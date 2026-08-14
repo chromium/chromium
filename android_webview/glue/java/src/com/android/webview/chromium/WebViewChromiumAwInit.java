@@ -18,8 +18,8 @@ import android.webkit.WebViewDatabase;
 import androidx.annotation.GuardedBy;
 import androidx.annotation.Nullable;
 
-import com.android.webview.chromium.WebViewChromium.ApiCall;
-import com.android.webview.chromium.WebViewChromium.ApiCallUserAction;
+import com.android.webview.chromium.ApiCallLogger.ApiCall;
+import com.android.webview.chromium.ApiCallLogger.ApiCallUserAction;
 
 import org.chromium.android_webview.AwBrowserContext;
 import org.chromium.android_webview.AwBrowserProcess;
@@ -814,7 +814,7 @@ public class WebViewChromiumAwInit {
 
     public WebIconDatabase getWebIconDatabase() {
         triggerAndWaitForChromiumStarted(StartupCallSite.GET_WEB_ICON_DATABASE);
-        WebViewChromium.recordWebViewApiCall(
+        ApiCallLogger.recordWebViewApiCall(
                 ApiCall.WEB_ICON_DATABASE_GET_INSTANCE,
                 ApiCallUserAction.WEB_ICON_DATABASE_GET_INSTANCE);
         synchronized (mLazyInitLock) {

@@ -7,8 +7,8 @@ package com.android.webview.chromium;
 import android.webkit.ValueCallback;
 import android.webkit.WebStorage;
 
-import com.android.webview.chromium.WebViewChromium.ApiCall;
-import com.android.webview.chromium.WebViewChromium.ApiCallUserAction;
+import com.android.webview.chromium.ApiCallLogger.ApiCall;
+import com.android.webview.chromium.ApiCallLogger.ApiCallUserAction;
 
 import org.chromium.android_webview.AwQuotaManagerBridge;
 import org.chromium.android_webview.common.Lifetime;
@@ -58,7 +58,7 @@ final class WebStorageAdapter extends WebStorage {
                         try (TraceEvent event =
                                 TraceEvent.scoped(
                                         "WebView.APICall.Framework.WEB_STORAGE_GET_ORIGINS")) {
-                            WebViewChromium.recordWebViewApiCall(
+                            ApiCallLogger.recordWebViewApiCall(
                                     ApiCall.WEB_STORAGE_GET_ORIGINS,
                                     ApiCallUserAction.WEB_STORAGE_GET_ORIGINS);
                             mQuotaManagerBridge.getOrigins(awOriginsCallback);
@@ -68,7 +68,7 @@ final class WebStorageAdapter extends WebStorage {
         }
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.WEB_STORAGE_GET_ORIGINS")) {
-            WebViewChromium.recordWebViewApiCall(
+            ApiCallLogger.recordWebViewApiCall(
                     ApiCall.WEB_STORAGE_GET_ORIGINS, ApiCallUserAction.WEB_STORAGE_GET_ORIGINS);
             mQuotaManagerBridge.getOrigins(awOriginsCallback);
         }
@@ -82,7 +82,7 @@ final class WebStorageAdapter extends WebStorage {
                         try (TraceEvent event =
                                 TraceEvent.scoped(
                                         "WebView.APICall.Framework.WEB_STORAGE_GET_USAGE_FOR_ORIGIN")) {
-                            WebViewChromium.recordWebViewApiCall(
+                            ApiCallLogger.recordWebViewApiCall(
                                     ApiCall.WEB_STORAGE_GET_USAGE_FOR_ORIGIN,
                                     ApiCallUserAction.WEB_STORAGE_GET_USAGE_FOR_ORIGIN);
                             mQuotaManagerBridge.getUsageForOrigin(
@@ -93,7 +93,7 @@ final class WebStorageAdapter extends WebStorage {
         }
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.WEB_STORAGE_GET_USAGE_FOR_ORIGIN")) {
-            WebViewChromium.recordWebViewApiCall(
+            ApiCallLogger.recordWebViewApiCall(
                     ApiCall.WEB_STORAGE_GET_USAGE_FOR_ORIGIN,
                     ApiCallUserAction.WEB_STORAGE_GET_USAGE_FOR_ORIGIN);
             mQuotaManagerBridge.getUsageForOrigin(
@@ -109,7 +109,7 @@ final class WebStorageAdapter extends WebStorage {
                         try (TraceEvent event =
                                 TraceEvent.scoped(
                                         "WebView.APICall.Framework.WEB_STORAGE_GET_QUOTA_FOR_ORIGIN")) {
-                            WebViewChromium.recordWebViewApiCall(
+                            ApiCallLogger.recordWebViewApiCall(
                                     ApiCall.WEB_STORAGE_GET_QUOTA_FOR_ORIGIN,
                                     ApiCallUserAction.WEB_STORAGE_GET_QUOTA_FOR_ORIGIN);
                             mQuotaManagerBridge.getQuotaForOrigin(
@@ -120,7 +120,7 @@ final class WebStorageAdapter extends WebStorage {
         }
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.WEB_STORAGE_GET_QUOTA_FOR_ORIGIN")) {
-            WebViewChromium.recordWebViewApiCall(
+            ApiCallLogger.recordWebViewApiCall(
                     ApiCall.WEB_STORAGE_GET_QUOTA_FOR_ORIGIN,
                     ApiCallUserAction.WEB_STORAGE_GET_QUOTA_FOR_ORIGIN);
             mQuotaManagerBridge.getQuotaForOrigin(
@@ -141,7 +141,7 @@ final class WebStorageAdapter extends WebStorage {
                         try (TraceEvent event =
                                 TraceEvent.scoped(
                                         "WebView.APICall.Framework.WEB_STORAGE_DELETE_ORIGIN")) {
-                            WebViewChromium.recordWebViewApiCall(
+                            ApiCallLogger.recordWebViewApiCall(
                                     ApiCall.WEB_STORAGE_DELETE_ORIGIN,
                                     ApiCallUserAction.WEB_STORAGE_DELETE_ORIGIN);
                             mQuotaManagerBridge.deleteOriginFramework(origin);
@@ -151,7 +151,7 @@ final class WebStorageAdapter extends WebStorage {
         }
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.WEB_STORAGE_DELETE_ORIGIN")) {
-            WebViewChromium.recordWebViewApiCall(
+            ApiCallLogger.recordWebViewApiCall(
                     ApiCall.WEB_STORAGE_DELETE_ORIGIN, ApiCallUserAction.WEB_STORAGE_DELETE_ORIGIN);
             mQuotaManagerBridge.deleteOriginFramework(origin);
         }
@@ -165,7 +165,7 @@ final class WebStorageAdapter extends WebStorage {
                         try (TraceEvent event =
                                 TraceEvent.scoped(
                                         "WebView.APICall.Framework.WEB_STORAGE_DELETE_ALL_DATA")) {
-                            WebViewChromium.recordWebViewApiCall(
+                            ApiCallLogger.recordWebViewApiCall(
                                     ApiCall.WEB_STORAGE_DELETE_ALL_DATA,
                                     ApiCallUserAction.WEB_STORAGE_DELETE_ALL_DATA);
                             mQuotaManagerBridge.deleteAllDataFramework();
@@ -175,7 +175,7 @@ final class WebStorageAdapter extends WebStorage {
         }
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.WEB_STORAGE_DELETE_ALL_DATA")) {
-            WebViewChromium.recordWebViewApiCall(
+            ApiCallLogger.recordWebViewApiCall(
                     ApiCall.WEB_STORAGE_DELETE_ALL_DATA,
                     ApiCallUserAction.WEB_STORAGE_DELETE_ALL_DATA);
             mQuotaManagerBridge.deleteAllDataFramework();

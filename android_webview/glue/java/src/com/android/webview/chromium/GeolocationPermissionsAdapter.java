@@ -7,7 +7,8 @@ package com.android.webview.chromium;
 import android.webkit.GeolocationPermissions;
 import android.webkit.ValueCallback;
 
-import com.android.webview.chromium.WebViewChromium.ApiCall;
+import com.android.webview.chromium.ApiCallLogger.ApiCall;
+import com.android.webview.chromium.ApiCallLogger.ApiCallUserAction;
 
 import org.chromium.android_webview.AwGeolocationPermissions;
 import org.chromium.base.ThreadUtils;
@@ -35,9 +36,9 @@ final class GeolocationPermissionsAdapter extends GeolocationPermissions {
     public void allow(final String origin) {
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.GEOLOCATION_PERMISSIONS_ALLOW")) {
-            WebViewChromium.recordWebViewApiCall(
+            ApiCallLogger.recordWebViewApiCall(
                     ApiCall.GEOLOCATION_PERMISSIONS_ALLOW,
-                    WebViewChromium.ApiCallUserAction.GEOLOCATION_PERMISSIONS_ALLOW);
+                    ApiCallUserAction.GEOLOCATION_PERMISSIONS_ALLOW);
             if (checkNeedsPost()) {
                 mFactory.addTask(() -> mChromeGeolocationPermissions.allow(origin));
                 return;
@@ -50,9 +51,9 @@ final class GeolocationPermissionsAdapter extends GeolocationPermissions {
     public void clear(final String origin) {
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.GEOLOCATION_PERMISSIONS_CLEAR")) {
-            WebViewChromium.recordWebViewApiCall(
+            ApiCallLogger.recordWebViewApiCall(
                     ApiCall.GEOLOCATION_PERMISSIONS_CLEAR,
-                    WebViewChromium.ApiCallUserAction.GEOLOCATION_PERMISSIONS_CLEAR);
+                    ApiCallUserAction.GEOLOCATION_PERMISSIONS_CLEAR);
             if (checkNeedsPost()) {
                 mFactory.addTask(() -> mChromeGeolocationPermissions.clear(origin));
                 return;
@@ -65,9 +66,9 @@ final class GeolocationPermissionsAdapter extends GeolocationPermissions {
     public void clearAll() {
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.GEOLOCATION_PERMISSIONS_CLEAR_ALL")) {
-            WebViewChromium.recordWebViewApiCall(
+            ApiCallLogger.recordWebViewApiCall(
                     ApiCall.GEOLOCATION_PERMISSIONS_CLEAR_ALL,
-                    WebViewChromium.ApiCallUserAction.GEOLOCATION_PERMISSIONS_CLEAR_ALL);
+                    ApiCallUserAction.GEOLOCATION_PERMISSIONS_CLEAR_ALL);
             if (checkNeedsPost()) {
                 mFactory.addTask(mChromeGeolocationPermissions::clearAll);
                 return;
@@ -81,9 +82,9 @@ final class GeolocationPermissionsAdapter extends GeolocationPermissions {
         try (TraceEvent event =
                 TraceEvent.scoped(
                         "WebView.APICall.Framework.GEOLOCATION_PERMISSIONS_GET_ALLOWED")) {
-            WebViewChromium.recordWebViewApiCall(
+            ApiCallLogger.recordWebViewApiCall(
                     ApiCall.GEOLOCATION_PERMISSIONS_GET_ALLOWED,
-                    WebViewChromium.ApiCallUserAction.GEOLOCATION_PERMISSIONS_GET_ALLOWED);
+                    ApiCallUserAction.GEOLOCATION_PERMISSIONS_GET_ALLOWED);
             if (checkNeedsPost()) {
                 mFactory.addTask(
                         () ->
@@ -101,9 +102,9 @@ final class GeolocationPermissionsAdapter extends GeolocationPermissions {
         try (TraceEvent event =
                 TraceEvent.scoped(
                         "WebView.APICall.Framework.GEOLOCATION_PERMISSIONS_GET_ORIGINS")) {
-            WebViewChromium.recordWebViewApiCall(
+            ApiCallLogger.recordWebViewApiCall(
                     ApiCall.GEOLOCATION_PERMISSIONS_GET_ORIGINS,
-                    WebViewChromium.ApiCallUserAction.GEOLOCATION_PERMISSIONS_GET_ORIGINS);
+                    ApiCallUserAction.GEOLOCATION_PERMISSIONS_GET_ORIGINS);
 
             if (checkNeedsPost()) {
                 mFactory.addTask(
