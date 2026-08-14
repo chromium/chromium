@@ -14,14 +14,14 @@
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/glic/experimental_triggering/actor_log.h"
+#include "chrome/browser/glic/experimental_triggering/glic_experimental_triggering_converters.h"
 #include "chrome/browser/glic/experimental_triggering/glic_experimental_triggering_coordinator.h"
 #include "chrome/browser/glic/experimental_triggering/glic_experimental_triggering_metrics.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sharing/glic_experimental_triggering/actor_log.h"
-#include "chrome/browser/sharing/glic_experimental_triggering/glic_experimental_triggering_converters.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/common/chrome_features.h"
@@ -257,7 +257,7 @@ void GlicExperimentalTriggeringMessageHandler::OnMessage(
     if (profile_) {
       actor::ActorKeyedService* actor_service =
           actor::ActorKeyedService::Get(profile_);
-      LogGlicExperimentalTriggeringProto(
+      glic::LogGlicExperimentalTriggeringProto(
           actor_service, "GlicExperimentalTriggering", "", request);
     }
 
@@ -323,7 +323,7 @@ void GlicExperimentalTriggeringMessageHandler::ProcessValidatedMessage(
   if (profile_) {
     actor::ActorKeyedService* actor_service =
         actor::ActorKeyedService::Get(profile_);
-    LogGlicExperimentalTriggeringProto(
+    glic::LogGlicExperimentalTriggeringProto(
         actor_service, "GlicExperimentalTriggering", context_id, request);
   }
 
@@ -367,7 +367,7 @@ GlicExperimentalTriggeringMessageHandler::GetUpdateCallback(
         if (weak_message_handler->profile_) {
           actor::ActorKeyedService* actor_service =
               actor::ActorKeyedService::Get(weak_message_handler->profile_);
-          LogGlicExperimentalTriggeringProto(
+          glic::LogGlicExperimentalTriggeringProto(
               actor_service, "GlicExperimentalTriggering", response.context_id,
               outgoing_message.glic_experimental_triggering());
         }

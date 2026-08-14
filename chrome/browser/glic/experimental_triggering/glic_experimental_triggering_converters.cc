@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/sharing/glic_experimental_triggering/glic_experimental_triggering_converters.h"
+#include "chrome/browser/glic/experimental_triggering/glic_experimental_triggering_converters.h"
 
 #include <optional>
 #include <utility>

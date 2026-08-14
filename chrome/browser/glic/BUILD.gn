@@ -17,6 +17,8 @@ import("//mojo/public/tools/bindings/mojom.gni")
 source_set("glic") {
   sources = [
     "common/local_hotkey_manager.h",
+    "experimental_triggering/actor_log.h",
+    "experimental_triggering/glic_experimental_triggering_converters.h",
     "experimental_triggering/glic_experimental_triggering_coordinator.h",
     "experimental_triggering/glic_experimental_triggering_metrics.h",
     "experimental_triggering/glic_experimental_triggering_transport_handler.h",
@@ -315,6 +317,8 @@ source_set("impl") {
     "experimental_opt_in/glic_experimental_opt_in_controller.cc",
     "experimental_opt_in/glic_experimental_opt_in_controller.h",
     "experimental_opt_in/glic_experimental_opt_in_ui_host.h",
+    "experimental_triggering/actor_log.cc",
+    "experimental_triggering/glic_experimental_triggering_converters.cc",
     "experimental_triggering/glic_experimental_triggering_coordinator.cc",
     "experimental_triggering/glic_experimental_triggering_manager.cc",
     "experimental_triggering/glic_experimental_triggering_manager.h",
@@ -729,6 +733,7 @@ mojom("mojo_bindings") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "experimental_triggering/glic_experimental_triggering_converters_unittest.cc",
     "experimental_triggering/glic_experimental_triggering_coordinator_unittest.cc",
     "experimental_triggering/glic_experimental_triggering_transport_handler_unittest.cc",
     "glic_settings_util_unittest.cc",
