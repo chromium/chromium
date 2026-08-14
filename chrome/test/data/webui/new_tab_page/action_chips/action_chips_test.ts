@@ -852,30 +852,51 @@ suite('NewTabPageActionChipsTest', () => {
       assertFalse(chips.hasAttribute('small-chips-enabled'));
     });
 
-    test('renders subtitle span when chip has secondary text', async () => {
-      await initializeChips({
-        ntpSmallActionChipsEnabled: true,
-        actionChips: [{
-          suggestTemplateInfo: {
-            typeIcon: IconType.kFavicon,
-            primaryText: {text: 'Example Tab', a11yText: null},
-            secondaryText: {text: 'Subtitle for recent tab', a11yText: null},
-            fuseboxAction: {
-              preselectedTool: ToolMode.kUnspecified,
-              preferredInventory: null,
-            },
-          },
-          suggestion: 'Suggestion for recent tab',
-          tab: null,
-        }],
-      });
-      const chip =
-          chips.shadowRoot.querySelector<HTMLButtonElement>('.action-chip');
-      assertTrue(!!chip);
-      const bodyElement = chip.querySelector('.chip-body');
-      assertTrue(!!bodyElement);
-      assertEquals('Subtitle for recent tab', bodyElement.textContent?.trim());
-    });
+    test(
+        'renders has-chips attribute when action chips are present',
+        async () => {
+          await initializeChips({
+            actionChips: defaultActionChips,
+          });
+          assertTrue(chips.hasAttribute('has-chips'));
+        });
+
+    test(
+        'does not render has-chips attribute when action chips are empty',
+        async () => {
+          await initializeChips({
+            actionChips: [],
+          });
+          assertFalse(chips.hasAttribute('has-chips'));
+        });
+
+    test(
+        'does not render subtitle span when small chips are enabled even if ' +
+            'chip has secondary text',
+        async () => {
+          await initializeChips({
+            ntpSmallActionChipsEnabled: true,
+            actionChips: [{
+              suggestTemplateInfo: {
+                typeIcon: IconType.kFavicon,
+                primaryText: {text: 'Example Tab', a11yText: null},
+                secondaryText:
+                    {text: 'Subtitle for recent tab', a11yText: null},
+                fuseboxAction: {
+                  preselectedTool: ToolMode.kUnspecified,
+                  preferredInventory: null,
+                },
+              },
+              suggestion: 'Suggestion for recent tab',
+              tab: null,
+            }],
+          });
+          const chip =
+              chips.shadowRoot.querySelector<HTMLButtonElement>('.action-chip');
+          assertTrue(!!chip);
+          const bodyElement = chip.querySelector('.chip-body');
+          assertEquals(null, bodyElement);
+        });
 
     test(
         'does not render subtitle span when chip has no secondary text',
