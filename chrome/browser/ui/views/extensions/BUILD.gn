@@ -127,7 +127,10 @@ source_set("unit_tests") {
 
   if (is_chromeos) {
     sources += [ "media_galleries_dialog_views_unittest.cc" ]
-    deps += [ "//chrome/browser/media_galleries:test_support" ]
+    deps += [
+      ":media_gallery_checkbox_view",
+      "//chrome/browser/media_galleries:test_support",
+    ]
   }
 }
 
@@ -202,6 +205,7 @@ source_set("browser_tests") {
       "media_galleries_dialog_views_browsertest.cc",
     ]
     deps += [
+      ":media_gallery_checkbox_view",
       "//chrome/browser/media_galleries:test_support",
       "//chrome/browser/ui:browser_select_file_dialog_controller",
     ]
@@ -296,4 +300,22 @@ source_set("extensions_views_utils") {
     "//ui/color",
     "//ui/events",
   ]
+}
+
+if (is_chromeos) {
+  source_set("media_gallery_checkbox_view") {
+    public = [ "media_gallery_checkbox_view.h" ]
+    sources = [ "media_gallery_checkbox_view.cc" ]
+    public_deps = [
+      "//base",
+      "//ui/base/metadata",
+      "//ui/views",
+    ]
+    deps = [
+      "//chrome/browser/media_galleries",
+      "//chrome/browser/ui/views:layout_provider",
+      "//skia",
+      "//ui/gfx/geometry",
+    ]
+  }
 }
