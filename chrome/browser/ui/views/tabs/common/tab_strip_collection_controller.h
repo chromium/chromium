@@ -17,6 +17,7 @@
 #include "components/tab_groups/tab_group_id.h"
 #include "ui/base/models/list_selection_model.h"
 
+class BrowserFrameView;
 class BrowserView;
 class ExpandOnHoverLock;
 class TabCollectionNode;
@@ -51,12 +52,15 @@ class TabStripCollectionController : public TabContextMenuController::Delegate {
       delete;
   ~TabStripCollectionController() override;
 
-  void ShowContextMenuForNode(TabCollectionNode* collection_node,
-                              views::View* source,
-                              const gfx::Point& point,
-                              ui::mojom::MenuSourceType source_type);
-
   int GetTabCount() const;
+  const tabs::TabInterface* GetActiveTab() const;
+  const TabCollectionNode* GetAdjacentTab(
+      const tabs::TabInterface* tab_interface,
+      bool leading) const;
+  std::optional<tab_groups::TabGroupId> GetFocusedGroup() const;
+  std::optional<SkColor> GetGroupColor(
+      const tabs::TabInterface* tab_interface) const;
+
   void ShiftTabNext(const tabs::TabInterface* tab_interface);
   void ShiftTabPrevious(const tabs::TabInterface* tab_interface);
   void ShiftGroupUp(const tab_groups::TabGroupId& group);
@@ -72,6 +76,10 @@ class TabStripCollectionController : public TabContextMenuController::Delegate {
   const ui::ListSelectionModel& GetSelectionModel() const;
   void ToggleTabGroupCollapsedState(const TabGroup* group,
                                     ToggleTabGroupCollapsedStateOrigin origin);
+
+  void ShowTabContextMenu(TabCollectionNode* collection_node,
+                          const gfx::Point& point,
+                          ui::mojom::MenuSourceType source_type);
   void ShowGroupEditorBubble(const TabCollectionNode* group_node);
   std::unique_ptr<views::Widget> ShowGroupEditorBubble(
       const tab_groups::TabGroupId& group_id,
@@ -88,7 +96,8 @@ class TabStripCollectionController : public TabContextMenuController::Delegate {
   }
 
   BrowserView* GetBrowserView() const { return browser_view_; }
-  bool IsGlassFrame() const { return is_glass_; }
+  BrowserFrameView* GetBrowserFrameView() const;
+  bool IsGlassFrame() const { return is_glass_frame_; }
   void OnGlassFrameEligibilityChanged(bool is_eligible);
   int GetStrokeThickness() const;
 
@@ -99,13 +108,9 @@ class TabStripCollectionController : public TabContextMenuController::Delegate {
     return hover_card_controller_.get();
   }
 
-  const tabs::TabInterface* GetActiveTab() const;
-
   // Notifies BrowserCommandController that the tab with keyboard focus has
   // changed.
   void TabKeyboardFocusChangedTo(const tabs::TabInterface* tab);
-
-  std::optional<tab_groups::TabGroupId> GetFocusedGroup() const;
 
   void TabGroupFocusChanged(
       std::optional<tab_groups::TabGroupId> new_focused_group_id,
@@ -151,7 +156,7 @@ class TabStripCollectionController : public TabContextMenuController::Delegate {
   const raw_ref<TabDragHandler> drag_handler_;
   raw_ptr<TabHoverCardController> hover_card_controller_;
 
-  bool is_glass_ = false;
+  bool is_glass_frame_ = false;
   base::CallbackListSubscription glass_frame_service_subscription_;
 };
 

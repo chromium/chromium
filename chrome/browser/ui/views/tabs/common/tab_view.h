@@ -38,7 +38,6 @@ class TabCollectionNode;
 class TabIcon;
 class TabTitle;
 class TabStyleViews;
-class TabStyleViewDelegate;
 
 namespace base {
 class TimeDelta;
@@ -91,12 +90,9 @@ class TabView : public views::View,
   float radial_highlight_opacity() { return radial_highlight_opacity_; }
   const tabs::TabData& data() const { return tab_data_; }
   bool IsActive() const { return active_; }
-  bool IsClosing() const;
+  bool IsClosing() const { return !collection_node_; }
   bool split() const { return split_; }
   const tabs::TabInterface* GetTabInterface() const;
-
-  const TabView* GetAdjacentTab(bool leading) const;
-  std::optional<SkColor> GetGroupColor() const;
 
   GlowHoverController* GetHoverControllerForTesting() {
     return hover_controller_.get();
@@ -216,9 +212,6 @@ class TabView : public views::View,
 
   // Applies rounded corners to the view's layer.
   void UpdateLayerRoundedCorners();
-
-  static std::unique_ptr<TabStyleViewDelegate> CreateStyleDelegate(
-      const TabView* tab_view);
 
   raw_ptr<TabCollectionNode> collection_node_ = nullptr;
   TabStripOrientation orientation_ = TabStripOrientation::kHorizontal;

@@ -7,7 +7,6 @@
 #include <optional>
 #include <string>
 
-#include "base/check_is_test.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
@@ -24,8 +23,6 @@
 #include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
 #include "chrome/browser/ui/tabs/tab_change_type.h"
 #include "chrome/browser/ui/tabs/tab_data.h"
-#include "chrome/browser/ui/tabs/tab_group_model.h"
-#include "chrome/browser/ui/tabs/tab_group_theme.h"
 #include "chrome/browser/ui/tabs/tab_muted_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
@@ -33,10 +30,8 @@
 #include "chrome/browser/ui/views/event_utils.h"
 #include "chrome/browser/ui/views/frame/base_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/themed_background.h"
 #include "chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h"
-#include "chrome/browser/ui/views/tabs/common/root_tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/common/split_tab_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/common/tab_drag_handler.h"
@@ -58,7 +53,6 @@
 #include "chrome/grit/theme_resources.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/tabs/public/tab_alert.h"
-#include "components/tabs/public/tab_group.h"
 #include "components/tabs/public/tab_interface.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkPathBuilder.h"
@@ -161,7 +155,11 @@ class TabStyleViewDelegateImpl : public TabStyleViewDelegate {
   }
 
   std::optional<SkColor> GetGroupColor() const override {
-    return tab_view_->GetGroupColor();
+    const auto* controller = tab_view_->collection_node()
+                                 ? tab_view_->collection_node()->GetController()
+                                 : nullptr;
+    return controller ? controller->GetGroupColor(tab_view_->GetTabInterface())
+                      : std::nullopt;
   }
 
   bool IsInFocusedGroup() const override {
@@ -212,10 +210,17 @@ class TabStyleViewDelegateImpl : public TabStyleViewDelegate {
   }
 
   const TabStyleViewDelegate* GetAdjacentTab(bool leading) const override {
-    const TabView* adjacent = tab_view_->GetAdjacentTab(leading);
-    return (adjacent && adjacent->tab_styling())
-               ? adjacent->tab_styling()->delegate()
-               : nullptr;
+    const auto* controller = tab_view_->collection_node()
+                                 ? tab_view_->collection_node()->GetController()
+                                 : nullptr;
+    const TabCollectionNode* adjacent_node =
+        controller
+            ? controller->GetAdjacentTab(tab_view_->GetTabInterface(), leading)
+            : nullptr;
+    const TabView* adjacent_view =
+        adjacent_node ? views::AsViewClass<TabView>(adjacent_node->view())
+                      : nullptr;
+    return adjacent_view ? adjacent_view->tab_styling()->delegate() : nullptr;
   }
 
   float GetHoverAnimationValue() const override {
@@ -236,19 +241,10 @@ class TabStyleViewDelegateImpl : public TabStyleViewDelegate {
   }
 
   BrowserFrameView* GetBrowserFrameView() const override {
-    tabs::TabInterface* tab_interface =
-        const_cast<tabs::TabInterface*>(tab_view_->GetTabInterface());
-    BrowserWindowInterface* browser_window_interface =
-        tab_interface ? tab_interface->GetBrowserWindowInterface() : nullptr;
-    if (!browser_window_interface) {
-      return nullptr;
-    }
-    BrowserView* browser_view =
-        BrowserView::GetBrowserViewForBrowser(browser_window_interface);
-    if (!browser_view || !browser_view->browser_widget()) {
-      return nullptr;
-    }
-    return browser_view->browser_widget()->GetFrameView();
+    const auto* controller = tab_view_->collection_node()
+                                 ? tab_view_->collection_node()->GetController()
+                                 : nullptr;
+    return controller ? controller->GetBrowserFrameView() : nullptr;
   }
 
   BrowserWindowInterface* GetBrowserWindowInterface() const override {
@@ -292,6 +288,9 @@ TabView::TabView(TabCollectionNode* collection_node)
     : HoverCardAnchorTarget(this),
       collection_node_(collection_node),
       orientation_(collection_node->orientation()),
+      tab_styling_(TabStyleViews::Create(
+          std::make_unique<TabStyleViewDelegateImpl>(this),
+          orientation_)),
       icon_(AddChildView(std::make_unique<TabIcon>())),
       title_(AddChildView(std::make_unique<TabTitle>())),
       alert_indicator_(
@@ -306,7 +305,6 @@ TabView::TabView(TabCollectionNode* collection_node)
                                   this,
                                   kGlowHoverAnimationDuration)
                             : nullptr) {
-  tab_styling_ = TabStyleViews::Create(CreateStyleDelegate(this), orientation_);
   tabs::TabInterface* tab = const_cast<tabs::TabInterface*>(GetTabInterface());
   BrowserWindowInterface* browser_window = tab->GetBrowserWindowInterface();
   if (browser_window &&
@@ -395,10 +393,6 @@ TabView::TabView(TabCollectionNode* collection_node)
 }
 
 TabView::~TabView() = default;
-
-bool TabView::IsClosing() const {
-  return !collection_node_;
-}
 
 void TabView::StepLoadingAnimation(const base::TimeDelta& elapsed_time) {
   // TODO(crbug.com/467710547): Paint favicon to a layer when tab strip isn't
@@ -695,9 +689,8 @@ void TabView::OnGestureEvent(ui::GestureEvent* event) {
 
     case ui::EventType::kGestureLongTap: {
       // Show context menu on release after long press.
-      controller->ShowContextMenuForNode(collection_node_, this,
-                                         event->location(),
-                                         ui::mojom::MenuSourceType::kTouch);
+      controller->ShowTabContextMenu(collection_node_, event->location(),
+                                     ui::mojom::MenuSourceType::kTouch);
       event->SetHandled();
       break;
     }
@@ -1025,8 +1018,7 @@ void TabView::ShowContextMenuForViewImpl(
     ui::mojom::MenuSourceType source_type) {
   if (collection_node_) {
     if (auto* controller = collection_node_->GetController()) {
-      controller->ShowContextMenuForNode(collection_node_, source, point,
-                                         source_type);
+      controller->ShowTabContextMenu(collection_node_, point, source_type);
     }
   }
 }
@@ -1386,85 +1378,6 @@ SkScalar TabView::GetCornerRadius() const {
   return SkIntToScalar(
       GetLayoutConstant(LayoutConstant::kVerticalTabCornerRadius) +
       (split_ ? GetInsets().height() : 0));
-}
-
-const TabView* TabView::GetAdjacentTab(bool leading) const {
-  const tabs::TabInterface* tab = GetTabInterface();
-  const BrowserWindowInterface* browser_window =
-      tab ? tab->GetBrowserWindowInterface() : nullptr;
-  const TabStripModel* model =
-      browser_window ? browser_window->GetTabStripModel() : nullptr;
-  if (!model) {
-    return nullptr;
-  }
-
-  std::optional<int> maybe_index = model->GetIndexOfTab(tab);
-  if (!maybe_index.has_value()) {
-    return nullptr;
-  }
-
-  int adjacent_index =
-      leading ? maybe_index.value() - 1 : maybe_index.value() + 1;
-  if (!model->ContainsIndex(adjacent_index)) {
-    return nullptr;
-  }
-
-  const tabs::TabInterface* adjacent_tab = model->GetTabAtIndex(adjacent_index);
-  BrowserView* browser_view =
-      BrowserView::GetBrowserViewForBrowser(browser_window);
-  BaseTabStripRegionView* region_view =
-      browser_view ? views::AsViewClass<BaseTabStripRegionView>(
-                         browser_view->tab_strip_view())
-                   : nullptr;
-  RootTabCollectionNode* root_node =
-      region_view ? region_view->root_node() : nullptr;
-  TabCollectionNode* adjacent_node =
-      (root_node && adjacent_tab)
-          ? root_node->GetNodeForHandle(adjacent_tab->GetHandle())
-          : nullptr;
-
-  return adjacent_node ? views::AsViewClass<TabView>(adjacent_node->view())
-                       : nullptr;
-}
-
-std::optional<SkColor> TabView::GetGroupColor() const {
-  const tabs::TabInterface* tab_interface = GetTabInterface();
-  std::optional<tab_groups::TabGroupId> group_id =
-      tab_interface ? tab_interface->GetGroup() : std::nullopt;
-  if (!group_id.has_value()) {
-    return std::nullopt;
-  }
-
-  const BrowserWindowInterface* browser_window =
-      tab_interface->GetBrowserWindowInterface();
-  const TabStripModel* model =
-      browser_window ? browser_window->GetTabStripModel() : nullptr;
-  if (!model || !model->SupportsTabGroups()) {
-    return std::nullopt;
-  }
-
-  const TabGroupModel* group_model = model->group_model();
-  const TabGroup* group = (group_model->ContainsTabGroup(group_id.value()))
-                              ? group_model->GetTabGroup(group_id.value())
-                              : nullptr;
-  if (!group || !group->visual_data()) {
-    return std::nullopt;
-  }
-
-  const auto* cp = GetColorProvider();
-  if (!cp) {
-    return std::nullopt;
-  }
-
-  return cp->GetColor(GetTabGroupTabStripColorId(
-      group->visual_data()->color(),
-      GetWidget() ? GetWidget()->ShouldPaintAsActive() : true));
-}
-
-// static
-std::unique_ptr<TabStyleViewDelegate> TabView::CreateStyleDelegate(
-    const TabView* tab_view) {
-  return std::make_unique<TabStyleViewDelegateImpl>(tab_view);
 }
 
 std::optional<performance_manager::freezing::FreezingVote>&
