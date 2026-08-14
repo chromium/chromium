@@ -1465,9 +1465,8 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, VoiceIsolationControl) {
   constraint_factory_.Reset();
   settings = SelectSettings(true, capabilities_);
   EXPECT_TRUE(settings.HasValue());
-  EXPECT_EQ(
-      settings.audio_processing_properties().voice_isolation,
-      AudioProcessingProperties::VoiceIsolationType::kVoiceIsolationDefault);
+  EXPECT_EQ(settings.audio_processing_properties().voice_isolation,
+            kVoiceIsolationDefaultValue);
 }
 #else
 TEST_P(MediaStreamConstraintsUtilAudioTest, VoiceIsolationControl) {

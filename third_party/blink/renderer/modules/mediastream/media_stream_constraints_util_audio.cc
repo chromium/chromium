@@ -551,7 +551,7 @@ class EchoCancellationContainer {
     properties->auto_gain_control &= default_audio_processing_value;
 
     properties->noise_suppression &= default_audio_processing_value;
-    properties->voice_isolation = VoiceIsolationType::kVoiceIsolationDefault;
+    properties->voice_isolation = kVoiceIsolationDefaultValue;
   }
 
   bool GetDefaultValueForAudioProperties(

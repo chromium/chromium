@@ -48,8 +48,7 @@ TEST(AudioProcessingPropertiesToAudioProcessingSettingsTest,
   EXPECT_FALSE(settings.noise_suppression);
   EXPECT_FALSE(settings.automatic_gain_control);
 
-  EXPECT_EQ(properties.voice_isolation,
-            VoiceIsolationType::kVoiceIsolationDefault);
+  EXPECT_EQ(properties.voice_isolation, kVoiceIsolationDefaultValue);
 }
 
 TEST(AudioProcessingPropertiesToAudioProcessingSettingsTest,
@@ -226,8 +225,7 @@ TEST(AudioProcessingPropertiesTest, VerifyDefaultProcessingState) {
             EchoCancellationMode::kBrowserDecides);
   EXPECT_TRUE(kDefaultProperties.auto_gain_control);
   EXPECT_TRUE(kDefaultProperties.noise_suppression);
-  EXPECT_EQ(kDefaultProperties.voice_isolation,
-            VoiceIsolationType::kVoiceIsolationDefault);
+  EXPECT_EQ(kDefaultProperties.voice_isolation, kVoiceIsolationDefaultValue);
 }
 
 class MediaStreamAudioProcessingLayoutTest

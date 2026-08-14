@@ -33,7 +33,7 @@ const AudioProcessingProperties& AudioProcessingProperties::Disabled() {
       .echo_cancellation_mode = EchoCancellationMode::kDisabled,
       .auto_gain_control = false,
       .noise_suppression = false,
-      .voice_isolation = VoiceIsolationType::kVoiceIsolationDefault};
+      .voice_isolation = kVoiceIsolationDefaultValue};
 
   return kDisabledProperties;
 }

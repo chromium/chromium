@@ -8,6 +8,7 @@ include_rules = [
     # Dependencies.
     "+media/base",
     "+media/capture",
+    "+media/media_buildflags.h",
     "+media/webrtc/audio_processor_controls.h",
     "+media/webrtc/webrtc_features.h",
     "+third_party/blink/renderer/platform/allow_discouraged_type.h",
