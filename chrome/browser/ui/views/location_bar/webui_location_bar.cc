@@ -667,13 +667,16 @@ void WebUILocationBar::ShowPageInfoBubble() {
     return;
   }
 
-  ui::TrackedElement* location_bar_element = GetAnchorOrNull();
+  ui::TrackedElement* anchor_element =
+      BrowserElements::From(browser_)->GetElement(kLocationIconElementId);
+  if (!anchor_element) {
+    anchor_element = GetAnchorOrNull();
+  }
 
   std::unique_ptr<PageInfoBubbleSpecification> specification =
       PageInfoBubbleSpecification::Builder(
-          location_bar_element
-              ? views::BubbleAnchor(location_bar_element)
-              : views::BubbleAnchor(toolbar_delegate_->GetView()),
+          anchor_element ? views::BubbleAnchor(anchor_element)
+                         : views::BubbleAnchor(toolbar_delegate_->GetView()),
           toolbar_delegate_->GetView()->GetWidget()->GetNativeWindow(),
           contents, entry->GetVirtualURL())
           // TODO(crbug.com/495419742): We currently don't handle refocusing the
