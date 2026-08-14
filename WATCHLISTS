@@ -124,6 +124,9 @@
                   '|components/crash/android/' \
                   '|components/minidump_uploader/'
     },
+    'android_extensions_windowing': {
+      'filepath': 'chrome/browser/ui/android/extensions/windowing/',
+    },
     'android_flags': {
       'filepath': 'chrome/android/java/src/org/chromium/chrome/browser/flags/'
     },
@@ -723,6 +726,9 @@
     },
     'browser_scheduler': {
       'filepath': 'content/browser/scheduler'
+    },
+    'browser_window': {
+      'filepath': 'chrome/browser/ui/browser_window/',
     },
     'browsing_data': {
       'filepath': 'browsing_data|BrowsingData',
@@ -2608,6 +2614,7 @@
     'android_browser_controls': ['peilinwang+watch@google.com'],
     'android_crash_reporting': ['asvitkine+watch@chromium.org',
                                 'wnwen+watch@chromium.org'],
+    'android_extensions_windowing': ['linyuh+watch@google.com'],
     'android_flags': ['hnakashima+watch@chromium.org'],
     'android_infobars': ['dfalcantara+watch@chromium.org'],
     'android_infra': ['agrieve+watch@chromium.org'],
@@ -2619,7 +2626,7 @@
     'android_omnibox': ['ender+watch@chromium.org'],
     'android_search_widget': ['yusufo+watch@chromium.org'],
     'android_side_panel': ['clhager@google.com',
-                           'linyuh@google.com',
+                           'linyuh+watch@google.com',
                            'mschillaci+watchsidepanel@google.com',
                            'nemco+watch@google.com',
                            'shuyng@google.com'],
@@ -2857,6 +2864,7 @@
     'browser_components': ['browser-components-watch@chromium.org'],
     'browser_compositor': ['vollick@chromium.org'],
     'browser_scheduler': ['scheduler-bugs+browser@chromium.org'],
+    'browser_window': ['linyuh+watch@google.com'],
     'browsing_data': ['dullweber+watch@chromium.org',
                       'msramek+watch@chromium.org'],
     'cast_2_class': ['cros-edu-eng+cl@google.com'],
