@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
+
 #include "base/feature_list.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/run_until.h"
@@ -14,7 +16,6 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/features.h"
-#include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/toasts/toast_view.h"
@@ -38,6 +39,7 @@
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/interaction/interactive_views_test.h"
+#include "ui/views/test/widget_test.h"
 
 namespace base::test {
 
@@ -414,15 +416,12 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripInteractiveUiTest,
             ToastId::kTabStripSwitchDelayedVertical);
 
   // Click the action button on the toast to exit fullscreen.
-  RunTestSequence(
-      WaitForShow(toasts::ToastView::kToastActionButton), Do([]() {
-        base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
-        base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-            FROM_HERE, run_loop.QuitClosure(), base::Seconds(20));
-        run_loop.Run();
-      }),
-      PressButton(toasts::ToastView::kToastActionButton),
-      WaitForHide(toasts::ToastView::kToastViewId));
+  ui_test_utils::FullscreenWaiter waiter(
+      browser(), ui_test_utils::FullscreenWaiter::kNoFullscreen);
+  RunTestSequence(WaitForShow(toasts::ToastView::kToastActionButton),
+                  PressButton(toasts::ToastView::kToastActionButton),
+                  WaitForHide(toasts::ToastView::kToastViewId),
+                  Do([&waiter]() { waiter.Wait(); }));
 
   // Verify we exited fullscreen and vertical tabs are now enabled!
   fake_controller_->SetEnabled(false);
@@ -467,17 +466,85 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripInteractiveUiTest,
             ToastId::kTabStripSwitchDelayedHorizontal);
 
   // Click action button to exit fullscreen
-  RunTestSequence(
-      WaitForShow(toasts::ToastView::kToastActionButton), Do([]() {
-        base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
-        base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-            FROM_HERE, run_loop.QuitClosure(), base::Seconds(20));
-        run_loop.Run();
-      }),
-      PressButton(toasts::ToastView::kToastActionButton),
-      WaitForHide(toasts::ToastView::kToastViewId));
+  ui_test_utils::FullscreenWaiter waiter(
+      browser(), ui_test_utils::FullscreenWaiter::kNoFullscreen);
+  RunTestSequence(WaitForShow(toasts::ToastView::kToastActionButton),
+                  PressButton(toasts::ToastView::kToastActionButton),
+                  WaitForHide(toasts::ToastView::kToastViewId),
+                  Do([&waiter]() { waiter.Wait(); }));
 
   // Verify we exited fullscreen and vertical tabs are now disabled!
+  fake_controller_->SetEnabled(false);
+  EXPECT_FALSE(browser()->GetWindow()->IsFullscreen());
+  EXPECT_FALSE(tabs::VerticalTabStripStateController::From(browser())
+                   ->ShouldDisplayVerticalTabs());
+}
+
+IN_PROC_BROWSER_TEST_F(VerticalTabStripInteractiveUiTest,
+                       ImmersiveFullscreenSwitchShowHorizontalToastRepeatedly) {
+  // Enable vertical tabs first
+  tabs::VerticalTabStripStateController::From(browser())
+      ->SetVerticalTabsEnabled(true);
+  ASSERT_TRUE(tabs::VerticalTabStripStateController::From(browser())
+                  ->ShouldDisplayVerticalTabs());
+
+  // Enter immersive fullscreen
+  ui_test_utils::ToggleFullscreenModeAndWait(browser());
+  ASSERT_TRUE(browser()->GetWindow()->IsFullscreen());
+  fake_controller_->SetEnabled(true);
+
+  // Try to disable vertical tabs
+  tabs::VerticalTabStripStateController::From(browser())
+      ->SetVerticalTabsEnabled(false);
+
+  // Stop the timer so it doesn't auto-dismiss during test execution.
+  ToastController* const toast_controller =
+      browser()->GetFeatures().toast_controller();
+  toast_controller->GetToastCloseTimerForTesting()->Stop();
+
+  // Verify that vertical tabs are STILL enabled because state is locked
+  EXPECT_TRUE(tabs::VerticalTabStripStateController::From(browser())
+                  ->ShouldDisplayVerticalTabs());
+
+  // Verify that horizontal toast is showing
+  EXPECT_TRUE(toast_controller->IsShowingToast());
+  EXPECT_EQ(toast_controller->GetCurrentToastId(),
+            ToastId::kTabStripSwitchDelayedHorizontal);
+
+  // Dismiss toast and wait for it to hide
+  views::test::WidgetDestroyedWaiter destroyed_waiter(
+      toast_controller->GetToastWidgetForTesting());
+  RunTestSequence(WaitForShow(toasts::ToastView::kToastCloseButton),
+                  PressButton(toasts::ToastView::kToastCloseButton),
+                  WaitForHide(toasts::ToastView::kToastViewId),
+                  Do([&destroyed_waiter]() { destroyed_waiter.Wait(); }));
+  EXPECT_FALSE(toast_controller->IsShowingToast());
+
+  // Try to disable vertical tabs again
+  tabs::VerticalTabStripStateController::From(browser())
+      ->SetVerticalTabsEnabled(false);
+
+  // Stop the timer so it doesn't auto-dismiss during test execution
+  toast_controller->GetToastCloseTimerForTesting()->Stop();
+
+  // Verify that vertical tabs are STILL enabled
+  EXPECT_TRUE(tabs::VerticalTabStripStateController::From(browser())
+                  ->ShouldDisplayVerticalTabs());
+
+  // Verify that horizontal toast is showing again
+  EXPECT_TRUE(toast_controller->IsShowingToast());
+  EXPECT_EQ(toast_controller->GetCurrentToastId(),
+            ToastId::kTabStripSwitchDelayedHorizontal);
+
+  // Click action button to exit fullscreen
+  ui_test_utils::FullscreenWaiter waiter(
+      browser(), ui_test_utils::FullscreenWaiter::kNoFullscreen);
+  RunTestSequence(WaitForShow(toasts::ToastView::kToastActionButton),
+                  PressButton(toasts::ToastView::kToastActionButton),
+                  WaitForHide(toasts::ToastView::kToastViewId),
+                  Do([&waiter]() { waiter.Wait(); }));
+
+  // Verify we exited fullscreen and vertical tabs are now disabled
   fake_controller_->SetEnabled(false);
   EXPECT_FALSE(browser()->GetWindow()->IsFullscreen());
   EXPECT_FALSE(tabs::VerticalTabStripStateController::From(browser())

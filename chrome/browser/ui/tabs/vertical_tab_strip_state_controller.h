@@ -166,6 +166,9 @@ class VerticalTabStripStateController : public SessionServiceBaseObserver,
   void OnDidBecomeActive(BrowserWindowInterface* browser);
 
   void MaybeShowExpandOnHoverIPH();
+  // `new_enabled` represents the updated state of whether vertical tabs is
+  // enabled that will be used once fullscreen mode is exited.
+  void MaybeShowDelayedToast(bool new_enabled);
 
   void OnLockCreated();
   void OnLockDestroyed();
