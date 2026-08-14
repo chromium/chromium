@@ -281,7 +281,14 @@ export class SearchboxInputElement extends SearchboxInputElementBase {
           metricsReporter.mark('CharTyped');
         }
       }
+      // The above code already updated the text and selection. Prevent default
+      // keydown handling muddling the updated state.
       e.preventDefault();
+      // The above code already identified this is a text-changing keydown event
+      // and fired 'searchbox-input-text-updated' to update state accordingly
+      // text update. Prevent event bubbling from triggering other custom
+      // keydown handlers treating this as a generic keydown event.
+      e.stopPropagation();
     }
   }
 
