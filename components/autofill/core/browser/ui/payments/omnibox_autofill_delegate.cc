@@ -480,10 +480,6 @@ void OmniboxAutofillDelegate::OnFieldBecameVisible() {
   // consistency with standard Autofill suggestion generation logging.
   autofill_metrics::LogSuggestionsCount(suggestions);
 
-  // Log security status of the credit card form when suggestions are generated,
-  // similar to standard Autofill suggestions generation.
-  AutofillMetrics::LogIsQueriedCreditCardFormSecure(client_->IsContextSecure());
-
   // Requests to show the "Autofill payment" chip and initializes the bubble.
   client_->GetPaymentsAutofillClient()->ShowExpandedOmniboxAutofillChip(
       std::move(suggestions),

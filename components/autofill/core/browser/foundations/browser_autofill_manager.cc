@@ -662,6 +662,31 @@ bool ShouldShowWebauthnHybridEntryPoint(const FormFieldData& field) {
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 }
 
+void LogSuggestionGenerationMetrics(
+    const std::vector<Suggestion>& suggestions,
+    base::TimeTicks suggestion_generation_start_time) {
+  if (suggestions.empty()) {
+    return;
+  }
+
+  auto generated_filling_products =
+      DenseSet<FillingProduct>(suggestions, [&](const Suggestion& suggestion) {
+        return GetFillingProductFromSuggestionType(suggestion.type);
+      });
+  generated_filling_products.erase(FillingProduct::kNone);
+  for (FillingProduct filling_product : generated_filling_products) {
+    base::UmaHistogramEnumeration(
+        "Autofill.SuggestionGeneration.GeneratedFillingProduct",
+        filling_product);
+  }
+
+  base::UmaHistogramTimes(
+      "Autofill.Timing.SuggestionGeneration2",
+      base::TimeTicks::Now() - suggestion_generation_start_time);
+
+  autofill_metrics::LogSuggestionsCount(suggestions);
+}
+
 // Finds the footer section with "Manage" suggestions or adds a separator to
 // create a new footer section if there is none. Then, it moves any WebAuthn
 // fallback items to the footer - before any "Manage" suggestion, moving them
@@ -1244,12 +1269,8 @@ void BrowserAutofillManager::OnIndividualSuggestionsGenerated(
     if (suggestions.empty()) {
       continue;
     }
-    FillingProduct filling_product =
-        GetFillingProductFromSuggestionDataSource(suggestion_data_source);
-    base::UmaHistogramEnumeration(
-        "Autofill.SuggestionGeneration.GeneratedFillingProduct",
-        filling_product);
-    prioritized_suggestions[filling_product] = std::move(suggestions);
+    prioritized_suggestions[GetFillingProductFromSuggestionDataSource(
+        suggestion_data_source)] = std::move(suggestions);
   }
 
   auto passkey_suggestions =
@@ -1666,22 +1687,11 @@ void BrowserAutofillManager::OnGenerateSuggestionsComplete(
     base::ScopedClosureRunner scoped_on_after) {
   ReorderWebAuthnSuggestionsToFooter(suggestions);
 
-  if (!suggestions.empty()) {
-    base::UmaHistogramTimes(
-        "Autofill.Timing.SuggestionGeneration2",
-        base::TimeTicks::Now() - suggestion_generation_start_time);
-  }
-
-  autofill_metrics::LogSuggestionsCount(suggestions);
-  // When focusing on a field, log whether there is a suggestion for the user
-  // and whether the suggestion is shown.
   auto [form_structure, autofill_field] =
       FindMutableFormAndField(form_id, trigger_field.global_id());
-  if (form_structure &&
-      context.filling_product == FillingProduct::kCreditCard) {
-    AutofillMetrics::LogIsQueriedCreditCardFormSecure(
-        client().IsContextSecure());
-  }
+
+  LogSuggestionGenerationMetrics(suggestions, suggestion_generation_start_time);
+
   if (trigger_source ==
           AutofillSuggestionTriggerSource::kFormControlElementClicked &&
       autofill_field) {

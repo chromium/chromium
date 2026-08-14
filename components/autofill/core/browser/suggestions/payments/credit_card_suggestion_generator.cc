@@ -691,10 +691,18 @@ void CreditCardSuggestionGenerator::GenerateSuggestions(
         std::move(summary.metadata_logging_context));
   }
 
+  const bool is_context_secure = client.IsContextSecure();
+  AutofillMetrics::LogIsQueriedCreditCardFormSecure(is_context_secure);
+
+  if (suggestions.empty()) {
+    callback({data_source, {}});
+    return;
+  }
+
   // Don't provide credit card suggestions for non-secure pages, but do provide
-  // them for secure pages with passive mixed content (see implementation of
-  // IsContextSecure).
-  if (!suggestions.empty() && !client.IsContextSecure()) {
+  // them for secure pages with passive mixed content (see implementations of
+  // AutofillClient::IsContextSecure()).
+  if (!is_context_secure) {
     // Replace the suggestion content with a warning message explaining why
     // Autofill is disabled for a website. The string is different if the credit
     // card autofill HTTP warning experiment is enabled.
