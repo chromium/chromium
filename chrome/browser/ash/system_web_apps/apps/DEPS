@@ -110,7 +110,6 @@ specific_include_rules = {
   "boca_app_integration_browsertest\\.cc": [
     "+chrome/app/chrome_command_ids.h",
     "+chrome/browser/extensions/chrome_test_extension_loader.h",
-    "+chrome/browser/ui/browser_command_controller.h",
     "+chrome/browser/ui/views",
   ],
   "demo_mode_app_integration_browsertest\\.cc": [
