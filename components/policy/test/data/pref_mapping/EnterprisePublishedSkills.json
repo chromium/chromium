@@ -1,6 +1,5 @@
 [
   {
-    "can_be_recommended": true,
     "os": ["win", "linux", "mac"],
     "policy_pref_mapping_tests": [
       {
@@ -14,7 +13,6 @@
         },
         "prefs": {
           "skills.enterprise_published_skills": {
-            "check_for_mandatory": false,
             "value": [
               {
                 "url": "https://example.com/skill.json",

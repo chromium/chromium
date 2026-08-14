@@ -27,8 +27,8 @@ EnterprisePublishedSkillsPolicyHandler::EnterprisePublishedSkillsPolicyHandler(
           skills::prefs::kEnterprisePublishedSkills,
           schema,
           policy::SCHEMA_ALLOW_UNKNOWN_AND_INVALID_LIST_ENTRY,
-          policy::SimpleSchemaValidatingPolicyHandler::RECOMMENDED_ALLOWED,
-          policy::SimpleSchemaValidatingPolicyHandler::MANDATORY_PROHIBITED) {}
+          policy::SimpleSchemaValidatingPolicyHandler::RECOMMENDED_PROHIBITED,
+          policy::SimpleSchemaValidatingPolicyHandler::MANDATORY_ALLOWED) {}
 
 EnterprisePublishedSkillsPolicyHandler::
     ~EnterprisePublishedSkillsPolicyHandler() = default;

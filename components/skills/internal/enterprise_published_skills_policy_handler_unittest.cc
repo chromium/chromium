@@ -30,7 +30,7 @@
 
 namespace skills {
 
-using policy::POLICY_LEVEL_RECOMMENDED;
+using policy::POLICY_LEVEL_MANDATORY;
 using policy::POLICY_SCOPE_MACHINE;
 using policy::POLICY_SOURCE_CLOUD;
 using policy::PolicyErrorMap;
@@ -75,7 +75,7 @@ class EnterprisePublishedSkillsPolicyHandlerTest : public testing::Test {
   }
 
   void SetPolicy(base::ListValue list) {
-    policies_.Set(kPolicyName, POLICY_LEVEL_RECOMMENDED, POLICY_SCOPE_MACHINE,
+    policies_.Set(kPolicyName, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
                   POLICY_SOURCE_CLOUD, base::Value(std::move(list)), nullptr);
   }
 
