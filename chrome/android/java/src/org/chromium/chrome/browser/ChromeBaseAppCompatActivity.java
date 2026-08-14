@@ -280,7 +280,7 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
 
         if (NtpCustomizationUtils.isNtpThemeCustomizationEnabled()) {
             if (mNtpThemeStateObserver == null) {
-                mNtpThemeStateObserver = () -> recreate();
+                mNtpThemeStateObserver = this::recreate;
                 NtpThemeStateProvider.getInstance().addObserver(mNtpThemeStateObserver);
             }
         }
@@ -826,9 +826,7 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
         Toolbar backButtonToolbarForAutomotive = findViewById(R.id.back_button_toolbar);
         if (backButtonToolbarForAutomotive != null) {
             backButtonToolbarForAutomotive.setNavigationOnClickListener(
-                    backButtonClick -> {
-                        getOnBackPressedDispatcher().onBackPressed();
-                    });
+                    _ -> getOnBackPressedDispatcher().onBackPressed());
         }
         AutomotiveBackButtonToolbarCoordinator.hideBackButtonToolbar(this);
     }
