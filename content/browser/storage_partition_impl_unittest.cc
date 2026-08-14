@@ -1059,6 +1059,60 @@ TEST_F(StoragePartitionImplTest, RemoveCookieWithDeleteInfo) {
   EXPECT_FALSE(tester.ContainsCookie(kOrigin));
 }
 
+TEST_F(StoragePartitionImplTest, DeleteStaleSessionDataDeferred) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kDeferSessionStorageScavengingOnStartup);
+
+  StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
+      browser_context()->GetDefaultStoragePartition());
+
+  // Override the delay to 10 seconds.
+  partition->OverrideDeleteStaleSessionCleanupDelayForTesting(
+      base::Seconds(10));
+
+  // Trigger stale session data deletion.
+  partition->DeleteStaleSessionData();
+
+  // Run any immediate tasks. Since scavenging is deferred, it shouldn't have
+  // run.
+  task_environment()->RunUntilIdle();
+  EXPECT_FALSE(
+      partition->GetDOMStorageContext()->scavenging_started_for_testing());
+
+  // Fast forward by slightly less than the delay (9 seconds).
+  task_environment()->FastForwardBy(base::Seconds(9));
+  EXPECT_FALSE(
+      partition->GetDOMStorageContext()->scavenging_started_for_testing());
+
+  // Fast forward to complete the delay (total 10 seconds).
+  task_environment()->FastForwardBy(base::Seconds(1));
+  EXPECT_TRUE(
+      partition->GetDOMStorageContext()->scavenging_started_for_testing());
+}
+
+TEST_F(StoragePartitionImplTest, DeleteStaleSessionDataImmediate) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kDeferSessionStorageScavengingOnStartup);
+
+  StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
+      browser_context()->GetDefaultStoragePartition());
+
+  // Override the delay to 10 seconds.
+  partition->OverrideDeleteStaleSessionCleanupDelayForTesting(
+      base::Seconds(10));
+
+  // Trigger stale session data deletion.
+  partition->DeleteStaleSessionData();
+
+  // Run any immediate tasks. Since scavenging is NOT deferred, it should run
+  // immediately.
+  task_environment()->RunUntilIdle();
+  EXPECT_TRUE(
+      partition->GetDOMStorageContext()->scavenging_started_for_testing());
+}
+
 TEST_P(LocalStoragePartitionImplTest, RemoveUnprotectedLocalStorageForever) {
   const url::Origin kOrigin1 = url::Origin::Create(GURL("http://host1:1/"));
   const url::Origin kOrigin2 = url::Origin::Create(GURL("http://host2:1/"));

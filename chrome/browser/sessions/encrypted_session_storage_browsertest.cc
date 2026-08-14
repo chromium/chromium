@@ -277,8 +277,7 @@ class EncryptedSessionStorageBrowserTestBase : public InProcessBrowserTest {
     helper.SetForceBrowserNotAliveWithNoWindows(true);
 
     profile->GetDefaultStoragePartition()
-        ->OverrideDeleteStaleSessionOnlyCookiesDelayForTesting(
-            base::Minutes(0));
+        ->OverrideDeleteStaleSessionCleanupDelayForTesting(base::Minutes(0));
 
     if (url.is_empty()) {
       chrome::NewEmptyWindow(profile);

@@ -384,8 +384,7 @@ class SessionRestoreTest : public InProcessBrowserTest {
 
     // Ensure stale cookies are cleared immediately on startup for testing.
     profile->GetDefaultStoragePartition()
-        ->OverrideDeleteStaleSessionOnlyCookiesDelayForTesting(
-            base::Minutes(0));
+        ->OverrideDeleteStaleSessionCleanupDelayForTesting(base::Minutes(0));
 
     // Create a new window, which should trigger session restore.
     if (url.is_empty()) {

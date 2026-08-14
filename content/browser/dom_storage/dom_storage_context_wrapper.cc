@@ -207,6 +207,7 @@ DOMStorageContextWrapper::RecreateSessionStorage(
 }
 
 void DOMStorageContextWrapper::StartScavengingUnusedSessionStorage() {
+  scavenging_started_for_testing_ = true;
   if (!session_storage_control_) {
     // Shutdown() has been called.
     return;
