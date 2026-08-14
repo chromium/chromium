@@ -261,7 +261,7 @@ void ComputePropertyTreeNodeUpdate(
   wire->surface_contents_scale = new_node.surface_contents_scale;
   wire->subtree_capture_id = new_node.subtree_capture_id;
   wire->subtree_size = new_node.subtree_size;
-  wire->blend_mode = base::checked_cast<uint32_t>(new_node.blend_mode);
+  wire->blend_mode = new_node.blend_mode;
   wire->target_id = new_node.target_id;
   wire->view_transition_target_id = new_node.view_transition_target_id;
   wire->closest_ancestor_with_cached_render_surface_id =

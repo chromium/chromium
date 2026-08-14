@@ -1314,7 +1314,7 @@ TEST_F(LayerContextImplUpdateDisplayTreeEffectNodeTest,
   node_update->filters.Append(cc::FilterOperation::CreateBlurFilter(2.f));
   node_update->backdrop_filters.Append(
       cc::FilterOperation::CreateGrayscaleFilter(0.8f));
-  node_update->blend_mode = static_cast<uint32_t>(SkBlendMode::kMultiply);
+  node_update->blend_mode = SkBlendMode::kMultiply;
   node_update->render_surface_reason = cc::RenderSurfaceReason::kTest;
 
   // TODO(vmiura): If we have a render_surface_reason, without a valid
@@ -1534,17 +1534,6 @@ TEST_F(LayerContextImplUpdateDisplayTreeEffectNodeTest,
   EXPECT_EQ(result.error(), "Invalid target_id for effect node");
 }
 
-TEST_F(LayerContextImplUpdateDisplayTreeEffectNodeTest, InvalidBlendMode) {
-  auto update = CreateDefaultUpdate();
-  auto node_update = mojom::EffectNode::New();
-  node_update->id = cc::kSecondaryRootPropertyNodeId;
-  node_update->blend_mode = 999;  // Invalid blend mode
-  update->effect_nodes.push_back(std::move(node_update));
-
-  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
-  ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(result.error(), "Invalid blend_mode for effect node");
-}
 
 TEST_F(LayerContextImplUpdateDisplayTreeEffectNodeTest,
        InvalidParentIdForNonRootEffectNode) {

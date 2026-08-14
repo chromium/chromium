@@ -1,0 +1,38 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module skia.mojom;
+
+// Mirror of SkBlendMode in third_party/skia/include/core/SkBlendMode.h.
+enum BlendMode {
+  kClear,
+  kSrc,
+  kDst,
+  kSrcOver,
+  kDstOver,
+  kSrcIn,
+  kDstIn,
+  kSrcOut,
+  kDstOut,
+  kSrcATop,
+  kDstATop,
+  kXor,
+  kPlus,
+  kModulate,
+  kScreen,
+  kOverlay,
+  kDarken,
+  kLighten,
+  kColorDodge,
+  kColorBurn,
+  kHardLight,
+  kSoftLight,
+  kDifference,
+  kExclusion,
+  kMultiply,
+  kHue,
+  kSaturation,
+  kColor,
+  kLuminosity,
+};

@@ -33,6 +33,7 @@ mojom("mojom") {
   generate_java = true
   sources = [
     "bitmap.mojom",
+    "blend_mode.mojom",
     "hdr_metadata.mojom",
     "image_info.mojom",
     "skcolor.mojom",
@@ -47,6 +48,16 @@ mojom("mojom") {
   public_deps = [ "//mojo/public/mojom/base" ]
 
   shared_skia_cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "skia.mojom.BlendMode"
+          cpp = "::SkBlendMode"
+        },
+      ]
+      traits_headers = [ "blend_mode_mojom_traits.h" ]
+      traits_public_deps = [ "//skia" ]
+    },
     {
       types = [
         {

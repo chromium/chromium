@@ -6,10 +6,11 @@ module viz.mojom;
 
 import "mojo/public/mojom/base/token.mojom";
 import "services/viz/public/mojom/compositing/offset_tag.mojom";
+import "skia/public/mojom/blend_mode.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
+import "ui/gfx/mojom/mask_filter_info.mojom";
 import "ui/gfx/mojom/rrect_f.mojom";
 import "ui/gfx/mojom/transform.mojom";
-import "ui/gfx/mojom/mask_filter_info.mojom";
 
 // See viz::SharedQuadState.
 struct SharedQuadState {
@@ -35,9 +36,7 @@ struct SharedQuadState {
   bool are_contents_opaque;
 
   float opacity;
-  // TODO(fsamuel): Change this to an SkXfermode enum once native enums are
-  // supported.
-  uint32 blend_mode;
+  skia.mojom.BlendMode blend_mode;
   int32 sorting_context_id;
   uint32 layer_id;
 

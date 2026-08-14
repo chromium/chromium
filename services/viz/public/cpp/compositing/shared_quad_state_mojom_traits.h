@@ -13,6 +13,7 @@
 #include "mojo/public/cpp/bindings/optional_as_pointer.h"
 #include "services/viz/public/cpp/compositing/offset_tag_mojom_traits.h"
 #include "services/viz/public/mojom/compositing/shared_quad_state.mojom-shared.h"
+#include "skia/public/mojom/blend_mode_mojom_traits.h"
 #include "ui/gfx/geometry/mask_filter_info.h"
 #include "ui/gfx/mojom/mask_filter_info_mojom_traits.h"
 
@@ -52,8 +53,8 @@ struct StructTraits<viz::mojom::SharedQuadStateDataView, viz::SharedQuadState> {
 
   static float opacity(const viz::SharedQuadState& sqs) { return sqs.opacity; }
 
-  static uint32_t blend_mode(const viz::SharedQuadState& sqs) {
-    return static_cast<uint32_t>(sqs.blend_mode);
+  static SkBlendMode blend_mode(const viz::SharedQuadState& sqs) {
+    return sqs.blend_mode;
   }
 
   static int32_t sorting_context_id(const viz::SharedQuadState& sqs) {
@@ -100,11 +101,9 @@ struct StructTraits<viz::mojom::SharedQuadStateDataView, viz::SharedQuadState> {
 
     out->are_contents_opaque = data.are_contents_opaque();
     out->opacity = data.opacity();
-    if (data.blend_mode() > static_cast<int>(SkBlendMode::kLastMode)) {
-      return base::unexpected(
-          DeserializationError::CustomCode(data.blend_mode()));
+    if (!data.ReadBlendMode(&out->blend_mode)) {
+      return base::unexpected(DeserializationError());
     }
-    out->blend_mode = static_cast<SkBlendMode>(data.blend_mode());
     out->sorting_context_id = data.sorting_context_id();
     out->layer_id = data.layer_id();
     out->is_fast_rounded_corner = data.is_fast_rounded_corner();

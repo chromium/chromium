@@ -409,11 +409,7 @@ base::expected<void, std::string> UpdatePropertyTreeNode(
   node.surface_contents_scale = wire.surface_contents_scale;
   node.subtree_capture_id = wire.subtree_capture_id;
   node.subtree_size = wire.subtree_size;
-
-  if (wire.blend_mode > static_cast<uint32_t>(SkBlendMode::kLastMode)) {
-    return base::unexpected("Invalid blend_mode for effect node");
-  }
-  node.blend_mode = static_cast<SkBlendMode>(wire.blend_mode);
+  node.blend_mode = wire.blend_mode;
   node.target_id = wire.target_id;
   node.view_transition_target_id = wire.view_transition_target_id;
   node.closest_ancestor_with_cached_render_surface_id =
