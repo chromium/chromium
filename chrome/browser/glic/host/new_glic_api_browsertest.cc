@@ -1545,6 +1545,29 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithDefaultTabContextDisabled,
   histogram_tester.ExpectTotalCount("Glic.Api.GetContextFromTab.Error.Text", 2);
 }
 
+IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithDefaultTabContextDisabled,
+                       testGetContextFromTabFailsIfNotPinned) {
+  tabs::TabInterface* first_tab = GetTabListInterface()->GetActiveTab();
+  const int first_tab_id = first_tab->GetHandle().raw_value();
+
+  // Create second tab and activate it, so first_tab goes to background.
+  CreateAndActivateTab(
+      embedded_test_server()->GetURL("/browser_tests/test.html"));
+
+  ASSERT_OK(OpenGlicForActiveTab());
+  glic::GlicHistogramTester histogram_tester;
+
+  ExecuteJsTest({.params = base::Value(base::DictValue().Set(
+                     "tabId", base::NumberToString(first_tab_id)))});
+
+  // Should have one error logged for tab context permission not granted.
+  histogram_tester.ExpectBucketCount(
+      "Glic.Api.GetContextFromTab.Error.Text",
+      GlicGetContextFromTabError::kPermissionDeniedContextPermissionNotEnabled,
+      1);
+  histogram_tester.ExpectTotalCount("Glic.Api.GetContextFromTab.Error.Text", 1);
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testPinTabsFailsWhenIncognitoWindow) {
   ASSERT_OK(OpenGlicForActiveTabAndDetach());

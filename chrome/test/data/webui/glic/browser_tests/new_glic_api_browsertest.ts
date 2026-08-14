@@ -318,6 +318,36 @@ class ApiTests extends ApiTestFixtureBase {
     });
   }
 
+  async testGetContextFromTabFailsIfNotPinned() {
+    assertDefined(this.host.getContextFromTab);
+    assertDefined(this.host.pinTabs);
+    assertDefined(this.host.unpinTabs);
+    assertDefined(this.host.getPinnedTabs);
+
+    const tabId: string = this.testParams.tabId;
+    // Make sure tabId is not the focused tab.
+    assertNotEquals(tabId, this.getFocusedTabId());
+
+    // Initially, only the active tab is auto-pinned.
+    const pinnedTabsUpdates = observeSequence(this.host.getPinnedTabs());
+    await pinnedTabsUpdates.waitFor((tabs) => tabs.length === 1);
+
+    await this.host.pinTabs([tabId]);
+    await pinnedTabsUpdates.waitFor(
+        (tabs) => tabs.length === 2 && tabs.some((t) => t.tabId === tabId));
+
+    const result = await this.host.getContextFromTab(tabId, {});
+    assertDefined(result);
+    assertEquals(result.tabData.tabId, tabId);
+
+    await this.host.unpinTabs([tabId]);
+    await pinnedTabsUpdates.waitFor((tabs) => tabs.length === 1);
+    await assertRejects(this.host.getContextFromTab(tabId, {}), {
+      withErrorMessage: 'tabContext failed: permission denied:' +
+          ' context permission not enabled',
+    });
+  }
+
   async testPinTabsFailsWhenIncognitoWindow() {
     assertDefined(this.host.pinTabs);
     assertDefined(this.host.getPinnedTabs);

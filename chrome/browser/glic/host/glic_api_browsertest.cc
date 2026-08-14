@@ -1554,28 +1554,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest,
 }
 
 
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
-                       testGetContextFromTabFailsIfNotPinned) {
-  TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
-  TrackGlicInstanceWithId(GetGlicInstance()->id());
-  const int tab_id =
-      GetTabId(browser()->tab_strip_model()->GetActiveWebContents());
-  RunTestSequence(AddInstrumentedTab(kSecondTab, page_url()));
-
-  ExecuteJsTest({.params = base::Value(base::DictValue().Set(
-                     "tabId", base::NumberToString(tab_id)))});
-
-  // Should have one error logged for tab context permission not granted.
-  EXPECT_THAT(
-      histogram_tester->GetAllSamplesForPrefix(
-          "Glic.Api.GetContextFromTab.Error"),
-      UnorderedElementsAre(Pair(
-          "Glic.Api.GetContextFromTab.Error.Text",
-          BucketsAre(Bucket(GlicGetContextFromTabError::
-                                kPermissionDeniedContextPermissionNotEnabled,
-                            1)))));
-}
-
 // TODO(crbug.com/457020736): Flaky on multiple platforms.
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
                        DISABLED_testGetContextFromTabFailsIfDoesNotExist) {
