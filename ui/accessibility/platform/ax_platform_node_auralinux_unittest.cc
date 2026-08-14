@@ -3358,4 +3358,18 @@ TEST_F(AXPlatformNodeAuraLinuxTest, AriaNotification) {
   }
 }
 
+TEST_F(AXPlatformNodeAuraLinuxTest, FindStartOfStyleWithNoStyles) {
+  AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kStaticText;
+  root.SetName("text");
+  Init(root);
+
+  AXPlatformNodeAuraLinux* node = GetRootPlatformNode();
+  ASSERT_NE(nullptr, node);
+
+  EXPECT_EQ(0, node->FindStartOfStyle(0, ax::mojom::MoveDirection::kBackward));
+  EXPECT_EQ(0, node->FindStartOfStyle(4, ax::mojom::MoveDirection::kBackward));
+}
+
 }  // namespace ui

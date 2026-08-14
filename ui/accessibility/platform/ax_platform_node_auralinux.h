@@ -13,6 +13,7 @@
 #include <utility>
 
 #include "base/component_export.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/no_destructor.h"
@@ -453,6 +454,9 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeAuraLinux
 
   friend AXPlatformNode::Pointer AXPlatformNode::Create(
       AXPlatformNodeDelegate& delegate);
+
+  FRIEND_TEST_ALL_PREFIXES(AXPlatformNodeAuraLinuxTest,
+                           FindStartOfStyleWithNoStyles);
 };
 
 }  // namespace ui

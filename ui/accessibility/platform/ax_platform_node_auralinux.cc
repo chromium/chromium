@@ -5153,12 +5153,14 @@ int AXPlatformNodeAuraLinux::FindStartOfStyle(
   int text_length = GetHypertext().length();
   DCHECK_GE(start_offset, 0);
   DCHECK_LE(start_offset, text_length);
-  DCHECK(!offset_to_text_attributes_.empty());
 
   switch (direction) {
     case ax::mojom::MoveDirection::kNone:
       NOTREACHED();
     case ax::mojom::MoveDirection::kBackward: {
+      if (offset_to_text_attributes_.empty()) {
+        return 0;
+      }
       auto iterator = offset_to_text_attributes_.upper_bound(start_offset);
       --iterator;
       return iterator->first;
@@ -5180,7 +5182,7 @@ const TextAttributeList& AXPlatformNodeAuraLinux::GetTextAttributes(
     int* start_offset,
     int* end_offset) {
   ComputeStylesIfNeeded();
-  DCHECK(!offset_to_text_attributes_.empty());
+  DCHECK(!offset_to_text_attributes_.empty()) << GetData().ToString();
 
   int utf16_offset = UnicodeToUTF16OffsetInText(offset);
   int style_start =
@@ -5189,7 +5191,13 @@ const TextAttributeList& AXPlatformNodeAuraLinux::GetTextAttributes(
       FindStartOfStyle(utf16_offset, ax::mojom::MoveDirection::kForward);
 
   auto iterator = offset_to_text_attributes_.find(style_start);
-  CHECK(iterator != offset_to_text_attributes_.end());
+
+  // Intentionally a DCHECK; the condition is handled below. See
+  // crbug.com/460470244.
+  DCHECK(iterator != offset_to_text_attributes_.end())
+      << "No text attribute run starts at " << style_start << " for offset "
+      << offset << "; node: " << GetData().ToString() << "; hypertext: '"
+      << base::UTF16ToUTF8(GetHypertext()) << "'";
 
   SetIntPointerValueIfNotNull(start_offset,
                               UTF16ToUnicodeOffsetInText(style_start));

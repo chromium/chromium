@@ -2189,7 +2189,7 @@ TextAttributeMap BrowserAccessibility::ComputeTextAttributeMap(
     return attributes_map;
   }
 
-  DCHECK(PlatformChildCount());
+  DCHECK(PlatformChildCount()) << GetData().ToString();
 
   int start_offset = 0;
   for (const auto& child : PlatformChildren()) {
