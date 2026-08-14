@@ -59,7 +59,7 @@ suite('OmniboxEverywhereOmniboxTest', () => {
     await microtasksFinished();
   });
 
-  test('onAddTabContext_ opens composebox with tab upload', () => {
+  test('AddTabContext opens composebox with tab upload', () => {
     let openComposeboxCalled = false;
     const detailHolder: {state?: ComposeboxState} = {};
     omnibox.addEventListener('open-composebox', (e: Event) => {
@@ -250,7 +250,7 @@ suite('OmniboxEverywhereOmniboxTest', () => {
       closeMenuCalled = true;
     };
 
-    omnibox['onContextMenuOpened_']();
+    contextMenu.dispatchEvent(new CustomEvent('context-menu-opened'));
     await omnibox.updateComplete;
 
     const event = new ToggleEvent('unbounded', {
@@ -263,7 +263,7 @@ suite('OmniboxEverywhereOmniboxTest', () => {
     mockDialog.remove();
   });
 
-  test('onContextMenuClosed_ removes unbounded visibility', async () => {
+  test('ContextMenuClosed event removes unbounded visibility', async () => {
     const contextMenu =
         omnibox.shadowRoot.querySelector<ContextualEntrypointAndMenuElement>(
             '#context')!;
@@ -281,7 +281,7 @@ suite('OmniboxEverywhereOmniboxTest', () => {
     (contextMenu as unknown as {getDialog: () => HTMLDialogElement}).getDialog =
         () => mockDialog;
 
-    omnibox['onContextMenuClosed_']();
+    contextMenu.dispatchEvent(new CustomEvent('context-menu-closed'));
     await microtasksFinished();
 
     assertTrue(hideCalled);
@@ -366,7 +366,7 @@ suite('OmniboxEverywhereComposeboxTest', () => {
     assertTrue(glow.energyEffectAnimationEnabled);
   });
 
-  test('onAddTabContext adds tab to composebox files', async () => {
+  test('AddTabContext event adds tab to composebox files', async () => {
     const mockToken = {high: 1234n, low: 5678n};
     testProxy.handler.setPromiseResolveFor('addTabContext', mockToken);
 

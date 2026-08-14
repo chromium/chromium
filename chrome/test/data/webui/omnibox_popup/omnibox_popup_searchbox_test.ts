@@ -1323,7 +1323,7 @@ suite('OmniboxPopupSearchboxTest', function() {
    assertEquals('https://example.com', pastedText);
    assertEquals(19, selection.start);
    assertEquals(19, selection.end);
-   assertEquals(searchbox['currentSequenceNum_'], sequenceNum);
+   assertEquals(0, sequenceNum);
 
    assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
    const [_queryId, queryText, preventInline, _cursorPos, _inventory, isOnFocus] =
