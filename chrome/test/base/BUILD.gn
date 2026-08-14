@@ -675,6 +675,24 @@ if (is_android) {
   }
 }
 
+if (!is_android) {
+  source_set("save_desktop_snapshot") {
+    testonly = true
+    sources = [
+      "save_desktop_snapshot.cc",
+      "save_desktop_snapshot.h",
+    ]
+    public_deps = [ "//base" ]
+    deps = [
+      "//base/test:test_support",
+      "//content/public/browser",
+      "//skia",
+      "//ui/gfx",
+      "//ui/gfx/codec",
+    ]
+  }
+}
+
 source_set("web_ui_mocha_browser_test") {
   testonly = true
   sources = [
