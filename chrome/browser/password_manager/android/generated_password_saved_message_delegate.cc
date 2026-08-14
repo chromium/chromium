@@ -97,7 +97,7 @@ void GeneratedPasswordSavedMessageDelegate::ShowPasswordSavedMessage(
 
   std::u16string description;
   description = l10n_util::GetStringUTF16(
-      IDS_PASSWORD_MANAGER_GENERATED_PASSWORD_SAVED_MESSAGE_DESCRIPTION);
+      IDS_PASSWORD_SAVED_CONFIRMATION_MESSAGE_DESCRIPTION);
 
   message_->SetDescription(description);
   message_->SetPrimaryButtonText(l10n_util::GetStringUTF16(IDS_OK));

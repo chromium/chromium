@@ -234,6 +234,8 @@ public class MessagesMetrics {
                 return "ImmersivePlaybackConfirmation";
             case MessageIdentifier.INTRANET_REDIRECT:
                 return "IntranetRedirect";
+            case MessageIdentifier.PASSWORD_SAVED_CONFIRMATION:
+                return "PasswordSavedConfirmation";
             default:
                 return "Unknown";
         }

@@ -2002,7 +2002,7 @@ void ChromePasswordManagerClient::WebContentsDestroyed() {
   content_credential_manager_.DisconnectBinding();
 
 #if BUILDFLAG(IS_ANDROID)
-  save_update_password_message_delegate_.DismissSaveUpdatePasswordPrompt();
+  save_update_password_message_delegate_.DismissAllActiveUI();
   if (password_manager_error_message_delegate_) {
     password_manager_error_message_delegate_
         ->DismissPasswordManagerErrorMessage(

@@ -196,10 +196,9 @@ TEST_F(GeneratedPasswordSavedMessageDelegateTest, MessagePropertyValues) {
             GetMessageWrapper()->GetTitle());
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_OK),
             GetMessageWrapper()->GetPrimaryButtonText());
-  EXPECT_EQ(
-      l10n_util::GetStringUTF16(
-          IDS_PASSWORD_MANAGER_GENERATED_PASSWORD_SAVED_MESSAGE_DESCRIPTION),
-      GetMessageWrapper()->GetDescription());
+  EXPECT_EQ(l10n_util::GetStringUTF16(
+                IDS_PASSWORD_SAVED_CONFIRMATION_MESSAGE_DESCRIPTION),
+            GetMessageWrapper()->GetDescription());
   EXPECT_EQ(ResourceMapper::MapToJavaDrawableId(
                 IDR_ANDROID_PASSWORD_MANAGER_LOGO_24DP),
             GetMessageWrapper()->GetIconResourceId());

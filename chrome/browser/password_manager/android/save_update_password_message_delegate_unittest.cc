@@ -180,9 +180,10 @@ class SaveUpdatePasswordMessageDelegateTest
   void TriggerNeverSaveMenuItem();
 
   void ExpectDismissMessageCall();
+  void ExpectConfirmationMessageDismissCall();
   void DismissMessage(messages::DismissReason dismiss_reason);
   void DestroyDelegate();
-  void DismissSaveUpdatePasswordPrompt();
+  void DismissAllActiveUI();
 
   TestDeviceLockBridge* test_device_lock_bridge();
   MockPasswordManagerErrorMessageHelperBridge* helper_bridge();
@@ -219,6 +220,17 @@ class SaveUpdatePasswordMessageDelegateTest
                         PasswordFormMetricsRecorder::BubbleDismissalReason
                             expected_dismissal_reason,
                         bool update_password);
+
+  SaveUpdatePasswordMessageDelegate* delegate() { return delegate_.get(); }
+
+  void DisplaySaveUpdatePasswordPromptInternal(
+      std::unique_ptr<PasswordFormManagerForUI> form_to_save,
+      std::optional<AccountInfo> account_info,
+      bool update_password) {
+    delegate_->DisplaySaveUpdatePasswordPromptInternal(
+        web_contents(), std::move(form_to_save), account_info, update_password,
+        &password_manager_client_);
+  }
 
   messages::MockMessageDispatcherBridge* message_dispatcher_bridge() {
     return &message_dispatcher_bridge_;
@@ -301,7 +313,7 @@ void SaveUpdatePasswordMessageDelegateTest::SetUp() {
 
 void SaveUpdatePasswordMessageDelegateTest::TearDown() {
   if (delegate_) {
-    delegate_->DismissSaveUpdatePasswordPrompt();
+    delegate_->DismissAllActiveUI();
   }
   messages::MessageDispatcherBridge::SetInstanceForTesting(nullptr);
   password_store_->ShutdownOnUIThread();
@@ -384,7 +396,8 @@ void SaveUpdatePasswordMessageDelegateTest::EnqueueMessage(
     account_info = AccountInfo();
     account_info.value().email = kAccountEmail;
   }
-  EXPECT_CALL(message_dispatcher_bridge_, EnqueueMessage);
+  EXPECT_CALL(message_dispatcher_bridge_, EnqueueMessage)
+      .WillOnce(Return(true));
   delegate_->DisplaySaveUpdatePasswordPromptInternal(
       web_contents(), std::move(form_to_save), account_info, update_password,
       &password_manager_client_);
@@ -403,6 +416,7 @@ void SaveUpdatePasswordMessageDelegateTest::TriggerActionClick(
 
 void SaveUpdatePasswordMessageDelegateTest::TriggerPasswordEditDialog(
     bool update_password) {
+  ExpectDismissMessageCall();
   if (update_password) {
     GetMessageWrapper()->HandleSecondaryActionClick(
         base::android::AttachCurrentThread());
@@ -412,21 +426,33 @@ void SaveUpdatePasswordMessageDelegateTest::TriggerPasswordEditDialog(
         static_cast<int>(SaveUpdatePasswordMessageDelegate::
                              SavePasswordDialogMenuItem::kEditPassword));
   }
-  // Simulate call from Java to dismiss message on secondary button click.
-  DismissMessage(messages::DismissReason::SECONDARY_ACTION);
+  EXPECT_EQ(nullptr, GetMessageWrapper());
 }
 
 void SaveUpdatePasswordMessageDelegateTest::TriggerNeverSaveMenuItem() {
+  ExpectDismissMessageCall();
   GetMessageWrapper()->HandleSecondaryMenuItemSelected(
       base::android::AttachCurrentThread(),
       static_cast<int>(SaveUpdatePasswordMessageDelegate::
                            SavePasswordDialogMenuItem::kNeverSave));
-  // Simulate call from Java to dismiss message on secondary button click.
-  DismissMessage(messages::DismissReason::SECONDARY_ACTION);
+  EXPECT_EQ(nullptr, GetMessageWrapper());
 }
 
 void SaveUpdatePasswordMessageDelegateTest::ExpectDismissMessageCall() {
-  EXPECT_CALL(message_dispatcher_bridge_, DismissMessage)
+  EXPECT_CALL(message_dispatcher_bridge_,
+              DismissMessage(GetMessageWrapper(), _))
+      .WillOnce([](messages::MessageWrapper* message,
+                   messages::DismissReason dismiss_reason) {
+        message->HandleDismissCallback(base::android::AttachCurrentThread(),
+                                       static_cast<int>(dismiss_reason));
+      })
+      .RetiresOnSaturation();
+}
+
+void SaveUpdatePasswordMessageDelegateTest::
+    ExpectConfirmationMessageDismissCall() {
+  EXPECT_CALL(message_dispatcher_bridge_,
+              DismissMessage(delegate_->confirmation_message_.get(), _))
       .WillOnce([](messages::MessageWrapper* message,
                    messages::DismissReason dismiss_reason) {
         message->HandleDismissCallback(base::android::AttachCurrentThread(),
@@ -445,8 +471,8 @@ void SaveUpdatePasswordMessageDelegateTest::DestroyDelegate() {
   delegate_.reset();
 }
 
-void SaveUpdatePasswordMessageDelegateTest::DismissSaveUpdatePasswordPrompt() {
-  delegate_->DismissSaveUpdatePasswordPrompt();
+void SaveUpdatePasswordMessageDelegateTest::DismissAllActiveUI() {
+  delegate_->DismissAllActiveUI();
 }
 
 TestDeviceLockBridge*
@@ -739,8 +765,13 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
     RecordPasswordSaved();
     run_loop.Quit();
   });
+  EXPECT_CALL(*message_dispatcher_bridge(), EnqueueMessage)
+      .WillOnce(Return(true));
   account_store_->NotifyAboutError();
   run_loop.Run();
+
+  ExpectConfirmationMessageDismissCall();
+  delegate()->DismissAllActiveUI();
 }
 
 // Tests that the password is updated after trusted vault key is retrieved.
@@ -778,8 +809,13 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
     RecordPasswordSaved();
     run_loop.Quit();
   });
+  EXPECT_CALL(*message_dispatcher_bridge(), EnqueueMessage)
+      .WillOnce(Return(true));
   account_store_->NotifyAboutError();
   run_loop.Run();
+
+  ExpectConfirmationMessageDismissCall();
+  delegate()->DismissAllActiveUI();
 }
 
 // Tests that the password is not saved if the delegate is cleared (e.g., due
@@ -812,7 +848,7 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
 
   // Simulate lifecycle cleanup (e.g. user navigating away) while the vault
   // unlock is in progress.
-  DismissSaveUpdatePasswordPrompt();
+  DismissAllActiveUI();
 
   // Simulate that the trusted vault key was resolved *after* dismissal.
   account_store_->ReturnErrorOnRequest(std::nullopt);
@@ -909,8 +945,13 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
     run_loop.Quit();
   });
   account_store_->ReturnErrorOnRequest(std::nullopt);
+  EXPECT_CALL(*message_dispatcher_bridge(), EnqueueMessage)
+      .WillOnce(Return(true));
   account_store_->NotifyAboutError();
   run_loop.Run();
+
+  ExpectConfirmationMessageDismissCall();
+  delegate()->DismissAllActiveUI();
 }
 
 // Tests that the password is updated after the trusted vault key is retrieved
@@ -958,8 +999,13 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
     run_loop.Quit();
   });
   account_store_->ReturnErrorOnRequest(std::nullopt);
+  EXPECT_CALL(*message_dispatcher_bridge(), EnqueueMessage)
+      .WillOnce(Return(true));
   account_store_->NotifyAboutError();
   run_loop.Run();
+
+  ExpectConfirmationMessageDismissCall();
+  delegate()->DismissAllActiveUI();
 }
 
 // Tests that password form is not saved and metrics recorded correctly when the
@@ -1032,7 +1078,8 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
   EnqueueMessage(std::move(form_manager), /*user_signed_in=*/false,
                  /*update_password=*/true);
   EXPECT_NE(nullptr, GetMessageWrapper());
-  TriggerActionClick();
+  ExpectDismissMessageCall();
+  GetMessageWrapper()->HandleActionClick(base::android::AttachCurrentThread());
   EXPECT_EQ(nullptr, GetMessageWrapper());
   TriggerDialogAcceptedCallback(/*username=*/kUsername,
                                 /*password=*/kPassword);
@@ -1896,4 +1943,90 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
             GetMessageWrapper()->GetPrimaryButtonText());
 
   DismissMessage(messages::DismissReason::UNKNOWN);
+}
+
+TEST_F(SaveUpdatePasswordMessageDelegateTest,
+       ConfirmationMessageShownAfterSave) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      password_manager::features::kPasswordSaveInContextErrorResolution);
+
+  account_store_->ReturnErrorOnRequest(
+      password_manager::PasswordStoreBackendError(
+          password_manager::PasswordStoreBackendErrorType::
+              kKeyRetrievalRequired));
+
+  SetPendingCredentials(kUsername, kPassword);
+  std::unique_ptr<MockPasswordFormManagerForUI> form_manager =
+      CreateFormManager(GURL(kDefaultUrl), empty_best_matches());
+  EXPECT_CALL(*form_manager, Save());
+
+  // 1. Expect the first message (Save Password Prompt)
+  messages::MessageWrapper* prompt_message = nullptr;
+  EXPECT_CALL(*message_dispatcher_bridge(), EnqueueMessage)
+      .WillOnce([&prompt_message](messages::MessageWrapper* message,
+                                  content::WebContents* web_contents,
+                                  messages::MessageScopeType scope_type,
+                                  messages::MessagePriority priority) {
+        prompt_message = message;
+        return true;
+      });
+
+  // Display the prompt
+  DisplaySaveUpdatePasswordPromptInternal(std::move(form_manager),
+                                          /*account_info=*/std::nullopt,
+                                          /*update_password=*/false);
+
+  ASSERT_NE(nullptr, prompt_message);
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_SAVE_PASSWORD),
+            prompt_message->GetTitle());
+
+  // Trigger Save action
+  EXPECT_CALL(*helper_bridge(),
+              StartTrustedVaultKeyRetrievalFlow(
+                  _, trusted_vault::TrustedVaultUserActionTriggerForUMA::
+                         kPasswordSavePrompt));
+  TriggerActionClick();
+
+  // The primary message should be dismissed, and no confirmation message
+  // enqueued yet.
+  EXPECT_EQ(nullptr, GetMessageWrapper());
+
+  // Simulate that the trusted vault key was successfully retrieved.
+  account_store_->ReturnErrorOnRequest(std::nullopt);
+
+  // 2. Expect the confirmation message
+  messages::MessageWrapper* confirmation_message = nullptr;
+  base::RunLoop run_loop;
+  EXPECT_CALL(*message_dispatcher_bridge(), EnqueueMessage)
+      .WillOnce([&confirmation_message, &run_loop](
+                    messages::MessageWrapper* message,
+                    content::WebContents* web_contents,
+                    messages::MessageScopeType scope_type,
+                    messages::MessagePriority priority) {
+        confirmation_message = message;
+        run_loop.Quit();
+        return true;
+      });
+
+  account_store_->NotifyAboutError();
+  run_loop.Run();
+
+  // The confirmation message should now be enqueued!
+  ASSERT_NE(nullptr, confirmation_message);
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_CONFIRM_SAVED_TITLE),
+            confirmation_message->GetTitle());
+  EXPECT_EQ(l10n_util::GetStringUTF16(
+                IDS_PASSWORD_SAVED_CONFIRMATION_MESSAGE_DESCRIPTION),
+            confirmation_message->GetDescription());
+
+  // Verify dismissing the confirmation message resets it.
+  EXPECT_CALL(*message_dispatcher_bridge(),
+              DismissMessage(confirmation_message, _))
+      .WillOnce([](messages::MessageWrapper* message,
+                   messages::DismissReason dismiss_reason) {
+        message->HandleDismissCallback(base::android::AttachCurrentThread(),
+                                       static_cast<int>(dismiss_reason));
+      });
+  delegate()->DismissAllActiveUI();
 }

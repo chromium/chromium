@@ -69,7 +69,7 @@ class SaveUpdatePasswordMessageDelegate
   // Dismisses currently displayed message or dialog. Because the implementation
   // uses some of the dependencies (e.g. log manager) this method needs to be
   // called before the object is destroyed.
-  void DismissSaveUpdatePasswordPrompt();
+  void DismissAllActiveUI();
 
   // Implementation of PasswordEditDialogBridgeDelegate interface.
   void HandleDialogDismissed(bool dialogAccepted) override;
@@ -144,13 +144,19 @@ class SaveUpdatePasswordMessageDelegate
   void StartSavePasswordFlow();
   void SolveTrustedVaultCheck(bool flow_involved_device_lock_ui,
                               bool is_device_lock_requirement_met);
-  void SaveFormManager();
+  void SaveFormManager(bool show_confirmation_message);
   void HandleNeverSaveClicked();
   void HandleUpdateButtonClicked();
   void DisplayEditDialog(bool update_password);
   void HandleMessageDismissed(messages::DismissReason dismiss_reason);
   bool HasMultipleCredentialsStored();
   void CreatePasswordEditDialog();
+
+  // Shows a confirmation message after the password has been saved after
+  // error resolution.
+  void ShowConfirmationMessage();
+  void HandleConfirmationMessageDismissed(
+      messages::DismissReason dismiss_reason);
 
   void ClearState();
 
@@ -175,6 +181,7 @@ class SaveUpdatePasswordMessageDelegate
   ManagePasswordsState passwords_state_;
 
   std::unique_ptr<messages::MessageWrapper> message_;
+  std::unique_ptr<messages::MessageWrapper> confirmation_message_;
   std::unique_ptr<PasswordEditDialog> password_edit_dialog_;
 
   std::unique_ptr<DeviceLockBridge> device_lock_bridge_;

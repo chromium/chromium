@@ -95,13 +95,17 @@ void SaveUpdatePasswordMessageDelegate::DisplaySaveUpdatePasswordPrompt(
       update_password, password_manager_client);
 }
 
-void SaveUpdatePasswordMessageDelegate::DismissSaveUpdatePasswordPrompt() {
+void SaveUpdatePasswordMessageDelegate::DismissAllActiveUI() {
   // This dismissal is not user-initiated, but rather due to other reasons
   // (e.g. WebContents being destroyed).
   if (password_edit_dialog_ != nullptr) {
     password_edit_dialog_->Dismiss();
   }
   DismissSaveUpdatePasswordMessage(messages::DismissReason::UNKNOWN);
+  if (confirmation_message_ != nullptr) {
+    messages::MessageDispatcherBridge::Get()->DismissMessage(
+        confirmation_message_.get(), messages::DismissReason::UNKNOWN);
+  }
   if (waiting_for_unlocking_trusted_vault_) {
     // While the delegate waits for the trusted vault key to save the password,
     // the state has to be persisted. If the delegate is destroyed while waiting
@@ -125,7 +129,7 @@ void SaveUpdatePasswordMessageDelegate::DisplaySaveUpdatePasswordPromptInternal(
     bool update_password,
     password_manager::PasswordManagerClient* password_manager_client) {
   // Dismiss previous message if it is displayed.
-  DismissSaveUpdatePasswordPrompt();
+  DismissAllActiveUI();
   CHECK(message_ == nullptr, base::NotFatalUntil::M152);
   CHECK(password_edit_dialog_ == nullptr, base::NotFatalUntil::M152);
   CHECK(password_manager_client);
@@ -154,9 +158,6 @@ void SaveUpdatePasswordMessageDelegate::DisplaySaveUpdatePasswordPromptInternal(
 }
 
 void SaveUpdatePasswordMessageDelegate::CreateMessage(bool update_password) {
-  // Binding with base::Unretained(this) is safe here because
-  // SaveUpdatePasswordMessageDelegate owns message_. Callbacks won't be called
-  // after the current object is destroyed.
   messages::MessageIdentifier message_id =
       update_password ? messages::MessageIdentifier::UPDATE_PASSWORD
                       : messages::MessageIdentifier::SAVE_PASSWORD;
@@ -164,14 +165,14 @@ void SaveUpdatePasswordMessageDelegate::CreateMessage(bool update_password) {
       update_password
           ? base::BindOnce(
                 &SaveUpdatePasswordMessageDelegate::HandleUpdateButtonClicked,
-                base::Unretained(this))
+                weak_ptr_factory_.GetWeakPtr())
           : base::BindOnce(
                 &SaveUpdatePasswordMessageDelegate::HandleSaveButtonClicked,
-                base::Unretained(this));
+                weak_ptr_factory_.GetWeakPtr());
   message_ = std::make_unique<messages::MessageWrapper>(
       message_id, std::move(callback),
       base::BindOnce(&SaveUpdatePasswordMessageDelegate::HandleMessageDismissed,
-                     base::Unretained(this)));
+                     weak_ptr_factory_.GetWeakPtr()));
 
   message_->SetDuration(kMessageDismissDurationMs);
 
@@ -216,11 +217,11 @@ void SaveUpdatePasswordMessageDelegate::SetupCogMenu(
   if (update_password) {
     message->SetSecondaryActionCallback(base::BindRepeating(
         &SaveUpdatePasswordMessageDelegate::DisplayEditDialog,
-        base::Unretained(this), update_password));
+        weak_ptr_factory_.GetWeakPtr(), update_password));
   } else {
     message_->SetSecondaryMenuItemSelectedCallback(base::BindRepeating(
         &SaveUpdatePasswordMessageDelegate::HandleSaveMessageMenuItemClick,
-        base::Unretained(this)));
+        weak_ptr_factory_.GetWeakPtr()));
     message_->AddSecondaryMenuItem(
         static_cast<int>(SavePasswordDialogMenuItem::kNeverSave),
         /*resource_id=*/0,
@@ -385,7 +386,7 @@ void SaveUpdatePasswordMessageDelegate::SolveTrustedVaultCheck(
     return;
   }
 
-  SaveFormManager();
+  SaveFormManager(/*show_confirmation_message=*/false);
 
   // If trusted vault unlock was not needed, but the flow involved device lock
   // UI and it could be shown (i.e. WindowAndroid is available), then the state
@@ -397,7 +398,8 @@ void SaveUpdatePasswordMessageDelegate::SolveTrustedVaultCheck(
   }
 }
 
-void SaveUpdatePasswordMessageDelegate::SaveFormManager() {
+void SaveUpdatePasswordMessageDelegate::SaveFormManager(
+    bool show_confirmation_message) {
   passwords_state_.form_manager()->Save();
 
   const password_manager::StoredCredential* changed_credential_with_backup =
@@ -411,6 +413,56 @@ void SaveUpdatePasswordMessageDelegate::SaveFormManager() {
     password_manager::metrics_util::LogPrimaryPasswordUpdatedWithBackup(
         web_contents_->GetPrimaryMainFrame()->GetPageUkmSourceId());
   }
+
+  if (show_confirmation_message &&
+      base::FeatureList::IsEnabled(
+          password_manager::features::kPasswordSaveInContextErrorResolution)) {
+    ShowConfirmationMessage();
+  }
+}
+
+void SaveUpdatePasswordMessageDelegate::ShowConfirmationMessage() {
+  CHECK(confirmation_message_ == nullptr);
+
+  if (web_contents_ == nullptr) {
+    return;
+  }
+
+  confirmation_message_ = std::make_unique<messages::MessageWrapper>(
+      messages::MessageIdentifier::PASSWORD_SAVED_CONFIRMATION,
+      /*action_callback=*/base::DoNothing(),
+      base::BindOnce(&SaveUpdatePasswordMessageDelegate::
+                         HandleConfirmationMessageDismissed,
+                     weak_ptr_factory_.GetWeakPtr()));
+
+  confirmation_message_->SetTitle(
+      l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_CONFIRM_SAVED_TITLE));
+
+  std::u16string description = l10n_util::GetStringUTF16(
+      IDS_PASSWORD_SAVED_CONFIRMATION_MESSAGE_DESCRIPTION);
+  confirmation_message_->SetDescription(description);
+
+  confirmation_message_->SetPrimaryButtonText(
+      l10n_util::GetStringUTF16(IDS_OK));
+
+  // TODO(crbug.com/545522304): Check if we need to change the icon for
+  // non-branded builds.
+
+  // IDR_ANDROID_PASSWORD_MANAGER_LOGO_24DP maps to the Google Password Manager
+  // logo on branded builds, and to a generic key icon on non-branded builds.
+  confirmation_message_->SetIconResourceId(ResourceMapper::MapToJavaDrawableId(
+      IDR_ANDROID_PASSWORD_MANAGER_LOGO_24DP));
+  confirmation_message_->DisableIconTint();
+
+  messages::MessageDispatcherBridge::Get()->EnqueueMessage(
+      confirmation_message_.get(), web_contents_,
+      messages::MessageScopeType::WEB_CONTENTS,
+      messages::MessagePriority::kNormal);
+}
+
+void SaveUpdatePasswordMessageDelegate::HandleConfirmationMessageDismissed(
+    messages::DismissReason dismiss_reason) {
+  confirmation_message_.reset();
 }
 
 void SaveUpdatePasswordMessageDelegate::HandleNeverSaveClicked() {
@@ -607,7 +659,7 @@ void SaveUpdatePasswordMessageDelegate::OnErrorStateChanged(
   if (changed_error == password_manager::ActionableError::kNoError &&
       !password_manager_util::IsSavingBlockedByTrustedVaultError(
           passwords_state_.client(), passwords_state_.form_manager())) {
-    SaveFormManager();
+    SaveFormManager(/*show_confirmation_message=*/true);
     ClearState();
   }
 }
