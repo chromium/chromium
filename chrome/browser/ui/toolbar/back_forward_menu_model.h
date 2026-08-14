@@ -19,7 +19,8 @@
 #include "ui/base/models/menu_model.h"
 #include "ui/base/window_open_disposition.h"
 
-class Browser;
+class BrowserWindowInterface;
+class Profile;
 
 namespace favicon_base {
 struct FaviconImageResult;
@@ -53,7 +54,10 @@ class BackForwardMenuModel final : public ui::MenuModel,
     kShowFullHistory,  // "Show Full History" item
   };
 
-  BackForwardMenuModel(Browser* browser, ModelType model_type);
+  // `browser_window_interface` may be nullptr in unit tests when
+  // `set_test_web_contents()` is used.
+  BackForwardMenuModel(BrowserWindowInterface* browser_window_interface,
+                       ModelType model_type);
 
   BackForwardMenuModel(const BackForwardMenuModel&) = delete;
   BackForwardMenuModel& operator=(const BackForwardMenuModel&) = delete;
@@ -211,6 +215,9 @@ class BackForwardMenuModel final : public ui::MenuModel,
   // the browser window.
   content::WebContents* GetWebContents() const;
 
+  // Retrieves the Profile pointer from the browser or the WebContents.
+  Profile* GetProfile() const;
+
   // Build a string version of a user action on this menu, used as an
   // identifier for logging user behavior.
   // E.g. BuildActionName("Click", 2) returns "BackMenu_Click2".
@@ -222,7 +229,7 @@ class BackForwardMenuModel final : public ui::MenuModel,
   // only in outside incognito mode.
   bool ShouldShowFullHistoryBeVisible() const;
 
-  const raw_ptr<Browser> browser_;
+  raw_ptr<BrowserWindowInterface> browser_window_interface_ = nullptr;
 
   // The unit tests will provide their own WebContents to use.
   raw_ptr<content::WebContents> test_web_contents_ = nullptr;

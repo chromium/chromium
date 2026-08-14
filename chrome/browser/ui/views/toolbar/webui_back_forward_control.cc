@@ -20,7 +20,7 @@ WebUIBackForwardControl::WebUIBackForwardControl(
     BackForwardButton::Direction direction)
     : delegate_(delegate),
       direction_(direction),
-      menu_model_(delegate->GetBrowser()->GetBrowserForMigrationOnly(),
+      menu_model_(delegate->GetBrowser(),
                   direction == BackForwardButton::Direction::kBack
                       ? BackForwardMenuModel::ModelType::kBackward
                       : BackForwardMenuModel::ModelType::kForward) {}
