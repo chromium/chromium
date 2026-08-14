@@ -10,9 +10,9 @@ export function getHtml(this: DummyTestElement) {
     <h1>${this.title}</h1>
   <span>Test with bad indent and expr</span>
 </div>
-
+    
 <div class="extra space before" ?hidden="${this.divHidden}">
-
+      
 <div class="child without indent"></div>
 
     <div class="another child with too much indent"></div>

@@ -23,7 +23,8 @@ export function getHtml(this: SidebarElement) {
       ?first-load="${this.firstLoad_}" .state="${this.state}"
       ?app-kiosk-mode="${this.isInAppKioskMode_}"
       ?disabled="${this.controlsDisabled_}" available class="settings-section"
-      @destination-capabilities-changed="${this.onDestinationCapabilitiesChanged_}">
+      @destination-capabilities-changed="${
+          this.onDestinationCapabilitiesChanged_}">
   </print-preview-destination-settings>
   <print-preview-pages-settings page-count="${this.pageCount}"
       ?disabled="${this.controlsDisabled_}"
@@ -42,13 +43,15 @@ export function getHtml(this: SidebarElement) {
   </print-preview-color-settings>
   <print-preview-more-settings
       ?settings-expanded-by-user="${this.settingsExpandedByUser_}"
-      @settings-expanded-by-user-changed="${this.onSettingsExpandedByUserChanged_}"
+      @settings-expanded-by-user-changed="${
+          this.onSettingsExpandedByUserChanged_}"
       ?disabled="${this.controlsDisabled_}"
       ?hidden="${!this.shouldShowMoreSettings_}">
   </print-preview-more-settings>
   <cr-collapse id="moreSettings" ?opened="${this.shouldExpandSettings_()}">
     <print-preview-media-size-settings
-        .capability="${this.destinationCapabilities_?.printer.media_size || null}"
+        .capability="${
+            this.destinationCapabilities_?.printer.media_size || null}"
         ?disabled="${this.controlsDisabled_}"
         ?hidden="${!this.settingsAvailable_.mediaSize}"
         class="settings-section">

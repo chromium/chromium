@@ -45,7 +45,8 @@ export function getHtml(this: AppElement) {
     page-count="${this.documentSettings_.pageCount}" state="${this.state}"
     @focus="${this.onSidebarFocus_}"
     @destination-changed="${this.onDestinationChanged_}"
-    @destination-capabilities-changed="${this.onDestinationCapabilitiesChanged_}"
+    @destination-capabilities-changed="${
+        this.onDestinationCapabilitiesChanged_}"
     @print-with-system-dialog="${this.onPrintWithSystemDialog_}"
     @print-requested="${this.onPrintRequested_}"
     @cancel-requested="${this.onCancelRequested_}">

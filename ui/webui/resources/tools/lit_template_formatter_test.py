@@ -115,6 +115,10 @@ class LitTemplateFormatterTest(unittest.TestCase):
     self._run_test("test_multiline_subtemplate_expression.html.ts",
                    "test_multiline_subtemplate_expression.html.ts")
 
+  def testLongConditionalSubtemplate(self):
+    self._run_test("test_long_conditional_subtemplate.html.ts",
+                   "test_long_conditional_subtemplate.html.ts")
+
   def testWithIfExpr(self):
     self._run_test("test_with_if_expr.html.ts", "test_with_if_expr.html.ts")
 

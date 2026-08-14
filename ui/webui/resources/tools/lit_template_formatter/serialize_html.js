@@ -4,7 +4,7 @@
 
 import assert from 'node:assert';
 
-import {EXPR_PREFIX, FORMAT_OFF_PREFIX, getChildDepthForNode, getDepthForNode, getDepthForTagName, getIndentationPrefix, INDENT_SIZE, LINE_LENGTH_LIMIT, PROP_PREFIX, RESTRICTED_TAGS, TRAILING_NEWLINE_REGEX, VOID_ELEMENTS, WRAPPED_LINE_INDENT_SIZE} from './html_utils.js';
+import {EXPR_PREFIX, FALSE_TEMPLATE_PREFIX, FORMAT_OFF_PREFIX, getChildDepthForNode, getDepthForNode, getDepthForTagName, getIndentationPrefix, INDENT_SIZE, LINE_LENGTH_LIMIT, PROP_PREFIX, RESTRICTED_TAGS, TEMPLATE_PREFIX, TRAILING_NEWLINE_REGEX, VOID_ELEMENTS, WRAPPED_LINE_INDENT_SIZE} from './html_utils.js';
 
 const PREFIX_REGEX = /^[?.]/;
 
@@ -200,7 +200,8 @@ function formatAttributes(
   return lines.join('\n') + '>';
 }
 
-export function serializeNode(node, depth, placeholderMap, sortAttributes) {
+export function serializeNode(
+    node, depth, placeholderMap, sortAttributes, skipSibling = false) {
   if (node.nodeName === '#document-fragment') {
     // Increment depth for children of document fragment.
     return node.childNodes
@@ -228,6 +229,14 @@ export function serializeNode(node, depth, placeholderMap, sortAttributes) {
         `${FORMAT_OFF_PREFIX} missing id or placeholder mapping`);
     return placeholderMap.get(attr.value).code;
   }
+
+  const isTemplatePlaceholder = tagName.startsWith(TEMPLATE_PREFIX) ||
+      tagName.startsWith(FALSE_TEMPLATE_PREFIX);
+  if (isTemplatePlaceholder) {
+    assert.ok(placeholderMap.has(tagName));
+  }
+  const isTemplateNode =
+      isTemplatePlaceholder && placeholderMap.get(tagName).isTemplate;
 
   // Determine if the contents of this element may be whitespace sensitive.
   // Avoid adding extra newlines between the opening and closing tag if
@@ -268,8 +277,24 @@ export function serializeNode(node, depth, placeholderMap, sortAttributes) {
 
   const elementIndent =
       depth > 0 ? getDepthForNode(node, depth - 1) * INDENT_SIZE : 0;
-  const fullLength =
+  let fullLength =
       elementIndent + startTag.length + childrenHtml.length + endTag.length;
+
+  // For conditional expressions (true and false branches), account for the
+  // attached sibling branch when computing full single-line length.
+  if (!skipSibling) {
+    if (node.falseBranch) {
+      fullLength +=
+          serializeNode(
+              node.falseBranch, nextDepth, placeholderMap, sortAttributes, true)
+              .length;
+    } else if (node.trueBranch) {
+      fullLength +=
+          serializeNode(
+              node.trueBranch, nextDepth, placeholderMap, sortAttributes, true)
+              .length;
+    }
+  }
 
   // Avoid inserting a newline and child indentation after the opening tag if
   // the first child is a comment that suppresses leading whitespace (e.g.
@@ -278,12 +303,29 @@ export function serializeNode(node, depth, placeholderMap, sortAttributes) {
       node.childNodes.length > 0 &&
       node.childNodes[0].suppressLeadingWhitespace;
 
-  // Closing tag on new line if opening tag didn't fit on one line, or if the
-  // full element exceeds 80 characters.
-  // Trim trailing whitespace and use the expected indent to avoid doubling
-  // whitespace.
-  if ((startTag.includes('\n') || fullLength > LINE_LENGTH_LIMIT) &&
-      (hasChildElement || childrenHtml.trim() === '')) {
+  const lastChildSuppressesWhitespace = !!node.childNodes &&
+      node.childNodes.length > 0 &&
+      node.childNodes.at(-1).suppressTrailingWhitespace;
+
+  // Determine if children and closing tag should be placed on new lines (i.e.
+  // if opening tag didn't fit on one line, or if the full element exceeds 80
+  // characters).
+  // For templates (e.g. html`...`), wrap non-empty template contents across
+  // lines if the template exceeds 80 characters, but keep empty templates
+  // (html``) on a single line. For regular HTML elements, only wrap if there
+  // are child elements or if the element is empty.
+  const tagIsMultiline = startTag.includes('\n');
+  const exceedsLineLimit = fullLength > LINE_LENGTH_LIMIT;
+  const shouldWrap = isTemplateNode ?
+      childrenHtml.trim() !== '' && (tagIsMultiline || exceedsLineLimit) :
+      (tagIsMultiline || exceedsLineLimit) &&
+          (hasChildElement || childrenHtml.trim() === '');
+
+  if (shouldWrap) {
+    if (lastChildSuppressesWhitespace) {
+      return `${startTag}${childrenHtml}${endTag}`;
+    }
+
     const endTagIndent = getIndentationPrefix(elementIndent);
 
     // Since the full tag doesn't fit on one line, put children on new line

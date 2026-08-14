@@ -14,9 +14,9 @@ export function getHtml(this: DownloadsBypassWarningConfirmationDialogElement) {
     <div id="icon-wrapper" role="img"
         aria-label="$i18n{accessibleLabelDangerous}">
       <cr-icon
-          icon="${this.webuiRoundedIconsEnabled_ ?
-              'downloads:dangerous-filled' :
-              'downloads:dangerous-old'}">
+          icon="${
+              this.webuiRoundedIconsEnabled_ ? 'downloads:dangerous-filled' :
+                                               'downloads:dangerous-old'}">
       </cr-icon>
     </div>
     <div id="body-text">

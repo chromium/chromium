@@ -133,6 +133,9 @@ function format(node, depth, placeholderMap, rawHtml = '') {
       }
 
       if (child.nodeName === '#text') {
+        // Normalize any blank lines to remove trailing whitespace.
+        child.value = child.value.replace(/\n[ \t]+(?=\n)/g, '\n');
+
         if (child.value.trim() === '') {
           newChildren.push(child);
           continue;
@@ -198,6 +201,13 @@ function format(node, depth, placeholderMap, rawHtml = '') {
       }
     }
 
+    // Link true and false branch placeholders for conditional expressions.
+    if (prevChild?.tagName?.startsWith(TEMPLATE_PREFIX) &&
+        tagName?.startsWith(FALSE_TEMPLATE_PREFIX)) {
+      prevChild.falseBranch = child;
+      child.trueBranch = prevChild;
+    }
+
     // Skip newline if it's a false branch placeholder. Also skip if the tag is
     // directly preceded by a comment that suppresses trailing whitespace
     // (e.g. `--><span...`).
@@ -225,7 +235,7 @@ function format(node, depth, placeholderMap, rawHtml = '') {
         TRAILING_NEWLINE_REGEX.test(prevChild.value)) {
       prevChild.value = prevChild.value.replace(
           TRAILING_NEWLINE_REGEX, getIndentationPrefix(closeIndent));
-    } else {
+    } else if (!prevChild?.suppressTrailingWhitespace) {
       newChildren.push({
         nodeName: '#text',
         value: getIndentationPrefix(closeIndent),

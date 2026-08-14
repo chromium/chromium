@@ -14,6 +14,27 @@ export function getHtml(this: DummyTestElement) {
       @some-very-very-long-event-name="${this.onMyButtonWithExtraTextSomeVeryVeryLongEventName}">
     Click Me!
   </button>
+  <select>
+    <option value="${this.someConfigObject.someSelectedOptionValue}"
+        ?selected="${this.isSomeOptionSelected_(
+            this.someConfigObject.someSelectedOptionValue)}">
+      Some Option
+    </option>
+  </select>
+  <div>
+    <div>
+      <div>
+        <div>
+          <div>
+            <div>
+              <input .value="${this.someValue}"
+                  @very-long-attribute-event-listener-name="${this.onHandlerCallbackAction_.bind(this, item.id, item.name)}">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 <!--_html_template_end_-->`;
 }

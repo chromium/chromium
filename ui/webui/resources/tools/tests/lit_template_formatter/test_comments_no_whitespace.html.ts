@@ -13,6 +13,13 @@ export function getHtml(this: DummyTestElement) {
   Before #name.
 --><span id="name" title="${this.data?.fileName || ''}"></span>
 </div>
+<span><!-- Whitespace is preserved in this span. Ignore new lines.
+  --><span>${this.beforeText}</span><!--
+  --><mark aria-description="${this.highlightDescription}"><!--
+    -->${this.highlightedText}<!--
+  --></mark><!--
+  --><span>${this.afterText}</span><!--
+--></span>
 <!--_html_template_end_-->`;
   // clang-format on
 }
