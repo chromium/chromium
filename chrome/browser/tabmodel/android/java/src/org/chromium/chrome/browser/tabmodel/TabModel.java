@@ -96,6 +96,18 @@ public interface TabModel extends TabList {
      */
     @Nullable Tab getNextTabIfClosed(@TabId int id, boolean uponExit);
 
+    /**
+     * Finds the next tab to select hierarchically (child -> sibling -> parent) when closing the
+     * given tab.
+     *
+     * @param closingTab The {@link Tab} that is closing.
+     * @param closingTabs The collection of all tabs that are closing.
+     * @return The next {@link Tab} to select, or {@code null} if no candidate is found.
+     */
+    default @Nullable Tab getHierarchicalNextTab(Tab closingTab, List<Tab> closingTabs) {
+        return null;
+    }
+
     boolean supportsPendingClosures();
 
     /**

@@ -163,4 +163,9 @@ public class StubTabModel extends EmptyTabModel {
             throw error();
         }
     }
+
+    @Override
+    public @Nullable Tab getHierarchicalNextTab(Tab closingTab, List<Tab> closingTabs) {
+        throw error();
+    }
 }

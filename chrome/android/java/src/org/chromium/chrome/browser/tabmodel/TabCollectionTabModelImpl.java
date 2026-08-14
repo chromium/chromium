@@ -331,6 +331,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
     private final TabUngrouper mTabUngrouper;
     private final Supplier<ScopedStorageBatch> mBatchFactory;
     private @Nullable PendingTabClosureManager mPendingTabClosureManager;
+    private final @Nullable TabOpenerTrackerHelper mTabOpenerTrackerHelper;
 
     private long mNativeTabCollectionTabModelImplPtr;
     // Only ever true for the regular tab model. Called after tab state is initialized, before
@@ -393,6 +394,10 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
             mPendingTabClosureManager =
                     new PendingTabClosureManager(this, new PendingTabClosureDelegateImpl());
         }
+        mTabOpenerTrackerHelper = TabOpenerTrackerHelper.create();
+        if (mTabOpenerTrackerHelper != null) {
+            addObserver(mTabOpenerTrackerHelper);
+        }
 
         initializeNative(activityType, customTabProfileType, tabModelType);
     }
@@ -439,6 +444,9 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
             } else {
                 mPendingTabClosureManager.destroy();
             }
+        }
+        if (mTabOpenerTrackerHelper != null) {
+            removeObserver(mTabOpenerTrackerHelper);
         }
 
         mTabIdToTabs.clear();
@@ -529,6 +537,15 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
                 Collections.singletonList(tab),
                 uponExit,
                 TabCloseType.SINGLE);
+    }
+
+    @Override
+    public @Nullable Tab getHierarchicalNextTab(Tab closingTab, List<Tab> closingTabs) {
+        assert mNextTabPolicySupplier.get() == NextTabPolicy.HIERARCHICAL;
+        return mTabOpenerTrackerHelper != null
+                ? mTabOpenerTrackerHelper.findHierarchicalNextTab(
+                        /* tabModel= */ this, closingTab, closingTabs)
+                : null;
     }
 
     @Override

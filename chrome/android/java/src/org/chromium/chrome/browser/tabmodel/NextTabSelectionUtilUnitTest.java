@@ -23,6 +23,9 @@ import org.chromium.base.Token;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
@@ -387,5 +390,59 @@ public class NextTabSelectionUtilUnitTest {
 
         Tab result = NextTabSelectionUtil.findNearbyNotClosingTab(mTabModel, 1, List.of(tab1));
         assertEquals(tab2, result);
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.TAB_OPENER_TRACKING})
+    public void testGetNextTabIfClosed_ChildPreference() {
+        when(mTabModel.isActiveModel()).thenReturn(true);
+        when(mTabModelDelegate.getCurrentModel()).thenReturn(mTabModel);
+
+        Tab parentTab = createTab();
+        Tab currentTab = createTab(0, parentTab.getId());
+        Tab childTab = createTab(0, currentTab.getId());
+
+        when(mTabModel.getHierarchicalNextTab(currentTab, List.of(currentTab)))
+                .thenReturn(childTab);
+        setUpTabsInTabModel(mTabModel, List.of(parentTab, currentTab, childTab));
+
+        setCurrentTab(currentTab);
+        assertEquals(childTab, getNextTabIfClosed(mTabModel, currentTab, false));
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.TAB_OPENER_TRACKING})
+    public void testGetNextTabIfClosed_SiblingPreference() {
+        when(mTabModel.isActiveModel()).thenReturn(true);
+        when(mTabModelDelegate.getCurrentModel()).thenReturn(mTabModel);
+
+        Tab parentTab = createTab();
+        Tab currentTab = createTab(0, parentTab.getId());
+        Tab siblingTab = createTab(0, parentTab.getId());
+
+        when(mTabModel.getHierarchicalNextTab(currentTab, List.of(currentTab)))
+                .thenReturn(siblingTab);
+        setUpTabsInTabModel(mTabModel, List.of(parentTab, currentTab, siblingTab));
+
+        setCurrentTab(currentTab);
+        assertEquals(siblingTab, getNextTabIfClosed(mTabModel, currentTab, false));
+    }
+
+    @Test
+    @DisableFeatures({ChromeFeatureList.TAB_OPENER_TRACKING})
+    public void testGetNextTabIfClosed_HierarchicalFallbackToParent() {
+        when(mTabModel.isActiveModel()).thenReturn(true);
+        when(mTabModelDelegate.getCurrentModel()).thenReturn(mTabModel);
+
+        Tab parentTab = createTab();
+        Tab currentTab = createTab(0, parentTab.getId());
+        Tab siblingTab = createTab(0, parentTab.getId());
+
+        when(mTabModel.getTabById(parentTab.getId())).thenReturn(parentTab);
+        setUpTabsInTabModel(mTabModel, List.of(parentTab, currentTab, siblingTab));
+
+        setCurrentTab(currentTab);
+        // When flag is disabled, it selects parentTab directly.
+        assertEquals(parentTab, getNextTabIfClosed(mTabModel, currentTab, false));
     }
 }
