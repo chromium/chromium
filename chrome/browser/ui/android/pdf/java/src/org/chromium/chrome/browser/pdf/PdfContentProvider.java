@@ -12,6 +12,8 @@ import android.database.MatrixCursor;
 import android.net.Uri;
 import android.os.ParcelFileDescriptor;
 import android.provider.OpenableColumns;
+import android.system.Os;
+import android.system.OsConstants;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
@@ -277,9 +279,6 @@ public class PdfContentProvider extends ContentProvider {
         }
     }
 
-    /**
-     * @see ContentProvider#openFile(Uri, String)
-     */
     @Override
     public ParcelFileDescriptor openFile(Uri uri, String mode) throws FileNotFoundException {
         if (uri == null) {
@@ -293,10 +292,26 @@ public class PdfContentProvider extends ContentProvider {
 
         PdfFileInfo info = sStreamRegistry.get(uniqueId);
         if (info != null) {
+            if (info.filePath != null) {
+                try {
+                    File file = new File(info.filePath);
+                    int pfdMode =
+                            mode != null
+                                    ? ParcelFileDescriptor.parseMode(mode)
+                                    : ParcelFileDescriptor.MODE_READ_ONLY;
+                    return ParcelFileDescriptor.open(file, pfdMode);
+                } catch (IOException | IllegalArgumentException | SecurityException ignored) {
+                }
+            }
             try {
                 // Duplicate so each caller owns an independent descriptor; closing one
                 // does not invalidate descriptors held by other callers.
-                return info.pfd.dup();
+                ParcelFileDescriptor dup = info.pfd.dup();
+                try {
+                    Os.lseek(dup.getFileDescriptor(), 0, OsConstants.SEEK_SET);
+                } catch (Exception ignored) {
+                }
+                return dup;
             } catch (IOException e) {
                 throw new FileNotFoundException(
                         "Failed to duplicate file descriptor: " + e.getMessage());

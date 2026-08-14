@@ -1103,6 +1103,23 @@ public class PdfCoordinatorUnitTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
+    public void testLoadPdfFile_SameUri_SetsDocumentUri() {
+        createPdfCoordinator();
+        assertTrue(mPdfCoordinator.getIsPdfLoadedForTesting());
+        Uri originalUri = mPdfCoordinator.getUri();
+
+        mPdfCoordinator.resetLoadState();
+        assertFalse(mPdfCoordinator.getIsPdfLoadedForTesting());
+
+        mPdfCoordinator.onDownloadComplete(FILE_PATH, PDF_TITLE);
+        mPdfCoordinator.mChromePdfViewerFragment.setDocumentUri(mPdfCoordinator.getUri());
+        assertTrue(mPdfCoordinator.getIsPdfLoadedForTesting());
+        assertEquals(originalUri, mPdfCoordinator.getUri());
+        assertEquals(originalUri, mPdfCoordinator.mChromePdfViewerFragment.getDocumentUri());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
     public void testReloadWhenViewDetached() {
         createPdfCoordinator();
         assertTrue(mPdfCoordinator.getIsPdfLoadedForTesting());
@@ -1606,9 +1623,11 @@ public class PdfCoordinatorUnitTest {
     @Test
     @DisableFeatures(ChromeFeatureList.INLINE_PDF_V2)
     public void testOnLoadDocumentSuccess_V2Disabled_KeepsToolboxWhenAnnotatorExists() {
+        createPdfCoordinator();
+
         Intent intent = new Intent(ACTION_ANNOTATE);
         intent.addCategory(Intent.CATEGORY_DEFAULT);
-        intent.setDataAndType(Uri.parse(TEST_CONTENT_URI), "application/pdf");
+        intent.setDataAndType(mPdfCoordinator.getUri(), "application/pdf");
 
         ResolveInfo resolveInfo = new ResolveInfo();
         resolveInfo.activityInfo = new ActivityInfo();
@@ -1616,8 +1635,6 @@ public class PdfCoordinatorUnitTest {
         resolveInfo.activityInfo.name = "com.example.pdfannotator.AnnotateActivity";
         org.robolectric.Shadows.shadowOf(mActivity.getPackageManager())
                 .addResolveInfoForIntent(intent, resolveInfo);
-
-        createPdfCoordinator();
 
         TestChromePdfViewerFragment fragment = new TestChromePdfViewerFragment(mPdfCoordinator);
         mPdfCoordinator.mChromePdfViewerFragment = fragment;
@@ -1642,9 +1659,11 @@ public class PdfCoordinatorUnitTest {
     @Test
     @DisableFeatures(ChromeFeatureList.INLINE_PDF_V2)
     public void testOpenPdfInExternalEditor_OnClick() {
+        createPdfCoordinator();
+
         Intent intent = new Intent(ACTION_ANNOTATE);
         intent.addCategory(Intent.CATEGORY_DEFAULT);
-        intent.setDataAndType(Uri.parse(TEST_CONTENT_URI), "application/pdf");
+        intent.setDataAndType(mPdfCoordinator.getUri(), "application/pdf");
 
         ResolveInfo resolveInfo = new ResolveInfo();
         resolveInfo.activityInfo = new ActivityInfo();
@@ -1652,8 +1671,6 @@ public class PdfCoordinatorUnitTest {
         resolveInfo.activityInfo.name = "com.example.pdfannotator.AnnotateActivity";
         org.robolectric.Shadows.shadowOf(mActivity.getPackageManager())
                 .addResolveInfoForIntent(intent, resolveInfo);
-
-        createPdfCoordinator();
 
         TestChromePdfViewerFragment fragment = new TestChromePdfViewerFragment(mPdfCoordinator);
         mPdfCoordinator.mChromePdfViewerFragment = fragment;
@@ -1674,7 +1691,7 @@ public class PdfCoordinatorUnitTest {
         Intent startedIntent = org.robolectric.Shadows.shadowOf(mActivity).getNextStartedActivity();
         assertNotNull(startedIntent);
         assertEquals(ACTION_ANNOTATE, startedIntent.getAction());
-        assertEquals(Uri.parse(TEST_CONTENT_URI), startedIntent.getData());
+        assertEquals(mPdfCoordinator.getUri(), startedIntent.getData());
         assertEquals("application/pdf", startedIntent.getType());
     }
 
@@ -1959,7 +1976,7 @@ public class PdfCoordinatorUnitTest {
 
         @Override
         public ParcelFileDescriptor openFile(Uri uri, String mode) throws FileNotFoundException {
-            if ("w".equals(mode)) {
+            if ("w".equals(mode) || "rw".equals(mode)) {
                 return mPfd;
             }
             return super.openFile(uri, mode);

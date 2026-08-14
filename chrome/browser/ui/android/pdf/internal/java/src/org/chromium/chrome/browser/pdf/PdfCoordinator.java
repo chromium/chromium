@@ -704,15 +704,13 @@ public class PdfCoordinator
                 boolean success = false;
                 try {
                     if (ContentResolver.SCHEME_CONTENT.equals(uri.getScheme())) {
-                        pfd = getContext().getContentResolver().openFileDescriptor(uri, "w");
+                        pfd = getContext().getContentResolver().openFileDescriptor(uri, "rw");
                     } else if (ContentResolver.SCHEME_FILE.equals(uri.getScheme())) {
                         String path = uri.getPath();
                         if (path != null) {
                             pfd =
                                     ParcelFileDescriptor.open(
-                                            new File(path),
-                                            ParcelFileDescriptor.MODE_WRITE_ONLY
-                                                    | ParcelFileDescriptor.MODE_TRUNCATE);
+                                            new File(path), ParcelFileDescriptor.MODE_READ_WRITE);
                         } else {
                             Log.e(TAG, "File URI has null path: " + uri);
                         }
@@ -1140,6 +1138,10 @@ public class PdfCoordinator
     public void resetLoadState() {
         mIsPdfLoaded = false;
         if (mChromePdfViewerFragment != null) {
+            if (mChromePdfViewerFragment.isAdded()) {
+                mChromePdfViewerFragment.setDocumentUri(null);
+                mChromePdfViewerFragment.setEditModeEnabled(false);
+            }
             mChromePdfViewerFragment.setPagesPerRow(false);
         }
         // Reset two-pages-per-row state early so the overflow menu doesn't show a stale label while
@@ -1147,6 +1149,7 @@ public class PdfCoordinator
         // onDocumentLoaded() is invoked.
         if (mToolbarCoordinator != null) {
             mToolbarCoordinator.resetTwoPagesPerRow();
+            mToolbarCoordinator.setEditModeActive(false);
         }
     }
 
@@ -1237,11 +1240,9 @@ public class PdfCoordinator
                 mProgressBar.setVisibility(View.GONE);
                 try {
                     mIsInitialZoomPass = true;
-                    if (!mUri.equals(mChromePdfViewerFragment.getDocumentUri())) {
-                        mChromePdfViewerFragment.setDocumentUri(mUri);
-                        mChromePdfViewerFragment.setFilePath(mPdfFilePath);
-                        mChromePdfViewerFragment.setFileName(mTitle);
-                    }
+                    mChromePdfViewerFragment.setDocumentUri(mUri);
+                    mChromePdfViewerFragment.setFilePath(mPdfFilePath);
+                    mChromePdfViewerFragment.setFileName(mTitle);
                 } catch (IllegalArgumentException e) {
                     Log.e(TAG, "Load pdf fails due to invalid uri.", e);
                 } finally {
@@ -1445,10 +1446,9 @@ public class PdfCoordinator
 
     @Override
     public void onDocumentLoaded(int pageCount) {
-        assert mToolbarCoordinator != null;
-        assert mUri != null;
-        assert mTitle != null;
-        mToolbarCoordinator.onDocumentLoaded(pageCount, mTitle);
+        if (mToolbarCoordinator != null && mTitle != null) {
+            mToolbarCoordinator.onDocumentLoaded(pageCount, mTitle);
+        }
     }
 
     @Override

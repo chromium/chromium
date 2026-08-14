@@ -8,6 +8,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Build;
+import android.os.SystemClock;
 import android.os.ext.SdkExtensions;
 import android.text.TextUtils;
 import android.view.View;
@@ -341,7 +342,7 @@ public class PdfUtils {
     }
 
     @VisibleForTesting
-    static @Nullable Uri getUriFromFilePath(String pdfFilePath) {
+    public static @Nullable Uri getUriFromFilePath(String pdfFilePath) {
         Uri uri = Uri.parse(pdfFilePath);
         String scheme = uri.getScheme();
         try {
@@ -352,7 +353,14 @@ public class PdfUtils {
             } else {
                 // Convert filepath to Uri for transient downloads.
                 File file = new File(pdfFilePath);
-                return ChromeFileProvider.generateUri(file);
+                Uri fileUri = ChromeFileProvider.generateUri(file);
+                if (fileUri != null) {
+                    return fileUri.buildUpon()
+                            .appendQueryParameter(
+                                    "reload", String.valueOf(SystemClock.elapsedRealtime()))
+                            .build();
+                }
+                return null;
             }
         } catch (IllegalArgumentException | NullPointerException e) {
             Log.e(TAG, "Couldn't generate Uri: " + e);
@@ -405,17 +413,22 @@ public class PdfUtils {
      * @return the decoded download url; or null if the original url is not a pdf page url.
      */
     public static @Nullable String decodePdfPageUrl(@Nullable String originalUrl) {
+        String decodedUrl = decodePdfPageUrlInternal(originalUrl);
+        if (originalUrl != null && originalUrl.startsWith(UrlConstants.PDF_URL)) {
+            recordIsPdfDownloadUrlDecoded(decodedUrl != null);
+        }
+        return decodedUrl;
+    }
+
+    private static @Nullable String decodePdfPageUrlInternal(@Nullable String originalUrl) {
         if (originalUrl == null || !originalUrl.startsWith(UrlConstants.PDF_URL)) {
             return null;
         }
         Uri uri = Uri.parse(originalUrl);
         try {
             // #getQueryParameter has already decoded the url.
-            String decodedUrl = uri.getQueryParameter(UrlConstants.PDF_URL_QUERY_PARAM);
-            recordIsPdfDownloadUrlDecoded(true);
-            return decodedUrl;
+            return uri.getQueryParameter(UrlConstants.PDF_URL_QUERY_PARAM);
         } catch (UnsupportedOperationException | NullPointerException e) {
-            recordIsPdfDownloadUrlDecoded(false);
             Log.e(TAG, "Unsupported encoding: " + e.getMessage());
             return null;
         }
@@ -424,15 +437,28 @@ public class PdfUtils {
     /**
      * Extracts a valid HTTP(S) URL from a PDF page URL for re-downloading.
      *
-     * <p>This method decodes the provided {@code originalUrl} and verifies that the result uses a
-     * supported scheme (HTTP or HTTPS).
+     * <p>If the provided {@code originalUrl} is already a raw HTTP or HTTPS URL, it is returned
+     * directly without decoding. Otherwise, this method decodes the encoded PDF page URL and
+     * verifies that the resulting URL uses HTTP or HTTPS.
+     *
+     * <p>Warning: Because any HTTP(S) URL is allowed to pass through directly, this method does not
+     * validate whether the URL actually points to a PDF resource. Callers must independently verify
+     * that they are in a PDF context before using this method.
      *
      * @param originalUrl The original, potentially encoded, URL string to process.
-     * @return The decoded URL string if it is a valid HTTP(S) URL; {@code null} otherwise.
+     * @return The raw or decoded URL string if it is a valid HTTP(S) URL; {@code null} otherwise.
      */
-    public static @Nullable String getPdfReDownloadUrl(String originalUrl) {
-        String decodedUrl = decodePdfPageUrl(originalUrl);
+    public static @Nullable String getPdfReDownloadUrl(@Nullable String originalUrl) {
+        if (originalUrl == null) {
+            return null;
+        }
 
+        if (originalUrl.startsWith(UrlConstants.HTTP_URL_PREFIX)
+                || originalUrl.startsWith(UrlConstants.HTTPS_URL_PREFIX)) {
+            return originalUrl;
+        }
+
+        String decodedUrl = decodePdfPageUrlInternal(originalUrl);
         if (decodedUrl == null) {
             return null;
         }
@@ -443,6 +469,33 @@ public class PdfUtils {
         }
 
         return null;
+    }
+
+    /**
+     * Returns whether two PDF URLs (which may be raw HTTP(S)/content/file URLs or encoded {@code
+     * chrome-native://pdf/...} URLs) refer to the same PDF document URL.
+     *
+     * <p>Note: This method only normalizes and compares the URLs; it does not verify whether the
+     * URLs actually point to PDF resources. Callers are expected to ensure that the provided URLs
+     * represent PDF documents.
+     *
+     * @param url1 The first URL to compare.
+     * @param url2 The second URL to compare.
+     * @return True if both URLs resolve to the same canonical URL; false otherwise (including if
+     *     either URL is null).
+     */
+    public static boolean isPdfUrlMatch(@Nullable String url1, @Nullable String url2) {
+        if (url1 == null || url2 == null) {
+            return false;
+        }
+
+        String decodedUrl1 = decodePdfPageUrlInternal(url1);
+        String canonical1 = decodedUrl1 != null ? decodedUrl1 : url1;
+
+        String decodedUrl2 = decodePdfPageUrlInternal(url2);
+        String canonical2 = decodedUrl2 != null ? decodedUrl2 : url2;
+
+        return TextUtils.equals(canonical1, canonical2);
     }
 
     /**

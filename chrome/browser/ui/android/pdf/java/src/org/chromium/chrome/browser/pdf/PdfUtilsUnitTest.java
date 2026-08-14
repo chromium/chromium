@@ -275,6 +275,25 @@ public class PdfUtilsUnitTest {
     }
 
     @Test
+    public void testGetPdfReDownloadUrl_RawHttps() {
+        String downloadUrl = PdfUtils.getPdfReDownloadUrl(PDF_LINK);
+        Assert.assertEquals(
+                "The re-download url should match raw HTTP(S) url", PDF_LINK, downloadUrl);
+    }
+
+    @Test
+    public void testIsPdfUrlMatch() {
+        Assert.assertTrue(PdfUtils.isPdfUrlMatch(PDF_LINK, PDF_LINK_ENCODED));
+        Assert.assertTrue(PdfUtils.isPdfUrlMatch(PDF_LINK_ENCODED, PDF_LINK));
+        Assert.assertTrue(PdfUtils.isPdfUrlMatch(PDF_LINK, PDF_LINK));
+        Assert.assertTrue(PdfUtils.isPdfUrlMatch(CONTENT_URL, CONTENT_URL));
+        Assert.assertFalse(PdfUtils.isPdfUrlMatch(PDF_LINK, "https://www.example.com/other.pdf"));
+        Assert.assertFalse(PdfUtils.isPdfUrlMatch(PDF_LINK, null));
+        Assert.assertFalse(PdfUtils.isPdfUrlMatch(null, PDF_LINK));
+        Assert.assertFalse(PdfUtils.isPdfUrlMatch(null, null));
+    }
+
+    @Test
     public void testGetPdfReDownloadUrl_Invalid() {
         String downloadUrl = PdfUtils.getPdfReDownloadUrl(PDF_LINK_ENCODED_INVALID);
         Assert.assertNull("The re-download url should be null", downloadUrl);
@@ -314,7 +333,7 @@ public class PdfUtilsUnitTest {
         Assert.assertNotNull("Uri should not be null", uri);
         // Should be a file URI or content URI from ChromeFileProvider (which is mocked to
         // CONTENT_URL)
-        Assert.assertEquals(CONTENT_URL, uri.toString());
+        Assert.assertTrue(uri.toString().startsWith(CONTENT_URL));
     }
 
     @Test

@@ -28,7 +28,7 @@ import org.chromium.content_public.browser.LoadUrlParams;
  */
 @NullMarked
 public abstract class BasicNativePage implements NativePage, OnAttachStateChangeListener {
-    private final NativePageHost mHost;
+    protected final NativePageHost mHost;
     private final int mBackgroundColor;
     private @Nullable BackPressHandler mBackPressHandler;
     private @Nullable BackPressHandlerRegistry mRegistry;

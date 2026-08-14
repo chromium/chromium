@@ -36,6 +36,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.ui.base.MimeTypeUtils;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -156,12 +157,69 @@ public class PdfContentProviderUnitTest {
 
     @Test
     public void testOpenFile_WriteModeAllowed() throws IOException, FileNotFoundException {
-        ParcelFileDescriptor pfd = createMockPfd();
+        File tempFile = createTempFile();
+        ParcelFileDescriptor pfd =
+                ParcelFileDescriptor.open(tempFile, ParcelFileDescriptor.MODE_READ_ONLY);
         Uri uri =
                 PdfContentProvider.createContentUri(
-                        TEST_UNIQUE_ID, "dummy_path", pfd, TEST_FILE_NAME);
+                        TEST_UNIQUE_ID, tempFile.getAbsolutePath(), pfd, TEST_FILE_NAME);
         ParcelFileDescriptor writePfd = mProvider.openFile(uri, "w");
         assertNotNull("Write ParcelFileDescriptor should not be null", writePfd);
+        try (FileOutputStream fos = new FileOutputStream(writePfd.getFileDescriptor())) {
+            fos.write(new byte[] {1, 2, 3, 4});
+        }
+        writePfd.close();
+
+        ParcelFileDescriptor readPfd = mProvider.openFile(uri, "r");
+        assertNotNull("Read ParcelFileDescriptor should not be null", readPfd);
+        assertEquals("File size should reflect write", 4, readPfd.getStatSize());
+        readPfd.close();
+    }
+
+    @Test
+    public void testOpenFile_MultipleWritesAndReadsPersist()
+            throws IOException, FileNotFoundException {
+        File tempFile = createTempFile();
+        ParcelFileDescriptor pfd =
+                ParcelFileDescriptor.open(tempFile, ParcelFileDescriptor.MODE_READ_ONLY);
+        Uri uri =
+                PdfContentProvider.createContentUri(
+                        TEST_UNIQUE_ID, tempFile.getAbsolutePath(), pfd, TEST_FILE_NAME);
+
+        // First annotation write
+        try (ParcelFileDescriptor writePfd1 = mProvider.openFile(uri, "rw");
+                FileOutputStream fos1 = new FileOutputStream(writePfd1.getFileDescriptor())) {
+            fos1.write(new byte[] {1, 2, 3});
+        }
+
+        // First read after write
+        try (ParcelFileDescriptor readPfd1 = mProvider.openFile(uri, "r");
+                FileInputStream fis1 = new FileInputStream(readPfd1.getFileDescriptor())) {
+            byte[] data1 = new byte[3];
+            int bytesRead1 = fis1.read(data1);
+            assertEquals("Should read 3 bytes", 3, bytesRead1);
+            assertEquals(1, data1[0]);
+            assertEquals(2, data1[1]);
+            assertEquals(3, data1[2]);
+        }
+
+        // Second annotation write
+        try (ParcelFileDescriptor writePfd2 = mProvider.openFile(uri, "rw");
+                FileOutputStream fos2 = new FileOutputStream(writePfd2.getFileDescriptor())) {
+            fos2.write(new byte[] {4, 5, 6, 7});
+        }
+
+        // Second read after write (verifies subsequent annotation sessions persist from offset 0)
+        try (ParcelFileDescriptor readPfd2 = mProvider.openFile(uri, "r");
+                FileInputStream fis2 = new FileInputStream(readPfd2.getFileDescriptor())) {
+            byte[] data2 = new byte[4];
+            int bytesRead2 = fis2.read(data2);
+            assertEquals("Should read 4 bytes", 4, bytesRead2);
+            assertEquals(4, data2[0]);
+            assertEquals(5, data2[1]);
+            assertEquals(6, data2[2]);
+            assertEquals(7, data2[3]);
+        }
     }
 
     @Test
