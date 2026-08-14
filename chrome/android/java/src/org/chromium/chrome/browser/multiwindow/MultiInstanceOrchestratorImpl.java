@@ -60,7 +60,7 @@ import java.util.Set;
     private final TabReparentingDelegate mTabReparentingDelegate;
     private final Map<Activity, MultiInstanceManager> mActivityMultiInstanceManagerAssignments =
             new HashMap<>();
-    private int mTabbedActivityCount;
+    private int mInitializedTabbedActivityCount;
 
     /** Returns the singleton instance for {@link MultiInstanceOrchestrator}. */
     public static MultiInstanceOrchestrator getInstance() {
@@ -117,13 +117,12 @@ import java.util.Set;
                 : "A MultiInstanceManager for this Activity already exists.";
         mActivityMultiInstanceManagerAssignments.put(activity, multiInstanceManager);
         if (activity instanceof ChromeTabbedActivity tabbedActivity) {
-            mTabbedActivityCount++;
-            if (mTabbedActivityCount == 1) {
-                // Restore any windows from a relaunch before evaluating crash recovery metadata so
-                // that relaunch restoration can consume the recoverable state before non-crash
-                // cleanup occurs.
-                TabbedStartupWindowPolicyDelegate.getInstance()
-                        .maybeRestoreWindowsAfterLaunch(tabbedActivity);
+            mInitializedTabbedActivityCount++;
+            if (mInitializedTabbedActivityCount == 1) {
+                // Restore any windows from a relaunch and finalize startup policy consumption
+                // before evaluating crash recovery metadata so that relaunch restoration can
+                // consume the recoverable state before non-crash cleanup occurs.
+                TabbedStartupWindowPolicyDelegate.getInstance().applyPolicy(tabbedActivity);
                 TabbedCrashRecoveryDelegate.getInstance().initializeCrashRecoveryMetadata();
             }
         }
@@ -135,7 +134,7 @@ import java.util.Set;
 
         // If a ChromeTabbedActivity has already initialized, immediate crash recovery was already
         // evaluated / handled. Do not set a pending crash recovery state.
-        if (mTabbedActivityCount > 0) {
+        if (mInitializedTabbedActivityCount > 0) {
             return;
         }
 
@@ -665,9 +664,19 @@ import java.util.Set;
         if (newState == ActivityState.DESTROYED) {
             MultiInstanceManager removed =
                     mActivityMultiInstanceManagerAssignments.remove(activity);
-            if (removed != null && activity instanceof ChromeTabbedActivity) {
-                mTabbedActivityCount--;
-                assert mTabbedActivityCount >= 0 : "Tabbed activity count cannot be negative.";
+            if (activity instanceof ChromeTabbedActivity) {
+                if (removed != null) {
+                    mInitializedTabbedActivityCount--;
+                    assert mInitializedTabbedActivityCount >= 0
+                            : "Initialized tabbed activity count cannot be negative.";
+                }
+                // Reset the startup policy reservation only if all initialized tabbed
+                // activities have drained and no in-flight activities are currently
+                // starting up, preventing races during overlapping window launches.
+                if (mInitializedTabbedActivityCount == 0
+                        && MultiWindowUtils.getRunningTabbedActivityCount() == 0) {
+                    TabbedStartupWindowPolicyDelegate.getInstance().resetPolicy();
+                }
             }
         }
     }
@@ -686,6 +695,6 @@ import java.util.Set;
 
     /* package */ void clearAssignmentsForTesting() {
         mActivityMultiInstanceManagerAssignments.clear();
-        mTabbedActivityCount = 0;
+        mInitializedTabbedActivityCount = 0;
     }
 }

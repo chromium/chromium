@@ -25,7 +25,6 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
@@ -439,45 +438,33 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
                     profileType);
         }
 
-        // Search for an unassigned ID. The index is available for the assignment if:
-        // a) there is no associated task and the instance is not marked for deletion, or
-        // b) the corresponding persistent state does not exist.
-        // Prefer a over b. Pick the MRU instance if there is more than one. Type b returns 0
-        // for |readLastAccessedTime|, so can be regarded as the least favored.
+        // Search for an unassigned instance ID. An index is eligible if it has no associated task
+        // and is not marked for deletion. Unless startup policies require allocating a fresh
+        // instance ID, prefer adopting existing persisted instances in MRU order over allocating
+        // an unmapped ID.
         int id = INVALID_WINDOW_ID;
         boolean newInstanceIdAllocated = false;
         @InstanceAllocationType int allocationType = InstanceAllocationType.INVALID_INSTANCE;
-        boolean isRelaunch =
-                IntentUtils.safeGetBooleanExtra(
-                        mActivity.getIntent(), IntentHandler.EXTRA_FROM_RELAUNCH, false);
         int maxRange =
                 ChromeFeatureList.sAllocInstanceIdIncreasedDefaultRange.isEnabled()
                         ? TabWindowManager.MAX_SELECTORS_1000
                         : getMaxInstances();
-        boolean lastWindowClosedByApp =
-                MultiWindowUtils.isNewStartupWindowPolicyEnabled()
-                        && ChromeMultiInstancePersistentStore.readLastSessionExitType()
-                                == LastSessionExitType.LAST_WINDOW_CLOSED_BY_APP;
-        if (lastWindowClosedByApp) {
-            // Clear the non-default session type after it has been first processed during an app
-            // launch to prevent it from being incorrectly used subsequently.
-            ChromeMultiInstancePersistentStore.clearLastSessionExitType();
-        }
+        boolean allocNewIdOnStartup =
+                TabbedStartupWindowPolicyDelegate.getInstance()
+                        .claimForceNewInstancePolicy(isIncognitoIntent);
 
         for (int i = 0; i < maxRange; ++i) {
             int persistedTaskId = ChromeMultiInstancePersistentStore.readTaskId(i);
             if (persistedTaskId != INVALID_TASK_ID) {
                 continue;
             }
+
             if (ChromeMultiInstancePersistentStore.readMarkedForDeletion(i)) {
                 continue;
             }
 
             boolean instanceExists = ChromeMultiInstancePersistentStore.hasInstance(i);
-            if (instanceExists && !isRelaunch && lastWindowClosedByApp) {
-                // This supports updated default id allocation / startup behavior where a newly
-                // created activity will refrain from using existing instance state and will be
-                // created as a brand-new window instead.
+            if (instanceExists && allocNewIdOnStartup) {
                 continue;
             }
 

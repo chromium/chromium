@@ -433,7 +433,7 @@ class ChromeMultiInstancePersistentStore extends MultiInstancePersistentStore {
     }
 
     static void clearLastSessionExitType() {
-        if (sData != null) {
+        if (sData != null && sData.hasLastSessionExitType()) {
             sData = sData.toBuilder().clearLastSessionExitType().build();
             saveProto();
         }
@@ -441,7 +441,9 @@ class ChromeMultiInstancePersistentStore extends MultiInstancePersistentStore {
 
     static int readRestoreOnStartupPrefValue() {
         assert sData != null;
-        return sData.getRestoreOnStartupPrefValue();
+        return sData.hasRestoreOnStartupPrefValue()
+                ? sData.getRestoreOnStartupPrefValue()
+                : TabbedStartupWindowPolicyDelegate.PREF_UNSET;
     }
 
     static void writeRestoreOnStartupPrefValue(int value) {

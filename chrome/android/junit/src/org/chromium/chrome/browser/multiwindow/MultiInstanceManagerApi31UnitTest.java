@@ -469,52 +469,6 @@ public class MultiInstanceManagerApi31UnitTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.ON_STARTUP_WINDOW_POLICY)
-    public void testAllocInstanceId_onStartupWindowPolicy_refrainsFromUsingExistingInstanceState() {
-        DeviceInfo.setIsDesktopForTesting(true);
-        // Allocate instance 0 and 1.
-        assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mActivityPool[0]));
-        assertEquals(1, allocInstanceIndex(PASSED_ID_INVALID, mActivityPool[1]));
-
-        // Simulate closing instance 1 from recents (instance 1 now has persisted state).
-        removeTaskOnRecentsScreen(mActivityPool[1]);
-
-        // Mark last session exit type as LAST_WINDOW_CLOSED_BY_APP.
-        ChromeMultiInstancePersistentStore.writeLastSessionExitType(
-                LastSessionExitType.LAST_WINDOW_CLOSED_BY_APP);
-
-        // Allocating a new window should refrain from using instance 1 and allocate brand-new
-        // instance 2.
-        assertEquals(2, allocInstanceIndex(PASSED_ID_INVALID, mActivityPool[1]));
-
-        // Check that the flag was reset to DEFAULT.
-        assertEquals(
-                LastSessionExitType.DEFAULT,
-                ChromeMultiInstancePersistentStore.readLastSessionExitType());
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.ON_STARTUP_WINDOW_POLICY)
-    public void testAllocInstanceId_onStartupWindowPolicy_relaunchBypassesPolicy() {
-        DeviceInfo.setIsDesktopForTesting(true);
-        // Allocate instance 0 and 1.
-        assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mActivityPool[0]));
-        assertEquals(1, allocInstanceIndex(PASSED_ID_INVALID, mActivityPool[1]));
-
-        // Simulate closing a window from Android Recents.
-        removeTaskOnRecentsScreen(mActivityPool[1]);
-
-        // Mock the intent for the current activity to contain EXTRA_FROM_RELAUNCH.
-        Intent relaunchIntent = new Intent();
-        relaunchIntent.putExtra(IntentHandler.EXTRA_FROM_RELAUNCH, true);
-        when(mCurrentActivity.getIntent()).thenReturn(relaunchIntent);
-
-        // With ON_STARTUP_WINDOW_POLICY enabled, but with EXTRA_FROM_RELAUNCH set on the intent,
-        // it should bypass the skip check and reuse instance 1.
-        assertEquals(1, allocInstanceIndex(PASSED_ID_INVALID, mActivityPool[1]));
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.ON_STARTUP_WINDOW_POLICY)
     public void
             testAllocInstanceId_onStartupWindowPolicy_lastWindowClosedByApp_refrainsFromUsingExistingInstanceState() {
         DeviceInfo.setIsDesktopForTesting(true);
@@ -525,6 +479,9 @@ public class MultiInstanceManagerApi31UnitTest {
         // Simulate closing instance 1 from recents (instance 1 now has persisted state).
         removeTaskOnRecentsScreen(mActivityPool[1]);
 
+        // Reset the delegate to simulate launching in a new browser process.
+        TabbedStartupWindowPolicyDelegate.setInstanceForTesting(null);
+
         // Mark last session exit type as LAST_WINDOW_CLOSED_BY_APP.
         ChromeMultiInstancePersistentStore.writeLastSessionExitType(
                 LastSessionExitType.LAST_WINDOW_CLOSED_BY_APP);
@@ -532,11 +489,30 @@ public class MultiInstanceManagerApi31UnitTest {
         // Allocating a new window should refrain from using instance 1 and allocate brand-new
         // instance 2.
         assertEquals(2, allocInstanceIndex(PASSED_ID_INVALID, mActivityPool[1]));
+    }
 
-        // Check that the flag was reset to DEFAULT.
-        assertEquals(
-                LastSessionExitType.DEFAULT,
-                ChromeMultiInstancePersistentStore.readLastSessionExitType());
+    @Test
+    @EnableFeatures(ChromeFeatureList.SYNC_RESTORE_ON_STARTUP_PREF)
+    public void testAllocInstanceId_restoreOnStartup_newTabAllocatesNewWindow() {
+        DeviceInfo.setIsDesktopForTesting(true);
+
+        // Allocate instance 0 and 1.
+        assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mActivityPool[0]));
+        assertEquals(1, allocInstanceIndex(PASSED_ID_INVALID, mActivityPool[1]));
+
+        // Simulate closing instance 1 from recents (instance 1 now has persisted state).
+        removeTaskOnRecentsScreen(mActivityPool[1]);
+
+        // Reset the delegate to simulate launching in a new browser process.
+        TabbedStartupWindowPolicyDelegate.setInstanceForTesting(null);
+
+        // Set the cached startup policy to NEW_TAB.
+        ChromeMultiInstancePersistentStore.writeRestoreOnStartupPrefValue(
+                SessionStartupPref.NEW_TAB);
+
+        // Allocating a new window should refrain from using instance 1 (since we want a new window)
+        // and allocate brand-new instance 2.
+        assertEquals(2, allocInstanceIndex(PASSED_ID_INVALID, mActivityPool[1]));
     }
 
     @Test
@@ -2658,6 +2634,40 @@ public class MultiInstanceManagerApi31UnitTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.ON_STARTUP_WINDOW_POLICY)
+    public void testOnDestroy_whenFinishing_quit_startupPrefIsNewTab_makesInstanceNonRecoverable() {
+        // Setup.
+        DeviceInfo.setIsDesktopForTesting(true);
+        ChromeMultiInstancePersistentStore.sData = MultiInstanceData.getDefaultInstance();
+
+        int instanceId = allocInstanceIndex(PASSED_ID_INVALID, mCurrentActivity);
+        mMultiInstanceManager.initialize(instanceId, TASK_ID_56, SupportedProfileType.MIXED);
+        ChromeMultiInstancePersistentStore.writeRestoreOnStartupPrefValue(
+                SessionStartupPref.NEW_TAB);
+        TabbedStartupWindowPolicyDelegate.getInstance()
+                .maybeSaveWindowStateOnSessionTermination(LastSessionExitType.QUIT);
+
+        assertTrue(
+                "Instance should be recoverable initially.",
+                ChromeMultiInstancePersistentStore.readCrashRecoveryData().stream()
+                        .anyMatch(info -> info.windowId == instanceId));
+
+        when(mCurrentActivity.isFinishing()).thenReturn(true);
+
+        // Act.
+        mMultiInstanceManager.onDestroy();
+
+        // Verify.
+        assertFalse(
+                "Instance should not be recoverable after onDestroy() when startup pref is"
+                        + " NEW_TAB.",
+                ChromeMultiInstancePersistentStore.readCrashRecoveryData().stream()
+                        .anyMatch(info -> info.windowId == instanceId));
+
+        ChromeMultiInstancePersistentStore.sData = null;
+    }
+
+    @Test
     public void testOnStopWithNative_whenFinishing_makesInstanceNonRecoverable() {
         // Setup sData so that isRecoverable is supported.
         ChromeMultiInstancePersistentStore.sData = MultiInstanceData.getDefaultInstance();
@@ -2744,6 +2754,41 @@ public class MultiInstanceManagerApi31UnitTest {
         assertFalse(
                 "Instance should not be recoverable after onStopWithNative() when it has no normal"
                         + " tabs.",
+                ChromeMultiInstancePersistentStore.readCrashRecoveryData().stream()
+                        .anyMatch(info -> info.windowId == instanceId));
+
+        ChromeMultiInstancePersistentStore.sData = null;
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ON_STARTUP_WINDOW_POLICY)
+    public void
+            testOnStopWithNative_whenFinishing_quit_startupPrefIsNewTab_makesInstanceNonRecoverable() {
+        // Setup.
+        DeviceInfo.setIsDesktopForTesting(true);
+        ChromeMultiInstancePersistentStore.sData = MultiInstanceData.getDefaultInstance();
+
+        int instanceId = allocInstanceIndex(PASSED_ID_INVALID, mCurrentActivity);
+        mMultiInstanceManager.initialize(instanceId, TASK_ID_56, SupportedProfileType.MIXED);
+        ChromeMultiInstancePersistentStore.writeRestoreOnStartupPrefValue(
+                SessionStartupPref.NEW_TAB);
+        TabbedStartupWindowPolicyDelegate.getInstance()
+                .maybeSaveWindowStateOnSessionTermination(LastSessionExitType.QUIT);
+
+        assertTrue(
+                "Instance should be recoverable initially.",
+                ChromeMultiInstancePersistentStore.readCrashRecoveryData().stream()
+                        .anyMatch(info -> info.windowId == instanceId));
+
+        when(mCurrentActivity.isFinishing()).thenReturn(true);
+
+        // Act.
+        mMultiInstanceManager.onStopWithNative();
+
+        // Verify.
+        assertFalse(
+                "Instance should not be recoverable after onStopWithNative() when startup pref is"
+                        + " NEW_TAB.",
                 ChromeMultiInstancePersistentStore.readCrashRecoveryData().stream()
                         .anyMatch(info -> info.windowId == instanceId));
 
