@@ -2197,6 +2197,45 @@ public class WebContentsAccessibilityTest {
         Assert.assertTrue(lastParagraphNodeInfo.isAccessibilityFocused());
     }
 
+    /**
+     * Tests paragraph navigation when HTML contains div wrappers around controls (like buttons).
+     * Regression test for b/544096062. Paragraph navigation should skip unlabelled generic
+     * container divs and navigate directly to actual paragraphs / headings.
+     */
+    @Test
+    @SmallTest
+    public void testEvent_paragraphGranularity_buttonsInDivContainers() throws Throwable {
+        setupTestWithHTML(
+                """
+                <h2>Buttons</h2>
+                <div>
+                  <button id="button">Button</button>
+                </div>
+                <div>
+                  <input id="submit" type="submit" value="Submit button">
+                </div>
+                <h2>Editable text</h2>
+                """);
+
+        int heading1Vvid = waitForNodeMatching(sTextMatcher, "Buttons");
+        int heading2Vvid = waitForNodeMatching(sTextMatcher, "Editable text");
+
+        Bundle args = new Bundle();
+        args.putInt(ACTION_ARGUMENT_MOVEMENT_GRANULARITY_INT, MOVEMENT_GRANULARITY_PARAGRAPH);
+        args.putBoolean(ACTION_ARGUMENT_EXTEND_SELECTION_BOOLEAN, false);
+
+        // Perform paragraph navigation starting from "Buttons" heading.
+        mTestData.setReceivedAccessibilityFocusEvent(false);
+        performActionOnUiThread(heading1Vvid, ACTION_NEXT_AT_MOVEMENT_GRANULARITY, args);
+
+        CriteriaHelper.pollUiThread(() -> mTestData.hasReceivedAccessibilityFocusEvent());
+
+        // Accessibility focus should move to "Editable text" (or next paragraph), NOT an unlabelled
+        // wrapper div.
+        AccessibilityNodeInfoCompat heading2NodeInfo = createAccessibilityNodeInfo(heading2Vvid);
+        Assert.assertTrue(heading2NodeInfo.isAccessibilityFocused());
+    }
+
     /** Tests initializeMovementAtGranularityOnSetAccessibilityFocus with selection offset types. */
     @Test
     @SmallTest

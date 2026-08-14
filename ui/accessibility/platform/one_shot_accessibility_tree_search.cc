@@ -40,7 +40,7 @@ bool IsBlockContainer(BrowserAccessibility* node) {
   if (!node || !node->node()) {
     return false;
   }
-  const ui::AXNode* ax_node = node->node();
+  const AXNode* ax_node = node->node();
   return (ax_node->GetBoolAttribute(
               ax::mojom::BoolAttribute::kIsLineBreakingObject) ||
           ax_node->GetRole() == ax::mojom::Role::kParagraph) &&
@@ -48,10 +48,16 @@ bool IsBlockContainer(BrowserAccessibility* node) {
          ax_node->GetRole() != ax::mojom::Role::kInlineTextBox;
 }
 
-bool HasBlockContainerDescendant(BrowserAccessibility* node) {
+// Helper that checks if node has any block container descendants or control
+// descendants.
+bool HasBlockDescendantOrControl(BrowserAccessibility* node) {
+  if (!node) {
+    return false;
+  }
   for (size_t i = 0; i < node->PlatformChildCount(); ++i) {
     BrowserAccessibility* child = node->PlatformGetChild(i);
-    if (IsBlockContainer(child) || HasBlockContainerDescendant(child)) {
+    if (IsControl(child->GetRole()) || IsBlockContainer(child) ||
+        HasBlockDescendantOrControl(child)) {
       return true;
     }
   }
@@ -482,11 +488,6 @@ bool AccessibilityMediaPredicate(BrowserAccessibility* start,
 
 bool AccessibilityParagraphPredicate(BrowserAccessibility* start,
                                      BrowserAccessibility* node) {
-  // Since paragraphs can contain inline child nodes (such as static text or
-  // links), they are not leaf nodes in the tree. The start node will often be a
-  // descendant of a paragraph. We exclude ancestors of the start node to avoid
-  // matching the paragraph that already contains the start node, as we want to
-  // find other paragraphs.
   if (start->IsDescendantOf(node)) {
     return false;
   }
@@ -508,8 +509,9 @@ bool AccessibilityParagraphPredicate(BrowserAccessibility* start,
   }
 
   // Exclude block containers that have block descendants (we only want leaf
-  // blocks).
-  if (HasBlockContainerDescendant(node)) {
+  // blocks) or descendants that are interactive controls (e.g. <div> wrapping
+  // buttons).
+  if (HasBlockDescendantOrControl(node)) {
     return false;
   }
 
