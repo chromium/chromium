@@ -254,6 +254,20 @@ ChildProcessLauncherHelper::~ChildProcessLauncherHelper() {
     base::Process::Open(process_id_.value()).ForgetPriority();
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_MAC)
+  if (scoped_sandboxed_user_dir_) {
+    GetProcessLauncherTaskRunner()->DeleteSoon(
+        FROM_HERE, std::move(scoped_sandboxed_user_dir_));
+  }
+  if (scoped_sandboxed_user_cache_dir_) {
+    GetProcessLauncherTaskRunner()->DeleteSoon(
+        FROM_HERE, std::move(scoped_sandboxed_user_cache_dir_));
+  }
+  if (scoped_sandboxed_user_temp_dir_) {
+    GetProcessLauncherTaskRunner()->DeleteSoon(
+        FROM_HERE, std::move(scoped_sandboxed_user_temp_dir_));
+  }
+#endif
 #if BUILDFLAG(IS_IOS)
   GetProcessLauncherTaskRunner()->DeleteSoon(FROM_HERE,
                                              std::move(scoped_temp_dir_));
