@@ -1,0 +1,37 @@
+extension ILType {
+{%- for m in maps %}
+    fileprivate static let {{m|format_il_type}}: ILType =
+        .createJsMapType(
+            ofKeyType: .{{m.key_kind|format_il_type(primitive_with_suffix=True)}},
+            ofValueType: .{{m.value_kind|format_il_type(primitive_with_suffix=True)}}
+        )
+{%- endfor %}
+}
+
+{%- for m in maps %}
+    {%- if loop.first %}
+
+/// Generate a map with only one element. As Fuzzilli runs, the OperationMutator
+/// and VariadicInputReducer will modify the `CreateMap` operation to increase
+/// or decrease the element count.
+    {%- endif %}
+private let Mojo{{m|format_unique_name}}Generator = CodeGenerator(
+    "Mojo{{m|format_unique_name}}Generator",
+    inputs: .required(
+        .{{m.key_kind|format_il_type(primitive_with_suffix=True)}},
+        .{{m.value_kind|format_il_type(primitive_with_suffix=True)}}
+    ),
+    produces: [.{{m|format_il_type}}]
+) { b, key, val in
+    b.createMap(
+        withKeys: [key],
+        withValues: [val],
+        keyGroupName: ObjectGroup.
+            {{- m.key_kind|format_unique_name(primitive_with_suffix=True)|to_camel(True) -}}
+            .group.name,
+        valueGroupName: ObjectGroup.
+            {{- m.value_kind|format_unique_name(primitive_with_suffix=True)|to_camel(True) -}}
+            .group.name
+    )
+}
+{%- endfor %}

@@ -1,0 +1,15 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+module golden;
+
+interface Primary {
+  PassMap(map<string, Entry> entry_map, string token) => (Entry result);
+  PassNestedMap(map<int32, map<string, Entry>> nested_map, int32 key) => (map<string, Entry> result);
+
+  [Sync]
+  GetMap() => (map<float, bool> result);
+};
+
+struct Entry {};
+

@@ -31,6 +31,14 @@ private static let mojoPrefix = "{{module.namespace}}."
 {% include "arrays.tmpl" %}
 {%- endif %}
 
+{%- if maps %}
+
+///
+/// Maps
+///
+{% include "maps.tmpl" %}
+{%- endif %}
+
 {%- if enums %}
 
 ///

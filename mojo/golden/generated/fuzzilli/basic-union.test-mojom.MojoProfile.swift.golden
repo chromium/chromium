@@ -115,6 +115,10 @@ extension ILType {
     fileprivate static let jsIntegerArray: ILType =
         .createJsArrayType(ofElementType: .jsIntegerElement)
 }
+
+/// Generate an array with only one element. As Fuzzilli runs, the
+/// OperationMutator and VariadicInputReducer will modify the
+/// `CreateArray` operation to increase  or decrease the element count.
 private let MojoIntegerArrayGenerator = CodeGenerator(
     "MojoIntegerArrayGenerator",
     inputs: .required(.integer),

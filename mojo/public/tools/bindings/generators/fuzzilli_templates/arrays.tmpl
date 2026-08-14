@@ -6,6 +6,12 @@ extension ILType {
 }
 
 {%- for array in arrays %}
+    {%- if loop.first %}
+
+/// Generate an array with only one element. As Fuzzilli runs, the
+/// OperationMutator and VariadicInputReducer will modify the
+/// `CreateArray` operation to increase  or decrease the element count.
+    {%- endif %}
 private let Mojo{{array|format_unique_name}}Generator = CodeGenerator(
     "Mojo{{array|format_unique_name}}Generator",
     inputs: .required(.{{array.kind|format_il_type}}),

@@ -54,6 +54,7 @@ class Generator(generator.Generator):
     self.interface_remotes = {}
     self.interface_receivers = {}
     self.arrays = {}
+    self.maps = {}
     self.enums = {}
     self.unions = {}
     self.structs = {}
@@ -86,6 +87,7 @@ class Generator(generator.Generator):
       "interface_remotes": list(self.interface_remotes.values()),
       "interface_receivers": list(self.interface_receivers.values()),
       "arrays": list(self.arrays.values()),
+      "maps": list(self.maps.values()),
       "enums": list(self.enums.values()),
       "unions": list(self.unions.values()),
       "structs": list(self.structs.values()),
@@ -107,6 +109,8 @@ class Generator(generator.Generator):
       self._CollectEnum(kind)
     elif mojom.IsArrayKind(kind):
       self._CollectArray(kind, is_in_js)
+    elif mojom.IsMapKind(kind):
+      self._CollectMap(kind, is_in_js)
     elif mojom.IsAnyInterfaceKind(kind):
       self._CollectInterface(kind, is_in_js)
     elif mojom.IsUnionKind(kind):
@@ -126,6 +130,14 @@ class Generator(generator.Generator):
       return
     self.arrays[name] = array
     self._CollectInterfaceAndTypes(array.kind, is_in_js)
+
+  def _CollectMap(self, m, is_in_js):
+    name = self._FormatUniqueName(m)
+    if name in self.maps:
+      return
+    self.maps[name] = m
+    self._CollectInterfaceAndTypes(m.key_kind, is_in_js)
+    self._CollectInterfaceAndTypes(m.value_kind, is_in_js)
 
   def _CollectEnum(self, enum):
     name = self._FormatUniqueName(enum)
@@ -157,6 +169,9 @@ class Generator(generator.Generator):
     else:
       interface = kind
 
+    # TODO(crbug.com/522372048): this check prevents interfaces from being
+    # registered as both remotes and receivers. Rewrite the logic to
+    # support the edge case where an interface is used as both.
     name = self._FormatUniqueName(interface)
     if name in self.interface_remotes or name in self.interface_receivers:
       return
@@ -223,6 +238,12 @@ class Generator(generator.Generator):
       # as the `ILType` definitions are `fileprivate`.
       return f"{self._FormatUniqueName(kind.kind)}Array"
 
+    if mojom.IsMapKind(kind):
+      return (
+        f"{self._FormatUniqueName(kind.key_kind)}_"
+        f"{self._FormatUniqueName(kind.value_kind)}Map"
+      )
+
     if self._IsAnyPendingRemoteKind(kind) or self._IsAnyPendingReceiverKind(
       kind
     ):
@@ -263,6 +284,12 @@ class Generator(generator.Generator):
 
     if mojom.IsArrayKind(kind):
       return f"js{self._FormatUniqueName(kind.kind)}Array"
+
+    if mojom.IsMapKind(kind):
+      return (
+        f"js{self._FormatUniqueName(kind.key_kind)}_"
+        f"{self._FormatUniqueName(kind.value_kind)}Map"
+      )
 
     if mojom.IsInterfaceKind(kind):
       return f"js{self._FormatUniqueName(kind)}Remote"
