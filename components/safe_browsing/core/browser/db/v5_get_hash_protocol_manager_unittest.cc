@@ -986,6 +986,44 @@ TEST_F(V5GetHashProtocolManagerTest,
 #endif
 }
 
+TEST_F(V5GetHashProtocolManagerTest,
+       GetFullHashes_Metadata_SubresourceFilter_BetterAdsAndAbusive) {
+  std::unique_ptr<V5GetHashProtocolManager> pm = CreateProtocolManager();
+
+  FullHashStr full_hash("12345678901234567890123456789012");
+  std::map<FullHashStr, std::vector<SBThreatType>> full_hash_to_threat_types;
+  full_hash_to_threat_types[full_hash] = {
+      SBThreatType::SB_THREAT_TYPE_SUBRESOURCE_FILTER};
+  std::string expected_url =
+      GetExpectedRequestUrl(SBProtocolManagerUtil::GetHashPrefix(full_hash));
+
+  std::vector<V5::FullHash> full_hashes = {
+      CreateFullHashProto(full_hash,
+                          {V5::ThreatType::BETTER_ADS_VIOLATION,
+                           V5::ThreatType::ABUSIVE_EXPERIENCE_VIOLATION},
+                          /*threat_attributes=*/std::nullopt)};
+  SetUpDefaultLookupResponse(expected_url, full_hashes);
+
+  base::test::TestFuture<SBThreatType, const ThreatMetadata&> future;
+  pm->GetFullHashes(full_hash_to_threat_types, future.GetCallback());
+
+  EXPECT_EQ(future.Get<0>(), SBThreatType::SB_THREAT_TYPE_SUBRESOURCE_FILTER);
+  const ThreatMetadata& metadata = future.Get<1>();
+  auto bas_it =
+      metadata.subresource_filter_match.find(SubresourceFilterType::BETTER_ADS);
+  ASSERT_NE(bas_it, metadata.subresource_filter_match.end());
+  EXPECT_EQ(bas_it->second, SubresourceFilterLevel::ENFORCE);
+  auto abs_it =
+      metadata.subresource_filter_match.find(SubresourceFilterType::ABUSIVE);
+  ASSERT_NE(abs_it, metadata.subresource_filter_match.end());
+  EXPECT_EQ(abs_it->second, SubresourceFilterLevel::ENFORCE);
+
+  CheckSuccessTestLogs(
+      /*expected_prefix_count=*/1,
+      /*expected_threat_info_size=*/2,
+      /*expected_found_unmatched_full_hashes=*/false);
+}
+
 TEST_F(V5GetHashProtocolManagerTest, GetFullHashes_AllThreatTypes) {
   struct TestCase {
     V5::ThreatType v5_type;

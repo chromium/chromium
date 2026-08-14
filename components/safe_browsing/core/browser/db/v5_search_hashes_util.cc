@@ -35,19 +35,30 @@ std::optional<ParseFailure> EvaluateNetworkResult(int net_error,
   return std::nullopt;
 }
 
-ThreatMetadata GetThreatMetadata(const V5::FullHash::FullHashDetail& detail) {
-  ThreatMetadata metadata;
+void AddToSubresourceFilterMetadata(
+    ThreatMetadata* subresource_filter_metadata,
+    const V5::FullHash::FullHashDetail& detail) {
   SubresourceFilterLevel level =
       std::ranges::contains(detail.attributes(), V5::ThreatAttribute::CANARY)
           ? SubresourceFilterLevel::WARN
           : SubresourceFilterLevel::ENFORCE;
   if (detail.threat_type() == V5::ThreatType::ABUSIVE_EXPERIENCE_VIOLATION) {
-    metadata.subresource_filter_match[SubresourceFilterType::ABUSIVE] = level;
+    auto it = subresource_filter_metadata->subresource_filter_match.find(
+        SubresourceFilterType::ABUSIVE);
+    if (it == subresource_filter_metadata->subresource_filter_match.end() ||
+        level > it->second) {
+      subresource_filter_metadata
+          ->subresource_filter_match[SubresourceFilterType::ABUSIVE] = level;
+    }
   } else if (detail.threat_type() == V5::ThreatType::BETTER_ADS_VIOLATION) {
-    metadata.subresource_filter_match[SubresourceFilterType::BETTER_ADS] =
-        level;
+    auto it = subresource_filter_metadata->subresource_filter_match.find(
+        SubresourceFilterType::BETTER_ADS);
+    if (it == subresource_filter_metadata->subresource_filter_match.end() ||
+        level > it->second) {
+      subresource_filter_metadata
+          ->subresource_filter_match[SubresourceFilterType::BETTER_ADS] = level;
+    }
   }
-  return metadata;
 }
 
 int GetThreatSeverity(const V5::FullHash::FullHashDetail& detail) {
@@ -177,14 +188,18 @@ SBThreatType MapFullHashDetailToSbThreatType(
 ThreatResult DetermineMostSevereThreat(
     const std::vector<const V5::FullHash::FullHashDetail*>& filtered_details) {
   ThreatResult result;
+  ThreatMetadata subresource_filter_metadata;
   for (const auto* detail_ptr : filtered_details) {
     const auto& detail = *detail_ptr;
     int severity = GetThreatSeverity(detail);
     if (severity < result.threat_severity) {
       result.threat_severity = severity;
       result.threat_type = MapFullHashDetailToSbThreatType(detail);
-      result.metadata = GetThreatMetadata(detail);
     }
+    AddToSubresourceFilterMetadata(&subresource_filter_metadata, detail);
+  }
+  if (result.threat_type == SBThreatType::SB_THREAT_TYPE_SUBRESOURCE_FILTER) {
+    result.metadata = std::move(subresource_filter_metadata);
   }
   return result;
 }
