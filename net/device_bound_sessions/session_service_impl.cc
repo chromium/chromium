@@ -312,6 +312,7 @@ void SessionServiceImpl::OnGetCookiesForPrewarm(
               .trigger = RefreshTrigger::kProactive,
               .isolation_info =
                   net::IsolationInfo::CreateForInternalRequest(origin),
+              .site_for_cookies = net::SiteForCookies::FromOrigin(origin),
               .initiator = origin,
               .priority =
                   unexportable_keys::BackgroundTaskPriority::kBestEffort,
@@ -395,6 +396,7 @@ void SessionServiceImpl::RegisterBoundSession(
     OnAccessCallback on_access_callback,
     RegistrationFetcherParam registration_params,
     const IsolationInfo& isolation_info,
+    const net::SiteForCookies& site_for_cookies,
     const NetLogWithSource& net_log,
     const std::optional<url::Origin>& original_request_initiator) {
   if (registration_params.provider_session_id().has_value()) {
@@ -416,23 +418,22 @@ void SessionServiceImpl::RegisterBoundSession(
         std::move(provider_key_thumbprint), on_access_callback,
         base::BindOnce(&SessionServiceImpl::RegisterBoundSessionInternal,
                        weak_factory_.GetWeakPtr(), on_access_callback,
-                       std::move(registration_params),
-                       std::move(isolation_info), std::move(net_log),
-                       std::move(original_request_initiator)));
+                       std::move(registration_params), isolation_info,
+                       site_for_cookies, net_log, original_request_initiator));
     return;
   }
 
-  RegisterBoundSessionInternal(std::move(on_access_callback),
-                               std::move(registration_params),
-                               std::move(isolation_info), std::move(net_log),
-                               std::move(original_request_initiator),
-                               /*federated_provider_session=*/nullptr);
+  RegisterBoundSessionInternal(
+      std::move(on_access_callback), std::move(registration_params),
+      isolation_info, site_for_cookies, net_log, original_request_initiator,
+      /*federated_provider_session=*/nullptr);
 }
 
 void SessionServiceImpl::RegisterBoundSessionInternal(
     OnAccessCallback on_access_callback,
     RegistrationFetcherParam registration_params,
     const IsolationInfo& isolation_info,
+    const net::SiteForCookies& site_for_cookies,
     const NetLogWithSource& net_log,
     const std::optional<url::Origin>& original_request_initiator,
     base::expected<Session*, SessionError> federated_provider_session) {
@@ -472,7 +473,7 @@ void SessionServiceImpl::RegisterBoundSessionInternal(
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
           request_params, *this, key_service_.get(), context_.get(),
-          isolation_info, net_log_source_for_registration,
+          isolation_info, site_for_cookies, net_log_source_for_registration,
           original_request_initiator,
           unexportable_keys::BackgroundTaskPriority::kBestEffort);
   RegistrationFetcher* fetcher_raw = fetcher.get();
@@ -770,6 +771,7 @@ void SessionServiceImpl::DeferRequestForRefresh(
       {
           .trigger = RefreshTrigger::kMissingCookie,
           .isolation_info = request.isolation_info(),
+          .site_for_cookies = request.site_for_cookies(),
           .initiator = request.initiator(),
           .priority = unexportable_keys::BackgroundTaskPriority::kUserBlocking,
           .access_callback = request.device_bound_session_access_callback(),
@@ -1546,6 +1548,7 @@ void SessionServiceImpl::RefreshSessionInternal(
 
       req_it->triggered_refresh = true;
       params.isolation_info = req_it->request->isolation_info();
+      params.site_for_cookies = req_it->request->site_for_cookies();
       params.initiator = req_it->request->initiator();
       params.access_callback =
           req_it->request->device_bound_session_access_callback();
@@ -1569,8 +1572,8 @@ void SessionServiceImpl::RefreshSessionInternal(
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
           registration_param, *this, key_service_.get(), context_.get(),
-          params.isolation_info, net_log_source_for_refresh, params.initiator,
-          params.priority);
+          params.isolation_info, params.site_for_cookies,
+          net_log_source_for_refresh, params.initiator, params.priority);
   RegistrationFetcher* fetcher_raw = fetcher.get();
   registration_fetchers_.insert(std::move(fetcher));
   fetcher_raw->StartFetchWithExistingKey(registration_param, *key_id,
@@ -1691,6 +1694,7 @@ void SessionServiceImpl::MaybeStartProactiveRefresh(
       {
           .trigger = RefreshTrigger::kProactive,
           .isolation_info = request.isolation_info(),
+          .site_for_cookies = request.site_for_cookies(),
           .initiator = request.initiator(),
           .priority = unexportable_keys::BackgroundTaskPriority::kBestEffort,
           .access_callback = per_request_callback,
@@ -1717,7 +1721,8 @@ void SessionServiceImpl::HandleResponseHeaders(
   for (auto& param : params) {
     RegisterBoundSession(request.device_bound_session_access_callback(),
                          std::move(param), request.isolation_info(),
-                         request.net_log(), request.initiator());
+                         request.site_for_cookies(), request.net_log(),
+                         request.initiator());
   }
 
   // If response header Sec-Session-Challenge is present, for each header

@@ -210,6 +210,7 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
       unexportable_keys::UnexportableKeyService& key_service,
       const URLRequestContext* context,
       const IsolationInfo& isolation_info,
+      const net::SiteForCookies& site_for_cookies,
       std::optional<NetLogSource> net_log_source,
       const std::optional<url::Origin>& original_request_initiator,
       unexportable_keys::BackgroundTaskPriority priority)
@@ -219,6 +220,7 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
         key_service_(key_service),
         context_(context),
         isolation_info_(isolation_info),
+        site_for_cookies_(site_for_cookies),
         net_log_source_(std::move(net_log_source)),
         original_request_initiator_(original_request_initiator),
         priority_(priority) {}
@@ -622,7 +624,7 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
     request.set_method("POST");
     request.SetLoadFlags(LOAD_DISABLE_CACHE);
 
-    request.set_site_for_cookies(isolation_info_.site_for_cookies());
+    request.set_site_for_cookies(site_for_cookies_);
     request.set_initiator(original_request_initiator_);
     request.set_isolation_info(isolation_info_);
 
@@ -934,6 +936,7 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
       attestation_key_id_;
   raw_ptr<const URLRequestContext> context_;
   IsolationInfo isolation_info_;
+  net::SiteForCookies site_for_cookies_;
   std::optional<net::NetLogSource> net_log_source_;
   std::optional<url::Origin> original_request_initiator_;
   const unexportable_keys::BackgroundTaskPriority priority_ =
@@ -964,14 +967,15 @@ std::unique_ptr<RegistrationFetcher> RegistrationFetcher::CreateFetcher(
     unexportable_keys::UnexportableKeyService& key_service,
     const URLRequestContext* context,
     const IsolationInfo& isolation_info,
+    const net::SiteForCookies& site_for_cookies,
     std::optional<NetLogSource> net_log_source,
     const std::optional<url::Origin>& original_request_initiator,
     unexportable_keys::BackgroundTaskPriority priority) {
   return std::make_unique<RegistrationFetcherImpl>(
       request_params.TakeRegistrationEndpoint(),
       request_params.TakeSessionIdentifier(), session_service, key_service,
-      context, isolation_info, net_log_source, original_request_initiator,
-      priority);
+      context, isolation_info, site_for_cookies, net_log_source,
+      original_request_initiator, priority);
 }
 
 void RegistrationFetcher::SetFetcherForTesting(FetcherType* func) {

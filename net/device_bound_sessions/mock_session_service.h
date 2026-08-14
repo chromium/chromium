@@ -29,6 +29,7 @@ class SessionServiceMock : public SessionService {
               (OnAccessCallback on_access_callback,
                RegistrationFetcherParam registration_params,
                const IsolationInfo& isolation_info,
+               const net::SiteForCookies& site_for_cookies,
                const NetLogWithSource& net_log,
                const std::optional<url::Origin>& original_request_initiator),
               (override));

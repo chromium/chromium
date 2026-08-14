@@ -219,7 +219,8 @@ TEST_F(DeviceBoundSessionManagerTest, ObserverNotifiesChangeOnlyOnSite) {
   service().RegisterBoundSession(
       base::NullCallback(), std::move(fetch_param),
       net::IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
-      net::NetLogWithSource(), /*original_request_initiator=*/std::nullopt);
+      net::SiteForCookies(), net::NetLogWithSource(),
+      /*original_request_initiator=*/std::nullopt);
 
   observer.WaitForNotification();
 

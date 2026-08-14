@@ -29,6 +29,7 @@
 namespace net {
 class FirstPartySetMetadata;
 class IsolationInfo;
+class SiteForCookies;
 class URLRequestContext;
 class HttpRequestHeaders;
 class SSLCertRequestInfo;
@@ -139,6 +140,7 @@ class NET_EXPORT SessionService {
       OnAccessCallback on_access_callback,
       RegistrationFetcherParam registration_params,
       const IsolationInfo& isolation_info,
+      const net::SiteForCookies& site_for_cookies,
       const NetLogWithSource& net_log,
       const std::optional<url::Origin>& original_request_initiator) = 0;
 

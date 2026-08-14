@@ -8,12 +8,21 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/location_bar/location_bar.h"
+#include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/base/web_feature_histogram_tester.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
+#include "components/search_engines/template_url.h"
+#include "components/search_engines/template_url_data.h"
+#include "components/search_engines/template_url_service.h"
 #include "components/unexportable_keys/features.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -662,5 +671,79 @@ IN_PROC_BROWSER_TEST_F(DeviceBoundSessionBrowserTest,
   EXPECT_EQ("Failed to fetch", result.GetString());
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+// Regression test for https://crbug.com/545350631.
+// Verifies that when an omnibox query triggers a DBSC refresh (where
+// IsolationInfo has an empty site_for_cookies, but the URLRequest has a valid
+// SiteForCookies), the refresh request includes same-site cookies and
+// successfully refreshes the session.
+IN_PROC_BROWSER_TEST_F(DeviceBoundSessionBrowserTest,
+                       OmniboxQueryWithExpiredCookieTriggersRefresh) {
+  content::WebContents* web_contents =
+      chrome_test_utils::GetActiveWebContents(this);
+
+  // Register a session.
+  {
+    base::test::TestFuture<SessionAccess> future;
+    DeviceBoundSessionAccessObserver observer(
+        web_contents, future.GetRepeatingCallback<const SessionAccess&>());
+    ASSERT_TRUE(NavigateToUrl(GetURL("/resource_triggered_dbsc_registration")));
+    ASSERT_TRUE(future.Wait());
+  }
+
+  ASSERT_THAT(GetCanonicalCookies(browser()
+                                      ->tab_strip_model()
+                                      ->GetActiveWebContents()
+                                      ->GetBrowserContext(),
+                                  GetURL("/dbsc_required")),
+              testing::Contains(net::MatchesCookieWithName("auth_cookie")));
+
+  // Configure default search engine with suggest URL in scope of the session.
+  TemplateURLService* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(browser()->GetProfile());
+  search_test_utils::WaitForTemplateURLServiceToLoad(template_url_service);
+
+  TemplateURLData data;
+  data.SetShortName(u"Test DSE");
+  data.SetKeyword(u"testdse");
+  data.SetURL(GetURL("/search?q={searchTerms}").spec());
+  data.suggestions_url = GetURL("/suggest?q={searchTerms}").spec();
+  TemplateURL* template_url =
+      template_url_service->Add(std::make_unique<TemplateURL>(data));
+  ASSERT_TRUE(template_url);
+  template_url_service->SetUserSelectedDefaultSearchProvider(template_url);
+
+  // Delete the auth cookie to force a refresh on the next request.
+  ASSERT_TRUE(
+      content::ExecJs(web_contents, "cookieStore.delete('auth_cookie')"));
+  ASSERT_THAT(GetCanonicalCookies(browser()
+                                      ->tab_strip_model()
+                                      ->GetActiveWebContents()
+                                      ->GetBrowserContext(),
+                                  GetURL("/dbsc_required")),
+              testing::Not(testing::Contains(
+                  net::MatchesCookieWithName("auth_cookie"))));
+
+  // Trigger an Omnibox autocomplete search suggestion request.
+  LocationBar* location_bar = browser()->GetFeatures().location_bar();
+  location_bar->FocusLocation(/*is_user_initiated=*/true,
+                              /*clear_focus_if_failed=*/false);
+  OmniboxView* omnibox_view = location_bar->GetOmniboxView();
+  omnibox_view->OnBeforePossibleChange();
+  omnibox_view->SetUserText(u"search_term");
+  omnibox_view->OnAfterPossibleChange(/*allow_keyword_ui_change=*/true);
+  ui_test_utils::WaitForAutocompleteDone(browser());
+
+  // The bound cookie should be restored via DBSC refresh.
+  EXPECT_THAT(GetCanonicalCookies(browser()
+                                      ->tab_strip_model()
+                                      ->GetActiveWebContents()
+                                      ->GetBrowserContext(),
+                                  GetURL("/dbsc_required")),
+              testing::Contains(net::MatchesCookieWithName("auth_cookie")));
+
+  // Navigating to an authenticated endpoint succeeds.
+  ASSERT_TRUE(NavigateToUrl(GetURL("/ensure_authenticated")));
+}
 
 }  // namespace
