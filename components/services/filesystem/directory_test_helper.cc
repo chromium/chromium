@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
@@ -36,6 +37,22 @@ class DirectoryTestHelper::BlockingState {
         std::move(receiver));
   }
 
+  void BindNewReadOnlyTempDirectory(
+      mojo::PendingReceiver<mojom::Directory> receiver) {
+    auto temp_dir = std::make_unique<base::ScopedTempDir>();
+    CHECK(temp_dir->CreateUniqueTempDir());
+    base::FilePath path = temp_dir->GetPath();
+    CHECK(base::WriteFile(path.AppendASCII("existing_file"), "hello world"));
+    CHECK(base::CreateDirectory(path.AppendASCII("existing_dir")));
+    CHECK(base::WriteFile(path.AppendASCII("existing_dir/sub_file"),
+                          "sub content"));
+    directories_.Add(
+        std::make_unique<DirectoryImpl>(
+            path, base::MakeRefCounted<SharedTempDir>(std::move(temp_dir)),
+            DirectoryImpl::AccessMode::kReadOnly),
+        std::move(receiver));
+  }
+
  private:
   mojo::UniqueReceiverSet<mojom::Directory> directories_;
 };
@@ -49,6 +66,13 @@ DirectoryTestHelper::~DirectoryTestHelper() = default;
 mojo::Remote<mojom::Directory> DirectoryTestHelper::CreateTempDir() {
   mojo::Remote<mojom::Directory> remote;
   blocking_state_.AsyncCall(&BlockingState::BindNewTempDirectory)
+      .WithArgs(remote.BindNewPipeAndPassReceiver());
+  return remote;
+}
+
+mojo::Remote<mojom::Directory> DirectoryTestHelper::CreateReadOnlyTempDir() {
+  mojo::Remote<mojom::Directory> remote;
+  blocking_state_.AsyncCall(&BlockingState::BindNewReadOnlyTempDirectory)
       .WithArgs(remote.BindNewPipeAndPassReceiver());
   return remote;
 }
