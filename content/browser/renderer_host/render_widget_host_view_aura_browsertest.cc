@@ -973,14 +973,17 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraHideCursorOnTypingBrowserTest,
   ASSERT_TRUE(cursor_manager->IsCursorVisible());
 
   auto* rwhva = GetRenderWidgetHostView();
-  ui::test::EventGenerator generator(rwhva->GetNativeView()->GetRootWindow());
+  aura::Window* native_view = rwhva->GetNativeView();
+  // Supplying the target view centers the pointer over it, ensuring generated
+  // mouse events are delivered to the renderer.
+  ui::test::EventGenerator generator(native_view->GetRootWindow(), native_view);
 
   // Typing a character hides the cursor.
   generator.PressAndReleaseKey(ui::VKEY_A, ui::EF_NONE);
   EXPECT_FALSE(cursor_manager->IsCursorVisible());
 
   // Moving the mouse restores the cursor.
-  generator.MoveMouseTo(rwhva->GetNativeView()->bounds().CenterPoint());
+  generator.MoveMouseBy(1, 0);
   EXPECT_TRUE(cursor_manager->IsCursorVisible());
 }
 
@@ -1020,15 +1023,16 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraHideCursorOnTypingBrowserTest,
   ASSERT_TRUE(cursor_manager->IsCursorVisible());
 
   auto* rwhva = GetRenderWidgetHostView();
-  ui::test::EventGenerator generator(rwhva->GetNativeView()->GetRootWindow());
+  aura::Window* native_view = rwhva->GetNativeView();
+  // Supplying the target view centers the pointer over it, ensuring generated
+  // mouse events are delivered to the renderer.
+  ui::test::EventGenerator generator(native_view->GetRootWindow(), native_view);
 
   // Type to hide the cursor.
   generator.PressAndReleaseKey(ui::VKEY_A, ui::EF_NONE);
   ASSERT_FALSE(cursor_manager->IsCursorVisible());
 
   // A click restores it.
-  generator.set_current_screen_location(
-      rwhva->GetNativeView()->bounds().CenterPoint());
   generator.ClickLeftButton();
   EXPECT_TRUE(cursor_manager->IsCursorVisible());
 }
@@ -1040,15 +1044,16 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraHideCursorOnTypingBrowserTest,
   ASSERT_TRUE(cursor_manager->IsCursorVisible());
 
   auto* rwhva = GetRenderWidgetHostView();
-  ui::test::EventGenerator generator(rwhva->GetNativeView()->GetRootWindow());
+  aura::Window* native_view = rwhva->GetNativeView();
+  // Supplying the target view centers the pointer over it, ensuring generated
+  // mouse events are delivered to the renderer.
+  ui::test::EventGenerator generator(native_view->GetRootWindow(), native_view);
 
   // Type to hide the cursor.
   generator.PressAndReleaseKey(ui::VKEY_A, ui::EF_NONE);
   ASSERT_FALSE(cursor_manager->IsCursorVisible());
 
   // A wheel scroll restores it.
-  generator.set_current_screen_location(
-      rwhva->GetNativeView()->bounds().CenterPoint());
   generator.MoveMouseWheel(0, -5);
   EXPECT_TRUE(cursor_manager->IsCursorVisible());
 }
