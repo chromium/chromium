@@ -2503,8 +2503,8 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, UaFOnWebContentsDestr
             // Close the WebContents during the callback execution.
             // This destroys the web contents, triggering ContentAnalysisDialogController::WebContentsDestroyed()
             // which deletes the ContentAnalysisDelegate instance we are currently inside.
-            int index = browser()->tab_strip_model()->GetIndexOfWebContents(contents);
-            browser()->tab_strip_model()->CloseWebContentsAt(index, TabCloseTypes::CLOSE_USER_GESTURE);
+            browser()->tab_strip_model()->CloseWebContents(
+                contents, TabCloseTypes::CLOSE_USER_GESTURE);
             quit_closure.Run();
           }),
       DeepScanAccessPoint::UPLOAD);

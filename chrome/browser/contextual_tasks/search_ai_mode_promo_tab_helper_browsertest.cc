@@ -300,10 +300,8 @@ IN_PROC_BROWSER_TEST_F(SearchAiModePromoTabHelperBrowserTest,
   // The helper will still be alive for now, but when the users interacts
   // with the promo it will detect the initiator's destruction and will be
   // destroyed.
-  int source_index =
-      browser()->tab_strip_model()->GetIndexOfWebContents(source_contents);
-  browser()->tab_strip_model()->CloseWebContentsAt(
-      source_index, TabCloseTypes::CLOSE_USER_GESTURE);
+  browser()->tab_strip_model()->CloseWebContents(
+      source_contents, TabCloseTypes::CLOSE_USER_GESTURE);
 
   // Verify helper is alive (listening for sign-in).
   ASSERT_TRUE(SearchAiModePromoTabHelper::FromWebContents(new_contents));

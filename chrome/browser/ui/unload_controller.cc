@@ -751,15 +751,13 @@ void UnloadController::OnCustomConfirmationClosed(
                 browser = tab->GetBrowserWindowInterface();
               }
               if (browser && browser->GetTabStripModel()) {
-                int current_index =
-                    browser->GetTabStripModel()->GetIndexOfWebContents(
-                        web_contents.get());
-                if (current_index != TabStripModel::kNoTab) {
+                if (browser->GetTabStripModel()->GetIndexOfWebContents(
+                        web_contents.get()) != TabStripModel::kNoTab) {
                   // Note: Once the user has confirmed once via the custom
                   // confirmation dialog, the tab closes directly without any
                   // additional prompts.
-                  browser->GetTabStripModel()->CloseWebContentsAt(
-                      current_index, TabCloseTypes::CLOSE_USER_GESTURE);
+                  browser->GetTabStripModel()->CloseWebContents(
+                      web_contents.get(), TabCloseTypes::CLOSE_USER_GESTURE);
                 }
               }
             },

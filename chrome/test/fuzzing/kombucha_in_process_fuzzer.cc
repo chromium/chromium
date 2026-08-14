@@ -176,10 +176,9 @@ void KombuchaInProcessFuzzer::CleanInProcessBrowserState() {
   }
 
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
-  for (int i = 1; i < tab_strip_model->count(); i++) {
+  while (tab_strip_model->count() > 1) {
     auto* contents = tab_strip_model->GetActiveWebContents();
-    int idx = tab_strip_model->GetIndexOfWebContents(contents);
-    tab_strip_model->CloseWebContentsAt(idx, TabCloseTypes::CLOSE_NONE);
+    tab_strip_model->CloseWebContents(contents, TabCloseTypes::CLOSE_NONE);
   }
 }
 

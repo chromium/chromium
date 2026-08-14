@@ -3286,14 +3286,9 @@ class PageLoadMetricsBrowserTestTerminatedPage
     // Get the total count of tabs.
     int tab_count = tab_strip_model->count();
 
-    // Get the tab index of the given WebContents.
-    int tab_index = tab_strip_model->GetIndexOfWebContents(contents);
-    // Expect the tab index of the given WebContents is found.
-    EXPECT_NE(tab_index, TabStripModel::kNoTab);
-
     // Close the tab corresponding to the given WebContents.
-    tab_strip_model->CloseWebContentsAt(tab_index,
-                                        TabCloseTypes::CLOSE_USER_GESTURE);
+    tab_strip_model->CloseWebContents(contents,
+                                      TabCloseTypes::CLOSE_USER_GESTURE);
     // Verify tab is closed.
     EXPECT_EQ(tab_strip_model->count(), tab_count - 1);
   }

@@ -319,9 +319,8 @@ IN_PROC_BROWSER_TEST_F(GlicActorActionExecutionFunctionalBrowserTest,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   // Close the active web contents.
-  browser()->tab_strip_model()->CloseWebContentsAt(
-      browser()->tab_strip_model()->GetIndexOfWebContents(web_contents()),
-      TabCloseTypes::CLOSE_NONE);
+  browser()->tab_strip_model()->CloseWebContents(web_contents(),
+                                                 TabCloseTypes::CLOSE_NONE);
 
   // After an acting tab is closed, the task should be cancelled and the
   // corresponding action have a result code of kTaskWentAway.

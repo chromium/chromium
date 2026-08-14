@@ -736,11 +736,8 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromManifestBrowserTest,
 
   // Close the initiating tab.
   content::WebContentsDestroyedWatcher destroyed_watcher(install_wc);
-  const int install_tab_index =
-      browser()->tab_strip_model()->GetIndexOfWebContents(install_wc);
-  ASSERT_NE(install_tab_index, TabStripModel::kNoTab);
-  browser()->tab_strip_model()->CloseWebContentsAt(
-      install_tab_index, TabCloseTypes::CLOSE_USER_GESTURE);
+  browser()->tab_strip_model()->CloseWebContents(
+      install_wc, TabCloseTypes::CLOSE_USER_GESTURE);
   destroyed_watcher.Wait();
   dialog_destroyed.Wait();
 

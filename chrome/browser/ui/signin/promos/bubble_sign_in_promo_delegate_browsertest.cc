@@ -266,11 +266,9 @@ IN_PROC_BROWSER_TEST_F(BubbleSignInPromoDelegateTest,
           browser(), signin_metrics::AccessPoint::kSendTabToSelfPromo);
   ASSERT_TRUE(sign_in_tab);
 
-  int tab_index =
-      browser()->tab_strip_model()->GetIndexOfWebContents(sign_in_tab);
   content::WebContentsDestroyedWatcher watcher(sign_in_tab);
-  browser()->tab_strip_model()->CloseWebContentsAt(
-      tab_index, TabCloseTypes::CLOSE_USER_GESTURE);
+  browser()->tab_strip_model()->CloseWebContents(
+      sign_in_tab, TabCloseTypes::CLOSE_USER_GESTURE);
   watcher.Wait();
 
   // The future should NOT be ready since the tab was closed without sign-in.

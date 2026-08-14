@@ -882,8 +882,6 @@ IN_PROC_BROWSER_TEST_F(MediaStreamDevicesControllerTest,
       permissions::PermissionRequestManager::ACCEPT_ALL);
 
   content::WebContents* prompt_contents = GetWebContents();
-  const int prompt_contents_index =
-      browser()->tab_strip_model()->GetIndexOfWebContents(prompt_contents);
 
   // Now request permissions, but before the request is handled, destroy the
   // tab.
@@ -904,8 +902,8 @@ IN_PROC_BROWSER_TEST_F(MediaStreamDevicesControllerTest,
   // destructor, it has to be destroyed before the tab.
   prompt_factory_.reset();
   int previous_tab_count = browser()->tab_strip_model()->count();
-  browser()->tab_strip_model()->CloseWebContentsAt(
-      prompt_contents_index, TabCloseTypes::CLOSE_USER_GESTURE);
+  browser()->tab_strip_model()->CloseWebContents(
+      prompt_contents, TabCloseTypes::CLOSE_USER_GESTURE);
   EXPECT_EQ(previous_tab_count - 1, browser()->tab_strip_model()->count());
   base::RunLoop().RunUntilIdle();
 

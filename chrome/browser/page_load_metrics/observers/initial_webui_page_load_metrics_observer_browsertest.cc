@@ -265,9 +265,7 @@ class InitialWebUIPageLoadMetricsObserverBrowserTest
     }
 
     if (close_tab) {
-      int index =
-          browser()->tab_strip_model()->GetIndexOfWebContents(raw_contents);
-      browser()->tab_strip_model()->CloseWebContentsAt(index, 0);
+      browser()->tab_strip_model()->CloseWebContents(raw_contents, 0);
     }
     return raw_contents;
   }
@@ -335,8 +333,7 @@ IN_PROC_BROWSER_TEST_F(InitialWebUIPageLoadMetricsObserverBrowserTest,
   }
 
   // Manually close the tab now to trigger page end metrics.
-  int index = browser()->tab_strip_model()->GetIndexOfWebContents(web_contents);
-  browser()->tab_strip_model()->CloseWebContentsAt(index, 0);
+  browser()->tab_strip_model()->CloseWebContents(web_contents, 0);
 
   auto page_load_entries = GetEntriesForUrl("InitialWebUIPageLoad", url);
 
@@ -533,8 +530,7 @@ IN_PROC_BROWSER_TEST_F(InitialWebUIPageLoadMetricsObserverBrowserTest,
   metrics_waiter->Wait();
 
   // Close the tab to trigger OnComplete and OnHidden.
-  int index = browser()->tab_strip_model()->GetIndexOfWebContents(bg_contents);
-  browser()->tab_strip_model()->CloseWebContentsAt(index, 0);
+  browser()->tab_strip_model()->CloseWebContents(bg_contents, 0);
 
   // Verify InitialWebUIPageLoad has Page Load, Renderer Usage, Timing, and
   // Page End metrics. Note that paint metrics are not recorded for background
@@ -692,8 +688,7 @@ IN_PROC_BROWSER_TEST_F(InitialWebUIPageLoadMetricsObserverBrowserTest,
   chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
   reload_observer.Wait();
 
-  int index = browser()->tab_strip_model()->GetIndexOfWebContents(contents);
-  browser()->tab_strip_model()->CloseWebContentsAt(index, 0);
+  browser()->tab_strip_model()->CloseWebContents(contents, 0);
 
   // We expect entries for both the original load and the reload.
   auto page_load_entries = GetEntriesForUrl("InitialWebUIPageLoad", url);
@@ -849,8 +844,7 @@ IN_PROC_BROWSER_TEST_F(InitialWebUIPageLoadMetricsObserverBrowserTest,
   observer->FlushMetricsOnAppEnterBackground();
 
   // Close the WebContents to finish recording and upload UKM
-  int index = browser()->tab_strip_model()->GetIndexOfWebContents(contents);
-  browser()->tab_strip_model()->CloseWebContentsAt(index, 0);
+  browser()->tab_strip_model()->CloseWebContents(contents, 0);
 
   // Verify that PageEndReason of END_APP_ENTER_BACKGROUND (value 6) is logged
   auto entries = GetEntriesForUrl("InitialWebUIPageLoad", url);
@@ -916,9 +910,7 @@ IN_PROC_BROWSER_TEST_F(InitialWebUIPageLoadMetricsObserverBrowserTest,
   // Close the tab. This triggers OnComplete and RecordPageEndMetrics.
   // Since it is currently in foreground, the final foreground session will be
   // added to TotalForegroundDuration.
-  int index =
-      browser()->tab_strip_model()->GetIndexOfWebContents(active_contents);
-  browser()->tab_strip_model()->CloseWebContentsAt(index, 0);
+  browser()->tab_strip_model()->CloseWebContents(active_contents, 0);
 
   entries = GetEntriesForUrl("InitialWebUIPageLoad", url);
   EXPECT_THAT(entries,

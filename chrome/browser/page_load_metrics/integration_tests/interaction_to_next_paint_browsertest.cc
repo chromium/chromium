@@ -459,15 +459,9 @@ IN_PROC_BROWSER_TEST_F(InteractionToNextPaintTest,
   // Close the initial tab.
   waiter->AddOnCompleteCalledExpectation();
 
-  // Get the tab index of the given WebContents.
-  int tab_index = tab_strip_model->GetIndexOfWebContents(initial_web_contents);
-
-  // Expect the tab index of the given WebContents is found.
-  EXPECT_NE(tab_index, TabStripModel::kNoTab);
-
   // Close the tab.
-  tab_strip_model->CloseWebContentsAt(tab_index,
-                                      TabCloseTypes::CLOSE_USER_GESTURE);
+  tab_strip_model->CloseWebContents(initial_web_contents,
+                                    TabCloseTypes::CLOSE_USER_GESTURE);
 
   waiter->Wait();
 

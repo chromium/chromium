@@ -178,14 +178,13 @@ void LockedSessionWindowTracker::MaybeCloseWebContents(
     return;
   }
   if (browser_->GetWebContentsCount() > 1) {
-    int index =
-        browser_->GetBrowser().GetTabStripModel()->GetIndexOfWebContents(tab);
-    if (index == TabStripModel::kNoTab) {
+    if (browser_->GetBrowser().GetTabStripModel()->GetIndexOfWebContents(tab) ==
+        TabStripModel::kNoTab) {
       return;
     }
     on_task_blocklist()->RemoveChildFilter(tab);
-    browser_->GetBrowser().GetTabStripModel()->CloseWebContentsAt(
-        index, TabCloseTypes::CLOSE_NONE);
+    browser_->GetBrowser().GetTabStripModel()->CloseWebContents(
+        tab, TabCloseTypes::CLOSE_NONE);
   }
 }
 

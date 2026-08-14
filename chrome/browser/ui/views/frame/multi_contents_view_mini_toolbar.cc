@@ -300,16 +300,14 @@ void MultiContentsViewMiniToolbar::CloseCurrentView() {
       base::UserMetricsAction("DesktopSplitView_MiniToolbarCloseView"));
 
   TabStripModel* const model = browser_view_->browser()->tab_strip_model();
-  const int index = model->GetIndexOfWebContents(web_contents_);
-
-  if (index == TabStripModel::kNoTab) {
+  if (model->GetIndexOfWebContents(web_contents_) == TabStripModel::kNoTab) {
     // Only close the WebContents if it exists. crbug.com/459828484
     return;
   }
 
-  model->CloseWebContentsAt(index,
-                            TabCloseTypes::CLOSE_USER_GESTURE |
-                                TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
+  model->CloseWebContents(web_contents_,
+                          TabCloseTypes::CLOSE_USER_GESTURE |
+                              TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
 }
 
 BEGIN_METADATA(MultiContentsViewMiniToolbar)

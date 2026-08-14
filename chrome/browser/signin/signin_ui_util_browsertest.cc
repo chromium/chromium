@@ -407,9 +407,8 @@ IN_PROC_BROWSER_TEST_P(SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos,
     EXPECT_EQ(signin::GetChromeSyncURLForDice(
                   {kMainEmail, GURL(google_util::kGoogleHomepageURL)}),
               active_contents->GetVisibleURL());
-    tab_strip->CloseWebContentsAt(
-        tab_strip->GetIndexOfWebContents(active_contents),
-        TabCloseTypes::CLOSE_USER_GESTURE);
+    tab_strip->CloseWebContents(active_contents,
+                                TabCloseTypes::CLOSE_USER_GESTURE);
   }
 }
 
@@ -517,9 +516,8 @@ IN_PROC_BROWSER_TEST_F(SigninUiUtilTest, SignInWithAlreadySignedInAccount) {
   content::WebContents* active_contents = tab_strip->GetActiveWebContents();
   ASSERT_TRUE(active_contents);
   EXPECT_EQ(GURL("https://example.com"), active_contents->GetVisibleURL());
-  tab_strip->CloseWebContentsAt(
-      tab_strip->GetIndexOfWebContents(active_contents),
-      TabCloseTypes::CLOSE_USER_GESTURE);
+  tab_strip->CloseWebContents(active_contents,
+                              TabCloseTypes::CLOSE_USER_GESTURE);
 }
 
 IN_PROC_BROWSER_TEST_F(SigninUiUtilTest, SignInWithAccountThatNeedsReauth) {
@@ -554,9 +552,8 @@ IN_PROC_BROWSER_TEST_F(SigninUiUtilTest, SignInWithAccountThatNeedsReauth) {
   EXPECT_EQ(signin::GetAddAccountURLForDice(
                 kMainEmail, GURL(google_util::kGoogleHomepageURL)),
             active_contents->GetVisibleURL());
-  tab_strip->CloseWebContentsAt(
-      tab_strip->GetIndexOfWebContents(active_contents),
-      TabCloseTypes::CLOSE_USER_GESTURE);
+  tab_strip->CloseWebContents(active_contents,
+                              TabCloseTypes::CLOSE_USER_GESTURE);
 }
 
 IN_PROC_BROWSER_TEST_F(SigninUiUtilTest, SignInForNewAccountWithNoTab) {

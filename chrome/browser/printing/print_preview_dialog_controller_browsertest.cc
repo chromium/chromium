@@ -823,8 +823,7 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewDialogControllerBrowserTest,
   EXPECT_EQ(3, tab_strip_model->count());
 
   // Close `web_contents_1`'s tab
-  int tab_1_index = tab_strip_model->GetIndexOfWebContents(web_contents_1);
-  tab_strip_model->CloseWebContentsAt(tab_1_index, 0);
+  tab_strip_model->CloseWebContents(web_contents_1, 0);
   EXPECT_EQ(2, tab_strip_model->count());
 
   // Simulate a crash of the render process host for `web_contents_2`. Print

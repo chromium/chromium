@@ -109,9 +109,8 @@ IN_PROC_BROWSER_TEST_F(JavaScriptDialogTest,
   runner->Run();
 
   // Tab two is closed while the dialog is up.
-  int tab2_index = browser()->tab_strip_model()->GetIndexOfWebContents(tab2);
-  browser()->tab_strip_model()->CloseWebContentsAt(tab2_index,
-                                                   TabCloseTypes::CLOSE_NONE);
+  browser()->tab_strip_model()->CloseWebContents(tab2,
+                                                 TabCloseTypes::CLOSE_NONE);
 
   // Try reloading tab one.
   tab1->GetController().Reload(content::ReloadType::NORMAL, false);
@@ -144,9 +143,8 @@ IN_PROC_BROWSER_TEST_F(JavaScriptDialogTest,
   runner->Run();
 
   // The tab is closed while the dialog is up.
-  int tab_index = browser()->tab_strip_model()->GetIndexOfWebContents(tab);
-  browser()->tab_strip_model()->CloseWebContentsAt(tab_index,
-                                                   TabCloseTypes::CLOSE_NONE);
+  browser()->tab_strip_model()->CloseWebContents(tab,
+                                                 TabCloseTypes::CLOSE_NONE);
 
   // No crash is good news.
 }

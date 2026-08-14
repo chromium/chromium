@@ -46,10 +46,8 @@ class PasswordReuseModalWarningTest : public DialogBrowserTest {
 
   void CloseActiveWebContents() {
     TabStripModel* tab_strip_model = browser()->tab_strip_model();
-    tab_strip_model->CloseWebContentsAt(
-        tab_strip_model->GetIndexOfWebContents(
-            tab_strip_model->GetActiveWebContents()),
-        TabCloseTypes::CLOSE_NONE);
+    tab_strip_model->CloseWebContents(tab_strip_model->GetActiveWebContents(),
+                                      TabCloseTypes::CLOSE_NONE);
   }
 
   void DialogCallback(WarningAction action) { latest_user_action_ = action; }

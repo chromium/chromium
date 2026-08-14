@@ -217,9 +217,8 @@ IN_PROC_BROWSER_TEST_F(AddressBubblesControllerBrowserTest,
                             Property(&profile_ref::has_value, false)));
   // Close controller tab.
   int previous_tab_count = browser()->tab_strip_model()->count();
-  browser()->tab_strip_model()->CloseWebContentsAt(
-      tab_strip_model->GetIndexOfWebContents(controller_web_contents),
-      TabCloseTypes::CLOSE_USER_GESTURE);
+  browser()->tab_strip_model()->CloseWebContents(
+      controller_web_contents, TabCloseTypes::CLOSE_USER_GESTURE);
   EXPECT_EQ(previous_tab_count - 1, browser()->tab_strip_model()->count());
 }
 
