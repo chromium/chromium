@@ -40,7 +40,7 @@ class AsyncMemoryConsumerRegistration::MainThread : public MemoryConsumer {
 
     // The memory limit could already have been set by a policy. The
     // consumer implementation on the other sequence must be notified.
-    if (memory_limit() != MemoryLimit::Default()) {
+    if (memory_limit() != base::MemoryConsumer::kDefaultMemoryLimit) {
       consumer_task_runner_->PostTask(
           FROM_HERE,
           BindOnce(&AsyncMemoryConsumerRegistration::NotifyUpdateMemoryLimit,
@@ -132,10 +132,9 @@ AsyncMemoryConsumerRegistration::~AsyncMemoryConsumerRegistration() {
   }
 }
 
-void AsyncMemoryConsumerRegistration::NotifyUpdateMemoryLimit(
-    MemoryLimit memory_limit) {
+void AsyncMemoryConsumerRegistration::NotifyUpdateMemoryLimit(int percentage) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  consumer_->UpdateMemoryLimit(memory_limit);
+  consumer_->UpdateMemoryLimit(percentage);
 }
 
 void AsyncMemoryConsumerRegistration::NotifyReleaseMemory() {

@@ -11,7 +11,6 @@
 #include "base/compiler_specific.h"
 #include "base/memory_coordinator/memory_consumer.h"
 #include "base/memory_coordinator/memory_coordinator_features.h"
-#include "base/memory_coordinator/memory_limit.h"
 #include "base/memory_coordinator/traits.h"
 #include "base/memory_coordinator/utils.h"
 #include "base/numerics/safe_conversions.h"
@@ -293,8 +292,7 @@ void VulkanInProcessContextProvider::OnUpdateMemoryLimit() {
     // We cap the ratio to 1.0 to ensure that we never exceed the
     // user-provided sync_cpu_memory_limit, even if the memory coordinator
     // allows for more memory usage (ratio > 1.0).
-    base::MemoryLimit capped_memory_limit =
-        std::min(base::MemoryLimit::Default(), memory_limit());
+    int capped_memory_limit = std::min(100, memory_limit());
     uint32_t target_limit =
         base::ScaleByMemoryLimit(*sync_cpu_memory_limit_, capped_memory_limit);
 
@@ -321,8 +319,7 @@ void VulkanInProcessContextProvider::OnReleaseMemory() {
     // We cap the ratio to 1.0 to ensure that we never exceed the
     // user-provided sync_cpu_memory_limit, even if the memory coordinator
     // allows for more memory usage (ratio > 1.0).
-    base::MemoryLimit capped_memory_limit =
-        std::min(base::MemoryLimit::Default(), memory_limit());
+    int capped_memory_limit = std::min(100, memory_limit());
     uint32_t new_sync_cpu_memory_limit =
         base::ScaleByMemoryLimit(*sync_cpu_memory_limit_, capped_memory_limit);
     active_sync_cpu_memory_limit_.store(new_sync_cpu_memory_limit,

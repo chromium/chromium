@@ -39,21 +39,20 @@ TEST(MemoryConsumerTest, UpdateMemoryLimit) {
   MemoryConsumerRegistration registration("consumer", kTestTraits, &consumer);
 
   // Initial limit value of 100.
-  EXPECT_EQ(consumer.memory_limit(), MemoryLimit::Default());
-  EXPECT_EQ(consumer.memory_limit().percent(), 100);
+  EXPECT_EQ(consumer.memory_limit(), 100);
   EXPECT_DOUBLE_EQ(consumer.memory_limit_ratio(), 1.0);
 
   // Try a couple values.
   EXPECT_CALL(consumer, OnUpdateMemoryLimit());
   test_registry.NotifyUpdateMemoryLimit(20);
 
-  EXPECT_EQ(consumer.memory_limit(), MemoryLimit::FromPercent(20));
+  EXPECT_EQ(consumer.memory_limit(), 20);
   EXPECT_DOUBLE_EQ(consumer.memory_limit_ratio(), 0.2);
 
   EXPECT_CALL(consumer, OnUpdateMemoryLimit());
   test_registry.NotifyUpdateMemoryLimit(150);
 
-  EXPECT_EQ(consumer.memory_limit(), MemoryLimit::FromPercent(150));
+  EXPECT_EQ(consumer.memory_limit(), 150);
   EXPECT_DOUBLE_EQ(consumer.memory_limit_ratio(), 1.5);
 }
 

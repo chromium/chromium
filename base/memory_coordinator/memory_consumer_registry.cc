@@ -22,16 +22,16 @@ void MemoryConsumerRegistry::NotifyReleaseMemory(MemoryConsumer* consumer) {
 }
 
 void MemoryConsumerRegistry::NotifyUpdateMemoryLimit(MemoryConsumer* consumer,
-                                                     MemoryLimit memory_limit) {
+                                                     int percentage) {
   CHECK(consumer);
-  consumer->UpdateMemoryLimit(memory_limit);
+  consumer->UpdateMemoryLimit(percentage);
 }
 
 void MemoryConsumerRegistry::NotifyUpdateMemoryLimitNoNotification(
     MemoryConsumer* consumer,
-    MemoryLimit memory_limit) {
+    int percentage) {
   CHECK(consumer);
-  consumer->UpdateMemoryLimitNoNotification(memory_limit);
+  consumer->UpdateMemoryLimitNoNotification(percentage);
 }
 
 // static

@@ -30,15 +30,17 @@ void MemoryConsumer::ReleaseMemory() {
   OnReleaseMemory();
 }
 
-void MemoryConsumer::UpdateMemoryLimit(MemoryLimit memory_limit) {
+void MemoryConsumer::UpdateMemoryLimit(int percentage) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  UpdateMemoryLimitNoNotification(memory_limit);
+  UpdateMemoryLimitNoNotification(percentage);
   OnUpdateMemoryLimit();
 }
 
-void MemoryConsumer::UpdateMemoryLimitNoNotification(MemoryLimit memory_limit) {
+void MemoryConsumer::UpdateMemoryLimitNoNotification(int percentage) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  memory_limit_ = memory_limit;
+  // The percentage can never be negative (but it can be higher than 100).
+  CHECK_GE(percentage, 0);
+  memory_limit_ = percentage;
 }
 
 // MemoryConsumerRegistration ---------------------------------------
@@ -109,8 +111,10 @@ void MemoryConsumerRegistration::OnBeforeMemoryConsumerRegistryDestroyed() {
   registry_ = nullptr;
 }
 
-ByteSize ScaleByMemoryLimit(ByteSize baseline, MemoryLimit memory_limit) {
-  return memory_limit.Scale(baseline);
+ByteSize ScaleByMemoryLimit(ByteSize baseline, int memory_limit) {
+  // Use int64_t here in order to get saturating behaviour if we get too big.
+  const int64_t tmp = static_cast<int64_t>(baseline.InBytes());
+  return ByteSize(static_cast<uint64_t>(ScaleByMemoryLimit(tmp, memory_limit)));
 }
 
 }  // namespace base

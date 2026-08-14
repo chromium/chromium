@@ -12,7 +12,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/memory_coordinator/memory_consumer_registry.h"
-#include "base/memory_coordinator/memory_limit.h"
 #include "base/observer_list.h"
 
 namespace base {
@@ -32,13 +31,13 @@ class TestMemoryConsumerRegistry : public MemoryConsumerRegistry {
   void OnMemoryConsumerRemoved(uint32_t consumer_id,
                                MemoryConsumer* consumer) override;
 
-  // Invokes UpdateMemoryLimit(memory_limit) on all consumers.
-  void NotifyUpdateMemoryLimit(MemoryLimit memory_limit);
+  // Invokes UpdateMemoryLimit(percentage) on all consumers.
+  void NotifyUpdateMemoryLimit(int percentage);
 
   // Invokes DoReleaseMemory() on all consumers.
   void NotifyReleaseMemory();
 
-  void NotifyUpdateMemoryLimitAsync(MemoryLimit memory_limit,
+  void NotifyUpdateMemoryLimitAsync(int percentage,
                                     OnceClosure on_notification_sent_callback);
   void NotifyReleaseMemoryAsync(OnceClosure on_notification_sent_callback);
 

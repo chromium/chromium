@@ -13,7 +13,6 @@
 #include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory_coordinator/memory_consumer_registry_destruction_observer.h"
-#include "base/memory_coordinator/memory_limit.h"
 #include "base/memory_coordinator/traits.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/observer_list_types.h"
@@ -70,12 +69,13 @@ class MemoryConsumerRegistry;
 //   void OnUpdateMemoryLimit() override {
 //     // Update the maximum size of the cache, but don't decrease that maximum
 //     // size below its current size to avoid freeing memory.
-//     int target_cache_size = memory_limit().Scale(kDefaultCacheMaxSize);
+//     int target_cache_size = ScaleByMemoryLimit(kDefaultCacheMaxSize,
+//                                                memory_limit());
 //     cache_.SetMaxSize(std::max(cache_.size(), target_cache_size));
 //   }
 //   void OnReleaseMemory() override {
 //     cache_.SetMaxSizeAndEvictExtraEntries(
-//         memory_limit().Scale(kDefaultCacheMaxSize));
+//         ScaleByMemoryLimit(kDefaultCacheMaxSize, memory_limit()));
 //   }
 //
 //  private:
@@ -91,10 +91,8 @@ class MemoryConsumerRegistry;
 //
 class BASE_EXPORT MemoryConsumer : public CheckedObserver {
  public:
-  // Deprecated: Use `base::MemoryLimit::Default()` or
-  // `base::MemoryLimit::Default().ratio()` instead.
-  // TODO(crbug.com/441951621): Remove after migration to base::MemoryLimit is
-  // complete.
+  // This is the default value for a consumer's memory limit. It corresponds to
+  // 100%, meaning the consumer is not restricted in its memory usage.
   static constexpr int kDefaultMemoryLimit = 100;
   static constexpr double kDefaultMemoryLimitRatio = 1.0;
 
@@ -103,11 +101,11 @@ class BASE_EXPORT MemoryConsumer : public CheckedObserver {
 
   virtual bool IsPassive() const;
 
-  // The memory limit assigned to this instance.
-  MemoryLimit memory_limit() const { return memory_limit_; }
+  // The memory limit, expressed as a percentage.
+  int memory_limit() const { return memory_limit_; }
 
-  // Same as `memory_limit().ratio()`, provided for convenience.
-  double memory_limit_ratio() const { return memory_limit_.ratio(); }
+  // Same as `memory_limit`, but expressed as a ratio.
+  double memory_limit_ratio() const { return memory_limit_ / 100.0; }
 
  protected:
   // Invoked when memory above the current `memory_limit()` should be freed.
@@ -123,17 +121,17 @@ class BASE_EXPORT MemoryConsumer : public CheckedObserver {
 
   // Instructs this consumer to update its internal memory limit. See the class
   // comment above for a detailed description of how this limit works.
-  void UpdateMemoryLimit(MemoryLimit memory_limit);
+  void UpdateMemoryLimit(int percentage);
 
   // Similar to UpdateMemoryLimit, but does not invoke OnUpdateMemoryLimit
   // callback.
-  void UpdateMemoryLimitNoNotification(MemoryLimit memory_limit);
+  void UpdateMemoryLimitNoNotification(int percentage);
 
   // Instructs this consumer to release memory that is above the current
   // `memory_limit()`.
   void ReleaseMemory();
 
-  MemoryLimit memory_limit_ = MemoryLimit::Default();
+  int memory_limit_ = kDefaultMemoryLimit;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
@@ -205,17 +203,22 @@ class BASE_EXPORT MemoryConsumerRegistration
   raw_ptr<MemoryConsumerRegistry> registry_;
 };
 
-// Scales a baseline value linearly by the provided `memory_limit`.
+// Scales a baseline value linearly by the provided `memory_limit` (expressed as
+// a percentage, e.g., 100 for 1.0x).
 //
-// Deprecated: Use `memory_limit.Scale(baseline)` directly.
-// TODO(crbug.com/441951621): Remove after migration to base::MemoryLimit is
-// complete.
+// The result is truncated towards zero and clamped to the range of the
+// type to prevent overflow.
 template <typename T>
-T ScaleByMemoryLimit(T baseline, MemoryLimit memory_limit) {
-  return memory_limit.Scale(baseline);
+T ScaleByMemoryLimit(T baseline, int memory_limit) {
+  static_assert(std::is_integral_v<T>, "T must be an integral type.");
+  CHECK_GE(memory_limit, 0);
+  // Calculate the ratio first (memory_limit / 100.0) to avoid potential
+  // overflow during multiplication and then scale the baseline.
+  double ratio = memory_limit / 100.0;
+  return base::saturated_cast<T>(baseline * ratio);
 }
 
-ByteSize ScaleByMemoryLimit(ByteSize baseline, MemoryLimit memory_limit);
+ByteSize ScaleByMemoryLimit(ByteSize baseline, int memory_limit);
 
 }  // namespace base
 

@@ -12,7 +12,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/memory_coordinator/memory_consumer.h"
-#include "base/memory_coordinator/memory_limit.h"
 #include "base/memory_coordinator/traits.h"
 #include "base/sequence_checker.h"
 
@@ -36,7 +35,7 @@ class BASE_EXPORT AsyncMemoryConsumerRegistration {
  private:
   class MainThread;
 
-  void NotifyUpdateMemoryLimit(MemoryLimit memory_limit);
+  void NotifyUpdateMemoryLimit(int percentage);
   void NotifyReleaseMemory();
 
   // A pointer to the actual consumer. Must outlive `this`.
