@@ -23,7 +23,16 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
+namespace media {
+class AudioDeviceThread;
+class AudioOutputDeviceThreadCallback;
+class AudioParameters;
+}  // namespace media
+
 namespace readaloud {
+
+class AudioSegmentQueue;
+class ReadAloudAudioRenderer;
 
 // Implements both ReadAloudPlaybackControllerFactory (the service entry point)
 // and ReadAloudPlaybackController (the control interface) for simplicity.
@@ -52,7 +61,8 @@ class ReadAloudPlaybackController
   // read_aloud::mojom::ReadAloudPlaybackController:
   void InitializeAudio(
       mojo::PendingRemote<media::mojom::AudioOutputStream> stream,
-      media::mojom::ReadWriteAudioDataPipePtr data_pipe) override;
+      media::mojom::ReadWriteAudioDataPipePtr data_pipe,
+      const media::AudioParameters& params) override;
   void SetTextContent(
       std::vector<read_aloud::mojom::TextSegmentPtr> segments) override;
   void Play() override;
@@ -97,6 +107,28 @@ class ReadAloudPlaybackController
 
   // Manages document-bound speech synthesis caching and sentence timeline.
   PrefetchManager prefetch_manager_;
+
+  struct AudioResources {
+    AudioResources();
+    AudioResources(AudioResources&&);
+    AudioResources& operator=(AudioResources&&);
+    ~AudioResources();
+
+    // Members are declared in dependency order so that their reverse-order
+    // destruction (bottom-to-top) is safe:
+    mojo::Remote<media::mojom::AudioOutputStream> audio_output_stream;
+    // 3. `audio_renderer` holds a raw pointer to `audio_segment_queue` to
+    //    pull synthesis data, so it must be destroyed before the queue.
+    std::unique_ptr<AudioSegmentQueue> audio_segment_queue;
+    std::unique_ptr<ReadAloudAudioRenderer> audio_renderer;
+    // 2. `audio_callback` holds a raw pointer to and calls into
+    //    `audio_renderer`, so it must be destroyed next.
+    std::unique_ptr<media::AudioOutputDeviceThreadCallback> audio_callback;
+    // 1. `audio_thread` runs a real-time thread calling into
+    //    `audio_callback`, so it must be stopped/destroyed first.
+    std::unique_ptr<media::AudioDeviceThread> audio_thread;
+  };
+  std::optional<AudioResources> audio_resources_;
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<ReadAloudPlaybackController> session_weak_factory_{this};

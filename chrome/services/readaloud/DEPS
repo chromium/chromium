@@ -4,4 +4,5 @@ include_rules = [
   "+media/filters",
   "+media/ffmpeg",
   "+third_party/ffmpeg",
+  "+media/audio",
 ]

@@ -6,6 +6,7 @@ module read_aloud.mojom;
 
 import "media/mojo/mojom/audio_data_pipe.mojom";
 import "media/mojo/mojom/audio_output_stream.mojom";
+import "media/mojo/mojom/audio_parameters.mojom";
 import "mojo/public/mojom/base/big_buffer.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/time.mojom";
@@ -33,7 +34,8 @@ enum PlaybackState {
 [RuntimeFeature=mojo_base.mojom.kMojomWorkInProgress]
 interface ReadAloudPlaybackController {
   InitializeAudio(pending_remote<media.mojom.AudioOutputStream> stream,
-                  media.mojom.ReadWriteAudioDataPipe data_pipe);
+                  media.mojom.ReadWriteAudioDataPipe data_pipe,
+                  media.mojom.AudioParameters params);
   // Replaces the article text. If playback is active, cancels in-flight synthesis,
   // flushes prefetch caches, resets the cursor to index 0, and pauses (`kPaused`).
   //
