@@ -124,7 +124,7 @@ class FlatLayoutDelegate extends TabListLayoutDelegate {
         }
 
         mMediator.addObserversForTab(movedTab);
-        mMediator.onTabAdded(movedTab);
+        onTabAdded(movedTab);
         if (mTabGridDialogHandler != null) {
             mTabGridDialogHandler.updateDialogContent(
                     tabModel.getGroupLastShownTabId(firstTab.getTabGroupId()));

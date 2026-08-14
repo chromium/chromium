@@ -7,6 +7,9 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -59,6 +62,67 @@ public class FlatLayoutDelegateUnitTest {
         when(mMediator.getCurrentTabModelChecked()).thenReturn(mTabModel);
         when(mTab1.getId()).thenReturn(TAB1_ID);
         when(mTab2.getId()).thenReturn(TAB2_ID);
+    }
+
+    @Test
+    public void testRequiresThumbnailUpdateOnDeselect() {
+        assertFalse(mDelegate.requiresThumbnailUpdateOnDeselect());
+    }
+
+    @Test
+    public void testRequiresThumbnailUpdateOnSelect() {
+        assertTrue(mDelegate.requiresThumbnailUpdateOnSelect());
+    }
+
+    @Test
+    public void testGetMediaIndicatorState() {
+        when(mTab1.getMediaState()).thenReturn(MediaState.AUDIBLE);
+        PropertyModel model = new PropertyModel(TabProperties.ALL_KEYS_TAB_GRID);
+        int state = mDelegate.getMediaIndicatorState(mTab1, model);
+        assertEquals(MediaState.AUDIBLE, state);
+    }
+
+    @Test
+    public void testGetInsertionIndexOfTab() {
+        addTabsToModelList(TAB1_ID);
+        when(mMediator.getRelatedTabsForId(TAB1_ID)).thenReturn(List.of(mTab1, mTab2));
+
+        int insertionIndex = mDelegate.getInsertionIndexOfTab(mTab2);
+
+        assertEquals(1, insertionIndex);
+    }
+
+    @Test
+    public void testGetInsertionIndexOfTab_NullTab() {
+        int insertionIndex = mDelegate.getInsertionIndexOfTab(null);
+        assertEquals(TabModel.INVALID_TAB_INDEX, insertionIndex);
+    }
+
+    @Test
+    public void testGetInsertionIndexOfTab_EmptyModelList() {
+        int insertionIndex = mDelegate.getInsertionIndexOfTab(mTab2);
+        assertEquals(TabModel.INVALID_TAB_INDEX, insertionIndex);
+    }
+
+    @Test
+    public void testOnTabAdded_NewTab() {
+        addTabsToModelList(TAB1_ID);
+        when(mMediator.getRelatedTabsForId(TAB1_ID)).thenReturn(List.of(mTab1, mTab2));
+
+        int index = mDelegate.onTabAdded(mTab2);
+
+        assertEquals(1, index);
+        verify(mMediator).addTabCardToModel(mTab2, 1);
+    }
+
+    @Test
+    public void testOnTabAdded_AlreadyInModel() {
+        addTabsToModelList(TAB1_ID, TAB2_ID);
+
+        int index = mDelegate.onTabAdded(mTab2);
+
+        assertEquals(1, index);
+        verify(mMediator, never()).addTabCardToModel(any(), anyInt());
     }
 
     @Test
@@ -168,11 +232,13 @@ public class FlatLayoutDelegateUnitTest {
         when(mTabModel.getTabById(TAB1_ID)).thenReturn(mTab1);
         when(mTabModel.getGroupLastShownTabId(TAB_GROUP_ID)).thenReturn(TAB1_ID);
 
+        when(mMediator.getRelatedTabsForId(TAB1_ID)).thenReturn(List.of(mTab1, mTab2));
+
         // Execute merging mTab2.
-        mDelegate.didMergeTabToGroup(mTab2, false);
+        mDelegate.didMergeTabToGroup(mTab2, /* isDestinationTab= */ false);
 
         verify(mMediator).addObserversForTab(mTab2);
-        verify(mMediator).onTabAdded(mTab2);
+        verify(mMediator).addTabCardToModel(mTab2, 1);
         verify(mTabGridDialogHandler).updateDialogContent(TAB1_ID);
     }
 
@@ -185,7 +251,7 @@ public class FlatLayoutDelegateUnitTest {
         when(mTabModel.getTabById(TAB1_ID)).thenReturn(mTab1);
 
         // Execute merging mTab2.
-        mDelegate.didMergeTabToGroup(mTab2, false);
+        mDelegate.didMergeTabToGroup(mTab2, /* isDestinationTab= */ false);
 
         verify(mMediator).getCurrentTabModelChecked();
         verifyNoMoreInteractions(mMediator);
@@ -195,7 +261,7 @@ public class FlatLayoutDelegateUnitTest {
     @Test
     public void testDidMergeTabToGroup_EmptyModelList() {
         // Empty model list.
-        mDelegate.didMergeTabToGroup(mTab2, false);
+        mDelegate.didMergeTabToGroup(mTab2, /* isDestinationTab= */ false);
 
         verify(mMediator).getCurrentTabModelChecked();
         verifyNoMoreInteractions(mMediator);
@@ -227,46 +293,6 @@ public class FlatLayoutDelegateUnitTest {
         // Flat layout does not display tab group headers, so no updates should occur.
         verifyNoInteractions(mMediator);
         verifyNoInteractions(mTabGridDialogHandler);
-    }
-
-    @Test
-    public void testRequiresThumbnailUpdateOnDeselect() {
-        assertFalse(mDelegate.requiresThumbnailUpdateOnDeselect());
-    }
-
-    @Test
-    public void testRequiresThumbnailUpdateOnSelect() {
-        assertTrue(mDelegate.requiresThumbnailUpdateOnSelect());
-    }
-
-    @Test
-    public void testGetMediaIndicatorState() {
-        when(mTab1.getMediaState()).thenReturn(MediaState.AUDIBLE);
-        PropertyModel model = new PropertyModel(TabProperties.ALL_KEYS_TAB_GRID);
-        int state = mDelegate.getMediaIndicatorState(mTab1, model);
-        assertEquals(MediaState.AUDIBLE, state);
-    }
-
-    @Test
-    public void testGetInsertionIndexOfTab() {
-        addTabsToModelList(TAB1_ID);
-        when(mMediator.getRelatedTabsForId(TAB1_ID)).thenReturn(List.of(mTab1, mTab2));
-
-        int insertionIndex = mDelegate.getInsertionIndexOfTab(mTab2);
-
-        assertEquals(1, insertionIndex);
-    }
-
-    @Test
-    public void testGetInsertionIndexOfTab_NullTab() {
-        int insertionIndex = mDelegate.getInsertionIndexOfTab(null);
-        assertEquals(TabModel.INVALID_TAB_INDEX, insertionIndex);
-    }
-
-    @Test
-    public void testGetInsertionIndexOfTab_EmptyModelList() {
-        int insertionIndex = mDelegate.getInsertionIndexOfTab(mTab2);
-        assertEquals(TabModel.INVALID_TAB_INDEX, insertionIndex);
     }
 
     private void addTabsToModelList(int... tabIds) {

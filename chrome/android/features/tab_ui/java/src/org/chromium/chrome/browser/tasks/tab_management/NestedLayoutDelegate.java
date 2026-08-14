@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.isOnlyArchivedMsg;
 
 import android.util.SparseIntArray;
 
@@ -122,6 +123,37 @@ class NestedLayoutDelegate extends TabListLayoutDelegate {
     }
 
     @Override
+    int onTabAdded(Tab tab) {
+        int existingIndex = mModelList.indexFromTabId(tab.getId());
+        if (existingIndex != TabModel.INVALID_TAB_INDEX) return existingIndex;
+
+        int newIndex = getInsertionIndexOfTab(tab);
+
+        // Tabs should be inserted only after the archived message card.
+        if (newIndex == 0 && isOnlyArchivedMsg(mModelList)) newIndex++;
+
+        Token groupId = tab.getTabGroupId();
+        if (groupId != null && mMediator.isTabInTabGroup(tab)) {
+            if (ensureGroupHeaderExists(tab, groupId, newIndex)) {
+                newIndex++;
+            }
+            mMediator.updateTabGroupTitle(groupId);
+
+            if (newIndex == TabList.INVALID_TAB_INDEX
+                    || mMediator.getCurrentTabModelChecked().getTabGroupCollapsed(groupId)) {
+                return newIndex;
+            }
+        }
+
+        if (newIndex == TabList.INVALID_TAB_INDEX) return newIndex;
+
+        TabModel tabModel = mMediator.getCurrentTabModelChecked();
+        mMediator.addTabInfoToModelForTab(
+                tab, newIndex, TabModelUtils.getCurrentTabId(tabModel) == tab.getId());
+        return newIndex;
+    }
+
+    @Override
     public void didChangeTabGroupColor(Token tabGroupId, @TabGroupColorId int newColor) {
         super.didChangeTabGroupColor(tabGroupId, newColor);
         // Sync the color down to the child models so decorations (like the group spine) can
@@ -209,8 +241,7 @@ class NestedLayoutDelegate extends TabListLayoutDelegate {
         int destUiIndex = mModelList.indexFromTabId(destinationTab.getId());
         if (destUiIndex == TabModel.INVALID_TAB_INDEX) return;
 
-        if (mMediator.ensureGroupHeaderExistsInNestedLayout(
-                destinationTab, tabGroupId, destUiIndex)) {
+        if (ensureGroupHeaderExists(destinationTab, tabGroupId, destUiIndex)) {
             // After adding the group header, the destination tab's model shifts by one position.
             PropertyModel childModel = mModelList.get(destUiIndex + 1).model;
             setupGroupPropertiesForChildTab(destinationTab, childModel);
@@ -244,6 +275,28 @@ class NestedLayoutDelegate extends TabListLayoutDelegate {
         } else {
             mMediator.clearTabGroupProperties(model);
         }
+    }
+
+    /**
+     * Checks whether a group header card for the given {@code tabGroupId} exists in {@link
+     * #mModelList}. If missing, creates and inserts a header card at {@code targetUiIndex}.
+     *
+     * @param tab A representative {@link Tab} of the group used to initialize the header model.
+     * @param tabGroupId The group ID token.
+     * @param targetUiIndex The UI index where the header should be inserted if missing.
+     * @return {@code true} if a header was created and inserted, {@code false} otherwise.
+     */
+    boolean ensureGroupHeaderExists(Tab tab, Token tabGroupId, int targetUiIndex) {
+        if (tabGroupId == null || targetUiIndex == TabModel.INVALID_TAB_INDEX) {
+            return false;
+        }
+
+        if (mModelList.indexFromTabGroupId(tabGroupId) == TabModel.INVALID_TAB_INDEX) {
+            mMediator.addTabInfoToModelForGroup(tab, tabGroupId, targetUiIndex);
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -281,7 +334,7 @@ class NestedLayoutDelegate extends TabListLayoutDelegate {
 
             if (newTabGroupId != null) {
                 int newTabUiIndex = mModelList.indexFromTabId(tab.getId());
-                mMediator.ensureGroupHeaderExistsInNestedLayout(tab, newTabGroupId, newTabUiIndex);
+                ensureGroupHeaderExists(tab, newTabGroupId, newTabUiIndex);
             }
         }
 

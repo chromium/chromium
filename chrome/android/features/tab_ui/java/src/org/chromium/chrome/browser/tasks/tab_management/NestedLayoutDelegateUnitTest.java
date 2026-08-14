@@ -7,9 +7,10 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -101,6 +102,72 @@ public class NestedLayoutDelegateUnitTest {
         when(mTab1.getMediaState()).thenReturn(MediaState.AUDIBLE);
         int state = mDelegate.getMediaIndicatorState(mTab1, headerModel);
         assertEquals(MediaState.NONE, state);
+    }
+
+    @Test
+    public void testOnTabAdded_StandaloneTab() {
+        setupTabsInModel(mTab1);
+
+        int index = mDelegate.onTabAdded(mTab1);
+
+        assertEquals(0, index);
+        verify(mMediator).addTabInfoToModelForTab(mTab1, 0, /* isSelected= */ true);
+    }
+
+    @Test
+    public void testOnTabAdded_TabInExpandedGroup() {
+        setupTabsInModel(mTab1);
+        when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
+        when(mMediator.isTabInTabGroup(mTab1)).thenReturn(true);
+        when(mTabModel.getTabGroupCollapsed(TAB_GROUP_ID)).thenReturn(false);
+
+        int index = mDelegate.onTabAdded(mTab1);
+
+        assertEquals(1, index);
+        verify(mMediator).addTabInfoToModelForGroup(mTab1, TAB_GROUP_ID, 0);
+        verify(mMediator).updateTabGroupTitle(TAB_GROUP_ID);
+        verify(mMediator).addTabInfoToModelForTab(mTab1, 1, /* isSelected= */ true);
+    }
+
+    @Test
+    public void testOnTabAdded_TabInCollapsedGroup_NewHeader() {
+        setupTabsInModel(mTab1);
+        when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
+        when(mMediator.isTabInTabGroup(mTab1)).thenReturn(true);
+        when(mTabModel.getTabGroupCollapsed(TAB_GROUP_ID)).thenReturn(true);
+
+        int index = mDelegate.onTabAdded(mTab1);
+
+        assertEquals(1, index);
+        verify(mMediator).addTabInfoToModelForGroup(mTab1, TAB_GROUP_ID, 0);
+        verify(mMediator).updateTabGroupTitle(TAB_GROUP_ID);
+        verify(mMediator, never()).addTabInfoToModelForTab(any(), anyInt(), anyBoolean());
+    }
+
+    @Test
+    public void testOnTabAdded_TabInCollapsedGroup_HeaderAlreadyExists() {
+        addGroupHeaderToModelList(TAB1_ID);
+        setupTabsInModel(mTab1, mTab2);
+        when(mTab2.getTabGroupId()).thenReturn(TAB_GROUP_ID);
+        when(mMediator.isTabInTabGroup(mTab2)).thenReturn(true);
+        when(mTabModel.getTabGroupCollapsed(TAB_GROUP_ID)).thenReturn(true);
+
+        int index = mDelegate.onTabAdded(mTab2);
+
+        assertEquals(TabModel.INVALID_TAB_INDEX, index);
+        verify(mMediator, never()).addTabInfoToModelForGroup(any(), any(), anyInt());
+        verify(mMediator).updateTabGroupTitle(TAB_GROUP_ID);
+        verify(mMediator, never()).addTabInfoToModelForTab(any(), anyInt(), anyBoolean());
+    }
+
+    @Test
+    public void testOnTabAdded_AlreadyInModel() {
+        addTabToModelList(TAB1_ID, null);
+
+        int index = mDelegate.onTabAdded(mTab1);
+
+        assertEquals(0, index);
+        verify(mMediator, never()).addTabInfoToModelForTab(any(), anyInt(), anyBoolean());
     }
 
     @Test
@@ -295,8 +362,7 @@ public class NestedLayoutDelegateUnitTest {
         assertEquals(TAB_GROUP_ID, tab2Model.get(TabProperties.TAB_GROUP_ID));
         verify(mMediator).updateTabGroupProperties(mTab1, tab1Model, TabGroupColorId.BLUE);
         verify(mMediator).updateTabGroupProperties(mTab2, tab2Model, TabGroupColorId.BLUE);
-        verify(mMediator).ensureGroupHeaderExistsInNestedLayout(mTab1, TAB_GROUP_ID, 0);
-        verify(mMediator).ensureGroupHeaderExistsInNestedLayout(mTab2, TAB_GROUP_ID, 1);
+        verify(mMediator).addTabInfoToModelForGroup(mTab1, TAB_GROUP_ID, 0);
         verify(mMediator, times(2)).updateTabGroupTitle(TAB_GROUP_ID);
     }
 
@@ -392,12 +458,11 @@ public class NestedLayoutDelegateUnitTest {
         mModelList.add(new ListItem(UiType.TAB, tab1Model));
 
         when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
-        when(mMediator.ensureGroupHeaderExistsInNestedLayout(eq(mTab1), eq(TAB_GROUP_ID), eq(0)))
-                .thenReturn(true);
 
         mDelegate.didCreateNewGroup(mTab1, mTabModel);
 
         assertEquals(TAB_GROUP_ID, tab1Model.get(TabProperties.TAB_GROUP_ID));
+        verify(mMediator).addTabInfoToModelForGroup(mTab1, TAB_GROUP_ID, 0);
         verify(mMediator).updateTabGroupProperties(mTab1, tab1Model, TabGroupColorId.BLUE);
         assertEquals(2, mModelList.size());
     }
@@ -408,11 +473,10 @@ public class NestedLayoutDelegateUnitTest {
         addTabToModelList(TAB1_ID, TAB_GROUP_ID);
 
         when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
-        when(mMediator.ensureGroupHeaderExistsInNestedLayout(eq(mTab1), eq(TAB_GROUP_ID), anyInt()))
-                .thenReturn(false);
 
         mDelegate.didCreateNewGroup(mTab1, mTabModel);
 
+        verify(mMediator, never()).addTabInfoToModelForGroup(any(), any(), anyInt());
         verify(mMediator, never()).updateTabGroupProperties(any(), any(), anyInt());
         verify(mMediator, never()).clearTabGroupProperties(any());
     }
@@ -441,6 +505,32 @@ public class NestedLayoutDelegateUnitTest {
 
         assertEquals(1, mModelList.size());
         assertEquals(TAB1_ID, mModelList.get(0).model.get(TabProperties.TAB_ID));
+    }
+
+    @Test
+    public void testEnsureGroupHeaderExists_NewHeader() {
+        boolean created = mDelegate.ensureGroupHeaderExists(mTab1, TAB_GROUP_ID, 0);
+
+        assertTrue(created);
+        verify(mMediator).addTabInfoToModelForGroup(mTab1, TAB_GROUP_ID, 0);
+    }
+
+    @Test
+    public void testEnsureGroupHeaderExists_AlreadyExists() {
+        addGroupHeaderToModelList(TAB1_ID);
+
+        boolean created = mDelegate.ensureGroupHeaderExists(mTab1, TAB_GROUP_ID, 0);
+
+        assertFalse(created);
+        verify(mMediator, never()).addTabInfoToModelForGroup(any(), any(), anyInt());
+    }
+
+    @Test
+    public void testEnsureGroupHeaderExists_InvalidInputs() {
+        assertFalse(mDelegate.ensureGroupHeaderExists(mTab1, null, 0));
+        assertFalse(
+                mDelegate.ensureGroupHeaderExists(mTab1, TAB_GROUP_ID, TabModel.INVALID_TAB_INDEX));
+        verify(mMediator, never()).addTabInfoToModelForGroup(any(), any(), anyInt());
     }
 
     private PropertyModel addTabToModelList(int tabId, @Nullable Token tabGroupId) {

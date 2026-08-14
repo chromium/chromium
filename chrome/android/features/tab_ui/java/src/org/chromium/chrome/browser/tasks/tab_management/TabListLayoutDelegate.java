@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.isOnlyArchivedMsg;
 
 import android.util.Pair;
 
@@ -14,6 +15,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.MediaState;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupObserver;
+import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -31,9 +33,6 @@ abstract class TabListLayoutDelegate implements TabGroupObserver {
         mMediator = mediator;
         mModelList = modelList;
     }
-
-    /** Returns the insertion index for a new tab card. */
-    abstract int getInsertionIndexOfTab(Tab tab);
 
     /**
      * Whether this layout requires a thumbnail cache invalidation fetch when a tab is deselected.
@@ -56,6 +55,34 @@ abstract class TabListLayoutDelegate implements TabGroupObserver {
      * @return The {@link MediaState} that should be displayed.
      */
     abstract @MediaState int getMediaIndicatorState(Tab representativeTab, PropertyModel model);
+
+    /** Returns the insertion index for a new tab card. */
+    abstract int getInsertionIndexOfTab(Tab tab);
+
+    /**
+     * Handles tab insertion into {@link #mModelList} by resolving the target insertion index,
+     * placing the tab after any leading archived message card, and delegating model creation to
+     * {@link TabListMediator#addTabCardToModel}. If the tab is already present in the list, returns
+     * its existing index without modifying the model.
+     *
+     * @param tab The {@link Tab} being added.
+     * @return The UI index where the tab was inserted, or {@link TabModel#INVALID_TAB_INDEX} if the
+     *     tab was not added to the model list (e.g. child tab of a collapsed group).
+     */
+    int onTabAdded(Tab tab) {
+        int existingIndex = mModelList.indexFromTabId(tab.getId());
+        if (existingIndex != TabModel.INVALID_TAB_INDEX) return existingIndex;
+
+        int newIndex = getInsertionIndexOfTab(tab);
+
+        // Tabs should be inserted only after the archived message card.
+        if (newIndex == 0 && isOnlyArchivedMsg(mModelList)) newIndex++;
+
+        if (newIndex == TabList.INVALID_TAB_INDEX) return newIndex;
+
+        mMediator.addTabCardToModel(tab, newIndex);
+        return newIndex;
+    }
 
     @Override
     public void didChangeTabGroupTitle(Token tabGroupId, String newTitle) {
@@ -98,14 +125,13 @@ abstract class TabListLayoutDelegate implements TabGroupObserver {
     }
 
     /**
-     * Initializes layout-specific group properties on a child tab card model. Defaults to a no-op
-     * for layouts that do not style child tab cards.
+     * Configures layout-specific group properties on a child tab card model (e.g. group spine
+     * styling in NESTED layouts). Defaults to a no-op in layouts that do not style child tab rows.
+     *
+     * @param tab The {@link Tab} being configured.
+     * @param model The {@link PropertyModel} of the child tab card.
      */
     void setupGroupPropertiesForChildTab(Tab tab, PropertyModel model) {}
-
-    protected boolean hasHigherBackendIndex(int modelIndex, int targetModelIndex) {
-        return modelIndex != TabModel.INVALID_TAB_INDEX && modelIndex > targetModelIndex;
-    }
 
     /**
      * Adjusts the proposed insertion UI index if the tab is being moved from an earlier position.
@@ -120,7 +146,7 @@ abstract class TabListLayoutDelegate implements TabGroupObserver {
      *     TabModel.INVALID_TAB_INDEX if the tab is not currently in the UI list.
      * @return The adjusted insertion UI index.
      */
-    protected int adjustIndexForTabMovement(int currentIndex, int targetTabCurrentIndex) {
+    protected static int adjustIndexForTabMovement(int currentIndex, int targetTabCurrentIndex) {
         if (targetTabCurrentIndex != TabModel.INVALID_TAB_INDEX
                 && currentIndex > targetTabCurrentIndex) {
             return currentIndex - 1;

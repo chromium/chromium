@@ -12,7 +12,6 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.Card
 import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.TAB_GROUP_COLOR_VIEW_PROVIDER;
 import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.TAB_ID;
 import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.THUMBNAIL_FETCHER;
-import static org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.isOnlyArchivedMsg;
 import static org.chromium.chrome.browser.tasks.tab_management.UiTypeHelper.isLargeMessageCard;
 import static org.chromium.chrome.browser.tasks.tab_management.UiTypeHelper.isMessageCard;
 
@@ -1043,7 +1042,7 @@ public class TabListMediator implements TabListNotificationHandler {
                         assert mShowingTabs;
 
                         addObserversForTab(tab);
-                        onTabAdded(tab);
+                        mTabListLayoutDelegate.onTabAdded(tab);
 
                         if (sTabClosedFromMap.containsKey(tab.getId())) {
                             @TabClosedFrom int from = sTabClosedFromMap.get(tab.getId());
@@ -1143,7 +1142,7 @@ public class TabListMediator implements TabListNotificationHandler {
                             return;
                         }
 
-                        onTabAdded(tab);
+                        mTabListLayoutDelegate.onTabAdded(tab);
                         if (type == TabLaunchType.FROM_RESTORE
                                 && mLayoutType != TabListLayoutType.FLAT) {
                             // When tab is restored after restoring stage (e.g. exiting multi-window
@@ -1437,6 +1436,10 @@ public class TabListMediator implements TabListNotificationHandler {
         }
     }
 
+    /**
+     * Returns the currently active {@link TabModel} from {@link #mCurrentTabModelSupplier},
+     * asserting that the supplier returned a non-null model.
+     */
     TabModel getCurrentTabModelChecked() {
         TabModel tabModel = mCurrentTabModelSupplier.get();
         assert tabModel != null;
@@ -1585,6 +1588,13 @@ public class TabListMediator implements TabListNotificationHandler {
         sTabClosedFromMap.put(tabId, from);
     }
 
+    /**
+     * Returns all {@link Tab}s in the same tab group as the specified tab ID, or a single-element
+     * list if the tab is not in a group. Returns an empty list if the current tab model is null.
+     *
+     * @param id The ID of the tab whose related group members are requested.
+     * @return A list of related {@link Tab} instances.
+     */
     List<Tab> getRelatedTabsForId(int id) {
         TabModel tabModel = mCurrentTabModelSupplier.get();
         return tabModel == null ? new ArrayList<>() : tabModel.getRelatedTabList(id);
@@ -1597,65 +1607,6 @@ public class TabListMediator implements TabListNotificationHandler {
             tabIds.add(tab.getId());
         }
         return tabIds;
-    }
-
-    // TODO(crbug.com/509226293): Move this to NestedLayoutDelegate.
-    /**
-     * Ensures that a group header exists in NESTED layout. If not, it creates and inserts one.
-     *
-     * @param tab A representative tab of the group.
-     * @param tabGroupId The group ID.
-     * @param targetUiIndex The UI index where the header should be inserted if missing.
-     * @return true if a header was created and inserted, false otherwise.
-     */
-    boolean ensureGroupHeaderExistsInNestedLayout(Tab tab, Token tabGroupId, int targetUiIndex) {
-        if (mLayoutType != TabListLayoutType.NESTED
-                || tabGroupId == null
-                || targetUiIndex == TabModel.INVALID_TAB_INDEX) {
-            return false;
-        }
-
-        if (mModelList.indexFromTabGroupId(tabGroupId) == TabModel.INVALID_TAB_INDEX) {
-            addTabInfoToModelForGroup(tab, tabGroupId, targetUiIndex);
-            return true;
-        }
-
-        return false;
-    }
-
-    int onTabAdded(Tab tab) {
-        int existingIndex = mModelList.indexFromTabId(tab.getId());
-        if (existingIndex != TabModel.INVALID_TAB_INDEX) return existingIndex;
-
-        int newIndex = mTabListLayoutDelegate.getInsertionIndexOfTab(tab);
-
-        // Tabs should be inserted only after the archived message card.
-        if (newIndex == 0 && isOnlyArchivedMsg(mModelList)) newIndex++;
-
-        if (mLayoutType == TabListLayoutType.NESTED && isTabInTabGroup(tab)) {
-            Token groupId = tab.getTabGroupId();
-            if (groupId != null) {
-                if (ensureGroupHeaderExistsInNestedLayout(tab, groupId, newIndex)) {
-                    newIndex++;
-                }
-                updateTabGroupTitle(groupId);
-
-                if (newIndex == TabList.INVALID_TAB_INDEX
-                        || getCurrentTabModelChecked().getTabGroupCollapsed(groupId)) {
-                    return newIndex;
-                }
-
-                TabModel tabModel = getCurrentTabModelChecked();
-                addTabInfoToModelForTab(
-                        tab, newIndex, TabModelUtils.getCurrentTabId(tabModel) == tab.getId());
-                return newIndex;
-            }
-        }
-
-        if (newIndex == TabList.INVALID_TAB_INDEX) return newIndex;
-
-        addTabCardToModel(tab, newIndex);
-        return newIndex;
     }
 
     private boolean areTabsUnchanged(@Nullable List<Tab> tabs) {
@@ -1800,7 +1751,7 @@ public class TabListMediator implements TabListNotificationHandler {
         mShowingTabs = false;
         // if tab was marked for add later, add to model and mark as selected.
         if (mTabToAddDelayed != null) {
-            int index = onTabAdded(mTabToAddDelayed);
+            int index = mTabListLayoutDelegate.onTabAdded(mTabToAddDelayed);
             selectTab(mLastSelectedTabListModelIndex, index);
             mTabToAddDelayed = null;
         }
@@ -2308,6 +2259,15 @@ public class TabListMediator implements TabListNotificationHandler {
         }
     }
 
+    /**
+     * Constructs and inserts the UI property model for a newly added tab at the specified index. If
+     * the tab belongs to a tab group (in non-FLAT layouts), delegates to {@link
+     * #addTabInfoToModelForGroup}; otherwise delegates to {@link #addTabInfoToModelForTab} as an
+     * individual tab card.
+     *
+     * @param tab The {@link Tab} to add to the model list.
+     * @param index The UI index in {@link #mModelList} where the card should be inserted.
+     */
     void addTabCardToModel(Tab tab, int index) {
         boolean isTabGroup = isTabInTabGroup(tab) && mLayoutType != TabListLayoutType.FLAT;
         if (isTabGroup) {
@@ -2376,6 +2336,15 @@ public class TabListMediator implements TabListNotificationHandler {
         return tabInfo;
     }
 
+    /**
+     * Builds and inserts a {@link PropertyModel} for an individual tab card at the given UI index,
+     * binding metadata fetchers (favicon, thumbnail, persisted tab data) and applying
+     * layout-specific child properties.
+     *
+     * @param tab The {@link Tab} to represent in the model list.
+     * @param index The target UI index where the tab card model will be inserted.
+     * @param isSelected Whether the tab card should visually indicate that it is currently active.
+     */
     void addTabInfoToModelForTab(Tab tab, int index, boolean isSelected) {
         assert index != TabModel.INVALID_TAB_INDEX;
 
@@ -2408,7 +2377,16 @@ public class TabListMediator implements TabListNotificationHandler {
         }
     }
 
-    private void addTabInfoToModelForGroup(Tab tab, Token tabGroupId, int index) {
+    /**
+     * Builds and inserts a {@link PropertyModel} for a tab group card or header at the given UI
+     * index. Configures group properties including color, title fallback, collapsed state, and sets
+     * selection if the group is collapsed and contains the active tab.
+     *
+     * @param tab A representative {@link Tab} for the group.
+     * @param tabGroupId The {@link Token} identifying the tab group.
+     * @param index The target UI index where the group card or header will be inserted.
+     */
+    void addTabInfoToModelForGroup(Tab tab, Token tabGroupId, int index) {
         assert index != TabModel.INVALID_TAB_INDEX;
         assumeNonNull(tabGroupId);
         TabModel tabModel = getCurrentTabModelChecked();
@@ -3130,6 +3108,12 @@ public class TabListMediator implements TabListNotificationHandler {
         // for the oldFilter which can result in invalid updates.
     }
 
+    /**
+     * Attaches tab lifecycle, actor UI state, and underline management observers to the given tab
+     * so that subsequent state changes synchronize to its UI model.
+     *
+     * @param tab The {@link Tab} to observe.
+     */
     void addObserversForTab(Tab tab) {
         tab.addObserver(mTabObserver);
 
@@ -3706,6 +3690,12 @@ public class TabListMediator implements TabListNotificationHandler {
         model.set(THUMBNAIL_FETCHER, newFetcher);
     }
 
+    /**
+     * Resolves the latest title for a tab group and updates the corresponding group header card's
+     * title and accessibility descriptions in {@link #mModelList}.
+     *
+     * @param tabGroupId The {@link Token} of the tab group to update.
+     */
     void updateTabGroupTitle(Token tabGroupId) {
         @Nullable Pair<Integer, Tab> headerIndexAndTab = getIndexAndTabForTabGroupId(tabGroupId);
         if (headerIndexAndTab == null) return;
@@ -3718,6 +3708,12 @@ public class TabListMediator implements TabListNotificationHandler {
         updateActionButtonDescriptionString(tab, headerModel);
     }
 
+    /**
+     * Resets all tab group visual properties on the given model and destroys any attached {@link
+     * TabGroupColorViewProvider}.
+     *
+     * @param model The {@link PropertyModel} from which group properties should be removed.
+     */
     void clearTabGroupProperties(PropertyModel model) {
         @Nullable TabGroupColorViewProvider provider = model.get(TAB_GROUP_COLOR_VIEW_PROVIDER);
         model.set(TabProperties.TAB_GROUP_ID, null);
@@ -3727,6 +3723,14 @@ public class TabListMediator implements TabListNotificationHandler {
         if (provider != null) provider.destroy();
     }
 
+    /**
+     * Updates group visual styling (such as group color provider and group header/card IDs) on a
+     * tab's property model based on its group membership and the active layout.
+     *
+     * @param tab The {@link Tab} whose properties are being updated.
+     * @param model The {@link PropertyModel} associated with the tab.
+     * @param colorId The {@link TabGroupColorId} to apply to the group indicators.
+     */
     void updateTabGroupProperties(Tab tab, PropertyModel model, @TabGroupColorId int colorId) {
         @Nullable Token tabGroupId = tab.getTabGroupId();
         if (mLayoutType == TabListLayoutType.FLAT || tabGroupId == null || !isTabInTabGroup(tab)) {
