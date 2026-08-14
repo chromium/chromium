@@ -1722,7 +1722,7 @@ class LocationBarMediator
         }
         mToolbarParent = null;
         mLocationBarLayout.setReparentedToPopover(false);
-        mUrlCoordinator.finishReparenting(mCurrentInput != null);
+        mUrlCoordinator.finishReparenting(/* postReparentingFocus= */ mCurrentInput != null);
         mIsReparenting = false;
     }
 
