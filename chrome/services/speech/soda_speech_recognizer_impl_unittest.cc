@@ -82,6 +82,7 @@ class SodaSpeechRecognizerImplTest
   void ResultRetrieved(std::vector<media::mojom::WebSpeechRecognitionResultPtr>
                            results) override {
     result_received_ = true;
+    last_results_ = std::move(results);
     MaybeQuit();
   }
 
@@ -143,6 +144,18 @@ class SodaSpeechRecognizerImplTest
         base::BindOnce([](bool) {}));
   }
 
+  void OnSpeechRecognitionRecognitionEventWithTiming() {
+    media::SpeechRecognitionResult speech_result(
+        "Quokkas are known as the happiest animals in the world",
+        /*is_final=*/true);
+    speech_result.timing_information = media::TimingInformation();
+    speech_result.timing_information->audio_start_time =
+        base::Milliseconds(100);
+    speech_result.timing_information->audio_end_time = base::Milliseconds(600);
+    recognizer_->OnSpeechRecognitionRecognitionEvent(
+        speech_result, base::BindOnce([](bool continue_recognition) {}));
+  }
+
   void OnSpeechRecognitionError() { recognizer_->OnSpeechRecognitionError(); }
 
   void AddAudio(int frame_count = 4800, bool loud = false) {
@@ -200,6 +213,7 @@ class SodaSpeechRecognizerImplTest
   bool sound_ended_ = false;
   bool recognition_context_updated_ = false;
   bool mark_done_called_ = false;
+  std::vector<media::mojom::WebSpeechRecognitionResultPtr> last_results_;
   media::mojom::SpeechRecognitionErrorCode error_ =
       media::mojom::SpeechRecognitionErrorCode::kNone;
   base::OnceClosure quit_closure_;
@@ -223,6 +237,25 @@ TEST_P(SodaSpeechRecognizerImplTest, RecognitionEvent) {
   OnSpeechRecognitionRecognitionEvent();
   WaitForCondition([&]() { return result_received_; });
   CheckEventsConsistency();
+
+  StopCapture();
+  WaitForCondition([&]() { return recognition_ended_; });
+  CheckEventsConsistency();
+  CheckFinalEventsConsistency();
+}
+
+TEST_P(SodaSpeechRecognizerImplTest, RecognitionEventWithTimingInformation) {
+  WaitForCondition([&]() { return recognition_started_; });
+
+  AddAudio();
+  WaitForCondition([&]() { return audio_started_; });
+  CheckEventsConsistency();
+
+  OnSpeechRecognitionRecognitionEventWithTiming();
+  WaitForCondition([&]() { return result_received_; });
+  ASSERT_FALSE(last_results_.empty());
+  EXPECT_EQ(last_results_[0]->audio_start_time, base::Milliseconds(100));
+  EXPECT_EQ(last_results_[0]->audio_end_time, base::Milliseconds(600));
 
   StopCapture();
   WaitForCondition([&]() { return recognition_ended_; });

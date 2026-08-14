@@ -125,6 +125,13 @@ void SodaSpeechRecognizerImpl::OnSpeechRecognitionRecognitionEvent(
   media::mojom::WebSpeechRecognitionResultPtr& result = results.back();
   result->is_provisional = !recognition_result.is_final;
 
+  if (recognition_result.timing_information.has_value()) {
+    result->audio_start_time =
+        recognition_result.timing_information->audio_start_time;
+    result->audio_end_time =
+        recognition_result.timing_information->audio_end_time;
+  }
+
   media::mojom::SpeechRecognitionHypothesisPtr hypothesis =
       media::mojom::SpeechRecognitionHypothesis::New();
 
