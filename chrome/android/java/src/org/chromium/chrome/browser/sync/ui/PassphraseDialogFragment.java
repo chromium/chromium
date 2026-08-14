@@ -22,7 +22,6 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.TextView.OnEditorActionListener;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
@@ -101,14 +100,11 @@ public class PassphraseDialogFragment extends DialogFragment implements OnClickL
 
         mPassphraseEditText = v.findViewById(R.id.passphrase);
         mPassphraseEditText.setOnEditorActionListener(
-                new OnEditorActionListener() {
-                    @Override
-                    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                        if (actionId == EditorInfo.IME_ACTION_NEXT) {
-                            handleSubmit();
-                        }
-                        return false;
+                (TextView _, int actionId, KeyEvent _) -> {
+                    if (actionId == EditorInfo.IME_ACTION_NEXT) {
+                        handleSubmit();
                     }
+                    return false;
                 });
 
         // Create a new background Drawable for the passphrase EditText to use when the user has
@@ -142,18 +138,9 @@ public class PassphraseDialogFragment extends DialogFragment implements OnClickL
 
         d.getDelegate().setHandleNativeActionModesEnabled(false);
         d.setOnShowListener(
-                new DialogInterface.OnShowListener() {
-                    @Override
-                    public void onShow(DialogInterface dialog) {
-                        Button b = d.getButton(AlertDialog.BUTTON_POSITIVE);
-                        b.setOnClickListener(
-                                new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View view) {
-                                        handleSubmit();
-                                    }
-                                });
-                    }
+                dialog -> {
+                    Button b = d.getButton(AlertDialog.BUTTON_POSITIVE);
+                    b.setOnClickListener(view -> handleSubmit());
                 });
         return d;
     }
