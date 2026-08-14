@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "components/page_load_metrics/browser/fake_page_load_metrics_observer_delegate.h"
+
 #include "base/time/default_tick_clock.h"
+#include "components/page_load_metrics/browser/navigation_scenario.h"
 #include "components/page_load_metrics/common/page_load_metrics.mojom.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
@@ -231,6 +233,11 @@ FakePageLoadMetricsObserverDelegate::GetUkmSourceIdForSameDocumentNavigation(
 bool FakePageLoadMetricsObserverDelegate::IsFirstNavigationInWebContents()
     const {
   return false;
+}
+
+NavigationScenario FakePageLoadMetricsObserverDelegate::GetNavigationScenario()
+    const {
+  return navigation_scenario_;
 }
 
 bool FakePageLoadMetricsObserverDelegate::IsOriginVisit() const {

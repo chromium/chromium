@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
 #include "base/unguessable_token.h"
+#include "components/page_load_metrics/browser/navigation_scenario.h"
 #include "components/page_load_metrics/browser/observers/core/largest_contentful_paint_handler.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer_delegate.h"
@@ -298,6 +299,7 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
   ukm::SourceId GetUkmSourceIdForSameDocumentNavigation(
       base::UnguessableToken same_document_metrics_token) const override;
   bool IsFirstNavigationInWebContents() const override;
+  NavigationScenario GetNavigationScenario() const override;
   bool IsOriginVisit() const override;
   bool IsTerminalVisit() const override;
   bool ShouldObserveScheme(std::string_view scheme) const override;
@@ -594,6 +596,7 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
   const IsFirstNavigationInWebContentsBool is_first_navigation_in_web_contents_;
   const IsReloadAfterDiscardBool is_reload_after_discard_;
   const bool is_origin_visit_;
+  const NavigationScenario navigation_scenario_;
   bool is_terminal_visit_ = true;
 
   page_load_metrics::LargestContentfulPaintHandler

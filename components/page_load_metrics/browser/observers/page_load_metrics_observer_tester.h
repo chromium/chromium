@@ -10,6 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "components/page_load_metrics/browser/navigation_scenario.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "components/page_load_metrics/common/page_load_metrics.mojom-forward.h"
 #include "components/page_load_metrics/common/test/weak_mock_timer.h"
@@ -168,6 +169,13 @@ class PageLoadMetricsObserverTester : public test::WeakMockTimerProvider {
   void RegisterObservers(PageLoadTracker* tracker);
 
   bool is_non_tab_webui() const { return is_non_tab_webui_; }
+  void set_navigation_scenario(NavigationScenario scenario) {
+    navigation_scenario_ = scenario;
+  }
+  NavigationScenario GetNavigationScenario(
+      content::NavigationHandle* navigation_handle) const {
+    return navigation_scenario_;
+  }
 
  private:
   void SimulatePageLoadTimingUpdate(
@@ -197,6 +205,7 @@ class PageLoadMetricsObserverTester : public test::WeakMockTimerProvider {
   ukm::TestAutoSetUkmRecorder test_ukm_recorder_;
 
   bool is_non_tab_webui_ = false;
+  NavigationScenario navigation_scenario_ = NavigationScenario::kUnknown;
 };
 
 }  // namespace page_load_metrics
