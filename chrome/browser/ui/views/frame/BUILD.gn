@@ -158,3 +158,70 @@ source_set("glass_frame_service") {
     "//ui/base/unowned_user_data",
   ]
 }
+
+source_set("caption_button_placeholder_container") {
+  public = [ "caption_button_placeholder_container.h" ]
+  sources = [ "caption_button_placeholder_container.cc" ]
+  public_deps = [
+    "//ui/base/metadata",
+    "//ui/views",
+  ]
+}
+
+source_set("contents_container_outline") {
+  public = [ "contents_container_outline.h" ]
+  sources = [ "contents_container_outline.cc" ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/ui/color:color_headers",
+    "//ui/views",
+  ]
+  deps = [
+    "//base:i18n",
+    "//skia",
+    "//ui/base/metadata",
+    "//ui/color:color_headers",
+    "//ui/compositor",
+    "//ui/gfx",
+    "//ui/gfx/geometry",
+  ]
+}
+
+source_set("contents_separator") {
+  public = [ "contents_separator.h" ]
+  sources = [ "contents_separator.cc" ]
+  public_deps = [ "//ui/views" ]
+  deps = [
+    "//base",
+    "//chrome/browser/ui/color:color_headers",
+    "//ui/base/metadata",
+  ]
+}
+
+source_set("scrim_view") {
+  public = [ "scrim_view.h" ]
+  sources = [ "scrim_view.cc" ]
+  public_deps = [
+    "//ui/color:color_headers",
+    "//ui/views",
+  ]
+  deps = [
+    "//ui/base/metadata",
+    "//ui/compositor",
+    "//ui/gfx/geometry",
+  ]
+}
+
+source_set("windows_icon_painter") {
+  public = [ "windows_icon_painter.h" ]
+  sources = [ "windows_icon_painter.cc" ]
+  public_deps = [
+    "//base",
+    "//ui/gfx",
+  ]
+  deps = [
+    "//chrome/browser/ui/color:color_headers",
+    "//skia",
+    "//ui/gfx/geometry",
+  ]
+}
