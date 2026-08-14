@@ -12,7 +12,7 @@ StubPermissionPromptDelegate::StubPermissionPromptDelegate() = default;
 StubPermissionPromptDelegate::~StubPermissionPromptDelegate() = default;
 
 const std::vector<std::unique_ptr<PermissionRequest>>&
-StubPermissionPromptDelegate::Requests() {
+StubPermissionPromptDelegate::Requests() const {
   return requests_;
 }
 

@@ -19,7 +19,8 @@ class StubPermissionPromptDelegate : public PermissionPrompt::Delegate {
   ~StubPermissionPromptDelegate() override;
 
   // PermissionPrompt::Delegate:
-  const std::vector<std::unique_ptr<PermissionRequest>>& Requests() override;
+  const std::vector<std::unique_ptr<PermissionRequest>>& Requests()
+      const override;
 
   GURL GetRequestingOrigin() const override;
 
