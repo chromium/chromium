@@ -461,14 +461,10 @@ viz::CompositorFrame ArCompositorFrameSink::CreateFrame(WebXrFrame* xr_frame,
                             gfx::ProtectedVideoType::kClear,
                             /*is_tex_coords_normalized=*/false);
 
-    viz::TransferableResource::MetadataOverride render_resource_overrides = {
-        .is_overlay_candidate = false,
-    };
-
     auto renderer_resource = viz::TransferableResource::Make(
         renderer_buffer->shared_image,
         viz::TransferableResource::ResourceSource::kAR,
-        renderer_buffer->sync_token, render_resource_overrides);
+        renderer_buffer->sync_token);
 
     renderer_resource.id = renderer_buffer->id;
     id_to_frame_map_[renderer_buffer->id] = xr_frame;
@@ -508,15 +504,11 @@ viz::CompositorFrame ArCompositorFrameSink::CreateFrame(WebXrFrame* xr_frame,
                       /*secure_output=*/false, gfx::ProtectedVideoType::kClear,
                       /*is_tex_coords_normalized=*/false);
 
-  viz::TransferableResource::MetadataOverride camera_resource_overrides = {
-      .is_overlay_candidate = false,
-  };
-
   // Additionally append to the resource_list
   auto camera_resource = viz::TransferableResource::Make(
       camera_buffer->shared_image,
-      viz::TransferableResource::ResourceSource::kAR, camera_buffer->sync_token,
-      camera_resource_overrides);
+      viz::TransferableResource::ResourceSource::kAR,
+      camera_buffer->sync_token);
 
   camera_resource.id = camera_buffer->id;
   id_to_frame_map_[camera_buffer->id] = xr_frame;
