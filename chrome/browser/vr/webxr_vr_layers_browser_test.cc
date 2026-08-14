@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/command_line.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/vr/test/mock_xr_device_hook_base.h"
 #include "chrome/browser/vr/test/multi_class_browser_test.h"
@@ -9,16 +10,19 @@
 #include "chrome/browser/vr/test/webxr_vr_browser_test.h"
 #include "device/vr/buildflags/buildflags.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/gl/gl_switches.h"
 
 #if BUILDFLAG(ENABLE_OPENXR)
 
 namespace vr {
 
 namespace {
+
+constexpr int kColorTolerance = 10;
+
 class MockForLayers : public MockXRDeviceHookBase {
  public:
-  explicit MockForLayers(int color_tolerance = 0)
-      : color_tolerance_(color_tolerance) {}
+  MockForLayers() = default;
 
   void ProcessSubmittedFrameUnlocked(
       const std::vector<device::ViewData>& views,
@@ -27,7 +31,6 @@ class MockForLayers : public MockXRDeviceHookBase {
                    const std::vector<device::LayerData>& expected_layers);
 
  private:
-  int color_tolerance_;
   base::Lock lock_;
   std::vector<device::ViewData> last_submitted_views_ GUARDED_BY(lock_);
   std::vector<device::LayerData> last_submitted_layers_ GUARDED_BY(lock_);
@@ -62,41 +65,32 @@ void MockForLayers::VerifyFrame(
               last_submitted_layers_[i].face_colors.size());
     for (size_t j = 0; j < expected_layers[i].face_colors.size(); ++j) {
       LOG(INFO) << "Verifying face " << j;
-      if (color_tolerance_ == 0) {
-        EXPECT_EQ(expected_layers[i].face_colors[j],
-                  last_submitted_layers_[i].face_colors[j]);
-      } else {
-        // Use a tolerance for video/media layers as YUV/RGB conversions can
-        // introduce slight color variations.
-        EXPECT_NEAR(
-            static_cast<int>(SkColorGetR(expected_layers[i].face_colors[j])),
-            static_cast<int>(
-                SkColorGetR(last_submitted_layers_[i].face_colors[j])),
-            color_tolerance_);
-        EXPECT_NEAR(
-            static_cast<int>(SkColorGetG(expected_layers[i].face_colors[j])),
-            static_cast<int>(
-                SkColorGetG(last_submitted_layers_[i].face_colors[j])),
-            color_tolerance_);
-        EXPECT_NEAR(
-            static_cast<int>(SkColorGetB(expected_layers[i].face_colors[j])),
-            static_cast<int>(
-                SkColorGetB(last_submitted_layers_[i].face_colors[j])),
-            color_tolerance_);
-        EXPECT_NEAR(
-            static_cast<int>(SkColorGetA(expected_layers[i].face_colors[j])),
-            static_cast<int>(
-                SkColorGetA(last_submitted_layers_[i].face_colors[j])),
-            color_tolerance_);
-      }
+      // Use a tolerance for layer color matching as color space conversions,
+      // alpha blending, video/media YUV conversions, and texture samplers can
+      // introduce slight rounding variations across GPU drivers and decoders.
+      EXPECT_NEAR(
+          static_cast<int>(SkColorGetR(expected_layers[i].face_colors[j])),
+          static_cast<int>(
+              SkColorGetR(last_submitted_layers_[i].face_colors[j])),
+          kColorTolerance);
+      EXPECT_NEAR(
+          static_cast<int>(SkColorGetG(expected_layers[i].face_colors[j])),
+          static_cast<int>(
+              SkColorGetG(last_submitted_layers_[i].face_colors[j])),
+          kColorTolerance);
+      EXPECT_NEAR(
+          static_cast<int>(SkColorGetB(expected_layers[i].face_colors[j])),
+          static_cast<int>(
+              SkColorGetB(last_submitted_layers_[i].face_colors[j])),
+          kColorTolerance);
+      EXPECT_NEAR(
+          static_cast<int>(SkColorGetA(expected_layers[i].face_colors[j])),
+          static_cast<int>(
+              SkColorGetA(last_submitted_layers_[i].face_colors[j])),
+          kColorTolerance);
     }
   }
 }
-
-class MockForMediaLayers : public MockForLayers {
- public:
-  MockForMediaLayers() : MockForLayers(10) {}
-};
 }  // namespace
 
 // Test all kinds of layers in WebXR. This test requests the 'layers' feature.
@@ -143,8 +137,16 @@ WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestLayers) {
 
   // The equirect layer has 0.5 opacity (half alpha and half intensity).
   expected_layers.emplace_back(device::LayerType::kEquirect);
-  expected_layers.back().face_colors.push_back(
-      SkColorSetARGB(128, 128, 128, 0));
+  if (base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          switches::kUseCmdDecoder) == gl::kCmdDecoderValidatingName) {
+    // When using the validating command decoder on OpenGLES with sRGB swapchain
+    // formats, linear 0.5 intensity maps to sRGB (~192).
+    expected_layers.back().face_colors.push_back(
+        SkColorSetARGB(128, 192, 192, 0));
+  } else {
+    expected_layers.back().face_colors.push_back(
+        SkColorSetARGB(128, 128, 128, 0));
+  }
 
   expected_layers.emplace_back(device::LayerType::kCube);
   expected_layers.back().face_colors.push_back(SK_ColorRED);
@@ -161,7 +163,7 @@ WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestLayers) {
 
 WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestMediaLayers) {
   UiUtils::DisableOverlayForTesting();
-  MockForMediaLayers mock;
+  MockForLayers mock;
 
   t->LoadFileAndAwaitInitialization("test_openxr_media_layers");
   t->EnterSessionWithUserGestureOrFail();

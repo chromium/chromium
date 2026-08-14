@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 #include <atomic>
+#include <cmath>
 #include <memory>
 
+#include "base/command_line.h"
 #include "base/environment.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -13,6 +15,7 @@
 #include "chrome/browser/vr/test/ui_utils.h"
 #include "chrome/browser/vr/test/webxr_vr_browser_test.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/gl/gl_switches.h"
 
 namespace vr {
 namespace {
@@ -48,10 +51,29 @@ class MyXRMock : public MockXRDeviceHookBase {
   std::atomic_int frame_id_ = 0;
 };
 
+uint8_t SrgbToLinear(uint8_t srgb) {
+  float s = srgb / 255.0f;
+  float c =
+      (s <= 0.04045f) ? (s / 12.92f) : std::pow((s + 0.055f) / 1.055f, 2.4f);
+  return static_cast<uint8_t>(std::round(c * 255.0f));
+}
+
 uint32_t ParseColorFrameId(SkColor color) {
+  uint8_t r = SkColorGetR(color);
+  uint8_t g = SkColorGetG(color);
+  uint8_t b = SkColorGetB(color);
+  // The validating command decoder (used on Android emulators) enforces sRGB
+  // color conversion on OpenGLES sRGB swapchains, which gamma-encodes the
+  // float clearColor into sRGB byte values. Convert back to linear space to
+  // recover the original integer frame ID.
+  if (base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          switches::kUseCmdDecoder) == gl::kCmdDecoderValidatingName) {
+    r = SrgbToLinear(r);
+    g = SrgbToLinear(g);
+    b = SrgbToLinear(b);
+  }
   // Corresponding math in test_webxr_poses.html.
-  uint32_t frame_id = static_cast<uint32_t>(SkColorGetR(color)) +
-                      256 * SkColorGetG(color) + 256 * 256 * SkColorGetB(color);
+  uint32_t frame_id = static_cast<uint32_t>(r) + 256 * g + 256 * 256 * b;
   return frame_id;
 }
 
@@ -71,11 +93,9 @@ void MyXRMock::ProcessSubmittedFrameUnlocked(
   ASSERT_TRUE(last_immersive_frame_data)
       << "Frame submitted without any frame data provided";
 
-  // We expect a waitGetPoses, then 2 submits (one for each eye), so after 2
-  // submitted frames don't use the same frame_data again.
-  if (GetFrameCount() % 2 == 0) {
-    last_immersive_frame_data = std::nullopt;
-  }
+  // Consume the frame data so each submitted frame must have a corresponding
+  // UpdateFrameData call.
+  last_immersive_frame_data = std::nullopt;
 }
 
 void MyXRMock::UpdateFrameDataUnlocked() {

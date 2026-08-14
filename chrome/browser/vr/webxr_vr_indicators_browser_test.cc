@@ -14,6 +14,7 @@
 #include "chrome/browser/vr/test/multi_class_browser_test.h"
 #include "chrome/browser/vr/test/ui_utils.h"
 #include "chrome/browser/vr/test/webxr_vr_browser_test.h"
+#include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -95,7 +96,6 @@ PermissionSetting CreateGeolocationSetting(ContentSetting setting) {
 void TestIndicatorOnAccessForContentType(
     WebXrVrBrowserTestBase* t,
     ContentSettingsType content_setting_type,
-    const std::string& script,
     UserFriendlyElementName element_name) {
   MockXRDeviceHookBase mock_device;
   // Enter VR while the content setting is CONTENT_SETTING_ASK to suppress
@@ -109,11 +109,18 @@ void TestIndicatorOnAccessForContentType(
   SetMultipleContentSetting(
       t, {{content_setting_type,
            CreateGeolocationSetting(CONTENT_SETTING_ALLOW)}});
-  t->RunJavaScriptOrFail(script);
 
   auto utils = UiUtils::Create();
-  // Check if the location indicator shows.
-  utils->WaitForVisibilityStatus(element_name, true);
+
+  content_settings::PageSpecificContentSettings::GetForFrame(
+      t->GetCurrentWebContents()->GetPrimaryMainFrame())
+      ->OnContentAllowed(content_setting_type);
+
+  // Check if the location indicator shows. Use a longer timeout on slower
+  // environments (e.g. emulators) because VRUiHostImpl polls capturing state
+  // on a timer before posting state updates to the VR rendering thread.
+  utils->WaitForVisibilityStatus(element_name, true,
+                                 XrBrowserTestBase::kPollTimeoutLong);
 
   t->EndSessionOrFail();
 }
@@ -154,21 +161,18 @@ WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestLocationInUseIndicator) {
   // enabling/capability (unlike microphone, camera). Hence, this test.
   TestIndicatorOnAccessForContentType(
       t, permissions::PermissionUtil::GetGeolocationType(),
-      "navigator.geolocation.getCurrentPosition( ()=>{}, ()=>{} )",
       UserFriendlyElementName::kWebXrLocationPermissionIndicator);
 }
 
 WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(DISABLED_TestMicrophoneInUseIndicator) {
   TestIndicatorOnAccessForContentType(
       t, ContentSettingsType::MEDIASTREAM_MIC,
-      "navigator.getUserMedia( {audio : true},  ()=>{}, ()=>{} )",
       UserFriendlyElementName::kWebXrAudioIndicator);
 }
 
 WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(DISABLED_TestCameraInUseIndicator) {
   TestIndicatorOnAccessForContentType(
       t, ContentSettingsType::MEDIASTREAM_CAMERA,
-      "navigator.getUserMedia( {video : true},  ()=>{}, ()=>{} )",
       UserFriendlyElementName::kWebXrVideoPermissionIndicator);
 }
 
