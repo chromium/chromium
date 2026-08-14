@@ -84,13 +84,12 @@ public class SplitChromeApplication extends SplitCompatApplication {
     protected void attachBaseContext(Context context) {
         if (isBrowserProcess()) {
             setImplSupplier(
-                    () -> {
-                        return (Impl)
-                                BundleUtils.newInstance(
-                                        mChromeApplicationClassName, CHROME_SPLIT_NAME);
-                    });
+                    () ->
+                            (Impl)
+                                    BundleUtils.newInstance(
+                                            mChromeApplicationClassName, CHROME_SPLIT_NAME));
         } else {
-            setImplSupplier(() -> createNonBrowserApplication());
+            setImplSupplier(this::createNonBrowserApplication);
         }
         // We need to call setImplSupplier before continuing attachBaseContext. See
         // crbug.com/395261363 for details.

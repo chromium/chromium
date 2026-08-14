@@ -255,16 +255,13 @@ public class SplitCompatApplication extends Application {
         // actually be run for incremental apks, but not normal apks.
         if (!isIsolatedProcess && !isWebViewProcess()) {
             JavaExceptionReporterFactory factory =
-                    new JavaExceptionReporterFactory() {
-                        @Override
-                        public JavaExceptionReporter createJavaExceptionReporter() {
-                            // ChromePureJavaExceptionReporter may be in the chrome module, so load
-                            // by reflection from there.
-                            return (JavaExceptionReporter)
-                                    BundleUtils.newInstance(
-                                            "org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter",
-                                            CHROME_SPLIT_NAME);
-                        }
+                    () -> {
+                        // ChromePureJavaExceptionReporter may be in the chrome module, so load
+                        // by reflection from there.
+                        return (JavaExceptionReporter)
+                                BundleUtils.newInstance(
+                                        "org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter",
+                                        CHROME_SPLIT_NAME);
                     };
             PureJavaExceptionHandler.installHandler(factory);
             CustomAssertionHandler.installPreNativeHandler(factory);
