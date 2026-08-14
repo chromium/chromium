@@ -13,6 +13,7 @@
 #include "base/check_deref.h"
 #include "base/containers/adapters.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -245,6 +246,31 @@ void ContextHubService::GenerateTabBasedTodos(
     return;
   }
 
+  auto_todos_store_->GetAllItems(base::BindOnce(
+      &ContextHubService::OnAllAutoTodosFetchedForTabBasedTodos,
+      weak_factory_.GetWeakPtr(), std::move(tabs), std::move(callback)));
+}
+
+void ContextHubService::OnAllAutoTodosFetchedForTabBasedTodos(
+    std::vector<base::WeakPtr<content::WebContents>> tabs,
+    AutoTodosStore::OperationCallback callback,
+    std::vector<AutoTodoEntry> stored_todos) {
+  if (!auto_todos_store_ || pending_tab_todos_callback_) {
+    if (callback) {
+      std::move(callback).Run(false);
+    }
+    return;
+  }
+
+  base::flat_set<int64_t> cached_tab_ids;
+  for (const auto& entry : stored_todos) {
+    if (entry.is_third_party()) {
+      if (auto tab_id = entry.tab_id()) {
+        cached_tab_ids.insert(*tab_id);
+      }
+    }
+  }
+
   std::vector<base::WeakPtr<content::WebContents>> eligible_tabs;
   for (auto& tab : tabs) {
     if (!tab) {
@@ -262,6 +288,11 @@ void ContextHubService::GenerateTabBasedTodos(
     if (!tab->GetLastActiveTime().is_null() &&
         (base::Time::Now() - tab->GetLastActiveTime()) >
             features::kTabBasedTodosInactivityThreshold.Get()) {
+      SessionID session_id = sessions::SessionTabHelper::IdForTab(tab.get());
+      int64_t tab_id = session_id.is_valid() ? session_id.id() : -1;
+      if (tab_id != -1 && cached_tab_ids.contains(tab_id)) {
+        continue;
+      }
       eligible_tabs.push_back(std::move(tab));
     }
   }

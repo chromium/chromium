@@ -541,6 +541,60 @@ TEST_F(ContextHubServiceTest, GenerateTabBasedTodos_MissingPageContentSkipped) {
   EXPECT_TRUE(future.Get());
 }
 
+TEST_F(ContextHubServiceTest, GenerateTabBasedTodos_SkipsTabsAlreadyInCache) {
+  auto web_contents1 = CreateEligibleTab(GURL("https://example.com/tab1"));
+  auto web_contents2 = CreateEligibleTabWithMockExtraction(
+      GURL("https://example.com/tab2"), "Tab 2");
+
+  // Pre-populate store with a todo for tab1.
+  SessionID session_id1 =
+      sessions::SessionTabHelper::IdForTab(web_contents1.get());
+  AutoTodoEntry existing_entry;
+  existing_entry.title = "Existing Todo";
+  ThirdPartyData third_party;
+  third_party.tab_id = session_id1.id();
+  third_party.group_type = ThirdPartyData::GroupType::kReadingList;
+  existing_entry.data = std::move(third_party);
+
+  base::test::TestFuture<bool> add_future;
+  service_.UpdateAutoTodo(std::move(existing_entry), add_future.GetCallback());
+  EXPECT_TRUE(add_future.Get());
+
+  // Page content extraction service should only be called for tab2, not tab1.
+  EXPECT_CALL(mock_page_content_extraction_service_,
+              GetExtractedPageContentAndEligibilityForPageAsync(
+                  testing::Ref(web_contents1->GetPrimaryPage()), _, _))
+      .Times(0);
+
+  EXPECT_CALL(
+      mock_remote_model_executor_,
+      ExecuteModel(optimization_guide::ModelBasedCapabilityKey::kContextHub, _,
+                   _, _))
+      .WillOnce(
+          [this](
+              optimization_guide::ModelBasedCapabilityKey feature,
+              const google::protobuf::MessageLite& request_metadata,
+              const optimization_guide::ModelExecutionOptions& options,
+              optimization_guide::OptimizationGuideModelExecutionResultCallback
+                  callback) {
+            base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+                FROM_HERE,
+                base::BindOnce(
+                    std::move(callback),
+                    CreateContextHubResponseResult(
+                        "Todo for tab 2",
+                        optimization_guide::proto::BrowserBasedTodosResponse::
+                            GROUP_TYPE_UNFINISHED),
+                    nullptr));
+          });
+
+  base::test::TestFuture<bool> future;
+  service_.GenerateTabBasedTodos(
+      {web_contents1->GetWeakPtr(), web_contents2->GetWeakPtr()},
+      future.GetCallback());
+  EXPECT_TRUE(future.Get());
+}
+
 TEST_F(ContextHubServiceTest, GenerateTabBasedTodos_QueuesRequestsOverLimit) {
   // Set the number of tabs to exceed kMaxConcurrentMesRequests (10) to verify
   // request queuing and batch processing.

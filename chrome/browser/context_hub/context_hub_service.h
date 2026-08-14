@@ -262,6 +262,13 @@ class ContextHubService : public KeyedService, public AutoTodosStore::Observer {
       AutoTodosStore::OperationCallback callback,
       bool success);
 
+  // Handles the async response when all auto todos are fetched to filter tabs
+  // for tab-based todos generation.
+  void OnAllAutoTodosFetchedForTabBasedTodos(
+      std::vector<base::WeakPtr<content::WebContents>> tabs,
+      AutoTodosStore::OperationCallback callback,
+      std::vector<AutoTodoEntry> stored_todos);
+
   // Handles the async response when APC is fetched for tabs.
   void OnTabContextsFetched(
       std::vector<
