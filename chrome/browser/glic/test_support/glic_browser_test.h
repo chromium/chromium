@@ -523,17 +523,17 @@ class GlicBrowserTestMixin : public T {
 
   // Waits for the Glic UI to be closed. Defaults to the only glic instance,
   // but can be specified.
-  TestResult<> WaitForGlicClose(GlicInstance* instance = nullptr) {
+  TestResult<> WaitForGlicClose(GlicInstanceImpl* instance = nullptr) {
     std::optional<InstanceId> id =
         instance ? std::make_optional(instance->id()) : std::nullopt;
     bool success = RunUntil(
         [this, id]() {
-          GlicInstance* target =
+          GlicInstanceImpl* target =
               id ? GetInstanceById(*id) : GetOnlyGlicInstance();
           if (!target) {
             return true;
           }
-          return target->IsFullyClosedForTesting();
+          return !target->HasActiveEmbedder();
         },
         "Failed to close Glic UI");
     if (!success) {

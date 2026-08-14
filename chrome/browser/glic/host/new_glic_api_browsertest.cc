@@ -1405,6 +1405,27 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest,
       {.params = base::Value(base::DictValue().Set("isFirstRun", false))});
 }
 
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest,
+                       testPinTabsStatePersistWhenClosePanelAndReopen) {
+  ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTab());
+  PreventDeletionOnClose(instance);
+  // Open second tab in background.
+  tabs::TabInterface* second_tab = CreateBackgroundTab(
+      embedded_test_server()->GetURL("/browser_tests/test.html"));
+  const int tab_id = second_tab->GetHandle().raw_value();
+
+  ExecuteJsTest({.params = base::Value(base::DictValue().Set(
+                     "tabId", base::NumberToString(tab_id)))});
+
+  // Glic UI was closed by JS, wait for it.
+  ASSERT_OK(WaitForGlicClose());
+
+  // Re-open Glic.
+  ASSERT_OK(OpenGlicForActiveTab());
+
+  ContinueJsTest();
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testPinTabsFailsWhenIncognitoWindow) {
   ASSERT_OK(OpenGlicForActiveTabAndDetach());

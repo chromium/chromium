@@ -178,7 +178,6 @@ class GlicInstanceImpl : public GlicInstance,
   Target GetInvokeTarget(Target::Surface fallback_surface) override;
   bool IsActive() override;
   bool IsHibernated() const override;
-  bool IsFullyClosedForTesting() const override;
 
   bool HasActiveEmbedder() const;
   bool IsDetached();

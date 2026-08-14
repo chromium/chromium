@@ -583,26 +583,6 @@ class ApiTests extends ApiTestFixtureBase {
     return tabId;
   }
 
-  async testPinTabsStatePersistWhenClosePanelAndReopen() {
-    assertDefined(this.host.closePanel);
-    assertDefined(this.host.pinTabs);
-    assertDefined(this.host.getPinnedTabs);
-
-    const tabId = this.testParams.tabId;
-    const activeTabId = this.getActiveTabId();
-
-    assertTrue(await this.host.pinTabs([activeTabId, tabId]));
-    const pinnedTabsUpdates = observeSequence(this.host.getPinnedTabs());
-    await pinnedTabsUpdates.waitFor((tabs) => tabs.length === 2);
-
-    await this.host.closePanel();
-
-    // Open glic window again.
-    await this.advanceToNextStep();
-
-    assertEquals(this.host.getPinnedTabs().getCurrentValue()?.length, 2);
-  }
-
   async testUnpinTabsFailsWhenNotPinned() {
     assertDefined(this.host.pinTabs);
     assertDefined(this.host.getPinnedTabs);
