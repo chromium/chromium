@@ -74,6 +74,11 @@ template("create_native_executable_dist") {
   }
 
   copy_ex(target_name) {
+    metadata = {
+      # Prevents this executable's library dependencies and sanitizer runtimes
+      # from leaking into outer APKs or tests that depend on this dist.
+      shared_libraries_barrier = []
+    }
     inputs = [
       _libraries_list,
       invoker.binary,
@@ -3273,6 +3278,10 @@ if (!is_robolectric && enable_java_templates) {
         if (defined(invoker.metadata)) {
           forward_variables_from(invoker.metadata, "*")
         }
+
+        # Prevents native libraries in this APK from leaking into targets that
+        # have a data_dep or dependency on this APK.
+        shared_libraries_barrier = []
 
         # Allows metadata collection via apk targets that traverse only java
         # deps.

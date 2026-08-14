@@ -721,12 +721,7 @@ template("test") {
       if (_use_raw_android_executable) {
         deps += [ ":$_dist_target" ]
       } else {
-        # Dep needed for the swarming .isolate file to pick up data
-        # deps from the forward_variables_from(invoker, "*") on the library.
-        deps += [
-          ":$_apk_target_name",
-          ":$_library_target_name",
-        ]
+        deps += [ ":$_apk_target_name" ]
       }
 
       if (defined(invoker.data_deps)) {

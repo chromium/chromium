@@ -17,7 +17,7 @@
 #  args: Optional. Additionnal arguments to the copy_ex.py script.
 #
 #  The following variables have the usual GN meaning: data, deps, inputs,
-#  outputs, testonly, visibility.
+#  metadata, outputs, testonly, visibility.
 
 import("//build/config/python.gni")
 
@@ -27,6 +27,7 @@ template("copy_ex") {
                            [
                              "data",
                              "deps",
+                             "metadata",
                              "public_deps",
                              "testonly",
                              "visibility",
