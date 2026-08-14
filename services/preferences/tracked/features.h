@@ -21,6 +21,11 @@ BASE_DECLARE_FEATURE(kEnableEncryptedTrackedPrefOnEnterprise);
 BASE_DECLARE_FEATURE(kRejectWeakCiphertext);
 #endif  // BUILDFLAG(IS_WIN)
 
+// When enabled, disables the legacy HMAC fallback upgrade path during
+// validation with os_crypt. Missing encrypted hashes will not be healed via
+// legacy MACs, preventing downgrade attacks.
+BASE_DECLARE_FEATURE(kDisallowLegacyPrefMacFallback);
+
 }  // namespace tracked
 
 #endif  // SERVICES_PREFERENCES_TRACKED_FEATURES_H_

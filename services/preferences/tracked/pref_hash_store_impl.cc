@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -19,6 +20,7 @@
 #include "components/os_crypt/async/common/encryptor.h"
 #include "services/preferences/public/cpp/tracked/tracked_preference_histogram_names.h"
 #include "services/preferences/tracked/device_id.h"
+#include "services/preferences/tracked/features.h"
 #include "services/preferences/tracked/hash_store_contents.h"
 
 namespace {
@@ -450,14 +452,17 @@ ValueState PrefHashStoreImpl::PrefHashStoreTransactionImpl::CheckValueInternal(
                    : ValueState::CLEARED_ENCRYPTED;
     }
     // Priority 2: Fallback to legacy MAC for healing.
-    if (stored_mac.has_value()) {
-      ValidationResult result =
-          outer_->pref_hash_calculator_.Validate(path, value, *stored_mac);
-      if (result == ValidationResult::VALID) {
-        return ValueState::UNCHANGED_VIA_HMAC_FALLBACK;
+    if (!base::FeatureList::IsEnabled(
+            tracked::kDisallowLegacyPrefMacFallback)) {
+      if (stored_mac.has_value()) {
+        ValidationResult result =
+            outer_->pref_hash_calculator_.Validate(path, value, *stored_mac);
+        if (result == ValidationResult::VALID) {
+          return ValueState::UNCHANGED_VIA_HMAC_FALLBACK;
+        }
+        return value ? ValueState::CHANGED_VIA_HMAC_FALLBACK
+                     : ValueState::CLEARED_VIA_HMAC_FALLBACK;
       }
-      return value ? ValueState::CHANGED_VIA_HMAC_FALLBACK
-                   : ValueState::CLEARED_VIA_HMAC_FALLBACK;
     }
   } else {
     // ---- Encryptor is NOT available: Legacy path ----
@@ -477,6 +482,8 @@ ValueState PrefHashStoreImpl::PrefHashStoreTransactionImpl::CheckValueInternal(
   // Arrive here if:
   // 1. No hashes stored at all.
   // 2. ONLY encrypted hash stored, but no encryptor (fell through above).
+  // 3. Encryptor is present, encrypted hash missing, and legacy fallback
+  // disabled.
   if (!value) {
     // Null value is always trusted if no usable hash is present
     return ValueState::TRUSTED_NULL_VALUE;
@@ -490,18 +497,35 @@ ValueState PrefHashStoreImpl::PrefHashStoreTransactionImpl::CheckValueInternal(
     return ValueState::UNTRUSTED_UNKNOWN_VALUE;
   }
 
+  // If the encryptor is present and fallback is disabled, but a legacy MAC was
+  // present (meaning an old or downgraded pref with no encrypted hash), treat
+  // it as untrusted.
+  if (encryptor_ && stored_mac.has_value() &&
+      base::FeatureList::IsEnabled(tracked::kDisallowLegacyPrefMacFallback)) {
+    return ValueState::UNTRUSTED_UNKNOWN_VALUE;
+  }
+
   // Otherwise (genuinely no hashes stored), base trust on the validity
-  // state of either super hash *cached at the start of the transaction*.
+  // state of super hash *cached at the start of the transaction*.
   // If the super encrypted hash was present but failed verification (mismatch),
   // we do not trust the state even if the legacy super MAC was valid.
   if (super_encrypted_hash_mismatch_) {
     return ValueState::UNTRUSTED_UNKNOWN_VALUE;
   }
-  if (super_mac_valid_ || super_encrypted_hash_valid_) {
-    return ValueState::TRUSTED_UNKNOWN_VALUE;
+
+  bool is_trusted = false;
+  if (encryptor_ &&
+      base::FeatureList::IsEnabled(tracked::kDisallowLegacyPrefMacFallback)) {
+    // When os_crypt is available and legacy fallback is disallowed, trust must
+    // be anchored in the Super Encrypted Hash, not the forgeable legacy Super
+    // MAC.
+    is_trusted = super_encrypted_hash_valid_;
   } else {
-    return ValueState::UNTRUSTED_UNKNOWN_VALUE;
+    is_trusted = (super_mac_valid_ || super_encrypted_hash_valid_);
   }
+
+  return is_trusted ? ValueState::TRUSTED_UNKNOWN_VALUE
+                    : ValueState::UNTRUSTED_UNKNOWN_VALUE;
 }
 
 ValueState PrefHashStoreImpl::PrefHashStoreTransactionImpl::CheckValue(
@@ -615,32 +639,35 @@ PrefHashStoreImpl::PrefHashStoreTransactionImpl::CheckSplitValueInternal(
     }
 
     // --- Priority 2: Fallback to legacy MACs for healing.
-    if (has_mac_hashes) {
-      std::map<std::string, std::string> current_macs = split_macs;
-      if (initial_split_value) {
-        for (const auto item : *initial_split_value) {
-          const std::string keyed_path = path + "." + item.first;
-          auto it = current_macs.find(item.first);
-          if (it == current_macs.end() ||
-              outer_->pref_hash_calculator_.Validate(keyed_path, &item.second,
-                                                     it->second) !=
-                  ValidationResult::VALID) {
-            invalid_keys->push_back(item.first);
-          }
-          if (it != current_macs.end()) {
-            current_macs.erase(it);
+    if (!base::FeatureList::IsEnabled(
+            tracked::kDisallowLegacyPrefMacFallback)) {
+      if (has_mac_hashes) {
+        std::map<std::string, std::string> current_macs = split_macs;
+        if (initial_split_value) {
+          for (const auto item : *initial_split_value) {
+            const std::string keyed_path = path + "." + item.first;
+            auto it = current_macs.find(item.first);
+            if (it == current_macs.end() ||
+                outer_->pref_hash_calculator_.Validate(keyed_path, &item.second,
+                                                       it->second) !=
+                    ValidationResult::VALID) {
+              invalid_keys->push_back(item.first);
+            }
+            if (it != current_macs.end()) {
+              current_macs.erase(it);
+            }
           }
         }
-      }
-      for (const auto& pair : current_macs) {
-        invalid_keys->push_back(pair.first);
-      }
+        for (const auto& pair : current_macs) {
+          invalid_keys->push_back(pair.first);
+        }
 
-      if (invalid_keys->empty()) {
-        return ValueState::UNCHANGED_VIA_HMAC_FALLBACK;
+        if (invalid_keys->empty()) {
+          return ValueState::UNCHANGED_VIA_HMAC_FALLBACK;
+        }
+        return is_initial_value_empty ? ValueState::CLEARED_VIA_HMAC_FALLBACK
+                                      : ValueState::CHANGED_VIA_HMAC_FALLBACK;
       }
-      return is_initial_value_empty ? ValueState::CLEARED_VIA_HMAC_FALLBACK
-                                    : ValueState::CHANGED_VIA_HMAC_FALLBACK;
     }
   } else {
     // --- No encryptor, legacy-only path ---
@@ -679,6 +706,8 @@ PrefHashStoreImpl::PrefHashStoreTransactionImpl::CheckSplitValueInternal(
   // Arrive here if:
   // 1. No hashes stored at all.
   // 2. ONLY encrypted hashes stored, but no encryptor (fell through).
+  // 3. Encryptor is present, encrypted hashes missing, and legacy fallback
+  // disabled.
   if (is_initial_value_empty) {
     return ValueState::UNCHANGED;
   }
@@ -687,19 +716,36 @@ PrefHashStoreImpl::PrefHashStoreTransactionImpl::CheckSplitValueInternal(
     return ValueState::UNTRUSTED_UNKNOWN_VALUE;
   }
 
+  // If the encryptor is present and fallback is disabled, but legacy MACs were
+  // present (meaning old or downgraded split prefs with no encrypted hashes),
+  // treat them as untrusted.
+  if (encryptor_ && has_mac_hashes &&
+      base::FeatureList::IsEnabled(tracked::kDisallowLegacyPrefMacFallback)) {
+    return ValueState::UNTRUSTED_UNKNOWN_VALUE;
+  }
+
   // Otherwise (genuinely no hashes at all, or MACs were checked and failed),
-  // base trust on the validity state of either super hash *cached at the start
+  // base trust on the validity state of super hash *cached at the start
   // of the transaction*.
   // If the super encrypted hash was present but failed verification (mismatch),
   // we do not trust the state even if the legacy super MAC was valid.
   if (super_encrypted_hash_mismatch_) {
     return ValueState::UNTRUSTED_UNKNOWN_VALUE;
   }
-  if (super_mac_valid_ || super_encrypted_hash_valid_) {
-    return ValueState::TRUSTED_UNKNOWN_VALUE;
+
+  bool is_trusted = false;
+  if (encryptor_ &&
+      base::FeatureList::IsEnabled(tracked::kDisallowLegacyPrefMacFallback)) {
+    // When os_crypt is available and legacy fallback is disallowed, trust must
+    // be anchored in the Super Encrypted Hash, not the forgeable legacy Super
+    // MAC.
+    is_trusted = super_encrypted_hash_valid_;
   } else {
-    return ValueState::UNTRUSTED_UNKNOWN_VALUE;
+    is_trusted = (super_mac_valid_ || super_encrypted_hash_valid_);
   }
+
+  return is_trusted ? ValueState::TRUSTED_UNKNOWN_VALUE
+                    : ValueState::UNTRUSTED_UNKNOWN_VALUE;
 }
 
 ValueState PrefHashStoreImpl::PrefHashStoreTransactionImpl::CheckSplitValue(

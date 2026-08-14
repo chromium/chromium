@@ -7,11 +7,13 @@
 #include <string>
 
 #include "base/base64.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "components/os_crypt/async/browser/test_utils.h"
 #include "components/os_crypt/async/common/encryptor.h"
 #include "services/preferences/public/mojom/tracked_preference_validation_delegate.mojom.h"
 #include "services/preferences/tracked/dictionary_hash_store_contents.h"
+#include "services/preferences/tracked/features.h"
 #include "services/preferences/tracked/hash_store_contents.h"
 #include "services/preferences/tracked/pref_hash_calculator.h"
 #include "services/preferences/tracked/pref_hash_store_transaction.h"
@@ -1003,6 +1005,96 @@ TEST_F(PrefHashStoreImplEncryptedTest, CheckValueValidation) {
     dictionary_contents_.SetMac(GetEncKey(path), "Invalid Base64");
     EXPECT_EQ(ValueState::UNCHANGED, tx->CheckValue(path, &value));
   }
+}
+
+TEST_F(PrefHashStoreImplEncryptedTest,
+       CheckValue_DisallowLegacyPrefMacFallback) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(tracked::kDisallowLegacyPrefMacFallback);
+
+  base::Value value("valid_value");
+  base::Value wrong_value("wrong_value");
+  const base::Value* null_value_ptr = nullptr;
+  std::string path = "check.pref";
+
+  auto tx = BeginTransaction(/*with_encryptor=*/true);
+  ASSERT_TRUE(tx);
+  MakeSuperMACInvalid();
+
+  // Scenario 1: Store only MAC (legacy). With fallback disallowed, this must
+  // NOT return UNCHANGED_VIA_HMAC_FALLBACK and should be treated as untrusted.
+  tx->ClearHash(path);
+  tx->StoreHash(path, &value);
+  EXPECT_EQ(ValueState::UNTRUSTED_UNKNOWN_VALUE, tx->CheckValue(path, &value));
+  EXPECT_EQ(ValueState::UNTRUSTED_UNKNOWN_VALUE,
+            tx->CheckValue(path, &wrong_value));
+  EXPECT_EQ(ValueState::TRUSTED_NULL_VALUE,
+            tx->CheckValue(path, null_value_ptr));
+
+  // Scenario 2: Store both MAC and Encrypted Hash. Encrypted hash is valid.
+  tx->ClearHash(path);
+  tx->StoreHash(path, &value);
+  tx->StoreEncryptedHash(path, &value);
+  EXPECT_EQ(ValueState::UNCHANGED_ENCRYPTED, tx->CheckValue(path, &value));
+  EXPECT_EQ(ValueState::CHANGED_ENCRYPTED, tx->CheckValue(path, &wrong_value));
+  EXPECT_EQ(ValueState::CLEARED_ENCRYPTED,
+            tx->CheckValue(path, null_value_ptr));
+
+  // Scenario 3: Store only Encrypted Hash (no MAC).
+  tx->ClearHash(path);
+  tx->StoreEncryptedHash(path, &value);
+  EXPECT_EQ(ValueState::UNCHANGED_ENCRYPTED, tx->CheckValue(path, &value));
+  EXPECT_EQ(ValueState::CHANGED_ENCRYPTED, tx->CheckValue(path, &wrong_value));
+  EXPECT_EQ(ValueState::CLEARED_ENCRYPTED,
+            tx->CheckValue(path, null_value_ptr));
+}
+
+TEST_F(PrefHashStoreImplEncryptedTest,
+       CheckSplitValue_DisallowLegacyPrefMacFallback) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(tracked::kDisallowLegacyPrefMacFallback);
+
+  const std::string kPrefPath = "my.split.pref.disallow_fallback";
+  std::vector<std::string> actual_invalid_keys;
+
+  base::DictValue current_prefs;
+  current_prefs.Set("key1", "value1");
+  current_prefs.Set("key2", "value2");
+
+  // Scenario 1: Store only split MACs (legacy). With fallback disallowed, this
+  // must NOT return UNCHANGED_VIA_HMAC_FALLBACK and should be treated as
+  // untrusted.
+  pref_store_contents_.clear();
+  dictionary_contents_.Reset();
+  actual_invalid_keys.clear();
+  MakeSuperMACInvalid();
+
+  base::DictValue computed_split_macs =
+      hash_store_.ComputeSplitMacs(kPrefPath, &current_prefs);
+  SeedSplitMacs(kPrefPath, &computed_split_macs);
+
+  auto tx = BeginTransaction(/*with_encryptor=*/true);
+  ValueState result_state =
+      tx->CheckSplitValue(kPrefPath, &current_prefs, &actual_invalid_keys);
+  EXPECT_EQ(ValueState::UNTRUSTED_UNKNOWN_VALUE, result_state);
+
+  // Scenario 2: Store both split MACs and split encrypted hashes.
+  pref_store_contents_.clear();
+  dictionary_contents_.Reset();
+  actual_invalid_keys.clear();
+  MakeSuperMACInvalid();
+
+  SeedSplitMacs(kPrefPath, &computed_split_macs);
+  base::DictValue computed_split_encrypted_hashes =
+      hash_store_.ComputeSplitEncryptedHashes(kPrefPath, &current_prefs,
+                                              test_encryptor_.get());
+  SeedSplitEncryptedHashes(kPrefPath, &computed_split_encrypted_hashes);
+
+  tx = BeginTransaction(/*with_encryptor=*/true);
+  result_state =
+      tx->CheckSplitValue(kPrefPath, &current_prefs, &actual_invalid_keys);
+  EXPECT_EQ(ValueState::UNCHANGED_ENCRYPTED, result_state);
+  EXPECT_TRUE(actual_invalid_keys.empty());
 }
 
 TEST_F(PrefHashStoreImplEncryptedTest, ClearHashTest) {

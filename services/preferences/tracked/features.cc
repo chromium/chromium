@@ -20,4 +20,8 @@ BASE_FEATURE(kEnableEncryptedTrackedPrefOnEnterprise,
 BASE_FEATURE(kRejectWeakCiphertext, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
 
+// When enabled, disables the legacy HMAC fallback upgrade path during
+// validation with os_crypt.
+BASE_FEATURE(kDisallowLegacyPrefMacFallback, base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace tracked
