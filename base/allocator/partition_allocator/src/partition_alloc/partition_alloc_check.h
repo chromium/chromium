@@ -117,8 +117,8 @@ struct PA_DEBUGKV_ALIGN DebugKv {
   DebugKv(const char* key, uint64_t value) : v(value) {
     // Fill with ' ', so that the stack dump is nicer to read.  Not using
     // memset() on purpose, this header is included from *many* places.
-    for (size_t index = 0; index < sizeof k; index++) {
-      PA_UNSAFE_TODO(k[index]) = ' ';
+    for (char& c : k) {
+      c = ' ';
     }
 
     for (size_t index = 0; index < sizeof k; index++) {

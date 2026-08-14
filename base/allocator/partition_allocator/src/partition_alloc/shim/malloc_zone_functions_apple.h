@@ -105,9 +105,9 @@ PA_COMPONENT_EXPORT(ALLOCATOR_SHIM) int GetMallocZoneCountForTesting();
 PA_COMPONENT_EXPORT(ALLOCATOR_SHIM) void ClearAllMallocZonesForTesting();
 
 inline MallocZoneFunctions& GetFunctionsForZone(void* zone) {
-  for (unsigned int i = 0; i < kMaxZoneCount; ++i) {
-    if (PA_UNSAFE_TODO(g_malloc_zones[i]).context == zone) {
-      return PA_UNSAFE_TODO(g_malloc_zones[i]);
+  for (auto& malloc_zone : g_malloc_zones) {
+    if (malloc_zone.context == zone) {
+      return malloc_zone;
     }
   }
   PA_IMMEDIATE_CRASH();
