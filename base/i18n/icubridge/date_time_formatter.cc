@@ -325,72 +325,13 @@ std::u16string GetWeekDaySkeleton(const std::string& skeleton,
   return std::u16string(weekday_count, weekday_symbol);
 }
 
-std::u16string GetHourSkeleton(const std::string& skeleton,
-                               DateTimeFormatterOptions options,
-                               const icu::Locale& locale) {
-  size_t hour_h_count = std::ranges::count(skeleton, 'h');
-  size_t hour_H_count = std::ranges::count(skeleton, 'H');
-  size_t hour_K_count = std::ranges::count(skeleton, 'K');
-  size_t hour_k_count = std::ranges::count(skeleton, 'k');
-
-  bool prefer_K = false;
-  bool prefer_k = false;
-  icu::Locale base_locale = locale;
-  UErrorCode status = U_ZERO_ERROR;
-  base_locale.setUnicodeKeywordValue("hc", nullptr, status);
-  std::unique_ptr<icu::DateTimePatternGenerator> base_generator(
-      icu::DateTimePatternGenerator::createInstance(base_locale, status));
-  if (U_SUCCESS(status)) {
-    status = U_ZERO_ERROR;
-    icu::UnicodeString pattern_12h =
-        base_generator->getBestPattern(icu::UnicodeString("ahm"), status);
-    if (U_SUCCESS(status) && pattern_12h.indexOf('K') != -1) {
-      prefer_K = true;
-    }
-    status = U_ZERO_ERROR;
-    icu::UnicodeString pattern_24h =
-        base_generator->getBestPattern(icu::UnicodeString("Hm"), status);
-    if (U_SUCCESS(status) && pattern_24h.indexOf('k') != -1) {
-      prefer_k = true;
-    }
-  }
-
-  std::u16string output_hour_skeleton;
-  size_t total_hour_count =
-      hour_h_count + hour_H_count + hour_K_count + hour_k_count;
-  if (options.hour_clock_type == base::k12HourClock) {
-    char16_t symbol = (hour_K_count > 0 || prefer_K) ? 'K' : 'h';
-    output_hour_skeleton.append(
-        std::u16string(std::max<size_t>(total_hour_count, 1), symbol));
-  } else if (options.hour_clock_type == base::k24HourClock) {
-    char16_t symbol = (hour_k_count > 0 || prefer_k) ? 'k' : 'H';
-    output_hour_skeleton.append(
-        std::u16string(std::max<size_t>(total_hour_count, 1), symbol));
-  } else {
-    if (hour_h_count) {
-      output_hour_skeleton.append(std::u16string(hour_h_count, 'h'));
-    }
-    if (hour_H_count) {
-      output_hour_skeleton.append(std::u16string(hour_H_count, 'H'));
-    }
-    if (hour_K_count) {
-      output_hour_skeleton.append(std::u16string(hour_K_count, 'K'));
-    }
-    if (hour_k_count) {
-      output_hour_skeleton.append(std::u16string(hour_k_count, 'k'));
-    }
-  }
-  return output_hour_skeleton;
-}
-
 // Takes a complete skeleton and returns a new one containing only the fields
 // that must be present.
 icu::UnicodeString GetFormattedSkeleton(
     const icu::UnicodeString& icu_initial_pattern,
     const icu::UnicodeString& complete_skeleton,
     const SkeletonOptions& skeleton_options,
-    DateTimeFormatterOptions options,
-    const icu::Locale& locale) {
+    DateTimeFormatterOptions options) {
   std::string skeleton =
       base::UTF16ToUTF8(base::i18n::UnicodeStringToString16(complete_skeleton));
 
@@ -418,11 +359,26 @@ icu::UnicodeString GetFormattedSkeleton(
 
   // Early return as from here, only time-formatting skeleton is built.
   if (skeleton_options.has_time) {
-    output_skeleton.append(GetHourSkeleton(skeleton, options, locale));
-
+    size_t hour_12_count = std::ranges::count(skeleton, 'h');
+    size_t hour_24_count = std::ranges::count(skeleton, 'H');
     size_t minute_count = std::ranges::count(skeleton, 'm');
     size_t second_count = std::ranges::count(skeleton, 's');
     size_t subsecond_count = std::ranges::count(skeleton, 'S');
+    // Hour
+    if (options.hour_clock_type == base::k12HourClock) {
+      output_skeleton.append(std::u16string(
+          std::max<size_t>(hour_12_count + hour_24_count, 1), 'h'));
+    } else if (options.hour_clock_type == base::k24HourClock) {
+      output_skeleton.append(std::u16string(
+          std::max<size_t>(hour_12_count + hour_24_count, 1), 'H'));
+    } else {
+      if (hour_12_count) {
+        output_skeleton.append(std::u16string(hour_12_count, 'h'));
+      }
+      if (hour_24_count) {
+        output_skeleton.append(std::u16string(hour_24_count, 'H'));
+      }
+    }
 
     if (options.time_precision !=
         DateTimeFormatterOptions::TimePrecision::kHour) {
@@ -528,7 +484,7 @@ icu::UnicodeString GetBestPattern(const icu::Locale& locale,
   }
 
   icu::UnicodeString formatted_skeleton = GetFormattedSkeleton(
-      icu_pattern, complete_skeleton, skeleton_options, options, locale);
+      icu_pattern, complete_skeleton, skeleton_options, options);
   icu::UnicodeString best_pattern =
       generator->getBestPattern(formatted_skeleton, status);
 
@@ -551,31 +507,8 @@ icu::Locale GetLocaleWithHourClockType(
   }
 
   UErrorCode status = U_ZERO_ERROR;
-  std::unique_ptr<icu::DateTimePatternGenerator> generator(
-      icu::DateTimePatternGenerator::createInstance(locale_arg, status));
-  bool prefers_K = false;
-  bool prefers_k = false;
-  if (U_SUCCESS(status)) {
-    status = U_ZERO_ERROR;
-    icu::UnicodeString pattern_12h =
-        generator->getBestPattern(icu::UnicodeString("ahm"), status);
-    if (U_SUCCESS(status) && pattern_12h.indexOf('K') != -1) {
-      prefers_K = true;
-    }
-    status = U_ZERO_ERROR;
-    icu::UnicodeString pattern_24h =
-        generator->getBestPattern(icu::UnicodeString("Hm"), status);
-    if (U_SUCCESS(status) && pattern_24h.indexOf('k') != -1) {
-      prefers_k = true;
-    }
-  }
-
-  status = U_ZERO_ERROR;
-  if (*hour_clock_type == base::k12HourClock) {
-    locale.setUnicodeKeywordValue("hc", prefers_K ? "h11" : "h12", status);
-  } else {
-    locale.setUnicodeKeywordValue("hc", prefers_k ? "h24" : "h23", status);
-  }
+  locale.setUnicodeKeywordValue(
+      "hc", (*hour_clock_type == base::k12HourClock) ? "h12" : "h23", status);
   return locale;
 }
 
