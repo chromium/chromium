@@ -67,8 +67,6 @@ class GlicCueTargetTest : public testing::Test {
     identity_test_env_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile_);
 
-    GlicEnabling::SetBypassEnablementChecksForTesting(true);
-
     web_contents_ =
         content::WebContentsTester::CreateTestWebContents(profile_, nullptr);
 
@@ -89,7 +87,6 @@ class GlicCueTargetTest : public testing::Test {
   }
 
   void TearDown() override {
-    GlicEnabling::SetBypassEnablementChecksForTesting(false);
     target_.reset();
     mock_tab_.reset();
     mock_glic_keyed_service_.reset();
@@ -115,6 +112,7 @@ class GlicCueTargetTest : public testing::Test {
   }
 
  protected:
+  GlicEnabling::ScopedBypassEnablementChecksForTesting scoped_glic_bypass_;
   base::test::ScopedFeatureList feature_list_;
   content::BrowserTaskEnvironment task_environment_;
 
@@ -262,7 +260,6 @@ class GlicCueTargetAsyncTest : public testing::Test {
         "TestProfile", std::move(testing_factories));
     identity_test_env_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile_);
-    GlicEnabling::SetBypassEnablementChecksForTesting(true);
     web_contents_ =
         content::WebContentsTester::CreateTestWebContents(profile_, nullptr);
     mock_glic_keyed_service_ = std::make_unique<MockGlicKeyedService>(
@@ -285,7 +282,6 @@ class GlicCueTargetAsyncTest : public testing::Test {
   }
 
   void TearDown() override {
-    GlicEnabling::SetBypassEnablementChecksForTesting(false);
     target_.reset();
     cue_tab_state_.reset();
     mock_tab_.reset();
@@ -332,6 +328,7 @@ class GlicCueTargetAsyncTest : public testing::Test {
   }
 
  protected:
+  GlicEnabling::ScopedBypassEnablementChecksForTesting scoped_glic_bypass_;
   base::test::ScopedFeatureList feature_list_;
   content::BrowserTaskEnvironment task_environment_{
       content::BrowserTaskEnvironment::TimeSource::MOCK_TIME};

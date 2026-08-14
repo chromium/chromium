@@ -30,13 +30,17 @@ class GlicCueTargetBrowserTest : public GlicApiBrowserTest {
 
   void SetUpOnMainThread() override {
     GlicApiBrowserTest::SetUpOnMainThread();
-    GlicEnabling::SetBypassEnablementChecksForTesting(true);
+    scoped_glic_bypass_.emplace();
   }
 
   void TearDownOnMainThread() override {
-    GlicEnabling::SetBypassEnablementChecksForTesting(false);
+    scoped_glic_bypass_.reset();
     GlicApiBrowserTest::TearDownOnMainThread();
   }
+
+ private:
+  std::optional<GlicEnabling::ScopedBypassEnablementChecksForTesting>
+      scoped_glic_bypass_;
 };
 
 class GlicCueTargetBrowserTestAutoSubmitEnabled

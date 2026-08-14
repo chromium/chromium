@@ -84,7 +84,6 @@ class SkillsUiTabControllerTest : public ChromeViewsTestBase {
     EXPECT_CALL(mock_tab_, GetBrowserWindowInterface())
         .WillRepeatedly(Return(&mock_browser_window_interface_));
 
-    glic::GlicEnabling::SetBypassEnablementChecksForTesting(true);
     TestingProfile* profile =
         profile_manager->CreateTestingProfile("test_profile");
     glic_test_env_.SetupProfile(profile);
@@ -109,6 +108,8 @@ class SkillsUiTabControllerTest : public ChromeViewsTestBase {
   }
 
  protected:
+  glic::GlicEnabling::ScopedBypassEnablementChecksForTesting
+      scoped_glic_bypass_;
   base::HistogramTester histogram_tester_;
   content::RenderViewHostTestEnabler render_view_host_test_enabler_;
   glic::GlicProfileManager glic_profile_manager_;

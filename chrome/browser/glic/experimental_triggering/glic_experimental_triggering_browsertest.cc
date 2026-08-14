@@ -29,7 +29,7 @@ using GlicExperimentalTriggeringBrowserTest = GlicBrowserTest;
 IN_PROC_BROWSER_TEST_F(
     GlicExperimentalTriggeringBrowserTest,
     ExperimentalTriggeringWithFocusedPwaDoesNotCreateNewWindow) {
-  GlicEnabling::SetBypassEnablementChecksForTesting(true);
+  GlicEnabling::ScopedBypassEnablementChecksForTesting scoped_glic_bypass;
   auto* glic_service = GlicKeyedServiceFactory::GetGlicKeyedService(
       GetProfile(), /*create=*/true);
   ASSERT_TRUE(glic_service);

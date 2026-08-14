@@ -50,14 +50,11 @@ class GlicContextMenuInvocationHelperUnittest : public testing::Test {
                       &GlicContextMenuInvocationHelperUnittest::CreateService,
                       base::Unretained(this)));
 
-    GlicEnabling::SetBypassEnablementChecksForTesting(true);
-
     // Create the service so mock_service_ is not null.
     GlicKeyedServiceFactory::GetGlicKeyedService(profile_, /*create=*/true);
   }
 
   void TearDown() override {
-    GlicEnabling::SetBypassEnablementChecksForTesting(false);
     identity_test_env_adaptor_.reset();
     profile_ = nullptr;
     mock_service_ = nullptr;
@@ -78,6 +75,7 @@ class GlicContextMenuInvocationHelperUnittest : public testing::Test {
   }
 
  protected:
+  GlicEnabling::ScopedBypassEnablementChecksForTesting scoped_glic_bypass_;
   content::BrowserTaskEnvironment task_environment_;
   content::RenderViewHostTestEnabler enabler_;
   raw_ptr<TestingProfile> profile_;

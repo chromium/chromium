@@ -239,7 +239,7 @@ IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest, DialogIsTabScoped) {
 IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest, VerifyWebUIPlumbing) {
   // Enable Glic late to avoid a crash in GlicTabIndicatorHelper during tab
   // creation.
-  glic::GlicEnabling::SetBypassEnablementChecksForTesting(true);
+  glic::GlicEnabling::ScopedBypassEnablementChecksForTesting scoped_glic_bypass;
 
   // Show the dialog.
   skills::Skill test_skill("id", "skill_name", "icon", "Test Prompt");
@@ -265,7 +265,6 @@ IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest, VerifyWebUIPlumbing) {
   EXPECT_TRUE(skills_ui->GetDelegateForTesting());
   EXPECT_EQ(skills_ui->GetInitialSkillForTesting().name, "skill_name");
   EXPECT_EQ(skills_ui->GetInitialSkillForTesting().icon, "icon");
-  glic::GlicEnabling::SetBypassEnablementChecksForTesting(false);
 }
 
 // Verify that clicking the Cancel button closes the dialog.
@@ -273,7 +272,7 @@ IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest,
                        CancelButtonClosesDialog) {
   // Enable Glic late to avoid a crash in GlicTabIndicatorHelper during tab
   // creation.
-  glic::GlicEnabling::SetBypassEnablementChecksForTesting(true);
+  glic::GlicEnabling::ScopedBypassEnablementChecksForTesting scoped_glic_bypass;
   skills::Skill test_skill("", "name", "icon", "prompt");
   skills_ui_tab_controller()->ShowDialog(
       std::move(test_skill), SkillsDialogEntryPoint::kWebClientPrefilled,
@@ -313,7 +312,6 @@ IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest,
   histogram_tester_.ExpectBucketCount(
       "Skills.Dialog.Creation.WebClient.Prefilled.Action",
       SkillsDialogAction::kCancelled, 1);
-  glic::GlicEnabling::SetBypassEnablementChecksForTesting(false);
 }
 
 // Verify that the Skill data passed to ShowDialog correctly populates the
@@ -325,7 +323,7 @@ IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest,
 #endif
 IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest,
                        MAYBE_SkillPopulatesUIFields) {
-  glic::GlicEnabling::SetBypassEnablementChecksForTesting(true);
+  glic::GlicEnabling::ScopedBypassEnablementChecksForTesting scoped_glic_bypass;
 
   // Setup a specific test skill.
   const std::string kTestName = "Vegan for 3";
@@ -384,13 +382,11 @@ IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest,
   EXPECT_EQ(*name, kTestName);
   EXPECT_EQ(*prompt, kTestPrompt);
   EXPECT_EQ(*icon, kTestIcon);
-
-  glic::GlicEnabling::SetBypassEnablementChecksForTesting(false);
 }
 
 IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest,
                        KeyboardShortcutsAreRouted) {
-  glic::GlicEnabling::SetBypassEnablementChecksForTesting(true);
+  glic::GlicEnabling::ScopedBypassEnablementChecksForTesting scoped_glic_bypass;
 
   skills::Skill test_skill("id", "name", "icon", "prompt");
   skills_ui_tab_controller()->ShowDialog(
@@ -459,7 +455,6 @@ IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest,
         (nativeInput.selectionEnd - nativeInput.selectionStart) : 0;
     })()
   )");
-  glic::GlicEnabling::SetBypassEnablementChecksForTesting(false);
 }
 
 // Verify that OnSkillDeleted triggers the deleted toast.

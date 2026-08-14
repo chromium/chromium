@@ -534,6 +534,13 @@ GlicEnabling::ProfileEnablement ComputeProfileEnablement(
 
 }  // namespace
 
+GlicEnabling::ScopedBypassEnablementChecksForTesting::
+    ScopedBypassEnablementChecksForTesting()
+    : auto_reset_(&g_bypass_enablement_checks_for_testing, true) {}
+
+GlicEnabling::ScopedBypassEnablementChecksForTesting::
+    ~ScopedBypassEnablementChecksForTesting() = default;
+
 // static
 void GlicEnabling::SetBypassEnablementChecksForTesting(bool bypass) {
   g_bypass_enablement_checks_for_testing = bypass;

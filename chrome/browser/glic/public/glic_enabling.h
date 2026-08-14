@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 
+#include "base/auto_reset.h"
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -537,7 +538,23 @@ class GlicEnabling final : public signin::IdentityManager::Observer,
     glic_user_status_fetcher_->UpdateUserStatusWithThrottling();
   }
 
-  // Test-only method to bypass enablement checks.
+  // RAII helper to temporarily bypass enablement checks during a test, and
+  // restore the previous state upon destruction.
+  class ScopedBypassEnablementChecksForTesting {
+   public:
+    ScopedBypassEnablementChecksForTesting();
+    ~ScopedBypassEnablementChecksForTesting();
+    ScopedBypassEnablementChecksForTesting(
+        const ScopedBypassEnablementChecksForTesting&) = delete;
+    ScopedBypassEnablementChecksForTesting& operator=(
+        const ScopedBypassEnablementChecksForTesting&) = delete;
+
+   private:
+    base::AutoReset<bool> auto_reset_;
+  };
+
+  // Test-only method to bypass enablement checks. Prefer using
+  // ScopedBypassEnablementChecksForTesting in tests.
   static void SetBypassEnablementChecksForTesting(bool bypass);
 
   // Test-only method to bypass system requirement checks.

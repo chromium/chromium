@@ -39,6 +39,7 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
+#include "components/prefs/pref_service.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "content/public/browser/web_contents.h"
@@ -99,7 +100,6 @@ class GlicExperimentalTriggeringCoordinatorTest : public testing::Test {
     profile_ = profile_manager_.CreateTestingProfile(
         "test_profile", std::move(testing_factories));
 
-    GlicEnabling::SetBypassEnablementChecksForTesting(true);
     coordinator_ = std::make_unique<TestGlicExperimentalTriggeringCoordinator>(
         profile_);
     OptIn();
@@ -143,6 +143,10 @@ class GlicExperimentalTriggeringCoordinatorTest : public testing::Test {
     auto* glic_service = GlicKeyedServiceFactory::GetGlicKeyedService(
         profile_, /*create=*/true);
     ASSERT_TRUE(glic_service);
+    // This allows this test to run on managed (dev) machines.
+    profile_->GetPrefs()->SetInteger(
+        glic::prefs::kGlicSparkPolicySettings,
+        static_cast<int>(glic::prefs::GlicSparkPolicyState::kEnabled));
     glic_service->enabling().SetCompletedFre(
         glic::prefs::FreStatus::kCompleted);
     glic_service->enabling().SetUserEnabledActuationOnWeb(true);
@@ -163,6 +167,7 @@ class GlicExperimentalTriggeringCoordinatorTest : public testing::Test {
   }
 
  protected:
+  GlicEnabling::ScopedBypassEnablementChecksForTesting scoped_glic_bypass_;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<policy::ScopedManagementServiceOverrideForTesting>
       scoped_platform_management_override_;

@@ -3488,7 +3488,7 @@ class NewGlicApiTestWithGeminiActOnWebPolicy : public NewGlicApiTest {
   void SetUpOnMainThread() override {
     NewGlicApiTest::SetUpOnMainThread();
 
-    GlicEnabling::SetBypassEnablementChecksForTesting(true);
+    scoped_glic_bypass_.emplace();
 
     adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(GetProfile());
@@ -3515,7 +3515,7 @@ class NewGlicApiTestWithGeminiActOnWebPolicy : public NewGlicApiTest {
   }
 
   void TearDownOnMainThread() override {
-    GlicEnabling::SetBypassEnablementChecksForTesting(false);
+    scoped_glic_bypass_.reset();
     identity_manager_ = nullptr;
     identity_test_env_ = nullptr;
     adaptor_.reset();
@@ -3534,6 +3534,8 @@ class NewGlicApiTestWithGeminiActOnWebPolicy : public NewGlicApiTest {
   }
 
  protected:
+  std::optional<GlicEnabling::ScopedBypassEnablementChecksForTesting>
+      scoped_glic_bypass_;
   testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor> adaptor_;
