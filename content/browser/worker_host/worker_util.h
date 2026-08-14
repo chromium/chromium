@@ -7,6 +7,11 @@
 #include "content/common/content_export.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
+#include "url/origin.h"
+
+namespace blink::web_pref {
+struct WebPreferences;
+}  // namespace blink::web_pref
 
 namespace content {
 
@@ -38,6 +43,18 @@ CONTENT_EXPORT url::Origin CalculateWorkerRendererOrigin(
     const GURL& script_url,
     const blink::StorageKey& worker_storage_key,
     bool is_opaque_origin_enabled);
+
+// Returns whether the worker should be allowed to load file URLs.
+// This is allowed only when `creator_origin` is a file URL and at least one of
+// the following conditions is met:
+// - The --allow-file-access-from-files command-line switch is present.
+// - `web_preferences` allows file access from file URLs or universal access
+//   from file URLs.
+// - `creator_worker_has_file_url_support` is true.
+CONTENT_EXPORT bool DoesCreatorAllowFileUrlSupport(
+    const url::Origin& creator_origin,
+    const blink::web_pref::WebPreferences* web_preferences,
+    bool creator_worker_has_file_url_support = false);
 
 }  // namespace content
 
