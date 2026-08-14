@@ -4694,7 +4694,8 @@
       // Simplifies the behavior and stacking interactions of popover=hint and
       // popover=auto. See https://crbug.com/499019927.
       // This shipped in M150, was disabled via Finch, and was re-enabled in
-      // M151. It can be removed in M153.
+      // M151. The behavior was tweaked slightly in M153, and milestones
+      // now happen twice as quickly, so the flag can be removed in M157.
       name: "PopoverHintNewBehavior",
       status: "stable",
     },

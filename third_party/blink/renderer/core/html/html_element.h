@@ -349,8 +349,6 @@ class CORE_EXPORT HTMLElement : public Element {
   // pointerup events.
   static void HandlePopoverLightDismiss(const PointerEvent& event,
                                         const Node& node);
-  static void HidePopoversForLightDismiss(const HTMLElement* target_popover,
-                                          Document& document);
   static void HandlePopoverLightDismissForClick(const Node& pointer_down_target,
                                                 const Node& pointer_up_target);
   void InvokePopover(Element& invoker);

@@ -2325,8 +2325,17 @@ PopoverHideResult HTMLElement::HideAllPopoversUntil(
             ? caller_popovers_held_open_by_inspector
             : &local_popovers_held_open_by_inspector;
     auto result = PopoverHideResult::kHidden;
+    if (RuntimeEnabledFeatures::PopoverHintNewBehaviorEnabled() &&
+        (!endpoint || !stack.Contains(endpoint))) {
+      return CloseEntirePopoverStack(stack, focus_behavior,
+                                     transition_behavior);
+    }
     do {
       popover_stack_for_inspector->clear();
+      if (RuntimeEnabledFeatures::PopoverHintNewBehaviorEnabled() &&
+          !stack.Contains(endpoint)) {
+        return PopoverHideResult::kHidden;
+      }
       auto* last_to_hide = find_last_to_hide(endpoint, stack);
       if (!last_to_hide) {
         // find_last_to_hide returns nullptr if endpoint is on the top of the
@@ -2354,9 +2363,11 @@ PopoverHideResult HTMLElement::HideAllPopoversUntil(
         }
       }
       // Now check if we're left with endpoint at the top of the stack.
-      CHECK(!repeating_hide ||
-            (!popover_stack_for_inspector->empty() && stack.empty()) ||
-            stack.back() == endpoint);
+      if (!RuntimeEnabledFeatures::PopoverHintNewBehaviorEnabled()) {
+        CHECK(!repeating_hide ||
+              (!popover_stack_for_inspector->empty() && stack.empty()) ||
+              stack.back() == endpoint);
+      }
       repeating_hide =
           (popover_stack_for_inspector->empty() || !stack.empty()) &&
           stack.Contains(endpoint) && stack.back() != endpoint;
@@ -2383,14 +2394,32 @@ PopoverHideResult HTMLElement::HideAllPopoversUntil(
   auto& hint_stack = document.PopoverHintStack();
   if (hint_stack.Contains(endpoint)) {
     // If the hint stack contains this endpoint, close the popovers above that
-    // point in the stack, then return.
+    // point in the stack.
     if (RuntimeEnabledFeatures::PopoverHintNewBehaviorEnabled()) {
       CHECK_NE(endpoint->PopoverType(), PopoverValueType::kManual);
       CHECK_NE(endpoint->PopoverType(), PopoverValueType::kNone);
     } else {
       CHECK_EQ(endpoint->PopoverType(), PopoverValueType::kHint);
     }
-    return hide_stack_until(endpoint, hint_stack);
+    auto result = hide_stack_until(endpoint, hint_stack);
+    if (RuntimeEnabledFeatures::PopoverHintNewBehaviorEnabled() &&
+        document.PopoverHidingNestingCount() == 0) {
+      auto* hint_parent = document.PopoverHintStackParent();
+      auto& auto_stack = document.PopoverAutoStack();
+      if (hint_parent && auto_stack.Contains(hint_parent)) {
+        if (hide_stack_until(hint_parent, auto_stack) ==
+            PopoverHideResult::kForcedOpenByInspector) {
+          return PopoverHideResult::kForcedOpenByInspector;
+        }
+      } else {
+        if (CloseEntirePopoverStack(auto_stack, focus_behavior,
+                                    transition_behavior) ==
+            PopoverHideResult::kForcedOpenByInspector) {
+          return PopoverHideResult::kForcedOpenByInspector;
+        }
+      }
+    }
+    return result;
   }
 
   // Now check the auto stack.
@@ -2404,27 +2433,19 @@ PopoverHideResult HTMLElement::HideAllPopoversUntil(
       return PopoverHideResult::kHidden;
     }
   } else {
-    CHECK(auto_stack.Contains(endpoint));
-    bool should_hide_hint_stack = false;
-    if (auto* hint_parent = document.PopoverHintStackParent()) {
-      for (auto& popover : base::Reversed(auto_stack)) {
-        if (popover == endpoint) {
-          break;
-        }
-        if (popover == hint_parent) {
-          should_hide_hint_stack = true;
-          break;
-        }
-      }
+    if (!auto_stack.Contains(endpoint)) {
+      return PopoverHideResult::kHidden;
     }
-
-    if (should_hide_hint_stack) {
+    if (document.PopoverHidingNestingCount() == 0) {
       if (CloseEntirePopoverStack(document.PopoverHintStack(), focus_behavior,
                                   transition_behavior) ==
           PopoverHideResult::kForcedOpenByInspector) {
         return PopoverHideResult::kForcedOpenByInspector;
       }
       document.SetPopoverHintStackParent(nullptr);
+    }
+    if (!auto_stack.Contains(endpoint)) {
+      return PopoverHideResult::kHidden;
     }
   }
 
@@ -3051,54 +3072,6 @@ const HTMLElement* FindTopmostRelatedPopover(
 }
 }  // namespace
 
-// This differs from `HideAllPopoversUntil` in that it is more aggressive
-// about closing hint popovers. If the target is an auto popover, or outside of
-// any popovers, it closes all hint popovers.
-void HTMLElement::HidePopoversForLightDismiss(const HTMLElement* target_popover,
-                                              Document& document) {
-  if (!RuntimeEnabledFeatures::PopoverHintNewBehaviorEnabled()) {
-    HideAllPopoversUntil(
-        target_popover, document, HidePopoverFocusBehavior::kNone,
-        HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions);
-    return;
-  }
-  auto& hint_stack = document.PopoverHintStack();
-  auto* hint_parent = document.PopoverHintStackParent();
-  bool clicked_on_hint = target_popover && target_popover->PopoverType() ==
-                                               PopoverValueType::kHint;
-  if (RuntimeEnabledFeatures::PopoverHintNewBehaviorEnabled()) {
-    clicked_on_hint = target_popover && (target_popover->PopoverType() ==
-                                             PopoverValueType::kHint ||
-                                         hint_stack.Contains(target_popover));
-  }
-  if (!clicked_on_hint) {
-    if (CloseEntirePopoverStack(
-            hint_stack, HidePopoverFocusBehavior::kNone,
-            HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions) ==
-        PopoverHideResult::kForcedOpenByInspector) {
-      return;
-    }
-    document.SetPopoverHintStackParent(nullptr);
-  }
-  HideAllPopoversUntil(
-      target_popover, document, HidePopoverFocusBehavior::kNone,
-      HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions);
-  if (hint_stack.empty()) {
-    document.SetPopoverHintStackParent(nullptr);
-  }
-  if (clicked_on_hint) {
-    if (hint_parent) {
-      HideAllPopoversUntil(
-          hint_parent, document, HidePopoverFocusBehavior::kNone,
-          HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions);
-    } else {
-      CloseEntirePopoverStack(
-          document.PopoverAutoStack(), HidePopoverFocusBehavior::kNone,
-          HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions);
-    }
-  }
-}
-
 // static
 void HTMLElement::HandlePopoverLightDismiss(const PointerEvent& event,
                                             const Node& target_node) {
@@ -3133,7 +3106,9 @@ void HTMLElement::HandlePopoverLightDismiss(const PointerEvent& event,
     bool same_target = ancestor_popover == document.PopoverPointerdownTarget();
     document.SetPopoverPointerdownTarget(nullptr);
     if (same_target) {
-      HidePopoversForLightDismiss(ancestor_popover, document);
+      HideAllPopoversUntil(
+          ancestor_popover, document, HidePopoverFocusBehavior::kNone,
+          HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions);
     }
   }
 }
@@ -3147,7 +3122,9 @@ void HTMLElement::HandlePopoverLightDismissForClick(
   auto* pointer_up_popover = FindTopmostRelatedPopover(pointer_up_target);
   if (pointer_down_popover == pointer_up_popover) {
     auto& document = pointer_down_target.GetDocument();
-    HidePopoversForLightDismiss(pointer_up_popover, document);
+    HideAllPopoversUntil(
+        pointer_up_popover, document, HidePopoverFocusBehavior::kNone,
+        HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions);
   }
 }
 
