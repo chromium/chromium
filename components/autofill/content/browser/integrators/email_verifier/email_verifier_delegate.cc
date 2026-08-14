@@ -10,6 +10,7 @@
 #include "base/functional/function_ref.h"
 #include "base/json/values_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -41,14 +42,33 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 namespace autofill {
 
 namespace {
 
+std::optional<url::Origin> GetOriginFromEmail(std::string_view email) {
+  auto parts = base::RSplitStringOnce(email, "@");
+  if (!parts || parts->first.empty() || parts->second.empty()) {
+    return std::nullopt;
+  }
+  GURL url("https://" + std::string(parts->second));
+  if (!url.is_valid() || !url.has_host() || url.GetHost() != parts->second) {
+    return std::nullopt;
+  }
+  url::Origin origin = url::Origin::Create(url);
+  if (origin.opaque()) {
+    return std::nullopt;
+  }
+  return origin;
+}
+
 content::webid::EmailVerifier* GetOrCreateEmailVerifier(
     AutofillClient& client,
-    content::RenderFrameHost* rfh) {
+    content::RenderFrameHost* rfh,
+    const std::optional<url::Origin>& email_origin = std::nullopt) {
   if (!rfh) {
     return nullptr;
   }
@@ -69,14 +89,21 @@ content::webid::EmailVerifier* GetOrCreateEmailVerifier(
 
   // In the non-overridden experiment state, EVT is enabled if the feature
   // is enabled globally (via the default state) and the web site opts in
-  // via Origin trial token.
-  bool globally_enabled =
+  // via Origin trial token (first-party or third-party for the email origin).
+  const bool globally_enabled =
       base::FeatureList::IsEnabled(::features::kEmailVerificationProtocol);
-  content::RuntimeFeatureStateDocumentData* document_data =
+  content::RuntimeFeatureStateDocumentData* const document_data =
       content::RuntimeFeatureStateDocumentData::GetForCurrentDocument(rfh);
   bool enabled_for_page =
       document_data && document_data->runtime_feature_state_read_context()
                            .IsEmailVerificationProtocolEnabled();
+
+  if (!enabled_for_page && document_data && email_origin) {
+    enabled_for_page = document_data->runtime_feature_state_read_context()
+                           .IsEmailVerificationProtocolEnabledForThirdParty(
+                               base::span_from_ref(*email_origin));
+  }
+
   if (!globally_enabled || !enabled_for_page) {
     return nullptr;
   }
@@ -95,8 +122,8 @@ void EmailVerifierDelegate::Verify(
   content::RenderFrameHost* rfh = FindRenderFrameHostByToken(
       *static_cast<ContentAutofillClient&>(manager->client()).web_contents(),
       email_field_id.frame_token);
-  content::webid::EmailVerifier* verifier =
-      GetOrCreateEmailVerifier(manager->client(), rfh);
+  content::webid::EmailVerifier* verifier = GetOrCreateEmailVerifier(
+      manager->client(), rfh, GetOriginFromEmail(display_email));
   if (!verifier) {
     NotifyFlowCompleted(manager.get(), email_field_id,
                         EvpAutofillFlowResult::kVerifierUnavailable);
@@ -657,8 +684,12 @@ void EmailVerifierDelegate::TriggerVerification(AutofillManager& manager,
                         EvpAutofillFlowResult::kUserPrefDisabled);
     return;
   }
-  content::webid::EmailVerifier* verifier =
-      GetOrCreateEmailVerifier(manager.client(), rfh);
+
+  const std::string display_email =
+      base::ToLowerASCII(base::UTF16ToUTF8(email_value));
+
+  content::webid::EmailVerifier* verifier = GetOrCreateEmailVerifier(
+      manager.client(), rfh, GetOriginFromEmail(display_email));
   if (!verifier) {
     NotifyFlowCompleted(&manager, email_field_id,
                         EvpAutofillFlowResult::kVerifierUnavailable);
@@ -672,9 +703,6 @@ void EmailVerifierDelegate::TriggerVerification(AutofillManager& manager,
   // verify. It only represents whether the API is triggered on the website.
   page_load_metrics::MetricsWebContentsObserver::RecordFeatureUsage(
       rfh, blink::mojom::WebFeature::kEmailVerificationProtocol);
-
-  std::string display_email =
-      base::ToLowerASCII(base::UTF16ToUTF8(email_value));
 
   if (manager.client().GetStrikeDatabase()) {
     EmailVerificationStrikeDatabase strike_db(

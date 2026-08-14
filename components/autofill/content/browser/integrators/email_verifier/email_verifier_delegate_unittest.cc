@@ -43,6 +43,7 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/origin_trials/scoped_test_origin_trial_policy.h"
 #include "third_party/blink/public/common/runtime_feature_state/runtime_feature_state_context.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 
@@ -107,6 +108,25 @@ class TestRuntimeFeatureStateContext
   TestRuntimeFeatureStateContext() {
     feature_overrides_
         [blink::mojom::RuntimeFeature::kEmailVerificationProtocol] = true;
+  }
+};
+
+class TestThirdPartyRuntimeFeatureStateContext
+    : public blink::RuntimeFeatureStateContext {
+ public:
+  explicit TestThirdPartyRuntimeFeatureStateContext(
+      std::string_view token =
+          // Well-formed third-party token for EmailVerificationProtocol on
+          // https://example.com:443 generated with generate_token.py:
+          // generate_token.py example.com EmailVerificationProtocol
+          // --is-third-party --expire-timestamp=2000000000
+      "A+FzImNfohO7M6qFRK5nUdnhKh2nl0sl4aFu8gGr4m4WX8H3pa9ugjPmCg3cYm8mP8"
+      "HPNS1IQ/b2MzkrBjoW4gcAAAB5eyJvcmlnaW4iOiAiaHR0cHM6Ly9leGFtcGxlLmNvb"
+      "To0NDMiLCAiZmVhdHVyZSI6ICJFbWFpbFZlcmlmaWNhdGlvblByb3RvY29sIiwgImV4"
+      "cGlyeSI6IDIwMDAwMDAwMDAsICJpc1RoaXJkUGFydHkiOiB0cnVlfQ==") {
+    possible_third_party_feature_overrides_
+        [blink::mojom::RuntimeFeature::kEmailVerificationProtocol]
+            .push_back(std::string(token));
   }
 };
 
@@ -648,6 +668,108 @@ TEST_F(EmailVerifierDelegateTestBase, OriginTrialNotEnabledWithoutOverride) {
   EXPECT_CALL(email_verifier(), Verify).Times(0);
   EXPECT_CALL(driver(), SendEmailVerificationToken).Times(0);
   EXPECT_CALL(client(), ShowEmailVerifiedToast).Times(0);
+
+  AutofillProfile profile = test::GetFullProfile();
+  profile.SetRawInfo(EMAIL_ADDRESS, u"test@example.com");
+
+  base::flat_set<FieldGlobalId> filled_field_ids = {
+      form->field(0)->global_id()};
+  delegate().OnFillOrPreviewForm(
+      manager(), form->global_id(), form->field(0)->global_id(),
+      mojom::ActionPersistence::kFill, filled_field_ids, /*skip_reasons=*/{},
+      &profile);
+}
+
+// Verifies that when a third-party Origin Trial token matching the email domain
+// is present on the page (without a first-party Origin Trial token),
+// verification is triggered.
+TEST_F(EmailVerifierDelegateTestBase, ThirdPartyOriginTrialEnabled) {
+  blink::ScopedTestOriginTrialPolicy test_origin_trial_policy;
+  if (content::RuntimeFeatureStateDocumentData::GetForCurrentDocument(
+          main_rfh())) {
+    content::RuntimeFeatureStateDocumentData::DeleteForCurrentDocument(
+        main_rfh());
+  }
+  content::RuntimeFeatureStateDocumentData::CreateForCurrentDocument(
+      main_rfh(), TestThirdPartyRuntimeFeatureStateContext());
+
+  FormStructure* form = SetUpValidForm();
+
+  // With test@example.com matching the 3P OT token origin https://example.com,
+  // CheckIfVerifiable should be called.
+  EXPECT_CALL(email_verifier(), CheckIfVerifiable("test@example.com", _));
+
+  AutofillProfile profile = test::GetFullProfile();
+  profile.SetRawInfo(EMAIL_ADDRESS, u"test@example.com");
+
+  base::flat_set<FieldGlobalId> filled_field_ids = {
+      form->field(0)->global_id()};
+  delegate().OnFillOrPreviewForm(
+      manager(), form->global_id(), form->field(0)->global_id(),
+      mojom::ActionPersistence::kFill, filled_field_ids, /*skip_reasons=*/{},
+      &profile);
+}
+
+// Verifies that when a third-party Origin Trial token is present, but the email
+// domain does not match the origin of the token, verification is NOT triggered.
+TEST_F(EmailVerifierDelegateTestBase, ThirdPartyOriginTrialMismatch) {
+  blink::ScopedTestOriginTrialPolicy test_origin_trial_policy;
+  if (content::RuntimeFeatureStateDocumentData::GetForCurrentDocument(
+          main_rfh())) {
+    content::RuntimeFeatureStateDocumentData::DeleteForCurrentDocument(
+        main_rfh());
+  }
+  content::RuntimeFeatureStateDocumentData::CreateForCurrentDocument(
+      main_rfh(), TestThirdPartyRuntimeFeatureStateContext());
+
+  FormStructure* form = SetUpValidForm();
+
+  // test@otherdomain.com does not match the 3P OT token origin
+  // https://example.com, so CheckIfVerifiable should never be called.
+  EXPECT_CALL(email_verifier(), CheckIfVerifiable).Times(0);
+
+  AutofillProfile profile = test::GetFullProfile();
+  profile.SetRawInfo(EMAIL_ADDRESS, u"test@otherdomain.com");
+
+  base::flat_set<FieldGlobalId> filled_field_ids = {
+      form->field(0)->global_id()};
+  delegate().OnFillOrPreviewForm(
+      manager(), form->global_id(), form->field(0)->global_id(),
+      mojom::ActionPersistence::kFill, filled_field_ids, /*skip_reasons=*/{},
+      &profile);
+}
+
+// Verifies that a third-party Origin Trial token registered directly under
+// subdomain.example.com does not match apex test@example.com, so verification
+// is NOT triggered.
+TEST_F(EmailVerifierDelegateTestBase,
+       ThirdPartyOriginTrialSubdomainTokenDoesNotMatchApexEmail) {
+  blink::ScopedTestOriginTrialPolicy test_origin_trial_policy;
+  // Well-formed third-party token for EmailVerificationProtocol on
+  // https://subdomain.example.com:443 generated with generate_token.py:
+  // generate_token.py subdomain.example.com EmailVerificationProtocol
+  // --is-third-party --expire-timestamp=2000000000
+  static constexpr char kSubdomainThirdPartyToken[] =
+      "A0L29NjK8oFXkDwPqLsGYRdyuWkNtHjfqUGI9DN52FP4YibYhzerReoClCCf/1cvJyXhQi4"
+      "LlwZO0i6Py1/ZQQEAAACDeyJvcmlnaW4iOiAiaHR0cHM6Ly9zdWJkb21haW4uZXhhbXBsZ"
+      "S5jb206NDQzIiwgImZlYXR1cmUiOiAiRW1haWxWZXJpZmljYXRpb25Qcm90b2NvbCIsICJ"
+      "leHBpcnkiOiAyMDAwMDAwMDAwLCAiaXNUaGlyZFBhcnR5IjogdHJ1ZX0=";
+
+  if (content::RuntimeFeatureStateDocumentData::GetForCurrentDocument(
+          main_rfh())) {
+    content::RuntimeFeatureStateDocumentData::DeleteForCurrentDocument(
+        main_rfh());
+  }
+  content::RuntimeFeatureStateDocumentData::CreateForCurrentDocument(
+      main_rfh(),
+      TestThirdPartyRuntimeFeatureStateContext(kSubdomainThirdPartyToken));
+
+  FormStructure* form = SetUpValidForm();
+
+  // test@example.com (origin https://example.com) does not match the 3P OT
+  // token origin https://subdomain.example.com, so CheckIfVerifiable should
+  // never be called.
+  EXPECT_CALL(email_verifier(), CheckIfVerifiable).Times(0);
 
   AutofillProfile profile = test::GetFullProfile();
   profile.SetRawInfo(EMAIL_ADDRESS, u"test@example.com");
