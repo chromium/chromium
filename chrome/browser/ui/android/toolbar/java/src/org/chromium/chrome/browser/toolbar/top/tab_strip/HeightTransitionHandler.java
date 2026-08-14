@@ -254,31 +254,38 @@ class HeightTransitionHandler {
                         + mControlContainer.getToolbarHairlineHeight();
         controlContainerView().setMinimumHeight(maxHeight);
 
-        // When we are force an transition height update during start up, skip waiting for the
-        // toolbar capture, since the native scene layer is not ready at this point.
-        if (canForceTransitionDuringStartup()) {
+        boolean isCapturingDisabled = mControlContainer.isCapturingDisabled();
+        if (isCapturingDisabled || canForceTransitionDuringStartup()) {
             updateTabStrip(showTabStrip);
         }
 
-        // When transition kicked off by the BrowserControlsManager, the toolbar capture can be
-        // stale e.g. still with the previous window width. Force invalidate the toolbar capture to
-        // make sure the it's up-to-date with the latest Android view.
-        var resourceAdapter = mControlContainer.getToolbarResourceAdapter();
-        DynamicResourceReadyOnceCallback.onNext(
-                resourceAdapter, (resource) -> updateTabStrip(showTabStrip));
+        if (!isCapturingDisabled) {
+            // When we are forcing a transition height update during start up, skip waiting for the
+            // toolbar capture, since the native scene layer is not ready at this point.
+            if (canForceTransitionDuringStartup()) {
+                updateTabStrip(showTabStrip);
+            }
 
-        // Post the invalidate to make sure another layout pass is done. This is to make sure the
-        // omnibox has the URL text updated to the final width of location bar after the toolbar
-        // tablet button animations.
-        // TODO(crbug.com/41493621): Trigger bitmap capture without mHandler#post.
-        // TODO(crbug.com/41494086): Remove #invalidate after CaptureObservers respect a null
-        // dirtyRect input.
-        mHandler.post(
-                mCallbackController.makeCancelable(
-                        () -> {
-                            resourceAdapter.invalidate(null);
-                            resourceAdapter.triggerBitmapCapture();
-                        }));
+            // When transition kicked off by the BrowserControlsManager, the toolbar capture can be
+            // stale e.g. still with the previous window width. Force invalidate the toolbar capture
+            // to make sure the it's up-to-date with the latest Android view.
+            var resourceAdapter = mControlContainer.getToolbarResourceAdapter();
+            DynamicResourceReadyOnceCallback.onNext(
+                    resourceAdapter, (resource) -> updateTabStrip(showTabStrip));
+
+            // Post the invalidate to make sure another layout pass is done. This is to make sure
+            // the omnibox has the URL text updated to the final width of location bar after the
+            // toolbar tablet button animations.
+            // TODO(crbug.com/41493621): Trigger bitmap capture without mHandler#post.
+            // TODO(crbug.com/41494086): Remove #invalidate after CaptureObservers respect a null
+            // dirtyRect input.
+            mHandler.post(
+                    mCallbackController.makeCancelable(
+                            () -> {
+                                resourceAdapter.invalidate(null);
+                                resourceAdapter.triggerBitmapCapture();
+                            }));
+        }
     }
 
     void onTabStripSizeChanged(

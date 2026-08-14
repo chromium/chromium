@@ -125,4 +125,9 @@ public interface ControlContainer extends TabStripTransitionDelegate {
      * bitmap.
      */
     void doSynchronousLayout(boolean forceCaptureAfterLayout);
+
+    /** Returns whether bitmap capturing is disabled for the control container. */
+    default boolean isCapturingDisabled() {
+        return false;
+    }
 }

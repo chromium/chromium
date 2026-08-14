@@ -328,6 +328,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             ObservableSuppliers.createNonNull(0);
     private @Nullable PrefChangeRegistrar mPrefChangeRegistrar;
     private @Nullable OnSharedPreferenceChangeListener mVerticalTabsPreferenceListener;
+    private @Nullable Callback<Boolean> mVerticalTabsActiveObserver;
     private @Nullable TabbedSystemUiCoordinator mSystemUiCoordinator;
     private @Nullable TabGroupSyncController mTabGroupSyncController;
     private final OneshotSupplierImpl<TabGroupUiActionHandler> mTabGroupUiActionHandlerSupplier =
@@ -2382,12 +2383,13 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         // Restore the user's saved tab layout preference upon browser cold launch.
         boolean useVerticalLayoutOnLaunch = VerticalTabUtils.isVerticalTabsEnabled(mActivity);
 
-        mIsVerticalTabsActiveSupplier.addSyncObserver(
+        mVerticalTabsActiveObserver =
                 active -> {
                     var transitionCoordinator =
                             assumeNonNull(mToolbarManager).getTabStripTransitionCoordinator();
                     assumeNonNull(transitionCoordinator).suppressTabStrip(active);
-                });
+                };
+        mIsVerticalTabsActiveSupplier.addSyncObserver(mVerticalTabsActiveObserver);
 
         var transitionCoordinator =
                 assumeNonNull(mToolbarManager).getTabStripTransitionCoordinator();
@@ -2546,16 +2548,17 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         }
 
         if (mSideUiCoordinator != null) {
-            // Remove observers.
             if (mSecondaryUiContainerMarginAdjuster != null) {
                 mSideUiCoordinator.removeObserver(mSecondaryUiContainerMarginAdjuster);
             }
-
             mSideUiCoordinator.destroy();
             mSideUiCoordinator = null;
         }
 
         if (mVerticalTabsSideUiCoordinator != null) {
+            if (mVerticalTabsActiveObserver != null) {
+                mIsVerticalTabsActiveSupplier.removeObserver(mVerticalTabsActiveObserver);
+            }
             mVerticalTabsSideUiCoordinator.destroy();
             mVerticalTabsSideUiCoordinator = null;
         }

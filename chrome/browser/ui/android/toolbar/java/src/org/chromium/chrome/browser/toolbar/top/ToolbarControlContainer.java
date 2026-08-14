@@ -1492,4 +1492,12 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
             resourceAdapter.triggerBitmapCapture();
         }
     }
+
+    @Override
+    public boolean isCapturingDisabled() {
+        if (mToolbarContainer == null) return false;
+        ToolbarViewResourceAdapter adapter =
+                (ToolbarViewResourceAdapter) getToolbarResourceAdapter();
+        return adapter != null && adapter.isCapturingDisabled();
+    }
 }
