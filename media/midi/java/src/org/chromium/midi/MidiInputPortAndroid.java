@@ -12,6 +12,7 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
@@ -24,7 +25,7 @@ import java.io.IOException;
 @NullMarked
 class MidiInputPortAndroid {
     /** The underlying port. */
-    private @Nullable MidiOutputPort mPort;
+    private volatile @Nullable MidiOutputPort mPort;
 
     /** A pointer to a midi::MidiInputPortAndroid object. */
     private long mNativeReceiverPointer;
@@ -35,8 +36,11 @@ class MidiInputPortAndroid {
     /** The index of the port in the associated device. */
     private final int mIndex;
 
+    private static final String TAG = "MidiInputPortAndroid";
+
     /**
      * constructor
+     *
      * @param device the device this port belongs to.
      * @param index the index of the port in the associated device.
      */
@@ -56,40 +60,75 @@ class MidiInputPortAndroid {
         if (mPort != null) {
             return true;
         }
-        mPort = mDevice.openOutputPort(mIndex);
-        if (mPort == null) {
-            return false;
-        }
-        mNativeReceiverPointer = nativeReceiverPointer;
-        mPort.connect(
-                new MidiReceiver() {
-                    @Override
-                    public void onSend(byte[] bs, int offset, int count, long timestamp) {
-                        synchronized (MidiInputPortAndroid.this) {
-                            if (mPort == null) {
-                                return;
-                            }
-                            MidiInputPortAndroidJni.get()
-                                    .onData(mNativeReceiverPointer, bs, offset, count, timestamp);
+        @Nullable MidiOutputPort localPort = null;
+        try {
+            localPort = mDevice.openOutputPort(mIndex);
+            if (localPort != null) {
+                synchronized (this) {
+                    if (mPort != null) {
+                        try {
+                            localPort.close();
+                        } catch (IOException innerException) {
+                            // We can do nothing here. Just ignore the error.
                         }
+                        return true;
                     }
-                });
-        return true;
+                    localPort.connect(
+                            new MidiReceiver() {
+                                @Override
+                                public void onSend(
+                                        byte[] bs, int offset, int count, long timestamp) {
+                                    synchronized (MidiInputPortAndroid.this) {
+                                        if (mPort == null) {
+                                            return;
+                                        }
+                                        MidiInputPortAndroidJni.get()
+                                                .onData(
+                                                        mNativeReceiverPointer,
+                                                        bs,
+                                                        offset,
+                                                        count,
+                                                        timestamp);
+                                    }
+                                }
+                            });
+                    mPort = localPort;
+                    mNativeReceiverPointer = nativeReceiverPointer;
+                }
+                return true;
+            }
+        } catch (SecurityException | IllegalArgumentException exception) {
+            Log.w(TAG, "Failed to open or connect port", exception);
+            if (localPort != null) {
+                try {
+                    localPort.close();
+                } catch (IOException innerException) {
+                    // We can do nothing here. Just ignore the error.
+                }
+            }
+        }
+        return false;
     }
 
     /** Closes the port. */
     @CalledByNative
-    synchronized void close() {
-        if (mPort == null) {
-            return;
+    void close() {
+        MidiOutputPort localPort;
+
+        synchronized (this) {
+            if (mPort == null) {
+                return;
+            }
+            localPort = mPort;
+            mNativeReceiverPointer = 0;
+            mPort = null;
         }
+
         try {
-            mPort.close();
+            localPort.close();
         } catch (IOException e) {
             // We can do nothing here. Just ignore the error.
         }
-        mNativeReceiverPointer = 0;
-        mPort = null;
     }
 
     @NativeMethods
