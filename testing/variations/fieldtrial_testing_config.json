@@ -1192,47 +1192,6 @@
             ]
         }
     ],
-    "AndroidPermissionOptIns": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "FirstPromptDay7_SecondPromptDay14",
-                    "params": {
-                        "initial_prompt_delay_days": "7",
-                        "permission_request_interval_days": "7",
-                        "permission_request_max_count": "2"
-                    },
-                    "enable_features": [
-                        "NotificationPermissionVariant"
-                    ]
-                },
-                {
-                    "name": "FirstPromptDay7_Only",
-                    "params": {
-                        "initial_prompt_delay_days": "7",
-                        "permission_request_max_count": "1"
-                    },
-                    "enable_features": [
-                        "NotificationPermissionVariant"
-                    ]
-                },
-                {
-                    "name": "FirstPromptDay56_SecondPromptDay63",
-                    "params": {
-                        "initial_prompt_delay_days": "56",
-                        "permission_request_interval_days": "7",
-                        "permission_request_max_count": "2"
-                    },
-                    "enable_features": [
-                        "NotificationPermissionVariant"
-                    ]
-                }
-            ]
-        }
-    ],
     "AndroidPkAutocorrectUnderline": [
         {
             "platforms": [
