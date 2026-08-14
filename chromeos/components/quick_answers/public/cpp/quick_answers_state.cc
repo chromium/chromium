@@ -9,6 +9,7 @@
 #include "base/check_is_test.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/functional/bind.h"
+#include "base/i18n/legacy_language_tag_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
@@ -289,8 +290,8 @@ QuickAnswersState::IsEligibleExpectedAs(
     return base::unexpected(QuickAnswersState::Error::kUninitialized);
   }
 
-  return IsSupportedLanguage(
-      l10n_util::GetLanguage(resolved_application_locale_));
+  return IsSupportedLanguage(base::i18n::GetLanguageSubtagUsingLanguageTag(
+      resolved_application_locale_));
 }
 
 base::expected<bool, QuickAnswersState::Error>

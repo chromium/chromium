@@ -12,6 +12,7 @@
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
+#include "base/i18n/legacy_language_tag_helpers.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -215,8 +216,10 @@ bool LocaleChangeGuard::RequiresUserConfirmation(
 bool LocaleChangeGuard::ShouldShowLocaleChangeNotification(
     std::string_view from_locale,
     std::string_view to_locale) {
-  const std::string_view from_lang = l10n_util::GetLanguage(from_locale);
-  const std::string_view to_lang = l10n_util::GetLanguage(to_locale);
+  const std::string from_lang =
+      base::i18n::GetLanguageSubtagUsingLanguageTag(from_locale);
+  const std::string to_lang =
+      base::i18n::GetLanguageSubtagUsingLanguageTag(to_locale);
 
   if (from_locale == to_locale)
     return false;

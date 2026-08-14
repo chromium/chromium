@@ -16,6 +16,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/i18n/case_conversion.h"
+#include "base/i18n/legacy_language_tag_helpers.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -27,8 +28,12 @@ bool IsButtonVisible() {
 }
 
 std::u16string GetSubLabelText() {
-  return base::i18n::ToUpper(base::UTF8ToUTF16(l10n_util::GetLanguage(
-      Shell::Get()->system_tray_model()->locale()->current_locale_iso_code())));
+  return base::i18n::ToUpper(
+      base::UTF8ToUTF16(base::i18n::GetLanguageSubtagUsingLanguageTag(
+          Shell::Get()
+              ->system_tray_model()
+              ->locale()
+              ->current_locale_iso_code())));
 }
 
 }  // namespace

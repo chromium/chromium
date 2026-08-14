@@ -8,6 +8,7 @@
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "ash/webui/settings/public/constants/routes_util.h"
 #include "base/functional/bind.h"
+#include "base/i18n/legacy_language_tag_helpers.h"
 #include "base/i18n/rtl.h"
 #include "base/json/json_reader.h"
 #include "base/values.h"
@@ -110,7 +111,7 @@ void TtsHandler::OnVoicesChanged() {
           "displayLanguage",
           l10n_util::GetStringUTF8(IDS_TEXT_TO_SPEECH_SETTINGS_NO_LANGUAGE));
     } else {
-      language_code = l10n_util::GetLanguage(voice.lang);
+      language_code = base::i18n::GetLanguageSubtagUsingLanguageTag(voice.lang);
       response.Set(
           "displayLanguage",
           l10n_util::GetDisplayNameForLocale(
@@ -163,8 +164,8 @@ int TtsHandler::GetVoiceLangMatchScore(const content::VoiceData* voice,
   if (voice->lang == app_locale) {
     return 2;
   }
-  return l10n_util::GetLanguage(voice->lang) ==
-                 l10n_util::GetLanguage(app_locale)
+  return base::i18n::GetLanguageSubtagUsingLanguageTag(voice->lang) ==
+                 base::i18n::GetLanguageSubtagUsingLanguageTag(app_locale)
              ? 1
              : 0;
 }

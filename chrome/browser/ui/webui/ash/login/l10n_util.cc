@@ -17,6 +17,7 @@
 #include "ash/login/resources/grit/ash_login_strings.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
+#include "base/i18n/legacy_language_tag_helpers.h"
 #include "base/i18n/rtl.h"
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
@@ -149,7 +150,8 @@ base::ListValue GetLanguageList(
        it != language_index.end(); ++it) {
     const std::string& language_id = it->first;
 
-    const std::string_view lang = l10n_util::GetLanguage(language_id);
+    const std::string lang =
+        base::i18n::GetLanguageSubtagUsingLanguageTag(language_id);
 
     // Ignore non-specific codes.
     if (lang.empty() || lang == language_id) {

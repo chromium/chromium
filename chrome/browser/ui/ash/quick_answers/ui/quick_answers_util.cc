@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/ash/quick_answers/ui/quick_answers_util.h"
 
+#include "base/i18n/legacy_language_tag_helpers.h"
 #include "base/strings/escape.h"
 #include "chrome/browser/ui/ash/quick_answers/ui/quick_answers_text_label.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
@@ -213,8 +214,8 @@ GURL GetDetailsUrlForQuery(const std::string& query) {
                 base::EscapeUrlEncodedData(query, /*use_plus=*/true));
   }
   auto query_text = base::EscapeUrlEncodedData(*remainder, /*use_plus=*/true);
-  auto device_language =
-      l10n_util::GetLanguage(QuickAnswersState::Get()->application_locale());
+  auto device_language = base::i18n::GetLanguageSubtagUsingLanguageTag(
+      QuickAnswersState::Get()->application_locale());
   auto translate_url = base::StringPrintf(kGoogleTranslateUrlTemplate,
                                           device_language, query_text);
   return GURL(translate_url);

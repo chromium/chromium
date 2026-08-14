@@ -17,6 +17,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/i18n/case_conversion.h"
+#include "base/i18n/legacy_language_tag_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -64,8 +65,8 @@ class LocaleItemView : public views::Button {
     iso_code_label->SetEnabledColor(
         static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface));
     iso_code_label->SetAutoColorReadabilityEnabled(false);
-    iso_code_label->SetText(base::i18n::ToUpper(
-        base::UTF8ToUTF16(l10n_util::GetLanguage(iso_code))));
+    iso_code_label->SetText(base::i18n::ToUpper(base::UTF8ToUTF16(
+        base::i18n::GetLanguageSubtagUsingLanguageTag(iso_code))));
     ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
     const gfx::FontList& base_font_list =
         rb.GetFontList(ui::ResourceBundle::MediumBoldFont);

@@ -6,6 +6,7 @@
 
 #include "ash/constants/generative_ai_country_restrictions.h"
 #include "base/check_deref.h"
+#include "base/i18n/legacy_language_tag_helpers.h"
 #include "base/memory/raw_ref.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ash/app_restore/full_restore_app_launch_handler.h"
@@ -331,8 +332,8 @@ bool CoralDelegateImpl::GetGenAILocationAvailability() {
 }
 
 std::string CoralDelegateImpl::GetSystemLanguage() {
-  return std::string(
-      l10n_util::GetLanguage(application_locale_storage_->Get()));
+  return base::i18n::GetLanguageSubtagUsingLanguageTag(
+      application_locale_storage_->Get());
 }
 
 void CoralDelegateImpl::OnIdentityManagerShutdown(

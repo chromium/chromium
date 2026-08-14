@@ -4,6 +4,7 @@
 
 #include "chromeos/components/quick_answers/utils/spell_checker.h"
 
+#include "base/i18n/legacy_language_tag_helpers.h"
 #include "base/logging.h"
 #include "base/strings/string_split.h"
 #include "base/types/expected.h"
@@ -112,17 +113,18 @@ void SpellChecker::CheckEligibilityAndUpdateLanguages(
 
   // Add application language.
   std::set<std::string> languages;
-  languages.insert(std::string(
-      l10n_util::GetLanguage(QuickAnswersState::Get()->application_locale())));
+  languages.insert(base::i18n::GetLanguageSubtagUsingLanguageTag(
+      QuickAnswersState::Get()->application_locale()));
 
   // Add preferred languages if supported.
   auto preferred_languages_list =
       base::SplitString(QuickAnswersState::Get()->preferred_languages(), ",",
                         base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   for (const std::string& locale : preferred_languages_list) {
-    auto language = l10n_util::GetLanguage(locale);
-    if (QuickAnswersState::Get()->IsSupportedLanguage(language))
-      languages.insert(std::string(language));
+    auto language = base::i18n::GetLanguageSubtagUsingLanguageTag(locale);
+    if (QuickAnswersState::Get()->IsSupportedLanguage(language)) {
+      languages.insert(language);
+    }
   }
 
   spellcheck_languages_.clear();

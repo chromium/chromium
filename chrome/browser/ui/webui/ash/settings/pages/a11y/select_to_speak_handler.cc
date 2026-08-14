@@ -7,6 +7,7 @@
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "ash/webui/settings/public/constants/routes_util.h"
 #include "base/functional/bind.h"
+#include "base/i18n/legacy_language_tag_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
@@ -52,11 +53,8 @@ void SelectToSpeakHandler::OnVoicesChanged() {
     std::string language_code;
     std::string language_and_country_code = voice.lang;
     if (!language_and_country_code.empty()) {
-      // Normalize underscores to hyphens because enhanced voices use
-      // underscores, and l10n_util::GetLanguage uses hyphens.
-      std::replace(language_and_country_code.begin(),
-                   language_and_country_code.end(), '_', '-');
-      language_code = l10n_util::GetLanguage(language_and_country_code);
+      language_code = base::i18n::GetLanguageSubtagUsingLanguageTag(
+          language_and_country_code);
       response.Set(
           "displayLanguage",
           l10n_util::GetDisplayNameForLocale(
