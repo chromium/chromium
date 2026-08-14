@@ -32,6 +32,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiState.BookmarkUiMode;
 import org.chromium.components.bookmarks.BookmarkId;
+import org.chromium.components.browser_ui.widget.navigation_pane.NavigationPaneProperties;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 
@@ -182,7 +183,7 @@ public class BookmarkDesktopNavigationMediatorUnitTest {
     public void testClickHandling() {
         assertEquals(4, mModelList.size());
         ListItem item = mModelList.get(0);
-        Runnable onClick = item.model.get(BookmarkDesktopNavigationProperties.ON_CLICK_HANDLER);
+        Runnable onClick = item.model.get(NavigationPaneProperties.ON_CLICK_HANDLER);
         onClick.run();
 
         verify(mBookmarkDelegate).openFolder(mBookmarkModel.getDesktopFolderId());
@@ -192,8 +193,8 @@ public class BookmarkDesktopNavigationMediatorUnitTest {
     public void testSelectionHighlight() {
         // Initial state: nothing selected
         for (ListItem item : mModelList) {
-            if (item.type == BookmarkDesktopNavigationProperties.NAVIGATION_TYPE_FOLDER) {
-                assertFalse(item.model.get(BookmarkDesktopNavigationProperties.IS_SELECTED));
+            if (item.type == NavigationPaneProperties.ITEM_TYPE_NAVIGATION_ITEM) {
+                assertFalse(item.model.get(NavigationPaneProperties.IS_SELECTED));
             }
         }
 
@@ -202,10 +203,10 @@ public class BookmarkDesktopNavigationMediatorUnitTest {
         mMediator.onFolderStateSet(desktopId);
 
         // Verify highlight
-        assertTrue(mModelList.get(0).model.get(BookmarkDesktopNavigationProperties.IS_SELECTED));
-        assertFalse(mModelList.get(1).model.get(BookmarkDesktopNavigationProperties.IS_SELECTED));
-        assertFalse(mModelList.get(2).model.get(BookmarkDesktopNavigationProperties.IS_SELECTED));
-        assertFalse(mModelList.get(3).model.get(BookmarkDesktopNavigationProperties.IS_SELECTED));
+        assertTrue(mModelList.get(0).model.get(NavigationPaneProperties.IS_SELECTED));
+        assertFalse(mModelList.get(1).model.get(NavigationPaneProperties.IS_SELECTED));
+        assertFalse(mModelList.get(2).model.get(NavigationPaneProperties.IS_SELECTED));
+        assertFalse(mModelList.get(3).model.get(NavigationPaneProperties.IS_SELECTED));
     }
 
     @Test
@@ -213,21 +214,21 @@ public class BookmarkDesktopNavigationMediatorUnitTest {
         // Set folder state first to highlight it
         BookmarkId desktopId = mBookmarkModel.getDesktopFolderId();
         mMediator.onFolderStateSet(desktopId);
-        assertTrue(mModelList.get(0).model.get(BookmarkDesktopNavigationProperties.IS_SELECTED));
+        assertTrue(mModelList.get(0).model.get(NavigationPaneProperties.IS_SELECTED));
 
         // Switch to search mode
         mMediator.onUiModeChanged(BookmarkUiMode.SEARCHING);
 
         // Verify highlight is cleared
         for (ListItem item : mModelList) {
-            if (item.type == BookmarkDesktopNavigationProperties.NAVIGATION_TYPE_FOLDER) {
-                assertFalse(item.model.get(BookmarkDesktopNavigationProperties.IS_SELECTED));
+            if (item.type == NavigationPaneProperties.ITEM_TYPE_NAVIGATION_ITEM) {
+                assertFalse(item.model.get(NavigationPaneProperties.IS_SELECTED));
             }
         }
 
         // Switch back to folder mode (simulated by setting folder state)
         mMediator.onFolderStateSet(desktopId);
-        assertTrue(mModelList.get(0).model.get(BookmarkDesktopNavigationProperties.IS_SELECTED));
+        assertTrue(mModelList.get(0).model.get(NavigationPaneProperties.IS_SELECTED));
     }
 
     @Test
@@ -244,10 +245,10 @@ public class BookmarkDesktopNavigationMediatorUnitTest {
         mMediator.onFolderStateSet(nestedSubFolderId);
 
         // Verify that Bookmarks Bar (index 0) is still highlighted
-        assertTrue(mModelList.get(0).model.get(BookmarkDesktopNavigationProperties.IS_SELECTED));
-        assertFalse(mModelList.get(1).model.get(BookmarkDesktopNavigationProperties.IS_SELECTED));
-        assertFalse(mModelList.get(2).model.get(BookmarkDesktopNavigationProperties.IS_SELECTED));
-        assertFalse(mModelList.get(3).model.get(BookmarkDesktopNavigationProperties.IS_SELECTED));
+        assertTrue(mModelList.get(0).model.get(NavigationPaneProperties.IS_SELECTED));
+        assertFalse(mModelList.get(1).model.get(NavigationPaneProperties.IS_SELECTED));
+        assertFalse(mModelList.get(2).model.get(NavigationPaneProperties.IS_SELECTED));
+        assertFalse(mModelList.get(3).model.get(NavigationPaneProperties.IS_SELECTED));
     }
 
     @Test
@@ -301,17 +302,16 @@ public class BookmarkDesktopNavigationMediatorUnitTest {
     private void assertFolderItem(
             int index, BookmarkId expectedId, String expectedTitle, int expectedIconRes) {
         ListItem item = mModelList.get(index);
-        assertEquals(BookmarkDesktopNavigationProperties.NAVIGATION_TYPE_FOLDER, item.type);
+        assertEquals(NavigationPaneProperties.ITEM_TYPE_NAVIGATION_ITEM, item.type);
         assertEquals(expectedId, item.model.get(BookmarkDesktopNavigationProperties.BOOKMARK_ID));
-        assertEquals(expectedTitle, item.model.get(BookmarkDesktopNavigationProperties.TITLE));
-        Drawable icon = item.model.get(BookmarkDesktopNavigationProperties.ICON);
+        assertEquals(expectedTitle, item.model.get(NavigationPaneProperties.TITLE));
+        Drawable icon = item.model.get(NavigationPaneProperties.ICON);
         assertEquals(expectedIconRes, Shadows.shadowOf(icon).getCreatedFromResId());
     }
 
     private void assertHeaderItem(int index, String expectedTitle) {
         ListItem item = mModelList.get(index);
-        assertEquals(BookmarkDesktopNavigationProperties.NAVIGATION_TYPE_HEADER, item.type);
-        assertEquals(
-                expectedTitle, item.model.get(BookmarkDesktopNavigationProperties.HEADER_TITLE));
+        assertEquals(NavigationPaneProperties.ITEM_TYPE_HEADER, item.type);
+        assertEquals(expectedTitle, item.model.get(NavigationPaneProperties.HEADER_TITLE));
     }
 }

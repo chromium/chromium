@@ -5,17 +5,17 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<LinearLayout
+<org.chromium.components.browser_ui.widget.navigation_pane.NavigationPaneItemView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="208dp"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:minHeight="56dp"
     android:orientation="horizontal"
     android:gravity="center_vertical"
     android:paddingHorizontal="24dp"
     android:paddingVertical="16dp"
-    android:background="@drawable/bookmark_desktop_navigation_item_bg"
+    android:background="@drawable/navigation_pane_item_bg"
     android:clickable="true"
     android:focusable="true"
     android:baselineAligned="false">
@@ -24,7 +24,8 @@ found in the LICENSE file.
         android:id="@+id/icon"
         android:layout_width="24dp"
         android:layout_height="24dp"
-        app:tint="@color/tonal_button_icon_tint_list"
+        app:tint="@color/navigation_pane_icon_tint_list"
+        android:duplicateParentState="true"
         android:importantForAccessibility="no"/>
 
     <TextView
@@ -35,5 +36,6 @@ found in the LICENSE file.
         android:layout_marginStart="12dp"
         android:maxLines="1"
         android:ellipsize="end"
-        android:textAppearance="@style/TextAppearance.BookmarkDesktopNavigationItem"/>
-</LinearLayout>
+        android:duplicateParentState="true"
+        android:textAppearance="@style/TextAppearance.TextMedium.SecondaryContainer" />
+</org.chromium.components.browser_ui.widget.navigation_pane.NavigationPaneItemView>

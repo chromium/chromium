@@ -15,6 +15,7 @@ import org.chromium.chrome.browser.bookmarks.BookmarkUiState.BookmarkUiMode;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkType;
+import org.chromium.components.browser_ui.widget.navigation_pane.NavigationPaneProperties;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -159,26 +160,24 @@ class BookmarkDesktopNavigationMediator extends BookmarkModelObserver
         PropertyModel model =
                 new PropertyModel.Builder(BookmarkDesktopNavigationProperties.FOLDER_KEYS)
                         .with(BookmarkDesktopNavigationProperties.BOOKMARK_ID, id)
+                        .with(NavigationPaneProperties.TITLE, mBookmarkModel.getBookmarkTitle(id))
+                        .with(NavigationPaneProperties.ICON, getFolderIcon(id))
                         .with(
-                                BookmarkDesktopNavigationProperties.TITLE,
-                                mBookmarkModel.getBookmarkTitle(id))
-                        .with(BookmarkDesktopNavigationProperties.ICON, getFolderIcon(id))
-                        .with(
-                                BookmarkDesktopNavigationProperties.IS_SELECTED,
+                                NavigationPaneProperties.IS_SELECTED,
                                 Objects.equals(id, mCurrentFolderId))
                         .with(
-                                BookmarkDesktopNavigationProperties.ON_CLICK_HANDLER,
+                                NavigationPaneProperties.ON_CLICK_HANDLER,
                                 () -> mBookmarkDelegate.openFolder(id))
                         .build();
-        return new ListItem(BookmarkDesktopNavigationProperties.NAVIGATION_TYPE_FOLDER, model);
+        return new ListItem(NavigationPaneProperties.ITEM_TYPE_NAVIGATION_ITEM, model);
     }
 
     private ListItem createHeaderItem(String title) {
         PropertyModel model =
-                new PropertyModel.Builder(BookmarkDesktopNavigationProperties.HEADER_KEYS)
-                        .with(BookmarkDesktopNavigationProperties.HEADER_TITLE, title)
+                new PropertyModel.Builder(NavigationPaneProperties.HEADER_KEYS)
+                        .with(NavigationPaneProperties.HEADER_TITLE, title)
                         .build();
-        return new ListItem(BookmarkDesktopNavigationProperties.NAVIGATION_TYPE_HEADER, model);
+        return new ListItem(NavigationPaneProperties.ITEM_TYPE_HEADER, model);
     }
 
     private Drawable getFolderIcon(BookmarkId id) {
@@ -192,11 +191,10 @@ class BookmarkDesktopNavigationMediator extends BookmarkModelObserver
     private void updateSelectionHighlight() {
         BookmarkId ancestorId = getTopLevelAncestorId(mCurrentFolderId);
         for (ListItem item : mModelList) {
-            if (item.type == BookmarkDesktopNavigationProperties.NAVIGATION_TYPE_FOLDER) {
+            if (item.type == NavigationPaneProperties.ITEM_TYPE_NAVIGATION_ITEM) {
                 BookmarkId id = item.model.get(BookmarkDesktopNavigationProperties.BOOKMARK_ID);
                 item.model.set(
-                        BookmarkDesktopNavigationProperties.IS_SELECTED,
-                        Objects.equals(id, ancestorId));
+                        NavigationPaneProperties.IS_SELECTED, Objects.equals(id, ancestorId));
             }
         }
     }
@@ -249,7 +247,7 @@ class BookmarkDesktopNavigationMediator extends BookmarkModelObserver
 
     private void openFirstFolder() {
         for (ListItem item : mModelList) {
-            if (item.type == BookmarkDesktopNavigationProperties.NAVIGATION_TYPE_FOLDER) {
+            if (item.type == NavigationPaneProperties.ITEM_TYPE_NAVIGATION_ITEM) {
                 BookmarkId id = item.model.get(BookmarkDesktopNavigationProperties.BOOKMARK_ID);
                 mBookmarkDelegate.replaceFolder(id);
                 break;

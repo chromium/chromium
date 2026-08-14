@@ -56,7 +56,6 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/bookmarks/BookmarkDesktopNavigationCoordinator.java",
     "java/src/org/chromium/chrome/browser/bookmarks/BookmarkDesktopNavigationMediator.java",
     "java/src/org/chromium/chrome/browser/bookmarks/BookmarkDesktopNavigationProperties.java",
-    "java/src/org/chromium/chrome/browser/bookmarks/BookmarkDesktopNavigationViewBinder.java",
     "java/src/org/chromium/chrome/browser/bookmarks/BookmarkFolderPickerProperties.java",
     "java/src/org/chromium/chrome/browser/bookmarks/BookmarkFolderPickerViewBinder.java",
     "java/src/org/chromium/chrome/browser/bookmarks/BookmarkImageFetcher.java",

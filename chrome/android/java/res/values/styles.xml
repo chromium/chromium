@@ -589,9 +589,6 @@ found in the LICENSE file.
         <!-- The same as the regular style, but using dp instead of sp. -->
         <item name="android:textSize">16dp</item>
     </style>
-    <style name="TextAppearance.BookmarkDesktopNavigationItem" parent="TextAppearance.TextMedium.Primary">
-        <item name="android:textColor">@color/tonal_button_icon_tint_list</item>
-    </style>
 
      <!-- Magic Stack styles -->
     <style name="TextAppearance.ShoppingPriceDropSmallText" parent="TextAppearance.TextSmall.Secondary">

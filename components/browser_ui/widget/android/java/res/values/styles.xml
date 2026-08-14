@@ -203,4 +203,10 @@ found in the LICENSE file.
         <item name="android:popupBackground">@drawable/dialog_bg_tinted</item>
         <item name="android:popupElevation">0dp</item>
     </style>
+
+    <!-- Navigation Pane Items -->
+    <style name="TextAppearance.TextMedium.SecondaryContainer" parent="TextAppearance.TextMedium">
+        <item name="android:textColor">@color/navigation_pane_text_color_list</item>
+    </style>
+
 </resources>

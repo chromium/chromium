@@ -4,39 +4,20 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
-import android.graphics.drawable.Drawable;
-
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.bookmarks.BookmarkId;
+import org.chromium.components.browser_ui.widget.navigation_pane.NavigationPaneProperties;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /** Properties for the bookmark desktop navigation pane. */
 @NullMarked
 class BookmarkDesktopNavigationProperties {
-    // View types
-    public static final int NAVIGATION_TYPE_FOLDER = 0;
-    public static final int NAVIGATION_TYPE_HEADER = 1;
+    public static final WritableObjectPropertyKey<BookmarkId> BOOKMARK_ID =
+            new WritableObjectPropertyKey<>();
 
-    // Folder properties
-    public static final PropertyModel.WritableObjectPropertyKey<BookmarkId> BOOKMARK_ID =
-            new PropertyModel.WritableObjectPropertyKey<>();
-    public static final PropertyModel.WritableObjectPropertyKey<String> TITLE =
-            new PropertyModel.WritableObjectPropertyKey<>();
-    public static final PropertyModel.WritableObjectPropertyKey<Drawable> ICON =
-            new PropertyModel.WritableObjectPropertyKey<>();
-    public static final PropertyModel.WritableBooleanPropertyKey IS_SELECTED =
-            new PropertyModel.WritableBooleanPropertyKey();
-    public static final PropertyModel.WritableObjectPropertyKey<Runnable> ON_CLICK_HANDLER =
-            new PropertyModel.WritableObjectPropertyKey<>();
-
-    public static final PropertyKey[] FOLDER_KEYS = {
-        BOOKMARK_ID, TITLE, ICON, IS_SELECTED, ON_CLICK_HANDLER
-    };
-
-    // Header properties
-    public static final PropertyModel.WritableObjectPropertyKey<String> HEADER_TITLE =
-            new PropertyModel.WritableObjectPropertyKey<>();
-
-    public static final PropertyKey[] HEADER_KEYS = {HEADER_TITLE};
+    public static final PropertyKey[] FOLDER_KEYS =
+            PropertyModel.concatKeys(
+                    NavigationPaneProperties.NAVIGATION_ITEM_KEYS, new PropertyKey[] {BOOKMARK_ID});
 }

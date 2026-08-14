@@ -275,4 +275,10 @@ found in the LICENSE file.
 
     <!-- Containment -->
     <item name="containment_item_hover_alpha" format="float" type="dimen">0.04</item>
+
+    <!-- Navigation Pane dimensions -->
+    <dimen name="navigation_pane_header_padding_top">16dp</dimen>
+    <dimen name="navigation_pane_header_padding_bottom">8dp</dimen>
+    <dimen name="navigation_pane_divider_margin">8dp</dimen>
+
 </resources>
