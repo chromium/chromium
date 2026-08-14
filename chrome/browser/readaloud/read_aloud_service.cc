@@ -11,6 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/dom_distiller/dom_distiller_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/readaloud/audio_generation/speech_synthesis_broker.h"
 #include "chrome/browser/readaloud/read_aloud_playback_session.h"
 #include "components/dom_distiller/content/browser/distiller_page_web_contents.h"
 #include "components/dom_distiller/core/dom_distiller_service.h"
@@ -20,11 +21,11 @@
 
 namespace readaloud {
 
-ReadAloudService::ReadAloudService(
-    Profile* profile,
-    PlaybackControllerBinder controller_binder)
+ReadAloudService::ReadAloudService(Profile* profile,
+                                   PlaybackControllerBinder controller_binder)
     : profile_(profile),
-      controller_binder_(std::move(controller_binder)) {}
+      controller_binder_(std::move(controller_binder)),
+      speech_synthesis_broker_(std::make_unique<SpeechSynthesisBroker>()) {}
 
 ReadAloudService::~ReadAloudService() = default;
 
@@ -97,7 +98,17 @@ void ReadAloudService::SeekToWordIndex(int word_index) {}
 void ReadAloudService::Seek(base::TimeDelta absolute_time) {}
 void ReadAloudService::SeekRelative(base::TimeDelta offset) {}
 void ReadAloudService::SetPlaybackRate(float rate) {}
-void ReadAloudService::SetVoice(std::string_view voice_id) {}
+void ReadAloudService::SetVoice(std::string_view voice_id) {
+  if (speech_synthesis_broker_) {
+    speech_synthesis_broker_->SetVoice(voice_id);
+  }
+}
+
+void ReadAloudService::SetLanguageCode(std::string_view language_code) {
+  if (speech_synthesis_broker_) {
+    speech_synthesis_broker_->SetLanguageCode(language_code);
+  }
+}
 void ReadAloudService::PreviewVoice(std::string_view voice_id) {
   // Pause active article playback while previewing a voice.
   Pause();

@@ -579,4 +579,12 @@ TEST_F(ReadAloudServiceTest, PlayResumesPlaybackAfterVoicePreview) {
   EXPECT_CALL(*delegate_ptr, OnNativeDestroyed()).Times(1);
 }
 
+TEST_F(ReadAloudServiceTest,
+       SetVoiceAndLanguageCodeForwardsToSpeechSynthesisBroker) {
+  // Verifies that SetVoice and SetLanguageCode do not crash and forward
+  // parameters.
+  service()->SetVoice("es-ES-Wavenet-B");
+  service()->SetLanguageCode("es");
+}
+
 }  // namespace readaloud

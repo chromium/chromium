@@ -31,6 +31,7 @@ namespace readaloud {
 
 class ReadAloudPlaybackSession;
 class ReadAloudServiceTest;
+class SpeechSynthesisBroker;
 
 // Central lifecycle and state orchestrator for the Read Aloud feature in
 // Chrome, which allows users to listen to web page content.
@@ -181,6 +182,9 @@ class ReadAloudService
   // Sets the voice to be used for text-to-speech synthesis.
   void SetVoice(std::string_view voice_id);
 
+  // Sets the target language code for text-to-speech synthesis.
+  void SetLanguageCode(std::string_view language_code);
+
   // Plays a short audio sample of the specified voice.
   void PreviewVoice(std::string_view voice_id);
 
@@ -262,6 +266,7 @@ class ReadAloudService
       utility_observer_receiver_{this};
 
   std::unique_ptr<ReadAloudPlaybackSession> active_session_;
+  std::unique_ptr<SpeechSynthesisBroker> speech_synthesis_broker_;
 
   base::WeakPtrFactory<ReadAloudService> weak_factory_{this};
 };
