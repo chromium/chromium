@@ -821,14 +821,13 @@ bool AutofillField::ShouldSuppressSuggestionsAndFillingByDefault(
     return false;
   }
 
-  // The field will not be suppressed (i.e., it will be filled/suggested) if one
-  // of the following is true:
-  // 1. The autocomplete attribute is valid type (that can be seen in the HTML
-  //    spec).
+  // Suggestions/filling will not be suppressed if one of the following is true:
+  // 1. The autocomplete attribute is valid (can be seen in the HTML spec).
   // 2. The field's type comes from a server override.
-  // 3. The field type is credit-card-related.
+  // 3. The field type has a credit-card-related classification.
   if (html_type_ != HtmlFieldType::kUnrecognized ||
-      server_type_prediction_is_override() || IsCreditCardPrediction()) {
+      server_type_prediction_is_override() ||
+      Type().GetCreditCardType() != UNKNOWN_TYPE) {
     return false;
   }
 
@@ -868,11 +867,6 @@ void AutofillField::UpdateFieldData(const FormFieldData& field_data) {
 
   field_signature_ =
       CalculateFieldSignatureByNameAndType(name(), form_control_type());
-}
-
-bool AutofillField::IsCreditCardPrediction() const {
-  return GroupTypeOfFieldType(server_type()) == FieldTypeGroup::kCreditCard ||
-         GroupTypeOfFieldType(heuristic_type()) == FieldTypeGroup::kCreditCard;
 }
 
 void AutofillField::AppendLogEventIfNotRepeated(

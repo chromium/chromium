@@ -540,9 +540,6 @@ class AutofillField : public FormFieldData {
   // `AutofillField` that were inherited from `FormFieldData`.
   void UpdateFieldData(const FormFieldData& field_data);
 
-  // Whether the heuristics or server predict a credit card field.
-  bool IsCreditCardPrediction() const;
-
   // Creates a union type that contains
   // - the `primary_field_type` and
   // - the Autofill AI FieldTypes in the `server_predictions_` (modulo conflict
