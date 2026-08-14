@@ -2694,9 +2694,9 @@ crbug.com/536952792 external/wpt/html/semantics/scripting-1/the-script-element/m
 crbug.com/540322301 external/wpt/webaudio/the-audio-api/the-oscillatornode-interface/sub-sample-start.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
-external/wpt/css/css-values/using-font-relative-units-in-font-properties.html [ Crash ]
-external/wpt/css/css-viewport/zoom/grid.html [ Failure ]
-external/wpt/html/rendering/widgets/button-layout/anonymous-button-content-box.html [ Failure ]
+crbug.com/546278641 external/wpt/css/css-values/using-font-relative-units-in-font-properties.html [ Crash ]
+crbug.com/546278641 external/wpt/css/css-viewport/zoom/grid.html [ Failure ]
+crbug.com/546159614 external/wpt/html/rendering/widgets/button-layout/anonymous-button-content-box.html [ Failure ]
 crbug.com/546241037 external/wpt/css/css-borders/corner-shape/corner-shape-superellipse-concave.html [ Failure ]
 crbug.com/546241037 external/wpt/css/css-borders/corner-shape/corner-shape-superellipse-convex.html [ Failure ]
 crbug.com/546146009 external/wpt/css/css-overflow/line-clamp/line-clamp-with-floats-012.html [ Failure ]
