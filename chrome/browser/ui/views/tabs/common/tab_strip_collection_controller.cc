@@ -395,16 +395,21 @@ void TabStripCollectionController::ToggleTabGroupCollapsedState(
   }
 
   if (should_toggle_group) {
-    gfx::Range tabs_in_group = group->ListTabs();
-    for (uint32_t i = tabs_in_group.start(); i < tabs_in_group.end(); ++i) {
-      views::View* const view =
-          browser_view_->tab_strip_view()->GetTabAnchorViewAt(i);
-      CHECK(views::IsViewClass<TabView>(view));
-      TabView* const tab_view = views::AsViewClass<TabView>(view);
-      if (is_currently_collapsed) {
-        tab_view->ReleaseFreezingVote(FreezingVoteReason::kCollapsedGroup);
-      } else {
-        tab_view->CreateFreezingVote(FreezingVoteReason::kCollapsedGroup);
+    auto* const base_region_view = views::AsViewClass<BaseTabStripRegionView>(
+        browser_view_->tab_strip_view());
+    CHECK(base_region_view);
+    const TabCollectionNode* group_node =
+        base_region_view->root_node()->GetNodeForHandle(
+            group->GetCollectionHandle());
+    if (group_node) {
+      for (const auto& child_node : group_node->children()) {
+        if (auto* tab_view = views::AsViewClass<TabView>(child_node->view())) {
+          if (is_currently_collapsed) {
+            tab_view->ReleaseFreezingVote(FreezingVoteReason::kCollapsedGroup);
+          } else {
+            tab_view->CreateFreezingVote(FreezingVoteReason::kCollapsedGroup);
+          }
+        }
       }
     }
   }
@@ -684,14 +689,19 @@ void TabStripCollectionController::ShiftTabRelative(
           target_index = offset < 0 ? 0 : model_->count() - 1;
         }
       } else {
+        tabs::TabInterface* tab = model_->GetTabAtIndex(start_index);
         views::View* tab_view =
-            browser_view_->tab_strip_view()->GetTabAnchorViewAt(start_index);
+            tab ? browser_view_->tab_strip_view()->GetTabAnchorView(
+                      tab->GetHandle())
+                : nullptr;
         // Read before adding the tab to the group so that the group description
         // isn't the tab we just added.
         AnnounceTabAddedToGroup(target_group.value());
         model_->AddToExistingGroup({start_index}, target_group.value());
-        views::ElementTrackerViews::GetInstance()->NotifyCustomEvent(
-            kTabGroupedCustomEventId, tab_view);
+        if (tab_view) {
+          views::ElementTrackerViews::GetInstance()->NotifyCustomEvent(
+              kTabGroupedCustomEventId, tab_view);
+        }
         return;
       }
     }

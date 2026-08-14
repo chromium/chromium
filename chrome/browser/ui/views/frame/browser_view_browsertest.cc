@@ -283,7 +283,8 @@ class BrowserViewTest : public InProcessBrowserTest {
   std::u16string GetAccessibleNameForTabAt(int index) {
     return browser_view()
         ->tab_strip_view()
-        ->GetTabAnchorViewAt(index)
+        ->GetTabAnchorView(
+            browser()->tab_strip_model()->GetTabAtIndex(index)->GetHandle())
         ->GetViewAccessibility()
         .GetCachedName();
   }

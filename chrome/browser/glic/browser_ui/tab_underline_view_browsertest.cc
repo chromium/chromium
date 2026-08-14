@@ -186,8 +186,11 @@ class TabUnderlineViewBrowserTest : public GlicBrowserTest {
     TabStripRegionView* tab_strip_view =
         BrowserView::GetBrowserViewForBrowser(target_browser)->tab_strip_view();
     views::View* underline =
-        tab_strip_view->GetTabAnchorViewAt(index)->GetViewByElementId(
-            TabUnderlineView::kGlicTabUnderlineElementId);
+        tab_strip_view
+            ->GetTabAnchorView(target_browser->tab_strip_model()
+                                   ->GetTabAtIndex(index)
+                                   ->GetHandle())
+            ->GetViewByElementId(TabUnderlineView::kGlicTabUnderlineElementId);
     CHECK(underline);
     return views::AsViewClass<TabUnderlineView>(underline);
   }
@@ -206,7 +209,8 @@ class TabUnderlineViewBrowserTest : public GlicBrowserTest {
         BrowserView::GetBrowserViewForBrowser(browser())->tab_strip_view();
     views::View* button =
         tab_strip_view
-            ->GetTabAnchorViewAt(GetTabListInterface()->GetActiveIndex())
+            ->GetTabAnchorView(
+                browser()->tab_strip_model()->GetActiveTab()->GetHandle())
             ->GetViewByElementId(kTabAlertIndicatorButtonElementId);
     return views::AsViewClass<AlertIndicatorButton>(button);
   }

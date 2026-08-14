@@ -6031,9 +6031,12 @@ void BrowserView::UpdateAccessibleNameForAllTabs() {
 // TODO(crbug.com/529834985): See if we can consolidate the logic here and in
 // TabView::UpdateAccessibleName/TabView::UpdateAccessibleName.
 void BrowserView::UpdateAccessibleNameForTabAt(int index) {
-  std::u16string accessible_title = tabs::GetAccessibleTabLabel(
-      browser()->tab_strip_model()->GetTabAtIndex(index), /*is_for_tab=*/true);
-  views::View* tab = tab_strip_view()->GetTabAnchorViewAt(index);
+  tabs::TabInterface* tab_interface =
+      browser()->tab_strip_model()->GetTabAtIndex(index);
+  std::u16string accessible_title =
+      tabs::GetAccessibleTabLabel(tab_interface, /*is_for_tab=*/true);
+  views::View* tab =
+      tab_strip_view()->GetTabAnchorView(tab_interface->GetHandle());
   CHECK(tab);
   if (accessible_title.empty()) {
     // Under the right conditions GetAccessibleTabLabel can return an empty

@@ -115,29 +115,23 @@ void SplitViewIphController::RemoveTabFromTracker(
 
 ui::TrackedElement* SplitViewIphController::GetTabSwitchIPHAnchor(
     BrowserView* browser_view) {
-  TabStripModel* tab_strip_model =
-      browser_window_interface_->GetTabStripModel();
-
-  // Default to no tab if tabs have not been switched yet.
-  int tab_strip_tab_index = TabStripModel::kNoTab;
-
-  if (recent_tabs_.size() >= kNumTabsTracked) {
-    const int inactive_tab_index =
-        browser_window_interface_->GetActiveTabInterface() ==
-                recent_tabs_[kMostRecentTabTrackerIndex]
-            ? kLeastRecentTabTrackerIndex
-            : kMostRecentTabTrackerIndex;
-
-    tab_strip_tab_index =
-        tab_strip_model->GetIndexOfTab(recent_tabs_[inactive_tab_index]);
-  }
-
-  if (tab_strip_tab_index == TabStripModel::kNoTab) {
+  if (recent_tabs_.size() < kNumTabsTracked) {
     return nullptr;
   }
 
-  views::View* tab_view =
-      browser_view->tab_strip_view()->GetTabAnchorViewAt(tab_strip_tab_index);
+  const int inactive_tab_index =
+      browser_window_interface_->GetActiveTabInterface() ==
+              recent_tabs_[kMostRecentTabTrackerIndex]
+          ? kLeastRecentTabTrackerIndex
+          : kMostRecentTabTrackerIndex;
+
+  tabs::TabInterface* inactive_tab = recent_tabs_[inactive_tab_index];
+  if (!inactive_tab) {
+    return nullptr;
+  }
+
+  views::View* tab_view = browser_view->tab_strip_view()->GetTabAnchorView(
+      inactive_tab->GetHandle());
   return tab_view
              ? views::ElementTrackerViews::GetInstance()->GetElementForView(
                    tab_view)

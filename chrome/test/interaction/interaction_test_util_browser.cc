@@ -362,7 +362,8 @@ class InteractionTestUtilSimulatorBrowser
 
     // Tabs can be selected using a default action; no special input logic is
     // needed.
-    views::View* const tab = tab_strip_region->GetTabAnchorViewAt(index);
+    views::View* const tab = tab_strip_region->GetTabAnchorView(
+        tab_strip_model->GetTabAtIndex(index)->GetHandle());
     views::test::InteractionTestUtilSimulatorViews::DoDefaultAction(tab,
                                                                     input_type);
 

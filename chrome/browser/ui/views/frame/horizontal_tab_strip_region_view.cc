@@ -530,9 +530,15 @@ const tabs::TabData& HorizontalTabStripRegionViewOld::GetTabData(
   NOTREACHED() << "Tab view not found for handle";
 }
 
-views::View* HorizontalTabStripRegionViewOld::GetTabAnchorViewAt(
-    int tab_index) {
-  return tab_strip_->tab_at(tab_index);
+views::View* HorizontalTabStripRegionViewOld::GetTabAnchorView(
+    const tabs::TabHandle& tab) {
+  for (int i = 0; i < tab_strip_->GetTabCount(); ++i) {
+    Tab* tab_view = tab_strip_->tab_at(i);
+    if (tab_view->tab_handle() == tab) {
+      return tab_view;
+    }
+  }
+  return nullptr;
 }
 
 views::View* HorizontalTabStripRegionViewOld::GetTabGroupAnchorView(

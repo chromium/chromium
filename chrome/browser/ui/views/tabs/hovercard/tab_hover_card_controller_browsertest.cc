@@ -57,7 +57,8 @@ class TabHoverCardControllerTest : public InProcessBrowserTest {
   HoverCardAnchorTarget* GetHoverCardAnchorTargetAt(int index) {
     bool is_vertical = GetBrowserView()->ShouldDrawVerticalTabStrip();
     views::View* tab_view =
-        GetBrowserView()->tab_strip_view()->GetTabAnchorViewAt(index);
+        GetBrowserView()->tab_strip_view()->GetTabAnchorView(
+            browser()->tab_strip_model()->GetTabAtIndex(index)->GetHandle());
 
     if (is_vertical ||
         base::FeatureList::IsEnabled(tabs::kTabStripUnification)) {

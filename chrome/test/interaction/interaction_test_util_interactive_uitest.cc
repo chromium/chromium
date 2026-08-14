@@ -60,8 +60,8 @@ IN_PROC_BROWSER_TEST_F(InteractionTestUtilInteractiveUitest,
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
 
-  views::View* const tab =
-      GetBrowserView()->tab_strip_view()->GetTabAnchorViewAt(0);
+  views::View* const tab = GetBrowserView()->tab_strip_view()->GetTabAnchorView(
+      browser()->tab_strip_model()->GetTabAtIndex(0)->GetHandle());
 
   // Because context menus run synchronously on Mac we will use an
   // InteractionSequence in order to show the context menu, respond immediately

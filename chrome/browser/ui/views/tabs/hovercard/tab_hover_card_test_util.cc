@@ -89,8 +89,9 @@ TabHoverCardBubbleView* TabHoverCardTestUtil::SimulateHoverTab(
     int tab_index) {
   auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
   if (base::FeatureList::IsEnabled(tabs::kTabStripUnification)) {
-    auto* tab_view = views::AsViewClass<TabView>(
-        browser_view->tab_strip_view()->GetTabAnchorViewAt(tab_index));
+    auto* tab_view = views::AsViewClass<
+        TabView>(browser_view->tab_strip_view()->GetTabAnchorView(
+        browser->GetTabStripModel()->GetTabAtIndex(tab_index)->GetHandle()));
     if (tab_view) {
       if (auto* controller = GetHoverCardController(browser)) {
         controller->UpdateHoverCard(

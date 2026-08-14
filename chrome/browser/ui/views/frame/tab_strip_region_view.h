@@ -70,7 +70,7 @@ class TabStripRegionView : public views::AccessiblePaneView,
   virtual TabHoverCardController* GetHoverCardController() = 0;
 
   // -- UI anchoring --
-  virtual views::View* GetTabAnchorViewAt(int tab_index) = 0;
+  virtual views::View* GetTabAnchorView(const tabs::TabHandle& tab) = 0;
   virtual views::View* GetTabGroupAnchorView(
       const tab_groups::TabGroupId& group) = 0;
 

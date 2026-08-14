@@ -79,7 +79,7 @@ class HorizontalTabStripRegionViewOld : public TabStripRegionView {
   void UpdateLoadingAnimations(const base::TimeDelta& elapsed_time) override;
   std::optional<int> GetFocusedTabIndex() const override;
   const tabs::TabData& GetTabData(const tabs::TabHandle& tab) override;
-  views::View* GetTabAnchorViewAt(int tab_index) override;
+  views::View* GetTabAnchorView(const tabs::TabHandle& tab) override;
   views::View* GetTabGroupAnchorView(
       const tab_groups::TabGroupId& group) override;
   void OnTabGroupFocusChanged(

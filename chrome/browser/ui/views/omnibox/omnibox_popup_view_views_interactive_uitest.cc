@@ -58,10 +58,12 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
       views::GetRootWindow(browser_view->GetWidget()),
       browser_view->GetNativeWindow());
   CreatePopupForTestQuery();
-  event_generator.MoveMouseTo(browser_view->tab_strip_view()
-                                  ->GetTabAnchorViewAt(0)
-                                  ->GetBoundsInScreen()
-                                  .CenterPoint());
+  event_generator.MoveMouseTo(
+      browser_view->tab_strip_view()
+          ->GetTabAnchorView(
+              browser()->tab_strip_model()->GetTabAtIndex(0)->GetHandle())
+          ->GetBoundsInScreen()
+          .CenterPoint());
   event_generator.ClickLeftButton();
   EXPECT_TRUE(omnibox_view()->HasFocus());
   EXPECT_FALSE(omnibox_view()->GetText().empty());

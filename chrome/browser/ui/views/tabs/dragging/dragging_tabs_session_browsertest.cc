@@ -40,8 +40,8 @@ class DraggingTabsSessionBrowserTest : public InProcessBrowserTest {
   std::tuple<tabs::TabInterface*, views::View*> AddTab(int index,
                                                        bool foreground) {
     chrome::AddTabAt(browser(), GURL("about:blank"), index, foreground);
-    return std::make_tuple(model_->GetTabAtIndex(index),
-                           view_->GetTabAnchorViewAt(index));
+    tabs::TabInterface* tab = model_->GetTabAtIndex(index);
+    return std::make_tuple(tab, view_->GetTabAnchorView(tab->GetHandle()));
   }
 
   // Sets up model and view state, and populates a DragSessionData, to drag the
@@ -59,8 +59,8 @@ class DraggingTabsSessionBrowserTest : public InProcessBrowserTest {
 
     DragSessionData drag_data;
     for (int tab_index : tab_indices) {
-      Tab* const tab_view =
-          views::AsViewClass<Tab>(view_->GetTabAnchorViewAt(tab_index));
+      Tab* const tab_view = views::AsViewClass<Tab>(view_->GetTabAnchorView(
+          model_->GetTabAtIndex(tab_index)->GetHandle()));
       CHECK(tab_view) << "Anchor view did not return a horizontal tab";
       drag_data.tab_drag_data_.emplace_back(view_->GetDragContext(), tab_view);
       drag_data.tab_drag_data_.back().attached_view = tab_view;

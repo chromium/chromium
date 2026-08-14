@@ -83,8 +83,13 @@ void VerticalTabIphController::MaybeShowPromo() {
 
   // If the unpinned tab is shrunk significantly compared to its standard
   // width show the IPH.
-  views::View* tab =
-      browser_view->tab_strip_view()->GetTabAnchorViewAt(first_unpinned_index);
+  tabs::TabInterface* first_unpinned_tab =
+      tab_strip_model->GetTabAtIndex(first_unpinned_index);
+  if (!first_unpinned_tab) {
+    return;
+  }
+  views::View* tab = browser_view->tab_strip_view()->GetTabAnchorView(
+      first_unpinned_tab->GetHandle());
   if (IsTabShrunk(tab)) {
     BrowserUserEducationInterface::From(browser_window_interface_)
         ->MaybeShowFeaturePromo(

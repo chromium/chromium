@@ -158,7 +158,9 @@ class CollaborationMessagingObserverBrowserTest
   TabIcon* GetTabIcon(Browser* target_browser, int index) {
     return views::AsViewClass<TabIcon>(
         GetTabStripView(target_browser)
-            ->GetTabAnchorViewAt(index)
+            ->GetTabAnchorView(target_browser->tab_strip_model()
+                                   ->GetTabAtIndex(index)
+                                   ->GetHandle())
             ->GetViewByElementId(kTabIconElementId));
   }
 

@@ -227,18 +227,13 @@ const tabs::TabData& BaseTabStripRegionView::GetTabData(
   return tab_view->data();
 }
 
-views::View* BaseTabStripRegionView::GetTabAnchorViewAt(int tab_index) {
-  if (!root_node_ || tab_index < 0 || tab_index >= tab_strip_model_->count()) {
+views::View* BaseTabStripRegionView::GetTabAnchorView(
+    const tabs::TabHandle& tab) {
+  if (!root_node_) {
     return nullptr;
   }
-  tabs::TabInterface* tab = tab_strip_model_->GetTabAtIndex(tab_index);
-  CHECK(tab) << "No tab found for tab_index: " << tab_index;
-
-  const TabCollectionNode* node =
-      root_node_->GetNodeForHandle(tab->GetHandle());
-  CHECK(node) << "No node found for tab handle";
-
-  return node->view();
+  const TabCollectionNode* node = root_node_->GetNodeForHandle(tab);
+  return node ? node->view() : nullptr;
 }
 
 views::View* BaseTabStripRegionView::GetTabGroupAnchorView(

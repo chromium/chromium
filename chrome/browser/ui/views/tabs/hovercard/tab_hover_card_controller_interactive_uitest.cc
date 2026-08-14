@@ -176,7 +176,11 @@ class TabHoverCardInteractiveUiTest
       BrowserView* const browser_view =
           BrowserView::GetBrowserViewForBrowser(browser());
       if (auto* tab_view = views::AsViewClass<TabView>(
-              browser_view->tab_strip_view()->GetTabAnchorViewAt(index))) {
+              browser_view->tab_strip_view()->GetTabAnchorView(
+                  browser()
+                      ->tab_strip_model()
+                      ->GetTabAtIndex(index)
+                      ->GetHandle()))) {
         tab_view->SetDataForTesting(std::move(data));
       }
     } else {
@@ -335,7 +339,8 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest,
       base::FeatureList::IsEnabled(tabs::kTabStripUnification)
           ? BrowserView::GetBrowserViewForBrowser(browser())
                 ->tab_strip_view()
-                ->GetTabAnchorViewAt(1)
+                ->GetTabAnchorView(
+                    browser()->tab_strip_model()->GetTabAtIndex(1)->GetHandle())
           : static_cast<views::View*>(GetTabStrip(browser())->tab_at(1));
   EXPECT_EQ(expected_anchor, hover_card->GetAnchorView());
 }

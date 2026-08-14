@@ -108,10 +108,15 @@ class MultiContentsViewTabDragEntrypointsUiTest
   }
 
   auto NameTabViewAt(std::string_view name, int index) {
-    return NameView(name, base::BindLambdaForTesting([this, index]() {
-                      return GetBrowserView().tab_strip_view()->GetTabAnchorViewAt(
-                          index);
-                    }));
+    return NameView(
+        name, base::BindLambdaForTesting([this, index]() {
+          return GetBrowserView().tab_strip_view()->GetTabAnchorView(
+              GetBrowserView()
+                  .browser()
+                  ->tab_strip_model()
+                  ->GetTabAtIndex(index)
+                  ->GetHandle());
+        }));
   }
 
   auto WaitTime(base::TimeDelta timeout) {

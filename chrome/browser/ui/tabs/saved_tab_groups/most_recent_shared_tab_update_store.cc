@@ -34,14 +34,13 @@ ui::TrackedElement* MostRecentSharedTabUpdateStore::GetIPHAnchor(
     BrowserView* browser_view) {
   CHECK(last_updated_tab_.has_value());
 
-  TabStripModel* tab_strip_model = browser_view->browser()->tab_strip_model();
   if (last_updated_tab_->second.has_value()) {
     // Last update was an active tab. Anchor to this tab.
     tabs::TabInterface* tab = SavedTabGroupUtils::GetGroupedTab(
         last_updated_tab_->first, last_updated_tab_->second.value());
-    int index = tab_strip_model->GetIndexOfTab(tab);
     views::View* tab_view =
-        browser_view->tab_strip_view()->GetTabAnchorViewAt(index);
+        tab ? browser_view->tab_strip_view()->GetTabAnchorView(tab->GetHandle())
+            : nullptr;
     return tab_view
                ? views::ElementTrackerViews::GetInstance()->GetElementForView(
                      tab_view)

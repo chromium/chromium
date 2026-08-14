@@ -266,8 +266,11 @@ class WebAppTabStripBrowserTest : public WebAppBrowserTestBase,
   }
 
   TabIcon* GetTabIconFor(BrowserView* browser_view, int index) {
-    views::View* tab_view =
-        browser_view->tab_strip_view()->GetTabAnchorViewAt(index);
+    views::View* tab_view = browser_view->tab_strip_view()->GetTabAnchorView(
+        browser_view->browser()
+            ->tab_strip_model()
+            ->GetTabAtIndex(index)
+            ->GetHandle());
     if (auto* unified_tab = views::AsViewClass<TabView>(tab_view)) {
       return unified_tab->GetTabIconForTesting();
     }

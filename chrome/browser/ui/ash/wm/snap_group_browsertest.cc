@@ -291,9 +291,17 @@ IN_PROC_BROWSER_TEST_F(SnapGroupBrowserTest, DoNotBreakGroupOnTabDragging) {
   TabStripRegionView* tab_strip_view =
       BrowserView::GetBrowserViewForBrowser(browser())->tab_strip_view();
   const auto start_point =
-      tab_strip_view->GetTabAnchorViewAt(1)->GetBoundsInScreen().CenterPoint();
+      tab_strip_view
+          ->GetTabAnchorView(
+              browser()->tab_strip_model()->GetTabAtIndex(1)->GetHandle())
+          ->GetBoundsInScreen()
+          .CenterPoint();
   const auto end_point =
-      tab_strip_view->GetTabAnchorViewAt(0)->GetBoundsInScreen().left_center();
+      tab_strip_view
+          ->GetTabAnchorView(
+              browser()->tab_strip_model()->GetTabAtIndex(0)->GetHandle())
+          ->GetBoundsInScreen()
+          .left_center();
   event_generator.MoveMouseTo(start_point);
   event_generator.PressLeftButton();
   event_generator.MoveMouseTo(end_point);
@@ -325,7 +333,11 @@ IN_PROC_BROWSER_TEST_F(SnapGroupBrowserTest, DoNotBreakGroupOnTabDetaching) {
   TabStripRegionView* tab_strip_view =
       BrowserView::GetBrowserViewForBrowser(browser())->tab_strip_view();
   const gfx::Point start_point =
-      tab_strip_view->GetTabAnchorViewAt(1)->GetBoundsInScreen().CenterPoint();
+      tab_strip_view
+          ->GetTabAnchorView(
+              browser()->tab_strip_model()->GetTabAtIndex(1)->GetHandle())
+          ->GetBoundsInScreen()
+          .CenterPoint();
   const gfx::Point end_point = window2->GetBoundsInScreen().CenterPoint();
   event_generator.MoveMouseTo(start_point);
 

@@ -71,8 +71,16 @@ class BaseActorUiTabControllerTest : public InProcessBrowserTest {
   views::AnimatedImageView* GetSpinner() {
     TabStripRegionView* tab_strip_view =
         BrowserView::GetBrowserViewForBrowser(browser())->tab_strip_view();
-    views::View* tab_specific = tab_strip_view->GetTabAnchorViewAt(
-        browser()->tab_strip_model()->active_index());
+    tabs::TabInterface* active_tab =
+        browser()->tab_strip_model()->GetActiveTab();
+    if (!active_tab) {
+      return nullptr;
+    }
+    views::View* tab_specific =
+        tab_strip_view->GetTabAnchorView(active_tab->GetHandle());
+    if (!tab_specific) {
+      return nullptr;
+    }
     views::AnimatedImageView* spinner =
         views::AsViewClass<AlertIndicatorButton>(
             tab_specific->GetViewByElementId(kTabAlertIndicatorButtonElementId))

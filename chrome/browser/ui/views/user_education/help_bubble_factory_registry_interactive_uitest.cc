@@ -116,7 +116,11 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryRegistryInteractiveUitest,
         base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE, base::BindLambdaForTesting([this]() {
               views::View* tab =
-                  GetBrowserView()->tab_strip_view()->GetTabAnchorViewAt(0);
+                  GetBrowserView()->tab_strip_view()->GetTabAnchorView(
+                      browser()
+                          ->tab_strip_model()
+                          ->GetTabAtIndex(0)
+                          ->GetHandle());
               tab->ShowContextMenu(tab->bounds().CenterPoint(),
                                    ui::mojom::MenuSourceType::kMouse);
             }));

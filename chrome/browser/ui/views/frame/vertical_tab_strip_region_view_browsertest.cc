@@ -119,7 +119,8 @@ class VerticalTabStripRegionViewTest
   }
 
   views::View* GetTabViewAt(int index) {
-    return region_view()->GetTabAnchorViewAt(index);
+    return region_view()->GetTabAnchorView(
+        browser()->tab_strip_model()->GetTabAtIndex(index)->GetHandle());
   }
 
   void PressCollapseButton() {
@@ -647,20 +648,21 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
 }
 
 IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
-                       GetTabAnchorViewAtReturnsCorrectView) {
+                       GetTabAnchorViewReturnsCorrectView) {
   // Add a few tabs.
   AppendTab();
   AppendTab();
   AppendTab();
 
-  // Verify GetTabAnchorViewAt for a valid index.
+  // Verify GetTabAnchorView for a valid tab handle.
   const int tab_index = 1;
-  views::View* tab_anchor_view = region_view()->GetTabAnchorViewAt(tab_index);
+  tabs::TabInterface* tab =
+      browser()->tab_strip_model()->GetTabAtIndex(tab_index);
+  views::View* tab_anchor_view =
+      region_view()->GetTabAnchorView(tab->GetHandle());
   EXPECT_NE(nullptr, tab_anchor_view);
 
   // Get the tab from the model and its corresponding node view for comparison.
-  tabs::TabInterface* tab =
-      browser()->tab_strip_model()->GetTabAtIndex(tab_index);
   const TabCollectionNode* node =
       region_view()->root_node_for_testing()->GetNodeForHandle(
           tab->GetHandle());
@@ -702,7 +704,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
   // Ensure the default focusable element is the VerticalTabStripTopContainer.
   views::View* view = region_view()->GetDefaultFocusableChild();
   ASSERT_TRUE(view);
-  EXPECT_EQ(view, region_view()->GetTabAnchorViewAt(0));
+  EXPECT_EQ(view, GetTabViewAt(0));
 }
 
 IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
@@ -711,7 +713,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
   AppendTab();
 
   // Get the view for the first tab.
-  views::View* first_tab_view = region_view()->GetTabAnchorViewAt(0);
+  views::View* first_tab_view = GetTabViewAt(0);
   ASSERT_TRUE(first_tab_view);
 
   // Directly set focus using the FocusManager.
@@ -747,7 +749,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
       focused_tab_index, TabStripUserGestureDetails(
                              TabStripUserGestureDetails::GestureType::kOther));
 
-  views::View* tab_view = region_view()->GetTabAnchorViewAt(focused_tab_index);
+  views::View* tab_view = GetTabViewAt(focused_tab_index);
 
   views::FocusManager* focus_manager =
       BrowserView::GetBrowserViewForBrowser(browser())->GetFocusManager();

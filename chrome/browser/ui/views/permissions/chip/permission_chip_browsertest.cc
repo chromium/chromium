@@ -333,7 +333,8 @@ IN_PROC_BROWSER_TEST_F(PermissionChipBrowserTest, AccessibleName) {
   ui::AXNodeData data;
   browser_view()
       ->tab_strip_view()
-      ->GetTabAnchorViewAt(0)
+      ->GetTabAnchorView(
+          browser()->tab_strip_model()->GetTabAtIndex(0)->GetHandle())
       ->GetViewAccessibility()
       .GetAccessibleNodeData(&data);
   EXPECT_TRUE(chip_controller->IsPermissionPromptChipVisible());
@@ -344,7 +345,8 @@ IN_PROC_BROWSER_TEST_F(PermissionChipBrowserTest, AccessibleName) {
   data = ui::AXNodeData();
   browser_view()
       ->tab_strip_view()
-      ->GetTabAnchorViewAt(0)
+      ->GetTabAnchorView(
+          browser()->tab_strip_model()->GetTabAtIndex(0)->GetHandle())
       ->GetViewAccessibility()
       .GetAccessibleNodeData(&data);
   EXPECT_FALSE(chip_controller->IsPermissionPromptChipVisible());

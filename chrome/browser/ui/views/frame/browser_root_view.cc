@@ -448,9 +448,8 @@ void BrowserRootView::PaintChildren(const views::PaintInfo& paint_info) {
   TabStripModel* model = browser_view_->browser()->tab_strip_model();
   std::vector<tabs::TabInterface*> active_tabs = model->GetForegroundTabs();
   for (tabs::TabInterface* active_tab : active_tabs) {
-    int index = model->GetIndexOfTab(active_tab);
-    views::View* tab_view =
-        browser_view_->tab_strip_view()->GetTabAnchorViewAt(index);
+    views::View* tab_view = browser_view_->tab_strip_view()->GetTabAnchorView(
+        active_tab->GetHandle());
 
     if (tab_view && tab_view->GetVisible()) {
       gfx::RectF bounds(tab_view->GetMirroredBounds());

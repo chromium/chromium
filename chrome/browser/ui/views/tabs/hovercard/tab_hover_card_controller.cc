@@ -125,8 +125,14 @@ base::TimeDelta GetShowDelay(BrowserWindowInterface* browser,
     // the delay is consistent for all tabs within the tab strip.
     tab_width = anchor_target->GetView()->width();
     for (int i = 0; i < browser->GetTabStripModel()->count(); i++) {
-      tab_width =
-          std::max(tab_width, tab_strip->GetTabAnchorViewAt(i)->width());
+      tabs::TabInterface* tab = browser->GetTabStripModel()->GetTabAtIndex(i);
+      if (!tab) {
+        continue;
+      }
+      views::View* tab_anchor = tab_strip->GetTabAnchorView(tab->GetHandle());
+      if (tab_anchor) {
+        tab_width = std::max(tab_width, tab_anchor->width());
+      }
     }
 
     const TabStyle* tab_style = TabStyle::Get();
