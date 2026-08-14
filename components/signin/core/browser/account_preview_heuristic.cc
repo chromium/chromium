@@ -120,6 +120,8 @@ sync_pb::SyncEnums_DeviceFormFactor ExtractOtherDeviceFormFactor(
 // This function is needed as `SyncDataQuartileToValue()` should only be used
 // for persisting information, and not comparing score, since the value of the
 // enum may not represent its semantic meaning of magnitude.
+// The score uses powers of 2 (exponential) to give higher importance to higher
+// quartiles.
 int GetQuartileScore(SyncDataQuartile quartile) {
   switch (quartile) {
     case SyncDataQuartile::kZero:
@@ -129,27 +131,56 @@ int GetQuartileScore(SyncDataQuartile quartile) {
     case SyncDataQuartile::kQ1ToMedian:
       return 2;
     case SyncDataQuartile::kMedianToQ3:
-      return 3;
-    case SyncDataQuartile::kAboveQ3:
       return 4;
+    case SyncDataQuartile::kAboveQ3:
+      return 8;
   }
   NOTREACHED();
 }
 
-// The Account Score is computed as the sum of each data type quartile score.
-// The Quartile score is a direct mapping of the quartile to an integer value
-// representing that quartile, check `GetQuartileScore()`, this allows to
-// normalize the values of each data type.
-int CalculateSyncDataScore(const AccountPreviewData& data) {
+// Holds the total sync data score and individual quartile counts for an
+// account. In case of equal scores (ties), the count of higher quartiles is
+// used as a tie-breaker.
+struct SyncDataScore {
   int total_score = 0;
+  size_t q4_count = 0;
+  size_t q3_count = 0;
+  size_t q2_count = 0;
+  size_t q1_count = 0;
+
+  auto operator<=>(const SyncDataScore&) const = default;
+};
+
+// The Account Score is computed as the sum of each data type quartile score.
+// The Quartile score is an exponential mapping of the quartile to an integer
+// value (powers of 2), check `GetQuartileScore()`.
+// In case of ties, the counts of higher quartiles break the tie.
+SyncDataScore CalculateSyncDataScore(const AccountPreviewData& data) {
+  SyncDataScore score;
   for (const auto& [type, thresholds] : kDataTypeThresholds) {
     auto it = data.counts.find(type);
     if (it != data.counts.end()) {
-      total_score +=
-          GetQuartileScore(thresholds.GetQuartileForCount(it->second));
+      SyncDataQuartile quartile = thresholds.GetQuartileForCount(it->second);
+      score.total_score += GetQuartileScore(quartile);
+      switch (quartile) {
+        case SyncDataQuartile::kZero:
+          break;
+        case SyncDataQuartile::kBelowQ1:
+          score.q1_count++;
+          break;
+        case SyncDataQuartile::kQ1ToMedian:
+          score.q2_count++;
+          break;
+        case SyncDataQuartile::kMedianToQ3:
+          score.q3_count++;
+          break;
+        case SyncDataQuartile::kAboveQ3:
+          score.q4_count++;
+          break;
+      }
     }
   }
-  return total_score;
+  return score;
 }
 
 bool HasEqualOrMoreSyncData(const AccountPreviewData& candidate,

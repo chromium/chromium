@@ -548,4 +548,97 @@ TEST_F(AccountPreviewHeuristicTest,
   EXPECT_EQ(pref->gaia_id, GaiaId("acc1"));
 }
 
+TEST_F(AccountPreviewHeuristicTest,
+       ExponentialQuartileScores1Q4Vs2Q3ScoreTieHigherQuartileWins) {
+  // Account 1: 1 Q4 (Passwords: 50, q3=50 -> kAboveQ3 = Q4, score = 8)
+  // Account 2: 2 Q3 (Bookmarks: 50, median=50 -> kMedianToQ3 = Q3, score = 4;
+  //                  Autofill: 15, median=15 -> kMedianToQ3 = Q3, score = 4)
+  // Both accounts have total sync data score = 8.
+  // Account 1 wins the tie-breaker because it has a higher Q4 count (1 vs 0).
+  AccountPreviewData data_1q4 = CreatePreviewData({.passwords = 50});
+  AccountPreviewHeuristicContext acc_1q4{
+      .gaia_id = GaiaId("acc_1q4"),
+      .preview_data = &data_1q4,
+  };
+
+  AccountPreviewData data_2q3 =
+      CreatePreviewData({.bookmarks = 50, .autofill = 15});
+  AccountPreviewHeuristicContext acc_2q3{
+      .gaia_id = GaiaId("acc_2q3"),
+      .preview_data = &data_2q3,
+  };
+
+  // acc_1q4 is preferred as it has higher data type score.
+  auto pref = ComputePreferredAccountForPromo({acc_1q4, acc_2q3});
+  ASSERT_TRUE(pref.has_value());
+  EXPECT_EQ(pref->gaia_id, GaiaId("acc_1q4"));
+
+  pref = ComputePreferredAccountForPromo({acc_2q3, acc_1q4});
+  ASSERT_TRUE(pref.has_value());
+  EXPECT_EQ(pref->gaia_id, GaiaId("acc_1q4"));
+}
+
+TEST_F(AccountPreviewHeuristicTest,
+       ExponentialQuartileScores1Q4Vs2Q3Plus1Q1HigherScoreWins) {
+  // Account 1: 1 Q4 (Passwords: 50 -> kAboveQ3 = Q4, score = 8)
+  // Account 2: 2 Q3 + 1 Q1 (Bookmarks: 50 -> kMedianToQ3 = Q3, score = 4;
+  //                         Autofill: 15 -> kMedianToQ3 = Q3, score = 4;
+  //                         Passwords: 2, q1=5 -> kBelowQ1 = Q1, score = 1)
+  // Account 2 has total sync data score = 4 + 4 + 1 = 9, which is strictly
+  // greater than Account 1's score of 8. Therefore, Account 2 wins.
+  AccountPreviewData data_1q4 = CreatePreviewData({.passwords = 50});
+  AccountPreviewHeuristicContext acc_1q4{
+      .gaia_id = GaiaId("acc_1q4"),
+      .preview_data = &data_1q4,
+  };
+
+  AccountPreviewData data_2q3_1q1 =
+      CreatePreviewData({.passwords = 2, .bookmarks = 50, .autofill = 15});
+  AccountPreviewHeuristicContext acc_2q3_1q1{
+      .gaia_id = GaiaId("acc_2q3_1q1"),
+      .preview_data = &data_2q3_1q1,
+  };
+
+  // acc_2q3_1q1 is preferred as it has higher data type score.
+  auto pref = ComputePreferredAccountForPromo({acc_1q4, acc_2q3_1q1});
+  ASSERT_TRUE(pref.has_value());
+  EXPECT_EQ(pref->gaia_id, GaiaId("acc_2q3_1q1"));
+
+  pref = ComputePreferredAccountForPromo({acc_2q3_1q1, acc_1q4});
+  ASSERT_TRUE(pref.has_value());
+  EXPECT_EQ(pref->gaia_id, GaiaId("acc_2q3_1q1"));
+}
+
+TEST_F(AccountPreviewHeuristicTest,
+       ExponentialQuartileScores1Q4VsLowQuartilesHigherScoreWins) {
+  // Account 1: 1 Q4 (Passwords: 50, q3=50 -> kAboveQ3 = Q4, score = 8)
+  // Account 2: 3 Q1s + 1 Q2 (Passwords: 2, q1=5 -> kBelowQ1 = Q1, score = 1;
+  //                          Bookmarks: 5, q1=10 -> kBelowQ1 = Q1, score = 1;
+  //                          Autofill: 2, q1=5 -> kBelowQ1 = Q1, score = 1;
+  //                          Wallet: 1, q1=1 -> kQ1ToMedian = Q2, score = 2)
+  // Account 1 has score 8, while Account 2 has score 1 + 1 + 1 + 2 = 5.
+  // Under the exponential scoring, Account 1 wins decisively with score 8 > 5.
+  AccountPreviewData data_1q4 = CreatePreviewData({.passwords = 50});
+  AccountPreviewHeuristicContext acc_1q4{
+      .gaia_id = GaiaId("acc_1q4"),
+      .preview_data = &data_1q4,
+  };
+
+  AccountPreviewData data_low_quartiles = CreatePreviewData(
+      {.passwords = 2, .bookmarks = 5, .autofill = 2, .wallet = 1});
+  AccountPreviewHeuristicContext acc_low_quartiles{
+      .gaia_id = GaiaId("acc_low_quartiles"),
+      .preview_data = &data_low_quartiles,
+  };
+
+  // acc_1q4 is preferred as it has higher sync data score.
+  auto pref = ComputePreferredAccountForPromo({acc_1q4, acc_low_quartiles});
+  ASSERT_TRUE(pref.has_value());
+  EXPECT_EQ(pref->gaia_id, GaiaId("acc_1q4"));
+
+  pref = ComputePreferredAccountForPromo({acc_low_quartiles, acc_1q4});
+  ASSERT_TRUE(pref.has_value());
+  EXPECT_EQ(pref->gaia_id, GaiaId("acc_1q4"));
+}
+
 }  // namespace signin
