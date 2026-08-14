@@ -980,6 +980,7 @@ TEST_P(SqlSharedCacheIsolatedDatabaseTest, GetAllUrlHashes) {
 
   // Make key3 ready by writing remaining body with set_ready=true.
   auto body_remainder = base::MakeRefCounted<net::IOBufferWithSize>(10);
+  std::ranges::fill(body_remainder->span(), 0);
   EXPECT_TRUE(db.WriteBody(key3, *row3, 0, body_remainder, /*set_ready=*/true)
                   .has_value());
 
