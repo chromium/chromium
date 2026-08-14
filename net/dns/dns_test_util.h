@@ -497,7 +497,7 @@ class MockDnsClient : public DnsClient {
   MockDnsTransactionFactory* factory() { return factory_.get(); }
 
  private:
-  std::optional<DnsConfig> BuildEffectiveConfig();
+  DnsConfig BuildEffectiveConfig();
   scoped_refptr<DnsSession> BuildSession();
 
   InsecureDnsMode insecure_dns_mode_ = InsecureDnsMode::kDisabled;
@@ -516,7 +516,7 @@ class MockDnsClient : public DnsClient {
   std::optional<DnsConfig> config_;
   scoped_refptr<DnsSession> session_;
   DnsConfigOverrides overrides_;
-  std::optional<DnsConfig> effective_config_;
+  DnsConfig effective_config_;
   std::unique_ptr<MockDnsTransactionFactory> factory_;
   std::unique_ptr<AddressSorter> address_sorter_;
   std::optional<url::SchemeHostPort> preset_endpoint_;

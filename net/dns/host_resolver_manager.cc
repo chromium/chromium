@@ -819,7 +819,7 @@ void HostResolverManager::InitializeJobKeyAndIPAddress(
   bool use_local_ipv6 = true;
   if (dns_client_) {
     const DnsConfig* config = dns_client_->GetEffectiveConfig();
-    if (config) {
+    if (!config->nameservers.empty() || !config->doh_config.servers().empty()) {
       use_local_ipv6 = config->use_local_ipv6;
     }
   }
@@ -1472,7 +1472,7 @@ void HostResolverManager::CreateTaskSequence(
         bool system_task_allowed =
             has_address_type &&
             job_key.secure_dns_mode != SecureDnsMode::kSecure;
-        if (dns_client_ && dns_client_->GetEffectiveConfig()) {
+        if (dns_client_) {
           InsecureDnsMode insecure_dns_mode = InsecureDnsMode::kDisabled;
           if (dns_client_->CanUseInsecureDnsTransactions() &&
               !dns_client_->FallbackFromInsecureTransactionPreferred() &&
@@ -1501,7 +1501,7 @@ void HostResolverManager::CreateTaskSequence(
       out_tasks->push_back(TaskType::SYSTEM);
       break;
     case HostResolverSource::DNS:
-      if (dns_client_ && dns_client_->GetEffectiveConfig()) {
+      if (dns_client_) {
         InsecureDnsMode insecure_dns_mode = InsecureDnsMode::kDisabled;
         if (dns_client_->CanUseInsecureDnsTransactions() &&
             (has_address_type ||
@@ -1777,7 +1777,7 @@ void HostResolverManager::AbortInsecureDnsTasks(int error, bool fallback_only) {
 
 // TODO(crbug.com/40641277): Consider removing this and its usage.
 void HostResolverManager::TryServingAllJobsFromHosts() {
-  if (!dns_client_ || !dns_client_->GetEffectiveConfig())
+  if (!dns_client_)
     return;
 
   // TODO(szym): Do not do this if nsswitch.conf instructs not to.

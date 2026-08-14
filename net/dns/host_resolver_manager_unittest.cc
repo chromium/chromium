@@ -9190,8 +9190,10 @@ TEST_F(HostResolverManagerDnsTest, NoBaseConfig_PartialOverrides) {
   resolver_->SetDnsConfigOverrides(overrides);
   base::RunLoop().RunUntilIdle();  // Potential notifications are async.
 
-  EXPECT_FALSE(client_ptr->GetEffectiveConfig());
-  EXPECT_EQ(0, config_observer.dns_changed_calls());
+  DnsConfig expected;
+  expected.nameservers = {CreateExpected("192.168.0.3", 193)};
+  EXPECT_THAT(client_ptr->GetEffectiveConfig(), testing::Pointee(expected));
+  EXPECT_EQ(1, config_observer.dns_changed_calls());
 
   NetworkChangeNotifier::RemoveDNSObserver(&config_observer);
 }
@@ -9301,7 +9303,10 @@ TEST_F(HostResolverManagerDnsTest,
   original_config.unhandled_options = true;
   ChangeDnsConfig(original_config);
 
-  EXPECT_FALSE(client_ptr->GetEffectiveConfig());
+  const DnsConfig* fetched_config = client_ptr->GetEffectiveConfig();
+  ASSERT_TRUE(fetched_config);
+  EXPECT_TRUE(fetched_config->nameservers.empty());
+  EXPECT_THAT(fetched_config->doh_config.servers(), IsEmpty());
 }
 
 TEST_F(HostResolverManagerDnsTest, DohMappingWithExclusion) {
@@ -13464,13 +13469,14 @@ TEST_F(HostResolverManagerDnsTest,
   overrides.secure_dns_mode = SecureDnsMode::kSecure;
   resolver_->SetDnsConfigOverrides(overrides);
 
-  ASSERT_FALSE(mock_dns_client_->GetCurrentSession());
+  ASSERT_TRUE(mock_dns_client_->GetCurrentSession());
 
   // Register context before loading a DNS config.
   resolver_->RegisterResolveContext(&context);
-  EXPECT_FALSE(context.current_session_for_testing());
+  EXPECT_EQ(context.current_session_for_testing(),
+            mock_dns_client_->GetCurrentSession());
 
-  // Load DNS config and expect the session to be loaded into the ResolveContext
+  // Load DNS config and expect the new session to be loaded into the ResolveContext
   ChangeDnsConfig(CreateValidDnsConfig());
   ASSERT_TRUE(mock_dns_client_->GetCurrentSession());
   EXPECT_EQ(context.current_session_for_testing(),
