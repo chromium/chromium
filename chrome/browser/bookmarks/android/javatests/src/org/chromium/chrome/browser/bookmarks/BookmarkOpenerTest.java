@@ -11,6 +11,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -147,7 +148,7 @@ public class BookmarkOpenerTest {
         // Mobile bookmarks is merged into all bookmarks when improved bookmark is enabled.
         onView(
                         allOf(
-                                withText("Mobile bookmarks"),
+                                withText(startsWith("Mobile bookmarks")),
                                 isDescendantOfA(withId(R.id.selectable_list_recycler_view))))
                 .perform(click());
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
@@ -158,7 +159,7 @@ public class BookmarkOpenerTest {
 
         onView(
                         allOf(
-                                withText("Reading list"),
+                                withText(startsWith("Reading list")),
                                 isDescendantOfA(withId(R.id.selectable_list_recycler_view))))
                 .perform(click());
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();

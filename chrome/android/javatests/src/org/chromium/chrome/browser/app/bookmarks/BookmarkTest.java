@@ -20,6 +20,7 @@ import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
@@ -1442,18 +1443,18 @@ public class BookmarkTest {
 
         // An empty mobile bookmarks folder is hidden on desktop devices.
         if (DeviceInfo.isDesktop()) {
-            onView(withText("Mobile bookmarks")).check(doesNotExist());
+            onView(withText(startsWith("Mobile bookmarks"))).check(doesNotExist());
         } else {
-            onViewWaiting(allOf(withText("Mobile bookmarks"), isDisplayed()));
+            onViewWaiting(allOf(withText(startsWith("Mobile bookmarks")), isDisplayed()));
         }
         onViewWaiting(
                 allOf(
-                        withText("Reading list"),
+                        withText(startsWith("Reading list")),
                         isDescendantOfA(withId(R.id.selectable_list_recycler_view)),
                         isDisplayed()));
         onView(
                         allOf(
-                                withText("Bookmarks bar"),
+                                withText(startsWith("Bookmarks bar")),
                                 isDescendantOfA(withId(R.id.selectable_list_recycler_view))))
                 .check(
                         BookmarkBarUtils.isDeviceBookmarkBarCompatible(

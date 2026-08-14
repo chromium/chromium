@@ -13,6 +13,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.startsWith;
 
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.espresso.ViewInteraction;
@@ -80,7 +81,7 @@ public class BookmarkTestUtil {
             BookmarkModel bookmarkModel) {
         openRootFolder(recyclerView, bookmarkDelegate, bookmarkModel);
 
-        onView(withText("Mobile bookmarks")).perform(click());
+        onView(withText(startsWith("Mobile bookmarks"))).perform(click());
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
     }
 
@@ -92,7 +93,7 @@ public class BookmarkTestUtil {
             BookmarkModel bookmarkModel) {
         openRootFolder(recyclerView, bookmarkDelegate, bookmarkModel);
 
-        onView(withText("Reading list")).perform(click());
+        onView(withText(startsWith("Reading list"))).perform(click());
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
     }
 
@@ -236,7 +237,7 @@ public class BookmarkTestUtil {
         return onView(
                 allOf(
                         withId(R.id.container),
-                        hasDescendant(withText(text)),
+                        hasDescendant(withText(startsWith(text))),
                         hasDescendant(
                                 allOf(
                                         withId(R.id.local_bookmark_image),

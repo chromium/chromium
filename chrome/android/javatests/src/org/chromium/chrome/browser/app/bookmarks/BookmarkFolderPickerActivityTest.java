@@ -10,6 +10,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -122,8 +123,8 @@ public class BookmarkFolderPickerActivityTest {
 
         ThreadUtils.runOnUiThreadBlocking(() -> mBookmarkModel.addObserver(mBookmarkModelObserver));
 
-        onView(withText("Mobile bookmarks")).perform(click());
-        onView(withText("folder")).perform(click());
+        onView(withText(startsWith("Mobile bookmarks"))).perform(click());
+        onView(withText(startsWith("folder"))).perform(click());
         onView(withText("Move here")).perform(click());
 
         BookmarkItem oldParent = getBookmarkItem(mMobileFolderId);
@@ -148,8 +149,10 @@ public class BookmarkFolderPickerActivityTest {
         ThreadUtils.runOnUiThreadBlocking(() -> mBookmarkModel.addObserver(mBookmarkModelObserver));
 
         onView(withId(R.id.folder_recycler_view))
-                .perform(RecyclerViewActions.scrollTo(hasDescendant(withText("Reading list"))));
-        onView(withText("Reading list")).perform(click());
+                .perform(
+                        RecyclerViewActions.scrollTo(
+                                hasDescendant(withText(startsWith("Reading list")))));
+        onView(withText(startsWith("Reading list"))).perform(click());
         onView(withText("Move here")).perform(click());
 
         BookmarkItem oldParent = getBookmarkItem(mMobileFolderId);

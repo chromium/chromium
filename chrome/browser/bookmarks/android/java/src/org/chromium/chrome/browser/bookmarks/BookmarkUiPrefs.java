@@ -12,6 +12,7 @@ import androidx.annotation.IntDef;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -122,8 +123,11 @@ public class BookmarkUiPrefs {
 
     /** Returns how the bookmark rows should be displayed, doesn't write anything to prefs. */
     public @BookmarkRowDisplayPref int getBookmarkRowDisplayPref() {
-        return mPrefsManager.readInt(
-                ChromePreferenceKeys.BOOKMARKS_VISUALS_PREF, INITIAL_BOOKMARK_ROW_DISPLAY_PREF);
+        int fallback =
+                BuildConfig.IS_DESKTOP_ANDROID
+                        ? BookmarkRowDisplayPref.COMPACT
+                        : INITIAL_BOOKMARK_ROW_DISPLAY_PREF;
+        return mPrefsManager.readInt(ChromePreferenceKeys.BOOKMARKS_VISUALS_PREF, fallback);
     }
 
     /**

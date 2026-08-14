@@ -16,6 +16,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertEquals;
 
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeBookmarksUrl;
@@ -180,7 +181,7 @@ public class BookmarkTabletTest {
                             });
                 });
         mActivityTestRule.loadUrl(getOriginalNativeBookmarksUrl());
-        onView(withText("Mobile bookmarks")).check(matches(isDisplayed()));
+        onView(withText(startsWith("Mobile bookmarks"))).check(matches(isDisplayed()));
         assertEquals(0, callbackHelper.getCallCount());
     }
 
@@ -203,7 +204,7 @@ public class BookmarkTabletTest {
                 .check(matches(isDisplayed()));
 
         onView(allOf(withId(R.id.clear_text_button), isDisplayed())).perform(click());
-        onView(withText("Mobile bookmarks")).perform(click());
+        onView(withText(startsWith("Mobile bookmarks"))).perform(click());
         onView(allOf(isDescendantOfA(withId(R.id.action_bar)), withText("Mobile bookmarks")))
                 .check(matches(isDisplayed()));
 
@@ -216,7 +217,7 @@ public class BookmarkTabletTest {
         // user's query is empty in the search bar
         BookmarkTestUtil.getSearchBoxViewInteraction().perform(replaceText(""));
         // user's query is empty the context inside bookmarks should not change
-        onView(withText("Mobile bookmarks")).check(matches(isDisplayed()));
+        onView(withText(startsWith("Mobile bookmarks"))).check(matches(isDisplayed()));
     }
 
     @Test
@@ -238,7 +239,7 @@ public class BookmarkTabletTest {
                 .check(matches(isDisplayed()));
 
         onView(allOf(withId(R.id.clear_text_button), isDisplayed())).perform(click());
-        onView(withText("Mobile bookmarks")).perform(click());
+        onView(withText(startsWith("Mobile bookmarks"))).perform(click());
         onView(allOf(isDescendantOfA(withId(R.id.action_bar)), withText("Mobile bookmarks")))
                 .check(matches(isDisplayed()));
 
@@ -251,6 +252,6 @@ public class BookmarkTabletTest {
         // user's query is empty in the search bar
         BookmarkTestUtil.getSearchBoxViewInteraction().perform(replaceText(""));
         // user's query is empty the context inside bookmarks should not change
-        onView(withText("Mobile bookmarks")).check(matches(isDisplayed()));
+        onView(withText(startsWith("Mobile bookmarks"))).check(matches(isDisplayed()));
     }
 }

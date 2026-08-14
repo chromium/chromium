@@ -17,6 +17,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.startsWith;
 import static org.mockito.Mockito.doReturn;
 
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
@@ -193,7 +194,7 @@ public class ReadingListTest {
     void openReadingList() {
         onView(
                         allOf(
-                                withText("Reading list"),
+                                withText(startsWith("Reading list")),
                                 isDescendantOfA(withId(R.id.selectable_list_recycler_view))))
                 .perform(click());
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
@@ -466,12 +467,12 @@ public class ReadingListTest {
         // Reading list should show in the root folder.
         onView(
                         allOf(
-                                withText("Reading list"),
+                                withText(startsWith("Reading list")),
                                 isDescendantOfA(withId(R.id.selectable_list_recycler_view))))
                 .check(matches(isDisplayed()));
         onView(
                         allOf(
-                                withText("Reading list"),
+                                withText(startsWith("Reading list")),
                                 isDescendantOfA(withId(R.id.selectable_list_recycler_view))))
                 .check(
                         matches(

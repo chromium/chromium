@@ -24,6 +24,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowSortOrder;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -54,8 +55,11 @@ public class BookmarkUiPrefsUnitTest {
     @Test
     public void initialBookmarkRowDisplayPref() {
         // Nothing has been written to shared prefs manager.
-        Assert.assertEquals(
-                BookmarkRowDisplayPref.VISUAL, mBookmarkUiPrefs.getBookmarkRowDisplayPref());
+        int expectedDefault =
+                BuildConfig.IS_DESKTOP_ANDROID
+                        ? BookmarkRowDisplayPref.COMPACT
+                        : BookmarkRowDisplayPref.VISUAL;
+        Assert.assertEquals(expectedDefault, mBookmarkUiPrefs.getBookmarkRowDisplayPref());
     }
 
     @Test
@@ -102,8 +106,11 @@ public class BookmarkUiPrefsUnitTest {
 
     @Test
     public void testRowDisplayPref_changesInBackground() {
-        Assert.assertEquals(
-                BookmarkRowDisplayPref.VISUAL, mBookmarkUiPrefs.getBookmarkRowDisplayPref());
+        int expectedDefault =
+                BuildConfig.IS_DESKTOP_ANDROID
+                        ? BookmarkRowDisplayPref.COMPACT
+                        : BookmarkRowDisplayPref.VISUAL;
+        Assert.assertEquals(expectedDefault, mBookmarkUiPrefs.getBookmarkRowDisplayPref());
 
         mBookmarkUiPrefs.addObserver(mObserver);
         mSharedPreferencesManager.writeInt(
