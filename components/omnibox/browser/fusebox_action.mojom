@@ -15,15 +15,15 @@ enum QueryActionOverride {
 };
 // LINT.ThenChange(//third_party/omnibox_proto/suggest_template_info.proto:QueryActionOverride)
 
-// LINT.IfChange(InputSource)
+// Maps to //third_party/omnibox_proto/input_source.proto.
 enum InputSource {
   kInputSourceUnspecified = 0,
   kInputSourceGallery = 1,
   kInputSourceCamera = 2,
   kInputSourceFilePicker = 3,
   kInputSourceDrive = 4,
+  kInputSourceTabPicker = 5,
 };
-// LINT.ThenChange(//third_party/omnibox_proto/input_source.proto:InputSource)
 
 enum SearchboxOverride {
   // Requests that no searchbox be opened.

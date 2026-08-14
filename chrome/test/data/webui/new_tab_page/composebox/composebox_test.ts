@@ -889,7 +889,7 @@ suite(`NewTabPageComposeboxTest`, () => {
           imageInputClicked = true;
         });
 
-        composebox.handleFuseboxAction({
+        await composebox.handleFuseboxAction({
           preselectedTool: null,
           preferredInventory: null,
           preselectedModel: null,
@@ -917,7 +917,7 @@ suite(`NewTabPageComposeboxTest`, () => {
           fileInputClicked = true;
         });
 
-        composebox.handleFuseboxAction({
+        await composebox.handleFuseboxAction({
           preselectedTool: null,
           preferredInventory: null,
           preselectedModel: null,
@@ -927,6 +927,26 @@ suite(`NewTabPageComposeboxTest`, () => {
         });
 
         assertTrue(fileInputClicked);
+      });
+
+  test(
+      'handleFuseboxAction opens tab picker for kInputSourceTabPicker',
+      async () => {
+        const composebox = new NtpComposeboxElement();
+        composebox.contextMenuEnabled = true;
+        document.body.appendChild(composebox);
+        await microtasksFinished();
+
+        await composebox.handleFuseboxAction({
+          preselectedTool: null,
+          preferredInventory: null,
+          preselectedModel: null,
+          queryActionOverride: null,
+          preselectedInputSource: InputSource.kInputSourceTabPicker,
+          searchboxOverride: null,
+        });
+
+        assertTrue(composebox.shareTabsFlyoutOpen);
       });
 });
 

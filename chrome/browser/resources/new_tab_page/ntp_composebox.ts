@@ -189,7 +189,7 @@ export class NtpComposeboxElement extends ComposeboxEmbedderMixin
     return file;
   }
 
-  handleFuseboxAction(action: FuseboxAction) {
+  async handleFuseboxAction(action: FuseboxAction) {
     if (action.preselectedInputSource) {
       switch (action.preselectedInputSource) {
         case InputSource.kInputSourceGallery:
@@ -202,9 +202,37 @@ export class NtpComposeboxElement extends ComposeboxEmbedderMixin
               ?.querySelector<HTMLInputElement>('#fileInput')
               ?.click();
           break;
+        case InputSource.kInputSourceTabPicker:
+          await this.openTabPicker();
+          break;
         default:
           break;
       }
+    }
+  }
+
+  async openTabPicker() {
+    if (!this.inputState) {
+      const response = await this.getSearchboxHandler().getInputState();
+      if (response) {
+        this.inputState = response.state;
+      }
+    }
+    this.shareTabsFlyoutOpen = true;
+    await this.refreshTabSuggestions(/*forceRefresh=*/ true);
+    await this.updateComplete;
+
+    const contextEntrypoint = this.getContextEntrypointElement();
+    if (contextEntrypoint) {
+      await contextEntrypoint.updateComplete;
+      const entrypointButton =
+          contextEntrypoint.shadowRoot?.querySelector<CrLitElement>(
+              '#entrypointButton');
+      if (entrypointButton) {
+        await entrypointButton.updateComplete;
+      }
+      entrypointButton?.shadowRoot?.querySelector<HTMLElement>('#entrypoint')
+          ?.click();
     }
   }
 }
