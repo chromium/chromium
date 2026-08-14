@@ -821,6 +821,44 @@ void BaseAudioContext::HandleStoppableSourceNodes() {
   }
 }
 
+void BaseAudioContext::AddPendingPromiseResolver(
+    ScriptPromiseResolver<IDLUndefined>* resolver) {
+  DCHECK(IsMainThread());
+
+  DeferredTaskHandler::GraphAutoLocker locker(GetDeferredTaskHandler());
+  pending_promise_resolvers_.push_back(resolver);
+}
+
+void BaseAudioContext::ResolvePendingPromiseResolvers() {
+  DCHECK(IsMainThread());
+
+  HeapVector<Member<ScriptPromiseResolver<IDLUndefined>>> resolvers;
+  {
+    DeferredTaskHandler::GraphAutoLocker locker(GetDeferredTaskHandler());
+    resolvers.swap(pending_promise_resolvers_);
+  }
+
+  for (auto& resolver : resolvers) {
+    resolver->Resolve();
+  }
+}
+
+void BaseAudioContext::RejectPendingPromiseResolversWithException(
+    const String& message) {
+  DCHECK(IsMainThread());
+
+  HeapVector<Member<ScriptPromiseResolver<IDLUndefined>>> resolvers;
+  {
+    DeferredTaskHandler::GraphAutoLocker locker(GetDeferredTaskHandler());
+    resolvers.swap(pending_promise_resolvers_);
+  }
+
+  for (auto& resolver : resolvers) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kInvalidStateError, message));
+  }
+}
+
 void BaseAudioContext::RejectPendingDecodeAudioDataResolvers() {
   // Now reject any pending decodeAudioData resolvers
   for (auto& resolver : decode_audio_resolvers_) {
@@ -833,6 +871,7 @@ void BaseAudioContext::RejectPendingDecodeAudioDataResolvers() {
 void BaseAudioContext::RejectPendingResolvers() {
   DCHECK(IsMainThread());
 
+  RejectPendingPromiseResolversWithException("Audio context is going away");
   RejectPendingDecodeAudioDataResolvers();
 }
 
@@ -860,6 +899,7 @@ void BaseAudioContext::StartRendering() {
 void BaseAudioContext::Trace(Visitor* visitor) const {
   visitor->Trace(destination_node_);
   visitor->Trace(listener_);
+  visitor->Trace(pending_promise_resolvers_);
   visitor->Trace(decode_audio_resolvers_);
   visitor->Trace(periodic_wave_sine_);
   visitor->Trace(periodic_wave_square_);

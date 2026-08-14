@@ -2694,6 +2694,114 @@ TEST_F(AudioContextTest, AsyncStateUseCountersResumeAfterSuspend) {
   }
 }
 
+// Verifies the suspend() promise settles correctly.
+TEST_F(AudioContextTest, TestPromiseWhenSuspend) {
+  enum SuspendTiming {
+    kSuspendBeforeInitialTransition,
+    kSuspendAfterInitialTransition
+  };
+  for (bool feature_enabled : {true, false}) {
+    for (SuspendTiming suspend_timing :
+         {kSuspendBeforeInitialTransition, kSuspendAfterInitialTransition}) {
+      for (bool close_before_suspended : {true, false}) {
+        SCOPED_TRACE(testing::Message()
+                     << "feature_enabled: " << feature_enabled
+                     << ", suspend_timing: " << suspend_timing
+                     << ", close_before_suspended: " << close_before_suspended);
+        ScopedAudioContextAsyncStateTransitionsForTest scoped_feature(
+            feature_enabled);
+
+        ScriptState* script_state = ToScriptStateForMainWorld(&GetFrame());
+        ScriptState::Scope scope(script_state);
+        AudioContextOptions* options = AudioContextOptions::Create();
+
+        AudioContext* audio_context = AudioContext::Create(
+            GetFrame().DomWindow(), options, ASSERT_NO_EXCEPTION);
+
+        if (suspend_timing == kSuspendAfterInitialTransition) {
+          // Wait until "running".
+          ExpectContextBecomesRunningAsync(audio_context);
+        }
+
+        auto suspend_promise =
+            audio_context->suspendContext(script_state, ASSERT_NO_EXCEPTION);
+        ScriptPromiseTester suspend_tester(script_state, suspend_promise);
+
+        if (close_before_suspended) {
+          auto close_promise =
+              audio_context->closeContext(script_state, ASSERT_NO_EXCEPTION);
+          ScriptPromiseTester close_tester(script_state, close_promise);
+
+          close_tester.WaitUntilSettled();
+          EXPECT_TRUE(close_tester.IsFulfilled());
+
+          suspend_tester.WaitUntilSettled();
+          EXPECT_TRUE(feature_enabled ? suspend_tester.IsRejected()
+                                      : suspend_tester.IsFulfilled());
+        } else {
+          // Wait until "suspended".
+          ExpectContextBecomesSuspendedAsync(audio_context);
+
+          suspend_tester.WaitUntilSettled();
+          EXPECT_TRUE(suspend_tester.IsFulfilled());
+        }
+      }
+    }
+  }
+}
+
+// Verifies that RejectPendingResolvers() rejects the pending promise
+// resolvers stored in BaseAudioContext.
+TEST_F(AudioContextTest, RejectPendingResolvers) {
+  enum SuspendTiming {
+    kSuspendBeforeInitialTransition,
+    kSuspendAfterInitialTransition
+  };
+  for (bool feature_enabled : {true, false}) {
+    for (SuspendTiming suspend_timing :
+         {kSuspendBeforeInitialTransition, kSuspendAfterInitialTransition}) {
+      SCOPED_TRACE(testing::Message()
+                   << "feature_enabled: " << feature_enabled
+                   << ", suspend_timing: " << suspend_timing);
+      ScopedAudioContextAsyncStateTransitionsForTest scoped_feature(
+          feature_enabled);
+
+      ScriptState* script_state = ToScriptStateForMainWorld(&GetFrame());
+      ScriptState::Scope scope(script_state);
+      AudioContextOptions* options = AudioContextOptions::Create();
+
+      AudioContext* audio_context = AudioContext::Create(
+          GetFrame().DomWindow(), options, ASSERT_NO_EXCEPTION);
+
+      if (suspend_timing == kSuspendAfterInitialTransition) {
+        // Wait until "running".
+        ExpectContextBecomesRunningAsync(audio_context);
+      }
+
+      ScriptPromiseTester suspend_tester(
+          script_state,
+          audio_context->suspendContext(script_state, ASSERT_NO_EXCEPTION));
+
+      // With the feature flag set, suspend() enqueues a pending resolver
+      // into pending_promise_resolvers_. Otherwise the promise is resolved
+      // synchronously and nothing is enqueued.
+      EXPECT_EQ(audio_context->PendingPromiseResolverCountForTesting(),
+                feature_enabled ? 1u : 0u);
+
+      audio_context->RejectPendingResolvers();
+
+      EXPECT_EQ(audio_context->PendingPromiseResolverCountForTesting(), 0u);
+
+      // With the feature flag set, RejectPendingResolvers() rejects the
+      // enqueued pending promise resolvers. Otherwise the promise was
+      // already resolved by suspend().
+      suspend_tester.WaitUntilSettled();
+      EXPECT_TRUE(feature_enabled ? suspend_tester.IsRejected()
+                                  : suspend_tester.IsFulfilled());
+    }
+  }
+}
+
 // Verifies the suspend() and resume() promises settle correctly when both are
 // pending.
 TEST_F(AudioContextTest, TestPromiseWhenSuspendAndResume) {

@@ -766,7 +766,6 @@ void AudioContext::Trace(Visitor* visitor) const {
   visitor->Trace(media_player_receiver_);
   visitor->Trace(media_player_observer_);
   visitor->Trace(pending_resume_resolvers_);
-  visitor->Trace(pending_suspend_resolvers_);
   visitor->Trace(deferred_resume_resolvers_);
   BaseAudioContext::Trace(visitor);
   PageVisibilityObserver::Trace(visitor);
@@ -801,10 +800,7 @@ ScriptPromise<IDLUndefined> AudioContext::suspendContext(
         script_state, exception_state.GetContext());
     promise = resolver->Promise();
 
-    {
-      DeferredTaskHandler::GraphAutoLocker locker(GetDeferredTaskHandler());
-      pending_suspend_resolvers_.push_back(resolver);
-    }
+    AddPendingPromiseResolver(resolver);
 
     // Probe reports the user action to the inspector synchronously.
     probe::DidSuspendAudioContext(GetExecutionContext());
@@ -1061,16 +1057,8 @@ void AudioContext::DidClose() {
   }
   set_sink_id_resolvers_.clear();
 
-  // Reject all pending suspend promises.
-  {
-    DeferredTaskHandler::GraphAutoLocker locker(GetDeferredTaskHandler());
-    for (auto& resolver : pending_suspend_resolvers_) {
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kInvalidStateError,
-          "AudioContext closed before a pending suspend() could complete."));
-    }
-    pending_suspend_resolvers_.clear();
-  }
+  RejectPendingPromiseResolversWithException(
+      "AudioContext closed before a pending suspend() could complete.");
 
   // Reject all resume() promises that are still deferred waiting for the
   // frame's visibility to become known. They can never settle now that the
@@ -1154,19 +1142,10 @@ void AudioContext::PerformTransitionToSuspended() {
 
   pending_transition_to_suspend_ = false;
 
-  HeapVector<Member<ScriptPromiseResolver<IDLUndefined>>> resolvers;
-  {
-    DeferredTaskHandler::GraphAutoLocker locker(GetDeferredTaskHandler());
-    resolvers.swap(pending_suspend_resolvers_);
-  }
-
   // If the context has already been closed, reject pending suspend promises.
   if (ContextState() == V8AudioContextState::Enum::kClosed) {
-    for (auto& resolver : resolvers) {
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kInvalidStateError,
-          "Cannot suspend a closed AudioContext."));
-    }
+    RejectPendingPromiseResolversWithException(
+        "Cannot suspend a closed AudioContext.");
     return;
   }
 
@@ -1175,9 +1154,7 @@ void AudioContext::PerformTransitionToSuspended() {
     SuspendRendering();
   }
 
-  for (auto& resolver : resolvers) {
-    resolver->Resolve();
-  }
+  ResolvePendingPromiseResolvers();
 }
 
 void AudioContext::StartRendering() {

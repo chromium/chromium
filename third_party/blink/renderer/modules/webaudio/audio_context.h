@@ -642,10 +642,6 @@ class MODULES_EXPORT AudioContext final
   bool pending_transition_to_suspend_
       GUARDED_BY_CONTEXT(main_thread_sequence_checker_) = false;
 
-  // Stores promise resolvers for suspend().
-  HeapVector<Member<ScriptPromiseResolver<IDLUndefined>>>
-      pending_suspend_resolvers_;
-
   // https://webaudio.github.io/web-audio-api/#dom-audiocontext-pending-resume-promises-slot
   HeapVector<Member<ScriptPromiseResolver<IDLUndefined>>>
       pending_resume_resolvers_;

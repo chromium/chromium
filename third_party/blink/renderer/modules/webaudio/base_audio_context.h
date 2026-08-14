@@ -326,6 +326,10 @@ class MODULES_EXPORT BaseAudioContext
   // if the execution context does not exist.
   bool CheckExecutionContextAndThrowIfNecessary(ExceptionState&);
 
+  wtf_size_t PendingPromiseResolverCountForTesting() const {
+    return pending_promise_resolvers_.size();
+  }
+
  protected:
   enum class ContextType { kRealtimeContext, kOfflineContext };
 
@@ -349,6 +353,10 @@ class MODULES_EXPORT BaseAudioContext
 
   // Returns the window with which the instance is associated.
   LocalDOMWindow* GetWindow() const;
+
+  void AddPendingPromiseResolver(ScriptPromiseResolver<IDLUndefined>*);
+  void ResolvePendingPromiseResolvers();
+  void RejectPendingPromiseResolversWithException(const String& message);
 
   Member<AudioDestinationNode> destination_node_;
 
@@ -386,6 +394,11 @@ class MODULES_EXPORT BaseAudioContext
 
   // Graph locking.
   scoped_refptr<DeferredTaskHandler> deferred_task_handler_;
+
+  // Vector for tracking suspend and resume resolvers in BaseAudioContext.
+  // https://webaudio.github.io/web-audio-api/#dom-baseaudiocontext-pending-promises-slot
+  HeapVector<Member<ScriptPromiseResolver<IDLUndefined>>>
+      pending_promise_resolvers_;
 
   // Vector of promises created by decodeAudioData.  This keeps the resolvers
   // alive until decodeAudioData finishes decoding and can tell the main thread
