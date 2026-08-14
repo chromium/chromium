@@ -1572,10 +1572,12 @@ public class CompositorViewHolder extends FrameLayout
         // Delay #updateWebContentsSize to the end of the task queue. Some side panel instances
         // rapidly close and re-open the side panel, which can cause a flicker if the web contents
         // are updated synchronously.
-        post(this::updateWebContentsSize);
-
-        // TODO(crbug.com/514774842): Account for offset X for animations.
-        mLayoutManager.setContentOffsetX(sideUiSpecs.getWidth(AnchorSide.LEFT));
+        post(
+                () -> {
+                    updateWebContentsSize();
+                    // TODO(crbug.com/514774842): Account for offset X for animations.
+                    mLayoutManager.setContentOffsetX(sideUiSpecs.getWidth(AnchorSide.LEFT));
+                });
 
         repositionTabViewForSideUi(sideUiSpecs);
         onViewportChanged();

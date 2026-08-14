@@ -919,8 +919,9 @@ void WebContentsViewAndroid::OnSizeChanged() {
   auto* rwhv = GetRenderWidgetHostViewAndroid();
   if (rwhv) {
     web_contents_->SendScreenRects();
-    rwhv->SynchronizeVisualProperties(cc::DeadlinePolicy::UseDefaultDeadline(),
-                                      std::nullopt);
+    auto deadline_policy = cc::DeadlinePolicy::UseSpecifiedDeadline(
+        ui::DelegatedFrameHostAndroid::ResizeTimeoutFrames());
+    rwhv->SynchronizeVisualProperties(deadline_policy, std::nullopt);
   }
 }
 
