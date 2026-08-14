@@ -837,10 +837,14 @@ ExecutionEngine::ShouldDeferNavigation(
   origin_gating_checker_.ComputeGatingDecision(
       std::move(context), event, source_origin.GetURL(),
       navigation_handle.GetURL(),
-      base::BindOnce(&ExecutionEngine::OnComputedGatingDecision, GetWeakPtr(),
-                     std::move(wrapped_callback), source_origin,
-                     url::Origin::Create(navigation_handle.GetURL()), state_,
-                     navigation_handle.GetInitiatorOrigin(), event));
+      base::BindOnce(
+          &ExecutionEngine::OnComputedGatingDecision, GetWeakPtr(),
+          std::move(wrapped_callback),
+          journal_->CreatePendingAsyncEntry(
+              navigation_handle.GetURL(), task_->id(),
+              MakeBrowserTrackUUID(task_->id()), "OriginGatingDecision", {}),
+          source_origin, url::Origin::Create(navigation_handle.GetURL()),
+          state_, navigation_handle.GetInitiatorOrigin(), event));
   return content::NavigationThrottle::DEFER;
 }
 
@@ -851,6 +855,7 @@ void ExecutionEngine::CancelPendingNavigations() {
 
 void ExecutionEngine::OnComputedGatingDecision(
     NavigationDecisionCallback callback,
+    std::unique_ptr<AggregatedJournal::PendingAsyncEntry> journal_entry,
     const url::Origin& source_origin,
     const url::Origin& destination_origin,
     State initial_state,
@@ -859,32 +864,28 @@ void ExecutionEngine::OnComputedGatingDecision(
     std::unique_ptr<origin_gating::GatingDecisionContext> context,
     origin_gating::GatingDecision decision) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto* navigation_response_context =
-      static_cast<NavigationResponseContext*>(context.get());
-  bool is_no_verdict = decision.attribution == DecisionSource::kNoVerdict;
   LogNavigationGating(source_origin, initiator, destination_origin,
-                      /*applied_gate=*/!decision.is_allowed || is_no_verdict);
+                      /*applied_gate=*/!decision.is_allowed ||
+                          decision.attribution == DecisionSource::kNoVerdict);
 
   RecordNavigationGatingDecision(MapGatingDecisionToEngineDecision(decision));
 
   if (decision.attribution == DecisionSource::kCacheWithoutUserConfirmation ||
       decision.attribution == DecisionSource::kCacheWithUserConfirmation) {
-    ukm::builders::Actor_OriginGating builder(
-        navigation_response_context->ukm_source_id);
-    builder
+    ukm::builders::Actor_OriginGating(
+        static_cast<NavigationResponseContext*>(context.get())->ukm_source_id)
         .SetServerConfirmationResult(static_cast<int64_t>(
             ExecutionEngine::ActorServerConfirmationResult::kNotRequired))
-        .SetEngineState(static_cast<int64_t>(initial_state));
-    builder.Record(ukm::UkmRecorder::Get());
+        .SetEngineState(static_cast<int64_t>(initial_state))
+        .Record(ukm::UkmRecorder::Get());
   }
 
-  journal_->Log(
-      destination_origin.GetURL(), task_->id(), "OriginGatingDecision",
+  journal_entry->EndEntry(
       JournalDetailsBuilder()
           .Add("source_origin", source_origin.Serialize())
           .Add("destination_origin", destination_origin.Serialize())
           .Add("initiator_origin",
-               initiator.has_value() ? initiator->Serialize() : "none")
+               initiator.transform(&url::Origin::Serialize).value_or("none"))
           .Add("event", origin_gating::GateableEventToString(event))
           .Add("decision", decision.is_allowed ? "allowed" : "blocked")
           .Add("attribution", decision.attribution.ToString())

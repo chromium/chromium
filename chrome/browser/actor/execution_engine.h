@@ -406,6 +406,7 @@ class ExecutionEngine : public ToolDelegate,
 
   void OnComputedGatingDecision(
       NavigationDecisionCallback callback,
+      std::unique_ptr<AggregatedJournal::PendingAsyncEntry> journal_entry,
       const url::Origin& source_origin,
       const url::Origin& destination_origin,
       State initial_state,
