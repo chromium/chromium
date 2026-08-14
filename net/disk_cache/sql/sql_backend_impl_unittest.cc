@@ -3934,12 +3934,31 @@ TEST_F(SqlBackendImplTest, ReadFromSharedCacheHandleNotFound) {
   backend->RunUntilAllTasksCompleteForTest();
 }
 
-class SqlBackendImplSharedCacheTest : public SqlBackendImplTest {
+// Helper base class to ensure `base::test::ScopedFeatureList` is initialized
+// before `SqlBackendImplTest`'s `TaskEnvironment` starts and destroyed only
+// after `TaskEnvironment` has shut down and joined all worker threads.
+//
+// In C++, base classes are constructed in the order of declaration and
+// destructed in reverse order. Inheriting `SqlBackendImplFeatureInitializer`
+// before `SqlBackendImplTest` prevents `base::FeatureList` from being deleted
+// while background threads in the task environment are still running and
+// querying feature flags (e.g. on Android during thread creation; see
+// crbug.com/359904334).
+class SqlBackendImplFeatureInitializer {
  public:
-  SqlBackendImplSharedCacheTest() {
+  SqlBackendImplFeatureInitializer() {
     feature_list_.InitAndEnableFeature(
         net::features::kRendererAccessibleHttpCache);
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+class SqlBackendImplSharedCacheTest : private SqlBackendImplFeatureInitializer,
+                                      public SqlBackendImplTest {
+ public:
+  SqlBackendImplSharedCacheTest() = default;
 
  protected:
   void WriteResponseInfoToEntry(disk_cache::Entry* entry,
@@ -3988,9 +4007,6 @@ class SqlBackendImplSharedCacheTest : public SqlBackendImplTest {
     ASSERT_TRUE(result.has_value());
     EXPECT_TRUE(result->shared_cache_resource_id.has_value());
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(SqlBackendImplSharedCacheTest,

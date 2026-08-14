@@ -61,10 +61,10 @@ class SqlSharedCacheIsolatedDatabaseTest : public testing::TestWithParam<bool> {
     return db.blob_handle_holders_.empty();
   }
 
+  base::test::ScopedFeatureList feature_list_;
   base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,

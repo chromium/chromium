@@ -7119,9 +7119,6 @@ class SqlPersistentStoreSharedCacheTest
     EXPECT_EQ(read_res.error(),
               SqlSharedCacheIsolatedDatabase::Error::kEntryNotFound);
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,

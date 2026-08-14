@@ -84,9 +84,9 @@ class SqlSharedCacheIsolatedDatabaseReaderTest
     return std::move(pending_file_set.value());
   }
 
+  base::test::ScopedFeatureList feature_list_;
   base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(

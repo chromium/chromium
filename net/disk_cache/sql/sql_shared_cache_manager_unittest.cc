@@ -102,12 +102,12 @@ class SqlSharedCacheManagerTest : public testing::TestWithParam<bool> {
     async_task_manager_.RunUntilAllTasksCompleteForTest();
   }
 
+  base::test::ScopedFeatureList feature_list_;
   base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
   std::vector<scoped_refptr<base::SequencedTaskRunner>> task_runners_;
   SqlAsyncTaskManager async_task_manager_;
   std::unique_ptr<SqlPersistentStore> store_;
-  base::test::ScopedFeatureList feature_list_;
   scoped_refptr<BackendCleanupTracker> cleanup_tracker_;
 };
 
