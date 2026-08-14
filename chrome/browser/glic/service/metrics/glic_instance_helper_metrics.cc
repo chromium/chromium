@@ -4,13 +4,39 @@
 
 #include "chrome/browser/glic/service/metrics/glic_instance_helper_metrics.h"
 
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/strcat.h"
+#include "chrome/browser/glic/public/features.h"
+#include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/web_contents.h"
+#include "services/metrics/public/cpp/metrics_utils.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 
 namespace glic {
 
-GlicInstanceHelperMetrics::GlicInstanceHelperMetrics() = default;
+namespace {
+
+MetricCloseReason ConvertDaisyChainActionToMetricCloseReason(
+    DaisyChainFirstAction action) {
+  return action == DaisyChainFirstAction::kTabSwitched
+             ? MetricCloseReason::kTabSwitched
+             : MetricCloseReason::kExplicitlyClosed;
+}
+
+ukm::SourceId GetSourceIdForTab(tabs::TabInterface* tab) {
+  if (tab && tab->GetContents() && tab->GetContents()->GetPrimaryMainFrame()) {
+    return tab->GetContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
+  }
+  return ukm::kInvalidSourceId;
+}
+
+}  // namespace
+
+GlicInstanceHelperMetrics::GlicInstanceHelperMetrics(tabs::TabInterface* tab)
+    : tab_(tab) {}
 
 GlicInstanceHelperMetrics::~GlicInstanceHelperMetrics() {
   if (!bound_instances_.empty()) {
@@ -22,7 +48,9 @@ GlicInstanceHelperMetrics::~GlicInstanceHelperMetrics() {
                                 pinned_by_instances_.size());
   }
   if (is_daisy_chained_) {
-    FlushMetric();
+    MetricCloseReason close_reason =
+        ConvertDaisyChainActionToMetricCloseReason(current_metric_action_);
+    FlushAutoOpenMetrics(close_reason, base::TimeTicks::Now());
   }
 }
 
@@ -44,38 +72,67 @@ void GlicInstanceHelperMetrics::SetIsDaisyChained(DaisyChainSource source) {
   daisy_chain_source_ = source;
   metric_finalized_ = false;
   current_metric_action_ = DaisyChainFirstAction::kNoAction;
+  start_time_ = base::TimeTicks::Now();
+  first_action_time_ = base::TimeTicks();
+  prompt_count_ = 0;
+  ukm_recorded_ = false;
+  source_id_ = GetSourceIdForTab(tab_);
   flush_timer_.Stop();
 }
 
 void GlicInstanceHelperMetrics::OnDaisyChainAction(
     DaisyChainFirstAction action) {
-  if (!is_daisy_chained_ || metric_finalized_) {
+  if (!is_daisy_chained_ || action == DaisyChainFirstAction::kNoAction) {
     return;
   }
 
-  // kNoAction should not overwrite any other action.
-  if (action == DaisyChainFirstAction::kNoAction &&
-      current_metric_action_ != DaisyChainFirstAction::kNoAction) {
+  if (action == DaisyChainFirstAction::kInputSubmitted) {
+    prompt_count_++;
+    flush_timer_.Stop();
+  }
+
+  if (first_action_time_.is_null()) {
+    first_action_time_ = base::TimeTicks::Now();
+  }
+
+  // Explicit panel closure or tab switch starts/restarts the debounce timer
+  // for both UKM and UMA.
+  if (action == DaisyChainFirstAction::kSidePanelClosed ||
+      action == DaisyChainFirstAction::kTabSwitched) {
+    MetricCloseReason close_reason =
+        ConvertDaisyChainActionToMetricCloseReason(action);
+    flush_timer_.Start(
+        FROM_HERE, features::kAutoOpenMetricDebounceDuration.Get(),
+        base::BindOnce(&GlicInstanceHelperMetrics::FlushAutoOpenMetrics,
+                       base::Unretained(this), close_reason,
+                       base::TimeTicks::Now()));
+  }
+
+  if (metric_finalized_) {
     return;
   }
 
+  // Set the current action. Interim ambiguous actions (e.g. kTabSwitched or
+  // kSidePanelClosed) can be upgraded to a terminal engagement action (e.g.
+  // kInputSubmitted) if triggered within the 5s debounce window. Once a
+  // terminal action executes, `metric_finalized_` is set to true to prevent
+  // subsequent dismissals from overwriting it.
   current_metric_action_ = action;
 
-  // Switching tabs or explicitly closing the side panel can be ambiguous, e.g.
-  // user may cycle through tabs or quickly re-open the panel to finish
-  // something. We start a timer to wait for a more definitive action.
-  if (action == DaisyChainFirstAction::kTabSwitched ||
-      action == DaisyChainFirstAction::kSidePanelClosed) {
-    // Ambiguous action. Start/restart timer.
-    flush_timer_.Start(FROM_HERE, base::Seconds(5), this,
-                       &GlicInstanceHelperMetrics::FlushMetric);
-  } else {
-    // Terminal action. Flush immediately.
-    FlushMetric();
+  if (action != DaisyChainFirstAction::kSidePanelClosed &&
+      action != DaisyChainFirstAction::kTabSwitched) {
+    // Terminal action (e.g. user input). Flush UMA immediately.
+    FlushFirstActionMetric();
   }
 }
 
-void GlicInstanceHelperMetrics::FlushMetric() {
+void GlicInstanceHelperMetrics::FlushAutoOpenMetrics(
+    MetricCloseReason close_reason, base::TimeTicks close_time) {
+  FlushFirstActionMetric();
+  RecordUkm(close_reason, close_time);
+}
+
+void GlicInstanceHelperMetrics::FlushFirstActionMetric() {
   if (metric_finalized_) {
     return;
   }
@@ -86,6 +143,51 @@ void GlicInstanceHelperMetrics::FlushMetric() {
       current_metric_action_);
   metric_finalized_ = true;
   flush_timer_.Stop();
+}
+
+void GlicInstanceHelperMetrics::RecordUkm(MetricCloseReason close_reason,
+                                          base::TimeTicks end_time) {
+  if (!is_daisy_chained_ || ukm_recorded_ ||
+      daisy_chain_source_ != DaisyChainSource::kAutoOpenPdf) {
+    return;
+  }
+
+  if (source_id_ == ukm::kInvalidSourceId) {
+    return;
+  }
+
+  base::TimeDelta auto_open_duration;
+  if (!start_time_.is_null() && !end_time.is_null()) {
+    auto_open_duration = end_time - start_time_;
+  }
+  int64_t bucketed_duration_ms = ukm::GetExponentialBucketMinForUserTiming(
+      auto_open_duration.InMilliseconds());
+
+  DaisyChainFirstAction first_action = current_metric_action_;
+  if (first_action == DaisyChainFirstAction::kNoAction) {
+    if (close_reason == MetricCloseReason::kTabSwitched) {
+      first_action = DaisyChainFirstAction::kTabSwitched;
+    } else {
+      first_action = DaisyChainFirstAction::kSidePanelClosed;
+    }
+  }
+
+  ukm::builders::Glic_AutoOpen_Closed builder(source_id_);
+  builder.SetSessionDurationMs(bucketed_duration_ms)
+      .SetCloseReason(static_cast<int64_t>(close_reason))
+      .SetFirstAction(static_cast<int64_t>(first_action))
+      .SetPromptCount(ukm::GetExponentialBucketMinForCounts1000(prompt_count_));
+
+  if (!first_action_time_.is_null() && !start_time_.is_null()) {
+    base::TimeDelta first_action_duration = first_action_time_ - start_time_;
+    builder.SetTimeToFirstActionMs(ukm::GetExponentialBucketMinForUserTiming(
+        first_action_duration.InMilliseconds()));
+  } else {
+    builder.SetTimeToFirstActionMs(bucketed_duration_ms);
+  }
+
+  builder.Record(ukm::UkmRecorder::Get());
+  ukm_recorded_ = true;
 }
 
 }  // namespace glic

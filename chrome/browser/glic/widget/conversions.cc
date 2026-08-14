@@ -24,4 +24,11 @@ GlicSidePanelCoordinator::ShowOptions ConvertToCoordinatorShowOptions(
   return target_options;
 }
 
+MetricCloseReason ConvertSidePanelStateToMetricCloseReason(
+    GlicSidePanelCoordinator::State state) {
+  return state == GlicSidePanelCoordinator::State::kBackgrounded
+             ? MetricCloseReason::kTabSwitched
+             : MetricCloseReason::kExplicitlyClosed;
+}
+
 }  // namespace glic

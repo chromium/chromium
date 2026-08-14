@@ -249,11 +249,8 @@ EmbedderCloseReason MapStateToCloseReason(
 void GlicSidePanelUi::SidePanelStateChanged(
     GlicSidePanelCoordinator::State state) {
   if (state != GlicSidePanelCoordinator::State::kShown && tab_) {
-    GlicInstanceMetrics::CloseReason reason =
-        state == GlicSidePanelCoordinator::State::kBackgrounded
-            ? GlicInstanceMetrics::CloseReason::kTabSwitched
-            : GlicInstanceMetrics::CloseReason::kExplicitlyClosed;
-    instance_metrics_->OnSidePanelClosed(tab_.get(), reason);
+    instance_metrics_->OnSidePanelClosed(
+        tab_.get(), ConvertSidePanelStateToMetricCloseReason(state));
     panel_state_.kind = mojom::PanelStateKind::kHidden;
     delegate_->NotifyPanelStateChanged();
 
