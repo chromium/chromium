@@ -3,7 +3,12 @@
 # Copyright 2026 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""Installs and manages skills for the Gemini CLI."""
+"""Installs and manages Chromium agent skills.
+
+'link' and 'uninstall' manage local skill links under .agents/skills, which
+any agent that discovers that location can use. 'list', 'enable' and 'disable'
+are implemented with the Gemini CLI and require it to be installed.
+"""
 
 import argparse
 import copy
@@ -13,6 +18,7 @@ import re
 import os
 import subprocess
 import sys
+from collections.abc import Iterable
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -255,11 +261,49 @@ def _handle_uninstall(args: argparse.Namespace) -> bool:
     return uninstall_skills(args.names)
 
 
-def uninstall_skills(names: list[str]) -> bool:
+def _is_local_link_name(name: str) -> bool:
+    """Returns True if `name` may be joined under .agents/skills.
+
+    Only a single, non-empty, unanchored path component is safe to join, so
+    that a name can never refer to a path outside of .agents/skills.
+    """
+    if not name or name in ('.', '..'):
+        return False
+    if '/' in name or '\\' in name:
+        return False
+    # Rejects drive-relative names such as 'C:name' on Windows.
+    return not os.path.splitdrive(name)[0]
+
+
+def _unlink_local_skill(name: str) -> bool:
+    """Removes the link created by `link_skills()` for `name`, if any.
+
+    Returns:
+      True if a local symlink was removed.
+    """
+    if not _is_local_link_name(name):
+        return False
+    link = _PROJECT_ROOT / '.agents' / 'skills' / name
+    # Only unlink. Do not delete as it risks permanently losing files.
+    if not link.is_symlink():
+        return False
+    logging.info('Uninstalling skill: %s', name)
+    link.unlink()
+    return True
+
+
+def uninstall_skills(names: Iterable[str]) -> bool:
     """Handles the 'uninstall' command."""
+    names = set(names)
+    # First remove every local link, so that argument order cannot leave one
+    # behind and so that Gemini is only needed for the remaining skills.
+    remaining = [name for name in names if not _unlink_local_skill(name)]
+    if not remaining:
+        return True
+
     installed = get_installed_skills()
     success = True
-    for name in names:
+    for name in remaining:
         logging.info('Uninstalling skill: %s', name)
         skill = installed.get(name)
         if not skill:
@@ -317,10 +361,14 @@ def enable_disable_skills(action: str, names: list[str]) -> bool:
 
 def main() -> None:
     """CLI for managing skills."""
-    parser = argparse.ArgumentParser(description='Manage Gemini CLI skills.')
+    parser = argparse.ArgumentParser(
+        description='Manage Chromium agent skills.'
+    )
     subparsers = parser.add_subparsers(dest='command', help='Commands')
 
-    list_parser = subparsers.add_parser('list', help='List skills')
+    list_parser = subparsers.add_parser(
+        'list', help='List skills (requires Gemini CLI)'
+    )
     list_parser.set_defaults(func=_handle_list)
 
     # Common parser for commands that take skill names as arguments.
@@ -328,10 +376,10 @@ def main() -> None:
     names_parser.add_argument('names', nargs='+', help='Names of the skills')
 
     for cmd, help_text, handler in [
-        ('link', 'Link skills', _handle_link),
-        ('uninstall', 'Uninstall skills', _handle_uninstall),
-        ('enable', 'Enable skills', _handle_enable),
-        ('disable', 'Disable skills', _handle_disable),
+        ('link', 'Link skills into .agents/skills', _handle_link),
+        ('uninstall', 'Uninstall skills or local links', _handle_uninstall),
+        ('enable', 'Enable skills (requires Gemini CLI)', _handle_enable),
+        ('disable', 'Disable skills (requires Gemini CLI)', _handle_disable),
     ]:
         p = subparsers.add_parser(cmd, help=help_text, parents=[names_parser])
         p.set_defaults(func=handler)

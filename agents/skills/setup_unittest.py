@@ -259,17 +259,67 @@ class TestSkillsSetup(fake_filesystem_unittest.TestCase):
         self.fs.create_dir(project_root / 'skill1_src')
         os.symlink(project_root / 'skill1_src', skill_loc)
 
-        mock_inst.return_value = {
-            'skill1': setup.SkillInfo(
-                name='skill1', installed=True, location=str(skill_loc)
-            )
-        }
         with unittest.mock.patch('setup._PROJECT_ROOT', project_root):
             args = argparse.Namespace(names=['skill1'])
             success = setup._handle_uninstall(args)
         self.assertTrue(success)
-        self.assertFalse(skill_loc.exists())
-        # Should NOT call subprocess uninstall if it's a symlink
+        self.assertFalse(skill_loc.is_symlink())
+        # A local link is removed without discovering or invoking Gemini.
+        mock_inst.assert_not_called()
+        self.mock_run.assert_not_called()
+
+    @unittest.mock.patch('setup.get_installed_skills')
+    def test_handle_uninstall_duplicate_symlink(self, mock_inst):
+        project_root = Path('/root/src')
+        skill_loc = project_root / '.agents' / 'skills' / 'skill1'
+        self.fs.create_dir(project_root / '.agents' / 'skills')
+        self.fs.create_dir(project_root / 'skill1_src')
+        os.symlink(project_root / 'skill1_src', skill_loc)
+
+        with unittest.mock.patch('setup._PROJECT_ROOT', project_root):
+            args = argparse.Namespace(names=['skill1', 'skill1'])
+            success = setup._handle_uninstall(args)
+
+        self.assertTrue(success)
+        self.assertFalse(skill_loc.is_symlink())
+        mock_inst.assert_not_called()
+        self.mock_run.assert_not_called()
+
+    @unittest.mock.patch('setup.get_installed_skills')
+    def test_handle_uninstall_rejects_traversal(self, mock_inst):
+        project_root = Path('/root/src')
+        outside_link = project_root / '.agents' / 'outside-link'
+        self.fs.create_dir(project_root / '.agents' / 'skills')
+        self.fs.create_dir(project_root / 'skill_src')
+        os.symlink(project_root / 'skill_src', outside_link)
+
+        mock_inst.return_value = {}
+        with unittest.mock.patch('setup._PROJECT_ROOT', project_root):
+            args = argparse.Namespace(names=['../outside-link', '..', '.'])
+            success = setup._handle_uninstall(args)
+
+        self.assertTrue(success)
+        self.assertTrue(outside_link.is_symlink())
+        # Path-like names are routed to the Gemini fallback instead.
+        mock_inst.assert_called_once()
+        self.mock_run.assert_not_called()
+
+    @unittest.mock.patch('setup.get_installed_skills')
+    def test_handle_uninstall_rejects_absolute_path(self, mock_inst):
+        project_root = Path('/root/src')
+        outside_link = project_root / '.agents' / 'outside-link'
+        self.fs.create_dir(project_root / '.agents' / 'skills')
+        self.fs.create_dir(project_root / 'skill_src')
+        os.symlink(project_root / 'skill_src', outside_link)
+
+        mock_inst.return_value = {}
+        with unittest.mock.patch('setup._PROJECT_ROOT', project_root):
+            args = argparse.Namespace(names=[str(outside_link)])
+            success = setup._handle_uninstall(args)
+
+        self.assertTrue(success)
+        self.assertTrue(outside_link.is_symlink())
+        mock_inst.assert_called_once()
         self.mock_run.assert_not_called()
 
     @unittest.mock.patch('setup.get_installed_skills')
