@@ -203,8 +203,13 @@ static_library("test_support") {
     "//chrome/test/base:testing_profile_impl",
     "//chrome/test/base:tracing",
     "//chrome/test/base:web_feature_histogram_tester",
+    "//chrome/test/base:web_ui_mocha_browser_test",
     "//chrome/test/base:web_ui_test_data_source",
   ]
+
+  if (is_android) {
+    public_deps += [ "//chrome/test/base:android_ui_test_utils" ]
+  }
 
   sources = [
     "../app/startup_timestamps.h",
@@ -217,8 +222,6 @@ static_library("test_support") {
     "base/chrome_test_utils.cc",
     "base/chrome_unit_test_suite.cc",
     "base/chrome_unit_test_suite.h",
-    "base/web_ui_mocha_browser_test.cc",
-    "base/web_ui_mocha_browser_test.h",
   ]
 
   if (enable_guest_view) {
@@ -241,13 +244,6 @@ static_library("test_support") {
 
   if (is_chromeos) {
     deps += [ "//chrome/browser/media_galleries" ]
-  }
-
-  if (is_android) {
-    sources += [
-      "base/android/android_ui_test_utils.cc",
-      "base/android/android_ui_test_utils.h",
-    ]
   }
 
   if (enable_extensions_core) {
@@ -8038,8 +8034,6 @@ if (!is_android) {
       "base/test_chrome_web_ui_controller_factory.h",
       "base/ui_test_utils.cc",
       "base/ui_test_utils.h",
-      "base/web_ui_mocha_browser_test.cc",
-      "base/web_ui_mocha_browser_test.h",
       "base/web_ui_test_data_source.cc",
       "base/web_ui_test_data_source.h",
       "base/web_view_focus_helper.cc",
@@ -8078,6 +8072,7 @@ if (!is_android) {
       "//chrome/test/base:in_process_browser_test_mixin",
       "//chrome/test/base:platform_browser_test",
       "//chrome/test/base:test_launcher_utils",
+      "//chrome/test/base:web_ui_mocha_browser_test",
       "//chrome/test/interaction",
       "//chrome/test/permissions",
       "//components/autofill/content/browser:test_support",

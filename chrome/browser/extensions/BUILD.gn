@@ -1697,6 +1697,7 @@ static_library("test_support") {
       "//chrome/browser/renderer_context_menu:test_support",
       "//chrome/browser/ui/android/tab_model:test_support",
       "//chrome/test:test_support_ui_android",
+      "//chrome/test/base:android_ui_test_utils",
       "//extensions/common/api",
     ]
   } else {

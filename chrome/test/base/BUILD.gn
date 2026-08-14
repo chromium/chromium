@@ -658,6 +658,65 @@ if (!is_android) {
   }
 }
 
+if (is_android) {
+  source_set("android_ui_test_utils") {
+    testonly = true
+    sources = [
+      "android/android_ui_test_utils.cc",
+      "android/android_ui_test_utils.h",
+    ]
+    public_deps = [ "//url" ]
+    deps = [
+      "//chrome/browser/android:tabs_public",
+      "//chrome/browser/ui/android/tab_model",
+      "//content/public/browser",
+      "//content/test:test_support",
+    ]
+  }
+}
+
+source_set("web_ui_mocha_browser_test") {
+  testonly = true
+  sources = [
+    "web_ui_mocha_browser_test.cc",
+    "web_ui_mocha_browser_test.h",
+  ]
+  public_deps = [
+    "//base",
+    "//testing/gtest",
+  ]
+  deps = [
+    "//chrome/browser/profiles:profile",
+    "//chrome/common",
+    "//chrome/test/base:chrome_test_utils",
+    "//chrome/test/base:test_switches",
+    "//chrome/test/base:web_ui_test_data_source",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//ui/base",
+    "//url",
+  ]
+  if (is_android) {
+    public_deps += [
+      "//base/test:test_support",
+      "//chrome/test:test_support_ui_android",
+      "//content/public/common",
+    ]
+    deps += [ "//chrome/test/base:android_ui_test_utils" ]
+  } else {
+    public_deps += [
+      "//chrome/test/base:devtools_coverage",
+      "//chrome/test/base:platform_browser_test",
+    ]
+    deps += [
+      "//base/test:test_support",
+      "//chrome/browser/ui",
+      "//chrome/test/base:ui_test_utils",
+      "//content/public/common",
+    ]
+  }
+}
+
 if (use_aura) {
   source_set("test_browser_window_aura") {
     testonly = true
