@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <optional>
 #include <vector>
 
-#include "base/command_line.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -18,11 +17,12 @@
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/browser_features.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/password_manager/password_manager_test_util.h"
-#include "chrome/browser/prefs/browser_prefs.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sharing_hub/sharing_hub_features.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
@@ -31,24 +31,19 @@
 #include "chrome/browser/ui/global_error/global_error.h"
 #include "chrome/browser/ui/global_error/global_error_service.h"
 #include "chrome/browser/ui/global_error/global_error_service_factory.h"
-#include "chrome/browser/ui/safety_hub/menu_notification_service_factory.h"
 #include "chrome/browser/ui/safety_hub/password_status_check_service.h"
 #include "chrome/browser/ui/safety_hub/password_status_check_service_factory.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_test_util.h"
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_manager.h"
 #include "chrome/browser/ui/tabs/recent_tabs_sub_menu_model.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_icon_controller.h"
 #include "chrome/browser/ui/toolbar/bookmark_sub_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
-#include "chrome/test/base/menu_model_test.h"
-#include "chrome/test/base/testing_browser_process.h"
-#include "chrome/test/base/testing_profile.h"
-#include "components/autofill/core/common/autofill_features.h"
+#include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/prefs/pref_service.h"
@@ -61,11 +56,9 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/base/features.h"
 #include "components/sync/test/test_sync_service.h"
-#include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/gfx/color_palette.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/policy/system_features_disable_list_policy_handler.h"
@@ -113,25 +106,13 @@ class FakeIconDelegate : public AppMenuIconController::Delegate {
 
 }  // namespace
 
-class AppMenuModelTest : public BrowserWithTestWindowTest,
+class AppMenuModelTest : public InProcessBrowserTest,
                          public ui::AcceleratorProvider {
  public:
   AppMenuModelTest() = default;
 
-  TestingProfile::TestingFactories GetTestingFactories() override {
-    TestingProfile::TestingFactories factories =
-        BrowserWithTestWindowTest::GetTestingFactories();
-    factories.emplace_back(
-        SyncServiceFactory::GetInstance(),
-        base::BindRepeating([](content::BrowserContext* context)
-                                -> std::unique_ptr<KeyedService> {
-          return std::make_unique<syncer::TestSyncService>();
-        }));
-    return factories;
-  }
-
-  void SetUp() override {
-    BrowserWithTestWindowTest::SetUp();
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
     safety_hub_test_util::CreateRevokedPermissionsService(
         browser()->GetProfile());
     safety_hub_test_util::CreateNotificationPermissionsReviewService(
@@ -142,6 +123,8 @@ class AppMenuModelTest : public BrowserWithTestWindowTest,
   AppMenuModelTest& operator=(const AppMenuModelTest&) = delete;
 
   ~AppMenuModelTest() override = default;
+
+  Profile* profile() { return browser()->GetProfile(); }
 
   // Don't handle accelerators.
   bool GetAcceleratorForCommandId(int command_id,
@@ -192,12 +175,16 @@ class TestLogMetricsAppMenuModel : public AppMenuModel {
                              Browser* browser)
       : AppMenuModel(provider, browser) {}
 
+  void ExecuteCommand(int command_id, int event_flags) override {
+    LogMenuMetrics(command_id);
+  }
+
   void LogMenuAction(AppMenuAction action_id) override { log_metrics_count_++; }
 
   int log_metrics_count_ = 0;
 };
 
-TEST_F(AppMenuModelTest, Basics) {
+IN_PROC_BROWSER_TEST_F(AppMenuModelTest, Basics) {
   // Simulate that an update is available to ensure that the menu includes the
   // upgrade item for platforms that support it.
   UpgradeDetector* detector = UpgradeDetector::GetInstance();
@@ -264,7 +251,7 @@ TEST_F(AppMenuModelTest, Basics) {
 }
 
 // Tests global error menu items in the app menu.
-TEST_F(AppMenuModelTest, GlobalError) {
+IN_PROC_BROWSER_TEST_F(AppMenuModelTest, GlobalError) {
   // Make sure services required for tests are initialized.
   GlobalErrorService* service =
       GlobalErrorServiceFactory::GetForProfile(browser()->GetProfile());
@@ -294,7 +281,7 @@ TEST_F(AppMenuModelTest, GlobalError) {
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-TEST_F(AppMenuModelTest, DefaultBrowserPrompt) {
+IN_PROC_BROWSER_TEST_F(AppMenuModelTest, DefaultBrowserPrompt) {
   DefaultBrowserPromptManager::GetInstance()->MaybeShowPrompt();
   FakeIconDelegate fake_delegate;
   AppMenuIconController app_menu_icon_controller(browser()->GetProfile(),
@@ -311,7 +298,7 @@ TEST_F(AppMenuModelTest, DefaultBrowserPrompt) {
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
-TEST_F(AppMenuModelTest, PerformanceItem) {
+IN_PROC_BROWSER_TEST_F(AppMenuModelTest, PerformanceItem) {
   AppMenuModel model(this, browser());
   model.Init();
   ToolsMenuModel toolModel(&model, browser());
@@ -321,7 +308,7 @@ TEST_F(AppMenuModelTest, PerformanceItem) {
   EXPECT_TRUE(toolModel.IsEnabledAt(performance_index));
 }
 
-TEST_F(AppMenuModelTest, CustomizeChromeItem) {
+IN_PROC_BROWSER_TEST_F(AppMenuModelTest, CustomizeChromeItem) {
   AppMenuModel model(this, browser());
   model.Init();
   ToolsMenuModel tool_model(&model, browser());
@@ -333,24 +320,29 @@ TEST_F(AppMenuModelTest, CustomizeChromeItem) {
   EXPECT_TRUE(tool_model.IsEnabledAt(customize_chrome_index));
 }
 
-TEST_F(AppMenuModelTest, CustomizeChromeLogMetrics) {
+IN_PROC_BROWSER_TEST_F(AppMenuModelTest, CustomizeChromeLogMetrics) {
   TestLogMetricsAppMenuModel model(this, browser());
   model.Init();
   model.ExecuteCommand(IDC_SHOW_CUSTOMIZE_CHROME_SIDE_PANEL, 0);
   EXPECT_EQ(1, model.log_metrics_count_);
 }
 
-TEST_F(AppMenuModelTest, GlicItem) {
-  feature_list_.Reset();
-  feature_list_.InitWithFeatures({features::kGlic, features::kGlicRollout}, {});
+class AppMenuModelGlicTest : public AppMenuModelTest {
+ public:
+  AppMenuModelGlicTest() {
+    feature_list_.InitWithFeatures({features::kGlic, features::kGlicRollout},
+                                   {});
+  }
+};
 
+IN_PROC_BROWSER_TEST_F(AppMenuModelGlicTest, GlicItem) {
   TestLogMetricsAppMenuModel model(this, browser());
   model.Init();
   model.ExecuteCommand(IDC_OPEN_GLIC, 0);
   EXPECT_EQ(1, model.log_metrics_count_);
 }
 
-TEST_F(AppMenuModelTest, DoNotShowShareSubMenuItem) {
+IN_PROC_BROWSER_TEST_F(AppMenuModelTest, DoNotShowShareSubMenuItem) {
   PrefService* prefs = browser()->GetProfile()->GetPrefs();
 #if !BUILDFLAG(IS_CHROMEOS)
   prefs->SetBoolean(prefs::kDesktopSharingHubEnabled, false);
@@ -384,29 +376,33 @@ TEST_F(AppMenuModelTest, DoNotShowShareSubMenuItem) {
   EXPECT_EQ(expected_item_count, submenu->GetItemCount());
 }
 
-TEST_F(AppMenuModelTest, ModelHasIcons) {
+IN_PROC_BROWSER_TEST_F(AppMenuModelTest, ModelHasIcons) {
   // Skip the items that are either not supposed to have an icon, or are not
   // ready to be tested. Remove items once they're ready for testing.
-  static const std::vector<int> skip_commands = {
-      kRecentTabsNoDeviceTabsId, IDC_ABOUT,
+  const std::vector<int> skip_commands = {
+      kRecentTabsNoDeviceTabsId,
+      IDC_ABOUT,
       RecentTabsSubMenuModel::GetDisabledRecentlyClosedHeaderCommandId(),
-      IDC_EXTENSIONS_SUBMENU_VISIT_CHROME_WEB_STORE, IDC_TAKE_SCREENSHOT};
+      IDC_EXTENSIONS_SUBMENU_VISIT_CHROME_WEB_STORE,
+      IDC_TAKE_SCREENSHOT,
+      IDC_BOOKMARK_BAR_SUBMENU_ALWAYS_SHOW,
+      IDC_BOOKMARK_BAR_SUBMENU_ALWAYS_HIDE,
+      IDC_BOOKMARK_BAR_SUBMENU_ONLY_ON_NTP};
   AppMenuModel model(this, browser());
   model.Init();
 
-  const auto check_for_icons = [](std::u16string menu_name,
-                                  ui::MenuModel* model) -> void {
-    auto check_for_icons_impl = [](std::u16string menu_name,
-                                   ui::MenuModel* model,
-                                   auto& check_for_icons_ref) -> void {
+  const auto check_for_icons = [&skip_commands](std::u16string menu_name,
+                                                ui::MenuModel* model) -> void {
+    auto check_for_icons_impl =
+        [&skip_commands](std::u16string menu_name, ui::MenuModel* model,
+                         auto& check_for_icons_ref) -> void {
       // Except where noted by the above vector, all menu items in CR2023 must
       // have icons.
       for (size_t i = 0; i < model->GetItemCount(); ++i) {
         auto menu_type = model->GetTypeAt(i);
         if (menu_type != ui::MenuModel::TYPE_ACTIONABLE_SUBMENU &&
             menu_type != ui::MenuModel::TYPE_SUBMENU &&
-            std::find(skip_commands.cbegin(), skip_commands.cend(),
-                      model->GetCommandIdAt(i)) != skip_commands.cend()) {
+            std::ranges::contains(skip_commands, model->GetCommandIdAt(i))) {
           continue;
         }
         if (menu_type != ui::MenuModel::TYPE_SEPARATOR &&
@@ -417,8 +413,7 @@ TEST_F(AppMenuModelTest, ModelHasIcons) {
         }
         if ((menu_type == ui::MenuModel::TYPE_SUBMENU ||
              menu_type == ui::MenuModel::TYPE_ACTIONABLE_SUBMENU) &&
-            std::find(skip_commands.cbegin(), skip_commands.cend(),
-                      model->GetCommandIdAt(i)) == skip_commands.cend()) {
+            !std::ranges::contains(skip_commands, model->GetCommandIdAt(i))) {
           check_for_icons_ref(model->GetLabelAt(i), model->GetSubmenuModelAt(i),
                               check_for_icons_ref);
         }
@@ -433,10 +428,7 @@ TEST_F(AppMenuModelTest, ModelHasIcons) {
 class ExtensionsMenuModelTest : public AppMenuModelTest,
                                 public testing::WithParamInterface<bool> {
  public:
-  ExtensionsMenuModelTest() = default;
-  ~ExtensionsMenuModelTest() override = default;
-
-  void SetUp() override {
+  ExtensionsMenuModelTest() {
     if (GetParam()) {
       scoped_feature_list_.InitAndEnableFeature(
           features::kExtensionsCollapseMainMenu);
@@ -444,8 +436,8 @@ class ExtensionsMenuModelTest : public AppMenuModelTest,
       scoped_feature_list_.InitAndDisableFeature(
           features::kExtensionsCollapseMainMenu);
     }
-    AppMenuModelTest::SetUp();
   }
+  ~ExtensionsMenuModelTest() override = default;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -460,7 +452,7 @@ INSTANTIATE_TEST_SUITE_P(,
 
 // Tests that extensions sub menu (when enabled) generates the correct elements
 // or does not generate its elements when disabled.
-TEST_P(ExtensionsMenuModelTest, ExtensionsMenu) {
+IN_PROC_BROWSER_TEST_P(ExtensionsMenuModelTest, ExtensionsMenu) {
   AppMenuModel model(this, browser());
   model.Init();
 
@@ -489,9 +481,16 @@ class TestAppMenuModelMetricsTest : public AppMenuModelTest,
                                     public testing::WithParamInterface<int> {
  public:
   TestAppMenuModelMetricsTest() = default;
+
+  void SetUpOnMainThread() override {
+    AppMenuModelTest::SetUpOnMainThread();
+    signin::MakePrimaryAccountAvailable(
+        IdentityManagerFactory::GetForProfile(browser()->GetProfile()),
+        "user@example.com", signin::ConsentLevel::kSync);
+  }
 };
 
-TEST_P(TestAppMenuModelMetricsTest, LogProfileMenuMetrics) {
+IN_PROC_BROWSER_TEST_P(TestAppMenuModelMetricsTest, LogProfileMenuMetrics) {
   int command_id = GetParam();
   TestLogMetricsAppMenuModel model(this, browser());
   model.Init();
@@ -521,7 +520,7 @@ INSTANTIATE_TEST_SUITE_P(
                     IDC_SHOW_TRAVEL,
                     AppMenuModel::kMinOtherProfileCommandId));
 
-TEST_F(AppMenuModelTest, YourSavedInfoSubmenusShown) {
+IN_PROC_BROWSER_TEST_F(AppMenuModelTest, YourSavedInfoSubmenusShown) {
   AppMenuModel model(this, browser());
   model.Init();
 
@@ -541,7 +540,7 @@ TEST_F(AppMenuModelTest, YourSavedInfoSubmenusShown) {
       your_saved_info_menu->GetIndexOfCommandId(IDC_SHOW_TRAVEL).has_value());
 }
 
-TEST_F(AppMenuModelTest, ProfileSyncOnTest) {
+IN_PROC_BROWSER_TEST_F(AppMenuModelTest, ProfileSyncOnTest) {
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(browser()->GetProfile());
   signin::MakePrimaryAccountAvailable(identity_manager, "user@example.com",
@@ -567,7 +566,7 @@ bool DoesHelpMenuHaveCommand(const AppMenuModel& model, int command_id) {
   return help_menu->GetIndexOfCommandId(command_id).has_value();
 }
 
-TEST_F(AppMenuModelTest, Feedback_UserFeedbackAllowedPolicy) {
+IN_PROC_BROWSER_TEST_F(AppMenuModelTest, Feedback_UserFeedbackAllowedPolicy) {
   browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kUserFeedbackAllowed,
                                                   true);
   {
@@ -593,8 +592,8 @@ class AppMenuReportUnsafeSiteTest : public base::test::WithFeatureOverride,
   ~AppMenuReportUnsafeSiteTest() override = default;
 };
 
-TEST_P(AppMenuReportUnsafeSiteTest,
-       ReportUnsafeSite_UserFeedbackAllowedPolicy) {
+IN_PROC_BROWSER_TEST_P(AppMenuReportUnsafeSiteTest,
+                       ReportUnsafeSite_UserFeedbackAllowedPolicy) {
   browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kUserFeedbackAllowed,
                                                   true);
   {
@@ -613,7 +612,8 @@ TEST_P(AppMenuReportUnsafeSiteTest,
   }
 }
 
-TEST_P(AppMenuReportUnsafeSiteTest, ReportUnsafeSite_SafeBrowsingDisabled) {
+IN_PROC_BROWSER_TEST_P(AppMenuReportUnsafeSiteTest,
+                       ReportUnsafeSite_SafeBrowsingDisabled) {
   browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kUserFeedbackAllowed,
                                                   true);
   browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled,
@@ -653,7 +653,7 @@ class AppMenuModelSigninPromoTest : public base::test::WithFeatureOverride,
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_P(AppMenuModelSigninPromoTest, SignedIn) {
+IN_PROC_BROWSER_TEST_P(AppMenuModelSigninPromoTest, SignedIn) {
   base::HistogramTester histogram_tester;
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(browser()->GetProfile());
@@ -673,7 +673,7 @@ TEST_P(AppMenuModelSigninPromoTest, SignedIn) {
   histogram_tester.ExpectTotalCount("Signin.SignIn.Offered", 0);
 }
 
-TEST_P(AppMenuModelSigninPromoTest, SignedOut) {
+IN_PROC_BROWSER_TEST_P(AppMenuModelSigninPromoTest, SignedOut) {
   base::HistogramTester histogram_tester;
   AppMenuModel model(this, browser());
   model.Init();
@@ -702,19 +702,24 @@ TEST_P(AppMenuModelSigninPromoTest, SignedOut) {
 
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(AppMenuModelSigninPromoTest);
 
-TEST_F(AppMenuModelTest,
-       ProfileSyncBookmarkLimitExceededErrorHiddenTest_Syncing) {
-  // Set up the bookmark limit exceeded error.
-  syncer::TestSyncService* test_sync_service =
-      static_cast<syncer::TestSyncService*>(
-          SyncServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-              browser()->GetProfile(),
-              base::BindRepeating([](content::BrowserContext* context)
-                                      -> std::unique_ptr<KeyedService> {
-                return std::make_unique<syncer::TestSyncService>();
-              })));
-  test_sync_service->SetBookmarksLimitExceeded(true);
+class AppMenuModelBookmarkLimitExceededSyncingTest : public AppMenuModelTest {
+ public:
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    AppMenuModelTest::SetUpBrowserContextKeyedServices(context);
+    SyncServiceFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating([](content::BrowserContext* context)
+                                         -> std::unique_ptr<KeyedService> {
+          auto service = std::make_unique<syncer::TestSyncService>();
+          service->SetBookmarksLimitExceeded(true);
+          return service;
+        }));
+  }
+};
 
+IN_PROC_BROWSER_TEST_F(
+    AppMenuModelBookmarkLimitExceededSyncingTest,
+    ProfileSyncBookmarkLimitExceededErrorHiddenTest_Syncing) {
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(browser()->GetProfile());
   signin::MakePrimaryAccountAvailable(identity_manager, "user@example.com",
@@ -736,23 +741,30 @@ TEST_F(AppMenuModelTest,
   EXPECT_FALSE(profile_menu->GetIndexOfCommandId(0).has_value());
 }
 
-TEST_F(AppMenuModelTest,
-       ProfileSyncBookmarkLimitExceededErrorHiddenTest_SignedInNonSyncing) {
-  feature_list_.Reset();
-  feature_list_.InitAndEnableFeature(
-      syncer::kReplaceSyncPromosWithSignInPromos);
+class AppMenuModelBookmarkLimitExceededSignedInNonSyncingTest
+    : public AppMenuModelTest {
+ public:
+  AppMenuModelBookmarkLimitExceededSignedInNonSyncingTest() {
+    feature_list_.InitAndEnableFeature(
+        syncer::kReplaceSyncPromosWithSignInPromos);
+  }
 
-  // Set up the bookmark limit exceeded error.
-  syncer::TestSyncService* test_sync_service =
-      static_cast<syncer::TestSyncService*>(
-          SyncServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-              browser()->GetProfile(),
-              base::BindRepeating([](content::BrowserContext* context)
-                                      -> std::unique_ptr<KeyedService> {
-                return std::make_unique<syncer::TestSyncService>();
-              })));
-  test_sync_service->SetBookmarksLimitExceeded(true);
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    AppMenuModelTest::SetUpBrowserContextKeyedServices(context);
+    SyncServiceFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating([](content::BrowserContext* context)
+                                         -> std::unique_ptr<KeyedService> {
+          auto service = std::make_unique<syncer::TestSyncService>();
+          service->SetBookmarksLimitExceeded(true);
+          return service;
+        }));
+  }
+};
 
+IN_PROC_BROWSER_TEST_F(
+    AppMenuModelBookmarkLimitExceededSignedInNonSyncingTest,
+    ProfileSyncBookmarkLimitExceededErrorHiddenTest_SignedInNonSyncing) {
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(browser()->GetProfile());
   signin::MakePrimaryAccountAvailable(identity_manager, "user@example.com",
@@ -779,7 +791,7 @@ TEST_F(AppMenuModelTest,
 #if BUILDFLAG(IS_CHROMEOS)
 // Tests settings menu items is disabled in the app menu when
 // kSystemFeaturesDisableList is set.
-TEST_F(AppMenuModelTest, DisableSettingsItem) {
+IN_PROC_BROWSER_TEST_F(AppMenuModelTest, DisableSettingsItem) {
   AppMenuModel model(this, browser());
   model.Init();
   const size_t options_index = model.GetIndexOfCommandId(IDC_OPTIONS).value();
@@ -799,7 +811,7 @@ TEST_F(AppMenuModelTest, DisableSettingsItem) {
 
   {
     ScopedListPrefUpdate update(
-        TestingBrowserProcess::GetGlobal()->local_state(),
+        g_browser_process->local_state(),
         policy::policy_prefs::kSystemFeaturesDisableList);
     update->Append(static_cast<int>(policy::SystemFeature::kBrowserSettings));
   }
@@ -813,7 +825,7 @@ TEST_F(AppMenuModelTest, DisableSettingsItem) {
 
   {
     ScopedListPrefUpdate update(
-        TestingBrowserProcess::GetGlobal()->local_state(),
+        g_browser_process->local_state(),
         policy::policy_prefs::kSystemFeaturesDisableList);
     update->clear();
   }
@@ -839,9 +851,14 @@ class TestAppMenuModelSafetyHubTest : public AppMenuModelTest {
         features::kSafetyHubDisruptiveNotificationRevocation);
   }
 
-  void SetUp() override {
-    AppMenuModelTest::SetUp();
-    password_store_ = CreateAndUseTestPasswordStore(profile());
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    AppMenuModelTest::SetUpBrowserContextKeyedServices(context);
+    CreateAndUseTestPasswordStore(context);
+  }
+
+  void SetUpOnMainThread() override {
+    AppMenuModelTest::SetUpOnMainThread();
 
     // Let PasswordStatusCheckService run until it fetches the latest data.
     PasswordStatusCheckService* password_service =
@@ -851,14 +868,12 @@ class TestAppMenuModelSafetyHubTest : public AppMenuModelTest {
     EXPECT_EQ(password_service->compromised_credential_count(), 0UL);
   }
 
- protected:
-  scoped_refptr<password_manager::TestPasswordStore> password_store_;
-
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(TestAppMenuModelSafetyHubTest, SafetyHubMenuNotification) {
+IN_PROC_BROWSER_TEST_F(TestAppMenuModelSafetyHubTest,
+                       SafetyHubMenuNotification) {
   // When there is no issue identified by Safety Hub, there shouldn't be an
   // entry in the AppMenu either.
   AppMenuModel model(this, browser());
@@ -894,35 +909,23 @@ class TabSearchMenuModelTest : public AppMenuModelTest {
 
   ~TabSearchMenuModelTest() override = default;
 
-  void SetUp() override {
-    // The kFeatureManagementGlic flag is needed at startup for a cached
-    // ChromeOS check. The rest of the flags are set at runtime to avoid needing
-    // to initialize the rest of Glic.
-    scoped_feature_list_.InitWithFeatures(
-        {
-#if BUILDFLAG(IS_CHROMEOS)
-            chromeos::features::kFeatureManagementGlic
-#endif  // BUILDFLAG(IS_CHROMEOS)
-        },
-        /*disabled_features=*/{});
-    AppMenuModelTest::SetUp();
-    // This is necessary because this isn't a browser test, and the
-    // global features that GlicEnabling depends on are not initialized
-    // correctly.
+  void SetUpOnMainThread() override {
+    AppMenuModelTest::SetUpOnMainThread();
+    // This is necessary because the global features that GlicEnabling depends
+    // on are not initialized for glic.
     glic::GlicEnabling::SetBypassEnablementChecksForTesting(true);
   }
 
-  void TearDown() override {
+  void TearDownOnMainThread() override {
     glic::GlicEnabling::SetBypassEnablementChecksForTesting(false);
-    AppMenuModelTest::TearDown();
+    AppMenuModelTest::TearDownOnMainThread();
   }
 
  private:
   base::test::ScopedFeatureList glic_enabled_feature_list_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(TabSearchMenuModelTest, TabSearchItem) {
+IN_PROC_BROWSER_TEST_F(TabSearchMenuModelTest, TabSearchItem) {
   AppMenuModel model(this, browser());
   model.Init();
   ToolsMenuModel toolModel(&model, browser());
@@ -949,7 +952,7 @@ class AppMenuModelBookmarkBarTest : public AppMenuModelTest,
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_P(AppMenuModelBookmarkBarTest, BookmarkBarSubmenu) {
+IN_PROC_BROWSER_TEST_P(AppMenuModelBookmarkBarTest, BookmarkBarSubmenu) {
   AppMenuModel model(this, browser());
   model.Init();
   BookmarkSubMenuModel bookmark_sub_model(&model, browser());
@@ -999,7 +1002,7 @@ class AppMenuModelEnterpriseReleaseNotesTest
   ~AppMenuModelEnterpriseReleaseNotesTest() override = default;
 };
 
-TEST_P(AppMenuModelEnterpriseReleaseNotesTest, MenuVisibility) {
+IN_PROC_BROWSER_TEST_P(AppMenuModelEnterpriseReleaseNotesTest, MenuVisibility) {
   {
     AppMenuModel model(this, browser());
     model.Init();
@@ -1038,28 +1041,44 @@ class AppMenuModelSendTabToSelfTest : public AppMenuModelTest {
   AppMenuModelSendTabToSelfTest() = default;
   ~AppMenuModelSendTabToSelfTest() override = default;
 
-  TestingProfile::TestingFactories GetTestingFactories() override {
-    return {TestingProfile::TestingFactory{
-        SendTabToSelfSyncServiceFactory::GetInstance(),
-        base::BindRepeating([](content::BrowserContext* context)
-                                -> std::unique_ptr<KeyedService> {
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    AppMenuModelTest::SetUpBrowserContextKeyedServices(context);
+    SendTabToSelfSyncServiceFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating([](content::BrowserContext* context)
+                                         -> std::unique_ptr<KeyedService> {
           return std::make_unique<StubSendTabToSelfSyncService>();
-        })}};
+        }));
+  }
+};
+
+class AppMenuModelSendTabToSelfEnhancedEnabledTest
+    : public AppMenuModelSendTabToSelfTest {
+ public:
+  AppMenuModelSendTabToSelfEnhancedEnabledTest() {
+    feature_list_.InitAndEnableFeature(kSendTabToSelfEnhancedDesktopUIv2);
+  }
+};
+
+class AppMenuModelSendTabToSelfEnhancedDisabledTest
+    : public AppMenuModelSendTabToSelfTest {
+ public:
+  AppMenuModelSendTabToSelfEnhancedDisabledTest() {
+    feature_list_.InitAndDisableFeature(kSendTabToSelfEnhancedDesktopUIv2);
   }
 };
 
 // Tests that when kSendTabToSelfEnhancedDesktopUIv2 feature is enabled, the
 // "Send to Your Devices" item in the Save and Share submenu is a submenu model.
-TEST_F(AppMenuModelSendTabToSelfTest, SendTabToSelfSaveAndShareSubmenuEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kSendTabToSelfEnhancedDesktopUIv2);
-
+IN_PROC_BROWSER_TEST_F(AppMenuModelSendTabToSelfEnhancedEnabledTest,
+                       SendTabToSelfSaveAndShareSubmenuEnabled) {
   auto* sync_service = static_cast<StubSendTabToSelfSyncService*>(
       SendTabToSelfSyncServiceFactory::GetForProfile(profile()));
   sync_service->SetEntryPointDisplayReason(
       EntryPointDisplayReason::kOfferFeature);
 
-  AddTab(browser(), GURL("https://example.com"));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("https://example.com")));
 
   AppMenuModel model(this, browser());
   model.Init();
@@ -1080,17 +1099,15 @@ TEST_F(AppMenuModelSendTabToSelfTest, SendTabToSelfSaveAndShareSubmenuEnabled) {
 // Tests that when kSendTabToSelfEnhancedDesktopUIv2 feature is disabled, the
 // "Send to Your Devices" item in the Save and Share submenu remains a simple
 // command.
-TEST_F(AppMenuModelSendTabToSelfTest,
-       SendTabToSelfSaveAndShareSubmenuDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kSendTabToSelfEnhancedDesktopUIv2);
-
+IN_PROC_BROWSER_TEST_F(AppMenuModelSendTabToSelfEnhancedDisabledTest,
+                       SendTabToSelfSaveAndShareSubmenuDisabled) {
   auto* sync_service = static_cast<StubSendTabToSelfSyncService*>(
       SendTabToSelfSyncServiceFactory::GetForProfile(profile()));
   sync_service->SetEntryPointDisplayReason(
       EntryPointDisplayReason::kOfferFeature);
 
-  AddTab(browser(), GURL("https://example.com"));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("https://example.com")));
 
   AppMenuModel model(this, browser());
   model.Init();
@@ -1110,15 +1127,14 @@ TEST_F(AppMenuModelSendTabToSelfTest,
 // Tests that when Send Tab to Self is not offered for the active page,
 // the item is still present in the Save and Share submenu as a fallback command
 // item.
-TEST_F(AppMenuModelSendTabToSelfTest, SendTabToSelfSaveAndShareNotOffered) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kSendTabToSelfEnhancedDesktopUIv2);
-
+IN_PROC_BROWSER_TEST_F(AppMenuModelSendTabToSelfEnhancedEnabledTest,
+                       SendTabToSelfSaveAndShareNotOffered) {
   auto* sync_service = static_cast<StubSendTabToSelfSyncService*>(
       SendTabToSelfSyncServiceFactory::GetForProfile(profile()));
   sync_service->SetEntryPointDisplayReason(std::nullopt);
 
-  AddTab(browser(), GURL("https://example.com"));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("https://example.com")));
 
   AppMenuModel model(this, browser());
   model.Init();
