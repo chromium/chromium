@@ -274,9 +274,6 @@ public class AutocompleteInputUnitTest {
                         // SRP
                         PageClassification.SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
                         PageClassification.SRP_OMNIBOX_COMPOSEBOX,
-                        // Co-browsing
-                        PageClassification.CO_BROWSING_COMPOSEBOX,
-                        PageClassification.CO_BROWSING_COMPOSEBOX,
                         // Web
                         PageClassification.OTHER, //
                         PageClassification.OTHER_OMNIBOX_COMPOSEBOX);

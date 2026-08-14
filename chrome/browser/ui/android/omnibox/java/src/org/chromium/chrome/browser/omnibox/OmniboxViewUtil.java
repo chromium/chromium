@@ -35,7 +35,6 @@ public class OmniboxViewUtil {
         // TODO(crbug.com/507471408): Revisit logic to guard it more strictly.
         return !PageClassificationUtils.isHubOrTabSearch(pageClassification)
                 && pageClassification != PageClassification.OTHER_ON_CCT
-                && pageClassification != PageClassification.CO_BROWSING_COMPOSEBOX
                 && pageClassification != PageClassification.ANDROID_SEARCH_WIDGET
                 && pageClassification != PageClassification.ANDROID_SHORTCUTS_WIDGET;
     }

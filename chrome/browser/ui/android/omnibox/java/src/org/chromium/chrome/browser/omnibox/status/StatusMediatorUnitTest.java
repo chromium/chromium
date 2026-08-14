@@ -251,20 +251,6 @@ public final class StatusMediatorUnitTest {
 
     @Test
     @SmallTest
-    public void searchEngineLogo_contextualTasksFusebox_evenWhenNtp() {
-        doReturn(PageClassification.CO_BROWSING_COMPOSEBOX)
-                .when(mLocationBarDataProvider)
-                .getPageClassification(/* prefetch= */ false);
-        doReturn(true).when(mNewTabPageDelegate).isCurrentlyVisible();
-
-        mMediator.beginInput(mFuseboxSessionState);
-
-        // It should NOT show the status view at all (to avoid the gap).
-        assertFalse(mModel.get(StatusProperties.SHOW_STATUS_VIEW));
-    }
-
-    @Test
-    @SmallTest
     // OmniboxMobileParityUpdate is now always enabled
     public void searchEngineLogoPersistent() {
         doReturn(true).when(mNewTabPageDelegate).isCurrentlyVisible();

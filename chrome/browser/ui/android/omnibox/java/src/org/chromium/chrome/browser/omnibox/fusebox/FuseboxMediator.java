@@ -71,7 +71,6 @@ import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
 import org.chromium.components.contextual_search.InputState;
 import org.chromium.components.feature_engagement.Tracker;
-import org.chromium.components.metrics.OmniboxEventProtosIntDef.PageClassification;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteInput.AutocompleteState;
 import org.chromium.components.omnibox.AutocompleteInput.SiteSearchData;
@@ -148,7 +147,6 @@ import java.util.function.Supplier;
     private @Nullable AttachmentsSelectionController mSelectionController;
 
     private boolean mIsTextWrapping;
-    private boolean mHasContextualTasksFocus;
     private @BrandedColorScheme int mBrandedColorScheme = BrandedColorScheme.APP_DEFAULT;
     private @Nullable Profile mProfile;
     private @Nullable AutocompleteInput mInput;
@@ -399,13 +397,7 @@ import java.util.function.Supplier;
         updateSnackbarStyling();
     }
 
-    /**
-     * Called when the user stops interacting with the Omnibox.
-     *
-     * <p>For standard search, this is called on every focus loss to clear the UI. For Contextual
-     * Tasks, this is only called when the task is destroyed (e.g., tab switch or explicit close) to
-     * keep the session warm during focus loss.
-     */
+    /** Called when the user stops interacting with the Omnibox. */
     /* package */ void endInput() {
         hidePopup();
         setModelList(null);
@@ -420,24 +412,6 @@ import java.util.function.Supplier;
         }
         updateFuseboxState();
         updateActivationChip();
-    }
-
-    /**
-     * Called when focus is lost or gained while in a Contextual Tasks session.
-     *
-     * @param hasFocus Whether the contextual tasks fusebox has focus.
-     */
-    /* package */ void onContextualTaskFocusChanged(boolean hasFocus) {
-        if (mHasContextualTasksFocus == hasFocus) return;
-        mHasContextualTasksFocus = hasFocus;
-
-        if (!isInInputSession()) return;
-
-        if (!hasFocus) {
-            hidePopup();
-            mIsTextWrapping = false;
-        }
-        updateFuseboxState();
     }
 
     private void setAutocompleteInput(@Nullable AutocompleteInput input) {
@@ -552,17 +526,10 @@ import java.util.function.Supplier;
     private void updateFuseboxState() {
         @FuseboxState int targetState;
         boolean showRequestTypeButton = shouldShowRequestTypeButton();
-        boolean isContextualTasks =
-                mInput != null
-                        && mInput.getRawPageClassification()
-                                == PageClassification.CO_BROWSING_COMPOSEBOX;
-
         if (!isInInputSession()) {
             targetState = FuseboxState.DISABLED;
         } else if (mInput.isStandby()) {
             targetState = FuseboxState.DISABLED;
-        } else if (!mHasContextualTasksFocus && isContextualTasks) {
-            targetState = FuseboxState.COMPACT;
         } else {
             boolean isPopover =
                     mModel.get(FuseboxProperties.FUSEBOX_LAYOUT_MODE)

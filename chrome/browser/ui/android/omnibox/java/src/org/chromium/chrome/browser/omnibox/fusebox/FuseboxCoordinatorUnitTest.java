@@ -294,7 +294,6 @@ public class FuseboxCoordinatorUnitTest {
                 Set.of(
                         PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS,
                         PageClassification.SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
-                        PageClassification.CO_BROWSING_COMPOSEBOX,
                         PageClassification.OTHER);
 
         for (@PageClassification int pageClass = PageClassification.MIN_VALUE;

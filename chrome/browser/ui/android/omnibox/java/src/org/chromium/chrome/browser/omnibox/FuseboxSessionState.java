@@ -350,11 +350,6 @@ public class FuseboxSessionState implements UserData {
         return mIsActive;
     }
 
-    /** Returns whether the session is a contextual tasks session. */
-    public boolean isContextualTasksState() {
-        return false;
-    }
-
     /** Modifies this session input to have the values of the given input. */
     public void applyAutocompleteInput(AutocompleteInput input) {
         mAutocompleteInput.copyFrom(input);

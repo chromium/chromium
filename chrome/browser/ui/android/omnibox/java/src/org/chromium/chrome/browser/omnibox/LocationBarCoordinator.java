@@ -1031,11 +1031,6 @@ public class LocationBarCoordinator
         return mUrlCoordinator;
     }
 
-    /** Returns the {@link FuseboxCoordinator} for the LocationBar. */
-    public FuseboxCoordinator getFuseboxCoordinator() {
-        return mFuseboxCoordinator;
-    }
-
     /**
      * @param focusable Whether the url bar should be focusable.
      */

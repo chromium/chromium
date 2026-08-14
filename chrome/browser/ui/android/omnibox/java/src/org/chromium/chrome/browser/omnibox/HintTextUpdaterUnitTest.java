@@ -99,8 +99,6 @@ public class HintTextUpdaterUnitTest {
     @Before
     public void setUp() {
         when(mLocationBarDataProvider.getFuseboxSessionState()).thenReturn(mFuseboxSessionState);
-        when(mLocationBarDataProvider.getDefaultRequestType())
-                .thenReturn(AutocompleteRequestType.SEARCH);
         when(mFuseboxSessionState.getAutocompleteInput()).thenReturn(mAutocompleteInput);
         when(mAutocompleteInput.getRequestTypeSupplier()).thenReturn(mRequestTypeSupplier);
         when(mAutocompleteInput.getSiteSearchDataSupplier()).thenReturn(mSiteSearchDataSupplier);

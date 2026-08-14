@@ -154,14 +154,6 @@ public class LocationBarCoordinatorUnitTest {
     }
 
     @Test
-    public void testInitializeBoundsEllipsis_DisableInCobrowseComposebox() {
-        when(mLocationBarDataProvider.getPageClassification(false))
-                .thenReturn(PageClassification.CO_BROWSING_COMPOSEBOX);
-        mCoordinator.initializeBoundsEllipsis(mLocationBarDataProvider);
-        verify(mUrlCoordinator).setBoundsEllipsisEnabled(false);
-    }
-
-    @Test
     public void testSetMiniOriginMode_Transitions() {
         // Setup default bounds ellipsis
         when(mLocationBarDataProvider.getPageClassification(false))

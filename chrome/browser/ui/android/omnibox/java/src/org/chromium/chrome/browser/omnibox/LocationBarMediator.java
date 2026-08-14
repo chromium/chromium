@@ -1280,7 +1280,7 @@ class LocationBarMediator
         if (mCurrentInput == null) return; // session not started yet.
 
         if (TextUtils.isEmpty(mCurrentInput.getUserText())) {
-            mCurrentInput.setRequestType(mLocationBarDataProvider.getDefaultRequestType());
+            mCurrentInput.setRequestType(AutocompleteRequestType.SEARCH);
         }
 
         mCurrentInput.setUserText(null);
@@ -1433,11 +1433,6 @@ class LocationBarMediator
         // This guarantees that any calls to onSuggestionsChanged() will see the correct
         // mCurrentInput instance.
         mCurrentInput = session.getAutocompleteInput();
-        // If the session is already in a specialized mode (e.g. IMAGE_GENERATION), we preserve it.
-        // Otherwise, we apply the default request type for the current page.
-        if (mCurrentInput.getRequestType() == AutocompleteRequestType.SEARCH) {
-            mCurrentInput.setRequestType(mLocationBarDataProvider.getDefaultRequestType());
-        }
 
         // See if there's any existing user selection that we can pick and work with.
         var displayTextSelection =
@@ -3058,14 +3053,7 @@ class LocationBarMediator
                     false, /* animate= */ OmniboxCapabilities.areAnimationsEnabled());
         }
         disconnectObservers(input);
-        FuseboxSessionState state = FuseboxSessionState.from(mLocationBarDataProvider);
-        if (state != null) {
-            // Only for Contextual Tasks, we skip ending the Fusebox input to allow it to stay warm
-            // in compact mode.
-            if (!state.isContextualTasksState()) {
-                mFuseboxCoordinator.endInput();
-            }
-        }
+        mFuseboxCoordinator.endInput();
         mHintTextUpdater.endInput();
         setAttachmentModelList(null);
         updateShowFocusRing();

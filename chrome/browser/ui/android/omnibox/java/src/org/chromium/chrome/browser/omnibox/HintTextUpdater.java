@@ -169,7 +169,7 @@ public class HintTextUpdater implements LocationBarDataProvider.Observer {
         @AutocompleteRequestType
         int requestType =
                 mCurrentInput == null
-                        ? mLocationBarDataProvider.getDefaultRequestType()
+                        ? AutocompleteRequestType.SEARCH
                         : mCurrentInput.getRequestType();
 
         if (useAimActivationOrEmptyHint()) {

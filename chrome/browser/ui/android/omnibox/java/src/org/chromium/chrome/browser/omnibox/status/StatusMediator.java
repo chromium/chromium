@@ -639,9 +639,6 @@ public class StatusMediator
             clickListener = mFuseboxOnPlusButtonClicked;
             descRes = R.string.accessibility_omnibox_open_context_popup;
             doubleTapDescriptionRes = Resources.ID_NULL;
-        } else if (isContextualTasksFusebox()) {
-            mPermissionStatusHandler.reset(/* shouldDismissNativePrompt= */ false);
-            // No icon shown for Fusebox.
         } else if (maybeUpdateStatusIconForSearchEngineIcon()) {
             mPermissionStatusHandler.reset(/* shouldDismissNativePrompt= */ true);
             // No need to proceed further if we've already updated it for the search engine icon.
@@ -740,8 +737,7 @@ public class StatusMediator
      */
     boolean shouldDisplaySearchEngineIcon() {
         if (PageClassificationUtils.isHubOrTabSearch(
-                        mLocationBarDataProvider.getPageClassification(/* prefetch= */ false))
-                || isContextualTasksFusebox()) {
+                        mLocationBarDataProvider.getPageClassification(/* prefetch= */ false))) {
             return false;
         }
 
@@ -1068,11 +1064,6 @@ public class StatusMediator
     }
 
     private void updateStatusViewVisibility() {
-        if (isContextualTasksFusebox()) {
-            setShowStatusView(false);
-            return;
-        }
-
         setShowStatusView(
                 mUrlHasFocus
                         || PageClassificationUtils.isHubOrTabSearch(
@@ -1097,11 +1088,6 @@ public class StatusMediator
         if (UrlUtilities.isNtpUrl(mLocationBarDataProvider.getCurrentGurl())) return;
 
         openPageInfo(mLocationBarDataProvider.getTab());
-    }
-
-    private boolean isContextualTasksFusebox() {
-        return mLocationBarDataProvider.getPageClassification(/* prefetch= */ false)
-                == PageClassification.CO_BROWSING_COMPOSEBOX;
     }
 
     private boolean isUrlBarTextSearch() {
