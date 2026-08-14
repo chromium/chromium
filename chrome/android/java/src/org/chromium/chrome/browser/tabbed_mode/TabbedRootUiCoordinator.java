@@ -266,6 +266,7 @@ import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 import org.chromium.chrome.browser.user_education.UserEducationUtils;
 import org.chromium.chrome.browser.user_education.UserEducationUtils.OptionalPromoType;
 import org.chromium.chrome.browser.webapps.PwaRestorePromoUtils;
+import org.chromium.components.bookmarks.BookmarkBarVisibilityState;
 import org.chromium.components.browser_ui.accessibility.PageZoomUtils;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.widget.CoordinatorLayoutForPointer;
@@ -1309,6 +1310,14 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         @Override
                         public void onVisibilityChanged(boolean visibility) {
                             updateBookmarkBarIfNecessary(visibility);
+                        }
+
+                        @Override
+                        public void onVisibilityChanged_TriState(
+                                @BookmarkBarVisibilityState int visibilityState) {
+                            // TODO(crbug.com/542276874): Add proper NTP treatment here.
+                            updateBookmarkBarIfNecessary(
+                                    visibilityState == BookmarkBarVisibilityState.ALWAYS_SHOW);
                         }
                     };
             mBookmarkBarVisibilityProvider.addObserver(mBookmarkBarVisibilityObserver);
@@ -2918,8 +2927,32 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             return true;
         } else if (id == R.id.toggle_bookmark_bar) {
             if (BookmarkBarUtils.isActivityStateBookmarkBarCompatible(mActivity)) {
-                BookmarkBarUtils.toggleShowBookmarksBar(
-                        mProfileSupplier.asNonNull().get(), /* fromKeyboardShortcut= */ true);
+                // When the tri-state feature flag is not enabled, we use the v1 simple boolean.
+                if (!ChromeFeatureList.isEnabled(ChromeFeatureList.BOOKMARKS_BAR_NTP)) {
+                    BookmarkBarUtils.toggleShowBookmarksBar(
+                            mProfileSupplier.asNonNull().get(), /* fromKeyboardShortcut= */ true);
+                    return true;
+                }
+
+                // We will only switch back and forth between ALWAYS_SHOW and ALWAYS_HIDE, there is
+                // no keyboard shortcut to go to ONLY_SHOW_ON_NTP, but if already in that state, the
+                // user will be put into the ALWAYS_SHOW state.
+                @BookmarkBarVisibilityState
+                int currentState =
+                        BookmarkBarUtils.getBookmarkBarVisibilityState(
+                                mActivity,
+                                mProfileSupplier.asNonNull().get(),
+                                mXrSpaceModeObservableSupplier.get());
+                @BookmarkBarVisibilityState
+                int newState =
+                        currentState == BookmarkBarVisibilityState.ALWAYS_SHOW
+                                ? BookmarkBarVisibilityState.ALWAYS_HIDE
+                                : BookmarkBarVisibilityState.ALWAYS_SHOW;
+
+                BookmarkBarUtils.setBookmarkBarVisibilityState(
+                        mProfileSupplier.asNonNull().get(),
+                        newState,
+                        /* fromKeyboardShortcut= */ true);
                 return true;
             }
         } else if (id == R.id.bookmark_bar_state_always_show_menu_id) {

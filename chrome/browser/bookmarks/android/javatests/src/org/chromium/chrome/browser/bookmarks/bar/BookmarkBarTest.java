@@ -73,6 +73,7 @@ import org.chromium.chrome.test.OverrideContextWrapperTestRule;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.util.BookmarkTestUtil;
+import org.chromium.components.bookmarks.BookmarkBarVisibilityState;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -164,6 +165,50 @@ public class BookmarkBarTest {
         BookmarkBarUtils.setActivityStateBookmarkBarCompatibleForTesting(false);
         ThreadUtils.runOnUiThreadBlocking(() -> activity.onKeyDown(evt.getKeyCode(), evt));
         waitForBookmarkBarVisibility(/* visible= */ false);
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.BOOKMARKS_BAR_NTP)
+    public void testOnBookmarkBarToggledViaKeyboard_TriState() {
+        final var activity = mCtaTestRule.getActivity();
+        final var evt =
+                new KeyEvent(
+                        /* downTime= */ SystemClock.uptimeMillis(),
+                        /* eventTime= */ SystemClock.uptimeMillis(),
+                        KeyEvent.ACTION_DOWN,
+                        KeyEvent.KEYCODE_B,
+                        /* repeat= */ 0,
+                        KeyEvent.META_CTRL_ON | KeyEvent.META_SHIFT_ON);
+
+        // Case 1: Initial state ALWAYS_HIDE -> toggles to ALWAYS_SHOW.
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        BookmarkBarUtils.setBookmarkBarVisibilityState(
+                                activity.getProfileProviderSupplier().get().getOriginalProfile(),
+                                BookmarkBarVisibilityState.ALWAYS_HIDE,
+                                /* fromKeyboardShortcut= */ false));
+        waitForBookmarkBarVisibility(/* visible= */ false);
+
+        ThreadUtils.runOnUiThreadBlocking(() -> activity.onKeyDown(evt.getKeyCode(), evt));
+        waitForBookmarkBarVisibility(/* visible= */ true);
+
+        // Case 2: Toggle when ALWAYS_SHOW -> toggles to ALWAYS_HIDE.
+        ThreadUtils.runOnUiThreadBlocking(() -> activity.onKeyDown(evt.getKeyCode(), evt));
+        waitForBookmarkBarVisibility(/* visible= */ false);
+
+        // Case 3: Initial state ONLY_SHOW_ON_NTP (on blank page, not NTP) -> toggles to
+        // ALWAYS_SHOW.
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        BookmarkBarUtils.setBookmarkBarVisibilityState(
+                                activity.getProfileProviderSupplier().get().getOriginalProfile(),
+                                BookmarkBarVisibilityState.ONLY_SHOW_ON_NTP,
+                                /* fromKeyboardShortcut= */ false));
+        waitForBookmarkBarVisibility(/* visible= */ false);
+
+        ThreadUtils.runOnUiThreadBlocking(() -> activity.onKeyDown(evt.getKeyCode(), evt));
+        waitForBookmarkBarVisibility(/* visible= */ true);
     }
 
     @Test
@@ -451,8 +496,17 @@ public class BookmarkBarTest {
     private void setBookmarkBarSetting(boolean enabled) {
         final var activity = mCtaTestRule.getActivity();
         final var profile = activity.getProfileProviderSupplier().get().getOriginalProfile();
-        BookmarkBarUtils.setUserPrefsShowBookmarksBar(
-                profile, enabled, /* fromKeyboardShortcut= */ false);
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.BOOKMARKS_BAR_NTP)) {
+            BookmarkBarUtils.setBookmarkBarVisibilityState(
+                    profile,
+                    enabled
+                            ? BookmarkBarVisibilityState.ALWAYS_SHOW
+                            : BookmarkBarVisibilityState.ALWAYS_HIDE,
+                    /* fromKeyboardShortcut= */ false);
+        } else {
+            BookmarkBarUtils.setUserPrefsShowBookmarksBar(
+                    profile, enabled, /* fromKeyboardShortcut= */ false);
+        }
     }
 
     private void waitForBookmarkBarVisibility(boolean visible) {
