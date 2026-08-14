@@ -211,13 +211,6 @@ public class UrlBar extends AutocompleteEditText {
         /** Called to notify that UrlBar has been touched after focus. */
         void onTouchAfterFocus();
 
-        /**
-         * Called when an editor action is performed on the UrlBar.
-         *
-         * @param actionCode The action code performed.
-         */
-        default void onEditorAction(int actionCode) {}
-
         /** Returns whether showing the keyboard should be suppressed. */
         default boolean isKeyboardSuppressed() {
             return false;
@@ -719,13 +712,7 @@ public class UrlBar extends AutocompleteEditText {
         return result;
     }
 
-    @Override
-    public void onEditorAction(int actionCode) {
-        if (mUrlBarDelegate != null) {
-            mUrlBarDelegate.onEditorAction(actionCode);
-        }
-        super.onEditorAction(actionCode);
-    }
+
 
     /**
      * If the direction of the URL has changed, update mUrlDirection and notify the

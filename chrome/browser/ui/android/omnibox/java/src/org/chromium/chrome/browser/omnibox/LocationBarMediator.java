@@ -27,7 +27,6 @@ import android.view.View;
 import android.view.View.OnKeyListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
-import android.view.inputmethod.EditorInfo;
 import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
@@ -2614,18 +2613,6 @@ class LocationBarMediator
             boolean isRtl = view.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
             if (handleKeyNavigationEvent(keyCode, event)) {
                 return true;
-            } else if (KeyNavigationUtil.isEnter(event) && !hasAutocompleteController()) {
-                // This path is specific to Contextual Tasks where suggestions are disabled.
-                // The overriding URL loading delegate in ContextualTasksFusebox will handle this
-                // and send it to the ComposeboxQueryControllerBridge where the query text will be
-                // extracted and sent to the AIM page.
-                loadUrl(
-                        new OmniboxLoadUrlParams.Builder(
-                                        mUrlCoordinator.getTextWithAutocomplete(),
-                                        PageTransition.TYPED)
-                                .setInputStartTimestamp(event.getEventTime())
-                                .build());
-                return true;
             } else if ((!isRtl && KeyNavigationUtil.isGoRight(event))
                     || (isRtl && KeyNavigationUtil.isGoLeft(event))) {
                 // Ensures URL bar doesn't lose focus, when RIGHT or LEFT (RTL) key is pressed while
@@ -3128,11 +3115,6 @@ class LocationBarMediator
         return mUrlHasFocus;
     }
 
-    private boolean hasAutocompleteController() {
-        return mAutocompleteCoordinator != null
-                && mAutocompleteCoordinator.hasAutocompleteController();
-    }
-
     /** {@see OmniboxStub#loadUrlFromVoice(String)} */
     @Override
     public void loadUrlFromVoice(String query) {
@@ -3217,23 +3199,6 @@ class LocationBarMediator
     @Override
     public void onFocusByTouch() {
         recordOmniboxFocusReason(OmniboxFocusReason.OMNIBOX_TAP);
-    }
-
-    @Override
-    public void onEditorAction(int actionCode) {
-        // For contextual tasks, autocomplete is disabled and unavailable to handle keyboard
-        // actions, so we have to handle them here.
-        if (hasAutocompleteController()) return;
-
-        if (actionCode == EditorInfo.IME_ACTION_GO
-                || actionCode == EditorInfo.IME_ACTION_SEARCH
-                || actionCode == EditorInfo.IME_ACTION_SEND
-                || actionCode == EditorInfo.IME_ACTION_DONE) {
-            loadUrl(
-                    new OmniboxLoadUrlParams.Builder(
-                                    mUrlCoordinator.getTextWithAutocomplete(), PageTransition.TYPED)
-                            .build());
-        }
     }
 
     @Override
