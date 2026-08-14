@@ -15,6 +15,7 @@ option optimize_for = LITE_RUNTIME;
 package sync_pb;
 
 // Specifics for a history journey.
+// LINT.IfChange(JourneySpecifics)
 message JourneySpecifics {
   // Used as a client_tag by Sync - unique identifier for the entity (GUID).
   optional string journey_id = 1;
@@ -36,3 +37,4 @@ message JourneySpecifics {
   }
   repeated ContinuationQuery continuation_queries = 8;
 }
+// LINT.ThenChange(//components/history/core/browser/journeys/journeys_sync_bridge.cc:TrimAllSupportedFieldsFromRemoteSpecifics)
