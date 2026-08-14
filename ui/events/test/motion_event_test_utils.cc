@@ -86,8 +86,9 @@ MockMotionEvent::MockMotionEvent(Action action,
   set_unique_event_id(ui::GetNextTouchEventId());
   if (action == Action::POINTER_UP || action == Action::POINTER_DOWN)
     set_action_index(static_cast<int>(positions.size()) - 1);
-  for (size_t i = 0; i < positions.size(); ++i)
-    PushPointer(positions[i].x(), positions[i].y());
+  for (auto position : positions) {
+    PushPointer(position.x(), position.y());
+  }
 }
 
 MockMotionEvent::MockMotionEvent(const MockMotionEvent& other)

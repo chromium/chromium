@@ -363,9 +363,9 @@ bool SendKeyEventsNotifyWhenDone(gfx::NativeWindow window,
   // But using [NSApplication sendEvent:] should be safe for keyboard events,
   // because until now, no code wants to retrieve the next event when handling
   // a keyboard event.
-  for (std::vector<NSEvent*>::iterator iter = events.begin();
-       iter != events.end(); ++iter)
-    [[NSApplication sharedApplication] sendEvent:*iter];
+  for (NSEvent* event : events) {
+    [[NSApplication sharedApplication] sendEvent:event];
+  }
 
   if (!task.is_null()) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(

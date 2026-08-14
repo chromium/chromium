@@ -92,11 +92,11 @@ void AnimationContainer::Run(base::TimeTicks current_time) {
   // removed as part of invoking Step there aren't any problems.
   Elements elements = elements_;
 
-  for (Elements::const_iterator i = elements.begin();
-       i != elements.end(); ++i) {
+  for (const auto& element : elements) {
     // Make sure the element is still valid.
-    if (elements_.find(*i) != elements_.end())
-      (*i)->Step(current_time);
+    if (elements_.find(element) != elements_.end()) {
+      element->Step(current_time);
+    }
   }
 
   if (observer_)

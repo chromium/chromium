@@ -11,11 +11,10 @@ namespace test {
 
 std::string ChildLayerNamesAsString(const ui::Layer& parent) {
   std::string names;
-  for (auto it = parent.children().begin(); it != parent.children().end();
-       ++it) {
+  for (const Layer* child : parent.children()) {
     if (!names.empty())
       names += " ";
-    names += (*it)->name();
+    names += child->name();
   }
   return names;
 }

@@ -30,9 +30,7 @@ Insets GetInsets(const ShadowValues& shadows, bool include_inner_blur) {
   int right = 0;
   int bottom = 0;
 
-  for (size_t i = 0; i < shadows.size(); ++i) {
-    const ShadowValue& shadow = shadows[i];
-
+  for (const auto& shadow : shadows) {
     double blur = shadow.blur();
     if (!include_inner_blur)
       blur /= 2;

@@ -201,10 +201,7 @@ bool PumpableTaskRunner::WaitForSingleWrappedTaskToRun(
     {
       base::AutoLock lock(task_queue_lock_);
 
-      for (WrappedTaskQueue::iterator it = task_queue_.begin();
-           it != task_queue_.end(); ++it) {
-        WrappedTask* potential_task = *it;
-
+      for (WrappedTask* potential_task : task_queue_) {
         // If this task is scheduled for the future, take it into account when
         // deciding how long to sleep, and continue on to the next task.
         if (potential_task->can_run_time() > current_time) {

@@ -734,8 +734,7 @@ SkBitmap SkBitmapOperations::CreateDropShadow(
                    SkIntToScalar(shadow_margin.top()));
 
   SkPaint paint;
-  for (size_t i = 0; i < shadows.size(); ++i) {
-    const gfx::ShadowValue& shadow = shadows[i];
+  for (const auto& shadow : shadows) {
     SkBitmap shadow_image = SkBitmapOperations::CreateColorMask(bitmap,
                                                                 shadow.color());
 

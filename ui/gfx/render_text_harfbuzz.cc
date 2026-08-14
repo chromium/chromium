@@ -2133,12 +2133,11 @@ bool RenderTextHarfBuzz::ItemizeAndShapeTextImpl(
 
   ItemizeTextToRuns(text, run_list, commonized_run_map);
   bool successfully_shaped_runs = true;
-  for (auto iter = commonized_run_map->begin();
-       iter != commonized_run_map->end(); ++iter) {
-    internal::TextRunHarfBuzz::FontParams font_params = iter->first;
+  for (auto& iter : *commonized_run_map) {
+    internal::TextRunHarfBuzz::FontParams font_params = iter.first;
     font_params.ComputeRenderParamsFontSizeAndBaselineOffset();
     successfully_shaped_runs &=
-        ShapeRuns(text, font_params, std::move(iter->second));
+        ShapeRuns(text, font_params, std::move(iter.second));
   }
   return successfully_shaped_runs;
 }

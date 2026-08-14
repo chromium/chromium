@@ -151,9 +151,8 @@ void GammaCurve::Evaluate(base::span<float, 3> rgb) const {
 
 std::string GammaCurve::ToString() const {
   std::string str = "[";
-  for (size_t i = 0; i < lut_.size(); ++i) {
-    str += base::StringPrintf("[%04x,%04x,%04x],", lut_[i].r, lut_[i].g,
-                              lut_[i].b);
+  for (const GammaRampRGBEntry& entry : lut_) {
+    str += base::StringPrintf("[%04x,%04x,%04x],", entry.r, entry.g, entry.b);
   }
   if (pre_curve_) {
     str += ",after(";

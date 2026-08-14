@@ -199,9 +199,9 @@ void Canvas::DrawStringRectWithFlags(std::u16string_view text,
                        static_cast<float>(text_bounds.width()),
                        text_bounds.height(), wrap_behavior, &strings);
 
-    for (size_t i = 0; i < strings.size(); i++) {
-      Range range = StripAcceleratorChars(flags, &strings[i]);
-      UpdateRenderText(rect, strings[i], font_list, flags, color,
+    for (auto& string : strings) {
+      Range range = StripAcceleratorChars(flags, &string);
+      UpdateRenderText(rect, string, font_list, flags, color,
                        render_text.get());
       int line_padding = 0;
       const int line_height = render_text->GetStringSize().height();

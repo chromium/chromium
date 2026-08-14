@@ -142,9 +142,10 @@ class NotificationListTest : public testing::Test {
 
 bool IsInNotifications(const NotificationList::Notifications& notifications,
                        const std::string& id) {
-  for (auto iter = notifications.begin(); iter != notifications.end(); ++iter) {
-    if ((*iter)->id() == id)
+  for (const auto& notification : notifications) {
+    if (notification->id() == id) {
       return true;
+    }
   }
   return false;
 }
@@ -392,8 +393,8 @@ TEST_F(NotificationListTest, Priority) {
 
   NotificationList::Notifications notifications =
       notification_list_->GetVisibleNotifications(blockers_);
-  for (auto iter = notifications.begin(); iter != notifications.end(); ++iter) {
-    notification_list_->RemoveNotification((*iter)->id());
+  for (const auto& notification : notifications) {
+    notification_list_->RemoveNotification(notification->id());
   }
 
   // Higher priority: no limits to the number of popups.

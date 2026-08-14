@@ -173,9 +173,10 @@ class GestureProviderTest : public testing::Test, public GestureProviderClient {
   }
 
   bool HasReceivedGesture(EventType type) const {
-    for (size_t i = 0; i < gestures_.size(); ++i) {
-      if (gestures_[i].type() == type)
+    for (const auto& gesture : gestures_) {
+      if (gesture.type() == type) {
         return true;
+      }
     }
     return false;
   }

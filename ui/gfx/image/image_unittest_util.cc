@@ -93,11 +93,11 @@ bool AreImagesClose(const gfx::Image& img1,
   if (image_skia2.image_reps().size() != img1_reps.size())
     return false;
 
-  for (size_t i = 0; i < img1_reps.size(); ++i) {
-    float scale = img1_reps[i].scale();
+  for (const auto& img1_rep : img1_reps) {
+    float scale = img1_rep.scale();
     const gfx::ImageSkiaRep& image_rep2 = image_skia2.GetRepresentation(scale);
     if (image_rep2.scale() != scale ||
-        !AreBitmapsClose(img1_reps[i].GetBitmap(), image_rep2.GetBitmap(),
+        !AreBitmapsClose(img1_rep.GetBitmap(), image_rep2.GetBitmap(),
                          max_deviation)) {
       return false;
     }
@@ -171,14 +171,14 @@ bool ImageSkiaStructureMatches(
     return false;
   }
 
-  for (size_t i = 0; i < scales.size(); ++i) {
-    gfx::ImageSkiaRep image_rep =
-        image_skia.GetRepresentation(scales[i]);
-    if (image_rep.is_null() || image_rep.scale() != scales[i])
+  for (float scale : scales) {
+    gfx::ImageSkiaRep image_rep = image_skia.GetRepresentation(scale);
+    if (image_rep.is_null() || image_rep.scale() != scale) {
       return false;
+    }
 
-    if (image_rep.pixel_width() != static_cast<int>(width * scales[i]) ||
-        image_rep.pixel_height() != static_cast<int>(height * scales[i])) {
+    if (image_rep.pixel_width() != static_cast<int>(width * scale) ||
+        image_rep.pixel_height() != static_cast<int>(height * scale)) {
       return false;
     }
   }

@@ -37,9 +37,9 @@ TEST(Vector3dFTest, Add) {
       {gfx::Vector3dF(3.1f - 4.3f, 5.1f + 1.3f, 2.7f - 8.1f), f1 - f2},
   });
 
-  for (size_t i = 0; i < std::size(float_tests); ++i)
-    EXPECT_EQ(float_tests[i].expected.ToString(),
-              float_tests[i].actual.ToString());
+  for (const auto& float_test : float_tests) {
+    EXPECT_EQ(float_test.expected.ToString(), float_test.actual.ToString());
+  }
 }
 
 TEST(Vector3dFTest, Negative) {
@@ -56,9 +56,9 @@ TEST(Vector3dFTest, Negative) {
       {gfx::Vector3dF(-0.3f, -0.3f, 0.3f), -gfx::Vector3dF(0.3f, 0.3f, -0.3f)},
   });
 
-  for (size_t i = 0; i < std::size(float_tests); ++i)
-    EXPECT_EQ(float_tests[i].expected.ToString(),
-              float_tests[i].actual.ToString());
+  for (const auto& float_test : float_tests) {
+    EXPECT_EQ(float_test.expected.ToString(), float_test.actual.ToString());
+  }
 }
 
 TEST(Vector3dFTest, Scale) {
@@ -89,23 +89,19 @@ TEST(Vector3dFTest, Scale) {
       {0, 1.2f, 1.8f, 3.3f, 5.6f, 4.2f},
   });
 
-  for (size_t i = 0; i < std::size(triple_values); ++i) {
-    gfx::Vector3dF v(triple_values[i][0],
-                     triple_values[i][1],
-                     triple_values[i][2]);
-    v.Scale(triple_values[i][3], triple_values[i][4], triple_values[i][5]);
-    EXPECT_EQ(triple_values[i][0] * triple_values[i][3], v.x());
-    EXPECT_EQ(triple_values[i][1] * triple_values[i][4], v.y());
-    EXPECT_EQ(triple_values[i][2] * triple_values[i][5], v.z());
+  for (auto& triple_value : triple_values) {
+    gfx::Vector3dF v(triple_value[0], triple_value[1], triple_value[2]);
+    v.Scale(triple_value[3], triple_value[4], triple_value[5]);
+    EXPECT_EQ(triple_value[0] * triple_value[3], v.x());
+    EXPECT_EQ(triple_value[1] * triple_value[4], v.y());
+    EXPECT_EQ(triple_value[2] * triple_value[5], v.z());
 
     Vector3dF v2 = ScaleVector3d(
-        gfx::Vector3dF(triple_values[i][0],
-                       triple_values[i][1],
-                       triple_values[i][2]),
-        triple_values[i][3], triple_values[i][4], triple_values[i][5]);
-    EXPECT_EQ(triple_values[i][0] * triple_values[i][3], v2.x());
-    EXPECT_EQ(triple_values[i][1] * triple_values[i][4], v2.y());
-    EXPECT_EQ(triple_values[i][2] * triple_values[i][5], v2.z());
+        gfx::Vector3dF(triple_value[0], triple_value[1], triple_value[2]),
+        triple_value[3], triple_value[4], triple_value[5]);
+    EXPECT_EQ(triple_value[0] * triple_value[3], v2.x());
+    EXPECT_EQ(triple_value[1] * triple_value[4], v2.y());
+    EXPECT_EQ(triple_value[2] * triple_value[5], v2.z());
   }
 
   auto single_values = std::to_array<std::array<float, 4>>({
@@ -125,23 +121,19 @@ TEST(Vector3dFTest, Scale) {
       {4.5f, 1.2f, 0, 3.3f},
   });
 
-  for (size_t i = 0; i < std::size(single_values); ++i) {
-    gfx::Vector3dF v(single_values[i][0],
-                     single_values[i][1],
-                     single_values[i][2]);
-    v.Scale(single_values[i][3]);
-    EXPECT_EQ(single_values[i][0] * single_values[i][3], v.x());
-    EXPECT_EQ(single_values[i][1] * single_values[i][3], v.y());
-    EXPECT_EQ(single_values[i][2] * single_values[i][3], v.z());
+  for (auto& single_value : single_values) {
+    gfx::Vector3dF v(single_value[0], single_value[1], single_value[2]);
+    v.Scale(single_value[3]);
+    EXPECT_EQ(single_value[0] * single_value[3], v.x());
+    EXPECT_EQ(single_value[1] * single_value[3], v.y());
+    EXPECT_EQ(single_value[2] * single_value[3], v.z());
 
     Vector3dF v2 = ScaleVector3d(
-        gfx::Vector3dF(single_values[i][0],
-                       single_values[i][1],
-                       single_values[i][2]),
-        single_values[i][3]);
-    EXPECT_EQ(single_values[i][0] * single_values[i][3], v2.x());
-    EXPECT_EQ(single_values[i][1] * single_values[i][3], v2.y());
-    EXPECT_EQ(single_values[i][2] * single_values[i][3], v2.z());
+        gfx::Vector3dF(single_value[0], single_value[1], single_value[2]),
+        single_value[3]);
+    EXPECT_EQ(single_value[0] * single_value[3], v2.x());
+    EXPECT_EQ(single_value[1] * single_value[3], v2.y());
+    EXPECT_EQ(single_value[2] * single_value[3], v2.z());
   }
 }
 
@@ -167,10 +159,10 @@ TEST(Vector3dFTest, Length) {
        27861786423846742743236423478236784678.236713617231f},
   });
 
-  for (size_t i = 0; i < std::size(float_values); ++i) {
-    double v0 = float_values[i][0];
-    double v1 = float_values[i][1];
-    double v2 = float_values[i][2];
+  for (auto& float_value : float_values) {
+    double v0 = float_value[0];
+    double v1 = float_value[1];
+    double v2 = float_value[2];
     double length_squared =
         static_cast<double>(v0) * v0 +
         static_cast<double>(v1) * v1 +
@@ -202,9 +194,9 @@ TEST(Vector3dFTest, DotProduct) {
        gfx::Vector3dF(4.4f, 5.5f, 6.6f)},
   });
 
-  for (size_t i = 0; i < std::size(tests); ++i) {
-    float actual = gfx::DotProduct(tests[i].input1, tests[i].input2);
-    EXPECT_EQ(tests[i].expected, actual);
+  for (const auto& test : tests) {
+    float actual = gfx::DotProduct(test.input1, test.input2);
+    EXPECT_EQ(test.expected, actual);
   }
 }
 
@@ -288,13 +280,11 @@ TEST(Vector3dFTest, AngleBetweenVectorsInDegress) {
        gfx::Vector3dF(0, -0.999995f, -0.003124f)},
   });
 
-  for (size_t i = 0; i < std::size(tests); ++i) {
-    float actual =
-        gfx::AngleBetweenVectorsInDegrees(tests[i].input1, tests[i].input2);
-    EXPECT_FLOAT_EQ(tests[i].expected, actual);
-    actual =
-        gfx::AngleBetweenVectorsInDegrees(tests[i].input2, tests[i].input1);
-    EXPECT_FLOAT_EQ(tests[i].expected, actual);
+  for (const auto& test : tests) {
+    float actual = gfx::AngleBetweenVectorsInDegrees(test.input1, test.input2);
+    EXPECT_FLOAT_EQ(test.expected, actual);
+    actual = gfx::AngleBetweenVectorsInDegrees(test.input2, test.input1);
+    EXPECT_FLOAT_EQ(test.expected, actual);
   }
 }
 
@@ -315,15 +305,15 @@ TEST(Vector3dFTest, ClockwiseAngleBetweenVectorsInDegress) {
 
   const gfx::Vector3dF normal_vector(1.0f, 0.0f, 0.0f);
 
-  for (size_t i = 0; i < std::size(tests); ++i) {
+  for (const auto& test : tests) {
     float actual = gfx::ClockwiseAngleBetweenVectorsInDegrees(
-        tests[i].input1, tests[i].input2, normal_vector);
-    EXPECT_FLOAT_EQ(tests[i].expected, actual);
+        test.input1, test.input2, normal_vector);
+    EXPECT_FLOAT_EQ(test.expected, actual);
     actual = -gfx::ClockwiseAngleBetweenVectorsInDegrees(
-                 tests[i].input2, tests[i].input1, normal_vector);
+        test.input2, test.input1, normal_vector);
     if (actual < 0.0f)
       actual += 360.0f;
-    EXPECT_FLOAT_EQ(tests[i].expected, actual);
+    EXPECT_FLOAT_EQ(test.expected, actual);
   }
 }
 
@@ -347,10 +337,10 @@ TEST(Vector3dFTest, GetNormalized) {
        gfx::Vector3dF(1, 0, 0)},
   });
 
-  for (size_t i = 0; i < std::size(tests); ++i) {
+  for (const auto& test : tests) {
     gfx::Vector3dF n;
-    EXPECT_EQ(tests[i].expected, tests[i].v.GetNormalized(&n));
-    EXPECT_EQ(tests[i].normalized.ToString(), n.ToString());
+    EXPECT_EQ(test.expected, test.v.GetNormalized(&n));
+    EXPECT_EQ(test.normalized.ToString(), n.ToString());
   }
 }
 

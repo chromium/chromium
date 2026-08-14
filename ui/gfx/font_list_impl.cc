@@ -125,8 +125,9 @@ FontListImpl* FontListImpl::Derive(int size_delta,
   // If there is a font vector, derive from that.
   if (!fonts_.empty()) {
     std::vector<Font> fonts = fonts_;
-    for (size_t i = 0; i < fonts.size(); ++i)
-      fonts[i] = fonts[i].Derive(size_delta, font_style, weight);
+    for (auto& font : fonts) {
+      font = font.Derive(size_delta, font_style, weight);
+    }
     return new FontListImpl(fonts);
   }
 
@@ -195,10 +196,10 @@ const std::vector<Font>& FontListImpl::GetFonts() const {
                                      &style, &font_size_, &font_weight_));
     if (font_style_ == -1)
       font_style_ = style;
-    for (size_t i = 0; i < font_names.size(); ++i) {
-      DCHECK(!font_names[i].empty());
+    for (const auto& font_name : font_names) {
+      DCHECK(!font_name.empty());
 
-      Font font(font_names[i], font_size_);
+      Font font(font_name, font_size_);
       if (font_style_ == Font::NORMAL && font_weight_ == Font::Weight::NORMAL)
         fonts_.push_back(font);
       else
@@ -218,9 +219,9 @@ void FontListImpl::CacheCommonFontHeightAndBaseline() const {
   int ascent = 0;
   int descent = 0;
   const std::vector<Font>& fonts = GetFonts();
-  for (auto i = fonts.begin(); i != fonts.end(); ++i) {
-    ascent = std::max(ascent, i->GetBaseline());
-    descent = std::max(descent, i->GetHeight() - i->GetBaseline());
+  for (const auto& font : fonts) {
+    ascent = std::max(ascent, font.GetBaseline());
+    descent = std::max(descent, font.GetHeight() - font.GetBaseline());
   }
   common_height_ = ascent + descent;
   common_baseline_ = ascent;

@@ -46,8 +46,7 @@ TEST(RectTest, Contains) {
       {0, 0, -10, -10, 0, 0, false},
 #endif
   });
-  for (size_t i = 0; i < std::size(contains_cases); ++i) {
-    const ContainsCase& value = contains_cases[i];
+  for (const auto& value : contains_cases) {
     Rect rect(value.rect_x, value.rect_y, value.rect_width, value.rect_height);
     EXPECT_EQ(value.contained, rect.Contains(value.point_x, value.point_y));
   }
@@ -77,11 +76,11 @@ TEST(RectTest, Intersects) {
       {10, 10, 10, 10, 20, 15, 10, 10, false},
       {10, 10, 10, 10, 21, 15, 10, 10, false},
   });
-  for (size_t i = 0; i < std::size(tests); ++i) {
-    Rect r1(tests[i].x1, tests[i].y1, tests[i].w1, tests[i].h1);
-    Rect r2(tests[i].x2, tests[i].y2, tests[i].w2, tests[i].h2);
-    EXPECT_EQ(tests[i].intersects, r1.Intersects(r2));
-    EXPECT_EQ(tests[i].intersects, r2.Intersects(r1));
+  for (const auto& test : tests) {
+    Rect r1(test.x1, test.y1, test.w1, test.h1);
+    Rect r2(test.x2, test.y2, test.w2, test.h2);
+    EXPECT_EQ(test.intersects, r1.Intersects(r2));
+    EXPECT_EQ(test.intersects, r2.Intersects(r1));
   }
 }
 
@@ -114,10 +113,10 @@ TEST(RectTest, Intersect) {
       {3, 0, 2, 2,  // gap
        0, 0, 2, 2, 0, 0, 0, 0},
   });
-  for (size_t i = 0; i < std::size(tests); ++i) {
-    Rect r1(tests[i].x1, tests[i].y1, tests[i].w1, tests[i].h1);
-    Rect r2(tests[i].x2, tests[i].y2, tests[i].w2, tests[i].h2);
-    Rect r3(tests[i].x3, tests[i].y3, tests[i].w3, tests[i].h3);
+  for (const auto& test : tests) {
+    Rect r1(test.x1, test.y1, test.w1, test.h1);
+    Rect r2(test.x2, test.y2, test.w2, test.h2);
+    Rect r3(test.x3, test.y3, test.w3, test.h3);
     EXPECT_EQ(r3, IntersectRects(r1, r2));
   }
 }
@@ -196,10 +195,10 @@ TEST(RectTest, AdjustToFit) {
       {2, 2, 4, 4, 0, 0, 3, 3, 0, 0, 3, 3},
       {2, 2, 1, 1, 0, 0, 3, 3, 2, 2, 1, 1},
   });
-  for (size_t i = 0; i < std::size(tests); ++i) {
-    Rect r1(tests[i].x1, tests[i].y1, tests[i].w1, tests[i].h1);
-    Rect r2(tests[i].x2, tests[i].y2, tests[i].w2, tests[i].h2);
-    Rect r3(tests[i].x3, tests[i].y3, tests[i].w3, tests[i].h3);
+  for (const auto& test : tests) {
+    Rect r1(test.x1, test.y1, test.w1, test.h1);
+    Rect r2(test.x2, test.y2, test.w2, test.h2);
+    Rect r3(test.x3, test.y3, test.w3, test.h3);
     Rect u = r1;
     u.AdjustToFit(r2);
     EXPECT_EQ(r3, u);
@@ -521,9 +520,9 @@ TEST(RectTest, BoundingRect) {
       {Point(-4, 6), Point(6, -4), Rect(-4, -4, 10, 10)},
   });
 
-  for (size_t i = 0; i < std::size(int_tests); ++i) {
-    Rect actual = BoundingRect(int_tests[i].a, int_tests[i].b);
-    EXPECT_EQ(int_tests[i].expected, actual);
+  for (auto& int_test : int_tests) {
+    Rect actual = BoundingRect(int_test.a, int_test.b);
+    EXPECT_EQ(int_test.expected, actual);
   }
 }
 

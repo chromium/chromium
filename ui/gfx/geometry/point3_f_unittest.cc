@@ -31,9 +31,9 @@ TEST(Point3FTest, VectorArithmetic) {
       {gfx::Point3F(-9.6f, 9.5f, -2.8f), a - v1 + v2},
   });
 
-  for (size_t i = 0; i < std::size(tests); ++i)
-    EXPECT_EQ(tests[i].expected.ToString(),
-              tests[i].actual.ToString());
+  for (const auto& test : tests) {
+    EXPECT_EQ(test.expected.ToString(), test.actual.ToString());
+  }
 
   a += v1;
   EXPECT_EQ(Point3F(4.7f, 1.9f, 12.5f).ToString(), a.ToString());

@@ -358,8 +358,8 @@ ImageSkia ImageSkia::DeepCopy() const {
   CHECK(CanRead());
 
   std::vector<gfx::ImageSkiaRep>& reps = storage_->image_reps();
-  for (auto iter = reps.begin(); iter != reps.end(); ++iter) {
-    copy.AddRepresentation(*iter);
+  for (auto& rep : reps) {
+    copy.AddRepresentation(rep);
   }
   // The copy has its own storage. Detach the copy from the current
   // sequence so that other sequences can use this.
@@ -478,10 +478,10 @@ std::vector<ImageSkiaRep> ImageSkia::image_reps() const {
   // Create list of image reps to return, skipping null image reps which were
   // added for caching purposes only.
   ImageSkiaReps image_reps;
-  for (auto it = internal_image_reps.begin(); it != internal_image_reps.end();
-       ++it) {
-    if (!it->is_null())
-      image_reps.push_back(*it);
+  for (auto& internal_image_rep : internal_image_reps) {
+    if (!internal_image_rep.is_null()) {
+      image_reps.push_back(internal_image_rep);
+    }
   }
 
   return image_reps;

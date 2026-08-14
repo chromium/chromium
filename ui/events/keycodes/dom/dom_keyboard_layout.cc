@@ -42,9 +42,9 @@ base::flat_map<std::string, std::string> DomKeyboardLayout::GetMap() {
     // Map combining accents into the corresponding printable character.
     if (unicode >= 0x0300 && unicode <= 0x036f) {
       uint16_t printable = 0;
-      for (size_t j = 0; j < std::size(kCombiningKeyMapping); ++j) {
-        if (kCombiningKeyMapping[j].combining == unicode) {
-          printable = kCombiningKeyMapping[j].printable;
+      for (auto mapping : kCombiningKeyMapping) {
+        if (mapping.combining == unicode) {
+          printable = mapping.printable;
           break;
         }
       }
