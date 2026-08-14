@@ -57,7 +57,10 @@ blink_modules_sources("file_system_access") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "global_file_system_access_test.cc" ]
+  sources = [
+    "file_system_access_regular_file_delegate_test.cc",
+    "global_file_system_access_test.cc",
+  ]
 
   configs += [
     "//third_party/blink/renderer:config",
