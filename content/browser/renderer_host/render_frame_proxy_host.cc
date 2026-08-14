@@ -343,7 +343,9 @@ void RenderFrameProxyHost::SetRenderFrameProxyCreated(bool created) {
 
 const mojo::AssociatedRemote<blink::mojom::RemoteFrame>&
 RenderFrameProxyHost::GetAssociatedRemoteFrame() {
-  CHECK(remote_frame_.is_bound(), base::NotFatalUntil::M152);
+  // TODO(crbug.com/544915927): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(remote_frame_.is_bound());
   return remote_frame_;
 }
 
