@@ -2387,135 +2387,68 @@ source_set("browser") {
     "//components/contextual_tasks/public",
     "//components/contextual_tasks/public:feature_list",
     "//components/contextual_tasks/public:query_contextualizer",
-    "//components/continuous_search/browser",
-    "//components/cookie_config",
     "//components/country_codes",
     "//components/crash/core/browser",
-    "//components/credential_management:browser",
-    "//components/critical_actions/core/browser",
     "//components/crx_file",
     "//components/custom_handlers",
-    "//components/desktop_to_mobile_promos",
     "//components/device_event_log",
     "//components/device_reauth",
     "//components/device_signals/core/browser",
     "//components/dom_distiller/content/browser",
-    "//components/dom_distiller/content/common/mojom",
     "//components/domain_reliability",
-    "//components/domain_reliability:prefs",
     "//components/download/content/factory",
     "//components/download/content/public",
-    "//components/download/database",
-    "//components/download/public/background_service:public",
     "//components/embedder_support",
-    "//components/embedder_support:content_settings",
     "//components/embedder_support:user_agent",
-    "//components/embedder_support/origin_trials",
-    "//components/encrypted_messages",
     "//components/enterprise",
-    "//components/enterprise/browser/data_region",
     "//components/enterprise/browser/identifiers",
     "//components/enterprise/browser/promotion",
-    "//components/enterprise/common/proto:connectors_proto",
-    "//components/enterprise/common/proto:extensions_workflow_events_proto",
     "//components/enterprise/content",
-    "//components/enterprise/data_protection",
-    "//components/enterprise/device_trust",
-    "//components/enterprise/encryption/cache",
-    "//components/enterprise/isolated_mode",
     "//components/enterprise/net",
-    "//components/enterprise/network_header_injection/core",
-    "//components/enterprise/obfuscation/core:enterprise_obfuscation",
-    "//components/error_page/common",
     "//components/error_page/content/browser",
     "//components/facilitated_payments/core/features",
     "//components/favicon/content",
     "//components/favicon/core",
-    "//components/favicon/core:history_implementation",
-    "//components/favicon_base",
     "//components/feature_engagement",
     "//components/feed/core/common:feed_core_common",
     "//components/feed/core/shared_prefs:feed_shared_prefs",
-    "//components/filename_generation",
     "//components/find_in_page",
     "//components/gcm_driver",
-    "//components/guest_view/buildflags",
-    "//components/handoff",
-    "//components/headless/select_file_dialog",
-    "//components/heap_profiling/in_process",
-    "//components/heap_profiling/in_process:mojom",
-    "//components/heavy_ad_intervention",
     "//components/history/content/browser",
     "//components/history/core/browser",
     "//components/history/core/common",
-    "//components/history/metrics",
     "//components/history_clusters/core",
     "//components/history_clusters/history_clusters_internals/webui",
     "//components/infobars/content",
     "//components/infobars/core",
-    "//components/invalidation",
-    "//components/invalidation:legacy_topics_cleanup",
     "//components/javascript_dialogs",
     "//components/keyed_service/content",
-    "//components/language/content/browser",
-    "//components/language/content/browser/ulp_language_code_locator",
     "//components/language/core/browser",
     "//components/language/core/common",
-    "//components/language/core/language_model",
-    "//components/language_detection/content/browser",
     "//components/lens",
     "//components/lens:enterprise_policy",
-    "//components/leveldb_proto",
-    "//components/link_header_util",
     "//components/live_caption:constants",
     "//components/live_caption:utils",
     "//components/lookalikes/core",
-    "//components/lookalikes/core:proto",
-    "//components/lookalikes/core:safety_tips",
     "//components/manta",
-    "//components/media_device_salt",
-    "//components/memory_pressure",
-    "//components/metrics:call_stack_profile_collector",
-    "//components/metrics:component_metrics",
     "//components/metrics:content",
-    "//components/metrics:net",
-    "//components/metrics:ui",
-    "//components/metrics/demographics",
     "//components/metrics/private_metrics",
-    "//components/metrics/private_metrics:private_metrics_features",
-    "//components/metrics/structured",
-    "//components/metrics/structured:structured_events",
-    "//components/metrics/structured:structured_metrics_validator",
     "//components/metrics_services_manager",
     "//components/mirroring/service:mirroring_service",
     "//components/multistep_filter/core:features",
     "//components/navigation_interception",
     "//components/navigation_metrics",
     "//components/net_log",
-    "//components/network_hints/common:mojo_bindings",
-    "//components/network_session_configurator/browser",
-    "//components/network_time",
-    "//components/network_time/time_tracker",
     "//components/no_state_prefetch/browser",
-    "//components/no_state_prefetch/common",
-    "//components/no_state_prefetch/common:mojo_bindings",
     "//components/ntp_tiles",
     "//components/offline_pages/buildflags",
     "//components/offline_pages/core",
     "//components/offline_pages/core/background:background_offliner",
-    "//components/offline_pages/core/request_header",
     "//components/omnibox/browser",
     "//components/omnibox/common:features",
     "//components/onc",
-    "//components/open_from_clipboard",
     "//components/optimization_guide/core",
-    "//components/optimization_guide/core:bloomfilter",
-    "//components/optimization_guide/core:prediction",
     "//components/optimization_guide/optimization_guide_internals/webui",
-    "//components/optimization_guide/public/mojom",
-    "//components/origin_trials:browser",
-    "//components/origin_trials:common",
-    "//components/os_crypt/async/browser",
     "//components/page_info/core:proto",
     "//components/page_load_metrics/browser",
     "//components/page_load_metrics/browser/observers/ad_metrics",
@@ -3071,23 +3004,17 @@ source_set("browser") {
       "//components/commerce/core/mojom:mojo_bindings",
       "//components/constrained_window",
       "//components/endpoint_fetcher",
-      "//components/enterprise/buildflags",
       "//components/feedback",
       "//components/feedback/content:factory",
       "//components/feedback/redaction_tool",
-      "//components/headless/clipboard",
       "//components/headless/policy",
       "//components/image_fetcher/core",
       "//components/keep_alive_registry",
       "//components/live_caption",
-      "//components/live_caption:live_translate",
       "//components/manta",
       "//components/manta/proto",
       "//components/media_gallery_util",
       "//components/media_router/browser",
-      "//components/memory_pressure",
-      "//components/mirroring/browser",
-      "//components/mirroring/mojom:service",
       "//components/mirroring/service:mirroring_service",
       "//components/omnibox/browser:mojo_bindings",
       "//components/page_image_service/mojom:mojo_bindings",
@@ -3403,9 +3330,6 @@ source_set("browser") {
       "//chrome/browser/chromeos/upload_office_to_cloud",
       "//chrome/browser/enterprise/connectors/device_trust/attestation/ash",
       "//chromeos/ash/components/system_web_apps:system_web_app_type",
-      "//components/enterprise/device_trust/core/attestation/proto:attestation_ca_proto",
-      "//components/enterprise/device_trust/core/attestation/proto:google_key_proto",
-      "//components/enterprise/device_trust/core/attestation/proto:interface_proto",
 
       # TODO(crbug.com/353332589): Remove this circular dependency when
       # c/b/browser_process_platform_part_ash.h gets modularized.
@@ -3643,19 +3567,9 @@ source_set("browser") {
       "//components/app_restore",
       "//components/certificate_transparency",
       "//components/component_updater/ash",
-      "//components/cross_device/nearby",
       "//components/desks_storage",
-      "//components/device_signals/core/browser/ash",
-      "//components/digital_goods/mojom",
       "//components/drive",
       "//components/exo",
-      "//components/exo/server",
-      "//components/memory_pressure",
-      "//components/metrics",
-      "//components/metrics/structured",
-      "//components/metrics/structured:external_metrics",
-      "//components/metrics/structured:structured_metrics_validator",
-      "//components/metrics/structured/lib",
       "//components/pref_registry",
       "//components/prefs",
       "//components/quirks",
@@ -3716,10 +3630,6 @@ source_set("browser") {
     }
   }
 
-  if (!enable_extensions_core) {
-    deps += [ "//components/guest_view/browser/slim_web_view:mojo_bindings" ]
-  }
-
   if (enable_background_mode) {
     deps += [
       "//chrome/browser/background/extensions",
@@ -3756,11 +3666,7 @@ source_set("browser") {
   }
 
   if (enterprise_watermark) {
-    deps += [
-      "//chrome/browser/ui/webui/watermark",
-      "//components/enterprise/watermarking",
-      "//components/enterprise/watermarking/content",
-    ]
+    deps += [ "//chrome/browser/ui/webui/watermark" ]
   }
 
   if (enterprise_data_controls) {
@@ -3768,16 +3674,7 @@ source_set("browser") {
   }
 
   if (enterprise_client_certificates) {
-    deps += [
-      "//components/enterprise/client_certificates/core",
-      "//components/enterprise/client_certificates/core:dm_server_client",
-      "//components/enterprise/client_certificates/core:management_delegate",
-      "//components/enterprise/core",
-    ]
-  }
-
-  if (is_linux || is_win || is_mac || is_chromeos || is_android) {
-    deps += [ "//components/enterprise/device_trust/core:metrics" ]
+    deps += [ "//components/enterprise/client_certificates/core" ]
   }
 
   if (is_linux || is_win || is_mac || is_chromeos) {
@@ -3785,15 +3682,6 @@ source_set("browser") {
       "//chrome/browser/ui/webui/skills",
       "//chrome/browser/ui/webui/skills:mojo_bindings",
       "//components/device_signals/core/browser",
-      "//components/device_signals/core/common",
-      "//components/enterprise/core",
-      "//components/enterprise/device_trust",
-      "//components/enterprise/device_trust/core:metrics",
-      "//components/enterprise/device_trust/core/attestation",
-      "//components/enterprise/device_trust/core/attestation:types",
-      "//components/metrics",
-      "//components/metrics/structured",
-      "//components/metrics/structured:structured_metrics_validator",
       "//components/policy/proto",
       "//components/power_metrics",
       "//components/webapps/isolated_web_apps:scheme",
@@ -3801,14 +3689,9 @@ source_set("browser") {
     ]
   }
 
-  if (is_linux || is_win || is_mac || is_android) {
-    deps += [ "//components/enterprise/idle" ]
-  }
-
   if (enterprise_cloud_content_analysis || is_android ||
       safe_browsing_mode == 1) {
     deps += [
-      "//components/enterprise/common/proto:chrome_reporting_entity",
       "//components/enterprise/connectors/core",
       "//components/enterprise/connectors/core:cloud_content_scanning",
     ]
@@ -3817,10 +3700,7 @@ source_set("browser") {
   }
 
   if (enterprise_cloud_content_analysis) {
-    deps += [
-      "//components/enterprise/common/proto:chrome_reporting_entity",
-      "//components/enterprise/connectors/core:cloud_content_scanning",
-    ]
+    deps += [ "//components/enterprise/connectors/core:cloud_content_scanning" ]
     public_deps +=
         [ "//components/enterprise/common/proto:browser_events_proto" ]
   }
@@ -3845,7 +3725,6 @@ source_set("browser") {
       "//chrome/browser/updates:update_metrics",
       "//chrome/services/system_signals/public/cpp/browser",
       "//chrome/updater:browser_sources",
-      "//components/on_device_translation",
       "//components/supervised_user/core/common:features",
       "//components/themes:policy",
     ]
@@ -3865,8 +3744,6 @@ source_set("browser") {
     if (use_dbus) {
       deps += [
         "//chrome/common:chrome_features",
-        "//components/dbus",
-        "//components/os_crypt/async/browser:freedesktop_secret_key_provider",
         "//components/os_crypt/async/browser:secret_portal_key_provider",
       ]
     }
@@ -3907,7 +3784,6 @@ source_set("browser") {
 
   if (is_posix && !is_mac) {
     deps += [
-      "//components/crash/content/browser",
       "//components/crash/core/app",
       "//components/version_info:generate_version_info",
     ]
@@ -4029,9 +3905,6 @@ source_set("browser") {
       "//extensions/strings",
     ]
   } else {
-    if (enable_guest_view) {
-      deps += [ "//components/guest_view/browser/slim_web_view" ]
-    }
   }
 
   if (enable_extensions) {
@@ -4067,8 +3940,6 @@ source_set("browser") {
     deps += [
       # TODO(crbug.com/41410773): mirroring shouldn't depend on
       # enable_extensions.
-      "//components/mirroring/browser",
-      "//components/mirroring/mojom:service",
       "//components/mirroring/service:mirroring_service",
     ]
     deps += [
@@ -4116,10 +3987,7 @@ source_set("browser") {
     ]
   }
   if (enable_on_device_translation) {
-    deps += [
-      "//chrome/browser/on_device_translation",
-      "//components/on_device_translation",
-    ]
+    deps += [ "//chrome/browser/on_device_translation" ]
   }
 
   if (enable_pdf) {
@@ -4159,10 +4027,7 @@ source_set("browser") {
   }
 
   if (is_linux || is_mac) {
-    deps += [
-      "//chrome/browser/gapis",
-      "//components/gapis",
-    ]
+    deps += [ "//chrome/browser/gapis" ]
   }
 
   if (enable_spellcheck) {
