@@ -1129,11 +1129,6 @@ BASE_FEATURE(kResetNativePointerInCreditCardAuthDialog,
 BASE_FEATURE(kShowAutocompleteAtMemoryButton,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Kill switch: if enabled, suggestions are shown for fields with unrecognized
-// autocomplete attribute if they are already autofilled.
-BASE_FEATURE(kShowSugesstionsOnAlreadyAutofilledUnrecognized,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, "Manage information" menu item for enhanced autofill will
 // redirect user either to "/travel" or "/identityDocs" pages instead of
 // "/yourSavedInfo" always.

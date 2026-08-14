@@ -261,10 +261,6 @@ public final class ProductionSupportedFlagList {
                 "Allows autofill to ignore suppressing predicitons on fields with"
                         + " autocomplete=unrecognized."),
         Flag.baseFeature(
-                AutofillFeatures.SHOW_SUGESSTIONS_ON_ALREADY_AUTOFILLED_UNRECOGNIZED,
-                "Allows autofill to offer filling again on fields that were autofilled and now hold"
-                        + " autocomplete=unrecognized value."),
-        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_FIX_IFRAME_OWNERSHIP,
                 "Make Autofill's iframe ownership consistent with form control ownership."),
         Flag.baseFeature(

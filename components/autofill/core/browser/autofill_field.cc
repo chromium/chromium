@@ -811,9 +811,7 @@ bool AutofillField::ShouldSuppressSuggestionsAndFillingByDefault(
   // autocomplete attribute's value to unrecognized. This is done in order to
   // preserve the ability to swap an autofilled value for a different one.
   // See crbug.com/469057923 for details.
-  if (last_modifier() == FieldModifier::kAutofill &&
-      base::FeatureList::IsEnabled(
-          features::kShowSugesstionsOnAlreadyAutofilledUnrecognized)) {
+  if (last_modifier() == FieldModifier::kAutofill) {
     return false;
   }
 
