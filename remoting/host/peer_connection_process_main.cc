@@ -26,6 +26,14 @@
 #include "base/files/file_descriptor_watcher_posix.h"
 #endif
 
+#if BUILDFLAG(IS_LINUX)
+#include <memory>
+
+#include "base/logging.h"
+#include "remoting/host/linux/peer_connection_bpf_policy_linux.h"
+#include "sandbox/linux/seccomp-bpf/sandbox_bpf.h"
+#endif
+
 namespace remoting {
 
 int PeerConnectionProcessMain() {
@@ -74,6 +82,31 @@ int PeerConnectionProcessMain() {
   if (!peer_connection_process.Start(std::move(message_pipe))) {
     return kInitializationFailed;
   }
+
+#if BUILDFLAG(IS_LINUX)
+  // Engage the multi-threaded Seccomp-BPF sandbox after establishing the
+  // initial Mojo IPC connection with the parent process, but before starting
+  // the main RunLoop to process untrusted WebRTC peer traffic and remote
+  // inputs.
+  //
+  // Note: Future threads created on the fly (e.g. by ThreadPool or WebRTC)
+  // are explicitly allowed by the policy and automatically inherit the filter
+  // via SECCOMP_FILTER_FLAG_TSYNC.
+  if (sandbox::SandboxBPF::SupportsSeccompSandbox(
+          sandbox::SandboxBPF::SeccompLevel::MULTI_THREADED)) {
+    sandbox::SandboxBPF sandbox(
+        std::make_unique<PeerConnectionBpfPolicyLinux>());
+    if (!sandbox.StartSandbox(
+            sandbox::SandboxBPF::SeccompLevel::MULTI_THREADED)) {
+      LOG(ERROR) << "Failed to engage Seccomp-BPF sandbox in the peer "
+                 << "connection process.";
+      return kInitializationFailed;
+    }
+  } else {
+    LOG(WARNING)
+        << "Seccomp-BPF multi-threaded sandbox not supported on this kernel.";
+  }
+#endif
 
   // Run the loop.
   task_runner = nullptr;
