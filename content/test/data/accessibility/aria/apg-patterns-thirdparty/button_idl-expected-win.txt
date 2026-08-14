@@ -1,0 +1,30 @@
+ROLE_SYSTEM_DOCUMENT name='Button Examples (IDL Version)' READONLY FOCUSABLE
+++IA2_ROLE_SECTION
+++++IA2_ROLE_HEADING name='Important'
+++++++ROLE_SYSTEM_STATICTEXT name='Important'
+++++IA2_ROLE_PARAGRAPH
+++++++ROLE_SYSTEM_STATICTEXT name='This example is coded using syntax that was not introduced until version 1.2 of the ARIA specification. When using a '
+++++++ROLE_SYSTEM_LINK name='browser that does not yet provide support for ARIA attribute reflection' FOCUSABLE
+++++++++ROLE_SYSTEM_STATICTEXT name='browser that does not yet provide support for ARIA attribute reflection'
+++++++ROLE_SYSTEM_STATICTEXT name=', the buttons will not be styled correctly.'
+++++IA2_ROLE_PARAGRAPH
+++++++ROLE_SYSTEM_STATICTEXT name='This '
+++++++ROLE_SYSTEM_STATICTEXT name='%E2%80%9C'
+++++++ROLE_SYSTEM_STATICTEXT name='Print'
+++++++ROLE_SYSTEM_STATICTEXT name='%E2%80%9D'
+++++++ROLE_SYSTEM_STATICTEXT name=' action button uses a '
+++++++IA2_ROLE_TEXT_FRAME
+++++++++ROLE_SYSTEM_STATICTEXT name='div'
+++++++ROLE_SYSTEM_STATICTEXT name=' element.'
+++++ROLE_SYSTEM_PUSHBUTTON name='Print Page' FOCUSABLE
+++++IA2_ROLE_PARAGRAPH
+++++++ROLE_SYSTEM_STATICTEXT name='This '
+++++++ROLE_SYSTEM_STATICTEXT name='%E2%80%9C'
+++++++ROLE_SYSTEM_STATICTEXT name='Mute'
+++++++ROLE_SYSTEM_STATICTEXT name='%E2%80%9D'
+++++++ROLE_SYSTEM_STATICTEXT name=' toggle button uses an '
+++++++IA2_ROLE_TEXT_FRAME
+++++++++ROLE_SYSTEM_STATICTEXT name='a'
+++++++ROLE_SYSTEM_STATICTEXT name=' element.'
+++++IA2_ROLE_TOGGLE_BUTTON name='Mute ' FOCUSABLE
+++++++ROLE_SYSTEM_STATICTEXT name='Mute '

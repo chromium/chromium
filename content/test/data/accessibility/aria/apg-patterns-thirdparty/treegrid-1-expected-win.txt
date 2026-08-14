@@ -1,0 +1,50 @@
+ROLE_SYSTEM_DOCUMENT name='Treegrid Email Inbox Example' READONLY FOCUSABLE
+++IA2_ROLE_SECTION
+++++ROLE_SYSTEM_OUTLINE name='Inbox'
+++++++ROLE_SYSTEM_OUTLINEITEM name='Subject Summary Email'
+++++++++ROLE_SYSTEM_COLUMNHEADER name='Subject'
+++++++++++ROLE_SYSTEM_STATICTEXT name='Subject'
+++++++++ROLE_SYSTEM_COLUMNHEADER name='Summary'
+++++++++++ROLE_SYSTEM_STATICTEXT name='Summary'
+++++++++ROLE_SYSTEM_COLUMNHEADER name='Email'
+++++++++++ROLE_SYSTEM_STATICTEXT name='Email'
+++++++ROLE_SYSTEM_OUTLINEITEM name=' Treegrids are awesome Want to learn how to use them? aaron@thegoogle.rocks' EXPANDED FOCUSABLE
+++++++++ROLE_SYSTEM_CELL name=' Treegrids are awesome'
+++++++++++IA2_ROLE_SECTION
+++++++++++++ROLE_SYSTEM_STATICTEXT name='  '
+++++++++++ROLE_SYSTEM_STATICTEXT name='Treegrids are awesome'
+++++++++ROLE_SYSTEM_CELL name='Want to learn how to use them?'
+++++++++++ROLE_SYSTEM_STATICTEXT name='Want to learn how to use them?'
+++++++++ROLE_SYSTEM_CELL name='aaron@thegoogle.rocks'
+++++++++++ROLE_SYSTEM_LINK name='aaron@thegoogle.rocks' value='mailto:aaron@thegoogle.rocks' FOCUSABLE
+++++++++++++ROLE_SYSTEM_STATICTEXT name='aaron@thegoogle.rocks'
+++++++ROLE_SYSTEM_OUTLINEITEM name=' re: Treegrids are awesome I agree with you, they are the shizzle joe@blahblahblah.blahblah' FOCUSABLE
+++++++++ROLE_SYSTEM_CELL name=' re: Treegrids are awesome'
+++++++++++IA2_ROLE_SECTION
+++++++++++++ROLE_SYSTEM_STATICTEXT name='  '
+++++++++++ROLE_SYSTEM_STATICTEXT name='re: Treegrids are awesome'
+++++++++ROLE_SYSTEM_CELL name='I agree with you, they are the shizzle'
+++++++++++ROLE_SYSTEM_STATICTEXT name='I agree with you, they are the shizzle'
+++++++++ROLE_SYSTEM_CELL name='joe@blahblahblah.blahblah'
+++++++++++ROLE_SYSTEM_LINK name='joe@blahblahblah.blahblah' value='mailto:joe@blahblahblah.blahblah' FOCUSABLE
+++++++++++++ROLE_SYSTEM_STATICTEXT name='joe@blahblahblah.blahblah'
+++++++ROLE_SYSTEM_OUTLINEITEM name=' re: Treegrids are awesome They are great for showing a lot of data, like a grid billy@dangerous.fish' COLLAPSED FOCUSABLE
+++++++++ROLE_SYSTEM_CELL name=' re: Treegrids are awesome'
+++++++++++IA2_ROLE_SECTION
+++++++++++++ROLE_SYSTEM_STATICTEXT name='  '
+++++++++++ROLE_SYSTEM_STATICTEXT name='re: Treegrids are awesome'
+++++++++ROLE_SYSTEM_CELL name='They are great for showing a lot of data, like a grid'
+++++++++++ROLE_SYSTEM_STATICTEXT name='They are great for showing a lot of data, like a grid'
+++++++++ROLE_SYSTEM_CELL name='billy@dangerous.fish'
+++++++++++ROLE_SYSTEM_LINK name='billy@dangerous.fish' value='mailto:billy@dangerous.fish' FOCUSABLE
+++++++++++++ROLE_SYSTEM_STATICTEXT name='billy@dangerous.fish'
+++++++ROLE_SYSTEM_OUTLINEITEM name=' re: Treegrids are awesome I hear the Fancytree library is going to align with this example! someone@please-do-it.company' COLLAPSED FOCUSABLE
+++++++++ROLE_SYSTEM_CELL name=' re: Treegrids are awesome'
+++++++++++IA2_ROLE_SECTION
+++++++++++++ROLE_SYSTEM_STATICTEXT name='  '
+++++++++++ROLE_SYSTEM_STATICTEXT name='re: Treegrids are awesome'
+++++++++ROLE_SYSTEM_CELL name='I hear the Fancytree library is going to align with this example!'
+++++++++++ROLE_SYSTEM_STATICTEXT name='I hear the Fancytree library is going to align with this example!'
+++++++++ROLE_SYSTEM_CELL name='someone@please-do-it.company'
+++++++++++ROLE_SYSTEM_LINK name='someone@please-do-it.company' value='mailto:someone@please-do-it.company' FOCUSABLE
+++++++++++++ROLE_SYSTEM_STATICTEXT name='someone@please-do-it.company'

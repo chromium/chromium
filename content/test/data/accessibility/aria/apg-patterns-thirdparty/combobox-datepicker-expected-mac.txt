@@ -1,0 +1,11 @@
+AXWebArea AXTitle='Date Picker Combobox Example'
+++AXGroup
+++++AXGroup
+++++++AXGroup
+++++++++AXGroup
+++++++++++AXStaticText AXValue='Date'
+++++++++AXGroup
+++++++++++AXComboBox AXTitle='Date'
+++++++++++AXGroup
+++++++++++++AXStaticText AXValue='(date format: mm/dd/yyyy)'
+++++++++++AXButton AXDescription='Choose Date' AXTitle='Choose Date'

@@ -1,0 +1,10 @@
+AXWebArea AXTitle='Horizontal Multi-Thumb Slider Example'
+++AXGroup
+++++AXHeading AXTitle='Hotel Price Range (in USD)' AXValue=3
+++++++AXStaticText AXValue='Hotel Price Range (in '
+++++++AXGroup AXDescription='United States Dollars' AXTitle='United States Dollars'
+++++++++AXStaticText AXValue='USD'
+++++++AXStaticText AXValue=')'
+++++AXGroup
+++++++AXSlider AXDescription='Hotel Minimum Price in US dollars' AXTitle='Hotel Minimum Price in US dollars' AXValue=100
+++++++AXSlider AXDescription='Hotel Maximum Price in US dollars' AXTitle='Hotel Maximum Price in US dollars' AXValue=250

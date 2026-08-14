@@ -1,0 +1,78 @@
+rootWebArea name='Example Disclosure (Show/Hide) Card'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer
+++++++++genericContainer ignored
+++++++++++heading name='Musical Education Conference'
+++++++++++++staticText name='Musical Education Conference'
+++++++++++++++inlineTextBox name='Musical Education Conference'
+++++++++++list name='Musical Education Conference'
+++++++++++++listItem
+++++++++++++++article name='Symphonic Structure: Form, Function, and Feeling'
+++++++++++++++++sectionHeader
+++++++++++++++++++group
+++++++++++++++++++++heading name='Symphonic Structure: Form, Function, and Feeling'
+++++++++++++++++++++++staticText name='Symphonic Structure: Form, Function, and Feeling'
+++++++++++++++++++++++++inlineTextBox name='Symphonic Structure: Form, Function, and Feeling'
+++++++++++++++++++++paragraph
+++++++++++++++++++++++staticText name='Ludwig van Beethoven'
+++++++++++++++++++++++++inlineTextBox name='Ludwig van Beethoven'
+++++++++++++++++++paragraph ignored
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++staticText name='7 AM in Theater an der Wien'
+++++++++++++++++++++++++inlineTextBox name='7 AM in Theater an der Wien'
+++++++++++++++++++++button collapsed name='Symphonic Structure: Form, Function, and Feeling Details'
+++++++++++++++++++++++image ignored invisible
+++++++++++++++++++++++++graphicsSymbol ignored invisible
+++++++++++++++++++++++++graphicsSymbol ignored invisible
+++++++++++++++++++++++staticText name='Details'
+++++++++++++++++++++++++inlineTextBox name='Details'
+++++++++++++++++labelText ignored invisible
+++++++++++++++++++checkBox ignored invisible
+++++++++++++++++++staticText ignored invisible
+++++++++++++listItem
+++++++++++++++article name='Folk Futures: Tradition in the Classroom'
+++++++++++++++++sectionHeader
+++++++++++++++++++group
+++++++++++++++++++++heading name='Folk Futures: Tradition in the Classroom'
+++++++++++++++++++++++staticText name='Folk Futures: Tradition in the Classroom'
+++++++++++++++++++++++++inlineTextBox name='Folk Futures: Tradition in the Classroom'
+++++++++++++++++++++paragraph
+++++++++++++++++++++++staticText name='Anton%C3%ADn Dvo%C5%99%C3%A1k'
+++++++++++++++++++++++++inlineTextBox name='Anton%C3%ADn Dvo%C5%99%C3%A1k'
+++++++++++++++++++paragraph ignored
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++staticText name='8 AM in Rudolfinum Hall'
+++++++++++++++++++++++++inlineTextBox name='8 AM in Rudolfinum Hall'
+++++++++++++++++++++button collapsed name='Folk Futures: Tradition in the Classroom Details'
+++++++++++++++++++++++image ignored invisible
+++++++++++++++++++++++++graphicsSymbol ignored invisible
+++++++++++++++++++++++++graphicsSymbol ignored invisible
+++++++++++++++++++++++staticText name='Details'
+++++++++++++++++++++++++inlineTextBox name='Details'
+++++++++++++++++labelText ignored invisible
+++++++++++++++++++checkBox ignored invisible
+++++++++++++++++++staticText ignored invisible
+++++++++++++listItem
+++++++++++++++article name='Playful Dissonance: Teaching with Wit and Wonder'
+++++++++++++++++sectionHeader
+++++++++++++++++++group
+++++++++++++++++++++heading name='Playful Dissonance: Teaching with Wit and Wonder'
+++++++++++++++++++++++staticText name='Playful Dissonance: Teaching with Wit and Wonder'
+++++++++++++++++++++++++inlineTextBox name='Playful Dissonance: Teaching with Wit and Wonder'
+++++++++++++++++++++paragraph
+++++++++++++++++++++++staticText name='Francis Poulenc'
+++++++++++++++++++++++++inlineTextBox name='Francis Poulenc'
+++++++++++++++++++paragraph ignored
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++staticText name='9 AM in %C3%89glise Saint-Roch'
+++++++++++++++++++++++++inlineTextBox name='9 AM in %C3%89glise Saint-Roch'
+++++++++++++++++++++button collapsed name='Playful Dissonance: Teaching with Wit and Wonder Details'
+++++++++++++++++++++++image ignored invisible
+++++++++++++++++++++++++graphicsSymbol ignored invisible
+++++++++++++++++++++++++graphicsSymbol ignored invisible
+++++++++++++++++++++++staticText name='Details'
+++++++++++++++++++++++++inlineTextBox name='Details'
+++++++++++++++++labelText ignored invisible
+++++++++++++++++++checkBox ignored invisible
+++++++++++++++++++staticText ignored invisible

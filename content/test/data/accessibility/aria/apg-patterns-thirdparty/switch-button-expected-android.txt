@@ -1,0 +1,6 @@
+android.webkit.WebView focusable focused interesting name='Switch Example Using HTML Button'
+++android.view.View
+++++android.view.View container_title='Environmental Controls'
+++++++android.widget.TextView role_description='heading 3' heading interesting name='Environmental Controls'
+++++++android.widget.Switch checkable clickable focusable interesting name='Living Room Lights' state_description='Off'
+++++++android.widget.Switch checkable clickable focusable interesting name='Outdoor Lights' state_description='Off'

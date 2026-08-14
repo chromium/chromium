@@ -1,0 +1,91 @@
+rootWebArea name='Treegrid Email Inbox Example'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer
+++++++++treeGrid name='Inbox'
+++++++++++rowGroup
+++++++++++++row name='Subject Summary Email'
+++++++++++++++columnHeader name='Subject'
+++++++++++++++++staticText name='Subject'
+++++++++++++++++++inlineTextBox name='Subject'
+++++++++++++++columnHeader name='Summary'
+++++++++++++++++staticText name='Summary'
+++++++++++++++++++inlineTextBox name='Summary'
+++++++++++++++columnHeader name='Email'
+++++++++++++++++staticText name='Email'
+++++++++++++++++++inlineTextBox name='Email'
+++++++++++rowGroup ignored
+++++++++++++row name=' Treegrids are awesome Want to learn how to use them? aaron@thegoogle.rocks'
+++++++++++++++gridCell name=' Treegrids are awesome'
+++++++++++++++++genericContainer
+++++++++++++++++++staticText name='  '
+++++++++++++++++staticText name='Treegrids are awesome'
+++++++++++++++++++inlineTextBox name='Treegrids are awesome'
+++++++++++++++gridCell name='Want to learn how to use them?'
+++++++++++++++++staticText name='Want to learn how to use them?'
+++++++++++++++++++inlineTextBox name='Want to learn how to use them?'
+++++++++++++++gridCell name='aaron@thegoogle.rocks'
+++++++++++++++++link name='aaron@thegoogle.rocks'
+++++++++++++++++++staticText name='aaron@thegoogle.rocks'
+++++++++++++++++++++inlineTextBox name='aaron@thegoogle.rocks'
+++++++++++++row name=' re: Treegrids are awesome I agree with you, they are the shizzle joe@blahblahblah.blahblah'
+++++++++++++++gridCell name=' re: Treegrids are awesome'
+++++++++++++++++genericContainer
+++++++++++++++++++staticText name='  '
+++++++++++++++++staticText name='re: Treegrids are awesome'
+++++++++++++++++++inlineTextBox name='re: Treegrids are awesome'
+++++++++++++++gridCell name='I agree with you, they are the shizzle'
+++++++++++++++++staticText name='I agree with you, they are the shizzle'
+++++++++++++++++++inlineTextBox name='I agree with you, they are the shizzle'
+++++++++++++++gridCell name='joe@blahblahblah.blahblah'
+++++++++++++++++link name='joe@blahblahblah.blahblah'
+++++++++++++++++++staticText name='joe@blahblahblah.blahblah'
+++++++++++++++++++++inlineTextBox name='joe@blahblahblah.blahblah'
+++++++++++++row collapsed name=' re: Treegrids are awesome They are great for showing a lot of data, like a grid billy@dangerous.fish'
+++++++++++++++gridCell name=' re: Treegrids are awesome'
+++++++++++++++++genericContainer
+++++++++++++++++++staticText name='  '
+++++++++++++++++staticText name='re: Treegrids are awesome'
+++++++++++++++++++inlineTextBox name='re: Treegrids are awesome'
+++++++++++++++gridCell name='They are great for showing a lot of data, like a grid'
+++++++++++++++++staticText name='They are great for showing a lot of data, like a grid'
+++++++++++++++++++inlineTextBox name='They are great for showing a lot of data, like a grid'
+++++++++++++++++++inlineTextBox name='They are great for showing a lot of data, li'
+++++++++++++++++++inlineTextBox name='%E2%80%A6'
+++++++++++++++gridCell name='billy@dangerous.fish'
+++++++++++++++++link name='billy@dangerous.fish'
+++++++++++++++++++staticText name='billy@dangerous.fish'
+++++++++++++++++++++inlineTextBox name='billy@dangerous.fish'
+++++++++++++row ignored invisible
+++++++++++++++gridCell ignored invisible
+++++++++++++++gridCell ignored invisible
+++++++++++++++gridCell ignored invisible
+++++++++++++row collapsed name=' re: Treegrids are awesome I hear the Fancytree library is going to align with this example! someone@please-do-it.company'
+++++++++++++++gridCell name=' re: Treegrids are awesome'
+++++++++++++++++genericContainer
+++++++++++++++++++staticText name='  '
+++++++++++++++++staticText name='re: Treegrids are awesome'
+++++++++++++++++++inlineTextBox name='re: Treegrids are awesome'
+++++++++++++++gridCell name='I hear the Fancytree library is going to align with this example!'
+++++++++++++++++staticText name='I hear the Fancytree library is going to align with this example!'
+++++++++++++++++++inlineTextBox name='I hear the Fancytree library is going to align with this example!'
+++++++++++++++++++inlineTextBox name='I hear the Fancytree library is going to ali'
+++++++++++++++++++inlineTextBox name='%E2%80%A6'
+++++++++++++++gridCell name='someone@please-do-it.company'
+++++++++++++++++link name='someone@please-do-it.company'
+++++++++++++++++++staticText name='someone@please-do-it.company'
+++++++++++++++++++++inlineTextBox name='someone@please-do-it.company'
+++++++++++++++++++++inlineTextBox name='someone@please-do-it.comp'
+++++++++++++++++++++inlineTextBox name='%E2%80%A6'
+++++++++++++row ignored invisible
+++++++++++++++gridCell ignored invisible
+++++++++++++++gridCell ignored invisible
+++++++++++++++gridCell ignored invisible
+++++++++++++row ignored invisible
+++++++++++++++gridCell ignored invisible
+++++++++++++++gridCell ignored invisible
+++++++++++++++gridCell ignored invisible
+++++++++++++row ignored invisible
+++++++++++++++gridCell ignored invisible
+++++++++++++++gridCell ignored invisible
+++++++++++++++gridCell ignored invisible

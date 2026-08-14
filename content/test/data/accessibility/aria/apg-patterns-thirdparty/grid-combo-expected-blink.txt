@@ -1,0 +1,11 @@
+rootWebArea name='Editable Combobox with Grid Popup Example'
+++genericContainer ignored
+++++genericContainer
+++++++genericContainer
+++++++++labelText
+++++++++++staticText name='Fruits and vegetables '
+++++++++++++inlineTextBox name='Fruits and vegetables '
+++++++++genericContainer
+++++++++++genericContainer
+++++++++++++textFieldWithComboBox collapsed autoComplete='list' name='Fruits and vegetables'
+++++++++++++++genericContainer

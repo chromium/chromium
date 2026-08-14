@@ -1,0 +1,5 @@
+AXWebArea AXTitle='Vertical Temperature Slider Example'
+++AXGroup
+++++AXGroup
+++++++AXStaticText AXValue='Temperature'
+++++AXSlider AXTitle='Temperature' AXValue=25

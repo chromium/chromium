@@ -1,0 +1,12 @@
+rootWebArea name='Editable Combobox without Autocomplete Example'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer
+++++++++labelText
+++++++++++staticText name='Search'
+++++++++++++inlineTextBox name='Search'
+++++++++genericContainer
+++++++++++genericContainer
+++++++++++++textFieldWithComboBox collapsed name='Search'
+++++++++++++++genericContainer
+++++++++++++button collapsed name='Previous Searches'

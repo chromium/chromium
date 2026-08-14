@@ -1,0 +1,100 @@
+rootWebArea name='Accordion Example'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer
+++++++++genericContainer
+++++++++++heading name='Personal Information'
+++++++++++++button name='Personal Information' controlsIds=region
+++++++++++++++genericContainer ignored
+++++++++++++++++staticText name='Personal Information'
+++++++++++++++++++inlineTextBox name='Personal Information'
+++++++++++++++++genericContainer ignored
+++++++++++region name='Personal Information'
+++++++++++++genericContainer ignored
+++++++++++++++group
+++++++++++++++++paragraph ignored
+++++++++++++++++++labelText
+++++++++++++++++++++staticText name='Name'
+++++++++++++++++++++++inlineTextBox name='Name'
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++++staticText name=':'
+++++++++++++++++++++++inlineTextBox name=':'
+++++++++++++++++++textField required name='Name:'
+++++++++++++++++++++genericContainer
+++++++++++++++++paragraph ignored
+++++++++++++++++++labelText
+++++++++++++++++++++staticText name='Email'
+++++++++++++++++++++++inlineTextBox name='Email'
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++++staticText name=':'
+++++++++++++++++++++++inlineTextBox name=':'
+++++++++++++++++++textField required name='Email:'
+++++++++++++++++++++genericContainer
+++++++++++++++++paragraph ignored
+++++++++++++++++++labelText
+++++++++++++++++++++staticText name='Phone:'
+++++++++++++++++++++++inlineTextBox name='Phone:'
+++++++++++++++++++textField name='Phone:'
+++++++++++++++++++++genericContainer
+++++++++++++++++paragraph ignored
+++++++++++++++++++labelText
+++++++++++++++++++++staticText name='Extension:'
+++++++++++++++++++++++inlineTextBox name='Extension:'
+++++++++++++++++++textField name='Extension:'
+++++++++++++++++++++genericContainer
+++++++++++++++++paragraph ignored
+++++++++++++++++++labelText
+++++++++++++++++++++staticText name='Country:'
+++++++++++++++++++++++inlineTextBox name='Country:'
+++++++++++++++++++textField name='Country:'
+++++++++++++++++++++genericContainer
+++++++++++++++++paragraph ignored
+++++++++++++++++++labelText
+++++++++++++++++++++staticText name='City/Province:'
+++++++++++++++++++++++inlineTextBox name='City/Province:'
+++++++++++++++++++textField name='City/Province:'
+++++++++++++++++++++genericContainer
+++++++++++heading name='Billing Address'
+++++++++++++button collapsed name='Billing Address'
+++++++++++++++genericContainer ignored
+++++++++++++++++staticText name='Billing Address'
+++++++++++++++++++inlineTextBox name='Billing Address'
+++++++++++++++++genericContainer ignored
+++++++++++labelText ignored invisible
+++++++++++++staticText ignored invisible
+++++++++++genericContainer ignored invisible
+++++++++++labelText ignored invisible
+++++++++++++staticText ignored invisible
+++++++++++genericContainer ignored invisible
+++++++++++labelText ignored invisible
+++++++++++++staticText ignored invisible
+++++++++++genericContainer ignored invisible
+++++++++++labelText ignored invisible
+++++++++++++staticText ignored invisible
+++++++++++genericContainer ignored invisible
+++++++++++labelText ignored invisible
+++++++++++++staticText ignored invisible
+++++++++++genericContainer ignored invisible
+++++++++++heading name='Shipping Address'
+++++++++++++button collapsed name='Shipping Address'
+++++++++++++++genericContainer ignored
+++++++++++++++++staticText name='Shipping Address'
+++++++++++++++++++inlineTextBox name='Shipping Address'
+++++++++++++++++genericContainer ignored
+++++++++++labelText ignored invisible
+++++++++++++staticText ignored invisible
+++++++++++genericContainer ignored invisible
+++++++++++labelText ignored invisible
+++++++++++++staticText ignored invisible
+++++++++++genericContainer ignored invisible
+++++++++++labelText ignored invisible
+++++++++++++staticText ignored invisible
+++++++++++genericContainer ignored invisible
+++++++++++labelText ignored invisible
+++++++++++++staticText ignored invisible
+++++++++++genericContainer ignored invisible
+++++++++++labelText ignored invisible
+++++++++++++staticText ignored invisible
+++++++++++genericContainer ignored invisible

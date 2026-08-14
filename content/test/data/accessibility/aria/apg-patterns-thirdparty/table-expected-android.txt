@@ -1,0 +1,29 @@
+android.webkit.WebView focusable focused interesting name='Table Example'
+++android.view.View
+++++android.widget.GridView collection name='Students' hint='Students currently enrolled in WAI-ARIA 101 for the coming semester' row_count=5 column_count=4
+++++++android.widget.TextView interesting name='Students currently enrolled in WAI-ARIA 101 for the coming semester'
+++++++android.view.View row_index=0
+++++++++android.view.View collection_item interesting table_header name='First Name' row_index=0 row_span=1 column_index=0 column_span=1
+++++++++android.view.View collection_item interesting table_header name='Last Name' row_index=0 row_span=1 column_index=1 column_span=1
+++++++++android.view.View collection_item interesting table_header name='Company' row_index=0 row_span=1 column_index=2 column_span=1
+++++++++android.view.View collection_item interesting table_header name='Address' row_index=0 row_span=1 column_index=3 column_span=1
+++++++android.view.View row_index=1
+++++++++android.view.View collection_item interesting name='Fred' row_index=1 row_span=1 column_index=0 column_span=1
+++++++++android.view.View collection_item interesting name='Jackson' row_index=1 row_span=1 column_index=1 column_span=1
+++++++++android.view.View collection_item interesting name='Acme, Inc.' row_index=1 row_span=1 column_index=2 column_span=1
+++++++++android.view.View collection_item interesting name='123 Broad St.' row_index=1 row_span=1 column_index=3 column_span=1
+++++++android.view.View row_index=2
+++++++++android.view.View collection_item interesting name='Sara' row_index=2 row_span=1 column_index=0 column_span=1
+++++++++android.view.View collection_item interesting name='James' row_index=2 row_span=1 column_index=1 column_span=1
+++++++++android.view.View collection_item interesting name='Acme, Inc.' row_index=2 row_span=1 column_index=2 column_span=1
+++++++++android.view.View collection_item interesting name='123 Broad St.' row_index=2 row_span=1 column_index=3 column_span=1
+++++++android.view.View row_index=3
+++++++++android.view.View collection_item interesting name='Ralph' row_index=3 row_span=1 column_index=0 column_span=1
+++++++++android.view.View collection_item interesting name='Jefferson' row_index=3 row_span=1 column_index=1 column_span=1
+++++++++android.view.View collection_item interesting name='XYZ, Inc.' row_index=3 row_span=1 column_index=2 column_span=1
+++++++++android.view.View collection_item interesting name='456 Main St.' row_index=3 row_span=1 column_index=3 column_span=1
+++++++android.view.View row_index=4
+++++++++android.view.View collection_item interesting name='Nancy' row_index=4 row_span=1 column_index=0 column_span=1
+++++++++android.view.View collection_item interesting name='Jensen' row_index=4 row_span=1 column_index=1 column_span=1
+++++++++android.view.View collection_item interesting name='XYZ, Inc.' row_index=4 row_span=1 column_index=2 column_span=1
+++++++++android.view.View collection_item interesting name='456 Main St.' row_index=4 row_span=1 column_index=3 column_span=1

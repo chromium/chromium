@@ -1,0 +1,54 @@
+rootWebArea name='Quantity Spin Button Example'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer
+++++++++group name='Guests'
+++++++++++legend
+++++++++++++staticText name='Guests'
+++++++++++++++inlineTextBox name='Guests'
+++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
+++++++++++++++labelText
+++++++++++++++++staticText name='Adults'
+++++++++++++++++++inlineTextBox name='Adults'
+++++++++++++++genericContainer ignored
+++++++++++++++++button name='Remove adult' nameFrom=title restriction=disabled controlsIds=spinButton
+++++++++++++++++spinButton name='Adults' value='1' valueForRange=1.00 minValueForRange=1.00 maxValueForRange=8.00
+++++++++++++++++++genericContainer
+++++++++++++++++++++staticText name='1'
+++++++++++++++++++++++inlineTextBox name='1'
+++++++++++++++++button name='Add adult' nameFrom=title controlsIds=spinButton
+++++++++++++++genericContainer
+++++++++++++++++staticText name='1 to 8'
+++++++++++++++++++inlineTextBox name='1 to 8'
+++++++++++++++status
+++++++++++++genericContainer ignored
+++++++++++++++labelText
+++++++++++++++++staticText name='Kids'
+++++++++++++++++++inlineTextBox name='Kids'
+++++++++++++++genericContainer ignored
+++++++++++++++++button name='Remove kid' nameFrom=title restriction=disabled controlsIds=spinButton
+++++++++++++++++spinButton name='Kids' value='0' valueForRange=0.00 minValueForRange=0.00 maxValueForRange=8.00
+++++++++++++++++++genericContainer
+++++++++++++++++++++staticText name='0'
+++++++++++++++++++++++inlineTextBox name='0'
+++++++++++++++++button name='Add kid' nameFrom=title controlsIds=spinButton
+++++++++++++++genericContainer
+++++++++++++++++staticText name='0 to 8'
+++++++++++++++++++inlineTextBox name='0 to 8'
+++++++++++++++status
+++++++++++++genericContainer ignored
+++++++++++++++labelText
+++++++++++++++++staticText name='Animals'
+++++++++++++++++++inlineTextBox name='Animals'
+++++++++++++++genericContainer ignored
+++++++++++++++++button name='Remove animal' nameFrom=title restriction=disabled controlsIds=spinButton
+++++++++++++++++spinButton name='Animals' value='0' valueForRange=0.00 minValueForRange=0.00 maxValueForRange=12.00
+++++++++++++++++++genericContainer
+++++++++++++++++++++staticText name='0'
+++++++++++++++++++++++inlineTextBox name='0'
+++++++++++++++++button name='Add animal' nameFrom=title controlsIds=spinButton
+++++++++++++++genericContainer
+++++++++++++++++staticText name='0 to 12'
+++++++++++++++++++inlineTextBox name='0 to 12'
+++++++++++++++status

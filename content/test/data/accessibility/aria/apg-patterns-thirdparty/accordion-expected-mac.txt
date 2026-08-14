@@ -1,0 +1,31 @@
+AXWebArea AXTitle='Accordion Example'
+++AXGroup
+++++AXGroup
+++++++AXHeading AXTitle='Personal Information' AXValue=3
+++++++++AXButton AXTitle='Personal Information'
+++++++AXGroup AXSubrole=AXLandmarkRegion AXTitle='Personal Information'
+++++++++AXGroup AXSubrole=AXFieldset
+++++++++++AXGroup
+++++++++++++AXStaticText AXValue='Name'
+++++++++++++AXStaticText AXValue=':'
+++++++++++AXTextField AXTitle='Name:'
+++++++++++AXGroup
+++++++++++++AXStaticText AXValue='Email'
+++++++++++++AXStaticText AXValue=':'
+++++++++++AXTextField AXTitle='Email:'
+++++++++++AXGroup
+++++++++++++AXStaticText AXValue='Phone:'
+++++++++++AXTextField AXTitle='Phone:'
+++++++++++AXGroup
+++++++++++++AXStaticText AXValue='Extension:'
+++++++++++AXTextField AXTitle='Extension:'
+++++++++++AXGroup
+++++++++++++AXStaticText AXValue='Country:'
+++++++++++AXTextField AXTitle='Country:'
+++++++++++AXGroup
+++++++++++++AXStaticText AXValue='City/Province:'
+++++++++++AXTextField AXTitle='City/Province:'
+++++++AXHeading AXTitle='Billing Address' AXValue=3
+++++++++AXButton AXTitle='Billing Address'
+++++++AXHeading AXTitle='Shipping Address' AXValue=3
+++++++++AXButton AXTitle='Shipping Address'

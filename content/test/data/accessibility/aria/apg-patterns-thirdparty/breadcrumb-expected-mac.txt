@@ -1,0 +1,19 @@
+AXWebArea AXTitle='Breadcrumb Example'
+++AXGroup
+++++AXGroup AXSubrole=AXLandmarkNavigation AXDescription='Breadcrumb' AXTitle='Breadcrumb'
+++++++AXList AXSubrole=AXContentList
+++++++++AXGroup
+++++++++++AXLink AXDescription='WAI-ARIA Authoring Practices Guide (APG)' AXTitle='WAI-ARIA Authoring Practices Guide (APG)'
+++++++++++++AXStaticText AXValue='WAI-ARIA Authoring Practices Guide (APG)'
+++++++++AXGroup
+++++++++++AXGroup AXSubrole=AXEmptyGroup
+++++++++++AXLink AXDescription='Patterns' AXTitle='Patterns'
+++++++++++++AXStaticText AXValue='Patterns'
+++++++++AXGroup
+++++++++++AXGroup AXSubrole=AXEmptyGroup
+++++++++++AXLink AXDescription='Breadcrumb Pattern' AXTitle='Breadcrumb Pattern'
+++++++++++++AXStaticText AXValue='Breadcrumb Pattern'
+++++++++AXGroup
+++++++++++AXGroup AXSubrole=AXEmptyGroup
+++++++++++AXLink AXDescription='Breadcrumb Example' AXTitle='Breadcrumb Example'
+++++++++++++AXStaticText AXValue='Breadcrumb Example'

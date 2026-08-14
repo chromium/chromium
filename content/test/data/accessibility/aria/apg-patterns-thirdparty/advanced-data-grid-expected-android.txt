@@ -1,0 +1,4 @@
+android.webkit.WebView focusable focused interesting name='Advanced Data Grid Example'
+++android.view.View
+++++android.widget.TextView interesting name='This is the place where the reader will experience the functioning example.'
+++++android.widget.TextView interesting name='The HTML in this section along with the javascript and CSS it uses demonstrate the design pattern.'

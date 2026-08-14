@@ -1,0 +1,19 @@
+ROLE_SYSTEM_DOCUMENT name='Breadcrumb Example' READONLY FOCUSABLE
+++IA2_ROLE_SECTION
+++++IA2_ROLE_LANDMARK name='Breadcrumb'
+++++++ROLE_SYSTEM_LIST READONLY
+++++++++ROLE_SYSTEM_LISTITEM READONLY
+++++++++++ROLE_SYSTEM_LINK name='WAI-ARIA Authoring Practices Guide (APG)' FOCUSABLE
+++++++++++++ROLE_SYSTEM_STATICTEXT name='WAI-ARIA Authoring Practices Guide (APG)'
+++++++++ROLE_SYSTEM_LISTITEM READONLY
+++++++++++IA2_ROLE_SECTION
+++++++++++ROLE_SYSTEM_LINK name='Patterns' FOCUSABLE
+++++++++++++ROLE_SYSTEM_STATICTEXT name='Patterns'
+++++++++ROLE_SYSTEM_LISTITEM READONLY
+++++++++++IA2_ROLE_SECTION
+++++++++++ROLE_SYSTEM_LINK name='Breadcrumb Pattern' FOCUSABLE
+++++++++++++ROLE_SYSTEM_STATICTEXT name='Breadcrumb Pattern'
+++++++++ROLE_SYSTEM_LISTITEM READONLY
+++++++++++IA2_ROLE_SECTION
+++++++++++ROLE_SYSTEM_LINK name='Breadcrumb Example' FOCUSABLE
+++++++++++++ROLE_SYSTEM_STATICTEXT name='Breadcrumb Example'

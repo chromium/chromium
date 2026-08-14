@@ -1,0 +1,11 @@
+rootWebArea name='Select-Only Combobox Example'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer
+++++++++genericContainer
+++++++++++genericContainer
+++++++++++++staticText name='Favorite Fruit'
+++++++++++++++inlineTextBox name='Favorite Fruit'
+++++++++++comboBoxMenuButton collapsed name='Favorite Fruit' value='Choose a Fruit'
+++++++++++++staticText name='Choose a Fruit'
+++++++++++++++inlineTextBox name='Choose a Fruit'

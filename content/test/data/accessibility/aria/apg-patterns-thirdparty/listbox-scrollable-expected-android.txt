@@ -1,0 +1,32 @@
+android.webkit.WebView focusable focused interesting name='Scrollable Listbox Example'
+++android.view.View
+++++android.widget.TextView interesting name='Choose your favorite transuranic element (actinide or transactinide).'
+++++android.widget.TextView interesting name='Transuranium elements:'
+++++android.widget.ListView clickable collection focusable interesting container_title='Transuranium elements:' item_count=27 row_count=27 column_count=1 selection_mode=1
+++++++android.view.View clickable collection_item interesting name='None' item_index=0 row_index=0 row_span=1 column_span=1
+++++++android.view.View clickable collection_item interesting name='Neptunium' item_index=1 row_index=1 row_span=1 column_span=1
+++++++android.view.View clickable collection_item interesting name='Plutonium' item_index=2 row_index=2 row_span=1 column_span=1
+++++++android.view.View clickable collection_item interesting name='Americium' item_index=3 row_index=3 row_span=1 column_span=1
+++++++android.view.View clickable collection_item interesting name='Curium' item_index=4 row_index=4 row_span=1 column_span=1
+++++++android.view.View clickable collection_item interesting name='Berkelium' item_index=5 row_index=5 row_span=1 column_span=1
+++++++android.view.View clickable collection_item interesting name='Californium' item_index=6 row_index=6 row_span=1 column_span=1
+++++++android.view.View clickable collection_item interesting name='Einsteinium' item_index=7 row_index=7 row_span=1 column_span=1
+++++++android.view.View clickable collection_item interesting name='Fermium' item_index=8 row_index=8 row_span=1 column_span=1
+++++++android.view.View clickable collection_item interesting name='Mendelevium' item_index=9 row_index=9 row_span=1 column_span=1
+++++++android.view.View clickable collection_item interesting name='Nobelium' item_index=10 row_index=10 row_span=1 column_span=1
+++++++android.view.View clickable collection_item interesting name='Lawrencium' item_index=11 row_index=11 row_span=1 column_span=1
+++++++android.view.View clickable collection_item interesting name='Rutherfordium' item_index=12 row_index=12 row_span=1 column_span=1
+++++++android.view.View clickable collection_item interesting name='Dubnium' item_index=13 row_index=13 row_span=1 column_span=1
+++++++android.view.View clickable collection_item interesting name='Seaborgium' item_index=14 row_index=14 row_span=1 column_span=1
+++++++android.view.View clickable collection_item interesting name='Bohrium' item_index=15 row_index=15 row_span=1 column_span=1
+++++++android.view.View clickable collection_item interesting name='Hassium' item_index=16 row_index=16 row_span=1 column_span=1
+++++++android.view.View clickable collection_item interesting name='Meitnerium' item_index=17 row_index=17 row_span=1 column_span=1
+++++++android.view.View clickable collection_item interesting name='Darmstadtium' item_index=18 row_index=18 row_span=1 column_span=1
+++++++android.view.View clickable collection_item interesting name='Roentgenium' item_index=19 row_index=19 row_span=1 column_span=1
+++++++android.view.View clickable collection_item interesting name='Copernicium' item_index=20 row_index=20 row_span=1 column_span=1
+++++++android.view.View clickable collection_item interesting name='Nihonium' item_index=21 row_index=21 row_span=1 column_span=1
+++++++android.view.View clickable collection_item interesting name='Flerovium' item_index=22 row_index=22 row_span=1 column_span=1
+++++++android.view.View clickable collection_item interesting name='Moscovium' item_index=23 row_index=23 row_span=1 column_span=1
+++++++android.view.View clickable collection_item interesting name='Livermorium' item_index=24 row_index=24 row_span=1 column_span=1
+++++++android.view.View clickable collection_item interesting name='Tennessine' item_index=25 row_index=25 row_span=1 column_span=1
+++++++android.view.View clickable collection_item interesting name='Oganesson' item_index=26 row_index=26 row_span=1 column_span=1

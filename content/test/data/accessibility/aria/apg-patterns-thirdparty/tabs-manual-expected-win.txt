@@ -1,0 +1,16 @@
+ROLE_SYSTEM_DOCUMENT name='Example of Tabs with Manual Activation' READONLY FOCUSABLE
+++IA2_ROLE_SECTION
+++++IA2_ROLE_HEADING name='Danish Composers'
+++++++ROLE_SYSTEM_STATICTEXT name='Danish Composers'
+++++ROLE_SYSTEM_PAGETABLIST name='Danish Composers' IA2_STATE_HORIZONTAL
+++++++ROLE_SYSTEM_PAGETAB name='Maria Ahlefeldt' SELECTED FOCUSABLE
+++++++ROLE_SYSTEM_PAGETAB name='Carl Andersen' FOCUSABLE
+++++++ROLE_SYSTEM_PAGETAB name='Ida da Fonseca' FOCUSABLE
+++++++ROLE_SYSTEM_PAGETAB name='Peter M%C3%BCller' FOCUSABLE
+++++ROLE_SYSTEM_PROPERTYPAGE name='Maria Ahlefeldt'
+++++++IA2_ROLE_PARAGRAPH
+++++++++ROLE_SYSTEM_LINK name='Maria Theresia Ahlefeldt' FOCUSABLE
+++++++++++ROLE_SYSTEM_STATICTEXT name='Maria Theresia Ahlefeldt'
+++++++++ROLE_SYSTEM_STATICTEXT name=' (16 January 1755 %E2%80%93 20 December 1810) was a Danish, (originally German), composer. She is known as the first female composer in Denmark. Maria Theresia composed music for several ballets, operas, and plays of the royal theatre. She was given good critic as a composer and described as a %E2%80%9C'
+++++++++ROLE_SYSTEM_STATICTEXT name='virkelig Tonekunstnerinde'
+++++++++ROLE_SYSTEM_STATICTEXT name='%E2%80%9D ('a True Artist of Music').'

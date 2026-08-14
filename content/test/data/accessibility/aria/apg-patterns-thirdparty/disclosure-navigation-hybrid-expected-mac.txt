@@ -1,0 +1,28 @@
+AXWebArea AXTitle='Example Disclosure Navigation Menu with Top-Level Links'
+++AXGroup
+++++AXGroup AXSubrole=AXLandmarkBanner
+++++++AXGroup
+++++++++AXStaticText AXValue='Mythical University'
+++++++AXGroup
+++++++++AXStaticText AXValue='Using a disclosure + link pattern for navigation'
+++++AXGroup AXSubrole=AXLandmarkNavigation AXDescription='Mythical University' AXTitle='Mythical University'
+++++++AXList AXSubrole=AXContentList
+++++++++AXGroup
+++++++++++AXLink AXDescription='About' AXTitle='About'
+++++++++++++AXStaticText AXValue='About'
+++++++++++AXButton AXDescription='More About pages' AXTitle='More About pages'
+++++++++AXGroup
+++++++++++AXLink AXDescription='Admissions' AXTitle='Admissions'
+++++++++++++AXStaticText AXValue='Admissions'
+++++++++++AXButton AXDescription='More Admissions pages' AXTitle='More Admissions pages'
+++++++++AXGroup
+++++++++++AXLink AXDescription='Academics' AXTitle='Academics'
+++++++++++++AXStaticText AXValue='Academics'
+++++++++++AXButton AXDescription='More Academics pages' AXTitle='More Academics pages'
+++++AXGroup AXSubrole=AXLandmarkRegion AXTitle='Home'
+++++++AXHeading AXTitle='Home' AXValue=3
+++++++++AXStaticText AXValue='Home'
+++++++AXGroup
+++++++++AXStaticText AXValue='Sample content section. Activating a link above will update and navigate to this region.'
+++++AXGroup AXSubrole=AXLandmarkContentInfo
+++++++AXStaticText AXValue='Mythical University footer information'

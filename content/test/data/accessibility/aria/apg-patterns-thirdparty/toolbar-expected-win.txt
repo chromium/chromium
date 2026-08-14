@@ -1,0 +1,31 @@
+ROLE_SYSTEM_DOCUMENT name='Toolbar Example' READONLY FOCUSABLE
+++IA2_ROLE_SECTION
+++++ROLE_SYSTEM_TOOLBAR name='Text Formatting' READONLY IA2_STATE_HORIZONTAL
+++++++IA2_ROLE_SECTION
+++++++++IA2_ROLE_TOGGLE_BUTTON name='Bold' FOCUSABLE
+++++++++IA2_ROLE_TOGGLE_BUTTON name='Italic' FOCUSABLE
+++++++++IA2_ROLE_TOGGLE_BUTTON name='Underline' FOCUSABLE
+++++++ROLE_SYSTEM_GROUPING name='Text Alignment'
+++++++++ROLE_SYSTEM_RADIOBUTTON name='Text Align Left' CHECKED FOCUSABLE IA2_STATE_CHECKABLE checkable:true
+++++++++ROLE_SYSTEM_RADIOBUTTON name='Text Align Center' FOCUSABLE IA2_STATE_CHECKABLE checkable:true
+++++++++ROLE_SYSTEM_RADIOBUTTON name='Text Align Right' FOCUSABLE IA2_STATE_CHECKABLE checkable:true
+++++++IA2_ROLE_SECTION
+++++++++ROLE_SYSTEM_PUSHBUTTON name='Copy' UNAVAILABLE FOCUSABLE
+++++++++ROLE_SYSTEM_PUSHBUTTON name='Paste' UNAVAILABLE FOCUSABLE
+++++++++ROLE_SYSTEM_PUSHBUTTON name='Cut' UNAVAILABLE FOCUSABLE
+++++++IA2_ROLE_SECTION
+++++++++ROLE_SYSTEM_BUTTONMENU name='Font: Sans-serif' COLLAPSED FOCUSABLE HASPOPUP
+++++++++++ROLE_SYSTEM_STATICTEXT name='SANS-SERIF'
+++++++++++ROLE_SYSTEM_GRAPHIC READONLY
+++++++IA2_ROLE_SECTION
+++++++++ROLE_SYSTEM_SPINBUTTON name='Font size in points' value='14 Point' FOCUSABLE
+++++++IA2_ROLE_SECTION
+++++++++IA2_ROLE_LABEL
+++++++++++ROLE_SYSTEM_CHECKBUTTON name='Night Mode' FOCUSABLE IA2_STATE_CHECKABLE checkable:true
+++++++++++ROLE_SYSTEM_STATICTEXT name=' Night Mode'
+++++++++ROLE_SYSTEM_LINK name='Help' FOCUSABLE
+++++++++++ROLE_SYSTEM_STATICTEXT name='Help'
+++++IA2_ROLE_LABEL
+++++++ROLE_SYSTEM_STATICTEXT name='Text Sample'
+++++ROLE_SYSTEM_WHITESPACE name='<newline>'
+++++ROLE_SYSTEM_TEXT name='Text Sample' value='Abraham Lincoln's Gettysburg Address<newline><newline>Four score and seven years ago our fathers brought forth on this continent a new nation, conceived in Liberty, and dedicated to the proposition that all men are created equal.<newline><newline>Now we are engaged in a great civil war, testing whether that nation, or any nation, so conceived and so dedicated, can long endure. We are met on a great battle-field of that war. We have come to dedicate a portion of that field, as a final resting place for those who here gave their lives that that nation might live. It is altogether fitting and proper that we should do this.<newline><newline>But, in a larger sense, we can not dedicate, we can not consecrate, we can not hallow, this ground. The brave men, living and dead, who struggled here, have consecrated it, far above our poor power to add or detract. The world will little note, nor long remember what we say here, but it can never forget what they did here. It is for us the living, rather, to be dedicated here to the unfinished work which they who fought here have thus far so nobly advanced. It is rather for us to be here dedicated to the great task remaining before us, that from these honored dead we take increased devotion to that cause for which they gave the last full measure of devotion, that we here highly resolve that these dead shall not have died in vain, that this nation, under God, shall have a new birth of freedom, and that government of the people, by the people, for the people, shall not perish from the earth.<newline>' FOCUSABLE IA2_STATE_MULTI_LINE

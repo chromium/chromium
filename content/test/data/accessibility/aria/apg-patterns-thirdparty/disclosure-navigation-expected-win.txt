@@ -1,0 +1,15 @@
+ROLE_SYSTEM_DOCUMENT name='Example Disclosure Navigation Menu' READONLY FOCUSABLE
+++IA2_ROLE_SECTION
+++++IA2_ROLE_LANDMARK name='Mythical University'
+++++++ROLE_SYSTEM_LIST READONLY
+++++++++ROLE_SYSTEM_LISTITEM READONLY
+++++++++++ROLE_SYSTEM_PUSHBUTTON name='About' COLLAPSED FOCUSABLE
+++++++++ROLE_SYSTEM_LISTITEM READONLY
+++++++++++ROLE_SYSTEM_PUSHBUTTON name='Admissions' COLLAPSED FOCUSABLE
+++++++++ROLE_SYSTEM_LISTITEM READONLY
+++++++++++ROLE_SYSTEM_PUSHBUTTON name='Academics' COLLAPSED FOCUSABLE
+++++IA2_ROLE_LANDMARK name='Mythical University sample page content' FOCUSABLE
+++++++IA2_ROLE_HEADING name='Mythical University'
+++++++++ROLE_SYSTEM_STATICTEXT name='Mythical University'
+++++++IA2_ROLE_PARAGRAPH
+++++++++ROLE_SYSTEM_STATICTEXT name='Sample content section. Activating a link above will update and navigate to this region.'

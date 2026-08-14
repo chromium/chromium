@@ -1,0 +1,49 @@
+rootWebArea name='Infinite Scrolling Feed Example'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer
+++++++++paragraph
+++++++++++staticText name='The example feed experience below is presented in an iframe in order not to obstruct from the rest of the content of the page.'
+++++++++++++inlineTextBox name='The example feed experience below is presented in an iframe in order not to obstruct from the rest of the content of the '
+++++++++++++inlineTextBox name='page.'
+++++++++iframe name='Feed example' nameFrom=title
+++++++++++rootWebArea name='Feed Display'
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored
+++++++++++++++++heading name='Recommended Restaurants'
+++++++++++++++++++staticText name='Recommended Restaurants'
+++++++++++++++++++++inlineTextBox name='Recommended Restaurants'
+++++++++++++++++sectionWithoutName
+++++++++++++++++++feed busy=true
+++++++++++++++++++++article description='5 stars Mexican, Tacos 123 Blueberry Ln San Dimas, CA (111) 111-1111' name='Tito's Tacos' descriptionFrom=relatedElement
+++++++++++++++++++++++genericContainer
+++++++++++++++++++++++++genericContainer
+++++++++++++++++++++++++++staticText name='Tito's Tacos'
+++++++++++++++++++++++++++++inlineTextBox name='Tito's Tacos'
+++++++++++++++++++++++++genericContainer
+++++++++++++++++++++++++++image name='5 stars'
+++++++++++++++++++++++++++++group ignored
+++++++++++++++++++++++++++++group ignored
+++++++++++++++++++++++++++++group ignored
+++++++++++++++++++++++++++++group ignored
+++++++++++++++++++++++++++++group ignored
+++++++++++++++++++++++++genericContainer
+++++++++++++++++++++++++++staticText name='Mexican, Tacos'
+++++++++++++++++++++++++++++inlineTextBox name='Mexican, Tacos'
+++++++++++++++++++++++genericContainer
+++++++++++++++++++++++++genericContainer
+++++++++++++++++++++++++++staticText name='123 Blueberry Ln'
+++++++++++++++++++++++++++++inlineTextBox name='123 Blueberry Ln'
+++++++++++++++++++++++++genericContainer
+++++++++++++++++++++++++++staticText name='San Dimas, CA'
+++++++++++++++++++++++++++++inlineTextBox name='San Dimas, CA'
+++++++++++++++++++++++++genericContainer
+++++++++++++++++++++++++++staticText name='(111) 111-1111'
+++++++++++++++++++++++++++++inlineTextBox name='(111) 111-1111'
+++++++++++++++++++++++genericContainer
+++++++++++++++++++++++++button name='Bookmark'
+++++++++++++++++++++++++++staticText name='Bookmark'
+++++++++++++++++++++++++++++inlineTextBox name='Bookmark'
+++++++++button name='Terms of use'
+++++++++++staticText name='Terms of use'
+++++++++++++inlineTextBox name='Terms of use'

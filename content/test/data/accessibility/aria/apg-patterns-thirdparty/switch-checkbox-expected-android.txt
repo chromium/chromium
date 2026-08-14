@@ -1,0 +1,14 @@
+android.webkit.WebView focusable focused interesting name='Switch Example Using HTML Checkbox Input'
+++android.view.View
+++++android.view.View container_title='Accessibility Preferences'
+++++++android.view.View interesting name='Accessibility Preferences'
+++++++android.view.View
+++++++++android.widget.TextView interesting name='Reduced motion'
+++++++++android.widget.Switch checkable clickable focusable interesting name='Reduced motion' state_description='Off'
+++++++++android.view.View
+++++++++++android.widget.TextView
+++++++android.view.View
+++++++++android.widget.TextView interesting name='Show captions'
+++++++++android.widget.Switch checkable clickable focusable interesting name='Show captions' state_description='Off'
+++++++++android.view.View
+++++++++++android.widget.TextView

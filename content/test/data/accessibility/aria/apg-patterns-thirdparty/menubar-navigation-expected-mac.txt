@@ -1,0 +1,32 @@
+AXWebArea AXTitle='Navigation Menubar Example'
+++AXGroup
+++++AXGroup AXSubrole=AXLandmarkBanner
+++++++AXGroup
+++++++++AXStaticText AXValue='Mythical University'
+++++++AXGroup
+++++++++AXStaticText AXValue='Using a Menubar for navigation links'
+++++AXGroup AXSubrole=AXLandmarkNavigation AXDescription='Mythical University' AXTitle='Mythical University'
+++++++AXMenuBar AXDescription='Mythical University' AXTitle='Mythical University'
+++++++++AXMenuItem AXTitle='Home'
+++++++++AXMenuItem AXTitle='About '
+++++++++++AXStaticText AXValue='About '
+++++++++++AXImage
+++++++++AXMenuItem AXTitle='Admissions '
+++++++++++AXStaticText AXValue='Admissions '
+++++++++++AXImage
+++++++++AXMenuItem AXTitle='Academics '
+++++++++++AXStaticText AXValue='Academics '
+++++++++++AXImage
+++++AXGroup AXSubrole=AXLandmarkRegion AXTitle='Home'
+++++++AXHeading AXTitle='Home' AXValue=1
+++++++++AXStaticText AXValue='Home'
+++++++AXGroup
+++++++++AXStaticText AXValue='The content on this page is associated with the '
+++++++++AXLink AXDescription='Home' AXTitle='Home'
+++++++++++AXStaticText AXValue='Home'
+++++++++AXStaticText AXValue=' link for '
+++++++++AXLink AXDescription='Mythical University' AXTitle='Mythical University'
+++++++++++AXStaticText AXValue='Mythical University'
+++++++++AXStaticText AXValue='.'
+++++AXGroup AXSubrole=AXLandmarkContentInfo
+++++++AXStaticText AXValue='Mythical University footer information'

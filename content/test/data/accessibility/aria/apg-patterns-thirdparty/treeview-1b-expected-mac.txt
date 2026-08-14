@@ -1,0 +1,21 @@
+AXWebArea AXTitle='File Directory Treeview Example Using Declared Properties'
+++AXGroup
+++++AXHeading AXTitle='My Documents' AXValue=3
+++++++AXStaticText AXValue='My Documents'
+++++AXOutline AXTitle='My Documents' AXTitleUIElement=:3
+++++++AXRow AXSubrole=AXOutlineRow AXTitle='%EF%81%BB Projects'
+++++++++AXGroup
+++++++++++AXStaticText AXValue='%EF%81%BB'
+++++++++AXStaticText AXValue=' Projects'
+++++++AXRow AXSubrole=AXOutlineRow AXTitle='%EF%81%BB Reports'
+++++++++AXGroup
+++++++++++AXStaticText AXValue='%EF%81%BB'
+++++++++AXStaticText AXValue=' Reports'
+++++++AXRow AXSubrole=AXOutlineRow AXTitle='%EF%81%BB Letters'
+++++++++AXGroup
+++++++++++AXStaticText AXValue='%EF%81%BB'
+++++++++AXStaticText AXValue=' Letters'
+++++AXGroup
+++++++AXGroup
+++++++++AXStaticText AXValue='File or Folder Selected: '
+++++++++AXTextField AXTitle='File or Folder Selected:'

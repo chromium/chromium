@@ -1,0 +1,8 @@
+AXWebArea AXTitle='Editable Combobox with Grid Popup Example'
+++AXGroup
+++++AXGroup
+++++++AXGroup
+++++++++AXStaticText AXValue='Fruits and vegetables '
+++++++AXGroup
+++++++++AXGroup
+++++++++++AXComboBox AXAutocompleteValue='list' AXTitle='Fruits and vegetables'

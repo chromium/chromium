@@ -1,0 +1,4 @@
+WebView supplementalDescription:"Modal Dialog Example" focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
+++View viewIdResName:"ex1" actions:[AX_FOCUS] bundle:[chromeRole="genericContainer"]
+++++Button text:"Add Delivery Address" clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="button", clickableScore="300"]
+++++TextView viewIdResName:"dialog_layer" actions:[AX_FOCUS] bundle:[chromeRole="genericContainer"]

@@ -1,0 +1,13 @@
+android.webkit.WebView focusable focused interesting name='(Deprecated) Date Picker Spin Button Example'
+++android.view.View
+++++android.view.View container_title='Choose a Date current value is Thursday, May fifteenth, 2025'
+++++++android.widget.TextView interesting name='Choose a Date'
+++++++android.widget.Button clickable focusable interesting content_description='previous day'
+++++++android.widget.EditText role_description='spin button' clickable focusable range interesting state_description='fifteenth' range_min=1 range_max=31 range_current_value=15
+++++++android.widget.Button clickable focusable interesting content_description='next day'
+++++++android.widget.Button clickable focusable interesting content_description='previous month'
+++++++android.widget.EditText role_description='spin button' clickable focusable range interesting state_description='May' range_max=11 range_current_value=4
+++++++android.widget.Button clickable focusable interesting content_description='next month'
+++++++android.widget.Button clickable focusable interesting content_description='previous year'
+++++++android.widget.EditText role_description='spin button' clickable focusable range interesting name='Year' state_description='2025' item_index=28 item_count=100 range_min=2019 range_max=2040 range_current_value=2025
+++++++android.widget.Button clickable focusable interesting content_description='next year'

@@ -1,0 +1,37 @@
+ROLE_SYSTEM_DOCUMENT name='Navigation Treeview Example' READONLY FOCUSABLE
+++IA2_ROLE_SECTION
+++++IA2_ROLE_SECTION
+++++++IA2_ROLE_LANDMARK
+++++++++IA2_ROLE_SECTION
+++++++++++ROLE_SYSTEM_STATICTEXT name='Mythical University'
+++++++++IA2_ROLE_SECTION
+++++++++++ROLE_SYSTEM_STATICTEXT name='Using a Tree widget pattern for navigation links'
+++++++IA2_ROLE_LANDMARK name='Mythical University'
+++++++++ROLE_SYSTEM_OUTLINE name='Mythical University'
+++++++++++ROLE_SYSTEM_OUTLINEITEM name='Home' FOCUSABLE
+++++++++++++ROLE_SYSTEM_STATICTEXT name='Home'
+++++++++++ROLE_SYSTEM_OUTLINEITEM name='About' COLLAPSED FOCUSABLE
+++++++++++++IA2_ROLE_SECTION
+++++++++++++++ROLE_SYSTEM_GRAPHIC READONLY
+++++++++++++ROLE_SYSTEM_STATICTEXT name='About'
+++++++++++ROLE_SYSTEM_OUTLINEITEM name='Admissions' COLLAPSED FOCUSABLE
+++++++++++++IA2_ROLE_SECTION
+++++++++++++++ROLE_SYSTEM_GRAPHIC READONLY
+++++++++++++ROLE_SYSTEM_STATICTEXT name='Admissions'
+++++++++++ROLE_SYSTEM_OUTLINEITEM name='Academics' COLLAPSED FOCUSABLE
+++++++++++++IA2_ROLE_SECTION
+++++++++++++++ROLE_SYSTEM_GRAPHIC READONLY
+++++++++++++ROLE_SYSTEM_STATICTEXT name='Academics'
+++++++IA2_ROLE_LANDMARK name='Mythical University Home'
+++++++++IA2_ROLE_HEADING name='Home'
+++++++++++ROLE_SYSTEM_STATICTEXT name='Home'
+++++++++IA2_ROLE_PARAGRAPH
+++++++++++ROLE_SYSTEM_STATICTEXT name='The content on this page is associated with the '
+++++++++++ROLE_SYSTEM_LINK name='Home' FOCUSABLE
+++++++++++++ROLE_SYSTEM_STATICTEXT name='Home'
+++++++++++ROLE_SYSTEM_STATICTEXT name=' link for '
+++++++++++ROLE_SYSTEM_LINK name='Mythical University' FOCUSABLE
+++++++++++++ROLE_SYSTEM_STATICTEXT name='Mythical University'
+++++++++++ROLE_SYSTEM_STATICTEXT name='.'
+++++++IA2_ROLE_LANDMARK
+++++++++ROLE_SYSTEM_STATICTEXT name='Mythical University footer information'

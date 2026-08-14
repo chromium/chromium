@@ -1,0 +1,13 @@
+ROLE_SYSTEM_DOCUMENT name='Switch Example Using HTML Button' READONLY FOCUSABLE
+++IA2_ROLE_SECTION
+++++ROLE_SYSTEM_GROUPING name='Environmental Controls'
+++++++IA2_ROLE_HEADING name='Environmental Controls'
+++++++++ROLE_SYSTEM_STATICTEXT name='Environmental Controls'
+++++++IA2_ROLE_TOGGLE_BUTTON name='Living Room Lights' FOCUSABLE IA2_STATE_CHECKABLE checkable:true
+++++++++IA2_ROLE_SECTION
+++++++++++ROLE_SYSTEM_STATICTEXT name='Living Room Lights'
+++++++++ROLE_SYSTEM_GRAPHIC READONLY
+++++++IA2_ROLE_TOGGLE_BUTTON name='Outdoor Lights' FOCUSABLE IA2_STATE_CHECKABLE checkable:true
+++++++++IA2_ROLE_SECTION
+++++++++++ROLE_SYSTEM_STATICTEXT name='Outdoor Lights'
+++++++++ROLE_SYSTEM_GRAPHIC READONLY

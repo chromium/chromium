@@ -1,0 +1,95 @@
+rootWebArea name='Editor Menubar Example'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer
+++++++++genericContainer ignored
+++++++++++menuBar horizontal name='Text Formatting'
+++++++++++++menuItem collapsed name='Font'
+++++++++++++++staticText name='Font'
+++++++++++++++++inlineTextBox name='Font'
+++++++++++++++genericContainer ignored invisible
+++++++++++++++++genericContainer ignored invisible
+++++++++++++menu ignored invisible
+++++++++++++menuItem collapsed name='Style/Color'
+++++++++++++++staticText name='Style/Color'
+++++++++++++++++inlineTextBox name='Style/Color'
+++++++++++++++genericContainer ignored invisible
+++++++++++++++++genericContainer ignored invisible
+++++++++++++menu ignored invisible
+++++++++++++menuItem collapsed name='Text Align'
+++++++++++++++staticText name='Text Align'
+++++++++++++++++inlineTextBox name='Text Align'
+++++++++++++++genericContainer ignored invisible
+++++++++++++++++genericContainer ignored invisible
+++++++++++++menu ignored invisible
+++++++++++++menuItem collapsed name='Size'
+++++++++++++++staticText name='Size'
+++++++++++++++++inlineTextBox name='Size'
+++++++++++++++genericContainer ignored invisible
+++++++++++++++++genericContainer ignored invisible
+++++++++++++menu ignored invisible
+++++++++++textField multiline name='Text Sample' value='            Four score and seven years ago our fathers brought forth on this continent a new nation, conceived in Liberty, and dedicated to the proposition that all men are created equal.<newline><newline>            Now we are engaged in a great civil war, testing whether that nation, or any nation, so conceived and so dedicated, can long endure. We are met on a great battle-field of that war. We have come to dedicate a portion of that field, as a final resting place for those who here gave their lives that that nation might live. It is altogether fitting and proper that we should do this.<newline><newline>            But, in a larger sense, we can not dedicate, we can not consecrate, we can not hallow, this ground. The brave men, living and dead, who struggled here, have consecrated it, far above our poor power to add or detract. The world will little note, nor long remember what we say here, but it can never forget what they did here. It is for us the living, rather, to be dedicated here to the unfinished work which they who fought here have thus far so nobly advanced. It is rather for us to be here dedicated to the great task remaining before us, that from these honored dead we take increased devotion to that cause for which they gave the last full measure of devotion, that we here highly resolve that these dead shall not have died in vain, that this nation, under God, shall have a new birth of freedom, and that government of the people, by the people, for the people, shall not perish from the earth.<newline>            '
+++++++++++++genericContainer
+++++++++++++++staticText name='            Four score and seven years ago our fathers brought forth on this continent a new nation, conceived in Liberty, and dedicated to the proposition that all men are created equal.'
+++++++++++++++++inlineTextBox name='            '
+++++++++++++++++inlineTextBox name='Four score and seven years ago our fathers brought forth on this'
+++++++++++++++++inlineTextBox name=' '
+++++++++++++++++inlineTextBox name='continent a new nation, conceived in Liberty, and dedicated to the'
+++++++++++++++++inlineTextBox name=' '
+++++++++++++++++inlineTextBox name='proposition that all men are created equal.'
+++++++++++++++lineBreak name='<newline>'
+++++++++++++++++inlineTextBox name='<newline>'
+++++++++++++++lineBreak name='<newline>'
+++++++++++++++++inlineTextBox name='<newline>'
+++++++++++++++staticText name='            Now we are engaged in a great civil war, testing whether that nation, or any nation, so conceived and so dedicated, can long endure. We are met on a great battle-field of that war. We have come to dedicate a portion of that field, as a final resting place for those who here gave their lives that that nation might live. It is altogether fitting and proper that we should do this.'
+++++++++++++++++inlineTextBox name='            '
+++++++++++++++++inlineTextBox name='Now we are engaged in a great civil war, testing whether that'
+++++++++++++++++inlineTextBox name=' '
+++++++++++++++++inlineTextBox name='nation, or any nation, so conceived and so dedicated, can long endure. We'
+++++++++++++++++inlineTextBox name=' '
+++++++++++++++++inlineTextBox name='are met on a great battle-field of that war. We have come to dedicate a'
+++++++++++++++++inlineTextBox name=' '
+++++++++++++++++inlineTextBox name='portion of that field, as a final resting place for those who here gave their'
+++++++++++++++++inlineTextBox name=' '
+++++++++++++++++inlineTextBox name='lives that that nation might live. It is altogether fitting and proper that we'
+++++++++++++++++inlineTextBox name=' '
+++++++++++++++++inlineTextBox name='should do this.'
+++++++++++++++lineBreak name='<newline>'
+++++++++++++++++inlineTextBox name='<newline>'
+++++++++++++++lineBreak name='<newline>'
+++++++++++++++++inlineTextBox name='<newline>'
+++++++++++++++staticText name='            But, in a larger sense, we can not dedicate, we can not consecrate, we can not hallow, this ground. The brave men, living and dead, who struggled here, have consecrated it, far above our poor power to add or detract. The world will little note, nor long remember what we say here, but it can never forget what they did here. It is for us the living, rather, to be dedicated here to the unfinished work which they who fought here have thus far so nobly advanced. It is rather for us to be here dedicated to the great task remaining before us, that from these honored dead we take increased devotion to that cause for which they gave the last full measure of devotion, that we here highly resolve that these dead shall not have died in vain, that this nation, under God, shall have a new birth of freedom, and that government of the people, by the people, for the people, shall not perish from the earth.'
+++++++++++++++++inlineTextBox name='            '
+++++++++++++++++inlineTextBox name='But, in a larger sense, we can not dedicate, we can not consecrate,'
+++++++++++++++++inlineTextBox name=' '
+++++++++++++++++inlineTextBox name='we can not hallow, this ground. The brave men, living and dead, who'
+++++++++++++++++inlineTextBox name=' '
+++++++++++++++++inlineTextBox name='struggled here, have consecrated it, far above our poor power to add or'
+++++++++++++++++inlineTextBox name=' '
+++++++++++++++++inlineTextBox name='detract. The world will little note, nor long remember what we say here, but'
+++++++++++++++++inlineTextBox name=' '
+++++++++++++++++inlineTextBox name='it can never forget what they did here. It is for us the living, rather, to be'
+++++++++++++++++inlineTextBox name=' '
+++++++++++++++++inlineTextBox name='dedicated here to the unfinished work which they who fought here have'
+++++++++++++++++inlineTextBox name=' '
+++++++++++++++++inlineTextBox name='thus far so nobly advanced. It is rather for us to be here dedicated to the'
+++++++++++++++++inlineTextBox name=' '
+++++++++++++++++inlineTextBox name='great task remaining before us, that from these honored dead we take'
+++++++++++++++++inlineTextBox name=' '
+++++++++++++++++inlineTextBox name='increased devotion to that cause for which they gave the last full measure'
+++++++++++++++++inlineTextBox name=' '
+++++++++++++++++inlineTextBox name='of devotion, that we here highly resolve that these dead shall not have died'
+++++++++++++++++inlineTextBox name=' '
+++++++++++++++++inlineTextBox name='in vain, that this nation, under God, shall have a new birth of freedom, and'
+++++++++++++++++inlineTextBox name=' '
+++++++++++++++++inlineTextBox name='that government of the people, by the people, for the people, shall not'
+++++++++++++++++inlineTextBox name=' '
+++++++++++++++++inlineTextBox name='perish from the earth.'
+++++++++++++++lineBreak name='<newline>'
+++++++++++++++++inlineTextBox name='<newline>'
+++++++++++++++staticText name='            '
+++++++++++++++++inlineTextBox name='            '
+++++++++paragraph
+++++++++++link name='More information on Gettysburg Address'
+++++++++++++staticText name='More information on Gettysburg Address'
+++++++++++++++inlineTextBox name='More information on Gettysburg Address'

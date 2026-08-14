@@ -1,0 +1,10 @@
+AXWebArea AXTitle='Actions Menu Button Example Using aria-activedescendant'
+++AXGroup
+++++AXGroup
+++++++AXPopUpButton AXTitle='Actions '
+++++++++AXStaticText AXValue='Actions '
+++++++++AXImage
+++++AXGroup
+++++++AXGroup
+++++++++AXStaticText AXValue='Last Action: '
+++++++++AXTextField AXTitle='Last Action:' AXValue='none'

@@ -1,0 +1,8 @@
+WebView supplementalDescription:"(Deprecated) Collapsible Dropdown Listbox Example" focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
+++View viewIdResName:"ex" actions:[AX_FOCUS] bundle:[chromeRole="genericContainer"]
+++++TextView text:"Choose your favorite transuranic element (actinide or transactinide)." actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="paragraph"]
+++++TextView text:"Choose an element:" viewIdResName:"exp_elem" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="genericContainer"]
+++++View viewIdResName:"exp_wrapper" actions:[AX_FOCUS] bundle:[chromeRole="genericContainer"]
+++++++Button viewIdResName:"exp_button" supplementalDescription:"Choose an element: Neptunium" canOpenPopUp clickable focusable actions:[FOCUS, CLICK, AX_FOCUS] bundle:[chromeRole="popUpButton", clickableScore="300", roleDescription="pop up button"]
+++++++++TextView text:"Neptunium" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText", clickableScore="100"]
+++++++++TextView actions:[AX_FOCUS] bundle:[chromeRole="genericContainer", clickableScore="100"]

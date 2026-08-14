@@ -1,0 +1,7 @@
+ROLE_SYSTEM_DOCUMENT name='Select-Only Combobox Example' READONLY FOCUSABLE
+++IA2_ROLE_SECTION
+++++IA2_ROLE_SECTION
+++++++IA2_ROLE_SECTION
+++++++++ROLE_SYSTEM_STATICTEXT name='Favorite Fruit'
+++++++ROLE_SYSTEM_COMBOBOX name='Favorite Fruit' value='Choose a Fruit' COLLAPSED FOCUSABLE HASPOPUP
+++++++++ROLE_SYSTEM_STATICTEXT name='Choose a Fruit'

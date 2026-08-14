@@ -1,0 +1,25 @@
+rootWebArea name='Example Disclosure Navigation Menu'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer
+++++++++navigation name='Mythical University'
+++++++++++list
+++++++++++++listItem
+++++++++++++++button collapsed name='About'
+++++++++++++++++staticText name='About'
+++++++++++++++++++inlineTextBox name='About'
+++++++++++++listItem
+++++++++++++++button collapsed name='Admissions'
+++++++++++++++++staticText name='Admissions'
+++++++++++++++++++inlineTextBox name='Admissions'
+++++++++++++listItem
+++++++++++++++button collapsed name='Academics'
+++++++++++++++++staticText name='Academics'
+++++++++++++++++++inlineTextBox name='Academics'
+++++++++region name='Mythical University sample page content'
+++++++++++heading name='Mythical University'
+++++++++++++staticText name='Mythical University'
+++++++++++++++inlineTextBox name='Mythical University'
+++++++++++paragraph
+++++++++++++staticText name='Sample content section. Activating a link above will update and navigate to this region.'
+++++++++++++++inlineTextBox name='Sample content section. Activating a link above will update and navigate to this region.'

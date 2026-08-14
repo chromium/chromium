@@ -1,0 +1,7 @@
+android.webkit.WebView focusable focused interesting name='Alert Dialog Example'
+++android.view.View
+++++android.view.View interesting name='Notes'
+++++android.widget.EditText clickable editable_text focusable has_non_empty_value multiline interesting name='This is an example text box, which unsurprisingly contains text. The user is given the option to save this text - which triggers a basic alert - or to discard the text - which triggers an alert dialog that prompts the user for confirmation.' hint='Notes' text_change_added_count=240
+++++android.view.View role_description='alert' live_region_type=2
+++++android.widget.Button clickable focusable interesting name='Save'
+++++android.widget.Button clickable focusable interesting name='Discard'

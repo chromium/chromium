@@ -1,0 +1,10 @@
+rootWebArea name='Navigation Menu Button Example'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer
+++++++++genericContainer
+++++++++++popUpButton collapsed name='WAI-ARIA Quick Links '
+++++++++++++staticText name='WAI-ARIA Quick Links '
+++++++++++++++inlineTextBox name='WAI-ARIA Quick Links '
+++++++++++++image
+++++++++++menu ignored invisible

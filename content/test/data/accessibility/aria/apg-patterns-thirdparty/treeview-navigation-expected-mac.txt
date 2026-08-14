@@ -1,0 +1,37 @@
+AXWebArea AXTitle='Navigation Treeview Example'
+++AXGroup
+++++AXGroup
+++++++AXGroup AXSubrole=AXLandmarkBanner
+++++++++AXGroup
+++++++++++AXStaticText AXValue='Mythical University'
+++++++++AXGroup
+++++++++++AXStaticText AXValue='Using a Tree widget pattern for navigation links'
+++++++AXGroup AXSubrole=AXLandmarkNavigation AXDescription='Mythical University' AXTitle='Mythical University'
+++++++++AXOutline AXDescription='Mythical University' AXTitle='Mythical University'
+++++++++++AXRow AXSubrole=AXOutlineRow AXTitle='Home'
+++++++++++++AXStaticText AXValue='Home'
+++++++++++AXRow AXSubrole=AXOutlineRow AXTitle='About'
+++++++++++++AXGroup AXSubrole=AXEmptyGroup
+++++++++++++++AXImage
+++++++++++++AXStaticText AXValue='About'
+++++++++++AXRow AXSubrole=AXOutlineRow AXTitle='Admissions'
+++++++++++++AXGroup AXSubrole=AXEmptyGroup
+++++++++++++++AXImage
+++++++++++++AXStaticText AXValue='Admissions'
+++++++++++AXRow AXSubrole=AXOutlineRow AXTitle='Academics'
+++++++++++++AXGroup AXSubrole=AXEmptyGroup
+++++++++++++++AXImage
+++++++++++++AXStaticText AXValue='Academics'
+++++++AXGroup AXSubrole=AXLandmarkRegion AXTitle='Mythical University Home'
+++++++++AXHeading AXTitle='Home' AXValue=1
+++++++++++AXStaticText AXValue='Home'
+++++++++AXGroup
+++++++++++AXStaticText AXValue='The content on this page is associated with the '
+++++++++++AXLink AXDescription='Home' AXTitle='Home'
+++++++++++++AXStaticText AXValue='Home'
+++++++++++AXStaticText AXValue=' link for '
+++++++++++AXLink AXDescription='Mythical University' AXTitle='Mythical University'
+++++++++++++AXStaticText AXValue='Mythical University'
+++++++++++AXStaticText AXValue='.'
+++++++AXGroup AXSubrole=AXLandmarkContentInfo
+++++++++AXStaticText AXValue='Mythical University footer information'

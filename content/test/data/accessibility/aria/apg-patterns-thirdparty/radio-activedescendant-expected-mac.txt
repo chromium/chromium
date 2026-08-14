@@ -1,0 +1,26 @@
+AXWebArea AXTitle='Radio Group Example Using aria-activedescendant'
+++AXGroup
+++++AXHeading AXTitle='Pizza Crust' AXValue=3
+++++++AXStaticText AXValue='Pizza Crust'
+++++AXRadioGroup AXDescription='Pizza Crust' AXTitle='Pizza Crust'
+++++++AXRadioButton AXTitle='Regular crust' AXValue=0
+++++++++AXImage
+++++++++AXStaticText AXValue='Regular crust'
+++++++AXRadioButton AXTitle='Deep dish' AXValue=0
+++++++++AXImage
+++++++++AXStaticText AXValue='Deep dish'
+++++++AXRadioButton AXTitle='Thin crust' AXValue=0
+++++++++AXImage
+++++++++AXStaticText AXValue='Thin crust'
+++++AXHeading AXTitle='Pizza Delivery' AXValue=3
+++++++AXStaticText AXValue='Pizza Delivery'
+++++AXRadioGroup AXDescription='Pizza Delivery' AXTitle='Pizza Delivery'
+++++++AXRadioButton AXTitle='Pick up' AXValue=0
+++++++++AXImage
+++++++++AXStaticText AXValue='Pick up'
+++++++AXRadioButton AXTitle='Home Delivery' AXValue=0
+++++++++AXImage
+++++++++AXStaticText AXValue='Home Delivery'
+++++++AXRadioButton AXTitle='Dine in Restaurant' AXValue=0
+++++++++AXImage
+++++++++AXStaticText AXValue='Dine in Restaurant'

@@ -1,0 +1,23 @@
+android.webkit.WebView focusable focused interesting name='Accordion Example'
+++android.view.View
+++++android.view.View
+++++++android.view.View role_description='heading 3' heading name='Personal Information'
+++++++++android.widget.Button clickable expanded focusable interesting name='Personal Information' expanded_state=3
+++++++android.view.View role_description='region' container_title='Personal Information'
+++++++++android.view.View
+++++++++++android.view.View interesting name='Name:'
+++++++++++android.widget.EditText clickable editable_text focusable required interesting hint='Name:' input_type=1
+++++++++++android.view.View interesting name='Email:'
+++++++++++android.widget.EditText clickable editable_text focusable required interesting hint='Email:' input_type=1
+++++++++++android.view.View interesting name='Phone:'
+++++++++++android.widget.EditText clickable editable_text focusable interesting hint='Phone:' input_type=1
+++++++++++android.view.View interesting name='Extension:'
+++++++++++android.widget.EditText clickable editable_text focusable interesting hint='Extension:' input_type=1
+++++++++++android.view.View interesting name='Country:'
+++++++++++android.widget.EditText clickable editable_text focusable interesting hint='Country:' input_type=1
+++++++++++android.view.View interesting name='City/Province:'
+++++++++++android.widget.EditText clickable editable_text focusable interesting hint='City/Province:' input_type=1
+++++++android.view.View role_description='heading 3' heading name='Billing Address'
+++++++++android.widget.Button clickable collapsed focusable interesting name='Billing Address' expanded_state=1
+++++++android.view.View role_description='heading 3' heading name='Shipping Address'
+++++++++android.widget.Button clickable collapsed focusable interesting name='Shipping Address' expanded_state=1

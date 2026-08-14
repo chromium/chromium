@@ -1,0 +1,42 @@
+rootWebArea name='Radio Group Example Using aria-activedescendant'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer
+++++++++heading name='Pizza Crust'
+++++++++++staticText name='Pizza Crust'
+++++++++++++inlineTextBox name='Pizza Crust'
+++++++++radioGroup name='Pizza Crust' activedescendantId=radioButton
+++++++++++radioButton name='Regular crust' checkedState=false
+++++++++++++genericContainer ignored
+++++++++++++++image
+++++++++++++staticText name='Regular crust'
+++++++++++++++inlineTextBox name='Regular crust'
+++++++++++radioButton name='Deep dish' checkedState=false
+++++++++++++genericContainer ignored
+++++++++++++++image
+++++++++++++staticText name='Deep dish'
+++++++++++++++inlineTextBox name='Deep dish'
+++++++++++radioButton name='Thin crust' checkedState=false
+++++++++++++genericContainer ignored
+++++++++++++++image
+++++++++++++staticText name='Thin crust'
+++++++++++++++inlineTextBox name='Thin crust'
+++++++++heading name='Pizza Delivery'
+++++++++++staticText name='Pizza Delivery'
+++++++++++++inlineTextBox name='Pizza Delivery'
+++++++++radioGroup name='Pizza Delivery' activedescendantId=radioButton
+++++++++++radioButton name='Pick up' checkedState=false
+++++++++++++genericContainer ignored
+++++++++++++++image
+++++++++++++staticText name='Pick up'
+++++++++++++++inlineTextBox name='Pick up'
+++++++++++radioButton name='Home Delivery' checkedState=false
+++++++++++++genericContainer ignored
+++++++++++++++image
+++++++++++++staticText name='Home Delivery'
+++++++++++++++inlineTextBox name='Home Delivery'
+++++++++++radioButton name='Dine in Restaurant' checkedState=false
+++++++++++++genericContainer ignored
+++++++++++++++image
+++++++++++++staticText name='Dine in Restaurant'
+++++++++++++++inlineTextBox name='Dine in Restaurant'

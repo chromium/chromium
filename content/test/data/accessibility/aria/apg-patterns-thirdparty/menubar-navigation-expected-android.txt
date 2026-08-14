@@ -1,0 +1,22 @@
+android.webkit.WebView focusable focused interesting name='Navigation Menubar Example'
+++android.view.View
+++++android.view.View role_description='banner'
+++++++android.widget.TextView interesting name='Mythical University'
+++++++android.widget.TextView interesting name='Using a Menubar for navigation links'
+++++com.google.android.material.navigation.NavigationView role_description='navigation' container_title='Mythical University'
+++++++android.view.View role_description='menu bar' collection container_title='Mythical University' item_count=4 row_count=4 column_count=1 selection_mode=1
+++++++++android.view.MenuItem role_description='menu item' clickable collection_item focusable interesting name='Home' state_description='current page' item_index=0 row_index=0
+++++++++android.view.MenuItem role_description='menu item' clickable collapsed collection_item focusable interesting name='About ' item_index=1 row_index=1 expanded_state=1
+++++++++android.view.MenuItem role_description='menu item' clickable collapsed collection_item focusable interesting name='Admissions ' item_index=2 row_index=2 expanded_state=1
+++++++++android.view.MenuItem role_description='menu item' clickable collapsed collection_item focusable interesting name='Academics ' item_index=3 row_index=3 expanded_state=1
+++++android.view.View role_description='region' container_title='Home'
+++++++android.widget.TextView role_description='heading 1' focusable heading interesting name='Home'
+++++++android.view.View
+++++++++android.widget.TextView interesting name='The content on this page is associated with the '
+++++++++android.view.View role_description='link' clickable focusable link interesting name='Home'
+++++++++++android.widget.TextView name='Home'
+++++++++android.widget.TextView interesting name=' link for '
+++++++++android.view.View role_description='link' clickable focusable link interesting name='Mythical University'
+++++++++++android.widget.TextView name='Mythical University'
+++++++++android.widget.TextView interesting name='.'
+++++android.view.View role_description='content information' interesting name='Mythical University footer information'

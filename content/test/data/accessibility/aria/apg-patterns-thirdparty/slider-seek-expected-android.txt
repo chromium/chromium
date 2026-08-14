@@ -1,0 +1,10 @@
+android.webkit.WebView focusable focused interesting name='Media Seek Slider Example'
+++android.view.View
+++++android.widget.TextView interesting name='Seek'
+++++android.widget.SeekBar clickable focusable range interesting state_description='1 Minute 30 Seconds of 5 Minutes' range_max=300 range_current_value=90
+++++android.widget.TextView interesting name='0:00'
+++++android.widget.TextView interesting name='1:00'
+++++android.widget.TextView interesting name='2:00'
+++++android.widget.TextView interesting name='3:00'
+++++android.widget.TextView interesting name='4:00'
+++++android.widget.TextView interesting name='5:00'

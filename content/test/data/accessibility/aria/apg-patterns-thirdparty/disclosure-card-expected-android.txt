@@ -1,0 +1,28 @@
+android.webkit.WebView focusable focused interesting name='Example Disclosure (Show/Hide) Card'
+++android.view.View
+++++android.widget.TextView role_description='heading 3' heading interesting name='Musical Education Conference'
+++++android.widget.ListView collection container_title='Musical Education Conference' item_count=3 row_count=3 column_count=1
+++++++android.view.View collection_item item_index=0 row_index=0 row_span=1 column_span=1
+++++++++android.view.View role_description='article' name='Symphonic Structure: Form, Function, and Feeling'
+++++++++++android.view.View
+++++++++++++android.view.View
+++++++++++++++android.widget.TextView role_description='heading 4' heading interesting name='Symphonic Structure: Form, Function, and Feeling'
+++++++++++++++android.widget.TextView interesting name='Ludwig van Beethoven'
+++++++++++++android.widget.TextView interesting name='7 AM in Theater an der Wien'
+++++++++++++android.widget.Button clickable collapsed focusable interesting name='Symphonic Structure: Form, Function, and Feeling Details' expanded_state=1
+++++++android.view.View collection_item item_index=1 row_index=1 row_span=1 column_span=1
+++++++++android.view.View role_description='article' name='Folk Futures: Tradition in the Classroom'
+++++++++++android.view.View
+++++++++++++android.view.View
+++++++++++++++android.widget.TextView role_description='heading 4' heading interesting name='Folk Futures: Tradition in the Classroom'
+++++++++++++++android.widget.TextView interesting name='Anton%C3%ADn Dvo%C5%99%C3%A1k'
+++++++++++++android.widget.TextView interesting name='8 AM in Rudolfinum Hall'
+++++++++++++android.widget.Button clickable collapsed focusable interesting name='Folk Futures: Tradition in the Classroom Details' expanded_state=1
+++++++android.view.View collection_item item_index=2 row_index=2 row_span=1 column_span=1
+++++++++android.view.View role_description='article' name='Playful Dissonance: Teaching with Wit and Wonder'
+++++++++++android.view.View
+++++++++++++android.view.View
+++++++++++++++android.widget.TextView role_description='heading 4' heading interesting name='Playful Dissonance: Teaching with Wit and Wonder'
+++++++++++++++android.widget.TextView interesting name='Francis Poulenc'
+++++++++++++android.widget.TextView interesting name='9 AM in %C3%89glise Saint-Roch'
+++++++++++++android.widget.Button clickable collapsed focusable interesting name='Playful Dissonance: Teaching with Wit and Wonder Details' expanded_state=1

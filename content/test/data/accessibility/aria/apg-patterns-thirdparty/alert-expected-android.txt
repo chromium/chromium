@@ -1,0 +1,3 @@
+android.webkit.WebView focusable focused interesting name='Alert Example'
+++android.view.View
+++++android.widget.Button clickable focusable interesting name='Trigger Alert'

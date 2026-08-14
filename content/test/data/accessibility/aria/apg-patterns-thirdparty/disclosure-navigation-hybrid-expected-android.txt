@@ -1,0 +1,23 @@
+android.webkit.WebView focusable focused interesting name='Example Disclosure Navigation Menu with Top-Level Links'
+++android.view.View
+++++android.view.View role_description='banner'
+++++++android.widget.TextView interesting name='Mythical University'
+++++++android.widget.TextView interesting name='Using a disclosure + link pattern for navigation'
+++++com.google.android.material.navigation.NavigationView role_description='navigation' container_title='Mythical University'
+++++++android.widget.ListView collection item_count=3 row_count=3 column_count=1
+++++++++android.view.View collection_item item_index=0 row_index=0 row_span=1 column_span=1
+++++++++++android.view.View role_description='link' clickable focusable link interesting name='About'
+++++++++++++android.widget.TextView name='About'
+++++++++++android.widget.Button clickable collapsed focusable interesting content_description='More About pages' expanded_state=1
+++++++++android.view.View collection_item item_index=1 row_index=1 row_span=1 column_span=1
+++++++++++android.view.View role_description='link' clickable focusable link interesting name='Admissions'
+++++++++++++android.widget.TextView name='Admissions'
+++++++++++android.widget.Button clickable collapsed focusable interesting content_description='More Admissions pages' expanded_state=1
+++++++++android.view.View collection_item item_index=2 row_index=2 row_span=1 column_span=1
+++++++++++android.view.View role_description='link' clickable focusable link interesting name='Academics'
+++++++++++++android.widget.TextView name='Academics'
+++++++++++android.widget.Button clickable collapsed focusable interesting content_description='More Academics pages' expanded_state=1
+++++android.view.View role_description='region' focusable interesting container_title='Home'
+++++++android.widget.TextView role_description='heading 3' heading interesting name='Home'
+++++++android.widget.TextView interesting name='Sample content section. Activating a link above will update and navigate to this region.'
+++++android.view.View role_description='footer' interesting name='Mythical University footer information'

@@ -1,0 +1,46 @@
+android.webkit.WebView focusable focused interesting name='Example Listboxes with Rearrangeable Options'
+++android.view.View
+++++android.widget.TextView interesting name='Rank features important to you when choosing where to live. If a feature is unimportant, move it to the unimportant features list.'
+++++android.widget.TextView interesting name='Important Features:'
+++++android.widget.ListView clickable collection focusable interesting container_title='Important Features:' item_count=10 row_count=10 column_count=1 selection_mode=1
+++++++android.view.View clickable collection_item interesting name='Proximity of public K-12 schools' item_index=0 row_index=0 row_span=1 column_span=1
+++++++android.view.View clickable collection_item interesting name='Proximity of child-friendly parks' item_index=1 row_index=1 row_span=1 column_span=1
+++++++android.view.View clickable collection_item interesting name='Proximity of grocery shopping' item_index=2 row_index=2 row_span=1 column_span=1
+++++++android.view.View clickable collection_item interesting name='Proximity of fast food' item_index=3 row_index=3 row_span=1 column_span=1
+++++++android.view.View clickable collection_item interesting name='Proximity of fine dining' item_index=4 row_index=4 row_span=1 column_span=1
+++++++android.view.View clickable collection_item interesting name='Neighborhood walkability' item_index=5 row_index=5 row_span=1 column_span=1
+++++++android.view.View clickable collection_item interesting name='Availability of public transit' item_index=6 row_index=6 row_span=1 column_span=1
+++++++android.view.View clickable collection_item interesting name='Proximity of hospital and medical services' item_index=7 row_index=7 row_span=1 column_span=1
+++++++android.view.View clickable collection_item interesting name='Level of traffic noise' item_index=8 row_index=8 row_span=1 column_span=1
+++++++android.view.View clickable collection_item interesting name='Access to major highways' item_index=9 row_index=9 row_span=1 column_span=1
+++++android.view.View role_description='toolbar' clickable name='Actions'
+++++++android.widget.Button clickable disabled focusable interesting name='Up'
+++++++android.widget.Button clickable disabled focusable interesting name='Down'
+++++++android.widget.Button clickable disabled focusable interesting name=' Not Important'
+++++android.widget.TextView interesting name='Unimportant Features:'
+++++android.widget.ListView clickable collection focusable interesting container_title='Unimportant Features:' item_count=0 row_count=0 column_count=1
+++++android.widget.Button clickable disabled focusable interesting name='Important'
+++++android.view.View
+++++++android.widget.TextView interesting name='Last change:'
+++++++android.widget.TextView live_region_type=1
+++android.view.View
+++++android.widget.TextView interesting name='Choose upgrades for your transport capsule.'
+++++android.widget.TextView interesting name='Available upgrades:'
+++++android.widget.ListView clickable collection focusable multiselectable interesting state_description='multiselectable, none selected.' container_title='Available upgrades:' item_count=10 row_count=10 column_count=1 selection_mode=2
+++++++android.view.View clickable collection_item interesting name='Leather seats' item_index=0 row_index=0 row_span=1 column_span=1
+++++++android.view.View clickable collection_item interesting name='Front seat warmers' item_index=1 row_index=1 row_span=1 column_span=1
+++++++android.view.View clickable collection_item interesting name='Rear bucket seats' item_index=2 row_index=2 row_span=1 column_span=1
+++++++android.view.View clickable collection_item interesting name='Rear seat warmers' item_index=3 row_index=3 row_span=1 column_span=1
+++++++android.view.View clickable collection_item interesting name='Front sun roof' item_index=4 row_index=4 row_span=1 column_span=1
+++++++android.view.View clickable collection_item interesting name='Rear sun roof' item_index=5 row_index=5 row_span=1 column_span=1
+++++++android.view.View clickable collection_item interesting name='Cloaking capability' item_index=6 row_index=6 row_span=1 column_span=1
+++++++android.view.View clickable collection_item interesting name='Food synthesizer' item_index=7 row_index=7 row_span=1 column_span=1
+++++++android.view.View clickable collection_item interesting name='Advanced waste recycling system' item_index=8 row_index=8 row_span=1 column_span=1
+++++++android.view.View clickable collection_item interesting name='Turbo vertical take-off capability' item_index=9 row_index=9 row_span=1 column_span=1
+++++android.widget.Button clickable disabled focusable interesting name=' Add'
+++++android.widget.TextView interesting name='Upgrades you have chosen:'
+++++android.widget.ListView clickable collection focusable multiselectable interesting state_description='multiselectable, none selected.' container_title='Upgrades you have chosen:' item_count=0 row_count=0 column_count=1 selection_mode=2
+++++android.widget.Button clickable disabled focusable interesting name='Remove'
+++++android.view.View
+++++++android.widget.TextView interesting name='Last change:'
+++++++android.widget.TextView live_region_type=1

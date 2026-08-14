@@ -1406,8 +1406,409 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    public void test_ariaApgPatternThirdPartyAccordion() {
+        performApgPatternThirdPartyTest("accordion/examples/accordion.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaApgPatternThirdPartyAdvancedDataGrid() {
+        performApgPatternThirdPartyTest("grid/examples/advanced-data-grid.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaApgPatternThirdPartyAlert() {
+        performApgPatternThirdPartyTest("alert/examples/alert.html");
+    }
+
+    // TODO(crbug.com/545647752): disabled due to flakiness
+    @Test
+    @SmallTest
+    @DisabledTest(message = "b/545647752")
+    public void test_ariaApgPatternThirdPartyAlertdialog() {
+        performApgPatternThirdPartyTest("alertdialog/examples/alertdialog.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaApgPatternThirdPartyBreadcrumb() {
+        performApgPatternThirdPartyTest("breadcrumb/examples/breadcrumb.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaApgPatternThirdPartyButton() {
+        performApgPatternThirdPartyTest("button/examples/button.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaApgPatternThirdPartyButtonIdl() {
+        performApgPatternThirdPartyTest("button/examples/button_idl.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaApgPatternThirdPartyCarousel1PrevNext() {
+        performApgPatternThirdPartyTest("carousel/examples/carousel-1-prev-next.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaApgPatternThirdPartyCarousel2Tablist() {
+        performApgPatternThirdPartyTest("carousel/examples/carousel-2-tablist.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaApgPatternThirdPartyCheckbox() {
+        performApgPatternThirdPartyTest("checkbox/examples/checkbox.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaApgPatternThirdPartyCheckboxMixed() {
+        performApgPatternThirdPartyTest("checkbox/examples/checkbox-mixed.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaApgPatternThirdPartyComboboxAutocompleteBoth() {
+        performApgPatternThirdPartyTest("combobox/examples/combobox-autocomplete-both.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaApgPatternThirdPartyComboboxAutocompleteList() {
+        performApgPatternThirdPartyTest("combobox/examples/combobox-autocomplete-list.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaApgPatternThirdPartyComboboxAutocompleteNone() {
+        performApgPatternThirdPartyTest("combobox/examples/combobox-autocomplete-none.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaApgPatternThirdPartyComboboxDatepicker() {
+        performApgPatternThirdPartyTest("combobox/examples/combobox-datepicker.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaApgPatternThirdPartyComboboxSelectOnly() {
+        performApgPatternThirdPartyTest("combobox/examples/combobox-select-only.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaApgPatternThirdPartyDataGrids() {
+        performApgPatternThirdPartyTest("grid/examples/data-grids.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaApgPatternThirdPartyDatepickerDialog() {
+        performApgPatternThirdPartyTest("dialog-modal/examples/datepicker-dialog.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaApgPatternThirdPartyDatepickerSpinbuttons() {
+        performApgPatternThirdPartyTest("spinbutton/examples/datepicker-spinbuttons.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaApgPatternThirdPartyDialog() {
+        performApgPatternThirdPartyTest("dialog-modal/examples/dialog.html");
+    }
+
+    // TODO(crbug.com/545647752): disabled due to flakiness
+    @Test
+    @SmallTest
+    @DisabledTest(message = "b/545647752")
+    public void test_ariaApgPatternThirdPartyDisclosureCard() {
+        performApgPatternThirdPartyTest("disclosure/examples/disclosure-card.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaApgPatternThirdPartyDisclosureFaq() {
+        performApgPatternThirdPartyTest("disclosure/examples/disclosure-faq.html");
+    }
+
+    // TODO(crbug.com/545647752): disabled due to flakiness
+    @Test
+    @SmallTest
+    @DisabledTest(message = "b/545647752")
+    public void test_ariaApgPatternThirdPartyDisclosureImageDescription() {
+        performApgPatternThirdPartyTest("disclosure/examples/disclosure-image-description.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaApgPatternThirdPartyDisclosureNavigation() {
+        performApgPatternThirdPartyTest("disclosure/examples/disclosure-navigation.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaApgPatternThirdPartyDisclosureNavigationHybrid() {
+        performApgPatternThirdPartyTest("disclosure/examples/disclosure-navigation-hybrid.html");
+    }
+
+    // TODO(crbug.com/545647752): disabled due to flakiness
+    @Test
+    @SmallTest
+    @DisabledTest(message = "b/545647752")
+    public void test_ariaApgPatternThirdPartyFeed() {
+        performApgPatternThirdPartyTest("feed/examples/feed.html");
+    }
+
+    // TODO(crbug.com/545647752): disabled due to flakiness
+    @Test
+    @SmallTest
+    @DisabledTest(message = "b/545647752")
+    public void test_ariaApgPatternThirdPartyFeedDisplay() {
+        performApgPatternThirdPartyTest("feed/examples/feed-display.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaApgPatternThirdPartyGridCombo() {
+        performApgPatternThirdPartyTest("combobox/examples/grid-combo.html");
+    }
+
+    // TODO(crbug.com/545647752): disabled due to flakiness
+    @Test
+    @SmallTest
+    @DisabledTest(message = "b/545647752")
+    public void test_ariaApgPatternThirdPartyLayoutGrids() {
+        performApgPatternThirdPartyTest("grid/examples/layout-grids.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaApgPatternThirdPartyLink() {
+        performApgPatternThirdPartyTest("link/examples/link.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaApgPatternThirdPartyListboxCollapsible() {
+        performApgPatternThirdPartyTest("listbox/examples/listbox-collapsible.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaApgPatternThirdPartyListboxGrouped() {
+        performApgPatternThirdPartyTest("listbox/examples/listbox-grouped.html");
+    }
+
+    // TODO(crbug.com/545647752): disabled due to flakiness
+    @Test
+    @SmallTest
+    @DisabledTest(message = "b/545647752")
+    public void test_ariaApgPatternThirdPartyListboxRearrangeable() {
+        performApgPatternThirdPartyTest("listbox/examples/listbox-rearrangeable.html");
+    }
+
+    // TODO(crbug.com/545647752): disabled due to flakiness
+    @Test
+    @SmallTest
+    @DisabledTest(message = "b/545647752")
+    public void test_ariaApgPatternThirdPartyListboxScrollable() {
+        performApgPatternThirdPartyTest("listbox/examples/listbox-scrollable.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaApgPatternThirdPartyMenuButtonActions() {
+        performApgPatternThirdPartyTest("menu-button/examples/menu-button-actions.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaApgPatternThirdPartyMenuButtonActionsActiveDescendant() {
+        performApgPatternThirdPartyTest(
+                "menu-button/examples/menu-button-actions-active-descendant.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaApgPatternThirdPartyMenuButtonLinks() {
+        performApgPatternThirdPartyTest("menu-button/examples/menu-button-links.html");
+    }
+
+    // TODO(crbug.com/545647752): disabled due to flakiness
+    @Test
+    @SmallTest
+    @DisabledTest(message = "b/545647752")
+    public void test_ariaApgPatternThirdPartyMenubarEditor() {
+        performApgPatternThirdPartyTest("menubar/examples/menubar-editor.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaApgPatternThirdPartyMenubarNavigation() {
+        performApgPatternThirdPartyTest("menubar/examples/menubar-navigation.html");
+    }
+
+    @Test
+    @SmallTest
     public void test_ariaApgPatternThirdPartyMeter() {
         performApgPatternThirdPartyTest("meter/examples/meter.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaApgPatternThirdPartyQuantitySpinbutton() {
+        performApgPatternThirdPartyTest("spinbutton/examples/quantity-spinbutton.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaApgPatternThirdPartyRadio() {
+        performApgPatternThirdPartyTest("radio/examples/radio.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaApgPatternThirdPartyRadioActivedescendant() {
+        performApgPatternThirdPartyTest("radio/examples/radio-activedescendant.html");
+    }
+
+    // TODO(crbug.com/545647752): disabled due to flakiness
+    @Test
+    @SmallTest
+    @DisabledTest(message = "b/545647752")
+    public void test_ariaApgPatternThirdPartyRadioRating() {
+        performApgPatternThirdPartyTest("radio/examples/radio-rating.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaApgPatternThirdPartySliderColorViewer() {
+        performApgPatternThirdPartyTest("slider/examples/slider-color-viewer.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaApgPatternThirdPartySliderMultithumb() {
+        performApgPatternThirdPartyTest("slider-multithumb/examples/slider-multithumb.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaApgPatternThirdPartySliderRating() {
+        performApgPatternThirdPartyTest("slider/examples/slider-rating.html");
+    }
+
+    // TODO(crbug.com/545647752): disabled due to flakiness
+    @Test
+    @SmallTest
+    @DisabledTest(message = "b/545647752")
+    public void test_ariaApgPatternThirdPartySliderSeek() {
+        performApgPatternThirdPartyTest("slider/examples/slider-seek.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaApgPatternThirdPartySliderTemperature() {
+        performApgPatternThirdPartyTest("slider/examples/slider-temperature.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaApgPatternThirdPartySortableTable() {
+        performApgPatternThirdPartyTest("table/examples/sortable-table.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaApgPatternThirdPartySwitch() {
+        performApgPatternThirdPartyTest("switch/examples/switch.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaApgPatternThirdPartySwitchButton() {
+        performApgPatternThirdPartyTest("switch/examples/switch-button.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaApgPatternThirdPartySwitchCheckbox() {
+        performApgPatternThirdPartyTest("switch/examples/switch-checkbox.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaApgPatternThirdPartyTable() {
+        performApgPatternThirdPartyTest("table/examples/table.html");
+    }
+
+    // TODO(crbug.com/545647752): disabled due to flakiness
+    @Test
+    @SmallTest
+    @DisabledTest(message = "b/545647752")
+    public void test_ariaApgPatternThirdPartyTabsActions() {
+        performApgPatternThirdPartyTest("tabs/examples/tabs-actions.html");
+    }
+
+    // TODO(crbug.com/545647752): disabled due to flakiness
+    @Test
+    @SmallTest
+    @DisabledTest(message = "b/545647752")
+    public void test_ariaApgPatternThirdPartyTabsAutomatic() {
+        performApgPatternThirdPartyTest("tabs/examples/tabs-automatic.html");
+    }
+
+    // TODO(crbug.com/545647752): disabled due to flakiness
+    @Test
+    @SmallTest
+    @DisabledTest(message = "b/545647752")
+    public void test_ariaApgPatternThirdPartyTabsManual() {
+        performApgPatternThirdPartyTest("tabs/examples/tabs-manual.html");
+    }
+
+    // TODO(crbug.com/545647752): disabled due to flakiness
+    @Test
+    @SmallTest
+    @DisabledTest(message = "b/545647752")
+    public void test_ariaApgPatternThirdPartyToolbar() {
+        performApgPatternThirdPartyTest("toolbar/examples/toolbar.html");
+    }
+
+    // TODO(crbug.com/545647752): disabled due to flakiness
+    @Test
+    @SmallTest
+    @DisabledTest(message = "b/545647752")
+    public void test_ariaApgPatternThirdPartyTreegrid1() {
+        performApgPatternThirdPartyTest("treegrid/examples/treegrid-1.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaApgPatternThirdPartyTreeview1a() {
+        performApgPatternThirdPartyTest("treeview/examples/treeview-1a.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaApgPatternThirdPartyTreeview1b() {
+        performApgPatternThirdPartyTest("treeview/examples/treeview-1b.html");
+    }
+
+    // TODO(crbug.com/545647752): disabled due to flakiness
+    @Test
+    @SmallTest
+    @DisabledTest(message = "b/545647752")
+    public void test_ariaApgPatternThirdPartyTreeviewNavigation() {
+        performApgPatternThirdPartyTest("treeview/examples/treeview-navigation.html");
     }
 
     // ------------------ CSS TESTS ------------------ //

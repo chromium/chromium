@@ -1,0 +1,8 @@
+ROLE_SYSTEM_DOCUMENT name='Editable Combobox with Grid Popup Example' READONLY FOCUSABLE
+++IA2_ROLE_SECTION
+++++IA2_ROLE_SECTION
+++++++IA2_ROLE_LABEL
+++++++++ROLE_SYSTEM_STATICTEXT name='Fruits and vegetables '
+++++++IA2_ROLE_SECTION
+++++++++IA2_ROLE_SECTION
+++++++++++ROLE_SYSTEM_COMBOBOX name='Fruits and vegetables' COLLAPSED FOCUSABLE HASPOPUP

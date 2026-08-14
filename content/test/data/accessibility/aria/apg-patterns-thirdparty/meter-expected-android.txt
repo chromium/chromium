@@ -1,0 +1,7 @@
+android.webkit.WebView focusable focused interesting name='Meter Example'
+++android.view.View
+++++android.widget.TextView interesting name='The value of this meter changes every 5 seconds. Use the pause button to stop changes.'
+++++android.widget.TextView role_description='heading 3' heading interesting name='Central Processing Unit (CPU) Usage'
+++++android.view.View
+++++++android.widget.Button clickable focusable interesting name='Pause Updates'
+++++android.widget.ProgressBar role_description='meter' range interesting name='Central Processing Unit (CPU) Usage' item_index=90 item_count=100 range_max=100 range_current_value=90

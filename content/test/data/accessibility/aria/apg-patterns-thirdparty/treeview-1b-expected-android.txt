@@ -1,0 +1,11 @@
+android.webkit.WebView focusable focused interesting name='File Directory Treeview Example Using Declared Properties'
+++android.view.View
+++++android.widget.TextView role_description='heading 3' heading interesting name='My Documents'
+++++android.view.View role_description='tree' collection hierarchical interesting container_title='My Documents' item_count=3 row_count=3
+++++++android.view.View role_description='tree item' clickable collapsed collection_item focusable interesting name='%EF%81%BB Projects' item_index=0 row_index=0 expanded_state=1
+++++++android.view.View role_description='tree item' clickable collapsed collection_item focusable interesting name='%EF%81%BB Reports' item_index=1 row_index=1 expanded_state=1
+++++++android.view.View role_description='tree item' clickable collapsed collection_item focusable interesting name='%EF%81%BB Letters' item_index=2 row_index=2 expanded_state=1
+++++android.view.View
+++++++android.view.View
+++++++++android.widget.TextView interesting name='File or Folder Selected: '
+++++++++android.widget.EditText clickable editable_text focusable interesting hint='File or Folder Selected:' input_type=1

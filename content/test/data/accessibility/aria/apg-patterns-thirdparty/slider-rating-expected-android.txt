@@ -1,0 +1,4 @@
+android.webkit.WebView focusable focused interesting name='Rating Slider Example'
+++android.view.View
+++++android.widget.TextView interesting name='Rate your satisfaction with the service you received'
+++++android.widget.SeekBar clickable focusable range interesting state_description='Choose a rating from one to ten where 10 is extremely satisfied' range_max=10

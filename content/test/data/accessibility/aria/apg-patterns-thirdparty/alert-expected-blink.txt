@@ -1,0 +1,7 @@
+rootWebArea name='Alert Example'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer
+++++++++button name='Trigger Alert'
+++++++++++staticText name='Trigger Alert'
+++++++++++++inlineTextBox name='Trigger Alert'

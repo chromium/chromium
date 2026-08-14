@@ -1,0 +1,24 @@
+ROLE_SYSTEM_DOCUMENT name='Example Disclosure (Show/Hide) for Answers to Frequently Asked Questions' READONLY FOCUSABLE
+++IA2_ROLE_SECTION
+++++IA2_ROLE_HEADING name='Parking FAQs'
+++++++ROLE_SYSTEM_STATICTEXT name='Parking '
+++++++IA2_ROLE_TEXT_FRAME name='Frequently Asked Questions'
+++++++++ROLE_SYSTEM_STATICTEXT name='FAQ'
+++++++ROLE_SYSTEM_STATICTEXT name='s'
+++++ROLE_SYSTEM_LIST READONLY
+++++++ROLE_SYSTEM_LISTITEM READONLY
+++++++++ROLE_SYSTEM_PUSHBUTTON name='What do I do if I have a permit for an assigned lot, but can't find a space there?' COLLAPSED FOCUSABLE
+++++++++++ROLE_SYSTEM_GRAPHIC READONLY
+++++++++++ROLE_SYSTEM_STATICTEXT name='What do I do if I have a permit for an assigned lot, but can't find a space there?'
+++++++ROLE_SYSTEM_LISTITEM READONLY
+++++++++ROLE_SYSTEM_PUSHBUTTON name='What do I do if I lose my permit or if my permit is stolen?' COLLAPSED FOCUSABLE
+++++++++++ROLE_SYSTEM_GRAPHIC READONLY
+++++++++++ROLE_SYSTEM_STATICTEXT name='What do I do if I lose my permit or if my permit is stolen?'
+++++++ROLE_SYSTEM_LISTITEM READONLY
+++++++++ROLE_SYSTEM_PUSHBUTTON name='Is there free parking on holidays?' COLLAPSED FOCUSABLE
+++++++++++ROLE_SYSTEM_GRAPHIC READONLY
+++++++++++ROLE_SYSTEM_STATICTEXT name='Is there free parking on holidays?'
+++++++ROLE_SYSTEM_LISTITEM READONLY
+++++++++ROLE_SYSTEM_PUSHBUTTON name='Do all parking facilities have the same enforcement rules?' COLLAPSED FOCUSABLE
+++++++++++ROLE_SYSTEM_GRAPHIC READONLY
+++++++++++ROLE_SYSTEM_STATICTEXT name='Do all parking facilities have the same enforcement rules?'

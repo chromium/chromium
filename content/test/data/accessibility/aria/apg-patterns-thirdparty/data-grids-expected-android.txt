@@ -1,0 +1,279 @@
+android.webkit.WebView focusable focused interesting name='Data Grid Examples'
+++android.view.View
+++++android.widget.TextView role_description='heading 4' heading interesting name='Transactions January 1 through January 6'
+++++android.widget.GridView collection container_title='Transactions January 1 through January 6' row_count=7 column_count=5
+++++++android.view.View name='Date Type Description Amount Balance' row_index=0
+++++++++android.view.View collection_item interesting table_header name='Date' row_index=0 row_span=1 column_index=0 column_span=1
+++++++++android.view.View collection_item interesting table_header name='Type' row_index=0 row_span=1 column_index=1 column_span=1
+++++++++android.view.View collection_item interesting table_header name='Description' row_index=0 row_span=1 column_index=2 column_span=1
+++++++++android.view.View collection_item interesting table_header name='Amount' row_index=0 row_span=1 column_index=3 column_span=1
+++++++++android.view.View collection_item interesting table_header name='Balance' row_index=0 row_span=1 column_index=4 column_span=1
+++++++android.view.View name='01-Jan-16 Deposit Cash Deposit $1,000,000.00 $1,000,000.00' row_index=1
+++++++++android.view.View collection_item focusable interesting name='01-Jan-16' row_index=1 row_span=1 column_index=0 column_span=1
+++++++++android.view.View collection_item focusable interesting name='Deposit' row_index=1 row_span=1 column_index=1 column_span=1
+++++++++android.view.View collection_item name='Cash Deposit' row_index=1 row_span=1 column_index=2 column_span=1
+++++++++++android.view.View role_description='link' clickable focusable link interesting name='Cash Deposit'
+++++++++++++android.widget.TextView name='Cash Deposit'
+++++++++android.view.View collection_item focusable interesting name='$1,000,000.00' row_index=1 row_span=1 column_index=3 column_span=1
+++++++++android.view.View collection_item focusable interesting name='$1,000,000.00' row_index=1 row_span=1 column_index=4 column_span=1
+++++++android.view.View name='02-Jan-16 Debit Down Town Grocery $250.00 $999,750.00' row_index=2
+++++++++android.view.View collection_item focusable interesting name='02-Jan-16' row_index=2 row_span=1 column_index=0 column_span=1
+++++++++android.view.View collection_item focusable interesting name='Debit' row_index=2 row_span=1 column_index=1 column_span=1
+++++++++android.view.View collection_item name='Down Town Grocery' row_index=2 row_span=1 column_index=2 column_span=1
+++++++++++android.view.View role_description='link' clickable focusable link interesting name='Down Town Grocery'
+++++++++++++android.widget.TextView name='Down Town Grocery'
+++++++++android.view.View collection_item focusable interesting name='$250.00' row_index=2 row_span=1 column_index=3 column_span=1
+++++++++android.view.View collection_item focusable interesting name='$999,750.00' row_index=2 row_span=1 column_index=4 column_span=1
+++++++android.view.View name='03-Jan-16 Debit Hot Coffee $9.00 $999,741.00' row_index=3
+++++++++android.view.View collection_item focusable interesting name='03-Jan-16' row_index=3 row_span=1 column_index=0 column_span=1
+++++++++android.view.View collection_item focusable interesting name='Debit' row_index=3 row_span=1 column_index=1 column_span=1
+++++++++android.view.View collection_item name='Hot Coffee' row_index=3 row_span=1 column_index=2 column_span=1
+++++++++++android.view.View role_description='link' clickable focusable link interesting name='Hot Coffee'
+++++++++++++android.widget.TextView name='Hot Coffee'
+++++++++android.view.View collection_item focusable interesting name='$9.00' row_index=3 row_span=1 column_index=3 column_span=1
+++++++++android.view.View collection_item focusable interesting name='$999,741.00' row_index=3 row_span=1 column_index=4 column_span=1
+++++++android.view.View name='04-Jan-16 Debit The Filling Station $88.00 $999,653.00' row_index=4
+++++++++android.view.View collection_item focusable interesting name='04-Jan-16' row_index=4 row_span=1 column_index=0 column_span=1
+++++++++android.view.View collection_item focusable interesting name='Debit' row_index=4 row_span=1 column_index=1 column_span=1
+++++++++android.view.View collection_item name='The Filling Station' row_index=4 row_span=1 column_index=2 column_span=1
+++++++++++android.view.View role_description='link' clickable focusable link interesting name='The Filling Station'
+++++++++++++android.widget.TextView name='The Filling Station'
+++++++++android.view.View collection_item focusable interesting name='$88.00' row_index=4 row_span=1 column_index=3 column_span=1
+++++++++android.view.View collection_item focusable interesting name='$999,653.00' row_index=4 row_span=1 column_index=4 column_span=1
+++++++android.view.View name='05-Jan-16 Debit Tinker's Hardware $3,421.00 $996,232.00' row_index=5
+++++++++android.view.View collection_item focusable interesting name='05-Jan-16' row_index=5 row_span=1 column_index=0 column_span=1
+++++++++android.view.View collection_item focusable interesting name='Debit' row_index=5 row_span=1 column_index=1 column_span=1
+++++++++android.view.View collection_item name='Tinker's Hardware' row_index=5 row_span=1 column_index=2 column_span=1
+++++++++++android.view.View role_description='link' clickable focusable link interesting name='Tinker's Hardware'
+++++++++++++android.widget.TextView name='Tinker's Hardware'
+++++++++android.view.View collection_item focusable interesting name='$3,421.00' row_index=5 row_span=1 column_index=3 column_span=1
+++++++++android.view.View collection_item focusable interesting name='$996,232.00' row_index=5 row_span=1 column_index=4 column_span=1
+++++++android.view.View name='06-Jan-16 Debit Cutey's Salon $700.00 $995,532.00' row_index=6
+++++++++android.view.View collection_item focusable interesting name='06-Jan-16' row_index=6 row_span=1 column_index=0 column_span=1
+++++++++android.view.View collection_item focusable interesting name='Debit' row_index=6 row_span=1 column_index=1 column_span=1
+++++++++android.view.View collection_item name='Cutey's Salon' row_index=6 row_span=1 column_index=2 column_span=1
+++++++++++android.view.View role_description='link' clickable focusable link interesting name='Cutey's Salon'
+++++++++++++android.widget.TextView name='Cutey's Salon'
+++++++++android.view.View collection_item focusable interesting name='$700.00' row_index=6 row_span=1 column_index=3 column_span=1
+++++++++android.view.View collection_item focusable interesting name='$995,532.00' row_index=6 row_span=1 column_index=4 column_span=1
+++android.view.View
+++++android.widget.TextView role_description='heading 4' heading interesting name='Transactions January 1 through January 7'
+++++android.widget.GridView collection container_title='Transactions January 1 through January 7' row_count=8 column_count=6
+++++++android.view.View name='Date Type Description Category Amount Balance' row_index=0
+++++++++android.view.View collection_item table_header name='Date' row_index=0 row_span=1 column_index=0 column_span=1
+++++++++++android.widget.Button clickable focusable interesting name='Date'
+++++++++android.view.View collection_item focusable interesting table_header name='Type' row_index=0 row_span=1 column_index=1 column_span=1
+++++++++android.view.View collection_item focusable interesting table_header name='Description' row_index=0 row_span=1 column_index=2 column_span=1
+++++++++android.view.View collection_item focusable interesting table_header name='Category' row_index=0 row_span=1 column_index=3 column_span=1
+++++++++android.view.View collection_item table_header name='Amount' row_index=0 row_span=1 column_index=4 column_span=1
+++++++++++android.widget.Button clickable focusable interesting name='Amount'
+++++++++android.view.View collection_item focusable interesting table_header name='Balance' row_index=0 row_span=1 column_index=5 column_span=1
+++++++android.view.View name='01-Jan-16 Deposit Cash Deposit Income $1,000,000.00 $1,000,000.00' row_index=1
+++++++++android.view.View collection_item focusable interesting name='01-Jan-16' row_index=1 row_span=1 column_index=0 column_span=1
+++++++++android.view.View collection_item focusable interesting name='Deposit' row_index=1 row_span=1 column_index=1 column_span=1
+++++++++android.view.View collection_item name='Cash Deposit' row_index=1 row_span=1 column_index=2 column_span=1
+++++++++++android.widget.Button clickable focusable interesting name='Cash Deposit'
+++++++++android.view.View collection_item name='Income' row_index=1 row_span=1 column_index=3 column_span=1
+++++++++++android.widget.Button role_description='menu pop up button' clickable focusable interesting name='Income'
+++++++++android.view.View collection_item focusable interesting name='$1,000,000.00' row_index=1 row_span=1 column_index=4 column_span=1
+++++++++android.view.View collection_item focusable interesting name='$1,000,000.00' row_index=1 row_span=1 column_index=5 column_span=1
+++++++android.view.View name='02-Jan-16 Debit Down Town Grocery Groceries $250.00 $999,750.00' row_index=2
+++++++++android.view.View collection_item focusable interesting name='02-Jan-16' row_index=2 row_span=1 column_index=0 column_span=1
+++++++++android.view.View collection_item focusable interesting name='Debit' row_index=2 row_span=1 column_index=1 column_span=1
+++++++++android.view.View collection_item name='Down Town Grocery' row_index=2 row_span=1 column_index=2 column_span=1
+++++++++++android.widget.Button clickable focusable interesting name='Down Town Grocery'
+++++++++android.view.View collection_item name='Groceries' row_index=2 row_span=1 column_index=3 column_span=1
+++++++++++android.widget.Button role_description='menu pop up button' clickable focusable interesting name='Groceries'
+++++++++android.view.View collection_item focusable interesting name='$250.00' row_index=2 row_span=1 column_index=4 column_span=1
+++++++++android.view.View collection_item focusable interesting name='$999,750.00' row_index=2 row_span=1 column_index=5 column_span=1
+++++++android.view.View name='03-Jan-16 Debit Hot Coffee Dining Out $9.00 $999,741.00' row_index=3
+++++++++android.view.View collection_item focusable interesting name='03-Jan-16' row_index=3 row_span=1 column_index=0 column_span=1
+++++++++android.view.View collection_item focusable interesting name='Debit' row_index=3 row_span=1 column_index=1 column_span=1
+++++++++android.view.View collection_item name='Hot Coffee' row_index=3 row_span=1 column_index=2 column_span=1
+++++++++++android.widget.Button clickable focusable interesting name='Hot Coffee'
+++++++++android.view.View collection_item name='Dining Out' row_index=3 row_span=1 column_index=3 column_span=1
+++++++++++android.widget.Button role_description='menu pop up button' clickable focusable interesting name='Dining Out'
+++++++++android.view.View collection_item focusable interesting name='$9.00' row_index=3 row_span=1 column_index=4 column_span=1
+++++++++android.view.View collection_item focusable interesting name='$999,741.00' row_index=3 row_span=1 column_index=5 column_span=1
+++++++android.view.View name='04-Jan-16 Debit The Filling Station Auto $88.00 $999,653.00' row_index=4
+++++++++android.view.View collection_item focusable interesting name='04-Jan-16' row_index=4 row_span=1 column_index=0 column_span=1
+++++++++android.view.View collection_item focusable interesting name='Debit' row_index=4 row_span=1 column_index=1 column_span=1
+++++++++android.view.View collection_item name='The Filling Station' row_index=4 row_span=1 column_index=2 column_span=1
+++++++++++android.widget.Button clickable focusable interesting name='The Filling Station'
+++++++++android.view.View collection_item name='Auto' row_index=4 row_span=1 column_index=3 column_span=1
+++++++++++android.widget.Button role_description='menu pop up button' clickable focusable interesting name='Auto'
+++++++++android.view.View collection_item focusable interesting name='$88.00' row_index=4 row_span=1 column_index=4 column_span=1
+++++++++android.view.View collection_item focusable interesting name='$999,653.00' row_index=4 row_span=1 column_index=5 column_span=1
+++++++android.view.View name='05-Jan-16 Debit Tinker's Hardware Household $3,421.00 $996,232.00' row_index=5
+++++++++android.view.View collection_item focusable interesting name='05-Jan-16' row_index=5 row_span=1 column_index=0 column_span=1
+++++++++android.view.View collection_item focusable interesting name='Debit' row_index=5 row_span=1 column_index=1 column_span=1
+++++++++android.view.View collection_item name='Tinker's Hardware' row_index=5 row_span=1 column_index=2 column_span=1
+++++++++++android.widget.Button clickable focusable interesting name='Tinker's Hardware'
+++++++++android.view.View collection_item name='Household' row_index=5 row_span=1 column_index=3 column_span=1
+++++++++++android.widget.Button role_description='menu pop up button' clickable focusable interesting name='Household'
+++++++++android.view.View collection_item focusable interesting name='$3,421.00' row_index=5 row_span=1 column_index=4 column_span=1
+++++++++android.view.View collection_item focusable interesting name='$996,232.00' row_index=5 row_span=1 column_index=5 column_span=1
+++++++android.view.View name='06-Jan-16 Debit Cutey's Salon Beauty $700.00 $995,532.00' row_index=6
+++++++++android.view.View collection_item focusable interesting name='06-Jan-16' row_index=6 row_span=1 column_index=0 column_span=1
+++++++++android.view.View collection_item focusable interesting name='Debit' row_index=6 row_span=1 column_index=1 column_span=1
+++++++++android.view.View collection_item name='Cutey's Salon' row_index=6 row_span=1 column_index=2 column_span=1
+++++++++++android.widget.Button clickable focusable interesting name='Cutey's Salon'
+++++++++android.view.View collection_item name='Beauty' row_index=6 row_span=1 column_index=3 column_span=1
+++++++++++android.widget.Button role_description='menu pop up button' clickable focusable interesting name='Beauty'
+++++++++android.view.View collection_item focusable interesting name='$700.00' row_index=6 row_span=1 column_index=4 column_span=1
+++++++++android.view.View collection_item focusable interesting name='$995,532.00' row_index=6 row_span=1 column_index=5 column_span=1
+++++++android.view.View name='07-Jan-16 Debit My Chocolate Shop Dining Out $41.00 $995,491.00' row_index=7
+++++++++android.view.View collection_item focusable interesting name='07-Jan-16' row_index=7 row_span=1 column_index=0 column_span=1
+++++++++android.view.View collection_item focusable interesting name='Debit' row_index=7 row_span=1 column_index=1 column_span=1
+++++++++android.view.View collection_item name='My Chocolate Shop' row_index=7 row_span=1 column_index=2 column_span=1
+++++++++++android.widget.Button clickable focusable interesting name='My Chocolate Shop'
+++++++++android.view.View collection_item name='Dining Out' row_index=7 row_span=1 column_index=3 column_span=1
+++++++++++android.widget.Button role_description='menu pop up button' clickable focusable interesting name='Dining Out'
+++++++++android.view.View collection_item focusable interesting name='$41.00' row_index=7 row_span=1 column_index=4 column_span=1
+++++++++android.view.View collection_item focusable interesting name='$995,491.00' row_index=7 row_span=1 column_index=5 column_span=1
+++android.view.View
+++++android.widget.TextView role_description='heading 4' heading interesting name='Transactions for January 1 through January 15'
+++++android.widget.Button clickable focusable interesting name='Hide Type and Category'
+++++android.widget.GridView collection container_title='Transactions for January 1 through January 15' row_count=16 column_count=6
+++++++android.view.View name='Date Type Description Category Amount Balance' row_index=0
+++++++++android.view.View collection_item interesting table_header name='Date' row_index=0 row_span=1 column_index=0 column_span=1
+++++++++android.view.View collection_item interesting table_header name='Type' row_index=0 row_span=1 column_index=1 column_span=1
+++++++++android.view.View collection_item interesting table_header name='Description' row_index=0 row_span=1 column_index=2 column_span=1
+++++++++android.view.View collection_item interesting table_header name='Category' row_index=0 row_span=1 column_index=3 column_span=1
+++++++++android.view.View collection_item interesting table_header name='Amount' row_index=0 row_span=1 column_index=4 column_span=1
+++++++++android.view.View collection_item interesting table_header name='Balance' row_index=0 row_span=1 column_index=5 column_span=1
+++++++android.view.View name='01-Jan-16 Deposit Cash Deposit Income $1,000,000.00 $1,000,000.00' row_index=1
+++++++++android.view.View collection_item focusable interesting name='01-Jan-16' row_index=1 row_span=1 column_index=0 column_span=1
+++++++++android.view.View collection_item focusable interesting name='Deposit' row_index=1 row_span=1 column_index=1 column_span=1
+++++++++android.view.View collection_item name='Cash Deposit' row_index=1 row_span=1 column_index=2 column_span=1
+++++++++++android.view.View role_description='link' clickable focusable link interesting name='Cash Deposit'
+++++++++++++android.widget.TextView name='Cash Deposit'
+++++++++android.view.View collection_item focusable interesting name='Income' row_index=1 row_span=1 column_index=3 column_span=1
+++++++++android.view.View collection_item focusable interesting name='$1,000,000.00' row_index=1 row_span=1 column_index=4 column_span=1
+++++++++android.view.View collection_item focusable interesting name='$1,000,000.00' row_index=1 row_span=1 column_index=5 column_span=1
+++++++android.view.View name='02-Jan-16 Debit Down Town Grocery Groceries $250.00 $999,750.00' row_index=2
+++++++++android.view.View collection_item focusable interesting name='02-Jan-16' row_index=2 row_span=1 column_index=0 column_span=1
+++++++++android.view.View collection_item focusable interesting name='Debit' row_index=2 row_span=1 column_index=1 column_span=1
+++++++++android.view.View collection_item name='Down Town Grocery' row_index=2 row_span=1 column_index=2 column_span=1
+++++++++++android.view.View role_description='link' clickable focusable link interesting name='Down Town Grocery'
+++++++++++++android.widget.TextView name='Down Town Grocery'
+++++++++android.view.View collection_item focusable interesting name='Groceries' row_index=2 row_span=1 column_index=3 column_span=1
+++++++++android.view.View collection_item focusable interesting name='$250.00' row_index=2 row_span=1 column_index=4 column_span=1
+++++++++android.view.View collection_item focusable interesting name='$999,750.00' row_index=2 row_span=1 column_index=5 column_span=1
+++++++android.view.View name='03-Jan-16 Debit Hot Coffee Dining Out $9.00 $999,741.00' row_index=3
+++++++++android.view.View collection_item focusable interesting name='03-Jan-16' row_index=3 row_span=1 column_index=0 column_span=1
+++++++++android.view.View collection_item focusable interesting name='Debit' row_index=3 row_span=1 column_index=1 column_span=1
+++++++++android.view.View collection_item name='Hot Coffee' row_index=3 row_span=1 column_index=2 column_span=1
+++++++++++android.view.View role_description='link' clickable focusable link interesting name='Hot Coffee'
+++++++++++++android.widget.TextView name='Hot Coffee'
+++++++++android.view.View collection_item focusable interesting name='Dining Out' row_index=3 row_span=1 column_index=3 column_span=1
+++++++++android.view.View collection_item focusable interesting name='$9.00' row_index=3 row_span=1 column_index=4 column_span=1
+++++++++android.view.View collection_item focusable interesting name='$999,741.00' row_index=3 row_span=1 column_index=5 column_span=1
+++++++android.view.View name='04-Jan-16 Debit The Filling Station Auto $88.00 $999,653.00' row_index=4
+++++++++android.view.View collection_item focusable interesting name='04-Jan-16' row_index=4 row_span=1 column_index=0 column_span=1
+++++++++android.view.View collection_item focusable interesting name='Debit' row_index=4 row_span=1 column_index=1 column_span=1
+++++++++android.view.View collection_item name='The Filling Station' row_index=4 row_span=1 column_index=2 column_span=1
+++++++++++android.view.View role_description='link' clickable focusable link interesting name='The Filling Station'
+++++++++++++android.widget.TextView name='The Filling Station'
+++++++++android.view.View collection_item focusable interesting name='Auto' row_index=4 row_span=1 column_index=3 column_span=1
+++++++++android.view.View collection_item focusable interesting name='$88.00' row_index=4 row_span=1 column_index=4 column_span=1
+++++++++android.view.View collection_item focusable interesting name='$999,653.00' row_index=4 row_span=1 column_index=5 column_span=1
+++++++android.view.View name='05-Jan-16 Debit Tinker's Hardware Household $3,421.00 $996,232.00' row_index=5
+++++++++android.view.View collection_item focusable interesting name='05-Jan-16' row_index=5 row_span=1 column_index=0 column_span=1
+++++++++android.view.View collection_item focusable interesting name='Debit' row_index=5 row_span=1 column_index=1 column_span=1
+++++++++android.view.View collection_item name='Tinker's Hardware' row_index=5 row_span=1 column_index=2 column_span=1
+++++++++++android.view.View role_description='link' clickable focusable link interesting name='Tinker's Hardware'
+++++++++++++android.widget.TextView name='Tinker's Hardware'
+++++++++android.view.View collection_item focusable interesting name='Household' row_index=5 row_span=1 column_index=3 column_span=1
+++++++++android.view.View collection_item focusable interesting name='$3,421.00' row_index=5 row_span=1 column_index=4 column_span=1
+++++++++android.view.View collection_item focusable interesting name='$996,232.00' row_index=5 row_span=1 column_index=5 column_span=1
+++++++android.view.View name='06-Jan-16 Debit Cutey's Salon Beauty $700.00 $995,532.00' row_index=6
+++++++++android.view.View collection_item focusable interesting name='06-Jan-16' row_index=6 row_span=1 column_index=0 column_span=1
+++++++++android.view.View collection_item focusable interesting name='Debit' row_index=6 row_span=1 column_index=1 column_span=1
+++++++++android.view.View collection_item name='Cutey's Salon' row_index=6 row_span=1 column_index=2 column_span=1
+++++++++++android.view.View role_description='link' clickable focusable link interesting name='Cutey's Salon'
+++++++++++++android.widget.TextView name='Cutey's Salon'
+++++++++android.view.View collection_item focusable interesting name='Beauty' row_index=6 row_span=1 column_index=3 column_span=1
+++++++++android.view.View collection_item focusable interesting name='$700.00' row_index=6 row_span=1 column_index=4 column_span=1
+++++++++android.view.View collection_item focusable interesting name='$995,532.00' row_index=6 row_span=1 column_index=5 column_span=1
+++++++android.view.View name='07-Jan-16 Debit My Chocolate Shop Dining Out $41.00 $995,491.00' row_index=7
+++++++++android.view.View collection_item focusable interesting name='07-Jan-16' row_index=7 row_span=1 column_index=0 column_span=1
+++++++++android.view.View collection_item focusable interesting name='Debit' row_index=7 row_span=1 column_index=1 column_span=1
+++++++++android.view.View collection_item name='My Chocolate Shop' row_index=7 row_span=1 column_index=2 column_span=1
+++++++++++android.view.View role_description='link' clickable focusable link interesting name='My Chocolate Shop'
+++++++++++++android.widget.TextView name='My Chocolate Shop'
+++++++++android.view.View collection_item focusable interesting name='Dining Out' row_index=7 row_span=1 column_index=3 column_span=1
+++++++++android.view.View collection_item focusable interesting name='$41.00' row_index=7 row_span=1 column_index=4 column_span=1
+++++++++android.view.View collection_item focusable interesting name='$995,491.00' row_index=7 row_span=1 column_index=5 column_span=1
+++++++android.view.View name='08-Jan-16 Debit Who's Cook'n Dining Out $150.00 $995,341.00' row_index=8
+++++++++android.view.View collection_item focusable interesting name='08-Jan-16' row_index=8 row_span=1 column_index=0 column_span=1
+++++++++android.view.View collection_item focusable interesting name='Debit' row_index=8 row_span=1 column_index=1 column_span=1
+++++++++android.view.View collection_item name='Who's Cook'n' row_index=8 row_span=1 column_index=2 column_span=1
+++++++++++android.view.View role_description='link' clickable focusable link interesting name='Who's Cook'n'
+++++++++++++android.widget.TextView name='Who's Cook'n'
+++++++++android.view.View collection_item focusable interesting name='Dining Out' row_index=8 row_span=1 column_index=3 column_span=1
+++++++++android.view.View collection_item focusable interesting name='$150.00' row_index=8 row_span=1 column_index=4 column_span=1
+++++++++android.view.View collection_item focusable interesting name='$995,341.00' row_index=8 row_span=1 column_index=5 column_span=1
+++++++android.view.View name='09-Jan-16 Debit Dmuddy Paws Pet $100.00 $995,241.00' row_index=9
+++++++++android.view.View collection_item focusable interesting name='09-Jan-16' row_index=9 row_span=1 column_index=0 column_span=1
+++++++++android.view.View collection_item focusable interesting name='Debit' row_index=9 row_span=1 column_index=1 column_span=1
+++++++++android.view.View collection_item name='Dmuddy Paws' row_index=9 row_span=1 column_index=2 column_span=1
+++++++++++android.view.View role_description='link' clickable focusable link interesting name='Dmuddy Paws'
+++++++++++++android.widget.TextView name='Dmuddy Paws'
+++++++++android.view.View collection_item focusable interesting name='Pet' row_index=9 row_span=1 column_index=3 column_span=1
+++++++++android.view.View collection_item focusable interesting name='$100.00' row_index=9 row_span=1 column_index=4 column_span=1
+++++++++android.view.View collection_item focusable interesting name='$995,241.00' row_index=9 row_span=1 column_index=5 column_span=1
+++++++android.view.View name='10-Jan-16 Debit West End Bikes Recreation $6,420.00 $988,821.00' row_index=10
+++++++++android.view.View collection_item focusable interesting name='10-Jan-16' row_index=10 row_span=1 column_index=0 column_span=1
+++++++++android.view.View collection_item focusable interesting name='Debit' row_index=10 row_span=1 column_index=1 column_span=1
+++++++++android.view.View collection_item name='West End Bikes' row_index=10 row_span=1 column_index=2 column_span=1
+++++++++++android.view.View role_description='link' clickable focusable link interesting name='West End Bikes'
+++++++++++++android.widget.TextView name='West End Bikes'
+++++++++android.view.View collection_item focusable interesting name='Recreation' row_index=10 row_span=1 column_index=3 column_span=1
+++++++++android.view.View collection_item focusable interesting name='$6,420.00' row_index=10 row_span=1 column_index=4 column_span=1
+++++++++android.view.View collection_item focusable interesting name='$988,821.00' row_index=10 row_span=1 column_index=5 column_span=1
+++++++android.view.View name='11-Jan-16 Debit Pay More Cars Auto $431,323.00 $557,498.00' row_index=11
+++++++++android.view.View collection_item focusable interesting name='11-Jan-16' row_index=11 row_span=1 column_index=0 column_span=1
+++++++++android.view.View collection_item focusable interesting name='Debit' row_index=11 row_span=1 column_index=1 column_span=1
+++++++++android.view.View collection_item name='Pay More Cars' row_index=11 row_span=1 column_index=2 column_span=1
+++++++++++android.view.View role_description='link' clickable focusable link interesting name='Pay More Cars'
+++++++++++++android.widget.TextView name='Pay More Cars'
+++++++++android.view.View collection_item focusable interesting name='Auto' row_index=11 row_span=1 column_index=3 column_span=1
+++++++++android.view.View collection_item focusable interesting name='$431,323.00' row_index=11 row_span=1 column_index=4 column_span=1
+++++++++android.view.View collection_item focusable interesting name='$557,498.00' row_index=11 row_span=1 column_index=5 column_span=1
+++++++android.view.View name='12-Jan-16 Debit The Interior Shop Household $142,334.00 $415,164.00' row_index=12
+++++++++android.view.View collection_item focusable interesting name='12-Jan-16' row_index=12 row_span=1 column_index=0 column_span=1
+++++++++android.view.View collection_item focusable interesting name='Debit' row_index=12 row_span=1 column_index=1 column_span=1
+++++++++android.view.View collection_item name='The Interior Shop' row_index=12 row_span=1 column_index=2 column_span=1
+++++++++++android.view.View role_description='link' clickable focusable link interesting name='The Interior Shop'
+++++++++++++android.widget.TextView name='The Interior Shop'
+++++++++android.view.View collection_item focusable interesting name='Household' row_index=12 row_span=1 column_index=3 column_span=1
+++++++++android.view.View collection_item focusable interesting name='$142,334.00' row_index=12 row_span=1 column_index=4 column_span=1
+++++++++android.view.View collection_item focusable interesting name='$415,164.00' row_index=12 row_span=1 column_index=5 column_span=1
+++++++android.view.View name='13-Jan-16 Debit Adventure Guys Recreation $88,424.00 $326,740.00' row_index=13
+++++++++android.view.View collection_item focusable interesting name='13-Jan-16' row_index=13 row_span=1 column_index=0 column_span=1
+++++++++android.view.View collection_item focusable interesting name='Debit' row_index=13 row_span=1 column_index=1 column_span=1
+++++++++android.view.View collection_item name='Adventure Guys' row_index=13 row_span=1 column_index=2 column_span=1
+++++++++++android.view.View role_description='link' clickable focusable link interesting name='Adventure Guys'
+++++++++++++android.widget.TextView name='Adventure Guys'
+++++++++android.view.View collection_item focusable interesting name='Recreation' row_index=13 row_span=1 column_index=3 column_span=1
+++++++++android.view.View collection_item focusable interesting name='$88,424.00' row_index=13 row_span=1 column_index=4 column_span=1
+++++++++android.view.View collection_item focusable interesting name='$326,740.00' row_index=13 row_span=1 column_index=5 column_span=1
+++++++android.view.View name='14-Jan-16 Debit Hungry Folks Place Dining Out $313.00 $326,427.00' row_index=14
+++++++++android.view.View collection_item focusable interesting name='14-Jan-16' row_index=14 row_span=1 column_index=0 column_span=1
+++++++++android.view.View collection_item focusable interesting name='Debit' row_index=14 row_span=1 column_index=1 column_span=1
+++++++++android.view.View collection_item name='Hungry Folks Place' row_index=14 row_span=1 column_index=2 column_span=1
+++++++++++android.view.View role_description='link' clickable focusable link interesting name='Hungry Folks Place'
+++++++++++++android.widget.TextView name='Hungry Folks Place'
+++++++++android.view.View collection_item focusable interesting name='Dining Out' row_index=14 row_span=1 column_index=3 column_span=1
+++++++++android.view.View collection_item focusable interesting name='$313.00' row_index=14 row_span=1 column_index=4 column_span=1
+++++++++android.view.View collection_item focusable interesting name='$326,427.00' row_index=14 row_span=1 column_index=5 column_span=1
+++++++android.view.View name='15-Jan-16 Debit Horse Play Recreation $2,421.00 $324,006.00' row_index=15
+++++++++android.view.View collection_item focusable interesting name='15-Jan-16' row_index=15 row_span=1 column_index=0 column_span=1
+++++++++android.view.View collection_item focusable interesting name='Debit' row_index=15 row_span=1 column_index=1 column_span=1
+++++++++android.view.View collection_item name='Horse Play' row_index=15 row_span=1 column_index=2 column_span=1
+++++++++++android.view.View role_description='link' clickable focusable link interesting name='Horse Play'
+++++++++++++android.widget.TextView name='Horse Play'
+++++++++android.view.View collection_item focusable interesting name='Recreation' row_index=15 row_span=1 column_index=3 column_span=1
+++++++++android.view.View collection_item focusable interesting name='$2,421.00' row_index=15 row_span=1 column_index=4 column_span=1
+++++++++android.view.View collection_item focusable interesting name='$324,006.00' row_index=15 row_span=1 column_index=5 column_span=1

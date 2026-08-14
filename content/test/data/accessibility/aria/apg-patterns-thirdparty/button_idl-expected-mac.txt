@@ -1,0 +1,30 @@
+AXWebArea AXTitle='Button Examples (IDL Version)'
+++AXGroup
+++++AXHeading AXTitle='Important' AXValue=3
+++++++AXStaticText AXValue='Important'
+++++AXGroup
+++++++AXStaticText AXValue='This example is coded using syntax that was not introduced until version 1.2 of the ARIA specification. When using a '
+++++++AXLink AXDescription='browser that does not yet provide support for ARIA attribute reflection' AXTitle='browser that does not yet provide support for ARIA attribute reflection'
+++++++++AXStaticText AXValue='browser that does not yet provide support for ARIA attribute reflection'
+++++++AXStaticText AXValue=', the buttons will not be styled correctly.'
+++++AXGroup
+++++++AXStaticText AXValue='This '
+++++++AXStaticText AXValue='%E2%80%9C'
+++++++AXStaticText AXValue='Print'
+++++++AXStaticText AXValue='%E2%80%9D'
+++++++AXStaticText AXValue=' action button uses a '
+++++++AXGroup AXSubrole=AXCodeStyleGroup
+++++++++AXStaticText AXValue='div'
+++++++AXStaticText AXValue=' element.'
+++++AXButton AXTitle='Print Page'
+++++AXGroup
+++++++AXStaticText AXValue='This '
+++++++AXStaticText AXValue='%E2%80%9C'
+++++++AXStaticText AXValue='Mute'
+++++++AXStaticText AXValue='%E2%80%9D'
+++++++AXStaticText AXValue=' toggle button uses an '
+++++++AXGroup AXSubrole=AXCodeStyleGroup
+++++++++AXStaticText AXValue='a'
+++++++AXStaticText AXValue=' element.'
+++++AXCheckBox AXSubrole=AXToggleButton AXTitle='Mute ' AXValue=0
+++++++AXStaticText AXValue='Mute '

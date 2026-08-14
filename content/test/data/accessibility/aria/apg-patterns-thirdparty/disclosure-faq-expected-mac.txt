@@ -1,0 +1,24 @@
+AXWebArea AXTitle='Example Disclosure (Show/Hide) for Answers to Frequently Asked Questions'
+++AXGroup
+++++AXHeading AXTitle='Parking FAQs' AXValue=3
+++++++AXStaticText AXValue='Parking '
+++++++AXGroup AXDescription='Frequently Asked Questions' AXTitle='Frequently Asked Questions'
+++++++++AXStaticText AXValue='FAQ'
+++++++AXStaticText AXValue='s'
+++++AXList AXSubrole=AXContentList
+++++++AXGroup
+++++++++AXButton AXTitle='What do I do if I have a permit for an assigned lot, but can't find a space there?'
+++++++++++AXImage
+++++++++++AXStaticText AXValue='What do I do if I have a permit for an assigned lot, but can't find a space there?'
+++++++AXGroup
+++++++++AXButton AXTitle='What do I do if I lose my permit or if my permit is stolen?'
+++++++++++AXImage
+++++++++++AXStaticText AXValue='What do I do if I lose my permit or if my permit is stolen?'
+++++++AXGroup
+++++++++AXButton AXTitle='Is there free parking on holidays?'
+++++++++++AXImage
+++++++++++AXStaticText AXValue='Is there free parking on holidays?'
+++++++AXGroup
+++++++++AXButton AXTitle='Do all parking facilities have the same enforcement rules?'
+++++++++++AXImage
+++++++++++AXStaticText AXValue='Do all parking facilities have the same enforcement rules?'

@@ -1,0 +1,183 @@
+rootWebArea name='Example Disclosure (Show/Hide) for Image Description'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer
+++++++++figure
+++++++++++image name='Charles Minard's 1869 chart showing the number of men in Napoleon%E2%80%99s 1812 Russian campaign army, their movements, as well as the temperature they encountered on the return path.'
+++++++++++figcaption
+++++++++++++paragraph
+++++++++++++++staticText name='Figurative Map of the successive losses in men of the French Army in the Russian campaign 1812-1813. Drawn by Mr. Minard, Inspector General of Bridges and Roads in retirement. Paris, 20 November 1869.'
+++++++++++++++++inlineTextBox name='Figurative Map of the successive losses in men of the French Army in the Russian campaign 1812-1813. '
+++++++++++++++++inlineTextBox name='Drawn by Mr. Minard, Inspector General of Bridges and Roads in retirement. Paris, 20 November 1869.'
+++++++++++++paragraph
+++++++++++++++staticText name='The numbers of men present are represented by the widths of the colored zones in a rate of one millimeter for ten thousand men; these are also written beside the zones. Red designates men moving into Russia, black those on retreat.'
+++++++++++++++++inlineTextBox name='The numbers of men present are represented by the widths of the colored zones in a rate of one millimeter '
+++++++++++++++++inlineTextBox name='for ten thousand men; these are also written beside the zones. Red designates men moving into Russia, '
+++++++++++++++++inlineTextBox name='black those on retreat.'
+++++++++++++paragraph
+++++++++++++++staticText name='The information used for drawing the map were taken from the works of Messrs. Thiers, '
+++++++++++++++++inlineTextBox name='The information used for drawing the map were taken from the works of Messrs. Thiers, '
+++++++++++++++genericContainer ignored
+++++++++++++++++staticText name='de S%C3%A9gur, de Fezensac, de Chambray'
+++++++++++++++++++inlineTextBox name='de S%C3%A9gur, de '
+++++++++++++++++++inlineTextBox name='Fezensac, de Chambray'
+++++++++++++++staticText name=' and the unpublished diary of Jacob, pharmacist of the Army since 28 October.'
+++++++++++++++++inlineTextBox name=' and the unpublished diary of Jacob, pharmacist of the Army since 28 October.'
+++++++++++++paragraph
+++++++++++++++staticText name='In order to facilitate the judgement of the eye regarding the diminution of the army, I supposed that the troops under Prince J%C3%A8r%C3%B4me and under Marshal Davoust, who were sent to Minsk and Mobilow and who rejoined near Orscha and Witebsk, had always marched with the army.'
+++++++++++++++++inlineTextBox name='In order to facilitate the judgement of the eye regarding the diminution of the army, I supposed that the '
+++++++++++++++++inlineTextBox name='troops under Prince J%C3%A8r%C3%B4me and under Marshal Davoust, who were sent to Minsk and Mobilow and who '
+++++++++++++++++inlineTextBox name='rejoined near Orscha and Witebsk, had always marched with the army.'
+++++++++++++paragraph
+++++++++++++++strong
+++++++++++++++++staticText name='Note: A French translation from Wikipedia.'
+++++++++++++++++++inlineTextBox name='Note: A French translation from Wikipedia.'
+++++++++++++button collapsed name='Data Table for Minard's Chart'
+++++++++++++++genericContainer ignored
+++++++++++++++++image
+++++++++++++++staticText name='Data Table for Minard's Chart'
+++++++++++++++++inlineTextBox name='Data Table for Minard's Chart'
+++++++++++++heading ignored invisible
+++++++++++++++staticText ignored invisible
+++++++++++++table ignored invisible
+++++++++++++++row ignored invisible
+++++++++++++++++columnHeader ignored invisible
+++++++++++++++++columnHeader ignored invisible
+++++++++++++++++columnHeader ignored invisible
+++++++++++++++++columnHeader ignored invisible
+++++++++++++++++columnHeader ignored invisible
+++++++++++++++++columnHeader ignored invisible
+++++++++++++++rowGroup ignored invisible
+++++++++++++++++row ignored invisible
+++++++++++++++++++rowHeader ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++row ignored invisible
+++++++++++++++++++rowHeader ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++row ignored invisible
+++++++++++++++++++rowHeader ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++row ignored invisible
+++++++++++++++++++rowHeader ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++row ignored invisible
+++++++++++++++++++rowHeader ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++row ignored invisible
+++++++++++++++++++rowHeader ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++row ignored invisible
+++++++++++++++++++rowHeader ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++row ignored invisible
+++++++++++++++++++rowHeader ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++row ignored invisible
+++++++++++++++++++rowHeader ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++row ignored invisible
+++++++++++++++++++rowHeader ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++row ignored invisible
+++++++++++++++++++rowHeader ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++row ignored invisible
+++++++++++++++++++rowHeader ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++row ignored invisible
+++++++++++++++++++rowHeader ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++row ignored invisible
+++++++++++++++++++rowHeader ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++row ignored invisible
+++++++++++++++++++rowHeader ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++row ignored invisible
+++++++++++++++++++rowHeader ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++row ignored invisible
+++++++++++++++++++rowHeader ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++row ignored invisible
+++++++++++++++++++rowHeader ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++row ignored invisible
+++++++++++++++++++rowHeader ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++++cell ignored invisible
+++++++++++++++++++cell ignored invisible

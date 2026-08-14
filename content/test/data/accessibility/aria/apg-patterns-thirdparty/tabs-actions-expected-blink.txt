@@ -1,0 +1,92 @@
+rootWebArea name='Experimental Example of Tabs with Action Buttons'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer
+++++++++genericContainer ignored
+++++++++++heading name='Interesting Sharks'
+++++++++++++staticText name='Interesting Sharks'
+++++++++++++++inlineTextBox name='Interesting Sharks'
+++++++++++tabList horizontal name='Interesting Sharks'
+++++++++++++genericContainer
+++++++++++++++tab name='Nurse shark' selected=true controlsIds=tabPanel
+++++++++++++++++genericContainer ignored
+++++++++++++++++++staticText name='Nurse shark'
+++++++++++++++++++++inlineTextBox name='Nurse shark'
+++++++++++++++genericContainer
+++++++++++++++++popUpButton collapsed name='Actions for Nurse shark tab'
+++++++++++++++++++image ignored invisible
+++++++++++++++++++++graphicsSymbol ignored invisible
+++++++++++++++++++++graphicsSymbol ignored invisible
+++++++++++++++++++++graphicsSymbol ignored invisible
+++++++++++++++++menu ignored invisible
+++++++++++++genericContainer
+++++++++++++++tab name='Basking shark' selected=false
+++++++++++++++++genericContainer ignored
+++++++++++++++++++staticText name='Basking shark'
+++++++++++++++++++++inlineTextBox name='Basking shark'
+++++++++++++++genericContainer
+++++++++++++++++popUpButton collapsed name='Actions for Basking shark tab'
+++++++++++++++++++image ignored invisible
+++++++++++++++++++++graphicsSymbol ignored invisible
+++++++++++++++++++++graphicsSymbol ignored invisible
+++++++++++++++++++++graphicsSymbol ignored invisible
+++++++++++++++++menu ignored invisible
+++++++++++++genericContainer
+++++++++++++++tab name='Whale shark' selected=false
+++++++++++++++++genericContainer ignored
+++++++++++++++++++staticText name='Whale shark'
+++++++++++++++++++++inlineTextBox name='Whale shark'
+++++++++++++++genericContainer
+++++++++++++++++popUpButton collapsed name='Actions for Whale shark tab'
+++++++++++++++++++image ignored invisible
+++++++++++++++++++++graphicsSymbol ignored invisible
+++++++++++++++++++++graphicsSymbol ignored invisible
+++++++++++++++++++++graphicsSymbol ignored invisible
+++++++++++++++++menu ignored invisible
+++++++++++++genericContainer
+++++++++++++++tab name='Goblin shark' selected=false
+++++++++++++++++genericContainer ignored
+++++++++++++++++++staticText name='Goblin shark'
+++++++++++++++++++++inlineTextBox name='Goblin shark'
+++++++++++++++genericContainer
+++++++++++++++++popUpButton collapsed name='Actions for Goblin shark tab'
+++++++++++++++++++image ignored invisible
+++++++++++++++++++++graphicsSymbol ignored invisible
+++++++++++++++++++++graphicsSymbol ignored invisible
+++++++++++++++++++++graphicsSymbol ignored invisible
+++++++++++++++++menu ignored invisible
+++++++++++tabPanel name='Nurse shark'
+++++++++++++paragraph
+++++++++++++++staticText name='The '
+++++++++++++++++inlineTextBox name='The '
+++++++++++++++link name='nurse shark'
+++++++++++++++++staticText name='nurse shark'
+++++++++++++++++++inlineTextBox name='nurse shark'
+++++++++++++++staticText name=' ('
+++++++++++++++++inlineTextBox name=' ('
+++++++++++++++genericContainer ignored
+++++++++++++++++staticText name='Ginglymostoma cirratum'
+++++++++++++++++++inlineTextBox name='Ginglymostoma cirratum'
+++++++++++++++staticText name=') is an elasmobranch fish in the family '
+++++++++++++++++inlineTextBox name=') is an elasmobranch fish in the family '
+++++++++++++++genericContainer ignored
+++++++++++++++++staticText name='Ginglymostomatidae'
+++++++++++++++++++inlineTextBox name='Ginglymostomatidae'
+++++++++++++++staticText name='. The conservation status of the nurse shark is globally assessed as Vulnerable in the IUCN List of Threatened Species. They are considered to be a species of least concern in the United States and in The Bahamas, but considered to be near threatened in the western Atlantic Ocean because of their vulnerable status in South America and reported threats throughout many areas of Central America and the Caribbean. They are directly targeted in some fisheries and considered by-catch in others.'
+++++++++++++++++inlineTextBox name='. '
+++++++++++++++++inlineTextBox name='The conservation status of the nurse shark is globally assessed as Vulnerable in the IUCN List of '
+++++++++++++++++inlineTextBox name='Threatened Species. They are considered to be a species of least concern in the United States and in '
+++++++++++++++++inlineTextBox name='The Bahamas, but considered to be near threatened in the western Atlantic Ocean because of their '
+++++++++++++++++inlineTextBox name='vulnerable status in South America and reported threats throughout many areas of Central America '
+++++++++++++++++inlineTextBox name='and the Caribbean. They are directly targeted in some fisheries and considered by-catch in others.'
+++++++++++genericContainer ignored invisible
+++++++++++genericContainer ignored invisible
+++++++++++genericContainer ignored invisible
+++++++++++genericContainer ignored invisible
+++++++++++genericContainer ignored invisible
+++++++++++genericContainer ignored invisible
+++++++++++genericContainer ignored invisible
+++++++++++genericContainer ignored invisible
+++++++++++genericContainer ignored invisible
+++++++++++genericContainer ignored invisible
+++++++++++status

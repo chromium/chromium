@@ -1,0 +1,28 @@
+ROLE_SYSTEM_DOCUMENT name='Example Disclosure Navigation Menu with Top-Level Links' READONLY FOCUSABLE
+++IA2_ROLE_SECTION
+++++IA2_ROLE_LANDMARK
+++++++IA2_ROLE_SECTION
+++++++++ROLE_SYSTEM_STATICTEXT name='Mythical University'
+++++++IA2_ROLE_SECTION
+++++++++ROLE_SYSTEM_STATICTEXT name='Using a disclosure + link pattern for navigation'
+++++IA2_ROLE_LANDMARK name='Mythical University'
+++++++ROLE_SYSTEM_LIST READONLY
+++++++++ROLE_SYSTEM_LISTITEM READONLY
+++++++++++ROLE_SYSTEM_LINK name='About' FOCUSABLE
+++++++++++++ROLE_SYSTEM_STATICTEXT name='About'
+++++++++++ROLE_SYSTEM_PUSHBUTTON name='More About pages' COLLAPSED FOCUSABLE
+++++++++ROLE_SYSTEM_LISTITEM READONLY
+++++++++++ROLE_SYSTEM_LINK name='Admissions' FOCUSABLE
+++++++++++++ROLE_SYSTEM_STATICTEXT name='Admissions'
+++++++++++ROLE_SYSTEM_PUSHBUTTON name='More Admissions pages' COLLAPSED FOCUSABLE
+++++++++ROLE_SYSTEM_LISTITEM READONLY
+++++++++++ROLE_SYSTEM_LINK name='Academics' FOCUSABLE
+++++++++++++ROLE_SYSTEM_STATICTEXT name='Academics'
+++++++++++ROLE_SYSTEM_PUSHBUTTON name='More Academics pages' COLLAPSED FOCUSABLE
+++++IA2_ROLE_LANDMARK name='Home' FOCUSABLE
+++++++IA2_ROLE_HEADING name='Home'
+++++++++ROLE_SYSTEM_STATICTEXT name='Home'
+++++++IA2_ROLE_PARAGRAPH
+++++++++ROLE_SYSTEM_STATICTEXT name='Sample content section. Activating a link above will update and navigate to this region.'
+++++IA2_ROLE_LANDMARK
+++++++ROLE_SYSTEM_STATICTEXT name='Mythical University footer information'

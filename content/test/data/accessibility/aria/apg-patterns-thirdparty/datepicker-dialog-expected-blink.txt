@@ -1,0 +1,82 @@
+rootWebArea name='Date Picker Dialog Example'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer
+++++++++genericContainer
+++++++++++genericContainer ignored
+++++++++++++labelText
+++++++++++++++staticText name='Date'
+++++++++++++++++inlineTextBox name='Date'
+++++++++++++genericContainer
+++++++++++++++textField description='( date format: mm/dd/yyyy)' name='Date' placeholder='mm/dd/yyyy' descriptionFrom=relatedElement
+++++++++++++++++genericContainer ignored
+++++++++++++++++genericContainer
+++++++++++++++genericContainer
+++++++++++++++++staticText name='('
+++++++++++++++++++inlineTextBox name='('
+++++++++++++++++genericContainer ignored
+++++++++++++++++++staticText name='date format:'
+++++++++++++++++++++inlineTextBox name='date format:'
+++++++++++++++++staticText name='mm/dd/yyyy)'
+++++++++++++++++++inlineTextBox name='mm/dd/yyyy)'
+++++++++++++++button name='Choose Date'
+++++++++++heading ignored invisible
+++++++++++++staticText ignored invisible
+++++++++++grid ignored invisible
+++++++++++++row ignored invisible
+++++++++++++++columnHeader ignored invisible
+++++++++++++++columnHeader ignored invisible
+++++++++++++++columnHeader ignored invisible
+++++++++++++++columnHeader ignored invisible
+++++++++++++++columnHeader ignored invisible
+++++++++++++++columnHeader ignored invisible
+++++++++++++++columnHeader ignored invisible
+++++++++++++rowGroup ignored invisible
+++++++++++++++row ignored invisible
+++++++++++++++++cell ignored invisible
+++++++++++++++++cell ignored invisible
+++++++++++++++++cell ignored invisible
+++++++++++++++++cell ignored invisible
+++++++++++++++++cell ignored invisible
+++++++++++++++++cell ignored invisible
+++++++++++++++++cell ignored invisible
+++++++++++++++row ignored invisible
+++++++++++++++++cell ignored invisible
+++++++++++++++++cell ignored invisible
+++++++++++++++++cell ignored invisible
+++++++++++++++++cell ignored invisible
+++++++++++++++++cell ignored invisible
+++++++++++++++++cell ignored invisible
+++++++++++++++++cell ignored invisible
+++++++++++++++row ignored invisible
+++++++++++++++++cell ignored invisible
+++++++++++++++++cell ignored invisible
+++++++++++++++++cell ignored invisible
+++++++++++++++++cell ignored invisible
+++++++++++++++++cell ignored invisible
+++++++++++++++++cell ignored invisible
+++++++++++++++++cell ignored invisible
+++++++++++++++row ignored invisible
+++++++++++++++++cell ignored invisible
+++++++++++++++++cell ignored invisible
+++++++++++++++++cell ignored invisible
+++++++++++++++++cell ignored invisible
+++++++++++++++++cell ignored invisible
+++++++++++++++++cell ignored invisible
+++++++++++++++++cell ignored invisible
+++++++++++++++row ignored invisible
+++++++++++++++++cell ignored invisible
+++++++++++++++++cell ignored invisible
+++++++++++++++++cell ignored invisible
+++++++++++++++++cell ignored invisible
+++++++++++++++++cell ignored invisible
+++++++++++++++++cell ignored invisible
+++++++++++++++++cell ignored invisible
+++++++++++++++row ignored invisible
+++++++++++++++++cell ignored invisible
+++++++++++++++++cell ignored invisible
+++++++++++++++++cell ignored invisible
+++++++++++++++++cell ignored invisible
+++++++++++++++++cell ignored invisible
+++++++++++++++++cell ignored invisible
+++++++++++++++++cell ignored invisible

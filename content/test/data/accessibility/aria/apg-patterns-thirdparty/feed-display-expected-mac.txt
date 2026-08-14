@@ -1,0 +1,22 @@
+AXWebArea AXTitle='Feed Display'
+++AXHeading AXTitle='Recommended Restaurants' AXValue=3
+++++AXStaticText AXValue='Recommended Restaurants'
+++AXGroup
+++++AXGroup AXSubrole=AXApplicationGroup
+++++++AXGroup AXSubrole=AXDocumentArticle AXTitle='Tito's Tacos'
+++++++++AXGroup
+++++++++++AXGroup
+++++++++++++AXStaticText AXValue='Tito's Tacos'
+++++++++++AXGroup
+++++++++++++AXImage AXDescription='5 stars' AXTitle='5 stars'
+++++++++++AXGroup
+++++++++++++AXStaticText AXValue='Mexican, Tacos'
+++++++++AXGroup
+++++++++++AXGroup
+++++++++++++AXStaticText AXValue='123 Blueberry Ln'
+++++++++++AXGroup
+++++++++++++AXStaticText AXValue='San Dimas, CA'
+++++++++++AXGroup
+++++++++++++AXStaticText AXValue='(111) 111-1111'
+++++++++AXGroup
+++++++++++AXButton AXTitle='Bookmark'

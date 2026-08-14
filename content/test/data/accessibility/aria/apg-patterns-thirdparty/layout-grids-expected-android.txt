@@ -1,0 +1,190 @@
+android.webkit.WebView focusable focused interesting name='Layout Grid Examples'
+++android.view.View
+++++android.widget.TextView role_description='heading 4' heading interesting name='Related Documents'
+++++android.widget.GridView collection container_title='Related Documents' row_count=1 column_count=6
+++++++android.view.View name='ARIA 1.1 Specification Core Accessibility API Mappings 1.1 WAI-ARIA Overview WCAG Overview HTML Specification SVG 2 Specification' row_index=0
+++++++++android.view.View collection_item name='ARIA 1.1 Specification' row_index=0 row_span=1 column_index=0 column_span=1
+++++++++++android.view.View role_description='link' clickable focusable link interesting name='ARIA 1.1 Specification'
+++++++++++++android.widget.TextView name='ARIA 1.1 Specification'
+++++++++android.view.View collection_item name='Core Accessibility API Mappings 1.1' row_index=0 row_span=1 column_index=1 column_span=1
+++++++++++android.view.View role_description='link' clickable focusable link interesting name='Core Accessibility API Mappings 1.1'
+++++++++++++android.widget.TextView name='Core Accessibility API Mappings 1.1'
+++++++++android.view.View collection_item name='WAI-ARIA Overview' row_index=0 row_span=1 column_index=2 column_span=1
+++++++++++android.view.View role_description='link' clickable focusable link interesting name='WAI-ARIA Overview'
+++++++++++++android.widget.TextView name='WAI-ARIA Overview'
+++++++++android.view.View collection_item name='WCAG Overview' row_index=0 row_span=1 column_index=3 column_span=1
+++++++++++android.view.View role_description='link' clickable focusable link interesting name='WCAG Overview'
+++++++++++++android.widget.TextView name='WCAG Overview'
+++++++++android.view.View collection_item name='HTML Specification' row_index=0 row_span=1 column_index=4 column_span=1
+++++++++++android.view.View role_description='link' clickable focusable link interesting name='HTML Specification'
+++++++++++++android.widget.TextView name='HTML Specification'
+++++++++android.view.View collection_item name='SVG 2 Specification' row_index=0 row_span=1 column_index=5 column_span=1
+++++++++++android.view.View role_description='link' clickable focusable link interesting name='SVG 2 Specification'
+++++++++++++android.widget.TextView name='SVG 2 Specification'
+++android.view.View
+++++android.view.View
+++++++android.widget.TextView interesting name='Send To:'
+++++++android.widget.GridView collection container_title='Send To:' row_count=2 column_count=2
+++++++++android.view.View name='Recipient Name 1 Remove Recipient Name 1' row_index=0
+++++++++++android.view.View collection_item name='Recipient Name 1' row_index=0 row_span=1 column_index=0 column_span=1
+++++++++++++android.view.View role_description='link' clickable focusable link interesting name='Recipient Name 1'
+++++++++++++++android.widget.TextView name='Recipient Name 1'
+++++++++++android.view.View collection_item name='Remove Recipient Name 1' row_index=0 row_span=1 column_index=1 column_span=1
+++++++++++++android.widget.Button clickable focusable interesting name='Remove Recipient Name 1'
+++++++++android.view.View name='Recipient Name 2 Remove Recipient Name 2' row_index=1
+++++++++++android.view.View collection_item name='Recipient Name 2' row_index=1 row_span=1 column_index=0 column_span=1
+++++++++++++android.view.View role_description='link' clickable focusable link interesting name='Recipient Name 2'
+++++++++++++++android.widget.TextView name='Recipient Name 2'
+++++++++++android.view.View collection_item name='Remove Recipient Name 2' row_index=1 row_span=1 column_index=1 column_span=1
+++++++++++++android.widget.Button clickable focusable interesting name='Remove Recipient Name 2'
+++++++android.view.View
+++++++++android.widget.EditText clickable editable_text focusable interesting hint='Add Recipient New Recipient Name' input_type=1
+++++++++android.widget.Button clickable focusable interesting name='Add'
+++++++++android.view.View
+++++++++++android.widget.TextView interesting name='Last change to recipient list:'
+++++++++++android.widget.TextView live_region_type=1
+++android.view.View
+++++android.widget.TextView role_description='heading 4' heading interesting name='Search Results for "W3C WAI-ARIA"'
+++++android.view.View
+++++++android.widget.TextView interesting name='Showing results '
+++++++android.widget.TextView interesting name='1'
+++++++android.widget.TextView interesting name=' to '
+++++++android.widget.TextView interesting name='5'
+++++++android.widget.TextView interesting name=' of 19'
+++++android.widget.GridView collection container_title='Search Results for "W3C WAI-ARIA"' row_count=19 column_count=3
+++++++android.view.View name='WAI-ARIA Overview Web Accessibility Initiative W3C World Wide Web Consortium WAI-ARIA, the Accessible Rich Internet Applications Suite, defines a way to make Web content and Web applications more accessible to people with disabilities.' row_index=0
+++++++++android.view.View collection_item name='WAI-ARIA Overview Web Accessibility Initiative W3C' row_index=0 row_span=1 column_index=0 column_span=1
+++++++++++android.view.View role_description='heading 5 link' clickable heading name='WAI-ARIA Overview Web Accessibility Initiative W3C'
+++++++++++++android.view.View role_description='heading 5 link' clickable focusable link interesting name='WAI-ARIA Overview Web Accessibility Initiative W3C'
+++++++++++++++android.widget.TextView name='WAI-ARIA Overview Web Accessibility Initiative W3C'
+++++++++android.view.View collection_item focusable interesting name='World Wide Web Consortium' row_index=0 row_span=1 column_index=1 column_span=1
+++++++++android.view.View collection_item focusable interesting name='WAI-ARIA, the Accessible Rich Internet Applications Suite, defines a way to make Web content and Web applications more accessible to people with disabilities.' row_index=0 row_span=1 column_index=2 column_span=1
+++++++android.view.View name='ARIA States and Properties - W3C World Wide Web Consortium In this document, states and properties are both treated as aria-prefixed markup attributes. However, they are maintained conceptually distinct to clarify subtle%C2%A0...' row_index=1
+++++++++android.view.View collection_item name='ARIA States and Properties - W3C' row_index=1 row_span=1 column_index=0 column_span=1
+++++++++++android.view.View role_description='heading 5 link' clickable heading name='ARIA States and Properties - W3C'
+++++++++++++android.view.View role_description='heading 5 link' clickable focusable link interesting name='ARIA States and Properties - W3C'
+++++++++++++++android.widget.TextView name='ARIA States and Properties - W3C'
+++++++++android.view.View collection_item focusable interesting name='World Wide Web Consortium' row_index=1 row_span=1 column_index=1 column_span=1
+++++++++android.view.View collection_item focusable interesting name='In this document, states and properties are both treated as aria-prefixed markup attributes. However, they are maintained conceptually distinct to clarify subtle%C2%A0...' row_index=1 row_span=1 column_index=2 column_span=1
+++++++android.view.View name='Accessible Rich Internet Applications (WAI-ARIA) 1.0 - W3C World Wide Web Consortium Mar 20, 2014 - This is the WAI-ARIA 1.0 W3C Recommendation from the Protocols & Formats Working Group of the Web Accessibility Initiative. The Working%C2%A0...' row_index=2
+++++++++android.view.View collection_item name='Accessible Rich Internet Applications (WAI-ARIA) 1.0 - W3C' row_index=2 row_span=1 column_index=0 column_span=1
+++++++++++android.view.View role_description='heading 5 link' clickable heading name='Accessible Rich Internet Applications (WAI-ARIA) 1.0 - W3C'
+++++++++++++android.view.View role_description='heading 5 link' clickable focusable link interesting name='Accessible Rich Internet Applications (WAI-ARIA) 1.0 - W3C'
+++++++++++++++android.widget.TextView name='Accessible Rich Internet Applications (WAI-ARIA) 1.0 - W3C'
+++++++++android.view.View collection_item focusable interesting name='World Wide Web Consortium' row_index=2 row_span=1 column_index=1 column_span=1
+++++++++android.view.View collection_item focusable interesting name='Mar 20, 2014 - This is the WAI-ARIA 1.0 W3C Recommendation from the Protocols & Formats Working Group of the Web Accessibility Initiative. The Working%C2%A0...' row_index=2 row_span=1 column_index=2 column_span=1
+++++++android.view.View name='Accessible Rich Internet Applications (ARIA) Working Group - W3C World Wide Web Consortium The mission of the Accessible Rich Internet Applications Working Group (ARIA WG) is to develop technologies that enhance accessibility of web content for%C2%A0...' row_index=3
+++++++++android.view.View collection_item name='Accessible Rich Internet Applications (ARIA) Working Group - W3C' row_index=3 row_span=1 column_index=0 column_span=1
+++++++++++android.view.View role_description='heading 5 link' clickable heading name='Accessible Rich Internet Applications (ARIA) Working Group - W3C'
+++++++++++++android.view.View role_description='heading 5 link' clickable focusable link interesting name='Accessible Rich Internet Applications (ARIA) Working Group - W3C'
+++++++++++++++android.widget.TextView name='Accessible Rich Internet Applications (ARIA) Working Group - W3C'
+++++++++android.view.View collection_item focusable interesting name='World Wide Web Consortium' row_index=3 row_span=1 column_index=1 column_span=1
+++++++++android.view.View collection_item focusable interesting name='The mission of the Accessible Rich Internet Applications Working Group (ARIA WG) is to develop technologies that enhance accessibility of web content for%C2%A0...' row_index=3 row_span=1 column_index=2 column_span=1
+++++++android.view.View name='Accessible Rich Internet Applications (WAI-ARIA) 1.1 - W3C World Wide Web Consortium Jul 21, 2016 - This version of ARIA 1.1 changes the aria-kbdshortcuts property to aria-keyshortcuts , expands roles that can be used in comboboxes, adds a%C2%A0...' row_index=4
+++++++++android.view.View collection_item name='Accessible Rich Internet Applications (WAI-ARIA) 1.1 - W3C' row_index=4 row_span=1 column_index=0 column_span=1
+++++++++++android.view.View role_description='heading 5 link' clickable heading name='Accessible Rich Internet Applications (WAI-ARIA) 1.1 - W3C'
+++++++++++++android.view.View role_description='heading 5 link' clickable focusable link interesting name='Accessible Rich Internet Applications (WAI-ARIA) 1.1 - W3C'
+++++++++++++++android.widget.TextView name='Accessible Rich Internet Applications (WAI-ARIA) 1.1 - W3C'
+++++++++android.view.View collection_item focusable interesting name='World Wide Web Consortium' row_index=4 row_span=1 column_index=1 column_span=1
+++++++++android.view.View collection_item focusable interesting name='Jul 21, 2016 - This version of ARIA 1.1 changes the aria-kbdshortcuts property to aria-keyshortcuts , expands roles that can be used in comboboxes, adds a%C2%A0...' row_index=4 row_span=1 column_index=2 column_span=1
+++++++android.view.View name='The Roles Model | Accessible Rich Internet Applications (WAI-ARIA) 1.0 World Wide Web Consortium This section defines the WAI-ARIA role taxonomy and describes the characteristics and properties of all roles. A formal RDF / OWL representation of all the%C2%A0...' row_index=5
+++++++++android.view.View collection_item name='The Roles Model | Accessible Rich Internet Applications (WAI-ARIA) 1.0' row_index=5 row_span=1 column_index=0 column_span=1
+++++++++++android.view.View role_description='heading 5 link' clickable heading name='The Roles Model | Accessible Rich Internet Applications (WAI-ARIA) 1.0'
+++++++++++++android.view.View role_description='heading 5 link' clickable focusable link interesting name='The Roles Model | Accessible Rich Internet Applications (WAI-ARIA) 1.0'
+++++++++++++++android.widget.TextView name='The Roles Model | Accessible Rich Internet Applications (WAI-ARIA) 1.0'
+++++++++android.view.View collection_item focusable interesting name='World Wide Web Consortium' row_index=5 row_span=1 column_index=1 column_span=1
+++++++++android.view.View collection_item focusable interesting name='This section defines the WAI-ARIA role taxonomy and describes the characteristics and properties of all roles. A formal RDF / OWL representation of all the%C2%A0...' row_index=5 row_span=1 column_index=2 column_span=1
+++++++android.view.View name='WAI-ARIA Authoring Practices 1.1 - W3C World Wide Web Consortium Mar 17, 2016 - The WAI-ARIA Authoring Practices Guide is intended to provide an understanding of how to use WAI-ARIA to create an accessible Rich Internet%C2%A0...' row_index=6
+++++++++android.view.View collection_item name='WAI-ARIA Authoring Practices 1.1 - W3C' row_index=6 row_span=1 column_index=0 column_span=1
+++++++++++android.view.View role_description='heading 5 link' clickable heading name='WAI-ARIA Authoring Practices 1.1 - W3C'
+++++++++++++android.view.View role_description='heading 5 link' clickable focusable link interesting name='WAI-ARIA Authoring Practices 1.1 - W3C'
+++++++++++++++android.widget.TextView name='WAI-ARIA Authoring Practices 1.1 - W3C'
+++++++++android.view.View collection_item focusable interesting name='World Wide Web Consortium' row_index=6 row_span=1 column_index=1 column_span=1
+++++++++android.view.View collection_item focusable interesting name='Mar 17, 2016 - The WAI-ARIA Authoring Practices Guide is intended to provide an understanding of how to use WAI-ARIA to create an accessible Rich Internet%C2%A0...' row_index=6 row_span=1 column_index=2 column_span=1
+++++++android.view.View name='ARIA in HTML - W3C World Wide Web Consortium Oct 5, 2016 - ARIA in HTML is a [ HTML51 ] specification module. Any HTML features, conformance requirements, or terms that this specification module%C2%A0...' row_index=7
+++++++++android.view.View collection_item name='ARIA in HTML - W3C' row_index=7 row_span=1 column_index=0 column_span=1
+++++++++++android.view.View role_description='heading 5 link' clickable heading name='ARIA in HTML - W3C'
+++++++++++++android.view.View role_description='heading 5 link' clickable focusable link interesting name='ARIA in HTML - W3C'
+++++++++++++++android.widget.TextView name='ARIA in HTML - W3C'
+++++++++android.view.View collection_item focusable interesting name='World Wide Web Consortium' row_index=7 row_span=1 column_index=1 column_span=1
+++++++++android.view.View collection_item focusable interesting name='Oct 5, 2016 - ARIA in HTML is a [ HTML51 ] specification module. Any HTML features, conformance requirements, or terms that this specification module%C2%A0...' row_index=7 row_span=1 column_index=2 column_span=1
+++++++android.view.View name='ARIA in HTML World Wide Web Consortium Jul 24, 2015 - Setting an ARIA role and/or aria-* attribute that matches the default implicit ARIA semantics is unnecessary and is NOT RECOMMENDED as%C2%A0...' row_index=8
+++++++++android.view.View collection_item name='ARIA in HTML' row_index=8 row_span=1 column_index=0 column_span=1
+++++++++++android.view.View role_description='heading 5 link' clickable heading name='ARIA in HTML'
+++++++++++++android.view.View role_description='heading 5 link' clickable focusable link interesting name='ARIA in HTML'
+++++++++++++++android.widget.TextView name='ARIA in HTML'
+++++++++android.view.View collection_item focusable interesting name='World Wide Web Consortium' row_index=8 row_span=1 column_index=1 column_span=1
+++++++++android.view.View collection_item focusable interesting name='Jul 24, 2015 - Setting an ARIA role and/or aria-* attribute that matches the default implicit ARIA semantics is unnecessary and is NOT RECOMMENDED as%C2%A0...' row_index=8 row_span=1 column_index=2 column_span=1
+++++++android.view.View name='Accessible Rich Internet Applications (ARIA) Overview World Wide Web Consortium Here are answers to some frequently asked questions (FAQ) about WAI-ARIA, the Accessible Rich Internet Applications Suite. When we add significant%C2%A0...' row_index=9
+++++++++android.view.View collection_item name='Accessible Rich Internet Applications (ARIA) Overview' row_index=9 row_span=1 column_index=0 column_span=1
+++++++++++android.view.View role_description='heading 5 link' clickable heading name='Accessible Rich Internet Applications (ARIA) Overview'
+++++++++++++android.view.View role_description='heading 5 link' clickable focusable link interesting name='Accessible Rich Internet Applications (ARIA) Overview'
+++++++++++++++android.widget.TextView name='Accessible Rich Internet Applications (ARIA) Overview'
+++++++++android.view.View collection_item focusable interesting name='World Wide Web Consortium' row_index=9 row_span=1 column_index=1 column_span=1
+++++++++android.view.View collection_item focusable interesting name='Here are answers to some frequently asked questions (FAQ) about WAI-ARIA, the Accessible Rich Internet Applications Suite. When we add significant%C2%A0...' row_index=9 row_span=1 column_index=2 column_span=1
+++++++android.view.View name='WAI-ARIA 1.0 User Agent Implementation Guide - W3C World Wide Web Consortium WAI-ARIA enables rich Internet applications to have the same accessibility features as desktop GUI applications by adding metadata to markup technologies%C2%A0...' row_index=10
+++++++++android.view.View collection_item name='WAI-ARIA 1.0 User Agent Implementation Guide - W3C' row_index=10 row_span=1 column_index=0 column_span=1
+++++++++++android.view.View role_description='heading 5 link' clickable heading name='WAI-ARIA 1.0 User Agent Implementation Guide - W3C'
+++++++++++++android.view.View role_description='heading 5 link' clickable focusable link interesting name='WAI-ARIA 1.0 User Agent Implementation Guide - W3C'
+++++++++++++++android.widget.TextView name='WAI-ARIA 1.0 User Agent Implementation Guide - W3C'
+++++++++android.view.View collection_item focusable interesting name='World Wide Web Consortium' row_index=10 row_span=1 column_index=1 column_span=1
+++++++++android.view.View collection_item focusable interesting name='WAI-ARIA enables rich Internet applications to have the same accessibility features as desktop GUI applications by adding metadata to markup technologies%C2%A0...' row_index=10 row_span=1 column_index=2 column_span=1
+++++++android.view.View name='ARIA - HTML5 - W3C on GitHub World Wide Web Consortium Alertdialog #. aria.alertdialog = role="" alertdialog "" intermixed with an optional aria-expanded element. Application #. aria.application = role="" application%C2%A0...' row_index=11
+++++++++android.view.View collection_item name='ARIA - HTML5 - W3C on GitHub' row_index=11 row_span=1 column_index=0 column_span=1
+++++++++++android.view.View role_description='heading 5 link' clickable heading name='ARIA - HTML5 - W3C on GitHub'
+++++++++++++android.view.View role_description='heading 5 link' clickable focusable link interesting name='ARIA - HTML5 - W3C on GitHub'
+++++++++++++++android.widget.TextView name='ARIA - HTML5 - W3C on GitHub'
+++++++++android.view.View collection_item focusable interesting name='World Wide Web Consortium' row_index=11 row_span=1 column_index=1 column_span=1
+++++++++android.view.View collection_item focusable interesting name='Alertdialog #. aria.alertdialog = role="" alertdialog "" intermixed with an optional aria-expanded element. Application #. aria.application = role="" application%C2%A0...' row_index=11 row_span=1 column_index=2 column_span=1
+++++++android.view.View name='WAI-ARIA 1.0 Authoring Practices - W3C World Wide Web Consortium Abstract. This document provided readers with an understanding of how to use WAI-ARIA [ ARIA ] to create accessible rich internet applications. It described%C2%A0...' row_index=12
+++++++++android.view.View collection_item name='WAI-ARIA 1.0 Authoring Practices - W3C' row_index=12 row_span=1 column_index=0 column_span=1
+++++++++++android.view.View role_description='heading 5 link' clickable heading name='WAI-ARIA 1.0 Authoring Practices - W3C'
+++++++++++++android.view.View role_description='heading 5 link' clickable focusable link interesting name='WAI-ARIA 1.0 Authoring Practices - W3C'
+++++++++++++++android.widget.TextView name='WAI-ARIA 1.0 Authoring Practices - W3C'
+++++++++android.view.View collection_item focusable interesting name='World Wide Web Consortium' row_index=12 row_span=1 column_index=1 column_span=1
+++++++++android.view.View collection_item focusable interesting name='Abstract. This document provided readers with an understanding of how to use WAI-ARIA [ ARIA ] to create accessible rich internet applications. It described%C2%A0...' row_index=12 row_span=1 column_index=2 column_span=1
+++++++android.view.View name='Notes on Using ARIA in HTML - W3C World Wide Web Consortium May 21, 2015 - This document demonstrates how to use WAI-ARIA in [ HTML51 ], which especially helps with dynamic content and advanced user interface%C2%A0...' row_index=13
+++++++++android.view.View collection_item name='Notes on Using ARIA in HTML - W3C' row_index=13 row_span=1 column_index=0 column_span=1
+++++++++++android.view.View role_description='heading 5 link' clickable heading name='Notes on Using ARIA in HTML - W3C'
+++++++++++++android.view.View role_description='heading 5 link' clickable focusable link interesting name='Notes on Using ARIA in HTML - W3C'
+++++++++++++++android.widget.TextView name='Notes on Using ARIA in HTML - W3C'
+++++++++android.view.View collection_item focusable interesting name='World Wide Web Consortium' row_index=13 row_span=1 column_index=1 column_span=1
+++++++++android.view.View collection_item focusable interesting name='May 21, 2015 - This document demonstrates how to use WAI-ARIA in [ HTML51 ], which especially helps with dynamic content and advanced user interface%C2%A0...' row_index=13 row_span=1 column_index=2 column_span=1
+++++++android.view.View name='Accessible Rich Internet Applications (WAI-ARIA) Current Status - W3C World Wide Web Consortium Accessible Rich Internet Applications (WAI-ARIA) 1.0. Accessibility of Web content to people with disabilities requires semantic information about widgets,%C2%A0...' row_index=14
+++++++++android.view.View collection_item name='Accessible Rich Internet Applications (WAI-ARIA) Current Status - W3C' row_index=14 row_span=1 column_index=0 column_span=1
+++++++++++android.view.View role_description='heading 5 link' clickable heading name='Accessible Rich Internet Applications (WAI-ARIA) Current Status - W3C'
+++++++++++++android.view.View role_description='heading 5 link' clickable focusable link interesting name='Accessible Rich Internet Applications (WAI-ARIA) Current Status - W3C'
+++++++++++++++android.widget.TextView name='Accessible Rich Internet Applications (WAI-ARIA) Current Status - W3C'
+++++++++android.view.View collection_item focusable interesting name='World Wide Web Consortium' row_index=14 row_span=1 column_index=1 column_span=1
+++++++++android.view.View collection_item focusable interesting name='Accessible Rich Internet Applications (WAI-ARIA) 1.0. Accessibility of Web content to people with disabilities requires semantic information about widgets,%C2%A0...' row_index=14 row_span=1 column_index=2 column_span=1
+++++++android.view.View name='Accessible Rich Internet Applications (WAI-ARIA) 1.0 - W3C World Wide Web Consortium Feb 3, 2014 - This version: http://www.w3.org/WAI/PF/aria/; Previous editors' draft: ... This document is part of the WAI-ARIA suite described in the WAI-ARIA%C2%A0...' row_index=15
+++++++++android.view.View collection_item name='Accessible Rich Internet Applications (WAI-ARIA) 1.0 - W3C' row_index=15 row_span=1 column_index=0 column_span=1
+++++++++++android.view.View role_description='heading 5 link' clickable heading name='Accessible Rich Internet Applications (WAI-ARIA) 1.0 - W3C'
+++++++++++++android.view.View role_description='heading 5 link' clickable focusable link interesting name='Accessible Rich Internet Applications (WAI-ARIA) 1.0 - W3C'
+++++++++++++++android.widget.TextView name='Accessible Rich Internet Applications (WAI-ARIA) 1.0 - W3C'
+++++++++android.view.View collection_item focusable interesting name='World Wide Web Consortium' row_index=15 row_span=1 column_index=1 column_span=1
+++++++++android.view.View collection_item focusable interesting name='Feb 3, 2014 - This version: http://www.w3.org/WAI/PF/aria/; Previous editors' draft: ... This document is part of the WAI-ARIA suite described in the WAI-ARIA%C2%A0...' row_index=15 row_span=1 column_index=2 column_span=1
+++++++android.view.View name='Introduction | Accessible Rich Internet Applications (WAI-ARIA) 1.0 World Wide Web Consortium WAI-ARIA is a technical specification that provides a framework to improve the accessibility and interoperability of web content and applications. This document%C2%A0...' row_index=16
+++++++++android.view.View collection_item name='Introduction | Accessible Rich Internet Applications (WAI-ARIA) 1.0' row_index=16 row_span=1 column_index=0 column_span=1
+++++++++++android.view.View role_description='heading 5 link' clickable heading name='Introduction | Accessible Rich Internet Applications (WAI-ARIA) 1.0'
+++++++++++++android.view.View role_description='heading 5 link' clickable focusable link interesting name='Introduction | Accessible Rich Internet Applications (WAI-ARIA) 1.0'
+++++++++++++++android.widget.TextView name='Introduction | Accessible Rich Internet Applications (WAI-ARIA) 1.0'
+++++++++android.view.View collection_item focusable interesting name='World Wide Web Consortium' row_index=16 row_span=1 column_index=1 column_span=1
+++++++++android.view.View collection_item focusable interesting name='WAI-ARIA is a technical specification that provides a framework to improve the accessibility and interoperability of web content and applications. This document%C2%A0...' row_index=16 row_span=1 column_index=2 column_span=1
+++++++android.view.View name='Using WAI-ARIA | Accessible Rich Internet Applications (WAI-ARIA) 1.0 World Wide Web Consortium WAI-ARIA divides the semantics into roles (the type defining a user interface element) and states and properties supported by the roles. Authors need to%C2%A0...' row_index=17
+++++++++android.view.View collection_item name='Using WAI-ARIA | Accessible Rich Internet Applications (WAI-ARIA) 1.0' row_index=17 row_span=1 column_index=0 column_span=1
+++++++++++android.view.View role_description='heading 5 link' clickable heading name='Using WAI-ARIA | Accessible Rich Internet Applications (WAI-ARIA) 1.0'
+++++++++++++android.view.View role_description='heading 5 link' clickable focusable link interesting name='Using WAI-ARIA | Accessible Rich Internet Applications (WAI-ARIA) 1.0'
+++++++++++++++android.widget.TextView name='Using WAI-ARIA | Accessible Rich Internet Applications (WAI-ARIA) 1.0'
+++++++++android.view.View collection_item focusable interesting name='World Wide Web Consortium' row_index=17 row_span=1 column_index=1 column_span=1
+++++++++android.view.View collection_item focusable interesting name='WAI-ARIA divides the semantics into roles (the type defining a user interface element) and states and properties supported by the roles. Authors need to%C2%A0...' row_index=17 row_span=1 column_index=2 column_span=1
+++++++android.view.View name='Using ARIA landmarks to identify regions of a page - WCAG WG - W3C World Wide Web Consortium Jan 3, 2014 - NVDA 2 supports all landmarks except it will not support navigation to %E2%80%9Capplication%E2%80%9D; Window Eyes as of V.7 does not support ARIA landmarks.' row_index=18
+++++++++android.view.View collection_item name='Using ARIA landmarks to identify regions of a page - WCAG WG - W3C' row_index=18 row_span=1 column_index=0 column_span=1
+++++++++++android.view.View role_description='heading 5 link' clickable heading name='Using ARIA landmarks to identify regions of a page - WCAG WG - W3C'
+++++++++++++android.view.View role_description='heading 5 link' clickable focusable link interesting name='Using ARIA landmarks to identify regions of a page - WCAG WG - W3C'
+++++++++++++++android.widget.TextView name='Using ARIA landmarks to identify regions of a page - WCAG WG - W3C'
+++++++++android.view.View collection_item focusable interesting name='World Wide Web Consortium' row_index=18 row_span=1 column_index=1 column_span=1
+++++++++android.view.View collection_item focusable interesting name='Jan 3, 2014 - NVDA 2 supports all landmarks except it will not support navigation to %E2%80%9Capplication%E2%80%9D; Window Eyes as of V.7 does not support ARIA landmarks.' row_index=18 row_span=1 column_index=2 column_span=1
+++++android.view.View
+++++++android.widget.Button clickable disabled interesting name='Previous'
+++++++android.widget.Button clickable focusable interesting name='Next'

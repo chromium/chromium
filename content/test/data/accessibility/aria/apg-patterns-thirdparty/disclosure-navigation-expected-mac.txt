@@ -1,0 +1,15 @@
+AXWebArea AXTitle='Example Disclosure Navigation Menu'
+++AXGroup
+++++AXGroup AXSubrole=AXLandmarkNavigation AXDescription='Mythical University' AXTitle='Mythical University'
+++++++AXList AXSubrole=AXContentList
+++++++++AXGroup
+++++++++++AXButton AXTitle='About'
+++++++++AXGroup
+++++++++++AXButton AXTitle='Admissions'
+++++++++AXGroup
+++++++++++AXButton AXTitle='Academics'
+++++AXGroup AXSubrole=AXLandmarkRegion AXDescription='Mythical University sample page content' AXTitle='Mythical University sample page content'
+++++++AXHeading AXTitle='Mythical University' AXValue=3
+++++++++AXStaticText AXValue='Mythical University'
+++++++AXGroup
+++++++++AXStaticText AXValue='Sample content section. Activating a link above will update and navigate to this region.'

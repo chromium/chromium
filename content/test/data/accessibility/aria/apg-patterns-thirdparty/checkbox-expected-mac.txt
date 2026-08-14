@@ -1,0 +1,22 @@
+AXWebArea AXTitle='Checkbox Example (Two State)'
+++AXGroup
+++++AXHeading AXTitle='Sandwich Condiments' AXValue=3
+++++++AXStaticText AXValue='Sandwich Condiments'
+++++AXGroup AXSubrole=AXApplicationGroup AXDescription='Sandwich Condiments' AXTitle='Sandwich Condiments'
+++++++AXList AXSubrole=AXContentList
+++++++++AXGroup
+++++++++++AXCheckBox AXTitle='Lettuce' AXValue=0
+++++++++++++AXImage
+++++++++++++AXStaticText AXValue='Lettuce'
+++++++++AXGroup
+++++++++++AXCheckBox AXTitle='Tomato' AXValue=1
+++++++++++++AXImage
+++++++++++++AXStaticText AXValue='Tomato'
+++++++++AXGroup
+++++++++++AXCheckBox AXTitle='Mustard' AXValue=0
+++++++++++++AXImage
+++++++++++++AXStaticText AXValue='Mustard'
+++++++++AXGroup
+++++++++++AXCheckBox AXTitle='Sprouts' AXValue=0
+++++++++++++AXImage
+++++++++++++AXStaticText AXValue='Sprouts'

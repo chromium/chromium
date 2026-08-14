@@ -1,0 +1,94 @@
+rootWebArea name='Scrollable Listbox Example'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer
+++++++++paragraph
+++++++++++staticText name='Choose your favorite transuranic element (actinide or transactinide).'
+++++++++++++inlineTextBox name='Choose your favorite transuranic element (actinide or transactinide).'
+++++++++genericContainer ignored
+++++++++++genericContainer ignored
+++++++++++++genericContainer
+++++++++++++++staticText name='Transuranium elements:'
+++++++++++++++++inlineTextBox name='Transuranium elements:'
+++++++++++++listBox name='Transuranium elements:'
+++++++++++++++listBoxOption name='None' selected=false
+++++++++++++++++staticText name='None'
+++++++++++++++++++inlineTextBox name='None'
+++++++++++++++listBoxOption name='Neptunium' selected=false
+++++++++++++++++staticText name='Neptunium'
+++++++++++++++++++inlineTextBox name='Neptunium'
+++++++++++++++listBoxOption name='Plutonium' selected=false
+++++++++++++++++staticText name='Plutonium'
+++++++++++++++++++inlineTextBox name='Plutonium'
+++++++++++++++listBoxOption name='Americium' selected=false
+++++++++++++++++staticText name='Americium'
+++++++++++++++++++inlineTextBox name='Americium'
+++++++++++++++listBoxOption name='Curium' selected=false
+++++++++++++++++staticText name='Curium'
+++++++++++++++++++inlineTextBox name='Curium'
+++++++++++++++listBoxOption name='Berkelium' selected=false
+++++++++++++++++staticText name='Berkelium'
+++++++++++++++++++inlineTextBox name='Berkelium'
+++++++++++++++listBoxOption name='Californium' selected=false
+++++++++++++++++staticText name='Californium'
+++++++++++++++++++inlineTextBox name='Californium'
+++++++++++++++listBoxOption name='Einsteinium' selected=false
+++++++++++++++++staticText name='Einsteinium'
+++++++++++++++++++inlineTextBox name='Einsteinium'
+++++++++++++++listBoxOption name='Fermium' selected=false
+++++++++++++++++staticText name='Fermium'
+++++++++++++++++++inlineTextBox name='Fermium'
+++++++++++++++listBoxOption name='Mendelevium' selected=false
+++++++++++++++++staticText name='Mendelevium'
+++++++++++++++++++inlineTextBox name='Mendelevium'
+++++++++++++++listBoxOption name='Nobelium' selected=false
+++++++++++++++++staticText name='Nobelium'
+++++++++++++++++++inlineTextBox name='Nobelium'
+++++++++++++++listBoxOption name='Lawrencium' selected=false
+++++++++++++++++staticText name='Lawrencium'
+++++++++++++++++++inlineTextBox name='Lawrencium'
+++++++++++++++listBoxOption name='Rutherfordium' selected=false
+++++++++++++++++staticText name='Rutherfordium'
+++++++++++++++++++inlineTextBox name='Rutherfordium'
+++++++++++++++listBoxOption name='Dubnium' selected=false
+++++++++++++++++staticText name='Dubnium'
+++++++++++++++++++inlineTextBox name='Dubnium'
+++++++++++++++listBoxOption name='Seaborgium' selected=false
+++++++++++++++++staticText name='Seaborgium'
+++++++++++++++++++inlineTextBox name='Seaborgium'
+++++++++++++++listBoxOption name='Bohrium' selected=false
+++++++++++++++++staticText name='Bohrium'
+++++++++++++++++++inlineTextBox name='Bohrium'
+++++++++++++++listBoxOption name='Hassium' selected=false
+++++++++++++++++staticText name='Hassium'
+++++++++++++++++++inlineTextBox name='Hassium'
+++++++++++++++listBoxOption name='Meitnerium' selected=false
+++++++++++++++++staticText name='Meitnerium'
+++++++++++++++++++inlineTextBox name='Meitnerium'
+++++++++++++++listBoxOption name='Darmstadtium' selected=false
+++++++++++++++++staticText name='Darmstadtium'
+++++++++++++++++++inlineTextBox name='Darmstadtium'
+++++++++++++++listBoxOption name='Roentgenium' selected=false
+++++++++++++++++staticText name='Roentgenium'
+++++++++++++++++++inlineTextBox name='Roentgenium'
+++++++++++++++listBoxOption name='Copernicium' selected=false
+++++++++++++++++staticText name='Copernicium'
+++++++++++++++++++inlineTextBox name='Copernicium'
+++++++++++++++listBoxOption name='Nihonium' selected=false
+++++++++++++++++staticText name='Nihonium'
+++++++++++++++++++inlineTextBox name='Nihonium'
+++++++++++++++listBoxOption name='Flerovium' selected=false
+++++++++++++++++staticText name='Flerovium'
+++++++++++++++++++inlineTextBox name='Flerovium'
+++++++++++++++listBoxOption name='Moscovium' selected=false
+++++++++++++++++staticText name='Moscovium'
+++++++++++++++++++inlineTextBox name='Moscovium'
+++++++++++++++listBoxOption name='Livermorium' selected=false
+++++++++++++++++staticText name='Livermorium'
+++++++++++++++++++inlineTextBox name='Livermorium'
+++++++++++++++listBoxOption name='Tennessine' selected=false
+++++++++++++++++staticText name='Tennessine'
+++++++++++++++++++inlineTextBox name='Tennessine'
+++++++++++++++listBoxOption name='Oganesson' selected=false
+++++++++++++++++staticText name='Oganesson'
+++++++++++++++++++inlineTextBox name='Oganesson'

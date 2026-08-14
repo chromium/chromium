@@ -1,0 +1,3 @@
+AXWebArea AXTitle='Alert Example'
+++AXGroup
+++++AXButton AXTitle='Trigger Alert'

@@ -1,0 +1,103 @@
+AXWebArea AXTitle='Table Example'
+++AXGroup
+++++AXTable AXDescription='Students' AXTitle='Students'
+++++++AXGroup
+++++++++AXStaticText AXValue='Students currently enrolled in WAI-ARIA 101 for the coming semester'
+++++++AXRow
+++++++++AXCell
+++++++++++AXStaticText AXValue='First Name'
+++++++++AXCell
+++++++++++AXStaticText AXValue='Last Name'
+++++++++AXCell
+++++++++++AXStaticText AXValue='Company'
+++++++++AXCell
+++++++++++AXStaticText AXValue='Address'
+++++++AXRow
+++++++++AXCell
+++++++++++AXStaticText AXValue='Fred'
+++++++++AXCell
+++++++++++AXStaticText AXValue='Jackson'
+++++++++AXCell
+++++++++++AXStaticText AXValue='Acme, Inc.'
+++++++++AXCell
+++++++++++AXStaticText AXValue='123 Broad St.'
+++++++AXRow
+++++++++AXCell
+++++++++++AXStaticText AXValue='Sara'
+++++++++AXCell
+++++++++++AXStaticText AXValue='James'
+++++++++AXCell
+++++++++++AXStaticText AXValue='Acme, Inc.'
+++++++++AXCell
+++++++++++AXStaticText AXValue='123 Broad St.'
+++++++AXRow
+++++++++AXCell
+++++++++++AXStaticText AXValue='Ralph'
+++++++++AXCell
+++++++++++AXStaticText AXValue='Jefferson'
+++++++++AXCell
+++++++++++AXStaticText AXValue='XYZ, Inc.'
+++++++++AXCell
+++++++++++AXStaticText AXValue='456 Main St.'
+++++++AXRow
+++++++++AXCell
+++++++++++AXStaticText AXValue='Nancy'
+++++++++AXCell
+++++++++++AXStaticText AXValue='Jensen'
+++++++++AXCell
+++++++++++AXStaticText AXValue='XYZ, Inc.'
+++++++++AXCell
+++++++++++AXStaticText AXValue='456 Main St.'
+++++++AXColumn
+++++++++AXCell
+++++++++++AXStaticText AXValue='First Name'
+++++++++AXCell
+++++++++++AXStaticText AXValue='Fred'
+++++++++AXCell
+++++++++++AXStaticText AXValue='Sara'
+++++++++AXCell
+++++++++++AXStaticText AXValue='Ralph'
+++++++++AXCell
+++++++++++AXStaticText AXValue='Nancy'
+++++++AXColumn
+++++++++AXCell
+++++++++++AXStaticText AXValue='Last Name'
+++++++++AXCell
+++++++++++AXStaticText AXValue='Jackson'
+++++++++AXCell
+++++++++++AXStaticText AXValue='James'
+++++++++AXCell
+++++++++++AXStaticText AXValue='Jefferson'
+++++++++AXCell
+++++++++++AXStaticText AXValue='Jensen'
+++++++AXColumn
+++++++++AXCell
+++++++++++AXStaticText AXValue='Company'
+++++++++AXCell
+++++++++++AXStaticText AXValue='Acme, Inc.'
+++++++++AXCell
+++++++++++AXStaticText AXValue='Acme, Inc.'
+++++++++AXCell
+++++++++++AXStaticText AXValue='XYZ, Inc.'
+++++++++AXCell
+++++++++++AXStaticText AXValue='XYZ, Inc.'
+++++++AXColumn
+++++++++AXCell
+++++++++++AXStaticText AXValue='Address'
+++++++++AXCell
+++++++++++AXStaticText AXValue='123 Broad St.'
+++++++++AXCell
+++++++++++AXStaticText AXValue='123 Broad St.'
+++++++++AXCell
+++++++++++AXStaticText AXValue='456 Main St.'
+++++++++AXCell
+++++++++++AXStaticText AXValue='456 Main St.'
+++++++AXGroup
+++++++++AXCell
+++++++++++AXStaticText AXValue='First Name'
+++++++++AXCell
+++++++++++AXStaticText AXValue='Last Name'
+++++++++AXCell
+++++++++++AXStaticText AXValue='Company'
+++++++++AXCell
+++++++++++AXStaticText AXValue='Address'

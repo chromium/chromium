@@ -1,0 +1,22 @@
+AXWebArea AXTitle='Auto-Rotating Image Carousel Example with Buttons for Slide Control'
+++AXGroup
+++++AXGroup AXSubrole=AXLandmarkRegion AXDescription='Highlighted television shows' AXTitle='Highlighted television shows'
+++++++AXGroup
+++++++++AXGroup
+++++++++++AXButton AXDescription='Start automatic slide show' AXTitle='Start automatic slide show'
+++++++++++++AXImage
+++++++++++AXButton AXDescription='Previous Slide' AXTitle='Previous Slide'
+++++++++++++AXImage
+++++++++++AXButton AXDescription='Next Slide' AXTitle='Next Slide'
+++++++++++++AXImage
+++++++++AXGroup
+++++++++++AXGroup AXSubrole=AXApplicationGroup AXDescription='1 of 6' AXTitle='1 of 6'
+++++++++++++AXGroup
+++++++++++++++AXLink AXDescription='Walking Tour in Amsterdam' AXTitle='Walking Tour in Amsterdam'
+++++++++++++++++AXImage AXDescription='Walking Tour in Amsterdam' AXTitle='Walking Tour in Amsterdam'
+++++++++++++AXGroup
+++++++++++++++AXHeading AXTitle='Dynamic Europe: Amsterdam, Prague, Berlin' AXValue=3
+++++++++++++++++AXLink AXDescription='Dynamic Europe: Amsterdam, Prague, Berlin' AXTitle='Dynamic Europe: Amsterdam, Prague, Berlin'
+++++++++++++++++++AXStaticText AXValue='Dynamic Europe: Amsterdam, Prague, Berlin'
+++++++++++++++AXGroup
+++++++++++++++++AXStaticText AXValue='7 pm Tuesday, March 3, on TV'

@@ -1,0 +1,5 @@
+WebView supplementalDescription:"Select-Only Combobox Example" focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
+++View viewIdResName:"ex1" actions:[AX_FOCUS] bundle:[chromeRole="genericContainer"]
+++++View actions:[AX_FOCUS] bundle:[chromeRole="genericContainer"]
+++++++TextView text:"Favorite Fruit" viewIdResName:"combo1-label" clickable actions:[CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="genericContainer", clickableScore="200"]
+++++++Spinner text:"Choose a Fruit" viewIdResName:"combo1" supplementalDescription:"Favorite Fruit" canOpenPopUp clickable focusable expandedState:1 actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS, EXPAND] bundle:[chromeRole="comboBoxMenuButton", clickableScore="300"]

@@ -1,0 +1,102 @@
+AXWebArea AXTitle='Treegrid Email Inbox Example'
+++AXGroup
+++++AXTable AXDescription='Inbox' AXTitle='Inbox'
+++++++AXRow AXTitle='Subject Summary Email'
+++++++++AXCell
+++++++++++AXStaticText AXValue='Subject'
+++++++++AXCell
+++++++++++AXStaticText AXValue='Summary'
+++++++++AXCell
+++++++++++AXStaticText AXValue='Email'
+++++++AXRow AXTitle=' Treegrids are awesome Want to learn how to use them? aaron@thegoogle.rocks'
+++++++++AXCell
+++++++++++AXGroup
+++++++++++++AXStaticText AXValue='  '
+++++++++++AXStaticText AXValue='Treegrids are awesome'
+++++++++AXCell
+++++++++++AXStaticText AXValue='Want to learn how to use them?'
+++++++++AXCell
+++++++++++AXLink AXDescription='aaron@thegoogle.rocks' AXTitle='aaron@thegoogle.rocks'
+++++++++++++AXStaticText AXValue='aaron@thegoogle.rocks'
+++++++AXRow AXTitle=' re: Treegrids are awesome I agree with you, they are the shizzle joe@blahblahblah.blahblah'
+++++++++AXCell
+++++++++++AXGroup
+++++++++++++AXStaticText AXValue='  '
+++++++++++AXStaticText AXValue='re: Treegrids are awesome'
+++++++++AXCell
+++++++++++AXStaticText AXValue='I agree with you, they are the shizzle'
+++++++++AXCell
+++++++++++AXLink AXDescription='joe@blahblahblah.blahblah' AXTitle='joe@blahblahblah.blahblah'
+++++++++++++AXStaticText AXValue='joe@blahblahblah.blahblah'
+++++++AXRow AXTitle=' re: Treegrids are awesome They are great for showing a lot of data, like a grid billy@dangerous.fish'
+++++++++AXCell
+++++++++++AXGroup
+++++++++++++AXStaticText AXValue='  '
+++++++++++AXStaticText AXValue='re: Treegrids are awesome'
+++++++++AXCell
+++++++++++AXStaticText AXValue='They are great for showing a lot of data, like a grid'
+++++++++AXCell
+++++++++++AXLink AXDescription='billy@dangerous.fish' AXTitle='billy@dangerous.fish'
+++++++++++++AXStaticText AXValue='billy@dangerous.fish'
+++++++AXRow AXTitle=' re: Treegrids are awesome I hear the Fancytree library is going to align with this example! someone@please-do-it.company'
+++++++++AXCell
+++++++++++AXGroup
+++++++++++++AXStaticText AXValue='  '
+++++++++++AXStaticText AXValue='re: Treegrids are awesome'
+++++++++AXCell
+++++++++++AXStaticText AXValue='I hear the Fancytree library is going to align with this example!'
+++++++++AXCell
+++++++++++AXLink AXDescription='someone@please-do-it.company' AXTitle='someone@please-do-it.company'
+++++++++++++AXStaticText AXValue='someone@please-do-it.company'
+++++++AXColumn
+++++++++AXCell
+++++++++++AXStaticText AXValue='Subject'
+++++++++AXCell
+++++++++++AXGroup
+++++++++++++AXStaticText AXValue='  '
+++++++++++AXStaticText AXValue='Treegrids are awesome'
+++++++++AXCell
+++++++++++AXGroup
+++++++++++++AXStaticText AXValue='  '
+++++++++++AXStaticText AXValue='re: Treegrids are awesome'
+++++++++AXCell
+++++++++++AXGroup
+++++++++++++AXStaticText AXValue='  '
+++++++++++AXStaticText AXValue='re: Treegrids are awesome'
+++++++++AXCell
+++++++++++AXGroup
+++++++++++++AXStaticText AXValue='  '
+++++++++++AXStaticText AXValue='re: Treegrids are awesome'
+++++++AXColumn
+++++++++AXCell
+++++++++++AXStaticText AXValue='Summary'
+++++++++AXCell
+++++++++++AXStaticText AXValue='Want to learn how to use them?'
+++++++++AXCell
+++++++++++AXStaticText AXValue='I agree with you, they are the shizzle'
+++++++++AXCell
+++++++++++AXStaticText AXValue='They are great for showing a lot of data, like a grid'
+++++++++AXCell
+++++++++++AXStaticText AXValue='I hear the Fancytree library is going to align with this example!'
+++++++AXColumn
+++++++++AXCell
+++++++++++AXStaticText AXValue='Email'
+++++++++AXCell
+++++++++++AXLink AXDescription='aaron@thegoogle.rocks' AXTitle='aaron@thegoogle.rocks'
+++++++++++++AXStaticText AXValue='aaron@thegoogle.rocks'
+++++++++AXCell
+++++++++++AXLink AXDescription='joe@blahblahblah.blahblah' AXTitle='joe@blahblahblah.blahblah'
+++++++++++++AXStaticText AXValue='joe@blahblahblah.blahblah'
+++++++++AXCell
+++++++++++AXLink AXDescription='billy@dangerous.fish' AXTitle='billy@dangerous.fish'
+++++++++++++AXStaticText AXValue='billy@dangerous.fish'
+++++++++AXCell
+++++++++++AXLink AXDescription='someone@please-do-it.company' AXTitle='someone@please-do-it.company'
+++++++++++++AXStaticText AXValue='someone@please-do-it.company'
+++++++AXGroup
+++++++++AXCell
+++++++++++AXStaticText AXValue='Subject'
+++++++++AXCell
+++++++++++AXStaticText AXValue='Summary'
+++++++++AXCell
+++++++++++AXStaticText AXValue='Email'

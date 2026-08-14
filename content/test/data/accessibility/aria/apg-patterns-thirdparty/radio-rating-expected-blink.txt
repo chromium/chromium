@@ -1,0 +1,23 @@
+rootWebArea name='Rating Radio Group Example'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer
+++++++++radioGroup name='Rating'
+++++++++++genericContainer
+++++++++++++staticText name='Rating'
+++++++++++++++inlineTextBox name='Rating'
+++++++++++radioButton name='one star' checkedState=false
+++++++++++++group ignored
+++++++++++++group ignored
+++++++++++radioButton name='two stars' checkedState=false
+++++++++++++group ignored
+++++++++++++group ignored
+++++++++++radioButton name='three stars' checkedState=false
+++++++++++++group ignored
+++++++++++++group ignored
+++++++++++radioButton name='four stars' checkedState=false
+++++++++++++group ignored
+++++++++++++group ignored
+++++++++++radioButton name='five stars' checkedState=false
+++++++++++++group ignored
+++++++++++++group ignored

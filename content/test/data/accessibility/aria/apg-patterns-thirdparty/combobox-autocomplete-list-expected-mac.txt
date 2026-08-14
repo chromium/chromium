@@ -1,0 +1,8 @@
+AXWebArea AXTitle='Editable Combobox With List Autocomplete Example'
+++AXGroup
+++++AXGroup
+++++++AXStaticText AXValue='State'
+++++AXGroup
+++++++AXGroup
+++++++++AXComboBox AXAutocompleteValue='list' AXTitle='State'
+++++++++AXButton AXDescription='States' AXTitle='States'

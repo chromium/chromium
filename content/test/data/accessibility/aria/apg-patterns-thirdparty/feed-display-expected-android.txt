@@ -1,0 +1,16 @@
+android.webkit.WebView focusable focused interesting name='Feed Display'
+++android.widget.TextView role_description='heading 3' heading interesting name='Recommended Restaurants'
+++android.view.View
+++++android.view.View role_description='feed'
+++++++android.view.View role_description='article' focusable interesting name='Tito's Tacos' hint='5 stars Mexican, Tacos 123 Blueberry Ln San Dimas, CA (111) 111-1111' item_index=0 row_index=0
+++++++++android.view.View
+++++++++++android.widget.TextView interesting name='Tito's Tacos'
+++++++++++android.view.View
+++++++++++++android.widget.Image interesting content_description='5 stars'
+++++++++++android.widget.TextView interesting name='Mexican, Tacos'
+++++++++android.view.View
+++++++++++android.widget.TextView interesting name='123 Blueberry Ln'
+++++++++++android.widget.TextView interesting name='San Dimas, CA'
+++++++++++android.widget.TextView interesting name='(111) 111-1111'
+++++++++android.view.View
+++++++++++android.widget.Button clickable focusable interesting name='Bookmark'

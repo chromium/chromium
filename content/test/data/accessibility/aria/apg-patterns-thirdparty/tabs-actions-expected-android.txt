@@ -1,0 +1,31 @@
+android.webkit.WebView focusable focused interesting name='Experimental Example of Tabs with Action Buttons'
+++android.view.View
+++++android.widget.TextView role_description='heading 3' heading interesting name='Interesting Sharks'
+++++android.view.ViewGroup role_description='tab list' collection container_title='Interesting Sharks' item_count=4 row_count=4 column_count=1
+++++++android.view.View
+++++++++android.view.View role_description='tab' clickable collection_item focusable selected interesting name='Nurse shark' item_index=0 row_index=0
+++++++++android.view.View
+++++++++++android.widget.Button role_description='menu pop up button' clickable collapsed focusable interesting name='Actions for Nurse shark tab' expanded_state=1
+++++++android.view.View
+++++++++android.view.View role_description='tab' clickable collection_item focusable interesting name='Basking shark' item_index=1 row_index=1
+++++++++android.view.View
+++++++++++android.widget.Button role_description='menu pop up button' clickable collapsed focusable interesting name='Actions for Basking shark tab' expanded_state=1
+++++++android.view.View
+++++++++android.view.View role_description='tab' clickable collection_item focusable interesting name='Whale shark' item_index=2 row_index=2
+++++++++android.view.View
+++++++++++android.widget.Button role_description='menu pop up button' clickable collapsed focusable interesting name='Actions for Whale shark tab' expanded_state=1
+++++++android.view.View
+++++++++android.view.View role_description='tab' clickable collection_item focusable interesting name='Goblin shark' item_index=3 row_index=3
+++++++++android.view.View
+++++++++++android.widget.Button role_description='menu pop up button' clickable collapsed focusable interesting name='Actions for Goblin shark tab' expanded_state=1
+++++android.view.View role_description='tab panel' name='Nurse shark'
+++++++android.view.View
+++++++++android.widget.TextView interesting name='The '
+++++++++android.view.View role_description='link' clickable focusable link interesting name='nurse shark'
+++++++++++android.widget.TextView name='nurse shark'
+++++++++android.widget.TextView interesting name=' ('
+++++++++android.widget.TextView interesting name='Ginglymostoma cirratum'
+++++++++android.widget.TextView interesting name=') is an elasmobranch fish in the family '
+++++++++android.widget.TextView interesting name='Ginglymostomatidae'
+++++++++android.widget.TextView interesting name='. The conservation status of the nurse shark is globally assessed as Vulnerable in the IUCN List of Threatened Species. They are considered to be a species of least concern in the United States and in The Bahamas, but considered to be near threatened in the western Atlantic Ocean because of their vulnerable status in South America and reported threats throughout many areas of Central America and the Caribbean. They are directly targeted in some fisheries and considered by-catch in others.'
+++++android.view.View role_description='status' live_region_type=1

@@ -1,0 +1,32 @@
+AXWebArea AXTitle='Experimental Example of Tabs with Action Buttons'
+++AXGroup
+++++AXHeading AXTitle='Interesting Sharks' AXValue=3
+++++++AXStaticText AXValue='Interesting Sharks'
+++++AXTabGroup AXTitle='Interesting Sharks'
+++++++AXGroup
+++++++++AXRadioButton AXSubrole=AXTabButton AXTitle='Nurse shark' AXValue=1
+++++++++AXGroup
+++++++++++AXPopUpButton AXDescription='Actions for Nurse shark tab' AXTitle='Actions for Nurse shark tab'
+++++++AXGroup
+++++++++AXRadioButton AXSubrole=AXTabButton AXTitle='Basking shark' AXValue=0
+++++++++AXGroup
+++++++++++AXPopUpButton AXDescription='Actions for Basking shark tab' AXTitle='Actions for Basking shark tab'
+++++++AXGroup
+++++++++AXRadioButton AXSubrole=AXTabButton AXTitle='Whale shark' AXValue=0
+++++++++AXGroup
+++++++++++AXPopUpButton AXDescription='Actions for Whale shark tab' AXTitle='Actions for Whale shark tab'
+++++++AXGroup
+++++++++AXRadioButton AXSubrole=AXTabButton AXTitle='Goblin shark' AXValue=0
+++++++++AXGroup
+++++++++++AXPopUpButton AXDescription='Actions for Goblin shark tab' AXTitle='Actions for Goblin shark tab'
+++++AXGroup AXSubrole=AXTabPanel AXDescription='Nurse shark' AXTitle='Nurse shark'
+++++++AXGroup
+++++++++AXStaticText AXValue='The '
+++++++++AXLink AXDescription='nurse shark' AXTitle='nurse shark'
+++++++++++AXStaticText AXValue='nurse shark'
+++++++++AXStaticText AXValue=' ('
+++++++++AXStaticText AXValue='Ginglymostoma cirratum'
+++++++++AXStaticText AXValue=') is an elasmobranch fish in the family '
+++++++++AXStaticText AXValue='Ginglymostomatidae'
+++++++++AXStaticText AXValue='. The conservation status of the nurse shark is globally assessed as Vulnerable in the IUCN List of Threatened Species. They are considered to be a species of least concern in the United States and in The Bahamas, but considered to be near threatened in the western Atlantic Ocean because of their vulnerable status in South America and reported threats throughout many areas of Central America and the Caribbean. They are directly targeted in some fisheries and considered by-catch in others.'
+++++AXGroup AXSubrole=AXApplicationStatus

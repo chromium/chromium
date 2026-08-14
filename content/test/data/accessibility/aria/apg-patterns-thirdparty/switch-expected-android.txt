@@ -1,0 +1,3 @@
+android.webkit.WebView focusable focused interesting name='Switch Example'
+++android.view.View
+++++android.widget.Switch checkable clickable focusable interesting name='Notifications' state_description='Off'

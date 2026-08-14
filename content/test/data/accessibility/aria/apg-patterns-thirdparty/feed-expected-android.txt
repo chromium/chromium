@@ -1,0 +1,33 @@
+android.webkit.WebView focusable focused interesting name='Infinite Scrolling Feed Example'
+++android.view.View
+++++android.widget.TextView interesting name='The example feed experience below is presented in an iframe in order not to obstruct from the rest of the content of the page.'
+++++android.view.View focusable interesting
+++++++android.view.View focusable interesting name='Feed Display'
+++++++++android.widget.TextView role_description='heading 3' heading interesting name='Recommended Restaurants'
+++++++++android.view.View
+++++++++++android.view.View role_description='feed'
+++++++++++++android.view.View role_description='article' focusable interesting name='Tito's Tacos' hint='5 stars Mexican, Tacos 123 Blueberry Ln San Dimas, CA (111) 111-1111' item_index=0 row_index=0
+++++++++++++++android.view.View
+++++++++++++++++android.widget.TextView interesting name='Tito's Tacos'
+++++++++++++++++android.view.View
+++++++++++++++++++android.widget.Image interesting content_description='5 stars'
+++++++++++++++++android.widget.TextView interesting name='Mexican, Tacos'
+++++++++++++++android.view.View
+++++++++++++++++android.widget.TextView interesting name='123 Blueberry Ln'
+++++++++++++++++android.widget.TextView interesting name='San Dimas, CA'
+++++++++++++++++android.widget.TextView interesting name='(111) 111-1111'
+++++++++++++++android.view.View
+++++++++++++++++android.widget.Button clickable focusable interesting name='Bookmark'
+++++++++++++android.view.View role_description='article' focusable interesting name='Sakura Sushi' hint='4 stars Japanese, Fish, Sushi 123 Blueberry Ln Pomona, CA (111) 111-1111' item_index=1 row_index=1
+++++++++++++++android.view.View
+++++++++++++++++android.widget.TextView interesting name='Sakura Sushi'
+++++++++++++++++android.view.View
+++++++++++++++++++android.widget.Image interesting content_description='4 stars'
+++++++++++++++++android.widget.TextView interesting name='Japanese, Fish, Sushi'
+++++++++++++++android.view.View
+++++++++++++++++android.widget.TextView interesting name='123 Blueberry Ln'
+++++++++++++++++android.widget.TextView interesting name='Pomona, CA'
+++++++++++++++++android.widget.TextView interesting name='(111) 111-1111'
+++++++++++++++android.view.View
+++++++++++++++++android.widget.Button clickable focusable interesting name='Bookmark'
+++++android.widget.Button clickable focusable interesting name='Terms of use'

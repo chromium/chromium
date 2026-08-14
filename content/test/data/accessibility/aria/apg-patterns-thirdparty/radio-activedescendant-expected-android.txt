@@ -1,0 +1,24 @@
+android.webkit.WebView focusable focused interesting name='Radio Group Example Using aria-activedescendant'
+++android.view.View
+++++android.widget.TextView role_description='heading 3' heading interesting name='Pizza Crust'
+++++android.widget.RadioGroup role_description='radio group' focusable interesting container_title='Pizza Crust'
+++++++android.widget.RadioButton checkable clickable focusable interesting name='Regular crust' state_description='Not checked. In group, option 1 of 3' item_index=0 row_index=0
+++++++++android.widget.Image
+++++++++android.widget.TextView name='Regular crust'
+++++++android.widget.RadioButton checkable clickable focusable interesting name='Deep dish' state_description='Not checked. In group, option 2 of 3' item_index=1 row_index=1
+++++++++android.widget.Image
+++++++++android.widget.TextView name='Deep dish'
+++++++android.widget.RadioButton checkable clickable focusable interesting name='Thin crust' state_description='Not checked. In group, option 3 of 3' item_index=2 row_index=2
+++++++++android.widget.Image
+++++++++android.widget.TextView name='Thin crust'
+++++android.widget.TextView role_description='heading 3' heading interesting name='Pizza Delivery'
+++++android.widget.RadioGroup role_description='radio group' focusable interesting container_title='Pizza Delivery'
+++++++android.widget.RadioButton checkable clickable focusable interesting name='Pick up' state_description='Not checked. In group, option 1 of 3' item_index=0 row_index=0
+++++++++android.widget.Image
+++++++++android.widget.TextView name='Pick up'
+++++++android.widget.RadioButton checkable clickable focusable interesting name='Home Delivery' state_description='Not checked. In group, option 2 of 3' item_index=1 row_index=1
+++++++++android.widget.Image
+++++++++android.widget.TextView name='Home Delivery'
+++++++android.widget.RadioButton checkable clickable focusable interesting name='Dine in Restaurant' state_description='Not checked. In group, option 3 of 3' item_index=2 row_index=2
+++++++++android.widget.Image
+++++++++android.widget.TextView name='Dine in Restaurant'

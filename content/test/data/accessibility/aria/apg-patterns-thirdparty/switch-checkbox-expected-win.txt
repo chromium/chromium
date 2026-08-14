@@ -1,0 +1,17 @@
+ROLE_SYSTEM_DOCUMENT name='Switch Example Using HTML Checkbox Input' READONLY FOCUSABLE
+++IA2_ROLE_SECTION
+++++ROLE_SYSTEM_GROUPING name='Accessibility Preferences'
+++++++IA2_ROLE_LABEL
+++++++++ROLE_SYSTEM_STATICTEXT name='Accessibility Preferences'
+++++++IA2_ROLE_LABEL
+++++++++IA2_ROLE_SECTION
+++++++++++ROLE_SYSTEM_STATICTEXT name='Reduced motion'
+++++++++IA2_ROLE_TOGGLE_BUTTON name='Reduced motion' FOCUSABLE IA2_STATE_CHECKABLE checkable:true
+++++++++IA2_ROLE_SECTION
+++++++++++IA2_ROLE_SECTION
+++++++IA2_ROLE_LABEL
+++++++++IA2_ROLE_SECTION
+++++++++++ROLE_SYSTEM_STATICTEXT name='Show captions'
+++++++++IA2_ROLE_TOGGLE_BUTTON name='Show captions' FOCUSABLE IA2_STATE_CHECKABLE checkable:true
+++++++++IA2_ROLE_SECTION
+++++++++++IA2_ROLE_SECTION

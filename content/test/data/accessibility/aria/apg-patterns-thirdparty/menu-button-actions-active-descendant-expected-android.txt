@@ -1,0 +1,8 @@
+android.webkit.WebView focusable focused interesting name='Actions Menu Button Example Using aria-activedescendant'
+++android.view.View
+++++android.view.View
+++++++android.widget.Button role_description='menu pop up button' clickable collapsed focusable interesting name='Actions ' expanded_state=1
+++++android.view.View
+++++++android.view.View
+++++++++android.widget.TextView interesting name='Last Action: '
+++++++++android.widget.EditText clickable editable_text focusable has_non_empty_value interesting name='none' hint='Last Action:' input_type=1 text_change_added_count=4

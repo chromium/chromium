@@ -1,0 +1,12 @@
+rootWebArea name='Editable Combobox With List Autocomplete Example'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer
+++++++++labelText
+++++++++++staticText name='State'
+++++++++++++inlineTextBox name='State'
+++++++++genericContainer
+++++++++++genericContainer
+++++++++++++textFieldWithComboBox collapsed autoComplete='list' name='State'
+++++++++++++++genericContainer
+++++++++++++button collapsed name='States'

@@ -1,0 +1,13 @@
+AXWebArea AXTitle='Switch Example Using HTML Button'
+++AXGroup
+++++AXGroup AXSubrole=AXApplicationGroup AXDescription='Environmental Controls' AXTitle='Environmental Controls'
+++++++AXHeading AXTitle='Environmental Controls' AXValue=3
+++++++++AXStaticText AXValue='Environmental Controls'
+++++++AXCheckBox AXSubrole=AXSwitch AXTitle='Living Room Lights' AXValue=0
+++++++++AXGroup
+++++++++++AXStaticText AXValue='Living Room Lights'
+++++++++AXImage
+++++++AXCheckBox AXSubrole=AXSwitch AXTitle='Outdoor Lights' AXValue=0
+++++++++AXGroup
+++++++++++AXStaticText AXValue='Outdoor Lights'
+++++++++AXImage

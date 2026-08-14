@@ -1,0 +1,52 @@
+AXWebArea AXTitle='Example Listboxes with Rearrangeable Options'
+++AXGroup
+++++AXGroup
+++++++AXStaticText AXValue='Rank features important to you when choosing where to live. If a feature is unimportant, move it to the unimportant features list.'
+++++AXGroup
+++++++AXStaticText AXValue='Important Features:'
+++++AXList AXTitle='Important Features:'
+++++++AXStaticText AXValue='Proximity of public K-12 schools'
+++++++AXStaticText AXValue='Proximity of child-friendly parks'
+++++++AXStaticText AXValue='Proximity of grocery shopping'
+++++++AXStaticText AXValue='Proximity of fast food'
+++++++AXStaticText AXValue='Proximity of fine dining'
+++++++AXStaticText AXValue='Neighborhood walkability'
+++++++AXStaticText AXValue='Availability of public transit'
+++++++AXStaticText AXValue='Proximity of hospital and medical services'
+++++++AXStaticText AXValue='Level of traffic noise'
+++++++AXStaticText AXValue='Access to major highways'
+++++AXToolbar AXDescription='Actions' AXTitle='Actions'
+++++++AXButton AXTitle='Up'
+++++++AXButton AXTitle='Down'
+++++++AXButton AXTitle=' Not Important'
+++++AXGroup
+++++++AXStaticText AXValue='Unimportant Features:'
+++++AXList AXTitle='Unimportant Features:'
+++++AXButton AXTitle='Important'
+++++AXGroup
+++++++AXStaticText AXValue='Last change:'
+++++++AXGroup AXSubrole=AXEmptyGroup
+++AXGroup
+++++AXGroup
+++++++AXStaticText AXValue='Choose upgrades for your transport capsule.'
+++++AXGroup
+++++++AXStaticText AXValue='Available upgrades:'
+++++AXList AXTitle='Available upgrades:'
+++++++AXStaticText AXValue='Leather seats'
+++++++AXStaticText AXValue='Front seat warmers'
+++++++AXStaticText AXValue='Rear bucket seats'
+++++++AXStaticText AXValue='Rear seat warmers'
+++++++AXStaticText AXValue='Front sun roof'
+++++++AXStaticText AXValue='Rear sun roof'
+++++++AXStaticText AXValue='Cloaking capability'
+++++++AXStaticText AXValue='Food synthesizer'
+++++++AXStaticText AXValue='Advanced waste recycling system'
+++++++AXStaticText AXValue='Turbo vertical take-off capability'
+++++AXButton AXTitle=' Add'
+++++AXGroup
+++++++AXStaticText AXValue='Upgrades you have chosen:'
+++++AXList AXTitle='Upgrades you have chosen:'
+++++AXButton AXTitle='Remove'
+++++AXGroup
+++++++AXStaticText AXValue='Last change:'
+++++++AXGroup AXSubrole=AXEmptyGroup

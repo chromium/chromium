@@ -1,0 +1,5 @@
+ROLE_SYSTEM_DOCUMENT name='Vertical Temperature Slider Example' READONLY FOCUSABLE
+++IA2_ROLE_SECTION
+++++IA2_ROLE_SECTION
+++++++ROLE_SYSTEM_STATICTEXT name='Temperature'
+++++ROLE_SYSTEM_SLIDER name='Temperature' value='25.0 degrees Celsius' FOCUSABLE

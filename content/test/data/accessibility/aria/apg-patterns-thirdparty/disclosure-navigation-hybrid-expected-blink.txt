@@ -1,0 +1,38 @@
+rootWebArea name='Example Disclosure Navigation Menu with Top-Level Links'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer
+++++++++header
+++++++++++genericContainer
+++++++++++++staticText name='Mythical University'
+++++++++++++++inlineTextBox name='Mythical University'
+++++++++++genericContainer
+++++++++++++staticText name='Using a disclosure + link pattern for navigation'
+++++++++++++++inlineTextBox name='Using a disclosure + link pattern for navigation'
+++++++++navigation name='Mythical University'
+++++++++++list
+++++++++++++listItem
+++++++++++++++link name='About'
+++++++++++++++++staticText name='About'
+++++++++++++++++++inlineTextBox name='About'
+++++++++++++++button collapsed name='More About pages'
+++++++++++++listItem
+++++++++++++++link name='Admissions'
+++++++++++++++++staticText name='Admissions'
+++++++++++++++++++inlineTextBox name='Admissions'
+++++++++++++++button collapsed name='More Admissions pages'
+++++++++++++listItem
+++++++++++++++link name='Academics'
+++++++++++++++++staticText name='Academics'
+++++++++++++++++++inlineTextBox name='Academics'
+++++++++++++++button collapsed name='More Academics pages'
+++++++++region name='Home'
+++++++++++heading name='Home'
+++++++++++++staticText name='Home'
+++++++++++++++inlineTextBox name='Home'
+++++++++++paragraph
+++++++++++++staticText name='Sample content section. Activating a link above will update and navigate to this region.'
+++++++++++++++inlineTextBox name='Sample content section. Activating a link above will update and navigate to this region.'
+++++++++footer
+++++++++++staticText name='Mythical University footer information'
+++++++++++++inlineTextBox name='Mythical University footer information'

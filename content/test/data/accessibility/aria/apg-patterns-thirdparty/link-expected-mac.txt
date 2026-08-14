@@ -1,0 +1,108 @@
+AXWebArea AXTitle='Link Examples'
+++AXTable
+++++AXRow
+++++++AXCell
+++++++++AXStaticText AXValue='Number'
+++++++AXCell
+++++++++AXStaticText AXValue='Description'
+++++++AXCell
+++++++++AXStaticText AXValue='Link'
+++++AXRow
+++++++AXCell
+++++++++AXGroup
+++++++++++AXGroup
+++++++++++++AXStaticText AXValue='1'
+++++++AXCell
+++++++++AXGroup AXSubrole=AXCodeStyleGroup
+++++++++++AXStaticText AXValue='span'
+++++++++AXStaticText AXValue=' element with text content.'
+++++++AXCell
+++++++++AXLink AXDescription='W3C website' AXTitle='W3C website'
+++++++++++AXStaticText AXValue='W3C website'
+++++AXRow
+++++++AXCell
+++++++++AXGroup
+++++++++++AXGroup
+++++++++++++AXStaticText AXValue='2'
+++++++AXCell
+++++++++AXGroup AXSubrole=AXCodeStyleGroup
+++++++++++AXStaticText AXValue='img'
+++++++++AXStaticText AXValue=' element with '
+++++++++AXGroup AXSubrole=AXCodeStyleGroup
+++++++++++AXStaticText AXValue='alt'
+++++++++AXStaticText AXValue=' attribute.'
+++++++AXCell
+++++++++AXLink AXDescription='W3C Website' AXTitle='W3C Website'
+++++AXRow
+++++++AXCell
+++++++++AXGroup
+++++++++++AXGroup
+++++++++++++AXStaticText AXValue='3'
+++++++AXCell
+++++++++AXStaticText AXValue='CSS '
+++++++++AXGroup AXSubrole=AXCodeStyleGroup
+++++++++++AXStaticText AXValue=':before'
+++++++++AXStaticText AXValue=' content property on a '
+++++++++AXGroup AXSubrole=AXCodeStyleGroup
+++++++++++AXStaticText AXValue='span'
+++++++++AXStaticText AXValue=' element.'
+++++++AXCell
+++++++++AXLink AXDescription='W3C website' AXTitle='W3C website'
+++++++++++AXGroup AXSubrole=AXEmptyGroup
+++++++++++++AXImage
+++++AXColumn
+++++++AXCell
+++++++++AXStaticText AXValue='Number'
+++++++AXCell
+++++++++AXGroup
+++++++++++AXGroup
+++++++++++++AXStaticText AXValue='1'
+++++++AXCell
+++++++++AXGroup
+++++++++++AXGroup
+++++++++++++AXStaticText AXValue='2'
+++++++AXCell
+++++++++AXGroup
+++++++++++AXGroup
+++++++++++++AXStaticText AXValue='3'
+++++AXColumn
+++++++AXCell
+++++++++AXStaticText AXValue='Description'
+++++++AXCell
+++++++++AXGroup AXSubrole=AXCodeStyleGroup
+++++++++++AXStaticText AXValue='span'
+++++++++AXStaticText AXValue=' element with text content.'
+++++++AXCell
+++++++++AXGroup AXSubrole=AXCodeStyleGroup
+++++++++++AXStaticText AXValue='img'
+++++++++AXStaticText AXValue=' element with '
+++++++++AXGroup AXSubrole=AXCodeStyleGroup
+++++++++++AXStaticText AXValue='alt'
+++++++++AXStaticText AXValue=' attribute.'
+++++++AXCell
+++++++++AXStaticText AXValue='CSS '
+++++++++AXGroup AXSubrole=AXCodeStyleGroup
+++++++++++AXStaticText AXValue=':before'
+++++++++AXStaticText AXValue=' content property on a '
+++++++++AXGroup AXSubrole=AXCodeStyleGroup
+++++++++++AXStaticText AXValue='span'
+++++++++AXStaticText AXValue=' element.'
+++++AXColumn
+++++++AXCell
+++++++++AXStaticText AXValue='Link'
+++++++AXCell
+++++++++AXLink AXDescription='W3C website' AXTitle='W3C website'
+++++++++++AXStaticText AXValue='W3C website'
+++++++AXCell
+++++++++AXLink AXDescription='W3C Website' AXTitle='W3C Website'
+++++++AXCell
+++++++++AXLink AXDescription='W3C website' AXTitle='W3C website'
+++++++++++AXGroup AXSubrole=AXEmptyGroup
+++++++++++++AXImage
+++++AXGroup
+++++++AXCell
+++++++++AXStaticText AXValue='Number'
+++++++AXCell
+++++++++AXStaticText AXValue='Description'
+++++++AXCell
+++++++++AXStaticText AXValue='Link'

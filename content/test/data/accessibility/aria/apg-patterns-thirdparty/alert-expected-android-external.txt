@@ -1,0 +1,3 @@
+WebView supplementalDescription:"Alert Example" focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
+++View viewIdResName:"ex1" actions:[AX_FOCUS] bundle:[chromeRole="genericContainer"]
+++++Button text:"Trigger Alert" viewIdResName:"alert-trigger" clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="button", clickableScore="300"]

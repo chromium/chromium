@@ -1,0 +1,10 @@
+AXWebArea AXTitle='(Deprecated) Collapsible Dropdown Listbox Example'
+++AXGroup
+++++AXGroup
+++++++AXStaticText AXValue='Choose your favorite transuranic element (actinide or transactinide).'
+++++AXGroup
+++++++AXStaticText AXValue='Choose an element:'
+++++AXGroup
+++++++AXPopUpButton AXTitle='Choose an element: Neptunium'
+++++++++AXStaticText AXValue='Neptunium'
+++++++++AXGroup AXSubrole=AXEmptyGroup

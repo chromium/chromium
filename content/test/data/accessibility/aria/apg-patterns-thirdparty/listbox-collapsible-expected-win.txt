@@ -1,0 +1,10 @@
+ROLE_SYSTEM_DOCUMENT name='(Deprecated) Collapsible Dropdown Listbox Example' READONLY FOCUSABLE
+++IA2_ROLE_SECTION
+++++IA2_ROLE_PARAGRAPH
+++++++ROLE_SYSTEM_STATICTEXT name='Choose your favorite transuranic element (actinide or transactinide).'
+++++IA2_ROLE_SECTION
+++++++ROLE_SYSTEM_STATICTEXT name='Choose an element:'
+++++IA2_ROLE_SECTION
+++++++ROLE_SYSTEM_BUTTONMENU name='Choose an element: Neptunium' FOCUSABLE HASPOPUP
+++++++++ROLE_SYSTEM_STATICTEXT name='Neptunium'
+++++++++IA2_ROLE_SECTION

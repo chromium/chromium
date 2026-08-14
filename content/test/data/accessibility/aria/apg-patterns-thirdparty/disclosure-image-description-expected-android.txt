@@ -1,0 +1,12 @@
+android.webkit.WebView focusable focused interesting name='Example Disclosure (Show/Hide) for Image Description'
+++android.view.View
+++++android.view.View role_description='graphic'
+++++++android.widget.Image interesting content_description='Charles Minard's 1869 chart showing the number of men in Napoleon%E2%80%99s 1812 Russian campaign army, their movements, as well as the temperature they encountered on the return path.'
+++++++android.view.View
+++++++++android.widget.TextView interesting name='Figurative Map of the successive losses in men of the French Army in the Russian campaign 1812-1813. Drawn by Mr. Minard, Inspector General of Bridges and Roads in retirement. Paris, 20 November 1869.'
+++++++++android.widget.TextView interesting name='The numbers of men present are represented by the widths of the colored zones in a rate of one millimeter for ten thousand men; these are also written beside the zones. Red designates men moving into Russia, black those on retreat.'
+++++++++android.widget.TextView interesting name='The information used for drawing the map were taken from the works of Messrs. Thiers, de S%C3%A9gur, de Fezensac, de Chambray and the unpublished diary of Jacob, pharmacist of the Army since 28 October.'
+++++++++android.widget.TextView interesting name='In order to facilitate the judgement of the eye regarding the diminution of the army, I supposed that the troops under Prince J%C3%A8r%C3%B4me and under Marshal Davoust, who were sent to Minsk and Mobilow and who rejoined near Orscha and Witebsk, had always marched with the army.'
+++++++++android.view.View
+++++++++++android.view.View interesting name='Note: A French translation from Wikipedia.'
+++++++++android.widget.Button clickable collapsed focusable interesting name='Data Table for Minard's Chart' expanded_state=1

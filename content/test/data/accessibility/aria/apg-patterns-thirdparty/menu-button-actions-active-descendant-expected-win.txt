@@ -1,0 +1,10 @@
+ROLE_SYSTEM_DOCUMENT name='Actions Menu Button Example Using aria-activedescendant' READONLY FOCUSABLE
+++IA2_ROLE_SECTION
+++++IA2_ROLE_SECTION
+++++++ROLE_SYSTEM_BUTTONMENU name='Actions ' COLLAPSED FOCUSABLE HASPOPUP
+++++++++ROLE_SYSTEM_STATICTEXT name='Actions '
+++++++++ROLE_SYSTEM_GRAPHIC READONLY
+++++IA2_ROLE_PARAGRAPH
+++++++IA2_ROLE_LABEL
+++++++++ROLE_SYSTEM_STATICTEXT name='Last Action: '
+++++++++ROLE_SYSTEM_TEXT name='Last Action:' value='none' FOCUSABLE

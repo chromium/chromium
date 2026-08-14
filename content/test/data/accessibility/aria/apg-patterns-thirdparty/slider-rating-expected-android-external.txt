@@ -1,0 +1,4 @@
+WebView supplementalDescription:"Rating Slider Example" focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
+++View viewIdResName:"ex1" actions:[AX_FOCUS] bundle:[chromeRole="genericContainer"]
+++++TextView text:"Rate your satisfaction with the service you received" viewIdResName:"id-rating-label" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="genericContainer"]
+++++SeekBar viewIdResName:"id-rating" stateDescription:"Choose a rating from one to ten where 10 is extremely satisfied" supplementalDescription:"Rate your satisfaction with the service you received" clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, SET_PROGRESS] bundle:[chromeRole="slider"]

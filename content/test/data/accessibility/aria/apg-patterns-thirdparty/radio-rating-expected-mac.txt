@@ -1,0 +1,10 @@
+AXWebArea AXTitle='Rating Radio Group Example'
+++AXGroup
+++++AXRadioGroup AXDescription='Rating' AXTitle='Rating'
+++++++AXGroup
+++++++++AXStaticText AXValue='Rating'
+++++++AXRadioButton AXDescription='one star' AXTitle='one star' AXValue=0
+++++++AXRadioButton AXDescription='two stars' AXTitle='two stars' AXValue=0
+++++++AXRadioButton AXDescription='three stars' AXTitle='three stars' AXValue=0
+++++++AXRadioButton AXDescription='four stars' AXTitle='four stars' AXValue=0
+++++++AXRadioButton AXDescription='five stars' AXTitle='five stars' AXValue=0

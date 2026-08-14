@@ -1,0 +1,6 @@
+WebView supplementalDescription:"Switch Example Using HTML Button" focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea", hasImage="true"]
+++View viewIdResName:"ex1" actions:[AX_FOCUS] bundle:[chromeRole="genericContainer", hasImage="true"]
+++++View containerTitle:"Environmental Controls" actions:[AX_FOCUS] bundle:[chromeRole="group", hasImage="true"]
+++++++TextView text:"Environmental Controls" viewIdResName:"id-group-label" heading actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="heading", roleDescription="heading 3"]
+++++++Switch text:"Living Room Lights" stateDescription:"Off" checkable clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="switch", clickableScore="300", hasImage="true"]
+++++++Switch text:"Outdoor Lights" stateDescription:"Off" checkable clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="switch", clickableScore="300", hasImage="true"]

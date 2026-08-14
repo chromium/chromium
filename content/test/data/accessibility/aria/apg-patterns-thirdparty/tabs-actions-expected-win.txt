@@ -1,0 +1,32 @@
+ROLE_SYSTEM_DOCUMENT name='Experimental Example of Tabs with Action Buttons' READONLY FOCUSABLE
+++IA2_ROLE_SECTION
+++++IA2_ROLE_HEADING name='Interesting Sharks'
+++++++ROLE_SYSTEM_STATICTEXT name='Interesting Sharks'
+++++ROLE_SYSTEM_PAGETABLIST name='Interesting Sharks' IA2_STATE_HORIZONTAL
+++++++IA2_ROLE_SECTION
+++++++++ROLE_SYSTEM_PAGETAB name='Nurse shark' SELECTED FOCUSABLE
+++++++++IA2_ROLE_SECTION
+++++++++++ROLE_SYSTEM_BUTTONMENU name='Actions for Nurse shark tab' COLLAPSED FOCUSABLE HASPOPUP
+++++++IA2_ROLE_SECTION
+++++++++ROLE_SYSTEM_PAGETAB name='Basking shark' FOCUSABLE
+++++++++IA2_ROLE_SECTION
+++++++++++ROLE_SYSTEM_BUTTONMENU name='Actions for Basking shark tab' COLLAPSED FOCUSABLE HASPOPUP
+++++++IA2_ROLE_SECTION
+++++++++ROLE_SYSTEM_PAGETAB name='Whale shark' FOCUSABLE
+++++++++IA2_ROLE_SECTION
+++++++++++ROLE_SYSTEM_BUTTONMENU name='Actions for Whale shark tab' COLLAPSED FOCUSABLE HASPOPUP
+++++++IA2_ROLE_SECTION
+++++++++ROLE_SYSTEM_PAGETAB name='Goblin shark' FOCUSABLE
+++++++++IA2_ROLE_SECTION
+++++++++++ROLE_SYSTEM_BUTTONMENU name='Actions for Goblin shark tab' COLLAPSED FOCUSABLE HASPOPUP
+++++ROLE_SYSTEM_PROPERTYPAGE name='Nurse shark'
+++++++IA2_ROLE_PARAGRAPH
+++++++++ROLE_SYSTEM_STATICTEXT name='The '
+++++++++ROLE_SYSTEM_LINK name='nurse shark' FOCUSABLE
+++++++++++ROLE_SYSTEM_STATICTEXT name='nurse shark'
+++++++++ROLE_SYSTEM_STATICTEXT name=' ('
+++++++++ROLE_SYSTEM_STATICTEXT name='Ginglymostoma cirratum'
+++++++++ROLE_SYSTEM_STATICTEXT name=') is an elasmobranch fish in the family '
+++++++++ROLE_SYSTEM_STATICTEXT name='Ginglymostomatidae'
+++++++++ROLE_SYSTEM_STATICTEXT name='. The conservation status of the nurse shark is globally assessed as Vulnerable in the IUCN List of Threatened Species. They are considered to be a species of least concern in the United States and in The Bahamas, but considered to be near threatened in the western Atlantic Ocean because of their vulnerable status in South America and reported threats throughout many areas of Central America and the Caribbean. They are directly targeted in some fisheries and considered by-catch in others.'
+++++ROLE_SYSTEM_STATUSBAR

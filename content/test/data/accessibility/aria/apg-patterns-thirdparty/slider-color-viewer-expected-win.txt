@@ -1,0 +1,22 @@
+ROLE_SYSTEM_DOCUMENT name='Color Viewer Slider Example' READONLY FOCUSABLE
+++IA2_ROLE_SECTION
+++++ROLE_SYSTEM_GROUPING name='Color Viewer'
+++++++IA2_ROLE_HEADING name='Color Viewer'
+++++++++ROLE_SYSTEM_STATICTEXT name='Color Viewer'
+++++++IA2_ROLE_SECTION
+++++++++ROLE_SYSTEM_STATICTEXT name='Red'
+++++++ROLE_SYSTEM_SLIDER name='Red' value='128' FOCUSABLE IA2_STATE_HORIZONTAL
+++++++IA2_ROLE_SECTION
+++++++++ROLE_SYSTEM_STATICTEXT name='Green'
+++++++ROLE_SYSTEM_SLIDER name='Green' value='128' FOCUSABLE IA2_STATE_HORIZONTAL
+++++++IA2_ROLE_SECTION
+++++++++ROLE_SYSTEM_STATICTEXT name='Blue'
+++++++ROLE_SYSTEM_SLIDER name='Blue' value='128' FOCUSABLE IA2_STATE_HORIZONTAL
+++++++IA2_ROLE_HEADING name='Color View Box'
+++++++++ROLE_SYSTEM_STATICTEXT name='Color View Box'
+++++++IA2_ROLE_LABEL
+++++++++ROLE_SYSTEM_STATICTEXT name='Color (HEX): '
+++++++++ROLE_SYSTEM_TEXT name='Color (HEX):' value='#808080' READONLY FOCUSABLE
+++++++IA2_ROLE_LABEL
+++++++++ROLE_SYSTEM_STATICTEXT name='Color (RGB): '
+++++++++ROLE_SYSTEM_TEXT name='Color (RGB):' value='128, 128, 128' READONLY FOCUSABLE

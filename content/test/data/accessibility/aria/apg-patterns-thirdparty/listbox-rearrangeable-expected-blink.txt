@@ -1,0 +1,129 @@
+rootWebArea name='Example Listboxes with Rearrangeable Options'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer
+++++++++paragraph
+++++++++++staticText name='Rank features important to you when choosing where to live. If a feature is unimportant, move it to the unimportant features list.'
+++++++++++++inlineTextBox name='Rank features important to you when choosing where to live. If a feature is unimportant, move it to the unimportant '
+++++++++++++inlineTextBox name='features list.'
+++++++++genericContainer ignored
+++++++++++genericContainer ignored
+++++++++++++genericContainer
+++++++++++++++staticText name='Important Features:'
+++++++++++++++++inlineTextBox name='Important Features:'
+++++++++++++listBox name='Important Features:'
+++++++++++++++listBoxOption name='Proximity of public K-12 schools' selected=false
+++++++++++++++++staticText name='Proximity of public K-12 schools'
+++++++++++++++++++inlineTextBox name='Proximity of public K-12 schools'
+++++++++++++++listBoxOption name='Proximity of child-friendly parks' selected=false
+++++++++++++++++staticText name='Proximity of child-friendly parks'
+++++++++++++++++++inlineTextBox name='Proximity of child-friendly parks'
+++++++++++++++listBoxOption name='Proximity of grocery shopping' selected=false
+++++++++++++++++staticText name='Proximity of grocery shopping'
+++++++++++++++++++inlineTextBox name='Proximity of grocery shopping'
+++++++++++++++listBoxOption name='Proximity of fast food' selected=false
+++++++++++++++++staticText name='Proximity of fast food'
+++++++++++++++++++inlineTextBox name='Proximity of fast food'
+++++++++++++++listBoxOption name='Proximity of fine dining' selected=false
+++++++++++++++++staticText name='Proximity of fine dining'
+++++++++++++++++++inlineTextBox name='Proximity of fine dining'
+++++++++++++++listBoxOption name='Neighborhood walkability' selected=false
+++++++++++++++++staticText name='Neighborhood walkability'
+++++++++++++++++++inlineTextBox name='Neighborhood walkability'
+++++++++++++++listBoxOption name='Availability of public transit' selected=false
+++++++++++++++++staticText name='Availability of public transit'
+++++++++++++++++++inlineTextBox name='Availability of public transit'
+++++++++++++++listBoxOption name='Proximity of hospital and medical services' selected=false
+++++++++++++++++staticText name='Proximity of hospital and medical services'
+++++++++++++++++++inlineTextBox name='Proximity of hospital and medical services'
+++++++++++++++listBoxOption name='Level of traffic noise' selected=false
+++++++++++++++++staticText name='Level of traffic noise'
+++++++++++++++++++inlineTextBox name='Level of traffic noise'
+++++++++++++++listBoxOption name='Access to major highways' selected=false
+++++++++++++++++staticText name='Access to major highways'
+++++++++++++++++++inlineTextBox name='Access to major highways'
+++++++++++++toolbar horizontal name='Actions'
+++++++++++++++button keyShortcuts='Alt+ArrowUp' name='Up' restriction=disabled
+++++++++++++++++staticText name='Up'
+++++++++++++++++++inlineTextBox name='Up'
+++++++++++++++button keyShortcuts='Alt+ArrowDown' name='Down' restriction=disabled
+++++++++++++++++staticText name='Down'
+++++++++++++++++++inlineTextBox name='Down'
+++++++++++++++button keyShortcuts='Alt+ArrowRight Delete' name=' Not Important' restriction=disabled
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++staticText name=' Not Important'
+++++++++++++++++++inlineTextBox name=' Not Important'
+++++++++++genericContainer ignored
+++++++++++++genericContainer
+++++++++++++++staticText name='Unimportant Features:'
+++++++++++++++++inlineTextBox name='Unimportant Features:'
+++++++++++++listBox name='Unimportant Features:'
+++++++++++++button keyShortcuts='Alt+ArrowLeft Enter' name='Important' restriction=disabled
+++++++++++++++genericContainer ignored invisible
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++staticText name='Important'
+++++++++++++++++inlineTextBox name='Important'
+++++++++++genericContainer
+++++++++++++staticText name='Last change:'
+++++++++++++++inlineTextBox name='Last change:'
+++++++++++++genericContainer
+++++++genericContainer
+++++++++paragraph
+++++++++++staticText name='Choose upgrades for your transport capsule.'
+++++++++++++inlineTextBox name='Choose upgrades for your transport capsule.'
+++++++++genericContainer ignored
+++++++++++genericContainer ignored
+++++++++++++genericContainer
+++++++++++++++staticText name='Available upgrades:'
+++++++++++++++++inlineTextBox name='Available upgrades:'
+++++++++++++listBox multiselectable name='Available upgrades:'
+++++++++++++++listBoxOption name='Leather seats' selected=false
+++++++++++++++++staticText name='Leather seats'
+++++++++++++++++++inlineTextBox name='Leather seats'
+++++++++++++++listBoxOption name='Front seat warmers' selected=false
+++++++++++++++++staticText name='Front seat warmers'
+++++++++++++++++++inlineTextBox name='Front seat warmers'
+++++++++++++++listBoxOption name='Rear bucket seats' selected=false
+++++++++++++++++staticText name='Rear bucket seats'
+++++++++++++++++++inlineTextBox name='Rear bucket seats'
+++++++++++++++listBoxOption name='Rear seat warmers' selected=false
+++++++++++++++++staticText name='Rear seat warmers'
+++++++++++++++++++inlineTextBox name='Rear seat warmers'
+++++++++++++++listBoxOption name='Front sun roof' selected=false
+++++++++++++++++staticText name='Front sun roof'
+++++++++++++++++++inlineTextBox name='Front sun roof'
+++++++++++++++listBoxOption name='Rear sun roof' selected=false
+++++++++++++++++staticText name='Rear sun roof'
+++++++++++++++++++inlineTextBox name='Rear sun roof'
+++++++++++++++listBoxOption name='Cloaking capability' selected=false
+++++++++++++++++staticText name='Cloaking capability'
+++++++++++++++++++inlineTextBox name='Cloaking capability'
+++++++++++++++listBoxOption name='Food synthesizer' selected=false
+++++++++++++++++staticText name='Food synthesizer'
+++++++++++++++++++inlineTextBox name='Food synthesizer'
+++++++++++++++listBoxOption name='Advanced waste recycling system' selected=false
+++++++++++++++++staticText name='Advanced waste recycling system'
+++++++++++++++++++inlineTextBox name='Advanced waste recycling system'
+++++++++++++++listBoxOption name='Turbo vertical take-off capability' selected=false
+++++++++++++++++staticText name='Turbo vertical take-off capability'
+++++++++++++++++++inlineTextBox name='Turbo vertical take-off capability'
+++++++++++++button keyShortcuts='Alt+ArrowRight Enter' name=' Add' restriction=disabled
+++++++++++++++genericContainer ignored invisible
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++staticText name=' Add'
+++++++++++++++++inlineTextBox name=' Add'
+++++++++++genericContainer ignored
+++++++++++++genericContainer
+++++++++++++++staticText name='Upgrades you have chosen:'
+++++++++++++++++inlineTextBox name='Upgrades you have chosen:'
+++++++++++++listBox multiselectable name='Upgrades you have chosen:'
+++++++++++++button keyShortcuts='Alt+ArrowLeft Delete' name='Remove' restriction=disabled
+++++++++++++++genericContainer ignored invisible
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++staticText name='Remove'
+++++++++++++++++inlineTextBox name='Remove'
+++++++++++genericContainer
+++++++++++++staticText name='Last change:'
+++++++++++++++inlineTextBox name='Last change:'
+++++++++++++genericContainer

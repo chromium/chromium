@@ -1,0 +1,26 @@
+android.webkit.WebView focusable focused interesting name='Button Examples (IDL Version)'
+++android.view.View
+++++android.widget.TextView role_description='heading 3' heading interesting name='Important'
+++++android.view.View
+++++++android.widget.TextView interesting name='This example is coded using syntax that was not introduced until version 1.2 of the ARIA specification. When using a '
+++++++android.view.View role_description='link' clickable focusable link interesting name='browser that does not yet provide support for ARIA attribute reflection'
+++++++++android.widget.TextView name='browser that does not yet provide support for ARIA attribute reflection'
+++++++android.widget.TextView interesting name=', the buttons will not be styled correctly.'
+++++android.view.View
+++++++android.widget.TextView interesting name='This '
+++++++android.widget.TextView interesting name='%E2%80%9C'
+++++++android.widget.TextView interesting name='Print'
+++++++android.widget.TextView interesting name='%E2%80%9D'
+++++++android.widget.TextView interesting name=' action button uses a '
+++++++android.view.View interesting name='div'
+++++++android.widget.TextView interesting name=' element.'
+++++android.widget.Button clickable focusable interesting name='Print Page'
+++++android.view.View
+++++++android.widget.TextView interesting name='This '
+++++++android.widget.TextView interesting name='%E2%80%9C'
+++++++android.widget.TextView interesting name='Mute'
+++++++android.widget.TextView interesting name='%E2%80%9D'
+++++++android.widget.TextView interesting name=' toggle button uses an '
+++++++android.view.View interesting name='a'
+++++++android.widget.TextView interesting name=' element.'
+++++android.widget.ToggleButton checkable clickable focusable interesting name='Mute '

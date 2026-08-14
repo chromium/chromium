@@ -1,0 +1,41 @@
+android.webkit.WebView focusable focused interesting name='Link Examples'
+++android.widget.GridView collection row_count=4 column_count=3
+++++android.view.View row_index=0
+++++++android.view.View collection_item interesting table_header name='Number' row_index=0 row_span=1 column_index=0 column_span=1
+++++++android.view.View collection_item interesting table_header name='Description' row_index=0 row_span=1 column_index=1 column_span=1
+++++++android.view.View collection_item interesting table_header name='Link' row_index=0 row_span=1 column_index=2 column_span=1
+++++android.view.View row_index=1
+++++++android.view.View collection_item table_header name='1' row_index=1 row_span=1 column_index=0 column_span=1
+++++++++android.view.View
+++++++++++android.widget.TextView interesting name='1'
+++++++android.view.View collection_item name='span element with text content.' row_index=1 row_span=1 column_index=1 column_span=1
+++++++++android.view.View interesting name='span'
+++++++++android.widget.TextView interesting name=' element with text content.'
+++++++android.view.View collection_item name='W3C website' row_index=1 row_span=1 column_index=2 column_span=1
+++++++++android.view.View role_description='link' clickable focusable link interesting name='W3C website'
+++++++++++android.widget.TextView name='W3C website'
+++++android.view.View row_index=2
+++++++android.view.View collection_item table_header name='2' row_index=2 row_span=1 column_index=0 column_span=1
+++++++++android.view.View
+++++++++++android.widget.TextView interesting name='2'
+++++++android.view.View collection_item name='img element with alt attribute.' row_index=2 row_span=1 column_index=1 column_span=1
+++++++++android.view.View interesting name='img'
+++++++++android.widget.TextView interesting name=' element with '
+++++++++android.view.View interesting name='alt'
+++++++++android.widget.TextView interesting name=' attribute.'
+++++++android.view.View collection_item name='W3C Website' row_index=2 row_span=1 column_index=2 column_span=1
+++++++++android.view.View role_description='link' clickable focusable link interesting content_description='W3C Website'
+++++android.view.View row_index=3
+++++++android.view.View collection_item table_header name='3' row_index=3 row_span=1 column_index=0 column_span=1
+++++++++android.view.View
+++++++++++android.widget.TextView interesting name='3'
+++++++android.view.View collection_item name='CSS :before content property on a span element.' row_index=3 row_span=1 column_index=1 column_span=1
+++++++++android.widget.TextView interesting name='CSS '
+++++++++android.view.View interesting name=':before'
+++++++++android.widget.TextView interesting name=' content property on a '
+++++++++android.view.View interesting name='span'
+++++++++android.widget.TextView interesting name=' element.'
+++++++android.view.View collection_item name='W3C website' row_index=3 row_span=1 column_index=2 column_span=1
+++++++++android.view.View role_description='link' clickable focusable link interesting content_description='W3C website'
+++++++++++android.view.View
+++++++++++++android.widget.Image

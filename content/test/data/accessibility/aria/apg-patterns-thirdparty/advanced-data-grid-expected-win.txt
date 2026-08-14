@@ -1,0 +1,6 @@
+ROLE_SYSTEM_DOCUMENT name='Advanced Data Grid Example' READONLY FOCUSABLE
+++IA2_ROLE_SECTION
+++++IA2_ROLE_PARAGRAPH
+++++++ROLE_SYSTEM_STATICTEXT name='This is the place where the reader will experience the functioning example.'
+++++IA2_ROLE_PARAGRAPH
+++++++ROLE_SYSTEM_STATICTEXT name='The HTML in this section along with the javascript and CSS it uses demonstrate the design pattern.'

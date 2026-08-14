@@ -1,0 +1,10 @@
+rootWebArea name='Switch Example'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer
+++++++++switch name='Notifications' checkedState=false
+++++++++++genericContainer
+++++++++++++staticText name='Notifications'
+++++++++++++++inlineTextBox name='Notifications'
+++++++++++genericContainer
+++++++++++++genericContainer ignored

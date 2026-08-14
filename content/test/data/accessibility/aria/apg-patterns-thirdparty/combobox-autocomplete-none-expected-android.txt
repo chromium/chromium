@@ -1,0 +1,7 @@
+android.webkit.WebView focusable focused interesting name='Editable Combobox without Autocomplete Example'
+++android.view.View
+++++android.view.View interesting name='Search'
+++++android.view.View
+++++++android.view.View
+++++++++android.widget.EditText clickable collapsed editable_text focusable interesting hint='Search' input_type=1 expanded_state=1
+++++++++android.widget.Button clickable collapsed focusable interesting content_description='Previous Searches' expanded_state=1

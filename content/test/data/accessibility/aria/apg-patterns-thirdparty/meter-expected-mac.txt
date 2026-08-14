@@ -1,0 +1,9 @@
+AXWebArea AXTitle='Meter Example'
+++AXGroup
+++++AXGroup
+++++++AXStaticText AXValue='The value of this meter changes every 5 seconds. Use the pause button to stop changes.'
+++++AXHeading AXTitle='Central Processing Unit (CPU) Usage' AXValue=3
+++++++AXStaticText AXValue='Central Processing Unit (CPU) Usage'
+++++AXGroup
+++++++AXButton AXTitle='Pause Updates'
+++++AXLevelIndicator AXSubrole=AXMeter AXTitle='Central Processing Unit (CPU) Usage' AXValue=90

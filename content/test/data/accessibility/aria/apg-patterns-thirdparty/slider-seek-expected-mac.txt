@@ -1,0 +1,17 @@
+AXWebArea AXTitle='Media Seek Slider Example'
+++AXGroup
+++++AXGroup
+++++++AXStaticText AXValue='Seek'
+++++AXSlider AXTitle='Seek' AXValue=90
+++++AXGroup
+++++++AXStaticText AXValue='0:00'
+++++AXGroup
+++++++AXStaticText AXValue='1:00'
+++++AXGroup
+++++++AXStaticText AXValue='2:00'
+++++AXGroup
+++++++AXStaticText AXValue='3:00'
+++++AXGroup
+++++++AXStaticText AXValue='4:00'
+++++AXGroup
+++++++AXStaticText AXValue='5:00'

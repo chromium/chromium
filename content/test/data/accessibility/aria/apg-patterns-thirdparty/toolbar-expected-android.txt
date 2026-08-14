@@ -1,0 +1,30 @@
+android.webkit.WebView focusable focused interesting name='Toolbar Example'
+++android.view.View
+++++android.view.View role_description='toolbar' clickable name='Text Formatting'
+++++++android.view.View
+++++++++android.widget.ToggleButton checkable clickable focusable interesting name='Bold'
+++++++++android.widget.ToggleButton checkable clickable focusable interesting name='Italic'
+++++++++android.widget.ToggleButton checkable clickable focusable interesting name='Underline'
+++++++android.widget.RadioGroup role_description='radio group' container_title='Text Alignment'
+++++++++android.widget.RadioButton checkable clickable focusable interesting name='Text Align Left' state_description='Checked. In group, option 1 of 3' item_index=0 row_index=0 checked=1
+++++++++android.widget.RadioButton checkable clickable focusable interesting name='Text Align Center' state_description='Not checked. In group, option 2 of 3' item_index=1 row_index=1
+++++++++android.widget.RadioButton checkable clickable focusable interesting name='Text Align Right' state_description='Not checked. In group, option 3 of 3' item_index=2 row_index=2
+++++++android.view.View
+++++++++android.widget.Button clickable disabled focusable interesting name='Copy'
+++++++++android.widget.Button clickable disabled focusable interesting name='Paste'
+++++++++android.widget.Button clickable disabled focusable interesting name='Cut'
+++++++android.view.View
+++++++++android.widget.Button role_description='menu pop up button' clickable collapsed focusable interesting name='Font: Sans-serif' expanded_state=1
+++++++++++android.widget.TextView name='SANS-SERIF'
+++++++++++android.widget.Image
+++++++android.view.View
+++++++++android.widget.EditText role_description='spin button' clickable focusable range interesting state_description='14 Point' range_min=8 range_max=40 range_current_value=14
+++++++android.view.View
+++++++++android.view.View
+++++++++++android.widget.CheckBox checkable clickable focusable interesting name='Night Mode'
+++++++++++android.widget.TextView interesting name=' Night Mode'
+++++++++android.view.View role_description='link' clickable focusable link interesting name='Help'
+++++++++++android.widget.TextView name='Help'
+++++android.view.View interesting name='Text Sample'
+++++android.view.View name='<newline>'
+++++android.widget.EditText clickable editable_text focusable has_non_empty_value multiline interesting name='Abraham Lincoln's Gettysburg Address<newline><newline>Four score and seven years ago our fathers brought forth on this continent a new nation, conceived in Liberty, and dedicated to the proposition that all men are created equal.<newline><newline>Now we are engaged in a great civil war, testing whether that nation, or any nation, so conceived and so dedicated, can long endure. We are met on a great battle-field of that war. We have come to dedicate a portion of that field, as a final resting place for those who here gave their lives that that nation might live. It is altogether fitting and proper that we should do this.<newline><newline>But, in a larger sense, we can not dedicate, we can not consecrate, we can not hallow, this ground. The brave men, living and dead, who struggled here, have consecrated it, far above our poor power to add or detract. The world will little note, nor long remember what we say here, but it can never forget what they did here. It is for us the living, rather, to be dedicated here to the unfinished work which they who fought here have thus far so nobly advanced. It is rather for us to be here dedicated to the great task remaining before us, that from these honored dead we take increased devotion to that cause for which they gave the last full measure of devotion, that we here highly resolve that these dead shall not have died in vain, that this nation, under God, shall have a new birth of freedom, and that government of the people, by the people, for the people, shall not perish from the earth.<newline>' hint='Text Sample' text_change_added_count=1500

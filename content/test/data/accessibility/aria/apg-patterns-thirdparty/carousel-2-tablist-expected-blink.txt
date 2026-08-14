@@ -1,0 +1,38 @@
+rootWebArea name='Auto-Rotating Image Carousel with Tabs for Slide Control Example'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer
+++++++++region name='Highlighted television shows' roleDescription='carousel'
+++++++++++genericContainer
+++++++++++++genericContainer
+++++++++++++++button name='Start automatic slide show'
+++++++++++++++++image
+++++++++++++++genericContainer
+++++++++++++++++tabList horizontal name='Slides'
+++++++++++++++++++tab name='Slide 1' selected=true controlsIds=tabPanel
+++++++++++++++++++++image
+++++++++++++++++++tab name='Slide 2' selected=false
+++++++++++++++++++++image
+++++++++++++++++++tab name='Slide 3' selected=false
+++++++++++++++++++++image
+++++++++++++++++++tab name='Slide 4' selected=false
+++++++++++++++++++++image
+++++++++++++++++++tab name='Slide 5' selected=false
+++++++++++++++++++++image
+++++++++++++++++++tab name='Slide 6' selected=false
+++++++++++++++++++++image
+++++++++++++genericContainer
+++++++++++++++tabPanel name='1 of 6' roleDescription='slide'
+++++++++++++++++genericContainer
+++++++++++++++++++link name='Walking Tour in Amsterdam'
+++++++++++++++++++++image name='Walking Tour in Amsterdam'
+++++++++++++++++genericContainer
+++++++++++++++++++heading name='Dynamic Europe: Amsterdam, Prague, Berlin'
+++++++++++++++++++++link name='Dynamic Europe: Amsterdam, Prague, Berlin'
+++++++++++++++++++++++staticText name='Dynamic Europe: Amsterdam, Prague, Berlin'
+++++++++++++++++++++++++inlineTextBox name='Dynamic Europe: Amsterdam, Prague, Berlin'
+++++++++++++++++++genericContainer ignored
+++++++++++++++++++++paragraph
+++++++++++++++++++++++staticText name='7 pm Tuesday, March 3, on TV'
+++++++++++++++++++++++++inlineTextBox name='7 pm Tuesday, March 3, on TV'
+++++++++genericContainer ignored

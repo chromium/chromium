@@ -1,0 +1,22 @@
+ROLE_SYSTEM_DOCUMENT name='Listbox Example with Grouped Options' READONLY FOCUSABLE
+++IA2_ROLE_SECTION
+++++IA2_ROLE_SECTION
+++++++ROLE_SYSTEM_STATICTEXT name='Choose your animal sidekick'
+++++ROLE_SYSTEM_LIST name='Choose your animal sidekick' FOCUSABLE
+++++++ROLE_SYSTEM_GROUPING name='Land'
+++++++++ROLE_SYSTEM_STATICTEXT name='Land'
+++++++++ROLE_SYSTEM_LISTITEM name='Cat'
+++++++++ROLE_SYSTEM_LISTITEM name='Dog'
+++++++++ROLE_SYSTEM_LISTITEM name='Tiger'
+++++++++ROLE_SYSTEM_LISTITEM name='Reindeer'
+++++++++ROLE_SYSTEM_LISTITEM name='Raccoon'
+++++++ROLE_SYSTEM_GROUPING name='Water'
+++++++++ROLE_SYSTEM_STATICTEXT name='Water'
+++++++++ROLE_SYSTEM_LISTITEM name='Dolphin'
+++++++++ROLE_SYSTEM_LISTITEM name='Flounder'
+++++++++ROLE_SYSTEM_LISTITEM name='Eel'
+++++++ROLE_SYSTEM_GROUPING name='Air'
+++++++++ROLE_SYSTEM_STATICTEXT name='Air'
+++++++++ROLE_SYSTEM_LISTITEM name='Falcon'
+++++++++ROLE_SYSTEM_LISTITEM name='Winged Horse'
+++++++++ROLE_SYSTEM_LISTITEM name='Owl'

@@ -1,0 +1,28 @@
+rootWebArea name='Auto-Rotating Image Carousel Example with Buttons for Slide Control'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer
+++++++++region name='Highlighted television shows' roleDescription='carousel'
+++++++++++genericContainer
+++++++++++++genericContainer
+++++++++++++++button name='Start automatic slide show'
+++++++++++++++++image
+++++++++++++++button name='Previous Slide' controlsIds=genericContainer
+++++++++++++++++image
+++++++++++++++button name='Next Slide' controlsIds=genericContainer
+++++++++++++++++image
+++++++++++++genericContainer
+++++++++++++++group name='1 of 6' roleDescription='slide'
+++++++++++++++++genericContainer
+++++++++++++++++++link name='Walking Tour in Amsterdam'
+++++++++++++++++++++image name='Walking Tour in Amsterdam'
+++++++++++++++++genericContainer
+++++++++++++++++++heading name='Dynamic Europe: Amsterdam, Prague, Berlin'
+++++++++++++++++++++link name='Dynamic Europe: Amsterdam, Prague, Berlin'
+++++++++++++++++++++++staticText name='Dynamic Europe: Amsterdam, Prague, Berlin'
+++++++++++++++++++++++++inlineTextBox name='Dynamic Europe: Amsterdam, Prague, Berlin'
+++++++++++++++++++genericContainer ignored
+++++++++++++++++++++paragraph
+++++++++++++++++++++++staticText name='7 pm Tuesday, March 3, on TV'
+++++++++++++++++++++++++inlineTextBox name='7 pm Tuesday, March 3, on TV'
+++++++++genericContainer ignored

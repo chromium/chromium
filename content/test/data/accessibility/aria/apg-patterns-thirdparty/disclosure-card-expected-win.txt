@@ -1,0 +1,35 @@
+ROLE_SYSTEM_DOCUMENT name='Example Disclosure (Show/Hide) Card' READONLY FOCUSABLE
+++IA2_ROLE_SECTION
+++++IA2_ROLE_HEADING name='Musical Education Conference'
+++++++ROLE_SYSTEM_STATICTEXT name='Musical Education Conference'
+++++ROLE_SYSTEM_LIST name='Musical Education Conference' READONLY
+++++++ROLE_SYSTEM_LISTITEM READONLY
+++++++++ROLE_SYSTEM_DOCUMENT name='Symphonic Structure: Form, Function, and Feeling' READONLY
+++++++++++ROLE_SYSTEM_GROUPING
+++++++++++++ROLE_SYSTEM_GROUPING
+++++++++++++++IA2_ROLE_HEADING name='Symphonic Structure: Form, Function, and Feeling'
+++++++++++++++++ROLE_SYSTEM_STATICTEXT name='Symphonic Structure: Form, Function, and Feeling'
+++++++++++++++IA2_ROLE_PARAGRAPH
+++++++++++++++++ROLE_SYSTEM_STATICTEXT name='Ludwig van Beethoven'
+++++++++++++ROLE_SYSTEM_STATICTEXT name='7 AM in Theater an der Wien'
+++++++++++++ROLE_SYSTEM_PUSHBUTTON name='Symphonic Structure: Form, Function, and Feeling Details' COLLAPSED FOCUSABLE
+++++++ROLE_SYSTEM_LISTITEM READONLY
+++++++++ROLE_SYSTEM_DOCUMENT name='Folk Futures: Tradition in the Classroom' READONLY
+++++++++++ROLE_SYSTEM_GROUPING
+++++++++++++ROLE_SYSTEM_GROUPING
+++++++++++++++IA2_ROLE_HEADING name='Folk Futures: Tradition in the Classroom'
+++++++++++++++++ROLE_SYSTEM_STATICTEXT name='Folk Futures: Tradition in the Classroom'
+++++++++++++++IA2_ROLE_PARAGRAPH
+++++++++++++++++ROLE_SYSTEM_STATICTEXT name='Anton%C3%ADn Dvo%C5%99%C3%A1k'
+++++++++++++ROLE_SYSTEM_STATICTEXT name='8 AM in Rudolfinum Hall'
+++++++++++++ROLE_SYSTEM_PUSHBUTTON name='Folk Futures: Tradition in the Classroom Details' COLLAPSED FOCUSABLE
+++++++ROLE_SYSTEM_LISTITEM READONLY
+++++++++ROLE_SYSTEM_DOCUMENT name='Playful Dissonance: Teaching with Wit and Wonder' READONLY
+++++++++++ROLE_SYSTEM_GROUPING
+++++++++++++ROLE_SYSTEM_GROUPING
+++++++++++++++IA2_ROLE_HEADING name='Playful Dissonance: Teaching with Wit and Wonder'
+++++++++++++++++ROLE_SYSTEM_STATICTEXT name='Playful Dissonance: Teaching with Wit and Wonder'
+++++++++++++++IA2_ROLE_PARAGRAPH
+++++++++++++++++ROLE_SYSTEM_STATICTEXT name='Francis Poulenc'
+++++++++++++ROLE_SYSTEM_STATICTEXT name='9 AM in %C3%89glise Saint-Roch'
+++++++++++++ROLE_SYSTEM_PUSHBUTTON name='Playful Dissonance: Teaching with Wit and Wonder Details' COLLAPSED FOCUSABLE

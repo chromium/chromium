@@ -1,0 +1,26 @@
+AXWebArea AXTitle='Radio Group Example Using Roving tabindex'
+++AXGroup
+++++AXRadioGroup AXDescription='Pizza Crust' AXTitle='Pizza Crust'
+++++++AXHeading AXTitle='Pizza Crust' AXValue=3
+++++++++AXStaticText AXValue='Pizza Crust'
+++++++AXRadioButton AXTitle='Regular crust' AXValue=0
+++++++++AXImage
+++++++++AXStaticText AXValue='Regular crust'
+++++++AXRadioButton AXTitle='Deep dish' AXValue=0
+++++++++AXImage
+++++++++AXStaticText AXValue='Deep dish'
+++++++AXRadioButton AXTitle='Thin crust' AXValue=0
+++++++++AXImage
+++++++++AXStaticText AXValue='Thin crust'
+++++AXRadioGroup AXDescription='Pizza Delivery' AXTitle='Pizza Delivery'
+++++++AXHeading AXTitle='Pizza Delivery' AXValue=3
+++++++++AXStaticText AXValue='Pizza Delivery'
+++++++AXRadioButton AXTitle='Pickup' AXValue=0
+++++++++AXImage
+++++++++AXStaticText AXValue='Pickup'
+++++++AXRadioButton AXTitle='Home Delivery' AXValue=0
+++++++++AXImage
+++++++++AXStaticText AXValue='Home Delivery'
+++++++AXRadioButton AXTitle='Dine in' AXValue=0
+++++++++AXImage
+++++++++AXStaticText AXValue='Dine in'

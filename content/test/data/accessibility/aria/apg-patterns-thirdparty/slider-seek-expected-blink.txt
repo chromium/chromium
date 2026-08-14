@@ -1,0 +1,27 @@
+rootWebArea name='Media Seek Slider Example'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer
+++++++++genericContainer ignored
+++++++++++genericContainer
+++++++++++++staticText name='Seek'
+++++++++++++++inlineTextBox name='Seek'
+++++++++++slider horizontal name='Seek' ariaValueText='1 Minute 30 Seconds of 5 Minutes' valueForRange=90.00 minValueForRange=0.00 maxValueForRange=300.00
+++++++++++genericContainer
+++++++++++++staticText name='0:00'
+++++++++++++++inlineTextBox name='0:00'
+++++++++++genericContainer
+++++++++++++staticText name='1:00'
+++++++++++++++inlineTextBox name='1:00'
+++++++++++genericContainer
+++++++++++++staticText name='2:00'
+++++++++++++++inlineTextBox name='2:00'
+++++++++++genericContainer
+++++++++++++staticText name='3:00'
+++++++++++++++inlineTextBox name='3:00'
+++++++++++genericContainer
+++++++++++++staticText name='4:00'
+++++++++++++++inlineTextBox name='4:00'
+++++++++++genericContainer
+++++++++++++staticText name='5:00'
+++++++++++++++inlineTextBox name='5:00'

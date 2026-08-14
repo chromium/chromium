@@ -1,0 +1,96 @@
+rootWebArea name='Modal Dialog Example'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer
+++++++++button name='Add Delivery Address'
+++++++++++staticText name='Add Delivery Address'
+++++++++++++inlineTextBox name='Add Delivery Address'
+++++++++genericContainer
+++++++++++heading ignored invisible
+++++++++++++staticText ignored invisible
+++++++++++labelText ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++++++++staticText ignored invisible
+++++++++++++textField ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++labelText ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++++++++staticText ignored invisible
+++++++++++++textField ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++labelText ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++++++++staticText ignored invisible
+++++++++++++textField ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++labelText ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++++++++staticText ignored invisible
+++++++++++++textField ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++labelText ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++++++++staticText ignored invisible
+++++++++++genericContainer ignored invisible
+++++++++++genericContainer ignored invisible
+++++++++++++staticText ignored invisible
+++++++++++heading ignored invisible
+++++++++++++staticText ignored invisible
+++++++++++genericContainer ignored invisible
+++++++++++++paragraph ignored invisible
+++++++++++++++staticText ignored invisible
+++++++++++++paragraph ignored invisible
+++++++++++++++staticText ignored invisible
+++++++++++++list ignored invisible
+++++++++++++++listItem ignored invisible
+++++++++++++++++staticText ignored invisible
+++++++++++++++listItem ignored invisible
+++++++++++++++++staticText ignored invisible
+++++++++++++++listItem ignored invisible
+++++++++++++++++staticText ignored invisible
+++++++++++++++listItem ignored invisible
+++++++++++++++++staticText ignored invisible
+++++++++++++++++list ignored invisible
+++++++++++++++++++listItem ignored invisible
+++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++listItem ignored invisible
+++++++++++++++++++++staticText ignored invisible
+++++++++++++paragraph ignored invisible
+++++++++++++++staticText ignored invisible
+++++++++++++list ignored invisible
+++++++++++++++listItem ignored invisible
+++++++++++++++++staticText ignored invisible
+++++++++++++++listItem ignored invisible
+++++++++++++++++staticText ignored invisible
+++++++++++++paragraph ignored invisible
+++++++++++++++staticText ignored invisible
+++++++++++++++emphasis ignored invisible
+++++++++++++++++staticText ignored invisible
+++++++++++++++staticText ignored invisible
+++++++++++++list ignored invisible
+++++++++++++++listItem ignored invisible
+++++++++++++++++staticText ignored invisible
+++++++++++++++listItem ignored invisible
+++++++++++++++++staticText ignored invisible
+++++++++++++++listItem ignored invisible
+++++++++++++++++staticText ignored invisible
+++++++++++++paragraph ignored invisible
+++++++++++++++staticText ignored invisible
+++++++++++++++code ignored invisible
+++++++++++++++++staticText ignored invisible
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++staticText ignored invisible
+++++++++++++++staticText ignored invisible
+++++++++++++++code ignored invisible
+++++++++++++++++staticText ignored invisible
+++++++++++++++staticText ignored invisible
+++++++++++heading ignored invisible
+++++++++++++staticText ignored invisible
+++++++++++paragraph ignored invisible
+++++++++++++staticText ignored invisible
+++++++++++++link ignored invisible
+++++++++++++++staticText ignored invisible
+++++++++++heading ignored invisible
+++++++++++++staticText ignored invisible
+++++++++++paragraph ignored invisible
+++++++++++++staticText ignored invisible

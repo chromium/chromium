@@ -1,0 +1,18 @@
+android.webkit.WebView focusable focused interesting name='Auto-Rotating Image Carousel Example with Buttons for Slide Control'
+++android.view.View
+++++android.view.View role_description='carousel' container_title='Highlighted television shows'
+++++++android.view.View
+++++++++android.view.View
+++++++++++android.widget.Button clickable focusable interesting content_description='Start automatic slide show'
+++++++++++android.widget.Button clickable focusable interesting content_description='Previous Slide'
+++++++++++android.widget.Button clickable focusable interesting content_description='Next Slide'
+++++++++android.view.View live_region_type=1
+++++++++++android.view.View role_description='slide' container_title='1 of 6'
+++++++++++++android.view.View
+++++++++++++++android.view.View role_description='link' clickable focusable link interesting name='Walking Tour in Amsterdam'
+++++++++++++++++android.widget.Image content_description='Walking Tour in Amsterdam'
+++++++++++++android.view.View
+++++++++++++++android.view.View role_description='heading 3 link' clickable heading name='Dynamic Europe: Amsterdam, Prague, Berlin'
+++++++++++++++++android.view.View role_description='heading 3 link' clickable focusable link interesting name='Dynamic Europe: Amsterdam, Prague, Berlin'
+++++++++++++++++++android.widget.TextView name='Dynamic Europe: Amsterdam, Prague, Berlin'
+++++++++++++++android.widget.TextView interesting name='7 pm Tuesday, March 3, on TV'

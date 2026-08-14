@@ -1,0 +1,73 @@
+ROLE_SYSTEM_DOCUMENT name='Feed Display' READONLY FOCUSABLE
+++IA2_ROLE_HEADING name='Recommended Restaurants'
+++++ROLE_SYSTEM_STATICTEXT name='Recommended Restaurants'
+++IA2_ROLE_SECTION
+++++ROLE_SYSTEM_GROUPING BUSY
+++++++ROLE_SYSTEM_DOCUMENT name='Tito's Tacos' READONLY FOCUSABLE description-from:aria-describedby description='5 stars Mexican, Tacos 123 Blueberry Ln San Dimas, CA (111) 111-1111'
+++++++++IA2_ROLE_SECTION
+++++++++++IA2_ROLE_SECTION
+++++++++++++ROLE_SYSTEM_STATICTEXT name='Tito's Tacos'
+++++++++++IA2_ROLE_SECTION
+++++++++++++ROLE_SYSTEM_GRAPHIC name='5 stars' READONLY
+++++++++++IA2_ROLE_SECTION
+++++++++++++ROLE_SYSTEM_STATICTEXT name='Mexican, Tacos'
+++++++++IA2_ROLE_SECTION
+++++++++++IA2_ROLE_SECTION
+++++++++++++ROLE_SYSTEM_STATICTEXT name='123 Blueberry Ln'
+++++++++++IA2_ROLE_SECTION
+++++++++++++ROLE_SYSTEM_STATICTEXT name='San Dimas, CA'
+++++++++++IA2_ROLE_SECTION
+++++++++++++ROLE_SYSTEM_STATICTEXT name='(111) 111-1111'
+++++++++IA2_ROLE_SECTION
+++++++++++ROLE_SYSTEM_PUSHBUTTON name='Bookmark' FOCUSABLE
+++++++ROLE_SYSTEM_DOCUMENT name='Sakura Sushi' READONLY FOCUSABLE description-from:aria-describedby description='4 stars Japanese, Fish, Sushi 123 Blueberry Ln Pomona, CA (111) 111-1111'
+++++++++IA2_ROLE_SECTION
+++++++++++IA2_ROLE_SECTION
+++++++++++++ROLE_SYSTEM_STATICTEXT name='Sakura Sushi'
+++++++++++IA2_ROLE_SECTION
+++++++++++++ROLE_SYSTEM_GRAPHIC name='4 stars' READONLY
+++++++++++IA2_ROLE_SECTION
+++++++++++++ROLE_SYSTEM_STATICTEXT name='Japanese, Fish, Sushi'
+++++++++IA2_ROLE_SECTION
+++++++++++IA2_ROLE_SECTION
+++++++++++++ROLE_SYSTEM_STATICTEXT name='123 Blueberry Ln'
+++++++++++IA2_ROLE_SECTION
+++++++++++++ROLE_SYSTEM_STATICTEXT name='Pomona, CA'
+++++++++++IA2_ROLE_SECTION
+++++++++++++ROLE_SYSTEM_STATICTEXT name='(111) 111-1111'
+++++++++IA2_ROLE_SECTION
+++++++++++ROLE_SYSTEM_PUSHBUTTON name='Bookmark' FOCUSABLE
+++++++ROLE_SYSTEM_DOCUMENT name='Prime Steakhouse' READONLY FOCUSABLE description-from:aria-describedby description='4 stars Steakhouses 123 Blueberry Ln Claremont, CA (111) 111-1111'
+++++++++IA2_ROLE_SECTION
+++++++++++IA2_ROLE_SECTION
+++++++++++++ROLE_SYSTEM_STATICTEXT name='Prime Steakhouse'
+++++++++++IA2_ROLE_SECTION
+++++++++++++ROLE_SYSTEM_GRAPHIC name='4 stars' READONLY
+++++++++++IA2_ROLE_SECTION
+++++++++++++ROLE_SYSTEM_STATICTEXT name='Steakhouses'
+++++++++IA2_ROLE_SECTION
+++++++++++IA2_ROLE_SECTION
+++++++++++++ROLE_SYSTEM_STATICTEXT name='123 Blueberry Ln'
+++++++++++IA2_ROLE_SECTION
+++++++++++++ROLE_SYSTEM_STATICTEXT name='Claremont, CA'
+++++++++++IA2_ROLE_SECTION
+++++++++++++ROLE_SYSTEM_STATICTEXT name='(111) 111-1111'
+++++++++IA2_ROLE_SECTION
+++++++++++ROLE_SYSTEM_PUSHBUTTON name='Bookmark' FOCUSABLE
+++++++ROLE_SYSTEM_DOCUMENT name='The Pizza Factory' READONLY FOCUSABLE description-from:aria-describedby description='4 stars Pizza 123 Blueberry Ln Pomona, CA (111) 111-1111'
+++++++++IA2_ROLE_SECTION
+++++++++++IA2_ROLE_SECTION
+++++++++++++ROLE_SYSTEM_STATICTEXT name='The Pizza Factory'
+++++++++++IA2_ROLE_SECTION
+++++++++++++ROLE_SYSTEM_GRAPHIC name='4 stars' READONLY
+++++++++++IA2_ROLE_SECTION
+++++++++++++ROLE_SYSTEM_STATICTEXT name='Pizza'
+++++++++IA2_ROLE_SECTION
+++++++++++IA2_ROLE_SECTION
+++++++++++++ROLE_SYSTEM_STATICTEXT name='123 Blueberry Ln'
+++++++++++IA2_ROLE_SECTION
+++++++++++++ROLE_SYSTEM_STATICTEXT name='Pomona, CA'
+++++++++++IA2_ROLE_SECTION
+++++++++++++ROLE_SYSTEM_STATICTEXT name='(111) 111-1111'
+++++++++IA2_ROLE_SECTION
+++++++++++ROLE_SYSTEM_PUSHBUTTON name='Bookmark' FOCUSABLE

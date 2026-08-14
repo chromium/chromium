@@ -1,0 +1,61 @@
+ROLE_SYSTEM_DOCUMENT name='Sortable Table Example' READONLY FOCUSABLE
+++IA2_ROLE_SECTION
+++++ROLE_SYSTEM_TABLE name='Students currently enrolled in WAI-ARIA 101 %E2%80%88(column headers with buttons are sortable).'
+++++++IA2_ROLE_CAPTION
+++++++++ROLE_SYSTEM_STATICTEXT name='Students currently enrolled in WAI-ARIA 101'
+++++++++ROLE_SYSTEM_STATICTEXT name='%E2%80%88(column headers with buttons are sortable).'
+++++++ROLE_SYSTEM_ROW
+++++++++ROLE_SYSTEM_COLUMNHEADER name='First Name'
+++++++++++ROLE_SYSTEM_PUSHBUTTON name='First Name' FOCUSABLE
+++++++++ROLE_SYSTEM_COLUMNHEADER name='Last Name'
+++++++++++ROLE_SYSTEM_PUSHBUTTON name='Last Name' FOCUSABLE
+++++++++ROLE_SYSTEM_COLUMNHEADER name='Company'
+++++++++++ROLE_SYSTEM_PUSHBUTTON name='Company' FOCUSABLE
+++++++++ROLE_SYSTEM_COLUMNHEADER name='Address'
+++++++++++ROLE_SYSTEM_STATICTEXT name='Address'
+++++++++ROLE_SYSTEM_COLUMNHEADER name='Favorite Number'
+++++++++++ROLE_SYSTEM_PUSHBUTTON name='Favorite Number' FOCUSABLE
+++++++ROLE_SYSTEM_ROW
+++++++++ROLE_SYSTEM_CELL name='Fred'
+++++++++++ROLE_SYSTEM_STATICTEXT name='Fred'
+++++++++ROLE_SYSTEM_CELL name='Jackson'
+++++++++++ROLE_SYSTEM_STATICTEXT name='Jackson'
+++++++++ROLE_SYSTEM_CELL name='Canary, Inc.'
+++++++++++ROLE_SYSTEM_STATICTEXT name='Canary, Inc.'
+++++++++ROLE_SYSTEM_CELL name='123 Broad St.'
+++++++++++ROLE_SYSTEM_STATICTEXT name='123 Broad St.'
+++++++++ROLE_SYSTEM_CELL name='56'
+++++++++++ROLE_SYSTEM_STATICTEXT name='56'
+++++++ROLE_SYSTEM_ROW
+++++++++ROLE_SYSTEM_CELL name='Sara'
+++++++++++ROLE_SYSTEM_STATICTEXT name='Sara'
+++++++++ROLE_SYSTEM_CELL name='James'
+++++++++++ROLE_SYSTEM_STATICTEXT name='James'
+++++++++ROLE_SYSTEM_CELL name='Cardinal, Inc.'
+++++++++++ROLE_SYSTEM_STATICTEXT name='Cardinal, Inc.'
+++++++++ROLE_SYSTEM_CELL name='457 First St.'
+++++++++++ROLE_SYSTEM_STATICTEXT name='457 First St.'
+++++++++ROLE_SYSTEM_CELL name='7'
+++++++++++ROLE_SYSTEM_STATICTEXT name='7'
+++++++ROLE_SYSTEM_ROW
+++++++++ROLE_SYSTEM_CELL name='Ralph'
+++++++++++ROLE_SYSTEM_STATICTEXT name='Ralph'
+++++++++ROLE_SYSTEM_CELL name='Jefferson'
+++++++++++ROLE_SYSTEM_STATICTEXT name='Jefferson'
+++++++++ROLE_SYSTEM_CELL name='Robin, Inc.'
+++++++++++ROLE_SYSTEM_STATICTEXT name='Robin, Inc.'
+++++++++ROLE_SYSTEM_CELL name='456 Main St.'
+++++++++++ROLE_SYSTEM_STATICTEXT name='456 Main St.'
+++++++++ROLE_SYSTEM_CELL name='513'
+++++++++++ROLE_SYSTEM_STATICTEXT name='513'
+++++++ROLE_SYSTEM_ROW
+++++++++ROLE_SYSTEM_CELL name='Nancy'
+++++++++++ROLE_SYSTEM_STATICTEXT name='Nancy'
+++++++++ROLE_SYSTEM_CELL name='Jensen'
+++++++++++ROLE_SYSTEM_STATICTEXT name='Jensen'
+++++++++ROLE_SYSTEM_CELL name='Eagle, Inc.'
+++++++++++ROLE_SYSTEM_STATICTEXT name='Eagle, Inc.'
+++++++++ROLE_SYSTEM_CELL name='2203 Logan Dr.'
+++++++++++ROLE_SYSTEM_STATICTEXT name='2203 Logan Dr.'
+++++++++ROLE_SYSTEM_CELL name='3.5'
+++++++++++ROLE_SYSTEM_STATICTEXT name='3.5'

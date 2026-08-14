@@ -1,0 +1,4 @@
+WebView supplementalDescription:"Advanced Data Grid Example" focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
+++View viewIdResName:"ex1" actions:[AX_FOCUS] bundle:[chromeRole="genericContainer"]
+++++TextView text:"This is the place where the reader will experience the functioning example." actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="paragraph"]
+++++TextView text:"The HTML in this section along with the javascript and CSS it uses demonstrate the design pattern." actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="paragraph"]

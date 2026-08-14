@@ -1,0 +1,8 @@
+rootWebArea name='Rating Slider Example'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer
+++++++++genericContainer
+++++++++++staticText name='Rate your satisfaction with the service you received'
+++++++++++++inlineTextBox name='Rate your satisfaction with the service you received'
+++++++++slider horizontal name='Rate your satisfaction with the service you received' ariaValueText='Choose a rating from one to ten where 10 is extremely satisfied' valueForRange=0.00 minValueForRange=0.00 maxValueForRange=10.00

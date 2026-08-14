@@ -1,0 +1,53 @@
+rootWebArea name='Listbox Example with Grouped Options'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer
+++++++++genericContainer ignored
+++++++++++genericContainer ignored
+++++++++++++genericContainer
+++++++++++++++staticText name='Choose your animal sidekick'
+++++++++++++++++inlineTextBox name='Choose your animal sidekick'
+++++++++++++listBox name='Choose your animal sidekick'
+++++++++++++++group name='Land'
+++++++++++++++++staticText name='Land'
+++++++++++++++++++inlineTextBox name='Land'
+++++++++++++++++listBoxOption name='Cat' selected=false
+++++++++++++++++++staticText name='Cat'
+++++++++++++++++++++inlineTextBox name='Cat'
+++++++++++++++++listBoxOption name='Dog' selected=false
+++++++++++++++++++staticText name='Dog'
+++++++++++++++++++++inlineTextBox name='Dog'
+++++++++++++++++listBoxOption name='Tiger' selected=false
+++++++++++++++++++staticText name='Tiger'
+++++++++++++++++++++inlineTextBox name='Tiger'
+++++++++++++++++listBoxOption name='Reindeer' selected=false
+++++++++++++++++++staticText name='Reindeer'
+++++++++++++++++++++inlineTextBox name='Reindeer'
+++++++++++++++++listBoxOption name='Raccoon' selected=false
+++++++++++++++++++staticText name='Raccoon'
+++++++++++++++++++++inlineTextBox name='Raccoon'
+++++++++++++++group name='Water'
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++staticText name='Water'
+++++++++++++++++++inlineTextBox name='Water'
+++++++++++++++++listBoxOption name='Dolphin' selected=false
+++++++++++++++++++staticText name='Dolphin'
+++++++++++++++++++++inlineTextBox name='Dolphin'
+++++++++++++++++listBoxOption name='Flounder' selected=false
+++++++++++++++++++staticText name='Flounder'
+++++++++++++++++++++inlineTextBox name='Flounder'
+++++++++++++++++listBoxOption name='Eel' selected=false
+++++++++++++++++++staticText name='Eel'
+++++++++++++++++++++inlineTextBox name='Eel'
+++++++++++++++group name='Air'
+++++++++++++++++staticText name='Air'
+++++++++++++++++++inlineTextBox name='Air'
+++++++++++++++++listBoxOption name='Falcon' selected=false
+++++++++++++++++++staticText name='Falcon'
+++++++++++++++++++++inlineTextBox name='Falcon'
+++++++++++++++++listBoxOption name='Winged Horse' selected=false
+++++++++++++++++++staticText name='Winged Horse'
+++++++++++++++++++++inlineTextBox name='Winged Horse'
+++++++++++++++++listBoxOption name='Owl' selected=false
+++++++++++++++++++staticText name='Owl'
+++++++++++++++++++++inlineTextBox name='Owl'

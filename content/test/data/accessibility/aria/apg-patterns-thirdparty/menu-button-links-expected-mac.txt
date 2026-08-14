@@ -1,0 +1,6 @@
+AXWebArea AXTitle='Navigation Menu Button Example'
+++AXGroup
+++++AXGroup
+++++++AXPopUpButton AXTitle='WAI-ARIA Quick Links '
+++++++++AXStaticText AXValue='WAI-ARIA Quick Links '
+++++++++AXImage

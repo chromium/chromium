@@ -1,0 +1,7 @@
+AXWebArea AXTitle='Select-Only Combobox Example'
+++AXGroup
+++++AXGroup
+++++++AXGroup
+++++++++AXStaticText AXValue='Favorite Fruit'
+++++++AXComboBox AXTitle='Favorite Fruit' AXValue='Choose a Fruit'
+++++++++AXStaticText AXValue='Choose a Fruit'

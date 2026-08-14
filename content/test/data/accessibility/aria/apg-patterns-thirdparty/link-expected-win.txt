@@ -1,0 +1,52 @@
+ROLE_SYSTEM_DOCUMENT name='Link Examples' READONLY FOCUSABLE
+++ROLE_SYSTEM_TABLE
+++++ROLE_SYSTEM_ROW
+++++++ROLE_SYSTEM_COLUMNHEADER name='Number'
+++++++++ROLE_SYSTEM_STATICTEXT name='Number'
+++++++ROLE_SYSTEM_COLUMNHEADER name='Description'
+++++++++ROLE_SYSTEM_STATICTEXT name='Description'
+++++++ROLE_SYSTEM_COLUMNHEADER name='Link'
+++++++++ROLE_SYSTEM_STATICTEXT name='Link'
+++++ROLE_SYSTEM_ROW
+++++++ROLE_SYSTEM_ROWHEADER name='1'
+++++++++IA2_ROLE_SECTION
+++++++++++IA2_ROLE_SECTION
+++++++++++++ROLE_SYSTEM_STATICTEXT name='1'
+++++++ROLE_SYSTEM_CELL name='span element with text content.'
+++++++++IA2_ROLE_TEXT_FRAME
+++++++++++ROLE_SYSTEM_STATICTEXT name='span'
+++++++++ROLE_SYSTEM_STATICTEXT name=' element with text content.'
+++++++ROLE_SYSTEM_CELL name='W3C website'
+++++++++ROLE_SYSTEM_LINK name='W3C website' FOCUSABLE
+++++++++++ROLE_SYSTEM_STATICTEXT name='W3C website'
+++++ROLE_SYSTEM_ROW
+++++++ROLE_SYSTEM_ROWHEADER name='2'
+++++++++IA2_ROLE_SECTION
+++++++++++IA2_ROLE_SECTION
+++++++++++++ROLE_SYSTEM_STATICTEXT name='2'
+++++++ROLE_SYSTEM_CELL name='img element with alt attribute.'
+++++++++IA2_ROLE_TEXT_FRAME
+++++++++++ROLE_SYSTEM_STATICTEXT name='img'
+++++++++ROLE_SYSTEM_STATICTEXT name=' element with '
+++++++++IA2_ROLE_TEXT_FRAME
+++++++++++ROLE_SYSTEM_STATICTEXT name='alt'
+++++++++ROLE_SYSTEM_STATICTEXT name=' attribute.'
+++++++ROLE_SYSTEM_CELL name='W3C Website'
+++++++++ROLE_SYSTEM_LINK name='W3C Website' FOCUSABLE
+++++ROLE_SYSTEM_ROW
+++++++ROLE_SYSTEM_ROWHEADER name='3'
+++++++++IA2_ROLE_SECTION
+++++++++++IA2_ROLE_SECTION
+++++++++++++ROLE_SYSTEM_STATICTEXT name='3'
+++++++ROLE_SYSTEM_CELL name='CSS :before content property on a span element.'
+++++++++ROLE_SYSTEM_STATICTEXT name='CSS '
+++++++++IA2_ROLE_TEXT_FRAME
+++++++++++ROLE_SYSTEM_STATICTEXT name=':before'
+++++++++ROLE_SYSTEM_STATICTEXT name=' content property on a '
+++++++++IA2_ROLE_TEXT_FRAME
+++++++++++ROLE_SYSTEM_STATICTEXT name='span'
+++++++++ROLE_SYSTEM_STATICTEXT name=' element.'
+++++++ROLE_SYSTEM_CELL name='W3C website'
+++++++++ROLE_SYSTEM_LINK name='W3C website' FOCUSABLE
+++++++++++IA2_ROLE_SECTION
+++++++++++++ROLE_SYSTEM_GRAPHIC READONLY

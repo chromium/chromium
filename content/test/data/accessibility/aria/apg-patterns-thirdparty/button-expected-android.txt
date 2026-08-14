@@ -1,0 +1,20 @@
+android.webkit.WebView focusable focused interesting name='Button Examples'
+++android.view.View
+++++android.view.View
+++++++android.widget.TextView interesting name='This '
+++++++android.widget.TextView interesting name='%E2%80%9C'
+++++++android.widget.TextView interesting name='Print'
+++++++android.widget.TextView interesting name='%E2%80%9D'
+++++++android.widget.TextView interesting name=' action button uses a '
+++++++android.view.View interesting name='div'
+++++++android.widget.TextView interesting name=' element.'
+++++android.widget.Button clickable focusable interesting name='Print Page'
+++++android.view.View
+++++++android.widget.TextView interesting name='This '
+++++++android.widget.TextView interesting name='%E2%80%9C'
+++++++android.widget.TextView interesting name='Mute'
+++++++android.widget.TextView interesting name='%E2%80%9D'
+++++++android.widget.TextView interesting name=' toggle button uses an '
+++++++android.view.View interesting name='a'
+++++++android.widget.TextView interesting name=' element.'
+++++android.widget.ToggleButton checkable clickable focusable interesting name='Mute '

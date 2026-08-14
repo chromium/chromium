@@ -1,0 +1,35 @@
+rootWebArea name='File Directory Treeview Example Using Declared Properties'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer
+++++++++heading name='My Documents'
+++++++++++staticText name='My Documents'
+++++++++++++inlineTextBox name='My Documents'
+++++++++tree name='My Documents'
+++++++++++treeItem collapsed name='%EF%81%BB Projects' selected=false
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer
+++++++++++++++++staticText name='%EF%81%BB'
+++++++++++++++++++inlineTextBox name='%EF%81%BB'
+++++++++++++++staticText name=' Projects'
+++++++++++++++++inlineTextBox name=' Projects'
+++++++++++treeItem collapsed name='%EF%81%BB Reports' selected=false
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer
+++++++++++++++++staticText name='%EF%81%BB'
+++++++++++++++++++inlineTextBox name='%EF%81%BB'
+++++++++++++++staticText name=' Reports'
+++++++++++++++++inlineTextBox name=' Reports'
+++++++++++treeItem collapsed name='%EF%81%BB Letters' selected=false
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer
+++++++++++++++++staticText name='%EF%81%BB'
+++++++++++++++++++inlineTextBox name='%EF%81%BB'
+++++++++++++++staticText name=' Letters'
+++++++++++++++++inlineTextBox name=' Letters'
+++++++++paragraph
+++++++++++labelText
+++++++++++++staticText name='File or Folder Selected: '
+++++++++++++++inlineTextBox name='File or Folder Selected: '
+++++++++++++textField name='File or Folder Selected:' restriction=readOnly
+++++++++++++++genericContainer

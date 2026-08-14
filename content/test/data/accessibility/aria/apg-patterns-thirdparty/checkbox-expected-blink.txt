@@ -1,0 +1,33 @@
+rootWebArea name='Checkbox Example (Two State)'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer
+++++++++heading name='Sandwich Condiments'
+++++++++++staticText name='Sandwich Condiments'
+++++++++++++inlineTextBox name='Sandwich Condiments'
+++++++++group name='Sandwich Condiments'
+++++++++++list
+++++++++++++listItem
+++++++++++++++checkBox name='Lettuce' checkedState=false
+++++++++++++++++genericContainer ignored
+++++++++++++++++++image
+++++++++++++++++staticText name='Lettuce'
+++++++++++++++++++inlineTextBox name='Lettuce'
+++++++++++++listItem
+++++++++++++++checkBox name='Tomato' checkedState=true
+++++++++++++++++genericContainer ignored
+++++++++++++++++++image
+++++++++++++++++staticText name='Tomato'
+++++++++++++++++++inlineTextBox name='Tomato'
+++++++++++++listItem
+++++++++++++++checkBox name='Mustard' checkedState=false
+++++++++++++++++genericContainer ignored
+++++++++++++++++++image
+++++++++++++++++staticText name='Mustard'
+++++++++++++++++++inlineTextBox name='Mustard'
+++++++++++++listItem
+++++++++++++++checkBox name='Sprouts' checkedState=false
+++++++++++++++++genericContainer ignored
+++++++++++++++++++image
+++++++++++++++++staticText name='Sprouts'
+++++++++++++++++++inlineTextBox name='Sprouts'

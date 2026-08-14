@@ -1,0 +1,427 @@
+AXWebArea AXTitle='Layout Grid Examples'
+++AXGroup
+++++AXHeading AXTitle='Related Documents' AXValue=4
+++++++AXStaticText AXValue='Related Documents'
+++++AXTable AXTitle='Related Documents'
+++++++AXRow AXTitle='ARIA 1.1 Specification Core Accessibility API Mappings 1.1 WAI-ARIA Overview WCAG Overview HTML Specification SVG 2 Specification'
+++++++++AXCell
+++++++++++AXLink AXDescription='ARIA 1.1 Specification' AXTitle='ARIA 1.1 Specification'
+++++++++++++AXStaticText AXValue='ARIA 1.1 Specification'
+++++++++AXCell
+++++++++++AXLink AXDescription='Core Accessibility API Mappings 1.1' AXTitle='Core Accessibility API Mappings 1.1'
+++++++++++++AXStaticText AXValue='Core Accessibility API Mappings 1.1'
+++++++++AXCell
+++++++++++AXLink AXDescription='WAI-ARIA Overview' AXTitle='WAI-ARIA Overview'
+++++++++++++AXStaticText AXValue='WAI-ARIA Overview'
+++++++++AXCell
+++++++++++AXLink AXDescription='WCAG Overview' AXTitle='WCAG Overview'
+++++++++++++AXStaticText AXValue='WCAG Overview'
+++++++++AXCell
+++++++++++AXLink AXDescription='HTML Specification' AXTitle='HTML Specification'
+++++++++++++AXStaticText AXValue='HTML Specification'
+++++++++AXCell
+++++++++++AXLink AXDescription='SVG 2 Specification' AXTitle='SVG 2 Specification'
+++++++++++++AXStaticText AXValue='SVG 2 Specification'
+++++++AXColumn
+++++++++AXCell
+++++++++++AXLink AXDescription='ARIA 1.1 Specification' AXTitle='ARIA 1.1 Specification'
+++++++++++++AXStaticText AXValue='ARIA 1.1 Specification'
+++++++AXColumn
+++++++++AXCell
+++++++++++AXLink AXDescription='Core Accessibility API Mappings 1.1' AXTitle='Core Accessibility API Mappings 1.1'
+++++++++++++AXStaticText AXValue='Core Accessibility API Mappings 1.1'
+++++++AXColumn
+++++++++AXCell
+++++++++++AXLink AXDescription='WAI-ARIA Overview' AXTitle='WAI-ARIA Overview'
+++++++++++++AXStaticText AXValue='WAI-ARIA Overview'
+++++++AXColumn
+++++++++AXCell
+++++++++++AXLink AXDescription='WCAG Overview' AXTitle='WCAG Overview'
+++++++++++++AXStaticText AXValue='WCAG Overview'
+++++++AXColumn
+++++++++AXCell
+++++++++++AXLink AXDescription='HTML Specification' AXTitle='HTML Specification'
+++++++++++++AXStaticText AXValue='HTML Specification'
+++++++AXColumn
+++++++++AXCell
+++++++++++AXLink AXDescription='SVG 2 Specification' AXTitle='SVG 2 Specification'
+++++++++++++AXStaticText AXValue='SVG 2 Specification'
+++++++AXGroup AXSubrole=AXEmptyGroup
+++AXGroup
+++++AXGroup
+++++++AXGroup
+++++++++AXStaticText AXValue='Send To:'
+++++++AXTable AXTitle='Send To:'
+++++++++AXRow AXTitle='Recipient Name 1 Remove Recipient Name 1'
+++++++++++AXCell
+++++++++++++AXLink AXDescription='Recipient Name 1' AXTitle='Recipient Name 1'
+++++++++++++++AXStaticText AXValue='Recipient Name 1'
+++++++++++AXCell
+++++++++++++AXButton AXTitle='Remove Recipient Name 1'
+++++++++AXRow AXTitle='Recipient Name 2 Remove Recipient Name 2'
+++++++++++AXCell
+++++++++++++AXLink AXDescription='Recipient Name 2' AXTitle='Recipient Name 2'
+++++++++++++++AXStaticText AXValue='Recipient Name 2'
+++++++++++AXCell
+++++++++++++AXButton AXTitle='Remove Recipient Name 2'
+++++++++AXColumn
+++++++++++AXCell
+++++++++++++AXLink AXDescription='Recipient Name 1' AXTitle='Recipient Name 1'
+++++++++++++++AXStaticText AXValue='Recipient Name 1'
+++++++++++AXCell
+++++++++++++AXLink AXDescription='Recipient Name 2' AXTitle='Recipient Name 2'
+++++++++++++++AXStaticText AXValue='Recipient Name 2'
+++++++++AXColumn
+++++++++++AXCell
+++++++++++++AXButton AXTitle='Remove Recipient Name 1'
+++++++++++AXCell
+++++++++++++AXButton AXTitle='Remove Recipient Name 2'
+++++++++AXGroup AXSubrole=AXEmptyGroup
+++++++AXGroup
+++++++++AXTextField AXDescription='Add Recipient' AXTitle='Add Recipient'
+++++++++AXButton AXTitle='Add'
+++++++++AXGroup
+++++++++++AXStaticText AXValue='Last change to recipient list:'
+++++++++++AXGroup AXSubrole=AXEmptyGroup
+++AXGroup
+++++AXHeading AXTitle='Search Results for "W3C WAI-ARIA"' AXValue=4
+++++++AXStaticText AXValue='Search Results for "W3C WAI-ARIA"'
+++++AXGroup
+++++++AXStaticText AXValue='Showing results '
+++++++AXGroup
+++++++++AXStaticText AXValue='1'
+++++++AXStaticText AXValue=' to '
+++++++AXGroup
+++++++++AXStaticText AXValue='5'
+++++++AXStaticText AXValue=' of 19'
+++++AXTable AXTitle='Search Results for "W3C WAI-ARIA"'
+++++++AXRow AXTitle='WAI-ARIA Overview Web Accessibility Initiative W3C World Wide Web Consortium WAI-ARIA, the Accessible Rich Internet Applications Suite, defines a way to make Web content and Web applications more accessible to people with disabilities.'
+++++++++AXCell
+++++++++++AXHeading AXTitle='WAI-ARIA Overview Web Accessibility Initiative W3C' AXValue=5
+++++++++++++AXLink AXDescription='WAI-ARIA Overview Web Accessibility Initiative W3C' AXTitle='WAI-ARIA Overview Web Accessibility Initiative W3C'
+++++++++++++++AXStaticText AXValue='WAI-ARIA Overview Web Accessibility Initiative W3C'
+++++++++AXCell
+++++++++++AXStaticText AXValue='World Wide Web Consortium'
+++++++++AXCell
+++++++++++AXStaticText AXValue='WAI-ARIA, the Accessible Rich Internet Applications Suite, defines a way to make Web content and Web applications more accessible to people with disabilities.'
+++++++AXRow AXTitle='ARIA States and Properties - W3C World Wide Web Consortium In this document, states and properties are both treated as aria-prefixed markup attributes. However, they are maintained conceptually distinct to clarify subtle%C2%A0...'
+++++++++AXCell
+++++++++++AXHeading AXTitle='ARIA States and Properties - W3C' AXValue=5
+++++++++++++AXLink AXDescription='ARIA States and Properties - W3C' AXTitle='ARIA States and Properties - W3C'
+++++++++++++++AXStaticText AXValue='ARIA States and Properties - W3C'
+++++++++AXCell
+++++++++++AXStaticText AXValue='World Wide Web Consortium'
+++++++++AXCell
+++++++++++AXStaticText AXValue='In this document, states and properties are both treated as aria-prefixed markup attributes. However, they are maintained conceptually distinct to clarify subtle%C2%A0...'
+++++++AXRow AXTitle='Accessible Rich Internet Applications (WAI-ARIA) 1.0 - W3C World Wide Web Consortium Mar 20, 2014 - This is the WAI-ARIA 1.0 W3C Recommendation from the Protocols & Formats Working Group of the Web Accessibility Initiative. The Working%C2%A0...'
+++++++++AXCell
+++++++++++AXHeading AXTitle='Accessible Rich Internet Applications (WAI-ARIA) 1.0 - W3C' AXValue=5
+++++++++++++AXLink AXDescription='Accessible Rich Internet Applications (WAI-ARIA) 1.0 - W3C' AXTitle='Accessible Rich Internet Applications (WAI-ARIA) 1.0 - W3C'
+++++++++++++++AXStaticText AXValue='Accessible Rich Internet Applications (WAI-ARIA) 1.0 - W3C'
+++++++++AXCell
+++++++++++AXStaticText AXValue='World Wide Web Consortium'
+++++++++AXCell
+++++++++++AXStaticText AXValue='Mar 20, 2014 - This is the WAI-ARIA 1.0 W3C Recommendation from the Protocols & Formats Working Group of the Web Accessibility Initiative. The Working%C2%A0...'
+++++++AXRow AXTitle='Accessible Rich Internet Applications (ARIA) Working Group - W3C World Wide Web Consortium The mission of the Accessible Rich Internet Applications Working Group (ARIA WG) is to develop technologies that enhance accessibility of web content for%C2%A0...'
+++++++++AXCell
+++++++++++AXHeading AXTitle='Accessible Rich Internet Applications (ARIA) Working Group - W3C' AXValue=5
+++++++++++++AXLink AXDescription='Accessible Rich Internet Applications (ARIA) Working Group - W3C' AXTitle='Accessible Rich Internet Applications (ARIA) Working Group - W3C'
+++++++++++++++AXStaticText AXValue='Accessible Rich Internet Applications (ARIA) Working Group - W3C'
+++++++++AXCell
+++++++++++AXStaticText AXValue='World Wide Web Consortium'
+++++++++AXCell
+++++++++++AXStaticText AXValue='The mission of the Accessible Rich Internet Applications Working Group (ARIA WG) is to develop technologies that enhance accessibility of web content for%C2%A0...'
+++++++AXRow AXTitle='Accessible Rich Internet Applications (WAI-ARIA) 1.1 - W3C World Wide Web Consortium Jul 21, 2016 - This version of ARIA 1.1 changes the aria-kbdshortcuts property to aria-keyshortcuts , expands roles that can be used in comboboxes, adds a%C2%A0...'
+++++++++AXCell
+++++++++++AXHeading AXTitle='Accessible Rich Internet Applications (WAI-ARIA) 1.1 - W3C' AXValue=5
+++++++++++++AXLink AXDescription='Accessible Rich Internet Applications (WAI-ARIA) 1.1 - W3C' AXTitle='Accessible Rich Internet Applications (WAI-ARIA) 1.1 - W3C'
+++++++++++++++AXStaticText AXValue='Accessible Rich Internet Applications (WAI-ARIA) 1.1 - W3C'
+++++++++AXCell
+++++++++++AXStaticText AXValue='World Wide Web Consortium'
+++++++++AXCell
+++++++++++AXStaticText AXValue='Jul 21, 2016 - This version of ARIA 1.1 changes the aria-kbdshortcuts property to aria-keyshortcuts , expands roles that can be used in comboboxes, adds a%C2%A0...'
+++++++AXRow AXTitle='The Roles Model | Accessible Rich Internet Applications (WAI-ARIA) 1.0 World Wide Web Consortium This section defines the WAI-ARIA role taxonomy and describes the characteristics and properties of all roles. A formal RDF / OWL representation of all the%C2%A0...'
+++++++++AXCell
+++++++++++AXHeading AXTitle='The Roles Model | Accessible Rich Internet Applications (WAI-ARIA) 1.0' AXValue=5
+++++++++++++AXLink AXDescription='The Roles Model | Accessible Rich Internet Applications (WAI-ARIA) 1.0' AXTitle='The Roles Model | Accessible Rich Internet Applications (WAI-ARIA) 1.0'
+++++++++++++++AXStaticText AXValue='The Roles Model | Accessible Rich Internet Applications (WAI-ARIA) 1.0'
+++++++++AXCell
+++++++++++AXStaticText AXValue='World Wide Web Consortium'
+++++++++AXCell
+++++++++++AXStaticText AXValue='This section defines the WAI-ARIA role taxonomy and describes the characteristics and properties of all roles. A formal RDF / OWL representation of all the%C2%A0...'
+++++++AXRow AXTitle='WAI-ARIA Authoring Practices 1.1 - W3C World Wide Web Consortium Mar 17, 2016 - The WAI-ARIA Authoring Practices Guide is intended to provide an understanding of how to use WAI-ARIA to create an accessible Rich Internet%C2%A0...'
+++++++++AXCell
+++++++++++AXHeading AXTitle='WAI-ARIA Authoring Practices 1.1 - W3C' AXValue=5
+++++++++++++AXLink AXDescription='WAI-ARIA Authoring Practices 1.1 - W3C' AXTitle='WAI-ARIA Authoring Practices 1.1 - W3C'
+++++++++++++++AXStaticText AXValue='WAI-ARIA Authoring Practices 1.1 - W3C'
+++++++++AXCell
+++++++++++AXStaticText AXValue='World Wide Web Consortium'
+++++++++AXCell
+++++++++++AXStaticText AXValue='Mar 17, 2016 - The WAI-ARIA Authoring Practices Guide is intended to provide an understanding of how to use WAI-ARIA to create an accessible Rich Internet%C2%A0...'
+++++++AXRow AXTitle='ARIA in HTML - W3C World Wide Web Consortium Oct 5, 2016 - ARIA in HTML is a [ HTML51 ] specification module. Any HTML features, conformance requirements, or terms that this specification module%C2%A0...'
+++++++++AXCell
+++++++++++AXHeading AXTitle='ARIA in HTML - W3C' AXValue=5
+++++++++++++AXLink AXDescription='ARIA in HTML - W3C' AXTitle='ARIA in HTML - W3C'
+++++++++++++++AXStaticText AXValue='ARIA in HTML - W3C'
+++++++++AXCell
+++++++++++AXStaticText AXValue='World Wide Web Consortium'
+++++++++AXCell
+++++++++++AXStaticText AXValue='Oct 5, 2016 - ARIA in HTML is a [ HTML51 ] specification module. Any HTML features, conformance requirements, or terms that this specification module%C2%A0...'
+++++++AXRow AXTitle='ARIA in HTML World Wide Web Consortium Jul 24, 2015 - Setting an ARIA role and/or aria-* attribute that matches the default implicit ARIA semantics is unnecessary and is NOT RECOMMENDED as%C2%A0...'
+++++++++AXCell
+++++++++++AXHeading AXTitle='ARIA in HTML' AXValue=5
+++++++++++++AXLink AXDescription='ARIA in HTML' AXTitle='ARIA in HTML'
+++++++++++++++AXStaticText AXValue='ARIA in HTML'
+++++++++AXCell
+++++++++++AXStaticText AXValue='World Wide Web Consortium'
+++++++++AXCell
+++++++++++AXStaticText AXValue='Jul 24, 2015 - Setting an ARIA role and/or aria-* attribute that matches the default implicit ARIA semantics is unnecessary and is NOT RECOMMENDED as%C2%A0...'
+++++++AXRow AXTitle='Accessible Rich Internet Applications (ARIA) Overview World Wide Web Consortium Here are answers to some frequently asked questions (FAQ) about WAI-ARIA, the Accessible Rich Internet Applications Suite. When we add significant%C2%A0...'
+++++++++AXCell
+++++++++++AXHeading AXTitle='Accessible Rich Internet Applications (ARIA) Overview' AXValue=5
+++++++++++++AXLink AXDescription='Accessible Rich Internet Applications (ARIA) Overview' AXTitle='Accessible Rich Internet Applications (ARIA) Overview'
+++++++++++++++AXStaticText AXValue='Accessible Rich Internet Applications (ARIA) Overview'
+++++++++AXCell
+++++++++++AXStaticText AXValue='World Wide Web Consortium'
+++++++++AXCell
+++++++++++AXStaticText AXValue='Here are answers to some frequently asked questions (FAQ) about WAI-ARIA, the Accessible Rich Internet Applications Suite. When we add significant%C2%A0...'
+++++++AXRow AXTitle='WAI-ARIA 1.0 User Agent Implementation Guide - W3C World Wide Web Consortium WAI-ARIA enables rich Internet applications to have the same accessibility features as desktop GUI applications by adding metadata to markup technologies%C2%A0...'
+++++++++AXCell
+++++++++++AXHeading AXTitle='WAI-ARIA 1.0 User Agent Implementation Guide - W3C' AXValue=5
+++++++++++++AXLink AXDescription='WAI-ARIA 1.0 User Agent Implementation Guide - W3C' AXTitle='WAI-ARIA 1.0 User Agent Implementation Guide - W3C'
+++++++++++++++AXStaticText AXValue='WAI-ARIA 1.0 User Agent Implementation Guide - W3C'
+++++++++AXCell
+++++++++++AXStaticText AXValue='World Wide Web Consortium'
+++++++++AXCell
+++++++++++AXStaticText AXValue='WAI-ARIA enables rich Internet applications to have the same accessibility features as desktop GUI applications by adding metadata to markup technologies%C2%A0...'
+++++++AXRow AXTitle='ARIA - HTML5 - W3C on GitHub World Wide Web Consortium Alertdialog #. aria.alertdialog = role="" alertdialog "" intermixed with an optional aria-expanded element. Application #. aria.application = role="" application%C2%A0...'
+++++++++AXCell
+++++++++++AXHeading AXTitle='ARIA - HTML5 - W3C on GitHub' AXValue=5
+++++++++++++AXLink AXDescription='ARIA - HTML5 - W3C on GitHub' AXTitle='ARIA - HTML5 - W3C on GitHub'
+++++++++++++++AXStaticText AXValue='ARIA - HTML5 - W3C on GitHub'
+++++++++AXCell
+++++++++++AXStaticText AXValue='World Wide Web Consortium'
+++++++++AXCell
+++++++++++AXStaticText AXValue='Alertdialog #. aria.alertdialog = role="" alertdialog "" intermixed with an optional aria-expanded element. Application #. aria.application = role="" application%C2%A0...'
+++++++AXRow AXTitle='WAI-ARIA 1.0 Authoring Practices - W3C World Wide Web Consortium Abstract. This document provided readers with an understanding of how to use WAI-ARIA [ ARIA ] to create accessible rich internet applications. It described%C2%A0...'
+++++++++AXCell
+++++++++++AXHeading AXTitle='WAI-ARIA 1.0 Authoring Practices - W3C' AXValue=5
+++++++++++++AXLink AXDescription='WAI-ARIA 1.0 Authoring Practices - W3C' AXTitle='WAI-ARIA 1.0 Authoring Practices - W3C'
+++++++++++++++AXStaticText AXValue='WAI-ARIA 1.0 Authoring Practices - W3C'
+++++++++AXCell
+++++++++++AXStaticText AXValue='World Wide Web Consortium'
+++++++++AXCell
+++++++++++AXStaticText AXValue='Abstract. This document provided readers with an understanding of how to use WAI-ARIA [ ARIA ] to create accessible rich internet applications. It described%C2%A0...'
+++++++AXRow AXTitle='Notes on Using ARIA in HTML - W3C World Wide Web Consortium May 21, 2015 - This document demonstrates how to use WAI-ARIA in [ HTML51 ], which especially helps with dynamic content and advanced user interface%C2%A0...'
+++++++++AXCell
+++++++++++AXHeading AXTitle='Notes on Using ARIA in HTML - W3C' AXValue=5
+++++++++++++AXLink AXDescription='Notes on Using ARIA in HTML - W3C' AXTitle='Notes on Using ARIA in HTML - W3C'
+++++++++++++++AXStaticText AXValue='Notes on Using ARIA in HTML - W3C'
+++++++++AXCell
+++++++++++AXStaticText AXValue='World Wide Web Consortium'
+++++++++AXCell
+++++++++++AXStaticText AXValue='May 21, 2015 - This document demonstrates how to use WAI-ARIA in [ HTML51 ], which especially helps with dynamic content and advanced user interface%C2%A0...'
+++++++AXRow AXTitle='Accessible Rich Internet Applications (WAI-ARIA) Current Status - W3C World Wide Web Consortium Accessible Rich Internet Applications (WAI-ARIA) 1.0. Accessibility of Web content to people with disabilities requires semantic information about widgets,%C2%A0...'
+++++++++AXCell
+++++++++++AXHeading AXTitle='Accessible Rich Internet Applications (WAI-ARIA) Current Status - W3C' AXValue=5
+++++++++++++AXLink AXDescription='Accessible Rich Internet Applications (WAI-ARIA) Current Status - W3C' AXTitle='Accessible Rich Internet Applications (WAI-ARIA) Current Status - W3C'
+++++++++++++++AXStaticText AXValue='Accessible Rich Internet Applications (WAI-ARIA) Current Status - W3C'
+++++++++AXCell
+++++++++++AXStaticText AXValue='World Wide Web Consortium'
+++++++++AXCell
+++++++++++AXStaticText AXValue='Accessible Rich Internet Applications (WAI-ARIA) 1.0. Accessibility of Web content to people with disabilities requires semantic information about widgets,%C2%A0...'
+++++++AXRow AXTitle='Accessible Rich Internet Applications (WAI-ARIA) 1.0 - W3C World Wide Web Consortium Feb 3, 2014 - This version: http://www.w3.org/WAI/PF/aria/; Previous editors' draft: ... This document is part of the WAI-ARIA suite described in the WAI-ARIA%C2%A0...'
+++++++++AXCell
+++++++++++AXHeading AXTitle='Accessible Rich Internet Applications (WAI-ARIA) 1.0 - W3C' AXValue=5
+++++++++++++AXLink AXDescription='Accessible Rich Internet Applications (WAI-ARIA) 1.0 - W3C' AXTitle='Accessible Rich Internet Applications (WAI-ARIA) 1.0 - W3C'
+++++++++++++++AXStaticText AXValue='Accessible Rich Internet Applications (WAI-ARIA) 1.0 - W3C'
+++++++++AXCell
+++++++++++AXStaticText AXValue='World Wide Web Consortium'
+++++++++AXCell
+++++++++++AXStaticText AXValue='Feb 3, 2014 - This version: http://www.w3.org/WAI/PF/aria/; Previous editors' draft: ... This document is part of the WAI-ARIA suite described in the WAI-ARIA%C2%A0...'
+++++++AXRow AXTitle='Introduction | Accessible Rich Internet Applications (WAI-ARIA) 1.0 World Wide Web Consortium WAI-ARIA is a technical specification that provides a framework to improve the accessibility and interoperability of web content and applications. This document%C2%A0...'
+++++++++AXCell
+++++++++++AXHeading AXTitle='Introduction | Accessible Rich Internet Applications (WAI-ARIA) 1.0' AXValue=5
+++++++++++++AXLink AXDescription='Introduction | Accessible Rich Internet Applications (WAI-ARIA) 1.0' AXTitle='Introduction | Accessible Rich Internet Applications (WAI-ARIA) 1.0'
+++++++++++++++AXStaticText AXValue='Introduction | Accessible Rich Internet Applications (WAI-ARIA) 1.0'
+++++++++AXCell
+++++++++++AXStaticText AXValue='World Wide Web Consortium'
+++++++++AXCell
+++++++++++AXStaticText AXValue='WAI-ARIA is a technical specification that provides a framework to improve the accessibility and interoperability of web content and applications. This document%C2%A0...'
+++++++AXRow AXTitle='Using WAI-ARIA | Accessible Rich Internet Applications (WAI-ARIA) 1.0 World Wide Web Consortium WAI-ARIA divides the semantics into roles (the type defining a user interface element) and states and properties supported by the roles. Authors need to%C2%A0...'
+++++++++AXCell
+++++++++++AXHeading AXTitle='Using WAI-ARIA | Accessible Rich Internet Applications (WAI-ARIA) 1.0' AXValue=5
+++++++++++++AXLink AXDescription='Using WAI-ARIA | Accessible Rich Internet Applications (WAI-ARIA) 1.0' AXTitle='Using WAI-ARIA | Accessible Rich Internet Applications (WAI-ARIA) 1.0'
+++++++++++++++AXStaticText AXValue='Using WAI-ARIA | Accessible Rich Internet Applications (WAI-ARIA) 1.0'
+++++++++AXCell
+++++++++++AXStaticText AXValue='World Wide Web Consortium'
+++++++++AXCell
+++++++++++AXStaticText AXValue='WAI-ARIA divides the semantics into roles (the type defining a user interface element) and states and properties supported by the roles. Authors need to%C2%A0...'
+++++++AXRow AXTitle='Using ARIA landmarks to identify regions of a page - WCAG WG - W3C World Wide Web Consortium Jan 3, 2014 - NVDA 2 supports all landmarks except it will not support navigation to %E2%80%9Capplication%E2%80%9D; Window Eyes as of V.7 does not support ARIA landmarks.'
+++++++++AXCell
+++++++++++AXHeading AXTitle='Using ARIA landmarks to identify regions of a page - WCAG WG - W3C' AXValue=5
+++++++++++++AXLink AXDescription='Using ARIA landmarks to identify regions of a page - WCAG WG - W3C' AXTitle='Using ARIA landmarks to identify regions of a page - WCAG WG - W3C'
+++++++++++++++AXStaticText AXValue='Using ARIA landmarks to identify regions of a page - WCAG WG - W3C'
+++++++++AXCell
+++++++++++AXStaticText AXValue='World Wide Web Consortium'
+++++++++AXCell
+++++++++++AXStaticText AXValue='Jan 3, 2014 - NVDA 2 supports all landmarks except it will not support navigation to %E2%80%9Capplication%E2%80%9D; Window Eyes as of V.7 does not support ARIA landmarks.'
+++++++AXColumn
+++++++++AXCell
+++++++++++AXHeading AXTitle='WAI-ARIA Overview Web Accessibility Initiative W3C' AXValue=5
+++++++++++++AXLink AXDescription='WAI-ARIA Overview Web Accessibility Initiative W3C' AXTitle='WAI-ARIA Overview Web Accessibility Initiative W3C'
+++++++++++++++AXStaticText AXValue='WAI-ARIA Overview Web Accessibility Initiative W3C'
+++++++++AXCell
+++++++++++AXHeading AXTitle='ARIA States and Properties - W3C' AXValue=5
+++++++++++++AXLink AXDescription='ARIA States and Properties - W3C' AXTitle='ARIA States and Properties - W3C'
+++++++++++++++AXStaticText AXValue='ARIA States and Properties - W3C'
+++++++++AXCell
+++++++++++AXHeading AXTitle='Accessible Rich Internet Applications (WAI-ARIA) 1.0 - W3C' AXValue=5
+++++++++++++AXLink AXDescription='Accessible Rich Internet Applications (WAI-ARIA) 1.0 - W3C' AXTitle='Accessible Rich Internet Applications (WAI-ARIA) 1.0 - W3C'
+++++++++++++++AXStaticText AXValue='Accessible Rich Internet Applications (WAI-ARIA) 1.0 - W3C'
+++++++++AXCell
+++++++++++AXHeading AXTitle='Accessible Rich Internet Applications (ARIA) Working Group - W3C' AXValue=5
+++++++++++++AXLink AXDescription='Accessible Rich Internet Applications (ARIA) Working Group - W3C' AXTitle='Accessible Rich Internet Applications (ARIA) Working Group - W3C'
+++++++++++++++AXStaticText AXValue='Accessible Rich Internet Applications (ARIA) Working Group - W3C'
+++++++++AXCell
+++++++++++AXHeading AXTitle='Accessible Rich Internet Applications (WAI-ARIA) 1.1 - W3C' AXValue=5
+++++++++++++AXLink AXDescription='Accessible Rich Internet Applications (WAI-ARIA) 1.1 - W3C' AXTitle='Accessible Rich Internet Applications (WAI-ARIA) 1.1 - W3C'
+++++++++++++++AXStaticText AXValue='Accessible Rich Internet Applications (WAI-ARIA) 1.1 - W3C'
+++++++++AXCell
+++++++++++AXHeading AXTitle='The Roles Model | Accessible Rich Internet Applications (WAI-ARIA) 1.0' AXValue=5
+++++++++++++AXLink AXDescription='The Roles Model | Accessible Rich Internet Applications (WAI-ARIA) 1.0' AXTitle='The Roles Model | Accessible Rich Internet Applications (WAI-ARIA) 1.0'
+++++++++++++++AXStaticText AXValue='The Roles Model | Accessible Rich Internet Applications (WAI-ARIA) 1.0'
+++++++++AXCell
+++++++++++AXHeading AXTitle='WAI-ARIA Authoring Practices 1.1 - W3C' AXValue=5
+++++++++++++AXLink AXDescription='WAI-ARIA Authoring Practices 1.1 - W3C' AXTitle='WAI-ARIA Authoring Practices 1.1 - W3C'
+++++++++++++++AXStaticText AXValue='WAI-ARIA Authoring Practices 1.1 - W3C'
+++++++++AXCell
+++++++++++AXHeading AXTitle='ARIA in HTML - W3C' AXValue=5
+++++++++++++AXLink AXDescription='ARIA in HTML - W3C' AXTitle='ARIA in HTML - W3C'
+++++++++++++++AXStaticText AXValue='ARIA in HTML - W3C'
+++++++++AXCell
+++++++++++AXHeading AXTitle='ARIA in HTML' AXValue=5
+++++++++++++AXLink AXDescription='ARIA in HTML' AXTitle='ARIA in HTML'
+++++++++++++++AXStaticText AXValue='ARIA in HTML'
+++++++++AXCell
+++++++++++AXHeading AXTitle='Accessible Rich Internet Applications (ARIA) Overview' AXValue=5
+++++++++++++AXLink AXDescription='Accessible Rich Internet Applications (ARIA) Overview' AXTitle='Accessible Rich Internet Applications (ARIA) Overview'
+++++++++++++++AXStaticText AXValue='Accessible Rich Internet Applications (ARIA) Overview'
+++++++++AXCell
+++++++++++AXHeading AXTitle='WAI-ARIA 1.0 User Agent Implementation Guide - W3C' AXValue=5
+++++++++++++AXLink AXDescription='WAI-ARIA 1.0 User Agent Implementation Guide - W3C' AXTitle='WAI-ARIA 1.0 User Agent Implementation Guide - W3C'
+++++++++++++++AXStaticText AXValue='WAI-ARIA 1.0 User Agent Implementation Guide - W3C'
+++++++++AXCell
+++++++++++AXHeading AXTitle='ARIA - HTML5 - W3C on GitHub' AXValue=5
+++++++++++++AXLink AXDescription='ARIA - HTML5 - W3C on GitHub' AXTitle='ARIA - HTML5 - W3C on GitHub'
+++++++++++++++AXStaticText AXValue='ARIA - HTML5 - W3C on GitHub'
+++++++++AXCell
+++++++++++AXHeading AXTitle='WAI-ARIA 1.0 Authoring Practices - W3C' AXValue=5
+++++++++++++AXLink AXDescription='WAI-ARIA 1.0 Authoring Practices - W3C' AXTitle='WAI-ARIA 1.0 Authoring Practices - W3C'
+++++++++++++++AXStaticText AXValue='WAI-ARIA 1.0 Authoring Practices - W3C'
+++++++++AXCell
+++++++++++AXHeading AXTitle='Notes on Using ARIA in HTML - W3C' AXValue=5
+++++++++++++AXLink AXDescription='Notes on Using ARIA in HTML - W3C' AXTitle='Notes on Using ARIA in HTML - W3C'
+++++++++++++++AXStaticText AXValue='Notes on Using ARIA in HTML - W3C'
+++++++++AXCell
+++++++++++AXHeading AXTitle='Accessible Rich Internet Applications (WAI-ARIA) Current Status - W3C' AXValue=5
+++++++++++++AXLink AXDescription='Accessible Rich Internet Applications (WAI-ARIA) Current Status - W3C' AXTitle='Accessible Rich Internet Applications (WAI-ARIA) Current Status - W3C'
+++++++++++++++AXStaticText AXValue='Accessible Rich Internet Applications (WAI-ARIA) Current Status - W3C'
+++++++++AXCell
+++++++++++AXHeading AXTitle='Accessible Rich Internet Applications (WAI-ARIA) 1.0 - W3C' AXValue=5
+++++++++++++AXLink AXDescription='Accessible Rich Internet Applications (WAI-ARIA) 1.0 - W3C' AXTitle='Accessible Rich Internet Applications (WAI-ARIA) 1.0 - W3C'
+++++++++++++++AXStaticText AXValue='Accessible Rich Internet Applications (WAI-ARIA) 1.0 - W3C'
+++++++++AXCell
+++++++++++AXHeading AXTitle='Introduction | Accessible Rich Internet Applications (WAI-ARIA) 1.0' AXValue=5
+++++++++++++AXLink AXDescription='Introduction | Accessible Rich Internet Applications (WAI-ARIA) 1.0' AXTitle='Introduction | Accessible Rich Internet Applications (WAI-ARIA) 1.0'
+++++++++++++++AXStaticText AXValue='Introduction | Accessible Rich Internet Applications (WAI-ARIA) 1.0'
+++++++++AXCell
+++++++++++AXHeading AXTitle='Using WAI-ARIA | Accessible Rich Internet Applications (WAI-ARIA) 1.0' AXValue=5
+++++++++++++AXLink AXDescription='Using WAI-ARIA | Accessible Rich Internet Applications (WAI-ARIA) 1.0' AXTitle='Using WAI-ARIA | Accessible Rich Internet Applications (WAI-ARIA) 1.0'
+++++++++++++++AXStaticText AXValue='Using WAI-ARIA | Accessible Rich Internet Applications (WAI-ARIA) 1.0'
+++++++++AXCell
+++++++++++AXHeading AXTitle='Using ARIA landmarks to identify regions of a page - WCAG WG - W3C' AXValue=5
+++++++++++++AXLink AXDescription='Using ARIA landmarks to identify regions of a page - WCAG WG - W3C' AXTitle='Using ARIA landmarks to identify regions of a page - WCAG WG - W3C'
+++++++++++++++AXStaticText AXValue='Using ARIA landmarks to identify regions of a page - WCAG WG - W3C'
+++++++AXColumn
+++++++++AXCell
+++++++++++AXStaticText AXValue='World Wide Web Consortium'
+++++++++AXCell
+++++++++++AXStaticText AXValue='World Wide Web Consortium'
+++++++++AXCell
+++++++++++AXStaticText AXValue='World Wide Web Consortium'
+++++++++AXCell
+++++++++++AXStaticText AXValue='World Wide Web Consortium'
+++++++++AXCell
+++++++++++AXStaticText AXValue='World Wide Web Consortium'
+++++++++AXCell
+++++++++++AXStaticText AXValue='World Wide Web Consortium'
+++++++++AXCell
+++++++++++AXStaticText AXValue='World Wide Web Consortium'
+++++++++AXCell
+++++++++++AXStaticText AXValue='World Wide Web Consortium'
+++++++++AXCell
+++++++++++AXStaticText AXValue='World Wide Web Consortium'
+++++++++AXCell
+++++++++++AXStaticText AXValue='World Wide Web Consortium'
+++++++++AXCell
+++++++++++AXStaticText AXValue='World Wide Web Consortium'
+++++++++AXCell
+++++++++++AXStaticText AXValue='World Wide Web Consortium'
+++++++++AXCell
+++++++++++AXStaticText AXValue='World Wide Web Consortium'
+++++++++AXCell
+++++++++++AXStaticText AXValue='World Wide Web Consortium'
+++++++++AXCell
+++++++++++AXStaticText AXValue='World Wide Web Consortium'
+++++++++AXCell
+++++++++++AXStaticText AXValue='World Wide Web Consortium'
+++++++++AXCell
+++++++++++AXStaticText AXValue='World Wide Web Consortium'
+++++++++AXCell
+++++++++++AXStaticText AXValue='World Wide Web Consortium'
+++++++++AXCell
+++++++++++AXStaticText AXValue='World Wide Web Consortium'
+++++++AXColumn
+++++++++AXCell
+++++++++++AXStaticText AXValue='WAI-ARIA, the Accessible Rich Internet Applications Suite, defines a way to make Web content and Web applications more accessible to people with disabilities.'
+++++++++AXCell
+++++++++++AXStaticText AXValue='In this document, states and properties are both treated as aria-prefixed markup attributes. However, they are maintained conceptually distinct to clarify subtle%C2%A0...'
+++++++++AXCell
+++++++++++AXStaticText AXValue='Mar 20, 2014 - This is the WAI-ARIA 1.0 W3C Recommendation from the Protocols & Formats Working Group of the Web Accessibility Initiative. The Working%C2%A0...'
+++++++++AXCell
+++++++++++AXStaticText AXValue='The mission of the Accessible Rich Internet Applications Working Group (ARIA WG) is to develop technologies that enhance accessibility of web content for%C2%A0...'
+++++++++AXCell
+++++++++++AXStaticText AXValue='Jul 21, 2016 - This version of ARIA 1.1 changes the aria-kbdshortcuts property to aria-keyshortcuts , expands roles that can be used in comboboxes, adds a%C2%A0...'
+++++++++AXCell
+++++++++++AXStaticText AXValue='This section defines the WAI-ARIA role taxonomy and describes the characteristics and properties of all roles. A formal RDF / OWL representation of all the%C2%A0...'
+++++++++AXCell
+++++++++++AXStaticText AXValue='Mar 17, 2016 - The WAI-ARIA Authoring Practices Guide is intended to provide an understanding of how to use WAI-ARIA to create an accessible Rich Internet%C2%A0...'
+++++++++AXCell
+++++++++++AXStaticText AXValue='Oct 5, 2016 - ARIA in HTML is a [ HTML51 ] specification module. Any HTML features, conformance requirements, or terms that this specification module%C2%A0...'
+++++++++AXCell
+++++++++++AXStaticText AXValue='Jul 24, 2015 - Setting an ARIA role and/or aria-* attribute that matches the default implicit ARIA semantics is unnecessary and is NOT RECOMMENDED as%C2%A0...'
+++++++++AXCell
+++++++++++AXStaticText AXValue='Here are answers to some frequently asked questions (FAQ) about WAI-ARIA, the Accessible Rich Internet Applications Suite. When we add significant%C2%A0...'
+++++++++AXCell
+++++++++++AXStaticText AXValue='WAI-ARIA enables rich Internet applications to have the same accessibility features as desktop GUI applications by adding metadata to markup technologies%C2%A0...'
+++++++++AXCell
+++++++++++AXStaticText AXValue='Alertdialog #. aria.alertdialog = role="" alertdialog "" intermixed with an optional aria-expanded element. Application #. aria.application = role="" application%C2%A0...'
+++++++++AXCell
+++++++++++AXStaticText AXValue='Abstract. This document provided readers with an understanding of how to use WAI-ARIA [ ARIA ] to create accessible rich internet applications. It described%C2%A0...'
+++++++++AXCell
+++++++++++AXStaticText AXValue='May 21, 2015 - This document demonstrates how to use WAI-ARIA in [ HTML51 ], which especially helps with dynamic content and advanced user interface%C2%A0...'
+++++++++AXCell
+++++++++++AXStaticText AXValue='Accessible Rich Internet Applications (WAI-ARIA) 1.0. Accessibility of Web content to people with disabilities requires semantic information about widgets,%C2%A0...'
+++++++++AXCell
+++++++++++AXStaticText AXValue='Feb 3, 2014 - This version: http://www.w3.org/WAI/PF/aria/; Previous editors' draft: ... This document is part of the WAI-ARIA suite described in the WAI-ARIA%C2%A0...'
+++++++++AXCell
+++++++++++AXStaticText AXValue='WAI-ARIA is a technical specification that provides a framework to improve the accessibility and interoperability of web content and applications. This document%C2%A0...'
+++++++++AXCell
+++++++++++AXStaticText AXValue='WAI-ARIA divides the semantics into roles (the type defining a user interface element) and states and properties supported by the roles. Authors need to%C2%A0...'
+++++++++AXCell
+++++++++++AXStaticText AXValue='Jan 3, 2014 - NVDA 2 supports all landmarks except it will not support navigation to %E2%80%9Capplication%E2%80%9D; Window Eyes as of V.7 does not support ARIA landmarks.'
+++++++AXGroup AXSubrole=AXEmptyGroup
+++++AXGroup
+++++++AXButton AXTitle='Previous'
+++++++AXButton AXTitle='Next'

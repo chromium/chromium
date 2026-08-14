@@ -1,0 +1,26 @@
+ROLE_SYSTEM_DOCUMENT name='Radio Group Example Using Roving tabindex' READONLY FOCUSABLE
+++IA2_ROLE_SECTION
+++++ROLE_SYSTEM_GROUPING name='Pizza Crust'
+++++++IA2_ROLE_HEADING name='Pizza Crust'
+++++++++ROLE_SYSTEM_STATICTEXT name='Pizza Crust'
+++++++ROLE_SYSTEM_RADIOBUTTON name='Regular crust' FOCUSABLE IA2_STATE_CHECKABLE checkable:true
+++++++++ROLE_SYSTEM_GRAPHIC READONLY
+++++++++ROLE_SYSTEM_STATICTEXT name='Regular crust'
+++++++ROLE_SYSTEM_RADIOBUTTON name='Deep dish' FOCUSABLE IA2_STATE_CHECKABLE checkable:true
+++++++++ROLE_SYSTEM_GRAPHIC READONLY
+++++++++ROLE_SYSTEM_STATICTEXT name='Deep dish'
+++++++ROLE_SYSTEM_RADIOBUTTON name='Thin crust' FOCUSABLE IA2_STATE_CHECKABLE checkable:true
+++++++++ROLE_SYSTEM_GRAPHIC READONLY
+++++++++ROLE_SYSTEM_STATICTEXT name='Thin crust'
+++++ROLE_SYSTEM_GROUPING name='Pizza Delivery'
+++++++IA2_ROLE_HEADING name='Pizza Delivery'
+++++++++ROLE_SYSTEM_STATICTEXT name='Pizza Delivery'
+++++++ROLE_SYSTEM_RADIOBUTTON name='Pickup' FOCUSABLE IA2_STATE_CHECKABLE checkable:true
+++++++++ROLE_SYSTEM_GRAPHIC READONLY
+++++++++ROLE_SYSTEM_STATICTEXT name='Pickup'
+++++++ROLE_SYSTEM_RADIOBUTTON name='Home Delivery' FOCUSABLE IA2_STATE_CHECKABLE checkable:true
+++++++++ROLE_SYSTEM_GRAPHIC READONLY
+++++++++ROLE_SYSTEM_STATICTEXT name='Home Delivery'
+++++++ROLE_SYSTEM_RADIOBUTTON name='Dine in' FOCUSABLE IA2_STATE_CHECKABLE checkable:true
+++++++++ROLE_SYSTEM_GRAPHIC READONLY
+++++++++ROLE_SYSTEM_STATICTEXT name='Dine in'

@@ -1,0 +1,23 @@
+AXWebArea AXTitle='Button Examples'
+++AXGroup
+++++AXGroup
+++++++AXStaticText AXValue='This '
+++++++AXStaticText AXValue='%E2%80%9C'
+++++++AXStaticText AXValue='Print'
+++++++AXStaticText AXValue='%E2%80%9D'
+++++++AXStaticText AXValue=' action button uses a '
+++++++AXGroup AXSubrole=AXCodeStyleGroup
+++++++++AXStaticText AXValue='div'
+++++++AXStaticText AXValue=' element.'
+++++AXButton AXTitle='Print Page'
+++++AXGroup
+++++++AXStaticText AXValue='This '
+++++++AXStaticText AXValue='%E2%80%9C'
+++++++AXStaticText AXValue='Mute'
+++++++AXStaticText AXValue='%E2%80%9D'
+++++++AXStaticText AXValue=' toggle button uses an '
+++++++AXGroup AXSubrole=AXCodeStyleGroup
+++++++++AXStaticText AXValue='a'
+++++++AXStaticText AXValue=' element.'
+++++AXCheckBox AXSubrole=AXToggleButton AXTitle='Mute ' AXValue=0
+++++++AXStaticText AXValue='Mute '

@@ -1,0 +1,7 @@
+WebView supplementalDescription:"Editable Combobox without Autocomplete Example" focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
+++View viewIdResName:"ex1" actions:[AX_FOCUS] bundle:[chromeRole="genericContainer"]
+++++View text:"Search" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="labelText"]
+++++View actions:[AX_FOCUS] bundle:[chromeRole="genericContainer"]
+++++++View actions:[AX_FOCUS] bundle:[chromeRole="genericContainer"]
+++++++++EditText viewIdResName:"cb1-input" supplementalDescription:"Search" canOpenPopUp clickable editable focusable inputType:1 textSelectionStart:0 textSelectionEnd:0 expandedState:1 actions:[FOCUS, CLICK, AX_FOCUS, PASTE, EXPAND, SET_TEXT, IME_ENTER] bundle:[chromeRole="textFieldWithComboBox", clickableScore="300"]
+++++++++Button contentDescription:"Previous Searches" viewIdResName:"cb1-button" clickable focusable expandedState:1 actions:[FOCUS, CLICK, AX_FOCUS, EXPAND] bundle:[chromeRole="button", clickableScore="300"]

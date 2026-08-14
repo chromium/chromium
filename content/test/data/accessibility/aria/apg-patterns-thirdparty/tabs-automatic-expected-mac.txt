@@ -1,0 +1,14 @@
+AXWebArea AXTitle='Example of Tabs with Automatic Activation'
+++AXGroup
+++++AXHeading AXTitle='Danish Composers' AXValue=3
+++++++AXStaticText AXValue='Danish Composers'
+++++AXTabGroup AXTitle='Danish Composers'
+++++++AXRadioButton AXSubrole=AXTabButton AXTitle='Maria Ahlefeldt' AXValue=1
+++++++AXRadioButton AXSubrole=AXTabButton AXTitle='Carl Andersen' AXValue=0
+++++++AXRadioButton AXSubrole=AXTabButton AXTitle='Ida da Fonseca' AXValue=0
+++++++AXRadioButton AXSubrole=AXTabButton AXTitle='Peter M%C3%BCller' AXValue=0
+++++AXGroup AXSubrole=AXTabPanel AXDescription='Maria Ahlefeldt' AXTitle='Maria Ahlefeldt'
+++++++AXGroup
+++++++++AXStaticText AXValue='Maria Theresia Ahlefeldt (16 January 1755 %E2%80%93 20 December 1810) was a Danish, (originally German), composer. She is known as the first female composer in Denmark. Maria Theresia composed music for several ballets, operas, and plays of the royal theatre. She was given good critic as a composer and described as a %E2%80%9C'
+++++++++AXStaticText AXValue='virkelig Tonekunstnerinde'
+++++++++AXStaticText AXValue='%E2%80%9D ('a True Artist of Music').'

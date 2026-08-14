@@ -1,0 +1,74 @@
+rootWebArea name='Link Examples'
+++genericContainer ignored
+++++genericContainer ignored
+++++++table
+++++++++rowGroup
+++++++++++row
+++++++++++++columnHeader name='Number'
+++++++++++++++staticText name='Number'
+++++++++++++++++inlineTextBox name='Number'
+++++++++++++columnHeader name='Description'
+++++++++++++++staticText name='Description'
+++++++++++++++++inlineTextBox name='Description'
+++++++++++++columnHeader name='Link'
+++++++++++++++staticText name='Link'
+++++++++++++++++inlineTextBox name='Link'
+++++++++rowGroup ignored
+++++++++++row
+++++++++++++rowHeader name='1'
+++++++++++++++genericContainer
+++++++++++++++++genericContainer
+++++++++++++++++++staticText name='1'
+++++++++++++++++++++inlineTextBox name='1'
+++++++++++++cell name='span element with text content.'
+++++++++++++++code
+++++++++++++++++staticText name='span'
+++++++++++++++++++inlineTextBox name='span'
+++++++++++++++staticText name=' element with text content.'
+++++++++++++++++inlineTextBox name=' element with text content.'
+++++++++++++cell name='W3C website'
+++++++++++++++link name='W3C website'
+++++++++++++++++staticText name='W3C website'
+++++++++++++++++++inlineTextBox name='W3C website'
+++++++++++row
+++++++++++++rowHeader name='2'
+++++++++++++++genericContainer
+++++++++++++++++genericContainer
+++++++++++++++++++staticText name='2'
+++++++++++++++++++++inlineTextBox name='2'
+++++++++++++cell name='img element with alt attribute.'
+++++++++++++++code
+++++++++++++++++staticText name='img'
+++++++++++++++++++inlineTextBox name='img'
+++++++++++++++staticText name=' element with '
+++++++++++++++++inlineTextBox name=' element with '
+++++++++++++++code
+++++++++++++++++staticText name='alt'
+++++++++++++++++++inlineTextBox name='alt'
+++++++++++++++staticText name=' attribute.'
+++++++++++++++++inlineTextBox name=' attribute.'
+++++++++++++cell name='W3C Website'
+++++++++++++++link name='W3C Website'
+++++++++++row
+++++++++++++rowHeader name='3'
+++++++++++++++genericContainer
+++++++++++++++++genericContainer
+++++++++++++++++++staticText name='3'
+++++++++++++++++++++inlineTextBox name='3'
+++++++++++++cell name='CSS :before content property on a span element.'
+++++++++++++++staticText name='CSS '
+++++++++++++++++inlineTextBox name='CSS '
+++++++++++++++code
+++++++++++++++++staticText name=':before'
+++++++++++++++++++inlineTextBox name=':before'
+++++++++++++++staticText name=' content property on a '
+++++++++++++++++inlineTextBox name=' content property on a '
+++++++++++++++code
+++++++++++++++++staticText name='span'
+++++++++++++++++++inlineTextBox name='span'
+++++++++++++++staticText name=' element.'
+++++++++++++++++inlineTextBox name=' element.'
+++++++++++++cell name='W3C website'
+++++++++++++++link name='W3C website'
+++++++++++++++++genericContainer
+++++++++++++++++++image

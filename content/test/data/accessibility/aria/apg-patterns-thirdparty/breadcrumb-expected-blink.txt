@@ -1,0 +1,25 @@
+rootWebArea name='Breadcrumb Example'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer
+++++++++navigation name='Breadcrumb'
+++++++++++list
+++++++++++++listItem
+++++++++++++++link name='WAI-ARIA Authoring Practices Guide (APG)'
+++++++++++++++++staticText name='WAI-ARIA Authoring Practices Guide (APG)'
+++++++++++++++++++inlineTextBox name='WAI-ARIA Authoring Practices Guide (APG)'
+++++++++++++listItem
+++++++++++++++genericContainer
+++++++++++++++link name='Patterns'
+++++++++++++++++staticText name='Patterns'
+++++++++++++++++++inlineTextBox name='Patterns'
+++++++++++++listItem
+++++++++++++++genericContainer
+++++++++++++++link name='Breadcrumb Pattern'
+++++++++++++++++staticText name='Breadcrumb Pattern'
+++++++++++++++++++inlineTextBox name='Breadcrumb Pattern'
+++++++++++++listItem
+++++++++++++++genericContainer
+++++++++++++++link name='Breadcrumb Example'
+++++++++++++++++staticText name='Breadcrumb Example'
+++++++++++++++++++inlineTextBox name='Breadcrumb Example'

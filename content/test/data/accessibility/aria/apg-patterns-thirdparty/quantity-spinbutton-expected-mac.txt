@@ -1,0 +1,29 @@
+AXWebArea AXTitle='Quantity Spin Button Example'
+++AXGroup
+++++AXGroup AXSubrole=AXFieldset AXDescription='Guests' AXTitle='Guests'
+++++++AXGroup
+++++++++AXStaticText AXValue='Guests'
+++++++AXGroup
+++++++++AXStaticText AXValue='Adults'
+++++++AXButton AXDescription='Remove adult' AXTitle='Remove adult'
+++++++AXIncrementor AXTitle='Adults' AXValue=1
+++++++AXButton AXDescription='Add adult' AXTitle='Add adult'
+++++++AXGroup
+++++++++AXStaticText AXValue='1 to 8'
+++++++AXGroup AXSubrole=AXApplicationStatus
+++++++AXGroup
+++++++++AXStaticText AXValue='Kids'
+++++++AXButton AXDescription='Remove kid' AXTitle='Remove kid'
+++++++AXIncrementor AXTitle='Kids' AXValue=0
+++++++AXButton AXDescription='Add kid' AXTitle='Add kid'
+++++++AXGroup
+++++++++AXStaticText AXValue='0 to 8'
+++++++AXGroup AXSubrole=AXApplicationStatus
+++++++AXGroup
+++++++++AXStaticText AXValue='Animals'
+++++++AXButton AXDescription='Remove animal' AXTitle='Remove animal'
+++++++AXIncrementor AXTitle='Animals' AXValue=0
+++++++AXButton AXDescription='Add animal' AXTitle='Add animal'
+++++++AXGroup
+++++++++AXStaticText AXValue='0 to 12'
+++++++AXGroup AXSubrole=AXApplicationStatus

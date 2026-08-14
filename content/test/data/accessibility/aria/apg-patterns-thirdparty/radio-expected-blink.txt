@@ -1,0 +1,42 @@
+rootWebArea name='Radio Group Example Using Roving tabindex'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer
+++++++++radioGroup name='Pizza Crust'
+++++++++++heading name='Pizza Crust'
+++++++++++++staticText name='Pizza Crust'
+++++++++++++++inlineTextBox name='Pizza Crust'
+++++++++++radioButton name='Regular crust' checkedState=false
+++++++++++++genericContainer ignored
+++++++++++++++image
+++++++++++++staticText name='Regular crust'
+++++++++++++++inlineTextBox name='Regular crust'
+++++++++++radioButton name='Deep dish' checkedState=false
+++++++++++++genericContainer ignored
+++++++++++++++image
+++++++++++++staticText name='Deep dish'
+++++++++++++++inlineTextBox name='Deep dish'
+++++++++++radioButton name='Thin crust' checkedState=false
+++++++++++++genericContainer ignored
+++++++++++++++image
+++++++++++++staticText name='Thin crust'
+++++++++++++++inlineTextBox name='Thin crust'
+++++++++radioGroup name='Pizza Delivery'
+++++++++++heading name='Pizza Delivery'
+++++++++++++staticText name='Pizza Delivery'
+++++++++++++++inlineTextBox name='Pizza Delivery'
+++++++++++radioButton name='Pickup' checkedState=false
+++++++++++++genericContainer ignored
+++++++++++++++image
+++++++++++++staticText name='Pickup'
+++++++++++++++inlineTextBox name='Pickup'
+++++++++++radioButton name='Home Delivery' checkedState=false
+++++++++++++genericContainer ignored
+++++++++++++++image
+++++++++++++staticText name='Home Delivery'
+++++++++++++++inlineTextBox name='Home Delivery'
+++++++++++radioButton name='Dine in' checkedState=false
+++++++++++++genericContainer ignored
+++++++++++++++image
+++++++++++++staticText name='Dine in'
+++++++++++++++inlineTextBox name='Dine in'

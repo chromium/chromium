@@ -1,0 +1,53 @@
+rootWebArea name='Button Examples'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer
+++++++++paragraph
+++++++++++staticText name='This '
+++++++++++++inlineTextBox name='This '
+++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored
+++++++++++++++++staticText name='%E2%80%9C'
+++++++++++++++++++inlineTextBox name='%E2%80%9C'
+++++++++++++staticText name='Print'
+++++++++++++++inlineTextBox name='Print'
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored
+++++++++++++++++staticText name='%E2%80%9D'
+++++++++++++++++++inlineTextBox name='%E2%80%9D'
+++++++++++staticText name=' action button uses a '
+++++++++++++inlineTextBox name=' action button uses a '
+++++++++++code
+++++++++++++staticText name='div'
+++++++++++++++inlineTextBox name='div'
+++++++++++staticText name=' element.'
+++++++++++++inlineTextBox name=' element.'
+++++++++button name='Print Page'
+++++++++++staticText name='Print Page'
+++++++++++++inlineTextBox name='Print Page'
+++++++++paragraph
+++++++++++staticText name='This '
+++++++++++++inlineTextBox name='This '
+++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored
+++++++++++++++++staticText name='%E2%80%9C'
+++++++++++++++++++inlineTextBox name='%E2%80%9C'
+++++++++++++staticText name='Mute'
+++++++++++++++inlineTextBox name='Mute'
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored
+++++++++++++++++staticText name='%E2%80%9D'
+++++++++++++++++++inlineTextBox name='%E2%80%9D'
+++++++++++staticText name=' toggle button uses an '
+++++++++++++inlineTextBox name=' toggle button uses an '
+++++++++++code
+++++++++++++staticText name='a'
+++++++++++++++inlineTextBox name='a'
+++++++++++staticText name=' element.'
+++++++++++++inlineTextBox name=' element.'
+++++++++toggleButton name='Mute ' checkedState=false
+++++++++++staticText name='Mute '
+++++++++++++inlineTextBox name='Mute '
+++++++++++group ignored invisible

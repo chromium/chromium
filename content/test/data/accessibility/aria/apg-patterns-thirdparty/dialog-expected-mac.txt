@@ -1,0 +1,4 @@
+AXWebArea AXTitle='Modal Dialog Example'
+++AXGroup
+++++AXButton AXTitle='Add Delivery Address'
+++++AXGroup AXSubrole=AXEmptyGroup

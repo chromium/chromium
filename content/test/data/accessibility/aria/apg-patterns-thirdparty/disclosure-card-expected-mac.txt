@@ -1,0 +1,35 @@
+AXWebArea AXTitle='Example Disclosure (Show/Hide) Card'
+++AXGroup
+++++AXHeading AXTitle='Musical Education Conference' AXValue=3
+++++++AXStaticText AXValue='Musical Education Conference'
+++++AXList AXSubrole=AXContentList AXTitle='Musical Education Conference'
+++++++AXGroup
+++++++++AXGroup AXSubrole=AXDocumentArticle AXTitle='Symphonic Structure: Form, Function, and Feeling'
+++++++++++AXGroup AXSubrole=AXSectionHeader
+++++++++++++AXGroup AXSubrole=AXApplicationGroup
+++++++++++++++AXHeading AXTitle='Symphonic Structure: Form, Function, and Feeling' AXValue=4
+++++++++++++++++AXStaticText AXValue='Symphonic Structure: Form, Function, and Feeling'
+++++++++++++++AXGroup
+++++++++++++++++AXStaticText AXValue='Ludwig van Beethoven'
+++++++++++++AXStaticText AXValue='7 AM in Theater an der Wien'
+++++++++++++AXButton AXTitle='Symphonic Structure: Form, Function, and Feeling Details'
+++++++AXGroup
+++++++++AXGroup AXSubrole=AXDocumentArticle AXTitle='Folk Futures: Tradition in the Classroom'
+++++++++++AXGroup AXSubrole=AXSectionHeader
+++++++++++++AXGroup AXSubrole=AXApplicationGroup
+++++++++++++++AXHeading AXTitle='Folk Futures: Tradition in the Classroom' AXValue=4
+++++++++++++++++AXStaticText AXValue='Folk Futures: Tradition in the Classroom'
+++++++++++++++AXGroup
+++++++++++++++++AXStaticText AXValue='Anton%C3%ADn Dvo%C5%99%C3%A1k'
+++++++++++++AXStaticText AXValue='8 AM in Rudolfinum Hall'
+++++++++++++AXButton AXTitle='Folk Futures: Tradition in the Classroom Details'
+++++++AXGroup
+++++++++AXGroup AXSubrole=AXDocumentArticle AXTitle='Playful Dissonance: Teaching with Wit and Wonder'
+++++++++++AXGroup AXSubrole=AXSectionHeader
+++++++++++++AXGroup AXSubrole=AXApplicationGroup
+++++++++++++++AXHeading AXTitle='Playful Dissonance: Teaching with Wit and Wonder' AXValue=4
+++++++++++++++++AXStaticText AXValue='Playful Dissonance: Teaching with Wit and Wonder'
+++++++++++++++AXGroup
+++++++++++++++++AXStaticText AXValue='Francis Poulenc'
+++++++++++++AXStaticText AXValue='9 AM in %C3%89glise Saint-Roch'
+++++++++++++AXButton AXTitle='Playful Dissonance: Teaching with Wit and Wonder Details'

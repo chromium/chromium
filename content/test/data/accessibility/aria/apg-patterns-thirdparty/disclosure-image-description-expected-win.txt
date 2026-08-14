@@ -1,0 +1,21 @@
+ROLE_SYSTEM_DOCUMENT name='Example Disclosure (Show/Hide) for Image Description' READONLY FOCUSABLE
+++IA2_ROLE_SECTION
+++++ROLE_SYSTEM_GROUPING
+++++++ROLE_SYSTEM_GRAPHIC name='Charles Minard's 1869 chart showing the number of men in Napoleon%E2%80%99s 1812 Russian campaign army, their movements, as well as the temperature they encountered on the return path.' READONLY
+++++++IA2_ROLE_CAPTION
+++++++++IA2_ROLE_PARAGRAPH
+++++++++++ROLE_SYSTEM_STATICTEXT name='Figurative Map of the successive losses in men of the French Army in the Russian campaign 1812-1813. Drawn by Mr. Minard, Inspector General of Bridges and Roads in retirement. Paris, 20 November 1869.'
+++++++++IA2_ROLE_PARAGRAPH
+++++++++++ROLE_SYSTEM_STATICTEXT name='The numbers of men present are represented by the widths of the colored zones in a rate of one millimeter for ten thousand men; these are also written beside the zones. Red designates men moving into Russia, black those on retreat.'
+++++++++IA2_ROLE_PARAGRAPH
+++++++++++ROLE_SYSTEM_STATICTEXT name='The information used for drawing the map were taken from the works of Messrs. Thiers, '
+++++++++++ROLE_SYSTEM_STATICTEXT name='de S%C3%A9gur, de Fezensac, de Chambray'
+++++++++++ROLE_SYSTEM_STATICTEXT name=' and the unpublished diary of Jacob, pharmacist of the Army since 28 October.'
+++++++++IA2_ROLE_PARAGRAPH
+++++++++++ROLE_SYSTEM_STATICTEXT name='In order to facilitate the judgement of the eye regarding the diminution of the army, I supposed that the troops under Prince J%C3%A8r%C3%B4me and under Marshal Davoust, who were sent to Minsk and Mobilow and who rejoined near Orscha and Witebsk, had always marched with the army.'
+++++++++IA2_ROLE_PARAGRAPH
+++++++++++IA2_ROLE_TEXT_FRAME
+++++++++++++ROLE_SYSTEM_STATICTEXT name='Note: A French translation from Wikipedia.'
+++++++++ROLE_SYSTEM_PUSHBUTTON name='Data Table for Minard's Chart' COLLAPSED FOCUSABLE
+++++++++++ROLE_SYSTEM_GRAPHIC READONLY
+++++++++++ROLE_SYSTEM_STATICTEXT name='Data Table for Minard's Chart'

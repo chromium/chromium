@@ -1,0 +1,20 @@
+AXWebArea AXTitle='(Deprecated) Date Picker Spin Button Example'
+++AXGroup
+++++AXGroup AXSubrole=AXApplicationGroup AXDescription='Choose a Date current value is Thursday, May fifteenth, 2025' AXTitle='Choose a Date current value is Thursday, May fifteenth, 2025'
+++++++AXGroup
+++++++++AXStaticText AXValue='Choose a Date'
+++++++AXButton AXDescription='previous day' AXTitle='previous day'
+++++++++AXImage
+++++++AXIncrementor AXDescription='Day' AXTitle='Day' AXValue=15
+++++++AXButton AXDescription='next day' AXTitle='next day'
+++++++++AXImage
+++++++AXButton AXDescription='previous month' AXTitle='previous month'
+++++++++AXImage
+++++++AXIncrementor AXDescription='Month' AXTitle='Month' AXValue=4
+++++++AXButton AXDescription='next month' AXTitle='next month'
+++++++++AXImage
+++++++AXButton AXDescription='previous year' AXTitle='previous year'
+++++++++AXImage
+++++++AXIncrementor AXDescription='Year' AXTitle='Year' AXValue=2025
+++++++AXButton AXDescription='next year' AXTitle='next year'
+++++++++AXImage

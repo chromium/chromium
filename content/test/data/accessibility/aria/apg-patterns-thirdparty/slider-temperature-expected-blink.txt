@@ -1,0 +1,15 @@
+rootWebArea name='Vertical Temperature Slider Example'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer
+++++++++genericContainer ignored
+++++++++++genericContainer
+++++++++++++staticText name='Temperature'
+++++++++++++++inlineTextBox name='Temperature'
+++++++++++slider name='Temperature' ariaValueText='25.0 degrees Celsius' valueForRange=25.00 minValueForRange=10.00 maxValueForRange=38.00
+++++++++++++genericContainer
+++++++++++++++staticText name='25.0%C2%B0C'
+++++++++++++++++inlineTextBox name='25.0%C2%B0C'
+++++++++++++genericContainer
+++++++++++++++staticText name='25.0%C2%B0C'
+++++++++++++++++inlineTextBox name='25.0%C2%B0C'

@@ -1,0 +1,5 @@
+android.webkit.WebView focusable focused interesting name='Select-Only Combobox Example'
+++android.view.View
+++++android.view.View
+++++++android.widget.TextView clickable interesting name='Favorite Fruit'
+++++++android.widget.Spinner clickable collapsed focusable interesting name='Choose a Fruit' hint='Favorite Fruit' expanded_state=1

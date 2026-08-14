@@ -1,0 +1,15 @@
+android.webkit.WebView focusable focused interesting name='Example of Tabs with Manual Activation'
+++android.view.View
+++++android.widget.TextView role_description='heading 3' heading interesting name='Danish Composers'
+++++android.view.ViewGroup role_description='tab list' collection container_title='Danish Composers' item_count=4 row_count=4 column_count=1
+++++++android.view.View role_description='tab' clickable collection_item focusable selected interesting name='Maria Ahlefeldt' item_index=0 row_index=0
+++++++android.view.View role_description='tab' clickable collection_item focusable interesting name='Carl Andersen' item_index=1 row_index=1
+++++++android.view.View role_description='tab' clickable collection_item focusable interesting name='Ida da Fonseca' item_index=2 row_index=2
+++++++android.view.View role_description='tab' clickable collection_item focusable interesting name='Peter M%C3%BCller' item_index=3 row_index=3
+++++android.view.View role_description='tab panel' name='Maria Ahlefeldt'
+++++++android.view.View
+++++++++android.view.View role_description='link' clickable focusable link interesting name='Maria Theresia Ahlefeldt'
+++++++++++android.widget.TextView name='Maria Theresia Ahlefeldt'
+++++++++android.widget.TextView interesting name=' (16 January 1755 %E2%80%93 20 December 1810) was a Danish, (originally German), composer. She is known as the first female composer in Denmark. Maria Theresia composed music for several ballets, operas, and plays of the royal theatre. She was given good critic as a composer and described as a %E2%80%9C'
+++++++++android.widget.TextView interesting name='virkelig Tonekunstnerinde'
+++++++++android.widget.TextView interesting name='%E2%80%9D ('a True Artist of Music').'

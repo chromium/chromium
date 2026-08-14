@@ -1,0 +1,6 @@
+WebView supplementalDescription:"Horizontal Multi-Thumb Slider Example" focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
+++View viewIdResName:"ex1" actions:[AX_FOCUS] bundle:[chromeRole="genericContainer"]
+++++View text:"Hotel Price Range (in USD)" heading actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="heading", roleDescription="heading 3"]
+++++View actions:[AX_FOCUS] bundle:[chromeRole="genericContainer"]
+++++++SeekBar supplementalDescription:"Hotel Minimum Price in US dollars" clickable focusable RangeInfo:[current=100.0, min=0.0, max=250.0] actions:[FOCUS, CLICK, AX_FOCUS, SET_PROGRESS] bundle:[chromeRole="slider"]
+++++++SeekBar supplementalDescription:"Hotel Maximum Price in US dollars" clickable focusable RangeInfo:[current=250.0, min=100.0, max=400.0] actions:[FOCUS, CLICK, AX_FOCUS, SET_PROGRESS] bundle:[chromeRole="slider"]

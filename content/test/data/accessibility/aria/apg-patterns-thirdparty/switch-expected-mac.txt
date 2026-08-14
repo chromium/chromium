@@ -1,0 +1,6 @@
+AXWebArea AXTitle='Switch Example'
+++AXGroup
+++++AXCheckBox AXSubrole=AXSwitch AXTitle='Notifications' AXValue=0
+++++++AXGroup
+++++++++AXStaticText AXValue='Notifications'
+++++++AXGroup AXSubrole=AXEmptyGroup

@@ -1,0 +1,17 @@
+rootWebArea name='(Deprecated) Collapsible Dropdown Listbox Example'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer
+++++++++paragraph
+++++++++++staticText name='Choose your favorite transuranic element (actinide or transactinide).'
+++++++++++++inlineTextBox name='Choose your favorite transuranic element (actinide or transactinide).'
+++++++++genericContainer ignored
+++++++++++genericContainer ignored
+++++++++++++genericContainer
+++++++++++++++staticText name='Choose an element:'
+++++++++++++++++inlineTextBox name='Choose an element:'
+++++++++++++genericContainer
+++++++++++++++popUpButton name='Choose an element: Neptunium'
+++++++++++++++++staticText name='Neptunium'
+++++++++++++++++++inlineTextBox name='Neptunium'
+++++++++++++++++genericContainer

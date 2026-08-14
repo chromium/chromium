@@ -1,0 +1,6 @@
+AXWebArea AXTitle='Advanced Data Grid Example'
+++AXGroup
+++++AXGroup
+++++++AXStaticText AXValue='This is the place where the reader will experience the functioning example.'
+++++AXGroup
+++++++AXStaticText AXValue='The HTML in this section along with the javascript and CSS it uses demonstrate the design pattern.'

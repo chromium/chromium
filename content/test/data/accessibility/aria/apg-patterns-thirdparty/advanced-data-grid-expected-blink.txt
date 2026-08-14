@@ -1,0 +1,10 @@
+rootWebArea name='Advanced Data Grid Example'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer
+++++++++paragraph
+++++++++++staticText name='This is the place where the reader will experience the functioning example.'
+++++++++++++inlineTextBox name='This is the place where the reader will experience the functioning example.'
+++++++++paragraph
+++++++++++staticText name='The HTML in this section along with the javascript and CSS it uses demonstrate the design pattern.'
+++++++++++++inlineTextBox name='The HTML in this section along with the javascript and CSS it uses demonstrate the design pattern.'

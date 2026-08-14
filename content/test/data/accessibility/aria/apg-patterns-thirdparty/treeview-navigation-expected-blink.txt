@@ -1,0 +1,57 @@
+rootWebArea name='Navigation Treeview Example'
+++genericContainer ignored
+++++genericContainer
+++++++genericContainer
+++++++++genericContainer ignored
+++++++++++banner
+++++++++++++genericContainer
+++++++++++++++staticText name='Mythical University'
+++++++++++++++++inlineTextBox name='Mythical University'
+++++++++++++genericContainer
+++++++++++++++staticText name='Using a Tree widget pattern for navigation links'
+++++++++++++++++inlineTextBox name='Using a Tree widget pattern for navigation links'
+++++++++++genericContainer ignored
+++++++++++++navigation name='Mythical University'
+++++++++++++++tree name='Mythical University'
+++++++++++++++++treeItem name='Home' selected=false
+++++++++++++++++++staticText name='Home'
+++++++++++++++++++++inlineTextBox name='Home'
+++++++++++++++++treeItem collapsed name='About' selected=false
+++++++++++++++++++genericContainer
+++++++++++++++++++++image
+++++++++++++++++++staticText name='About'
+++++++++++++++++++++inlineTextBox name='About'
+++++++++++++++++treeItem ignored invisible
+++++++++++++++++treeItem ignored invisible
+++++++++++++++++treeItem collapsed name='Admissions' selected=false
+++++++++++++++++++genericContainer
+++++++++++++++++++++image
+++++++++++++++++++staticText name='Admissions'
+++++++++++++++++++++inlineTextBox name='Admissions'
+++++++++++++++++treeItem ignored invisible
+++++++++++++++++treeItem collapsed name='Academics' selected=false
+++++++++++++++++++genericContainer
+++++++++++++++++++++image
+++++++++++++++++++staticText name='Academics'
+++++++++++++++++++++inlineTextBox name='Academics'
+++++++++++++region name='Mythical University Home'
+++++++++++++++heading name='Home'
+++++++++++++++++staticText name='Home'
+++++++++++++++++++inlineTextBox name='Home'
+++++++++++++++genericContainer ignored
+++++++++++++++++paragraph
+++++++++++++++++++staticText name='The content on this page is associated with the '
+++++++++++++++++++++inlineTextBox name='The content on this page is associated with the '
+++++++++++++++++++link name='Home'
+++++++++++++++++++++staticText name='Home'
+++++++++++++++++++++++inlineTextBox name='Home'
+++++++++++++++++++staticText name=' link for '
+++++++++++++++++++++inlineTextBox name=' link for '
+++++++++++++++++++link name='Mythical University'
+++++++++++++++++++++staticText name='Mythical University'
+++++++++++++++++++++++inlineTextBox name='Mythical University'
+++++++++++++++++++staticText name='.'
+++++++++++++++++++++inlineTextBox name='.'
+++++++++++contentInfo
+++++++++++++staticText name='Mythical University footer information'
+++++++++++++++inlineTextBox name='Mythical University footer information'

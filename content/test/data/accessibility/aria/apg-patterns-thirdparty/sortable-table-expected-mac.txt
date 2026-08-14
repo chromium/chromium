@@ -1,0 +1,127 @@
+AXWebArea AXTitle='Sortable Table Example'
+++AXGroup
+++++AXTable AXTitle='Students currently enrolled in WAI-ARIA 101 %E2%80%88(column headers with buttons are sortable).'
+++++++AXGroup
+++++++++AXStaticText AXValue='Students currently enrolled in WAI-ARIA 101'
+++++++++AXStaticText AXValue='%E2%80%88(column headers with buttons are sortable).'
+++++++AXRow
+++++++++AXCell
+++++++++++AXButton AXTitle='First Name'
+++++++++AXCell
+++++++++++AXButton AXTitle='Last Name'
+++++++++AXCell
+++++++++++AXButton AXTitle='Company'
+++++++++AXCell
+++++++++++AXStaticText AXValue='Address'
+++++++++AXCell
+++++++++++AXButton AXTitle='Favorite Number'
+++++++AXRow
+++++++++AXCell
+++++++++++AXStaticText AXValue='Fred'
+++++++++AXCell
+++++++++++AXStaticText AXValue='Jackson'
+++++++++AXCell
+++++++++++AXStaticText AXValue='Canary, Inc.'
+++++++++AXCell
+++++++++++AXStaticText AXValue='123 Broad St.'
+++++++++AXCell
+++++++++++AXStaticText AXValue='56'
+++++++AXRow
+++++++++AXCell
+++++++++++AXStaticText AXValue='Sara'
+++++++++AXCell
+++++++++++AXStaticText AXValue='James'
+++++++++AXCell
+++++++++++AXStaticText AXValue='Cardinal, Inc.'
+++++++++AXCell
+++++++++++AXStaticText AXValue='457 First St.'
+++++++++AXCell
+++++++++++AXStaticText AXValue='7'
+++++++AXRow
+++++++++AXCell
+++++++++++AXStaticText AXValue='Ralph'
+++++++++AXCell
+++++++++++AXStaticText AXValue='Jefferson'
+++++++++AXCell
+++++++++++AXStaticText AXValue='Robin, Inc.'
+++++++++AXCell
+++++++++++AXStaticText AXValue='456 Main St.'
+++++++++AXCell
+++++++++++AXStaticText AXValue='513'
+++++++AXRow
+++++++++AXCell
+++++++++++AXStaticText AXValue='Nancy'
+++++++++AXCell
+++++++++++AXStaticText AXValue='Jensen'
+++++++++AXCell
+++++++++++AXStaticText AXValue='Eagle, Inc.'
+++++++++AXCell
+++++++++++AXStaticText AXValue='2203 Logan Dr.'
+++++++++AXCell
+++++++++++AXStaticText AXValue='3.5'
+++++++AXColumn
+++++++++AXCell
+++++++++++AXButton AXTitle='First Name'
+++++++++AXCell
+++++++++++AXStaticText AXValue='Fred'
+++++++++AXCell
+++++++++++AXStaticText AXValue='Sara'
+++++++++AXCell
+++++++++++AXStaticText AXValue='Ralph'
+++++++++AXCell
+++++++++++AXStaticText AXValue='Nancy'
+++++++AXColumn
+++++++++AXCell
+++++++++++AXButton AXTitle='Last Name'
+++++++++AXCell
+++++++++++AXStaticText AXValue='Jackson'
+++++++++AXCell
+++++++++++AXStaticText AXValue='James'
+++++++++AXCell
+++++++++++AXStaticText AXValue='Jefferson'
+++++++++AXCell
+++++++++++AXStaticText AXValue='Jensen'
+++++++AXColumn
+++++++++AXCell
+++++++++++AXButton AXTitle='Company'
+++++++++AXCell
+++++++++++AXStaticText AXValue='Canary, Inc.'
+++++++++AXCell
+++++++++++AXStaticText AXValue='Cardinal, Inc.'
+++++++++AXCell
+++++++++++AXStaticText AXValue='Robin, Inc.'
+++++++++AXCell
+++++++++++AXStaticText AXValue='Eagle, Inc.'
+++++++AXColumn
+++++++++AXCell
+++++++++++AXStaticText AXValue='Address'
+++++++++AXCell
+++++++++++AXStaticText AXValue='123 Broad St.'
+++++++++AXCell
+++++++++++AXStaticText AXValue='457 First St.'
+++++++++AXCell
+++++++++++AXStaticText AXValue='456 Main St.'
+++++++++AXCell
+++++++++++AXStaticText AXValue='2203 Logan Dr.'
+++++++AXColumn
+++++++++AXCell
+++++++++++AXButton AXTitle='Favorite Number'
+++++++++AXCell
+++++++++++AXStaticText AXValue='56'
+++++++++AXCell
+++++++++++AXStaticText AXValue='7'
+++++++++AXCell
+++++++++++AXStaticText AXValue='513'
+++++++++AXCell
+++++++++++AXStaticText AXValue='3.5'
+++++++AXGroup
+++++++++AXCell
+++++++++++AXButton AXTitle='First Name'
+++++++++AXCell
+++++++++++AXButton AXTitle='Last Name'
+++++++++AXCell
+++++++++++AXButton AXTitle='Company'
+++++++++AXCell
+++++++++++AXStaticText AXValue='Address'
+++++++++AXCell
+++++++++++AXButton AXTitle='Favorite Number'

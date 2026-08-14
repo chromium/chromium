@@ -1,0 +1,39 @@
+rootWebArea name='Color Viewer Slider Example'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer
+++++++++group name='Color Viewer'
+++++++++++heading name='Color Viewer'
+++++++++++++staticText name='Color Viewer'
+++++++++++++++inlineTextBox name='Color Viewer'
+++++++++++genericContainer
+++++++++++++staticText name='Red'
+++++++++++++++inlineTextBox name='Red'
+++++++++++slider horizontal name='Red' valueForRange=128.00 minValueForRange=0.00 maxValueForRange=255.00
+++++++++++genericContainer
+++++++++++++staticText name='Green'
+++++++++++++++inlineTextBox name='Green'
+++++++++++slider horizontal name='Green' valueForRange=128.00 minValueForRange=0.00 maxValueForRange=255.00
+++++++++++genericContainer
+++++++++++++staticText name='Blue'
+++++++++++++++inlineTextBox name='Blue'
+++++++++++slider horizontal name='Blue' valueForRange=128.00 minValueForRange=0.00 maxValueForRange=255.00
+++++++++++heading name='Color View Box'
+++++++++++++staticText name='Color View Box'
+++++++++++++++inlineTextBox name='Color View Box'
+++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
+++++++++++++labelText
+++++++++++++++staticText name='Color (HEX): '
+++++++++++++++++inlineTextBox name='Color (HEX): '
+++++++++++++++textField name='Color (HEX):' value='#808080' restriction=readOnly
+++++++++++++++++genericContainer
+++++++++++++++++++staticText name='#808080'
+++++++++++++++++++++inlineTextBox name='#808080'
+++++++++++++labelText
+++++++++++++++staticText name='Color (RGB): '
+++++++++++++++++inlineTextBox name='Color (RGB): '
+++++++++++++++textField name='Color (RGB):' value='128, 128, 128' restriction=readOnly
+++++++++++++++++genericContainer
+++++++++++++++++++staticText name='128, 128, 128'
+++++++++++++++++++++inlineTextBox name='128, 128, 128'

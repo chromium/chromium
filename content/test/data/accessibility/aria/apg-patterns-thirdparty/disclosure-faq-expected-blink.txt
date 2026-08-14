@@ -1,0 +1,37 @@
+rootWebArea name='Example Disclosure (Show/Hide) for Answers to Frequently Asked Questions'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer
+++++++++heading name='Parking FAQs'
+++++++++++staticText name='Parking '
+++++++++++++inlineTextBox name='Parking '
+++++++++++abbr name='Frequently Asked Questions' nameFrom=title
+++++++++++++staticText name='FAQ'
+++++++++++++++inlineTextBox name='FAQ'
+++++++++++staticText name='s'
+++++++++++++inlineTextBox name='s'
+++++++++list
+++++++++++listItem
+++++++++++++button collapsed name='What do I do if I have a permit for an assigned lot, but can't find a space there?'
+++++++++++++++genericContainer ignored
+++++++++++++++++image
+++++++++++++++staticText name='What do I do if I have a permit for an assigned lot, but can't find a space there?'
+++++++++++++++++inlineTextBox name='What do I do if I have a permit for an assigned lot, but can't find a space there?'
+++++++++++listItem
+++++++++++++button collapsed name='What do I do if I lose my permit or if my permit is stolen?'
+++++++++++++++genericContainer ignored
+++++++++++++++++image
+++++++++++++++staticText name='What do I do if I lose my permit or if my permit is stolen?'
+++++++++++++++++inlineTextBox name='What do I do if I lose my permit or if my permit is stolen?'
+++++++++++listItem
+++++++++++++button collapsed name='Is there free parking on holidays?'
+++++++++++++++genericContainer ignored
+++++++++++++++++image
+++++++++++++++staticText name='Is there free parking on holidays?'
+++++++++++++++++inlineTextBox name='Is there free parking on holidays?'
+++++++++++listItem
+++++++++++++button collapsed name='Do all parking facilities have the same enforcement rules?'
+++++++++++++++genericContainer ignored
+++++++++++++++++image
+++++++++++++++staticText name='Do all parking facilities have the same enforcement rules?'
+++++++++++++++++inlineTextBox name='Do all parking facilities have the same enforcement rules?'

@@ -1,0 +1,30 @@
+rootWebArea name='Checkbox Example (Mixed-State)'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer
+++++++++group name='Sandwich Condiments'
+++++++++++legend
+++++++++++++staticText name='Sandwich Condiments'
+++++++++++++++inlineTextBox name='Sandwich Condiments'
+++++++++++checkBox name='All condiments' checkedState=mixed controlsIds=checkBox,checkBox,checkBox,checkBox
+++++++++++++genericContainer ignored
+++++++++++++++image
+++++++++++++staticText name='All condiments'
+++++++++++++++inlineTextBox name='All condiments'
+++++++++++list
+++++++++++++listItem
+++++++++++++++labelText ignored
+++++++++++++++++checkBox name='Lettuce' checkedState=false
+++++++++++++++++staticText ignored
+++++++++++++listItem
+++++++++++++++labelText ignored
+++++++++++++++++checkBox name='Tomato' checkedState=true
+++++++++++++++++staticText ignored
+++++++++++++listItem
+++++++++++++++labelText ignored
+++++++++++++++++checkBox name='Mustard' checkedState=false
+++++++++++++++++staticText ignored
+++++++++++++listItem
+++++++++++++++labelText ignored
+++++++++++++++++checkBox name='Sprouts' checkedState=false
+++++++++++++++++staticText ignored

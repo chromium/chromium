@@ -1,0 +1,34 @@
+rootWebArea name='(Deprecated) Date Picker Spin Button Example'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer
+++++++++group name='Choose a Date current value is Thursday, May fifteenth, 2025'
+++++++++++genericContainer
+++++++++++++staticText name='Choose a Date'
+++++++++++++++inlineTextBox name='Choose a Date'
+++++++++++genericContainer ignored invisible
+++++++++++++staticText ignored invisible
+++++++++++genericContainer ignored
+++++++++++++button name='previous day'
+++++++++++++++image
+++++++++++++spinButton name='Day' ariaValueText='fifteenth' valueForRange=15.00 minValueForRange=1.00 maxValueForRange=31.00
+++++++++++++++staticText name='15'
+++++++++++++++++inlineTextBox name='15'
+++++++++++++button name='next day'
+++++++++++++++image
+++++++++++genericContainer ignored
+++++++++++++button name='previous month'
+++++++++++++++image
+++++++++++++spinButton name='Month' ariaValueText='May' valueForRange=4.00 minValueForRange=0.00 maxValueForRange=11.00
+++++++++++++++staticText name='May'
+++++++++++++++++inlineTextBox name='May'
+++++++++++++button name='next month'
+++++++++++++++image
+++++++++++genericContainer ignored
+++++++++++++button name='previous year'
+++++++++++++++image
+++++++++++++spinButton name='Year' valueForRange=2025.00 minValueForRange=2019.00 maxValueForRange=2040.00
+++++++++++++++staticText name='2025'
+++++++++++++++++inlineTextBox name='2025'
+++++++++++++button name='next year'
+++++++++++++++image

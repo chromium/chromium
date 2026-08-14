@@ -1,0 +1,5 @@
+ROLE_SYSTEM_DOCUMENT name='Rating Slider Example' READONLY FOCUSABLE
+++IA2_ROLE_SECTION
+++++IA2_ROLE_SECTION
+++++++ROLE_SYSTEM_STATICTEXT name='Rate your satisfaction with the service you received'
+++++ROLE_SYSTEM_SLIDER name='Rate your satisfaction with the service you received' value='Choose a rating from one to ten where 10 is extremely satisfied' FOCUSABLE IA2_STATE_HORIZONTAL

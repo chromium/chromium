@@ -1,0 +1,8 @@
+android.webkit.WebView focusable focused interesting name='Date Picker Dialog Example'
+++android.view.View
+++++android.view.View
+++++++android.view.View interesting name='Date'
+++++++android.view.View
+++++++++android.widget.EditText clickable editable_text focusable interesting hint='Date mm/dd/yyyy ( date format: mm/dd/yyyy)' input_type=1
+++++++++android.widget.TextView interesting name='(date format:mm/dd/yyyy)'
+++++++++android.widget.Button clickable focusable interesting content_description='Choose Date'

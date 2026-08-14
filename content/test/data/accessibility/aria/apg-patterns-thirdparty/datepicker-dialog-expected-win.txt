@@ -1,0 +1,12 @@
+ROLE_SYSTEM_DOCUMENT name='Date Picker Dialog Example' READONLY FOCUSABLE
+++IA2_ROLE_SECTION
+++++IA2_ROLE_SECTION
+++++++IA2_ROLE_LABEL
+++++++++ROLE_SYSTEM_STATICTEXT name='Date'
+++++++IA2_ROLE_SECTION
+++++++++ROLE_SYSTEM_TEXT name='Date' FOCUSABLE description-from:aria-describedby description='( date format: mm/dd/yyyy)'
+++++++++IA2_ROLE_SECTION
+++++++++++ROLE_SYSTEM_STATICTEXT name='('
+++++++++++ROLE_SYSTEM_STATICTEXT name='date format:'
+++++++++++ROLE_SYSTEM_STATICTEXT name='mm/dd/yyyy)'
+++++++++ROLE_SYSTEM_PUSHBUTTON name='Choose Date' FOCUSABLE

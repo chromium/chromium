@@ -1,0 +1,8 @@
+android.webkit.WebView focusable focused interesting name='(Deprecated) Collapsible Dropdown Listbox Example'
+++android.view.View
+++++android.widget.TextView interesting name='Choose your favorite transuranic element (actinide or transactinide).'
+++++android.widget.TextView interesting name='Choose an element:'
+++++android.view.View
+++++++android.widget.Button role_description='pop up button' clickable focusable interesting name='Choose an element: Neptunium'
+++++++++android.widget.TextView name='Neptunium'
+++++++++android.widget.TextView

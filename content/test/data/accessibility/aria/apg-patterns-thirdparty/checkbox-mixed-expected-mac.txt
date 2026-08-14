@@ -1,0 +1,17 @@
+AXWebArea AXTitle='Checkbox Example (Mixed-State)'
+++AXGroup
+++++AXGroup AXSubrole=AXFieldset AXDescription='Sandwich Condiments' AXTitle='Sandwich Condiments'
+++++++AXGroup
+++++++++AXStaticText AXValue='Sandwich Condiments'
+++++++AXCheckBox AXTitle='All condiments' AXValue=2
+++++++++AXImage
+++++++++AXStaticText AXValue='All condiments'
+++++++AXList AXSubrole=AXContentList
+++++++++AXGroup
+++++++++++AXCheckBox AXTitle='Lettuce' AXValue=0
+++++++++AXGroup
+++++++++++AXCheckBox AXTitle='Tomato' AXValue=1
+++++++++AXGroup
+++++++++++AXCheckBox AXTitle='Mustard' AXValue=0
+++++++++AXGroup
+++++++++++AXCheckBox AXTitle='Sprouts' AXValue=0

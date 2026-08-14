@@ -1,0 +1,9 @@
+ROLE_SYSTEM_DOCUMENT name='Meter Example' READONLY FOCUSABLE
+++IA2_ROLE_SECTION
+++++IA2_ROLE_PARAGRAPH
+++++++ROLE_SYSTEM_STATICTEXT name='The value of this meter changes every 5 seconds. Use the pause button to stop changes.'
+++++IA2_ROLE_HEADING name='Central Processing Unit (CPU) Usage'
+++++++ROLE_SYSTEM_STATICTEXT name='Central Processing Unit (CPU) Usage'
+++++IA2_ROLE_PARAGRAPH
+++++++ROLE_SYSTEM_PUSHBUTTON name='Pause Updates' FOCUSABLE
+++++ROLE_SYSTEM_PROGRESSBAR name='Central Processing Unit (CPU) Usage' value='90'

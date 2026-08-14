@@ -1,0 +1,17 @@
+AXWebArea AXTitle='Switch Example Using HTML Checkbox Input'
+++AXGroup
+++++AXGroup AXSubrole=AXFieldset AXDescription='Accessibility Preferences' AXTitle='Accessibility Preferences'
+++++++AXGroup
+++++++++AXStaticText AXValue='Accessibility Preferences'
+++++++AXGroup
+++++++++AXGroup
+++++++++++AXStaticText AXValue='Reduced motion'
+++++++++AXCheckBox AXSubrole=AXSwitch AXTitle='Reduced motion' AXValue=0
+++++++++AXGroup AXSubrole=AXEmptyGroup
+++++++++++AXGroup AXSubrole=AXEmptyGroup
+++++++AXGroup
+++++++++AXGroup
+++++++++++AXStaticText AXValue='Show captions'
+++++++++AXCheckBox AXSubrole=AXSwitch AXTitle='Show captions' AXValue=0
+++++++++AXGroup AXSubrole=AXEmptyGroup
+++++++++++AXGroup AXSubrole=AXEmptyGroup

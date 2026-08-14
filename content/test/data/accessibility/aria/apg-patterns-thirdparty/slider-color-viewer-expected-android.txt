@@ -1,0 +1,17 @@
+android.webkit.WebView focusable focused interesting name='Color Viewer Slider Example'
+++android.view.View
+++++android.view.View container_title='Color Viewer'
+++++++android.widget.TextView role_description='heading 3' heading interesting name='Color Viewer'
+++++++android.widget.TextView interesting name='Red'
+++++++android.widget.SeekBar clickable focusable range interesting name='Red' item_index=50 item_count=100 range_max=255 range_current_value=128
+++++++android.widget.TextView interesting name='Green'
+++++++android.widget.SeekBar clickable focusable range interesting name='Green' item_index=50 item_count=100 range_max=255 range_current_value=128
+++++++android.widget.TextView interesting name='Blue'
+++++++android.widget.SeekBar clickable focusable range interesting name='Blue' item_index=50 item_count=100 range_max=255 range_current_value=128
+++++++android.widget.TextView role_description='heading 4' heading interesting name='Color View Box'
+++++++android.view.View
+++++++++android.widget.TextView interesting name='Color (HEX): '
+++++++++android.widget.EditText clickable editable_text focusable has_non_empty_value interesting name='#808080' hint='Color (HEX):' input_type=1 text_change_added_count=7
+++++++android.view.View
+++++++++android.widget.TextView interesting name='Color (RGB): '
+++++++++android.widget.EditText clickable editable_text focusable has_non_empty_value interesting name='128, 128, 128' hint='Color (RGB):' input_type=1 text_change_added_count=13

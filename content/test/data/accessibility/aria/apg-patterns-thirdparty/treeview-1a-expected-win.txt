@@ -1,0 +1,21 @@
+ROLE_SYSTEM_DOCUMENT name='File Directory Treeview Example Using Computed Properties' READONLY FOCUSABLE
+++IA2_ROLE_SECTION
+++++IA2_ROLE_HEADING name='My Documents'
+++++++ROLE_SYSTEM_STATICTEXT name='My Documents'
+++++ROLE_SYSTEM_OUTLINE name='My Documents'
+++++++ROLE_SYSTEM_OUTLINEITEM name='%EF%81%BB Projects' COLLAPSED FOCUSABLE
+++++++++IA2_ROLE_SECTION
+++++++++++ROLE_SYSTEM_STATICTEXT name='%EF%81%BB'
+++++++++ROLE_SYSTEM_STATICTEXT name=' Projects'
+++++++ROLE_SYSTEM_OUTLINEITEM name='%EF%81%BB Reports' COLLAPSED FOCUSABLE
+++++++++IA2_ROLE_SECTION
+++++++++++ROLE_SYSTEM_STATICTEXT name='%EF%81%BB'
+++++++++ROLE_SYSTEM_STATICTEXT name=' Reports'
+++++++ROLE_SYSTEM_OUTLINEITEM name='%EF%81%BB Letters' COLLAPSED FOCUSABLE
+++++++++IA2_ROLE_SECTION
+++++++++++ROLE_SYSTEM_STATICTEXT name='%EF%81%BB'
+++++++++ROLE_SYSTEM_STATICTEXT name=' Letters'
+++++IA2_ROLE_PARAGRAPH
+++++++IA2_ROLE_LABEL
+++++++++ROLE_SYSTEM_STATICTEXT name='File or Folder Selected: '
+++++++++ROLE_SYSTEM_TEXT name='File or Folder Selected:' READONLY FOCUSABLE

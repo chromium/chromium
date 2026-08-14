@@ -1,0 +1,3 @@
+WebView supplementalDescription:"Switch Example" focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
+++View viewIdResName:"ex1" actions:[AX_FOCUS] bundle:[chromeRole="genericContainer"]
+++++Switch text:"Notifications" stateDescription:"Off" checkable clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="switch", clickableScore="300"]

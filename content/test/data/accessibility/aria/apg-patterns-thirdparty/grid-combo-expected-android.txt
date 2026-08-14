@@ -1,0 +1,7 @@
+android.webkit.WebView focusable focused interesting name='Editable Combobox with Grid Popup Example'
+++android.view.View clickable
+++++android.view.View
+++++++android.view.View interesting name='Fruits and vegetables '
+++++++android.view.View
+++++++++android.view.View
+++++++++++android.widget.EditText clickable collapsed editable_text focusable interesting hint='Fruits and vegetables' input_type=1 expanded_state=1

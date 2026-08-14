@@ -1,0 +1,8 @@
+AXWebArea AXTitle='Editable Combobox without Autocomplete Example'
+++AXGroup
+++++AXGroup
+++++++AXStaticText AXValue='Search'
+++++AXGroup
+++++++AXGroup
+++++++++AXComboBox AXTitle='Search'
+++++++++AXButton AXDescription='Previous Searches' AXTitle='Previous Searches'

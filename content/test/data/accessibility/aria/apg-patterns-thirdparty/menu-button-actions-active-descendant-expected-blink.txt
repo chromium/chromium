@@ -1,0 +1,18 @@
+rootWebArea name='Actions Menu Button Example Using aria-activedescendant'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer
+++++++++genericContainer
+++++++++++popUpButton collapsed name='Actions '
+++++++++++++staticText name='Actions '
+++++++++++++++inlineTextBox name='Actions '
+++++++++++++image
+++++++++++menu ignored invisible
+++++++++paragraph
+++++++++++labelText
+++++++++++++staticText name='Last Action: '
+++++++++++++++inlineTextBox name='Last Action: '
+++++++++++++textField name='Last Action:' value='none'
+++++++++++++++genericContainer
+++++++++++++++++staticText name='none'
+++++++++++++++++++inlineTextBox name='none'

@@ -1,0 +1,65 @@
+rootWebArea name='Button Examples (IDL Version)'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer
+++++++++genericContainer ignored
+++++++++++heading name='Important'
+++++++++++++staticText name='Important'
+++++++++++++++inlineTextBox name='Important'
+++++++++++paragraph
+++++++++++++staticText name='This example is coded using syntax that was not introduced until version 1.2 of the ARIA specification. When using a '
+++++++++++++++inlineTextBox name='This example is coded using syntax that was not introduced until version 1.2 of the ARIA specification. When using a '
+++++++++++++link name='browser that does not yet provide support for ARIA attribute reflection'
+++++++++++++++staticText name='browser that does not yet provide support for ARIA attribute reflection'
+++++++++++++++++inlineTextBox name='browser that does not yet provide support for ARIA attribute reflection'
+++++++++++++staticText name=', the buttons will not be styled correctly.'
+++++++++++++++inlineTextBox name=', the buttons will not be styled correctly.'
+++++++++paragraph
+++++++++++staticText name='This '
+++++++++++++inlineTextBox name='This '
+++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored
+++++++++++++++++staticText name='%E2%80%9C'
+++++++++++++++++++inlineTextBox name='%E2%80%9C'
+++++++++++++staticText name='Print'
+++++++++++++++inlineTextBox name='Print'
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored
+++++++++++++++++staticText name='%E2%80%9D'
+++++++++++++++++++inlineTextBox name='%E2%80%9D'
+++++++++++staticText name=' action button uses a '
+++++++++++++inlineTextBox name=' action button uses a '
+++++++++++code
+++++++++++++staticText name='div'
+++++++++++++++inlineTextBox name='div'
+++++++++++staticText name=' element.'
+++++++++++++inlineTextBox name=' element.'
+++++++++button name='Print Page'
+++++++++++staticText name='Print Page'
+++++++++++++inlineTextBox name='Print Page'
+++++++++paragraph
+++++++++++staticText name='This '
+++++++++++++inlineTextBox name='This '
+++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored
+++++++++++++++++staticText name='%E2%80%9C'
+++++++++++++++++++inlineTextBox name='%E2%80%9C'
+++++++++++++staticText name='Mute'
+++++++++++++++inlineTextBox name='Mute'
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored
+++++++++++++++++staticText name='%E2%80%9D'
+++++++++++++++++++inlineTextBox name='%E2%80%9D'
+++++++++++staticText name=' toggle button uses an '
+++++++++++++inlineTextBox name=' toggle button uses an '
+++++++++++code
+++++++++++++staticText name='a'
+++++++++++++++inlineTextBox name='a'
+++++++++++staticText name=' element.'
+++++++++++++inlineTextBox name=' element.'
+++++++++toggleButton name='Mute ' checkedState=false
+++++++++++staticText name='Mute '
+++++++++++++inlineTextBox name='Mute '
+++++++++++group ignored invisible

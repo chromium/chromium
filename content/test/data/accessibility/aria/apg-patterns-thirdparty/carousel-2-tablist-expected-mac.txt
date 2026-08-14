@@ -1,0 +1,32 @@
+AXWebArea AXTitle='Auto-Rotating Image Carousel with Tabs for Slide Control Example'
+++AXGroup
+++++AXGroup AXSubrole=AXLandmarkRegion AXDescription='Highlighted television shows' AXTitle='Highlighted television shows'
+++++++AXGroup
+++++++++AXGroup
+++++++++++AXButton AXDescription='Start automatic slide show' AXTitle='Start automatic slide show'
+++++++++++++AXImage
+++++++++++AXGroup
+++++++++++++AXTabGroup AXDescription='Slides' AXTitle='Slides'
+++++++++++++++AXRadioButton AXSubrole=AXTabButton AXDescription='Slide 1' AXTitle='Slide 1' AXValue=1
+++++++++++++++++AXImage
+++++++++++++++AXRadioButton AXSubrole=AXTabButton AXDescription='Slide 2' AXTitle='Slide 2' AXValue=0
+++++++++++++++++AXImage
+++++++++++++++AXRadioButton AXSubrole=AXTabButton AXDescription='Slide 3' AXTitle='Slide 3' AXValue=0
+++++++++++++++++AXImage
+++++++++++++++AXRadioButton AXSubrole=AXTabButton AXDescription='Slide 4' AXTitle='Slide 4' AXValue=0
+++++++++++++++++AXImage
+++++++++++++++AXRadioButton AXSubrole=AXTabButton AXDescription='Slide 5' AXTitle='Slide 5' AXValue=0
+++++++++++++++++AXImage
+++++++++++++++AXRadioButton AXSubrole=AXTabButton AXDescription='Slide 6' AXTitle='Slide 6' AXValue=0
+++++++++++++++++AXImage
+++++++++AXGroup
+++++++++++AXGroup AXSubrole=AXTabPanel AXDescription='1 of 6' AXTitle='1 of 6'
+++++++++++++AXGroup
+++++++++++++++AXLink AXDescription='Walking Tour in Amsterdam' AXTitle='Walking Tour in Amsterdam'
+++++++++++++++++AXImage AXDescription='Walking Tour in Amsterdam' AXTitle='Walking Tour in Amsterdam'
+++++++++++++AXGroup
+++++++++++++++AXHeading AXTitle='Dynamic Europe: Amsterdam, Prague, Berlin' AXValue=3
+++++++++++++++++AXLink AXDescription='Dynamic Europe: Amsterdam, Prague, Berlin' AXTitle='Dynamic Europe: Amsterdam, Prague, Berlin'
+++++++++++++++++++AXStaticText AXValue='Dynamic Europe: Amsterdam, Prague, Berlin'
+++++++++++++++AXGroup
+++++++++++++++++AXStaticText AXValue='7 pm Tuesday, March 3, on TV'

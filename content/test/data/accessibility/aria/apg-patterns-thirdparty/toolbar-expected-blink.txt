@@ -1,0 +1,115 @@
+rootWebArea name='Toolbar Example'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer
+++++++++toolbar horizontal name='Text Formatting' controlsIds=textField
+++++++++++genericContainer
+++++++++++++toggleButton name='Bold' checkedState=false
+++++++++++++++genericContainer ignored
+++++++++++++++++staticText name='Bold'
+++++++++++++++++++inlineTextBox name='Bold'
+++++++++++++toggleButton name='Italic' checkedState=false
+++++++++++++++genericContainer ignored
+++++++++++++++++staticText name='Italic'
+++++++++++++++++++inlineTextBox name='Italic'
+++++++++++++toggleButton name='Underline' checkedState=false
+++++++++++++++genericContainer ignored
+++++++++++++++++staticText name='Underline'
+++++++++++++++++++inlineTextBox name='Underline'
+++++++++++radioGroup name='Text Alignment'
+++++++++++++radioButton name='Text Align Left' checkedState=true
+++++++++++++++genericContainer ignored
+++++++++++++++++staticText name='Text Align Left'
+++++++++++++++++++inlineTextBox name='Text Align Left'
+++++++++++++radioButton name='Text Align Center' checkedState=false
+++++++++++++++genericContainer ignored
+++++++++++++++++staticText name='Text Align Center'
+++++++++++++++++++inlineTextBox name='Text Align Center'
+++++++++++++radioButton name='Text Align Right' checkedState=false
+++++++++++++++genericContainer ignored
+++++++++++++++++staticText name='Text Align Right'
+++++++++++++++++++inlineTextBox name='Text Align Right'
+++++++++++genericContainer
+++++++++++++button name='Copy' restriction=disabled
+++++++++++++++staticText name='Copy'
+++++++++++++++++inlineTextBox name='Copy'
+++++++++++++button name='Paste' restriction=disabled
+++++++++++++++staticText name='Paste'
+++++++++++++++++inlineTextBox name='Paste'
+++++++++++++button name='Cut' restriction=disabled
+++++++++++++++staticText name='Cut'
+++++++++++++++++inlineTextBox name='Cut'
+++++++++++genericContainer
+++++++++++++popUpButton collapsed name='Font: Sans-serif'
+++++++++++++++staticText name='SANS-SERIF'
+++++++++++++++++inlineTextBox name='SANS-SERIF'
+++++++++++++++genericContainer ignored
+++++++++++++++++genericContainer ignored
+++++++++++++++++++image
+++++++++++++menu ignored invisible
+++++++++++genericContainer
+++++++++++++spinButton name='Font size in points' ariaValueText='14 Point' valueForRange=14.00 minValueForRange=8.00 maxValueForRange=40.00
+++++++++++++++genericContainer
+++++++++++++++++staticText name='14 Point'
+++++++++++++++++++inlineTextBox name='14 Point'
+++++++++++++++genericContainer
+++++++++++++++++image
+++++++++++++++genericContainer
+++++++++++++++++image
+++++++++++genericContainer
+++++++++++++labelText
+++++++++++++++checkBox name='Night Mode' checkedState=false
+++++++++++++++staticText name=' Night Mode'
+++++++++++++++++inlineTextBox name=' Night Mode'
+++++++++++++link name='Help'
+++++++++++++++staticText name='Help'
+++++++++++++++++inlineTextBox name='Help'
+++++++++labelText
+++++++++++staticText name='Text Sample'
+++++++++++++inlineTextBox name='Text Sample'
+++++++++lineBreak name='<newline>'
+++++++++++inlineTextBox name='<newline>'
+++++++++textField multiline name='Text Sample' value='Abraham Lincoln's Gettysburg Address<newline><newline>Four score and seven years ago our fathers brought forth on this continent a new nation, conceived in Liberty, and dedicated to the proposition that all men are created equal.<newline><newline>Now we are engaged in a great civil war, testing whether that nation, or any nation, so conceived and so dedicated, can long endure. We are met on a great battle-field of that war. We have come to dedicate a portion of that field, as a final resting place for those who here gave their lives that that nation might live. It is altogether fitting and proper that we should do this.<newline><newline>But, in a larger sense, we can not dedicate, we can not consecrate, we can not hallow, this ground. The brave men, living and dead, who struggled here, have consecrated it, far above our poor power to add or detract. The world will little note, nor long remember what we say here, but it can never forget what they did here. It is for us the living, rather, to be dedicated here to the unfinished work which they who fought here have thus far so nobly advanced. It is rather for us to be here dedicated to the great task remaining before us, that from these honored dead we take increased devotion to that cause for which they gave the last full measure of devotion, that we here highly resolve that these dead shall not have died in vain, that this nation, under God, shall have a new birth of freedom, and that government of the people, by the people, for the people, shall not perish from the earth.<newline>'
+++++++++++genericContainer
+++++++++++++staticText name='Abraham Lincoln's Gettysburg Address'
+++++++++++++++inlineTextBox name='Abraham Lincoln's Gettysburg Address'
+++++++++++++lineBreak name='<newline>'
+++++++++++++++inlineTextBox name='<newline>'
+++++++++++++lineBreak name='<newline>'
+++++++++++++++inlineTextBox name='<newline>'
+++++++++++++staticText name='Four score and seven years ago our fathers brought forth on this continent a new nation, conceived in Liberty, and dedicated to the proposition that all men are created equal.'
+++++++++++++++inlineTextBox name='Four score and seven years ago our fathers brought forth on this continent a new nation, conceived in Liberty, and dedicated to'
+++++++++++++++inlineTextBox name=' '
+++++++++++++++inlineTextBox name='the proposition that all men are created equal.'
+++++++++++++lineBreak name='<newline>'
+++++++++++++++inlineTextBox name='<newline>'
+++++++++++++lineBreak name='<newline>'
+++++++++++++++inlineTextBox name='<newline>'
+++++++++++++staticText name='Now we are engaged in a great civil war, testing whether that nation, or any nation, so conceived and so dedicated, can long endure. We are met on a great battle-field of that war. We have come to dedicate a portion of that field, as a final resting place for those who here gave their lives that that nation might live. It is altogether fitting and proper that we should do this.'
+++++++++++++++inlineTextBox name='Now we are engaged in a great civil war, testing whether that nation, or any nation, so conceived and so dedicated, can long'
+++++++++++++++inlineTextBox name=' '
+++++++++++++++inlineTextBox name='endure. We are met on a great battle-field of that war. We have come to dedicate a portion of that field, as a final resting place'
+++++++++++++++inlineTextBox name=' '
+++++++++++++++inlineTextBox name='for those who here gave their lives that that nation might live. It is altogether fitting and proper that we should do this.'
+++++++++++++lineBreak name='<newline>'
+++++++++++++++inlineTextBox name='<newline>'
+++++++++++++lineBreak name='<newline>'
+++++++++++++++inlineTextBox name='<newline>'
+++++++++++++staticText name='But, in a larger sense, we can not dedicate, we can not consecrate, we can not hallow, this ground. The brave men, living and dead, who struggled here, have consecrated it, far above our poor power to add or detract. The world will little note, nor long remember what we say here, but it can never forget what they did here. It is for us the living, rather, to be dedicated here to the unfinished work which they who fought here have thus far so nobly advanced. It is rather for us to be here dedicated to the great task remaining before us, that from these honored dead we take increased devotion to that cause for which they gave the last full measure of devotion, that we here highly resolve that these dead shall not have died in vain, that this nation, under God, shall have a new birth of freedom, and that government of the people, by the people, for the people, shall not perish from the earth.'
+++++++++++++++inlineTextBox name='But, in a larger sense, we can not dedicate, we can not consecrate, we can not hallow, this ground. The brave men, living and'
+++++++++++++++inlineTextBox name=' '
+++++++++++++++inlineTextBox name='dead, who struggled here, have consecrated it, far above our poor power to add or detract. The world will little note, nor long'
+++++++++++++++inlineTextBox name=' '
+++++++++++++++inlineTextBox name='remember what we say here, but it can never forget what they did here. It is for us the living, rather, to be dedicated here to the'
+++++++++++++++inlineTextBox name=' '
+++++++++++++++inlineTextBox name='unfinished work which they who fought here have thus far so nobly advanced. It is rather for us to be here dedicated to the'
+++++++++++++++inlineTextBox name=' '
+++++++++++++++inlineTextBox name='great task remaining before us, that from these honored dead we take increased devotion to that cause for which they gave the'
+++++++++++++++inlineTextBox name=' '
+++++++++++++++inlineTextBox name='last full measure of devotion, that we here highly resolve that these dead shall not have died in vain, that this nation, under God,'
+++++++++++++++inlineTextBox name=' '
+++++++++++++++inlineTextBox name='shall have a new birth of freedom, and that government of the people, by the people, for the people, shall not perish from the'
+++++++++++++++inlineTextBox name=' '
+++++++++++++++inlineTextBox name='earth.'
+++++++++++++lineBreak name='<newline>'
+++++++++++++++inlineTextBox name='<newline>'

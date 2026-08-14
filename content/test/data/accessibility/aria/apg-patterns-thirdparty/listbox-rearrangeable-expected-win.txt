@@ -1,0 +1,52 @@
+ROLE_SYSTEM_DOCUMENT name='Example Listboxes with Rearrangeable Options' READONLY FOCUSABLE
+++IA2_ROLE_SECTION
+++++IA2_ROLE_PARAGRAPH
+++++++ROLE_SYSTEM_STATICTEXT name='Rank features important to you when choosing where to live. If a feature is unimportant, move it to the unimportant features list.'
+++++IA2_ROLE_SECTION
+++++++ROLE_SYSTEM_STATICTEXT name='Important Features:'
+++++ROLE_SYSTEM_LIST name='Important Features:' FOCUSABLE
+++++++ROLE_SYSTEM_LISTITEM name='Proximity of public K-12 schools'
+++++++ROLE_SYSTEM_LISTITEM name='Proximity of child-friendly parks'
+++++++ROLE_SYSTEM_LISTITEM name='Proximity of grocery shopping'
+++++++ROLE_SYSTEM_LISTITEM name='Proximity of fast food'
+++++++ROLE_SYSTEM_LISTITEM name='Proximity of fine dining'
+++++++ROLE_SYSTEM_LISTITEM name='Neighborhood walkability'
+++++++ROLE_SYSTEM_LISTITEM name='Availability of public transit'
+++++++ROLE_SYSTEM_LISTITEM name='Proximity of hospital and medical services'
+++++++ROLE_SYSTEM_LISTITEM name='Level of traffic noise'
+++++++ROLE_SYSTEM_LISTITEM name='Access to major highways'
+++++ROLE_SYSTEM_TOOLBAR name='Actions' READONLY IA2_STATE_HORIZONTAL
+++++++ROLE_SYSTEM_PUSHBUTTON name='Up' UNAVAILABLE FOCUSABLE
+++++++ROLE_SYSTEM_PUSHBUTTON name='Down' UNAVAILABLE FOCUSABLE
+++++++ROLE_SYSTEM_PUSHBUTTON name=' Not Important' UNAVAILABLE FOCUSABLE
+++++IA2_ROLE_SECTION
+++++++ROLE_SYSTEM_STATICTEXT name='Unimportant Features:'
+++++ROLE_SYSTEM_LIST name='Unimportant Features:' FOCUSABLE
+++++ROLE_SYSTEM_PUSHBUTTON name='Important' UNAVAILABLE FOCUSABLE
+++++IA2_ROLE_SECTION
+++++++ROLE_SYSTEM_STATICTEXT name='Last change:'
+++++++IA2_ROLE_SECTION
+++IA2_ROLE_SECTION
+++++IA2_ROLE_PARAGRAPH
+++++++ROLE_SYSTEM_STATICTEXT name='Choose upgrades for your transport capsule.'
+++++IA2_ROLE_SECTION
+++++++ROLE_SYSTEM_STATICTEXT name='Available upgrades:'
+++++ROLE_SYSTEM_LIST name='Available upgrades:' FOCUSABLE MULTISELECTABLE
+++++++ROLE_SYSTEM_LISTITEM name='Leather seats'
+++++++ROLE_SYSTEM_LISTITEM name='Front seat warmers'
+++++++ROLE_SYSTEM_LISTITEM name='Rear bucket seats'
+++++++ROLE_SYSTEM_LISTITEM name='Rear seat warmers'
+++++++ROLE_SYSTEM_LISTITEM name='Front sun roof'
+++++++ROLE_SYSTEM_LISTITEM name='Rear sun roof'
+++++++ROLE_SYSTEM_LISTITEM name='Cloaking capability'
+++++++ROLE_SYSTEM_LISTITEM name='Food synthesizer'
+++++++ROLE_SYSTEM_LISTITEM name='Advanced waste recycling system'
+++++++ROLE_SYSTEM_LISTITEM name='Turbo vertical take-off capability'
+++++ROLE_SYSTEM_PUSHBUTTON name=' Add' UNAVAILABLE FOCUSABLE
+++++IA2_ROLE_SECTION
+++++++ROLE_SYSTEM_STATICTEXT name='Upgrades you have chosen:'
+++++ROLE_SYSTEM_LIST name='Upgrades you have chosen:' FOCUSABLE MULTISELECTABLE
+++++ROLE_SYSTEM_PUSHBUTTON name='Remove' UNAVAILABLE FOCUSABLE
+++++IA2_ROLE_SECTION
+++++++ROLE_SYSTEM_STATICTEXT name='Last change:'
+++++++IA2_ROLE_SECTION

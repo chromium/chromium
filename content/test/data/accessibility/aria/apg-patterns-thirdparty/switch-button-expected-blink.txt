@@ -1,0 +1,18 @@
+rootWebArea name='Switch Example Using HTML Button'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer
+++++++++group name='Environmental Controls'
+++++++++++heading name='Environmental Controls'
+++++++++++++staticText name='Environmental Controls'
+++++++++++++++inlineTextBox name='Environmental Controls'
+++++++++++switch name='Living Room Lights' checkedState=false
+++++++++++++genericContainer
+++++++++++++++staticText name='Living Room Lights'
+++++++++++++++++inlineTextBox name='Living Room Lights'
+++++++++++++image
+++++++++++switch name='Outdoor Lights' checkedState=false
+++++++++++++genericContainer
+++++++++++++++staticText name='Outdoor Lights'
+++++++++++++++++inlineTextBox name='Outdoor Lights'
+++++++++++++image

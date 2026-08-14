@@ -1,0 +1,37 @@
+rootWebArea name='Feed Display'
+++genericContainer ignored
+++++genericContainer ignored
+++++++heading name='Recommended Restaurants'
+++++++++staticText name='Recommended Restaurants'
+++++++++++inlineTextBox name='Recommended Restaurants'
+++++++sectionWithoutName
+++++++++feed busy=true
+++++++++++article description='5 stars Mexican, Tacos 123 Blueberry Ln San Dimas, CA (111) 111-1111' name='Tito's Tacos' descriptionFrom=relatedElement
+++++++++++++genericContainer
+++++++++++++++genericContainer
+++++++++++++++++staticText name='Tito's Tacos'
+++++++++++++++++++inlineTextBox name='Tito's Tacos'
+++++++++++++++genericContainer
+++++++++++++++++image name='5 stars'
+++++++++++++++++++group ignored
+++++++++++++++++++group ignored
+++++++++++++++++++group ignored
+++++++++++++++++++group ignored
+++++++++++++++++++group ignored
+++++++++++++++genericContainer
+++++++++++++++++staticText name='Mexican, Tacos'
+++++++++++++++++++inlineTextBox name='Mexican, Tacos'
+++++++++++++genericContainer
+++++++++++++++genericContainer
+++++++++++++++++staticText name='123 Blueberry Ln'
+++++++++++++++++++inlineTextBox name='123 Blueberry Ln'
+++++++++++++++genericContainer
+++++++++++++++++staticText name='San Dimas, CA'
+++++++++++++++++++inlineTextBox name='San Dimas, CA'
+++++++++++++++genericContainer
+++++++++++++++++staticText name='(111) 111-1111'
+++++++++++++++++++inlineTextBox name='(111) 111-1111'
+++++++++++++genericContainer
+++++++++++++++button name='Bookmark'
+++++++++++++++++staticText name='Bookmark'
+++++++++++++++++++inlineTextBox name='Bookmark'

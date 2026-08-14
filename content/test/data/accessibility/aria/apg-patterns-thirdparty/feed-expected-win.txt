@@ -1,0 +1,45 @@
+ROLE_SYSTEM_DOCUMENT name='Infinite Scrolling Feed Example' READONLY FOCUSABLE
+++IA2_ROLE_SECTION
+++++IA2_ROLE_PARAGRAPH
+++++++ROLE_SYSTEM_STATICTEXT name='The example feed experience below is presented in an iframe in order not to obstruct from the rest of the content of the page.'
+++++IA2_ROLE_INTERNAL_FRAME name='Feed example'
+++++++ROLE_SYSTEM_DOCUMENT name='Feed Display' READONLY FOCUSABLE
+++++++++IA2_ROLE_HEADING name='Recommended Restaurants'
+++++++++++ROLE_SYSTEM_STATICTEXT name='Recommended Restaurants'
+++++++++IA2_ROLE_SECTION
+++++++++++ROLE_SYSTEM_GROUPING BUSY
+++++++++++++ROLE_SYSTEM_DOCUMENT name='Tito's Tacos' READONLY FOCUSABLE description-from:aria-describedby description='5 stars Mexican, Tacos 123 Blueberry Ln San Dimas, CA (111) 111-1111'
+++++++++++++++IA2_ROLE_SECTION
+++++++++++++++++IA2_ROLE_SECTION
+++++++++++++++++++ROLE_SYSTEM_STATICTEXT name='Tito's Tacos'
+++++++++++++++++IA2_ROLE_SECTION
+++++++++++++++++++ROLE_SYSTEM_GRAPHIC name='5 stars' READONLY
+++++++++++++++++IA2_ROLE_SECTION
+++++++++++++++++++ROLE_SYSTEM_STATICTEXT name='Mexican, Tacos'
+++++++++++++++IA2_ROLE_SECTION
+++++++++++++++++IA2_ROLE_SECTION
+++++++++++++++++++ROLE_SYSTEM_STATICTEXT name='123 Blueberry Ln'
+++++++++++++++++IA2_ROLE_SECTION
+++++++++++++++++++ROLE_SYSTEM_STATICTEXT name='San Dimas, CA'
+++++++++++++++++IA2_ROLE_SECTION
+++++++++++++++++++ROLE_SYSTEM_STATICTEXT name='(111) 111-1111'
+++++++++++++++IA2_ROLE_SECTION
+++++++++++++++++ROLE_SYSTEM_PUSHBUTTON name='Bookmark' FOCUSABLE
+++++++++++++ROLE_SYSTEM_DOCUMENT name='Sakura Sushi' READONLY FOCUSABLE description-from:aria-describedby description='4 stars Japanese, Fish, Sushi 123 Blueberry Ln Pomona, CA (111) 111-1111'
+++++++++++++++IA2_ROLE_SECTION
+++++++++++++++++IA2_ROLE_SECTION
+++++++++++++++++++ROLE_SYSTEM_STATICTEXT name='Sakura Sushi'
+++++++++++++++++IA2_ROLE_SECTION
+++++++++++++++++++ROLE_SYSTEM_GRAPHIC name='4 stars' READONLY
+++++++++++++++++IA2_ROLE_SECTION
+++++++++++++++++++ROLE_SYSTEM_STATICTEXT name='Japanese, Fish, Sushi'
+++++++++++++++IA2_ROLE_SECTION
+++++++++++++++++IA2_ROLE_SECTION
+++++++++++++++++++ROLE_SYSTEM_STATICTEXT name='123 Blueberry Ln'
+++++++++++++++++IA2_ROLE_SECTION
+++++++++++++++++++ROLE_SYSTEM_STATICTEXT name='Pomona, CA'
+++++++++++++++++IA2_ROLE_SECTION
+++++++++++++++++++ROLE_SYSTEM_STATICTEXT name='(111) 111-1111'
+++++++++++++++IA2_ROLE_SECTION
+++++++++++++++++ROLE_SYSTEM_PUSHBUTTON name='Bookmark' FOCUSABLE
+++++ROLE_SYSTEM_PUSHBUTTON name='Terms of use' FOCUSABLE

@@ -1,0 +1,76 @@
+rootWebArea name='Date Picker Combobox Example'
+++genericContainer ignored
+++++genericContainer
+++++++genericContainer
+++++++++genericContainer
+++++++++++genericContainer ignored
+++++++++++++labelText
+++++++++++++++staticText name='Date'
+++++++++++++++++inlineTextBox name='Date'
+++++++++++genericContainer
+++++++++++++textFieldWithComboBox collapsed description='(date format: mm/dd/yyyy)' name='Date' descriptionFrom=relatedElement
+++++++++++++++genericContainer
+++++++++++++genericContainer
+++++++++++++++staticText name='(date format: mm/dd/yyyy)'
+++++++++++++++++inlineTextBox name='(date format: mm/dd/yyyy)'
+++++++++++++button name='Choose Date'
+++++++++++heading ignored invisible
+++++++++++++staticText ignored invisible
+++++++++++grid ignored invisible
+++++++++++++row ignored invisible
+++++++++++++++columnHeader ignored invisible
+++++++++++++++columnHeader ignored invisible
+++++++++++++++columnHeader ignored invisible
+++++++++++++++columnHeader ignored invisible
+++++++++++++++columnHeader ignored invisible
+++++++++++++++columnHeader ignored invisible
+++++++++++++++columnHeader ignored invisible
+++++++++++++rowGroup ignored invisible
+++++++++++++++row ignored invisible
+++++++++++++++++cell ignored invisible
+++++++++++++++++cell ignored invisible
+++++++++++++++++cell ignored invisible
+++++++++++++++++cell ignored invisible
+++++++++++++++++cell ignored invisible
+++++++++++++++++cell ignored invisible
+++++++++++++++++cell ignored invisible
+++++++++++++++row ignored invisible
+++++++++++++++++cell ignored invisible
+++++++++++++++++cell ignored invisible
+++++++++++++++++cell ignored invisible
+++++++++++++++++cell ignored invisible
+++++++++++++++++cell ignored invisible
+++++++++++++++++cell ignored invisible
+++++++++++++++++cell ignored invisible
+++++++++++++++row ignored invisible
+++++++++++++++++cell ignored invisible
+++++++++++++++++cell ignored invisible
+++++++++++++++++cell ignored invisible
+++++++++++++++++cell ignored invisible
+++++++++++++++++cell ignored invisible
+++++++++++++++++cell ignored invisible
+++++++++++++++++cell ignored invisible
+++++++++++++++row ignored invisible
+++++++++++++++++cell ignored invisible
+++++++++++++++++cell ignored invisible
+++++++++++++++++cell ignored invisible
+++++++++++++++++cell ignored invisible
+++++++++++++++++cell ignored invisible
+++++++++++++++++cell ignored invisible
+++++++++++++++++cell ignored invisible
+++++++++++++++row ignored invisible
+++++++++++++++++cell ignored invisible
+++++++++++++++++cell ignored invisible
+++++++++++++++++cell ignored invisible
+++++++++++++++++cell ignored invisible
+++++++++++++++++cell ignored invisible
+++++++++++++++++cell ignored invisible
+++++++++++++++++cell ignored invisible
+++++++++++++++row ignored invisible
+++++++++++++++++cell ignored invisible
+++++++++++++++++cell ignored invisible
+++++++++++++++++cell ignored invisible
+++++++++++++++++cell ignored invisible
+++++++++++++++++cell ignored invisible
+++++++++++++++++cell ignored invisible
+++++++++++++++++cell ignored invisible

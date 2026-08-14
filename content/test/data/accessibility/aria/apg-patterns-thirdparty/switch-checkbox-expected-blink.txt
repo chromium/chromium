@@ -1,0 +1,30 @@
+rootWebArea name='Switch Example Using HTML Checkbox Input'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer
+++++++++group name='Accessibility Preferences'
+++++++++++legend
+++++++++++++staticText name='Accessibility Preferences'
+++++++++++++++inlineTextBox name='Accessibility Preferences'
+++++++++++labelText
+++++++++++++genericContainer
+++++++++++++++staticText name='Reduced motion'
+++++++++++++++++inlineTextBox name='Reduced motion'
+++++++++++++switch name='Reduced motion' checkedState=false
+++++++++++++genericContainer
+++++++++++++++genericContainer
+++++++++++++++genericContainer ignored invisible
+++++++++++++++++staticText ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++++++staticText ignored invisible
+++++++++++labelText
+++++++++++++genericContainer
+++++++++++++++staticText name='Show captions'
+++++++++++++++++inlineTextBox name='Show captions'
+++++++++++++switch name='Show captions' checkedState=false
+++++++++++++genericContainer
+++++++++++++++genericContainer
+++++++++++++++genericContainer ignored invisible
+++++++++++++++++staticText ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++++++staticText ignored invisible

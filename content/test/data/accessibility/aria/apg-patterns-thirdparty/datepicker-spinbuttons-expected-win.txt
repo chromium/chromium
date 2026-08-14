@@ -1,0 +1,20 @@
+ROLE_SYSTEM_DOCUMENT name='(Deprecated) Date Picker Spin Button Example' READONLY FOCUSABLE
+++IA2_ROLE_SECTION
+++++ROLE_SYSTEM_GROUPING name='Choose a Date current value is Thursday, May fifteenth, 2025'
+++++++IA2_ROLE_SECTION
+++++++++ROLE_SYSTEM_STATICTEXT name='Choose a Date'
+++++++ROLE_SYSTEM_PUSHBUTTON name='previous day' FOCUSABLE
+++++++++ROLE_SYSTEM_GRAPHIC READONLY
+++++++ROLE_SYSTEM_SPINBUTTON name='Day' value='fifteenth' FOCUSABLE
+++++++ROLE_SYSTEM_PUSHBUTTON name='next day' FOCUSABLE
+++++++++ROLE_SYSTEM_GRAPHIC READONLY
+++++++ROLE_SYSTEM_PUSHBUTTON name='previous month' FOCUSABLE
+++++++++ROLE_SYSTEM_GRAPHIC READONLY
+++++++ROLE_SYSTEM_SPINBUTTON name='Month' value='May' FOCUSABLE
+++++++ROLE_SYSTEM_PUSHBUTTON name='next month' FOCUSABLE
+++++++++ROLE_SYSTEM_GRAPHIC READONLY
+++++++ROLE_SYSTEM_PUSHBUTTON name='previous year' FOCUSABLE
+++++++++ROLE_SYSTEM_GRAPHIC READONLY
+++++++ROLE_SYSTEM_SPINBUTTON name='Year' value='2025' FOCUSABLE
+++++++ROLE_SYSTEM_PUSHBUTTON name='next year' FOCUSABLE
+++++++++ROLE_SYSTEM_GRAPHIC READONLY
