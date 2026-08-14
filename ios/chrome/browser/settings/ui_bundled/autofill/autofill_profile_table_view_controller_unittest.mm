@@ -22,6 +22,7 @@
 #import "components/autofill/core/browser/geo/alternative_state_name_map_updater.h"
 #import "components/autofill/core/browser/test_utils/entity_data_test_utils.h"
 #import "components/autofill/core/common/autofill_features.h"
+#import "components/autofill/core/common/autofill_prefs.h"
 #import "components/personal_context/core/mock_personal_context_eligibility_service.h"
 #import "components/personal_context/core/personal_context_prefs.h"
 #import "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
@@ -310,6 +311,63 @@ TEST_F(AutofillProfileTableViewControllerTest,
 
   NSString* text = l10n_util::GetNSString(IDS_SETTINGS_AUTOFILL_AI_PAGE_TITLE);
   EXPECT_NSEQ(text, item.text);
+}
+
+// Tests that when `kAutofillAiUsePrivateAi` is enabled, updating
+// `kAutofillAiPrivateInferenceOptInStatus` updates the Enhanced Autofill
+// item's detail text.
+TEST_F(AutofillProfileTableViewControllerTest, TestPrivateAiPrefChange) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{autofill::features::kAutofillAiUsePrivateAi,
+                            autofill::features::kAutofillAiWithDataSchema,
+                            autofill::features::kAutofillAiReauthRequired},
+      /*disabled_features=*/{});
+  SignIn();
+
+  // Set notice shown timestamp so that opt-in state can be true.
+  profile_->GetPrefs()->SetTime(
+      autofill::prefs::kAutofillAiPrivateInferenceNoticeShownTimestamp,
+      base::Time::Now());
+  profile_->GetPrefs()->SetBoolean(
+      autofill::prefs::kAutofillAiPrivateInferenceOptInStatus, true);
+
+  CreateController();
+  CheckController();
+
+  TableViewDetailIconItem* item =
+      base::apple::ObjCCastStrict<TableViewDetailIconItem>(
+          GetTableViewItem(/*section=*/1, /*item=*/0));
+  EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_SETTING_ON), item.detailText);
+
+  profile_->GetPrefs()->SetBoolean(
+      autofill::prefs::kAutofillAiPrivateInferenceOptInStatus, false);
+  EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_SETTING_OFF), item.detailText);
+}
+
+// Tests that when `kAutofillAiUsePrivateAi` is disabled, updating
+// the legacy `kAutofillAiOptInStatus` updates the Enhanced Autofill
+// item's detail text.
+TEST_F(AutofillProfileTableViewControllerTest, TestLegacyPrefChange) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{autofill::features::kAutofillAiWithDataSchema,
+                            autofill::features::kAutofillAiReauthRequired},
+      /*disabled_features=*/{autofill::features::kAutofillAiUsePrivateAi});
+  SignIn();
+
+  autofill::SetEnhancedAutofillEnabled(profile_.get(), true);
+
+  CreateController();
+  CheckController();
+
+  TableViewDetailIconItem* item =
+      base::apple::ObjCCastStrict<TableViewDetailIconItem>(
+          GetTableViewItem(/*section=*/1, /*item=*/0));
+  EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_SETTING_ON), item.detailText);
+
+  autofill::SetEnhancedAutofillEnabled(profile_.get(), false);
+  EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_SETTING_OFF), item.detailText);
 }
 
 // TODO(crbug.com/496456595): Alter this test once YourSavedInfoSettingsPageIos

@@ -352,7 +352,8 @@ ItemType ItemTypeForEntitySectionHeader(SectionIdentifier section_identifier) {
     // screen.
     if (!IsYourSavedInfoSettingsPageIosEnabled()) {
       _prefObserverBridge->ObserveChangesForPreference(
-          autofill::prefs::kAutofillAiOptInStatus, &_prefChangeRegistrar);
+          autofill::GetAutofillAiOptInPreferenceKeyName(),
+          &_prefChangeRegistrar);
       if (autofill::ShouldShowPersonalContextAutofillSetting(
               _browser->GetProfile())) {
         _prefObserverBridge->ObserveChangesForPreference(
@@ -1342,7 +1343,7 @@ ItemType ItemTypeForEntitySectionHeader(SectionIdentifier section_identifier) {
     return;
   }
 
-  if (preferenceName == autofill::prefs::kAutofillAiOptInStatus) {
+  if (preferenceName == autofill::GetAutofillAiOptInPreferenceKeyName()) {
     if (_enhancedAutofillItem) {
       [self configureEnhancedAutofillItem];
       [self reconfigureCellsForItems:@[ _enhancedAutofillItem ]];

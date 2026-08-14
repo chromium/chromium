@@ -74,7 +74,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     // Register to observe any changes on Pref-backed values displayed by the
     // screen.
     _prefObserverBridge->ObserveChangesForPreference(
-        autofill::prefs::kAutofillAiOptInStatus, &_prefChangeRegistrar);
+        autofill::GetAutofillAiOptInPreferenceKeyName(), &_prefChangeRegistrar);
   }
   return self;
 }
@@ -232,7 +232,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     return;
   }
 
-  if (preferenceName == autofill::prefs::kAutofillAiOptInStatus) {
+  if (preferenceName == autofill::GetAutofillAiOptInPreferenceKeyName()) {
     [self setSwitchItemOn:[self isEnhancedAutofillEnabled]
                  itemType:ItemTypeEnhancedAutofillSwitch];
   }

@@ -43,6 +43,10 @@ bool IsAutofillAtMemoryEnabled();
 // Returns whether Enhanced Autofill is enabled.
 bool IsEnhancedAutofillEnabled(ProfileIOS* profile);
 
+// Returns the preference name to use for checking the Autofill AI opt-in
+// status.
+const char* GetAutofillAiOptInPreferenceKeyName();
+
 // Returns whether the Personal Context Autofill setting should be shown.
 // Required to be called with a non-nil profile.
 bool ShouldShowPersonalContextAutofillSetting(ProfileIOS* profile);
