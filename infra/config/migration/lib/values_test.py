@@ -15,7 +15,6 @@ from lib import values
 
 
 class TestValueBuilder(values._CompoundValueBuilder):
-
   def __init__(self):
     super().__init__()
     self.entries: list[str] | None = None
@@ -35,7 +34,6 @@ class TestValueBuilder(values._CompoundValueBuilder):
 
 
 class ValueBuildersTest(unittest.TestCase):
-
   def test_empty_call_builder(self):
     builder = values.CallValueBuilder('func')
 
@@ -52,12 +50,12 @@ class ValueBuildersTest(unittest.TestCase):
     builder['bar'] = 'y'
 
     self.assertEqual(
-        textwrap.dedent("""\
+      textwrap.dedent("""\
             func(
               foo = x,
               bar = y,
             )"""),
-        builder.output(),
+      builder.output(),
     )
 
   def test_call_builder_with_initial_params(self):
@@ -83,17 +81,17 @@ class ValueBuildersTest(unittest.TestCase):
     builder['bar'] = 'y'
 
     self.assertEqual(
-        textwrap.dedent("""\
+      textwrap.dedent("""\
             func(
               bar = y,
             )"""),
-        builder.output(),
+      builder.output(),
     )
 
     test_value_builder.entries = ['x', 'z']
 
     self.assertEqual(
-        textwrap.dedent("""\
+      textwrap.dedent("""\
             func(
               foo = <
                 x,
@@ -101,25 +99,25 @@ class ValueBuildersTest(unittest.TestCase):
               >,
               bar = y,
             )"""),
-        builder.output(),
+      builder.output(),
     )
 
   def test_call_builder_elide_param(self):
     test_value_builder = TestValueBuilder()
     test_value_builder.entries = ['x', 'y']
     builder = values.CallValueBuilder(
-        'func',
-        {'foo': test_value_builder},
-        elide_param='foo',
+      'func',
+      {'foo': test_value_builder},
+      elide_param='foo',
     )
 
     self.assertEqual(
-        textwrap.dedent("""\
+      textwrap.dedent("""\
             <
               x,
               y,
             >"""),
-        builder.output(),
+      builder.output(),
     )
 
   def test_empty_dict_builder(self):
@@ -138,12 +136,12 @@ class ValueBuildersTest(unittest.TestCase):
     builder['bar'] = 'y'
 
     self.assertEqual(
-        textwrap.dedent("""\
+      textwrap.dedent("""\
             {
               foo: x,
               bar: y,
             }"""),
-        builder.output(),
+      builder.output(),
     )
 
   def test_dict_builder_with_initial_items(self):
@@ -169,17 +167,17 @@ class ValueBuildersTest(unittest.TestCase):
     builder['bar'] = 'y'
 
     self.assertEqual(
-        textwrap.dedent("""\
+      textwrap.dedent("""\
             {
               bar: y,
             }"""),
-        builder.output(),
+      builder.output(),
     )
 
     test_value_builder.entries = ['x', 'z']
 
     self.assertEqual(
-        textwrap.dedent("""\
+      textwrap.dedent("""\
             {
               foo: <
                 x,
@@ -187,7 +185,7 @@ class ValueBuildersTest(unittest.TestCase):
               >,
               bar: y,
             }"""),
-        builder.output(),
+      builder.output(),
     )
 
   def test_empty_list_builder(self):
@@ -206,12 +204,12 @@ class ValueBuildersTest(unittest.TestCase):
     builder.append('bar')
 
     self.assertEqual(
-        textwrap.dedent("""\
+      textwrap.dedent("""\
             [
               foo,
               bar,
             ]"""),
-        builder.output(),
+      builder.output(),
     )
 
   def test_list_builder_with_initial_elements(self):
@@ -237,17 +235,17 @@ class ValueBuildersTest(unittest.TestCase):
     builder.append('bar')
 
     self.assertEqual(
-        textwrap.dedent("""\
+      textwrap.dedent("""\
             [
               bar,
             ]"""),
-        builder.output(),
+      builder.output(),
     )
 
     test_value_builder.entries = ['foo', 'baz']
 
     self.assertEqual(
-        textwrap.dedent("""\
+      textwrap.dedent("""\
             [
               <
                 foo,
@@ -255,14 +253,14 @@ class ValueBuildersTest(unittest.TestCase):
               >,
               bar,
             ]"""),
-        builder.output(),
+      builder.output(),
     )
 
   def test_commented_value_with_string(self):
     value = values.CommentedValue('my_value', ['# comment 1', '# comment 2'])
     self.assertEqual(
-        '# comment 1\n# comment 2\nmy_value',
-        value.output(),
+      '# comment 1\n# comment 2\nmy_value',
+      value.output(),
     )
 
   def test_commented_value_with_value_builder(self):
@@ -270,13 +268,13 @@ class ValueBuildersTest(unittest.TestCase):
     test_value_builder.entries = ['x', 'y']
     value = values.CommentedValue(test_value_builder, ['# a comment'])
     self.assertEqual(
-        textwrap.dedent("""\
+      textwrap.dedent("""\
             # a comment
             <
               x,
               y,
             >"""),
-        value.output(),
+      value.output(),
     )
 
   def test_commented_value_with_empty_value_builder(self):
@@ -285,42 +283,44 @@ class ValueBuildersTest(unittest.TestCase):
     self.assertIsNone(value.output())
 
   def test_list_builder_with_commented_value(self):
-    builder = values.ListValueBuilder([
+    builder = values.ListValueBuilder(
+      [
         values.CommentedValue('foo', ['# comment']),
         'bar',
-    ])
+      ]
+    )
     self.assertEqual(
-        textwrap.dedent("""\
+      textwrap.dedent("""\
             [
               # comment
               foo,
               bar,
             ]"""),
-        builder.output(),
+      builder.output(),
     )
 
   def test_dict_builder_with_comments(self):
     key = values.CommentedValue("'foo'", ['# key comment'])
     builder = values.DictValueBuilder({key: 'x'})
     self.assertEqual(
-        textwrap.dedent("""\
+      textwrap.dedent("""\
             {
               # key comment
               'foo': x,
             }"""),
-        builder.output(),
+      builder.output(),
     )
 
   def test_call_builder_with_comments(self):
     key = values.CommentedValue('foo', ['# name comment'])
     builder = values.CallValueBuilder('func', {key: 'x'})
     self.assertEqual(
-        textwrap.dedent("""\
+      textwrap.dedent("""\
             func(
               # name comment
               foo = x,
             )"""),
-        builder.output(),
+      builder.output(),
     )
 
 

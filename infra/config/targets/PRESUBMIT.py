@@ -29,17 +29,18 @@ def CheckBundlesOrder(input_api, output_api):
   sorted_names = sorted(names)
   if names != sorted_names:
     diff = difflib.unified_diff(
-        [n + '\n' for n in sorted_names],
-        [n + '\n' for n in names],
-        fromfile='bundles.star (sorted)',
-        tofile='bundles.star',
-        lineterm='\n',
+      [n + '\n' for n in sorted_names],
+      [n + '\n' for n in names],
+      fromfile='bundles.star (sorted)',
+      tofile='bundles.star',
+      lineterm='\n',
     )
     error_message = (
-        'targets.bundle name are not sorted.\n' + ''.join(diff) + '\n'
-        'For googlers: please run /google/bin/releases/keep-sorted/keep-sorted '
-        f'{bundles_file} to sort it locally.\n'
-        'Or use the automatic fix provided by the Keep Sorted analyzer.')
+      'targets.bundle name are not sorted.\n' + ''.join(diff) + '\n'
+      'For googlers: please run /google/bin/releases/keep-sorted/keep-sorted '
+      f'{bundles_file} to sort it locally.\n'
+      'Or use the automatic fix provided by the Keep Sorted analyzer.'
+    )
 
     if input_api.is_committing:
       return [output_api.PresubmitError(error_message)]
@@ -51,11 +52,13 @@ def CheckBundlesOrder(input_api, output_api):
 def CheckLucicfgLint(input_api, output_api):
   """Checks if infra/config/targets/*.star files have lint issue or not."""
   d = input_api.PresubmitLocalPath()
-  return input_api.RunTests([
+  return input_api.RunTests(
+    [
       input_api.Command(
-          name=f'lucicfg lint {d}',
-          cmd=['lucicfg', 'lint', d],
-          kwargs={},
-          message=output_api.PresubmitError,
+        name=f'lucicfg lint {d}',
+        cmd=['lucicfg', 'lint', d],
+        kwargs={},
+        message=output_api.PresubmitError,
       )
-  ])
+    ]
+  )

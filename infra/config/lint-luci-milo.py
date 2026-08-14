@@ -12,8 +12,7 @@ import sys
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 SRC_ROOT = os.path.join(THIS_DIR, '..', '..')
-sys.path.insert(1, os.path.join(
-    SRC_ROOT, "third_party", "protobuf", "python"))
+sys.path.insert(1, os.path.join(SRC_ROOT, "third_party", "protobuf", "python"))
 
 import google.protobuf.text_format
 import project_pb2
@@ -39,18 +38,22 @@ def compare_builders(name, main_builders, sub_builders):
       desc_list.append('category: ' + category)
       desc_list.append('short_name: ' + builder.short_name)
     return desc_list
+
   main_desc = to_list(main_builders)
   sub_desc = to_list(sub_builders, name)
 
   if main_desc != sub_desc:
-    print('bot lists different between main waterfall ' +
-          'and stand-alone %s waterfall:' % name)
-    print('\n'.join(
-        difflib.unified_diff(main_desc,
-                             sub_desc,
-                             fromfile='main',
-                             tofile=name,
-                             lineterm='')))
+    print(
+      'bot lists different between main waterfall '
+      + 'and stand-alone %s waterfall:' % name
+    )
+    print(
+      '\n'.join(
+        difflib.unified_diff(
+          main_desc, sub_desc, fromfile='main', tofile=name, lineterm=''
+        )
+      )
+    )
     print('')
     return False
   return True
@@ -58,10 +61,12 @@ def compare_builders(name, main_builders, sub_builders):
 
 def main():
   project = project_pb2.Project()
-  with open(os.path.join(THIS_DIR, 'generated', 'luci', 'luci-milo.cfg'),
-            'rb') as f:
-    google.protobuf.text_format.Parse(f.read(), project,
-                                      allow_unknown_field=True)
+  with open(
+    os.path.join(THIS_DIR, 'generated', 'luci', 'luci-milo.cfg'), 'rb'
+  ) as f:
+    google.protobuf.text_format.Parse(
+      f.read(), project, allow_unknown_field=True
+    )
 
   # Maps subwaterfall name to list of builders on that subwaterfall
   # on the main waterfall.
@@ -77,8 +82,8 @@ def main():
   # Check that every referenced subwaterfall has its own console, unless it's
   # explicitly excluded below.
   excluded_names = [
-      # This is the chrome console in src-internal.
-      'chrome',
+    # This is the chrome console in src-internal.
+    'chrome',
   ]
   all_console_names = [console.id for console in project.consoles]
   referenced_names = set(subwaterfalls.keys())
@@ -92,8 +97,9 @@ def main():
   all_good = True
   for console in project.consoles:
     if console.id in subwaterfalls:
-      if not compare_builders(console.id, subwaterfalls[console.id],
-                              console.builders):
+      if not compare_builders(
+        console.id, subwaterfalls[console.id], console.builders
+      ):
         all_good = False
   return 0 if all_good else 1
 

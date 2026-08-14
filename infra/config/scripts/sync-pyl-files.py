@@ -22,9 +22,11 @@ import sys
 
 INFRA_CONFIG_DIR = os.path.abspath(f'{__file__}/../..')
 TESTING_BUILDBOT_DIR = os.path.normpath(
-    f'{INFRA_CONFIG_DIR}/../../testing/buildbot')
+  f'{INFRA_CONFIG_DIR}/../../testing/buildbot'
+)
 GENERATED_TESTING_DIR = os.path.normpath(
-    f'{INFRA_CONFIG_DIR}/generated/testing')
+  f'{INFRA_CONFIG_DIR}/generated/testing'
+)
 
 
 def copy_file(src, dst):
@@ -32,32 +34,40 @@ def copy_file(src, dst):
   return None
 
 
-_DOC_LINK = ('https://chromium.googlesource.com/chromium/src'
-             '/+/HEAD/infra/config/targets#tests-in-starlark')
+_DOC_LINK = (
+  'https://chromium.googlesource.com/chromium/src'
+  '/+/HEAD/infra/config/targets#tests-in-starlark'
+)
 
 
 def check_file(src, dst):
   if os.path.exists(dst) and filecmp.cmp(src, dst):
     return None
-  return ('files in //testing/buildbot differ from those in'
-          f' //infra/config/generated/testing, see {_DOC_LINK} for information'
-          ' on the process for updating pyl files')
+  return (
+    'files in //testing/buildbot differ from those in'
+    f' //infra/config/generated/testing, see {_DOC_LINK} for information'
+    ' on the process for updating pyl files'
+  )
 
 
 def parse_args(argv):
   parser = argparse.ArgumentParser()
   parser.set_defaults(func=copy_file)
-  parser.add_argument('--check',
-                      help='check that files are synced',
-                      action='store_const',
-                      dest='func',
-                      const=check_file)
+  parser.add_argument(
+    '--check',
+    help='check that files are synced',
+    action='store_const',
+    dest='func',
+    const=check_file,
+  )
   return parser.parse_args(argv)
 
 
 def main(args):
-  error = args.func(os.path.normpath(f'{GENERATED_TESTING_DIR}/mixins.pyl'),
-                    os.path.normpath(f'{TESTING_BUILDBOT_DIR}/mixins.pyl'))
+  error = args.func(
+    os.path.normpath(f'{GENERATED_TESTING_DIR}/mixins.pyl'),
+    os.path.normpath(f'{TESTING_BUILDBOT_DIR}/mixins.pyl'),
+  )
   if error is not None:
     print(error, file=sys.stderr)
     return 1

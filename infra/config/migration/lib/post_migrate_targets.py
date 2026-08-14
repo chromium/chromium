@@ -11,7 +11,7 @@ from . import values
 
 
 def convert_basic_suite(
-    suite: pyl.Dict[pyl.Str, pyl.Dict[pyl.Str, pyl.Value]],
+  suite: pyl.Dict[pyl.Str, pyl.Dict[pyl.Str, pyl.Value]],
 ) -> dict[str, str | None]:
   """Convert a basic suite definition to a bundle.
 
@@ -34,46 +34,62 @@ def convert_basic_suite(
     anonymous_mixin_builder = values.CallValueBuilder('targets.mixin')
     mixins_builder = None
     modifications_builder = values.CallValueBuilder(
-        'targets.per_test_modification',
-        elide_param='mixins',
+      'targets.per_test_modification',
+      elide_param='mixins',
     )
 
     per_test_modifications_builder[converted_test_name] = modifications_builder
 
     for key, value in test.items:
       match key.value:
-      # These keys are actually filled in by the declaration of the test in
-      # starlark, so can't/shouldn't be part of the bundle definition
-        case ('results_handler' | 'script' | 'telemetry_test_name' | 'test'
-              | 'test_common'):
+        # These keys are actually filled in by the declaration of the test in
+        # starlark, so can't/shouldn't be part of the bundle definition
+        case (
+          'results_handler'
+          | 'script'
+          | 'telemetry_test_name'
+          | 'test'
+          | 'test_common'
+        ):
           pass
 
         case 'ci_only' | 'experiment_percentage' | 'use_isolated_scripts_api':
           converted_value = starlark_conversions.convert_direct(value)
           converted_value = comments.ensure_no_comments(
-              value, converted_value, message=f'on value for "{key.value}"')
+            value, converted_value, message=f'on value for "{key.value}"'
+          )
           anonymous_mixin_builder[key.value] = converted_value
 
-        case ('android_args' | 'chromeos_args' | 'desktop_args' | 'args'
-              | 'lacros_args' | 'linux_args'):
+        case (
+          'android_args'
+          | 'chromeos_args'
+          | 'desktop_args'
+          | 'args'
+          | 'lacros_args'
+          | 'linux_args'
+        ):
           value = typing.cast(pyl.List[pyl.Str], value)
           anonymous_mixin_builder[key.value] = (
-              starlark_conversions.convert_args(value))
+            starlark_conversions.convert_args(value)
+          )
 
         case 'resultdb':
           value = typing.cast(pyl.Dict[pyl.Str, pyl.Value], value)
           anonymous_mixin_builder['resultdb'] = (
-              starlark_conversions.convert_resultdb(value))
+            starlark_conversions.convert_resultdb(value)
+          )
 
         case 'android_swarming' | 'chromeos_swarming' | 'swarming':
           value = typing.cast(pyl.Dict[pyl.Str, pyl.Value], value)
           anonymous_mixin_builder[key.value] = (
-              starlark_conversions.convert_swarming(value))
+            starlark_conversions.convert_swarming(value)
+          )
 
         case 'skylab':
           value = typing.cast(pyl.Dict[pyl.Str, pyl.Value], value)
           anonymous_mixin_builder[key.value] = (
-              starlark_conversions.convert_skylab(value))
+            starlark_conversions.convert_skylab(value)
+          )
 
         case 'mixins':
           value = typing.cast(pyl.List[pyl.Str], value)
@@ -87,23 +103,23 @@ def convert_basic_suite(
           # of the generated test_suites.pyl if a pyl entry isn't generated for
           # the mixin, so ensure the remove_mixins gets checked to include all
           # of the elements
-          remove_mixins_builder = values.ListValueBuilder([
-              f'"DO{""} NOT SUBMIT ensure all remove mixins values are present"'
-          ])
+          remove_mixins_builder = values.ListValueBuilder(
+            [f'"DO{""} NOT SUBMIT ensure all remove mixins values are present"']
+          )
           modifications_builder['remove_mixins'] = remove_mixins_builder
           for m in value.elements:
             remove_mixins_builder.append(starlark_conversions.convert_direct(m))
 
         case _:
           raise Exception(
-              f'{key.start}: unhandled key in basic suite test definition: "{key.value}"'
+            f'{key.start}: unhandled key in basic suite test definition: "{key.value}"'
           )
 
     modifications_builder['mixins'] = mixins_builder or anonymous_mixin_builder
 
   return {
-      'targets': targets_builder.output(),
-      'per_test_modifications': per_test_modifications_builder.output(),
+    'targets': targets_builder.output(),
+    'per_test_modifications': per_test_modifications_builder.output(),
   }
 
 
@@ -120,12 +136,12 @@ def convert_compound_suite(suite: pyl.List[pyl.Str]) -> dict[str, str | None]:
     the string representation of the parameter values.
   """
   return {
-      'targets': values.to_output(starlark_conversions.convert_direct(suite))
+    'targets': values.to_output(starlark_conversions.convert_direct(suite))
   }
 
 
 def convert_matrix_compound_suite(
-    suite: pyl.Dict[pyl.Str, pyl.Dict[pyl.Str, pyl.Dict[pyl.Str, pyl.Value]]],
+  suite: pyl.Dict[pyl.Str, pyl.Dict[pyl.Str, pyl.Dict[pyl.Str, pyl.Value]]],
 ) -> dict[str, str | None]:
   """Convert a matrix compound suite definition to a bundle.
 
@@ -146,24 +162,28 @@ def convert_matrix_compound_suite(
       targets_builder.append(starlark_conversions.convert_direct(suite_name))
     else:
       bundle_builder = values.CallValueBuilder(
-          'targets.bundle',
-          {
-              comments.comment(suite_name, 'targets'):
-              starlark_conversions.convert_direct(suite_name,
-                                                  include_comments=False)
-          },
+        'targets.bundle',
+        {
+          comments.comment(
+            suite_name, 'targets'
+          ): starlark_conversions.convert_direct(
+            suite_name, include_comments=False
+          )
+        },
       )
       for key, value in matrix_config.items:
         match key.value:
           case 'mixins' | 'variants':
             converted_value = starlark_conversions.convert_direct(value)
             converted_value = comments.ensure_no_comments(
-                value, converted_value, message=f'on value for "{key.value}')
+              value, converted_value, message=f'on value for "{key.value}'
+            )
             bundle_builder[key.value] = converted_value
 
           case _:
             raise Exception(
-                f'{key.start}: unhandled key in matrix config: "{key.value}"')
+              f'{key.start}: unhandled key in matrix config: "{key.value}"'
+            )
       targets_builder.append(bundle_builder)
 
   return {'targets': targets_builder.output()}

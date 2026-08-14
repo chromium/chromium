@@ -14,32 +14,33 @@ T = typing.TypeVar('T', bound=values.Value)
 def comment(value: pyl.Value, converted: T) -> values.MaybeCommentedValue[T]:
   if value.comments:
     return values.CommentedValue(
-        converted, [comment.comment for comment in value.comments])
+      converted, [comment.comment for comment in value.comments]
+    )
   return converted
 
 
 @typing.overload
 def ensure_no_comments(
-    value: pyl.Value,
-    converted: values.CommentedValue,
-    *,
-    message: str | None = None,
-) -> typing.Never:
-  ...
+  value: pyl.Value,
+  converted: values.CommentedValue,
+  *,
+  message: str | None = None,
+) -> typing.Never: ...
 
 
 @typing.overload
 def ensure_no_comments(
-    value: pyl.Value,
-    converted: T,
-    *,
-    message: str | None = None,
-) -> T:
-  ...
+  value: pyl.Value,
+  converted: T,
+  *,
+  message: str | None = None,
+) -> T: ...
 
 
 def ensure_no_comments(value, converted, *, message=None):
-  assert not value.comments, (f'{value.comments[0].start} unexpected comment'
-                              f'{" " + message if message else ""}')
+  assert not value.comments, (
+    f'{value.comments[0].start} unexpected comment'
+    f'{" " + message if message else ""}'
+  )
   assert not isinstance(converted, values.CommentedValue)
   return converted

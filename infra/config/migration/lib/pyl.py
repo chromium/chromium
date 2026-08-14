@@ -81,6 +81,7 @@ import typing
 
 class UnhandledParseError(Exception):
   """An error raised during parsing."""
+
   pass
 
 
@@ -262,9 +263,9 @@ class _TokenStream:
     return cls(file, tokenize.generate_tokens(io.StringIO(source).readline))
 
   def __init__(
-      self,
-      file: str | os.PathLike,
-      tokens: collections.abc.Iterable[tokenize.TokenInfo],
+    self,
+    file: str | os.PathLike,
+    tokens: collections.abc.Iterable[tokenize.TokenInfo],
   ):
     self._file = file
     self._tokens = map(self._token, tokens)
@@ -272,11 +273,11 @@ class _TokenStream:
 
   def _token(self, token: tokenize.TokenInfo) -> _Token:
     return _Token(
-        type=token.exact_type,
-        start=Loc(file=self._file, line=token.start[0], column=token.start[1]),
-        end=Loc(file=self._file, line=token.end[0], column=token.end[1]),
-        string=token.string,
-        line=token.line,
+      type=token.exact_type,
+      start=Loc(file=self._file, line=token.start[0], column=token.start[1]),
+      end=Loc(file=self._file, line=token.end[0], column=token.end[1]),
+      string=token.string,
+      line=token.line,
     )
 
   def current(self) -> _Token:
@@ -320,13 +321,15 @@ class _TokenStream:
     """
     start = self._current_token.start
     end = self._current_token.end
-    return (f'{start}: {message}, got {self._current_token.type_name}\n'
-            f'{self._current_token.line}\n'
-            f'{" " * (start.column)}{"^" * (end.column - start.column)}')
+    return (
+      f'{start}: {message}, got {self._current_token.type_name}\n'
+      f'{self._current_token.line}\n'
+      f'{" " * (start.column)}{"^" * (end.column - start.column)}'
+    )
 
   def require(
-      self,
-      token_type: _TokenType | collections.abc.Collection[_TokenType],
+    self,
+    token_type: _TokenType | collections.abc.Collection[_TokenType],
   ) -> None:
     """Enforce the current token's type.
 
@@ -352,8 +355,8 @@ class _TokenStream:
     raise UnhandledParseError(message)
 
   def consume(
-      self,
-      token_type: _TokenType | collections.abc.Collection[_TokenType],
+    self,
+    token_type: _TokenType | collections.abc.Collection[_TokenType],
   ) -> _Token:
     """Enforce the current token's type and advance the stream.
 
@@ -375,8 +378,8 @@ class _TokenStream:
     return ret
 
   def consume_if(
-      self,
-      token_type: _TokenType | collections.abc.Collection[_TokenType],
+    self,
+    token_type: _TokenType | collections.abc.Collection[_TokenType],
   ) -> _Token | None:
     """Advance the stream if the current token has expected type(s).
 
@@ -408,20 +411,21 @@ class _TokenStream:
 def _parse_comment(token_stream: _TokenStream) -> Comment:
   comment_token = token_stream.consume(tokenize.COMMENT)
   return Comment(
-      comment=comment_token.string,
-      start=comment_token.start,
-      end=comment_token.end,
+    comment=comment_token.string,
+    start=comment_token.start,
+    end=comment_token.end,
   )
 
 
 def _add_end_of_line_comment_if_present(
-    token_stream: _TokenStream,
-    value: Value,
+  token_stream: _TokenStream,
+  value: Value,
 ) -> Value:
   if token_stream.current().type != tokenize.COMMENT:
     return value
-  return dataclasses.replace(value,
-                             end_of_line_comment=_parse_comment(token_stream))
+  return dataclasses.replace(
+    value, end_of_line_comment=_parse_comment(token_stream)
+  )
 
 
 _CONSTANT_TOKEN_TYPES = (tokenize.STRING, tokenize.NUMBER, tokenize.NAME)
@@ -433,28 +437,30 @@ def _parse_constant(token_stream: _TokenStream) -> Constant:
   match token.type:
     case tokenize.STRING:
       return Str(
-          value=ast.literal_eval(token.string),
-          start=token.start,
-          end=token.end,
+        value=ast.literal_eval(token.string),
+        start=token.start,
+        end=token.end,
       )
     case tokenize.NUMBER:
       return Int(
-          value=ast.literal_eval(token.string),
-          start=token.start,
-          end=token.end,
+        value=ast.literal_eval(token.string),
+        start=token.start,
+        end=token.end,
       )
     case tokenize.NAME:
-      assert token.string in _ALLOWED_NAMES, f'got unexpected name {token.string}'
+      assert token.string in _ALLOWED_NAMES, (
+        f'got unexpected name {token.string}'
+      )
       if token.string == 'None':
         return None_(
-            value=None,
-            start=token.start,
-            end=token.end,
-        )
-      return Bool(
-          value=token.string == 'True',
+          value=None,
           start=token.start,
           end=token.end,
+        )
+      return Bool(
+        value=token.string == 'True',
+        start=token.start,
+        end=token.end,
       )
   assert False, "unreachable"  # pragma: no cover
 
@@ -481,11 +487,11 @@ def _parse_dict(token_stream: _TokenStream) -> Dict:
       case tokenize.RBRACE:
         token_stream.advance()
         return Dict(
-            items=tuple(items),
-            start=lbrace_token.start,
-            end=token.end,
-            opening_comment=opening_comment,
-            trailing_comments=tuple(item_comments),
+          items=tuple(items),
+          start=lbrace_token.start,
+          end=token.end,
+          opening_comment=opening_comment,
+          trailing_comments=tuple(item_comments),
         )
 
       case _ if token.type in _CONSTANT_TOKEN_TYPES:
@@ -499,7 +505,8 @@ def _parse_dict(token_stream: _TokenStream) -> Dict:
 
       case _:
         message = token_stream.token_error_message(
-            'unexpected token type while parsing dict')
+          'unexpected token type while parsing dict'
+        )
         raise UnhandledParseError(message)
 
 
@@ -525,11 +532,11 @@ def _parse_list(token_stream: _TokenStream) -> List:
       case tokenize.RSQB:
         token_stream.advance()
         return List(
-            elements=tuple(elements),
-            start=lsqb_token.start,
-            end=token.end,
-            opening_comment=opening_comment,
-            trailing_comments=tuple(element_comments),
+          elements=tuple(elements),
+          start=lsqb_token.start,
+          end=token.end,
+          opening_comment=opening_comment,
+          trailing_comments=tuple(element_comments),
         )
 
       case _ if token.type in _VALUE_PARSERS:
@@ -541,23 +548,21 @@ def _parse_list(token_stream: _TokenStream) -> List:
 
       case _:
         message = token_stream.token_error_message(
-            'unexpected token type while parsing list')
+          'unexpected token type while parsing list'
+        )
         raise UnhandledParseError(message)
 
 
 _VALUE_PARSERS = {
-    tokenize.LBRACE: _parse_dict,
-    tokenize.LSQB: _parse_list,
-} | {
-    token_type: _parse_constant
-    for token_type in _CONSTANT_TOKEN_TYPES
-}
+  tokenize.LBRACE: _parse_dict,
+  tokenize.LSQB: _parse_list,
+} | {token_type: _parse_constant for token_type in _CONSTANT_TOKEN_TYPES}
 
 
 def _parse_value(
-    token_stream: _TokenStream,
-    *,
-    comments: collections.abc.Iterable[Comment] = (),
+  token_stream: _TokenStream,
+  *,
+  comments: collections.abc.Iterable[Comment] = (),
 ) -> Value:
   token_stream.require(_VALUE_PARSERS.keys())
   value_parser = _VALUE_PARSERS[token_stream.current().type]
@@ -585,13 +590,14 @@ def _parse_file(token_stream: _TokenStream) -> collections.abc.Iterable[Node]:
 
       case _:
         message = token_stream.token_error_message(
-            'unexpected token type at file scope')
+          'unexpected token type at file scope'
+        )
         raise UnhandledParseError(message)
 
 
 def parse(
-    file: str | os.PathLike,
-    source: str,
+  file: str | os.PathLike,
+  source: str,
 ) -> collections.abc.Iterable[Node]:
   """Parse a pyl file.
 

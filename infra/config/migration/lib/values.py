@@ -68,7 +68,6 @@ import collections.abc
 import typing
 
 
-
 class ValueBuilder(abc.ABC):
   """An object that potentially builds a value for starlark output.
 
@@ -223,8 +222,8 @@ class _CompoundValueBuilder(ValueBuilder):
 
   @staticmethod
   def _get_output_stream_for_contained_value(
-      contained_value: Value | CommentedValue,
-      indent: str,
+    contained_value: Value | CommentedValue,
+    indent: str,
   ) -> typing.Iterable[str] | None:
     """Get the text of a value.
 
@@ -253,12 +252,14 @@ class CallValueBuilder(_CompoundValueBuilder):
 
   ParamName: typing.TypeAlias = MaybeCommentedValue[str]
 
-  def __init__(self,
-               function: str,
-               params: collections.abc.Mapping[ParamName, Value] | None = None,
-               *,
-               elide_param: str | None = None,
-               **kwargs):
+  def __init__(
+    self,
+    function: str,
+    params: collections.abc.Mapping[ParamName, Value] | None = None,
+    *,
+    elide_param: str | None = None,
+    **kwargs,
+  ):
     """Initialize the CallValueBuilder.
 
     Args:
@@ -288,13 +289,16 @@ class CallValueBuilder(_CompoundValueBuilder):
     param_output_streams = {}
     for param_name, param_value in self._params.items():
       output_stream = self._get_output_stream_for_contained_value(
-          param_value, indent)
+        param_value, indent
+      )
       if output_stream is not None:
         param_output_streams[param_name] = output_stream
 
-    if (self._elide_param is not None
-        and self._elide_param in param_output_streams
-        and len(param_output_streams) == 1):
+    if (
+      self._elide_param is not None
+      and self._elide_param in param_output_streams
+      and len(param_output_streams) == 1
+    ):
       return param_output_streams[self._elide_param]
 
     return super()._output_stream(indent)
@@ -303,7 +307,8 @@ class CallValueBuilder(_CompoundValueBuilder):
     param_output_streams = {}
     for param_name, param_value in self._params.items():
       output_stream = self._get_output_stream_for_contained_value(
-          param_value, indent)
+        param_value, indent
+      )
       if output_stream is not None:
         param_output_streams[param_name] = output_stream
 
@@ -332,9 +337,9 @@ class DictValueBuilder(_CompoundValueBuilder):
 
   Key: typing.TypeAlias = MaybeCommentedValue[str]
 
-  def __init__(self,
-               items: collections.abc.Mapping[Key, Value] | None = None,
-               **kwargs):
+  def __init__(
+    self, items: collections.abc.Mapping[Key, Value] | None = None, **kwargs
+  ):
     """Initialize the CallValueBuilder.
 
     Args:
@@ -390,10 +395,10 @@ class ListValueBuilder(_CompoundValueBuilder):
   Element: typing.TypeAlias = MaybeCommentedValue[Value]
 
   def __init__(
-      self,
-      elements: collections.abc.Iterable[MaybeCommentedValue[Value]]
-      | None = None,
-      **kwargs,
+    self,
+    elements: collections.abc.Iterable[MaybeCommentedValue[Value]]
+    | None = None,
+    **kwargs,
   ):
     """Initialize the ListValueBuilder.
 
@@ -421,7 +426,8 @@ class ListValueBuilder(_CompoundValueBuilder):
     element_output_streams = []
     for element in self._elements:
       output_stream = self._get_output_stream_for_contained_value(
-          element, indent)
+        element, indent
+      )
       if output_stream is not None:
         element_output_streams.append(output_stream)
 

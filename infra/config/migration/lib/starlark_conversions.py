@@ -10,18 +10,15 @@ from . import pyl
 from . import values
 
 _MAGIC_ARG_MAPPING = {
-    '$$MAGIC_SUBSTITUTION_AndroidDesktopGtestRemote':
-    'ANDROID_DESKTOP_GTEST_REMOTE',
-    '$$MAGIC_SUBSTITUTION_AndroidDesktopTelemetryRemote':
-    'ANDROID_DESKTOP_TELEMETRY_REMOTE',
-    '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote': 'CROS_TELEMETRY_REMOTE',
-    '$$MAGIC_SUBSTITUTION_ChromeOSGtestFilterFile': 'CROS_GTEST_FILTER_FILE',
-    '$$MAGIC_SUBSTITUTION_GPUExpectedVendorId': 'GPU_EXPECTED_VENDOR_ID',
-    '$$MAGIC_SUBSTITUTION_GPUExpectedDeviceId': 'GPU_EXPECTED_DEVICE_ID',
-    '$$MAGIC_SUBSTITUTION_GPUParallelJobs': 'GPU_PARALLEL_JOBS',
-    '$$MAGIC_SUBSTITUTION_GPUTelemetryNoRootForUnrootedDevices':
-    'GPU_TELEMETRY_NO_ROOT_FOR_UNROOTED_DEVICES',
-    '$$MAGIC_SUBSTITUTION_GPUWebGLRuntimeFile': 'GPU_WEBGL_RUNTIME_FILE',
+  '$$MAGIC_SUBSTITUTION_AndroidDesktopGtestRemote': 'ANDROID_DESKTOP_GTEST_REMOTE',
+  '$$MAGIC_SUBSTITUTION_AndroidDesktopTelemetryRemote': 'ANDROID_DESKTOP_TELEMETRY_REMOTE',
+  '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote': 'CROS_TELEMETRY_REMOTE',
+  '$$MAGIC_SUBSTITUTION_ChromeOSGtestFilterFile': 'CROS_GTEST_FILTER_FILE',
+  '$$MAGIC_SUBSTITUTION_GPUExpectedVendorId': 'GPU_EXPECTED_VENDOR_ID',
+  '$$MAGIC_SUBSTITUTION_GPUExpectedDeviceId': 'GPU_EXPECTED_DEVICE_ID',
+  '$$MAGIC_SUBSTITUTION_GPUParallelJobs': 'GPU_PARALLEL_JOBS',
+  '$$MAGIC_SUBSTITUTION_GPUTelemetryNoRootForUnrootedDevices': 'GPU_TELEMETRY_NO_ROOT_FOR_UNROOTED_DEVICES',
+  '$$MAGIC_SUBSTITUTION_GPUWebGLRuntimeFile': 'GPU_WEBGL_RUNTIME_FILE',
 }
 
 
@@ -36,7 +33,8 @@ def convert_arg(arg: pyl.Str) -> values.MaybeCommentedValue[str]:
   arg_value = typing.cast(str, arg.value)
   if arg_value.startswith('$$MAGIC_SUBSTITUTION_'):
     return comments.comment(
-        arg, f'targets.magic_args.{_MAGIC_ARG_MAPPING[arg_value]}')
+      arg, f'targets.magic_args.{_MAGIC_ARG_MAPPING[arg_value]}'
+    )
   return convert_direct(arg)
 
 
@@ -53,38 +51,34 @@ def convert_args(args: pyl.List[pyl.Str]) -> values.Value:
 
 @typing.overload
 def convert_direct(
-    value: pyl.Constant,
-    *,
-    include_comments: typing.Literal[False],
-) -> str:
-  ...  # pragma: no cover
+  value: pyl.Constant,
+  *,
+  include_comments: typing.Literal[False],
+) -> str: ...  # pragma: no cover
 
 
 @typing.overload
 def convert_direct(
-    value: pyl.Constant,
-    *,
-    include_comments: bool = True,
-) -> values.MaybeCommentedValue[str]:
-  ...  # pragma: no cover
+  value: pyl.Constant,
+  *,
+  include_comments: bool = True,
+) -> values.MaybeCommentedValue[str]: ...  # pragma: no cover
 
 
 @typing.overload
 def convert_direct(
-    value: pyl.Value,
-    *,
-    include_comments: typing.Literal[False],
-) -> values.Value:
-  ...  # pragma: no cover
+  value: pyl.Value,
+  *,
+  include_comments: typing.Literal[False],
+) -> values.Value: ...  # pragma: no cover
 
 
 @typing.overload
 def convert_direct(
-    value: pyl.Value,
-    *,
-    include_comments: bool = True,
-) -> values.MaybeCommentedValue[values.Value]:
-  ...  # pragma: no cover
+  value: pyl.Value,
+  *,
+  include_comments: bool = True,
+) -> values.MaybeCommentedValue[values.Value]: ...  # pragma: no cover
 
 
 def convert_direct(value, *, include_comments=True):
@@ -107,25 +101,32 @@ def convert_direct(value, *, include_comments=True):
       return maybe_comment('"{}"'.format(value.value.replace("\"", "\\\"")))
     case pyl.List():
       return maybe_comment(
-          typing.cast(
-              values.Value,
-              values.ListValueBuilder(
-                  [convert_direct(e) for e in value.elements])))
-    case pyl.Dict():  # pragma: no branch
-      return maybe_comment(converted=typing.cast(
+        typing.cast(
           values.Value,
-          values.DictValueBuilder({
-              typing.cast(str, convert_direct(k)):
-              comments.ensure_no_comments(v, convert_direct(v))
+          values.ListValueBuilder([convert_direct(e) for e in value.elements]),
+        )
+      )
+    case pyl.Dict():  # pragma: no branch
+      return maybe_comment(
+        converted=typing.cast(
+          values.Value,
+          values.DictValueBuilder(
+            {
+              typing.cast(str, convert_direct(k)): comments.ensure_no_comments(
+                v, convert_direct(v)
+              )
               for k, v in value.items
-          })))
+            }
+          ),
+        )
+      )
   typing.assert_never(value)  # pragma: no cover
 
 
 def param_name(
-    key: pyl.Str,
-    *,
-    remap_to: str | None = None,
+  key: pyl.Str,
+  *,
+  remap_to: str | None = None,
 ) -> values.MaybeCommentedValue[str]:
   """Convert a pyl dict key to a starlark parameter name.
 
@@ -150,11 +151,13 @@ def convert_resultdb(resultdb: pyl.Dict[pyl.Str, pyl.Value]) -> values.Value:
 
       case _:
         raise Exception(
-            f'{key.start}: unhandled key in resultdb: "{key.value}"')
+          f'{key.start}: unhandled key in resultdb: "{key.value}"'
+        )
 
     converted_value = convert_direct(value)
     converted_value = comments.ensure_no_comments(
-        value, converted_value, message=f'value for "{key.value}" in resultdb')
+      value, converted_value, message=f'value for "{key.value}" in resultdb'
+    )
     converted_param = param_name(key)
     value_builder[converted_param] = converted_value
 
@@ -181,11 +184,13 @@ def convert_swarming(swarming: pyl.Dict[pyl.Str, pyl.Value]) -> values.Value:
 
       case _:
         raise Exception(
-            f'{key.start}: unhandled key in swarming: "{key.value}"')
+          f'{key.start}: unhandled key in swarming: "{key.value}"'
+        )
 
     converted_value = convert_direct(value)
     converted_value = comments.ensure_no_comments(
-        value, converted_value, message=f'value for "{key.value}" in swarming')
+      value, converted_value, message=f'value for "{key.value}" in swarming'
+    )
     value_builder[converted_param] = converted_value
 
   return value_builder
@@ -205,7 +210,8 @@ def convert_skylab(skylab: pyl.Dict[pyl.Str, pyl.Value]) -> values.Value:
 
     converted_value = convert_direct(value)
     converted_value = comments.ensure_no_comments(
-        value, converted_value, message=f'value for "{key.value}" in skylab')
+      value, converted_value, message=f'value for "{key.value}" in skylab'
+    )
     converted_param = param_name(key)
     value_builder[converted_param] = converted_value
 

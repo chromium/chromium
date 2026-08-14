@@ -22,121 +22,135 @@ from lib import values
 # having to specify a type or cast for each call
 def _to_pyl_value(value: str) -> typing.Any:
   nodes = list(pyl.parse('test', value))
-  assert (all(isinstance(n, pyl.Comment) for n in nodes[:-1])
-          and isinstance(nodes[-1], pyl.Value)
-          ), f'{value!r} does not parse to a single pyl.Value, got {nodes}'
+  assert all(isinstance(n, pyl.Comment) for n in nodes[:-1]) and isinstance(
+    nodes[-1], pyl.Value
+  ), f'{value!r} does not parse to a single pyl.Value, got {nodes}'
   node = nodes[-1]
   return dataclasses.replace(node, comments=tuple(nodes[:-1]))
 
 
 class StarlarkConversionsTest(unittest.TestCase):
-
   def assertOutputEquals(self, value: values.MaybeCommentedValue, output: str):
     self.assertEqual(values.to_output(value), output)
 
   def test_convert_arg_simple_string(self):
     self.assertOutputEquals(
-        starlark_conversions.convert_arg(_to_pyl_value(repr('foo'))), '"foo"')
+      starlark_conversions.convert_arg(_to_pyl_value(repr('foo'))), '"foo"'
+    )
 
   def test_convert_arg_magic_string(self):
     self.assertOutputEquals(
-        starlark_conversions.convert_arg(
-            _to_pyl_value(
-                repr('$$MAGIC_SUBSTITUTION_AndroidDesktopTelemetryRemote'))),
-        'targets.magic_args.ANDROID_DESKTOP_TELEMETRY_REMOTE')
+      starlark_conversions.convert_arg(
+        _to_pyl_value(
+          repr('$$MAGIC_SUBSTITUTION_AndroidDesktopTelemetryRemote')
+        )
+      ),
+      'targets.magic_args.ANDROID_DESKTOP_TELEMETRY_REMOTE',
+    )
 
   def test_convert_args(self):
     self.assertOutputEquals(
-        starlark_conversions.convert_args(
-            _to_pyl_value(
-                repr([
-                    'foo', '$$MAGIC_SUBSTITUTION_AndroidDesktopTelemetryRemote'
-                ]))),
-        textwrap.dedent("""\
+      starlark_conversions.convert_args(
+        _to_pyl_value(
+          repr(['foo', '$$MAGIC_SUBSTITUTION_AndroidDesktopTelemetryRemote'])
+        )
+      ),
+      textwrap.dedent("""\
             [
               "foo",
               targets.magic_args.ANDROID_DESKTOP_TELEMETRY_REMOTE,
-            ]"""))
+            ]"""),
+    )
 
   def test_convert_direct_none(self):
     self.assertOutputEquals(
-        starlark_conversions.convert_direct(_to_pyl_value(repr(None))), 'None')
+      starlark_conversions.convert_direct(_to_pyl_value(repr(None))), 'None'
+    )
 
   def test_convert_direct_int(self):
     self.assertOutputEquals(
-        starlark_conversions.convert_direct(_to_pyl_value(repr(1))), '1')
+      starlark_conversions.convert_direct(_to_pyl_value(repr(1))), '1'
+    )
 
   def test_convert_direct_bool(self):
     self.assertOutputEquals(
-        starlark_conversions.convert_direct(_to_pyl_value(repr(True))), 'True')
+      starlark_conversions.convert_direct(_to_pyl_value(repr(True))), 'True'
+    )
 
   def test_convert_direct_string(self):
     self.assertOutputEquals(
-        starlark_conversions.convert_direct(_to_pyl_value(repr('foo'))),
-        '"foo"')
+      starlark_conversions.convert_direct(_to_pyl_value(repr('foo'))), '"foo"'
+    )
 
   def test_convert_direct_string_with_embedded_quote(self):
     self.assertOutputEquals(
-        starlark_conversions.convert_direct(_to_pyl_value(repr('"foo"'))),
-        '"\\"foo\\""')
+      starlark_conversions.convert_direct(_to_pyl_value(repr('"foo"'))),
+      '"\\"foo\\""',
+    )
 
   def test_convert_direct_list(self):
     self.assertOutputEquals(
-        starlark_conversions.convert_direct(_to_pyl_value(repr(['foo',
-                                                                'bar']))),
-        textwrap.dedent("""\
+      starlark_conversions.convert_direct(_to_pyl_value(repr(['foo', 'bar']))),
+      textwrap.dedent("""\
             [
               "foo",
               "bar",
-            ]"""))
+            ]"""),
+    )
 
   def test_convert_direct_dict(self):
     self.assertOutputEquals(
-        starlark_conversions.convert_direct(_to_pyl_value(repr({'foo':
-                                                                'bar'}))),
-        textwrap.dedent("""\
+      starlark_conversions.convert_direct(_to_pyl_value(repr({'foo': 'bar'}))),
+      textwrap.dedent("""\
             {
               "foo": "bar",
-            }"""))
+            }"""),
+    )
 
   def test_convert_resultdb_unhandled_key(self):
     with self.assertRaises(Exception) as caught:
       starlark_conversions.convert_resultdb(
-          _to_pyl_value(repr({'unhandled': True})))
-    self.assertEqual(str(caught.exception),
-                     'test:1:1: unhandled key in resultdb: "unhandled"')
+        _to_pyl_value(repr({'unhandled': True}))
+      )
+    self.assertEqual(
+      str(caught.exception), 'test:1:1: unhandled key in resultdb: "unhandled"'
+    )
 
   def test_convert_resultdb(self):
     self.assertOutputEquals(
-        starlark_conversions.convert_resultdb(
-            _to_pyl_value(repr({'enable': True}))),
-        textwrap.dedent("""\
+      starlark_conversions.convert_resultdb(
+        _to_pyl_value(repr({'enable': True}))
+      ),
+      textwrap.dedent("""\
             targets.resultdb(
               enable = True,
-            )"""))
+            )"""),
+    )
 
   def test_convert_swarming_unhandled_key(self):
     with self.assertRaises(Exception) as caught:
       starlark_conversions.convert_swarming(
-          _to_pyl_value(repr({'unhandled': True})))
-    self.assertEqual(str(caught.exception),
-                     'test:1:1: unhandled key in swarming: "unhandled"')
+        _to_pyl_value(repr({'unhandled': True}))
+      )
+    self.assertEqual(
+      str(caught.exception), 'test:1:1: unhandled key in swarming: "unhandled"'
+    )
 
   def test_convert_swarming(self):
     swarming = {
-        'shards': 2,
-        'hard_timeout': 60,
-        'io_timeout': 30,
-        'expiration': 120,
-        'idempotent': True,
-        'service_account': 'account',
-        'dimensions': {
-            'pool': 'default',
-        },
+      'shards': 2,
+      'hard_timeout': 60,
+      'io_timeout': 30,
+      'expiration': 120,
+      'idempotent': True,
+      'service_account': 'account',
+      'dimensions': {
+        'pool': 'default',
+      },
     }
     self.assertOutputEquals(
-        starlark_conversions.convert_swarming(_to_pyl_value(repr(swarming))),
-        textwrap.dedent("""\
+      starlark_conversions.convert_swarming(_to_pyl_value(repr(swarming))),
+      textwrap.dedent("""\
             targets.swarming(
               shards = 2,
               hard_timeout_sec = 60,
@@ -147,95 +161,112 @@ class StarlarkConversionsTest(unittest.TestCase):
               dimensions = {
                 "pool": "default",
               },
-            )"""))
+            )"""),
+    )
 
   def test_convert_skylab_unhandled_key(self):
     with self.assertRaises(Exception) as caught:
       starlark_conversions.convert_skylab(
-          _to_pyl_value(repr({'unhandled': True})))
-    self.assertEqual(str(caught.exception),
-                     'test:1:1: unhandled key in skylab: "unhandled"')
+        _to_pyl_value(repr({'unhandled': True}))
+      )
+    self.assertEqual(
+      str(caught.exception), 'test:1:1: unhandled key in skylab: "unhandled"'
+    )
 
   def test_convert_skylab(self):
     skylab = {
-        'shards': 2,
-        'timeout_sec': 60,
+      'shards': 2,
+      'timeout_sec': 60,
     }
     self.assertOutputEquals(
-        starlark_conversions.convert_skylab(_to_pyl_value(repr(skylab))),
-        textwrap.dedent("""\
+      starlark_conversions.convert_skylab(_to_pyl_value(repr(skylab))),
+      textwrap.dedent("""\
             targets.skylab(
               shards = 2,
               timeout_sec = 60,
-            )"""))
+            )"""),
+    )
 
   def test_convert_direct_with_comment_on_int(self):
     self.assertOutputEquals(
-        starlark_conversions.convert_direct(
-            _to_pyl_value(
-                textwrap.dedent("""\
+      starlark_conversions.convert_direct(
+        _to_pyl_value(
+          textwrap.dedent("""\
                     # comment
                     1
-                    """)[:-1])),
-        textwrap.dedent("""\
+                    """)[:-1]
+        )
+      ),
+      textwrap.dedent("""\
             # comment
             1
-            """)[:-1])
+            """)[:-1],
+    )
 
   def test_convert_direct_with_comment_on_list(self):
     self.assertOutputEquals(
-        starlark_conversions.convert_direct(
-            _to_pyl_value(
-                textwrap.dedent("""\
+      starlark_conversions.convert_direct(
+        _to_pyl_value(
+          textwrap.dedent("""\
                     # comment
                     [1]
-                    """)[:-1])),
-        textwrap.dedent("""\
+                    """)[:-1]
+        )
+      ),
+      textwrap.dedent("""\
             # comment
             [
               1,
             ]
-            """)[:-1])
+            """)[:-1],
+    )
 
   def test_convert_direct_with_comment_on_dict(self):
     self.assertOutputEquals(
-        starlark_conversions.convert_direct(
-            _to_pyl_value(
-                textwrap.dedent("""\
+      starlark_conversions.convert_direct(
+        _to_pyl_value(
+          textwrap.dedent("""\
                     # comment
                     {"foo": "bar"}
-                    """)[:-1])),
-        textwrap.dedent("""\
+                    """)[:-1]
+        )
+      ),
+      textwrap.dedent("""\
             # comment
             {
               "foo": "bar",
             }
-            """)[:-1])
+            """)[:-1],
+    )
 
   def test_convert_direct_with_comment_on_str(self):
     self.assertOutputEquals(
-        starlark_conversions.convert_direct(
-            _to_pyl_value(
-                textwrap.dedent("""\
+      starlark_conversions.convert_direct(
+        _to_pyl_value(
+          textwrap.dedent("""\
                     # comment
                     'foo'
-                    """)[:-1])),
-        textwrap.dedent("""\
+                    """)[:-1]
+        )
+      ),
+      textwrap.dedent("""\
             # comment
             "foo"
-            """)[:-1])
+            """)[:-1],
+    )
 
   def test_convert_direct_with_comment_and_no_include_comments(self):
     self.assertEqual(
-        starlark_conversions.convert_direct(
-            _to_pyl_value(
-                textwrap.dedent("""\
+      starlark_conversions.convert_direct(
+        _to_pyl_value(
+          textwrap.dedent("""\
                     # comment
                     1
-                    """)[:-1]),
-            include_comments=False,
+                    """)[:-1]
         ),
-        '1',
+        include_comments=False,
+      ),
+      '1',
     )
 
 

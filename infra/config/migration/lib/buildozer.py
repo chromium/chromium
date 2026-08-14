@@ -19,17 +19,17 @@ def _run(*args: str) -> subprocess.CompletedProcess[str]:
   # output is always captured to avoid having each edit trigger a repetitive
   # line of output
   return subprocess.run(
-      [
-          'buildozer',
-          # Use empty tables
-          f'-tables={_TABLES_JSON_FILE}',
-          # Add comments above the element being commented instead of at the end
-          # of the line
-          '-eol-comments=false',
-          *args,
-      ],
-      capture_output=True,
-      encoding='utf-8',
+    [
+      'buildozer',
+      # Use empty tables
+      f'-tables={_TABLES_JSON_FILE}',
+      # Add comments above the element being commented instead of at the end
+      # of the line
+      '-eol-comments=false',
+      *args,
+    ],
+    capture_output=True,
+    encoding='utf-8',
   )
 
 

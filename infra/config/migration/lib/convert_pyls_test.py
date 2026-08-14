@@ -21,15 +21,14 @@ from lib import pyl
 # having to specify a type or cast for each call
 def _to_pyl_value(value: str) -> typing.Any:
   nodes = list(pyl.parse('test', value))
-  assert (all(isinstance(n, pyl.Comment) for n in nodes[:-1])
-          and isinstance(nodes[-1], pyl.Value)
-          ), f'{value!r} does not parse to a single pyl.Value, got {nodes}'
+  assert all(isinstance(n, pyl.Comment) for n in nodes[:-1]) and isinstance(
+    nodes[-1], pyl.Value
+  ), f'{value!r} does not parse to a single pyl.Value, got {nodes}'
   node = nodes[-1]
   return dataclasses.replace(node, comments=tuple(nodes[:-1]))
 
 
 class ConvertPylsTest(unittest.TestCase):
-
   def test_convert_gn_isolate_map_pyl_success(self):
     gn_isolate_map = textwrap.dedent("""\
         {
@@ -61,11 +60,13 @@ class ConvertPylsTest(unittest.TestCase):
         """)
 
     files = convert_pyls.convert_gn_isolate_map_pyl(
-        _to_pyl_value(gn_isolate_map))
+      _to_pyl_value(gn_isolate_map)
+    )
 
     self.maxDiff = None
     self.assertCountEqual(
-        files.keys(), ['targets/binaries.star', 'targets/compile_targets.star'])
+      files.keys(), ['targets/binaries.star', 'targets/compile_targets.star']
+    )
 
     year = datetime.datetime.now().year
     binaries_star = files['targets/binaries.star']
@@ -131,60 +132,73 @@ class ConvertPylsTest(unittest.TestCase):
 
   def test_isolate_missing_type(self):
     gn_isolate_map = _to_pyl_value(
-        repr({
-            'test_isolate': {
-                'label': '//:test_label',
-            },
-        }))
-    with self.assertRaises(Exception) as caught:
-      convert_pyls.convert_gn_isolate_map_pyl(gn_isolate_map)
-    self.assertEqual(str(caught.exception),
-                     'test:1:1: isolate test_isolate missing type')
-
-  def test_args_for_compile_target(self):
-    gn_isolate_map = _to_pyl_value(
-        repr({
-            'test_isolate': {
-                'type': 'additional_compile_target',
-                'args': [],
-            },
-        }))
+      repr(
+        {
+          'test_isolate': {
+            'label': '//:test_label',
+          },
+        }
+      )
+    )
     with self.assertRaises(Exception) as caught:
       convert_pyls.convert_gn_isolate_map_pyl(gn_isolate_map)
     self.assertEqual(
-        str(caught.exception),
-        ('test:1:55: args specified for isolate "test_isolate"'
-         ' with type "additional_compile_target"'),
+      str(caught.exception), 'test:1:1: isolate test_isolate missing type'
+    )
+
+  def test_args_for_compile_target(self):
+    gn_isolate_map = _to_pyl_value(
+      repr(
+        {
+          'test_isolate': {
+            'type': 'additional_compile_target',
+            'args': [],
+          },
+        }
+      )
+    )
+    with self.assertRaises(Exception) as caught:
+      convert_pyls.convert_gn_isolate_map_pyl(gn_isolate_map)
+    self.assertEqual(
+      str(caught.exception),
+      (
+        'test:1:55: args specified for isolate "test_isolate"'
+        ' with type "additional_compile_target"'
+      ),
     )
 
   def test_script_for_non_script_type(self):
     gn_isolate_map = _to_pyl_value(
-        repr({
-            'test_isolate': {
-                'type': 'executable',
-                'script': 'run.py'
-            },
-        }))
+      repr(
+        {
+          'test_isolate': {'type': 'executable', 'script': 'run.py'},
+        }
+      )
+    )
     with self.assertRaises(Exception) as caught:
       convert_pyls.convert_gn_isolate_map_pyl(gn_isolate_map)
     self.assertEqual(
-        str(caught.exception),
-        ('test:1:40: script specified for isolate "test_isolate"'
-         ' with non-"script" type "executable"'),
+      str(caught.exception),
+      (
+        'test:1:40: script specified for isolate "test_isolate"'
+        ' with non-"script" type "executable"'
+      ),
     )
 
   def test_unhandled_key_in_isolate(self):
     gn_isolate_map = _to_pyl_value(
-        repr({
-            'test_isolate': {
-                'type': 'executable',
-                'unknown_key': 'value'
-            },
-        }))
+      repr(
+        {
+          'test_isolate': {'type': 'executable', 'unknown_key': 'value'},
+        }
+      )
+    )
     with self.assertRaises(Exception) as caught:
       convert_pyls.convert_gn_isolate_map_pyl(gn_isolate_map)
-    self.assertEqual(str(caught.exception),
-                     'test:1:40: unhandled key in isolate: "unknown_key"')
+    self.assertEqual(
+      str(caught.exception),
+      'test:1:40: unhandled key in isolate: "unknown_key"',
+    )
 
 
 if __name__ == '__main__':

@@ -15,36 +15,42 @@ from lib import values
 
 
 class CommentsTest(unittest.TestCase):
-
   def test_comment_with_multiple_comments_and_string(self):
     pyl_value = pyl.Str(
-        value='foo',
-        start=pyl.Loc(file='', line=0, column=0),
-        end=pyl.Loc(file='', line=0, column=0),
-        comments=(
-            pyl.Comment(comment='# comment 1',
-                        start=pyl.Loc(file='', line=0, column=0),
-                        end=pyl.Loc(file='', line=0, column=0)),
-            pyl.Comment(comment='# comment 2',
-                        start=pyl.Loc(file='', line=0, column=0),
-                        end=pyl.Loc(file='', line=0, column=0)),
+      value='foo',
+      start=pyl.Loc(file='', line=0, column=0),
+      end=pyl.Loc(file='', line=0, column=0),
+      comments=(
+        pyl.Comment(
+          comment='# comment 1',
+          start=pyl.Loc(file='', line=0, column=0),
+          end=pyl.Loc(file='', line=0, column=0),
         ),
+        pyl.Comment(
+          comment='# comment 2',
+          start=pyl.Loc(file='', line=0, column=0),
+          end=pyl.Loc(file='', line=0, column=0),
+        ),
+      ),
     )
     converted = 'bar'
     commented = comments.comment(pyl_value, converted)
     self.assertIsInstance(commented, values.CommentedValue)
     self.assertEqual(
-        values.to_output(commented),
-        textwrap.dedent("""\
+      values.to_output(commented),
+      textwrap.dedent("""\
             # comment 1
             # comment 2
             bar
-            """)[:-1])
+            """)[:-1],
+    )
 
   def test_comment_with_no_comments_and_string(self):
-    pyl_value = pyl.Str(value='foo',
-                        start=pyl.Loc(file='', line=0, column=0),
-                        end=pyl.Loc(file='', line=0, column=0))
+    pyl_value = pyl.Str(
+      value='foo',
+      start=pyl.Loc(file='', line=0, column=0),
+      end=pyl.Loc(file='', line=0, column=0),
+    )
     converted = 'bar'
     commented = comments.comment(pyl_value, converted)
     self.assertNotIsInstance(commented, values.CommentedValue)

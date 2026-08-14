@@ -14,7 +14,8 @@ from lib import pyl
 
 
 def _parse_args(
-    args: collections.abc.Sequence[str] | None = None) -> argparse.Namespace:
+  args: collections.abc.Sequence[str] | None = None,
+) -> argparse.Namespace:
   parser = argparse.ArgumentParser()
   parser.add_argument('--pyls-dir', type=pathlib.Path)
   parser.add_argument('--infra-config-dir', type=pathlib.Path)
@@ -42,8 +43,10 @@ def main():
   gn_isolate_map = _get_literal(args.pyls_dir / 'gn_isolate_map.pyl')
   if gn_isolate_map:
     new_files = convert_pyls.convert_gn_isolate_map_pyl(
-        typing.cast(pyl.Dict[pyl.Str, pyl.Dict[pyl.Str, pyl.Value]],
-                    gn_isolate_map))
+      typing.cast(
+        pyl.Dict[pyl.Str, pyl.Dict[pyl.Str, pyl.Value]], gn_isolate_map
+      )
+    )
 
   for file_name, content in new_files.items():
     file_path = args.infra_config_dir / file_name
