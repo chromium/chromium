@@ -252,8 +252,11 @@ template("cpp_api_from_rust") {
     deps += [
       ":$_action_target_name",
       ":$_rust_impl_target_name",
-      "//build/rust/crubit:cpp_api_from_rust_bindings_cpp_deps",
     ]
+
+    # `**public**_deps` to propagate `include_dirs` for including Crubit
+    # support libraries.
+    public_deps = [ "//build/rust/crubit:cpp_api_from_rust_bindings_cpp_deps" ]
 
     _gen_dir_relative_h_out = rebase_path(_h_out, root_gen_dir)
     metadata = {

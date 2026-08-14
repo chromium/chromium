@@ -30,10 +30,20 @@ source_set("test_cpp_api_from_rust") {
   sources = [ "unittests.cc" ]
   deps = [
     ":rust_lib_bindings",
+    ":target_depending_only_on_bindings",
     "//base",
     "//build/rust/crubit",
     "//testing/gmock",
     "//testing/gtest",
   ]
+  testonly = true
+}
+
+# Separate target to keep `deps` as small as possible - this target should only
+# depend on `:rust_lib_bindings`.  Small `deps` were originally required to
+# repro https://crbug.com/546044516
+source_set("target_depending_only_on_bindings") {
+  sources = [ "target_depending_only_on_bindings.cc" ]
+  deps = [ ":rust_lib_bindings" ]
   testonly = true
 }
