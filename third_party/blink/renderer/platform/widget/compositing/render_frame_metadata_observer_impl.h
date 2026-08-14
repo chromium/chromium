@@ -46,6 +46,10 @@ class PLATFORM_EXPORT RenderFrameMetadataObserverImpl
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   void DidEndScroll() override;
 #endif
+#if BUILDFLAG(IS_ANDROID)
+  void ReportScrollJankStats(uint32_t total_frames,
+                             uint32_t janky_frames) override;
+#endif
 
   // mojom::RenderFrameMetadataObserver:
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)

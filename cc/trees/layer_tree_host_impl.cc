@@ -652,6 +652,12 @@ LayerTreeHostImpl::LayerTreeHostImpl(
             id,
             /*is_trees_in_viz_client=*/
             settings_.TreesInVizInClientProcess());
+#if BUILDFLAG(IS_ANDROID)
+    if (features::ShouldScrollJankV4MetricReportAndroidAppJankStats()) {
+      compositor_frame_reporting_controller_->SetScrollJankOsReporter(
+          weak_factory_.GetWeakPtr());
+    }
+#endif
   }
 
   if (base::FeatureList::IsEnabled(features::kTreesInViz) ||
@@ -2353,6 +2359,17 @@ void LayerTreeHostImpl::ReportEventLatency(
   if (auto* recorder = CustomMetricRecorder::Get()) {
     recorder->ReportEventLatency(args, std::move(latencies));
   }
+}
+
+void LayerTreeHostImpl::ReportScrollJankStats(uint32_t total_frames,
+                                              uint32_t janky_frames) {
+  CHECK_LE(janky_frames, total_frames);
+#if BUILDFLAG(IS_ANDROID)
+  if (render_frame_metadata_observer_) {
+    render_frame_metadata_observer_->ReportScrollJankStats(total_frames,
+                                                           janky_frames);
+  }
+#endif
 }
 
 void LayerTreeHostImpl::OnCanDrawStateChangedForTree() {

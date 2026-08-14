@@ -12,6 +12,7 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "cc/cc_export.h"
@@ -21,6 +22,7 @@
 #include "cc/metrics/frame_sorter.h"
 #include "cc/metrics/predictor_jank_tracker.h"
 #include "cc/metrics/scroll_jank_dropped_frame_tracker.h"
+#include "cc/metrics/scroll_jank_os_reporter.h"
 #include "cc/metrics/scroll_jank_v4_processor.h"
 
 namespace viz {
@@ -102,6 +104,8 @@ class CC_EXPORT CompositorFrameReportingController {
   void SetFrameSorter(FrameSorter* frame_sorter) {
     global_trackers_.frame_sorter = frame_sorter;
   }
+
+  void SetScrollJankOsReporter(base::WeakPtr<ScrollJankOsReporter> os_reporter);
 
   void SetFrameSequenceTrackerCollection(
       FrameSequenceTrackerCollection* frame_sequence_trackers) {

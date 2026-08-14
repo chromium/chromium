@@ -44,6 +44,7 @@
 #include "cc/metrics/frame_sequence_metrics.h"
 #include "cc/metrics/frame_sequence_tracker.h"
 #include "cc/metrics/frame_sequence_tracker_collection.h"
+#include "cc/metrics/scroll_jank_os_reporter.h"
 #include "cc/metrics/submit_info.h"
 #include "cc/paint/paint_worklet_job.h"
 #include "cc/scheduler/begin_frame_tracker.h"
@@ -143,7 +144,8 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
                                     public MutatorHostDelegate,
                                     public ImageAnimationController::Delegate,
                                     public CompositorDelegateForInput,
-                                    public EventLatencyTracker {
+                                    public EventLatencyTracker,
+                                    public ScrollJankOsReporter {
  public:
   // A struct of data for a single UIResource, including the backing
   // pixels, and metadata about it.
@@ -542,6 +544,10 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   void ReportEventLatency(
       const viz::BeginFrameArgs& args,
       std::vector<EventLatencyTracker::LatencyData> latencies) override;
+
+  // ScrollJankOsReporter implementation.
+  void ReportScrollJankStats(uint32_t total_frames,
+                             uint32_t janky_frames) override;
 
   // Unbounded element implementation.
   void SetUnboundedFrameSink(

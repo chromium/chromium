@@ -42,6 +42,13 @@ class CC_EXPORT RenderFrameMetadataObserver {
   // Notification of the scroll end event.
   virtual void DidEndScroll() = 0;
 #endif
+
+#if BUILDFLAG(IS_ANDROID)
+  // Report scroll jank statistics to the OS (`View.reportAppJankStats()` on
+  // Android) at the end of a scroll.
+  virtual void ReportScrollJankStats(uint32_t total_frames,
+                                     uint32_t janky_frames) {}
+#endif
 };
 
 }  // namespace cc

@@ -280,4 +280,13 @@ void RenderFrameMetadataObserverImpl::DidEndScroll() {
 }
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+void RenderFrameMetadataObserverImpl::ReportScrollJankStats(
+    uint32_t total_frames,
+    uint32_t janky_frames) {
+  render_frame_metadata_observer_client_->ReportScrollJankStats(total_frames,
+                                                                janky_frames);
+}
+#endif
+
 }  // namespace blink

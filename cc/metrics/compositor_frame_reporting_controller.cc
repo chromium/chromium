@@ -9,9 +9,11 @@
 
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
+#include "base/memory/weak_ptr.h"
 #include "cc/metrics/compositor_frame_reporter.h"
 #include "cc/metrics/frame_sequence_tracker_collection.h"
 #include "cc/metrics/scroll_jank_dropped_frame_tracker.h"
+#include "cc/metrics/scroll_jank_os_reporter.h"
 #include "cc/metrics/scroll_jank_v4_processor.h"
 #include "cc/scheduler/scheduler_state_machine.h"
 #include "components/viz/common/frame_timing_details.h"
@@ -96,6 +98,13 @@ base::TimeTicks CompositorFrameReportingController::Now() const {
 bool CompositorFrameReportingController::HasReporterAt(
     PipelineStage stage) const {
   return !!reporters_[stage].get();
+}
+
+void CompositorFrameReportingController::SetScrollJankOsReporter(
+    base::WeakPtr<ScrollJankOsReporter> os_reporter) {
+  if (scroll_jank_v4_processor_) {
+    scroll_jank_v4_processor_->SetOsReporter(std::move(os_reporter));
+  }
 }
 
 void CompositorFrameReportingController::ProcessSkippedFramesIfNecessary(

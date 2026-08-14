@@ -512,4 +512,16 @@ TEST_F(RenderFrameMetadataObserverImplTest, ForceSendMetadata) {
   }
 }
 
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(RenderFrameMetadataObserverImplTest, ReportScrollJankStats) {
+  base::RunLoop run_loop;
+  EXPECT_CALL(client(),
+              ReportScrollJankStats(/*total_frames=*/100, /*janky_frames=*/10))
+      .WillOnce(InvokeClosure(run_loop.QuitClosure()));
+  observer_impl().ReportScrollJankStats(/*total_frames=*/100,
+                                        /*janky_frames=*/10);
+  run_loop.Run();
+}
+#endif
+
 }  // namespace blink
