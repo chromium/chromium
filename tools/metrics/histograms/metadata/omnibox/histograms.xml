@@ -243,6 +243,8 @@ chromium-metrics-reviews@google.com.
   <variant name="ANDROID_HUB" summary="Searchbox in the Android Hub"/>
   <variant name="ANDROID_SEARCH_WIDGET" summary="Android search widget"/>
   <variant name="ANDROID_SHORTCUTS_WIDGET" summary="Android Shortcuts widget"/>
+  <variant name="ANDROID_TAB_SEARCH_OVERLAY"
+      summary="Searchbox in the Android Tab Search overlay"/>
   <variant name="APP_HOME" summary="home screen"/>
   <variant name="APP_MAPS" summary="maps app"/>
   <variant name="APP_SEARCH" summary="search app"/>

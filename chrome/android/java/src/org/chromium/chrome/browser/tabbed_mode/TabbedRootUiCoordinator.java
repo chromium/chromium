@@ -212,6 +212,7 @@ import org.chromium.chrome.browser.tasks.tab_management.FaviconResolver;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupFaviconCluster;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupListFaviconResolverFactory;
 import org.chromium.chrome.browser.tasks.tab_management.TabSearchOverlayCoordinator;
+import org.chromium.chrome.browser.tasks.tab_management.TabSearchOverlayCoordinator.TabSearchEntryPoint;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiUtils;
 import org.chromium.chrome.browser.tasks.tab_management.UndoGroupSnackbarController;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabListCoordinator;
@@ -1386,9 +1387,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     /** Returns the {@link LeadingButtonDelegate} for the tab strip's leading button. */
     public LeadingButtonDelegate getLeadingButtonDelegate() {
         return () -> {
-            if (mTabSearchOverlayCoordinator != null) {
-                mTabSearchOverlayCoordinator.show();
-            }
+            showTabSearchOverlay(TabSearchEntryPoint.HORIZONTAL_TAB_STRIP);
         };
     }
 
@@ -3057,10 +3056,12 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     /**
      * Shows the tab search overlay if it has been initialized. This overlay provides a floating
      * container anchored on the left with an embedded search UI as a side panel.
+     *
+     * @param entryPoint The entry point from which Tab Search is being invoked.
      */
-    public void showTabSearchOverlay() {
+    public void showTabSearchOverlay(@TabSearchEntryPoint int entryPoint) {
         if (mTabSearchOverlayCoordinator != null) {
-            mTabSearchOverlayCoordinator.show();
+            mTabSearchOverlayCoordinator.show(entryPoint);
         }
     }
 

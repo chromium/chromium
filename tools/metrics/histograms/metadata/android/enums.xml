@@ -2205,6 +2205,30 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="FAILED_SHARE_ALL_TABS_FILTERED"/>
 </enum>
 
+<!-- LINT.IfChange(TabSearchDismissalReason) -->
+
+<enum name="TabSearchDismissalReason">
+  <int value="0" label="Close Button"/>
+  <int value="1" label="Scrim"/>
+  <int value="2" label="Back Press / ESC"/>
+  <int value="3" label="Window Focus Lost"/>
+  <int value="4" label="Tab Selected"/>
+  <int value="5" label="Tab Group Selected"/>
+  <int value="6" label="URL Loaded / Query Submitted"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/TabSearchOverlayCoordinator.java:TabSearchDismissalReason) -->
+
+<!-- LINT.IfChange(TabSearchEntryPoint) -->
+
+<enum name="TabSearchEntryPoint">
+  <int value="0" label="Horizontal Tab Strip"/>
+  <int value="1" label="Vertical Tabs"/>
+  <int value="2" label="Keyboard Shortcut"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/TabSearchOverlayCoordinator.java:TabSearchEntryPoint) -->
+
 <enum name="ToolbarCaptureType">
   <int value="0" label="UNKNOWN"/>
   <int value="1" label="TOP"/>

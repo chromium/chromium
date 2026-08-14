@@ -326,6 +326,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabGroupUi;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegate;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegateProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabModelNotificationDotManager;
+import org.chromium.chrome.browser.tasks.tab_management.TabSearchOverlayCoordinator.TabSearchEntryPoint;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherBackPressHandlerManager;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherPaneBase;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiUtils;
@@ -3680,7 +3681,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             @Override
             public void openTabSearch() {
                 if (mRootUiCoordinator != null) {
-                    ((TabbedRootUiCoordinator) mRootUiCoordinator).showTabSearchOverlay();
+                    ((TabbedRootUiCoordinator) mRootUiCoordinator)
+                            .showTabSearchOverlay(TabSearchEntryPoint.VERTICAL_TABS);
                 }
             }
 
@@ -4667,7 +4669,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
         } else if (id == R.id.tab_search_side_ui) {
             // Trigger the start anchored tab search side UI for Desktop.
             if (mRootUiCoordinator != null) {
-                ((TabbedRootUiCoordinator) mRootUiCoordinator).showTabSearchOverlay();
+                ((TabbedRootUiCoordinator) mRootUiCoordinator)
+                        .showTabSearchOverlay(TabSearchEntryPoint.KEYBOARD_SHORTCUT);
             }
         } else if (id == R.id.toggle_tab_layout_menu_id) {
             if (fromMenu) {

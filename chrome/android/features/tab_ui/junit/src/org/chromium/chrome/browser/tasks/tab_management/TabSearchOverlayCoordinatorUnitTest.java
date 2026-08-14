@@ -58,6 +58,7 @@ import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.back_press.BackPressManager;
@@ -79,6 +80,8 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tasks.tab_management.TabSearchOverlayCoordinator.TabSearchDismissalReason;
+import org.chromium.chrome.browser.tasks.tab_management.TabSearchOverlayCoordinator.TabSearchEntryPoint;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.IntentOrigin;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.SearchType;
@@ -237,6 +240,30 @@ public class TabSearchOverlayCoordinatorUnitTest {
     }
 
     @Test
+    public void testShow_recordsEntryPointHistogram() {
+        var watcherHorizontal =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.TabSearch.EntryPoint", TabSearchEntryPoint.HORIZONTAL_TAB_STRIP);
+        mCoordinator.show(TabSearchEntryPoint.HORIZONTAL_TAB_STRIP);
+        watcherHorizontal.assertExpected();
+        mCoordinator.hide(TabSearchDismissalReason.CLOSE_BUTTON);
+
+        var watcherVertical =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.TabSearch.EntryPoint", TabSearchEntryPoint.VERTICAL_TABS);
+        mCoordinator.show(TabSearchEntryPoint.VERTICAL_TABS);
+        watcherVertical.assertExpected();
+        mCoordinator.hide(TabSearchDismissalReason.CLOSE_BUTTON);
+
+        var watcherShortcut =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.TabSearch.EntryPoint", TabSearchEntryPoint.KEYBOARD_SHORTCUT);
+        mCoordinator.show(TabSearchEntryPoint.KEYBOARD_SHORTCUT);
+        watcherShortcut.assertExpected();
+        mCoordinator.hide(TabSearchDismissalReason.CLOSE_BUTTON);
+    }
+
+    @Test
     public void testSearchUiElementsInitialized() {
         verify(mSearchUiCoordinator)
                 .setDefaultStatusIconOverrideResId(R.drawable.ic_suggestion_magnifier);
@@ -274,7 +301,11 @@ public class TabSearchOverlayCoordinatorUnitTest {
     @Test
     public void testClickScrim_hidesOverlay() {
         showOverlay();
+        var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.TabSearch.DismissalReason", TabSearchDismissalReason.SCRIM);
         mScrim.performClick();
+        watcher.assertExpected();
         verify(mLocationBarCoordinator, never()).clearOmniboxFocus();
         assertOverlayHidden();
     }
@@ -282,9 +313,13 @@ public class TabSearchOverlayCoordinatorUnitTest {
     @Test
     public void testClickCloseButton_hidesOverlay() {
         showOverlay();
+        var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.TabSearch.DismissalReason", TabSearchDismissalReason.CLOSE_BUTTON);
         View closeButton = mPanelContainer.findViewById(R.id.tab_search_close_button);
         assertNotNull(closeButton);
         closeButton.performClick();
+        watcher.assertExpected();
         verify(mLocationBarCoordinator, never()).clearOmniboxFocus();
         assertOverlayHidden();
     }
@@ -316,7 +351,11 @@ public class TabSearchOverlayCoordinatorUnitTest {
     @Test
     public void testHide_hidesOverlayAndClearsFocus() {
         showOverlay();
-        mCoordinator.hide();
+        var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.TabSearch.DismissalReason", TabSearchDismissalReason.CLOSE_BUTTON);
+        mCoordinator.hide(TabSearchDismissalReason.CLOSE_BUTTON);
+        watcher.assertExpected();
         verify(mLocationBarCoordinator, never()).clearOmniboxFocus();
         assertOverlayHidden();
     }
@@ -331,7 +370,11 @@ public class TabSearchOverlayCoordinatorUnitTest {
                 new OmniboxLoadUrlParams.Builder(
                                 "https://www.google.com/search?q=test", PageTransition.TYPED)
                         .build();
+        var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.TabSearch.DismissalReason", TabSearchDismissalReason.URL_LOADED);
         boolean handled = delegate.willHandleLoadUrlWithPostData(params, /* incognito= */ false);
+        watcher.assertExpected();
         assertTrue(handled);
         assertFalse(mCoordinator.isVisible());
 
@@ -355,7 +398,11 @@ public class TabSearchOverlayCoordinatorUnitTest {
                 new OmniboxLoadUrlParams.Builder(
                                 "https://www.google.com/search?q=test", PageTransition.TYPED)
                         .build();
+        var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.TabSearch.DismissalReason", TabSearchDismissalReason.URL_LOADED);
         boolean handled = delegate.willHandleLoadUrlWithPostData(params, /* incognito= */ true);
+        watcher.assertExpected();
         assertTrue(handled);
         assertFalse(mCoordinator.isVisible());
 
@@ -387,7 +434,12 @@ public class TabSearchOverlayCoordinatorUnitTest {
         Callback<String> callback = mBringTabGroupToFrontCallbackCaptor.getValue();
         assertNotNull(callback);
 
+        var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.TabSearch.DismissalReason",
+                        TabSearchDismissalReason.TAB_GROUP_SELECTED);
         callback.onResult("group_id_1");
+        watcher.assertExpected();
         assertFalse(mCoordinator.isVisible());
 
         verify(mTabGroupUiActionHandler, never()).openTabGroup(any());
@@ -418,7 +470,12 @@ public class TabSearchOverlayCoordinatorUnitTest {
         Callback<String> callback = mBringTabGroupToFrontCallbackCaptor.getValue();
         assertNotNull(callback);
 
+        var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.TabSearch.DismissalReason",
+                        TabSearchDismissalReason.TAB_GROUP_SELECTED);
         callback.onResult("group_id_1");
+        watcher.assertExpected();
         assertFalse(mCoordinator.isVisible());
 
         verify(mTabGroupUiActionHandler).openTabGroup("sync_id_1");
@@ -426,7 +483,7 @@ public class TabSearchOverlayCoordinatorUnitTest {
     }
 
     private void showOverlay() {
-        mCoordinator.show();
+        mCoordinator.show(TabSearchEntryPoint.HORIZONTAL_TAB_STRIP);
         assertOverlayShown();
     }
 
@@ -513,7 +570,7 @@ public class TabSearchOverlayCoordinatorUnitTest {
         showOverlay();
         assertTrue(mCoordinator.getHandleBackPressChangedSupplier().get());
 
-        mCoordinator.hide();
+        mCoordinator.hide(TabSearchDismissalReason.BACK_PRESS);
         assertFalse(mCoordinator.getHandleBackPressChangedSupplier().get());
     }
 
@@ -522,7 +579,11 @@ public class TabSearchOverlayCoordinatorUnitTest {
         showOverlay();
         assertTrue(mCoordinator.isVisible());
 
+        var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.TabSearch.DismissalReason", TabSearchDismissalReason.BACK_PRESS);
         int result = mCoordinator.handleBackPress();
+        watcher.assertExpected();
         assertEquals(BackPressResult.SUCCESS, result);
         assertOverlayHidden();
     }
@@ -557,6 +618,43 @@ public class TabSearchOverlayCoordinatorUnitTest {
                 mCoordinator
                         .getModelForTesting()
                         .get(TabSearchOverlayProperties.EMPTY_STATE_VISIBLE));
+    }
+
+    @Test
+    public void testSessionHadEmptyState_recordsHistogram() {
+        // Case 1: Session without empty state records false on hide.
+        showOverlay();
+        when(mUrlBarCoordinator.getTextWithoutAutocomplete()).thenReturn("abc");
+        mSuggestionsListNonEmptySupplier.set(true);
+        var watcherNoEmpty =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.TabSearch.SessionHadEmptyState", false);
+        mCoordinator.hide(TabSearchDismissalReason.CLOSE_BUTTON);
+        watcherNoEmpty.assertExpected();
+
+        // Case 2: Session with empty state records true on hide.
+        showOverlay();
+        when(mUrlBarCoordinator.getTextWithoutAutocomplete()).thenReturn("xyz");
+        mSuggestionsListNonEmptySupplier.set(false);
+        assertTrue(
+                mCoordinator
+                        .getModelForTesting()
+                        .get(TabSearchOverlayProperties.EMPTY_STATE_VISIBLE));
+        var watcherWithEmpty =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.TabSearch.SessionHadEmptyState", true);
+        mCoordinator.hide(TabSearchDismissalReason.CLOSE_BUTTON);
+        watcherWithEmpty.assertExpected();
+
+        // Case 3: Subsequent session resets flag and records false if no empty state occurs.
+        showOverlay();
+        when(mUrlBarCoordinator.getTextWithoutAutocomplete()).thenReturn("abc");
+        mSuggestionsListNonEmptySupplier.set(true);
+        var watcherReset =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.TabSearch.SessionHadEmptyState", false);
+        mCoordinator.hide(TabSearchDismissalReason.CLOSE_BUTTON);
+        watcherReset.assertExpected();
     }
 
     @Test
@@ -785,7 +883,7 @@ public class TabSearchOverlayCoordinatorUnitTest {
         assertEquals(new Rect(228, 4, 260, 36), exclusionRects.get(0));
 
         // Hide overlay and verify exclusion rect is cleared.
-        mCoordinator.hide();
+        mCoordinator.hide(TabSearchDismissalReason.CLOSE_BUTTON);
         assertTrue(mPanelContainer.getSystemGestureExclusionRects().isEmpty());
     }
 
@@ -817,7 +915,7 @@ public class TabSearchOverlayCoordinatorUnitTest {
         assertEquals(new Rect(0, 0, 800, 40), exclusionRects.get(1));
 
         // Hide overlay and verify exclusion rects are cleared.
-        mCoordinator.hide();
+        mCoordinator.hide(TabSearchDismissalReason.CLOSE_BUTTON);
         assertTrue(mPanelContainer.getSystemGestureExclusionRects().isEmpty());
     }
 
@@ -837,7 +935,12 @@ public class TabSearchOverlayCoordinatorUnitTest {
         showOverlay();
         assertTrue(mCoordinator.isVisible());
 
+        var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.TabSearch.DismissalReason",
+                        TabSearchDismissalReason.WINDOW_FOCUS_LOST);
         mCoordinator.getWindowFocusListenerForTesting().onWindowFocusChanged(false);
+        watcher.assertExpected();
 
         assertOverlayHidden();
     }

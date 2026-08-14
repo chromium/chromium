@@ -4642,6 +4642,7 @@ chromium-metrics-reviews@google.com.
     <variant name="NTP" summary="the New Tab Page"/>
     <variant name="Other" summary="a website"/>
     <variant name="SRP" summary="the Search Results Page"/>
+    <variant name="TabSearch" summary="the Tab Search overlay"/>
     <variant name="Widget" summary="the Widget Search Activity"/>
   </token>
 </histogram>
@@ -6435,6 +6436,43 @@ chromium-metrics-reviews@google.com.
     <variant name="OpenId4Vci" summary="openid-credential-offer://"/>
     <variant name="OpenId4Vp" summary="openid4vp://"/>
   </token>
+</histogram>
+
+<histogram name="Android.TabSearch.DismissalReason"
+    enum="TabSearchDismissalReason" expires_after="2026-11-15">
+  <owner>bjfong@google.com</owner>
+  <owner>wylieb@google.com</owner>
+  <owner>clank-growth@google.com</owner>
+  <summary>
+    Records the reason the Tab Search overlay was dismissed (e.g. close button,
+    scrim click, back press / ESC, window focus loss, or tab / URL selection).
+    Recorded every time the Tab Search overlay is hidden.
+  </summary>
+</histogram>
+
+<histogram name="Android.TabSearch.EntryPoint" enum="TabSearchEntryPoint"
+    expires_after="2026-11-15">
+  <owner>bjfong@google.com</owner>
+  <owner>wylieb@google.com</owner>
+  <owner>clank-growth@google.com</owner>
+  <summary>
+    Records the entrypoint used to open the Tab Search overlay (e.g. horizontal
+    tab strip button, vertical tabs button, or app menu / shortcut). Recorded
+    when the Tab Search overlay is invoked.
+  </summary>
+</histogram>
+
+<histogram name="Android.TabSearch.SessionHadEmptyState" enum="Boolean"
+    expires_after="2026-11-15">
+  <owner>bjfong@google.com</owner>
+  <owner>wylieb@google.com</owner>
+  <owner>clank-growth@google.com</owner>
+  <summary>
+    Records whether the Tab Search overlay displayed an empty search state
+    (&quot;No results found&quot;) at least once during a search session because
+    an entered search query returned zero matching suggestions. Recorded once
+    per Tab Search overlay session upon dismissal.
+  </summary>
 </histogram>
 
 <histogram name="Android.TabStrip.NullTabHoverCardView.ShowDelayed"
