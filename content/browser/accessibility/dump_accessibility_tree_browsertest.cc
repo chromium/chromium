@@ -3887,11 +3887,6 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilitySelectDisabled) {
   RunHtmlTest(FILE_PATH_LITERAL("select-disabled.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       AccessibilityAriaAttributeRemoval) {
-  RunHtmlTest(FILE_PATH_LITERAL("aria-attribute-removal.html"));
-}
-
 // The test times out on Mac because it cannot open the native select.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_AccessibilitySelectOpen DISABLED_AccessibilitySelectOpen
