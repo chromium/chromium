@@ -725,7 +725,9 @@ class ChromeDriver(object):
                     isResidentCredential=None, rpId=None, privateKey=None,
                     userHandle=None, signCount=_UNSET, largeBlob=None,
                     backupState=None, backupEligibility=None,userName=None,
-                    userDisplayName=None):
+                    userDisplayName=None, cmtgKeys=None,
+                    activeCmtgKeyIndex=None,
+                    generateCmtgKeyOnNextOperation=None):
     options = {}
     if authenticatorId is not None:
       options['authenticatorId'] = authenticatorId
@@ -751,6 +753,12 @@ class ChromeDriver(object):
       options['userName'] = userName
     if userDisplayName is not None:
       options['userDisplayName'] = userDisplayName
+    if cmtgKeys is not None:
+      options['cmtgKeys'] = cmtgKeys
+    if activeCmtgKeyIndex is not None:
+      options['activeCmtgKeyIndex'] = activeCmtgKeyIndex
+    if generateCmtgKeyOnNextOperation is not None:
+      options['generateCmtgKeyOnNextOperation'] = generateCmtgKeyOnNextOperation
     return self.ExecuteCommand(Command.ADD_CREDENTIAL, options)
 
   def GetCredentials(self, authenticatorId):
@@ -773,7 +781,9 @@ class ChromeDriver(object):
 
   def SetCredentialProperties(self, authenticatorId, credentialId,
                               backupState=None, backupEligibility=None,
-                              signCount=_UNSET):
+                              signCount=_UNSET,
+                              activeCmtgKeyIndex=None,
+                              generateCmtgKeyOnNextOperation=None):
     params = {'authenticatorId': authenticatorId, 'credentialId': credentialId}
     if backupState is not None:
       params['backupState'] = backupState
@@ -781,6 +791,10 @@ class ChromeDriver(object):
       params['backupEligibility'] = backupEligibility
     if signCount is not _UNSET:
       params['signCount'] = signCount
+    if activeCmtgKeyIndex is not None:
+      params['activeCmtgKeyIndex'] = activeCmtgKeyIndex
+    if generateCmtgKeyOnNextOperation is not None:
+      params['generateCmtgKeyOnNextOperation'] = generateCmtgKeyOnNextOperation
     return self.ExecuteCommand(Command.SET_CREDENTIAL_PROPERTIES, params)
 
   def SetSPCTransactionMode(self, mode):

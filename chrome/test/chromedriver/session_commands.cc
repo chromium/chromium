@@ -220,6 +220,7 @@ base::DictValue CreateCapabilities(Session* session,
   caps.Set("webauthn:extension:minPinLength", !capabilities.IsAndroid());
   caps.Set("webauthn:extension:credBlob", !capabilities.IsAndroid());
   caps.Set("webauthn:extension:prf", !capabilities.IsAndroid());
+  caps.Set("webauthn:extension:cmtgKey", !capabilities.IsAndroid());
 
   // See https://github.com/fedidcg/FedCM/pull/478
   caps.Set("fedcm:accounts", true);

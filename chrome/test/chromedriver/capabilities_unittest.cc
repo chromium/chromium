@@ -999,6 +999,23 @@ TEST(ParseCapabilities, VirtualAuthenticatorsLargeBlobNotBool) {
   EXPECT_FALSE(capabilities.Parse(caps).IsOk());
 }
 
+TEST(ParseCapabilities, VirtualAuthenticatorsCmtgKeyBool) {
+  Capabilities capabilities;
+  base::DictValue caps;
+  caps.Set("webauthn:extension:cmtgKey", true);
+  EXPECT_TRUE(capabilities.Parse(caps).IsOk());
+
+  caps.Set("webauthn:extension:cmtgKey", false);
+  EXPECT_TRUE(capabilities.Parse(caps).IsOk());
+}
+
+TEST(ParseCapabilities, VirtualAuthenticatorsCmtgKeyNotBool) {
+  Capabilities capabilities;
+  base::DictValue caps;
+  caps.Set("webauthn:extension:cmtgKey", "not a bool");
+  EXPECT_FALSE(capabilities.Parse(caps).IsOk());
+}
+
 TEST(ParseCapabilities, FedcmAccountsBool) {
   Capabilities capabilities;
   base::DictValue caps;

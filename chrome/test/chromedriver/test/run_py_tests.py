@@ -4122,7 +4122,9 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
     self.assertEqual(
         is_desktop,
         self._driver.capabilities['webauthn:virtualAuthenticators'])
-    for extension in ['largeBlob', 'minPinLength', 'credBlob', 'prf']:
+    for extension in [
+        'largeBlob', 'minPinLength', 'credBlob', 'prf', 'cmtgKey'
+    ]:
       self.assertEqual(
           is_desktop,
           self._driver.capabilities['webauthn:extension:' + extension])
@@ -5224,6 +5226,133 @@ class ChromeDriverSecureContextTest(ChromeDriverBaseTestWithWebServer):
     # GetCredentials should return None.
     credentials = self._driver.GetCredentials(authenticatorId)
     self.assertIsNone(credentials[0]['signCount'])
+
+  def testCmtgKeys(self):
+    self._driver.Load(self.GetHttpsUrlForFile(
+        '/chromedriver/webauthn_test.html', 'chromedriver.test'))
+
+    authenticatorId = self._driver.AddVirtualAuthenticator(
+        protocol = 'ctap2',
+        transport = 'usb',
+        hasResidentKey = True,
+        hasUserVerification = True,
+        isUserVerified = True,
+        extensions = ['cmtgKey'],
+    )
+
+    safe_credential_id = self.URLSafeBase64Encode("cred-safe")
+    # Inject a credential with a CMTG key.
+    self._driver.AddCredential(
+        authenticatorId = authenticatorId,
+        credentialId = safe_credential_id,
+        userHandle = self.URLSafeBase64Encode('melia'),
+        isResidentCredential = True,
+        rpId = "chromedriver.test",
+        privateKey = self.privateKey,
+        signCount = 1,
+        cmtgKeys = [self.privateKey],
+        activeCmtgKeyIndex = 0,
+        generateCmtgKeyOnNextOperation = False,
+    )
+
+    # Verify it was injected correctly.
+    credentials = self._driver.GetCredentials(authenticatorId)
+    self.assertEqual(1, len(credentials))
+    self.assertEqual(safe_credential_id, credentials[0]['credentialId'])
+    self.assertEqual(1, len(credentials[0]['cmtgKeys']))
+    self.assertEqual(self.privateKey, credentials[0]['cmtgKeys'][0])
+    self.assertEqual(0, credentials[0]['activeCmtgKeyIndex'])
+    self.assertFalse(credentials[0]['generateCmtgKeyOnNextOperation'])
+
+    # Set generateCmtgKeyOnNextOperation to True.
+    self._driver.SetCredentialProperties(
+        authenticatorId = authenticatorId,
+        credentialId = safe_credential_id,
+        generateCmtgKeyOnNextOperation = True,
+    )
+
+    # Verify it updated.
+    credentials = self._driver.GetCredentials(authenticatorId)
+    self.assertTrue(credentials[0]['generateCmtgKeyOnNextOperation'])
+
+    # Assert and verify a new CMTG key is generated.
+    assert_script = """
+      let done = arguments[0];
+      getCredential({
+        type: "public-key",
+        id: new TextEncoder().encode("cred-safe"),
+        transports: ["usb"],
+      }, {
+        extensions: {
+          cmtgKey: true,
+        }
+      }).then(done);
+    """
+    result = self._driver.ExecuteAsyncScript(assert_script)
+    self.assertEqual("OK", result['status'])
+    self.assertIn('cmtgKey', result['extensions'])
+
+    # Verify the store now has 2 CMTG keys and active index is updated.
+    credentials = self._driver.GetCredentials(authenticatorId)
+    self.assertEqual(2, len(credentials[0]['cmtgKeys']))
+    self.assertEqual(1, credentials[0]['activeCmtgKeyIndex'])
+    self.assertFalse(credentials[0]['generateCmtgKeyOnNextOperation'])
+
+  def testAddCredentialCmtgKeysErrors(self):
+    self._driver.Load(self.GetHttpsUrlForFile(
+        '/chromedriver/webauthn_test.html', 'chromedriver.test'))
+
+    authenticatorId = self._driver.AddVirtualAuthenticator(
+        protocol = 'ctap2',
+        transport = 'usb',
+        hasResidentKey = True,
+        hasUserVerification = True,
+        isUserVerified = True,
+        extensions = ['cmtgKey'],
+    )
+
+    # Try adding a credential with cmtgKeys not being a list.
+    self.assertRaisesRegex(
+        chromedriver.InvalidArgument,
+        'cmtgKeys must be a list',
+        self._driver.AddCredential,
+        authenticatorId = authenticatorId,
+        credentialId = self.URLSafeBase64Encode('cred-1'),
+        userHandle = self.URLSafeBase64Encode('melia'),
+        isResidentCredential = True,
+        rpId = 'chromedriver.test',
+        privateKey = self.privateKey,
+        cmtgKeys = 'not-a-list',
+    )
+
+    # Try adding a credential with cmtgKeys containing non-base64url encoded
+    # items.
+    self.assertRaisesRegex(
+        chromedriver.InvalidArgument,
+        'cmtgKeys items must be base64url encoded strings',
+        self._driver.AddCredential,
+        authenticatorId = authenticatorId,
+        credentialId = self.URLSafeBase64Encode('cred-2'),
+        userHandle = self.URLSafeBase64Encode('melia'),
+        isResidentCredential = True,
+        rpId = 'chromedriver.test',
+        privateKey = self.privateKey,
+        cmtgKeys = [self.privateKey, 'invalid+base64url'],
+    )
+
+    # Try adding a credential with cmtgKeys containing non-string items.
+    self.assertRaisesRegex(
+        chromedriver.InvalidArgument,
+        'cmtgKeys items must be base64url encoded strings',
+        self._driver.AddCredential,
+        authenticatorId = authenticatorId,
+        credentialId = self.URLSafeBase64Encode('cred-3'),
+        userHandle = self.URLSafeBase64Encode('melia'),
+        isResidentCredential = True,
+        rpId = 'chromedriver.test',
+        privateKey = self.privateKey,
+        cmtgKeys = [self.privateKey, 42],
+    )
 
   def testCreateVirtualSensorWithInvalidSensorName(self):
     self.assertRaisesRegex(chromedriver.InvalidArgument,

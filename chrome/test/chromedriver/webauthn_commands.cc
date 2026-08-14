@@ -5,6 +5,7 @@
 #include "chrome/test/chromedriver/webauthn_commands.h"
 
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -12,6 +13,7 @@
 #include "base/base64url.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
+#include "base/strings/strcat.h"
 #include "base/values.h"
 #include "chrome/test/chromedriver/chrome/status.h"
 #include "chrome/test/chromedriver/chrome/web_view.h"
@@ -19,11 +21,14 @@
 
 namespace {
 
+static constexpr char kArgumentMustBeAList[] = " must be a list";
 static constexpr char kBase64UrlError[] = " must be a base64url encoded string";
 static constexpr char kDevToolsDidNotReturnExpectedValue[] =
     "DevTools did not return the expected value";
 static constexpr char kExtensionsMustBeList[] =
     "extensions must be a list of strings";
+static constexpr char kItemsMustBeBase64UrlEncoded[] =
+    " items must be base64url encoded strings";
 static constexpr char kUnrecognizedExtension[] =
     " is not a recognized extension";
 static constexpr char kUnrecognizedProtocol[] =
@@ -43,46 +48,75 @@ base::DictValue MapParams(
   return options;
 }
 
+// Converts a single base64url encoded string |value| to base64. Returns a
+// status error if the value is not a string or if conversion failed.
+[[nodiscard]] Status ConvertValueBase64UrlToBase64(
+    base::Value& value,
+    std::string_view error_message) {
+  if (!value.is_string()) {
+    return Status(kInvalidArgument, std::string(error_message));
+  }
+  std::string& str = value.GetString();
+  std::string temp;
+  if (!Base64UrlDecode(str, base::Base64UrlDecodePolicy::IGNORE_PADDING,
+                       &temp)) {
+    return Status(kInvalidArgument, std::string(error_message));
+  }
+  str = base::Base64Encode(temp);
+  return Status(kOk);
+}
+
+// Converts a single base64 encoded string |value| to base64url.
+[[nodiscard]] Status ConvertValueBase64ToBase64Url(base::Value& value) {
+  if (!value.is_string()) {
+    return Status(kInvalidArgument, kDevToolsDidNotReturnExpectedValue);
+  }
+  std::string& str = value.GetString();
+  std::string temp;
+  if (!base::Base64Decode(str, &temp)) {
+    return Status(kInvalidArgument, kDevToolsDidNotReturnExpectedValue);
+  }
+  base::Base64UrlEncode(temp, base::Base64UrlEncodePolicy::OMIT_PADDING, &str);
+  return Status(kOk);
+}
+
 // Converts the string |keys| in |params| from base64url to base64. Returns a
 // status error if conversion of one of the keys failed.
-Status ConvertBase64UrlToBase64(base::DictValue& params,
-                                const std::vector<std::string>& keys) {
+[[nodiscard]] Status ConvertBase64UrlToBase64(
+    base::DictValue& params,
+    const std::vector<std::string>& keys) {
   for (const std::string& key : keys) {
     base::Value* maybe_value = params.Find(key);
-    if (!maybe_value)
+    if (!maybe_value) {
       continue;
-
-    if (!maybe_value->is_string())
-      return Status(kInvalidArgument, key + kBase64UrlError);
-
-    std::string& value = maybe_value->GetString();
-    std::string temp;
-    if (!Base64UrlDecode(value, base::Base64UrlDecodePolicy::IGNORE_PADDING,
-                         &temp)) {
-      return Status(kInvalidArgument, key + kBase64UrlError);
     }
 
-    value = base::Base64Encode(temp);
+    Status status = ConvertValueBase64UrlToBase64(
+        *maybe_value, base::StrCat({key, kBase64UrlError}));
+    if (status.IsError()) {
+      return status;
+    }
   }
 
   return Status(kOk);
 }
 
 // Converts the string |keys| in |params| from base64 to base64url.
-void ConvertBase64ToBase64Url(base::DictValue& params,
-                              const std::vector<std::string>& keys) {
+[[nodiscard]] Status ConvertBase64ToBase64Url(
+    base::DictValue& params,
+    const std::vector<std::string>& keys) {
   for (const std::string& key : keys) {
-    std::string* maybe_value = params.FindString(key);
-    if (!maybe_value)
+    base::Value* maybe_value = params.Find(key);
+    if (!maybe_value) {
       continue;
+    }
 
-    std::string temp;
-    bool result = base::Base64Decode(*maybe_value, &temp);
-    DCHECK(result);
-
-    base::Base64UrlEncode(temp, base::Base64UrlEncodePolicy::OMIT_PADDING,
-                          maybe_value);
+    Status status = ConvertValueBase64ToBase64Url(*maybe_value);
+    if (status.IsError()) {
+      return status;
+    }
   }
+  return Status(kOk);
 }
 
 // Maps the signCount parameter, handling null as -1.
@@ -95,6 +129,50 @@ void MapSignCount(const base::DictValue& params, base::DictValue& target) {
       target.Set("signCount", sign_count->Clone());
     }
   }
+}
+
+// Converts a list of base64url encoded strings in `params` under `key` to
+// base64. Returns a status error if conversion of one of the items failed.
+[[nodiscard]] Status ConvertListBase64UrlToBase64(base::DictValue& params,
+                                                  std::string_view key) {
+  base::Value* maybe_value = params.Find(key);
+  if (!maybe_value) {
+    return Status(kOk);
+  }
+
+  if (!maybe_value->is_list()) {
+    return Status(kInvalidArgument, base::StrCat({key, kArgumentMustBeAList}));
+  }
+
+  for (base::Value& item : maybe_value->GetList()) {
+    Status status = ConvertValueBase64UrlToBase64(
+        item, base::StrCat({key, kItemsMustBeBase64UrlEncoded}));
+    if (status.IsError()) {
+      return status;
+    }
+  }
+  return Status(kOk);
+}
+
+// Converts a list of base64 encoded strings in `params` under `key` to
+// base64url.
+[[nodiscard]] Status ConvertListBase64ToBase64Url(base::DictValue& params,
+                                                  std::string_view key) {
+  base::Value* maybe_value = params.Find(key);
+  if (!maybe_value) {
+    return Status(kOk);
+  }
+  if (!maybe_value->is_list()) {
+    return Status(kInvalidArgument, kDevToolsDidNotReturnExpectedValue);
+  }
+
+  for (base::Value& item : maybe_value->GetList()) {
+    Status status = ConvertValueBase64ToBase64Url(item);
+    if (status.IsError()) {
+      return status;
+    }
+  }
+  return Status(kOk);
 }
 
 }  // namespace
@@ -149,6 +227,8 @@ Status ExecuteAddVirtualAuthenticator(WebView* web_view,
         mapped_params.SetByDottedPath("options.hasMinPinLength", true);
       } else if (extension_string == "prf") {
         mapped_params.SetByDottedPath("options.hasPrf", true);
+      } else if (extension_string == "cmtgKey") {
+        mapped_params.SetByDottedPath("options.hasCmtgKey", true);
       } else {
         return Status(kUnsupportedOperation,
                       extension_string + kUnrecognizedExtension);
@@ -212,6 +292,10 @@ Status ExecuteAddCredential(WebView* web_view,
           {"credential.backupState", "backupState"},
           {"credential.userName", "userName"},
           {"credential.userDisplayName", "userDisplayName"},
+          {"credential.cmtgKeys", "cmtgKeys"},
+          {"credential.activeCmtgKeyIndex", "activeCmtgKeyIndex"},
+          {"credential.generateCmtgKeyOnNextOperation",
+           "generateCmtgKeyOnNextOperation"},
       },
       params);
   base::DictValue* credential = mapped_params.FindDict("credential");
@@ -223,6 +307,10 @@ Status ExecuteAddCredential(WebView* web_view,
     return status;
 
   MapSignCount(params, *credential);
+  status = ConvertListBase64UrlToBase64(*credential, "cmtgKeys");
+  if (status.IsError()) {
+    return status;
+  }
 
   return web_view->SendCommandAndGetResult("WebAuthn.addCredential",
                                            mapped_params, value);
@@ -250,12 +338,19 @@ Status ExecuteGetCredentials(WebView* web_view,
     if (sign_count && sign_count->is_int() && sign_count->GetInt() == -1) {
       credential.GetDict().Set("signCount", base::Value());
     }
-    ConvertBase64ToBase64Url(
+    status = ConvertBase64ToBase64Url(
         credential.GetDict(),
         {"credentialId", "privateKey", "userHandle", "largeBlob"});
+    if (status.IsError()) {
+      return status;
+    }
+    status = ConvertListBase64ToBase64Url(credential.GetDict(), "cmtgKeys");
+    if (status.IsError()) {
+      return status;
+    }
   }
   *value = std::make_unique<base::Value>(std::move(*credentials));
-  return status;
+  return Status(kOk);
 }
 
 Status ExecuteRemoveCredential(WebView* web_view,
@@ -306,6 +401,8 @@ Status ExecuteSetCredentialProperties(WebView* web_view,
           {"credentialId", "credentialId"},
           {"backupEligibility", "backupEligibility"},
           {"backupState", "backupState"},
+          {"activeCmtgKeyIndex", "activeCmtgKeyIndex"},
+          {"generateCmtgKeyOnNextOperation", "generateCmtgKeyOnNextOperation"},
       },
       params);
   Status status = ConvertBase64UrlToBase64(mapped_params, {"credentialId"});
