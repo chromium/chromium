@@ -876,6 +876,7 @@ void PasteFromGeminiIfAllowedByContentAnalysis(
       dialog_data.text.push_back(std::move(data));
       dialog_data.reason =
           enterprise_connectors::ContentAnalysisRequest::CLIPBOARD_PASTE;
+      dialog_data.initiating_frame_id = destination->GetGlobalId();
       dialog_data.clipboard_source.set_context(
           enterprise_connectors::ContentMetaData::CopiedTextSource::
               GEMINI_IN_CHROME);

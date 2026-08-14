@@ -22,9 +22,10 @@
 #include "components/enterprise/connectors/core/common.h"
 #include "components/enterprise/connectors/core/content_analysis_data.h"
 #include "components/enterprise/connectors/core/content_analysis_delegate_base.h"
+#include "content/public/browser/global_routing_id.h"
 
 namespace content {
-class WebContent;
+class WebContents;
 struct ClipboardPasteData;
 }  // namespace content
 
@@ -85,6 +86,10 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase,
     // `content::ClipboardPasteData` object.
     void AddClipboardData(
         const content::ClipboardPasteData& clipboard_paste_data);
+
+    // ID of the frame initiating the action. If provided, frame URL chain
+    // collection starts from this frame instead of the currently focused frame.
+    std::optional<content::GlobalRenderFrameHostId> initiating_frame_id;
   };
 
   // Result of deep scanning.  Each Result contains the verdicts of deep scans

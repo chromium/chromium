@@ -357,6 +357,9 @@ void FileSelectHelper::PerformContentAnalysisIfNeeded(
   if (enterprise_connectors::ContentAnalysisDelegate::IsEnabled(
           profile_, web_contents_->GetLastCommittedURL(), &data,
           enterprise_connectors::AnalysisConnector::FILE_ATTACHED)) {
+    if (render_frame_host_) {
+      data.initiating_frame_id = render_frame_host_->GetGlobalId();
+    }
     data.reason =
         enterprise_connectors::ContentAnalysisRequest::FILE_PICKER_DIALOG;
     data.paths.reserve(list.size());

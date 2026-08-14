@@ -2163,6 +2163,7 @@ void ChromeFileSystemAccessPermissionContext::CheckPathsAgainstEnterprisePolicy(
 
   data.reason =
       enterprise_connectors::ContentAnalysisRequest::FILE_PICKER_DIALOG;
+  data.initiating_frame_id = frame_id;
 
 #if BUILDFLAG(IS_CHROMEOS)
   storage::FileSystemContext* file_system_context = nullptr;

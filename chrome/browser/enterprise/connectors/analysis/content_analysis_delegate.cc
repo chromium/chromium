@@ -555,7 +555,8 @@ ContentAnalysisDelegate::ContentAnalysisDelegate(
   CHECK(web_contents);
   profile_ = Profile::FromBrowserContext(web_contents->GetBrowserContext());
   url_ = web_contents->GetLastCommittedURL();
-  frame_url_chain_ = CollectFrameUrls(web_contents, access_point_);
+  frame_url_chain_ =
+      CollectFrameUrls(web_contents, access_point_, data_.initiating_frame_id);
   title_ = base::UTF16ToUTF8(web_contents->GetTitle());
   user_action_id_ = base::HexEncode(base::RandBytesAsVector(128));
   page_content_type_ = web_contents->GetContentsMimeType();

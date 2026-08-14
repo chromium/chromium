@@ -193,8 +193,8 @@ class BaseTest : public testing::Test {
 
   content::WebContents* contents() {
     if (!web_contents_) {
-      content::WebContents::CreateParams params(profile());
-      web_contents_ = content::WebContents::Create(params);
+      web_contents_ = content::WebContentsTester::CreateTestWebContents(
+          profile(), content::SiteInstance::Create(profile()));
     }
     return web_contents_.get();
   }
@@ -213,8 +213,14 @@ class BaseTest : public testing::Test {
     EXPECT_EQ(expect_malware, tags.find("malware") != tags.end());
   }
 
+  void TearDown() override {
+    web_contents_.reset();
+    testing::Test::TearDown();
+  }
+
  protected:
   content::BrowserTaskEnvironment task_environment_;
+  content::RenderViewHostTestEnabler rvh_test_enabler_;
   base::test::ScopedFeatureList scoped_feature_list_;
   TestingPrefServiceSimple pref_service_;
   TestingProfileManager profile_manager_;
@@ -1924,6 +1930,114 @@ TEST_F(ContentAnalysisDelegateUpdateFinalResultTest, Precedence) {
   delegate->UpdateFinalResult(
       FinalContentAnalysisResult::KEPT_IN_MANAGED_CHROME, "dlp", {});
   EXPECT_EQ(FinalContentAnalysisResult::FAILURE, delegate->final_result_);
+}
+
+using ContentAnalysisDelegateFrameUrlChainTest = BaseTest;
+
+TEST_F(ContentAnalysisDelegateFrameUrlChainTest,
+       DefaultToFocusedFrameWhenInitiatingFrameOmitted) {
+  content::WebContentsTester::For(contents())->NavigateAndCommit(
+      GURL(kTestUrl));
+
+  const GURL child_frame_url("https://subframe.example.com/");
+  content::RenderFrameHostTester* rfh_tester =
+      content::RenderFrameHostTester::For(
+          contents()->GetPrimaryMainFrame());
+
+  content::RenderFrameHost* child_frame =
+      rfh_tester->AppendChild("child_frame");
+  child_frame = content::NavigationSimulator::NavigateAndCommitFromDocument(
+      child_frame_url, child_frame);
+
+  // Focus the child frame.
+  content::FocusWebContentsOnFrame(contents(), child_frame);
+
+  ContentAnalysisDelegate::Data data;
+  data.url = GURL("https://example.com");
+  // data.initiating_frame_id is omitted (std::nullopt).
+
+  auto delegate = std::make_unique<MinimalTestContentAnalysisDelegate>(
+      contents(), std::move(data));
+
+  google::protobuf::RepeatedPtrField<std::string> frame_urls =
+      delegate->frame_url_chain();
+
+  ASSERT_EQ(1, frame_urls.size());
+  EXPECT_EQ(child_frame_url.spec(), frame_urls[0]);
+}
+
+TEST_F(ContentAnalysisDelegateFrameUrlChainTest,
+       UsesInitiatingFrameWhenMainFrameFocused) {
+  content::WebContentsTester::For(contents())->NavigateAndCommit(
+      GURL(kTestUrl));
+
+  const GURL child_frame_url("https://subframe.example.com/");
+  content::RenderFrameHostTester* rfh_tester =
+      content::RenderFrameHostTester::For(
+          contents()->GetPrimaryMainFrame());
+
+  content::RenderFrameHost* child_frame =
+      rfh_tester->AppendChild("child_frame");
+  child_frame = content::NavigationSimulator::NavigateAndCommitFromDocument(
+      child_frame_url, child_frame);
+
+  // Focus the main frame, simulating focus change away from the child frame.
+  content::FocusWebContentsOnFrame(contents(),
+                                   contents()->GetPrimaryMainFrame());
+
+  ContentAnalysisDelegate::Data data;
+  data.url = GURL("https://example.com");
+  data.initiating_frame_id = child_frame->GetGlobalId();
+
+  auto delegate = std::make_unique<MinimalTestContentAnalysisDelegate>(
+      contents(), std::move(data));
+
+  google::protobuf::RepeatedPtrField<std::string> frame_urls =
+      delegate->frame_url_chain();
+
+  ASSERT_EQ(1, frame_urls.size());
+  EXPECT_EQ(child_frame_url.spec(), frame_urls[0]);
+}
+
+TEST_F(ContentAnalysisDelegateFrameUrlChainTest,
+       UsesInitiatingFrameWhenSiblingFrameFocused) {
+  content::WebContentsTester::For(contents())->NavigateAndCommit(
+      GURL(kTestUrl));
+
+  const GURL untrusted_frame_url("https://untrusted.example.com/");
+  const GURL trusted_sibling_frame_url("https://trusted-sibling.example.com/");
+
+  content::RenderFrameHostTester* rfh_tester =
+      content::RenderFrameHostTester::For(
+          contents()->GetPrimaryMainFrame());
+
+  content::RenderFrameHost* untrusted_frame =
+      rfh_tester->AppendChild("untrusted_frame");
+  untrusted_frame = content::NavigationSimulator::NavigateAndCommitFromDocument(
+      untrusted_frame_url, untrusted_frame);
+
+  content::RenderFrameHost* trusted_sibling_frame =
+      rfh_tester->AppendChild("trusted_sibling_frame");
+  trusted_sibling_frame =
+      content::NavigationSimulator::NavigateAndCommitFromDocument(
+          trusted_sibling_frame_url, trusted_sibling_frame);
+
+  // Focus the trusted sibling frame, simulating focus shift to a trusted sibling.
+  content::FocusWebContentsOnFrame(contents(), trusted_sibling_frame);
+
+  ContentAnalysisDelegate::Data data;
+  data.url = GURL("https://example.com");
+  data.initiating_frame_id = untrusted_frame->GetGlobalId();
+
+  auto delegate = std::make_unique<MinimalTestContentAnalysisDelegate>(
+      contents(), std::move(data));
+
+  google::protobuf::RepeatedPtrField<std::string> frame_urls =
+      delegate->frame_url_chain();
+
+  // The chain must contain the untrusted initiating frame, NOT the focused sibling.
+  ASSERT_EQ(1, frame_urls.size());
+  EXPECT_EQ(untrusted_frame_url.spec(), frame_urls[0]);
 }
 
 }  // namespace enterprise_connectors
