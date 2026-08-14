@@ -48,6 +48,7 @@ import org.chromium.base.test.util.TestAnimations;
 import org.chromium.base.test.util.TestAnimations.EnableAnimations;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.composeplate.ComposeplateUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
@@ -74,6 +75,7 @@ import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.transit.tabmodel.TabThumbnailsCapturedCarryOn;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.components.tab_groups.TabGroupsFeatureMap;
 import org.chromium.mojo.system.Pair;
@@ -130,6 +132,8 @@ public class TabSwitcherLayoutPTTest {
 
     @Before
     public void setUp() throws ExecutionException {
+        ComposeplateUtils.setIsEnabledForTesting(false);
+        OmniboxFeatures.sUseAskHintForNtp.setForTesting(false);
         // After setUp, Chrome is launched and has one NTP.
         mStartPage = mCtaTestRule.startOnBlankPage();
 
@@ -297,9 +301,6 @@ public class TabSwitcherLayoutPTTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @DisableIf.Build(
-            sdk_equals = Build.VERSION_CODES.BAKLAVA,
-            message = "Flaky on android-16 bots, crbug.com/543240915")
     @DisableIf.Device(DeviceFormFactor.DESKTOP) // crbug.com/545205792
     public void testRenderGrid_PinnedTabs() throws IOException {
         WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
