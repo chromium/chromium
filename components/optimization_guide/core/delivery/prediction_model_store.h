@@ -37,7 +37,7 @@ extern const base::FilePath::CharType kOptimizationGuideModelStoreDirPrefix[];
 class PredictionModelStore {
  public:
   using PredictionModelLoadedCallback =
-      base::OnceCallback<void(std::unique_ptr<proto::PredictionModel>)>;
+      base::OnceCallback<void(std::optional<ModelInfo>)>;
 
   explicit PredictionModelStore(PrefService& local_state);
 

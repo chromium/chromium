@@ -413,7 +413,7 @@ void PredictionManager::StartModelDownload(
 void PredictionManager::MaybeDownloadOrUpdatePredictionModel(
     proto::OptimizationTarget optimization_target,
     const proto::PredictionModel& get_models_response_model,
-    std::unique_ptr<proto::PredictionModel> loaded_model) {
+    std::optional<ModelInfo> loaded_model) {
   if (!loaded_model) {
     // Model load failed, redownload the model.
     ModelProviderRegistry::RecordLifecycleState(
@@ -528,7 +528,7 @@ void PredictionManager::OnModelReady(const base::FilePath& base_model_dir,
   if (registry_.IsRegistered(model.model_info().optimization_target())) {
     OnLoadPredictionModel(model.model_info().optimization_target(),
                           /*record_availability_metrics=*/false,
-                          std::make_unique<proto::PredictionModel>(model));
+                          ModelInfo::CreateFromProto(model));
   }
 }
 
@@ -612,9 +612,13 @@ void PredictionManager::OnPredictionModelOverrideLoaded(
   VLOG(0) << "Loading override for "
           << proto::OptimizationTarget_Name(optimization_target)
           << (is_available ? " succeeded" : " failed");
+  std::optional<ModelInfo> model_info;
+  if (prediction_model) {
+    model_info = ModelInfo::CreateFromProto(*prediction_model);
+  }
   OnLoadPredictionModel(optimization_target,
                         /*record_availability_metrics=*/false,
-                        std::move(prediction_model));
+                        std::move(model_info));
   RecordModelAvailableAtRegistration(optimization_target, is_available);
 }
 
@@ -654,38 +658,32 @@ void PredictionManager::LoadPredictionModels(
 void PredictionManager::OnLoadPredictionModel(
     proto::OptimizationTarget optimization_target,
     bool record_availability_metrics,
-    std::unique_ptr<proto::PredictionModel> model) {
+    std::optional<ModelInfo> model_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!model) {
-    if (record_availability_metrics) {
-      RecordModelAvailableAtRegistration(optimization_target, false);
-    }
-    return;
-  }
-  bool success = ProcessAndStoreLoadedModel(*model);
-  DCHECK_EQ(optimization_target, model->model_info().optimization_target());
+
+  base::UmaHistogramBoolean(
+      base::StrCat({"OptimizationGuide.IsPredictionModelValid.",
+                    GetStringNameForOptimizationTarget(optimization_target)}),
+      model_info.has_value());
+
+  bool success = model_info && registry_.IsRegistered(optimization_target);
   if (record_availability_metrics) {
     RecordModelAvailableAtRegistration(optimization_target, success);
   }
-  OnProcessLoadedModel(*model, success);
-}
-
-void PredictionManager::OnProcessLoadedModel(
-    const proto::PredictionModel& model,
-    bool success) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
   if (success) {
+    int64_t version = model_info->version;
+    if (ShouldUpdateStoredModelForTarget(optimization_target, version)) {
+      StoreLoadedModelInfo(optimization_target, std::move(*model_info));
+    }
     base::UmaHistogramSparse(
         base::StrCat({"OptimizationGuide.PredictionModelLoadedVersion.",
-                      GetStringNameForOptimizationTarget(
-                          model.model_info().optimization_target())}),
-        model.model_info().version());
-    return;
+                      GetStringNameForOptimizationTarget(optimization_target)}),
+        version);
+  } else {
+    RemoveModelFromStore(
+        optimization_target,
+        PredictionModelStoreModelRemovalReason::kModelLoadFailed);
   }
-  RemoveModelFromStore(
-      model.model_info().optimization_target(),
-      PredictionModelStoreModelRemovalReason::kModelLoadFailed);
 }
 
 void PredictionManager::RemoveModelFromStore(
@@ -698,50 +696,6 @@ void PredictionManager::RemoveModelFromStore(
                                          model_removal_reason);
     registry_.RemoveModel(optimization_target);
   }
-}
-
-bool PredictionManager::ProcessAndStoreLoadedModel(
-    const proto::PredictionModel& model) {
-  TRACE_EVENT("optimization_guide",
-              "PredictionManager::ProcessAndStoreLoadedModel");
-
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!model.model_info().has_optimization_target()) {
-    return false;
-  }
-  if (!model.model_info().has_version()) {
-    return false;
-  }
-  if (!model.has_model()) {
-    return false;
-  }
-
-  proto::OptimizationTarget optimization_target =
-      model.model_info().optimization_target();
-  if (!registry_.IsRegistered(optimization_target)) {
-    return false;
-  }
-
-  std::optional<ModelInfo> model_info = ModelInfo::CreateFromProto(model);
-
-  base::UmaHistogramBoolean(
-      base::StrCat({"OptimizationGuide.IsPredictionModelValid.",
-                    GetStringNameForOptimizationTarget(optimization_target)}),
-      !!model_info);
-
-  if (!model_info) {
-    return false;
-  }
-
-  // See if we should update the loaded model.
-  if (!ShouldUpdateStoredModelForTarget(optimization_target,
-                                        model.model_info().version())) {
-    return true;
-  }
-
-  StoreLoadedModelInfo(optimization_target, std::move(*model_info));
-
-  return true;
 }
 
 bool PredictionManager::ShouldUpdateStoredModelForTarget(

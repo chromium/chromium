@@ -224,7 +224,7 @@ void PredictionModelStore::LoadModel(
   auto metadata =
       ledger_.GetEntryIfExists(optimization_target, model_cache_key);
   if (!metadata) {
-    std::move(callback).Run(nullptr);
+    std::move(callback).Run(std::nullopt);
     return;
   }
   if (!metadata->GetKeepBeyondValidDuration() &&
@@ -232,14 +232,14 @@ void PredictionModelStore::LoadModel(
     RemoveModel(
         optimization_target, model_cache_key,
         PredictionModelStoreModelRemovalReason::kModelExpiredOnLoadModel);
-    std::move(callback).Run(nullptr);
+    std::move(callback).Run(std::nullopt);
     return;
   }
   auto base_model_dir = metadata->GetModelBaseDir();
   if (!base_model_dir || base_model_dir->IsAbsolute()) {
     RemoveModel(optimization_target, model_cache_key,
                 PredictionModelStoreModelRemovalReason::kInvalidModelDir);
-    std::move(callback).Run(nullptr);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
@@ -266,24 +266,10 @@ void PredictionModelStore::OnModelLoaded(
   if (!model_info) {
     RemoveModel(optimization_target, model_cache_key,
                 PredictionModelStoreModelRemovalReason::kModelLoadFailed);
-    std::move(callback).Run(nullptr);
+    std::move(callback).Run(std::nullopt);
     return;
   }
-  auto model = std::make_unique<proto::PredictionModel>();
-  model->mutable_model_info()->set_optimization_target(optimization_target);
-  model->mutable_model_info()->set_version(model_info->version);
-  if (model_info->model_metadata) {
-    *model->mutable_model_info()->mutable_model_metadata() =
-        *model_info->model_metadata;
-  }
-  for (const auto& additional_file : model_info->additional_files) {
-    model->mutable_model_info()->add_additional_files()->set_file_path(
-        FilePathToString(additional_file));
-  }
-  model->mutable_model()->set_download_url(
-      FilePathToString(model_info->model_file_path));
-
-  std::move(callback).Run(std::move(model));
+  std::move(callback).Run(std::move(model_info));
 }
 
 void PredictionModelStore::UpdateMetadataForExistingModel(
