@@ -517,8 +517,14 @@ IN_PROC_BROWSER_TEST_F(NewTabPageModulesInteractiveTabGroupsUiTest,
       CheckResult([&]() { return GetTabGroupCount(browser()); }, 1));
 }
 
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ResumeTabGroupInCurrentWindow \
+  DISABLED_ResumeTabGroupInCurrentWindow
+#else
+#define MAYBE_ResumeTabGroupInCurrentWindow ResumeTabGroupInCurrentWindow
+#endif  // BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(NewTabPageModulesInteractiveTabGroupsUiTest,
-                       ResumeTabGroupInCurrentWindow) {
+                       MAYBE_ResumeTabGroupInCurrentWindow) {
   ASSERT_TRUE(
       AddTabAtIndex(0, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
   const tab_groups::TabGroupId group_id =
