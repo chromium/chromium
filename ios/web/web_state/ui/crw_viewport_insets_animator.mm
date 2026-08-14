@@ -9,37 +9,31 @@
 #import <cmath>
 
 #import "base/check.h"
-#import "base/notreached.h"
-#import "ios/web/common/crw_viewport_controller.h"
 
 @implementation CRWViewportInsetsAnimator {
-  __weak UIView<CRWViewportController>* _webView;
-  __weak UIScrollView* _scrollView;
-
   NSTimeInterval _duration;
   UIEdgeInsets _startInsets;
+  CRWViewportInsetsUpdateHandler _updateHandler;
   ProceduralBlock _completion;
 
   CADisplayLink* _insetsDisplayLink;
   CFTimeInterval _animationStartTime;
 }
 
-- (instancetype)initWithWebView:(UIView<CRWViewportController>*)webView
-                     scrollView:(UIScrollView*)scrollView
-                    startInsets:(UIEdgeInsets)startInsets
-                   targetInsets:(UIEdgeInsets)targetInsets
-                       duration:(NSTimeInterval)duration
-                     completion:(ProceduralBlock)completion {
+- (instancetype)initWithStartInsets:(UIEdgeInsets)startInsets
+                       targetInsets:(UIEdgeInsets)targetInsets
+                           duration:(NSTimeInterval)duration
+                      updateHandler:
+                          (CRWViewportInsetsUpdateHandler)updateHandler
+                         completion:(ProceduralBlock)completion {
   self = [super init];
   if (self) {
-    CHECK(webView);
-    CHECK(scrollView);
-    _webView = webView;
-    _scrollView = scrollView;
+    CHECK(updateHandler);
     _startInsets = startInsets;
     _targetInsets = targetInsets;
     _currentInsets = startInsets;
     _duration = duration;
+    _updateHandler = [updateHandler copy];
     _completion = [completion copy];
   }
   return self;
@@ -69,23 +63,9 @@
 
 #pragma mark - Private
 
-// Applies the specified insets to the scroll view and underlying web view.
-- (void)applyInsets:(UIEdgeInsets)obscuredInsets {
-  UIScrollView* scrollView = _scrollView;
-  scrollView.contentInset = obscuredInsets;
-
-  UIView<CRWViewportController>* webView = _webView;
-  if (webView) {
-    if (@available(iOS 26, *)) {
-      [webView setObscuredContentInsets:obscuredInsets];
-    } else {
-      NOTREACHED();
-    }
-  }
-}
-
 // Handles each display link frame tick, calculates easing interpolation
-// progress, applies intermediate insets, and invokes completion on finish.
+// progress, invokes the update handler with intermediate insets, and runs
+// completion on finish.
 - (void)handleDisplayLink:(CADisplayLink*)displayLink {
   if (_animationStartTime <= 0) {
     _animationStartTime = displayLink.timestamp;
@@ -94,11 +74,13 @@
   double progress = _duration > 0 ? (elapsed / _duration) : 1.0;
   if (progress >= 1.0) {
     UIEdgeInsets targetInsets = _targetInsets;
+    CRWViewportInsetsUpdateHandler updateHandler = _updateHandler;
     ProceduralBlock completion = _completion;
+    _updateHandler = nil;
     _completion = nil;
     [self stop];
     _currentInsets = targetInsets;
-    [self applyInsets:targetInsets];
+    updateHandler(targetInsets);
     if (completion) {
       completion();
     }
@@ -120,7 +102,7 @@
           easedProgress * (_targetInsets.right - _startInsets.right));
 
   _currentInsets = currentInsets;
-  [self applyInsets:currentInsets];
+  _updateHandler(currentInsets);
 }
 
 @end

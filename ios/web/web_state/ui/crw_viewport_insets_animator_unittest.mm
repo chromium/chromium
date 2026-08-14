@@ -6,7 +6,6 @@
 
 #import <QuartzCore/QuartzCore.h>
 
-#import "ios/web/web_state/crw_web_view.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -23,72 +22,67 @@ using CRWViewportInsetsAnimatorTest = PlatformTest;
 // Tests that animating with a positive duration updates insets and fires
 // completion upon finish.
 TEST_F(CRWViewportInsetsAnimatorTest, AnimateWithDurationRunsToCompletion) {
-  if (@available(iOS 26, *)) {
-    CRWWebView* webView = [[CRWWebView alloc] initWithFrame:CGRectZero];
-    UIScrollView* scrollView = [[UIScrollView alloc] init];
+  const NSTimeInterval duration = 0.4;
+  UIEdgeInsets startInsets = UIEdgeInsetsMake(0, 0, 0, 0);
+  UIEdgeInsets targetInsets = UIEdgeInsetsMake(100, 0, 80, 0);
+  __block BOOL completionCalled = NO;
+  __block UIEdgeInsets lastReportedInsets = UIEdgeInsetsZero;
 
-    const NSTimeInterval duration = 0.4;
-    UIEdgeInsets startInsets = UIEdgeInsetsMake(0, 0, 0, 0);
-    UIEdgeInsets targetInsets = UIEdgeInsetsMake(100, 0, 80, 0);
-    __block BOOL completionCalled = NO;
+  CRWViewportInsetsAnimator* animator =
+      [[CRWViewportInsetsAnimator alloc] initWithStartInsets:startInsets
+          targetInsets:targetInsets
+          duration:duration
+          updateHandler:^(UIEdgeInsets insets) {
+            lastReportedInsets = insets;
+          }
+          completion:^{
+            completionCalled = YES;
+          }];
 
-    CRWViewportInsetsAnimator* animator =
-        [[CRWViewportInsetsAnimator alloc] initWithWebView:webView
-                                                scrollView:scrollView
-                                               startInsets:startInsets
-                                              targetInsets:targetInsets
-                                                  duration:duration
-                                                completion:^{
-                                                  completionCalled = YES;
-                                                }];
+  [animator start];
 
-    [animator start];
+  id mockDisplayLink = OCMClassMock([CADisplayLink class]);
+  __block CFTimeInterval mockTimestamp = 100.0;
+  [[[mockDisplayLink stub] andDo:^(NSInvocation* invocation) {
+    [invocation setReturnValue:&mockTimestamp];
+  }] timestamp];
 
-    id mockDisplayLink = OCMClassMock([CADisplayLink class]);
-    __block CFTimeInterval mockTimestamp = 100.0;
-    [[[mockDisplayLink stub] andDo:^(NSInvocation* invocation) {
-      [invocation setReturnValue:&mockTimestamp];
-    }] timestamp];
+  // Tick 1: start (t = 0.0)
+  mockTimestamp = 100.0;
+  [animator handleDisplayLink:mockDisplayLink];
+  EXPECT_FALSE(completionCalled);
 
-    // Tick 1: start (t = 0.0)
-    mockTimestamp = 100.0;
-    [animator handleDisplayLink:mockDisplayLink];
-    EXPECT_FALSE(completionCalled);
+  // Tick 2: end (t = 0.4s)
+  mockTimestamp = 100.4;
+  [animator handleDisplayLink:mockDisplayLink];
 
-    // Tick 2: end (t = 0.4s)
-    mockTimestamp = 100.4;
-    [animator handleDisplayLink:mockDisplayLink];
-
-    EXPECT_TRUE(completionCalled);
-    EXPECT_TRUE(
-        UIEdgeInsetsEqualToEdgeInsets(targetInsets, animator.currentInsets));
-    EXPECT_TRUE(
-        UIEdgeInsetsEqualToEdgeInsets(targetInsets, scrollView.contentInset));
-  }
+  EXPECT_TRUE(completionCalled);
+  EXPECT_TRUE(
+      UIEdgeInsetsEqualToEdgeInsets(targetInsets, animator.currentInsets));
+  EXPECT_TRUE(UIEdgeInsetsEqualToEdgeInsets(targetInsets, lastReportedInsets));
 }
 
-// Tests that stop cancels active animation without invoking completion.
+// Tests that stop cancels active animation without invoking completion or
+// further updates.
 TEST_F(CRWViewportInsetsAnimatorTest, StopAnimationCancelsDisplayLink) {
-  if (@available(iOS 26, *)) {
-    CRWWebView* webView = [[CRWWebView alloc] initWithFrame:CGRectZero];
-    UIScrollView* scrollView = [[UIScrollView alloc] init];
+  __block BOOL completionCalled = NO;
+  __block int updateCount = 0;
+  CRWViewportInsetsAnimator* animator =
+      [[CRWViewportInsetsAnimator alloc] initWithStartInsets:UIEdgeInsetsZero
+          targetInsets:UIEdgeInsetsMake(50, 0, 50, 0)
+          duration:0.3
+          updateHandler:^(UIEdgeInsets insets) {
+            updateCount++;
+          }
+          completion:^{
+            completionCalled = YES;
+          }];
 
-    __block BOOL completionCalled = NO;
-    CRWViewportInsetsAnimator* animator = [[CRWViewportInsetsAnimator alloc]
-        initWithWebView:webView
-             scrollView:scrollView
-            startInsets:UIEdgeInsetsZero
-           targetInsets:UIEdgeInsetsMake(50, 0, 50, 0)
-               duration:0.3
-             completion:^{
-               completionCalled = YES;
-             }];
+  [animator start];
+  [animator stop];
 
-    [animator start];
-    [animator stop];
-
-    EXPECT_FALSE(completionCalled);
-  }
+  EXPECT_FALSE(completionCalled);
+  EXPECT_EQ(0, updateCount);
 }
 
 }  // namespace

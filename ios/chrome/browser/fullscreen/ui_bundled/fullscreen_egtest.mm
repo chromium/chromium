@@ -770,10 +770,6 @@ std::unique_ptr<net::test_server::HttpResponse> NotFoundResponse() {
   if (![ChromeEarlGrey isFullscreenSmoothScrollingSupported]) {
     EARL_GREY_TEST_SKIPPED(@"Smooth scrolling not supported.");
   }
-  if (@available(iOS 26, *)) {
-    [super testLongPDFInitialState];
-    return;
-  }
   GURL URL = self.testServer->GetURL("/two_pages.pdf");
   [ChromeEarlGrey loadURL:URL];
   WaitforPDFExtensionView();
@@ -842,10 +838,6 @@ std::unique_ptr<net::test_server::HttpResponse> NotFoundResponse() {
 - (void)testLongPDFInitialState {
   if (![ChromeEarlGrey isFullscreenSmoothScrollingSupported]) {
     EARL_GREY_TEST_SKIPPED(@"Smooth scrolling not supported.");
-  }
-  if (@available(iOS 26, *)) {
-    [super testLongPDFInitialState];
-    return;
   }
   GURL URL = self.testServer->GetURL("/two_pages.pdf");
   [ChromeEarlGrey loadURL:URL];

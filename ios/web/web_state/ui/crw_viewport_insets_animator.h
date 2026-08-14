@@ -9,22 +9,21 @@
 
 #import "base/ios/block_types.h"
 
-@protocol CRWViewportController;
+// Callback block invoked on each animation frame with interpolated insets.
+typedef void (^CRWViewportInsetsUpdateHandler)(UIEdgeInsets insets);
 
-// Ephemeral helper object that drives frame-by-frame interpolation of
-// `obscuredContentInsets` and scroll view `contentInset` using a CADisplayLink.
-// Instances of this class are intended to exist only for the duration of an
-// active animation.
+// Ephemeral helper object that drives frame-by-frame interpolation of viewport
+// insets using a CADisplayLink.
 @interface CRWViewportInsetsAnimator : NSObject
 
-// Initializes the animator with the target web view, scroll view, start and
-// target insets, duration, and completion callback.
-- (instancetype)initWithWebView:(UIView<CRWViewportController>*)webView
-                     scrollView:(UIScrollView*)scrollView
-                    startInsets:(UIEdgeInsets)startInsets
-                   targetInsets:(UIEdgeInsets)targetInsets
-                       duration:(NSTimeInterval)duration
-                     completion:(ProceduralBlock)completion
+// Initializes the animator with start and target insets, duration, an update
+// handler invoked on each frame tick, and a completion callback.
+- (instancetype)initWithStartInsets:(UIEdgeInsets)startInsets
+                       targetInsets:(UIEdgeInsets)targetInsets
+                           duration:(NSTimeInterval)duration
+                      updateHandler:
+                          (CRWViewportInsetsUpdateHandler)updateHandler
+                         completion:(ProceduralBlock)completion
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

@@ -1723,18 +1723,12 @@ bool IsFullscreenNextIAEnabled() {
 // Calls `callback` for each edge that has a safe area inset.
 - (void)getSafeAreaInsets:(void (^)(UIRectEdge edge, CGFloat amount))callback {
   callback(UIRectEdgeTop, [self topInset]);
-  AppBarPosition position = self.layoutState.appBarPosition;
-  UIEdgeInsets insets = self.rootSafeAreaInsets;
-  if (position == AppBarPosition::kRight && insets.left > 0) {
-    callback(UIRectEdgeLeft, insets.left);
-  } else if (position == AppBarPosition::kLeft && insets.right > 0) {
-    callback(UIRectEdgeRight, insets.right);
-  } else if (IsSplitToolbarMode(self) && !IsChromeNextIaEnabled() &&
-             insets.bottom > 0) {
+  if (IsSplitToolbarMode(self) && !IsChromeNextIaEnabled() &&
+      self.rootSafeAreaInsets.bottom > 0) {
     // Avoid adding the bottom safe area inset when Chrome Next is enabled
     // because the bottom UI elements report heights that already include the
     // safe area.
-    callback(UIRectEdgeBottom, insets.bottom);
+    callback(UIRectEdgeBottom, self.rootSafeAreaInsets.bottom);
   }
 }
 

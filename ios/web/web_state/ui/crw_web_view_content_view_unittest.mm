@@ -200,4 +200,94 @@ TEST_F(CRWWebViewContentViewTest, ObscuredInsetsWithoutAnimation) {
   }
 }
 
+// Tests that scroll view contentInset accounts for safe area insets in
+// kContentInset mode.
+TEST_F(CRWWebViewContentViewTest, ContentInsetAdjustedForSafeArea) {
+  if (!@available(iOS 26, *)) {
+    GTEST_SKIP() << "kContentInset mode is only supported on iOS 26+";
+  }
+  CRWWebView* webView = [[CRWWebView alloc] init];
+  UIScrollView* scrollView = [[UIScrollView alloc] init];
+  [webView addSubview:scrollView];
+  CRWWebViewContentView* contentView = [[CRWWebViewContentView alloc]
+      initWithWebView:webView
+           scrollView:scrollView
+      fullscreenState:CrFullscreenState::kNotInFullScreen];
+  contentView.webViewResizingType = WebViewResizingType::kContentInset;
+
+  id mockContentView = OCMPartialMock(contentView);
+  const UIEdgeInsets safeArea = UIEdgeInsetsMake(0, 20, 0, 30);
+  OCMStub([mockContentView safeAreaInsets]).andReturn(safeArea);
+
+  const UIEdgeInsets obscuredInsets = UIEdgeInsetsMake(10, 5, 10, 5);
+  [mockContentView setObscuredInsets:obscuredInsets];
+
+  const UIEdgeInsets expectedContentInset = UIEdgeInsetsMake(10, 20, 10, 30);
+  EXPECT_TRUE(UIEdgeInsetsEqualToEdgeInsets(expectedContentInset,
+                                            scrollView.contentInset));
+}
+
+// Tests that min/max viewport insets passed to WKWebView are adjusted for safe
+// area insets.
+TEST_F(CRWWebViewContentViewTest, ViewportInsetsAdjustedForSafeArea) {
+  CRWWebView* webView =
+      [[CRWWebView alloc] initWithFrame:CGRectMake(0, 0, 800, 1000)];
+  webView.autoresizingMask =
+      UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+  UIScrollView* scrollView = [[UIScrollView alloc] init];
+  [webView addSubview:scrollView];
+  id mockWebView = OCMPartialMock(webView);
+
+  CRWWebViewContentView* contentView = [[CRWWebViewContentView alloc]
+      initWithWebView:webView
+           scrollView:scrollView
+      fullscreenState:CrFullscreenState::kNotInFullScreen];
+  contentView.webViewResizingType = WebViewResizingType::kContentInset;
+
+  UIWindow* window = [[UIWindow alloc] init];
+  [window addSubview:contentView];
+  contentView.frame = CGRectMake(0, 0, 800, 1000);
+  [contentView layoutIfNeeded];
+
+  id mockContentView = OCMPartialMock(contentView);
+  const UIEdgeInsets safeArea = UIEdgeInsetsMake(0, 25, 0, 35);
+  OCMStub([mockContentView safeAreaInsets]).andReturn(safeArea);
+
+  const UIEdgeInsets minInset = UIEdgeInsetsMake(10, 5, 10, 5);
+  const UIEdgeInsets maxInset = UIEdgeInsetsMake(50, 10, 50, 10);
+  const UIEdgeInsets expectedMinInset = UIEdgeInsetsMake(10, 25, 10, 35);
+  const UIEdgeInsets expectedMaxInset = UIEdgeInsetsMake(50, 25, 50, 35);
+
+  OCMExpect([mockWebView setMinimumViewportInset:expectedMinInset
+                            maximumViewportInset:expectedMaxInset]);
+  [mockContentView setMinimumViewportInset:minInset
+                      maximumViewportInset:maxInset];
+  EXPECT_OCMOCK_VERIFY(mockWebView);
+}
+
+// Tests that the web view frame is adjusted for safe area insets in kFrame mode
+// when obscured insets are non-zero.
+TEST_F(CRWWebViewContentViewTest, FrameAdjustedForSafeAreaInFrameMode) {
+  CRWWebView* webView = [[CRWWebView alloc] init];
+  UIScrollView* scrollView = [[UIScrollView alloc] init];
+  [webView addSubview:scrollView];
+  CRWWebViewContentView* contentView = [[CRWWebViewContentView alloc]
+      initWithWebView:webView
+           scrollView:scrollView
+      fullscreenState:CrFullscreenState::kNotInFullScreen];
+  contentView.webViewResizingType = WebViewResizingType::kFrame;
+  contentView.frame = CGRectMake(0, 0, 800, 600);
+
+  id mockContentView = OCMPartialMock(contentView);
+  const UIEdgeInsets safeArea = UIEdgeInsetsMake(0, 20, 0, 30);
+  OCMStub([mockContentView safeAreaInsets]).andReturn(safeArea);
+
+  const UIEdgeInsets obscuredInsets = UIEdgeInsetsMake(50, 5, 0, 5);
+  [mockContentView setObscuredInsets:obscuredInsets];
+
+  // Frame should be inset by top: 50, left: 20, bottom: 0, right: 30.
+  const CGRect expectedFrame = CGRectMake(20, 50, 750, 550);
+  EXPECT_TRUE(CGRectEqualToRect(expectedFrame, webView.frame));
+}
+
 }  // namespace
