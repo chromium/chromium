@@ -18,12 +18,15 @@
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service_factory.h"
 #include "chrome/browser/bookmarks/bookmark_test_utils.h"
 #include "chrome/browser/extensions/api/bookmark_manager_private/bookmark_manager_private_api.h"
-#include "chrome/browser/ui/bookmarks/bookmark_drag_drop.h"
+#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "chrome/browser/ui/tabs/tab_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
 #include "chrome/browser/ui/webui/bookmarks/bookmark_prefs.h"
 #include "chrome/browser/ui/webui/side_panel/bookmarks/bookmarks.mojom.h"
 #include "chrome/browser/ui/webui/side_panel/bookmarks/bookmarks_side_panel_ui.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
+#include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_node_data.h"
@@ -152,20 +155,32 @@ class CreateFolderFunctionHelper {
   base::RunLoop run_loop_;
 };
 
-class BookmarksPageHandlerTest : public BrowserWithTestWindowTest {
+class BookmarksPageHandlerTest : public ChromeRenderViewHostTestHarness {
  public:
   void SetUp() override {
-    BrowserWithTestWindowTest::SetUp();
+    ChromeRenderViewHostTestHarness::SetUp();
+    ON_CALL(mock_browser_window_interface_, GetProfile())
+        .WillByDefault(testing::Return(profile()));
+    tab_strip_model_delegate_.SetBrowserWindowInterface(
+        &mock_browser_window_interface_);
+    tab_strip_model_ =
+        std::make_unique<TabStripModel>(&tab_strip_model_delegate_, profile());
+    ON_CALL(mock_browser_window_interface_, GetTabStripModel())
+        .WillByDefault(testing::Return(tab_strip_model_.get()));
     CreateHandler();
     LoadBookmarkModel();
   }
 
   void TearDown() override {
+    if (tab_strip_model_) {
+      tab_strip_model_->CloseAllTabs();
+    }
     ClearHandler();
-    BrowserWithTestWindowTest::TearDown();
+    tab_strip_model_.reset();
+    ChromeRenderViewHostTestHarness::TearDown();
   }
 
-  TestingProfile::TestingFactories GetTestingFactories() override {
+  TestingProfile::TestingFactories GetTestingFactories() const override {
     return {TestingProfile::TestingFactory{
         BookmarkModelFactory::GetInstance(),
         BookmarkModelFactory::GetDefaultFactory()}};
@@ -183,6 +198,7 @@ class BookmarksPageHandlerTest : public BrowserWithTestWindowTest {
   content::WebContents* side_panel_web_contents() {
     return fake_side_panel_web_contents_.get();
   }
+  TabStripModel* tab_strip_model() { return tab_strip_model_.get(); }
 
   void CreateHandler(int managed_bookmarks_count = 0) {
     CHECK(!handler_);
@@ -216,7 +232,7 @@ class BookmarksPageHandlerTest : public BrowserWithTestWindowTest {
             profile(), content::SiteInstance::Create(profile()));
     web_ui_.set_web_contents(fake_side_panel_web_contents_.get());
     webui::SetBrowserWindowInterface(fake_side_panel_web_contents_.get(),
-                                     browser());
+                                     &mock_browser_window_interface_);
 
     bookmarks_ui_ = std::make_unique<BookmarksSidePanelUI>(&web_ui_);
 
@@ -255,6 +271,15 @@ class BookmarksPageHandlerTest : public BrowserWithTestWindowTest {
   }
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      switches::kSyncEnableBookmarksInTransportMode};
+
+  const tabs::TabModel::PreventFeatureInitializationForTesting
+      prevent_tab_features_;
+  TestTabStripModelDelegate tab_strip_model_delegate_;
+  std::unique_ptr<TabStripModel> tab_strip_model_;
+  testing::NiceMock<MockBrowserWindowInterface> mock_browser_window_interface_;
+
   std::unique_ptr<sync_preferences::TestingPrefServiceSyncable> prefs_;
 
   std::unique_ptr<bookmarks::ManagedBookmarkService> managed_bookmark_service_;
@@ -267,9 +292,6 @@ class BookmarksPageHandlerTest : public BrowserWithTestWindowTest {
   testing::NiceMock<MockBookmarksPage> mock_bookmarks_page_;
 
   std::unique_ptr<BookmarksPageHandler> handler_;
-
-  base::test::ScopedFeatureList scoped_feature_list_{
-      switches::kSyncEnableBookmarksInTransportMode};
 };
 
 TEST_F(BookmarksPageHandlerTest, SetSortOrder) {
@@ -565,9 +587,6 @@ TEST_F(BookmarksPageHandlerTest,
 }
 
 TEST_F(BookmarksPageHandlerTest, OnBookmarkNodeMoved) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      switches::kSyncEnableBookmarksInTransportMode};
-
   model()->CreateAccountPermanentFolders();
 
   const bookmarks::BookmarkNode* other_node = model()->other_node();
@@ -588,7 +607,13 @@ TEST_F(BookmarksPageHandlerTest, OnBookmarkNodeMoved) {
 
 TEST_F(BookmarksPageHandlerTest, BookmarkCurrentTabInFolder) {
   // Adds tab content that will be used to be bookmarked.
-  AddTab(browser(), GURL("http://www.google.com/"));
+  std::unique_ptr<content::WebContents> tab_contents =
+      content::WebContentsTester::CreateTestWebContents(
+          profile(), content::SiteInstance::Create(profile()));
+  content::WebContentsTester::For(tab_contents.get())
+      ->NavigateAndCommit(GURL("http://www.google.com/"));
+  tab_strip_model()->AppendWebContents(std::move(tab_contents),
+                                       /*foreground=*/true);
 
   const bookmarks::BookmarkNode* other_node = model()->other_node();
   ASSERT_TRUE(other_node->children().empty());
@@ -706,7 +731,7 @@ TEST_F(BookmarksPageHandlerTest, DropBookmarks) {
 
   // Create and prepare the bookmark node data to be dropped.
   bookmarks::BookmarkNodeData data({node1, node2});
-  data.SetOriginatingProfilePath(browser()->GetProfile()->GetPath());
+  data.SetOriginatingProfilePath(profile()->GetPath());
   extensions::BookmarkManagerPrivateDragEventRouter::FromWebContents(
       side_panel_web_contents())
       ->OnDrop(data);
@@ -733,7 +758,7 @@ TEST_F(BookmarksPageHandlerTest, DropManagedBookmark) {
 
   // Create and prepare the bookmark node data to be dropped.
   bookmarks::BookmarkNodeData data({node1, node2});
-  data.SetOriginatingProfilePath(browser()->GetProfile()->GetPath());
+  data.SetOriginatingProfilePath(profile()->GetPath());
   extensions::BookmarkManagerPrivateDragEventRouter::FromWebContents(
       side_panel_web_contents())
       ->OnDrop(data);
@@ -804,7 +829,7 @@ TEST_F(BookmarksPageHandlerTest, DropBookmarksWithAccountNodes) {
 
   // Create and prepare the bookmark node data to be dropped.
   bookmarks::BookmarkNodeData data({node1, node2});
-  data.SetOriginatingProfilePath(browser()->GetProfile()->GetPath());
+  data.SetOriginatingProfilePath(profile()->GetPath());
   extensions::BookmarkManagerPrivateDragEventRouter::FromWebContents(
       side_panel_web_contents())
       ->OnDrop(data);
