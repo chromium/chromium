@@ -20,7 +20,8 @@ export function getHtml(this: AppMenuButtonElement) {
     .tooltip="${this.getTooltip_()}"
     style="--toolbar-chip-trailing-margin: ${this.state.trailingMargin}px">
   ${this.state.labelText ? html`<span>${this.state.labelText}</span>` : ''}
-  <cr-icon id="icon" icon="cr:more-vert" slot="suffix-icon"></cr-icon>
+  <cr-icon id="icon" icon="webui-toolbar:more_vert" slot="suffix-icon">
+  </cr-icon>
 </toolbar-chip-button>
 <!--_html_template_end_-->`;
   // clang-format on
