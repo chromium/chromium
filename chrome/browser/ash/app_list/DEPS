@@ -50,7 +50,6 @@ include_rules = [
   "+chrome/browser/trusted_vault",
   "+chrome/browser/ui/ash",
   "+chrome/browser/ui/browser.h",
-  "+chrome/browser/ui/browser_window.h",
   "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
   "+chrome/browser/ui/browser_window/public/profile_browser_collection.h",
   "+chrome/browser/ui/navigator/browser_navigator.h",
@@ -125,6 +124,7 @@ specific_include_rules = {
   # //chromeos/ash/components/search_engines interface.
   "app_list_client_impl_browsertest\\.cc": [
     "+chrome/browser/search_engines",
+    "+chrome/browser/ui/browser_window.h",
     "+chrome/browser/ui/settings_window_manager_chromeos.h",
     "+ui/message_center/test/message_center_waiter.h",
   ],
