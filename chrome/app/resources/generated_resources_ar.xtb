@@ -80,7 +80,6 @@
 <translation id="1049743911850919806">التصفح المتخفي</translation>
 <translation id="1049795001945932310">إ&amp;عدادات اللغة</translation>
 <translation id="1050693411695664090">ضعيفة</translation>
-<translation id="1050765387089990494">اكتب ردًا مختصرًا ومهذبًا لرفض دعوة</translation>
 <translation id="1053226848101751430">تم حذف الإدخال</translation>
 <translation id="1054048317165655285">إكمال الإعداد على هاتفك</translation>
 <translation id="1054153489933238809">فتح الصورة الأصلية في علامة تبويب جديدة</translation>
@@ -111,7 +110,6 @@
 <translation id="1070705170564860382">جارٍ الفتح في متصفِّح بديل خلال <ph name="COUNTDOWN_SECONDS" /> ثانية</translation>
 <translation id="1071661533099313342">فصل طرق العرض</translation>
 <translation id="1072700771426194907">‏تم التعرّف على جهاز USB</translation>
-<translation id="1073951898092443918">أعِد كتابة رسالتي الإلكترونية من خلال تعديل الأسلوب ليكون أكثر إقناعًا</translation>
 <translation id="1075920807995555452">‏يمكنك تشغيل الأدوات وأدوات التحرير وبرامج IDE في بيئة تديرها مؤسستك على <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="1076176485976385390">التنقُّل بين الصفحات باستخدام مؤشر النص</translation>
 <translation id="1076730357641144594">يمكنك الاطّلاع على مفاتيح المرور المحفوظة وإدارتها من خلال "<ph name="GOOGLE_PASSWORD_MANAGER" />"</translation>
@@ -366,7 +364,6 @@
 <translation id="1256143630373008432">تعذّر الاختبار الذاتي</translation>
 <translation id="1257336506558170607">تصدير الشهادة التي تم اختيارها</translation>
 <translation id="1258491128795710625">الميزات الجديدة</translation>
-<translation id="1259438590315804994">صِغ مقدمة لرسالة تعريفية تسلّط الضوء على مهاراتي وخبراتي لدور محدّد</translation>
 <translation id="1260451001046713751">السماح دائمًا بعرض النوافذ المنبثقة وعمليات إعادة التوجيه من الموقع <ph name="HOST" /></translation>
 <translation id="1261380933454402672">معتدل</translation>
 <translation id="1262395978737369974">‏المواقع الإلكترونية المسموح لها دائمًا باستخدام ميزة تحسين JavaScript</translation>
@@ -662,7 +659,6 @@
 <translation id="1506187449813838456">زيادة درجة الصوت</translation>
 <translation id="1507170440449692343">تم حظر دخول هذه الصفحة إلى الكاميرا التابعة لك.</translation>
 <translation id="1507246803636407672">إل&amp;غاء</translation>
-<translation id="1508605873202255562">أريد إنشاء جدول بيانات مخصّص لتتبُّع التقدّم لمساعدتي في تحقيق أهدافي</translation>
 <translation id="1508931164824684991">‏السماح للمواقع الإلكترونية باستخدام JavaScript</translation>
 <translation id="1509163368529404530">استعادة المجموعة</translation>
 <translation id="1509281256533087115">‏الوصول إلى أي <ph name="DEVICE_NAME_AND_VENDOR" /> عبر USB</translation>
@@ -719,7 +715,6 @@
 <translation id="1549788673239553762">يريد <ph name="APP_NAME" /> الوصول إلى <ph name="VOLUME_NAME" />. قد يعدّل أو يحذف ملفاتك.</translation>
 <translation id="1549966883323105187">الوصول بسرعة إلى كلمات المرور المحفوظة</translation>
 <translation id="1550656959113606473">‏إعدادات Chrome التلقائية</translation>
-<translation id="1550906923175308360">أنشِئ لي قائمة مهام لليوم لمساعدتي في إنجاز أعمالي</translation>
 <translation id="1552301827267621511">غيرت الإضافة "<ph name="EXTENSION_NAME" />" البحث لاستخدام <ph name="SEARCH_PROVIDER_DOMAIN" />.</translation>
 <translation id="1552752544932680961">إدارة الإضافة</translation>
 <translation id="1553538517812678578">غير محدودة</translation>
@@ -1237,7 +1232,6 @@
 <translation id="1940221956626514677">تخصيص شريط الأدوات</translation>
 <translation id="1940546824932169984">الأجهزة المتصلة</translation>
 <translation id="194081218158106711">جارٍ التحقق من تغيير كلمة المرور...</translation>
-<translation id="1940937679128415504">هل هناك أي طاولات متاحة في مطاعم قريبة الليلة؟</translation>
 <translation id="1941410638996203291">وقت البدء: <ph name="TIME" /></translation>
 <translation id="1941553344801134989">الإصدار: <ph name="APP_VERSION" /></translation>
 <translation id="1941685451584875710">‏ضبطَ المشرف إعدادات حسابك لربطه بخدمة Microsoft OneDrive تلقائيًا، ولكن حدث خطأ.</translation>
@@ -2530,7 +2524,6 @@
 <translation id="2939908794993783865">المزيد من المواقع الإلكترونية غير النشطة</translation>
 <translation id="2939938020978911855">عرض أجهزة بلوتوث المُتاحة</translation>
 <translation id="2941112035454246133">منخفضة</translation>
-<translation id="2942170180325421996">ساعِدني في حسم نقاش مع صديق من خلال تقديم تحليل موضوعي يستند إلى البيانات ويعرض وجهتَي النظر بإنصاف</translation>
 <translation id="2942560570858569904">جارٍ الانتظار...</translation>
 <translation id="2942581856830209953">تخصيص هذه الصفحة</translation>
 <translation id="2942707801577151363">‏بإمكانك فتح ملفات Word وExcel وPowerPoint وتعديلها وحفظها. قد يكون عليك الاشتراك للاستفادة من بعض الميزات.</translation>
@@ -2848,7 +2841,6 @@
 <translation id="3179982752812949580">خط النص</translation>
 <translation id="31806439105337256">عرض علامات التبويب عموديًا</translation>
 <translation id="3180990259147710757">تحريك الفك إلى اليسار</translation>
-<translation id="3181307292207270140">‏أبحث عن مقهى مريح يمكنني فيه الاسترخاء قليلاً والقراءة وإنجاز بعض الأعمال. هل يمكنك العثور على أماكن قريبة معروفة بأنّها هادئة ومريحة، وبها شبكة Wi-Fi موثوقة؟</translation>
 <translation id="3181825792072797598">تفعيل المزامنة</translation>
 <translation id="3181954750937456830">التصفُّح الآمن (يحميك ويحمي جهازك من المواقع الإلكترونية الضارة)</translation>
 <translation id="3182749001423093222">التدقيق الإملائي</translation>
@@ -3150,7 +3142,6 @@
 <translation id="3415580428903497523">استخدام الشهادات المُخزَّنة على الجهاز التي تم استيرادها من نظام التشغيل</translation>
 <translation id="341589277604221596">عرض ميزة "النسخ النصي التلقائي" باللغة <ph name="LANGUAGE" /></translation>
 <translation id="3416468988018290825">‏عرض عناوين URL الكاملة دائمًا</translation>
-<translation id="3417390269491141648">قارِن بين خيارات خطتي الصحية ووضِّح الاختلافات الرئيسية بينها</translation>
 <translation id="3417835166382867856">البحث في علامات التبويب</translation>
 <translation id="3417836307470882032">التوقيت العسكري</translation>
 <translation id="3418798368381485936">لا يمكنك تسجيل الدخول باستخدام هذا الحساب</translation>
@@ -3459,7 +3450,6 @@
 <translation id="3647654707956482440">يتعذّر استخدام هذا الرابط. يُرجى التحقق من الرابط بحثًا عن الأخطاء الإملائية أو استخدام رابط آخر ثم إعادة المحاولة.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{تم استلام <ph name="ATTACHMENTS" /> من جهاز <ph name="DEVICE_NAME" />}zero{تم استلام <ph name="ATTACHMENTS" /> من جهاز <ph name="DEVICE_NAME" />}two{تم استلام <ph name="ATTACHMENTS" /> من جهاز <ph name="DEVICE_NAME" />}few{تم استلام <ph name="ATTACHMENTS" /> من جهاز <ph name="DEVICE_NAME" />}many{تم استلام <ph name="ATTACHMENTS" /> من جهاز <ph name="DEVICE_NAME" />}other{تم استلام <ph name="ATTACHMENTS" /> من جهاز <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3648348069317717750">تم اكتشاف <ph name="USB_DEVICE_NAME" /></translation>
-<translation id="3648667207586409316">ما هي بعض الإجراءات التي يمكنني اتخاذها للمساعدة في تقليل التوتر؟</translation>
 <translation id="3650845953328929506">تحميل السجلّ مُعلّق.</translation>
 <translation id="3651488188562686558">‏قطع الاتصال بشبكة Wi-Fi</translation>
 <translation id="3652181838577940678">تحديد مكان الأزرار على قلم الشاشة</translation>
@@ -3667,7 +3657,6 @@
 <translation id="3786224729726357296">حذف البيانات والأذونات الخاصة بالموقع الإلكتروني <ph name="SITE" /></translation>
 <translation id="3786834302860277193">إظهار التسطير للنص التجميعي</translation>
 <translation id="3786890785076278600">خط ثابت</translation>
-<translation id="3787429331139352881">أعِد كتابة النص التالي بأسلوب احترافي ومهذب وواضح ومناسب لبيئة العمل. حافِظ على جوهر الرسالة الأصلية مع تحسين الأسلوب ليكون مناسبًا للجمهور التنفيذي: [يُرجى إدخال النص هنا]</translation>
 <translation id="3787434344076711519">في انتظار الترجمة</translation>
 <translation id="3789432704615470433">‏ملفات SharePoint وOneDrive</translation>
 <translation id="3789841737615482174">تثبيت</translation>
@@ -3956,7 +3945,6 @@
 <translation id="3987544746655539083">مواصلة حظر هذا الموقع الإلكتروني من الوصول إلى موقعك الجغرافي</translation>
 <translation id="3987993985790029246">نسخ الرابط</translation>
 <translation id="3988124842897276887">‏علامة التبويب هذه متصلة بجهاز USB.</translation>
-<translation id="3988734044246990738">ساعِدني في إنشاء قائمة بمستلزمات رحلتي القادمة للتأكّد من عدم نسيان الأمور المهمة</translation>
 <translation id="3989635538409502728">تسجيل الخروج</translation>
 <translation id="399179161741278232">المستوردة</translation>
 <translation id="3992008114154328194">جارٍ تنزيل "<ph name="FILE_NAME" />"، <ph name="STATUS" /></translation>
@@ -4012,7 +4000,6 @@
 <translation id="4039966970282098406">يمكنك إدارة خصوصيتك من خلال التحكّم في إمكانية الوصول إلى الميكروفون والكاميرا وغير ذلك</translation>
 <translation id="4040041015953651705">لغة النص المطلوب ترجمته</translation>
 <translation id="4040854068229263729">الإ&amp;زالة من القاموس</translation>
-<translation id="4042611013811262481">أنشِئ قائمة تسوّق استنادًا إلى وصفة طعام أو خطة وجبات</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{الخروج من الصفحة}zero{الخروج من صفحة}two{الخروج من الصفحتين}few{الخروج من صفحات}many{الخروج من صفحة}other{الخروج من صفحة}}</translation>
 <translation id="4042941173059740150">المتابعة إلى <ph name="SITE_ETLD_PLUS_ONE" /> باستخدام <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4043267180218562935">حجم مؤشر الماوس</translation>
@@ -4239,7 +4226,6 @@
 <translation id="4235965441080806197">إلغاء تسجيل الدخول</translation>
 <translation id="4235976607074422892">سرعة الانتقال للأعلى أو للأسفل</translation>
 <translation id="4236163961381003811">الاطّلاع على مزيد من الإضافات</translation>
-<translation id="4238607350028440048">ساعدني في التدرُّب على مقابلة، من خلال طرح أسئلة عليّ كما لو أنّك مدير توظيف</translation>
 <translation id="4241140145060464825">محتوى التطبيق</translation>
 <translation id="4241224519481557898">الفئة</translation>
 <translation id="4242245038391716252">‏تم التنزيل بواسطة الإضافة: &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
@@ -4251,7 +4237,6 @@
 <translation id="4243624244759495699"><ph name="LOCALE" />، الدرجة <ph name="GRADE" /></translation>
 <translation id="4244238649050961491">العثور على المزيد من تطبيقات قلم الشاشة</translation>
 <translation id="4246980464509998944">التعليقات الإضافية:</translation>
-<translation id="42481816218163154">أريد إنشاء روتين صباحي لمدة 15 دقيقة يساعدني على بدء يومي بشكل أكثر سلاسة. يجب تضمين تمرين لليقظة والوعي التام</translation>
 <translation id="4248401726442101648">لم يتم توصيل أي كاميرات.</translation>
 <translation id="4249116869350613769">توفير شحن البطارية</translation>
 <translation id="4249373718504745892">تم حظر دخول هذه الصفحة إلى الكاميرا والميكروفون التابعين لك.</translation>
@@ -4260,7 +4245,6 @@
 <translation id="4250596587221570622">اختيار مظهر لملفك الشخصي</translation>
 <translation id="4250680216510889253">لا</translation>
 <translation id="4251243704979202079">سيتمكّن <ph name="ORIGIN" /> من عرض الملفات الموجودة في "<ph name="FOLDERNAME" />" وإنشاء نُسخ منها</translation>
-<translation id="4251676308358173916">ساعدني في إنشاء تمرين لكامل الجسم لمدة 10 دقائق. أريد التركيز على القوة والقدرة على التحمّل والمرونة</translation>
 <translation id="4252899949534773101">البلوتوث غير مُفعَّل</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - تمت مشاركة محتوى علامة التبويب</translation>
 <translation id="4253168017788158739">ملاحظة</translation>
@@ -4300,7 +4284,6 @@
 <translation id="4276390967705106170">الفتح في علامة تبويب متصفِّح جديدة</translation>
 <translation id="4276598757692536305">‏ملف PPD للطابعة</translation>
 <translation id="4277434192562187284">‏مصدر ملفات XML للإعدادات</translation>
-<translation id="4277442707759481607">أنشِئ أسئلة تدريبية لاختبار معرفتي بموضوع معيّن</translation>
 <translation id="4278390842282768270">مسموح به</translation>
 <translation id="4279129444466079448">‏يمكنك تثبيت <ph name="PROFILE_LIMIT" /> ملف شخصي لبطاقة eSIM كحد أقصى على هذا الجهاز. لإضافة ملف شخصي آخر، عليك أولاً إزالة أحد الملفات الشخصية الحالية.</translation>
 <translation id="427987768447457592">مجموعة علامات تبويب جديدة</translation>
@@ -4400,7 +4383,6 @@
 <translation id="435185728237714178">الانتقال إلى تطبيق "<ph name="APP_NAME" />" لإدارة التطبيقات التي يتم تثبيتها وبثّها</translation>
 <translation id="4352913519324947509">لم يتم تغيير كلمة المرور، ولكن ما زال بإمكانك الوصول إلى الموقع الإلكتروني باستخدام كلمة المرور الحالية</translation>
 <translation id="4354073718307267720">طلب الإذن عند محاولة موقع إلكتروني إنشاء خريطة ثلاثية الأبعاد للبيئة المحيطة بك أو تتبُّع موضع الكاميرا</translation>
-<translation id="435434000498374342">أنشِئ جدول تدريب لمدة 8 أسابيع لشخص مبتدئ تمامًا يريد الجري لمسافة 5 كيلومترات. يجب أن يتضمّن الجدول فترات متناوبة من المشي والجري، وأيامًا مخصّصة للاستراحة</translation>
 <translation id="4354344420232759511">ستظهر المواقع التي تزورها هنا.</translation>
 <translation id="4356100841225547054">إيقاف الصوت</translation>
 <translation id="4357583358198801992">عرض مجموعات علامات التبويب</translation>
@@ -4451,7 +4433,6 @@
 <translation id="4385985255515673508">{NUM_EXTENSIONS,plural, =1{تم إيقاف هذه الإضافة لأنّها أصبحت غير متوافقة}zero{تم إيقاف هذه الإضافات لأنّها أصبحت غير متوافقة}two{تم إيقاف هاتين الإضافتين لأنّهما أصبحتا غير متوافقتين}few{تم إيقاف هذه الإضافات لأنّها أصبحت غير متوافقة}many{تم إيقاف هذه الإضافات لأنّها أصبحت غير متوافقة}other{تم إيقاف هذه الإضافات لأنّها أصبحت غير متوافقة}}</translation>
 <translation id="4386435410933281983">يتعذَّر الحفظ. يُرجى إعادة المحاولة</translation>
 <translation id="4386604394450371010">نظرة عامة</translation>
-<translation id="4387362115623213806">ساعِدني في صياغة ردّ مهذّب للاعتذار عن ترتيبات لقاء</translation>
 <translation id="4387890294700445764">كلمات مرور محتمَل تعرّضها للاختراق</translation>
 <translation id="4388650384344483842">يجب استخدام 8 أحرف على الأقل.</translation>
 <translation id="4388700905120039425">{COUNT,plural, =1{كلمة المرور للموقع الإلكتروني <ph name="URL" />}zero{كلمات المرور للموقع الإلكتروني <ph name="URL" /> ({COUNT})}two{كلمات المرور للموقع الإلكتروني <ph name="URL" /> ({COUNT})}few{كلمات المرور للموقع الإلكتروني <ph name="URL" /> ({COUNT})}many{كلمات المرور للموقع الإلكتروني <ph name="URL" /> ({COUNT})}other{كلمات المرور للموقع الإلكتروني <ph name="URL" /> ({COUNT})}}</translation>
@@ -4530,7 +4511,6 @@
 <translation id="4437879751057074691">اقتراح حفظ كلمات المرور ومفاتيح المرور</translation>
 <translation id="4437947179446780764">إضافة مقدِّم خدمة مخصّص لنظام أسماء النطاقات</translation>
 <translation id="4438043733494739848">شفاف</translation>
-<translation id="4439665841041786039">هل يمكنك مساعدتي في تبادل الأفكار لحلّ مشكلتي؟</translation>
 <translation id="4441147046941420429">للمواصلة، يُرجى إزالة مفتاح الأمان من جهازك، ثم إعادة إدخاله ولمسه.</translation>
 <translation id="444134486829715816">توسيع...</translation>
 <translation id="4441928470323187829">ثبَّت المشرف هذه الإضافة.</translation>
@@ -4591,7 +4571,6 @@
         <ph name="BREAK" />
         <ph name="BREAK" />
         يمكنك إدارة الإعدادات من قائمة البطاقة أو الاطّلاع على المزيد من الخيارات عند النقر على الزر "تخصيص Chrome".</translation>
-<translation id="4503459574136856756">أعِد كتابة سيرتي الذاتية لتصبح أكثر احترافية</translation>
 <translation id="4504940961672722399">استخدم هذه الإضافة بالنقر على هذا الرمز أو بالضغط على <ph name="EXTENSION_SHORTCUT" />.</translation>
 <translation id="4505469832694348179">‏يمكنك تنزيل Chrome باستخدام رمز الاستجابة السريعة هذا، ثم تسجيل الدخول إلى حسابك على Google.</translation>
 <translation id="450552327874992444">تمت إضافة الكلمة مُسبَقًا.</translation>
@@ -4865,7 +4844,6 @@
 <translation id="4711638718396952945">استعادة الإعدادات</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4713409221649555176">حذف البيانات عند إغلاق جميع النوافذ</translation>
-<translation id="4714279348049646935">‏أريد احتساب المعدّل التراكمي (GPA) من خلال ترجيح الساعات المعتمدة ومستويات الدورات التعليمية، وقيم نقاط الدرجات</translation>
 <translation id="4714414859110184926">الوصول إلى مفاتيح المرور</translation>
 <translation id="4715631922189108923">تعديل اسم المستخدم</translation>
 <translation id="47158868804223727">انقر على اسم المجموعة لتوسيعها أو تصغيرها.</translation>
@@ -4924,7 +4902,6 @@
 <translation id="4759202969060787081">عدم فتح الملف</translation>
 <translation id="4759238208242260848">عمليات التنزيل</translation>
 <translation id="4761104368405085019">استخدام الميكروفون</translation>
-<translation id="4762155283275129615">أريد اختصار رسالتي الإلكترونية من خلال التركيز على النقاط الأساسية</translation>
 <translation id="4762489666082647806">لون مؤشر الماوس</translation>
 <translation id="4762718786438001384">مساحة القرص على الجهاز منخفضة للغاية</translation>
 <translation id="4762849514113423887">كلمة المرور غير صحيحة. يُرجى إعادة المحاولة.</translation>
@@ -5273,7 +5250,6 @@
 <translation id="5015344424288992913">إثبات هوية الخادم الوسيط...</translation>
 <translation id="5016305686459575361">من خلال توصيل هاتفك، يمكنك إجراء ما يلي:</translation>
 <translation id="5016491575926936899">يمكنك إرسال رسائل نصية من جهاز الكمبيوتر ومشاركة اتصالك بالإنترنت والرد على إشعارات المحادثات وفتح قفل جهاز <ph name="DEVICE_TYPE" /> باستخدام هاتفك.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
-<translation id="5016793191388570244">أريد إنشاء برنامج ممتع لمشاهدة عدة أفلام في عطلة نهاية الأسبوع. اقترِح موضوعًا و4 أفلام على الأقل يجب مشاهدتها، ووجبات خفيفة مناسبة لتناولها أثناء المشاهدة</translation>
 <translation id="5017250179386090956">جارٍ تنزيل ملفات التعليقات التوضيحية للعقدة الرئيسية</translation>
 <translation id="5017529052065664584">آخر 15 دقيقة</translation>
 <translation id="5018207570537526145">فتح الموقع الإلكتروني الخاص بالإضافة</translation>
@@ -5457,7 +5433,6 @@
 <translation id="5154917547274118687">الذاكرة</translation>
 <translation id="5155299520372681119">انتهت صلاحية تحميل الملف وتمت إزالته.</translation>
 <translation id="5156638757840305347">يتم تمييز المؤشر عند ظهوره أو تحريكه.</translation>
-<translation id="5156995531130738884">صِغ خطة درس تتضمّن جلسة تفاعلية لصفّي</translation>
 <translation id="5157250307065481244">عرض تفاصيل الموقع الإلكتروني</translation>
 <translation id="5159094275429367735">‏إعداد نظام التشغيل Crostini</translation>
 <translation id="5159236862360390997">سيتم عرض سلسلة من فقاعات المساعدة التي تتضمّن تعليمات.
@@ -5516,7 +5491,6 @@
 <translation id="5195074424945754995">‏لن يؤدي فرض فتح عناوين URL المتوافقة مع هذه القواعد إلى تبديل المتصفِّح، ويمكن فتح هذه العناوين في متصفِّح <ph name="BROWSER_NAME" /> أو متصفِّح <ph name="ALTERNATIVE_BROWSER_NAME" /> البديل.</translation>
 <translation id="5196790039230503600">استخدِم الإيماءة، ثم حرِّك رأسك لإظهار المكان الذي تريد إفلات العنصر فيه ثمّ استخدِمها مرة أخرى لإفلاته.</translation>
 <translation id="5197255632782567636">الإنترنت</translation>
-<translation id="5197384040493814274">قدِّم لي بعض النصائح التي تساعدني على الترويج لعلامتي التجارية، مع تضمين نصائح حول كيفية تحسين موقعي الإلكتروني</translation>
 <translation id="5199729219167945352">التجارب</translation>
 <translation id="5200191131577845078">تم السماح بإرسال الإشعارات من <ph name="DOMAIN" /></translation>
 <translation id="5200680225062692606">بصمة الإصبع مقفلة. للمتابعة، أدخِل كلمة المرور.</translation>
@@ -5629,7 +5603,6 @@
 <translation id="5290322819358431297">الملء التلقائي لكلمات المرور</translation>
 <translation id="52912272896845572">ملف المفتاح الخاص غير صالح.</translation>
 <translation id="5293043095535566171">هل تريد السماح بالوصول إلى الموقع الجغرافي؟</translation>
-<translation id="5293160437421672778">ابحث عن مطاعم مناسبة للعائلة تتيح إجراء الحجوزات. يجب أن يكون بها قائمة طعام للأطفال وأن تكون أجواؤها مريحة</translation>
 <translation id="5293170712604732402">استعادة الإعدادات إلى الوضع التلقائي الأصلي</translation>
 <translation id="5294068591166433464">‏إذا حاول موقع إلكتروني سرقة كلمة المرور، أو إذا نزّلت ملفًا ضارًا، قد يرسِل Chrome أيضًا عناوين URL، بما في ذلك أجزاء من محتوى الصفحة، إلى Google.</translation>
 <translation id="5294618183559481278">‏يستخدم جهاز <ph name="DEVICE_TYPE" /> أداة استشعار مدمجة لرصد مَن ينظر إلى شاشة جهازك. تتم معالجة جميع البيانات فورًا على جهازك، ثم حذفها. ولا يتم مطلقًا إرسال بيانات جهاز الاستشعار إلى Google. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
@@ -6011,7 +5984,6 @@
 <translation id="5596627076506792578">خيارات إضافية</translation>
 <translation id="5600706100022181951">سيستهلك تنزيل التحديث <ph name="UPDATE_SIZE_MB" /> ميغابايت من بيانات الجوّال. هل ترغب في المتابعة؟</translation>
 <translation id="5601503069213153581">رقم التعريف الشخصي</translation>
-<translation id="5601519850195445492">أنشِئ روتين تمارين رياضية لمدة 10 دقائق يمكنني ممارسته في غرفتي، بدون تضمين القفز أو حركات تسبّب ضوضاء</translation>
 <translation id="5601833336918638013">عدم السماح للمواقع الإلكترونية بالبحث عن أجهزة تتضمّن بلوتوث</translation>
 <translation id="5602586420788540146">فتح في مجموعة علامات تبويب جديدة</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{تم حظر هذه الإضافة}zero{تم حظر هذه الإضافات}two{تم حظر هاتين الإضافتين}few{تم حظر هذه الإضافات}many{تم حظر هذه الإضافات}other{تم حظر هذه الإضافات}}</translation>
@@ -6146,7 +6118,6 @@
 <translation id="5720729194423017301">اختصارات للمواقع الإلكترونية ومحركات البحث</translation>
 <translation id="572155275267014074">‏إعدادات Android</translation>
 <translation id="5722086096420375088">أخضر وأبيض</translation>
-<translation id="5722778418591961221">أريد التخطيط لروتين لياقة بدنية في المنزل يساعدني في تحقيق أهدافي</translation>
 <translation id="572328651809341494">علامات التبويب الأخيرة</translation>
 <translation id="5723508132121499792">ليس هناك تطبيقات خلفية قيد التشغيل</translation>
 <translation id="5724723163580775373">تركيز على نطاق كبير</translation>
@@ -6943,7 +6914,6 @@
 <translation id="635100112331897007">‏عرض جميع سياسات Chrome</translation>
 <translation id="6351178441572658285">لغات التطبيقات</translation>
 <translation id="6352992678231622317">تم نقل علامة التبويب إلى الأسفل</translation>
-<translation id="635394585025793320">أريد أن أُبهر شخصاً ما. ابحث عن طاولات متاحة لشخصَين في المطاعم الرائجة الآن</translation>
 <translation id="6355632359041940003">تولّي المهمة</translation>
 <translation id="6356537493253478650">هادئ</translation>
 <translation id="63566973648609420">‏لا يمكن لأحد قراءة بياناتك المشفرة سوى من لديه عبارة المرور التي تستخدمها. ولا يتم إرسال عبارة المرور إلى شركة Google أو تخزينها لديها. إذا نسيت عبارة المرور أو رغبت في تغيير هذا الإعداد، فسيلزمك <ph name="BEGIN_LINK" />إعادة ضبط المزامنة<ph name="END_LINK" />.</translation>
@@ -7198,7 +7168,6 @@
 <translation id="6557199166823345360">أضِف المزيد من التفاصيل أو اطرح سؤالاً حول اختيارك لتحسين عملية البحث</translation>
 <translation id="6557290421156335491">اختصاراتي</translation>
 <translation id="6558098963164662391">الإ&amp;زالة من القاموس</translation>
-<translation id="6558249393995317167">هل يمكنك توضيح مراحل حياة النجوم بالتفصيل؟</translation>
 <translation id="6560061709899140565">عرض جلسات البثّ الأخرى</translation>
 <translation id="656065428026159829">عرض المزيد</translation>
 <translation id="6561877237303825108">قد يكون نوع الملف (<ph name="TYPE" />) هذا خطيرًا. لذا يُرجى عدم حفظ هذا الملف إلا إذا كان <ph name="ORIGIN" /> موثوقًا</translation>
@@ -7642,7 +7611,6 @@
 <translation id="6873156759937047811">رقم التعريف الشخصي:</translation>
 <translation id="6873571253135628430">تغيير أذونات الموقع الإلكتروني</translation>
 <translation id="6874986444867497677">تعذَّر إكمال التثبيت. يُرجى إعادة المحاولة أو إغلاق هذه النافذة.</translation>
-<translation id="6875515581501280009">أنشِئ لي خطة واقعية للابتعاد عن الأجهزة الرقمية في عطلة نهاية الأسبوع هذه</translation>
 <translation id="6876155724392614295">دراجة</translation>
 <translation id="6876469544038980967">غير مفيد</translation>
 <translation id="6878422606530379992">استخدام أجهزة الاستشعار مسموح به</translation>
@@ -7778,9 +7746,7 @@
 <translation id="6981982820502123353">تسهيل الاستخدام</translation>
 <translation id="6983507711977005608">قطع الاتصال بشبكة "التوصيل الفوري"</translation>
 <translation id="6983890893900549383">Escape</translation>
-<translation id="6984095691972094111">أحاول تعلُّم لغة جديدة. أنشِئ اختبارًا لمساعدتي في التدرُّب على المفردات والقواعد النحوية</translation>
 <translation id="698428203349952091">إضافة الموقع الإلكتروني إلى قائمة المواقع الإلكترونية غير المسموح بها</translation>
-<translation id="698450079873764780">ساعِدني في الاستعداد لمحادثة صعبة من خلال تقمُّص الأدوار معي، حتى أتمكّن من التدرّب على ردودي</translation>
 <translation id="6985235333261347343">‏عامل استرداد مفتاح Microsoft</translation>
 <translation id="698524779381350301">السماح بالوصول إلى المواقع التالية تلقائيًا</translation>
 <translation id="6985607387932385770">الطابعات</translation>
@@ -7917,7 +7883,6 @@
 <translation id="7088434364990739311">تعذّر بدء التحقق من التحديثات (رمز الخطأ <ph name="ERROR" />).</translation>
 <translation id="7088960765736518739">الوصول عبر مفتاح تبديل</translation>
 <translation id="7089253021944603172">علامة التبويب نشطة مجددًا</translation>
-<translation id="7090698782953528257">ساعِدني في تمثيل دالة بيانيًا لتوضيح المعادلة الرياضية ومعاينة شكل المنحنى</translation>
 <translation id="7090714929377281710">إيقاف نقطة الاتصال تلقائيًا</translation>
 <translation id="7092452922791061650">انقر بزر الماوس الأيمن على علامة التبويب هذه واختَر "إضافة علامة التبويب الحالية إلى وضع تقسيم العرض الجديد"</translation>
 <translation id="7092504544229909737">‏لا يمكن استخدام هذا الحساب مع تطبيقات Android</translation>
@@ -8588,7 +8553,6 @@
 <translation id="7620049858153799769">‏في إطار جهود تحسين Gemini، قد يطّلع فريق من المراجعين على المحادثات المتعلّقة بعلامات التبويب التي تمت مشاركتها.</translation>
 <translation id="7620083113061729689">مزامنة السجلّ</translation>
 <translation id="7620616707541471029">اختيار حساب للمتابعة</translation>
-<translation id="7621546470643449009">أنشِئ دليلاً للمبتدئين حول رصد النجوم لمساعدتي في معرفة ما يجب البحث عنه في السماء ليلاً، مع تضمين 3 مجموعات نجمية يسهل التعرّف عليها</translation>
 <translation id="7621595347123595643">لن تتمكّن من استرداد البيانات المحلّية في حال نسيان كلمة المرور أو رقم التعريف الشخصي.</translation>
 <translation id="762200934554267613">السماح للمواقع الإلكترونية بطلب الوصول إلى التطبيقات والخدمات الأخرى على هذا الجهاز</translation>
 <translation id="7622768823216805500">تعمل المواقع الإلكترونية عادةً على تثبيت معالجات الدفع لتتيح ميزات التسوّق، مثل الدفع بسهولة.</translation>
@@ -8642,7 +8606,6 @@
 <translation id="7659154729610375585">هل تريد الخروج من وضع التصفُّح المتخفي على أي حال؟</translation>
 <translation id="7659336857671800422">الاطّلاع على دليل الخصوصية</translation>
 <translation id="7660146600670077843">انقر بزر الماوس الأيمن على علامة تبويب واختَر "إضافة علامة تبويب إلى المجموعة الجديدة".</translation>
-<translation id="7661440329832413796">‏ساعِدني في تعلّم البرمجة بلغة Python</translation>
 <translation id="7662535435481776002">فاتح منخفض التباين</translation>
 <translation id="7663719505383602579">المتلقي: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7663774460282684730">اختصارات لوحة المفاتيح المتوفّرة</translation>
@@ -9091,7 +9054,6 @@
 ملف المفتاح: <ph name="KEY_FILE" />
 
 احتفظ بملف المفتاح في مكان آمن، حيث ستحتاج إليه لإنشاء إصدارات جديدة من إضافتك.</translation>
-<translation id="7999482381722829925">أنشِئ قائمة تحقّق مرتّبة حسب الأولوية لتنظيف غرف المنزل بعمق، مع التركيز على الأماكن التي لا يتم الانتباه إليها غالبًا</translation>
 <translation id="8000020256436988724">شريط الأدوات</translation>
 <translation id="800117767980299235">تمييز النص المقروء</translation>
 <translation id="8001561107130904792">مشاركة محتوى الصفحة</translation>
@@ -9434,7 +9396,6 @@
 <translation id="8256319818471787266">اللامع</translation>
 <translation id="8257950718085972371">متابعة حظر الدخول إلى الكاميرا</translation>
 <translation id="8258027225380843424">تم الاستيراد</translation>
-<translation id="8258311291367036761">هل يمكنك مساعدتي في التفكير مليًا في أمر ما؟</translation>
 <translation id="8259048637628995340">‏اربط هاتفك الذي يعمل بنظام تشغيل Android للحصول على تجربة استخدام سلسة</translation>
 <translation id="8260177673299865994">تحسين حماية عمليات التنزيل</translation>
 <translation id="8260864402787962391">الماوس</translation>
@@ -9534,7 +9495,6 @@
 <translation id="8327544198829180337">إغلاق هذا العرض</translation>
 <translation id="8328228852664998535">في حال المتابعة، سيتم حذف كلمات المرور ومفاتيح المرور والبيانات الأخرى نهائيًا من "<ph name="BRAND" />". ولن يتم حذف أي حسابات أنشأتها للمواقع الإلكترونية أو التطبيقات.</translation>
 <translation id="8328777765163860529">إغلاق الكل</translation>
-<translation id="8329314618548024109">اطرح عليّ أسئلة حول شعوري، واستخدِم إجاباتي لإنشاء قائمة تشغيل مخصّصة تناسب حالتي المزاجية</translation>
 <translation id="8330617762701840933">قائمة المواقع الإلكترونية التي تتم إعادة توجيهها إلى المتصفِّح البديل</translation>
 <translation id="8330689128072902965">يمكن لجهات الاتصال القريبة مشاركة المحتوى معك. انقر لتغيير هذه الإعدادات.</translation>
 <translation id="8331323939220256760">{FILE_TYPE_COUNT,plural, =1{نوع الملف المتوافق: <ph name="FILE_TYPE1" />}=2{نوعا الملفات المتوافقان: <ph name="FILE_TYPE1" /> و<ph name="FILE_TYPE2" />}=3{أنواع الملفات المتوافقة: <ph name="FILE_TYPE1" /> و<ph name="FILE_TYPE2" /> و<ph name="FILE_TYPE3" />}=4{أنواع الملفات المتوافقة: <ph name="FILE_TYPE1" /> و<ph name="FILE_TYPE2" /> و<ph name="FILE_TYPE3" /> و<ph name="FILE_TYPE4" />}zero{أنواع الملفات المتوافقة: <ph name="FILE_TYPE1" /> و<ph name="FILE_TYPE2" /> و<ph name="FILE_TYPE3" /> و<ph name="FILE_TYPE4" /> (<ph name="LINK" />و{OVERFLOW_COUNT} نوع آخر<ph name="END_LINK" />)}few{أنواع الملفات المتوافقة: <ph name="FILE_TYPE1" /> و<ph name="FILE_TYPE2" /> و<ph name="FILE_TYPE3" /> و<ph name="FILE_TYPE4" /> (<ph name="LINK" />و{OVERFLOW_COUNT} أنواع أخرى<ph name="END_LINK" />)}many{أنواع الملفات المتوافقة: <ph name="FILE_TYPE1" /> و<ph name="FILE_TYPE2" /> و<ph name="FILE_TYPE3" /> و<ph name="FILE_TYPE4" /> (<ph name="LINK" />و{OVERFLOW_COUNT} نوعًا آخر<ph name="END_LINK" />)}other{أنواع الملفات المتوافقة: <ph name="FILE_TYPE1" /> و<ph name="FILE_TYPE2" /> و<ph name="FILE_TYPE3" /> و<ph name="FILE_TYPE4" /> (<ph name="LINK" />و{OVERFLOW_COUNT} نوع آخر<ph name="END_LINK" />)}}</translation>
@@ -10188,7 +10148,6 @@
 <translation id="8841884135319684422">إنهاء المهمّة</translation>
 <translation id="8842594465773264717">حذف بصمة الإصبع هذه</translation>
 <translation id="8845001906332463065">الحصول على مساعدة</translation>
-<translation id="8845586173202501576">أريد إنشاء جدول زمني للدراسة لمدة 7 أيام للاستعداد لامتحاني القادم باستخدام تقنية "بومودورو" والتكرار المتباعد، علمًا بأنّني لا أريد الدراسة بشكل مكثّف في اليوم السابق للاختبار، لذا احرِص على أن يتضمّن اليوم السابق مراجعة خفيفة وقسطًا كافيًا من النوم</translation>
 <translation id="8846132060409673887">قراءة نموذج هذا الكمبيوتر والشركة المصنِّعة</translation>
 <translation id="8846239054091760429">ميزة "الصوت الأحادي" وأصوات بدء التشغيل وميزة "النسخ النصي التلقائي" وغيرها</translation>
 <translation id="8847988622838149491">USB</translation>
@@ -10264,10 +10223,8 @@
 <translation id="8898786835233784856">اختيار علامة التبويب التالية</translation>
 <translation id="8898790559170352647">‏إضافة حسابك على Microsoft</translation>
 <translation id="8898822736010347272">‏إرسال عناوين URL الخاصّة ببعض الصفحات التي تزورها، وعدد محدود من معلومات النظام، وبعض أنواع محتوى الصفحات إلى Google، وذلك للمساعدة على اكتشاف التهديدات الجديدة وتوفير الحماية لجميع المستخدمين على الويب</translation>
-<translation id="8899299346165404002">صِغ مسودة لمخطط ينظّم أفكاري في تنسيق واضح وموجز</translation>
 <translation id="8899851313684471736">&amp;فتح الرّابط في نافذة جديدة</translation>
 <translation id="8900413463156971200">تفعيل شبكة الجوّال</translation>
-<translation id="8901147364315347044">أريد أفكارًا لاختيار هدايا فريدة لشخص ما، استنادًا إلى هواياته واهتماماته التي سأشاركها معك</translation>
 <translation id="8902667442496790482">فتح إعدادات سماع الاختيار</translation>
 <translation id="8903733144777177139">تم حظر الوصول إلى الميكروفون.</translation>
 <translation id="8904787158537906492">تم نسخ الرابط إلى الحافظة</translation>

@@ -80,7 +80,6 @@
 <translation id="1049743911850919806">גלישה פרטית</translation>
 <translation id="1049795001945932310">הגד&amp;רות שפה</translation>
 <translation id="1050693411695664090">איכות גרועה</translation>
-<translation id="1050765387089990494">תנסח תשובה קצרה ומנומסת לדחיית ההזמנה</translation>
 <translation id="1053226848101751430">הערך נמחק</translation>
 <translation id="1054048317165655285">יש להשלים את ההגדרה בטלפון</translation>
 <translation id="1054153489933238809">פתיחת ה&amp;תמונה המקורית בכרטיסייה חדשה</translation>
@@ -111,7 +110,6 @@
 <translation id="1070705170564860382">פתיחה בדפדפן חלופי בעוד <ph name="COUNTDOWN_SECONDS" /> שניות</translation>
 <translation id="1071661533099313342">תצוגות נפרדות</translation>
 <translation id="1072700771426194907">‏זוהה התקן USB</translation>
-<translation id="1073951898092443918">תשכתב את האימייל שלי ותשנה את הטון כך שיישמע משכנע יותר</translation>
 <translation id="1075920807995555452">‏הפעלת כלים, עורכים וסביבות פיתוח משולבות (IDE) בסביבה שמנוהלת על ידי הארגון שלך ב-<ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="1076176485976385390">ניווט בדפים באמצעות סמן הטקסט</translation>
 <translation id="1076730357641144594">יש לך אפשרות לראות ולנהל את מפתחות הגישה ששמורים ב<ph name="GOOGLE_PASSWORD_MANAGER" /></translation>
@@ -366,7 +364,6 @@
 <translation id="1256143630373008432">הבדיקה העצמית נכשלה</translation>
 <translation id="1257336506558170607">ייצוא האישור שנבחר</translation>
 <translation id="1258491128795710625">מה חדש</translation>
-<translation id="1259438590315804994">תנסח לי מכתב להגשת מועמדות למשרה מסוימת שמדגיש את הכישורים והניסיון שלי</translation>
 <translation id="1260451001046713751">התרה תמיד של חלונות קופצים והפניות אוטומטיות מ-<ph name="HOST" /></translation>
 <translation id="1261380933454402672">מתון</translation>
 <translation id="1262395978737369974">‏תמיד יש הרשאה להשתמש באופטימיזציה של JavaScript</translation>
@@ -662,7 +659,6 @@
 <translation id="1506187449813838456">הגברת גובה הצליל</translation>
 <translation id="1507170440449692343">דף זה נחסם לגישה למצלמה שלך.</translation>
 <translation id="1507246803636407672">&amp;התעלמות</translation>
-<translation id="1508605873202255562">תיצור כלי מעקב בהתאמה אישית שיעזור לי להגיע ליעדים שלי</translation>
 <translation id="1508931164824684991">‏אתרים יכולים להשתמש ב-JavaScript</translation>
 <translation id="1509163368529404530">&amp;שחזור הקבוצה</translation>
 <translation id="1509281256533087115">‏גישה לכל מכשיר של <ph name="DEVICE_NAME_AND_VENDOR" /> באמצעות USB</translation>
@@ -719,7 +715,6 @@
 <translation id="1549788673239553762"><ph name="APP_NAME" /> רוצה לגשת אל <ph name="VOLUME_NAME" />. ייתכן שהוא יישנה או ימחק את הקבצים.</translation>
 <translation id="1549966883323105187">אפשר לגשת מהר יותר לסיסמאות השמורות</translation>
 <translation id="1550656959113606473">‏ברירת המחדל של Chrome</translation>
-<translation id="1550906923175308360">תיצור לי רשימת משימות להיום כדי לעזור לי לעמוד ביעדים</translation>
 <translation id="1552301827267621511">התוסף "<ph name="EXTENSION_NAME" />" שינה את הגדרות החיפוש לשימוש ב-<ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
 <translation id="1552752544932680961">נהל תוספים</translation>
 <translation id="1553538517812678578">לא מוגבל</translation>
@@ -1244,7 +1239,6 @@
 <translation id="1940221956626514677">התאמה אישית של סרגל הכלים</translation>
 <translation id="1940546824932169984">מכשירים מחוברים</translation>
 <translation id="194081218158106711">מאשרים את שינוי הסיסמה…</translation>
-<translation id="1940937679128415504">יש שולחנות פנויים במסעדות בסביבה הערב?</translation>
 <translation id="1941410638996203291">שעת ההתחלה <ph name="TIME" /></translation>
 <translation id="1941553344801134989">גרסה: <ph name="APP_VERSION" /></translation>
 <translation id="1941685451584875710">‏לפי הגדרת האדמין שלך, החשבון אמור להתחבר אוטומטית ל-Microsoft OneDrive, אבל משהו השתבש.</translation>
@@ -2539,7 +2533,6 @@
 <translation id="2939908794993783865">אתרים נוספים שאינם פעילים</translation>
 <translation id="2939938020978911855">‏הצגת מכשירי Bluetooth זמינים</translation>
 <translation id="2941112035454246133">נמוכה</translation>
-<translation id="2942170180325421996">תעזור לי ליישב ויכוח עם חבר. תן לי ניתוח אובייקטיבי שמבוסס על נתונים ומייצג את שני הצדדים בצורה הוגנת.</translation>
 <translation id="2942560570858569904">המערכת ממתינה...</translation>
 <translation id="2942581856830209953">התאמה אישית של הדף הזה</translation>
 <translation id="2942707801577151363">‏פתיחה, עריכה ושמירה של קובצי Word,‏ Excel ו-PowerPoint. יכול להיות שנדרש מינוי לשימוש בתכונות מסוימות.</translation>
@@ -2857,7 +2850,6 @@
 <translation id="3179982752812949580">גופן הטקסט</translation>
 <translation id="31806439105337256">הצגת הכרטיסיות לאורך</translation>
 <translation id="3180990259147710757">מזיזים את הלסת שמאלה</translation>
-<translation id="3181307292207270140">‏בא לי לשבת בבית קפה נעים, להתנתק קצת, לקרוא ואולי גם לעבוד. תוכל להציע לי מקומות שקטים ונוחים בסביבה עם חיבור טוב ל-Wi-Fi?</translation>
 <translation id="3181825792072797598">הפעלת סנכרון</translation>
 <translation id="3181954750937456830">גלישה בטוחה (מגנה עליך ועל המכשיר מפני אתרים מסוכנים)</translation>
 <translation id="3182749001423093222">בדיקת איות</translation>
@@ -3159,7 +3151,6 @@
 <translation id="3415580428903497523">שימוש באישורים מקומיים שיובאו ממערכת ההפעלה</translation>
 <translation id="341589277604221596">כתוביות מיידיות – <ph name="LANGUAGE" /></translation>
 <translation id="3416468988018290825">‏הצגה של כתובות URL מלאות בכל המקרים</translation>
-<translation id="3417390269491141648">תשווה בין האפשרויות שלי לביטוח בריאות ותפרט את ההבדלים העיקריים ביניהן</translation>
 <translation id="3417835166382867856">חיפוש כרטיסיות</translation>
 <translation id="3417836307470882032">שעון 24 שעות</translation>
 <translation id="3418798368381485936">אי אפשר להיכנס באמצעות החשבון הזה</translation>
@@ -3468,7 +3459,6 @@
 <translation id="3647654707956482440">אי אפשר להשתמש בקישור הזה. יש לבדוק אם הקישור מכיל שגיאות הקלדה או להשתמש בקישור אחר ולנסות שוב.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> התקבל מהמכשיר <ph name="DEVICE_NAME" />}one{<ph name="ATTACHMENTS" /> התקבלו מהמכשיר <ph name="DEVICE_NAME" />}two{<ph name="ATTACHMENTS" /> התקבלו מהמכשיר <ph name="DEVICE_NAME" />}other{<ph name="ATTACHMENTS" /> התקבלו מהמכשיר <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3648348069317717750">המערכת זיהתה את <ph name="USB_DEVICE_NAME" /></translation>
-<translation id="3648667207586409316">מה אפשר לעשות כדי להפחית את הלחץ?</translation>
 <translation id="3650845953328929506">העלאת היומן בהמתנה.</translation>
 <translation id="3651488188562686558">‏ניתוק חיבור ה-Wi-Fi</translation>
 <translation id="3652181838577940678">איתור כפתורים בעט</translation>
@@ -3675,7 +3665,6 @@
 <translation id="3786224729726357296">מחיקת הנתונים מהאתר <ph name="SITE" /> וההרשאות שלו</translation>
 <translation id="3786834302860277193">הצגת קו תחתון לטקסט מוקלד</translation>
 <translation id="3786890785076278600">קו סטטי</translation>
-<translation id="3787429331139352881">תשכתב את הטקסט הבא כך שיישמע מקצועי, מנומס וברור. תשמור על המסר המרכזי המקורי, אבל תעלה את המשלב כך שיתאים לקהל של מנהלים: [כאן מוסיפים את הטקסט].</translation>
 <translation id="3787434344076711519">בהמתנה לתרגום</translation>
 <translation id="3789432704615470433">‏קבצים ב-SharePoint וב-OneDrive</translation>
 <translation id="3789841737615482174">התקנה</translation>
@@ -3967,7 +3956,6 @@
 <translation id="3987544746655539083">להמשיך לחסום – האתר לא יקבל גישה למיקום שלך</translation>
 <translation id="3987993985790029246">העתקת קישור</translation>
 <translation id="3988124842897276887">‏הכרטיסייה הזו מחוברת להתקן USB</translation>
-<translation id="3988734044246990738">תכין לי רשימה של דברים שצריך לארוז לנסיעה הקרובה. תעזור לי לוודא שלא שכחתי שום דבר חשוב.</translation>
 <translation id="3989635538409502728">יציאה</translation>
 <translation id="399179161741278232">מיובאות</translation>
 <translation id="3992008114154328194">מתבצעת הורדה לקובץ <ph name="FILE_NAME" />,‏ <ph name="STATUS" /></translation>
@@ -4023,7 +4011,6 @@
 <translation id="4039966970282098406">ניהול ההגדרות לשמירה על פרטיות באמצעות הרשאות הגישה למיקרופון, למצלמה ועוד</translation>
 <translation id="4040041015953651705">שפת המקור לתרגום</translation>
 <translation id="4040854068229263729">&amp;הסרה מהמילון</translation>
-<translation id="4042611013811262481">תכין לי רשימת קניות לפי מתכון או תוכנית לארוחה</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{יציאה מהדף}one{יציאה מהדפים}two{יציאה מהדפים}other{יציאה מהדפים}}</translation>
 <translation id="4042941173059740150">יש לך אפשרות להמשיך לאתר <ph name="SITE_ETLD_PLUS_ONE" /> עם החשבון <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4043267180218562935">גודל הסמן</translation>
@@ -4250,7 +4237,6 @@
 <translation id="4235965441080806197">ביטול כניסה</translation>
 <translation id="4235976607074422892">מהירות הגלילה</translation>
 <translation id="4236163961381003811">תוספים נוספים</translation>
-<translation id="4238607350028440048">אני רוצה להתכונן לריאיון עבודה. תעזור לי להתאמן ותשאל אותי שאלות כמו מנהל גיוס עובדים.</translation>
 <translation id="4241140145060464825">תוכן אפליקציות</translation>
 <translation id="4241224519481557898">קטגוריה</translation>
 <translation id="4242245038391716252">‏הורדה על ידי התוסף: &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
@@ -4262,7 +4248,6 @@
 <translation id="4243624244759495699"><ph name="LOCALE" />, רמה <ph name="GRADE" /></translation>
 <translation id="4244238649050961491">חיפוש עוד אפליקציות לשימוש בסטיילוס</translation>
 <translation id="4246980464509998944">הערות נוספות:</translation>
-<translation id="42481816218163154">תיצור שגרת בוקר של 15 דקות שתעזור לי להתחיל את הבוקר בצורה חלקה יותר. תוודא שהיא כוללת תרגיל מיינדפולנס.</translation>
 <translation id="4248401726442101648">לא מחוברת מצלמה</translation>
 <translation id="4249116869350613769">חיסכון בסוללה</translation>
 <translation id="4249373718504745892">הגישה של הדף הזה למצלמה ולמיקרופון נחסמה.</translation>
@@ -4271,7 +4256,6 @@
 <translation id="4250596587221570622">בחירת עיצוב לפרופיל</translation>
 <translation id="4250680216510889253">לא</translation>
 <translation id="4251243704979202079">ל-<ph name="ORIGIN" /> תהיה הרשאה לגשת לקבצים בתיקייה <ph name="FOLDERNAME" /> וליצור מהם עותקים משלו</translation>
-<translation id="4251676308358173916">תעזור לי ליצור אימון כושר של 10 דקות לכל הגוף. אני רוצה להתמקד בכוח, בסיבולת ובגמישות.</translation>
 <translation id="4252899949534773101">‏Bluetooth מושבת</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - תוכן הכרטיסייה שותף</translation>
 <translation id="4253168017788158739">הערה</translation>
@@ -4311,7 +4295,6 @@
 <translation id="4276390967705106170">פתיחה בכרטיסייה חדשה בדפדפן</translation>
 <translation id="4276598757692536305">‏קובץ PPD של המדפסת</translation>
 <translation id="4277434192562187284">‏מקור להגדרות XML</translation>
-<translation id="4277442707759481607">תיצור שאלות לתרגול כדי לבדוק את הידע שלי בנושא מסוים</translation>
 <translation id="4278390842282768270">יש אישור</translation>
 <translation id="4279129444466079448">‏ניתן להתקין עד <ph name="PROFILE_LIMIT" /> פרופילים של eSIM במכשיר הזה. כדי להוסיף פרופיל נוסף, קודם צריך להסיר פרופיל קיים.</translation>
 <translation id="427987768447457592">קבוצת כרטיסיות חדשה</translation>
@@ -4411,7 +4394,6 @@
 <translation id="435185728237714178">כדי לנהל אפליקציות שמותקנות ואפליקציות סטרימינג, עוברים לאפליקציה '<ph name="APP_NAME" />'</translation>
 <translation id="4352913519324947509">הסיסמה שלך לא שונתה, אבל עדיין אמורה להיות לך אפשרות לגשת לאתר באמצעות הסיסמה הקיימת</translation>
 <translation id="4354073718307267720">תוצג שאלה כשאתר ירצה ליצור מפה בתלת ממד של הסביבה שלך או לעקוב אחר מיקום המצלמה</translation>
-<translation id="435434000498374342">תיצור תוכנית אימונים של 8 שבועות למתחילים שרוצים לרוץ 5 ק"מ. תכלול אינטרוולים של הליכה וריצה לסירוגין, וימי מנוחה ייעודיים.</translation>
 <translation id="4354344420232759511">אתרים שבהם ביקרת יופיעו כאן</translation>
 <translation id="4356100841225547054">כיבוי השמע</translation>
 <translation id="4357583358198801992">הצגה של קבוצות כרטיסיות</translation>
@@ -4462,7 +4444,6 @@
 <translation id="4385985255515673508">{NUM_EXTENSIONS,plural, =1{התוסף הזה הושבת כי הוא כבר לא נתמך}one{התוספים האלה הושבתו כי הם כבר לא נתמכים}two{התוספים האלה הושבתו כי הם כבר לא נתמכים}other{התוספים האלה הושבתו כי הם כבר לא נתמכים}}</translation>
 <translation id="4386435410933281983">המיומנות לא נשמרה. אפשר לנסות שוב</translation>
 <translation id="4386604394450371010">סקירה כללית</translation>
-<translation id="4387362115623213806">תעזור לי לנסח תשובה מנומסת כדי לדחות תוכניות להיפגש</translation>
 <translation id="4387890294700445764">סיסמאות שנחשפו</translation>
 <translation id="4388650384344483842">עליך להזין לפחות 8 תווים</translation>
 <translation id="4388700905120039425">{COUNT,plural, =1{סיסמה לאתר <ph name="URL" />}one{סיסמאות לאתר <ph name="URL" /> ‏({COUNT})}two{שתי סיסמאות לאתר <ph name="URL" />‏ ({COUNT})}other{סיסמאות לאתר <ph name="URL" />‏ ({COUNT})}}</translation>
@@ -4542,7 +4523,6 @@
 <translation id="4437879751057074691">הצעה לשמירת סיסמאות ומפתחות גישה</translation>
 <translation id="4437947179446780764">‏הוספה של ספק שירות DNS בהתאמה אישית</translation>
 <translation id="4438043733494739848">שקוף</translation>
-<translation id="4439665841041786039">תוכל לעשות איתי סיעור מוחות כדי לעזור לי לפתור את הבעיה?</translation>
 <translation id="4441147046941420429">כדי להמשיך, יש לנתק את מפתח האבטחה מהמכשיר, לחבר אותו מחדש ולגעת בו</translation>
 <translation id="444134486829715816">הרחבה...</translation>
 <translation id="4441928470323187829">מנהל המערכת הצמיד את התוסף הזה</translation>
@@ -4603,7 +4583,6 @@
         <ph name="BREAK" />
         <ph name="BREAK" />
         אפשר לנהל את ההגדרות דרך התפריט בכרטיס או לראות עוד אפשרויות בקטע "התאמה אישית של Chrome".</translation>
-<translation id="4503459574136856756">תשכתב את המידע הביוגרפי שלי כך שיישמע מקצועי יותר</translation>
 <translation id="4504940961672722399">אפשר להשתמש בתוסף הזה על ידי לחיצה על הסמל או על ידי הקשה על <ph name="EXTENSION_SHORTCUT" />.</translation>
 <translation id="4505469832694348179">‏צריך להוריד את דפדפן Chrome עם קוד ה-QR הזה ולהיכנס לחשבון Google.</translation>
 <translation id="450552327874992444">המילה כבר נוספה</translation>
@@ -4877,7 +4856,6 @@
 <translation id="4711638718396952945">שחזור הגדרות</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4713409221649555176">כשכל החלונות נסגרים, מתבצעת מחיקה</translation>
-<translation id="4714279348049646935">תחשב את ממוצע הציונים שלי לפי שקלול של שעות הלימוד, רמות הקורסים והציונים</translation>
 <translation id="4714414859110184926">למפתחות גישה</translation>
 <translation id="4715631922189108923">עריכת שם המשתמש</translation>
 <translation id="47158868804223727">לוחצים על שם הקבוצה כדי להרחיב או לכווץ אותה</translation>
@@ -4936,7 +4914,6 @@
 <translation id="4759202969060787081">לא לפתוח</translation>
 <translation id="4759238208242260848">הורדות</translation>
 <translation id="4761104368405085019">להשתמש במיקרופון</translation>
-<translation id="4762155283275129615">תקצר את האימייל שלי ותשאיר רק את הנקודות העיקריות</translation>
 <translation id="4762489666082647806">צבע המצביע</translation>
 <translation id="4762718786438001384">מקום האחסון בדיסק כמעט נגמר</translation>
 <translation id="4762849514113423887">הסיסמה שגויה. אפשר לנסות שוב.</translation>
@@ -5285,7 +5262,6 @@
 <translation id="5015344424288992913">פותר פרוקסי...</translation>
 <translation id="5016305686459575361">כשמחברים את הטלפון, אפשר:</translation>
 <translation id="5016491575926936899">יש לך אפשרות לשלוח הודעות טקסט מהמחשב, לשתף את חיבור האינטרנט, להגיב להתראות על שיחות ולבטל את הנעילה של <ph name="DEVICE_TYPE" /> באמצעות הטלפון.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
-<translation id="5016793191388570244">תיצור תוכנית כיפית למרתון סרטים בסוף השבוע. תבחר נושא עם לפחות 4 סרטים שחובה לראות, ותמליץ על חטיפים ספציפיים שמתאימים לסרט.</translation>
 <translation id="5017250179386090956">מתבצעת הורדה של קובצי הרישומים של הצומת הראשי</translation>
 <translation id="5017529052065664584">15 הדקות האחרונות</translation>
 <translation id="5018207570537526145">פתיחת אתר התוסף</translation>
@@ -5469,7 +5445,6 @@
 <translation id="5154917547274118687">זיכרון</translation>
 <translation id="5155299520372681119">התוקף של העלאת הקובץ פג והיא הוסרה.</translation>
 <translation id="5156638757840305347">הסמן מודגש כשהוא מופיע או זז</translation>
-<translation id="5156995531130738884">תנסח מערך שיעור עם תיאור של מפגש מעניין לכיתה שלי</translation>
 <translation id="5157250307065481244">הצגת פרטי האתר</translation>
 <translation id="5159094275429367735">‏הגדרת Crostini</translation>
 <translation id="5159236862360390997">תוצג סדרה של בועות הדרכה עם הוראות.
@@ -5528,7 +5503,6 @@
 <translation id="5195074424945754995">‏כתובות ה‑URL שמתאימות לכללים האלה לא יגרמו להחלפת דפדפנים ויוכלו להיפתח בדפדפן <ph name="BROWSER_NAME" /> או בדפדפן <ph name="ALTERNATIVE_BROWSER_NAME" />.</translation>
 <translation id="5196790039230503600">מבצעים את התנועה, ואז מזיזים את הראש כדי להראות איפה רוצים לשחרר את הפריט. כדי לשחרר את הפריט, משתמשים בתנועה שוב.</translation>
 <translation id="5197255632782567636">אינטרנט</translation>
-<translation id="5197384040493814274">יש לך טיפים שיעזרו לי לקדם את המותג שלי? תכלול עצות לשיפור האתר שלי.</translation>
 <translation id="5199729219167945352">ניסויים</translation>
 <translation id="5200191131577845078">יש הרשאה לקבל התראות מ-<ph name="DOMAIN" /></translation>
 <translation id="5200680225062692606">‏‫Touch ID נעול. כדי להמשיך עליך להזין את הסיסמה שלך.</translation>
@@ -5641,7 +5615,6 @@
 <translation id="5290322819358431297">מילוי אוטומטי של סיסמאות</translation>
 <translation id="52912272896845572">קובץ המפתח הפרטי אינו חוקי</translation>
 <translation id="5293043095535566171">להפעיל את הגישה למיקום?</translation>
-<translation id="5293160437421672778">תחפש מסעדות ידידותיות למשפחות שאוכל להזמין בהן מקום. הן חייבות להציע תפריט לילדים ואווירה רגועה.</translation>
 <translation id="5293170712604732402">שחזור ההגדרות לברירות המחדל המקוריות שלהן</translation>
 <translation id="5294068591166433464">‏אם באתר כלשהו מתבצע ניסיון לגנוב את הסיסמה שלך, או אם המערכת מזהה הורדה של קובץ מזיק, Chrome עשוי גם לשלוח כתובות URL וקטעי תוכן מדפים לבדיקה</translation>
 <translation id="5294618183559481278">‏חיישן מובנה ב-<ph name="DEVICE_TYPE" /> משמש לזיהוי אנשים שנמצאים מול המכשיר. מתבצע עיבוד מיידי של כל הנתונים במכשיר ואז הם נמחקים. נתוני החיישנים אף פעם לא נשלחים אל Google. <ph name="LINK_BEGIN" />למידע נוסף<ph name="LINK_END" /></translation>
@@ -6023,7 +5996,6 @@
 <translation id="5596627076506792578">אפשרויות נוספות</translation>
 <translation id="5600706100022181951">‏ההורדה של העדכון תנצל MB <ph name="UPDATE_SIZE_MB" /> מחבילת הגלישה. להמשיך?</translation>
 <translation id="5601503069213153581">קוד אימות</translation>
-<translation id="5601519850195445492">תיצור תוכנית אימונים של 10 דקות שאוכל לעשות בחדר שלי, בלי קפיצות או תנועות רועשות</translation>
 <translation id="5601833336918638013">‏לא לאפשר לאתרים לאתר מכשירי Bluetooth</translation>
 <translation id="5602586420788540146">פתיחה בקבוצת כרטיסיות חדשה</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{התוסף הזה נחסם}one{התוספים האלה נחסמו}two{התוספים האלה נחסמו}other{התוספים האלה נחסמו}}</translation>
@@ -6158,7 +6130,6 @@
 <translation id="5720729194423017301">קיצורי דרך לאתרים ולמנועי חיפוש</translation>
 <translation id="572155275267014074">‏הגדרות Android</translation>
 <translation id="5722086096420375088">ירוק ולבן</translation>
-<translation id="5722778418591961221">תתכנן לי שגרת כושר ביתית שתעזור לי להשיג את היעדים שלי</translation>
 <translation id="572328651809341494">כרטיסיות אחרונות</translation>
 <translation id="5723508132121499792">אין יישומים פועלים ברקע</translation>
 <translation id="5724723163580775373">מיקוד גדול</translation>
@@ -6955,7 +6926,6 @@
 <translation id="635100112331897007">‏צפייה בכל כללי המדיניות של Chrome</translation>
 <translation id="6351178441572658285">השפות באפליקציות</translation>
 <translation id="6352992678231622317">הכרטיסייה הועברה למטה</translation>
-<translation id="635394585025793320">תעזור לי לעשות רושם טוב. תחפש שולחנות פנויים ל-2 אנשים במסעדות שכולם מדברים עליהן עכשיו.</translation>
 <translation id="6355632359041940003">השתלטות על המשימה</translation>
 <translation id="6356537493253478650">שלֵו</translation>
 <translation id="63566973648609420">‏רק מי שיודע את ביטוי הסיסמה יכול לקרוא את הנתונים המוצפנים. ביטוי הסיסמה לא נשלח אל Google והיא אינה מאחסנת אותו. אם לא זוכרים את ביטוי הסיסמה או אם רוצים לשנות את ההגדרה הזו, יש <ph name="BEGIN_LINK" />לאפס את הסנכרון<ph name="END_LINK" />.</translation>
@@ -7210,7 +7180,6 @@
 <translation id="6557199166823345360">כדי לשפר את החיפוש, אפשר להוסיף עוד פרטים או לשאול שאלה לגבי הבחירה</translation>
 <translation id="6557290421156335491">קיצורי הדרך שלי</translation>
 <translation id="6558098963164662391">&amp;הסרה מהמילון</translation>
-<translation id="6558249393995317167">תוכל לפרט את מחזור החיים של כוכב?</translation>
 <translation id="6560061709899140565">‏הצגת סשנים אחרים של הפעלת Cast</translation>
 <translation id="656065428026159829">אפשרויות נוספות</translation>
 <translation id="6561877237303825108">הקובץ הזה מסוג (<ph name="TYPE" />) עלול להיות מסוכן. מומלץ לשמור את הקובץ רק אם האתר <ph name="ORIGIN" /> מהימן</translation>
@@ -7650,7 +7619,6 @@
 <translation id="6873156759937047811">קוד האימות:</translation>
 <translation id="6873571253135628430">שינוי ההרשאות לאתרים</translation>
 <translation id="6874986444867497677">ההתקנה לא הצליחה. אפשר לנסות שוב או לסגור את החלון הזה.</translation>
-<translation id="6875515581501280009">תיצור לי תוכנית מציאותית להתנתקות מהדיגיטל בסוף השבוע הזה</translation>
 <translation id="6876155724392614295">אופניים</translation>
 <translation id="6876469544038980967">לא מועילה</translation>
 <translation id="6878422606530379992">השימוש בחיישנים מותר</translation>
@@ -7786,9 +7754,7 @@
 <translation id="6981982820502123353">נגישות</translation>
 <translation id="6983507711977005608">התנתקות מהרשת של שיתוף אינטרנט מיידי בין מכשירים</translation>
 <translation id="6983890893900549383">‏מקש Escape</translation>
-<translation id="6984095691972094111">אני מנסה ללמוד שפה חדשה. תכין לי בוחן שיעזור לי לתרגל אוצר מילים ודקדוק.</translation>
 <translation id="698428203349952091">הוספת אתר לרשימת האתרים האסורים</translation>
-<translation id="698450079873764780">תעזור לי להתכונן לשיחה קשה באמצעות משחק תפקידים כדי שאוכל לתרגל את התשובות שלי</translation>
 <translation id="6985235333261347343">‏סוכן שחזור המפתחות של Microsoft</translation>
 <translation id="698524779381350301">יש להעניק גישה אוטומטית לאתרים הבאים</translation>
 <translation id="6985607387932385770">מדפסות</translation>
@@ -7925,7 +7891,6 @@
 <translation id="7088434364990739311">המערכת לא הצליחה להפעיל את בדיקת העדכונים (קוד שגיאה <ph name="ERROR" />).</translation>
 <translation id="7088960765736518739">גישה באמצעות מתג</translation>
 <translation id="7089253021944603172">הכרטיסייה פעילה שוב</translation>
-<translation id="7090698782953528257">תעזור לי ליצור גרף של פונקציה כדי להמחיש את המשוואה המתמטית ולראות את צורת העקומה</translation>
 <translation id="7090714929377281710">כיבוי אוטומטי של הנקודה לשיתוף אינטרנט</translation>
 <translation id="7092452922791061650">לוחצים לחיצה ימנית על הכרטיסייה הזאת ובוחרים באפשרות "תצוגה מפוצלת חדשה עם הכרטיסייה הנוכחית"</translation>
 <translation id="7092504544229909737">‏לא ניתן להשתמש בחשבון הזה עם אפליקציות ל-Android</translation>
@@ -8596,7 +8561,6 @@
 <translation id="7620049858153799769">‏יכול להיות שבודקים אנושיים יראו שיחות על כרטיסיות משותפות כדי לשפר את Gemini.</translation>
 <translation id="7620083113061729689">סנכרון ההיסטוריה</translation>
 <translation id="7620616707541471029">בחירת חשבון להמשך</translation>
-<translation id="7621546470643449009">תיצור מדריך למתחילים לצפייה בכוכבים שיעזור לי ללמוד מה לחפש בשמי הלילה, כולל 3 קבוצות כוכבים שקל לזהות</translation>
 <translation id="7621595347123595643">לא תהיה אפשרות לשחזר נתונים מקומיים אם שוכחים את הסיסמה או קוד האימות.</translation>
 <translation id="762200934554267613">אתרים יכולים לבקש להתחבר לאפליקציות ולשירותים אחרים במכשיר הזה</translation>
 <translation id="7622768823216805500">‏אתרים מתקינים בדרך כלל רכיבי handler של תשלומים כדי להציע תכונות קנייה, כמו תשלום קל יותר בקופה</translation>
@@ -8650,7 +8614,6 @@
 <translation id="7659154729610375585">לצאת מהמצב האנונימי בכל זאת?</translation>
 <translation id="7659336857671800422">כניסה למדריך בנושא פרטיות</translation>
 <translation id="7660146600670077843">לוחצים לחיצה ימנית על הכרטיסייה ובוחרים באפשרות 'הוספת כרטיסייה לקבוצה חדשה'</translation>
-<translation id="7661440329832413796">‏תעזור לי ללמוד תכנות ב-Python</translation>
 <translation id="7662535435481776002">ניגודיות נמוכה בעיצוב בהיר</translation>
 <translation id="7663719505383602579">מקבל: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7663774460282684730">יש מקשי קיצור</translation>
@@ -9099,7 +9062,6 @@
 קובץ מפתח: <ph name="KEY_FILE" />
 
 יש לשמור על קובץ המפתח שלך במקום בטוח. הוא נחוץ אותו כדי ליצור גרסאות חדשות של התוסף שלך.</translation>
-<translation id="7999482381722829925">תיצור רשימת משימות לניקוי יסודי של כל החדרים בבית, לפי סדר עדיפויות, עם דגש על מקומות שנוטים לפספס</translation>
 <translation id="8000020256436988724">סרגל כלים</translation>
 <translation id="800117767980299235">הקראת ההדגשה</translation>
 <translation id="8001561107130904792">שיתוף תוכן הדף</translation>
@@ -9441,7 +9403,6 @@
 <translation id="8256319818471787266">נבחן</translation>
 <translation id="8257950718085972371">המשך לחסום גישה למצלמה</translation>
 <translation id="8258027225380843424">הייבוא הושלם בהצלחה.</translation>
-<translation id="8258311291367036761">תוכל לעזור לי לחשוב על משהו?</translation>
 <translation id="8259048637628995340">‏כדאי לחבר את טלפון Android כדי ליהנות מחווייית שימוש נוחה במיוחד</translation>
 <translation id="8260177673299865994">שיפור ההגנה מפני הורדות</translation>
 <translation id="8260864402787962391">עכבר</translation>
@@ -9541,7 +9502,6 @@
 <translation id="8327544198829180337">סגירת התצוגה הזו</translation>
 <translation id="8328228852664998535">לאחר המשך הפעולה, הסיסמאות, מפתחות הגישה ונתונים אחרים יימחקו באופן סופי מ<ph name="BRAND" />. חשבונות שיצרת לאתרים או לאפליקציות לא יימחקו.</translation>
 <translation id="8328777765163860529">סגירת הכול</translation>
-<translation id="8329314618548024109">תשאל שאלות על ההרגשה הכללית שלי ותשתמש בתשובות כדי ליצור פלייליסט שמותאם למצב הרוח שלי</translation>
 <translation id="8330617762701840933">רשימת האתרים שמפנים לדפדפן חלופי.</translation>
 <translation id="8330689128072902965">אנשי קשר בקרבת מקום יכולים לשתף איתך. אפשר ללחוץ כדי לשנות.</translation>
 <translation id="8331323939220256760">{FILE_TYPE_COUNT,plural, =1{סוג הקובץ הנתמך: <ph name="FILE_TYPE1" />}=2{סוגי הקבצים הנתמכים: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />}=3{סוגי הקבצים הנתמכים: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />}=4{סוגי הקבצים הנתמכים: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" />}one{סוגי הקבצים הנתמכים: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />ועוד {OVERFLOW_COUNT}<ph name="END_LINK" />)}other{סוגי הקבצים הנתמכים: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />ועוד {OVERFLOW_COUNT}<ph name="END_LINK" />)}}</translation>
@@ -10195,7 +10155,6 @@
 <translation id="8841884135319684422">סיום המשימה</translation>
 <translation id="8842594465773264717">מחיקת טביעת האצבע הזו</translation>
 <translation id="8845001906332463065">קבלת עזרה</translation>
-<translation id="8845586173202501576">תכין לוח זמנים ללימודים של 7 ימים כדי להתכונן למבחן הקרוב שלי. תשתמש בטכניקת פומודורו ובחזרה על החומר במרווחי זמן. אני לא רוצה ללמוד יותר מדי ביום שלפני המבחן, אז תוודא שהיום שלפני המבחן יכלול חזרה קלה ושינה.</translation>
 <translation id="8846132060409673887">קריאת היצרן והדגם של המחשב הזה</translation>
 <translation id="8846239054091760429">אודיו במונו, הפעלה, כתוביות מיידיות ועוד</translation>
 <translation id="8847988622838149491">USB</translation>
@@ -10271,10 +10230,8 @@
 <translation id="8898786835233784856">בחר את הכרטיסייה הבאה</translation>
 <translation id="8898790559170352647">‏הוספה של חשבון Microsoft</translation>
 <translation id="8898822736010347272">‏שולח ל-Google כתובות URL של חלק מהדפים שאליהם נכנסת, פרטים מוגבלים לגבי המערכת וחלק מתוכן הדפים. פעולה זו עוזרת לזהות איומים חדשים ולהגן על כל המשתמשים באינטרנט.</translation>
-<translation id="8899299346165404002">תכין לי רשימה בראשי פרקים שתעזור לי לארגן את המחשבות שלי בפורמט ברור ותמציתי</translation>
 <translation id="8899851313684471736">פתיחת קישור &amp;בחלון חדש</translation>
 <translation id="8900413463156971200">הפעלת רשת סלולרית</translation>
-<translation id="8901147364315347044">תעזור לי להעלות רעיונות ייחודיים למתנה בשביל מישהו. אני אשתף איתך את תחומי העניין והתחביבים שלו.</translation>
 <translation id="8902667442496790482">פתיחה של הגדרות ההקראה</translation>
 <translation id="8903733144777177139">הגישה למיקרופון חסומה</translation>
 <translation id="8904787158537906492">הקישור הועתק ללוח</translation>

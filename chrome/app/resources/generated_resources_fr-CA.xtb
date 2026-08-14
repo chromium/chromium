@@ -80,7 +80,6 @@
 <translation id="1049743911850919806">Navigation privée</translation>
 <translation id="1049795001945932310">Paramètres &amp;linguistiques</translation>
 <translation id="1050693411695664090">Médiocre</translation>
-<translation id="1050765387089990494">Rédige une réponse brève et polie pour refuser une invitation</translation>
 <translation id="1053226848101751430">Entrée supprimée</translation>
 <translation id="1054048317165655285">Terminer la configuration sur votre téléphone</translation>
 <translation id="1054153489933238809">Ouvrir l'&amp;image d'origine dans un nouvel onglet</translation>
@@ -111,7 +110,6 @@
 <translation id="1070705170564860382">Ouverture dans un navigateur secondaire dans <ph name="COUNTDOWN_SECONDS" /> secondes</translation>
 <translation id="1071661533099313342">Affichages séparés</translation>
 <translation id="1072700771426194907">Appareil USB détecté</translation>
-<translation id="1073951898092443918">Réécris mon courriel en ajustant le ton pour le rendre plus persuasif</translation>
 <translation id="1075920807995555452">Exécutez des outils, des éditeurs et des environnements de développement intégrés dans un environnement géré par votre entreprise sur votre <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="1076176485976385390">Parcourir les pages à l'aide d'un curseur de texte</translation>
 <translation id="1076730357641144594">Vous pouvez afficher et gérer vos clés d'accès enregistrées dans <ph name="GOOGLE_PASSWORD_MANAGER" /></translation>
@@ -366,7 +364,6 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1256143630373008432">Échec de l'autotest</translation>
 <translation id="1257336506558170607">Exporter le certificat sélectionné</translation>
 <translation id="1258491128795710625">Nouveautés</translation>
-<translation id="1259438590315804994">Rédige une introduction de lettre de motivation qui met en évidence mes compétences et mon expérience pour un poste précis</translation>
 <translation id="1260451001046713751">Toujours autoriser les fenêtres contextuelles et les redirections de <ph name="HOST" /></translation>
 <translation id="1261380933454402672">Modérée</translation>
 <translation id="1262395978737369974">Toujours autorisé à utiliser l'optimisation JavaScript</translation>
@@ -661,7 +658,6 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1506187449813838456">Augmenter la hauteur de la voix</translation>
 <translation id="1507170440449692343">L'accès à votre caméra est bloqué pour cette page.</translation>
 <translation id="1507246803636407672">Supprim&amp;er</translation>
-<translation id="1508605873202255562">Crée un outil de suivi personnalisé pour m'aider à atteindre mes objectifs</translation>
 <translation id="1508931164824684991">Les sites peuvent utiliser JavaScript</translation>
 <translation id="1509163368529404530">&amp;Restaurer le groupe</translation>
 <translation id="1509281256533087115">Accéder à n'importe quel appareil <ph name="DEVICE_NAME_AND_VENDOR" /> par USB</translation>
@@ -718,7 +714,6 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1549788673239553762"><ph name="APP_NAME" /> souhaite accéder à <ph name="VOLUME_NAME" />. Cela peut modifier ou supprimer vos fichiers.</translation>
 <translation id="1549966883323105187">Accédez plus rapidement à vos mots de passe enregistrés</translation>
 <translation id="1550656959113606473">Chrome par défaut</translation>
-<translation id="1550906923175308360">Crée-moi une liste de tâches pour aujourd'hui afin de m'aider à m'organiser</translation>
 <translation id="1552301827267621511">L'extension « <ph name="EXTENSION_NAME" /> » a activé un moteur de recherche différent : <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
 <translation id="1552752544932680961">Gérer l'extension</translation>
 <translation id="1553538517812678578">Sans limites</translation>
@@ -1235,7 +1230,6 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1940221956626514677">Personnaliser la barre d'outils</translation>
 <translation id="1940546824932169984">Appareils connectés</translation>
 <translation id="194081218158106711">Confirmation du mot de passe modifié en cours…</translation>
-<translation id="1940937679128415504">Y a-t-il des tables disponibles dans des restaurants à proximité ce soir?</translation>
 <translation id="1941410638996203291">Heure de début : <ph name="TIME" /></translation>
 <translation id="1941553344801134989">Version : <ph name="APP_VERSION" /></translation>
 <translation id="1941685451584875710">Votre administrateur a configuré votre compte pour qu'il se connecte automatiquement à Microsoft OneDrive, mais un problème est survenu.</translation>
@@ -2529,7 +2523,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="2939908794993783865">Sites inactifs supplémentaires</translation>
 <translation id="2939938020978911855">Afficher les appareils Bluetooth disponibles</translation>
 <translation id="2941112035454246133">Faible</translation>
-<translation id="2942170180325421996">Aide-moi à trancher un débat avec un ami en proposant une analyse objective, basée sur des données, qui présente équitablement les deux points de vue</translation>
 <translation id="2942560570858569904">En attente…</translation>
 <translation id="2942581856830209953">Personnaliser cette page</translation>
 <translation id="2942707801577151363">Ouvrez, modifiez et enregistrez des fichiers Word, Excel et PowerPoint. Un abonnement peut être requis pour accéder à certaines fonctionnalités.</translation>
@@ -2847,7 +2840,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="3179982752812949580">Police du texte</translation>
 <translation id="31806439105337256">Afficher les onglets verticalement</translation>
 <translation id="3180990259147710757">Déplacez la mâchoire vers la gauche</translation>
-<translation id="3181307292207270140">J'ai envie de me rendre dans un café accueillant pour déconnecter un peu, lire et peut-être faire un peu de travail. Peux-tu me trouver des endroits à proximité réputés pour être calmes et confortables, avec une connexion Wi-Fi fiable?</translation>
 <translation id="3181825792072797598">Activer la synchronisation</translation>
 <translation id="3181954750937456830">Navigation sécurisée (vous protège, vous et votre appareil, des sites dangereux)</translation>
 <translation id="3182749001423093222">Correcteur orthographique</translation>
@@ -3149,7 +3141,6 @@ l‘<ph name="BEGIN_LINK" />
 <translation id="3415580428903497523">Utiliser des certificats locaux importés de votre système d'exploitation</translation>
 <translation id="341589277604221596">Sous-titres instantanés – <ph name="LANGUAGE" /></translation>
 <translation id="3416468988018290825">Toujours afficher les URL en entier</translation>
-<translation id="3417390269491141648">Compare mes options de régime d'assurance maladie et détaille les principales différences</translation>
 <translation id="3417835166382867856">Rechercher dans les onglets</translation>
 <translation id="3417836307470882032">Format 24 h</translation>
 <translation id="3418798368381485936">Vous ne pouvez pas vous connecter avec ce compte</translation>
@@ -3458,7 +3449,6 @@ l‘<ph name="BEGIN_LINK" />
 <translation id="3647654707956482440">Impossible d'utiliser ce lien. Vérifiez s'il y a des fautes de frappe ou utilisez un autre lien pour réessayer.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> reçu de l'appareil <ph name="DEVICE_NAME" />}one{<ph name="ATTACHMENTS" /> reçu de l'appareil <ph name="DEVICE_NAME" />}other{<ph name="ATTACHMENTS" /> reçus de l'appareil <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3648348069317717750">Appareil <ph name="USB_DEVICE_NAME" /> détecté</translation>
-<translation id="3648667207586409316">Quelles sont les meilleures façons de réduire le stress?</translation>
 <translation id="3650845953328929506">Téléversement du journal en attente.</translation>
 <translation id="3651488188562686558">Se déconnectera du Wi-Fi</translation>
 <translation id="3652181838577940678">Localiser les boutons de votre stylet</translation>
@@ -3665,7 +3655,6 @@ l‘<ph name="BEGIN_LINK" />
 <translation id="3786224729726357296">Supprimer les autorisations et les données relatives aux sites pour <ph name="SITE" /></translation>
 <translation id="3786834302860277193">Afficher le soulignement pour le texte de composition</translation>
 <translation id="3786890785076278600">Ligne statique</translation>
-<translation id="3787429331139352881">Réécris le texte suivant pour lui donner un ton professionnel, poli et clair, adapté au milieu de travail. Conserve le message d'origine, mais adopte un ton plus soutenu adapté à un public de dirigeants : [insérer votre texte ici]</translation>
 <translation id="3787434344076711519">En attente de traduction</translation>
 <translation id="3789432704615470433">Fichiers SharePoint et OneDrive</translation>
 <translation id="3789841737615482174">Installer</translation>
@@ -3957,7 +3946,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3987544746655539083">Continuer à empêcher ce site d'accéder à votre position</translation>
 <translation id="3987993985790029246">Copier lien</translation>
 <translation id="3988124842897276887">Cet onglet est connecté à un appareil USB</translation>
-<translation id="3988734044246990738">Crée une liste de bagages pour mon voyage à venir. Aide-moi à m'assurer de ne rien oublier d'important</translation>
 <translation id="3989635538409502728">Déconnexion</translation>
 <translation id="399179161741278232">Importés</translation>
 <translation id="3992008114154328194">Téléchargement en cours : <ph name="FILE_NAME" />, <ph name="STATUS" /></translation>
@@ -4013,7 +4001,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4039966970282098406">Gérez votre confidentialité en contrôlant l'accès au microphone et à la caméra, entre autres</translation>
 <translation id="4040041015953651705">Langue à partir de laquelle traduire</translation>
 <translation id="4040854068229263729">&amp;Retirer du dictionnaire</translation>
-<translation id="4042611013811262481">Prépare-moi une liste d'épicerie à partir d'une recette ou d'un plan de repas</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Quitter la page}one{Quitter la page}other{Quitter les pages}}</translation>
 <translation id="4042941173059740150">Continuer jusqu'à <ph name="SITE_ETLD_PLUS_ONE" /> avec <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4043267180218562935">Taille du curseur</translation>
@@ -4240,7 +4227,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4235965441080806197">Annuler la connexion</translation>
 <translation id="4235976607074422892">Vitesse de défilement</translation>
 <translation id="4236163961381003811">Découvrir plus d'extensions</translation>
-<translation id="4238607350028440048">Aide-moi à m'entraîner pour mon entretien en me posant des questions comme si tu étais un responsable du recrutement</translation>
 <translation id="4241140145060464825">Contenu de l'appli</translation>
 <translation id="4241224519481557898">Catégorie</translation>
 <translation id="4242245038391716252">Téléchargé par l'extension : &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
@@ -4252,7 +4238,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4243624244759495699"><ph name="LOCALE" />, niveau <ph name="GRADE" /></translation>
 <translation id="4244238649050961491">Rechercher d'autres applications de stylet</translation>
 <translation id="4246980464509998944">Autres commentaires :</translation>
-<translation id="42481816218163154">Crée une routine matinale de 15 minutes pour m'aider à mieux démarrer la journée. Assure-toi d'y inclure un exercice de pleine conscience</translation>
 <translation id="4248401726442101648">Aucune caméra connectée</translation>
 <translation id="4249116869350613769">Économiseur de pile</translation>
 <translation id="4249373718504745892">L'accès à votre caméra et à votre microphone est bloqué pour cette page.</translation>
@@ -4261,7 +4246,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4250596587221570622">Choisir un thème pour votre profil</translation>
 <translation id="4250680216510889253">Non</translation>
 <translation id="4251243704979202079"><ph name="ORIGIN" /> pourra afficher les fichiers dans <ph name="FOLDERNAME" /> et en faire ses propres copies</translation>
-<translation id="4251676308358173916">Aide-moi à créer un entraînement complet du corps de 10 minutes. Je veux mettre l'accent sur la force, l'endurance et la souplesse</translation>
 <translation id="4252899949534773101">Le Bluetooth est désactivé</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - Partage du contenu de l'onglet</translation>
 <translation id="4253168017788158739">Remarque</translation>
@@ -4301,7 +4285,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4276390967705106170">Ouvrir dans un nouvel onglet de navigateur</translation>
 <translation id="4276598757692536305">Fichier PPD de l'imprimante</translation>
 <translation id="4277434192562187284">Source de configuration XML</translation>
-<translation id="4277442707759481607">Crée des questions de révision pour tester mes connaissances sur un sujet</translation>
 <translation id="4278390842282768270">Autorisé</translation>
 <translation id="4279129444466079448">Vous pouvez installer un maximum de <ph name="PROFILE_LIMIT" /> profils de carte eSIM sur cet appareil. Pour en ajouter un autre, commencez par supprimer un profil existant.</translation>
 <translation id="427987768447457592">Nouveau groupe d'onglets</translation>
@@ -4401,7 +4384,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="435185728237714178">Accédez à l'application « <ph name="APP_NAME" /> » pour gérer les applications installées et diffusées en continu</translation>
 <translation id="4352913519324947509">Votre mot de passe n'a pas été modifié, mais vous devriez toujours pouvoir accéder au site avec votre mot de passe actuel</translation>
 <translation id="4354073718307267720">Demander une autorisation lorsqu'un site veut créer une carte 3D de votre environnement ou faire le suivi de la position de l'appareil photo</translation>
-<translation id="435434000498374342">Rédige un programme d'entraînement de huit semaines pour un vrai débutant qui souhaite courir un cinq kilomètres. Prévois des intervalles de marche et de course en alternance, ainsi que des jours de repos prévus</translation>
 <translation id="4354344420232759511">Les sites que vous visiterez apparaîtront ici</translation>
 <translation id="4356100841225547054">Désactiver le volume</translation>
 <translation id="4357583358198801992">Afficher les groupes d'onglets</translation>
@@ -4452,7 +4434,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4385985255515673508">{NUM_EXTENSIONS,plural, =1{Cette extension a été désactivée, car elle n'est plus prise en charge}one{Cette extension a été désactivée, car elle n'est plus prise en charge}other{Ces extensions ont été désactivées, car elles ne sont plus prises en charge}}</translation>
 <translation id="4386435410933281983">Impossible d'effectuer l'enregistrement. Réessayez</translation>
 <translation id="4386604394450371010">aperçu</translation>
-<translation id="4387362115623213806">Aide-moi à rédiger une réponse polie pour décliner une invitation à se voir</translation>
 <translation id="4387890294700445764">Mots de passe compromis</translation>
 <translation id="4388650384344483842">Utiliser au moins huit caractères</translation>
 <translation id="4388700905120039425">{COUNT,plural, =1{Mot de passe pour <ph name="URL" />}one{Mot de passe pour <ph name="URL" /> ({COUNT})}other{Mots de passe pour <ph name="URL" /> ({COUNT})}}</translation>
@@ -4531,7 +4512,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4437879751057074691">Proposer d'enregistrer les mots de passe et les clés d'accès</translation>
 <translation id="4437947179446780764">Ajouter un fournisseur de services DNS personnalisé</translation>
 <translation id="4438043733494739848">Transparent</translation>
-<translation id="4439665841041786039">Peux-tu faire du remue-méninges avec moi afin de m'aider à résoudre mon problème?</translation>
 <translation id="4441147046941420429">Pour continuer, retirez votre clé de sécurité de votre appareil, puis réinsérez-la et touchez-la</translation>
 <translation id="444134486829715816">Développer...</translation>
 <translation id="4441928470323187829">Épinglée par votre administrateur</translation>
@@ -4592,7 +4572,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <ph name="BREAK" />
 <ph name="BREAK" />
 Vous pouvez gérer les paramètres à partir du menu de la carte ou voir plus d'options dans Personnaliser Chrome.</translation>
-<translation id="4503459574136856756">Réécris ma biographie pour qu'elle soit plus professionnelle</translation>
 <translation id="4504940961672722399">Utilisez cette extension en cliquant sur ​​cette icône ou en appuyant sur <ph name="EXTENSION_SHORTCUT" />.</translation>
 <translation id="4505469832694348179">Téléchargez Chrome avec ce code QR et connectez-vous à votre compte Google.</translation>
 <translation id="450552327874992444">Mot déjà ajouté</translation>
@@ -4866,7 +4845,6 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou voir plus d'
 <translation id="4711638718396952945">Restaurer les paramètres</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4713409221649555176">Supprimer lorsque vous fermez toutes les fenêtres</translation>
-<translation id="4714279348049646935">Calcule ma note moyenne en pondérant les unités de cours, les niveaux de difficulté et la valeur des notes</translation>
 <translation id="4714414859110184926">Obtenir des clés d'accès</translation>
 <translation id="4715631922189108923">Modifier le nom d'utilisateur</translation>
 <translation id="47158868804223727">Cliquez sur le nom du groupe pour le développer ou le réduire</translation>
@@ -4925,7 +4903,6 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="4759202969060787081">Ne pas ouvrir</translation>
 <translation id="4759238208242260848">Téléchargements</translation>
 <translation id="4761104368405085019">Utiliser votre microphone</translation>
-<translation id="4762155283275129615">Raccourcis mon courriel en ne gardant que l'essentiel</translation>
 <translation id="4762489666082647806">Couleur du pointeur</translation>
 <translation id="4762718786438001384">Vous n'avez presque plus d'espace disque sur votre appareil</translation>
 <translation id="4762849514113423887">Mot de passe incorrect. Réessayez.</translation>
@@ -5273,7 +5250,6 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5015344424288992913">Résolution du mandataire...</translation>
 <translation id="5016305686459575361">En connectant votre téléphone, vous pouvez :</translation>
 <translation id="5016491575926936899">Vous pouvez envoyer des messages texte à partir de votre ordinateur, partager votre connexion Internet, répondre à une notification de conversation et déverrouiller votre <ph name="DEVICE_TYPE" /> au moyen de votre téléphone.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
-<translation id="5016793191388570244">Crée un itinéraire amusant pour un marathon de films ce week-end. Propose un thème, au moins quatre films incontournables et des idées de collations pour accompagner la séance</translation>
 <translation id="5017250179386090956">Téléchargement des fichiers d'annotation du nœud principal en cours…</translation>
 <translation id="5017529052065664584">Les 15 dernières minutes</translation>
 <translation id="5018207570537526145">Ouvrir le site Web pour les extensions</translation>
@@ -5457,7 +5433,6 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5154917547274118687">Mémoire</translation>
 <translation id="5155299520372681119">Le téléversement du fichier a expiré et a été retiré.</translation>
 <translation id="5156638757840305347">Le curseur est mis en évidence lorsqu'il apparaît ou se déplace</translation>
-<translation id="5156995531130738884">Rédige un plan de cours détaillant une séance captivante pour ma classe</translation>
 <translation id="5157250307065481244">Afficher les détails du site</translation>
 <translation id="5159094275429367735">Configurer Crostini</translation>
 <translation id="5159236862360390997">Une série de bulles tutorielles contenant des instructions seront affichées.
@@ -5516,7 +5491,6 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5195074424945754995">Les URL correspondant à ces règles ne déclencheront pas de changement de navigateur et pourront s'ouvrir dans <ph name="BROWSER_NAME" /> ou <ph name="ALTERNATIVE_BROWSER_NAME" />.</translation>
 <translation id="5196790039230503600">Utilisez le geste, puis bougez la tête pour indiquer où vous voulez déposer l'élément. Utilisez de nouveau le geste pour le déposer.</translation>
 <translation id="5197255632782567636">Internet</translation>
-<translation id="5197384040493814274">Quels conseils peux-tu me donner pour m'aider à promouvoir ma marque? Donne-moi aussi des conseils pour optimiser mon site Web</translation>
 <translation id="5199729219167945352">Fonctionnalités expérimentales</translation>
 <translation id="5200191131577845078">Notifications autorisées à partir de <ph name="DOMAIN" /></translation>
 <translation id="5200680225062692606">Touch ID est verrouillé. Pour continuer, entrez votre mot de passe.</translation>
@@ -5628,7 +5602,6 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5290322819358431297">Remplissez autom. mots de passe</translation>
 <translation id="52912272896845572">Le fichier de clé privée est incorrect.</translation>
 <translation id="5293043095535566171">Activer l'accès à la position?</translation>
-<translation id="5293160437421672778">Trouve des restaurants appropriés pour les familles qui acceptent les réservations. Ils doivent proposer un menu pour enfants et une ambiance décontractée</translation>
 <translation id="5293170712604732402">Rétablir les valeurs par défaut des paramètres</translation>
 <translation id="5294068591166433464">Si un site tente de voler votre mot de passe ou si vous téléchargez un fichier dangereux, Chrome peut également envoyer les URL concernées, y compris des extraits du contenu de pages, à Google</translation>
 <translation id="5294618183559481278">Votre <ph name="DEVICE_TYPE" /> utilise un capteur intégré pour détecter les personnes devant votre appareil. Toutes les données sont traitées sur votre appareil immédiatement, puis supprimées. Les données des capteurs ne sont jamais envoyées à Google. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
@@ -6010,7 +5983,6 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="5596627076506792578">Autres options</translation>
 <translation id="5600706100022181951">La mise à jour sera téléchargée en utilisant <ph name="UPDATE_SIZE_MB" /> Mo de données cellulaires. Voulez-vous continuer?</translation>
 <translation id="5601503069213153581">NIP</translation>
-<translation id="5601519850195445492">Crée un programme d'entraînement de 10 minutes que je peux faire dans ma chambre, sans sauts ou mouvements bruyants</translation>
 <translation id="5601833336918638013">Ne pas autoriser les sites à rechercher les appareils Bluetooth</translation>
 <translation id="5602586420788540146">Ouvrir dans un nouveau groupe d'onglets</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Cette extension est bloquée}one{Cette extension est bloquée}other{Ces extensions sont bloquées}}</translation>
@@ -6145,7 +6117,6 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="5720729194423017301">Raccourcis pour les sites et les moteurs de recherche</translation>
 <translation id="572155275267014074">Paramètres Android</translation>
 <translation id="5722086096420375088">Vert et blanc</translation>
-<translation id="5722778418591961221">Planifie un programme d'entraînement à la maison qui m'aide à atteindre mes objectifs</translation>
 <translation id="572328651809341494">Onglets récents</translation>
 <translation id="5723508132121499792">Aucune application ne fonctionne en arrière-plan</translation>
 <translation id="5724723163580775373">Grande mise en évidence</translation>
@@ -6942,7 +6913,6 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="635100112331897007">Afficher toutes les politiques de Chrome</translation>
 <translation id="6351178441572658285">Langues des applications</translation>
 <translation id="6352992678231622317">Onglet déplacé vers le bas</translation>
-<translation id="635394585025793320">Je veux impressionner quelqu'un. Trouve des tables pour deux dans les restaurants dont tout le monde parle en ce moment</translation>
 <translation id="6355632359041940003">Prendre en charge la tâche</translation>
 <translation id="6356537493253478650">Serein</translation>
 <translation id="63566973648609420">Seule une personne connaissant votre phrase de passe peut lire vos données chiffrées. Google ne reçoit pas la phrase de passe et ne la stocke pas. Si vous l'oubliez ou souhaitez modifier ce paramètre, vous devrez <ph name="BEGIN_LINK" />réinitialiser la synchronisation<ph name="END_LINK" />.</translation>
@@ -7197,7 +7167,6 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6557199166823345360">Ajoutez plus de détails ou posez une question sur votre sélection pour affiner votre recherche</translation>
 <translation id="6557290421156335491">Mes raccourcis</translation>
 <translation id="6558098963164662391">&amp;Retirer du dictionnaire</translation>
-<translation id="6558249393995317167">Peux-tu décrire le cycle de vie d'une étoile?</translation>
 <translation id="6560061709899140565">Afficher d'autres sessions de diffusion</translation>
 <translation id="656065428026159829">En voir plus</translation>
 <translation id="6561877237303825108">Ce fichier de type (<ph name="TYPE" />) peut être dangereux. N'enregistrez ce fichier que si vous faites confiance à <ph name="ORIGIN" /></translation>
@@ -7635,7 +7604,6 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="6873156759937047811">NIP :</translation>
 <translation id="6873571253135628430">Modifier les autorisations du site</translation>
 <translation id="6874986444867497677">L'installation n'a pas pu être effectuée. Veuillez réessayer ou fermez cette fenêtre.</translation>
-<translation id="6875515581501280009">Crée-moi un plan de désintoxication numérique réaliste pour cette fin de semaine</translation>
 <translation id="6876155724392614295">Vélo</translation>
 <translation id="6876469544038980967">Pas utile</translation>
 <translation id="6878422606530379992">Capteurs autorisés</translation>
@@ -7771,9 +7739,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="6981982820502123353">Accessibilité</translation>
 <translation id="6983507711977005608">Se déconnecter du réseau de partage de connexion instantané</translation>
 <translation id="6983890893900549383">échap.</translation>
-<translation id="6984095691972094111">J'essaie d'apprendre une nouvelle langue. Crée un jeu-questionnaire pour m'aider à réviser le vocabulaire et la grammaire</translation>
 <translation id="698428203349952091">Ajouter un site à la liste des sites non autorisés</translation>
-<translation id="698450079873764780">Aide-moi à me préparer à une conversation difficile en faisant une mise en situation avec moi pour que je puisse m'exercer</translation>
 <translation id="6985235333261347343">Agent de récupération de clé Microsoft</translation>
 <translation id="698524779381350301">Autoriser automatiquement l'accès aux sites suivants</translation>
 <translation id="6985607387932385770">Imprimantes</translation>
@@ -7909,7 +7875,6 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7088434364990739311">Échec du lancement de la vérification des mises à jour (code d'erreur <ph name="ERROR" />).</translation>
 <translation id="7088960765736518739">Switch Access</translation>
 <translation id="7089253021944603172">Onglet à nouveau actif</translation>
-<translation id="7090698782953528257">Aide-moi à tracer le graphique d'une fonction pour visualiser l'équation mathématique et voir la forme de la courbe</translation>
 <translation id="7090714929377281710">Désactiver automatiquement le point d'accès sans fil</translation>
 <translation id="7092452922791061650">Faites un clic droit sur cet onglet et sélectionnez « Nouvel affichage partagé avec l'onglet actuel »</translation>
 <translation id="7092504544229909737">Ne peut pas être utilisé avec les applis Android</translation>
@@ -8580,7 +8545,6 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7620049858153799769">Les conversations portant sur les onglets partagés peuvent être consultées par des réviseurs humains aux fins d'amélioration de Gemini.</translation>
 <translation id="7620083113061729689">Synchroniser l'historique</translation>
 <translation id="7620616707541471029">Sélectionnez un compte pour continuer</translation>
-<translation id="7621546470643449009">Crée un guide du débutant sur l'observation des étoiles pour m'aider à savoir quoi regarder dans le ciel nocturne, avec trois constellations facilement identifiables</translation>
 <translation id="7621595347123595643">Vous ne pourrez pas récupérer les données locales si vous oubliez votre mot de passe ou votre NIP.</translation>
 <translation id="762200934554267613">Les sites peuvent demander à accéder à d'autres applis et services sur cet appareil</translation>
 <translation id="7622768823216805500">Les sites font généralement appel à des modules de traitement des paiements pour proposer certaines fonctionnalités d'achat, comme un paiement simplifié</translation>
@@ -8634,7 +8598,6 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7659154729610375585">Quitter le mode de navigation privée quand même?</translation>
 <translation id="7659336857671800422">Passer en revue le guide sur la confidentialité</translation>
 <translation id="7660146600670077843">Faites un clic droit sur un onglet et sélectionnez « Ajouter l'onglet au nouveau groupe »</translation>
-<translation id="7661440329832413796">Aide-moi à apprendre à coder en Python</translation>
 <translation id="7662535435481776002">Clair à contraste faible</translation>
 <translation id="7663719505383602579">Récepteur : <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7663774460282684730">Un raccourci-clavier existe</translation>
@@ -9083,7 +9046,6 @@ Extension : <ph name="EXTENSION_FILE" />
 Fichier de clé : <ph name="KEY_FILE" />
 
 Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la création de nouvelles versions de l'extension.</translation>
-<translation id="7999482381722829925">Crée une liste de contrôle priorisée pour un nettoyage en profondeur pièce par pièce, en ciblant les endroits souvent oubliés</translation>
 <translation id="8000020256436988724">Barre d'outils</translation>
 <translation id="800117767980299235">Mise en évidence de la voix</translation>
 <translation id="8001561107130904792">Partage du contenu de la page</translation>
@@ -9425,7 +9387,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8256319818471787266">Fido</translation>
 <translation id="8257950718085972371">Continuer de bloquer l'accès à la caméra</translation>
 <translation id="8258027225380843424">Importation réussie!</translation>
-<translation id="8258311291367036761">Peux-tu m'aider à approfondir ma réflexion sur un sujet?</translation>
 <translation id="8259048637628995340">Connecter votre téléphone Android pour une expérience fluide</translation>
 <translation id="8260177673299865994">Améliorer la protection des téléchargements</translation>
 <translation id="8260864402787962391">Souris</translation>
@@ -9525,7 +9486,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8327544198829180337">Fermer cet affichage</translation>
 <translation id="8328228852664998535">Si vous continuez, vos mots de passe, vos clés d'accès et d'autres données seront définitivement supprimés de <ph name="BRAND" />. Tous les comptes que vous avez créés pour des sites ou des applis ne seront pas supprimés.</translation>
 <translation id="8328777765163860529">Tout fermer</translation>
-<translation id="8329314618548024109">Pose-moi des questions sur mon état d'esprit et utilise mes réponses pour créer une liste de lecture adaptée à mon humeur</translation>
 <translation id="8330617762701840933">La liste des sites Web qui s'ouvrent dans un navigateur secondaire.</translation>
 <translation id="8330689128072902965">Les contacts à proximité peuvent partager du contenu avec vous. Cliquez pour modifier.</translation>
 <translation id="8331323939220256760">{FILE_TYPE_COUNT,plural, =1{Type de fichier pris en charge : <ph name="FILE_TYPE1" />}=2{Types de fichiers pris en charge : <ph name="FILE_TYPE1" /> et <ph name="FILE_TYPE2" />}=3{Types de fichiers pris en charge : <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" /> et <ph name="FILE_TYPE3" />}=4{Types de fichiers pris en charge : <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" /> et <ph name="FILE_TYPE4" />}one{Types de fichiers pris en charge : <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" /> et <ph name="FILE_TYPE4" />(<ph name="LINK" />et {OVERFLOW_COUNT} autre<ph name="END_LINK" />)}other{Types de fichiers pris en charge : <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" /> et <ph name="FILE_TYPE4" />(<ph name="LINK" />et {OVERFLOW_COUNT} autres<ph name="END_LINK" />)}}</translation>
@@ -10178,7 +10138,6 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="8841884135319684422">Terminer la tâche</translation>
 <translation id="8842594465773264717">Supprimer cette empreinte digitale</translation>
 <translation id="8845001906332463065">Obtenir de l'aide</translation>
-<translation id="8845586173202501576">Crée un programme de révision sur sept jours pour mon prochain examen, en utilisant la technique Pomodoro et la répétition espacée. Je ne veux pas faire d'étude intensive de dernière minute la veille de l'examen, alors assure-toi de prévoir une révision légère et suffisamment de sommeil ce jour-là</translation>
 <translation id="8846132060409673887">Trouvez le fabricant et le modèle de cet ordinateur</translation>
 <translation id="8846239054091760429">Son mono, démarrage, sous-titres instantanés et plus encore</translation>
 <translation id="8847988622838149491">USB</translation>
@@ -10254,10 +10213,8 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="8898786835233784856">Sélectionner l'onglet suivant</translation>
 <translation id="8898790559170352647">Ajouter votre compte Microsoft</translation>
 <translation id="8898822736010347272">Envoie à Google des URL de certaines pages que vous visitez, certaines données système et des échantillons de contenu des pages afin d'aider à découvrir de nouvelles menaces et de protéger tous les internautes.</translation>
-<translation id="8899299346165404002">Rédige un plan pour organiser mes pensées de manière claire et concise</translation>
 <translation id="8899851313684471736">Ouvrir le lien dans une nouvelle &amp;fenêtre</translation>
 <translation id="8900413463156971200">Activer la connexion cellulaire</translation>
-<translation id="8901147364315347044">Aide-moi à trouver des idées de cadeaux uniques en te basant sur les loisirs et les centres d'intérêt de cette personne que je vais te partager</translation>
 <translation id="8902667442496790482">Ouvrir les paramètres de la fonction Sélectionner pour énoncer</translation>
 <translation id="8903733144777177139">L'accès au microphone est bloqué</translation>
 <translation id="8904787158537906492">Lien copié dans le presse-papiers</translation>

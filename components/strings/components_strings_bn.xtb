@@ -30,6 +30,7 @@
 <translation id="1044897699341250361">এর মানে কি</translation>
 <translation id="1046350918013988591">কুপন ও ডিসকাউন্ট অফার</translation>
 <translation id="1050038467049342496">অন্যান্য অ্যাপ্লিকেশানগুলি বন্ধ করুন</translation>
+<translation id="1050765387089990494">আমন্ত্রণ প্রত্যাখ্যান করে একটি সংক্ষিপ্ত, নম্রভাবে উত্তর ড্রাফ্ট করো</translation>
 <translation id="1055184225775184556">&amp;যোগ করাকে পূর্বাবস্থায় ফেরান</translation>
 <translation id="1056898198331236512">সতর্কতা</translation>
 <translation id="1058344460600311577"><ph name="PLAY_CHROME_DINO_GAME_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome-এ ডাইনো রান গেম খেলতে Tab প্রেস করার পর Enter প্রেস করুন</translation>
@@ -48,6 +49,7 @@
 <translation id="1070901266639972381">রাত</translation>
 <translation id="1071917609930274619">ডেটা চিহ্নকরণ</translation>
 <translation id="1073690811593784042">গ্লাস (রঙিন)</translation>
+<translation id="1073951898092443918">আমার ইমেলের টোন পরিবর্তন করে সেটি আরও বেশি বিশ্বাসযোগ্য করে তোলো</translation>
 <translation id="1074287282535157335">৪টি কিস্তিতে বা মাসে মাসে (যোগ্যতার উপর নির্ভর করে) পরিশোধ করুন</translation>
 <translation id="1074497978438210769">সুরক্ষিত নয়</translation>
 <translation id="1074779248866616641">ফলাফল</translation>
@@ -77,6 +79,7 @@
 <translation id="1118429183611783760">ভ্যাকুম ও ক্লিনার</translation>
 <translation id="111897705806685148">অন্য ডিভাইস থেকে পাসকী ব্যবহার করুন</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, আপনার Google অ্যাকাউন্টে Chrome-এর কোন কোন তথ্য সেভ করবেন তা ম্যানেজ করতে প্রথমে Tab, তারপরে Enter প্রেস করুন</translation>
+<translation id="1121990216147052230">একটি টু-ডু লিস্ট তৈরি করে দাও</translation>
 <translation id="1122714970786750095">ইলেকট্রনিক্স ও বৈদ্যুতিক</translation>
 <translation id="1123753900084781868">'লাইভ ক্যাপশন' ফিচারের সুবিধা এখনই পাওয়া যাবে না</translation>
 <translation id="1124643885833329193">নির্ভুল লোকেশন</translation>
@@ -174,6 +177,8 @@
 <translation id="1257286744552378071">আপনার প্রতিষ্ঠানের নয় এমন একটি সাইটে আপনার পাসওয়ার্ড লিখেছেন। আপনার অ্যাকাউন্টের সুরক্ষার জন্য অন্যান্য অ্যাপ এবং সাইটগুলিতে আপনার এই পাসওয়ার্ডটি ব্যবহার করবেন না।</translation>
 <translation id="1257553931232494454">জুম লেভেল</translation>
 <translation id="1257714792349895570">লোকাল নেটওয়ার্ক</translation>
+<translation id="1259438590315804994">নির্দিষ্ট কোনও রোলের জন্য আমার দক্ষতা ও অভিজ্ঞতা হাইলাইট করে একটি কভার লেটারের ভূমিকা ড্রাফ্ট করো</translation>
+<translation id="1259474203619072905">আমাকে শান্ত ক্যাফে খুঁজে দাও</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, আপনার Chrome সেটিংস ম্যানেজ করতে Tab প্রেস করে Enter প্রেস করুন</translation>
 <translation id="1264309058268477500">বিকল্প</translation>
 <translation id="1264974993859112054">খেলাধূলা</translation>
@@ -336,6 +341,7 @@
 <translation id="1504042622576912555">ফ্লুট</translation>
 <translation id="1507202001669085618">&lt;p&gt;আপনি যদি এমন কোনও ওয়াই-ফাই পোর্টাল ব্যবহার করেন যেখানে অনলাইন হওয়ার জন্য সাইন-ইন করতে হয়, তাহলে এই সমস্যাটি হতে পারে।&lt;/p&gt;
     &lt;p&gt;এই সমস্যার সমাধান করতে, যে পৃষ্ঠাটি খুলতে চান সেটিতে &lt;strong&gt;কানেক্ট করুন&lt;/strong&gt; বোতামে ক্লিক করুন।&lt;/p&gt;</translation>
+<translation id="1508605873202255562">আমার লক্ষ্য পূরণ করতে কাস্টমাইজ করা ট্র্যাকার তৈরি করো</translation>
 <translation id="1513706915089223971">ইতিহাসে এন্ট্রির তালিকা</translation>
 <translation id="1515436033764190215">ঘণ্টা আগে</translation>
 <translation id="151720253492607760">আর অনুমতি নেই</translation>
@@ -356,6 +362,7 @@
 <translation id="1545757265410828525">দাম সম্পর্কিত ইতিহাস</translation>
 <translation id="1546286808622193216">Gemini ব্যবহার করে কার্ডের সুবিধার তুলনা করুন</translation>
 <translation id="1549470594296187301">এই বৈশিষ্ট্যটি ব্যবহার করার জন্য জাভাস্ক্রিপ্ট চালু করা প্রয়োজন।</translation>
+<translation id="1550906923175308360">আজকের জন্য আমার একটি 'করণীয়' তালিকা তৈরি করো যাতে আমি নিজের কাজ ঠিকমতো করতে পারি</translation>
 <translation id="1553152622374372421">শীতকালীন খেলাধূলা</translation>
 <translation id="1553358976309200471">Chrome আপডেট করুন</translation>
 <translation id="1555130319947370107">নীল</translation>
@@ -514,6 +521,7 @@
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Windows নেটওয়ার্ক ডায়গনিস্টিক্স চালিয়ে দেখুন<ph name="END_LINK" />।</translation>
 <translation id="1777422078676229054">ফটো (আর্কাইভাল)</translation>
 <translation id="1778646502362731194">JIS B0</translation>
+<translation id="1784449499499574899">আমার ইমেল ছোট করো</translation>
 <translation id="1785118555253503473">ওয়েব অ্যাপ ইনস্টল করতে চান?</translation>
 <translation id="1791044335740781449">Google Drive-এ ফাইল আপলোড করা হচ্ছে</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, আপনার Google অ্যাকাউন্টে নিজের সম্পর্কে তথ্য, গোপনীয়তা এবং সুরক্ষা ম্যানেজ করতে প্রথমে Tab তারপরে Enter প্রেস করুন</translation>
@@ -610,6 +618,7 @@
 <translation id="1939059826036755332">অটোমেটিক 'ছবির-মধ্যে-ছবি'</translation>
 <translation id="1939175642807587452">বিজ্ঞপ্তি পাঠাতে অনুমতি চাইতে পারে</translation>
 <translation id="1940441167050915935">সেভ করা নিরাপত্তা কোড মুছুন</translation>
+<translation id="1940937679128415504">আজ রাতে কাছাকাছি রেস্তোরাঁয় কোনও টেবিল খালি আছে?</translation>
 <translation id="194174710521904357">আপনি এই সাইটটিকে থার্ড-পার্টি কুকি ব্যবহারের সাময়িক অনুমতি দিয়েছেন, যার ফলে ব্রাউজিং সংক্রান্ত নিরাপত্তা একটু কম থাকলেও সাইটের সব ফিচার প্রত্যাশা অনুযায়ী কাজ করার সম্ভাবনা বেশি হবে।</translation>
 <translation id="1942498996464084801">বই ও সাহিত্য</translation>
 <translation id="1943994668912612445">ডিজাইন</translation>
@@ -636,6 +645,7 @@
 <translation id="1975584088563498795">মেলবক্স ১০</translation>
 <translation id="1978555033938440688">ফার্মওয়্যার ভার্সন</translation>
 <translation id="1979156660928743046">মিডিয়া সংক্রান্ত তথ্য</translation>
+<translation id="1980625250417123895">আমার সাথে ব্রেনস্টর্ম করো</translation>
 <translation id="1987486584747170374">আপনার সার্চ, মিলে যাওয়া সেরা ফলাফল ও সেই পৃষ্ঠাগুলির কন্টেন্ট Google-এ পাঠানো হয়। AI ফিচারের উন্নতি করতে হিউম্যান রিভিউয়াররা সেগুলি ব্যবহার করবেন না। আপনার প্রতিষ্ঠান এই সেটিংস যেকোনও সময় পরিবর্তন করতে পারবে।</translation>
 <translation id="1988881251331415125">বানান সঠিক হলে, <ph name="BEGIN_LINK" />'কানেক্টিভিটি ডায়াগনস্টিক' টুল চালিয়ে দেখুন<ph name="END_LINK" />।</translation>
 <translation id="1991370806334788445">থার্ড-পার্টি কুকিকে অনুমতি দিয়ে দেখুন। এর মানে হল, ব্রাউজ করার ক্ষেত্রে সুরক্ষা কম হয়ে গেলেও সাইটের ফিচারগুলি প্রত্যাশা অনুযায়ী আরও বেশি কাজ করতে পারে।</translation>
@@ -649,6 +659,7 @@
 <translation id="2003775180883135320">উপরে কোয়াড পাঞ্চ</translation>
 <translation id="2009942480257059311">'ইভেন্ট তৈরি করুন' বোতাম, Google Calendar-এ চটপট নতুন ইভেন্ট তৈরি করতে এটি চালু করুন</translation>
 <translation id="201174227998721785">Chrome সেটিংসে বিভিন্ন সাইটের স্টোর করা ডেটা ও অনুমতি ম্যানেজ করুন</translation>
+<translation id="2017251371756906434">মুদিখানার তালিকা তৈরি করো</translation>
 <translation id="2018769312928511665">ফ্যাব্রিক (গ্লসি)</translation>
 <translation id="2021333772895814435">এই নীতি, ডিভাইস জুড়ে এটির জন্য সিঙ্ক করা অটোমেটিক বন্ধ করে দেয়: <ph name="ACTION_LIST" />।</translation>
 <translation id="202224654587969958">১২ x ১৯ ইঞ্চি</translation>
@@ -876,6 +887,7 @@
 <translation id="2328651992442742497">অনুমতি আছে (ডিফল্ট)</translation>
 <translation id="2328955282645810595">নির্মাণ ও পাওয়ার টুল</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />-এর মেয়াদ, <ph name="EXPIRATION_DATE_ABBR" /> তারিখে শেষ হবে</translation>
+<translation id="2330159380157777735">লেসন প্ল্যান ড্রাফ্ট করো</translation>
 <translation id="2334327033751265975">আপনার শেয়ার করা ট্যাব গ্রুপগুলি আবার উপলভ্য হয়েছে</translation>
 <translation id="2337852623177822836">সেটিংস আপনার প্রশাসক নিয়ন্ত্রণ করে</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> এদের সঙ্গে যুক্ত হতে চাচ্ছে</translation>
@@ -1044,6 +1056,7 @@
 <translation id="2570734079541893434">সেটিংস ম্যানেজ করুন</translation>
 <translation id="257136025287118539">আপনার অ্যাডমিনিস্ট্রেটর আপনার ফাইল <ph name="CLOUD_PROVIDER" />-এ সরাচ্ছেন। আপলোড করার প্রসেস একবার সম্পূর্ণ হলে আপনি এইসব ফাইল পরিবর্তন করতে পারবেন।</translation>
 <translation id="2571488850200220306">এছাড়াও, নিরাপত্তা নিশ্চিত করার ব্যাপারে সহায়তা করতে, এটি ডিভাইসের OS, ব্রাউজার ভার্সন এবং কী সফ্টওয়্যার ইনস্টল করা রয়েছে তা দেখতে পারবে</translation>
+<translation id="2572277925482605243">কঠিন কথোপকথনের জন্য আমাকে প্রস্তুতি নিতে সাহায্য করো</translation>
 <translation id="2573170131138724450">টেলিভিশন</translation>
 <translation id="257674075312929031">গ্রুপ</translation>
 <translation id="2577522251608256362">খুব পরিচিত ক্ষেত্র</translation>
@@ -1263,6 +1276,7 @@
 <translation id="2940418897281183211">PNG ছবি</translation>
 <translation id="2941878205777356567">এনভেলপ ৯ x ১২ ইঞ্চি</translation>
 <translation id="2941952326391522266">এই সার্ভার প্রমাণ করতে পারেনি যে এটি <ph name="DOMAIN" />; এর নিরাপত্তা সার্টিফিকেট <ph name="DOMAIN2" /> থেকে পাওয়া। কোনো ভুল কনফিগারেশনের কারণে অথবা কোনো আক্রমণকারী আপনার সংযোগ মাঝপথে আটকে দিচ্ছে বলে এমনটা হতে পারে।</translation>
+<translation id="2942170180325421996">বন্ধুর সাথে একটি তর্কের মীমাংসা করতে আমাকে সাহায্য করো; এমন একটি নিরপেক্ষ ও তথ্যনির্ভর বিশ্লেষণ দাও যেখানে দুই পক্ষকেই সমানভাবে তুলে ধরা হয়েছে</translation>
 <translation id="2942492342931589800">ক্যাজুয়াল</translation>
 <translation id="2942515540157583425">আইটি ও প্রযুক্তির চাকরি</translation>
 <translation id="2943895734390379394">যে সময়ে আপলোড করা হয়েছিল:</translation>
@@ -1427,6 +1441,7 @@
     <ph name="PLATFORM_TEXT" /></translation>
 <translation id="317878711435188021">জানতে চায় আপনি সক্রিয়ভাবে কখন এই ডিভাইস ব্যবহার করেন</translation>
 <translation id="3180358318770512945">বাচ্চার লালনপালন করা</translation>
+<translation id="3181307292207270140">আমার এখন আরামদায়ক কোনও ক্যাফেতে বসে একটু নিজের মতো করে সময় কাটাতে ইচ্ছে করছে, যেখানে বই পড়া যাবে, পাশাপাশি কিছু কাজও সেরে নেওয়া যেতে পারে। আশেপাশে এমন কোনও জায়গা খুঁজে দিতে পারবে যেখানকার পরিবেশ শান্ত, আরামদায়ক হবে এবং ভরসাযোগ্য ওয়াই-ফাই কানেকশন থাকবে?</translation>
 <translation id="3181543705317761806">ওয়েব থেকে পাওয়া প্রাসঙ্গিক তথ্য সহ AI দ্বারা পরিচালিত উত্তর পান।</translation>
 <translation id="3182185041786697613">সুরক্ষা কোড সেভ করবেন?</translation>
 <translation id="3185635157430775689">কম্পিউটারের কম্পোনেন্ট</translation>
@@ -1573,6 +1588,7 @@
 <translation id="3414952576877147120">মাপ:</translation>
 <translation id="341513675006332771">'Chrome ডাইনো গেম খেলুন' বোতাম, Chrome-এ Dino Run গেম খেলতে এটি চালু করুন</translation>
 <translation id="3415471717466570460">আপনার সার্চ, মিলে যাওয়া সেরা ফলাফল ও সেই পৃষ্ঠাগুলির কন্টেন্ট Google-এ পাঠানো হয়েছে এবং তা হিউম্যান রিভিউয়াররা দেখতে পারেন, যাতে এই ফিচারের উন্নতি করা যায়। এটি হল পরীক্ষামূলক ফিচার এবং সব সময় সঠিক তথ্য দেবে না।</translation>
+<translation id="3417390269491141648">আমার হেল্থ প্ল্যানের বিকল্পগুলির মধ্যে তুলনা করো এবং সেগুলির মধ্যে যেসব মূল পার্থক্য রয়েছে তার ব্রেকডাউন তৈরি করো</translation>
 <translation id="3421387094817716717">এলিপ্টিক কার্ভ সর্বজনীন কী</translation>
 <translation id="3422248202833853650">মেমরি ফাঁকা করতে অন্যান্য প্রোগ্রাম থেকে বেরিয়ে যাওয়ার চেষ্টা করুন।</translation>
 <translation id="3422472998109090673">বর্তমানে <ph name="HOST_NAME" /> পাওয়া যাচ্ছে না।</translation>
@@ -1727,6 +1743,7 @@
 <translation id="3642638418806704195">অ্যাপ্লিকেশন:</translation>
 <translation id="3647286794400715637">প্রতিটি URL স্ট্রিং এন্ট্রিতে ১ থেকে ২টি URL থাকতে হবে।</translation>
 <translation id="3647400963805615193">Chrome সম্পর্কিত পরামর্শ বাতিল করার বোতাম, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /> বাতিল করতে Enter প্রেস করুন</translation>
+<translation id="3648667207586409316">স্ট্রেস কমাতে আমি কী কী করতে পারি?</translation>
 <translation id="3650584904733503804">বৈধতা যাচাইকরণ সফল হয়েছে</translation>
 <translation id="3650594806107685466">আপনার কার্ড সুরক্ষিত রাখতে সাহায্য করার জন্য, <ph name="SIDE_OF_CARD" />-এ CVC লিখুন</translation>
 <translation id="3650917416636556301">হাইকিং ও ক্যাম্পিং</translation>
@@ -1822,6 +1839,7 @@
 <translation id="3784372983762739446">ব্লুটুথ ডিভাইস</translation>
 <translation id="3785246317262748285">সাধারণত আপনি সুরক্ষিতভাবে সাইটের সাথে কানেক্ট করেন, তবে Chrome এই মুহূর্তে কোনও সুরক্ষিত কানেকশন ব্যবহার করতে পারছে না। কোনও হ্যাকার আপনার নেটওয়ার্ক কানেকশনে গোপনে আড়ি পাততে বা সেটি পরিবর্তন করার চেষ্টা করতে পারে। <ph name="LEARN_MORE" /></translation>
 <translation id="378611282717571199">"<ph name="SEARCH_QUERY" />"-এর জন্য মিলে যাওয়া সেরা ফলাফল</translation>
+<translation id="3787429331139352881">নিম্নলিখিত টেক্সটটি কর্মক্ষেত্রের সাথে মানানসই হয় এমন পেশাদার পদ্ধতিতে, নম্রভাবে ও স্পষ্ট করে আবার লেখো। মূল মেসেজটি অপরিবর্তিত রেখে এক্সিকিউটিভ অডিয়েন্সের জন্য উপযুক্ত করে তুলতে টোন উন্নত করো: [এখানে আপনার টেক্সট লিখুন]</translation>
 <translation id="3787887386289385215"><ph name="ISSUER_1_NAME" />, <ph name="ISSUER_2_NAME" /> বা <ph name="ISSUER_3_NAME" /></translation>
 <translation id="3789841737615482174">ইনস্টল করুন</translation>
 <translation id="3791118028061680614">অ্যাপ পরিবর্তন না করেই পেমেন্ট করুন</translation>
@@ -1948,6 +1966,7 @@
 <translation id="3986705137476756801">এখনকার মতো লাইভ ক্যাপশন বন্ধ করে দিন</translation>
 <translation id="3987460020348247775"><ph name="EXPRESSION" /> = <ph name="ANSWER" /></translation>
 <translation id="3987940399970879459">১ এমবির কম</translation>
+<translation id="3988734044246990738">আমার আসন্ন ট্রিপের জন্য প্যাকিং লিস্ট তৈরি করো। আমি যাতে কোনও গুরুত্বপূর্ণ বিষয় ভুলে না যাই তা নিশ্চিত করতে আমাকে সাহায্য করো</translation>
 <translation id="3990250421422698716">জগ অফসেট</translation>
 <translation id="3990532701115075684">হ্যান্ড ট্র্যাক করার অনুমতি দিন</translation>
 <translation id="399179161741278232">আমদানিকৃত</translation>
@@ -1962,6 +1981,7 @@
 <translation id="4014895360827978999">মার্চেন্ট পরিষেবা ও পেমেন্ট সিস্টেম</translation>
 <translation id="4018819349042761761">সর্বজনীন 'কী'</translation>
 <translation id="4023431997072828269">এই ফর্মটি এমন কানেকশন ব্যবহার করে জমা দেওয়া হয়েছে যা নিরাপদ নয়, তাই আপনার তথ্য অন্যান্য ব্যবহারকারীরা দেখতে পাবেন।</translation>
+<translation id="4024795508424217012">আমাকে উত্তর ড্রাফ্ট করতে সাহায্য করো</translation>
 <translation id="4025325634010721551">নীতি আবার লোড করা হয়েছে</translation>
 <translation id="4025338605225449265">মুদ্রা ও বৈদেশিক মুদ্রাবিনিময়</translation>
 <translation id="4025777154208238692">বিপরীত ক্রম</translation>
@@ -1979,6 +1999,7 @@
 <translation id="4038863931942689384"><ph name="ATTRIBUTE_VALUE" />, নতুন</translation>
 <translation id="4039506337798853114">আপনার কার্সর দেখাতে, |<ph name="ACCELERATOR" />| প্রেস করুন</translation>
 <translation id="4042597221652780603">আনুমানিক</translation>
+<translation id="4042611013811262481">রেসিপি বা মিল প্ল্যানের ভিত্তিতে আমার জন্য মুদিখানার তালিকা তৈরি করো</translation>
 <translation id="4045070493270310437">ট্যাব আবার খুলুন</translation>
 <translation id="4045226534284799755">আবার চেষ্টা করার আগে নিজের Microsoft অ্যাকাউন্টে সাইন-ইন করুন</translation>
 <translation id="4045441967987592849">আবার খুলুন</translation>
@@ -2124,6 +2145,7 @@
 <translation id="4230204356098880324">ক্যামেরা ব্যবহার করতে এবং সরাতে অনুমতি চাইতে পারে</translation>
 <translation id="4231448684371260244">৮ x ১৩ ইঞ্চি</translation>
 <translation id="4234996384188431444">Google Chrome-এ অ্যাপ পরিবর্তন না করেই Pix-এর মাধ্যমে পেমেন্ট করুন</translation>
+<translation id="4238607350028440048">তুমি একজন নিয়োগকারী ম্যানেজার হিসেবে আমাকে প্রশ্ন করে ইন্টারভিউয়ের জন্য প্র্যাক্টিস করতে সাহায্য করো</translation>
 <translation id="4239799716689808527">লেবেল</translation>
 <translation id="424063167283213501">পরিচিত পর্যটকের নম্বর সেভ করা</translation>
 <translation id="4241830393007970744">আপনি যে সাইট ভিজিট করার চেষ্টা করেছেন সেখানে আক্রমণকারীরা প্রতারণার মাধ্যমে আপনাকে দিয়ে কোনও সফ্টওয়্যার ইনস্টল করিয়ে নিতে পারে। অথবা আপনার পাসওয়ার্ড, ফোন নম্বর বা ক্রেডিট কার্ড নম্বর জেনে নিতে পারে।</translation>
@@ -2131,11 +2153,13 @@
 <translation id="4242981939686657948">আপনার ব্রাউজিং ইতিহাস সার্চ করার আরও ভালো উপায়ের জন্য, এটি চালু করুন</translation>
 <translation id="4244926541863471678">ফিল্ম</translation>
 <translation id="4246517972543675653">বিদেশে পড়াশুনো করা</translation>
+<translation id="42481816218163154">১৫ মিনিটের একটি মর্নিং রুটিন তৈরি করো যা আমার সকালের বিভিন্ন কাজকে আরও সহজ করে তুলতে সাহায্য করবে। নিশ্চিত করো যে এতে মনোযোগ বৃদ্ধিকারী এক্সারসাইজ অন্তর্ভুক্ত আছে</translation>
 <translation id="4250343410682686342">'এখন কিনুন, পরে পেমেন্ট করুন' পেমেন্ট পদ্ধতি সম্পর্কিত সমস্যা দেখানো স্ক্রিন সম্পূর্ণ স্ক্রিন জুড়ে খোলা আছে।</translation>
 <translation id="4250431568374086873">এই সাইটে আপনার সংযোগ সম্পূর্ণরূপে নিরাপদ নয়</translation>
 <translation id="4250680216510889253">না</translation>
 <translation id="4250716950689692560">A4x4</translation>
 <translation id="4250937007454749162">টি-শার্ট</translation>
+<translation id="4251676308358173916">আমাকে ১০ মিনিটের ফুল বডির জন্য ওয়ার্কআউট তৈরি করতে সাহায্য করো। আমি শারীরিক শক্তি, স্ট্যামিনা এবং নমনীয়তার ওপর গুরুত্ব দিতে চাই</translation>
 <translation id="4253168017788158739">টিকা</translation>
 <translation id="4255487295905690262">কোনও সাইটে দাম কমলে আপনি সেই বিষয়ে ইমেলের মাধ্যমে সতর্কতা পাবেন।</translation>
 <translation id="425582637250725228">আপনার করা পরিবর্তনগুলি সংরক্ষণ নাও করা হতে পারে।</translation>
@@ -2156,6 +2180,7 @@
 <translation id="4275830172053184480">আপনার ডিভাইস বন্ধ করে চালু করুন</translation>
 <translation id="4276974990916607331">না থাক</translation>
 <translation id="4277028893293644418">পাসওয়ার্ড রিসেট করুন</translation>
+<translation id="4277442707759481607">কোনও বিষয় সম্পর্কে আমার জ্ঞান পরীক্ষা করার জন্য প্র্যাক্টিস প্রশ্ন তৈরি করো</translation>
 <translation id="4277529130885813215">অন্য ডিভাইস ব্যবহার করুন</translation>
 <translation id="4277937682389409325">স্থানীয় ঠিকানা</translation>
 <translation id="4278090321534187713">এই ব্যবসায়ী যে কার্ড গ্রহণ করেন না তা বন্ধ করা আছে</translation>
@@ -2215,6 +2240,7 @@
 <translation id="4349810866125026513">তবুও আপলোড করুন</translation>
 <translation id="4350629523305688469">মাল্টিফাংশন ট্রে</translation>
 <translation id="4351060348582610152">কাছাকাছি থাকা ব্লুটুথ ডিভাইসগুলিকে <ph name="ORIGIN" /> স্ক্যান করতে চায়, এই ডিভাইসগুলি পাওয়া গেছে:</translation>
+<translation id="435434000498374342">৫ কিমি দৌড়াতে চান এমন একজন একদম নতুন রানারের জন্য ৮ সপ্তাহের একটি ট্রেনিং শিডিউল ড্রাফ্ট করো। এতে পর্যায়ক্রমে হাঁটা ও দৌড়ানোর বিরতি এবং নির্দিষ্ট বিশ্রামের দিনগুলো অন্তর্ভুক্ত করো</translation>
 <translation id="4355383636893709732">Android অ্যাপের জন্য ChromeOS আপডেট</translation>
 <translation id="4357577888320640139">প্রতিটি থ্রেডে অটোমেটিক প্রাসঙ্গিক ট্যাব শেয়ার করুন</translation>
 <translation id="4358059973562876591">DnsOverHttpsMode নীতিতে সমস্যা থাকার কারণে আপনার নির্দিষ্ট করা টেমপ্লেট হয়তো ব্যবহার করা যাবে না।</translation>
@@ -2229,10 +2255,12 @@
 <translation id="4377125064752653719">আপনি <ph name="DOMAIN" />-এ পৌঁছানোর প্রচেষ্টা করেছেন, তবে সার্ভারটি যে সার্টিফিকেটটি উপস্থাপন করেছে সেটির জারিকর্তা সেটিকে প্রত্যাহার করেছে৷ এর অর্থ হ'ল সার্ভারটি যে সুরক্ষা প্রমানপত্র উপস্থাপন করেছে তা কোনওমতেই বিশ্বাসযোগ্য নয়৷ হতে পারে আপনি একজন আক্রমণকারীর সাথে যোগাযোগ করছেন৷</translation>
 <translation id="4377869186417956230">এই মেনু আইটেমের সব লয়ালটি কার্ডে পরিবর্তন করুন।</translation>
 <translation id="4378154925671717803">ফোন</translation>
+<translation id="4378221908737133050">আমার বাড়ির জন্য ডিপ-ক্লিন চেকলিস্ট তৈরি করো</translation>
 <translation id="4381997246130185847">আপনি যেখানে শেষ করেছিলেন সেখান থেকেই শুরু করতে পারবেন অথবা যখন খুশি যেখানে খুশি নতুন ট্যাব গ্রুপ তৈরি করতে পারবেন</translation>
 <translation id="4382484599443659549">পিডিএফ</translation>
 <translation id="4382833368532556056">এখন থেকে আপনার ফাইল ক্লাউড স্টোরেজে সেভ করুন</translation>
 <translation id="4384395682990721132">A4x3</translation>
+<translation id="4387362115623213806">দেখা করার প্ল্যান প্রত্যাখ্যান করার জন্য নম্রভাবে উত্তর ড্রাফ্ট করতে আমাকে সাহায্য করো</translation>
 <translation id="4387692837058041921">Microsoft OneDrive-এ ফাইল আপলোড করার প্রসেস পজ করা হয়েছে</translation>
 <translation id="4390472908992056574">ব্রিম</translation>
 <translation id="4395550503472021297">এই নীতি, এইসব নীতির ডিফল্ট অ্যাকশন কন্ট্রোল করছে: <ph name="POLICIES" /></translation>
@@ -2262,6 +2290,7 @@
 <translation id="4434045419905280838">পপ-আপ এবং রিডাইরেক্ট</translation>
 <translation id="443673843213245140">প্রক্সির ব্যবহার অক্ষম করা হয়েছে কিন্তু কোনো স্পষ্ট প্রক্সি কনফিগারেশান নির্দিষ্ট করা হয়েছে৷</translation>
 <translation id="4438821706955556403">সাধারণ দাম</translation>
+<translation id="4439665841041786039">আমার সমস্যা সমাধানে সাহায্য করার জন্য তুমি কি আমার সাথে ব্রেনস্টর্ম করতে পারবে?</translation>
 <translation id="4441832193888514600">উপেক্ষা করা হয়েছে কারণ নীতিটি শুধুমাত্র ক্লাউড ব্যবহারকারী নীতি হিসেবে সেট করা যেতে পারে।</translation>
 <translation id="4444062564459679679">আপনার <ph name="DEVICE_NAME" />-এ থাকা Chrome-এ আগেই পাঠানো হয়েছে</translation>
 <translation id="4445964943162061557">এটি পরীক্ষামূলক ফিচার তাই সবসময় সঠিক তথ্য দেখাবে না।</translation>
@@ -2291,9 +2320,12 @@
 <translation id="4494323206460475851">আপনি সেটিংসে বিজ্ঞাপনের বিষয়গুলি দেখতে পারেন এবং সাইটে শেয়ার করতে চান না এমন বিষয়গুলি ব্লক করতে পারেন। ৪ সপ্তাহের বেশি পুরনো বিজ্ঞাপনের বিষয়গুলিও Chrome অটোমেটিক মুছে দেয়।</translation>
 <translation id="4497010149473852018">টাচ করে পূরণ করার জন্য লয়ালটি কার্ড উপলভ্য আছে। কীবোর্ড লুকানো রয়েছে।</translation>
 <translation id="4500587658229086076">নিরাপদ নয় এমন কন্টেন্ট</translation>
+<translation id="4501939680615452918">ট্রেন্ড করা রেস্তোরাঁয় রিজার্ভেশন স্লট খোঁজো</translation>
+<translation id="4503459574136856756">আরও পেশাদার করে তুলতে আমার বায়ো আবার লেখো</translation>
 <translation id="4504850595255879616"><ph name="ENGINE" /> জন ব্যক্তি</translation>
 <translation id="4506176782989081258">যাচাইকরণের ত্রুটি: <ph name="VALIDATION_ERROR" /></translation>
 <translation id="4506599922270137252">সিস্টেম প্রশাসকের সাথে যোগাযোগ করে দেখুন</translation>
+<translation id="4506763601327080673">আউটলাইন ড্রাফ্ট করো</translation>
 <translation id="450710068430902550">প্রশাসকের সাথে ভাগ করছে</translation>
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Translate ব্যবহার করে এই পৃষ্ঠা অনুবাদ করতে, প্রথমে Tab আর তারপরে Enter প্রেস করুন</translation>
 <translation id="4510703642214459906">স্থান</translation>
@@ -2413,6 +2445,7 @@
 <translation id="4710249055485272920">এই তথ্য খুঁজে পাওয়া যায়নি</translation>
 <translation id="4711628883879888561">ট্যাব গ্রুপে কোলাবরেট করুন</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
+<translation id="4714279348049646935">ক্রেডিট আওয়ার, কোর্সের লেভেল এবং গ্রেড পয়েন্টের মান অনুযায়ী ওয়েটেড গড় হিসাব করে আমার GPA গণনা করো</translation>
 <translation id="471880041731876836">এই সাইট দেখার অনুমতি আপনার নেই</translation>
 <translation id="4718897478554657123">৬০০ x ৯০০ মিমি</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Windows নেটওয়ার্ক ডায়গনিস্টিক্স চালান<ph name="END_LINK" /></translation>
@@ -2452,6 +2485,7 @@
 <translation id="4761326898079498987">আরও বিবরণের জন্য পর্যালোচনা করুন</translation>
 <translation id="4761869838909035636">'Chrome নিরাপত্তা সংক্রান্ত পরীক্ষা' চালান</translation>
 <translation id="4762097990764616058"><ph name="BNPL_ISSUER_NAME" /> ব্যবহার করে পেমেন্ট করা চালিয়ে যাবেন?</translation>
+<translation id="4762155283275129615">মেসেজের মূল পয়েন্টে ফোকাস করে আমার ইমেল ছোট করো</translation>
 <translation id="4763196677855776703"><ph name="URL" />-এর মাধ্যমে নিয়ম ও শর্তাবলী দেওয়া হয়েছে</translation>
 <translation id="4764680219299728632">রেঞ্জ, কুকটপ ও ওভেন</translation>
 <translation id="4764776831041365478"><ph name="URL" />-এ ওয়েবপৃষ্ঠাটি অস্থায়ীভাবে ডাউন থাকতে পারে অথবা এটি স্থায়ীভাবে কোনো নতুন ওয়েব অ্যাড্রেসে সরানো হয়ে থাকতে পারে৷</translation>
@@ -2546,6 +2580,7 @@
 <translation id="4901778704868714008">সেভ করুন...</translation>
 <translation id="4901952598169637881">ক্যাজুয়াল জুতো</translation>
 <translation id="4905659621780993806"><ph name="DATE" />-এ <ph name="TIME" />-এ অ্যাডমিনিস্ট্রেটর অটোমেটিক আপনার ডিভাইস রিস্টার্ট করবে। ডিভাইস রিস্টার্ট হওয়ার আগে খোলা আছে এমন যেকোনও আইটেম সেভ করুন।</translation>
+<translation id="4908123261203588878">আমাকে নক্ষত্র সম্পর্কে জানতে সাহায্য করো</translation>
 <translation id="4913083239887436582">ওয়েব অ্যাপ ইনস্টলেশন</translation>
 <translation id="4913987521957242411">উপরের বাঁদিকে পাঞ্চ</translation>
 <translation id="4914727764832832057">নীল ১</translation>
@@ -2610,6 +2645,7 @@
 <translation id="5011561501798487822">শনাক্ত করা ভাষা</translation>
 <translation id="5015510746216210676">মেশিনের নাম:</translation>
 <translation id="5016205925109358554">Serif</translation>
+<translation id="5016793191388570244">এমন একটি মজাদার সূচি তৈরি করো যাতে সপ্তাহান্তে প্রচুর সিনেমা দেখার প্ল্যান থাকে। এমন একটি থিম ঠিক করো যাতে অন্তত ৪টি দারুণ সিনেমার নাম থাকে এবং সেই সিনেমার সাথে মানানসই কিছু স্ন্যাকসের আইডিয়া দাও</translation>
 <translation id="5017554619425969104">আপনার কপি করা টেক্সট</translation>
 <translation id="5017828934289857214">আমাকে পরে মনে করিয়ে দিও</translation>
 <translation id="5018422839182700155">এই পৃষ্ঠাটি খোলা যাচ্ছে না</translation>
@@ -2623,6 +2659,7 @@
 <translation id="5021557570875267742">Chrome ব্যবহার করে দাম ট্র্যাক করুন</translation>
 <translation id="5023310440958281426">আপনার প্রশাসকের নীতিগুলি দেখুন</translation>
 <translation id="5024171724744627792">কার্ড সেভ করে আরও দ্রুত পেমেন্ট করুন। আপনার Google অ্যাকাউন্টে কার্ডের তথ্য এনক্রিপ্ট করা থাকে।</translation>
+<translation id="5026121202864677765">আমার কভার লেটার লেখো</translation>
 <translation id="5030338702439866405">দ্বারা ইস্যু করা</translation>
 <translation id="503069730517007720">"<ph name="SOFTWARE_NAME" />" এর জন্য একটি রুট সার্টিফিকেট প্রয়োজন কিন্তু সেটি ইনস্টল করা নেই। এই সমস্যাটি সমাধান করতে আপনার IT প্রশাসককে "<ph name="SOFTWARE_NAME" />" এর কনফিগারেশন নির্দেশ ভাল করে দেখে নিতে হবে। <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="503498442187459473"><ph name="HOST" /> আপনার ক্যামেরা ও মাইক্রোফোন ব্যবহার করতে চায়</translation>
@@ -2699,6 +2736,7 @@
 <translation id="5143310416385956149">OneDrive-এ স্ক্যান সেভ করা হয়েছে</translation>
 <translation id="5144613843429436866">এই সাইটের জন্য আপনি <ph name="PERMISSION" />-এর অনুমতি দিয়েছেন</translation>
 <translation id="5145883236150621069">নীতি প্রতিক্রিয়ার মধ্যে ত্রুটি কোড উপস্থিত</translation>
+<translation id="5146031810732101666">আমাকে সমস্যা সমাধান করতে সাহায্য করো</translation>
 <translation id="5146995429444047494"><ph name="ORIGIN" />-এর বিজ্ঞপ্তি ব্লক করা হয়েছে</translation>
 <translation id="514704532284964975"><ph name="URL" /> আপনার ফোনে ট্যাপ করেন এমন NFC ডিভাইসে তথ্য দেখতে এবং পরিবর্তন করতে চায়</translation>
 <translation id="5147633291963801297">সাইড প্যানেলে দাম কমার তথ্য দেখুন</translation>
@@ -2706,6 +2744,7 @@
 <translation id="5148889558173091794">আপনার সংস্থা <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />-কে ব্লক করেছে কারণ, এটি একটি নীতি লঙ্ঘন করেছে। <ph name="BEGIN_LEARN_MORE_LINK" />এই সতর্কতা সম্পর্কে আরও জানুন<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154702632169343078">বিষয়</translation>
+<translation id="5156995531130738884">আমার ক্লাসের জন্য একটি আকর্ষণীয় সেশনের রূপরেখাসহ লেসন প্ল্যান ড্রাফ্ট করো</translation>
 <translation id="5157504274688344097">মাস মার্চেন্ট ও ডিপার্টমেন্ট স্টোর্স</translation>
 <translation id="5158275234811857234">কভার</translation>
 <translation id="5159010409087891077">নতুন ছদ্মবেশী উইন্ডোতে (⇧⌘N) করে একটি পৃষ্ঠা খুলুন</translation>
@@ -2728,6 +2767,7 @@
 <translation id="5191315092027169558"><ph name="DOMAIN" /> আপনার প্রোফাইল ম্যানেজ করে</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> একাধিক ফাইল ডাউনলোড করতে চায়</translation>
 <translation id="519528950056409240">Wallet-কে ডেটা শেয়ার করার অনুমতি দিন</translation>
+<translation id="5197384040493814274">আমার ব্র্যান্ড প্রোমোট করার ক্ষেত্রে কোন ধরনের পরামর্শ দেবে? আমার ওয়েবসাইট কীভাবে অপ্টিমাইজ করতে পারি সেই সম্পর্কিত পরামর্শও যোগ করবে</translation>
 <translation id="5200063972779787617">অ্যাকাউন্টে ঠিকানা সেভ করুন</translation>
 <translation id="5201306358585911203">এই পৃষ্ঠার এম্বেডেড করা একটি পৃষ্ঠায় এটি দেখানো হচ্ছে</translation>
 <translation id="5203716867500274632">আপনার অ্যাডমিনিস্ট্রেটর বিভিন্ন ChromeOS ডিভাইস জুড়ে আপনার আগের এবং বর্তমান সেশনের মধ্যে নিচে উল্লেখ করা ডেটা সিঙ্ক করার সুবিধা চালু করেছেন:</translation>
@@ -2743,6 +2783,7 @@
 <translation id="5217759126664161410">প্রোটোকল ফর্ম্যাটটি সঠিক নয়।</translation>
 <translation id="5221377878828867877">একই পাসওয়ার্ড একাধিক সাইটে ব্যবহার হচ্ছে কিনা তা আপনার সংগঠন মনিটর করে</translation>
 <translation id="5222812217790122047">ইমেল আইডি প্রয়োজন</translation>
+<translation id="5226979307236834587">আমি কীভাবে ভদ্রভাবে কোনও প্ল্যান প্রত্যাখ্যান করতে পারি?</translation>
 <translation id="5228269245420405804">দূরশিক্ষা</translation>
 <translation id="5229844812197559338"><ph name="SELECT_PROVIDER_TITLE" />. <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="5230733896359313003">শিপিংয়ের ঠিকানা</translation>
@@ -2789,6 +2830,7 @@
 <translation id="5288108484102287882">নীতির মূল্য যাচাইকরণ থেকে সতর্কতা পাওয়া গেছে</translation>
 <translation id="5289384342738547352">মাল্টিপল ডকুমেন্ট ম্যানেজ করা</translation>
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{আজ আপডেট করতে হবে}=2{আগামীকালের মধ্যে আপডেট করতে হবে}one{# দিনের মধ্যে আপডেট করতে হবে}other{# দিনের মধ্যে আপডেট করতে হবে}}</translation>
+<translation id="5293160437421672778">পরিবারের সাথে যাওয়ার উপযুক্ত এমন রেস্তোরাঁ খোঁজো যেখানে রিজার্ভেশনের সুবিধা আছে। বাচ্চাদের জন্য মেনু ও ক্যাজুয়াল পরিবেশ থাকতে হবে</translation>
 <translation id="5293919335876685914">কুপে</translation>
 <translation id="5298618990685278995">প্রথম ড্রাফ্ট</translation>
 <translation id="5299298092464848405">নীতি বিশ্লেষণ করার সময় ত্রুটি</translation>
@@ -2973,6 +3015,7 @@
 <translation id="5547939254150808298">প্রিন্টিং ও প্রকাশনা</translation>
 <translation id="554815783948612276">ফোরাম ও চ্যাট প্রদানকারী</translation>
 <translation id="5548606607480005320">নিরাপত্তা সংক্রান্ত পরীক্ষা</translation>
+<translation id="554868699913876106">৫ কিলোমিটার দৌড়ের জন্য ৮ সপ্তাহের ট্রেনিং শিডিউলের ড্রাফ্ট তৈরি করো</translation>
 <translation id="555037537507405574">উন্নত প্রিন্টারের ফিচার</translation>
 <translation id="555128936272638662">মোবাইল ও ওয়্যারলেস অ্যাক্সেসরিজ</translation>
 <translation id="555146886889455303">JPEG ছবি</translation>
@@ -3008,6 +3051,7 @@
 <translation id="5596627076506792578">আরও বিকল্পগুলি</translation>
 <translation id="5596939519753369075">২ x ৩.৫ ইঞ্চি</translation>
 <translation id="5597254438174353289">নীল ৩</translation>
+<translation id="5601519850195445492">আমার ঘরে করা যাবে এমন ১০ মিনিটের ওয়ার্ক-আউটের রুটিন তৈরি করো, যাতে লাফানো বা জোরে মুভ করার জেসচার থাকবে না</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> বা <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">পরিচালনা সমর্থিত নয়</translation>
 <translation id="5604254791550001355">প্রম্পট এডিট করুন</translation>
@@ -3085,6 +3129,7 @@
 <translation id="5720895412771013401">ডেস্কটপ কম্পিউটার</translation>
 <translation id="5721147290164931316">ফোন দিয়ে সাইন-ইন করার জন্য স্ক্যান করুন</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} ও আরও ১টি}one{{website_1}, {website_2} ও আরও {more_count}টি}other{{website_1}, {website_2} ও আরও {more_count}টি}}</translation>
+<translation id="5722778418591961221">আমার লক্ষ্য পূরণে সাহায্য করার জন্য বাড়িতেই করা যায় এমন একটি ফিটনেস রুটিন তৈরি করো</translation>
 <translation id="572328651809341494">সাম্প্রতিক ট্যাবগুলি</translation>
 <translation id="5723873695528696965">আপনার MIDI ডিভাইস কন্ট্রোল ও রিপ্রোগ্রাম করুন</translation>
 <translation id="5725297205162868298">@ অক্ষর দিয়ে কোনও শর্টকাট শুরু করা যাবে না: "<ph name="SHORTCUT_NAME" />"</translation>
@@ -3350,6 +3395,7 @@
 <translation id="6124058285696691147">অ্যাটাচমেন্ট ডাউনলোড করুন</translation>
 <translation id="6124432979022149706">Chrome Enterprise কানেক্টর</translation>
 <translation id="6124996493718543728">'এখন কিনুন, পরে পেমেন্ট করুন' পেমেন্ট পদ্ধতির প্রোগ্রেস স্ক্রিন সম্পূর্ণ স্ক্রিন জুড়ে খোলা আছে।</translation>
+<translation id="6125627875118714946">আমাকে ডিজিটাল ডিটক্স প্ল্যান করতে সাহায্য করো</translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />আরও বিবরণ<ph name="END_LINK" /></translation>
 <translation id="6126565365696310362">এনভেলপ চিনা #২</translation>
 <translation id="6131824478727057281">লোকেশন</translation>
@@ -3463,6 +3509,7 @@
 <translation id="6305205051461490394"><ph name="URL" /> এ পৌঁছানো যাচ্ছে না</translation>
 <translation id="6306713302480826305">এই ঠিকানাটি এটি এবং আপনার সাইন-ইন করা অন্যান্য ডিভাইস থেকে মুছে ফেলা হবে</translation>
 <translation id="6307968763353904914">এই পেমেন্ট পদ্ধতির জন্য আপনার ব্যাঙ্ক এই মুহূর্তে ভার্চুয়াল কার্ড প্রদান করতে পারছে না, তবে আপনি এখনও অনলাইনে পেমেন্ট করার জন্য <ph name="CARD_LABEL" /> ব্যবহার করতে পারবেন।</translation>
+<translation id="6309662731179180634">কোনও বিষয়ে আমাকে ক্যুইজ করো</translation>
 <translation id="6311410654831092784">কার্ড স্টক</translation>
 <translation id="6311642842034740437">লোকেশনের নাম</translation>
 <translation id="6312113039770857350">Webpage not available</translation>
@@ -3491,6 +3538,7 @@
 <translation id="6350739641326887427">Pix কোড কপি ও পেস্ট না করেই পেমেন্ট করুন। <ph name="BEGIN_LINK1" />এটি কীভাবে কাজ করে দেখুন<ph name="END_LINK1" /></translation>
 <translation id="6351658970066645919">ব্রাউজ করা ডেটা মুছে দিন</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{একটিও নয়}=1{১টি পাসওয়ার্ড (<ph name="DOMAIN_LIST" />-এর জন্য, সিঙ্ক করা হয়েছে)}=2{২টি পাসওয়ার্ড (<ph name="DOMAIN_LIST" />-এর জন্য, সিঙ্ক করা হয়েছে)}one{#টি পাসওয়ার্ড (<ph name="DOMAIN_LIST" />-এর জন্য, সিঙ্ক করা হয়েছে)}other{#টি পাসওয়ার্ড (<ph name="DOMAIN_LIST" />-এর জন্য, সিঙ্ক করা হয়েছে)}}</translation>
+<translation id="635394585025793320">আমি কাউকে ইমপ্রেস করতে চাই। সবাই যে রেস্তোরাঁ নিয়ে এখন কথা বলছে সেখানে ২ জনের জন্য টেবিল খালি আছে কিনা দেখো</translation>
 <translation id="6354918092619878358">SECG এলিপ্টিক কার্ভ secp256r1 (ওরফে ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="6355224247005550277"><ph name="CROSS_DEVICE_TAB_FOCUSED_FRIENDLY_MATCH_TEXT" />, অন্যান্য ডিভাইস থেকে আরও ট্যাব দেখতে, Tab প্রেস করে Enter কী প্রেস করুন</translation>
 <translation id="6355392890578844978">কোনও কোম্পানি বা অন্য কোনও সংস্থা এই ব্রাউজার ম্যানেজ করে না। এই ডিভাইসের অ্যাক্টিভিটি Chromium-এর বাইরে থেকে ম্যানেজ করা যেতে পারে। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
@@ -3614,6 +3662,7 @@
 <translation id="6518133107902771759">যাচাই করুন</translation>
 <translation id="6519885440226079262">আপনার হ্যান্ড ট্র্যাক করার জন্য জিজ্ঞাসা করতে পারে</translation>
 <translation id="6520026037299163656">ওয়েব অ্যাপ্লিকেশন ও অনলাইন টুল</translation>
+<translation id="6520031894252870394">অনন্য উপহারের আইডিয়া ব্রেনস্টর্ম করো</translation>
 <translation id="6520509611422418552"><ph name="MEMBER_FIRST_NAME" />, "<ph name="GROUP_NAME" />" ট্যাব গ্রুপে যোগ দিয়েছেন</translation>
 <translation id="6521745193039995384">অ্যাক্টিভ নয়</translation>
 <translation id="6522682797352430154">শাস্ত্রীয় সংগীত</translation>
@@ -3637,6 +3686,7 @@
 <translation id="6554732001434021288"><ph name="NUM_DAYS" /> দিন আগে শেষবার দেখেছেন</translation>
 <translation id="6556866813142980365">আবার করুন</translation>
 <translation id="6557715786897013164">১৪ x ১৭ ইঞ্চি</translation>
+<translation id="6558249393995317167">তুমি কি কোনও তারার (স্টার) জীবনচক্রের বিভিন্ন পর্যায় বর্ণনা করতে পারবে?</translation>
 <translation id="6560786330438719938">কোন কোন অ্যাপ ইনস্টল বা আনইনস্টল করা হয়েছে এবং কত ঘন ঘন সেগুলি ব্যবহৃত হয়েছে</translation>
 <translation id="6567832540451970450">অ্যাডমিনিস্ট্রেটর এই সাইটের জন্য <ph name="PERMISSION" /> ব্যবহারের অনুমতি দেয়</translation>
 <translation id="6568793038316600992">'পেমেন্ট পদ্ধতি ম্যানেজ করুন' বোতাম, Chrome সেটিংসে আপনার পেমেন্ট ও ক্রেডিট কার্ডের তথ্য ম্যানেজ করতে এটি চালু করুন</translation>
@@ -3663,6 +3713,7 @@
 <translation id="6615297766614333076">স্ট্যাকার ২</translation>
 <translation id="6619496928666593220">IBAN পূরণ করা হয়নি</translation>
 <translation id="6624427990725312378">পরিচিতির তথ্য</translation>
+<translation id="6625629379283886932">আমাকে কোড করা শেখাও</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> সার্চ</translation>
 <translation id="6629652037942826935">লাক্সারি ট্রাভেল</translation>
 <translation id="6630043285902923878">USB ডিভাইস খোঁজা হচ্ছে...</translation>
@@ -3821,6 +3872,7 @@
 <translation id="6871813064737840684">এই বিকল্পের জন্য ওয়েব জুড়ে দামের ইতিহাস</translation>
 <translation id="6873456682041376666">উপরের ট্রে</translation>
 <translation id="6874604403660855544">&amp;যোগ করাকে পুনরায় করুন</translation>
+<translation id="6875515581501280009">এই উইকেন্ডে আমার জন্য একটি বাস্তবসম্মত প্ল্যান তৈরি করো যাতে আমি ডিজিটাল দুনিয়া থেকে দূরে থাকতে পারি</translation>
 <translation id="6875873347995743859">Assistant-কে পাঠান</translation>
 <translation id="6875894866901426843">আপনার অ্যাডমিনিস্ট্রেটর <ph name="DATE_TIME" />-এ স্থানীয় ফাইল মুছে দেবেন, যাতে ট্র্যাশে থাকা যেকোনও ফাইলও অন্তর্ভুক্ত।</translation>
 <translation id="6880941331070119097">বেশি দাম সম্পর্কিত বিকল্প</translation>
@@ -3905,6 +3957,8 @@
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">মিউট (ডিফল্ট)</translation>
 <translation id="6983783921975806247">নিবন্ধীকৃত OID</translation>
+<translation id="6984095691972094111">আমি একটি নতুন ভাষা শেখার চেষ্টা করছি। আমাকে ভোকাবুলারি ও ব্যাকরণ প্র্যাক্টিস করার ক্ষেত্রে সাহায্য করার জন্য একটি ক্যুইজ তৈরি করো</translation>
+<translation id="698450079873764780">আমার সাথে রোলপ্লে করে কঠিন কথোপকথনের জন্য আমাকে প্রস্তুত হতে সাহায্য করো যাতে আমি আমার উত্তর অনুশীলন করতে পারি</translation>
 <translation id="6987806006823772670">এনভেলপ (কোটেড)</translation>
 <translation id="6989256887001961296">এই কন্টেন্ট ব্লক করা হয়েছে।</translation>
 <translation id="6989763994942163495">উন্নত সেটিংস দেখান ...</translation>
@@ -3912,6 +3966,7 @@
 <translation id="6997288673234694149">বেসবল ও সফ্টবলের সরঞ্জাম</translation>
 <translation id="6998512609912910179">আরও দ্রুত ফর্ম পূরণ করুন</translation>
 <translation id="6999480632062519056">ফিটনেস সংক্রান্ত নির্দেশিকা ও ব্যক্তিগত প্রশিক্ষণ</translation>
+<translation id="7000094925113284872">নক্ষত্রের জীবনচক্রের ম্যাপ তৈরি করো</translation>
 <translation id="7002897669829306463">বাড়ির ঠিকানা, <ph name="ADDRESS" /></translation>
 <translation id="7003278537452757231">কম্বল ও কার্পেট</translation>
 <translation id="7003322000677139268">যানবাহনের যন্ত্রাংশ ও অ্যাক্সেসরি</translation>
@@ -3968,7 +4023,9 @@
 <translation id="7083258188081898530">ট্রে ৯</translation>
 <translation id="70846382339153529">OpenDocument Text</translation>
 <translation id="7086090958708083563">ব্যবহারকারী আপলোড করার অনুরোধ জানিয়েছেন</translation>
+<translation id="7090698782953528257">গাণিতিক সমীকরণ ভিজ্যুয়ালাইজ করতে এবং কার্ভের আকার দেখার ক্ষেত্রে সাহায্য করতে আমাকে ফাংশনের গ্রাফ তৈরিতে সাহায্য করো</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome সেটিংসে বিভিন্ন সাইটের স্টোর করা ডেটা ও অনুমতি ম্যানেজ করতে প্রথমে Tab, তারপরে Enter প্রেস করুন</translation>
+<translation id="709604659664854823">আজ রাতে কাছাকাছি রেস্তোরাঁয় শেষ মুহূর্তের রিজার্ভেশন খুঁজে দাও</translation>
 <translation id="7096341143397839437">ইমেল: <ph name="EMAIL" />।</translation>
 <translation id="7096937462164235847">এই ওয়েবসাইটের পরিচয় যাচাই করা যায়নি।</translation>
 <translation id="7102554173784142865">Chrome ডাইনো গেম খেলুন</translation>
@@ -4322,6 +4379,7 @@
 <translation id="761261689936461781">মোটা</translation>
 <translation id="7613889955535752492">মেয়াদোত্তীর্ণ: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome সেটিংসে আপনার পাসওয়ার্ড দেখতে ও ম্যানেজ করতে প্রথমে Tab আর তারপরে Enter প্রেস করুন</translation>
+<translation id="7615588229248133259">কিছু টেক্সট আবার লিখতে সাহায্য করো যাতে সেগুলো আরও পেশাদার শোনায়</translation>
 <translation id="7615932826417658001">আইডি কার্ড যোগ করুন</translation>
 <translation id="7616390733770379387">এগুলি র‍্যান্ডম অর্ডারে দেখানো হয়।</translation>
 <translation id="7616645509853975347">আপনার অ্যাডমিনিস্ট্রেটর Chrome Enterprise কানেক্টরগুলিকে আপনার ব্রাউজারে চালু করেছে। এই কানেক্টর আপনার কিছু ডেটা অ্যাক্সেস করতে পারবে।</translation>
@@ -4329,6 +4387,7 @@
 <translation id="7617825962482469577">এনভেলপ C7/C6</translation>
 <translation id="7618270539713451657">মার্শাল আর্টস</translation>
 <translation id="7619838219691048931">শেষ শিট</translation>
+<translation id="7621546470643449009">রাতের আকাশে কী কী দেখতে হবে তা শিখতে আমাকে সাহায্য করার জন্য তারা দেখার একটি প্রাথমিক নির্দেশিকা তৈরি করো, যেখানে সহজেই চেনা যায় এমন ৩টি নক্ষত্রপুঞ্জও অন্তর্ভুক্ত থাকবে</translation>
 <translation id="7622467660690571257">টোয়িং ও রাস্তায় সহায়তা</translation>
 <translation id="7625242817712715120">অ্যাডমিনিস্ট্রেটরের নীতি এই কন্টেন্ট প্রিন্ট করার সাজেশন দেয় না</translation>
 <translation id="7627785503571172573">ফটো (ফিল্ম)</translation>
@@ -4358,6 +4417,7 @@
 <translation id="7659327900411729175">এনভেলপ কাকু ৮</translation>
 <translation id="766014026101194726">{0,plural, =1{অ্যাডমিনিস্ট্রেটরের সেট করা নীতি অনুযায়ী এই ফাইল আপলোড করার সুবিধা ব্লক করা হয়েছে}one{অ্যাডমিনিস্ট্রেটরের সেট করা নীতি অনুযায়ী #টি ফাইল আপলোড করার সুবিধা ব্লক করা হয়েছে}other{অ্যাডমিনিস্ট্রেটরের সেট করা নীতি অনুযায়ী #টি ফাইল আপলোড করার সুবিধা ব্লক করা হয়েছে}}</translation>
 <translation id="7660456820368115565">ব্যাপকভাবে মাল্টিপ্লেয়ার গেম</translation>
+<translation id="7661440329832413796">Python-এ কীভাবে কোড লিখতে হয় তা শিখতে আমাকে সাহায্য করো</translation>
 <translation id="7662298039739062396">সেটিংস একটি এক্সটেনশন দ্বারা নিয়ন্ত্রিত</translation>
 <translation id="7662911501613893058"><ph name="USER_DISPLAY_NAME" /> গ্রুপটি ছেড়ে গেছেন</translation>
 <translation id="7666397036351755929">'ছদ্মবেশী মোড'-এ অনুমতি দেওয়া নেই</translation>
@@ -4392,6 +4452,7 @@
 <translation id="7696107855583699585">পরিচিত পর্যটকের নম্বর এডিট করুন</translation>
 <translation id="7697837508203274589">লাইভ খেলাধুলার ইভেন্ট</translation>
 <translation id="7698864304447945242">Google Play Services for AR আপডেট করবেন?</translation>
+<translation id="7699509138503320152">আমার ইমেলটি আরও প্রভাবশালী করে নতুন করে লেখো</translation>
 <translation id="7701040980221191251">কিছু নেই</translation>
 <translation id="7701486038694690341">কান্ট্রি মিউজিক</translation>
 <translation id="7701544340847569275">আপডেট প্রক্রিয়া সম্পূর্ণ করা যায়নি</translation>
@@ -4576,6 +4637,7 @@
 <translation id="799384093520583425">আপনার সংস্থা এই পৃষ্ঠায় DevTools-এর ব্যবহার ব্লক করেছে</translation>
 <translation id="7995512525968007366">নির্দিষ্ট করে উল্লেখ করা নেই</translation>
 <translation id="7997855386298213183">শেয়ার করা ট্যাব</translation>
+<translation id="7999482381722829925">সাধারণত যেসব জায়গা পরিষ্কার করার ক্ষেত্রে নজর দেওয়া হয় না, সেগুলি টার্গেট করো এবং রুম-অনুযায়ী অগ্রাধিকারের ভিত্তিতে ডিপ ক্লিনিং চেকলিস্ট তৈরি করো</translation>
 <translation id="8001912761979890298">এই সার্ভারটি প্রমাণ দিতে পারেনি যে এটি <ph name="DOMAIN" />, কারণ এটি এমন একটি নিরাপত্তা সার্টিফিকেট ব্যবহার করছে যা Chromium বা আপনার ওয়েব ট্রাফিক এনক্রিপশনের জন্য সেট করা সিস্টেম কনফিগারেশনের বিশ্বস্ত নয়। ভুল কনফিগারেশনের কারণে বা কোনও আক্রমণকারী আপনার কানেকশন ইন্টারসেপ্ট করার চেষ্টা করলে এটি হতে পারে। <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />সার্টিফিকেট দেখুন<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="800218591365569300">মেমরি ফাঁকা করতে অন্যান্য ট্যাব বা প্রোগ্রাম বন্ধ করার চেষ্টা করুন।</translation>
 <translation id="8002230960325005199">নতুন ট্যাবে সম্পর্কিত সাইট দেখুন</translation>
@@ -4657,6 +4719,7 @@
 <translation id="8133495915926741232">পছন্দমতো বিজ্ঞাপন দেখানোর জন্য কোনও বিষয়ের কোন কোন বিস্তারিত বিভাগ ব্যবহার করা যেতে পারে তা বেছে নিন। কোনও বিস্তারিত বিভাগ বন্ধ করে দেওয়া হলে, এটির সাথে সম্পর্কিত বিষয়ও ব্লক করা হবে। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="8134058435519644366">রিক্রুটমেন্ট ও স্টাফিং</translation>
 <translation id="8135546115396015134">বাঁদিকের তীরচিহ্নযুক্ত 'কী'</translation>
+<translation id="8137185688006450980">হেল্থ প্ল্যানের বিকল্পগুলির মধ্যে তুলনা করো</translation>
 <translation id="8137456439814903304">শক্তি ও উপযোগিতা</translation>
 <translation id="814071672416123670">আপনার সংস্থার নীতির কারণে কন্টেন্ট কপি করা যায়নি</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{১ মাস আগে তৈরি করা হয়েছে}one{{NUM_MONTHS} মাস আগে তৈরি করা হয়েছে}other{{NUM_MONTHS} মাস আগে তৈরি করা হয়েছে}}</translation>
@@ -4675,6 +4738,7 @@
 <translation id="8163866351304776260">বাঁদিকে কোয়াড পাঞ্চ</translation>
 <translation id="8164078261547504572">দাম কমলে ইমেল পেতে চান?</translation>
 <translation id="8169175551046720804">"<ph name="DATA_CONTROLS_KEYS" />" কী একই অভিধানে সেট করা যাচ্ছে না</translation>
+<translation id="8172809706700703589">আমার ট্রিপের জন্য প্যাকিং লিস্ট তৈরি করো</translation>
 <translation id="8174047975335711832">ডিভাইস সংক্রান্ত তথ্য</translation>
 <translation id="8175053171643471349">লয়ালটি কার্ড ম্যানেজ করুন</translation>
 <translation id="8175796834047840627">আপনি সাইন-ইন করে রয়েছেন বলে, Chrome আপনার কার্ডগুলি আপনার Google অ্যাকাউন্টে সেভ করার অফার করছে। সেটিংসে গিয়ে এই আচরণটি পরিবর্তন করতে পারেন।</translation>
@@ -4726,6 +4790,7 @@
 <translation id="8252991034201168845">'অ্যাক্সেসিবিলিটি সেটিংস ম্যানেজ করুন' বোতাম, ChromeOS সেটিংস থেকে আপনার অ্যাক্সেসিবিলিটি টুল পছন্দ মতো বেছে নিতে Enter প্রেস করুন</translation>
 <translation id="8253091569723639551">বিলিং ঠিকানা প্রয়োজন</translation>
 <translation id="8257387598443225809">এই অ্যাপটি মোবাইলের কথা ভেবে তৈরি করা হয়েছে</translation>
+<translation id="8258311291367036761">কোনও বিষয়ে চিন্তা করতে আমাকে সাহায্য করতে পারবে?</translation>
 <translation id="8259239120149678929">টিভি ডকুমেন্টারি এবং ননফিকশন</translation>
 <translation id="8261506727792406068">মুছুন</translation>
 <translation id="8262952874573525464">নিচে ধারের দিকে সেলাই</translation>
@@ -4750,6 +4815,7 @@
 <translation id="8282409409360764263">ইয়ার্ড রক্ষণাবেক্ষণ</translation>
 <translation id="828282277746732142">Google Wallet-এ IBAN সেভ করুন</translation>
 <translation id="8282947398454257691">আপনার অনন্য ডিভাইস সনাক্তকারীকে জানুন</translation>
+<translation id="8283946103133796868">আমার ওয়েটেড GPA গণনা করো</translation>
 <translation id="8284769179630993263">Chrome সেটিংসে আপনার Safe Browsing ও আরও অনেক কিছু ম্যানেজ করুন</translation>
 <translation id="828558778104922222">অজানা সমস্যার কারণে ফটো হারিয়ে গেছে</translation>
 <translation id="8286036467436129157">সাইন-ইন করুন</translation>
@@ -4783,6 +4849,7 @@
 <translation id="832547548543012337">পাসপোর্ট মুছে দিন</translation>
 <translation id="832567874344484841">ব্রেকফাস্টের খাবার</translation>
 <translation id="8329068931308448247">এনভেলপ #১৪</translation>
+<translation id="8329314618548024109">আমার কেমন অনুভূতি হচ্ছে সেই সম্পর্কে আমাকে প্রশ্ন করো এবং আমার উত্তরের ভিত্তিতে আমার মুডের সাথে মানানসই প্লেলিস্ট তৈরি করো</translation>
 <translation id="8332188693563227489"><ph name="HOST_NAME" /> এ অ্যাক্সেস অস্বীকার করা হয়েছে</translation>
 <translation id="833262891116910667">হাইলাইট</translation>
 <translation id="8339163506404995330"><ph name="LANGUAGE" /> ভাষার পৃষ্ঠার অনুবাদ করা হবে না</translation>
@@ -4899,6 +4966,7 @@
 <translation id="8521812709849134608">কাউন্টারটপ</translation>
 <translation id="8522180136695974431">ক্রেডিট সম্পর্কে রিপোর্ট ও মনিটর করা</translation>
 <translation id="8522552481199248698">পাসওয়ার্ড পরিবর্তন করে আপনার Google অ্যাকাউন্ট সুরক্ষিত রাখতে Chrome সাহায্য করতে পারবে।</translation>
+<translation id="8523574453888018351">আমাকে নতুন ভাষা শিখতে সাহায্য করো</translation>
 <translation id="852450791482410042">এখনই পে করুন</translation>
 <translation id="8527228059738193856">স্পিকার</translation>
 <translation id="8527681393107582734">কৃষি ও বনজ</translation>
@@ -4908,6 +4976,7 @@
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533587060884335451">যথাযথ লোকেশন ব্যবহার করুন</translation>
 <translation id="8533619373899488139">ব্লক করা ইউআরএলের তালিকা এবং আপনার সিস্টেম অ্যাডমিনিস্ট্রেটরের প্রয়োগ করা অন্যান্য নীতিগুলি দেখার জন্য &lt;strong&gt;chrome://policy&lt;/strong&gt;-এ যান।</translation>
+<translation id="8534333267675998827">একটা গাণিতিক সমীকরণ ভিজ্যুয়ালাইজ করো</translation>
 <translation id="8536234749087605613">এনভেলপ (উইন্ডো)</translation>
 <translation id="8538228968820006247">আপনার ট্যাব গ্রুপে আর জায়গা নেই, নতুন সদস্যরা আর লিঙ্কের সাহায্যে যোগ দিতে পারবেন না</translation>
 <translation id="8539500321752640291">২টি অনুমতি দেবেন?</translation>
@@ -5065,6 +5134,7 @@
 <translation id="8796062699363039080"><ph name="OPERATING_SYSTEM" /> সেটিংস</translation>
 <translation id="8798099450830957504">ডিফল্ট</translation>
 <translation id="8800034312320686233">সাইট কি কাজ করছে না?</translation>
+<translation id="8803251172194676606">একটা কাস্টম ফিটনেস রুটিন ডিজাইন করো</translation>
 <translation id="8803526663383843427">যখন চালু থাকে</translation>
 <translation id="8805819170075074995">তালিকার এন্ট্রি "<ph name="LANGUAGE_ID" />": এন্ট্রিটি SpellcheckLanguage নীতিতেও অন্তর্ভুক্ত থাকার জন্য এটি অগ্রাহ্য করা হয়েছে।</translation>
 <translation id="8806062468703310719">ফোন পরিষেবা প্রদানকারী</translation>
@@ -5093,6 +5163,7 @@
 <translation id="8842351563145134519">হাফ স্ক্রিন জুড়ে খুলে টাচ করে পূরণ করা যাবে এমন পেমেন্ট পদ্ধতি উপলভ্য।</translation>
 <translation id="884264119367021077">শিপিং ঠিকানা</translation>
 <translation id="8843516219908676469">Chrome ফর্ম আরও ভালো বুঝতে পারে এবং আপনার জন্য আরও দ্রুত তা অটোফিল করতে পারে</translation>
+<translation id="8845586173202501576">আমার আসন্ন পরীক্ষার জন্য পোমোডোরো টেকনিক ও স্পেসড রিপিটেশন ব্যবহার করে ৭ দিনের স্টাডি শিডিউল তৈরি করো। আমি পরীক্ষার আগের দিন বেশি পড়াশোনা করতে চাই না, তাই নিশ্চিত করো যে আগের দিন হালকা রিভিউ ও ঘুম যেন শিডিউল করা হয়</translation>
 <translation id="8849032795302265570">আপনার কর্মী কীভাবে ওয়েব ব্রাউজ করবে তা সহজেই ম্যানেজ করুন</translation>
 <translation id="8849231003559822746">১৩০ x ১৮০ মিমি</translation>
 <translation id="884923133447025588">কোন প্রত্যাহার নির্মাণকৌশল পাওয়া যায় নি৷</translation>
@@ -5117,8 +5188,10 @@
 <translation id="8871553383647848643">আপনার ব্রাউজার কেমন দেখাবে তা কাস্টমাইজ করুন</translation>
 <translation id="887350038812854047">এই নীতিতে মেশিন ও ব্যবহারকারী লেভেলে একই ভ্যালু প্রয়োগ করা হয়েছে। নীতিটি সঠিকভাবে কাজ করছে।</translation>
 <translation id="8874824191258364635">একটি সঠিক কার্ড নম্বর লিখুন</translation>
+<translation id="8877356245007430672">আমার মুডের উপর ভিত্তি করে প্লেলিস্ট কিউরেট করো</translation>
 <translation id="8877780815363510165">মাছ ধরা</translation>
 <translation id="888117890813270681">"<ph name="DATA_CONTROLS_LEVEL" />"-এ "<ph name="DATA_CONTROLS_RESTRICTION" />" সেট করা যাচ্ছে না</translation>
+<translation id="888169490072887292">বাচ্চাদের মেনু-সহ পরিবার-বান্ধব রেস্তোরাঁ খোঁজো</translation>
 <translation id="8883863364960302898">Google Drive ফোল্ডার</translation>
 <translation id="8884537526797090108">গোপনীয় কন্টেন্ট রেকর্ড করা যাচ্ছে না</translation>
 <translation id="8888187300091017436">তোষকগুলি</translation>
@@ -5129,7 +5202,9 @@
 <translation id="8897221284075091877">এই কন্টেন্ট দেখার জন্য অনুমতি নিতে, আপনার Google অ্যাকাউন্টের মাধ্যমে চালিয়ে যান</translation>
 <translation id="8897428486789851669">সাঁতার শিক্ষা</translation>
 <translation id="8898854704577986668">সাইড প্যানেলে ইতিহাস দেখুন</translation>
+<translation id="8899299346165404002">এমন একটি আউটলাইন ড্রাফ্ট করো যা আমার চিন্তাভাবনাকে স্পষ্ট ও সংক্ষিপ্ত ফর্ম্যাটে সাজায়</translation>
 <translation id="8899807382908246773">ব্যাঘাতকারী বিজ্ঞাপন</translation>
+<translation id="8901147364315347044">কারও জন্য নতুন ধরনের উপহারের বিষয়ে আইডিয়া পেতে আমাকে সাহায্য করার জন্য ব্রেনস্টর্ম করো। আমি তার শখ ও আগ্রহের বিষয়গুলি তোমার সাথে শেয়ার করব</translation>
 <translation id="8903921497873541725">জুম বাড়ান</translation>
 <translation id="8903998444169664879">আপনার পেমেন্ট সেটিংস পরিবর্তন করতে নিজের পরিচয় যাচাই করিয়ে নিন</translation>
 <translation id="890493561996401738">সাজেশন বোতাম সরান, সরাতে Enter বোতাম প্রেস করুন, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
@@ -5186,6 +5261,7 @@
 <translation id="9004367719664099443">ভিআর (VR) সেশন চলছে</translation>
 <translation id="9005998258318286617">পিডিএফ ডকুমেন্ট লোড করা যায়নি।</translation>
 <translation id="9008201768610948239">উপেক্ষা করুন</translation>
+<translation id="9010187979699879769">আমার জন্য স্টাডি শিডিউল তৈরি করো</translation>
 <translation id="9011281744469077577">{COUNT,plural, =0{কোনওটিই নয়}=1{১টি সাইট থেকে}one{#টি সাইট থেকে}other{#টি সাইট থেকে}}</translation>
 <translation id="9018120810758822233"><ph name="CREDIT_CARD" />-এর জন্য আপনার নিরাপত্তা কোড লিখুন</translation>
 <translation id="901834265349196618">ইমেল আইডি</translation>
