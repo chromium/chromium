@@ -267,13 +267,9 @@ void ShowGeminiMicrophonePermissionAlert(UIViewController* base_view_controller,
 }
 
 // Returns true if the page context is eligible to be listed in the tab picker.
-// A context is eligible if it is explicitly attached and its computation state
-// is either success or pending (meaning it is not blocked or protected).
+// A context is eligible if its computation state is either success or pending
+// (meaning it is not blocked or protected).
 bool IsPageContextEligibleForTabPicker(GeminiPageContext* context) {
-  if (context.geminiPageContextAttachmentState !=
-      ios::provider::GeminiPageContextAttachmentState::kAttached) {
-    return false;
-  }
   auto computation_state = context.geminiPageContextComputationState;
   return computation_state ==
              ios::provider::GeminiPageContextComputationState::kSuccess ||
@@ -466,7 +462,10 @@ GeminiBrowserAgent::GeminiBrowserAgent(Browser* browser)
         if (weak_this) {
           std::set<web::WebStateID> eligible_tabs;
           for (const auto& [tab_id, context] : weak_this->attached_tabs_) {
-            if (IsPageContextEligibleForTabPicker(context)) {
+            if (IsPageContextEligibleForTabPicker(context) &&
+                context.geminiPageContextAttachmentState ==
+                    ios::provider::GeminiPageContextAttachmentState::
+                        kAttached) {
               eligible_tabs.insert(tab_id);
             }
           }
