@@ -493,27 +493,6 @@ ChromeAutofillClientIOS::ShowAutofillSuggestions(
     base::WeakPtr<AutofillSuggestionDelegate> delegate) {
   active_suggestion_delegate_ = std::move(delegate);
 
-  // TODO(crbug.com/538597989): This manual suggestions-based notice triggering
-  // check is a temporary workaround. Replace it with the shared
-  // cross-platform logic once verified.
-  bool has_autofill_ai_suggestion = std::ranges::any_of(
-      open_args.suggestions, [](const Suggestion& suggestion) {
-        return suggestion.type == SuggestionType::kFillAutofillAi;
-      });
-
-  if (has_autofill_ai_suggestion) {
-    PrefService* prefs = GetPrefs();
-    bool should_show_notice =
-        prefs
-            ->GetTime(
-                autofill::prefs::
-                    kAutofillAiPrivateInferenceNoticeAcknowledgedTimestamp)
-            .is_null();
-    if (should_show_notice &&
-        base::FeatureList::IsEnabled(features::kAutofillAiUsePrivateAi)) {
-      ShowAutofillAiPrivateInferenceNotice();
-    }
-  }
 
   [bridge_ showAutofillPopup:open_args.suggestions
           suggestionDelegate:active_suggestion_delegate_];
