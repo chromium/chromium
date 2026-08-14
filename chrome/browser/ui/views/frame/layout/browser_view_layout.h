@@ -142,22 +142,13 @@ class BrowserViewLayout : public views::LayoutManager {
   // Used by BrowserView.
   web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost();
 
-  // Test-only methods.
-
-  // Returns the minimum acceptable width for the browser web contents.
-  void SetDelegateForTesting(
-      std::unique_ptr<BrowserViewLayoutDelegate> delegate);
-
  protected:
   // |browser| may be null in tests.
   BrowserViewLayout(std::unique_ptr<BrowserViewLayoutDelegate> delegate,
-                    BrowserWindowInterface* browser,
                     BrowserViewLayoutViews views);
 
   const BrowserViewLayoutViews& views() const { return views_; }
 
-  BrowserWindowInterface* browser() { return browser_; }
-  const BrowserWindowInterface* browser() const { return browser_; }
   BrowserViewLayoutDelegate& delegate() { return *delegate_; }
   const BrowserViewLayoutDelegate& delegate() const { return *delegate_; }
 
@@ -173,9 +164,6 @@ class BrowserViewLayout : public views::LayoutManager {
 
   // The delegate interface. May be a mock or replaced in tests.
   std::unique_ptr<BrowserViewLayoutDelegate> delegate_;
-
-  // The owning browser view.
-  const raw_ptr<BrowserWindowInterface> browser_;
 
   // The collection of Views associated with the browser.
   BrowserViewLayoutViews views_;

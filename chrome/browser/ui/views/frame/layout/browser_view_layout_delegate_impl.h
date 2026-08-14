@@ -38,6 +38,7 @@ class BrowserViewLayoutDelegateImpl : public BrowserViewLayoutDelegate {
   bool IsActiveTabSplit() const override;
   bool IsActiveTabAtLeadingWindowEdge() const override;
   const ImmersiveModeController* GetImmersiveModeController() const override;
+  BrowserAnimationController* GetAnimationController() const override;
   ExclusiveAccessBubbleViews* GetExclusiveAccessBubble() const override;
   bool IsTopControlsSlideBehaviorEnabled() const override;
   float GetTopControlsSlideBehaviorShownRatio() const override;
@@ -50,6 +51,9 @@ class BrowserViewLayoutDelegateImpl : public BrowserViewLayoutDelegate {
   bool ShouldLayoutTabStrip() const override;
   int GetExtraInfobarOffset() const override;
   bool IsOrganizerPanelVisible() const override;
+  base::CallbackListSubscription AddOnGlassModeChangedCallback(
+      base::RepeatingCallback<void(bool)> callback,
+      bool* current_state_out) override;
 
  protected:
   BrowserView& browser_view() { return browser_view_.get(); }

@@ -15,8 +15,6 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/layout/flex_layout_types.h"
 
-class BrowserWindowInterface;
-
 namespace views {
 class View;
 }
@@ -27,7 +25,6 @@ class BrowserViewTabbedLayoutImpl : public BrowserViewLayoutImpl {
  public:
   BrowserViewTabbedLayoutImpl(
       std::unique_ptr<BrowserViewLayoutDelegate> delegate,
-      BrowserWindowInterface* browser,
       BrowserViewLayoutViews views);
   ~BrowserViewTabbedLayoutImpl() override;
 

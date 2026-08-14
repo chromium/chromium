@@ -182,9 +182,8 @@ struct BrowserViewTabbedLayoutImpl::TransientLayoutData {
 
 BrowserViewTabbedLayoutImpl::BrowserViewTabbedLayoutImpl(
     std::unique_ptr<BrowserViewLayoutDelegate> delegate,
-    BrowserWindowInterface* browser,
     BrowserViewLayoutViews views)
-    : BrowserViewLayoutImpl(std::move(delegate), browser, std::move(views)) {}
+    : BrowserViewLayoutImpl(std::move(delegate), std::move(views)) {}
 
 BrowserViewTabbedLayoutImpl::~BrowserViewTabbedLayoutImpl() = default;
 
@@ -468,6 +467,8 @@ BrowserViewTabbedLayoutImpl::CalculateVerticalTabStripAnimation() {
   const bool has_infobar = delegate().IsInfobarVisible();
   std::optional<double> max_uncollapsed_top_corner;
 
+  auto* const controller = delegate().GetAnimationController();
+
   if (layout_data_->tab_strip_type == TabStripType::kVertical) {
     double top_corner_collapsed_state = 1.0;
     const bool would_have_separator = has_infobar || !is_split_view;
@@ -492,7 +493,6 @@ BrowserViewTabbedLayoutImpl::CalculateVerticalTabStripAnimation() {
         break;
     }
 
-    auto* const controller = BrowserAnimationController::From(browser());
     auto* const animations =
         controller->GetAnimationProvider<TabStripAnimations>();
     animations->UpdateDefaultValue(TabStripAnimations::kVerticalTabStrip,
@@ -504,7 +504,6 @@ BrowserViewTabbedLayoutImpl::CalculateVerticalTabStripAnimation() {
   // animation values.
   int leading_exclusion_height = GetCollapsedVerticalTabStripRelativeTop();
   VerticalTabStripAnimation animation;
-  auto* const controller = BrowserAnimationController::From(browser());
   animation.current_motion =
       controller->GetCurrentMotion(TabStripAnimations::kVerticalTabStrip);
   animation.top_offset = base::ClampRound(
@@ -571,15 +570,6 @@ gfx::Size BrowserViewTabbedLayoutImpl::GetMinimumMainAreaSize(
 BrowserViewTabbedLayoutImpl::TabStripType
 BrowserViewTabbedLayoutImpl::GetTabStripType() const {
   if (delegate().ShouldDrawVerticalTabStrip()) {
-#if BUILDFLAG(IS_MAC)
-    // Do not lay out the vertical tabstrip in content-fullscreen on Mac. This
-    // check cannot be done in BrowserView because the immersive mode controller
-    // itself relies on BrowserView reporting which tab strip it *would* draw,
-    // creating a circular dependency/race condition.
-    if (fullscreen_utils::IsInContentFullscreen(browser())) {
-      return TabStripType::kNone;
-    }
-#endif
     return TabStripType::kVertical;
   }
   return delegate().ShouldDrawTabStrip() ? TabStripType::kHorizontal
@@ -591,9 +581,8 @@ BrowserViewTabbedLayoutImpl::GetVerticalTabStripCollapsedState() const {
   if (!views().vertical_tab_strip_region_view) {
     return VerticalTabStripCollapsedState::kExpanded;
   }
-  const auto motion =
-      BrowserAnimationController::From(browser())->GetCurrentMotion(
-          TabStripAnimations::kVerticalTabStrip);
+  const auto motion = delegate().GetAnimationController()->GetCurrentMotion(
+      TabStripAnimations::kVerticalTabStrip);
   if (motion == TabStripAnimations::kCollapse) {
     return VerticalTabStripCollapsedState::kCollapsing;
   }

@@ -25,7 +25,6 @@
 class BrowserViewLayoutImpl : public BrowserViewLayout {
  public:
   BrowserViewLayoutImpl(std::unique_ptr<BrowserViewLayoutDelegate> delegate,
-                        BrowserWindowInterface* browser,
                         BrowserViewLayoutViews views);
   ~BrowserViewLayoutImpl() override;
 

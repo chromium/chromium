@@ -143,16 +143,25 @@ std::unique_ptr<BrowserViewLayout> BrowserViewLayout::CreateLayout(
     switch (browser->GetType()) {
       case BrowserWindowInterface::Type::TYPE_NORMAL:
         return std::make_unique<BrowserViewTabbedLayoutImpl>(
-            std::move(delegate), browser, std::move(views));
+            std::move(delegate), std::move(views));
       case BrowserWindowInterface::Type::TYPE_APP:
-      case BrowserWindowInterface::Type::TYPE_APP_POPUP:
+      case BrowserWindowInterface::Type::TYPE_APP_POPUP: {
+        bool is_web_app =
+            browser->GetType() == BrowserWindowInterface::Type::TYPE_APP &&
+            web_app::AppBrowserController::IsWebApp(browser);
+#if BUILDFLAG(IS_CHROMEOS)
+        is_web_app =
+            is_web_app &&
+            !web_app::AppBrowserController::From(browser)->system_app();
+#endif
         return std::make_unique<BrowserViewAppLayoutImpl>(
-            std::move(delegate), browser, std::move(views));
+            std::move(delegate), std::move(views), is_web_app);
+      }
       case BrowserWindowInterface::Type::TYPE_POPUP:
       case BrowserWindowInterface::Type::TYPE_DEVTOOLS:
       case BrowserWindowInterface::Type::TYPE_PICTURE_IN_PICTURE:
-        return std::make_unique<BrowserViewPopupLayoutImpl>(
-            std::move(delegate), browser, std::move(views));
+        return std::make_unique<BrowserViewPopupLayoutImpl>(std::move(delegate),
+                                                            std::move(views));
     }
   }
   NOTREACHED() << "Tried to create layout for unknown browser type: "
@@ -161,10 +170,8 @@ std::unique_ptr<BrowserViewLayout> BrowserViewLayout::CreateLayout(
 
 BrowserViewLayout::BrowserViewLayout(
     std::unique_ptr<BrowserViewLayoutDelegate> delegate,
-    BrowserWindowInterface* browser,
     BrowserViewLayoutViews views)
     : delegate_(std::move(delegate)),
-      browser_(browser),
       views_(std::move(views)),
       dialog_host_(std::make_unique<BrowserModalDialogHostViews>(this)) {}
 

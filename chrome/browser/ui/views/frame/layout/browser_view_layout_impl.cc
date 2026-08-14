@@ -126,19 +126,12 @@ std::string BrowserViewLayoutImpl::ProposedLayout::ToString(int depth) const {
 
 BrowserViewLayoutImpl::BrowserViewLayoutImpl(
     std::unique_ptr<BrowserViewLayoutDelegate> delegate,
-    BrowserWindowInterface* browser,
     BrowserViewLayoutViews views)
-    : BrowserViewLayout(std::move(delegate), browser, std::move(views)) {
-#if BUILDFLAG(IS_MAC)
-  if (auto* const glass_frame_service = GlassFrameService::GetInstance()) {
-    in_glass_mode_ = glass_frame_service->IsBrowserWindowEligible(browser);
-    glass_mode_subscription_ =
-        glass_frame_service->RegisterGlassFrameEligibilityChangedCallback(
-            browser, base::BindRepeating(
-                         &BrowserViewLayoutImpl::OnGlassModeChangedCallback,
-                         base::Unretained(this)));
-  }
-#endif
+    : BrowserViewLayout(std::move(delegate), std::move(views)) {
+  glass_mode_subscription_ = this->delegate().AddOnGlassModeChangedCallback(
+      base::BindRepeating(&BrowserViewLayoutImpl::OnGlassModeChangedCallback,
+                          base::Unretained(this)),
+      /*current_state_out=*/&in_glass_mode_);
 }
 
 BrowserViewLayoutImpl::~BrowserViewLayoutImpl() = default;

@@ -11,14 +11,11 @@
 #include "chrome/browser/ui/views/frame/layout/browser_view_layout_delegate.h"
 #include "chrome/browser/ui/views/frame/layout/browser_view_layout_impl.h"
 
-class BrowserWindowInterface;
-
 // Performs layout for popup, devtools, and picture-in-picture windows.
 class BrowserViewPopupLayoutImpl : public BrowserViewLayoutImpl {
  public:
   BrowserViewPopupLayoutImpl(
       std::unique_ptr<BrowserViewLayoutDelegate> delegate,
-      BrowserWindowInterface* browser,
       BrowserViewLayoutViews views);
   ~BrowserViewPopupLayoutImpl() override;
 

@@ -81,9 +81,10 @@ gfx::Rect GetBoundsBetweenExclusionZones(const BrowserLayoutParams& params) {
 
 BrowserViewAppLayoutImpl::BrowserViewAppLayoutImpl(
     std::unique_ptr<BrowserViewLayoutDelegate> delegate,
-    BrowserWindowInterface* browser,
-    BrowserViewLayoutViews views)
-    : BrowserViewLayoutImpl(std::move(delegate), browser, std::move(views)) {}
+    BrowserViewLayoutViews views,
+    bool is_web_app)
+    : BrowserViewLayoutImpl(std::move(delegate), std::move(views)),
+      is_web_app_(is_web_app) {}
 
 BrowserViewAppLayoutImpl::~BrowserViewAppLayoutImpl() = default;
 
@@ -119,15 +120,7 @@ gfx::Size BrowserViewAppLayoutImpl::GetMinimumSize(
   gfx::Size contents_size = views().multi_contents_view->GetMinimumSize();
 
   // For full PWAs, there is a minimum content width.
-  bool is_web_app =
-      browser() &&
-      browser()->GetType() == BrowserWindowInterface::Type::TYPE_APP &&
-      web_app::AppBrowserController::IsWebApp(browser());
-#if BUILDFLAG(IS_CHROMEOS)
-  is_web_app = is_web_app &&
-               !web_app::AppBrowserController::From(browser())->system_app();
-#endif
-  if (is_web_app) {
+  if (is_web_app_) {
     contents_size.SetToMax(gfx::Size(kMainBrowserContentsMinimumWidth, 1));
   }
 

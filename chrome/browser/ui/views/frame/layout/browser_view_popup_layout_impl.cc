@@ -11,9 +11,8 @@
 
 BrowserViewPopupLayoutImpl::BrowserViewPopupLayoutImpl(
     std::unique_ptr<BrowserViewLayoutDelegate> delegate,
-    BrowserWindowInterface* browser,
     BrowserViewLayoutViews views)
-    : BrowserViewLayoutImpl(std::move(delegate), browser, std::move(views)) {
+    : BrowserViewLayoutImpl(std::move(delegate), std::move(views)) {
   // Some elements may be visible when they should not be. Remove them.
   if (this->views().horizontal_tab_strip_region_view) {
     this->views().horizontal_tab_strip_region_view->SetVisible(false);

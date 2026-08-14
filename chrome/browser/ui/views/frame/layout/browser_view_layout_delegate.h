@@ -5,10 +5,13 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_LAYOUT_BROWSER_VIEW_LAYOUT_DELEGATE_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_LAYOUT_BROWSER_VIEW_LAYOUT_DELEGATE_H_
 
+#include "base/callback_list.h"
+#include "base/functional/callback_forward.h"
 #include "chrome/browser/ui/views/frame/layout/browser_view_layout_params.h"
 #include "ui/gfx/native_ui_types.h"
 #include "ui/views/layout/layout_types.h"
 
+class BrowserAnimationController;
 class ExclusiveAccessBubbleViews;
 class ImmersiveModeController;
 
@@ -47,6 +50,7 @@ class BrowserViewLayoutDelegate {
   virtual bool IsActiveTabSplit() const = 0;
   virtual bool IsActiveTabAtLeadingWindowEdge() const = 0;
   virtual const ImmersiveModeController* GetImmersiveModeController() const = 0;
+  virtual BrowserAnimationController* GetAnimationController() const = 0;
   virtual ExclusiveAccessBubbleViews* GetExclusiveAccessBubble() const = 0;
   virtual bool IsTopControlsSlideBehaviorEnabled() const = 0;
   virtual float GetTopControlsSlideBehaviorShownRatio() const = 0;
@@ -59,6 +63,9 @@ class BrowserViewLayoutDelegate {
   virtual bool ShouldLayoutTabStrip() const = 0;
   virtual int GetExtraInfobarOffset() const = 0;
   virtual bool IsOrganizerPanelVisible() const = 0;
+  virtual base::CallbackListSubscription AddOnGlassModeChangedCallback(
+      base::RepeatingCallback<void(bool)> callback,
+      bool* current_state_out) = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_LAYOUT_BROWSER_VIEW_LAYOUT_DELEGATE_H_
