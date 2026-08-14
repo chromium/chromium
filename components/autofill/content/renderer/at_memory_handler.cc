@@ -14,7 +14,6 @@
 #include "base/feature_list.h"
 #include "base/hash/hash.h"
 #include "base/strings/string_util.h"
-#include "base/strings/utf_string_conversion_utils.h"
 #include "build/build_config.h"
 #include "components/autofill/content/renderer/autofill_agent.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"
@@ -148,7 +147,7 @@ bool AtMemoryHandler::ShouldTriggerAtMemorySearch(
     return false;
   }
 
-  const WebString trigger = WebString::FromUtf8(GetTriggerString());
+  const WebString trigger = WebString(GetTriggerString());
   if (trigger.IsEmpty()) {
     return false;
   }
@@ -252,7 +251,7 @@ void AtMemoryHandler::DidReceiveKeyDownForAtMemoryTriggerString(
     return;
   }
 
-  const std::string& trigger = GetTriggerString();
+  const std::u16string& trigger = GetTriggerString();
   if (trigger.empty()) {
     trigger_state_ = {};
     return;
@@ -282,7 +281,7 @@ void AtMemoryHandler::DidReceiveKeyDownForAtMemoryTriggerString(
     trigger_state_ = {};
   }
 
-  base::WriteUnicodeCharacter(event.text[0], &trigger_state_.seen_trigger);
+  trigger_state_.seen_trigger.push_back(event.text[0]);
 
   // Truncate the seen trigger so that it is a prefix of the expected trigger.
   while (!trigger_state_.seen_trigger.empty() &&
@@ -538,10 +537,10 @@ const RendererPreferences* AtMemoryHandler::GetRendererPreferences() const {
   return nullptr;
 }
 
-const std::string& AtMemoryHandler::GetTriggerString() const {
+const std::u16string& AtMemoryHandler::GetTriggerString() const {
   const blink::RendererPreferences* prefs = GetRendererPreferences();
   if (!prefs) {
-    return base::EmptyString();
+    return base::EmptyString16();
   }
   return prefs->autofill_trigger_string;
 }

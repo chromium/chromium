@@ -138,6 +138,6 @@ TEST_F(RendererPreferencesUtilTest, AutofillAtMemoryTriggerString) {
   if constexpr (BUILDFLAG(IS_ANDROID)) {
     EXPECT_TRUE(renderer_preferences.autofill_trigger_string.empty());
   } else {
-    EXPECT_EQ(renderer_preferences.autofill_trigger_string, "@@");
+    EXPECT_EQ(renderer_preferences.autofill_trigger_string, u"@@");
   }
 }

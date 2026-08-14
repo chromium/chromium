@@ -99,7 +99,7 @@ struct BLINK_COMMON_EXPORT RendererPreferences {
 
   ui::KeyboardCode autofill_shortcut_key_code = ui::VKEY_UNKNOWN;
   int autofill_shortcut_modifiers = 0;
-  std::string autofill_trigger_string;
+  std::u16string autofill_trigger_string;
 
   RendererPreferences();
   RendererPreferences(const RendererPreferences& other);

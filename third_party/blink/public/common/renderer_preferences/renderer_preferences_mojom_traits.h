@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "build/build_config.h"
+#include "mojo/public/cpp/base/string16_mojom_traits.h"
 #include "mojo/public/cpp/base/time_mojom_traits.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "third_party/blink/public/common/common_export.h"
@@ -21,10 +22,6 @@
 #include "third_party/blink/public/mojom/peerconnection/webrtc_ip_handling_policy.mojom.h"
 #include "third_party/blink/public/mojom/renderer_preferences.mojom-shared.h"
 #include "ui/gfx/mojom/font_render_params_mojom_traits.h"
-
-#if BUILDFLAG(IS_WIN)
-#include "mojo/public/cpp/base/string16_mojom_traits.h"
-#endif
 
 namespace mojo {
 
@@ -276,7 +273,7 @@ struct BLINK_COMMON_EXPORT
     return data.autofill_shortcut_modifiers;
   }
 
-  static const std::string& autofill_trigger_string(
+  static const std::u16string& autofill_trigger_string(
       const ::blink::RendererPreferences& data) {
     return data.autofill_trigger_string;
   }

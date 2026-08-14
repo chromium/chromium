@@ -109,7 +109,7 @@ class AtMemoryHandler {
 
   const blink::RendererPreferences* GetRendererPreferences() const;
 
-  const std::string& GetTriggerString() const;
+  const std::u16string& GetTriggerString() const;
 
   // AtMemory should be triggered if the field is not a password field, no text
   // is selected and the cursor is located behind the trigger string.
@@ -146,7 +146,7 @@ class AtMemoryHandler {
   struct {
     // The longest suffix of coherent user input that is a prefix of the trigger
     // string. These characters do not necessarily occur in the field value.
-    std::string seen_trigger;
+    std::u16string seen_trigger;
     // The time of the last keydown event. Only events that happen in a certain
     // timespan are considered coherent.
     base::TimeTicks last_time;

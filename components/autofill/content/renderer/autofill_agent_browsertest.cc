@@ -1922,7 +1922,7 @@ class AutofillAgentTest_AtMemory : public AutofillAgentTest {
 
   void SetUp() override {
     AutofillAgentTest::SetUp();
-    SetTrigger("@@");
+    SetTrigger(u"@@");
     run_loop_.emplace();
     ON_CALL(autofill_driver(), AskForValuesToFill)
         .WillByDefault([this](const FormData& form, FieldRendererId field_id,
@@ -1957,7 +1957,7 @@ class AutofillAgentTest_AtMemory : public AutofillAgentTest {
     action_persistence_to_respond_ = persistence;
   }
 
-  void SetTrigger(std::string trigger_string) {
+  void SetTrigger(std::u16string trigger_string) {
     blink::RendererPreferences prefs =
         GetMainRenderFrame()->GetWebView()->GetRendererPreferences();
     prefs.autofill_trigger_string = std::move(trigger_string);
@@ -1969,7 +1969,7 @@ class AutofillAgentTest_AtMemory : public AutofillAgentTest {
   void SetTrigger(ui::KeyboardCode key_code, int modifiers) {
     blink::RendererPreferences prefs =
         GetMainRenderFrame()->GetWebView()->GetRendererPreferences();
-    prefs.autofill_trigger_string = "";
+    prefs.autofill_trigger_string = u"";
     prefs.autofill_shortcut_key_code = key_code;
     prefs.autofill_shortcut_modifiers = modifiers;
     GetMainRenderFrame()->GetWebView()->SetRendererPreferences(prefs);
@@ -2341,7 +2341,7 @@ TEST_F(AutofillAgentTest_AtMemory, MemorySearchTriggerInMiddle) {
 // "aaaa" is not a prefix of the trigger string "aaab", AtMemoryHandler detects
 // typing one more "b" completes the trigger.
 TEST_F(AutofillAgentTest_AtMemory, MemorySearchTriggerOverlappingPrefix) {
-  SetTrigger("aaab");
+  SetTrigger(u"aaab");
 
   EXPECT_CALL(
       autofill_driver(),
@@ -2544,7 +2544,7 @@ TEST_F(AutofillAgentTest_AtMemory, NonStandardTriggerString) {
       AskForValuesToFill(
           _, _, _, AutofillSuggestionTriggerSource::kAtMemoryTriggerString, _));
 
-  SetTrigger("Foo");
+  SetTrigger(u"Foo");
   LoadHTML(R"(<input id="f">)");
   WaitForFormsSeen();
   Focus("f");
@@ -2816,7 +2816,7 @@ TEST_F(AutofillAgentTest_AtMemoryContentEditable, NonStandardTriggerString) {
       AskForValuesToFill(
           _, _, _, AutofillSuggestionTriggerSource::kAtMemoryTriggerString, _));
 
-  SetTrigger("Foo");
+  SetTrigger(u"Foo");
   LoadHTML(R"(<div contenteditable id="f">)");
   WaitForFormsSeen();
   Focus("f");

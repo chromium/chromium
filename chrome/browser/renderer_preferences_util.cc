@@ -12,6 +12,7 @@
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/convert_explicitly_allowed_network_ports_pref.h"
@@ -217,16 +218,16 @@ void UpdateFromSystemSettings(blink::RendererPreferences* prefs,
             ui::Command::StringToAccelerator(*trigger_string);
         prefs->autofill_shortcut_key_code = accelerator.key_code();
         prefs->autofill_shortcut_modifiers = accelerator.modifiers();
-        prefs->autofill_trigger_string = "";
+        prefs->autofill_trigger_string = u"";
       }
     } else {
       prefs->autofill_shortcut_key_code = ui::VKEY_UNKNOWN;
       prefs->autofill_shortcut_modifiers = 0;
       if (const std::string* trigger_string =
               autofill_trigger_info.FindString("trigger")) {
-        prefs->autofill_trigger_string = *trigger_string;
+        prefs->autofill_trigger_string = base::UTF8ToUTF16(*trigger_string);
       } else {
-        prefs->autofill_trigger_string = "";
+        prefs->autofill_trigger_string = u"";
       }
     }
   }
