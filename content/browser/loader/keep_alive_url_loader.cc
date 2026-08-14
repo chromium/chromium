@@ -907,8 +907,9 @@ base::TimeDelta KeepAliveURLLoader::UpdateNextRetryDelay() {
 bool KeepAliveURLLoader::IsEligibleForRetry(
     std::optional<network::URLLoaderCompletionStatus> completion_status) const {
   auto retry_options = resource_request_.fetch_retry_options;
-  if (!retry_options.has_value()) {
-    // The fetch must opt-in to retry.
+  if (!retry_options.has_value() ||
+      !base::FeatureList::IsEnabled(blink::features::kFetchRetry)) {
+    // The fetch must opt-in to retry and the feature must be enabled.
     return false;
   }
 

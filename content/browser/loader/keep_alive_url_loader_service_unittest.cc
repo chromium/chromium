@@ -565,6 +565,59 @@ TEST_F(KeepAliveURLLoaderServiceTest, LoadTrustedRequestAndTerminate) {
       "resource_request.trusted_params must not be set");
 }
 
+TEST_F(KeepAliveURLLoaderServiceTest,
+       LoadRequestWithRetryOptionsWhenFeatureDisabledAndTerminate) {
+  FakeRemoteURLLoaderFactory renderer_loader_factory;
+  MockReceiverURLLoaderClient renderer_loader_client;
+  BindKeepAliveURLLoaderFactory(renderer_loader_factory);
+
+  base::test::ScopedFeatureList overwritten_feature_list;
+  overwritten_feature_list.InitAndDisableFeature(blink::features::kFetchRetry);
+
+  auto resource_request = CreateResourceRequest(GURL(kTestRequestUrl));
+  network::FetchRetryOptions options;
+  options.max_attempts = 1;
+  resource_request.fetch_retry_options = options;
+
+  renderer_loader_factory.CreateLoaderAndStart(
+      resource_request, renderer_loader_client.BindNewPipeAndPassRemote(),
+      /*expect_success=*/false);
+
+  EXPECT_EQ(network_url_loader_factory().NumPending(), 0);
+  EXPECT_EQ(loader_service().NumLoadersForTesting(), 0u);
+  EXPECT_FALSE(renderer_loader_factory.is_remote_url_loader_connected());
+  ExpectMojoBadMessage(
+      "Unexpected `resource_request` in "
+      "KeepAliveURLLoaderFactoriesBase::CreateLoaderAndStart(): "
+      "resource_request.fetch_retry_options must not be set when "
+      "FetchRetry is disabled");
+}
+
+TEST_F(KeepAliveURLLoaderServiceTest,
+       LoadRequestWithRetryOptionsWithoutOriginTrialAndTerminate) {
+  FakeRemoteURLLoaderFactory renderer_loader_factory;
+  MockReceiverURLLoaderClient renderer_loader_client;
+  BindKeepAliveURLLoaderFactory(renderer_loader_factory);
+
+  auto resource_request = CreateResourceRequest(GURL(kTestRequestUrl));
+  network::FetchRetryOptions options;
+  options.max_attempts = 1;
+  resource_request.fetch_retry_options = options;
+
+  renderer_loader_factory.CreateLoaderAndStart(
+      resource_request, renderer_loader_client.BindNewPipeAndPassRemote(),
+      /*expect_success=*/false);
+
+  EXPECT_EQ(network_url_loader_factory().NumPending(), 0);
+  EXPECT_EQ(loader_service().NumLoadersForTesting(), 0u);
+  EXPECT_FALSE(renderer_loader_factory.is_remote_url_loader_connected());
+  ExpectMojoBadMessage(
+      "Unexpected `resource_request` in "
+      "KeepAliveURLLoaderFactoriesBase::CreateLoaderAndStart(): "
+      "resource_request.fetch_retry_options must not be set when "
+      "FetchRetry is disabled");
+}
+
 TEST_F(KeepAliveURLLoaderServiceTest, LoadRequestAfterPageIsUnloaded) {
   FakeRemoteURLLoaderFactory renderer_loader_factory;
   MockReceiverURLLoaderClient renderer_loader_client;
@@ -1415,6 +1468,57 @@ TEST_F(FetchLaterKeepAliveURLLoaderServiceTest,
   ExpectMojoBadMessage(
       "Unexpected `resource_request.is_fetch_later_api` in "
       "FetchLaterLoaderFactories::CreateLoader(): must be set");
+}
+
+TEST_F(FetchLaterKeepAliveURLLoaderServiceTest,
+       LoadFetchLaterRequestWithRetryOptionsWhenFeatureDisabledAndTerminate) {
+  FakeRemoteFetchLaterLoaderFactory renderer_loader_factory;
+  BindFetchLaterLoaderFactory(renderer_loader_factory);
+
+  base::test::ScopedFeatureList overwritten_feature_list;
+  overwritten_feature_list.InitAndDisableFeature(blink::features::kFetchRetry);
+
+  auto resource_request =
+      CreateFetchLaterResourceRequest(GURL(kTestRequestUrl));
+  network::FetchRetryOptions options;
+  options.max_attempts = 1;
+  resource_request.fetch_retry_options = options;
+  renderer_loader_factory.CreateLoader(resource_request,
+                                       /*expect_success=*/false);
+
+  EXPECT_EQ(network_url_loader_factory().NumPending(), 0);
+  EXPECT_EQ(loader_service().NumLoadersForTesting(), 0u);
+  EXPECT_FALSE(
+      renderer_loader_factory.is_remote_fetch_later_loader_connected());
+  ExpectMojoBadMessage(
+      "Unexpected `resource_request` in "
+      "KeepAliveURLLoaderFactoriesBase::CreateLoaderAndStart(): "
+      "resource_request.fetch_retry_options must not be set when "
+      "FetchRetry is disabled");
+}
+
+TEST_F(FetchLaterKeepAliveURLLoaderServiceTest,
+       LoadFetchLaterRequestWithRetryOptionsWithoutOriginTrialAndTerminate) {
+  FakeRemoteFetchLaterLoaderFactory renderer_loader_factory;
+  BindFetchLaterLoaderFactory(renderer_loader_factory);
+
+  auto resource_request =
+      CreateFetchLaterResourceRequest(GURL(kTestRequestUrl));
+  network::FetchRetryOptions options;
+  options.max_attempts = 1;
+  resource_request.fetch_retry_options = options;
+  renderer_loader_factory.CreateLoader(resource_request,
+                                       /*expect_success=*/false);
+
+  EXPECT_EQ(network_url_loader_factory().NumPending(), 0);
+  EXPECT_EQ(loader_service().NumLoadersForTesting(), 0u);
+  EXPECT_FALSE(
+      renderer_loader_factory.is_remote_fetch_later_loader_connected());
+  ExpectMojoBadMessage(
+      "Unexpected `resource_request` in "
+      "KeepAliveURLLoaderFactoriesBase::CreateLoaderAndStart(): "
+      "resource_request.fetch_retry_options must not be set when "
+      "FetchRetry is disabled");
 }
 
 TEST_F(FetchLaterKeepAliveURLLoaderServiceTest,
