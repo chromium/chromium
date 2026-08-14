@@ -7,9 +7,11 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/ai_overlay_dialog/ai_overlay_dialog_controller.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/actions/actions.h"
@@ -26,11 +28,14 @@
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/link.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/table_layout_view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
+#include "ui/views/widget/widget.h"
+#include "url/gurl.h"
 
 namespace {
 
@@ -233,6 +238,45 @@ void AiOverlayToolbarButton::OnOptionsButtonPressed() {
           base::BindRepeating(&OnPersonaToggled, controller)));
   persona_toggle->SetIsOn(controller->use_persona());
   persona_toggle->GetViewAccessibility().SetName(u"Persona");
+
+  // Spacing between rows
+  contents_view->AddPaddingRow(0,
+                               ChromeLayoutProvider::Get()->GetDistanceMetric(
+                                   views::DISTANCE_RELATED_CONTROL_VERTICAL) /
+                                   2);
+
+  // Remembered Notes row
+  contents_view->AddRows(1, views::TableLayout::kFixedSize);
+
+  // TODO(crbug.com/535704548): Move UI string literal ("Remembered Notes") to
+  // generated_resources.grd for localization.
+  auto* notes_link = contents_view->AddChildView(
+      std::make_unique<views::Link>(u"Remembered Notes"));
+  notes_link->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+
+  auto* launch_button = contents_view->AddChildView(
+      views::CreateVectorImageButton(base::RepeatingClosure()));
+  views::SetImageFromVectorIconWithColor(
+      launch_button, vector_icons::kOpenInNewFlippableIcon, 16,
+      views::IconColors(GetColorProvider()->GetColor(ui::kColorIcon),
+                        GetColorProvider()->GetColor(ui::kColorIconDisabled)));
+  launch_button->GetViewAccessibility().SetName(u"Remembered Notes");
+  launch_button->SetTooltipText(u"Open Remembered Notes");
+
+  auto on_open_notes = base::BindRepeating(
+      [](Browser* browser, views::View* view) {
+        if (view && view->GetWidget()) {
+          view->GetWidget()->CloseWithReason(
+              views::Widget::ClosedReason::kUnspecified);
+        }
+        ShowSingletonTab(browser,
+                         GURL(chrome::kChromeUIAiOverlayDialogUntrustedURL)
+                             .Resolve("notes"));
+      },
+      browser(), base::Unretained(notes_link));
+
+  notes_link->SetCallback(on_open_notes);
+  launch_button->SetCallback(on_open_notes);
 
   bubble_delegate->SetContentsView(std::move(contents_view));
   views::BubbleDialogDelegate::CreateBubbleDeprecated(
