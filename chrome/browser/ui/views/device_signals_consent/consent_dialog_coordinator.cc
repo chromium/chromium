@@ -153,8 +153,13 @@ void ConsentDialogCoordinator::Show() {
     return;
   }
   base::RecordAction(base::UserMetricsAction("DeviceSignalsConsent_Shown"));
-  dialog_widget_ = chrome::ShowBrowserModal(
+
+  auto weak_this = weak_ptr_factory_.GetWeakPtr();
+  views::Widget* widget = chrome::ShowBrowserModal(
       browser_, CreateDeviceSignalsConsentDialogModel());
+  if (weak_this) {
+    dialog_widget_ = widget;
+  }
 }
 
 void ConsentDialogCoordinator::OnConsentDialogAccept() {
