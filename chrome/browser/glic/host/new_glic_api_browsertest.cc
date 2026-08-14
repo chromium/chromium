@@ -13,6 +13,7 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_expected_support.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_logging_settings.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
@@ -666,6 +667,43 @@ IN_PROC_BROWSER_TEST_P(NewGlicOnboardingApiTest, testIsOnboardingCompleted) {
   ASSERT_OK(OpenGlicForActiveTab());
   ExecuteJsTest();
   glic::SetFRECompletion(GetProfile(), prefs::FreStatus::kCompleted);
+  ContinueJsTest();
+}
+
+IN_PROC_BROWSER_TEST_P(NewGlicOnboardingApiTest, testSetOnboardingCompleted) {
+  ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest();
+
+  ASSERT_FALSE(GlicEnabling::HasConsentedForProfile(GetProfile()));
+
+// Android doesn't use global hotkeys or a taskbar launcher
+#if !BUILDFLAG(IS_ANDROID)
+  base::test::TestFuture<void> default_browser_check_called;
+  // Ensure that CheckDefaultBrowserToEnableLauncher was called.
+  GlicLauncherConfiguration::SetCheckDefaultBrowserCallbackForTesting(
+      default_browser_check_called.GetRepeatingCallback());
+#endif
+
+  base::UserActionTester user_action_tester;
+  EXPECT_EQ(0,
+            user_action_tester.GetActionCount("Glic.Onboarding.OptInAccept"));
+
+  ContinueJsTest();
+
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return GlicEnabling::HasConsentedForProfile(GetProfile()); }));
+
+// Android doesn't use global hotkeys or a taskbar launcher
+#if !BUILDFLAG(IS_ANDROID)
+  // Wait for the default browser check to be called.
+  EXPECT_TRUE(default_browser_check_called.Wait());
+  GlicLauncherConfiguration::SetCheckDefaultBrowserCallbackForTesting(
+      base::RepeatingClosure());
+#endif
+
+  EXPECT_EQ(1,
+            user_action_tester.GetActionCount("Glic.Onboarding.OptInAccept"));
+
   ContinueJsTest();
 }
 

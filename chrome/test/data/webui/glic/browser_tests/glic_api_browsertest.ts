@@ -56,21 +56,6 @@ class ApiTests extends ApiTestFixtureBase {
     await this.advanceToNextStep();
   }
 
-
-  async testSetOnboardingCompleted() {
-    assertDefined(this.host.setOnboardingCompleted);
-
-    // Check that onboarding is not completed yet.
-    await this.advanceToNextStep();
-
-    // Call mojo to set onboarding completed.
-    await this.host.setOnboardingCompleted();
-
-    // Check that onboarding is completed.
-    await this.advanceToNextStep();
-  }
-
-
   async testGetFocusedTabStateV2WithNavigation() {
     // Initial state.
     assertDefined(this.host.getFocusedTabStateV2);

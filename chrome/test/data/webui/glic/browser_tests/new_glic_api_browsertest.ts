@@ -372,6 +372,19 @@ class ApiTests extends ApiTestFixtureBase {
     assertTrue(await completedSequence.next());
   }
 
+  async testSetOnboardingCompleted() {
+    assertDefined(this.host.setOnboardingCompleted);
+
+    // Check that onboarding is not completed yet.
+    await this.advanceToNextStep();
+
+    // Call mojo to set onboarding completed.
+    await this.host.setOnboardingCompleted();
+
+    // Check that onboarding is completed.
+    await this.advanceToNextStep();
+  }
+
   async testPinTabsFailsWhenIncognitoWindow() {
     assertDefined(this.host.pinTabs);
     assertDefined(this.host.getPinnedTabs);

@@ -188,7 +188,6 @@ std::vector<std::string> GetTestSuiteNames() {
       "GlicApiTestWithGeminiActOnWebPolicy",
       "GlicApiTestWithWebContentsWarming",
       "GlicApiTestHibernateAllOnMemoryPressure",
-      "GlicOnboardingApiTest",
       "GlicApiTestWithDaisyChain",
       "GlicApiTestGeminiEnterpriseSettingsOverride",
       "GlicApiTestGeminiEnterpriseSettingsDisabled",
@@ -852,63 +851,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testPanelActiveWithMicrophone) {
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithMqlsIdGetterEnabled,
                        testGetModelQualityClientIdFeatureEnabled) {
   ExecuteJsTest();
-}
-
-
-class GlicOnboardingApiTest : public GlicApiTestWithOneTab {
- public:
-  GlicOnboardingApiTest()
-      : GlicApiTestWithOneTab({.fre_status = prefs::FreStatus::kNotStarted}) {
-    feature_list_.InitWithFeaturesAndParameters(
-        {{features::kGlicMultiInstance, {}},
-         {mojom::features::kGlicMultiTab, {}},
-         {features::kGlicMultitabUnderlines, {}}},
-        {/*disabled_features=*/});
-  }
-
-  void SetUpOnMainThread() override {
-    GlicApiTest::SetUpOnMainThread();
-    NavigateTabAndOpenGlic();
-  }
-
-  void TearDownOnMainThread() override {
-    GlicProfileManager::ForceConnectionTypeForTesting(std::nullopt);
-    GlicApiTestWithOneTab::TearDownOnMainThread();
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-
-IN_PROC_BROWSER_TEST_P(GlicOnboardingApiTest, testSetOnboardingCompleted) {
-  ExecuteJsTest();
-
-  ASSERT_FALSE(GlicEnabling::HasConsentedForProfile(browser()->GetProfile()));
-
-  base::RunLoop run_loop;
-  // Ensure that CheckDefaultBrowserToEnableLauncher was called.
-  GlicLauncherConfiguration::SetCheckDefaultBrowserCallbackForTesting(
-      run_loop.QuitClosure());
-
-  EXPECT_EQ(0,
-            user_action_tester->GetActionCount("Glic.Onboarding.OptInAccept"));
-
-  ContinueJsTest();
-
-  ASSERT_TRUE(base::test::RunUntil([&] {
-    return GlicEnabling::HasConsentedForProfile(browser()->GetProfile());
-  }));
-
-  // Wait for the default browser check to be called.
-  run_loop.Run();
-  GlicLauncherConfiguration::SetCheckDefaultBrowserCallbackForTesting(
-      base::RepeatingClosure());
-
-  EXPECT_EQ(1,
-            user_action_tester->GetActionCount("Glic.Onboarding.OptInAccept"));
-
-  ContinueJsTest();
 }
 
 // TODO(crbug.com/435271214): Re-enable this test
@@ -2099,10 +2041,7 @@ INSTANTIATE_TEST_SUITE_P(,
                          GlicApiTestWithGeminiActOnWebPolicy,
                          DefaultTestParamSet(),
                          &WithTestParams::PrintTestVariant);
-INSTANTIATE_TEST_SUITE_P(,
-                         GlicOnboardingApiTest,
-                         DefaultTestParamSet(),
-                         &WithTestParams::PrintTestVariant);
+
 INSTANTIATE_TEST_SUITE_P(,
                          GlicApiTestWithDaisyChain,
                          DefaultTestParamSet(),
