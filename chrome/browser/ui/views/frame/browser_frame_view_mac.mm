@@ -15,6 +15,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/headless/headless_mode_util.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_properties.h"
@@ -418,6 +419,12 @@ void BrowserFrameViewMac::WindowControlsOverlayEnabledChanged() {
 
 gfx::Size BrowserFrameViewMac::GetMinimumSize() const {
   gfx::Size client_size = browser_widget()->client_view()->GetMinimumSize();
+
+  // Headless mode does not enforce macOS desktop window aspect ratio
+  // constraints.
+  if (headless::IsHeadlessMode()) {
+    return client_size;
+  }
 
   // macOS apps generally don't allow their windows to get shorter than a
   // certain height, which empirically seems to be related to their *minimum*

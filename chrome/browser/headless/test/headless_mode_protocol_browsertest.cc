@@ -378,6 +378,7 @@ HEADLESS_MODE_PROTOCOL_TEST(OzoneScreenSizeOverride,
 HEADLESS_MODE_PROTOCOL_TEST(MultipleScreenDetails,
                             "shared/multiple-screen-details.js")
 
+// If this test flakes, please re-open http://crbug.com/543040219.
 HEADLESS_MODE_PROTOCOL_TEST(MoveWindowBetweenScreens,
                             "shared/move-window-between-screens.js")
 
