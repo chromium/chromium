@@ -2338,6 +2338,7 @@ void TabsCreateFunction::OpenTabInBrowser(BrowserWindowInterface& browser,
   options.active = active_;
   options.pinned = pinned_;
   options.index = index_;
+  options.split_with_tab_id = split_with_tab_id_;
 
   base::expected<content::WebContents*, std::string> result =
       OpenTabHelper::OpenTab(validated_url_, browser, *this, options);

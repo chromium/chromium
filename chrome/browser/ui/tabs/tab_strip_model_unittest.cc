@@ -2905,6 +2905,26 @@ TEST_F(TabStripModelTest, RotateFocusedGroup) {
   EXPECT_EQ(group2, tabstrip()->GetFocusedGroup());
 }
 
+TEST_F(TabStripModelTest, AddToNewSplit_MultipleIndices_Active) {
+  PrepareTabs(tabstrip(), 5);
+  tabstrip()->ActivateTabAt(2);
+  ASSERT_EQ(2, tabstrip()->active_index());
+  tabstrip()->AddToNewSplit({2, 3}, split_tabs::SplitTabVisualData(),
+                            split_tabs::SplitTabCreatedSource::kExtensionsApi);
+  EXPECT_EQ(2, tabstrip()->active_index());
+  EXPECT_EQ("0 1 2s 3s 4", GetTabStripStateString(tabstrip()));
+}
+
+TEST_F(TabStripModelTest, AddToNewSplit_MultipleIndices_Background) {
+  PrepareTabs(tabstrip(), 5);
+  tabstrip()->ActivateTabAt(0);
+  ASSERT_EQ(0, tabstrip()->active_index());
+  tabstrip()->AddToNewSplit({2, 3}, split_tabs::SplitTabVisualData(),
+                            split_tabs::SplitTabCreatedSource::kExtensionsApi);
+  EXPECT_EQ(0, tabstrip()->active_index());
+  EXPECT_EQ("0 1 2s 3s 4", GetTabStripStateString(tabstrip()));
+}
+
 TEST_F(TabStripModelTest, SplitTabPinning) {
   for (bool split_is_selected : {true, false}) {
     for (bool use_left_tab : {true, false}) {
@@ -3015,6 +3035,31 @@ TEST_F(TabStripModelTest, AddToSplitInGroup) {
   EXPECT_TRUE(tabstrip()->empty());
 }
 
+TEST_F(TabStripModelTest, AddToSplitInGroup_MultipleIndices) {
+  for (bool use_grouped_tab_as_pivot : {true, false}) {
+    // Create five tabs with two pinned.
+    ASSERT_NO_FATAL_FAILURE(
+        PrepareTabstripForSelectionTest(tabstrip(), 5, 2, {2}));
+
+    // Add tab at index 4 to a group.
+    tabstrip()->AddToNewGroup({4});
+
+    const std::vector<int> split_indices =
+        use_grouped_tab_as_pivot ? std::vector{4, 2} : std::vector{2, 4};
+    tabstrip()->AddToNewSplit(
+        split_indices, split_tabs::SplitTabVisualData(),
+        split_tabs::SplitTabCreatedSource::kExtensionsApi);
+
+    const std::string expected_tab_strip =
+        use_grouped_tab_as_pivot ? "0p 1p 3 2g0s 4g0s" : "0p 1p 2s 4s 3";
+    EXPECT_EQ(expected_tab_strip,
+              GetTabStripStateString(tabstrip(), /*annotate_groups=*/true));
+
+    tabstrip()->CloseAllTabs();
+    EXPECT_TRUE(tabstrip()->empty());
+  }
+}
+
 TEST_F(TabStripModelTest, AddToSplitInPinned) {
   // Create five tabs with two pinned.
   ASSERT_NO_FATAL_FAILURE(
@@ -3033,6 +3078,29 @@ TEST_F(TabStripModelTest, AddToSplitInPinned) {
 
   tabstrip()->CloseAllTabs();
   EXPECT_TRUE(tabstrip()->empty());
+}
+
+TEST_F(TabStripModelTest, AddToSplitInPinned_MultipleIndices) {
+  for (bool use_pinned_tab_as_pivot : {true, false}) {
+    // Create five tabs with one pinned.
+    ASSERT_NO_FATAL_FAILURE(
+        PrepareTabstripForSelectionTest(tabstrip(), 5, 1, {2}));
+
+    const std::vector<int> split_indices =
+        use_pinned_tab_as_pivot ? std::vector{0, 1} : std::vector{1, 0};
+    tabstrip()->AddToNewSplit(
+        split_indices, split_tabs::SplitTabVisualData(),
+        split_tabs::SplitTabCreatedSource::kExtensionsApi);
+
+    const std::string expected_tab_strip =
+        use_pinned_tab_as_pivot ? "0ps 1ps 2 3 4" : "0s 1s 2 3 4";
+    EXPECT_EQ(use_pinned_tab_as_pivot, tabstrip()->IsTabPinned(0));
+    EXPECT_EQ(use_pinned_tab_as_pivot, tabstrip()->IsTabPinned(1));
+    EXPECT_EQ(expected_tab_strip, GetTabStripStateString(tabstrip()));
+
+    tabstrip()->CloseAllTabs();
+    EXPECT_TRUE(tabstrip()->empty());
+  }
 }
 
 TEST_F(TabStripModelTest, AddToSplitInSelected) {

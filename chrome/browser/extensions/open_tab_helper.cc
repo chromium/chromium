@@ -22,14 +22,20 @@
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
 #include "ui/base/base_window.h"
 #include "url/gurl.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/unload_controller.h"
+#include "components/split_tabs/split_tab_id.h"
+#include "components/split_tabs/split_tab_visual_data.h"
+#include "components/tabs/public/tab_interface.h"
 #endif
 
 namespace extensions {
@@ -181,12 +187,40 @@ base::expected<content::WebContents*, std::string> OpenTabHelper::OpenTab(
   navigate_params.disposition = active
                                     ? WindowOpenDisposition::NEW_FOREGROUND_TAB
                                     : WindowOpenDisposition::NEW_BACKGROUND_TAB;
+
+  // TODO(https://crbug.com/480192698): Remove this restriction once split tabs
+  // are supported on Desktop Android.
+  tabs::TabInterface* split_tab = nullptr;
+#if !BUILDFLAG(IS_ANDROID)
+  // If splitWithTabId is specified, determine the relative positioning of the
+  // new tab. Defaults to the right of the target tab if index is not specified.
+  content::WebContents* split_contents = nullptr;
+  if (params.split_with_tab_id.has_value() &&
+      base::FeatureList::IsEnabled(extensions_features::kApiTabsSplitView)) {
+    int split_index = -1;
+    if (ExtensionTabUtil::GetTabById(*params.split_with_tab_id,
+                                     function.browser_context(),
+                                     function.include_incognito_information(),
+                                     /*window=*/nullptr,
+                                     /*contents=*/&split_contents,
+                                     /*tab_index=*/&split_index)) {
+      if (index != split_index) {
+        index = split_index + 1;
+      }
+      if (split_contents) {
+        split_tab = tabs::TabInterface::GetFromContents(split_contents);
+      }
+    }
+  }
+#endif
+
   navigate_params.tabstrip_index = index;
   navigate_params.user_gesture = false;
 
-  // Default to not pinning the tab. Setting the 'pinned' property to true
-  // will override this default.
-  bool pinned = params.pinned.value_or(false);
+  // Default to not pinning the tab unless splitting with a pinned tab.
+  // Setting the 'pinned' property explicitly will override this default.
+  bool pinned =
+      params.pinned.value_or(split_tab ? split_tab->IsPinned() : false);
 
   int add_types = active ? AddTabTypes::ADD_ACTIVE : AddTabTypes::ADD_NONE;
   add_types |= AddTabTypes::ADD_FORCE_INDEX;
@@ -219,6 +253,26 @@ base::expected<content::WebContents*, std::string> OpenTabHelper::OpenTab(
   if (!new_contents) {
     return base::unexpected(ExtensionTabUtil::kLockedFullscreenModeNewTabError);
   }
+
+// TODO(https://crbug.com/480192698): Remove this restriction once split tabs
+// are supported on Desktop Android.
+#if !BUILDFLAG(IS_ANDROID)
+  // Split the tab if the splitWithTabId is specified and the tab is valid.
+  if (split_contents) {
+    // TODO(https://crbug.com/544806577): Use TabListInterface once it supports
+    // split tabs.
+    TabStripModel* tab_strip_model =
+        browser.GetBrowserForMigrationOnly()->tab_strip_model();
+    int new_tab_index = tab_strip_model->GetIndexOfWebContents(new_contents);
+    int split_index = tab_strip_model->GetIndexOfWebContents(split_contents);
+    if (new_tab_index != TabStripModel::kNoTab &&
+        split_index != TabStripModel::kNoTab) {
+      tab_strip_model->AddToNewSplit(
+          {split_index, new_tab_index}, split_tabs::SplitTabVisualData(),
+          split_tabs::SplitTabCreatedSource::kExtensionsApi);
+    }
+  }
+#endif
 
   if (active) {
     new_contents->SetInitialFocus();

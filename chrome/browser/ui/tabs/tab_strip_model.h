@@ -650,9 +650,10 @@ class TabStripModel {
   // Reverses the order of tabs with `split_id`.
   void ReverseTabsInSplit(split_tabs::SplitTabId split_id);
 
-  // Create a new split view with the active tab and add the set of tabs pointed
-  // to by |indices| to it. Reorders the tabs so they are contiguous. |indices|
-  // must be sorted in ascending order.
+  // Create a new split view with the first entry in |indices| (or the active
+  // tab if there is only one element in |indices|) as the pivot index and add
+  // the rest of the tabs pointed to by |indices| to it. Reorders the tabs so
+  // they are contiguous.
   split_tabs::SplitTabId AddToNewSplit(
       std::vector<int> indices,
       split_tabs::SplitTabVisualData visual_data,

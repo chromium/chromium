@@ -2050,22 +2050,25 @@ split_tabs::SplitTabId TabStripModel::AddToNewSplit(
     split_tabs::SplitTabCreatedSource source) {
   ReentrancyCheck reentrancy_check(&reentrancy_guard_);
 
-  // Ensure that there is only one index. This will be split with the active
-  // tab.
-  CHECK_EQ(indices.size(), 1u);
-  CHECK(std::ranges::is_sorted(indices));
-  CHECK(active_index() != kNoTab);
-  CHECK(active_index() != indices[0]);
+  CHECK(indices.size() == 1u || indices.size() == 2u)
+      << "Invalid index count: " << indices.size();
+
+  // If there is only one entry in `indices`, use the active index as the pivot
+  // index. Otherwise, use the first index.
+  if (indices.size() == 1u) {
+    indices.insert(indices.begin(), active_index());
+  }
+  int pivot_index = indices[0];
+  CHECK(pivot_index != kNoTab);
+  // Check that the indices are unique.
+  std::ranges::sort(indices);
+  CHECK(std::ranges::adjacent_find(indices) == indices.end());
 
   split_tabs::RecordSplitTabCreated(source, visual_data.split_layout());
 
   split_tabs::SplitTabId split_id = split_tabs::SplitTabId::GenerateNew();
 
-  // Insert the active index into the sorted `indices`.
-  auto position = lower_bound(indices.begin(), indices.end(), active_index());
-  indices.insert(position, active_index());
-
-  AddToSplitImpl(split_id, indices, active_index(), visual_data,
+  AddToSplitImpl(split_id, indices, pivot_index, visual_data,
                  SplitTabChange::SplitTabAddReason::kNewSplitTabAdded);
   split_tabs::LogSplitViewCreatedUKM(this, split_id);
 
