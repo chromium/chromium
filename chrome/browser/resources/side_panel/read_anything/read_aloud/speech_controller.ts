@@ -978,11 +978,32 @@ export class SpeechController {
         previousStart = firstSegment.start;
       }
 
-      this.highlightCurrentGranularity_(
-          currentSegments, /*scrollIntoView=*/ false,
-          /*shouldUpdateSentenceHighlight=*/ true,
-          /*shouldSetLastReadingPos=*/ false);
-      this.moveToNextGranularity_();
+      // On pages with lots of speech segments, if playback is moved to a
+      // node towards the end of the page, multiple calls to
+      // highlightCurrentGranularity can create lag and in some cases crash
+      // reading mode because of a blocked UI thread.
+      // Calling readAloudModel_.moveSpeechForward() allows speech to start
+      // much more quickly when playing from the content position but does
+      // prevent the previous highlights from being added. However, not
+      // showing the previous highlight is preferred to 10+ second speech
+      // delays / crashes.
+      // This is technically a bug with both line focus and playing from
+      // selection. However, this bug is much more noticeable with line focus.
+      // Therefore, this change is being temporarily guarded with the line
+      // focus flag to allow it to be more safely tested in case it causes
+      // unexpected bugs. Longer term, moveSpeechForward should be the default
+      // regardless of the line focus flag OR reading mode should implement
+      // a better searching algorithm for finding the node in the DOM instead
+      // of looking through every element one-by-one.
+      if (chrome.readingMode.isLineFocusEnabled) {
+        this.readAloudModel_.moveSpeechForward();
+      } else {
+        this.highlightCurrentGranularity_(
+            currentSegments, /*scrollIntoView=*/ false,
+            /*shouldUpdateSentenceHighlight=*/ true,
+            /*shouldSetLastReadingPos=*/ false);
+        this.moveToNextGranularity_();
+      }
 
       currentSegments = this.readAloudModel_.getCurrentTextSegments();
       hasCurrentText = currentSegments.length > 0;

@@ -7,7 +7,6 @@ import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-c
 import {ContentController, playFromSelectionTimeout, SelectionController, setInstance, SpeechBrowserProxyImpl, SpeechController, ToolbarEvent, VoiceLanguageController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
-import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {createApp, emitEvent} from './common.js';
 import {TestSpeechBrowserProxy} from './test_speech_browser_proxy.js';
@@ -240,10 +239,12 @@ suite('ReadAloudHighlight', () => {
     let currentHighlight: HTMLElement|null;
     let previousHighlights: NodeListOf<Element>;
     let mockTimer: MockTimer;
+    let initialLineFocusEnabled: boolean;
 
-    async function selectAndPlay(
+    function selectAndPlay(
         anchorId: number, anchorOffset: number, focusId: number,
-        focusOffset: number): Promise<void> {
+        focusOffset: number): void {
+      mockTimer.install();
       const selectedTree = Object.assign(
           {
             selection: {
@@ -255,11 +256,13 @@ suite('ReadAloudHighlight', () => {
             },
           },
           axTree);
+
       chrome.readingMode.setContentForTesting(selectedTree, leafIds);
       selectionController.updateSelection(app.getSelection(), app.$.container);
-      await microtasksFinished();
+      selectionController.onSelectionChange(app.getSelection());
+      speechController.onSelectionChange(
+          selectionController.getCurrentSelectionStart());
 
-      mockTimer.install();
       emitEvent(app, ToolbarEvent.PLAY_PAUSE);
       mockTimer.tick(playFromSelectionTimeout);
       mockTimer.uninstall();
@@ -267,42 +270,106 @@ suite('ReadAloudHighlight', () => {
 
     setup(() => {
       mockTimer = new MockTimer();
-      return selectAndPlay(3, 1, 3, 5);
+      initialLineFocusEnabled = chrome.readingMode.isLineFocusEnabled;
     });
 
-    test('shows correct highlights', () => {
-      currentHighlight =
-          app.$.container.querySelector('.current-read-highlight');
-      previousHighlights =
-          app.$.container.querySelectorAll('.previous-read-highlight');
-
-      assertEquals(sentence2, currentHighlight!.textContent);
-      assertEquals(1, previousHighlights!.length);
-      assertEquals(sentence1, previousHighlights![0]!.textContent);
+    teardown(() => {
+      Object.defineProperty(chrome.readingMode, 'isLineFocusEnabled', {
+        value: initialLineFocusEnabled,
+        configurable: true,
+      });
     });
 
-    test('next granularity shows correct highlights', () => {
-      emitNextGranularity();
+    // TODO(b/497896810): Clean up Object.defineProperty when line focus
+    // flag is removed or when test hook is added to ReadAnythingAppController.
+    suite('with line focus disabled', () => {
+      setup(() => {
+        Object.defineProperty(chrome.readingMode, 'isLineFocusEnabled', {
+          value: false,
+          configurable: true,
+        });
+        selectAndPlay(3, 1, 3, 5);
+      });
 
-      currentHighlight =
-          app.$.container.querySelector('.current-read-highlight');
-      previousHighlights =
-          app.$.container.querySelectorAll('.previous-read-highlight');
-      assertEquals(sentenceSegment1, currentHighlight!.textContent);
-      assertEquals(2, previousHighlights!.length);
-      assertEquals(sentence1, previousHighlights![0]!.textContent);
-      assertEquals(sentence2, previousHighlights![1]!.textContent);
+      test('shows correct highlights', () => {
+        currentHighlight =
+            app.$.container.querySelector('.current-read-highlight');
+        previousHighlights =
+            app.$.container.querySelectorAll('.previous-read-highlight');
+
+        assertEquals(sentence2, currentHighlight!.textContent);
+        assertEquals(1, previousHighlights!.length);
+        assertEquals(sentence1, previousHighlights![0]!.textContent);
+      });
+
+      test('next granularity shows correct highlights', () => {
+        emitNextGranularity();
+
+        currentHighlight =
+            app.$.container.querySelector('.current-read-highlight');
+        previousHighlights =
+            app.$.container.querySelectorAll('.previous-read-highlight');
+        assertEquals(sentenceSegment1, currentHighlight!.textContent);
+        assertEquals(2, previousHighlights!.length);
+        assertEquals(sentence1, previousHighlights![0]!.textContent);
+        assertEquals(sentence2, previousHighlights![1]!.textContent);
+      });
+
+      test('previous granularity shows correct highlights', () => {
+        emitPreviousGranularity();
+
+        currentHighlight =
+            app.$.container.querySelector('.current-read-highlight');
+        previousHighlights =
+            app.$.container.querySelectorAll('.previous-read-highlight');
+        assertEquals(sentence1, currentHighlight!.textContent);
+        assertEquals(0, previousHighlights!.length);
+      });
     });
 
-    test('previous granularity shows correct highlights', () => {
-      emitPreviousGranularity();
+    // TODO(b/497896810): Clean up Object.defineProperty when line focus
+    // flag is removed or when test hook is added to ReadAnythingAppController.
+    suite('with line focus enabled', () => {
+      setup(() => {
+        Object.defineProperty(chrome.readingMode, 'isLineFocusEnabled', {
+          value: true,
+          configurable: true,
+        });
+        selectAndPlay(3, 1, 3, 5);
+      });
 
-      currentHighlight =
-          app.$.container.querySelector('.current-read-highlight');
-      previousHighlights =
-          app.$.container.querySelectorAll('.previous-read-highlight');
-      assertEquals(sentence1, currentHighlight!.textContent);
-      assertEquals(0, previousHighlights!.length);
+      test('shows correct highlights', () => {
+        currentHighlight =
+            app.$.container.querySelector('.current-read-highlight');
+        previousHighlights =
+            app.$.container.querySelectorAll('.previous-read-highlight');
+
+        assertEquals(sentence2, currentHighlight!.textContent);
+        assertEquals(0, previousHighlights!.length);
+      });
+
+      test('next granularity shows correct highlights', () => {
+        emitNextGranularity();
+
+        currentHighlight =
+            app.$.container.querySelector('.current-read-highlight');
+        previousHighlights =
+            app.$.container.querySelectorAll('.previous-read-highlight');
+        assertEquals(sentenceSegment1, currentHighlight!.textContent);
+        assertEquals(1, previousHighlights!.length);
+        assertEquals(sentence2, previousHighlights![0]!.textContent);
+      });
+
+      test('previous granularity shows correct highlights', () => {
+        emitPreviousGranularity();
+
+        currentHighlight =
+            app.$.container.querySelector('.current-read-highlight');
+        previousHighlights =
+            app.$.container.querySelectorAll('.previous-read-highlight');
+        assertEquals(sentence1, currentHighlight!.textContent);
+        assertEquals(0, previousHighlights!.length);
+      });
     });
   });
 });
