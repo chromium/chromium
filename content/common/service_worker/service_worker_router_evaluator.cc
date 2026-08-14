@@ -734,6 +734,7 @@ void ServiceWorkerRouterEvaluator::Compile() {
         ServiceWorkerRouterEvaluatorErrorEnums::kExceedMaxRouterSize;
     return;
   }
+  CHECK(compiled_rules_.empty());
   for (size_t idx = 0; idx < rules_.rules.size(); ++idx) {
     const auto& r = rules_.rules[idx];
     std::unique_ptr<RouterRule> rule = std::make_unique<RouterRule>();
@@ -857,9 +858,19 @@ std::string ServiceWorkerRouterEvaluator::ToString() const {
 
 std::vector<ServiceWorkerRouterRule>
 ServiceWorkerRouterEvaluator::CalculateRouterRulesForDevTools() const {
-  // TODO(crbug.com/540469610): Implement this.
-  NOTIMPLEMENTED();
-  return {};
+  CHECK_EQ(rules_.rules.size(), compiled_rules_.size());
+  std::vector<ServiceWorkerRouterRule> router_rules;
+  router_rules.reserve(rules_.rules.size());
+  for (size_t idx = 0; idx < rules_.rules.size(); ++idx) {
+    const auto& r = rules_.rules[idx];
+    router_rules.push_back(
+        {.condition = r.condition,
+         // `sources` is always a singleton per the current spec.
+         // TODO(crbug.com/545781129): Refactor to a single source field.
+         .source = r.sources[0],
+         .id = base::checked_cast<int>(compiled_rules_[idx]->id())});
+  }
+  return router_rules;
 }
 
 void ServiceWorkerRouterEvaluator::RecordRouterRuleInfo() const {

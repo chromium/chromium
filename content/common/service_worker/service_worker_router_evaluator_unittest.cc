@@ -1770,6 +1770,99 @@ TEST(ServiceWorkerRouterEvaluator, ToValueUrlPatternWithoutFields) {
   EXPECT_EQ(expected_rules, evaluator.ToValue());
 }
 
+TEST(ServiceWorkerRouterEvaluator, CalculateRouterRulesForDevTools) {
+  blink::ServiceWorkerRouterRules rules;
+  {
+    blink::ServiceWorkerRouterRule rule;
+    {
+      blink::ServiceWorkerRouterRunningStatusCondition running_status;
+      running_status.status = blink::ServiceWorkerRouterRunningStatusCondition::
+          RunningStatusEnum::kRunning;
+      rule.condition = blink::ServiceWorkerRouterCondition::WithRunningStatus(
+          running_status);
+    }
+    {
+      blink::ServiceWorkerRouterSource source;
+      source.type = network::mojom::ServiceWorkerRouterSourceType::kNetwork;
+      source.network_source.emplace();
+      rule.sources.push_back(source);
+    }
+    rules.rules.push_back(rule);
+  }
+  ServiceWorkerRouterEvaluator evaluator(rules);
+  ASSERT_TRUE(evaluator.IsValid());
+  const std::vector<ServiceWorkerRouterRule> eval_result =
+      evaluator.CalculateRouterRulesForDevTools();
+
+  EXPECT_EQ(1U, eval_result.size());
+  EXPECT_EQ(rules.rules[0].condition, eval_result[0].condition);
+  EXPECT_EQ(network::mojom::ServiceWorkerRouterSourceType::kNetwork,
+            eval_result[0].source.type);
+  EXPECT_EQ(1, eval_result[0].id);
+}
+
+TEST(ServiceWorkerRouterEvaluator, CalculateRouterRulesForDevToolsEmptyRules) {
+  blink::ServiceWorkerRouterRules rules;
+  ServiceWorkerRouterEvaluator evaluator(rules);
+  const std::vector<ServiceWorkerRouterRule> eval_result =
+      evaluator.CalculateRouterRulesForDevTools();
+  ASSERT_TRUE(evaluator.IsValid());
+  EXPECT_EQ(0U, eval_result.size());
+}
+
+TEST(ServiceWorkerRouterEvaluator,
+     CalculateRouterRulesForDevToolsMultipleRules) {
+  blink::ServiceWorkerRouterRules rules;
+  {
+    blink::ServiceWorkerRouterRule rule;
+    {
+      blink::ServiceWorkerRouterRunningStatusCondition running_status;
+      running_status.status = blink::ServiceWorkerRouterRunningStatusCondition::
+          RunningStatusEnum::kRunning;
+      rule.condition = blink::ServiceWorkerRouterCondition::WithRunningStatus(
+          running_status);
+    }
+    {
+      blink::ServiceWorkerRouterSource source;
+      source.type = network::mojom::ServiceWorkerRouterSourceType::kNetwork;
+      source.network_source.emplace();
+      rule.sources.push_back(source);
+    }
+    rules.rules.push_back(rule);
+  }
+  {
+    blink::ServiceWorkerRouterRule rule;
+    {
+      blink::ServiceWorkerRouterRunningStatusCondition running_status;
+      running_status.status = blink::ServiceWorkerRouterRunningStatusCondition::
+          RunningStatusEnum::kNotRunning;
+      rule.condition = blink::ServiceWorkerRouterCondition::WithRunningStatus(
+          running_status);
+    }
+    {
+      blink::ServiceWorkerRouterSource source;
+      source.type = network::mojom::ServiceWorkerRouterSourceType::kNetwork;
+      source.network_source.emplace();
+      rule.sources.push_back(source);
+    }
+    rules.rules.push_back(rule);
+  }
+  ServiceWorkerRouterEvaluator evaluator(rules);
+  ASSERT_TRUE(evaluator.IsValid());
+  const std::vector<ServiceWorkerRouterRule> eval_result =
+      evaluator.CalculateRouterRulesForDevTools();
+
+  EXPECT_EQ(2U, eval_result.size());
+  EXPECT_EQ(rules.rules[0].condition, eval_result[0].condition);
+  EXPECT_EQ(network::mojom::ServiceWorkerRouterSourceType::kNetwork,
+            eval_result[0].source.type);
+  EXPECT_EQ(1, eval_result[0].id);
+  EXPECT_EQ(rules.rules[1].condition, eval_result[1].condition);
+  EXPECT_EQ(network::mojom::ServiceWorkerRouterSourceType::kNetwork,
+            eval_result[1].source.type);
+  EXPECT_EQ(2, eval_result[1].id);
+}
+
 }  // namespace
 
 }  // namespace content
