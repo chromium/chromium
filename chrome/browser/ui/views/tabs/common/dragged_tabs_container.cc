@@ -10,6 +10,7 @@
 #include "base/time/time.h"
 #include "base/types/to_address.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/views/tabs/common/tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/common/tab_drag_handler.h"
@@ -115,7 +116,7 @@ void DraggedTabsContainer::ApplyUpdatesForDragPositionChange() {
 
   UpdateDraggingViewTransforms(point_in_container);
 
-  HandleTabDragInContainer(dragged_bounds_in_container);
+  HandleTabDragInContainer(dragged_bounds_in_container, point_in_container);
 }
 
 void DraggedTabsContainer::OnTabDragExited(const gfx::Point& point_in_screen) {
@@ -137,6 +138,7 @@ bool DraggedTabsContainer::CanDropTab() {
 }
 
 void DraggedTabsContainer::HandleTabDragEnteredContainer() {
+  last_move_drag_x_ = std::nullopt;
   CHECK(collection_node_);
   GetDragHandler().HandleDraggedTabsIntoNode(*collection_node_);
 
@@ -191,6 +193,7 @@ void DraggedTabsContainer::AnimationEnded(const gfx::Animation* animation) {
 void DraggedTabsContainer::InitializeDragState(
     TabDragTarget::DragController& controller) {
   CHECK(dragging_views_.empty());
+  last_move_drag_x_ = std::nullopt;
 
   auto* scroll_view = GetScrollViewForContainer();
   CHECK(scroll_view);
@@ -405,6 +408,7 @@ void DraggedTabsContainer::ResetDragState() {
   animating_views_start_offsets_.clear();
   drag_start_animation_.Reset(0.0);
   dragging_views_bounds_ = gfx::Rect();
+  last_move_drag_x_ = std::nullopt;
 
   on_scrolled_subscription_.reset();
 }
@@ -606,7 +610,26 @@ std::vector<const views::View*> DraggedTabsContainer::GetDraggingViews() const {
 }
 
 void DraggedTabsContainer::HandleTabDragInContainer(
-    const gfx::Rect& dragged_tab_bounds) {
+    const gfx::Rect& dragged_tab_bounds,
+    const gfx::Point& point_in_container) {
+  // Only reorder tabs if the drag has moved beyond a minimum threshold since
+  // the last move to prevent rapid jitter and oscillation.
+  if (drag_axes_ == DragAxes::kHorizontalOnly &&
+      last_move_drag_x_.has_value()) {
+    // Minimum distance a drag must travel between tab reorders in horizontal
+    // mode to prevent jitter. This value gets scaled by the tab's size.
+    constexpr int kHorizontalMoveThreshold = 16;
+    const int tab_width = dragged_tab_bounds.width();
+    const int standard_width =
+        TabStyle::Get()->GetStandardWidth(/*is_split=*/false);
+    const int threshold =
+        base::ClampRound(static_cast<double>(tab_width) / standard_width *
+                         kHorizontalMoveThreshold);
+    if (std::abs(point_in_container.x() - *last_move_drag_x_) <= threshold) {
+      return;
+    }
+  }
+
   TabDragHandler& drag_handler = GetDragHandler();
   const views::ProposedLayout& drag_layout = GetLayoutForDrag();
   const auto* target = GetTargetForTabDrag(drag_layout, dragged_tab_bounds);
@@ -614,8 +637,12 @@ void DraggedTabsContainer::HandleTabDragInContainer(
   // A null target implies the drag is at the end of the container. We
   // intentionally invalidate layout here to support resizing the container as
   // the drag exceeds its bounds.
-  if (drag_handler.HandleDraggedTabsIntoPosition(*collection_node_, target) ||
-      !target) {
+  if (drag_handler.HandleDraggedTabsIntoPosition(*collection_node_, target)) {
+    if (drag_axes_ == DragAxes::kHorizontalOnly) {
+      last_move_drag_x_ = point_in_container.x();
+    }
+    host_view_->InvalidateLayout();
+  } else if (!target) {
     host_view_->InvalidateLayout();
   }
 }
@@ -662,15 +689,17 @@ const TabCollectionNode* DraggedTabsContainer::GetTargetForTabDrag(
     }
 
     // If the dragged view was already seen, then discount its size from
-    // the candidate's bounds to give an accurate representation of where
-    // the dragged tabs should be inserted into.
-    auto adjusted_bounds = child_layout.bounds;
-    if (is_after_dragged_views) {
-      adjusted_bounds.set_y(child_layout.bounds.y() -
-                            dragged_tab_bounds.height());
-    }
+    // the candidate's position to represent where it would move to.
+    const int dragged_height = dragged_tab_bounds.height();
+    const int dragged_center_y = dragged_tab_bounds.CenterPoint().y();
+    const int child_center_y = child_layout.bounds.CenterPoint().y();
+    const int adjusted_child_center_y = is_after_dragged_views
+                                            ? child_center_y - dragged_height
+                                            : child_center_y;
+    // Calculate the crossover midpoint between adjacent tabs.
+    const int midpoint_y = adjusted_child_center_y + (dragged_height / 2);
 
-    if (dragged_tab_bounds.y() < adjusted_bounds.CenterPoint().y()) {
+    if (dragged_center_y < midpoint_y) {
       return child_node;
     }
   }
@@ -688,6 +717,16 @@ const TabCollectionNode* DraggedTabsContainer::GetTargetForTabDragInRow(
     logical_drag_bounds.set_x(
         host_view_->GetMirroredXForRect(logical_drag_bounds));
   }
+
+  const int tab_overlap = (drag_axes_ == DragAxes::kHorizontalOnly)
+                              ? TabStyle::Get()->GetTabOverlap()
+                              : 0;
+  // The effective step size between adjacent tabs, taking tab overlap into
+  // account.
+  const int dragged_stride =
+      std::max(0, logical_drag_bounds.width() - tab_overlap);
+  const int dragged_center_x = logical_drag_bounds.CenterPoint().x();
+
   for (size_t i = row_start_idx; i < layout.child_layouts.size(); ++i) {
     const auto& row_child_layout = layout.child_layouts[i];
     const TabCollectionNode* row_child_node;
@@ -708,13 +747,14 @@ const TabCollectionNode* DraggedTabsContainer::GetTargetForTabDragInRow(
       return row_child_node;
     }
 
-    auto adjusted_row_bounds = row_child_layout.bounds;
-    if (is_after_dragged_views) {
-      adjusted_row_bounds.set_x(row_child_layout.bounds.x() -
-                                logical_drag_bounds.width());
-    }
+    const int child_center_x = row_child_layout.bounds.CenterPoint().x();
+    const int adjusted_child_center_x = is_after_dragged_views
+                                            ? child_center_x - dragged_stride
+                                            : child_center_x;
+    // Calculate the crossover midpoint between adjacent tabs.
+    const int midpoint_x = adjusted_child_center_x + (dragged_stride / 2);
 
-    if (logical_drag_bounds.x() < adjusted_row_bounds.CenterPoint().x()) {
+    if (dragged_center_x < midpoint_x) {
       return row_child_node;
     }
   }

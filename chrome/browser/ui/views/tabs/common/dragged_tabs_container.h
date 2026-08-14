@@ -142,7 +142,8 @@ class DraggedTabsContainer : public TabDragTarget,
 
   // Handles a dragged tab that is parented within this target.
   // `point_in_container` is a point relative to this target's view.
-  void HandleTabDragInContainer(const gfx::Rect& dragged_tab_bounds);
+  void HandleTabDragInContainer(const gfx::Rect& dragged_tab_bounds,
+                                const gfx::Point& point_in_container);
 
   // Handles dragged tabs entering this container, applying the necessary
   // updates to reparent them into this.
@@ -254,6 +255,10 @@ class DraggedTabsContainer : public TabDragTarget,
       dragged_view_observations_{this};
 
   TabDragScrollHandler scroll_handler_;
+
+  // The horizontal coordinate of the last tab reorder in container coordinates.
+  // Used to prevent jitter when dragging tabs horizontally.
+  std::optional<int> last_move_drag_x_ = std::nullopt;
 
   std::optional<base::CallbackListSubscription> on_scrolled_subscription_ =
       std::nullopt;
