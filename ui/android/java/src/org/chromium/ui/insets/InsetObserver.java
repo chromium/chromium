@@ -578,12 +578,14 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
      * @param bottom The updated bottom inset.
      */
     private void onInsetChanged(int left, int top, int right, int bottom) {
-        if (mWindowInsets.left != left
-                || mWindowInsets.top != top
-                || mWindowInsets.right != right
-                || mWindowInsets.bottom != bottom) {
-            mWindowInsets.set(left, top, right, bottom);
+        if (mWindowInsets.left == left
+                && mWindowInsets.top == top
+                && mWindowInsets.right == right
+                && mWindowInsets.bottom == bottom) {
+            return;
         }
+
+        mWindowInsets.set(left, top, right, bottom);
 
         for (WindowInsetObserver observer : mObservers) {
             observer.onInsetChanged();
