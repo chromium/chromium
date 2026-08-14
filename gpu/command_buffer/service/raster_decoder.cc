@@ -2678,6 +2678,8 @@ void RasterDecoderImpl::DoReadbackYUVImagePixelsINTERNAL(
 
     // TODO(crbug.com/40106956): Use COMMANDS_COMPLETED query for async readback.
     DoFinish();
+    is_context_lost =
+        !yuv_result.finished && (WasContextLost() || gr_context()->abandoned());
   }
 
   // The call above will sync up gpu and CPU, resulting in callback being run
