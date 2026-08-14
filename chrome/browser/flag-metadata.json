@@ -6887,11 +6887,6 @@
     "expiry_milestone": 141
   },
   {
-    "name": "manual-log-uploads-in-the-fre",
-    "owners": [ "hiramahmood@google.com", "bling-pandamonium@google.com" ],
-    "expiry_milestone": 148
-  },
-  {
     "name": "mark-all-credentials-as-leaked",
     "owners": [
       "atsvirchkova@google.com",

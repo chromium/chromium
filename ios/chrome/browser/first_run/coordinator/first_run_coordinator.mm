@@ -138,16 +138,14 @@ class FirstRunCoordinatorMetricsHelper final {
   [self stopChildCoordinator];
   [self presentScreen:[self.screenProvider nextScreenType]];
 
-  if (base::FeatureList::IsEnabled(first_run::kManualLogUploadsInTheFRE)) {
-    // Trigger a metrics log upload with the MetricsService.
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(^{
-          std::unique_ptr<first_run::FirstRunCoordinatorMetricsHelper>
-              metricsHelper = std::make_unique<
-                  first_run::FirstRunCoordinatorMetricsHelper>();
-          metricsHelper->StartOutOfBandUploadIfPossible();
-        }));
-  }
+  // Trigger a metrics log upload with the MetricsService.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(^{
+        std::unique_ptr<first_run::FirstRunCoordinatorMetricsHelper>
+            metricsHelper =
+                std::make_unique<first_run::FirstRunCoordinatorMetricsHelper>();
+        metricsHelper->StartOutOfBandUploadIfPossible();
+      }));
 }
 
 #pragma mark - Helper
