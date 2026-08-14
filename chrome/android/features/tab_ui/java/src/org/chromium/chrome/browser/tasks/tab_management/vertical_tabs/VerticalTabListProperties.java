@@ -50,6 +50,8 @@ public class VerticalTabListProperties {
             new PropertyModel.WritableBooleanPropertyKey();
     public static final PropertyModel.WritableBooleanPropertyKey IS_INCOGNITO =
             new PropertyModel.WritableBooleanPropertyKey();
+    public static final PropertyModel.WritableBooleanPropertyKey IS_INCOGNITO_BUTTON_VISIBLE =
+            new PropertyModel.WritableBooleanPropertyKey();
     public static final PropertyModel.WritableObjectPropertyKey<View.OnClickListener>
             ON_GRID_CLICK_LISTENER = new PropertyModel.WritableObjectPropertyKey<>();
     public static final PropertyModel.WritableObjectPropertyKey<View.OnClickListener>
@@ -66,6 +68,7 @@ public class VerticalTabListProperties {
                 COLLAPSE_STATE,
                 IS_COLLAPSE_BUTTON_ENABLED,
                 IS_INCOGNITO,
+                IS_INCOGNITO_BUTTON_VISIBLE,
                 ON_GRID_CLICK_LISTENER,
                 ON_SEARCH_CLICK_LISTENER,
                 ON_NEW_TAB_CLICK_LISTENER,
