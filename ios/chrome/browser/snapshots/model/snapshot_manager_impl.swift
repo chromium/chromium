@@ -65,6 +65,12 @@ import UIKit
     snapshotGenerator.generateSnapshot(completion: wrappedCompletion)
   }
 
+  // Asynchronously generates a new snapshot without overlays, and invokes
+  // `completion` with the generated image. This does not update the snapshot storage.
+  public func generateSnapshotWithoutOverlays(completion: @escaping ((UIImage?) -> Void)) {
+    snapshotGenerator.generateSnapshot(includeOverlays: false, completion: completion)
+  }
+
   // Generates and returns a new snapshot image with UIKit-based snapshot API. This does not update
   // the snapshot storage.
   public func generateUIViewSnapshot() -> UIImage? {

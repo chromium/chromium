@@ -14,6 +14,10 @@
   // invokes `completion` with the generated image.
   @objc func updateSnapshot(completion: @escaping ((UIImage?) -> Void))
 
+  // Asynchronously generates a new snapshot without overlays, and invokes
+  // `completion` with the generated image. This does not update the snapshot storage.
+  @objc func generateSnapshotWithoutOverlays(completion: @escaping ((UIImage?) -> Void))
+
   // Synchronously generates and returns a new snapshot image with the
   // UIKit-based snapshot API. This does not update the snapshot storage.
   @objc func generateUIViewSnapshot() -> UIImage?

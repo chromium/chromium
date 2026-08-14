@@ -5,7 +5,9 @@
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 
 #import "base/files/scoped_temp_dir.h"
+#import "base/functional/callback_helpers.h"
 #import "base/run_loop.h"
+#import "base/test/test_future.h"
 #import "ios/chrome/browser/shared/ui/util/image/image_util.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/snapshots/model/fake_snapshot_generator_delegate.h"
@@ -390,6 +392,50 @@ TEST_F(SnapshotTabHelperTest, GenerateSnapshot) {
 
   UIImage* cached_snapshot = GetCachedSnapshot();
   EXPECT_FALSE(UIImagesAreEqual(snapshot, cached_snapshot));
+}
+
+// Tests that GenerateSnapshotWithoutOverlaysWithCallback ignores any cached
+// snapshots, generates a new snapshot without adding it to the cache, and
+// invokes the callback.
+TEST_F(SnapshotTabHelperTest, GenerateSnapshotWithoutOverlaysWithCallback) {
+  SetCachedSnapshot(UIImageWithSizeAndSolidColor(kDefaultSnapshotSize,
+                                                 [UIColor colorWithRed:0.0
+                                                                 green:1.0
+                                                                  blue:0.0
+                                                                 alpha:1.0]));
+
+  base::test::TestFuture<UIImage*> future;
+  SnapshotTabHelper::FromWebState(&web_state_)
+      ->GenerateSnapshotWithoutOverlaysWithCallback(
+          base::CallbackToBlock(future.GetCallback()));
+
+  UIImage* snapshot = future.Get();
+
+  ASSERT_TRUE(snapshot);
+  EXPECT_TRUE(CGSizeEqualToSize(snapshot.size, kWebStateViewSize));
+  EXPECT_TRUE(IsDominantColorForImage(snapshot, [UIColor colorWithRed:1.0
+                                                                green:0.0
+                                                                 blue:0.0
+                                                                alpha:1.0]));
+
+  UIImage* cached_snapshot = GetCachedSnapshot();
+  EXPECT_FALSE(UIImagesAreEqual(snapshot, cached_snapshot));
+  EXPECT_EQ(delegate_.snapshotTakenCount, 1u);
+}
+
+// Tests that GenerateSnapshotWithoutOverlaysWithCallback returns nil when the
+// delegate says it is not possible to take a snapshot.
+TEST_F(SnapshotTabHelperTest,
+       GenerateSnapshotWithoutOverlaysWithCallbackCannotTakeSnapshot) {
+  delegate_.canTakeSnapshot = NO;
+
+  base::test::TestFuture<UIImage*> future;
+  SnapshotTabHelper::FromWebState(&web_state_)
+      ->GenerateSnapshotWithoutOverlaysWithCallback(
+          base::CallbackToBlock(future.GetCallback()));
+
+  EXPECT_FALSE(future.Get());
+  EXPECT_EQ(delegate_.snapshotTakenCount, 0u);
 }
 
 // Tests that UpdateSnapshotStorage doesn't override an old image if taking a

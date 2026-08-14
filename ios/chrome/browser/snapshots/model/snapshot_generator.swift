@@ -20,6 +20,16 @@ import UIKit
 
   // Generates a new snapshot and runs a callback with the new snapshot image.
   func generateSnapshot(completion: ((UIImage?) -> Void)?) {
+    generateSnapshot(includeOverlays: true, completion: completion)
+  }
+
+  // Generates a new snapshot and runs a callback with the new snapshot image.
+  // The generated image includes overlays if `includeOverlays` is true.
+  func generateSnapshot(includeOverlays: Bool, completion: ((UIImage?) -> Void)?) {
+    guard delegate != nil else {
+      completion?(nil)
+      return
+    }
     guard let lastCommittedUrl = webStateInfo.lastCommittedURL(),
       let newTabPageUrl = URL.init(string: "chrome://newtab/")
     else {
@@ -34,11 +44,11 @@ import UIKit
     if !isNTP && webStateInfo.canTakeSnapshot() {
       // Take the snapshot using the optimized WKWebView snapshotting API for pages loaded in the
       // web view when the WebState snapshot API is available.
-      generateWKWebViewSnapshot(completion: completion)
+      generateWKWebViewSnapshot(includeOverlays: includeOverlays, completion: completion)
       return
     }
     // Use the UIKit-based snapshot API as a fallback when the WKWebView API is unavailable.
-    let snapshot = generateUIViewSnapshotWithOverlays()
+    let snapshot = includeOverlays ? generateUIViewSnapshotWithOverlays() : generateUIViewSnapshot()
     if completion != nil {
       completion?(snapshot)
     }
@@ -75,7 +85,7 @@ import UIKit
   // Asynchronously generates a new snapshot with WebKit-based snapshot API and runs a callback with
   // the new snapshot image. It is an error to call this method if the web state is showing anything
   // other (e.g., native content) than a web view.
-  private func generateWKWebViewSnapshot(completion: ((UIImage?) -> Void)?) {
+  private func generateWKWebViewSnapshot(includeOverlays: Bool, completion: ((UIImage?) -> Void)?) {
     if !canTakeSnapshot() {
       completion?(nil)
       return
@@ -94,7 +104,8 @@ import UIKit
     let frameInBaseView = baseView.bounds.inset(by: baseViewInsets)
 
     let wrappedCompletion = { [weak self] (image: UIImage?) in
-      let snapshot = self?.adjustWKWebViewSnapshotIfNecessary(image: image)
+      let snapshot = self?.adjustWKWebViewSnapshotIfNecessary(
+        image: image, includeOverlays: includeOverlays)
       completion?(snapshot)
     }
     webStateInfo.takeSnapshot(frameInBaseView, callback: wrappedCompletion)
@@ -102,8 +113,11 @@ import UIKit
 
   // Adjusts a snapshot taken by WebKit API if necessary.
   // If the image is smaller than the base view, we need to add a background to the image (e.g. 1
-  // page PDF in WKWebView. See crbug.com/399702753). Add overlays as well if they exist.
-  private func adjustWKWebViewSnapshotIfNecessary(image: UIImage?) -> UIImage? {
+  // page PDF in WKWebView. See crbug.com/399702753). Add overlays as well if they exist and
+  // `includeOverlays` is true.
+  private func adjustWKWebViewSnapshotIfNecessary(image: UIImage?, includeOverlays: Bool)
+    -> UIImage?
+  {
     guard let image = image else {
       return nil
     }
@@ -129,17 +143,17 @@ import UIKit
       format.opaque = true
 
       let renderer = UIGraphicsImageRenderer(size: frameInBaseView.size, format: format)
-      let image = autoreleasepool {
+      let combinedImage = autoreleasepool {
         return renderer.image { (context) in
           backgroundImage.draw(in: CGRect(origin: CGPoint.zero, size: backgroundImage.size))
           image.draw(in: CGRect(origin: CGPoint.zero, size: image.size))
         }
       }
 
-      return self.addOverlays(baseImage: image)
+      return includeOverlays ? self.addOverlays(baseImage: combinedImage) : combinedImage
     }
 
-    return self.addOverlays(baseImage: image)
+    return includeOverlays ? self.addOverlays(baseImage: image) : image
   }
 
   // Converts an UIView to an UIImage. The size of generated UIImage is the same as `baseView`.

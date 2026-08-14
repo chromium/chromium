@@ -64,7 +64,16 @@ class SnapshotTabHelper : public web::WebStateObserver,
   // Generates a new snapshot without any overlays, and returns the new snapshot
   // image. This does not update the snapshot storage. Returns nil if snapshot
   // generation fails.
+  // TODO(crbug.com/502615476): Rename this to
+  // "GenerateUIViewSnapshotWithoutOverlays" to make its differences from
+  // `GenerateSnapshotWithoutOverlays` more clear.
   UIImage* GenerateSnapshotWithoutOverlays();
+
+  // Asynchronously generates a new snapshot without any overlays, and invokes
+  // `callback` with the new snapshot image. This does not update the snapshot
+  // storage. Invokes `callback` with nil if snapshot generation fails.
+  void GenerateSnapshotWithoutOverlaysWithCallback(
+      SnapshotRetrievedBlock callback);
 
   // Instructs the helper not to snapshot content for the next page load event.
   void IgnoreNextLoad();

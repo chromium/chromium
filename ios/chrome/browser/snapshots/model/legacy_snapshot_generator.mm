@@ -42,27 +42,12 @@ struct SnapshotInfo {
 }
 
 - (void)generateSnapshotWithCompletion:(void (^)(UIImage*))completion {
-  // TODO(crbug.com/452299163): A last committed URL is nil when this method is
-  // called before the navigation has been committed. For instance, a snapshot
-  // is taken prior to the navigation when opening multiple new tab pages
-  // quickly. The execution continues but it may choose the wrong way to take a
-  // snapshot (-generateWKWebViewSnapshotWithCompletion: vs
-  // -generateUIViewSnapshotWithOverlays:).
-  bool isNTP = _webState->GetLastCommittedURL() == kChromeUINewTabURL;
-  SnapshotSourceTabHelper* snapshotSource =
-      SnapshotSourceTabHelper::FromWebState(_webState.get());
-  if (!isNTP && snapshotSource->CanTakeSnapshot()) {
-    // Take the snapshot using the optimized WKWebView snapshotting API for
-    // pages loaded in the web view when the WebState snapshot API is available.
-    [self generateWKWebViewSnapshotWithCompletion:completion];
-    return;
-  }
-  // Use the UIKit-based snapshot API as a fallback when the WKWebView API is
-  // unavailable.
-  UIImage* snapshot = [self generateUIViewSnapshotWithOverlays];
-  if (completion) {
-    completion(snapshot);
-  }
+  [self generateSnapshotWithCompletion:completion includeOverlays:YES];
+}
+
+- (void)generateSnapshotWithoutOverlaysWithCompletion:
+    (void (^)(UIImage*))completion {
+  [self generateSnapshotWithCompletion:completion includeOverlays:NO];
 }
 
 - (UIImage*)generateUIViewSnapshot {
@@ -102,11 +87,49 @@ struct SnapshotInfo {
 
 #pragma mark - Private methods
 
+// Generates a new snapshot and runs a callback with the new snapshot image.
+// The generated image includes overlays if `includeOverlays` is YES.
+// - If the web state is not showing a new tab page, the page is not incognito
+//   and it doesn't have JavaScript dialogs,
+//   - it uses WebKit-based snapshot API
+//   - and the callback is called asynchronously.
+// - Otherwise,
+//   - it uses UIKit-based snapshot API
+//   - and the callback is called immediately (without posting a task).
+- (void)generateSnapshotWithCompletion:(void (^)(UIImage*))completion
+                       includeOverlays:(BOOL)includeOverlays {
+  // TODO(crbug.com/452299163): A last committed URL is nil when this method is
+  // called before the navigation has been committed. For instance, a snapshot
+  // is taken prior to the navigation when opening multiple new tab pages
+  // quickly. The execution continues but it may choose the wrong way to take a
+  // snapshot (-generateWKWebViewSnapshotWithCompletion: vs
+  // -generateUIViewSnapshotWithOverlays:).
+  bool isNTP = _webState->GetLastCommittedURL() == kChromeUINewTabURL;
+  SnapshotSourceTabHelper* snapshotSource =
+      SnapshotSourceTabHelper::FromWebState(_webState.get());
+  if (!isNTP && snapshotSource->CanTakeSnapshot()) {
+    // Take the snapshot using the optimized WKWebView snapshotting API for
+    // pages loaded in the web view when the WebState snapshot API is available.
+    [self generateWKWebViewSnapshotWithCompletion:completion
+                                  includeOverlays:includeOverlays];
+    return;
+  }
+  // Use the UIKit-based snapshot API as a fallback when the WKWebView API is
+  // unavailable.
+  UIImage* snapshot = includeOverlays
+                          ? [self generateUIViewSnapshotWithOverlays]
+                          : [self generateUIViewSnapshot];
+  if (completion) {
+    completion(snapshot);
+  }
+}
+
 // Asynchronously generates a new snapshot with WebKit-based snapshot API and
 // runs a callback with the new snapshot image. It is an error to call this
 // method if the web state is showing anything other (e.g., native content) than
 // a web view.
-- (void)generateWKWebViewSnapshotWithCompletion:(void (^)(UIImage*))completion {
+- (void)generateWKWebViewSnapshotWithCompletion:(void (^)(UIImage*))completion
+                                includeOverlays:(BOOL)includeOverlays {
   if (![self canTakeSnapshot]) {
     if (completion) {
       // Post a task to the current thread (UI thread).
@@ -133,13 +156,15 @@ struct SnapshotInfo {
     return;
   }
 
-  auto wrappedCompletion = ^(__weak LegacySnapshotGenerator* generator,
-                             UIImage* image) {
-    UIImage* snapshot = [generator adjustWKWebViewSnapshotIfNecessary:image];
-    if (completion) {
-      completion(snapshot);
-    }
-  };
+  auto wrappedCompletion =
+      ^(__weak LegacySnapshotGenerator* generator, UIImage* image) {
+        UIImage* snapshot =
+            [generator adjustWKWebViewSnapshotIfNecessary:image
+                                          includeOverlays:includeOverlays];
+        if (completion) {
+          completion(snapshot);
+        }
+      };
 
   __weak LegacySnapshotGenerator* weakSelf = self;
   snapshotSource->TakeSnapshot(
@@ -150,8 +175,9 @@ struct SnapshotInfo {
 // Adjusts a snapshot taken by WebKit API if necessary.
 // If the image is smaller than the base view, we need to add a background to
 // the image (e.g. 1 page PDF in WKWebView. See crbug.com/399702753). Add
-// overlays as well if they exist.
-- (UIImage*)adjustWKWebViewSnapshotIfNecessary:(UIImage*)image {
+// overlays as well if they exist and `includeOverlays` is YES.
+- (UIImage*)adjustWKWebViewSnapshotIfNecessary:(UIImage*)image
+                               includeOverlays:(BOOL)includeOverlays {
   std::optional<SnapshotInfo> snapshotInfo = [self snapshotInfo];
   if (!snapshotInfo) {
     return nil;
@@ -179,9 +205,12 @@ struct SnapshotInfo {
     }];
   }
 
-  return [self addOverlays:[self overlays]
-                 baseImage:image
-             frameInWindow:snapshotInfo.value().snapshotFrameInWindow];
+  if (includeOverlays) {
+    return [self addOverlays:[self overlays]
+                   baseImage:image
+               frameInWindow:snapshotInfo.value().snapshotFrameInWindow];
+  }
+  return image;
 }
 
 // Returns NO if WebState or the view is not ready for snapshot.

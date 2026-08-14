@@ -37,7 +37,13 @@ class WebState;
 //   - and the callback is called immediately (without posting a task).
 - (void)generateSnapshotWithCompletion:(void (^)(UIImage*))completion;
 
-// Generates and returns a new snapshot image with UIKit-based snapshot API.
+// Same as `generateSnapshotWithCompletion:`, but generates the snapshot without
+// overlays.
+- (void)generateSnapshotWithoutOverlaysWithCompletion:
+    (void (^)(UIImage*))completion;
+
+// Generates and returns a new snapshot image with UIKit-based snapshot API
+// without overlays.
 - (UIImage*)generateUIViewSnapshot;
 
 // Generates and returns a new snapshot image with UIKit-based snapshot API. The

@@ -89,6 +89,12 @@ UIImage* SnapshotTabHelper::GenerateSnapshotWithoutOverlays() {
   return [snapshot_manager_ generateUIViewSnapshot];
 }
 
+void SnapshotTabHelper::GenerateSnapshotWithoutOverlaysWithCallback(
+    SnapshotRetrievedBlock callback) {
+  CHECK(snapshot_manager_);
+  [snapshot_manager_ generateSnapshotWithoutOverlaysWithCompletion:callback];
+}
+
 void SnapshotTabHelper::IgnoreNextLoad() {
   ignore_next_load_ = true;
 }

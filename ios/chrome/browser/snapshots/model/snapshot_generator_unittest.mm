@@ -4,7 +4,9 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/functional/callback_helpers.h"
 #import "base/run_loop.h"
+#import "base/test/test_future.h"
 #import "ios/chrome/browser/shared/ui/util/image/image_util.h"
 #import "ios/chrome/browser/snapshots/model/fake_snapshot_generator_delegate.h"
 #import "ios/chrome/browser/snapshots/model/legacy_snapshot_generator.h"
@@ -343,6 +345,67 @@ TEST_F(LegacySnapshotGeneratorWithOverlaysTest, GenerateWebViewSnapshot) {
   [delegate_.overlay removeFromSuperview];
 }
 
+// Tests that generateSnapshotWithoutOverlays ignores overlays and generates
+// the snapshot from the web view.
+TEST_F(LegacySnapshotGeneratorWithOverlaysTest,
+       GenerateSnapshotWithoutOverlays) {
+  UIWindow* window = GetAnyKeyWindow();
+  [window addSubview:delegate_.overlay];
+
+  // Hack to forcefully render the overlay view.
+  [NSRunLoop.currentRunLoop
+      runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
+  [window layoutIfNeeded];
+
+  // Enable the flag to take a snapshot with WebKit-based API.
+  web_state_.SetCanTakeSnapshot(true);
+  web_state_.SetCurrentURL(GURL(kTestURL));
+
+  base::test::TestFuture<UIImage*> future;
+  [generator_
+      generateSnapshotWithoutOverlaysWithCompletion:base::CallbackToBlock(
+                                                        future.GetCallback())];
+
+  UIImage* snapshot = future.Get();
+
+  // The color should be blue because overlays (green) are ignored and the
+  // WebKit snapshot (blue) is used.
+  ASSERT_TRUE(snapshot);
+  EXPECT_TRUE(CGSizeEqualToSize(snapshot.size, kWebStateViewSize));
+  EXPECT_TRUE(IsDominantColorForImage(snapshot, [UIColor colorWithRed:0.0
+                                                                green:0.0
+                                                                 blue:1.0
+                                                                alpha:1.0]));
+
+  [delegate_.overlay removeFromSuperview];
+}
+
+// Tests that generateUIViewSnapshot ignores overlays and generates the snapshot
+// from the base view.
+TEST_F(LegacySnapshotGeneratorWithOverlaysTest,
+       GenerateUIViewSnapshotWithoutOverlays) {
+  UIWindow* window = GetAnyKeyWindow();
+  [window addSubview:delegate_.overlay];
+
+  // Hack to forcefully render the overlay view.
+  [NSRunLoop.currentRunLoop
+      runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
+  [window layoutIfNeeded];
+
+  UIImage* snapshot = [generator_ generateUIViewSnapshot];
+
+  // The color should be red because overlays (green) are ignored and the
+  // base view (red) is used.
+  ASSERT_TRUE(snapshot);
+  EXPECT_TRUE(CGSizeEqualToSize(snapshot.size, kWebStateViewSize));
+  EXPECT_TRUE(IsDominantColorForImage(snapshot, [UIColor colorWithRed:1.0
+                                                                green:0.0
+                                                                 blue:0.0
+                                                                alpha:1.0]));
+
+  [delegate_.overlay removeFromSuperview];
+}
+
 class SnapshotGeneratorWithOverlaysTest : public PlatformTest {
  public:
   SnapshotGeneratorWithOverlaysTest() {
@@ -434,6 +497,66 @@ TEST_F(SnapshotGeneratorWithOverlaysTest, GenerateWebViewSnapshot) {
   [delegate_.overlay removeFromSuperview];
 }
 
+// Tests that generateSnapshot with includeOverlays:false ignores overlays and
+// generates the snapshot from the web view.
+TEST_F(SnapshotGeneratorWithOverlaysTest, GenerateSnapshotWithoutOverlays) {
+  UIWindow* window = GetAnyKeyWindow();
+  [window addSubview:delegate_.overlay];
+
+  // Hack to forcefully render the overlay view.
+  [NSRunLoop.currentRunLoop
+      runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
+  [window layoutIfNeeded];
+
+  // Enable the flag to take a snapshot with WebKit-based API.
+  web_state_.SetCanTakeSnapshot(true);
+  web_state_.SetCurrentURL(GURL(kTestURL));
+
+  base::test::TestFuture<UIImage*> future;
+  [generator_ generateSnapshotWithIncludeOverlays:NO
+                                       completion:base::CallbackToBlock(
+                                                      future.GetCallback())];
+
+  UIImage* snapshot = future.Get();
+
+  // The color should be blue because overlays (green) are ignored and the
+  // WebKit snapshot (blue) is used.
+  ASSERT_TRUE(snapshot);
+  EXPECT_TRUE(CGSizeEqualToSize(snapshot.size, kWebStateViewSize));
+  EXPECT_TRUE(IsDominantColorForImage(snapshot, [UIColor colorWithRed:0.0
+                                                                green:0.0
+                                                                 blue:1.0
+                                                                alpha:1.0]));
+
+  [delegate_.overlay removeFromSuperview];
+}
+
+// Tests that generateUIViewSnapshot ignores overlays and generates the snapshot
+// from the base view.
+TEST_F(SnapshotGeneratorWithOverlaysTest,
+       GenerateUIViewSnapshotWithoutOverlays) {
+  UIWindow* window = GetAnyKeyWindow();
+  [window addSubview:delegate_.overlay];
+
+  // Hack to forcefully render the overlay view.
+  [NSRunLoop.currentRunLoop
+      runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
+  [window layoutIfNeeded];
+
+  UIImage* snapshot = [generator_ generateUIViewSnapshot];
+
+  // The color should be red because overlays (green) are ignored and the
+  // base view (red) is used.
+  ASSERT_TRUE(snapshot);
+  EXPECT_TRUE(CGSizeEqualToSize(snapshot.size, kWebStateViewSize));
+  EXPECT_TRUE(IsDominantColorForImage(snapshot, [UIColor colorWithRed:1.0
+                                                                green:0.0
+                                                                 blue:0.0
+                                                                alpha:1.0]));
+
+  [delegate_.overlay removeFromSuperview];
+}
+
 class SnapshotGeneratorNilDelegateTest : public PlatformTest {
  public:
   SnapshotGeneratorNilDelegateTest() {
@@ -463,6 +586,17 @@ TEST_F(SnapshotGeneratorNilDelegateTest, GenerateSnapshot) {
   run_loop.Run();
 
   EXPECT_FALSE(snapshot);
+}
+
+// Tests that generateSnapshot with includeOverlays:false returns a nil
+// snapshot.
+TEST_F(SnapshotGeneratorNilDelegateTest, GenerateSnapshotWithoutOverlays) {
+  base::test::TestFuture<UIImage*> future;
+  [generator_ generateSnapshotWithIncludeOverlays:NO
+                                       completion:base::CallbackToBlock(
+                                                      future.GetCallback())];
+
+  EXPECT_FALSE(future.Get());
 }
 
 // Tests that generateUIViewSnapshot returns a nil snapshot.
