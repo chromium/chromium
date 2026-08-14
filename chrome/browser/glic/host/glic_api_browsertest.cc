@@ -1510,17 +1510,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testCallingApiWhileHiddenRecordsMetrics) {
   histogram_tester.ExpectTotalCount("Glic.Api.RequestHostLatency.CreateTab", 1);
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTest, testUnpinTabsFailsWhenNotPinned) {
-  NavigateTabAndOpenGlicFloating();
-  // Unpinning a tab that is not pinned should fail.
-  const int tab_id =
-      GetTabId(browser()->tab_strip_model()->GetActiveWebContents());
-  RunTestSequence(AddInstrumentedTab(kSecondTab, page_url()));
-
-  ExecuteJsTest({.params = base::Value(base::DictValue().Set(
-                     "tabId", base::NumberToString(tab_id)))});
-}
-
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testUnpinAllTabs) {
   NavigateTabAndOpenGlicFloating();
   const int tab_id =
