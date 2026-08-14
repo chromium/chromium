@@ -348,6 +348,18 @@ class ApiTests extends ApiTestFixtureBase {
     });
   }
 
+  async testGetContextFromTabFailsIfDoesNotExist() {
+    assertDefined(this.host.onModeChange);
+    assertDefined(this.host.getContextFromTab);
+
+    this.host.onModeChange(WebClientMode.TEXT);
+
+    await assertRejects(
+        this.host.getContextFromTab('not-exist', {}),
+        {withErrorMessage: 'tabContext failed: tab not found'},
+    );
+  }
+
   async testPinTabsFailsWhenIncognitoWindow() {
     assertDefined(this.host.pinTabs);
     assertDefined(this.host.getPinnedTabs);

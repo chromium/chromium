@@ -491,7 +491,7 @@ export class HostMessageHandler implements PostMessageHandler<WebClientHost> {
   }
 
   onUserInputSubmitted(request: {mode: number}): void {
-    this.handler.onUserInputSubmitted(request.mode);
+    this.handler.onUserInputSubmitted(webClientModeToMojo(request.mode));
   }
 
   onContextUploadStarted(): void {

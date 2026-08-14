@@ -666,15 +666,6 @@ class ApiTests extends ApiTestFixtureBase {
   }
 
 
-  async testGetContextFromTabFailsIfDoesNotExist() {
-    assertDefined(this.host.getContextFromTab);
-
-    await assertRejects(
-        this.host.getContextFromTab('not-exist', {}),
-        {withErrorMessage: 'tabContext failed: tab not found'},
-    );
-  }
-
   // Helper for `testFetchInactiveTabScreenshot` and
   // `testFetchInactiveTabScreenshotWhileMinimized`.
   async fetchInactiveTabScreenshot(expectNoFocus: boolean = false) {

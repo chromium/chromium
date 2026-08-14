@@ -1554,23 +1554,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest,
 }
 
 
-// TODO(crbug.com/457020736): Flaky on multiple platforms.
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
-                       DISABLED_testGetContextFromTabFailsIfDoesNotExist) {
-  ExecuteJsTest();
-
-  // TODO(b/450026474): Multi-instance fails the metrics check because the
-  // starting web client mode is not set.
-  SKIP_TEST_FOR_MULTI_INSTANCE();
-  // Should have one error logged for tab context permission not granted.
-  EXPECT_THAT(
-      histogram_tester->GetAllSamplesForPrefix(
-          "Glic.Api.GetContextFromTab.Error"),
-      UnorderedElementsAre(Pair(
-          "Glic.Api.GetContextFromTab.Error.Text",
-          BucketsAre(Bucket(GlicGetContextFromTabError::kTabNotFound, 1)))));
-}
-
 // TODO(crbug.com/441588906): Flaky on multiple platforms.
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab,
                        DISABLED_testFetchInactiveTabScreenshot) {

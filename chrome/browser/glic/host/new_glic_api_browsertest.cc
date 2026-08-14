@@ -1568,6 +1568,17 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithDefaultTabContextDisabled,
   histogram_tester.ExpectTotalCount("Glic.Api.GetContextFromTab.Error.Text", 1);
 }
 
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest,
+                       testGetContextFromTabFailsIfDoesNotExist) {
+  ASSERT_OK(OpenGlicForActiveTab());
+  glic::GlicHistogramTester histogram_tester;
+  ExecuteJsTest();
+  histogram_tester.ExpectBucketCount("Glic.Api.GetContextFromTab.Error.Text",
+                                     GlicGetContextFromTabError::kTabNotFound,
+                                     1);
+  histogram_tester.ExpectTotalCount("Glic.Api.GetContextFromTab.Error.Text", 1);
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testPinTabsFailsWhenIncognitoWindow) {
   ASSERT_OK(OpenGlicForActiveTabAndDetach());
