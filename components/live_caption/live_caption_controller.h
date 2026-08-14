@@ -10,6 +10,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/live_caption/caption_controller_base.h"
@@ -106,6 +107,10 @@ class LiveCaptionController : public KeyedService,
 
   // Whether Live Caption is enabled.
   bool enabled_ = false;
+
+  base::ScopedObservation<speech::SodaInstaller,
+                          speech::SodaInstaller::Observer>
+      soda_installer_observation_{this};
 };
 
 }  // namespace captions
