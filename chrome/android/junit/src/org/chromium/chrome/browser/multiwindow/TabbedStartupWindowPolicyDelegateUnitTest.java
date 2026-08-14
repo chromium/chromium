@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.multiwindow;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
@@ -60,12 +61,15 @@ public class TabbedStartupWindowPolicyDelegateUnitTest {
     @Mock private ChromeTabbedActivity mTabbedActivity;
     @Mock private PrefService mPrefService;
     @Mock private PrefChangeRegistrar.Natives mMockPrefChangeRegistrarNatives;
+    @Mock private TabbedStartupWindowPolicyDelegate.Natives mMockDelegateNatives;
 
     private TabbedStartupWindowPolicyDelegate mDelegate;
 
     @Before
     public void setUp() {
         TabbedStartupWindowPolicyDelegate.setInstanceForTesting(null);
+        TabbedStartupWindowPolicyDelegateJni.setInstanceForTesting(mMockDelegateNatives);
+        when(mMockDelegateNatives.getSessionStartupUrls(any())).thenReturn(List.of());
         PrefChangeRegistrarJni.setInstanceForTesting(mMockPrefChangeRegistrarNatives);
         when(mMockPrefChangeRegistrarNatives.init(any(), any())).thenReturn(117L);
         ChromeMultiInstancePersistentStore.ensureInitialized();
@@ -337,7 +341,7 @@ public class TabbedStartupWindowPolicyDelegateUnitTest {
                 /* instanceId= */ 1, "https://www.google.com", /* tabCount= */ 1, /* taskId= */ 1);
         MultiWindowTestUtils.createInstance(
                 /* instanceId= */ 2, "https://www.google.com", /* tabCount= */ 1, /* taskId= */ 2);
-        ChromeMultiInstancePersistentStore.writeRestoreOnStartupPrefValue(SessionStartupPref.UR_LS);
+        ChromeMultiInstancePersistentStore.writeRestoreOnStartupPrefValue(SessionStartupPref.URLS);
 
         // Act.
         mDelegate.maybeSaveWindowStateOnSessionTermination(LastSessionExitType.QUIT);
@@ -390,6 +394,8 @@ public class TabbedStartupWindowPolicyDelegateUnitTest {
         // Setup mock native preferences.
         when(mPrefService.getInteger(Pref.RESTORE_ON_STARTUP))
                 .thenReturn(SessionStartupPref.NEW_TAB);
+        when(mMockDelegateNatives.getSessionStartupUrls(mPrefService))
+                .thenReturn(List.of("https://www.google.com"));
 
         // Act.
         mDelegate.initializeWithNative(mPrefService);
@@ -398,6 +404,23 @@ public class TabbedStartupWindowPolicyDelegateUnitTest {
         assertEquals(
                 SessionStartupPref.NEW_TAB,
                 ChromeMultiInstancePersistentStore.readRestoreOnStartupPrefValue());
+        assertEquals(
+                List.of("https://www.google.com"),
+                ChromeMultiInstancePersistentStore.readRestoreOnStartupUrls());
+    }
+
+    @Test
+    public void testPreferenceChange_emptyUrls_storesNull() {
+        // Setup mock native preferences with empty URLs list.
+        when(mPrefService.getInteger(Pref.RESTORE_ON_STARTUP))
+                .thenReturn(SessionStartupPref.NEW_TAB);
+        when(mMockDelegateNatives.getSessionStartupUrls(mPrefService)).thenReturn(List.of());
+
+        // Act.
+        mDelegate.initializeWithNative(mPrefService);
+
+        // Verify.
+        assertNull(ChromeMultiInstancePersistentStore.readRestoreOnStartupUrls());
     }
 
     @Test
@@ -414,9 +437,11 @@ public class TabbedStartupWindowPolicyDelegateUnitTest {
         assertEquals(
                 TabbedStartupWindowPolicyDelegate.PREF_UNSET,
                 ChromeMultiInstancePersistentStore.readRestoreOnStartupPrefValue());
+        assertNull(ChromeMultiInstancePersistentStore.readRestoreOnStartupUrls());
 
         // Verify that we never register preference observer.
         verify(mMockPrefChangeRegistrarNatives, never()).init(any(), any());
+        verify(mMockDelegateNatives, never()).getSessionStartupUrls(any());
     }
 
     @Test
@@ -514,7 +539,7 @@ public class TabbedStartupWindowPolicyDelegateUnitTest {
         // Setup.
         ChromeMultiInstancePersistentStore.writeLastSessionExitType(
                 LastSessionExitType.LAST_WINDOW_CLOSED_BY_APP);
-        ChromeMultiInstancePersistentStore.writeRestoreOnStartupPrefValue(SessionStartupPref.UR_LS);
+        ChromeMultiInstancePersistentStore.writeRestoreOnStartupPrefValue(SessionStartupPref.URLS);
 
         // Act & Verify.
         assertFalse(mDelegate.claimForceNewInstancePolicy(false));

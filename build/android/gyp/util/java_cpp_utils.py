@@ -52,6 +52,8 @@ def KCamelToShouty(s):
     s = re.sub(r'^k', '', s)
     # Treat "WebView" like one word.
     s = re.sub(r'WebView', r'Webview', s)
+    # Treat "URLs" like one word.
+    s = re.sub(r'URLs', r'Urls', s)
     # Add _ between title words and anything else.
     s = re.sub(r'([^_])([A-Z][^A-Z_0-9]+)', r'\1_\2', s)
     # Add _ between lower -> upper transitions.

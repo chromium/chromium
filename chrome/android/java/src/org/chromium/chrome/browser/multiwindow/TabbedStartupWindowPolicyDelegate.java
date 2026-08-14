@@ -9,6 +9,10 @@ import static org.chromium.build.NullUtil.assertNonNull;
 import android.app.ActivityManager.AppTask;
 import android.content.Intent;
 
+import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
@@ -21,6 +25,7 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.components.prefs.PrefChangeRegistrar;
 import org.chromium.components.prefs.PrefService;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -28,6 +33,7 @@ import java.util.Set;
  * Delegate to manage startup window policies and relaunch session restoration for {@link
  * ChromeTabbedActivity} windows.
  */
+@JNINamespace("chrome::android")
 @NullMarked
 public class TabbedStartupWindowPolicyDelegate {
     /* package */ static final int PREF_UNSET = -1;
@@ -66,7 +72,10 @@ public class TabbedStartupWindowPolicyDelegate {
         mPrefChangeRegistrar = new PrefChangeRegistrar(prefService);
         mPrefChangeRegistrar.addObserver(
                 Pref.RESTORE_ON_STARTUP, this::onRestoreOnStartupPrefChanged);
+        mPrefChangeRegistrar.addObserver(
+                Pref.URLS_TO_RESTORE_ON_STARTUP, this::onRestoreOnStartupUrlsPrefChanged);
         onRestoreOnStartupPrefChanged();
+        onRestoreOnStartupUrlsPrefChanged();
     }
 
     /**
@@ -231,6 +240,13 @@ public class TabbedStartupWindowPolicyDelegate {
         ChromeMultiInstancePersistentStore.writeRestoreOnStartupPrefValue(type);
     }
 
+    private void onRestoreOnStartupUrlsPrefChanged() {
+        assertNonNull(mPrefService);
+        List<String> urls =
+                TabbedStartupWindowPolicyDelegateJni.get().getSessionStartupUrls(mPrefService);
+        ChromeMultiInstancePersistentStore.writeRestoreOnStartupUrls(urls);
+    }
+
     /* package */ void resetForTesting() {
         if (mPrefChangeRegistrar != null) {
             mPrefChangeRegistrar.destroy();
@@ -244,5 +260,11 @@ public class TabbedStartupWindowPolicyDelegate {
             @Nullable TabbedStartupWindowPolicyDelegate delegate) {
         sInstance = delegate;
         ResettersForTesting.register(() -> sInstance = null);
+    }
+
+    @NativeMethods
+    public interface Natives {
+        @JniType("std::vector<std::string>")
+        List<String> getSessionStartupUrls(@JniType("PrefService*") PrefService prefService);
     }
 }

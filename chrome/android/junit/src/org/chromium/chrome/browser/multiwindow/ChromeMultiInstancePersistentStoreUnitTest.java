@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.tabmodel.SupportedProfileType;
 
 import java.time.Duration;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -489,5 +490,41 @@ public class ChromeMultiInstancePersistentStoreUnitTest {
 
         ChromeMultiInstancePersistentStore.writeIsCrashRecoveryPending(false);
         assertFalse(ChromeMultiInstancePersistentStore.readIsCrashRecoveryPending());
+    }
+
+    @Test
+    public void testRestoreOnStartupPrefValue() {
+        // Verify default value.
+        assertEquals(
+                TabbedStartupWindowPolicyDelegate.PREF_UNSET,
+                ChromeMultiInstancePersistentStore.readRestoreOnStartupPrefValue());
+
+        // Verify writing and reading.
+        ChromeMultiInstancePersistentStore.writeRestoreOnStartupPrefValue(
+                SessionStartupPref.NEW_TAB);
+        assertEquals(
+                SessionStartupPref.NEW_TAB,
+                ChromeMultiInstancePersistentStore.readRestoreOnStartupPrefValue());
+    }
+
+    @Test
+    public void testRestoreOnStartupUrls() {
+        // Verify default value is null when unset.
+        assertNull(ChromeMultiInstancePersistentStore.readRestoreOnStartupUrls());
+
+        // Verify writing and reading non-empty list.
+        List<String> urls = List.of("https://www.google.com", "https://www.example.com");
+        ChromeMultiInstancePersistentStore.writeRestoreOnStartupUrls(urls);
+        assertEquals(urls, ChromeMultiInstancePersistentStore.readRestoreOnStartupUrls());
+
+        // Verify writing an empty list clears the field and returns null.
+        ChromeMultiInstancePersistentStore.writeRestoreOnStartupUrls(List.of());
+        assertNull(ChromeMultiInstancePersistentStore.readRestoreOnStartupUrls());
+
+        // Verify writing null clears the field and returns null.
+        ChromeMultiInstancePersistentStore.writeRestoreOnStartupUrls(urls);
+        assertEquals(urls, ChromeMultiInstancePersistentStore.readRestoreOnStartupUrls());
+        ChromeMultiInstancePersistentStore.writeRestoreOnStartupUrls(null);
+        assertNull(ChromeMultiInstancePersistentStore.readRestoreOnStartupUrls());
     }
 }

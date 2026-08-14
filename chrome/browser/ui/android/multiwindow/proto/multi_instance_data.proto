@@ -69,6 +69,9 @@ message MultiInstanceData {
   // The cached value of the RestoreOnStartup policy/preference.
   // Maps to SessionStartupPref::PrefValue.
   optional int32 restore_on_startup_pref_value = 15;
+
+  // The cached URLs of the RestoreOnStartup policy/preference.
+  repeated string restore_on_startup_urls = 16;
 }
 
 // Data representing the state of a single Chrome instance.
