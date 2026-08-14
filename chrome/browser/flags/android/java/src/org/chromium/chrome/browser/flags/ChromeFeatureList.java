@@ -1151,7 +1151,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sMigrateManagementToWebUIOnMobile =
             newCachedFlag(
                     MIGRATE_MANAGEMENT_TO_WEBUI_ON_MOBILE,
-                    /* defaultValue= */ false,
+                    /* defaultValue= */ true,
                     /* defaultValueInTests= */ true);
     public static final CachedFlag sMostVisitedTilesCustomization =
             newCachedFlag(
