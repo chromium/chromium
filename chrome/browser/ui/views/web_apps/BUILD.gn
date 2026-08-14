@@ -114,3 +114,47 @@ source_set("launch_dialogs") {
     "//url",
   ]
 }
+
+if (is_chromeos) {
+  source_set("protocol_handler_picker_dialog") {
+    public = [ "protocol_handler_picker_dialog.h" ]
+    sources = [ "protocol_handler_picker_dialog.cc" ]
+    public_deps = [
+      "//base",
+      "//content/public/browser",
+      "//ui/base",
+      "//ui/base/metadata",
+      "//ui/views",
+      "//url",
+    ]
+    deps = [
+      "//chrome/app:generated_resources",
+      "//chrome/browser/ui/views:layout_provider",
+      "//components/strings:components_strings",
+      "//components/vector_icons",
+      "//ui/chromeos/styles:cros_tokens_color_mappings",
+      "//ui/gfx",
+      "//ui/strings:ui_strings",
+    ]
+  }
+}
+
+source_set("web_app_icon_name_and_origin_view") {
+  public = [ "web_app_icon_name_and_origin_view.h" ]
+  sources = [ "web_app_icon_name_and_origin_view.cc" ]
+  public_deps = [
+    "//base",
+    "//ui/base/metadata",
+    "//ui/views",
+    "//url",
+  ]
+  deps = [
+    ":web_apps",
+    "//chrome/browser/ui/views:layout_provider",
+    "//chrome/browser/ui/web_applications",
+    "//chrome/browser/web_applications",
+    "//third_party/abseil-cpp:absl",
+    "//ui/base",
+    "//ui/gfx",
+  ]
+}
