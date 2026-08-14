@@ -256,73 +256,7 @@ public class WebViewChromiumAwInit {
         addBrowserProcessStartTasksToQueue(
                 preBrowserProcessStartTasks, postBrowserProcessStartTasks);
 
-        postBrowserProcessStartTasks.addLast(
-                () -> {
-                    AwBrowserProcess.initializeMetricsLogUploader();
-
-                    int targetSdkVersion =
-                            ContextUtils.getApplicationContext()
-                                    .getApplicationInfo()
-                                    .targetSdkVersion;
-                    RecordHistogram.recordSparseHistogram(
-                            "Android.WebView.TargetSdkVersion", targetSdkVersion);
-
-                    try (DualTraceEvent e =
-                            DualTraceEvent.scoped(
-                                    "WebViewChromiumAwInit.initThreadUnsafeSingletons")) {
-                        mChromiumStartedGlobals = new ChromiumStartedGlobals();
-                    }
-
-                    if (ApkInfo.isDebugAndroidOrApp()) {
-                        getSharedStatics().setWebContentsDebuggingEnabledUnconditionally(true);
-                    }
-
-                    if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
-                            ? CompatChanges.isChangeEnabled(WebSettings.ENABLE_SIMPLIFIED_DARK_MODE)
-                            : targetSdkVersion >= Build.VERSION_CODES.TIRAMISU) {
-                        AwDarkMode.enableSimplifiedDarkMode();
-                    }
-
-                    AwBrowserProcess.maybeEnableSafeBrowsingFromGms();
-                    AwBrowserProcess.setupSupervisedUser();
-                    AwBrowserProcess.handleMinidumpsAndSetMetricsConsent(
-                            /* updateMetricsConsent= */ true);
-
-                    AwBrowserProcess.postBackgroundTasks(
-                            mFactory.isSafeModeEnabled(), mFactory.getWebViewPrefs());
-
-                    AconfigFlaggedApiDelegate delegate = AconfigFlaggedApiDelegate.getInstance();
-                    if (delegate != null) {
-                        AwContentsStatics.setSelectionActionMenuClient(
-                                delegate.getSelectionActionMenuClient(
-                                        mFactory.getWebViewDelegate()));
-                    }
-
-                    AwCrashyClassUtils.maybeCrashIfEnabled();
-                    // Must happen right after Chromium initialization is complete.
-                    mInitState.set(INIT_FINISHED);
-                    mStartupFinished.countDown();
-
-                    // Initialize the default profile once Chromium initialization is fully
-                    // complete,
-                    // ensuring it is available before executing pending post-init tasks.
-                    if (mShouldInitializeDefaultProfile) {
-                        try (DualTraceEvent e =
-                                DualTraceEvent.scoped(
-                                        "WebViewChromiumAwInit.initializeDefaultProfile")) {
-                            mDefaultProfileHolder.initializeDefaultProfileOnUI();
-                        }
-                    }
-
-                    // This runs all the pending tasks queued for after Chromium init is
-                    // finished, so should run after `mInitState` is `INIT_FINISHED`.
-                    mFactory.getRunQueue().notifyChromiumStarted();
-                    if (mRunStartupTasksAsync) {
-                        // Re-enables the taskrunners
-                        PostTask.disablePreNativeUiTasks(false);
-                        AwBrowserProcess.onStartupComplete();
-                    }
-                });
+        postBrowserProcessStartTasks.addLast(this::postBrowserProcessStartTask);
 
         // Initialize the decoupled StartupTasksRunner with a Delegate interface implementation.
         return new StartupTasksRunner(
@@ -435,6 +369,65 @@ public class WebViewChromiumAwInit {
         // the seed is available when AwFeatureListCreator::SetUpFieldTrials()
         // runs.
         AwBrowserProcess.finishVariationsInit();
+    }
+
+    private void postBrowserProcessStartTask() {
+        AwBrowserProcess.initializeMetricsLogUploader();
+
+        int targetSdkVersion =
+                ContextUtils.getApplicationContext().getApplicationInfo().targetSdkVersion;
+        RecordHistogram.recordSparseHistogram("Android.WebView.TargetSdkVersion", targetSdkVersion);
+
+        try (DualTraceEvent e =
+                DualTraceEvent.scoped("WebViewChromiumAwInit.initThreadUnsafeSingletons")) {
+            mChromiumStartedGlobals = new ChromiumStartedGlobals();
+        }
+
+        if (ApkInfo.isDebugAndroidOrApp()) {
+            getSharedStatics().setWebContentsDebuggingEnabledUnconditionally(true);
+        }
+
+        if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+                ? CompatChanges.isChangeEnabled(WebSettings.ENABLE_SIMPLIFIED_DARK_MODE)
+                : targetSdkVersion >= Build.VERSION_CODES.TIRAMISU) {
+            AwDarkMode.enableSimplifiedDarkMode();
+        }
+
+        AwBrowserProcess.maybeEnableSafeBrowsingFromGms();
+        AwBrowserProcess.setupSupervisedUser();
+        AwBrowserProcess.handleMinidumpsAndSetMetricsConsent(/* updateMetricsConsent= */ true);
+
+        AwBrowserProcess.postBackgroundTasks(
+                mFactory.isSafeModeEnabled(), mFactory.getWebViewPrefs());
+
+        AconfigFlaggedApiDelegate delegate = AconfigFlaggedApiDelegate.getInstance();
+        if (delegate != null) {
+            AwContentsStatics.setSelectionActionMenuClient(
+                    delegate.getSelectionActionMenuClient(mFactory.getWebViewDelegate()));
+        }
+
+        AwCrashyClassUtils.maybeCrashIfEnabled();
+        // Must happen right after Chromium initialization is complete.
+        mInitState.set(INIT_FINISHED);
+        mStartupFinished.countDown();
+
+        // Initialize the default profile once Chromium initialization is fully complete,
+        // ensuring it is available before executing pending post-init tasks.
+        if (mShouldInitializeDefaultProfile) {
+            try (DualTraceEvent e =
+                    DualTraceEvent.scoped("WebViewChromiumAwInit.initializeDefaultProfile")) {
+                mDefaultProfileHolder.initializeDefaultProfileOnUI();
+            }
+        }
+
+        // This runs all the pending tasks queued for after Chromium init is
+        // finished, so should run after `mInitState` is `INIT_FINISHED`.
+        mFactory.getRunQueue().notifyChromiumStarted();
+        if (mRunStartupTasksAsync) {
+            // Re-enables the taskrunners
+            PostTask.disablePreNativeUiTasks(false);
+            AwBrowserProcess.onStartupComplete();
+        }
     }
 
     private void addBrowserProcessStartTasksToQueue(
