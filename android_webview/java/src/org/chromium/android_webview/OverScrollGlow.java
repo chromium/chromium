@@ -203,6 +203,11 @@ class OverScrollGlow {
         return invalidateForGlow;
     }
 
+    @androidx.annotation.VisibleForTesting
+    public int getEdgeEffectColor() {
+        return mEdgeGlowTop.getColor();
+    }
+
     /** @return True if any glow is still animating */
     public boolean isAnimating() {
         return (!mEdgeGlowTop.isFinished()

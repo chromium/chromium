@@ -14,7 +14,6 @@ import android.widget.ZoomButtonsController;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.android_webview.common.Lifetime;
-import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
@@ -26,7 +25,7 @@ public class AwZoomControls {
 
     // It is advised to use getZoomController() where possible.
     @SuppressWarnings("deprecation")
-    private @MonotonicNonNull ZoomButtonsController mZoomButtonsController;
+    private @Nullable ZoomButtonsController mZoomButtonsController;
 
     private boolean mCanZoomIn;
     private boolean mCanZoomOut;
@@ -62,9 +61,9 @@ public class AwZoomControls {
 
     @SuppressWarnings("deprecation")
     public void dismissZoomPicker() {
-        ZoomButtonsController zoomController = getZoomController();
-        if (zoomController != null) {
-            zoomController.setVisible(false);
+        if (mZoomButtonsController != null) {
+            mZoomButtonsController.setVisible(false);
+            mZoomButtonsController = null;
         }
     }
 

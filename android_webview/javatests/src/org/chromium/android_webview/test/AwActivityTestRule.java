@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Base64;
+import android.view.ContextThemeWrapper;
 import android.view.ViewGroup;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
@@ -628,6 +629,16 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
      * testing state preservation across context updates.
      */
     public AwTestContainerView reparentAwContents(AwTestContainerView view) {
+        return reparentAwContents(view, 0);
+    }
+
+    /**
+     * Overload for reparentAwContents that allows injecting a customized theme on the new Activity.
+     *
+     * @param view The view to reparent.
+     * @param themeId The theme resource ID to apply to the newly spawned AwTestRunnerActivity.
+     */
+    public AwTestContainerView reparentAwContents(AwTestContainerView view, int themeId) {
         AwTestRunnerActivity newActivity;
         Intent intent = new Intent(getActivity(), AwTestRunnerActivity.class);
         newActivity =
@@ -645,9 +656,14 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
                         parent.removeView(view);
                     }
 
+                    Context context = newActivity;
+                    if (themeId != 0) {
+                        context = new ContextThemeWrapper(newActivity, themeId);
+                    }
+
                     AwTestContainerView newContainerView =
                             new AwTestContainerView(
-                                    newActivity,
+                                    context,
                                     /* allowHardwareAcceleration= */ true,
                                     /* allowMultipleHardwareViews= */ true);
                     newContainerView.initialize(view.getAwContents());

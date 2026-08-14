@@ -64,6 +64,7 @@ import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TimeUtils;
+
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -2037,5 +2038,64 @@ public class AwContentsTest extends AwParameterizedTest {
         AwTestContainerView newerView = mActivityTestRule.reparentAwContents(newView);
 
         Assert.assertEquals(150, newerView.getAwContents().getSettings().getTextZoom());
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    public void testReparentAwContentsOverScrollGlow() throws Throwable {
+        mActivityTestRule.startBrowserProcess();
+        TestAwContentsClient client = new TestAwContentsClient();
+        AwTestContainerView oldView =
+                mActivityTestRule.createAwTestContainerViewOnMainSync(client, false);
+
+        int oldColor = ThreadUtils.runOnUiThreadBlocking(
+                () -> oldView.getAwContents().getEdgeEffectColor());
+
+        AwTestContainerView newView =
+                mActivityTestRule.reparentAwContents(oldView, android.R.style.Theme_Black);
+
+        int newColor = ThreadUtils.runOnUiThreadBlocking(
+                () -> newView.getAwContents().getEdgeEffectColor());
+
+        Assert.assertNotEquals(oldColor, newColor);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    public void testReparentAwContentsViewAndroidDelegate() throws Throwable {
+        mActivityTestRule.startBrowserProcess();
+        TestAwContentsClient client = new TestAwContentsClient();
+        AwTestContainerView oldView =
+                mActivityTestRule.createAwTestContainerViewOnMainSync(client, false);
+
+        ThreadUtils.runOnUiThreadBlocking(() -> {
+            oldView.getAwContents().getViewAndroidDelegateForTesting().acquireView();
+        });
+
+        AwTestContainerView newView =
+                mActivityTestRule.reparentAwContents(oldView, android.R.style.Theme_Black);
+
+        Assert.assertNotNull(newView);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    public void testReparentAwContentsZoomControls() throws Throwable {
+        mActivityTestRule.startBrowserProcess();
+        TestAwContentsClient client = new TestAwContentsClient();
+        AwTestContainerView oldView =
+                mActivityTestRule.createAwTestContainerViewOnMainSync(client, false);
+
+        ThreadUtils.runOnUiThreadBlocking(() -> {
+            oldView.getAwContents().getZoomControlsForTest().invokeZoomPicker();
+        });
+
+        AwTestContainerView newView =
+                mActivityTestRule.reparentAwContents(oldView, android.R.style.Theme_Black);
+
+        Assert.assertNotNull(newView);
     }
 }

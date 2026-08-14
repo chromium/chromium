@@ -1435,7 +1435,13 @@ public class AwContents implements SmartClipProvider {
         for (PopupTouchHandleDrawable drawable : mTouchHandleDrawables) {
             drawable.onContainerViewChanged(newContainerView);
         }
+
+        mOverScrollHelper.setContainerView(mContainerView);
+        setOverScrollMode(mContainerView.getOverScrollMode());
+        mScrollAccessibilityHelper.setContainerView(mContainerView);
+
         onContainerViewChanged();
+        setScrollBarStyle(mInternalAccessAdapter.super_getScrollBarStyle());
     }
 
     public AwDrawFnImpl.DrawFnAccess getDrawFnAccess() {
@@ -2856,6 +2862,11 @@ public class AwContents implements SmartClipProvider {
 
     public AwZoomControls getZoomControlsForTest() {
         return mZoomControls;
+    }
+
+    @VisibleForTesting
+    public int getEdgeEffectColor() {
+        return mOverScrollHelper.getEdgeEffectColor();
     }
 
     /**

@@ -17,13 +17,25 @@ import org.chromium.build.annotations.Nullable;
 @Lifetime.WebView
 @NullMarked
 public class AwOverScrollHelper {
-    private final View mContainerView;
+    private View mContainerView;
     private final AwScrollOffsetManager mScrollOffsetManager;
     private @Nullable OverScrollGlow mOverScrollGlow;
 
     public AwOverScrollHelper(View containerView, AwScrollOffsetManager scrollOffsetManager) {
         mContainerView = containerView;
         mScrollOffsetManager = scrollOffsetManager;
+    }
+
+    public void setContainerView(View containerView) {
+        mContainerView = containerView;
+        if (mOverScrollGlow != null) {
+            mOverScrollGlow = new OverScrollGlow(mContainerView.getContext(), mContainerView);
+        }
+    }
+
+    @androidx.annotation.VisibleForTesting
+    public int getEdgeEffectColor() {
+        return mOverScrollGlow == null ? 0 : mOverScrollGlow.getEdgeEffectColor();
     }
 
     public void setOverScrollMode(int mode, Context context) {
