@@ -94,22 +94,19 @@ android {
 
 {% include 'dependencies.jinja' %}
 
-afterEvaluate {
-    def tasksToDisable = tasks.findAll {
-        return (it.name.equals('generateDebugSources')  // causes unwanted AndroidManifest.java
-                || it.name.equals('generateReleaseSources')
-                || it.name.endsWith('BuildConfig')  // causes unwanted BuildConfig.java
-                || it.name.equals('preDebugAndroidTestBuild')
+tasks.matching {
+    return (it.name.equals('generateDebugSources')  // causes unwanted AndroidManifest.java
+            || it.name.equals('generateReleaseSources')
+            || it.name.endsWith('BuildConfig')  // causes unwanted BuildConfig.java
+            || it.name.equals('preDebugAndroidTestBuild')
 {% if not use_gradle_process_resources %}
-                || it.name.endsWith('Assets')
-                || it.name.endsWith('Resources')
-                || it.name.endsWith('ResValues')
+            || it.name.endsWith('Assets')
+            || it.name.endsWith('Resources')
+            || it.name.endsWith('ResValues')
 {% endif %}
-                || it.name.endsWith('Aidl')
-                || it.name.endsWith('Renderscript')
-                || it.name.endsWith('Shaders'))
-    }
-    tasksToDisable.each { Task task ->
-      task.enabled = false
-    }
+            || it.name.endsWith('Aidl')
+            || it.name.endsWith('Renderscript')
+            || it.name.endsWith('Shaders'))
+}.configureEach { Task task ->
+    task.enabled = false
 }
