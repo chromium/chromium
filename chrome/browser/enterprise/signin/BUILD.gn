@@ -74,6 +74,7 @@ if (is_win || is_mac || is_linux) {
       "//chrome/browser/sync",
       "//chrome/browser/ui:managed_ui",
       "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/signin",
       "//chrome/test:test_support",
       "//chrome/test:test_support_ui",

@@ -35,7 +35,6 @@
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -659,8 +658,8 @@ void ProfileManagementDisclaimerService::OpenPrivacyPolicyArticlePopUp(
                                           /*from_user_gesture=*/true);
   create_params.should_trigger_session_restore = false;
   create_params.omit_from_session_restore = true;
-  Browser* popup_browser = CreateBrowserWindow(std::move(create_params))
-                               ->GetBrowserForMigrationOnly();
+  BrowserWindowInterface* popup_browser =
+      CreateBrowserWindow(std::move(create_params));
   if (popup_browser) {
     privacy_article_browser_ = popup_browser->GetWeakPtr();
     chrome::AddSelectedTabWithURL(popup_browser,

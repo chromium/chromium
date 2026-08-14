@@ -907,6 +907,7 @@ if (!is_android) {
       "//base",
       "//chrome/browser/policy:test_support",
       "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui/browser_window",
       "//chrome/test:test_support",
       "//chrome/test:test_support_ui",
       "//components/enterprise:test_support",

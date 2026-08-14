@@ -29,6 +29,7 @@ source_set("test_support") {
 
     deps += [
       "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui/browser_window",
       "//components/device_signals/core/browser",
       "//components/policy:policy_code_generate",
       "//components/prefs",

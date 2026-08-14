@@ -16,6 +16,7 @@
 #include "chrome/browser/extensions/navigation_extension_enabler.h"
 #include "chrome/browser/sync/test/integration/extensions_helper.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
@@ -88,26 +89,27 @@ class IncognitoNavigationThrottleBrowserTest
     policy_provider_.UpdateChromePolicy(policies);
   }
 
-  bool IsPageWithContentLoaded(Browser* browser, const std::u16string& text) {
+  bool IsPageWithContentLoaded(BrowserWindowInterface* browser,
+                               const std::u16string& text) {
     if (!browser) {
       return false;
     }
     return 1 == ui_test_utils::FindInPage(
-                    browser->tab_strip_model()->GetActiveWebContents(), text,
+                    browser->GetTabStripModel()->GetActiveWebContents(), text,
                     /*forward=*/false,
                     /*case_sensitive=*/false,
                     /*ordinal*/ nullptr,
                     /*selection_rect=*/nullptr);
   }
 
-  void NavigateToSimplePage(Browser* browser) {
+  void NavigateToSimplePage(BrowserWindowInterface* browser) {
     GURL url(embedded_test_server()->GetURL("/simple_page.html"));
     ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
         browser, url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   }
 
-  bool IsSimplePageSown(Browser* browser) {
+  bool IsSimplePageSown(BrowserWindowInterface* browser) {
     return IsPageWithContentLoaded(browser, kSimplePageContent);
   }
 
@@ -116,7 +118,7 @@ class IncognitoNavigationThrottleBrowserTest
   // verifies that the correct singular/plural form of the text is shown,
   // depending on  the size of `extensions`.
   bool IsUnallowedExtensionsBlockingPageSown(
-      Browser* browser,
+      BrowserWindowInterface* browser,
       const std::vector<std::string>& extensions) {
     return VerifyContentExistsInPage(browser,
                                      extensions.size() > 1
@@ -130,7 +132,7 @@ class IncognitoNavigationThrottleBrowserTest
   // verifies that the correct singular/plural form of the text is shown,
   // depending on  the size of `extensions`.
   bool IsMissingExtensionsBlockingPageSown(
-      Browser* browser,
+      BrowserWindowInterface* browser,
       const std::vector<std::string>& extensions) {
     return VerifyContentExistsInPage(browser,
                                      extensions.size() > 1
@@ -139,7 +141,7 @@ class IncognitoNavigationThrottleBrowserTest
                                      extensions);
   }
 
-  Browser* incognito_browser() {
+  BrowserWindowInterface* incognito_browser() {
     if (!incognito_browser_) {
       incognito_browser_ = CreateIncognitoBrowser();
     }
@@ -148,7 +150,7 @@ class IncognitoNavigationThrottleBrowserTest
 
  private:
   bool VerifyContentExistsInPage(
-      Browser* browser,
+      BrowserWindowInterface* browser,
       const std::string& page_heading,
       const std::vector<std::string>& extension_names_or_ids) {
     if (!IsPageWithContentLoaded(browser, base::UTF8ToUTF16(page_heading))) {

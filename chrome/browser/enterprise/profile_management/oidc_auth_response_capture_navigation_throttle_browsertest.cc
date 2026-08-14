@@ -17,7 +17,7 @@
 #include "chrome/browser/enterprise/signin/oidc_authentication_signin_interceptor_factory.h"
 #include "chrome/browser/enterprise/signin/oidc_metrics_utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/signin/dice_web_signin_interceptor_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -373,7 +373,7 @@ IN_PROC_BROWSER_TEST_F(OidcAuthResponseCaptureNavigationThrottleTest,
 
 IN_PROC_BROWSER_TEST_F(OidcAuthResponseCaptureNavigationThrottleTest,
                        NoServiceForGuestMode) {
-  Browser* guest_browser = CreateGuestBrowser();
+  BrowserWindowInterface* guest_browser = CreateGuestBrowser();
   ASSERT_NE(guest_browser, nullptr);
   TestNoServiceForInvalidProfile(guest_browser->GetProfile());
 }

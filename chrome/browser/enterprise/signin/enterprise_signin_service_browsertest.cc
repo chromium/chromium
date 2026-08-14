@@ -17,7 +17,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interaction_test_util_browser.h"
@@ -132,7 +132,7 @@ class EnterpriseSigninServiceTest : public InteractiveBrowserTest {
     }));
   }
 
-  auto NewTab(Browser* browser, GURL url) {
+  auto NewTab(BrowserWindowInterface* browser, GURL url) {
     return Steps(Do([browser, url = std::move(url)]() {
       ui_test_utils::NavigateToURLWithDisposition(
           browser, url, WindowOpenDisposition::NEW_BACKGROUND_TAB,
@@ -141,9 +141,10 @@ class EnterpriseSigninServiceTest : public InteractiveBrowserTest {
     }));
   }
 
-  auto CheckTabs(Browser* browser, std::vector<TabState> expected_tabs) {
+  auto CheckTabs(BrowserWindowInterface* browser,
+                 std::vector<TabState> expected_tabs) {
     return Steps(Do([browser, expected_tabs = std::move(expected_tabs)]() {
-      TabStripModel* tab_strip = browser->tab_strip_model();
+      TabStripModel* tab_strip = browser->GetTabStripModel();
       std::vector<TabState> actual_tabs;
       for (int i = 0; i < tab_strip->count(); i++) {
         actual_tabs.push_back(TabState{
@@ -155,13 +156,13 @@ class EnterpriseSigninServiceTest : public InteractiveBrowserTest {
     }));
   }
 
-  auto ActivateTab(Browser* browser, int index) {
+  auto ActivateTab(BrowserWindowInterface* browser, int index) {
     return Steps(Do([browser, index]() {
-      browser->tab_strip_model()->ActivateTabAt(index);
+      browser->GetTabStripModel()->ActivateTabAt(index);
     }));
   }
 
-  auto Navigate(Browser* browser, GURL dest) {
+  auto Navigate(BrowserWindowInterface* browser, GURL dest) {
     return Steps(Do([browser, dest]() {
       ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, dest));
     }));
@@ -221,7 +222,7 @@ IN_PROC_BROWSER_TEST_F(EnterpriseSigninServiceTest,
   GURL example_url(kExampleUrl);
   GURL auth_url(kAuthUrl);
 
-  Browser* browser2 = CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* browser2 = CreateBrowser(browser()->GetProfile());
 
   RunTestSequence(
       SetMaxTransportState(TransportState::START_DEFERRED),
