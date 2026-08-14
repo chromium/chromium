@@ -663,14 +663,15 @@ TEST_F(EnterpriseProxyServiceTest, AccountChangeTriggersRefresh) {
   CreateService();
   SetPolicyDomains({kTestDomain1}, /*use_oauth=*/true);
 
-  // Initial fetch fails permanently because there is no primary account.
+  // Initial fetch fails with blocked transient error because there is no
+  // primary account.
   ASSERT_TRUE(
       base::test::RunUntil([&]() { return !service_->IsRefreshInProgress(); }));
   EXPECT_EQ(0u, service_->GetDynamicRoutingConfig().routing_rules.size());
   std::vector<ProvisioningDomainProxyConfig> configs =
       service_->GetProvisioningDomainConfigs();
   ASSERT_EQ(1u, configs.size());
-  EXPECT_EQ(ProvisioningDomainProxyConfig::State::kFailedPermanent,
+  EXPECT_EQ(ProvisioningDomainProxyConfig::State::kFailedBlocked,
             configs[0].state);
 
   MockObserver observer;
@@ -701,6 +702,74 @@ TEST_F(EnterpriseProxyServiceTest, AccountChangeTriggersRefresh) {
   EXPECT_EQ(1u, service_->GetDynamicRoutingConfig().routing_rules.size());
 
   service_->RemoveObserver(&observer);
+}
+
+TEST_F(EnterpriseProxyServiceTest, RouteFlushingOnAuthFailureAndRecovery) {
+  CreateService();
+  SetUpPrimaryAccount();
+  SetPolicyDomains({kTestDomain1}, /*use_oauth=*/true);
+
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return service_->IsRefreshInProgress(); }));
+  identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      "test_token", base::Time::Max());
+
+  ASSERT_EQ(1, test_url_loader_factory_.NumPending());
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      "https://domain1.example.com/.well-known/pvd", kValidPvdJson1);
+
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return !service_->IsRefreshInProgress(); }));
+  EXPECT_EQ(1u, service_->GetDynamicRoutingConfig().routing_rules.size());
+  std::vector<ProvisioningDomainProxyConfig> configs =
+      service_->GetProvisioningDomainConfigs();
+  ASSERT_EQ(1u, configs.size());
+  EXPECT_EQ(ProvisioningDomainProxyConfig::State::kValid, configs[0].state);
+
+  // Invalidate refresh token with auth error.
+  CoreAccountId primary_account_id =
+      identity_test_env_.identity_manager()->GetPrimaryAccountId(
+          signin::ConsentLevel::kSignin);
+
+  // Trigger refresh. Token fetch fails with auth error -> transitions to
+  // kFailedBlocked.
+  service_->ForceRefreshAllConfigs();
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return service_->IsRefreshInProgress(); }));
+  identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+              CREDENTIALS_REJECTED_BY_SERVER));
+
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return !service_->IsRefreshInProgress(); }));
+
+  // Verify that active routes were FLUSHED to prevent IdP loop.
+  EXPECT_EQ(0u, service_->GetDynamicRoutingConfig().routing_rules.size());
+  configs = service_->GetProvisioningDomainConfigs();
+  ASSERT_EQ(1u, configs.size());
+  EXPECT_EQ(ProvisioningDomainProxyConfig::State::kFailedBlocked,
+            configs[0].state);
+
+  // Recovery: Credentials resolved / new token issued.
+  identity_test_env_.SetRefreshTokenForAccount(primary_account_id);
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return service_->IsRefreshInProgress(); }));
+
+  identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      "new_token", base::Time::Max());
+  ASSERT_EQ(1, test_url_loader_factory_.NumPending());
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      "https://domain1.example.com/.well-known/pvd", kValidPvdJson1);
+
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return !service_->IsRefreshInProgress(); }));
+
+  // Routes are restored!
+  EXPECT_EQ(1u, service_->GetDynamicRoutingConfig().routing_rules.size());
+  configs = service_->GetProvisioningDomainConfigs();
+  ASSERT_EQ(1u, configs.size());
+  EXPECT_EQ(ProvisioningDomainProxyConfig::State::kValid, configs[0].state);
 }
 
 TEST_F(EnterpriseProxyServiceTest, MalformedPolicyDoesNotRefresh) {

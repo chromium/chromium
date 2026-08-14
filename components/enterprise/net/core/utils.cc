@@ -87,6 +87,8 @@ std::string StateToString(ProvisioningDomainProxyConfig::State state) {
       return "Valid";
     case ProvisioningDomainProxyConfig::State::kFailedTransient:
       return "FailedTransient";
+    case ProvisioningDomainProxyConfig::State::kFailedBlocked:
+      return "FailedBlocked";
     case ProvisioningDomainProxyConfig::State::kFailedPermanent:
       return "FailedPermanent";
   }

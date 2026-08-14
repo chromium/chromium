@@ -151,8 +151,10 @@ EnterpriseProxyService::FindMatchingProxyEndpoint(
     const GURL& destination_url,
     const net::ProxyChain& proxy_chain) const {
   for (const auto& domain_manager : provisioning_domain_managers_) {
-    if (domain_manager->fetched_config().state ==
-        ProvisioningDomainProxyConfig::State::kFailedPermanent) {
+    if (domain_manager->state() ==
+            ProvisioningDomainProxyConfig::State::kFailedPermanent ||
+        domain_manager->state() ==
+            ProvisioningDomainProxyConfig::State::kFailedBlocked) {
       continue;
     }
     const auto* endpoint = enterprise_net::FindMatchingProxyEndpoint(
@@ -277,9 +279,11 @@ void EnterpriseProxyService::OnProvisioningDomainStateChanged(
   } else {
     refreshing_managers_.erase(domain_manager);
     // Do not overwrite previously cached valid configurations with transient
-    // failure states.
-    if (domain_manager->fetched_config().state !=
-        ProvisioningDomainProxyConfig::State::kFailedTransient) {
+    // or blocked failure states.
+    if (domain_manager->state() !=
+            ProvisioningDomainProxyConfig::State::kFailedTransient &&
+        domain_manager->state() !=
+            ProvisioningDomainProxyConfig::State::kFailedBlocked) {
       std::string policy_hash = ComputePolicyHash(domain_manager->policy());
       if (!policy_hash.empty()) {
         ScopedDictPrefUpdate update(pref_service_,

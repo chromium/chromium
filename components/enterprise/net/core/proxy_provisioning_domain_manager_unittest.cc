@@ -209,19 +209,18 @@ TEST_F(ProxyProvisioningDomainManagerTest,
   EXPECT_EQ(2u, manager->fetched_config().proxy_endpoints.size());
   EXPECT_EQ(3u, manager->fetched_config().routing_rules.size());
 
-  // Trigger another refresh that fails with permanent JSON parse error.
-  ExpectStateTransitionTo(
-      observer, manager.get(),
-      ProvisioningDomainProxyConfig::State::kFailedPermanent);
+  // Trigger another refresh that fails with blocked JSON parse error.
+  ExpectStateTransitionTo(observer, manager.get(),
+                          ProvisioningDomainProxyConfig::State::kFailedBlocked);
 
   manager->ForceRefresh();
   ASSERT_EQ(1, test_url_loader_factory_.NumPending());
   test_url_loader_factory_.SimulateResponseForPendingRequest(kTestUrl,
                                                              "{invalid_json");
   EXPECT_FALSE(manager->is_refresh_in_progress());
-  // Verify previous valid routes were PRESERVED!
-  EXPECT_EQ(2u, manager->fetched_config().proxy_endpoints.size());
-  EXPECT_EQ(3u, manager->fetched_config().routing_rules.size());
+  // Verify previous routes were FLUSHED on blocked error
+  EXPECT_EQ(0u, manager->fetched_config().proxy_endpoints.size());
+  EXPECT_EQ(0u, manager->fetched_config().routing_rules.size());
 
   manager->RemoveObserver(&observer);
 }
@@ -366,15 +365,16 @@ TEST_F(ProxyProvisioningDomainManagerTest,
               manager->state());
   }
 
-  // Test permanent error case with auth token fetch without primary account.
+  // Test blocked transient error case with auth token fetch without primary
+  // account.
   {
     auto manager = CreateManager(CreateTestPolicyConfigWithAuthAndHeaders(),
                                  auth_service.get());
     ASSERT_TRUE(base::test::RunUntil([&]() {
       return manager->state() ==
-             ProvisioningDomainProxyConfig::State::kFailedPermanent;
+             ProvisioningDomainProxyConfig::State::kFailedBlocked;
     }));
-    EXPECT_EQ(ProvisioningDomainProxyConfig::State::kFailedPermanent,
+    EXPECT_EQ(ProvisioningDomainProxyConfig::State::kFailedBlocked,
               manager->state());
   }
 
@@ -397,6 +397,49 @@ TEST_F(ProxyProvisioningDomainManagerTest,
     test_url_loader_factory_.SimulateResponseForPendingRequest(
         kTestUrl, "", net::HTTP_TOO_MANY_REQUESTS);
     EXPECT_EQ(ProvisioningDomainProxyConfig::State::kFailedTransient,
+              manager->state());
+  }
+
+  // Test transient error case with HTTP 503 Service Unavailable (exhausting
+  // SimpleURLLoader retries).
+  {
+    auto manager = CreateManager(CreateTestPolicyConfig(), auth_service.get());
+    for (int i = 0; i < 3; ++i) {
+      ASSERT_EQ(1, test_url_loader_factory_.NumPending());
+      test_url_loader_factory_.SimulateResponseForPendingRequest(
+          kTestUrl, "", net::HTTP_SERVICE_UNAVAILABLE);
+    }
+    EXPECT_EQ(ProvisioningDomainProxyConfig::State::kFailedTransient,
+              manager->state());
+  }
+
+  // Test transient error case with HTTP 408 Request Timeout.
+  {
+    auto manager = CreateManager(CreateTestPolicyConfig(), auth_service.get());
+    ASSERT_EQ(1, test_url_loader_factory_.NumPending());
+    test_url_loader_factory_.SimulateResponseForPendingRequest(
+        kTestUrl, "", net::HTTP_REQUEST_TIMEOUT);
+    EXPECT_EQ(ProvisioningDomainProxyConfig::State::kFailedTransient,
+              manager->state());
+  }
+
+  // Test permanent error case with HTTP 403 Forbidden.
+  {
+    auto manager = CreateManager(CreateTestPolicyConfig(), auth_service.get());
+    ASSERT_EQ(1, test_url_loader_factory_.NumPending());
+    test_url_loader_factory_.SimulateResponseForPendingRequest(
+        kTestUrl, "", net::HTTP_FORBIDDEN);
+    EXPECT_EQ(ProvisioningDomainProxyConfig::State::kFailedPermanent,
+              manager->state());
+  }
+
+  // Test blocked error case with unparsable JSON response.
+  {
+    auto manager = CreateManager(CreateTestPolicyConfig(), auth_service.get());
+    ASSERT_EQ(1, test_url_loader_factory_.NumPending());
+    test_url_loader_factory_.SimulateResponseForPendingRequest(
+        kTestUrl, "{ not valid json }", net::HTTP_OK);
+    EXPECT_EQ(ProvisioningDomainProxyConfig::State::kFailedBlocked,
               manager->state());
   }
 }
@@ -552,12 +595,12 @@ TEST_F(ProxyProvisioningDomainManagerTest, HandlesNonDictPolicyValue) {
 }
 
 TEST_F(ProxyProvisioningDomainManagerTest,
-       ForceRefreshRecoversFromPermanentFetchError) {
+       ForceRefreshRecoversFromBlockedFetchError) {
   auto auth_service = CreateAuthService();
   MockDomainObserver observer;
 
   // Create a manager with auth config requiring primary account. Since no
-  // account is signed in, initial fetch fails permanently.
+  // account is signed in, initial fetch enters blocked transient error state.
   auto manager = CreateManager(CreateTestPolicyConfigWithAuthAndHeaders(),
                                auth_service.get());
   manager->AddObserver(&observer);
@@ -565,15 +608,14 @@ TEST_F(ProxyProvisioningDomainManagerTest,
   ExpectStateTransitions(
       observer, manager.get(),
       {ProvisioningDomainProxyConfig::State::kFetching,
-       ProvisioningDomainProxyConfig::State::kFailedPermanent});
+       ProvisioningDomainProxyConfig::State::kFailedBlocked});
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return manager->state() ==
-           ProvisioningDomainProxyConfig::State::kFailedPermanent;
+           ProvisioningDomainProxyConfig::State::kFailedBlocked;
   }));
 
-  EXPECT_EQ(ProvisioningDomainProxyConfig::State::kFailedPermanent,
+  EXPECT_EQ(ProvisioningDomainProxyConfig::State::kFailedBlocked,
             manager->state());
-  EXPECT_TRUE(manager->is_policy_valid());
 
   // Now make primary account available and force refresh.
   AccountInfo account_info = identity_test_env_.MakePrimaryAccountAvailable(
@@ -617,7 +659,6 @@ TEST_F(ProxyProvisioningDomainManagerTest,
 
   EXPECT_EQ(ProvisioningDomainProxyConfig::State::kFailedPermanent,
             manager->state());
-  EXPECT_FALSE(manager->is_policy_valid());
 
   // ForceRefresh should do nothing for malformed policies.
   manager->ForceRefresh();

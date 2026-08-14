@@ -88,14 +88,31 @@ struct ProvisioningDomainConfig {
 
 // Public structure representing a fetched Provisioning Domain configuration
 // alongside its current fetch state.
-// TODO(crbug.com/540422559): Change the transient error definition to
-// distinguish between blocked and currently retry-able transient errors.
 struct ProvisioningDomainProxyConfig {
+  // Lifecycle and fetch state of a Provisioning Domain configuration.
   enum class State {
+    // Initial state upon creation or restoration from persistent cache;
+    // indicates a refresh is needed or scheduled.
+    // Cached routing rules remain active.
     kRefreshNeeded = 0,
+    // A network or authentication token fetch is currently in progress.
     kFetching,
+    // Configuration was successfully fetched and validated; actively used for
+    // routing and proxy authentication.
     kValid,
+    // A temporary network, 5xx server, or token fetch error occurred.
+    // Cached routes are preserved in memory to prevent session disruption,
+    // and refreshes are retried on timers and applicable changes
+    // (network, account etc).
     kFailedTransient,
+    // A blocking condition occurred (e.g. invalid credentials, unparsable
+    // server responses etc.). Active routes are flushed to prevent sign-in
+    // deadlocks and will be retried upon applicable changes (network, account
+    // etc).
+    kFailedBlocked,
+    // An unrecoverable policy or configuration error occurred (e.g. malformed
+    // policy dictionary, invalid URL, unsupported scope, or HTTP 404/403).
+    // Active routes are flushed and the domain will not be retried.
     kFailedPermanent,
   };
 
