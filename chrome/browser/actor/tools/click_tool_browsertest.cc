@@ -12,6 +12,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
+#include "base/values.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/tools/click_tool_request.h"
 #include "chrome/browser/actor/tools/tool_request.h"
@@ -211,6 +212,119 @@ IN_PROC_BROWSER_TEST_F(ActorClickToolBrowserTest, ClickTool_SentToElement) {
 
     // Ensure the button's event handler was invoked.
     EXPECT_EQ(true, EvalJs(web_contents(), "button_clicked"));
+  }
+}
+
+// Ensure mouse event modifiers (e.g. event.buttons) are set properly during
+// mousedown and cleared during mouseup for left and right clicks.
+IN_PROC_BROWSER_TEST_F(ActorClickToolBrowserTest, ClickTool_Modifiers) {
+  const GURL url =
+      embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  ASSERT_TRUE(ExecJs(web_contents(), R"JS(
+    window.recorded_events = [];
+    const recordEvent = (e) => {
+      window.recorded_events.push({
+        type: e.type,
+        button: e.button,
+        buttons: e.buttons,
+      });
+    };
+    const button = document.getElementById('clickable');
+    button.addEventListener('mousedown', recordEvent);
+    button.addEventListener('mouseup', recordEvent);
+  )JS"));
+
+  std::optional<int> button_id =
+      GetDOMNodeId(*main_frame(), "button#clickable");
+  ASSERT_TRUE(button_id);
+
+  // 1. Left click: mousedown has buttons=1, mouseup has buttons=0.
+  {
+    std::unique_ptr<ToolRequest> action =
+        MakeClickRequest(*main_frame(), button_id.value());
+    ActResultFuture result;
+    actor_task().Act(ToRequestList(action), result.GetCallback());
+    ExpectOkResult(result);
+
+    content::EvalJsResult events_result =
+        EvalJs(web_contents(), "window.recorded_events");
+    const base::ListValue& events = events_result.ExtractList();
+    ASSERT_EQ(events.size(), 2u);
+    EXPECT_EQ("mousedown", *events[0].GetDict().FindString("type"));
+    EXPECT_EQ(0, events[0].GetDict().FindInt("button").value_or(-1));
+    EXPECT_EQ(1, events[0].GetDict().FindInt("buttons").value_or(-1));
+
+    EXPECT_EQ("mouseup", *events[1].GetDict().FindString("type"));
+    EXPECT_EQ(0, events[1].GetDict().FindInt("button").value_or(-1));
+    EXPECT_EQ(0, events[1].GetDict().FindInt("buttons").value_or(-1));
+  }
+
+  // 2. Right click: mousedown has buttons=2, mouseup has buttons=0.
+  {
+    ASSERT_TRUE(ExecJs(web_contents(), "window.recorded_events = [];"));
+
+    std::unique_ptr<ToolRequest> action = MakeClickRequest(
+        *main_frame(), button_id.value(), mojom::ClickType::kRight);
+    ActResultFuture result;
+    actor_task().Act(ToRequestList(action), result.GetCallback());
+    ExpectOkResult(result);
+
+    content::EvalJsResult events_result =
+        EvalJs(web_contents(), "window.recorded_events");
+    const base::ListValue& events = events_result.ExtractList();
+    ASSERT_EQ(events.size(), 2u);
+    EXPECT_EQ("mousedown", *events[0].GetDict().FindString("type"));
+    EXPECT_EQ(2, events[0].GetDict().FindInt("button").value_or(-1));
+    EXPECT_EQ(2, events[0].GetDict().FindInt("buttons").value_or(-1));
+
+    EXPECT_EQ("mouseup", *events[1].GetDict().FindString("type"));
+    EXPECT_EQ(2, events[1].GetDict().FindInt("button").value_or(-1));
+    EXPECT_EQ(0, events[1].GetDict().FindInt("buttons").value_or(-1));
+  }
+}
+
+// Ensure mouse events (mousemove, mousedown, mouseup) have their screen
+// coordinates (screenX, screenY) populated.
+IN_PROC_BROWSER_TEST_F(ActorClickToolBrowserTest, ClickTool_ScreenPosition) {
+  const GURL url =
+      embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  ASSERT_TRUE(ExecJs(web_contents(), R"JS(
+    window.screen_positions = [];
+    const recordPosition = (e) => {
+      window.screen_positions.push({
+        type: e.type,
+        screenX: e.screenX,
+        screenY: e.screenY,
+      });
+    };
+    const button = document.getElementById('clickable');
+    button.addEventListener('mousemove', recordPosition);
+    button.addEventListener('mousedown', recordPosition);
+    button.addEventListener('mouseup', recordPosition);
+  )JS"));
+
+  std::optional<int> button_id =
+      GetDOMNodeId(*main_frame(), "button#clickable");
+  ASSERT_TRUE(button_id);
+
+  std::unique_ptr<ToolRequest> action =
+      MakeClickRequest(*main_frame(), button_id.value());
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+  ExpectOkResult(result);
+
+  content::EvalJsResult positions_result =
+      EvalJs(web_contents(), "window.screen_positions");
+  const base::ListValue& positions = positions_result.ExtractList();
+  EXPECT_GE(positions.size(), 2u);
+
+  for (const base::Value& pos : positions) {
+    EXPECT_GT(pos.GetDict().FindInt("screenX").value_or(0), 0);
+    EXPECT_GT(pos.GetDict().FindInt("screenY").value_or(0), 0);
   }
 }
 

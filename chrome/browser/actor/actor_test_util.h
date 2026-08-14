@@ -198,13 +198,19 @@ optimization_guide::proto::Actions MakeMediaControl(
 /////////////////////////
 // ToolRequest action makers
 
-std::unique_ptr<ToolRequest> MakeClickRequest(content::RenderFrameHost& rfh,
-                                              int content_node_id);
+std::unique_ptr<ToolRequest> MakeClickRequest(
+    content::RenderFrameHost& rfh,
+    int content_node_id,
+    mojom::ClickType type = mojom::ClickType::kLeft,
+    mojom::ClickCount count = mojom::ClickCount::kSingle);
 std::unique_ptr<ToolRequest> MakeDirectElementActivationClickRequest(
     content::RenderFrameHost& rfh,
     int content_node_id);
-std::unique_ptr<ToolRequest> MakeClickRequest(tabs::TabInterface& tab,
-                                              const gfx::Point& click_point);
+std::unique_ptr<ToolRequest> MakeClickRequest(
+    tabs::TabInterface& tab,
+    const gfx::Point& click_point,
+    mojom::ClickType type = mojom::ClickType::kLeft,
+    mojom::ClickCount count = mojom::ClickCount::kSingle);
 std::unique_ptr<ToolRequest> MakeHistoryBackRequest(tabs::TabInterface& tab);
 std::unique_ptr<ToolRequest> MakeHistoryForwardRequest(tabs::TabInterface& tab);
 std::unique_ptr<ToolRequest> MakeMouseMoveRequest(content::RenderFrameHost& rfh,
