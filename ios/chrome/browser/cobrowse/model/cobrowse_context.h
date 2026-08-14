@@ -16,10 +16,6 @@ class GURL;
 // The triggering URL.
 @property(nonatomic, assign, readonly) const GURL& url;
 
-// The unique server-side identifier for this specific conversation turn.
-// Corresponds to the "mstk" query parameter.
-@property(nonatomic, copy, readonly) NSString* conversationTurnID;
-
 // The search query text.
 // Corresponds to the "q" query parameter.
 @property(nonatomic, copy, readonly) NSString* searchQuery;

@@ -12,7 +12,34 @@
 
 namespace {
 
+// The base search URL used for fallback/debugging.
+// Note: `udm=50` (Unified Drilldown Mode) corresponds to the Modeless Filter
+// ID. Value 50 explicitly isolates the search into AI Mode (AIM).
 const char kBaseSearchURL[] = "https://www.google.com/search?udm=50";
+
+// The query parameter key for the search query text.
+const char kSearchQueryKey[] = "q";
+
+// AI Mode (AIM) Specific Parameters
+
+// Magi Thread ID (mtid): Identifies the unique conversation thread ID in the
+// current AI Mode session.
+const char kThreadIDKey[] = "mtid";
+
+// Conversation Search UI Restore (csuir): A boolean flag (1 for true) telling
+// the backend/UI to restore the conversation view using the provided mstk state
+// rather than starting a completely fresh query thread.
+const char kConversationRestoreKey[] = "csuir";
+const char kConversationSearchUIRestoreValue[] = "1";
+
+const char kGoogleSearchClientKey[] = "gsc";
+const char kGoogleSearchClientValue[] = "2";
+
+const char kSourceIDKey[] = "sourceid";
+const char kSourceIDValue[] = "chrome-mobile";
+
+const char kGoogleSearchAppStateKey[] = "gsas";
+const char kGoogleSearchAppStateValue[] = "4";
 
 }  // namespace
 
@@ -39,19 +66,20 @@ const char kBaseSearchURL[] = "https://www.google.com/search?udm=50";
     } else {
       _url = url;
     }
-    _url = net::AppendOrReplaceQueryParameter(_url, "gsc", "2");
-    _url = net::AppendOrReplaceQueryParameter(_url, "sourceid", "chrome-mobile");
-    _url = net::AppendOrReplaceQueryParameter(_url, "gsas", "4");
-    _url = net::AppendOrReplaceQueryParameter(_url, "csuir", "1");
+    _url = net::AppendOrReplaceQueryParameter(_url, kGoogleSearchClientKey,
+                                              kGoogleSearchClientValue);
+    _url =
+        net::AppendOrReplaceQueryParameter(_url, kSourceIDKey, kSourceIDValue);
+    _url = net::AppendOrReplaceQueryParameter(_url, kGoogleSearchAppStateKey,
+                                              kGoogleSearchAppStateValue);
+    _url = net::AppendOrReplaceQueryParameter(
+        _url, kConversationRestoreKey, kConversationSearchUIRestoreValue);
 
     std::string value;
-    if (net::GetValueForKeyInQuery(_url, "mstk", &value)) {
-      _conversationTurnID = base::SysUTF8ToNSString(value);
-    }
-    if (net::GetValueForKeyInQuery(_url, "q", &value)) {
+    if (net::GetValueForKeyInQuery(_url, kSearchQueryKey, &value)) {
       _searchQuery = base::SysUTF8ToNSString(value);
     }
-    if (net::GetValueForKeyInQuery(_url, "mtid", &value)) {
+    if (net::GetValueForKeyInQuery(_url, kThreadIDKey, &value)) {
       _serverID = base::SysUTF8ToNSString(value);
     }
   }
