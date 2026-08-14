@@ -669,8 +669,14 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabPrerenderingTest, DISABLED_Prerendering) {
   ASSERT_TRUE(RunExtensionTest("tabs/prerendering")) << message_;
 }
 
+// TODO(crbug.com/497838105): Flaky.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_PrerenderingIntoANewTab DISABLED_PrerenderingIntoANewTab
+#else
+#define MAYBE_PrerenderingIntoANewTab PrerenderingIntoANewTab
+#endif
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabPrerenderingTest,
-                       PrerenderingIntoANewTab) {
+                       MAYBE_PrerenderingIntoANewTab) {
   ASSERT_TRUE(RunExtensionTest("tabs/prerendering_into_new_tab")) << message_;
 }
 
