@@ -178,13 +178,19 @@ public class AtMemoryBottomSheetMediatorTest {
                                 .build());
 
         mMediator.show(suggestions);
+        assertEquals(ScreenId.HOME_SCREEN, mModel.get(CURRENT_SCREEN));
 
         PropertyModel itemModel2 = mModelList.get(1).model;
         itemModel2.get(ON_FLYOUT_CLICKED).run();
+        assertEquals(ScreenId.FLYOUT_SCREEN, mModel.get(CURRENT_SCREEN));
 
         PropertyModel flyoutModel = mMediator.getFlyoutModel();
         assertEquals("Hotel Booking Type", flyoutModel.get(FlyoutProperties.TITLE));
         assertEquals(List.of(childSuggestion), flyoutModel.get(FlyoutProperties.SUGGESTIONS));
+
+        // Showing the suggestions again should switch the screen to the home screen.
+        mMediator.show(suggestions);
+        assertEquals(ScreenId.HOME_SCREEN, mModel.get(CURRENT_SCREEN));
     }
 
     @Test

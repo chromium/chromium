@@ -115,6 +115,7 @@ class AtMemoryBottomSheetMediator implements AtMemorySearchBarView.Delegate {
 
     private void applyScreenState(
             AtMemoryScreenState screenState, List<AutofillSuggestion> suggestions) {
+        mModel.set(CURRENT_SCREEN, ScreenId.HOME_SCREEN);
         mHomeModel.set(HomeProperties.IS_LOADING, screenState.isLoading);
 
         ModelList sheetItems = mHomeModel.get(HomeProperties.SHEET_ITEMS);
@@ -135,7 +136,6 @@ class AtMemoryBottomSheetMediator implements AtMemorySearchBarView.Delegate {
         }
         if (screenState == AtMemoryScreenState.HIDDEN) {
             mModel.set(VISIBLE, false);
-            mModel.set(CURRENT_SCREEN, ScreenId.HOME_SCREEN);
             mFlyoutModel.set(FlyoutProperties.TITLE, "");
             mFlyoutModel.set(FlyoutProperties.SUGGESTIONS, List.of());
             sheetItems.clear();
