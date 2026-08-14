@@ -82,7 +82,7 @@ if (toolkit_views) {
 
   # frame/browser_view.h, frame/contents_web_view.h,
   # content_setting_bubble_contents.h, extensions_container_views.h,
-  # sub_apps_permission_explanation.h, and title_origin_label.h are all
+  # and sub_apps_permission_explanation.h are all
   # still monolithic in ui:ui (crbug.com/353332589) and are only ever
   # needed by the .cc files below, never by the public headers above --
   # so this :impl target is the one that carries the real dependency and
@@ -139,6 +139,7 @@ if (toolkit_views) {
       "//chrome/browser/ui/views:device_chooser_content_view",
       "//chrome/browser/ui/views:layout_provider",
       "//chrome/browser/ui/views:sub_apps_permission_explanation",
+      "//chrome/browser/ui/views:title_origin_label",
       "//chrome/browser/ui/views/infobars",
       "//chrome/browser/ui/views/location_bar",
       "//chrome/browser/ui/views/omnibox",
@@ -175,6 +176,7 @@ if (toolkit_views) {
 
     deps = [
       ":permissions",
+      "//chrome/browser/ui/views:title_origin_label",
       "//chrome/test:test_support",
       "//components/media_effects/test:test_support",
       "//testing/gmock",

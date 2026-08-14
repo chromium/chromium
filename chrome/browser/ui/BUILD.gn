@@ -875,7 +875,6 @@ static_library("ui") {
     # the following headers get modularized:
     # - c/b/ui/browser_window.h
     # - c/b/ui/browser.h
-    # - c/b/ui/views/title_origin_label.h
     # - c/b/ui/views/frame/browser_view.h
     "//chrome/browser/ui/views/file_system_access:impl",
   ]
@@ -2866,8 +2865,6 @@ static_library("ui") {
       "views/tabs/z_orderable_tab_container_element.h",
       "views/task_manager_view.cc",
       "views/task_manager_view.h",
-      "views/title_origin_label.cc",
-      "views/title_origin_label.h",
       "views/toolbar/avatar_toolbar_button_interface.cc",
       "views/toolbar/avatar_toolbar_button_interface.h",
       "views/upgrade_notification_controller.cc",
@@ -2983,6 +2980,7 @@ static_library("ui") {
       "//chrome/browser/ui/views:sub_apps_permission_explanation",
       "//chrome/browser/ui/views:task_manager_search_bar_view",
       "//chrome/browser/ui/views:theme_copying_widget",
+      "//chrome/browser/ui/views:title_origin_label",
       "//chrome/browser/ui/views:update_recommended_message_box",
       "//chrome/browser/ui/views/accessibility",
       "//chrome/browser/ui/views/accessibility:impl",
@@ -3275,7 +3273,6 @@ static_library("ui") {
       # c/b/ui/views/extensions/security_dialog_tracker.h
       # c/b/ui/views/frame/browser_view.h
       # c/b/ui/views/media_picker_utils.h
-      # c/b/ui/views/title_origin_label.h
       "//chrome/browser/ui/views/desktop_capture:impl",
 
       # TODO(crbug.com/434882143): Remove this circular dependency when the
@@ -3410,7 +3407,6 @@ static_library("ui") {
       # c/b/ui/views/extensions/extensions_container_views.h
       # c/b/ui/views/frame/browser_view.h
       # c/b/ui/views/frame/contents_web_view.h
-      # c/b/ui/views/title_origin_label.h
       "//chrome/browser/ui/views/permissions:impl",
     ]
 

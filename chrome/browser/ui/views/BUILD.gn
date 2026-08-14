@@ -512,3 +512,13 @@ source_set("update_recommended_message_box") {
     "//ui/base/mojom",
   ]
 }
+
+source_set("title_origin_label") {
+  public = [ "title_origin_label.h" ]
+  sources = [ "title_origin_label.cc" ]
+  public_deps = [ "//ui/views" ]
+  deps = [
+    "//ui/gfx",
+    "//ui/gfx/range",
+  ]
+}
