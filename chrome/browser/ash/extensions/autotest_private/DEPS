@@ -48,6 +48,7 @@ include_rules = [
 
 specific_include_rules = {
   "autotest_private_api\\.cc": [
+    "+chrome/browser/global_features.h",
     "+chrome/common/pref_names.h",
     "+ui/message_center",
   ],

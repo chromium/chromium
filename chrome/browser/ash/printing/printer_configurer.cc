@@ -13,6 +13,7 @@
 
 #include "ash/constants/webui_url_constants.h"
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -20,19 +21,18 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_view_util.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/component_updater/cros_component_installer_chromeos.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/ash/components/dbus/printscanmgr/printscanmgr_client.h"
 #include "chromeos/dbus/common/dbus_library_error.h"
 #include "chromeos/printing/ppd_line_reader.h"
 #include "chromeos/printing/ppd_provider.h"
 #include "chromeos/printing/printer_configuration.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "components/device_event_log/device_event_log.h"
 #include "content/public/browser/browser_thread.h"
 #include "crypto/obsolete/md5.h"
@@ -139,9 +139,13 @@ bool AddHplipPluginPathToPpdContent(std::string_view path, std::string& ppd) {
 // debugd.  This class must be used on the UI thread.
 class PrinterConfigurerImpl : public PrinterConfigurer {
  public:
-  PrinterConfigurerImpl(scoped_refptr<PpdProvider> ppd_provider,
-                        DlcserviceClient* dlc_service_client)
-      : ppd_provider_(ppd_provider), dlc_service_client_(dlc_service_client) {
+  PrinterConfigurerImpl(
+      const ApplicationLocaleStorage* application_locale_storage,
+      scoped_refptr<PpdProvider> ppd_provider,
+      DlcserviceClient* dlc_service_client)
+      : application_locale_storage_(CHECK_DEREF(application_locale_storage)),
+        ppd_provider_(ppd_provider),
+        dlc_service_client_(dlc_service_client) {
     DCHECK(ppd_provider_);
     DCHECK(dlc_service_client_);
   }
@@ -183,7 +187,7 @@ class PrinterConfigurerImpl : public PrinterConfigurer {
     printscanmgr::CupsAddAutoConfiguredPrinterRequest request;
     request.set_name(printer.id());
     request.set_uri(printer.uri().GetNormalized(/*always_print_port=*/true));
-    request.set_language(g_browser_process->GetApplicationLocale());
+    request.set_language(application_locale_storage_->Get());
     PrintscanmgrClient::Get()->CupsAddAutoConfiguredPrinter(
         std::move(request),
         base::BindOnce(&PrinterConfigurerImpl::OnAddedPrinter<
@@ -224,7 +228,7 @@ class PrinterConfigurerImpl : public PrinterConfigurer {
     request.set_name(printer.id());
     request.set_uri(printer.uri().GetNormalized(/*always_print_port=*/true));
     request.set_ppd_contents(ppd_contents);
-    request.set_language(g_browser_process->GetApplicationLocale());
+    request.set_language(application_locale_storage_->Get());
     PrintscanmgrClient::Get()->CupsAddManuallyConfiguredPrinter(
         std::move(request),
         base::BindOnce(
@@ -353,6 +357,7 @@ class PrinterConfigurerImpl : public PrinterConfigurer {
 
   std::string GetLastPpdBasename() const override { return ppd_filename_; }
 
+  const raw_ref<const ApplicationLocaleStorage> application_locale_storage_;
   scoped_refptr<PpdProvider> ppd_provider_;
   raw_ptr<DlcserviceClient> dlc_service_client_;
   std::string ppd_filename_;
@@ -381,10 +386,11 @@ void PrinterConfigurer::RecordUsbPrinterSetupSource(
 
 // static
 std::unique_ptr<PrinterConfigurer> PrinterConfigurer::Create(
+    const ApplicationLocaleStorage* application_locale_storage,
     scoped_refptr<PpdProvider> ppd_provider,
     DlcserviceClient* dlc_service_client) {
-  return std::make_unique<PrinterConfigurerImpl>(ppd_provider,
-                                                 dlc_service_client);
+  return std::make_unique<PrinterConfigurerImpl>(
+      application_locale_storage, ppd_provider, dlc_service_client);
 }
 
 // static

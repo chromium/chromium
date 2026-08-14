@@ -11,6 +11,7 @@
 #include "chrome/browser/ash/printing/synced_printers_manager_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
 
 namespace ash {
@@ -64,8 +65,11 @@ CupsPrintersManagerFactory::BuildServiceInstanceForBrowserContext(
     return nullptr;
   }
 
+  // NOTE: Allow g_browser_process here as this class is initialized lazily with
+  // base::NoDestructor.
   std::unique_ptr<CupsPrintersManager> manager = CupsPrintersManager::Create(
-      CHECK_DEREF(g_browser_process->local_state()), profile);
+      CHECK_DEREF(g_browser_process->local_state()),
+      g_browser_process->GetFeatures()->application_locale_storage(), profile);
   if (ProfileHelper::IsPrimaryProfile(profile)) {
     proxy_->SetManager(manager.get());
   }

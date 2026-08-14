@@ -117,6 +117,7 @@ static_library("printing") {
     "//chrome/app/vector_icons",
     "//chrome/browser:browser_process",
     "//chrome/browser:browser_process_platform_part",
+    "//chrome/browser:global_features",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/printing/enterprise",
     "//chrome/browser/ash/printing/history",
@@ -250,6 +251,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/settings",
     "//chromeos/ash/services/network_config/public/cpp:test_support",
+    "//components/application_locale_storage",
     "//components/sync:test_support",
     "//components/sync_preferences:test_support",
     "//components/user_manager",
@@ -269,7 +271,6 @@ source_set("unit_tests") {
     ]
     deps += [
       "//components/account_id:test_support",
-      "//components/application_locale_storage",
       "//components/session_manager/test:test_support",
       "//printing:printing_base",
       "//printing/backend",

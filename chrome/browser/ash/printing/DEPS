@@ -39,6 +39,9 @@ specific_include_rules = {
     "+chrome/browser/web_applications/test",
     "+chrome/test/base",
   ],
+  "cups_printers_manager_factory\\.cc": [
+    "+chrome/browser/global_features.h",
+  ],
   "(server_printers_fetcher|server_printers_provider_unittest)\\.cc": [
     # IPP protocol; it is needed for communication with print servers.
     "+third_party/libipp/libipp/builder.h",

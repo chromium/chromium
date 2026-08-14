@@ -23,6 +23,7 @@ static_library("autotest_private") {
     "//chrome/app:command_ids",
     "//chrome/browser:browser_process",
     "//chrome/browser:browser_process_platform_part",
+    "//chrome/browser:global_features",
     "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/arc",
     "//chrome/browser/ash/arc:arc_util",

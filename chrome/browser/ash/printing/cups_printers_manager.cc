@@ -12,12 +12,14 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/network_config_service.h"
+#include "base/check_deref.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
@@ -143,6 +145,7 @@ class CupsPrintersManagerImpl
   enum DetectorIds { kUsbDetector, kZeroconfDetector, kPrintServerDetector };
 
   CupsPrintersManagerImpl(
+      const ApplicationLocaleStorage* application_locale_storage,
       SyncedPrintersManager* synced_printers_manager,
       std::unique_ptr<PrinterDetector> usb_detector,
       std::unique_ptr<PrinterDetector> zeroconf_detector,
@@ -154,7 +157,8 @@ class CupsPrintersManagerImpl
       std::unique_ptr<EnterprisePrintersProvider> enterprise_printers_provider,
       PrinterEventTracker* event_tracker,
       PrefService* pref_service)
-      : synced_printers_manager_(synced_printers_manager),
+      : application_locale_storage_(CHECK_DEREF(application_locale_storage)),
+        synced_printers_manager_(synced_printers_manager),
         usb_detector_(std::move(usb_detector)),
         zeroconf_detector_(std::move(zeroconf_detector)),
         ppd_provider_(std::move(ppd_provider)),
@@ -427,7 +431,8 @@ class CupsPrintersManagerImpl
     // start/restart the setup process.
     if (printers_being_setup_[id].fingerprint != fingerprint) {
       printers_being_setup_[id].configurer =
-          PrinterConfigurer::Create(ppd_provider_, dlc_service_client_);
+          PrinterConfigurer::Create(&application_locale_storage_.get(),
+                                    ppd_provider_, dlc_service_client_);
       printers_being_setup_[id].fingerprint = fingerprint;
       printers_being_setup_[id].configurer->SetUpPrinterInCups(
           printer, base::BindOnce(
@@ -1227,6 +1232,8 @@ class CupsPrintersManagerImpl
 
   SEQUENCE_CHECKER(sequence_);
 
+  const raw_ref<const ApplicationLocaleStorage> application_locale_storage_;
+
   // Source lists for detected printers.
   std::vector<PrinterDetector::DetectedPrinter> usb_detections_;
   std::vector<PrinterDetector::DetectedPrinter> zeroconf_detections_;
@@ -1325,8 +1332,10 @@ class CupsPrintersManagerImpl
 // static
 std::unique_ptr<CupsPrintersManager> CupsPrintersManager::Create(
     PrefService& local_state,
+    const ApplicationLocaleStorage* application_locale_storage,
     Profile* profile) {
   return std::make_unique<CupsPrintersManagerImpl>(
+      application_locale_storage,
       SyncedPrintersManagerFactory::GetInstance()->GetForBrowserContext(
           profile),
       UsbPrinterDetector::Create(), ZeroconfPrinterDetector::Create(),
@@ -1340,6 +1349,7 @@ std::unique_ptr<CupsPrintersManager> CupsPrintersManager::Create(
 
 // static
 std::unique_ptr<CupsPrintersManager> CupsPrintersManager::CreateForTesting(
+    const ApplicationLocaleStorage* application_locale_storage,
     SyncedPrintersManager* synced_printers_manager,
     std::unique_ptr<PrinterDetector> usb_detector,
     std::unique_ptr<PrinterDetector> zeroconf_detector,
@@ -1352,8 +1362,9 @@ std::unique_ptr<CupsPrintersManager> CupsPrintersManager::CreateForTesting(
     PrinterEventTracker* event_tracker,
     PrefService* pref_service) {
   return std::make_unique<CupsPrintersManagerImpl>(
-      synced_printers_manager, std::move(usb_detector),
-      std::move(zeroconf_detector), std::move(ppd_provider), dlc_service_client,
+      application_locale_storage, synced_printers_manager,
+      std::move(usb_detector), std::move(zeroconf_detector),
+      std::move(ppd_provider), dlc_service_client,
       std::move(usb_notification_controller), std::move(print_servers_manager),
       std::move(enterprise_printers_provider), event_tracker, pref_service);
 }

@@ -36,6 +36,7 @@
 #include "chrome/browser/ash/printing/synced_printers_manager.h"
 #include "chrome/browser/ash/printing/usb_printer_detector.h"
 #include "chrome/browser/ash/printing/usb_printer_notification_controller.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/printing/print_preview_sticky_settings.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/dlcservice/fake_dlcservice_client.h"
@@ -435,6 +436,9 @@ class CupsPrintersManagerTest : public testing::Test,
     CupsPrintersManager::RegisterProfilePrefs(pref_service_.registry());
 
     manager_ = CupsPrintersManager::CreateForTesting(
+        TestingBrowserProcess::GetGlobal()
+            ->GetFeatures()
+            ->application_locale_storage(),
         &synced_printers_manager_, std::move(usb_detector),
         std::move(zeroconf_detector), ppd_provider_, &dlc_service_client_,
         std::move(usb_notif_controller), std::move(print_servers_manager),
