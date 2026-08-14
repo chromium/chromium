@@ -10,7 +10,10 @@ import "components/personal_context/proto/features/common_data.proto";
 
 option optimize_for = LITE_RUNTIME;
 
-message AutoTodosRequest {}
+message AutoTodosRequest {
+  // Existing todos stored for the user to deduplicate against.
+  repeated AutoTodoItem existing_todos = 1;
+}
 
 message AutoTodosResponse {
   // The list of Todos to be given to the user.
@@ -33,4 +36,16 @@ message AutoTodoItem {
 
   // Importance score of the Todo from 0.0 to 1.0.
   float importance_score = 5;
+
+  enum Status {
+    STATUS_UNSPECIFIED = 0;
+    STATUS_ACTIVE = 1;
+    STATUS_COMPLETED = 2;
+    STATUS_DISMISSED = 3;
+  }
+  // The status of the Todo.
+  Status status = 6;
+
+  // Unique identifier for the todo.
+  string id = 7;
 }
