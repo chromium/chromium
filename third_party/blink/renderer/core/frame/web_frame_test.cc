@@ -7543,6 +7543,7 @@ class TestNewWindowWebFrameClient
   // frame_test_helpers::TestWebFrameClient:
   void BeginNavigation(std::unique_ptr<WebNavigationInfo> info) override {
     begin_navigation_call_count_++;
+    last_navigation_policy_ = info->navigation_policy;
     if (ignore_navigations_) {
       return;
     }
@@ -7555,21 +7556,37 @@ class TestNewWindowWebFrameClient
       const WebString&,
       const gfx::Rect&,
       WebNavigationPolicy,
-      network::mojom::blink::WebSandboxFlags,
+      network::mojom::blink::WebSandboxFlags sandbox_flags,
       const SessionStorageNamespaceId&,
       bool& consumed_user_gesture,
       const std::optional<WebPictureInPictureWindowOptions>&,
       const WebURL&) override {
-    EXPECT_TRUE(false);
+    EXPECT_TRUE(expect_create_new_window_);
+    did_call_create_new_window_ = true;
+    new_window_sandbox_flags_ = sandbox_flags;
     return nullptr;
   }
 
   int BeginNavigationCallCount() const { return begin_navigation_call_count_; }
+  WebNavigationPolicy LastNavigationPolicy() const {
+    return last_navigation_policy_;
+  }
+  bool DidCallCreateNewWindow() const { return did_call_create_new_window_; }
+  network::mojom::blink::WebSandboxFlags NewWindowSandboxFlags() const {
+    return new_window_sandbox_flags_;
+  }
+
   void IgnoreNavigations() { ignore_navigations_ = true; }
+  void ExpectCreateNewWindow() { expect_create_new_window_ = true; }
 
  private:
   bool ignore_navigations_ = false;
+  bool expect_create_new_window_ = false;
+  bool did_call_create_new_window_ = false;
   int begin_navigation_call_count_ = 0;
+  WebNavigationPolicy last_navigation_policy_ = kWebNavigationPolicyCurrentTab;
+  network::mojom::blink::WebSandboxFlags new_window_sandbox_flags_ =
+      network::mojom::blink::WebSandboxFlags::kNone;
 };
 
 TEST_F(WebFrameTest, ModifiedClickNewWindow) {
@@ -14921,6 +14938,7 @@ TEST_F(WebFrameTest, SandboxedIframePopupCtrlClick) {
       base_url_ + "sandboxed-srcdoc-ctrl-click.html", &web_frame_client);
 
   ASSERT_EQ(web_frame_client.iframe_client()->BeginNavigationCallCount(), 1);
+  web_frame_client.iframe_client()->IgnoreNavigations();
 
   LocalFrame* child = To<LocalFrame>(
       web_view_helper.GetWebView()->GetPage()->MainFrame()->FirstChild());
@@ -14929,9 +14947,45 @@ TEST_F(WebFrameTest, SandboxedIframePopupCtrlClick) {
   To<HTMLElement>(element)->click();
 
   // Clicking the button will attempt a synthetic Ctrl+Click from an iframe
-  // sandboxed without `allow-popups`. This should be blocked before reaching
-  // BeginNavigation().
+  // sandboxed without `allow-popups`. This should reach begin navigation, but
+  // not reach CreateNewWindow() (TestNewWindowWebFrameClient will fail the test
+  // if CreateNewWindow() is reached).
+  EXPECT_EQ(web_frame_client.iframe_client()->BeginNavigationCallCount(), 2);
+  EXPECT_EQ(web_frame_client.iframe_client()->LastNavigationPolicy(),
+            kWebNavigationPolicyCurrentTab);
+}
+
+TEST_F(WebFrameTest,
+       SandboxedIframePropagatesToAuxiliaryBrowsingContextsCtrlClick) {
+  RegisterMockedHttpURLLoad("sandboxed-allow-popups-srcdoc-ctrl-click.html");
+  IframeBeginNavivationCountTestWebFrameClient web_frame_client;
+  frame_test_helpers::WebViewHelper web_view_helper;
+  web_view_helper.InitializeAndLoad(
+      base_url_ + "sandboxed-allow-popups-srcdoc-ctrl-click.html",
+      &web_frame_client);
+
+  ASSERT_EQ(web_frame_client.iframe_client()->BeginNavigationCallCount(), 1);
+  web_frame_client.iframe_client()->IgnoreNavigations();
+  web_frame_client.iframe_client()->ExpectCreateNewWindow();
+
+  LocalFrame* child = To<LocalFrame>(
+      web_view_helper.GetWebView()->GetPage()->MainFrame()->FirstChild());
+  ASSERT_TRUE(child->GetSecurityContext()->IsSandboxed(
+      network::mojom::blink::WebSandboxFlags::
+          kPropagatesToAuxiliaryBrowsingContexts));
+
+  Element* element =
+      child->GetDocument()->body()->getElementById(AtomicString("btn"));
+  To<HTMLElement>(element)->click();
+
+  // Clicking the button will attempt a synthetic Ctrl+Click from an iframe
+  // sandboxed without sandbox escaping. This should go through the
+  // CreateNewWindow() path instead of the BeginNavigation() path, and should
+  // include the child's sandbox flags.
   EXPECT_EQ(web_frame_client.iframe_client()->BeginNavigationCallCount(), 1);
+  EXPECT_TRUE(web_frame_client.iframe_client()->DidCallCreateNewWindow());
+  EXPECT_EQ(web_frame_client.iframe_client()->NewWindowSandboxFlags(),
+            child->GetSecurityContext()->GetSandboxFlags());
 }
 
 // Tests that a FrameLoadRequest for a GET request made from an opaque origin

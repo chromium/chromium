@@ -44,6 +44,15 @@ const unsigned kInvalidChildCount = ~0U;
 
 }  // namespace
 
+namespace features {
+
+// When enabled, override WebNavigationPolicy from click modifiers if
+// the navigation was triggered by a synthetic event in a sandboxed frame.
+// Killswitch, see https://crbug.com/544197473.
+BASE_FEATURE(kIgnoreSyntheticClicksForSandboxPropagation,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+}  // namespace features
+
 FrameTree::FrameTree(Frame* this_frame)
     : this_frame_(this_frame), scoped_child_count_(kInvalidChildCount) {}
 
@@ -205,6 +214,29 @@ FrameTree::FindResult FrameTree::FindOrCreateFrameForNavigation(
   // Named frame lookup should always be relative to a local frame.
   DCHECK(IsA<LocalFrame>(this_frame_.Get()));
   LocalFrame* current_frame = To<LocalFrame>(this_frame_.Get());
+
+  // A sandboxed iframe with popup restrictions should not be able to
+  // open a new browsing context by emulating a user gesture in JS.
+  // (e.g. Ctrl+click). Ignore click modifiers by resetting the
+  // navigation policy to kNavigationPolicyCurrentTab.
+  if (request.GetNavigationPolicy() != kNavigationPolicyCurrentTab &&
+      request.GetTriggeringEventInfo() ==
+          mojom::blink::TriggeringEventInfo::kFromUntrustedEvent) {
+    bool should_ignore_synthetic_click_modifiers =
+        this_frame_->GetSecurityContext()->IsSandboxed(
+            network::mojom::blink::WebSandboxFlags::kPopups);
+    if (base::FeatureList::IsEnabled(
+            features::kIgnoreSyntheticClicksForSandboxPropagation)) {
+      should_ignore_synthetic_click_modifiers |=
+          this_frame_->GetSecurityContext()->IsSandboxed(
+              network::mojom::blink::WebSandboxFlags::
+                  kPropagatesToAuxiliaryBrowsingContexts);
+    }
+
+    if (should_ignore_synthetic_click_modifiers) {
+      request.SetNavigationPolicy(kNavigationPolicyCurrentTab);
+    }
+  }
 
   // A GetNavigationPolicy() value other than kNavigationPolicyCurrentTab at
   // this point indicates that a user event modified the navigation policy
