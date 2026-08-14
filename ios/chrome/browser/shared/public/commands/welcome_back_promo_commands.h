@@ -7,11 +7,14 @@
 
 #import <UIKit/UIKit.h>
 
+@protocol PromosManagerUIHandler;
+
 // Commands for interacting with the Welcome Back promo.
 @protocol WelcomeBackPromoCommands <NSObject>
 
 // Shows the Welcome Back promo.
-- (void)showWelcomeBack;
+- (void)showWelcomeBackPromoWithPromosUIHandler:
+    (id<PromosManagerUIHandler>)promosUIHandler;
 
 // Dismisses the Welcome Back promo.
 - (void)hideWelcomeBackPromo;

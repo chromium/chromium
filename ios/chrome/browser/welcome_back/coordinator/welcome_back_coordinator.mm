@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/first_run/best_features/coordinator/best_features_screen_detail_coordinator.h"
 #import "ios/chrome/browser/first_run/public/best_features_item.h"
 #import "ios/chrome/browser/first_run/public/first_run_screen_delegate.h"
+#import "ios/chrome/browser/promos_manager/coordinator/promos_manager_ui_handler.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -46,6 +47,19 @@
   BestFeaturesScreenDetailCoordinator* _detailScreenCoordinator;
   // Number of time a feature was clicked in Welcome Back.
   int _featureClickedCount;
+  // The UI handler to alert the promo manager when the promo is dismissed.
+  id<PromosManagerUIHandler> _promosUIHandler;
+}
+
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser
+                           promosUIHandler:
+                               (id<PromosManagerUIHandler>)promosUIHandler {
+  self = [super initWithBaseViewController:viewController browser:browser];
+  if (self) {
+    _promosUIHandler = promosUIHandler;
+  }
+  return self;
 }
 
 #pragma mark - ChromeCoordinator
@@ -111,6 +125,8 @@
   _navigationController = nil;
   [_mediator disconnect];
   _mediator = nil;
+
+  [_promosUIHandler promoWasDismissed];
 }
 
 #pragma mark - ConfirmationAlertActionHandler

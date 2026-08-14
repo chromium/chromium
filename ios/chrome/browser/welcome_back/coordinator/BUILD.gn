@@ -23,6 +23,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/first_run/public:features",
     "//ios/chrome/browser/first_run/public:screen_delegate",
     "//ios/chrome/browser/instructions_bottom_sheet/ui",
+    "//ios/chrome/browser/promos_manager/coordinator:promos",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",

@@ -2628,7 +2628,7 @@
 
 - (void)showWelcomeBackPromo {
   [HandlerForProtocol(self.dispatcher, WelcomeBackPromoCommands)
-      showWelcomeBack];
+      showWelcomeBackPromoWithPromosUIHandler:self.promosManagerCoordinator];
 }
 
 - (void)showHomeBackgroundCustomizationPromo {

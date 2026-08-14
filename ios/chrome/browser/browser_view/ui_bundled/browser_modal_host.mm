@@ -2066,11 +2066,13 @@ const char kChromeAppStoreUrl[] =
 
 #pragma mark - WelcomeBackPromoCommands
 
-- (void)showWelcomeBack {
+- (void)showWelcomeBackPromoWithPromosUIHandler:
+    (id<PromosManagerUIHandler>)promosUIHandler {
   [_welcomeBackCoordinator stop];
   _welcomeBackCoordinator = [[WelcomeBackCoordinator alloc]
       initWithBaseViewController:_baseViewController
-                         browser:_browser];
+                         browser:_browser
+                 promosUIHandler:promosUIHandler];
   [_welcomeBackCoordinator start];
 }
 
