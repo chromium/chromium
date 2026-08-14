@@ -52,8 +52,8 @@ android {
 
     defaultConfig {
         vectorDrawables.useSupportLibrary = true
-        minSdkVersion {{ min_sdk_version }}
-        targetSdkVersion {{ target_sdk_version }}
+        minSdk = {{ min_sdk_version }}
+        targetSdk = {{ target_sdk_version }}
     }
 
     compileOptions {
@@ -76,7 +76,6 @@ android {
             assets.srcDirs = []
             java.srcDirs = []
             jni.srcDirs = []
-            renderscript.srcDirs = []
             res.srcDirs = []
             resources.srcDirs = []
         }
@@ -105,7 +104,6 @@ tasks.matching {
             || it.name.endsWith('ResValues')
 {% endif %}
             || it.name.endsWith('Aidl')
-            || it.name.endsWith('Renderscript')
             || it.name.endsWith('Shaders'))
 }.configureEach { Task task ->
     task.enabled = false
