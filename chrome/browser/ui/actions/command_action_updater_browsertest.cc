@@ -250,3 +250,43 @@ IN_PROC_BROWSER_TEST_F(
   toggle_action->SetInvokeActionCallback(
       actions::ActionItem::InvokeActionCallback());
 }
+
+IN_PROC_BROWSER_TEST_F(CommandActionUpdaterBrowserTest,
+                       ClipboardCommandsMapToActionsNamespace) {
+  actions::ActionItem* root =
+      BrowserActions::From(browser())->root_action_item();
+  ASSERT_TRUE(root);
+
+  actions::ActionItem* cut_action =
+      actions::ActionManager::Get().FindAction(actions::kActionCut, root);
+  ASSERT_TRUE(cut_action);
+
+  actions::ActionItem* copy_action =
+      actions::ActionManager::Get().FindAction(actions::kActionCopy, root);
+  ASSERT_TRUE(copy_action);
+
+  actions::ActionItem* paste_action =
+      actions::ActionManager::Get().FindAction(actions::kActionPaste, root);
+  ASSERT_TRUE(paste_action);
+
+  chrome::BrowserCommandController::From(browser())->UpdateCommandEnabled(
+      IDC_CUT, true);
+  EXPECT_TRUE(cut_action->GetEnabled());
+  chrome::BrowserCommandController::From(browser())->UpdateCommandEnabled(
+      IDC_CUT, false);
+  EXPECT_FALSE(cut_action->GetEnabled());
+
+  chrome::BrowserCommandController::From(browser())->UpdateCommandEnabled(
+      IDC_COPY, true);
+  EXPECT_TRUE(copy_action->GetEnabled());
+  chrome::BrowserCommandController::From(browser())->UpdateCommandEnabled(
+      IDC_COPY, false);
+  EXPECT_FALSE(copy_action->GetEnabled());
+
+  chrome::BrowserCommandController::From(browser())->UpdateCommandEnabled(
+      IDC_PASTE, true);
+  EXPECT_TRUE(paste_action->GetEnabled());
+  chrome::BrowserCommandController::From(browser())->UpdateCommandEnabled(
+      IDC_PASTE, false);
+  EXPECT_FALSE(paste_action->GetEnabled());
+}

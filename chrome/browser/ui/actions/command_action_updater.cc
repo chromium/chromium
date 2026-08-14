@@ -19,8 +19,8 @@ namespace {
 
 #define MAP_ACTION_E1(action)
 #define MAP_ACTION_E2(action, idc) {idc, action},
-#define MAP_ACTION_E3(action, idc, scope) {idc, action},
-#define MAP_ACTION_E4(action, idc, val, scope) {idc, action},
+#define MAP_ACTION_E3(action, idc, scope) {idc, scope::action},
+#define MAP_ACTION_E4(action, idc, val, scope) {idc, scope::action},
 
 #define GET_MAP_ACTION_E(_1, _2, _3, _4, macro_name, ...) macro_name
 #define E(...)                                                               \
