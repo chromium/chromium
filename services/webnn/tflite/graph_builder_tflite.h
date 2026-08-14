@@ -285,6 +285,9 @@ class GraphBuilderTflite final {
 
   // Get the value from constant operand and cast it to int64 data type.
   base::FixedArray<int64_t> GetConstantInt64Value(OperandId operand_id);
+  // Returns the value of `operand_id` if it is a floating point constant with
+  // a single element.
+  std::optional<float> GetFloatScalarConstant(OperandId operand_id);
   // Get quantize scale value for float16 and float32 data type.
   base::FixedArray<float> GetQuantizeScaleValue(OperandId operand_id);
 

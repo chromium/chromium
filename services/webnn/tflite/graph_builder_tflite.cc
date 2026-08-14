@@ -5197,6 +5197,18 @@ auto GraphBuilderTflite::SerializeElementWiseBinary(
           const std::vector<int32_t> output_dims,
           ToSignedDimensions(
               GetOperand(op.output_operand_id).descriptor.shape()));
+      // Emit SQUARE for pow(x, 2), only when the exponent does not
+      // broadcast the base, since SQUARE cannot change the shape of
+      // its input.
+      if ((lhs_tensor_info.data_type == ::tflite::TensorType_FLOAT32 ||
+           lhs_tensor_info.data_type == ::tflite::TensorType_INT32) &&
+          lhs_tensor_info.data_type == output_tensor_type &&
+          lhs_tensor_info.dimensions == output_dims &&
+          GetFloatScalarConstant(op.rhs_operand_id) == 2.0f) {
+        return SerializeSquareOperation(lhs_tensor_info.index,
+                                        lhs_tensor_info.data_type,
+                                        output_tensor_index);
+      }
       // Use the actual TFLite tensor types of the (possibly float16->float32
       // cast) inputs and output rather than the WebNN-level data types, so
       // any temporary tensors created during rank reduction match.
@@ -8295,6 +8307,24 @@ base::FixedArray<int64_t> GraphBuilderTflite::GetConstantInt64Value(
       NOTREACHED() << "This data type is not supported.";
   }
   return typed_value;
+}
+
+std::optional<float> GraphBuilderTflite::GetFloatScalarConstant(
+    OperandId operand_id) {
+  const mojom::Operand& operand = GetOperand(operand_id);
+  if (operand.kind != mojom::Operand::Kind::kConstant ||
+      operand.descriptor.NumberOfElements() != 1) {
+    return std::nullopt;
+  }
+  switch (operand.descriptor.data_type()) {
+    case OperandDataType::kFloat32:
+      return GetConstantValue<float>(operand_id)[0];
+    case OperandDataType::kFloat16:
+      return fp16_ieee_to_fp32_value(
+          GetConstantValue<Float16>(operand_id)[0].data);
+    default:
+      return std::nullopt;
+  }
 }
 
 base::FixedArray<float> GraphBuilderTflite::GetQuantizeScaleValue(
