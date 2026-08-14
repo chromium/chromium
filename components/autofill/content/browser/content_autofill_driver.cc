@@ -625,14 +625,21 @@ void ContentAutofillDriver::RendererShouldSetSuggestionAvailability(
                suggestion_availability);
 }
 
+void ContentAutofillDriver::GetNonceForEmailVerification(
+    FieldGlobalId email_field_id,
+    base::OnceCallback<void(const std::optional<std::string>&)> callback) {
+  RouteToAgent(router(), &AutofillDriverRouter::GetNonceForEmailVerification,
+               &mojom::AutofillAgent::GetNonceForEmailVerification,
+               email_field_id, std::move(callback));
+}
+
 void ContentAutofillDriver::SendEmailVerificationToken(
     FieldGlobalId email_field_id,
     const std::string& email,
-    FieldGlobalId token_field_id,
     const std::string& token) {
   RouteToAgent(router(), &AutofillDriverRouter::SendEmailVerificationToken,
                &mojom::AutofillAgent::SendEmailVerificationToken,
-               email_field_id, email, token_field_id, token);
+               email_field_id, email, token);
 }
 
 void ContentAutofillDriver::UpdateEmailVerificationState(
@@ -762,11 +769,11 @@ void ContentAutofillDriver::JavaScriptChangedAutofilledValue(
 
 void ContentAutofillDriver::FormWithEmailVerificationTokenSubmitted(
     const FormData& form,
-    FieldRendererId field_id) {
+    FieldRendererId email_field_id) {
   RouteToManager(*this, router(),
                  &AutofillDriverRouter::FormWithEmailVerificationTokenSubmitted,
                  &AutofillManager::OnFormWithEmailVerificationTokenSubmitted,
-                 form, field_id);
+                 form, email_field_id);
 }
 
 void ContentAutofillDriver::DidDetectJavaScriptAutofill(

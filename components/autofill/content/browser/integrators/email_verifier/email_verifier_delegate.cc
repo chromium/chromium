@@ -84,23 +84,12 @@ content::webid::EmailVerifier* GetOrCreateEmailVerifier(
   return content::webid::EmailVerifier::GetOrCreateForFrame(rfh);
 }
 
-const AutofillField* FindField(
-    const std::vector<std::unique_ptr<AutofillField>>& fields,
-    base::FunctionRef<bool(const AutofillField&)> predicate) {
-  auto iter = std::ranges::find_if(
-      fields, [&](const std::unique_ptr<AutofillField>& field) {
-        return predicate(*field);
-      });
-  return iter != std::ranges::end(fields) ? iter->get() : nullptr;
-}
-
 }  // namespace
 
 void EmailVerifierDelegate::Verify(
     base::WeakPtr<AutofillManager> manager,
     FieldGlobalId email_field_id,
     std::string display_email,
-    FieldGlobalId token_field_id,
     const std::string& nonce,
     const content::webid::EmailVerifier::Result& result) {
   content::RenderFrameHost* rfh = FindRenderFrameHostByToken(
@@ -121,14 +110,13 @@ void EmailVerifierDelegate::Verify(
       result, nonce,
       base::BindOnce(&EmailVerifierDelegate::OnVerificationResponseReceived,
                      weak_ptr_factory_.GetWeakPtr(), manager, email_field_id,
-                     display_email, token_field_id, result.issuer_site));
+                     display_email, result.issuer_site));
 }
 
 void EmailVerifierDelegate::OnVerificationResponseReceived(
     base::WeakPtr<AutofillManager> manager,
     FieldGlobalId email_field_id,
     std::string display_email,
-    FieldGlobalId token_field_id,
     net::SchemefulSite issuer_site,
     std::optional<std::string> token,
     blink::mojom::EmailVerificationRequestResult status,
@@ -159,9 +147,9 @@ void EmailVerifierDelegate::OnVerificationResponseReceived(
                         EvpAutofillFlowResult::kVerificationFailed);
     return;
   }
-  issuers_[token_field_id] = issuer_site.GetURL();
+  issuers_[email_field_id] = issuer_site.GetURL();
   manager->driver().SendEmailVerificationToken(email_field_id, display_email,
-                                               token_field_id, *token);
+                                               *token);
   NotifyFlowCompleted(manager.get(), email_field_id,
                       EvpAutofillFlowResult::kTokenSentToRenderer);
 }
@@ -170,7 +158,6 @@ void EmailVerifierDelegate::OnEmailVerificationDecision(
     base::WeakPtr<AutofillManager> manager,
     FieldGlobalId email_field_id,
     std::string display_email,
-    FieldGlobalId token_field_id,
     std::string nonce,
     content::webid::EmailVerifier::Result result,
     AutofillClient::EmailVerificationPermissionUiStatus ui_status) {
@@ -214,8 +201,7 @@ void EmailVerifierDelegate::OnEmailVerificationDecision(
         update->Set(display_email, std::move(email_dict));
       }
 
-      Verify(manager, email_field_id, display_email, token_field_id, nonce,
-             result);
+      Verify(manager, email_field_id, display_email, nonce, result);
 
       if (manager->client().GetStrikeDatabase()) {
         EmailVerificationStrikeDatabase strike_db(
@@ -255,7 +241,6 @@ void EmailVerifierDelegate::OnEmailVerificationDecision(
 void EmailVerifierDelegate::OnIsVerifiable(
     base::WeakPtr<AutofillManager> manager,
     FieldGlobalId email_field_id,
-    FieldGlobalId token_field_id,
     gfx::RectF email_field_bounds,
     std::u16string email,
     std::string nonce,
@@ -297,8 +282,7 @@ void EmailVerifierDelegate::OnIsVerifiable(
 
   std::string display_email = base::ToLowerASCII(base::UTF16ToUTF8(email));
   if (already_allowed) {
-    Verify(manager, email_field_id, display_email, token_field_id, nonce,
-           *result);
+    Verify(manager, email_field_id, display_email, nonce, *result);
     return;
   }
 
@@ -307,7 +291,7 @@ void EmailVerifierDelegate::OnIsVerifiable(
       email_field_bounds, issuer_site, base::UTF8ToUTF16(display_email),
       base::BindOnce(&EmailVerifierDelegate::OnEmailVerificationDecision,
                      weak_ptr_factory_.GetWeakPtr(), manager, email_field_id,
-                     display_email, token_field_id, nonce, std::move(*result)));
+                     display_email, nonce, std::move(*result)));
 }
 
 EmailVerifierDelegate::EmailVerifierDelegate(AutofillClient* client) {
@@ -484,7 +468,7 @@ void EmailVerifierDelegate::OnFillOrPreviewForm(
   // browser updates its cache) so we can use the `email_field->value()`
   // instead.
   std::u16string email = (*profile)->GetRawInfo(EMAIL_ADDRESS);
-  TriggerVerification(manager, *form, *triggering_email_field, email);
+  QueryNonce(manager, *triggering_email_field, email);
 }
 
 void EmailVerifierDelegate::OnFillOrPreviewField(
@@ -510,18 +494,18 @@ void EmailVerifierDelegate::OnFillOrPreviewField(
     return;
   }
 
-  TriggerVerification(manager, *form, *triggering_email_field, value);
+  QueryNonce(manager, *triggering_email_field, value);
 }
 
 void EmailVerifierDelegate::OnBeforeFormWithEmailVerificationTokenSubmitted(
     AutofillManager& manager,
     const FormData& form,
-    const FieldGlobalId& field_id) {
+    const FieldGlobalId& email_field_id) {
   if (manager.driver().GetLifecycleState() !=
       AutofillDriver::LifecycleState::kActive) {
     return;
   }
-  if (auto it = issuers_.find(field_id); it != issuers_.end()) {
+  if (auto it = issuers_.find(email_field_id); it != issuers_.end()) {
     GURL issuer_url = it->second;
     issuers_.erase(it);
     manager.client().ShowEmailVerifiedToast(issuer_url);
@@ -599,52 +583,84 @@ void EmailVerifierDelegate::OnFieldLostFocus(AutofillManager& manager,
     last_verified_values_.erase(last_verified_values_.begin());
   }
 
-  TriggerVerification(manager, *form, *email_field, value);
+  QueryNonce(manager, *email_field, value);
 }
 
-void EmailVerifierDelegate::TriggerVerification(
-    AutofillManager& manager,
-    const FormStructure& form,
-    const AutofillField& email_field,
-    const std::u16string& email_value) {
-  const std::vector<std::unique_ptr<AutofillField>>& fields = form.fields();
-  const AutofillField* token_field =
-      FindField(fields, [&](const AutofillField& field) {
-        return field.parsed_autocomplete() &&
-               field.parsed_autocomplete()->email_verification_token &&
-               field.renderer_form_id() == email_field.renderer_form_id();
-      });
-
-  if (!token_field) {
+void EmailVerifierDelegate::QueryNonce(AutofillManager& manager,
+                                       const AutofillField& email_field,
+                                       const std::u16string& email_value) {
+  if (!base::FeatureList::IsEnabled(::features::kEmailVerificationProtocol)) {
     return;
   }
 
-  pending_request_metrics_[email_field.global_id()] = RequestMetrics();
-  RequestMetrics& metrics = pending_request_metrics_[email_field.global_id()];
+  manager.driver().GetNonceForEmailVerification(
+      email_field.global_id(),
+      base::BindOnce(&EmailVerifierDelegate::OnNonceReceived,
+                     weak_ptr_factory_.GetWeakPtr(), manager.GetWeakPtr(),
+                     email_field.global_id(), email_field.bounds(),
+                     email_value));
+}
+
+void EmailVerifierDelegate::OnNonceReceived(
+    base::WeakPtr<AutofillManager> manager,
+    FieldGlobalId email_field_id,
+    gfx::RectF email_field_bounds,
+    std::u16string email_value,
+    const std::optional<std::string>& nonce) {
+  if (!manager) {
+    NotifyFlowCompleted(manager.get(), email_field_id,
+                        EvpAutofillFlowResult::kManagerDestroyed);
+    return;
+  }
+  switch (manager->driver().GetLifecycleState()) {
+    case AutofillDriver::LifecycleState::kInactive:
+    case AutofillDriver::LifecycleState::kPendingReset:
+    case AutofillDriver::LifecycleState::kPendingDeletion:
+      NotifyFlowCompleted(manager.get(), email_field_id,
+                          EvpAutofillFlowResult::kDriverInactive);
+      return;
+    case AutofillDriver::LifecycleState::kActive:
+      break;
+  }
+
+  if (!nonce) {
+    return;
+  }
+
+  TriggerVerification(*manager, email_field_id, email_field_bounds, email_value,
+                      *nonce);
+}
+
+void EmailVerifierDelegate::TriggerVerification(AutofillManager& manager,
+                                                FieldGlobalId email_field_id,
+                                                gfx::RectF email_field_bounds,
+                                                std::u16string email_value,
+                                                const std::string& nonce) {
+  pending_request_metrics_[email_field_id] = RequestMetrics();
+  RequestMetrics& metrics = pending_request_metrics_[email_field_id];
   content::RenderFrameHost* rfh = FindRenderFrameHostByToken(
       *static_cast<ContentAutofillClient&>(manager.client()).web_contents(),
-      email_field.host_frame());
+      email_field_id.frame_token);
   if (rfh) {
     metrics.ukm_source_id = rfh->GetPageUkmSourceId();
   }
 
-  if (token_field->nonce().empty()) {
-    NotifyFlowCompleted(&manager, email_field.global_id(),
+  if (nonce.empty()) {
+    NotifyFlowCompleted(&manager, email_field_id,
                         EvpAutofillFlowResult::kTokenFieldHasNoNonce);
     return;
   }
 
   const PrefService* prefs = manager.client().GetPrefs();
   if (!prefs || !prefs->GetBoolean(prefs::kAutofillEmailVerificationEnabled)) {
-    NotifyFlowCompleted(&manager, email_field.global_id(),
+    NotifyFlowCompleted(&manager, email_field_id,
                         EvpAutofillFlowResult::kUserPrefDisabled);
     return;
   }
-
   content::webid::EmailVerifier* verifier =
       GetOrCreateEmailVerifier(manager.client(), rfh);
   if (!verifier) {
-    NotifyFlowCompleted(&manager, email_field.global_id(),
+    NotifyFlowCompleted(&manager, email_field_id,
                         EvpAutofillFlowResult::kVerifierUnavailable);
     return;
   }
@@ -665,7 +681,7 @@ void EmailVerifierDelegate::TriggerVerification(
         manager.client().GetStrikeDatabase());
     if (strike_db.ShouldBlockFeature(
             EmailVerificationStrikeDatabase::GetId(display_email))) {
-      NotifyFlowCompleted(&manager, email_field.global_id(),
+      NotifyFlowCompleted(&manager, email_field_id,
                           EvpAutofillFlowResult::kStrikeDatabaseBlock);
       return;
     }
@@ -681,9 +697,8 @@ void EmailVerifierDelegate::TriggerVerification(
       display_email,
       base::BindOnce(&EmailVerifierDelegate::OnIsVerifiable,
                      weak_ptr_factory_.GetWeakPtr(), manager.GetWeakPtr(),
-                     email_field.global_id(), token_field->global_id(),
-                     email_field.bounds(), email_value,
-                     base::UTF16ToUTF8(token_field->nonce()), already_allowed));
+                     email_field_id, email_field_bounds, email_value, nonce,
+                     already_allowed));
 }
 
 }  // namespace autofill

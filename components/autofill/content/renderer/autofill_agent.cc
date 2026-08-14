@@ -340,7 +340,6 @@ AutofillAgent::Config CreateConfig(bool uses_platform_autofill) {
       AutofillAgent::UsesKeyboardAccessoryForSuggestions(BUILDFLAG(IS_ANDROID)),
   };
 }
-
 }  // namespace
 
 // During prerendering, we do not want the renderer to send messages to the
@@ -449,9 +448,9 @@ class AutofillAgent::DeferringAutofillDriver : public mojom::AutofillDriver {
   }
   void FormWithEmailVerificationTokenSubmitted(
       const FormData& form,
-      FieldRendererId field_id) override {
+      FieldRendererId email_field_id) override {
     DeferMsg(&mojom::AutofillDriver::FormWithEmailVerificationTokenSubmitted,
-             form, field_id);
+             form, email_field_id);
   }
   void DidDetectJavaScriptAutofill(
       const FormData& form,
@@ -1708,16 +1707,18 @@ void AutofillAgent::GetPotentialLastFourCombinationsForStandaloneCvc(
   }
 }
 
+void AutofillAgent::GetNonceForEmailVerification(
+    FieldRendererId email_field_id,
+    GetNonceForEmailVerificationCallback callback) {
+  email_verification_handler_.GetNonceForEmailVerification(email_field_id,
+                                                           std::move(callback));
+}
+
 void AutofillAgent::SendEmailVerificationToken(FieldRendererId email_field_id,
                                                const std::string& email,
-                                               FieldRendererId token_field_id,
                                                const std::string& token) {
-  if (token.empty()) {
-    return;
-  }
-
-  email_verification_handler_.StoreEmailVerificationToken(
-      email_field_id, email, token_field_id, token);
+  email_verification_handler_.StoreEmailVerificationToken(email_field_id, email,
+                                                          token);
 }
 
 void AutofillAgent::UpdateEmailVerificationState(

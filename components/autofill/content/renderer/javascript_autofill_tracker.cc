@@ -64,7 +64,6 @@ bool IsPossibleAnchorElement(blink::WebFormControlElement element) {
     case mojom::FormControlType::kInputRadio:
     case mojom::FormControlType::kSelectOne:
     case mojom::FormControlType::kInputDate:
-    case mojom::FormControlType::kInputHiddenEmailVerification:
       return false;
   }
   NOTREACHED();

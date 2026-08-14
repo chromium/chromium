@@ -12,7 +12,6 @@ namespace send_tab_to_self {
 bool IsSensitiveFieldType(autofill::FormControlType type) {
   switch (type) {
     case autofill::FormControlType::kInputPassword:
-    case autofill::FormControlType::kInputHiddenEmailVerification:
       return true;
     case autofill::FormControlType::kContentEditable:
     case autofill::FormControlType::kInputCheckbox:

@@ -230,7 +230,7 @@ IN_PROC_BROWSER_TEST_F(EmailVerificationBrowserTest, FullFlowRendererStorage) {
       manager, base::BindRepeating([](const FormStructure& form) {
         return std::ranges::any_of(
             form.fields(), [](const std::unique_ptr<AutofillField>& field) {
-              return field->nonce() == u"test_nonce";
+              return field->Type().GetAddressType() == EMAIL_ADDRESS;
             });
       }));
   ASSERT_TRUE(form_structure);
@@ -326,7 +326,7 @@ IN_PROC_BROWSER_TEST_F(EmailVerificationBrowserTest,
       manager, base::BindRepeating([](const FormStructure& form) {
         return std::ranges::any_of(
             form.fields(), [](const std::unique_ptr<AutofillField>& field) {
-              return field->nonce() == u"test_nonce";
+              return field->Type().GetAddressType() == EMAIL_ADDRESS;
             });
       }));
   ASSERT_TRUE(form_structure);
@@ -465,7 +465,7 @@ IN_PROC_BROWSER_TEST_F(EmailVerificationBrowserTest, FullFlowAutocomplete) {
       manager, base::BindRepeating([](const FormStructure& form) {
         return std::ranges::any_of(
             form.fields(), [](const std::unique_ptr<AutofillField>& field) {
-              return field->nonce() == u"test_nonce";
+              return field->Type().GetAddressType() == EMAIL_ADDRESS;
             });
       }));
   ASSERT_TRUE(form_structure);

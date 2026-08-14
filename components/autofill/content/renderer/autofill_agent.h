@@ -226,9 +226,11 @@ class AutofillAgent : public content::RenderFrameObserver,
   void GetPotentialLastFourCombinationsForStandaloneCvc(
       base::OnceCallback<void(const std::vector<std::string>&)>
           potential_matches) override;
+  void GetNonceForEmailVerification(
+      FieldRendererId email_field_id,
+      GetNonceForEmailVerificationCallback callback) override;
   void SendEmailVerificationToken(FieldRendererId email_field_id,
                                   const std::string& email,
-                                  FieldRendererId token_field_id,
                                   const std::string& token) override;
   void UpdateEmailVerificationState(
       FieldRendererId email_field_id,

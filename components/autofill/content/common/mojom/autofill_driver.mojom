@@ -151,10 +151,10 @@ interface AutofillDriver {
 
   // Sent when a form with an email verification token is submitted.
   //
-  // `field_id` must identify a field of `form`. This is enforced by
+  // `email_field_id` must identify a field of `form`. This is enforced by
   // ContentAutofillDriver.
   FormWithEmailVerificationTokenSubmitted(FormData form,
-                                          FieldRendererId field_id);
+                                          FieldRendererId email_field_id);
 
   // Sent when the renderer suspects a custom JavaScript autofill event has
   // occurred, filling all fields in `field_ids`, and suspecting that

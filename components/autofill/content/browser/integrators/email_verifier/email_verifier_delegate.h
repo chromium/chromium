@@ -7,10 +7,10 @@
 
 #include <map>
 #include <optional>
+#include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
-#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -23,6 +23,7 @@
 #include "net/base/schemeful_site.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/mojom/webid/email_verification_request.mojom-shared.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "url/gurl.h"
 
 namespace autofill {
@@ -122,7 +123,7 @@ class EmailVerifierDelegate : public AutofillManager::Observer,
   void OnBeforeFormWithEmailVerificationTokenSubmitted(
       AutofillManager& manager,
       const FormData& form,
-      const FieldGlobalId& field_id) override;
+      const FieldGlobalId& email_field_id) override;
   void OnAfterFocusOnFormField(AutofillManager& manager,
                                FormGlobalId form_id,
                                FieldGlobalId field_id) override;
@@ -140,18 +141,29 @@ class EmailVerifierDelegate : public AutofillManager::Observer,
     void OnFlowCompleted(const RequestMetrics& metrics) override;
   };
 
-  // Initiates the verification of the given `email_value` by checking the frame
-  // for a `nonce` attribute, prompting the user for verification, and sending
-  // the token to the renderer on completion.
+  // Queries the renderer for the nonce.
+  void QueryNonce(AutofillManager& manager,
+                  const AutofillField& email_field,
+                  const std::u16string& email_value);
+
+  void OnNonceReceived(base::WeakPtr<AutofillManager> manager,
+                       FieldGlobalId email_field_id,
+                       gfx::RectF email_field_bounds,
+                       std::u16string email_value,
+                       const std::optional<std::string>& nonce);
+
+  // Initiates the verification of the given `email_value` by checking the
+  // user pref, origin trial, and strike database, prompting the user for
+  // verification, and sending the token to the renderer on completion.
   void TriggerVerification(AutofillManager& manager,
-                           const FormStructure& form,
-                           const AutofillField& email_field,
-                           const std::u16string& email_value);
+                           FieldGlobalId email_field_id,
+                           gfx::RectF email_field_bounds,
+                           std::u16string email_value,
+                           const std::string& nonce);
 
   void OnIsVerifiable(
       base::WeakPtr<AutofillManager> manager,
       FieldGlobalId email_field_id,
-      FieldGlobalId token_field_id,
       gfx::RectF email_field_bounds,
       std::u16string email,
       std::string nonce,
@@ -163,7 +175,6 @@ class EmailVerifierDelegate : public AutofillManager::Observer,
   void Verify(base::WeakPtr<AutofillManager> manager,
               FieldGlobalId email_field_id,
               std::string email_utf8,
-              FieldGlobalId token_field_id,
               const std::string& nonce,
               const content::webid::EmailVerifier::Result& result);
 
@@ -171,7 +182,6 @@ class EmailVerifierDelegate : public AutofillManager::Observer,
       base::WeakPtr<AutofillManager> manager,
       FieldGlobalId email_field_id,
       std::string email,
-      FieldGlobalId token_field_id,
       net::SchemefulSite issuer_site,
       std::optional<std::string> token,
       blink::mojom::EmailVerificationRequestResult status,
@@ -181,7 +191,6 @@ class EmailVerifierDelegate : public AutofillManager::Observer,
       base::WeakPtr<AutofillManager> manager,
       FieldGlobalId email_field_id,
       std::string email_utf8,
-      FieldGlobalId token_field_id,
       std::string nonce,
       content::webid::EmailVerifier::Result result,
       AutofillClient::EmailVerificationPermissionUiStatus ui_status);

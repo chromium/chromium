@@ -240,9 +240,12 @@ class ContentAutofillDriver : public AutofillDriver,
                         mojom::ActionPersistence action_persistence,
                         const FieldGlobalId& field_id,
                         const std::u16string& value) override;
+  void GetNonceForEmailVerification(
+      FieldGlobalId email_field_id,
+      base::OnceCallback<void(const std::optional<std::string>&)> callback)
+      override;
   void SendEmailVerificationToken(FieldGlobalId email_field_id,
                                   const std::string& email,
-                                  FieldGlobalId token_field_id,
                                   const std::string& token) override;
   void UpdateEmailVerificationState(
       const FieldGlobalId& email_field_id,
@@ -326,7 +329,7 @@ class ContentAutofillDriver : public AutofillDriver,
                           FieldRendererId field_id) override;
   void FormWithEmailVerificationTokenSubmitted(
       const FormData& form,
-      FieldRendererId field_id) override;
+      FieldRendererId email_field_id) override;
   void DidDetectJavaScriptAutofill(
       const FormData& form,
       FieldRendererId trigger_field_id,

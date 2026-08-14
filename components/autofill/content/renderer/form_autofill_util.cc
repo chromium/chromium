@@ -278,7 +278,6 @@ bool IsTextInput(const WebFormControlElement& element) {
   switch (*type) {
     case FormControlType::kContentEditable:
     case FormControlType::kInputCheckbox:
-    case FormControlType::kInputHiddenEmailVerification:
     case FormControlType::kInputMonth:
     case FormControlType::kInputDate:
     case FormControlType::kInputRadio:
@@ -1353,7 +1352,6 @@ void FillFormField(const FormFieldData::FillData& data,
   switch (*type) {
     case FormControlType::kInputCheckbox:
     case FormControlType::kInputRadio:
-    case FormControlType::kInputHiddenEmailVerification:
       return;
     case FormControlType::kContentEditable:
       NOTREACHED();
@@ -1427,7 +1425,6 @@ void PreviewFormField(const FormFieldData::FillData& data,
   switch (*type) {
     case FormControlType::kInputCheckbox:
     case FormControlType::kInputRadio:
-    case FormControlType::kInputHiddenEmailVerification:
       return;
     case FormControlType::kContentEditable:
       NOTREACHED();
@@ -1919,27 +1916,6 @@ bool HasFormAncestor(WebNode node) {
   return false;
 }
 
-// Returns all connected form control elements
-// - owned by `form_element` if `!form_element.IsNull()`;
-// - owned by no form otherwise.
-std::vector<WebFormControlElement> GetOwnedFormControls(
-    const WebDocument& document,
-    const WebFormElement& form_element) {
-  std::vector<WebFormControlElement> form_controls;
-  if (form_element) {
-    form_controls = form_element.GetFormControlElements();  // nocheck
-  } else {
-    form_controls = document.UnassociatedFormControls();  // nocheck
-    // A form control element may be unassociated inside its Shadow DOM, but
-    // owned (in the Autofill sense) by a <form> containing the shadow host.
-    std::erase_if(form_controls, [](const WebFormControlElement& e) {
-      return e.OwnerShadowHost() && HasFormAncestor(e);
-    });
-  }
-  std::erase_if(form_controls, std::not_fn(&IsAccessible));
-  return form_controls;
-}
-
 // Populates out a FormFieldData object from a given autofillable
 // WebFormControlElement. Field properties are copied from |field_data_manager|,
 // if the argument is not null and has entry for |element| (see properties in
@@ -2377,8 +2353,6 @@ std::optional<FormControlType> GetAutofillFormControlType(
   // shared with other tests.
   static const bool g_autofill_ignore_checkable_elements_enabled =
       base::FeatureList::IsEnabled(features::kAutofillIgnoreCheckableElements);
-  static const bool g_email_verification_protocol_enabled =
-      base::FeatureList::IsEnabled(::features::kEmailVerificationProtocol);
 
   // Note that adding a new field type here automatically makes
   // IsAutofillableElement() return true.
@@ -2391,13 +2365,6 @@ std::optional<FormControlType> GetAutofillFormControlType(
     case blink::mojom::FormControlType::kInputEmail:
       return FormControlType::kInputEmail;
     case blink::mojom::FormControlType::kInputHidden:
-      if (g_email_verification_protocol_enabled) {
-        std::optional<AutocompleteParsingResult> parsed =
-            ParseAutocompleteAttribute(GetAutocompleteAttribute(element));
-        if (parsed && parsed->email_verification_token) {
-          return FormControlType::kInputHiddenEmailVerification;
-        }
-      }
       break;
     case blink::mojom::FormControlType::kInputMonth:
       return FormControlType::kInputMonth;
@@ -2494,6 +2461,27 @@ base::i18n::TextDirection GetTextDirectionForElement(
     case WebFormControlElement::Alignment::kNotSet:
       return element.DirectionForFormData();
   }
+}
+
+// Returns all connected form control elements
+// - owned by `form_element` if `!form_element.IsNull()`;
+// - owned by no form otherwise.
+std::vector<WebFormControlElement> GetOwnedFormControls(
+    const WebDocument& document,
+    const WebFormElement& form_element) {
+  std::vector<WebFormControlElement> form_controls;
+  if (form_element) {
+    form_controls = form_element.GetFormControlElements();  // nocheck
+  } else {
+    form_controls = document.UnassociatedFormControls();  // nocheck
+    // A form control element may be unassociated inside its Shadow DOM, but
+    // owned (in the Autofill sense) by a <form> containing the shadow host.
+    std::erase_if(form_controls, [](const WebFormControlElement& e) {
+      return e.OwnerShadowHost() && HasFormAncestor(e);
+    });
+  }
+  std::erase_if(form_controls, std::not_fn(&IsAccessible));
+  return form_controls;
 }
 
 std::vector<WebFormControlElement> GetOwnedAutofillableFormControls(

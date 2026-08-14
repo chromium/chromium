@@ -2902,13 +2902,13 @@ TEST_F(EmailVerificationHandlerTest,
   blink::WebFormControlElement verification_element =
       GetFormControlElementById("verification");
 
-  autofill_agent().SendEmailVerificationToken(
-      form_util::GetFieldRendererId(email_element), "a@example.com",
-      form_util::GetFieldRendererId(verification_element), "evt_token_123");
-
   EXPECT_CALL(autofill_driver(),
               FormWithEmailVerificationTokenSubmitted(
-                  _, form_util::GetFieldRendererId(verification_element)));
+                  _, form_util::GetFieldRendererId(email_element)));
+
+  autofill_agent().SendEmailVerificationToken(
+      form_util::GetFieldRendererId(email_element), "a@example.com",
+      "evt_token_123");
 
   test_api(autofill_agent())
       .email_verification_handler()
@@ -2937,16 +2937,14 @@ TEST_F(EmailVerificationHandlerTest,
   blink::WebFormControlElement verification_element =
       GetFormControlElementById("verification");
 
+  EXPECT_CALL(autofill_driver(), FormWithEmailVerificationTokenSubmitted(_, _))
+      .Times(0);
+
   autofill_agent().SendEmailVerificationToken(
       form_util::GetFieldRendererId(email_element), "a@example.com",
-      form_util::GetFieldRendererId(verification_element), "evt_token_123");
+      "evt_token_123");
 
   email_element.SetValue(blink::WebString::FromUtf16(u"b@example.com"));
-
-  EXPECT_CALL(autofill_driver(),
-              FormWithEmailVerificationTokenSubmitted(
-                  _, form_util::GetFieldRendererId(verification_element)))
-      .Times(0);
 
   test_api(autofill_agent())
       .email_verification_handler()
@@ -2975,22 +2973,51 @@ TEST_F(EmailVerificationHandlerTest,
   blink::WebFormControlElement verification_element =
       GetFormControlElementById("verification");
 
+  EXPECT_CALL(autofill_driver(), FormWithEmailVerificationTokenSubmitted(_, _))
+      .Times(0);
+
   autofill_agent().SendEmailVerificationToken(
       form_util::GetFieldRendererId(email_element), "a@example.com",
-      form_util::GetFieldRendererId(verification_element), "evt_token_123");
+      "evt_token_123");
 
   email_element.SetValue(blink::WebString::FromUtf16(u""));
-
-  EXPECT_CALL(autofill_driver(),
-              FormWithEmailVerificationTokenSubmitted(
-                  _, form_util::GetFieldRendererId(verification_element)))
-      .Times(0);
 
   test_api(autofill_agent())
       .email_verification_handler()
       .WillSendSubmitEvent(form_element);
 
   EXPECT_EQ(verification_element.Value().Utf16(), u"");
+}
+
+// Tests that GetNonceForEmailVerification correctly queries the nonce from
+// the hidden verification token field.
+TEST_F(EmailVerificationHandlerTest, GetNonceForEmailVerification) {
+  EXPECT_CALL(autofill_driver(), FormsSeen);
+  LoadHTML(R"(<body>
+    <form id="form">
+      <input type="email" id="email" value="a@example.com">
+      <input type="hidden" id="verification" autocomplete="email-verification-token" nonce="test_nonce_123">
+    </form>
+    <form id="form_without_token">
+      <input type="email" id="email2" value="b@example.com">
+    </form>
+  </body>)");
+  WaitForFormsSeen();
+
+  blink::WebFormControlElement email_element =
+      GetFormControlElementById("email");
+  blink::WebFormControlElement email2_element =
+      GetFormControlElementById("email2");
+
+  base::test::TestFuture<const std::optional<std::string>&> future1;
+  autofill_agent().GetNonceForEmailVerification(
+      form_util::GetFieldRendererId(email_element), future1.GetCallback());
+  EXPECT_EQ(future1.Get(), "test_nonce_123");
+
+  base::test::TestFuture<const std::optional<std::string>&> future2;
+  autofill_agent().GetNonceForEmailVerification(
+      form_util::GetFieldRendererId(email2_element), future2.GetCallback());
+  EXPECT_EQ(future2.Get(), std::nullopt);
 }
 
 // Malicious web pages can attempt to steal saved autofill data via a

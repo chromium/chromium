@@ -1004,7 +1004,7 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
 
 void BrowserAutofillManager::OnFormWithEmailVerificationTokenSubmittedImpl(
     const FormData& form,
-    const FieldGlobalId& field_id) {}
+    const FieldGlobalId& email_field_id) {}
 
 void BrowserAutofillManager::UpdatePendingForm(const FormData& form) {
   // Process the current pending form if different than supplied |form|.

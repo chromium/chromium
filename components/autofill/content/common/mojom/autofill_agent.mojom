@@ -125,13 +125,26 @@ interface AutofillAgent {
   GetPotentialLastFourCombinationsForStandaloneCvc()
       => (array<string> potential_matches);
 
+  // Part of the Email Verification Protocol (EVP).
+  // The website can include an email field and a hidden token field with a
+  // `nonce` attribute in the same form.
+  // When the user autofills the email, the browser detects this and tries to
+  // verify the email.
+  // This method queries the renderer if it has an email-verification-token
+  // field in the form owning the `email_field_id`. If so, returns its nonce.
+  // Otherwise, returns a nullopt.
+  // The browser will then send this nonce (challenge) to the verifier (issuer)
+  // to get a token.
+  GetNonceForEmailVerification(FieldRendererId email_field_id)
+      => (string? nonce);
+
   // Sends an email verification token along with the corresponding email
-  // address and field ID to the renderer. At form submission time, the
-  // renderer will verify that the email field's value still matches the
-  // verified email address before injecting the token.
+  // address and the email field's ID to the renderer. At form submission
+  // time, the renderer will verify that the email field's value still
+  // matches the verified email address, find the associated token field,
+  // and inject the token.
   SendEmailVerificationToken(FieldRendererId email_field_id,
                              string email,
-                             FieldRendererId token_field_id,
                              string token);
 
   // Notifies the renderer of a change in the email verification state for the

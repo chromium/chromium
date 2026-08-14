@@ -31,7 +31,7 @@ enum FormControlType {
   // deprecated: kSelectList = 13
   kTextArea = 14,
   kInputDate = 15,
-  kInputHiddenEmailVerification = 16,
+  // deprecated: kInputHiddenEmailVerification = 16,
 };
 
 // The list of all HTML autocomplete field mode hints supported by Chrome.

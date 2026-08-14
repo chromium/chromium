@@ -293,11 +293,11 @@ class AutofillManager
     virtual void OnBeforeFormWithEmailVerificationTokenSubmitted(
         AutofillManager& manager,
         const FormData& form,
-        const FieldGlobalId& field) {}
+        const FieldGlobalId& email_field_id) {}
     virtual void OnAfterFormWithEmailVerificationTokenSubmitted(
         AutofillManager& manager,
         const FormData& form,
-        const FieldGlobalId& field) {}
+        const FieldGlobalId& email_field_id) {}
   };
 
   template <bool IsConst>
@@ -538,7 +538,7 @@ class AutofillManager
                                    mojom::SubmissionSource source) = 0;
   virtual void OnFormWithEmailVerificationTokenSubmittedImpl(
       const FormData& form,
-      const FieldGlobalId& field_id) = 0;
+      const FieldGlobalId& email_field_id) = 0;
   virtual void OnCaretMovedInFormFieldImpl(const FormData& form,
                                            const FieldGlobalId& field_id,
                                            const gfx::Rect& caret_bounds) = 0;

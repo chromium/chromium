@@ -51,6 +51,7 @@ namespace autofill {
 namespace {
 
 using ::base::test::RunOnceCallback;
+using ::base::test::RunOnceCallbackRepeatedly;
 using ::content::webid::EmailVerifier;
 using ::testing::_;
 using ::testing::AnyNumber;
@@ -74,10 +75,14 @@ class MockAutofillDriver : public TestContentAutofillDriver {
  public:
   using TestContentAutofillDriver::TestContentAutofillDriver;
   MOCK_METHOD(void,
+              GetNonceForEmailVerification,
+              (FieldGlobalId email_field_id,
+               base::OnceCallback<void(const std::optional<std::string>&)>),
+              (override));
+  MOCK_METHOD(void,
               SendEmailVerificationToken,
               (FieldGlobalId email_field_id,
                const std::string& email,
-               FieldGlobalId token_field_id,
                const std::string& presentation_token),
               (override));
   MOCK_METHOD(void,
@@ -151,6 +156,9 @@ class EmailVerifierDelegateTestBase
     }
     content::RuntimeFeatureStateDocumentData::CreateForCurrentDocument(
         main_rfh(), TestRuntimeFeatureStateContext());
+
+    ON_CALL(driver(), GetNonceForEmailVerification(_, _))
+        .WillByDefault(RunOnceCallbackRepeatedly<1>("test_nonce"));
   }
 
   MockAutofillClient& client() {
@@ -186,8 +194,9 @@ class EmailVerifierDelegateTestBase
                   .name = u"verification_token",
                   .nonce = u"test_nonce",
                   .autocomplete_attribute = "email-verification-token",
-                  .form_control_type =
-                      FormControlType::kInputHiddenEmailVerification},
+                  // Using kInputText is arbitrary here because FormControlType
+                  // has no kInputHidden representation.
+                  .form_control_type = FormControlType::kInputText},
              },
          .host_frame = driver().GetFrameToken()});
   }
@@ -225,6 +234,9 @@ class EmailVerifierDelegateTestBase
       const std::string& email = "johndoe@hades.com",
       AutofillClient::EmailVerificationPermissionUiStatus ui_status =
           AutofillClient::EmailVerificationPermissionUiStatus::kAllowed) {
+    EXPECT_CALL(driver(),
+                GetNonceForEmailVerification(form.field(0)->global_id(), _))
+        .WillOnce(RunOnceCallback<1>("test_nonce"));
     EXPECT_CALL(email_verifier(), CheckIfVerifiable(email, _))
         .WillOnce(RunOnceCallback<1>(
             CreateVerifiableResult(email),
@@ -249,9 +261,9 @@ class EmailVerifierDelegateTestBase
               blink::mojom::EmailVerificationRequestResult::kSuccess,
               base::Milliseconds(200)));
 
-      EXPECT_CALL(driver(), SendEmailVerificationToken(
-                                form.field(0)->global_id(), email,
-                                form.field(1)->global_id(), "test_token"));
+      EXPECT_CALL(driver(),
+                  SendEmailVerificationToken(form.field(0)->global_id(), email,
+                                             "test_token"));
       EXPECT_CALL(driver(), UpdateEmailVerificationState(
                                 form.field(0)->global_id(),
                                 mojom::EmailVerificationState::kVerified));
@@ -349,7 +361,7 @@ TEST_F(EmailVerifierDelegateTest, TokenSharedSuccess) {
 
   EXPECT_CALL(client(), ShowEmailVerifiedToast(GURL("https://example.com")));
   delegate().OnBeforeFormWithEmailVerificationTokenSubmitted(
-      manager(), form->ToFormData(), form->field(1)->global_id());
+      manager(), form->ToFormData(), form->field(0)->global_id());
 
   histogram_tester.ExpectUniqueSample(
       "Blink.Evp.Autofill.FlowResult",
@@ -511,18 +523,25 @@ TEST_F(EmailVerifierDelegateTest, NoNonce) {
       ::features::kEmailVerificationProtocol};
 
   FormData form_data = test::GetFormData(
-      {.fields = {
-           {.role = EMAIL_ADDRESS,
-            .label = u"Email",
-            .name = u"email",
-            .value = u"Triggering field (filled)",
-            .form_control_type = FormControlType::kInputEmail},
-       }});
+      {.fields =
+           {
+               {.role = EMAIL_ADDRESS,
+                .label = u"Email",
+                .name = u"email",
+                .value = u"Triggering field (filled)",
+                .form_control_type = FormControlType::kInputEmail},
+           },
+       .host_frame = driver().GetFrameToken()});
 
   manager().AddSeenForm(form_data, {EMAIL_ADDRESS});
-  const FormStructure* form =
-      manager().FindCachedFormById(form_data.global_id());
+  FormStructure* form =
+      test_api(manager()).FindCachedFormById(form_data.global_id());
   ASSERT_TRUE(form);
+  form->field(0)->set_autofilled_type(EMAIL_ADDRESS);
+
+  EXPECT_CALL(driver(),
+              GetNonceForEmailVerification(form->field(0)->global_id(), _))
+      .WillOnce(RunOnceCallback<1>(std::nullopt));
 
   EXPECT_CALL(email_verifier(), Verify).Times(0);
 
@@ -829,8 +848,9 @@ TEST_F(EmailVerifierDelegateTest, TokenFieldHasNoNonce) {
                 .name = u"verification_token",
                 .nonce = u"",  // Empty nonce!
                 .autocomplete_attribute = "email-verification-token",
-                .form_control_type =
-                    FormControlType::kInputHiddenEmailVerification},
+                // Using kInputText is arbitrary here because FormControlType
+                // has no kInputHidden representation.
+                .form_control_type = FormControlType::kInputText},
            },
        .host_frame = driver().GetFrameToken()});
   manager().AddSeenForm(form_data, {EMAIL_ADDRESS, UNKNOWN_TYPE});
@@ -838,6 +858,10 @@ TEST_F(EmailVerifierDelegateTest, TokenFieldHasNoNonce) {
       test_api(manager()).FindCachedFormById(form_data.global_id());
   ASSERT_TRUE(form);
   form->field(0)->set_autofilled_type(EMAIL_ADDRESS);
+
+  EXPECT_CALL(driver(),
+              GetNonceForEmailVerification(form->field(0)->global_id(), _))
+      .WillOnce(RunOnceCallback<1>(""));
 
   EXPECT_CALL(email_verifier(), Verify).Times(0);
   EXPECT_CALL(client(), ShowEmailVerificationPopup).Times(0);
@@ -1066,6 +1090,10 @@ TEST_F(EmailVerifierDelegateTest, NoTokenField_NoMetricsOnNavigation) {
   ASSERT_TRUE(form);
   form->field(0)->set_autofilled_type(EMAIL_ADDRESS);
 
+  EXPECT_CALL(driver(),
+              GetNonceForEmailVerification(form->field(0)->global_id(), _))
+      .WillOnce(RunOnceCallback<1>(std::nullopt));
+
   EXPECT_CALL(email_verifier(), CheckIfVerifiable).Times(0);
   EXPECT_CALL(email_verifier(), Verify).Times(0);
 
@@ -1140,8 +1168,9 @@ TEST_F(EmailVerifierDelegateTest,
                 .name = u"verification_token",
                 .nonce = u"test_nonce",
                 .autocomplete_attribute = "email-verification-token",
-                .form_control_type =
-                    FormControlType::kInputHiddenEmailVerification},
+                // Using kInputText is arbitrary here because FormControlType
+                // has no kInputHidden representation.
+                .form_control_type = FormControlType::kInputText},
            },
        .host_frame = driver().GetFrameToken()});
   manager().AddSeenForm(
@@ -1458,9 +1487,8 @@ TEST_F(EmailVerifierDelegateTest,
                     blink::mojom::EmailVerificationRequestResult::kSuccess,
                     base::Milliseconds(200))));
 
-  EXPECT_CALL(driver(), SendEmailVerificationToken(
-                            form->field(0)->global_id(), lower_email,
-                            form->field(1)->global_id(), "test_token"));
+  EXPECT_CALL(driver(), SendEmailVerificationToken(form->field(0)->global_id(),
+                                                   lower_email, "test_token"));
 
   AutofillProfile profile = test::GetFullProfile();
   profile.SetRawInfo(EMAIL_ADDRESS, u"MixedCase@Example.COM");
@@ -1502,9 +1530,8 @@ TEST_F(EmailVerifierDelegateTest,
           blink::mojom::EmailVerificationRequestResult::kSuccess,
           base::Milliseconds(200)));
 
-  EXPECT_CALL(driver(), SendEmailVerificationToken(
-                            form->field(0)->global_id(), lower_email,
-                            form->field(1)->global_id(), "test_token"));
+  EXPECT_CALL(driver(), SendEmailVerificationToken(form->field(0)->global_id(),
+                                                   lower_email, "test_token"));
 
   AutofillProfile profile = test::GetFullProfile();
   profile.SetRawInfo(EMAIL_ADDRESS, u"MixedCase@Example.COM");

@@ -125,6 +125,13 @@ FieldRendererId GetFieldRendererId(const blink::WebElement& e);
 base::i18n::TextDirection GetTextDirectionForElement(
     const blink::WebFormControlElement& element);
 
+// Returns all connected form control elements
+// - owned by `form_element` if `!form_element.IsNull()`;
+// - owned by no form otherwise.
+std::vector<blink::WebFormControlElement> GetOwnedFormControls(
+    const blink::WebDocument& document,
+    const blink::WebFormElement& form_element);
+
 // Returns all connected, autofillable form control elements
 // - owned by `form_element` if `!form_element.IsNull()`;
 // - owned by no form otherwise.
