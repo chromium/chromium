@@ -139,4 +139,103 @@ TEST_F(JpegParserTest, ParsingFail) {
   ASSERT_FALSE(ParseJpegPicture(data, &result));
 }
 
+static std::vector<uint8_t> CreateJpegWithCustomHuffmanTable(
+    uint8_t table_class,
+    size_t num_symbols) {
+  std::vector<uint8_t> jpeg = {
+      0xff,
+      0xd8,  // SOI
+      // DQT: 64 bytes
+      0xff,
+      0xdb,
+      0x00,
+      0x43,
+      0x00,
+  };
+  jpeg.insert(jpeg.end(), 64, 16);
+
+  // DHT: table_id=0
+  uint16_t dht_payload_size = 2 + 1 + 16 + num_symbols;
+  std::vector<uint8_t> dht = {
+      0xff,
+      0xc4,
+      static_cast<uint8_t>(dht_payload_size >> 8),
+      static_cast<uint8_t>(dht_payload_size & 0xff),
+      static_cast<uint8_t>((table_class << 4) | 0x00),
+  };
+  // Distribute num_symbols across 16 code length bins (each bin <= 255)
+  size_t remaining = num_symbols;
+  for (int i = 0; i < 16; ++i) {
+    uint8_t count = static_cast<uint8_t>(std::min<size_t>(remaining, 255));
+    dht.push_back(count);
+    remaining -= count;
+  }
+  for (size_t i = 0; i < num_symbols; ++i) {
+    dht.push_back(static_cast<uint8_t>(i & 0xff));
+  }
+  jpeg.insert(jpeg.end(), dht.begin(), dht.end());
+
+  // SOF0: 16x16, 1 component
+  std::vector<uint8_t> sof0 = {
+      0xff, 0xc0, 0x00, 0x0b, 0x08, 0x00, 0x10,
+      0x00, 0x10, 0x01, 0x01, 0x11, 0x00,
+  };
+  jpeg.insert(jpeg.end(), sof0.begin(), sof0.end());
+
+  // SOS: 1 component
+  std::vector<uint8_t> sos = {
+      0xff, 0xda, 0x00, 0x08, 0x01, 0x01, 0x00, 0x00, 0x3f, 0x00,
+  };
+  jpeg.insert(jpeg.end(), sos.begin(), sos.end());
+
+  // Scan payload & EOI
+  jpeg.push_back(0x00);
+  jpeg.push_back(0x00);
+  jpeg.push_back(0xff);
+  jpeg.push_back(0xd9);
+
+  return jpeg;
+}
+
+TEST_F(JpegParserTest, DCHuffmanTableCodeLengthLimit) {
+  // DC table with 12 symbols is the maximum allowed by ITU-T T.81 baseline ->
+  // OK.
+  {
+    auto jpeg_dc_12 = CreateJpegWithCustomHuffmanTable(/*table_class=*/0, 12);
+    JpegParseResult result;
+    EXPECT_TRUE(ParseJpegPicture(jpeg_dc_12, &result));
+    EXPECT_TRUE(result.dc_table[0].valid);
+  }
+
+  // DC table with > 12 symbols (e.g. 13 or 16) must be rejected.
+  {
+    auto jpeg_dc_13 = CreateJpegWithCustomHuffmanTable(/*table_class=*/0, 13);
+    JpegParseResult result;
+    EXPECT_FALSE(ParseJpegPicture(jpeg_dc_13, &result));
+  }
+
+  {
+    auto jpeg_dc_16 = CreateJpegWithCustomHuffmanTable(/*table_class=*/0, 16);
+    JpegParseResult result;
+    EXPECT_FALSE(ParseJpegPicture(jpeg_dc_16, &result));
+  }
+}
+
+TEST_F(JpegParserTest, ACHuffmanTableCodeLengthLimit) {
+  // AC table with 162 symbols is the maximum allowed -> OK.
+  {
+    auto jpeg_ac_162 = CreateJpegWithCustomHuffmanTable(/*table_class=*/1, 162);
+    JpegParseResult result;
+    EXPECT_TRUE(ParseJpegPicture(jpeg_ac_162, &result));
+    EXPECT_TRUE(result.ac_table[0].valid);
+  }
+
+  // AC table with > 162 symbols must be rejected.
+  {
+    auto jpeg_ac_163 = CreateJpegWithCustomHuffmanTable(/*table_class=*/1, 163);
+    JpegParseResult result;
+    EXPECT_FALSE(ParseJpegPicture(jpeg_ac_163, &result));
+  }
+}
+
 }  // namespace media
