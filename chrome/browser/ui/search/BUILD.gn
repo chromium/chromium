@@ -8,6 +8,7 @@ assert(!is_ios)
 
 source_set("search") {
   sources = [
+    "most_visited_metrics_logger.h",
     "ntp_user_data_logger.h",
     "ntp_user_data_types.h",
   ]
@@ -41,7 +42,10 @@ source_set("search") {
 }
 
 source_set("impl") {
-  sources = [ "ntp_user_data_logger.cc" ]
+  sources = [
+    "most_visited_metrics_logger.cc",
+    "ntp_user_data_logger.cc",
+  ]
   deps = [
     ":search",
     "//base",
@@ -185,6 +189,7 @@ if (!is_android) {
     testonly = true
     sources = [
       "chrome_search_navigation_throttle_unittest.cc",
+      "most_visited_metrics_logger_unittest.cc",
       "ntp_user_data_logger_unittest.cc",
       "search_ipc_router_unittest.cc",
     ]

@@ -11,6 +11,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/new_tab_page/prefs/ntp_pref_names.h"
 #include "chrome/browser/search_engines/template_url_service_factory_test_util.h"
+#include "chrome/browser/ui/search/most_visited_metrics_logger.h"
 #include "chrome/browser/ui/webui/cr_components/most_visited/most_visited_handler.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/ntp_tiles/constants.h"
@@ -41,9 +42,7 @@ class MockMostVisitedHandler : public MostVisitedHandler {
             mojo::PendingRemote<most_visited::mojom::MostVisitedPage>(),
             profile,
             web_contents,
-            GURL(),
-            base::Time(),
-            base::TimeTicks()) {}
+            std::make_unique<MostVisitedMetricsLogger>("NewTabPage")) {}
   ~MockMostVisitedHandler() override = default;
 
   MOCK_METHOD(

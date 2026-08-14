@@ -79,17 +79,17 @@ MostVisitedHandler::MostVisitedHandler(
     mojo::PendingRemote<most_visited::mojom::MostVisitedPage> pending_page,
     Profile* profile,
     content::WebContents* web_contents,
-    const GURL& ntp_url,
-    const base::Time& ntp_navigation_start_time,
-    base::TimeTicks ntp_navigation_start_time_ticks)
+    std::unique_ptr<MostVisitedMetricsLogger> logger,
+    const base::Time& navigation_start_time)
     : profile_(profile),
       most_visited_sites_(
           ChromeMostVisitedSitesFactory::NewForProfile(profile)),
       web_contents_(web_contents),
-      logger_(profile, ntp_url, ntp_navigation_start_time_ticks),
-      ntp_navigation_start_time_(ntp_navigation_start_time),
+      logger_(std::move(logger)),
+      navigation_start_time_(navigation_start_time),
       page_handler_(this, std::move(pending_page_handler)),
       page_(std::move(pending_page)) {
+  CHECK(logger_);
   most_visited_sites_->AddMostVisitedURLsObserver(
       this, ntp_tiles::kMaxNumMostVisited);
 
@@ -124,8 +124,8 @@ void MostVisitedHandler::AddMostVisitedTile(
     bool success =
         most_visited_sites_->AddCustomLink(url, base::UTF8ToUTF16(title));
     std::move(callback).Run(success);
-    logger_.LogEvent(NTP_CUSTOMIZE_SHORTCUT_ADD,
-                     base::TimeDelta() /* unused */);
+    logger_->LogEvent(NTP_CUSTOMIZE_SHORTCUT_ADD,
+                      base::TimeDelta() /* unused */);
   }
 }
 
@@ -135,15 +135,15 @@ void MostVisitedHandler::DeleteMostVisitedTile(
   if (IsFromEnterpriseShortcut(tile->source)) {
     CHECK(most_visited_sites_->IsEnterpriseShortcutsEnabled());
     most_visited_sites_->DeleteEnterpriseShortcut(tile->url);
-    logger_.LogEvent(NTP_CUSTOMIZE_ENTERPRISE_SHORTCUT_REMOVE,
-                     base::TimeDelta() /* unused */);
+    logger_->LogEvent(NTP_CUSTOMIZE_ENTERPRISE_SHORTCUT_REMOVE,
+                      base::TimeDelta() /* unused */);
     return;
   }
 
   if (most_visited_sites_->IsCustomLinksEnabled()) {
     most_visited_sites_->DeleteCustomLink(tile->url);
-    logger_.LogEvent(NTP_CUSTOMIZE_SHORTCUT_REMOVE,
-                     base::TimeDelta() /* unused */);
+    logger_->LogEvent(NTP_CUSTOMIZE_SHORTCUT_REMOVE,
+                      base::TimeDelta() /* unused */);
   } else {
     most_visited_sites_->AddOrRemoveBlockedUrl(tile->url, true);
     last_blocklisted_ = tile->url;
@@ -155,15 +155,15 @@ void MostVisitedHandler::RestoreMostVisitedDefaults(
   if (IsFromEnterpriseShortcut(source)) {
     CHECK(most_visited_sites_->IsEnterpriseShortcutsEnabled());
     most_visited_sites_->RestoreEnterpriseShortcutsDefaults();
-    logger_.LogEvent(NTP_CUSTOMIZE_ENTERPRISE_SHORTCUT_RESTORE_ALL,
-                     base::TimeDelta() /* unused */);
+    logger_->LogEvent(NTP_CUSTOMIZE_ENTERPRISE_SHORTCUT_RESTORE_ALL,
+                      base::TimeDelta() /* unused */);
     return;
   }
 
   if (most_visited_sites_->IsCustomLinksEnabled()) {
     most_visited_sites_->UninitializeCustomLinks();
-    logger_.LogEvent(NTP_CUSTOMIZE_SHORTCUT_RESTORE_ALL,
-                     base::TimeDelta() /* unused */);
+    logger_->LogEvent(NTP_CUSTOMIZE_SHORTCUT_RESTORE_ALL,
+                      base::TimeDelta() /* unused */);
   } else {
     most_visited_sites_->ClearBlockedUrls();
   }
@@ -185,24 +185,24 @@ void MostVisitedHandler::UndoMostVisitedAutoRemoval() {
   DisableShortcutsAutoRemoval(profile_);
   // Set the pref to true to show the shortcuts.
   profile_->GetPrefs()->SetBoolean(ntp_prefs::kNtpShortcutsVisible, true);
-  logger_.LogEvent(NTP_SHORTCUTS_AUTO_REMOVE_UNDO,
-                   base::TimeDelta() /* unused */);
+  logger_->LogEvent(NTP_SHORTCUTS_AUTO_REMOVE_UNDO,
+                    base::TimeDelta() /* unused */);
 }
 
 void MostVisitedHandler::UndoMostVisitedTileAction(
     ntp_tiles::TileSource source) {
   if (IsFromEnterpriseShortcut(source)) {
     CHECK(most_visited_sites_->IsEnterpriseShortcutsEnabled());
-    logger_.LogEvent(NTP_CUSTOMIZE_ENTERPRISE_SHORTCUT_UNDO,
-                     base::TimeDelta() /* unused */);
+    logger_->LogEvent(NTP_CUSTOMIZE_ENTERPRISE_SHORTCUT_UNDO,
+                      base::TimeDelta() /* unused */);
     most_visited_sites_->UndoEnterpriseShortcutAction();
     return;
   }
 
   if (most_visited_sites_->IsCustomLinksEnabled()) {
     most_visited_sites_->UndoCustomLinkAction();
-    logger_.LogEvent(NTP_CUSTOMIZE_SHORTCUT_UNDO,
-                     base::TimeDelta() /* unused */);
+    logger_->LogEvent(NTP_CUSTOMIZE_SHORTCUT_UNDO,
+                      base::TimeDelta() /* unused */);
   } else if (last_blocklisted_.is_valid()) {
     most_visited_sites_->AddOrRemoveBlockedUrl(last_blocklisted_, false);
     last_blocklisted_ = GURL();
@@ -224,15 +224,15 @@ void MostVisitedHandler::UpdateMostVisitedTile(
     bool success = most_visited_sites_->UpdateEnterpriseShortcut(
         tile->url, base::UTF8ToUTF16(new_title));
     std::move(callback).Run(success);
-    logger_.LogEvent(NTP_CUSTOMIZE_ENTERPRISE_SHORTCUT_UPDATE,
-                     base::TimeDelta() /* unused */);
+    logger_->LogEvent(NTP_CUSTOMIZE_ENTERPRISE_SHORTCUT_UPDATE,
+                      base::TimeDelta() /* unused */);
   } else if (most_visited_sites_->IsCustomLinksEnabled()) {
     bool success = most_visited_sites_->UpdateCustomLink(
         tile->url, new_url != tile->url ? new_url : GURL(),
         base::UTF8ToUTF16(new_title));
     std::move(callback).Run(success);
-    logger_.LogEvent(NTP_CUSTOMIZE_SHORTCUT_UPDATE,
-                     base::TimeDelta() /* unused */);
+    logger_->LogEvent(NTP_CUSTOMIZE_SHORTCUT_UPDATE,
+                      base::TimeDelta() /* unused */);
   }
 }
 
@@ -242,15 +242,14 @@ void MostVisitedHandler::OnMostVisitedTilesRendered(
   // Update staleness info on tiles rendered.
   UpdateShortcutsStaleness(profile_);
   for (size_t i = 0; i < tiles.size(); i++) {
-    logger_.LogMostVisitedImpression(MakeNTPTileImpression(*tiles[i], i));
+    logger_->LogMostVisitedImpression(MakeNTPTileImpression(*tiles[i], i));
   }
   // This call flushes all most visited impression logs to UMA histograms.
   // Therefore, it must come last.
   bool is_expanded =
       profile_->GetPrefs()->GetBoolean(ntp_prefs::kNtpShowAllMostVisitedTiles);
-  logger_.LogMostVisitedLoaded(
-      base::Time::FromMillisecondsSinceUnixEpoch(time) -
-          ntp_navigation_start_time_,
+  logger_->LogMostVisitedLoaded(
+      base::Time::FromMillisecondsSinceUnixEpoch(time) - navigation_start_time_,
       most_visited_sites_->IsTopSitesEnabled(),
       most_visited_sites_->IsCustomLinksEnabled(),
       most_visited_sites_->IsEnterpriseShortcutsEnabled(),
@@ -266,7 +265,7 @@ void MostVisitedHandler::OnMostVisitedTileNavigation(
     bool meta_key,
     bool shift_key) {
   DisableShortcutsAutoRemoval(profile_);
-  logger_.LogMostVisitedNavigation(MakeNTPTileImpression(*tile, index));
+  logger_->LogMostVisitedNavigation(MakeNTPTileImpression(*tile, index));
 
   WindowOpenDisposition disposition = ui::DispositionFromClick(
       /*middle_button=*/mouse_button == 1, alt_key, ctrl_key, meta_key,
@@ -491,8 +490,8 @@ bool MostVisitedHandler::MaybeRemoveStaleShortcuts() {
             prefs->SetBoolean(ntp_prefs::kNtpShortcutsAutoRemovalDisabled,
                               true);
             handler->page_->OnMostVisitedTilesAutoRemoval();
-            handler->logger_.LogEvent(NTP_SHORTCUTS_AUTO_REMOVE,
-                                      base::TimeDelta());
+            handler->logger_->LogEvent(NTP_SHORTCUTS_AUTO_REMOVE,
+                                       base::TimeDelta());
           },
           weak_ptr_factory_.GetWeakPtr(), profile_->GetPrefs()));
   return true;

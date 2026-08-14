@@ -54,6 +54,7 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/search/ntp_user_data_logger.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/webui/browser_command/browser_command_handler.h"
 #include "chrome/browser/ui/webui/cr_components/composebox/composebox_handler.h"
@@ -1298,8 +1299,11 @@ void NewTabPageUI::CreatePageHandler(
   DCHECK(pending_page.is_valid());
   most_visited_page_handler_ = std::make_unique<MostVisitedHandler>(
       std::move(pending_page_handler), std::move(pending_page), profile_,
-      web_contents(), chrome::ChromeUINewTabPageURLAsGURL(),
-      navigation_start_time_, navigation_start_time_ticks_);
+      web_contents(),
+      std::make_unique<NTPUserDataLogger>(profile_,
+                                          chrome::ChromeUINewTabPageURLAsGURL(),
+                                          navigation_start_time_ticks_),
+      navigation_start_time_);
   most_visited_pref_observer_ = std::make_unique<MostVisitedPrefObserver>(
       profile_, most_visited_page_handler_.get());
 }

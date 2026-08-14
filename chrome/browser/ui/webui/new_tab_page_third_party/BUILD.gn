@@ -51,6 +51,7 @@ if (!is_android) {
       "//chrome/browser/resources/new_tab_page_third_party:resources",
       "//chrome/browser/themes",
       "//chrome/browser/ui/color:color_headers",
+      "//chrome/browser/ui/search",
       "//chrome/browser/ui/webui:favicon_source",
       "//chrome/browser/ui/webui:theme_source",
       "//chrome/browser/ui/webui/cr_components/most_visited",

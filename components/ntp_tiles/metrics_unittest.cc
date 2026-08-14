@@ -342,6 +342,32 @@ TEST(RecordTileClickTest, ShouldRecordClicksForIconType) {
                       .Build());
 }
 
+TEST(CustomPrefixMetricsTest, ShouldRecordMetricsWithCustomPrefix) {
+  base::HistogramTester histogram_tester;
+
+  RecordPageImpression(/*number_of_tiles=*/4, "Omnibox");
+  EXPECT_THAT(histogram_tester.GetAllSamples("Omnibox.NumberOfTiles"),
+              ElementsAre(base::Bucket(4, /*count=*/1)));
+
+  RecordTileImpression(
+      Builder().WithIndex(0).WithSource(TileSource::TOP_SITES).Build(),
+      "Omnibox");
+  EXPECT_THAT(histogram_tester.GetAllSamples("Omnibox.SuggestionsImpression"),
+              ElementsAre(base::Bucket(0, /*count=*/1)));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Omnibox.SuggestionsImpression.client"),
+      ElementsAre(base::Bucket(0, /*count=*/1)));
+
+  RecordTileClick(
+      Builder().WithIndex(1).WithSource(TileSource::CUSTOM_LINKS).Build(),
+      "Omnibox");
+  EXPECT_THAT(histogram_tester.GetAllSamples("Omnibox.MostVisited"),
+              ElementsAre(base::Bucket(1, /*count=*/1)));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Omnibox.MostVisited.custom_links"),
+      ElementsAre(base::Bucket(1, /*count=*/1)));
+}
+
 }  // namespace
 }  // namespace metrics
 }  // namespace ntp_tiles

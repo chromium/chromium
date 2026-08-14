@@ -12,6 +12,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/new_tab_page/prefs/ntp_pref_names.h"
 #include "chrome/browser/search_engines/template_url_service_factory_test_util.h"
+#include "chrome/browser/ui/search/ntp_user_data_logger.h"
 #include "chrome/browser/ui/search/ntp_user_data_types.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/ntp_tiles/most_visited_sites.h"
@@ -63,8 +64,10 @@ class MostVisitedAutoRemovalTest
         content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
     handler_ = std::make_unique<MostVisitedHandler>(
         mojo::PendingReceiver<most_visited::mojom::MostVisitedPageHandler>(),
-        page_.BindAndGetRemote(), &profile_, web_contents_.get(), GURL(),
-        base::Time(), base::TimeTicks());
+        page_.BindAndGetRemote(), &profile_, web_contents_.get(),
+        std::make_unique<NTPUserDataLogger>(&profile_, GURL(),
+                                            base::TimeTicks::Now()),
+        base::Time::Now());
     handler_->EnableTileTypes(
         ntp_tiles::MostVisitedSites::EnableTileTypesOptions().with_custom_links(
             GetParam().custom_links_enabled));

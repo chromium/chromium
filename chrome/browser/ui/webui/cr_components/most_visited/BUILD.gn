@@ -15,7 +15,10 @@ source_set("most_visited") {
     "most_visited_handler.h",
     "most_visited_pref_observer.h",
   ]
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+  public_deps = [
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ui/search",
+  ]
   deps = [
     "//base",
     "//chrome/browser:browser_features",
@@ -28,8 +31,6 @@ source_set("most_visited") {
     "//chrome/browser/preloading/new_tab_page_preload",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/search_engines",
-    "//chrome/browser/ui/search",
-    "//chrome/browser/ui/search:impl",
     "//chrome/browser/ui/tabs:tabs_public",
     "//chrome/browser/ui/webui:webui_util",
     "//chrome/common/search:mojo_bindings",

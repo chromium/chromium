@@ -238,7 +238,8 @@ NTPUserDataLogger::NTPUserDataLogger(
     Profile* profile,
     const GURL& ntp_url,
     base::TimeTicks ntp_navigation_start_time_ticks)
-    : during_startup_(!AfterStartupTaskUtils::IsBrowserStartupComplete()),
+    : MostVisitedMetricsLogger("NewTabPage"),
+      during_startup_(!AfterStartupTaskUtils::IsBrowserStartupComplete()),
       ntp_url_(ntp_url),
       profile_(profile),
       ntp_navigation_start_time_(ntp_navigation_start_time_ticks) {}
@@ -369,26 +370,11 @@ void NTPUserDataLogger::LogMostVisitedLoaded(base::TimeDelta time,
                                              bool using_enterprise_shortcuts,
                                              bool is_visible,
                                              std::optional<bool> is_expanded) {
+  MostVisitedMetricsLogger::LogMostVisitedLoaded(
+      time, using_most_visited, using_custom_links, using_enterprise_shortcuts,
+      is_visible, is_expanded);
   EmitNtpStatistics(time, using_most_visited, using_custom_links,
                     using_enterprise_shortcuts, is_visible, is_expanded);
-}
-
-void NTPUserDataLogger::LogMostVisitedImpression(
-    const ntp_tiles::NTPTileImpression& impression) {
-  if ((impression.index >= ntp_tiles::kMaxNumTiles) ||
-      logged_impressions_[impression.index].has_value()) {
-    return;
-  }
-  logged_impressions_[impression.index] = impression;
-}
-
-void NTPUserDataLogger::LogMostVisitedNavigation(
-    const ntp_tiles::NTPTileImpression& impression) {
-  ntp_tiles::metrics::RecordTileClick(impression);
-
-  // Records the action. This will be available as a time-stamped stream
-  // server-side and can be used to compute time-to-long-dwell.
-  base::RecordAction(base::UserMetricsAction("MostVisited_Clicked"));
 }
 
 bool NTPUserDataLogger::DefaultSearchProviderIsGoogle() const {
@@ -411,19 +397,7 @@ void NTPUserDataLogger::EmitNtpStatistics(base::TimeDelta load_time,
     return;
   }
 
-  int tiles_count = 0;
-  for (const std::optional<ntp_tiles::NTPTileImpression>& impression :
-       logged_impressions_) {
-    if (!impression.has_value()) {
-      break;
-    }
-    ntp_tiles::metrics::RecordTileImpression(*impression);
-    ++tiles_count;
-  }
-  ntp_tiles::metrics::RecordPageImpression(tiles_count);
-
-  DVLOG(1) << "Emitting NTP load time: " << load_time << ", "
-           << "number of tiles: " << tiles_count;
+  DVLOG(1) << "Emitting NTP load time: " << load_time;
 
   UMA_HISTOGRAM_LOAD_TIME("NewTabPage.LoadTime", load_time);
   UMA_HISTOGRAM_LOAD_TIME("NewTabPage.LoadTime.MostVisited", load_time);
@@ -438,11 +412,6 @@ void NTPUserDataLogger::EmitNtpStatistics(base::TimeDelta load_time,
     UMA_HISTOGRAM_LOAD_TIME("NewTabPage.LoadTime.WebUINTP", load_time);
   } else if (ntp_url_ == GURL(chrome::kChromeUINewTabPageThirdPartyURL)) {
     UMA_HISTOGRAM_LOAD_TIME("NewTabPage.LoadTime.WebUI3PNTP", load_time);
-  }
-
-  if (is_expanded.has_value()) {
-    base::UmaHistogramBoolean("NewTabPage.MostVisited.IsExpandedOnLoad",
-                              is_expanded.value());
   }
 
   // Split between Startup and non-startup.

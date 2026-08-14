@@ -10,7 +10,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
-#include "base/strings/stringprintf.h"
+#include "base/strings/strcat.h"
 #include "components/ntp_tiles/constants.h"
 
 namespace ntp_tiles {
@@ -72,88 +72,89 @@ const char* GetTileTypeSuffix(TileVisualType type) {
 
 }  // namespace
 
-void RecordPageImpression(int number_of_tiles) {
-  base::UmaHistogramSparse("NewTabPage.NumberOfTiles", number_of_tiles);
+void RecordPageImpression(int number_of_tiles, std::string_view prefix) {
+  base::UmaHistogramSparse(base::StrCat({prefix, ".NumberOfTiles"}),
+                           number_of_tiles);
 }
 
-void RecordNumberOfCustomTilesOnFirstNtp(int number_of_custom_tiles) {
+void RecordNumberOfCustomTilesOnFirstNtp(int number_of_custom_tiles,
+                                         std::string_view prefix) {
   base::UmaHistogramSparse(
-      "NewTabPage.MostVisited.NumberOfCustomTilesOnFirstNtp",
+      base::StrCat({prefix, ".MostVisited.NumberOfCustomTilesOnFirstNtp"}),
       number_of_custom_tiles);
 }
 
-void RecordTileImpression(const NTPTileImpression& impression) {
-  UMA_HISTOGRAM_ENUMERATION("NewTabPage.SuggestionsImpression",
-                            impression.index, kMaxNumTiles);
+void RecordTileImpression(const NTPTileImpression& impression,
+                          std::string_view prefix) {
+  base::UmaHistogramExactLinear(
+      base::StrCat({prefix, ".SuggestionsImpression"}), impression.index,
+      kMaxNumTiles);
 
   std::string source_name = GetSourceHistogramName(impression.source);
   base::UmaHistogramExactLinear(
-      base::StringPrintf("NewTabPage.SuggestionsImpression.%s",
-                         source_name.c_str()),
+      base::StrCat({prefix, ".SuggestionsImpression.", source_name}),
       impression.index, kMaxNumTiles);
 
-  UMA_HISTOGRAM_ENUMERATION("NewTabPage.TileTitle",
-                            static_cast<int>(impression.title_source),
-                            kLastTitleSource + 1);
+  base::UmaHistogramExactLinear(base::StrCat({prefix, ".TileTitle"}),
+                                static_cast<int>(impression.title_source),
+                                kLastTitleSource + 1);
   base::UmaHistogramExactLinear(
-      base::StringPrintf("NewTabPage.TileTitle.%s",
-                         GetSourceHistogramName(impression.source).c_str()),
+      base::StrCat({prefix, ".TileTitle.", source_name}),
       static_cast<int>(impression.title_source), kLastTitleSource + 1);
 
   if (impression.visual_type > LAST_RECORDED_TILE_TYPE) {
     return;
   }
 
-  UMA_HISTOGRAM_ENUMERATION("NewTabPage.TileType", impression.visual_type,
-                            LAST_RECORDED_TILE_TYPE + 1);
+  base::UmaHistogramExactLinear(base::StrCat({prefix, ".TileType"}),
+                                impression.visual_type,
+                                LAST_RECORDED_TILE_TYPE + 1);
 
   base::UmaHistogramExactLinear(
-      base::StringPrintf("NewTabPage.TileType.%s", source_name.c_str()),
-      impression.visual_type, LAST_RECORDED_TILE_TYPE + 1);
+      base::StrCat({prefix, ".TileType.", source_name}), impression.visual_type,
+      LAST_RECORDED_TILE_TYPE + 1);
 
   const char* tile_type_suffix = GetTileTypeSuffix(impression.visual_type);
   if (tile_type_suffix) {
     // TODO(http://crbug.com/1021598): Add UKM here.
     base::UmaHistogramExactLinear(
-        base::StringPrintf("NewTabPage.SuggestionsImpression.%s",
-                           tile_type_suffix),
+        base::StrCat({prefix, ".SuggestionsImpression.", tile_type_suffix}),
         impression.index, kMaxNumTiles);
   }
 }
 
-void RecordTileClick(const NTPTileImpression& impression) {
-  UMA_HISTOGRAM_ENUMERATION("NewTabPage.MostVisited", impression.index,
-                            kMaxNumTiles);
-  base::RecordAction(base::UserMetricsAction("NewTabPage.MostVisited.Clicked"));
+void RecordTileClick(const NTPTileImpression& impression,
+                     std::string_view prefix) {
+  base::UmaHistogramExactLinear(base::StrCat({prefix, ".MostVisited"}),
+                                impression.index, kMaxNumTiles);
+  base::RecordComputedAction(base::StrCat({prefix, ".MostVisited.Clicked"}));
 
   std::string source_name = GetSourceHistogramName(impression.source);
   base::UmaHistogramExactLinear(
-      base::StringPrintf("NewTabPage.MostVisited.%s", source_name.c_str()),
-      impression.index, kMaxNumTiles);
+      base::StrCat({prefix, ".MostVisited.", source_name}), impression.index,
+      kMaxNumTiles);
 
   const char* tile_type_suffix = GetTileTypeSuffix(impression.visual_type);
   if (tile_type_suffix) {
     base::UmaHistogramExactLinear(
-        base::StringPrintf("NewTabPage.MostVisited.%s", tile_type_suffix),
+        base::StrCat({prefix, ".MostVisited.", tile_type_suffix}),
         impression.index, kMaxNumTiles);
   }
 
-  UMA_HISTOGRAM_ENUMERATION("NewTabPage.TileTitleClicked",
-                            static_cast<int>(impression.title_source),
-                            kLastTitleSource + 1);
+  base::UmaHistogramExactLinear(base::StrCat({prefix, ".TileTitleClicked"}),
+                                static_cast<int>(impression.title_source),
+                                kLastTitleSource + 1);
   base::UmaHistogramExactLinear(
-      base::StringPrintf("NewTabPage.TileTitleClicked.%s",
-                         GetSourceHistogramName(impression.source).c_str()),
+      base::StrCat({prefix, ".TileTitleClicked.", source_name}),
       static_cast<int>(impression.title_source), kLastTitleSource + 1);
 
   if (impression.visual_type <= LAST_RECORDED_TILE_TYPE) {
-    UMA_HISTOGRAM_ENUMERATION("NewTabPage.TileTypeClicked",
-                              impression.visual_type,
-                              LAST_RECORDED_TILE_TYPE + 1);
+    base::UmaHistogramExactLinear(base::StrCat({prefix, ".TileTypeClicked"}),
+                                  impression.visual_type,
+                                  LAST_RECORDED_TILE_TYPE + 1);
 
     base::UmaHistogramExactLinear(
-        base::StringPrintf("NewTabPage.TileTypeClicked.%s",
-                           GetSourceHistogramName(impression.source).c_str()),
+        base::StrCat({prefix, ".TileTypeClicked.", source_name}),
         impression.visual_type, LAST_RECORDED_TILE_TYPE + 1);
   }
 }
