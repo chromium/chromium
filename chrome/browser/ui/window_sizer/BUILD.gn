@@ -33,6 +33,7 @@ source_set("impl") {
     ":window_sizer",
     "//chrome/browser:browser_process",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/web_applications",
     "//chrome/common:non_code_constants",
     "//components/prefs",
