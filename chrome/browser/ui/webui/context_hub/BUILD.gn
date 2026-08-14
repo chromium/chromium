@@ -88,7 +88,10 @@ source_set("context_hub_page_handler") {
       "context_hub_tab_provider_desktop.h",
     ]
     deps += [
+      "//chrome/browser/ui",
       "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/ui/tabs/saved_tab_groups",
+      "//components/saved_tab_groups/public",
       "//ui/base",
     ]
   }
