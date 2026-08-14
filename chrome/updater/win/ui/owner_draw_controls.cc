@@ -144,7 +144,7 @@ HWND CaptionButton::Create(HWND parent, const RECT& bounds, int control_id) {
       .uFlags = TTF_IDISHWND | TTF_SUBCLASS,
       .hwnd = hwnd(),
       .uId = reinterpret_cast<UINT_PTR>(hwnd()),
-      .lpszText = const_cast<LPWSTR>(tool_tip_text_.c_str()),
+      .lpszText = tool_tip_text_.data(),
   };
   ::SendMessageW(tool_tip_window_, TTM_ADDTOOLW, 0,
                  reinterpret_cast<LPARAM>(&ti));

@@ -25,8 +25,8 @@ void SetProxyForRequest(
   if (winhttp_proxy_info.has_value() && winhttp_proxy_info.value().IsValid()) {
     const ScopedWinHttpProxyInfo& proxy_info = winhttp_proxy_info.value();
     VLOG(1) << "Setting proxy: " << *(proxy_info.get());
-    HRESULT hr = SetOption(request_handle, WINHTTP_OPTION_PROXY,
-                           const_cast<WINHTTP_PROXY_INFO*>(proxy_info.get()));
+    HRESULT hr =
+        SetOption(request_handle, WINHTTP_OPTION_PROXY, proxy_info.get());
     if (FAILED(hr)) {
       PLOG(ERROR) << "Failed to set WINHTTP_OPTION_PROXY: 0x" << std::hex << hr;
     }

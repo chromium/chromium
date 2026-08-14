@@ -331,8 +331,8 @@ HRESULT NetworkFetcher::SendRequest(const std::string& data) {
 
   const uint32_t bytes_to_send =
       base::saturated_cast<uint32_t>(request_data_.size());
-  void* request_body = bytes_to_send ? const_cast<char*>(request_data_.c_str())
-                                     : WINHTTP_NO_REQUEST_DATA;
+  void* request_body =
+      bytes_to_send ? request_data_.data() : WINHTTP_NO_REQUEST_DATA;
   if (!::WinHttpSendRequest(request_handle_.get(),
                             WINHTTP_NO_ADDITIONAL_HEADERS, 0, request_body,
                             bytes_to_send, bytes_to_send, context())) {
