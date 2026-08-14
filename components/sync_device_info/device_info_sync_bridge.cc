@@ -475,11 +475,7 @@ DeviceInfoSyncBridge::DeviceInfoSyncBridge(
   DCHECK(!local_device_info_provider_->GetLocalDeviceInfo());
 
   DCHECK(pulse_task_runner);
-  if (base::FeatureList::IsEnabled(kSyncDeviceInfoUseWallClockTimer)) {
-    wall_clock_pulse_timer_.SetTaskRunner(std::move(pulse_task_runner));
-  } else {
-    pulse_timer_.SetTaskRunner(std::move(pulse_task_runner));
-  }
+  pulse_timer_.SetTaskRunner(std::move(pulse_task_runner));
 
   std::move(store_factory)
       .Run(DEVICE_INFO, base::BindOnce(&DeviceInfoSyncBridge::OnStoreCreated,
@@ -686,7 +682,6 @@ void DeviceInfoSyncBridge::ApplyDisableSyncChanges(
   local_device_info_provider_->Clear();
   local_cache_guid_.clear();
   pulse_timer_.Stop();
-  wall_clock_pulse_timer_.Stop();
 
   // Remove all local data, if sync is being disabled, the user has expressed
   // their desire to not have knowledge about other devices.
@@ -785,12 +780,12 @@ bool DeviceInfoSyncBridge::IsRecentLocalCacheGuid(
 
 bool DeviceInfoSyncBridge::IsPulseTimerRunningForTest() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return pulse_timer_.IsRunning() || wall_clock_pulse_timer_.IsRunning();
+  return pulse_timer_.IsRunning();
 }
 
 void DeviceInfoSyncBridge::ForcePulseForTest() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (pulse_timer_.IsRunning() || wall_clock_pulse_timer_.IsRunning()) {
+  if (pulse_timer_.IsRunning()) {
     // FireNow() can't be used with SetTaskRunner, so re-set the timer to fire
     // with no delay, and don't return until it's done.
 
@@ -806,12 +801,7 @@ void DeviceInfoSyncBridge::ForcePulseForTest() {
     base::RunLoop run_loop;
     done_pulse_timer_callback_for_test_ = run_loop.QuitClosure();
 
-    if (wall_clock_pulse_timer_.IsRunning()) {
-      wall_clock_pulse_timer_.Start(FROM_HERE, base::Time::Now(),
-                                    std::move(timer_task));
-    } else {
-      pulse_timer_.Start(FROM_HERE, base::TimeDelta(), std::move(timer_task));
-    }
+    pulse_timer_.Start(FROM_HERE, base::Time::Now(), std::move(timer_task));
     run_loop.Run();
     return;
   }
@@ -1053,7 +1043,7 @@ bool DeviceInfoSyncBridge::ReconcileLocalAndStored() {
   if (IsStoredLocalDeviceInfoStillAccurate(&previous_device_info,
                                            current_info) &&
       !force_reupload_for_test_) {
-    if (pulse_timer_.IsRunning() || wall_clock_pulse_timer_.IsRunning()) {
+    if (pulse_timer_.IsRunning()) {
       // No need to update the |pulse_timer| since nothing has changed.
       return false;
     }
@@ -1061,16 +1051,10 @@ bool DeviceInfoSyncBridge::ReconcileLocalAndStored() {
     const base::TimeDelta pulse_delay(DeviceInfoUtil::CalculatePulseDelay(
         GetLastUpdateTime(iter->second.specifics()), Time::Now()));
     if (!pulse_delay.is_zero()) {
-      if (base::FeatureList::IsEnabled(kSyncDeviceInfoUseWallClockTimer)) {
-        wall_clock_pulse_timer_.Start(
-            FROM_HERE, base::Time::Now() + pulse_delay,
-            base::BindOnce(&DeviceInfoSyncBridge::SendLocalData,
-                           base::Unretained(this)));
-      } else {
-        pulse_timer_.Start(FROM_HERE, pulse_delay,
-                           base::BindOnce(&DeviceInfoSyncBridge::SendLocalData,
-                                          base::Unretained(this)));
-      }
+      pulse_timer_.Start(
+          FROM_HERE, base::Time::Now() + pulse_delay,
+          base::BindOnce(&DeviceInfoSyncBridge::SendLocalData,
+                         base::Unretained(this)));
       return false;
     }
   }
@@ -1114,16 +1098,10 @@ void DeviceInfoSyncBridge::SendLocalDataWithBatch(
   StoreSpecifics(std::move(*specifics), batch.get());
   CommitAndNotify(std::move(batch), /*should_notify=*/true);
 
-  if (base::FeatureList::IsEnabled(kSyncDeviceInfoUseWallClockTimer)) {
-    wall_clock_pulse_timer_.Start(
-        FROM_HERE, base::Time::Now() + DeviceInfoUtil::GetPulseInterval(),
-        base::BindOnce(&DeviceInfoSyncBridge::SendLocalData,
-                       base::Unretained(this)));
-  } else {
-    pulse_timer_.Start(FROM_HERE, DeviceInfoUtil::GetPulseInterval(),
-                       base::BindOnce(&DeviceInfoSyncBridge::SendLocalData,
-                                      base::Unretained(this)));
-  }
+  pulse_timer_.Start(
+      FROM_HERE, base::Time::Now() + DeviceInfoUtil::GetPulseInterval(),
+      base::BindOnce(&DeviceInfoSyncBridge::SendLocalData,
+                     base::Unretained(this)));
   if (done_pulse_timer_callback_for_test_) {
     std::move(done_pulse_timer_callback_for_test_).Run();
   }

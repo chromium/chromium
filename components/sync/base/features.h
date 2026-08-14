@@ -217,10 +217,6 @@ BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
 // as the minimum number of days between recordings.
 BASE_DECLARE_FEATURE_PARAM(int, kSyncRecordDeviceStatisticsMetricsPeriodDays);
 
-// If enabled, DeviceInfoSyncBridge uses WallClockTimer for pulse updates,
-// which is more resilient to device suspension.
-BASE_DECLARE_FEATURE(kSyncDeviceInfoUseWallClockTimer);
-
 // If enabled, validate the access token before sending the request to the
 // server.
 BASE_DECLARE_FEATURE(kSyncValidateAccessToken);

@@ -197,9 +197,6 @@ BASE_FEATURE_PARAM(int,
                    "SyncRecordDeviceStatisticsMetricsPeriodDays",
                    1);
 
-BASE_FEATURE(kSyncDeviceInfoUseWallClockTimer,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kSyncValidateAccessToken, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSyncUsePropagatedAccessToken, base::FEATURE_DISABLED_BY_DEFAULT);

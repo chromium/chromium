@@ -21,14 +21,12 @@
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/test/protobuf_matchers.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/sync/base/data_type.h"
-#include "components/sync/base/features.h"
 #include "components/sync/base/time.h"
 #include "components/sync/model/data_batch.h"
 #include "components/sync/model/data_type_activation_request.h"
@@ -64,10 +62,12 @@ using sync_pb::EntitySpecifics;
 using testing::_;
 using testing::AllOf;
 using testing::Contains;
+using testing::Field;
 using testing::InvokeWithoutArgs;
 using testing::IsEmpty;
 using testing::IsNull;
 using testing::Matcher;
+using testing::Mock;
 using testing::NiceMock;
 using testing::Not;
 using testing::NotNull;
@@ -191,7 +191,7 @@ MATCHER_P(ModelEqualsSpecifics, expected_specifics, "") {
 
 Matcher<std::unique_ptr<EntityData>> HasSpecifics(
     const Matcher<sync_pb::EntitySpecifics>& m) {
-  return testing::Pointee(testing::Field(&EntityData::specifics, m));
+  return Pointee(Field(&EntityData::specifics, m));
 }
 
 MATCHER_P(HasCacheGuid, cache_guid, "") {
@@ -1336,12 +1336,13 @@ TEST_F(DeviceInfoSyncBridgeTest,
   EXPECT_THAT(bridge()->GetDeviceInfo(CacheGuidForSuffix(3)), NotNull());
 }
 
+// Tests that local device info is pulsed when requested in full sync mode.
 TEST_F(DeviceInfoSyncBridgeTest, SendLocalData) {
   // Ensure |last_updated| is about now, plus or minus a little bit.
   EXPECT_CALL(*processor(), Put(_, HasSpecifics(HasLastUpdatedAboutNow()), _));
   InitializeAndMergeInitialData(SyncMode::kFull);
   EXPECT_EQ(1, change_count());
-  testing::Mock::VerifyAndClearExpectations(processor());
+  Mock::VerifyAndClearExpectations(processor());
 
   // Ensure |last_updated| is about now, plus or minus a little bit.
   EXPECT_CALL(*processor(), Put(_, HasSpecifics(HasLastUpdatedAboutNow()), _));
@@ -1420,7 +1421,7 @@ TEST_F(DeviceInfoSyncBridgeTest, RefreshLocalDeviceInfo) {
   EXPECT_CALL(*processor(), Put(_, HasSpecifics(HasLastUpdatedAboutNow()), _));
   InitializeAndMergeInitialData(SyncMode::kFull);
   EXPECT_EQ(1, change_count());
-  testing::Mock::VerifyAndClearExpectations(processor());
+  Mock::VerifyAndClearExpectations(processor());
 
   // Check that the device is not updated if nothing has been changed.
   RefreshLocalDeviceInfo();
@@ -1843,31 +1844,13 @@ TEST_F(DeviceInfoSyncBridgeTest, ShouldDeriveOsFromDeviceType) {
   }
 }
 
-TEST_F(DeviceInfoSyncBridgeTest, PulseWithWallClockTimer) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kSyncDeviceInfoUseWallClockTimer);
-
-  // Ensure `last_updated` is about now, plus or minus a little bit.
-  EXPECT_CALL(*processor(), Put(_, HasSpecifics(HasLastUpdatedAboutNow()), _));
-  InitializeAndMergeInitialData(SyncMode::kFull);
-  EXPECT_EQ(1, change_count());
-  testing::Mock::VerifyAndClearExpectations(processor());
-
-  // Ensure `last_updated` is about now, plus or minus a little bit.
-  EXPECT_CALL(*processor(), Put(_, HasSpecifics(HasLastUpdatedAboutNow()), _));
-  ForcePulse();
-  EXPECT_EQ(2, change_count());
-}
-
-TEST_F(DeviceInfoSyncBridgeTest, PulseWithWallClockTimerTransportOnly) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kSyncDeviceInfoUseWallClockTimer);
-
+// Tests that local device info is pulsed when requested in transport-only mode.
+TEST_F(DeviceInfoSyncBridgeTest, SendLocalDataTransportOnly) {
   // Ensure `last_updated` is about now, plus or minus a little bit.
   EXPECT_CALL(*processor(), Put(_, HasSpecifics(HasLastUpdatedAboutNow()), _));
   InitializeAndMergeInitialData(SyncMode::kTransportOnly);
   EXPECT_EQ(1, change_count());
-  testing::Mock::VerifyAndClearExpectations(processor());
+  Mock::VerifyAndClearExpectations(processor());
 
   // Ensure `last_updated` is about now, plus or minus a little bit.
   EXPECT_CALL(*processor(), Put(_, HasSpecifics(HasLastUpdatedAboutNow()), _));

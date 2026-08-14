@@ -17,7 +17,6 @@
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
-#include "base/timer/timer.h"
 #include "base/timer/wall_clock_timer.h"
 #include "components/sync/base/sync_mode.h"
 #include "components/sync/model/data_type_store.h"
@@ -216,9 +215,7 @@ class DeviceInfoSyncBridge : public DataTypeSyncBridge,
   std::unique_ptr<DataTypeStore> store_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Used to update our local device info once every pulse interval.
-  base::OneShotTimer pulse_timer_ GUARDED_BY_CONTEXT(sequence_checker_);
-  base::WallClockTimer wall_clock_pulse_timer_
-      GUARDED_BY_CONTEXT(sequence_checker_);
+  base::WallClockTimer pulse_timer_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Callback that's set by ForcePulseForTest() to run after `pulse_timer_`
   // fires. This lets the test wait until the pulse finishes.
