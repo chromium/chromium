@@ -868,6 +868,32 @@ IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxInteractiveTest, OnCopy) {
       }));
 }
 
+// Verifies that pressing Enter on an open page (without modifying the URL)
+// submits the verbatim URL (reloads/navigates) and closes the popup.
+IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxInteractiveTest,
+                       EnterSubmitsVerbatimUrlOnOpenPage) {
+  RunTestSequence(
+      OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
+      WaitForWebUIInputValue("chrome://version"),
+      SendKeyPress(kBrowserViewElementId, ui::VKEY_RETURN, ui::EF_NONE),
+      WaitForWebContentsNavigation(kTab1, GURL("chrome://version/")),
+      InAnyContext(WaitForHide(OmniboxPopupPresenter::kRoundedResultsFrame)),
+      WaitForOmniboxFocus(false));
+}
+
+// Verifies that pressing Alt+Enter on an open page (without modifying the URL)
+// opens the verbatim URL in a new foreground tab.
+IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxInteractiveTest,
+                       AltEnterOpensInNewForegroundTab) {
+  RunTestSequence(
+      OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
+      WaitForWebUIInputValue("chrome://version"), InstrumentNextTab(kTab2),
+      SendKeyPress(kBrowserViewElementId, ui::VKEY_RETURN, ui::EF_ALT_DOWN),
+      WaitForWebContentsReady(kTab2),
+      InAnyContext(WaitForHide(OmniboxPopupPresenter::kRoundedResultsFrame)),
+      WaitForOmniboxFocus(false));
+}
+
 class FullWebUIOmniboxAimInteractiveTestBase
     : public FullWebUIOmniboxInteractiveTestBase {
  public:

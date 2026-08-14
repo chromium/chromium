@@ -862,9 +862,28 @@ export class OmniboxPopupSearchboxElement extends
     if (e.key === 'Escape') {
       e.preventDefault();
       this.handleEscapeKey_();
-    } else {
-      super.handleKeyNavigation(e);
+      return;
     }
+
+    if (e.key === 'Enter' && this.selectedMatchIndex === -1) {
+      // On an open page where no suggestion match is highlighted, submit the
+      // verbatim input text (or reload the permanent URL).
+      e.preventDefault();
+      this.pageHandler().openAutocompleteMatch(
+          /*line=*/ -1,
+          /*url=*/ '',
+          /*areMatchesShowing=*/ this.dropdownIsVisible,
+          /*mouseButton=*/ 0, {
+            altKey: e.altKey,
+            ctrlKey: e.ctrlKey,
+            metaKey: e.metaKey,
+            shiftKey: e.shiftKey,
+          },
+          /*viaKeyboard=*/ true);
+      return;
+    }
+
+    super.handleKeyNavigation(e);
   }
 
   private handleEscapeKey_() {

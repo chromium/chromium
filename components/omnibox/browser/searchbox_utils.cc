@@ -40,20 +40,6 @@
 
 using metrics::OmniboxEventProto;
 
-namespace {
-
-void ClassifyString(OmniboxClient* client,
-                    const std::u16string& text,
-                    AutocompleteMatch* match,
-                    GURL* alternate_nav_url) {
-  DCHECK(match);
-  client->GetAutocompleteClassifier()->Classify(
-      text, false, false, client->GetPageClassification(/*is_prefetch=*/false),
-      match, alternate_nav_url);
-}
-
-}  // namespace
-
 namespace searchbox {
 
 InteractionMetricsTracker::InteractionMetricsTracker() = default;
@@ -364,13 +350,29 @@ void OpenMatch(
       input.text(), match, alternative_nav_match);
 }
 
+void ClassifyString(OmniboxClient* client,
+                    const std::u16string& text,
+                    bool in_keyword_mode,
+                    bool allow_exact_keyword_match,
+                    AutocompleteMatch* match,
+                    GURL* alternate_nav_url) {
+  DCHECK(match);
+  AutocompleteClassifier* classifier = client->GetAutocompleteClassifier();
+  if (classifier) {
+    classifier->Classify(text, in_keyword_mode, allow_exact_keyword_match,
+                         client->GetPageClassification(/*is_prefetch=*/false),
+                         match, alternate_nav_url);
+  }
+}
+
 bool CanPasteAndGo(OmniboxClient* client, const std::u16string& text) {
   if (!client->IsPasteAndGoEnabled()) {
     return false;
   }
 
   AutocompleteMatch match;
-  ClassifyString(client, text, &match, nullptr);
+  ClassifyString(client, text, /*in_keyword_mode=*/false,
+                 /*allow_exact_keyword_match=*/false, &match, nullptr);
   return match.destination_url.is_valid();
 }
 
@@ -385,7 +387,9 @@ void PasteAndGo(AutocompleteController* autocomplete_controller,
   AutocompleteInput input = autocomplete_controller->input();
   AutocompleteMatch match;
   GURL alternate_nav_url;
-  ClassifyString(client, text, &match, &alternate_nav_url);
+  ClassifyString(client, text, /*in_keyword_mode=*/false,
+                 /*allow_exact_keyword_match=*/false, &match,
+                 &alternate_nav_url);
 
   GURL upgraded_url;
   if (match.type == AutocompleteMatchType::URL_WHAT_YOU_TYPED &&

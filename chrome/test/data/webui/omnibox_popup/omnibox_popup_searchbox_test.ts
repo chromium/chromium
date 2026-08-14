@@ -91,6 +91,33 @@ suite('OmniboxPopupSearchboxTest', function() {
     assertEquals(1, testProxy.handler.getCallCount('stopAutocomplete'));
   });
 
+  test('EnterKeySubmitsVerbatimMatchWhenNoMatchSelected', async () => {
+    callbackRouter.setInputState(createDefaultOmniboxInputState({
+      text: 'chrome://version',
+    }));
+    await microtasksFinished();
+
+    assertEquals(-1, searchbox.selectedMatchIndex);
+
+    await searchbox.handleKeyNavigation(new KeyboardEvent('keydown', {
+      key: 'Enter',
+      cancelable: true,
+    }));
+    await microtasksFinished();
+
+    const [line, url, areMatchesShowing, mouseButton, modifiers, viaKeyboard] =
+        await testProxy.handler.whenCalled('openAutocompleteMatch');
+    assertEquals(-1, line);
+    assertEquals('', url);
+    assertFalse(areMatchesShowing);
+    assertEquals(0, mouseButton);
+    assertFalse(modifiers.altKey);
+    assertFalse(modifiers.ctrlKey);
+    assertFalse(modifiers.metaKey);
+    assertFalse(modifiers.shiftKey);
+    assertTrue(viaKeyboard);
+  });
+
   test('HandlesSelectionChange', async () => {
     // Focus the input so it's the active element.
     const input = searchbox.$.input.inputElement;

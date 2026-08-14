@@ -149,6 +149,28 @@ TEST_F(SearchboxUtilsTest, ComputeOpenDispositionFromModifiers) {
   }
 }
 
+TEST_F(SearchboxUtilsTest, ClassifyStringUrl) {
+  AutocompleteMatch match;
+  GURL alternate_nav_url;
+  ClassifyString(&client_, u"https://example.com", /*in_keyword_mode=*/false,
+                 /*allow_exact_keyword_match=*/true, &match,
+                 &alternate_nav_url);
+  EXPECT_TRUE(match.destination_url.is_valid());
+  EXPECT_EQ(AutocompleteMatchType::URL_WHAT_YOU_TYPED, match.type);
+  EXPECT_EQ(GURL("https://example.com/"), match.destination_url);
+}
+
+TEST_F(SearchboxUtilsTest, ClassifyStringSearchQuery) {
+  AutocompleteMatch match;
+  GURL alternate_nav_url;
+  ClassifyString(&client_, u"test search query", /*in_keyword_mode=*/false,
+                 /*allow_exact_keyword_match=*/true, &match,
+                 &alternate_nav_url);
+  EXPECT_TRUE(match.destination_url.is_valid());
+  EXPECT_TRUE(AutocompleteMatch::IsSearchType(match.type));
+  EXPECT_EQ(AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED, match.type);
+}
+
 TEST_F(SearchboxUtilsTest, CanPasteAndGo) {
   EXPECT_TRUE(CanPasteAndGo(&client_, u"https://example.com"));
   EXPECT_FALSE(CanPasteAndGo(&client_, u""));

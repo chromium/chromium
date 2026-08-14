@@ -102,6 +102,15 @@ void OpenMatch(AutocompleteController* autocomplete_controller,
                    keyword_mode_entry_method,
                const std::u16string& pasted_text);
 
+// Classifies `text` using the AutocompleteClassifier to generate a match and an
+// optional alternate navigation URL.
+void ClassifyString(OmniboxClient* client,
+                    const std::u16string& text,
+                    bool in_keyword_mode,
+                    bool allow_exact_keyword_match,
+                    AutocompleteMatch* match,
+                    GURL* alternate_nav_url = nullptr);
+
 // Determines whether the user can "paste and go", given the specified text.
 bool CanPasteAndGo(OmniboxClient* client, const std::u16string& text);
 
