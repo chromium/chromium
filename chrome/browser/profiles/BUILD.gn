@@ -827,6 +827,7 @@ source_set("profiles_extra_parts_impl") {
     "//chrome/browser/sharing",
     "//chrome/browser/signin",
     "//chrome/browser/site_token_provider",
+    "//chrome/browser/skills",
     "//chrome/browser/speech",
     "//chrome/browser/ssl",
     "//chrome/browser/storage",

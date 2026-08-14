@@ -237,6 +237,7 @@
 #include "chrome/browser/signin/signin_policy_service_factory.h"
 #include "chrome/browser/signin/signin_profile_attributes_updater_factory.h"
 #include "chrome/browser/site_token_provider/site_token_provider_service_factory.h"
+#include "chrome/browser/skills/skills_service_factory.h"
 #include "chrome/browser/ssl/https_first_mode_settings_tracker.h"
 #include "chrome/browser/ssl/sct_reporting_service_factory.h"
 #include "chrome/browser/ssl/stateful_ssl_host_state_delegate_factory.h"
@@ -1522,6 +1523,7 @@ void ChromeBrowserMainExtraPartsProfiles::
           site_token_provider::features::kSiteTokenProviderEnabled)) {
     site_token_provider::SiteTokenProviderServiceFactory::GetInstance();
   }
+  skills::SkillsServiceFactory::GetInstance();
 #if BUILDFLAG(IS_CHROMEOS)
   SmartCardPermissionContextFactory::GetInstance();
 #endif
