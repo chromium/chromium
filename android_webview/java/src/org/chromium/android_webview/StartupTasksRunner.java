@@ -72,13 +72,7 @@ public final class StartupTasksRunner {
     /** Delegate interface for communicating back with the startup coordinator. */
     public interface Delegate {
         /** Called when all tasks are complete to record metrics and notify listeners. */
-        void onStartupComplete(
-                @StartupCallSite int startCallSite,
-                @StartupCallSite int finishCallSite,
-                long startTimeMs,
-                long totalTimeTakenMs,
-                long longestUiBlockingTaskTimeMs,
-                @StartupMode int startupMode);
+        void onStartupComplete(StartupDiagnostics diagnostics);
 
         /** Called when a startup task throws a runtime exception. */
         void onStartupFailed(RuntimeException e);
@@ -91,6 +85,7 @@ public final class StartupTasksRunner {
     }
 
     private final Delegate mDelegate;
+    private final StartupDiagnostics mDiagnostics;
     private final ArrayDeque<Runnable> mPreBrowserProcessStartQueue;
     private final ArrayDeque<Runnable> mPostBrowserProcessStartQueue;
     private final int mPreBrowserProcessStartTasksSize;
@@ -110,11 +105,13 @@ public final class StartupTasksRunner {
 
     public StartupTasksRunner(
             Delegate delegate,
+            StartupDiagnostics diagnostics,
             ArrayDeque<Runnable> preBrowserProcessStartTasks,
             ArrayDeque<Runnable> postBrowserProcessStartTasks,
             boolean runStartupTasksAsync,
             @StartupRequestMode int chromiumFirstStartupRequestMode) {
         mDelegate = delegate;
+        mDiagnostics = diagnostics;
         mPreBrowserProcessStartQueue = preBrowserProcessStartTasks;
         mPostBrowserProcessStartQueue = postBrowserProcessStartTasks;
         mPreBrowserProcessStartTasksSize = preBrowserProcessStartTasks.size();
@@ -253,14 +250,15 @@ public final class StartupTasksRunner {
             mLongestUiBlockingTaskTimeMs = Math.max(mLongestUiBlockingTaskTimeMs, durationMs);
             mTotalTimeTakenMs += durationMs;
             if (mPostBrowserProcessStartQueue.isEmpty()) {
-                // We are done running all the tasks, so record the metrics.
-                mDelegate.onStartupComplete(
-                        mStartCallSite,
-                        mFinishCallSite,
-                        /* startTimeMs= */ mStartupTimeMs,
-                        /* totalTimeTakenMs= */ mTotalTimeTakenMs,
-                        /* longestUiBlockingTaskTimeMs= */ mLongestUiBlockingTaskTimeMs,
-                        calculateStartupMode());
+                // We are done running all the tasks, so store them in the diagnostics object.
+                mDiagnostics.setTotalTimeUiThreadChromiumInitMillis(mTotalTimeTakenMs);
+                mDiagnostics.setMaxTimePerTaskUiThreadChromiumInitMillis(
+                        mLongestUiBlockingTaskTimeMs);
+                mDiagnostics.setStartTimeMillis(mStartupTimeMs);
+                mDiagnostics.setStartupMode(calculateStartupMode());
+                mDiagnostics.setCallSites(mStartCallSite, mFinishCallSite);
+
+                mDelegate.onStartupComplete(mDiagnostics);
             }
         } catch (RuntimeException e) {
             Log.e(TAG, "WebView chromium startup failed", e);

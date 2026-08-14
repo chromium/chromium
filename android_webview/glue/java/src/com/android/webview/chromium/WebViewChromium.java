@@ -72,6 +72,7 @@ import org.chromium.android_webview.DarkModeHelper;
 import org.chromium.android_webview.DualTraceEvent;
 import org.chromium.android_webview.ManifestMetadataUtil;
 import org.chromium.android_webview.StartupCallSite;
+import org.chromium.android_webview.StartupMetrics;
 import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.AwSwitches;
 import org.chromium.android_webview.common.Lifetime;
@@ -97,7 +98,6 @@ import java.io.File;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executor;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * This class is the delegate to which WebViewProxy forwards all API calls.
@@ -149,8 +149,6 @@ class WebViewChromium
         sRecordWholeDocumentEnabledByApi = true;
     }
 
-    private static final AtomicBoolean sFirstWebViewInstanceCreated = new AtomicBoolean();
-
     // This does not touch any global / non-threadsafe state, but note that
     // init is called right after and is NOT threadsafe.
     public WebViewChromium(
@@ -195,7 +193,6 @@ class WebViewChromium
                 ApiCallUserAction.WEBVIEW_INSTANCE_WEBVIEW_CHROMIUM_INIT);
         long startTime = SystemClock.uptimeMillis();
         boolean wasChromiumAlreadyInitialized = mAwInit.isChromiumInitialized();
-        boolean isFirstWebViewInstance = !sFirstWebViewInstanceCreated.getAndSet(true);
         try (DualTraceEvent ignored = DualTraceEvent.scoped("WebViewChromium.init")) {
             if (privateBrowsing) {
                 throw new IllegalArgumentException("Private browsing is not supported in WebView.");
@@ -225,43 +222,7 @@ class WebViewChromium
             mFactory.addTask(this::initForReal);
         }
 
-        long elapsedTime = SystemClock.uptimeMillis() - startTime;
-        if (isFirstWebViewInstance) {
-            if (wasChromiumAlreadyInitialized) {
-                // This is the first WebView created, but global Chromium initialization happened
-                // before the constructor was called.
-                RecordHistogram.recordTimesHistogram(
-                        "Android.WebView.Startup.CreationTime.FirstInstanceAfterGlobalStartup",
-                        elapsedTime);
-                TraceEvent.webViewStartupFirstInstance(startTime, elapsedTime, false);
-            } else {
-                // This is the first WebView created, and we blocked running global Chromium
-                // initialization during the constructor.
-                RecordHistogram.recordTimesHistogram(
-                        "Android.WebView.Startup.CreationTime.FirstInstanceWithGlobalStartup",
-                        elapsedTime);
-                TraceEvent.webViewStartupFirstInstance(startTime, elapsedTime, true);
-            }
-        } else {
-            // This is not the first WebView created; global Chromium initialization must have
-            // happened beforehand.
-            RecordHistogram.recordTimesHistogram(
-                    "Android.WebView.Startup.CreationTime.NotFirstInstance", elapsedTime);
-            TraceEvent.webViewStartupNotFirstInstance(startTime, elapsedTime);
-        }
-
-        // Record "legacy" metrics. These have suboptimal definitions because they don't allow for
-        // the case where global Chromium initialization happened before the first WebView instance
-        // was constructed, and just use "cold/warm" to refer to whether global Chromium
-        // initialization had to be run during the constructor or not, giving the "cold" case a
-        // bimodal distribution.
-        if (!wasChromiumAlreadyInitialized) {
-            RecordHistogram.recordTimesHistogram(
-                    "Android.WebView.Startup.CreationTime.Stage2.ProviderInit.Cold", elapsedTime);
-        } else {
-            RecordHistogram.recordTimesHistogram(
-                    "Android.WebView.Startup.CreationTime.Stage2.ProviderInit.Warm", elapsedTime);
-        }
+        StartupMetrics.webViewInstanceCreated(startTime, wasChromiumAlreadyInitialized);
     }
 
     private void initForReal() {

@@ -30,6 +30,18 @@ public class StartupDiagnostics {
     private @Nullable Long mMaxTimePerTaskUiThreadChromiumInitMillis;
 
     @GuardedBy("mLock")
+    private @Nullable Long mStartTimeMillis;
+
+    @GuardedBy("mLock")
+    private int mStartupMode;
+
+    @GuardedBy("mLock")
+    private int mStartCallSite;
+
+    @GuardedBy("mLock")
+    private int mFinishCallSite;
+
+    @GuardedBy("mLock")
     private @Nullable Throwable mSynchronousChromiumInitLocation;
 
     @GuardedBy("mLock")
@@ -47,6 +59,30 @@ public class StartupDiagnostics {
     public @Nullable Long getMaxTimePerTaskUiThreadChromiumInitMillis() {
         synchronized (mLock) {
             return mMaxTimePerTaskUiThreadChromiumInitMillis;
+        }
+    }
+
+    public @Nullable Long getStartTimeMillis() {
+        synchronized (mLock) {
+            return mStartTimeMillis;
+        }
+    }
+
+    public int getStartupMode() {
+        synchronized (mLock) {
+            return mStartupMode;
+        }
+    }
+
+    public int getStartCallSite() {
+        synchronized (mLock) {
+            return mStartCallSite;
+        }
+    }
+
+    public int getFinishCallSite() {
+        synchronized (mLock) {
+            return mFinishCallSite;
         }
     }
 
@@ -70,7 +106,6 @@ public class StartupDiagnostics {
 
     public void setTotalTimeUiThreadChromiumInitMillis(Long time) {
         synchronized (mLock) {
-            // The setter should only be called once.
             assert (mTotalTimeUiThreadChromiumInitMillis == null);
             mTotalTimeUiThreadChromiumInitMillis = time;
         }
@@ -78,15 +113,33 @@ public class StartupDiagnostics {
 
     public void setMaxTimePerTaskUiThreadChromiumInitMillis(Long time) {
         synchronized (mLock) {
-            // The setter should only be called once.
             assert (mMaxTimePerTaskUiThreadChromiumInitMillis == null);
             mMaxTimePerTaskUiThreadChromiumInitMillis = time;
         }
     }
 
+    public void setStartTimeMillis(Long time) {
+        synchronized (mLock) {
+            assert (mStartTimeMillis == null);
+            mStartTimeMillis = time;
+        }
+    }
+
+    public void setStartupMode(int startupMode) {
+        synchronized (mLock) {
+            mStartupMode = startupMode;
+        }
+    }
+
+    public void setCallSites(int startCallSite, int finishCallSite) {
+        synchronized (mLock) {
+            mStartCallSite = startCallSite;
+            mFinishCallSite = finishCallSite;
+        }
+    }
+
     public void setSynchronousChromiumInitLocation(Throwable t) {
         synchronized (mLock) {
-            // The setter should only be called once.
             assert (mSynchronousChromiumInitLocation == null);
             mSynchronousChromiumInitLocation = t;
         }
@@ -94,7 +147,6 @@ public class StartupDiagnostics {
 
     public void setProviderInitOnMainLooperLocation(Throwable t) {
         synchronized (mLock) {
-            // The setter should only be called once.
             assert (mProviderInitOnMainLooperLocation == null);
             mProviderInitOnMainLooperLocation = t;
         }
@@ -102,7 +154,6 @@ public class StartupDiagnostics {
 
     public void setAsynchronousChromiumInitLocation(Throwable t) {
         synchronized (mLock) {
-            // The setter should only be called once.
             assert (mAsynchronousChromiumInitLocation == null);
             mAsynchronousChromiumInitLocation = t;
         }
