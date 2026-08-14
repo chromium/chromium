@@ -28,11 +28,11 @@
 //
 // If `earliest_next_refresh_time` is null it will not
 // schedule a new pre-warming, unless there are transient errors, in which case
-// it will use the default interval.
+// it will use the minimum interval.
 //
-// If `earliest_next_refresh_time` is in the past,
-// it will schedule the next pre-warming at the default interval to avoid
-// infinite loops.
+// If `earliest_next_refresh_time` is in the past or shorter than the minimum
+// interval, it will schedule the next pre-warming at the minimum interval to
+// avoid infinite loops or excessive requests.
 class DeviceBoundSessionPrewarmer {
  public:
   // A callback to retrieve the DeviceBoundSessionManager pointer dynamically.

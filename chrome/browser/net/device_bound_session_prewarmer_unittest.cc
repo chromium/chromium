@@ -49,7 +49,7 @@ TEST_F(DeviceBoundSessionPrewarmerTest, LogsStartupUmaTrue) {
                           network::mojom::DeviceBoundSessionManager::
                               PrewarmSessionsForUrlCallback callback) {
         std::vector<RefreshResult> results = {RefreshResult::kRefreshed};
-        std::move(callback).Run(results, base::Time::Now() + base::Seconds(30));
+        std::move(callback).Run(results, base::Time::Now() + base::Seconds(90));
       });
 
   prewarmer.Start(base::BindLambdaForTesting([&]() { return target_url_; }),
@@ -63,8 +63,8 @@ TEST_F(DeviceBoundSessionPrewarmerTest, LogsStartupUmaTrue) {
   histogram_tester.ExpectTotalCount(
       "Net.DeviceBoundSessions.PrewarmResult.Scheduled", 0);
 
-  // Second callback runs after 30 seconds.
-  task_environment_.FastForwardBy(base::Seconds(30));
+  // Second callback runs after 90 seconds.
+  task_environment_.FastForwardBy(base::Seconds(90));
   histogram_tester.ExpectUniqueSample(
       "Net.DeviceBoundSessions.PrewarmResult.Startup",
       RefreshResult::kRefreshed, 1);
@@ -85,7 +85,7 @@ TEST_F(DeviceBoundSessionPrewarmerTest, LogsStartupUmaFalse) {
                           network::mojom::DeviceBoundSessionManager::
                               PrewarmSessionsForUrlCallback callback) {
         std::vector<RefreshResult> results = {RefreshResult::kRefreshed};
-        std::move(callback).Run(results, base::Time::Now() + base::Seconds(30));
+        std::move(callback).Run(results, base::Time::Now() + base::Seconds(90));
       });
 
   prewarmer.Start(base::BindLambdaForTesting([&]() { return target_url_; }),
@@ -99,8 +99,8 @@ TEST_F(DeviceBoundSessionPrewarmerTest, LogsStartupUmaFalse) {
       "Net.DeviceBoundSessions.PrewarmResult.Scheduled",
       RefreshResult::kRefreshed, 1);
 
-  // Second callback runs after 30 seconds.
-  task_environment_.FastForwardBy(base::Seconds(30));
+  // Second callback runs after 90 seconds.
+  task_environment_.FastForwardBy(base::Seconds(90));
   histogram_tester.ExpectTotalCount(
       "Net.DeviceBoundSessions.PrewarmResult.Startup", 0);
   histogram_tester.ExpectUniqueSample(
@@ -117,7 +117,7 @@ TEST_F(DeviceBoundSessionPrewarmerTest, InvokesMojoOnTimerTick) {
       .WillRepeatedly([&](const GURL& url,
                           network::mojom::DeviceBoundSessionManager::
                               PrewarmSessionsForUrlCallback callback) {
-        std::move(callback).Run({}, base::Time::Now() + base::Seconds(30));
+        std::move(callback).Run({}, base::Time::Now() + base::Seconds(90));
       });
 
   // Starts recurring timer dynamically. First call happens immediately (or next
@@ -125,9 +125,34 @@ TEST_F(DeviceBoundSessionPrewarmerTest, InvokesMojoOnTimerTick) {
   prewarmer.Start(base::BindLambdaForTesting([&]() { return target_url_; }),
                   /*is_startup_prewarm=*/true);
 
-  task_environment_.FastForwardBy(base::Seconds(60));
+  task_environment_.FastForwardBy(base::Seconds(180));
 
   prewarmer.Stop();
+}
+
+TEST_F(DeviceBoundSessionPrewarmerTest,
+       SchedulesAfterMinIntervalIfTimeTooSoon) {
+  DeviceBoundSessionPrewarmer prewarmer(GetManagerProvider());
+
+  EXPECT_CALL(mock_session_manager(), PrewarmSessionsForUrl(target_url_, _))
+      .Times(2)
+      .WillRepeatedly([&](const GURL& url,
+                          network::mojom::DeviceBoundSessionManager::
+                              PrewarmSessionsForUrlCallback callback) {
+        // Provide a time that is too soon (e.g. 10 seconds).
+        std::move(callback).Run({}, base::Time::Now() + base::Seconds(10));
+      });
+
+  prewarmer.Start(base::BindLambdaForTesting([&]() { return target_url_; }),
+                  /*is_startup_prewarm=*/false);
+
+  // Prewarm is invoked at t=0.
+  // Fast forward by 10s: Prewarmer should NOT execute yet because it is capped
+  // by the hard limit minimum interval (60s).
+  task_environment_.FastForwardBy(base::Seconds(10));
+
+  // Fast forward by another 50s (total 60s from start): Prewarmer executes.
+  task_environment_.FastForwardBy(base::Seconds(50));
 }
 
 TEST_F(DeviceBoundSessionPrewarmerTest, StopsInvokingWhenStopped) {
@@ -234,7 +259,7 @@ TEST_F(DeviceBoundSessionPrewarmerTest, HandlesNetworkServiceDisconnect) {
                         PrewarmSessionsForUrlCallback callback) {
         // We must provide a next refresh time or a transient error, otherwise
         // the prewarmer stops and the subsequent fast forwards do nothing.
-        std::move(callback).Run({}, base::Time::Now() + base::Seconds(40));
+        std::move(callback).Run({}, base::Time::Now() + base::Seconds(90));
       });
 
   prewarmer.Start(base::BindLambdaForTesting([&]() { return target_url_; }),
@@ -247,7 +272,7 @@ TEST_F(DeviceBoundSessionPrewarmerTest, HandlesNetworkServiceDisconnect) {
   // Since the provided session manager evaluates to null when the network
   // service disconnects, this will not invoke the mojo method nor crash.
   // Instead, it should schedule a retry after the default interval.
-  task_environment_.FastForwardBy(base::Seconds(40));
+  task_environment_.FastForwardBy(base::Seconds(90));
 
   // Simulate the network service restarting.
   mock_manager = std::make_unique<network::MockDeviceBoundSessionManager>();
@@ -256,7 +281,7 @@ TEST_F(DeviceBoundSessionPrewarmerTest, HandlesNetworkServiceDisconnect) {
       .WillOnce([&](const GURL& url,
                     network::mojom::DeviceBoundSessionManager::
                         PrewarmSessionsForUrlCallback callback) {
-        std::move(callback).Run({}, base::Time::Now() + base::Seconds(45));
+        std::move(callback).Run({}, base::Time::Now() + base::Seconds(90));
       });
 
   // Fast forward by the default retry interval (60 seconds) to trigger the
@@ -383,17 +408,17 @@ TEST_F(DeviceBoundSessionPrewarmerTest, StartTwice) {
 
   // Run the first callback. It should be invalidated because Start() was called
   // a second time.
-  std::move(saved_callback_1).Run({}, base::Time::Now() + base::Seconds(30));
+  std::move(saved_callback_1).Run({}, base::Time::Now() + base::Seconds(90));
 
-  // Fast forwarding by 30 seconds should NOT trigger the prewarmer if the first
+  // Fast forwarding by 90 seconds should NOT trigger the prewarmer if the first
   // callback was ignored.
-  task_environment_.FastForwardBy(base::Seconds(30));
+  task_environment_.FastForwardBy(base::Seconds(90));
 
-  // Run the second callback. It should schedule a timer for 45 seconds.
-  std::move(saved_callback_2).Run({}, base::Time::Now() + base::Seconds(45));
+  // Run the second callback. It should schedule a timer for 90 seconds.
+  std::move(saved_callback_2).Run({}, base::Time::Now() + base::Seconds(90));
 
-  // Fast forward by 45 seconds. Third call happens here.
-  task_environment_.FastForwardBy(base::Seconds(45));
+  // Fast forward by 90 seconds. Third call happens here.
+  task_environment_.FastForwardBy(base::Seconds(90));
 }
 
 TEST_F(DeviceBoundSessionPrewarmerTest, LogsUmaMetricsOnPrewarmComplete) {
@@ -406,7 +431,7 @@ TEST_F(DeviceBoundSessionPrewarmerTest, LogsUmaMetricsOnPrewarmComplete) {
                           network::mojom::DeviceBoundSessionManager::
                               PrewarmSessionsForUrlCallback callback) {
         std::move(callback).Run({RefreshResult::kRefreshed},
-                                base::Time::Now() + base::Seconds(30));
+                                base::Time::Now() + base::Seconds(90));
       });
 
   prewarmer.Start(base::BindLambdaForTesting([&]() { return target_url_; }),
@@ -419,7 +444,7 @@ TEST_F(DeviceBoundSessionPrewarmerTest, LogsUmaMetricsOnPrewarmComplete) {
   histogram_tester.ExpectTotalCount(
       "Net.DeviceBoundSessions.PrewarmResult.Scheduled", 0);
 
-  task_environment_.FastForwardBy(base::Seconds(30));
+  task_environment_.FastForwardBy(base::Seconds(90));
   histogram_tester.ExpectUniqueSample(
       "Net.DeviceBoundSessions.PrewarmResult.Startup",
       RefreshResult::kRefreshed, 1);
@@ -439,14 +464,14 @@ TEST_F(DeviceBoundSessionPrewarmerTest,
                     network::mojom::DeviceBoundSessionManager::
                         PrewarmSessionsForUrlCallback callback) {
         // Return 0 results; flag should unconditionally drop.
-        std::move(callback).Run({}, base::Time::Now() + base::Seconds(30));
+        std::move(callback).Run({}, base::Time::Now() + base::Seconds(90));
       })
       .WillOnce([&](const GURL& url,
                     network::mojom::DeviceBoundSessionManager::
                         PrewarmSessionsForUrlCallback callback) {
         // Return 1 result which should be Scheduled.
         std::move(callback).Run({RefreshResult::kRefreshed},
-                                base::Time::Now() + base::Seconds(30));
+                                base::Time::Now() + base::Seconds(90));
       });
 
   // First call (empty results).
@@ -457,7 +482,7 @@ TEST_F(DeviceBoundSessionPrewarmerTest,
       "Net.DeviceBoundSessions.PrewarmResult.Startup", 0);
 
   // Second call (1 result, expected to be Scheduled).
-  task_environment_.FastForwardBy(base::Seconds(30));
+  task_environment_.FastForwardBy(base::Seconds(90));
   histogram_tester.ExpectTotalCount(
       "Net.DeviceBoundSessions.PrewarmResult.Startup", 0);
   histogram_tester.ExpectTotalCount(
@@ -480,7 +505,7 @@ TEST_F(DeviceBoundSessionPrewarmerTest, LogsMultipleResultsCorrectly) {
         // Scheduled on the second call.
         std::move(callback).Run(
             {RefreshResult::kRefreshed, RefreshResult::kFatalError},
-            base::Time::Now() + base::Seconds(30));
+            base::Time::Now() + base::Seconds(90));
       });
 
   // First call (2 results, both Startup).
@@ -499,7 +524,7 @@ TEST_F(DeviceBoundSessionPrewarmerTest, LogsMultipleResultsCorrectly) {
       "Net.DeviceBoundSessions.PrewarmResult.Scheduled", 0);
 
   // Second call (2 results, expected to be Scheduled).
-  task_environment_.FastForwardBy(base::Seconds(30));
+  task_environment_.FastForwardBy(base::Seconds(90));
   histogram_tester.ExpectTotalCount(
       "Net.DeviceBoundSessions.PrewarmResult.Startup", 2);
   histogram_tester.ExpectTotalCount(
@@ -522,7 +547,7 @@ TEST_F(DeviceBoundSessionPrewarmerTest, ResetStartupModeOnRestart) {
                           network::mojom::DeviceBoundSessionManager::
                               PrewarmSessionsForUrlCallback callback) {
         std::move(callback).Run({RefreshResult::kRefreshed},
-                                base::Time::Now() + base::Seconds(30));
+                                base::Time::Now() + base::Seconds(90));
       });
 
   // First Start().
@@ -535,7 +560,7 @@ TEST_F(DeviceBoundSessionPrewarmerTest, ResetStartupModeOnRestart) {
       "Net.DeviceBoundSessions.PrewarmResult.Scheduled", 0);
 
   // Advance time for scheduled run.
-  task_environment_.FastForwardBy(base::Seconds(30));
+  task_environment_.FastForwardBy(base::Seconds(90));
   histogram_tester.ExpectTotalCount(
       "Net.DeviceBoundSessions.PrewarmResult.Startup", 1);
   histogram_tester.ExpectTotalCount(

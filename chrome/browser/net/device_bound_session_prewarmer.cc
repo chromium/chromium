@@ -14,9 +14,11 @@
 #include "services/network/public/mojom/device_bound_sessions.mojom.h"
 
 namespace {
-// The fallback prewarm timer interval when earliest_next_refresh_time is in the
-// past or a transient error is returned.
-constexpr base::TimeDelta kDefaultPrewarmInterval = base::Seconds(60);
+// The minimum prewarm timer interval. Used as:
+// - The minimum delay when scheduling subsequent prewarm requests.
+// - The fallback interval when a transient error is returned.
+// - The fallback interval when the session manager is unavailable.
+constexpr base::TimeDelta kMinPrewarmInterval = base::Seconds(60);
 
 // The prewarm timer interval when the URL provider callback returns an empty or
 // invalid URL.
@@ -86,7 +88,7 @@ void DeviceBoundSessionPrewarmer::DoPrewarm() {
         base::BindOnce(&DeviceBoundSessionPrewarmer::OnPrewarmComplete,
                        weak_ptr_factory_.GetWeakPtr()));
   } else {
-    timer_.Start(FROM_HERE, kDefaultPrewarmInterval, this,
+    timer_.Start(FROM_HERE, kMinPrewarmInterval, this,
                  &DeviceBoundSessionPrewarmer::DoPrewarm);
   }
 }
@@ -131,15 +133,15 @@ void DeviceBoundSessionPrewarmer::OnPrewarmComplete(
       return;
     }
 
-    timer_.Start(FROM_HERE, kDefaultPrewarmInterval, this,
+    timer_.Start(FROM_HERE, kMinPrewarmInterval, this,
                  &DeviceBoundSessionPrewarmer::DoPrewarm);
     return;
   }
 
-  // If the next refresh time is in the past, we should schedule the next
-  // prewarm at least `kDefaultPrewarmInterval` from now to avoid infinite
-  // loops.
-  base::TimeDelta delay = *earliest_next_refresh_time - base::Time::Now();
-  timer_.Start(FROM_HERE, delay.is_positive() ? delay : kDefaultPrewarmInterval,
-               this, &DeviceBoundSessionPrewarmer::DoPrewarm);
+  // If the next refresh time is in the past or shorter than the minimum
+  // interval, schedule the next prewarm after `kMinPrewarmInterval` to avoid
+  // infinite loops or excessive requests.
+  base::TimeDelta delay = std::max(
+      *earliest_next_refresh_time - base::Time::Now(), kMinPrewarmInterval);
+  timer_.Start(FROM_HERE, delay, this, &DeviceBoundSessionPrewarmer::DoPrewarm);
 }
