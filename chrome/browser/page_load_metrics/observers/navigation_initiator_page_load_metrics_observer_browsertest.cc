@@ -9,6 +9,7 @@
 #include "chrome/browser/preloading/prerender/prerender_manager.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -18,6 +19,7 @@
 #include "components/page_load_metrics/browser/navigation_handle_user_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/preloading_test_util.h"
@@ -530,4 +532,264 @@ IN_PROC_BROWSER_TEST_F(NavigationInitiatorPageLoadMetricsBrowserTest,
   // navigations.
   histogram_tester.ExpectTotalCount("Navigation.InitiatorType.All", 2);
   histogram_tester.ExpectTotalCount("Navigation.InitiatorType.SRP", 1);
+}
+
+class NavigationInitiatorPageLoadMetricsBFCacheBrowserTest
+    : public NavigationInitiatorPageLoadMetricsBrowserTest,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  bool IsBfcacheEnabled() const { return GetParam(); }
+
+  void SetUpOnMainThread() override {
+    NavigationInitiatorPageLoadMetricsBrowserTest::SetUpOnMainThread();
+    if (!IsBfcacheEnabled()) {
+      content::DisableBackForwardCacheForTesting(
+          GetActiveWebContents(),
+          content::BackForwardCache::DisableForTestingReason::
+              TEST_REQUIRES_NO_CACHING);
+    }
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         NavigationInitiatorPageLoadMetricsBFCacheBrowserTest,
+                         testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(NavigationInitiatorPageLoadMetricsBFCacheBrowserTest,
+                       BackForwardAndReload) {
+  GURL url_a = embedded_test_server()->GetURL("a.com", "/empty.html");
+  GURL url_b = embedded_test_server()->GetURL("b.com", "/empty.html");
+
+  // Navigate to url_a.
+  {
+    base::HistogramTester histogram_tester;
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_a));
+
+    histogram_tester.ExpectUniqueSample(
+        "Navigation.InitiatorType.All",
+        MetricValue(page_load_metrics::NavigationHandleUserData::
+                        kInitiatorLocationOther),
+        1);
+    histogram_tester.ExpectUniqueSample(
+        "Navigation.InitiatorType.SRP",
+        MetricValue(page_load_metrics::NavigationHandleUserData::
+                        kInitiatorLocationOther),
+        0);
+  }
+  content::RenderFrameHostWrapper rfh_a(
+      GetActiveWebContents()->GetPrimaryMainFrame());
+
+  // Navigate to url_b.
+  {
+    base::HistogramTester histogram_tester;
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
+    if (IsBfcacheEnabled()) {
+      EXPECT_EQ(rfh_a->GetLifecycleState(),
+                content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+    } else {
+      EXPECT_TRUE(rfh_a.WaitUntilRenderFrameDeleted());
+    }
+
+    histogram_tester.ExpectUniqueSample(
+        "Navigation.InitiatorType.All",
+        MetricValue(page_load_metrics::NavigationHandleUserData::
+                        kInitiatorLocationOther),
+        1);
+    histogram_tester.ExpectUniqueSample(
+        "Navigation.InitiatorType.SRP",
+        MetricValue(page_load_metrics::NavigationHandleUserData::
+                        kInitiatorLocationOther),
+        0);
+  }
+  content::RenderFrameHostWrapper rfh_b(
+      GetActiveWebContents()->GetPrimaryMainFrame());
+
+  {
+    // Navigate back to url_a.
+    base::HistogramTester histogram_tester;
+    ASSERT_TRUE(content::HistoryGoBack(GetActiveWebContents()));
+    if (IsBfcacheEnabled()) {
+      EXPECT_TRUE(rfh_a->IsInPrimaryMainFrame());
+      EXPECT_EQ(rfh_b->GetLifecycleState(),
+                content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+    } else {
+      EXPECT_TRUE(rfh_b.WaitUntilRenderFrameDeleted());
+    }
+
+    histogram_tester.ExpectUniqueSample(
+        "Navigation.InitiatorType.All",
+        MetricValue(GetInitiatorLocation(ChromeInitiatorLocation::kBackward)),
+        1);
+    histogram_tester.ExpectUniqueSample(
+        "Navigation.InitiatorType.SRP",
+        MetricValue(GetInitiatorLocation(ChromeInitiatorLocation::kBackward)),
+        0);
+  }
+  content::RenderFrameHostWrapper rfh_a2(
+      GetActiveWebContents()->GetPrimaryMainFrame());
+
+  {
+    // Navigate forward to url_b.
+    base::HistogramTester histogram_tester;
+    ASSERT_TRUE(content::HistoryGoForward(GetActiveWebContents()));
+    if (IsBfcacheEnabled()) {
+      EXPECT_TRUE(rfh_b->IsInPrimaryMainFrame());
+    } else {
+      EXPECT_TRUE(rfh_a2.WaitUntilRenderFrameDeleted());
+    }
+
+    histogram_tester.ExpectUniqueSample(
+        "Navigation.InitiatorType.All",
+        MetricValue(GetInitiatorLocation(ChromeInitiatorLocation::kForward)),
+        1);
+    histogram_tester.ExpectUniqueSample(
+        "Navigation.InitiatorType.SRP",
+        MetricValue(GetInitiatorLocation(ChromeInitiatorLocation::kForward)),
+        0);
+  }
+
+  {
+    // Reload url_b.
+    base::HistogramTester histogram_tester;
+    chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
+    EXPECT_TRUE(content::WaitForLoadStop(GetActiveWebContents()));
+
+    histogram_tester.ExpectUniqueSample(
+        "Navigation.InitiatorType.All",
+        MetricValue(GetInitiatorLocation(ChromeInitiatorLocation::kReload)), 1);
+    histogram_tester.ExpectUniqueSample(
+        "Navigation.InitiatorType.SRP",
+        MetricValue(GetInitiatorLocation(ChromeInitiatorLocation::kReload)), 0);
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(NavigationInitiatorPageLoadMetricsBFCacheBrowserTest,
+                       BackForwardAndReloadSRP) {
+  GURL url_srp =
+      embedded_test_server()->GetURL("www.google.com", "/search?q=test");
+  GURL url_b = embedded_test_server()->GetURL("b.com", "/empty.html");
+
+  // Navigate to url_srp.
+  {
+    base::HistogramTester histogram_tester;
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_srp));
+
+    histogram_tester.ExpectUniqueSample(
+        "Navigation.InitiatorType.All",
+        MetricValue(page_load_metrics::NavigationHandleUserData::
+                        kInitiatorLocationOther),
+        1);
+    histogram_tester.ExpectUniqueSample(
+        "Navigation.InitiatorType.SRP",
+        MetricValue(page_load_metrics::NavigationHandleUserData::
+                        kInitiatorLocationOther),
+        1);
+  }
+  content::RenderFrameHostWrapper rfh_srp(
+      GetActiveWebContents()->GetPrimaryMainFrame());
+
+  // Navigate to url_b.
+  {
+    base::HistogramTester histogram_tester;
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
+    if (IsBfcacheEnabled()) {
+      EXPECT_EQ(rfh_srp->GetLifecycleState(),
+                content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+    } else {
+      EXPECT_TRUE(rfh_srp.WaitUntilRenderFrameDeleted());
+    }
+
+    histogram_tester.ExpectUniqueSample(
+        "Navigation.InitiatorType.All",
+        MetricValue(page_load_metrics::NavigationHandleUserData::
+                        kInitiatorLocationOther),
+        1);
+    histogram_tester.ExpectUniqueSample(
+        "Navigation.InitiatorType.SRP",
+        MetricValue(page_load_metrics::NavigationHandleUserData::
+                        kInitiatorLocationOther),
+        0);
+  }
+  content::RenderFrameHostWrapper rfh_b(
+      GetActiveWebContents()->GetPrimaryMainFrame());
+
+  {
+    // Navigate back to url_srp.
+    base::HistogramTester histogram_tester;
+    ASSERT_TRUE(content::HistoryGoBack(GetActiveWebContents()));
+    if (IsBfcacheEnabled()) {
+      EXPECT_TRUE(rfh_srp->IsInPrimaryMainFrame());
+      EXPECT_EQ(rfh_b->GetLifecycleState(),
+                content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+    } else {
+      EXPECT_TRUE(rfh_b.WaitUntilRenderFrameDeleted());
+    }
+
+    histogram_tester.ExpectUniqueSample(
+        "Navigation.InitiatorType.All",
+        MetricValue(GetInitiatorLocation(ChromeInitiatorLocation::kBackward)),
+        1);
+    histogram_tester.ExpectUniqueSample(
+        "Navigation.InitiatorType.SRP",
+        MetricValue(GetInitiatorLocation(ChromeInitiatorLocation::kBackward)),
+        1);
+  }
+  content::RenderFrameHostWrapper rfh_srp2(
+      GetActiveWebContents()->GetPrimaryMainFrame());
+
+  {
+    // Navigate forward to url_b.
+    base::HistogramTester histogram_tester;
+    ASSERT_TRUE(content::HistoryGoForward(GetActiveWebContents()));
+    if (IsBfcacheEnabled()) {
+      EXPECT_TRUE(rfh_b->IsInPrimaryMainFrame());
+    } else {
+      EXPECT_TRUE(rfh_srp2.WaitUntilRenderFrameDeleted());
+    }
+
+    histogram_tester.ExpectUniqueSample(
+        "Navigation.InitiatorType.All",
+        MetricValue(GetInitiatorLocation(ChromeInitiatorLocation::kForward)),
+        1);
+    histogram_tester.ExpectUniqueSample(
+        "Navigation.InitiatorType.SRP",
+        MetricValue(GetInitiatorLocation(ChromeInitiatorLocation::kForward)),
+        0);
+  }
+  content::RenderFrameHostWrapper rfh_b2(
+      GetActiveWebContents()->GetPrimaryMainFrame());
+
+  {
+    // Navigate back to url_srp again.
+    base::HistogramTester histogram_tester;
+    ASSERT_TRUE(content::HistoryGoBack(GetActiveWebContents()));
+    if (IsBfcacheEnabled()) {
+      EXPECT_TRUE(rfh_srp->IsInPrimaryMainFrame());
+    } else {
+      EXPECT_TRUE(rfh_b2.WaitUntilRenderFrameDeleted());
+    }
+
+    histogram_tester.ExpectUniqueSample(
+        "Navigation.InitiatorType.All",
+        MetricValue(GetInitiatorLocation(ChromeInitiatorLocation::kBackward)),
+        1);
+    histogram_tester.ExpectUniqueSample(
+        "Navigation.InitiatorType.SRP",
+        MetricValue(GetInitiatorLocation(ChromeInitiatorLocation::kBackward)),
+        1);
+  }
+
+  {
+    // Reload url_srp.
+    base::HistogramTester histogram_tester;
+    chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
+    EXPECT_TRUE(content::WaitForLoadStop(GetActiveWebContents()));
+
+    histogram_tester.ExpectUniqueSample(
+        "Navigation.InitiatorType.All",
+        MetricValue(GetInitiatorLocation(ChromeInitiatorLocation::kReload)), 1);
+    histogram_tester.ExpectUniqueSample(
+        "Navigation.InitiatorType.SRP",
+        MetricValue(GetInitiatorLocation(ChromeInitiatorLocation::kReload)), 1);
+  }
 }
