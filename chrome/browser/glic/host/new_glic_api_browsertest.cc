@@ -1505,6 +1505,18 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testUnpinTabsThatNavigateInBackground) {
   ContinueJsTest();
 }
 
+IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithDefaultTabContextDisabled,
+                       testGetContextFromTabIgnorePermissionWhenPinned) {
+  ASSERT_OK(OpenGlicForActiveTab());
+  glic::GlicHistogramTester histogram_tester;
+  ExecuteJsTest();
+  histogram_tester.ExpectBucketCount(
+      "Glic.Api.GetContextFromTab.Error.Text",
+      GlicGetContextFromTabError::kPermissionDeniedContextPermissionNotEnabled,
+      1);
+  histogram_tester.ExpectTotalCount("Glic.Api.GetContextFromTab.Error.Text", 1);
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testPinTabsFailsWhenIncognitoWindow) {
   ASSERT_OK(OpenGlicForActiveTabAndDetach());

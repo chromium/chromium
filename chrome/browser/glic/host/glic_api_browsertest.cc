@@ -1553,22 +1553,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest,
   ContinueJsTest();
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
-                       testGetContextFromTabIgnorePermissionWhenPinned) {
-  // Try to extract context from an arbitrary tab without permission, while it's
-  // unpinned and then pinned.
-  ExecuteJsTest();
-
-  // Should have one error logged for tab context permission not granted.
-  EXPECT_THAT(
-      histogram_tester->GetAllSamplesForPrefix(
-          "Glic.Api.GetContextFromTab.Error"),
-      UnorderedElementsAre(Pair(
-          "Glic.Api.GetContextFromTab.Error.Text",
-          BucketsAre(Bucket(GlicGetContextFromTabError::
-                                kPermissionDeniedContextPermissionNotEnabled,
-                            1)))));
-}
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
                        testGetContextFromTabFailDifferentlyBasedOnPermission) {

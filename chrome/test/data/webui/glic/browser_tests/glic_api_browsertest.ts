@@ -665,31 +665,6 @@ class ApiTests extends ApiTestFixtureBase {
         }));
   }
 
-  async testGetContextFromTabIgnorePermissionWhenPinned() {
-    assertDefined(this.host.getContextFromTab);
-    assertDefined(this.host.pinTabs);
-    assertDefined(this.host.getPinnedTabs);
-    assertDefined(this.host.unpinTabs);
-
-    // Fail getContextFromTab due to no tab context permission not granted.
-    await this.host.setTabContextPermissionState(false);
-    const tabId: string = this.getFocusedTabId();
-    await this.host.unpinTabs([tabId]);  // Unpin required for multi-instance.
-    await assertRejects(this.host.getContextFromTab(tabId, {}), {
-      withErrorMessage: 'tabContext failed: permission denied:' +
-          ' context permission not enabled',
-    });
-
-    // Pinning the tab should allow ignoring the tab context permission.
-    await this.host.pinTabs([tabId]);
-    const pinnedTabsUpdates = observeSequence(this.host.getPinnedTabs());
-    pinnedTabsUpdates.waitFor(
-        (tabs) => tabs.length === 1 && tabs.some((t) => t.tabId === tabId));
-
-    const result = await this.host.getContextFromTab(tabId, {});
-    assertDefined(result);
-    assertEquals(result.tabData.tabId, tabId);
-  }
 
   async testGetContextFromTabFailDifferentlyBasedOnPermission() {
     assertDefined(this.host.getContextFromTab);
