@@ -790,7 +790,8 @@ TEST_F(ValuableSuggestionGeneratorWithNonAffiliationSupportTest,
 }
 
 // Tests that no loyalty card suggestions are shown when no data is available.
-TEST_F(ValuableSuggestionGeneratorTest, LoyaltyCardsEmpty) {
+TEST_F(ValuableSuggestionGeneratorWithNonAffiliationSupportTest,
+       LoyaltyCardsEmpty) {
   TestAutofillClient client;
   EXPECT_THAT(GetSuggestionsForLoyaltyCards(
                   form().ToFormData(), &form(), field(), &field(),

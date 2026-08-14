@@ -301,6 +301,11 @@ void LoyaltyCardSuggestionGenerator::GenerateSuggestions(
   std::vector<LoyaltyCard> all_loyalty_cards =
       client.GetValuablesDataManager()->GetLoyaltyCardsToSuggest();
 
+  if (all_loyalty_cards.empty()) {
+    callback({SuggestionDataSource::kLoyaltyCard, {}});
+    return;
+  }
+
   auto non_affiliated_cards = std::ranges::stable_partition(
       all_loyalty_cards, [&](const LoyaltyCard& card) {
         return card.GetAffiliationCategory(
