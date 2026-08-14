@@ -21,11 +21,14 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/user_metrics.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "components/prefs/json_pref_store.h"
 #include "components/prefs/pref_filter.h"
+#include "components/supervised_user/core/browser/supervised_user_url_filtering_service.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/sync/model/sync_change.h"
@@ -33,7 +36,9 @@
 #include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/managed_user_setting_specifics.pb.h"
+#include "components/url_formatter/url_formatter.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
+#include "url/gurl.h"
 
 namespace supervised_user {
 
@@ -702,4 +707,43 @@ FamilyLinkSettingsService::HostExceptions::HostExceptions(
 FamilyLinkSettingsService::HostExceptions&
 FamilyLinkSettingsService::HostExceptions::operator=(
     const HostExceptions& other) = default;
+
+bool FamilyLinkSettingsService::IsHostManuallyBlocked(
+    std::string_view host) const {
+  base::DictValue defaults = GetSettingsWithDefault();
+  const base::DictValue* manual_behavior_hosts =
+      defaults.FindDict(kContentPackManualBehaviorHosts);
+  if (!manual_behavior_hosts) {
+    return false;
+  }
+
+  std::optional<bool> is_allowed = manual_behavior_hosts->FindBool(host);
+  return is_allowed.has_value() && !*is_allowed;
+}
+
+GURL FamilyLinkSettingsService::GetUnnormalizedEffectiveUrlToUnblock(
+    const WebFilteringResult& result) const {
+  // If the URL is blocked because of an exact match in the manual blocklist,
+  // then the URL should be unblocked by itself to remove the blocklist entry
+  // too.
+  if (result.IsFromManualList() && IsHostManuallyBlocked(result.url.host())) {
+    return result.url;
+  }
+
+  // Otherwise, prepare a canonical version of the URL to unblock.
+  return GURL(url_formatter::FormatUrl(
+      result.url, url_formatter::kFormatUrlOmitTrivialSubdomains,
+      base::UnescapeRule::SPACES, /*new_parsed=*/nullptr,
+      /*prefix_end=*/nullptr, /*offset_for_adjustment=*/nullptr));
+}
+
+GURL FamilyLinkSettingsService::GetEffectiveUrlToUnblock(
+    const WebFilteringResult& result) const {
+#if !BUILDFLAG(IS_CHROMEOS)
+  return NormalizeUrl(GetUnnormalizedEffectiveUrlToUnblock(result));
+#else
+  return GetUnnormalizedEffectiveUrlToUnblock(result);
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+}
+
 }  // namespace supervised_user

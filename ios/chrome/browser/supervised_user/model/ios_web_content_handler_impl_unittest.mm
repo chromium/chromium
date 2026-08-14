@@ -9,6 +9,7 @@
 #import "base/functional/callback_helpers.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
+#import "components/supervised_user/core/browser/family_link_settings_service.h"
 #import "components/supervised_user/core/browser/supervised_user_test_environment.h"
 #import "components/supervised_user/core/browser/supervised_user_utils.h"
 #import "components/supervised_user/core/common/features.h"
@@ -47,8 +48,8 @@ class IOSWebContentHandlerImplTest : public PlatformTest {
     return web_content_handler_.get();
   }
 
-  supervised_user::FamilyLinkUrlFilter& url_filter() {
-    return *supervised_user_test_environment_.family_link_url_filter();
+  supervised_user::FamilyLinkSettingsService& settings_service() {
+    return *supervised_user_test_environment_.family_link_settings_service();
   }
 
   base::HistogramTester histogram_tester_;
@@ -87,7 +88,7 @@ TEST_F(IOSWebContentHandlerImplTest, HideParentAccessBottomsheet) {
   result.url = GURL("https://www.example.com");
   result.behavior = supervised_user::FilteringBehavior::kBlock;
   result.reason = supervised_user::FilteringBehaviorReason::DEFAULT;
-  GURL target_url = url_filter().GetEffectiveUrlToUnblock(result);
+  GURL target_url = settings_service().GetEffectiveUrlToUnblock(result);
 
   web_content_handler()->RequestLocalApproval(target_url, result, u"Bob",
                                               /*callback=*/base::DoNothing());

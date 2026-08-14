@@ -14,9 +14,11 @@
 #include "base/strings/string_util.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "build/build_config.h"
 #include "components/prefs/testing_pref_store.h"
 #include "components/supervised_user/core/browser/device_parental_controls_noop_impl.h"
 #include "components/supervised_user/core/browser/supervised_user_pref_store.h"
+#include "components/supervised_user/core/browser/supervised_user_url_filtering_service.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/sync/model/sync_change.h"
@@ -26,6 +28,7 @@
 #include "components/sync/test/sync_change_processor_wrapper_for_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace supervised_user {
 namespace {
@@ -548,6 +551,68 @@ TEST_F(FamilyLinkSettingsServiceTest, UpdatesAreSentForEachSettingUpdate) {
   // that are always set by the service upon subscribing.
   settings_service_.SetLocalSetting(kGeolocationDisabled, base::Value(true));
 }
+
+TEST_F(FamilyLinkSettingsServiceTest, StripOnDefaultFilteringBehaviour) {
+  EXPECT_EQ(GURL("http://example.com"),
+            settings_service_.GetEffectiveUrlToUnblock(
+                {.url = GURL("http://www.example.com"),
+                 .behavior = FilteringBehavior::kBlock,
+                 .reason = FilteringBehaviorReason::DEFAULT}));
+}
+
+TEST_F(FamilyLinkSettingsServiceTest,
+       StripOnManualFilteringBehaviourWithoutConflict) {
+  EXPECT_EQ(GURL("http://example.com"),
+            settings_service_.GetEffectiveUrlToUnblock(
+                {.url = GURL("http://www.example.com"),
+                 .behavior = FilteringBehavior::kBlock,
+                 .reason = FilteringBehaviorReason::MANUAL}));
+}
+
+TEST_F(FamilyLinkSettingsServiceTest,
+       SkipStripOnManualFilteringBehaviourWithConflict) {
+  GURL full_url("http://www.example.com");
+
+  // Add a conflicting entry in the blocklist.
+  base::DictValue hosts;
+  hosts.Set(full_url.GetHost(), false);
+  settings_service_.SetLocalSetting(kContentPackManualBehaviorHosts,
+                                    std::move(hosts));
+
+  EXPECT_EQ(full_url,
+            settings_service_.GetEffectiveUrlToUnblock(
+                {.url = full_url,
+                 .behavior = FilteringBehavior::kBlock,
+                 .reason = FilteringBehaviorReason::MANUAL}));
+}
+
+#if !BUILDFLAG(IS_CHROMEOS)
+TEST_F(FamilyLinkSettingsServiceTest, NormalizesUnblockingUrls) {
+  GURL full_spec_url("http://admin:password@www.example.com/path?query#ref");
+
+  // First the url has normalized trivial domain, username, password, query and
+  // ref.
+  ASSERT_EQ(GURL("http://example.com/path"),
+            settings_service_.GetEffectiveUrlToUnblock(
+                {.url = full_spec_url,
+                 .behavior = FilteringBehavior::kBlock,
+                 .reason = FilteringBehaviorReason::MANUAL}));
+
+  // Now add it to the manual blocklist.
+  base::DictValue hosts;
+  hosts.Set(full_spec_url.GetHost(), false);
+  settings_service_.SetLocalSetting(kContentPackManualBehaviorHosts,
+                                    std::move(hosts));
+
+  // This time the url is normalized without trivial domain prefixes because it
+  // was added to the manual host blocklist.
+  EXPECT_EQ(GURL("http://www.example.com/path"),
+            settings_service_.GetEffectiveUrlToUnblock(
+                {.url = full_spec_url,
+                 .behavior = FilteringBehavior::kBlock,
+                 .reason = FilteringBehaviorReason::MANUAL}));
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 }  // namespace supervised_user

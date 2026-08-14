@@ -146,17 +146,6 @@ class FamilyLinkUrlFilter : public UrlFilteringDelegate {
   void SetURLCheckerClientForTesting(
       std::unique_ptr<safe_search_api::URLCheckerClient> url_checker_client);
 
-  // Returns the URL that should be sent for remote approvals to ensure that
-  // the url in the filtering result will no longer trigger interstitial.
-  // This methods prefers unnormalized url if it is already present in the block
-  // list: this way, the Family Link backend will remove this entry from the
-  // block list and add one to the allow list. Otherwise, a normalized url is
-  // returned.
-  // TODO(crbug.com/475731807): This method is Family-Link specific, and
-  // probably should live in the SupervisedUserSettingsService after it's
-  // renamed to FamilyLinkUserSettingsService.
-  GURL GetEffectiveUrlToUnblock(WebFilteringResult result) const;
-
   // UrlFilteringDelegate:
   WebFilterType GetWebFilterType() const override;
   WebFilteringResult GetFilteringBehavior(const GURL& url) const override;
@@ -180,10 +169,6 @@ class FamilyLinkUrlFilter : public UrlFilteringDelegate {
   void RunAsyncChecker(const GURL& url, WebFilteringResult::Callback callback);
 
   FilteringBehavior GetManualFilteringBehaviorForURL(const GURL& url) const;
-
-  // Calculates a URL that should unblock the filtering result but without the
-  // normalization it (eg. stripping username, password, query params, ref).
-  GURL GetUnnormalizedEffectiveUrlToUnblock(WebFilteringResult result) const;
 
   void OnFamilyLinkSettingsChanged(const base::DictValue& settings);
 

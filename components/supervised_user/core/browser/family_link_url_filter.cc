@@ -17,7 +17,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
-#include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
@@ -27,7 +26,6 @@
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
-#include "components/url_formatter/url_formatter.h"
 #include "components/url_matcher/url_util.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
@@ -498,31 +496,6 @@ FilteringBehavior FamilyLinkUrlFilter::GetManualFilteringBehaviorForURL(
     }
   }
   return result;
-}
-
-GURL FamilyLinkUrlFilter::GetUnnormalizedEffectiveUrlToUnblock(
-    WebFilteringResult result) const {
-  // If the URL is blocked because of an exact match, then the URL should be
-  // unblocked by itself to remove blocklist entry too.
-  if (blocked_host_list_.contains(result.url.host()) &&
-      result.IsFromManualList()) {
-    return result.url;
-  }
-
-  // Otherwise, prepare a canonical version of the URL to unblock.
-  return GURL(url_formatter::FormatUrl(
-      result.url, url_formatter::kFormatUrlOmitTrivialSubdomains,
-      base::UnescapeRule::SPACES, /*new_parsed=*/nullptr,
-      /*prefix_end=*/nullptr, /*offset_for_adjustment=*/nullptr));
-}
-
-GURL FamilyLinkUrlFilter::GetEffectiveUrlToUnblock(
-    WebFilteringResult result) const {
-#if !BUILDFLAG(IS_CHROMEOS)
-  return NormalizeUrl(GetUnnormalizedEffectiveUrlToUnblock(result));
-#else
-  return GetUnnormalizedEffectiveUrlToUnblock(result);
-#endif  // !BUILDFLAG(IS_CHROMEOS)
 }
 
 void FamilyLinkUrlFilter::GetFilteringBehavior(

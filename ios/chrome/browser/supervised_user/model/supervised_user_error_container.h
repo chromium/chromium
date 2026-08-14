@@ -22,6 +22,7 @@
 @protocol ParentAccessCommands;
 
 namespace supervised_user {
+class FamilyLinkSettingsService;
 class SupervisedUserService;
 }  // namespace supervised_user
 
@@ -111,6 +112,8 @@ class SupervisedUserErrorContainer
   // Handler used to request showing the parent access bottom sheet.
   __weak id<ParentAccessCommands> commands_handler_;
   std::unique_ptr<SupervisedUserErrorInfo> supervised_user_error_info_;
+  raw_ref<supervised_user::FamilyLinkSettingsService>
+      family_link_settings_service_;
   raw_ref<supervised_user::SupervisedUserService> supervised_user_service_;
   raw_ref<supervised_user::SupervisedUserUrlFilteringService>
       supervised_user_url_filtering_service_;

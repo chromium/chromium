@@ -177,7 +177,7 @@ void SupervisedUserPrefStoreTestEnvironment::Shutdown() {
 }
 
 FamilyLinkSettingsService*
-SupervisedUserPrefStoreTestEnvironment::settings_service() {
+SupervisedUserPrefStoreTestEnvironment::settings_service()  {
   return &settings_service_;
 }
 
@@ -320,6 +320,10 @@ void SupervisedUserTestEnvironment::SetManualFilterForUrl(
 FamilyLinkUrlFilter* SupervisedUserTestEnvironment::family_link_url_filter()
     const {
   return service()->GetURLFilter();
+}
+FamilyLinkSettingsService*
+SupervisedUserTestEnvironment::family_link_settings_service() {
+  return pref_store_environment_.settings_service();
 }
 SupervisedUserService* SupervisedUserTestEnvironment::service() const {
   return service_.get();

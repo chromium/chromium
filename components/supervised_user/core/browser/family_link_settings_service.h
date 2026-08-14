@@ -31,6 +31,8 @@ class SequencedTaskRunner;
 
 namespace supervised_user {
 
+struct WebFilteringResult;
+
 // This class syncs Family Link user settings from the sync server, which are
 // mapped to preferences. The downloaded settings are either persisted in the
 // SupervisedUserPrefStore - second most important store of the PrefService, or
@@ -213,7 +215,20 @@ class FamilyLinkSettingsService : public KeyedService,
 
   bool IsSafeSitesEnabled() const;
 
+  // Returns the URL that should be sent for remote or local approvals to ensure
+  // that the url in the filtering result will no longer trigger interstitial.
+  // This method prefers unnormalized url if it is already present in the block
+  // list: this way, the Family Link backend will remove this entry from the
+  // block list and add one to the allow list. Otherwise, a normalized url is
+  // returned.
+  GURL GetEffectiveUrlToUnblock(const WebFilteringResult& result) const;
+
  private:
+  // Calculates a URL that should unblock the filtering result but without the
+  // normalization of it (eg. stripping username, password, query params, ref).
+  GURL GetUnnormalizedEffectiveUrlToUnblock(
+      const WebFilteringResult& result) const;
+
   // Returns parsed logical value for the default filtering behavior setting,
   // considering its default value.
   FilteringBehavior GetDefaultFilteringBehavior(
@@ -222,6 +237,10 @@ class FamilyLinkSettingsService : public KeyedService,
   // Returns parsed logical value for the safe sites setting, considering its
   // default value.
   bool IsSafeSitesEnabled(const base::DictValue& settings) const;
+
+  // Returns true if the host is explicitly marked as blocked in the manual host
+  // exceptions list.
+  bool IsHostManuallyBlocked(std::string_view host) const;
 
   // Returns the dictionary where a given Sync item should be stored, depending
   // on whether the Family Link user setting is atomic or split. In case of a

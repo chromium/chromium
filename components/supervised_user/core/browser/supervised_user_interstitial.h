@@ -17,6 +17,7 @@
 namespace supervised_user {
 class WebContentHandler;
 class SupervisedUserService;
+class FamilyLinkSettingsService;
 
 // This class is used by SupervisedUserNavigationObserver to handle requests
 // from supervised user error page. The error page is shown when a page is
@@ -70,6 +71,7 @@ class SupervisedUserInterstitial {
   static std::unique_ptr<SupervisedUserInterstitial> Create(
       std::unique_ptr<WebContentHandler> web_content_handler,
       SupervisedUserService& supervised_user_service,
+      FamilyLinkSettingsService& family_link_settings_service,
       WebFilteringResult filtering_result,
       const std::u16string& supervised_user_name);
 
@@ -106,12 +108,14 @@ class SupervisedUserInterstitial {
   SupervisedUserInterstitial(
       std::unique_ptr<WebContentHandler> web_content_handler,
       SupervisedUserService& supervised_user_service,
+      FamilyLinkSettingsService& family_link_settings_service,
       WebFilteringResult filtering_result,
       const std::u16string& supervised_user_name);
 
   void OutputRequestPermissionSourceMetric();
 
   const raw_ref<SupervisedUserService> supervised_user_service_;
+  const raw_ref<FamilyLinkSettingsService> family_link_settings_service_;
 
   std::unique_ptr<WebContentHandler> web_content_handler_;
 
