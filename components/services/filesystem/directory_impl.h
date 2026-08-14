@@ -18,10 +18,19 @@ namespace filesystem {
 
 class DirectoryImpl : public mojom::Directory {
  public:
+  enum class AccessMode {
+    // All operations are permitted.
+    kReadWrite,
+    // Mutating operations (file creation, write, delete, rename, replace) are
+    // rejected and file handles can only be opened with kFlagOpen | kFlagRead.
+    kReadOnly,
+  };
+
   // Set |temp_dir| only if there's a temporary directory that should be deleted
   // when this object is destroyed.
   DirectoryImpl(base::FilePath directory_path,
-                scoped_refptr<SharedTempDir> temp_dir);
+                scoped_refptr<SharedTempDir> temp_dir,
+                AccessMode access_mode = AccessMode::kReadWrite);
 
   DirectoryImpl(const DirectoryImpl&) = delete;
   DirectoryImpl& operator=(const DirectoryImpl&) = delete;
@@ -66,6 +75,7 @@ class DirectoryImpl : public mojom::Directory {
 
   base::FilePath directory_path_;
   scoped_refptr<SharedTempDir> temp_dir_;
+  AccessMode access_mode_;
 };
 
 }  // namespace filesystem

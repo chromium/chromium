@@ -309,4 +309,198 @@ TEST_F(DirectoryImplTest, Flush) {
 }
 
 }  // namespace
+
+class ReadOnlyDirectoryImplTest : public testing::Test {
+ public:
+  ReadOnlyDirectoryImplTest() = default;
+
+  ReadOnlyDirectoryImplTest(const ReadOnlyDirectoryImplTest&) = delete;
+  ReadOnlyDirectoryImplTest& operator=(const ReadOnlyDirectoryImplTest&) =
+      delete;
+
+  mojo::Remote<mojom::Directory> CreateReadOnlyTempDir() {
+    return test_helper_.CreateReadOnlyTempDir();
+  }
+
+ private:
+  base::test::TaskEnvironment task_environment_;
+  DirectoryTestHelper test_helper_;
+};
+
+TEST_F(ReadOnlyDirectoryImplTest, ReadAndStat) {
+  mojo::Remote<mojom::Directory> directory = CreateReadOnlyTempDir();
+  base::File::Error error = base::File::Error::FILE_ERROR_FAILED;
+  std::optional<std::vector<mojom::DirectoryEntryPtr>> directory_contents;
+  bool handled = directory->Read(&error, &directory_contents);
+  EXPECT_TRUE(handled);
+  EXPECT_EQ(base::File::Error::FILE_OK, error);
+  EXPECT_TRUE(directory_contents.has_value());
+  if (directory_contents.has_value()) {
+    EXPECT_EQ(2u, directory_contents->size());
+  }
+
+  error = base::File::Error::FILE_ERROR_FAILED;
+  mojom::FileInformationPtr file_info;
+  handled = directory->StatFile("existing_file", &error, &file_info);
+  EXPECT_TRUE(handled);
+  EXPECT_EQ(base::File::Error::FILE_OK, error);
+  EXPECT_TRUE(file_info);
+
+  error = base::File::Error::FILE_ERROR_FAILED;
+  bool is_writable = true;
+  handled = directory->IsWritable("existing_file", &error, &is_writable);
+  EXPECT_TRUE(handled);
+  EXPECT_EQ(base::File::Error::FILE_OK, error);
+  EXPECT_FALSE(is_writable);
+}
+
+TEST_F(ReadOnlyDirectoryImplTest, OpenFileHandleReadOnly) {
+  mojo::Remote<mojom::Directory> directory = CreateReadOnlyTempDir();
+  base::File::Error error = base::File::Error::FILE_ERROR_FAILED;
+  base::File file_handle;
+  bool handled = directory->OpenFileHandle("existing_file",
+                                           mojom::kFlagRead | mojom::kFlagOpen,
+                                           &error, &file_handle);
+  EXPECT_TRUE(handled);
+  EXPECT_EQ(base::File::Error::FILE_OK, error);
+  EXPECT_TRUE(file_handle.IsValid());
+  file_handle.Close();
+
+  error = base::File::Error::FILE_OK;
+  handled = directory->OpenFileHandle("existing_file",
+                                      mojom::kFlagWrite | mojom::kFlagOpen,
+                                      &error, &file_handle);
+  EXPECT_TRUE(handled);
+  EXPECT_EQ(base::File::Error::FILE_ERROR_SECURITY, error);
+  EXPECT_FALSE(file_handle.IsValid());
+
+  error = base::File::Error::FILE_OK;
+  handled = directory->OpenFileHandle(
+      "existing_file", mojom::kFlagRead | mojom::kFlagWrite | mojom::kFlagOpen,
+      &error, &file_handle);
+  EXPECT_TRUE(handled);
+  EXPECT_EQ(base::File::Error::FILE_ERROR_SECURITY, error);
+  EXPECT_FALSE(file_handle.IsValid());
+}
+
+TEST_F(ReadOnlyDirectoryImplTest, OpenFileHandlesReadOnly) {
+  mojo::Remote<mojom::Directory> directory = CreateReadOnlyTempDir();
+  std::vector<mojom::FileOpenDetailsPtr> details;
+
+  mojom::FileOpenDetailsPtr read_detail = mojom::FileOpenDetails::New();
+  read_detail->path = "existing_file";
+  read_detail->open_flags = mojom::kFlagRead | mojom::kFlagOpen;
+  details.push_back(std::move(read_detail));
+
+  mojom::FileOpenDetailsPtr write_detail = mojom::FileOpenDetails::New();
+  write_detail->path = "existing_file";
+  write_detail->open_flags = mojom::kFlagWrite | mojom::kFlagOpen;
+  details.push_back(std::move(write_detail));
+
+  std::vector<mojom::FileOpenResultPtr> results;
+  bool handled = directory->OpenFileHandles(std::move(details), &results);
+  EXPECT_TRUE(handled);
+  EXPECT_EQ(2u, results.size());
+  if (results.size() == 2u) {
+    EXPECT_EQ("existing_file", results[0]->path);
+    EXPECT_EQ(base::File::Error::FILE_OK, results[0]->error);
+    EXPECT_TRUE(results[0]->file_handle.IsValid());
+
+    EXPECT_EQ("existing_file", results[1]->path);
+    EXPECT_EQ(base::File::Error::FILE_ERROR_SECURITY, results[1]->error);
+    EXPECT_FALSE(results[1]->file_handle.IsValid());
+  }
+}
+
+TEST_F(ReadOnlyDirectoryImplTest, WriteFileRejected) {
+  mojo::Remote<mojom::Directory> directory = CreateReadOnlyTempDir();
+  base::File::Error error = base::File::Error::FILE_OK;
+  std::vector<uint8_t> data = {0x1, 0x2, 0x3};
+  bool handled = directory->WriteFile("existing_file", data, &error);
+  EXPECT_TRUE(handled);
+  EXPECT_EQ(base::File::Error::FILE_ERROR_SECURITY, error);
+
+  error = base::File::Error::FILE_OK;
+  handled = directory->WriteFile("new_file", data, &error);
+  EXPECT_TRUE(handled);
+  EXPECT_EQ(base::File::Error::FILE_ERROR_SECURITY, error);
+}
+
+TEST_F(ReadOnlyDirectoryImplTest, DeleteRejected) {
+  mojo::Remote<mojom::Directory> directory = CreateReadOnlyTempDir();
+  base::File::Error error = base::File::Error::FILE_OK;
+  bool handled = directory->Delete("existing_file", 0, &error);
+  EXPECT_TRUE(handled);
+  EXPECT_EQ(base::File::Error::FILE_ERROR_SECURITY, error);
+
+  error = base::File::Error::FILE_OK;
+  handled =
+      directory->Delete("existing_dir", mojom::kDeleteFlagRecursive, &error);
+  EXPECT_TRUE(handled);
+  EXPECT_EQ(base::File::Error::FILE_ERROR_SECURITY, error);
+}
+
+TEST_F(ReadOnlyDirectoryImplTest, RenameAndReplaceRejected) {
+  mojo::Remote<mojom::Directory> directory = CreateReadOnlyTempDir();
+  base::File::Error error = base::File::Error::FILE_OK;
+  bool handled = directory->Rename("existing_file", "renamed_file", &error);
+  EXPECT_TRUE(handled);
+  EXPECT_EQ(base::File::Error::FILE_ERROR_SECURITY, error);
+
+  error = base::File::Error::FILE_OK;
+  handled = directory->Replace("existing_file", "renamed_file", &error);
+  EXPECT_TRUE(handled);
+  EXPECT_EQ(base::File::Error::FILE_ERROR_SECURITY, error);
+}
+
+TEST_F(ReadOnlyDirectoryImplTest, OpenDirectoryAndClonePropagation) {
+  mojo::Remote<mojom::Directory> directory = CreateReadOnlyTempDir();
+  mojo::Remote<mojom::Directory> sub_dir;
+  base::File::Error error = base::File::Error::FILE_ERROR_FAILED;
+  bool handled = directory->OpenDirectory(
+      "existing_dir", sub_dir.BindNewPipeAndPassReceiver(),
+      mojom::kFlagRead | mojom::kFlagOpen, &error);
+  EXPECT_TRUE(handled);
+  EXPECT_EQ(base::File::Error::FILE_OK, error);
+
+  error = base::File::Error::FILE_OK;
+  handled = sub_dir->Delete("sub_file", 0, &error);
+  EXPECT_TRUE(handled);
+  EXPECT_EQ(base::File::Error::FILE_ERROR_SECURITY, error);
+
+  mojo::Remote<mojom::Directory> cloned_dir;
+  directory->Clone(cloned_dir.BindNewPipeAndPassReceiver());
+  error = base::File::Error::FILE_OK;
+  handled = cloned_dir->Delete("existing_file", 0, &error);
+  EXPECT_TRUE(handled);
+  EXPECT_EQ(base::File::Error::FILE_ERROR_SECURITY, error);
+}
+
+TEST_F(ReadOnlyDirectoryImplTest, OpenDirectoryCreateRejected) {
+  mojo::Remote<mojom::Directory> directory = CreateReadOnlyTempDir();
+  mojo::Remote<mojom::Directory> new_dir;
+  base::File::Error error = base::File::Error::FILE_OK;
+  bool handled = directory->OpenDirectory(
+      "new_dir", new_dir.BindNewPipeAndPassReceiver(),
+      mojom::kFlagRead | mojom::kFlagWrite | mojom::kFlagCreate, &error);
+  EXPECT_TRUE(handled);
+  EXPECT_EQ(base::File::Error::FILE_ERROR_SECURITY, error);
+
+  error = base::File::Error::FILE_OK;
+  new_dir.reset();
+  handled = directory->OpenDirectory(
+      "new_dir", new_dir.BindNewPipeAndPassReceiver(),
+      mojom::kFlagRead | mojom::kFlagOpenAlways, &error);
+  EXPECT_TRUE(handled);
+  EXPECT_EQ(base::File::Error::FILE_ERROR_SECURITY, error);
+
+  error = base::File::Error::FILE_OK;
+  new_dir.reset();
+  handled =
+      directory->OpenDirectory("new_dir", new_dir.BindNewPipeAndPassReceiver(),
+                               mojom::kFlagRead | mojom::kFlagOpen, &error);
+  EXPECT_TRUE(handled);
+  EXPECT_EQ(base::File::Error::FILE_ERROR_NOT_FOUND, error);
+}
+
 }  // namespace filesystem

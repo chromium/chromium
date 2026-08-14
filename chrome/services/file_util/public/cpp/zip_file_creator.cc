@@ -135,7 +135,8 @@ void ZipFileCreator::BindDirectory(
              RunnerPtr runner) {
             mojo::MakeSelfOwnedReceiver(
                 std::make_unique<filesystem::DirectoryImpl>(
-                    std::move(src_dir), /*temp_dir=*/nullptr),
+                    std::move(src_dir), /*temp_dir=*/nullptr,
+                    filesystem::DirectoryImpl::AccessMode::kReadOnly),
                 std::move(receiver), std::move(runner));
           },
           src_dir_, std::move(receiver), runner));
