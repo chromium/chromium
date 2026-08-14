@@ -623,7 +623,7 @@ class VIEWS_EXPORT MenuController final : public gfx::AnimationDelegate,
   // Sets exit type. Calling this can terminate the active nested message-loop.
   void SetExitType(ExitType type);
 
-  // Performs the teardown of menus. This will notify the |delegate_|. If
+  // Performs the teardown of menus. This will notify the delegate. If
   // |exit_type_| is ExitType::kAll all nested runs will be exited.
   void ExitMenu();
 
@@ -723,10 +723,16 @@ class VIEWS_EXPORT MenuController final : public gfx::AnimationDelegate,
   std::list<NestedState> menu_stack_;
 
   // When Run is invoked during an active Run, it may be called from a separate
-  // MenuControllerDelegate. If not empty it means we are nested, and the
-  // stacked delegates should be notified instead of |delegate_|.
+  // MenuControllerDelegate. The stacked delegates are stored here, with the top
+  // (back) of the stack being the active delegate.
   std::list<raw_ptr<internal::MenuControllerDelegate, CtnExperimental>>
       delegate_stack_;
+
+  // Returns the current delegate (the top element of `delegate_stack_`), or
+  // nullptr if the stack is empty.
+  internal::MenuControllerDelegate* delegate() const {
+    return delegate_stack_.empty() ? nullptr : delegate_stack_.back().get();
+  }
 
   // As the mouse moves around submenus are not opened immediately. Instead
   // they open after this timer fires.
@@ -782,8 +788,6 @@ class VIEWS_EXPORT MenuController final : public gfx::AnimationDelegate,
 
   // Current hot tracked child button if any.
   raw_ptr<Button> hot_button_ = nullptr;
-
-  raw_ptr<internal::MenuControllerDelegate> delegate_;
 
   // The timestamp of the event which closed the menu - or 0 otherwise.
   base::TimeTicks closing_event_time_;

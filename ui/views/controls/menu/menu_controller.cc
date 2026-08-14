@@ -814,8 +814,8 @@ void MenuController::Cancel(ExitType type) {
     // triggers deleting us.
     DCHECK(selected);
     showing_ = false;
-    delegate_->OnMenuClosed(internal::MenuControllerDelegate::NOTIFY_DELEGATE,
-                            selected->GetRootMenuItem(), accept_event_flags_);
+    delegate()->OnMenuClosed(internal::MenuControllerDelegate::NOTIFY_DELEGATE,
+                             selected->GetRootMenuItem(), accept_event_flags_);
     // WARNING: the call to MenuClosed deletes us.
     return;
   }
@@ -825,7 +825,7 @@ void MenuController::Cancel(ExitType type) {
   // the drag operation completes. For non-dragging cases it is possible that
   // the release of ViewsDelegate leads immediately to shutdown, which can
   // trigger nested calls to Cancel. We want to reject these to prevent
-  // attempting a nested tear down of this and |delegate_|.
+  // attempting a nested tear down of this and the delegate.
   if (type == ExitType::kAll) {
     showing_ = false;
   }
@@ -842,7 +842,6 @@ void MenuController::Cancel(ExitType type) {
 void MenuController::AddNestedDelegate(
     internal::MenuControllerDelegate* delegate) {
   delegate_stack_.push_back(delegate);
-  delegate_ = delegate;
 }
 
 bool MenuController::IsCombobox() const {
@@ -1436,7 +1435,7 @@ views::View::DropCallback MenuController::GetDropCallback(
     showing_ = false;
     SetExitType(ExitType::kAll);
 
-    delegate_->OnMenuClosed(
+    delegate()->OnMenuClosed(
         internal::MenuControllerDelegate::DONT_NOTIFY_DELEGATE,
         item->GetRootMenuItem(), accept_event_flags_);
   }
@@ -2120,9 +2119,8 @@ MenuController::MenuController(bool for_drop,
     : for_drop_(for_drop),
       result_(nullptr),
       active_mouse_view_tracker_(std::make_unique<ViewTracker>()),
-      delegate_(delegate),
       alert_animation_(this) {
-  delegate_stack_.push_back(delegate_.get());
+  delegate_stack_.push_back(delegate);
   active_instance_ = this;
 }
 
@@ -2291,7 +2289,7 @@ bool MenuController::ShowSiblingMenu(SubmenuView* source,
     return false;
   }
 
-  delegate_->SiblingMenuCreated(alt_menu);
+  delegate()->SiblingMenuCreated(alt_menu);
 
   // If the delegate returns a menu, they must also return a button.
   CHECK(button);
@@ -3641,7 +3639,7 @@ void MenuController::SetExitType(ExitType type) {
 void MenuController::ExitMenu() {
   bool nested = delegate_stack_.size() > 1;
   // ExitTopMostMenu unwinds nested delegates
-  internal::MenuControllerDelegate* delegate = delegate_;
+  internal::MenuControllerDelegate* delegate = this->delegate();
   int accept_event_flags = accept_event_flags_;
   // Since |delegate| may delete this, get a weak pointer first, and ensure
   // |result| is safe from deletion (it can be freed but will be quarantined).
@@ -3704,7 +3702,6 @@ raw_ptr<MenuItemView> MenuController::ExitTopMostMenu() {
     // Even though the menus are nested, there may not be nested delegates.
     if (delegate_stack_.size() > 1) {
       delegate_stack_.pop_back();
-      delegate_ = delegate_stack_.back().get();
     }
   } else {
 #if defined(USE_AURA)

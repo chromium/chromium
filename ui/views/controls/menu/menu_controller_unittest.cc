@@ -444,7 +444,7 @@ class MenuControllerTest : public ViewsTestBase,
   MenuItemView* FindInitialSelectableMenuItemUp(MenuItemView* parent);
 
   internal::MenuControllerDelegate* current_controller_delegate() {
-    return menu_controller_->delegate_;
+    return menu_controller_->delegate();
   }
 
   bool showing() const { return menu_controller_->showing_; }
