@@ -103,6 +103,10 @@ public class SearchBoxContainerView extends LinearLayout {
                     }
                     return false;
                 });
+
+        if (!mIsNtpAuroraEnabled) {
+            revertToLegacyLayoutConfiguration(res);
+        }
     }
 
     @Override
@@ -233,5 +237,42 @@ public class SearchBoxContainerView extends LinearLayout {
         mLastTouchDelegateRect = bounds;
         mTouchDelegate = new TouchDelegate(bounds, mPlusButton);
         setTouchDelegate(mTouchDelegate);
+    }
+
+    private void revertToLegacyLayoutConfiguration(Resources res) {
+        int startPadding = res.getDimensionPixelSize(R.dimen.fake_search_box_start_padding_legacy);
+        int endPadding = res.getDimensionPixelSize(R.dimen.fake_search_box_end_padding_legacy);
+        mSearchBoxView.setPaddingRelative(
+                startPadding,
+                mSearchBoxView.getPaddingTop(),
+                endPadding,
+                mSearchBoxView.getPaddingBottom());
+
+        int iconSize = res.getDimensionPixelSize(R.dimen.omnibox_search_engine_logo_composed_size);
+        setViewSize(mDseIconView, iconSize, iconSize);
+        setViewSize(mPlusButton, iconSize, iconSize);
+
+        int legacyMarginEnd =
+                res.getDimensionPixelSize(R.dimen.fake_search_box_start_padding_legacy);
+        setViewMarginEnd(mDseIconView, legacyMarginEnd);
+        setViewMarginEnd(mPlusButton, legacyMarginEnd);
+    }
+
+    private void setViewSize(View view, int width, int height) {
+        ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
+        if (layoutParams != null) {
+            layoutParams.width = width;
+            layoutParams.height = height;
+            view.setLayoutParams(layoutParams);
+        }
+    }
+
+    private void setViewMarginEnd(View view, int marginEnd) {
+        ViewGroup.MarginLayoutParams layoutParams =
+                (ViewGroup.MarginLayoutParams) view.getLayoutParams();
+        if (layoutParams != null) {
+            layoutParams.setMarginEnd(marginEnd);
+            view.setLayoutParams(layoutParams);
+        }
     }
 }
