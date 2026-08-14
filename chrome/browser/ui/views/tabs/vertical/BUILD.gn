@@ -10,6 +10,7 @@ source_set("vertical") {
     "top_container_button.h",
     "vertical_tab_strip_bottom_container.h",
     "vertical_tab_strip_expand_on_hover_lock.h",
+    "vertical_tab_strip_focus_swipe_controller.h",
     "vertical_tab_strip_scroll_bar.h",
     "vertical_tab_strip_top_container.h",
   ]
@@ -38,6 +39,7 @@ source_set("impl") {
     "top_container_button.cc",
     "vertical_tab_strip_bottom_container.cc",
     "vertical_tab_strip_expand_on_hover_lock.cc",
+    "vertical_tab_strip_focus_swipe_controller.cc",
     "vertical_tab_strip_scroll_bar.cc",
     "vertical_tab_strip_top_container.cc",
   ]

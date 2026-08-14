@@ -125,6 +125,7 @@ class BaseTabStripRegionView : public TabStripRegionView,
   bool IsDropBeforeGroupHeader(const BrowserRootView::DropIndex& drop_index,
                                const tabs::TabInterface* tab) const;
   views::View* GetGroupHeaderView(const tab_groups::TabGroupId& group_id) const;
+  bool IsDragging() const;
 
   BrowserView* browser_view() const { return browser_view_; }
   actions::ActionItem* root_action_item() const { return root_action_item_; }

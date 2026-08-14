@@ -34,6 +34,7 @@
 class BrowserView;
 class VerticalTabStripTopContainer;
 class VerticalTabStripBottomContainer;
+class VerticalTabStripFocusSwipeController;
 class ShadowFrameView;
 
 namespace tabs {
@@ -149,6 +150,10 @@ class VerticalTabStripRegionView final
   views::ResizeArea* resize_area_for_testing() { return resize_area_; }
   tabs::VerticalTabStripState target_collapse_state_for_testing() {
     return target_collapse_state_;
+  }
+
+  VerticalTabStripFocusSwipeController* focus_swipe_controller_for_testing() {
+    return focus_swipe_controller_.get();
   }
 
  private:
@@ -293,6 +298,11 @@ class VerticalTabStripRegionView final
 
   RegionViewFocusListener focus_listener_{this};
   ClickEventHandler click_handler_{this};
+  std::unique_ptr<VerticalTabStripFocusSwipeController> focus_swipe_controller_;
+
+  // Allows the swipe controller to inspect tab dragging state and rotate
+  // focused tab groups on the TabStripModel.
+  friend class VerticalTabStripFocusSwipeController;
 
   // The mouse exit event debounce timer.
   base::OneShotTimer mouse_exit_timer_;

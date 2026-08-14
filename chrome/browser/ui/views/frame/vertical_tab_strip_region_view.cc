@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/animations/tab_strip_animations.h"
 #include "chrome/browser/ui/views/frame/base_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -47,6 +48,7 @@
 #include "chrome/browser/ui/views/tabs/shared/drop_arrow.h"
 #include "chrome/browser/ui/views/tabs/vertical/top_container_button.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_bottom_container.h"
+#include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_focus_swipe_controller.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_top_container.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/grit/generated_resources.h"
@@ -184,6 +186,11 @@ VerticalTabStripRegionView::VerticalTabStripRegionView(
   shadow_frame_ = AddChildView(std::make_unique<ShadowFrameView>(
       kExpandOnHoverShadowElevation, kExpandOnHoverShadowAlpha));
   shadow_frame_->SetProperty(views::kViewIgnoredByLayoutKey, true);
+
+  if (base::FeatureList::IsEnabled(features::kTabGroupsFocusing)) {
+    focus_swipe_controller_ =
+        std::make_unique<VerticalTabStripFocusSwipeController>(this);
+  }
 
   SetNotifyEnterExitOnChild(true);
   UpdateColors();

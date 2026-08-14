@@ -614,6 +614,10 @@ views::View* BaseTabStripRegionView::GetGroupHeaderView(
   return group_view ? group_view->group_header() : nullptr;
 }
 
+bool BaseTabStripRegionView::IsDragging() const {
+  return drag_handler_ && drag_handler_->IsDragging();
+}
+
 gfx::Rect BaseTabStripRegionView::GetLinkDropBounds(
     const BrowserRootView::DropIndex& drop_index,
     DropArrow::Direction* direction) {

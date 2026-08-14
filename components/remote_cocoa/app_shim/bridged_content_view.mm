@@ -302,6 +302,22 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
   // https://crbug.com/830962).
   if (hitTestResult ==
       remote_cocoa::mojom::HitTestResult::kDraggableBackground) {
+    NSEvent* currentEvent = [NSApp currentEvent];
+    if (currentEvent) {
+      NSEventType type = [currentEvent type];
+      // In AppKit, 2-finger trackpad swipes and scrolling gestures are
+      // dispatched as continuous NSEventTypeScrollWheel events.
+      // NSEventTypeSwipe is a discrete, high-level event that is not emitted
+      // for standard 2-finger trackpad swipes, but is instead specific to
+      // particular macOS settings (e.g. 3-finger page swipes). Allow
+      // scroll wheel events over draggable background areas (such as the
+      // VerticalTabStrip) to pass through to Views rather than being
+      // swallowed by the window manager to support swiping to switch the
+      // window's focused group.
+      if (type == NSEventTypeScrollWheel) {
+        return self;
+      }
+    }
     return nil;
   }
 
