@@ -284,12 +284,7 @@ Frame* FrameTree::FindFrameForNavigationInternal(
     FrameLoadRequest* request) const {
   LocalFrame* current_frame = To<LocalFrame>(this_frame_.Get());
 
-  if (EqualIgnoringAsciiCase(name, "_current")) {
-    UseCounter::Count(current_frame->GetDocument(), WebFeature::kTargetCurrent);
-  }
-
-  if (EqualIgnoringAsciiCase(name, "_self") ||
-      EqualIgnoringAsciiCase(name, "_current") || name.empty()) {
+  if (EqualIgnoringAsciiCase(name, "_self") || name.empty()) {
     return current_frame;
   }
 
