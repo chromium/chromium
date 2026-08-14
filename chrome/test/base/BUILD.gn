@@ -658,6 +658,50 @@ if (!is_android) {
   }
 }
 
+if (is_mac) {
+  source_set("launchservices_utils_mac") {
+    testonly = true
+    sources = [
+      "launchservices_utils_mac.h",
+      "launchservices_utils_mac.mm",
+    ]
+    public_deps = [ "//base" ]
+    deps = [ "//build:branding_buildflags" ]
+  }
+
+  source_set("scoped_bundle_swizzler_mac") {
+    testonly = true
+    sources = [
+      "scoped_bundle_swizzler_mac.h",
+      "scoped_bundle_swizzler_mac.mm",
+    ]
+    deps = [ "//base" ]
+  }
+}
+
+if (is_win) {
+  source_set("process_inspector_win") {
+    testonly = true
+    sources = [
+      "process_inspector_win.cc",
+      "process_inspector_win.h",
+    ]
+    deps = [ "//base" ]
+  }
+
+  source_set("process_lineage_win") {
+    testonly = true
+    sources = [
+      "process_lineage_win.cc",
+      "process_lineage_win.h",
+    ]
+    deps = [
+      "//base",
+      "//chrome/test/base:process_inspector_win",
+    ]
+  }
+}
+
 if (is_android) {
   source_set("android_ui_test_utils") {
     testonly = true
@@ -771,5 +815,29 @@ if (use_aura) {
       "//ui/wm",
       "//ui/wm/public",
     ]
+  }
+
+  source_set("drag_and_drop_test_utils") {
+    testonly = true
+    sources = [
+      "drag_and_drop_test_utils.cc",
+      "drag_and_drop_test_utils.h",
+    ]
+    public_deps = [
+      "//base",
+      "//ui/aura",
+      "//ui/base/dragdrop/mojom",
+      "//ui/gfx/geometry",
+    ]
+    deps = [
+      "//content/public/browser",
+      "//content/test:test_support",
+      "//testing/gtest",
+      "//ui/base/dragdrop:types",
+      "//url",
+    ]
+    if (is_win) {
+      deps += [ "//ui/base" ]
+    }
   }
 }

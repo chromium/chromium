@@ -626,10 +626,6 @@ static_library("test_support") {
     sources += [
       "//chrome/app/chrome_crash_reporter_client.cc",
       "//chrome/app/chrome_crash_reporter_client_mac.mm",
-      "base/launchservices_utils_mac.h",
-      "base/launchservices_utils_mac.mm",
-      "base/scoped_bundle_swizzler_mac.h",
-      "base/scoped_bundle_swizzler_mac.mm",
     ]
     deps += [
       "//build:branding_buildflags",
@@ -638,39 +634,30 @@ static_library("test_support") {
       "//chrome/browser:chrome_browser_application_mac",
       "//components/upload_list",
     ]
-    public_deps += [ "//components/crash/core/app" ]
+    public_deps += [
+      "//chrome/test/base:launchservices_utils_mac",
+      "//chrome/test/base:scoped_bundle_swizzler_mac",
+      "//components/crash/core/app",
+    ]
   }
 
   if (use_aura) {
-    sources += [
-      "base/drag_and_drop_test_utils.cc",
-      "base/drag_and_drop_test_utils.h",
-    ]
-    deps += [
-      "//ui/aura:test_support",
-      "//ui/base/dragdrop:types",
-      "//ui/base/dragdrop/mojom",
-      "//ui/events:test_support",
-    ]
+    public_deps += [ "//chrome/test/base:drag_and_drop_test_utils" ]
   }
 
   if (is_win) {
-    sources += [
-      "//chrome/app/chrome_crash_reporter_client_win.cc",
-      "base/process_inspector_win.cc",
-      "base/process_inspector_win.h",
-      "base/process_lineage_win.cc",
-      "base/process_lineage_win.h",
+    sources += [ "//chrome/app/chrome_crash_reporter_client_win.cc" ]
+    public_deps += [
+      "//chrome/chrome_elf:crash",
+      "//chrome/install_static/test:test_support",
+      "//chrome/test/base:process_inspector_win",
+      "//chrome/test/base:process_lineage_win",
+      "//components/crash/core/app",
+      "//third_party/wtl",
     ]
     deps += [
       "//chrome/browser/webshare:test_support",
       "//chrome/chrome_elf:constants",
-    ]
-    public_deps += [
-      "//chrome/chrome_elf:crash",
-      "//chrome/install_static/test:test_support",
-      "//components/crash/core/app",
-      "//third_party/wtl",
     ]
     libs = [ "runtimeobject.lib" ]
   }
@@ -8255,6 +8242,10 @@ if (!is_android) {
         "base/in_process_browser_test_mac.mm",
         "base/interactive_test_utils_mac.mm",
       ]
+      public_deps += [
+        "//chrome/test/base:launchservices_utils_mac",
+        "//chrome/test/base:scoped_bundle_swizzler_mac",
+      ]
       deps += [
         "//chrome/browser:chrome_browser_application_mac",
         "//chrome/browser/apps/app_shim",
@@ -8270,6 +8261,7 @@ if (!is_android) {
         "base/window_contents_as_string_win.cc",
         "base/window_contents_as_string_win.h",
       ]
+      public_deps += [ "//chrome/test/base:process_lineage_win" ]
       deps += [ "//chrome/browser/os_crypt" ]
     }
 
