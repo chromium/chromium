@@ -18,8 +18,8 @@ export const OobeScrollableMixin = dedupingMixin(
     Constructor<OobeScrollableMixinInterface> => {
       class OobeScrollableMixinInternal extends superClass implements
           OobeScrollableMixinInterface {
-        private scrollableElement: HTMLElement|null;
-        private resizeObserver: ResizeObserver|null;
+        private scrollableElement: HTMLElement|null = null;
+        private resizeObserver: ResizeObserver|null = null;
 
         /**
          * Init observers to keep track of the scrollable element size changes.

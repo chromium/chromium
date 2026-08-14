@@ -66,8 +66,8 @@ export class OobeIconButton extends OobeBaseButton {
     };
   }
 
-  icon1x: string;
-  icon2x: string;
+  declare icon1x: string;
+  declare icon2x: string;
 
   private updateIconVisibility(): void {
     this.$.icon.hidden = (this.icon1x === undefined || this.icon1x.length === 0);

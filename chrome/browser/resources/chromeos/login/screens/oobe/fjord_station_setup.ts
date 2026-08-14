@@ -4,6 +4,7 @@
 
 import '../../components/buttons/oobe_text_button.js';
 
+import {assert} from '//resources/js/assert.js';
 import type {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -45,9 +46,9 @@ export class FjordStationSetupScreen extends
     return {};
   }
 
-  private webview: chrome.webviewTag.WebView;
-  private currentPage: StationSetupPage;
-  private handler: FjordStationSetupPageHandlerRemote;
+  private webview: chrome.webviewTag.WebView|null = null;
+  private currentPage = StationSetupPage.STATION_SETUP;
+  private handler = new FjordStationSetupPageHandlerRemote();
 
   /**
    * Returns the control which should receive initial focus.
@@ -60,19 +61,19 @@ export class FjordStationSetupScreen extends
     super.onBeforeShow();
     // Trigger a reload because at the time the dialog is created, the web
     // server is not up yet and will show an error page.
+    assert(this.webview);
     this.webview.reload();
   }
 
   override ready(): void {
     super.ready();
-    this.handler = new FjordStationSetupPageHandlerRemote();
+
     OobeScreensFactoryBrowserProxy.getInstance()
         .screenFactory.establishFjordStationSetupScreenPipe(
             this.handler.$.bindNewPipeAndPassReceiver());
 
     this.webview =
         this.shadowRoot!.querySelector<chrome.webviewTag.WebView>('webview')!;
-    this.currentPage = StationSetupPage.STATION_SETUP;
 
     // Intercept all requests and block them if they are not allowed origins.
     this.webview.request.onBeforeRequest.addListener((details) => {
@@ -87,6 +88,7 @@ export class FjordStationSetupScreen extends
     // Call the onSetupComplete API when the user is done with the finish setup
     // page.
     if (this.currentPage === StationSetupPage.STATION_SETUP) {
+      assert(this.webview);
       this.webview.src = FINISH_SETUP_URL;
       this.shadowRoot!.querySelector('#primaryButton')!.setAttribute(
           'text-key', 'fjordStationSetupDoneButton');

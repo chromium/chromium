@@ -33,7 +33,7 @@ export const OobeI18nMixin = dedupingMixin(
           };
         }
 
-        private locale: string;
+        declare private locale: string;
 
         override ready() {
           super.ready();
