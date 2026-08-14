@@ -14,27 +14,29 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.CommandLine;
+import org.chromium.base.FeatureMap;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
-import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.components.cached_flags.CachedFlag;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /** Checks for app-level issues with flags. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@DoNotBatch(reason = "Tests state of flags at specific app startup points")
+@Batch(Batch.PER_CLASS)
 public class ChromeCachedFlagsTest {
     @Rule
-    public FreshCtaTransitTestRule mCtaTestRule =
-            ChromeTransitTestRules.freshChromeTabbedActivityRule();
+    public AutoResetCtaTransitTestRule mCtaTestRule =
+            ChromeTransitTestRules.fastAutoResetCtaActivityRule();
 
     // Baseline so that the test can be enabled and catch new violations.
     //
@@ -86,7 +88,7 @@ public class ChromeCachedFlagsTest {
                 boolean jsonValue =
                         cachedFlag
                                 .getFeatureMapForTesting()
-                                .isEnabledInNative(cachedFlag.getFeatureName());
+                                .queryFeatureValueFromNative(cachedFlag.getFeatureName());
                 boolean matches = cachedFlag.getDefaultValue() == jsonValue;
                 if (BASELINE.contains(cachedFlag)) {
                     if (matches) {
@@ -108,6 +110,103 @@ public class ChromeCachedFlagsTest {
         }
         if (!notNeededInBaseline.isEmpty()) {
             fail("Flags not needed in baseline: " + String.join(", ", notNeededInBaseline));
+        }
+    }
+
+    /**
+     * Tests that the default value in tests in the sFlagsDefaultValuesInTests map matches the
+     * fieldtrial_testing_config.json.
+     */
+    @Test
+    @MediumTest
+    public void testFlagsDefaultValuesInTestsAreConsistentWithFieldTrialTestingConfig() {
+        // In Chrome-branded builds, the fieldtrial_testing_config.json isn't applied, so
+        // flag values may differ.
+        Assume.assumeTrue(!BuildConfig.IS_CHROME_BRANDED);
+
+        // If the switch --disable-field-trial-config is set, the fieldtrial_testing_config.json
+        // isn't applied either.
+        Assume.assumeTrue(!CommandLine.getInstance().hasSwitch("disable-field-trial-config"));
+
+        mCtaTestRule.startOnBlankPage();
+
+        List<String> notMatching = new ArrayList<>();
+        for (FeatureMap featureMap : ChromeCachedFlags.LIST_OF_FEATURE_MAPS) {
+            Map<String, Boolean> defaultValuesMap = featureMap.getFlagsDefaultValuesInTests();
+            if (defaultValuesMap == null) {
+                continue;
+            }
+            for (Map.Entry<String, Boolean> defaultValueEntry : defaultValuesMap.entrySet()) {
+                String featureName = defaultValueEntry.getKey();
+                Boolean defaultValueInTests = defaultValueEntry.getValue();
+                // Get the fieldtrial_testing_config.json value by getting the value from native.
+                boolean jsonValue = featureMap.queryFeatureValueFromNative(featureName);
+                if (defaultValueInTests != jsonValue) {
+                    notMatching.add(featureName);
+                }
+            }
+        }
+
+        if (!notMatching.isEmpty()) {
+            fail(
+                    "default value in tests returned by "
+                            + "FooFeatureMap.getFlagsDefaultValuesInTests() and "
+                            + "fieldtrial_testing_config.json value do not match for flags: "
+                            + String.join(", ", notMatching));
+        }
+    }
+
+    /**
+     * Tests that the default value in tests in the sParamsDefaultValuesInTests map matches the
+     * fieldtrial_testing_config.json.
+     */
+    @Test
+    @MediumTest
+    public void testParamsDefaultValuesInTestsAreConsistentWithFieldTrialTestingConfig() {
+        // In Chrome-branded builds, the fieldtrial_testing_config.json isn't applied, so
+        // param values may differ.
+        Assume.assumeTrue(!BuildConfig.IS_CHROME_BRANDED);
+
+        // If the switch --disable-field-trial-config is set, the fieldtrial_testing_config.json
+        // isn't applied either.
+        Assume.assumeTrue(!CommandLine.getInstance().hasSwitch("disable-field-trial-config"));
+
+        mCtaTestRule.startOnBlankPage();
+
+        List<String> notMatching = new ArrayList<>();
+        for (FeatureMap featureMap : ChromeCachedFlags.LIST_OF_FEATURE_MAPS) {
+            Map<String, Map<String, String>> defaultValuesMap =
+                    featureMap.getParamsDefaultValuesInTests();
+            if (defaultValuesMap == null) {
+                continue;
+            }
+            for (Map.Entry<String, Map<String, String>> innerMapEntry :
+                    defaultValuesMap.entrySet()) {
+                String featureName = innerMapEntry.getKey();
+                Map<String, String> innerMap = innerMapEntry.getValue();
+                if (innerMap == null) {
+                    continue;
+                }
+                for (Map.Entry<String, String> defaultValueEntry : innerMap.entrySet()) {
+                    String paramName = defaultValueEntry.getKey();
+                    String defaultValueInTests = defaultValueEntry.getValue();
+                    String defaultValue = featureMap.getParamDefaultValue(featureName, paramName);
+                    String jsonValue =
+                            featureMap.getFieldTrialParamByFeatureAsString(
+                                    featureName, paramName, defaultValue);
+                    if (!defaultValueInTests.equals(jsonValue)) {
+                        notMatching.add(featureName + "-" + paramName);
+                    }
+                }
+            }
+        }
+
+        if (!notMatching.isEmpty()) {
+            fail(
+                    "default value in tests returned by "
+                            + "FooFeatureMap.getParamsDefaultValuesInTests() and "
+                            + "fieldtrial_testing_config.json value do not match for params: "
+                            + String.join(", ", notMatching));
         }
     }
 }

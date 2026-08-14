@@ -17,6 +17,9 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.BaseFlagTestRule;
+import org.chromium.build.annotations.Nullable;
+
+import java.util.Map;
 
 /** Unit Tests for {@link PostNativeFlag}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -29,27 +32,50 @@ public class PostNativeFlagUnitTest {
         new PostNativeFlag(BaseFlagTestRule.FEATURE_MAP, FEATURE_A);
     }
 
-    @Test(expected = AssertionError.class)
-    public void testNativeNotInitialized_throwAssertionError() {
+    @Test(expected = IllegalArgumentException.class)
+    public void testNoFeatureOverrides_throwIllegalArgumentException() {
         PostNativeFlag featureA = new PostNativeFlag(BaseFlagTestRule.FEATURE_MAP, FEATURE_A);
-
-        // Disable test feature short circuit so the test goes through the same code
-        // path as prod chrome.
-        FeatureList.setDisableNativeForTesting(false);
-
         featureA.isEnabled();
     }
 
     @Test
-    public void testNativeInitialized_getsFromChromeFeatureList() {
+    public void testHasFeatureOverrides_getsFromChromeFeatureList() {
         PostNativeFlag featureA = new PostNativeFlag(BaseFlagTestRule.FEATURE_MAP, FEATURE_A);
         PostNativeFlag featureB = new PostNativeFlag(BaseFlagTestRule.FEATURE_MAP, FEATURE_B);
 
-        // Values from the FeatureMap should be used from now on.
+        // The following feature overrides should be used from now on.
         A_OFF_B_ON.apply();
 
-        // Assert {@link MutableFlagWithSafeDefault} uses the values from FeatureMap.
+        // Assert that PostNativeFlags return the values from feature overrides.
         assertFalse(featureA.isEnabled());
         assertTrue(featureB.isEnabled());
+    }
+
+    @Test
+    public void testHasDefaultValues_getsFromChromeFeatureList() {
+        // Create a feature map that returns the following default values for flags.
+        FeatureMap testFeatureMap =
+                new FeatureMap() {
+                    @Override
+                    public @Nullable Map<String, Boolean> getFlagsDefaultValuesInTests() {
+                        return Map.ofEntries(
+                                Map.entry(FEATURE_A, true), Map.entry(FEATURE_B, false));
+                    }
+
+                    @Override
+                    protected long getNativeMap() {
+                        throw new UnsupportedOperationException(
+                                "FeatureMap stub for testing does not support getting the flag"
+                                        + " value across the native boundary, provide test override"
+                                        + " values instead.");
+                    }
+                };
+
+        PostNativeFlag featureA = new PostNativeFlag(testFeatureMap, FEATURE_A);
+        PostNativeFlag featureB = new PostNativeFlag(testFeatureMap, FEATURE_B);
+
+        // Assert that PostNativeFlags return the default values hardcoded in the feature map.
+        assertTrue(featureA.isEnabled());
+        assertFalse(featureB.isEnabled());
     }
 }

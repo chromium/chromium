@@ -9,15 +9,18 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.FeatureMap;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
+import java.util.Map;
 
 /**
  * Java accessor for state of Chrome-layer feature flags.
  *
- * This class provides methods to access values of Chrome-layer feature flags, listed in
- * {@link ChromeFeatureList} and to  their field trial parameters. The API to access those values
- * is in the base class {@link FeatureMap} and is shared with other FeatureLists and FeatureMaps.
+ * <p>This class provides methods to access values of Chrome-layer feature flags, listed in {@link
+ * ChromeFeatureList} and to their field trial parameters. The API to access those values is in the
+ * base class {@link FeatureMap} and is shared with other FeatureLists and FeatureMaps.
  *
- * The same functionality is provided through static methods in {@link ChromeFeatureList} for
+ * <p>The same functionality is provided through static methods in {@link ChromeFeatureList} for
  * backwards compatibility and convenience.
  */
 @JNINamespace("chrome::android")
@@ -42,6 +45,21 @@ public class ChromeFeatureMap extends FeatureMap {
     @Override
     protected long getNativeMap() {
         return ChromeFeatureMapJni.get().getNativeMap();
+    }
+
+    @Override
+    public @Nullable Map<String, Boolean> getFlagsDefaultValuesInTests() {
+        return ChromeFeatureList.sFlagsDefaultValuesInTests;
+    }
+
+    @Override
+    public @Nullable Map<String, Map<String, String>> getParamsDefaultValues() {
+        return ChromeFeatureList.sParamsDefaultValues;
+    }
+
+    @Override
+    public @Nullable Map<String, Map<String, String>> getParamsDefaultValuesInTests() {
+        return ChromeFeatureList.sParamsDefaultValuesInTests;
     }
 
     @NativeMethods

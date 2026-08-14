@@ -13,6 +13,7 @@ import org.chromium.base.SysUtils;
 import org.chromium.base.TimeUtils;
 import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.cached_flags.BooleanCachedFeatureParam;
 import org.chromium.components.cached_flags.CachedFeatureParam;
 import org.chromium.components.cached_flags.CachedFlag;
@@ -59,6 +60,9 @@ public abstract class ChromeFeatureList {
      *
      * <p>Note: Features queried through this API must be added to the array
      * |kFeaturesExposedToJava| in chrome/browser/flags/android/chrome_feature_list.cc
+     *
+     * @deprecated Use {@link ChromeFeatureList#getFieldTrialParamByFeatureAsString(String, String)}
+     *     instead.
      */
     public static String getFieldTrialParamByFeature(String featureName, String paramName) {
         return ChromeFeatureMap.getInstance().getFieldTrialParamByFeature(featureName, paramName);
@@ -70,6 +74,9 @@ public abstract class ChromeFeatureList {
      *
      * <p>Note: Features queried through this API must be added to the array
      * |kFeaturesExposedToJava| in chrome/browser/flags/android/chrome_feature_list.cc
+     *
+     * @deprecated Use {@link ChromeFeatureList#getFieldTrialParamByFeatureAsBoolean(String,
+     *     String)} instead.
      */
     public static boolean getFieldTrialParamByFeatureAsBoolean(
             String featureName, String paramName, boolean defaultValue) {
@@ -79,10 +86,26 @@ public abstract class ChromeFeatureList {
 
     /**
      * Convenience method to get Chrome-layer feature field trial params, see {@link
+     * FeatureMap#getFieldTrialParamByFeatureAsBoolean(String, String)}.
+     *
+     * <p>Note: Features queried through this API must be added to the array
+     * |kFeaturesExposedToJava| in chrome/browser/flags/android/chrome_feature_list.cc
+     */
+    public static boolean getFieldTrialParamByFeatureAsBoolean(
+            String featureName, String paramName) {
+        return ChromeFeatureMap.getInstance()
+                .getFieldTrialParamByFeatureAsBoolean(featureName, paramName);
+    }
+
+    /**
+     * Convenience method to get Chrome-layer feature field trial params, see {@link
      * FeatureMap#getFieldTrialParamByFeatureAsInt(String, String, int)}.
      *
      * <p>Note: Features queried through this API must be added to the array
      * |kFeaturesExposedToJava| in chrome/browser/flags/android/chrome_feature_list.cc
+     *
+     * @deprecated Use {@link ChromeFeatureList#getFieldTrialParamByFeatureAsInt(String, String)}
+     *     instead.
      */
     public static int getFieldTrialParamByFeatureAsInt(
             String featureName, String paramName, int defaultValue) {
@@ -92,15 +115,70 @@ public abstract class ChromeFeatureList {
 
     /**
      * Convenience method to get Chrome-layer feature field trial params, see {@link
+     * FeatureMap#getFieldTrialParamByFeatureAsInt(String, String)}.
+     *
+     * <p>Note: Features queried through this API must be added to the array
+     * |kFeaturesExposedToJava| in chrome/browser/flags/android/chrome_feature_list.cc
+     */
+    public static int getFieldTrialParamByFeatureAsInt(String featureName, String paramName) {
+        return ChromeFeatureMap.getInstance()
+                .getFieldTrialParamByFeatureAsInt(featureName, paramName);
+    }
+
+    /**
+     * Convenience method to get Chrome-layer feature field trial params, see {@link
      * FeatureMap#getFieldTrialParamByFeatureAsDouble(String, String, double)}.
      *
      * <p>Note: Features queried through this API must be added to the array
      * |kFeaturesExposedToJava| in chrome/browser/flags/android/chrome_feature_list.cc
+     *
+     * @deprecated Use {@link ChromeFeatureList#getFieldTrialParamByFeatureAsDouble(String, String)}
+     *     instead.
      */
     public static double getFieldTrialParamByFeatureAsDouble(
             String featureName, String paramName, double defaultValue) {
         return ChromeFeatureMap.getInstance()
                 .getFieldTrialParamByFeatureAsDouble(featureName, paramName, defaultValue);
+    }
+
+    /**
+     * Convenience method to get Chrome-layer feature field trial params, see {@link
+     * FeatureMap#getFieldTrialParamByFeatureAsDouble(String, String)}.
+     *
+     * <p>Note: Features queried through this API must be added to the array
+     * |kFeaturesExposedToJava| in chrome/browser/flags/android/chrome_feature_list.cc
+     */
+    public static double getFieldTrialParamByFeatureAsDouble(String featureName, String paramName) {
+        return ChromeFeatureMap.getInstance()
+                .getFieldTrialParamByFeatureAsDouble(featureName, paramName);
+    }
+
+    /**
+     * Convenience method to get Chrome-layer feature field trial params, see {@link
+     * FeatureMap#getFieldTrialParamByFeatureAsString(String, String, String)}.
+     *
+     * <p>Note: Features queried through this API must be added to the array
+     * |kFeaturesExposedToJava| in chrome/browser/flags/android/chrome_feature_list.cc
+     *
+     * @deprecated This should only be used in tests. In production, use {@link
+     *     ChromeFeatureList#getFieldTrialParamByFeatureAsString(String, String)} instead.
+     */
+    public static String getFieldTrialParamByFeatureAsString(
+            String featureName, String paramName, String defaultValue) {
+        return ChromeFeatureMap.getInstance()
+                .getFieldTrialParamByFeatureAsString(featureName, paramName, defaultValue);
+    }
+
+    /**
+     * Convenience method to get Chrome-layer feature field trial params, see {@link
+     * FeatureMap#getFieldTrialParamByFeatureAsString(String, String)}.
+     *
+     * <p>Note: Features queried through this API must be added to the array
+     * |kFeaturesExposedToJava| in chrome/browser/flags/android/chrome_feature_list.cc
+     */
+    public static String getFieldTrialParamByFeatureAsString(String featureName, String paramName) {
+        return ChromeFeatureMap.getInstance()
+                .getFieldTrialParamByFeatureAsString(featureName, paramName);
     }
 
     /**
@@ -787,6 +865,15 @@ public abstract class ChromeFeatureList {
             "YourSavedInfoSettingsPageAndroid";
     // keep-sorted end
     // LINT.ThenChange(//chrome/browser/flags/android/chrome_feature_list.cc:FeaturesExposedToJava)
+
+    /**
+     * This map contains each flag's default value in tests, which is previously a CachedFlag's
+     * defaultValueInTests. This is what gets returned when you run {@link
+     * ChromeFeatureList#isEnabled(String)} in test builds. It should be in sync with the
+     * fieldtrial_testing_config.json.
+     */
+    static final @Nullable Map<String, Boolean> sFlagsDefaultValuesInTests =
+            !BuildConfig.IS_FOR_TEST ? null : Map.ofEntries();
 
     // keep-sorted start group_prefixes=["public static final CachedFlag"]
     public static final CachedFlag sAccountForSuppressedKeyboardInsets =
@@ -1692,18 +1779,51 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(XPLAT_SYNCED_SETUP_THEMES, false);
     // keep-sorted end
 
+    // Parameter names.
+    // keep-sorted start group_prefixes=["public static final String"]
+    public static final String ANDROID_ANIMATED_PROGRESS_BAR_IN_BROWSER_FPS_CAP = "fps_cap";
+    public static final String ANDROID_ANIMATED_PROGRESS_BAR_IN_BROWSER_JUMP_TO_COMPLETION_NO_FADE =
+            "jump_to_completion_no_fade";
+    public static final String
+            ANDROID_ANIMATED_PROGRESS_BAR_IN_BROWSER_JUMP_TO_COMPLETION_WITH_FADE =
+                    "jump_to_completion_with_fade";
+
+    // keep-sorted end
+
+    /**
+     * This map contains each parameter's default value, which is previously a CachedFeatureParam's
+     * defaultValue. This is what gets returned when you run functions like {@link
+     * ChromeFeatureList#getFieldTrialParamByFeatureAsBoolean(String, String)} when the specified
+     * parameter does not exist in the field trial. It should be in sync with the native param's
+     * default value, if there is a corresponding native param.
+     */
+    static final Map<String, Map<String, String>> sParamsDefaultValues = Map.ofEntries();
+
+    /**
+     * This map contains each parameter's default value in tests. This is what gets returned when
+     * you run functions like {@link ChromeFeatureList#getFieldTrialParamByFeatureAsBoolean(String,
+     * String)} in test builds. It should be in sync with the fieldtrial_testing_config.json.
+     */
+    static final @Nullable Map<String, Map<String, String>> sParamsDefaultValuesInTests =
+            !BuildConfig.IS_FOR_TEST ? null : Map.ofEntries();
+
     // CachedFeatureParam instances.
     /* Alphabetical order by feature name, arbitrary order by param name: */
     public static final IntCachedFeatureParam sAndroidAnimatedProgressBarFpsCap =
-            newIntCachedFeatureParam(ANDROID_ANIMATED_PROGRESS_BAR_IN_BROWSER, "fps_cap", 0);
+            newIntCachedFeatureParam(
+                    ANDROID_ANIMATED_PROGRESS_BAR_IN_BROWSER,
+                    ANDROID_ANIMATED_PROGRESS_BAR_IN_BROWSER_FPS_CAP,
+                    0);
     public static final BooleanCachedFeatureParam sAndroidApbJumpToCompletionWithFade =
             newBooleanCachedFeatureParam(
                     ANDROID_ANIMATED_PROGRESS_BAR_IN_BROWSER,
-                    "jump_to_completion_with_fade",
+                    ANDROID_ANIMATED_PROGRESS_BAR_IN_BROWSER_JUMP_TO_COMPLETION_WITH_FADE,
                     false);
     public static final BooleanCachedFeatureParam sAndroidApbJumpToCompletionNoFade =
             newBooleanCachedFeatureParam(
-                    ANDROID_ANIMATED_PROGRESS_BAR_IN_BROWSER, "jump_to_completion_no_fade", false);
+                    ANDROID_ANIMATED_PROGRESS_BAR_IN_BROWSER,
+                    ANDROID_ANIMATED_PROGRESS_BAR_IN_BROWSER_JUMP_TO_COMPLETION_NO_FADE,
+                    false);
     public static final BooleanCachedFeatureParam sAndroidThemeModuleForceDependencies =
             newBooleanCachedFeatureParam(
                     ANDROID_THEME_MODULE, "force_theme_module_dependencies", false);
