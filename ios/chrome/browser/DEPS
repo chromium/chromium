@@ -128,7 +128,7 @@ include_rules = [
   "+components/ukm",
   "+components/undo",
   "+components/unified_consent",
-  "+components/unified_consent",
+  "+components/universal_optout",
   "+components/update_client",
   "+components/upload_list",
   "+components/user_data_importer",

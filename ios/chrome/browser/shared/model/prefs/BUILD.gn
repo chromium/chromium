@@ -107,6 +107,7 @@ source_set("browser_prefs") {
     "//components/translate/core/browser",
     "//components/translate/core/common",
     "//components/unified_consent",
+    "//components/universal_optout",
     "//components/update_client",
     "//components/variations/service",
     "//components/web_resource",

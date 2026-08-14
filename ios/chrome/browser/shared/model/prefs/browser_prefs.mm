@@ -100,6 +100,7 @@
 #import "components/translate/core/browser/translate_pref_names.h"
 #import "components/translate/core/browser/translate_prefs.h"
 #import "components/unified_consent/unified_consent_service.h"
+#import "components/universal_optout/prefs.h"
 #import "components/update_client/update_client.h"
 #import "components/variations/service/variations_service.h"
 #import "components/web_resource/web_resource_pref_names.h"
@@ -564,6 +565,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   TemplateURLPrepopulateData::RegisterProfilePrefs(registry);
   translate::TranslatePrefs::RegisterProfilePrefs(registry);
   unified_consent::UnifiedConsentService::RegisterPrefs(registry);
+  universal_optout::prefs::RegisterProfilePrefs(registry);
   variations::VariationsService::RegisterProfilePrefs(registry);
   ZeroSuggestProvider::RegisterProfilePrefs(registry);
   tab_resumption_prefs::RegisterProfilePrefs(registry);
