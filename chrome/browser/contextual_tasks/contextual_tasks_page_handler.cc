@@ -1003,12 +1003,22 @@ void ContextualTasksPageHandler::MaybeTriggerPinningPromo() {
 #endif
 }
 
-void ContextualTasksPageHandler::ShowPageInfoBubble() {
+void ContextualTasksPageHandler::ShowPageInfoBubble(
+    bool is_pointer_interaction) {
   if (!contextual_tasks::IsContextualTasksSidePanelRearchitectureEnabled()) {
     return;
   }
   if (panel_controller_) {
-    panel_controller_->ShowPageInfoBubble();
+    panel_controller_->ShowPageInfoBubble(is_pointer_interaction);
+  }
+}
+
+void ContextualTasksPageHandler::OnLogoPointerDown() {
+  if (!contextual_tasks::IsContextualTasksSidePanelRearchitectureEnabled()) {
+    return;
+  }
+  if (panel_controller_) {
+    panel_controller_->OnLogoPointerDown();
   }
 }
 

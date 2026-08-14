@@ -96,7 +96,8 @@ class ContextualTasksPageHandler
   void CloseWindow(
       const contextual_tasks::ContextualWindowId& window_id) override;
   void MaybeTriggerPinningPromo() override;
-  void ShowPageInfoBubble() override;
+  void ShowPageInfoBubble(bool is_pointer_interaction) override;
+  void OnLogoPointerDown() override;
   void CreateNewThread() override;
   void PostAimMessage(const lens::ClientToAimMessage& message);
 

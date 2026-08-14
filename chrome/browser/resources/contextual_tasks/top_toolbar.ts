@@ -274,11 +274,22 @@ export class TopToolbarElement extends TopToolbarElementBase {
     this.showReopenTabs_ = false;
   }
 
-  protected onLogoClick_() {
+  protected onLogoPointerdown_() {
     if (!this.isSidePanelRearchitectureEnabled_) {
       return;
     }
-    this.browserProxy_.handler.showPageInfoBubble();
+    this.browserProxy_.handler.onLogoPointerDown();
+  }
+
+  protected onLogoClick_(e: Event) {
+    if (!this.isSidePanelRearchitectureEnabled_) {
+      return;
+    }
+    // Keyboard synthetic clicks generate PointerEvents with an empty
+    // pointerType in WebUI, whereas natural pointer clicks have a valid
+    // pointerType (e.g., 'mouse', 'touch', 'pen').
+    this.browserProxy_.handler.showPageInfoBubble(
+        e instanceof PointerEvent && e.pointerType !== '');
   }
 }
 

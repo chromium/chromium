@@ -1366,9 +1366,11 @@ bool ContextualTasksSidePanelCoordinator::CanExpandToFullTab() const {
   return web_ui_interface ? web_ui_interface->CanExpandToFullTab() : false;
 }
 
-void ContextualTasksSidePanelCoordinator::ShowPageInfoBubble() {
+void ContextualTasksSidePanelCoordinator::ShowPageInfoBubble(
+    bool is_pointer_interaction) {
 #if !BUILDFLAG(IS_ANDROID)
-  if (page_info_bubble_suppressor_.ShouldSuppress()) {
+  if (page_info_bubble_suppressor_.ShouldSuppressBubbleShow(
+          is_pointer_interaction)) {
     return;
   }
 
@@ -1424,6 +1426,12 @@ void ContextualTasksSidePanelCoordinator::ShowPageInfoBubble() {
 #else
   // TODO(crbug.com/536100150): Add support to trigger this menu on Android
   // Desktop
+#endif
+}
+
+void ContextualTasksSidePanelCoordinator::OnLogoPointerDown() {
+#if !BUILDFLAG(IS_ANDROID)
+  page_info_bubble_suppressor_.OnMousePressed();
 #endif
 }
 

@@ -222,7 +222,15 @@ interface PageHandler {
   MaybeTriggerPinningPromo();
 
   // Triggers the display of the native PageInfo bubble.
-  ShowPageInfoBubble();
+  // `is_pointer_interaction` is true if the bubble was opened via a pointer
+  // interaction (mouse, touch, etc.) rather than a keyboard interaction. This
+  // is necessary because the backend uses this context to decide whether to run
+  // pointer-specific rapid-reopen suppression shielding.
+  ShowPageInfoBubble(bool is_pointer_interaction);
+
+  // Called when the user presses the pointer down on the PageInfo button.
+  // This is used for bubble reopening suppression.
+  OnLogoPointerDown();
 
   // Requests the browser to load a new thread URL in the guest WebContents.
   CreateNewThread();

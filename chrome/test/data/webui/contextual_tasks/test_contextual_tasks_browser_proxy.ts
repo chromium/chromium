@@ -243,6 +243,7 @@ class TestContextualTasksPageHandler extends TestBrowserProxy implements
       'closeWindow',
       'maybeTriggerPinningPromo',
       'showPageInfoBubble',
+      'onLogoPointerDown',
       'createNewThread',
     ]);
 
@@ -477,8 +478,12 @@ class TestContextualTasksPageHandler extends TestBrowserProxy implements
     this.methodCalled('maybeTriggerPinningPromo');
   }
 
-  showPageInfoBubble() {
-    this.methodCalled('showPageInfoBubble');
+  showPageInfoBubble(isPointerInteraction: boolean) {
+    this.methodCalled('showPageInfoBubble', isPointerInteraction);
+  }
+
+  onLogoPointerDown() {
+    this.methodCalled('onLogoPointerDown');
   }
 
   createNewThread() {

@@ -89,7 +89,11 @@ class MockContextualTasksPanelController
   MOCK_METHOD(void, MoveTaskUiToNewTab, (), (override));
   MOCK_METHOD(void, NotifyExpandToFullTabStateChanged, (), (override));
   MOCK_METHOD(bool, CanExpandToFullTab, (), (const, override));
-  MOCK_METHOD(void, ShowPageInfoBubble, (), (override));
+  MOCK_METHOD(void,
+              ShowPageInfoBubble,
+              (bool is_pointer_interaction),
+              (override));
+  MOCK_METHOD(void, OnLogoPointerDown, (), (override));
   MOCK_METHOD(void, AddObserver, (Observer*), (override));
   MOCK_METHOD(void, RemoveObserver, (Observer*), (override));
 };

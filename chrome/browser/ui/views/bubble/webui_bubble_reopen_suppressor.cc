@@ -51,10 +51,6 @@ bool WebUIBubbleReopenSuppressor::ShouldSuppressBubbleShow(
   return IsShowing();
 }
 
-bool WebUIBubbleReopenSuppressor::ShouldSuppress() const {
-  return IsTimeWithinSuppressionWindow();
-}
-
 bool WebUIBubbleReopenSuppressor::IsTimeWithinSuppressionWindow() const {
   if (IsShowing()) {
     return true;

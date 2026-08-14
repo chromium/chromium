@@ -66,14 +66,6 @@ class WebUIBubbleReopenSuppressor : public views::WidgetObserver {
   // mouse, but WebUI considers mouse/touch/pen.
   bool ShouldSuppressBubbleShow(bool is_pointer_interaction);
 
-  // Returns true if the time elapsed since the widget was closed is less than
-  // the suppression threshold, or if the widget is currently showing. Use this
-  // directly ONLY if you lack the native interception capabilities to use
-  // `OnMousePressed()` / `ShouldSuppressBubbleShow()`.
-  // TODO(crbug.com/532609175): Remove this after all callers are migrated to
-  // call `ShouldSuppressBubbleShow()` instead.
-  bool ShouldSuppress() const;
-
   // views::WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;
 
