@@ -141,7 +141,7 @@ std::optional<AtMemoryHandler::CaretInfo> AtMemoryHandler::GetCaretInfo(
   return std::nullopt;
 }
 
-bool AtMemoryHandler::ShouldTriggerAtMemorySearch(
+bool AtMemoryHandler::HasTriggerStringNextToCaret(
     const WebElement& element) const {
   if (!base::FeatureList::IsEnabled(features::kAutofillAtMemory)) {
     return false;
@@ -366,7 +366,7 @@ void AtMemoryHandler::ReplaceSelectionForAtMemory(WebElement element,
   }
 
   int offset = 0;
-  if (info->caused_by_trigger_string && ShouldTriggerAtMemorySearch(element)) {
+  if (info->caused_by_trigger_string && HasTriggerStringNextToCaret(element)) {
     offset = GetTriggerString().size();
   }
 

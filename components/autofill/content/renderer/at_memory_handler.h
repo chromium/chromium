@@ -111,9 +111,8 @@ class AtMemoryHandler {
 
   const std::u16string& GetTriggerString() const;
 
-  // AtMemory should be triggered if the field is not a password field, no text
-  // is selected and the cursor is located behind the trigger string.
-  bool ShouldTriggerAtMemorySearch(const blink::WebElement& element) const;
+  // Returns true if the trigger string occurs before the caret in `element`.
+  bool HasTriggerStringNextToCaret(const blink::WebElement& element) const;
 
   bool DidReceiveKeyDownForAtMemoryShortcut(
       const blink::WebElement& element,
