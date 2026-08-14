@@ -11,6 +11,8 @@ const allowAsyncResponsesForAllEvents =
     webRequestNatives.AllowAsyncResponsesForAllEvents();
 const isServiceWorkerContext =
     requireNative('service_worker_natives').IsServiceWorkerContext();
+const usePerContextEventDispatch =
+    webRequestNatives.IsPerContextEventDispatchEnabled();
 
 // Returns an ID that is either globally unique (in this process) or unique
 // within this given context. Note that we use separate prefixes ('g' and 's')
@@ -41,6 +43,27 @@ function getUniqueSubEventName(eventName) {
 function hasExtraInfo(extraInfo, option) {
   return !!extraInfo && $Array.indexOf(extraInfo, option) >= 0;
 }
+
+// ----------------------------------------------------------------------------
+// Per-context dispatch.
+//
+// When WebRequestPerContextEventDispatch is enabled, the browser dispatches
+// matching events once per context, and JS matches context listeners locally.
+// ----------------------------------------------------------------------------
+
+// Listener IDs for the `ParsedFilter` cache (see `WebRequestNatives`).
+let nextListenerId = 0;
+
+// Listener records for all events in this context, keyed by the listener ID
+// registered with the `TrackListener()` native.
+const trackedListeners = {
+  __proto__: null
+};
+
+// One custom event per parent event name; see `getOrCreateParentEvent()`.
+const parentEvents = {
+  __proto__: null
+};
 
 // Header names delivered only to "extraHeaders" listeners.
 // NOTE: Keep in sync with `kExtra{Request,Response}HeaderNames` in
@@ -121,11 +144,34 @@ function getFilteredDetails(details, listener) {
   return copy;
 }
 
+// Returns the custom event that carries `eventName`'s listener
+// registrations to the browser.
+function getOrCreateParentEvent(eventName) {
+  let parentEvent = parentEvents[eventName];
+  if (parentEvent) {
+    return parentEvent;
+  }
+  parentEvent = bindingUtil.createCustomEvent(
+      eventName, /*supportsFilters=*/ true,
+      /*supportsLazyListeners=*/ true);
+  parentEvents[eventName] = parentEvent;
+  return parentEvent;
+}
+
+// ----------------------------------------------------------------------------
+
 // WebRequestEventImpl object. This is used for special webRequest events
-// with extra parameters. Each invocation of addListener creates a new named
-// sub-event. That sub-event is associated with the extra parameters in the
-// browser process, so that only it is dispatched when the main event occurs
-// matching the extra parameters.
+// with extra parameters.
+//
+// With per-context dispatch (usePerContextEventDispatch), listeners register
+// with the browser under the parent event name, and renderer bindings match
+// and dispatch to listeners locally.
+//
+// Otherwise, each invocation of addListener creates a new named sub-event.
+// That sub-event is associated with the extra parameters in the browser
+// process, so that only it is dispatched when the main event occurs matching
+// the extra parameters.
+//
 // Note: this is not used for the onActionIgnored event.
 //
 // Example:
@@ -144,7 +190,8 @@ function WebRequestEventImpl(eventName, opt_argSchemas, opt_extraArgSchemas,
   this.argSchemas = opt_argSchemas;
   this.extraArgSchemas = opt_extraArgSchemas;
   this.webViewInstanceId = opt_webViewInstanceId || 0;
-  this.subEvents = [];
+  this.subEvents = [];  // Legacy sub-event dispatch.
+  this.listeners = [];  // Per-context dispatch.
 }
 $Object.setPrototypeOf(WebRequestEventImpl.prototype, null);
 
@@ -155,6 +202,9 @@ WebRequestEventImpl.prototype.hasListener = function(cb) {
 
 // Test if any callbacks are registered fur thus event.
 WebRequestEventImpl.prototype.hasListeners = function() {
+  if (usePerContextEventDispatch) {
+    return this.listeners.length > 0;
+  }
   return this.subEvents.length > 0;
 };
 
@@ -164,6 +214,11 @@ WebRequestEventImpl.prototype.hasListeners = function() {
 // info is sent to the callback.
 WebRequestEventImpl.prototype.addListener = function(
     cb, opt_filter, opt_extraInfo) {
+  if (usePerContextEventDispatch) {
+    this.addListenerContextDispatch_(cb, opt_filter, opt_extraInfo);
+    return;
+  }
+
   // NOTE(benjhayden) New APIs should not use this subEventName trick! It does
   // not play well with event pages. See downloads.onDeterminingFilename and
   // ExtensionDownloadsEventRouter for an alternative approach.
@@ -235,9 +290,64 @@ WebRequestEventImpl.prototype.addListener = function(
       {extraInfo: opt_extraInfo, webViewInstanceId: this.webViewInstanceId});
 };
 
+// addListener() for per-context dispatch: registers the listener with the
+// browser under the parent event and records it locally for dispatch matching.
+WebRequestEventImpl.prototype.addListenerContextDispatch_ = function(
+    cb, opt_filter, opt_extraInfo) {
+  bindingUtil.validateCustomSignature(
+      this.eventName, $Array.slice(arguments, 1));
+
+  const parentEvent = getOrCreateParentEvent(this.eventName);
+  const listener = {
+    __proto__: null,
+    id: nextListenerId++,
+    callback: cb,
+    // Attaches to the shared parent event to forward filters and options to
+    // the browser once per addListener call. A new function keeps each call
+    // a separate registration.
+    placeholder: function() {},
+    extraInfoSpec: opt_extraInfo,
+    isBlocking: hasExtraInfo(opt_extraInfo, 'blocking'),
+    isAsyncBlocking: hasExtraInfo(opt_extraInfo, 'asyncBlocking'),
+    // Precalculated to avoid work during event dispatch.
+    droppedKeys: computeDroppedKeys(opt_extraInfo),
+    hasExtraHeaders: hasExtraInfo(opt_extraInfo, 'extraHeaders'),
+    hasSecurityInfoRawDer: hasExtraInfo(opt_extraInfo, 'securityInfoRawDer'),
+    // Dispatches that still await this listener's asynchronous response.
+    blockedDispatches: [],
+  };
+
+  // NOTE: Throws if validation fails, preventing native listener tracking
+  // below.
+  parentEvent.addListener(listener.placeholder, opt_filter, {
+    extraInfo: opt_extraInfo,
+    webViewInstanceId: this.webViewInstanceId,
+  });
+
+  // Registers listener filter rules in the C++ cache to avoid re-parsing
+  // filters on dispatch.
+  webRequestNatives.TrackListener(
+      this.eventName, listener.id, opt_filter, this.webViewInstanceId,
+      listener.isBlocking, listener.isAsyncBlocking);
+  trackedListeners[listener.id] = listener;
+  $Array.push(this.listeners, listener);
+};
+
 // Unregisters a callback.
 WebRequestEventImpl.prototype.removeListener = function(cb) {
   var idx;
+  if (usePerContextEventDispatch) {
+    const parentEvent = parentEvents[this.eventName];
+    while ((idx = this.findListener_(cb)) >= 0) {
+      const listener = this.listeners[idx];
+      parentEvent.removeListener(listener.placeholder);
+      webRequestNatives.UntrackListener(listener.id);
+      $Array.splice(this.listeners, idx, 1);
+      delete trackedListeners[listener.id];
+    }
+    return;
+  }
+
   while ((idx = this.findListener_(cb)) >= 0) {
     var e = this.subEvents[idx];
     e.subEvent.removeListener(e.subEventCallback);
@@ -250,6 +360,15 @@ WebRequestEventImpl.prototype.removeListener = function(cb) {
 };
 
 WebRequestEventImpl.prototype.findListener_ = function(cb) {
+  if (usePerContextEventDispatch) {
+    for (let i = 0; i < this.listeners.length; ++i) {
+      if (this.listeners[i].callback === cb) {
+        return i;
+      }
+    }
+    return -1;
+  }
+
   for (var i in this.subEvents) {
     var e = this.subEvents[i];
     if (e.callback === cb) {
