@@ -174,7 +174,7 @@ PaymentsChurnedUsersBubbleController::GetConfirmationUiParams() const {
 }
 
 base::OnceCallback<void(PaymentsUiClosedReason)>
-PaymentsChurnedUsersBubbleController::GetOnBubbleClosedCallback() {
+PaymentsChurnedUsersBubbleController::GetConfirmationBubbleClosedCallback() {
   return base::IgnoreArgs<PaymentsUiClosedReason>(
       base::BindOnce(&PaymentsChurnedUsersBubbleController::
                          ResetBubbleViewAndInformBubbleManager,

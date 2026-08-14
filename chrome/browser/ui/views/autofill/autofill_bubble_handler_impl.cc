@@ -361,7 +361,7 @@ AutofillBubbleHandlerImpl::ShowPaymentsChurnedUsersConfirmationBubble(
   views::BubbleAnchor anchor = toolbar_button_provider_->GetBubbleAnchor(
       kActionShowPaymentsChurnedUsersBubble);
   base::OnceCallback<void(PaymentsUiClosedReason)> callback =
-      controller->GetOnBubbleClosedCallback();
+      controller->GetConfirmationBubbleClosedCallback();
 
   return ShowSaveCardAndVirtualCardEnrollConfirmationBubble(
       anchor, web_contents, std::move(callback), kPaymentsChurnedUsersBubbleId,

@@ -66,7 +66,8 @@ class PaymentsChurnedUsersBubbleController
   void ShowConfirmationBubbleView();
   SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams
   GetConfirmationUiParams() const;
-  base::OnceCallback<void(PaymentsUiClosedReason)> GetOnBubbleClosedCallback();
+  base::OnceCallback<void(PaymentsUiClosedReason)>
+  GetConfirmationBubbleClosedCallback();
   base::WeakPtr<PaymentsChurnedUsersBubbleController> GetWeakPtr();
 
   // AutofillBubbleControllerBase:
