@@ -7,6 +7,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/actor/actor_proto_conversion.h"
 #include "chrome/browser/actor/actor_test_util.h"
+#include "components/actor/core/actor_features.h"
 #include "components/actor/core/shared_types.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/password_manager/core/browser/features/password_features.h"
@@ -82,6 +83,31 @@ TEST_F(AttemptLoginToolRequestTest, ReadFromProto) {
   ASSERT_TRUE(std::holds_alternative<gfx::Point>(*sign_in_with_google_button));
   EXPECT_EQ(std::get<gfx::Point>(*sign_in_with_google_button),
             gfx::Point(100, 200));
+}
+
+TEST_F(AttemptLoginToolRequestTest,
+       GetObservationPageStabilityConfig_FeatureEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kActorLoginObservationStartDelay, {{"start_delay", "4s"}});
+
+  AttemptLoginToolRequest request(tabs::TabHandle(123), std::nullopt,
+                                  std::nullopt);
+  auto config = request.GetObservationPageStabilityConfig();
+  EXPECT_TRUE(config.supports_paint_stability);
+  EXPECT_EQ(config.start_delay, base::Seconds(4));
+}
+
+TEST_F(AttemptLoginToolRequestTest,
+       GetObservationPageStabilityConfig_FeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kActorLoginObservationStartDelay);
+
+  AttemptLoginToolRequest request(tabs::TabHandle(123), std::nullopt,
+                                  std::nullopt);
+  auto config = request.GetObservationPageStabilityConfig();
+  EXPECT_TRUE(config.supports_paint_stability);
+  EXPECT_EQ(config.start_delay, base::TimeDelta());
 }
 
 }  // namespace

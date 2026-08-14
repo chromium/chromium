@@ -102,6 +102,10 @@ BASE_DECLARE_FEATURE(kGlicActorSkipScreenshot);
 
 BASE_DECLARE_FEATURE(kActorRestartObservationDelayControllerOnNavigate);
 
+BASE_DECLARE_FEATURE(kActorLoginObservationStartDelay);
+extern const base::FeatureParam<base::TimeDelta>
+    kActorLoginObservationStartDelayDuration;
+
 // Kill switch to disable sending a browser signal (which is used for user
 // interaction) before sending action to renderer.
 BASE_DECLARE_FEATURE(kActorSendBrowserSignalForAction);

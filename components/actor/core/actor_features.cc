@@ -151,6 +151,12 @@ BASE_FEATURE(kGlicActorSkipScreenshot, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kActorRestartObservationDelayControllerOnNavigate,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kActorLoginObservationStartDelay,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+const base::FeatureParam<base::TimeDelta>
+    kActorLoginObservationStartDelayDuration{&kActorLoginObservationStartDelay,
+                                             "start_delay", base::Seconds(3)};
+
 BASE_FEATURE(kActorSendBrowserSignalForAction,
              base::FEATURE_ENABLED_BY_DEFAULT);
 

@@ -11,6 +11,7 @@
 #include "base/notimplemented.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/actor/actor_task.h"
+#include "chrome/browser/actor/tools/attempt_login_tool_request.h"
 #include "chrome/browser/actor/tools/click_tool_request.h"
 #include "chrome/browser/actor/tools/observation_delay_controller.h"
 #include "chrome/browser/actor/tools/tool_callbacks.h"
@@ -513,7 +514,8 @@ void AttemptLoginTool::OnAttemptLogin(
       sign_in_with_google_button_.has_value()) {
     tool_delegate().EnqueueFollowupAction(std::make_unique<ClickToolRequest>(
         tab_handle_, *sign_in_with_google_button_, mojom::ClickType::kLeft,
-        mojom::ClickCount::kSingle, requires_opening_web_contents_));
+        mojom::ClickCount::kSingle, requires_opening_web_contents_,
+        AttemptLoginToolRequest::GetLoginObservationPageStabilityConfig()));
     mojom::ActionResultPtr result =
         MakeOkResult(/*requires_page_stabilization=*/false);
     result->attempt_login_status = mojom::AttemptLoginStatus::kFederated;
@@ -529,7 +531,8 @@ void AttemptLoginTool::OnAttemptLogin(
     CHECK_EQ(selected_credential.type, actor_login::CredentialType::kPassword);
     tool_delegate().EnqueueFollowupAction(std::make_unique<ClickToolRequest>(
         tab_handle_, *password_button_, mojom::ClickType::kLeft,
-        mojom::ClickCount::kSingle, requires_opening_web_contents_));
+        mojom::ClickCount::kSingle, requires_opening_web_contents_,
+        AttemptLoginToolRequest::GetLoginObservationPageStabilityConfig()));
     mojom::ActionResultPtr result =
         MakeOkResult(/*requires_page_stabilization=*/false);
     result->attempt_login_status = mojom::AttemptLoginStatus::kPasswordManager;

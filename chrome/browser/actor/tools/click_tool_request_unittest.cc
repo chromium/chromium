@@ -99,6 +99,29 @@ TEST(ClickToolRequestTest, RequiresTargetInLastApc_ForOccludedClick) {
   EXPECT_FALSE(regular_dom_node.RequiresTargetInLastApc());
 }
 
+TEST(ClickToolRequestTest, GetObservationPageStabilityConfig_Default) {
+  ClickToolRequest request(NonNullTabHandleForRequestPolicyTest(),
+                           NonRootDomNodeTarget(), mojom::ClickType::kLeft,
+                           mojom::ClickCount::kSingle);
+  auto config = request.GetObservationPageStabilityConfig();
+  EXPECT_TRUE(config.supports_paint_stability);
+  EXPECT_EQ(config.start_delay, base::TimeDelta());
+}
+
+TEST(ClickToolRequestTest, GetObservationPageStabilityConfig_Custom) {
+  ObservationDelayController::PageStabilityConfig custom_config{
+      .supports_paint_stability = false,
+      .start_delay = base::Seconds(4),
+  };
+  ClickToolRequest request(
+      NonNullTabHandleForRequestPolicyTest(), NonRootDomNodeTarget(),
+      mojom::ClickType::kLeft, mojom::ClickCount::kSingle,
+      /*requires_opening_web_contents=*/false, custom_config);
+  auto config = request.GetObservationPageStabilityConfig();
+  EXPECT_FALSE(config.supports_paint_stability);
+  EXPECT_EQ(config.start_delay, base::Seconds(4));
+}
+
 TEST(PageToolRequestTargetApcTest,
      PageTools_RequireTargetInLastApcForEnabledNonRootDomNodes) {
   // With TOCTOU validation enabled, page tools check DOM targets against APC.

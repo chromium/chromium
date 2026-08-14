@@ -10,6 +10,7 @@
 #include "chrome/browser/actor/tools/tool.h"
 #include "chrome/browser/actor/tools/tool_request_visitor_functor.h"
 #include "chrome/common/actor/action_result.h"
+#include "components/actor/core/actor_features.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/tabs/public/tab_interface.h"
@@ -58,6 +59,22 @@ std::string_view AttemptLoginToolRequest::Name() const {
 
 bool AttemptLoginToolRequest::RequiresOpeningWebContents() const {
   return base::FeatureList::IsEnabled(features::kFedCmEmbedderInitiatedLogin);
+}
+
+ObservationDelayController::PageStabilityConfig
+AttemptLoginToolRequest::GetLoginObservationPageStabilityConfig() {
+  ObservationDelayController::PageStabilityConfig config{
+      .supports_paint_stability = true,
+  };
+  if (base::FeatureList::IsEnabled(kActorLoginObservationStartDelay)) {
+    config.start_delay = kActorLoginObservationStartDelayDuration.Get();
+  }
+  return config;
+}
+
+ObservationDelayController::PageStabilityConfig
+AttemptLoginToolRequest::GetObservationPageStabilityConfig() const {
+  return GetLoginObservationPageStabilityConfig();
 }
 
 }  // namespace actor

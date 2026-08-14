@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 
+#include "chrome/browser/actor/tools/observation_delay_controller.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "components/actor/core/shared_types.h"
 
@@ -19,6 +20,9 @@ class ToolRequestVisitorFunctor;
 class AttemptLoginToolRequest : public TabToolRequest {
  public:
   static constexpr char kName[] = "AttemptLogin";
+
+  static ObservationDelayController::PageStabilityConfig
+  GetLoginObservationPageStabilityConfig();
 
   explicit AttemptLoginToolRequest(
       tabs::TabHandle tab_handle,
@@ -34,6 +38,8 @@ class AttemptLoginToolRequest : public TabToolRequest {
   void Apply(ToolRequestVisitorFunctor& f) const override;
   std::string_view Name() const override;
   bool RequiresOpeningWebContents() const override;
+  ObservationDelayController::PageStabilityConfig
+  GetObservationPageStabilityConfig() const override;
 
   std::optional<PageTarget> GetPasswordButtonForTesting() const {
     return password_button_;
