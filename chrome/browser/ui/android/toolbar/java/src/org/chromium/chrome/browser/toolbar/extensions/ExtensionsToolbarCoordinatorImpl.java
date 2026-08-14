@@ -19,6 +19,7 @@ import android.view.ViewStub;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.lifetime.LifetimeAssert;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
@@ -179,7 +180,7 @@ public class ExtensionsToolbarCoordinatorImpl
                         currentTabSupplier,
                         mExtensionsToolbarBridge,
                         (TextView) mContainer.findViewById(R.id.extensions_request_access_button),
-                        (v) -> {},
+                        CallbackUtils.emptyCallback(),
                         () ->
                                 mContainer.getResources().getConfiguration().screenWidthDp
                                         < COMPACT_WINDOW_THRESHOLD_DP);

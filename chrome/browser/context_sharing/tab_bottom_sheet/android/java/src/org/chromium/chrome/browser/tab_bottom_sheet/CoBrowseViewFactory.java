@@ -14,6 +14,7 @@ import androidx.annotation.VisibleForTesting;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
@@ -214,7 +215,7 @@ public class CoBrowseViewFactory {
                 /* canPromoteToNewTab= */ true,
                 /* shouldHaveContextMenu= */ true,
                 initiatorOrigin,
-                /* requestDeniedCallback= */ () -> {});
+                /* requestDeniedCallback= */ CallbackUtils.emptyRunnable());
     }
 
     private void addToReadingList(GURL url, String title) {

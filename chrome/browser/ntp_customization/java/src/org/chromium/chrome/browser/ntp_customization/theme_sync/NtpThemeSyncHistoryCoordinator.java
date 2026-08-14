@@ -16,6 +16,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -92,7 +93,7 @@ public class NtpThemeSyncHistoryCoordinator {
                 parentView,
                 bottomSheetDelegate,
                 moreOptionsClickListener,
-                new NtpThemeCollectionManager(context, profile, bitmap -> {}),
+                new NtpThemeCollectionManager(context, profile, CallbackUtils.emptyCallback()),
                 profile);
     }
 

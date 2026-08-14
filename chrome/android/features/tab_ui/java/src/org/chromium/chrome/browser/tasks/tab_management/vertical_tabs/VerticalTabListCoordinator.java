@@ -25,6 +25,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.Callback;
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordUserAction;
@@ -569,7 +570,7 @@ public class VerticalTabListCoordinator {
                         /* snackbarManager */ null,
                         TabListEditorCoordinator.UNLIMITED_SELECTION,
                         /* isSingleContextMode */ false,
-                        /* onDragStateChangedListener */ () -> {});
+                        /* onDragStateChangedListener */ CallbackUtils.emptyRunnable());
 
         mMediator.initWithNative(profile.getOriginalProfile());
 

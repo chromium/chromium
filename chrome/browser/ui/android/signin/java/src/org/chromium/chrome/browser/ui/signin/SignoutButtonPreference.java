@@ -14,6 +14,7 @@ import android.view.View;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
@@ -75,7 +76,7 @@ public class SignoutButtonPreference extends Preference implements ContainmentIt
                             assertNonNull(mSnackbarManagerSupplier.get()),
                             SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS,
                             /* showConfirmDialog= */ false,
-                            () -> {});
+                            CallbackUtils.emptyRunnable());
                 });
     }
 

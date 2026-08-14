@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.offlinepages.downloads;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 
+import org.chromium.base.CallbackUtils;
 import org.chromium.chrome.browser.download.DownloadInfo;
 import org.chromium.chrome.browser.download.DownloadManagerService;
 import org.chromium.chrome.browser.download.DownloadNotifier;
@@ -183,7 +184,7 @@ public class OfflinePageNotificationBridge {
     /** TODO(shaktisahu): Remove this function when offline pages backend cache loading is fixed. */
     private static void intializeOfflineItemsCollection() {
         OfflineContentProvider offlineContentProvider = OfflineContentAggregatorFactory.get();
-        offlineContentProvider.getAllItems(offlineItems -> {});
+        offlineContentProvider.getAllItems(CallbackUtils.emptyCallback());
     }
 
     private static DownloadNotifier getDownloadNotifier() {
