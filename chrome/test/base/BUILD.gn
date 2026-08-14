@@ -622,4 +622,59 @@ if (!is_android) {
       "//url",
     ]
   }
+
+  source_set("test_browser_window") {
+    testonly = true
+    sources = [
+      "dialog_test_browser_window.cc",
+      "dialog_test_browser_window.h",
+      "test_browser_window.cc",
+      "test_browser_window.h",
+    ]
+    public_deps = [
+      "//base",
+      "//chrome/browser/ui",
+      "//chrome/browser/ui/autofill:test_support",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/location_bar",
+      "//chrome/browser/ui/translate",
+      "//chrome/browser/ui/webui/tab_search:mojo_bindings",
+      "//components/user_education/common",
+      "//components/web_modal",
+      "//content/public/browser",
+    ]
+    deps = [
+      "//chrome/browser/apps/link_capturing",
+      "//chrome/browser/ui/browser_window:create_browser_window",
+      "//chrome/browser/ui/find_bar",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/ui/user_education",
+      "//chrome/browser/ui/views:bubble_anchor_util_views",
+      "//chrome/common:buildflags",
+      "//components/sharing_message",
+      "//ui/color",
+      "//ui/views",
+    ]
+  }
+}
+
+if (use_aura) {
+  source_set("test_browser_window_aura") {
+    testonly = true
+    sources = [
+      "test_browser_window_aura.cc",
+      "test_browser_window_aura.h",
+    ]
+    public_deps = [
+      "//chrome/test/base:test_browser_window",
+      "//ui/aura:test_support",
+    ]
+    deps = [
+      "//base",
+      "//chrome/browser/ui/browser_window:create_browser_window",
+      "//ui/views",
+      "//ui/wm",
+      "//ui/wm/public",
+    ]
+  }
 }

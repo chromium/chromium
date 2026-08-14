@@ -614,11 +614,8 @@ static_library("test_support") {
     sources += [
       "../test/base/browser_with_test_window_test.cc",
       "../test/base/browser_with_test_window_test.h",
-      "base/dialog_test_browser_window.cc",
-      "base/dialog_test_browser_window.h",
-      "base/test_browser_window.cc",
-      "base/test_browser_window.h",
     ]
+    public_deps += [ "//chrome/test/base:test_browser_window" ]
     allow_circular_includes_from += [
       ":test_support_ui",
       "//chrome/browser/ui/views/tabs/common:impl",
@@ -806,15 +803,7 @@ static_library("test_support") {
   }
 
   if (use_aura) {
-    sources += [
-      "base/test_browser_window_aura.cc",
-      "base/test_browser_window_aura.h",
-    ]
-    deps += [
-      "//ui/aura:test_support",
-      "//ui/wm",
-      "//ui/wm/public",
-    ]
+    public_deps += [ "//chrome/test/base:test_browser_window_aura" ]
   }
 
   if (toolkit_views) {
