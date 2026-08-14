@@ -8,6 +8,7 @@
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "base/types/expected.h"
+#import "components/autofill/core/common/autofill_features.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_request.h"
@@ -28,7 +29,12 @@ namespace actor {
 // Test fixture for ActorToolFactory.
 class ActorToolFactoryTest : public PlatformTest {
  protected:
-  ActorToolFactoryTest() { feature_list_.InitAndEnableFeature(kActorTools); }
+  ActorToolFactoryTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{kActorTools,
+                              autofill::features::kGlicActorAutofill},
+        /*disabled_features=*/{});
+  }
 
   void SetUp() override {
     PlatformTest::SetUp();

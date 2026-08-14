@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_factory.h"
 
+#import "components/autofill/core/common/autofill_features.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_request.h"
@@ -116,9 +117,16 @@ ActorToolFactory::CreateTool(const ActorToolRequest& request,
       return AttemptLoginTool::Create(
           target_web_state, request.action().attempt_login(), tool_delegate);
     case optimization_guide::proto::Action::kAttemptFormFilling:
-      return AttemptFormFillingTool::Create(
-          target_web_state, request.action().attempt_form_filling(),
-          tool_delegate);
+      if (base::FeatureList::IsEnabled(
+              autofill::features::kGlicActorAutofill)) {
+        return AttemptFormFillingTool::Create(
+            target_web_state, request.action().attempt_form_filling(),
+            tool_delegate);
+      }
+      return base::unexpected(
+          ToolExecutionResult(mojom::ActionResultCode::kArgumentsInvalid,
+                              /*requires_page_stabilization=*/false,
+                              "Actor autofill feature not enabled."));
     case optimization_guide::proto::Action::kCloseTab:
       return TabManagementTool::CreateCloseTabTool(target_web_state,
                                                    target_web_state_list);

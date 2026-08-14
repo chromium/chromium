@@ -587,6 +587,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/autofill/core/browser/actor",
     "//components/autofill/core/browser/actor:test_support",
+    "//components/autofill/core/common:features",
     "//components/autofill/ios/browser:test_support",
     "//components/autofill/ios/browser:util",
     "//components/autofill/ios/common",

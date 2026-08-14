@@ -941,6 +941,11 @@ inline constexpr char kGlassToolbarName[] = "GlassToolbar";
 inline constexpr char kGlassToolbarDescription[] =
     "Enables the GlassToolbar feature.";
 
+inline constexpr char kGlicActorAutofillName[] = "Actor autofill";
+inline constexpr char kGlicActorAutofillDescription[] =
+    "Enables autofill actions for the actor tools on iOS. Specific fillable "
+    "types may also need to be enabled.";
+
 inline constexpr char kHandleMdmErrorsForDasherAccountsName[] =
     "Mdm error handling for dasher accounts";
 inline constexpr char kHandleMdmErrorsForDasherAccountsDescription[] =

@@ -2911,6 +2911,9 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kVoiceSearchMicPermissionsName,
      flag_descriptions::kVoiceSearchMicPermissionsDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kVoiceSearchMicPermissions)},
+    {"glic-actor-autofill", flag_descriptions::kGlicActorAutofillName,
+     flag_descriptions::kGlicActorAutofillDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(autofill::features::kGlicActorAutofill)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
