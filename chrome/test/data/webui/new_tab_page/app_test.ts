@@ -5268,6 +5268,9 @@ suite('NewTabPageAppContextMenuAnimationTest', () => {
       assertEquals(
           1,
           handler.getCallCount('recordRealboxContextMenuAnimationImpression'));
+      const [shown] =
+          handler.getArgs('recordRealboxContextMenuAnimationImpression');
+      assertTrue(shown);
     });
 
     test('canShow is false and energy effect enabled', async () => {
@@ -5284,8 +5287,11 @@ suite('NewTabPageAppContextMenuAnimationTest', () => {
           GlifAnimationState.INELIGIBLE,
           app.$.searchbox.contextMenuGlifAnimationState);
       assertEquals(
-          0,
+          1,
           handler.getCallCount('recordRealboxContextMenuAnimationImpression'));
+      const [shown] =
+          handler.getArgs('recordRealboxContextMenuAnimationImpression');
+      assertFalse(shown);
     });
 
     test('canShow is true and energy effect disabled', async () => {
@@ -5317,6 +5323,9 @@ suite('NewTabPageAppContextMenuAnimationTest', () => {
       assertEquals(
           1,
           handler.getCallCount('recordRealboxContextMenuAnimationImpression'));
+      const [shown] =
+          handler.getArgs('recordRealboxContextMenuAnimationImpression');
+      assertTrue(shown);
     });
 
     test('canShow is false and energy effect disabled', async () => {
@@ -5333,8 +5342,11 @@ suite('NewTabPageAppContextMenuAnimationTest', () => {
           GlifAnimationState.INELIGIBLE,
           app.$.searchbox.contextMenuGlifAnimationState);
       assertEquals(
-          0,
+          1,
           handler.getCallCount('recordRealboxContextMenuAnimationImpression'));
+      const [shown] =
+          handler.getArgs('recordRealboxContextMenuAnimationImpression');
+      assertFalse(shown);
     });
   });
 
@@ -5361,8 +5373,11 @@ suite('NewTabPageAppContextMenuAnimationTest', () => {
       assertEquals(
           0, handler.getCallCount('canShowRealboxContextMenuAnimation'));
       assertEquals(
-          0,
+          1,
           handler.getCallCount('recordRealboxContextMenuAnimationImpression'));
+      const [shown] =
+          handler.getArgs('recordRealboxContextMenuAnimationImpression');
+      assertTrue(shown);
     });
 
     test('energy effect disabled', async () => {
@@ -5391,8 +5406,11 @@ suite('NewTabPageAppContextMenuAnimationTest', () => {
           GlifAnimationState.STARTED,
           app.$.searchbox.contextMenuGlifAnimationState);
       assertEquals(
-          0,
+          1,
           handler.getCallCount('recordRealboxContextMenuAnimationImpression'));
+      const [shown] =
+          handler.getArgs('recordRealboxContextMenuAnimationImpression');
+      assertTrue(shown);
     });
   });
 });

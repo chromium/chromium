@@ -1732,9 +1732,7 @@ export class AppElement extends AppElementBase {
       if (canShow) {
         if (this.energyEffectAnimationEnabled_) {
           this.contextMenuGlifAnimationState_ = GlifAnimationState.STARTED;
-          if (this.contextMenuAnimationLimitingEnabled_) {
-            this.pageHandler_.recordRealboxContextMenuAnimationImpression();
-          }
+          this.pageHandler_.recordRealboxContextMenuAnimationImpression(true);
         } else {
           const isSpinnerEligible =
               this.ntpNextFeaturesEnabled_ && this.isActionChipsVisible_;
@@ -1744,6 +1742,7 @@ export class AppElement extends AppElementBase {
         }
       } else {
         this.contextMenuGlifAnimationState_ = GlifAnimationState.INELIGIBLE;
+        this.pageHandler_.recordRealboxContextMenuAnimationImpression(false);
       }
     } else {
       this.realboxContextMenuAnimationAllowed_ = false;
@@ -1781,9 +1780,7 @@ export class AppElement extends AppElementBase {
         this.contextMenuGlifAnimationState_ = GlifAnimationState.SPINNER_ONLY;
       } else if (state === ActionChipsRetrievalState.UPDATED) {
         this.contextMenuGlifAnimationState_ = GlifAnimationState.STARTED;
-        if (this.contextMenuAnimationLimitingEnabled_) {
-          this.pageHandler_.recordRealboxContextMenuAnimationImpression();
-        }
+        this.pageHandler_.recordRealboxContextMenuAnimationImpression(true);
       }
     }
   }

@@ -367,7 +367,14 @@ void ComposeboxHandler::CanShowNextboxAnimation(
   std::move(callback).Run(can_show);
 }
 
-void ComposeboxHandler::RecordNextboxAnimationImpression() {
+void ComposeboxHandler::RecordNextboxAnimationImpression(bool shown) {
+  base::UmaHistogramBoolean(
+      "Omnibox.ContextMenu.AnimationShown.ContextualTasks", shown);
+
+  if (!shown) {
+    return;
+  }
+
   PrefService* prefs = profile_->GetPrefs();
   const base::DictValue& state_dict =
       prefs->GetDict(prefs::kContextMenuAnimationState);

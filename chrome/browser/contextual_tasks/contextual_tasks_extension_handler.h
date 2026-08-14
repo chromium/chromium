@@ -98,7 +98,7 @@ class ContextualTasksExtensionHandler
   void NotifyComposeboxQuerySubmittedWithContext() override;
   void CanShowNextboxAnimation(
       CanShowNextboxAnimationCallback callback) override;
-  void RecordNextboxAnimationImpression() override;
+  void RecordNextboxAnimationImpression(bool shown) override;
   void OnContextMenuOpened() override;
 
   // searchbox::mojom::PageHandler:

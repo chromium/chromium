@@ -59,7 +59,7 @@ class LensComposeboxHandler : public composebox::mojom::PageHandler,
   void NotifyComposeboxQuerySubmittedWithContext() override;
   void CanShowNextboxAnimation(
       CanShowNextboxAnimationCallback callback) override;
-  void RecordNextboxAnimationImpression() override;
+  void RecordNextboxAnimationImpression(bool shown) override;
 
   // searchbox::mojom::PageHandler:
   void DeleteAutocompleteMatch(uint8_t line, const GURL& url) override;

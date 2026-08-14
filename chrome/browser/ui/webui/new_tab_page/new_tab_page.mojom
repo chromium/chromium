@@ -283,8 +283,9 @@ interface PageHandler {
   OnAppRendered(double time);
   // Queries whether the Realbox "+" context menu button animation should be shown.
   CanShowRealboxContextMenuAnimation() => (bool can_show);
-  // Records that the Realbox "+" context menu button animation was shown.
-  RecordRealboxContextMenuAnimationImpression();
+  // Records that the Realbox "+" context menu button animation was shown or
+  // blocked.
+  RecordRealboxContextMenuAnimationImpression(bool shown);
   // Records that the user engaged with the contextual search IPH.
   OnContextualSearchIPHEngaged();
 };

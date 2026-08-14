@@ -199,7 +199,7 @@ void LensComposeboxHandler::CanShowNextboxAnimation(
   std::move(callback).Run(false);
 }
 
-void LensComposeboxHandler::RecordNextboxAnimationImpression() {
+void LensComposeboxHandler::RecordNextboxAnimationImpression(bool shown) {
   // No-op for Lens composebox.
 }
 

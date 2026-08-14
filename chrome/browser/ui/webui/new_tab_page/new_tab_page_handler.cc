@@ -1208,7 +1208,14 @@ void NewTabPageHandler::CanShowRealboxContextMenuAnimation(
   std::move(callback).Run(can_show);
 }
 
-void NewTabPageHandler::RecordRealboxContextMenuAnimationImpression() {
+void NewTabPageHandler::RecordRealboxContextMenuAnimationImpression(
+    bool shown) {
+  base::UmaHistogramBoolean("Omnibox.ContextMenu.AnimationShown.NTP", shown);
+
+  if (!shown) {
+    return;
+  }
+
   PrefService* prefs = profile_->GetPrefs();
   const base::DictValue& state_dict =
       prefs->GetDict(prefs::kContextMenuAnimationState);

@@ -137,7 +137,8 @@ void ContextualTasksExtensionHandler::CanShowNextboxAnimation(
     CanShowNextboxAnimationCallback callback) {
   std::move(callback).Run(false);
 }
-void ContextualTasksExtensionHandler::RecordNextboxAnimationImpression() {}
+void ContextualTasksExtensionHandler::RecordNextboxAnimationImpression(
+    bool shown) {}
 void ContextualTasksExtensionHandler::OnContextMenuOpened() {}
 
 // searchbox::mojom::PageHandler stubs:

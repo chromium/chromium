@@ -1170,6 +1170,9 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
           1,
           mockComposeboxPageHandler.getCallCount(
               'recordNextboxAnimationImpression'));
+      const [shown] =
+          mockComposeboxPageHandler.getArgs('recordNextboxAnimationImpression');
+      assertTrue(shown);
     });
 
     test('block animation if canShow is false', async () => {
@@ -1181,9 +1184,30 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
       assertEquals(
           1, mockComposeboxPageHandler.getCallCount('canShowNextboxAnimation'));
       assertEquals(
-          0,
+          1,
           mockComposeboxPageHandler.getCallCount(
               'recordNextboxAnimationImpression'));
+      const [shown] =
+          mockComposeboxPageHandler.getArgs('recordNextboxAnimationImpression');
+      assertFalse(shown);
+    });
+
+    test('allow animation if limiting is disabled', async () => {
+      loadTimeData.overrideValues({
+        contextMenuAnimationLimitingEnabled: false,
+      });
+      contextualTasksApp.$.composebox.isZeroState = true;
+      await microtasksFinished();
+
+      assertEquals(
+          0, mockComposeboxPageHandler.getCallCount('canShowNextboxAnimation'));
+      assertEquals(
+          1,
+          mockComposeboxPageHandler.getCallCount(
+              'recordNextboxAnimationImpression'));
+      const [shown] =
+          mockComposeboxPageHandler.getArgs('recordNextboxAnimationImpression');
+      assertTrue(shown);
     });
   });
 });

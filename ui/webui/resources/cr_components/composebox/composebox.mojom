@@ -59,7 +59,8 @@ interface PageHandler {
   // under impression limit caps.
   CanShowNextboxAnimation() => (bool can_show);
 
-  // Records that the nextbox zero-state page load animation was shown.
-  RecordNextboxAnimationImpression();
+  // Records that the nextbox zero-state page load animation was shown or
+  // blocked.
+  RecordNextboxAnimationImpression(bool shown);
 };
 

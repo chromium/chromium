@@ -172,7 +172,7 @@ class NewTabPageHandler
   void MaybeTriggerAutomaticCustomizeChromePromo() override;
   void CanShowRealboxContextMenuAnimation(
       CanShowRealboxContextMenuAnimationCallback callback) override;
-  void RecordRealboxContextMenuAnimationImpression() override;
+  void RecordRealboxContextMenuAnimationImpression(bool shown) override;
   void OnContextualSearchIPHEngaged() override;
 
  private:

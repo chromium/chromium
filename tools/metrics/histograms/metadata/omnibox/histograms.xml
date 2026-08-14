@@ -1419,6 +1419,29 @@ Keep consistent with active providers. Doesn't need to include every provider in
   </summary>
 </histogram>
 
+<histogram name="Omnibox.ContextMenu.AnimationShown.ContextualTasks"
+    enum="Boolean" expires_after="2027-08-01">
+  <owner>dhruvkathpalia@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Records whether the context menu (nextbox) animation was shown to the user
+    or blocked due to the ContextMenuAnimationLimiting experiment on Contextual
+    Tasks page. Recorded when the context menu animation is shown on the
+    Nextbox.
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.ContextMenu.AnimationShown.NTP" enum="Boolean"
+    expires_after="2027-08-01">
+  <owner>dhruvkathpalia@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Records whether the context menu (realbox) animation was shown to the user
+    or blocked due to the ContextMenuAnimationLimiting experiment on NTP.
+    Recorded when the context menu animation is shown on the Realbox.
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.ContextualSearchSuggestion.Precision" enum="Boolean"
     expires_after="2027-01-03">
   <owner>khalidpeer@chromium.org</owner>

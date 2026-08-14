@@ -381,12 +381,14 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
               await this.pageHandler_.canShowNextboxAnimation();
           if (allowed) {
             this.glifAnimationState_ = GlifAnimationState.STARTED;
-            this.pageHandler_.recordNextboxAnimationImpression();
+            this.pageHandler_.recordNextboxAnimationImpression(true);
           } else {
             this.glifAnimationState_ = GlifAnimationState.INELIGIBLE;
+            this.pageHandler_.recordNextboxAnimationImpression(false);
           }
         } else {
           this.glifAnimationState_ = GlifAnimationState.STARTED;
+          this.pageHandler_.recordNextboxAnimationImpression(true);
         }
       } else {
         this.glifAnimationState_ = GlifAnimationState.INELIGIBLE;
