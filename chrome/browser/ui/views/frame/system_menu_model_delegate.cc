@@ -4,11 +4,9 @@
 
 #include "chrome/browser/ui/views/frame/system_menu_model_delegate.h"
 
-#include "base/i18n/rtl.h"
 #include "base/metrics/user_metrics.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
-#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/profiles/profile.h"
@@ -27,7 +25,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/sessions/core/tab_restore_service.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/ui_base_features.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ui/frame/desks/move_to_desks_menu_delegate.h"
@@ -202,17 +199,6 @@ std::u16string SystemMenuModelDelegate::GetLabelForCommandId(
       NOTREACHED();
   }
   return l10n_util::GetStringUTF16(string_id);
-}
-
-ui::ImageModel SystemMenuModelDelegate::GetIconForCommandId(
-    int command_id) const {
-  if (command_id == IDC_TOGGLE_VERTICAL_TABS) {
-    if (auto* controller =
-            tabs::VerticalTabStripStateController::From(browser_)) {
-      return controller->GetToggleIcon();
-    }
-  }
-  return ui::ImageModel();
 }
 
 void SystemMenuModelDelegate::ExecuteCommand(int command_id, int event_flags) {

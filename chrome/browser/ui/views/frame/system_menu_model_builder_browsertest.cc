@@ -46,17 +46,6 @@ bool ContainsCommand(const ui::MenuModel* menu,
   }
   return false;
 }
-
-// Returns true if the command in menu has a non-empty icon attached.
-bool CommandHasIcon(const ui::MenuModel* menu, int command_id) {
-  CHECK(menu);
-  for (size_t index = 0; index < menu->GetItemCount(); index++) {
-    if (menu->GetCommandIdAt(index) == command_id) {
-      return !menu->GetIconAt(index).IsEmpty();
-    }
-  }
-  return false;
-}
 }  // namespace
 
 class SystemMenuModelBuilderGlicTest : public InProcessBrowserTest {
@@ -212,12 +201,8 @@ IN_PROC_BROWSER_TEST_F(SystemMenuModelBuilderVerticalTabsTest,
   // - IDC_TOGGLE_VERTICAL_TABS (to switch to vertical tabs)
   EXPECT_TRUE(ContainsCommand(menu, IDC_TOGGLE_VERTICAL_TABS,
                               IDS_SWITCH_TO_VERTICAL_TAB));
-  EXPECT_TRUE(CommandHasIcon(menu, IDC_TOGGLE_VERTICAL_TABS));
   EXPECT_FALSE(ContainsCommand(menu, IDC_TOGGLE_VERTICAL_TABS_EXPAND_ON_HOVER,
                                std::nullopt));
-  if (chrome::CanOpenTaskManager()) {
-    EXPECT_TRUE(CommandHasIcon(menu, IDC_TASK_MANAGER_CONTEXT_MENU));
-  }
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
   // Horizontal Tabs + Immersive Mode (only exists on Mac and ChromeOS).
@@ -252,7 +237,6 @@ IN_PROC_BROWSER_TEST_F(SystemMenuModelBuilderVerticalTabsTest,
   // - IDC_TOGGLE_VERTICAL_TABS_EXPAND_ON_HOVER
   EXPECT_TRUE(ContainsCommand(menu, IDC_TOGGLE_VERTICAL_TABS,
                               IDS_SWITCH_TO_HORIZONTAL_TAB));
-  EXPECT_TRUE(CommandHasIcon(menu, IDC_TOGGLE_VERTICAL_TABS));
   EXPECT_TRUE(ContainsCommand(menu, IDC_TOGGLE_VERTICAL_TABS_COLLAPSE,
                               IDS_COLLAPSE_VERTICAL_TABS));
   EXPECT_TRUE(ContainsCommand(menu, IDC_TOGGLE_VERTICAL_TABS_EXPAND_ON_HOVER,
