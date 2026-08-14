@@ -179,6 +179,8 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
       lineFocusMovement: {type: Number},
       showLineFocusNewBadge: {type: Boolean},
       webuiRoundedIconsEnabled_: {type: Boolean},
+      isAiPlaybackActive: {type: Boolean},
+      isAiPlaybackUiEnabled_: {type: Boolean},
     };
   }
 
@@ -211,8 +213,10 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   // TODO(crbug.com/543113387): Remove this when the WebUI new badge supports
   // auto-disappearing logic itself.
   accessor showLineFocusNewBadge: boolean = false;
+  accessor isAiPlaybackActive: boolean = false;
   protected accessor hideSpinner_: boolean = true;
   protected accessor isImmersiveEnabled_: boolean = false;
+  protected accessor isAiPlaybackUiEnabled_: boolean = false;
   // Overflow buttons on the toolbar that open a menu of options.
   protected accessor moreOptionsButtons_: MenuButton[] = [];
   protected accessor speechRate_: number = 1;
@@ -267,6 +271,8 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     this.logger_.logTimeFrom(
         TimeFrom.TOOLBAR, this.startTime_, this.constructorTime_);
     this.isImmersiveEnabled_ = chrome.readingMode.isImmersiveEnabled;
+    this.isAiPlaybackUiEnabled_ =
+        chrome.readingMode.isReadAnythingReadAloudExperimentalPlaybackUiEnabled;
 
     this.textStyleToggles_.push({
       id: IMAGES_TOGGLE_BUTTON_ID,
@@ -609,6 +615,10 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
 
   protected onShowRateMenuClick_(event: MouseEvent) {
     this.$.rateMenu.open(event.target as HTMLElement);
+  }
+
+  protected onAiPlaybackClick_() {
+    this.isAiPlaybackActive = !this.isAiPlaybackActive;
   }
 
   protected onVoiceSelectionMenuClick_(event: MouseEvent) {

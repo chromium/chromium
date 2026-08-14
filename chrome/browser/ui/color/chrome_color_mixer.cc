@@ -916,6 +916,15 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
       SkColorSetRGB(18, 74, 115)};
   mixer[kColorReadAnythingPreviousReadAloudHighlightLowContrastDark] = {
       SkColorSetRGB(91, 179, 240)};
+  mixer[kColorReadAnythingAiPlaybackBackground] = {
+      SkColorSetRGB(0xF0, 0xF4, 0xF9)};
+  mixer[kColorReadAnythingAiPlaybackHoverBackground] = {
+      SkColorSetRGB(0xE2, 0xE7, 0xEB)};
+  mixer[kColorReadAnythingAiPlaybackIcon] = {SkColorSetRGB(0x44, 0x47, 0x46)};
+  mixer[kColorReadAnythingAiPlaybackActiveBackground] = {
+      SkColorSetRGB(0x1E, 0x64, 0xD4)};
+  mixer[kColorReadAnythingAiPlaybackActiveIcon] = {
+      SkColorSetRGB(0xFF, 0xFF, 0xFF)};
   mixer[kColorReadAnythingAudioPlayerBackground] = {
       ui::kColorSysTonalContainer};
   mixer[kColorReadAnythingAudioPlayerBackgroundBlue] = {

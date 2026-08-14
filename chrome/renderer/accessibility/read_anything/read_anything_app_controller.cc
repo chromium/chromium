@@ -1536,6 +1536,9 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetProperty(
           "isReadAnythingTranslateEntryPointEnabled",
           &ReadAnythingAppController::IsReadAnythingTranslateEntryPointEnabled)
+      .SetProperty("isReadAnythingReadAloudExperimentalPlaybackUiEnabled",
+                   &ReadAnythingAppController::
+                       IsReadAnythingReadAloudExperimentalPlaybackUiEnabled)
       .SetProperty("isReadabilityEnabled",
                    &ReadAnythingAppController::IsReadabilityEnabled)
       .SetProperty("isReadabilitySelectTextEnabled",
@@ -2273,6 +2276,11 @@ bool ReadAnythingAppController::IsImprovedReadAloudEnabled() const {
 
 bool ReadAnythingAppController::IsReadAnythingImprovedUiEnabled() const {
   return features::IsReadAnythingImprovedUiEnabled();
+}
+
+bool ReadAnythingAppController::
+    IsReadAnythingReadAloudExperimentalPlaybackUiEnabled() const {
+  return features::IsReadAnythingReadAloudExperimentalPlaybackUiEnabled();
 }
 
 bool ReadAnythingAppController::IsReadAnythingTranslateEntryPointEnabled()

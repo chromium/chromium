@@ -65,6 +65,20 @@ export function getHtml(this: ReadAnythingToolbarElement) {
         </cr-button>
       ` : ''}
     </span>
+    ${this.isAiPlaybackUiEnabled_ ? html`
+    <cr-icon-button class="toolbar-button ${this.isAiPlaybackActive ? 'active'
+        : ''}"
+        id="ai-playback-toggle"
+        aria-label="${this.isAiPlaybackActive
+            ? this.i18n('aiPlaybackTurnOff')
+            : this.i18n('aiPlaybackTurnOn')}"
+        title="${this.isAiPlaybackActive
+            ? this.i18n('aiPlaybackTurnOff')
+            : this.i18n('aiPlaybackTurnOn')}"
+        iron-icon="read-anything:audio_magic_eraser"
+        @click="${this.onAiPlaybackClick_}">
+    </cr-icon-button>
+    ` : ''}
     ${this.isLineFocusShowing ? html`
     <cr-button class="toolbar-button" id="line-focus-off"
       tabindex="-1"

@@ -338,6 +338,7 @@ class ReadAnythingAppController
   bool IsImprovedReadAloudEnabled() const;
   bool IsReadAnythingImprovedUiEnabled() const;
   bool IsReadAnythingTranslateEntryPointEnabled() const;
+  bool IsReadAnythingReadAloudExperimentalPlaybackUiEnabled() const;
   bool IsTsTextSegmentationEnabled() const;
   bool IsReadabilityEnabled() const;
   bool IsReadabilitySelectTextEnabled() const;

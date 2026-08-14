@@ -225,6 +225,23 @@
   margin: 8px 6px;
 }
 
+#ai-playback-toggle {
+  background-color: var(--color-read-anything-ai-playback-background);
+  --cr-icon-button-fill-color: var(--color-read-anything-ai-playback-icon);
+  border-radius: 50%;
+  --cr-icon-button-hover-background-color: transparent;
+}
+
+#ai-playback-toggle:hover {
+  background-color: var(--color-read-anything-ai-playback-hover-background);
+}
+
+#ai-playback-toggle.active {
+  background-color: var(--color-read-anything-ai-playback-active-background);
+  --cr-icon-button-fill-color: var(--color-read-anything-ai-playback-active-icon);
+  border-radius: 12px;
+}
+
 #more-options-menu-dialog::part(dialog) {
   min-width: 92px;
 }
