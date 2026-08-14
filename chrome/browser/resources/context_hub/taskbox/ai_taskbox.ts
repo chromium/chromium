@@ -6,6 +6,8 @@ import './todo_item.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_collapse/cr_collapse.js';
 import '//resources/cr_elements/cr_expand_button/cr_expand_button.js';
+import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import '//resources/cr_elements/icons.html.js';
 
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
@@ -47,6 +49,7 @@ export class AiTaskboxElement extends CrLitElement {
   static override get properties() {
     return {
       autoTodosEnabled_: {type: Boolean},
+      showingReadingList_: {type: Boolean},
       // Gmail-based todo properties.
       todos: {type: Array},
       completedTodos: {type: Array},
@@ -61,6 +64,8 @@ export class AiTaskboxElement extends CrLitElement {
       hasTabGenerationError_: {type: Boolean},
       hasGeneratedTab_: {type: Boolean},
       isCompletedTabExpanded_: {type: Boolean},
+      // Reading list properties.
+      readingListTodos: {type: Array},
     };
   }
 
@@ -68,8 +73,10 @@ export class AiTaskboxElement extends CrLitElement {
   accessor completedTodos: AutoTodoItem[]|null = null;
   accessor tabTodos: AutoTodoItem[]|null = null;
   accessor completedTabTodos: AutoTodoItem[]|null = null;
+  accessor readingListTodos: AutoTodoItem[]|null = null;
   protected accessor autoTodosEnabled_: boolean =
       loadTimeData.getBoolean('kAutoTodos');
+  protected accessor showingReadingList_: boolean = false;
 
   // Gmail-based property accessors.
   protected accessor isGeneratingGmailTodos_: boolean = false;
@@ -109,6 +116,8 @@ export class AiTaskboxElement extends CrLitElement {
                         todos
                             .filter(
                                 todo => !!todo.data.thirdParty &&
+                                    todo.data.thirdParty.groupType !==
+                                        AutoTodoGroup.kReadingList &&
                                     todo.status === AutoTodoStatus.kActive)
                             .sort(
                                 (a, b) => getTabTodoPriority(a) -
@@ -117,7 +126,19 @@ export class AiTaskboxElement extends CrLitElement {
                         todos
                             .filter(
                                 todo => !!todo.data.thirdParty &&
+                                    todo.data.thirdParty.groupType !==
+                                        AutoTodoGroup.kReadingList &&
                                     todo.status === AutoTodoStatus.kCompleted)
+                            .sort(
+                                (a, b) => getTabTodoPriority(a) -
+                                    getTabTodoPriority(b));
+                    this.readingListTodos =
+                        todos
+                            .filter(
+                                todo => !!todo.data.thirdParty &&
+                                    todo.data.thirdParty.groupType ===
+                                        AutoTodoGroup.kReadingList &&
+                                    todo.status !== AutoTodoStatus.kDismissed)
                             .sort(
                                 (a, b) => getTabTodoPriority(a) -
                                     getTabTodoPriority(b));
@@ -152,12 +173,27 @@ export class AiTaskboxElement extends CrLitElement {
               .sort((a, b) => b.score - a.score) ??
           null;
       this.tabTodos =
-          thirdPartyTodos.filter(todo => todo.status === AutoTodoStatus.kActive)
+          thirdPartyTodos
+              .filter(
+                  todo => todo.data.thirdParty?.groupType !==
+                          AutoTodoGroup.kReadingList &&
+                      todo.status === AutoTodoStatus.kActive)
               .sort((a, b) => getTabTodoPriority(a) - getTabTodoPriority(b)) ??
           null;
       this.completedTabTodos =
           thirdPartyTodos
-              .filter(todo => todo.status === AutoTodoStatus.kCompleted)
+              .filter(
+                  todo => todo.data.thirdParty?.groupType !==
+                          AutoTodoGroup.kReadingList &&
+                      todo.status === AutoTodoStatus.kCompleted)
+              .sort((a, b) => getTabTodoPriority(a) - getTabTodoPriority(b)) ??
+          null;
+      this.readingListTodos =
+          thirdPartyTodos
+              .filter(
+                  todo => todo.data.thirdParty?.groupType ===
+                          AutoTodoGroup.kReadingList &&
+                      todo.status !== AutoTodoStatus.kDismissed)
               .sort((a, b) => getTabTodoPriority(a) - getTabTodoPriority(b)) ??
           null;
     } catch (e) {
@@ -175,6 +211,14 @@ export class AiTaskboxElement extends CrLitElement {
 
   protected onGeneralFeedbackClick_() {
     window.open(GENERAL_FEEDBACK_FORM_URL, '_blank');
+  }
+
+  protected onGoToReadingListClick_() {
+    this.showingReadingList_ = true;
+  }
+
+  protected onBackClick_() {
+    this.showingReadingList_ = false;
   }
 
   protected onCompletedExpandedChanged_(e: CustomEvent<{value: boolean}>) {

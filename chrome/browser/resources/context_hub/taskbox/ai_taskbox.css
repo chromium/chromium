@@ -21,6 +21,22 @@
   margin-bottom: 24px;
 }
 
+.header-buttons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.header-title-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+#back-button {
+  margin-inline-start: -8px;
+}
+
 h1 {
   color: var(--cr-primary-text-color);
   font-size: 28px;

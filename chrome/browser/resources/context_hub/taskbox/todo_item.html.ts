@@ -4,6 +4,8 @@
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
+import {AutoTodoGroup, AutoTodoStatus} from '../context_hub.mojom-webui.js';
+
 import type {TodoItemElement} from './todo_item.js';
 import {TodoItemVariant} from './todo_item.js';
 
@@ -11,11 +13,15 @@ export function getHtml(this: TodoItemElement) {
   return this.variant === TodoItemVariant.TAB ?
       html`
       <div class="todo-content tab-todo-content">
-        <cr-icon-button id="check-circle"
-            ?disabled="${this.disable_state_mgmt}"
-            iron-icon="cr:check-circle"
-            @click="${this.onCheckCircleClick_}">
-        </cr-icon-button>
+        ${
+          this.groupType !== AutoTodoGroup.kReadingList ? html`
+          <cr-icon-button id="check-circle"
+              ?disabled="${this.disable_state_mgmt}"
+              iron-icon="cr:check-circle"
+              @click="${this.onCheckCircleClick_}">
+          </cr-icon-button>
+        ` :
+                                                          ''}
         <div class="todo-info">
           <h3 title="${this.heading}">${this.heading}</h3>
           <p class="description">${this.description}</p>
@@ -48,8 +54,17 @@ export function getHtml(this: TodoItemElement) {
         <button class="dropdown-item" @click="${this.onCloseTabClick_}">
           Close tab
         </button>
+        ${
+          this.groupType !== AutoTodoGroup.kReadingList &&
+                  this.status !== AutoTodoStatus.kCompleted ?
+              html`
         <button class="dropdown-item" @click="${this.onSaveClick_}">
-          Save for later
+          Add to Reading List
+        </button>
+        ` :
+              ''}
+        <button class="dropdown-item" @click="${this.onDismissClick_}">
+          Dismiss Todo
         </button>
       </cr-action-menu>
     ` :

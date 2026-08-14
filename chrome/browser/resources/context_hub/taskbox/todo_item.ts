@@ -33,7 +33,7 @@ export enum TodoItemVariant {
 
 export interface TodoItemElement {
   $: {
-    menu: CrActionMenuElement,
+    menu?: CrActionMenuElement,
   };
 }
 
@@ -175,12 +175,13 @@ export class TodoItemElement extends CrLitElement {
 
   protected async onDismissClick_(e: Event) {
     e.stopPropagation();
+    this.$.menu?.close();
     await this.updateStatus_(AutoTodoStatus.kDismissed);
   }
 
   protected onMoreClick_(e: Event) {
     e.stopPropagation();
-    this.$.menu.showAt(e.currentTarget as HTMLElement);
+    this.$.menu?.showAt(e.currentTarget as HTMLElement);
   }
 
   protected onOpenTabClick_(e: Event) {
@@ -199,16 +200,44 @@ export class TodoItemElement extends CrLitElement {
 
   protected onCloseTabClick_(e: Event) {
     e.stopPropagation();
-    this.$.menu.close();
+    this.$.menu?.close();
     if (this.tabId !== null) {
       browserProxyFactory.getInstance().handler.closeTab(this.tabId);
     }
   }
 
-  protected onSaveClick_(e: Event) {
+  private async addToReadingList_() {
+    if (this.disable_state_mgmt || this.tabId === null) {
+      return;
+    }
+
+    const data: AutoTodoData = {
+      thirdParty: {
+        tabId: this.tabId,
+        lastActiveTimestamp: this.lastActiveTimestamp ?? {internalValue: 0n},
+        groupType: AutoTodoGroup.kReadingList,
+      },
+    };
+
+    const todo: AutoTodoItem = {
+      id: this.id,
+      title: this.heading,
+      description: this.description,
+      status: this.status,
+      score: 0,
+      data,
+    };
+    try {
+      await browserProxyFactory.getInstance().handler.updateAutoTodo(todo);
+    } catch (e) {
+      console.error('Failed to add auto todo to reading list:', e);
+    }
+  }
+
+  protected async onSaveClick_(e: Event) {
     e.stopPropagation();
-    this.$.menu.close();
-    // TODO(crbug.com/541016246): Implement save click.
+    this.$.menu?.close();
+    await this.addToReadingList_();
   }
 
   protected getReferences() {

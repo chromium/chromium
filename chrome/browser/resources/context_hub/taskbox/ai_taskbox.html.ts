@@ -8,14 +8,57 @@ import type {AiTaskboxElement} from './ai_taskbox.js';
 import {TodoItemVariant} from './todo_item.js';
 
 export function getHtml(this: AiTaskboxElement) {
-  return html`
+  return this.showingReadingList_ ? html`
+    <main id="reading-list-view">
+      <section class="header-section">
+        <div class="header-title-container">
+          <cr-icon-button
+              id="back-button"
+              iron-icon="cr:arrow-back"
+              aria-label="Back"
+              @click="${this.onBackClick_}">
+          </cr-icon-button>
+          <h1>Reading List</h1>
+        </div>
+      </section>
+
+      <div class="todo-list">
+        ${
+      this.readingListTodos ?
+          repeat(
+              this.readingListTodos, todo => todo.id,
+              todo => html`
+                    <todo-item
+                        .id="${todo.id}"
+                        .heading="${todo.title}"
+                        .description="${todo.description}"
+                        .status="${todo.status}"
+                        .tabId="${todo.data.thirdParty!.tabId}"
+                        .lastActiveTimestamp="${
+                  todo.data.thirdParty!.lastActiveTimestamp}"
+                        .groupType="${todo.data.thirdParty!.groupType}"
+                        .variant="${TodoItemVariant.TAB}"
+                        .disable_state_mgmt="${this.isGeneratingTabTodos_}">
+                    </todo-item>
+                  `) :
+          ''}
+      </div>
+    </main>
+  ` : html`
     <main id="dashboard-view">
         <section class="header-section">
             <!-- TODO(crbug.com/519576944): Replace with the dynamic greeting title. -->
             <h1>AI Taskbox</h1>
-            <cr-button @click="${this.onGeneralFeedbackClick_}">
-              General Feedback Form
-            </cr-button>
+            <div class="header-buttons">
+              <cr-button
+                  ?disabled="${(this.readingListTodos?.length || 0) === 0}"
+                  @click="${this.onGoToReadingListClick_}">
+                My Reading List (${this.readingListTodos?.length || 0})
+              </cr-button>
+              <cr-button @click="${this.onGeneralFeedbackClick_}">
+                General Feedback Form
+              </cr-button>
+            </div>
         </section>
 
         <div class="columns-container">
