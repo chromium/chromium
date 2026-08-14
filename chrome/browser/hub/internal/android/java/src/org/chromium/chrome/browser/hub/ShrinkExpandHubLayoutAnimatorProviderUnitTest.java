@@ -55,6 +55,7 @@ import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.hub.NewTabAnimationUtils.RectStart;
 import org.chromium.chrome.browser.hub.ShrinkExpandHubLayoutAnimatorProvider.ImageViewWeakRefBitmapCallback;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.TestActivity;
@@ -267,7 +268,7 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
     @Test
     public void testNewTab() {
         ShrinkExpandImageView imageView = spy(new ShrinkExpandImageView(mActivity));
-        HubLayoutAnimatorProvider animatorProvider =
+        ShrinkExpandHubLayoutAnimatorProvider animatorProvider =
                 new ShrinkExpandHubLayoutAnimatorProvider(
                         HubLayoutAnimationType.EXPAND_NEW_TAB,
                         /* needsBitmap= */ false,
@@ -325,6 +326,69 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
         verify(imageView, atLeastOnce())
                 .setRoundedCorners(0, endCornerRadius, endCornerRadius, endCornerRadius);
 
+        assertNull(animatorProvider.getFakeBottomControlsViewForTesting());
+        verifyFinalState(animatorProvider, /* wasForcedToFinish= */ false);
+    }
+
+    @Test
+    public void testNewTabAnimation_BottomCenter() {
+        ShrinkExpandImageView imageView = spy(new ShrinkExpandImageView(mActivity));
+        ShrinkExpandHubLayoutAnimatorProvider animatorProvider =
+                new ShrinkExpandHubLayoutAnimatorProvider(
+                        HubLayoutAnimationType.EXPAND_NEW_TAB,
+                        /* needsBitmap= */ false,
+                        mHubContainerView,
+                        imageView,
+                        mAnimationDataSupplier,
+                        Color.RED,
+                        HUB_LAYOUT_EXPAND_NEW_TAB_DURATION_MS,
+                        mOnAlphaChange,
+                        /* isIncognito= */ false);
+        assertEquals(
+                HubLayoutAnimationType.EXPAND_NEW_TAB, animatorProvider.getPlannedAnimationType());
+        assertNull(animatorProvider.getThumbnailCallback());
+
+        Rect initialRect = new Rect(20, -10, 40, HEIGHT);
+        Rect finalRect = new Rect(20, -10, WIDTH + 10, HEIGHT + 15);
+        int startCornerRadius = 30;
+        int endCornerRadius = 7;
+        int[] initialCornerRadius = new int[] {startCornerRadius, startCornerRadius, 0, 0};
+        int[] finalCornerRadius = new int[] {endCornerRadius, endCornerRadius, 0, 0};
+        ShrinkExpandAnimationData data =
+                ShrinkExpandAnimationData.createHubNewTabAnimationData(
+                        initialRect,
+                        finalRect,
+                        startCornerRadius,
+                        RectStart.BOTTOM_CENTER,
+                        /* useFallbackAnimation= */ false,
+                        /* bottomMargin= */ 0);
+
+        assertArrayEquals(initialCornerRadius, data.getInitialCornerRadii());
+        assertArrayEquals(finalCornerRadius, data.getFinalCornerRadii());
+
+        mAnimationDataSupplier.set(data);
+
+        HubLayoutAnimationRunner runner =
+                HubLayoutAnimationRunnerFactory.createHubLayoutAnimationRunner(animatorProvider);
+
+        setUpShrinkExpandListener(
+                /* isShrink= */ false,
+                imageView,
+                initialRect,
+                finalRect,
+                /* hasBitmap= */ false,
+                /* toolbarFades= */ true);
+        runner.addListener(mListener);
+        runner.runWithWaitForAnimatorTimeout(HUB_LAYOUT_TIMEOUT_MS);
+
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
+
+        verify(imageView, atLeastOnce())
+                .setRoundedCorners(startCornerRadius, startCornerRadius, 0, 0);
+
+        verify(imageView, atLeastOnce()).setRoundedCorners(endCornerRadius, endCornerRadius, 0, 0);
+
+        assertNull(animatorProvider.getFakeBottomControlsViewForTesting());
         verifyFinalState(animatorProvider, /* wasForcedToFinish= */ false);
     }
 

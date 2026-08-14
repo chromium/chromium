@@ -54,6 +54,7 @@ import org.chromium.chrome.browser.compositor.layouts.components.LayoutTab;
 import org.chromium.chrome.browser.compositor.scene_layer.SolidColorSceneLayer;
 import org.chromium.chrome.browser.compositor.scene_layer.StaticTabSceneLayer;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.hub.NewTabAnimationUtils.RectStart;
 import org.chromium.chrome.browser.layouts.EventFilter;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
@@ -66,6 +67,7 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.chrome.browser.ui.bottombar.BottomBarConfigUtils;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager.AppHeaderObserver;
@@ -552,13 +554,14 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
         // transition.
         if (background || isStartingToHide()) return;
 
+        Context context = getContext();
         HubContainerView containerView = mHubController.getContainerView();
 
         // Skip animation:
         // * If ContainerView is not laid out there will be no geometry for an animation.
         // * For LFF devices which don't have new tab animations in the tab switcher.
         if (!containerView.isLaidOut()
-                || DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())) {
+                || DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)) {
             selectTabAndHideHubLayout(tabId);
             return;
         }
@@ -569,7 +572,7 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
         updateEmptyLayerColor(mPaneManager.getFocusedPaneSupplier().get());
 
         @ColorInt
-        int backgroundColor = NewTabAnimationUtils.getBackgroundColor(getContext(), newIsIncognito);
+        int backgroundColor = NewTabAnimationUtils.getBackgroundColor(context, newIsIncognito);
         SyncOneshotSupplierImpl<ShrinkExpandAnimationData> animationDataSupplier =
                 new SyncOneshotSupplierImpl<>();
         HubLayoutAnimatorProvider animatorProvider =
@@ -583,28 +586,36 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
 
         // TODO(crbug.com/40285429): Supply this from HubController so it can look like the
         // animation originated from wherever on the Hub was clicked. This defaults to the top
-        // left/right of the pane host view.
+        // left/right of the pane host view, or bottom center when the bottom bar is shown in GTS.
+        boolean isBottomBarInGts =
+                BottomBarConfigUtils.isBottomBarEnabled(context)
+                        && BottomBarConfigUtils.shouldShowOnGts();
+        @RectStart int rectStart = isBottomBarInGts ? RectStart.BOTTOM_CENTER : RectStart.TOP;
+
         boolean isRtl = LocalizationUtils.isLayoutRtl();
         Rect finalRect = new Rect();
         getFinalRectForNewTabAnimation(containerView, newIsIncognito, finalRect);
         Rect initialRect;
         int cornerRadius;
-        // Without this code, the upper corner shows a bit of blinking when running the
-        // animation. This ensures the {@link ShrinkExpandImageView} fully covers the origin
-        // corner.
-        if (isRtl) {
-            finalRect.right += 1;
-        } else {
-            finalRect.left -= 1;
+        if (rectStart == RectStart.TOP) {
+            // Without this code, the upper corner shows a bit of blinking when running the
+            // animation. This ensures the {@link ShrinkExpandImageView} fully covers the origin
+            // corner.
+            if (isRtl) {
+                finalRect.right += 1;
+            } else {
+                finalRect.left -= 1;
+            }
+            finalRect.top -= 1;
+        } else if (rectStart == RectStart.BOTTOM_CENTER) {
+            // Bleed 1px into the bottom bar to cover the bottom origin edge and avoid blinking.
+            finalRect.bottom += 1;
         }
-        finalRect.top -= 1;
 
         initialRect = new Rect();
-        NewTabAnimationUtils.updateRects(
-                NewTabAnimationUtils.RectStart.TOP, isRtl, initialRect, finalRect);
+        NewTabAnimationUtils.updateRects(rectStart, isRtl, initialRect, finalRect);
         cornerRadius =
-                getContext()
-                        .getResources()
+                context.getResources()
                         .getDimensionPixelSize(R.dimen.new_tab_animation_rect_corner_radius);
 
         animationDataSupplier.set(
@@ -612,6 +623,7 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
                         initialRect,
                         finalRect,
                         cornerRadius,
+                        rectStart,
                         /* useFallbackAnimation= */ false,
                         /* bottomMargin= */ 0));
 

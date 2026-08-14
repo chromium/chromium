@@ -39,13 +39,47 @@ public class ShrinkExpandAnimationData {
             int cornerRadius,
             boolean useFallbackAnimation,
             int bottomMargin) {
+        return createHubNewTabAnimationData(
+                initialRect,
+                finalRect,
+                cornerRadius,
+                NewTabAnimationUtils.RectStart.TOP,
+                useFallbackAnimation,
+                bottomMargin);
+    }
+
+    /**
+     * Creates a {@link ShrinkExpandAnimationData} for {@link
+     * HubLayoutAnimationType#EXPAND_NEW_TAB}.
+     *
+     * @param initialRect The initial {@link Rect} for the view to start at.
+     * @param finalRect The final {@link Rect} for the view to end at.
+     * @param cornerRadius The corner radius for the {@link ShrinkExpandImageView}.
+     * @param rectStart The start position of the animation.
+     * @param useFallbackAnimation Whether the fallback animation should be used. If this is true
+     *     the fallback animation is forced. Useful when something happened while preparing this
+     *     data that suggests the shrink or expand animation can no longer proceed.
+     */
+    public static ShrinkExpandAnimationData createHubNewTabAnimationData(
+            Rect initialRect,
+            Rect finalRect,
+            int cornerRadius,
+            @NewTabAnimationUtils.RectStart int rectStart,
+            boolean useFallbackAnimation,
+            int bottomMargin) {
+        int[] cornerRadii;
+        if (rectStart == NewTabAnimationUtils.RectStart.BOTTOM_CENTER) {
+            cornerRadii = new int[] {cornerRadius, cornerRadius, 0, 0};
+        } else {
+            cornerRadii = new int[] {0, cornerRadius, cornerRadius, cornerRadius};
+        }
         // We can assume the top toolbar exists for this animation as either we will cover the hub
         // toolbar with the animation (incognito) or the new tab has a dedicated top toolbar.
         return new ShrinkExpandAnimationData(
                 initialRect,
                 finalRect,
-                new int[] {0, cornerRadius, cornerRadius, cornerRadius},
-                new int[] {0, cornerRadius, cornerRadius, cornerRadius},
+                cornerRadii,
+                cornerRadii.clone(),
                 /* thumbnailSize= */ null,
                 /* isTopToolbar= */ true,
                 useFallbackAnimation,

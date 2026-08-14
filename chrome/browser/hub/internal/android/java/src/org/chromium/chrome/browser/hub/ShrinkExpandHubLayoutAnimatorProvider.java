@@ -364,7 +364,10 @@ public class ShrinkExpandHubLayoutAnimatorProvider implements HubLayoutAnimatorP
         final @Nullable ObjectAnimator bottomControlsScaleAnimator;
 
         int bottomMargin = animationData.getBottomMargin();
-        int animatingHeight = Math.max(0, bottomControlsHeight - bottomMargin);
+        int animatingHeight =
+                mAnimationType == HubLayoutAnimationType.EXPAND_NEW_TAB
+                        ? 0
+                        : Math.max(0, bottomControlsHeight - bottomMargin);
 
         if (animatingHeight > 0) {
             Context context = mHubContainerView.getContext();
