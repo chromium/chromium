@@ -141,9 +141,14 @@ public class SettingsSearchCoordinator
     // FS_SETTINGS: Basic state browsing through setting fragments/preferences
     // FS_SEARCH: In search UI, entering queries and performing search
     // FS_RESULTS: After tapping one of the search results, navigating through them
-    private static final int FS_SETTINGS = 0;
-    private static final int FS_SEARCH = 1;
-    private static final int FS_RESULTS = 2;
+    @VisibleForTesting(otherwise = PRIVATE)
+    static final int FS_SETTINGS = 0;
+
+    @VisibleForTesting(otherwise = PRIVATE)
+    static final int FS_SEARCH = 1;
+
+    @VisibleForTesting(otherwise = PRIVATE)
+    static final int FS_RESULTS = 2;
 
     private int mFragmentState;
 
@@ -859,7 +864,8 @@ public class SettingsSearchCoordinator
         adjustTalkbackTraversalOrder(queryContainer);
     }
 
-    private void setFragmentState(int state) {
+    @VisibleForTesting(otherwise = PRIVATE)
+    void setFragmentState(int state) {
         mFragmentState = state;
         if (!mUseMultiColumn) showTitleTextView(state != FS_SEARCH);
     }
@@ -1082,9 +1088,17 @@ public class SettingsSearchCoordinator
         return mMultiColumnSettings != null ? R.id.preferences_detail : R.id.settings_content;
     }
 
+    /**
+     * Returns whether the navigation icon should be shown on the toolbar. In single-column mode,
+     * the navigation icon is hidden while in search state (FS_SEARCH) because the search query UI
+     * is placed inside the toolbar with its own back button.
+     */
+    public boolean shouldShowNavigationIcon() {
+        return mUseMultiColumn || mFragmentState != FS_SEARCH;
+    }
+
     // Update search UI width/location when multi-column settings fragment is enabled.
     private void updateSearchUiWidth() {
-        boolean showBackIcon = mFragmentState != FS_SEARCH;
         if (mUseMultiColumn) {
             View searchBox = findViewById(R.id.search_box);
             View query = findViewById(R.id.search_query_container);
@@ -1106,11 +1120,10 @@ public class SettingsSearchCoordinator
             int searchUiWidth = detailPaneWidth - gapPx * 2 - getMenuWidth();
             updateView(searchBox, 0, 0, searchUiWidth);
             updateView(query, 0, 0, searchUiWidth);
-            showBackIcon = true;
         } else {
             updateSingleColumnSearchUiWidth();
         }
-        setDisplayHomeAsUpEnabled(showBackIcon);
+        setDisplayHomeAsUpEnabled(shouldShowNavigationIcon());
     }
 
     private void setDisplayHomeAsUpEnabled(boolean show) {
@@ -1819,5 +1832,9 @@ public class SettingsSearchCoordinator
 
     boolean hasRecentSearchEntriesForTesting() {
         return !RecentSearchQueue.getInstance().isEmpty();
+    }
+
+    void setUseMultiColumnForTesting(boolean useMultiColumn) {
+        mUseMultiColumn = useMultiColumn;
     }
 }

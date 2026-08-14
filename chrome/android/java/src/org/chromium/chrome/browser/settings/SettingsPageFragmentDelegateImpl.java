@@ -409,6 +409,10 @@ public class SettingsPageFragmentDelegateImpl
         return mSearchCoordinator;
     }
 
+    void setSearchCoordinatorForTesting(@Nullable SettingsSearchCoordinator searchCoordinator) {
+        mSearchCoordinator = searchCoordinator;
+    }
+
     @Override
     public HelpAndFeedbackLauncher getHelpAndFeedbackLauncher() {
         return HelpAndFeedbackLauncherFactory.getForProfile(mProfile);
@@ -530,10 +534,14 @@ public class SettingsPageFragmentDelegateImpl
             SettingsMenuHelper.updateNavigationIcon(
                     mToolbar,
                     mActivity,
-                    /* show= */ true,
+                    /* show= */ shouldShowNavigationIcon(),
                     isTwoColumnSettingsVisible(),
                     isMainSettingsVisible());
         }
+    }
+
+    private boolean shouldShowNavigationIcon() {
+        return mSearchCoordinator == null || mSearchCoordinator.shouldShowNavigationIcon();
     }
 
     private boolean isMainSettingsVisible() {

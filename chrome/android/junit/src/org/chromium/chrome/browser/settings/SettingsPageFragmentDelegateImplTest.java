@@ -657,6 +657,42 @@ public class SettingsPageFragmentDelegateImplTest {
     }
 
     @Test
+    public void testUpdateNavigationIcon_singleColumnInSearch_hidesNavigationIcon() {
+        mDelegate.initSettings(mContainerView, "");
+
+        Toolbar toolbar = mInflatedSettingsView.findViewById(R.id.action_bar);
+        assertNotNull(toolbar);
+
+        when(mMockSettingsHostFragment.isAttachedToActivity()).thenReturn(true);
+        when(mMockSettingsHostFragment.getActiveFragment()).thenReturn(mMultiColumnSettings);
+        when(mMultiColumnSettings.isTwoColumn()).thenReturn(false);
+        when(mMultiColumnSettings.isLayoutOpen()).thenReturn(false);
+
+        // Before search: Chrome logo is shown.
+        mDelegate.onHeaderLayoutUpdated();
+        assertEquals(
+                ApplicationProvider.getApplicationContext().getString(R.string.app_name),
+                toolbar.getNavigationContentDescription());
+
+        // When search coordinator indicates navigation icon should be hidden (single-column in
+        // search mode):
+        SettingsSearchCoordinator mockSearchCoordinator = mock(SettingsSearchCoordinator.class);
+        when(mockSearchCoordinator.shouldShowNavigationIcon()).thenReturn(false);
+        mDelegate.setSearchCoordinatorForTesting(mockSearchCoordinator);
+
+        // During slide animation / header updates while in search mode, navigation icon must stay
+        // hidden.
+        mDelegate.onSlideStateUpdated(MultiColumnSettings.SlideState.OPENING);
+        assertNull(toolbar.getNavigationIcon());
+
+        mDelegate.onHeaderLayoutUpdated();
+        assertNull(toolbar.getNavigationIcon());
+
+        mDelegate.onTitleUpdated();
+        assertNull(toolbar.getNavigationIcon());
+    }
+
+    @Test
     public void testInitSettings_registersSelfAsMultiColumnSettingsObserver() {
         mDelegate.initSettings(mContainerView, "");
 

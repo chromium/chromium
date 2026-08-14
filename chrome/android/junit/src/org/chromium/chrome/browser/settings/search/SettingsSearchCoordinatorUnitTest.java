@@ -5,7 +5,9 @@
 package org.chromium.chrome.browser.settings.search;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -290,5 +292,37 @@ public class SettingsSearchCoordinatorUnitTest {
         // Flush the looper. The posted task should exit early without crashing on methods that
         // require views that are no longer present.
         ShadowLooper.idleMainLooper();
+    }
+
+    @Test
+    public void testShouldShowNavigationIcon_multiColumn() {
+        mCoordinator.setUseMultiColumnForTesting(true);
+
+        // In multi-column mode, navigation icon should always be shown regardless of state.
+        mCoordinator.setFragmentState(SettingsSearchCoordinator.FS_SETTINGS);
+        assertTrue(mCoordinator.shouldShowNavigationIcon());
+
+        mCoordinator.setFragmentState(SettingsSearchCoordinator.FS_SEARCH);
+        assertTrue(mCoordinator.shouldShowNavigationIcon());
+
+        mCoordinator.setFragmentState(SettingsSearchCoordinator.FS_RESULTS);
+        assertTrue(mCoordinator.shouldShowNavigationIcon());
+    }
+
+    @Test
+    public void testShouldShowNavigationIcon_singleColumn() {
+        mCoordinator.setUseMultiColumnForTesting(false);
+
+        // In default state (FS_SETTINGS), navigation icon should be shown.
+        mCoordinator.setFragmentState(SettingsSearchCoordinator.FS_SETTINGS);
+        assertTrue(mCoordinator.shouldShowNavigationIcon());
+
+        // In search state (FS_SEARCH), navigation icon should be hidden.
+        mCoordinator.setFragmentState(SettingsSearchCoordinator.FS_SEARCH);
+        assertFalse(mCoordinator.shouldShowNavigationIcon());
+
+        // In results state (FS_RESULTS), navigation icon should be shown (as a back button).
+        mCoordinator.setFragmentState(SettingsSearchCoordinator.FS_RESULTS);
+        assertTrue(mCoordinator.shouldShowNavigationIcon());
     }
 }
