@@ -160,6 +160,8 @@ import org.chromium.chrome.browser.signin.WebSigninRedirectCoordinatorSupplier;
 import org.chromium.chrome.browser.signin.services.WebSigninBridge;
 import org.chromium.chrome.browser.tab.AccessibilityVisibilityHandler;
 import org.chromium.chrome.browser.tab.AutofillSessionLifetimeController;
+import org.chromium.chrome.browser.tab.CurrentTabObserver;
+import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
@@ -236,6 +238,7 @@ import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager.ScrimClient;
+import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuPopulatorFactory;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
@@ -250,6 +253,7 @@ import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.ukm.UkmRecorder;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsAccessibility;
 import org.chromium.ui.base.ActivityResultTracker;
@@ -440,6 +444,7 @@ public class RootUiCoordinator
     protected final NonNullObservableSupplier<Integer> mOverviewColorSupplier;
     private @Nullable ContextualSearchObserver mReadAloudContextualSearchObserver;
     private PageZoomBarCoordinator mPageZoomBarCoordinator;
+    private @Nullable CurrentTabObserver mReaderModeTabObserver;
     private @Nullable ReaderModeBottomSheetManager mReaderModeBottomSheetManager;
     private @Nullable AppMenuObserver mAppMenuObserver;
     private @Nullable LinkHoverStatusBarCoordinator mLinkHoverStatusBarCoordinator;
@@ -1150,6 +1155,11 @@ public class RootUiCoordinator
 
         mTopInsetProvider.destroy();
 
+        if (mReaderModeTabObserver != null) {
+            mReaderModeTabObserver.destroy();
+            mReaderModeTabObserver = null;
+        }
+
         if (mReaderModeBottomSheetManager != null) {
             mReaderModeBottomSheetManager.destroy();
             mReaderModeBottomSheetManager = null;
@@ -1390,13 +1400,11 @@ public class RootUiCoordinator
         if (contextualSearchManager != null) {
             contextualSearchManager.addObserver(mReadAloudContextualSearchObserver);
         }
-        mReaderModeBottomSheetManager =
-                new ReaderModeBottomSheetManager(
-                        mActivity,
-                        assertNonNull(getBottomSheetController()),
-                        mActivityTabProvider,
-                        mBrowserControlsManager,
-                        mToolbarThemeColorProvider);
+        if (!ChromeFeatureList.sAndroidStartupImprovements.isEnabled()) {
+            initReaderModeBottomSheetManager();
+        } else {
+            initReaderModeBottomSheetLazyObserver();
+        }
 
         if (DeviceInfo.isAutomotive()) {
             mAutomotiveBackButtonToolbarCoordinator =
@@ -1449,6 +1457,55 @@ public class RootUiCoordinator
                         mCompositorViewHolderSupplier.asNonNull().get(),
                         () -> mBrowserControlsManager.getContentOffset());
         AnchoredDialogCoordinatorProvider.attach(mWindowAndroid, mAnchoredDialogCoordinator);
+    }
+
+    private void initReaderModeBottomSheetManager() {
+        if (mReaderModeBottomSheetManager != null) return;
+        mReaderModeBottomSheetManager =
+                new ReaderModeBottomSheetManager(
+                        mActivity,
+                        assertNonNull(getBottomSheetController()),
+                        mActivityTabProvider,
+                        mBrowserControlsManager,
+                        mToolbarThemeColorProvider);
+        if (mReaderModeTabObserver != null) {
+            mReaderModeTabObserver.destroy();
+            mReaderModeTabObserver = null;
+        }
+    }
+
+    private void initReaderModeBottomSheetLazyObserver() {
+        Tab currentTab = mActivityTabProvider.get();
+        if (currentTab != null && DomDistillerUrlUtils.isDistilledPage(currentTab.getUrl())) {
+            initReaderModeBottomSheetManager();
+            return;
+        }
+
+        CurrentTabObserver observer =
+                new CurrentTabObserver(
+                        mActivityTabProvider.asObservable(),
+                        new EmptyTabObserver() {
+                            @Override
+                            public void onDidFinishNavigationInPrimaryMainFrame(
+                                    Tab tab, NavigationHandle navigationHandle) {
+                                if (navigationHandle.hasCommitted()
+                                        && navigationHandle.isInPrimaryMainFrame()
+                                        && DomDistillerUrlUtils.isDistilledPage(tab.getUrl())) {
+                                    initReaderModeBottomSheetManager();
+                                }
+                            }
+                        },
+                        (@Nullable Tab tab) -> {
+                            if (tab != null && DomDistillerUrlUtils.isDistilledPage(tab.getUrl())) {
+                                initReaderModeBottomSheetManager();
+                            }
+                        });
+
+        if (mReaderModeBottomSheetManager != null) {
+            observer.destroy();
+        } else {
+            mReaderModeTabObserver = observer;
+        }
     }
 
     protected boolean isContextualSearchEnabled() {

@@ -1699,17 +1699,9 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
 
             initiateArchivedTabsAutoDeletePromoManager();
 
-            if (FindsFeatures.sChromeFinds.isEnabled()) {
-                FindsService findsService = FindsService.getForProfile(profile);
-                if (findsService != null) {
-                    mFindsManager =
-                            new FindsManager(
-                                    this,
-                                    profile,
-                                    assertNonNull(mRootUiCoordinator.getBottomSheetController()),
-                                    getSnackbarManager(),
-                                    findsService);
-                }
+            if (!ChromeFeatureList.sAndroidStartupImprovements.isEnabled()
+                    && FindsFeatures.sChromeFinds.isEnabled()) {
+                initFindsManager(profile);
             }
         }
     }
@@ -4022,6 +4014,22 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
 
         if (ChromeFeatureList.sAndroidStartupImprovements.isEnabled()) {
             recordFirstAppLaunchTimestampIfNeeded();
+            if (FindsFeatures.sChromeFinds.isEnabled()) {
+                initFindsManager(profile);
+            }
+        }
+    }
+
+    private void initFindsManager(Profile profile) {
+        FindsService findsService = FindsService.getForProfile(profile);
+        if (findsService != null) {
+            mFindsManager =
+                    new FindsManager(
+                            this,
+                            profile,
+                            assertNonNull(mRootUiCoordinator.getBottomSheetController()),
+                            getSnackbarManager(),
+                            findsService);
         }
     }
 
