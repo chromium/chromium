@@ -11,6 +11,7 @@
 #include <optional>
 
 #include "base/base_paths.h"
+#include "base/check_op.h"
 #include "base/clang_profiling_buildflags.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
@@ -21,6 +22,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -154,17 +156,18 @@ void GetTestFunctionInstructions(std::vector<Instruction>* body) {
 
 #if defined(OFFICIAL_BUILD)
 
-std::optional<std::vector<Instruction>> ExpectImmediateCrashInvocation(
-    std::vector<Instruction> instructions) {
-  auto iter = instructions.begin();
-  for (const auto inst : kRequiredBody) {
-    if (iter == instructions.end()) {
-      return std::nullopt;
-    }
-    EXPECT_EQ(inst, *iter);
-    iter++;
-  }
-  return std::make_optional(std::vector<Instruction>(iter, instructions.end()));
+// *  Verifies that `instructions` starts with `kRequiredBody`.
+// *  Flags a failed expectation if that's not so.
+// *  Crashes if `instructions` isn't at least `kRequiredBody.size()` in
+//    length.
+//
+// Returns `instructions` with `kRequiredBody.size()` elements consumed.
+span<const Instruction> ExpectImmediateCrashInvocation(
+    span<const Instruction> instructions) {
+  CHECK_GE(instructions.size(), kRequiredBody.size());
+  const auto [prefix, suffix] = instructions.split_at<kRequiredBody.size()>();
+  EXPECT_THAT(prefix, testing::ElementsAreArray(kRequiredBody));
+  return suffix;
 }
 
 std::vector<Instruction> MaybeSkipOptionalFooter(
@@ -233,11 +236,10 @@ TEST(ImmediateCrashTest, ExpectedOpcodeSequence) {
   body = std::vector<Instruction>(it, body.end());
   std::optional<std::vector<Instruction>> result =
       ToVector(MaybeSkipCoverageHook(body));
-  result = ExpectImmediateCrashInvocation(result.value());
+  result = ToVector(ExpectImmediateCrashInvocation(result.value()));
   result = MaybeSkipOptionalFooter(result.value());
   result = ToVector(MaybeSkipCoverageHook(result.value()));
-  result = ExpectImmediateCrashInvocation(result.value());
-  ASSERT_TRUE(result);
+  ExpectImmediateCrashInvocation(result.value());
 #endif  // defined(OFFICIAL_BUILD)
 }
 
