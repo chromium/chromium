@@ -3794,6 +3794,12 @@ deps = {
       'condition': 'checkout_src_internal',
   },
 
+  'src/chrome/browser/payments/internal': {
+      'url': Var('chrome_git') + '/chrome/payments.git' + '@' +
+        '2ee0bfd5990740fccfe223fd6c9fe21bc4846b9a',
+      'condition': 'checkout_src_internal',
+  },
+
   'src/chrome/browser/platform_experience/win': {
       'url': Var('chrome_git') + '/chrome/browser/platform_experience/win.git' + '@' +
         '06307d1e9efcc322f9bf64c3f738e671d42a3c3e',
