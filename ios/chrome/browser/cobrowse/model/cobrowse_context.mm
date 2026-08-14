@@ -90,4 +90,23 @@ const char kGoogleSearchAppStateValue[] = "4";
   return [[self alloc] initWithURL:GURL(kBaseSearchURL)];
 }
 
+- (BOOL)isEqual:(id)other {
+  if (other == self) {
+    return YES;
+  }
+  if (![other isKindOfClass:[CobrowseContext class]]) {
+    return NO;
+  }
+  CobrowseContext* otherContext = (CobrowseContext*)other;
+  return self.url.EqualsIgnoringRef(otherContext.url) &&
+         [self.searchQuery isEqual:otherContext.searchQuery] &&
+         [self.serverID isEqual:otherContext.serverID] &&
+         [self.attachedItems isEqual:otherContext.attachedItems];
+}
+
+- (NSUInteger)hash {
+  return [self.searchQuery hash] ^ [self.serverID hash] ^
+         [self.attachedItems hash];
+}
+
 @end

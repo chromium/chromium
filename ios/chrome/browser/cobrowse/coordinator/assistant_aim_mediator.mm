@@ -180,7 +180,7 @@
 - (void)updateContext {
   if (_cobrowseBrowserAgent) {
     CobrowseContext* newContext = _cobrowseBrowserAgent->GetCobrowseContext();
-    if (newContext && newContext != _context) {
+    if (newContext && ![_context isEqual:newContext]) {
       BOOL urlChanged = (!_context || newContext.url != _context.url);
       _context = newContext;
       if (urlChanged && _context.url.is_valid()) {
