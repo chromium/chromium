@@ -93,7 +93,7 @@ class AuxiliarySearchDonationServiceBridge implements Closeable {
         }
         Account account = fromCoreAccountInfo(coreAccountInfo);
 
-        ListenableFuture<AppSearchBatchResult<String, Void>> putFuture =
+        var _ =
                 Futures.transformAsync(
                         mSessionFuture,
                         session -> {
@@ -116,31 +116,34 @@ class AuxiliarySearchDonationServiceBridge implements Closeable {
                                 }
                                 builder.addGenericDocuments(extendedDocBuilder.build());
                             }
-                            return session.putAsync(builder.build());
+                            ListenableFuture<AppSearchBatchResult<String, Void>> putFuture =
+                                    session.putAsync(builder.build());
+                            // WARNING: Do not log URLs here, including document IDs which contain
+                            // URLs. See docs/android_logging.md for more information.
+                            Futures.addCallback(
+                                    putFuture,
+                                    new FutureCallback<AppSearchBatchResult<String, Void>>() {
+                                        @Override
+                                        public void onSuccess(
+                                                AppSearchBatchResult<String, Void> result) {
+                                            if (!result.isSuccess()) {
+                                                Log.w(
+                                                        TAG,
+                                                        "Failed to donate documents: %d"
+                                                                + " failure(s).",
+                                                        result.getFailures().size());
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onFailure(Throwable t) {
+                                            Log.w(TAG, "Failed to donate history to AppSearch.", t);
+                                        }
+                                    },
+                                    MoreExecutors.directExecutor());
+                            return putFuture;
                         },
                         MoreExecutors.directExecutor());
-
-        // WARNING: Do not log URLs here, including document IDs which contain URLs.
-        // See docs/android_logging.md for more information.
-        Futures.addCallback(
-                putFuture,
-                new FutureCallback<AppSearchBatchResult<String, Void>>() {
-                    @Override
-                    public void onSuccess(AppSearchBatchResult<String, Void> result) {
-                        if (!result.isSuccess()) {
-                            Log.w(
-                                    TAG,
-                                    "Failed to donate documents: %d failure(s).",
-                                    result.getFailures().size());
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Throwable t) {
-                        Log.w(TAG, "Failed to donate history to AppSearch.", t);
-                    }
-                },
-                MoreExecutors.directExecutor());
     }
 
     @CalledByNative

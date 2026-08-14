@@ -352,6 +352,28 @@ public class AuxiliarySearchDonationServiceBridgeUnitTest {
     }
 
     @Test
+    public void testDonateHistory_sessionFailure_doesNotLogWarning() {
+        when(mMockFactory.createSearchSessionAsync(anyString()))
+                .thenReturn(Futures.immediateFailedFuture(new RuntimeException("Session error")));
+        // Suppress log spam in tests.
+        ShadowLog.stream = null;
+        var bridge =
+                new AuxiliarySearchDonationServiceBridge(/* isBrowsingDataDonationEnabled= */ true);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        WebPage page =
+                AuxiliarySearchDonationServiceBridge.createHistoryDocument(
+                        TEST_ID, TEST_URL, TEST_TITLE, TEST_LAST_VISITED);
+        bridge.donateHistory(List.of(page), /* coreAccountInfo= */ null);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        verify(mMockSession, never()).putAsync(any());
+        assertTrue(
+                "Warning log was unexpectedly found when session failed",
+                ShadowLog.getLogs().stream().noneMatch(item -> EXPECTED_LOG_TAG.equals(item.tag)));
+    }
+
+    @Test
     public void testDonateHistory_batchFailure_logsWarning() {
         when(mMockFactory.createSearchSessionAsync(anyString()))
                 .thenReturn(Futures.immediateFuture(mMockSession));
