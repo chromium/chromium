@@ -4,11 +4,10 @@
 
 #include "chromeos/ash/components/system/factory_ping_embargo_check.h"
 
-#include "base/i18n/time_formatting.h"
+#include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/icu/source/i18n/unicode/timezone.h"
 
 namespace ash::system {
 
@@ -24,9 +23,10 @@ namespace {
 // return value will be "2018-01-21".
 std::string GenerateEmbargoEndDate(int days_offset) {
   const base::Time target_time = base::Time::Now() + base::Days(days_offset);
-  const std::string embargo_end_date_string =
-      base::UnlocalizedTimeFormatWithPattern(target_time, "yyyy-MM-dd",
-                                             icu::TimeZone::getGMT());
+  base::Time::Exploded exploded;
+  target_time.UTCExplode(&exploded);
+  const std::string embargo_end_date_string = base::StringPrintf(
+      "%04d-%02d-%02d", exploded.year, exploded.month, exploded.day_of_month);
 
   // Sanity check that base::Time::FromUTCString can read back the format used
   // here.
