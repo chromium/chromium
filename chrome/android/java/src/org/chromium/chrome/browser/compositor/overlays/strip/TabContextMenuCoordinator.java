@@ -1171,6 +1171,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
                                     getTabModel(),
                                     /* tabMovedCallback= */ null);
                         } else {
+                            ungroupTabs(tabs);
                             mMultiInstanceOrchestrator.moveTabsToWindowByIdChecked(
                                     windowId,
                                     tabs,
