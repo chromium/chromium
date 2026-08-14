@@ -492,7 +492,12 @@ BASE_FEATURE(kEnableOAuthMultiloginStandardCookiesBinding,
 // for secondary partitions.
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 BASE_FEATURE(kEnableOAuthMultiloginStandardCookiesBindingForSecondaryPartitions,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_WIN)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif  // BUILDFLAG(IS_WIN)
+);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)

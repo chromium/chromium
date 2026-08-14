@@ -9257,21 +9257,6 @@
             ]
         }
     ],
-    "DeviceBoundSessionsForSecondaryPartitions": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20260430",
-                    "enable_features": [
-                        "EnableOAuthMultiloginStandardCookiesBindingForSecondaryPartitions"
-                    ]
-                }
-            ]
-        }
-    ],
     "DeviceBoundSessionsRetryTransientRefreshErrors": [
         {
             "platforms": [
