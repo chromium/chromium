@@ -201,6 +201,7 @@ public class ToolbarPhone extends ToolbarLayout
 
     protected boolean mDisableLocationBarRelayout;
     protected boolean mLayoutLocationBarInFocusedMode;
+    private boolean mLastUrlFocusOnNtp;
     private boolean mLayoutLocationBarWithoutExtraButton;
     private boolean mOptionalButtonShowTransitionRunning;
     private int mOptionalButtonTransitionWidthDelta;
@@ -262,6 +263,7 @@ public class ToolbarPhone extends ToolbarLayout
 
     private final int mToolbarSidePadding;
     private final int mToolbarSidePaddingForNtp;
+    private final boolean mIsAuroraEnabled;
     private final int mBackgroundHeightIncreaseWhenFocus;
     private int mTopPaddingForEdgeToEdgeNtp;
 
@@ -355,6 +357,7 @@ public class ToolbarPhone extends ToolbarLayout
         super(context, attrs);
         mToolbarSidePadding = OmniboxResourceProvider.getToolbarSidePadding(context);
         mToolbarSidePaddingForNtp = OmniboxResourceProvider.getToolbarSidePaddingForNtp(context);
+        mIsAuroraEnabled = NewTabPageUtils.isNtpAuroraButtonColorEnabled();
         mBackgroundHeightIncreaseWhenFocus =
                 OmniboxResourceProvider.getLocationBarBackgroundOnFocusHeightIncrease(context);
         mToolbarBackgroundColorForNtp =
@@ -774,6 +777,15 @@ public class ToolbarPhone extends ToolbarLayout
         if (mLayoutLocationBarInFocusedMode
                 || (mVisualState == VisualState.NEW_TAB_NORMAL
                         && mTabSwitcherState == STATIC_TAB)) {
+            if (mIsAuroraEnabled
+                    && mVisualState == VisualState.NEW_TAB_NORMAL
+                    && mTabSwitcherState == STATIC_TAB) {
+                boolean currentUrlFocus = urlHasFocus();
+                if (mLastUrlFocusOnNtp != currentUrlFocus) {
+                    changed = true;
+                    mLastUrlFocusOnNtp = currentUrlFocus;
+                }
+            }
             int priorVisibleWidth =
                     mLocationBar.getPhoneCoordinator().getOffsetOfFirstVisibleFocusedView();
             width =
@@ -2056,6 +2068,7 @@ public class ToolbarPhone extends ToolbarLayout
         if (isInTabSwitcherMode()
                 || mUrlFocusChangeInProgress
                 || urlHasFocus()
+                || isLocationBarShownInNtp()
                 || getToolbarDataProvider()
                         .getNewTabPageDelegate()
                         .transitioningAwayFromLocationBar()) {
@@ -2295,7 +2308,10 @@ public class ToolbarPhone extends ToolbarLayout
     private void populateUrlExpansionAnimatorSet(List<Animator> animators) {
         TraceEvent.begin("ToolbarPhone.populateUrlFocusingAnimatorSet");
         Animator animator = ObjectAnimator.ofFloat(this, mUrlFocusChangeFractionProperty, 1f);
-        animator.setDuration(URL_FOCUS_CHANGE_ANIMATION_DURATION_MS);
+        animator.setDuration(
+                mIsAuroraEnabled && isLocationBarShownInNtp()
+                        ? 0
+                        : URL_FOCUS_CHANGE_ANIMATION_DURATION_MS);
         animator.setInterpolator(Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR);
         animators.add(animator);
 
@@ -3248,6 +3264,11 @@ public class ToolbarPhone extends ToolbarLayout
             mHomeButton.setAccessibilityTraversalBefore(R.id.toolbar_buttons);
         } else {
             mHomeButton.setAccessibilityTraversalBefore(View.NO_ID);
+        }
+
+        if (mIsAuroraEnabled && mVisualState != VisualState.NEW_TAB_NORMAL) {
+            // Resets this flag once NTP isn't shown.
+            mLastUrlFocusOnNtp = false;
         }
 
         // If we are navigating to or from a brand color, allow the transition animation
