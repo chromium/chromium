@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/page/create_window.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -283,6 +284,12 @@ Frame* FrameTree::FindFrameForNavigationInternal(
     const KURL& url,
     FrameLoadRequest* request) const {
   LocalFrame* current_frame = To<LocalFrame>(this_frame_.Get());
+
+  if (!RuntimeEnabledFeatures::RemoveTargetCurrentEnabled() &&
+      EqualIgnoringAsciiCase(name, "_current")) {
+    UseCounter::Count(current_frame->GetDocument(), WebFeature::kTargetCurrent);
+    return current_frame;
+  }
 
   if (EqualIgnoringAsciiCase(name, "_self") || name.empty()) {
     return current_frame;

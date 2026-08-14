@@ -2124,7 +2124,7 @@ enum WebFeature {
   kRefreshHeader = 2832,
   kSearchEventFired = 2833,
   kIdleDetectionStart = 2834,
-  kOBSOLETE_TargetCurrent = 2835,
+  kTargetCurrent = 2835,
   kSandboxBackForwardStaysWithinSubtree = 2836,
   kSandboxBackForwardAffectsFramesOutsideSubtree = 2837,
   kDownloadPrePolicyCheck = 2838,

@@ -15009,4 +15009,16 @@ TEST_F(WebFrameTest, FrameLoadRequestOriginGETOpaque) {
                   .IsNull());
 }
 
+TEST_F(WebFrameTest, FindFrameByNameCurrent) {
+  frame_test_helpers::WebViewHelper web_view_helper;
+  web_view_helper.Initialize();
+  WebLocalFrame* frame = web_view_helper.LocalMainFrame();
+
+  EXPECT_EQ(frame->FindFrameByName(WebString("_self")), frame);
+  EXPECT_EQ(frame->FindFrameByName(WebString("_current")), nullptr);
+
+  ScopedRemoveTargetCurrentForTest scoped_feature(false);
+  EXPECT_EQ(frame->FindFrameByName(WebString("_current")), frame);
+}
+
 }  // namespace blink

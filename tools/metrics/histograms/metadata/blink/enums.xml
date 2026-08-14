@@ -3300,7 +3300,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="2832" label="RefreshHeader"/>
   <int value="2833" label="SearchEventFired"/>
   <int value="2834" label="IdleDetectionStart"/>
-  <int value="2835" label="OBSOLETE_TargetCurrent"/>
+  <int value="2835" label="TargetCurrent"/>
   <int value="2836" label="SandboxBackForwardStaysWithinSubtree"/>
   <int value="2837" label="SandboxBackForwardAffectsFramesOutsideSubtree"/>
   <int value="2838" label="DownloadPrePolicyCheck"/>

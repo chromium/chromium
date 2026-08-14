@@ -5100,6 +5100,11 @@
       status: "stable",
     },
     {
+      // See https://crbug.com/539212797
+      name: "RemoveTargetCurrent",
+      status: "stable",
+    },
+    {
       // See https://issues.chromium.org/issues/41311101
       name: "RemoveVisibleSelectionInDOMSelection",
       status: "test",
