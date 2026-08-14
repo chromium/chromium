@@ -5181,8 +5181,8 @@
     "expiry_milestone": 170
   },
   {
-    "name": "force-enterprise-isolated-mode-replaces-incognito",
-    "owners": [ "proberge@google.com" ],
+    "name": "force-enterprise-isolated-mode",
+    "owners": [ "zmin@chromium.org", "krakhotin@google.com" ],
     "expiry_milestone": 161
   },
   {

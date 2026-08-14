@@ -4902,6 +4902,9 @@ const FeatureEntry::FeatureVariation kAutofillAiWalletPassBranding2026Variations
 // enums.xml and don't forget to run AboutFlagsHistogramTest unit test to
 // calculate and verify checksum.
 //
+constexpr char kEnterpriseIsolatedModeInternalName[] =
+    "force-enterprise-isolated-mode";
+
 // When adding a new choice, add it to the end of the list.
 const FeatureEntry kFeatureEntries[] = {
 // Include generated flags for flag unexpiry; see //docs/flag_expiry.md and
@@ -5637,7 +5640,7 @@ const FeatureEntry kFeatureEntries[] = {
      SINGLE_VALUE_TYPE(switches::kSitePerProcess)},
 #endif
 
-    {"force-enterprise-isolated-mode-replaces-incognito",
+    {kEnterpriseIsolatedModeInternalName,
      flag_descriptions::kEnterpriseIsolatedModeName,
      flag_descriptions::kEnterpriseIsolatedModeDescription, kOsAll,
      SINGLE_VALUE_TYPE(enterprise_isolated_mode::switches::
@@ -14021,6 +14024,13 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
            form_factor != ui::DEVICE_FORM_FACTOR_TABLET;
   }
 #endif  // BUILDFLAG(IS_ANDROID)
+  if (std::string_view(kEnterpriseIsolatedModeInternalName) ==
+      entry.internal_name) {
+    return channel != version_info::Channel::BETA &&
+           channel != version_info::Channel::DEV &&
+           channel != version_info::Channel::CANARY &&
+           channel != version_info::Channel::UNKNOWN;
+  }
 
   if (flags::IsFlagExpired(storage, entry.internal_name)) {
     return true;

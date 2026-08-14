@@ -20,7 +20,7 @@ bool IsolatedModeReplacesIncognito(const PrefService& pref_service,
 
 namespace switches {
 inline constexpr char kForceEnterpriseIsolatedModeReplacesIncognito[] =
-    "force-enterprise-isolated-mode-replaces-incognito";
+    "force-enterprise-isolated-mode";
 }  // namespace switches
 
 }  // namespace enterprise_isolated_mode
