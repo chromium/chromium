@@ -6,42 +6,13 @@
 
 #import <Foundation/Foundation.h>
 #include <IOKit/IOKitLib.h>
-#include <IOKit/ps/IOPSKeys.h>
 
-#include "base/apple/foundation_util.h"
+#import "base/apple/bridging.h"
+#import "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "base/mac/scoped_ioobject.h"
 
 namespace base {
-namespace {
-
-// Returns the value corresponding to |key| in the dictionary |description|.
-// Returns |default_value| if the dictionary does not contain |key|, the
-// corresponding value is nullptr or it could not be converted to SInt64.
-std::optional<SInt64> GetValueAsSInt64(CFDictionaryRef description,
-                                       CFStringRef key) {
-  CFNumberRef number_ref =
-      base::apple::GetValueFromDictionary<CFNumberRef>(description, key);
-
-  SInt64 value;
-  if (number_ref && CFNumberGetValue(number_ref, kCFNumberSInt64Type, &value)) {
-    return value;
-  }
-
-  return std::nullopt;
-}
-
-std::optional<bool> GetValueAsBoolean(CFDictionaryRef description,
-                                      CFStringRef key) {
-  CFBooleanRef boolean =
-      base::apple::GetValueFromDictionary<CFBooleanRef>(description, key);
-  if (!boolean) {
-    return std::nullopt;
-  }
-  return CFBooleanGetValue(boolean);
-}
-
-}  // namespace
 
 class BatteryLevelProviderMac : public BatteryLevelProvider {
  public:
@@ -73,62 +44,83 @@ BatteryLevelProviderMac::GetBatteryStateImpl() {
     return MakeBatteryState(/* battery_details=*/{});
   }
 
-  apple::ScopedCFTypeRef<CFMutableDictionaryRef> dict;
-  kern_return_t result =
-      IORegistryEntryCreateCFProperties(service.get(), dict.InitializeInto(),
-                                        /*allocator=*/nullptr, /*options=*/0);
+  // Note that there is API to get battery info (IOPSCopyPowerSourcesInfo(),
+  // IOPSCopyPowerSourcesList(), IOPSGetPowerSourceDescription()).
+  // Unfortunately, that API is not useful:
+  //
+  // - Capacity values are reported in a 0-100% scale, not in absolute values
+  // - Voltage values are often not present, in contradiction of the
+  //   documentation for kIOPSVoltageKey
+  //
+  // Therefore, alas, go mucking around in the IORegistry.
 
-  if (result != KERN_SUCCESS) {
+  apple::ScopedCFTypeRef<CFMutableDictionaryRef> dict_cf;
+  kern_return_t result =
+      IORegistryEntryCreateCFProperties(service.get(), dict_cf.InitializeInto(),
+                                        /*allocator=*/nullptr, /*options=*/0);
+  NSDictionary* dict = base::apple::CFToNSPtrCast(dict_cf.get());
+  if (result != KERN_SUCCESS || !dict) {
     // Failing to retrieve the dictionary is unexpected.
     return std::nullopt;
   }
 
-  std::optional<bool> battery_installed =
-      GetValueAsBoolean(dict.get(), CFSTR("BatteryInstalled"));
-  if (!battery_installed.has_value()) {
+  NSNumber* battery_installed =
+      base::apple::ObjCCast<NSNumber>([dict objectForKey:@"BatteryInstalled"]);
+  if (!battery_installed || !battery_installed.boolValue) {
     // Failing to access the BatteryInstalled property is unexpected.
+    // BatteryInstalled == false means that there is no battery.
     return std::nullopt;
   }
 
-  if (!battery_installed.value()) {
-    // BatteryInstalled == false means that there is no battery.
-    return MakeBatteryState(/* battery_details=*/{});
-  }
-
-  std::optional<bool> external_connected =
-      GetValueAsBoolean(dict.get(), CFSTR("ExternalConnected"));
-  if (!external_connected.has_value()) {
+  NSNumber* external_connected =
+      base::apple::ObjCCast<NSNumber>([dict objectForKey:@"ExternalConnected"]);
+  if (!external_connected) {
     // Failing to access the ExternalConnected property is unexpected.
     return std::nullopt;
   }
 
-  std::optional<SInt64> current_capacity =
-      GetValueAsSInt64(dict.get(), CFSTR("AppleRawCurrentCapacity"));
-  if (!current_capacity.has_value()) {
+  NSNumber* current_capacity;
+  NSNumber* full_charged_capacity;
+  if (@available(macOS 27, *)) {
+    if (NSDictionary* battery_data = base::apple::ObjCCast<NSDictionary>(
+            [dict objectForKey:@"BatteryData"])) {
+      current_capacity = base::apple::ObjCCast<NSNumber>(
+          [battery_data objectForKey:@"RemainingCapacity"]);
+      full_charged_capacity = base::apple::ObjCCast<NSNumber>(
+          [battery_data objectForKey:@"FullChargeCapacity"]);
+    }
+  } else {
+    current_capacity = base::apple::ObjCCast<NSNumber>(
+        [dict objectForKey:@"AppleRawCurrentCapacity"]);
+    full_charged_capacity = base::apple::ObjCCast<NSNumber>(
+        [dict objectForKey:@"AppleRawMaxCapacity"]);
+  }
+  if (!current_capacity || !full_charged_capacity) {
     return std::nullopt;
   }
 
-  std::optional<SInt64> max_capacity =
-      GetValueAsSInt64(dict.get(), CFSTR("AppleRawMaxCapacity"));
-  if (!max_capacity.has_value()) {
+  NSNumber* voltage_mv =
+      base::apple::ObjCCast<NSNumber>([dict objectForKey:@"Voltage"]);
+  if (!voltage_mv) {
     return std::nullopt;
   }
 
-  std::optional<SInt64> voltage_mv =
-      GetValueAsSInt64(dict.get(), CFSTR(kIOPSVoltageKey));
-  if (!voltage_mv.has_value()) {
-    return std::nullopt;
-  }
-
-  DCHECK_GE(*current_capacity, 0);
-  DCHECK_GE(*max_capacity, 0);
-  DCHECK_GE(*voltage_mv, 0);
+  // Paranoia; these values should be positive integers but DCHECK in case they
+  // are not.
+  DCHECK_GE(current_capacity.longValue, 0);
+  DCHECK(!CFNumberIsFloatType(base::apple::NSToCFPtrCast(current_capacity)));
+  DCHECK_GE(full_charged_capacity.longValue, 0);
+  DCHECK(
+      !CFNumberIsFloatType(base::apple::NSToCFPtrCast(full_charged_capacity)));
+  DCHECK_GE(voltage_mv.longValue, 0);
+  DCHECK(!CFNumberIsFloatType(base::apple::NSToCFPtrCast(voltage_mv)));
 
   return MakeBatteryState({BatteryDetails{
-      .is_external_power_connected = external_connected.value(),
-      .current_capacity = static_cast<uint64_t>(current_capacity.value()),
-      .full_charged_capacity = static_cast<uint64_t>(max_capacity.value()),
-      .voltage_mv = static_cast<uint64_t>(voltage_mv.value()),
+      .is_external_power_connected =
+          static_cast<bool>(external_connected.boolValue),
+      .current_capacity = current_capacity.unsignedLongValue,
+      .full_charged_capacity = full_charged_capacity.unsignedLongValue,
+      .voltage_mv = voltage_mv.unsignedLongValue,
       .charge_unit = BatteryLevelUnit::kMAh}});
 }
 
