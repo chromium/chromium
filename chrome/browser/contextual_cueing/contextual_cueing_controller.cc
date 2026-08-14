@@ -41,7 +41,6 @@
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui_provider.h"
@@ -78,6 +77,7 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/contextual_cueing/internals/contextual_cueing_internals.mojom.h"
+#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/page_action/page_action_controller.h"
 #include "chrome/browser/ui/page_action/page_action_observer.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
@@ -1262,8 +1262,10 @@ void ContextualCueingController::OnCueInteraction(
       }
       break;
     case ContextualCueingInteraction::kCueSuggestionsSettings:
+#if !BUILDFLAG(IS_ANDROID)
       chrome::ShowSettingsSubPageForProfile(tab_->GetProfile(),
                                             chrome::kSuggestionsSubPage);
+#endif
       break;
     case ContextualCueingInteraction::kCueClicked:
       if (CueTarget* target = GetTarget(cue_type)) {

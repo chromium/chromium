@@ -18,9 +18,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
-#if !BUILDFLAG(IS_ANDROID)
 class BrowserUiController;
-#endif
 
 namespace content {
 class NavigationEntry;
@@ -60,10 +58,8 @@ class TabUIHelper : public tabs::ContentsObservingTabFeature {
 
   bool ShouldThemifyFavicon();
 
-#if !BUILDFLAG(IS_ANDROID)
   bool ShouldDisplayFavicon();
   bool IsMonochromeFavicon();
-#endif
 
   // Get the favicon of the tab. It will return a favicon from history service
   // if it needs to, otherwise, it will return the favicon of the WebContents.
@@ -92,9 +88,7 @@ class TabUIHelper : public tabs::ContentsObservingTabFeature {
       content::NavigationHandle* navigation_handle) override;
   void PrimaryMainFrameRenderProcessGone(
       base::TerminationStatus status) override;
-#if !BUILDFLAG(IS_ANDROID)
   void PrimaryPageChanged(content::Page& page) override;
-#endif
 
   void SetCreatedBySessionRestore(bool created_by_session_restore);
   bool is_created_by_session_restore_for_testing() {
@@ -112,15 +106,13 @@ class TabUIHelper : public tabs::ContentsObservingTabFeature {
   // Returns the amount of bytes saved from discarding the tab.
   std::optional<base::ByteSize> GetDiscardedMemorySavings();
 
+  void NotifyTabUIChanged(base::PassKey<BrowserUiController> pass_key);
+
   bool was_active_at_least_once_for_testing() const {
     return was_active_at_least_once_;
   }
 
   tabs::TabNetworkState GetTabNetworkState();
-
-#if !BUILDFLAG(IS_ANDROID)
-  void NotifyTabUIChanged(base::PassKey<BrowserUiController> pass_key);
-#endif
 
  private:
   void OnTabPinnedStatusChange(tabs::TabInterface* tab_interface,

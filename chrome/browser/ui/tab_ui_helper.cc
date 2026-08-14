@@ -17,12 +17,15 @@
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom.h"
 #include "chrome/browser/sessions/session_restore.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/performance_controls/memory_saver_utils.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_web_contents_listener.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/browser/ui/web_applications/web_app_browser_controller.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
@@ -38,24 +41,15 @@
 #include "ui/resources/grit/ui_resources.h"
 #include "url/gurl.h"
 
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"  // nogncheck
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/web_applications/web_app_browser_controller.h"
-#endif
-
 namespace {
 
 bool IsNTP(const GURL& url) {
   return url.SchemeIs(content::kChromeUIScheme) &&
          (url.host() == chrome::kChromeUINewTabHost ||
-#if !BUILDFLAG(IS_ANDROID)
           url.host() == chrome::kChromeUITabSearchHost ||
-#endif  // !BUILDFLAG(IS_ANDROID)
           url.host() == chrome::kChromeUINewTabPageHost);
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 web_app::WebAppBrowserController* GetWebAppBrowserController(
     tabs::TabInterface* tab_interface) {
   // The browser window interface can be null during unit tests.
@@ -79,7 +73,6 @@ bool ShouldShowAppIcon(web_app::WebAppBrowserController* app_controller,
       tab_interface);
   return app_controller->ShouldShowAppIconOnTab(index);
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 }  // namespace
 
 DEFINE_USER_DATA(TabUIHelper);
@@ -143,7 +136,6 @@ bool TabUIHelper::ShouldThemifyFavicon() {
   return entry && favicon::ShouldThemifyFaviconForEntry(entry);
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 bool TabUIHelper::ShouldDisplayFavicon() {
   // BrowserWindowInterface can be null during unit tests
   BrowserWindowInterface* const browser_window_interface =
@@ -180,7 +172,6 @@ bool TabUIHelper::IsMonochromeFavicon() {
   return ShouldShowAppIcon(web_app_browser_controller, &tab()) &&
          !web_app_browser_controller->GetHomeTabIcon().isNull();
 }
-#endif
 
 ui::ImageModel TabUIHelper::GetFavicon() {
   const tab_groups::SavedTabGroupWebContentsListener* wc_listener =
@@ -192,7 +183,6 @@ ui::ImageModel TabUIHelper::GetFavicon() {
     }
   }
 
-#if !BUILDFLAG(IS_ANDROID)
   web_app::WebAppBrowserController* const web_app_browser_controller =
       GetWebAppBrowserController(&tab());
   if (ShouldShowAppIcon(web_app_browser_controller, &tab())) {
@@ -208,7 +198,6 @@ ui::ImageModel TabUIHelper::GetFavicon() {
       }
     }
   }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   return ui::ImageModel::FromImage(
       favicon::TabFaviconFromWebContents(web_contents()));
@@ -312,7 +301,6 @@ void TabUIHelper::PrimaryMainFrameRenderProcessGone(
   }
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 void TabUIHelper::PrimaryPageChanged(content::Page& page) {
   if (tab().IsSplit()) {
     split_tabs::LogSplitViewUpdatedUKM(
@@ -320,7 +308,6 @@ void TabUIHelper::PrimaryPageChanged(content::Page& page) {
         tab().GetSplit().value());
   }
 }
-#endif
 
 void TabUIHelper::SetCreatedBySessionRestore(bool created_by_session_restore) {
   const bool was_hiding_throbber = ShouldHideThrobber();
@@ -368,18 +355,16 @@ std::optional<base::ByteSize> TabUIHelper::GetDiscardedMemorySavings() {
              : std::nullopt;
 }
 
-tabs::TabNetworkState TabUIHelper::GetTabNetworkState() {
-  return tabs::TabNetworkStateForWebContents(tab().GetContents());
-}
-
-#if !BUILDFLAG(IS_ANDROID)
 void TabUIHelper::NotifyTabUIChanged(
     base::PassKey<BrowserUiController> pass_key) {
   // Notify subscribers because data might have updated since the browser is
   // batching updates.
   tab_ui_change_callbacks_.Notify();
 }
-#endif
+
+tabs::TabNetworkState TabUIHelper::GetTabNetworkState() {
+  return tabs::TabNetworkStateForWebContents(tab().GetContents());
+}
 
 void TabUIHelper::OnTabPinnedStatusChange(tabs::TabInterface* tab_interface,
                                           bool new_pinned_state) {

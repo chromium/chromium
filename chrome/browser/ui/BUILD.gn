@@ -521,8 +521,6 @@ static_library("ui") {
     "screen_capture_notification_ui.h",
     "tab_helpers.cc",
     "tab_helpers.h",
-    "tab_ui_helper.cc",
-    "tab_ui_helper.h",
   ]
 
   defines = []
@@ -1316,6 +1314,8 @@ static_library("ui") {
       "scoped_tabbed_browser_displayer.h",
       "singleton_tabs.cc",
       "singleton_tabs.h",
+      "tab_ui_helper.cc",
+      "tab_ui_helper.h",
       "unload_controller.cc",
       "unload_controller.h",
       "views/search_engine_choice/search_engine_choice_dialog_view.cc",

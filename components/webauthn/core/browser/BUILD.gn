@@ -22,15 +22,12 @@ source_set("browser") {
     "//url",
   ]
 
-  if (!is_android && use_blink) {
+  if (use_blink) {
     sources += [
+      "internal_authenticator.h",
       "rate_limiter_slide_window.cc",
       "rate_limiter_slide_window.h",
     ]
-  }
-
-  if (use_blink) {
-    sources += [ "internal_authenticator.h" ]
 
     deps += [
       "//third_party/blink/public/common",

@@ -13,7 +13,6 @@
 #include "chrome/browser/contextual_cueing/contextual_cueing_metrics.h"
 #include "chrome/browser/contextual_cueing/cueing_log.h"
 #include "chrome/browser/contextual_cueing/features.h"
-#include "chrome/browser/glic/browser_ui/glic_vector_icon_manager.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
@@ -38,6 +37,10 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/image/image_skia.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/glic/browser_ui/glic_vector_icon_manager.h"
+#endif
 
 namespace glic {
 
@@ -193,9 +196,14 @@ ui::ImageModel GlicCueTarget::GetAnchoredMessageIcon() const {
 }
 
 ui::ImageModel GlicCueTarget::GetOmniboxChipIcon() const {
+#if BUILDFLAG(IS_ANDROID)
+  NOTIMPLEMENTED() << "Glic contextual cue not yet implemented for Android.";
+  return ui::ImageModel();
+#else
   return ui::ImageModel::FromVectorIcon(
       glic::GlicVectorIconManager::GetVectorIcon(IDR_GLIC_BUTTON_VECTOR_ICON),
       ui::kColorSysOnSurface, 18);
+#endif
 }
 
 contextual_cueing::CueActionData GlicCueTarget::CueActionDataFromResponse(
