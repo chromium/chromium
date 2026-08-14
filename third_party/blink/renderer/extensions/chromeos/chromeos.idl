@@ -5,6 +5,4 @@
 [
     TargetOfExposed=ChromeOSExtensions
 ] interface ChromeOS {
-  [IsolatedContext, CallWith=ExecutionContext]
-  readonly attribute IsolatedWebApp isolatedWebApp;
 };

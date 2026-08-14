@@ -38,7 +38,7 @@ void CrosIsolatedWebAppEnabler::ReadyToCommitNavigation(
   blink::RuntimeFeatureStateContext& context =
       navigation_handle->GetMutableRuntimeFeatureStateContext();
   context.SetBlinkExtensionChromeOSEnabled(true);
-  context.SetBlinkExtensionChromeOSIsolatedWebAppSetShapeEnabled(true);
+  context.SetSetShapeEnabled(true);
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(CrosIsolatedWebAppEnabler);

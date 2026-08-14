@@ -79,7 +79,6 @@ mojom("mojom_platform") {
     "choosers/date_time_chooser.mojom",
     "choosers/file_chooser.mojom",
     "choosers/popup_menu.mojom",
-    "chromeos/isolated_web_app_api_bridge.mojom",
     "clipboard/clipboard.mojom",
     "close_watcher/close_listener.mojom",
     "commit_result/commit_result.mojom",
@@ -311,6 +310,10 @@ mojom("mojom_platform") {
     sources += [ "input/text_input_host.mojom" ]
   }
 
+  if (is_chromeos) {
+    sources += [ "set_shape/set_shape.mojom" ]
+  }
+
   if (use_blink_extensions_webview) {
     sources += [ "webview/webview_media_integrity.mojom" ]
   }
@@ -320,6 +323,7 @@ mojom("mojom_platform") {
     ":authenticator_mojo_bindings",
     ":color_scheme_mojo_bindings",
     ":credentialmanagement_mojo_bindings",
+    ":dom_node_id",
     ":mojom_mhtml_load_result",
     ":script_type_mojo_bindings",
     ":web_feature_mojo_bindings",
@@ -346,7 +350,6 @@ mojom("mojom_platform") {
     "//services/service_manager/public/mojom",
     "//services/viz/public/mojom",
     "//skia/public/mojom",
-    ":dom_node_id",
     "//third_party/blink/public/mojom/content_extraction",
     "//third_party/blink/public/mojom/fingerprinting_protection",
     "//third_party/blink/public/mojom/gpu",
@@ -1223,6 +1226,7 @@ mojom("mojom_core") {
   public_deps = [
     ":android_mojo_bindings",
     ":color_scheme_mojo_bindings",
+    ":dom_node_id",
     ":mojom_platform",
     ":script_type_mojo_bindings",
     ":web_feature_mojo_bindings",
@@ -1235,7 +1239,6 @@ mojom("mojom_core") {
     "//services/service_manager/public/mojom",
     "//services/viz/public/mojom",
     "//skia/public/mojom",
-    ":dom_node_id",
     "//third_party/blink/public/mojom/fingerprinting_protection",
     "//third_party/blink/public/mojom/runtime_feature_state",
     "//third_party/blink/public/mojom/service_worker:storage",

@@ -1,6 +1,6 @@
-# Blink extensions for Isolated Web Apps in ChromeOS
+# SetShape API for Isolated Web Apps in ChromeOS
 
-This directory defines the `chromeos.isolatedWebApp` interface containing APIs
+This directory implements the Blink module for the `window.setShape` API, which is
 restricted to allowlisted Isolated Web Apps running in Chrome OS.
 
 ## Requesting access

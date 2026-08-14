@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/ash/experiences/isolated_web_app/isolated_web_app_api_bridge_impl.h"
+#include "chromeos/ash/experiences/isolated_web_app/set_shape_service_impl.h"
 
 #include <memory>
 #include <utility>
@@ -23,7 +23,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/mojom/chromeos/isolated_web_app_api_bridge.mojom.h"
+#include "third_party/blink/public/mojom/set_shape/set_shape.mojom.h"
 #include "ui/aura/window.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/widget/widget.h"
@@ -68,9 +68,9 @@ class FakeWebContentsDelegate : public content::WebContentsDelegate {
 
 }  // namespace
 
-class IsolatedWebAppApiBridgeImplTest : public AshTestBase {
+class SetShapeServiceImplTest : public AshTestBase {
  public:
-  IsolatedWebAppApiBridgeImplTest()
+  SetShapeServiceImplTest()
       : AshTestBase(std::unique_ptr<base::test::TaskEnvironment>(
             std::make_unique<content::BrowserTaskEnvironment>())) {}
 
@@ -91,9 +91,8 @@ class IsolatedWebAppApiBridgeImplTest : public AshTestBase {
     widget_->GetNativeWindow()->AddChild(web_contents_->GetNativeView());
     web_contents_->SetDelegate(&fake_delegate_);
 
-    IsolatedWebAppApiBridgeImpl::CreateForTesting(
-        web_contents_->GetPrimaryMainFrame(),
-        remote_.BindNewPipeAndPassReceiver());
+    SetShapeServiceImpl::CreateForTesting(web_contents_->GetPrimaryMainFrame(),
+                                          remote_.BindNewPipeAndPassReceiver());
   }
 
   void TearDown() override {
@@ -116,10 +115,10 @@ class IsolatedWebAppApiBridgeImplTest : public AshTestBase {
   raw_ptr<content::WebContents> web_contents_;
   std::unique_ptr<views::Widget> widget_;
   FakeWebContentsDelegate fake_delegate_;
-  mojo::Remote<blink::mojom::IsolatedWebAppApiBridge> remote_;
+  mojo::Remote<blink::mojom::SetShapeService> remote_;
 };
 
-TEST_F(IsolatedWebAppApiBridgeImplTest, SetShapeCreatesEventTargeter) {
+TEST_F(SetShapeServiceImplTest, SetShapeCreatesEventTargeter) {
   std::vector<gfx::Rect> rects = {gfx::Rect(10, 10, 50, 50)};
   base::test::TestFuture<blink::mojom::SetShapeResult> future;
   remote_->SetShape(rects, future.GetCallback());
@@ -129,7 +128,7 @@ TEST_F(IsolatedWebAppApiBridgeImplTest, SetShapeCreatesEventTargeter) {
   EXPECT_TRUE(widget_->GetNativeWindow()->targeter());
 }
 
-TEST_F(IsolatedWebAppApiBridgeImplTest, SetShapeWithEmptyRectsResetsTargeter) {
+TEST_F(SetShapeServiceImplTest, SetShapeWithEmptyRectsResetsTargeter) {
   // First set a shape.
   std::vector<gfx::Rect> rects = {gfx::Rect(10, 10, 50, 50)};
   base::test::TestFuture<blink::mojom::SetShapeResult> future1;
@@ -145,7 +144,7 @@ TEST_F(IsolatedWebAppApiBridgeImplTest, SetShapeWithEmptyRectsResetsTargeter) {
   EXPECT_FALSE(widget_->GetNativeWindow()->targeter());
 }
 
-TEST_F(IsolatedWebAppApiBridgeImplTest, SetShapeReturnsNoWindowIfNoWidget) {
+TEST_F(SetShapeServiceImplTest, SetShapeReturnsNoWindowIfNoWidget) {
   // Remove `web_contents_` from `widget_`.
   widget_->GetNativeWindow()->RemoveChild(web_contents_->GetNativeView());
 
@@ -155,7 +154,7 @@ TEST_F(IsolatedWebAppApiBridgeImplTest, SetShapeReturnsNoWindowIfNoWidget) {
   EXPECT_EQ(future.Get(), blink::mojom::SetShapeResult::kNoWindow);
 }
 
-TEST_F(IsolatedWebAppApiBridgeImplTest, SetShapeFailsIfWindowIsNotUnframed) {
+TEST_F(SetShapeServiceImplTest, SetShapeFailsIfWindowIsNotUnframed) {
   fake_delegate_.set_display_mode(blink::mojom::DisplayMode::kStandalone);
 
   std::vector<gfx::Rect> rects = {gfx::Rect(10, 10, 50, 50)};
@@ -164,7 +163,7 @@ TEST_F(IsolatedWebAppApiBridgeImplTest, SetShapeFailsIfWindowIsNotUnframed) {
   EXPECT_EQ(future.Get(), blink::mojom::SetShapeResult::kNotUnframed);
 }
 
-TEST_F(IsolatedWebAppApiBridgeImplTest, SetShapeFailsIfNoRectIs10x10) {
+TEST_F(SetShapeServiceImplTest, SetShapeFailsIfNoRectIs10x10) {
   std::vector<gfx::Rect> rects = {
       gfx::Rect(10, 10, /*width=*/9, /*height=*/9),
       gfx::Rect(20, 20, /*width=*/5, /*height=*/10)};
@@ -176,8 +175,7 @@ TEST_F(IsolatedWebAppApiBridgeImplTest, SetShapeFailsIfNoRectIs10x10) {
       bad_message_observer.WaitForBadMessage());
 }
 
-TEST_F(IsolatedWebAppApiBridgeImplTest,
-       SetShapeSucceedsIfAtLeastOneRectIs10x10) {
+TEST_F(SetShapeServiceImplTest, SetShapeSucceedsIfAtLeastOneRectIs10x10) {
   std::vector<gfx::Rect> rects = {
       gfx::Rect(10, 10, /*width=*/9, /*height=*/9),
       gfx::Rect(20, 20, /*width=*/10, /*height=*/10)};
@@ -186,7 +184,7 @@ TEST_F(IsolatedWebAppApiBridgeImplTest,
   EXPECT_EQ(future.Get(), blink::mojom::SetShapeResult::kSuccess);
 }
 
-TEST_F(IsolatedWebAppApiBridgeImplTest, SetShapeFailsIfGivenTooManyRects) {
+TEST_F(SetShapeServiceImplTest, SetShapeFailsIfGivenTooManyRects) {
   std::vector<gfx::Rect> rects(blink::mojom::kMaxSetShapeRects + 1,
                                gfx::Rect(10, 10, 50, 50));
 

@@ -172,7 +172,7 @@ IN_PROC_BROWSER_TEST_F(SetShapeTest, ValidatesInput) {
   });
   for (const auto& input : invalid_inputs) {
     std::string script = base::StrCat({
-        "window.chromeos.isolatedWebApp.setShape(",
+        "window.setShape(",
         input,
         ").catch(error => error.name)",
     });
@@ -186,7 +186,7 @@ IN_PROC_BROWSER_TEST_F(SetShapeTest, WorksInUnframedMode) {
   content::RenderFrameHost* frame = OpenApp(app_url_info_->app_id());
 
   auto result = content::EvalJs(frame, R"(
-      window.chromeos.isolatedWebApp.setShape([
+      window.setShape([
         new DOMRect(0, 0, 200, 200),
         new DOMRect(180, 190, 100, 300)
       ])
@@ -205,7 +205,7 @@ IN_PROC_BROWSER_TEST_F(SetShapeTest, DoesNotWorkOutsideUnframedMode) {
   content::RenderFrameHost* frame = OpenApp(url_info.app_id());
 
   auto result = content::EvalJs(frame, R"(
-      window.chromeos.isolatedWebApp.setShape([
+      window.setShape([
         new DOMRect(0, 0, 200, 200),
         new DOMRect(180, 190, 100, 300)
       ]).catch(error => error.name)
@@ -220,7 +220,7 @@ IN_PROC_BROWSER_TEST_F(SetShapeTest, ClearsShapeOnTransitionFromUnframed) {
   EXPECT_THAT(frame, ShapeRectanglesAre({}));
 
   auto result = content::EvalJs(frame, R"(
-      window.chromeos.isolatedWebApp.setShape([
+      window.setShape([
         new DOMRect(0, 0, 200, 200)
       ])
     )");
@@ -233,7 +233,7 @@ IN_PROC_BROWSER_TEST_F(SetShapeTest, ClearsShapeOnTransitionFromUnframed) {
   EXPECT_THAT(frame, ShapeRectanglesAre({}));
 
   auto set_shape_after_revoke = content::EvalJs(frame, R"(
-      window.chromeos.isolatedWebApp.setShape([
+      window.setShape([
         new DOMRect(0, 0, 200, 200)
       ]).catch(error => error.name)
     )");
@@ -245,7 +245,7 @@ IN_PROC_BROWSER_TEST_F(SetShapeTest, AllowsMixOfSmallAndLargeRects) {
   content::RenderFrameHost* frame = OpenApp(app_url_info_->app_id());
 
   auto result = content::EvalJs(frame, R"(
-      window.chromeos.isolatedWebApp.setShape([
+      window.setShape([
         new DOMRect(0, 0, 9, 9),
         new DOMRect(10, 10, 10, 10)
       ])
@@ -261,7 +261,7 @@ IN_PROC_BROWSER_TEST_F(SetShapeTest, EmptyListClearsShape) {
   content::RenderFrameHost* frame = OpenApp(app_url_info_->app_id());
 
   auto set_result = content::EvalJs(frame, R"(
-      window.chromeos.isolatedWebApp.setShape([
+      window.setShape([
         new DOMRect(0, 0, 200, 200)
       ])
     )");
@@ -269,7 +269,7 @@ IN_PROC_BROWSER_TEST_F(SetShapeTest, EmptyListClearsShape) {
   EXPECT_THAT(frame, ShapeRectanglesAre({gfx::Rect(0, 0, 200, 200)}));
 
   auto clear_result = content::EvalJs(frame, R"(
-      window.chromeos.isolatedWebApp.setShape([])
+      window.setShape([])
     )");
   EXPECT_EQ(base::Value(), clear_result);
   EXPECT_THAT(frame, ShapeRectanglesAre({}));

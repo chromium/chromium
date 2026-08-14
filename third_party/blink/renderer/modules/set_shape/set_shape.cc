@@ -1,38 +1,24 @@
-// Copyright 2026 The Chromium Authors. All rights reserved.
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/extensions/chromeos/isolated_web_app/isolated_web_app.h"
+#include "third_party/blink/renderer/modules/set_shape/set_shape.h"
 
 #include <cmath>
 #include <utility>
 
-#include "base/check.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/task/single_thread_task_runner.h"
-#include "third_party/blink/public/mojom/chromeos/isolated_web_app_api_bridge.mojom-blink.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-blink.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/task_type.h"
-#include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/css/media_values.h"
-#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
-#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect_read_only.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
-#include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
-#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
-#include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
-#include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -40,52 +26,46 @@
 
 namespace blink {
 
-const char IsolatedWebApp::kSupplementName[] = "IsolatedWebApp";
+const char SetShape::kSupplementName[] = "SetShape";
 
 // static
-IsolatedWebApp& IsolatedWebApp::From(ExecutionContext& execution_context) {
-  CHECK(!execution_context.IsContextDestroyed());
-  IsolatedWebApp* supplement =
-      Supplement<ExecutionContext>::From<IsolatedWebApp>(execution_context);
+SetShape& SetShape::From(LocalDOMWindow& window) {
+  SetShape* supplement = Supplement<LocalDOMWindow>::From<SetShape>(window);
   if (!supplement) {
-    supplement = MakeGarbageCollected<IsolatedWebApp>(execution_context);
-    ProvideTo(execution_context, supplement);
+    supplement = MakeGarbageCollected<SetShape>(window);
+    ProvideTo(window, supplement);
   }
   return *supplement;
 }
 
-IsolatedWebApp::IsolatedWebApp(ExecutionContext& execution_context)
-    : Supplement(execution_context), remote_(&execution_context) {}
+SetShape::SetShape(LocalDOMWindow& window)
+    : Supplement(window), remote_(&window) {}
 
-HeapMojoRemote<mojom::blink::IsolatedWebAppApiBridge>&
-IsolatedWebApp::GetRemote() {
+HeapMojoRemote<mojom::blink::SetShapeService>& SetShape::GetRemote() {
   if (!remote_.is_bound()) {
-    ExecutionContext* context = GetSupplementable();
-    context->GetBrowserInterfaceBroker().GetInterface(
+    LocalDOMWindow* window = GetSupplementable();
+    window->GetBrowserInterfaceBroker().GetInterface(
         remote_.BindNewPipeAndPassReceiver(
-            context->GetTaskRunner(TaskType::kInternalLoading)));
+            window->GetTaskRunner(TaskType::kMiscPlatformAPI)));
   }
   return remote_;
 }
 
-ScriptPromise<IDLUndefined> IsolatedWebApp::setShape(
+ScriptPromise<IDLUndefined> SetShape::setShape(
     ScriptState* script_state,
+    LocalDOMWindow& window,
     const HeapVector<Member<DOMRectReadOnly>>& rects,
     ExceptionState& exception_state) {
-  ExecutionContext* context = GetSupplementable();
-  if (context && context->IsWindow()) {
-    LocalDOMWindow* window = To<LocalDOMWindow>(context);
-    if (window->GetFrame()) {
-      MediaValues* media_values =
-          MediaValues::CreateDynamicIfFrameExists(window->GetFrame());
-      if (media_values) {
-        mojom::blink::DisplayMode display_mode = media_values->DisplayMode();
-        if (display_mode != mojom::blink::DisplayMode::kUnframed) {
-          exception_state.ThrowDOMException(
-              DOMExceptionCode::kInvalidStateError,
-              "setShape requires the window to be in unframed display mode.");
-          return EmptyPromise();
-        }
+  if (window.GetFrame()) {
+    MediaValues* media_values =
+        MediaValues::CreateDynamicIfFrameExists(window.GetFrame());
+    if (media_values) {
+      mojom::blink::DisplayMode display_mode = media_values->DisplayMode();
+      if (display_mode != mojom::blink::DisplayMode::kUnframed) {
+        exception_state.ThrowDOMException(
+            DOMExceptionCode::kInvalidStateError,
+            "setShape requires the window to be in unframed display mode.");
+        return EmptyPromise();
       }
     }
   }
@@ -136,7 +116,7 @@ ScriptPromise<IDLUndefined> IsolatedWebApp::setShape(
       MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
   auto promise = resolver->Promise();
 
-  GetRemote()->SetShape(
+  From(window).GetRemote()->SetShape(
       std::move(converted_rects),
       resolver->WrapCallbackInScriptScope(
           BindOnce([](ScriptPromiseResolver<IDLUndefined>* resolver,
@@ -162,10 +142,9 @@ ScriptPromise<IDLUndefined> IsolatedWebApp::setShape(
   return promise;
 }
 
-void IsolatedWebApp::Trace(Visitor* visitor) const {
+void SetShape::Trace(Visitor* visitor) const {
   visitor->Trace(remote_);
-  ScriptWrappable::Trace(visitor);
-  Supplement<ExecutionContext>::Trace(visitor);
+  Supplement<LocalDOMWindow>::Trace(visitor);
 }
 
 }  // namespace blink

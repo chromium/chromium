@@ -904,12 +904,6 @@
       browser_process_read_write_access: true,
     },
     {
-      name: "BlinkExtensionChromeOSIsolatedWebAppSetShape",
-      status: {"ChromeOS": "experimental", "default": ""},
-      browser_process_read_write_access: true,
-      depends_on: ["BlinkExtensionChromeOS"],
-    },
-    {
       name: "BlinkExtensionWebView",
       public: true,
     },
@@ -5639,6 +5633,11 @@
     {
       name: "SetSequentialFocusStartingPoint",
       status: "experimental",
+    },
+    {
+      name: "SetShape",
+      status: {"ChromeOS": "experimental", "default": ""},
+      browser_process_read_write_access: true,
     },
     // https://chromestatus.com/feature/5176753681203200
     {

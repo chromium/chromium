@@ -6,9 +6,8 @@ module blink.mojom;
 
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
-// The service definition for blink extensions available to allowlisted IWAs in
-// ChromeOS.
-interface IsolatedWebAppApiBridge {
+// The service definition for window setShape API in ChromeOS.
+interface SetShapeService {
   // Sets the shape of the current window to the union of the given `rects`.
   // Only areas of the window that are covered by at least one rectangle become
   // visible and can be interacted with.

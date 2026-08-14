@@ -85,9 +85,7 @@ IN_PROC_BROWSER_TEST_F(BlinkExtensionsWithFlagSetTest,
       InstallIsolatedWebAppAndReturnUrlInfo(profile());
   content::RenderFrameHost* frame = OpenApp(url_info.app_id());
 
-  EXPECT_EQ(true, content::EvalJs(frame, "'chromeos' in window"));
-  EXPECT_EQ(true,
-            content::EvalJs(frame, "'isolatedWebApp' in window.chromeos"));
+  EXPECT_EQ(true, content::EvalJs(frame, "'setShape' in window"));
 }
 
 IN_PROC_BROWSER_TEST_F(BlinkExtensionsWithFlagSetTest,
@@ -103,12 +101,7 @@ IN_PROC_BROWSER_TEST_F(BlinkExtensionsWithFlagSetTest,
   content::WaitForLoadStop(child_contents);
   ASSERT_TRUE(child_contents);
 
-  ASSERT_EQ(true, content::EvalJs(child_contents, "'chromeos' in window"));
-  ASSERT_EQ(true, content::EvalJs(child_contents,
-                                  "'isolatedWebApp' in window.chromeos"));
-  ASSERT_EQ(true,
-            content::EvalJs(child_contents,
-                            "'setShape' in window.chromeos.isolatedWebApp"));
+  ASSERT_EQ(true, content::EvalJs(child_contents, "'setShape' in window"));
 }
 
 IN_PROC_BROWSER_TEST_F(BlinkExtensionsWithFlagSetTest,
@@ -121,8 +114,8 @@ IN_PROC_BROWSER_TEST_F(BlinkExtensionsWithFlagSetTest,
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  // `window.chromeos` is not defined because this is not an IWA.
-  EXPECT_EQ(false, content::EvalJs(web_contents, "'chromeos' in window"));
+  // `window.setShape` is not defined because this is not an IWA.
+  EXPECT_EQ(false, content::EvalJs(web_contents, "'setShape' in window"));
 }
 
 // Verifies that only IWAs in the allowlist can access the CrOS IWA API.
@@ -138,7 +131,7 @@ IN_PROC_BROWSER_TEST_F(BlinkExtensionsAllowlistTest, ExtensionsAreUndefined) {
   content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
 
   // By default, the IWA is not allowlisted and the flag is disabled.
-  EXPECT_EQ(false, content::EvalJs(app_frame, "'chromeos' in window"));
+  EXPECT_EQ(false, content::EvalJs(app_frame, "'setShape' in window"));
 }
 
 IN_PROC_BROWSER_TEST_F(BlinkExtensionsAllowlistTest,
@@ -156,12 +149,12 @@ IN_PROC_BROWSER_TEST_F(BlinkExtensionsAllowlistTest,
   content::RenderFrameHost* non_allowed_frame =
       OpenApp(non_allowed_url_info.app_id());
 
-  EXPECT_EQ(true, content::EvalJs(allowed_frame, "'chromeos' in window"));
-  EXPECT_EQ(false, content::EvalJs(non_allowed_frame, "'chromeos' in window"));
+  EXPECT_EQ(true, content::EvalJs(allowed_frame, "'setShape' in window"));
+  EXPECT_EQ(false, content::EvalJs(non_allowed_frame, "'setShape' in window"));
 
   // `setShape` returns a resolved `Promise<undefined>` on success.
   auto result = content::EvalJs(allowed_frame, R"(
-      window.chromeos.isolatedWebApp.setShape([
+      window.setShape([
         new DOMRect(0, 0, 200, 200)
       ])
     )");
@@ -192,7 +185,7 @@ IN_PROC_BROWSER_TEST_F(BlinkExtensionsAllowlistDisabledTest,
 
   content::RenderFrameHost* frame = OpenApp(url_info.app_id());
 
-  EXPECT_EQ(false, content::EvalJs(frame, "'chromeos' in window"));
+  EXPECT_EQ(false, content::EvalJs(frame, "'setShape' in window"));
 }
 
 // Verifies the `kCrosIsolatedWebAppSetShape` flag grants access even if the
@@ -218,11 +211,7 @@ IN_PROC_BROWSER_TEST_F(BlinkExtensionsAllowlistDisabledWithMainFlagEnabledTest,
 
   content::RenderFrameHost* frame = OpenApp(url_info.app_id());
 
-  ASSERT_EQ(true, content::EvalJs(frame, "'chromeos' in window"));
-  ASSERT_EQ(true,
-            content::EvalJs(frame, "'isolatedWebApp' in window.chromeos"));
-  ASSERT_EQ(true, content::EvalJs(
-                      frame, "'setShape' in window.chromeos.isolatedWebApp"));
+  ASSERT_EQ(true, content::EvalJs(frame, "'setShape' in window"));
 }
 
 }  // namespace ash

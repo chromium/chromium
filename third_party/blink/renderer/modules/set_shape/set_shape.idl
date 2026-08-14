@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Isolated Web App (IWA) interface.
-//
-// Contains the set of blink extensions available to allowlisted IWAs in
-// ChromeOS.
+// Window setShape API interface for allowlisted Isolated Web Apps.
 [
+  ImplementedAs=SetShape,
+  RuntimeEnabled=SetShape,
+  SecureContext,
   IsolatedContext
-] interface IsolatedWebApp {
+] partial interface Window {
   // Sets the shape of the current window to the union of the given `rects`.
   // Only areas of the window that are covered by at least one rectangle become
   // visible and can be interacted with.
@@ -21,7 +21,6 @@
   // rejected if the shape couldn't be set (e.g. when `rects` are invalid,
   // the window could not be found, or the window is not in unframed mode).
   [
-    RuntimeEnabled=BlinkExtensionChromeOSIsolatedWebAppSetShape,
     CallWith=ScriptState,
     RaisesException
   ]

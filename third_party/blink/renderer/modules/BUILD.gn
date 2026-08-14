@@ -184,6 +184,9 @@ component("modules") {
       "//third_party/blink/renderer/modules/smart_card",
     ]
   }
+  if (is_chromeos) {
+    sub_modules += [ "//third_party/blink/renderer/modules/set_shape" ]
+  }
   if (!is_ios && !target_os_is_android) {
     sub_modules += [ "//third_party/blink/renderer/modules/awc" ]
   }

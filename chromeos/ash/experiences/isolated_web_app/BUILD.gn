@@ -10,8 +10,8 @@ component("isolated_web_app") {
     "cros_isolated_web_app_enabler.h",
     "isolated_web_app_api_allowlist.cc",
     "isolated_web_app_api_allowlist.h",
-    "isolated_web_app_api_bridge_impl.cc",
-    "isolated_web_app_api_bridge_impl.h",
+    "set_shape_service_impl.cc",
+    "set_shape_service_impl.h",
     "shaped_window_targeter.cc",
     "shaped_window_targeter.h",
   ]
@@ -35,7 +35,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
-    "isolated_web_app_api_bridge_impl_unittest.cc",
+    "set_shape_service_impl_unittest.cc",
     "shaped_window_targeter_unittest.cc",
   ]
 

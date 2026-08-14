@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_ASH_EXPERIENCES_ISOLATED_WEB_APP_ISOLATED_WEB_APP_API_BRIDGE_IMPL_H_
-#define CHROMEOS_ASH_EXPERIENCES_ISOLATED_WEB_APP_ISOLATED_WEB_APP_API_BRIDGE_IMPL_H_
+#ifndef CHROMEOS_ASH_EXPERIENCES_ISOLATED_WEB_APP_SET_SHAPE_SERVICE_IMPL_H_
+#define CHROMEOS_ASH_EXPERIENCES_ISOLATED_WEB_APP_SET_SHAPE_SERVICE_IMPL_H_
 
 #include <optional>
 #include <vector>
@@ -14,7 +14,7 @@
 #include "content/public/browser/permission_result.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "third_party/blink/public/mojom/chromeos/isolated_web_app_api_bridge.mojom.h"
+#include "third_party/blink/public/mojom/set_shape/set_shape.mojom.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace content {
@@ -29,9 +29,8 @@ namespace ash {
 
 // Implements the mojo service for IWA blink extensions in ChromeOS.
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_ISOLATED_WEB_APP)
-    IsolatedWebAppApiBridgeImpl
-    : public content::DocumentUserData<IsolatedWebAppApiBridgeImpl>,
-      public blink::mojom::IsolatedWebAppApiBridge {
+    SetShapeServiceImpl : public content::DocumentUserData<SetShapeServiceImpl>,
+                          public blink::mojom::SetShapeService {
  public:
   // If the `render_frame_host` is allowed to access this service, this function
   // creates an instance for the document and binds `receiver` to it. Otherwise
@@ -40,7 +39,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_ISOLATED_WEB_APP)
   // `render_frame_host` must be non-null and `receiver` must be valid.
   static void Create(
       content::RenderFrameHost* render_frame_host,
-      mojo::PendingReceiver<blink::mojom::IsolatedWebAppApiBridge> receiver);
+      mojo::PendingReceiver<blink::mojom::SetShapeService> receiver);
 
   // Similar to `Create`, but always binds the receiver without without checking
   // that the `render_frame_host` is allowed. Must only be used in tests.
@@ -48,24 +47,22 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_ISOLATED_WEB_APP)
   // `render_frame_host` must be non-null and `receiver` must be valid.
   static void CreateForTesting(
       content::RenderFrameHost* render_frame_host,
-      mojo::PendingReceiver<blink::mojom::IsolatedWebAppApiBridge> receiver);
+      mojo::PendingReceiver<blink::mojom::SetShapeService> receiver);
 
-  IsolatedWebAppApiBridgeImpl(const IsolatedWebAppApiBridgeImpl&) = delete;
-  IsolatedWebAppApiBridgeImpl& operator=(const IsolatedWebAppApiBridgeImpl&) =
-      delete;
+  SetShapeServiceImpl(const SetShapeServiceImpl&) = delete;
+  SetShapeServiceImpl& operator=(const SetShapeServiceImpl&) = delete;
 
-  ~IsolatedWebAppApiBridgeImpl() override;
+  ~SetShapeServiceImpl() override;
 
-  // blink::mojom::IsolatedWebAppApiBridge:
+  // blink::mojom::SetShapeService:
   void SetShape(const std::vector<gfx::Rect>& rects,
                 SetShapeCallback callback) override;
 
  private:
-  friend class content::DocumentUserData<IsolatedWebAppApiBridgeImpl>;
+  friend class content::DocumentUserData<SetShapeServiceImpl>;
   DOCUMENT_USER_DATA_KEY_DECL();
 
-  explicit IsolatedWebAppApiBridgeImpl(
-      content::RenderFrameHost* render_frame_host);
+  explicit SetShapeServiceImpl(content::RenderFrameHost* render_frame_host);
 
   // Resets any custom shape and event targeter in the window back to default.
   void ResetShape();
@@ -81,14 +78,13 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_ISOLATED_WEB_APP)
 
   // Binds `receiver` to `receiver_`. If the `receiver_` is already bound,
   // it will be re-bound to the new pipe.
-  void Bind(
-      mojo::PendingReceiver<blink::mojom::IsolatedWebAppApiBridge> receiver);
+  void Bind(mojo::PendingReceiver<blink::mojom::SetShapeService> receiver);
 
   // Returns the top-level `Widget` associated with the `render_frame_host()`,
   // or `nullptr` if a native view cannot be found.
   views::Widget* GetWidget();
 
-  mojo::Receiver<blink::mojom::IsolatedWebAppApiBridge> receiver_{this};
+  mojo::Receiver<blink::mojom::SetShapeService> receiver_{this};
 
   // The ID set when a WINDOW_MANAGEMENT subscription is active.
   std::optional<content::PermissionController::SubscriptionId>
@@ -100,4 +96,4 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_ISOLATED_WEB_APP)
 
 }  // namespace ash
 
-#endif  // CHROMEOS_ASH_EXPERIENCES_ISOLATED_WEB_APP_ISOLATED_WEB_APP_API_BRIDGE_IMPL_H_
+#endif  // CHROMEOS_ASH_EXPERIENCES_ISOLATED_WEB_APP_SET_SHAPE_SERVICE_IMPL_H_

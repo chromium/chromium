@@ -1,7 +1,11 @@
-# Blink extensions for IWAs in ChromeOS
+# ChromeOS Mojo Services and Allowlisting for IWAs
 
-This directory is the browser counterpart to the Blink extensions defined in
-`//third_party/blink/renderer/extensions/chromeos/isolated_web_app`.
+This directory hosts the Mojo services for features restricted to
+allowlisted Isolated Web Apps (IWAs) on ChromeOS.
 
-It hosts the mojo services used as the entry point to API implementation.
-Currently it implements `chromeos.isolatedWebApp.setShape`.
+Currently, it implements the `window.setShape` API.
+
+* The Blink frontend lives in
+  `//third_party/blink/renderer/modules/set_shape/`.
+* The browser tests verifying this API and its allowlist
+  behavior live in `//chrome/browser/ash/isolated_web_app/`.

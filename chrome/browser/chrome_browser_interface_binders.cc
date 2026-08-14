@@ -111,7 +111,8 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/apps/digital_goods/digital_goods_factory_impl.h"
 #include "chrome/browser/speech/cros_speech_recognition_service_factory.h"
-#include "chromeos/ash/experiences/isolated_web_app/isolated_web_app_api_bridge_impl.h"
+#include "chromeos/ash/experiences/isolated_web_app/set_shape_service_impl.h"
+#include "third_party/blink/public/mojom/set_shape/set_shape.mojom.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
@@ -533,8 +534,7 @@ void PopulateChromeFrameBinders(
 #if BUILDFLAG(IS_CHROMEOS)
   map->Add<payments::mojom::DigitalGoodsFactory>(
       &apps::DigitalGoodsFactoryImpl::BindDigitalGoodsFactory);
-  map->Add<blink::mojom::IsolatedWebAppApiBridge>(
-      &ash::IsolatedWebAppApiBridgeImpl::Create);
+  map->Add<blink::mojom::SetShapeService>(&ash::SetShapeServiceImpl::Create);
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)

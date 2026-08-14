@@ -101,7 +101,7 @@ LocalDOMWindow* GetOpenerWindowIfSameOrigin(LocalFrame* frame) {
   return opener_window;
 }
 
-// Conditional runtime-enabled features (like Direct Sockets) are
+// Conditional runtime-enabled features (like Direct Sockets and SetShape) are
 // evaluated by V8 during the initial context creation (which synchronously
 // spawns an `about:blank` document).
 // API exposure is never re-evaluated, leaving features permanently disabled in
@@ -127,6 +127,10 @@ bool MaybeInheritRuntimeFeaturesFromOpener(LocalFrame* frame) {
     target_context->SetDirectSocketsForceEnabled();
     inherited = true;
   }
+  if (RuntimeEnabledFeatures::SetShapeEnabled(opener_window)) {
+    target_context->SetSetShapeForceEnabled();
+    inherited = true;
+  }
   return inherited;
 }
 
@@ -136,8 +140,9 @@ bool MaybeInheritRuntimeFeaturesFromOpener(LocalFrame* frame) {
 //
 // Because V8 gets a cache hit, it entirely bypasses the slow compilation path
 // which would normally run standard properties-installation callbacks. As a
-// result, dynamically-enabled conditional properties (like Direct Sockets in an
-// IWA context) are never overlaid onto the restored global Window wrappers.
+// result, dynamically-enabled conditional properties (like Direct Sockets or
+// SetShape in an IWA context) are never overlaid onto the restored global
+// Window wrappers.
 //
 // To fix this omission, this helper manually retrieves the restored Window
 // prototype and constructor wrappers from the PerContextData cache, and forces

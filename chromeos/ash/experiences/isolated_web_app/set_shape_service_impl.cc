@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/ash/experiences/isolated_web_app/isolated_web_app_api_bridge_impl.h"
+#include "chromeos/ash/experiences/isolated_web_app/set_shape_service_impl.h"
 
 #include <algorithm>
 #include <memory>
@@ -23,9 +23,9 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_exposed_isolation_level.h"
-#include "third_party/blink/public/mojom/chromeos/isolated_web_app_api_bridge.mojom.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
+#include "third_party/blink/public/mojom/set_shape/set_shape.mojom.h"
 #include "ui/aura/window.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/widget/widget.h"
@@ -70,9 +70,9 @@ bool IsAtLeastMinimumSize(const gfx::Rect& rect) {
 }  // namespace
 
 // static
-void IsolatedWebAppApiBridgeImpl::Create(
+void SetShapeServiceImpl::Create(
     content::RenderFrameHost* render_frame_host,
-    mojo::PendingReceiver<blink::mojom::IsolatedWebAppApiBridge> receiver) {
+    mojo::PendingReceiver<blink::mojom::SetShapeService> receiver) {
   CHECK(render_frame_host);
   CHECK(receiver.is_valid());
 
@@ -80,43 +80,41 @@ void IsolatedWebAppApiBridgeImpl::Create(
     return;
   }
 
-  IsolatedWebAppApiBridgeImpl::GetOrCreateForCurrentDocument(render_frame_host)
+  SetShapeServiceImpl::GetOrCreateForCurrentDocument(render_frame_host)
       ->Bind(std::move(receiver));
 }
 
 // static
-void IsolatedWebAppApiBridgeImpl::CreateForTesting(
+void SetShapeServiceImpl::CreateForTesting(  // IN-TEST
     content::RenderFrameHost* render_frame_host,
-    mojo::PendingReceiver<blink::mojom::IsolatedWebAppApiBridge> receiver) {
+    mojo::PendingReceiver<blink::mojom::SetShapeService> receiver) {
   CHECK(render_frame_host);
   CHECK(receiver.is_valid());
 
-  IsolatedWebAppApiBridgeImpl* bridge =
-      IsolatedWebAppApiBridgeImpl::GetOrCreateForCurrentDocument(
-          render_frame_host);
+  SetShapeServiceImpl* bridge =
+      SetShapeServiceImpl::GetOrCreateForCurrentDocument(render_frame_host);
   bridge->force_enable_api_for_testing_ = true;
   bridge->Bind(std::move(receiver));
 }
 
-IsolatedWebAppApiBridgeImpl::IsolatedWebAppApiBridgeImpl(
+SetShapeServiceImpl::SetShapeServiceImpl(
     content::RenderFrameHost* render_frame_host)
-    : content::DocumentUserData<IsolatedWebAppApiBridgeImpl>(
-          render_frame_host) {}
+    : content::DocumentUserData<SetShapeServiceImpl>(render_frame_host) {}
 
-IsolatedWebAppApiBridgeImpl::~IsolatedWebAppApiBridgeImpl() {
+SetShapeServiceImpl::~SetShapeServiceImpl() {
   UnsubscribeFromWindowManagementPermissionChanges();
 }
 
-void IsolatedWebAppApiBridgeImpl::Bind(
-    mojo::PendingReceiver<blink::mojom::IsolatedWebAppApiBridge> receiver) {
+void SetShapeServiceImpl::Bind(
+    mojo::PendingReceiver<blink::mojom::SetShapeService> receiver) {
   if (receiver_.is_bound()) {
     receiver_.reset();
   }
   receiver_.Bind(std::move(receiver));
 }
 
-void IsolatedWebAppApiBridgeImpl::SetShape(const std::vector<gfx::Rect>& rects,
-                                           SetShapeCallback callback) {
+void SetShapeServiceImpl::SetShape(const std::vector<gfx::Rect>& rects,
+                                   SetShapeCallback callback) {
   if (!force_enable_api_for_testing_ && !ApiIsEnabledFor(render_frame_host())) {
     receiver_.ReportBadMessage("SetShape is disabled for this caller.");
     return;
@@ -174,14 +172,14 @@ void IsolatedWebAppApiBridgeImpl::SetShape(const std::vector<gfx::Rect>& rects,
   std::move(callback).Run(blink::mojom::SetShapeResult::kSuccess);
 }
 
-void IsolatedWebAppApiBridgeImpl::ResetShape() {
+void SetShapeServiceImpl::ResetShape() {
   views::Widget* widget = GetWidget();
   if (widget) {
     SetShapeAndEventTargeter(*widget, {});
   }
 }
 
-void IsolatedWebAppApiBridgeImpl::OnWindowManagementPermissionChanged(
+void SetShapeServiceImpl::OnWindowManagementPermissionChanged(
     content::PermissionResult result) {
   if (result.status != blink::mojom::PermissionStatus::GRANTED) {
     ResetShape();
@@ -189,8 +187,7 @@ void IsolatedWebAppApiBridgeImpl::OnWindowManagementPermissionChanged(
   }
 }
 
-void IsolatedWebAppApiBridgeImpl::
-    SubscribeToWindowManagementPermissionChanges() {
+void SetShapeServiceImpl::SubscribeToWindowManagementPermissionChanges() {
   if (permission_subscription_id_) {
     return;
   }
@@ -206,12 +203,11 @@ void IsolatedWebAppApiBridgeImpl::
       /*render_process_host*/ nullptr, &render_frame_host(), origin.GetURL(),
       /*should_include_device_status=*/false,
       base::BindRepeating(
-          &IsolatedWebAppApiBridgeImpl::OnWindowManagementPermissionChanged,
+          &SetShapeServiceImpl::OnWindowManagementPermissionChanged,
           base::Unretained(this)));
 }
 
-void IsolatedWebAppApiBridgeImpl::
-    UnsubscribeFromWindowManagementPermissionChanges() {
+void SetShapeServiceImpl::UnsubscribeFromWindowManagementPermissionChanges() {
   if (!permission_subscription_id_) {
     return;
   }
@@ -223,7 +219,7 @@ void IsolatedWebAppApiBridgeImpl::
   permission_subscription_id_.reset();
 }
 
-views::Widget* IsolatedWebAppApiBridgeImpl::GetWidget() {
+views::Widget* SetShapeServiceImpl::GetWidget() {
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(&render_frame_host());
   if (!web_contents || !web_contents->GetNativeView()) {
@@ -233,6 +229,6 @@ views::Widget* IsolatedWebAppApiBridgeImpl::GetWidget() {
       web_contents->GetNativeView());
 }
 
-DOCUMENT_USER_DATA_KEY_IMPL(IsolatedWebAppApiBridgeImpl);
+DOCUMENT_USER_DATA_KEY_IMPL(SetShapeServiceImpl);
 
 }  // namespace ash
