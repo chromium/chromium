@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import '//resources/cr_elements/cr_icon/cr_icon.js';
+import '//resources/cr_elements/icons.html.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
 
 import {assert, assertNotReached} from '//resources/js/assert.js';
@@ -68,6 +69,10 @@ export class ErrorPageElement extends CrLitElement {
 
   protected isSkillsDisabled_(): boolean {
     return this.errorType === ErrorType.SKILLS_DISABLED;
+  }
+
+  protected isRemoteAuthorityUnreachable_(): boolean {
+    return this.errorType === ErrorType.REMOTE_AUTHORITY_UNREACHABLE;
   }
 
   protected errorTitle(): string {
