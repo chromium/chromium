@@ -1065,7 +1065,14 @@ BASE_FEATURE(kFieldClassificationModelCaching,
 #endif
 );
 
-BASE_FEATURE(kGlicActorAutofill, base::FEATURE_DISABLED_BY_DEFAULT);
+// The feature will be tested and rolled out independently on iOS.
+BASE_FEATURE(kGlicActorAutofill,
+#if BUILDFLAG(IS_IOS)
+             base::FEATURE_DISABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif  // BUILDFLAG(IS_IOS)
+);
 
 // The amount of time to wait for a fill to happen if no credit card fetch is
 // ongoing.
