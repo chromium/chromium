@@ -277,6 +277,7 @@ public class StripLayoutHelperManager
     private final String mDefaultTitle;
     private final MonotonicObservableSupplier<LayerTitleCache> mLayerTitleCacheSupplier;
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
+    private final BrowserControlsStateProvider.Observer mBrowserControlsObserver;
     private final Callback<Integer> mStripVisibilityStateObserver;
     private final SettableNonNullObservableSupplier<@StripVisibilityState Integer>
             mStripVisibilityStateSupplier =
@@ -581,6 +582,23 @@ public class StripLayoutHelperManager
                 };
         mStripVisibilityStateSupplier.addSyncObserverAndPostIfNonNull(
                 mStripVisibilityStateObserver);
+        mBrowserControlsObserver =
+                new BrowserControlsStateProvider.Observer() {
+                    @Override
+                    public void onControlsOffsetChanged(
+                            int topOffset,
+                            int topControlsMinHeightOffset,
+                            boolean topControlsMinHeightChanged,
+                            int bottomOffset,
+                            int bottomControlsMinHeightOffset,
+                            boolean bottomControlsMinHeightChanged,
+                            boolean requestNewFrame,
+                            boolean isVisibilityForced) {
+                        setStripVisibilityState(
+                                StripVisibilityState.HIDDEN_BY_SCROLL, /* clear= */ topOffset >= 0);
+                    }
+                };
+        mBrowserControlsStateProvider.addObserver(mBrowserControlsObserver);
 
         Runnable selectorClickHandler = () -> handleModelSelectorButtonClick();
         StripLayoutViewOnKeyboardFocusHandler selectorKeyboardFocusHandler =
@@ -810,6 +828,7 @@ public class StripLayoutHelperManager
         mTabStripTreeProvider = null;
         mTrailingButtonsCoordinator.destroy();
         mLifecycleDispatcher.unregister(this);
+        mBrowserControlsStateProvider.removeObserver(mBrowserControlsObserver);
         // Remove the observer to prevent any updates on a destroyed EventFilter.
         mStripVisibilityStateSupplier.removeObserver(mStripVisibilityStateObserver);
         // Delete the EventFilter to avoid any updates on destroyed StripLayoutHelpers.
@@ -892,9 +911,6 @@ public class StripLayoutHelperManager
     private void pushAndUpdateStrip(float yOffsetDp, float visibleHeightDp) {
         if (mResourceManager == null) return;
 
-        setStripVisibilityState(
-                StripVisibilityState.HIDDEN_BY_SCROLL,
-                /* clear= */ mBrowserControlsStateProvider.getTopControlOffset() >= 0);
         Tab selectedTab =
                 mTabModelSelector == null
                         ? null
@@ -1811,6 +1827,10 @@ public class StripLayoutHelperManager
             getStripVisibilityStateSupplier() {
         // TODO(crbug.com/417238089): get() returns a stale value during height transitions.
         return mStripVisibilityStateSupplier;
+    }
+
+    BrowserControlsStateProvider.Observer getBrowserControlsObserverForTesting() {
+        return mBrowserControlsObserver;
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)

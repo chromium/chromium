@@ -1486,4 +1486,65 @@ public class StripLayoutHelperManagerTest {
                 "Last hovered tab should be cleared on URL text change.",
                 activeLayoutHelper.getLastHoveredTab());
     }
+
+    @Test
+    public void testControlsOffsetChanged_UpdatesStripVisibilityStateAndEventFilterArea() {
+        mStripLayoutHelperManager.onSizeChanged(
+                SCREEN_WIDTH, SCREEN_HEIGHT, VISIBLE_VIEWPORT_Y, ORIENTATION);
+        assertTrue(
+                "Strip motion event should be handled when controls are fully visible.",
+                motionEventHandled(SCREEN_WIDTH / 2, TAB_STRIP_HEIGHT_PX / 2f));
+        assertEquals(
+                "Strip should be visible initially.",
+                StripVisibilityState.VISIBLE,
+                (int) mStripLayoutHelperManager.getStripVisibilityStateSupplier().get());
+
+        var browserControlsObserver =
+                mStripLayoutHelperManager.getBrowserControlsObserverForTesting();
+        assertNotNull("Browser controls observer should be registered.", browserControlsObserver);
+
+        // Scroll top controls off-screen (topOffset < 0).
+        browserControlsObserver.onControlsOffsetChanged(
+                /* topOffset= */ -10,
+                /* topControlsMinHeightOffset= */ 0,
+                /* topControlsMinHeightChanged= */ false,
+                /* bottomOffset= */ 0,
+                /* bottomControlsMinHeightOffset= */ 0,
+                /* bottomControlsMinHeightChanged= */ false,
+                /* requestNewFrame= */ false,
+                /* isVisibilityForced= */ false);
+
+        assertEquals(
+                "Strip should be marked as HIDDEN_BY_SCROLL.",
+                StripVisibilityState.HIDDEN_BY_SCROLL,
+                mStripLayoutHelperManager.getStripVisibilityStateSupplier().get()
+                        & StripVisibilityState.HIDDEN_BY_SCROLL);
+        assertFalse(
+                "Strip motion event should not be handled when controls are scrolled off.",
+                motionEventHandled(SCREEN_WIDTH / 2, TAB_STRIP_HEIGHT_PX / 2f));
+
+        // Scroll top controls back on-screen (topOffset == 0) without lifting touch.
+        browserControlsObserver.onControlsOffsetChanged(
+                /* topOffset= */ 0,
+                /* topControlsMinHeightOffset= */ 0,
+                /* topControlsMinHeightChanged= */ false,
+                /* bottomOffset= */ 0,
+                /* bottomControlsMinHeightOffset= */ 0,
+                /* bottomControlsMinHeightChanged= */ false,
+                /* requestNewFrame= */ false,
+                /* isVisibilityForced= */ false);
+
+        assertEquals(
+                "Strip HIDDEN_BY_SCROLL should be cleared.",
+                0,
+                mStripLayoutHelperManager.getStripVisibilityStateSupplier().get()
+                        & StripVisibilityState.HIDDEN_BY_SCROLL);
+        assertEquals(
+                "Strip should be fully VISIBLE.",
+                StripVisibilityState.VISIBLE,
+                (int) mStripLayoutHelperManager.getStripVisibilityStateSupplier().get());
+        assertTrue(
+                "Strip motion event should be handled when controls are scrolled back on.",
+                motionEventHandled(SCREEN_WIDTH / 2, TAB_STRIP_HEIGHT_PX / 2f));
+    }
 }
