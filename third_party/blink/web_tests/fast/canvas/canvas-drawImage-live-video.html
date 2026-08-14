@@ -21,7 +21,10 @@ async_test(t => {
   var ctx = canvas.getContext("2d");
 
     var video = document.getElementById("video");
-    video.addEventListener("canplaythrough", drawFirstFrame, true);
+    if (video.readyState >= HTMLMediaElement.HAVE_ENOUGH_DATA)
+      drawFirstFrame();
+    else
+      video.addEventListener("canplaythrough", drawFirstFrame, true);
 
     function drawFirstFrame() {
       video.removeEventListener("canplaythrough", drawFirstFrame, true);
