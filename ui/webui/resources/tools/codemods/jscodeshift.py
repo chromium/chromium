@@ -6,16 +6,19 @@
 import argparse
 import os
 import sys
+
 """
 Helper script for running jscodeshift codemods over a set of files.
 """
 
 _HERE_PATH = os.path.dirname(__file__)
 _SRC_PATH = os.path.normpath(
-    os.path.join(_HERE_PATH, '..', '..', '..', '..', '..'))
+  os.path.join(_HERE_PATH, '..', '..', '..', '..', '..')
+)
 
 sys.path.append(os.path.join(_SRC_PATH, 'third_party', 'node'))
 import node
+
 """
  Instructions to run this script locally.
  1) From the root of the repository run the following command
@@ -43,21 +46,25 @@ def main(argv):
 
   if not os.path.exists(args.transform):
     print(
-        f'Error: jscodeshift.py: Could not file transform file \'args.transform\'',
-        file=sys.stderr)
+      f'Error: jscodeshift.py: Could not file transform file \'args.transform\'',
+      file=sys.stderr,
+    )
     sys.exit(1)
 
   print(f'Migrating {len(args.files)} files...')
 
   # Update TS file.
-  node.RunNode([
+  node.RunNode(
+    [
       os.path.join(_HERE_PATH, 'node_modules/jscodeshift/bin/jscodeshift.js'),
       '--transform=' + args.transform,
       '--extensions=ts',
       '--parser=ts',
       '--no-babel',
       '--fail-on-error',
-  ] + args.files)
+    ]
+    + args.files
+  )
 
   print('DONE')
 

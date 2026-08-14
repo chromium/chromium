@@ -25,24 +25,35 @@ def main(argv):
 
   args = parser.parse_args(argv)
   out_path = os.path.normpath(
-      os.path.join(_CWD, args.out_folder).replace('\\', '/'))
+    os.path.join(_CWD, args.out_folder).replace('\\', '/')
+  )
   in_path = os.path.normpath(
-      os.path.join(_CWD, args.in_folder).replace('\\', '/'))
+    os.path.join(_CWD, args.in_folder).replace('\\', '/')
+  )
 
   # Spawn a NodeJS script to use the programmatic Terser API, since the CLI API
   # does not allow compressing multiple files at once. This is done to avoid
   # launching NodeJS once for every input file.
-  node.RunNode([
-      os.path.join(_HERE_PATH, 'minify_js.js'), '--in_folder', in_path,
-      '--out_folder', out_path
-  ] + args.in_files)
+  node.RunNode(
+    [
+      os.path.join(_HERE_PATH, 'minify_js.js'),
+      '--in_folder',
+      in_path,
+      '--out_folder',
+      out_path,
+    ]
+    + args.in_files
+  )
 
   manifest_data = {}
   manifest_data['base_dir'] = args.out_folder
   manifest_data['files'] = args.in_files
-  with open(os.path.normpath(os.path.join(_CWD, args.out_manifest)), 'w',
-            newline='', encoding='utf-8') \
-      as manifest_file:
+  with open(
+    os.path.normpath(os.path.join(_CWD, args.out_manifest)),
+    'w',
+    newline='',
+    encoding='utf-8',
+  ) as manifest_file:
     json.dump(manifest_data, manifest_file)
 
 

@@ -42,9 +42,10 @@ def _get_mime_to_type_map(file_types):
 
 def get_custom_globals(model):
     return {
-        'extension_to_type_map':
-        _get_extension_to_type_map(model['file_types']),
-        'mime_to_type_map': _get_mime_to_type_map(model['file_types'])
+        'extension_to_type_map': _get_extension_to_type_map(
+            model['file_types']
+        ),
+        'mime_to_type_map': _get_mime_to_type_map(model['file_types']),
     }
 
 

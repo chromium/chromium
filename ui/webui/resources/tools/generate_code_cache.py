@@ -24,25 +24,33 @@ def main(argv):
   args = parser.parse_args(argv)
 
   util_path = os.path.normpath(
-      os.path.join(_CWD, args.util_path).replace('\\', '/'))
+    os.path.join(_CWD, args.util_path).replace('\\', '/')
+  )
   in_folder = os.path.normpath(
-      os.path.join(_CWD, args.in_folder).replace('\\', '/'))
+    os.path.join(_CWD, args.in_folder).replace('\\', '/')
+  )
   out_folder = os.path.normpath(
-      os.path.join(_CWD, args.out_folder).replace('\\', '/'))
+    os.path.join(_CWD, args.out_folder).replace('\\', '/')
+  )
   out_manifest = os.path.normpath(
-      os.path.join(_CWD, args.out_manifest).replace('\\', '/'))
+    os.path.join(_CWD, args.out_manifest).replace('\\', '/')
+  )
   out_file_suffix = '.code_cache'
 
-  subprocess.run([
-      util_path, f'--in_folder={in_folder}',
-      '--in_files=' + ','.join(args.in_files), f'--out_folder={out_folder}',
-      f'--out_file_suffix={out_file_suffix}'
-  ],
-                 check=True)
+  subprocess.run(
+    [
+      util_path,
+      f'--in_folder={in_folder}',
+      '--in_files=' + ','.join(args.in_files),
+      f'--out_folder={out_folder}',
+      f'--out_file_suffix={out_file_suffix}',
+    ],
+    check=True,
+  )
 
   manifest_data = {
-      'base_dir': args.out_folder,
-      'files': [],
+    'base_dir': args.out_folder,
+    'files': [],
   }
   for in_file in args.in_files:
     manifest_data['files'].append(in_file + out_file_suffix)

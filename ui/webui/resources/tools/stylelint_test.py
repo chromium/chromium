@@ -13,7 +13,6 @@ _HERE_DIR = os.path.dirname(__file__)
 
 
 class StylelintTest(unittest.TestCase):
-
   _in_folder = os.path.join(_HERE_DIR, "tests", "stylelint")
 
   def setUp(self):
@@ -30,14 +29,14 @@ class StylelintTest(unittest.TestCase):
     config = os.path.join(_HERE_DIR, "stylelint.config_base.mjs")
 
     args = [
-        "--in_folder",
-        self._in_folder,
-        "--out_file",
-        os.path.join(self._out_dir, 'stylelint_result.txt'),
-        "--config",
-        config,
-        "--in_files",
-        *in_files,
+      "--in_folder",
+      self._in_folder,
+      "--out_file",
+      os.path.join(self._out_dir, 'stylelint_result.txt'),
+      "--config",
+      config,
+      "--in_files",
+      *in_files,
     ]
 
     stylelint.main(args)
@@ -45,7 +44,8 @@ class StylelintTest(unittest.TestCase):
   def testSuccess(self):
     self._run_test(["no_violations.css"])
     actual_contents = self._read_file(
-        os.path.join(self._out_dir, "stylelint_result.txt"))
+      os.path.join(self._out_dir, "stylelint_result.txt")
+    )
     self.assertMultiLineEqual("OK", actual_contents)
 
   def testError(self):

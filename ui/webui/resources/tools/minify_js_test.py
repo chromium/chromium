@@ -14,7 +14,6 @@ _HERE_DIR = os.path.dirname(__file__)
 
 
 class MinifyJsTest(unittest.TestCase):
-
   def setUp(self):
     self._out_dir = tempfile.mkdtemp(dir=_HERE_DIR)
 
@@ -28,14 +27,14 @@ class MinifyJsTest(unittest.TestCase):
   def _run_test(self, in_files, expected_files):
     manifest_path = os.path.join(self._out_dir, "manifest.json")
     args = [
-        "--in_folder",
-        os.path.join(_HERE_DIR, "tests", "minify_js"),
-        "--out_folder",
-        self._out_dir,
-        "--out_manifest",
-        manifest_path,
-        "--in_files",
-        *in_files,
+      "--in_folder",
+      os.path.join(_HERE_DIR, "tests", "minify_js"),
+      "--out_folder",
+      self._out_dir,
+      "--out_manifest",
+      manifest_path,
+      "--in_files",
+      *in_files,
     ]
 
     minify_js.main(args)
@@ -58,8 +57,9 @@ class MinifyJsTest(unittest.TestCase):
 
   def testMinifyMultipleFiles(self):
     self._run_test(
-        ["foo.js", "bar.js"],
-        ["tests/minify_js/foo_expected.js", "tests/minify_js/bar_expected.js"])
+      ["foo.js", "bar.js"],
+      ["tests/minify_js/foo_expected.js", "tests/minify_js/bar_expected.js"],
+    )
 
 
 if __name__ == "__main__":

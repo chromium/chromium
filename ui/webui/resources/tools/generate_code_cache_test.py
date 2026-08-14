@@ -16,7 +16,6 @@ _BUILD_DIR = os.environ['CHROMIUM_BUILD_DIRECTORY']
 
 
 class GenerateCodeCacheTest(unittest.TestCase):
-
   def setUp(self):
     self._out_dir = tempfile.mkdtemp(dir=_HERE_DIR)
 
@@ -29,19 +28,23 @@ class GenerateCodeCacheTest(unittest.TestCase):
 
   def _run_test(self, in_files):
     manifest_path = os.path.join(self._out_dir, "manifest.json")
-    util_path = os.path.join(_HERE_DIR, "tests", "generate_code_cache",
-                             "code_cache_generator_test_util.py")
+    util_path = os.path.join(
+      _HERE_DIR,
+      "tests",
+      "generate_code_cache",
+      "code_cache_generator_test_util.py",
+    )
     args = [
-        "--util_path",
-        os.path.join(_BUILD_DIR, "code_cache_generator"),
-        "--in_folder",
-        os.path.join(_HERE_DIR, "tests", "generate_code_cache"),
-        "--in_files",
-        *in_files,
-        "--out_folder",
-        self._out_dir,
-        "--out_manifest",
-        manifest_path,
+      "--util_path",
+      os.path.join(_BUILD_DIR, "code_cache_generator"),
+      "--in_folder",
+      os.path.join(_HERE_DIR, "tests", "generate_code_cache"),
+      "--in_files",
+      *in_files,
+      "--out_folder",
+      self._out_dir,
+      "--out_manifest",
+      manifest_path,
     ]
 
     generate_code_cache.main(args)
@@ -52,7 +55,8 @@ class GenerateCodeCacheTest(unittest.TestCase):
     for in_file in in_files:
       out_code_cache_file = f'{in_file}.code_cache'
       self.assertTrue(
-          os.path.isfile(os.path.join(self._out_dir, out_code_cache_file)))
+        os.path.isfile(os.path.join(self._out_dir, out_code_cache_file))
+      )
       self.assertTrue(out_code_cache_file in manifest_data['files'])
 
   def testGenerateCodeCacheModuleBasic(self):

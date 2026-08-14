@@ -3,8 +3,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """
-  A thin wrapper around Python's difflib.unified_diff() that
-  prints the unified diff between 2 files to stdout.
+A thin wrapper around Python's difflib.unified_diff() that
+prints the unified diff between 2 files to stdout.
 """
 
 import argparse
@@ -32,7 +32,8 @@ def main():
 
   # Use unified_diff to generate diff similar to 'git diff'
   diff = difflib.unified_diff(
-      lines1, lines2, fromfile=file1, tofile=file2, lineterm='')
+    lines1, lines2, fromfile=file1, tofile=file2, lineterm=''
+  )
 
   for line in diff:
     print(line)

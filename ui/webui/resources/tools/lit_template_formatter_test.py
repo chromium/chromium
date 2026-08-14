@@ -20,36 +20,42 @@ import node
 def _check_clang_format_works():
   import subprocess
 
-  clang_format_py = os.path.join(_SRC_PATH, 'third_party', 'depot_tools',
-                                 'clang_format.py')
+  clang_format_py = os.path.join(
+    _SRC_PATH, 'third_party', 'depot_tools', 'clang_format.py'
+  )
 
   try:
     env = os.environ.copy()
     env['CHROMIUM_BUILDTOOLS_PATH'] = os.path.join(_SRC_PATH, 'buildtools')
-    subprocess.run(['python3', clang_format_py, '--version'],
-                   stdout=subprocess.DEVNULL,
-                   stderr=subprocess.DEVNULL,
-                   env=env,
-                   check=True)
+    subprocess.run(
+      ['python3', clang_format_py, '--version'],
+      stdout=subprocess.DEVNULL,
+      stderr=subprocess.DEVNULL,
+      env=env,
+      check=True,
+    )
     return True
   except (subprocess.SubprocessError, OSError):
     return False
 
 
 class LitTemplateFormatterTest(unittest.TestCase):
-
   def setUp(self):
     self.maxDiff = None
     self._out_dir = tempfile.mkdtemp(dir=_HERE_DIR)
     os.environ['CHROMIUM_BUILDTOOLS_PATH'] = os.path.join(
-        _SRC_PATH, 'buildtools')
+      _SRC_PATH, 'buildtools'
+    )
 
     if not _check_clang_format_works():
       self.assertEqual(
-          sys.platform, 'darwin',
-          'clang-format.py should always be executable on non-macOS')
+        sys.platform,
+        'darwin',
+        'clang-format.py should always be executable on non-macOS',
+      )
       raise unittest.SkipTest(
-          'depot_tools/clang_format.py is not working on this host')
+        'depot_tools/clang_format.py is not working on this host'
+      )
 
   def tearDown(self):
     shutil.rmtree(self._out_dir)
@@ -59,19 +65,25 @@ class LitTemplateFormatterTest(unittest.TestCase):
       return file.read()
 
   def _run_formatter(self, args):
-    formatter_script = os.path.join(_HERE_DIR, "lit_template_formatter",
-                                    "main.js")
+    formatter_script = os.path.join(
+      _HERE_DIR, "lit_template_formatter", "main.js"
+    )
     return node.RunNode([formatter_script] + args)
 
   # When expected_filename is None, compares the formatted output directly
   # against the original source file, verifying that correct formatting remains
   # unaltered.
   def _run_test(self, filename, expected_filename=None):
-    src_path = os.path.join(_HERE_DIR, "tests", "lit_template_formatter",
-                            filename)
-    expected_path = os.path.join(_HERE_DIR, "tests", "lit_template_formatter",
-                                 "expected" if expected_filename else "",
-                                 expected_filename or filename)
+    src_path = os.path.join(
+      _HERE_DIR, "tests", "lit_template_formatter", filename
+    )
+    expected_path = os.path.join(
+      _HERE_DIR,
+      "tests",
+      "lit_template_formatter",
+      "expected" if expected_filename else "",
+      expected_filename or filename,
+    )
 
     expected_contents = self._read_file(expected_path)
 
@@ -90,20 +102,25 @@ class LitTemplateFormatterTest(unittest.TestCase):
     self.assertMultiLineEqual(expected_contents, idempotent_contents)
 
   def testBasicExpressions(self):
-    self._run_test("test_basic_expressions.html.ts",
-                   "test_basic_expressions.html.ts")
+    self._run_test(
+      "test_basic_expressions.html.ts", "test_basic_expressions.html.ts"
+    )
 
   def testConditionalAndMap(self):
-    self._run_test("test_conditional_and_map.html.ts",
-                   "test_conditional_and_map.html.ts")
+    self._run_test(
+      "test_conditional_and_map.html.ts", "test_conditional_and_map.html.ts"
+    )
 
   def testNestedTemplate(self):
-    self._run_test("test_nested_template.html.ts",
-                   "test_nested_template.html.ts")
+    self._run_test(
+      "test_nested_template.html.ts", "test_nested_template.html.ts"
+    )
 
   def testConditionalWithMoreWrapping(self):
-    self._run_test("test_conditional_with_more_wrapping.html.ts",
-                   "test_conditional_with_more_wrapping.html.ts")
+    self._run_test(
+      "test_conditional_with_more_wrapping.html.ts",
+      "test_conditional_with_more_wrapping.html.ts",
+    )
 
   def testWhitespaceSensitiveSiblings(self):
     self._run_test("test_whitespace_sensitive_siblings.html.ts")
@@ -112,27 +129,34 @@ class LitTemplateFormatterTest(unittest.TestCase):
     self._run_test("test_comments_no_whitespace.html.ts")
 
   def testMultilineSubtemplateExpression(self):
-    self._run_test("test_multiline_subtemplate_expression.html.ts",
-                   "test_multiline_subtemplate_expression.html.ts")
+    self._run_test(
+      "test_multiline_subtemplate_expression.html.ts",
+      "test_multiline_subtemplate_expression.html.ts",
+    )
 
   def testLongConditionalSubtemplate(self):
-    self._run_test("test_long_conditional_subtemplate.html.ts",
-                   "test_long_conditional_subtemplate.html.ts")
+    self._run_test(
+      "test_long_conditional_subtemplate.html.ts",
+      "test_long_conditional_subtemplate.html.ts",
+    )
 
   def testWithIfExpr(self):
     self._run_test("test_with_if_expr.html.ts", "test_with_if_expr.html.ts")
 
   def testMultilineAttributeExpression(self):
-    self._run_test("test_multiline_attribute_expression.html.ts",
-                   "test_multiline_attribute_expression.html.ts")
+    self._run_test(
+      "test_multiline_attribute_expression.html.ts",
+      "test_multiline_attribute_expression.html.ts",
+    )
 
   def testRetainNewlines(self):
     self._run_test("retain_newlines.html.ts", "retain_newlines.html.ts")
 
   def testDryRunModeFormatted(self):
     filename = "test_basic_expressions.html.ts"
-    expected_path = os.path.join(_HERE_DIR, "tests", "lit_template_formatter",
-                                 "expected", filename)
+    expected_path = os.path.join(
+      _HERE_DIR, "tests", "lit_template_formatter", "expected", filename
+    )
     dest_path = os.path.join(self._out_dir, filename)
     shutil.copy(expected_path, dest_path)
     # Should not throw
@@ -140,8 +164,9 @@ class LitTemplateFormatterTest(unittest.TestCase):
 
   def testDryRunModeUnformatted(self):
     filename = "test_basic_expressions.html.ts"
-    src_path = os.path.join(_HERE_DIR, "tests", "lit_template_formatter",
-                            filename)
+    src_path = os.path.join(
+      _HERE_DIR, "tests", "lit_template_formatter", filename
+    )
     dest_path = os.path.join(self._out_dir, filename)
     shutil.copy(src_path, dest_path)
     # Should throw because it is not formatted
@@ -152,8 +177,9 @@ class LitTemplateFormatterTest(unittest.TestCase):
 
   def testDiffModeFormatted(self):
     filename = "test_basic_expressions.html.ts"
-    expected_path = os.path.join(_HERE_DIR, "tests", "lit_template_formatter",
-                                 "expected", filename)
+    expected_path = os.path.join(
+      _HERE_DIR, "tests", "lit_template_formatter", "expected", filename
+    )
     dest_path = os.path.join(self._out_dir, filename)
     shutil.copy(expected_path, dest_path)
     # Already formatted, so no diff should show.
@@ -162,8 +188,9 @@ class LitTemplateFormatterTest(unittest.TestCase):
 
   def testDiffModeUnformatted(self):
     filename = "test_basic_expressions.html.ts"
-    src_path = os.path.join(_HERE_DIR, "tests", "lit_template_formatter",
-                            filename)
+    src_path = os.path.join(
+      _HERE_DIR, "tests", "lit_template_formatter", filename
+    )
     dest_path = os.path.join(self._out_dir, filename)
     shutil.copy(src_path, dest_path)
     # Should NOT throw, and should return the diff in stdout
@@ -176,8 +203,9 @@ class LitTemplateFormatterTest(unittest.TestCase):
 
   def testDiffAndDryRunModeUnformatted(self):
     filename = "test_basic_expressions.html.ts"
-    src_path = os.path.join(_HERE_DIR, "tests", "lit_template_formatter",
-                            filename)
+    src_path = os.path.join(
+      _HERE_DIR, "tests", "lit_template_formatter", filename
+    )
     dest_path = os.path.join(self._out_dir, filename)
     shutil.copy(src_path, dest_path)
     # Should throw because it has diffs (and exits with 2 due to dry-run/diff)
@@ -190,8 +218,9 @@ class LitTemplateFormatterTest(unittest.TestCase):
     self.assertIn("+  <h1>${this.title}</h1>", str(context.exception))
 
   def testJsUnitTests(self):
-    test_script = os.path.join(_HERE_DIR, "lit_template_formatter",
-                               "lit_template_formatter_test.js")
+    test_script = os.path.join(
+      _HERE_DIR, "lit_template_formatter", "lit_template_formatter_test.js"
+    )
     node.RunNode([test_script])
 
 

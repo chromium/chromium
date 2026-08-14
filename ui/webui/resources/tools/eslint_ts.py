@@ -51,15 +51,15 @@ def _generate_config_file(args):
       extra_configs.append('noExplicitAnyConfig')
 
     f.write(
-        _ESLINT_CONFIG_TEMPLATE % {
-            'config_base':
-                args.config_base,
-            'tsconfig':
-                args.tsconfig,
-            'extraConfigs':
-                '' if len(extra_configs) == 0 else ', '.join(extra_configs) +
-                ',',
-        })
+      _ESLINT_CONFIG_TEMPLATE
+      % {
+        'config_base': args.config_base,
+        'tsconfig': args.tsconfig,
+        'extraConfigs': ''
+        if len(extra_configs) == 0
+        else ', '.join(extra_configs) + ',',
+      }
+    )
     return config_file
 
 
@@ -71,7 +71,8 @@ def main(argv):
   parser.add_argument('--custom_loader_script', required=True)
   parser.add_argument('--tsconfig', required=True)
   parser.add_argument(
-      '--enable_web_component_missing_deps', action='store_true')
+    '--enable_web_component_missing_deps', action='store_true'
+  )
   parser.add_argument('--enable_no_chrome_send', action='store_true')
   parser.add_argument('--enable_no_explicit_any', action='store_true')
   parser.add_argument('--in_files', nargs='*', required=True)
@@ -93,7 +94,7 @@ def main(argv):
     chunk_size = min(round(len(in_files) / 2), 100)
 
   in_files_chunks = [
-      in_files[i:i + chunk_size] for i in range(0, len(in_files), chunk_size)
+    in_files[i : i + chunk_size] for i in range(0, len(in_files), chunk_size)
   ]
 
   for files in in_files_chunks:
@@ -106,7 +107,8 @@ def main(argv):
       # 'c:'"
       custom_loader_script = 'file:///' + custom_loader_script
 
-    node.RunNode([
+    node.RunNode(
+      [
         '--loader',
         custom_loader_script,
         node_modules.PathToEsLint(),
@@ -115,7 +117,9 @@ def main(argv):
         '--quiet',
         '--config',
         config_file,
-    ] + files)
+      ]
+      + files
+    )
 
 
 if __name__ == '__main__':
