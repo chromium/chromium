@@ -9402,3 +9402,7 @@ crbug.com/543622964 [ Linux ] external/wpt/html/semantics/permission-element/lar
 # for popups to avoid racing mid-navigation resizes, causing an opener/popup
 # geometry mismatch.
 crbug.com/446689489 [ Mac ] external/wpt/html/browsers/the-window-object/open-close/open_initial_size.html [ Failure ]
+
+# Gardener 2026-08-14
+crbug.com/546014641 [ Win ] external/wpt/css/css-scroll-snap/snap-fling-past-furthest-area.html [ Failure Pass Timeout ]
+
