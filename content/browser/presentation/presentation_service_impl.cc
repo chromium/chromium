@@ -221,6 +221,17 @@ void PresentationServiceImpl::StartPresentation(
     NewPresentationCallback callback) {
   DVLOG(2) << "StartPresentation";
 
+  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kDisableGestureRequirementForPresentation) &&
+      !render_frame_host_->HasTransientUserActivation()) {
+    std::move(callback).Run(
+        /** PresentationConnectionResultPtr */ nullptr,
+        PresentationError::New(
+            PresentationErrorType::PRESENTATION_REQUEST_CANCELLED,
+            "PresentationRequest::start() requires user gesture."));
+    return;
+  }
+
   // There is a StartPresentation request in progress. To avoid queueing up
   // requests, the incoming request is rejected.
   if (start_presentation_request_id_ != kInvalidRequestId) {

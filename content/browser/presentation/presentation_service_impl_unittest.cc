@@ -15,6 +15,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
@@ -22,6 +23,7 @@
 #include "content/browser/presentation/presentation_test_utils.h"
 #include "content/public/browser/presentation_request.h"
 #include "content/public/browser/presentation_service_delegate.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/test/test_render_frame_host.h"
 #include "content/test/test_render_view_host.h"
@@ -330,6 +332,37 @@ TEST_F(PresentationServiceImplTest, SetSameDefaultPresentationUrls) {
 }
 
 TEST_F(PresentationServiceImplTest, StartPresentationSuccess) {
+  contents()->GetPrimaryMainFrame()->SimulateUserActivation();
+  PresentationConnectionCallback saved_success_cb;
+  EXPECT_CALL(mock_delegate_, StartPresentation(_, _, _))
+      .WillOnce([&saved_success_cb](const auto& request, auto success_cb,
+                                    auto error_cb) {
+        saved_success_cb = std::move(success_cb);
+      });
+  service_impl_->StartPresentation(presentation_urls_,
+                                   std::move(expect_presentation_success_cb_));
+  EXPECT_FALSE(saved_success_cb.is_null());
+  EXPECT_CALL(mock_delegate_, ListenForConnectionStateChange(_, _, _, _))
+      .Times(1);
+  std::move(saved_success_cb)
+      .Run(PresentationConnectionResult::New(
+          PresentationInfo::New(presentation_url1_, kPresentationId),
+          mojo::NullRemote(), mojo::NullReceiver()));
+  ExpectPresentationCallbackWasRun();
+}
+
+TEST_F(PresentationServiceImplTest, StartPresentationWithoutUserActivation) {
+  EXPECT_CALL(mock_delegate_, StartPresentation(_, _, _)).Times(0);
+  service_impl_->StartPresentation(presentation_urls_,
+                                   std::move(expect_presentation_error_cb_));
+  ExpectPresentationCallbackWasRun();
+}
+
+TEST_F(PresentationServiceImplTest,
+       StartPresentationDisabledGestureRequirement) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kDisableGestureRequirementForPresentation);
+
   PresentationConnectionCallback saved_success_cb;
   EXPECT_CALL(mock_delegate_, StartPresentation(_, _, _))
       .WillOnce([&saved_success_cb](const auto& request, auto success_cb,
@@ -349,6 +382,7 @@ TEST_F(PresentationServiceImplTest, StartPresentationSuccess) {
 }
 
 TEST_F(PresentationServiceImplTest, StartPresentationError) {
+  contents()->GetPrimaryMainFrame()->SimulateUserActivation();
   base::OnceCallback<void(const PresentationError&)> saved_error_cb;
   EXPECT_CALL(mock_delegate_, StartPresentation(_, _, _))
       .WillOnce([&](const auto& request, auto success_cb, auto error_cb) {
@@ -364,6 +398,7 @@ TEST_F(PresentationServiceImplTest, StartPresentationError) {
 
 TEST_F(PresentationServiceImplTest, StartPresentationInProgress) {
   EXPECT_CALL(mock_delegate_, StartPresentation(_, _, _)).Times(1);
+  contents()->GetPrimaryMainFrame()->SimulateUserActivation();
   // Uninvoked callbacks must outlive |service_impl_| since they get invoked
   // at |service_impl_|'s destruction.
   service_impl_->StartPresentation(presentation_urls_, base::DoNothing());
