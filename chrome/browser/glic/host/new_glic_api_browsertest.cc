@@ -583,6 +583,23 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithDefaultTabContextDisabled,
   ContinueJsTest();
 }
 
+IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithDefaultTabContextDisabled,
+                       testPinTabsHaveNoEffectOnFocusedTab) {
+  tabs::TabInterface* first_tab = GetTabListInterface()->GetActiveTab();
+  const int first_tab_id = first_tab->GetHandle().raw_value();
+
+  tabs::TabInterface* second_tab = CreateAndActivateTab(
+      embedded_test_server()->GetURL("/browser_tests/test.html"));
+  const int second_tab_id = second_tab->GetHandle().raw_value();
+
+  ASSERT_OK(OpenGlicForActiveTab());
+
+  ExecuteJsTest({.params = base::Value(
+                     base::DictValue()
+                         .Set("tabId1", base::NumberToString(first_tab_id))
+                         .Set("tabId2", base::NumberToString(second_tab_id)))});
+}
+
 #if defined(NOT_VETTED_ON_ANDROID)
 #define MAYBE_testAttachPanel DISABLED_testAttachPanel
 #else

@@ -1509,19 +1509,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testCallingApiWhileHiddenRecordsMetrics) {
   // Confirm that this request gets latency metrics recorded.
   histogram_tester.ExpectTotalCount("Glic.Api.RequestHostLatency.CreateTab", 1);
 }
-
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
-                       testPinTabsHaveNoEffectOnFocusedTab) {
-  // In multi-instance, pinned tabs do have an effect on the focused tab.
-  SKIP_TEST_FOR_MULTI_INSTANCE();
-  const int tab_id =
-      GetTabId(browser()->tab_strip_model()->GetActiveWebContents());
-  RunTestSequence(AddInstrumentedTab(kSecondTab, page_url()));
-
-  ExecuteJsTest({.params = base::Value(base::DictValue().Set(
-                     "tabId", base::NumberToString(tab_id)))});
-}
-
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testUnpinTabsThatNavigateInBackground) {
   // Note: Enabling this for multi-instance is tricky because pinned tabs
   // automatically bind, so background pinned tabs take some work to set up.

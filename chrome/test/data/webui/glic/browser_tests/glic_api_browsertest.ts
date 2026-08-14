@@ -583,34 +583,6 @@ class ApiTests extends ApiTestFixtureBase {
     return tabId;
   }
 
-  async testPinTabsHaveNoEffectOnFocusedTab() {
-    assertDefined(this.host.pinTabs);
-    assertDefined(this.host.unpinAllTabs);
-    assertDefined(this.host.getPinnedTabs);
-    assertDefined(this.host.getFocusedTabStateV2);
-
-    await this.host.setTabContextPermissionState(true);
-    const tabId: string = this.testParams.tabId;
-
-    const focusSequence = observeSequence(this.host.getFocusedTabStateV2());
-    const focus = await focusSequence.next();
-    const focusedTabId = checkDefined(focus?.hasFocus?.tabData.tabId);
-    // Make sure tabId is not the focused tab.
-    assertNotEquals(tabId, focusedTabId);
-
-    await this.host.pinTabs([tabId]);
-    const pinnedTabsUpdates = observeSequence(this.host.getPinnedTabs());
-    pinnedTabsUpdates.waitFor(
-        (tabs) => tabs.length === 1 && tabs.at(0)?.tabId === tabId);
-
-    assertTrue(focusSequence.isEmpty());
-
-    this.host.unpinAllTabs();
-    pinnedTabsUpdates.waitFor((tabs) => tabs.length === 0);
-
-    assertTrue(focusSequence.isEmpty());
-  }
-
   // Tests that tabs which navigate are unpinned if the glic window is closed.
   async testUnpinTabsThatNavigateInBackground() {
     assertDefined(this.host.getPinCandidates);
