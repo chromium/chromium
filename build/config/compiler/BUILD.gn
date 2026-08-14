@@ -299,10 +299,16 @@ config("default_include_dirs") {
   ]
 }
 
-# Compiler instrumentation can introduce dependencies in DSOs to symbols in
-# the executable they are loaded into, so they are unresolved at link-time.
+# On platforms like Linux and ChromeOS, compiler instrumentation (e.g. ASan,
+# UBSan) can introduce dependencies in DSOs to sanitizer runtime symbols that
+# are statically linked into the main executable rather than each DSO. These
+# symbols are resolved dynamically at runtime by the executable, so they are
+# unresolved at DSO link time and require disabling -Wl,-z,defs.
+# On Android, DSOs link directly against the sanitizer runtime DSO (e.g.
+# libclang_rt.asan-*-android.so), so all sanitizer symbols are resolved at link
+# time and -Wl,-z,defs can safely remain enabled to catch missing symbols.
 config("no_unresolved_symbols") {
-  if (!using_sanitizer &&
+  if ((!using_sanitizer || is_android) &&
       (is_linux || is_chromeos || is_android || is_fuchsia)) {
     ldflags = [
       "-Wl,-z,defs",
