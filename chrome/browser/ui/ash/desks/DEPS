@@ -23,9 +23,6 @@ include_rules = [
   "+chrome/browser/ui/ash/multi_user",
   "+chrome/browser/ui/ash/shelf",
   "+chrome/browser/ui/ash/system_web_apps",
-  "+chrome/browser/ui/browser.h",
-  "+chrome/browser/ui/browser_tabstrip.h",
-  "+chrome/browser/ui/browser_window.h",
   "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
   "+chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h",
   "+chrome/browser/ui/browser_window/public/browser_collection_observer.h",
@@ -38,3 +35,11 @@ include_rules = [
   "+chrome/grit",
   "+chrome/test",
 ]
+
+specific_include_rules = {
+  ".*_browsertest\\.cc": [
+    "+chrome/browser/ui/browser.h",
+    "+chrome/browser/ui/browser_tabstrip.h",
+    "+chrome/browser/ui/browser_window.h",
+  ],
+}

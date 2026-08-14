@@ -15,7 +15,7 @@
 #include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/desks/desks_templates_app_launch_handler.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/webui/ash/scanner_feedback_dialog/scanner_feedback_dialog.h"
@@ -144,7 +144,7 @@ Profile* GetActiveUserProfile() {
 }
 
 // Creates a browser on the active desk.
-Browser* CreateBrowser() {
+ash::BrowserDelegate* CreateBrowser() {
   Profile* active_profile = GetActiveUserProfile();
   if (!active_profile) {
     return nullptr;
@@ -154,7 +154,8 @@ Browser* CreateBrowser() {
                                    active_profile,
                                    /*user_gesture=*/false);
   params.should_trigger_session_restore = false;
-  return CreateBrowserWindow(std::move(params))->GetBrowserForMigrationOnly();
+  return ash::BrowserController::GetInstance()->GetDelegate(
+      CreateBrowserWindow(std::move(params)));
 }
 
 // Finds the first tab with given url on the desk with the given `index` and
@@ -248,8 +249,7 @@ void CoralDelegateImpl::MoveTabsInGroupToNewDesk(
     if (source_browser) {
       // Create a browser on the new desk if there is none.
       if (!target_browser) {
-        target_browser =
-            ash::BrowserController::GetInstance()->GetDelegate(CreateBrowser());
+        target_browser = CreateBrowser();
         if (!target_browser) {
           break;
         }
