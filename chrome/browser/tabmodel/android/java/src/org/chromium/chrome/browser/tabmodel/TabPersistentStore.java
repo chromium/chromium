@@ -7,8 +7,8 @@ package org.chromium.chrome.browser.tabmodel;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.CallbackUtils;
+import org.chromium.base.TriState;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.TabStateAttributes;
 import org.chromium.chrome.browser.tabmodel.PersistentStoreMigrationManager.StoreType;
 
@@ -40,7 +40,7 @@ public interface TabPersistentStore extends TabStateAttributes.StoreKey {
                 String url,
                 boolean isStandardActiveIndex,
                 boolean isIncognitoActiveIndex,
-                @Nullable Boolean isIncognito,
+                @TriState int isIncognito,
                 boolean fromMerge) {}
 
         /** To be called when the TabStates have all been loaded. */

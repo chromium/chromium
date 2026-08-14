@@ -23,6 +23,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.TriState;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -337,13 +338,25 @@ public class TabModelOrchestratorUnitTest {
 
         for (int i = 0; i < numIncognitoTabs; i++) {
             observer.onDetailsRead(
-                    index, index, "Tab " + index, false, i == incognitoIndex, true, fromMerge);
+                    index,
+                    index,
+                    "Tab " + index,
+                    false,
+                    i == incognitoIndex,
+                    TriState.TRUE,
+                    fromMerge);
             index++;
         }
 
         for (int i = 0; i < numStandardTabs; i++) {
             observer.onDetailsRead(
-                    index, index, "Tab " + index, i == standardIndex, false, false, fromMerge);
+                    index,
+                    index,
+                    "Tab " + index,
+                    i == standardIndex,
+                    false,
+                    TriState.FALSE,
+                    fromMerge);
             index++;
         }
 

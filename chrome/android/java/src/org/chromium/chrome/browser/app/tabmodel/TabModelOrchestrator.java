@@ -12,6 +12,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
+import org.chromium.base.TriState;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.EnsuresNonNull;
@@ -414,12 +415,12 @@ public class TabModelOrchestrator {
                             String url,
                             boolean isStandardActiveIndex,
                             boolean isIncognitoActiveIndex,
-                            @Nullable Boolean isIncognito,
+                            @TriState int isIncognito,
                             boolean fromMerge) {
-                        if (isIncognito == null || !isIncognito.booleanValue()) {
-                            mStandardCount++;
-                        } else {
+                        if (isIncognito == TriState.TRUE) {
                             mIncognitoCount++;
+                        } else {
+                            mStandardCount++;
                         }
 
                         // We prioritize focusing the active tab from the "primary" (non-merging)

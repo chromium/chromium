@@ -41,6 +41,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Token;
+import org.chromium.base.TriState;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.task.SequencedTaskRunner;
@@ -203,7 +204,7 @@ public class TabPersistentStoreUnitTest {
                 .thenReturn(emptyNtp);
 
         TabRestoreDetails emptyNtpDetails =
-                new TabRestoreDetails(1, 0, false, getOriginalNativeNtpUrl(), false);
+                new TabRestoreDetails(1, 0, TriState.FALSE, getOriginalNativeNtpUrl(), false);
         mPersistentStore.restoreTab(emptyNtpDetails, null, false);
 
         verify(mNormalTabCreator)
@@ -241,7 +242,7 @@ public class TabPersistentStoreUnitTest {
                 .thenReturn(emptyNtp);
 
         TabRestoreDetails emptyNtpDetails =
-                new TabRestoreDetails(1, 0, false, getOriginalNativeNtpUrl(), false);
+                new TabRestoreDetails(1, 0, TriState.FALSE, getOriginalNativeNtpUrl(), false);
         mPersistentStore.restoreTab(emptyNtpDetails, null, true);
 
         verify(mNormalTabCreator)
@@ -279,7 +280,7 @@ public class TabPersistentStoreUnitTest {
                 .thenReturn(emptyNtp);
 
         TabRestoreDetails emptyNtpDetails =
-                new TabRestoreDetails(1, 0, false, getOriginalNativeNtpUrl(), true);
+                new TabRestoreDetails(1, 0, TriState.FALSE, getOriginalNativeNtpUrl(), true);
         mPersistentStore.restoreTab(emptyNtpDetails, null, false);
         verify(mNormalTabCreator)
                 .createNewTab(
@@ -289,7 +290,7 @@ public class TabPersistentStoreUnitTest {
                         eq(0));
 
         TabRestoreDetails emptyIncognitoNtpDetails =
-                new TabRestoreDetails(1, 0, true, getOriginalNativeNtpUrl(), true);
+                new TabRestoreDetails(1, 0, TriState.TRUE, getOriginalNativeNtpUrl(), true);
         mPersistentStore.restoreTab(emptyIncognitoNtpDetails, null, false);
         verify(mIncognitoTabCreator)
                 .createNewTab(
@@ -316,7 +317,7 @@ public class TabPersistentStoreUnitTest {
                 /* ignoreIncognitoFiles= */ false, /* ignoreRegularFiles= */ false);
 
         TabRestoreDetails ntpDetails =
-                new TabRestoreDetails(1, 0, false, getOriginalNativeNtpUrl(), false);
+                new TabRestoreDetails(1, 0, TriState.FALSE, getOriginalNativeNtpUrl(), false);
         TabState ntpState = new TabState();
         mPersistentStore.restoreTab(ntpDetails, ntpState, false);
 
@@ -350,7 +351,7 @@ public class TabPersistentStoreUnitTest {
                 .thenReturn(emptyNtp);
 
         TabRestoreDetails emptyNtpDetails =
-                new TabRestoreDetails(1, 0, true, getOriginalNativeNtpUrl(), false);
+                new TabRestoreDetails(1, 0, TriState.TRUE, getOriginalNativeNtpUrl(), false);
         mPersistentStore.restoreTab(emptyNtpDetails, null, true);
 
         verify(mIncognitoTabCreator)
@@ -380,7 +381,7 @@ public class TabPersistentStoreUnitTest {
         mPersistentStore.initializeRestoreVars(
                 /* ignoreIncognitoFiles= */ false, /* ignoreRegularFiles= */ false);
 
-        TabRestoreDetails emptyNtpDetails = new TabRestoreDetails(1, 0, false, url, false);
+        TabRestoreDetails emptyNtpDetails = new TabRestoreDetails(1, 0, TriState.FALSE, url, false);
         mPersistentStore.restoreTab(emptyNtpDetails, null, false);
 
         verify(mNormalTabCreator)
@@ -409,7 +410,7 @@ public class TabPersistentStoreUnitTest {
                 /* ignoreIncognitoFiles= */ false, /* ignoreRegularFiles= */ false);
 
         TabRestoreDetails emptyNtpDetails =
-                new TabRestoreDetails(1, 0, true, getOriginalNativeNtpUrl(), false);
+                new TabRestoreDetails(1, 0, TriState.TRUE, getOriginalNativeNtpUrl(), false);
         mPersistentStore.restoreTab(emptyNtpDetails, null, false);
 
         verifyNoMoreInteractions(mIncognitoTabCreator);
@@ -431,7 +432,7 @@ public class TabPersistentStoreUnitTest {
         mPersistentStore.initializeRestoreVars(true, false);
 
         TabRestoreDetails emptyNtpDetails =
-                new TabRestoreDetails(1, 0, true, getOriginalNativeNtpUrl(), false);
+                new TabRestoreDetails(1, 0, TriState.TRUE, getOriginalNativeNtpUrl(), false);
         mPersistentStore.restoreTab(emptyNtpDetails, null, true);
 
         verifyNoMoreInteractions(mIncognitoTabCreator);
@@ -457,9 +458,11 @@ public class TabPersistentStoreUnitTest {
         when(mTab.getUrl()).thenReturn(new GURL(RESTORE_TAB_STRING_1));
 
         TabRestoreDetails regularTabRestoreDetails =
-                new TabRestoreDetails(RESTORE_TAB_ID_1, 2, false, RESTORE_TAB_STRING_1, false);
+                new TabRestoreDetails(
+                        RESTORE_TAB_ID_1, 2, TriState.FALSE, RESTORE_TAB_STRING_1, false);
         TabRestoreDetails regularTabRestoreDetailsDupe =
-                new TabRestoreDetails(RESTORE_TAB_ID_1, 2, false, RESTORE_TAB_STRING_1, false);
+                new TabRestoreDetails(
+                        RESTORE_TAB_ID_1, 2, TriState.FALSE, RESTORE_TAB_STRING_1, false);
         TabState state = new TabState();
         mPersistentStore.restoreTab(regularTabRestoreDetails, state, false);
         mPersistentStore.restoreTab(regularTabRestoreDetailsDupe, state, false);
@@ -585,11 +588,14 @@ public class TabPersistentStoreUnitTest {
     public void testSerializeTabModelSelector_tabsBeingRestored() {
         setupSerializationTestMocks();
         TabRestoreDetails regularTabRestoreDetails =
-                new TabRestoreDetails(RESTORE_TAB_ID_1, 2, false, RESTORE_TAB_STRING_1, false);
+                new TabRestoreDetails(
+                        RESTORE_TAB_ID_1, 2, TriState.FALSE, RESTORE_TAB_STRING_1, false);
         TabRestoreDetails incognitoTabRestoreDetails =
-                new TabRestoreDetails(RESTORE_TAB_ID_2, 3, true, RESTORE_TAB_STRING_2, false);
+                new TabRestoreDetails(
+                        RESTORE_TAB_ID_2, 3, TriState.TRUE, RESTORE_TAB_STRING_2, false);
         TabRestoreDetails unknownTabRestoreDetails =
-                new TabRestoreDetails(RESTORE_TAB_ID_3, 4, null, RESTORE_TAB_STRING_3, false);
+                new TabRestoreDetails(
+                        RESTORE_TAB_ID_3, 4, TriState.NOT_SET, RESTORE_TAB_STRING_3, false);
         List<TabRestoreDetails> tabRestoreDetails = new ArrayList<>();
         tabRestoreDetails.add(regularTabRestoreDetails);
         tabRestoreDetails.add(incognitoTabRestoreDetails);
@@ -779,7 +785,7 @@ public class TabPersistentStoreUnitTest {
         mTabModelObserverCaptor.getValue().willCloseAllTabs(true);
 
         TabRestoreDetails details =
-                new TabRestoreDetails(1, 0, true, getOriginalNativeNtpUrl(), false);
+                new TabRestoreDetails(1, 0, TriState.TRUE, getOriginalNativeNtpUrl(), false);
         mPersistentStore.restoreTab(details, null, true);
 
         verifyNoMoreInteractions(mIncognitoTabCreator);
@@ -810,7 +816,7 @@ public class TabPersistentStoreUnitTest {
                 .willCloseTabs(List.of(tab), /* isAllTabs= */ true, /* allowUndo= */ false);
 
         TabRestoreDetails details =
-                new TabRestoreDetails(1, 0, true, getOriginalNativeNtpUrl(), false);
+                new TabRestoreDetails(1, 0, TriState.TRUE, getOriginalNativeNtpUrl(), false);
         mPersistentStore.restoreTab(details, null, true);
 
         verifyNoMoreInteractions(mIncognitoTabCreator);

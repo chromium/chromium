@@ -10,6 +10,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
+import org.chromium.base.TriStateUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.Initializer;
@@ -159,7 +160,7 @@ public class TabStateStore implements TabPersistentStore {
                                 url,
                                 isStandardActiveIndex,
                                 isIncognitoActiveIndex,
-                                isIncognito,
+                                TriStateUtils.from(isIncognito),
                                 fromMerge);
                     }
                 }

@@ -10,6 +10,8 @@ import androidx.annotation.VisibleForTesting;
 import androidx.core.util.AtomicFile;
 
 import org.chromium.base.Log;
+import org.chromium.base.TriState;
+import org.chromium.base.TriStateUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -115,7 +117,7 @@ public class TabMetadataFileManager {
                 int index,
                 int id,
                 String url,
-                @Nullable Boolean isIncognito,
+                @TriState int isIncognito,
                 boolean isStandardActiveIndex,
                 boolean isIncognitoActiveIndex);
     }
@@ -166,7 +168,9 @@ public class TabMetadataFileManager {
             if (id >= nextId) nextId = id + 1;
             if (tabIds != null) tabIds.append(id, true);
 
-            Boolean isIncognito = (incognitoCount < 0) ? null : i < incognitoCount;
+            @TriState
+            int isIncognito =
+                    incognitoCount < 0 ? TriState.NOT_SET : TriStateUtils.from(i < incognitoCount);
 
             if (callback != null) {
                 callback.onDetailsRead(
