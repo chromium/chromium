@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/catalogs/ui/view_catalog_view_controller.h"
 
 #import "base/apple/foundation_util.h"
+#import "ios/chrome/browser/catalogs/ui/details_view_controllers/default_browser_passive_promo_catalog_view_controller.h"
 #import "ios/chrome/browser/catalogs/ui/details_view_controllers/signin_promo_catalog_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
@@ -19,6 +20,7 @@ enum SectionIdentifier {
 // Item types used per View section.
 enum ItemType {
   kItemTypeSigninPromo = kItemTypeEnumZero,
+  kItemTypeDefaultBrowserPassivePromo,
 };
 
 }  // namespace
@@ -52,11 +54,17 @@ enum ItemType {
       [[TableViewTextItem alloc] initWithType:kItemTypeSigninPromo];
   signinPromoItem.text = @"Signin Promo";
 
+  TableViewTextItem* passivePromoItem = [[TableViewTextItem alloc]
+      initWithType:kItemTypeDefaultBrowserPassivePromo];
+  passivePromoItem.text = @"Passive Default Browser Promo";
+
   // Add sections.
   [model addSectionWithIdentifier:kSectionIdentifierView];
 
   // Add items.
   [model addItem:signinPromoItem
+      toSectionWithIdentifier:kSectionIdentifierView];
+  [model addItem:passivePromoItem
       toSectionWithIdentifier:kSectionIdentifierView];
 }
 
@@ -69,6 +77,13 @@ enum ItemType {
       SigninPromoCatalogViewController* viewController =
           [[SigninPromoCatalogViewController alloc]
               initWithBrowser:_browser.get()];
+      [self.navigationController pushViewController:viewController
+                                           animated:YES];
+      break;
+    }
+    case kItemTypeDefaultBrowserPassivePromo: {
+      DefaultBrowserPassivePromoCatalogViewController* viewController =
+          [[DefaultBrowserPassivePromoCatalogViewController alloc] init];
       [self.navigationController pushViewController:viewController
                                            animated:YES];
       break;

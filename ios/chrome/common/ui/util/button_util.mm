@@ -9,6 +9,7 @@ namespace {
 }  // namespace
 
 const CGFloat kButtonVerticalInsets = 14.5;
+const CGFloat kButtonHorizontalInsetsSmall = 20.0;
 const CGFloat kPrimaryButtonCornerRadius = 15;
 
 void SetConfigurationTitle(UIButton* button, NSString* newString) {

@@ -4,6 +4,8 @@
 
 source_set("details_view_controllers") {
   sources = [
+    "default_browser_passive_promo_catalog_view_controller.h",
+    "default_browser_passive_promo_catalog_view_controller.mm",
     "signin_promo_catalog_view_controller.h",
     "signin_promo_catalog_view_controller.mm",
   ]
@@ -12,6 +14,7 @@ source_set("details_view_controllers") {
     "//base",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/authentication/ui_bundled/cells",
+    "//ios/chrome/browser/default_browser/promo/ui",
     "//ios/chrome/browser/settings/ui_bundled:settings_root",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",

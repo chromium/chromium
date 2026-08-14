@@ -1099,6 +1099,12 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       <message name="IDS_IOS_SETTINGS_ADD_PASSWORD_FOOTER_BRANDED" desc="Disclaimer telling users what will happen to their passwords">
         Your password will be saved to Google Password Manager for <ph name="EMAIL">$1<ex>example@gmail.com</ex></ph>.
       </message>
+      <message name="IDS_IOS_SETTINGS_DEFAULT_BROWSER_PASSIVE_CARD_SUBTITLE" desc="Subtitle of the passive Default Browser card settings row. [iOS only]">
+        You can use Chrome any time you tap links in messages, documents and other apps
+      </message>
+      <message name="IDS_IOS_SETTINGS_DEFAULT_BROWSER_PASSIVE_CARD_TITLE" desc="Title of the passive Default Browser card settings row. [iOS only]">
+        Make Chrome your default browser
+      </message>
       <message name="IDS_IOS_SETTINGS_DEFAULT_BROWSER_PASSIVE_CELL_SUBTITLE" desc="Subtitle of the passive Default Browser cell settings row. [iOS only]">
         Open links faster when you set Chrome as default
       </message>

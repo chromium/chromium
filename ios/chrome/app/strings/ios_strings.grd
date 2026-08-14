@@ -7362,8 +7362,14 @@ Handoff must also be enabled in the General section of Settings, and your device
       <message name="IDS_IOS_SETTINGS_AUTOMATICALLY_OPEN_SYNCED_TAB_GROUPS_TITLE" desc="Title for the setting to automatically open tab groups from other devices. [iOS only]">
           Automatically open tab groups from other devices
       </message>
+      <message name="IDS_IOS_SETTINGS_CLOSE_DEFAULT_BROWSER_PROMO_ACCESSIBILITY_LABEL" desc="Close button accessibility label for the Default Browser promo in settings. [iOS only]" is_accessibility_with_no_ui="true">
+        Close default browser promo
+      </message>
       <message name="IDS_IOS_SETTINGS_DATE_PICKER_CLEAR" desc="Button title to clear the selected date in a date picker. [iOS only]">
         Clear
+      </message>
+      <message name="IDS_IOS_SETTINGS_DEFAULT_BROWSER_PASSIVE_CARD_BUTTON_TITLE" desc="Title of the passive Default Browser card primary button in settings. [iOS only]">
+        Set as default
       </message>
       <message name="IDS_IOS_SETTINGS_DELETE_ALL_CREDENTIALS" desc="Title for the authentication page when the user tries to delete all saved credentials. [iOS only]">
           To delete all passwords manager data
