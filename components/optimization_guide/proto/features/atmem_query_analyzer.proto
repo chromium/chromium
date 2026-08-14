@@ -6,6 +6,8 @@ edition = "2023";
 
 package optimization_guide.proto;
 
+import "components/optimization_guide/proto/features/common_quality_data.proto";
+
 import "components/optimization_guide/proto/model_quality_metadata.proto";
 
 option optimize_for = LITE_RUNTIME;
@@ -56,7 +58,85 @@ message AtmemQueryAnalyzerResponse {
 message AutofillFetchPlan {
   repeated MemoryDataType data_types = 1;
 
+  // TODO(crbug.com/543716348): Deprecate filter_keywords once we migrate to filters.
   repeated string filter_keywords = 2;
+
+  repeated Filter filters = 3;
+}
+
+message Filter {
+  repeated MemoryDataType data_types = 1;
+
+  StringFilter string_filter = 2 [features = { field_presence: EXPLICIT }];
+
+  TypedValueFilter typed_value_filter = 3 [features = { field_presence: EXPLICIT }];
+}
+
+message StringFilter {
+  string value = 1 [features = { field_presence: IMPLICIT }];
+
+
+  StringFilterMode mode = 2 [features = { field_presence: IMPLICIT }];
+
+
+  enum StringFilterMode {
+    STRING_FILTER_MODE_UNSPECIFIED = 0;
+
+    STRING_FILTER_MODE_SUBSTRING = 1;
+
+    STRING_FILTER_MODE_EXACT = 2;
+
+    STRING_FILTER_MODE_FUZZY = 3;
+  }
+}
+
+message TypedValueFilter {
+  TypedValue typed_value = 1 [features = { field_presence: EXPLICIT }];
+
+
+  FilterOperator filter_operator = 2 [features = { field_presence: IMPLICIT }];
+
+
+  enum FilterOperator {
+    FILTER_OPERATOR_UNSPECIFIED = 0;
+
+    FILTER_OPERATOR_EQUAL = 1;
+
+    FILTER_OPERATOR_NOT_EQUAL = 2;
+
+    FILTER_OPERATOR_LESS_THAN = 3;
+
+    FILTER_OPERATOR_LESS_THAN_OR_EQUAL = 4;
+
+    FILTER_OPERATOR_GREATER_THAN = 5;
+
+    FILTER_OPERATOR_GREATER_THAN_OR_EQUAL = 6;
+  }
+}
+
+// Strongly-typed representation of an attribute value.
+message TypedValue {
+  oneof value {
+    string country_code = 1;
+
+    Date date = 2;
+
+    DateTime date_time = 3;
+
+    StringList string_list = 4;
+  }
+
+  message Date {
+    int32 year = 1 [features = { field_presence: IMPLICIT }];
+
+    int32 month = 2 [features = { field_presence: IMPLICIT }];
+
+    int32 day = 3 [features = { field_presence: IMPLICIT }];
+  }
+
+  message StringList {
+    repeated string values = 1;
+  }
 }
 
 // Classification status of the user's query.
@@ -69,6 +149,7 @@ enum QueryType {
 }
 
 // Memory data types supported by the AtMemory query analyzer.
+
 enum MemoryDataType {
   MEMORY_DATA_TYPE_UNSPECIFIED = 0;
 
