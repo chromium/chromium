@@ -436,6 +436,8 @@ suite('TabDiscardExceptionList', function() {
     assertExceptionListEquals([existingEntry, ...entries]);
   });
 
+  // TODO(crbug.com/542289420): Flaky test.
+  // <if expr="not is_linux">
   test('ExceptionListOverflowEdit', async function() {
     const entries = [
       ...Array(TAB_DISCARD_EXCEPTIONS_OVERFLOW_SIZE + 1).keys(),
@@ -461,6 +463,7 @@ suite('TabDiscardExceptionList', function() {
     await microtasksFinished();
     assertExceptionListEquals(entries.slice(0, -1));
   });
+  // </if>
 
   test('ExceptionListOverflowDelete', async function() {
     const entries = [
