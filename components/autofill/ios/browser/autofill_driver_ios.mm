@@ -306,6 +306,7 @@ void AutofillDriverIOS::ApplyFieldAction(
         [cast(&driver)->bridge_
             fillSpecificFormField:field
                         withValue:value
+                       actionType:action_type
                           inFrame:cast(&driver)->web_frame()];
         break;
       }

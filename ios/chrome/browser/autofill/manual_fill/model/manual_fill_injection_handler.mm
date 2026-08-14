@@ -165,7 +165,8 @@ bool IsSupportedSuggestion(FormSuggestion* suggestion) {
 - (void)userDidPickContent:(NSString*)content
              passwordField:(BOOL)passwordField
              requiresHTTPS:(BOOL)requiresHTTPS
-           jumpToNextField:(BOOL)jumpToNextField {
+           jumpToNextField:(BOOL)jumpToNextField
+                actionType:(autofill::mojom::FieldActionType)actionType {
   if (passwordField) {
     UmaHistogramEnumeration("IOS.Reauth.Password.ManualFallback",
                             ReauthenticationEvent::kAttempt);
@@ -182,7 +183,8 @@ bool IsSupportedSuggestion(FormSuggestion* suggestion) {
     if (!passwordField) {
       [self fillLastSelectedFieldWithString:content
                                     context:context
-                            jumpToNextField:jumpToNextField];
+                            jumpToNextField:jumpToNextField
+                                 actionType:actionType];
       return;
     }
 
@@ -195,7 +197,8 @@ bool IsSupportedSuggestion(FormSuggestion* suggestion) {
                                   ReauthenticationEvent::kSuccess);
           [weakSelf fillLastSelectedFieldWithString:content
                                             context:context
-                                    jumpToNextField:jumpToNextField];
+                                    jumpToNextField:jumpToNextField
+                                         actionType:actionType];
         } else {
           UmaHistogramEnumeration("IOS.Reauth.Password.ManualFallback",
                                   ReauthenticationEvent::kFailure);
@@ -211,7 +214,8 @@ bool IsSupportedSuggestion(FormSuggestion* suggestion) {
                               ReauthenticationEvent::kMissingPasscode);
       [self fillLastSelectedFieldWithString:content
                                     context:context
-                            jumpToNextField:jumpToNextField];
+                            jumpToNextField:jumpToNextField
+                                 actionType:actionType];
     }
   }
 }
@@ -355,7 +359,9 @@ bool IsSupportedSuggestion(FormSuggestion* suggestion) {
 // next field.
 - (void)fillLastSelectedFieldWithString:(NSString*)string
                                 context:(const AutofillTargetContext&)context
-                        jumpToNextField:(BOOL)jumpToNextField {
+                        jumpToNextField:(BOOL)jumpToNextField
+                             actionType:
+                                 (autofill::mojom::FieldActionType)actionType {
   if (!_webStateList) {
     return;
   }
@@ -373,6 +379,9 @@ bool IsSupportedSuggestion(FormSuggestion* suggestion) {
   base::DictValue data;
   data.Set("renderer_id", static_cast<int>(context.field_id.value()));
   data.Set("value", base::SysNSStringToUTF16(string));
+  data.Set("should_insert_at_cursor",
+           actionType ==
+               autofill::mojom::FieldActionType::kReplaceSelectionForAtMemory);
   __weak __typeof(self) weakSelf = self;
   NSString* frameID = base::SysUTF8ToNSString(context.frame_id);
   autofill::AutofillJavaScriptFeature::GetInstance()->FillActiveFormField(

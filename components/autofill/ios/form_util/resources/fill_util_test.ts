@@ -48,6 +48,9 @@ fillApi.addFunction(
 fillApi.addFunction(
     'inferLabelFromTableRow', elementInferenceUtil.inferLabelFromTableRow);
 fillApi.addFunction(
+    'insertInputElementValueAtCursor',
+    fillUtil.insertInputElementValueAtCursor);
+fillApi.addFunction(
     'isAutofillableElement', inferenceUtil.isAutofillableElement);
 fillApi.addFunction(
     'isAutofillableInputElement', inferenceUtil.isAutofillableInputElement);

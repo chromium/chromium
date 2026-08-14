@@ -285,11 +285,13 @@ TEST_F(AutofillAgentTest, FillSpecificFormField) {
   [autofill_agent_
       fillSpecificFormField:field.renderer_id()
                   withValue:u"mattwashere"
+                 actionType:autofill::mojom::FieldActionType::kReplaceAll
                     inFrame:fake_web_frames_manager_->GetMainWebFrame()];
   fake_web_state_.WasShown();
   EXPECT_EQ(
       u"__gCrWeb.callFunctionInGcrWeb('autofill', 'fillSpecificFormField', "
-      u"[{\"renderer_id\":2,\"value\":\"mattwashere\"}]);",
+      u"[{\"renderer_id\":2,\"should_insert_at_cursor\":false,"
+      u"\"value\":\"mattwashere\"}]);",
       fake_main_frame_->GetLastJavaScriptCall());
 }
 
@@ -314,9 +316,11 @@ TEST_F(AutofillAgentTest, FillSpecificFormField_UpdateWithResults_WhenSuccess) {
   fake_web_state_.WasShown();
 
   // Fill form data.
-  [autofill_agent_ fillSpecificFormField:field_id
-                               withValue:field_value
-                                 inFrame:fake_main_frame_];
+  [autofill_agent_
+      fillSpecificFormField:field_id
+                  withValue:field_value
+                 actionType:autofill::mojom::FieldActionType::kReplaceAll
+                    inFrame:fake_main_frame_];
 
   // Run queues to yield the filling results.
   web::test::WaitForBackgroundTasks();
@@ -347,9 +351,11 @@ TEST_F(AutofillAgentTest, FillSpecificFormField_UpdateWithResults_WhenFailure) {
   fake_web_state_.WasShown();
 
   // Fill form data.
-  [autofill_agent_ fillSpecificFormField:field_id
-                               withValue:field_value
-                                 inFrame:fake_main_frame_];
+  [autofill_agent_
+      fillSpecificFormField:field_id
+                  withValue:field_value
+                 actionType:autofill::mojom::FieldActionType::kReplaceAll
+                    inFrame:fake_main_frame_];
 
   // Run queues to yield the filling results.
   web::test::WaitForBackgroundTasks();
@@ -394,7 +400,47 @@ TEST_F(AutofillAgentTest, DriverFillSpecificFormField) {
   fake_web_state_.WasShown();
   EXPECT_EQ(
       u"__gCrWeb.callFunctionInGcrWeb('autofill', 'fillSpecificFormField', "
-      u"[{\"renderer_id\":2,\"value\":\"mattwashere\"}]);",
+      u"[{\"renderer_id\":2,\"should_insert_at_cursor\":false,"
+      u"\"value\":\"mattwashere\"}]);",
+      fake_main_frame_->GetLastJavaScriptCall());
+}
+
+// Tests that `ApplyFieldAction` with `kReplaceSelectionForAtMemory` dispatches
+// should_insert_at_cursor true to JS.
+TEST_F(AutofillAgentTest,
+       DriverFillSpecificFormField_ReplaceSelectionForAtMemory) {
+  autofill::FormFieldData field;
+  field.set_form_control_type(autofill::FormControlType::kInputText);
+  field.set_label(u"Card number");
+  field.set_name(u"number");
+  field.set_name_attribute(field.name());
+  field.set_id_attribute(u"number");
+  field.set_value(u"number_value");
+  field.set_is_autofilled_according_to_renderer(true);
+  field.set_renderer_id(FieldRendererId(2));
+
+  AutofillDriverIOS* main_frame_driver =
+      AutofillDriverIOS::FromWebStateAndWebFrame(
+          &fake_web_state_, fake_web_frames_manager_->GetMainWebFrame());
+  field.set_host_frame(main_frame_driver->GetFrameToken());
+
+  autofill::FormData form;
+  form.set_host_frame(main_frame_driver->GetFrameToken());
+  form.set_renderer_id(autofill::FormRendererId(1));
+  field.set_host_form_id(form.renderer_id());
+  form.set_fields({field});
+  main_frame_driver->FormsSeen({form}, {});
+
+  main_frame_driver->ApplyFieldAction(
+      autofill::mojom::FieldActionType::kReplaceSelectionForAtMemory,
+      autofill::mojom::ActionPersistence::kFill, field.global_id(),
+      u"replacement");
+
+  fake_web_state_.WasShown();
+  EXPECT_EQ(
+      u"__gCrWeb.callFunctionInGcrWeb('autofill', 'fillSpecificFormField', "
+      u"[{\"renderer_id\":2,\"should_insert_at_cursor\":true,"
+      u"\"value\":\"replacement\"}]);",
       fake_main_frame_->GetLastJavaScriptCall());
 }
 

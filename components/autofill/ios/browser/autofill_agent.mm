@@ -105,6 +105,7 @@ using autofill::Section;
 using autofill::Suggestion;
 using autofill::SuggestionType;
 using autofill::FieldPropertiesFlags::kAutofilledOnUserTrigger;
+using autofill::mojom::FieldActionType;
 using ActivityType = autofill::FormActivityParams::ActivityType;
 using base::NumberToString;
 using base::SysNSStringToUTF16;
@@ -491,10 +492,16 @@ bool HasGuid(const Suggestion::Payload& payload) {
 // words, `field` need not be `document.activeElement`.
 - (void)fillSpecificFormField:(const FieldRendererId&)field
                     withValue:(const std::u16string)value
+                   actionType:(FieldActionType)actionType
                       inFrame:(web::WebFrame*)frame {
+  CHECK(actionType == FieldActionType::kReplaceAll ||
+        actionType == FieldActionType::kReplaceSelectionForAtMemory)
+      << "Unexpected action type: " << std::to_underlying(actionType);
   base::DictValue data;
   data.Set("renderer_id", static_cast<int>(field.value()));
   data.Set("value", value);
+  data.Set("should_insert_at_cursor",
+           actionType == FieldActionType::kReplaceSelectionForAtMemory);
 
   const auto callback =
       [](__weak AutofillAgent* agent, SuggestionHandledCompletion completion,

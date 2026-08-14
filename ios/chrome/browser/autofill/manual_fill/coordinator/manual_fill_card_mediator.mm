@@ -379,10 +379,12 @@ std::vector<CreditCard> FetchCards(
 
   // Don't replace the locked card with the unlocked one, so the user will
   // have to unlock it again, if needed.
-  [self.contentInjector userDidPickContent:fillValue
-                             passwordField:NO
-                             requiresHTTPS:YES
-                           jumpToNextField:YES];
+  [self.contentInjector
+      userDidPickContent:fillValue
+           passwordField:NO
+           requiresHTTPS:YES
+         jumpToNextField:YES
+              actionType:autofill::mojom::FieldActionType::kReplaceAll];
 }
 
 @end

@@ -70,6 +70,7 @@ export class AutofillFormFieldData extends JsonSafeObject {
   id_attribute?: string;
   pattern_attribute?: string;
   challenge?: string;
+  should_insert_at_cursor?: boolean;
 }
 
 export class AutofillFormData extends JsonSafeObject {
@@ -239,6 +240,50 @@ export function setInputElementValue(
   }
 
   if (input !== activeElement) {
+    createAndDispatchHTMLEvent(input, 'blur', true, false);
+    createAndDispatchHTMLEvent(activeElement, 'focus', true, false);
+  }
+  return filled;
+}
+
+/**
+ * Replaces the selected text (or inserts at the current cursor position) in an
+ * input element without overwriting the entire field.
+ *
+ * @param value The value to replace or insert.
+ * @param input The input element where selection is replaced.
+ * @return Whether the value has been set successfully.
+ */
+export function insertInputElementValueAtCursor(
+    value: string, input: HTMLInputElement): boolean {
+  const activeElement = document.activeElement;
+  if (input !== activeElement) {
+    // Dispatch synthetic blur and focus events to simulate the user lifecycle.
+    createAndDispatchHTMLEvent(activeElement, 'blur', true, false);
+    createAndDispatchHTMLEvent(input, 'focus', true, false);
+  }
+
+  const currentVal = input.value ?? '';
+  const endOfVal = currentVal.length;
+  // Some input types may return null for selectionStart
+  // and selectionEnd. Fall back to the end of the value in those cases.
+  const selStart = (typeof input.selectionStart === 'number') ?
+      input.selectionStart :
+      endOfVal;
+  const selEnd =
+      (typeof input.selectionEnd === 'number') ? input.selectionEnd : endOfVal;
+
+  const newVal =
+      currentVal.slice(0, selStart) + value + currentVal.slice(selEnd);
+
+  const filled = setInputElementValueInternal(newVal, input);
+
+  const newCursorPos = selStart + value.length;
+  // Set the cursor position to the end of the inserted value.
+  input.setSelectionRange(newCursorPos, newCursorPos);
+
+  if (input !== activeElement) {
+    // Dispatch synthetic blur and focus events to simulate the user lifecycle.
     createAndDispatchHTMLEvent(input, 'blur', true, false);
     createAndDispatchHTMLEvent(activeElement, 'focus', true, false);
   }

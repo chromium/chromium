@@ -507,7 +507,11 @@ function fillFormField(data, field) {
       sanitizedValue = data['value'].substr(0, maxLength);
     }
 
-    filled = fillUtil.setInputElementValue(sanitizedValue, field);
+    if (data['should_insert_at_cursor']) {
+      filled = fillUtil.insertInputElementValueAtCursor(sanitizedValue, field);
+    } else {
+      filled = fillUtil.setInputElementValue(sanitizedValue, field);
+    }
 
     // This is a hack to avoid showing Undo autofill when a field is filled with
     // manual fallback sheet, as this path does not path by

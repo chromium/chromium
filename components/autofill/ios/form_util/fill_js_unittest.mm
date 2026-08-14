@@ -517,4 +517,44 @@ TEST_F(FillJsTest, StringifyRestoresOwnToJSON) {
   EXPECT_NSEQ(result, @"own toJSON");
 }
 
+// Tests that insertInputElementValueAtCursor inserts value at the current
+// cursor position.
+TEST_F(FillJsTest, InsertInputElementValueAtCursorInsertAtCursor) {
+  LoadHtml(@"<input id='input' type='text' value='0123489'/>");
+  ExecuteJavaScript(
+      @"document.getElementById('input').setSelectionRange(5, 5);");
+  ExecuteJavaScript(@"__gCrWeb.getRegisteredApi('fill_test_api')."
+                    @"getFunction('insertInputElementValueAtCursor')('567', "
+                    @"document.getElementById('input'));");
+  id result = ExecuteJavaScript(@"document.getElementById('input').value");
+  EXPECT_NSEQ(result, @"0123456789");
+}
+
+// Tests that insertInputElementValueAtCursor replaces the current selection.
+TEST_F(FillJsTest, InsertInputElementValueAtCursorReplaceSelection) {
+  LoadHtml(@"<input id='input' type='text' value='0123450009'/>");
+  ExecuteJavaScript(
+      @"document.getElementById('input').setSelectionRange(6, 9);");
+  ExecuteJavaScript(@"__gCrWeb.getRegisteredApi('fill_test_api')."
+                    @"getFunction('insertInputElementValueAtCursor')('678', "
+                    @"document.getElementById('input'));");
+  id result = ExecuteJavaScript(@"document.getElementById('input').value");
+  EXPECT_NSEQ(result, @"0123456789");
+}
+
+// Tests that insertInputElementValueAtCursor updates the cursor position to the
+// end of the inserted value.
+TEST_F(FillJsTest, InsertInputElementValueAtCursorCursorPosition) {
+  LoadHtml(@"<input id='input' type='text' value='01234'/>");
+  ExecuteJavaScript(
+      @"document.getElementById('input').setSelectionRange(5, 5);");
+  ExecuteJavaScript(@"__gCrWeb.getRegisteredApi('fill_test_api')."
+                    @"getFunction('insertInputElementValueAtCursor')('56789', "
+                    @"document.getElementById('input'));");
+  id result = ExecuteJavaScript(
+      @"document.getElementById('input').selectionStart == 10 && "
+      @"document.getElementById('input').selectionEnd == 10");
+  EXPECT_NSEQ(result, @YES);
+}
+
 }  // namespace autofill

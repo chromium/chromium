@@ -441,10 +441,12 @@ void LogAutofillFormButtonTappedMetrics(BOOL from_all_passwords_context,
 - (void)userDidTapUsernameButton:(UIButton*)button {
   base::RecordAction(
       base::UserMetricsAction("ManualFallback_Password_SelectUsername"));
-  [self.contentInjector userDidPickContent:self.credential.username
-                             passwordField:NO
-                             requiresHTTPS:NO
-                           jumpToNextField:YES];
+  [self.contentInjector
+      userDidPickContent:self.credential.username
+           passwordField:NO
+           requiresHTTPS:NO
+         jumpToNextField:YES
+              actionType:autofill::mojom::FieldActionType::kReplaceAll];
 }
 
 - (void)userDidTapPasswordButton:(UIButton*)button {
@@ -455,10 +457,12 @@ void LogAutofillFormButtonTappedMetrics(BOOL from_all_passwords_context,
   base::RecordAction(base::UserMetricsAction(
       [self isBackupCredential] ? "ManualFallback_Password_SelectBackupPassword"
                                 : "ManualFallback_Password_SelectPassword"));
-  [self.contentInjector userDidPickContent:self.credential.password
-                             passwordField:YES
-                             requiresHTTPS:YES
-                           jumpToNextField:YES];
+  [self.contentInjector
+      userDidPickContent:self.credential.password
+           passwordField:YES
+           requiresHTTPS:YES
+         jumpToNextField:YES
+              actionType:autofill::mojom::FieldActionType::kReplaceAll];
 }
 
 // Called when the "Autofill Form" button is tapped. Fills the current form with

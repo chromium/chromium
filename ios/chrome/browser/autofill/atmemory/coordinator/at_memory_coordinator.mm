@@ -102,7 +102,9 @@
   [_contentInjector userDidPickContent:content
                          passwordField:NO
                          requiresHTTPS:YES
-                       jumpToNextField:NO];
+                       jumpToNextField:NO
+                            actionType:autofill::mojom::FieldActionType::
+                                           kReplaceSelectionForAtMemory];
 }
 
 #pragma mark - UIAdaptivePresentationControllerDelegate

@@ -7,6 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
+
 @class FormSuggestion;
 @class ManualFillCredential;
 
@@ -25,7 +27,7 @@
                        requiresHTTPS:(BOOL)requiresHTTPS;
 
 // Called after the user selects an element to be used as the input for the
-// current form field.
+// current form field with `actionType`.
 //
 // @param content The selected string.
 // @param passwordField YES if the user selected content that requires a
@@ -34,10 +36,16 @@
 // context to be injected.
 // @param jumpToNextField YES if focus should move to the next form field after
 // filling.
+// @param actionType The action type to perform. Only two actions are supported:
+// kReplaceAll, which was the default behavior before AtMemory; and
+// kReplaceSelectionForAtMemory replaces the current selection, or inserts at
+// the cursor if selection is collapsed. This is currently specific to AtMemory
+// to allow future behavioral divergence.
 - (void)userDidPickContent:(NSString*)content
              passwordField:(BOOL)passwordField
              requiresHTTPS:(BOOL)requiresHTTPS
-           jumpToNextField:(BOOL)jumpToNextField;
+           jumpToNextField:(BOOL)jumpToNextField
+                actionType:(autofill::mojom::FieldActionType)actionType;
 
 // Called when the user wants to entirely fill the current password form with a
 // credential. No-op if the current form is not a password form.

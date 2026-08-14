@@ -69,6 +69,7 @@
 }
 - (void)fillSpecificFormField:(const autofill::FieldRendererId&)field
                     withValue:(const std::u16string)value
+                   actionType:(autofill::mojom::FieldActionType)actionType
                       inFrame:(web::WebFrame*)frame {
 }
 - (void)handleParsedForms:

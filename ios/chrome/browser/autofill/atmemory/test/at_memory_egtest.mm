@@ -53,6 +53,7 @@ void LoadMultiFormPage(net::test_server::EmbeddedTestServer* test_server) {
       performAction:chrome_test_util::TapWebElementWithId(kNameFieldID)];
 
   // TODO(crbug.com/532090671): add verification after the cleanup.
+  // TODO(crbug.com/522340351): Add tests for selection-based filling.
 }
 
 @end
