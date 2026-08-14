@@ -97,6 +97,7 @@ source_set("tests") {
   if (use_blink) {
     sources += [
       "perfetto/consumer_host_unittest.cc",
+      "public/cpp/perfetto/histogram_samples_data_source_unittest.cc",
       "public/cpp/perfetto/metadata_data_source_unittest.cc",
       "public/cpp/perfetto/perfetto_config_unittest.cc",
       "public/cpp/perfetto/trace_packet_tokenizer_unittest.cc",
