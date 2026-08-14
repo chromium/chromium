@@ -110,6 +110,8 @@ EnterpriseProxyService::EnterpriseProxyService(
   CHECK(pref_service_);
   CHECK(auth_service_);
   CHECK(url_loader_factory_callback_);
+  net::NetworkChangeNotifier::AddNetworkChangeObserver(this);
+  auth_service_observation_.Observe(auth_service_);
   pref_change_registrar_.Init(pref_service_);
   pref_change_registrar_.Add(
       kProxyProvisioningDomains,
@@ -118,7 +120,9 @@ EnterpriseProxyService::EnterpriseProxyService(
   OnPolicyPrefChanged();
 }
 
-EnterpriseProxyService::~EnterpriseProxyService() = default;
+EnterpriseProxyService::~EnterpriseProxyService() {
+  net::NetworkChangeNotifier::RemoveNetworkChangeObserver(this);
+}
 
 void EnterpriseProxyService::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
@@ -259,6 +263,7 @@ void EnterpriseProxyService::Shutdown() {
   refreshing_managers_.clear();
   provisioning_domain_observations_.RemoveAllObservations();
   provisioning_domain_managers_.clear();
+  auth_service_observation_.Reset();
   observers_.Notify(&Observer::OnEnterpriseProxyServiceDestroyed);
   observers_.Clear();
 }
@@ -289,6 +294,17 @@ void EnterpriseProxyService::OnProvisioningDomainStateChanged(
   if ((old_count == 0 || new_count == 0) && old_count != new_count) {
     observers_.Notify(&Observer::OnDynamicProxyConfigsStatusChanged);
   }
+}
+
+void EnterpriseProxyService::OnNetworkChanged(
+    net::NetworkChangeNotifier::ConnectionType type) {
+  if (type != net::NetworkChangeNotifier::CONNECTION_NONE) {
+    ForceRefreshAllConfigs();
+  }
+}
+
+void EnterpriseProxyService::OnAccountStateChanged() {
+  ForceRefreshAllConfigs();
 }
 
 void EnterpriseProxyService::ForceRefreshAllConfigs() {

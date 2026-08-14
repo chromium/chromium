@@ -25,6 +25,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "net/base/mock_network_change_notifier.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
 #include "net/base/proxy_string_util.h"
@@ -161,14 +162,17 @@ class EnterpriseProxyServiceTest : public testing::Test {
   }
 
   void SetUp() override {
-    AccountInfo account_info = identity_test_env_.MakePrimaryAccountAvailable(
-        "user@managed.com", signin::ConsentLevel::kSignin);
-    identity_test_env_.SimulateSuccessfulFetchOfAccountInfo(
-        account_info.account_id, account_info.email, account_info.gaia,
-        "managed.com", "Full Name", "Given Name", "en-US", "picture_url");
     auth_service_ = std::make_unique<EnterpriseNetworkAuthService>(
         identity_test_env_.identity_manager(), &pref_service_,
         &profile_id_service_);
+  }
+
+  void SetUpPrimaryAccount(const std::string& email = "user@managed.com") {
+    AccountInfo account_info = identity_test_env_.MakePrimaryAccountAvailable(
+        email, signin::ConsentLevel::kSignin);
+    identity_test_env_.SimulateSuccessfulFetchOfAccountInfo(
+        account_info.account_id, account_info.email, account_info.gaia,
+        "managed.com", "Full Name", "Given Name", "en-US", "picture_url");
   }
 
   void CreateService(
@@ -198,6 +202,9 @@ class EnterpriseProxyServiceTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<net::test::MockNetworkChangeNotifier>
+      mock_network_change_notifier_ =
+          net::test::MockNetworkChangeNotifier::Create();
   TestingPrefServiceSimple pref_service_;
   enterprise::ProfileIdService profile_id_service_{"test_profile_id"};
   signin::IdentityTestEnvironment identity_test_env_;
@@ -477,6 +484,7 @@ TEST_F(EnterpriseProxyServiceTest, SingleDomainLifecycleAndStateTransitions) {
 }
 
 TEST_F(EnterpriseProxyServiceTest, OAuthAuthenticationFetch) {
+  SetUpPrimaryAccount();
   CreateService();
   SetPolicyDomains({kTestDomain1}, /*use_oauth=*/true);
 
@@ -600,11 +608,165 @@ TEST_F(EnterpriseProxyServiceTest,
   EXPECT_EQ(2u, endpoint->extra_headers.size());
 }
 
+TEST_F(EnterpriseProxyServiceTest, NetworkChangeTriggersRefresh) {
+  CreateService();
+  MockObserver observer;
+  service_->AddObserver(&observer);
+
+  // Initial policy set triggers fetch start and completion.
+  EXPECT_CALL(observer, OnDynamicProxyConfigsStatusChanged()).Times(2);
+  SetPolicyDomains({kTestDomain1, kTestDomain2});
+
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return service_->IsRefreshInProgress(); }));
+
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      "https://domain1.example.com/.well-known/pvd", kValidPvdJson1);
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      "https://domain2.example.com/.well-known/pvd", kValidPvdJson2);
+
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return !service_->IsRefreshInProgress(); }));
+  EXPECT_EQ(0, test_url_loader_factory_.NumPending());
+  testing::Mock::VerifyAndClearExpectations(&observer);
+
+  // CONNECTION_NONE should NOT trigger a refresh.
+  EXPECT_CALL(observer, OnDynamicProxyConfigsStatusChanged()).Times(0);
+  net::NetworkChangeNotifier::NotifyObserversOfNetworkChangeForTests(
+      net::NetworkChangeNotifier::CONNECTION_NONE);
+  EXPECT_FALSE(service_->IsRefreshInProgress());
+  EXPECT_EQ(0, test_url_loader_factory_.NumPending());
+  testing::Mock::VerifyAndClearExpectations(&observer);
+
+  // Active connection change (e.g. CONNECTION_WIFI) SHOULD trigger a refresh
+  // for all domains.
+  EXPECT_CALL(observer, OnDynamicProxyConfigsStatusChanged()).Times(2);
+  net::NetworkChangeNotifier::NotifyObserversOfNetworkChangeForTests(
+      net::NetworkChangeNotifier::CONNECTION_WIFI);
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return service_->IsRefreshInProgress(); }));
+  EXPECT_EQ(2, test_url_loader_factory_.NumPending());
+
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      "https://domain1.example.com/.well-known/pvd", kValidPvdJson1Updated);
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      "https://domain2.example.com/.well-known/pvd", kValidPvdJson2);
+
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return !service_->IsRefreshInProgress(); }));
+  testing::Mock::VerifyAndClearExpectations(&observer);
+
+  service_->RemoveObserver(&observer);
+}
+
+TEST_F(EnterpriseProxyServiceTest, AccountChangeTriggersRefresh) {
+  CreateService();
+  SetPolicyDomains({kTestDomain1}, /*use_oauth=*/true);
+
+  // Initial fetch fails permanently because there is no primary account.
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return !service_->IsRefreshInProgress(); }));
+  EXPECT_EQ(0u, service_->GetDynamicRoutingConfig().routing_rules.size());
+  std::vector<ProvisioningDomainProxyConfig> configs =
+      service_->GetProvisioningDomainConfigs();
+  ASSERT_EQ(1u, configs.size());
+  EXPECT_EQ(ProvisioningDomainProxyConfig::State::kFailedPermanent,
+            configs[0].state);
+
+  MockObserver observer;
+  service_->AddObserver(&observer);
+
+  // Sign in primary account automatically triggers refresh (start + finish).
+  EXPECT_CALL(observer, OnDynamicProxyConfigsStatusChanged())
+      .Times(testing::AtLeast(2));
+  SetUpPrimaryAccount();
+
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return service_->IsRefreshInProgress(); }));
+
+  identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      "test_token", base::Time::Max());
+
+  ASSERT_EQ(1, test_url_loader_factory_.NumPending());
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      "https://domain1.example.com/.well-known/pvd", kValidPvdJson1);
+
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return !service_->IsRefreshInProgress(); }));
+  testing::Mock::VerifyAndClearExpectations(&observer);
+
+  configs = service_->GetProvisioningDomainConfigs();
+  ASSERT_EQ(1u, configs.size());
+  EXPECT_EQ(ProvisioningDomainProxyConfig::State::kValid, configs[0].state);
+  EXPECT_EQ(1u, service_->GetDynamicRoutingConfig().routing_rules.size());
+
+  service_->RemoveObserver(&observer);
+}
+
+TEST_F(EnterpriseProxyServiceTest, MalformedPolicyDoesNotRefresh) {
+  CreateService();
+  MockObserver observer;
+  service_->AddObserver(&observer);
+
+  // Set policy with one malformed entry and one valid entry.
+  EXPECT_CALL(observer, OnDynamicProxyConfigsStatusChanged()).Times(2);
+  base::ListValue policy_domains;
+  base::DictValue malformed_entry;
+  malformed_entry.Set("invalid_field", "value");
+  policy_domains.Append(std::move(malformed_entry));
+  policy_domains.Append(
+      CreateDomainPolicyEntry(kTestDomain1, /*use_oauth=*/false));
+  pref_service_.SetList(kProxyProvisioningDomains, std::move(policy_domains));
+
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return service_->IsRefreshInProgress(); }));
+  // Only the valid domain produces a request.
+  EXPECT_EQ(1, test_url_loader_factory_.NumPending());
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      "https://domain1.example.com/.well-known/pvd", kValidPvdJson1);
+
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return !service_->IsRefreshInProgress(); }));
+  testing::Mock::VerifyAndClearExpectations(&observer);
+
+  std::vector<ProvisioningDomainProxyConfig> configs =
+      service_->GetProvisioningDomainConfigs();
+  ASSERT_EQ(2u, configs.size());
+  EXPECT_EQ(ProvisioningDomainProxyConfig::State::kFailedPermanent,
+            configs[0].state);
+  EXPECT_EQ(ProvisioningDomainProxyConfig::State::kValid, configs[1].state);
+
+  // Trigger network change.
+  EXPECT_CALL(observer, OnDynamicProxyConfigsStatusChanged()).Times(2);
+  net::NetworkChangeNotifier::NotifyObserversOfNetworkChangeForTests(
+      net::NetworkChangeNotifier::CONNECTION_WIFI);
+
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return service_->IsRefreshInProgress(); }));
+  // Only the valid domain produces a request; the malformed one does not.
+  EXPECT_EQ(1, test_url_loader_factory_.NumPending());
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      "https://domain1.example.com/.well-known/pvd", kValidPvdJson1);
+
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return !service_->IsRefreshInProgress(); }));
+  testing::Mock::VerifyAndClearExpectations(&observer);
+
+  configs = service_->GetProvisioningDomainConfigs();
+  ASSERT_EQ(2u, configs.size());
+  EXPECT_EQ(ProvisioningDomainProxyConfig::State::kFailedPermanent,
+            configs[0].state);
+  EXPECT_EQ(ProvisioningDomainProxyConfig::State::kValid, configs[1].state);
+
+  service_->RemoveObserver(&observer);
+}
+
 class EnterpriseProxyServiceAuthChallengeTest
     : public EnterpriseProxyServiceTest {
  protected:
   void SetUp() override {
     EnterpriseProxyServiceTest::SetUp();
+    SetUpPrimaryAccount();
     CreateService();
     // Configure default managed domain using existing kValidPvdJson1.
     SetUpDomainAndSimulateResponse(kTestDomain1, kValidPvdJson1);

@@ -108,6 +108,7 @@ ProxyProvisioningDomainManager::ProxyProvisioningDomainManager(
 
   const base::DictValue* dict = policy_val.GetIfDict();
   if (!dict || !ParseProxyProvisioningDomainPolicy(*dict).has_value()) {
+    is_policy_valid_ = false;
     fetched_config_.pvd_id = policy_.pvd_id;
     fetched_config_.state =
         ProvisioningDomainProxyConfig::State::kFailedPermanent;
@@ -133,7 +134,7 @@ ProxyProvisioningDomainManager::ProxyProvisioningDomainManager(
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&ProxyProvisioningDomainManager::StartRefreshInternal,
-                     weak_factory_.GetWeakPtr()));
+                     weak_factory_.GetWeakPtr(), /*force=*/false));
 }
 
 ProxyProvisioningDomainManager::~ProxyProvisioningDomainManager() = default;
@@ -147,10 +148,13 @@ void ProxyProvisioningDomainManager::RemoveObserver(Observer* observer) {
 }
 
 void ProxyProvisioningDomainManager::ForceRefresh() {
+  if (!is_policy_valid_) {
+    return;
+  }
   if (is_refresh_in_progress()) {
     CancelRefresh();
   }
-  StartRefreshInternal();
+  StartRefreshInternal(/*force=*/true);
 }
 
 void ProxyProvisioningDomainManager::CancelRefresh() {
@@ -171,11 +175,15 @@ void ProxyProvisioningDomainManager::Refresh() {
   if (is_refresh_in_progress()) {
     return;
   }
-  StartRefreshInternal();
+  StartRefreshInternal(/*force=*/false);
 }
 
-void ProxyProvisioningDomainManager::StartRefreshInternal() {
-  if (state() == ProvisioningDomainProxyConfig::State::kFailedPermanent) {
+void ProxyProvisioningDomainManager::StartRefreshInternal(bool force) {
+  if (!is_policy_valid_) {
+    return;
+  }
+  if (!force &&
+      state() == ProvisioningDomainProxyConfig::State::kFailedPermanent) {
     return;
   }
   if (!url_loader_factory_) {

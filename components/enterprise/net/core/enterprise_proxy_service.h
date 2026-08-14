@@ -17,12 +17,15 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/scoped_multi_source_observation.h"
+#include "base/scoped_observation.h"
 #include "base/values.h"
+#include "components/enterprise/net/core/enterprise_network_auth_service.h"
 #include "components/enterprise/net/core/proxy_provisioning_domain_manager.h"
 #include "components/enterprise/net/core/types.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "net/base/auth.h"
+#include "net/base/network_change_notifier.h"
 #include "net/http/http_response_headers.h"
 #include "url/gurl.h"
 
@@ -38,13 +41,14 @@ class ProfileIdService;
 
 namespace enterprise_net {
 
-class EnterpriseNetworkAuthService;
-
 // State-machine service responsible for managing multiple
 // ProxyProvisioningDomainManager, each of which maintain up-to-date proxy
 // configurations fetched from their configured Provisioning Domain (PvD).
-class EnterpriseProxyService : public KeyedService,
-                               public ProxyProvisioningDomainManager::Observer {
+class EnterpriseProxyService
+    : public KeyedService,
+      public ProxyProvisioningDomainManager::Observer,
+      public net::NetworkChangeNotifier::NetworkChangeObserver,
+      public EnterpriseNetworkAuthService::Observer {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -135,6 +139,13 @@ class EnterpriseProxyService : public KeyedService,
   void OnProvisioningDomainStateChanged(
       ProxyProvisioningDomainManager* domain_manager) override;
 
+  // net::NetworkChangeNotifier::NetworkChangeObserver:
+  void OnNetworkChanged(
+      net::NetworkChangeNotifier::ConnectionType type) override;
+
+  // EnterpriseNetworkAuthService::Observer:
+  void OnAccountStateChanged() override;
+
   // Forces a new fetch for all managed Provisioning Domains.
   void ForceRefreshAllConfigs();
 
@@ -192,6 +203,10 @@ class EnterpriseProxyService : public KeyedService,
   base::ScopedMultiSourceObservation<ProxyProvisioningDomainManager,
                                      ProxyProvisioningDomainManager::Observer>
       provisioning_domain_observations_{this};
+
+  base::ScopedObservation<EnterpriseNetworkAuthService,
+                          EnterpriseNetworkAuthService::Observer>
+      auth_service_observation_{this};
 
   // Set of managers currently executing a background fetch.
   base::flat_set<raw_ptr<ProxyProvisioningDomainManager>> refreshing_managers_;

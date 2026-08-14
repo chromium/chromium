@@ -62,7 +62,7 @@ class ProxyProvisioningDomainManager {
 
   // Forces a new refresh for this Provisioning Domain.
   // Cancels any in-flight refresh before starting a new one.
-  // Used in cases such as refreshing configs upon network change.
+  // Used in cases such as refreshing configs upon network or account change.
   void ForceRefresh();
 
   // Cancels any in-flight refresh workflow.
@@ -76,6 +76,7 @@ class ProxyProvisioningDomainManager {
     return fetched_config_.state;
   }
   bool is_refresh_in_progress() const { return fetcher_ != nullptr; }
+  bool is_policy_valid() const { return is_policy_valid_; }
 
   // Returns a dictionary representation of the policy and fetched config.
   base::DictValue ToDict() const;
@@ -85,10 +86,15 @@ class ProxyProvisioningDomainManager {
   // already in-progress. Scheduled internally on TTL expiration or creation.
   void Refresh();
 
-  void StartRefreshInternal();
+  void StartRefreshInternal(bool force);
   void OnRefreshComplete(ProvisioningDomainFetchResult result);
   void NotifyIfStateChanged();
 
+  // Distinguishes unrecoverable malformed policy dictionaries from transient/
+  // permanent fetch errors that can be retried on account/network triggers.
+  // TODO(crbug.com/540422559): Remove when kFailedBlocked is introduced in
+  // follow-up CL.
+  bool is_policy_valid_ = true;
   const ProvisioningDomainConfig policy_;
   ProvisioningDomainProxyConfig fetched_config_;
 

@@ -80,6 +80,7 @@ source_set("unit_tests") {
       "//components/language/core/browser",
       "//components/prefs:test_support",
       "//components/signin/public/identity_manager:test_support",
+      "//net:test_support",
       "//services/network:test_support",
       "//services/network/public/cpp",
       "//testing/gmock",

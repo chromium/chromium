@@ -13,17 +13,20 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
+#include "base/scoped_observation.h"
 #include "base/types/expected.h"
 #include "components/enterprise/net/core/types.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/public/base/oauth_consumer_id.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/http/http_request_headers.h"
 
 namespace signin {
 struct AccessTokenInfo;
 class AccountManagedStatusFinder;
-class IdentityManager;
 class PrimaryAccountAccessTokenFetcher;
 }  // namespace signin
 
@@ -58,8 +61,16 @@ using AccessTokenResult = base::expected<std::string, TokenFetchError>;
 
 // KeyedService responsible for providing authentication for Enterprise Network
 // features.
-class EnterpriseNetworkAuthService : public KeyedService {
+class EnterpriseNetworkAuthService : public KeyedService,
+                                     public signin::IdentityManager::Observer {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    // Called when the sign-in/primary account or its refresh token state
+    // changes.
+    virtual void OnAccountStateChanged() = 0;
+  };
+
   using AccessTokenCallback =
       base::OnceCallback<void(AccessTokenResult result)>;
 
@@ -71,6 +82,23 @@ class EnterpriseNetworkAuthService : public KeyedService {
   EnterpriseNetworkAuthService& operator=(const EnterpriseNetworkAuthService&) =
       delete;
   ~EnterpriseNetworkAuthService() override;
+
+  virtual void AddObserver(Observer* observer);
+  virtual void RemoveObserver(Observer* observer);
+
+  // signin::IdentityManager::Observer:
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event_details) override;
+  void OnRefreshTokenUpdatedForAccount(
+      const CoreAccountInfo& account_info) override;
+  void OnErrorStateOfRefreshTokenUpdatedForAccount(
+      const CoreAccountInfo& account_info,
+      const GoogleServiceAuthError& error,
+      signin_metrics::SourceForRefreshTokenOperation token_operation_source)
+      override;
+  void OnRefreshTokensLoaded() override;
+  void OnIdentityManagerShutdown(
+      signin::IdentityManager* identity_manager) override;
 
   // KeyedService:
   void Shutdown() override;
@@ -150,6 +178,11 @@ class EnterpriseNetworkAuthService : public KeyedService {
 
   // In-flight access token fetchers.
   base::IDMap<std::unique_ptr<PendingTokenFetch>> access_token_fetchers_;
+
+  base::ObserverList<Observer> observers_;
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      identity_manager_observation_{this};
 
   base::WeakPtrFactory<EnterpriseNetworkAuthService> weak_factory_{this};
 };

@@ -111,12 +111,67 @@ EnterpriseNetworkAuthService::EnterpriseNetworkAuthService(
   CHECK(identity_manager_);
   CHECK(pref_service_);
   CHECK(profile_id_service_);
+  identity_manager_observation_.Observe(identity_manager_);
 }
 
 EnterpriseNetworkAuthService::~EnterpriseNetworkAuthService() = default;
 
-void EnterpriseNetworkAuthService::Shutdown() {
+void EnterpriseNetworkAuthService::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void EnterpriseNetworkAuthService::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
+void EnterpriseNetworkAuthService::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event_details) {
   ClearPendingTokenFetches();
+  for (auto& observer : observers_) {
+    observer.OnAccountStateChanged();
+  }
+}
+
+void EnterpriseNetworkAuthService::OnRefreshTokenUpdatedForAccount(
+    const CoreAccountInfo& account_info) {
+  if (identity_manager_ &&
+      account_info == identity_manager_->GetPrimaryAccountInfo(
+                          signin::ConsentLevel::kSignin)) {
+    for (auto& observer : observers_) {
+      observer.OnAccountStateChanged();
+    }
+  }
+}
+
+void EnterpriseNetworkAuthService::OnErrorStateOfRefreshTokenUpdatedForAccount(
+    const CoreAccountInfo& account_info,
+    const GoogleServiceAuthError& error,
+    signin_metrics::SourceForRefreshTokenOperation token_operation_source) {
+  if (identity_manager_ &&
+      account_info == identity_manager_->GetPrimaryAccountInfo(
+                          signin::ConsentLevel::kSignin) &&
+      error.state() == GoogleServiceAuthError::NONE) {
+    for (auto& observer : observers_) {
+      observer.OnAccountStateChanged();
+    }
+  }
+}
+
+void EnterpriseNetworkAuthService::OnRefreshTokensLoaded() {
+  for (auto& observer : observers_) {
+    observer.OnAccountStateChanged();
+  }
+}
+
+void EnterpriseNetworkAuthService::OnIdentityManagerShutdown(
+    signin::IdentityManager* identity_manager) {
+  identity_manager_observation_.Reset();
+}
+
+void EnterpriseNetworkAuthService::Shutdown() {
+  identity_manager_observation_.Reset();
+  ClearPendingTokenFetches();
+  observers_.Clear();
 }
 
 void EnterpriseNetworkAuthService::FetchAccessToken(

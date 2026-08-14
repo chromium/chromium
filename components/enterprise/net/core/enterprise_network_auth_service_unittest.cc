@@ -374,5 +374,50 @@ TEST_F(EnterpriseNetworkAuthServiceTest,
   EXPECT_FALSE(resolved.HasHeader("X-Variable-Unsupported"));
 }
 
+class MockNetworkAuthObserver : public EnterpriseNetworkAuthService::Observer {
+ public:
+  MOCK_METHOD(void, OnAccountStateChanged, (), (override));
+};
+
+TEST_F(EnterpriseNetworkAuthServiceTest, ObserverNotifiedOnAccountChanges) {
+  EnterpriseNetworkAuthService auth_service(
+      identity_test_env_.identity_manager(), &pref_service_,
+      &profile_id_service_);
+
+  MockNetworkAuthObserver observer;
+  auth_service.AddObserver(&observer);
+
+  // Primary account set and refresh token issued.
+  EXPECT_CALL(observer, OnAccountStateChanged()).Times(testing::AtLeast(1));
+  AccountInfo account_info = identity_test_env_.MakePrimaryAccountAvailable(
+      "user@managed.com", signin::ConsentLevel::kSignin);
+  testing::Mock::VerifyAndClearExpectations(&observer);
+
+  // Set persistent auth error on primary account.
+  identity_test_env_.UpdatePersistentErrorOfRefreshTokenForAccount(
+      account_info.account_id,
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+              CREDENTIALS_REJECTED_BY_SERVER));
+
+  // Error state resolved for primary account should notify.
+  EXPECT_CALL(observer, OnAccountStateChanged()).Times(1);
+  identity_test_env_.UpdatePersistentErrorOfRefreshTokenForAccount(
+      account_info.account_id, GoogleServiceAuthError::AuthErrorNone());
+  testing::Mock::VerifyAndClearExpectations(&observer);
+
+  // Secondary account actions should NOT notify.
+  EXPECT_CALL(observer, OnAccountStateChanged()).Times(0);
+  AccountInfo secondary_account =
+      identity_test_env_.MakeAccountAvailable("other@managed.com");
+  testing::Mock::VerifyAndClearExpectations(&observer);
+
+  auth_service.RemoveObserver(&observer);
+
+  // After removing observer, subsequent token updates should NOT notify.
+  EXPECT_CALL(observer, OnAccountStateChanged()).Times(0);
+  identity_test_env_.SetRefreshTokenForAccount(account_info.account_id);
+}
+
 }  // namespace
 }  // namespace enterprise_net

@@ -551,5 +551,81 @@ TEST_F(ProxyProvisioningDomainManagerTest, HandlesNonDictPolicyValue) {
   EXPECT_EQ("FailedPermanent", *state_str);
 }
 
+TEST_F(ProxyProvisioningDomainManagerTest,
+       ForceRefreshRecoversFromPermanentFetchError) {
+  auto auth_service = CreateAuthService();
+  MockDomainObserver observer;
+
+  // Create a manager with auth config requiring primary account. Since no
+  // account is signed in, initial fetch fails permanently.
+  auto manager = CreateManager(CreateTestPolicyConfigWithAuthAndHeaders(),
+                               auth_service.get());
+  manager->AddObserver(&observer);
+
+  ExpectStateTransitions(
+      observer, manager.get(),
+      {ProvisioningDomainProxyConfig::State::kFetching,
+       ProvisioningDomainProxyConfig::State::kFailedPermanent});
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return manager->state() ==
+           ProvisioningDomainProxyConfig::State::kFailedPermanent;
+  }));
+
+  EXPECT_EQ(ProvisioningDomainProxyConfig::State::kFailedPermanent,
+            manager->state());
+  EXPECT_TRUE(manager->is_policy_valid());
+
+  // Now make primary account available and force refresh.
+  AccountInfo account_info = identity_test_env_.MakePrimaryAccountAvailable(
+      "user@managed.com", signin::ConsentLevel::kSignin);
+  identity_test_env_.SimulateSuccessfulFetchOfAccountInfo(
+      account_info.account_id, account_info.email, account_info.gaia,
+      "managed.com", "Full Name", "Given Name", "en-US", "picture_url");
+
+  ExpectStateTransitionTo(observer, manager.get(),
+                          ProvisioningDomainProxyConfig::State::kValid);
+
+  manager->ForceRefresh();
+
+  // Simulate token fetch success and PvD network response.
+  identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      "test_token", base::Time::Max());
+
+  ASSERT_EQ(1, test_url_loader_factory_.NumPending());
+  EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
+      kTestUrl, kTestPvdJson));
+
+  EXPECT_EQ(ProvisioningDomainProxyConfig::State::kValid, manager->state());
+}
+
+TEST_F(ProxyProvisioningDomainManagerTest,
+       ForceRefreshDoesNotRetryMalformedPolicy) {
+  auto auth_service = CreateAuthService();
+  base::DictValue malformed_policy;
+  malformed_policy.Set("invalid_field", 123);
+
+  auto url_loader_factory_callback = base::BindRepeating(
+      [](network::TestURLLoaderFactory* test_url_loader_factory)
+          -> scoped_refptr<network::SharedURLLoaderFactory> {
+        return test_url_loader_factory->GetSafeWeakWrapper();
+      },
+      &test_url_loader_factory_);
+
+  auto manager = std::make_unique<ProxyProvisioningDomainManager>(
+      base::Value(std::move(malformed_policy)), /*cached_config_dict=*/nullptr,
+      auth_service.get(), std::move(url_loader_factory_callback));
+
+  EXPECT_EQ(ProvisioningDomainProxyConfig::State::kFailedPermanent,
+            manager->state());
+  EXPECT_FALSE(manager->is_policy_valid());
+
+  // ForceRefresh should do nothing for malformed policies.
+  manager->ForceRefresh();
+  EXPECT_EQ(ProvisioningDomainProxyConfig::State::kFailedPermanent,
+            manager->state());
+  EXPECT_FALSE(manager->is_refresh_in_progress());
+  EXPECT_EQ(0, test_url_loader_factory_.NumPending());
+}
+
 }  // namespace
 }  // namespace enterprise_net
