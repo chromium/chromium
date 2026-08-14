@@ -48,17 +48,21 @@ def add_cmdline_args(argparse_parser):
         default=3,
         help='Sets the limit of test retries on failures to N.',
         metavar='N',
-        type=int)
-    argparse_parser.add_argument('--isolated-script-test-repeat',
-                                 dest='repetitions',
-                                 default=1,
-                                 help='Repeats each test N times.',
-                                 metavar='N',
-                                 type=int)
+        type=int,
+    )
+    argparse_parser.add_argument(
+        '--isolated-script-test-repeat',
+        dest='repetitions',
+        default=1,
+        help='Repeats each test N times.',
+        metavar='N',
+        type=int,
+    )
 
 
-def _calculate_tests_to_run(argparse_parsed_args, env,
-                            test_executable_wrappers):
+def _calculate_tests_to_run(
+    argparse_parsed_args, env, test_executable_wrappers
+):
     tests = []
     for wrapper in test_executable_wrappers:
         extra_tests = wrapper.list_all_tests()
@@ -68,8 +72,9 @@ def _calculate_tests_to_run(argparse_parsed_args, env,
     return test_filtering.filter_tests(argparse_parsed_args, env, tests)
 
 
-def _run_tests_and_save_results(argparse_parsed_args, list_of_tests_to_run,
-                                test_executable_wrapper):
+def _run_tests_and_save_results(
+    argparse_parsed_args, list_of_tests_to_run, test_executable_wrapper
+):
     start_time = time.time()
     results = []
     for wrapper in test_executable_wrapper:
@@ -92,9 +97,12 @@ def main(test_executable_wrappers, argparse_parsed_args, env):
         env: a dictionary-like object (typically from `os.environ`).
     """
     list_of_test_names_to_run = _calculate_tests_to_run(
-        argparse_parsed_args, env, test_executable_wrappers)
-    _run_tests_and_save_results(argparse_parsed_args,
-                                list_of_test_names_to_run,
-                                test_executable_wrappers)
+        argparse_parsed_args, env, test_executable_wrappers
+    )
+    _run_tests_and_save_results(
+        argparse_parsed_args,
+        list_of_test_names_to_run,
+        test_executable_wrappers,
+    )
     # TODO(lukasza): Repeat tests `args.repetitions` times.
     # TODO(lukasza): Retry failing times up to `args.retry_limit` times.

@@ -14,7 +14,6 @@ import noop_merge
 
 
 class NoopMergeTest(unittest.TestCase):
-
   # pylint: disable=super-with-arguments
   def setUp(self):
     super(NoopMergeTest, self).setUp()
@@ -56,7 +55,8 @@ class NoopMergeTest(unittest.TestCase):
       json.dump(input_json2_contents, f)
     output_json = os.path.join(self.temp_dir, 'output.json')
     self.assertNotEqual(
-        0, noop_merge.noop_merge(output_json, [input_json1, input_json2]))
+      0, noop_merge.noop_merge(output_json, [input_json1, input_json2])
+    )
 
 
 class CommandLineTest(common_merge_script_tests.CommandLineTest):

@@ -41,20 +41,23 @@ def with_python3():
 def main_run(args):
   print(sys.executable)
   with common.temporary_file() as tempfile_path:
-    rc = common.run_command([
+    rc = common.run_command(
+      [
         with_python3(),
         os.path.join(common.SRC_DIR, 'tools', 'checkbins', 'checkbins.py'),
         '--verbose',
         '--json',
         tempfile_path,
         args.build_dir,
-    ])
+      ]
+    )
 
     with open(tempfile_path) as f:
       checkbins_results = json.load(f)
 
-  common.record_local_script_results('checkbins', args.output,
-                                     checkbins_results, True)
+  common.record_local_script_results(
+    'checkbins', args.output, checkbins_results, True
+  )
 
   return rc
 
@@ -65,7 +68,7 @@ def main_compile_targets(args):
 
 if __name__ == '__main__':
   funcs = {
-      'run': main_run,
-      'compile_targets': main_compile_targets,
+    'run': main_run,
+    'compile_targets': main_compile_targets,
   }
   sys.exit(common.run_script(sys.argv[1:], funcs))

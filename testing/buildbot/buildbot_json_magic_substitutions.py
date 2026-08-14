@@ -21,32 +21,32 @@ MAGIC_SUBSTITUTION_PREFIX = '$$MAGIC_SUBSTITUTION_'
 
 GpuDevice = collections.namedtuple('GpuDevice', ['vendor', 'device'])
 ANDROID_DESKTOP_BOARD_GPUS = {
-    'brya': GpuDevice('8086', '46a8'),
+  'brya': GpuDevice('8086', '46a8'),
 }
 CROS_BOARD_GPUS = {
-    'volteer': GpuDevice('8086', '9a49'),
+  'volteer': GpuDevice('8086', '9a49'),
 }
 
 VENDOR_SUBSTITUTIONS = {
-    'apple': '106b',
-    'qcom': '4d4f4351',
+  'apple': '106b',
+  'qcom': '4d4f4351',
 }
 DEVICE_SUBSTITUTIONS = {
-    'm1': '0',
-    'm2': '0',
-    'm3': '0',
-    # Qualcomm Adreno 680/685/690 and 741 on Windows arm64. The approach
-    # swarming uses to find GPUs (looking for all Win32_VideoController WMI
-    # objects) results in different output than what Chrome sees.
-    # 0636 = Adreno 690 GPU (such as Surface Pro 9 5G)
-    # 0c36 = Adreno 741 GPU (such as Surface Pro 11th Edition)
-    '0636': '36333630',
-    '0c36': '36334330',
+  'm1': '0',
+  'm2': '0',
+  'm3': '0',
+  # Qualcomm Adreno 680/685/690 and 741 on Windows arm64. The approach
+  # swarming uses to find GPUs (looking for all Win32_VideoController WMI
+  # objects) results in different output than what Chrome sees.
+  # 0636 = Adreno 690 GPU (such as Surface Pro 9 5G)
+  # 0c36 = Adreno 741 GPU (such as Surface Pro 11th Edition)
+  '0636': '36333630',
+  '0c36': '36334330',
 }
 ANDROID_VULKAN_DEVICES = {
-    # Pixel 6 phones map to multiple GPU models.
-    'oriole': GpuDevice('13b5', '92020010,92020000'),
-    'frankel': GpuDevice('1010', '71061212'),
+  # Pixel 6 phones map to multiple GPU models.
+  'oriole': GpuDevice('13b5', '92020010,92020000'),
+  'frankel': GpuDevice('1010', '71061212'),
 }
 
 
@@ -64,8 +64,8 @@ def AndroidDesktopGtestRemote(test_config, _, tester_config):
   if not _GetAndroidDesktopBoardName(test_config):
     return []
   return [
-      '--device=variable_lab_dut_hostname',
-      '--connect-over-network',
+    '--device=variable_lab_dut_hostname',
+    '--connect-over-network',
   ]
 
 
@@ -75,8 +75,8 @@ def AndroidDesktopTelemetryRemote(test_config, _, tester_config):
   if not _GetAndroidDesktopBoardName(test_config):
     return []
   return [
-      '--device=variable_lab_dut_hostname',
-      '--connect-to-device-over-network',
+    '--device=variable_lab_dut_hostname',
+    '--connect-to-device-over-network',
   ]
 
 
@@ -98,13 +98,13 @@ def ChromeOSTelemetryRemote(test_config, _, tester_config):
     return []
   if _GetChromeOSBoardName(test_config) == 'amd64-generic':
     return [
-        '--remote=127.0.0.1',
-        # By default, CrOS VMs' ssh servers listen on local port 9222.
-        '--remote-ssh-port=9222',
+      '--remote=127.0.0.1',
+      # By default, CrOS VMs' ssh servers listen on local port 9222.
+      '--remote-ssh-port=9222',
     ]
   return [
-      # Magic hostname that resolves to a CrOS device in the test lab.
-      '--remote=variable_chromeos_device_hostname',
+    # Magic hostname that resolves to a CrOS device in the test lab.
+    '--remote=variable_chromeos_device_hostname',
   ]
 
 
@@ -121,8 +121,7 @@ def ChromeOSGtestFilterFile(test_config, _, tester_config):
     test_name = test_name.strip()
   filter_file = 'chromeos.%s.%s.filter' % (board, test_name)
   return [
-      '--test-launcher-filter-file=../../testing/buildbot/filters/' +
-      filter_file
+    '--test-launcher-filter-file=../../testing/buildbot/filters/' + filter_file
   ]
 
 
@@ -143,16 +142,17 @@ def _GetChromeOSBoardName(test_config):
     return False
 
   TEST_POOLS = [
-      'chrome.tests',
-      'chromium.tests',
+    'chrome.tests',
+    'chromium.tests',
   ]
   dimensions = test_config.get('swarming', {}).get('dimensions')
   assert dimensions is not None
   pool = dimensions.get('pool')
   if not pool:
     raise RuntimeError(
-        'No pool set for CrOS test, unable to determine whether running on '
-        'a VM or physical hardware.')
+      'No pool set for CrOS test, unable to determine whether running on '
+      'a VM or physical hardware.'
+    )
 
   if not StringContainsSubstring(pool, TEST_POOLS):
     raise RuntimeError('Unknown CrOS pool %s' % pool)
@@ -167,8 +167,9 @@ def _IsAndroidDesktopBot(test_config, tester_config):
 
 def _IsSkylabBot(tester_config):
   """Helper function to determine if a bot is a Skylab ChromeOS bot."""
-  return (tester_config.get('browser_config') == 'cros-chrome'
-          and not tester_config.get('use_swarming', True))
+  return tester_config.get(
+    'browser_config'
+  ) == 'cros-chrome' and not tester_config.get('use_swarming', True)
 
 
 def _IsAndroid(tester_config):
@@ -341,13 +342,17 @@ def GPUParallelJobs(test_config, tester_name, tester_config):
   # jobs there.
   # TODO(crbug.com/40233910): Try removing the Windows/Intel special casing once
   # we swap which machines we're using.
-  is_webgpu_cts = test_name.startswith('webgpu_cts') or test_config.get(
-      'telemetry_test_name') == 'webgpu_cts'
-  is_webgl_cts = (any(n in test_name
-                      for n in ('webgl_conformance', 'webgl1_conformance',
-                                'webgl2_conformance'))
-                  or test_config.get('telemetry_test_name')
-                  in ('webgl1_conformance', 'webgl2_conformance'))
+  is_webgpu_cts = (
+    test_name.startswith('webgpu_cts')
+    or test_config.get('telemetry_test_name') == 'webgpu_cts'
+  )
+  is_webgl_cts = any(
+    n in test_name
+    for n in ('webgl_conformance', 'webgl1_conformance', 'webgl2_conformance')
+  ) or test_config.get('telemetry_test_name') in (
+    'webgl1_conformance',
+    'webgl2_conformance',
+  )
   if os_type == 'win' and (is_webgl_cts or is_webgpu_cts):
     for gpu in _GetGpusFromTestConfig(test_config):
       if gpu.startswith('8086'):
@@ -363,10 +368,14 @@ def GPUParallelJobs(test_config, tester_name, tester_config):
         return ['--jobs=3']
 
   # Slow Mac configs have issues with flakiness when running tests in parallel.
-  is_pixel_test = (test_name == 'pixel_skia_gold_test'
-                   or test_config.get('telemetry_test_name') == 'pixel')
-  is_webcodecs_test = (test_name == 'webcodecs_tests'
-                       or test_config.get('telemetry_test_name') == 'webcodecs')
+  is_pixel_test = (
+    test_name == 'pixel_skia_gold_test'
+    or test_config.get('telemetry_test_name') == 'pixel'
+  )
+  is_webcodecs_test = (
+    test_name == 'webcodecs_tests'
+    or test_config.get('telemetry_test_name') == 'webcodecs'
+  )
   is_debug = any(s in tester_name.lower() for s in ('debug', 'dbg'))
   if os_type == 'mac' and (is_pixel_test or is_webcodecs_test):
     if is_debug:
@@ -377,8 +386,10 @@ def GPUParallelJobs(test_config, tester_name, tester_config):
 
   # trace_test flakily hangs Win NVIDIA GTX 1660 machines crbug.com/406454932.
   # Speculatively disable parallelism to check if it is related.
-  is_trace_test = (test_name.startswith('trace_test')
-                   or test_config.get('telemetry_test_name') == 'trace_test')
+  is_trace_test = (
+    test_name.startswith('trace_test')
+    or test_config.get('telemetry_test_name') == 'trace_test'
+  )
   if os_type == 'win' and is_trace_test:
     for gpu in _GetGpusFromTestConfig(test_config):
       if gpu.startswith('10de:2184'):
@@ -404,13 +415,13 @@ def GPUTelemetryNoRootForUnrootedDevices(test_config, _, tester_config):
     return []
 
   unrooted_devices = {
-      'a13',
-      'a13ve',
-      'a23',
-      'a23xq',
-      'dm1q',  # Samsung S23.
-      'devonn',  # Motorola Moto G Power 5G.
-      's5e9945',  # Samsung S24
+    'a13',
+    'a13ve',
+    'a23',
+    'a23xq',
+    'dm1q',  # Samsung S23.
+    'devonn',  # Motorola Moto G Power 5G.
+    's5e9945',  # Samsung S24
   }
   dimensions = test_config.get('swarming', {}).get('dimensions')
   assert dimensions is not None
@@ -441,8 +452,10 @@ def GPUWebGLRuntimeFile(test_config, _, tester_config):
     chosen_os = 'linux'
 
   runtime_filepath = (
-      f'../../content/test/data/gpu/{suite}_{chosen_os}_runtimes.json')
+    f'../../content/test/data/gpu/{suite}_{chosen_os}_runtimes.json'
+  )
   return [f'--read-abbreviated-json-results-from={runtime_filepath}']
+
 
 # LINT.ThenChange(//infra/config/PACKAGE.star)
 #
@@ -453,6 +466,7 @@ def GPUWebGLRuntimeFile(test_config, _, tester_config):
 # First a change to update magic_args.star should be submitted, then a CL can be
 # made that updates the @chromium-luci pin in PACKAGE.star to use the new
 # revision of infra/chromium and updates this file
+
 
 def TestOnlySubstitution(_, __, ___):
   """Magic substitution used for unittests."""

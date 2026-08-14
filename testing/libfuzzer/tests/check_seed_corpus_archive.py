@@ -9,8 +9,9 @@ import os
 import sys
 import zipfile
 
-seed_corpus_archive_path = os.path.join(os.path.dirname(sys.argv[0]),
-                                        sys.argv[1])
+seed_corpus_archive_path = os.path.join(
+  os.path.dirname(sys.argv[0]), sys.argv[1]
+)
 
 if not os.path.exists(seed_corpus_archive_path):
   sys.exit(-1)

@@ -105,21 +105,26 @@ def main(args):
 
 if __name__ == '__main__':
   parser = argparse.ArgumentParser()
-  parser.add_argument('-f',
-                      '--commands_file',
-                      help='path to file listing commands to be launched.')
-  parser.add_argument('-p',
-                      '--prod_dir',
-                      help='path to folder having product and test binaries.')
-  parser.add_argument('-c', '--cfg_file', help='path to test host config file.')
-  parser.add_argument('--me2me_manifest_file',
-                      help='path to me2me host manifest file.')
-  parser.add_argument('--it2me_manifest_file',
-                      help='path to it2me host manifest file.')
   parser.add_argument(
-      '-u',
-      '--user_profile_dir',
-      help='path to user-profile-dir, used by connect-to-host tests.')
+    '-f',
+    '--commands_file',
+    help='path to file listing commands to be launched.',
+  )
+  parser.add_argument(
+    '-p', '--prod_dir', help='path to folder having product and test binaries.'
+  )
+  parser.add_argument('-c', '--cfg_file', help='path to test host config file.')
+  parser.add_argument(
+    '--me2me_manifest_file', help='path to me2me host manifest file.'
+  )
+  parser.add_argument(
+    '--it2me_manifest_file', help='path to it2me host manifest file.'
+  )
+  parser.add_argument(
+    '-u',
+    '--user_profile_dir',
+    help='path to user-profile-dir, used by connect-to-host tests.',
+  )
   command_line_args = parser.parse_args()
   host_logs = ''
   failing_tests = ''

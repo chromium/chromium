@@ -12,10 +12,15 @@ import common
 
 def main_run(args):
   with common.temporary_file() as tempfile_path:
-    rc = common.run_command([
+    rc = common.run_command(
+      [
         os.path.join(common.SRC_DIR, 'tools', 'checkperms', 'checkperms.py'),
-        '--root', args.paths['checkout'], '--json', tempfile_path
-    ])
+        '--root',
+        args.paths['checkout'],
+        '--json',
+        tempfile_path,
+      ]
+    )
 
     with open(tempfile_path) as f:
       checkperms_results = json.load(f)
@@ -36,7 +41,7 @@ def main_compile_targets(args):
 
 if __name__ == '__main__':
   funcs = {
-      'run': main_run,
-      'compile_targets': main_compile_targets,
+    'run': main_run,
+    'compile_targets': main_compile_targets,
   }
   sys.exit(common.run_script(sys.argv[1:], funcs))

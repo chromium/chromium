@@ -17,8 +17,10 @@ def print_signal(sig, *_args):
 if __name__ == '__main__':
   if '--spawn-leaked-child' in sys.argv:
     import subprocess
+
     child = subprocess.Popen(
-        [sys.executable, '-c', 'import time; time.sleep(30)'])
+      [sys.executable, '-c', 'import time; time.sleep(30)']
+    )
     print('Leaked PID:{}'.format(child.pid))
     sys.stdout.flush()
     sys.exit(0)

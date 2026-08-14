@@ -51,18 +51,18 @@ _WAIT_TIMEOUT_IN_SEC = 0.5
 
 # Test cases to verify web elements can be rendered correctly.
 _TEST_CASES = [
-    {
-        # data:text/html,<h1 id="success">Success</h1>
-        'url': 'data:text/html,%3Ch1%20id%3D%22success%22%3ESuccess%3C%2Fh1%3E',
-        'expected_id': 'success',
-        'expected_text': 'Success',
-    },
-    {
-        'url': 'http://localhost:8000',
-        'expected_id': 'sites-chrome-userheader-title',
-        'expected_text': 'The Chromium Projects',
-        'skia_gold_image': 'finch_smoke_render_chromium_org_html',
-    },
+  {
+    # data:text/html,<h1 id="success">Success</h1>
+    'url': 'data:text/html,%3Ch1%20id%3D%22success%22%3ESuccess%3C%2Fh1%3E',
+    'expected_id': 'success',
+    'expected_text': 'Success',
+  },
+  {
+    'url': 'http://localhost:8000',
+    'expected_id': 'sites-chrome-userheader-title',
+    'expected_text': 'The Chromium Projects',
+    'skia_gold_image': 'finch_smoke_render_chromium_org_html',
+  },
 ]
 
 
@@ -92,11 +92,12 @@ def _get_platform():
     return 'mac'
 
   raise RuntimeError(
-      'Unsupported platform: %s. Only Linux (linux*) and Mac (darwin) and '
-      'Windows (win32 or cygwin) are supported' % sys.platform)
+    'Unsupported platform: %s. Only Linux (linux*) and Mac (darwin) and '
+    'Windows (win32 or cygwin) are supported' % sys.platform
+  )
 
 
-def _find_chrome_binary():  #pylint: disable=inconsistent-return-statements
+def _find_chrome_binary():  # pylint: disable=inconsistent-return-statements
   """Finds and returns the relative path to the Chrome binary.
 
   This function assumes that the CWD is the build directory.
@@ -109,8 +110,9 @@ def _find_chrome_binary():  #pylint: disable=inconsistent-return-statements
     return os.path.join('.', 'chrome')
   if platform == 'mac':
     chrome_name = 'Google Chrome'
-    return os.path.join('.', chrome_name + '.app', 'Contents', 'MacOS',
-                        chrome_name)
+    return os.path.join(
+      '.', chrome_name + '.app', 'Contents', 'MacOS', chrome_name
+    )
   if platform == 'win':
     return os.path.join('.', 'chrome.exe')
 
@@ -130,8 +132,10 @@ def _run_tests(work_dir, skia_util, *args):
   path_chrome = _find_chrome_binary()
   path_chromedriver = os.path.join('.', 'chromedriver')
   hardcoded_seed_path = os.path.join(
-      _THIS_DIR, _VARIATIONS_TEST_DATA,
-      'variations_seed_beta_%s.json' % _get_platform())
+    _THIS_DIR,
+    _VARIATIONS_TEST_DATA,
+    'variations_seed_beta_%s.json' % _get_platform(),
+  )
   path_seed = seed_helper.get_test_seed_file_path(hardcoded_seed_path)
 
   user_data_dir = tempfile.mkdtemp()
@@ -154,15 +158,17 @@ def _run_tests(work_dir, skia_util, *args):
 
   # By default, ChromeDriver passes in --disable-backgroud-networking, however,
   # fetching variations seeds requires network connection, so override it.
-  chrome_options.add_experimental_option('excludeSwitches',
-                                         ['disable-background-networking'])
+  chrome_options.add_experimental_option(
+    'excludeSwitches', ['disable-background-networking']
+  )
 
   driver = None
   try:
     # Starts Chrome with the test seed injected.
     chromedriver_service = Service(executable_path=path_chromedriver)
-    driver = webdriver.Chrome(service=chromedriver_service,
-                              options=chrome_options)
+    driver = webdriver.Chrome(
+      service=chromedriver_service, options=chrome_options
+    )
 
     # Run test cases: visit urls and verify certain web elements are rendered
     # correctly.
@@ -172,8 +178,11 @@ def _run_tests(work_dir, skia_util, *args):
       element = driver.find_element(By.ID, t['expected_id'])
       if not element.is_displayed() or t['expected_text'] != element.text:
         logging.error(
-            'Test failed because element: "%s" is not visibly found after '
-            'visiting url: "%s"', t['expected_text'], t['url'])
+          'Test failed because element: "%s" is not visibly found after '
+          'visiting url: "%s"',
+          t['expected_text'],
+          t['url'],
+        )
         return 1
       if 'skia_gold_image' in t:
         image_name = t['skia_gold_image']
@@ -183,10 +192,12 @@ def _run_tests(work_dir, skia_util, *args):
         if skia_util.IsTryjobRun and skia_util.IsRetryWithoutPatch:
           force_dryrun = True
         status, error = skia_gold_session.RunComparison(
-            name=image_name, png_file=sc_file, force_dryrun=force_dryrun)
+          name=image_name, png_file=sc_file, force_dryrun=force_dryrun
+        )
         if status:
           finch_skia_gold_utils.log_skia_gold_status_code(
-              skia_gold_session, image_name, status, error)
+            skia_gold_session, image_name, status, error
+          )
           return status
 
     driver.quit()
@@ -246,8 +257,9 @@ def main_run(args):
     rc = _run_tests(temp_dir, skia_util, *rest)
     if args.isolated_script_test_output:
       with open(args.isolated_script_test_output, 'w') as f:
-        common.record_local_script_results('run_variations_smoke_tests', f, [],
-                                           rc == 0)
+        common.record_local_script_results(
+          'run_variations_smoke_tests', f, [], rc == 0
+        )
   finally:
     httpd.shutdown()
     shutil.rmtree(temp_dir, ignore_errors=True)
@@ -264,8 +276,8 @@ def main_compile_targets(args):
 if __name__ == '__main__':
   if 'compile_targets' in sys.argv:
     funcs = {
-        'run': None,
-        'compile_targets': main_compile_targets,
+      'run': None,
+      'compile_targets': main_compile_targets,
     }
     sys.exit(common.run_script(sys.argv[1:], funcs))
   sys.exit(main_run(sys.argv[1:]))

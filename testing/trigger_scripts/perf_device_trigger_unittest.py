@@ -13,7 +13,6 @@ import perf_device_trigger
 
 
 class Args(object):  # pylint: disable=useless-object-inheritance
-
     def __init__(self):
         self.shards = 1
         self.shard_index = None
@@ -24,9 +23,9 @@ class Args(object):  # pylint: disable=useless-object-inheritance
 
 
 class FakeTriggerer(perf_device_trigger.PerfDeviceTriggerer):
-
-    def __init__(self, args, swarming_args, files, list_bots_result,
-                 list_tasks_results):
+    def __init__(
+        self, args, swarming_args, files, list_bots_result, list_tasks_results
+    ):
         self._bot_statuses = []
         self.swarming_runs = []
         self._files = files
@@ -62,30 +61,30 @@ class FakeTriggerer(perf_device_trigger.PerfDeviceTriggerer):
         return self._list_bots_result
 
     def list_tasks(self, tags, limit=None, server='chromium-swarm.appspot.com'):
-        res, self._list_tasks_results = self._list_tasks_results[
-            0], self._list_tasks_results[1:]
+        res, self._list_tasks_results = (
+            self._list_tasks_results[0],
+            self._list_tasks_results[1:],
+        )
         return res
 
     def run_swarming(self, args):
         self.swarming_runs.append(args)
 
-    def run_swarming_go(self,
-                        args,
-                        _json_path,
-                        _shard_index,
-                        _shard,
-                        _merged_json=None):
+    def run_swarming_go(
+        self, args, _json_path, _shard_index, _shard, _merged_json=None
+    ):
         self._triggered_with_swarming_go += 1
         self.run_swarming(args)
 
 
 class UnitTest(unittest.TestCase):
-
-    def setup_and_trigger(self,
-                          previous_task_assignment_map,
-                          alive_bots,
-                          dead_bots,
-                          use_dynamic_shards=False):
+    def setup_and_trigger(
+        self,
+        previous_task_assignment_map,
+        alive_bots,
+        dead_bots,
+        use_dynamic_shards=False,
+    ):
         args = Args()
         args.shards = len(previous_task_assignment_map)
         args.dump_json = 'output.json'
@@ -107,13 +106,19 @@ class UnitTest(unittest.TestCase):
         ]
 
         triggerer = FakeTriggerer(
-            args, swarming_args, self.get_files(args.shards),
+            args,
+            swarming_args,
+            self.get_files(args.shards),
             self.generate_list_of_eligible_bots_query_response(
-                alive_bots, dead_bots), [
-                    self.generate_last_task_to_shard_query_response(
-                        i, previous_task_assignment_map.get(i))
-                    for i in range(args.shards)
-                ])
+                alive_bots, dead_bots
+            ),
+            [
+                self.generate_last_task_to_shard_query_response(
+                    i, previous_task_assignment_map.get(i)
+                )
+                for i in range(args.shards)
+            ],
+        )
         triggerer.trigger_tasks(args, swarming_args)
         return triggerer
 
@@ -130,11 +135,13 @@ class UnitTest(unittest.TestCase):
         # should be an empty string.
         for i in range(num_shards):
             task = {
-                'tasks': [{
-                    'request': {
-                        'task_id': 'f%d' % i,
-                    },
-                }],
+                'tasks': [
+                    {
+                        'request': {
+                            'task_id': 'f%d' % i,
+                        },
+                    }
+                ],
             }
             files['base_trigger_dimensions%d.json' % file_index] = task
             file_index = file_index + 1
@@ -149,31 +156,38 @@ class UnitTest(unittest.TestCase):
             return [{'tags': ['id:%s' % bot_id]}]
         return []
 
-    def generate_list_of_eligible_bots_query_response(self, alive_bots,
-                                                      dead_bots):
+    def generate_list_of_eligible_bots_query_response(
+        self, alive_bots, dead_bots
+    ):
         if len(alive_bots) == 0 and len(dead_bots) == 0:
             return {}
         bots = []
         for bot_id in alive_bots:
-            bots.append({
-                'bot_id': ('%s' % bot_id),
-                'is_dead': False,
-                'quarantined': False
-            })
+            bots.append(
+                {
+                    'bot_id': ('%s' % bot_id),
+                    'is_dead': False,
+                    'quarantined': False,
+                }
+            )
         is_dead = True
         for bot_id in dead_bots:
-            is_quarantined = (not is_dead)
-            bots.append({
-                'bot_id': ('%s' % bot_id),
-                'is_dead': is_dead,
-                'quarantined': is_quarantined
-            })
-            is_dead = (not is_dead)
+            is_quarantined = not is_dead
+            bots.append(
+                {
+                    'bot_id': ('%s' % bot_id),
+                    'is_dead': is_dead,
+                    'quarantined': is_quarantined,
+                }
+            )
+            is_dead = not is_dead
         return bots
 
     def list_contains_sublist(self, main_list, sub_list):
-        return any(sub_list == main_list[offset:offset + len(sub_list)]
-                   for offset in range(len(main_list) - (len(sub_list) - 1)))
+        return any(
+            sub_list == main_list[offset : offset + len(sub_list)]
+            for offset in range(len(main_list) - (len(sub_list) - 1))
+        )
 
     def get_triggered_shard_to_bot(self, triggerer):
         triggered_map = {}
@@ -183,7 +197,7 @@ class UnitTest(unittest.TestCase):
             bot_id = run[(run.index('id') + 1)]
 
             g = 'GTEST_SHARD_INDEX='
-            shard = [int(r[len(g):]) for r in run if r.startswith(g)][0]
+            shard = [int(r[len(g) :]) for r in run if r.startswith(g)][0]
 
             triggered_map[shard] = bot_id
         return triggered_map
@@ -193,10 +207,11 @@ class UnitTest(unittest.TestCase):
             previous_task_assignment_map={
                 0: 'build3',
                 1: 'build4',
-                2: 'build5'
+                2: 'build5',
             },
             alive_bots=['build3', 'build4', 'build5'],
-            dead_bots=['build1', 'build2'])
+            dead_bots=['build1', 'build2'],
+        )
         expected_task_assignment = self.get_triggered_shard_to_bot(triggerer)
         self.assertEqual(len(set(expected_task_assignment.values())), 3)
 
@@ -208,9 +223,11 @@ class UnitTest(unittest.TestCase):
 
     def test_no_bot_returned(self):
         with self.assertRaises(ValueError) as context:
-            self.setup_and_trigger(previous_task_assignment_map={0: 'build1'},
-                                   alive_bots=[],
-                                   dead_bots=[])
+            self.setup_and_trigger(
+                previous_task_assignment_map={0: 'build1'},
+                alive_bots=[],
+                dead_bots=[],
+            )
         err_msg = 'Not enough available machines exist in swarming pool'
         self.assertTrue(err_msg in str(context.exception))
 
@@ -221,10 +238,11 @@ class UnitTest(unittest.TestCase):
             previous_task_assignment_map={
                 0: 'build1',
                 1: 'build2',
-                2: 'build3'
+                2: 'build3',
             },
             alive_bots=['build3', 'build4', 'build5'],
-            dead_bots=['build1', 'build2'])
+            dead_bots=['build1', 'build2'],
+        )
         expected_task_assignment = self.get_triggered_shard_to_bot(triggerer)
         self.assertEqual(len(set(expected_task_assignment.values())), 3)
 
@@ -241,10 +259,11 @@ class UnitTest(unittest.TestCase):
                 1: 'build2',
                 2: 'build3',
                 3: 'build4',
-                4: 'build5'
+                4: 'build5',
             },
             alive_bots=['build3', 'build4', 'build5'],
-            dead_bots=['build1', 'build2'])
+            dead_bots=['build1', 'build2'],
+        )
         expected_task_assignment = self.get_triggered_shard_to_bot(triggerer)
         self.assertEqual(len(set(expected_task_assignment.values())), 5)
 
@@ -265,10 +284,11 @@ class UnitTest(unittest.TestCase):
                 1: '',
                 2: 'build3',
                 3: 'build4',
-                4: 'build5'
+                4: 'build5',
             },
             alive_bots=['build3', 'build4', 'build5'],
-            dead_bots=['build1', 'build2'])
+            dead_bots=['build1', 'build2'],
+        )
         expected_task_assignment = self.get_triggered_shard_to_bot(triggerer)
         self.assertEqual(len(set(expected_task_assignment.values())), 5)
 
@@ -287,13 +307,10 @@ class UnitTest(unittest.TestCase):
         # First time this configuration has been seen.  Choose three
         # healthy shards to trigger jobs on
         triggerer = self.setup_and_trigger(
-            previous_task_assignment_map={
-                0: '',
-                1: '',
-                2: ''
-            },
+            previous_task_assignment_map={0: '', 1: '', 2: ''},
             alive_bots=['build3', 'build4', 'build5'],
-            dead_bots=['build1', 'build2'])
+            dead_bots=['build1', 'build2'],
+        )
         expected_task_assignment = self.get_triggered_shard_to_bot(triggerer)
         self.assertEqual(len(set(expected_task_assignment.values())), 3)
         new_healthy_bots = ['build3', 'build4', 'build5']
@@ -307,17 +324,20 @@ class UnitTest(unittest.TestCase):
                 0: 'build3',
                 1: 'build3',
                 2: 'build5',
-                3: 'build6'
+                3: 'build6',
             },
             alive_bots=['build3', 'build4', 'build5', 'build7'],
-            dead_bots=['build1', 'build6'])
+            dead_bots=['build1', 'build6'],
+        )
         expected_task_assignment = self.get_triggered_shard_to_bot(triggerer)
 
         # Test that the new assignment will add a new bot to avoid
         # assign 'build3' to both shard 0 & shard 1 as before.
         # It also replaces the dead 'build6' bot.
-        self.assertEqual(set(expected_task_assignment.values()),
-                         {'build3', 'build4', 'build5', 'build7'})
+        self.assertEqual(
+            set(expected_task_assignment.values()),
+            {'build3', 'build4', 'build5', 'build7'},
+        )
 
     def test_dynamic_sharding(self):
         triggerer = self.setup_and_trigger(
@@ -325,15 +345,18 @@ class UnitTest(unittest.TestCase):
             previous_task_assignment_map={
                 0: 'build301',
                 1: 'build1--',
-                2: 'build-blah'
+                2: 'build-blah',
             },
             alive_bots=['build1', 'build2', 'build3', 'build4', 'build5'],
             dead_bots=[],
-            use_dynamic_shards=True)
+            use_dynamic_shards=True,
+        )
         expected_task_assignment = self.get_triggered_shard_to_bot(triggerer)
 
-        self.assertEqual(set(expected_task_assignment.values()),
-                         {'build1', 'build2', 'build3', 'build4', 'build5'})
+        self.assertEqual(
+            set(expected_task_assignment.values()),
+            {'build1', 'build2', 'build3', 'build4', 'build5'},
+        )
 
     def test_dynamic_sharding_with_dead_bots(self):
         triggerer = self.setup_and_trigger(
@@ -341,15 +364,18 @@ class UnitTest(unittest.TestCase):
             previous_task_assignment_map={
                 0: 'build301',
                 1: 'build1--',
-                2: 'build-blah'
+                2: 'build-blah',
             },
             alive_bots=['build2', 'build5', 'build3'],
             dead_bots=['build1', 'build4'],
-            use_dynamic_shards=True)
+            use_dynamic_shards=True,
+        )
         expected_task_assignment = self.get_triggered_shard_to_bot(triggerer)
 
-        self.assertEqual(set(expected_task_assignment.values()),
-                         {'build2', 'build3', 'build5'})
+        self.assertEqual(
+            set(expected_task_assignment.values()),
+            {'build2', 'build3', 'build5'},
+        )
 
 
 if __name__ == '__main__':

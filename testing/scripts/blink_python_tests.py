@@ -12,14 +12,21 @@ import common
 
 def main_run(args):
   with common.temporary_file() as tempfile_path:
-    rc = common.run_command([
+    rc = common.run_command(
+      [
         sys.executable,
-        os.path.join(common.SRC_DIR, 'third_party', 'blink', 'tools',
-                     'run_blinkpy_tests.py'),
+        os.path.join(
+          common.SRC_DIR,
+          'third_party',
+          'blink',
+          'tools',
+          'run_blinkpy_tests.py',
+        ),
         '--write-full-results-to',
         tempfile_path,
-    ],
-                            cwd=args.paths['checkout'])
+      ],
+      cwd=args.paths['checkout'],
+    )
 
     with open(tempfile_path) as f:
       results = json.load(f)
@@ -28,13 +35,14 @@ def main_run(args):
   failures = parsed_results['unexpected_failures']
 
   json.dump(
-      {
-          'valid':
-          bool(rc <= common.MAX_FAILURES_EXIT_STATUS and
-               ((rc == 0) or failures)),
-          'failures':
-          failures.keys(),
-      }, args.output)
+    {
+      'valid': bool(
+        rc <= common.MAX_FAILURES_EXIT_STATUS and ((rc == 0) or failures)
+      ),
+      'failures': failures.keys(),
+    },
+    args.output,
+  )
 
   return rc
 
@@ -45,7 +53,7 @@ def main_compile_targets(args):
 
 if __name__ == '__main__':
   funcs = {
-      'run': main_run,
-      'compile_targets': main_compile_targets,
+    'run': main_run,
+    'compile_targets': main_compile_targets,
   }
   sys.exit(common.run_script(sys.argv[1:], funcs))

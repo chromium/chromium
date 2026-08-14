@@ -20,12 +20,13 @@ from unexpected_passes_common import expectations as unexpected_expectations
 from typ import expectations_parser
 
 
-class ResultProcessor():
+class ResultProcessor:
   def __init__(self, expectations_processor: expectations.ExpectationProcessor):
     self._expectations_processor = expectations_processor
 
-  def AggregateResults(self,
-                       results: ct.QueryJsonType) -> ct.AggregatedResultsType:
+  def AggregateResults(
+    self, results: ct.QueryJsonType
+  ) -> ct.AggregatedResultsType:
     """Aggregates BigQuery results.
 
     Also filters out any results that have already been suppressed.
@@ -49,13 +50,17 @@ class ResultProcessor():
     for r in results:
       build_url = 'http://ci.chromium.org/b/%s' % r.build_id
 
-      build_url_list = aggregated_results.setdefault(r.suite, {}).setdefault(
-          r.test, {}).setdefault(r.tags, [])
+      build_url_list = (
+        aggregated_results.setdefault(r.suite, {})
+        .setdefault(r.test, {})
+        .setdefault(r.tags, [])
+      )
       build_url_list.append(build_url)
     return aggregated_results
 
   def AggregateTestStatusResults(
-      self, results: ct.QueryJsonType) -> ct.AggregatedStatusResultsType:
+    self, results: ct.QueryJsonType
+  ) -> ct.AggregatedStatusResultsType:
     """Aggregates BigQuery results.
 
     Also filters out any results that have already been suppressed.
@@ -78,16 +83,20 @@ class ResultProcessor():
     results = self._ConvertJsonResultsToResultObjects(results)
     results = self._FilterOutSuppressedResults(results)
     aggregated_results = defaultdict(
-        lambda: defaultdict(lambda: defaultdict(list)))
+      lambda: defaultdict(lambda: defaultdict(list))
+    )
     for r in results:
       build_url = 'http://ci.chromium.org/b/%s' % r.build_id
       aggregated_results[r.suite][r.test][r.tags].append(
-          ct.ResultTupleType(r.status, build_url, r.date, r.is_slow,
-                             r.typ_expectations))
+        ct.ResultTupleType(
+          r.status, build_url, r.date, r.is_slow, r.typ_expectations
+        )
+      )
     return aggregated_results
 
-  def _ConvertJsonResultsToResultObjects(self, results: ct.QueryJsonType
-                                         ) -> List[data_types.Result]:
+  def _ConvertJsonResultsToResultObjects(
+    self, results: ct.QueryJsonType
+  ) -> List[data_types.Result]:
     """Converts JSON BigQuery results to data_types.Result objects.
 
     Args:
@@ -114,12 +123,22 @@ class ResultProcessor():
       if 'typ_expectations' in r:
         typ_expectations = r['typ_expectations']
       object_results.append(
-          data_types.Result(suite, test_name, typ_tags, build_id, status, date,
-                            is_slow, typ_expectations))
+        data_types.Result(
+          suite,
+          test_name,
+          typ_tags,
+          build_id,
+          status,
+          date,
+          is_slow,
+          typ_expectations,
+        )
+      )
     return object_results
 
-  def _FilterOutSuppressedResults(self, results: List[data_types.Result]
-                                  ) -> List[data_types.Result]:
+  def _FilterOutSuppressedResults(
+    self, results: List[data_types.Result]
+  ) -> List[data_types.Result]:
     """Filters out results that have already been suppressed in the repo.
 
     Args:
@@ -130,23 +149,26 @@ class ResultProcessor():
     """
     # Get all the expectations.
     origin_expectation_contents = (
-        self._expectations_processor.GetLocalCheckoutExpectationFileContents())
+      self._expectations_processor.GetLocalCheckoutExpectationFileContents()
+    )
     origin_expectations = collections.defaultdict(list)
     for filename, contents in origin_expectation_contents.items():
       list_parser = expectations_parser.TaggedTestListParser(contents)
       for e in list_parser.expectations:
-        wildcard_type = (
-            unexpected_expectations.WildcardTypeFromTypExpectation(e))
-        expectation = data_types.Expectation(e.test, e.tags, e.raw_results,
-                                             wildcard_type, e.reason)
+        wildcard_type = unexpected_expectations.WildcardTypeFromTypExpectation(
+          e
+        )
+        expectation = data_types.Expectation(
+          e.test, e.tags, e.raw_results, wildcard_type, e.reason
+        )
         origin_expectations[filename].append(expectation)
 
     # Discard any results that already have a matching expectation.
     kept_results = []
     for r in results:
       expectation_filename = (
-          self._expectations_processor.GetExpectationFileForSuite(
-              r.suite, r.tags))
+        self._expectations_processor.GetExpectationFileForSuite(r.suite, r.tags)
+      )
       expectation_filename = os.path.basename(expectation_filename)
       should_keep = True
       for e in origin_expectations[expectation_filename]:
@@ -158,6 +180,7 @@ class ResultProcessor():
 
     return kept_results
 
-  def GetTestSuiteAndNameFromResultDbName(self, result_db_name: str
-                                          ) -> Tuple[str, str]:
+  def GetTestSuiteAndNameFromResultDbName(
+    self, result_db_name: str
+  ) -> Tuple[str, str]:
     raise NotImplementedError

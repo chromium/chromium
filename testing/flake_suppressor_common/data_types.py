@@ -27,7 +27,7 @@ class Expectation(unexpected_dt.Expectation):
     return self._comp(result.test) and self.tags <= set(result.tags)
 
 
-class Result():
+class Result:
   """Container for a test result.
 
   Contains all the relevant information we get back from BigQuery for a result
@@ -36,15 +36,17 @@ class Result():
 
   # TODO(crbug.com/40237087): Refactor this Class to take ResultTupleType as an
   # input.
-  def __init__(self,
-               suite: str,
-               test: str,
-               tags: ct.TagTupleType,
-               build_id: str,
-               status: Optional[str] = None,
-               date: Optional[datetime.date] = None,
-               is_slow: Optional[bool] = None,
-               typ_expectations: Optional[List[str]] = None):
+  def __init__(
+    self,
+    suite: str,
+    test: str,
+    tags: ct.TagTupleType,
+    build_id: str,
+    status: Optional[str] = None,
+    date: Optional[datetime.date] = None,
+    is_slow: Optional[bool] = None,
+    typ_expectations: Optional[List[str]] = None,
+  ):
     assert isinstance(tags, tuple), 'Tags must be in tuple form to be hashable'
     # Results should not have any globs.
     assert '*' not in test
@@ -59,12 +61,28 @@ class Result():
     self.typ_expectations.sort()
 
   def __eq__(self, other: Any) -> bool:
-    return (isinstance(other, Result) and self.suite == other.suite
-            and self.test == other.test and self.tags == other.tags
-            and self.build_id == other.build_id and self.status == other.status
-            and self.date == other.date and self.is_slow == other.is_slow
-            and self.typ_expectations == other.typ_expectations)
+    return (
+      isinstance(other, Result)
+      and self.suite == other.suite
+      and self.test == other.test
+      and self.tags == other.tags
+      and self.build_id == other.build_id
+      and self.status == other.status
+      and self.date == other.date
+      and self.is_slow == other.is_slow
+      and self.typ_expectations == other.typ_expectations
+    )
 
   def __hash__(self) -> int:
-    return hash((self.suite, self.test, self.tags, self.build_id, self.status,
-                 self.date, self.is_slow, tuple(self.typ_expectations)))
+    return hash(
+      (
+        self.suite,
+        self.test,
+        self.tags,
+        self.build_id,
+        self.status,
+        self.date,
+        self.is_slow,
+        tuple(self.typ_expectations),
+      )
+    )

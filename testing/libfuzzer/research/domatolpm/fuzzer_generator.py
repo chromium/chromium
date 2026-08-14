@@ -34,13 +34,9 @@ import action_helpers
 sys.path.insert(1, os.path.join(SOURCE_DIR, 'third_party'))
 import jinja2
 
-_C_STR_TRANS = str.maketrans({
-    '\n': '\\n',
-    '\r': '\\r',
-    '\t': '\\t',
-    '\"': '\\\"',
-    '\\': '\\\\'
-})
+_C_STR_TRANS = str.maketrans(
+  {'\n': '\\n', '\r': '\\r', '\t': '\\t', '"': '\\"', '\\': '\\\\'}
+)
 
 
 def c_escape(v: str) -> str:
@@ -49,44 +45,49 @@ def c_escape(v: str) -> str:
 
 def main():
   parser = argparse.ArgumentParser(
-      description=
-      'Generate the necessary files for DomatoLPM to function properly.')
-  parser.add_argument('-p',
-                      '--path',
-                      required=True,
-                      help='The path to the template file.')
-  parser.add_argument('-f',
-                      '--file-format',
-                      required=True,
-                      help='The path (file format) where the generated files'
-                      ' should be written to.')
-  parser.add_argument('-n',
-                      '--name',
-                      required=True,
-                      help='The name of the fuzzer.')
+    description=(
+      'Generate the necessary files for DomatoLPM to function properly.'
+    )
+  )
+  parser.add_argument(
+    '-p', '--path', required=True, help='The path to the template file.'
+  )
+  parser.add_argument(
+    '-f',
+    '--file-format',
+    required=True,
+    help='The path (file format) where the generated files'
+    ' should be written to.',
+  )
+  parser.add_argument(
+    '-n', '--name', required=True, help='The name of the fuzzer.'
+  )
 
   parser.add_argument('-g', '--grammar', action='append')
 
-  parser.add_argument('-d',
-                      '--generated-dir',
-                      required=True,
-                      help='The path to the target gen directory.')
+  parser.add_argument(
+    '-d',
+    '--generated-dir',
+    required=True,
+    help='The path to the target gen directory.',
+  )
 
   args = parser.parse_args()
   template_str = ''
   with open(args.path, 'r') as f:
     template_str = f.read()
 
-  grammars = [{
-      'proto_type': repr.split(':')[0],
-      'proto_name': repr.split(':')[1]
-  } for repr in args.grammar]
+  grammars = [
+    {'proto_type': repr.split(':')[0], 'proto_name': repr.split(':')[1]}
+    for repr in args.grammar
+  ]
   grammar_types = [f'<{grammar["proto_type"]}>' for grammar in grammars]
 
   # This splits the template into fuzzing tags, so that we know where we need
   # to insert grammar results.
-  splitted_template = re.split('|'.join([f'({g})' for g in grammar_types]),
-                               template_str)
+  splitted_template = re.split(
+    '|'.join([f'({g})' for g in grammar_types]), template_str
+  )
   splitted_template = [a for a in splitted_template if a is not None]
 
   grammar_elements = []
@@ -103,14 +104,15 @@ def main():
     else:
       grammar_elements.append({'is_str': True, 'content': c_escape(elt)})
 
-  template_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                              'templates')
+  template_dir = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)), 'templates'
+  )
   environment = jinja2.Environment(loader=jinja2.FileSystemLoader(template_dir))
   rendering_context = {
-      'template_path': args.generated_dir,
-      'template_name': args.name,
-      'grammars': grammars,
-      'grammar_elements': grammar_elements,
+    'template_path': args.generated_dir,
+    'template_name': args.name,
+    'grammars': grammars,
+    'grammar_elements': grammar_elements,
   }
   template = environment.get_template('domatolpm_fuzzer.proto.tmpl')
   with action_helpers.atomic_output(f'{args.file_format}.proto', mode='w') as f:

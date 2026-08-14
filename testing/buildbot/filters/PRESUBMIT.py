@@ -11,8 +11,6 @@ import os
 import re
 
 
-
-
 def _CheckFilterFileFormat(input_api, output_api):
   """This ensures all modified filter files are free of common syntax errors.
 
@@ -43,18 +41,21 @@ def _CheckFilterFileFormat(input_api, output_api):
         continue
       if line.find('#') >= 0:
         errors.append(
-            '%s:%d "#" is not a valid method separator.  Use ".": "%s"' % (
-                filename, line_num, line))
+          '%s:%d "#" is not a valid method separator.  Use ".": "%s"'
+          % (filename, line_num, line)
+        )
         continue
       if line.startswith('//') or line.startswith('/*'):
         errors.append(
-            '%s:%d Not a valid comment syntax. Use "#" instead: "%s"' % (
-                filename, line_num, line))
+          '%s:%d Not a valid comment syntax. Use "#" instead: "%s"'
+          % (filename, line_num, line)
+        )
         continue
       if not re.match(r'^\S+$', line):
         errors.append(
-            '%s:%d Line must not contain whitespace: "%s"' % (
-                filename, line_num, line))
+          '%s:%d Line must not contain whitespace: "%s"'
+          % (filename, line_num, line)
+        )
         continue
       if line[0] == '-':
         exclusions += 1
@@ -66,18 +67,25 @@ def _CheckFilterFileFormat(input_api, output_api):
     # that such a combination will lead to a situation where zero tests are run.
     if exclusions and inclusions:
       warnings.append(
-          '%s: Contains both inclusions (%d) and exclusions (%d). This may '
-          'result in no tests running. Are you sure this is correct?' % (
-              filename, inclusions, exclusions))
+        '%s: Contains both inclusions (%d) and exclusions (%d). This may '
+        'result in no tests running. Are you sure this is correct?'
+        % (filename, inclusions, exclusions)
+      )
 
   res = []
   if errors:
-    res.append(output_api.PresubmitError(
+    res.append(
+      output_api.PresubmitError(
         'Filter files do not follow the correct format:',
-        long_text='\n'.join(errors)))
+        long_text='\n'.join(errors),
+      )
+    )
   if warnings:
-    res.append(output_api.PresubmitPromptWarning(
-        'Filter files may be incorrect:\n%s' % '\n'.join(warnings)))
+    res.append(
+      output_api.PresubmitPromptWarning(
+        'Filter files may be incorrect:\n%s' % '\n'.join(warnings)
+      )
+    )
   return res
 
 

@@ -13,9 +13,9 @@ from noop_merge import noop_merge
 
 def main(raw_args):
   parser = merge_api.ArgumentParser()
-  parser.add_argument('--pinlist-dir',
-                      required=True,
-                      help='where to store the merged data')
+  parser.add_argument(
+    '--pinlist-dir', required=True, help='where to store the merged data'
+  )
   args = parser.parse_args(raw_args)
 
   rc = noop_merge(args.output_json, args.jsons_to_merge)

@@ -22,6 +22,7 @@ TagsToUrlsType = Dict[TagTupleType, List[str]]
 TestToTagsType = Dict[str, TagsToUrlsType]
 AggregatedResultsType = Dict[str, TestToTagsType]
 
+
 # Sample of AggregatedStatusResultsType:
 # {
 #   'test_suite': {

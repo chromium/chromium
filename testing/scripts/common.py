@@ -17,15 +17,18 @@ import traceback
 logging.basicConfig(level=logging.INFO)
 
 sys.path.append(
-    os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
+  os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir))
+)
 # //testing imports.
 import test_env
+
 if sys.platform.startswith('linux'):
   import xvfb
 
 SCRIPT_DIR = os.path.abspath(os.path.dirname(__file__))
 SRC_DIR = os.path.abspath(
-    os.path.join(SCRIPT_DIR, os.path.pardir, os.path.pardir))
+  os.path.join(SCRIPT_DIR, os.path.pardir, os.path.pardir)
+)
 
 # Use result_sink.py in //build/util/lib/results/ for uploading the
 # results of non-isolated script tests.
@@ -50,10 +53,10 @@ INFRA_FAILURE_EXIT_CODE = 87
 
 # ACL might be explicitly set or inherited.
 CORRECT_ACL_VARIANTS = [
-    'APPLICATION PACKAGE AUTHORITY' \
-    '\\ALL RESTRICTED APPLICATION PACKAGES:(OI)(CI)(RX)', \
-    'APPLICATION PACKAGE AUTHORITY' \
-    '\\ALL RESTRICTED APPLICATION PACKAGES:(I)(OI)(CI)(RX)'
+  'APPLICATION PACKAGE AUTHORITY'
+  '\\ALL RESTRICTED APPLICATION PACKAGES:(OI)(CI)(RX)',
+  'APPLICATION PACKAGE AUTHORITY'
+  '\\ALL RESTRICTED APPLICATION PACKAGES:(I)(OI)(CI)(RX)',
 ]
 
 # pylint: disable=useless-object-inheritance
@@ -80,9 +83,9 @@ def set_lpac_acls(acl_dir, is_test_script=False):
   if sys.getwindowsversion().build < 19041:
     return
   try:
-    existing_acls = subprocess.check_output(['icacls', acl_dir],
-                                            stderr=subprocess.STDOUT,
-                                            universal_newlines=True)
+    existing_acls = subprocess.check_output(
+      ['icacls', acl_dir], stderr=subprocess.STDOUT, universal_newlines=True
+    )
   except subprocess.CalledProcessError as e:
     logging.error('Failed to retrieve existing ACLs for directory %s', acl_dir)
     logging.error('Command output: %s', e.output)
@@ -94,11 +97,13 @@ def set_lpac_acls(acl_dir, is_test_script=False):
   if not acls_correct:
     try:
       existing_acls = subprocess.check_output(
-          ['icacls', acl_dir, '/grant', '*S-1-15-2-2:(OI)(CI)(RX)'],
-          stderr=subprocess.STDOUT)
+        ['icacls', acl_dir, '/grant', '*S-1-15-2-2:(OI)(CI)(RX)'],
+        stderr=subprocess.STDOUT,
+      )
     except subprocess.CalledProcessError as e:
-      logging.error('Failed to retrieve existing ACLs for directory %s',
-                    acl_dir)
+      logging.error(
+        'Failed to retrieve existing ACLs for directory %s', acl_dir
+      )
       logging.error('Command output: %s', e.output)
       sys.exit(e.returncode)
   if not is_test_script:
@@ -107,8 +112,9 @@ def set_lpac_acls(acl_dir, is_test_script=False):
   # must be manually overridden here.
   with temporary_file() as tempfile_path:
     subprocess.check_output(
-        ['icacls', acl_dir, '/save', tempfile_path, '/t', '/q', '/c'],
-        stderr=subprocess.STDOUT)
+      ['icacls', acl_dir, '/save', tempfile_path, '/t', '/q', '/c'],
+      stderr=subprocess.STDOUT,
+    )
     # ACL files look like this, e.g. for c:\a\b\c\d\Release_x64
     #
     # Release_x64
@@ -119,7 +125,8 @@ def set_lpac_acls(acl_dir, is_test_script=False):
       for filename in aclfile:
         acl = next(aclfile).strip()
         full_filename = os.path.abspath(
-            os.path.join(acl_dir, os.pardir, filename.strip()))
+          os.path.join(acl_dir, os.pardir, filename.strip())
+        )
         if 'S-1-15-2-2' in acl:
           continue
         _grant_acls(full_filename, [('S-1-15-2-2', '(RX)')])
@@ -129,8 +136,9 @@ def set_lpac_acls(acl_dir, is_test_script=False):
     prof_dir = os.path.dirname(llvm_prof_file)
     if prof_dir:
       os.makedirs(prof_dir, exist_ok=True)
-      _grant_acls(prof_dir, [('S-1-15-2-1', '(OI)(CI)(M)'),
-                             ('S-1-15-2-2', '(OI)(CI)(M)')])
+      _grant_acls(
+        prof_dir, [('S-1-15-2-1', '(OI)(CI)(M)'), ('S-1-15-2-2', '(OI)(CI)(M)')]
+      )
 
 
 def run_script(argv, funcs):
@@ -140,9 +148,9 @@ def run_script(argv, funcs):
       return json.load(f)
 
   parser = argparse.ArgumentParser()
-  parser.add_argument('--build-dir',
-                      help='Absolute path to build-dir.',
-                      required=True)
+  parser.add_argument(
+    '--build-dir', help='Absolute path to build-dir.', required=True
+  )
   parser.add_argument('--paths', type=parse_json, default={})
   # Properties describe the environment of the build, and are the same per
   # script invocation.
@@ -154,16 +162,16 @@ def run_script(argv, funcs):
   subparsers = parser.add_subparsers()
 
   run_parser = subparsers.add_parser('run')
-  run_parser.add_argument('--output',
-                          type=argparse.FileType('w'),
-                          required=True)
+  run_parser.add_argument(
+    '--output', type=argparse.FileType('w'), required=True
+  )
   run_parser.add_argument('--filter-file', type=argparse.FileType('r'))
   run_parser.set_defaults(func=funcs['run'])
 
   run_parser = subparsers.add_parser('compile_targets')
-  run_parser.add_argument('--output',
-                          type=argparse.FileType('w'),
-                          required=True)
+  run_parser.add_argument(
+    '--output', type=argparse.FileType('w'), required=True
+  )
   run_parser.set_defaults(func=funcs['compile_targets'])
 
   args = parser.parse_args(argv)
@@ -220,16 +228,13 @@ def record_local_script_results(name, output_fd, failures, valid):
   # Source comes from:
   # infra/go/src/go.chromium.org/luci/resultdb/sink/proto/v1/test_result.proto
   struct_test_dict = {
-      'coarseName': None,  # Not used for single tests.
-      'fineName': None,  # Not used for single tests.
-      'caseNameComponents': ['*fixture'],
+    'coarseName': None,  # Not used for single tests.
+    'fineName': None,  # Not used for single tests.
+    'caseNameComponents': ['*fixture'],
   }
-  result_sink_client.Post(name,
-                          status,
-                          None,
-                          test_log,
-                          None,
-                          test_id_structured=struct_test_dict)
+  result_sink_client.Post(
+    name, status, None, test_log, None, test_id_structured=struct_test_dict
+  )
 
 
 def parse_common_test_results(json_results, test_separator='/'):
@@ -247,12 +252,12 @@ def parse_common_test_results(json_results, test_separator='/'):
     return result
 
   results = {
-      'passes': {},
-      'unexpected_passes': {},
-      'failures': {},
-      'unexpected_failures': {},
-      'flakes': {},
-      'unexpected_flakes': {},
+    'passes': {},
+    'unexpected_passes': {},
+    'failures': {},
+    'unexpected_failures': {},
+    'flakes': {},
+    'unexpected_flakes': {},
   }
 
   # TODO(dpranke): crbug.com/357866 - we should simplify the handling of
@@ -267,8 +272,9 @@ def parse_common_test_results(json_results, test_separator='/'):
     last_result = actual_results[-1]
     expected_results = result['expected'].split()
 
-    if (len(actual_results) > 1 and
-        (last_result in expected_results or last_result in passing_statuses)):
+    if len(actual_results) > 1 and (
+      last_result in expected_results or last_result in passing_statuses
+    ):
       key += 'flakes'
     elif last_result in passing_statuses:
       key += 'passes'
@@ -297,11 +303,11 @@ def write_interrupted_test_results_to(filepath, test_start_time):
   """
   with open(filepath, 'w') as fh:
     output = {
-        'interrupted': True,
-        'num_failures_by_type': {},
-        'seconds_since_epoch': test_start_time,
-        'tests': {},
-        'version': 3,
+      'interrupted': True,
+      'num_failures_by_type': {},
+      'seconds_since_epoch': test_start_time,
+      'tests': {},
+      'version': 3,
     }
     json.dump(output, fh)
 
@@ -343,15 +349,20 @@ def extract_filter_list(filter_list):
 
 def add_emulator_args(parser):
   parser.add_argument(
-      '--avd-config',
-      type=os.path.realpath,
-      help=('Path to the avd config. Required for Android products. '
-            '(See //tools/android/avd/proto for message definition '
-            'and existing *.textpb files.)'))
-  parser.add_argument('--emulator-window',
-                      action='store_true',
-                      default=False,
-                      help='Enable graphical window display on the emulator.')
+    '--avd-config',
+    type=os.path.realpath,
+    help=(
+      'Path to the avd config. Required for Android products. '
+      '(See //tools/android/avd/proto for message definition '
+      'and existing *.textpb files.)'
+    ),
+  )
+  parser.add_argument(
+    '--emulator-window',
+    action='store_true',
+    default=False,
+    help='Enable graphical window display on the emulator.',
+  )
 
 
 class BaseIsolatedScriptArgsAdapter:
@@ -365,36 +376,44 @@ class BaseIsolatedScriptArgsAdapter:
     self._rest_args = None
     self._script_writes_output_json = None
     self._parser.add_argument(
-        '--isolated-outdir',
-        type=str,
-        required=False,
-        help='value of $ISOLATED_OUTDIR from swarming task')
-    self._parser.add_argument('--isolated-script-test-output',
-                              type=os.path.abspath,
-                              required=False,
-                              help='path to write test results JSON object to')
-    self._parser.add_argument('--isolated-script-test-filter',
-                              type=str,
-                              required=False)
-    self._parser.add_argument('--isolated-script-test-repeat',
-                              type=int,
-                              required=False)
-    self._parser.add_argument('--isolated-script-test-launcher-retry-limit',
-                              type=int,
-                              required=False)
-    self._parser.add_argument('--isolated-script-test-also-run-disabled-tests',
-                              default=False,
-                              action='store_true',
-                              required=False)
+      '--isolated-outdir',
+      type=str,
+      required=False,
+      help='value of $ISOLATED_OUTDIR from swarming task',
+    )
+    self._parser.add_argument(
+      '--isolated-script-test-output',
+      type=os.path.abspath,
+      required=False,
+      help='path to write test results JSON object to',
+    )
+    self._parser.add_argument(
+      '--isolated-script-test-filter', type=str, required=False
+    )
+    self._parser.add_argument(
+      '--isolated-script-test-repeat', type=int, required=False
+    )
+    self._parser.add_argument(
+      '--isolated-script-test-launcher-retry-limit', type=int, required=False
+    )
+    self._parser.add_argument(
+      '--isolated-script-test-also-run-disabled-tests',
+      default=False,
+      action='store_true',
+      required=False,
+    )
 
     self._parser.add_argument(
-        '--xvfb',
-        help='start xvfb. Ignored on unsupported platforms',
-        action='store_true')
+      '--xvfb',
+      help='start xvfb. Ignored on unsupported platforms',
+      action='store_true',
+    )
     # Used to create the correct subclass.
-    self._parser.add_argument('--script-type',
-                              choices=['isolated', 'typ', 'bare'],
-                              help='Which script adapter to use')
+    self._parser.add_argument(
+      '--script-type',
+      choices=['isolated', 'typ', 'bare'],
+      help='Which script adapter to use',
+    )
 
     # Arguments that are ignored, but added here because it's easier to ignore
     # them to to update bot configs to not pass them.
@@ -421,6 +440,7 @@ class BaseIsolatedScriptArgsAdapter:
   def generate_test_output_args(self, output):
     del output  # unused
     return []
+
   # pylint: enable=no-self-use
 
   # Overridden by subclasses.
@@ -428,6 +448,7 @@ class BaseIsolatedScriptArgsAdapter:
   def generate_test_filter_args(self, test_filter_str):
     del test_filter_str  # unused
     raise RuntimeError('Flag not supported.')
+
   # pylint: enable=no-self-use
 
   # Overridden by subclasses.
@@ -435,6 +456,7 @@ class BaseIsolatedScriptArgsAdapter:
   def generate_test_repeat_args(self, repeat_count):
     del repeat_count  # unused
     raise RuntimeError('Flag not supported.')
+
   # pylint: enable=no-self-use
 
   # Overridden by subclasses.
@@ -442,6 +464,7 @@ class BaseIsolatedScriptArgsAdapter:
   def generate_test_launcher_retry_limit_args(self, retry_limit):
     del retry_limit  # unused
     raise RuntimeError('Flag not supported.')
+
   # pylint: enable=no-self-use
 
   # Overridden by subclasses.
@@ -449,18 +472,21 @@ class BaseIsolatedScriptArgsAdapter:
   def generate_sharding_args(self, total_shards, shard_index):
     del total_shards, shard_index  # unused
     raise RuntimeError('Flag not supported.')
+
   # pylint: enable=no-self-use
 
   # Overridden by subclasses.
   # pylint: disable=no-self-use
   def generate_test_also_run_disabled_tests_args(self):
     raise RuntimeError('Flag not supported.')
+
   # pylint: enable=no-self-use
 
   # Overridden by subclasses.
   # pylint: disable=no-self-use
   def select_python_executable(self):
     return sys.executable
+
   # pylint: enable=no-self-use
 
   def generate_isolated_script_cmd(self):
@@ -468,24 +494,28 @@ class BaseIsolatedScriptArgsAdapter:
 
     if self.options.isolated_script_test_output:
       output_args = self.generate_test_output_args(
-          self.options.isolated_script_test_output)
+        self.options.isolated_script_test_output
+      )
       self._script_writes_output_json = bool(output_args)
       isolated_script_cmd += output_args
 
     # Augment test filter args if needed
     if self.options.isolated_script_test_filter:
       isolated_script_cmd += self.generate_test_filter_args(
-          self.options.isolated_script_test_filter)
+        self.options.isolated_script_test_filter
+      )
 
     # Augment test repeat if needed
     if self.options.isolated_script_test_repeat is not None:
       isolated_script_cmd += self.generate_test_repeat_args(
-          self.options.isolated_script_test_repeat)
+        self.options.isolated_script_test_repeat
+      )
 
     # Augment test launcher retry limit args if needed
     if self.options.isolated_script_test_launcher_retry_limit is not None:
       isolated_script_cmd += self.generate_test_launcher_retry_limit_args(
-          self.options.isolated_script_test_launcher_retry_limit)
+        self.options.isolated_script_test_launcher_retry_limit
+      )
 
     # Augment test also run disable tests args if needed
     if self.options.isolated_script_test_also_run_disabled_tests:
@@ -503,7 +533,8 @@ class BaseIsolatedScriptArgsAdapter:
       shard_index = int(env['GTEST_SHARD_INDEX'])
     if total_shards is not None and shard_index is not None:
       isolated_script_cmd += self.generate_sharding_args(
-          total_shards, shard_index)
+        total_shards, shard_index
+      )
 
     return isolated_script_cmd
 
@@ -527,20 +558,18 @@ class BaseIsolatedScriptArgsAdapter:
     test_name = os.path.basename(self._rest_args[0])
     # See //docs/testing/json_test_results_format.md
     results_json = {
-        'version': 3,
-        'interrupted': False,
-        'num_failures_by_type': {
-            failure_type: 1
+      'version': 3,
+      'interrupted': False,
+      'num_failures_by_type': {failure_type: 1},
+      'path_delimiter': '/',
+      'seconds_since_epoch': start_time,
+      'tests': {
+        test_name: {
+          'expected': 'PASS',
+          'actual': failure_type,
+          'time': time.time() - start_time,
         },
-        'path_delimiter': '/',
-        'seconds_since_epoch': start_time,
-        'tests': {
-            test_name: {
-                'expected': 'PASS',
-                'actual': failure_type,
-                'time': time.time() - start_time,
-            },
-        },
+      },
     }
     with open(self.options.isolated_script_test_output, 'w') as fp:
       json.dump(results_json, fp)
@@ -571,8 +600,10 @@ class BaseIsolatedScriptArgsAdapter:
     finally:
       self.clean_up_after_test_run()
 
-    if (self.options.isolated_script_test_output
-        and not self._script_writes_output_json):
+    if (
+      self.options.isolated_script_test_output
+      and not self._script_writes_output_json
+    ):
       self._write_simple_test_results(start_time, exit_code)
 
     return exit_code if exit_code is not None else 2

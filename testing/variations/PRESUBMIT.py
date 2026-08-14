@@ -17,14 +17,31 @@ import sys
 from collections import OrderedDict
 
 VALID_EXPERIMENT_KEYS = [
-    'name', 'forcing_flag', 'params', 'enable_features', 'disable_features',
-    'min_os_version', 'disable_benchmarking', 'hardware_classes',
-    'exclude_hardware_classes', 'hardware_manufacturers',
-    'exclude_hardware_manufacturers', '//0', '//1', '//2', '//3', '//4', '//5',
-    '//6', '//7', '//8', '//9'
+  'name',
+  'forcing_flag',
+  'params',
+  'enable_features',
+  'disable_features',
+  'min_os_version',
+  'disable_benchmarking',
+  'hardware_classes',
+  'exclude_hardware_classes',
+  'hardware_manufacturers',
+  'exclude_hardware_manufacturers',
+  '//0',
+  '//1',
+  '//2',
+  '//3',
+  '//4',
+  '//5',
+  '//6',
+  '//7',
+  '//8',
+  '//9',
 ]
 
 FIELDTRIAL_CONFIG_FILE_NAME = 'fieldtrial_testing_config.json'
+
 
 # LINT.IfChange
 def PrettyPrint(contents):
@@ -82,7 +99,8 @@ def PrettyPrint(contents):
         ordered_study_config['form_factors'] = study_config['form_factors']
       if 'is_low_end_device' in study_config:
         ordered_study_config['is_low_end_device'] = study_config[
-            'is_low_end_device']
+          'is_low_end_device'
+        ]
       ordered_study_config['experiments'] = []
       for experiment_group in study_config['experiments']:
         ordered_experiment_group = OrderedDict()
@@ -90,46 +108,64 @@ def PrettyPrint(contents):
           comment_key = '//' + str(index)
           if comment_key in experiment_group:
             ordered_experiment_group[comment_key] = experiment_group[
-                comment_key]
+              comment_key
+            ]
         ordered_experiment_group['name'] = experiment_group['name']
         if 'forcing_flag' in experiment_group:
           ordered_experiment_group['forcing_flag'] = experiment_group[
-              'forcing_flag']
+            'forcing_flag'
+          ]
         if 'params' in experiment_group:
           ordered_experiment_group['params'] = OrderedDict(
-              sorted(experiment_group['params'].items(), key=lambda t: t[0]))
+            sorted(experiment_group['params'].items(), key=lambda t: t[0])
+          )
         if 'enable_features' in experiment_group:
-          ordered_experiment_group['enable_features'] = \
-              sorted(experiment_group['enable_features'])
+          ordered_experiment_group['enable_features'] = sorted(
+            experiment_group['enable_features']
+          )
         if 'disable_features' in experiment_group:
-          ordered_experiment_group['disable_features'] = \
-              sorted(experiment_group['disable_features'])
+          ordered_experiment_group['disable_features'] = sorted(
+            experiment_group['disable_features']
+          )
         if 'min_os_version' in experiment_group:
           ordered_experiment_group['min_os_version'] = experiment_group[
-              'min_os_version']
+            'min_os_version'
+          ]
         if 'disable_benchmarking' in experiment_group:
           ordered_experiment_group['disable_benchmarking'] = experiment_group[
-              'disable_benchmarking']
+            'disable_benchmarking'
+          ]
         if 'hardware_classes' in experiment_group:
-          ordered_experiment_group['hardware_classes'] = \
-              sorted(experiment_group['hardware_classes'])
+          ordered_experiment_group['hardware_classes'] = sorted(
+            experiment_group['hardware_classes']
+          )
         if 'exclude_hardware_classes' in experiment_group:
-          ordered_experiment_group['exclude_hardware_classes'] = \
-              sorted(experiment_group['exclude_hardware_classes'])
+          ordered_experiment_group['exclude_hardware_classes'] = sorted(
+            experiment_group['exclude_hardware_classes']
+          )
         if 'hardware_manufacturers' in experiment_group:
-          ordered_experiment_group['hardware_manufacturers'] = \
-              sorted(experiment_group['hardware_manufacturers'])
+          ordered_experiment_group['hardware_manufacturers'] = sorted(
+            experiment_group['hardware_manufacturers']
+          )
         if 'exclude_hardware_manufacturers' in experiment_group:
-          ordered_experiment_group['exclude_hardware_manufacturers'] = \
-              sorted(experiment_group['exclude_hardware_manufacturers'])
+          ordered_experiment_group['exclude_hardware_manufacturers'] = sorted(
+            experiment_group['exclude_hardware_manufacturers']
+          )
         ordered_study_config['experiments'].append(ordered_experiment_group)
       ordered_study.append(ordered_study_config)
     ordered_config[key] = ordered_study
-  return json.dumps(
-      ordered_config, sort_keys=False, indent=4, separators=(',', ': ')) + '\n'
+  return (
+    json.dumps(
+      ordered_config, sort_keys=False, indent=4, separators=(',', ': ')
+    )
+    + '\n'
+  )
+
+
 # pylint: disable=line-too-long
 # LINT.ThenChange(/components/variations/field_trial_config/field_trial_testing_config_schema.json)
 # pylint: enable=line-too-long
+
 
 def ValidateData(json_data, file_path, message_type):
   """Validates the format of a fieldtrial configuration.
@@ -146,12 +182,13 @@ def ValidateData(json_data, file_path, message_type):
   """
 
   def _CreateMessage(message_format, *args):
-    return _CreateMalformedConfigMessage(message_type, file_path,
-                                         message_format, *args)
+    return _CreateMalformedConfigMessage(
+      message_type, file_path, message_format, *args
+    )
 
   if not isinstance(json_data, dict):
     return _CreateMessage('Expecting dict')
-  for (study, study_configs) in iter(json_data.items()):
+  for study, study_configs in iter(json_data.items()):
     warnings = _ValidateEntry(study, study_configs, _CreateMessage)
     if warnings:
       return warnings
@@ -195,12 +232,19 @@ def _ValidateStudyConfig(study_config, create_message_fn):
   if not isinstance(study_config['platforms'], list):
     return create_message_fn('Expecting list for platforms')
   supported_platforms = [
-      'android', 'android_webview', 'chromeos', 'fuchsia', 'ios', 'linux',
-      'mac', 'windows'
+    'android',
+    'android_webview',
+    'chromeos',
+    'fuchsia',
+    'ios',
+    'linux',
+    'mac',
+    'windows',
   ]
   experiment_platforms = study_config['platforms']
   unsupported_platforms = list(
-      set(experiment_platforms).difference(supported_platforms))
+    set(experiment_platforms).difference(supported_platforms)
+  )
   if unsupported_platforms:
     return create_message_fn('Unsupported platforms %s', unsupported_platforms)
   return []
@@ -221,7 +265,7 @@ def _ValidateExperimentGroup(experiment_group, create_message_fn):
     params = experiment_group['params']
     if not isinstance(params, dict):
       return _CreateGroupMessage('Expected dict for params')
-    for (key, value) in iter(params.items()):
+    for key, value in iter(params.items()):
       if not isinstance(key, str) or not isinstance(value, str):
         return _CreateGroupMessage('Invalid param (%s: %s)', key, value)
   for key in experiment_group.keys():
@@ -230,8 +274,9 @@ def _ValidateExperimentGroup(experiment_group, create_message_fn):
   return []
 
 
-def _CreateMalformedConfigMessage(message_type, file_path, message_format,
-                                  *args):
+def _CreateMalformedConfigMessage(
+  message_type, file_path, message_format, *args
+):
   """Returns a list containing one |message_type| with the error message.
 
   Args:
@@ -246,7 +291,7 @@ def _CreateMalformedConfigMessage(message_type, file_path, message_format,
     'Malformed config file [file]: ' prepended to it.
   """
   error_message_format = 'Malformed config file %s: ' + message_format
-  format_args = (file_path, ) + args
+  format_args = (file_path,) + args
   return [message_type(error_message_format % format_args)]
 
 
@@ -266,8 +311,10 @@ def CheckPretty(contents, file_path, message_type):
   pretty = PrettyPrint(contents)
   if contents != pretty:
     return [
-        message_type('Pretty printing error: Run '
-                     'python3 testing/variations/PRESUBMIT.py %s' % file_path)
+      message_type(
+        'Pretty printing error: Run '
+        'python3 testing/variations/PRESUBMIT.py %s' % file_path
+      )
     ]
   return []
 
@@ -324,8 +371,10 @@ def CheckDuplicatedFeatures(new_json_data, old_json_data, message_type):
   # Get list of studies that changed.
   changed_studies = []
   for study_name in new_json_data:
-    if (study_name not in old_json_data
-        or new_json_data[study_name] != old_json_data[study_name]):
+    if (
+      study_name not in old_json_data
+      or new_json_data[study_name] != old_json_data[study_name]
+    ):
       changed_studies.append(study_name)
 
   # A map between a feature name and the name of studies that use it. E.g.,
@@ -340,25 +389,29 @@ def CheckDuplicatedFeatures(new_json_data, old_json_data, message_type):
         continue
 
       duplicated_features = _GetDuplicatedFeatures(
-          new_json_data[changed_study_name], new_json_data[study_name])
+        new_json_data[changed_study_name], new_json_data[study_name]
+      )
 
       for feature in duplicated_features:
         if feature not in duplicated_features_to_studies_map:
           duplicated_features_to_studies_map[feature] = set()
         duplicated_features_to_studies_map[feature].update(
-            [changed_study_name, study_name])
+          [changed_study_name, study_name]
+        )
 
   if len(duplicated_features_to_studies_map) == 0:
     return []
 
   duplicated_features_strings = [
-      '%s (in studies %s)' % (feature, ', '.join(studies))
-      for feature, studies in duplicated_features_to_studies_map.items()
+    '%s (in studies %s)' % (feature, ', '.join(studies))
+    for feature, studies in duplicated_features_to_studies_map.items()
   ]
 
   return [
-      message_type('The following feature(s) were specified in multiple '
-                   'studies: %s' % ', '.join(duplicated_features_strings))
+    message_type(
+      'The following feature(s) were specified in multiple '
+      'studies: %s' % ', '.join(duplicated_features_strings)
+    )
   ]
 
 
@@ -391,9 +444,11 @@ def CheckUndeclaredFeatures(input_api, output_api, json_data, changed_lines):
   try:
     # //testing/variations/presubmit imports.
     sys.path.append(
-        input_api.os_path.join(input_api.PresubmitLocalPath(), 'presubmit'))
+      input_api.os_path.join(input_api.PresubmitLocalPath(), 'presubmit')
+    )
     # pylint: disable=import-outside-toplevel
     import find_features
+
     # pylint: enable=import-outside-toplevel
     declared_features = find_features.FindDeclaredFeatures(input_api)
   finally:
@@ -401,9 +456,10 @@ def CheckUndeclaredFeatures(input_api, output_api, json_data, changed_lines):
 
   if not declared_features:
     return [
-        output_api.PresubmitError(
-            'Presubmit unable to find any declared flags in source. Please '
-            'check PRESUBMIT.py for errors.')
+      output_api.PresubmitError(
+        'Presubmit unable to find any declared flags in source. Please '
+        'check PRESUBMIT.py for errors.'
+      )
     ]
 
   messages = []
@@ -429,25 +485,27 @@ def CheckUndeclaredFeatures(input_api, output_api, json_data, changed_lines):
         # (checked by build tools in base/BUILD.gn).
         # Warn, but don't break, if they are present in the CL
         cros_late_boot_features = {
-            s
-            for s in missing_features if s.startswith('CrOSLateBoot')
+          s for s in missing_features if s.startswith('CrOSLateBoot')
         }
         missing_features = missing_features - cros_late_boot_features
         if cros_late_boot_features:
-          msg = ('CrOSLateBoot features added to '
-                 'study %s are not checked by presubmit.'
-                 '\nPlease manually check that they exist in the code base.'
-                 ) % study_name
+          msg = (
+            'CrOSLateBoot features added to '
+            'study %s are not checked by presubmit.'
+            '\nPlease manually check that they exist in the code base.'
+          ) % study_name
           messages.append(
-              output_api.PresubmitResult(msg, cros_late_boot_features))
+            output_api.PresubmitResult(msg, cros_late_boot_features)
+          )
 
         if missing_features:
-          msg = ('Presubmit was unable to verify existence of features in '
-                 'study %s.\nThis happens most commonly if the feature is '
-                 'defined by code generation.\n'
-                 'Please verify that the feature names have been spelled '
-                 'correctly before submitting. The affected features are:'
-                 ) % study_name
+          msg = (
+            'Presubmit was unable to verify existence of features in '
+            'study %s.\nThis happens most commonly if the feature is '
+            'defined by code generation.\n'
+            'Please verify that the feature names have been spelled '
+            'correctly before submitting. The affected features are:'
+          ) % study_name
           messages.append(output_api.PresubmitResult(msg, missing_features))
 
   return messages
@@ -455,39 +513,44 @@ def CheckUndeclaredFeatures(input_api, output_api, json_data, changed_lines):
 
 def CommonChecks(input_api, output_api):
   affected_files = input_api.AffectedFiles(
-      include_deletes=False,
-      file_filter=lambda x: x.LocalPath().endswith('.json'))
+    include_deletes=False, file_filter=lambda x: x.LocalPath().endswith('.json')
+  )
   for f in affected_files:
     if not f.LocalPath().endswith(FIELDTRIAL_CONFIG_FILE_NAME):
       return [
-          output_api.PresubmitError(
-              '%s is the only json file expected in this folder. If new jsons '
-              'are added, please update the presubmit process with proper '
-              'validation. ' % FIELDTRIAL_CONFIG_FILE_NAME)
+        output_api.PresubmitError(
+          '%s is the only json file expected in this folder. If new jsons '
+          'are added, please update the presubmit process with proper '
+          'validation. ' % FIELDTRIAL_CONFIG_FILE_NAME
+        )
       ]
     contents = input_api.ReadFile(f)
     try:
       json_data = input_api.json.loads(contents)
-      result = ValidateData(json_data, f.AbsoluteLocalPath(),
-                            output_api.PresubmitError)
+      result = ValidateData(
+        json_data, f.AbsoluteLocalPath(), output_api.PresubmitError
+      )
       if result:
         return result
       result = CheckPretty(contents, f.LocalPath(), output_api.PresubmitError)
       if result:
         return result
       result = CheckDuplicatedFeatures(
-          json_data, input_api.json.loads('\n'.join(f.OldContents())),
-          output_api.PresubmitError)
+        json_data,
+        input_api.json.loads('\n'.join(f.OldContents())),
+        output_api.PresubmitError,
+      )
       if result:
         return result
       if input_api.is_committing:
-        result = CheckUndeclaredFeatures(input_api, output_api, json_data,
-                                         f.ChangedContents())
+        result = CheckUndeclaredFeatures(
+          input_api, output_api, json_data, f.ChangedContents()
+        )
         if result:
           return result
     except ValueError:
       return [
-          output_api.PresubmitError('Malformed JSON file: %s' % f.LocalPath())
+        output_api.PresubmitError('Malformed JSON file: %s' % f.LocalPath())
       ]
   return []
 

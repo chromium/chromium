@@ -28,13 +28,11 @@ import os
 
 
 class TestResult:
-    """TestResult represents a result of executing a single test once.
-    """
+    """TestResult represents a result of executing a single test once."""
 
-    def __init__(self,
-                 test_name,
-                 actual_test_result,
-                 expected_test_result='PASS'):
+    def __init__(
+        self, test_name, actual_test_result, expected_test_result='PASS'
+    ):
         self.test_name = test_name
         self.actual_test_result = actual_test_result
         self.expected_test_result = expected_test_result
@@ -48,8 +46,9 @@ class TestResult:
         return hash(tuple(sorted(self.__dict__.items())))
 
     def __repr__(self):
-        result = 'TestResult[{}: {}'.format(self.test_name,
-                                            self.actual_test_result)
+        result = 'TestResult[{}: {}'.format(
+            self.test_name, self.actual_test_result
+        )
         if self.expected_test_result != 'PASS':
             result += ' (expecting: {})]'.format(self.expected_test_result)
         else:
@@ -71,26 +70,34 @@ def add_cmdline_args(argparse_parser):
         argparse_parser: An object of argparse.ArgumentParser type.
     """
     outdir_help = 'Directory where test results will be written into.'
-    argparse_parser.add_argument('--isolated-outdir',
-                                 dest='outdir',
-                                 help=outdir_help,
-                                 metavar='DIRPATH',
-                                 type=_validate_output_directory)
+    argparse_parser.add_argument(
+        '--isolated-outdir',
+        dest='outdir',
+        help=outdir_help,
+        metavar='DIRPATH',
+        type=_validate_output_directory,
+    )
 
-    outfile_help = 'If this argument is provided, then test results in the ' \
-                   'JSON Test Results Format will be written here. See also ' \
-                   '//docs/testing/json_test_results_format.md'
-    argparse_parser.add_argument('--isolated-script-test-output',
-                                 dest='test_output',
-                                 default=None,
-                                 help=outfile_help,
-                                 metavar='FILENAME')
+    outfile_help = (
+        'If this argument is provided, then test results in the '
+        'JSON Test Results Format will be written here. See also '
+        '//docs/testing/json_test_results_format.md'
+    )
+    argparse_parser.add_argument(
+        '--isolated-script-test-output',
+        dest='test_output',
+        default=None,
+        help=outfile_help,
+        metavar='FILENAME',
+    )
 
-    argparse_parser.add_argument('--isolated-script-test-perf-output',
-                                 dest='ignored_perf_output',
-                                 default=None,
-                                 help='Deprecated and ignored.',
-                                 metavar='IGNORED')
+    argparse_parser.add_argument(
+        '--isolated-script-test-perf-output',
+        dest='ignored_perf_output',
+        default=None,
+        help='Deprecated and ignored.',
+        metavar='IGNORED',
+    )
 
 
 def _build_json_data(list_of_test_results, seconds_since_epoch):
@@ -122,8 +129,11 @@ def _build_json_data(list_of_test_results, seconds_since_epoch):
     }
 
 
-def print_test_results(argparse_parsed_args, list_of_test_results,
-                       testing_start_time_as_seconds_since_epoch):
+def print_test_results(
+    argparse_parsed_args,
+    list_of_test_results,
+    testing_start_time_as_seconds_since_epoch,
+):
     """Prints `list_of_test_results` to a file specified on the cmdline.
 
     Args:
@@ -137,8 +147,9 @@ def print_test_results(argparse_parsed_args, list_of_test_results,
     if argparse_parsed_args.test_output is None:
         return
 
-    json_data = _build_json_data(list_of_test_results,
-                                 testing_start_time_as_seconds_since_epoch)
+    json_data = _build_json_data(
+        list_of_test_results, testing_start_time_as_seconds_since_epoch
+    )
 
     filepath = argparse_parsed_args.test_output
     with open(filepath, mode='w', encoding='utf-8') as f:

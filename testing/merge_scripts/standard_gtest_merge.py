@@ -44,19 +44,20 @@ def merge_shard_results(summary_json, jsons_to_merge):
       summary = json.load(f)
   except (IOError, ValueError):
     emit_warning(
-        'summary.json is missing or can not be read',
-        'Something is seriously wrong with swarming client or the bot.')
+      'summary.json is missing or can not be read',
+      'Something is seriously wrong with swarming client or the bot.',
+    )
     return None
 
   # Merge all JSON files together. Keep track of missing shards.
   merged = {
-      'all_tests': set(),
-      'disabled_tests': set(),
-      'global_tags': set(),
-      'missing_shards': [],
-      'per_iteration_data': [],
-      'swarming_summary': summary,
-      'test_locations': {},
+    'all_tests': set(),
+    'disabled_tests': set(),
+    'global_tags': set(),
+    'missing_shards': [],
+    'per_iteration_data': [],
+    'swarming_summary': summary,
+    'test_locations': {},
   }
   for index, result in enumerate(summary['shards']):
     if result is None:
@@ -67,33 +68,36 @@ def merge_shard_results(summary_json, jsons_to_merge):
     # client/swarming.py, which means the state enum is saved in its string
     # name form, not in the number form.
     state = result.get('state')
-    if state == u'BOT_DIED':
+    if state == 'BOT_DIED':
       emit_warning('Shard #%d had a Swarming internal failure' % index)
-    elif state == u'EXPIRED':
+    elif state == 'EXPIRED':
       emit_warning("There wasn't enough capacity to run your test")
-    elif state == u'TIMED_OUT':
+    elif state == 'TIMED_OUT':
       emit_warning(
-          'Test runtime exceeded allocated time',
-          "Either it ran for too long (hard timeout) or it didn't produce "
-          'I/O for an extended period of time (I/O timeout)')
-    elif state != u'COMPLETED':
+        'Test runtime exceeded allocated time',
+        "Either it ran for too long (hard timeout) or it didn't produce "
+        'I/O for an extended period of time (I/O timeout)',
+      )
+    elif state != 'COMPLETED':
       emit_warning('Invalid Swarming task state: %s' % state)
 
-    json_data, err_msg = load_shard_json(index, result.get('task_id'),
-                                         jsons_to_merge)
+    json_data, err_msg = load_shard_json(
+      index, result.get('task_id'), jsons_to_merge
+    )
     if json_data:
       # Set-like fields.
       for key in ('all_tests', 'disabled_tests', 'global_tags'):
         merged[key].update(json_data.get(key, []))
 
       # Dict-like fields.
-      for key in ('test_locations', ):
+      for key in ('test_locations',):
         merged[key].update(json_data.get(key, {}))
 
       # 'per_iteration_data' is a list of dicts. Dicts should be merged
       # together, not the 'per_iteration_data' list itself.
       merged['per_iteration_data'] = merge_list_of_dicts(
-          merged['per_iteration_data'], json_data.get('per_iteration_data', []))
+        merged['per_iteration_data'], json_data.get('per_iteration_data', [])
+      )
     else:
       merged['missing_shards'].append(index)
       emit_warning('No result was found: %s' % err_msg)
@@ -103,8 +107,9 @@ def merge_shard_results(summary_json, jsons_to_merge):
   # case.
   if merged['missing_shards']:
     as_str = ', '.join(map(str, merged['missing_shards']))
-    emit_warning('some shards did not complete: %s' % as_str,
-                 MISSING_SHARDS_MSG % as_str)
+    emit_warning(
+      'some shards did not complete: %s' % as_str, MISSING_SHARDS_MSG % as_str
+    )
     # Not all tests run, combined JSON summary can not be trusted.
     merged['global_tags'].add('UNRELIABLE_RESULTS')
 
@@ -132,9 +137,15 @@ def load_shard_json(index, task_id, jsons_to_merge):
   """
   # 'output.json' is set in swarming/api.py, gtest_task method.
   matching_json_files = [
-      j for j in jsons_to_merge if (os.path.basename(j) == 'output.json' and (
-          os.path.basename(os.path.dirname(j)) == str(index)
-          or os.path.basename(os.path.dirname(j)) == task_id))
+    j
+    for j in jsons_to_merge
+    if (
+      os.path.basename(j) == 'output.json'
+      and (
+        os.path.basename(os.path.dirname(j)) == str(index)
+        or os.path.basename(os.path.dirname(j)) == task_id
+      )
+    )
   ]
 
   if not matching_json_files:
@@ -149,9 +160,11 @@ def load_shard_json(index, task_id, jsons_to_merge):
   try:
     filesize = os.stat(path).st_size
     if filesize > OUTPUT_JSON_SIZE_LIMIT:
-      print('output.json is %d bytes. Max size is %d' %
-            (filesize, OUTPUT_JSON_SIZE_LIMIT),
-            file=sys.stderr)
+      print(
+        'output.json is %d bytes. Max size is %d'
+        % (filesize, OUTPUT_JSON_SIZE_LIMIT),
+        file=sys.stderr,
+      )
       return (None, 'shard %s test output exceeded the size limit' % index)
 
     with open(path, encoding='utf-8') as f:
@@ -189,8 +202,9 @@ def main(raw_args):
   parser = merge_api.ArgumentParser()
   args = parser.parse_args(raw_args)
 
-  return standard_gtest_merge(args.output_json, args.summary_json,
-                              args.jsons_to_merge)
+  return standard_gtest_merge(
+    args.output_json, args.summary_json, args.jsons_to_merge
+  )
 
 
 if __name__ == '__main__':

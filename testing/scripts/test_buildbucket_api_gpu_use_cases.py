@@ -11,9 +11,17 @@ import sys
 import common
 
 sys.path.append(
-    os.path.abspath(
-        os.path.join(os.path.dirname(__file__), os.path.pardir, os.path.pardir,
-                     'content', 'test', 'gpu')))
+  os.path.abspath(
+    os.path.join(
+      os.path.dirname(__file__),
+      os.path.pardir,
+      os.path.pardir,
+      'content',
+      'test',
+      'gpu',
+    )
+  )
+)
 
 # //content/test/gpu imports.
 import gather_power_measurement_results
@@ -21,12 +29,11 @@ import gather_swarming_json_results
 
 
 class BuildBucketApiGpuUseCaseTests:
-
   @classmethod
   def GenerateTests(cls):
     return [
-        'TestGatherPowerMeasurementResultsFromLatestGreenBuild',
-        'TestGatherWebGL2TestTimesFromLatestGreenBuild',
+      'TestGatherPowerMeasurementResultsFromLatestGreenBuild',
+      'TestGatherWebGL2TestTimesFromLatestGreenBuild',
     ]
 
   @staticmethod
@@ -38,11 +45,13 @@ class BuildBucketApiGpuUseCaseTests:
     step = 'power_measurement_test'
     build_id = gather_power_measurement_results.GetLatestGreenBuild(bot)
     build_json = gather_power_measurement_results.GetJsonForBuildSteps(
-        bot, build_id)
+      bot, build_id
+    )
     if 'steps' not in build_json:
       return '"steps" is missing from the build json'
     stdout_url = gather_power_measurement_results.FindStepLogURL(
-        build_json['steps'], step, 'stdout')
+      build_json['steps'], step, 'stdout'
+    )
     if not stdout_url:
       return 'Unable to find stdout from step %s' % step
     results = {'number': build_id, 'tests': []}
@@ -58,9 +67,10 @@ class BuildBucketApiGpuUseCaseTests:
     # Verify we can get more than 2000 WebGL2 tests running time from the
     # latest successful build.
     extracted_times, _ = gather_swarming_json_results.GatherResults(
-        bot='Linux FYI Release (NVIDIA)',
-        build=None,  # Use the latest green build
-        step='webgl2_conformance_validating_tests')
+      bot='Linux FYI Release (NVIDIA)',
+      build=None,  # Use the latest green build
+      step='webgl2_conformance_validating_tests',
+    )
 
     if 'times' not in extracted_times:
       return '"times" is missing from the extracted dict'
@@ -75,12 +85,12 @@ class BuildBucketApiGpuUseCaseTests:
 def main(argv):
   parser = argparse.ArgumentParser()
   parser.add_argument('--isolated-script-test-output', type=str)
-  parser.add_argument('--isolated-script-test-chartjson-output',
-                      type=str,
-                      required=False)
-  parser.add_argument('--isolated-script-test-perf-output',
-                      type=str,
-                      required=False)
+  parser.add_argument(
+    '--isolated-script-test-chartjson-output', type=str, required=False
+  )
+  parser.add_argument(
+    '--isolated-script-test-perf-output', type=str, required=False
+  )
   parser.add_argument('--isolated-script-test-filter', type=str, required=False)
 
   args = parser.parse_args(argv)
@@ -102,10 +112,13 @@ def main(argv):
 
   if args.isolated_script_test_output:
     with open(args.isolated_script_test_output, 'w') as json_file:
-      json.dump({
+      json.dump(
+        {
           'valid': True,
           'failures': failures,
-      }, json_file)
+        },
+        json_file,
+      )
 
   return retval
 
@@ -120,8 +133,8 @@ if __name__ == '__main__':
   # Conform minimally to the protocol defined by ScriptTest.
   if 'compile_targets' in sys.argv:
     funcs = {
-        'run': None,
-        'compile_targets': main_compile_targets,
+      'run': None,
+      'compile_targets': main_compile_targets,
     }
     sys.exit(common.run_script(sys.argv[1:], funcs))
   sys.exit(main(sys.argv[1:]))

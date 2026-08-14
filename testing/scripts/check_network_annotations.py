@@ -25,13 +25,18 @@ def main_run(args):
   os.close(errors_file)
 
   command_line = [
-      sys.executable,
-      os.path.join(common.SRC_DIR, 'tools', 'traffic_annotation', 'scripts',
-                   'check_annotations.py'),
-      '--build-path',
-      args.build_dir,
-      '--errors-file',
-      errors_filename,
+    sys.executable,
+    os.path.join(
+      common.SRC_DIR,
+      'tools',
+      'traffic_annotation',
+      'scripts',
+      'check_annotations.py',
+    ),
+    '--build-path',
+    args.build_dir,
+    '--errors-file',
+    errors_filename,
   ]
   rc = common.run_command(command_line)
 
@@ -39,8 +44,9 @@ def main_run(args):
   if rc:
     with open(errors_filename, encoding='utf-8') as f:
       failures = json.load(f) or ['Please refer to stdout for errors.']
-  common.record_local_script_results('check_network_annotations', args.output,
-                                     failures, True)
+  common.record_local_script_results(
+    'check_network_annotations', args.output, failures, True
+  )
 
   return rc
 
@@ -51,7 +57,7 @@ def main_compile_targets(args):
 
 if __name__ == '__main__':
   funcs = {
-      'run': main_run,
-      'compile_targets': main_compile_targets,
+    'run': main_run,
+    'compile_targets': main_compile_targets,
   }
   sys.exit(common.run_script(sys.argv[1:], funcs))

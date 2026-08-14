@@ -57,7 +57,8 @@ import jinja2
 
 # //third_party/blink/renderer/bindings/scripts imports.
 sys.path.append(
-    os.path.join(SOURCE_DIR, 'third_party/blink/renderer/bindings/scripts/'))
+  os.path.join(SOURCE_DIR, 'third_party/blink/renderer/bindings/scripts/')
+)
 import web_idl
 
 
@@ -73,6 +74,7 @@ class SwiftExpression:
         the string representation of this expression.
     """
     raise Exception('Not implemented.')
+
   # pylint: enable=no-self-use
 
 
@@ -86,6 +88,7 @@ class SwiftNil(SwiftExpression):
 @dataclasses.dataclass
 class StringLiteral(SwiftExpression):
   """Represents a Swift string literal."""
+
   value: str
 
   def fuzzilli_repr(self) -> str:
@@ -94,7 +97,8 @@ class StringLiteral(SwiftExpression):
 
 @dataclasses.dataclass
 class LiteralList(SwiftExpression):
-  """Represents a literal Swift list. """
+  """Represents a literal Swift list."""
+
   values: List[SwiftExpression]
 
   def fuzzilli_repr(self) -> str:
@@ -123,6 +127,7 @@ class Or(SwiftExpression):
 @dataclasses.dataclass
 class ILType(SwiftExpression):
   """Represents the Fuzzilli 'ILType' Swift type."""
+
   property: str
   args: Optional[List[SwiftExpression]] = None
   kwargs: Optional[Dict[str, SwiftExpression]] = None
@@ -135,7 +140,8 @@ class ILType(SwiftExpression):
       arg_s += ', '.join([a.fuzzilli_repr() for a in self.args])
     if self.kwargs:
       arg_s += ', '.join(
-          [f'{k}: {v.fuzzilli_repr()}' for k, v in self.kwargs.items()])
+        [f'{k}: {v.fuzzilli_repr()}' for k, v in self.kwargs.items()]
+      )
     return f'ILType.{self.property}({arg_s})'
 
   @staticmethod
@@ -204,18 +210,20 @@ class ILType(SwiftExpression):
 
   @staticmethod
   def jsTypedArray(variant: str) -> ILType:
-    return ILType(property='jsTypedArray',
-                  args=[StringLiteral(value=variant)],
-                  kwargs=None)
+    return ILType(
+      property='jsTypedArray', args=[StringLiteral(value=variant)], kwargs=None
+    )
 
   @staticmethod
   def function(signature: SignatureType) -> ILType:
     return ILType(property='function', args=[signature], kwargs=None)
 
   @staticmethod
-  def object(group: Optional[str] = None,
-             props: Optional[List[str]] = None,
-             methods: Optional[List[str]] = None) -> ILType:
+  def object(
+    group: Optional[str] = None,
+    props: Optional[List[str]] = None,
+    methods: Optional[List[str]] = None,
+  ) -> ILType:
     if not group and not props and not methods:
       return ILType(property='object', args=[])
 
@@ -225,9 +233,9 @@ class ILType(SwiftExpression):
     methods_list = LiteralList(values=methods_literals)
     group_val = StringLiteral(value=group) if group else SwiftNil()
     kwargs = {
-        'ofGroup': group_val,
-        'withProperties': props_list,
-        'withMethods': methods_list,
+      'ofGroup': group_val,
+      'withProperties': props_list,
+      'withMethods': methods_list,
     }
     return ILType(property='object', kwargs=kwargs)
 
@@ -243,50 +251,51 @@ class ILType(SwiftExpression):
 
 
 SIMPLE_TYPE_TO_ILTYPE = {
-    'void': ILType.undefined(),
-    'object': ILType.object(),
-    'undefined': ILType.undefined(),
-    'any': ILType.jsAnything(),
-    'byte': ILType.integer(),
-    'octet': ILType.integer(),
-    'short': ILType.integer(),
-    'unsigned short': ILType.integer(),
-    'long': ILType.integer(),
-    'unsigned long': ILType.integer(),
-    'long long': ILType.integer(),
-    'unsigned long long': ILType.integer(),
-    'integer': ILType.integer(),
-    'float': ILType.float(),
-    'double': ILType.float(),
-    'unrestricted float': ILType.float(),
-    'unrestricted double': ILType.float(),
-    'bigint': ILType.bigint(),
-    'boolean': ILType.boolean(),
-    'DOMString': ILType.string(),
-    'ByteString': ILType.string(),
-    'USVString': ILType.string(),
-    'ArrayBuffer': ILType.jsArrayBuffer(),
-    'ArrayBufferView': ILType.jsDataView(),
-    'SharedArray': ILType.jsSharedArrayBuffer(),
-    'Int8Array': ILType.jsTypedArray('Int8Array'),
-    'Int16Array': ILType.jsTypedArray('Int16Array'),
-    'Int32Array': ILType.jsTypedArray('Int32Array'),
-    'Uint8Array': ILType.jsTypedArray('Uint8Array'),
-    'Uint16Array': ILType.jsTypedArray('Uint16Array'),
-    'Uint32Array': ILType.jsTypedArray('Uint32Array'),
-    'Uint8ClampedArray': ILType.jsTypedArray('Uint8ClampedArray'),
-    'BigInt64Array': ILType.jsTypedArray('BigInt64Array'),
-    'BigUint64Array': ILType.jsTypedArray('BigUint64Array'),
-    'Float16Array': ILType.jsTypedArray('Float16Array'),
-    'Float32Array': ILType.jsTypedArray('Float32Array'),
-    'Float64Array': ILType.jsTypedArray('Float64Array'),
-    'DataView': ILType.jsDataView(),
+  'void': ILType.undefined(),
+  'object': ILType.object(),
+  'undefined': ILType.undefined(),
+  'any': ILType.jsAnything(),
+  'byte': ILType.integer(),
+  'octet': ILType.integer(),
+  'short': ILType.integer(),
+  'unsigned short': ILType.integer(),
+  'long': ILType.integer(),
+  'unsigned long': ILType.integer(),
+  'long long': ILType.integer(),
+  'unsigned long long': ILType.integer(),
+  'integer': ILType.integer(),
+  'float': ILType.float(),
+  'double': ILType.float(),
+  'unrestricted float': ILType.float(),
+  'unrestricted double': ILType.float(),
+  'bigint': ILType.bigint(),
+  'boolean': ILType.boolean(),
+  'DOMString': ILType.string(),
+  'ByteString': ILType.string(),
+  'USVString': ILType.string(),
+  'ArrayBuffer': ILType.jsArrayBuffer(),
+  'ArrayBufferView': ILType.jsDataView(),
+  'SharedArray': ILType.jsSharedArrayBuffer(),
+  'Int8Array': ILType.jsTypedArray('Int8Array'),
+  'Int16Array': ILType.jsTypedArray('Int16Array'),
+  'Int32Array': ILType.jsTypedArray('Int32Array'),
+  'Uint8Array': ILType.jsTypedArray('Uint8Array'),
+  'Uint16Array': ILType.jsTypedArray('Uint16Array'),
+  'Uint32Array': ILType.jsTypedArray('Uint32Array'),
+  'Uint8ClampedArray': ILType.jsTypedArray('Uint8ClampedArray'),
+  'BigInt64Array': ILType.jsTypedArray('BigInt64Array'),
+  'BigUint64Array': ILType.jsTypedArray('BigUint64Array'),
+  'Float16Array': ILType.jsTypedArray('Float16Array'),
+  'Float32Array': ILType.jsTypedArray('Float32Array'),
+  'Float64Array': ILType.jsTypedArray('Float64Array'),
+  'DataView': ILType.jsDataView(),
 }
 
 
 @dataclasses.dataclass
 class ParameterType(SwiftExpression):
   """Represents the Fuzzilli 'Parameter' Swift type."""
+
   property: str
   arg: ILType
 
@@ -309,6 +318,7 @@ class ParameterType(SwiftExpression):
 @dataclasses.dataclass
 class SignatureType(SwiftExpression):
   """Represents the Fuzzilli 'Signature' Swift type."""
+
   args: List[ILType]
   ret: ILType
 
@@ -322,6 +332,7 @@ class SignatureType(SwiftExpression):
 @dataclasses.dataclass()
 class ObjectGroup(SwiftExpression):
   """Represents the Fuzzilli ObjectGroup swift object."""
+
   name: str
   instanceType: ILType
   properties: Dict[str, ILType]
@@ -361,7 +372,8 @@ def idl_type_to_iltype(idl_type: web_idl.idl_type.IdlType) -> ILType:
 
 
 def parse_args(
-    args: Sequence[web_idl.argument.Argument]) -> List[ParameterType]:
+  args: Sequence[web_idl.argument.Argument],
+) -> List[ParameterType]:
   """Parse the list of arguments and returns a list of parameter types.
 
   Args:
@@ -382,7 +394,8 @@ def parse_args(
         rev_args.append(ParameterType.opt(idl_type_to_iltype(arg.idl_type)))
     elif arg.is_variadic:
       rev_args.append(
-          ParameterType.rest(idl_type_to_iltype(arg.idl_type.element_type)))
+        ParameterType.rest(idl_type_to_iltype(arg.idl_type.element_type))
+      )
     else:
       has_seen_plain = True
       rev_args.append(ParameterType.plain(idl_type_to_iltype(arg.idl_type)))
@@ -391,8 +404,9 @@ def parse_args(
 
 
 def parse_operation(
-    op: Union[web_idl.operation.Operation,
-              web_idl.callback_function.CallbackFunction]
+  op: Union[
+    web_idl.operation.Operation, web_idl.callback_function.CallbackFunction
+  ],
 ) -> SignatureType:
   """Parses an IDL 'operation', which is the method equivalent of a Javascript
   object.
@@ -406,9 +420,11 @@ def parse_operation(
   ret = idl_type_to_iltype(op.return_type)
   return SignatureType(args=parse_args(op.arguments), ret=ret)
 
+
 def parse_interface(
-    interface: Union[web_idl.interface.Interface,
-                     web_idl.callback_interface.CallbackInterface]
+  interface: Union[
+    web_idl.interface.Interface, web_idl.callback_interface.CallbackInterface
+  ],
 ) -> Tuple[ILType, ObjectGroup]:
   """Parses an IDL 'interface', which is a Javascript object.
 
@@ -420,31 +436,38 @@ def parse_interface(
       object group that defines the object properties and methods.
   """
   attributes = {
-      a.identifier: idl_type_to_iltype(a.idl_type)
-      for a in interface.attributes if not a.is_static
+    a.identifier: idl_type_to_iltype(a.idl_type)
+    for a in interface.attributes
+    if not a.is_static
   }
   methods = {
-      o.identifier: parse_operation(o)
-      for o in interface.operations if not o.is_static
+    o.identifier: parse_operation(o)
+    for o in interface.operations
+    if not o.is_static
   }
 
-  obj = ILType.object(group=interface.identifier,
-                      props=list(attributes.keys()),
-                      methods=list(methods.keys()))
+  obj = ILType.object(
+    group=interface.identifier,
+    props=list(attributes.keys()),
+    methods=list(methods.keys()),
+  )
   parent = None
   if hasattr(interface, 'inherited') and interface.inherited:
     parent = interface.inherited.identifier
-  group = ObjectGroup(name=interface.identifier,
-                      instanceType=ILType.refType(f'js{interface.identifier}'),
-                      properties=attributes,
-                      methods=methods,
-                      parent=parent)
+  group = ObjectGroup(
+    name=interface.identifier,
+    instanceType=ILType.refType(f'js{interface.identifier}'),
+    properties=attributes,
+    methods=methods,
+    parent=parent,
+  )
   return obj, group
 
 
 def sort_object_groups(
-    groups: Sequence[Union[web_idl.interface.Interfaces,
-                           web_idl.dictionary.Dictionary]]
+  groups: Sequence[
+    Union[web_idl.interface.Interfaces, web_idl.dictionary.Dictionary]
+  ],
 ) -> Sequence[web_idl.interface.Interfaces]:
   """Sorts the object groups given their dependencies to each others.
 
@@ -473,8 +496,9 @@ def sort_object_groups(
 
 
 def parse_constructors(
-    interface: Union[web_idl.interface.Interface,
-                     web_idl.callback_interface.CallbackInterface]
+  interface: Union[
+    web_idl.interface.Interface, web_idl.callback_interface.CallbackInterface
+  ],
 ) -> Tuple[Optional[ILType], Optional[ObjectGroup]]:
   """Parses an IDL 'interface' static properties, methods and constructors.
   This must be differentiated with `parse_interface`, because those are
@@ -487,21 +511,25 @@ def parse_constructors(
       A var declaration and an object group, if any.
   """
   attributes = {
-      a.identifier: idl_type_to_iltype(a.idl_type)
-      for a in interface.attributes if a.is_static
+    a.identifier: idl_type_to_iltype(a.idl_type)
+    for a in interface.attributes
+    if a.is_static
   }
   methods = {
-      o.identifier: parse_operation(o)
-      for o in interface.operations if o.is_static
+    o.identifier: parse_operation(o)
+    for o in interface.operations
+    if o.is_static
   }
 
   typedecl = None
   has_object = False
   if attributes or methods:
     has_object = True
-    typedecl = ILType.object(group=f'{interface.identifier}Constructor',
-                             props=attributes.keys(),
-                             methods=methods.keys())
+    typedecl = ILType.object(
+      group=f'{interface.identifier}Constructor',
+      props=attributes.keys(),
+      methods=methods.keys(),
+    )
 
   if interface.constructors:
     # As of now, Fuzzilli cannot handle multiple constructors, because it
@@ -509,8 +537,8 @@ def parse_constructors(
     c = interface.constructors[0]
     args = parse_args(c.arguments)
     ctor = ILType.constructor(
-        SignatureType(args=args,
-                      ret=ILType.refType(f'js{interface.identifier}')))
+      SignatureType(args=args, ret=ILType.refType(f'js{interface.identifier}'))
+    )
     typedecl = ctor + typedecl if typedecl else ctor
 
   if not typedecl:
@@ -519,15 +547,17 @@ def parse_constructors(
   group = None
   if has_object:
     var_name = f'{interface.identifier}Constructor'
-    group = ObjectGroup(name=var_name,
-                        instanceType=ILType.refType(f'js{var_name}'),
-                        properties=attributes,
-                        methods=methods)
+    group = ObjectGroup(
+      name=var_name,
+      instanceType=ILType.refType(f'js{var_name}'),
+      properties=attributes,
+      methods=methods,
+    )
   return typedecl, group
 
 
 def parse_dictionary(
-    dictionary: web_idl.dictionary.Dictionary
+  dictionary: web_idl.dictionary.Dictionary,
 ) -> Tuple[Optional[ILType], Optional[ObjectGroup]]:
   """Parses an IDL dictionary.
 
@@ -539,35 +569,36 @@ def parse_dictionary(
       definition.
   """
   props = {
-      m.identifier: idl_type_to_iltype(m.idl_type)
-      for m in dictionary.members
+    m.identifier: idl_type_to_iltype(m.idl_type) for m in dictionary.members
   }
-  obj = ILType.object(group=f'{dictionary.identifier}',
-                      props=list(props.keys()),
-                      methods=[])
+  obj = ILType.object(
+    group=f'{dictionary.identifier}', props=list(props.keys()), methods=[]
+  )
   parent = None
   if hasattr(dictionary, 'inherited') and dictionary.inherited:
     parent = dictionary.inherited.identifier
-  group = ObjectGroup(name=f'{dictionary.identifier}',
-                      instanceType=ILType.refType(f'js{dictionary.identifier}'),
-                      properties=props,
-                      methods={},
-                      parent=parent)
+  group = ObjectGroup(
+    name=f'{dictionary.identifier}',
+    instanceType=ILType.refType(f'js{dictionary.identifier}'),
+    properties=props,
+    methods={},
+    parent=parent,
+  )
   return obj, group
 
 
 def main():
   parser = argparse.ArgumentParser(
-      description=
-      'Generates a Chrome Profile for Fuzzilli that describes WebIDLs.')
-  parser.add_argument('-p',
-                      '--path',
-                      required=True,
-                      help='Path to the web_idl_database.')
-  parser.add_argument('-o',
-                      '--outfile',
-                      required=True,
-                      help='Path to the output profile.')
+    description=(
+      'Generates a Chrome Profile for Fuzzilli that describes WebIDLs.'
+    )
+  )
+  parser.add_argument(
+    '-p', '--path', required=True, help='Path to the web_idl_database.'
+  )
+  parser.add_argument(
+    '-o', '--outfile', required=True, help='Path to the output profile.'
+  )
 
   args = parser.parse_args()
   database = web_idl.Database.read_from_file(args.path)
@@ -581,7 +612,7 @@ def main():
   environment.filters['idl_type_to_iltype'] = idl_type_to_iltype
   template = environment.get_template('ChromiumProfile.swift.tmpl')
   context = {
-      'database': database,
+    'database': database,
   }
   with open(args.outfile, 'w') as f:
     f.write(template.render(context))

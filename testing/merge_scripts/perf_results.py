@@ -7,7 +7,8 @@ import os
 import sys
 
 SRC_DIR = os.path.dirname(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+  os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+)
 
 # //tools/perf imports.
 sys.path.append(os.path.join(SRC_DIR, 'tools', 'perf'))

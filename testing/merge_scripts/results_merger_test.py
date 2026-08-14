@@ -9,128 +9,66 @@ import unittest
 import results_merger
 
 GOOD_JSON_TEST_RESULT_0 = {
-    'tests': {
-        'car': {
-            'honda': {
-                'expected': 'PASS',
-                'actual': 'PASS'
-            },
-            'toyota': {
-                'expected': 'FAIL',
-                'actual': 'FAIL'
-            }
-        },
-        'computer': {
-            'dell': {
-                'expected': 'PASS',
-                'actual': 'PASS'
-            }
-        },
+  'tests': {
+    'car': {
+      'honda': {'expected': 'PASS', 'actual': 'PASS'},
+      'toyota': {'expected': 'FAIL', 'actual': 'FAIL'},
     },
-    'interrupted': False,
-    'version': 3,
-    'seconds_since_epoch': 1406662289.76,
-    'num_failures_by_type': {
-        'FAIL': 0,
-        'PASS': 2
-    },
-    'layout_tests_dir': 'abc'
+    'computer': {'dell': {'expected': 'PASS', 'actual': 'PASS'}},
+  },
+  'interrupted': False,
+  'version': 3,
+  'seconds_since_epoch': 1406662289.76,
+  'num_failures_by_type': {'FAIL': 0, 'PASS': 2},
+  'layout_tests_dir': 'abc',
 }
 
 GOOD_JSON_TEST_RESULT_1 = {
-    'tests': {
-        'car': {
-            'tesla': {
-                'expected': 'PASS',
-                'actual': 'PASS'
-            },
-        },
-        'burger': {
-            'mcdonald': {
-                'expected': 'PASS',
-                'actual': 'PASS'
-            }
-        },
+  'tests': {
+    'car': {
+      'tesla': {'expected': 'PASS', 'actual': 'PASS'},
     },
-    'interrupted': False,
-    'version': 3,
-    'seconds_since_epoch': 1406662283.11,
-    'num_failures_by_type': {
-        'FAIL': 0,
-        'PASS': 2
-    },
-    'layout_tests_dir': '123'
+    'burger': {'mcdonald': {'expected': 'PASS', 'actual': 'PASS'}},
+  },
+  'interrupted': False,
+  'version': 3,
+  'seconds_since_epoch': 1406662283.11,
+  'num_failures_by_type': {'FAIL': 0, 'PASS': 2},
+  'layout_tests_dir': '123',
 }
 
 GOOD_JSON_TEST_RESULT_2 = {
-    'tests': {
-        'car': {
-            'mercedes': {
-                'expected': 'PASS',
-                'actual': 'FAIL'
-            },
-        },
-        'burger': {
-            'in n out': {
-                'expected': 'PASS',
-                'actual': 'PASS'
-            }
-        },
+  'tests': {
+    'car': {
+      'mercedes': {'expected': 'PASS', 'actual': 'FAIL'},
     },
-    'interrupted': True,
-    'version': 3,
-    'seconds_since_epoch': 1406662200.01,
-    'num_failures_by_type': {
-        'FAIL': 1,
-        'PASS': 1
-    }
+    'burger': {'in n out': {'expected': 'PASS', 'actual': 'PASS'}},
+  },
+  'interrupted': True,
+  'version': 3,
+  'seconds_since_epoch': 1406662200.01,
+  'num_failures_by_type': {'FAIL': 1, 'PASS': 1},
 }
 
 GOOD_JSON_TEST_RESULT_MERGED = {
-    'tests': {
-        'car': {
-            'tesla': {
-                'expected': 'PASS',
-                'actual': 'PASS'
-            },
-            'mercedes': {
-                'expected': 'PASS',
-                'actual': 'FAIL'
-            },
-            'honda': {
-                'expected': 'PASS',
-                'actual': 'PASS'
-            },
-            'toyota': {
-                'expected': 'FAIL',
-                'actual': 'FAIL'
-            }
-        },
-        'computer': {
-            'dell': {
-                'expected': 'PASS',
-                'actual': 'PASS'
-            }
-        },
-        'burger': {
-            'mcdonald': {
-                'expected': 'PASS',
-                'actual': 'PASS'
-            },
-            'in n out': {
-                'expected': 'PASS',
-                'actual': 'PASS'
-            }
-        }
+  'tests': {
+    'car': {
+      'tesla': {'expected': 'PASS', 'actual': 'PASS'},
+      'mercedes': {'expected': 'PASS', 'actual': 'FAIL'},
+      'honda': {'expected': 'PASS', 'actual': 'PASS'},
+      'toyota': {'expected': 'FAIL', 'actual': 'FAIL'},
     },
-    'interrupted': True,
-    'version': 3,
-    'seconds_since_epoch': 1406662200.01,
-    'num_failures_by_type': {
-        'FAIL': 1,
-        'PASS': 5
+    'computer': {'dell': {'expected': 'PASS', 'actual': 'PASS'}},
+    'burger': {
+      'mcdonald': {'expected': 'PASS', 'actual': 'PASS'},
+      'in n out': {'expected': 'PASS', 'actual': 'PASS'},
     },
-    'layout_tests_dir': '123'
+  },
+  'interrupted': True,
+  'version': 3,
+  'seconds_since_epoch': 1406662200.01,
+  'num_failures_by_type': {'FAIL': 1, 'PASS': 5},
+  'layout_tests_dir': '123',
 }
 
 
@@ -154,17 +92,10 @@ class MergingTest(unittest.TestCase):  # pragma: no cover
   maxDiff = None  # Show full diff if assertion fail
 
   def test_merge_tries(self):
-    self.assertEqual({
-        'a': 'A',
-        'b': {
-            'c': 'C'
-        }
-    }, results_merger.merge_tries({
-        'a': 'A',
-        'b': {}
-    }, {'b': {
-        'c': 'C'
-    }}))
+    self.assertEqual(
+      {'a': 'A', 'b': {'c': 'C'}},
+      results_merger.merge_tries({'a': 'A', 'b': {}}, {'b': {'c': 'C'}}),
+    )
 
   def test_merge_tries_unmergable(self):
     with self.assertRaisesRegex(results_merger.MergeException, 'a:b'):
@@ -173,15 +104,21 @@ class MergingTest(unittest.TestCase):  # pragma: no cover
   def test_merge_metadata(self):
     metadata1 = {'metadata': {'tags': ['foo', 'bar']}}
     metadata2 = {'metadata': {'tags': ['foo', 'bat']}}
-    merged_results = results_merger.merge_test_results([
+    merged_results = results_merger.merge_test_results(
+      [
         extend(GOOD_JSON_TEST_RESULT_0, metadata1),
-        extend(GOOD_JSON_TEST_RESULT_1, metadata2)
-    ])
+        extend(GOOD_JSON_TEST_RESULT_1, metadata2),
+      ]
+    )
     self.assertEqual(merged_results['metadata']['tags'], ['foo', 'bat'])
 
   def test_merge_json_test_results_nop(self):
-    good_json_results = (GOOD_JSON_TEST_RESULT_0, GOOD_JSON_TEST_RESULT_1,
-                         GOOD_JSON_TEST_RESULT_2, GOOD_JSON_TEST_RESULT_MERGED)
+    good_json_results = (
+      GOOD_JSON_TEST_RESULT_0,
+      GOOD_JSON_TEST_RESULT_1,
+      GOOD_JSON_TEST_RESULT_2,
+      GOOD_JSON_TEST_RESULT_MERGED,
+    )
     for j in good_json_results:
       # Clone so we can check the input dictionaries are not modified
       a = copy.deepcopy(j)
@@ -190,83 +127,113 @@ class MergingTest(unittest.TestCase):  # pragma: no cover
 
   def test_merge_json_test_results_invalid_version(self):
     with self.assertRaises(results_merger.MergeException):
-      results_merger.merge_test_results([
+      results_merger.merge_test_results(
+        [
           extend(GOOD_JSON_TEST_RESULT_0, {'version': 5}),
-      ])
+        ]
+      )
 
     with self.assertRaises(results_merger.MergeException):
-      results_merger.merge_test_results([
+      results_merger.merge_test_results(
+        [
           GOOD_JSON_TEST_RESULT_0,
           extend(GOOD_JSON_TEST_RESULT_1, {'version': 5}),
-      ])
+        ]
+      )
 
   def test_merge_json_test_results_missing_version(self):
     with self.assertRaises(results_merger.MergeException):
-      results_merger.merge_test_results([
+      results_merger.merge_test_results(
+        [
           remove(GOOD_JSON_TEST_RESULT_0, ['version']),
-      ])
+        ]
+      )
 
     with self.assertRaises(results_merger.MergeException):
-      results_merger.merge_test_results([
+      results_merger.merge_test_results(
+        [
           GOOD_JSON_TEST_RESULT_0,
           remove(GOOD_JSON_TEST_RESULT_1, ['version']),
-      ])
+        ]
+      )
 
   def test_merge_json_test_results_invalid_extra(self):
     with self.assertRaises(results_merger.MergeException):
-      results_merger.merge_test_results([
+      results_merger.merge_test_results(
+        [
           extend(GOOD_JSON_TEST_RESULT_0, {'extra': True}),
-      ])
+        ]
+      )
 
     with self.assertRaises(results_merger.MergeException):
-      results_merger.merge_test_results([
+      results_merger.merge_test_results(
+        [
           GOOD_JSON_TEST_RESULT_0,
           extend(GOOD_JSON_TEST_RESULT_1, {'extra': True}),
-      ])
+        ]
+      )
 
   def test_merge_json_test_results_missing_required(self):
     with self.assertRaises(results_merger.MergeException):
-      results_merger.merge_test_results([
+      results_merger.merge_test_results(
+        [
           remove(GOOD_JSON_TEST_RESULT_0, ['interrupted']),
-      ])
+        ]
+      )
 
     with self.assertRaises(results_merger.MergeException):
-      results_merger.merge_test_results([
+      results_merger.merge_test_results(
+        [
           GOOD_JSON_TEST_RESULT_0,
           remove(GOOD_JSON_TEST_RESULT_1, ['interrupted']),
-      ])
+        ]
+      )
 
   def test_merge_json_test_results_multiple(self):
     self.assertEqual(
-        results_merger.merge_test_results([
-            GOOD_JSON_TEST_RESULT_0,
-            GOOD_JSON_TEST_RESULT_1,
-            GOOD_JSON_TEST_RESULT_2,
-        ]), GOOD_JSON_TEST_RESULT_MERGED)
+      results_merger.merge_test_results(
+        [
+          GOOD_JSON_TEST_RESULT_0,
+          GOOD_JSON_TEST_RESULT_1,
+          GOOD_JSON_TEST_RESULT_2,
+        ]
+      ),
+      GOOD_JSON_TEST_RESULT_MERGED,
+    )
 
   def test_merge_json_test_results_optional_matches(self):
     self.assertEqual(
-        results_merger.merge_test_results([
-            extend(GOOD_JSON_TEST_RESULT_0, {'path_delimiter': '.'}),
-            extend(GOOD_JSON_TEST_RESULT_1, {'path_delimiter': '.'}),
-            extend(GOOD_JSON_TEST_RESULT_2, {'path_delimiter': '.'}),
-        ]), extend(GOOD_JSON_TEST_RESULT_MERGED, {'path_delimiter': '.'}))
+      results_merger.merge_test_results(
+        [
+          extend(GOOD_JSON_TEST_RESULT_0, {'path_delimiter': '.'}),
+          extend(GOOD_JSON_TEST_RESULT_1, {'path_delimiter': '.'}),
+          extend(GOOD_JSON_TEST_RESULT_2, {'path_delimiter': '.'}),
+        ]
+      ),
+      extend(GOOD_JSON_TEST_RESULT_MERGED, {'path_delimiter': '.'}),
+    )
 
   def test_merge_json_test_results_optional_differs(self):
     with self.assertRaises(results_merger.MergeException):
-      results_merger.merge_test_results([
+      results_merger.merge_test_results(
+        [
           extend(GOOD_JSON_TEST_RESULT_0, {'path_delimiter': '.'}),
           extend(GOOD_JSON_TEST_RESULT_1, {'path_delimiter': '.'}),
           extend(GOOD_JSON_TEST_RESULT_2, {'path_delimiter': '/'}),
-      ])
+        ]
+      )
 
   def test_merge_json_test_results_optional_count(self):
     self.assertEqual(
-        results_merger.merge_test_results([
-            extend(GOOD_JSON_TEST_RESULT_0, {'fixable': 1}),
-            extend(GOOD_JSON_TEST_RESULT_1, {'fixable': 2}),
-            extend(GOOD_JSON_TEST_RESULT_2, {'fixable': 3}),
-        ]), extend(GOOD_JSON_TEST_RESULT_MERGED, {'fixable': 6}))
+      results_merger.merge_test_results(
+        [
+          extend(GOOD_JSON_TEST_RESULT_0, {'fixable': 1}),
+          extend(GOOD_JSON_TEST_RESULT_1, {'fixable': 2}),
+          extend(GOOD_JSON_TEST_RESULT_2, {'fixable': 3}),
+        ]
+      ),
+      extend(GOOD_JSON_TEST_RESULT_MERGED, {'fixable': 6}),
+    )
 
   def test_merge_nothing(self):
     self.assertEqual(results_merger.merge_test_results([]), {})

@@ -57,11 +57,21 @@ def get_device_info(args, failures):
 
   with common.temporary_file() as tempfile_path:
     test_cmd = [
-        sys.executable,
-        os.path.join(args.paths['checkout'], 'third_party', 'catapult', 'devil',
-                     'devil', 'android', 'tools', 'device_status.py'),
-        '--json-output', tempfile_path, '--denylist-file',
-        os.path.join(args.paths['checkout'], 'out', 'bad_devices.json')
+      sys.executable,
+      os.path.join(
+        args.paths['checkout'],
+        'third_party',
+        'catapult',
+        'devil',
+        'devil',
+        'android',
+        'tools',
+        'device_status.py',
+      ),
+      '--json-output',
+      tempfile_path,
+      '--denylist-file',
+      os.path.join(args.paths['checkout'], 'out', 'bad_devices.json'),
     ]
     if args.args:
       test_cmd.extend(args.args)
@@ -78,16 +88,16 @@ def get_device_info(args, failures):
   results['devices'] = sorted(v['serial'] for v in device_info)
 
   details = [
-      v['ro.build.fingerprint'] for v in device_info if not v['denylisted']
+    v['ro.build.fingerprint'] for v in device_info if not v['denylisted']
   ]
 
   def unique_build_details(index):
     return sorted(list({v.split(':')[index] for v in details}))
 
   parsed_details = {
-      'device_names': unique_build_details(0),
-      'build_versions': unique_build_details(1),
-      'build_types': unique_build_details(2),
+    'device_names': unique_build_details(0),
+    'build_versions': unique_build_details(1),
+    'build_types': unique_build_details(2),
   }
 
   for k, v in parsed_details.items():
@@ -120,11 +130,14 @@ def main_run(args):
 
   host_info['devices'] = get_device_info(args, failures)
 
-  json.dump({
+  json.dump(
+    {
       'valid': True,
       'failures': failures,
       '_host_info': host_info,
-  }, args.output)
+    },
+    args.output,
+  )
 
   if len(failures) != 0:
     return common.INFRA_FAILURE_EXIT_CODE
@@ -137,7 +150,7 @@ def main_compile_targets(args):
 
 if __name__ == '__main__':
   funcs = {
-      'run': main_run,
-      'compile_targets': main_compile_targets,
+    'run': main_run,
+    'compile_targets': main_compile_targets,
   }
   sys.exit(common.run_script(sys.argv[1:], funcs))

@@ -8,8 +8,19 @@ import copy
 import enum
 import functools
 import logging
-from typing import (Any, Dict, FrozenSet, Generator, Iterable, List, Optional,
-                    Set, Tuple, Type, Union)
+from typing import (
+  Any,
+  Dict,
+  FrozenSet,
+  Generator,
+  Iterable,
+  List,
+  Optional,
+  Set,
+  Tuple,
+  Type,
+  Union,
+)
 
 # //third_party/catapult/third_party/typ imports.
 from typ import expectations_parser
@@ -55,8 +66,9 @@ def SetBuildStatsImplementation(impl: Type['BaseBuildStats']) -> None:
   BuildStats = impl
 
 
-def SetTestExpectationMapImplementation(impl: Type['BaseTestExpectationMap']
-                                        ) -> None:
+def SetTestExpectationMapImplementation(
+  impl: Type['BaseTestExpectationMap'],
+) -> None:
   global TestExpectationMap  # pylint: disable=global-statement
   assert issubclass(impl, BaseTestExpectationMap)
   TestExpectationMap = impl
@@ -71,7 +83,7 @@ class WildcardType(enum.Enum):
   FULL_WILDCARD = 3
 
 
-class BaseExpectation():
+class BaseExpectation:
   """Container for a test expectation.
 
   Similar to typ's expectations_parser.Expectation class, but with unnecessary
@@ -81,12 +93,14 @@ class BaseExpectation():
   expectation file.
   """
 
-  def __init__(self,
-               test: str,
-               tags: Iterable[str],
-               expected_results: Union[str, Iterable[str]],
-               wildcard_type: WildcardType,
-               bug: Optional[str] = None):
+  def __init__(
+    self,
+    test: str,
+    tags: Iterable[str],
+    expected_results: Union[str, Iterable[str]],
+    wildcard_type: WildcardType,
+    bug: Optional[str] = None,
+  ):
     self._test_id = registry.RegisterTestName(test)
     self._tags_id = registry.RegisterTagSet(frozenset(tags))
     self._bug_id = registry.RegisterBug(bug or '')
@@ -97,7 +111,8 @@ class BaseExpectation():
     else:
       expected_results = frozenset(expected_results)
     self._expected_results_id = registry.RegisterExpectedResults(
-        expected_results)
+      expected_results
+    )
 
     # We're going to be making a lot of comparisons, so only use slower wildcard
     # comparisons as necessary.
@@ -112,18 +127,28 @@ class BaseExpectation():
       raise ValueError(f'Unsupported wildcard type {self.wildcard_type.name}')
 
   def __eq__(self, other: Any) -> bool:
-    return (isinstance(other, BaseExpectation) and self.test == other.test
-            and self.tags == other.tags
-            and self.expected_results == other.expected_results
-            and self.bug == other.bug
-            and self.wildcard_type == other.wildcard_type)
+    return (
+      isinstance(other, BaseExpectation)
+      and self.test == other.test
+      and self.tags == other.tags
+      and self.expected_results == other.expected_results
+      and self.bug == other.bug
+      and self.wildcard_type == other.wildcard_type
+    )
 
   def __ne__(self, other: Any) -> bool:
     return not self.__eq__(other)
 
   def __hash__(self) -> int:
-    return hash((self._test_id, self._tags_id, self._expected_results_id,
-                 self._bug_id, self.wildcard_type))
+    return hash(
+      (
+        self._test_id,
+        self._tags_id,
+        self._expected_results_id,
+        self._bug_id,
+        self.wildcard_type,
+      )
+    )
 
   @property
   def test(self) -> str:
@@ -191,7 +216,8 @@ class BaseExpectation():
     return self.AsExpectationFileStringWithTrailingComment(None)
 
   def AsExpectationFileStringWithTrailingComment(
-      self, trailing_comment: Optional[str]) -> str:
+    self, trailing_comment: Optional[str]
+  ) -> str:
     """Gets a string representation of the expectation usable in files.
 
     |trailing_comment| is included as a trailing comment.
@@ -207,16 +233,17 @@ class BaseExpectation():
     full_wildcard_support = self.wildcard_type == WildcardType.FULL_WILDCARD
 
     typ_expectation = expectations_parser.Expectation(
-        reason=self.bug,
-        test=self.test,
-        raw_tags=self._ProcessTagsForFileUse(),
-        raw_results=list(self.expected_results),
-        # This logic is normally handled by typ when parsing a file, but since
-        # we're manually creating an expectation, we have to specify the
-        # glob-ness manually.
-        is_glob=is_glob,
-        full_wildcard_support=full_wildcard_support,
-        trailing_comments=trailing_comment)
+      reason=self.bug,
+      test=self.test,
+      raw_tags=self._ProcessTagsForFileUse(),
+      raw_results=list(self.expected_results),
+      # This logic is normally handled by typ when parsing a file, but since
+      # we're manually creating an expectation, we have to specify the
+      # glob-ness manually.
+      is_glob=is_glob,
+      full_wildcard_support=full_wildcard_support,
+      trailing_comments=trailing_comment,
+    )
     return typ_expectation.to_string()
 
   def _ProcessTagsForFileUse(self) -> List[str]:
@@ -234,15 +261,21 @@ class BaseExpectation():
     return list(self.tags)
 
 
-class BaseResult():
+class BaseResult:
   """Container for a test result.
 
   Contains the minimal amount of data necessary to describe/identify a result
   from ResultDB for the purposes of the unexpected pass finder.
   """
 
-  def __init__(self, test: str, tags: Iterable[str], actual_result: str,
-               step: str, build_id: str):
+  def __init__(
+    self,
+    test: str,
+    tags: Iterable[str],
+    actual_result: str,
+    step: str,
+    build_id: str,
+  ):
     """
     Args:
       test: A string containing the name of the test.
@@ -260,17 +293,28 @@ class BaseResult():
     self.build_id = build_id
 
   def __eq__(self, other: Any) -> bool:
-    return (isinstance(other, BaseResult) and self.test == other.test
-            and self.tags == other.tags
-            and self.actual_result == other.actual_result
-            and self.step == other.step and self.build_id == other.build_id)
+    return (
+      isinstance(other, BaseResult)
+      and self.test == other.test
+      and self.tags == other.tags
+      and self.actual_result == other.actual_result
+      and self.step == other.step
+      and self.build_id == other.build_id
+    )
 
   def __ne__(self, other: Any) -> bool:
     return not self.__eq__(other)
 
   def __hash__(self) -> int:
-    return hash((self._test_id, self._tags_id, self._actual_result_id,
-                 self._step_id, self.build_id))
+    return hash(
+      (
+        self._test_id,
+        self._tags_id,
+        self._actual_result_id,
+        self._step_id,
+        self.build_id,
+      )
+    )
 
   @property
   def test(self) -> str:
@@ -289,7 +333,7 @@ class BaseResult():
     return registry.RetrieveStep(self._step_id)
 
 
-class BaseBuildStats():
+class BaseBuildStats:
   """Container for keeping track of a builder's pass/fail stats."""
 
   def __init__(self):
@@ -335,6 +379,7 @@ class BaseBuildStats():
       |expectation| being present. Otherwise, False.
     """
     return self.did_fully_pass
+
   # pylint:enable=unused-argument
 
   # pylint:disable=unused-argument
@@ -349,14 +394,17 @@ class BaseBuildStats():
       |expectation| being present. Otherwise, False.
     """
     return self.did_never_pass
+
   # pylint:enable=unused-argument
 
   def __eq__(self, other: Any) -> bool:
-    return (isinstance(other, BuildStats)
-            and self.passed_builds == other.passed_builds
-            and self.total_builds == other.total_builds
-            and self.failure_links == other.failure_links
-            and self.tag_sets == other.tag_sets)
+    return (
+      isinstance(other, BuildStats)
+      and self.passed_builds == other.passed_builds
+      and self.total_builds == other.total_builds
+      and self.failure_links == other.failure_links
+      and self.tag_sets == other.tag_sets
+    )
 
   def __ne__(self, other: Any) -> bool:
     return not self.__eq__(other)
@@ -422,11 +470,11 @@ class BaseTypedMap(dict):
     else:
       for k, v in self.items():
         for nested_value in v.IterToValueType(value_type):
-          yield (k, ) + nested_value
+          yield (k,) + nested_value
 
-  def Merge(self,
-            other_map: 'BaseTypedMap',
-            reference_map: Optional[dict] = None) -> None:
+  def Merge(
+    self, other_map: 'BaseTypedMap', reference_map: Optional[dict] = None
+  ) -> None:
     """Merges |other_map| into self.
 
     Args:
@@ -491,7 +539,7 @@ class BaseTestExpectationMap(BaseTypedMap):
     return ExpectationBuilderMap
 
   def IterBuilderStepMaps(
-      self
+    self,
   ) -> Generator[Tuple[str, BaseExpectation, 'BuilderStepMap'], None, None]:
     """Iterates over all BuilderStepMaps contained in the map.
 
@@ -501,11 +549,12 @@ class BaseTestExpectationMap(BaseTypedMap):
     """
     return self.IterToValueType(BuilderStepMap)
 
-  def AddResultList(self,
-                    builder: str,
-                    results: ResultListType,
-                    expectation_files: Optional[Iterable[str]] = None
-                    ) -> ResultListType:
+  def AddResultList(
+    self,
+    builder: str,
+    results: ResultListType,
+    expectation_files: Optional[Iterable[str]] = None,
+  ) -> ResultListType:
     """Adds |results| to |self|.
 
     Args:
@@ -538,7 +587,8 @@ class BaseTestExpectationMap(BaseTypedMap):
     modified_failing_retry_results = set()
     for r in failure_results:
       modified_failing_retry_results.add(
-          Result(r.test, r.tags, 'Pass', r.step, r.build_id))
+        Result(r.test, r.tags, 'Pass', r.step, r.build_id)
+      )
     pass_results -= modified_failing_retry_results
 
     # Group identically named results together so we reduce the number of
@@ -548,15 +598,19 @@ class BaseTestExpectationMap(BaseTypedMap):
     for r in all_results:
       grouped_results[r.test].append(r)
 
-    matched_results = self._AddGroupedResults(grouped_results, builder,
-                                              expectation_files)
+    matched_results = self._AddGroupedResults(
+      grouped_results, builder, expectation_files
+    )
     unmatched_results = list(all_results - matched_results)
 
     return unmatched_results
 
-  def _AddGroupedResults(self, grouped_results: Dict[str, ResultListType],
-                         builder: str, expectation_files: Optional[List[str]]
-                         ) -> ResultSetType:
+  def _AddGroupedResults(
+    self,
+    grouped_results: Dict[str, ResultListType],
+    builder: str,
+    expectation_files: Optional[List[str]],
+  ) -> ResultSetType:
     """Adds all results in |grouped_results| to |self|.
 
     Args:
@@ -601,11 +655,14 @@ class BaseTestExpectationMap(BaseTypedMap):
       stats.AddPassedBuild(result.tags)
     else:
       stats.AddFailedBuild(result.build_id, result.tags)
+
   # pylint: enable=no-self-use
 
   def SplitByStaleness(
-      self) -> Tuple['BaseTestExpectationMap', 'BaseTestExpectationMap',
-                     'BaseTestExpectationMap']:
+    self,
+  ) -> Tuple[
+    'BaseTestExpectationMap', 'BaseTestExpectationMap', 'BaseTestExpectationMap'
+  ]:
     """Separates stored data based on expectation staleness.
 
     Returns:
@@ -636,14 +693,17 @@ class BaseTestExpectationMap(BaseTypedMap):
         # A temporary map to hold data so we can later determine whether an
         # expectation is stale, semi-stale, or active.
         tmp_map = {
-            FULL_PASS: BuilderStepMap(),
-            NEVER_PASS: BuilderStepMap(),
-            PARTIAL_PASS: BuilderStepMap(),
+          FULL_PASS: BuilderStepMap(),
+          NEVER_PASS: BuilderStepMap(),
+          PARTIAL_PASS: BuilderStepMap(),
         }
 
         split_stats_map = builder_map.SplitBuildStatsByPass(expectation)
-        for builder_name, (fully_passed, never_passed,
-                           partially_passed) in split_stats_map.items():
+        for builder_name, (
+          fully_passed,
+          never_passed,
+          partially_passed,
+        ) in split_stats_map.items():
           if fully_passed:
             tmp_map[FULL_PASS][builder_name] = fully_passed
           if never_passed:
@@ -652,43 +712,47 @@ class BaseTestExpectationMap(BaseTypedMap):
             tmp_map[PARTIAL_PASS][builder_name] = partially_passed
 
         _CopyPassesIntoBuilderMap = functools.partial(
-            _CopyPassesIntoBuilderMapUncurried, tmp_map)
+          _CopyPassesIntoBuilderMapUncurried, tmp_map
+        )
 
         # Handle the case of a stale expectation.
         if not (tmp_map[NEVER_PASS] or tmp_map[PARTIAL_PASS]):
           builder_map = stale_dict.setdefault(
-              expectation_file,
-              ExpectationBuilderMap()).setdefault(expectation, BuilderStepMap())
+            expectation_file, ExpectationBuilderMap()
+          ).setdefault(expectation, BuilderStepMap())
           _CopyPassesIntoBuilderMap(builder_map, [FULL_PASS])
         # Handle the case of an active expectation.
         elif not tmp_map[FULL_PASS]:
           builder_map = active_dict.setdefault(
-              expectation_file,
-              ExpectationBuilderMap()).setdefault(expectation, BuilderStepMap())
+            expectation_file, ExpectationBuilderMap()
+          ).setdefault(expectation, BuilderStepMap())
           _CopyPassesIntoBuilderMap(builder_map, [NEVER_PASS, PARTIAL_PASS])
         # Handle the case of a semi-stale expectation that should be considered
         # active.
         elif self._ShouldTreatSemiStaleAsActive(tmp_map):
           builder_map = active_dict.setdefault(
-              expectation_file,
-              ExpectationBuilderMap()).setdefault(expectation, BuilderStepMap())
-          _CopyPassesIntoBuilderMap(builder_map,
-                                    [FULL_PASS, PARTIAL_PASS, NEVER_PASS])
+            expectation_file, ExpectationBuilderMap()
+          ).setdefault(expectation, BuilderStepMap())
+          _CopyPassesIntoBuilderMap(
+            builder_map, [FULL_PASS, PARTIAL_PASS, NEVER_PASS]
+          )
         # Handle the case of a semi-stale expectation.
         else:
           # TODO(crbug.com/40642384): Sort by pass percentage so it's easier to
           # find problematic builders without highlighting.
           builder_map = semi_stale_dict.setdefault(
-              expectation_file,
-              ExpectationBuilderMap()).setdefault(expectation, BuilderStepMap())
-          _CopyPassesIntoBuilderMap(builder_map,
-                                    [FULL_PASS, PARTIAL_PASS, NEVER_PASS])
+            expectation_file, ExpectationBuilderMap()
+          ).setdefault(expectation, BuilderStepMap())
+          _CopyPassesIntoBuilderMap(
+            builder_map, [FULL_PASS, PARTIAL_PASS, NEVER_PASS]
+          )
     return stale_dict, semi_stale_dict, active_dict
 
   # Overridden by subclasses.
   # pylint: disable=no-self-use
   def _ShouldTreatSemiStaleAsActive(
-      self, pass_map: Dict[int, 'BuilderStepMap']) -> bool:
+    self, pass_map: Dict[int, 'BuilderStepMap']
+  ) -> bool:
     """Check if a semi-stale expectation should be treated as active.
 
     Allows for implementation-specific workarounds.
@@ -703,6 +767,7 @@ class BaseTestExpectationMap(BaseTypedMap):
     """
     del pass_map
     return False
+
   # pylint: enable=no-self-use
 
   def FilterOutUnusedExpectations(self) -> Dict[str, List[BaseExpectation]]:
@@ -719,8 +784,11 @@ class BaseTestExpectationMap(BaseTypedMap):
     logging.info('Filtering out unused expectations')
     unused = collections.defaultdict(list)
     unused_count = 0
-    for (expectation_file, expectation,
-         builder_map) in self.IterBuilderStepMaps():
+    for (
+      expectation_file,
+      expectation,
+      builder_map,
+    ) in self.IterBuilderStepMaps():
       if not builder_map:
         unused[expectation_file].append(expectation)
         unused_count += 1
@@ -764,9 +832,10 @@ class BuilderStepMap(BaseTypedMap):
     return StepBuildStatsMap
 
   def SplitBuildStatsByPass(
-      self, expectation: BaseExpectation
-  ) -> Dict[str, Tuple['StepBuildStatsMap', 'StepBuildStatsMap',
-                       'StepBuildStatsMap']]:
+    self, expectation: BaseExpectation
+  ) -> Dict[
+    str, Tuple['StepBuildStatsMap', 'StepBuildStatsMap', 'StepBuildStatsMap']
+  ]:
     """Splits the underlying BuildStats data by passing-ness.
 
     Args:
@@ -798,7 +867,8 @@ class BuilderStepMap(BaseTypedMap):
     return retval
 
   def IterBuildStats(
-      self) -> Generator[Tuple[str, str, BaseBuildStats], None, None]:
+    self,
+  ) -> Generator[Tuple[str, str, BaseBuildStats], None, None]:
     """Iterates over all BuildStats contained in the map.
 
     Returns:
@@ -820,7 +890,7 @@ class StepBuildStatsMap(BaseTypedMap):
     return BuildStats
 
 
-class BuilderEntry():
+class BuilderEntry:
   """Simple container for defining a builder."""
 
   def __init__(self, name: str, builder_type: str, is_internal_builder: bool):
@@ -841,9 +911,12 @@ class BuilderEntry():
     return 'chrome' if self.is_internal_builder else 'chromium'
 
   def __eq__(self, other: Any) -> bool:
-    return (isinstance(other, BuilderEntry) and self.name == other.name
-            and self.builder_type == other.builder_type
-            and self.is_internal_builder == other.is_internal_builder)
+    return (
+      isinstance(other, BuilderEntry)
+      and self.name == other.name
+      and self.builder_type == other.builder_type
+      and self.is_internal_builder == other.is_internal_builder
+    )
 
   def __ne__(self, other: Any) -> bool:
     return not self.__eq__(other)

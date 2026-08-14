@@ -39,21 +39,26 @@ class EndToEndTests(fake_filesystem_unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmpdirname:
             # Prepare simulated inputs.
             test_list = [
-                'test_foo', 'test_bar', 'test_foobar', 'module/test_foo'
+                'test_foo',
+                'test_bar',
+                'test_foobar',
+                'module/test_foo',
             ]
             test_results = [
                 TestResult('test_foo', 'PASS'),
                 TestResult('test_bar', 'PASS'),
                 TestResult('test_foobar', 'FAILED'),
-                TestResult('module/test_foo', 'PASS')
+                TestResult('module/test_foo', 'PASS'),
             ]
             fake_executable_wrapper = FakeTestExecutableWrapper(
-                test_list, test_results)
+                test_list, test_results
+            )
             parser = argparse.ArgumentParser()
             main_program.add_cmdline_args(parser)
             output_file = os.path.join(tmpdirname, 'test.out')
             args = parser.parse_args(
-                args=['--isolated-script-test-output={}'.format(output_file)])
+                args=['--isolated-script-test-output={}'.format(output_file)]
+            )
             fake_env = {'GTEST_SHARD_INDEX': 0, 'GTEST_TOTAL_SHARDS': 1}
 
             # Run code under test.

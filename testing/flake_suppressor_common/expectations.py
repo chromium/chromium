@@ -23,7 +23,8 @@ from typ import expectations_parser
 # pylint: disable=no-self-use
 
 CHROMIUM_SRC_DIR = os.path.realpath(
-    os.path.join(os.path.dirname(__file__), '..', '..'))
+  os.path.join(os.path.dirname(__file__), '..', '..')
+)
 GITILES_URL = 'https://chromium.googlesource.com/chromium/src/+/refs/heads/main'
 TEXT_FORMAT_ARG = '?format=TEXT'
 
@@ -34,8 +35,10 @@ SuiteToTestsType = Dict[str, TestToUrlsType]
 TagOrderedAggregateResultType = Dict[ct.TagTupleType, SuiteToTestsType]
 
 
-def OverFailedBuildThreshold(failed_result_tuple_list: List[ct.ResultTupleType],
-                             build_fail_total_number_threshold: int) -> bool:
+def OverFailedBuildThreshold(
+  failed_result_tuple_list: List[ct.ResultTupleType],
+  build_fail_total_number_threshold: int,
+) -> bool:
   """Check if the number of failed build in |failed_result_tuple_list| is
      equal to or more than |build_fail_total_number_threshold|.
 
@@ -58,8 +61,9 @@ def OverFailedBuildThreshold(failed_result_tuple_list: List[ct.ResultTupleType],
 
 
 def OverFailedBuildByConsecutiveDayThreshold(
-    failed_result_tuple_list: List[ct.ResultTupleType],
-    build_fail_consecutive_day_threshold: int) -> bool:
+  failed_result_tuple_list: List[ct.ResultTupleType],
+  build_fail_consecutive_day_threshold: int,
+) -> bool:
   """Check if the max number of build fail in consecutive date
      is equal to or more than |build_fail_consecutive_day_threshold|.
 
@@ -95,8 +99,9 @@ def OverFailedBuildByConsecutiveDayThreshold(
 
 
 def FailedBuildWithinRecentDayThreshold(
-    failed_result_tuple_list: List[ct.ResultTupleType],
-    build_fail_recent_day_threshold: int) -> bool:
+  failed_result_tuple_list: List[ct.ResultTupleType],
+  build_fail_recent_day_threshold: int,
+) -> bool:
   """Check if there are any failed builds within the most
     recent |build_fail_latest_day_threshold| days.
 
@@ -109,18 +114,22 @@ def FailedBuildWithinRecentDayThreshold(
       Whether the test caused build fail within the recent day.
   """
   recent_check_day = date.today() - timedelta(
-      days=build_fail_recent_day_threshold)
+    days=build_fail_recent_day_threshold
+  )
   for test in failed_result_tuple_list:
     if test.date >= recent_check_day:
       return True
   return False
 
 
-class ExpectationProcessor():
+class ExpectationProcessor:
   # pylint: disable=too-many-locals
-  def IterateThroughResultsForUser(self, result_map: ct.AggregatedResultsType,
-                                   group_by_tags: bool,
-                                   include_all_tags: bool) -> None:
+  def IterateThroughResultsForUser(
+    self,
+    result_map: ct.AggregatedResultsType,
+    group_by_tags: bool,
+    include_all_tags: bool,
+  ) -> None:
     """Iterates over |result_map| for the user to provide input.
 
     For each unique result, user will be able to decide whether to ignore it (do
@@ -144,7 +153,6 @@ class ExpectationProcessor():
         continue
       for test, tag_map in test_map.items():
         for typ_tags, build_url_list in tag_map.items():
-
           print('')
           print('Suite: %s' % suite)
           print('Test: %s' % test)
@@ -152,33 +160,47 @@ class ExpectationProcessor():
           print('Failed builds:\n    %s' % '\n    '.join(build_url_list))
 
           other_failures_for_test = self.FindFailuresInSameTest(
-              result_map, suite, test, typ_tags)
+            result_map, suite, test, typ_tags
+          )
           if other_failures_for_test:
             print('Other failures in same test found on other configurations')
-            for (tags, failure_count) in other_failures_for_test:
+            for tags, failure_count in other_failures_for_test:
               print('    %d failures on %s' % (failure_count, ' '.join(tags)))
 
           other_failures_for_config = self.FindFailuresInSameConfig(
-              typ_tag_ordered_result_map, suite, test, typ_tags)
+            typ_tag_ordered_result_map, suite, test, typ_tags
+          )
           if other_failures_for_config:
             print('Other failures on same configuration found in other tests')
-            for (name, failure_count) in other_failures_for_config:
+            for name, failure_count in other_failures_for_config:
               print('    %d failures in %s' % (failure_count, name))
 
           expected_result, bug = self.PromptUserForExpectationAction()
           if not expected_result:
             continue
 
-          self.ModifyFileForResult(suite, test, typ_tags, bug, expected_result,
-                                   group_by_tags, include_all_tags)
+          self.ModifyFileForResult(
+            suite,
+            test,
+            typ_tags,
+            bug,
+            expected_result,
+            group_by_tags,
+            include_all_tags,
+          )
 
   # pylint: enable=too-many-locals
 
   # pylint: disable=too-many-locals,too-many-arguments
   def IterateThroughResultsWithThresholds(
-      self, result_map: ct.AggregatedResultsType, group_by_tags: bool,
-      result_counts: ct.ResultCountType, ignore_threshold: float,
-      flaky_threshold: float, include_all_tags: bool) -> None:
+    self,
+    result_map: ct.AggregatedResultsType,
+    group_by_tags: bool,
+    result_counts: ct.ResultCountType,
+    ignore_threshold: float,
+    flaky_threshold: float,
+    include_all_tags: bool,
+  ) -> None:
     """Iterates over |result_map| and generates expectations based off
        thresholds.
 
@@ -212,14 +234,25 @@ class ExpectationProcessor():
             continue
           expected_result = self.GetExpectedResult(fraction, flaky_threshold)
           if expected_result:
-            self.ModifyFileForResult(suite, test, typ_tags, '', expected_result,
-                                     group_by_tags, include_all_tags)
+            self.ModifyFileForResult(
+              suite,
+              test,
+              typ_tags,
+              '',
+              expected_result,
+              group_by_tags,
+              include_all_tags,
+            )
 
   def CreateExpectationsForAllResults(
-      self, result_map: ct.AggregatedStatusResultsType, group_by_tags: bool,
-      include_all_tags: bool, build_fail_total_number_threshold: int,
-      build_fail_consecutive_day_threshold: int,
-      build_fail_recent_day_threshold: int) -> None:
+    self,
+    result_map: ct.AggregatedStatusResultsType,
+    group_by_tags: bool,
+    include_all_tags: bool,
+    build_fail_total_number_threshold: int,
+    build_fail_consecutive_day_threshold: int,
+    build_fail_recent_day_threshold: int,
+  ) -> None:
     """Iterates over |result_map|, selects tests that hit all
        build-fail*-thresholds and adds expectations for their results. Same
        test in all builders that caused build fail must be over all threshold
@@ -256,14 +289,16 @@ class ExpectationProcessor():
         # Same test in all builders that caused build fail must be over all
         # threshold requirement.
         all_results = list(itertools.chain(*tag_map.values()))
-        if (not OverFailedBuildThreshold(all_results,
-                                         build_fail_total_number_threshold)
-            or not OverFailedBuildByConsecutiveDayThreshold(
-                all_results, build_fail_consecutive_day_threshold)):
+        if not OverFailedBuildThreshold(
+          all_results, build_fail_total_number_threshold
+        ) or not OverFailedBuildByConsecutiveDayThreshold(
+          all_results, build_fail_consecutive_day_threshold
+        ):
           continue
         for typ_tags, result_tuple_list in tag_map.items():
           if not FailedBuildWithinRecentDayThreshold(
-              result_tuple_list, build_fail_recent_day_threshold):
+            result_tuple_list, build_fail_recent_day_threshold
+          ):
             continue
           status = set()
           for test_result in result_tuple_list:
@@ -279,16 +314,25 @@ class ExpectationProcessor():
           if status:
             status_list = list(status)
             status_list.sort()
-            self.ModifyFileForResult(suite, test, typ_tags, '',
-                                     ' '.join(status_list), group_by_tags,
-                                     include_all_tags)
+            self.ModifyFileForResult(
+              suite,
+              test,
+              typ_tags,
+              '',
+              ' '.join(status_list),
+              group_by_tags,
+              include_all_tags,
+            )
 
   # pylint: enable=too-many-locals,too-many-arguments
 
-  def FindFailuresInSameTest(self, result_map: ct.AggregatedResultsType,
-                             target_suite: str, target_test: str,
-                             target_typ_tags: ct.TagTupleType
-                             ) -> List[Tuple[ct.TagTupleType, int]]:
+  def FindFailuresInSameTest(
+    self,
+    result_map: ct.AggregatedResultsType,
+    target_suite: str,
+    target_test: str,
+    target_typ_tags: ct.TagTupleType,
+  ) -> List[Tuple[ct.TagTupleType, int]]:
     """Finds all other failures that occurred in the given test.
 
     Ignores the failures for the test on the same configuration.
@@ -315,9 +359,12 @@ class ExpectationProcessor():
     return other_failures
 
   def FindFailuresInSameConfig(
-      self, typ_tag_ordered_result_map: TagOrderedAggregateResultType,
-      target_suite: str, target_test: str,
-      target_typ_tags: ct.TagTupleType) -> List[Tuple[str, int]]:
+    self,
+    typ_tag_ordered_result_map: TagOrderedAggregateResultType,
+    target_suite: str,
+    target_test: str,
+    target_typ_tags: ct.TagTupleType,
+  ) -> List[Tuple[str, int]]:
     """Finds all other failures that occurred on the given configuration.
 
     Ignores the failures for the given test on the given configuration.
@@ -349,8 +396,9 @@ class ExpectationProcessor():
         other_failures.append((full_name, len(build_url_list)))
     return other_failures
 
-  def _ReorderMapByTypTags(self, result_map: ct.AggregatedResultsType
-                           ) -> TagOrderedAggregateResultType:
+  def _ReorderMapByTypTags(
+    self, result_map: ct.AggregatedResultsType
+  ) -> TagOrderedAggregateResultType:
     """Rearranges|result_map| to use typ tags as the top level keys.
 
     Args:
@@ -371,13 +419,14 @@ class ExpectationProcessor():
     for suite, test_map in result_map.items():
       for test, tag_map in test_map.items():
         for typ_tags, build_url_list in tag_map.items():
-          reordered_map.setdefault(typ_tags,
-                                   {}).setdefault(suite,
-                                                  {})[test] = build_url_list
+          reordered_map.setdefault(typ_tags, {}).setdefault(suite, {})[test] = (
+            build_url_list
+          )
     return reordered_map
 
   def PromptUserForExpectationAction(
-      self) -> Union[Tuple[str, str], Tuple[None, None]]:
+    self,
+  ) -> Union[Tuple[str, str], Tuple[None, None]]:
     """Prompts the user on what to do to handle a failure.
 
     Returns:
@@ -387,8 +436,10 @@ class ExpectationProcessor():
       chooses to ignore the failure, both will be None. Otherwise, both are
       filled, although |bug| may be an empty string if no bug is provided.
     """
-    prompt = ('How should this failure be handled? (i)gnore/(r)etry on '
-              'failure/(f)ailure: ')
+    prompt = (
+      'How should this failure be handled? (i)gnore/(r)etry on '
+      'failure/(f)ailure: '
+    )
     valid_inputs = ['f', 'i', 'r']
     response = input(prompt).lower()
     while response not in valid_inputs:
@@ -399,16 +450,24 @@ class ExpectationProcessor():
       return (None, None)
     expected_result = 'RetryOnFailure' if response == 'r' else 'Failure'
 
-    prompt = ('What is the bug URL that should be associated with this '
-              'expectation? E.g. crbug.com/1234. ')
+    prompt = (
+      'What is the bug URL that should be associated with this '
+      'expectation? E.g. crbug.com/1234. '
+    )
     response = input(prompt)
     return (expected_result, response)
 
   # pylint: disable=too-many-locals,too-many-arguments
-  def ModifyFileForResult(self, suite: str, test: str,
-                          typ_tags: ct.TagTupleType, bug: str,
-                          expected_result: str, group_by_tags: bool,
-                          include_all_tags: bool) -> None:
+  def ModifyFileForResult(
+    self,
+    suite: str,
+    test: str,
+    typ_tags: ct.TagTupleType,
+    bug: str,
+    expected_result: str,
+    group_by_tags: bool,
+    include_all_tags: bool,
+  ) -> None:
     """Adds an expectation to the appropriate expectation file.
 
     Args:
@@ -431,14 +490,19 @@ class ExpectationProcessor():
     bug = '%s ' % bug if bug else bug
 
     def AppendExpectationToEnd():
-      expectation_line = '%s[ %s ] %s [ %s ]\n' % (bug, ' '.join(
-          self.ProcessTypTagsBeforeWriting(typ_tags)), test, expected_result)
+      expectation_line = '%s[ %s ] %s [ %s ]\n' % (
+        bug,
+        ' '.join(self.ProcessTypTagsBeforeWriting(typ_tags)),
+        test,
+        expected_result,
+      )
       with open(expectation_file, 'a') as outfile:
         outfile.write(expectation_line)
 
     if group_by_tags:
       insertion_line, best_matching_tags = (
-          self.FindBestInsertionLineForExpectation(typ_tags, expectation_file))
+        self.FindBestInsertionLineForExpectation(typ_tags, expectation_file)
+      )
       if insertion_line == -1:
         AppendExpectationToEnd()
       else:
@@ -451,8 +515,12 @@ class ExpectationProcessor():
         insertion_line -= 1
         tags_to_use = list(self.ProcessTypTagsBeforeWriting(tags_to_use))
         tags_to_use.sort()
-        expectation_line = '%s[ %s ] %s [ %s ]\n' % (bug, ' '.join(tags_to_use),
-                                                     test, expected_result)
+        expectation_line = '%s[ %s ] %s [ %s ]\n' % (
+          bug,
+          ' '.join(tags_to_use),
+          test,
+          expected_result,
+        )
         with open(expectation_file) as infile:
           input_contents = infile.read()
         output_contents = ''
@@ -468,8 +536,9 @@ class ExpectationProcessor():
   # pylint: enable=too-many-locals,too-many-arguments
 
   # pylint: disable=too-many-locals
-  def FilterToMostSpecificTypTags(self, typ_tags: ct.TagTupleType,
-                                  expectation_file: str) -> ct.TagTupleType:
+  def FilterToMostSpecificTypTags(
+    self, typ_tags: ct.TagTupleType, expectation_file: str
+  ) -> ct.TagTupleType:
     """Filters |typ_tags| to the most specific set.
 
     Assumes that the tags in |expectation_file| are ordered from least specific
@@ -500,8 +569,10 @@ class ExpectationProcessor():
       all_tags = set()
       for group in tag_groups:
         all_tags |= set(group)
-      raise RuntimeError('Found tags not in expectation file: %s' %
-                         ' '.join(set(typ_tags) - all_tags))
+      raise RuntimeError(
+        'Found tags not in expectation file: %s'
+        % ' '.join(set(typ_tags) - all_tags)
+      )
 
     filtered_tags = []
     for index, tags in tags_in_same_group.items():
@@ -522,9 +593,9 @@ class ExpectationProcessor():
 
   # pylint: enable=too-many-locals
 
-  def FindBestInsertionLineForExpectation(self, typ_tags: ct.TagTupleType,
-                                          expectation_file: str
-                                          ) -> Tuple[int, Set[str]]:
+  def FindBestInsertionLineForExpectation(
+    self, typ_tags: ct.TagTupleType, expectation_file: str
+  ) -> Tuple[int, Set[str]]:
     """Finds the best place to insert an expectation when grouping by tags.
 
     Args:
@@ -571,8 +642,9 @@ class ExpectationProcessor():
     expectation_files = self.ListOriginExpectationFiles()
     for f in expectation_files:
       filepath_posix = f.replace(os.sep, '/')
-      origin_filepath_url = posixpath.join(GITILES_URL,
-                                           filepath_posix) + TEXT_FORMAT_ARG
+      origin_filepath_url = (
+        posixpath.join(GITILES_URL, filepath_posix) + TEXT_FORMAT_ARG
+      )
       response = urllib.request.urlopen(origin_filepath_url).read()
       decoded_text = base64.b64decode(response).decode('utf-8')
       # After the URL access maintain all the paths as os paths.
@@ -602,11 +674,13 @@ class ExpectationProcessor():
     local_file_contents = self.GetLocalCheckoutExpectationFileContents()
     if origin_file_contents != local_file_contents:
       raise RuntimeError(
-          'Local Chromium checkout expectations are out of date. Please '
-          'perform a `git pull`.')
+        'Local Chromium checkout expectations are out of date. Please '
+        'perform a `git pull`.'
+      )
 
-  def GetExpectationFileForSuite(self, suite: str,
-                                 typ_tags: ct.TagTupleType) -> str:
+  def GetExpectationFileForSuite(
+    self, suite: str, typ_tags: ct.TagTupleType
+  ) -> str:
     """Finds the correct expectation file for the given suite.
 
     Args:
@@ -670,6 +744,7 @@ class ExpectationProcessor():
   def GetExpectedResult(self, fraction: float, flaky_threshold: float) -> str:
     raise NotImplementedError
 
-  def ProcessTypTagsBeforeWriting(self,
-                                  typ_tags: ct.TagTupleType) -> ct.TagTupleType:
+  def ProcessTypTagsBeforeWriting(
+    self, typ_tags: ct.TagTupleType
+  ) -> ct.TagTupleType:
     return typ_tags

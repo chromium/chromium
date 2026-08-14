@@ -9,36 +9,48 @@ import stat
 import sys
 
 sys.path.append(
-    os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, os.pardir,
-                 'build'))
+    os.path.join(
+        os.path.dirname(__file__), os.pardir, os.pardir, os.pardir, 'build'
+    )
+)
 # //build imports.
 import action_helpers
 
 
 def _parse_args(args):
-    description = 'Generator of bash scripts that can invoke the Python ' \
-                  'library for running Rust unit tests with support for ' \
-                  'Chromium test filters, sharding, and test output.'
+    description = (
+        'Generator of bash scripts that can invoke the Python '
+        'library for running Rust unit tests with support for '
+        'Chromium test filters, sharding, and test output.'
+    )
     parser = argparse.ArgumentParser(description=description)
-    parser.add_argument('--script-path',
-                        dest='script_path',
-                        help='Where to write the bash script.',
-                        metavar='FILEPATH',
-                        required=True)
-    parser.add_argument('--exe-dir',
-                        dest='exe_dir',
-                        help='Directory where the wrapped executables are',
-                        metavar='PATH',
-                        required=True)
-    parser.add_argument('--rust-test-executables',
-                        dest='rust_test_executables',
-                        help='File listing one or more executables to wrap. ' \
-                             '(basenames - no .exe extension or directory)',
-                        metavar='FILEPATH',
-                        required=True)
-    parser.add_argument('--make-bat',
-                        action='store_true',
-                        help='Generate a .bat file instead of a bash script')
+    parser.add_argument(
+        '--script-path',
+        dest='script_path',
+        help='Where to write the bash script.',
+        metavar='FILEPATH',
+        required=True,
+    )
+    parser.add_argument(
+        '--exe-dir',
+        dest='exe_dir',
+        help='Directory where the wrapped executables are',
+        metavar='PATH',
+        required=True,
+    )
+    parser.add_argument(
+        '--rust-test-executables',
+        dest='rust_test_executables',
+        help='File listing one or more executables to wrap. '
+        '(basenames - no .exe extension or directory)',
+        metavar='FILEPATH',
+        required=True,
+    )
+    parser.add_argument(
+        '--make-bat',
+        action='store_true',
+        help='Generate a .bat file instead of a bash script',
+    )
     return parser.parse_args(args=args)
 
 
@@ -53,7 +65,8 @@ def _find_test_executables(args):
             # as a signal.
             if exe_name in exes:
                 raise ValueError(
-                    f'Duplicate entry "{exe_name}" in {input_filepath}')
+                    f'Duplicate entry "{exe_name}" in {input_filepath}'
+                )
             if args.make_bat:
                 suffix = '.exe'
             else:
@@ -95,12 +108,14 @@ def _generate_script(args, should_validate_if_exes_exist=True):
         res += '    %*'
     else:
         res = '#!/bin/bash\n'
-        res += (f'env vpython3 '
-                f'"$(dirname $0)/{main_dir}/rust_main_program.py" \\\n')
+        res += (
+            f'env vpython3 "$(dirname $0)/{main_dir}/rust_main_program.py" \\\n'
+        )
         for exe in exes:
             res += (
                 f'    '
-                f'"--rust-test-executable=$(dirname $0)/{exe_dir}/{exe}" \\\n')
+                f'"--rust-test-executable=$(dirname $0)/{exe_dir}/{exe}" \\\n'
+            )
         res += '    "$@"'
     return res
 
@@ -115,10 +130,15 @@ def _main():
 
     # chmod a+x
     st = os.stat(args.script_path)
-    if (not st.st_mode & stat.S_IXUSR) or (not st.st_mode & stat.S_IXGRP) or \
-       (not st.st_mode & stat.S_IXOTH):
-        os.chmod(args.script_path,
-                 st.st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
+    if (
+        (not st.st_mode & stat.S_IXUSR)
+        or (not st.st_mode & stat.S_IXGRP)
+        or (not st.st_mode & stat.S_IXOTH)
+    ):
+        os.chmod(
+            args.script_path,
+            st.st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH,
+        )
 
 
 if __name__ == '__main__':

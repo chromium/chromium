@@ -27,6 +27,7 @@ from blinkpy.w3c import buganizer
 
 NON_WILDCARD = data_types.WildcardType.NON_WILDCARD
 
+
 def CreateTextOutputPermutations(text: str, inputs: Iterable[str]) -> Set[str]:
   """Creates permutations of |text| filled with the contents of |inputs|.
 
@@ -56,46 +57,48 @@ class ConvertUnmatchedResultsToStringDictUnittest(unittest.TestCase):
   def testMinimalData(self) -> None:
     """Tests that everything functions when minimal data is provided."""
     unmatched_results = {
-        'builder': [
-            data_types.Result('foo', [], 'Failure', 'step', 'build_id'),
-        ],
+      'builder': [
+        data_types.Result('foo', [], 'Failure', 'step', 'build_id'),
+      ],
     }
     expected_output = {
-        'foo': {
-            'builder': {
-                'step': [
-                    'Got "Failure" on http://ci.chromium.org/b/build_id with '
-                    'tags []',
-                ],
-            },
+      'foo': {
+        'builder': {
+          'step': [
+            'Got "Failure" on http://ci.chromium.org/b/build_id with tags []',
+          ],
         },
+      },
     }
     output = result_output._ConvertUnmatchedResultsToStringDict(
-        unmatched_results)
+      unmatched_results
+    )
     self.assertEqual(output, expected_output)
 
   def testRegularData(self) -> None:
     """Tests that everything functions when regular data is provided."""
     unmatched_results = {
-        'builder': [
-            data_types.Result('foo', ['win', 'intel'], 'Failure', 'step_name',
-                              'build_id')
-        ],
+      'builder': [
+        data_types.Result(
+          'foo', ['win', 'intel'], 'Failure', 'step_name', 'build_id'
+        )
+      ],
     }
     # TODO(crbug.com/40177248): Hard-code the tag string once only Python 3 is
     # supported.
     expected_output = {
-        'foo': {
-            'builder': {
-                'step_name': [
-                    'Got "Failure" on http://ci.chromium.org/b/build_id with '
-                    'tags [%s]' % ' '.join(set(['win', 'intel'])),
-                ]
-            }
+      'foo': {
+        'builder': {
+          'step_name': [
+            'Got "Failure" on http://ci.chromium.org/b/build_id with '
+            'tags [%s]' % ' '.join(set(['win', 'intel'])),
+          ]
         }
+      }
     }
     output = result_output._ConvertUnmatchedResultsToStringDict(
-        unmatched_results)
+      unmatched_results
+    )
     self.assertEqual(output, expected_output)
 
 
@@ -103,50 +106,57 @@ class ConvertTestExpectationMapToStringDictUnittest(unittest.TestCase):
   def testEmptyMap(self) -> None:
     """Tests that providing an empty map is a no-op."""
     self.assertEqual(
-        result_output._ConvertTestExpectationMapToStringDict(
-            data_types.TestExpectationMap()), {})
+      result_output._ConvertTestExpectationMapToStringDict(
+        data_types.TestExpectationMap()
+      ),
+      {},
+    )
 
   def testSemiStaleMap(self) -> None:
     """Tests that everything functions when regular data is provided."""
-    expectation_map = data_types.TestExpectationMap({
-        'expectation_file':
-        data_types.ExpectationBuilderMap({
-            data_types.Expectation('foo/test', ['win', 'intel'], [
-                                       'RetryOnFailure'
-                                   ], NON_WILDCARD):
-            data_types.BuilderStepMap({
-                'builder':
-                data_types.StepBuildStatsMap({
-                    'all_pass':
-                    uu.CreateStatsWithPassFails(2, 0),
-                    'all_fail':
-                    uu.CreateStatsWithPassFails(0, 2),
-                    'some_pass':
-                    uu.CreateStatsWithPassFails(1, 1),
-                }),
-            }),
-            data_types.Expectation('foo/test', ['linux', 'intel'], [
-                                       'RetryOnFailure'
-                                   ], NON_WILDCARD):
-            data_types.BuilderStepMap({
-                'builder':
-                data_types.StepBuildStatsMap({
-                    'all_pass':
-                    uu.CreateStatsWithPassFails(2, 0),
-                }),
-            }),
-            data_types.Expectation('foo/test', ['mac', 'intel'], [
-                                       'RetryOnFailure'
-                                   ], NON_WILDCARD):
-            data_types.BuilderStepMap({
-                'builder':
-                data_types.StepBuildStatsMap({
-                    'all_fail':
-                    uu.CreateStatsWithPassFails(0, 2),
-                }),
-            }),
-        }),
-    })
+    expectation_map = data_types.TestExpectationMap(
+      {
+        'expectation_file': data_types.ExpectationBuilderMap(
+          {
+            data_types.Expectation(
+              'foo/test', ['win', 'intel'], ['RetryOnFailure'], NON_WILDCARD
+            ): data_types.BuilderStepMap(
+              {
+                'builder': data_types.StepBuildStatsMap(
+                  {
+                    'all_pass': uu.CreateStatsWithPassFails(2, 0),
+                    'all_fail': uu.CreateStatsWithPassFails(0, 2),
+                    'some_pass': uu.CreateStatsWithPassFails(1, 1),
+                  }
+                ),
+              }
+            ),
+            data_types.Expectation(
+              'foo/test', ['linux', 'intel'], ['RetryOnFailure'], NON_WILDCARD
+            ): data_types.BuilderStepMap(
+              {
+                'builder': data_types.StepBuildStatsMap(
+                  {
+                    'all_pass': uu.CreateStatsWithPassFails(2, 0),
+                  }
+                ),
+              }
+            ),
+            data_types.Expectation(
+              'foo/test', ['mac', 'intel'], ['RetryOnFailure'], NON_WILDCARD
+            ): data_types.BuilderStepMap(
+              {
+                'builder': data_types.StepBuildStatsMap(
+                  {
+                    'all_fail': uu.CreateStatsWithPassFails(0, 2),
+                  }
+                ),
+              }
+            ),
+          }
+        ),
+      }
+    )
     # Set ordering does not appear to be stable between test runs, as we can
     # get either order of tags. So, generate them now instead of hard coding
     # them.
@@ -154,65 +164,68 @@ class ConvertTestExpectationMapToStringDictUnittest(unittest.TestCase):
     win_tags = ' '.join(set(['win', 'intel']))
     mac_tags = ' '.join(set(['mac', 'intel']))
     expected_output = {
-        'expectation_file': {
-            'foo/test': {
-                '"RetryOnFailure" expectation on "%s"' % linux_tags: {
-                    'builder': {
-                        'Fully passed in the following': [
-                            'all_pass (2/2 passed)',
-                        ],
-                    },
-                },
-                '"RetryOnFailure" expectation on "%s"' % win_tags: {
-                    'builder': {
-                        'Fully passed in the following': [
-                            'all_pass (2/2 passed)',
-                        ],
-                        'Partially passed in the following': {
-                            'some_pass (1/2 passed)': [
-                                data_types.BuildLinkFromBuildId('build_id0'),
-                            ],
-                        },
-                        'Never passed in the following': [
-                            'all_fail (0/2 passed)',
-                        ],
-                    },
-                },
-                '"RetryOnFailure" expectation on "%s"' % mac_tags: {
-                    'builder': {
-                        'Never passed in the following': [
-                            'all_fail (0/2 passed)',
-                        ],
-                    },
-                },
+      'expectation_file': {
+        'foo/test': {
+          '"RetryOnFailure" expectation on "%s"' % linux_tags: {
+            'builder': {
+              'Fully passed in the following': [
+                'all_pass (2/2 passed)',
+              ],
             },
+          },
+          '"RetryOnFailure" expectation on "%s"' % win_tags: {
+            'builder': {
+              'Fully passed in the following': [
+                'all_pass (2/2 passed)',
+              ],
+              'Partially passed in the following': {
+                'some_pass (1/2 passed)': [
+                  data_types.BuildLinkFromBuildId('build_id0'),
+                ],
+              },
+              'Never passed in the following': [
+                'all_fail (0/2 passed)',
+              ],
+            },
+          },
+          '"RetryOnFailure" expectation on "%s"' % mac_tags: {
+            'builder': {
+              'Never passed in the following': [
+                'all_fail (0/2 passed)',
+              ],
+            },
+          },
         },
+      },
     }
 
     str_dict = result_output._ConvertTestExpectationMapToStringDict(
-        expectation_map)
+      expectation_map
+    )
     self.assertEqual(str_dict, expected_output)
 
 
 class ConvertUnusedExpectationsToStringDictUnittest(unittest.TestCase):
   def testEmptyDict(self) -> None:
     """Tests that nothing blows up when given an empty dict."""
-    self.assertEqual(result_output._ConvertUnusedExpectationsToStringDict({}),
-                     {})
+    self.assertEqual(
+      result_output._ConvertUnusedExpectationsToStringDict({}), {}
+    )
 
   def testBasic(self) -> None:
     """Basic functionality test."""
     unused = {
-        'foo_file': [
-            data_types.Expectation('foo/test', ['win', 'nvidia'],
-                                   ['Failure', 'Timeout'], NON_WILDCARD),
-        ],
-        'bar_file': [
-            data_types.Expectation('bar/test', ['win'], ['Failure'],
-                                   NON_WILDCARD),
-            data_types.Expectation('bar/test2', ['win'], ['RetryOnFailure'],
-                                   NON_WILDCARD)
-        ],
+      'foo_file': [
+        data_types.Expectation(
+          'foo/test', ['win', 'nvidia'], ['Failure', 'Timeout'], NON_WILDCARD
+        ),
+      ],
+      'bar_file': [
+        data_types.Expectation('bar/test', ['win'], ['Failure'], NON_WILDCARD),
+        data_types.Expectation(
+          'bar/test2', ['win'], ['RetryOnFailure'], NON_WILDCARD
+        ),
+      ],
     }
     # Set ordering does not appear to be stable between test runs, as we can
     # get either order of tags. So, generate them now instead of hard coding
@@ -220,17 +233,18 @@ class ConvertUnusedExpectationsToStringDictUnittest(unittest.TestCase):
     tags = ' '.join(['nvidia', 'win'])
     results = ' '.join(['Failure', 'Timeout'])
     expected_output = {
-        'foo_file': [
-            '[ %s ] foo/test [ %s ]' % (tags, results),
-        ],
-        'bar_file': [
-            '[ win ] bar/test [ Failure ]',
-            '[ win ] bar/test2 [ RetryOnFailure ]',
-        ],
+      'foo_file': [
+        '[ %s ] foo/test [ %s ]' % (tags, results),
+      ],
+      'bar_file': [
+        '[ win ] bar/test [ Failure ]',
+        '[ win ] bar/test2 [ RetryOnFailure ]',
+      ],
     }
     self.assertEqual(
-        result_output._ConvertUnusedExpectationsToStringDict(unused),
-        expected_output)
+      result_output._ConvertUnusedExpectationsToStringDict(unused),
+      expected_output,
+    )
 
 
 class HtmlToFileUnittest(fake_filesystem_unittest.TestCase):
@@ -245,32 +259,35 @@ class HtmlToFileUnittest(fake_filesystem_unittest.TestCase):
     s = 'a'
     self.assertEqual(result_output._LinkifyString(s), 'a')
     s = 'http://a'
-    self.assertEqual(result_output._LinkifyString(s),
-                     '<a href="http://a">http://a</a>')
+    self.assertEqual(
+      result_output._LinkifyString(s), '<a href="http://a">http://a</a>'
+    )
     s = 'link to http://a, click it'
-    self.assertEqual(result_output._LinkifyString(s),
-                     'link to <a href="http://a">http://a</a>, click it')
+    self.assertEqual(
+      result_output._LinkifyString(s),
+      'link to <a href="http://a">http://a</a>, click it',
+    )
 
   def testRecursiveHtmlToFileExpectationMap(self) -> None:
     """Tests _RecursiveHtmlToFile() with an expectation map as input."""
     expectation_map = {
-        'foo': {
-            '"RetryOnFailure" expectation on "win intel"': {
-                'builder': {
-                    'Fully passed in the following': [
-                        'all_pass (2/2)',
-                    ],
-                    'Never passed in the following': [
-                        'all_fail (0/2)',
-                    ],
-                    'Partially passed in the following': {
-                        'some_pass (1/2)': [
-                            data_types.BuildLinkFromBuildId('build_id0'),
-                        ],
-                    },
-                },
+      'foo': {
+        '"RetryOnFailure" expectation on "win intel"': {
+          'builder': {
+            'Fully passed in the following': [
+              'all_pass (2/2)',
+            ],
+            'Never passed in the following': [
+              'all_fail (0/2)',
+            ],
+            'Partially passed in the following': {
+              'some_pass (1/2)': [
+                data_types.BuildLinkFromBuildId('build_id0'),
+              ],
             },
+          },
         },
+      },
     }
     result_output._RecursiveHtmlToFile(expectation_map, self._file_handle)
     self._file_handle.close()
@@ -309,19 +326,19 @@ class HtmlToFileUnittest(fake_filesystem_unittest.TestCase):
   def testRecursiveHtmlToFileUnmatchedResults(self) -> None:
     """Tests _RecursiveHtmlToFile() with unmatched results as input."""
     unmatched_results = {
-        'foo': {
-            'builder': {
-                None: [
-                    'Expected "" on http://ci.chromium.org/b/build_id, got '
-                    '"Failure" with tags []',
-                ],
-                'step_name': [
-                    'Expected "Failure RetryOnFailure" on '
-                    'http://ci.chromium.org/b/build_id, got '
-                    '"Failure" with tags [win intel]',
-                ]
-            },
+      'foo': {
+        'builder': {
+          None: [
+            'Expected "" on http://ci.chromium.org/b/build_id, got '
+            '"Failure" with tags []',
+          ],
+          'step_name': [
+            'Expected "Failure RetryOnFailure" on '
+            'http://ci.chromium.org/b/build_id, got '
+            '"Failure" with tags [win intel]',
+          ],
         },
+      },
     }
     result_output._RecursiveHtmlToFile(unmatched_results, self._file_handle)
     self._file_handle.close()
@@ -337,13 +354,13 @@ class HtmlToFileUnittest(fake_filesystem_unittest.TestCase):
 </div>
 """
     values = [
-        """\
+      """\
     <button type="button" class="collapsible_group">None</button>
     <div class="content">
       <p>Expected "" on <a href="http://ci.chromium.org/b/build_id">http://ci.chromium.org/b/build_id</a>, got "Failure" with tags []</p>
     </div>
 """,
-        """\
+      """\
     <button type="button" class="collapsible_group">step_name</button>
     <div class="content">
       <p>Expected "Failure RetryOnFailure" on <a href="http://ci.chromium.org/b/build_id">http://ci.chromium.org/b/build_id</a>, got "Failure" with tags [win intel]</p>
@@ -366,23 +383,23 @@ class PrintToFileUnittest(fake_filesystem_unittest.TestCase):
   def testRecursivePrintToFileExpectationMap(self) -> None:
     """Tests RecursivePrintToFile() with an expectation map as input."""
     expectation_map = {
-        'foo': {
-            '"RetryOnFailure" expectation on "win intel"': {
-                'builder': {
-                    'Fully passed in the following': [
-                        'all_pass (2/2)',
-                    ],
-                    'Never passed in the following': [
-                        'all_fail (0/2)',
-                    ],
-                    'Partially passed in the following': {
-                        'some_pass (1/2)': [
-                            data_types.BuildLinkFromBuildId('build_id0'),
-                        ],
-                    },
-                },
+      'foo': {
+        '"RetryOnFailure" expectation on "win intel"': {
+          'builder': {
+            'Fully passed in the following': [
+              'all_pass (2/2)',
+            ],
+            'Never passed in the following': [
+              'all_fail (0/2)',
+            ],
+            'Partially passed in the following': {
+              'some_pass (1/2)': [
+                data_types.BuildLinkFromBuildId('build_id0'),
+              ],
             },
+          },
         },
+      },
     }
     result_output.RecursivePrintToFile(expectation_map, 0, self._file_handle)
     self._file_handle.close()
@@ -405,19 +422,19 @@ foo
   def testRecursivePrintToFileUnmatchedResults(self) -> None:
     """Tests RecursivePrintToFile() with unmatched results as input."""
     unmatched_results = {
-        'foo': {
-            'builder': {
-                None: [
-                    'Expected "" on http://ci.chromium.org/b/build_id, got '
-                    '"Failure" with tags []',
-                ],
-                'step_name': [
-                    'Expected "Failure RetryOnFailure" on '
-                    'http://ci.chromium.org/b/build_id, got '
-                    '"Failure" with tags [win intel]',
-                ]
-            },
+      'foo': {
+        'builder': {
+          None: [
+            'Expected "" on http://ci.chromium.org/b/build_id, got '
+            '"Failure" with tags []',
+          ],
+          'step_name': [
+            'Expected "Failure RetryOnFailure" on '
+            'http://ci.chromium.org/b/build_id, got '
+            '"Failure" with tags [win intel]',
+          ],
         },
+      },
     }
     result_output.RecursivePrintToFile(unmatched_results, 0, self._file_handle)
     self._file_handle.close()
@@ -428,11 +445,11 @@ foo
   builder%s
 """
     values = [
-        """
+      """
     None
       Expected "" on http://ci.chromium.org/b/build_id, got "Failure" with tags []\
 """,
-        """
+      """
     step_name
       Expected "Failure RetryOnFailure" on http://ci.chromium.org/b/build_id, got "Failure" with tags [win intel]\
 """,
@@ -452,10 +469,14 @@ class OutputResultsUnittest(fake_filesystem_unittest.TestCase):
   def testOutputResultsUnsupportedFormat(self) -> None:
     """Tests that passing in an unsupported format is an error."""
     with self.assertRaises(RuntimeError):
-      result_output.OutputResults(data_types.TestExpectationMap(),
-                                  data_types.TestExpectationMap(),
-                                  data_types.TestExpectationMap(), {}, {},
-                                  'asdf')
+      result_output.OutputResults(
+        data_types.TestExpectationMap(),
+        data_types.TestExpectationMap(),
+        data_types.TestExpectationMap(),
+        {},
+        {},
+        'asdf',
+      )
 
   def testOutputResultsSmoketest(self) -> None:
     """Test that nothing blows up when outputting."""
@@ -496,41 +517,83 @@ class OutputResultsUnittest(fake_filesystem_unittest.TestCase):
     })
     # yapf: enable
     unmatched_results = {
-        'builder': [
-            data_types.Result('foo', ['win', 'intel'], 'Failure', 'step_name',
-                              'build_id'),
-        ],
+      'builder': [
+        data_types.Result(
+          'foo', ['win', 'intel'], 'Failure', 'step_name', 'build_id'
+        ),
+      ],
     }
     unmatched_expectations = {
-        'foo_file': [
-            data_types.Expectation('foo', ['linux'], 'RetryOnFailure',
-                                   NON_WILDCARD),
-        ],
+      'foo_file': [
+        data_types.Expectation(
+          'foo', ['linux'], 'RetryOnFailure', NON_WILDCARD
+        ),
+      ],
     }
 
     stale, semi_stale, active = expectation_map.SplitByStaleness()
 
-    result_output.OutputResults(stale, semi_stale, active, {}, {}, 'print',
-                                self._file_handle)
-    result_output.OutputResults(stale, semi_stale, active, unmatched_results,
-                                {}, 'print', self._file_handle)
-    result_output.OutputResults(stale, semi_stale, active, {},
-                                unmatched_expectations, 'print',
-                                self._file_handle)
-    result_output.OutputResults(stale, semi_stale, active, unmatched_results,
-                                unmatched_expectations, 'print',
-                                self._file_handle)
+    result_output.OutputResults(
+      stale, semi_stale, active, {}, {}, 'print', self._file_handle
+    )
+    result_output.OutputResults(
+      stale,
+      semi_stale,
+      active,
+      unmatched_results,
+      {},
+      'print',
+      self._file_handle,
+    )
+    result_output.OutputResults(
+      stale,
+      semi_stale,
+      active,
+      {},
+      unmatched_expectations,
+      'print',
+      self._file_handle,
+    )
+    result_output.OutputResults(
+      stale,
+      semi_stale,
+      active,
+      unmatched_results,
+      unmatched_expectations,
+      'print',
+      self._file_handle,
+    )
 
-    result_output.OutputResults(stale, semi_stale, active, {}, {}, 'html',
-                                self._file_handle)
-    result_output.OutputResults(stale, semi_stale, active, unmatched_results,
-                                {}, 'html', self._file_handle)
-    result_output.OutputResults(stale, semi_stale, active, {},
-                                unmatched_expectations, 'html',
-                                self._file_handle)
-    result_output.OutputResults(stale, semi_stale, active, unmatched_results,
-                                unmatched_expectations, 'html',
-                                self._file_handle)
+    result_output.OutputResults(
+      stale, semi_stale, active, {}, {}, 'html', self._file_handle
+    )
+    result_output.OutputResults(
+      stale,
+      semi_stale,
+      active,
+      unmatched_results,
+      {},
+      'html',
+      self._file_handle,
+    )
+    result_output.OutputResults(
+      stale,
+      semi_stale,
+      active,
+      {},
+      unmatched_expectations,
+      'html',
+      self._file_handle,
+    )
+    result_output.OutputResults(
+      stale,
+      semi_stale,
+      active,
+      unmatched_results,
+      unmatched_expectations,
+      'html',
+      self._file_handle,
+    )
 
 
 class OutputAffectedUrlsUnittest(fake_filesystem_unittest.TestCase):
@@ -542,25 +605,30 @@ class OutputAffectedUrlsUnittest(fake_filesystem_unittest.TestCase):
   def testOutput(self) -> None:
     """Tests that the output is correct."""
     urls = [
-        'https://crbug.com/1234',
-        'https://crbug.com/angleproject/1234',
-        'http://crbug.com/2345',
-        'crbug.com/3456',
-        'b/9999',
+      'https://crbug.com/1234',
+      'https://crbug.com/angleproject/1234',
+      'http://crbug.com/2345',
+      'crbug.com/3456',
+      'b/9999',
     ]
     orphaned_urls = ['https://crbug.com/1234', 'crbug.com/3456']
     result_output._OutputAffectedUrls(urls, orphaned_urls, self._file_handle)
     self._file_handle.close()
     with open(self._filepath) as f:
-      self.assertEqual(f.read(), ('Affected bugs: '
-                                  'https://crbug.com/1234 '
-                                  'https://crbug.com/angleproject/1234 '
-                                  'http://crbug.com/2345 '
-                                  'https://crbug.com/3456 '
-                                  'https://b/9999\n'
-                                  'Closable bugs: '
-                                  'https://crbug.com/1234 '
-                                  'https://crbug.com/3456\n'))
+      self.assertEqual(
+        f.read(),
+        (
+          'Affected bugs: '
+          'https://crbug.com/1234 '
+          'https://crbug.com/angleproject/1234 '
+          'http://crbug.com/2345 '
+          'https://crbug.com/3456 '
+          'https://b/9999\n'
+          'Closable bugs: '
+          'https://crbug.com/1234 '
+          'https://crbug.com/3456\n'
+        ),
+      )
 
 
 class OutputUrlsForClDescriptionUnittest(fake_filesystem_unittest.TestCase):
@@ -572,145 +640,170 @@ class OutputUrlsForClDescriptionUnittest(fake_filesystem_unittest.TestCase):
   def testSingleLine(self) -> None:
     """Tests when all bugs can fit on a single line."""
     urls = [
-        'crbug.com/1234',
-        'https://crbug.com/angleproject/2345',
-        'b/9999',
+      'crbug.com/1234',
+      'https://crbug.com/angleproject/2345',
+      'b/9999',
     ]
     result_output._OutputUrlsForClDescription(urls, [], self._file_handle)
     self._file_handle.close()
     with open(self._filepath) as f:
-      self.assertEqual(f.read(), ('Affected bugs for CL description:\n'
-                                  'Bug: 9999, 1234, angleproject:2345\n'))
+      self.assertEqual(
+        f.read(),
+        (
+          'Affected bugs for CL description:\n'
+          'Bug: 9999, 1234, angleproject:2345\n'
+        ),
+      )
 
   def testBugLimit(self) -> None:
     """Tests that only a certain number of bugs are allowed per line."""
     urls = [
-        'crbug.com/1',
-        'crbug.com/2',
-        'crbug.com/3',
-        'crbug.com/4',
-        'crbug.com/5',
-        'crbug.com/6',
+      'crbug.com/1',
+      'crbug.com/2',
+      'crbug.com/3',
+      'crbug.com/4',
+      'crbug.com/5',
+      'crbug.com/6',
     ]
     result_output._OutputUrlsForClDescription(urls, [], self._file_handle)
     self._file_handle.close()
     with open(self._filepath) as f:
-      self.assertEqual(f.read(), ('Affected bugs for CL description:\n'
-                                  'Bug: 1, 2, 3, 4, 5\n'
-                                  'Bug: 6\n'))
+      self.assertEqual(
+        f.read(),
+        ('Affected bugs for CL description:\nBug: 1, 2, 3, 4, 5\nBug: 6\n'),
+      )
 
   def testLengthLimit(self) -> None:
     """Tests that only a certain number of characters are allowed per line."""
     urls = [
-        'crbug.com/averylongprojectthatwillgooverthelinelength/1',
-        'crbug.com/averylongprojectthatwillgooverthelinelength/2',
+      'crbug.com/averylongprojectthatwillgooverthelinelength/1',
+      'crbug.com/averylongprojectthatwillgooverthelinelength/2',
     ]
     result_output._OutputUrlsForClDescription(urls, [], self._file_handle)
     self._file_handle.close()
     with open(self._filepath) as f:
-      self.assertEqual(f.read(),
-                       ('Affected bugs for CL description:\n'
-                        'Bug: averylongprojectthatwillgooverthelinelength:1\n'
-                        'Bug: averylongprojectthatwillgooverthelinelength:2\n'))
+      self.assertEqual(
+        f.read(),
+        (
+          'Affected bugs for CL description:\n'
+          'Bug: averylongprojectthatwillgooverthelinelength:1\n'
+          'Bug: averylongprojectthatwillgooverthelinelength:2\n'
+        ),
+      )
 
-    project_name = (result_output.MAX_CHARACTERS_PER_CL_LINE - len('Bug: ') -
-                    len(':1, 2')) * 'a'
+    project_name = (
+      result_output.MAX_CHARACTERS_PER_CL_LINE - len('Bug: ') - len(':1, 2')
+    ) * 'a'
     urls = [
-        'crbug.com/%s/1' % project_name,
-        'crbug.com/2',
+      'crbug.com/%s/1' % project_name,
+      'crbug.com/2',
     ]
     with open(self._filepath, 'w') as f:
       result_output._OutputUrlsForClDescription(urls, [], f)
     with open(self._filepath) as f:
-      self.assertEqual(f.read(), ('Affected bugs for CL description:\n'
-                                  'Bug: 2, %s:1\n' % project_name))
+      self.assertEqual(
+        f.read(),
+        ('Affected bugs for CL description:\nBug: 2, %s:1\n' % project_name),
+      )
 
     project_name += 'a'
     urls = [
-        'crbug.com/%s/1' % project_name,
-        'crbug.com/2',
+      'crbug.com/%s/1' % project_name,
+      'crbug.com/2',
     ]
     with open(self._filepath, 'w') as f:
       result_output._OutputUrlsForClDescription(urls, [], f)
     with open(self._filepath) as f:
-      self.assertEqual(f.read(), ('Affected bugs for CL description:\n'
-                                  'Bug: 2\nBug: %s:1\n' % project_name))
+      self.assertEqual(
+        f.read(),
+        (
+          'Affected bugs for CL description:\n'
+          'Bug: 2\nBug: %s:1\n' % project_name
+        ),
+      )
 
   def testSingleBugOverLineLimit(self) -> None:
     """Tests the behavior when a single bug by itself is over the line limit."""
     project_name = result_output.MAX_CHARACTERS_PER_CL_LINE * 'a'
     urls = [
-        'crbug.com/%s/1' % project_name,
-        'crbug.com/2',
+      'crbug.com/%s/1' % project_name,
+      'crbug.com/2',
     ]
     result_output._OutputUrlsForClDescription(urls, [], self._file_handle)
     self._file_handle.close()
     with open(self._filepath) as f:
-      self.assertEqual(f.read(), ('Affected bugs for CL description:\n'
-                                  'Bug: 2\n'
-                                  'Bug: %s:1\n' % project_name))
+      self.assertEqual(
+        f.read(),
+        (
+          'Affected bugs for CL description:\n'
+          'Bug: 2\n'
+          'Bug: %s:1\n' % project_name
+        ),
+      )
 
   def testOrphanedBugs(self) -> None:
     """Tests that orphaned bugs are output properly alongside affected ones."""
     urls = [
-        'crbug.com/1',
-        'crbug.com/2',
-        'crbug.com/3',
+      'crbug.com/1',
+      'crbug.com/2',
+      'crbug.com/3',
     ]
     orphaned_urls = ['crbug.com/2']
-    result_output._OutputUrlsForClDescription(urls, orphaned_urls,
-                                              self._file_handle)
+    result_output._OutputUrlsForClDescription(
+      urls, orphaned_urls, self._file_handle
+    )
     self._file_handle.close()
     with open(self._filepath) as f:
-      self.assertEqual(f.read(), ('Affected bugs for CL description:\n'
-                                  'Bug: 1, 3\n'
-                                  'Fixed: 2\n'))
+      self.assertEqual(
+        f.read(), ('Affected bugs for CL description:\nBug: 1, 3\nFixed: 2\n')
+      )
 
   def testOnlyOrphanedBugs(self) -> None:
     """Tests output when all affected bugs are orphaned bugs."""
     urls = [
-        'crbug.com/1',
-        'crbug.com/2',
+      'crbug.com/1',
+      'crbug.com/2',
     ]
     orphaned_urls = [
-        'crbug.com/1',
-        'crbug.com/2',
+      'crbug.com/1',
+      'crbug.com/2',
     ]
-    result_output._OutputUrlsForClDescription(urls, orphaned_urls,
-                                              self._file_handle)
+    result_output._OutputUrlsForClDescription(
+      urls, orphaned_urls, self._file_handle
+    )
     self._file_handle.close()
     with open(self._filepath) as f:
-      self.assertEqual(f.read(), ('Affected bugs for CL description:\n'
-                                  'Fixed: 1, 2\n'))
+      self.assertEqual(
+        f.read(), ('Affected bugs for CL description:\nFixed: 1, 2\n')
+      )
 
   def testNoAutoCloseBugs(self):
     """Tests behavior when not auto closing bugs."""
     urls = [
-        'crbug.com/0',
-        'crbug.com/1',
+      'crbug.com/0',
+      'crbug.com/1',
     ]
     orphaned_urls = [
-        'crbug.com/0',
+      'crbug.com/0',
     ]
     mock_buganizer = MockBuganizerClient()
-    with mock.patch.object(result_output,
-                           '_GetBuganizerClient',
-                           return_value=mock_buganizer):
-      result_output._OutputUrlsForClDescription(urls,
-                                                orphaned_urls,
-                                                self._file_handle,
-                                                auto_close_bugs=False)
+    with mock.patch.object(
+      result_output, '_GetBuganizerClient', return_value=mock_buganizer
+    ):
+      result_output._OutputUrlsForClDescription(
+        urls, orphaned_urls, self._file_handle, auto_close_bugs=False
+      )
     self._file_handle.close()
     with open(self._filepath) as f:
-      self.assertEqual(f.read(), ('Affected bugs for CL description:\n'
-                                  'Bug: 1\n'
-                                  'Bug: 0\n'))
+      self.assertEqual(
+        f.read(), ('Affected bugs for CL description:\nBug: 1\nBug: 0\n')
+      )
     mock_buganizer.NewComment.assert_called_once_with(
-        'crbug.com/0', result_output.BUGANIZER_COMMENT)
+      'crbug.com/0', result_output.BUGANIZER_COMMENT
+    )
 
 
 class MockBuganizerClient:
-
   def __init__(self):
     self.comment_list = []
     self.NewComment = mock.Mock()
@@ -720,13 +813,11 @@ class MockBuganizerClient:
 
 
 class PostCommentsToOrphanedBugsUnittest(unittest.TestCase):
-
   def setUp(self):
     self._buganizer_client = MockBuganizerClient()
     self._buganizer_patcher = mock.patch.object(
-        result_output,
-        '_GetBuganizerClient',
-        return_value=self._buganizer_client)
+      result_output, '_GetBuganizerClient', return_value=self._buganizer_client
+    )
     self._buganizer_patcher.start()
     self.addCleanup(self._buganizer_patcher.stop)
 
@@ -734,26 +825,33 @@ class PostCommentsToOrphanedBugsUnittest(unittest.TestCase):
     """Tests the basic/happy path scenario."""
     self._buganizer_client.comment_list.append({'comment': 'Not matching'})
     result_output._PostCommentsToOrphanedBugs(
-        ['crbug.com/0', 'crbug.com/angleproject/0'])
+      ['crbug.com/0', 'crbug.com/angleproject/0']
+    )
     self.assertEqual(self._buganizer_client.NewComment.call_count, 2)
     self._buganizer_client.NewComment.assert_any_call(
-        'crbug.com/0', result_output.BUGANIZER_COMMENT)
+      'crbug.com/0', result_output.BUGANIZER_COMMENT
+    )
     self._buganizer_client.NewComment.assert_any_call(
-        'crbug.com/angleproject/0', result_output.BUGANIZER_COMMENT)
+      'crbug.com/angleproject/0', result_output.BUGANIZER_COMMENT
+    )
 
   def testNoDuplicateComments(self):
     """Tests that duplicate comments are not posted on bugs."""
     self._buganizer_client.comment_list.append(
-        {'comment': result_output.BUGANIZER_COMMENT})
+      {'comment': result_output.BUGANIZER_COMMENT}
+    )
     result_output._PostCommentsToOrphanedBugs(
-        ['crbug.com/0', 'crbug.com/angleproject/0'])
+      ['crbug.com/0', 'crbug.com/angleproject/0']
+    )
     self._buganizer_client.NewComment.assert_not_called()
 
   def testInvalidBugUrl(self):
     """Tests behavior when a non-crbug URL is provided."""
-    with mock.patch.object(self._buganizer_client,
-                           'GetIssueComments',
-                           side_effect=buganizer.BuganizerError):
+    with mock.patch.object(
+      self._buganizer_client,
+      'GetIssueComments',
+      side_effect=buganizer.BuganizerError,
+    ):
       with self.assertLogs(level='WARNING') as log_manager:
         result_output._PostCommentsToOrphanedBugs(['somesite.com/0'])
         for message in log_manager.output:
@@ -765,56 +863,61 @@ class PostCommentsToOrphanedBugsUnittest(unittest.TestCase):
 
   def testServiceDiscoveryError(self):
     """Tests behavior when service discovery fails."""
-    with mock.patch.object(result_output,
-                           '_GetBuganizerClient',
-                           side_effect=buganizer.BuganizerError):
+    with mock.patch.object(
+      result_output, '_GetBuganizerClient', side_effect=buganizer.BuganizerError
+    ):
       with self.assertLogs(level='ERROR') as log_manager:
         result_output._PostCommentsToOrphanedBugs(['crbug.com/0'])
         for message in log_manager.output:
-          if ('Encountered error when authenticating, cannot post '
-              'comments') in message:
+          if (
+            'Encountered error when authenticating, cannot post comments'
+          ) in message:
             break
         else:
           self.fail('Did not find expected log message')
 
   def testGetIssueCommentsError(self):
     """Tests behavior when GetIssueComments encounters an error."""
-    with mock.patch.object(self._buganizer_client,
-                           'GetIssueComments',
-                           side_effect=({
-                               'error': ':('
-                           }, [{
-                               'comment': 'Not matching'
-                           }])):
+    with mock.patch.object(
+      self._buganizer_client,
+      'GetIssueComments',
+      side_effect=({'error': ':('}, [{'comment': 'Not matching'}]),
+    ):
       with self.assertLogs(level='ERROR') as log_manager:
         result_output._PostCommentsToOrphanedBugs(
-            ['crbug.com/0', 'crbug.com/1'])
+          ['crbug.com/0', 'crbug.com/1']
+        )
         for message in log_manager.output:
           if 'Failed to get comments from crbug.com/0: :(' in message:
             break
         else:
           self.fail('Did not find expected log message')
     self._buganizer_client.NewComment.assert_called_once_with(
-        'crbug.com/1', result_output.BUGANIZER_COMMENT)
+      'crbug.com/1', result_output.BUGANIZER_COMMENT
+    )
 
   def testGetIssueCommentsUnspecifiedError(self):
     """Tests behavior when GetIssueComments encounters an unspecified error."""
-    with mock.patch.object(self._buganizer_client,
-                           'GetIssueComments',
-                           side_effect=({}, [{
-                               'comment': 'Not matching'
-                           }])):
+    with mock.patch.object(
+      self._buganizer_client,
+      'GetIssueComments',
+      side_effect=({}, [{'comment': 'Not matching'}]),
+    ):
       with self.assertLogs(level='ERROR') as log_manager:
         result_output._PostCommentsToOrphanedBugs(
-            ['crbug.com/0', 'crbug.com/1'])
+          ['crbug.com/0', 'crbug.com/1']
+        )
         for message in log_manager.output:
-          if ('Failed to get comments from crbug.com/0: error not provided'
-              in message):
+          if (
+            'Failed to get comments from crbug.com/0: error not provided'
+            in message
+          ):
             break
         else:
           self.fail('Did not find expected log message')
     self._buganizer_client.NewComment.assert_called_once_with(
-        'crbug.com/1', result_output.BUGANIZER_COMMENT)
+      'crbug.com/1', result_output.BUGANIZER_COMMENT
+    )
 
 
 def _Dedent(s: str) -> str:

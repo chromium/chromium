@@ -12,17 +12,28 @@ import common
 
 def main_run(args):
   with common.temporary_file() as tempfile_path:
-    rc = common.run_command([
+    rc = common.run_command(
+      [
         sys.executable,
-        os.path.join(common.SRC_DIR, 'third_party', 'blink', 'tools',
-                     'lint_test_expectations.py'), '--json', tempfile_path
-    ] + args.args)
+        os.path.join(
+          common.SRC_DIR,
+          'third_party',
+          'blink',
+          'tools',
+          'lint_test_expectations.py',
+        ),
+        '--json',
+        tempfile_path,
+      ]
+      + args.args
+    )
 
     with open(tempfile_path) as f:
       failures = json.load(f)
 
-  common.record_local_script_results('blink_lint_expectations', args.output,
-                                     failures, True)
+  common.record_local_script_results(
+    'blink_lint_expectations', args.output, failures, True
+  )
 
   return rc
 
@@ -33,7 +44,7 @@ def main_compile_targets(args):
 
 if __name__ == '__main__':
   funcs = {
-      'run': main_run,
-      'compile_targets': main_compile_targets,
+    'run': main_run,
+    'compile_targets': main_compile_targets,
   }
   sys.exit(common.run_script(sys.argv[1:], funcs))

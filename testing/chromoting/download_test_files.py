@@ -3,15 +3,15 @@
 # found in the LICENSE file.
 """A script to download files required for Remoting integration tests from GCS.
 
-  The script expects 2 parameters:
+The script expects 2 parameters:
 
-    input_files: a file containing the full path in GCS to each file that is to
-                be downloaded.
-    output_folder: the folder to which the specified files should be downloaded.
+  input_files: a file containing the full path in GCS to each file that is to
+              be downloaded.
+  output_folder: the folder to which the specified files should be downloaded.
 
-  This scripts expects that its execution is done on a machine where the
-  credentials are correctly setup to obtain the required permissions for
-  downloading files from the specified GCS buckets.
+This scripts expects that its execution is done on a machine where the
+credentials are correctly setup to obtain the required permissions for
+downloading files from the specified GCS buckets.
 """
 
 import argparse
@@ -24,13 +24,14 @@ import sys
 def main():
 
   parser = argparse.ArgumentParser()
-  parser.add_argument('-f',
-                      '--files',
-                      help='File specifying files to be downloaded .')
   parser.add_argument(
-      '-o',
-      '--output_folder',
-      help='Folder where specified files should be downloaded .')
+    '-f', '--files', help='File specifying files to be downloaded .'
+  )
+  parser.add_argument(
+    '-o',
+    '--output_folder',
+    help='Folder where specified files should be downloaded .',
+  )
 
   if len(sys.argv) < 3:
     parser.print_help()

@@ -24,8 +24,9 @@ _VARIATIONS_SEED_FILE_NAME = 'VariationsSeedV1'
 _SEED_KEY = 'variations_compressed_seed'
 _SEED_SIGNATURE_KEY = 'variations_seed_signature'
 ILL_FORMED_TEST_SEED_ERROR_MESSAGE = (
-    f'Ill-formed test seed json file: "{_SEED_KEY}" and "{_SEED_SIGNATURE_KEY}"'
-    ' are required')
+  f'Ill-formed test seed json file: "{_SEED_KEY}" and "{_SEED_SIGNATURE_KEY}"'
+  ' are required'
+)
 
 
 def load_test_seed_from_file(hardcoded_seed_path):
@@ -57,8 +58,10 @@ def load_test_seed_from_file(hardcoded_seed_path):
   with open(path_seed, 'r') as f:
     seed_json = json.load(f)
 
-  return (seed_json.get(_SEED_KEY,
-                        None), seed_json.get(_SEED_SIGNATURE_KEY, None))
+  return (
+    seed_json.get(_SEED_KEY, None),
+    seed_json.get(_SEED_SIGNATURE_KEY, None),
+  )
 
 
 def get_test_seed_file_path(hardcoded_seed_path):
@@ -136,9 +139,12 @@ def _update_seed_file(user_data_dir, seed_dict):
 
   # The signature is stored in Local State.
   # TODO(crbug.com/411431524): Store the signature in the seed file.
-  update_local_state(user_data_dir, {
+  update_local_state(
+    user_data_dir,
+    {
       _SEED_SIGNATURE_KEY: seed_dict.get(_SEED_SIGNATURE_KEY),
-  })
+    },
+  )
 
 
 # TODO(crbug.com/417138763): Update this function to support updating the seed
@@ -152,13 +158,12 @@ def update_seed(user_data_dir, seed, signature):
     signature (str): A seed signature.
   """
   seed_dict = {
-      _SEED_KEY: seed,
-      _SEED_SIGNATURE_KEY: signature,
+    _SEED_KEY: seed,
+    _SEED_SIGNATURE_KEY: signature,
   }
 
   update_local_state(user_data_dir, seed_dict)
   _update_seed_file(user_data_dir, seed_dict)
-
 
 
 def update_local_state(user_data_dir, update_dict):

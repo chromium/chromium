@@ -18,36 +18,35 @@ import traceback
 import common
 
 WINDOWS_SHEET_CONFIG = {
-    'spreadsheet_id': '1TmBr9jnf1-hrjntiVBzT9EtkINGrtoBYFMWad2MBeaY',
-    'annotations_sheet_name': 'Annotations',
-    'chrome_version_sheet_name': 'Chrome Version',
-    'silent_change_columns': [],
-    'last_update_column_name': 'Last Update',
+  'spreadsheet_id': '1TmBr9jnf1-hrjntiVBzT9EtkINGrtoBYFMWad2MBeaY',
+  'annotations_sheet_name': 'Annotations',
+  'chrome_version_sheet_name': 'Chrome Version',
+  'silent_change_columns': [],
+  'last_update_column_name': 'Last Update',
 }
 
 CHROMEOS_SHEET_CONFIG = {
-    'spreadsheet_id': '1928goWKy6LVdF9Nl5nV1OD260YC10dHsdrnHEGdGsg8',
-    'annotations_sheet_name': 'Annotations',
-    'chrome_version_sheet_name': 'Chrome Version',
-    'silent_change_columns': [],
-    'last_update_column_name': 'Last Update',
+  'spreadsheet_id': '1928goWKy6LVdF9Nl5nV1OD260YC10dHsdrnHEGdGsg8',
+  'annotations_sheet_name': 'Annotations',
+  'chrome_version_sheet_name': 'Chrome Version',
+  'silent_change_columns': [],
+  'last_update_column_name': 'Last Update',
 }
 
 WINDOWS_DOC_CONFIG = {
-    'doc_id': '1Yx5cdCtqx_czAfkJyP388dlKCShqOGf1oZ96qsz84zo',
-    'doc_name': 'Chrome Browser Network Traffic Annotations - Windows',
-    'credentials_file_path':
-    'tools/traffic_annotation/scripts/credentials.json',
-    'client_token_file_path': 'tools/traffic_annotation/scripts/token.pickle',
+  'doc_id': '1Yx5cdCtqx_czAfkJyP388dlKCShqOGf1oZ96qsz84zo',
+  'doc_name': 'Chrome Browser Network Traffic Annotations - Windows',
+  'credentials_file_path': 'tools/traffic_annotation/scripts/credentials.json',
+  'client_token_file_path': 'tools/traffic_annotation/scripts/token.pickle',
 }
 
 CHROMEOS_DOC_CONFIG = {
-    'doc_id': '1F2jb_PHmG1cGkal-l3yv45BQFlOWzovg9o2XM-CO-sQ',
-    'doc_name': 'Chrome Browser Network Traffic Annotations - ChromeOS',
-    'credentials_file_path':
-    'tools/traffic_annotation/scripts/credentials.json',
-    'client_token_file_path': 'tools/traffic_annotation/scripts/token.pickle',
+  'doc_id': '1F2jb_PHmG1cGkal-l3yv45BQFlOWzovg9o2XM-CO-sQ',
+  'doc_name': 'Chrome Browser Network Traffic Annotations - ChromeOS',
+  'credentials_file_path': 'tools/traffic_annotation/scripts/credentials.json',
+  'client_token_file_path': 'tools/traffic_annotation/scripts/token.pickle',
 }
+
 
 def is_windows():
   return os.name == 'nt'
@@ -101,15 +100,20 @@ def main_run(args):
 
   build_path = args.build_dir
   command_line = [
-      sys.executable,
-      os.path.join(common.SRC_DIR, 'tools', 'traffic_annotation', 'scripts',
-                   'traffic_annotation_auditor_tests.py'),
-      '--build-path',
-      build_path,
-      '--annotations-file',
-      annotations_filename,
-      '--errors-file',
-      errors_filename,
+    sys.executable,
+    os.path.join(
+      common.SRC_DIR,
+      'tools',
+      'traffic_annotation',
+      'scripts',
+      'traffic_annotation_auditor_tests.py',
+    ),
+    '--build-path',
+    build_path,
+    '--annotations-file',
+    annotations_filename,
+    '--errors-file',
+    errors_filename,
   ]
   rc = common.run_command(command_line)
 
@@ -130,21 +134,27 @@ def main_run(args):
 
       if update_sheet and sheet_config is not None:
         print('Updating annotations sheet...')
-        with tempfile.NamedTemporaryFile(delete=False,
-                                         mode='w+') as config_file:
+        with tempfile.NamedTemporaryFile(
+          delete=False, mode='w+'
+        ) as config_file:
           json.dump(sheet_config, config_file, indent=4)
           config_filename = config_file.name
         vpython_path = 'vpython3.bat' if is_windows() else 'vpython3'
 
         command_line = [
-            vpython_path,
-            os.path.join(common.SRC_DIR, 'tools', 'traffic_annotation',
-                         'scripts', 'update_annotations_sheet.py'),
-            '--yes',
-            '--config-file',
-            config_filename,
-            '--annotations-file',
-            annotations_filename,
+          vpython_path,
+          os.path.join(
+            common.SRC_DIR,
+            'tools',
+            'traffic_annotation',
+            'scripts',
+            'update_annotations_sheet.py',
+          ),
+          '--yes',
+          '--config-file',
+          config_filename,
+          '--annotations-file',
+          annotations_filename,
         ]
         rc = common.run_command(command_line)
         cleanup_file(config_filename)
@@ -154,20 +164,26 @@ def main_run(args):
 
       if update_doc and doc_config is not None:
         print('Updating annotations doc...')
-        with tempfile.NamedTemporaryFile(delete=False,
-                                         mode='w+') as config_file:
+        with tempfile.NamedTemporaryFile(
+          delete=False, mode='w+'
+        ) as config_file:
           json.dump(doc_config, config_file, indent=4)
           config_filename = config_file.name
         vpython_path = 'vpython3.bat' if is_windows() else 'vpython3'
 
         command_line = [
-            vpython_path,
-            os.path.join(common.SRC_DIR, 'tools', 'traffic_annotation',
-                         'scripts', 'update_annotations_doc.py'),
-            '--config-file',
-            config_filename,
-            '--annotations-file',
-            annotations_filename,
+          vpython_path,
+          os.path.join(
+            common.SRC_DIR,
+            'tools',
+            'traffic_annotation',
+            'scripts',
+            'update_annotations_doc.py',
+          ),
+          '--config-file',
+          config_filename,
+          '--annotations-file',
+          annotations_filename,
         ]
         rc_doc = common.run_command(command_line)
         cleanup_file(config_filename)
@@ -176,8 +192,9 @@ def main_run(args):
           failures = ['Please refer to stdout for errors.']
           rc = rc_doc
 
-    common.record_local_script_results('test_traffic_annotation_auditor',
-                                       args.output, failures, True)
+    common.record_local_script_results(
+      'test_traffic_annotation_auditor', args.output, failures, True
+    )
   except (ValueError, OSError) as e:
     print('Error updating the annotations sheet', e)
     traceback.print_exc()
@@ -200,7 +217,7 @@ def main_compile_targets(args):
 
 if __name__ == '__main__':
   funcs = {
-      'run': main_run,
-      'compile_targets': main_compile_targets,
+    'run': main_run,
+    'compile_targets': main_compile_targets,
   }
   sys.exit(common.run_script(sys.argv[1:], funcs))

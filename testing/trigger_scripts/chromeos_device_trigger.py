@@ -25,7 +25,8 @@ import sys
 import base_test_triggerer
 
 SRC_DIR = os.path.dirname(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+)
 LKGM_FILE_PATH = os.path.join(SRC_DIR, 'chromeos', 'CHROMEOS_LKGM')
 # Should match something that looks like "12345.0.0".
 LKGM_RE = re.compile(r'\d+\.\d+\.\d+')
@@ -60,7 +61,8 @@ def parse_args(triggerer):
         nargs=2,
         dest='dimensions',
         help='Dimensions to filter on. Duplicated from the `swarming.py '
-        'trigger` command. Parsed here to ensure `device_os` is not added.')
+        'trigger` command. Parsed here to ensure `device_os` is not added.',
+    )
     parser.add_argument(
         '--optional-dimension',
         default=[],
@@ -68,29 +70,34 @@ def parse_args(triggerer):
         nargs=3,
         dest='optional_dimensions',
         help='Optional dimensions which will result in additional task slices. '
-        'Duplicated from the `swarming.py trigger` command.')
+        'Duplicated from the `swarming.py trigger` command.',
+    )
     base_test_triggerer.BaseTestTriggerer.setup_parser_contract(parser)
     args, additional_args = parser.parse_known_args()
-    additional_args = triggerer.modify_args(additional_args, 0,
-                                            args.shard_index, args.shards,
-                                            args.dump_json)
+    additional_args = triggerer.modify_args(
+        additional_args, 0, args.shard_index, args.shards, args.dump_json
+    )
 
     if additional_args[0] != 'trigger':
-        parser.error('This script is only supported for `swarming.py trigger`'
-                     ' invocations.')
+        parser.error(
+            'This script is only supported for `swarming.py trigger`'
+            ' invocations.'
+        )
 
     for k, _ in args.dimensions:
         if k == 'device_os':
             parser.error(
                 'Must not specify the device_os dimension when using this'
-                ' script. (It will be added automatically.)')
+                ' script. (It will be added automatically.)'
+            )
 
     # It might be a valid use-case to include optional-dimensions in the initial
     # invocation. But it'd be difficult to integrate them into what we're doing
     # here. So let's just ensure there aren't any.
     if args.optional_dimensions:
         parser.error(
-            'Must not specify optional dimensions when using this script.')
+            'Must not specify optional dimensions when using this script.'
+        )
 
     return args, additional_args
 
@@ -118,14 +125,17 @@ def main():
     if needs_device_status:
         new_args.extend(['--dimension', 'device_status', 'available'])
 
-    new_args.extend([
-        '-optional-dimension',
-        'device_os=%s:%d' % (current_lkgm, PRIMARY_SLICE_EXPIRATION_S),
-    ])
+    new_args.extend(
+        [
+            '-optional-dimension',
+            'device_os=%s:%d' % (current_lkgm, PRIMARY_SLICE_EXPIRATION_S),
+        ]
+    )
     new_args += additional_args[1:]
 
-    return triggerer.run_swarming_go(new_args, args.dump_json, args.shard_index
-                                     or 0, args.shards)
+    return triggerer.run_swarming_go(
+        new_args, args.dump_json, args.shard_index or 0, args.shards
+    )
 
 
 if __name__ == '__main__':

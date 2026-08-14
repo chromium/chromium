@@ -25,11 +25,11 @@ class GenerateHtmlOutputFileUnittest(fake_filesystem_unittest.TestCase):
   def testBasic(self) -> None:
     """Basic functionality test."""
     result_map = {
-        'some_suite': {
-            'some_test': {
-                ('some', 'tags'): ['url1', 'url2'],
-            },
+      'some_suite': {
+        'some_test': {
+          ('some', 'tags'): ['url1', 'url2'],
         },
+      },
     }
     result_output.GenerateHtmlOutputFile(result_map, self.output_file)
     expected_output = """\
@@ -79,11 +79,11 @@ class RecursiveHtmlToFileUnittest(fake_filesystem_unittest.TestCase):
   def testBasic(self) -> None:
     """Basic functionality test."""
     string_map = {
-        'some_suite': {
-            'some_test': {
-                'some tags': ['url1', 'url2'],
-            },
+      'some_suite': {
+        'some_test': {
+          'some tags': ['url1', 'url2'],
         },
+      },
     }
     result_output._RecursiveHtmlToFile(string_map, self.output_file)
     self.output_file.close()
@@ -114,42 +114,44 @@ class ConvertAggregatedResultsToStringMapUnittest(unittest.TestCase):
   def testBasic(self) -> None:
     """Basic functionality test."""
     result_map = {
-        'some_suite': {
-            'some_test': {
-                ('some', 'tags'): ['url1', 'url2'],
-            },
+      'some_suite': {
+        'some_test': {
+          ('some', 'tags'): ['url1', 'url2'],
         },
+      },
     }
     expected_map = {
-        'some_suite': {
-            'some_test': {
-                'some tags': ['url1', 'url2'],
-            },
+      'some_suite': {
+        'some_test': {
+          'some tags': ['url1', 'url2'],
         },
+      },
     }
     self.assertEqual(
-        result_output._ConvertAggregatedResultsToStringMap(result_map),
-        expected_map)
+      result_output._ConvertAggregatedResultsToStringMap(result_map),
+      expected_map,
+    )
 
 
 class ConvertFromTestGroupingToConfigGroupingUnittest(unittest.TestCase):
   def testBasic(self) -> None:
     """Basic functionality test."""
     string_map = {
-        'some_suite': {
-            'some_test': {
-                'some tags': ['url1', 'url2'],
-            },
+      'some_suite': {
+        'some_test': {
+          'some tags': ['url1', 'url2'],
         },
+      },
     }
     config_map = result_output._ConvertFromTestGroupingToConfigGrouping(
-        string_map)
+      string_map
+    )
     expected_config_map = {
-        'some tags': {
-            'some_suite': {
-                'some_test': ['url1', 'url2'],
-            },
+      'some tags': {
+        'some_suite': {
+          'some_test': ['url1', 'url2'],
         },
+      },
     }
     self.assertEqual(config_map, expected_config_map)
 

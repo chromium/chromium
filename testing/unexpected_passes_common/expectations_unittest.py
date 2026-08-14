@@ -140,18 +140,19 @@ crbug.com/5678 crbug.com/6789 [ win ] foo/another/test [ RetryOnFailure ]
 
 
 class CreateTestExpectationMapUnittest(fake_filesystem_unittest.TestCase):
-
   def setUp(self) -> None:
     self.setUpPyfakefs()
     self.instance = expectations.Expectations()
 
     self._expectation_content = {}
     self._content_patcher = mock.patch(
-        'unexpected_passes_common.expectations._GetNonRecentExpectationContent')
+      'unexpected_passes_common.expectations._GetNonRecentExpectationContent'
+    )
     self._content_mock = self._content_patcher.start()
     self.addCleanup(self._content_patcher.stop)
-    self._header_patcher = mock.patch.object(self.instance,
-                                             '_GetExpectationFileTagHeader')
+    self._header_patcher = mock.patch.object(
+      self.instance, '_GetExpectationFileTagHeader'
+    )
     self._header_mock = self._header_patcher.start()
     self.addCleanup(self._header_patcher.stop)
 
@@ -176,11 +177,13 @@ class CreateTestExpectationMapUnittest(fake_filesystem_unittest.TestCase):
   def testExclusiveOr(self) -> None:
     """Tests that only one input can be specified."""
     with self.assertRaises(AssertionError):
-      self.instance.CreateTestExpectationMap(None, None,
-                                             datetime.timedelta(days=0))
+      self.instance.CreateTestExpectationMap(
+        None, None, datetime.timedelta(days=0)
+      )
     with self.assertRaises(AssertionError):
-      self.instance.CreateTestExpectationMap('foo', ['bar'],
-                                             datetime.timedelta(days=0))
+      self.instance.CreateTestExpectationMap(
+        'foo', ['bar'], datetime.timedelta(days=0)
+      )
 
   def testExpectationFile(self) -> None:
     """Tests reading expectations from an expectation file."""
@@ -190,7 +193,8 @@ class CreateTestExpectationMapUnittest(fake_filesystem_unittest.TestCase):
       outfile.write(FAKE_EXPECTATION_FILE_CONTENTS)
 
     expectation_map = self.instance.CreateTestExpectationMap(
-        filename, None, datetime.timedelta(days=0))
+      filename, None, datetime.timedelta(days=0)
+    )
     # Skip expectations should be omitted, but everything else should be
     # present.
     # yapf: disable
@@ -216,13 +220,15 @@ class CreateTestExpectationMapUnittest(fake_filesystem_unittest.TestCase):
   def testExpectationFileWithFullWildcardSupport(self):
     """testExpectationfile, but with full_wildcard_support enabled."""
     filename = '/foo'
-    self._expectation_content[
-        filename] = FAKE_EXPECTATION_FILE_CONTENTS_FULL_WILDCARD_SUPPORT
+    self._expectation_content[filename] = (
+      FAKE_EXPECTATION_FILE_CONTENTS_FULL_WILDCARD_SUPPORT
+    )
     with open(filename, 'w', encoding='utf-8') as outfile:
       outfile.write(FAKE_EXPECTATION_FILE_CONTENTS_FULL_WILDCARD_SUPPORT)
 
     expectation_map = self.instance.CreateTestExpectationMap(
-        filename, None, datetime.timedelta(days=0))
+      filename, None, datetime.timedelta(days=0)
+    )
     # Skip expectations should be omitted, but everything else should be
     # present.
     # yapf: disable
@@ -252,10 +258,12 @@ class CreateTestExpectationMapUnittest(fake_filesystem_unittest.TestCase):
     filename3 = '/baz'
     expectation_files = [filename1, filename2, filename3]
     self._expectation_content[filename1] = FAKE_EXPECTATION_FILE_CONTENTS
-    self._expectation_content[
-        filename2] = SECONDARY_FAKE_EXPECTATION_FILE_CONTENTS
-    self._expectation_content[
-        filename3] = FAKE_EXPECTATION_FILE_CONTENTS_FULL_WILDCARD_SUPPORT
+    self._expectation_content[filename2] = (
+      SECONDARY_FAKE_EXPECTATION_FILE_CONTENTS
+    )
+    self._expectation_content[filename3] = (
+      FAKE_EXPECTATION_FILE_CONTENTS_FULL_WILDCARD_SUPPORT
+    )
     with open(filename1, 'w', encoding='utf-8') as outfile:
       outfile.write(FAKE_EXPECTATION_FILE_CONTENTS)
     with open(filename2, 'w', encoding='utf-8') as outfile:
@@ -264,7 +272,8 @@ class CreateTestExpectationMapUnittest(fake_filesystem_unittest.TestCase):
       outfile.write(FAKE_EXPECTATION_FILE_CONTENTS_FULL_WILDCARD_SUPPORT)
 
     expectation_map = self.instance.CreateTestExpectationMap(
-        expectation_files, None, datetime.timedelta(days=0))
+      expectation_files, None, datetime.timedelta(days=0)
+    )
     # yapf: disable
     expected_expectation_map = {
       expectation_files[0]: {
@@ -306,7 +315,8 @@ class CreateTestExpectationMapUnittest(fake_filesystem_unittest.TestCase):
   def testIndividualTests(self) -> None:
     """Tests reading expectations from a list of tests."""
     expectation_map = self.instance.CreateTestExpectationMap(
-        None, ['foo/test', 'bar/*'], datetime.timedelta(days=0))
+      None, ['foo/test', 'bar/*'], datetime.timedelta(days=0)
+    )
     # yapf: disable
     expected_expectation_map = {
         '': {
@@ -333,7 +343,8 @@ class CreateTestExpectationMapUnittest(fake_filesystem_unittest.TestCase):
     self._content_mock.side_effect = ContentSideEffect
 
     expectation_map = self.instance.CreateTestExpectationMap(
-        filename, None, datetime.timedelta(days=0))
+      filename, None, datetime.timedelta(days=0)
+    )
     # Skip expectations should be omitted, but everything else should be
     # present.
     # yapf: disable
@@ -366,7 +377,8 @@ class CreateTestExpectationMapUnittest(fake_filesystem_unittest.TestCase):
     filename = '/foo'
     with open(filename, 'w', encoding='utf-8') as outfile:
       outfile.write(
-          FAKE_EXPECTATION_FILE_CONTENTS_WITH_DUPLICATE_FULL_WILDCARD_SUPPORT)
+        FAKE_EXPECTATION_FILE_CONTENTS_WITH_DUPLICATE_FULL_WILDCARD_SUPPORT
+      )
 
     def ContentSideEffect(_, __) -> str:
       with open(filename, encoding='utf-8') as infile:
@@ -375,7 +387,8 @@ class CreateTestExpectationMapUnittest(fake_filesystem_unittest.TestCase):
     self._content_mock.side_effect = ContentSideEffect
 
     expectation_map = self.instance.CreateTestExpectationMap(
-        filename, None, datetime.timedelta(days=0))
+      filename, None, datetime.timedelta(days=0)
+    )
     # Skip expectations should be omitted, but everything else should be
     # present.
     # yapf: disable
@@ -402,32 +415,35 @@ class CreateTestExpectationMapUnittest(fake_filesystem_unittest.TestCase):
       content = infile.read()
 
     self.assertEqual(
-        content, FAKE_EXPECTATION_FILE_CONTENTS_FULL_WILDCARD_SUPPORT + '\n')
+      content, FAKE_EXPECTATION_FILE_CONTENTS_FULL_WILDCARD_SUPPORT + '\n'
+    )
 
   def testDuplicateExpectationNotRemoved(self):
     """Tests behavior when duplicate expectations still exist."""
     filename = '/foo'
     self._expectation_content[filename] = (
-        FAKE_EXPECTATION_FILE_CONTENTS_WITH_DUPLICATE)
+      FAKE_EXPECTATION_FILE_CONTENTS_WITH_DUPLICATE
+    )
     with open(filename, 'w', encoding='utf-8') as outfile:
       outfile.write(FAKE_EXPECTATION_FILE_CONTENTS_WITH_DUPLICATE)
 
     with self.assertRaisesRegex(
-        RuntimeError,
-        'Duplicate expectation \\[ linux \\] foo/test \\[ Failure \\]'):
-      self.instance.CreateTestExpectationMap(filename, None,
-                                             datetime.timedelta(days=0))
-
+      RuntimeError,
+      'Duplicate expectation \\[ linux \\] foo/test \\[ Failure \\]',
+    ):
+      self.instance.CreateTestExpectationMap(
+        filename, None, datetime.timedelta(days=0)
+      )
 
 
 class RemoveDuplicateExpectationsUnittest(fake_filesystem_unittest.TestCase):
-
   def setUp(self):
     self.setUpPyfakefs()
     self.instance = expectations.Expectations()
 
-    self._header_patcher = mock.patch.object(self.instance,
-                                             '_GetExpectationFileTagHeader')
+    self._header_patcher = mock.patch.object(
+      self.instance, '_GetExpectationFileTagHeader'
+    )
     self._header_mock = self._header_patcher.start()
     self.addCleanup(self._header_mock.stop)
 
@@ -479,10 +495,10 @@ class RemoveDuplicateExpectationsUnittest(fake_filesystem_unittest.TestCase):
 
 
 class GetNonRecentExpectationContentUnittest(unittest.TestCase):
-
   def setUp(self) -> None:
     self._output_patcher = mock.patch(
-        'unexpected_passes_common.expectations.subprocess.check_output')
+      'unexpected_passes_common.expectations.subprocess.check_output'
+    )
     self._output_mock = self._output_patcher.start()
     self.addCleanup(self._output_patcher.stop)
 
@@ -506,9 +522,9 @@ class GetNonRecentExpectationContentUnittest(unittest.TestCase):
 5f03bc04975c04 (Some R. Author    {today_date} 00:00:00 +0000  8)crbug.com/2345 testname [ Failure ]
 3fcadac9d861d0 (Some R. Author    {older_date} 00:00:00 +0000  9)crbug.com/3456 othertest [ Failure ]"""
     # pylint: enable=line-too-long
-    blame_output = blame_output.format(today_date=today_str,
-                                       yesterday_date=yesterday_str,
-                                       older_date=older_str)
+    blame_output = blame_output.format(
+      today_date=today_str, yesterday_date=yesterday_str, older_date=older_str
+    )
     self._output_mock.return_value = blame_output.encode('utf-8')
 
     expected_content = """\
@@ -519,8 +535,11 @@ class GetNonRecentExpectationContentUnittest(unittest.TestCase):
 [ tag1 ] othertest [ Failure ]
 crbug.com/3456 othertest [ Failure ]"""
     self.assertEqual(
-        expectations._GetNonRecentExpectationContent(
-            '', datetime.timedelta(days=1)), expected_content)
+      expectations._GetNonRecentExpectationContent(
+        '', datetime.timedelta(days=1)
+      ),
+      expected_content,
+    )
 
   def testNegativeGracePeriod(self) -> None:
     """Tests that setting a negative grace period disables filtering."""
@@ -540,9 +559,9 @@ crbug.com/3456 othertest [ Failure ]"""
 98637cd80f8c15 (Some R. Author    {yesterday_date} 00:00:00 +0000  6)[ tag2 ] testname [ Failure ] # Comment
 3fcadac9d861d0 (Some R. Author    {older_date} 00:00:00 +0000  7)[ tag1 ] othertest [ Failure ]"""
     # pylint: enable=line-too-long
-    blame_output = blame_output.format(today_date=today_str,
-                                       yesterday_date=yesterday_str,
-                                       older_date=older_str)
+    blame_output = blame_output.format(
+      today_date=today_str, yesterday_date=yesterday_str, older_date=older_str
+    )
     self._output_mock.return_value = blame_output.encode('utf-8')
 
     expected_content = """\
@@ -554,8 +573,11 @@ crbug.com/1234 [ tag1 ] testname [ Failure ]
 [ tag2 ] testname [ Failure ] # Comment
 [ tag1 ] othertest [ Failure ]"""
     self.assertEqual(
-        expectations._GetNonRecentExpectationContent(
-            '', datetime.timedelta(days=-1)), expected_content)
+      expectations._GetNonRecentExpectationContent(
+        '', datetime.timedelta(days=-1)
+      ),
+      expected_content,
+    )
 
 
 class RemoveExpectationsFromFileUnittest(fake_filesystem_unittest.TestCase):
@@ -568,7 +590,9 @@ class RemoveExpectationsFromFileUnittest(fake_filesystem_unittest.TestCase):
 
   def testExpectationRemoval(self) -> None:
     """Tests that expectations are properly removed from a file."""
-    contents = self.header + """
+    contents = (
+      self.header
+      + """
 
 # This is a test comment
 crbug.com/1234 [ win ] foo/test [ Failure ]
@@ -578,15 +602,20 @@ crbug.com/2345 [ win ] foo/test [ RetryOnFailure ]
 [ linux ] bar/test [ RetryOnFailure ]
 [ win ] bar/test [ RetryOnFailure ]
 """
+    )
 
     stale_expectations = [
-        data_types.Expectation('foo/test', ['win'], ['Failure'], NON_WILDCARD,
-                               'crbug.com/1234'),
-        data_types.Expectation('bar/test', ['linux'], ['RetryOnFailure'],
-                               NON_WILDCARD)
+      data_types.Expectation(
+        'foo/test', ['win'], ['Failure'], NON_WILDCARD, 'crbug.com/1234'
+      ),
+      data_types.Expectation(
+        'bar/test', ['linux'], ['RetryOnFailure'], NON_WILDCARD
+      ),
     ]
 
-    expected_contents = self.header + """
+    expected_contents = (
+      self.header
+      + """
 
 # This is a test comment
 crbug.com/2345 [ win ] foo/test [ RetryOnFailure ]
@@ -594,19 +623,23 @@ crbug.com/2345 [ win ] foo/test [ RetryOnFailure ]
 # Another comment
 [ win ] bar/test [ RetryOnFailure ]
 """
+    )
 
     with open(self.filename, 'w') as f:
       f.write(contents)
 
     removed_urls = self.instance.RemoveExpectationsFromFile(
-        stale_expectations, self.filename, expectations.RemovalType.STALE)
+      stale_expectations, self.filename, expectations.RemovalType.STALE
+    )
     self.assertEqual(removed_urls, set(['crbug.com/1234']))
     with open(self.filename) as f:
       self.assertEqual(f.read(), expected_contents)
 
   def testRemovalWithMultipleBugs(self) -> None:
     """Tests removal of expectations with multiple associated bugs."""
-    contents = self.header + """
+    contents = (
+      self.header
+      + """
 
 # This is a test comment
 crbug.com/1234 crbug.com/3456 crbug.com/4567 [ win ] foo/test [ Failure ]
@@ -616,12 +649,20 @@ crbug.com/2345 [ win ] foo/test [ RetryOnFailure ]
 [ linux ] bar/test [ RetryOnFailure ]
 [ win ] bar/test [ RetryOnFailure ]
 """
+    )
 
     stale_expectations = [
-        data_types.Expectation('foo/test', ['win'], ['Failure'], NON_WILDCARD,
-                               'crbug.com/1234 crbug.com/3456 crbug.com/4567'),
+      data_types.Expectation(
+        'foo/test',
+        ['win'],
+        ['Failure'],
+        NON_WILDCARD,
+        'crbug.com/1234 crbug.com/3456 crbug.com/4567',
+      ),
     ]
-    expected_contents = self.header + """
+    expected_contents = (
+      self.header
+      + """
 
 # This is a test comment
 crbug.com/2345 [ win ] foo/test [ RetryOnFailure ]
@@ -630,20 +671,24 @@ crbug.com/2345 [ win ] foo/test [ RetryOnFailure ]
 [ linux ] bar/test [ RetryOnFailure ]
 [ win ] bar/test [ RetryOnFailure ]
 """
+    )
     with open(self.filename, 'w') as f:
       f.write(contents)
 
     removed_urls = self.instance.RemoveExpectationsFromFile(
-        stale_expectations, self.filename, expectations.RemovalType.STALE)
+      stale_expectations, self.filename, expectations.RemovalType.STALE
+    )
     self.assertEqual(
-        removed_urls,
-        set(['crbug.com/1234', 'crbug.com/3456', 'crbug.com/4567']))
+      removed_urls, set(['crbug.com/1234', 'crbug.com/3456', 'crbug.com/4567'])
+    )
     with open(self.filename) as f:
       self.assertEqual(f.read(), expected_contents)
 
   def testGeneralBlockComments(self) -> None:
     """Tests that expectations in a disable block comment are not removed."""
-    contents = self.header + """
+    contents = (
+      self.header
+      + """
 crbug.com/1234 [ win ] foo/test [ Failure ]
 # finder:disable-general
 crbug.com/2345 [ win ] foo/test [ Failure ]
@@ -651,35 +696,48 @@ crbug.com/3456 [ win ] foo/test [ Failure ]
 # finder:enable-general
 crbug.com/4567 [ win ] foo/test [ Failure ]
 """
+    )
     stale_expectations = [
-        data_types.Expectation('foo/test', ['win'], ['Failure'], NON_WILDCARD,
-                               'crbug.com/1234'),
-        data_types.Expectation('foo/test', ['win'], ['Failure'], NON_WILDCARD,
-                               'crbug.com/2345'),
-        data_types.Expectation('foo/test', ['win'], ['Failure'], NON_WILDCARD,
-                               'crbug.com/3456'),
-        data_types.Expectation('foo/test', ['win'], ['Failure'], NON_WILDCARD,
-                               'crbug.com/4567'),
+      data_types.Expectation(
+        'foo/test', ['win'], ['Failure'], NON_WILDCARD, 'crbug.com/1234'
+      ),
+      data_types.Expectation(
+        'foo/test', ['win'], ['Failure'], NON_WILDCARD, 'crbug.com/2345'
+      ),
+      data_types.Expectation(
+        'foo/test', ['win'], ['Failure'], NON_WILDCARD, 'crbug.com/3456'
+      ),
+      data_types.Expectation(
+        'foo/test', ['win'], ['Failure'], NON_WILDCARD, 'crbug.com/4567'
+      ),
     ]
-    expected_contents = self.header + """
+    expected_contents = (
+      self.header
+      + """
 # finder:disable-general
 crbug.com/2345 [ win ] foo/test [ Failure ]
 crbug.com/3456 [ win ] foo/test [ Failure ]
 # finder:enable-general
 """
-    for removal_type in (expectations.RemovalType.STALE,
-                         expectations.RemovalType.UNUSED):
+    )
+    for removal_type in (
+      expectations.RemovalType.STALE,
+      expectations.RemovalType.UNUSED,
+    ):
       with open(self.filename, 'w') as f:
         f.write(contents)
       removed_urls = self.instance.RemoveExpectationsFromFile(
-          stale_expectations, self.filename, removal_type)
+        stale_expectations, self.filename, removal_type
+      )
       self.assertEqual(removed_urls, set(['crbug.com/1234', 'crbug.com/4567']))
       with open(self.filename) as f:
         self.assertEqual(f.read(), expected_contents)
 
   def testStaleBlockComments(self) -> None:
     """Tests that stale expectations in a stale disable block are not removed"""
-    contents = self.header + """
+    contents = (
+      self.header
+      + """
 crbug.com/1234 [ win ] not_stale [ Failure ]
 crbug.com/1234 [ win ] before_block [ Failure ]
 # finder:disable-stale
@@ -687,31 +745,41 @@ crbug.com/2345 [ win ] in_block [ Failure ]
 # finder:enable-stale
 crbug.com/3456 [ win ] after_block [ Failure ]
 """
+    )
     stale_expectations = [
-        data_types.Expectation('before_block', ['win'], 'Failure', NON_WILDCARD,
-                               'crbug.com/1234'),
-        data_types.Expectation('in_block', ['win'], 'Failure', NON_WILDCARD,
-                               'crbug.com/2345'),
-        data_types.Expectation('after_block', ['win'], 'Failure', NON_WILDCARD,
-                               'crbug.com/3456'),
+      data_types.Expectation(
+        'before_block', ['win'], 'Failure', NON_WILDCARD, 'crbug.com/1234'
+      ),
+      data_types.Expectation(
+        'in_block', ['win'], 'Failure', NON_WILDCARD, 'crbug.com/2345'
+      ),
+      data_types.Expectation(
+        'after_block', ['win'], 'Failure', NON_WILDCARD, 'crbug.com/3456'
+      ),
     ]
-    expected_contents = self.header + """
+    expected_contents = (
+      self.header
+      + """
 crbug.com/1234 [ win ] not_stale [ Failure ]
 # finder:disable-stale
 crbug.com/2345 [ win ] in_block [ Failure ]
 # finder:enable-stale
 """
+    )
     with open(self.filename, 'w') as f:
       f.write(contents)
     removed_urls = self.instance.RemoveExpectationsFromFile(
-        stale_expectations, self.filename, expectations.RemovalType.STALE)
+      stale_expectations, self.filename, expectations.RemovalType.STALE
+    )
     self.assertEqual(removed_urls, set(['crbug.com/1234', 'crbug.com/3456']))
     with open(self.filename) as f:
       self.assertEqual(f.read(), expected_contents)
 
   def testUnusedBlockComments(self) -> None:
     """Tests that stale expectations in unused disable blocks are not removed"""
-    contents = self.header + """
+    contents = (
+      self.header
+      + """
 crbug.com/1234 [ win ] not_unused [ Failure ]
 crbug.com/1234 [ win ] before_block [ Failure ]
 # finder:disable-unused
@@ -719,31 +787,41 @@ crbug.com/2345 [ win ] in_block [ Failure ]
 # finder:enable-unused
 crbug.com/3456 [ win ] after_block [ Failure ]
 """
+    )
     unused_expectations = [
-        data_types.Expectation('before_block', ['win'], 'Failure', NON_WILDCARD,
-                               'crbug.com/1234'),
-        data_types.Expectation('in_block', ['win'], 'Failure', NON_WILDCARD,
-                               'crbug.com/2345'),
-        data_types.Expectation('after_block', ['win'], 'Failure', NON_WILDCARD,
-                               'crbug.com/3456'),
+      data_types.Expectation(
+        'before_block', ['win'], 'Failure', NON_WILDCARD, 'crbug.com/1234'
+      ),
+      data_types.Expectation(
+        'in_block', ['win'], 'Failure', NON_WILDCARD, 'crbug.com/2345'
+      ),
+      data_types.Expectation(
+        'after_block', ['win'], 'Failure', NON_WILDCARD, 'crbug.com/3456'
+      ),
     ]
-    expected_contents = self.header + """
+    expected_contents = (
+      self.header
+      + """
 crbug.com/1234 [ win ] not_unused [ Failure ]
 # finder:disable-unused
 crbug.com/2345 [ win ] in_block [ Failure ]
 # finder:enable-unused
 """
+    )
     with open(self.filename, 'w') as f:
       f.write(contents)
     removed_urls = self.instance.RemoveExpectationsFromFile(
-        unused_expectations, self.filename, expectations.RemovalType.UNUSED)
+      unused_expectations, self.filename, expectations.RemovalType.UNUSED
+    )
     self.assertEqual(removed_urls, set(['crbug.com/1234', 'crbug.com/3456']))
     with open(self.filename) as f:
       self.assertEqual(f.read(), expected_contents)
 
   def testMismatchedBlockComments(self) -> None:
     """Tests that block comments for the wrong removal type do nothing."""
-    contents = self.header + """
+    contents = (
+      self.header
+      + """
 crbug.com/1234 [ win ] do_not_remove [ Failure ]
 # finder:disable-stale
 crbug.com/2345 [ win ] disabled_stale [ Failure ]
@@ -753,119 +831,162 @@ crbug.com/3456 [ win ] disabled_unused [ Failure ]
 # finder:enable-unused
 crbug.com/4567 [ win ] also_do_not_remove [ Failure ]
 """
+    )
     expectations_to_remove = [
-        data_types.Expectation('disabled_stale', ['win'], 'Failure',
-                               NON_WILDCARD, 'crbug.com/2345'),
-        data_types.Expectation('disabled_unused', ['win'], 'Failure',
-                               NON_WILDCARD, 'crbug.com/3456'),
+      data_types.Expectation(
+        'disabled_stale', ['win'], 'Failure', NON_WILDCARD, 'crbug.com/2345'
+      ),
+      data_types.Expectation(
+        'disabled_unused', ['win'], 'Failure', NON_WILDCARD, 'crbug.com/3456'
+      ),
     ]
 
-    expected_contents = self.header + """
+    expected_contents = (
+      self.header
+      + """
 crbug.com/1234 [ win ] do_not_remove [ Failure ]
 # finder:disable-stale
 crbug.com/2345 [ win ] disabled_stale [ Failure ]
 # finder:enable-stale
 crbug.com/4567 [ win ] also_do_not_remove [ Failure ]
 """
+    )
     with open(self.filename, 'w') as f:
       f.write(contents)
     removed_urls = self.instance.RemoveExpectationsFromFile(
-        expectations_to_remove, self.filename, expectations.RemovalType.STALE)
+      expectations_to_remove, self.filename, expectations.RemovalType.STALE
+    )
     self.assertEqual(removed_urls, set(['crbug.com/3456']))
     with open(self.filename) as f:
       self.assertEqual(f.read(), expected_contents)
 
-    expected_contents = self.header + """
+    expected_contents = (
+      self.header
+      + """
 crbug.com/1234 [ win ] do_not_remove [ Failure ]
 # finder:disable-unused
 crbug.com/3456 [ win ] disabled_unused [ Failure ]
 # finder:enable-unused
 crbug.com/4567 [ win ] also_do_not_remove [ Failure ]
 """
+    )
     with open(self.filename, 'w') as f:
       f.write(contents)
     removed_urls = self.instance.RemoveExpectationsFromFile(
-        expectations_to_remove, self.filename, expectations.RemovalType.UNUSED)
+      expectations_to_remove, self.filename, expectations.RemovalType.UNUSED
+    )
     self.assertEqual(removed_urls, set(['crbug.com/2345']))
     with open(self.filename) as f:
       self.assertEqual(f.read(), expected_contents)
 
   def testInlineGeneralComments(self) -> None:
     """Tests that expectations with inline disable comments are not removed."""
-    contents = self.header + """
+    contents = (
+      self.header
+      + """
 crbug.com/1234 [ win ] foo/test [ Failure ]
 crbug.com/2345 [ win ] foo/test [ Failure ]  # finder:disable-general
 crbug.com/3456 [ win ] foo/test [ Failure ]
 """
+    )
     stale_expectations = [
-        data_types.Expectation('foo/test', ['win'], ['Failure'], NON_WILDCARD,
-                               'crbug.com/1234'),
-        data_types.Expectation('foo/test', ['win'], ['Failure'], NON_WILDCARD,
-                               'crbug.com/2345'),
-        data_types.Expectation('foo/test', ['win'], ['Failure'], NON_WILDCARD,
-                               'crbug.com/3456'),
+      data_types.Expectation(
+        'foo/test', ['win'], ['Failure'], NON_WILDCARD, 'crbug.com/1234'
+      ),
+      data_types.Expectation(
+        'foo/test', ['win'], ['Failure'], NON_WILDCARD, 'crbug.com/2345'
+      ),
+      data_types.Expectation(
+        'foo/test', ['win'], ['Failure'], NON_WILDCARD, 'crbug.com/3456'
+      ),
     ]
-    expected_contents = self.header + """
+    expected_contents = (
+      self.header
+      + """
 crbug.com/2345 [ win ] foo/test [ Failure ]  # finder:disable-general
 """
-    for removal_type in (expectations.RemovalType.STALE,
-                         expectations.RemovalType.UNUSED):
+    )
+    for removal_type in (
+      expectations.RemovalType.STALE,
+      expectations.RemovalType.UNUSED,
+    ):
       with open(self.filename, 'w') as f:
         f.write(contents)
       removed_urls = self.instance.RemoveExpectationsFromFile(
-          stale_expectations, self.filename, removal_type)
+        stale_expectations, self.filename, removal_type
+      )
       self.assertEqual(removed_urls, set(['crbug.com/1234', 'crbug.com/3456']))
       with open(self.filename) as f:
         self.assertEqual(f.read(), expected_contents)
 
   def testInlineStaleComments(self) -> None:
     """Tests that expectations with inline stale disable comments not removed"""
-    contents = self.header + """
+    contents = (
+      self.header
+      + """
 crbug.com/1234 [ win ] not_disabled [ Failure ]
 crbug.com/2345 [ win ] stale_disabled [ Failure ]  # finder:disable-stale
 crbug.com/3456 [ win ] unused_disabled [ Failure ]  # finder:disable-unused
 """
+    )
     stale_expectations = [
-        data_types.Expectation('not_disabled', ['win'], 'Failure', NON_WILDCARD,
-                               'crbug.com/1234'),
-        data_types.Expectation('stale_disabled', ['win'], 'Failure',
-                               NON_WILDCARD, 'crbug.com/2345'),
-        data_types.Expectation('unused_disabled', ['win'], 'Failure',
-                               NON_WILDCARD, 'crbug.com/3456')
+      data_types.Expectation(
+        'not_disabled', ['win'], 'Failure', NON_WILDCARD, 'crbug.com/1234'
+      ),
+      data_types.Expectation(
+        'stale_disabled', ['win'], 'Failure', NON_WILDCARD, 'crbug.com/2345'
+      ),
+      data_types.Expectation(
+        'unused_disabled', ['win'], 'Failure', NON_WILDCARD, 'crbug.com/3456'
+      ),
     ]
-    expected_contents = self.header + """
+    expected_contents = (
+      self.header
+      + """
 crbug.com/2345 [ win ] stale_disabled [ Failure ]  # finder:disable-stale
 """
+    )
     with open(self.filename, 'w') as f:
       f.write(contents)
     removed_urls = self.instance.RemoveExpectationsFromFile(
-        stale_expectations, self.filename, expectations.RemovalType.STALE)
+      stale_expectations, self.filename, expectations.RemovalType.STALE
+    )
     self.assertEqual(removed_urls, set(['crbug.com/1234', 'crbug.com/3456']))
     with open(self.filename) as f:
       self.assertEqual(f.read(), expected_contents)
 
   def testInlineUnusedComments(self) -> None:
     """Tests that expectations with inline unused comments not removed"""
-    contents = self.header + """
+    contents = (
+      self.header
+      + """
 crbug.com/1234 [ win ] not_disabled [ Failure ]
 crbug.com/2345 [ win ] stale_disabled [ Failure ]  # finder:disable-stale
 crbug.com/3456 [ win ] unused_disabled [ Failure ]  # finder:disable-unused
 """
+    )
     stale_expectations = [
-        data_types.Expectation('not_disabled', ['win'], 'Failure', NON_WILDCARD,
-                               'crbug.com/1234'),
-        data_types.Expectation('stale_disabled', ['win'], 'Failure',
-                               NON_WILDCARD, 'crbug.com/2345'),
-        data_types.Expectation('unused_disabled', ['win'], 'Failure',
-                               NON_WILDCARD, 'crbug.com/3456')
+      data_types.Expectation(
+        'not_disabled', ['win'], 'Failure', NON_WILDCARD, 'crbug.com/1234'
+      ),
+      data_types.Expectation(
+        'stale_disabled', ['win'], 'Failure', NON_WILDCARD, 'crbug.com/2345'
+      ),
+      data_types.Expectation(
+        'unused_disabled', ['win'], 'Failure', NON_WILDCARD, 'crbug.com/3456'
+      ),
     ]
-    expected_contents = self.header + """
+    expected_contents = (
+      self.header
+      + """
 crbug.com/3456 [ win ] unused_disabled [ Failure ]  # finder:disable-unused
 """
+    )
     with open(self.filename, 'w') as f:
       f.write(contents)
     removed_urls = self.instance.RemoveExpectationsFromFile(
-        stale_expectations, self.filename, expectations.RemovalType.UNUSED)
+      stale_expectations, self.filename, expectations.RemovalType.UNUSED
+    )
     self.assertEqual(removed_urls, set(['crbug.com/1234', 'crbug.com/2345']))
     with open(self.filename) as f:
       self.assertEqual(f.read(), expected_contents)
@@ -873,16 +994,22 @@ crbug.com/3456 [ win ] unused_disabled [ Failure ]  # finder:disable-unused
   def testGetDisableReasonFromComment(self):
     """Tests that the disable reason can be pulled from a line."""
     self.assertEqual(
-        expectations._GetDisableReasonFromComment(
-            '# finder:disable-general foo'), 'foo')
+      expectations._GetDisableReasonFromComment('# finder:disable-general foo'),
+      'foo',
+    )
     self.assertEqual(
-        expectations._GetDisableReasonFromComment(
-            'crbug.com/1234 [ win ] bar/test [ Failure ]  '
-            '# finder:disable-general foo'), 'foo')
+      expectations._GetDisableReasonFromComment(
+        'crbug.com/1234 [ win ] bar/test [ Failure ]  '
+        '# finder:disable-general foo'
+      ),
+      'foo',
+    )
 
   def testGroupBlockAllRemovable(self):
     """Tests that a group with all members removable is removed."""
-    contents = self.header + """
+    contents = (
+      self.header
+      + """
 
 # This is a test comment
 crbug.com/2345 [ win ] foo/test [ RetryOnFailure ]
@@ -895,15 +1022,20 @@ crbug.com/1234 [ win ] foo/test [ Failure ]
 # finder:group-end
 [ win ] bar/test [ RetryOnFailure ]
 """
+    )
 
     stale_expectations = [
-        data_types.Expectation('foo/test', ['win'], ['Failure'], NON_WILDCARD,
-                               'crbug.com/1234'),
-        data_types.Expectation('bar/test', ['linux'], ['RetryOnFailure'],
-                               NON_WILDCARD),
+      data_types.Expectation(
+        'foo/test', ['win'], ['Failure'], NON_WILDCARD, 'crbug.com/1234'
+      ),
+      data_types.Expectation(
+        'bar/test', ['linux'], ['RetryOnFailure'], NON_WILDCARD
+      ),
     ]
 
-    expected_contents = self.header + """
+    expected_contents = (
+      self.header
+      + """
 
 # This is a test comment
 crbug.com/2345 [ win ] foo/test [ RetryOnFailure ]
@@ -912,12 +1044,14 @@ crbug.com/2345 [ win ] foo/test [ RetryOnFailure ]
 
 [ win ] bar/test [ RetryOnFailure ]
 """
+    )
 
     with open(self.filename, 'w') as f:
       f.write(contents)
 
     removed_urls = self.instance.RemoveExpectationsFromFile(
-        stale_expectations, self.filename, expectations.RemovalType.STALE)
+      stale_expectations, self.filename, expectations.RemovalType.STALE
+    )
     self.assertEqual(removed_urls, set(['crbug.com/1234']))
     with open(self.filename) as f:
       self.assertEqual(f.read(), expected_contents)
@@ -926,7 +1060,9 @@ crbug.com/2345 [ win ] foo/test [ RetryOnFailure ]
     """Tests that a large group with all members removable is removed."""
     # This test exists because we've had issues that passed tests with
     # relatively small groups, but failed on larger ones.
-    contents = self.header + """
+    contents = (
+      self.header
+      + """
 
 # This is a test comment
 crbug.com/2345 [ win ] foo/test [ RetryOnFailure ]
@@ -948,33 +1084,25 @@ crbug.com/2345 [ win ] foo/test [ RetryOnFailure ]
 # finder:group-end
 [ win ] bar/test [ RetryOnFailure ]
 """
+    )
 
     stale_expectations = [
-        data_types.Expectation('a', ['linux'], ['RetryOnFailure'],
-                               NON_WILDCARD),
-        data_types.Expectation('b', ['linux'], ['RetryOnFailure'],
-                               NON_WILDCARD),
-        data_types.Expectation('c', ['linux'], ['RetryOnFailure'],
-                               NON_WILDCARD),
-        data_types.Expectation('d', ['linux'], ['RetryOnFailure'],
-                               NON_WILDCARD),
-        data_types.Expectation('e', ['linux'], ['RetryOnFailure'],
-                               NON_WILDCARD),
-        data_types.Expectation('f', ['linux'], ['RetryOnFailure'],
-                               NON_WILDCARD),
-        data_types.Expectation('g', ['linux'], ['RetryOnFailure'],
-                               NON_WILDCARD),
-        data_types.Expectation('h', ['linux'], ['RetryOnFailure'],
-                               NON_WILDCARD),
-        data_types.Expectation('i', ['linux'], ['RetryOnFailure'],
-                               NON_WILDCARD),
-        data_types.Expectation('j', ['linux'], ['RetryOnFailure'],
-                               NON_WILDCARD),
-        data_types.Expectation('k', ['linux'], ['RetryOnFailure'],
-                               NON_WILDCARD),
+      data_types.Expectation('a', ['linux'], ['RetryOnFailure'], NON_WILDCARD),
+      data_types.Expectation('b', ['linux'], ['RetryOnFailure'], NON_WILDCARD),
+      data_types.Expectation('c', ['linux'], ['RetryOnFailure'], NON_WILDCARD),
+      data_types.Expectation('d', ['linux'], ['RetryOnFailure'], NON_WILDCARD),
+      data_types.Expectation('e', ['linux'], ['RetryOnFailure'], NON_WILDCARD),
+      data_types.Expectation('f', ['linux'], ['RetryOnFailure'], NON_WILDCARD),
+      data_types.Expectation('g', ['linux'], ['RetryOnFailure'], NON_WILDCARD),
+      data_types.Expectation('h', ['linux'], ['RetryOnFailure'], NON_WILDCARD),
+      data_types.Expectation('i', ['linux'], ['RetryOnFailure'], NON_WILDCARD),
+      data_types.Expectation('j', ['linux'], ['RetryOnFailure'], NON_WILDCARD),
+      data_types.Expectation('k', ['linux'], ['RetryOnFailure'], NON_WILDCARD),
     ]
 
-    expected_contents = self.header + """
+    expected_contents = (
+      self.header
+      + """
 
 # This is a test comment
 crbug.com/2345 [ win ] foo/test [ RetryOnFailure ]
@@ -983,19 +1111,23 @@ crbug.com/2345 [ win ] foo/test [ RetryOnFailure ]
 
 [ win ] bar/test [ RetryOnFailure ]
 """
+    )
 
     with open(self.filename, 'w') as f:
       f.write(contents)
 
     removed_urls = self.instance.RemoveExpectationsFromFile(
-        stale_expectations, self.filename, expectations.RemovalType.STALE)
+      stale_expectations, self.filename, expectations.RemovalType.STALE
+    )
     self.assertEqual(removed_urls, set([]))
     with open(self.filename) as f:
       self.assertEqual(f.read(), expected_contents)
 
   def testNestedGroupAndNarrowingAllRemovable(self):
     """Tests that a disable block within a group can be properly removed."""
-    contents = self.header + """
+    contents = (
+      self.header
+      + """
 crbug.com/2345 [ win ] baz/test [ Failure ]
 
 # Description
@@ -1008,33 +1140,42 @@ crbug.com/1234 [ win ] bar/test [ Failure ]
 
 crbug.com/3456 [ linux ] foo/test [ Failure ]
 """
+    )
 
     stale_expectations = [
-        data_types.Expectation('foo/test', ['win'], ['Failure'], NON_WILDCARD,
-                               'crbug.com/1234'),
-        data_types.Expectation('bar/test', ['win'], ['Failure'], NON_WILDCARD,
-                               'crbug.com/1234'),
+      data_types.Expectation(
+        'foo/test', ['win'], ['Failure'], NON_WILDCARD, 'crbug.com/1234'
+      ),
+      data_types.Expectation(
+        'bar/test', ['win'], ['Failure'], NON_WILDCARD, 'crbug.com/1234'
+      ),
     ]
 
-    expected_contents = self.header + """
+    expected_contents = (
+      self.header
+      + """
 crbug.com/2345 [ win ] baz/test [ Failure ]
 
 
 crbug.com/3456 [ linux ] foo/test [ Failure ]
 """
+    )
 
     with open(self.filename, 'w') as f:
       f.write(contents)
 
     removed_urls = self.instance.RemoveExpectationsFromFile(
-        stale_expectations, self.filename, expectations.RemovalType.STALE)
+      stale_expectations, self.filename, expectations.RemovalType.STALE
+    )
     self.assertEqual(removed_urls, set(['crbug.com/1234']))
     with open(self.filename) as f:
       self.assertEqual(f.read(), expected_contents)
 
   def testGroupBlockNotAllRemovable(self):
     """Tests that a group with not all members removable is not removed."""
-    contents = self.header + """
+    contents = (
+      self.header
+      + """
 
 # This is a test comment
 crbug.com/2345 [ win ] foo/test [ RetryOnFailure ]
@@ -1046,10 +1187,12 @@ crbug.com/1234 [ win ] foo/test [ Failure ]
 # finder:group-end
 [ win ] bar/test [ RetryOnFailure ]
 """
+    )
 
     stale_expectations = [
-        data_types.Expectation('bar/test', ['linux'], ['RetryOnFailure'],
-                               NON_WILDCARD)
+      data_types.Expectation(
+        'bar/test', ['linux'], ['RetryOnFailure'], NON_WILDCARD
+      )
     ]
 
     expected_contents = contents
@@ -1058,14 +1201,17 @@ crbug.com/1234 [ win ] foo/test [ Failure ]
       f.write(contents)
 
     removed_urls = self.instance.RemoveExpectationsFromFile(
-        stale_expectations, self.filename, expectations.RemovalType.STALE)
+      stale_expectations, self.filename, expectations.RemovalType.STALE
+    )
     self.assertEqual(removed_urls, set())
     with open(self.filename) as f:
       self.assertEqual(f.read(), expected_contents)
 
   def testGroupSplitAllRemovable(self):
     """Tests that a split group with all members removable is removed."""
-    contents = self.header + """
+    contents = (
+      self.header
+      + """
 
 # This is a test comment
 crbug.com/2345 [ win ] foo/test [ RetryOnFailure ]
@@ -1081,15 +1227,20 @@ crbug.com/1234 [ win ] foo/test [ Failure ]
 # finder:group-end
 [ win ] bar/test [ RetryOnFailure ]
 """
+    )
 
     stale_expectations = [
-        data_types.Expectation('foo/test', ['win'], ['Failure'], NON_WILDCARD,
-                               'crbug.com/1234'),
-        data_types.Expectation('bar/test', ['linux'], ['RetryOnFailure'],
-                               NON_WILDCARD)
+      data_types.Expectation(
+        'foo/test', ['win'], ['Failure'], NON_WILDCARD, 'crbug.com/1234'
+      ),
+      data_types.Expectation(
+        'bar/test', ['linux'], ['RetryOnFailure'], NON_WILDCARD
+      ),
     ]
 
-    expected_contents = self.header + """
+    expected_contents = (
+      self.header
+      + """
 
 # This is a test comment
 crbug.com/2345 [ win ] foo/test [ RetryOnFailure ]
@@ -1099,19 +1250,23 @@ crbug.com/2345 [ win ] foo/test [ RetryOnFailure ]
 
 [ win ] bar/test [ RetryOnFailure ]
 """
+    )
 
     with open(self.filename, 'w') as f:
       f.write(contents)
 
     removed_urls = self.instance.RemoveExpectationsFromFile(
-        stale_expectations, self.filename, expectations.RemovalType.STALE)
+      stale_expectations, self.filename, expectations.RemovalType.STALE
+    )
     self.assertEqual(removed_urls, set(['crbug.com/1234']))
     with open(self.filename) as f:
       self.assertEqual(f.read(), expected_contents)
 
   def testGroupSplitNotAllRemovable(self):
     """Tests that a split group without all members removable is not removed."""
-    contents = self.header + """
+    contents = (
+      self.header
+      + """
 
 # This is a test comment
 crbug.com/2345 [ win ] foo/test [ RetryOnFailure ]
@@ -1126,10 +1281,12 @@ crbug.com/1234 [ win ] foo/test [ Failure ]
 # finder:group-end
 [ win ] bar/test [ RetryOnFailure ]
 """
+    )
 
     stale_expectations = [
-        data_types.Expectation('bar/test', ['linux'], ['RetryOnFailure'],
-                               NON_WILDCARD)
+      data_types.Expectation(
+        'bar/test', ['linux'], ['RetryOnFailure'], NON_WILDCARD
+      )
     ]
 
     expected_contents = contents
@@ -1138,14 +1295,17 @@ crbug.com/1234 [ win ] foo/test [ Failure ]
       f.write(contents)
 
     removed_urls = self.instance.RemoveExpectationsFromFile(
-        stale_expectations, self.filename, expectations.RemovalType.STALE)
+      stale_expectations, self.filename, expectations.RemovalType.STALE
+    )
     self.assertEqual(removed_urls, set())
     with open(self.filename) as f:
       self.assertEqual(f.read(), expected_contents)
 
   def testGroupMultipleGroupsAllRemovable(self):
     """Tests that multiple groups with all members removable are removed."""
-    contents = self.header + """
+    contents = (
+      self.header
+      + """
 
 # This is a test comment
 crbug.com/2345 [ win ] foo/test [ RetryOnFailure ]
@@ -1161,15 +1321,20 @@ crbug.com/1234 [ win ] foo/test [ Failure ]
 # finder:group-end
 [ win ] bar/test [ RetryOnFailure ]
 """
+    )
 
     stale_expectations = [
-        data_types.Expectation('foo/test', ['win'], ['Failure'], NON_WILDCARD,
-                               'crbug.com/1234'),
-        data_types.Expectation('bar/test', ['linux'], ['RetryOnFailure'],
-                               NON_WILDCARD)
+      data_types.Expectation(
+        'foo/test', ['win'], ['Failure'], NON_WILDCARD, 'crbug.com/1234'
+      ),
+      data_types.Expectation(
+        'bar/test', ['linux'], ['RetryOnFailure'], NON_WILDCARD
+      ),
     ]
 
-    expected_contents = self.header + """
+    expected_contents = (
+      self.header
+      + """
 
 # This is a test comment
 crbug.com/2345 [ win ] foo/test [ RetryOnFailure ]
@@ -1179,19 +1344,23 @@ crbug.com/2345 [ win ] foo/test [ RetryOnFailure ]
 
 [ win ] bar/test [ RetryOnFailure ]
 """
+    )
 
     with open(self.filename, 'w') as f:
       f.write(contents)
 
     removed_urls = self.instance.RemoveExpectationsFromFile(
-        stale_expectations, self.filename, expectations.RemovalType.STALE)
+      stale_expectations, self.filename, expectations.RemovalType.STALE
+    )
     self.assertEqual(removed_urls, set(['crbug.com/1234']))
     with open(self.filename) as f:
       self.assertEqual(f.read(), expected_contents)
 
   def testGroupMultipleGroupsSomeRemovable(self):
     """Tests that multiple groups are handled separately."""
-    contents = self.header + """
+    contents = (
+      self.header
+      + """
 
 # This is a test comment
 crbug.com/2345 [ win ] foo/test [ RetryOnFailure ]
@@ -1208,15 +1377,20 @@ crbug.com/1234 [ linux ] foo/test [ Failure ]
 # finder:group-end
 [ win ] bar/test [ RetryOnFailure ]
 """
+    )
 
     stale_expectations = [
-        data_types.Expectation('foo/test', ['win'], ['Failure'], NON_WILDCARD,
-                               'crbug.com/1234'),
-        data_types.Expectation('bar/test', ['linux'], ['RetryOnFailure'],
-                               NON_WILDCARD)
+      data_types.Expectation(
+        'foo/test', ['win'], ['Failure'], NON_WILDCARD, 'crbug.com/1234'
+      ),
+      data_types.Expectation(
+        'bar/test', ['linux'], ['RetryOnFailure'], NON_WILDCARD
+      ),
     ]
 
-    expected_contents = self.header + """
+    expected_contents = (
+      self.header
+      + """
 
 # This is a test comment
 crbug.com/2345 [ win ] foo/test [ RetryOnFailure ]
@@ -1230,19 +1404,23 @@ crbug.com/1234 [ linux ] foo/test [ Failure ]
 # finder:group-end
 [ win ] bar/test [ RetryOnFailure ]
 """
+    )
 
     with open(self.filename, 'w') as f:
       f.write(contents)
 
     removed_urls = self.instance.RemoveExpectationsFromFile(
-        stale_expectations, self.filename, expectations.RemovalType.STALE)
+      stale_expectations, self.filename, expectations.RemovalType.STALE
+    )
     self.assertEqual(removed_urls, set())
     with open(self.filename) as f:
       self.assertEqual(f.read(), expected_contents)
 
   def testNestedGroupStart(self):
     """Tests that nested groups are disallowed."""
-    contents = self.header + """
+    contents = (
+      self.header
+      + """
 
 # This is a test comment
 crbug.com/2345 [ win ] foo/test [ RetryOnFailure ]
@@ -1255,18 +1433,23 @@ crbug.com/2345 [ win ] foo/test [ RetryOnFailure ]
 # finder:group-end
 [ win ] bar/test [ RetryOnFailure ]
 """
+    )
 
     with open(self.filename, 'w') as f:
       f.write(contents)
 
-    with self.assertRaisesRegex(RuntimeError,
-                                'that is inside another group block'):
-      self.instance.RemoveExpectationsFromFile([], self.filename,
-                                               expectations.RemovalType.STALE)
+    with self.assertRaisesRegex(
+      RuntimeError, 'that is inside another group block'
+    ):
+      self.instance.RemoveExpectationsFromFile(
+        [], self.filename, expectations.RemovalType.STALE
+      )
 
   def testOrphanedGroupEnd(self):
     """Tests that orphaned group ends are disallowed."""
-    contents = self.header + """
+    contents = (
+      self.header
+      + """
 
 # This is a test comment
 crbug.com/2345 [ win ] foo/test [ RetryOnFailure ]
@@ -1276,17 +1459,21 @@ crbug.com/2345 [ win ] foo/test [ RetryOnFailure ]
 [ linux ] bar/test [ RetryOnFailure ]
 [ win ] bar/test [ RetryOnFailure ]
 """
+    )
 
     with open(self.filename, 'w') as f:
       f.write(contents)
 
     with self.assertRaisesRegex(RuntimeError, 'without a group start comment'):
-      self.instance.RemoveExpectationsFromFile([], self.filename,
-                                               expectations.RemovalType.STALE)
+      self.instance.RemoveExpectationsFromFile(
+        [], self.filename, expectations.RemovalType.STALE
+      )
 
   def testNoGroupName(self):
     """Tests that unnamed groups are disallowed."""
-    contents = self.header + """
+    contents = (
+      self.header
+      + """
 
 # This is a test comment
 crbug.com/2345 [ win ] foo/test [ RetryOnFailure ]
@@ -1297,103 +1484,131 @@ crbug.com/2345 [ win ] foo/test [ RetryOnFailure ]
 [ linux ] bar/test [ RetryOnFailure ]
 [ win ] bar/test [ RetryOnFailure ]
 """
+    )
 
     with open(self.filename, 'w') as f:
       f.write(contents)
 
     with self.assertRaisesRegex(RuntimeError, 'did not have a group name'):
-      self.instance.RemoveExpectationsFromFile([], self.filename,
-                                               expectations.RemovalType.STALE)
+      self.instance.RemoveExpectationsFromFile(
+        [], self.filename, expectations.RemovalType.STALE
+      )
 
   def testRemoveCommentBlockSimpleTrailingWhitespace(self):
     """Tests stale comment removal in a simple case with trailing whitespace."""
-    contents = self.header + """
+    contents = (
+      self.header
+      + """
 # Comment line 1
 # Comment line 2
 crbug.com/1234 [ linux ] foo/test [ Failure ]
 
 crbug.com/2345 [ win ] bar/test [ Failure ]
 """
+    )
 
     stale_expectations = [
-        data_types.Expectation('foo/test', ['linux'], ['Failure'], NON_WILDCARD,
-                               'crbug.com/1234'),
+      data_types.Expectation(
+        'foo/test', ['linux'], ['Failure'], NON_WILDCARD, 'crbug.com/1234'
+      ),
     ]
 
-    expected_contents = self.header + """
+    expected_contents = (
+      self.header
+      + """
 
 crbug.com/2345 [ win ] bar/test [ Failure ]
 """
+    )
 
     with open(self.filename, 'w') as f:
       f.write(contents)
 
     removed_urls = self.instance.RemoveExpectationsFromFile(
-        stale_expectations, self.filename, expectations.RemovalType.STALE)
+      stale_expectations, self.filename, expectations.RemovalType.STALE
+    )
     self.assertEqual(removed_urls, {'crbug.com/1234'})
     with open(self.filename) as f:
       self.assertEqual(f.read(), expected_contents)
 
   def testRemoveCommentBlockSimpleTrailingComment(self):
     """Tests stale comment removal in a simple case with trailing comment."""
-    contents = self.header + """
+    contents = (
+      self.header
+      + """
 # Comment line 1
 # Comment line 2
 crbug.com/1234 [ linux ] foo/test [ Failure ]
 # Comment line 3
 crbug.com/2345 [ win ] bar/test [ Failure ]
 """
+    )
 
     stale_expectations = [
-        data_types.Expectation('foo/test', ['linux'], ['Failure'], NON_WILDCARD,
-                               'crbug.com/1234'),
+      data_types.Expectation(
+        'foo/test', ['linux'], ['Failure'], NON_WILDCARD, 'crbug.com/1234'
+      ),
     ]
 
-    expected_contents = self.header + """
+    expected_contents = (
+      self.header
+      + """
 # Comment line 3
 crbug.com/2345 [ win ] bar/test [ Failure ]
 """
+    )
 
     with open(self.filename, 'w') as f:
       f.write(contents)
 
     removed_urls = self.instance.RemoveExpectationsFromFile(
-        stale_expectations, self.filename, expectations.RemovalType.STALE)
+      stale_expectations, self.filename, expectations.RemovalType.STALE
+    )
     self.assertEqual(removed_urls, {'crbug.com/1234'})
     with open(self.filename) as f:
       self.assertEqual(f.read(), expected_contents)
 
   def testRemoveCommentBlockSimpleEndOfFile(self):
     """Tests stale comment removal in a simple case at file end."""
-    contents = self.header + """
+    contents = (
+      self.header
+      + """
 crbug.com/2345 [ win ] bar/test [ Failure ]
 
 # Comment line 1
 # Comment line 2
 crbug.com/1234 [ linux ] foo/test [ Failure ]"""
+    )
 
     stale_expectations = [
-        data_types.Expectation('foo/test', ['linux'], ['Failure'], NON_WILDCARD,
-                               'crbug.com/1234'),
+      data_types.Expectation(
+        'foo/test', ['linux'], ['Failure'], NON_WILDCARD, 'crbug.com/1234'
+      ),
     ]
 
-    expected_contents = self.header + """
+    expected_contents = (
+      self.header
+      + """
 crbug.com/2345 [ win ] bar/test [ Failure ]
 
 """
+    )
 
     with open(self.filename, 'w') as f:
       f.write(contents)
 
     removed_urls = self.instance.RemoveExpectationsFromFile(
-        stale_expectations, self.filename, expectations.RemovalType.STALE)
+      stale_expectations, self.filename, expectations.RemovalType.STALE
+    )
     self.assertEqual(removed_urls, {'crbug.com/1234'})
     with open(self.filename) as f:
       self.assertEqual(f.read(), expected_contents)
 
   def testRemoveCommentBlockWithAnnotations(self):
     """Tests stale comment removal with annotations on both ends."""
-    contents = self.header + """
+    contents = (
+      self.header
+      + """
 # Comment line 1
 # Comment line 2
 # finder:disable-unused
@@ -1402,29 +1617,37 @@ crbug.com/1234 [ linux ] foo/test [ Failure ]
 # Comment line 3
 crbug.com/2345 [ win ] bar/test [ Failure ]
 """
+    )
 
     stale_expectations = [
-        data_types.Expectation('foo/test', ['linux'], ['Failure'], NON_WILDCARD,
-                               'crbug.com/1234'),
+      data_types.Expectation(
+        'foo/test', ['linux'], ['Failure'], NON_WILDCARD, 'crbug.com/1234'
+      ),
     ]
 
-    expected_contents = self.header + """
+    expected_contents = (
+      self.header
+      + """
 # Comment line 3
 crbug.com/2345 [ win ] bar/test [ Failure ]
 """
+    )
 
     with open(self.filename, 'w') as f:
       f.write(contents)
 
     removed_urls = self.instance.RemoveExpectationsFromFile(
-        stale_expectations, self.filename, expectations.RemovalType.STALE)
+      stale_expectations, self.filename, expectations.RemovalType.STALE
+    )
     self.assertEqual(removed_urls, {'crbug.com/1234'})
     with open(self.filename) as f:
       self.assertEqual(f.read(), expected_contents)
 
   def testRemoveCommentBlockWithMissingTrailingAnnotation(self):
     """Tests stale comment removal with a missing trailing annotation."""
-    contents = self.header + """
+    contents = (
+      self.header
+      + """
 # Comment line 1
 # Comment line 2
 # finder:disable-unused
@@ -1436,13 +1659,17 @@ crbug.com/1234 [ win ] foo/test [ Failure ]
 # Comment line 3
 crbug.com/2345 [ win ] bar/test [ Failure ]
 """
+    )
 
     stale_expectations = [
-        data_types.Expectation('foo/test', ['linux'], ['Failure'], NON_WILDCARD,
-                               'crbug.com/1234'),
+      data_types.Expectation(
+        'foo/test', ['linux'], ['Failure'], NON_WILDCARD, 'crbug.com/1234'
+      ),
     ]
 
-    expected_contents = self.header + """
+    expected_contents = (
+      self.header
+      + """
 # Comment line 1
 # Comment line 2
 # finder:disable-unused
@@ -1453,19 +1680,23 @@ crbug.com/1234 [ win ] foo/test [ Failure ]
 # Comment line 3
 crbug.com/2345 [ win ] bar/test [ Failure ]
 """
+    )
 
     with open(self.filename, 'w') as f:
       f.write(contents)
 
     removed_urls = self.instance.RemoveExpectationsFromFile(
-        stale_expectations, self.filename, expectations.RemovalType.STALE)
+      stale_expectations, self.filename, expectations.RemovalType.STALE
+    )
     self.assertEqual(removed_urls, {'crbug.com/1234'})
     with open(self.filename) as f:
       self.assertEqual(f.read(), expected_contents)
 
   def testRemoveCommentBlockWithMissingStartAnnotation(self):
     """Tests stale comment removal with a missing start annotation."""
-    contents = self.header + """
+    contents = (
+      self.header
+      + """
 # finder:disable-unused
 crbug.com/1234 [ win ] foo/test [ Failure ]
 # Comment line 1
@@ -1475,32 +1706,40 @@ crbug.com/1234 [ linux ] foo/test [ Failure ]
 # Comment line 3
 crbug.com/2345 [ win ] bar/test [ Failure ]
 """
+    )
 
     stale_expectations = [
-        data_types.Expectation('foo/test', ['linux'], ['Failure'], NON_WILDCARD,
-                               'crbug.com/1234'),
+      data_types.Expectation(
+        'foo/test', ['linux'], ['Failure'], NON_WILDCARD, 'crbug.com/1234'
+      ),
     ]
 
-    expected_contents = self.header + """
+    expected_contents = (
+      self.header
+      + """
 # finder:disable-unused
 crbug.com/1234 [ win ] foo/test [ Failure ]
 # finder:enable-unused
 # Comment line 3
 crbug.com/2345 [ win ] bar/test [ Failure ]
 """
+    )
 
     with open(self.filename, 'w') as f:
       f.write(contents)
 
     removed_urls = self.instance.RemoveExpectationsFromFile(
-        stale_expectations, self.filename, expectations.RemovalType.STALE)
+      stale_expectations, self.filename, expectations.RemovalType.STALE
+    )
     self.assertEqual(removed_urls, {'crbug.com/1234'})
     with open(self.filename) as f:
       self.assertEqual(f.read(), expected_contents)
 
   def testRemoveCommentBlockMultipleExpectations(self):
     """Tests stale comment removal with multiple expectations in a block."""
-    contents = self.header + """
+    contents = (
+      self.header
+      + """
 # Comment line 1
 # Comment line 2
 # finder:disable-unused
@@ -1511,32 +1750,41 @@ crbug.com/3456 [ mac ] foo/test [ Failure ]
 # Comment line 3
 crbug.com/2345 [ win ] bar/test [ Failure ]
 """
+    )
 
     stale_expectations = [
-        data_types.Expectation('foo/test', ['linux'], ['Failure'], NON_WILDCARD,
-                               'crbug.com/1234'),
-        data_types.Expectation('foo/test', ['mac'], ['Failure'], NON_WILDCARD,
-                               'crbug.com/3456'),
+      data_types.Expectation(
+        'foo/test', ['linux'], ['Failure'], NON_WILDCARD, 'crbug.com/1234'
+      ),
+      data_types.Expectation(
+        'foo/test', ['mac'], ['Failure'], NON_WILDCARD, 'crbug.com/3456'
+      ),
     ]
 
-    expected_contents = self.header + """
+    expected_contents = (
+      self.header
+      + """
 
 # Comment line 3
 crbug.com/2345 [ win ] bar/test [ Failure ]
 """
+    )
 
     with open(self.filename, 'w') as f:
       f.write(contents)
 
     removed_urls = self.instance.RemoveExpectationsFromFile(
-        stale_expectations, self.filename, expectations.RemovalType.STALE)
+      stale_expectations, self.filename, expectations.RemovalType.STALE
+    )
     self.assertEqual(removed_urls, {'crbug.com/1234', 'crbug.com/3456'})
     with open(self.filename) as f:
       self.assertEqual(f.read(), expected_contents)
 
   def testRemoveCommentBlockMultipleBlocks(self):
     """Tests stale comment removal with expectations in multiple blocks."""
-    contents = self.header + """
+    contents = (
+      self.header
+      + """
 # Comment line 1
 # Comment line 2
 # finder:disable-unused
@@ -1550,32 +1798,41 @@ crbug.com/3456 [ mac ] foo/test [ Failure ]
 # Comment line 3
 crbug.com/2345 [ win ] bar/test [ Failure ]
 """
+    )
 
     stale_expectations = [
-        data_types.Expectation('foo/test', ['linux'], ['Failure'], NON_WILDCARD,
-                               'crbug.com/1234'),
-        data_types.Expectation('foo/test', ['mac'], ['Failure'], NON_WILDCARD,
-                               'crbug.com/3456'),
+      data_types.Expectation(
+        'foo/test', ['linux'], ['Failure'], NON_WILDCARD, 'crbug.com/1234'
+      ),
+      data_types.Expectation(
+        'foo/test', ['mac'], ['Failure'], NON_WILDCARD, 'crbug.com/3456'
+      ),
     ]
 
-    expected_contents = self.header + """
+    expected_contents = (
+      self.header
+      + """
 
 # Comment line 3
 crbug.com/2345 [ win ] bar/test [ Failure ]
 """
+    )
 
     with open(self.filename, 'w') as f:
       f.write(contents)
 
     removed_urls = self.instance.RemoveExpectationsFromFile(
-        stale_expectations, self.filename, expectations.RemovalType.STALE)
+      stale_expectations, self.filename, expectations.RemovalType.STALE
+    )
     self.assertEqual(removed_urls, {'crbug.com/1234', 'crbug.com/3456'})
     with open(self.filename) as f:
       self.assertEqual(f.read(), expected_contents)
 
   def testRemoveStaleAnnotationBlocks(self):
     """Tests removal of annotation blocks not associated with removals."""
-    contents = self.header + """
+    contents = (
+      self.header
+      + """
 # finder:disable-general
 # finder:enable-general
 
@@ -1594,21 +1851,26 @@ crbug.com/2345 [ win ] bar/test [ Failure ]
 # finder:group-start name
 # finder:group-end
 """
+    )
 
     stale_expectations = []
 
-    expected_contents = self.header + """
+    expected_contents = (
+      self.header
+      + """
 
 
 
 
 """
+    )
 
     with open(self.filename, 'w') as f:
       f.write(contents)
 
     removed_urls = self.instance.RemoveExpectationsFromFile(
-        stale_expectations, self.filename, expectations.RemovalType.STALE)
+      stale_expectations, self.filename, expectations.RemovalType.STALE
+    )
     self.assertEqual(removed_urls, set())
     with open(self.filename) as f:
       self.assertEqual(f.read(), expected_contents)
@@ -1616,12 +1878,14 @@ crbug.com/2345 [ win ] bar/test [ Failure ]
   def testGroupNameExtraction(self):
     """Tests that group names are properly extracted."""
     group_name = expectations._GetGroupNameFromCommentLine(
-        '# finder:group-start group name')
+      '# finder:group-start group name'
+    )
     self.assertEqual(group_name, 'group name')
 
 
 class GetDisableAnnotatedExpectationsFromFileUnittest(
-    fake_filesystem_unittest.TestCase):
+  fake_filesystem_unittest.TestCase
+):
   def setUp(self) -> None:
     self.setUpPyfakefs()
     self.instance = uu.CreateGenericExpectations()
@@ -1637,7 +1901,8 @@ crbug.com/1234 [ win ] foo/test [ Failure ]
 """
     with self.assertRaises(RuntimeError):
       self.instance._GetDisableAnnotatedExpectationsFromFile(
-          'expectation_file', contents)
+        'expectation_file', contents
+      )
 
     contents = """
 # finder:disable-general
@@ -1648,7 +1913,8 @@ crbug.com/1234 [ win ] foo/test [ Failure ]
 """
     with self.assertRaises(RuntimeError):
       self.instance._GetDisableAnnotatedExpectationsFromFile(
-          'expectation_file', contents)
+        'expectation_file', contents
+      )
 
     contents = """
 # finder:enable-general
@@ -1656,7 +1922,8 @@ crbug.com/1234 [ win ] foo/test [ Failure ]
 """
     with self.assertRaises(RuntimeError):
       self.instance._GetDisableAnnotatedExpectationsFromFile(
-          'expectation_file', contents)
+        'expectation_file', contents
+      )
 
   def testBlockComments(self) -> None:
     """Tests that disable block comments are properly parsed."""
@@ -1683,29 +1950,43 @@ crbug.com/1234 [ mac ] bar/test [ Failure ]
       outfile.write(contents)
 
     annotated_expectations = (
-        self.instance._GetDisableAnnotatedExpectationsFromFile(
-            '/expectation_file', contents))
+      self.instance._GetDisableAnnotatedExpectationsFromFile(
+        '/expectation_file', contents
+      )
+    )
     self.assertEqual(len(annotated_expectations), 4)
     self.assertEqual(
-        annotated_expectations[data_types.Expectation('foo/test', ['win'],
-                                                      'Failure', NON_WILDCARD,
-                                                      'crbug.com/1234')],
-        ('-general', 'general-reason'))
+      annotated_expectations[
+        data_types.Expectation(
+          'foo/test', ['win'], 'Failure', NON_WILDCARD, 'crbug.com/1234'
+        )
+      ],
+      ('-general', 'general-reason'),
+    )
     self.assertEqual(
-        annotated_expectations[data_types.Expectation('foo/test', ['mac'],
-                                                      'Failure', NON_WILDCARD,
-                                                      'crbug.com/1234')],
-        ('-stale', ''))
+      annotated_expectations[
+        data_types.Expectation(
+          'foo/test', ['mac'], 'Failure', NON_WILDCARD, 'crbug.com/1234'
+        )
+      ],
+      ('-stale', ''),
+    )
     self.assertEqual(
-        annotated_expectations[data_types.Expectation('foo/test', ['linux'],
-                                                      'Failure', NON_WILDCARD,
-                                                      'crbug.com/1234')],
-        ('-unused', 'unused reason'))
+      annotated_expectations[
+        data_types.Expectation(
+          'foo/test', ['linux'], 'Failure', NON_WILDCARD, 'crbug.com/1234'
+        )
+      ],
+      ('-unused', 'unused reason'),
+    )
     self.assertEqual(
-        annotated_expectations[data_types.Expectation('bar/test', ['win'],
-                                                      'Failure', NON_WILDCARD,
-                                                      'crbug.com/1234')],
-        ('-narrowing', ''))
+      annotated_expectations[
+        data_types.Expectation(
+          'bar/test', ['win'], 'Failure', NON_WILDCARD, 'crbug.com/1234'
+        )
+      ],
+      ('-narrowing', ''),
+    )
 
   def testInlineComments(self) -> None:
     """Tests that inline disable comments are properly parsed."""
@@ -1726,29 +2007,43 @@ crbug.com/1234 [ mac ] bar/test [ Failure ]
       outfile.write(contents)
 
     annotated_expectations = (
-        self.instance._GetDisableAnnotatedExpectationsFromFile(
-            '/expectation_file', contents))
+      self.instance._GetDisableAnnotatedExpectationsFromFile(
+        '/expectation_file', contents
+      )
+    )
     self.assertEqual(len(annotated_expectations), 4)
     self.assertEqual(
-        annotated_expectations[data_types.Expectation('foo/test', ['win'],
-                                                      'Failure', NON_WILDCARD,
-                                                      'crbug.com/1234')],
-        ('-general', 'general-reason'))
+      annotated_expectations[
+        data_types.Expectation(
+          'foo/test', ['win'], 'Failure', NON_WILDCARD, 'crbug.com/1234'
+        )
+      ],
+      ('-general', 'general-reason'),
+    )
     self.assertEqual(
-        annotated_expectations[data_types.Expectation('foo/test', ['mac'],
-                                                      'Failure', NON_WILDCARD,
-                                                      'crbug.com/1234')],
-        ('-stale', ''))
+      annotated_expectations[
+        data_types.Expectation(
+          'foo/test', ['mac'], 'Failure', NON_WILDCARD, 'crbug.com/1234'
+        )
+      ],
+      ('-stale', ''),
+    )
     self.assertEqual(
-        annotated_expectations[data_types.Expectation('foo/test', ['linux'],
-                                                      'Failure', NON_WILDCARD,
-                                                      'crbug.com/1234')],
-        ('-unused', 'unused reason'))
+      annotated_expectations[
+        data_types.Expectation(
+          'foo/test', ['linux'], 'Failure', NON_WILDCARD, 'crbug.com/1234'
+        )
+      ],
+      ('-unused', 'unused reason'),
+    )
     self.assertEqual(
-        annotated_expectations[data_types.Expectation('bar/test', ['win'],
-                                                      'Failure', NON_WILDCARD,
-                                                      'crbug.com/1234')],
-        ('-narrowing', ''))
+      annotated_expectations[
+        data_types.Expectation(
+          'bar/test', ['win'], 'Failure', NON_WILDCARD, 'crbug.com/1234'
+        )
+      ],
+      ('-narrowing', ''),
+    )
 
 
 class GetExpectationLineUnittest(fake_filesystem_unittest.TestCase):
@@ -1760,10 +2055,12 @@ class GetExpectationLineUnittest(fake_filesystem_unittest.TestCase):
     """Tests that the case of no matching expectation is handled."""
     with open('/expectation_file', 'w', encoding='utf-8') as outfile:
       outfile.write(FAKE_EXPECTATION_FILE_CONTENTS)
-    expectation = data_types.Expectation('foo', ['win'], 'Failure',
-                                         NON_WILDCARD)
+    expectation = data_types.Expectation(
+      'foo', ['win'], 'Failure', NON_WILDCARD
+    )
     line, line_number = self.instance._GetExpectationLine(
-        expectation, FAKE_EXPECTATION_FILE_CONTENTS, '/expectation_file')
+      expectation, FAKE_EXPECTATION_FILE_CONTENTS, '/expectation_file'
+    )
     self.assertIsNone(line)
     self.assertIsNone(line_number)
 
@@ -1771,16 +2068,17 @@ class GetExpectationLineUnittest(fake_filesystem_unittest.TestCase):
     """Tests that matching expectations are found."""
     with open('/expectation_file', 'w', encoding='utf-8') as outfile:
       outfile.write(FAKE_EXPECTATION_FILE_CONTENTS)
-    expectation = data_types.Expectation('foo/test', ['win'], 'Failure',
-                                         NON_WILDCARD, 'crbug.com/1234')
+    expectation = data_types.Expectation(
+      'foo/test', ['win'], 'Failure', NON_WILDCARD, 'crbug.com/1234'
+    )
     line, line_number = self.instance._GetExpectationLine(
-        expectation, FAKE_EXPECTATION_FILE_CONTENTS, '/expectation_file')
+      expectation, FAKE_EXPECTATION_FILE_CONTENTS, '/expectation_file'
+    )
     self.assertEqual(line, 'crbug.com/1234 [ win ] foo/test [ Failure ]')
     self.assertEqual(line_number, 3)
 
 
 class GetExpectationFileAnnotationsUnittest(fake_filesystem_unittest.TestCase):
-
   def setUp(self):
     self.setUpPyfakefs()
     self.instance = uu.CreateGenericExpectations()
@@ -1795,7 +2093,8 @@ class GetExpectationFileAnnotationsUnittest(fake_filesystem_unittest.TestCase):
       outfile.write(contents)
 
     self.assertEqual(
-        self.instance._GetExpectationFileAnnotations('/expectation_file'), '')
+      self.instance._GetExpectationFileAnnotations('/expectation_file'), ''
+    )
 
   def testAllAnnotations(self):
     """Tests behavior when all annotations are present."""
@@ -1816,8 +2115,9 @@ class GetExpectationFileAnnotationsUnittest(fake_filesystem_unittest.TestCase):
 """
 
     self.assertEqual(
-        self.instance._GetExpectationFileAnnotations('/expectation_file'),
-        expected_output)
+      self.instance._GetExpectationFileAnnotations('/expectation_file'),
+      expected_output,
+    )
 
   def testDuplicateAnnotation(self):
     """Tests behavior when there is a duplicate annotation present."""
@@ -1831,9 +2131,10 @@ class GetExpectationFileAnnotationsUnittest(fake_filesystem_unittest.TestCase):
       outfile.write(contents)
 
     with self.assertRaisesRegex(
-        RuntimeError,
-        'Found multiple cases of # full_wildcard_support:  annotation in file '
-        '/expectation_file'):
+      RuntimeError,
+      'Found multiple cases of # full_wildcard_support:  annotation in file '
+      '/expectation_file',
+    ):
       self.instance._GetExpectationFileAnnotations('/expectation_file')
 
 
@@ -1859,7 +2160,8 @@ class FilterToMostSpecificTypTagsUnittest(fake_filesystem_unittest.TestCase):
       outfile.write(expectation_file_contents)
     tags = frozenset(['win', 'nvidia', 'nvidia-0x1111', 'release'])
     filtered_tags = self._expectations._FilterToMostSpecificTypTags(
-        tags, self.filename)
+      tags, self.filename
+    )
     self.assertEqual(filtered_tags, set(['win', 'nvidia-0x1111', 'release']))
 
   def testSingleTags(self) -> None:
@@ -1872,7 +2174,8 @@ class FilterToMostSpecificTypTagsUnittest(fake_filesystem_unittest.TestCase):
 
     tags = frozenset(['tag1_most_specific', 'tag2_most_specific'])
     filtered_tags = self._expectations._FilterToMostSpecificTypTags(
-        tags, self.filename)
+      tags, self.filename
+    )
     self.assertEqual(filtered_tags, tags)
 
   def testUnusedTags(self) -> None:
@@ -1884,14 +2187,20 @@ class FilterToMostSpecificTypTagsUnittest(fake_filesystem_unittest.TestCase):
     with open(self.filename, 'w') as outfile:
       outfile.write(expectation_file_contents)
 
-    tags = frozenset([
-        'tag1_least_specific', 'tag1_most_specific', 'tag2_middle_specific',
-        'tag2_least_specific'
-    ])
+    tags = frozenset(
+      [
+        'tag1_least_specific',
+        'tag1_most_specific',
+        'tag2_middle_specific',
+        'tag2_least_specific',
+      ]
+    )
     filtered_tags = self._expectations._FilterToMostSpecificTypTags(
-        tags, self.filename)
-    self.assertEqual(filtered_tags,
-                     set(['tag1_most_specific', 'tag2_middle_specific']))
+      tags, self.filename
+    )
+    self.assertEqual(
+      filtered_tags, set(['tag1_most_specific', 'tag2_middle_specific'])
+    )
 
   def testMissingTags(self) -> None:
     """Tests that a file not having all tags is an error."""
@@ -1901,10 +2210,14 @@ class FilterToMostSpecificTypTagsUnittest(fake_filesystem_unittest.TestCase):
     with open(self.filename, 'w') as outfile:
       outfile.write(expectation_file_contents)
 
-    tags = frozenset([
-        'tag1_least_specific', 'tag1_most_specific', 'tag2_middle_specific',
-        'tag2_least_specific'
-    ])
+    tags = frozenset(
+      [
+        'tag1_least_specific',
+        'tag1_most_specific',
+        'tag2_middle_specific',
+        'tag2_least_specific',
+      ]
+    )
     with self.assertRaisesRegex(RuntimeError, r'.*tag1_most_specific.*'):
       self._expectations._FilterToMostSpecificTypTags(tags, self.filename)
 
@@ -1923,12 +2236,14 @@ class FilterToMostSpecificTypTagsUnittest(fake_filesystem_unittest.TestCase):
       outfile.write(expectation_file_contents)
     tags = frozenset(['win', 'win10', 'nvidia', 'release'])
     filtered_tags = self._expectations._FilterToMostSpecificTypTags(
-        tags, self.filename)
+      tags, self.filename
+    )
     self.assertEqual(filtered_tags, set(['win10', 'nvidia', 'release']))
 
 
-class NarrowSemiStaleExpectationScopeUnittest(fake_filesystem_unittest.TestCase
-                                              ):
+class NarrowSemiStaleExpectationScopeUnittest(
+  fake_filesystem_unittest.TestCase
+):
   def setUp(self) -> None:
     self.setUpPyfakefs()
     self.instance = uu.CreateGenericExpectations()
@@ -1940,11 +2255,13 @@ class NarrowSemiStaleExpectationScopeUnittest(fake_filesystem_unittest.TestCase
   def testEmptyExpectationMap(self) -> None:
     """Tests that scope narrowing with an empty map is a no-op."""
     urls = self.instance.NarrowSemiStaleExpectationScope(
-        data_types.TestExpectationMap({}))
+      data_types.TestExpectationMap({})
+    )
     self.assertEqual(urls, set())
     with open(self.filename) as infile:
-      self.assertEqual(infile.read(),
-                       FAKE_EXPECTATION_FILE_CONTENTS_WITH_COMPLEX_TAGS)
+      self.assertEqual(
+        infile.read(), FAKE_EXPECTATION_FILE_CONTENTS_WITH_COMPLEX_TAGS
+      )
 
   def testSimpleWildcard(self) -> None:
     """Regression test to ensure that wildcards are modified correctly."""
@@ -2276,8 +2593,9 @@ crbug.com/2345 [ linux ] foo/test [ RetryOnFailure ]
     # yapf: enable
     urls = self.instance.NarrowSemiStaleExpectationScope(test_expectation_map)
     with open(self.filename) as infile:
-      self.assertEqual(infile.read(),
-                       FAKE_EXPECTATION_FILE_CONTENTS_WITH_COMPLEX_TAGS)
+      self.assertEqual(
+        infile.read(), FAKE_EXPECTATION_FILE_CONTENTS_WITH_COMPLEX_TAGS
+      )
     self.assertEqual(urls, set())
 
   def testAmbiguousTags(self):
@@ -2307,8 +2625,9 @@ crbug.com/2345 [ linux ] foo/test [ RetryOnFailure ]
     # yapf: enable
     urls = self.instance.NarrowSemiStaleExpectationScope(test_expectation_map)
     with open(self.filename) as infile:
-      self.assertEqual(infile.read(),
-                       FAKE_EXPECTATION_FILE_CONTENTS_WITH_COMPLEX_TAGS)
+      self.assertEqual(
+        infile.read(), FAKE_EXPECTATION_FILE_CONTENTS_WITH_COMPLEX_TAGS
+      )
     self.assertEqual(urls, set())
 
   def testRemoveCommonTags(self) -> None:
@@ -2363,7 +2682,8 @@ crbug.com/2345 [ linux ] foo/test [ RetryOnFailure ]
     amd_stats.AddPassedBuild(frozenset(['win', 'amd']))
     nvidia_dgpu_intel_igpu_stats = data_types.BuildStats()
     nvidia_dgpu_intel_igpu_stats.AddFailedBuild(
-        '1', frozenset(['win', 'nvidia', 'intel']))
+      '1', frozenset(['win', 'nvidia', 'intel'])
+    )
     # yapf: disable
     test_expectation_map = data_types.TestExpectationMap({
         self.filename:
@@ -2380,9 +2700,9 @@ crbug.com/2345 [ linux ] foo/test [ RetryOnFailure ]
         }),
     })
     # yapf: enable
-    with mock.patch.object(self.instance,
-                           '_ConsolidateKnownOverlappingTags',
-                           side_effect=SideEffect):
+    with mock.patch.object(
+      self.instance, '_ConsolidateKnownOverlappingTags', side_effect=SideEffect
+    ):
       urls = self.instance.NarrowSemiStaleExpectationScope(test_expectation_map)
     expected_contents = """\
 # tags: [ win win10
@@ -2543,8 +2863,9 @@ crbug.com/2345 [ linux ] foo/test [ RetryOnFailure ]
     intel_debug_stats = data_types.BuildStats()
     intel_debug_stats.AddFailedBuild('1', frozenset(['win', 'intel', 'debug']))
     intel_release_stats = data_types.BuildStats()
-    intel_release_stats.AddFailedBuild('1',
-                                       frozenset(['win', 'intel', 'release']))
+    intel_release_stats.AddFailedBuild(
+      '1', frozenset(['win', 'intel', 'release'])
+    )
     amd_debug_stats = data_types.BuildStats()
     amd_debug_stats.AddFailedBuild('1', frozenset(['win', 'amd', 'debug']))
     amd_release_stats = data_types.BuildStats()
@@ -2628,11 +2949,13 @@ crbug.com/1234 foo/test [ Failure ]
     amd_stats = data_types.BuildStats()
     amd_stats.AddFailedBuild('1', frozenset(['mac', 'amd', 'amd-0x3333']))
     intel_stats_1 = data_types.BuildStats()
-    intel_stats_1.AddFailedBuild('1',
-                                 frozenset(['mac', 'intel', 'intel-0x2222']))
+    intel_stats_1.AddFailedBuild(
+      '1', frozenset(['mac', 'intel', 'intel-0x2222'])
+    )
     intel_stats_2 = data_types.BuildStats()
-    intel_stats_2.AddFailedBuild('1',
-                                 frozenset(['mac', 'intel', 'intel-0x4444']))
+    intel_stats_2.AddFailedBuild(
+      '1', frozenset(['mac', 'intel', 'intel-0x4444'])
+    )
     nvidia_stats = data_types.BuildStats()
     nvidia_stats.AddPassedBuild(frozenset(['win', 'nvidia', 'nvidia-0x1111']))
 
@@ -2749,27 +3072,34 @@ crbug.com/874695 foo/test [ Failure ]
     linux_release_stats.AddFailedBuild('1', frozenset(['linux', 'release']))
     mac10_release_stats = data_types.BuildStats()
     mac10_release_stats.AddFailedBuild(
-        '1', frozenset(['mac', 'mac10.15', 'release']))
+      '1', frozenset(['mac', 'mac10.15', 'release'])
+    )
     mac11_arm_release_stats = data_types.BuildStats()
     mac11_arm_release_stats.AddFailedBuild(
-        '1', frozenset(['mac', 'mac11-arm64', 'release']))
+      '1', frozenset(['mac', 'mac11-arm64', 'release'])
+    )
     mac11_release_stats = data_types.BuildStats()
-    mac11_release_stats.AddFailedBuild('1',
-                                       frozenset(['mac', 'mac11', 'release']))
+    mac11_release_stats.AddFailedBuild(
+      '1', frozenset(['mac', 'mac11', 'release'])
+    )
     mac12_arm_release_stats = data_types.BuildStats()
     mac12_arm_release_stats.AddFailedBuild(
-        '1', frozenset(['mac', 'mac12-arm64', 'release']))
+      '1', frozenset(['mac', 'mac12-arm64', 'release'])
+    )
     mac12_debug_stats = data_types.BuildStats()
     mac12_debug_stats.AddFailedBuild('1', frozenset(['debug', 'mac', 'mac12']))
     mac12_release_stats = data_types.BuildStats()
-    mac12_release_stats.AddFailedBuild('1',
-                                       frozenset(['mac', 'mac12', 'release']))
+    mac12_release_stats.AddFailedBuild(
+      '1', frozenset(['mac', 'mac12', 'release'])
+    )
     win10_release_stats = data_types.BuildStats()
     win10_release_stats.AddFailedBuild(
-        '1', frozenset(['release', 'win', 'win10.20h2']))
+      '1', frozenset(['release', 'win', 'win10.20h2'])
+    )
     win11_release_stats = data_types.BuildStats()
-    win11_release_stats.AddFailedBuild('1',
-                                       frozenset(['release', 'win', 'win11']))
+    win11_release_stats.AddFailedBuild(
+      '1', frozenset(['release', 'win', 'win11'])
+    )
     # yapf: disable
     test_expectation_map = data_types.TestExpectationMap({
         self.filename:
@@ -2927,18 +3257,22 @@ class FindOrphanedBugsUnittest(fake_filesystem_unittest.TestCase):
     self.setUpPyfakefs()
     self.instance = expectations.Expectations()
     self.filepath_patcher = mock.patch.object(
-        self.instance,
-        'GetExpectationFilepaths',
-        return_value=[os.path.join(expectations_dir, 'real_expectations.txt')])
+      self.instance,
+      'GetExpectationFilepaths',
+      return_value=[os.path.join(expectations_dir, 'real_expectations.txt')],
+    )
     self.filepath_mock = self.filepath_patcher.start()
     self.addCleanup(self.filepath_patcher.stop)
 
     real_contents = 'crbug.com/1\ncrbug.com/2'
     skipped_contents = 'crbug.com/4'
-    self.CreateFile(os.path.join(expectations_dir, 'real_expectations.txt'),
-                    contents=real_contents)
-    self.CreateFile(os.path.join(expectations_dir, 'fake.txt'),
-                    contents=skipped_contents)
+    self.CreateFile(
+      os.path.join(expectations_dir, 'real_expectations.txt'),
+      contents=real_contents,
+    )
+    self.CreateFile(
+      os.path.join(expectations_dir, 'fake.txt'), contents=skipped_contents
+    )
 
   def testNoOrphanedBugs(self) -> None:
     bugs = ['crbug.com/1', 'crbug.com/2']
@@ -2946,31 +3280,36 @@ class FindOrphanedBugsUnittest(fake_filesystem_unittest.TestCase):
 
   def testOrphanedBugs(self) -> None:
     bugs = ['crbug.com/1', 'crbug.com/3', 'crbug.com/4']
-    self.assertEqual(self.instance.FindOrphanedBugs(bugs),
-                     set(['crbug.com/3', 'crbug.com/4']))
+    self.assertEqual(
+      self.instance.FindOrphanedBugs(bugs), set(['crbug.com/3', 'crbug.com/4'])
+    )
 
 
 class WildcardTypeFromTypExpectationUnittest(unittest.TestCase):
-
   def testBasic(self):
     """Tests basic, happy path functionality."""
     typ_expectation = expectations_parser.Expectation(
-        'test', is_glob=False, full_wildcard_support=False)
+      'test', is_glob=False, full_wildcard_support=False
+    )
     self.assertEqual(
-        expectations.WildcardTypeFromTypExpectation(typ_expectation),
-        NON_WILDCARD)
+      expectations.WildcardTypeFromTypExpectation(typ_expectation), NON_WILDCARD
+    )
 
     typ_expectation = expectations_parser.Expectation(
-        'test*', is_glob=True, full_wildcard_support=False)
+      'test*', is_glob=True, full_wildcard_support=False
+    )
     self.assertEqual(
-        expectations.WildcardTypeFromTypExpectation(typ_expectation),
-        SIMPLE_WILDCARD)
+      expectations.WildcardTypeFromTypExpectation(typ_expectation),
+      SIMPLE_WILDCARD,
+    )
 
     typ_expectation = expectations_parser.Expectation(
-        '*test*', is_glob=True, full_wildcard_support=True)
+      '*test*', is_glob=True, full_wildcard_support=True
+    )
     self.assertEqual(
-        expectations.WildcardTypeFromTypExpectation(typ_expectation),
-        FULL_WILDCARD)
+      expectations.WildcardTypeFromTypExpectation(typ_expectation),
+      FULL_WILDCARD,
+    )
 
 
 if __name__ == '__main__':

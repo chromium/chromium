@@ -53,8 +53,9 @@ def kill(proc, name, timeout_in_seconds=10):
 
     thread.join(timeout_in_seconds)
     if thread.is_alive():
-      print('%s running after SIGTERM, trying SIGKILL.\n' % name,
-            file=sys.stderr)
+      print(
+        '%s running after SIGTERM, trying SIGKILL.\n' % name, file=sys.stderr
+      )
       proc.kill()
   except OSError as e:
     # proc.terminate()/kill() can raise, not sure if only ProcessLookupError
@@ -63,8 +64,10 @@ def kill(proc, name, timeout_in_seconds=10):
 
   thread.join(timeout_in_seconds)
   if thread.is_alive():
-    print('%s running after SIGTERM and SIGKILL; good luck!\n' % name,
-          file=sys.stderr)
+    print(
+      '%s running after SIGTERM and SIGKILL; good luck!\n' % name,
+      file=sys.stderr,
+    )
 
 
 @contextmanager
@@ -91,8 +94,11 @@ def dbus_session(env):  # pylint: disable=inconsistent-return-statements
   dbus_pid = None
   try:
     if 'DBUS_SESSION_BUS_ADDRESS' not in os.environ:
-      dbus_output = subprocess.check_output(['dbus-launch'],
-                                            env=env).decode('utf-8').split('\n')
+      dbus_output = (
+        subprocess.check_output(['dbus-launch'], env=env)
+        .decode('utf-8')
+        .split('\n')
+      )
       for line in dbus_output:
         m = re.match(r'([^=]+)\=(.+)', line)
         if m:
@@ -111,13 +117,15 @@ def dbus_session(env):  # pylint: disable=inconsistent-return-statements
 
 
 # TODO(crbug.com/40621504): Encourage setting flags to False.
-def run_executable(cmd,
-                   env,
-                   stdoutfile=None,
-                   use_openbox=True,
-                   use_xcompmgr=True,
-                   xvfb_whd=None,
-                   cwd=None):
+def run_executable(
+  cmd,
+  env,
+  stdoutfile=None,
+  use_openbox=True,
+  use_xcompmgr=True,
+  xvfb_whd=None,
+  cwd=None,
+):
   """Runs an executable within Weston, Xvfb or Xorg on Linux or normally on
      other platforms.
 
@@ -185,8 +193,9 @@ def run_executable(cmd,
   mutter_display = DEFAULT_MUTTER_DISPLAY
   if '--use-mutter' in cmd:
     if use_xvfb or use_xorg or use_weston:
-      print('Unable to use mutter with xvfb or Xorg or weston.\n',
-            file=sys.stderr)
+      print(
+        'Unable to use mutter with xvfb or Xorg or weston.\n', file=sys.stderr
+      )
       return 1
     use_mutter = True
     cmd.remove('--use-mutter')
@@ -196,15 +205,22 @@ def run_executable(cmd,
         cmd.remove(arg)
         break
 
-
   if sys.platform.startswith('linux') and (use_xvfb or use_xorg):
     # Do not let the host Wayland session make clients select Wayland instead
     # of the isolated X server.
     env.pop('WAYLAND_DISPLAY', None)
     env.pop('WAYLAND_SOCKET', None)
     env['XDG_SESSION_TYPE'] = 'x11'
-    return _run_with_x11(cmd, env, stdoutfile, use_openbox, use_xcompmgr,
-                         use_xorg, xvfb_whd or DEFAULT_XVFB_WHD, cwd)
+    return _run_with_x11(
+      cmd,
+      env,
+      stdoutfile,
+      use_openbox,
+      use_xcompmgr,
+      use_xorg,
+      xvfb_whd or DEFAULT_XVFB_WHD,
+      cwd,
+    )
   if use_weston:
     return _run_with_weston(cmd, env, stdoutfile, cwd)
 
@@ -218,11 +234,12 @@ def _re_search_command(regex, args, **kwargs):
   """Runs a subprocess defined by `args` and returns a regex match for the
   given expression on the output."""
   return re.search(
-      regex,
-      subprocess.check_output(args,
-                              stderr=subprocess.STDOUT,
-                              text=True,
-                              **kwargs), re.IGNORECASE)
+    regex,
+    subprocess.check_output(
+      args, stderr=subprocess.STDOUT, text=True, **kwargs
+    ),
+    re.IGNORECASE,
+  )
 
 
 def _make_xorg_modeline(width, height, refresh):
@@ -230,9 +247,8 @@ def _make_xorg_modeline(width, height, refresh):
   specified width, height and refresh rate.
   See: https://www.x.org/archive/X11R7.0/doc/html/chips4.html"""
   re_matches = _re_search_command(
-      r'Modeline "(.*)"\s+(.*)',
-      ['cvt', str(width), str(height),
-       str(refresh)],
+    r'Modeline "(.*)"\s+(.*)',
+    ['cvt', str(width), str(height), str(refresh)],
   )
   modeline_label = re_matches.group(1)
   modeline = re_matches.group(2)
@@ -249,7 +265,8 @@ def _get_supported_virtual_sizes(default_whd):
   (default_width, default_height, _) = default_whd.split('x')
   default_size = (int(default_width), int(default_height))
   return sorted(
-      set([default_size, (800, 600), (1024, 768), (1920, 1080), (1600, 1200)]))
+    set([default_size, (800, 600), (1024, 768), (1920, 1080), (1600, 1200)])
+  )
 
 
 def _make_xorg_config(default_whd):
@@ -286,21 +303,25 @@ Section "Screen"
   EndSubSection
 EndSection
   """ % ('\n'.join(modelines), depth, ' '.join(mode_labels))
-  config_file = os.path.join(tempfile.gettempdir(),
-                             'xorg-%s.config' % uuid.uuid4().hex)
+  config_file = os.path.join(
+    tempfile.gettempdir(), 'xorg-%s.config' % uuid.uuid4().hex
+  )
   with open(config_file, 'w') as f:
     f.write(config)
   return config_file
+
 
 def _setup_xrandr(env, default_whd):
   """Configures xrandr display(s)"""
 
   # Calls xrandr with the provided argument array
   def call_xrandr(args):
-    subprocess.check_call(['xrandr'] + args,
-                          env=env,
-                          stdout=subprocess.DEVNULL,
-                          stderr=subprocess.STDOUT)
+    subprocess.check_call(
+      ['xrandr'] + args,
+      env=env,
+      stdout=subprocess.DEVNULL,
+      stderr=subprocess.STDOUT,
+    )
 
   (default_width, default_height, _) = default_whd.split('x')
   default_size = (int(default_width), int(default_height))
@@ -309,8 +330,9 @@ def _setup_xrandr(env, default_whd):
   # XRANDR support. Older versions will be missing the "DUMMY" outputs.
   # Reliably checking the version is difficult, so check if the xrandr output
   # includes the DUMMY displays before trying to configure them.
-  dummy_displays_available = _re_search_command('DUMMY[0-9]', ['xrandr', '-q'],
-                                                env=env)
+  dummy_displays_available = _re_search_command(
+    'DUMMY[0-9]', ['xrandr', '-q'], env=env
+  )
   if dummy_displays_available:
     screen_sizes = _get_supported_virtual_sizes(default_whd)
     output_names = ['DUMMY0', 'DUMMY1', 'DUMMY2', 'DUMMY3', 'DUMMY4']
@@ -338,8 +360,9 @@ def _setup_signals():
   signal.signal(signal.SIGINT, raise_process_terminated)
 
 
-def _run_with_x11(cmd, env, stdoutfile, use_openbox, use_xcompmgr, use_xorg,
-                  xvfb_whd, cwd):
+def _run_with_x11(
+  cmd, env, stdoutfile, use_openbox, use_xcompmgr, use_xorg, xvfb_whd, cwd
+):
   """Runs with an X11 server. Uses Xvfb by default and Xorg when use_xorg is
   True."""
   openbox_proc = None
@@ -376,8 +399,20 @@ def _run_with_x11(cmd, env, stdoutfile, use_openbox, use_xcompmgr, use_xorg,
           x11_cmd = ['Xorg', display, '-noreset', '-config', xorg_config_file]
         else:
           x11_cmd = [
-              'Xvfb', display, '-screen', '0', xvfb_whd, '-ac', '-nolisten',
-              'tcp', '-dpi', '96', '+extension', 'RANDR', '-maxclients', '512'
+            'Xvfb',
+            display,
+            '-screen',
+            '0',
+            xvfb_whd,
+            '-ac',
+            '-nolisten',
+            'tcp',
+            '-dpi',
+            '96',
+            '+extension',
+            'RANDR',
+            '-maxclients',
+            '512',
           ]
 
         # Sets SIGUSR1 to ignore for Xvfb/Xorg to signal current process
@@ -388,7 +423,7 @@ def _run_with_x11(cmd, env, stdoutfile, use_openbox, use_xcompmgr, use_xorg,
         x11_proc = subprocess.Popen(x11_cmd, stderr=subprocess.STDOUT, env=env)
         signal.signal(signal.SIGUSR1, set_x11_ready)
         for _ in range(30):
-          time.sleep(.1)  # gives Xvfb/Xorg time to start or fail.
+          time.sleep(0.1)  # gives Xvfb/Xorg time to start or fail.
           if x11_ready.getvalue() or x11_proc.poll() is not None:
             break  # xvfb/xorg sent ready signal, or already failed and stopped.
 
@@ -406,9 +441,9 @@ def _run_with_x11(cmd, env, stdoutfile, use_openbox, use_xcompmgr, use_xorg,
 
       if use_openbox and not shutil.which('openbox'):
         print(
-            'Warning: openbox binary not found. '
-            'Running without window manager.',
-            file=sys.stderr)
+          'Warning: openbox binary not found. Running without window manager.',
+          file=sys.stderr,
+        )
         use_openbox = False
 
       if use_openbox:
@@ -425,12 +460,13 @@ def _run_with_x11(cmd, env, stdoutfile, use_openbox, use_xcompmgr, use_xorg,
         for _ in range(10):
           openbox_ready.setvalue(False)
           openbox_proc = subprocess.Popen(
-              ['openbox', '--sm-disable', '--startup', openbox_startup_cmd],
-              stderr=subprocess.STDOUT,
-              env=env)
+            ['openbox', '--sm-disable', '--startup', openbox_startup_cmd],
+            stderr=subprocess.STDOUT,
+            env=env,
+          )
 
           for _ in range(30):
-            time.sleep(.1)  # gives Openbox time to start or fail.
+            time.sleep(0.1)  # gives Openbox time to start or fail.
             if openbox_ready.getvalue() or openbox_proc.poll() is not None:
               break  # openbox sent ready signal, or failed and stopped.
 
@@ -440,28 +476,31 @@ def _run_with_x11(cmd, env, stdoutfile, use_openbox, use_xcompmgr, use_xorg,
             kill(openbox_proc, 'openbox')  # still not ready, give up and retry
             print('Openbox failed to start. Retrying.', file=sys.stderr)
 
-        if use_openbox and (openbox_proc is None
-                            or openbox_proc.poll() is not None):
+        if use_openbox and (
+          openbox_proc is None or openbox_proc.poll() is not None
+        ):
           raise _ProcessError('Failed to start openbox after 10 tries')
 
       if use_xcompmgr and not shutil.which('xcompmgr'):
         print(
-            'Warning: xcompmgr binary not found. '
-            'Running without compositor.',
-            file=sys.stderr)
+          'Warning: xcompmgr binary not found. Running without compositor.',
+          file=sys.stderr,
+        )
         use_xcompmgr = False
       if use_xcompmgr:
-        xcompmgr_proc = subprocess.Popen('xcompmgr',
-                                         stderr=subprocess.STDOUT,
-                                         env=env)
+        xcompmgr_proc = subprocess.Popen(
+          'xcompmgr', stderr=subprocess.STDOUT, env=env
+        )
 
       if use_xorg:
         _setup_xrandr(env, xvfb_whd)
 
       return test_env.run_executable(cmd, env, stdoutfile, cwd)
     except OSError as e:
-      print('Failed to start %s or Openbox: %s\n' % (x11_binary, str(e)),
-            file=sys.stderr)
+      print(
+        'Failed to start %s or Openbox: %s\n' % (x11_binary, str(e)),
+        file=sys.stderr,
+      )
       return 1
     except _ProcessError as e:
       print('%s fail: %s\n' % (x11_binary, str(e)), file=sys.stderr)
@@ -517,8 +556,9 @@ def _run_with_weston(cmd, env, stdoutfile, cwd):
 
     try:
       weston_executable = './weston'
-      compositor_found, cmd = _run_with_wayland_common(weston_executable, cmd,
-                                                       env)
+      compositor_found, cmd = _run_with_wayland_common(
+        weston_executable, cmd, env
+      )
       if not compositor_found:
         return test_env.run_executable(cmd, env, stdoutfile, cwd)
 
@@ -545,9 +585,13 @@ def _run_with_weston(cmd, env, stdoutfile, cwd):
       # of windows.
       # 5) --config=... - tells Weston to use our custom config.
       weston_cmd = [
-          weston_executable, '--backend=headless-backend.so', '--idle-time=0',
-          '--modules=ui-controls.so,systemd-notify.so', '--width=1280',
-          '--height=800', '--config=' + _weston_config_file_path()
+        weston_executable,
+        '--backend=headless-backend.so',
+        '--idle-time=0',
+        '--modules=ui-controls.so,systemd-notify.so',
+        '--width=1280',
+        '--height=800',
+        '--config=' + _weston_config_file_path(),
       ]
 
       if '--weston-use-gl' in cmd:
@@ -566,16 +610,17 @@ def _run_with_weston(cmd, env, stdoutfile, cwd):
       # systemd-notify module, weston will send a 'READY=1' message to the
       # socket once it has loaded that module.  See the sd_notify(3) man page
       # and weston's compositor/systemd-notify.c for more details.
-      with socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM
-                         | socket.SOCK_NONBLOCK) as notify_socket:
+      with socket.socket(
+        socket.AF_UNIX, socket.SOCK_DGRAM | socket.SOCK_NONBLOCK
+      ) as notify_socket:
         notify_socket.bind(_weston_notify_socket_address())
         env['NOTIFY_SOCKET'] = _weston_notify_socket_address()
 
         weston_proc_display = None
         for _ in range(10):
-          weston_proc = subprocess.Popen(weston_cmd,
-                                         stderr=subprocess.STDOUT,
-                                         env=env)
+          weston_proc = subprocess.Popen(
+            weston_cmd, stderr=subprocess.STDOUT, env=env
+          )
 
           for _ in range(25):
             time.sleep(0.1)  # Gives weston some time to start.
@@ -648,21 +693,25 @@ def _run_with_mutter(cmd, env, stdoutfile, cwd, mutter_display):
 
     try:
       mutter_executable = './mutter'
-      compositor_found, cmd = _run_with_wayland_common(mutter_executable, cmd,
-                                                       env)
+      compositor_found, cmd = _run_with_wayland_common(
+        mutter_executable, cmd, env
+      )
       if not compositor_found:
         # Ensure mutter is checked out if the compositor is not found.
         if not os.path.isdir(
-            os.path.join(os.path.dirname(__file__), '..', 'third_party',
-                         'mutter', 'src')):
+          os.path.join(
+            os.path.dirname(__file__), '..', 'third_party', 'mutter', 'src'
+          )
+        ):
           print(
-              'In order to run tests using mutter, its sources need to be '
-              'checked outexplicitly and built.\n'
-              'Add \'"checkout_mutter": True\' in the "custom_vars" section '
-              'of your .gclient file, and run gclient sync.\n'
-              'Then build the test executable or mutter and run this script '
-              'again.',
-              file=sys.stderr)
+            'In order to run tests using mutter, its sources need to be '
+            'checked outexplicitly and built.\n'
+            'Add \'"checkout_mutter": True\' in the "custom_vars" section '
+            'of your .gclient file, and run gclient sync.\n'
+            'Then build the test executable or mutter and run this script '
+            'again.',
+            file=sys.stderr,
+          )
           return 1
         return test_env.run_executable(cmd, env, stdoutfile, cwd)
 
@@ -674,8 +723,10 @@ def _run_with_mutter(cmd, env, stdoutfile, cwd, mutter_display):
 
       # Use headless wayland backend with a virtual monitor of appropriate size.
       mutter_cmd = [
-          mutter_executable, '--headless',
-          f'--virtual-monitor={mutter_display}', '--'
+        mutter_executable,
+        '--headless',
+        f'--virtual-monitor={mutter_display}',
+        '--',
       ]
       cmd = mutter_cmd + cmd
 
@@ -760,8 +811,7 @@ def find_display():
   """
 
   available_displays = [
-      d for d in range(99, 120)
-      if not os.path.isfile('/tmp/.X{}-lock'.format(d))
+    d for d in range(99, 120) if not os.path.isfile('/tmp/.X{}-lock'.format(d))
   ]
   if available_displays:
     return ':{}'.format(random.choice(available_displays))
@@ -779,12 +829,14 @@ def _set_xdg_runtime_dir(env):
 
 
 def main():
-  usage = ('[command [--no-xvfb or --use-xvfb or --use-weston] args...]\n'
-           '\t --no-xvfb\t\tTurns off all X11 backings (Xvfb and Xorg).\n'
-           '\t --use-xvfb\t\tForces legacy Xvfb backing instead of Xorg.\n'
-           '\t --use-weston\t\tEnable Weston Wayland server.\n'
-           '\t --use-mutter\t\tEnable Mutter Wayland server.\n'
-           '\t --mutter-display\tSpecify Mutter Display Resolution as WxH.')
+  usage = (
+    '[command [--no-xvfb or --use-xvfb or --use-weston] args...]\n'
+    '\t --no-xvfb\t\tTurns off all X11 backings (Xvfb and Xorg).\n'
+    '\t --use-xvfb\t\tForces legacy Xvfb backing instead of Xorg.\n'
+    '\t --use-weston\t\tEnable Weston Wayland server.\n'
+    '\t --use-mutter\t\tEnable Mutter Wayland server.\n'
+    '\t --mutter-display\tSpecify Mutter Display Resolution as WxH.'
+  )
   # TODO(crbug.com/326283384): Argparse-ify this.
   if len(sys.argv) < 2:
     print(usage + '\n', file=sys.stderr)
@@ -793,8 +845,9 @@ def main():
   # If the user still thinks the first argument is the execution directory then
   # print a friendly error message and quit.
   if os.path.isdir(sys.argv[1]):
-    print('Invalid command: \"%s\" is a directory\n' % sys.argv[1],
-          file=sys.stderr)
+    print(
+      'Invalid command: "%s" is a directory\n' % sys.argv[1], file=sys.stderr
+    )
     print(usage + '\n', file=sys.stderr)
     return 3
 

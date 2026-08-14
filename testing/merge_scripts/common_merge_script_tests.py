@@ -30,11 +30,11 @@ class CommandLineTest(unittest.TestCase):
     summary_json = os.path.join(task_output_dir, 'summary.json')
     with open(summary_json, 'w') as summary_file:
       summary_contents = {
-          u'shards': [
-              {
-                  u'state': u'COMPLETED',
-              },
-          ],
+        'shards': [
+          {
+            'state': 'COMPLETED',
+          },
+        ],
       }
       json.dump(summary_contents, summary_file)
 
@@ -45,12 +45,12 @@ class CommandLineTest(unittest.TestCase):
     output_json = os.path.join(self.temp_dir, 'merged.json')
 
     raw_args = [
-        '--task-output-dir',
-        task_output_dir,
-        '--summary-json',
-        summary_json,
-        '--output-json',
-        output_json,
-        shard0_json,
+      '--task-output-dir',
+      task_output_dir,
+      '--summary-json',
+      summary_json,
+      '--output-json',
+      output_json,
+      shard0_json,
     ]
     self.assertEqual(0, self._module.main(raw_args))

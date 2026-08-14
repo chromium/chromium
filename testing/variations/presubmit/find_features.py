@@ -15,62 +15,64 @@ import re
 
 from typing import List, Set
 
-BASE_FEATURE_PATTERN = br'BASE_(?:RUNTIME_MUTABLE_)?FEATURE\((.*?)\);'
-BASE_FEATURE_RE = re.compile(BASE_FEATURE_PATTERN,
-                             flags=re.MULTILINE + re.DOTALL)
+BASE_FEATURE_PATTERN = rb'BASE_(?:RUNTIME_MUTABLE_)?FEATURE\((.*?)\);'
+BASE_FEATURE_RE = re.compile(
+  BASE_FEATURE_PATTERN, flags=re.MULTILINE + re.DOTALL
+)
 
 # Example: base_feature!(FooFeature, FeatureState::Disabled);
-RUST_BASE_FEATURE_PATTERN = br'base_feature!\((.*?)\);'
-RUST_BASE_FEATURE_RE = re.compile(RUST_BASE_FEATURE_PATTERN,
-                                  flags=re.MULTILINE + re.DOTALL)
+RUST_BASE_FEATURE_PATTERN = rb'base_feature!\((.*?)\);'
+RUST_BASE_FEATURE_RE = re.compile(
+  RUST_BASE_FEATURE_PATTERN, flags=re.MULTILINE + re.DOTALL
+)
 
 # Only search these directories for flags. If your flag is outside these root
 # directories, then add the directory here.
 DIRECTORIES_TO_SEARCH = [
-    'android_webview',
-    'apps',
-    'ash',
-    'base',
-    'cc',
-    'chrome',
-    'chromecast',
-    'chromeos',
-    'clank',
-    'components',
-    'content',
-    'courgette',
-    'crypto',
-    'dbus',
-    'device',
-    'extensions',
-    'fuchsia_web',
-    'gin',
-    'google_apis',
-    'gpu',
-    'headless',
-    'infra',
-    'internal',
-    'ios',
-    'ipc',
-    'media',
-    'mojo',
-    'net',
-    'pdf',
-    'ppapi',
-    'printing',
-    'remoting',
-    'rlz',
-    'sandbox',
-    'services',
-    'skia',
-    'sql',
-    'storage',
-    # third_party/blink handled separately in FindDeclaredFeatures
-    'ui',
-    'url',
-    'v8',
-    'webkit',
-    'weblayer',
+  'android_webview',
+  'apps',
+  'ash',
+  'base',
+  'cc',
+  'chrome',
+  'chromecast',
+  'chromeos',
+  'clank',
+  'components',
+  'content',
+  'courgette',
+  'crypto',
+  'dbus',
+  'device',
+  'extensions',
+  'fuchsia_web',
+  'gin',
+  'google_apis',
+  'gpu',
+  'headless',
+  'infra',
+  'internal',
+  'ios',
+  'ipc',
+  'media',
+  'mojo',
+  'net',
+  'pdf',
+  'ppapi',
+  'printing',
+  'remoting',
+  'rlz',
+  'sandbox',
+  'services',
+  'skia',
+  'sql',
+  'storage',
+  # third_party/blink handled separately in FindDeclaredFeatures
+  'ui',
+  'url',
+  'v8',
+  'webkit',
+  'weblayer',
 ]
 
 
@@ -149,10 +151,13 @@ def _FindDeclaredFeaturesImpl(repository_root: pathlib.Path) -> Set[str]:
   root = pathlib.Path(repository_root)
   glob_patterns = []
   for extension in ['cc', 'rs']:
-    glob_patterns.extend([
-        str(p / pathlib.Path(f'**/*.{extension}')) for p in root.iterdir()
+    glob_patterns.extend(
+      [
+        str(p / pathlib.Path(f'**/*.{extension}'))
+        for p in root.iterdir()
         if p.is_dir() and p.name in DIRECTORIES_TO_SEARCH
-    ])
+      ]
+    )
 
   # blink is the only directory in third_party that should be searched.
   for extension in ['cc', 'rs']:
@@ -165,7 +170,7 @@ def _FindDeclaredFeaturesImpl(repository_root: pathlib.Path) -> Set[str]:
 
   # Create glob iterators that lazily go over the files to search
   glob_iterators = [
-      glob.iglob(pattern, recursive=True) for pattern in glob_patterns
+    glob.iglob(pattern, recursive=True) for pattern in glob_patterns
   ]
 
   # Limit to 4 processes - the disk accesses becomes a bottleneck with just a
@@ -173,8 +178,9 @@ def _FindDeclaredFeaturesImpl(repository_root: pathlib.Path) -> Set[str]:
   # a benefit of a few seconds.
   # The exact batch size does not seem to matter much, as long as it is >> 1.
   pool = multiprocessing.Pool(4)
-  found_features = pool.imap_unordered(_FindFeaturesInFile,
-                                       itertools.chain(*glob_iterators), 1000)
+  found_features = pool.imap_unordered(
+    _FindFeaturesInFile, itertools.chain(*glob_iterators), 1000
+  )
   pool.close()
   pool.join()
 

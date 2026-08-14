@@ -11,12 +11,12 @@ import buildbot_json_magic_substitutions as magic_substitutions
 
 def CreateConfigWithPool(pool, device_type=None, board=None):
   dims = {
-      'name': 'test_name',
-      'swarming': {
-          'dimensions': {
-              'pool': pool,
-          },
+    'name': 'test_name',
+    'swarming': {
+      'dimensions': {
+        'pool': pool,
       },
+    },
   }
   if device_type:
     dims['swarming']['dimensions']['device_type'] = device_type
@@ -26,101 +26,117 @@ def CreateConfigWithPool(pool, device_type=None, board=None):
 
 
 class AndroidDesktopForceMainuserTest(unittest.TestCase):
-
   def testNonAndroid(self):
     test_config = CreateConfigWithPool('chromium.tests', board='brya')
     with self.assertRaises(AssertionError):
-      magic_substitutions.AndroidDesktopForceMainUser(test_config, None,
-                                                      {'os_type': 'linux'})
+      magic_substitutions.AndroidDesktopForceMainUser(
+        test_config, None, {'os_type': 'linux'}
+      )
 
   def testNoBoard(self):
     test_config = CreateConfigWithPool('chromium.tests')
     self.assertEqual(
-        magic_substitutions.AndroidDesktopForceMainUser(test_config, None,
-                                                        {'os_type': 'android'}),
-        [])
+      magic_substitutions.AndroidDesktopForceMainUser(
+        test_config, None, {'os_type': 'android'}
+      ),
+      [],
+    )
 
   def testSuccess(self):
     test_config = CreateConfigWithPool('chromium.tests', board='brya')
     self.assertEqual(
-        magic_substitutions.AndroidDesktopForceMainUser(test_config, None,
-                                                        {'os_type': 'android'}),
-        [
-            '--force-main-user',
-        ])
+      magic_substitutions.AndroidDesktopForceMainUser(
+        test_config, None, {'os_type': 'android'}
+      ),
+      [
+        '--force-main-user',
+      ],
+    )
 
 
 class AndroidDesktopGtestRemoteTest(unittest.TestCase):
-
   def testNonAndroid(self):
     test_config = CreateConfigWithPool('chromium.tests', board='brya')
     with self.assertRaises(AssertionError):
-      magic_substitutions.AndroidDesktopGtestRemote(test_config, None,
-                                                    {'os_type': 'linux'})
+      magic_substitutions.AndroidDesktopGtestRemote(
+        test_config, None, {'os_type': 'linux'}
+      )
 
   def testNoBoard(self):
     test_config = CreateConfigWithPool('chromium.tests')
     self.assertEqual(
-        magic_substitutions.AndroidDesktopGtestRemote(test_config, None,
-                                                      {'os_type': 'android'}),
-        [])
+      magic_substitutions.AndroidDesktopGtestRemote(
+        test_config, None, {'os_type': 'android'}
+      ),
+      [],
+    )
 
   def testSuccess(self):
     test_config = CreateConfigWithPool('chromium.tests', board='brya')
     self.assertEqual(
-        magic_substitutions.AndroidDesktopGtestRemote(test_config, None,
-                                                      {'os_type': 'android'}),
-        [
-            '--device=variable_lab_dut_hostname',
-            '--connect-over-network',
-        ])
+      magic_substitutions.AndroidDesktopGtestRemote(
+        test_config, None, {'os_type': 'android'}
+      ),
+      [
+        '--device=variable_lab_dut_hostname',
+        '--connect-over-network',
+      ],
+    )
 
 
 class AndroidDesktopTelemetryRemoteTest(unittest.TestCase):
-
   def testNonAndroid(self):
     test_config = CreateConfigWithPool('chromium.tests', board='brya')
     with self.assertRaises(AssertionError):
-      magic_substitutions.AndroidDesktopTelemetryRemote(test_config, None,
-                                                        {'os_type': 'linux'})
+      magic_substitutions.AndroidDesktopTelemetryRemote(
+        test_config, None, {'os_type': 'linux'}
+      )
 
   def testNoBoard(self):
     test_config = CreateConfigWithPool('chromium.tests')
     self.assertEqual(
-        magic_substitutions.AndroidDesktopTelemetryRemote(
-            test_config, None, {'os_type': 'android'}), [])
+      magic_substitutions.AndroidDesktopTelemetryRemote(
+        test_config, None, {'os_type': 'android'}
+      ),
+      [],
+    )
 
   def testSuccess(self):
     test_config = CreateConfigWithPool('chromium.tests', board='brya')
     self.assertEqual(
-        magic_substitutions.AndroidDesktopTelemetryRemote(
-            test_config, None, {'os_type': 'android'}), [
-                '--device=variable_lab_dut_hostname',
-                '--connect-to-device-over-network',
-            ])
+      magic_substitutions.AndroidDesktopTelemetryRemote(
+        test_config, None, {'os_type': 'android'}
+      ),
+      [
+        '--device=variable_lab_dut_hostname',
+        '--connect-to-device-over-network',
+      ],
+    )
 
 
 class ChromeOSTelemetryRemoteTest(unittest.TestCase):
-
   def testVirtualMachineSubstitutions(self):
     test_config = CreateConfigWithPool('chromium.tests.cros.vm')
     self.assertEqual(
-        magic_substitutions.ChromeOSTelemetryRemote(test_config, None, {}), [
-            '--remote=127.0.0.1',
-            '--remote-ssh-port=9222',
-        ])
+      magic_substitutions.ChromeOSTelemetryRemote(test_config, None, {}),
+      [
+        '--remote=127.0.0.1',
+        '--remote-ssh-port=9222',
+      ],
+    )
 
   def testPhysicalHardwareSubstitutions(self):
     test_config = CreateConfigWithPool('chromium.tests', device_type='eve')
     self.assertEqual(
-        magic_substitutions.ChromeOSTelemetryRemote(test_config, None, {}),
-        ['--remote=variable_chromeos_device_hostname'])
+      magic_substitutions.ChromeOSTelemetryRemote(test_config, None, {}),
+      ['--remote=variable_chromeos_device_hostname'],
+    )
 
   def testSkylabSubstitutions(self):
     tester_config = {'browser_config': 'cros-chrome', 'use_swarming': False}
     self.assertEqual(
-        magic_substitutions.ChromeOSTelemetryRemote({}, None, tester_config),
-        [])
+      magic_substitutions.ChromeOSTelemetryRemote({}, None, tester_config), []
+    )
 
   def testNoPool(self):
     test_config = CreateConfigWithPool(None)
@@ -137,44 +153,52 @@ class ChromeOSGtestFilterFileTest(unittest.TestCase):
   def testVirtualMachineFile(self):
     test_config = CreateConfigWithPool('chromium.tests.cros.vm')
     self.assertEqual(
-        magic_substitutions.ChromeOSGtestFilterFile(test_config, None, {}), [
-            '--test-launcher-filter-file=../../testing/buildbot/filters/'
-            'chromeos.amd64-generic.test_name.filter',
-        ])
+      magic_substitutions.ChromeOSGtestFilterFile(test_config, None, {}),
+      [
+        '--test-launcher-filter-file=../../testing/buildbot/filters/'
+        'chromeos.amd64-generic.test_name.filter',
+      ],
+    )
 
   def testPhysicalHardwareFile(self):
     test_config = CreateConfigWithPool('chromium.tests', device_type='eve')
     self.assertEqual(
-        magic_substitutions.ChromeOSGtestFilterFile(test_config, None, {}), [
-            '--test-launcher-filter-file=../../testing/buildbot/filters/'
-            'chromeos.eve.test_name.filter',
-        ])
+      magic_substitutions.ChromeOSGtestFilterFile(test_config, None, {}),
+      [
+        '--test-launcher-filter-file=../../testing/buildbot/filters/'
+        'chromeos.eve.test_name.filter',
+      ],
+    )
 
   def testSkylab(self):
     test_config = {'name': 'test_name', 'cros_board': 'eve'}
     tester_config = {'browser_config': 'cros-chrome', 'use_swarming': False}
     self.assertEqual(
-        magic_substitutions.ChromeOSGtestFilterFile(test_config, None,
-                                                    tester_config),
-        [
-            '--test-launcher-filter-file=../../testing/buildbot/filters/'
-            'chromeos.eve.test_name.filter',
-        ])
+      magic_substitutions.ChromeOSGtestFilterFile(
+        test_config, None, tester_config
+      ),
+      [
+        '--test-launcher-filter-file=../../testing/buildbot/filters/'
+        'chromeos.eve.test_name.filter',
+      ],
+    )
 
   def testSkylabWithVariant(self):
     test_config = {
-        'name': 'test_name SOME_VARIANT',
-        'cros_board': 'eve',
-        'variant_id': 'SOME_VARIANT',
+      'name': 'test_name SOME_VARIANT',
+      'cros_board': 'eve',
+      'variant_id': 'SOME_VARIANT',
     }
     tester_config = {'browser_config': 'cros-chrome', 'use_swarming': False}
     self.assertEqual(
-        magic_substitutions.ChromeOSGtestFilterFile(test_config, None,
-                                                    tester_config),
-        [
-            '--test-launcher-filter-file=../../testing/buildbot/filters/'
-            'chromeos.eve.test_name.filter',
-        ])
+      magic_substitutions.ChromeOSGtestFilterFile(
+        test_config, None, tester_config
+      ),
+      [
+        '--test-launcher-filter-file=../../testing/buildbot/filters/'
+        'chromeos.eve.test_name.filter',
+      ],
+    )
 
   def testNoPool(self):
     test_config = CreateConfigWithPool(None)
@@ -189,11 +213,11 @@ class ChromeOSGtestFilterFileTest(unittest.TestCase):
 
 def CreateConfigWithGpu(gpu):
   return {
-      'swarming': {
-          'dimensions': {
-              'gpu': gpu,
-          },
+    'swarming': {
+      'dimensions': {
+        'gpu': gpu,
       },
+    },
   }
 
 
@@ -201,37 +225,43 @@ class GPUExpectedVendorId(unittest.TestCase):
   def testSingleGpuSingleDimension(self):
     test_config = CreateConfigWithGpu('vendor:device1-driver')
     self.assertEqual(
-        magic_substitutions.GPUExpectedVendorId(test_config, None, {}),
-        ['--expected-vendor-id', 'vendor'])
+      magic_substitutions.GPUExpectedVendorId(test_config, None, {}),
+      ['--expected-vendor-id', 'vendor'],
+    )
 
   def testDoubleGpuSingleDimension(self):
     test_config = CreateConfigWithGpu(
-        'vendor:device1-driver|vendor:device2-driver')
+      'vendor:device1-driver|vendor:device2-driver'
+    )
     self.assertEqual(
-        magic_substitutions.GPUExpectedVendorId(test_config, None, {}),
-        ['--expected-vendor-id', 'vendor'])
+      magic_substitutions.GPUExpectedVendorId(test_config, None, {}),
+      ['--expected-vendor-id', 'vendor'],
+    )
 
   def testDoubleGpuSingleDimensionDifferentVendors(self):
     test_config = CreateConfigWithGpu(
-        'vendor:device1-driver|vendor2:device2-driver')
+      'vendor:device1-driver|vendor2:device2-driver'
+    )
     with self.assertRaises(AssertionError):
       magic_substitutions.GPUExpectedVendorId(test_config, None, {})
 
   def testAppleSilicon(self):
     test_config = CreateConfigWithGpu('apple:m1')
     self.assertEqual(
-        magic_substitutions.GPUExpectedVendorId(test_config, None, {}),
-        ['--expected-vendor-id', '106b'])
+      magic_substitutions.GPUExpectedVendorId(test_config, None, {}),
+      ['--expected-vendor-id', '106b'],
+    )
 
   def testNoGpu(self):
     test_config = {
-        'swarming': {
-            'dimensions': {},
-        },
+      'swarming': {
+        'dimensions': {},
+      },
     }
     self.assertEqual(
-        magic_substitutions.GPUExpectedVendorId(test_config, None, {}),
-        ['--expected-vendor-id', '0'])
+      magic_substitutions.GPUExpectedVendorId(test_config, None, {}),
+      ['--expected-vendor-id', '0'],
+    )
 
   def testNoDimensions(self):
     with self.assertRaises(AssertionError):
@@ -239,65 +269,65 @@ class GPUExpectedVendorId(unittest.TestCase):
 
   def testAndroidDesktopKnownBoard(self):
     test_config = {
-        'name': 'test_name',
-        'swarming': {
-            'dimensions': {
-                'label-board': 'brya',
-            },
+      'name': 'test_name',
+      'swarming': {
+        'dimensions': {
+          'label-board': 'brya',
         },
+      },
     }
     tester_config = {
-        'os_type': 'android',
+      'os_type': 'android',
     }
     self.assertEqual(
-        magic_substitutions.GPUExpectedVendorId(test_config, None,
-                                                tester_config),
-        ['--expected-vendor-id', '8086'])
+      magic_substitutions.GPUExpectedVendorId(test_config, None, tester_config),
+      ['--expected-vendor-id', '8086'],
+    )
 
   def testAndroidDesktopUnknownBoard(self):
     test_config = {
-        'name': 'test_name',
-        'swarming': {
-            'dimensions': {
-                'label-board': 'fake_board',
-            },
+      'name': 'test_name',
+      'swarming': {
+        'dimensions': {
+          'label-board': 'fake_board',
         },
+      },
     }
     tester_config = {
-        'os_type': 'android',
+      'os_type': 'android',
     }
     self.assertEqual(
-        magic_substitutions.GPUExpectedVendorId(test_config, None,
-                                                tester_config),
-        ['--expected-vendor-id', '0'])
+      magic_substitutions.GPUExpectedVendorId(test_config, None, tester_config),
+      ['--expected-vendor-id', '0'],
+    )
 
   def testSkylabKnownBoard(self):
     test_config = {
-        'name': 'test_name',
-        'cros_board': 'volteer',
+      'name': 'test_name',
+      'cros_board': 'volteer',
     }
     tester_config = {
-        'browser_config': 'cros-chrome',
-        'use_swarming': False,
+      'browser_config': 'cros-chrome',
+      'use_swarming': False,
     }
     self.assertEqual(
-        magic_substitutions.GPUExpectedVendorId(test_config, None,
-                                                tester_config),
-        ['--expected-vendor-id', '8086'])
+      magic_substitutions.GPUExpectedVendorId(test_config, None, tester_config),
+      ['--expected-vendor-id', '8086'],
+    )
 
   def testSkylabUnknownBoard(self):
     test_config = {
-        'name': 'test_name',
-        'cros_board': 'fancy_new_board',
+      'name': 'test_name',
+      'cros_board': 'fancy_new_board',
     }
     tester_config = {
-        'browser_config': 'cros-chrome',
-        'use_swarming': False,
+      'browser_config': 'cros-chrome',
+      'use_swarming': False,
     }
     self.assertEqual(
-        magic_substitutions.GPUExpectedVendorId(test_config, None,
-                                                tester_config),
-        ['--expected-vendor-id', '0'])
+      magic_substitutions.GPUExpectedVendorId(test_config, None, tester_config),
+      ['--expected-vendor-id', '0'],
+    )
 
 
 class GPUExpectedDeviceId(unittest.TestCase):
@@ -311,27 +341,32 @@ class GPUExpectedDeviceId(unittest.TestCase):
   def testSingleGpuSingleDimension(self):
     test_config = CreateConfigWithGpu('vendor:device1-driver')
     self.assertDeviceIdCorrectness(
-        magic_substitutions.GPUExpectedDeviceId(test_config, None, {}),
-        ['device1'])
+      magic_substitutions.GPUExpectedDeviceId(test_config, None, {}),
+      ['device1'],
+    )
 
   def testDoubleGpuSingleDimension(self):
     test_config = CreateConfigWithGpu(
-        'vendor:device1-driver|vendor:device2-driver')
+      'vendor:device1-driver|vendor:device2-driver'
+    )
     self.assertDeviceIdCorrectness(
-        magic_substitutions.GPUExpectedDeviceId(test_config, None, {}),
-        ['device1', 'device2'])
+      magic_substitutions.GPUExpectedDeviceId(test_config, None, {}),
+      ['device1', 'device2'],
+    )
 
   def testAppleSilicon(self):
     test_config = CreateConfigWithGpu('apple:m1')
     self.assertDeviceIdCorrectness(
-        magic_substitutions.GPUExpectedDeviceId(test_config, None, {}), ['0'])
+      magic_substitutions.GPUExpectedDeviceId(test_config, None, {}), ['0']
+    )
 
   def testNoGpu(self):
     self.assertDeviceIdCorrectness(
-        magic_substitutions.GPUExpectedDeviceId(
-            {'swarming': {
-                'dimensions': {}
-            }}, None, {}), ['0'])
+      magic_substitutions.GPUExpectedDeviceId(
+        {'swarming': {'dimensions': {}}}, None, {}
+      ),
+      ['0'],
+    )
 
   def testNoDimensions(self):
     with self.assertRaises(AssertionError):
@@ -339,61 +374,65 @@ class GPUExpectedDeviceId(unittest.TestCase):
 
   def testAndroidDesktopKnownBoard(self):
     test_config = {
-        'name': 'test_name',
-        'swarming': {
-            'dimensions': {
-                'label-board': 'brya',
-            },
+      'name': 'test_name',
+      'swarming': {
+        'dimensions': {
+          'label-board': 'brya',
         },
+      },
     }
     tester_config = {
-        'os_type': 'android',
+      'os_type': 'android',
     }
     self.assertDeviceIdCorrectness(
-        magic_substitutions.GPUExpectedDeviceId(test_config, None,
-                                                tester_config), ['46a8'])
+      magic_substitutions.GPUExpectedDeviceId(test_config, None, tester_config),
+      ['46a8'],
+    )
 
   def testAndroidDesktopUnknownBoard(self):
     test_config = {
-        'name': 'test_name',
-        'swarming': {
-            'dimensions': {
-                'label-board': 'fake_board',
-            },
+      'name': 'test_name',
+      'swarming': {
+        'dimensions': {
+          'label-board': 'fake_board',
         },
+      },
     }
     tester_config = {
-        'os_type': 'android',
+      'os_type': 'android',
     }
     self.assertDeviceIdCorrectness(
-        magic_substitutions.GPUExpectedDeviceId(test_config, None,
-                                                tester_config), ['0'])
+      magic_substitutions.GPUExpectedDeviceId(test_config, None, tester_config),
+      ['0'],
+    )
 
   def testSkylabKnownBoard(self):
     test_config = {
-        'name': 'test_name',
-        'cros_board': 'volteer',
+      'name': 'test_name',
+      'cros_board': 'volteer',
     }
     tester_config = {
-        'browser_config': 'cros-chrome',
-        'use_swarming': False,
+      'browser_config': 'cros-chrome',
+      'use_swarming': False,
     }
     self.assertDeviceIdCorrectness(
-        magic_substitutions.GPUExpectedDeviceId(test_config, None,
-                                                tester_config), ['9a49'])
+      magic_substitutions.GPUExpectedDeviceId(test_config, None, tester_config),
+      ['9a49'],
+    )
 
   def testSkylabUnknownBoard(self):
     test_config = {
-        'name': 'test_name',
-        'cros_board': 'fancy_new_board',
+      'name': 'test_name',
+      'cros_board': 'fancy_new_board',
     }
     tester_config = {
-        'browser_config': 'cros-chrome',
-        'use_swarming': False,
+      'browser_config': 'cros-chrome',
+      'use_swarming': False,
     }
     self.assertDeviceIdCorrectness(
-        magic_substitutions.GPUExpectedDeviceId(test_config, None,
-                                                tester_config), ['0'])
+      magic_substitutions.GPUExpectedDeviceId(test_config, None, tester_config),
+      ['0'],
+    )
 
 
 class GPUParallelJobs(unittest.TestCase):
@@ -405,15 +444,17 @@ class GPUParallelJobs(unittest.TestCase):
   def testParallelJobs(self):
     test_config = CreateConfigWithGpu('vendor:device1-driver')
     for os_type in ['lacros', 'linux', 'mac', 'win']:
-      retval = magic_substitutions.GPUParallelJobs(test_config, 'name',
-                                                   {'os_type': os_type})
+      retval = magic_substitutions.GPUParallelJobs(
+        test_config, 'name', {'os_type': os_type}
+      )
       self.assertEqual(retval, ['--jobs=4'])
 
   def testSerialJobs(self):
     test_config = CreateConfigWithGpu('vendor:device1-driver')
     for os_type in ['android', 'chromeos', 'fuchsia']:
-      retval = magic_substitutions.GPUParallelJobs(test_config, 'name',
-                                                   {'os_type': os_type})
+      retval = magic_substitutions.GPUParallelJobs(
+        test_config, 'name', {'os_type': os_type}
+      )
       self.assertEqual(retval, ['--jobs=1'])
 
   def testWebGPUCTSWindowsIntelSerialJobs(self):
@@ -421,8 +462,10 @@ class GPUParallelJobs(unittest.TestCase):
     amd_config = CreateConfigWithGpu('1002:device1-driver')
 
     for gpu_config in [intel_config, amd_config]:
-      for name, telemetry_test_name in [('webgpu_cts', None),
-                                        (None, 'webgpu_cts')]:
+      for name, telemetry_test_name in [
+        ('webgpu_cts', None),
+        (None, 'webgpu_cts'),
+      ]:
         is_intel = intel_config == gpu_config
         c = gpu_config.copy()
         if name:
@@ -430,8 +473,9 @@ class GPUParallelJobs(unittest.TestCase):
         if telemetry_test_name:
           c['telemetry_test_name'] = telemetry_test_name
         for os_type in ['lacros', 'linux', 'mac', 'win']:
-          retval = magic_substitutions.GPUParallelJobs(c, 'name',
-                                                       {'os_type': os_type})
+          retval = magic_substitutions.GPUParallelJobs(
+            c, 'name', {'os_type': os_type}
+          )
           if is_intel and os_type == 'win':
             self.assertEqual(retval, ['--jobs=1'])
           else:
@@ -441,11 +485,13 @@ class GPUParallelJobs(unittest.TestCase):
     intel_config = CreateConfigWithGpu('8086:device1-driver')
     amd_config = CreateConfigWithGpu('1002:device1-driver')
     for gpu_config in [intel_config, amd_config]:
-      for name, telemetry_test_name in [('webgl_conformance', None),
-                                        ('webgl1_conformance', None),
-                                        ('webgl2_conformance', None),
-                                        (None, 'webgl1_conformance'),
-                                        (None, 'webgl2_conformance')]:
+      for name, telemetry_test_name in [
+        ('webgl_conformance', None),
+        ('webgl1_conformance', None),
+        ('webgl2_conformance', None),
+        (None, 'webgl1_conformance'),
+        (None, 'webgl2_conformance'),
+      ]:
         is_intel = intel_config == gpu_config
         c = gpu_config.copy()
         if name:
@@ -453,8 +499,9 @@ class GPUParallelJobs(unittest.TestCase):
         if telemetry_test_name:
           c['telemetry_test_name'] = telemetry_test_name
         for os_type in ['lacros', 'linux', 'mac', 'win']:
-          retval = magic_substitutions.GPUParallelJobs(c, 'name',
-                                                       {'os_type': os_type})
+          retval = magic_substitutions.GPUParallelJobs(
+            c, 'name', {'os_type': os_type}
+          )
           if is_intel and os_type == 'win':
             self.assertEqual(retval, ['--jobs=2'])
           else:
@@ -465,8 +512,10 @@ class GPUParallelJobs(unittest.TestCase):
     nvidia_config = CreateConfigWithGpu('10de:device1-driver')
 
     for gpu_config in [nvidia_config, amd_config]:
-      for name, telemetry_test_name in [('webgl1_conformance', None),
-                                        (None, 'webgl1_conformance')]:
+      for name, telemetry_test_name in [
+        ('webgl1_conformance', None),
+        (None, 'webgl1_conformance'),
+      ]:
         is_nvidia = gpu_config == nvidia_config
         c = gpu_config.copy()
         if name:
@@ -474,8 +523,9 @@ class GPUParallelJobs(unittest.TestCase):
         if telemetry_test_name:
           c['telemetry_test_name'] = telemetry_test_name
         for os_type in ['lacros', 'linux', 'mac', 'win']:
-          retval = magic_substitutions.GPUParallelJobs(c, 'name',
-                                                       {'os_type': os_type})
+          retval = magic_substitutions.GPUParallelJobs(
+            c, 'name', {'os_type': os_type}
+          )
           if is_nvidia and os_type == 'mac':
             self.assertEqual(retval, ['--jobs=3'])
           else:
@@ -483,8 +533,10 @@ class GPUParallelJobs(unittest.TestCase):
 
   def testPixelMacDebugParallelJobs(self):
     gpu_config = CreateConfigWithGpu('1002:device1-driver')
-    for name, telemetry_test_name in [('pixel_skia_gold_test', None),
-                                      (None, 'pixel')]:
+    for name, telemetry_test_name in [
+      ('pixel_skia_gold_test', None),
+      (None, 'pixel'),
+    ]:
       c = gpu_config.copy()
       if name:
         c['name'] = name
@@ -492,29 +544,34 @@ class GPUParallelJobs(unittest.TestCase):
         c['telemetry_test_name'] = telemetry_test_name
       for os_type in ['lacros', 'linux', 'mac', 'win']:
         for tester_name in ('Name Debug', 'Name Dbg', 'name debug', 'name dbg'):
-          retval = magic_substitutions.GPUParallelJobs(c, tester_name,
-                                                       {'os_type': os_type})
+          retval = magic_substitutions.GPUParallelJobs(
+            c, tester_name, {'os_type': os_type}
+          )
           if os_type == 'mac':
             self.assertEqual(retval, ['--jobs=1'])
           else:
             self.assertEqual(retval, ['--jobs=4'])
       # Double check that non-debug Mac pixel tests still get parallelized.
-      retval = magic_substitutions.GPUParallelJobs(c, 'name release',
-                                                   {'os_type': 'mac'})
+      retval = magic_substitutions.GPUParallelJobs(
+        c, 'name release', {'os_type': 'mac'}
+      )
       self.assertEqual(retval, ['--jobs=4'])
 
   def testPixelMacNvidiaParallelJobs(self):
     gpu_config = CreateConfigWithGpu('10de:device1-driver')
-    for name, telemetry_test_name in [('pixel_skia_gold_test', None),
-                                      (None, 'pixel')]:
+    for name, telemetry_test_name in [
+      ('pixel_skia_gold_test', None),
+      (None, 'pixel'),
+    ]:
       c = gpu_config.copy()
       if name:
         c['name'] = name
       if telemetry_test_name:
         c['telemetry_test_name'] = telemetry_test_name
       for os_type in ['lacros', 'linux', 'mac', 'win']:
-        retval = magic_substitutions.GPUParallelJobs(c, 'name',
-                                                     {'os_type': os_type})
+        retval = magic_substitutions.GPUParallelJobs(
+          c, 'name', {'os_type': os_type}
+        )
         if os_type == 'mac':
           self.assertEqual(retval, ['--jobs=1'])
         else:
@@ -523,11 +580,11 @@ class GPUParallelJobs(unittest.TestCase):
 
 def CreateConfigWithDeviceType(device_type):
   return {
-      'swarming': {
-          'dimensions': {
-              'device_type': device_type,
-          },
+    'swarming': {
+      'dimensions': {
+        'device_type': device_type,
       },
+    },
   }
 
 
@@ -536,11 +593,13 @@ class GPUTelemetryNoRootForUnrootedDevices(unittest.TestCase):
     test_config = CreateConfigWithDeviceType('a13')
     with self.assertRaises(AssertionError):
       magic_substitutions.GPUTelemetryNoRootForUnrootedDevices(
-          test_config, None, {})
+        test_config, None, {}
+      )
 
   def testNonAndroidOs(self):
     retval = magic_substitutions.GPUTelemetryNoRootForUnrootedDevices(
-        {}, None, {'os_type': 'linux'})
+      {}, None, {'os_type': 'linux'}
+    )
     self.assertEqual(retval, [])
 
   def testUnrootedDevices(self):
@@ -548,14 +607,17 @@ class GPUTelemetryNoRootForUnrootedDevices(unittest.TestCase):
     for d in devices:
       test_config = CreateConfigWithDeviceType(d)
       retval = magic_substitutions.GPUTelemetryNoRootForUnrootedDevices(
-          test_config, None, {'os_type': 'android'})
-      self.assertEqual(retval,
-                       ['--compatibility-mode=dont-require-rooted-device'])
+        test_config, None, {'os_type': 'android'}
+      )
+      self.assertEqual(
+        retval, ['--compatibility-mode=dont-require-rooted-device']
+      )
 
   def testRootedDevices(self):
     test_config = CreateConfigWithDeviceType('hammerhead')
     retval = magic_substitutions.GPUTelemetryNoRootForUnrootedDevices(
-        test_config, None, {'os_type': 'android'})
+      test_config, None, {'os_type': 'android'}
+    )
     self.assertEqual(retval, [])
 
 
@@ -580,20 +642,28 @@ class GPUWebGLRuntimeFile(unittest.TestCase):
     for os_type in ('android', 'linux', 'mac', 'win'):
       for suite in ('webgl1_conformance', 'webgl2_conformance'):
         retval = magic_substitutions.GPUWebGLRuntimeFile(
-            {'telemetry_test_name': suite}, None, {'os_type': os_type})
-        self.assertEqual(retval, [
+          {'telemetry_test_name': suite}, None, {'os_type': os_type}
+        )
+        self.assertEqual(
+          retval,
+          [
             '--read-abbreviated-json-results-from=../../content/test/data/gpu/'
             f'{suite}_{os_type}_runtimes.json'
-        ])
+          ],
+        )
 
   def testUnknownOsType(self):
     for suite in ('webgl1_conformance', 'webgl2_conformance'):
       retval = magic_substitutions.GPUWebGLRuntimeFile(
-          {'telemetry_test_name': suite}, None, {'os_type': 'foo'})
-      self.assertEqual(retval, [
+        {'telemetry_test_name': suite}, None, {'os_type': 'foo'}
+      )
+      self.assertEqual(
+        retval,
+        [
           '--read-abbreviated-json-results-from=../../content/test/data/gpu/'
           f'{suite}_linux_runtimes.json'
-      ])
+        ],
+      )
 
 
 if __name__ == '__main__':

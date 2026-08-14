@@ -10,6 +10,7 @@ Works better for text formats or protocols. For binary ones may be useless.
 """
 
 import argparse
+
 # This is a Python 2-only import despite the file using a Python 3 shebang. This
 # implies that this file has been unused for years and has not been properly
 # converted to Python 3.
@@ -209,32 +210,39 @@ def WriteDictionary(dictionary_path, dictionary):
 
 def main():
   parser = argparse.ArgumentParser(description='Generate fuzzer dictionary.')
-  parser.add_argument('--fuzzer',
-                      required=True,
-                      help='Path to a fuzzer binary executable. It is '
-                      'recommended to use a binary built with '
-                      '"use_libfuzzer=false is_asan=false" to get a better '
-                      'dictionary with fewer number of redundant elements.')
-  parser.add_argument('--spec',
-                      required=True,
-                      help='Path to a target specification (in textual form).')
-  parser.add_argument('--html',
-                      default=0,
-                      help='Decode HTML [01] (0 is default value): '
-                      '1 - if specification has HTML entities to be decoded.')
-  parser.add_argument('--out',
-                      required=True,
-                      help='Path to a file to write a dictionary into.')
-  parser.add_argument('--strategy',
-                      default='iu',
-                      help='Generation strategy [iqu] ("iu" is default value): '
-                      'i - intersection, q - quoted, u - uppercase.')
+  parser.add_argument(
+    '--fuzzer',
+    required=True,
+    help='Path to a fuzzer binary executable. It is '
+    'recommended to use a binary built with '
+    '"use_libfuzzer=false is_asan=false" to get a better '
+    'dictionary with fewer number of redundant elements.',
+  )
+  parser.add_argument(
+    '--spec',
+    required=True,
+    help='Path to a target specification (in textual form).',
+  )
+  parser.add_argument(
+    '--html',
+    default=0,
+    help='Decode HTML [01] (0 is default value): '
+    '1 - if specification has HTML entities to be decoded.',
+  )
+  parser.add_argument(
+    '--out', required=True, help='Path to a file to write a dictionary into.'
+  )
+  parser.add_argument(
+    '--strategy',
+    default='iu',
+    help='Generation strategy [iqu] ("iu" is default value): '
+    'i - intersection, q - quoted, u - uppercase.',
+  )
   args = parser.parse_args()
 
-  dictionary = GenerateDictionary(args.fuzzer,
-                                  args.spec,
-                                  args.strategy,
-                                  is_html=bool(args.html))
+  dictionary = GenerateDictionary(
+    args.fuzzer, args.spec, args.strategy, is_html=bool(args.html)
+  )
   WriteDictionary(args.out, dictionary)
 
 

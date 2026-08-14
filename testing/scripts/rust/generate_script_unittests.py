@@ -18,8 +18,9 @@ from generate_script import _generate_script
 class Tests(fake_filesystem_unittest.TestCase):
     def test_parse_args(self):
         raw_args = [
-            '--script-path=./bin/run_foobar', '--exe-dir=.',
-            '--rust-test-executables=metadata.json'
+            '--script-path=./bin/run_foobar',
+            '--exe-dir=.',
+            '--rust-test-executables=metadata.json',
         ]
         parsed_args = _parse_args(raw_args)
         self.assertEqual('./bin/run_foobar', parsed_args.script_path)
@@ -35,16 +36,15 @@ class Tests(fake_filesystem_unittest.TestCase):
         args.exe_dir = out_dir
 
         # pylint: disable=unexpected-keyword-arg
-        with tempfile.NamedTemporaryFile(delete=False,
-                                         mode='w',
-                                         encoding='utf-8') as f:
+        with tempfile.NamedTemporaryFile(
+            delete=False, mode='w', encoding='utf-8'
+        ) as f:
             filepath = f.name
             f.write('foo\n')
             f.write('bar\n')
         try:
             args.rust_test_executables = filepath
-            actual = _generate_script(args,
-                                      should_validate_if_exes_exist=False)
+            actual = _generate_script(args, should_validate_if_exes_exist=False)
         finally:
             os.remove(filepath)
 
@@ -68,16 +68,15 @@ env vpython3 \
         args.exe_dir = out_dir
 
         # pylint: disable=unexpected-keyword-arg
-        with tempfile.NamedTemporaryFile(delete=False,
-                                         mode='w',
-                                         encoding='utf-8') as f:
+        with tempfile.NamedTemporaryFile(
+            delete=False, mode='w', encoding='utf-8'
+        ) as f:
             filepath = f.name
             f.write('foo\n')
             f.write('bar\n')
         try:
             args.rust_test_executables = filepath
-            actual = _generate_script(args,
-                                      should_validate_if_exes_exist=False)
+            actual = _generate_script(args, should_validate_if_exes_exist=False)
         finally:
             os.remove(filepath)
 

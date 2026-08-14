@@ -12,7 +12,6 @@ import PRESUBMIT
 
 
 class MockInputApi:
-
   def __init__(self):
     self.os_path = os.path
     self.change = mock.Mock()
@@ -23,7 +22,6 @@ class MockInputApi:
 
 
 class MockOutputApi:
-
   @staticmethod
   def PresubmitError(message, items=None):
     # Using a tuple to make it easy to compare.
@@ -36,7 +34,6 @@ class MockOutputApi:
 
 
 class UndeclaredFeaturesTest(unittest.TestCase):
-
   def setUp(self):
     self.temp_dir = tempfile.TemporaryDirectory()
     self.repo_root = self.temp_dir.name
@@ -62,54 +59,71 @@ class UndeclaredFeaturesTest(unittest.TestCase):
   def testAllFeaturesOnChangedLinesAreDeclared(self):
     # Declare a variety of features using both 2- and 3-argument macros.
     self._create_file_in_repo(
-        'components/feature_a.cc',
-        'BASE_FEATURE(kFeatureA, base::FEATURE_ENABLED_BY_DEFAULT);')
+      'components/feature_a.cc',
+      'BASE_FEATURE(kFeatureA, base::FEATURE_ENABLED_BY_DEFAULT);',
+    )
     self._create_file_in_repo(
-        'chrome/feature_b.cc', 'BASE_FEATURE(kFeatureB, "FeatureB", '
-        'base::FEATURE_ENABLED_BY_DEFAULT);')
+      'chrome/feature_b.cc',
+      'BASE_FEATURE(kFeatureB, "FeatureB", base::FEATURE_ENABLED_BY_DEFAULT);',
+    )
     self._create_file_in_repo(
-        'components/feature_c.cc', 'BASE_FEATURE(kFeatureC, "FeatureC",\n'
-        '             base::FEATURE_ENABLED_BY_DEFAULT);')
+      'components/feature_c.cc',
+      'BASE_FEATURE(kFeatureC, "FeatureC",\n'
+      '             base::FEATURE_ENABLED_BY_DEFAULT);',
+    )
 
     json_data = {
-        'Study1': [{
-            'experiments': [{
-                'name': 'group1',
-                'enable_features': ['FeatureA', 'FeatureB'],
-            }]
-        }],
-        'Study2_Unaffected': [{
-            'experiments': [{
-                'name': 'group2',
-                'enable_features': ['UndeclaredFeature'],
-            }]
-        }]
+      'Study1': [
+        {
+          'experiments': [
+            {
+              'name': 'group1',
+              'enable_features': ['FeatureA', 'FeatureB'],
+            }
+          ]
+        }
+      ],
+      'Study2_Unaffected': [
+        {
+          'experiments': [
+            {
+              'name': 'group2',
+              'enable_features': ['UndeclaredFeature'],
+            }
+          ]
+        }
+      ],
     }
     # The check should only trigger on features in changed lines.
     # FeatureA and FeatureB are declared, so this should pass.
     # UndeclaredFeature is not on a changed line, so it's ignored.
     changed_lines = [(1, '"enable_features": ["FeatureA", "FeatureB"]')]
-    result = PRESUBMIT.CheckUndeclaredFeatures(self.mock_input_api,
-                                               self.mock_output_api, json_data,
-                                               changed_lines)
+    result = PRESUBMIT.CheckUndeclaredFeatures(
+      self.mock_input_api, self.mock_output_api, json_data, changed_lines
+    )
     self.assertEqual(result, [])
 
   def testUndeclaredFeatureOnChangedLine(self):
     self._create_file_in_repo(
-        'components/feature_a.cc',
-        'BASE_FEATURE(kFeatureA, base::FEATURE_ENABLED_BY_DEFAULT);')
+      'components/feature_a.cc',
+      'BASE_FEATURE(kFeatureA, base::FEATURE_ENABLED_BY_DEFAULT);',
+    )
     json_data = {
-        'Study1': [{
-            'experiments': [{
-                'name': 'group1',
-                'enable_features': ['FeatureA', 'UndeclaredFeature']
-            }]
-        }]
+      'Study1': [
+        {
+          'experiments': [
+            {
+              'name': 'group1',
+              'enable_features': ['FeatureA', 'UndeclaredFeature'],
+            }
+          ]
+        }
+      ]
     }
     changed_lines = [(1, '"enable_features": ["UndeclaredFeature"]')]
-    result = PRESUBMIT.CheckUndeclaredFeatures(self.mock_input_api,
-                                               self.mock_output_api, json_data,
-                                               changed_lines)
+    result = PRESUBMIT.CheckUndeclaredFeatures(
+      self.mock_input_api, self.mock_output_api, json_data, changed_lines
+    )
     self.assertEqual(len(result), 1)
     self.assertEqual(result[0][0], 'Result')
     self.assertIn('UndeclaredFeature', str(result[0]))
@@ -117,168 +131,174 @@ class UndeclaredFeaturesTest(unittest.TestCase):
 
   def testFeatureWithMacroParametersOnDifferentLines(self):
     self._create_file_in_repo(
-        'components/feature_d.cc', 'BASE_FEATURE(kFeatureD,\n'
-        '             "FeatureD",\n'
-        '             base::FEATURE_ENABLED_BY_DEFAULT);')
+      'components/feature_d.cc',
+      'BASE_FEATURE(kFeatureD,\n'
+      '             "FeatureD",\n'
+      '             base::FEATURE_ENABLED_BY_DEFAULT);',
+    )
     json_data = {
-        'Study1': [{
-            'experiments': [{
-                'name': 'group1',
-                'enable_features': ['FeatureD']
-            }]
-        }]
+      'Study1': [
+        {'experiments': [{'name': 'group1', 'enable_features': ['FeatureD']}]}
+      ]
     }
     changed_lines = [(1, '"enable_features": ["FeatureD"]')]
-    result = PRESUBMIT.CheckUndeclaredFeatures(self.mock_input_api,
-                                               self.mock_output_api, json_data,
-                                               changed_lines)
+    result = PRESUBMIT.CheckUndeclaredFeatures(
+      self.mock_input_api, self.mock_output_api, json_data, changed_lines
+    )
     self.assertEqual(result, [])
 
   def testTwoParameterMacro(self):
     self._create_file_in_repo(
-        'components/feature_g.cc',
-        'BASE_FEATURE(kFeatureG, base::FEATURE_ENABLED_BY_DEFAULT);')
+      'components/feature_g.cc',
+      'BASE_FEATURE(kFeatureG, base::FEATURE_ENABLED_BY_DEFAULT);',
+    )
     json_data = {
-        'Study1': [{
-            'experiments': [{
-                'name': 'group1',
-                'enable_features': ['FeatureG']
-            }]
-        }]
+      'Study1': [
+        {'experiments': [{'name': 'group1', 'enable_features': ['FeatureG']}]}
+      ]
     }
     changed_lines = [(1, '"enable_features": ["FeatureG"]')]
-    result = PRESUBMIT.CheckUndeclaredFeatures(self.mock_input_api,
-                                               self.mock_output_api, json_data,
-                                               changed_lines)
+    result = PRESUBMIT.CheckUndeclaredFeatures(
+      self.mock_input_api, self.mock_output_api, json_data, changed_lines
+    )
     self.assertEqual(result, [])
 
   def testTwoParameterMacroWithParametersOnDifferentLines(self):
     self._create_file_in_repo(
-        'components/feature_h.cc', 'BASE_FEATURE(kFeatureH,\n'
-        '             base::FEATURE_ENABLED_BY_DEFAULT);')
+      'components/feature_h.cc',
+      'BASE_FEATURE(kFeatureH,\n'
+      '             base::FEATURE_ENABLED_BY_DEFAULT);',
+    )
     json_data = {
-        'Study1': [{
-            'experiments': [{
-                'name': 'group1',
-                'enable_features': ['FeatureH']
-            }]
-        }]
+      'Study1': [
+        {'experiments': [{'name': 'group1', 'enable_features': ['FeatureH']}]}
+      ]
     }
     changed_lines = [(1, '"enable_features": ["FeatureH"]')]
-    result = PRESUBMIT.CheckUndeclaredFeatures(self.mock_input_api,
-                                               self.mock_output_api, json_data,
-                                               changed_lines)
+    result = PRESUBMIT.CheckUndeclaredFeatures(
+      self.mock_input_api, self.mock_output_api, json_data, changed_lines
+    )
     self.assertEqual(result, [])
 
   def testFeatureWithPreprocessorDirectives(self):
     self._create_file_in_repo(
-        'components/feature_f.cc', 'BASE_FEATURE(kFeatureF,\n'
-        '             "FeatureF",\n'
-        '#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN)\n'
-        '             base::FEATURE_ENABLED_BY_DEFAULT\n'
-        '#else\n'
-        '             base::FEATURE_DISABLED_BY_DEFAULT\n'
-        '#endif\n'
-        ');')
+      'components/feature_f.cc',
+      'BASE_FEATURE(kFeatureF,\n'
+      '             "FeatureF",\n'
+      '#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN)\n'
+      '             base::FEATURE_ENABLED_BY_DEFAULT\n'
+      '#else\n'
+      '             base::FEATURE_DISABLED_BY_DEFAULT\n'
+      '#endif\n'
+      ');',
+    )
     json_data = {
-        'Study1': [{
-            'experiments': [{
-                'name': 'group1',
-                'enable_features': ['FeatureF']
-            }]
-        }]
+      'Study1': [
+        {'experiments': [{'name': 'group1', 'enable_features': ['FeatureF']}]}
+      ]
     }
     changed_lines = [(1, '"enable_features": ["FeatureF"]')]
-    result = PRESUBMIT.CheckUndeclaredFeatures(self.mock_input_api,
-                                               self.mock_output_api, json_data,
-                                               changed_lines)
+    result = PRESUBMIT.CheckUndeclaredFeatures(
+      self.mock_input_api, self.mock_output_api, json_data, changed_lines
+    )
     self.assertEqual(result, [])
 
   def testTwoParameterMacroWithPreprocessorDirectives(self):
     self._create_file_in_repo(
-        'components/feature_k.cc', 'BASE_FEATURE(kFeatureK,\n'
-        '#if BUILDFLAG(IS_WIN)\n'
-        '    base::FEATURE_ENABLED_BY_DEFAULT\n'
-        '#else\n'
-        '    base::FEATURE_DISABLED_BY_DEFAULT\n'
-        '#endif\n'
-        ');')
+      'components/feature_k.cc',
+      'BASE_FEATURE(kFeatureK,\n'
+      '#if BUILDFLAG(IS_WIN)\n'
+      '    base::FEATURE_ENABLED_BY_DEFAULT\n'
+      '#else\n'
+      '    base::FEATURE_DISABLED_BY_DEFAULT\n'
+      '#endif\n'
+      ');',
+    )
     json_data = {
-        'Study1': [{
-            'experiments': [{
-                'name': 'group1',
-                'enable_features': ['FeatureK']
-            }]
-        }]
+      'Study1': [
+        {'experiments': [{'name': 'group1', 'enable_features': ['FeatureK']}]}
+      ]
     }
     changed_lines = [(1, '"enable_features": ["FeatureK"]')]
-    result = PRESUBMIT.CheckUndeclaredFeatures(self.mock_input_api,
-                                               self.mock_output_api, json_data,
-                                               changed_lines)
+    result = PRESUBMIT.CheckUndeclaredFeatures(
+      self.mock_input_api, self.mock_output_api, json_data, changed_lines
+    )
     self.assertEqual(result, [])
 
   def testRustFeatures(self):
     self._create_file_in_repo(
-        'components/feature_rust.rs',
-        'base_feature!(FeatureRust, FeatureState::Disabled);')
+      'components/feature_rust.rs',
+      'base_feature!(FeatureRust, FeatureState::Disabled);',
+    )
     json_data = {
-        'Study1': [{
-            'experiments': [{
-                'name': 'group1',
-                'enable_features': ['FeatureRust']
-            }]
-        }]
+      'Study1': [
+        {
+          'experiments': [
+            {'name': 'group1', 'enable_features': ['FeatureRust']}
+          ]
+        }
+      ]
     }
     changed_lines = [(1, '"enable_features": ["FeatureRust"]')]
-    result = PRESUBMIT.CheckUndeclaredFeatures(self.mock_input_api,
-                                               self.mock_output_api, json_data,
-                                               changed_lines)
+    result = PRESUBMIT.CheckUndeclaredFeatures(
+      self.mock_input_api, self.mock_output_api, json_data, changed_lines
+    )
     self.assertEqual(result, [])
 
   def testRustFeaturesMultiple(self):
     self._create_file_in_repo(
-        'components/feature_rust.rs',
-        'base_feature!(FeatureRust1, FeatureState::Enabled);\n'
-        'base_feature!(FeatureRust2, FeatureState::Disabled);')
+      'components/feature_rust.rs',
+      'base_feature!(FeatureRust1, FeatureState::Enabled);\n'
+      'base_feature!(FeatureRust2, FeatureState::Disabled);',
+    )
     json_data = {
-        'Study1': [{
-            'experiments': [{
-                'name': 'group1',
-                'enable_features': ['FeatureRust1', 'FeatureRust2']
-            }]
-        }]
+      'Study1': [
+        {
+          'experiments': [
+            {
+              'name': 'group1',
+              'enable_features': ['FeatureRust1', 'FeatureRust2'],
+            }
+          ]
+        }
+      ]
     }
     changed_lines = [(1, '"enable_features": ["FeatureRust1", "FeatureRust2"]')]
-    result = PRESUBMIT.CheckUndeclaredFeatures(self.mock_input_api,
-                                               self.mock_output_api, json_data,
-                                               changed_lines)
+    result = PRESUBMIT.CheckUndeclaredFeatures(
+      self.mock_input_api, self.mock_output_api, json_data, changed_lines
+    )
     self.assertEqual(result, [])
 
   def testUndeclaredRustFeature(self):
     self._create_file_in_repo(
-        'components/feature_rust.rs',
-        'base_feature!(FeatureRust, FeatureState::Enabled);')
+      'components/feature_rust.rs',
+      'base_feature!(FeatureRust, FeatureState::Enabled);',
+    )
     json_data = {
-        'Study1': [{
-            'experiments': [{
-                'name':
-                'group1',
-                'enable_features': ['FeatureRust', 'UndeclaredRustFeature']
-            }]
-        }]
+      'Study1': [
+        {
+          'experiments': [
+            {
+              'name': 'group1',
+              'enable_features': ['FeatureRust', 'UndeclaredRustFeature'],
+            }
+          ]
+        }
+      ]
     }
     changed_lines = [(1, '"enable_features": ["UndeclaredRustFeature"]')]
-    result = PRESUBMIT.CheckUndeclaredFeatures(self.mock_input_api,
-                                               self.mock_output_api, json_data,
-                                               changed_lines)
+    result = PRESUBMIT.CheckUndeclaredFeatures(
+      self.mock_input_api, self.mock_output_api, json_data, changed_lines
+    )
     self.assertEqual(len(result), 1)
     self.assertIn('UndeclaredRustFeature', str(result[0]))
 
   def testNoFeaturesDeclaredInRepo(self):
     # No files created, so no features will be found, which is an error
     # condition.
-    result = PRESUBMIT.CheckUndeclaredFeatures(self.mock_input_api,
-                                               self.mock_output_api, {}, [])
+    result = PRESUBMIT.CheckUndeclaredFeatures(
+      self.mock_input_api, self.mock_output_api, {}, []
+    )
     self.assertEqual(len(result), 1)
     self.assertEqual(result[0][0], 'Error')
     self.assertIn('unable to find any declared flags', result[0][1])

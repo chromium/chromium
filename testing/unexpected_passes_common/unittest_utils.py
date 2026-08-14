@@ -25,22 +25,28 @@ def CreateStatsWithPassFails(passes: int, fails: int) -> data_types.BuildStats:
 
 
 # id_ is used instead of id since id is a python built-in.
-def FakeQueryResult(builder_name: str, id_: str, test_id: str, status: str,
-                    typ_tags: Iterable[str], step_name: str) -> pandas.Series:
+def FakeQueryResult(
+  builder_name: str,
+  id_: str,
+  test_id: str,
+  status: str,
+  typ_tags: Iterable[str],
+  step_name: str,
+) -> pandas.Series:
   return pandas.Series(
-      data={
-          'builder_name': builder_name,
-          'id': id_,
-          'test_id': test_id,
-          'test_name': test_id.split('.')[-1],
-          'status': status,
-          'typ_tags': list(typ_tags),
-          'step_name': step_name,
-      })
+    data={
+      'builder_name': builder_name,
+      'id': id_,
+      'test_id': test_id,
+      'test_name': test_id.split('.')[-1],
+      'status': status,
+      'typ_tags': list(typ_tags),
+      'step_name': step_name,
+    }
+  )
 
 
 class SimpleBigQueryQuerier(queries_module.BigQueryQuerier):
-
   def __init__(self, *args, **kwargs):
     super().__init__(*args, **kwargs)
     self.query_results = []
@@ -66,11 +72,11 @@ class SimpleBigQueryQuerier(queries_module.BigQueryQuerier):
 
 
 def CreateGenericQuerier(
-    suite: Optional[str] = None,
-    project: Optional[str] = None,
-    num_samples: Optional[int] = None,
-    keep_unmatched_results: bool = False,
-    cls: Optional[Type[queries_module.BigQueryQuerier]] = None
+  suite: Optional[str] = None,
+  project: Optional[str] = None,
+  num_samples: Optional[int] = None,
+  keep_unmatched_results: bool = False,
+  cls: Optional[Type[queries_module.BigQueryQuerier]] = None,
 ) -> queries_module.BigQueryQuerier:
   suite = suite or 'pixel'
   project = project or 'project'
@@ -79,8 +85,9 @@ def CreateGenericQuerier(
   return cls(suite, project, num_samples, keep_unmatched_results)
 
 
-def GetArgsForMockCall(call_args_list: List[tuple],
-                       call_number: int) -> Tuple[tuple, dict]:
+def GetArgsForMockCall(
+  call_args_list: List[tuple], call_number: int
+) -> Tuple[tuple, dict]:
   """Helper to more sanely get call args from a mocked method.
 
   Args:
@@ -98,13 +105,13 @@ def GetArgsForMockCall(call_args_list: List[tuple],
 
 
 class GenericBuilders(builders.Builders):
-  #pylint: disable=useless-super-delegation
-  def __init__(self,
-               suite: Optional[str] = None,
-               include_internal_builders: bool = False):
+  # pylint: disable=useless-super-delegation
+  def __init__(
+    self, suite: Optional[str] = None, include_internal_builders: bool = False
+  ):
     super().__init__(suite, include_internal_builders)
 
-  #pylint: enable=useless-super-delegation
+  # pylint: enable=useless-super-delegation
 
   def _BuilderRunsTestOfInterest(self, _test_map) -> bool:
     return True
@@ -124,7 +131,6 @@ def RegisterGenericBuildersImplementation() -> None:
 
 
 class GenericExpectations(expectations.Expectations):
-
   def GetExpectationFilepaths(self) -> list:
     return []
 

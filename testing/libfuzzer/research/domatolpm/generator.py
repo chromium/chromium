@@ -47,6 +47,7 @@ import grammar
 # fields.
 # pylint: disable=protected-access
 
+
 def to_snake_case(name):
   name = re.sub(r'([A-Z]{2,})([A-Z][a-z])', r'\1_\2', name)
   return re.sub(r'([a-z0-9])([A-Z])', r'\1_\2', name, count=sys.maxsize).lower()
@@ -60,9 +61,9 @@ def GetProtoId(name):
   fnv = 2166136261
   for c in name:
     fnv = fnv ^ ord(c)
-    fnv = (fnv * 16777619) & 0xffffffff
+    fnv = (fnv * 16777619) & 0xFFFFFFFF
   # xor-fold to 29-bits
-  fnv = (fnv >> 29) ^ (fnv & 0x1fffffff)
+  fnv = (fnv >> 29) ^ (fnv & 0x1FFFFFFF)
   # now use a modulo to reduce to [0,2^29-1 - 1016]
   fnv = fnv % 536869895
   # now we move out the disallowed ranges
@@ -73,61 +74,57 @@ def GetProtoId(name):
 
 
 DOMATO_INT_TYPE_TO_CPP_INT_TYPE = {
-    'int': 'int',
-    'int32': 'int32_t',
-    'uint32': 'uint32_t',
-    'int8': 'int8_t',
-    'uint8': 'uint8_t',
-    'int16': 'int16_t',
-    'uint16': 'uint16_t',
-    'int64': 'uint64_t',
-    'uint64': 'uint64_t',
+  'int': 'int',
+  'int32': 'int32_t',
+  'uint32': 'uint32_t',
+  'int8': 'int8_t',
+  'uint8': 'uint8_t',
+  'int16': 'int16_t',
+  'uint16': 'uint16_t',
+  'int64': 'uint64_t',
+  'uint64': 'uint64_t',
 }
 
 DOMATO_TO_PROTO_BUILT_IN = {
-    'int': 'int32',
-    'int32': 'int32',
-    'uint32': 'uint32',
-    'int8': 'int32',
-    'uint8': 'uint32',
-    'int16': 'int32',
-    'uint16': 'uint32',
-    'int64': 'int64',
-    'uint64': 'uint64',
-    'float': 'float',
-    'double': 'double',
-    'char': 'int32',
-    'string': 'string',
-    'htmlsafestring': 'string',
-    'hex': 'int32',
-    'lines': 'repeated lines',
+  'int': 'int32',
+  'int32': 'int32',
+  'uint32': 'uint32',
+  'int8': 'int32',
+  'uint8': 'uint32',
+  'int16': 'int32',
+  'uint16': 'uint32',
+  'int64': 'int64',
+  'uint64': 'uint64',
+  'float': 'float',
+  'double': 'double',
+  'char': 'int32',
+  'string': 'string',
+  'htmlsafestring': 'string',
+  'hex': 'int32',
+  'lines': 'repeated lines',
 }
 
 DOMATO_TO_CPP_HANDLERS = {
-    'int': 'handle_int_conversion<int32_t, int>',
-    'int32': 'handle_int_conversion<int32_t, int32_t>',
-    'uint32': 'handle_int_conversion<uint32_t, uint32_t>',
-    'int8': 'handle_int_conversion<int32_t, int8_t>',
-    'uint8': 'handle_int_conversion<uint32_t, uint8_t>',
-    'int16': 'handle_int_conversion<int16_t, int16_t>',
-    'uint16': 'handle_int_conversion<uint16_t, uint16_t>',
-    'int64': 'handle_int_conversion<int64_t, int64_t>',
-    'uint64': 'handle_int_conversion<uint64_t, uint64_t>',
-    'float': 'handle_float',
-    'double': 'handle_double',
-    'char': 'handle_char',
-    'string': 'handle_string',
-    'htmlsafestring': 'handle_string',
-    'hex': 'handle_hex',
+  'int': 'handle_int_conversion<int32_t, int>',
+  'int32': 'handle_int_conversion<int32_t, int32_t>',
+  'uint32': 'handle_int_conversion<uint32_t, uint32_t>',
+  'int8': 'handle_int_conversion<int32_t, int8_t>',
+  'uint8': 'handle_int_conversion<uint32_t, uint8_t>',
+  'int16': 'handle_int_conversion<int16_t, int16_t>',
+  'uint16': 'handle_int_conversion<uint16_t, uint16_t>',
+  'int64': 'handle_int_conversion<int64_t, int64_t>',
+  'uint64': 'handle_int_conversion<uint64_t, uint64_t>',
+  'float': 'handle_float',
+  'double': 'handle_double',
+  'char': 'handle_char',
+  'string': 'handle_string',
+  'htmlsafestring': 'handle_string',
+  'hex': 'handle_hex',
 }
 
-_C_STR_TRANS = str.maketrans({
-    '\n': '\\n',
-    '\r': '\\r',
-    '\t': '\\t',
-    '\"': '\\\"',
-    '\\': '\\\\'
-})
+_C_STR_TRANS = str.maketrans(
+  {'\n': '\\n', '\r': '\\r', '\t': '\\t', '"': '\\"', '\\': '\\\\'}
+)
 
 BASE_PROTO_NS = 'domatolpm.generated'
 
@@ -210,6 +207,7 @@ def tarjan(g):
 @dataclasses.dataclass
 class ProtoType:
   """Represents a Proto type."""
+
   name: str
 
   @property
@@ -220,6 +218,7 @@ class ProtoType:
 @dataclasses.dataclass
 class ProtoField:
   """Represents a proto message field."""
+
   type: ProtoType
   name: str
   proto_id: int
@@ -228,12 +227,14 @@ class ProtoField:
 @dataclasses.dataclass
 class ProtoMessage(ProtoType):
   """Represents a Proto message."""
+
   fields: typing.List[ProtoField]
 
 
 @dataclasses.dataclass
 class OneOfProtoMessage(ProtoMessage):
   """Represents a Proto message with a oneof field."""
+
   oneofname: str
 
   @property
@@ -242,16 +243,17 @@ class OneOfProtoMessage(ProtoMessage):
 
 
 class CppExpression:
-
   # pylint: disable=no-self-use
   def repr(self):
     raise Exception('Not implemented.')
+
   # pylint: enable=no-self-use
 
 
 @dataclasses.dataclass
 class CppTxtExpression(CppExpression):
   """Represents a Raw text expression."""
+
   content: str
 
   def repr(self):
@@ -261,6 +263,7 @@ class CppTxtExpression(CppExpression):
 @dataclasses.dataclass
 class CppCallExpr(CppExpression):
   """Represents a CallExpr."""
+
   fct_name: str
   args: typing.List[CppExpression]
   ns: str = ''
@@ -271,11 +274,12 @@ class CppCallExpr(CppExpression):
 
 
 class CppHandlerCallExpr(CppCallExpr):
-
-  def __init__(self,
-               handler: str,
-               field_name: str,
-               extra_args: typing.Optional[typing.List[CppExpression]] = None):
+  def __init__(
+    self,
+    handler: str,
+    field_name: str,
+    extra_args: typing.Optional[typing.List[CppExpression]] = None,
+  ):
     args = [CppTxtExpression('ctx'), CppTxtExpression(f'arg.{field_name}()')]
     if extra_args:
       args += extra_args
@@ -287,18 +291,18 @@ class CppHandlerCallExpr(CppCallExpr):
 
 @dataclasses.dataclass
 class CppStringExpr(CppExpression):
-  """Represents a C++ literal string.
-  """
+  """Represents a C++ literal string."""
+
   content: str
 
   def repr(self):
-    return f'\"{c_escape(self.content)}\"'
+    return f'"{c_escape(self.content)}"'
 
 
 @dataclasses.dataclass
 class CppFunctionHandler:
-  """Represents a C++ function.
-  """
+  """Represents a C++ function."""
+
   name: str
   exprs: typing.List[CppExpression]
 
@@ -320,8 +324,9 @@ class CppStringTableHandler(CppFunctionHandler):
   of the represented strings.
   """
 
-  def __init__(self, name: str, var_name: str,
-               strings: typing.List[CppStringExpr]):
+  def __init__(
+    self, name: str, var_name: str, strings: typing.List[CppStringExpr]
+  ):
     super().__init__(name=f'{CPP_HANDLER_PREFIX}{name}', exprs=[])
     self.proto_type = f'{name}& arg'
     self.strings = strings
@@ -333,13 +338,14 @@ class CppStringTableHandler(CppFunctionHandler):
 
 
 class CppProtoMessageFunctionHandler(CppFunctionHandler):
-  """Represents a C++ function that handles a ProtoMessage.
-  """
+  """Represents a C++ function that handles a ProtoMessage."""
 
-  def __init__(self,
-               name: str,
-               exprs: typing.List[CppExpression],
-               creator: typing.Optional[typing.Dict[str, str]] = None):
+  def __init__(
+    self,
+    name: str,
+    exprs: typing.List[CppExpression],
+    creator: typing.Optional[typing.Dict[str, str]] = None,
+  ):
     super().__init__(name=f'{CPP_HANDLER_PREFIX}{name}', exprs=exprs)
     self.proto_type = f'{name}& arg'
     self.creator = creator
@@ -353,11 +359,14 @@ class CppProtoMessageFunctionHandler(CppFunctionHandler):
 
 
 class CppOneOfMessageFunctionHandler(CppFunctionHandler):
-  """Represents a C++ function that handles a OneOfProtoMessage.
-  """
+  """Represents a C++ function that handles a OneOfProtoMessage."""
 
-  def __init__(self, name: str, switch_name: str,
-               cases: typing.Dict[str, typing.List[CppExpression]]):
+  def __init__(
+    self,
+    name: str,
+    switch_name: str,
+    cases: typing.Dict[str, typing.List[CppExpression]],
+  ):
     super().__init__(name=f'{CPP_HANDLER_PREFIX}{name}', exprs=[])
     self.proto_type = f'{name}& arg'
     self.switch_name = switch_name
@@ -396,8 +405,9 @@ class DomatoBuilder:
 
   def __init__(self, g: grammar.Grammar, stabilize_grammar=False):
     self.handlers: typing.Dict[str, DomatoBuilder.Entry] = {}
-    self.backrefs: typing.Dict[str,
-                               typing.List[str]] = collections.defaultdict(list)
+    self.backrefs: typing.Dict[str, typing.List[str]] = collections.defaultdict(
+      list
+    )
     self.grammar = g
     self.stabilize_grammar = stabilize_grammar
     if self.grammar._root and self.grammar._root != 'root':
@@ -410,33 +420,35 @@ class DomatoBuilder:
       # one.
       rule = rules[-1]
       for part in rule['parts']:
-        if part['type'] == 'tag' and part[
-            'tagname'] == 'lines' and 'count' in part:
+        if (
+          part['type'] == 'tag'
+          and part['tagname'] == 'lines'
+          and 'count' in part
+        ):
           self.root = f'lines_{part["count"]}'
           break
     self._built_in_types_parser = {
-        'int': self._int_handler,
-        'int32': self._int_handler,
-        'uint32': self._int_handler,
-        'int8': self._int_handler,
-        'uint8': self._int_handler,
-        'int16': self._int_handler,
-        'uint16': self._int_handler,
-        'int64': self._int_handler,
-        'uint64': self._int_handler,
-        'float': self._default_handler,
-        'double': self._default_handler,
-        'char': self._default_handler,
-        'string': self._default_handler,
-        'htmlsafestring': self._default_handler,
-        'hex': self._default_handler,
-        'lines': self._lines_handler,
+      'int': self._int_handler,
+      'int32': self._int_handler,
+      'uint32': self._int_handler,
+      'int8': self._int_handler,
+      'uint8': self._int_handler,
+      'int16': self._int_handler,
+      'uint16': self._int_handler,
+      'int64': self._int_handler,
+      'uint64': self._int_handler,
+      'float': self._default_handler,
+      'double': self._default_handler,
+      'char': self._default_handler,
+      'string': self._default_handler,
+      'htmlsafestring': self._default_handler,
+      'hex': self._default_handler,
+      'lines': self._lines_handler,
     }
     self.unique_id = 0
 
   def create_internal_message(self) -> str:
-    """Returns a unique name for a newly created message.
-    """
+    """Returns a unique name for a newly created message."""
     self.unique_id += 1
     return f'DomatoLPMInternalMsg{self.unique_id}'
 
@@ -448,22 +460,26 @@ class DomatoBuilder:
       proto_fields: typing.List[ProtoField] = []
       for proto_id, msg in enumerate(messages, start=1):
         proto_fields.append(
-            ProtoField(type=ProtoType(name=msg.name),
-                       name=f'{field_name}_{proto_id}',
-                       proto_id=proto_id))
-      msg = OneOfProtoMessage(name=type_name,
-                              oneofname='oneoffield',
-                              fields=proto_fields)
+          ProtoField(
+            type=ProtoType(name=msg.name),
+            name=f'{field_name}_{proto_id}',
+            proto_id=proto_id,
+          )
+        )
+      msg = OneOfProtoMessage(
+        name=type_name, oneofname='oneoffield', fields=proto_fields
+      )
       cases = {
-          f.name: [
-              CppHandlerCallExpr(handler=f'{CPP_HANDLER_PREFIX}{f.type.name}',
-                                 field_name=f.name)
-          ]
-          for f in proto_fields
+        f.name: [
+          CppHandlerCallExpr(
+            handler=f'{CPP_HANDLER_PREFIX}{f.type.name}', field_name=f.name
+          )
+        ]
+        for f in proto_fields
       }
-      func = CppOneOfMessageFunctionHandler(name=type_name,
-                                            switch_name='oneoffield',
-                                            cases=cases)
+      func = CppOneOfMessageFunctionHandler(
+        name=type_name, switch_name='oneoffield', cases=cases
+      )
       self._add(msg, func)
 
   def all_proto_messages(self):
@@ -506,11 +522,13 @@ class DomatoBuilder:
       root = 'lines'
     root_handler = f'{CPP_HANDLER_PREFIX}{root}'
     fuzz_case = ProtoMessage(
-        name='fuzzcase',
-        fields=[ProtoField(type=ProtoType(name=root), name='root', proto_id=1)])
+      name='fuzzcase',
+      fields=[ProtoField(type=ProtoType(name=root), name='root', proto_id=1)],
+    )
     fuzz_fct = CppProtoMessageFunctionHandler(
-        name='fuzzcase',
-        exprs=[CppHandlerCallExpr(handler=root_handler, field_name='root')])
+      name='fuzzcase',
+      exprs=[CppHandlerCallExpr(handler=root_handler, field_name='root')],
+    )
     return fuzz_case, fuzz_fct
 
   def split_files(self, file_prefix: str, file_num=15):
@@ -565,13 +583,16 @@ class DomatoBuilder:
     if 'line' not in self.handlers:
       return
     rules = self.grammar._creators['line']
-    for (rule, field) in zip(rules, self.handlers['line'].msg.fields):
-      concat = ''.join(p['text'] if p['type'] == 'text' else p['tagname']
-                       for p in rule['parts'])
+    for rule, field in zip(rules, self.handlers['line'].msg.fields):
+      concat = ''.join(
+        p['text'] if p['type'] == 'text' else p['tagname']
+        for p in rule['parts']
+      )
       field.proto_id = GetProtoId(concat)
 
-  def _add(self, message: ProtoMessage,
-           handler: CppProtoMessageFunctionHandler):
+  def _add(
+    self, message: ProtoMessage, handler: CppProtoMessageFunctionHandler
+  ):
     self.handlers[message.name] = DomatoBuilder.Entry(message, handler)
     for field in message.fields:
       self.backrefs[field.type.name].append(message.name)
@@ -579,8 +600,8 @@ class DomatoBuilder:
   # Handlers should be together even if some of them don't actually use self.
   # pylint: disable=no-self-use
   def _int_handler(
-      self, part,
-      field_name: str) -> typing.Tuple[ProtoType, CppHandlerCallExpr]:
+    self, part, field_name: str
+  ) -> typing.Tuple[ProtoType, CppHandlerCallExpr]:
     proto_type = DOMATO_TO_PROTO_BUILT_IN[part['tagname']]
     handler = DOMATO_TO_CPP_HANDLERS[part['tagname']]
     extra_args = []
@@ -590,16 +611,17 @@ class DomatoBuilder:
       if not extra_args:
         cpp_type = DOMATO_INT_TYPE_TO_CPP_INT_TYPE[part['tagname']]
         extra_args.append(
-            CppTxtExpression(f'std::numeric_limits<{cpp_type}>::min()'))
+          CppTxtExpression(f'std::numeric_limits<{cpp_type}>::min()')
+        )
       extra_args.append(CppTxtExpression(part['max']))
-    contents = CppHandlerCallExpr(handler=handler,
-                                  field_name=field_name,
-                                  extra_args=extra_args)
+    contents = CppHandlerCallExpr(
+      handler=handler, field_name=field_name, extra_args=extra_args
+    )
     return proto_type, contents
 
   def _default_handler(
-      self, part,
-      field_name: str) -> typing.Tuple[ProtoType, CppHandlerCallExpr]:
+    self, part, field_name: str
+  ) -> typing.Tuple[ProtoType, CppHandlerCallExpr]:
     proto_type = DOMATO_TO_PROTO_BUILT_IN[part['tagname']]
     handler = DOMATO_TO_CPP_HANDLERS[part['tagname']]
     contents = CppHandlerCallExpr(handler=handler, field_name=field_name)
@@ -608,16 +630,17 @@ class DomatoBuilder:
   # pylint: enable=no-self-use
 
   def _lines_handler(
-      self, part,
-      field_name: str) -> typing.Tuple[ProtoType, CppHandlerCallExpr]:
+    self, part, field_name: str
+  ) -> typing.Tuple[ProtoType, CppHandlerCallExpr]:
     handler_name = 'lines'
     if 'count' in part:
       count = part['count']
       handler_name = f'{handler_name}_{count}'
       self.maybe_add_lines_handler(int(part['count']))
     proto_type = handler_name
-    contents = CppHandlerCallExpr(handler=f'handle_{handler_name}',
-                                  field_name=field_name)
+    contents = CppHandlerCallExpr(
+      handler=f'handle_{handler_name}', field_name=field_name
+    )
     return proto_type, contents
 
   def _parse_rule(self, creator_name, rules):
@@ -632,10 +655,11 @@ class DomatoBuilder:
         proto_type = None
         if rule['type'] == 'code' and 'new' in part:
           proto_fields.insert(
-              0,
-              ProtoField(type=ProtoType('optional int32'),
-                         name='old',
-                         proto_id=part_id))
+            0,
+            ProtoField(
+              type=ProtoType('optional int32'), name='old', proto_id=part_id
+            ),
+          )
           ret_vars += 1
           continue
         if part['type'] == 'text':
@@ -648,23 +672,26 @@ class DomatoBuilder:
           continue
         elif part['tagname'] == 'call':
           raise Exception(
-              'DomatoLPM does not implement <call> and <import> tags.')
+            'DomatoLPM does not implement <call> and <import> tags.'
+          )
         elif part['tagname'] in self.grammar._constant_types.keys():
           contents = CppStringExpr(
-              self.grammar._constant_types[part['tagname']])
+            self.grammar._constant_types[part['tagname']]
+          )
         elif part['tagname'] in self._built_in_types_parser:
           handler = self._built_in_types_parser[part['tagname']]
           proto_type, contents = handler(part, field_name)
         elif part['type'] == 'tag':
           proto_type = to_proto_type(part['tagname'])
           contents = CppHandlerCallExpr(
-              handler=f'{CPP_HANDLER_PREFIX}{proto_type}',
-              field_name=field_name)
+            handler=f'{CPP_HANDLER_PREFIX}{proto_type}', field_name=field_name
+          )
         if proto_type:
           proto_fields.append(
-              ProtoField(type=ProtoType(name=proto_type),
-                         name=field_name,
-                         proto_id=part_id))
+            ProtoField(
+              type=ProtoType(name=proto_type), name=field_name, proto_id=part_id
+            )
+          )
         cpp_contents.append(contents)
 
       if ret_vars > 1:
@@ -681,11 +708,12 @@ class DomatoBuilder:
           creates = creates[0]
         creator = {'var_type': creates['tagname'], 'var_prefix': 'var'}
       proto_type = to_proto_type(creator_name)
-      rule_msg = ProtoMessage(name=f'{proto_type}_{rule_id}',
-                              fields=proto_fields)
-      rule_func = CppProtoMessageFunctionHandler(name=f'{proto_type}_{rule_id}',
-                                                 exprs=cpp_contents,
-                                                 creator=creator)
+      rule_msg = ProtoMessage(
+        name=f'{proto_type}_{rule_id}', fields=proto_fields
+      )
+      rule_func = CppProtoMessageFunctionHandler(
+        name=f'{proto_type}_{rule_id}', exprs=cpp_contents, creator=creator
+      )
 
       self._add(rule_msg, rule_func)
       messages.append(rule_msg)
@@ -725,8 +753,12 @@ class DomatoBuilder:
     for name in self.handlers:
       msg = self.handlers[name].msg
       func = self.handlers[name].func
-      if msg.is_one_of or not func.is_message_handler or func.creates_new(
-      ) or name == self.root:
+      if (
+        msg.is_one_of
+        or not func.is_message_handler
+        or func.creates_new()
+        or name == self.root
+      ):
         continue
       if name not in self.backrefs:
         continue
@@ -748,7 +780,8 @@ class DomatoBuilder:
             continue
           assert isinstance(expr, CppHandlerCallExpr)
           field: ProtoField = next(
-              (f for f in msg.fields if f.type.name == child), None)
+            (f for f in msg.fields if f.type.name == child), None
+          )
           if not field or not expr.field_name == field.name:
             new_contents.append(expr)
             continue
@@ -761,7 +794,7 @@ class DomatoBuilder:
           # child's messages fields at some point, and we don't want those
           # changes to affect this current's message fields.
           fields_copy = copy.deepcopy(field_msg.fields)
-          msg.fields = msg.fields[:idx] + fields_copy + msg.fields[idx + 1:]
+          msg.fields = msg.fields[:idx] + fields_copy + msg.fields[idx + 1 :]
           new_contents += copy.deepcopy(field_fct.exprs)
           for f in field_msg.fields:
             self.backrefs[f.type.name].append(msg.name)
@@ -788,9 +821,10 @@ class DomatoBuilder:
           new_contents.append(expr)
           continue
         new_contents.append(
-            CppHandlerCallExpr(expr.handler,
-                               to_proto_field_name(f'field_{index}'),
-                               expr.extra_args))
+          CppHandlerCallExpr(
+            expr.handler, to_proto_field_name(f'field_{index}'), expr.extra_args
+          )
+        )
         index += 1
       entry.func.exprs = new_contents
 
@@ -814,7 +848,8 @@ class DomatoBuilder:
             new_contents.append(expr)
             continue
           new_contents.append(
-              CppHandlerCallExpr(expr.handler, field.name, expr.extra_args))
+            CppHandlerCallExpr(expr.handler, field.name, expr.extra_args)
+          )
         cases[field.name] = new_contents
       entry.func.cases = cases
 
@@ -827,10 +862,13 @@ class DomatoBuilder:
       if not msg.is_one_of:
         continue
 
-      if not all(f.type.name in self.handlers and len(self.handlers[
-          f.type.name].msg.fields) == 0 and not self.handlers[f.type.name].msg.
-                 is_one_of and len(self.handlers[f.type.name].func.exprs) == 1
-                 for f in msg.fields):
+      if not all(
+        f.type.name in self.handlers
+        and len(self.handlers[f.type.name].msg.fields) == 0
+        and not self.handlers[f.type.name].msg.is_one_of
+        and len(self.handlers[f.type.name].func.exprs) == 1
+        for f in msg.fields
+      ):
         continue
 
       fields = [ProtoField(type=ProtoType('uint32'), name='val', proto_id=1)]
@@ -841,9 +879,9 @@ class DomatoBuilder:
         for expr in self.handlers[field.type.name].func.exprs:
           assert isinstance(expr, CppStringExpr)
           strings += [expr]
-      new_func = CppStringTableHandler(name=msg.name,
-                                       var_name='val',
-                                       strings=strings)
+      new_func = CppStringTableHandler(
+        name=msg.name, var_name='val', strings=strings
+      )
       self.handlers[name] = DomatoBuilder.Entry(new_msg, new_func)
       self._update(name)
       has_made_changes = True
@@ -872,10 +910,11 @@ class DomatoBuilder:
         return True
       if msg.is_one_of:
         f = next(
-            (f for f in msg.fields if recursive_terminal_marker(f.type.name)),
-            None)
+          (f for f in msg.fields if recursive_terminal_marker(f.type.name)),
+          None,
+        )
         if not f:
-          #FIXME: for testing purpose only, we're not hard-failing on this.
+          # FIXME: for testing purpose only, we're not hard-failing on this.
           _being_visited.remove(name)
           return False
         msg.fields.remove(f)
@@ -886,7 +925,7 @@ class DomatoBuilder:
         _being_visited.remove(name)
         return True
       res = all(recursive_terminal_marker(f.type.name) for f in msg.fields)
-      #FIXME: for testing purpose only, we're not hard-failing on this.
+      # FIXME: for testing purpose only, we're not hard-failing on this.
       _being_visited.remove(name)
       return res
 
@@ -906,8 +945,12 @@ class DomatoBuilder:
           continue
         field_msg = self.handlers[field.type.name].msg
         field_func = self.handlers[field.type.name].func
-        if (field_msg.is_one_of or len(field_msg.fields) != 1
-            or not field_func.is_message_handler or field_func.creates_new()):
+        if (
+          field_msg.is_one_of
+          or len(field_msg.fields) != 1
+          or not field_func.is_message_handler
+          or field_func.creates_new()
+        ):
           continue
         func.cases.pop(field.name)
         field.name = field_msg.fields[0].name
@@ -961,9 +1004,9 @@ class DomatoBuilder:
       field_func = self.handlers[msg.fields[0].type.name].func
       self._remove(msg.fields[0].type.name)
       msg = ProtoMessage(name=msg.name, fields=field_msg.fields)
-      func = CppProtoMessageFunctionHandler(name=msg.name,
-                                            exprs=field_func.exprs,
-                                            creator=field_func.creator)
+      func = CppProtoMessageFunctionHandler(
+        name=msg.name, exprs=field_func.exprs, creator=field_func.creator
+      )
       self.handlers[name] = DomatoBuilder.Entry(msg, func)
       self._update(name)
       has_made_changes = True
@@ -1028,41 +1071,44 @@ class DomatoBuilder:
     assert entry.msg.is_one_of
     low_name = self.create_internal_message()
     high_name = self.create_internal_message()
-    fields_low = copy.copy(entry.msg.fields[:len(entry.msg.fields) // 2])
-    fields_high = copy.copy(entry.msg.fields[len(entry.msg.fields) // 2:])
+    fields_low = copy.copy(entry.msg.fields[: len(entry.msg.fields) // 2])
+    fields_high = copy.copy(entry.msg.fields[len(entry.msg.fields) // 2 :])
     low = OneOfProtoMessage(low_name, fields=fields_low, oneofname='oneoffield')
-    high = OneOfProtoMessage(high_name,
-                             fields=fields_high,
-                             oneofname='oneoffield')
+    high = OneOfProtoMessage(
+      high_name, fields=fields_high, oneofname='oneoffield'
+    )
     low_cases = {}
     for field in low.fields:
       low_cases[field.name] = entry.func.cases[field.name]
     high_cases = {}
     for field in high.fields:
       high_cases[field.name] = entry.func.cases[field.name]
-    func_low = CppOneOfMessageFunctionHandler(low_name,
-                                              switch_name='oneoffield',
-                                              cases=low_cases)
-    func_high = CppOneOfMessageFunctionHandler(high_name,
-                                               switch_name='oneoffield',
-                                               cases=high_cases)
+    func_low = CppOneOfMessageFunctionHandler(
+      low_name, switch_name='oneoffield', cases=low_cases
+    )
+    func_high = CppOneOfMessageFunctionHandler(
+      high_name, switch_name='oneoffield', cases=high_cases
+    )
     entry.msg.fields = [
-        ProtoField(type=ProtoType(low_name), name='line_1', proto_id=1),
-        ProtoField(type=ProtoType(high_name), name='line_2', proto_id=2),
+      ProtoField(type=ProtoType(low_name), name='line_1', proto_id=1),
+      ProtoField(type=ProtoType(high_name), name='line_2', proto_id=2),
     ]
     entry.func = CppOneOfMessageFunctionHandler(
-        f'{entry.msg.name}',
-        switch_name='oneoffield',
-        cases={
-            'line_1': [
-                CppHandlerCallExpr(handler=f'{CPP_HANDLER_PREFIX}{low_name}',
-                                   field_name='line_1')
-            ],
-            'line_2': [
-                CppHandlerCallExpr(handler=f'{CPP_HANDLER_PREFIX}{high_name}',
-                                   field_name='line_2')
-            ]
-        })
+      f'{entry.msg.name}',
+      switch_name='oneoffield',
+      cases={
+        'line_1': [
+          CppHandlerCallExpr(
+            handler=f'{CPP_HANDLER_PREFIX}{low_name}', field_name='line_1'
+          )
+        ],
+        'line_2': [
+          CppHandlerCallExpr(
+            handler=f'{CPP_HANDLER_PREFIX}{high_name}', field_name='line_2'
+          )
+        ],
+      },
+    )
     self.handlers[low_name] = DomatoBuilder.Entry(low, func_low)
     self.handlers[high_name] = DomatoBuilder.Entry(high, func_high)
     self.backrefs[low_name] = [entry.msg.name]
@@ -1075,8 +1121,7 @@ class DomatoBuilder:
       self.backrefs[field.type.name].append(high_name)
 
   def _split_oneofs(self):
-    """Splits oneofs that are too big and that would grow protobuf files.
-    """
+    """Splits oneofs that are too big and that would grow protobuf files."""
     for entry in self.handlers.values():
       if entry.msg.is_one_of and len(entry.msg.fields) > 200:
         self._split_oneof_internal(entry)
@@ -1119,7 +1164,8 @@ class DomatoBuilder:
       return comp_list
 
     total_weight = sum(
-        [len(entry.msg.fields) + 1 for entry in self.handlers.values()])
+      [len(entry.msg.fields) + 1 for entry in self.handlers.values()]
+    )
     # we purposefuly take a greater number here so that we can lower that until
     # we have the correct number of file being generated.
     cur_weight = total_weight / (num_files + 10)
@@ -1133,16 +1179,20 @@ class DomatoBuilder:
   def _fusion_similar_messages_impl(self, new_msg_name, messages):
     is_one_of = self.handlers[messages[0]].msg.is_one_of
     if is_one_of:
-      new_msg = OneOfProtoMessage(new_msg_name,
-                                  fields=self.handlers[messages[0]].msg.fields,
-                                  oneofname='oneoffield')
+      new_msg = OneOfProtoMessage(
+        new_msg_name,
+        fields=self.handlers[messages[0]].msg.fields,
+        oneofname='oneoffield',
+      )
       new_func = CppOneOfMessageFunctionHandler(
-          new_msg_name, 'oneoffield',
-          {field.name: [CppStringExpr('')]
-           for field in new_msg.fields})
+        new_msg_name,
+        'oneoffield',
+        {field.name: [CppStringExpr('')] for field in new_msg.fields},
+      )
     else:
-      new_msg = ProtoMessage(new_msg_name,
-                             fields=self.handlers[messages[0]].msg.fields)
+      new_msg = ProtoMessage(
+        new_msg_name, fields=self.handlers[messages[0]].msg.fields
+      )
       new_func = CppProtoMessageFunctionHandler(new_msg_name, exprs=[])
     self._add(new_msg, new_func)
     res = []
@@ -1175,122 +1225,139 @@ class DomatoBuilder:
     return res
 
 
-def _render_internal(template: jinja2.Template,
-                     context: typing.Dict[str, typing.Any], out_f: str):
+def _render_internal(
+  template: jinja2.Template, context: typing.Dict[str, typing.Any], out_f: str
+):
   with action_helpers.atomic_output(out_f, mode='w') as f:
     f.write(template.render(context))
 
 
 def _render_proto_internal(
-    template: jinja2.Template, out_f: str,
-    proto_messages: typing.List[typing.Union[ProtoMessage, OneOfProtoMessage]],
-    should_generate_repeated_lines: bool, proto_ns: str,
-    imports: typing.List[str]):
-  _render_internal(template, {
+  template: jinja2.Template,
+  out_f: str,
+  proto_messages: typing.List[typing.Union[ProtoMessage, OneOfProtoMessage]],
+  should_generate_repeated_lines: bool,
+  proto_ns: str,
+  imports: typing.List[str],
+):
+  _render_internal(
+    template,
+    {
       'messages': [m for m in proto_messages if not m.is_one_of],
       'oneofmessages': [m for m in proto_messages if m.is_one_of],
       'generate_repeated_lines': should_generate_repeated_lines,
       'proto_ns': proto_ns,
       'imports': imports,
-  },
-                   out_f=out_f)
+    },
+    out_f=out_f,
+  )
 
 
 def to_relative_path(generated_dir: str, filepath: str):
   return str(
-      pathlib.PurePosixPath(generated_dir).joinpath(
-          pathlib.PurePosixPath(filepath).name))
+    pathlib.PurePosixPath(generated_dir).joinpath(
+      pathlib.PurePosixPath(filepath).name
+    )
+  )
 
 
-def render_proto(environment: jinja2.Environment, generated_dir: str,
-                 out_f: str, name: str, builder: DomatoBuilder,
-                 files: typing.List[File]):
+def render_proto(
+  environment: jinja2.Environment,
+  generated_dir: str,
+  out_f: str,
+  name: str,
+  builder: DomatoBuilder,
+  files: typing.List[File],
+):
   template = environment.get_template('domatolpm.proto.tmpl')
   ns = f'{BASE_PROTO_NS}.{name}'
   for file in files:
     _render_proto_internal(
-        template, f'{file.name}.proto', file.protos, False, ns, [
-            to_relative_path(generated_dir, f'{dep.name}.proto')
-            for dep in file.deps
-        ])
+      template,
+      f'{file.name}.proto',
+      file.protos,
+      False,
+      ns,
+      [
+        to_relative_path(generated_dir, f'{dep.name}.proto')
+        for dep in file.deps
+      ],
+    )
   root, _ = builder.get_root()
   _render_proto_internal(
-      template, f'{out_f}.proto', [root], builder.root == 'line', ns, [
-          to_relative_path(generated_dir, f'{file.name}.proto')
-          for file in files if builder.root in (m.name for m in file.protos)
-      ])
+    template,
+    f'{out_f}.proto',
+    [root],
+    builder.root == 'line',
+    ns,
+    [
+      to_relative_path(generated_dir, f'{file.name}.proto')
+      for file in files
+      if builder.root in (m.name for m in file.protos)
+    ],
+  )
 
 
-def render_cpp(environment: jinja2.Environment, gen_dir: str, out_f: str,
-               name: str, builder: DomatoBuilder, files: typing.List[File]):
+def render_cpp(
+  environment: jinja2.Environment,
+  gen_dir: str,
+  out_f: str,
+  name: str,
+  builder: DomatoBuilder,
+  files: typing.List[File],
+):
   for file in files:
     funcs = [f for f in file.cpps if f.is_message_handler]
     oneofs = [f for f in file.cpps if f.is_oneof_handler]
     stfunctions = [f for f in file.cpps if f.is_string_table_handler]
-    has_line = 'line' in (f.type.name for msg in file.protos
-                          for f in msg.fields)
+    has_line = 'line' in (
+      f.type.name for msg in file.protos for f in msg.fields
+    )
     rendering_context = {
-        'includes':
-        [to_relative_path(gen_dir, f'{dep.name}.h') for dep in file.deps],
-        'functions':
-        funcs,
-        'oneoffunctions':
-        oneofs,
-        'stfunctions':
-        stfunctions,
-        'root':
-        None,
-        'generate_root':
-        False,
-        'generate_repeated_lines':
-        False,
-        'generate_one_line_handler':
-        has_line,
-        'line_prefix':
-        builder.get_line_prefix(),
-        'line_suffix':
-        builder.get_line_suffix(),
-        'proto_ns':
-        to_cpp_ns(f'{BASE_PROTO_NS}.{name}'),
-        'cpp_ns':
-        f'domatolpm::{name}',
+      'includes': [
+        to_relative_path(gen_dir, f'{dep.name}.h') for dep in file.deps
+      ],
+      'functions': funcs,
+      'oneoffunctions': oneofs,
+      'stfunctions': stfunctions,
+      'root': None,
+      'generate_root': False,
+      'generate_repeated_lines': False,
+      'generate_one_line_handler': has_line,
+      'line_prefix': builder.get_line_prefix(),
+      'line_suffix': builder.get_line_suffix(),
+      'proto_ns': to_cpp_ns(f'{BASE_PROTO_NS}.{name}'),
+      'cpp_ns': f'domatolpm::{name}',
     }
     rendering_context['includes'].append(
-        to_relative_path(gen_dir, f'{file.name}.h'))
+      to_relative_path(gen_dir, f'{file.name}.h')
+    )
     rendering_context['includes'].append(
-        to_relative_path(gen_dir, f'{file.name}.pb.h'))
+      to_relative_path(gen_dir, f'{file.name}.pb.h')
+    )
     template = environment.get_template('domatolpm.cc.tmpl')
     _render_internal(template, rendering_context, f'{file.name}.cc')
     rendering_context['includes'] = [
-        to_relative_path(gen_dir, f'{file.name}.pb.h')
+      to_relative_path(gen_dir, f'{file.name}.pb.h')
     ]
     template = environment.get_template('domatolpm.h.tmpl')
     _render_internal(template, rendering_context, f'{file.name}.h')
   _, root_func = builder.get_root()
 
   rendering_context = {
-      'includes':
-      [to_relative_path(gen_dir, f'{file.name}.h')
-       for file in files] + [f'{os.path.basename(out_f)}.pb.h'],
-      'functions': [],
-      'oneoffunctions': [],
-      'stfunctions': [],
-      'root':
-      root_func,
-      'generate_root':
-      True,
-      'generate_repeated_lines':
-      builder.root == 'line',
-      'generate_one_line_handler':
-      builder.root == 'line',
-      'line_prefix':
-      builder.get_line_prefix(),
-      'line_suffix':
-      builder.get_line_suffix(),
-      'proto_ns':
-      to_cpp_ns(f'{BASE_PROTO_NS}.{name}'),
-      'cpp_ns':
-      f'domatolpm::{name}',
+    'includes': [to_relative_path(gen_dir, f'{file.name}.h') for file in files]
+    + [f'{os.path.basename(out_f)}.pb.h'],
+    'functions': [],
+    'oneoffunctions': [],
+    'stfunctions': [],
+    'root': root_func,
+    'generate_root': True,
+    'generate_repeated_lines': builder.root == 'line',
+    'generate_one_line_handler': builder.root == 'line',
+    'line_prefix': builder.get_line_prefix(),
+    'line_suffix': builder.get_line_suffix(),
+    'proto_ns': to_cpp_ns(f'{BASE_PROTO_NS}.{name}'),
+    'cpp_ns': f'domatolpm::{name}',
   }
   template = environment.get_template('domatolpm.cc.tmpl')
   _render_internal(template, rendering_context, f'{out_f}.cc')
@@ -1300,48 +1367,56 @@ def render_cpp(environment: jinja2.Environment, gen_dir: str, out_f: str,
 
 def main():
   parser = argparse.ArgumentParser(
-      description=
-      'Generate the necessary files for DomatoLPM to function properly.')
-  parser.add_argument('-p',
-                      '--path',
-                      required=True,
-                      help='The path to a Domato grammar file.')
-  parser.add_argument('-n',
-                      '--name',
-                      required=True,
-                      help='The name of this grammar.')
+    description=(
+      'Generate the necessary files for DomatoLPM to function properly.'
+    )
+  )
   parser.add_argument(
-      '-f',
-      '--file-format',
-      required=True,
-      help='The path prefix to which the files should be generated.')
-  parser.add_argument('-d',
-                      '--generated-dir',
-                      required=True,
-                      help='The path to the target gen directory.')
-  parser.add_argument('-s',
-                      '--stabilize-grammar',
-                      required=False,
-                      default=False,
-                      action='store_true',
-                      help='Whether we should stabilize the proto generation.'
-                      'Grammars should not have duplicate lines')
+    '-p', '--path', required=True, help='The path to a Domato grammar file.'
+  )
+  parser.add_argument(
+    '-n', '--name', required=True, help='The name of this grammar.'
+  )
+  parser.add_argument(
+    '-f',
+    '--file-format',
+    required=True,
+    help='The path prefix to which the files should be generated.',
+  )
+  parser.add_argument(
+    '-d',
+    '--generated-dir',
+    required=True,
+    help='The path to the target gen directory.',
+  )
+  parser.add_argument(
+    '-s',
+    '--stabilize-grammar',
+    required=False,
+    default=False,
+    action='store_true',
+    help='Whether we should stabilize the proto generation.'
+    'Grammars should not have duplicate lines',
+  )
 
   args = parser.parse_args()
   g = grammar.Grammar()
   g.parse_from_file(filename=args.path)
 
-  template_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                              'templates')
+  template_dir = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)), 'templates'
+  )
   environment = jinja2.Environment(loader=jinja2.FileSystemLoader(template_dir))
   builder = DomatoBuilder(g, args.stabilize_grammar)
   builder.parse_grammar()
   builder.simplify()
   files = builder.split_files(f'{args.file_format}_sub', file_num=12)
-  render_cpp(environment, args.generated_dir, args.file_format, args.name,
-             builder, files)
-  render_proto(environment, args.generated_dir, args.file_format, args.name,
-               builder, files)
+  render_cpp(
+    environment, args.generated_dir, args.file_format, args.name, builder, files
+  )
+  render_proto(
+    environment, args.generated_dir, args.file_format, args.name, builder, files
+  )
 
 
 if __name__ == '__main__':

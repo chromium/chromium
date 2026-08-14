@@ -29,8 +29,9 @@ NATIVE_MESSAGING_DIR = 'NativeMessagingHosts'
 # under the temp folder.
 ISOLATE_CHROMOTING_HOST_PATH = 'remoting/host/linux/linux_me2me_host.py'
 ISOLATE_TEMP_FOLDER = os.path.abspath(os.path.join(os.getcwd(), '../..'))
-CHROMOTING_HOST_PATH = os.path.join(ISOLATE_TEMP_FOLDER,
-                                    ISOLATE_CHROMOTING_HOST_PATH)
+CHROMOTING_HOST_PATH = os.path.join(
+  ISOLATE_TEMP_FOLDER, ISOLATE_CHROMOTING_HOST_PATH
+)
 MAX_RETRIES = 1
 
 
@@ -50,9 +51,9 @@ def RunCommandInSubProcess(command):
   cmd_line = [command]
   try:
     print('Going to run:\n%s' % command)
-    results = subprocess.check_output(cmd_line,
-                                      stderr=subprocess.STDOUT,
-                                      shell=True)
+    results = subprocess.check_output(
+      cmd_line, stderr=subprocess.STDOUT, shell=True
+    )
   except subprocess.CalledProcessError as e:
     results = e.output
   finally:
@@ -108,8 +109,9 @@ def InitialiseTestMachineForLinux(cfg_file):
   default_config_file_name = 'host#%s.json' % HOST_HASH_VALUE
   config_file_src = os.path.join(os.getcwd(), cfg_file)
   shutil.copyfile(
-      config_file_src,
-      os.path.join(default_config_file_location, default_config_file_name))
+    config_file_src,
+    os.path.join(default_config_file_location, default_config_file_name),
+  )
 
   # Make sure chromoting host is running.
   RestartMe2MeHost()
@@ -158,12 +160,14 @@ def RestartMe2MeHost():
 
 
 def CleanupUserProfileDir(args):
-  SetupUserProfileDir(args.me2me_manifest_file, args.it2me_manifest_file,
-                      args.user_profile_dir)
+  SetupUserProfileDir(
+    args.me2me_manifest_file, args.it2me_manifest_file, args.user_profile_dir
+  )
 
 
-def SetupUserProfileDir(me2me_manifest_file, it2me_manifest_file,
-                        user_profile_dir):
+def SetupUserProfileDir(
+  me2me_manifest_file, it2me_manifest_file, user_profile_dir
+):
   """Sets up the Google Chrome user profile directory.
 
   Delete the previous user profile directory if exists and create a new one.
@@ -188,8 +192,9 @@ def SetupUserProfileDir(me2me_manifest_file, it2me_manifest_file,
   manifest_files = [me2me_manifest_file, it2me_manifest_file]
   for manifest_file in manifest_files:
     manifest_file_src = os.path.join(os.getcwd(), manifest_file)
-    manifest_file_dest = (os.path.join(native_messaging_folder,
-                                       os.path.basename(manifest_file)))
+    manifest_file_dest = os.path.join(
+      native_messaging_folder, os.path.basename(manifest_file)
+    )
     shutil.copyfile(manifest_file_src, manifest_file_dest)
 
 
@@ -207,8 +212,10 @@ def PrintHostLogContents(host_log_files=None):
     host_log_contents = ''
     for log_file in sorted(host_log_files):
       with open(log_file, 'r') as log:
-        host_log_contents += '\nHOST LOG %s\n CONTENTS:\n%s' % (log_file,
-                                                                log.read())
+        host_log_contents += '\nHOST LOG %s\n CONTENTS:\n%s' % (
+          log_file,
+          log.read(),
+        )
     print(host_log_contents)
 
 

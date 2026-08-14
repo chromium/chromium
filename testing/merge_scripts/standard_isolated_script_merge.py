@@ -25,9 +25,13 @@ def StandardIsolatedScriptMerge(output_json, summary_json, jsons_to_merge):
     with open(summary_json) as f:
       summary = json.load(f)
   except (IOError, ValueError):
-    print(('summary.json is missing or can not be read',
-           'Something is seriously wrong with swarming client or the bot.'),
-          file=sys.stderr)
+    print(
+      (
+        'summary.json is missing or can not be read',
+        'Something is seriously wrong with swarming client or the bot.',
+      ),
+      file=sys.stderr,
+    )
     return 1
 
   missing_shards = []
@@ -35,8 +39,9 @@ def StandardIsolatedScriptMerge(output_json, summary_json, jsons_to_merge):
   for index, result in enumerate(summary['shards']):
     output_path = None
     if result:
-      output_path = find_shard_output_path(index, result.get('task_id'),
-                                           jsons_to_merge)
+      output_path = find_shard_output_path(
+        index, result.get('task_id'), jsons_to_merge
+      )
     if not output_path:
       missing_shards.append(index)
       continue
@@ -74,9 +79,15 @@ def find_shard_output_path(index, task_id, jsons_to_merge):
   """
   # 'output.json' is set in swarming/api.py, gtest_task method.
   matching_json_files = [
-      j for j in jsons_to_merge if (os.path.basename(j) == 'output.json' and (
-          os.path.basename(os.path.dirname(j)) == str(index)
-          or os.path.basename(os.path.dirname(j)) == task_id))
+    j
+    for j in jsons_to_merge
+    if (
+      os.path.basename(j) == 'output.json'
+      and (
+        os.path.basename(os.path.dirname(j)) == str(index)
+        or os.path.basename(os.path.dirname(j)) == task_id
+      )
+    )
   ]
 
   if not matching_json_files:
@@ -92,8 +103,9 @@ def find_shard_output_path(index, task_id, jsons_to_merge):
 def main(raw_args):
   parser = merge_api.ArgumentParser()
   args = parser.parse_args(raw_args)
-  return StandardIsolatedScriptMerge(args.output_json, args.summary_json,
-                                     args.jsons_to_merge)
+  return StandardIsolatedScriptMerge(
+    args.output_json, args.summary_json, args.jsons_to_merge
+  )
 
 
 if __name__ == '__main__':

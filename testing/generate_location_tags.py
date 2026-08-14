@@ -28,25 +28,27 @@ import find_depot_tools
 
 def main():
   parser = argparse.ArgumentParser()
-  parser.add_argument('-o',
-                      '--out',
-                      required=True,
-                      help='path to write location tag metadata to')
+  parser.add_argument(
+    '-o', '--out', required=True, help='path to write location tag metadata to'
+  )
   args = parser.parse_args()
 
   logging.basicConfig(level=logging.WARNING)
 
   # ".git" is a directory in full checkouts, but a file in work trees.
   if not os.path.exists(os.path.join(SRC_DIR, '.git')):
-    logging.warning('Skip generating location tags because the script is not '
-                    'running in a git repository')
+    logging.warning(
+      'Skip generating location tags because the script is not '
+      'running in a git repository'
+    )
     return 0
 
   exe = os.path.join(find_depot_tools.DEPOT_TOOLS_PATH, 'dirmd')
   if sys.platform == 'win32':
     exe = exe + '.bat'
 
-  return subprocess.call([
+  return subprocess.call(
+    [
       exe,
       'location-tags',
       '-out',
@@ -55,7 +57,8 @@ def main():
       SRC_DIR,
       '-repo',
       'https://chromium.googlesource.com/chromium/src',
-  ])
+    ]
+  )
 
 
 if __name__ == '__main__':

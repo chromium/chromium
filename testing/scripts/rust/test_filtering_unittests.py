@@ -20,6 +20,7 @@ from test_filtering import _SetOfTestFiltersGroups
 # Protected access is allowed for unittests.
 # pylint: disable=protected-access
 
+
 class FilterTests(fake_filesystem_unittest.TestCase):
     def test_exact_match(self):
         t = _TestFilter('foo')
@@ -61,8 +62,9 @@ class FilterTests(fake_filesystem_unittest.TestCase):
 
 def _create_group_from_pseudo_file(file_contents):
     # pylint: disable=unexpected-keyword-arg
-    with tempfile.NamedTemporaryFile(delete=False, mode='w',
-                                     encoding='utf-8') as f:
+    with tempfile.NamedTemporaryFile(
+        delete=False, mode='w', encoding='utf-8'
+    ) as f:
         filepath = f.name
         f.write(file_contents)
     try:
@@ -176,15 +178,14 @@ class SetOfFilterGroupsTests(fake_filesystem_unittest.TestCase):
     def setUpClass(cls):
         # `_filter1`, `_filter2`, and `_tests` are based on the setup described
         # in test_executable_api.md#examples
-        cls._filter1 = _TestFiltersGroup.from_string(
-            'Foo.Bar.*::-Foo.Bar.bar3')
+        cls._filter1 = _TestFiltersGroup.from_string('Foo.Bar.*::-Foo.Bar.bar3')
         cls._filter2 = _TestFiltersGroup.from_string('Foo.Bar.bar2')
         cls._tests = [
             'Foo.Bar.bar1',
             'Foo.Bar.bar2',
             'Foo.Bar.bar3',
             'Foo.Baz.baz',  # TODO: Fix typo in test_executable_api.md
-            'Foo.Quux.quux'
+            'Foo.Quux.quux',
         ]
 
     def test_basics(self):
@@ -193,16 +194,19 @@ class SetOfFilterGroupsTests(fake_filesystem_unittest.TestCase):
         # and
         # test_executable_api.md#using-a-filter-file
         s = _SetOfTestFiltersGroups([self._filter1])
-        self.assertEqual(['Foo.Bar.bar1', 'Foo.Bar.bar2'],
-                         s.filter_test_names(self._tests))
+        self.assertEqual(
+            ['Foo.Bar.bar1', 'Foo.Bar.bar2'], s.filter_test_names(self._tests)
+        )
 
     def test_combining_multiple_filters1(self):
         # This test corresponds to the first test under
         # test_executable_api.md#combining-multiple-filters
-        s = _SetOfTestFiltersGroups([
-            _TestFiltersGroup.from_string('Foo.Bar.*'),
-            _TestFiltersGroup.from_string('Foo.Bar.bar2')
-        ])
+        s = _SetOfTestFiltersGroups(
+            [
+                _TestFiltersGroup.from_string('Foo.Bar.*'),
+                _TestFiltersGroup.from_string('Foo.Bar.bar2'),
+            ]
+        )
         self.assertEqual(['Foo.Bar.bar2'], s.filter_test_names(self._tests))
 
     def test_combining_multiple_filters2(self):
@@ -210,10 +214,12 @@ class SetOfFilterGroupsTests(fake_filesystem_unittest.TestCase):
         # test_executable_api.md#combining-multiple-filters
         # TODO(lukasza@chromium.org): Figure out if the 3rd test example from
         # the docs has correct inputs+outputs (or if there are some typos).
-        s = _SetOfTestFiltersGroups([
-            _TestFiltersGroup.from_string('Foo.Bar.*'),
-            _TestFiltersGroup.from_string('Foo.Baz.baz')
-        ])
+        s = _SetOfTestFiltersGroups(
+            [
+                _TestFiltersGroup.from_string('Foo.Bar.*'),
+                _TestFiltersGroup.from_string('Foo.Baz.baz'),
+            ]
+        )
         self.assertEqual([], s.filter_test_names(self._tests))
 
 
@@ -221,20 +227,24 @@ class PublicApiTests(fake_filesystem_unittest.TestCase):
     def test_filter_cmdline_arg(self):
         parser = argparse.ArgumentParser()
         test_filtering.add_cmdline_args(parser)
-        args = parser.parse_args(args=[
-            '--isolated-script-test-filter=-barbaz',
-            '--isolated-script-test-filter=foo*::bar*'
-        ])
+        args = parser.parse_args(
+            args=[
+                '--isolated-script-test-filter=-barbaz',
+                '--isolated-script-test-filter=foo*::bar*',
+            ]
+        )
         self.assertEqual(
             ['foo1', 'foo2', 'bar1', 'bar2'],
             test_filtering.filter_tests(
-                args, {}, ['foo1', 'foo2', 'bar1', 'bar2', 'barbaz', 'zzz']))
+                args, {}, ['foo1', 'foo2', 'bar1', 'bar2', 'barbaz', 'zzz']
+            ),
+        )
 
     def test_filter_file_cmdline_arg(self):
         # pylint: disable=unexpected-keyword-arg
-        f = tempfile.NamedTemporaryFile(delete=False,
-                                        mode='w',
-                                        encoding='utf-8')
+        f = tempfile.NamedTemporaryFile(
+            delete=False, mode='w', encoding='utf-8'
+        )
         try:
             filepath = f.name
             f.write('foo*')
@@ -242,12 +252,17 @@ class PublicApiTests(fake_filesystem_unittest.TestCase):
 
             parser = argparse.ArgumentParser()
             test_filtering.add_cmdline_args(parser)
-            args = parser.parse_args(args=[
-                '--isolated-script-test-filter-file={0:s}'.format(filepath)
-            ])
-            self.assertEqual(['foo1', 'foo2'],
-                             test_filtering.filter_tests(
-                                 args, {}, ['foo1', 'foo2', 'bar1', 'bar2']))
+            args = parser.parse_args(
+                args=[
+                    '--isolated-script-test-filter-file={0:s}'.format(filepath)
+                ]
+            )
+            self.assertEqual(
+                ['foo1', 'foo2'],
+                test_filtering.filter_tests(
+                    args, {}, ['foo1', 'foo2', 'bar1', 'bar2']
+                ),
+            )
         finally:
             os.remove(filepath)
 
@@ -265,38 +280,37 @@ class ShardingTest(unittest.TestCase):
     def test_basic_sharding(self):
         self.assertEqual(
             'a,c,e',
-            _shard_tests('a,b,c,d,e', {
-                'GTEST_SHARD_INDEX': '0',
-                'GTEST_TOTAL_SHARDS': '2'
-            }))
+            _shard_tests(
+                'a,b,c,d,e',
+                {'GTEST_SHARD_INDEX': '0', 'GTEST_TOTAL_SHARDS': '2'},
+            ),
+        )
         self.assertEqual(
             'b,d',
-            _shard_tests('a,b,c,d,e', {
-                'GTEST_SHARD_INDEX': '1',
-                'GTEST_TOTAL_SHARDS': '2'
-            }))
+            _shard_tests(
+                'a,b,c,d,e',
+                {'GTEST_SHARD_INDEX': '1', 'GTEST_TOTAL_SHARDS': '2'},
+            ),
+        )
 
     def test_error_conditions(self):
         # shard index > total shards
         with self.assertRaises(Exception):
-            _shard_tests('', {
-                'GTEST_SHARD_INDEX': '2',
-                'GTEST_TOTAL_SHARDS': '2'
-            })
+            _shard_tests(
+                '', {'GTEST_SHARD_INDEX': '2', 'GTEST_TOTAL_SHARDS': '2'}
+            )
 
         # non-integer shard index
         with self.assertRaises(Exception):
-            _shard_tests('', {
-                'GTEST_SHARD_INDEX': 'a',
-                'GTEST_TOTAL_SHARDS': '2'
-            })
+            _shard_tests(
+                '', {'GTEST_SHARD_INDEX': 'a', 'GTEST_TOTAL_SHARDS': '2'}
+            )
 
         # non-integer total shards
         with self.assertRaises(Exception):
-            _shard_tests('', {
-                'GTEST_SHARD_INDEX': '0',
-                'GTEST_TOTAL_SHARDS': 'b'
-            })
+            _shard_tests(
+                '', {'GTEST_SHARD_INDEX': '0', 'GTEST_TOTAL_SHARDS': 'b'}
+            )
 
 
 if __name__ == '__main__':

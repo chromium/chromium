@@ -24,11 +24,11 @@ import common
 
 
 class CastCoreIntegrationTestAdapter(common.BaseIsolatedScriptArgsAdapter):
-
   # Overriding parent implementation.
   # pylint: disable=no-self-use
   def generate_test_output_args(self, output):
     return ['--write-full-results-to', output]
+
   # pylint: enable=no-self-use
 
 
@@ -47,8 +47,8 @@ if __name__ == '__main__':
   # Conform minimally to the protocol defined by ScriptTest.
   if 'compile_targets' in sys.argv:
     funcs = {
-        'run': None,
-        'compile_targets': main_compile_targets,
+      'run': None,
+      'compile_targets': main_compile_targets,
     }
     sys.exit(common.run_script(sys.argv[1:], funcs))
   sys.exit(main())

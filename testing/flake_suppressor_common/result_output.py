@@ -18,13 +18,20 @@ TestToUrlListType = Dict[str, UrlListType]
 SuiteToTestsType = Dict[str, TestToUrlListType]
 ConfigGroupedStringMapType = Dict[str, SuiteToTestsType]
 
-NodeType = Union[UrlListType, StringTagsToUrlsType, TestToStringTagsType,
-                 StringMapType, TestToUrlListType, SuiteToTestsType,
-                 ConfigGroupedStringMapType]
+NodeType = Union[
+  UrlListType,
+  StringTagsToUrlsType,
+  TestToStringTagsType,
+  StringMapType,
+  TestToUrlListType,
+  SuiteToTestsType,
+  ConfigGroupedStringMapType,
+]
 
 
-def GenerateHtmlOutputFile(aggregated_results: ct.AggregatedResultsType,
-                           outfile: Optional[IO] = None) -> None:
+def GenerateHtmlOutputFile(
+  aggregated_results: ct.AggregatedResultsType, outfile: Optional[IO] = None
+) -> None:
   """Generates an HTML results file.
 
   Args:
@@ -32,7 +39,8 @@ def GenerateHtmlOutputFile(aggregated_results: ct.AggregatedResultsType,
     outfile: A file-like object to output to. Will create one if not provided.
   """
   outfile = outfile or tempfile.NamedTemporaryFile(
-      mode='w', delete=False, suffix='.html')
+    mode='w', delete=False, suffix='.html'
+  )
   try:
     outfile.write('<html>\n<body>\n')
     string_map = _ConvertAggregatedResultsToStringMap(aggregated_results)
@@ -45,8 +53,9 @@ def GenerateHtmlOutputFile(aggregated_results: ct.AggregatedResultsType,
   print('HTML results: %s' % outfile.name)
 
 
-def _OutputMapToHtmlFile(string_map: StringMapType, result_header: str,
-                         output_file: IO) -> None:
+def _OutputMapToHtmlFile(
+  string_map: StringMapType, result_header: str, output_file: IO
+) -> None:
   """Outputs a map to a file as a nested list.
 
   Args:
@@ -84,7 +93,8 @@ def _RecursiveHtmlToFile(node: NodeType, output_file: IO) -> None:
 
 
 def _ConvertAggregatedResultsToStringMap(
-    aggregated_results: ct.AggregatedResultsType) -> StringMapType:
+  aggregated_results: ct.AggregatedResultsType,
+) -> StringMapType:
   """Converts aggregated results to a format usable by _RecursiveHtmlToFile.
 
   Specifically, updates the string representation of the typ tags and replaces
@@ -108,14 +118,15 @@ def _ConvertAggregatedResultsToStringMap(
     for test, tag_map in test_map.items():
       for typ_tags, build_url_list in tag_map.items():
         str_typ_tags = ' '.join(typ_tags)
-        string_map.setdefault(suite,
-                              {}).setdefault(test,
-                                             {})[str_typ_tags] = build_url_list
+        string_map.setdefault(suite, {}).setdefault(test, {})[str_typ_tags] = (
+          build_url_list
+        )
   return string_map
 
 
-def _ConvertFromTestGroupingToConfigGrouping(string_map: StringMapType
-                                             ) -> ConfigGroupedStringMapType:
+def _ConvertFromTestGroupingToConfigGrouping(
+  string_map: StringMapType,
+) -> ConfigGroupedStringMapType:
   """Converts |string| map to be grouped by typ tags/configuration.
 
   Args:
@@ -135,6 +146,7 @@ def _ConvertFromTestGroupingToConfigGrouping(string_map: StringMapType
   for suite, test_map in string_map.items():
     for test, tag_map in test_map.items():
       for typ_tags, build_urls in tag_map.items():
-        converted_map.setdefault(typ_tags, {}).setdefault(suite,
-                                                          {})[test] = build_urls
+        converted_map.setdefault(typ_tags, {}).setdefault(suite, {})[test] = (
+          build_urls
+        )
   return converted_map

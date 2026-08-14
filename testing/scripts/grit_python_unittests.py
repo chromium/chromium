@@ -14,17 +14,22 @@ import common
 
 
 def main_run(args):
-  rc = common.run_command([
+  rc = common.run_command(
+    [
       sys.executable,
-      os.path.join(common.SRC_DIR, 'tools', 'grit', 'grit',
-                   'test_suite_all.py'),
-  ])
+      os.path.join(
+        common.SRC_DIR, 'tools', 'grit', 'grit', 'test_suite_all.py'
+      ),
+    ]
+  )
 
   json.dump(
-      {
-          'valid': True,
-          'failures': ['Please refer to stdout for errors.'] if rc else [],
-      }, args.output)
+    {
+      'valid': True,
+      'failures': ['Please refer to stdout for errors.'] if rc else [],
+    },
+    args.output,
+  )
 
   return rc
 
@@ -35,7 +40,7 @@ def main_compile_targets(args):
 
 if __name__ == '__main__':
   funcs = {
-      'run': main_run,
-      'compile_targets': main_compile_targets,
+    'run': main_run,
+    'compile_targets': main_compile_targets,
   }
   sys.exit(common.run_script(sys.argv[1:], funcs))

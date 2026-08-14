@@ -27,10 +27,12 @@ XVFB_TEST_SCRIPT = TEST_FILE.replace('_unittest', '_test_script')
 
 def launch_process(args):
   """Launches a sub process to run through xvfb.py."""
-  return subprocess.Popen([XVFB, XVFB_TEST_SCRIPT] + args,
-                          stdout=subprocess.PIPE,
-                          stderr=subprocess.STDOUT,
-                          env=os.environ.copy())
+  return subprocess.Popen(
+    [XVFB, XVFB_TEST_SCRIPT] + args,
+    stdout=subprocess.PIPE,
+    stderr=subprocess.STDOUT,
+    env=os.environ.copy(),
+  )
 
 
 # pylint: disable=inconsistent-return-statements
@@ -52,7 +54,6 @@ def send_signal(proc, sig, sleep_time=0.3):
 
 
 class XvfbLinuxTest(unittest.TestCase):
-
   def setUp(self):
     super(XvfbLinuxTest, self).setUp()
     if not sys.platform.startswith('linux'):
@@ -82,9 +83,9 @@ class XvfbLinuxTest(unittest.TestCase):
 
   def test_x11_environment_does_not_inherit_wayland_session(self):
     env = {
-        'WAYLAND_DISPLAY': 'wayland-test',
-        'WAYLAND_SOCKET': '10',
-        'XDG_SESSION_TYPE': 'wayland',
+      'WAYLAND_DISPLAY': 'wayland-test',
+      'WAYLAND_SOCKET': '10',
+      'XDG_SESSION_TYPE': 'wayland',
     }
     with mock.patch.object(xvfb, '_run_with_x11', return_value=0) as run_x11:
       self.assertEqual(xvfb.run_executable(['test-command'], env), 0)
@@ -99,7 +100,7 @@ class XvfbLinuxTest(unittest.TestCase):
     for proc in self._procs:
       proc.wait()
     display_list = [
-        read_subprocess_message(p, 'Display :') for p in self._procs
+      read_subprocess_message(p, 'Display :') for p in self._procs
     ]
     for display in display_list:
       self.assertIsNotNone(display)  # Openbox likely failed to open DISPLAY
@@ -113,7 +114,6 @@ class XvfbLinuxTest(unittest.TestCase):
 
 
 class XvfbTest(unittest.TestCase):
-
   def setUp(self):
     super(XvfbTest, self).setUp()
     if sys.platform == 'win32':
@@ -123,7 +123,7 @@ class XvfbTest(unittest.TestCase):
   def test_send_sigint(self):
     self._proc = launch_process(['--sleep'])
     # Give time for subprocess to install signal handlers
-    time.sleep(.3)
+    time.sleep(0.3)
     send_signal(self._proc, signal.SIGINT, 1)
     sig = read_subprocess_message(self._proc, 'Signal :')
     self.assertIsNotNone(sig)  # OpenBox likely failed to start
@@ -132,7 +132,7 @@ class XvfbTest(unittest.TestCase):
   def test_send_sigterm(self):
     self._proc = launch_process(['--sleep'])
     # Give time for subprocess to install signal handlers
-    time.sleep(.3)
+    time.sleep(0.3)
     send_signal(self._proc, signal.SIGTERM, 1)
     sig = read_subprocess_message(self._proc, 'Signal :')
     self.assertIsNotNone(sig)  # OpenBox likely failed to start

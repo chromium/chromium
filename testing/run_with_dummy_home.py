@@ -29,8 +29,13 @@ def _set_up_dummy_home(original_home, dummy_home):
 
   # Prevent fontconfig etc. from reconstructing the cache and symlink rr
   # trace directory.
-  for dirpath in [['.cache'], ['.local', 'share', 'rr'], ['.vpython'],
-                  ['.vpython_cipd_cache'], ['.vpython-root']]:
+  for dirpath in [
+    ['.cache'],
+    ['.local', 'share', 'rr'],
+    ['.vpython'],
+    ['.vpython_cipd_cache'],
+    ['.vpython-root'],
+  ]:
     original_path = os.path.join(original_home, *dirpath)
     if not os.path.exists(original_path):
       continue

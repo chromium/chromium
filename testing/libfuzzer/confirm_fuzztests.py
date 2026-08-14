@@ -16,27 +16,29 @@ import sys
 
 # //build imports.
 sys.path.append(
-    os.path.join(
-        os.path.dirname(os.path.abspath(__file__)),
-        os.pardir,
-        os.pardir,
-        'build',
-    ))
+  os.path.join(
+    os.path.dirname(os.path.abspath(__file__)),
+    os.pardir,
+    os.pardir,
+    'build',
+  )
+)
 import action_helpers
 
 
 def CreateArgumentParser():
   """Creates an argparse.ArgumentParser instance."""
   parser = argparse.ArgumentParser(description='Generate fuzztest fuzzers.')
-  parser.add_argument('--executable',
-                      help='Executable to interrogate for present fuzztests.')
   parser.add_argument(
-      '--output',
-      help='Path to the output file (which will be intentionally blank).',
+    '--executable', help='Executable to interrogate for present fuzztests.'
   )
-  parser.add_argument('--fuzztests',
-                      nargs='+',
-                      help='List of fuzztests we expect to find.')
+  parser.add_argument(
+    '--output',
+    help='Path to the output file (which will be intentionally blank).',
+  )
+  parser.add_argument(
+    '--fuzztests', nargs='+', help='List of fuzztests we expect to find.'
+  )
   return parser
 
 
@@ -49,10 +51,12 @@ def main():
   env = os.environ
   env['ASAN_OPTIONS'] = 'detect_odr_violation=0'
   try:
-    process_result = subprocess.run([args.executable, '--list_fuzz_tests=1'],
-                                    env=env,
-                                    stdout=subprocess.PIPE,
-                                    check=False)
+    process_result = subprocess.run(
+      [args.executable, '--list_fuzz_tests=1'],
+      env=env,
+      stdout=subprocess.PIPE,
+      check=False,
+    )
   except OSError:
     process_result = None
 
@@ -65,18 +69,23 @@ def main():
     # change gn files correspondingly, so strip such prefixes when checking
     # that the test lists match.
     actual_tests = {
-        test.strip().replace('DISABLED_', '').replace('FLAKY_', '')
-        for test in actual_tests
+      test.strip().replace('DISABLED_', '').replace('FLAKY_', '')
+      for test in actual_tests
     }
 
     if expected_tests != actual_tests:
-      print('Unexpected fuzztests found in this binary.\nFuzztest binary: ' +
-            args.executable + '\n' +
-            'Expected fuzztests (as declared by the gn "fuzztests" variable on'
-            ' this target): ' + str(expected_tests) +
-            '\nActual tests (as found in the binary): ' + str(actual_tests) +
-            '\nYou probably need to update the gn variable to match the tests'
-            ' actually in the binary.')
+      print(
+        'Unexpected fuzztests found in this binary.\nFuzztest binary: '
+        + args.executable
+        + '\n'
+        + 'Expected fuzztests (as declared by the gn "fuzztests" variable on'
+        ' this target): '
+        + str(expected_tests)
+        + '\nActual tests (as found in the binary): '
+        + str(actual_tests)
+        + '\nYou probably need to update the gn variable to match the tests'
+        ' actually in the binary.'
+      )
       sys.exit(-1)
 
   # If we couldn't run the fuzztest binary itself, we'll

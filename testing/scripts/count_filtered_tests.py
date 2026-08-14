@@ -18,7 +18,7 @@ def ParseTestList(test_list_contents):
   fixture = None
   for line in lines:
     if '#' in line:
-      line = line[:line.index('#')]
+      line = line[: line.index('#')]
     line = line.rstrip()
     if line[0] == ' ':
       assert fixture
@@ -36,7 +36,7 @@ def LoadFilterList(filter_file):
   all_filters = []
   for line in lines:
     if '#' in line:
-      line = line[:line.index('#')]
+      line = line[: line.index('#')]
     line = line.strip()
     if not line:
       continue
@@ -57,10 +57,12 @@ def main_run(args):
   test_filter_file = args.args[1]
   base_path = args.build_dir
   list_tests_output = subprocess.check_output(
-      [os.path.join(base_path, binary_name), '--gtest_list_tests'])
+    [os.path.join(base_path, binary_name), '--gtest_list_tests']
+  )
   tests = ParseTestList(list_tests_output)
   negative_filter_list = LoadFilterList(
-      os.path.join(base_path, test_filter_file))
+    os.path.join(base_path, test_filter_file)
+  )
 
   result = {'valid': True, 'failures': []}
   result['total_tests'] = len(tests)
@@ -82,7 +84,7 @@ def main_compile_targets(args):
 
 if __name__ == '__main__':
   funcs = {
-      'run': main_run,
-      'compile_targets': main_compile_targets,
+    'run': main_run,
+    'compile_targets': main_compile_targets,
   }
   sys.exit(common.run_script(sys.argv[1:], funcs))

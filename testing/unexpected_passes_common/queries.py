@@ -47,8 +47,13 @@ QueryResult = pandas.Series
 class BigQueryQuerier:
   """Class to handle all BigQuery queries for a script invocation."""
 
-  def __init__(self, suite: Optional[str], project: str, num_samples: int,
-               keep_unmatched_results: bool):
+  def __init__(
+    self,
+    suite: Optional[str],
+    project: str,
+    num_samples: int,
+    keep_unmatched_results: bool,
+  ):
     """
     Args:
       suite: A string containing the name of the suite that is being queried
@@ -68,8 +73,9 @@ class BigQueryQuerier:
     assert self._num_samples > 0
 
   def FillExpectationMapForBuilders(
-      self, expectation_map: data_types.TestExpectationMap,
-      builders: Collection[data_types.BuilderEntry]
+    self,
+    expectation_map: data_types.TestExpectationMap,
+    builders: Collection[data_types.BuilderEntry],
   ) -> Dict[str, data_types.ResultListType]:
     """Fills |expectation_map| with results from |builders|.
 
@@ -91,8 +97,9 @@ class BigQueryQuerier:
       }
     """
     start_time = time.time()
-    logging.debug('Starting to fill expectation map for %d builders',
-                  len(builders))
+    logging.debug(
+      'Starting to fill expectation map for %d builders', len(builders)
+    )
     assert isinstance(expectation_map, data_types.TestExpectationMap)
     # Ensure that all the builders are of the same type since we make some
     # assumptions about that later on.
@@ -111,8 +118,11 @@ class BigQueryQuerier:
     matched_builders = set()
     all_unmatched_results = {}
     for internal in internal_statuses:
-      for builder_name, results, expectation_files in (
-          self.GetBuilderGroupedQueryResults(builder_type, internal)):
+      for (
+        builder_name,
+        results,
+        expectation_files,
+      ) in self.GetBuilderGroupedQueryResults(builder_type, internal):
         matching_builder = None
         for b in builders:
           if b.name == builder_name and b.is_internal_builder == internal:
@@ -121,24 +131,31 @@ class BigQueryQuerier:
 
         if not matching_builder:
           logging.warning(
-              'Did not find a matching builder for name %s and '
-              'internal status %s. This is normal if the builder '
-              'is no longer running tests (e.g. it was '
-              'experimental).', builder_name, internal)
+            'Did not find a matching builder for name %s and '
+            'internal status %s. This is normal if the builder '
+            'is no longer running tests (e.g. it was '
+            'experimental).',
+            builder_name,
+            internal,
+          )
           continue
 
         if matching_builder in matched_builders:
           raise RuntimeError(
-              f'Got query result batches matched to builder '
-              f'{matching_builder} twice - this is indicative of a malformed '
-              f'query returning results that are not sorted by builder')
+            f'Got query result batches matched to builder '
+            f'{matching_builder} twice - this is indicative of a malformed '
+            f'query returning results that are not sorted by builder'
+          )
         matched_builders.add(matching_builder)
 
-        prefixed_builder_name = '%s/%s:%s' % (matching_builder.project,
-                                              matching_builder.builder_type,
-                                              matching_builder.name)
+        prefixed_builder_name = '%s/%s:%s' % (
+          matching_builder.project,
+          matching_builder.builder_type,
+          matching_builder.name,
+        )
         unmatched_results = expectation_map.AddResultList(
-            prefixed_builder_name, results, expectation_files)
+          prefixed_builder_name, results, expectation_files
+        )
         if self._keep_unmatched_results:
           if unmatched_results:
             all_unmatched_results[prefixed_builder_name] = unmatched_results
@@ -149,9 +166,10 @@ class BigQueryQuerier:
     return all_unmatched_results
 
   def GetBuilderGroupedQueryResults(
-      self, builder_type: str, is_internal: bool
-  ) -> Generator[Tuple[str, data_types.ResultListType, Optional[List[str]]],
-                 None, None]:
+    self, builder_type: str, is_internal: bool
+  ) -> Generator[
+    Tuple[str, data_types.ResultListType, Optional[List[str]]], None, None
+  ]:
     """Generates results for all relevant builders grouped by builder name.
 
     Args:
@@ -183,7 +201,8 @@ class BigQueryQuerier:
         current_builder = row.builder_name
       if row.builder_name != current_builder:
         results_for_builder, expectation_files = self._ProcessRowsForBuilder(
-            rows_for_builder)
+          rows_for_builder
+        )
         # The processing should have cleared out all the stored rows.
         assert not rows_for_builder
         yield current_builder, results_for_builder, expectation_files
@@ -192,18 +211,23 @@ class BigQueryQuerier:
 
     if current_builder is None:
       logging.warning(
-          'Did not get any results for builder type %s and internal status %s. '
-          'Depending on where tests are run and how frequently trybots are '
-          'used for submission, this may be benign.', builder_type, is_internal)
+        'Did not get any results for builder type %s and internal status %s. '
+        'Depending on where tests are run and how frequently trybots are '
+        'used for submission, this may be benign.',
+        builder_type,
+        is_internal,
+      )
 
     if current_builder is not None and rows_for_builder:
       results_for_builder, expectation_files = self._ProcessRowsForBuilder(
-          rows_for_builder)
+        rows_for_builder
+      )
       assert not rows_for_builder
       yield current_builder, results_for_builder, expectation_files
 
-  def _GetSeriesForQuery(self,
-                         query: str) -> Generator[pandas.Series, None, None]:
+  def _GetSeriesForQuery(
+    self, query: str
+  ) -> Generator[pandas.Series, None, None]:
     """Generates results for |query|.
 
     Args:
@@ -214,15 +238,17 @@ class BigQueryQuerier:
       accessed directly as attributes.
     """
     client = bigquery.Client(
-        project=self._project,
-        default_query_job_config=bigquery.QueryJobConfig(use_legacy_sql=False))
+      project=self._project,
+      default_query_job_config=bigquery.QueryJobConfig(use_legacy_sql=False),
+    )
     job = client.query(query)
     row_iterator = job.result()
     # Using a Dataframe iterator instead of directly using |row_iterator| allows
     # us to use the BigQuery Storage API, which results in ~10x faster query
     # result retrieval at the cost of a few more dependencies.
     dataframe_iterator = row_iterator.to_dataframe_iterable(
-        bigquery_storage.BigQueryReadClient())
+      bigquery_storage.BigQueryReadClient()
+    )
     for df in dataframe_iterator:
       for _, row in df.iterrows():
         yield row
@@ -244,7 +270,7 @@ class BigQueryQuerier:
     raise NotImplementedError()
 
   def _ProcessRowsForBuilder(
-      self, rows: List[QueryResult]
+    self, rows: List[QueryResult]
   ) -> Tuple[data_types.ResultListType, Optional[List[str]]]:
     """Processes rows from a query into data_types.Result representations.
 
@@ -308,7 +334,8 @@ class BigQueryQuerier:
     return data_types.Result(test_name, tags, actual_result, step, build_id)
 
   def _GetRelevantExpectationFilesForQueryResult(
-      self, query_result: QueryResult) -> Optional[Iterable[str]]:
+    self, query_result: QueryResult
+  ) -> Optional[Iterable[str]]:
     """Gets the relevant expectation file names for a given query result.
 
     Args:
