@@ -4,6 +4,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/bind.h"
 #include "build/build_config.h"
 #include "components/viz/test/test_gpu_service_holder.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
@@ -11,6 +12,7 @@
 #include "gpu/command_buffer/client/webgpu_implementation.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
+#include "gpu/command_buffer/service/graphite_shared_context.h"
 #include "gpu/command_buffer/service/webgpu_decoder.h"
 #include "gpu/command_buffer/tests/webgpu_test.h"
 #include "gpu/config/gpu_finch_features.h"
@@ -1469,6 +1471,51 @@ TEST_P(WebGPUMailboxTextureTest, AssociateDissociateMailboxWhenNotCurrent) {
                         scoped_refptr<gl::GLSurface> gl_surface2) {},
                      std::move(gl_context1), std::move(gl_context2),
                      std::move(gl_surface1), std::move(gl_surface2)));
+}
+
+// Test that a SharedImage that is presented while still uninitialized stays
+// reported as uncleared if the Skia clear could not be inserted into the
+// Graphite context, so subsequent reads see lazy-cleared contents rather than
+// stale data.
+TEST_P(WebGPUMailboxTextureTest,
+       PresentClearLeavesSharedImageUnclearedOnInsertFailure) {
+  auto* graphite_shared_context =
+      GetGpuServiceHolder()->GetGraphiteSharedContext();
+  SKIP_TEST_IF(!graphite_shared_context);
+
+  // Create the shared image and fill it with a non-zero sentinel.
+  SharedImageInterface* sii = GetSharedImageInterface();
+  scoped_refptr<gpu::ClientSharedImage> shared_image =
+      sii->CreateSharedImage({GetParam().format,
+                              {1, 1},
+                              gfx::ColorSpace::CreateSRGB(),
+                              GetSharedImageUsage(AccessType::ReadWrite),
+                              "TestLabel"},
+                             kNullSurfaceHandle);
+  InitializeTextureColor(device_, shared_image, {1.0, 0, 0, 1.0});
+  WaitForCompletion(device_);
+
+  // Simulate a recoverable Graphite insertRecording() failure so any recorded
+  // work is dropped without losing the Skia context.
+  graphite_shared_context->set_simulated_insert_status(
+      skgpu::graphite::InsertStatus::kPromiseImageInstantiationFailed);
+
+  // Associate with DISCARD so the texture is treated as uninitialized, then
+  // present without writing. The decoder will attempt to clear via Skia and
+  // the recording insertion will be dropped.
+  wgpu::TextureDescriptor desc = {
+      .usage = wgpu::TextureUsage::RenderAttachment,
+  };
+  std::unique_ptr<WebGPUTextureScopedAccess> webgpu_scoped_access =
+      shared_image->BeginWebGPUTextureAccess(webgpu(), gpu::SyncToken(),
+                                             device_, desc, /*usage=*/0,
+                                             webgpu::WEBGPU_MAILBOX_DISCARD);
+  webgpu_scoped_access->SetNeedsPresent(true);
+
+  webgpu_impl()->SetLostContextCallback(
+      base::MakeExpectedRunClosure(FROM_HERE));
+  EXPECT_WEBGPU_DEVICE_LOST(device_, WebGPUTextureScopedAccess::EndAccess(
+                                         std::move(webgpu_scoped_access)));
 }
 
 INSTANTIATE_TEST_SUITE_P(

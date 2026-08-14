@@ -2450,10 +2450,12 @@ bool WebGPUDecoderImpl::ClearSharedImageWithSkia(const Mailbox& mailbox) {
   if (!begin_semaphores.empty()) {
     // gr_context() must not be null when begin_semaphores is not empty.
     DCHECK(shared_context_state_->gr_context());
-    bool wait_result = shared_context_state_->gr_context()->wait(
-        begin_semaphores.size(), begin_semaphores.data(),
-        /*deleteSemaphoresAfterWait=*/false);
-    DCHECK(wait_result);
+    if (!shared_context_state_->gr_context()->wait(
+            begin_semaphores.size(), begin_semaphores.data(),
+            /*deleteSemaphoresAfterWait=*/false)) {
+      DLOG(ERROR) << "ClearSharedImage: Skia GrContext wait failed";
+      return false;
+    }
   }
   auto* canvas = surface->getCanvas();
   SkColor4f clear_color;
@@ -2466,38 +2468,27 @@ bool WebGPUDecoderImpl::ClearSharedImageWithSkia(const Mailbox& mailbox) {
 
   // It's ok to pass in empty GrFlushInfo here since SignalSemaphores()
   // will populate it with semaphores and call GrDirectContext::flush.
-  bool success = true;
   if (shared_context_state_->gr_context()) {
     skgpu::ganesh::Flush(surface);
   } else {
     DCHECK(shared_context_state_->graphite_shared_context());
     DCHECK(shared_context_state_->gpu_main_graphite_recorder());
-    success = GraphiteFlushAndSubmit(
-        shared_context_state_->graphite_shared_context(),
-        shared_context_state_->gpu_main_graphite_recorder());
-  }
-  if (success) {
-    representation->SetCleared();
+    if (!GraphiteFlushAndSubmit(
+            shared_context_state_->graphite_shared_context(),
+            shared_context_state_->gpu_main_graphite_recorder())) {
+      DLOG(ERROR) << "ClearSharedImage: GraphiteFlushAndSubmit failed";
+      return false;
+    }
   }
   // Transition the image back to the desired end state. This is used for
   // transitioning the image to the external queue for Vulkan/GL interop.
   scoped_write_access->ApplyBackendSurfaceEndState();
-
-  if (!end_semaphores.empty()) {
-    // gr_context() must not be null when end_semaphores is not empty.
-    DCHECK(shared_context_state_->gr_context());
-    GrFlushInfo flush_info = {
-        .fNumSemaphores = end_semaphores.size(),
-        .fSignalSemaphores = end_semaphores.data(),
-    };
-    // Note: this is a no-op if vk_context_provider is null.
-    AddVulkanCleanupTaskForSkiaFlush(
-        shared_context_state_->vk_context_provider(), &flush_info);
-    auto flush_result = shared_context_state_->gr_context()->flush(flush_info);
-    DCHECK(flush_result == GrSemaphoresSubmitted::kYes);
-    shared_context_state_->gr_context()->submit();
+  if (!shared_context_state_->SubmitIfNecessary(
+          std::move(end_semaphores), /*need_graphite_submit=*/false)) {
+    DLOG(ERROR) << "ClearSharedImage: SharedContextState submit failed";
+    return false;
   }
-
+  representation->SetCleared();
   return true;
 }
 

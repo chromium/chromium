@@ -39,7 +39,9 @@ bool GraphiteReadPixelsSyncImpl(GraphiteSharedContext* context,
                                 size_t dst_bytes_per_row,
                                 int src_x,
                                 int src_y) {
-  GraphiteFlush(context, recorder);
+  if (!GraphiteFlush(context, recorder)) {
+    return false;
+  }
 
   ReadPixelsContext read_context;
   const SkIRect src_rect =
@@ -75,6 +77,9 @@ bool GraphiteFlush(GraphiteSharedContext* context,
 bool GraphiteFlushAndSubmit(GraphiteSharedContext* context,
                             skgpu::graphite::Recorder* recorder) {
   bool success = GraphiteFlush(context, recorder);
+  // We submit any pending GPU work despite insertRecording failing since the
+  // caller can expect any resources used to be eventually released when the
+  // submitted work is done on the GPU.
   context->submit();
   return success;
 }

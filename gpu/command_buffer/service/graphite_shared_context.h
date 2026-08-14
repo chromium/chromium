@@ -226,6 +226,10 @@ class GPU_GLES2_EXPORT GraphiteSharedContext {
 
   skgpu::GpuStatsFlags supportedGpuStats() const;
 
+  // Overrides `fSimulatedStatus` for any `insertRecording` call when passed a
+  // `status` other than `kSuccess`.
+  void set_simulated_insert_status(skgpu::graphite::InsertStatus status);
+
  private:
   class AutoLock;
 
@@ -254,6 +258,9 @@ class GPU_GLES2_EXPORT GraphiteSharedContext {
   size_t num_pending_recordings_ = 0;
 
   raw_ptr<Delegate> delegate_ = nullptr;
+
+  skgpu::graphite::InsertStatus simulated_insert_status_ =
+      skgpu::graphite::InsertStatus::kSuccess;
 };
 
 }  // namespace gpu

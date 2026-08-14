@@ -21,7 +21,10 @@ WrappedGraphiteTextureHolder::WrappedGraphiteTextureHolder(
 WrappedGraphiteTextureHolder::~WrappedGraphiteTextureHolder() {
   auto destroy_resource = [](scoped_refptr<SharedContextState> context_state,
                              skgpu::graphite::BackendTexture texture) {
-    if (texture.isValid()) {
+    // It's possible in some tests that teardown with unsubmitted commands for
+    // the WrappedGraphiteTextureHolder to be released after the GraphiteDawn
+    // context has been nulled out and is in the middle of being torn down.
+    if (context_state->graphite_shared_context() && texture.isValid()) {
       context_state->graphite_shared_context()->deleteBackendTexture(texture);
     }
   };
