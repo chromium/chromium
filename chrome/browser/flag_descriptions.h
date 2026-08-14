@@ -5190,12 +5190,6 @@ inline constexpr char kUsePLinkInHelpDescription[] =
     "When enabled, Open-to-Content and P-links are used for Google help pages; "
     "Otherwise, the deprecated Open-to-Article is used";
 
-inline constexpr char kUserFeedbackAllowedPolicyName[] =
-    "User Feedback Allowed Policy";
-inline constexpr char kUserFeedbackAllowedPolicyDescription[] =
-    "When enabled, the UserFeedbackAllowed policy is respected. "
-    "Otherwise, user feedback is always allowed.";
-
 inline constexpr char kUserValueDefaultBrowserStringsName[] =
     "Default Browser settings page - updated strings";
 inline constexpr char kUserValueDefaultBrowserStringsDescription[] =

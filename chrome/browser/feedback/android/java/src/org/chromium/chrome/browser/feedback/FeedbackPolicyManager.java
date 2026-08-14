@@ -12,7 +12,6 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -90,9 +89,6 @@ public class FeedbackPolicyManager {
      * @return True if the user feedback is allowed by enterprise policy. Safe to call pre-native.
      */
     public boolean isUserFeedbackAllowed() {
-        if (!ChromeFeatureList.sUserFeedbackAllowedPolicy.isEnabled()) {
-            return true; // Default fallback when flag is disabled
-        }
         return mSharedPreferenceManager.readBoolean(
                 ChromePreferenceKeys.POLICY_USER_FEEDBACK_ALLOWED, true);
     }

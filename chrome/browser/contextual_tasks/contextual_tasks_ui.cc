@@ -154,15 +154,11 @@ void UpdateDarkModePreferenceFromUrl(content::WebContents* wc,
 }
 
 bool IsUserFeedbackAllowed(Profile* profile) {
-  bool is_user_feedback_allowed = true;
 #if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(
-          chrome::android::kUserFeedbackAllowedPolicy)) {
-    is_user_feedback_allowed =
-        profile->GetPrefs()->GetBoolean(prefs::kUserFeedbackAllowed);
-  }
+  return profile->GetPrefs()->GetBoolean(prefs::kUserFeedbackAllowed);
+#else
+  return true;
 #endif
-  return is_user_feedback_allowed;
 }
 
 std::string GetEncodedHandshakeMessage() {

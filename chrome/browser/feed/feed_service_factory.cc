@@ -217,10 +217,7 @@ FeedServiceFactory::BuildServiceInstanceForBrowserContext(
           profile);
   chrome_info.is_new_tab_search_engine_url_android_enabled =
       regional_capabilities->IsInEeaCountry();
-  if (base::FeatureList::IsEnabled(
-          chrome::android::kUserFeedbackAllowedPolicy)) {
-    chrome_info.user_feedback_allowed_pref_key = ::prefs::kUserFeedbackAllowed;
-  }
+  chrome_info.user_feedback_allowed_pref_key = ::prefs::kUserFeedbackAllowed;
 #else
   chrome_info.is_new_tab_search_engine_url_android_enabled = false;
 #endif
