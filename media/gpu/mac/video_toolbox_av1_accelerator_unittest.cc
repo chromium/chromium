@@ -133,4 +133,70 @@ TEST_F(VideoToolboxAV1AcceleratorTest, DecodeSuperframe) {
   EXPECT_THAT(data2, ElementsAreArray(show_existing_frame_data));
 }
 
+TEST_F(VideoToolboxAV1AcceleratorTest, InvalidAV1CBox) {
+  // Data without sequence header OBU will fail to yield valid av1C.
+  constexpr uint8_t invalid_data[] = {0x01, 0x02, 0x03, 0x04};
+
+  libgav1::ObuSequenceHeader sequence_header = {};
+  sequence_header.profile = libgav1::kProfile0;
+  sequence_header.color_config.bitdepth = 8;
+
+  const AV1ReferenceFrameVector ref_frames;
+  const libgav1::Vector<libgav1::TileBuffer> tile_buffers;
+
+  scoped_refptr<AV1Picture> pic = accelerator_->CreateAV1Picture(false);
+  pic->frame_header.width = 320;
+  pic->frame_header.height = 240;
+
+  accelerator_->SetStream(base::span(invalid_data), nullptr);
+  EXPECT_EQ(accelerator_->SubmitDecode(*pic, sequence_header, ref_frames,
+                                       tile_buffers, base::span(invalid_data)),
+            AV1Decoder::AV1Accelerator::Status::kFail);
+}
+
+TEST_F(VideoToolboxAV1AcceleratorTest,
+       BitDepthChangeTriggersFormatRegeneration) {
+  constexpr uint8_t frame_data[] = {0x0a, 0x0b, 0x00, 0x00, 0x00, 0x04, 0x3c,
+                                    0xff, 0xbc, 0xfb, 0xf9, 0x80, 0x40};
+
+  const AV1ReferenceFrameVector ref_frames;
+  const libgav1::Vector<libgav1::TileBuffer> tile_buffers;
+
+  scoped_refptr<AV1Picture> pic = accelerator_->CreateAV1Picture(false);
+  pic->frame_header.width = 320;
+  pic->frame_header.height = 240;
+  pic->set_visible_rect(gfx::Rect(320, 240));
+
+  VideoToolboxDecompressionSessionMetadata metadata_8bit;
+  VideoToolboxDecompressionSessionMetadata metadata_10bit;
+
+  // First decode: 8-bit.
+  libgav1::ObuSequenceHeader sequence_header_8bit = {};
+  sequence_header_8bit.profile = libgav1::kProfile0;
+  sequence_header_8bit.color_config.bitdepth = 8;
+
+  EXPECT_CALL(*this, OnDecode(_, _, _)).WillOnce(SaveArg<1>(&metadata_8bit));
+  EXPECT_CALL(*this, OnOutput(_));
+  accelerator_->SetStream(base::span(frame_data), nullptr);
+  EXPECT_EQ(accelerator_->SubmitDecode(*pic, sequence_header_8bit, ref_frames,
+                                       tile_buffers, base::span(frame_data)),
+            AV1Decoder::AV1Accelerator::Status::kOk);
+  accelerator_->OutputPicture(*pic);
+  EXPECT_EQ(metadata_8bit.bit_depth, 8);
+
+  // Second decode: Bit depth changes to 10-bit with frame dimensions unchanged.
+  libgav1::ObuSequenceHeader sequence_header_10bit = {};
+  sequence_header_10bit.profile = libgav1::kProfile0;
+  sequence_header_10bit.color_config.bitdepth = 10;
+
+  EXPECT_CALL(*this, OnDecode(_, _, _)).WillOnce(SaveArg<1>(&metadata_10bit));
+  EXPECT_CALL(*this, OnOutput(_));
+  accelerator_->SetStream(base::span(frame_data), nullptr);
+  EXPECT_EQ(accelerator_->SubmitDecode(*pic, sequence_header_10bit, ref_frames,
+                                       tile_buffers, base::span(frame_data)),
+            AV1Decoder::AV1Accelerator::Status::kOk);
+  accelerator_->OutputPicture(*pic);
+  EXPECT_EQ(metadata_10bit.bit_depth, 10);
+}
+
 }  // namespace media
