@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
 import 'chrome://settings/lazy_load.js';
 
 import type {SettingsSearchEngineIconElement} from 'chrome://settings/lazy_load.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {createSampleSearchEngine} from './test_search_engines_browser_proxy.js';
 
@@ -48,13 +47,16 @@ suite('SearchEngineIconTest', function() {
   test('FaviconWithIconURL_Successful', async function() {
     icon.engine = createSampleSearchEngine({
       iconPath: '',
-      iconURL: 'chrome://resources/images/chrome_logo_dark.svg',
+      iconURL: 'https://example.com/icon.png',
     });
+    await microtasksFinished();
 
-    await eventToPromise('load', icon.$.downloadedIcon);
     assertEquals(
-        'chrome://resources/images/chrome_logo_dark.svg',
+        'chrome://image/?https://example.com/icon.png',
         icon.$.downloadedIcon.src);
+
+    icon.$.downloadedIcon.dispatchEvent(new Event('load'));
+    await icon.updateComplete;
     assertTrue(isVisible(icon.$.downloadedIcon));
 
     const siteFavicon = icon.shadowRoot.querySelector('site-favicon');
@@ -68,11 +70,55 @@ suite('SearchEngineIconTest', function() {
   // site-favicon displays the icon.
   test('FaviconWithIconURL_Failed', async function() {
     icon.engine = createSampleSearchEngine(
-        {iconPath: '', iconURL: 'chrome://resources/images/invalid_url'});
+        {iconPath: '', iconURL: 'https://example.com/invalid_url'});
+    await microtasksFinished();
 
-    await eventToPromise('error', icon.$.downloadedIcon);
     assertEquals(
-        'chrome://resources/images/invalid_url', icon.$.downloadedIcon.src);
+        'chrome://image/?https://example.com/invalid_url',
+        icon.$.downloadedIcon.src);
+
+    icon.$.downloadedIcon.dispatchEvent(new Event('error'));
+    await microtasksFinished();
+    assertFalse(isVisible(icon.$.downloadedIcon));
+
+    const siteFavicon = icon.shadowRoot.querySelector('site-favicon');
+    assertTrue(!!siteFavicon);
+    const favicon = siteFavicon.shadowRoot!.querySelector('#favicon');
+    assertTrue(!!favicon);
+    assertTrue(isVisible(favicon));
+  });
+
+  // Test that when a search engine has a data: iconURL, it is not passed to
+  // cr-auto-img, and site-favicon displays the icon instead.
+  test('FaviconWithDataURL', async function() {
+    icon.engine = createSampleSearchEngine({
+      iconPath: '',
+      iconURL:
+          'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJ' +
+          'AAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==',
+    });
+    await microtasksFinished();
+
+    assertEquals('', icon.$.downloadedIcon.src);
+    assertFalse(isVisible(icon.$.downloadedIcon));
+
+    const siteFavicon = icon.shadowRoot.querySelector('site-favicon');
+    assertTrue(!!siteFavicon);
+    const favicon = siteFavicon.shadowRoot!.querySelector('#favicon');
+    assertTrue(!!favicon);
+    assertTrue(isVisible(favicon));
+  });
+
+  // Test that when a search engine has a chrome:// iconURL, it is not passed to
+  // cr-auto-img, and site-favicon displays the icon instead.
+  test('FaviconWithChromeURL', async function() {
+    icon.engine = createSampleSearchEngine({
+      iconPath: '',
+      iconURL: 'chrome://resources/images/chrome_logo_dark.svg',
+    });
+    await microtasksFinished();
+
+    assertEquals('', icon.$.downloadedIcon.src);
     assertFalse(isVisible(icon.$.downloadedIcon));
 
     const siteFavicon = icon.shadowRoot.querySelector('site-favicon');

@@ -63,8 +63,9 @@ export class SettingsSearchEngineIconElement extends CrLitElement {
       return '';
     }
     try {
-      new URL(iconURL);
-      return iconURL;
+      const url = new URL(iconURL);
+      return url.protocol === 'https:' || url.protocol === 'http:' ? iconURL :
+                                                                     '';
     } catch (e) {
       return '';
     }
