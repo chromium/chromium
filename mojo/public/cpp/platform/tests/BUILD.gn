@@ -21,6 +21,10 @@ source_set("tests") {
     deps += [ "//mojo/core/embedder" ]
   }
 
+  if (is_posix && !is_mac) {
+    sources += [ "socket_utils_posix_unittest.cc" ]
+  }
+
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
   # enable the diagnostic by removing this line.
   configs += [ "//build/config/compiler:no_exit_time_destructors" ]
