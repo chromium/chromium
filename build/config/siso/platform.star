@@ -18,8 +18,11 @@ def __filegroups(ctx):
         "third_party/cpython3/linux-amd64:cpython3": {
             "type": "glob",
             "includes": [
-                "bin/python3",
-                "*.py",
+                "*",
+            ],
+            "excludes": [
+                "bin/python3.11",
+                "*.h",
             ],
         },
     }
