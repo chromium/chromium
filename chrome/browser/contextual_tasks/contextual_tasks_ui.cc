@@ -1557,10 +1557,12 @@ void ContextualTasksUI::PushTaskDetailsToPage(std::optional<base::Uuid> id,
 }
 
 bool ContextualTasksUI::CanExpandToFullTab() const {
-  // Employs the cached contextual tasks eligibility value calculated on
-  // initialization. Mid-session updates are ignored to ensure the expand
-  // affordance remains static and consistent.
-  return was_ai_page_ && is_contextual_tasks_eligible_on_init_;
+  // Expanding to a full tab requires the `kContextualTasks` feature flag (other
+  // side panel configurations lack full-tab support), an active AI page, and
+  // initial eligibility. The initialization-time eligibility is cached so the
+  // expand affordance remains static and consistent throughout the session.
+  return base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks) &&
+         was_ai_page_ && is_contextual_tasks_eligible_on_init_;
 }
 
 mojo::Remote<contextual_tasks::mojom::Page>&
