@@ -999,10 +999,6 @@ inline constexpr char kIOSBrowserReportIncludeAllProfilesDescription[] =
     "When enabled, enterprise browser reports include all profiles (instead of "
     "only the current profile).";
 
-inline constexpr char kIOSChooseFromDriveName[] = "IOS Choose from Drive";
-inline constexpr char kIOSChooseFromDriveDescription[] =
-    "Enables the Choose from Drive feature on iOS.";
-
 inline constexpr char kIOSChooseFromDriveSignedOutName[] =
     "Choose from Drive Signed Out";
 inline constexpr char kIOSChooseFromDriveSignedOutDescription[] =

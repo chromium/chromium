@@ -138,10 +138,6 @@ bool ShouldHideSafetyCheckModuleIfNoIssues();
 // Whether the refactored implementation of the `OmahaService` is enabled.
 bool IsOmahaServiceRefactorEnabled();
 
-// Feature flag enabling Choose from Drive.
-// TODO(crbug.com/473788390): Clean-up feature once file upload menu is ready.
-BASE_DECLARE_FEATURE(kIOSChooseFromDrive);
-
 // Feature flag enabling Choose from Drive for signed out users.
 BASE_DECLARE_FEATURE(kIOSChooseFromDriveSignedOut);
 

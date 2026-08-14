@@ -88,13 +88,6 @@ bool IsChooseFromDriveAvailable(web::WebState* web_state,
     return false;
   }
 
-  // Check flag is enabled.
-  if (!base::FeatureList::IsEnabled(kIOSChooseFromDrive)) {
-    base::UmaHistogramEnumeration("IOS.FilePicker.Drive.Displayed",
-                                  FilePickerDriveDisplayed::kDisabled);
-    return false;
-  }
-
   // Check WebState is not Incognito.
   if (is_incognito) {
     base::UmaHistogramEnumeration("IOS.FilePicker.Drive.Displayed",

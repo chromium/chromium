@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/drive_file_picker/coordinator/browse_drive_file_picker_coordinator.h"
 
 #import "base/strings/sys_string_conversions.h"
-#import "base/test/scoped_feature_list.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/identity_test_environment.h"
 #import "components/sync/test/test_sync_service.h"
@@ -19,7 +18,6 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/drive_file_picker_commands.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
@@ -53,7 +51,6 @@ class BrowseDriveFilePickerCoordinatorTest : public PlatformTest {
  protected:
   void SetUp() final {
     PlatformTest::SetUp();
-    scoped_feature_list_.InitAndEnableFeature(kIOSChooseFromDrive);
     root_view_controller_ = [[UIViewController alloc] init];
     navigation_controller_ = [[UINavigationController alloc]
         initWithRootViewController:root_view_controller_];
@@ -131,7 +128,6 @@ class BrowseDriveFilePickerCoordinatorTest : public PlatformTest {
 
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   raw_ptr<FakeSystemIdentityManager> fake_system_identity_manager_;
   UIViewController* root_view_controller_;
   UINavigationController* navigation_controller_;

@@ -96,7 +96,6 @@ id<GREYMatcher> SigninPromoPrimaryButton() {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  config.features_enabled.push_back(kIOSChooseFromDrive);
 
   if ([self isRunningTest:@selector(testMultifileSelection)] ||
       [self isRunningTest:@selector(testFileSelectionSignedOut)] ||

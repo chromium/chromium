@@ -1106,9 +1106,6 @@ const char kChromeAppStoreUrl[] =
 #pragma mark - DriveFilePickerCommands
 
 - (void)showDriveFilePicker {
-  if (!base::FeatureList::IsEnabled(kIOSChooseFromDrive)) {
-    return;
-  }
   // If there is a coordinator, stop it before showing it again.
   [self hideDriveFilePicker];
   // Return early if the current WebState is not choosing files.
@@ -1166,9 +1163,6 @@ const char kChromeAppStoreUrl[] =
   // incognito.
   CHECK_EQ(_browser->type(), Browser::Type::kRegular);
 
-  if (!base::FeatureList::IsEnabled(kIOSChooseFromDrive)) {
-    return;
-  }
   // If there is a coordinator, stop it before showing it again.
   [self hideDriveFilePicker];
   web::WebState* activeWebState = self.activeWebState;

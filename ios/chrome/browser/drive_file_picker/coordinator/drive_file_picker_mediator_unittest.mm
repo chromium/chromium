@@ -7,7 +7,6 @@
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
-#import "base/test/scoped_feature_list.h"
 #import "components/image_fetcher/core/cached_image_fetcher.h"
 #import "components/image_fetcher/core/image_data_fetcher.h"
 #import "components/signin/public/base/consent_level.h"
@@ -32,7 +31,6 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/drive_file_picker_commands.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
@@ -286,7 +284,6 @@ class DriveFilePickerMediatorTest : public PlatformTest {
  protected:
   void SetUp() final {
     PlatformTest::SetUp();
-    scoped_feature_list_.InitAndEnableFeature(kIOSChooseFromDrive);
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
@@ -427,7 +424,6 @@ class DriveFilePickerMediatorTest : public PlatformTest {
   TaskEnvironment task_environment_{TaskEnvironment::MainThreadType::IO,
                                     TaskEnvironment::TimeSource::MOCK_TIME};
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   NSMutableSet<NSString*>* images_pending_;
   NSCache<NSString*, UIImage*>* image_cache_;
   DriveFilePickerMediator* mediator_;
