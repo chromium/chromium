@@ -8307,39 +8307,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.VideoCapture.Device.Effect2.{VideoEffect}"
-    enum="VideoEffectStatus" expires_after="2025-06-04">
-  <owner>mfoltz@chromium.org</owner>
-  <owner>openscreen-eng@google.com</owner>
-  <summary>
-    Records {VideoEffect} support and whether it is enabled for each video
-    capture device opened. Recorded in DeviceMediaToMojoAdapter::StartInternal
-    in the video capture service.
-  </summary>
-  <token key="VideoEffect">
-    <variant name="BackgroundBlur" summary="Background Blur"/>
-    <variant name="EyeGazeCorrection" summary="Eye Gaze Correction"/>
-    <variant name="FaceFraming" summary="Face Framing"/>
-  </token>
-</histogram>
-
-<histogram name="Media.VideoCapture.Device.Opened.ByModelId" units="usb_id"
-    expires_after="2025-12-15">
-  <owner>bryantchandler@chromium.org</owner>
-  <owner>openscreen-eng@google.com</owner>
-  <summary>
-    This metric records an unsigned interger value that corresponds to the USB
-    ID (vendor + device ID) of the webcam that is currently in use by the user.
-    The USB ID is originally a 32-bit hexadecimal number (formatted as
-    XXXX:XXXX) that then is converted to an unsigned integer for metrics
-    purposes. In case of a unknown/invalid USB ID, 0 is logged. This is done
-    when the CreateDevice method is called on the corresponding
-    VideoCaptureDeviceFactory class based on the operating system. For example,
-    on MacOS, this happens when VideoCaptureDeviceFactoryApple::CreateDevice is
-    called.
-  </summary>
-</histogram>
-
 <histogram name="Media.VideoCapture.Device.Opened.PixelFormat"
     enum="VideoPixelFormatUnion" expires_after="2027-01-03">
   <owner>bryantchandler@chromium.org</owner>
@@ -8347,18 +8314,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     This metric records the pixel format of the active camera video feed at
     start, and everytime the pixel format changes.
-  </summary>
-</histogram>
-
-<histogram name="Media.VideoCapture.Device.Opened.Resolution"
-    units="resolution" expires_after="2026-08-30">
-  <owner>bryantchandler@chromium.org</owner>
-  <owner>openscreen-eng@google.com</owner>
-  <summary>
-    This metric records the resolution of the active camera video feed at start,
-    and everytime the resolution changes. The metric combines the width and
-    height into a single uint32_t value, with the width stored in the first 16
-    bits and the height stored in the last 16 bits.
   </summary>
 </histogram>
 
@@ -8443,41 +8398,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.VideoCapture.Mac.Device.CapturedIOSurface"
-    enum="Boolean" expires_after="2023-03-19">
-  <owner>eshr@google.com</owner>
-  <owner>handellm@google.com</owner>
-  <summary>
-    A count of how often the capture device delivers an IOSurface to the capture
-    pipeline. This is recorded once per opening of the camera, when the first
-    video frame is captured.
-  </summary>
-</histogram>
-
-<histogram
-    name="Media.VideoCapture.Mac.Device.CapturedWithRequestedPixelFormat"
-    enum="Boolean" expires_after="2023-03-19">
-  <owner>eshr@google.com</owner>
-  <owner>handellm@google.com</owner>
-  <summary>
-    A boolean count of how often the requested pixel format is the one that was
-    actually captured. This is recorded once per opening of the camera, when the
-    first video frame is captured.
-  </summary>
-</histogram>
-
-<histogram name="Media.VideoCapture.Mac.Device.CapturedWithRequestedResolution"
-    enum="ResolutionComparison" expires_after="2023-04-23">
-  <owner>eshr@google.com</owner>
-  <owner>handellm@google.com</owner>
-  <summary>
-    An enumeration count of whether or not the requested resolution equals the
-    captured resolution, detailing which dimensions differ in the enum. This is
-    recorded once per opening of the camera, when the first video frame is
-    captured.
-  </summary>
-</histogram>
-
 <histogram name="Media.VideoCapture.Mac.Device.ImplementationClassification"
     enum="ImplementationClassification" expires_after="2026-12-06">
   <owner>avi@chromium.org</owner>
@@ -8495,16 +8415,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     An enumeration count of whether reaction effects are enabled and can be
     triggered by gestures. This is recorded once per opening of the camera.
-  </summary>
-</histogram>
-
-<histogram name="Media.VideoCapture.Mac.Device.RequestedPixelFormat"
-    enum="VideoPixelFormatUnion" expires_after="2023-03-05">
-  <owner>eshr@google.com</owner>
-  <owner>handellm@google.com</owner>
-  <summary>
-    Counts the pixel formats requested by the VideoCaptureDevice on Mac. This is
-    recorded when the first video frame is captured.
   </summary>
 </histogram>
 

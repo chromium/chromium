@@ -496,11 +496,6 @@ void VideoCaptureController::OnFrameReadyInBuffer(
   if (!has_received_frames_) {
     // Check the following group of metrics is captured only for cameras.
     if (stream_type() == blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE) {
-      // This metric combines width and height into a single UMA metric.
-      media::LogCaptureCurrentDeviceResolution(
-          frame_ready_buffer.frame_info->coded_size.width(),
-          frame_ready_buffer.frame_info->coded_size.height());
-
       media::LogCaptureCurrentDevicePixelFormat(
           frame_ready_buffer.frame_info->pixel_format);
     }

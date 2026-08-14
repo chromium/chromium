@@ -1090,10 +1090,8 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
   }
   const base::TimeDelta timestamp = pres_timestamp - _startTimestamp;
 #if BUILDFLAG(IS_MAC)
-  bool logUma = !std::exchange(_capturedFirstFrame, true);
-  if (logUma) {
+  if (!std::exchange(_capturedFirstFrame, true)) {
     [self logMessageLocked:"First frame received for this capturer instance"];
-    media::LogFirstCapturedVideoFrame(_bestCaptureFormat, sampleBuffer);
   }
 #endif
   // Forget the sample timestamp if we're out of the experiment.

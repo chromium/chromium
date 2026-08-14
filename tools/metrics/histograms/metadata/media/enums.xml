@@ -2313,20 +2313,6 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Supported"/>
 </enum>
 
-<enum name="ResolutionComparison">
-  <int value="0" label="Requested width larger than capture"/>
-  <int value="1" label="Requested width smaller than capture"/>
-  <int value="2" label="Requested height larger than capture"/>
-  <int value="3" label="Requested height smaller than capture"/>
-  <int value="4" label="Requested resolution equals capture"/>
-  <int value="5" label="Requested width and height larger than capture"/>
-  <int value="6"
-      label="Requested width smaller, and height larger than capture"/>
-  <int value="7"
-      label="Requested width larger and height smaller than capture"/>
-  <int value="8" label="Requested width and height smaller than capture"/>
-</enum>
-
 <enum name="RTCVideoDecoderFallbackReason">
   <int value="0" label="SpatialLayers"/>
   <int value="1" label="ConsecutivePendingBufferOverflow"/>
@@ -2752,12 +2738,6 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="kStarted"/>
   <int value="1" label="kTimedout"/>
   <int value="2" label="kFailed"/>
-</enum>
-
-<enum name="VideoEffectStatus">
-  <int value="0" label="Unsupported"/>
-  <int value="1" label="Supported"/>
-  <int value="2" label="Enabled"/>
 </enum>
 
 <enum name="VideoFrameStorageType">
