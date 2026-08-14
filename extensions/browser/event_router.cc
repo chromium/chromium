@@ -1211,7 +1211,8 @@ void EventRouter::RemoveFilterFromEvent(const std::string& event_name,
   ExtensionPrefs::ScopedDictionaryUpdate update(
       extension_prefs_, extension_id,
       is_for_service_worker ? kFilteredServiceWorkerEvents : kFilteredEvents);
-  auto filtered_events = update.Create();
+  // Use Get() instead of Create() so removals do not create the preference.
+  auto filtered_events = update.Get();
   base::ListValue* filter_list = nullptr;
   if (!filtered_events ||
       !filtered_events->GetListWithoutPathExpansion(event_name, &filter_list)) {
@@ -1222,6 +1223,12 @@ void EventRouter::RemoveFilterFromEvent(const std::string& event_name,
   auto it = std::ranges::find(*filter_list, filter, get_dict);
   if (it != filter_list->end()) {
     filter_list->erase(it);
+  }
+  // Erase the entry when its filter list is empty. Avoid path expansion because
+  // event names can contain '.'.
+  if (filter_list->empty()) {
+    filtered_events->RemoveWithoutPathExpansion(event_name,
+                                                /*out_value=*/nullptr);
   }
 }
 

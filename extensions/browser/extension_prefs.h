@@ -794,6 +794,14 @@ class ExtensionPrefs : public KeyedService {
   // behavior has been stable for a while.
   void CleanUpDuplicateSubEventFilters();
 
+  // Removes empty filter lists (e.g. "webRequest.onBeforeRequest/s3": []) and
+  // malformed non-list values from kFilteredEvents and
+  // kFilteredServiceWorkerEvents, and removes the preference dictionary
+  // entirely if no entries remain. See crbug.com/526929792.
+  // TODO(andreaorru): Remove this after M157 once existing profiles have been
+  // cleaned up.
+  void CleanUpEmptyFilteredEventLists();
+
   // Iterates over the extension pref entries and removes any obsolete keys. We
   // need to do this here specially (rather than in
   // MigrateObsoleteProfilePrefs()) because these entries are subkeys of the

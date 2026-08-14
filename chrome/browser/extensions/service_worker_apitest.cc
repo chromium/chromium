@@ -79,6 +79,7 @@
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_function_histogram_value.h"
 #include "extensions/browser/extension_host.h"
+#include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/process_map.h"
@@ -2906,11 +2907,24 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerWebRequestPersistFilteredEventsTest,
                     profile(), "webRequest.onBeforeRequest"));
   EXPECT_EQ(0u, web_request_router()->GetListenerCountForTesting(
                     profile(), "webRequest.onBeforeRequest"));
+
+  // Removing the listener should not leave an empty filter list in prefs.
+  // Regression check for crbug.com/526929792.
+  const base::DictValue* filtered_events =
+      ExtensionPrefs::Get(profile())->ReadPrefAsDict(
+          extension->id(), EventRouter::kFilteredServiceWorkerEvents);
+  // Before restart, `RemoveFilterFromEvent` will empty the preference,
+  // but not delete it.
+  ASSERT_TRUE(filtered_events);
+  EXPECT_TRUE(filtered_events->empty());
 }
 
 // Step 2: test that filters are NOT restored post restart.
 IN_PROC_BROWSER_TEST_F(ServiceWorkerWebRequestPersistFilteredEventsTest,
                        WebRequestAfterRestart_RemoveListener) {
+  const Extension* extension = GetSingleLoadedExtension();
+  ASSERT_TRUE(extension);
+
   // No service worker should be running yet.
   EXPECT_EQ(process_manager()->GetAllWorkersIdsForTesting().size(), 0u);
 
@@ -2919,6 +2933,13 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerWebRequestPersistFilteredEventsTest,
                     profile(), "webRequest.onBeforeRequest"));
   EXPECT_EQ(0u, web_request_router()->GetListenerCountForTesting(
                     profile(), "webRequest.onBeforeRequest"));
+
+  const base::DictValue* filtered_events =
+      ExtensionPrefs::Get(profile())->ReadPrefAsDict(
+          extension->id(), EventRouter::kFilteredServiceWorkerEvents);
+  // After restart, `CleanUpEmptyFilteredEventLists` will have
+  // deleted the empty preference.
+  EXPECT_EQ(nullptr, filtered_events);
 }
 
 // Tests that chrome.action.onClicked sees user gesture.
