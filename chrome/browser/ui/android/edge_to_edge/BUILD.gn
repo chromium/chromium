@@ -31,6 +31,7 @@ android_library("java") {
     "//chrome/browser/ui/android/native_page:java",
     "//components/browser_ui/display_cutout/android:java",
     "//components/cached_flags:java",
+    "//components/embedder_support/android:util_java",
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_experimental_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
@@ -39,6 +40,7 @@ android_library("java") {
     "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_java",
     "//ui/edge_to_edge:java",
+    "//url:url_java",
   ]
 }
 

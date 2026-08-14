@@ -449,7 +449,7 @@ public class RootUiCoordinator
             new OneshotSupplierImpl<>();
     private ActivityRecreationController mActivityRecreationController;
     private @Nullable RestoreTabsFeatureHelper mRestoreTabsFeatureHelper;
-    private @Nullable EdgeToEdgeController mEdgeToEdgeController;
+    protected @Nullable EdgeToEdgeController mEdgeToEdgeController;
     private @Nullable ComposedBrowserControlsVisibilityDelegate
             mAppBrowserControlsVisibilityDelegate;
     protected final EdgeToEdgeManager mEdgeToEdgeManager;
@@ -1408,7 +1408,11 @@ public class RootUiCoordinator
                             mBackPressManager);
         }
 
-        if (mWindowAndroid.getInsetObserver() != null
+        // TODO(crbug.com/498302496): Remove TopInsetCoordinator creation and
+        // TransitiveTopInsetProvider once sEdgelessTopInset is fully launched and
+        // TopInsetCoordinator is deleted.
+        if (!EdgeToEdgeUtils.isEdgelessTopInsetEnabled()
+                && mWindowAndroid.getInsetObserver() != null
                 && NtpCustomizationUtils.supportsEnableEdgeToEdgeOnTop(mWindowAndroid, mIsTablet)) {
             // Only create TopInsetCoordinator if there's a valid TransitiveTopInsetProvider
             // available. TopInsetCoordinator registers a listener with the singleton
@@ -2545,6 +2549,14 @@ public class RootUiCoordinator
                             mLayoutManagerSupplier,
                             mFullscreenManager);
             mEdgeToEdgeControllerSupplier.set(mEdgeToEdgeController);
+            // TODO(crbug.com/498302496): Pass mEdgeToEdgeController directly to downstream
+            // consumers (e.g. ToolbarManager, NewTabAnimationLayout) instead of using
+            // TransitiveTopInsetProvider.
+            if (EdgeToEdgeUtils.isEdgelessTopInsetEnabled()
+                    && mTopInsetProvider
+                            instanceof TransitiveTopInsetProvider transitiveTopInsetProvider) {
+                transitiveTopInsetProvider.set(mEdgeToEdgeController);
+            }
             mEdgeToEdgeBottomChin = createEdgeToEdgeBottomChin();
 
             recordIfMissingNavigationBar();

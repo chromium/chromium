@@ -8,6 +8,7 @@ import static android.view.Display.INVALID_DISPLAY;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -16,6 +17,7 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
@@ -1433,6 +1435,353 @@ public class EdgeToEdgeControllerTest {
                 "Bottom insets for safe area does not match.",
                 bottomInset,
                 (int) captor.getValue());
+    }
+
+    // --- Top Edge-to-Edge Migrated Tests (from TopInsetCoordinatorUnitTest) ---
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.EDGELESS_TOP_INSET)
+    public void testOnApplyWindowInsets_Top_ConsumeTopInset() {
+        when(mTab.isNativePage()).thenReturn(true);
+        when(mTab.getUrl()).thenReturn(org.chromium.url.JUnitTestGURLs.NTP_URL);
+        when(mTab.getNativePage()).thenReturn(mKeyNativePage);
+        when(mKeyNativePage.supportsEdgeToEdgeOnTop()).thenReturn(true);
+        mEdgeToEdgeControllerImpl.onTabSwitched(mTab);
+
+        WindowInsetsCompat result =
+                mEdgeToEdgeControllerImpl.handleWindowInsets(mViewMock, SYSTEM_BARS_WINDOW_INSETS);
+
+        assertTrue(mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
+        assertEquals(Insets.NONE, result.getInsets(WindowInsetsCompat.Type.statusBars()));
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.EDGELESS_TOP_INSET)
+    public void testOnApplyWindowInsets_Top_DisabledFlag_DoNotConsumeTopInset() {
+        when(mTab.isNativePage()).thenReturn(true);
+        when(mTab.getUrl()).thenReturn(org.chromium.url.JUnitTestGURLs.NTP_URL);
+        when(mTab.getNativePage()).thenReturn(mKeyNativePage);
+        when(mKeyNativePage.supportsEdgeToEdgeOnTop()).thenReturn(true);
+        mEdgeToEdgeControllerImpl.onTabSwitched(mTab);
+
+        WindowInsetsCompat result =
+                mEdgeToEdgeControllerImpl.handleWindowInsets(mViewMock, SYSTEM_BARS_WINDOW_INSETS);
+
+        // Consumption should be done through the TopInsetCoordinator instead of from the
+        // EdgeToEdgeController.
+        assertFalse(mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
+        assertNotEquals(Insets.NONE, result.getInsets(WindowInsetsCompat.Type.statusBars()));
+    }
+
+    @Test
+    @Config(sdk = VERSION_CODES.Q)
+    @EnableFeatures(ChromeFeatureList.EDGELESS_TOP_INSET)
+    public void testOnApplyWindowInsets_Top_BelowAndroidR_DoNotConsumeTopInset() {
+        assertFalse(EdgeToEdgeUtils.isEdgelessTopInsetEnabled());
+        when(mTab.isNativePage()).thenReturn(true);
+        when(mTab.getUrl()).thenReturn(org.chromium.url.JUnitTestGURLs.NTP_URL);
+        when(mTab.getNativePage()).thenReturn(mKeyNativePage);
+        when(mKeyNativePage.supportsEdgeToEdgeOnTop()).thenReturn(true);
+        mEdgeToEdgeControllerImpl.onTabSwitched(mTab);
+
+        WindowInsetsCompat result =
+                mEdgeToEdgeControllerImpl.handleWindowInsets(mViewMock, SYSTEM_BARS_WINDOW_INSETS);
+
+        assertFalse(mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
+        assertNotEquals(Insets.NONE, result.getInsets(WindowInsetsCompat.Type.statusBars()));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.EDGELESS_TOP_INSET)
+    public void testOnApplyWindowInsets_Top_DoNotConsumeTopInset() {
+        when(mTab.isNativePage()).thenReturn(false);
+        mEdgeToEdgeControllerImpl.onTabSwitched(mTab);
+
+        mEdgeToEdgeControllerImpl.handleWindowInsets(mViewMock, SYSTEM_BARS_WINDOW_INSETS);
+
+        assertFalse(mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.EDGELESS_TOP_INSET)
+    public void testOnApplyWindowInsets_Top_ToolbarSwipe() {
+        TopInsetProvider.Observer topInsetObserver = Mockito.mock(TopInsetProvider.Observer.class);
+        mEdgeToEdgeControllerImpl.addObserver(topInsetObserver);
+        clearInvocations(topInsetObserver);
+
+        when(mLayoutManager.getActiveLayoutType()).thenReturn(LayoutType.TOOLBAR_SWIPE);
+        mEdgeToEdgeControllerImpl.onTabSwitched(null);
+
+        mEdgeToEdgeControllerImpl.handleWindowInsets(mViewMock, SYSTEM_BARS_WINDOW_INSETS);
+
+        assertFalse(mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
+        // Verify that notifyObservers() is called because it's a toolbar swipe.
+        verify(topInsetObserver)
+                .onToEdgeChange(eq(TOP_INSET), eq(false), eq(LayoutType.TOOLBAR_SWIPE));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.EDGELESS_TOP_INSET)
+    public void testOnApplyWindowInsets_Top_TabSwitcher_ReturnEarly() {
+        TopInsetProvider.Observer topInsetObserver = Mockito.mock(TopInsetProvider.Observer.class);
+        mEdgeToEdgeControllerImpl.addObserver(topInsetObserver);
+        clearInvocations(topInsetObserver);
+
+        when(mLayoutManager.getActiveLayoutType()).thenReturn(LayoutType.HUB);
+        mEdgeToEdgeControllerImpl.onTabSwitched(null);
+
+        mEdgeToEdgeControllerImpl.handleWindowInsets(mViewMock, SYSTEM_BARS_WINDOW_INSETS);
+
+        assertFalse(mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
+        // Verify that notifyObservers() is NOT called when the tab switcher is showing with null
+        // tab.
+        verify(topInsetObserver, never()).onToEdgeChange(anyInt(), anyBoolean(), anyInt());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.EDGELESS_TOP_INSET)
+    public void testOnTabSwitched_Top_RetriggerOnApplyWindowInsets() {
+        // 1. Verifies that retriggerOnApplyWindowInsets() is called when switching to an NTP tab.
+        clearInvocations(mInsetObserver);
+        when(mTab.isNativePage()).thenReturn(true);
+        when(mTab.getUrl()).thenReturn(org.chromium.url.JUnitTestGURLs.NTP_URL);
+        when(mTab.getNativePage()).thenReturn(mKeyNativePage);
+        when(mKeyNativePage.supportsEdgeToEdgeOnTop()).thenReturn(true);
+        mEdgeToEdgeControllerImpl.onTabSwitched(mTab);
+        verify(mInsetObserver).retriggerOnApplyWindowInsets();
+
+        // 2. Verifies that retriggerOnApplyWindowInsets() is called when switching from NTP to a
+        // regular tab.
+        clearInvocations(mInsetObserver);
+        Tab regularTab1 = Mockito.mock(Tab.class);
+        when(regularTab1.getUrl()).thenReturn(org.chromium.url.JUnitTestGURLs.URL_1);
+        when(regularTab1.isNativePage()).thenReturn(false);
+        when(regularTab1.getUserDataHost()).thenReturn(new org.chromium.base.UserDataHost());
+        mEdgeToEdgeControllerImpl.onTabSwitched(regularTab1);
+        verify(mInsetObserver).retriggerOnApplyWindowInsets();
+
+        // 3. Verifies that retriggerOnApplyWindowInsets() is NOT called when switching between
+        // non-NTP tabs.
+        clearInvocations(mInsetObserver);
+        Tab regularTab2 = Mockito.mock(Tab.class);
+        when(regularTab2.getUrl()).thenReturn(org.chromium.url.JUnitTestGURLs.URL_2);
+        when(regularTab2.isNativePage()).thenReturn(false);
+        when(regularTab2.getUserDataHost()).thenReturn(new org.chromium.base.UserDataHost());
+        mEdgeToEdgeControllerImpl.onTabSwitched(regularTab2);
+        verify(mInsetObserver, never()).retriggerOnApplyWindowInsets();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.EDGELESS_TOP_INSET)
+    public void testOnTabSwitched_Top_NullTab() {
+        mEdgeToEdgeControllerImpl.onTabSwitched(null);
+        assertFalse(mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
+    }
+
+    @Test
+    public void testConstructor_Top_RetriggerOnApplyWindowInsets() {
+        verify(mInsetObserver, Mockito.atLeastOnce()).retriggerOnApplyWindowInsets();
+    }
+
+    @Test
+    public void testDestroy_Top_UnregistersListeners() {
+        mEdgeToEdgeControllerImpl.destroy();
+        verify(mInsetObserver).removeInsetsConsumer(any());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.EDGELESS_TOP_INSET)
+    public void testAddAndRemoveObservers_Top() {
+        TopInsetProvider.Observer observer = Mockito.mock(TopInsetProvider.Observer.class);
+        mEdgeToEdgeControllerImpl.addObserver(observer);
+        mEdgeToEdgeControllerImpl.setConsumeTopInsetForTesting(true);
+        assertTrue(mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
+        mEdgeToEdgeControllerImpl.removeObserver(observer);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.EDGELESS_TOP_INSET)
+    public void testLayoutStateProviderAvailable_Delayed() {
+        mEdgeToEdgeControllerImpl.onStartedShowing(LayoutType.BROWSING);
+        assertFalse(mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.EDGELESS_TOP_INSET)
+    public void testLayoutStateProviderAvailable_Immediate() {
+        mEdgeToEdgeControllerImpl.onFinishedShowing(LayoutType.HUB);
+        mEdgeToEdgeControllerImpl.onFinishedHiding(LayoutType.HUB);
+        assertFalse(mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.EDGELESS_TOP_INSET)
+    public void testOnFinishedHiding_HubToNtpTransition() {
+        when(mTab.isNativePage()).thenReturn(true);
+        when(mTab.getUrl()).thenReturn(org.chromium.url.JUnitTestGURLs.NTP_URL);
+        mEdgeToEdgeControllerImpl.onFinishedShowing(LayoutType.HUB);
+        mEdgeToEdgeControllerImpl.onTabSwitched(mTab);
+        clearInvocations(mInsetObserver);
+
+        mEdgeToEdgeControllerImpl.onFinishedHiding(LayoutType.HUB);
+        verify(mInsetObserver).retriggerOnApplyWindowInsets();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.EDGELESS_TOP_INSET)
+    public void testOnContentChanged_NavigateFromNtpToWebPage_RestoresTopInsets() {
+        TopInsetProvider.Observer topInsetObserver = Mockito.mock(TopInsetProvider.Observer.class);
+        mEdgeToEdgeControllerImpl.addObserver(topInsetObserver);
+
+        // 1. Start on NTP, which consumes top inset (isDrawingToTopEdge == true).
+        when(mTab.isNativePage()).thenReturn(true);
+        when(mTab.getNativePage()).thenReturn(mKeyNativePage);
+        when(mKeyNativePage.supportsEdgeToEdgeOnTop()).thenReturn(true);
+        mEdgeToEdgeControllerImpl.onTabSwitched(mTab);
+        mEdgeToEdgeControllerImpl.handleWindowInsets(mViewMock, SYSTEM_BARS_WINDOW_INSETS);
+
+        assertTrue(
+                "Should be drawing to top edge on NTP",
+                mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
+        verify(topInsetObserver, atLeastOnce()).onToEdgeChange(eq(TOP_INSET), eq(true), anyInt());
+
+        clearInvocations(topInsetObserver);
+
+        // 2. Simulate navigating away from NTP to a standard webpage within the same tab.
+        when(mTab.isNativePage()).thenReturn(false);
+        when(mTab.getNativePage()).thenReturn(null);
+        mEdgeToEdgeControllerImpl.getTabObserverForTesting().onContentChanged(mTab);
+        mEdgeToEdgeControllerImpl.handleWindowInsets(mViewMock, SYSTEM_BARS_WINDOW_INSETS);
+
+        assertFalse(
+                "Should no longer be drawing to top edge after navigating away from NTP",
+                mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
+        verify(topInsetObserver, atLeastOnce()).onToEdgeChange(eq(TOP_INSET), eq(false), anyInt());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.EDGELESS_TOP_INSET)
+    public void
+            testOnContentChanged_NavigateFromNtpToWebPage_WithThreeButtonNav_RestoresTopInsets() {
+        EdgeToEdgeUtils.setHas3ButtonNavBarForTesting(true);
+        TopInsetProvider.Observer topInsetObserver = Mockito.mock(TopInsetProvider.Observer.class);
+        mEdgeToEdgeControllerImpl.addObserver(topInsetObserver);
+
+        // 1. Start on NTP with 3-button nav enabled.
+        when(mTab.isNativePage()).thenReturn(true);
+        when(mTab.getNativePage()).thenReturn(mKeyNativePage);
+        when(mKeyNativePage.supportsEdgeToEdgeOnTop()).thenReturn(true);
+        mEdgeToEdgeControllerImpl.onTabSwitched(mTab);
+        mEdgeToEdgeControllerImpl.handleWindowInsets(mViewMock, SYSTEM_BARS_WINDOW_INSETS);
+
+        assertTrue(
+                "Should be drawing to top edge on NTP even with 3-button nav",
+                mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
+
+        clearInvocations(topInsetObserver);
+
+        // 2. Simulate navigating away from NTP to a standard webpage within the same tab.
+        when(mTab.isNativePage()).thenReturn(false);
+        when(mTab.getNativePage()).thenReturn(null);
+        mEdgeToEdgeControllerImpl.getTabObserverForTesting().onContentChanged(mTab);
+        mEdgeToEdgeControllerImpl.handleWindowInsets(mViewMock, SYSTEM_BARS_WINDOW_INSETS);
+
+        assertFalse(
+                "Should restore top scalp after navigating from NTP even with 3-button nav",
+                mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
+        verify(topInsetObserver, atLeastOnce()).onToEdgeChange(eq(TOP_INSET), eq(false), anyInt());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.EDGELESS_TOP_INSET)
+    public void testTopInsetProviderObserver() {
+        TopInsetProvider.Observer observer = Mockito.mock(TopInsetProvider.Observer.class);
+        mEdgeToEdgeControllerImpl.addObserver(observer);
+
+        verify(observer, atLeastOnce()).onToEdgeChange(eq(TOP_INSET), anyBoolean(), anyInt());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.EDGELESS_TOP_INSET)
+    public void testTopInsetOnNtpTab() {
+        when(mTab.isNativePage()).thenReturn(true);
+        NativePage nativePage = Mockito.mock(NativePage.class);
+        when(mTab.getNativePage()).thenReturn(nativePage);
+        when(nativePage.supportsEdgeToEdgeOnTop()).thenReturn(true);
+
+        mTabProvider.set(mTab);
+        assertTrue(mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.EDGELESS_TOP_INSET)
+    public void testTopInset_CustomizedBackgroundNtp_ConsumesStatusBars() {
+        when(mTab.isNativePage()).thenReturn(true);
+        NativePage nativePage = Mockito.mock(NativePage.class);
+        when(mTab.getNativePage()).thenReturn(nativePage);
+        when(nativePage.supportsEdgeToEdgeOnTop()).thenReturn(true);
+
+        mTabProvider.set(mTab);
+        assertTrue(mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
+
+        WindowInsetsCompat result =
+                mEdgeToEdgeControllerImpl.handleWindowInsets(mViewMock, SYSTEM_BARS_WINDOW_INSETS);
+        assertEquals(Insets.NONE, result.getInsets(WindowInsetsCompat.Type.statusBars()));
+        assertEquals(Insets.NONE, result.getInsets(WindowInsetsCompat.Type.captionBar()));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.EDGELESS_TOP_INSET)
+    public void testTopInsetOnNonNtpTab() {
+        when(mTab.isNativePage()).thenReturn(false);
+        mTabProvider.set(mTab);
+        assertFalse(mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.EDGELESS_TOP_INSET)
+    public void testTopInset_RegularPage_PreservesStatusBars() {
+        when(mTab.isNativePage()).thenReturn(false);
+        mTabProvider.set(mTab);
+        assertFalse(mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
+
+        WindowInsetsCompat result =
+                mEdgeToEdgeControllerImpl.handleWindowInsets(mViewMock, SYSTEM_BARS_WINDOW_INSETS);
+        assertNotEquals(Insets.NONE, result.getInsets(WindowInsetsCompat.Type.statusBars()));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.EDGELESS_TOP_INSET)
+    public void testTopInset_TabSwitcher_PreservesStatusBars() {
+        mEdgeToEdgeControllerImpl.onFinishedShowing(LayoutType.HUB);
+        assertFalse(mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
+
+        WindowInsetsCompat result =
+                mEdgeToEdgeControllerImpl.handleWindowInsets(mViewMock, SYSTEM_BARS_WINDOW_INSETS);
+        assertNotEquals(Insets.NONE, result.getInsets(WindowInsetsCompat.Type.statusBars()));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.EDGELESS_TOP_INSET)
+    public void testTopInset_HubToNtpTransition() {
+        // Show Hub
+        mEdgeToEdgeControllerImpl.onFinishedShowing(LayoutType.HUB);
+
+        when(mTab.isIncognito()).thenReturn(false);
+        when(mTab.getUrl()).thenReturn(org.chromium.url.JUnitTestGURLs.NTP_URL);
+        when(mTab.isNativePage()).thenReturn(true);
+        NativePage nativePage = Mockito.mock(NativePage.class);
+        when(mTab.getNativePage()).thenReturn(nativePage);
+        when(nativePage.supportsEdgeToEdgeOnTop()).thenReturn(true);
+
+        // Switch to NTP tab during Hub layout
+        mTabProvider.set(mTab);
+
+        clearInvocations(mInsetObserver);
+
+        // Finish hiding Hub
+        mEdgeToEdgeControllerImpl.onFinishedHiding(LayoutType.HUB);
+        verify(mInsetObserver).retriggerOnApplyWindowInsets();
     }
 
     Window mockWindowWithRootInsets(WindowInsetsCompat rootInsets) {

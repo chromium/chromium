@@ -14,7 +14,9 @@ import org.chromium.ui.edge_to_edge.EdgeToEdgeSupplier;
  * Bars.
  */
 @NullMarked
-public interface EdgeToEdgeController extends Destroyable, EdgeToEdgeSupplier {
+// TODO(crbug.com/498302496): Long term, consolidate EdgeToEdgeSupplier and TopInsetProvider
+// into a single interface.
+public interface EdgeToEdgeController extends Destroyable, EdgeToEdgeSupplier, TopInsetProvider {
     /**
      * @return the inset in DPs needed for the bottom UI to adjust views to draw below the Bottom
      *     Nav Bar. Returns 0 when Edge To Edge is not enabled or when the controller is drawing the
@@ -45,6 +47,11 @@ public interface EdgeToEdgeController extends Destroyable, EdgeToEdgeSupplier {
      */
     boolean isDrawingToEdge();
 
+    /** Whether the system is drawing edge-to-edge at the top (under the status bar). */
+    default boolean isDrawingToTopEdge() {
+        return false;
+    }
+
     /**
      * @return Whether the current webpage (via opt-in) or native page is drawing edge to edge to on
      *     initial page load. Note that a page may still draw beneath the OS navigation bar without
@@ -52,4 +59,10 @@ public interface EdgeToEdgeController extends Destroyable, EdgeToEdgeSupplier {
      *     and has been fully scrolled off.
      */
     boolean isPageOptedIntoEdgeToEdge();
+
+    @Override
+    default void addObserver(TopInsetProvider.Observer observer) {}
+
+    @Override
+    default void removeObserver(TopInsetProvider.Observer observer) {}
 }
