@@ -57,6 +57,9 @@ gfx::NativeViewAccessible ViewAXPlatformNodeDelegateWin::GetParent() const {
   while (ancestor_window) {
     Widget* ancestor_widget = Widget::GetWidgetForNativeView(ancestor_window);
     if (ancestor_widget && ancestor_widget->GetRootView()) {
+      if (IsInHiddenWidget()) {
+        return nullptr;
+      }
       return ancestor_widget->GetRootView()->GetNativeViewAccessible();
     }
     ancestor_window = GetWindowParentIncludingTransient(ancestor_window);

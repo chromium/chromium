@@ -186,4 +186,35 @@ TEST_F(ViewAXPlatformNodeDelegateAuraLinuxTest, IndexInParent) {
   EXPECT_EQ(-1, atk_object_get_index_in_parent(atk_object));
 }
 
+TEST_F(ViewAXPlatformNodeDelegateAuraLinuxTest,
+       HiddenChildWidgetRootViewHasNoParent) {
+  auto parent_widget = std::make_unique<Widget>();
+  Widget::InitParams parent_params =
+      CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+  parent_widget->Init(std::move(parent_params));
+  parent_widget->SetContentsView(std::make_unique<View>());
+  parent_widget->Show();
+
+  auto child_widget = std::make_unique<Widget>();
+  Widget::InitParams child_params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_POPUP);
+  child_params.parent = parent_widget->GetNativeView();
+  child_widget->Init(std::move(child_params));
+  child_widget->SetContentsView(std::make_unique<View>());
+
+  AtkObject* child_root_view =
+      child_widget->GetRootView()->GetNativeViewAccessible();
+  AtkObject* parent_root_view =
+      parent_widget->GetRootView()->GetNativeViewAccessible();
+
+  EXPECT_EQ(nullptr, atk_object_get_parent(child_root_view));
+
+  child_widget->Show();
+  EXPECT_EQ(parent_root_view, atk_object_get_parent(child_root_view));
+
+  child_widget->Hide();
+  EXPECT_EQ(nullptr, atk_object_get_parent(child_root_view));
+}
+
 }  // namespace views::test

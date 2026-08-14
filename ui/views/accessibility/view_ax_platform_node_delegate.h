@@ -156,6 +156,9 @@ class VIEWS_EXPORT ViewAXPlatformNodeDelegate
   const ui::AXNodeData& data() const { return data_; }
   ui::AXPlatformNode* ax_platform_node() { return ax_platform_node_.get(); }
 
+  // Whether this view belongs to a widget which is not visible.
+  bool IsInHiddenWidget() const;
+
   // Manager for the accessibility tree for this view. The tree will only have
   // one node, which contains the AXNodeData for this view. It's a temporary
   // solution to enable the ITextRangeProvider in Views: crbug.com/1468416.

@@ -1624,4 +1624,38 @@ TEST_F(AXViewTest, LayoutCalledInvalidateRootView) {
 }
 #endif
 
+// On Mac, ViewAXPlatformNodeDelegateMac::GetParent() resolves a root view
+// through its NSView rather than through the widget hierarchy.
+#if !BUILDFLAG(IS_MAC)
+TEST_F(ViewAXPlatformNodeDelegateTest, HiddenChildWidgetRootViewHasNoParent) {
+  auto parent_widget = std::make_unique<Widget>();
+  Widget::InitParams parent_params =
+      CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+  parent_widget->Init(std::move(parent_params));
+  parent_widget->SetContentsView(std::make_unique<View>());
+  parent_widget->Show();
+
+  auto child_widget = std::make_unique<Widget>();
+  Widget::InitParams child_params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_CONTROL);
+  child_params.parent = parent_widget->GetNativeView();
+  child_widget->Init(std::move(child_params));
+  child_widget->SetContentsView(std::make_unique<View>());
+
+  ViewAXPlatformNodeDelegate* child_root_view =
+      view_accessibility(child_widget->GetRootView());
+
+  EXPECT_EQ(parent_widget->GetRootView()->GetNativeViewAccessible(),
+            child_root_view->GetParent());
+
+  child_widget->Hide();
+  EXPECT_FALSE(child_root_view->GetParent());
+
+  child_widget->Show();
+  EXPECT_EQ(parent_widget->GetRootView()->GetNativeViewAccessible(),
+            child_root_view->GetParent());
+}
+#endif  // !BUILDFLAG(IS_MAC)
+
 }  // namespace views::test
