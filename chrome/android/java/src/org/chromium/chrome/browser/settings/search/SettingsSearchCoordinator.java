@@ -934,6 +934,10 @@ public class SettingsSearchCoordinator
 
         menuView.post(
                 () -> {
+                    // The task may run after the Activity has been destroyed, for example, during
+                    // theme switch. https://crbug.com/545872336
+                    if (mActivity.isFinishing() || mActivity.isDestroyed() || mIsDestroyed) return;
+
                     boolean show = shouldShowHelpMenu();
                     if (!show) {
                         // Should show menu if we have the search view.
