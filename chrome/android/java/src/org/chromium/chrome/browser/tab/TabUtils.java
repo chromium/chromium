@@ -34,6 +34,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.media.MediaCaptureDevicesDispatcherAndroid;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeProvider;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.util.AutomotiveUtils;
 import org.chromium.components.browser_ui.util.DimensionCompat;
 import org.chromium.components.tabs.TabAlert;
@@ -327,6 +328,8 @@ public class TabUtils {
     public static @DrawableRes int getTabAlertDrawable(@Nullable @TabAlert Integer alertState) {
         if (alertState == null) return Resources.ID_NULL;
         return switch (alertState) {
+            case TabAlert.ACTOR_ACCESSING -> R.drawable.ic_arrow_selector_spark_14dp;
+            case TabAlert.ACTOR_WAITING_ON_USER -> R.drawable.ic_arrow_selector_spark_16dp;
             case TabAlert.AUDIO_MUTING -> R.drawable.volume_off_24dp;
             case TabAlert.AUDIO_PLAYING -> R.drawable.volume_up_24dp;
             case TabAlert.AUDIO_RECORDING, TabAlert.MEDIA_RECORDING, TabAlert.VIDEO_RECORDING ->
@@ -348,6 +351,8 @@ public class TabUtils {
             Context context, @Nullable @TabAlert Integer alertState, @ColorInt int defaultTint) {
         if (alertState == null) return defaultTint;
         return switch (alertState) {
+            case TabAlert.ACTOR_ACCESSING, TabAlert.ACTOR_WAITING_ON_USER ->
+                    SemanticColorUtils.getColorPrimary(context);
             case TabAlert.AUDIO_RECORDING, TabAlert.MEDIA_RECORDING, TabAlert.VIDEO_RECORDING ->
                     context.getColor(R.color.tab_recording_media_color);
             case TabAlert.DESKTOP_CAPTURING, TabAlert.TAB_CAPTURING ->

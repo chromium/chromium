@@ -87,7 +87,6 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.actor.ui.TabIndicatorStatus;
 import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.collaboration.messaging.MessagingBackendServiceFactory;
@@ -931,30 +930,26 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    public void testOnActuationStateChanged() {
+    public void testOnAlertStateChanged_ActorAlert() {
         // Initialize with 2 tabs.
         initializeTest(false, false, 0, 2);
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
 
         Tab tab0 = mModel.getTabAt(0);
 
-        // Initially should be NONE.
-        assertEquals(
-                "Initial status should be NONE.",
-                TabIndicatorStatus.NONE,
-                tabs[0].getTabIndicatorStatus());
+        // Initially alert state should be null.
+        assertNull("Initial alert state should be null.", tabs[0].getAlertState());
 
-        // Update to STATIC.
-        mStripLayoutHelper.onActuationStateChanged(tab0.getId(), TabIndicatorStatus.STATIC);
+        // Update to ACTOR_WAITING_ON_USER.
+        mStripLayoutHelper.onAlertStateChanged(tab0, TabAlert.ACTOR_WAITING_ON_USER);
         assertEquals(
-                "Status should be STATIC.",
-                TabIndicatorStatus.STATIC,
-                tabs[0].getTabIndicatorStatus());
+                "Alert state should be ACTOR_WAITING_ON_USER.",
+                Integer.valueOf(TabAlert.ACTOR_WAITING_ON_USER),
+                tabs[0].getAlertState());
 
-        // Update to NONE.
-        mStripLayoutHelper.onActuationStateChanged(tab0.getId(), TabIndicatorStatus.NONE);
-        assertEquals(
-                "Status should be NONE.", TabIndicatorStatus.NONE, tabs[0].getTabIndicatorStatus());
+        // Update to null.
+        mStripLayoutHelper.onAlertStateChanged(tab0, null);
+        assertNull("Alert state should be null.", tabs[0].getAlertState());
     }
 
     @Test

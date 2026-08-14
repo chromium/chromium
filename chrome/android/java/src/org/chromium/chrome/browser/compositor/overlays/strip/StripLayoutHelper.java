@@ -59,7 +59,6 @@ import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.actor.ui.TabIndicatorStatus;
 import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.compositor.LayerTitleCache;
@@ -3804,7 +3803,7 @@ public class StripLayoutHelper
                 tab.addLoadingSpinnerRotation(degrees);
                 tabHasSpinner = true;
             }
-            if (tab.getTabIndicatorStatus() == TabIndicatorStatus.DYNAMIC) {
+            if (tab.getAlertState() != null && tab.getAlertState() == TabAlert.ACTOR_ACCESSING) {
                 tab.addTabIndicatorOverlayRotation(degrees);
                 tabHasSpinner = true;
             }
@@ -5876,14 +5875,6 @@ public class StripLayoutHelper
         if (stripLayoutTab == null) return;
         stripLayoutTab.setAlertState(alertState);
         setAccessibilityDescription(stripLayoutTab, tab);
-    }
-
-    public void onActuationStateChanged(int tabId, @TabIndicatorStatus int status) {
-        StripLayoutTab stripLayoutTab = findTabById(tabId);
-        if (stripLayoutTab == null) return;
-        stripLayoutTab.setTabIndicatorStatus(status);
-        // TODO(crbug.com/498337661): Polish accessibility strings
-        setAccessibilityDescription(stripLayoutTab, getTabById(tabId));
     }
 
     private boolean isViewDraggingInProgress() {
