@@ -79,7 +79,6 @@ _DEFAULT_TARGETS = [
     '//content/public/android:content_junit_tests',
     '//content/shell/android:content_shell_apk',
     # Below must be included even with --all since they are libraries.
-    '//base/android/jni_generator:jni_processor',
     '//tools/android/errorprone_plugin:errorprone_plugin_java',
 ]
 
