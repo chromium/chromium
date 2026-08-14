@@ -5,17 +5,17 @@
 import './sync_controls.js';
 import '../settings_page/settings_subpage.js';
 
-import {WebUiListenerMixin} from '//resources/cr_elements/web_ui_listener_mixin.js';
+import {WebUiListenerMixinLit} from '//resources/cr_elements/web_ui_listener_mixin_lit.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
 import {SyncBrowserProxyImpl} from '/shared/settings/people_page/sync_browser_proxy.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
+import {SettingsViewMixinLit} from '../settings_page/settings_view_mixin_lit.js';
 
-import {getTemplate} from './sync_controls_page.html.js';
+import {getHtml} from './sync_controls_page.html.js';
 
 const SettingsSyncControlsPageElementBase =
-    SettingsViewMixin(WebUiListenerMixin(PolymerElement));
+    SettingsViewMixinLit(WebUiListenerMixinLit(CrLitElement));
 
 export class SettingsSyncControlsPageElement extends
     SettingsSyncControlsPageElementBase {
@@ -23,17 +23,17 @@ export class SettingsSyncControlsPageElement extends
     return 'settings-sync-controls-page';
   }
 
-  static get template() {
-    return getTemplate();
+  override render() {
+    return getHtml.bind(this)();
   }
 
-  static get properties() {
+  static override get properties() {
     return {
       syncStatus_: {type: Object},
     };
   }
 
-  declare private syncStatus_: SyncStatus|null;
+  protected accessor syncStatus_: SyncStatus|null = null;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -50,7 +50,7 @@ export class SettingsSyncControlsPageElement extends
 
   // SettingsViewMixin implementation.
   override focusBackButton() {
-    this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
+    this.shadowRoot.querySelector('settings-subpage')!.focusBackButton();
   }
 }
 

@@ -17,34 +17,42 @@ import './sync_controls.js';
 import './sync_encryption_options.js';
 import '../settings_page/settings_subpage.js';
 
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import type {SyncBrowserProxy, SyncPrefs, SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
-import {ChromeSigninAccessPoint, SignedInState, SyncBrowserProxyImpl} from '/shared/settings/people_page/sync_browser_proxy.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {SignedInState, SyncBrowserProxyImpl} from '/shared/settings/people_page/sync_browser_proxy.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
+import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 import {routes} from '../route.js';
 import {Router} from '../router.js';
-import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
+import {SettingsViewMixinLit} from '../settings_page/settings_view_mixin_lit.js';
 
-import {getTemplate} from './account_page.html.js';
+import {getCss} from './account_page.css.js';
+import {getHtml} from './account_page.html.js';
 
 const SettingsAccountPageElementBase =
-    SettingsViewMixin(WebUiListenerMixin(I18nMixin(PolymerElement)));
+    SettingsViewMixinLit(WebUiListenerMixinLit(I18nMixinLit(CrLitElement)));
+
+export type AccountPageElement = SettingsAccountPageElement;
 
 export class SettingsAccountPageElement extends SettingsAccountPageElementBase {
   static get is() {
     return 'settings-account-page';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       /**
        * The current sync status.
@@ -54,60 +62,32 @@ export class SettingsAccountPageElement extends SettingsAccountPageElementBase {
       /**
        * The current sync preferences, supplied by SyncBrowserProxy.
        */
-      syncPrefs: Object,
+      syncPrefs: {type: Object},
 
-      isEeaChoiceCountry_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('isEeaChoiceCountry');
-        },
-      },
+      isEeaChoiceCountry_: {type: Boolean},
 
-      personalizationCollapseExpanded_: {
-        type: Boolean,
-        value: false,
-      },
+      personalizationCollapseExpanded_: {type: Boolean},
 
-      existingPassphraseLabel_: {
-        type: String,
-        computed: 'computeExistingPassphraseLabel_(syncPrefs.encryptAllData,' +
-            'syncPrefs.explicitPassphraseTime)',
-      },
+      existingPassphraseLabel_: {type: String},
 
-      dataEncrypted_: {
-        type: Boolean,
-        computed: 'computeDataEncrypted_(syncPrefs.encryptAllData)',
-      },
+      dataEncrypted_: {type: Boolean},
 
-      encryptionExpanded_: {
-        type: Boolean,
-        value: false,
-      },
-
-      // Exposes ChromeSigninAccessPoint enum to HTML bindings.
-      accessPointEnum_: {
-        type: Object,
-        value: ChromeSigninAccessPoint,
-      },
+      encryptionExpanded_: {type: Boolean},
     };
-  }
-
-  static get observers() {
-    return [
-      'expandEncryptionIfNeeded_(dataEncrypted_)',
-    ];
   }
 
   private syncBrowserProxy_: SyncBrowserProxy =
       SyncBrowserProxyImpl.getInstance();
-  declare private syncStatus_: SyncStatus|null;
-  declare syncPrefs?: SyncPrefs;
+  protected accessor syncStatus_: SyncStatus|null = null;
+  accessor syncPrefs: SyncPrefs|null = null;
 
-  declare private isEeaChoiceCountry_: boolean;
-  declare private personalizationCollapseExpanded_: boolean;
-  declare private dataEncrypted_: boolean;
-  declare private encryptionExpanded_: boolean;
-  declare private existingPassphraseLabel_: TrustedHTML;
+  protected accessor isEeaChoiceCountry_: boolean =
+      loadTimeData.getBoolean('isEeaChoiceCountry');
+  protected accessor personalizationCollapseExpanded_: boolean = false;
+  protected accessor dataEncrypted_: boolean = false;
+  protected accessor encryptionExpanded_: boolean = false;
+  protected accessor existingPassphraseLabel_: TrustedHTML =
+      window.trustedTypes!.emptyHTML;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -120,6 +100,19 @@ export class SettingsAccountPageElement extends SettingsAccountPageElementBase {
         'sync-status-changed', this.onSyncStatusChanged_.bind(this));
     this.addWebUiListener(
         'sync-prefs-changed', this.onSyncPrefsChanged_.bind(this));
+  }
+
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    if (changedProperties.has('syncPrefs')) {
+      const wasDataEncrypted = this.dataEncrypted_;
+      this.dataEncrypted_ = this.computeDataEncrypted_();
+      this.existingPassphraseLabel_ = this.computeExistingPassphraseLabel_();
+      if (wasDataEncrypted !== this.dataEncrypted_) {
+        this.expandEncryptionIfNeeded_();
+      }
+    }
   }
 
   private onSyncStatusChanged_(syncStatus: SyncStatus) {
@@ -142,23 +135,37 @@ export class SettingsAccountPageElement extends SettingsAccountPageElementBase {
     this.syncPrefs = syncPrefs;
   }
 
-  private onActivityControlsClick_() {
+  protected onSyncEncryptionOptionsSyncPrefsChanged_(
+      e: CustomEvent<{value: SyncPrefs}>) {
+    this.syncPrefs = e.detail.value;
+  }
+
+  protected onPersonalizationCollapseExpandedChanged_(
+      e: CustomEvent<{value: boolean}>) {
+    this.personalizationCollapseExpanded_ = e.detail.value;
+  }
+
+  protected onEncryptionExpandedChanged_(e: CustomEvent<{value: boolean}>) {
+    this.encryptionExpanded_ = e.detail.value;
+  }
+
+  protected onActivityControlsClick_() {
     this.syncBrowserProxy_.openActivityControlsUrl();
     OpenWindowProxyImpl.getInstance().openUrl(
         loadTimeData.getString('activityControlsUrl'));
   }
 
-  private onLinkedServicesClick_() {
+  protected onLinkedServicesClick_() {
     OpenWindowProxyImpl.getInstance().openUrl(
         loadTimeData.getString('linkedServicesUrl'));
   }
 
-  private onSyncDashboardLinkClick_() {
+  protected onSyncDashboardLinkClick_() {
     OpenWindowProxyImpl.getInstance().openUrl(
         loadTimeData.getString('syncDashboardUrl'));
   }
 
-  private onResetSyncClick_(event: Event) {
+  protected onResetSyncClick_(event: Event) {
     if ((event.target as HTMLElement).tagName === 'A') {
       // Stop the propagation of events as the |cr-expand-button|
       // prevents the default which will prevent the navigation to the link.
@@ -166,13 +173,13 @@ export class SettingsAccountPageElement extends SettingsAccountPageElementBase {
     }
   }
 
-  private onManageGoogleAccountClicked_() {
+  protected onManageGoogleAccountClick_() {
     OpenWindowProxyImpl.getInstance().openUrl(
         loadTimeData.getString('googleAccountUrl'));
   }
 
   // <if expr="is_chromeos">
-  private onManageDeviceAccountsClicked_() {
+  protected onManageDeviceAccountsClick_() {
     OpenWindowProxyImpl.getInstance().openUrl(
         loadTimeData.getString('osSettingsAccountsPageUrl'));
   }
@@ -200,14 +207,14 @@ export class SettingsAccountPageElement extends SettingsAccountPageElementBase {
     this.encryptionExpanded_ = this.dataEncrypted_;
   }
 
-  private shouldShowPageContents_() {
+  protected shouldShowPageContents_() {
     return this.syncStatus_ &&
         this.syncStatus_.signedInState === SignedInState.SIGNED_IN;
   }
 
   // SettingsViewMixin implementation.
   override focusBackButton() {
-    this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
+    this.shadowRoot.querySelector('settings-subpage')!.focusBackButton();
   }
 }
 

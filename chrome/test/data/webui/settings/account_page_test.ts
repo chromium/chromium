@@ -5,11 +5,9 @@
 import 'chrome://settings/lazy_load.js';
 
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {CrCollapseElement, CrExpandButtonElement, SettingsAccountPageElement, SettingsSyncEncryptionOptionsElement} from 'chrome://settings/lazy_load.js';
 import {loadTimeData, OpenWindowProxyImpl, resetRouterForTesting, Router, routes, SignedInState, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks, waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 import {isChildVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -45,16 +43,14 @@ suite('AccountPage', function() {
     webUIListenerCallback('sync-prefs-changed', getSyncAllPrefs());
     Router.getInstance().navigateTo(routes.ACCOUNT);
 
-    await waitBeforeNextRender(accountSettingsPage);
-    encryptionElement = accountSettingsPage.shadowRoot!.querySelector(
+    await microtasksFinished();
+    encryptionElement = accountSettingsPage.shadowRoot.querySelector(
         'settings-sync-encryption-options')!;
     assertTrue(!!encryptionElement, 'encryptionElement');
 
     await testSyncBrowserProxy.whenCalled('getStoredAccounts');
     simulateStoredAccounts([{email: 'foo@foo.com'}]);
-    flush();
-
-    return microtasksFinished();
+    await microtasksFinished();
   });
 
   function createSettingsAccountPageElement(): SettingsAccountPageElement {
@@ -68,11 +64,12 @@ suite('AccountPage', function() {
   }
 
   async function assertElementLinksToUrl(element: string, url: string) {
+    openWindowProxy.resetResolver('openUrl');
     const linkRow =
-        accountSettingsPage.shadowRoot!.querySelector<HTMLElement>(element);
+        accountSettingsPage.shadowRoot.querySelector<HTMLElement>(element);
     assertTrue(!!linkRow);
     linkRow.click();
-    await flushTasks();
+    await microtasksFinished();
     const openedUrl = await openWindowProxy.whenCalled('openUrl');
     assertEquals(loadTimeData.getString(url), openedUrl);
   }
@@ -110,24 +107,24 @@ suite('AccountPage', function() {
     assertEquals(routes.PEOPLE, Router.getInstance().getCurrentRoute());
   });
 
-  test('RowsLinkToCorrectUrls', function() {
-    assertElementLinksToUrl('#syncDashboardLink', 'syncDashboardUrl');
-    assertElementLinksToUrl('#manage-google-account', 'googleAccountUrl');
+  test('RowsLinkToCorrectUrls', async function() {
+    await assertElementLinksToUrl('#syncDashboardLink', 'syncDashboardUrl');
+    await assertElementLinksToUrl('#manage-google-account', 'googleAccountUrl');
     // <if expr="is_chromeos">
-    assertElementLinksToUrl(
+    await assertElementLinksToUrl(
         '#manage-device-accounts', 'osSettingsAccountsPageUrl');
     // </if>
-    assertElementLinksToUrl(
+    await assertElementLinksToUrl(
         '#activityControlsLinkRowV2', 'activityControlsUrl');
   });
 
   // Tests the Advanced Sync Settings
   test('EncryptionExpandButton', async function() {
     const encryptionDescription =
-        accountSettingsPage.shadowRoot!.querySelector<CrExpandButtonElement>(
+        accountSettingsPage.shadowRoot.querySelector<CrExpandButtonElement>(
             '#encryptionDescription');
     const encryptionCollapse =
-        accountSettingsPage.shadowRoot!.querySelector<CrCollapseElement>(
+        accountSettingsPage.shadowRoot.querySelector<CrCollapseElement>(
             '#encryptionCollapse');
     assertTrue(!!encryptionDescription);
     assertTrue(!!encryptionCollapse);
@@ -135,17 +132,17 @@ suite('AccountPage', function() {
     // No encryption with custom passphrase.
     assertFalse(encryptionCollapse.opened);
     encryptionDescription.click();
-    await encryptionDescription.updateComplete;
+    await microtasksFinished();
     assertTrue(encryptionCollapse.opened);
 
     // Push sync prefs with |prefs.encryptAllData| unchanged. The encryption
     // menu should not collapse.
     webUIListenerCallback('sync-prefs-changed', getSyncAllPrefs());
-    flush();
+    await microtasksFinished();
     assertTrue(encryptionCollapse.opened);
 
     encryptionDescription.click();
-    await encryptionDescription.updateComplete;
+    await microtasksFinished();
     assertFalse(encryptionCollapse.opened);
 
     // Data encrypted with custom passphrase.
@@ -153,7 +150,7 @@ suite('AccountPage', function() {
     const prefs = getSyncAllPrefs();
     prefs.encryptAllData = true;
     webUIListenerCallback('sync-prefs-changed', prefs);
-    flush();
+    await microtasksFinished();
     assertTrue(encryptionCollapse.opened);
 
     // Clicking |reset Sync| does not change the expansion state.
@@ -178,7 +175,7 @@ suite('AccountPage', function() {
     await microtasksFinished();
 
     assertTrue(
-        accountSettingsPage.shadowRoot!
+        accountSettingsPage.shadowRoot
             .querySelector<HTMLElement>('#encryptionDescription')!.hidden);
     assertFalse(!!encryptionElement.shadowRoot.querySelector(
         '#encryptionRadioGroupContainer'));
@@ -191,7 +188,7 @@ suite('AccountPage', function() {
     resetRouterForTesting();
     accountSettingsPage = createSettingsAccountPageElement();
     Router.getInstance().navigateTo(routes.ACCOUNT);
-    await waitBeforeNextRender(accountSettingsPage);
+    await microtasksFinished();
 
     assertFalse(
         isChildVisible(accountSettingsPage, '#activityControlsLinkRowV2'));
@@ -200,31 +197,31 @@ suite('AccountPage', function() {
 
     // The personalization section is collapsed by default.
     const personalizationCollapse =
-        accountSettingsPage.shadowRoot!.querySelector<CrCollapseElement>(
+        accountSettingsPage.shadowRoot.querySelector<CrCollapseElement>(
             '#personalizationCollapse');
     assertTrue(!!personalizationCollapse);
     assertFalse(personalizationCollapse.opened);
 
     // Clicking the expand-button expands the collapse.
     const expandButton =
-        accountSettingsPage.shadowRoot!.querySelector<HTMLElement>(
+        accountSettingsPage.shadowRoot.querySelector<HTMLElement>(
             '#personalizationExpandButton');
     assertTrue(!!expandButton);
     expandButton.click();
-    await flushTasks();
+    await microtasksFinished();
     assertTrue(personalizationCollapse.opened);
 
     // Clicking the expand-button again collapses the collapse.
     expandButton.click();
-    await flushTasks();
+    await microtasksFinished();
     assertFalse(personalizationCollapse.opened);
 
     // The linkedServices row is only visible when the collapse is expanded.
     expandButton.click();
-    await flushTasks();
+    await microtasksFinished();
 
     const linkedServicesLinkRow =
-        accountSettingsPage.shadowRoot!.querySelector<HTMLElement>(
+        accountSettingsPage.shadowRoot.querySelector<HTMLElement>(
             '#linkedServicesLinkRow');
     assertTrue(!!linkedServicesLinkRow);
     linkedServicesLinkRow.click();
@@ -236,7 +233,7 @@ suite('AccountPage', function() {
   // users, so it should remain hidden.
   test('SyncDashboardHiddenFromSupervisedUsers', async function() {
     const dashboardLink =
-        accountSettingsPage.shadowRoot!.querySelector<HTMLElement>(
+        accountSettingsPage.shadowRoot.querySelector<HTMLElement>(
             '#syncDashboardLink')!;
 
     const prefs = getSyncAllPrefs();
