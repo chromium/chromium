@@ -88,6 +88,7 @@ class WebUILocationBar : public LocationBar,
   OmniboxController* GetOmniboxController() override;
   bool ShouldCloseOmniboxPopup(ui::MouseEvent* event) override;
   ChipController* GetChipController() override;
+  PermissionDashboardController* GetPermissionDashboardController() override;
   content::WebContents* GetWebContents() override;
   void SetPermissionPromptShowing(bool showing) override;
   void AnnounceAlert(const std::u16string& announcement) override;
@@ -160,10 +161,6 @@ class WebUILocationBar : public LocationBar,
   views::View* GetLocationBarFocusRestoreView() override;
 
   void SetSuppressionThresholdForTesting(base::TimeDelta threshold);
-
-  PermissionDashboardController* permission_dashboard_controller() {
-    return permission_dashboard_controller_.get();
-  }
 
  private:
   friend class WebUILocationBarTest;

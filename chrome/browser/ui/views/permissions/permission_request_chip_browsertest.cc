@@ -490,10 +490,8 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestChipSensorBrowserTest,
 
   EXPECT_EQ("active", content::EvalJs(web_contents, kStartSensor));
 
-  LocationBarView* lb_view =
-      static_cast<LocationBarView*>(GetLocationBar(browser()));
   PermissionDashboardController* dashboard_controller =
-      lb_view->permission_dashboard_controller();
+      GetLocationBar(browser())->GetPermissionDashboardController();
   ASSERT_TRUE(dashboard_controller);
 
   PermissionChipInterface* indicator_chip =
@@ -554,10 +552,8 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestChipSensorBrowserTest,
   )";
   EXPECT_EQ("active", content::EvalJs(web_contents, kStartSensor));
 
-  LocationBarView* lb_view =
-      static_cast<LocationBarView*>(GetLocationBar(browser()));
   PermissionDashboardController* dashboard_controller =
-      lb_view->permission_dashboard_controller();
+      GetLocationBar(browser())->GetPermissionDashboardController();
   ASSERT_TRUE(dashboard_controller);
 
   PermissionChipInterface* indicator_chip =
@@ -619,10 +615,8 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestChipSensorBrowserTest,
   EXPECT_EQ("error: NotAllowedError",
             content::EvalJs(web_contents, kStartSensor));
 
-  LocationBarView* lb_view =
-      static_cast<LocationBarView*>(GetLocationBar(browser()));
   PermissionDashboardController* dashboard_controller =
-      lb_view->permission_dashboard_controller();
+      GetLocationBar(browser())->GetPermissionDashboardController();
   ASSERT_TRUE(dashboard_controller);
 
   PermissionChipInterface* indicator_chip =

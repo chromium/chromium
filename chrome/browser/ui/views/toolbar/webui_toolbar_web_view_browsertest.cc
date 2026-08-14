@@ -5497,8 +5497,8 @@ IN_PROC_BROWSER_TEST_P(WebUIToolbarWebViewPermissionBrowserTest,
 
   auto* location_bar = webui_toolbar_view->GetLocationBar();
   ASSERT_TRUE(location_bar);
-  ASSERT_TRUE(location_bar->permission_dashboard_controller());
-  location_bar->permission_dashboard_controller()
+  ASSERT_TRUE(location_bar->GetPermissionDashboardController());
+  location_bar->GetPermissionDashboardController()
       ->SetSuppressionThresholdForTesting(base::Seconds(1));
 
   // Test the suppression logic: simulating the OS closing the bubble due to

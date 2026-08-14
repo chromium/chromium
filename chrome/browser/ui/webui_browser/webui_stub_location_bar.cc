@@ -92,6 +92,11 @@ ChipController* WebUIStubLocationBar::GetChipController() {
   return permission_dashboard_controller_->request_chip_controller();
 }
 
+PermissionDashboardController*
+WebUIStubLocationBar::GetPermissionDashboardController() {
+  return permission_dashboard_controller_.get();
+}
+
 content::WebContents* WebUIStubLocationBar::GetWebContents() {
   return GetBrowser()->tab_strip_model()->GetActiveWebContents();
 }

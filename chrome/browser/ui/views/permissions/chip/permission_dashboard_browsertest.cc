@@ -98,7 +98,7 @@ class PermissionDashboardBrowserTest : public InProcessBrowserTest {
   }
 
   PermissionDashboardController* dashboard_controller() {
-    return location_bar_view()->permission_dashboard_controller();
+    return location_bar_view()->GetPermissionDashboardController();
   }
 
  private:

@@ -25,6 +25,7 @@ class CommandUpdater;
 class LocationBarModel;
 class LocationBarTesting;
 class OmniboxController;
+class PermissionDashboardController;
 class OmniboxView;
 class OmniboxPopupPresenterDelegate;
 class OmniboxPopupView;
@@ -132,6 +133,9 @@ class LocationBar {
 
   // Controls the chip in the LocationBar.
   virtual ChipController* GetChipController() = 0;
+
+  // Controls the permission dashboard in the LocationBar.
+  virtual PermissionDashboardController* GetPermissionDashboardController();
 
   // Announces an alert for accessibility screen readers.
   virtual void AnnounceAlert(const std::u16string& announcement) = 0;

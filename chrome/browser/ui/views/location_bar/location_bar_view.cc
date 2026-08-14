@@ -1061,6 +1061,11 @@ ChipController* LocationBarView::GetChipController() {
   return chip_controller_.get();
 }
 
+PermissionDashboardController*
+LocationBarView::GetPermissionDashboardController() {
+  return permission_dashboard_controller_.get();
+}
+
 void LocationBarView::UpdateWithoutTabRestore() {
   Update(nullptr);
 }
@@ -1411,7 +1416,7 @@ bool LocationBarView::RefreshContentSettingViews() {
       // first because of the ordering in
       // `ContentSettingImageModel::GenerateContentSettingImageModels()`.
       if (!dashboard_updated) {
-        visibility_changed |= permission_dashboard_controller()->Update(
+        visibility_changed |= GetPermissionDashboardController()->Update(
             v->content_setting_image_model());
         if (v->content_setting_image_model()->is_visible()) {
           dashboard_updated = true;

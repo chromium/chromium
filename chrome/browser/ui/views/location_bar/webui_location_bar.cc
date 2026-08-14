@@ -345,6 +345,11 @@ ChipController* WebUILocationBar::GetChipController() {
   return permission_dashboard_controller_->request_chip_controller();
 }
 
+PermissionDashboardController*
+WebUILocationBar::GetPermissionDashboardController() {
+  return permission_dashboard_controller_.get();
+}
+
 content::WebContents* WebUILocationBar::GetWebContents() {
   return delegate_->GetWebContents();
 }

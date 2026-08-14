@@ -168,7 +168,9 @@ class DashboardKombuchaInteractiveUITest : public InteractiveBrowserTest {
   }
 
   PermissionDashboardController* GetDashboardController() {
-    return GetLocationBarView()->permission_dashboard_controller();
+    return BrowserView::GetBrowserViewForBrowser(browser())
+        ->GetLocationBar()
+        ->GetPermissionDashboardController();
   }
 
  private:

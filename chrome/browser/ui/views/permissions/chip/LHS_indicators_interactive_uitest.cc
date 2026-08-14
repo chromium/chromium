@@ -270,7 +270,9 @@ class LHSIndicatorsInteractiveUITest : public UiBrowserTest {
   }
 
   PermissionDashboardController* GetDashboardController() {
-    return GetLocationBarView(browser())->permission_dashboard_controller();
+    return BrowserView::GetBrowserViewForBrowser(browser())
+        ->GetLocationBar()
+        ->GetPermissionDashboardController();
   }
 
   content::WebContents* web_contents() {

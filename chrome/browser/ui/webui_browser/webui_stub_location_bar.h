@@ -42,6 +42,7 @@ class WebUIStubLocationBar : public LocationBar,
   OmniboxController* GetOmniboxController() override;
   bool ShouldCloseOmniboxPopup(ui::MouseEvent* event) override;
   ChipController* GetChipController() override;
+  PermissionDashboardController* GetPermissionDashboardController() override;
   content::WebContents* GetWebContents() override;
   LocationBarModel* GetLocationBarModel() override;
   std::optional<bubble_anchor_util::AnchorConfiguration> GetChipAnchor()
