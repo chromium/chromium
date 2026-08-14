@@ -753,6 +753,32 @@ if (!is_android) {
       "//chrome/test/base:web_ui_test_data_source",
     ]
   }
+
+  if (is_win) {
+    source_set("always_on_top_window_killer_win") {
+      testonly = true
+      sources = [
+        "always_on_top_window_killer_win.cc",
+        "always_on_top_window_killer_win.h",
+      ]
+      deps = [
+        "//base",
+        "//base/test:test_support",
+        "//chrome/test/base:process_lineage_win",
+        "//chrome/test/base:save_desktop_snapshot",
+        "//ui/display",
+      ]
+    }
+
+    source_set("window_contents_as_string_win") {
+      testonly = true
+      sources = [
+        "window_contents_as_string_win.cc",
+        "window_contents_as_string_win.h",
+      ]
+      deps = [ "//base" ]
+    }
+  }
 }
 
 source_set("web_ui_mocha_browser_test") {

@@ -8254,12 +8254,10 @@ if (!is_android) {
     }
 
     if (is_win) {
-      sources += [
-        "base/always_on_top_window_killer_win.cc",
-        "base/always_on_top_window_killer_win.h",
-        "base/interactive_test_utils_win.cc",
-        "base/window_contents_as_string_win.cc",
-        "base/window_contents_as_string_win.h",
+      sources += [ "base/interactive_test_utils_win.cc" ]
+      public_deps += [
+        "//chrome/test/base:always_on_top_window_killer_win",
+        "//chrome/test/base:window_contents_as_string_win",
       ]
       public_deps += [ "//chrome/test/base:process_lineage_win" ]
       deps += [ "//chrome/browser/os_crypt" ]
