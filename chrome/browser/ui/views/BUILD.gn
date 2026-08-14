@@ -522,3 +522,20 @@ source_set("title_origin_label") {
     "//ui/gfx/range",
   ]
 }
+
+source_set("bubble_menu_item_factory") {
+  public = [ "bubble_menu_item_factory.h" ]
+  sources = [ "bubble_menu_item_factory.cc" ]
+  public_deps = [
+    "//ui/base",
+    "//ui/views",
+  ]
+  deps = [
+    ":layout_provider",
+    "//base",
+    "//chrome/browser/ui/views/controls",
+    "//ui/color",
+    "//ui/gfx",
+    "//ui/gfx/geometry",
+  ]
+}
