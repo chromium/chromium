@@ -593,6 +593,7 @@ test("gl_unittests") {
   use_xvfb = use_xvfb_in_this_config
 
   sources = [
+    "angle_platform_impl_unittest.cc",
     "egl_api_unittest.cc",
     "gl_api_unittest.cc",
     "gl_display_manager_unittest.cc",

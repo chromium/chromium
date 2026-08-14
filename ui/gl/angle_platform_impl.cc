@@ -4,6 +4,7 @@
 
 #include "ui/gl/angle_platform_impl.h"
 
+#include <atomic>
 #include <string>
 
 #include "base/base64.h"
@@ -24,6 +25,8 @@
 namespace angle {
 
 namespace {
+
+std::atomic<bool> g_post_task_failed_for_testing{false};
 
 double ANGLEPlatformImpl_currentTime(PlatformMethods* platform) {
   return base::Time::Now().InSecondsFSinceUnixEpoch();
@@ -151,20 +154,32 @@ void AnglePlatformImpl_runWorkerTask(PostWorkerTaskCallback callback, void* user
   callback(user_data);
 }
 
-void ANGLEPlatformImpl_postWorkerTask(PlatformMethods* platform,
-                                      PostWorkerTaskCallback callback,
-                                      void* user_data) {
-  base::ThreadPool::PostTask(
-      FROM_HERE, {base::TaskPriority::USER_BLOCKING},
-      base::BindOnce(&AnglePlatformImpl_runWorkerTask, callback, user_data));
-}
-
 void ANGLEPlatformImpl_recordShaderCacheUse(bool in_cache) {
   // Metrics were no longer required, we can remove once Angle no longer
   // requires the method.
 }
 
 }  // anonymous namespace
+
+void SetPostTaskFailedForTesting(bool failed) {
+  g_post_task_failed_for_testing.store(failed);
+}
+
+void ANGLEPlatformImpl_postWorkerTask(PlatformMethods* platform,
+                                      PostWorkerTaskCallback callback,
+                                      void* user_data) {
+  bool success = false;
+  if (!g_post_task_failed_for_testing.load()) {
+    success = base::ThreadPool::PostTask(
+        FROM_HERE, {base::TaskPriority::USER_BLOCKING},
+        base::BindOnce(&AnglePlatformImpl_runWorkerTask, callback, user_data));
+  }
+  if (!success) {
+    // Run the task synchronously if posting failed (e.g. during shutdown) to
+    // avoid GPU hangs. See https://crbug.com/539435331
+    AnglePlatformImpl_runWorkerTask(callback, user_data);
+  }
+}
 
 NO_SANITIZE("cfi-icall")
 bool InitializePlatform(EGLDisplay display,
