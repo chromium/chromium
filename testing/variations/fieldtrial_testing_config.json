@@ -8653,8 +8653,7 @@
     "DelayNativePaymentAppScrimShow": [
         {
             "platforms": [
-                "android",
-                "android_webview"
+                "android"
             ],
             "experiments": [
                 {
