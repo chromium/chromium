@@ -264,9 +264,7 @@ public class SplashController extends CustomTabTabObserver
         assumeNonNull(mCompositorViewHolder.get())
                 .getCompositorView()
                 .surfaceRedrawNeededAsync(
-                        () -> {
-                            ThreadUtils.runOnUiThread(() -> animateHideSplash(tab));
-                        });
+                        () -> ThreadUtils.runOnUiThread(() -> animateHideSplash(tab)));
     }
 
     private void removeTranslucency() {
@@ -318,10 +316,7 @@ public class SplashController extends CustomTabTabObserver
                         .animate()
                         .alpha(0f)
                         .setDuration(mSplashHideAnimationDurationMs)
-                        .withEndAction(
-                                () -> {
-                                    hideSplashNow(tab);
-                                });
+                        .withEndAction(() -> hideSplashNow(tab));
     }
 
     private void hideSplashNow(Tab tab) {
@@ -372,10 +367,7 @@ public class SplashController extends CustomTabTabObserver
     @RequiresNonNull("mParentView")
     private void recordTraceEventsShowedSplash() {
         SingleShotOnDrawListener.install(
-                mParentView,
-                () -> {
-                    TraceEvent.startAsync("SplashScreen.visible", hashCode());
-                });
+                mParentView, () -> TraceEvent.startAsync("SplashScreen.visible", hashCode()));
     }
 
     private void recordTraceEventsStartedHidingSplash() {
@@ -387,8 +379,6 @@ public class SplashController extends CustomTabTabObserver
         TraceEvent.finishAsync("SplashScreen.hidingAnimation", hashCode());
         SingleShotOnDrawListener.install(
                 mParentView,
-                () -> {
-                    TraceEvent.finishAsync("WebappSplashScreen.visible", hashCode());
-                });
+                () -> TraceEvent.finishAsync("WebappSplashScreen.visible", hashCode()));
     }
 }

@@ -301,35 +301,29 @@ public class ConfirmImportantSitesDialogFragment extends DialogFragment {
 
         mAdapter = new ClearBrowsingDataAdapter(mImportantDomains, mFaviconURLs, getResources());
         DialogInterface.OnClickListener listener =
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        if (which == AlertDialog.BUTTON_POSITIVE) {
-                            Intent data = new Intent();
-                            List<String> deselectedDomains = new ArrayList<>();
-                            List<String> ignoredDomains = new ArrayList<>();
-                            for (Entry<String, Boolean> entry : mCheckedState.entrySet()) {
-                                if (entry.getValue()) {
-                                    ignoredDomains.add(entry.getKey());
-                                } else {
-                                    deselectedDomains.add(entry.getKey());
-                                }
+                (DialogInterface _, int which) -> {
+                    if (which == AlertDialog.BUTTON_POSITIVE) {
+                        Intent data = new Intent();
+                        List<String> deselectedDomains = new ArrayList<>();
+                        List<String> ignoredDomains = new ArrayList<>();
+                        for (Entry<String, Boolean> entry : mCheckedState.entrySet()) {
+                            if (entry.getValue()) {
+                                ignoredDomains.add(entry.getKey());
+                            } else {
+                                deselectedDomains.add(entry.getKey());
                             }
-                            data.putExtra(
-                                    DESELECTED_DOMAINS_TAG,
-                                    deselectedDomains.toArray(new String[0]));
-                            data.putExtra(
-                                    IGNORED_DOMAINS_TAG, ignoredDomains.toArray(new String[0]));
-                            assumeNonNull(getTargetFragment())
-                                    .onActivityResult(
-                                            getTargetRequestCode(), Activity.RESULT_OK, data);
-                        } else {
-                            assumeNonNull(getTargetFragment())
-                                    .onActivityResult(
-                                            getTargetRequestCode(),
-                                            Activity.RESULT_CANCELED,
-                                            getActivity().getIntent());
                         }
+                        data.putExtra(
+                                DESELECTED_DOMAINS_TAG, deselectedDomains.toArray(new String[0]));
+                        data.putExtra(IGNORED_DOMAINS_TAG, ignoredDomains.toArray(new String[0]));
+                        assumeNonNull(getTargetFragment())
+                                .onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, data);
+                    } else {
+                        assumeNonNull(getTargetFragment())
+                                .onActivityResult(
+                                        getTargetRequestCode(),
+                                        Activity.RESULT_CANCELED,
+                                        getActivity().getIntent());
                     }
                 };
 

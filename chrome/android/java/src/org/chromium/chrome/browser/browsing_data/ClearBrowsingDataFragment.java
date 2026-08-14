@@ -733,9 +733,7 @@ public class ClearBrowsingDataFragment extends ChromeBaseSettingsFragment
         assert mSearchHistoryLinkOutOtherDse != null;
 
         mManageOtherGoogleDataSection.setOnExpandedListener(
-                () -> {
-                    updateManageOtherGoogleDataSection();
-                });
+                this::updateManageOtherGoogleDataSection);
 
         // Must be initially collapsed.
         mManageOtherGoogleDataSection.setExpanded(false);
@@ -841,7 +839,7 @@ public class ClearBrowsingDataFragment extends ChromeBaseSettingsFragment
         // Add button to bottom of the preferences view.
         ButtonCompat clearButton =
                 (ButtonCompat) inflater.inflate(R.layout.clear_browsing_data_button, view, false);
-        clearButton.setOnClickListener((View v) -> onClearButtonClicked());
+        clearButton.setOnClickListener(_ -> onClearButtonClicked());
         view.addView(clearButton);
 
         // Disable animations of preference changes.

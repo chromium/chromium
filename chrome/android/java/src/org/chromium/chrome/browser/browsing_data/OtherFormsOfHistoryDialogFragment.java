@@ -58,13 +58,12 @@ public class OtherFormsOfHistoryDialogFragment extends DialogFragment
                                 "</link>",
                                 new ChromeClickableSpan(
                                         getContext(),
-                                        (widget) -> {
-                                            new ChromeAsyncTabLauncher(/* incognito= */ false)
-                                                    .launchUrl(
-                                                            UrlConstants
-                                                                    .MY_ACTIVITY_URL_IN_CBD_NOTICE,
-                                                            TabLaunchType.FROM_CHROME_UI);
-                                        })));
+                                        _ ->
+                                                new ChromeAsyncTabLauncher(/* incognito= */ false)
+                                                        .launchUrl(
+                                                                UrlConstants
+                                                                        .MY_ACTIVITY_URL_IN_CBD_NOTICE,
+                                                                TabLaunchType.FROM_CHROME_UI))));
 
         textView.setText(textWithLink);
         textView.setMovementMethod(LinkMovementMethod.getInstance());
