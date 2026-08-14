@@ -42,6 +42,7 @@
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/signin/account_preview_data_service_factory.h"
 #include "chrome/browser/signin/chrome_signin_pref_names.h"
 #include "chrome/browser/signin/dice_intercepted_session_startup_helper.h"
 #include "chrome/browser/signin/dice_signed_in_profile_creator.h"
@@ -703,6 +704,7 @@ void DiceWebSigninInterceptor::OnDiceSigninSessionComplete(
 void DiceWebSigninInterceptor::Reset() {
   state_ = std::make_unique<ResetableState>();
   account_info_update_observation_.Reset();
+  weak_factory_.InvalidateWeakPtrs();
 }
 
 const ProfileAttributesEntry*
@@ -1211,7 +1213,79 @@ void DiceWebSigninInterceptor::OnInterceptionReadyToBeProcessed(
     case WebSigninInterceptor::SigninInterceptionType::kEnterpriseOIDC:
       NOTREACHED() << "This interception type should not happen in DICE";
   }
+
+  // Treat intercepts that require account preview fetching.
+  if (!state_->account_preview_fetch_started_) {
+    switch (*interception_type) {
+      case WebSigninInterceptor::SigninInterceptionType::kChromeSignin: {
+        if (!base::FeatureList::IsEnabled(
+                switches::kEnableAccountPreviewPreferredAccount)) {
+          break;
+        }
+
+        // For supervised accounts, there is a dedicated subtitle, so there is
+        // no need to fetch and wait for the account preview data.
+        if (info.GetAccountCapabilities().is_subject_to_parental_controls() ==
+            signin::Tribool::kTrue) {
+          break;
+        }
+
+        state_->account_preview_fetch_started_ = true;
+        signin::AccountPreviewDataService* preview_service =
+            AccountPreviewDataServiceFactory::GetForProfile(profile_);
+        if (!preview_service) {
+          break;
+        }
+        state_->interception_bubble_callback_ = std::move(callback);
+        state_->account_preview_timeout_timer_.Start(
+            FROM_HERE,
+            switches::
+                kAccountPreviewPreferredAccountSingleAccountPromoFetchTimeout
+                    .Get(),
+            base::BindOnce(
+                &DiceWebSigninInterceptor::OnAccountPreviewPreferenceReceived,
+                weak_factory_.GetWeakPtr(), bubble_parameters,
+                /*preference=*/std::nullopt));
+        preview_service->GetPreviewPreferenceForAccount(
+            info.gaia,
+            base::BindOnce(
+                &DiceWebSigninInterceptor::OnAccountPreviewPreferenceReceived,
+                weak_factory_.GetWeakPtr(), bubble_parameters));
+        return;
+      }
+      case WebSigninInterceptor::SigninInterceptionType::kProfileSwitch:
+      case WebSigninInterceptor::SigninInterceptionType::kProfileSwitchForced:
+      case WebSigninInterceptor::SigninInterceptionType::kEnterpriseForced:
+      case WebSigninInterceptor::SigninInterceptionType::
+          kEnterpriseAcceptManagement:
+      case WebSigninInterceptor::SigninInterceptionType::kEnterprise:
+      case WebSigninInterceptor::SigninInterceptionType::kMultiUser:
+        break;
+      case WebSigninInterceptor::SigninInterceptionType::kEnterpriseOIDC:
+        NOTREACHED() << "This interception type should not happen in DICE";
+    }
+  }
+
   ShowSigninInterceptionBubble(bubble_parameters, std::move(callback));
+}
+
+void DiceWebSigninInterceptor::OnAccountPreviewPreferenceReceived(
+    WebSigninInterceptor::Delegate::BubbleParameters bubble_parameters,
+    std::optional<signin::AccountPreviewDataService::AccountPreviewPreference>
+        preference) {
+  if (state_->account_preview_timeout_timer_.IsRunning()) {
+    state_->account_preview_timeout_timer_.Stop();
+  }
+
+  if (state_->was_interception_ui_displayed_ ||
+      !state_->is_interception_in_progress_ ||
+      !state_->interception_bubble_callback_) {
+    return;
+  }
+
+  bubble_parameters.account_preview_preference = std::move(preference);
+  ShowSigninInterceptionBubble(
+      bubble_parameters, std::move(state_->interception_bubble_callback_));
 }
 
 void DiceWebSigninInterceptor::OnExtendedAccountInfoUpdated(

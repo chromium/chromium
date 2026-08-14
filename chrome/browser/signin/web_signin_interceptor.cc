@@ -28,13 +28,16 @@ WebSigninInterceptor::Delegate::BubbleParameters::BubbleParameters(
     AccountInfo primary_account,
     SkColor profile_highlight_color,
     bool show_link_data_option,
-    bool show_managed_disclaimer)
+    bool show_managed_disclaimer,
+    std::optional<signin::AccountPreviewDataService::AccountPreviewPreference>
+        account_preview_preference)
     : interception_type(interception_type),
       intercepted_account(intercepted_account),
       primary_account(primary_account),
       profile_highlight_color(profile_highlight_color),
       show_link_data_option(show_link_data_option),
-      show_managed_disclaimer(show_managed_disclaimer) {}
+      show_managed_disclaimer(show_managed_disclaimer),
+      account_preview_preference(std::move(account_preview_preference)) {}
 
 WebSigninInterceptor::Delegate::BubbleParameters::BubbleParameters(
     const BubbleParameters& copy) = default;

@@ -585,6 +585,7 @@ source_set("unit_tests") {
     deps += [
       "//chrome/browser/new_tab_page/chrome_colors:selected_colors_info",
       "//chrome/browser/ui/profiles",
+      "//chrome/browser/ui/signin",
     ]
   }
 

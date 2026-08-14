@@ -179,6 +179,8 @@ source_set("test_support") {
   testonly = true
 
   sources = [
+    "test_account_preview_data_service.cc",
+    "test_account_preview_data_service.h",
     "test_account_reconcilor_observer.cc",
     "test_account_reconcilor_observer.h",
   ]

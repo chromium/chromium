@@ -4,7 +4,6 @@
 
 #include "chrome/browser/signin/dice_web_signin_interceptor.h"
 
-#include <map>
 #include <string>
 
 #include "base/command_line.h"
@@ -30,6 +29,7 @@
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/signin/account_preview_data_service_factory.h"
 #include "chrome/browser/signin/chrome_signin_pref_names.h"
 #include "chrome/browser/signin/dice_intercepted_session_startup_helper.h"
 #include "chrome/browser/signin/dice_web_signin_interceptor_factory.h"
@@ -67,6 +67,7 @@
 #include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/signin/core/browser/test_account_preview_data_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
@@ -84,6 +85,7 @@
 #include "components/sync/base/features.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/base/user_selectable_type.h"
+#include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
 #include "components/version_info/version_info.h"
@@ -94,6 +96,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "url/gurl.h"
 
 using testing::_;
@@ -151,6 +154,7 @@ class FakeDiceWebSigninInterceptorDelegate
       const BubbleParameters& bubble_parameters,
       base::OnceCallback<void(SigninInterceptionResult)> callback) override {
     EXPECT_EQ(bubble_parameters.interception_type, expected_interception_type_);
+    last_bubble_parameters_ = bubble_parameters;
     auto bubble_handle = std::make_unique<FakeBubbleHandle>();
     weak_bubble_handle_ = bubble_handle->AsWeakPtr();
     // The callback must not be called synchronously (see the documentation for
@@ -175,6 +179,10 @@ class FakeDiceWebSigninInterceptorDelegate
   Browser* fre_browser() { return fre_browser_; }
 
   const CoreAccountId& fre_account_id() { return fre_account_id_; }
+
+  const std::optional<BubbleParameters>& last_bubble_parameters() const {
+    return last_bubble_parameters_;
+  }
 
   void set_expected_interception_type(
       WebSigninInterceptor::SigninInterceptionType type) {
@@ -207,6 +215,7 @@ class FakeDiceWebSigninInterceptorDelegate
       WebSigninInterceptor::SigninInterceptionType::kMultiUser;
   SigninInterceptionResult expected_interception_result_ =
       SigninInterceptionResult::kAccepted;
+  std::optional<BubbleParameters> last_bubble_parameters_;
   std::optional<SigninUIError> signin_error_;
   base::WeakPtr<FakeBubbleHandle> weak_bubble_handle_;
 };
@@ -279,6 +288,13 @@ class DiceWebSigninInterceptorBrowserTest : public SigninBrowserTestBase {
     return interceptor_delegate;
   }
 
+  signin::TestAccountPreviewDataService* GetTestAccountPreviewDataService(
+      Profile* profile) {
+    // Make sure the service has been created.
+    AccountPreviewDataServiceFactory::GetForProfile(profile);
+    return test_account_preview_data_services_[profile];
+  }
+
   void SetupGaiaResponses() {
     // Instantly return from Gaia calls, to avoid timing out when injecting the
     // account in the new profile.
@@ -332,6 +348,12 @@ class DiceWebSigninInterceptorBrowserTest : public SigninBrowserTestBase {
             policy::ProfileSeparationPolicies(""));
   }
 
+  void TearDownOnMainThread() override {
+    interceptor_delegates_.clear();
+    test_account_preview_data_services_.clear();
+    SigninBrowserTestBase::TearDownOnMainThread();
+  }
+
  private:
   void OnWillCreateBrowserContextServices(
       content::BrowserContext* context) override {
@@ -341,6 +363,10 @@ class DiceWebSigninInterceptorBrowserTest : public SigninBrowserTestBase {
         base::BindRepeating(&DiceWebSigninInterceptorBrowserTest::
                                 BuildDiceWebSigninInterceptorWithFakeDelegate,
                             base::Unretained(this)));
+    AccountPreviewDataServiceFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating(&DiceWebSigninInterceptorBrowserTest::
+                                         BuildTestAccountPreviewDataService,
+                                     base::Unretained(this)));
   }
 
   // Builds a DiceWebSigninInterceptor with a fake delegate. To be used as a
@@ -355,11 +381,22 @@ class DiceWebSigninInterceptorBrowserTest : public SigninBrowserTestBase {
         profile, std::move(fake_delegate), &profile_metrics_service_);
   }
 
+  std::unique_ptr<KeyedService> BuildTestAccountPreviewDataService(
+      content::BrowserContext* context) {
+    auto test_service =
+        std::make_unique<signin::TestAccountPreviewDataService>();
+    test_account_preview_data_services_[context] = test_service.get();
+    return test_service;
+  }
+
   web_app::OsIntegrationTestOverrideBlockingRegistration faked_os_integration_;
 
-  std::map<content::BrowserContext*,
-           raw_ptr<FakeDiceWebSigninInterceptorDelegate, CtnExperimental>>
+  absl::flat_hash_map<content::BrowserContext*,
+                      raw_ptr<FakeDiceWebSigninInterceptorDelegate>>
       interceptor_delegates_;
+  absl::flat_hash_map<content::BrowserContext*,
+                      raw_ptr<signin::TestAccountPreviewDataService>>
+      test_account_preview_data_services_;
   metrics::ProfileMetricsService profile_metrics_service_{
       metrics::ProfileMetricsContext(1)};
 };
@@ -802,8 +839,8 @@ class DiceWebSigninInterceptorWithHatsSurveyBrowserTest
   }
 
   void TearDownOnMainThread() override {
-    SigninBrowserTestBase::TearDownOnMainThread();
     mock_hats_service_ = nullptr;
+    DiceWebSigninInterceptorBrowserTest::TearDownOnMainThread();
   }
 
   MockHatsService* mock_hats_service() { return mock_hats_service_; }
@@ -954,6 +991,50 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorSigninBubbleBrowserTest,
       account_email, /*hosted_domain=*/std::string());
   // Chrome Signin bubble should not show if the user already made a choice.
   ExpectAttemptToShowChromeSigninBubbleNotToShow(account_info);
+}
+
+class DiceWebSigninInterceptorSigninBubbleWithAccountPreviewBrowserTest
+    : public DiceWebSigninInterceptorSigninBubbleBrowserTest {
+ public:
+  DiceWebSigninInterceptorSigninBubbleWithAccountPreviewBrowserTest() {
+    feature_list_.InitAndEnableFeature(
+        switches::kEnableAccountPreviewPreferredAccount);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    DiceWebSigninInterceptorSigninBubbleWithAccountPreviewBrowserTest,
+    ChromeSigninInterceptWithAccountPreviewPreference) {
+  // Setup account for interception.
+  const std::string account_email = "alice@example.com";
+  AccountInfo account_info = MakeAccountInfoAvailableAndUpdate(
+      account_email, /*hosted_domain=*/std::string());
+  ASSERT_FALSE(IsChromeSignedIn());
+
+  signin::AccountPreviewDataService::AccountPreviewPreference pref;
+  pref.preferred_data_types.push_back(
+      {syncer::BOOKMARKS, signin::SyncDataQuartile::kAboveQ3});
+  pref.other_device_form_factor =
+      sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_PHONE;
+  GetTestAccountPreviewDataService(GetProfile())->SetPreviewPreference(pref);
+
+  FakeDiceWebSigninInterceptorDelegate* delegate =
+      ShowSigninBubble(account_info, /*expected_result=*/std::nullopt);
+
+  EXPECT_TRUE(delegate->intercept_bubble_shown());
+  EXPECT_THAT(
+      delegate->last_bubble_parameters(),
+      testing::Optional(testing::AllOf(
+          testing::Field(
+              &DiceWebSigninInterceptorDelegate::BubbleParameters::
+                  interception_type,
+              WebSigninInterceptor::SigninInterceptionType::kChromeSignin),
+          testing::Field(&DiceWebSigninInterceptorDelegate::BubbleParameters::
+                             account_preview_preference,
+                         pref))));
 }
 
 IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorSigninBubbleBrowserTest,

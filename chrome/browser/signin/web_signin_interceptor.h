@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/signin/core/browser/account_preview_data_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -167,12 +168,16 @@ class WebSigninInterceptor {
    public:
     // Parameters for interception bubble UIs.
     struct BubbleParameters {
-      BubbleParameters(SigninInterceptionType interception_type,
-                       AccountInfo intercepted_account,
-                       AccountInfo primary_account,
-                       SkColor profile_highlight_color = SkColor(),
-                       bool show_link_data_option = false,
-                       bool show_managed_disclaimer = false);
+      BubbleParameters(
+          SigninInterceptionType interception_type,
+          AccountInfo intercepted_account,
+          AccountInfo primary_account,
+          SkColor profile_highlight_color = SkColor(),
+          bool show_link_data_option = false,
+          bool show_managed_disclaimer = false,
+          std::optional<
+              signin::AccountPreviewDataService::AccountPreviewPreference>
+              account_preview_preference = std::nullopt);
 
       BubbleParameters(const BubbleParameters& copy);
       BubbleParameters& operator=(const BubbleParameters&);
@@ -184,6 +189,8 @@ class WebSigninInterceptor {
       SkColor profile_highlight_color;
       bool show_link_data_option;
       bool show_managed_disclaimer;
+      std::optional<signin::AccountPreviewDataService::AccountPreviewPreference>
+          account_preview_preference;
     };
 
     virtual ~Delegate() = default;

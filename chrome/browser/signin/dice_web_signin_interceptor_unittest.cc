@@ -23,6 +23,7 @@
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/signin/account_preview_data_service_factory.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/chrome_signin_client_test_util.h"
 #include "chrome/browser/signin/chrome_signin_pref_names.h"
@@ -40,6 +41,8 @@
 #include "components/policy/core/browser/signin/profile_separation_policies.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/core/browser/account_preview_data_service.h"
+#include "components/signin/core/browser/test_account_preview_data_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
@@ -49,6 +52,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/tribool.h"
+#include "components/sync/protocol/sync_enums.pb.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
@@ -129,12 +133,16 @@ MatchBubbleParameters(
       testing::Field("show_managed_disclaimer",
                      &WebSigninInterceptor::Delegate::BubbleParameters::
                          show_managed_disclaimer,
-                     parameters.show_managed_disclaimer));
+                     parameters.show_managed_disclaimer),
+      testing::Field("account_preview_preference",
+                     &WebSigninInterceptor::Delegate::BubbleParameters::
+                         account_preview_preference,
+                     parameters.account_preview_preference));
 }
 
 void MakeValidAccountCapabilities(AccountInfo* info) {
   AccountCapabilitiesTestMutator mutator(info);
-  mutator.set_is_subject_to_parental_controls(true);
+  mutator.set_is_subject_to_parental_controls(false);
   bool is_managed = info->IsManaged() == signin::Tribool::kTrue;
   mutator.set_is_subject_to_enterprise_features(is_managed);
   mutator.set_is_subject_to_account_level_enterprise_policies(is_managed);
@@ -2527,6 +2535,242 @@ TEST_F(DiceWebSigninInterceptorTest,
 
   EXPECT_EQ(interceptor()->is_interception_in_progress(),
             SigninInterceptionHeuristicOutcomeIsSuccess(expected_outcome));
+}
+
+class DiceWebSigninInterceptorTestWithAccountPreview
+    : public DiceWebSigninInterceptorTest {
+ public:
+  DiceWebSigninInterceptorTestWithAccountPreview() {
+    feature_list_.InitAndEnableFeature(
+        switches::kEnableAccountPreviewPreferredAccount);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(DiceWebSigninInterceptorTestWithAccountPreview,
+       InterceptChromeSigninBubbleWithAccountPreviewData) {
+  auto fake_service = std::make_unique<signin::TestAccountPreviewDataService>();
+  fake_service->set_defer_callbacks(true);
+  signin::TestAccountPreviewDataService* raw_fake_service = fake_service.get();
+  AccountPreviewDataServiceFactory::GetInstance()->SetTestingFactory(
+      profile(),
+      base::BindLambdaForTesting(
+          [&](content::BrowserContext*) -> std::unique_ptr<KeyedService> {
+            return std::move(fake_service);
+          }));
+
+  AccountInfo account_info =
+      identity_test_env()->MakeAccountAvailable("alice@example.com");
+  MakeValidAccountInfo(&account_info);
+  identity_test_env()->UpdateAccountInfoForAccount(account_info);
+
+  signin::AccountPreviewDataService::AccountPreviewPreference pref;
+  pref.preferred_data_types.push_back(
+      {syncer::BOOKMARKS, signin::SyncDataQuartile::kAboveQ3});
+  pref.other_device_form_factor =
+      sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_PHONE;
+
+  WebSigninInterceptor::Delegate::BubbleParameters expected_parameters(
+      WebSigninInterceptor::SigninInterceptionType::kChromeSignin,
+      /*intercepted_account=*/account_info,
+      /*primary_account=*/AccountInfo(),
+      /*profile_highlight_color=*/SkColor(),
+      /*show_link_data_option=*/false,
+      /*show_managed_disclaimer=*/false,
+      /*account_preview_preference=*/pref);
+
+  EXPECT_CALL(*mock_delegate(),
+              ShowSigninInterceptionBubble(
+                  web_contents(), MatchBubbleParameters(expected_parameters),
+                  testing::_));
+
+  interceptor()->MaybeInterceptWebSignin(
+      web_contents(), account_info.GetAccountId(),
+      signin_metrics::AccessPoint::kWebSignin,
+      /*is_new_account=*/true, /*is_sync_signin=*/false,
+      /*primary_is_connected=*/signin::Tribool::kUnknown);
+
+  EXPECT_TRUE(raw_fake_service->has_pending_callback());
+  raw_fake_service->TriggerCallback(pref);
+
+  testing::Mock::VerifyAndClearExpectations(mock_delegate());
+}
+
+TEST_F(DiceWebSigninInterceptorTestWithAccountPreview,
+       InterceptChromeSigninBubbleWithAccountPreviewDataSupervisedAccount) {
+  auto fake_service = std::make_unique<signin::TestAccountPreviewDataService>();
+  fake_service->set_defer_callbacks(true);
+  signin::TestAccountPreviewDataService* raw_fake_service = fake_service.get();
+  AccountPreviewDataServiceFactory::GetInstance()->SetTestingFactory(
+      profile(),
+      base::BindLambdaForTesting(
+          [&](content::BrowserContext*) -> std::unique_ptr<KeyedService> {
+            return std::move(fake_service);
+          }));
+
+  AccountInfo account_info =
+      identity_test_env()->MakeAccountAvailable("alice@example.com");
+  MakeValidAccountInfoWithoutCapabilities(&account_info);
+  AccountCapabilitiesTestMutator mutator(&account_info);
+  mutator.set_is_subject_to_parental_controls(true);
+  mutator.set_is_subject_to_account_level_enterprise_policies(false);
+  identity_test_env()->UpdateAccountInfoForAccount(account_info);
+
+  WebSigninInterceptor::Delegate::BubbleParameters expected_parameters(
+      WebSigninInterceptor::SigninInterceptionType::kChromeSignin,
+      /*intercepted_account=*/account_info,
+      /*primary_account=*/AccountInfo(),
+      /*profile_highlight_color=*/SkColor(),
+      /*show_link_data_option=*/false,
+      /*show_managed_disclaimer=*/false,
+      /*account_preview_preference=*/std::nullopt);
+
+  EXPECT_CALL(*mock_delegate(),
+              ShowSigninInterceptionBubble(
+                  web_contents(), MatchBubbleParameters(expected_parameters),
+                  testing::_));
+
+  interceptor()->MaybeInterceptWebSignin(
+      web_contents(), account_info.GetAccountId(),
+      signin_metrics::AccessPoint::kWebSignin,
+      /*is_new_account=*/true, /*is_sync_signin=*/false,
+      /*primary_is_connected=*/signin::Tribool::kUnknown);
+
+  // For supervised accounts, account preview data is not fetched, so no
+  // callback should be pending, and the bubble is shown immediately.
+  EXPECT_FALSE(raw_fake_service->has_pending_callback());
+
+  testing::Mock::VerifyAndClearExpectations(mock_delegate());
+}
+
+TEST_F(DiceWebSigninInterceptorTestWithAccountPreview,
+       InterceptChromeSigninBubbleWithAccountPreviewDataTimeout) {
+  auto fake_service = std::make_unique<signin::TestAccountPreviewDataService>();
+  fake_service->set_defer_callbacks(true);
+  signin::TestAccountPreviewDataService* raw_fake_service = fake_service.get();
+  AccountPreviewDataServiceFactory::GetInstance()->SetTestingFactory(
+      profile(),
+      base::BindLambdaForTesting(
+          [&](content::BrowserContext*) -> std::unique_ptr<KeyedService> {
+            return std::move(fake_service);
+          }));
+
+  AccountInfo account_info =
+      identity_test_env()->MakeAccountAvailable("alice@example.com");
+  MakeValidAccountInfo(&account_info);
+  identity_test_env()->UpdateAccountInfoForAccount(account_info);
+
+  WebSigninInterceptor::Delegate::BubbleParameters expected_parameters(
+      WebSigninInterceptor::SigninInterceptionType::kChromeSignin,
+      /*intercepted_account=*/account_info,
+      /*primary_account=*/AccountInfo(),
+      /*profile_highlight_color=*/SkColor(),
+      /*show_link_data_option=*/false,
+      /*show_managed_disclaimer=*/false,
+      /*account_preview_preference=*/std::nullopt);
+
+  EXPECT_CALL(*mock_delegate(),
+              ShowSigninInterceptionBubble(
+                  web_contents(), MatchBubbleParameters(expected_parameters),
+                  testing::_));
+
+  interceptor()->MaybeInterceptWebSignin(
+      web_contents(), account_info.GetAccountId(),
+      signin_metrics::AccessPoint::kWebSignin,
+      /*is_new_account=*/true, /*is_sync_signin=*/false,
+      /*primary_is_connected=*/signin::Tribool::kUnknown);
+
+  EXPECT_TRUE(raw_fake_service->has_pending_callback());
+  task_environment()->FastForwardBy(
+      switches::kAccountPreviewPreferredAccountSingleAccountPromoFetchTimeout
+          .Get());
+
+  testing::Mock::VerifyAndClearExpectations(mock_delegate());
+}
+
+TEST_F(
+    DiceWebSigninInterceptorTestWithAccountPreview,
+    InterceptChromeSigninBubbleWithAccountPreviewDataDelayedCallbackAfterReset) {
+  auto fake_service = std::make_unique<signin::TestAccountPreviewDataService>();
+  fake_service->set_defer_callbacks(true);
+  signin::TestAccountPreviewDataService* raw_fake_service = fake_service.get();
+  AccountPreviewDataServiceFactory::GetInstance()->SetTestingFactory(
+      profile(),
+      base::BindLambdaForTesting(
+          [&](content::BrowserContext*) -> std::unique_ptr<KeyedService> {
+            return std::move(fake_service);
+          }));
+
+  AccountInfo account_info_a =
+      identity_test_env()->MakeAccountAvailable("alice@example.com");
+  MakeValidAccountInfo(&account_info_a);
+  identity_test_env()->UpdateAccountInfoForAccount(account_info_a);
+
+  AccountInfo account_info_b =
+      identity_test_env()->MakeAccountAvailable("bob@example.com");
+  MakeValidAccountInfo(&account_info_b);
+  identity_test_env()->UpdateAccountInfoForAccount(account_info_b);
+
+  signin::AccountPreviewDataService::AccountPreviewPreference pref_a;
+  pref_a.preferred_data_types.push_back(
+      {syncer::BOOKMARKS, signin::SyncDataQuartile::kAboveQ3});
+  pref_a.other_device_form_factor =
+      sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_PHONE;
+
+  signin::AccountPreviewDataService::AccountPreviewPreference pref_b;
+  pref_b.preferred_data_types.push_back(
+      {syncer::PASSWORDS, signin::SyncDataQuartile::kAboveQ3});
+  pref_b.other_device_form_factor =
+      sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_DESKTOP;
+
+  WebSigninInterceptor::Delegate::BubbleParameters expected_parameters_b(
+      WebSigninInterceptor::SigninInterceptionType::kChromeSignin,
+      /*intercepted_account=*/account_info_b,
+      /*primary_account=*/AccountInfo(),
+      /*profile_highlight_color=*/SkColor(),
+      /*show_link_data_option=*/false,
+      /*show_managed_disclaimer=*/false,
+      /*account_preview_preference=*/pref_b);
+
+  // Interception 1 starts for Account A.
+  interceptor()->MaybeInterceptWebSignin(
+      web_contents(), account_info_a.GetAccountId(),
+      signin_metrics::AccessPoint::kWebSignin,
+      /*is_new_account=*/true, /*is_sync_signin=*/false,
+      /*primary_is_connected=*/signin::Tribool::kUnknown);
+
+  EXPECT_TRUE(raw_fake_service->has_pending_callback());
+  auto delayed_callback_a = raw_fake_service->TakePendingCallback();
+
+  // Interception 1 is reset while the fetch is in progress.
+  interceptor()->Reset();
+
+  // Interception 2 starts for Account B.
+  interceptor()->MaybeInterceptWebSignin(
+      web_contents(), account_info_b.GetAccountId(),
+      signin_metrics::AccessPoint::kWebSignin,
+      /*is_new_account=*/true, /*is_sync_signin=*/false,
+      /*primary_is_connected=*/signin::Tribool::kUnknown);
+
+  EXPECT_TRUE(raw_fake_service->has_pending_callback());
+
+  // Bubble should only be shown for Account B, not Account A.
+  EXPECT_CALL(*mock_delegate(),
+              ShowSigninInterceptionBubble(
+                  web_contents(), MatchBubbleParameters(expected_parameters_b),
+                  testing::_));
+
+  // The delayed callback for Account A finally fires. Since the weak pointer
+  // was invalidated during Reset(), this should NOT show the bubble for Account
+  // A.
+  std::move(delayed_callback_a).Run(pref_a);
+
+  // The callback for Account B fires and displays the bubble for Account B.
+  raw_fake_service->TriggerCallback(pref_b);
+
+  testing::Mock::VerifyAndClearExpectations(mock_delegate());
 }
 
 TEST_F(DiceWebSigninInterceptorTest,

@@ -16,12 +16,14 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
 #include "chrome/browser/signin/web_signin_interceptor.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/policy/core/browser/signin/profile_separation_policies.h"
 #include "components/search_engines/template_url_data.h"
+#include "components/signin/core/browser/account_preview_data_service.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_prefs.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -236,6 +238,9 @@ class DiceWebSigninInterceptor : public KeyedService,
   FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptorTest,
                            ShouldShowEnterpriseDialog_AlwaysAsk);
   FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptorTest, StateResetTest);
+  FRIEND_TEST_ALL_PREFIXES(
+      DiceWebSigninInterceptorTestWithAccountPreview,
+      InterceptChromeSigninBubbleWithAccountPreviewDataDelayedCallbackAfterReset);
   FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptorTest,
                            MultiUserInterceptionPrimaryNotConnectedSameName);
   FRIEND_TEST_ALL_PREFIXES(ManagedProfileRequiredNavigationThrottleTest,
@@ -451,11 +456,25 @@ class DiceWebSigninInterceptor : public KeyedService,
     bool dice_signin_session_complete_ = false;
     bool waiting_for_dice_signin_session_completion_ = false;
     base::OnceClosure deferred_action_callback_;
+
     // Stores `primary_is_connected` from the initial token exchange during a
     // multi-account sign-in so downstream heuristics can evaluate it after
     // asynchronous fetches complete.
     signin::Tribool primary_is_connected_ = signin::Tribool::kUnknown;
+
+    bool account_preview_fetch_started_ = false;
+    base::OneShotTimer account_preview_timeout_timer_;
+    // Callback to be invoked after the user makes a choice in the interception
+    // bubble. Stored here while awaiting asynchronous fetches (e.g. account
+    // preview data) before showing the bubble.
+    base::OnceCallback<void(SigninInterceptionResult)>
+        interception_bubble_callback_;
   };
+
+  void OnAccountPreviewPreferenceReceived(
+      WebSigninInterceptor::Delegate::BubbleParameters bubble_parameters,
+      std::optional<signin::AccountPreviewDataService::AccountPreviewPreference>
+          preference);
 
   const raw_ptr<Profile> profile_;
   const raw_ptr<signin::IdentityManager> identity_manager_;
@@ -474,6 +493,8 @@ class DiceWebSigninInterceptor : public KeyedService,
   // reset this value, it is expected to be sticky across tests.
   std::optional<policy::ProfileSeparationPolicies>
       intercepted_account_profile_separation_policies_response_for_testing_;
+
+  base::WeakPtrFactory<DiceWebSigninInterceptor> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_SIGNIN_DICE_WEB_SIGNIN_INTERCEPTOR_H_

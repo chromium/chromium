@@ -320,6 +320,10 @@ BASE_DECLARE_FEATURE_PARAM(size_t, kAutofillWalletMetadataMedianThreshold);
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE_PARAM(size_t, kAutofillWalletMetadataQ3Threshold);
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE_PARAM(
+    base::TimeDelta,
+    kAccountPreviewPreferredAccountSingleAccountPromoFetchTimeout);
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const base::FeatureParam<bool> kAccountPreviewDataPersistAccounts;
 
 #if BUILDFLAG(IS_ANDROID)

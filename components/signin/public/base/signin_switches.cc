@@ -369,6 +369,11 @@ BASE_FEATURE_PARAM(size_t,
                    kAutofillWalletMetadataQ3Threshold,
                    &kEnableAccountPreviewPreferredAccount,
                    3);
+BASE_FEATURE_PARAM(
+    base::TimeDelta,
+    kAccountPreviewPreferredAccountSingleAccountPromoFetchTimeout,
+    &kEnableAccountPreviewPreferredAccount,
+    base::Seconds(1));
 // Controls whether fetched accounts are stored to reduce redundant fetches.
 const base::FeatureParam<bool> kAccountPreviewDataPersistAccounts{
     &kEnableAccountPreviewData, "persist_accounts", true};
