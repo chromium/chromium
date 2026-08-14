@@ -22356,6 +22356,21 @@
             ]
         }
     ],
+    "ScrollJankV4MetricReportAndroidAppJankStats": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ScrollJankV4MetricReportAndroidAppJankStats"
+                    ]
+                }
+            ]
+        }
+    ],
     "SeaPenUseExptTemplate": [
         {
             "platforms": [
