@@ -6,14 +6,16 @@
 
 #include "base/feature_list.h"
 #include "build/build_config.h"
+#include "content/browser/media/capture/pip_screen_capture_coordinator.h"
+#include "content/browser/media/capture/screenshot_capture_request_impl.h"
 #if BUILDFLAG(IS_MAC)
 #include "content/browser/media/capture/desktop_capture_util_mac.h"
 #endif
-#include "content/browser/media/capture/pip_screen_capture_coordinator.h"
 #include "content/browser/renderer_host/media/media_stream_manager.h"
 #include "content/browser/renderer_host/media/video_capture_manager.h"
 #include "content/common/features.h"
 #include "content/public/common/content_features.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "content/browser/media/capture/desktop_capturer_ash.h"
@@ -134,15 +136,23 @@ void OpenNativeScreenCapturePicker(
     base::OnceCallback<void(webrtc::DesktopCapturer::Source)> picker_callback,
     base::OnceCallback<void()> cancel_callback,
     base::OnceCallback<void()> error_callback) {
-  content::MediaStreamManager::GetInstance()->OpenNativeScreenCapturePicker(
+  auto* manager = content::MediaStreamManager::GetInstance();
+  if (!manager) {
+    if (error_callback) {
+      std::move(error_callback).Run();
+    }
+    return;
+  }
+  manager->OpenNativeScreenCapturePicker(
       type, std::move(created_callback), std::move(picker_callback),
       std::move(cancel_callback), std::move(error_callback));
 }
 
 void CloseNativeScreenCapturePicker(DesktopMediaID source_id) {
-  content::MediaStreamManager::GetInstance()
-      ->video_capture_manager()
-      ->CloseNativeScreenCapturePicker(source_id);
+  auto* manager = content::MediaStreamManager::GetInstance();
+  if (manager && manager->video_capture_manager()) {
+    manager->video_capture_manager()->CloseNativeScreenCapturePicker(source_id);
+  }
 }
 
 #if BUILDFLAG(IS_MAC)
@@ -152,6 +162,12 @@ void GetApplicationAudioCaptureId(
   content::GetApplicationAudioCaptureIdInternal(desktop_media_id,
                                                 std::move(callback));
 }
-#endif  // #if BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
+
+std::unique_ptr<ScreenshotCaptureRequest> CaptureScreenshot(
+    DesktopMediaID source,
+    base::OnceCallback<void(const ::SkBitmap&)> callback) {
+  return CreateScreenshotCaptureRequest(source, std::move(callback));
+}
 
 }  // namespace content::desktop_capture

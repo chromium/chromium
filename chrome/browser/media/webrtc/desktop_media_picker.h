@@ -55,7 +55,8 @@ class DesktopMediaPicker {
       kGetDisplayMedia,
       kScreenshotDataCollector,
       kArcScreenCapture,
-      kGlic
+      kGlic,
+      kSearchbox
     };
 
     explicit Params(RequestSource request_source);

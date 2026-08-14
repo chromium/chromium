@@ -199,6 +199,8 @@ static_library("test_support") {
     "../public/test/context_menu_interceptor.h",
     "../public/test/cursor_utils.cc",
     "../public/test/cursor_utils.h",
+    "../public/test/desktop_capture_test_utils.cc",
+    "../public/test/desktop_capture_test_utils.h",
     "../public/test/direct_sockets_test_helpers.cc",
     "../public/test/direct_sockets_test_helpers.h",
     "../public/test/download_test_observer.cc",
@@ -3470,8 +3472,10 @@ test("content_unittests") {
 
     if (!is_ios) {
       deps += [ "//media/capture:test_support" ]
-      sources +=
-          [ "../browser/media/capture/desktop_capture_device_unittest.cc" ]
+      sources += [
+        "../browser/media/capture/desktop_capture_device_unittest.cc",
+        "../browser/media/capture/desktop_capture_unittest.cc",
+      ]
     }
 
     if (is_android) {

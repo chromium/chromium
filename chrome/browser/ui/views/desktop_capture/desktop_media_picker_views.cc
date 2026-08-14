@@ -1240,6 +1240,9 @@ std::u16string DesktopMediaPickerDialogView::GetWindowTitle() const {
   if (request_source_ == RequestSource::kGlic) {
     return l10n_util::GetStringUTF16(IDS_GLIC_SCREEN_PICKER_HEADLINE);
   }
+  if (request_source_ == RequestSource::kSearchbox) {
+    return l10n_util::GetStringUTF16(IDS_SEARCHBOX_PICKER_HEADLINE);
+  }
 
   int title_id = IDS_DESKTOP_MEDIA_PICKER_TITLE;
 

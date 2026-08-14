@@ -2853,6 +2853,8 @@ source_set("browser") {
         "media/capture/desktop_capture_device.h",
         "media/capture/mouse_cursor_overlay_controller.cc",
         "media/capture/mouse_cursor_overlay_controller.h",
+        "media/capture/screenshot_capture_request_impl.cc",
+        "media/capture/screenshot_capture_request_impl.h",
       ]
       public_deps += [ "//ui/base/cursor" ]
 
