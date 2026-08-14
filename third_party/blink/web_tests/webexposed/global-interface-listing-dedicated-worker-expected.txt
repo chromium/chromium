@@ -2349,7 +2349,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter name
 [Worker]     method constructor
 [Worker]     method createHTML
-[Worker]     method createParserOptions
 [Worker]     method createScript
 [Worker]     method createScriptURL
 [Worker] interface TrustedTypePolicyFactory

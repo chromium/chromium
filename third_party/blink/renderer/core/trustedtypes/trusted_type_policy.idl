@@ -12,5 +12,5 @@ typedef (TrustedHTML or TrustedScript or TrustedScriptURL) TrustedType;
     [CallWith=Isolate, RaisesException] TrustedHTML createHTML(DOMString input, any... args);
     [CallWith=Isolate, RaisesException] TrustedScript createScript(DOMString input, any... args);
     [CallWith=Isolate, RaisesException] TrustedScriptURL createScriptURL(DOMString input, any... args);
-    [CallWith=Isolate, RaisesException, RuntimeEnabled=TrustedTypesCreateParserOptions] TrustedParserOptions createParserOptions(SetHTMLUnsafeOptions input);
+    [CallWith=Isolate, RaisesException, RuntimeEnabled=TrustedTypesCreateParserOptions, Exposed=Window] TrustedParserOptions createParserOptions(SetHTMLUnsafeOptions input);
 };

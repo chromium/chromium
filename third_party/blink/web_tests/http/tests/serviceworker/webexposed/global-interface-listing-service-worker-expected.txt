@@ -2126,7 +2126,6 @@ interface TrustedTypePolicy
     getter name
     method constructor
     method createHTML
-    method createParserOptions
     method createScript
     method createScriptURL
 interface TrustedTypePolicyFactory
