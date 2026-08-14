@@ -10,6 +10,8 @@ import android.os.SystemClock;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.lifetime.DestroyChecker;
+import org.chromium.base.lifetime.Destroyable;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.xr.scenecore.XrPose;
@@ -22,12 +24,13 @@ import java.util.Locale;
  */
 @NullMarked
 public class ImmersiveVideoControlMediator
-        implements ImmersiveVideoControlView.UserInteractionListener {
+        implements Destroyable, ImmersiveVideoControlView.UserInteractionListener {
     private static final long SEEKBAR_UPDATE_INTERVAL_MS = 50L;
 
     private final PropertyModel mModel;
     private final ImmersiveVideoControlCoordinator.Delegate mDelegate;
     private final Handler mHandler;
+    private final DestroyChecker mDestroyChecker = new DestroyChecker();
 
     private int mDurationMs;
     private int mStartingPositionMs;
@@ -36,7 +39,6 @@ public class ImmersiveVideoControlMediator
     private boolean mIsPlaying;
     private boolean mIsSeeking;
     private boolean mIsVisible;
-    private boolean mIsDestroyed;
 
     private final Runnable mUpdateSeekbarTask =
             new Runnable() {
@@ -79,7 +81,7 @@ public class ImmersiveVideoControlMediator
      * @param playbackRate The current playback rate.
      */
     public void updateMediaPosition(long durationMs, long positionMs, double playbackRate) {
-        if (mIsDestroyed) return;
+        if (mDestroyChecker.isDestroyed()) return;
 
         int updatedDurationMs = (int) Math.max(0, Math.min(durationMs, Integer.MAX_VALUE));
         int updatedStartingPositionMs;
@@ -96,6 +98,10 @@ public class ImmersiveVideoControlMediator
         mStartingPositionMs = updatedStartingPositionMs;
         mLastUpdatedTimeMs = SystemClock.elapsedRealtime();
 
+        mModel.set(ImmersiveVideoControlProperties.DURATION_MS, durationMs);
+        mModel.set(ImmersiveVideoControlProperties.POSITION_MS, positionMs);
+        mModel.set(ImmersiveVideoControlProperties.PLAYBACK_RATE, playbackRate);
+
         if (mIsVisible && !mIsSeeking) {
             updateTimingProperties();
         }
@@ -108,24 +114,22 @@ public class ImmersiveVideoControlMediator
      * @param isPlaying True if playing, false otherwise.
      */
     public void updatePlaybackState(boolean isPlaying) {
-        if (mIsDestroyed) return;
+        if (mDestroyChecker.isDestroyed()) return;
 
         mStartingPositionMs = getCurrentPositionMs();
         mLastUpdatedTimeMs = SystemClock.elapsedRealtime();
         mIsPlaying = isPlaying;
 
-        if (mIsVisible) {
-            mModel.set(ImmersiveVideoControlProperties.IS_PLAYING, isPlaying);
-            if (!mIsSeeking) {
-                updateDisplayedPosition();
-            }
+        mModel.set(ImmersiveVideoControlProperties.IS_PLAYING, isPlaying);
+        if (mIsVisible && !mIsSeeking) {
+            updateDisplayedPosition();
         }
         updateSeekbarTimer();
     }
 
     /** Sets whether the control panel is visible. */
     public void setVisible(boolean visible) {
-        if (mIsDestroyed || mIsVisible == visible) return;
+        if (mDestroyChecker.isDestroyed() || mIsVisible == visible) return;
 
         mIsVisible = visible;
         if (visible) {
@@ -138,10 +142,11 @@ public class ImmersiveVideoControlMediator
     }
 
     /** Stops all callbacks and releases this mediator from further lifecycle work. */
+    @Override
     public void destroy() {
-        if (mIsDestroyed) return;
+        if (mDestroyChecker.isDestroyed()) return;
 
-        mIsDestroyed = true;
+        mDestroyChecker.destroy();
         mIsVisible = false;
         mHandler.removeCallbacks(mUpdateSeekbarTask);
     }
@@ -152,7 +157,7 @@ public class ImmersiveVideoControlMediator
      * @param selected True if selected, false otherwise.
      */
     public void setFormatButtonSelected(boolean selected) {
-        if (mIsDestroyed) return;
+        if (mDestroyChecker.isDestroyed()) return;
         mModel.set(ImmersiveVideoControlProperties.FORMAT_BUTTON_SELECTED, selected);
     }
 
@@ -162,7 +167,7 @@ public class ImmersiveVideoControlMediator
      * @param isMovable True if movable, false otherwise.
      */
     public void setMovable(boolean isMovable) {
-        if (mIsDestroyed) return;
+        if (mDestroyChecker.isDestroyed()) return;
         mModel.set(ImmersiveVideoControlProperties.IS_MOVABLE, isMovable);
     }
 
@@ -172,7 +177,7 @@ public class ImmersiveVideoControlMediator
      * @param pose The pose from the parent {@link XrSpace}.
      */
     public void updatePose(XrPose pose) {
-        if (mIsDestroyed) return;
+        if (mDestroyChecker.isDestroyed()) return;
         mModel.set(ImmersiveVideoControlProperties.POSE, pose);
     }
 
@@ -180,31 +185,31 @@ public class ImmersiveVideoControlMediator
 
     @Override
     public void onPlayClicked() {
-        if (mIsDestroyed) return;
+        if (mDestroyChecker.isDestroyed()) return;
         mDelegate.togglePlayPause(false);
     }
 
     @Override
     public void onPauseClicked() {
-        if (mIsDestroyed) return;
+        if (mDestroyChecker.isDestroyed()) return;
         mDelegate.togglePlayPause(true);
     }
 
     @Override
     public void onFormatClicked() {
-        if (mIsDestroyed) return;
+        if (mDestroyChecker.isDestroyed()) return;
         mDelegate.onFormatClicked();
     }
 
     @Override
     public void onExitFullscreenClicked() {
-        if (mIsDestroyed) return;
+        if (mDestroyChecker.isDestroyed()) return;
         mDelegate.onExitImmersivePlayback();
     }
 
     @Override
     public void onSeekTo(int progressMs) {
-        if (mIsDestroyed) return;
+        if (mDestroyChecker.isDestroyed()) return;
 
         int clampedProgressMs = Math.max(0, Math.min(progressMs, mDurationMs));
         mDelegate.seekTo(clampedProgressMs);
@@ -217,7 +222,7 @@ public class ImmersiveVideoControlMediator
 
     @Override
     public void onStartTrackingTouch() {
-        if (mIsDestroyed) return;
+        if (mDestroyChecker.isDestroyed()) return;
 
         mStartingPositionMs = getCurrentPositionMs();
         mLastUpdatedTimeMs = SystemClock.elapsedRealtime();
@@ -227,7 +232,7 @@ public class ImmersiveVideoControlMediator
 
     @Override
     public void onStopTrackingTouch() {
-        if (mIsDestroyed || !mIsSeeking) return;
+        if (mDestroyChecker.isDestroyed() || !mIsSeeking) return;
 
         mStartingPositionMs = getCurrentPositionMs();
         mIsSeeking = false;
@@ -239,7 +244,7 @@ public class ImmersiveVideoControlMediator
     }
 
     private boolean shouldScheduleSeekbarUpdate() {
-        return !mIsDestroyed
+        return !mDestroyChecker.isDestroyed()
                 && mIsVisible
                 && mIsPlaying
                 && mPlaybackRate > 0

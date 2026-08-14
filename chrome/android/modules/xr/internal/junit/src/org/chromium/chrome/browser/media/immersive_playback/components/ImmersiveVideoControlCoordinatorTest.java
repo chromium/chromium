@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.media.immersive_playback.components;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -154,5 +155,24 @@ public class ImmersiveVideoControlCoordinatorTest {
 
         verify(mSessionManager, times(1)).createPanelEntity(any(), any());
         verify(mMovableComponent, times(1)).addMoveListener(any());
+    }
+
+    @Test
+    public void testUpdateBeforeShow_UpdatesModel() {
+        PropertyModel model = mCoordinator.getModelForTesting();
+
+        mCoordinator.updateMediaPosition(10000L, 5000L, 1.0);
+        mCoordinator.updatePlaybackState(true);
+        mCoordinator.setFormatButtonSelected(true);
+
+        assertTrue(model.get(ImmersiveVideoControlProperties.IS_PLAYING));
+        assertTrue(model.get(ImmersiveVideoControlProperties.FORMAT_BUTTON_SELECTED));
+        assertEquals(10000L, (long) model.get(ImmersiveVideoControlProperties.DURATION_MS));
+        assertEquals(5000L, (long) model.get(ImmersiveVideoControlProperties.POSITION_MS));
+        assertEquals(1.0, (double) model.get(ImmersiveVideoControlProperties.PLAYBACK_RATE), 0.0);
+
+        mCoordinator.show(mParentEntity);
+
+        assertEquals(5000, (int) model.get(ImmersiveVideoControlProperties.PROGRESS));
     }
 }

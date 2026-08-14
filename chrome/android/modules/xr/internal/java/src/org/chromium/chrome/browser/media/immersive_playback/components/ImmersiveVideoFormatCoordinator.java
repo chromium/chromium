@@ -17,6 +17,7 @@ import org.chromium.build.annotations.RequiresNonNull;
 import org.chromium.chrome.browser.media.immersive_playback.ImmersiveVideoFormatRadioGroup;
 import org.chromium.content_public.browser.ImmersiveProjectionType;
 import org.chromium.content_public.browser.ImmersiveStereoMode;
+import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.xr.scenecore.XrEntityHolder;
@@ -53,11 +54,16 @@ public class ImmersiveVideoFormatCoordinator {
     private final Activity mActivity;
     private final XrSceneCoreSessionManager mSessionManager;
     private final Delegate mFormatControlDelegate;
-    private @Nullable ImmersiveVideoFormatMediator mMediator;
+    private final ImmersiveVideoFormatMediator mMediator;
     private @Nullable XrPanelEntityHolder<?> mHolder;
     private @Nullable ImmersiveVideoFormatView mView;
     private @Nullable ImmersiveVideoFormatRadioGroup mRadioGroup;
+    private @Nullable
+            PropertyModelChangeProcessor<
+                    PropertyModel, ImmersiveVideoFormatSpatialView, PropertyKey>
+            mModelChangeProcessor;
     private boolean mReportFormatSelection = true;
+    private boolean mIsDisposed;
 
     /**
      * Creates a new {@link ImmersiveVideoFormatCoordinator}.
@@ -74,6 +80,7 @@ public class ImmersiveVideoFormatCoordinator {
         mActivity = activity;
         mSessionManager = sessionManager;
         mFormatControlDelegate = formatControlDelegate;
+        mMediator = new ImmersiveVideoFormatMediator(mFormatControlDelegate, mModel);
     }
 
     /**
@@ -84,41 +91,38 @@ public class ImmersiveVideoFormatCoordinator {
      */
     public void setRecommendedFormat(
             @ImmersiveStereoMode int stereoMode, @ImmersiveProjectionType int projectionType) {
-        mModel.set(ImmersiveVideoFormatProperties.RECOMMENDED_STEREO_MODE, stereoMode);
-        mModel.set(ImmersiveVideoFormatProperties.RECOMMENDED_PROJECTION_TYPE, projectionType);
+        mMediator.setRecommendedFormat(stereoMode, projectionType);
     }
 
-    @EnsuresNonNull({"mMediator", "mHolder", "mView", "mRadioGroup"})
+    @EnsuresNonNull({"mHolder", "mView", "mRadioGroup"})
     private void ensureInitialized() {
         if (mHolder != null) {
-            assert mMediator != null && mView != null && mRadioGroup != null;
+            assert mView != null && mRadioGroup != null;
             return;
         }
 
         mView = createView();
-        mView.setAccessibilityFocusListener(
-                mFormatControlDelegate::onFormatPanelAccessibilityFocusChanged);
         mRadioGroup = mView.getRadioGroup();
         mHolder = mSessionManager.createPanelEntity(mView, "FormatSelectionPanel");
-        mMediator = new ImmersiveVideoFormatMediator(mFormatControlDelegate, mModel);
 
         mRadioGroup.setSelectionCallback(
                 (selectedFormat) -> {
-                    if (!mReportFormatSelection || mMediator == null || selectedFormat == null) {
+                    if (!mReportFormatSelection || selectedFormat == null) {
                         return;
                     }
                     mMediator.onFormatSelected(selectedFormat);
                 });
 
-        PropertyModelChangeProcessor.create(
-                mModel,
-                new ImmersiveVideoFormatSpatialView(mView, mHolder),
-                ImmersiveVideoFormatViewBinder::bind);
+        mModelChangeProcessor =
+                PropertyModelChangeProcessor.create(
+                        mModel,
+                        new ImmersiveVideoFormatSpatialView(mView, mHolder),
+                        ImmersiveVideoFormatViewBinder::bind);
 
         updateSpatialHeight();
     }
 
-    @RequiresNonNull({"mView", "mMediator"})
+    @RequiresNonNull("mView")
     private void updateSpatialHeight() {
         mView.measure(
                 View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
@@ -150,10 +154,14 @@ public class ImmersiveVideoFormatCoordinator {
             SizeF parentSize,
             @ImmersiveStereoMode int currentStereoMode,
             @ImmersiveProjectionType int currentProjectionType) {
+        if (mIsDisposed) return;
+
         ensureInitialized();
 
         mView.setVisibility(View.VISIBLE);
         mView.setHoverListener(mFormatControlDelegate::onFormatPanelHoverChanged);
+        mView.setAccessibilityFocusListener(
+                mFormatControlDelegate::onFormatPanelAccessibilityFocusChanged);
         mMediator.setParentSize(parentSize);
         mReportFormatSelection = false;
         mMediator.setSelectedFormat(currentStereoMode, currentProjectionType);
@@ -165,9 +173,12 @@ public class ImmersiveVideoFormatCoordinator {
 
     /** Dismisses the format selection panel. */
     public void dismiss() {
+        if (mIsDisposed) return;
+
         if (mView != null) {
             mView.setVisibility(View.GONE);
             mView.setHoverListener(null);
+            mView.setAccessibilityFocusListener(null);
         }
         if (mHolder != null) {
             mHolder.setEntityEnabled(false);
@@ -177,11 +188,21 @@ public class ImmersiveVideoFormatCoordinator {
 
     /** Disposes the format selection panel. */
     public void dispose() {
+        if (mIsDisposed) return;
+
         dismiss();
+        mIsDisposed = true;
+        mMediator.destroy();
+        if (mModelChangeProcessor != null) {
+            mModelChangeProcessor.destroy();
+            mModelChangeProcessor = null;
+        }
         if (mHolder != null) {
             mHolder.dispose();
             mHolder = null;
         }
+        mView = null;
+        mRadioGroup = null;
     }
 
     /** Requests accessibility focus on the format panel. */

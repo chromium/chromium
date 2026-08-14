@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.media.immersive_playback.components;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -16,6 +14,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
+
+import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.os.Handler;
 
@@ -86,9 +86,10 @@ public class ImmersiveVideoControlMediatorTest {
 
         mMediator.updateMediaPosition(
                 /* durationMs= */ 60_000, /* positionMs= */ 10_000, /* playbackRate= */ 2.0);
+        int hiddenModelUpdateCountAfterPositionChange = mModelUpdateCount;
         ShadowLooper.idleMainLooper(1_000, TimeUnit.MILLISECONDS);
         assertEquals(hiddenProgress, getProgress());
-        assertEquals(hiddenModelUpdateCount, mModelUpdateCount);
+        assertEquals(hiddenModelUpdateCountAfterPositionChange, mModelUpdateCount);
 
         mMediator.setVisible(true);
         assertEquals(12_000, getProgress());

@@ -21,6 +21,7 @@ import org.chromium.components.thinwebview.CompositorView;
 import org.chromium.components.thinwebview.CompositorViewFactory;
 import org.chromium.components.thinwebview.ThinWebViewConstraints;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.xr.scenecore.XrCurvedSurfaceEntityHolder;
@@ -146,9 +147,13 @@ public class ImmersiveVideoPlayerCoordinator {
                 }
             };
 
+    private final ImmersiveVideoPlayerMediator mMediator;
     private @Nullable CompositorView mCompositorView;
-    private @Nullable ImmersiveVideoPlayerMediator mMediator;
     private @Nullable XrSurfaceEntityHolder mHolder;
+    private @Nullable
+            PropertyModelChangeProcessor<PropertyModel, XrSurfaceEntityHolder, PropertyKey>
+            mModelChangeProcessor;
+    private boolean mIsDisposed;
 
     /**
      * Creates a new {@link ImmersiveVideoPlayerCoordinator}.
@@ -167,12 +172,12 @@ public class ImmersiveVideoPlayerCoordinator {
         mWindowAndroid = windowAndroid;
         mSessionManager = sessionManager;
         mDelegate = delegate;
+        mMediator = new ImmersiveVideoPlayerMediator(mModel);
     }
 
     private void ensureInitialized() {
         if (mCompositorView != null) return;
 
-        mMediator = new ImmersiveVideoPlayerMediator(mModel);
         mCompositorView = createCompositorView(mActivity, mWindowAndroid, mSessionManager);
         View playerView = mCompositorView.getView();
         if (playerView != null) {
@@ -194,13 +199,16 @@ public class ImmersiveVideoPlayerCoordinator {
             mHolder.getInteractableComponent().addOnDragListener(mOnDragListener);
             mHolder.getMovableComponent().addMoveListener(mOnMoveListener);
             mHolder.getResizableComponent().addResizeListener(mOnResizeListener);
-            PropertyModelChangeProcessor.create(
-                    mModel, mHolder, ImmersiveVideoPlayerViewBinder::bind);
+            mModelChangeProcessor =
+                    PropertyModelChangeProcessor.create(
+                            mModel, mHolder, ImmersiveVideoPlayerViewBinder::bind);
         }
     }
 
     /** Shows the player panel. */
     public void show() {
+        if (mIsDisposed) return;
+
         ensureInitialized();
         if (mHolder != null) {
             mSessionManager.getMainPanelEntity().setEntityEnabled(false);
@@ -214,6 +222,14 @@ public class ImmersiveVideoPlayerCoordinator {
 
     /** Disposes the player panel. */
     public void dispose() {
+        if (mIsDisposed) return;
+
+        mIsDisposed = true;
+        mMediator.destroy();
+        if (mModelChangeProcessor != null) {
+            mModelChangeProcessor.destroy();
+            mModelChangeProcessor = null;
+        }
         if (mHolder != null) {
             mHolder.dispose();
             mHolder = null;
@@ -238,16 +254,14 @@ public class ImmersiveVideoPlayerCoordinator {
      */
     public void updateVideoLayout(
             @XrSurfaceEntityStereoMode int stereoMode, @XrSurfaceEntityShape int shape) {
-        if (mMediator != null) {
-            mMediator.updateVideoLayout(stereoMode, shape);
-        }
+        if (mIsDisposed) return;
+        mMediator.updateVideoLayout(stereoMode, shape);
     }
 
     /** Updates the pose. */
     public void updatePose(XrPose pose) {
-        if (mMediator != null) {
-            mMediator.updatePose(pose);
-        }
+        if (mIsDisposed) return;
+        mMediator.updatePose(pose);
     }
 
     /**
@@ -257,9 +271,8 @@ public class ImmersiveVideoPlayerCoordinator {
      * @param height The height in pixels.
      */
     public void updatePlayerSize(int width, int height) {
-        if (mMediator != null) {
-            mMediator.updatePlayerSize(width, height);
-        }
+        if (mIsDisposed) return;
+        mMediator.updatePlayerSize(width, height);
     }
 
     /** Sets whether the video player panel is interactable. */
