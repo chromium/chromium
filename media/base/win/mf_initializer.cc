@@ -134,15 +134,11 @@ class MediaFoundationSession {
     // the imports could lead to hard faults to page in the DLLs.
     SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY();
 
-    // LoadAllImportsForDll() makes a case-sensitive comparison to the module
-    // names in the dll's delayloaded dependent module list.
-    // LINT.IfChange
     static constexpr base::cstring_view kDlls[] = {"MF.dll", "MFPlat.DLL"};
-    // LINT.ThenChange(//chrome/common/win/delay_load_failure_hook.cc)
     for (const auto& mfdll : kDlls) {
       // In tests the DLLs might not be direct deps of this module, so only
       // report errors encountered when the DLLs are found but not loaded.
-      auto loaded = base::win::LoadAllImportsForDll(mfdll);
+      auto loaded = base::win::LoadAllImportsForDllUnchecked(mfdll);
       if (!loaded.has_value()) {
         // Set error for PLOG.
         ::SetLastError(HRESULT_CODE(loaded.error()));

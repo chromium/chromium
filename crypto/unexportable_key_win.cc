@@ -586,7 +586,7 @@ class RSASigningKey : public WinKeyImpl<UnexportableSigningKey> {
 bool IsTbsAvailable() {
   static const bool is_available = [] {
     base::expected<bool, HRESULT> load_result =
-        base::win::LoadAllImportsForDll("tbs.dll");
+        base::win::LoadAllImportsForDllUnchecked("tbs.dll");
     bool available = load_result.value_or(false);
     base::UmaHistogramSparse(
         "Crypto.TPMOperation.Win.LoadTBSLibrary.Result",

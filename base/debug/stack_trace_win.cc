@@ -196,7 +196,7 @@ bool MaybeLoadDbghelp() {
     ::LoadLibrary(L"msdia140.dll");
   }
   // If the module is loaded, force resolve delayloads.
-  auto loaded = base::win::LoadAllImportsForDll("dbghelp.dll");
+  auto loaded = base::win::LoadAllImportsForDllUnchecked("dbghelp.dll");
   // In tests where dbghelp is not delayloaded this can safely be 'false', a
   // failure only occurs when an error code is returned.
   return loaded.has_value();

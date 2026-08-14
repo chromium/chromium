@@ -12,6 +12,7 @@
 #include "base/debug/crash_logging.h"
 #include "base/notreached.h"
 #include "base/process/memory.h"
+#include "base/win/delayload_helpers.h"
 
 FARPROC WINAPI HandleDelayLoadFailureCommon(unsigned reason,
                                             DelayLoadInfo* dll_info) {
@@ -19,6 +20,13 @@ FARPROC WINAPI HandleDelayLoadFailureCommon(unsigned reason,
   // more suitable crash rather than just CHECKing in this function.
   if (dll_info->dwLastError == ERROR_COMMITMENT_LIMIT) {
     base::TerminateBecauseOutOfMemory(0);
+  }
+
+  if (base::win::IsDelayLoadFailureSuppressed()) {
+    // Return zero from the failure hook so that a FACILITY_VISUALCPP
+    // ERROR_MOD_NOT_FOUND or ERROR_PROC_NOT_FOUND exception is raised as per
+    // https://learn.microsoft.com/en-us/cpp/build/reference/understanding-the-helper-function.
+    return nullptr;
   }
 
   DEBUG_ALIAS_FOR_CSTR(dll_name, dll_info->szDll, 256);

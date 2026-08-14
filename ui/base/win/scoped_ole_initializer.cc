@@ -15,10 +15,10 @@
 namespace ui {
 
 ScopedOleInitializer::ScopedOleInitializer() {
-  // OLEAUT32.dll is delayloaded but several OLE facilities will use it
-  // so ensure all its imports are resolved early on.
-  auto loaded = base::win::LoadAllImportsForDll("OLEAUT32.dll");
-  CHECK(loaded.has_value());
+  // OLEAUT32.dll is delayloaded but several OLE facilities will use it so
+  // ensure all its imports are resolved early on. Do not check the return
+  // value, as not all test executables have the delayload.
+  base::win::LoadAllImportsForDll("OLEAUT32.dll");
 
   hr_ = ::OleInitialize(NULL);
   DCHECK_NE(OLE_E_WRONGCOMPOBJ, hr_) << "Incompatible DLLs on machine";

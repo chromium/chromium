@@ -241,11 +241,8 @@ bool LoadMediaFoundationDlls() {
 
   // Force-resolve all imports from modules accessed via /DELAYLOAD. Note that
   // MF.dll and MFPlat.DLL have already been resolved via
-  // InitializeMediaFoundation(). LoadAllImportsForDll() makes a
-  // case-sensitive comparison to the module names in the dll.
-  // LINT.IfChange
-  auto loaded = base::win::LoadAllImportsForDll("MFReadWrite.dll");
-  // LINT.ThenChange(//chrome/common/win/delay_load_failure_hook.cc)
+  // InitializeMediaFoundation().
+  auto loaded = base::win::LoadAllImportsForDllUnchecked("MFReadWrite.dll");
   if (!loaded.value_or(false)) {
     // Loading failed, or the module is not a delayload dep of this module.
     return false;

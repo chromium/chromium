@@ -1927,6 +1927,7 @@ component("base") {
       "win/dark_mode_support.h",
       "win/default_apps_util.cc",
       "win/default_apps_util.h",
+      "win/delayload_helpers.cc",
       "win/delayload_helpers.h",
       "win/elevation_util.cc",
       "win/elevation_util.h",

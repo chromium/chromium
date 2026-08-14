@@ -9,17 +9,18 @@
 #include "base/process/memory.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/gtest_util.h"
+#include "base/win/delayload_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 // Subtle: In tests, unit_tests.exe is linked with
 // chrome/common/win/delay_load_failure_hook.cc not
 // chrome/app/delay_load_failure_hook_win.cc. So, __pfnDliFailureHook2 will
-// always call DelayLoadFailureHook and not DelayLoadFailureHookEXE despite
-// existing in an exe file named unit_tests.exe.
+// always be HandleDelayLoadFailureCommon rather than DelayLoadFailureHookEXE
+// despite existing in an exe file named unit_tests.exe.
 //
 // In production chrome.exe, __pfnDliFailureHook2 is instead backed by
 // DelayLoadFailureHookEXE in chrome/app/delay_load_failure_hook_win.cc, while
-// in chrome.dll, __pfnDliFailureHook2 is backed by DelayLoadFailureHook from
+// in chrome.dll, __pfnDliFailureHook2 is HandleDelayLoadFailureCommon from
 // chrome/common/win/delay_load_failure_hook.cc.
 
 // This test verifies that delay load hooks are correctly in place for the
@@ -34,25 +35,12 @@ TEST(ChromeDelayLoadHookTest, DllLoadFailureCrashes) {
   EXPECT_NOTREACHED_DEATH({ __pfnDliFailureHook2(dliFailLoadLib, &dli); });
 }
 
-// This test verifies that DelayLoadFailureHook does not crash for known
-// DLLs.
-TEST(ChromeDelayLoadHookTest, DllLoadFailureDoesNotCrash) {
-  {
-    DelayLoadInfo dli = {.szDll = "MF.dll"};
-    EXPECT_EQ(__pfnDliFailureHook2(dliFailLoadLib, &dli), nullptr);
-  }
-  {
-    DelayLoadInfo dli = {.szDll = "MFPlat.dll"};
-    EXPECT_EQ(__pfnDliFailureHook2(dliFailLoadLib, &dli), nullptr);
-  }
-  {
-    DelayLoadInfo dli = {.szDll = "MFReadWrite.dll"};
-    EXPECT_EQ(__pfnDliFailureHook2(dliFailLoadLib, &dli), nullptr);
-  }
-  {
-    DelayLoadInfo dli = {.szDll = "bthprops.cpl"};
-    EXPECT_EQ(__pfnDliFailureHook2(dliFailLoadLib, &dli), nullptr);
-  }
+// This test verifies that DelayLoadFailureHook does not crash when failure is
+// suppressed for the current thread.
+TEST(ChromeDelayLoadHookTest, DllLoadFailureDoesNotCrashWhenSuppressed) {
+  base::win::delayload_internal::ScopedSuppressDelayLoadFailure suppress;
+  DelayLoadInfo dli = {.szDll = "test.dll"};
+  EXPECT_EQ(__pfnDliFailureHook2(dliFailLoadLib, &dli), nullptr);
 }
 
 // This test verifies that if a DLL is failing to load because of lack of

@@ -92,7 +92,7 @@ bool IsTPM20Supported() {
     // Resolve all delay-loaded imports for tbs.dll on the first call to
     // prevent failed loads being treated as a fatal failure later, which
     // can happen in rare cases due to missing or corrupted DLL file.
-    return LoadAllImportsForDll("tbs.dll").value_or(false);
+    return LoadAllImportsForDllUnchecked("tbs.dll").value_or(false);
   }();
 
   if (!is_tbs_availabe) {
