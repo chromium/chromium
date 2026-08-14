@@ -48,11 +48,14 @@ message AtmemQueryAnalyzerRequest {
 message AtmemQueryAnalyzerResponse {
   QueryType query_type = 1 [features = { field_presence: IMPLICIT }];
 
+  // // TODO(crbug.com/543716348): Deprecate this field after query analyzer is updated.
   AutofillFetchPlan autofill_fetch_plan = 2 [features = { field_presence: EXPLICIT }];
 
   // The rewritten query that should be used. If empty, the original
   // query should be used.
   string rewritten_query = 3 [features = { field_presence: IMPLICIT }];
+
+  repeated AutofillFetchPlan autofill_fetch_plans = 4;
 }
 
 message AutofillFetchPlan {
