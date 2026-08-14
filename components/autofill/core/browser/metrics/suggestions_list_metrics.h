@@ -14,13 +14,14 @@
 namespace autofill {
 class AutofillField;
 enum class FillingProduct;
+struct Suggestion;
 
 namespace autofill_metrics {
 
-// Log the number of Autofill suggestions for the given
-// `filling_product`presented to the user when displaying the autofill popup.
-void LogSuggestionsCount(size_t num_suggestions,
-                         FillingProduct filling_product);
+// Log the number of Autofill suggestions presented to the user when
+// displaying the autofill popup, grouped by `FillingProduct` and excluding
+// management footer options.
+void LogSuggestionsCount(base::span<const Suggestion> suggestions);
 
 // Log the index of the selected Autofill suggestion in the popup.
 void LogSuggestionAcceptedIndex(

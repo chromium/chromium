@@ -478,8 +478,7 @@ void OmniboxAutofillDelegate::OnFieldBecameVisible() {
 
   // Log the number of credit card suggestions generated, maintaining
   // consistency with standard Autofill suggestion generation logging.
-  autofill_metrics::LogSuggestionsCount(suggestions.size(),
-                                        FillingProduct::kCreditCard);
+  autofill_metrics::LogSuggestionsCount(suggestions);
 
   // Log security status of the credit card form when suggestions are generated,
   // similar to standard Autofill suggestions generation.

@@ -20,34 +20,27 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/autofill/core/browser/suggestions/suggestion_util.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace autofill::autofill_metrics {
 
-void LogSuggestionsCount(size_t num_suggestions,
-                         FillingProduct filling_product) {
-  switch (filling_product) {
-    case FillingProduct::kAddress:
-      base::UmaHistogramCounts100("Autofill.SuggestionsCount.Address",
-                                  num_suggestions);
-      break;
-    case FillingProduct::kCreditCard:
-      base::UmaHistogramCounts100("Autofill.SuggestionsCount.CreditCard",
-                                  num_suggestions);
-      break;
-    case FillingProduct::kNone:
-    case FillingProduct::kMerchantPromoCode:
-    case FillingProduct::kIban:
-    case FillingProduct::kAutocomplete:
-    case FillingProduct::kPassword:
-    case FillingProduct::kCompose:
-    case FillingProduct::kAutofillAi:
-    case FillingProduct::kLoyaltyCard:
-    case FillingProduct::kIdentityCredential:
-    case FillingProduct::kDataList:
-    case FillingProduct::kOneTimePassword:
-    case FillingProduct::kPasskey:
-    case FillingProduct::kAtMemory:
-      NOTREACHED();
+void LogSuggestionsCount(base::span<const Suggestion> suggestions) {
+  absl::flat_hash_map<FillingProduct, size_t> suggestions_count;
+  for (const Suggestion& suggestion : suggestions) {
+    if (!IsManagementFooterOption(suggestion)) {
+      ++suggestions_count[GetFillingProductFromSuggestionType(suggestion.type)];
+    }
+  }
+
+  for (const auto& [product, count] : suggestions_count) {
+    if (product != FillingProduct::kNone) {
+      base::UmaHistogramCounts100(
+          base::StrCat(
+              {"Autofill.SuggestionsCount.", FillingProductToString(product)}),
+          count);
+    }
   }
 }
 

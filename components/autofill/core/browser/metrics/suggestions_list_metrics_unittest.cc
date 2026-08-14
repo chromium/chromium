@@ -52,8 +52,8 @@ TEST_F(SuggestionsListMetricsTest, SuggestionsCount) {
     autofill_manager().OnAskForValuesToFillTest(
         form, form.fields().front().global_id());
     // There are 3 suggestions: 2 address profiles and one "manage addresses"
-    // suggestion.
-    histogram_tester.ExpectUniqueSample("Autofill.SuggestionsCount.Address", 3,
+    // suggestion. Manage suggestions are ignored.
+    histogram_tester.ExpectUniqueSample("Autofill.SuggestionsCount.Address", 2,
                                         1);
   }
   {
@@ -61,9 +61,9 @@ TEST_F(SuggestionsListMetricsTest, SuggestionsCount) {
     autofill_manager().OnAskForValuesToFillTest(
         form, form.fields().back().global_id());
     // There are 2 suggestions: 1 card and one "manage payment methods"
-    // suggestion.
+    // suggestion. Manage suggestions are ignored.
     histogram_tester.ExpectUniqueSample("Autofill.SuggestionsCount.CreditCard",
-                                        2, 1);
+                                        1, 1);
   }
 }
 

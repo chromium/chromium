@@ -9183,18 +9183,17 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
-<histogram name="Autofill.SuggestionsCount{SuggestionType}" units="units"
+<histogram name="Autofill.SuggestionsCount.{SuggestionType}" units="units"
     expires_after="2026-12-12">
   <owner>jihadghanna@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
-    The number of suggestions shown in the Autofill popup. Recorded whenever
-    suggestions are shown. {SuggestionType}
+    The number of {SuggestionType} suggestions shown in the Autofill popup.
+    Recorded whenever suggestions are generated.
+
+    Ignores footer management suggestions since M153.
   </summary>
-  <token key="SuggestionType">
-    <variant name=".Address"/>
-    <variant name=".CreditCard"/>
-  </token>
+  <token key="SuggestionType" variants="Autofill.FillingProduct"/>
 </histogram>
 
 <histogram name="Autofill.SuggestionShown.OffTheRecord" units="units"

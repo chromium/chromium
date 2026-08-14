@@ -51,6 +51,10 @@ std::vector<Suggestion> PrepareLoadingStateSuggestions(
 // Returns the "Undo Autofill" suggestion.
 Suggestion CreateUndoSuggestion();
 
+// Returns true if `suggestion` is a management footer option (e.g., "Manage
+// addresses...", "Manage payment methods...", etc.).
+bool IsManagementFooterOption(const Suggestion& suggestion);
+
 }  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_SUGGESTIONS_SUGGESTION_UTIL_H_
