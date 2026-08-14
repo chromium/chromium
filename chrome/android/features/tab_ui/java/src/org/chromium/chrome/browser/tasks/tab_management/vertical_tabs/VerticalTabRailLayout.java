@@ -21,6 +21,7 @@ import androidx.appcompat.widget.TooltipCompat;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import org.chromium.base.Callback;
+import org.chromium.base.TriState;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tasks.tab_management.TabListRecyclerView;
@@ -28,8 +29,6 @@ import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTa
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.base.LocalizationUtils;
-
-import java.util.Objects;
 
 /**
  * Root layout for the vertical tab rail container. Encapsulates child view layout styling based on
@@ -41,9 +40,6 @@ import java.util.Objects;
 public class VerticalTabRailLayout extends ConstraintLayout {
     private static final int HEADER_BUTTON_COUNT_SINGLE_ROW = 3;
     private @Nullable Callback<@RailCollapseState Integer> mExpandOrCollapseOnHoverListener;
-    // Uses Boolean instead of boolean so null represents the uninitialized state before the
-    // first layout pass, avoiding false positive cache matches against a default false value.
-    private @Nullable Boolean mLastAppliedShowSingleRowHeader;
 
     private VerticalTabListRecyclerView mRecyclerView;
     private TabListRecyclerView mPinnedTabsRecyclerView;
@@ -61,7 +57,11 @@ public class VerticalTabRailLayout extends ConstraintLayout {
     private @Px int mHeaderButtonSizePx;
     private @Px int mHeaderButtonGapPx;
     private @RailCollapseState int mCollapseState = RailCollapseState.EXPANDED;
+    // Cache for the last applied collapse state to prevent redundant header layout updates.
     private @RailCollapseState int mLastAppliedCollapseState = RailCollapseState.UNKNOWN;
+    // Cache for whether single-row header styling was last applied to prevent redundant header
+    // layout updates; NOT_SET represents uninitialized state.
+    private @TriState int mLastAppliedShowSingleRowHeader = TriState.NOT_SET;
 
     public VerticalTabRailLayout(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -302,13 +302,15 @@ public class VerticalTabRailLayout extends ConstraintLayout {
         // Default to single-row header when unmeasured (width <= 0) to match the initial XML state.
         boolean canFitHeaderButtonsInSingleRow = width <= 0 || width >= mMinSingleButtonRowWidthPx;
         boolean showSingleRowHeader = !isCollapsed && canFitHeaderButtonsInSingleRow;
+        @TriState
+        int showSingleRowHeaderState = showSingleRowHeader ? TriState.TRUE : TriState.FALSE;
         if (mLastAppliedCollapseState == mCollapseState
-                && Objects.equals(mLastAppliedShowSingleRowHeader, showSingleRowHeader)) {
+                && mLastAppliedShowSingleRowHeader == showSingleRowHeaderState) {
             return;
         }
         if (width > 0) {
             mLastAppliedCollapseState = mCollapseState;
-            mLastAppliedShowSingleRowHeader = showSingleRowHeader;
+            mLastAppliedShowSingleRowHeader = showSingleRowHeaderState;
         }
 
         Resources res = getResources();
