@@ -119,27 +119,7 @@ ReconcilingTemplateURLDataHolder::GetOrComputeKeyword() const {
 std::unique_ptr<TemplateURLData>
 ReconcilingTemplateURLDataHolder::FindMatchingBuiltInDefinitionsByKeyword(
     const std::u16string& keyword) const {
-  std::vector<std::unique_ptr<TemplateURLData>> prepopulated_urls =
-      prepopulate_data_resolver_->GetPrepopulatedEngines();
-
-  auto engine_iter =
-      std::ranges::find(prepopulated_urls, keyword, &TemplateURLData::keyword);
-
-  std::unique_ptr<TemplateURLData> result;
-  if (engine_iter != prepopulated_urls.end()) {
-    result = std::move(*engine_iter);
-  } else {
-    // Search the entire search engine database to find matching entry.
-    auto all_engines = regional_capabilities::GetAllPrepopulatedEngines();
-    for (const auto& engine : all_engines) {
-      if (engine->keyword == keyword) {
-        result = TemplateURLDataFromPrepopulatedEngine(*engine);
-        break;
-      }
-    }
-  }
-
-  return result;
+  return prepopulate_data_resolver_->GetEngineFromFullList(keyword);
 }
 
 std::pair<std::unique_ptr<TemplateURLData>,
@@ -168,12 +148,11 @@ ReconcilingTemplateURLDataHolder::FindMatchingBuiltInDefinitionsById(
   }
 
   // Search the entire search engine database to find matching entry.
-  auto all_engines = regional_capabilities::GetAllPrepopulatedEngines();
-  for (const auto& engine : all_engines) {
-    if (engine->id == data_to_match.prepopulate_id) {
-      return {TemplateURLDataFromPrepopulatedEngine(*engine),
-              ReconciliationType::kByIdFromAllEngines};
-    }
+  if (std::unique_ptr<TemplateURLData> engine =
+          prepopulate_data_resolver_->GetEngineFromFullList(
+              data_to_match.prepopulate_id);
+      engine != nullptr) {
+    return {std::move(engine), ReconciliationType::kByIdFromAllEngines};
   }
 
   return {nullptr, ReconciliationType::kByIdFallthrough};

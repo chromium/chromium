@@ -5,6 +5,7 @@
 #include "components/search_engines/template_url_prepopulate_data_resolver.h"
 
 #include <optional>
+#include <string_view>
 
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -48,6 +49,13 @@ std::unique_ptr<TemplateURLData> Resolver::GetEngineFromFullList(
       profile_prefs_.get(),
       regional_capabilities_->GetRegionalPrepopulatedEngines(),
       prepopulated_id);
+}
+
+std::unique_ptr<TemplateURLData> Resolver::GetEngineFromFullList(
+    std::u16string_view keyword) const {
+  return TemplateURLPrepopulateData::GetPrepopulatedEngineFromFullList(
+      profile_prefs_.get(),
+      regional_capabilities_->GetRegionalPrepopulatedEngines(), keyword);
 }
 
 std::unique_ptr<TemplateURLData> Resolver::GetFallbackSearch() const {

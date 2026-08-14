@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <random>
+#include <string_view>
 #include <variant>
 #include <vector>
 
@@ -245,8 +246,9 @@ std::unique_ptr<TemplateURLData> GetPrepopulatedEngineFromFullList(
     const std::vector<raw_ptr<const PrepopulatedEngine>>&
         regional_prepopulated_engines,
     int prepopulated_id) {
-  // TODO(crbug.com/40940777): Refactor to better share code with
-  // `GetPrepopulatedEngine()`.
+  // TODO(crbug.com/530597465): Refactor to better share code with
+  // `GetPrepopulatedEngine()` once the SearchProvidersOverride logic is
+  // removed.
 
   // If there is a set of search engines in the preferences file, we look for
   // the ID there first.
@@ -259,6 +261,33 @@ std::unique_ptr<TemplateURLData> GetPrepopulatedEngineFromFullList(
 
   if (auto* matched_engine = GetPrepopulatedEngineFromBuiltInData(
           prepopulated_id, regional_prepopulated_engines);
+      matched_engine) {
+    return PrepopulatedEngineToTemplateURLData(matched_engine);
+  }
+
+  return {};
+}
+
+std::unique_ptr<TemplateURLData> GetPrepopulatedEngineFromFullList(
+    PrefService& prefs,
+    const std::vector<raw_ptr<const PrepopulatedEngine>>&
+        regional_prepopulated_engines,
+    std::u16string_view keyword) {
+  // TODO(crbug.com/530597465): Refactor to better share code with
+  // `GetPrepopulatedEngine()` once the SearchProvidersOverride logic is
+  // removed.
+
+  // If there is a set of search engines in the preferences file, we look for
+  // the keyword there first.
+  for (std::unique_ptr<TemplateURLData>& data :
+       GetOverriddenTemplateURLData(prefs)) {
+    if (data->keyword() == keyword) {
+      return std::move(data);
+    }
+  }
+
+  if (auto* matched_engine = GetPrepopulatedEngineFromBuiltInData(
+          keyword, regional_prepopulated_engines);
       matched_engine) {
     return PrepopulatedEngineToTemplateURLData(matched_engine);
   }

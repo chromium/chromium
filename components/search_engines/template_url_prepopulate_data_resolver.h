@@ -6,6 +6,7 @@
 #define COMPONENTS_SEARCH_ENGINES_TEMPLATE_URL_PREPOPULATE_DATA_RESOLVER_H_
 
 #include <optional>
+#include <string_view>
 #include <vector>
 
 #include "base/memory/raw_ref.h"
@@ -61,6 +62,12 @@ class Resolver : public KeyedService {
   // it's not known there.
   std::unique_ptr<TemplateURLData> GetEngineFromFullList(
       int prepopulated_id) const;
+
+  // Returns the prepopulated search engine with the given `keyword` from the
+  // full list of known prepopulated search engines, or `nullptr` if it's not
+  // known there.
+  std::unique_ptr<TemplateURLData> GetEngineFromFullList(
+      std::u16string_view keyword) const;
 
   // Returns the fallback default search provider, currently hardcoded to be
   // Google, or whichever one is the first of the list if Google is not in the

@@ -812,13 +812,21 @@ TEST_F(TemplateURLPrepopulateDataTest, GetPrepopulatedEngineFromFullList) {
   EXPECT_FALSE(prepopulate_data_resolver().GetPrepopulatedEngine(
       TemplateURLPrepopulateData::ecosia.id));
 
-  // Here we look in the full list.
-  auto found_engine = prepopulate_data_resolver().GetEngineFromFullList(
-      TemplateURLPrepopulateData::ecosia.id);
-  EXPECT_TRUE(found_engine);
-  auto expected_engine =
+  // Here we look in the full list by ID.
+  std::unique_ptr<TemplateURLData> found_engine_by_id =
+      prepopulate_data_resolver().GetEngineFromFullList(
+          TemplateURLPrepopulateData::ecosia.id);
+  ASSERT_TRUE(found_engine_by_id);
+  std::unique_ptr<TemplateURLData> expected_engine =
       TemplateURLDataFromPrepopulatedEngine(TemplateURLPrepopulateData::ecosia);
-  ExpectSimilar(expected_engine.get(), found_engine.get());
+  ExpectSimilar(expected_engine.get(), found_engine_by_id.get());
+
+  // Also verify lookup by keyword.
+  std::unique_ptr<TemplateURLData> found_engine_by_keyword =
+      prepopulate_data_resolver().GetEngineFromFullList(
+          TemplateURLPrepopulateData::ecosia.keyword);
+  ASSERT_TRUE(found_engine_by_keyword);
+  ExpectSimilar(expected_engine.get(), found_engine_by_keyword.get());
 }
 
 #if BUILDFLAG(IS_ANDROID)
