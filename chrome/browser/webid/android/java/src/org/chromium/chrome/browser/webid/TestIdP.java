@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.webid;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -84,7 +85,26 @@ public class TestIdP extends Service {
                                 .append(headersBundle.getString(key));
                     }
                 }
-                final String replyString = url + extraInfo.toString() + "Hello world!";
+                final String replyString;
+                String path = url != null ? Uri.parse(url).getPath() : null;
+                if (path != null && path.endsWith("/no_reply")) {
+                    // Do not reply, keeping the request in flight.
+                    return;
+                }
+                if (path != null && path.endsWith("/json_accounts")) {
+                    replyString =
+                            "{\"accounts\": [{\"id\": \"1234\", \"name\": \"Jane Doe\","
+                                    + " \"email\": \"jane@idp.example\", \"given_name\":"
+                                    + " \"Jane\"}]}";
+                } else if (path != null && path.endsWith("/json_token")) {
+                    replyString = "{\"token\": \"sample_native_jwt_token_12345\"}";
+                } else if (path != null && path.endsWith("/json_continue")) {
+                    replyString = "{\"continue_on\": \"https://idp.example/fedcm/continue\"}";
+                } else if (path != null && path.endsWith("/json_error")) {
+                    replyString = "{\"error\": {\"code\": \"access_denied\"}}";
+                } else {
+                    replyString = (url != null ? url : "") + extraInfo.toString() + "Hello world!";
+                }
 
                 mExecutor.execute(
                         () -> {

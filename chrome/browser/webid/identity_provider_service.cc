@@ -74,8 +74,20 @@ void IdentityProviderService::OnConnected(JNIEnv* env, bool success) {
 }
 
 void IdentityProviderService::OnDisconnected(JNIEnv* env) {
-  if (disconnect_callback_) {
-    std::move(disconnect_callback_).Run();
+  auto connect_callback = std::move(connect_callback_);
+  auto callback = std::move(callback_);
+  auto disconnect_callback = std::move(disconnect_callback_);
+
+  // If the service disconnects/dies while a fetch or connection is in flight,
+  // resolve those callbacks with an error so the caller doesn't hang forever.
+  if (connect_callback) {
+    std::move(connect_callback).Run(false);
+  }
+  if (callback) {
+    std::move(callback).Run(std::nullopt);
+  }
+  if (disconnect_callback) {
+    std::move(disconnect_callback).Run();
   }
 }
 
