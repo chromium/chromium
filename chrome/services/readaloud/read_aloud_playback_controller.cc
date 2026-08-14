@@ -10,9 +10,23 @@
 
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
+#include "chrome/services/readaloud/audio_renderer/read_aloud_audio_renderer.h"
+#include "chrome/services/readaloud/audio_segment_queue.h"
+#include "media/audio/audio_device_thread.h"
+#include "media/audio/audio_output_device_thread_callback.h"
+#include "media/base/audio_parameters.h"
 #include "mojo/public/cpp/bindings/message.h"
+#include "mojo/public/cpp/platform/platform_handle.h"
 
 namespace readaloud {
+
+ReadAloudPlaybackController::AudioResources::AudioResources() = default;
+ReadAloudPlaybackController::AudioResources::AudioResources(AudioResources&&) =
+    default;
+ReadAloudPlaybackController::AudioResources&
+ReadAloudPlaybackController::AudioResources::operator=(AudioResources&&) =
+    default;
+ReadAloudPlaybackController::AudioResources::~AudioResources() = default;
 
 ReadAloudPlaybackController::ReadAloudPlaybackController(
     mojo::PendingReceiver<read_aloud::mojom::ReadAloudPlaybackControllerFactory>
@@ -56,9 +70,70 @@ void ReadAloudPlaybackController::CreateController(
 
 void ReadAloudPlaybackController::InitializeAudio(
     mojo::PendingRemote<media::mojom::AudioOutputStream> stream,
-    media::mojom::ReadWriteAudioDataPipePtr data_pipe) {
+    media::mojom::ReadWriteAudioDataPipePtr data_pipe,
+    const media::AudioParameters& params) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(b/527526096): Bind AudioOutputStream and store data_pipe for playback.
+
+  // Immediately tear down any active audio resources and threads before
+  // initializing new ones or validating parameters.
+  audio_resources_.reset();
+
+  if (!stream.is_valid()) {
+    controller_receiver_.ReportBadMessage(
+        "ReadAloudPlaybackController: Invalid audio output stream remote");
+    return;
+  }
+
+  if (!params.IsValid() || params.IsBitstreamFormat()) {
+    controller_receiver_.ReportBadMessage(
+        "ReadAloudPlaybackController: Invalid audio parameters");
+    return;
+  }
+
+  if (!data_pipe || !data_pipe->socket.is_valid() ||
+      !data_pipe->shared_memory.IsValid()) {
+    controller_receiver_.ReportBadMessage(
+        "ReadAloudPlaybackController: Invalid data pipe or handles");
+    return;
+  }
+
+  size_t required_buffer_size = media::ComputeAudioOutputBufferSize(params);
+  if (data_pipe->shared_memory.GetSize() < required_buffer_size) {
+    controller_receiver_.ReportBadMessage(
+        "ReadAloudPlaybackController: Shared memory size is too small");
+    return;
+  }
+
+  AudioResources resources;
+  resources.audio_segment_queue = std::make_unique<AudioSegmentQueue>();
+  resources.audio_renderer = std::make_unique<ReadAloudAudioRenderer>();
+
+  if (!resources.audio_renderer->Initialize(
+          params, resources.audio_segment_queue.get())) {
+    return;
+  }
+
+  resources.audio_output_stream.Bind(std::move(stream));
+
+  base::ScopedPlatformFile socket_file =
+      std::move(data_pipe->socket).TakePlatformFile();
+  if (!socket_file.is_valid()) {
+    controller_receiver_.ReportBadMessage(
+        "ReadAloudPlaybackController: Failed to take socket handle");
+    return;
+  }
+
+  resources.audio_callback =
+      std::make_unique<media::AudioOutputDeviceThreadCallback>(
+          params, std::move(data_pipe->shared_memory),
+          resources.audio_renderer.get());
+  resources.audio_callback->InitializePlayStartTime();
+
+  resources.audio_thread = std::make_unique<media::AudioDeviceThread>(
+      resources.audio_callback.get(), std::move(socket_file),
+      "ReadAloudAudioPlayback", base::ThreadType::kRealtimeAudio);
+
+  audio_resources_ = std::move(resources);
 }
 
 void ReadAloudPlaybackController::SetTextContent(
@@ -211,10 +286,8 @@ void ReadAloudPlaybackController::ResetSession() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   controller_receiver_.reset();
   client_.reset();
-  // TODO(b/527526096): Reset stored audio stream and data pipe handles:
-  // audio_output_stream_.reset();
-  // audio_data_pipe_.reset();
   prefetch_manager_.ResetSession();
+  audio_resources_.reset();
   segments_.clear();
   playback_rate_ = 1.0f;
   session_weak_factory_.InvalidateWeakPtrs();

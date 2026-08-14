@@ -75,6 +75,7 @@ source_set("mock_playback_controller") {
   public_deps = [
     "//base",
     "//chrome/common:mojo_bindings",
+    "//media",
     "//media/mojo/mojom",
     "//mojo/public/cpp/bindings",
     "//testing/gmock",
