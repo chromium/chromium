@@ -20,7 +20,7 @@ export function getHtml(this: ActivityLogStreamElement) {
       @search-changed="${this.onSearchChanged_}">
   </cr-search-field>
   <cr-button id="toggle-stream-button" @click="${this.onToggleButtonClick_}">
-    <span">
+    <span>
       ${this.isStreamOn_ ?
           html`$i18n{stopActivityStream}` : html`$i18n{startActivityStream}`}
     </span>

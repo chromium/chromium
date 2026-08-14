@@ -370,7 +370,7 @@ this text can be found by Ctrl + F because it isn't hidden. -->
               <div>$i18n{itemAllowOnFileUrls}</div>
               <div class="section-content" id="allow-on-file-urls-warning"
                   ?hidden="${!this.data.fileAccessPendingChange}">
-                $i18n{pendingChangeWarning}</div>
+                $i18n{pendingChangeWarning}
               </div>
             </div>
           </extensions-toggle-row>` : ''}
