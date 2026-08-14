@@ -871,11 +871,6 @@ DevToolsUIBindings::DevToolsUIBindings(content::WebContents* web_contents)
   ThemeServiceFactory::GetForProfile(profile_->GetOriginalProfile())
       ->AddObserver(this);
 #endif
-#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-  if (auto* registry = extensions::ExtensionRegistry::Get(profile_)) {
-    extension_registry_observation_.Observe(registry);
-  }
-#endif
   can_access_aida_ = IsAnyAidaPoweredFeatureEnabled();
   is_local_frontend_ =
       IsLocalDevToolsFrontendURL(web_contents_->GetLastCommittedURL());
@@ -2867,7 +2862,6 @@ void DevToolsUIBindings::AddDevToolsExtensionsToClient() {
             .Set("runtimeAllowedHosts", std::move(runtime_allowed_hosts))
             .Set("runtimeBlockedHosts", std::move(runtime_blocked_hosts)));
     results.Append(std::move(extension_info));
-    devtools_extension_ids_.insert(extension->id());
   }
 
   CallClientMethod("DevToolsAPI", "setOriginsForbiddenForExtensions",
@@ -2876,30 +2870,6 @@ void DevToolsUIBindings::AddDevToolsExtensionsToClient() {
                    base::Value(std::move(results)));
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 }
-
-#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-void DevToolsUIBindings::OnExtensionUnloaded(
-    content::BrowserContext* browser_context,
-    const extensions::Extension* extension,
-    extensions::UnloadedExtensionReason reason) {
-  // If an extension that had devtools bindings was unloaded, we just close the
-  // devtools window.
-  // This is important, because extensions might be reloaded with different
-  // privileges, and we need to ensure we clear out any old state or bindings.
-  // This is also inline with our behavior for other extension pages, like
-  // tabs, popups, etc.
-  // Extensions aren't unloaded that often (and should only be so when they're
-  // idle or via a direct signal, e.g. from the user), so this shouldn't be too
-  // disruptive.
-  if (devtools_extension_ids_.contains(extension->id())) {
-    CloseWindow();
-  }
-}
-
-void DevToolsUIBindings::OnShutdown(extensions::ExtensionRegistry* registry) {
-  extension_registry_observation_.Reset();
-}
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 void DevToolsUIBindings::RegisterExtensionsAPI(const std::string& origin,
                                                const std::string& script) {
