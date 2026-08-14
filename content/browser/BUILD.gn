@@ -3614,6 +3614,7 @@ if (is_android) {
 group("for_content_tests") {
   visibility = [
     "//content/browser/btm:unit_tests",
+    "//content/browser/indexed_db:idb_factory_mojolpm_fuzzer",
     "//content/browser/indexed_db:unit_tests",
     "//content/public/test/android/*",
     "//content/test/*",

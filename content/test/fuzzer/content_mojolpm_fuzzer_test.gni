@@ -1,0 +1,27 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/fuzzers/mojolpm.gni")
+
+# Some features used to set up the RendererHost process call `CHECK_IS_TEST`,
+# which requires AllowCheckIsTestForTesting to be called during test
+# initialization. The fuzzers are not set up by the internal test setup
+# mechanism, and this function must be called at most once per process, which
+# prevents the fuzzers from calling it in their setup method (called for every
+# fuzzing iteration).
+template("content_mojolpm_fuzzer_test") {
+  mojolpm_fuzzer_test(target_name) {
+    forward_variables_from(invoker,
+                           "*",
+                           [
+                             "exclude_main",
+                             "deps",
+                           ])
+    deps = [ "//content/test/fuzzer:content_mojolpm_fuzzer_test_support" ]
+    if (defined(invoker.deps)) {
+      deps += invoker.deps
+    }
+    exclude_main = true
+  }
+}

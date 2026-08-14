@@ -17,6 +17,11 @@ include_rules = [
 ]
 
 specific_include_rules = {
+  'idb_factory_mojolpm_fuzzer.cc': [
+    "+components/services/storage",
+    "+content",
+    "+third_party/libprotobuf-mutator/src/src",
+  ],
   '.*browsertest.cc': [
     "+content",
   ],

@@ -2,7 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//content/test/fuzzer/content_mojolpm_fuzzer_test.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
 
 source_set("indexed_db") {
   public = [ "indexed_db_control_wrapper.h" ]
@@ -117,8 +119,70 @@ source_set("indexed_db") {
   configs += [ "//content:content_implementation" ]
 
   friend = [
-    ":unit_tests",
+    ":*",
     "//content/test/*",
+  ]
+}
+
+source_set("indexed_db_fuzzer_support") {
+  public_deps = [
+    "//base",
+    "//components/services/storage",
+    "//content/browser/indexed_db",
+    "//content/public/browser:browser_sources",
+    "//content/test:test_support",
+    "//third_party/blink/public/common:headers",
+  ]
+  testonly = true
+}
+
+fuzzer_test("indexed_db_leveldb_coding_encodeidbkey_fuzzer") {
+  sources = [ "indexed_db_leveldb_coding_encodeidbkey_fuzzer.cc" ]
+  deps = [ ":indexed_db_fuzzer_support" ]
+  seed_corpus = "fuzzer_corpus/indexed_db_key"
+}
+
+fuzzer_test("indexed_db_leveldb_coding_encodeidbkeypath_fuzzer") {
+  sources = [ "indexed_db_leveldb_coding_encodeidbkeypath_fuzzer.cc" ]
+  deps = [ ":indexed_db_fuzzer_support" ]
+  seed_corpus = "fuzzer_corpus/indexed_db_key_path"
+}
+
+fuzzer_test("indexed_db_leveldb_coding_decodeidbkey_fuzzer") {
+  sources = [ "indexed_db_leveldb_coding_decodeidbkey_fuzzer.cc" ]
+  deps = [ ":indexed_db_fuzzer_support" ]
+  seed_corpus = "fuzzer_corpus/encoded_indexed_db_key"
+}
+
+fuzzer_test("indexed_db_leveldb_coding_decodeidbkeypath_fuzzer") {
+  sources = [ "indexed_db_leveldb_coding_decodeidbkeypath_fuzzer.cc" ]
+  deps = [ ":indexed_db_fuzzer_support" ]
+  seed_corpus = "fuzzer_corpus/encoded_indexed_db_key_path"
+}
+
+content_mojolpm_fuzzer_test("idb_factory_mojolpm_fuzzer") {
+  sources = [ "idb_factory_mojolpm_fuzzer.cc" ]
+
+  proto_source = "idb_factory_mojolpm_fuzzer.proto"
+  testcase_proto_kind = "content.fuzzing.idb_factory.proto.Testcase"
+
+  deps = [
+    ":indexed_db",
+    "//content/browser:for_content_tests",
+    "//content/public/browser:browser_sources",
+    "//content/test/fuzzer:mojolpm_fuzzer_support",
+    "//third_party/blink/public/mojom:mojom_modules_mojolpm",
+  ]
+
+  proto_deps = [ "//third_party/blink/public/mojom:mojom_modules_mojolpm" ]
+
+  seed_corpus_sources = [
+    "fuzzer_corpus/idb_factory_mojolpm_fuzzer/basic_blob.textproto",
+    "fuzzer_corpus/idb_factory_mojolpm_fuzzer/basic_index_operations.textproto",
+    "fuzzer_corpus/idb_factory_mojolpm_fuzzer/basic_put_get.textproto",
+    "fuzzer_corpus/idb_factory_mojolpm_fuzzer/idb_factory.textproto",
+    "fuzzer_corpus/idb_factory_mojolpm_fuzzer/index_cursor.textproto",
+    "fuzzer_corpus/idb_factory_mojolpm_fuzzer/object_store_cursor.textproto",
   ]
 }
 

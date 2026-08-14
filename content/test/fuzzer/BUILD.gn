@@ -4,8 +4,8 @@
 
 # Fuzzers for content/ components.
 
+import("//content/test/fuzzer/content_mojolpm_fuzzer_test.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
-import("//mojo/public/tools/fuzzers/mojolpm.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
 import("//third_party/protobuf/proto_library.gni")
@@ -161,31 +161,6 @@ source_set("content_mojolpm_fuzzer_test_support") {
   deps = [ "//base/test:test_support" ]
 }
 
-# A bit of explanation is necessary here. Basically, some new features to setup
-# the RendererHost process is calling `CHECK_IS_TEST`, which requires
-# AllowCheckIsTestForTesting to be called in the test initialization setup, so
-# that the runtime knowns when we're running in a test.
-# Unfortunately, those fuzzers are not being setup by our internal test setup
-# mechanism, and thus we're never calling AllowCheckIsTestForTesting. Besides,
-# this function must be called at most once per process, which prevents the
-# fuzzers from calling it in their setup method (called at every fuzzing
-# iteration).
-template("content_mojolpm_fuzzer_test") {
-  mojolpm_fuzzer_test(target_name) {
-    forward_variables_from(invoker,
-                           "*",
-                           [
-                             "exclude_main",
-                             "deps",
-                           ])
-    deps = [ ":content_mojolpm_fuzzer_test_support" ]
-    if (defined(invoker.deps)) {
-      deps += invoker.deps
-    }
-    exclude_main = true
-  }
-}
-
 content_mojolpm_fuzzer_test("code_cache_host_mojolpm_fuzzer") {
   sources = [ "code_cache_host_mojolpm_fuzzer.cc" ]
 
@@ -204,32 +179,6 @@ content_mojolpm_fuzzer_test("code_cache_host_mojolpm_fuzzer") {
   seed_corpus_sources = [
     "//content/test/data/fuzzer_corpus/code_cache_host_mojolpm_fuzzer/did_generate_cacheable_metadata_origin_a.textproto",
     "//content/test/data/fuzzer_corpus/code_cache_host_mojolpm_fuzzer/did_generate_cacheable_metadata_origin_b.textproto",
-  ]
-}
-
-content_mojolpm_fuzzer_test("idb_factory_mojolpm_fuzzer") {
-  sources = [ "idb_factory_mojolpm_fuzzer.cc" ]
-
-  proto_source = "idb_factory_mojolpm_fuzzer.proto"
-  testcase_proto_kind = "content.fuzzing.idb_factory.proto.Testcase"
-
-  deps = [
-    ":mojolpm_fuzzer_support",
-    "//content/browser:for_content_tests",
-    "//content/browser/indexed_db",
-    "//content/public/browser:browser_sources",
-    "//third_party/blink/public/mojom:mojom_modules_mojolpm",
-  ]
-
-  proto_deps = [ "//third_party/blink/public/mojom:mojom_modules_mojolpm" ]
-
-  seed_corpus_sources = [
-    "//content/test/data/fuzzer_corpus/idb_factory_mojolpm_fuzzer/basic_blob.textproto",
-    "//content/test/data/fuzzer_corpus/idb_factory_mojolpm_fuzzer/basic_index_operations.textproto",
-    "//content/test/data/fuzzer_corpus/idb_factory_mojolpm_fuzzer/basic_put_get.textproto",
-    "//content/test/data/fuzzer_corpus/idb_factory_mojolpm_fuzzer/idb_factory.textproto",
-    "//content/test/data/fuzzer_corpus/idb_factory_mojolpm_fuzzer/index_cursor.textproto",
-    "//content/test/data/fuzzer_corpus/idb_factory_mojolpm_fuzzer/object_store_cursor.textproto",
   ]
 }
 
@@ -326,47 +275,6 @@ fuzzer_test("browser_accessibility_fuzzer") {
   if (is_android) {
     deps += [ "//base/test:test_support" ]
   }
-}
-
-source_set("indexed_db_fuzzer_support") {
-  public_deps = [
-    "//base",
-    "//components/services/storage",
-    "//content/browser/indexed_db",
-    "//content/public/browser:browser_sources",
-    "//content/test:test_support",
-    "//third_party/blink/public/common:headers",
-  ]
-  testonly = true
-}
-
-fuzzer_test("indexed_db_leveldb_coding_encodeidbkey_fuzzer") {
-  sources = [
-    "../../browser/indexed_db/indexed_db_leveldb_coding_encodeidbkey_fuzzer.cc",
-  ]
-  deps = [ ":indexed_db_fuzzer_support" ]
-  seed_corpus = "../../browser/indexed_db/fuzzer_corpus/indexed_db_key"
-}
-
-fuzzer_test("indexed_db_leveldb_coding_encodeidbkeypath_fuzzer") {
-  sources = [ "../../browser/indexed_db/indexed_db_leveldb_coding_encodeidbkeypath_fuzzer.cc" ]
-  deps = [ ":indexed_db_fuzzer_support" ]
-  seed_corpus = "../../browser/indexed_db/fuzzer_corpus/indexed_db_key_path"
-}
-
-fuzzer_test("indexed_db_leveldb_coding_decodeidbkey_fuzzer") {
-  sources = [
-    "../../browser/indexed_db/indexed_db_leveldb_coding_decodeidbkey_fuzzer.cc",
-  ]
-  deps = [ ":indexed_db_fuzzer_support" ]
-  seed_corpus = "../../browser/indexed_db/fuzzer_corpus/encoded_indexed_db_key"
-}
-
-fuzzer_test("indexed_db_leveldb_coding_decodeidbkeypath_fuzzer") {
-  sources = [ "../../browser/indexed_db/indexed_db_leveldb_coding_decodeidbkeypath_fuzzer.cc" ]
-  deps = [ ":indexed_db_fuzzer_support" ]
-  seed_corpus =
-      "../../browser/indexed_db/fuzzer_corpus/encoded_indexed_db_key_path"
 }
 
 if (use_fuzzing_engine) {
