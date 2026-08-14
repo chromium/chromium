@@ -55,16 +55,11 @@ export const PrivacyHubMixin = dedupingMixin(
           };
         }
 
-        cameraSwitchForceDisabled: boolean;
-        microphoneHardwareToggleActive: boolean;
-        microphoneMutedBySecurityCurtain: boolean;
-        private privacyHubBrowserProxy_: PrivacyHubBrowserProxy;
-
-        constructor() {
-          super();
-          this.privacyHubBrowserProxy_ =
-              PrivacyHubBrowserProxyImpl.getInstance();
-        }
+        declare cameraSwitchForceDisabled: boolean;
+        declare microphoneHardwareToggleActive: boolean;
+        declare microphoneMutedBySecurityCurtain: boolean;
+        private privacyHubBrowserProxy_: PrivacyHubBrowserProxy =
+            PrivacyHubBrowserProxyImpl.getInstance();
 
         override connectedCallback(): void {
           super.connectedCallback();

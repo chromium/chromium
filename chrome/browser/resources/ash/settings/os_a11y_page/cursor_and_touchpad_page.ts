@@ -29,7 +29,6 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import {RouteOriginMixin} from '../common/route_origin_mixin.js';
-import type {DevicePageBrowserProxy} from '../device_page/device_page_browser_proxy.js';
 import {DevicePageBrowserProxyImpl} from '../device_page/device_page_browser_proxy.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import type {Route} from '../router.js';
@@ -317,7 +316,7 @@ export class SettingsCursorAndTouchpadPageElement extends
   declare private autoClickDelayOptions_: Option[];
   declare private autoClickMovementThresholdOptions_: Option[];
   declare private cursorColorOptions_: Option[];
-  private deviceBrowserProxy_: DevicePageBrowserProxy;
+  private deviceBrowserProxy_ = DevicePageBrowserProxyImpl.getInstance();
   declare private disableTouchpadOptions_: Option[];
   declare private readonly isKioskModeActive_: boolean;
   declare private shelfNavigationButtonsImplicitlyEnabled_: boolean;
@@ -327,19 +326,12 @@ export class SettingsCursorAndTouchpadPageElement extends
   declare private showShelfNavigationButtonsSettings_: boolean;
   declare private readonly isAccessibilityDisableTouchpadEnabled_: boolean;
   declare private readonly isAccessibilityMouseKeysEnabled_: boolean;
-  private readonly largeCursorMaxSize_: number;
   declare private hasMouse_: boolean;
   declare private hasTouchpad_: boolean;
   declare private hasPointingStick_: boolean;
 
-  constructor() {
-    super();
-
-    /** RouteOriginMixin override */
-    this.route = routes.A11Y_CURSOR_AND_TOUCHPAD;
-
-    this.deviceBrowserProxy_ = DevicePageBrowserProxyImpl.getInstance();
-  }
+  // RouteOriginMixin override
+  override route = routes.A11Y_CURSOR_AND_TOUCHPAD;
 
   override connectedCallback(): void {
     super.connectedCallback();

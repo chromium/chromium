@@ -138,6 +138,13 @@ suite('<files-settings-card>', () => {
     Router.getInstance().resetRouteForTesting();
   });
 
+  test('Card rendering does not depend on OneDriveBrowserProxy', async () => {
+    OneDriveBrowserProxy.setInstance(null);
+    await createFilesSettingsCard();
+    await flushTasks();
+    assertTrue(isVisible(filesSettingsCard));
+  });
+
   test(
       'OneDrive row is not stamped when showOfficeSettings is false',
       async () => {

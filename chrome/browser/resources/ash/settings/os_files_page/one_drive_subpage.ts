@@ -45,21 +45,16 @@ export class SettingsOneDriveSubpageElement extends
     };
   }
 
-  /**
-   * Resolved once the async calls initiated by the constructor have resolved.
-   */
-  initPromise: Promise<void>;
-
-  constructor() {
-    super();
-    this.oneDriveProxy_ = OneDriveBrowserProxy.getInstance();
-    this.initPromise = this.updateUserEmailAddress_();
-  }
-
   declare private connectionState_: OneDriveConnectionState;
-  private userEmailAddress_: string|null;
-  private oneDriveProxy_: OneDriveBrowserProxy;
+  private userEmailAddress_: string|null = null;
+  private oneDriveProxy_ = OneDriveBrowserProxy.getInstance();
   private allowUserToRemoveOdfs_: boolean = true;
+
+  /**
+   * Resolved once the async calls initiated on element initialization have
+   * resolved. Must be ordered after `oneDriveProxy_`.
+   */
+  initPromise: Promise<void> = this.updateUserEmailAddress_();
 
   override connectedCallback(): void {
     super.connectedCallback();

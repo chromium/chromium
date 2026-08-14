@@ -139,17 +139,17 @@ export class SettingsGoogleDriveSubpageElement extends
   /**
    * Reflects the state of `prefs.gdata.disabled` pref.
    */
-  private driveDisabled_: boolean;
+  private driveDisabled_: boolean = false;
 
   /**
    * Reflects the state of `prefs.drivefs.bulk_pinning.visible` pref.
    */
-  private bulkPinningVisible_: boolean;
+  private bulkPinningVisible_: boolean = false;
 
   /**
    * A connection with the browser process to send/receive messages.
    */
-  private proxy_: GoogleDriveBrowserProxy;
+  private proxy_ = GoogleDriveBrowserProxy.getInstance();
 
   /**
    * Keeps track of the latest response about bulk pinning from the page
@@ -189,7 +189,7 @@ export class SettingsGoogleDriveSubpageElement extends
    */
   declare private showSpinner: boolean;
 
-  private updateContentCacheSizeInterval_: number;
+  private updateContentCacheSizeInterval_: number = -1;
 
   declare private readonly isDriveFsBulkPinningEnabled_: boolean;
   declare private readonly isDriveFsMirrorSyncEnabled_: boolean;

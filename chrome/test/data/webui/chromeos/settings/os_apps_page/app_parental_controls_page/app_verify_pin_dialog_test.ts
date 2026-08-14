@@ -80,6 +80,51 @@ suite('AppVerifyPinDialogTest', () => {
         assertFalse(verifyPinSubmitButton.disabled);
       });
 
+  test(
+      'Typing valid PIN then modifying it toggles submit button enabled state',
+      async () => {
+        const verifyPinKeyboard =
+            verifyPinDialog.shadowRoot!.getElementById('pinKeyboard');
+
+        assertTrue(!!verifyPinKeyboard);
+        assertTrue(hasStringProperty(verifyPinKeyboard, 'value'));
+
+        const verifyPinSubmitButton =
+            verifyPinDialog.shadowRoot!.querySelector<HTMLElement>('#dialog')!
+                .querySelector<HTMLButtonElement>('.action-button');
+
+        assertTrue(!!verifyPinSubmitButton);
+        assertTrue(verifyPinSubmitButton.disabled);
+
+        verifyPinKeyboard.value = '123456';
+        await flushTasks();
+        assertFalse(verifyPinSubmitButton.disabled);
+
+        verifyPinKeyboard.value = '12345';
+        await flushTasks();
+        assertTrue(verifyPinSubmitButton.disabled);
+      });
+
+  test('resetState disables submit button after valid PIN entry', async () => {
+    const verifyPinKeyboard =
+        verifyPinDialog.shadowRoot!.getElementById('pinKeyboard');
+    assertTrue(!!verifyPinKeyboard);
+    assertTrue(hasStringProperty(verifyPinKeyboard, 'value'));
+
+    const verifyPinSubmitButton =
+        verifyPinDialog.shadowRoot!.querySelector<HTMLElement>('#dialog')!
+            .querySelector<HTMLButtonElement>('.action-button');
+    assertTrue(!!verifyPinSubmitButton);
+
+    verifyPinKeyboard.value = '123456';
+    await flushTasks();
+    assertFalse(verifyPinSubmitButton.disabled);
+
+    verifyPinDialog.resetState();
+    await flushTasks();
+    assertTrue(verifyPinSubmitButton.disabled);
+  });
+
   test('Submitting incorrect PIN records error to histogram', async () => {
     const verifyPinKeyboard =
         verifyPinDialog.shadowRoot!.getElementById('pinKeyboard');

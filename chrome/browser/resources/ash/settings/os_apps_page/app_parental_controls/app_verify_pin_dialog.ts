@@ -65,6 +65,14 @@ export class AppVerifyPinDialogElement extends AppVerifyPinDialogElementBase {
       },
 
       /**
+       * Whether the submit button should be clickable.
+       */
+      enableSubmit_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
        * Whether the incorrect PIN error message should be displayed.
        */
       showError_: {
@@ -74,16 +82,12 @@ export class AppVerifyPinDialogElement extends AppVerifyPinDialogElementBase {
     };
   }
 
-  private enableSubmit_: boolean;
+  declare private enableSubmit_: boolean;
   declare private isVerificationPending_: boolean;
-  private mojoInterfaceProvider_: AppParentalControlsHandlerInterface;
+  private mojoInterfaceProvider_: AppParentalControlsHandlerInterface =
+      getAppParentalControlsProvider();
   declare private pinValue_: string;
   declare private showError_: boolean;
-
-  constructor() {
-    super();
-    this.mojoInterfaceProvider_ = getAppParentalControlsProvider();
-  }
 
   override connectedCallback(): void {
     super.connectedCallback();
@@ -101,6 +105,7 @@ export class AppVerifyPinDialogElement extends AppVerifyPinDialogElementBase {
   }
 
   resetState(): void {
+    this.enableSubmit_ = false;
     this.isVerificationPending_ = false;
     this.pinValue_ = '';
     this.showError_ = false;

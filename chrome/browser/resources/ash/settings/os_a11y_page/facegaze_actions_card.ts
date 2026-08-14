@@ -118,7 +118,7 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
   declare private dialogPageToShow_: AddDialogPage;
   declare private disableConfigureControls_: boolean;
   declare private leftClickGestures_: FacialGesture[];
-  private rowIdToUpdate_: number;
+  private rowIdToUpdate_: number = 0;
   declare private shouldAnnounceA11yActionFeedback_: boolean;
   declare private showAddActionDialog_: boolean;
 

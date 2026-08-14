@@ -112,14 +112,10 @@ export class AppSetupPinKeyboardElement extends AppSetupPinKeyboardElementBase {
 
   declare private initialPin_: string;
   declare private isSetPinCallPending_: boolean;
-  private mojoInterfaceProvider: AppParentalControlsHandlerInterface;
+  private mojoInterfaceProvider: AppParentalControlsHandlerInterface =
+      getAppParentalControlsProvider();
   declare private pinKeyboardValue_: string;
-  private problemMessage_: string;
-
-  constructor() {
-    super();
-    this.mojoInterfaceProvider = getAppParentalControlsProvider();
-  }
+  private problemMessage_: string = '';
 
   override focus(): void {
     this.$.pinKeyboard.focusInput();

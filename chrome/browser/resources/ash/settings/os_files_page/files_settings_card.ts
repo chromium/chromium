@@ -17,7 +17,6 @@ import '../settings_shared.css.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
-import type {SmbBrowserProxy} from 'chrome://resources/ash/common/smb_shares/smb_browser_proxy.js';
 import {SmbBrowserProxyImpl} from 'chrome://resources/ash/common/smb_shares/smb_browser_proxy.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -123,23 +122,20 @@ export class FilesSettingsCardElement extends FilesSettingsCardElementBase {
   declare private driveDisabled_: boolean;
   declare private isBulkPinningEnabled_: boolean;
   declare private isMirrorSyncEnabled_: boolean;
-  private oneDriveBrowserProxy_: OneDriveBrowserProxy|undefined;
+  private oneDriveBrowserProxy_: OneDriveBrowserProxy|null = null;
   declare private oneDriveConnectionState_: OneDriveConnectionState;
-  private oneDriveEmailAddress_: string|null;
-  private smbBrowserProxy_: SmbBrowserProxy;
+  private oneDriveEmailAddress_: string|null = null;
+  private smbBrowserProxy_ = SmbBrowserProxyImpl.getInstance();
   declare private shouldShowAddSmbButton_: boolean;
   declare private shouldShowAddSmbDialog_: boolean;
   declare private shouldShowOneDriveSettings_: boolean;
   declare private shouldShowOfficeSettings_: boolean;
 
+  // RouteOriginMixin override
+  override route = routes.SYSTEM_PREFERENCES;
 
   constructor() {
     super();
-
-    /** RouteOriginMixin override */
-    this.route = routes.SYSTEM_PREFERENCES;
-
-    this.smbBrowserProxy_ = SmbBrowserProxyImpl.getInstance();
 
     if (this.shouldShowOneDriveSettings_) {
       this.oneDriveBrowserProxy_ = OneDriveBrowserProxy.getInstance();
@@ -150,8 +146,9 @@ export class FilesSettingsCardElement extends FilesSettingsCardElementBase {
     super.connectedCallback();
 
     if (this.shouldShowOneDriveSettings_) {
+      assert(this.oneDriveBrowserProxy_);
       this.updateOneDriveEmail_();
-      this.oneDriveBrowserProxy_!.observer.onODFSMountOrUnmount.addListener(
+      this.oneDriveBrowserProxy_.observer.onODFSMountOrUnmount.addListener(
           this.updateOneDriveEmail_.bind(this));
     }
   }
@@ -232,9 +229,10 @@ export class FilesSettingsCardElement extends FilesSettingsCardElementBase {
   }
 
   private async updateOneDriveEmail_(): Promise<void> {
+    assert(this.oneDriveBrowserProxy_);
     this.oneDriveConnectionState_ = OneDriveConnectionState.LOADING;
     const {email} =
-        await this.oneDriveBrowserProxy_!.handler.getUserEmailAddress();
+        await this.oneDriveBrowserProxy_.handler.getUserEmailAddress();
     this.oneDriveEmailAddress_ = email;
     this.oneDriveConnectionState_ = email === null ?
         OneDriveConnectionState.DISCONNECTED :

@@ -67,20 +67,20 @@ export class NetworkDeviceInfoDialogElement extends I18nMixin
   declare deviceState: OncMojo.DeviceStateProperties|undefined;
   declare private canvasSize_: number;
   declare private eid_: string|undefined;
-  private canvasContext_: CanvasRenderingContext2D|null;
+  private canvasContext_: CanvasRenderingContext2D|null = null;
 
-    override ready(): void {
-      super.ready();
+  override ready(): void {
+    super.ready();
 
-      if (this.euicc) {
-        this.fetchEid_(this.euicc);
-        return;
-      }
-
-      requestAnimationFrame(() => {
-        this.$.done.focus();
-      });
+    if (this.euicc) {
+      this.fetchEid_(this.euicc);
+      return;
     }
+
+    requestAnimationFrame(() => {
+      this.$.done.focus();
+    });
+  }
 
     private onDonePressed_(): void {
       this.$.deviceInfoDialog.close();

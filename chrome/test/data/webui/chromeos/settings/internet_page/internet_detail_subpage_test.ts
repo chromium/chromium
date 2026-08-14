@@ -2258,6 +2258,79 @@ suite('<settings-internet-detail-subpage>', () => {
       assertTrue(!!networkToggle.shadowRoot!.querySelector(
           'cr-policy-network-indicator-mojo'));
     });
+
+    test(
+        'Suppress text messages toggle dynamically reflects managed property ' +
+            'updates',
+        async () => {
+          init();
+          mojoApi.setNetworkTypeEnabledState(NetworkType.kCellular, true);
+
+          const TEST_ICCID = '11111111111111111';
+          let cellularNetwork =
+              getManagedProperties(NetworkType.kCellular, 'cellular');
+          cellularNetwork.typeProperties.cellular!.iccid = TEST_ICCID;
+          cellularNetwork.typeProperties.cellular!.allowTextMessages = {
+            activeValue: false,
+            policySource: PolicySource.kNone,
+            policyValue: false,
+          };
+          mojoApi.setManagedPropertiesForTest(cellularNetwork);
+          internetDetailPage.init('cellular_guid', 'Cellular', 'cellular');
+          mojoApi.setDeviceStateForTest({
+            ...getDefaultDeviceStateProps(),
+            deviceState: DeviceStateType.kEnabled,
+            simInfos: [{
+              iccid: TEST_ICCID,
+              isPrimary: true,
+              slotId: 0,
+              eid: '',
+            }],
+          });
+          await flushTasks();
+
+          const getToggle = (): NetworkConfigToggleElement => {
+            const toggle = internetDetailPage.shadowRoot!
+                               .querySelector<NetworkConfigToggleElement>(
+                                   '#suppressTextMessagesToggle');
+            assertTrue(!!toggle);
+            return toggle;
+          };
+          assertFalse(getToggle().checked);
+
+          // Rebuild the object to force Polymer to recognize a change and
+          // notify onNetworkStateChanged.
+          cellularNetwork =
+              getManagedProperties(NetworkType.kCellular, 'cellular');
+          cellularNetwork.typeProperties.cellular!.iccid = TEST_ICCID;
+          cellularNetwork.typeProperties.cellular!.allowTextMessages = {
+            activeValue: true,
+            policySource: PolicySource.kNone,
+            policyValue: false,
+          };
+          mojoApi.setManagedPropertiesForTest(cellularNetwork);
+          internetDetailPage.onNetworkStateChanged(
+              OncMojo.managedPropertiesToNetworkState(cellularNetwork));
+          await flushTasks();
+
+          assertTrue(getToggle().checked);
+
+          // Toggling it back to false updates the toggle state again.
+          cellularNetwork =
+              getManagedProperties(NetworkType.kCellular, 'cellular');
+          cellularNetwork.typeProperties.cellular!.iccid = TEST_ICCID;
+          cellularNetwork.typeProperties.cellular!.allowTextMessages = {
+            activeValue: false,
+            policySource: PolicySource.kNone,
+            policyValue: false,
+          };
+          mojoApi.setManagedPropertiesForTest(cellularNetwork);
+          internetDetailPage.onNetworkStateChanged(
+              OncMojo.managedPropertiesToNetworkState(cellularNetwork));
+          await flushTasks();
+
+          assertFalse(getToggle().checked);
+        });
   });
 
   suite('DetailsPageEthernet', () => {

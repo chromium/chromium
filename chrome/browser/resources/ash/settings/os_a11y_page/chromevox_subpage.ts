@@ -32,7 +32,6 @@ import type {Route} from '../router.js';
 import {Router, routes} from '../router.js';
 
 import {getTemplate} from './chromevox_subpage.html.js';
-import type {ChromeVoxSubpageBrowserProxy} from './chromevox_subpage_browser_proxy.js';
 import {ChromeVoxSubpageBrowserProxyImpl} from './chromevox_subpage_browser_proxy.js';
 
 export {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
@@ -354,8 +353,9 @@ export class SettingsChromeVoxSubpageElement extends
   declare private brailleTableOptions_: DropdownMenuOptionList;
   declare private voiceOptions_: DropdownMenuOptionList;
   declare private virtualBrailleDisplayStyleOptions_: DropdownMenuOptionList;
-  private chromeVoxBrowserProxy_: ChromeVoxSubpageBrowserProxy;
-  private brailleTables_: BrailleTable[];
+  private chromeVoxBrowserProxy_ =
+      ChromeVoxSubpageBrowserProxyImpl.getInstance();
+  private brailleTables_: BrailleTable[] = [];
   declare private developerOptionsExpanded_: boolean;
   declare private readonly eventStreamFilters_: string[];
   declare private readonly mainNodeAnnotationsFeatureEnabled_: boolean;
@@ -369,16 +369,10 @@ export class SettingsChromeVoxSubpageElement extends
   private localSpeakerNameReplacement_ = '-x-local';
   private networkSpeakerNameReplacement_ = '-x-network';
 
+  // RouteOriginMixin override
+  override route = routes.A11Y_CHROMEVOX;
+
   // TODO(270619855): Add tests to verify these controls change their prefs.
-  constructor() {
-    super();
-
-    this.chromeVoxBrowserProxy_ =
-        ChromeVoxSubpageBrowserProxyImpl.getInstance();
-
-    /** RouteOriginMixin override */
-    this.route = routes.A11Y_CHROMEVOX;
-  }
 
   override ready(): void {
     super.ready();

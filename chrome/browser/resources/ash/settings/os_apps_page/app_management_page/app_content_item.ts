@@ -39,8 +39,8 @@ export class AppManagementAppContentItemElement extends
   }
 
   declare app: App;
-  appContentLabel: string;
-  appContentSublabel: string;
+  appContentLabel: string = '';
+  appContentSublabel: string = '';
   declare hidden: boolean;
   declare showAppContentDialog: boolean;
 
