@@ -14,7 +14,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
-#include "chrome/browser/notifications/system_notification_helper.h"
 #include "chromeos/ash/components/geolocation/system_location_provider.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
@@ -25,6 +24,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
@@ -105,7 +105,7 @@ void DeviceCommandQueryGeolocationJob::ShowLocationReportedNotificationIfNeeded(
   notification_data.priority = message_center::SYSTEM_PRIORITY;
   notification_data.never_timeout = true;
 
-  auto notification = ash::CreateSystemNotification(
+  auto notification = ash::CreateSystemNotificationPtr(
       message_center::NOTIFICATION_TYPE_SIMPLE, kLocationSavedNotificationId,
       l10n_util::GetStringUTF16(IDS_POLICY_DEVICE_LOCATED_TITLE),
       l10n_util::GetStringUTF16(IDS_POLICY_DEVICE_LOCATED_MESSAGE),
@@ -116,7 +116,8 @@ void DeviceCommandQueryGeolocationJob::ShowLocationReportedNotificationIfNeeded(
                                         : vector_icons::kBusinessOldIcon,
       message_center::SystemNotificationWarningLevel::NORMAL);
 
-  SystemNotificationHelper::GetInstance()->Display(notification);
+  message_center::MessageCenter::Get()->AddNotification(
+      std::move(notification));
 }
 
 enterprise_management::RemoteCommand_Type

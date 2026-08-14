@@ -33,9 +33,6 @@
 #include "chrome/browser/ash/settings/scoped_test_device_settings_service.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/notifications/notification_display_service_tester.h"
-#include "chrome/browser/notifications/notification_handler.h"
-#include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
@@ -63,7 +60,7 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/message_center/public/cpp/notification.h"
+#include "ui/message_center/message_center.h"
 #include "url/gurl.h"
 
 namespace policy {
@@ -133,8 +130,7 @@ class DeviceCommandQueryGeolocationJobTest : public testing::Test {
             ash::prefs::kDeviceCommandQueryGeolocationReported)) {
       DeviceCommandQueryGeolocationJob::RegisterPrefs(local_state->registry());
     }
-    TestingBrowserProcess::GetGlobal()->SetSystemNotificationHelper(
-        std::make_unique<SystemNotificationHelper>());
+    message_center::MessageCenter::Initialize();
     network_handler_test_helper_ =
         std::make_unique<ash::NetworkHandlerTestHelper>();
 
@@ -192,7 +188,7 @@ class DeviceCommandQueryGeolocationJobTest : public testing::Test {
     test_manager_->Shutdown();
     network_handler_test_helper_.reset();
     ash::SystemLocationProvider::DestroyForTesting();
-    TestingBrowserProcess::GetGlobal()->SetSystemNotificationHelper(nullptr);
+    message_center::MessageCenter::Shutdown();
     TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(nullptr);
     ash::DeviceSettingsService::Shutdown();
     ash::DBusThreadManager::Shutdown();
@@ -255,38 +251,33 @@ TEST_F(DeviceCommandQueryGeolocationJobTest, ShowNotificationWhenPrefIsSet) {
   TestingBrowserProcess::GetGlobal()->GetTestingLocalState()->SetBoolean(
       ash::prefs::kDeviceCommandQueryGeolocationReported, true);
 
-  NotificationDisplayServiceTester tester(/*profile=*/nullptr);
   DeviceCommandQueryGeolocationJob::ShowLocationReportedNotificationIfNeeded(
       TestingBrowserProcess::GetGlobal()->local_state());
 
-  std::optional<message_center::Notification> notification =
-      tester.GetNotification("device-located-disabled-device");
-  EXPECT_TRUE(notification);
+  EXPECT_TRUE(message_center::MessageCenter::Get()->FindVisibleNotificationById(
+      "device-located-disabled-device"));
 }
 
 TEST_F(DeviceCommandQueryGeolocationJobTest, NoNotificationWhenPrefNotSet) {
   TestingBrowserProcess::GetGlobal()->GetTestingLocalState()->SetBoolean(
       ash::prefs::kDeviceCommandQueryGeolocationReported, false);
 
-  NotificationDisplayServiceTester tester(/*profile=*/nullptr);
   DeviceCommandQueryGeolocationJob::ShowLocationReportedNotificationIfNeeded(
       TestingBrowserProcess::GetGlobal()->local_state());
 
-  std::optional<message_center::Notification> notification =
-      tester.GetNotification("device-located-disabled-device");
-  EXPECT_FALSE(notification);
+  EXPECT_FALSE(
+      message_center::MessageCenter::Get()->FindVisibleNotificationById(
+          "device-located-disabled-device"));
 }
 
 TEST_F(DeviceCommandQueryGeolocationJobTest, ClearPrefOnNotificationClose) {
   TestingBrowserProcess::GetGlobal()->GetTestingLocalState()->SetBoolean(
       ash::prefs::kDeviceCommandQueryGeolocationReported, true);
 
-  NotificationDisplayServiceTester tester(/*profile=*/nullptr);
   DeviceCommandQueryGeolocationJob::ShowLocationReportedNotificationIfNeeded(
       TestingBrowserProcess::GetGlobal()->local_state());
 
-  tester.RemoveNotification(
-      NotificationHandler::Type::TRANSIENT,
+  message_center::MessageCenter::Get()->RemoveNotification(
       "device-located-disabled-device", /*by_user=*/true);
 
   EXPECT_FALSE(TestingBrowserProcess::GetGlobal()

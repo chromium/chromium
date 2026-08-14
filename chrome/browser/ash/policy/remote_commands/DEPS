@@ -32,7 +32,6 @@ include_rules = [
   "+chrome/browser/browser_process_platform_part.h",
   "+chrome/browser/device_identity",
   "+chrome/browser/enterprise/remote_commands/extension_update_check_job.h",
-  "+chrome/browser/notifications",
   "+chrome/browser/policy/messaging_layer/proto/synced",
   "+chrome/browser/policy/messaging_layer/public",
   "+chrome/browser/prefs",
@@ -40,4 +39,6 @@ include_rules = [
   "+chrome/browser/support_tool",
   "+chrome/browser/ui/ash/login",
   "+chrome/test/base",
+
+  "+ui/message_center/message_center.h",
 ]

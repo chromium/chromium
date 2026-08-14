@@ -7,10 +7,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/notifications/notification_display_service_tester.h"
-#include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
-#include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_clients.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_euicc_client.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_manager_client.h"
@@ -21,7 +18,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/message_center/public/cpp/notification.h"
+#include "ui/message_center/message_center.h"
 
 namespace policy {
 
@@ -127,10 +124,6 @@ class DeviceCommandResetEuiccJobTest : public ChromeAshTestBase {
 };
 
 TEST_F(DeviceCommandResetEuiccJobTest, ResetEuicc) {
-  TestingBrowserProcess::GetGlobal()->SetSystemNotificationHelper(
-      std::make_unique<SystemNotificationHelper>());
-  NotificationDisplayServiceTester tester(/*profile=*/nullptr);
-
   std::unique_ptr<RemoteCommandJob> job = CreateResetEuiccJob(test_start_time_);
   base::test::TestFuture<void> job_finished_future;
   EXPECT_TRUE(job->Run(base::Time::Now(), base::TimeTicks::Now(),
@@ -141,7 +134,7 @@ TEST_F(DeviceCommandResetEuiccJobTest, ResetEuicc) {
 
   task_environment()->FastForwardBy(kNetworkListWaitTimeout);
   // Verify that the notification should be displayed.
-  EXPECT_TRUE(tester.GetNotification(
+  EXPECT_TRUE(message_center::MessageCenter::Get()->FindVisibleNotificationById(
       DeviceCommandResetEuiccJob::kResetEuiccNotificationId));
   // Verify that appropriate metrics have been logged.
   histogram_tester_.ExpectTotalCount(kResetEuiccOperationResultHistogram, 1);
@@ -155,9 +148,6 @@ TEST_F(DeviceCommandResetEuiccJobTest, ResetEuicc) {
 TEST_F(DeviceCommandResetEuiccJobTest, ResetEuiccFailure) {
   // Simulate a failure by removing the cellular device.
   ash::ShillManagerClient::Get()->GetTestInterface()->ClearDevices();
-  TestingBrowserProcess::GetGlobal()->SetSystemNotificationHelper(
-      std::make_unique<SystemNotificationHelper>());
-  NotificationDisplayServiceTester tester(/*profile=*/nullptr);
   base::test::TestFuture<void> job_finished_future;
 
   std::unique_ptr<RemoteCommandJob> job = CreateResetEuiccJob(test_start_time_);
@@ -168,8 +158,9 @@ TEST_F(DeviceCommandResetEuiccJobTest, ResetEuiccFailure) {
                   /*expected_profile_count=*/2u);
 
   // Verify that the notification was not displayed.
-  EXPECT_FALSE(tester.GetNotification(
-      DeviceCommandResetEuiccJob::kResetEuiccNotificationId));
+  EXPECT_FALSE(
+      message_center::MessageCenter::Get()->FindVisibleNotificationById(
+          DeviceCommandResetEuiccJob::kResetEuiccNotificationId));
   // Verify that appropriate metrics have been logged.
   histogram_tester_.ExpectTotalCount(kResetEuiccOperationResultHistogram, 1);
   histogram_tester_.ExpectBucketCount(

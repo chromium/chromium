@@ -64,7 +64,6 @@ static_library("remote_commands") {
     "//chrome/browser/ash/policy/uploading",
     "//chrome/browser/ash/system",
     "//chrome/browser/device_identity",
-    "//chrome/browser/notifications:system_notification_helper",
     "//chrome/browser/policy/messaging_layer/proto:log_upload_event_proto",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiles:profile_manager",
@@ -97,6 +96,7 @@ static_library("remote_commands") {
     "//ui/base",
     "//ui/gfx",
     "//ui/gfx/geometry",
+    "//ui/message_center",
     "//ui/message_center/public/cpp",
     "//ui/snapshot",
     "//url",
@@ -178,7 +178,6 @@ source_set("unit_tests") {
     "//chrome/browser/ash/settings",
     "//chrome/browser/ash/settings:test_support",
     "//chrome/browser/ash/system",
-    "//chrome/browser/notifications:system_notification_helper",
     "//chrome/browser/policy:test_support",
     "//chrome/browser/policy/messaging_layer/proto:log_upload_event_proto",
     "//chrome/browser/support_tool:support_tool_proto",
@@ -226,6 +225,7 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
     "//ui/gfx/codec",
+    "//ui/message_center",
     "//ui/message_center/public/cpp",
   ]
 }
