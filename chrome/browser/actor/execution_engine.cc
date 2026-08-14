@@ -686,7 +686,7 @@ ExecutionEngine::ExecutionEngine(
                   {CustomPredicate(
                        base::BindRepeating(&AllowIfSafetyChecksDisabled),
                        kSafetyChecksDisabledPredicateName),
-                   kRequestsAndPageActions},
+                   origin_gating::GateableEventSet::All()},
                   {CustomPredicate(
                        base::BindRepeating(&BlockIfSafeBrowsingDisabled,
                                            task_->GetProfile()),
