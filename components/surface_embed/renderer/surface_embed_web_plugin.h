@@ -100,6 +100,7 @@ class SurfaceEmbedWebPlugin : public blink::WebPlugin,
   void ChildProcessGone() override;
   void RequestFocusOnEmbedElement(
       RequestFocusOnEmbedElementCallback callback) override;
+  void AdvanceFocusFromEmbedElement(bool reverse) override;
 
   // cc::ContentLayerClient, used only if we're painting a sad plugin.
   scoped_refptr<cc::DisplayItemList> PaintContentsToDisplayList() override;

@@ -6133,6 +6133,7 @@ class SurfaceEmbedConnectorWebContentsBrowserTest
     bool IsAttachedForTesting() const override { return false; }
     void ChildProcessGone() override {}
     void RequestFocusOnEmbedElement() override {}
+    void AdvanceFocusFromEmbedElement(bool reverse) override {}
   };
 
   content::test::PrerenderTestHelper prerender_helper_;

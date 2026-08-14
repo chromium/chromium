@@ -41,6 +41,11 @@ interface SurfaceEmbed {
   // WebContents::Focus() in multi-level embedding setups (e.g., root -> parent
   // embed -> child embed when clicking on the child embed).
   RequestFocusOnEmbedElement() => ();
+
+  // Requests to advance focus from the <embed> element in the embedder page.
+  // When `reverse` is true, advances backward (e.g. Shift+Tab), otherwise
+  // advances forward (e.g. Tab).
+  AdvanceFocusFromEmbedElement(bool reverse);
 };
 
 // Represents the render throttling status of an embedded frame.

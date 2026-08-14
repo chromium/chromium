@@ -268,9 +268,18 @@ void WebContentsViewChildFrame::TakeFocus(bool reverse) {
     NOTREACHED();
   }
 
-  // TODO(crbug.com/508638062): this is reached when pressing Tab to traverse
-  // from an embedded frame to the parent frame.
-  NOTIMPLEMENTED();
+  // A top-level WebContents (WebContentsViewAura/Mac) forwards the focus
+  // to the embedder via WebContentsDelegate::TakeFocus. An embedded WebContents
+  // (WebContentsViewChildFrame) does not need that.
+
+  auto* surface_embed_connector = static_cast<SurfaceEmbedConnectorImpl*>(
+      web_contents_->GetSurfaceEmbedConnector());
+  CHECK(surface_embed_connector);
+
+  surface_embed_connector->ClearFocusOnInnerWebContents();
+  if (auto* delegate = surface_embed_connector->GetDelegate()) {
+    delegate->AdvanceFocusFromEmbedElement(reverse);
+  }
 }
 
 void WebContentsViewChildFrame::ShowContextMenu(

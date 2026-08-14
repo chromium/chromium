@@ -69,6 +69,7 @@ class SurfaceEmbedHost : public mojom::SurfaceEmbedHost,
   void ChildProcessGone() override;
   void DetachedByHost() override;
   void RequestFocusOnEmbedElement() override;
+  void AdvanceFocusFromEmbedElement(bool reverse) override;
   bool IsAttachedForTesting() const override;
 
   // TODO: Update surface_embed.mojom so that this is an override of a virtual

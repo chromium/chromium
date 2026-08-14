@@ -21,6 +21,7 @@
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_plugin_container.h"
 #include "third_party/blink/public/web/web_plugin_params.h"
+#include "third_party/blink/public/web/web_view.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkBlendMode.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -391,6 +392,20 @@ void SurfaceEmbedWebPlugin::RequestFocusOnEmbedElement(
     container_->GetElement().Focus();
   }
   std::move(callback).Run();
+}
+
+void SurfaceEmbedWebPlugin::AdvanceFocusFromEmbedElement(bool reverse) {
+  if (!container_) {
+    return;
+  }
+  if (container_->GetDocument().FocusedElement() != container_->GetElement()) {
+    return;
+  }
+  if (auto* frame = container_->GetDocument().GetFrame()) {
+    if (auto* view = frame->View()) {
+      view->AdvanceFocus(reverse);
+    }
+  }
 }
 
 scoped_refptr<cc::DisplayItemList>

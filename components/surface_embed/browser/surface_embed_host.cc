@@ -270,6 +270,12 @@ void SurfaceEmbedHost::OnRequestFocusOnEmbedElementCompleted() {
   pending_request_focus_on_embed_element_ = false;
 }
 
+void SurfaceEmbedHost::AdvanceFocusFromEmbedElement(bool reverse) {
+  if (surface_embed_) {
+    surface_embed_->AdvanceFocusFromEmbedElement(reverse);
+  }
+}
+
 bool SurfaceEmbedHost::IsAttachedForTesting() const {
   return child_contents_ != nullptr;
 }

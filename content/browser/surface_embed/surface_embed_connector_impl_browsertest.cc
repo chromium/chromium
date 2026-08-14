@@ -59,6 +59,7 @@ class MockSurfaceEmbedConnectorDelegate
   MOCK_METHOD(bool, IsAttachedForTesting, (), (const, override));
   MOCK_METHOD(void, ChildProcessGone, (), (override));
   MOCK_METHOD(void, RequestFocusOnEmbedElement, (), (override));
+  MOCK_METHOD(void, AdvanceFocusFromEmbedElement, (bool), (override));
 };
 
 }  // namespace
