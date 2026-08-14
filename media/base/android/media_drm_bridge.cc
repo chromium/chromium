@@ -794,12 +794,12 @@ void MediaDrmBridge::SetMediaCryptoReadyCB(
   DCHECK(!media_crypto_ready_cb_);
   media_crypto_ready_cb_ = std::move(media_crypto_ready_cb);
 
-  if (!j_media_crypto_) {
+  if (!j_media_crypto_.has_value()) {
     return;
   }
 
   std::move(media_crypto_ready_cb_)
-      .Run(j_media_crypto_, IsSecureCodecRequired());
+      .Run(*j_media_crypto_, IsSecureCodecRequired());
 }
 
 bool MediaDrmBridge::SetPropertyStringForTesting(
@@ -1099,13 +1099,12 @@ HdcpVersion MediaDrmBridge::GetCurrentHdcpLevel() {
 void MediaDrmBridge::NotifyMediaCryptoReady(
     ScopedJavaGlobalRef<jobject> j_media_crypto) {
   DCHECK(task_runner_->BelongsToCurrentThread());
-  DCHECK(j_media_crypto);
-  DCHECK(!j_media_crypto_);
-
-  j_media_crypto_ = std::move(j_media_crypto);
+  DCHECK(!j_media_crypto_.has_value());
 
   UMA_HISTOGRAM_BOOLEAN("Media.EME.MediaCryptoAvailable",
-                        !j_media_crypto_.is_null());
+                        !j_media_crypto.is_null());
+
+  j_media_crypto_ = std::move(j_media_crypto);
 
   if (!media_crypto_ready_cb_) {
     return;
@@ -1113,7 +1112,7 @@ void MediaDrmBridge::NotifyMediaCryptoReady(
 
   // We have to use scoped_ptr to pass ScopedJavaGlobalRef with a callback.
   std::move(media_crypto_ready_cb_)
-      .Run(j_media_crypto_, IsSecureCodecRequired());
+      .Run(*j_media_crypto_, IsSecureCodecRequired());
 }
 
 void MediaDrmBridge::SendProvisioningRequest(const GURL& default_url,

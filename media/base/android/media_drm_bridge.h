@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -396,12 +397,14 @@ class MEDIA_EXPORT MediaDrmBridge : public ContentDecryptionModule,
   base::android::ScopedJavaGlobalRef<jobject> j_media_drm_;
 
   // Java MediaCrypto instance. Possible values are:
-  // !j_media_crypto_:
-  //   MediaCrypto creation has not been notified via NotifyMediaCryptoReady().
-  //   Or: MediaCrypto creation failed and it has been notified.
-  // !j_media_crypto_.is_null():
+  // `!j_media_crypto_.has_value()`:
+  //   MediaCrypto creation has not been notified via
+  //   `NotifyMediaCryptoReady()`.
+  // `j_media_crypto_.has_value() && j_media_crypto_->is_null()`:
+  //   MediaCrypto creation failed and it has been notified.
+  // `j_media_crypto_.has_value() && !j_media_crypto_->is_null()`:
   //   MediaCrypto creation succeeded and it has been notified.
-  base::android::ScopedJavaGlobalRef<jobject> j_media_crypto_;
+  std::optional<base::android::ScopedJavaGlobalRef<jobject>> j_media_crypto_;
 
   // The callback to create a ProvisionFetcher.
   CreateFetcherCB create_fetcher_cb_;
