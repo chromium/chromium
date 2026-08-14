@@ -33,6 +33,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -67,6 +68,7 @@ public class BaseSuggestionViewBinderUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Runnable mRunnable;
     @Mock private View mView;
+    @Captor private ArgumentCaptor<Drawable> mBackgroundCaptor;
     private Context mBareContext;
     private Context mContext;
     private Resources mResources;
@@ -383,12 +385,10 @@ public class BaseSuggestionViewBinderUnitTest {
         BaseSuggestionViewBinder.sFocusableDrawableState =
                 new ColorDrawable(Color.MAGENTA).getConstantState();
 
-        var bgCaptor = ArgumentCaptor.forClass(Drawable.class);
-
         BaseSuggestionViewBinder.applySelectableBackground(mModel, mView, mResourceProvider);
-        verify(mView).setBackground(bgCaptor.capture());
+        verify(mView).setBackground(mBackgroundCaptor.capture());
 
-        var color = ((ColorDrawable) bgCaptor.getValue()).getColor();
+        var color = ((ColorDrawable) mBackgroundCaptor.getValue()).getColor();
 
         assertEquals(Color.MAGENTA, color);
     }

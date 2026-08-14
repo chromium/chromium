@@ -32,6 +32,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -61,11 +62,6 @@ public final class OmniboxImageSupplierUnitTest {
 
     @Rule public final MockitoRule mockitoRule = MockitoJUnit.rule();
 
-    private final ArgumentCaptor<LargeIconCallback> mIconCallbackCaptor =
-            ArgumentCaptor.forClass(LargeIconCallback.class);
-
-    private OmniboxImageSupplier mSupplier;
-
     @Mock private Bitmap mBitmap1;
     @Mock private Bitmap mBitmap2;
     @Mock private LargeIconBridge.Natives mLargeIconBridgeJni;
@@ -74,6 +70,11 @@ public final class OmniboxImageSupplierUnitTest {
     @Mock private Callback<Drawable> mCallback2;
     @Mock private Profile mProfile;
     @Mock private ImageFetcher mImageFetcher;
+    @Captor private ArgumentCaptor<LargeIconCallback> mIconCallbackCaptor;
+    @Captor private ArgumentCaptor<Drawable> mDrawableCaptor;
+    @Captor private ArgumentCaptor<ImageFetcher.Params> mParamCaptor;
+
+    private OmniboxImageSupplier mSupplier;
     private @Px int mFaviconSize;
 
     @Before
@@ -183,9 +184,8 @@ public final class OmniboxImageSupplierUnitTest {
         mSupplier.generateFavicon(NAV_URL, mCallback1);
         RobolectricUtil.runAllBackgroundAndUi();
 
-        ArgumentCaptor<Drawable> drawableCaptor = ArgumentCaptor.forClass(Drawable.class);
-        verify(mCallback1, times(1)).onResult(drawableCaptor.capture());
-        Drawable drawable = drawableCaptor.getValue();
+        verify(mCallback1, times(1)).onResult(mDrawableCaptor.capture());
+        Drawable drawable = mDrawableCaptor.getValue();
         assertThat(drawable).isInstanceOf(LayerDrawable.class);
         verifyNoOtherInteractionsAndClearInteractions();
     }
@@ -196,9 +196,8 @@ public final class OmniboxImageSupplierUnitTest {
         mSupplier.generateFavicon(NAV_URL, OmniboxImageSupplier.FallbackIconType.GLOBE, mCallback1);
         RobolectricUtil.runAllBackgroundAndUi();
 
-        ArgumentCaptor<Drawable> drawableCaptor = ArgumentCaptor.forClass(Drawable.class);
-        verify(mCallback1, times(1)).onResult(drawableCaptor.capture());
-        assertThat(drawableCaptor.getValue()).isNotNull();
+        verify(mCallback1, times(1)).onResult(mDrawableCaptor.capture());
+        assertThat(mDrawableCaptor.getValue()).isNotNull();
         verifyNoOtherInteractionsAndClearInteractions();
     }
 
@@ -301,14 +300,13 @@ public final class OmniboxImageSupplierUnitTest {
         mSupplier.fetchImage(url, mCallback2);
 
         // Observe only one interaction with ImageFetcher.
-        ArgumentCaptor<ImageFetcher.Params> paramCaptor =
-                ArgumentCaptor.forClass(ImageFetcher.Params.class);
         ArgumentCaptor<Callback<Bitmap>> callbackCaptor = MockitoHelper.callbackCaptor();
-        verify(mImageFetcher, times(1)).fetchImage(paramCaptor.capture(), callbackCaptor.capture());
+        verify(mImageFetcher, times(1))
+                .fetchImage(mParamCaptor.capture(), callbackCaptor.capture());
         verifyNoMoreInteractions(mImageFetcher);
 
         // Confirm the URL and no callbacks emitted to registered callbacks.
-        assertEquals(JUnitTestGURLs.RED_1.getSpec(), paramCaptor.getValue().url);
+        assertEquals(JUnitTestGURLs.RED_1.getSpec(), mParamCaptor.getValue().url);
         verifyNoMoreInteractions(mCallback1, mCallback2);
 
         // Emit reply.
@@ -330,14 +328,13 @@ public final class OmniboxImageSupplierUnitTest {
         mSupplier.fetchImage(url, mCallback2);
 
         // Observe only one interaction with ImageFetcher.
-        ArgumentCaptor<ImageFetcher.Params> paramCaptor =
-                ArgumentCaptor.forClass(ImageFetcher.Params.class);
         ArgumentCaptor<Callback<Bitmap>> callbackCaptor = MockitoHelper.callbackCaptor();
-        verify(mImageFetcher, times(1)).fetchImage(paramCaptor.capture(), callbackCaptor.capture());
+        verify(mImageFetcher, times(1))
+                .fetchImage(mParamCaptor.capture(), callbackCaptor.capture());
         verifyNoMoreInteractions(mImageFetcher);
 
         // Confirm the URL and no callbacks emitted to registered callbacks.
-        assertEquals(JUnitTestGURLs.RED_1.getSpec(), paramCaptor.getValue().url);
+        assertEquals(JUnitTestGURLs.RED_1.getSpec(), mParamCaptor.getValue().url);
         verifyNoMoreInteractions(mCallback1, mCallback2);
 
         // Emit reply.

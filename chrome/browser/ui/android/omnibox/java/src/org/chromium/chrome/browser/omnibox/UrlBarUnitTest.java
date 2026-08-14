@@ -57,6 +57,7 @@ import org.junit.Test;
 import org.junit.rules.TestName;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -142,6 +143,7 @@ public class UrlBarUnitTest {
     @Mock private AutocompleteEditTextModelBase mAutocompleteEditTextModelBase;
     @Mock private Runnable mRunnable;
     @Mock private KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
+    @Captor private ArgumentCaptor<SpannableStringBuilder> mHaveUrlCaptor;
 
     private ActivityController<TestActivity> mController;
     private Activity mActivity;
@@ -308,10 +310,8 @@ public class UrlBarUnitTest {
         mUrlBar.setText("www.google.com");
         mUrlBar.onProvideAutofillStructure(mViewStructure, 0);
 
-        ArgumentCaptor<SpannableStringBuilder> haveUrl =
-                ArgumentCaptor.forClass(SpannableStringBuilder.class);
-        verify(mViewStructure).setText(haveUrl.capture());
-        assertEquals("https://www.google.com", haveUrl.getValue().toString());
+        verify(mViewStructure).setText(mHaveUrlCaptor.capture());
+        assertEquals("https://www.google.com", mHaveUrlCaptor.getValue().toString());
     }
 
     @Test

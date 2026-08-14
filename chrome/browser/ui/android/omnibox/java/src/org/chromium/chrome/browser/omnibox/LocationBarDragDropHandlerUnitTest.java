@@ -368,8 +368,6 @@ public class LocationBarDragDropHandlerUnitTest {
 
     @Test
     public void testOnDrag_Drop_UnsupportedBrowsableIntent() {
-        DragEvent event = mock(DragEvent.class);
-        Activity activity = mock(Activity.class);
         Intent intent =
                 new Intent(Intent.ACTION_VIEW, Uri.parse("mailto:user@example.com"))
                         .addCategory(Intent.CATEGORY_BROWSABLE);
@@ -379,18 +377,16 @@ public class LocationBarDragDropHandlerUnitTest {
                         new String[] {ClipDescription.MIMETYPE_TEXT_URILIST},
                         new ClipData.Item(intent));
 
-        when(event.getAction()).thenReturn(DragEvent.ACTION_DROP);
-        when(event.getClipData()).thenReturn(clipData);
-        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(activity));
+        when(mDragEvent.getAction()).thenReturn(DragEvent.ACTION_DROP);
+        when(mDragEvent.getClipData()).thenReturn(clipData);
+        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mActivity));
 
-        assertFalse(mHandler.onDrag(new View(mContext), event));
+        assertFalse(mHandler.onDrag(new View(mContext), mDragEvent));
         verify(mOmniboxStub, never()).loadUrl(any());
     }
 
     @Test
     public void testOnDrag_Drop_SkipsUnsupportedBrowsableIntent() {
-        DragEvent event = mock(DragEvent.class);
-        Activity activity = mock(Activity.class);
         Intent mailIntent =
                 new Intent(Intent.ACTION_VIEW, Uri.parse("mailto:user@example.com"))
                         .addCategory(Intent.CATEGORY_BROWSABLE);
@@ -404,11 +400,11 @@ public class LocationBarDragDropHandlerUnitTest {
                         new ClipData.Item(mailIntent));
         clipData.addItem(new ClipData.Item(webIntent));
 
-        when(event.getAction()).thenReturn(DragEvent.ACTION_DROP);
-        when(event.getClipData()).thenReturn(clipData);
-        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(activity));
+        when(mDragEvent.getAction()).thenReturn(DragEvent.ACTION_DROP);
+        when(mDragEvent.getClipData()).thenReturn(clipData);
+        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mActivity));
 
-        assertTrue(mHandler.onDrag(new View(mContext), event));
+        assertTrue(mHandler.onDrag(new View(mContext), mDragEvent));
         verify(mOmniboxStub).loadUrl(mLoadUrlParamsCaptor.capture());
         assertEquals("https://www.example.com/", mLoadUrlParamsCaptor.getValue().url);
     }

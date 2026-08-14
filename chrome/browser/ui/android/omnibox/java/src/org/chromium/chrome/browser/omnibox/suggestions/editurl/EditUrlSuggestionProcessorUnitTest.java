@@ -28,6 +28,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -107,6 +108,7 @@ public final class EditUrlSuggestionProcessorUnitTest {
     @Mock private AutocompleteInput mInput;
     @Mock private DomDistillerUrlUtilsJni mDomDistillerUrlUtilsJni;
     @Mock private SadTab mSadTab;
+    @Captor private ArgumentCaptor<ClipData> mClipDataCaptor;
 
     private final UserDataHost mTabUserData = new UserDataHost();
     private final Supplier<Tab> mTabSupplier = () -> mTab;
@@ -369,8 +371,7 @@ public final class EditUrlSuggestionProcessorUnitTest {
         var monitor = new UserActionTester();
         mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS).get(ACTION_COPY).callback.run();
 
-        ArgumentCaptor<ClipData> argument = ArgumentCaptor.forClass(ClipData.class);
-        verify(mClipboardManager, times(1)).setPrimaryClip(argument.capture());
+        verify(mClipboardManager, times(1)).setPrimaryClip(mClipDataCaptor.capture());
 
         // ClipData doesn't implement equals, but their string representations matching should be
         // good enough.
@@ -379,7 +380,7 @@ public final class EditUrlSuggestionProcessorUnitTest {
                         "url",
                         new String[] {"text/x-moz-url", "text/plain"},
                         new ClipData.Item(SEARCH_URL_1.getSpec()));
-        assertEquals(clip.toString(), argument.getValue().toString());
+        assertEquals(clip.toString(), mClipDataCaptor.getValue().toString());
         verifyNoMoreInteractions(mSuggestionHost, mShareDelegate, mClipboardManager);
 
         assertEquals(1, monitor.getActionCount("Omnibox.EditUrlSuggestion.Copy"));
@@ -396,8 +397,7 @@ public final class EditUrlSuggestionProcessorUnitTest {
         var monitor = new UserActionTester();
         mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS).get(ACTION_COPY).callback.run();
 
-        ArgumentCaptor<ClipData> argument = ArgumentCaptor.forClass(ClipData.class);
-        verify(mClipboardManager, times(1)).setPrimaryClip(argument.capture());
+        verify(mClipboardManager, times(1)).setPrimaryClip(mClipDataCaptor.capture());
 
         // ClipData doesn't implement equals, but their string representations matching should be
         // good enough.
@@ -406,7 +406,7 @@ public final class EditUrlSuggestionProcessorUnitTest {
                         "url",
                         new String[] {"text/x-moz-url", "text/plain"},
                         new ClipData.Item(CHROME_DISTILLER_ORIGINAL_URL.getSpec()));
-        assertEquals(clip.toString(), argument.getValue().toString());
+        assertEquals(clip.toString(), mClipDataCaptor.getValue().toString());
         verifyNoMoreInteractions(mSuggestionHost, mShareDelegate, mClipboardManager);
 
         assertEquals(1, monitor.getActionCount("Omnibox.EditUrlSuggestion.Copy"));

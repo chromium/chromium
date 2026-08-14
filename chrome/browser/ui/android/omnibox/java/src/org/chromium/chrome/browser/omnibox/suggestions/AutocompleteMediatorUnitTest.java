@@ -176,9 +176,6 @@ public class AutocompleteMediatorUnitTest {
     @Mock private PreloadingFeatureMap mPreloadingFeatureMap;
     @Mock private ComposeboxQueryControllerBridge mComposeboxQueryControllerBridge;
     @Mock private Callback<GURL> mGurlCallback;
-    @Captor private ArgumentCaptor<OmniboxLoadUrlParams> mOmniboxLoadUrlParamsCaptor;
-    @Captor private ArgumentCaptor<Consumer<SiteSearchData>> mKeywordModeEnteredCaptor;
-    @Captor private ArgumentCaptor<Callback<GURL>> mUrlCallbackCaptor;
     private @Mock CachedZeroSuggestionsManager.OverridesForTesting
             mMockCachedZeroSuggestionsManager;
     @Mock private TemplateUrlService mTemplateUrlService;
@@ -188,6 +185,11 @@ public class AutocompleteMediatorUnitTest {
     @Mock private PropertyObserver<PropertyKey> mPropertyObserver;
     @Mock private Tab mTab;
     @Mock private WebContents mWebContents;
+    @Captor private ArgumentCaptor<OmniboxLoadUrlParams> mOmniboxLoadUrlParamsCaptor;
+    @Captor private ArgumentCaptor<Consumer<SiteSearchData>> mKeywordModeEnteredCaptor;
+    @Captor private ArgumentCaptor<Callback<GURL>> mUrlCallbackCaptor;
+    @Captor private ArgumentCaptor<AutocompleteInput> mAutocompleteInputCaptor;
+
     private PropertyModel mListModel;
     private OmniboxResourceProvider mResourceProvider;
     private AutocompleteMediator mMediator;
@@ -784,8 +786,8 @@ public class AutocompleteMediatorUnitTest {
         mMediator.beginInput(session);
 
         RobolectricUtil.runAllBackgroundAndUi();
-        var captor = ArgumentCaptor.forClass(AutocompleteInput.class);
-        verify(mAutocompleteController, never()).startZeroSuggest(any(), captor.capture());
+        verify(mAutocompleteController, never())
+                .startZeroSuggest(any(), mAutocompleteInputCaptor.capture());
         clearInvocations(mAutocompleteController);
     }
 
@@ -3173,9 +3175,9 @@ public class AutocompleteMediatorUnitTest {
 
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
-        ArgumentCaptor<AutocompleteInput> captor = ArgumentCaptor.forClass(AutocompleteInput.class);
-        verify(mAutocompleteController).start(any(), captor.capture(), anyInt(), anyBoolean());
-        assertEquals("query", captor.getValue().getUserText());
+        verify(mAutocompleteController)
+                .start(any(), mAutocompleteInputCaptor.capture(), anyInt(), anyBoolean());
+        assertEquals("query", mAutocompleteInputCaptor.getValue().getUserText());
     }
 
     @Test

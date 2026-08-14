@@ -28,6 +28,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
@@ -67,6 +68,7 @@ public class DropdownItemViewInfoListBuilderUnitTest {
 
     @Mock private SuggestionProcessor mMockSuggestionProcessor;
     @Mock private AutocompleteInput mInput;
+    @Captor private ArgumentCaptor<PropertyModel> mPropertyModelCaptor;
 
     DropdownItemViewInfoListBuilder mBuilder;
 
@@ -475,20 +477,21 @@ public class DropdownItemViewInfoListBuilderUnitTest {
                 mBuilder.buildHorizontalSuggestionsGroup(
                         mInput, SECTION_1_NO_HEADER, matches, /* position= */ 5);
 
-        var captor = ArgumentCaptor.forClass(PropertyModel.class);
         verify(mMockSuggestionProcessor).getViewTypeId();
         verify(mMockSuggestionProcessor).createModel();
         verify(mMockSuggestionProcessor, atLeastOnce()).doesProcessSuggestion(match, 5);
         verify(mMockSuggestionProcessor, times(2))
-                .populateModel(eq(mInput), eq(match), captor.capture(), eq(5));
+                .populateModel(eq(mInput), eq(match), mPropertyModelCaptor.capture(), eq(5));
         verifyNoMoreInteractions(mMockSuggestionProcessor);
 
         assertEquals(/* 1 suggestion row = */ 1, result.size());
 
         // Verify that the same PropertyModel was used to build UI element, and it's the one that
         // was returned.
-        assertEquals(captor.getAllValues().get(0), captor.getAllValues().get(1));
-        assertEquals(captor.getValue(), result.get(0).model);
+        assertEquals(
+                mPropertyModelCaptor.getAllValues().get(0),
+                mPropertyModelCaptor.getAllValues().get(1));
+        assertEquals(mPropertyModelCaptor.getValue(), result.get(0).model);
     }
 
     @Test
@@ -504,12 +507,11 @@ public class DropdownItemViewInfoListBuilderUnitTest {
                 mBuilder.buildHorizontalSuggestionsGroup(
                         mInput, SECTION_2_WITH_HEADER, matches, /* position= */ 7);
 
-        var captor = ArgumentCaptor.forClass(PropertyModel.class);
         verify(mMockSuggestionProcessor).getViewTypeId();
         verify(mMockSuggestionProcessor).createModel();
         verify(mMockSuggestionProcessor, atLeastOnce()).doesProcessSuggestion(match, 7);
         verify(mMockSuggestionProcessor, times(2))
-                .populateModel(eq(mInput), eq(match), captor.capture(), eq(7));
+                .populateModel(eq(mInput), eq(match), mPropertyModelCaptor.capture(), eq(7));
 
         verifyNoMoreInteractions(mMockSuggestionProcessor);
 
@@ -517,8 +519,10 @@ public class DropdownItemViewInfoListBuilderUnitTest {
 
         // Verify that the same PropertyModel was used to build UI element, and it's the one that
         // was returned.
-        assertEquals(captor.getAllValues().get(0), captor.getAllValues().get(1));
-        assertEquals(captor.getValue(), result.get(0).model);
+        assertEquals(
+                mPropertyModelCaptor.getAllValues().get(0),
+                mPropertyModelCaptor.getAllValues().get(1));
+        assertEquals(mPropertyModelCaptor.getValue(), result.get(0).model);
         assertEquals(
                 SECTION_2_WITH_HEADER.getHeaderText(),
                 result.get(0).model.get(SuggestionCommonProperties.HEADER_TITLE));

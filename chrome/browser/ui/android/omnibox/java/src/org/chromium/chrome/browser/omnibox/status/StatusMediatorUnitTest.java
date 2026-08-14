@@ -15,7 +15,6 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -135,6 +134,8 @@ public final class StatusMediatorUnitTest {
     @Mock private LargeIconBridge.Natives mLargeIconBridgeNatives;
     @Mock private Drawable mMockFaviconDrawable;
     @Mock private TemplateUrl mTemplateUrl;
+    @Mock private TemplateUrl mWikiTemplate;
+    @Mock private TemplateUrl mGeminiTemplate;
 
     @Captor private ArgumentCaptor<PermissionDialogController.Observer> mPermissionObserverCaptor;
 
@@ -1333,19 +1334,17 @@ public final class StatusMediatorUnitTest {
         Shadows.shadowOf(Looper.getMainLooper()).idle();
 
         // 1. User triggers @wiki first
-        TemplateUrl wikiTemplate = mock(TemplateUrl.class);
-        doReturn(wikiTemplate).when(mTemplateUrlService).getTemplateUrlForKeyword("wiki");
+        doReturn(mWikiTemplate).when(mTemplateUrlService).getTemplateUrlForKeyword("wiki");
 
         SiteSearchData wikiData = new SiteSearchData("wiki", "Wikipedia");
         siteSearchDataSupplier.set(wikiData);
         Shadows.shadowOf(Looper.getMainLooper()).idle();
 
         verify(mSearchEngineService)
-                .retrieveFavicon(eq(wikiTemplate), mFaviconCallbackCaptor.capture());
+                .retrieveFavicon(eq(mWikiTemplate), mFaviconCallbackCaptor.capture());
 
         // 2. User changes suggestion from @wiki to @gemini
-        TemplateUrl geminiTemplate = mock(TemplateUrl.class);
-        doReturn(geminiTemplate).when(mTemplateUrlService).getTemplateUrlForKeyword("gemini");
+        doReturn(mGeminiTemplate).when(mTemplateUrlService).getTemplateUrlForKeyword("gemini");
 
         SiteSearchData geminiData = new SiteSearchData("gemini", "Gemini");
         siteSearchDataSupplier.set(geminiData);

@@ -27,6 +27,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -70,15 +71,14 @@ public class OmniboxActionDelegateImplUnitTest {
     @Mock private Runnable mMockOpenQuickDeleteDialog;
     @Mock private TabWindowManager mTabManager;
     @Mock private OmniboxActionDelegateImpl.BringTabToFrontCallback mBringTabToFrontCallback;
-
     @Mock private SettingsNavigation mMockSettingsNavigation;
     @Mock private TabModel mTabModel;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private LensOverlayCoordinator mLensOverlayCoordinator;
+    @Captor private ArgumentCaptor<LoadUrlParams> mLoadParamsCaptor;
 
     private final AtomicReference<Tab> mTabReference = new AtomicReference<>();
     private SettableMonotonicObservableSupplier<TabWindowManager> mTabManagerSupplier;
-
     private Context mContext;
     private OmniboxActionDelegateImpl mDelegate;
 
@@ -146,9 +146,8 @@ public class OmniboxActionDelegateImplUnitTest {
         mDelegate.loadPageInCurrentTab("url");
 
         verify(mTab, times(1)).isUserInteractable();
-        var loadParamsCaptor = ArgumentCaptor.forClass(LoadUrlParams.class);
-        verify(mTab, times(1)).loadUrl(loadParamsCaptor.capture());
-        assertEquals("url", loadParamsCaptor.getValue().getUrl());
+        verify(mTab, times(1)).loadUrl(mLoadParamsCaptor.capture());
+        assertEquals("url", mLoadParamsCaptor.getValue().getUrl());
         verifyNoMoreInteractions(mTab);
     }
 

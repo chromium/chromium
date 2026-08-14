@@ -18,6 +18,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -43,10 +44,9 @@ public class PageInfoIphControllerUnitTest {
     @Mock private UserEducationHelper mHelper;
     @Mock private Profile mProfile;
     @Mock private Tracker mTracker;
+    @Captor private ArgumentCaptor<IphCommand> mIphCmdCaptor;
     private View mView;
     private PageInfoIphController mController;
-    private final ArgumentCaptor<IphCommand> mIphCmdCaptor =
-            ArgumentCaptor.forClass(IphCommand.class);
 
     @Before
     public void setUp() {

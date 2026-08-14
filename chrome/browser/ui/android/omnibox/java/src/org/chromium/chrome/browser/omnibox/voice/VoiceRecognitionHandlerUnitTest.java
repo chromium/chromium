@@ -17,7 +17,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
@@ -101,10 +100,12 @@ public class VoiceRecognitionHandlerUnitTest {
     @Mock private FuseboxSessionState mFuseboxSessionState;
     @Mock private AutocompleteInput mAutocompleteInput;
     @Mock private Profile mProfile;
+    @Mock private Profile mProfile2;
     @Mock private PrefService mPrefs;
     @Mock private TemplateUrlService mTemplateUrlService;
     @Captor private ArgumentCaptor<List<VoiceResult>> mVoiceResults;
     @Captor private ArgumentCaptor<WindowAndroid.IntentCallback> mIntentCallback;
+    @Captor private ArgumentCaptor<AutocompleteInput> mInputCaptor;
 
     private VoiceRecognitionIntentHandler mIntentHandler;
     private VoiceRecognitionHandler mHandler;
@@ -293,7 +294,7 @@ public class VoiceRecognitionHandlerUnitTest {
         clearInvocations(mObserver);
 
         mHandler.destroy();
-        mProfileSupplier.set(mock(Profile.class));
+        mProfileSupplier.set(mProfile2);
         // Stop propagating changes after destroy.
         verifyNoInteractions(mObserver);
     }
@@ -521,9 +522,7 @@ public class VoiceRecognitionHandlerUnitTest {
 
         mHandler.startVoiceRecognition(VoiceInteractionSource.OMNIBOX, () -> {});
 
-        ArgumentCaptor<AutocompleteInput> inputCaptor =
-                ArgumentCaptor.forClass(AutocompleteInput.class);
-        verify(mOmniboxStub).beginInput(inputCaptor.capture());
-        assertEquals(AutocompleteRequestType.AI_MODE, inputCaptor.getValue().getRequestType());
+        verify(mOmniboxStub).beginInput(mInputCaptor.capture());
+        assertEquals(AutocompleteRequestType.AI_MODE, mInputCaptor.getValue().getRequestType());
     }
 }

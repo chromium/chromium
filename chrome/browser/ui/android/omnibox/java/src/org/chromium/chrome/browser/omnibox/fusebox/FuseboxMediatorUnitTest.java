@@ -173,6 +173,7 @@ public class FuseboxMediatorUnitTest {
     @Mock private KeyEvent mKeyEvent;
     @Mock private Runnable mOnRemoveRunnable;
     @Mock private FuseboxAttachmentModelList mFuseboxAttachmentModelList;
+    @Mock private Tab mTab;
 
     @Captor private ArgumentCaptor<Intent> mIntentCaptor;
     @Captor private ArgumentCaptor<WindowAndroid.IntentCallback> mIntentCallbackCaptor;
@@ -2479,10 +2480,9 @@ public class FuseboxMediatorUnitTest {
 
         SuggestedTabInfo info =
                 new SuggestedTabInfo(1, "Title", new GURL("https://google.com"), 12345L);
-        Tab tab = mock(Tab.class);
-        when(tab.getId()).thenReturn(1);
-        when(tab.getTitle()).thenReturn("Title");
-        when(mTabModelSelector.getTabById(1)).thenReturn(tab);
+        when(mTab.getId()).thenReturn(1);
+        when(mTab.getTitle()).thenReturn("Title");
+        when(mTabModelSelector.getTabById(1)).thenReturn(mTab);
         when(mComposeboxQueryControllerBridge.addTabContextFromCache(eq(1L), anyBoolean()))
                 .thenReturn("token");
 
