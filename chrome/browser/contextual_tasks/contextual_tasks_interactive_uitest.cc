@@ -2837,6 +2837,14 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksCopyUrlTest, MAYBE_CopyUrl) {
 }
 
 IN_PROC_BROWSER_TEST_P(ContextualTasksCopyUrlTest, FocusAndBlur) {
+  const bool is_webui = GetParam();
+
+#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
+  if (is_webui) {
+    // TODO(crbug.com/546594688): Re-enable test
+    GTEST_SKIP() << "Disabled on Linux MSan for WebUI because test flakiness";
+  }
+#endif
   const GURL kInterceptionUrl("https://www.google.com/search?udm=50&q=test");
 
   ui::Accelerator focus_accelerator;
@@ -2846,8 +2854,6 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksCopyUrlTest, FocusAndBlur) {
 
   const WebContentsInteractionTestUtil::DeepQuery kTextInputDeepQuery = {
       "toolbar-app", "location-bar", "readonly-omnibox", "#textInput"};
-
-  const bool is_webui = GetParam();
 
   auto focus_omnibox = [this, focus_accelerator, kTextInputDeepQuery,
                         is_webui]() {
