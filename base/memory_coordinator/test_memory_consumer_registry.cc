@@ -42,9 +42,10 @@ void TestMemoryConsumerRegistry::OnMemoryConsumerRemoved(
   size_--;
 }
 
-void TestMemoryConsumerRegistry::NotifyUpdateMemoryLimit(int percentage) {
+void TestMemoryConsumerRegistry::NotifyUpdateMemoryLimit(
+    MemoryLimit memory_limit) {
   for (MemoryConsumer& consumer : memory_consumers_) {
-    MemoryConsumerRegistry::NotifyUpdateMemoryLimit(&consumer, percentage);
+    MemoryConsumerRegistry::NotifyUpdateMemoryLimit(&consumer, memory_limit);
   }
 }
 
@@ -55,12 +56,12 @@ void TestMemoryConsumerRegistry::NotifyReleaseMemory() {
 }
 
 void TestMemoryConsumerRegistry::NotifyUpdateMemoryLimitAsync(
-    int percentage,
+    MemoryLimit memory_limit,
     OnceClosure on_notification_sent_callback) {
   SingleThreadTaskRunner::GetMainThreadDefault()->PostTaskAndReply(
       FROM_HERE,
       BindOnce(&TestMemoryConsumerRegistry::NotifyUpdateMemoryLimit,
-               weak_ptr_factory_.GetWeakPtr(), percentage),
+               weak_ptr_factory_.GetWeakPtr(), memory_limit),
       std::move(on_notification_sent_callback));
 }
 

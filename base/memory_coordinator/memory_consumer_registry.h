@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory_coordinator/memory_consumer.h"
 #include "base/memory_coordinator/memory_consumer_registry_destruction_observer.h"
+#include "base/memory_coordinator/memory_limit.h"
 #include "base/memory_coordinator/traits.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
@@ -51,9 +52,10 @@ class BASE_EXPORT MemoryConsumerRegistry {
  protected:
   // Helpers to notify consumers of memory events.
   static void NotifyReleaseMemory(MemoryConsumer* consumer);
-  static void NotifyUpdateMemoryLimit(MemoryConsumer* consumer, int percentage);
+  static void NotifyUpdateMemoryLimit(MemoryConsumer* consumer,
+                                      MemoryLimit memory_limit);
   static void NotifyUpdateMemoryLimitNoNotification(MemoryConsumer* consumer,
-                                                    int percentage);
+                                                    MemoryLimit memory_limit);
 
   // Implementations must call this at the beginning of their destructors.
   // Notifies all registered MemoryConsumerRegistryDestructionObservers.
