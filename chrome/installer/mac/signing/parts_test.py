@@ -32,6 +32,7 @@ class TestGetParts(unittest.TestCase):
         self.assertEqual(
             'test.signing.bundle_id.helper', all_parts['helper-app'].identifier
         )
+        self.assertIn('libaperitif.dylib', all_parts)
         self.assertIn('libEGL.dylib', all_parts)
         self.assertIn('libGLESv2.dylib', all_parts)
 

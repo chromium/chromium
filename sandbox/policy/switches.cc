@@ -78,5 +78,6 @@ const char kZygoteProcessType[] = "zygote";
 const char kRelauncherProcessType[] = "relauncher";
 const char kCodeSignCloneCleanupProcessType[] = "code-sign-clone-cleanup";
 const char kAppShimProcessType[] = "app-shim";
+const char kNoOpForTestingProcessType[] = "no-op-for-testing";
 
 }  // namespace sandbox::policy::switches

@@ -46,3 +46,21 @@ content_mac_helpers = [
     " (GPU)",
   ],
 ]
+
+content_mac_aperitif_helpers = [
+  [
+    "aperitif",
+    "",
+    " (Aperitif)",
+  ],
+  [
+    "aperitif_renderer",
+    ".renderer",
+    " (Aperitif Renderer)",
+  ],
+  [
+    "aperitif_gpu",
+    "",
+    " (Aperitif GPU)",
+  ],
+]
