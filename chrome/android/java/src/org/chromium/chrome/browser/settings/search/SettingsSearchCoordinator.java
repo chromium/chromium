@@ -1261,7 +1261,8 @@ public class SettingsSearchCoordinator
         targetView.getViewTreeObserver().addOnGlobalLayoutListener(listener);
     }
 
-    private void onConfigurationChangedInternal() {
+    @VisibleForTesting(otherwise = PRIVATE)
+    void onConfigurationChangedInternal() {
         boolean useMultiColumn = mUseMultiColumnSupplier.getAsBoolean();
 
         // Changing the layout restarts the activity, and in which case the help icon should remain
@@ -1283,6 +1284,11 @@ public class SettingsSearchCoordinator
             // |mMultiColumnSettings.isLayoutOpen()| returns the right result.
             mHandler.post(
                     () -> {
+                        // The task may run after the Activity has been destroyed, for example,
+                        // during language switch. https://crbug.com/545872336
+                        if (mActivity.isFinishing() || mActivity.isDestroyed() || mIsDestroyed) {
+                            return;
+                        }
                         switchSearchUiLayout();
                         updateSearchUiWidth();
                     });

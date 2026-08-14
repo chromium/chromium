@@ -275,4 +275,20 @@ public class SettingsSearchCoordinatorUnitTest {
 
         verify(mMultiColumnSettings, never()).isLayoutOpen();
     }
+
+    /** Regression test for https://crbug.com/545907093. */
+    @Test
+    public void testOnConfigurationChangedInternal_whenDestroyed_doesNotCrash() {
+        // Switch to single-column mode and trigger configuration change handling.
+        mUseMultiColumn = false;
+        mCoordinator.onConfigurationChangedInternal();
+
+        // Destroy the coordinator before the posted Runnable executes on the Looper (for example,
+        // language switch / Activity recreation).
+        mCoordinator.destroy();
+
+        // Flush the looper. The posted task should exit early without crashing on methods that
+        // require views that are no longer present.
+        ShadowLooper.idleMainLooper();
+    }
 }
