@@ -902,11 +902,6 @@ targets.legacy_matrix_compound_suite(
                 "NVIDIA_GEFORCE_GTX_1660",
             ],
         ),
-        "opt_target_coverage_test_suite": targets.legacy_matrix_config(
-            mixins = [
-                "gce",
-            ],
-        ),
         # TODO(b:484388901): Enable GPU backedn testing when the issue is fixed.
         # "litert_e2e_tests_gpu_suite": targets.legacy_matrix_config(
         #    mixins = [

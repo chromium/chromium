@@ -1464,20 +1464,6 @@ targets.legacy_basic_suite(
 #     },
 # )
 
-targets.legacy_basic_suite(
-    name = "opt_target_coverage_test_suite",
-    tests = {
-        "opt_target_coverage_test": targets.legacy_test_config(
-            mixins = [
-                "has_native_resultdb_integration",
-            ],
-            linux_args = [
-                "--no-xvfb",
-            ],
-        ),
-    },
-)
-
 _CHROME_AI_WPT_TEST_CONFIG = targets.legacy_test_config(
     mixins = [
         "has_native_resultdb_integration",

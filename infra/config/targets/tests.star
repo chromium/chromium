@@ -1895,10 +1895,6 @@ targets.tests.isolated_script_test(
 # )
 
 targets.tests.isolated_script_test(
-    name = "opt_target_coverage_test",
-)
-
-targets.tests.isolated_script_test(
     name = "chrome_ai_wpt_tests_manifest_gpu_high_tier",
     args = [
         "--manifest-test-config=../../components/optimization_guide/internal/testing/configs/manifest_test_config_gpu_high_tier.json",
