@@ -411,65 +411,86 @@ if (!is_android && !is_mac) {
 }  # !is_android && !is_mac
 
 if (is_win) {
-  shared_library("chrome_dll") {
-    configs += [ "//build/config/compiler:wexit_time_destructors" ]
-    configs -= [ "//build/config/compiler:thinlto_optimize_default" ]
-    configs += [ "//build/config/compiler:thinlto_optimize_max" ]
+  # This template is used to create `chrome_dll`; it's instantiated twice,
+  # once normally (to create `chrome.dll`) and once with `collect_inputs_only`.
+  # In the latter case, rather than doing the link, it simply writes a list of
+  # all linker inputs (.obj, .lib), which will be passed to the
+  # `resource_allowlist` target.
+  template("chrome_dll_tmpl") {
+    shared_library(target_name) {
+      forward_variables_from(invoker, "*", [ "collect_inputs_only" ])
+      configs += [ "//build/config/compiler:wexit_time_destructors" ]
+      configs -= [ "//build/config/compiler:thinlto_optimize_default" ]
+      configs += [ "//build/config/compiler:thinlto_optimize_max" ]
 
-    defines = []
+      defines = []
 
-    sources = [
-      "//base/win/dllmain.cc",
-      "app/chrome_main.cc",
-      "app/chrome_main.h",
-      "app/chrome_main_delegate.cc",
-      "app/chrome_main_delegate.h",
-      "app/startup_timestamps.h",
-    ]
+      sources = [
+        "//base/win/dllmain.cc",
+        "app/chrome_main.cc",
+        "app/chrome_main.h",
+        "app/chrome_main_delegate.cc",
+        "app/chrome_main_delegate.h",
+        "app/startup_timestamps.h",
+      ]
 
-    output_name = "chrome"
+      if (defined(invoker.collect_inputs_only) && invoker.collect_inputs_only) {
+        output_name = "chrome_dll_inputs"
+        ldflags = [ "--collect-inputs-only" ]
+      } else {
+        output_name = "chrome"
+      }
 
-    deps = [
-      ":chrome_dll_manifest",
-      ":chrome_dll_version",
-      ":dependencies",
-      "//chrome/app:chrome_dll_resources",
-      "//chrome/app:command_ids",
-      "//chrome/app/theme:chrome_unscaled_resources",
-      "//chrome/browser:chrome_content_browser_client",
-      "//chrome/browser:chrome_process_singleton",
-      "//chrome/browser:process_singleton",
-      "//chrome/browser:startup_data",
-      "//chrome/browser/lifetime",
-      "//chrome/browser/win:isolated_browser_support",
-      "//chrome/chrome_elf",
-      "//chrome/common:buildflags",
-      "//chrome/common:version_header",
-      "//chrome/common/profiler",
-      "//chrome/install_static:install_static_util",
-      "//chrome/install_static:secondary_module",
-      "//components/crash/core/app",
-      "//components/memory_system",
-      "//components/policy:generated",
-      "//components/webapps/isolated_web_apps:scheme",
-      "//content/public/app",
-      "//crypto",
-      "//net:net_resources",
-      "//sandbox/win:sandbox",
-      "//third_party/cld_3/src/src:cld_3",
-      "//third_party/wtl",
-      "//ui/views",
-    ]
+      deps = [
+        ":chrome_dll_manifest",
+        ":chrome_dll_version",
+        ":dependencies",
+        "//chrome/app:chrome_dll_resources",
+        "//chrome/app:command_ids",
+        "//chrome/app/theme:chrome_unscaled_resources",
+        "//chrome/browser:chrome_content_browser_client",
+        "//chrome/browser:chrome_process_singleton",
+        "//chrome/browser:process_singleton",
+        "//chrome/browser:startup_data",
+        "//chrome/browser/lifetime",
+        "//chrome/browser/win:isolated_browser_support",
+        "//chrome/chrome_elf",
+        "//chrome/common:buildflags",
+        "//chrome/common:version_header",
+        "//chrome/common/profiler",
+        "//chrome/install_static:install_static_util",
+        "//chrome/install_static:secondary_module",
+        "//components/crash/core/app",
+        "//components/memory_system",
+        "//components/policy:generated",
+        "//components/webapps/isolated_web_apps:scheme",
+        "//content/public/app",
+        "//crypto",
+        "//net:net_resources",
+        "//sandbox/win:sandbox",
+        "//third_party/cld_3/src/src:cld_3",
+        "//third_party/wtl",
+        "//ui/views",
+      ]
 
-    configs += [ "//build/config/win:delayloads" ]
+      configs += [ "//build/config/win:delayloads" ]
 
-    if (use_aura) {
-      deps += [ "//ui/compositor" ]
+      if (use_aura) {
+        deps += [ "//ui/compositor" ]
+      }
+
+      if (is_chrome_for_testing) {
+        deps += [ "//chrome/browser/chrome_for_testing:browser" ]
+      }
     }
+  }
 
-    if (is_chrome_for_testing) {
-      deps += [ "//chrome/browser/chrome_for_testing:browser" ]
+  if (enable_resource_allowlist_generation) {
+    chrome_dll_tmpl("chrome_dll_inputs") {
+      collect_inputs_only = true
     }
+  }
+  chrome_dll_tmpl("chrome_dll") {
   }
 
   copy("copy_first_run") {
@@ -1829,8 +1850,8 @@ if (is_android) {
 # //chrome/android:${_variant}_resource_allowlist.
 if (is_win && enable_resource_allowlist_generation) {
   generate_resource_allowlist("resource_allowlist") {
-    deps = [ ":chrome_dll" ]
-    inputs = [ "$root_out_dir/chrome.dll.pdb" ]
+    deps = [ ":chrome_dll_inputs" ]
+    inputs = [ "$root_out_dir/chrome_dll_inputs.dll" ]
     output = _chrome_resource_allowlist
   }
 }

@@ -140,8 +140,10 @@ template("msvc_toolchain") {
       sys_include_flags = ""
     }
 
+    linker_wrapper =
+        "\"$python_path\" $_tool_wrapper_path link-wrapper $env False "
+
     if (host_os != "win" || (use_lld && defined(invoker.sys_lib_flags))) {
-      linker_wrapper = ""
       sys_lib_flags = "${invoker.sys_lib_flags}"
 
       # TODO(thakis): Remove once crbug.com/1300005 is fixed
@@ -164,9 +166,6 @@ template("msvc_toolchain") {
     } else {
       # link.exe must be run under a wrapper to set up the environment
       # (it needs %LIB% set to find libraries), and to work around its bugs.
-      # Note trailing space:
-      linker_wrapper =
-          "\"$python_path\" $_tool_wrapper_path link-wrapper $env False "
       sys_lib_flags = ""
     }
 

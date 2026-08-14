@@ -5,8 +5,8 @@
 
 __doc__ = """generate_resource_allowlist.py [-o OUTPUT] [--depfile DEPFILE] INPUTS...
 
-INPUTS are paths to unstripped binaries or PDBs containing references to
-resources in their debug info, or linker input files.
+INPUTS are paths to unstripped binaries or linker input file lists containing
+references to resources in their debug info.
 
 This script generates a resource allowlist by reading debug info from
 INPUTS and writes it to OUTPUT.
@@ -18,22 +18,58 @@ INPUTS and writes it to OUTPUT.
 
 import argparse
 import os
-import subprocess
 import sys
 
 sys.path.insert(1, os.path.join(os.path.dirname(__file__), '..', '..', 'build'))
 import action_helpers
 import ar
 
-llvm_bindir = os.path.join(os.path.dirname(__file__), '..', '..', 'third_party',
-                           'llvm-build', 'Release+Asserts', 'bin')
+
+def _DecodeMsvcInteger(s):
+  """Decodes an MSVC-mangled positive integer template argument.
+
+  MSVC encodes positive integer arguments as '0' followed by hex digits
+  mapped to letters 'A' (0x0) through 'P' (0xF), terminated by '@'.
+  For example, '0BJH@' -> 0x197 = 407.
+  """
+  if not s or s[0] != ord('0'):
+    return None, 0
+  val = 0
+  for i, c in enumerate(s[1:], 1):
+    if c == ord('@'):
+      return val, i + 1
+    if ord('A') <= c <= ord('P'):
+      val = (val << 4) | (c - ord('A'))
+    else:
+      return None, 0
+  return None, 0
 
 
-def ExtractAllowlistFromFile(path, resource_ids):
-  with open(path, 'rb') as f:
-    data = f.read()
-  # When symbol_level=0, only mangled names exist.
-  # E.g.: _ZN2ui19AllowlistedResourceILi22870EEEvv
+def _ExtractAllowlistMsvc(data, resource_ids):
+  """Extracts IDs from MSVC-mangled instantiations of
+  `ui::AllowlistedResource<ID>()`.
+
+  The mangled form looks like`??$AllowlistedResource@$0<HEX_ID>@@ui@@YAXXZ`,
+  where HEX_ID is encoded as in `_DecodeMsvcInteger`.
+  """
+  prefix = b'??$AllowlistedResource@$'
+  start_idx = 0
+  while start_idx != -1:
+    start_idx = data.find(prefix, start_idx)
+    if start_idx != -1:
+      start_idx += len(prefix)
+      val, advance = _DecodeMsvcInteger(data[start_idx:start_idx + 16])
+      if val is not None:
+        resource_ids.add(val)
+        start_idx += advance
+
+
+def _ExtractAllowlistItanium(data, resource_ids):
+  """Extracts IDs from Itanium-mangled instantiations of
+  `ui::AllowlistedResource<ID>()`.
+
+  Matches symbols of the form `_ZN2ui19AllowlistedResourceILi<ID>EEEvv`.
+  """
   prefix = b'AllowlistedResourceILi'
   start_idx = 0
   while start_idx != -1:
@@ -45,76 +81,38 @@ def ExtractAllowlistFromFile(path, resource_ids):
 
 
 def GetResourceAllowlistELF(path):
-  # Produce a resource allowlist by searching for debug info referring to
-  # AllowlistedResource.
+  """Produce a resource allowlist by searching for debug info referring to
+  AllowlistedResource.
+  """
   # This used to use "readelf -p .debug_str", but it doesn't seem to work with
   # use_debug_fission=true. Reading the raw file is faster anyways.
   resource_ids = set()
-  ExtractAllowlistFromFile(path, resource_ids)
-  return resource_ids, []
-
-
-def GetResourceAllowlistPDB(path):
-  # Produce a resource allowlist by using llvm-pdbutil to read a PDB file's
-  # publics stream, which is essentially a symbol table, and searching for
-  # instantiations of AllowlistedResource. Any such instantiations are demangled
-  # to extract the resource identifier.
-  pdbutil = subprocess.Popen(
-      [os.path.join(llvm_bindir, 'llvm-pdbutil'), 'dump', '-publics', path],
-      stdout=subprocess.PIPE)
-  names = ''
-  for line in pdbutil.stdout:
-    line = line.decode('utf8')
-    # Read a line of the form
-    # "733352 | S_PUB32 [size = 56] `??$AllowlistedResource@$0BFGM@@ui@@YAXXZ`".
-    if '`' not in line:
-      continue
-    sym_name = line[line.find('`') + 1:line.rfind('`')]
-    # Under certain conditions such as the GN arg `use_clang_coverage = true` it
-    # is possible for the compiler to emit additional symbols that do not match
-    # the standard mangled-name format.
-    # Example: __profd_??$AllowlistedResource@$0BGPH@@ui@@YAXXZ
-    # C++ mangled names are supposed to begin with `?`, so check for that.
-    if 'AllowlistedResource' in sym_name and sym_name.startswith('?'):
-      names += sym_name + '\n'
-  exit_code = pdbutil.wait()
-  if exit_code != 0:
-    raise Exception('llvm-pdbutil exited with exit code %d' % exit_code)
-
-  undname = subprocess.Popen([os.path.join(llvm_bindir, 'llvm-undname')],
-                             stdin=subprocess.PIPE,
-                             stdout=subprocess.PIPE)
-  stdout, _ = undname.communicate(names.encode('utf8'))
-  resource_ids = set()
-  for line in stdout.split(b'\n'):
-    line = line.decode('utf8')
-    # Read a line of the form
-    # "void __cdecl ui::AllowlistedResource<5484>(void)".
-    prefix = ' ui::AllowlistedResource<'
-    pos = line.find(prefix)
-    if pos == -1:
-      continue
-    try:
-      resource_ids.add(int(line[pos + len(prefix):line.rfind('>')]))
-    except ValueError:
-      continue
-  exit_code = undname.wait()
-  if exit_code != 0:
-    raise Exception('llvm-undname exited with exit code %d' % exit_code)
+  with open(path, 'rb') as f:
+    data = f.read()
+  _ExtractAllowlistItanium(data, resource_ids)
   return resource_ids, []
 
 
 def GetResourceAllowlistFileList(file_list_path):
-  # Creates a list of resources given the list of linker input files.
-  # Simply grep's them for AllowlistedResource<...>.
+  """Given the list of linker input files:
+  1. Scan each object file (including those recursively listed in e.g. a .lib)
+     and extract their resource IDs.
+  2. Return a list of all files that were examined (including archives) to
+     generate deps for GN.
+  """
   with open(file_list_path, encoding='utf-8') as f:
-    paths = f.read().splitlines()
+    paths = [p for p in f.read().splitlines() if os.path.exists(p)]
 
   expanded_paths = ar.ExpandThinArchives(paths)
 
   resource_ids = set()
   for p in expanded_paths:
-    ExtractAllowlistFromFile(p, resource_ids)
+    if p.endswith('.obj'):
+      with open(p, 'rb') as f:
+        _ExtractAllowlistMsvc(f.read(), resource_ids)
+    elif p.endswith('.o'):
+      with open(p, 'rb') as f:
+        _ExtractAllowlistItanium(f.read(), resource_ids)
   return resource_ids, set(paths) | set(expanded_paths)
 
 
@@ -127,13 +125,15 @@ def WriteResourceAllowlist(args):
       chunk = f.read(60)
     if magic == b'\x7fELF':
       func = GetResourceAllowlistELF
-    elif magic == b'Micr':
-      func = GetResourceAllowlistPDB
-    elif magic == b'obj/' or b'/obj/' in chunk:
+    elif magic.startswith(b'MZ'):
+      raise ValueError('Expected linker input file list, got PE binary: %s' %
+                       input_path)
+    elif (magic == b'obj/' or b'/obj/' in chunk or b'\\obj\\' in chunk
+          or input_path.endswith('.dll') or input_path.endswith('.so')):
       # For secondary toolchain, path will look like android_clang_arm/obj/...
       func = GetResourceAllowlistFileList
     else:
-      raise Exception('unknown file format')
+      raise ValueError('unknown file format for %s' % input_path)
 
     cur_resource_ids, cur_deps = func(input_path)
     resource_ids.update(cur_resource_ids)
@@ -141,9 +141,9 @@ def WriteResourceAllowlist(args):
 
   # The last time this broke, exactly two resources were still being found.
   if len(resource_ids) < 100:
-    raise Exception('Suspiciously few resources found. Likely an issue with '
-                    'the regular expression in this script. Found: ' +
-                    ','.join(str(x) for x in sorted(resource_ids)))
+    raise RuntimeError('Suspiciously few resources found. Likely an issue with '
+                       'the regular expression in this script. Found: ' +
+                       ','.join(str(x) for x in sorted(resource_ids)))
 
   output_content = ''.join(f'{resource_id}\n'
                            for resource_id in sorted(resource_ids))
@@ -160,7 +160,9 @@ def WriteResourceAllowlist(args):
 
 def main():
   parser = argparse.ArgumentParser(usage=__doc__)
-  parser.add_argument('inputs', nargs='+', help='An unstripped binary or PDB.')
+  parser.add_argument('inputs',
+                      nargs='+',
+                      help='An unstripped binary or linker input file list.')
   parser.add_argument('-o',
                       '--output',
                       help='The resource list path to write (default stdout)')
