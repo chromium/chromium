@@ -774,38 +774,32 @@ TEST_P(CompositorFrameSinkSupportTest, MonotonicallyIncreasingLocalSurfaceIds) {
 
   // LocalSurfaceId1(6, 1)
   auto result = support->MaybeSubmitCompositorFrame(
-      local_surface_id1, MakeDefaultInteractiveCompositorFrame(), std::nullopt,
-      0);
+      local_surface_id1, MakeDefaultCompositorFrame(), std::nullopt, 0);
   EXPECT_EQ(SubmitResult::ACCEPTED, result);
 
   // LocalSurfaceId(6, 2): Child-initiated synchronization.
   result = support->MaybeSubmitCompositorFrame(
-      local_surface_id2, MakeDefaultInteractiveCompositorFrame(), std::nullopt,
-      0);
+      local_surface_id2, MakeDefaultCompositorFrame(), std::nullopt, 0);
   EXPECT_EQ(SubmitResult::ACCEPTED, result);
 
   // LocalSurfaceId(7, 2): Parent-initiated synchronization.
   result = support->MaybeSubmitCompositorFrame(
-      local_surface_id3, MakeDefaultInteractiveCompositorFrame(), std::nullopt,
-      0);
+      local_surface_id3, MakeDefaultCompositorFrame(), std::nullopt, 0);
   EXPECT_EQ(SubmitResult::ACCEPTED, result);
 
   // LocalSurfaceId(5, 3): Submit rejected because not monotonically increasing.
   result = support->MaybeSubmitCompositorFrame(
-      local_surface_id4, MakeDefaultInteractiveCompositorFrame(), std::nullopt,
-      0);
+      local_surface_id4, MakeDefaultCompositorFrame(), std::nullopt, 0);
   EXPECT_EQ(SubmitResult::SURFACE_ID_DECREASED, result);
 
   // LocalSurfaceId(8, 1): Submit rejected because not monotonically increasing.
   result = support->MaybeSubmitCompositorFrame(
-      local_surface_id5, MakeDefaultInteractiveCompositorFrame(), std::nullopt,
-      0);
+      local_surface_id5, MakeDefaultCompositorFrame(), std::nullopt, 0);
   EXPECT_EQ(SubmitResult::SURFACE_ID_DECREASED, result);
 
   // LocalSurfaceId(9, 3): Parent AND child-initiated synchronization.
   result = support->MaybeSubmitCompositorFrame(
-      local_surface_id6, MakeDefaultInteractiveCompositorFrame(), std::nullopt,
-      0);
+      local_surface_id6, MakeDefaultCompositorFrame(), std::nullopt, 0);
   EXPECT_EQ(SubmitResult::ACCEPTED, result);
 
   manager_->InvalidateFrameSinkId(kAnotherArbitraryFrameSinkId, {});
@@ -940,7 +934,7 @@ TEST_P(CompositorFrameSinkSupportTest, EvictSurfaceWithTemporaryReference) {
 
   // When CompositorFrame is submitted, a temporary reference will be created.
   support_->SubmitCompositorFrame(local_surface_id,
-                                  MakeDefaultInteractiveCompositorFrame());
+                                  MakeDefaultCompositorFrame());
   EXPECT_TRUE(HasTemporaryReference(surface_id));
 
   // Verify the temporary reference has not prevented the surface from getting
@@ -964,7 +958,7 @@ TEST_P(CompositorFrameSinkSupportTest, EvictOlderSurfaces) {
 
   // When CompositorFrame is submitted, a temporary reference will be created.
   support_->SubmitCompositorFrame(local_surface_id1,
-                                  MakeDefaultInteractiveCompositorFrame());
+                                  MakeDefaultCompositorFrame());
   EXPECT_TRUE(HasTemporaryReference(surface_id1));
 
   // Evict |surface_id2|. |surface_id1| should be evicted too.
@@ -1326,14 +1320,14 @@ TEST_P(CompositorFrameSinkSupportTest, FrameIndexCarriedOverToNewSurface) {
 
   // Submit a frame to |id1| and record the frame index.
   support_->SubmitCompositorFrame(local_surface_id1,
-                                  MakeDefaultInteractiveCompositorFrame());
+                                  MakeDefaultCompositorFrame());
   Surface* surface1 = GetSurfaceForId(id1);
   uint32_t frame_index = surface1->GetActiveFrameIndex();
 
   // Submit a frame to |id2| and verify that the new frame index is one more
   // than what we had before.
   support_->SubmitCompositorFrame(local_surface_id2,
-                                  MakeDefaultInteractiveCompositorFrame());
+                                  MakeDefaultCompositorFrame());
   Surface* surface2 = GetSurfaceForId(id2);
   EXPECT_EQ(frame_index + 1, surface2->GetActiveFrameIndex());
 }
@@ -1350,11 +1344,11 @@ TEST_P(CompositorFrameSinkSupportTest,
 
   // Create the first surface.
   support_->SubmitCompositorFrame(local_surface_id1,
-                                  MakeDefaultInteractiveCompositorFrame());
+                                  MakeDefaultCompositorFrame());
 
   // Create the second surface.
   support_->SubmitCompositorFrame(local_surface_id2,
-                                  MakeDefaultInteractiveCompositorFrame());
+                                  MakeDefaultCompositorFrame());
 
   // Send a CopyOutputRequest.
   auto request = std::make_unique<CopyOutputRequest>(
@@ -1394,11 +1388,11 @@ TEST_P(CompositorFrameSinkSupportTest,
 
   // Create the first surface.
   support_->SubmitCompositorFrame(local_surface_id1,
-                                  MakeDefaultInteractiveCompositorFrame());
+                                  MakeDefaultCompositorFrame());
 
   // Create the second surface.
   support_->SubmitCompositorFrame(local_surface_id2,
-                                  MakeDefaultInteractiveCompositorFrame());
+                                  MakeDefaultCompositorFrame());
 
   // Send a CopyOutputRequest.
   auto request = std::make_unique<CopyOutputRequest>(
@@ -1440,7 +1434,7 @@ TEST_P(CompositorFrameSinkSupportTest,
 
   // Create the first surface.
   support_->SubmitCompositorFrame(local_surface_id1,
-                                  MakeDefaultInteractiveCompositorFrame());
+                                  MakeDefaultCompositorFrame());
 
   // Send a CopyOutputRequest. Note that the second surface doesn't even exist
   // yet.
@@ -1453,7 +1447,7 @@ TEST_P(CompositorFrameSinkSupportTest,
 
   // Create the second surface.
   support_->SubmitCompositorFrame(local_surface_id2,
-                                  MakeDefaultInteractiveCompositorFrame());
+                                  MakeDefaultCompositorFrame());
 
   // Second surface takes CopyOutputRequests from its client. Now only the
   // second surface should report having CopyOutputRequests.
@@ -1485,7 +1479,7 @@ TEST_P(CompositorFrameSinkSupportTest, CopyOutputRequestEmbeddingTokenChanges) {
 
   // Create the first surface.
   support_->SubmitCompositorFrame(local_surface_id1,
-                                  MakeDefaultInteractiveCompositorFrame());
+                                  MakeDefaultCompositorFrame());
 
   base::test::TestFuture<std::unique_ptr<CopyOutputResult>> result_future;
   auto request = std::make_unique<CopyOutputRequest>(
@@ -1497,7 +1491,7 @@ TEST_P(CompositorFrameSinkSupportTest, CopyOutputRequestEmbeddingTokenChanges) {
 
   // Create the second surface with new embedding token.
   support_->SubmitCompositorFrame(local_surface_id2,
-                                  MakeDefaultInteractiveCompositorFrame());
+                                  MakeDefaultCompositorFrame());
 
   GetSurfaceForId(id2)->TakeCopyOutputRequestsFromClient();
   EXPECT_FALSE(GetSurfaceForId(id2)->HasCopyOutputRequests());
@@ -1519,7 +1513,7 @@ TEST_P(CompositorFrameSinkSupportTest,
 
   // Create the first surface.
   support_->SubmitCompositorFrame(local_surface_id1,
-                                  MakeDefaultInteractiveCompositorFrame());
+                                  MakeDefaultCompositorFrame());
 
   auto request = std::make_unique<CopyOutputRequest>(
       CopyOutputRequest::ResultFormat::RGBA,
@@ -1533,7 +1527,7 @@ TEST_P(CompositorFrameSinkSupportTest,
 
   // Create the second surface with new embedding token.
   support_->SubmitCompositorFrame(local_surface_id2,
-                                  MakeDefaultInteractiveCompositorFrame());
+                                  MakeDefaultCompositorFrame());
 
   GetSurfaceForId(id2)->TakeCopyOutputRequestsFromClient();
   EXPECT_TRUE(GetSurfaceForId(id2)->HasCopyOutputRequests());
@@ -1579,7 +1573,7 @@ TEST_P(CompositorFrameSinkSupportTest, CopyOutputRequestWithTimeout) {
 
   // Create Surface1.
   support_->SubmitCompositorFrame(local_surface_id1,
-                                  MakeDefaultInteractiveCompositorFrame());
+                                  MakeDefaultCompositorFrame());
 
   GetSurfaceForId(id1)->TakeCopyOutputRequestsFromClient();
   EXPECT_FALSE(GetSurfaceForId(id1)->HasCopyOutputRequests());
@@ -1597,11 +1591,11 @@ TEST_P(CompositorFrameSinkSupportTest,
 
   // Create Surface1.
   support_->SubmitCompositorFrame(local_surface_id1,
-                                  MakeDefaultInteractiveCompositorFrame());
+                                  MakeDefaultCompositorFrame());
 
   // Create Surface2.
   support_->SubmitCompositorFrame(local_surface_id2,
-                                  MakeDefaultInteractiveCompositorFrame());
+                                  MakeDefaultCompositorFrame());
 
   // Send a non-exact CopyOutputRequest. It can be picked up by either Surface1
   // or Surface2.
@@ -1676,8 +1670,7 @@ TEST_P(CompositorFrameSinkSupportTest, OnFrameTokenUpdate) {
 TEST_P(CompositorFrameSinkSupportTest,
        DisallowEmbedTokenReuseAcrossFrameSinks) {
   auto result = support_->MaybeSubmitCompositorFrame(
-      local_surface_id_, MakeDefaultInteractiveCompositorFrame(), std::nullopt,
-      0);
+      local_surface_id_, MakeDefaultCompositorFrame(), std::nullopt, 0);
   EXPECT_EQ(SubmitResult::ACCEPTED, result);
 
   // Create another sink and reuse the same embed token to submit a frame. The
@@ -1688,8 +1681,7 @@ TEST_P(CompositorFrameSinkSupportTest,
       false /* not root frame sink */);
   LocalSurfaceId local_surface_id(31232, local_surface_id_.embed_token());
   result = support->MaybeSubmitCompositorFrame(
-      local_surface_id, MakeDefaultInteractiveCompositorFrame(), std::nullopt,
-      0);
+      local_surface_id, MakeDefaultCompositorFrame(), std::nullopt, 0);
   EXPECT_EQ(SubmitResult::SURFACE_OWNED_BY_ANOTHER_CLIENT, result);
 }
 
@@ -1766,9 +1758,8 @@ TEST_P(CompositorFrameSinkSupportTest, HitTestRegionValidation) {
 
   EXPECT_EQ(manager_->hit_test_manager()->submit_hit_test_region_list_index(),
             0u);
-  support->MaybeSubmitCompositorFrame(local_surface_id,
-                                      MakeDefaultInteractiveCompositorFrame(),
-                                      hit_test_region_list, 0);
+  support->MaybeSubmitCompositorFrame(
+      local_surface_id, MakeDefaultCompositorFrame(), hit_test_region_list, 0);
   // hit_test_region_1 is valid. Submitted region count increases.
   EXPECT_EQ(manager_->hit_test_manager()->submit_hit_test_region_list_index(),
             1u);
@@ -1783,9 +1774,8 @@ TEST_P(CompositorFrameSinkSupportTest, HitTestRegionValidation) {
   hit_test_region_list.regions.push_back(std::move(hit_test_region_2));
   EXPECT_EQ(manager_->hit_test_manager()->submit_hit_test_region_list_index(),
             1u);
-  support->MaybeSubmitCompositorFrame(local_surface_id,
-                                      MakeDefaultInteractiveCompositorFrame(),
-                                      hit_test_region_list, 0);
+  support->MaybeSubmitCompositorFrame(
+      local_surface_id, MakeDefaultCompositorFrame(), hit_test_region_list, 0);
   // hit_test_region_2 is invalid. Submitted region count does not change.
   EXPECT_EQ(manager_->hit_test_manager()->submit_hit_test_region_list_index(),
             1u);
@@ -1801,9 +1791,8 @@ TEST_P(CompositorFrameSinkSupportTest, HitTestRegionValidation) {
   hit_test_region_list.regions.push_back(std::move(hit_test_region_3));
   EXPECT_EQ(manager_->hit_test_manager()->submit_hit_test_region_list_index(),
             1u);
-  support->MaybeSubmitCompositorFrame(local_surface_id,
-                                      MakeDefaultInteractiveCompositorFrame(),
-                                      hit_test_region_list, 0);
+  support->MaybeSubmitCompositorFrame(
+      local_surface_id, MakeDefaultCompositorFrame(), hit_test_region_list, 0);
   // hit_test_region_3 is invalid. Submitted region count does not change.
   EXPECT_EQ(manager_->hit_test_manager()->submit_hit_test_region_list_index(),
             1u);
@@ -1820,9 +1809,8 @@ TEST_P(CompositorFrameSinkSupportTest, HitTestRegionValidation) {
   hit_test_region_list.regions.push_back(std::move(hit_test_region_4));
   EXPECT_EQ(manager_->hit_test_manager()->submit_hit_test_region_list_index(),
             1u);
-  support->MaybeSubmitCompositorFrame(local_surface_id,
-                                      MakeDefaultInteractiveCompositorFrame(),
-                                      hit_test_region_list, 0);
+  support->MaybeSubmitCompositorFrame(
+      local_surface_id, MakeDefaultCompositorFrame(), hit_test_region_list, 0);
   // hit_test_region_4 is valid. Submitted region count increases.
   EXPECT_EQ(manager_->hit_test_manager()->submit_hit_test_region_list_index(),
             2u);
@@ -1868,8 +1856,7 @@ TEST_P(CompositorFrameSinkSupportTest, RedirectionToInvalidFlags) {
 
   // Use MaybeSubmitCompositorFrame to check the return value.
   SubmitResult result = support_->MaybeSubmitCompositorFrame(
-      lsid, MakeDefaultInteractiveCompositorFrame(),
-      std::move(hit_test_region_list), 0);
+      lsid, MakeDefaultCompositorFrame(), std::move(hit_test_region_list), 0);
 
   EXPECT_EQ(result, SubmitResult::HIT_TEST_DATA_INVALID);
 
@@ -2040,8 +2027,8 @@ TEST_P(CompositorFrameSinkSupportTest, BeginFrameInterval) {
                            const FrameTimingDetailsMap&,
                            std::vector<ReturnedResource>) {
           EXPECT_THAT(actual_args, Eq(expected_args));
-          support->SubmitCompositorFrame(
-              local_surface_id_, MakeDefaultInteractiveCompositorFrame());
+          support->SubmitCompositorFrame(local_surface_id_,
+                                         MakeDefaultCompositorFrame());
           GetSurfaceForId(id)->MarkAsDrawn();
           sent_frame = true;
           // Ack the first submitted frame, as if activation completed.
@@ -2095,7 +2082,7 @@ TEST_P(CompositorFrameSinkSupportTest, HandlesSmallErrorInBeginFrameTimes) {
 
   auto submit_compositor_frame = [&]() {
     support->SubmitCompositorFrame(local_surface_id_,
-                                   MakeDefaultInteractiveCompositorFrame());
+                                   MakeDefaultCompositorFrame());
     GetSurfaceForId(id)->MarkAsDrawn();
   };
 
@@ -2236,8 +2223,7 @@ TEST_P(CompositorFrameSinkSupportTest, ForceFullFrameToActivateSurface) {
 TEST_P(CompositorFrameSinkSupportTest,
        ReleaseTransitionDirectiveClearsFrameSinkManagerEntry) {
   auto result = support_->MaybeSubmitCompositorFrame(
-      local_surface_id_, MakeDefaultInteractiveCompositorFrame(), std::nullopt,
-      0);
+      local_surface_id_, MakeDefaultCompositorFrame(), std::nullopt, 0);
   EXPECT_EQ(SubmitResult::ACCEPTED, result);
 
   blink::ViewTransitionToken transition_token;
@@ -2803,8 +2789,7 @@ TEST_F(CompositorFrameSinkSupportTestBase,
       local_surface_id_.parent_sequence_number() + 1,
       local_surface_id_.embed_token());
 
-  CompositorFrame frame_2 =
-      MakeDefaultInteractiveCompositorFrame(kBeginFrameSourceId);
+  CompositorFrame frame_2 = MakeDefaultCompositorFrame(kBeginFrameSourceId);
   // Add the requirement that token_x must be finished before this frame can
   // be displayed.
   frame_2.metadata.transition_directives.push_back(
