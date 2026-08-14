@@ -1017,8 +1017,6 @@ test("components_unittests") {
   }
   fuzztests = [
     "AndroidAppDescriptionToolsFuzzTest.MaintainsSingleActivityInvariant",
-    "Base32ParityTest.EncodeParity",
-    "Base32ParityTest.DecodeParity",
     "CBORReaderFuzzTest.ReadAndWriteIsIdempotentAndDoesNotCrash",
     "CBORReaderFuzzTest.ReadValidAndTruncatedCBORDoesNotCrash",
     "CBORReaderFuzzTest.ReadValidCBORWithConfigDoesNotCrash",

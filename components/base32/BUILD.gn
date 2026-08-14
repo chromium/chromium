@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/rust/rust_static_library.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 
 static_library("base32") {
@@ -11,17 +10,7 @@ static_library("base32") {
     "base32.h",
   ]
 
-  deps = [
-    ":base32_rust",
-    "//base",
-  ]
-}
-
-rust_static_library("base32_rust") {
-  crate_root = "base32.rs"
-  allow_unsafe = true
-  sources = [ crate_root ]
-  cxx_bindings = [ crate_root ]
+  deps = [ "//base" ]
 }
 
 source_set("unit_tests") {
@@ -31,9 +20,7 @@ source_set("unit_tests") {
   deps = [
     ":base32",
     "//base",
-    "//base/test:test_support",
     "//testing/gtest",
-    "//third_party/fuzztest",
   ]
 }
 
