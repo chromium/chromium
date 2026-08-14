@@ -56,7 +56,7 @@ mod module3 {
     }
 }
 
-#[gtest(ExactSuite, ExactTest)]
+#[gtest(RustGTestInteropTestExactSuite, ExactTest)]
 fn test() {}
 
 #[gtest(RustGTestInteropTest, WithResultType)]

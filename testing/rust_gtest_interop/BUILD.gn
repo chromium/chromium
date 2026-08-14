@@ -69,12 +69,26 @@ if (enable_rust) {
     visibility = [ ":*" ]
   }
 
-  rust_static_library("unittests") {
+  source_set("cpp_unittests") {
+    testonly = true
+    sources = [ "rust_gtest_interop_unittest.cc" ]
+    deps = [ "//testing/gtest" ]
+  }
+
+  rust_static_library("rust_unittests") {
     testonly = true
     is_gtest_unittests = true
     crate_root = "rust_gtest_interop_unittest.rs"
     sources = [ crate_root ]
     deps = [ "//testing/rust_gtest_interop" ]
+  }
+
+  group("unittests") {
+    testonly = true
+    deps = [
+      ":cpp_unittests",
+      ":rust_unittests",
+    ]
   }
 
   # TODO(https://crbug.com/532647976): Remove this test executable after
