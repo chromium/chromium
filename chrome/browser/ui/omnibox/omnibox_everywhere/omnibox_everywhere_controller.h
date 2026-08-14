@@ -74,8 +74,11 @@ class OmniboxEverywhereController
   // Called during profile teardown to synchronously close the widget.
   void ShutdownForProfile(Profile* profile);
 
-  // Sets the current target profile for Omnibox Everywhere and updates
-  // background mode manager and local state prefs.
+  // Stops the background mode.
+  void ExitBackgroundMode();
+
+  // Sets the current target profile for Omnibox Everywhere and notifies the
+  // background mode manager.
   void SetTargetProfile(Profile* profile);
 
   // Returns the current target profile.

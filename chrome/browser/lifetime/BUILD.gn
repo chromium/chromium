@@ -140,6 +140,7 @@ source_set("impl") {
       "smart_restart_policy.cc",
     ]
     deps += [
+      "//chrome/browser:global_features",
       "//chrome/browser/background/glic",
       "//chrome/browser/download",
       "//chrome/browser/first_run",
@@ -151,6 +152,7 @@ source_set("impl") {
       "//chrome/browser/sessions",
       "//chrome/browser/ui:chrome_pages",
       "//chrome/browser/ui/lens",
+      "//chrome/browser/ui/omnibox/omnibox_everywhere",
       "//chrome/browser/ui/profiles",
       "//chrome/browser/ui/startup",
       "//chrome/browser/ui/tabs:tab_strip",

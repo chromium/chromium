@@ -5,13 +5,17 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/global_features.h"
+#include "chrome/browser/lifetime/application_lifetime_desktop.h"
+#include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/status_icons/status_tray.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_controller.h"
@@ -571,6 +575,27 @@ IN_PROC_BROWSER_TEST_F(OmniboxEverywhereBrowserTest,
 
   // Verify controller restored profile1 as target profile on startup.
   EXPECT_EQ(profile, controller->target_profile());
+}
+
+IN_PROC_BROWSER_TEST_F(OmniboxEverywhereBrowserTest,
+                       ShutdownWithBackgroundModeEnabled) {
+  PrefService* local_state = g_browser_process->local_state();
+  ASSERT_TRUE(local_state);
+
+  set_exit_when_last_browser_closes(false);
+
+  // Enable background mode pref.
+  local_state->SetBoolean(prefs::kOmniboxEverywhereBackgroundMode, true);
+
+  // Close the browser window synchronously first. Since background mode is
+  // enabled, this should not shut down the browser process.
+  CloseBrowserSynchronously(browser());
+
+  // Post a task to quit the browser once the main message loop starts.
+  // This ensures that the quit flow executes while the main RunLoop is running,
+  // preventing CHECK failures in BrowserProcessImpl::StartTearDown.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&chrome::CloseAllBrowsersAndQuit));
 }
 
 }  // namespace omnibox_everywhere

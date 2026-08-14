@@ -37,6 +37,9 @@ class OmniboxEverywhereBackgroundModeManager
   // Sets the profile for which to hold a profile keep alive.
   void SetProfile(Profile* profile);
 
+  // Stops the background mode by releasing keep-alives and status icon.
+  void ExitBackgroundMode();
+
   StatusIcon* status_icon_for_testing() { return status_icon_; }
 
  private:

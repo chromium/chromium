@@ -66,6 +66,10 @@ void OmniboxEverywhereBackgroundModeManager::Reset() {
   HideStatusIcon();
 }
 
+void OmniboxEverywhereBackgroundModeManager::ExitBackgroundMode() {
+  Reset();
+}
+
 void OmniboxEverywhereBackgroundModeManager::OnPrefChanged() {
   if (!background_mode_pref_member_.GetValue()) {
     Reset();

@@ -237,6 +237,12 @@ Profile* OmniboxEverywhereController::GetTargetProfile() const {
   return target_profile_;
 }
 
+void OmniboxEverywhereController::ExitBackgroundMode() {
+  if (background_mode_manager_) {
+    background_mode_manager_->ExitBackgroundMode();
+  }
+}
+
 void OmniboxEverywhereController::OnKeyPressed(
     const ui::Accelerator& accelerator) {
   InvokeForActiveBrowserProfile(InvocationSource::kGlobalHotkey);
