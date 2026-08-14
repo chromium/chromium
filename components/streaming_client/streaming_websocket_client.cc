@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/private_ai/streaming_websocket_client.h"
+#include "components/streaming_client/streaming_websocket_client.h"
 
 #include <limits>
 #include <optional>
@@ -21,7 +21,7 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-namespace private_ai {
+namespace streaming_client {
 namespace {
 
 constexpr size_t kMaxIncomingMessageSize = 1 << 20;
@@ -290,4 +290,4 @@ void StreamingWebSocketClient::OnMojoPipeDisconnect() {
   delegate_->OnClose();
 }
 
-}  // namespace private_ai
+}  // namespace streaming_client

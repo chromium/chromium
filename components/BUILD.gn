@@ -360,6 +360,7 @@ test("components_unittests") {
     "//components/sqlite_proto:unit_tests",
     "//components/sqlite_vfs:unit_tests",
     "//components/ssl_errors:unit_tests",
+    "//components/streaming_client:unit_tests",
     "//components/strike_database:unit_tests",
     "//components/subresource_filter/core/browser:unit_tests",
     "//components/subresource_filter/core/common:unit_tests",

@@ -15,8 +15,8 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "components/private_ai/private_ai_common.h"
-#include "components/private_ai/streaming_websocket_client.h"
 #include "components/private_ai/transport.h"
+#include "components/streaming_client/streaming_websocket_client.h"
 #include "url/gurl.h"
 
 namespace network::mojom {
@@ -27,8 +27,9 @@ namespace private_ai {
 
 class PrivateAiLogger;
 
-class WebSocketClient : public Transport,
-                        public StreamingWebSocketClient::Delegate {
+class WebSocketClient
+    : public Transport,
+      public streaming_client::StreamingWebSocketClient::Delegate {
  public:
   WebSocketClient(const GURL& service_url,
                   network::mojom::NetworkContext* network_context,
@@ -42,7 +43,7 @@ class WebSocketClient : public Transport,
   void SetResponseCallback(ResponseCallback callback) override;
   void Send(const oak::session::v1::SessionRequest& request) override;
 
-  // StreamingWebSocketClient::Delegate:
+  // streaming_client::StreamingWebSocketClient::Delegate:
   void OnMessage(std::vector<uint8_t> message) override;
   void OnConnectionError(const std::string& message,
                          int net_error,
@@ -70,7 +71,7 @@ class WebSocketClient : public Transport,
   const raw_ptr<PrivateAiLogger> logger_;
   ResponseCallback response_callback_;
 
-  StreamingWebSocketClient streaming_client_;
+  streaming_client::StreamingWebSocketClient streaming_client_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

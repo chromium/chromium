@@ -1,0 +1,36 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("streaming_client") {
+  sources = [
+    "streaming_websocket_client.cc",
+    "streaming_websocket_client.h",
+  ]
+  deps = [
+    "//base",
+    "//mojo/public/cpp/system",
+    "//net",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "streaming_websocket_client_unittest.cc" ]
+  deps = [
+    ":streaming_client",
+    "//base",
+    "//base/test:test_support",
+    "//mojo/public/cpp/bindings",
+    "//mojo/public/cpp/system",
+    "//net",
+    "//net/traffic_annotation:test_support",
+    "//services/network:test_support",
+    "//services/network/public/mojom",
+    "//testing/gtest",
+    "//url",
+  ]
+}

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PRIVATE_AI_STREAMING_WEBSOCKET_CLIENT_H_
-#define COMPONENTS_PRIVATE_AI_STREAMING_WEBSOCKET_CLIENT_H_
+#ifndef COMPONENTS_STREAMING_CLIENT_STREAMING_WEBSOCKET_CLIENT_H_
+#define COMPONENTS_STREAMING_CLIENT_STREAMING_WEBSOCKET_CLIENT_H_
 
 #include <cstdint>
 #include <optional>
@@ -29,7 +29,7 @@ namespace network::mojom {
 class NetworkContext;
 }  // namespace network::mojom
 
-namespace private_ai {
+namespace streaming_client {
 
 // Reusable WebSocket client class that maintains a persistent connection
 // with a service to stream binary protobuf messages.
@@ -150,6 +150,6 @@ class StreamingWebSocketClient
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
-}  // namespace private_ai
+}  // namespace streaming_client
 
-#endif  // COMPONENTS_PRIVATE_AI_STREAMING_WEBSOCKET_CLIENT_H_
+#endif  // COMPONENTS_STREAMING_CLIENT_STREAMING_WEBSOCKET_CLIENT_H_

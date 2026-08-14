@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/private_ai/streaming_websocket_client.h"
+#include "components/streaming_client/streaming_websocket_client.h"
 
 #include <memory>
 #include <optional>
@@ -27,7 +27,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-namespace private_ai {
+namespace streaming_client {
 
 namespace {
 
@@ -455,4 +455,4 @@ TEST_F(StreamingWebSocketClientTest, DataPipeWriteFailure) {
 
 }  // namespace
 
-}  // namespace private_ai
+}  // namespace streaming_client
