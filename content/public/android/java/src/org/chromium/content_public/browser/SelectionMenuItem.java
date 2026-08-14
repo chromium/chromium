@@ -39,13 +39,21 @@ public final class SelectionMenuItem implements Comparable<SelectionMenuItem> {
         ItemGroupOffset.ASSIST_ITEMS,
         ItemGroupOffset.DEFAULT_ITEMS,
         ItemGroupOffset.SECONDARY_ASSIST_ITEMS,
-        ItemGroupOffset.TEXT_PROCESSING_ITEMS
+        ItemGroupOffset.TEXT_PROCESSING_ITEMS,
+        ItemGroupOffset.ALTERNATIVE_ITEMS,
     })
     public @interface ItemGroupOffset {
         int ASSIST_ITEMS = 0;
         int DEFAULT_ITEMS = 10;
         int SECONDARY_ASSIST_ITEMS = 20;
         int TEXT_PROCESSING_ITEMS = 30;
+
+        /**
+         * Additional items providing alternative actions, such as custom actions added by
+         * embedders. Historically used as a fallback category when explicit orders are not
+         * provided.
+         */
+        int ALTERNATIVE_ITEMS = Menu.CATEGORY_ALTERNATIVE;
     }
 
     private final @AttrRes int mIconAttr;
@@ -227,6 +235,9 @@ public final class SelectionMenuItem implements Comparable<SelectionMenuItem> {
                                 Math.min(
                                         order + category,
                                         ItemGroupOffset.TEXT_PROCESSING_ITEMS - 1);
+                        case ItemGroupOffset.TEXT_PROCESSING_ITEMS ->
+                                Math.min(order + category, ItemGroupOffset.ALTERNATIVE_ITEMS - 1);
+                        case ItemGroupOffset.ALTERNATIVE_ITEMS -> order + category;
                         default -> order + category;
                     };
             return this;
@@ -234,8 +245,8 @@ public final class SelectionMenuItem implements Comparable<SelectionMenuItem> {
 
         /**
          * Sets a raw order without applying an {@link ItemGroupOffset} category. Prefer {@link
-         * #setOrderAndCategory} unless the item must be placed outside the predefined sections
-         * (e.g. below {@code Menu.CATEGORY_ALTERNATIVE}) or when copying an existing item.
+         * #setOrderAndCategory} unless the item must be placed outside the predefined sections or
+         * when copying an existing item.
          */
         public Builder setOrder(int order) {
             if (order < 0) {

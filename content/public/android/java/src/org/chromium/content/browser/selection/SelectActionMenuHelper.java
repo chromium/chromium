@@ -388,8 +388,9 @@ public class SelectActionMenuHelper {
                 .build();
     }
 
-    // Note: For dropdown menus, Share uses Menu.CATEGORY_ALTERNATIVE + 1 to stably appear
-    // below alternative items (such as Ask Gemini).
+    // Relative order for the Share item within the alternative items section in dropdown menus.
+    private static final int ALTERNATIVE_SECTION_SHARE_ORDER = 1;
+
     private static SelectionMenuItem share(
             @Nullable Context context, int order, @MenuType int menuType) {
         if (context == null) {
@@ -405,7 +406,8 @@ public class SelectActionMenuHelper {
                         .setIsEnabled(true)
                         .setIsIconTintable(true);
         if (menuType == MenuType.DROPDOWN) {
-            builder.setOrder(Menu.CATEGORY_ALTERNATIVE + 1);
+            builder.setOrderAndCategory(
+                    ALTERNATIVE_SECTION_SHARE_ORDER, ItemGroupOffset.ALTERNATIVE_ITEMS);
         } else {
             builder.setOrderAndCategory(order, ItemGroupOffset.DEFAULT_ITEMS);
         }

@@ -74,6 +74,7 @@ import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.SelectAroundCaretResult;
 import org.chromium.content_public.browser.SelectionClient;
 import org.chromium.content_public.browser.SelectionMenuItem;
+import org.chromium.content_public.browser.SelectionMenuItem.ItemGroupOffset;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContents.UserDataFactory;
@@ -864,7 +865,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
         if (hasOrder(item)) {
             return item.model.get(ListMenuItemProperties.ORDER);
         }
-        return Menu.CATEGORY_ALTERNATIVE;
+        return ItemGroupOffset.ALTERNATIVE_ITEMS;
     }
 
     // HideablePopup implementation

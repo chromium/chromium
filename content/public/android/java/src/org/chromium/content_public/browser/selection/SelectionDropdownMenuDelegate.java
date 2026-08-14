@@ -7,7 +7,6 @@ package org.chromium.content_public.browser.selection;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
-import android.view.Menu;
 import android.view.View;
 
 import androidx.annotation.IdRes;
@@ -16,6 +15,7 @@ import androidx.annotation.Px;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.SelectionMenuItem;
+import org.chromium.content_public.browser.SelectionMenuItem.ItemGroupOffset;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -77,7 +77,9 @@ public interface SelectionDropdownMenuDelegate {
                                 itemModel, ListMenuItemProperties.GROUP_ID, 0))
                 .setOrder(
                         PropertyModel.getFromModelOrDefault(
-                                itemModel, ListMenuItemProperties.ORDER, Menu.CATEGORY_ALTERNATIVE))
+                                itemModel,
+                                ListMenuItemProperties.ORDER,
+                                ItemGroupOffset.ALTERNATIVE_ITEMS))
                 .setIntent(
                         PropertyModel.getFromModelOrDefault(
                                 itemModel, ListMenuItemProperties.INTENT, null))
