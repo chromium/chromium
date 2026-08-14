@@ -1012,6 +1012,7 @@ TEST_F(AISummarizerManifestTest,
 
   fake_manifest_broker_->client().RequestAssetsFor(
       "summarizer_small_expert_model");
+  base::RunLoop().RunUntilIdle();
 
   base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult> future;
   GetAIManagerInterface()->CanCreateSummarizer(options.Clone(),
@@ -1080,6 +1081,7 @@ TEST_F(AISummarizerManifestTest, CanCreateAndCreateWithManifestAutoPreference) {
 TEST_F(AISummarizerManifestTest,
        CanCreateAndCreateWithManifestCapabilityPreference) {
   fake_manifest_broker_->client().RequestAssetsFor("summarizer_api");
+  base::RunLoop().RunUntilIdle();
 
   auto options = GetDefaultOptions();
   options->preference = blink::mojom::PerformancePreference::kCapability;
@@ -1321,6 +1323,7 @@ TEST_F(AISummarizerManifestTest, CanCreateAndCreateWithManifestGemma4) {
       kAIApiFoundationalModel, {{"model_version", "v4"}});
 
   fake_manifest_broker_->client().RequestAssetsFor("summarizer_gemma4");
+  base::RunLoop().RunUntilIdle();
 
   // Verify CanCreateSummarizer check passes successfully for default options
   // mapping to gemma4. We requested assets only for summarizer_gemma4,

@@ -2547,6 +2547,7 @@ TEST_F(AILanguageModelManifestTest, CanCreateAndCreateWithManifestGemma4) {
       kAIApiFoundationalModel, {{"model_version", "v4"}});
 
   fake_manifest_broker_->client().RequestAssetsFor("prompt_api_gemma4");
+  base::RunLoop().RunUntilIdle();
 
   // Verify CanCreateLanguageModel check passes successfully.
   base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult> future;

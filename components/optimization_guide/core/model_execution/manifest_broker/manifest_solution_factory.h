@@ -10,10 +10,12 @@
 #include <utility>
 #include <vector>
 
+#include "base/byte_size.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/types/expected.h"
 #include "base/version.h"
 #include "components/optimization_guide/core/model_execution/manifest_broker/manifest.h"
@@ -23,6 +25,7 @@
 #include "components/optimization_guide/proto/manifest.pb.h"
 #include "components/optimization_guide/proto/text_safety_model_metadata.pb.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom-shared.h"
+#include "services/on_device_model/public/cpp/model_assets.h"
 #include "services/on_device_model/public/cpp/service_client.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
@@ -53,6 +56,7 @@ class ManifestSolutionFactory {
     BaseModelState& operator=(BaseModelState&& other);
 
     mojo::Remote<on_device_model::mojom::OnDeviceModel> remote_;
+    bool has_caches = false;
   };
 
   struct AdaptationState {
@@ -108,6 +112,7 @@ class ManifestSolutionFactory {
   // Notifies the factory of a change in an asset's state.
   // This will may cause the factory to emit new Solutions.
   void UpdateAssetState(const std::string& asset_id, AssetState new_state);
+  void UpdateFreeDiskSpace(std::optional<base::ByteSize> free_disk_space);
 
   // Flush all use cases and emit new solutions for any that are now available.
   void UpdateSolutions();
@@ -154,6 +159,14 @@ class ManifestSolutionFactory {
                              uint32_t reason,
                              const std::string& description);
 
+  on_device_model::ModelAssetPaths GetModelAssetPaths(
+      const proto::BaseModelRecipe& recipe) const;
+  void CheckCachesExist(const std::string& asset_id,
+                        base::OnceClosure on_complete);
+  void OnCachesExistChecked(const std::string& model_id,
+                            base::OnceClosure on_complete,
+                            bool caches_exist);
+
   const raw_ref<ModelBrokerImpl> broker_impl_;
   const raw_ref<on_device_model::ServiceClient> service_client_;
   const raw_ref<UsageTracker> usage_tracker_;
@@ -170,6 +183,9 @@ class ManifestSolutionFactory {
 
   base::RepeatingClosure on_asset_init_;
   base::RepeatingClosure on_solutions_updated_;
+
+  std::optional<base::ByteSize> free_disk_space_;
+  SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<ManifestSolutionFactory> weak_ptr_factory_{this};
 };

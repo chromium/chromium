@@ -46,7 +46,8 @@ class ManifestBrokerStateTest : public testing::Test {
   ManifestBrokerStateTest() {}
 
  protected:
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   FakeManifestBroker fake_;
 };
 
@@ -233,6 +234,75 @@ TEST_F(ManifestBrokerStateTest, UninstallModels) {
   fake_.state().UninstallModels();
 
   EXPECT_TRUE(fake_.component_state().WaitForUninstall("model_A_key"));
+}
+
+TEST_F(ManifestBrokerStateTest,
+       CreateSessionFailedOnInsufficientDiskSpaceForCaches) {
+  // Use a base model without cache files so that has_caches is false,
+  // which allows the kInsufficientDiskSpaceForCaches check to trigger.
+  ScenarioBuilder(fake_.component_state())
+      .AddBaseModel(
+          "model_A",
+          BaseModelRecipeArgs(
+              proto::BaseModelRecipe::BACKEND_TYPE_GPU,
+              proto::BaseModelRecipe::PERFORMANCE_HINT_HIGHEST_QUALITY, {},
+              100),
+          FakeBaseModelAsset::Content{.shader_cache_data = nullptr}, "1.0.0.0")
+      .AddUnsafeSolution("test", "model_A")
+      .AddUnsafeSolution("compose", "model_A")
+      .Finish();
+  fake_.Startup();
+  TestOnDeviceModelAvailabilityObserver obs(mojom::OnDeviceFeature::kTest);
+  fake_.state().AddOnDeviceModelAvailabilityChangeObserver(
+      mojom::OnDeviceFeature::kTest, &obs);
+  fake_.client().RequestAssetsFor("test");
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return obs.reason_ == OnDeviceModelEligibilityReason::kSuccess;
+  }));
+
+  // Drop free space below 10 GiB required for building caches after install.
+  fake_.component_state().SetFreeDiskSpace(base::GiBU(8));
+  task_environment_.FastForwardBy(base::Seconds(11));
+  // Request a different use case to trigger a fresh disk space evaluation.
+  fake_.client().RequestAssetsFor("compose");
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return obs.reason_ ==
+           OnDeviceModelEligibilityReason::kInsufficientDiskSpaceForCaches;
+  }));
+}
+
+TEST_F(ManifestBrokerStateTest,
+       CreateSessionSucceedsWithLowDiskSpaceWhenCachesExist) {
+  // ScenarioBuilder::AddBaseModel creates cache files by default,
+  // so has_caches is true.
+  ScenarioBuilder(fake_.component_state())
+      .AddBaseModel("model_A")
+      .AddUnsafeSolution("test", "model_A")
+      .AddUnsafeSolution("compose", "model_A")
+      .Finish();
+  fake_.Startup();
+  TestOnDeviceModelAvailabilityObserver obs(mojom::OnDeviceFeature::kTest);
+  fake_.state().AddOnDeviceModelAvailabilityChangeObserver(
+      mojom::OnDeviceFeature::kTest, &obs);
+  fake_.client().RequestAssetsFor("test");
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return obs.reason_ == OnDeviceModelEligibilityReason::kSuccess;
+  }));
+
+  // Drop free space below 10 GiB required for building caches.
+  fake_.component_state().SetFreeDiskSpace(base::GiBU(8));
+  task_environment_.FastForwardBy(base::Seconds(11));
+  // Request a different use case to trigger a fresh disk space evaluation.
+  fake_.client().RequestAssetsFor("compose");
+
+  // Since caches already exist on disk, availability remains kSuccess and
+  // session creation succeeds.
+  base::test::TestFuture<ModelBrokerClient::CreateSessionResult> session_future;
+  fake_.client().CreateSession(mojom::OnDeviceFeature::kTest,
+                               SessionConfigParams{},
+                               session_future.GetCallback());
+  EXPECT_TRUE(session_future.Take());
+  EXPECT_EQ(obs.reason_, OnDeviceModelEligibilityReason::kSuccess);
 }
 
 }  // namespace optimization_guide

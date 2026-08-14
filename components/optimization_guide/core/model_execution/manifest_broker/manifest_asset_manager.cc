@@ -380,6 +380,10 @@ void ManifestAssetManager::UpdateSolutionFactory(
   // TODO(holte): Potentially defer stopping the old factory from providing new
   // solutions until we actually download assets for the new factory.
   factory_ = std::move(factory);
+  if (std::optional<base::ByteSize> free_space =
+          disk_space_status_.GetFreeSpace()) {
+    factory_->UpdateFreeDiskSpace(free_space);
+  }
 
   // Mark the manifest asset as ready. This is deferred until now let the
   // AssetManager decide when the factory can start providing solutions.
@@ -487,6 +491,7 @@ void ManifestAssetManager::OnDiskSpaceEvaluated(
               perfetto::Flow::FromPointer(this));
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   disk_space_status_.Update(free_space);
+  factory_->UpdateFreeDiskSpace(free_space);
   UpdateRegistrations();
 }
 
