@@ -628,7 +628,9 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
         // UI that's pre-inflated using a themed application context as part of CCT warmup.
         // Note: this should be called before any calls to `Window#getDecorView`.
         if (shouldApplyDynamicColors()) {
-            applyDynamicColors();
+            if (!maybeApplyCustomizedColors()) {
+                DynamicColors.applyToActivityIfAvailable(this);
+            }
         }
 
         // TODO(https://crbug.com/392634251): Explore setting elegantTextHeight to 'true' on older
@@ -836,17 +838,21 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
         return true;
     }
 
-    /** Applies dynamic colors or a selected color theme generated using DynamicColors API. */
-    private void applyDynamicColors() {
+    /**
+     * Applies a selected color theme generated using DynamicColors API if exists.
+     *
+     * @return whether a color theme has been applied.
+     */
+    protected boolean maybeApplyCustomizedColors() {
         @ColorInt
         Integer primaryColor =
                 NtpCustomizationUtils.getPrimaryColorFromCustomizedThemeColor(
                         this, /* checkDailyRefresh= */ true);
         if (primaryColor != null) {
             NtpCustomizationUtils.applyDynamicColorToActivity(this, primaryColor);
-        } else {
-            DynamicColors.applyToActivityIfAvailable(this);
+            return true;
         }
+        return false;
     }
 
     // Recursively sets the classloader on the given bundle and all nested bundles.

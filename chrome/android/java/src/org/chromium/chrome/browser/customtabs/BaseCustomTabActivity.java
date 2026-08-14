@@ -1067,6 +1067,11 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
     }
 
     @Override
+    protected boolean maybeApplyCustomizedColors() {
+        return false;
+    }
+
+    @Override
     protected TabModelOrchestrator createTabModelOrchestrator() {
         return getCustomTabActivityTabFactory().createTabModelOrchestrator();
     }
