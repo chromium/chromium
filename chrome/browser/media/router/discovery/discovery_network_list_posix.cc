@@ -16,8 +16,10 @@
 #include "base/compiler_specific.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
+
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/media/router/discovery/discovery_network_list_wifi.h"
-#include "net/base/net_errors.h"
+#endif
 
 #if !BUILDFLAG(IS_MAC)
 #include <netpacket/packet.h>
@@ -82,10 +84,12 @@ void GetDiscoveryNetworkInfoListImpl(
       continue;
     }
 
+#if !BUILDFLAG(IS_ANDROID)
     if (MaybeGetWifiSSID(name, &ssid)) {
       network_info_list->push_back({name, ssid});
       continue;
     }
+#endif
 
     if (SOCKET_ADDRESS_LEN(ll_addr) == 0) {
       continue;

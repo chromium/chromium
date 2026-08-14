@@ -189,7 +189,7 @@ static_library("test_support") {
     ]
   }
 
-  if (enable_guest_view) {
+  if (enable_guest_view && enable_extensions) {
     sources += [
       "browser/guest_view/mime_handler_view/test_mime_handler_view_guest.cc",
       "browser/guest_view/mime_handler_view/test_mime_handler_view_guest.h",

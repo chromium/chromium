@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//extensions/buildflags/buildflags.gni")
+
 source_set("browser") {
   sources = [
     "issue_manager.cc",
@@ -84,7 +86,9 @@ source_set("browser") {
       "android/media_router_dialog_controller_android.h",
     ]
     deps += [ "android:jni_headers" ]
-  } else {
+  }
+
+  if (!is_android || enable_extensions_core) {
     sources += [
       "issues_observer.cc",
       "issues_observer.h",

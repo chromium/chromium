@@ -202,8 +202,6 @@ source_set("extensions") {
     "chrome_app_icon.cc",
     "chrome_app_icon.h",
     "chrome_app_icon_delegate.h",
-    "chrome_app_icon_loader.cc",
-    "chrome_app_icon_loader.h",
     "chrome_app_icon_service.cc",
     "chrome_app_icon_service.h",
     "chrome_app_icon_service_factory.cc",
@@ -701,6 +699,8 @@ source_set("extensions") {
       "api/chrome_extensions_api_client_non_android.cc",
       "api/tabs/tabs_event_router_platform_delegate_non_android.cc",
       "api/tabs/tabs_event_router_platform_delegate_non_android.h",
+      "chrome_app_icon_loader.cc",
+      "chrome_app_icon_loader.h",
     ]
     public_deps += [
       "//chrome/browser/ui/tabs:utils",

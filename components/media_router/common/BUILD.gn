@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//extensions/buildflags/buildflags.gni")
+
 static_library("common") {
   sources = [
     # media_sink_internal needs to be included with Android due to typemapping.
@@ -41,7 +43,7 @@ static_library("common") {
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
-  if (!is_android) {
+  if (!is_android || enable_extensions_core) {
     sources += [
       "discovery/media_sink_service_base.cc",
       "discovery/media_sink_service_base.h",
