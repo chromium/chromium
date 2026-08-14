@@ -7833,7 +7833,14 @@ test("unit_tests") {
 
     # TODO(crbug.com/353332589): Remove this dependency when the
     # views/autofill/popup/ unit tests get modularized.
-    deps += [ "//chrome/browser/ui/views/autofill/popup" ]
+    deps += [
+      "//chrome/browser/ui/views/autofill/popup",
+      "//chrome/browser/ui/views/autofill/popup:lazy_loading_image_view",
+      "//chrome/browser/ui/views/autofill/popup:popup_centered_text_view",
+      "//chrome/browser/ui/views/autofill/popup:popup_separator_view",
+      "//chrome/browser/ui/views/autofill/popup:popup_title_view",
+      "//chrome/browser/ui/views/autofill/popup:popup_warning_view",
+    ]
 
     deps += [
       "//chrome/browser/ui/call_to_action",
