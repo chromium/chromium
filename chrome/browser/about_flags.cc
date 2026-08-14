@@ -11819,6 +11819,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAndroidDesktopBookmarkLayoutDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kAndroidDesktopBookmarkLayout)},
 
+    {"android-desktop-history-layout",
+     flag_descriptions::kAndroidDesktopHistoryLayoutName,
+     flag_descriptions::kAndroidDesktopHistoryLayoutDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kAndroidDesktopHistoryLayout)},
+
     {"android-desktop-ua-platform",
      flag_descriptions::kAndroidDesktopUAPlatformName,
      flag_descriptions::kAndroidDesktopUAPlatformDescription, kOsAndroid,

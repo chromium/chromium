@@ -5477,6 +5477,11 @@ inline constexpr char kAndroidDesktopBookmarkLayoutName[] =
 inline constexpr char kAndroidDesktopBookmarkLayoutDescription[] =
     "Enables the desktop-styled bookmark layout on Android Desktop devices.";
 
+inline constexpr char kAndroidDesktopHistoryLayoutName[] =
+    "Android Desktop History Layout";
+inline constexpr char kAndroidDesktopHistoryLayoutDescription[] =
+    "Enables the new history manager layout for Android desktop.";
+
 inline constexpr char kAndroidDesktopUAPlatformName[] =
     "Android platform client hint for Desktop Android";
 inline constexpr char kAndroidDesktopUAPlatformDescription[] =

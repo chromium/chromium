@@ -322,6 +322,11 @@
     "expiry_milestone": 165
   },
   {
+    "name": "android-desktop-history-layout",
+    "owners": [ "wylieb@google.com" ],
+    "expiry_milestone": 165
+  },
+  {
     "name": "android-desktop-ua-platform",
     "owners": [ "victortan@chromium.org", "miketaylr@chromium.org" ],
     "expiry_milestone": 155
