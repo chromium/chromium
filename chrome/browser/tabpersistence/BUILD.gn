@@ -38,12 +38,16 @@ flatbuffer_java_library("flatbuffer_java") {
 }
 
 robolectric_library("junit") {
-  sources = [ "android/java/src/org/chromium/chrome/browser/tabpersistence/TabStateFileManagerUnitTest.java" ]
+  sources = [
+    "android/java/src/org/chromium/chrome/browser/tabpersistence/TabMetadataFileManagerUnitTest.java",
+    "android/java/src/org/chromium/chrome/browser/tabpersistence/TabStateFileManagerUnitTest.java",
+  ]
   deps = [
     ":java",
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//base:tristate_java",
     "//base/test:test_support_java",
     "//chrome/browser/android/crypto:java",
     "//chrome/browser/tab:java",
