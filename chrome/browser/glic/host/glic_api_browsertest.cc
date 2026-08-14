@@ -1509,55 +1509,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testCallingApiWhileHiddenRecordsMetrics) {
   // Confirm that this request gets latency metrics recorded.
   histogram_tester.ExpectTotalCount("Glic.Api.RequestHostLatency.CreateTab", 1);
 }
-IN_PROC_BROWSER_TEST_P(GlicApiTest, testUnpinTabsThatNavigateInBackground) {
-  // Note: Enabling this for multi-instance is tricky because pinned tabs
-  // automatically bind, so background pinned tabs take some work to set up.
-  // We should probably just make a new test. Also, the behavior being tested
-  // here likely needs changed, see b/457841601.
-  TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
-  // Use HTTPS test server for this test to test same-origin navigation.
-  ASSERT_TRUE(embedded_https_test_server().Start());
-
-  RunTestSequence(
-      InstrumentTab(kFirstTab),
-      NavigateWebContents(kFirstTab, embedded_https_test_server().GetURL(
-                                         "a.com", "/test_data/page.html?one")),
-
-      AddInstrumentedTab(kSecondTab, embedded_https_test_server().GetURL(
-                                         "a.com", "/test_data/page.html?two")));
-  RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents,
-                           /*conversation_id=*/std::nullopt));
-  ExecuteJsTest();
-
-  RunTestSequence(
-      // Navigate to a different origin. Because it's hidden and the glic window
-      // is hidden, it will be unpinned.
-      NavigateWebContents(kSecondTab,
-                          embedded_https_test_server().GetURL(
-                              "b.com", "/test_data/page.html?changedTwo")));
-  EXPECT_EQ(1,
-            user_action_tester->GetActionCount("Glic.PinnedTab.OriginChanged"));
-  EXPECT_EQ(1, user_action_tester->GetActionCount(
-                   "Glic.PinnedTab.OriginChanged.Unpinned"));
-
-  RunTestSequence(
-      // Navigate to the same origin, this tab should not be unpinned.
-      NavigateWebContents(kFirstTab,
-                          embedded_https_test_server().GetURL(
-                              "a.com", "/test_data/page.html?sameOrigin")),
-      // Show the glic window and navigate the remaining tab. It should not be
-      // unpinned.
-      ToggleGlicWindow(GlicWindowMode::kDetached),
-      NavigateWebContents(kFirstTab,
-                          embedded_https_test_server().GetURL(
-                              "b.com", "/test_data/page.html?changedOne")));
-  EXPECT_EQ(2,
-            user_action_tester->GetActionCount("Glic.PinnedTab.OriginChanged"));
-  EXPECT_EQ(1, user_action_tester->GetActionCount(
-                   "Glic.PinnedTab.OriginChanged.Unpinned"));
-
-  ContinueJsTest();
-}
 
 // TODO(crbug.com/454001121): Re-enable after fixing.
 IN_PROC_BROWSER_TEST_P(GlicApiTest,

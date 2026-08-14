@@ -51,6 +51,7 @@
 #include "components/feature_engagement/test/scoped_iph_feature_list.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/host_zoom_map.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -681,6 +682,14 @@ class GlicBrowserTestMixin : public T {
   tabs::TabInterface* CreateBackgroundTab(BrowserWindowInterface* browser,
                                           const GURL& url) {
     return CreateBackgroundTab(TabListInterface::From(browser), url);
+  }
+
+  // Navigates an existing tab to the given URL and waits for load to complete.
+  void NavigateTab(tabs::TabInterface& tab, const GURL& url) {
+    content::NavigationController::LoadURLParams params(url);
+    params.transition_type = ui::PageTransition::PAGE_TRANSITION_LINK;
+    tab.GetContents()->GetController().LoadURLWithParams(params);
+    CHECK(content::WaitForLoadStop(tab.GetContents()));
   }
 
   // Creates a new browser window and returns it. On Desktop, it will also

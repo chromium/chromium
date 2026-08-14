@@ -1465,6 +1465,46 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testUnpinAllTabs) {
   ExecuteJsTest();
 }
 
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testUnpinTabsThatNavigateInBackground) {
+  tabs::TabInterface* first_tab = GetTabListInterface()->GetActiveTab();
+  const int first_tab_id = first_tab->GetHandle().raw_value();
+
+  // Navigate first_tab to a.com to set up the starting origin.
+  NavigateTab(*first_tab,
+              embedded_test_server()->GetURL("a.com", "/test_data/page.html"));
+
+  // Open second tab and activate it.
+  CreateAndActivateTab(
+      embedded_test_server()->GetURL("/browser_tests/test.html"));
+
+  // Open Glic on the active tab (second_tab).
+  ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTab());
+  PreventDeletionOnClose(instance);
+
+  // Run the JS test, passing first_tab_id.
+  ExecuteJsTest({.params = base::Value(base::DictValue().Set(
+                     "tabId", base::NumberToString(first_tab_id)))});
+
+  // Navigate first_tab (background) to b.com.
+  // Glic window is open, so it should stay pinned.
+  NavigateTab(*first_tab, embedded_test_server()->GetURL(
+                              "b.com", "/browser_tests/test.html"));
+
+  // Continue to close panel.
+  ContinueJsTest();
+
+  // Glic UI was closed by JS, wait for it to be fully closed.
+  ASSERT_OK(WaitForGlicClose());
+
+  // Navigate first_tab (background) to a.com.
+  // Glic window is closed, so it should be unpinned.
+  NavigateTab(*first_tab,
+              embedded_test_server()->GetURL("a.com", "/title1.html"));
+
+  // Continue to check results.
+  ContinueJsTest();
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testPinTabsFailsWhenIncognitoWindow) {
   ASSERT_OK(OpenGlicForActiveTabAndDetach());

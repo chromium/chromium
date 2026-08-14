@@ -247,6 +247,32 @@ class ApiTests extends ApiTestFixtureBase {
     await pinnedTabsUpdates.waitFor((tabs) => tabs.length === 0);
   }
 
+  async testUnpinTabsThatNavigateInBackground() {
+    assertDefined(this.host.pinTabs);
+    assertDefined(this.host.getPinnedTabs);
+    assertDefined(this.host.closePanel);
+
+    const tabId = (this.testParams as any).tabId;
+    // Pin first_tab (background tab).
+    assertTrue(await this.host.pinTabs([tabId]));
+
+    const pinnedTabsUpdates = observeSequence(this.host.getPinnedTabs!());
+    await pinnedTabsUpdates.waitFor((tabs) => tabs.length === 2);
+
+    // Wait for the background tab to navigate. It should stay pinned.
+    await this.advanceToNextStep();
+
+    assertEquals(this.host.getPinnedTabs!().getCurrentValue()?.length, 2);
+
+    // Close the panel.
+    await this.host.closePanel();
+
+    // The background tab will navigate again. It should be unpinned.
+    await this.advanceToNextStep();
+
+    await pinnedTabsUpdates.waitFor((tabs) => tabs.length === 1);
+  }
+
   async testPinTabsFailsWhenIncognitoWindow() {
     assertDefined(this.host.pinTabs);
     assertDefined(this.host.getPinnedTabs);

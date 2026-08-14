@@ -261,6 +261,7 @@ class GlicApiBrowserTestMixin : public T {
 
   void SetUpOnMainThread() override {
     Base::SetUpOnMainThread();
+    Base::host_resolver()->AddRule("a.com", "127.0.0.1");
     Base::host_resolver()->AddRule("b.com", "127.0.0.1");
 #if !BUILDFLAG(IS_ANDROID)
     // Makes active browser selection deterministic for tests.
