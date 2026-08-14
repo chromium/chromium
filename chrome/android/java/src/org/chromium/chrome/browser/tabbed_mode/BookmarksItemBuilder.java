@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuBookmarkItemProperties;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
+import org.chromium.components.bookmarks.BookmarkBarVisibilityState;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.browser_ui.util.GlobalDiscardableReferencePool;
@@ -415,8 +416,9 @@ public class BookmarksItemBuilder implements Destroyable {
     private ListItem buildBookmarkBarVisibilityParentItem() {
         Supplier<List<ListItem>> submenuItemsSupplier =
                 () -> {
-                    boolean isBookmarkBarVisible =
-                            BookmarkBarUtils.isBookmarkBarVisible(
+                    @BookmarkBarVisibilityState
+                    int visibilityState =
+                            BookmarkBarUtils.getBookmarkBarVisibilityState(
                                     mContext,
                                     getProfileFromTabModel(),
                                     mXrSpaceModeObservableSupplier.get());
@@ -425,12 +427,12 @@ public class BookmarksItemBuilder implements Destroyable {
                             buildBookmarkBarStateItem(
                                     R.id.bookmark_bar_state_always_hide_menu_id,
                                     R.string.bookmark_bar_setting_always_hide,
-                                    !isBookmarkBarVisible));
+                                    visibilityState == BookmarkBarVisibilityState.ALWAYS_HIDE));
                     items.add(
                             buildBookmarkBarStateItem(
                                     R.id.bookmark_bar_state_always_show_menu_id,
                                     R.string.bookmark_bar_setting_always_show,
-                                    isBookmarkBarVisible));
+                                    visibilityState == BookmarkBarVisibilityState.ALWAYS_SHOW));
                     return items;
                 };
 

@@ -2930,23 +2930,35 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 return true;
             }
         } else if (id == R.id.bookmark_bar_state_always_show_menu_id) {
-            if (BookmarkBarUtils.isActivityStateBookmarkBarCompatible(mActivity)) {
-                if (!getBookmarkBarVisibility()) {
-                    BookmarkBarUtils.toggleShowBookmarksBar(
-                            mProfileSupplier.asNonNull().get(), /* fromKeyboardShortcut= */ false);
-                    RecordUserAction.record("MobileMenuBookmarkBarAlwaysShow");
-                }
-                return true;
+            if (!BookmarkBarUtils.isActivityStateBookmarkBarCompatible(mActivity)) {
+                return false;
             }
+            Profile profile = mProfileSupplier.asNonNull().get();
+            if (BookmarkBarUtils.getBookmarkBarVisibilityState(
+                            mActivity, profile, mXrSpaceModeObservableSupplier.get())
+                    != BookmarkBarVisibilityState.ALWAYS_SHOW) {
+                BookmarkBarUtils.setBookmarkBarVisibilityState(
+                        profile,
+                        BookmarkBarVisibilityState.ALWAYS_SHOW,
+                        /* fromKeyboardShortcut= */ false);
+                RecordUserAction.record("MobileMenuBookmarkBarAlwaysShow");
+            }
+            return true;
         } else if (id == R.id.bookmark_bar_state_always_hide_menu_id) {
-            if (BookmarkBarUtils.isActivityStateBookmarkBarCompatible(mActivity)) {
-                if (getBookmarkBarVisibility()) {
-                    BookmarkBarUtils.toggleShowBookmarksBar(
-                            mProfileSupplier.asNonNull().get(), /* fromKeyboardShortcut= */ false);
-                    RecordUserAction.record("MobileMenuBookmarkBarAlwaysHide");
-                }
-                return true;
+            if (!BookmarkBarUtils.isActivityStateBookmarkBarCompatible(mActivity)) {
+                return false;
             }
+            Profile profile = mProfileSupplier.asNonNull().get();
+            if (BookmarkBarUtils.getBookmarkBarVisibilityState(
+                            mActivity, profile, mXrSpaceModeObservableSupplier.get())
+                    != BookmarkBarVisibilityState.ALWAYS_HIDE) {
+                BookmarkBarUtils.setBookmarkBarVisibilityState(
+                        profile,
+                        BookmarkBarVisibilityState.ALWAYS_HIDE,
+                        /* fromKeyboardShortcut= */ false);
+                RecordUserAction.record("MobileMenuBookmarkBarAlwaysHide");
+            }
+            return true;
         } else if (id == R.id.close_window) {
             mActivity.finishAndRemoveTask();
             return true;
