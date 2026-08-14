@@ -75,6 +75,8 @@ inline constexpr char kSplitWithTabNotInSameWindowError[] =
 inline constexpr char kSplitWithTabIndexNotAdjacentError[] =
     "Cannot create split view with 'splitWithTabId': Tab ID * is at index *, "
     "which is not adjacent to 'index' *.";
+inline constexpr char kSplitViewCreationFailedError[] =
+    "Failed to create split view.";
 #if BUILDFLAG(IS_ANDROID)
 inline constexpr char kAndroidCannotMoveTabsWithinCctOrWebAppWindowError[] =
     "Cannot move tabs within an Android web app or custom tab window.";

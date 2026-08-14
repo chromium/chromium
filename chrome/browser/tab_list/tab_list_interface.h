@@ -12,6 +12,7 @@
 
 #include "base/scoped_observation_traits.h"
 #include "build/android_buildflags.h"
+#include "components/split_tabs/split_tab_id.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/tab_interface.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
@@ -163,6 +164,11 @@ class TabListInterface {
   // Creates a tab group from a list of tabs and returns the group ID. Returns
   // nullopt on error (for example, if the tab list is empty).
   virtual std::optional<tab_groups::TabGroupId> CreateTabGroup(
+      const std::vector<tabs::TabHandle>& tabs) = 0;
+
+  // Creates a new split view with the given `tabs` and returns the split ID.
+  // Returns nullopt on error.
+  virtual std::optional<split_tabs::SplitTabId> CreateSplit(
       const std::vector<tabs::TabHandle>& tabs) = 0;
 
   // Sets the visual data for a tab group. Implementations may choose to notify

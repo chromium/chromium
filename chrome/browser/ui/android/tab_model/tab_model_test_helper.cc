@@ -276,6 +276,12 @@ std::optional<tab_groups::TabGroupId> TestTabModel::CreateTabGroup(
   return std::nullopt;
 }
 
+std::optional<split_tabs::SplitTabId> TestTabModel::CreateSplit(
+    const std::vector<tabs::TabHandle>& tabs) {
+  NOTIMPLEMENTED();
+  return std::nullopt;
+}
+
 void TestTabModel::SetTabGroupVisualData(
     tab_groups::TabGroupId group_id,
     const tab_groups::TabGroupVisualData& visual_data) {
@@ -610,6 +616,12 @@ bool OwningTestTabModel::ContainsTabGroup(tab_groups::TabGroupId group_id) {
 }
 
 std::optional<tab_groups::TabGroupId> OwningTestTabModel::CreateTabGroup(
+    const std::vector<tabs::TabHandle>& tabs) {
+  NOTIMPLEMENTED();
+  return std::nullopt;
+}
+
+std::optional<split_tabs::SplitTabId> OwningTestTabModel::CreateSplit(
     const std::vector<tabs::TabHandle>& tabs) {
   NOTIMPLEMENTED();
   return std::nullopt;

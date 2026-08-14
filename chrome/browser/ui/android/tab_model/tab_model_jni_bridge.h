@@ -16,6 +16,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "chrome/browser/flags/android/chrome_session_state.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
+#include "components/split_tabs/split_tab_id.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/tab_interface.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
@@ -152,6 +153,8 @@ class TabModelJniBridge : public TabModel {
       tab_groups::TabGroupId group_id) override;
   gfx::Range GetTabGroupTabIndices(tab_groups::TabGroupId group_id) override;
   std::optional<tab_groups::TabGroupId> CreateTabGroup(
+      const std::vector<tabs::TabHandle>& tabs) override;
+  std::optional<split_tabs::SplitTabId> CreateSplit(
       const std::vector<tabs::TabHandle>& tabs) override;
   void SetTabGroupVisualData(
       tab_groups::TabGroupId group_id,

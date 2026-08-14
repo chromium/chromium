@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/split_tabs/split_tab_id.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "components/tabs/public/tab_group.h"
@@ -994,6 +995,42 @@ IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest,
   tab_list_interface->MoveGroupTo(*group_id, 3);
   EXPECT_EQ("0 1g0 2g0 3g0 6g1 7g1 8g1 4 5 9",
             GetTabStripStateString(tab_strip_model, /*annotate_groups=*/true));
+}
+
+IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest, CreateSplit) {
+  SetupTabs(browser(), 5);
+
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  ASSERT_TRUE(tab_strip_model);
+  EXPECT_EQ("0 1 2 3 4",
+            GetTabStripStateString(tab_strip_model, /*annotate_groups=*/true));
+
+  TabListInterface* tab_list_interface = TabListInterface::From(browser());
+  ASSERT_TRUE(tab_list_interface);
+
+  // Splitting adjacent tabs (index 0 and index 1).
+  std::optional<split_tabs::SplitTabId> split_id1 =
+      tab_list_interface->CreateSplit(
+          {tab_list_interface->GetTab(0)->GetHandle(),
+           tab_list_interface->GetTab(1)->GetHandle()});
+  ASSERT_TRUE(split_id1.has_value());
+  EXPECT_EQ("0s 1s 2 3 4",
+            GetTabStripStateString(tab_strip_model, /*annotate_groups=*/true));
+  EXPECT_EQ(split_id1, tab_list_interface->GetTab(0)->GetSplit());
+  EXPECT_EQ(split_id1, tab_list_interface->GetTab(1)->GetSplit());
+
+  // Splitting non-adjacent tabs (index 2 and index 4) repositions them so they
+  // become contiguous. This behavior is consistent with the underlying
+  // TabStripModel::AddToNewSplit implementation.
+  std::optional<split_tabs::SplitTabId> split_id2 =
+      tab_list_interface->CreateSplit(
+          {tab_list_interface->GetTab(2)->GetHandle(),
+           tab_list_interface->GetTab(4)->GetHandle()});
+  ASSERT_TRUE(split_id2.has_value());
+  EXPECT_EQ("0s 1s 2s 4s 3",
+            GetTabStripStateString(tab_strip_model, /*annotate_groups=*/true));
+  EXPECT_EQ(split_id2, tab_list_interface->GetTab(2)->GetSplit());
+  EXPECT_EQ(split_id2, tab_list_interface->GetTab(3)->GetSplit());
 }
 
 IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest, OpenTab) {

@@ -6,6 +6,7 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "base/types/expected_macros.h"
+#include "chrome/browser/extensions/api/tabs/tabs_constants.h"
 #include "chrome/browser/extensions/browser_window_util.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
@@ -17,6 +18,7 @@
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
@@ -159,6 +161,14 @@ base::expected<content::WebContents*, std::string> OpenTabHelper::OpenTab(
     const Params& params) {
   auto* const extension = function.extension();
 
+#if BUILDFLAG(IS_ANDROID)
+  // TODO(https://crbug.com/480192698): Remove this restriction once split tabs
+  // are supported on Desktop Android.
+  if (params.split_with_tab_id.has_value()) {
+    return base::unexpected(tabs_constants::kSplitViewCreationFailedError);
+  }
+#endif
+
   // DCHECK because the input should already have been validated, and this is
   // a somewhat costly function.
   DCHECK(ExtensionTabUtil::PrepareURLForNavigation(
@@ -188,15 +198,12 @@ base::expected<content::WebContents*, std::string> OpenTabHelper::OpenTab(
                                     ? WindowOpenDisposition::NEW_FOREGROUND_TAB
                                     : WindowOpenDisposition::NEW_BACKGROUND_TAB;
 
-  // TODO(https://crbug.com/480192698): Remove this restriction once split tabs
-  // are supported on Desktop Android.
-  tabs::TabInterface* split_tab = nullptr;
-#if !BUILDFLAG(IS_ANDROID)
   // If splitWithTabId is specified, determine the relative positioning of the
   // new tab. Defaults to the right of the target tab if index is not specified.
-  content::WebContents* split_contents = nullptr;
+  tabs::TabInterface* split_tab = nullptr;
   if (params.split_with_tab_id.has_value() &&
       base::FeatureList::IsEnabled(extensions_features::kApiTabsSplitView)) {
+    content::WebContents* split_contents = nullptr;
     int split_index = -1;
     if (ExtensionTabUtil::GetTabById(*params.split_with_tab_id,
                                      function.browser_context(),
@@ -209,10 +216,10 @@ base::expected<content::WebContents*, std::string> OpenTabHelper::OpenTab(
       }
       if (split_contents) {
         split_tab = tabs::TabInterface::GetFromContents(split_contents);
+        CHECK(split_tab);
       }
     }
   }
-#endif
 
   navigate_params.tabstrip_index = index;
   navigate_params.user_gesture = false;
@@ -254,25 +261,19 @@ base::expected<content::WebContents*, std::string> OpenTabHelper::OpenTab(
     return base::unexpected(ExtensionTabUtil::kLockedFullscreenModeNewTabError);
   }
 
-// TODO(https://crbug.com/480192698): Remove this restriction once split tabs
-// are supported on Desktop Android.
-#if !BUILDFLAG(IS_ANDROID)
   // Split the tab if the splitWithTabId is specified and the tab is valid.
-  if (split_contents) {
-    // TODO(https://crbug.com/544806577): Use TabListInterface once it supports
-    // split tabs.
-    TabStripModel* tab_strip_model =
-        browser.GetBrowserForMigrationOnly()->tab_strip_model();
-    int new_tab_index = tab_strip_model->GetIndexOfWebContents(new_contents);
-    int split_index = tab_strip_model->GetIndexOfWebContents(split_contents);
-    if (new_tab_index != TabStripModel::kNoTab &&
-        split_index != TabStripModel::kNoTab) {
-      tab_strip_model->AddToNewSplit(
-          {split_index, new_tab_index}, split_tabs::SplitTabVisualData(),
-          split_tabs::SplitTabCreatedSource::kExtensionsApi);
+  // Returns an error and cleans up the newly created tab if the split view
+  // cannot be created.
+  if (split_tab) {
+    tabs::TabInterface* new_tab =
+        tabs::TabInterface::GetFromContents(new_contents);
+    CHECK(new_tab);
+    if (!tab_list->CreateSplit(
+            {split_tab->GetHandle(), new_tab->GetHandle()})) {
+      tab_list->CloseTab(new_tab->GetHandle());
+      return base::unexpected(tabs_constants::kSplitViewCreationFailedError);
     }
   }
-#endif
 
   if (active) {
     new_contents->SetInitialFocus();

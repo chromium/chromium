@@ -11,6 +11,7 @@
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/tab_list/tab_list_interface_observer.h"
 #include "components/sessions/core/session_id.h"
+#include "components/split_tabs/split_tab_id.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "components/tabs/public/tab_interface.h"
@@ -97,6 +98,10 @@ class MockTabListInterface : public TabListInterface {
               (override));
   MOCK_METHOD(std::optional<tab_groups::TabGroupId>,
               CreateTabGroup,
+              (const std::vector<tabs::TabHandle>&),
+              (override));
+  MOCK_METHOD(std::optional<split_tabs::SplitTabId>,
+              CreateSplit,
               (const std::vector<tabs::TabHandle>&),
               (override));
   MOCK_METHOD(void,

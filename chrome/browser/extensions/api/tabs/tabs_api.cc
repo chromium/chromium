@@ -2081,6 +2081,15 @@ ExtensionFunction::ResponseAction TabsCreateFunction::Run() {
   pinned_ = create_properties.pinned;
   index_ = create_properties.index;
   original_url_ = std::move(create_properties.url);
+  split_with_tab_id_ = create_properties.split_with_tab_id;
+
+#if BUILDFLAG(IS_ANDROID)
+  // TODO(https://crbug.com/480192698): Remove this restriction once split tabs
+  // are supported on Desktop Android.
+  if (split_with_tab_id_) {
+    return RespondNow(Error(tabs_constants::kSplitViewCreationFailedError));
+  }
+#endif
 
   validated_url_ = chrome::ChromeUINewTabURLAsGURL();
   if (original_url_) {
@@ -2141,8 +2150,6 @@ ExtensionFunction::ResponseAction TabsCreateFunction::Run() {
   }
 
   if (base::FeatureList::IsEnabled(extensions_features::kApiTabsSplitView)) {
-    split_with_tab_id_ = create_properties.split_with_tab_id;
-
     if (split_with_tab_id_) {
       int target_index = -1;
       WindowController* target_window_controller = nullptr;
