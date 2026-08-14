@@ -28,6 +28,8 @@ import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.NavigationHistory;
 
+import java.util.List;
+
 /** Observer for events that are relevant to TabGroup suggestion triggering or calculation. */
 @NullMarked
 public class SuggestionEventObserver {
@@ -75,6 +77,14 @@ public class SuggestionEventObserver {
                 @Override
                 public void willCloseTab(Tab tab, boolean didCloseAlone) {
                     mGroupSuggestionsService.willCloseTab(tab.getId());
+                }
+
+                @Override
+                public void willCloseTabs(
+                        List<Tab> tabs, boolean isAllTabs, boolean allowUndo) {
+                    for (Tab tab : tabs) {
+                        mGroupSuggestionsService.willCloseTab(tab.getId());
+                    }
                 }
 
                 @Override

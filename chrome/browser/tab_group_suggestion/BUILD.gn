@@ -123,6 +123,7 @@ if (is_android) {
       "//base:callback_java",
       "//base:supplier_java",
       "//chrome/browser/android/lifecycle:java",
+      "//chrome/browser/flags:java",
       "//chrome/browser/hub:java",
       "//chrome/browser/profiles/android:java",
       "//chrome/browser/tab:java",
