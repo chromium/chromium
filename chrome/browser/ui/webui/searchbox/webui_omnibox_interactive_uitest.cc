@@ -757,7 +757,8 @@ IN_PROC_BROWSER_TEST_P(OmniboxAimSearchFulfillmentTest,
          Then(param.submit_via_keyboard
                   ? InAnyContext(
                         SendKeyPress(kOmniboxElementId, ui::VKEY_RETURN))
-                  : InSameContext(ClickElement(kAimPopupWebView, kAimSubmit)))),
+                  : Steps(WaitForAimPopupTallLayoutSettled(),
+                          ClickAimSubmit(kAimPopupWebView)))),
       // Ensure tab navigates to a Google search results page.
       WaitForGoogleSearch(kNewTab, {{"q", query}}));
 }
