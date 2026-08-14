@@ -1099,20 +1099,6 @@ def main():
         _BuildTargets(output_dir, targets)
 
     project_entries = []
-    # When only one entry will be generated we want it to have a valid
-    # build.gradle file with its own AndroidManifest.
-    for entry in entries:
-        data = _GenerateGradleFile(
-            entry, generator, build_vars, jinja_processor
-        )
-        if data and not args.all:
-            project_entries.append((entry.ProjectName(), entry.GradleSubdir()))
-            _WriteFile(
-                os.path.join(
-                    generator.EntryOutputDir(entry), _GRADLE_BUILD_FILE
-                ),
-                data,
-            )
     if args.all:
         project_entries.append((_MODULE_ALL, _MODULE_ALL))
         _GenerateModuleAll(
@@ -1122,6 +1108,21 @@ def main():
             jinja_processor,
             args.native_targets,
         )
+    else:
+        for entry in entries:
+            data = _GenerateGradleFile(
+                entry, generator, build_vars, jinja_processor
+            )
+            if data:
+                project_entries.append(
+                    (entry.ProjectName(), entry.GradleSubdir())
+                )
+                _WriteFile(
+                    os.path.join(
+                        generator.EntryOutputDir(entry), _GRADLE_BUILD_FILE
+                    ),
+                    data,
+                )
 
     root_gradle_path = os.path.join(generator.project_dir, _GRADLE_BUILD_FILE)
     _WriteFile(
