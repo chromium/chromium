@@ -17,7 +17,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.Objects;
 import java.util.function.DoubleConsumer;
 
 /**
@@ -119,22 +118,6 @@ public interface HubColorMixer {
             this.startScheme = startScheme;
             this.endScheme = endScheme;
             this.fraction = fraction;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o instanceof ColorBlendProgress that) {
-                return startScheme == that.startScheme
-                        && endScheme == that.endScheme
-                        && Float.compare(fraction, that.fraction) == 0;
-            }
-            return false;
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(startScheme, endScheme, fraction);
         }
     }
 }

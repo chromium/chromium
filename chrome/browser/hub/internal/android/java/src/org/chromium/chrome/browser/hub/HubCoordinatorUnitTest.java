@@ -537,9 +537,11 @@ public class HubCoordinatorUnitTest {
     @Test
     public void testOnSwipeDragProgress_blendsColors() {
         mHubCoordinator.onSwipeDragProgress(0.5f, true);
-        assertEquals(
-                new ColorBlendProgress(HubColorScheme.DEFAULT, HubColorScheme.INCOGNITO, 0.5f),
-                mSwipeAnimationProgressSupplier.get());
+        ColorBlendProgress progress = mSwipeAnimationProgressSupplier.get();
+        assertNotNull(progress);
+        assertEquals(HubColorScheme.DEFAULT, progress.startScheme);
+        assertEquals(HubColorScheme.INCOGNITO, progress.endScheme);
+        assertEquals(0.5f, progress.fraction, 0.0f);
     }
 
     @Test
