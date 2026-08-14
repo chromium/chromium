@@ -69,6 +69,12 @@ export class SearchboxInputElement extends SearchboxInputElementBase {
       searchboxAriaDescription: {type: String},
       searchboxIcon: {type: String},
       selectedMatch: {type: Object},
+      /**
+       * The URL of the current webpage when focused in the searchbox before
+       * typing, used to load the page's favicon. Empty when typing, on the NTP,
+       * or for consumers that do not provide a page URL.
+       */
+      pageUrl: {type: String},
       inputKeywordModel: {type: Object},
       inputHasMatches: {type: Boolean},
       allowFilePaste: {type: Boolean},
@@ -82,6 +88,7 @@ export class SearchboxInputElement extends SearchboxInputElementBase {
   accessor searchboxAriaDescription: string = '';
   accessor searchboxIcon: string = '';
   accessor selectedMatch: AutocompleteMatch|null = null;
+  accessor pageUrl: string = '';
   accessor inputKeywordModel: InputKeywordModel|null = null;
   accessor inputHasMatches: boolean = false;
   accessor allowFilePaste: boolean = false;

@@ -1618,4 +1618,90 @@ suite('OmniboxPopupSearchboxTest', function() {
    assertFalse(searchbox.dropdownIsVisible);
    assertFalse(!!searchbox.result);
  });
+
+ suite('InputIconState', () => {
+   test('InputMatchUpdatesWithSelectedMatch', async () => {
+     const navMatch = createSearchMatchForTesting({
+       contents: 'example.com',
+       destinationUrl: 'https://example.com/',
+       isSearchType: false,
+       type: 'history-url',
+     });
+     const searchMatch = createSearchMatchForTesting({
+       contents: 'example query',
+       destinationUrl: 'https://www.google.com/search?q=example',
+       isSearchType: true,
+       type: 'search-what-you-typed',
+     });
+
+     searchbox.activeQueryId = 0;
+     const result = createAutocompleteResultForTesting({
+       input: 'example',
+       matches: [navMatch, searchMatch],
+       queryId: 0,
+     });
+     testProxy.page.autocompleteResultChanged(result);
+     await microtasksFinished();
+
+     // With selectedMatchIndex === -1 while typing, input's selectedMatch
+     // should be null.
+     assertEquals(-1, searchbox.selectedMatchIndex);
+     assertEquals(null, searchbox.$.input.selectedMatch);
+
+     // When navigating to match 1, input's selectedMatch should be match 1.
+     searchbox.selectedMatchIndex = 1;
+     await microtasksFinished();
+     assertEquals(
+         searchbox.result!.matches[1], searchbox.$.input.selectedMatch);
+     assertEquals('example query', searchbox.$.input.selectedMatch?.contents);
+
+     // When navigating to match 0, input's selectedMatch should be match 0.
+     searchbox.selectedMatchIndex = 0;
+     await microtasksFinished();
+     assertEquals(
+         searchbox.result!.matches[0], searchbox.$.input.selectedMatch);
+     assertEquals('example.com', searchbox.$.input.selectedMatch?.contents);
+
+     // When navigating back to unselected, input's selectedMatch should return
+     // to null.
+     searchbox.selectedMatchIndex = -1;
+     await microtasksFinished();
+     assertEquals(null, searchbox.$.input.selectedMatch);
+   });
+
+   test('UneditedPageUrlProvidesPageUrl', async () => {
+     // When input is unedited on a regular webpage URL (e.g. badssl or initial
+     // page focus):
+     callbackRouter.setInputState(createDefaultOmniboxInputState({
+       userInputInProgress: false,
+       permanentDisplayText: 'https://expired.badssl.com/',
+       fullUrl: 'https://expired.badssl.com/',
+     }));
+     await microtasksFinished();
+
+     // pageUrl should be passed to input element while selectedMatch is null.
+     assertEquals('https://expired.badssl.com/', searchbox.$.input.pageUrl);
+     assertEquals(null, searchbox.$.input.selectedMatch);
+
+     // On NTP, pageUrl should be empty (to show Super G default icon).
+     callbackRouter.setInputState(createDefaultOmniboxInputState({
+       userInputInProgress: false,
+       permanentDisplayText: 'chrome://newtab',
+       fullUrl: 'chrome://newtab/',
+     }));
+     await microtasksFinished();
+     assertEquals('', searchbox.$.input.pageUrl);
+     assertEquals(null, searchbox.$.input.selectedMatch);
+
+     // When the user starts typing (userInputInProgress becomes true), pageUrl
+     // becomes empty.
+     callbackRouter.setInputState(createDefaultOmniboxInputState({
+       userInputInProgress: true,
+       text: 'search query',
+     }));
+     await microtasksFinished();
+     assertEquals('', searchbox.$.input.pageUrl);
+     assertEquals(null, searchbox.$.input.selectedMatch);
+   });
+ });
 });

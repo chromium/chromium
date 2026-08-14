@@ -13,6 +13,7 @@ export function getHtml(this: SearchboxInputElement) {
 <div id="inputInnerContainer" part="input-inner-container">
     <slot name="contextual-entrypoint"></slot>
     <cr-searchbox-icon id="icon" .match="${this.selectedMatch}"
+        page-url="${this.pageUrl}"
         default-icon="${this.searchboxIcon}" in-searchbox part="icon">
     </cr-searchbox-icon>
     <slot name="thumbnail"></slot>

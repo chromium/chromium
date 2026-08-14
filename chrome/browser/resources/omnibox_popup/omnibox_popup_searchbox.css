@@ -39,6 +39,7 @@
   --alignment-inset-horizontal: 1px;
   --cr-searchbox-font-size: 15px;
   --cr-searchbox-height: 36px;
+  --cr-searchbox-icon-size-in-searchbox: 20px;
   --location-bar-page-info-icon-vertical-padding: 3px;
 }
 
@@ -51,6 +52,7 @@
   --alignment-inset-horizontal: 6px;
   --cr-searchbox-font-size: 14px;
   --cr-searchbox-height: 32px;
+  --cr-searchbox-icon-size-in-searchbox: 16px;
   --location-bar-page-info-icon-vertical-padding: 5px;
 }
 

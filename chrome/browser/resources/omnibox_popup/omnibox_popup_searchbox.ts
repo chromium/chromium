@@ -50,6 +50,15 @@ enum DeferredFocusAction {
 const canShowSecondarySideMediaQueryList =
     window.matchMedia('(min-width: 675px)');
 
+function isNtpUrl(url: string): boolean {
+  if (!url) {
+    return true;
+  }
+  return url.startsWith('chrome://newtab') ||
+      url.startsWith('chrome://new-tab-page') ||
+      url.startsWith('chrome-search://local-ntp') || url === 'about:blank';
+}
+
 export interface AimButtonConfig {
   text: string;
   title: string;
@@ -168,6 +177,15 @@ export class OmniboxPopupSearchboxElement extends
         type: Boolean,
         reflect: true,
       },
+      userInputInProgress_: {
+        type: Boolean,
+      },
+      fullUrl_: {
+        type: String,
+      },
+      permanentDisplayText_: {
+        type: String,
+      },
     };
   }
 
@@ -226,12 +244,12 @@ export class OmniboxPopupSearchboxElement extends
   private currentSequenceNum_: number = 0;
   // True if the user has modified the text in the input field (e.g., typed or
   // deleted characters), as opposed to displaying permanent text set from C++.
-  private userInputInProgress_: boolean = false;
+  protected accessor userInputInProgress_: boolean = false;
+  protected accessor fullUrl_: string = '';
+  protected accessor permanentDisplayText_: string = '';
   // True during an active IME (Input Method Editor) text composition session.
   // Used to suppress intermediate selection updates until composition finishes.
   private isComposing_: boolean = false;
-  private fullUrl_: string = '';
-  private permanentDisplayText_: string = '';
   private fullUrlShown_: boolean = false;
   // TODO(b/504669677): Replace `deferredFocusAction_` with
   // an actual handshake, to give more control of when focusing happens, instead
@@ -617,6 +635,20 @@ export class OmniboxPopupSearchboxElement extends
       // Invalid URL string
       return false;
     }
+  }
+
+  /**
+   * Returns the unedited webpage URL to display its favicon in the searchbox
+   * icon when the user is focused on a page before typing. Returns an empty
+   * string while user input is in progress (to show the default search provider
+   * icon, e.g. Super G, instead of the webpage favicon) or when on the NTP.
+   */
+  protected computeCurrentPageUrl_(): string {
+    if (this.userInputInProgress_) {
+      return '';
+    }
+    const pageUrl = this.fullUrl_ || this.permanentDisplayText_;
+    return isNtpUrl(pageUrl) ? '' : pageUrl;
   }
 
   /**

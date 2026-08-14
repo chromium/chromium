@@ -123,6 +123,13 @@ export class SearchboxIconElement extends CrLitElement {
         reflect: true,
       },
 
+      /**
+       * The URL of the current webpage when focused in the searchbox before
+       * typing, used to load the page's favicon. Empty when typing, on the NTP,
+       * or for consumers that do not provide a page URL.
+       */
+      pageUrl: {type: String},
+
       match: {type: Object},
 
       //========================================================================
@@ -218,6 +225,7 @@ export class SearchboxIconElement extends CrLitElement {
   accessor isEnterpriseSearchAggregatorPeopleType: boolean = false;
   accessor maskImage: string = '';
   accessor match: AutocompleteMatch|null = null;
+  accessor pageUrl: string = '';
   protected accessor faviconImage_: string = '';
   protected accessor faviconImageSrcSet_: string = '';
   protected accessor hasImage_: boolean = false;
@@ -239,7 +247,7 @@ export class SearchboxIconElement extends CrLitElement {
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
 
-    if (changedProperties.has('match')) {
+    if (changedProperties.has('match') || changedProperties.has('pageUrl')) {
       this.iconSrc_ = this.computeIconSrc_();
       this.imageSrc_ = this.computeImageSrc_();
       this.isAnswer = this.computeIsAnswer_();
@@ -262,7 +270,7 @@ export class SearchboxIconElement extends CrLitElement {
     const changedPrivateProperties =
         changedProperties as Map<PropertyKey, unknown>;
 
-    if (changedProperties.has('match') ||
+    if (changedProperties.has('match') || changedProperties.has('pageUrl') ||
         changedProperties.has('defaultIcon') ||
         changedPrivateProperties.has('isTopChromeSearchbox_')) {
       this.faviconImage_ = this.computeFaviconImage_();
@@ -318,12 +326,13 @@ export class SearchboxIconElement extends CrLitElement {
   //============================================================================
 
   private computeFaviconUrl_(scaleFactor: number): string {
-    if (!this.match?.destinationUrl) {
+    const url = this.match?.destinationUrl || this.pageUrl;
+    if (!url) {
       return '';
     }
 
     return getFaviconUrl(
-        /* url= */ this.match.destinationUrl, {
+        /* url= */ url, {
           forceLightMode: !this.isTopChromeSearchbox_,
           forceEmptyDefaultFavicon: true,
           scaleFactor: `${scaleFactor}x`,
@@ -335,10 +344,13 @@ export class SearchboxIconElement extends CrLitElement {
       return '';
     }
 
-    return [
-      `${this.computeFaviconUrl_(/* scaleFactor= */ 1)} 1x`,
-      `${this.computeFaviconUrl_(/* scaleFactor= */ 2)} 2x`,
-    ].join(', ');
+    // `this.faviconImage_` is computed prior to `this.faviconImageSrcSet_` in
+    // `willUpdate()`, so it already contains the 1x URL (for match
+    // destinations, unedited page URLs, or default search providers). Derive
+    // the 2x URL by updating its scaleFactor query parameter.
+    const url2x = new URL(this.faviconImage_);
+    url2x.searchParams.set('scaleFactor', '2x');
+    return `${this.faviconImage_} 1x, ${url2x.toString()} 2x`;
   }
 
   private computeFaviconImage_(): string {
@@ -354,6 +366,13 @@ export class SearchboxIconElement extends CrLitElement {
           this.match.type !== FEATURED_ENTERPRISE_SEARCH) {
         return this.computeFaviconUrl_(/* scaleFactor= */ 1);
       }
+    }
+
+    // When in the searchbox with an unedited page URL and no match selected,
+    // fetch the current page's favicon.
+    if (this.inSearchbox && this.isTopChromeSearchbox_ && this.pageUrl &&
+        !this.match) {
+      return this.computeFaviconUrl_(/* scaleFactor= */ 1);
     }
 
     if (this.defaultIcon ===
@@ -395,37 +414,54 @@ export class SearchboxIconElement extends CrLitElement {
     if (this.isLensSearchbox_ && this.inSearchbox) {
       return `url(${this.defaultIcon})`;
     }
-    // Enterprise search aggregator people and starter pack/featured enterprise
-    // search suggestions should show icon even in searchbox.
+    // Enterprise search aggregator people, starter pack/featured enterprise
+    // search suggestions, top-chrome searchbox (WebUI Omnibox), and non-rich
+    // suggestions should show icon even in searchbox.
     if (this.match &&
         (!this.match.isRichSuggestion || this.match.type === STARTER_PACK ||
          this.match.type === FEATURED_ENTERPRISE_SEARCH ||
          this.match.isEnterpriseSearchAggregatorPeopleType ||
-         !this.inSearchbox)) {
+         this.isTopChromeSearchbox_ || !this.inSearchbox)) {
       return `url(${this.match.iconPath})`;
-    } else {
-      return `url(${this.defaultIcon})`;
     }
+
+    // When focused on an unedited webpage URL without an active match,
+    // fall back to the generic globe icon (page_cr23.svg).
+    if (this.inSearchbox && this.isTopChromeSearchbox_ && this.pageUrl &&
+        !this.match) {
+      return 'url(//resources/cr_components/searchbox/icons/page_cr23.svg)';
+    }
+
+    return `url(${this.defaultIcon})`;
   }
 
-  // Controls whether the favicon image should be used instead of the mask
+  // Controls whether the favicon image should be rendered instead of the mask
   // image.
   private computeShowFaviconImage_(): boolean {
-    if (!this.faviconImage_) {
+    // If the favicon resource is missing, still loading, or encountered an
+    // error, fall back to rendering the mask image icon.
+    if (!this.faviconImage_ || this.faviconLoading_ || this.faviconError_) {
       return false;
     }
 
-    // If the favicon resource is still loading or there was an error, then
-    // fall back to rendering the default vector icon (generic globe icon).
-    if (this.faviconLoading_ || this.faviconError_) {
-      return false;
-    }
-
-    // Navigation suggestions should always use the background image, except for
+    // Navigation suggestions should always use the favicon image, except for
     // Lens searchboxes and pedal/starter pack suggestions, which prefer to use
     // the default icon in the mask image.
-    if (!this.isLensSearchbox_ && this.match && !this.match.isSearchType &&
-        this.match.type !== STARTER_PACK && this.match.type !== PEDAL) {
+    if (this.match && !this.match.isSearchType) {
+      if (this.isLensSearchbox_ || this.match.type === STARTER_PACK ||
+          this.match.type === PEDAL) {
+        // Fall through for `themedIcons` check, but don't automatically return
+        // true for standard navigation favicons.
+      } else {
+        return true;
+      }
+    }
+
+    // Show favicons when in a TopChrome searchbox's input field (unedited page
+    // URL or non-Google DSE search matches).
+    if ((!this.match || this.match.isSearchType) && this.inSearchbox &&
+        this.isTopChromeSearchbox_ &&
+        this.faviconImage_.startsWith('chrome://favicon2/')) {
       return true;
     }
 
