@@ -1306,7 +1306,6 @@ import java.util.function.Supplier;
 
     void onActivationChipClicked() {
         if (!isInInputSession()) return;
-        mInput.setAutocompleteState(AutocompleteState.ENABLED);
 
         activateAiMode(AutocompleteRequestType.AI_MODE, AiModeActivationSource.DEDICATED_BUTTON);
         if (isUrlBarTextUnchanged()) {
@@ -1317,6 +1316,10 @@ import java.util.function.Supplier;
             // from the views.
             mOnActivationChipClickedWithQuery.run();
         }
+
+        // Enable autocomplete only after updating the request type and URL text so suggestions
+        // are not fetched or shown with stale search state.
+        mInput.setAutocompleteState(AutocompleteState.ENABLED);
     }
 
     private boolean isUrlBarTextUnchanged() {

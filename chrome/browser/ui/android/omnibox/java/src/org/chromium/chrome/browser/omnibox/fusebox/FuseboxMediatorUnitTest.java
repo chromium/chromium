@@ -660,6 +660,28 @@ public class FuseboxMediatorUnitTest {
     }
 
     @Test
+    public void testActivationChipClicked_TransitionsStandbyToEnabled_SetsAiModeBeforeEnabled() {
+        mInput.setAutocompleteState(AutocompleteState.STANDBY);
+        mInput.setRequestType(AutocompleteRequestType.SEARCH);
+        recreateMediator();
+
+        List<@AutocompleteRequestType Integer> requestTypesWhenStateChanged = new ArrayList<>();
+        mInput.getAutocompleteStateSupplier()
+                .addSyncObserver(
+                        state -> {
+                            if (state == AutocompleteState.ENABLED) {
+                                requestTypesWhenStateChanged.add(mInput.getRequestType());
+                            }
+                        });
+
+        mModel.get(FuseboxProperties.ACTIVATION_CHIP_CLICKED).run();
+
+        assertEquals(List.of(AutocompleteRequestType.AI_MODE), requestTypesWhenStateChanged);
+        assertEquals(AutocompleteState.ENABLED, mInput.getAutocompleteState());
+        assertEquals(AutocompleteRequestType.AI_MODE, mInput.getRequestType());
+    }
+
+    @Test
     public void testActivationChipClicked_otherText() {
         mInput.setRequestType(AutocompleteRequestType.SEARCH);
         mInput.setInitialUserText("google.com");
