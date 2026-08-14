@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/json/json_reader.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
@@ -14,6 +15,7 @@
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 #include "chrome/browser/contextual_tasks/mock_contextual_tasks_page.h"
+#include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/searchbox/searchbox_test_utils.h"
@@ -29,8 +31,11 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "extensions/browser/extension_registry.h"
+#include "extensions/common/extension_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
 
 namespace contextual_tasks {
@@ -166,6 +171,225 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionHandlerBrowserTest,
           }));
 
   run_loop.Run();
+}
+
+class ContextualTasksExtensionResourcesTest : public InProcessBrowserTest {
+ public:
+  ContextualTasksExtensionResourcesTest() {
+    feature_list_.InitWithFeatures(
+        {kContextualTasks, kContextualTasksRearchitecture,
+         extensions_features::kApiContextualTasksPrivate},
+        {});
+    extensions::ComponentLoader::EnableBackgroundExtensionsForTesting();
+  }
+  ~ContextualTasksExtensionResourcesTest() override = default;
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionResourcesTest, ResourcesLoad) {
+  extensions::ExtensionRegistry* registry =
+      extensions::ExtensionRegistry::Get(browser()->GetProfile());
+  bool found = false;
+  for (const auto& ext : registry->enabled_extensions()) {
+    if (ext->id() == "glbjnfimcajjenihimblfaponejbkoph") {
+      found = true;
+    }
+  }
+  EXPECT_TRUE(found) << "Contextual Tasks extension not loaded!";
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContentsConsoleObserver console_observer(web_contents);
+  console_observer.SetFilter(base::BindRepeating(
+      [](const content::WebContentsConsoleObserver::Message& message) {
+        return message.log_level == blink::mojom::ConsoleMessageLevel::kError;
+      }));
+
+  GURL extension_url(
+      "chrome-extension://glbjnfimcajjenihimblfaponejbkoph/input_plate.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), extension_url));
+
+  EXPECT_TRUE(content::WaitForLoadStop(web_contents));
+
+  // Verify that the custom properties are set on the host element.
+  {
+    std::string check_vars_script = R"(
+      (() => {
+        const app = document.querySelector('contextual-tasks-composebox');
+        if (!app) return 'NO_APP';
+        const style = window.getComputedStyle(app);
+        const spark = style.getPropertyValue('--search-spark-icon-url').trim();
+        const camera = style.getPropertyValue('--camera-icon-url').trim();
+        return JSON.stringify({spark, camera});
+      })()
+    )";
+    content::EvalJsResult result =
+        content::EvalJs(web_contents, check_vars_script);
+    std::string json_str = result.ExtractString();
+    ASSERT_NE(json_str, "NO_APP");
+    EXPECT_NE(json_str.find("chrome://resources/cr_components/searchbox/icons/"
+                            "search_spark.svg"),
+              std::string::npos);
+    EXPECT_NE(
+        json_str.find(
+            "chrome://resources/cr_components/searchbox/icons/camera.svg"),
+        std::string::npos);
+  }
+
+  // Type text to enable cancel button and trigger potential resource loads.
+  {
+    std::string type_script = R"(
+      (async () => {
+        const app = document.querySelector('contextual-tasks-composebox');
+        if (!app) return 'NO_APP';
+        const composebox = app.shadowRoot.querySelector('#composebox');
+        if (!composebox) return 'NO_COMPOSEBOX';
+        const composeboxInput =
+            composebox.shadowRoot.querySelector('#composeboxInput');
+        if (!composeboxInput) return 'NO_INPUT';
+
+        const cancelContainer =
+            composeboxInput.shadowRoot.querySelector('#cancelContainer');
+        if (!cancelContainer) return 'NO_CANCEL_CONTAINER_IN_TYPE';
+        cancelContainer.style.setProperty('transition', 'none', 'important');
+        cancelContainer.style.setProperty('opacity', '1', 'important');
+
+        const textarea = composeboxInput.shadowRoot.querySelector('#input');
+        if (!textarea) return 'NO_TEXTAREA';
+        textarea.value = 'test';
+        textarea.dispatchEvent(new Event('input', { bubbles: true }));
+        await composeboxInput.updateComplete;
+        await composebox.updateComplete;
+        return 'OK';
+      })()
+    )";
+    content::EvalJsResult result = content::EvalJs(web_contents, type_script);
+    ASSERT_EQ(result.ExtractString(), "OK");
+  }
+
+  // Verify that the aimIcon actually uses the chrome:// URL.
+  {
+    std::string check_icon_script = R"(
+      (() => {
+        const app = document.querySelector('contextual-tasks-composebox');
+        if (!app) return 'NO_APP';
+        const composebox = app.shadowRoot.querySelector('#composebox');
+        if (!composebox) return 'NO_COMPOSEBOX';
+        const composeboxInput =
+            composebox.shadowRoot.querySelector('#composeboxInput');
+        if (!composeboxInput) return 'NO_INPUT';
+        const aimIcon = composeboxInput.shadowRoot.querySelector('#aimIcon');
+        if (!aimIcon) return 'NO_AIM_ICON';
+        const style = window.getComputedStyle(aimIcon);
+        const aimIconMask = style.webkitMaskImage || style.maskImage || 'NONE';
+
+        const cancelIcon =
+            composeboxInput.shadowRoot.querySelector('#cancelIcon');
+        if (!cancelIcon) return 'NO_CANCEL_ICON';
+        const cancelContainer =
+            composeboxInput.shadowRoot.querySelector('#cancelContainer');
+        if (!cancelContainer) return 'NO_CANCEL_CONTAINER';
+
+        const cancelStyle = window.getComputedStyle(cancelIcon);
+        const containerStyle = window.getComputedStyle(cancelContainer);
+
+        const submitButton =
+            composebox.shadowRoot.querySelector('cr-composebox-submit');
+        let submitIconImage = 'NO_SUBMIT_BUTTON';
+        let submitBgColor = 'NO_SUBMIT_BUTTON';
+        if (submitButton) {
+          const submitIcon =
+              submitButton.shadowRoot.querySelector('#submitIcon');
+          if (submitIcon) {
+            const submitStyle = window.getComputedStyle(submitIcon);
+            submitIconImage =
+                submitStyle.getPropertyValue('--cr-icon-image').trim();
+          } else {
+            submitIconImage = 'NO_SUBMIT_ICON';
+          }
+          const submitEnergy =
+              submitButton.shadowRoot.querySelector('#submitEnergy');
+          if (submitEnergy) {
+            const energyStyle = window.getComputedStyle(submitEnergy);
+            submitBgColor = energyStyle.backgroundColor;
+          } else {
+            submitBgColor = 'NO_SUBMIT_ENERGY';
+          }
+        }
+
+        const composeboxAttrs =
+            Array.from(composebox.attributes).map(a => `${a.name}=${a.value}`);
+
+        return JSON.stringify({
+          aimIconMask,
+          cancelIconDisplay: cancelStyle.display,
+          cancelIconOpacity: cancelStyle.opacity,
+          cancelContainerDisplay: containerStyle.display,
+          cancelContainerOpacity: containerStyle.opacity,
+          cancelIconImage:
+              cancelStyle.getPropertyValue('--cr-icon-image').trim(),
+          submitIconImage,
+          submitBgColor,
+          composeboxAttrs,
+          composeboxInput_input: composeboxInput.input,
+          composebox_input: composebox.input,
+          composebox_submitEnabled: composebox.submitEnabled,
+        });
+      })()
+    )";
+    content::EvalJsResult result =
+        content::EvalJs(web_contents, check_icon_script);
+    std::string json_str = result.ExtractString();
+    ASSERT_NE(json_str, "NO_APP");
+    ASSERT_NE(json_str, "NO_COMPOSEBOX");
+    ASSERT_NE(json_str, "NO_INPUT");
+    ASSERT_NE(json_str, "NO_AIM_ICON");
+    ASSERT_NE(json_str, "NO_CANCEL_ICON");
+    ASSERT_NE(json_str, "NO_CANCEL_CONTAINER");
+    // Parse JSON in C++ to check values.
+    std::optional<base::Value> value =
+        base::JSONReader::Read(json_str, base::JSON_PARSE_RFC);
+    ASSERT_TRUE(value.has_value());
+    ASSERT_TRUE(value->is_dict());
+    const base::DictValue& dict = value->GetDict();
+
+    const std::string* aim_mask = dict.FindString("aimIconMask");
+    ASSERT_TRUE(aim_mask);
+    EXPECT_NE(aim_mask->find("chrome://resources/cr_components/searchbox/icons/"
+                             "search_spark.svg"),
+              std::string::npos);
+
+    const std::string* cancel_image = dict.FindString("cancelIconImage");
+    ASSERT_TRUE(cancel_image);
+    EXPECT_NE(cancel_image->find("chrome://resources/images/icon_clear.svg"),
+              std::string::npos);
+
+    const std::string* submit_image = dict.FindString("submitIconImage");
+    ASSERT_TRUE(submit_image);
+    ASSERT_NE(*submit_image, "NO_SUBMIT_BUTTON");
+    ASSERT_NE(*submit_image, "NO_SUBMIT_ICON");
+    EXPECT_NE(
+        submit_image->find("chrome://resources/images/icon_arrow_upward.svg"),
+        std::string::npos);
+
+    const std::string* submit_bg = dict.FindString("submitBgColor");
+    ASSERT_TRUE(submit_bg);
+    ASSERT_NE(*submit_bg, "NO_SUBMIT_BUTTON");
+    ASSERT_NE(*submit_bg, "NO_SUBMIT_ENERGY");
+    EXPECT_EQ(*submit_bg, "rgb(51, 110, 243)");
+
+    const std::string* cancel_display = dict.FindString("cancelIconDisplay");
+    ASSERT_TRUE(cancel_display);
+    EXPECT_EQ(*cancel_display, "block");
+
+    const std::string* container_opacity =
+        dict.FindString("cancelContainerOpacity");
+    ASSERT_TRUE(container_opacity);
+    EXPECT_EQ(*container_opacity, "1");
+  }
+  EXPECT_TRUE(console_observer.messages().empty());
 }
 
 }  // namespace contextual_tasks

@@ -125,6 +125,14 @@
   transition: var(--submit-enabled-transition, 255ms);
 }
 
+#closeButton.icon-clear {
+  --cr-icon-image: var(--cr-composebox-cancel-icon, url(//resources/images/icon_clear_old.svg));
+}
+
+:host-context([webui-rounded-icons]) #closeButton.icon-clear {
+  --cr-icon-image: var(--cr-composebox-cancel-icon, url(//resources/images/icon_clear.svg));
+}
+
 #bottomActions {
   align-items: center;
   bottom: var(--voice-bottom-actions-bottom, 12px);

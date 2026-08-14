@@ -119,6 +119,14 @@
   top: var(--cr-composebox-match-remove-button-top, 6px);
 }
 
+#remove.icon-clear {
+  --cr-icon-image: var(--cr-composebox-cancel-icon, url(//resources/images/icon_clear_old.svg));
+}
+
+:host-context([webui-rounded-icons]) #remove.icon-clear {
+  --cr-icon-image: var(--cr-composebox-cancel-icon, url(//resources/images/icon_clear.svg));
+}
+
 .container:hover #remove:not([hidden]),
 :host-context(cr-composebox-match:-webkit-any(:focus-within, [selected])) #remove:not([hidden]) {
   display: inline-flex;

@@ -350,7 +350,7 @@ search-animated-glow {
 
 #lensIcon {
   --cr-icon-button-icon-size: 20px;
-  --cr-icon-image: url(//resources/cr_components/searchbox/icons/camera.svg);
+  --cr-icon-image: var(--camera-icon-url, url(//resources/cr_components/searchbox/icons/camera.svg));
   bottom: var(--input-bottom-spacing);
   display: none;
   opacity: 1;

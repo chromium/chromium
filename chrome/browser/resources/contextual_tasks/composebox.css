@@ -62,6 +62,17 @@
   --emphasized-accelerate-curve: cubic-bezier(0.3, 0, 0.8, 0.15);
   --standard-accelerate-curve: cubic-bezier(0.3, 0, 1, 1);
   --standard-decelerate-curve: cubic-bezier(0, 0, 0, 1);
+
+  --search-spark-icon-url: url(chrome://resources/cr_components/searchbox/icons/search_spark.svg);
+  --camera-icon-url: url(chrome://resources/cr_components/searchbox/icons/camera.svg);
+  --cr-composebox-submit-icon-upward: url(chrome://resources/images/icon_arrow_upward.svg);
+  --cr-composebox-submit-icon-forward: url(chrome://resources/images/icon_arrow_forward.svg);
+  --cr-composebox-cancel-icon: url(chrome://resources/images/icon_clear.svg);
+}
+
+:host([is-extension]) {
+  --color-composebox-submit-button-background: rgba(51, 110, 243, 1);
+  --cr-composebox-submit-button-hover-color: rgba(32, 33, 36, .2);
 }
 
 :host([energy-effect-enabled_]) {
@@ -885,5 +896,9 @@
   100% {
     transform: scaleY(1);
   }
+}
+
+#composebox::part(cancel) {
+  opacity: 1;
 }
 

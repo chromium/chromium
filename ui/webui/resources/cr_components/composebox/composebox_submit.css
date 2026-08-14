@@ -55,6 +55,22 @@
   transition: var(--submit-enabled-transition);
 }
 
+#submitIcon.icon-arrow-upward {
+  --cr-icon-image: var(--cr-composebox-submit-icon-upward, url(//resources/images/icon_arrow_upward_old.svg));
+}
+
+#submitIcon.icon-arrow-forward {
+  --cr-icon-image: var(--cr-composebox-submit-icon-forward, url(//resources/images/icon_arrow_forward_old.svg));
+}
+
+:host-context([webui-rounded-icons]) #submitIcon.icon-arrow-upward {
+  --cr-icon-image: var(--cr-composebox-submit-icon-upward, url(//resources/images/icon_arrow_upward.svg));
+}
+
+:host-context([webui-rounded-icons]) #submitIcon.icon-arrow-forward {
+  --cr-icon-image: var(--cr-composebox-submit-icon-forward, url(//resources/images/icon_arrow_forward.svg));
+}
+
 :host([disabled]) #submitIcon {
   opacity: 0.4;
 }
