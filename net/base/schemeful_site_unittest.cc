@@ -10,7 +10,10 @@
 #include "net/base/url_util.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "testing/libfuzzer/proto/url.pb.h"
+#include "testing/libfuzzer/proto/url_proto_converter.h"
 #include "third_party/abseil-cpp/absl/hash/hash_testing.h"
+#include "third_party/fuzztest/src/fuzztest/fuzztest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "url/url_util.h"
@@ -547,5 +550,35 @@ TEST(SchemefulSiteTest, InternalValue) {
   SchemefulSite opaque_site(opaque_origin);
   EXPECT_EQ(opaque_site.internal_value(), opaque_origin);
 }
+
+void FuzzSchemefulSite(const url_proto::Url& url_message) {
+  std::string native_input = url_proto::Convert(url_message);
+  url::Origin origin = url::Origin::Create(GURL(native_input));
+
+  // We don't run the fuzzer on inputs whose hosts will contain "..". The ".."
+  // causes SchemefulSite to consider the registrable domain to start with the
+  // second ".".
+
+  if (origin.host().find("..") != std::string::npos) {
+    return;
+  }
+
+  SchemefulSite site(origin);
+
+  std::optional<SchemefulSite> site_with_registrable_domain =
+      SchemefulSite::CreateIfHasRegisterableDomain(origin);
+
+  if (site_with_registrable_domain) {
+    ASSERT_EQ(site_with_registrable_domain->GetInternalOriginForTesting(),
+              site.GetInternalOriginForTesting());
+    ASSERT_TRUE(site.has_registrable_domain_or_host());
+    const std::string& scheme = site.GetInternalOriginForTesting().scheme();
+    if (scheme == "http" || scheme == "https") {
+      ASSERT_NE(site.registrable_domain_or_host_for_testing().front(), '.');
+    }
+  }
+}
+
+FUZZ_TEST(SchemefulSiteTest, FuzzSchemefulSite);
 
 }  // namespace net

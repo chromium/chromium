@@ -3301,6 +3301,7 @@ target(_test_target_type, "net_unittests") {
     "ParseProxyListFuzzer.TestOneInput",
     "QuicheHostnameUtilsFuzzTest.FuzzPropertyNormalizationIsIdempotentForValidSni",
     "QuicVersionsFuzzTest.ParseSerializeParseIdentityProperty",
+    "SchemefulSiteTest.FuzzSchemefulSite",
     "SocketPoolAdditionalCapacityTest.ValidateRandomizedInputs",
     "StructuredHeadersTest.ParseDictionaryParity",
     "StructuredHeadersTest.ParseItemParity",
@@ -3338,6 +3339,8 @@ target(_test_target_type, "net_unittests") {
     "//net/tools/huffman_trie:huffman_trie_generator_sources",
     "//testing/gmock",
     "//testing/gtest",
+    "//testing/libfuzzer/proto:url_proto",
+    "//testing/libfuzzer/proto:url_proto_converter",
     "//third_party/abseil-cpp:absl",
     "//third_party/abseil-cpp:test_support",
     "//third_party/anonymous_tokens:anonymous_tokens_tests",
@@ -3996,21 +3999,6 @@ fuzzer_test("net_lookup_string_in_fixed_set_fuzzer") {
     "//net/base/registry_controlled_domains:lookup_strings_test_sets",
   ]
   dict = "data/fuzzer_dictionaries/net_get_domain_and_registry_fuzzer.dict"
-}
-
-fuzzer_test("net_base_schemeful_site_fuzzer") {
-  sources = [ "base/schemeful_site_fuzzer.cc" ]
-  deps = [
-    ":net_fuzzer_test_support",
-    "//base",
-    "//net",
-    "//testing/libfuzzer/proto:url_proto",
-    "//testing/libfuzzer/proto:url_proto_converter",
-    "//third_party/libprotobuf-mutator",
-  ]
-
-  # TODO(crbug.com/505034799): Migrate to FUZZ_TEST.
-  is_fuzztest_compatible = false
 }
 
 fuzzer_test("net_cert_ct_decode_signed_certificate_timestamp_fuzzer") {
