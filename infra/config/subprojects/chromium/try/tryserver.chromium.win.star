@@ -539,74 +539,15 @@ gpu.try_.win_optional_builder(
     branch_selector = branches.selector.WINDOWS_BRANCHES,
     description_html = ("Runs GPU tests on Windows 10 machines with NVIDIA GTX 1660 and Intel UHD 630 GPUs. " +
                         "Only automatically added to CLs that touch GPU-related files."),
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = [
-                "mb",
-            ],
-            build_config = builder_config.build_config.RELEASE,
-            target_bits = 64,
-            target_platform = builder_config.target_platform.WIN,
-        ),
-    ),
+    mirrors = [
+        "ci/GPU FYI Win x64 Builder",
+        "ci/Win10 FYI x64 Release (Intel)",
+        "ci/Win10 FYI x64 Release (NVIDIA)",
+    ],
     builder_config_settings = builder_config.try_settings(
         retry_failed_shards = False,
     ),
-    gn_args = gn_args.config(
-        configs = [
-            "gpu_fyi_tests",
-            "release_builder",
-            "remoteexec",
-            "minimal_symbols",
-            "dcheck_always_on",
-            "win",
-            "x64",
-        ],
-    ),
-    targets = targets.bundle(
-        targets = [
-            "win_optional_gpu_tests_rel_gpu_telemetry_tests",
-            "win_optional_gpu_tests_rel_gtests",
-            "win_optional_gpu_tests_rel_isolated_scripts",
-        ],
-        per_test_modifications = {
-            "pixel_skia_gold_passthrough_graphite_test 10de:2184": targets.per_test_modification(
-                mixins = targets.mixin(
-                    args = [
-                        # TODO(crbug.com/382422293): Remove when fixed
-                        "--jobs=1",
-                    ],
-                ),
-                replacements = targets.replacements(
-                    args = {
-                        # Magic substitution happens after regular replacement, so remove it
-                        # now since we are manually applying the number of jobs above.
-                        targets.magic_args.GPU_PARALLEL_JOBS: None,
-                    },
-                ),
-            ),
-            "trace_test 8086:9bc5": targets.remove(
-                reason = "TODO(crbug.com/41483572): Re-add this when capacity issues are resolved.",
-            ),
-            "webgl2_conformance_d3d11_passthrough_tests 8086:9bc5": targets.remove(
-                reason = "TODO(crbug.com/41483572): Re-add this when capacity issues are resolved.",
-            ),
-            "webgl_conformance_vulkan_passthrough_tests 10de:2184": targets.remove(
-                reason = "TODO(crbug.com/380431384): flaky crashes in random tests.",
-            ),
-            "xr_browser_tests 8086:9bc5": targets.mixin(
-                # TODO(crbug.com/40937024): Remove this once the flakes on Intel are
-                # resolved.
-                args = [
-                    "--gtest_filter=-WebXrVrOpenXrBrowserTest.TestNoStalledFrameLoop",
-                ],
-            ),
-        },
-    ),
+    gn_args = "ci/GPU FYI Win x64 Builder",
     targets_settings = targets.settings(
         browser_config = targets.browser_config.RELEASE_X64,
         os_type = targets.os_type.WINDOWS,

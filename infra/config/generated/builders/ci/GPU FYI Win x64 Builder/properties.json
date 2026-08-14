@@ -586,6 +586,10 @@
         {
           "builder": "gpu-fyi-try-win11-x64-nvidia-rtx-5080-exp",
           "group": "tryserver.chromium.win"
+        },
+        {
+          "builder": "win_optional_gpu_tests_rel",
+          "group": "tryserver.chromium.win"
         }
       ],
       "targets_spec_directory": "infra/config/generated/builders/ci/GPU FYI Win x64 Builder/targets"

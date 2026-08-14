@@ -3207,6 +3207,7 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "Win10 FYI x64 Release (Intel)",
+    branch_selector = branches.selector.WINDOWS_BRANCHES,
     description_html = "Runs release GPU tests on stable Windows 10/Intel UHD 630 configs",
     parent = "GPU FYI Win x64 Builder",
     builder_spec = gpu_fyi_thin_tester_builder_spec(
@@ -3235,14 +3236,57 @@ ci.thin_tester(
             "context_lost_passthrough_graphite_tests": targets.remove(
                 reason = "crbug.com/541312843 enable these tests after the test bundle standardization lands if capacity permits and mark as CI-only due to future optional trybot mirroring.",
             ),
+            "context_lost_passthrough_tests": targets.mixin(
+                # CI-only due to capacity reasons since this is mirrored by the
+                # optional trybot.
+                ci_only = True,
+            ),
             "expected_color_pixel_passthrough_graphite_test": targets.remove(
                 reason = "crbug.com/541312843 enable these tests after the test bundle standardization lands if capacity permits and mark as CI-only due to future optional trybot mirroring.",
+            ),
+            "expected_color_pixel_passthrough_test": targets.mixin(
+                # CI-only due to capacity reasons since this is mirrored by the
+                # optional trybot.
+                ci_only = True,
+            ),
+            "gpu_process_launch_tests": targets.mixin(
+                # CI-only due to capacity reasons since this is mirrored by the
+                # optional trybot.
+                ci_only = True,
+            ),
+            "hardware_accelerated_feature_tests": targets.mixin(
+                # CI-only due to capacity reasons since this is mirrored by the
+                # optional trybot.
+                ci_only = True,
             ),
             "pixel_skia_gold_passthrough_graphite_test": targets.remove(
                 reason = "crbug.com/541312843 enable these tests after the test bundle standardization lands if capacity permits and mark as CI-only due to future optional trybot mirroring.",
             ),
+            "pixel_skia_gold_passthrough_test": targets.mixin(
+                # CI-only due to capacity reasons since this is mirrored by the
+                # optional trybot.
+                # TODO(crbug.com/538645005): Try to remove this once UHD 630
+                # capacity is freed up elsewhere since pixel tests are prone to
+                # needing new images to be triaged.
+                ci_only = True,
+            ),
             "screenshot_sync_passthrough_graphite_tests": targets.remove(
                 reason = "crbug.com/541312843 enable these tests after the test bundle standardization lands if capacity permits and mark as CI-only due to future optional trybot mirroring.",
+            ),
+            "screenshot_sync_passthrough_tests": targets.mixin(
+                # CI-only due to capacity reasons since this is mirrored by the
+                # optional trybot.
+                ci_only = True,
+            ),
+            "trace_test": targets.mixin(
+                # CI-only due to capacity reasons since this is mirrored by the
+                # optional trybot.
+                ci_only = True,
+            ),
+            "webgl2_conformance_d3d11_passthrough_tests": targets.mixin(
+                # CI-only due to capacity reasons since this is mirrored by the
+                # optional trybot.
+                ci_only = True,
             ),
             "xr_browser_tests": targets.mixin(
                 args = [
@@ -3328,6 +3372,7 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "Win10 FYI x64 Release (NVIDIA)",
+    branch_selector = branches.selector.WINDOWS_BRANCHES,
     description_html = "Runs release GPU tests on stable Windows 10/NVIDIA GTX 1660 configs",
     parent = "GPU FYI Win x64 Builder",
     builder_spec = gpu_fyi_thin_tester_builder_spec(
@@ -4067,6 +4112,7 @@ gpu_fyi_windows_builder(
 
 gpu_fyi_windows_builder(
     name = "GPU FYI Win x64 Builder",
+    branch_selector = branches.selector.WINDOWS_BRANCHES,
     description_html = "Builds release Windows x64 binaries for GPU testing",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
