@@ -1379,6 +1379,14 @@ const FeatureEntry::FeatureVariation
         {"with on-device classifier (GPU / ANE)",
          kGeminiContextualSuggestionsCuesWithOnDeviceClassifierGPU, nullptr}};
 
+const FeatureEntry::FeatureParam
+    kNewTabPageRedesignStaticFakeboxParamEnabled[] = {
+        {kNewTabPageRedesignStaticFakeboxParam, "true"}};
+
+const FeatureEntry::FeatureVariation kNewTabPageRedesignVariations[] = {
+    {"Static Fakebox", kNewTabPageRedesignStaticFakeboxParamEnabled, nullptr},
+};
+
 // To add a new entry, add to the end of kFeatureEntries. There are four
 // distinct types of entries:
 // . ENABLE_DISABLE_VALUE: entry is either enabled, disabled, or uses the
@@ -1475,7 +1483,9 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      FEATURE_VALUE_TYPE(ntp_features::kNtpAlphaBackgroundCollections)},
     {"new-tab-page-redesign", flag_descriptions::kNewTabPageRedesignName,
      flag_descriptions::kNewTabPageRedesignDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kNewTabPageRedesign)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kNewTabPageRedesign,
+                                    kNewTabPageRedesignVariations,
+                                    "NewTabPageRedesign")},
     {"ntp-mvt-in-bottom-sheet", flag_descriptions::kMVTInBottomSheetName,
      flag_descriptions::kMVTInBottomSheetDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kMVTInBottomSheet)},

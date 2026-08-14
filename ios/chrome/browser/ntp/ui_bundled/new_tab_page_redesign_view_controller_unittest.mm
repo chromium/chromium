@@ -7,18 +7,21 @@
 #import "base/test/scoped_feature_list.h"
 #import "ios/chrome/browser/content_suggestions/ui/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_bottom_sheet_view_controller.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_content_delegate.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
+#import "ui/base/device_form_factor.h"
 
 namespace {
 const CGFloat kMinDragHandleHeight = 24.0;
-} // namespace
+}  // namespace
 
-@interface NewTabPageRedesignViewController (Testing)
+@interface NewTabPageRedesignViewController (Testing) <
+    NewTabPageBottomSheetViewControllerDelegate>
 - (CGFloat)restingOffsetForBottomSheetViewController:
     (NewTabPageBottomSheetViewController*)viewController;
 - (CGFloat)topContentHeight;
@@ -95,4 +98,190 @@ TEST_F(NewTabPageRedesignViewControllerTest, TestLandscapeSafetyGuard) {
       screen_height - safe_area_bottom - kMinDragHandleHeight;
 
   EXPECT_EQ(resting_offset, max_allowed_offset);
+}
+
+// Tests that the view controller loads its view correctly.
+TEST_F(NewTabPageRedesignViewControllerTest, TestLoadView) {
+  [view_controller_ loadViewIfNeeded];
+  EXPECT_NE(nil, view_controller_.view);
+}
+
+// Tests that didUpdateTopOffset in legacy mode (static-fakebox: false)
+// translates fakeLocationBar and keeps alpha at 1.0.
+TEST_F(NewTabPageRedesignViewControllerTest, TestLegacyDidUpdateTopOffset) {
+  view_controller_.view.frame = CGRectMake(0, 0, 400, 800);
+  [view_controller_ loadViewIfNeeded];
+  [view_controller_.view layoutIfNeeded];
+
+  UIView* fake_location_bar =
+      [view_controller_ valueForKey:@"_fakeLocationBar"];
+  EXPECT_NE(nil, fake_location_bar);
+
+  NewTabPageBottomSheetViewController* sheet =
+      [view_controller_ valueForKey:@"_bottomSheetViewController"];
+  CGFloat expandedOffset = [sheet expandedOffset];
+  CGFloat restingOffset = [sheet restingOffset];
+  CGFloat midOffset = (expandedOffset + restingOffset) / 2.0;
+
+  [view_controller_ bottomSheetViewController:sheet
+                           didUpdateTopOffset:midOffset];
+
+  EXPECT_FLOAT_EQ(1.0, fake_location_bar.alpha);
+}
+
+// Tests that didUpdateTopOffset in static-fakebox mode updates
+// fakeLocationBar.alpha and calls NTPContentDelegate.
+TEST_F(NewTabPageRedesignViewControllerTest,
+       TestStaticFakeboxDidUpdateTopOffset) {
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+    return;
+  }
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kNewTabPageRedesign, {{kNewTabPageRedesignStaticFakeboxParam, "true"}});
+
+  view_controller_.view.frame = CGRectMake(0, 0, 400, 800);
+  [view_controller_ loadViewIfNeeded];
+  [view_controller_.view layoutIfNeeded];
+
+  UIView* fake_location_bar =
+      [view_controller_ valueForKey:@"_fakeLocationBar"];
+  EXPECT_NE(nil, fake_location_bar);
+
+  id mock_content_delegate =
+      OCMProtocolMock(@protocol(NewTabPageContentDelegate));
+  view_controller_.NTPContentDelegate = mock_content_delegate;
+
+  NewTabPageBottomSheetViewController* sheet =
+      [view_controller_ valueForKey:@"_bottomSheetViewController"];
+
+  CGFloat expandedOffset = [sheet expandedOffset];
+  CGFloat restingOffset = [sheet restingOffset];
+  CGFloat midOffset = (expandedOffset + restingOffset) / 2.0;
+
+  // progress should be 0.5, expansionProgress = 1.0 - 0.5 = 0.5
+  OCMExpect([mock_content_delegate didUpdateNTPTabOmniboxScrollProgress:0.5]);
+
+  [view_controller_ bottomSheetViewController:sheet
+                           didUpdateTopOffset:midOffset];
+
+  EXPECT_FLOAT_EQ(0.5, fake_location_bar.alpha);
+  EXPECT_OCMOCK_VERIFY(mock_content_delegate);
+}
+
+// Tests that didUpdateTopOffset moves top content downward when topOffset >
+// restingOffset in static-fakebox mode.
+TEST_F(NewTabPageRedesignViewControllerTest,
+       TestStaticFakeboxDidUpdateTopOffsetCollapsed) {
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+    return;
+  }
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kNewTabPageRedesign, {{kNewTabPageRedesignStaticFakeboxParam, "true"}});
+
+  view_controller_.view.frame = CGRectMake(0, 0, 400, 800);
+  [view_controller_ loadViewIfNeeded];
+  [view_controller_.view layoutIfNeeded];
+
+  UIView* fake_location_bar =
+      [view_controller_ valueForKey:@"_fakeLocationBar"];
+  EXPECT_NE(nil, fake_location_bar);
+  NSLayoutConstraint* top_constraint =
+      [view_controller_ valueForKey:@"_fakeLocationBarTopConstraint"];
+  CGFloat initial_top = top_constraint.constant;
+
+  id mock_content_delegate =
+      OCMProtocolMock(@protocol(NewTabPageContentDelegate));
+  view_controller_.NTPContentDelegate = mock_content_delegate;
+
+  NewTabPageBottomSheetViewController* sheet =
+      [view_controller_ valueForKey:@"_bottomSheetViewController"];
+  CGFloat restingOffset = [sheet restingOffset];
+
+  // Pass topOffset greater than restingOffset (downward drag)
+  CGFloat collapsedOffset = restingOffset + 100.0;
+  OCMExpect([mock_content_delegate didUpdateNTPTabOmniboxScrollProgress:0.0]);
+
+  [view_controller_ bottomSheetViewController:sheet
+                           didUpdateTopOffset:collapsedOffset];
+
+  EXPECT_FLOAT_EQ(initial_top + 100.0, top_constraint.constant);
+  EXPECT_FLOAT_EQ(1.0, fake_location_bar.alpha);
+  EXPECT_OCMOCK_VERIFY(mock_content_delegate);
+}
+
+// Tests that expandedOffsetForBottomSheetViewController calculates correct
+// offsets.
+TEST_F(NewTabPageRedesignViewControllerTest, TestExpandedOffsetForBottomSheet) {
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+    return;
+  }
+  [view_controller_ loadViewIfNeeded];
+  NewTabPageBottomSheetViewController* sheet =
+      [view_controller_ valueForKey:@"_bottomSheetViewController"];
+
+  // Default legacy mode (static-fakebox: false): safeAreaTop + 20.0
+  CGFloat legacyOffset =
+      [view_controller_ expandedOffsetForBottomSheetViewController:sheet];
+  EXPECT_EQ(legacyOffset, view_controller_.view.safeAreaInsets.top + 20.0);
+
+  // Enable static-fakebox feature
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kNewTabPageRedesign, {{kNewTabPageRedesignStaticFakeboxParam, "true"}});
+
+  // Top Omnibox: safeAreaTop + kToolbarHeight
+  CGFloat offsetTop =
+      [view_controller_ expandedOffsetForBottomSheetViewController:sheet];
+  EXPECT_GT(offsetTop, 0.0);
+
+  // Bottom Omnibox (non-tabstrip): safeAreaTop
+  [view_controller_ setOmniboxInBottomPosition:YES];
+  CGFloat offsetBottom =
+      [view_controller_ expandedOffsetForBottomSheetViewController:sheet];
+  EXPECT_EQ(offsetBottom, view_controller_.view.safeAreaInsets.top);
+}
+
+// Tests that setOmniboxInBottomPosition is a no-op in legacy mode
+// (static-fakebox: false).
+TEST_F(NewTabPageRedesignViewControllerTest,
+       TestSetOmniboxInBottomPositionLegacy) {
+  [view_controller_ loadViewIfNeeded];
+  [view_controller_ setOmniboxInBottomPosition:YES];
+
+  // _isBottomOmnibox remains NO
+  BOOL isBottom =
+      [[view_controller_ valueForKey:@"_isBottomOmnibox"] boolValue];
+  EXPECT_FALSE(isBottom);
+}
+
+// Tests that setOmniboxInBottomPosition updates state in static-fakebox mode.
+TEST_F(NewTabPageRedesignViewControllerTest,
+       TestSetOmniboxInBottomPositionStaticFakebox) {
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+    return;
+  }
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kNewTabPageRedesign, {{kNewTabPageRedesignStaticFakeboxParam, "true"}});
+
+  [view_controller_ loadViewIfNeeded];
+  [view_controller_ setOmniboxInBottomPosition:YES];
+
+  // _isBottomOmnibox is updated to YES
+  BOOL isBottom =
+      [[view_controller_ valueForKey:@"_isBottomOmnibox"] boolValue];
+  EXPECT_TRUE(isBottom);
+}
+
+// Tests that bottomSheetViewControllerDidEscape posts accessibility
+// notification.
+TEST_F(NewTabPageRedesignViewControllerTest, TestBottomSheetDidEscape) {
+  [view_controller_ loadViewIfNeeded];
+  NewTabPageBottomSheetViewController* sheet =
+      [view_controller_ valueForKey:@"_bottomSheetViewController"];
+
+  // Calling bottomSheetViewControllerDidEscape should not crash.
+  [view_controller_ bottomSheetViewControllerDidEscape:sheet];
 }

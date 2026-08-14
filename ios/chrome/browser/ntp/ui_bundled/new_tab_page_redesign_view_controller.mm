@@ -33,6 +33,8 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/toolbar/ui/toolbar_constants.h"
 #import "ios/chrome/common/NSString+Chromium.h"
 #import "ios/chrome/common/material_timing.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -156,6 +158,7 @@ const CGFloat kMinDragHandleHeight = 24.0;
   NSLayoutConstraint* _leadingViewConstraint;
   NSLayoutConstraint* _hintLabelLeadingConstraint;
   NSLayoutConstraint* _hintLabelTrailingConstraint;
+  BOOL _isBottomOmnibox;
 }
 
 - (void)viewDidLoad {
@@ -180,7 +183,7 @@ const CGFloat kMinDragHandleHeight = 24.0;
   _defaultSearchEngineName = @"Google";
   _isGoogleDefaultSearchEngine = YES;
 
-  // Add fake location bar ON TOP of the sheet.
+  // Add fake location bar.
   _fakeLocationBar = [[FakeLocationBarView alloc] init];
   _fakeLocationBar.translatesAutoresizingMaskIntoConstraints = NO;
   [_fakeLocationBar addTarget:self
@@ -188,7 +191,12 @@ const CGFloat kMinDragHandleHeight = 24.0;
              forControlEvents:UIControlEventTouchUpInside];
   _fakeLocationBar.isAccessibilityElement = YES;
   _fakeLocationBar.accessibilityIdentifier = @"ntp-redesign-fake-omnibox";
-  [self.view addSubview:_fakeLocationBar];
+  if (IsNTPRedesignStaticFakeboxEnabled()) {
+    [self.view insertSubview:_fakeLocationBar
+                belowSubview:_bottomSheetViewController.view];
+  } else {
+    [self.view addSubview:_fakeLocationBar];
+  }
 
   _hintLabel = [[UILabel alloc] init];
   _hintLabel.translatesAutoresizingMaskIntoConstraints = NO;
@@ -361,13 +369,6 @@ const CGFloat kMinDragHandleHeight = 24.0;
       content_suggestions::FakeOmniboxHeight();
   _fakeLocationBar.layer.cornerRadius =
       _fakeLocationBarHeightConstraint.constant / 2.0;
-
-  // Update fake omnibox top if the bottom sheet is not pushing it
-  if (_bottomSheetViewController) {
-    CGFloat currentTopOffset = _bottomSheetViewController.view.frame.origin.y;
-    [self bottomSheetViewController:_bottomSheetViewController
-                 didUpdateTopOffset:currentTopOffset];
-  }
 }
 
 #pragma mark - UIViewController Overrides
@@ -467,10 +468,21 @@ const CGFloat kMinDragHandleHeight = 24.0;
   return superview.bounds.size.height - collapsedHeight;
 }
 
+- (CGFloat)expandedOffsetForBottomSheetViewController:
+    (NewTabPageBottomSheetViewController*)viewController {
+  CGFloat safeAreaTop = self.view.safeAreaInsets.top;
+  if (!IsNTPRedesignStaticFakeboxEnabled()) {
+    return safeAreaTop + 20.0;
+  }
+  if (_isBottomOmnibox && !CanShowTabStrip(self)) {
+    return safeAreaTop;
+  }
+  return safeAreaTop + kToolbarHeight;
+}
+
 - (void)bottomSheetViewController:
             (NewTabPageBottomSheetViewController*)bottomSheetViewController
                didUpdateTopOffset:(CGFloat)topOffset {
-  // Interpolate fake omnibox position relative to the sheet top
   CGFloat expandedOffset = [_bottomSheetViewController expandedOffset];
   CGFloat restingOffset = [_bottomSheetViewController restingOffset];
 
@@ -480,16 +492,33 @@ const CGFloat kMinDragHandleHeight = 24.0;
     progress = MIN(1.0, MAX(0.0, progress));
   }
 
-  CGFloat restingOffsetFromSheet =
-      -([self topContentHeight] + kRestingSheetMVTTopMargin);
+  if (IsNTPRedesignStaticFakeboxEnabled()) {
+    if (topOffset > restingOffset) {
+      // Collapsed range: Move top content down with sheet
+      CGFloat downwardDelta = topOffset - restingOffset;
+      _fakeLocationBarTopConstraint.constant =
+          [self centeredFakeOmniboxTop] + downwardDelta;
+      _fakeLocationBar.alpha = 1.0;
+      [self.NTPContentDelegate didUpdateNTPTabOmniboxScrollProgress:0.0];
+    } else {
+      // Expanded range: Fakebox stays static at centered position & fades out
+      _fakeLocationBarTopConstraint.constant = [self centeredFakeOmniboxTop];
+      _fakeLocationBar.alpha = progress;
+      CGFloat expansionProgress = 1.0 - progress;
+      [self.NTPContentDelegate
+          didUpdateNTPTabOmniboxScrollProgress:expansionProgress];
+    }
+  } else {
+    // Default legacy behavior: Shift fakebox to the top of the sheet
+    CGFloat restingOffsetFromSheet =
+        -([self topContentHeight] + kRestingSheetMVTTopMargin);
+    CGFloat offsetFromSheet = progress * restingOffsetFromSheet +
+                              (1.0 - progress) * kExpandedSheetOmniboxTopMargin;
+    _fakeLocationBarTopConstraint.constant = topOffset + offsetFromSheet;
+    _fakeLocationBar.alpha = 1.0;
+  }
 
-  // Spacing offset from sheet top: restingOffsetFromSheet when
-  // resting/collapsed (above sheet), +16 pt when expanded (inside sheet)
-  CGFloat offsetFromSheet = progress * restingOffsetFromSheet +
-                            (1.0 - progress) * kExpandedSheetOmniboxTopMargin;
-  _fakeLocationBarTopConstraint.constant = topOffset + offsetFromSheet;
-
-  // Interpolate opacity for logo, MVTs row, and identity disc
+  // Opacity for Logo, MVT, Identity Disc, and Quick Actions
   _searchEngineLogoView.alpha = progress;
   if (!IsMVTInBottomSheetEnabled()) {
     _mostVisitedContainerView.alpha = progress;
@@ -861,7 +890,18 @@ const CGFloat kMinDragHandleHeight = 24.0;
 }
 
 - (void)setOmniboxInBottomPosition:(BOOL)isBottomOmnibox {
-  // No-op for redesign.
+  if (!IsNTPRedesignStaticFakeboxEnabled()) {
+    return;
+  }
+  if (_isBottomOmnibox == isBottomOmnibox) {
+    return;
+  }
+  _isBottomOmnibox = isBottomOmnibox;
+  [_bottomSheetViewController setOmniboxInBottomPosition:isBottomOmnibox];
+  if (self.isViewLoaded) {
+    [_bottomSheetViewController updateBottomSheetPositionAnimated:YES];
+    [self.view setNeedsLayout];
+  }
 }
 
 - (void)updateADPBadgeWithErrorFound:(BOOL)hasAccountError

@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/ntp/ui_bundled/scroll_delegate_proxy.h"
+#import "ios/chrome/browser/toolbar/ui/toolbar_constants.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 namespace {
@@ -56,6 +57,32 @@ constexpr CGFloat kMinimumDragVelocityToChangeState = 250.0;
 
   // The original delegate of the feed scroll view.
   __weak id<UIScrollViewDelegate> _originalFeedDelegate;
+
+  BOOL _isBottomOmnibox;
+}
+
+- (void)setOmniboxInBottomPosition:(BOOL)isBottomOmnibox {
+  if (!IsNTPRedesignStaticFakeboxEnabled()) {
+    return;
+  }
+  _isBottomOmnibox = isBottomOmnibox;
+  [self updateFeedInsetsForBottomOmnibox];
+}
+
+- (void)updateFeedInsetsForBottomOmnibox {
+  if (!IsNTPRedesignStaticFakeboxEnabled() || !_feedScrollView) {
+    return;
+  }
+  CGFloat bottomInset = 0.0;
+  if (_isBottomOmnibox && _sheetState == BottomSheetSnappingStateExpanded) {
+    bottomInset = kToolbarHeight + self.view.safeAreaInsets.bottom;
+  }
+  UIEdgeInsets insets = _feedScrollView.contentInset;
+  if (insets.bottom != bottomInset) {
+    insets.bottom = bottomInset;
+    _feedScrollView.contentInset = insets;
+    _feedScrollView.scrollIndicatorInsets = insets;
+  }
 }
 
 - (void)loadView {
@@ -278,6 +305,9 @@ constexpr CGFloat kMinimumDragVelocityToChangeState = 250.0;
         [self isVoiceOverRunning];
     [_feedScrollView.panGestureRecognizer addTarget:self
                                              action:@selector(handleFeedPan:)];
+    if (IsNTPRedesignStaticFakeboxEnabled()) {
+      [self updateFeedInsetsForBottomOmnibox];
+    }
   }
 }
 
@@ -388,8 +418,7 @@ constexpr CGFloat kMinimumDragVelocityToChangeState = 250.0;
 }
 
 - (CGFloat)expandedOffset {
-  UIView* superview = self.view.superview;
-  return superview ? 20.0 + superview.safeAreaInsets.top : 0;
+  return [self.delegate expandedOffsetForBottomSheetViewController:self];
 }
 
 - (CGFloat)targetOffsetForState:(BottomSheetSnappingState)state {
@@ -436,6 +465,9 @@ constexpr CGFloat kMinimumDragVelocityToChangeState = 250.0;
         (_sheetState == BottomSheetSnappingStateExpanded) ||
         UIAccessibilityIsVoiceOverRunning();
     _feedScrollView.bounces = (_sheetState == BottomSheetSnappingStateExpanded);
+    if (IsNTPRedesignStaticFakeboxEnabled()) {
+      [self updateFeedInsetsForBottomOmnibox];
+    }
   }
 
   if (_sheetState != BottomSheetSnappingStateExpanded && _feedScrollView) {
@@ -518,7 +550,47 @@ constexpr CGFloat kMinimumDragVelocityToChangeState = 250.0;
   [self updateBottomSheetPositionAnimated:YES];
 }
 
-- (void)updateContentContainerInsetForOffset:(CGFloat)topOffset {
+- (CGFloat)mostVisitedTilesHeight {
+  CGFloat mvtHeight = CGRectGetHeight(_mostVisitedContainerView.bounds);
+  if (mvtHeight <= 0 && _mostVisitedView) {
+    mvtHeight = [_mostVisitedView
+                    systemLayoutSizeFittingSize:UILayoutFittingCompressedSize]
+                    .height;
+  }
+  return mvtHeight;
+}
+
+- (void)updateStaticFakeboxContentContainerInsetForOffset:(CGFloat)topOffset {
+  _magicStackContainerView.alpha = 1.0;
+
+  CGFloat expanded = [self expandedOffset];
+  CGFloat resting = [self restingOffset];
+  if (resting <= expanded) {
+    if (IsMVTInBottomSheetEnabled()) {
+      _mostVisitedContainerView.alpha = 0.0;
+    }
+    _magicStackTopConstraint.constant = 0.0;
+    return;
+  }
+
+  CGFloat progress = (topOffset - expanded) / (resting - expanded);
+  progress = MIN(1.0, MAX(0.0, progress));
+
+  if (IsMVTInBottomSheetEnabled()) {
+    _mostVisitedContainerView.alpha = progress;
+    CGFloat mvtHeight = [self mostVisitedTilesHeight];
+    CGFloat restingMagicStackTop =
+        (mvtHeight > 0)
+            ? (mvtHeight +
+               content_suggestions::ReducedModuleSpacing(self.traitCollection))
+            : 0.0;
+    _magicStackTopConstraint.constant = progress * restingMagicStackTop;
+  } else {
+    _magicStackTopConstraint.constant = 0.0;
+  }
+}
+
+- (void)updateLegacyContentContainerInsetForOffset:(CGFloat)topOffset {
   CGFloat expanded = [self expandedOffset];
   CGFloat resting = [self restingOffset];
   if (resting <= expanded) {
@@ -532,39 +604,38 @@ constexpr CGFloat kMinimumDragVelocityToChangeState = 250.0;
     }
     return;
   }
+
   CGFloat progress = (topOffset - expanded) / (resting - expanded);
   progress = MIN(1.0, MAX(0.0, progress));
 
   if (IsMVTInBottomSheetEnabled()) {
     _mostVisitedContainerView.alpha = progress;
-
-    CGFloat mvtHeight = CGRectGetHeight(_mostVisitedContainerView.bounds);
-    if (mvtHeight <= 0 && _mostVisitedView) {
-      mvtHeight = [_mostVisitedView
-                      systemLayoutSizeFittingSize:UILayoutFittingCompressedSize]
-                      .height;
-    }
-
+    CGFloat mvtHeight = [self mostVisitedTilesHeight];
     CGFloat expandedMagicStackTop = content_suggestions::FakeOmniboxHeight();
     CGFloat restingMagicStackTop =
         (mvtHeight > 0)
             ? (mvtHeight +
                content_suggestions::ReducedModuleSpacing(self.traitCollection))
             : 0.0;
-
     _magicStackTopConstraint.constant =
         progress * restingMagicStackTop +
         (1.0 - progress) * expandedMagicStackTop;
   } else {
     _magicStackContainerView.alpha = progress;
-
     CGFloat expandedMagicStackTop =
         content_suggestions::FakeOmniboxHeight() - kMagicStackHeight;
     CGFloat restingMagicStackTop = 0.0;
-
     _magicStackTopConstraint.constant =
         progress * restingMagicStackTop +
         (1.0 - progress) * expandedMagicStackTop;
+  }
+}
+
+- (void)updateContentContainerInsetForOffset:(CGFloat)topOffset {
+  if (IsNTPRedesignStaticFakeboxEnabled()) {
+    [self updateStaticFakeboxContentContainerInsetForOffset:topOffset];
+  } else {
+    [self updateLegacyContentContainerInsetForOffset:topOffset];
   }
 }
 

@@ -30,6 +30,11 @@
 - (CGFloat)collapsedOffsetForBottomSheetViewController:
     (NewTabPageBottomSheetViewController*)viewController;
 
+// Returns the preferred expanded offset for the bottom sheet (docked below
+// the toolbar or safe area).
+- (CGFloat)expandedOffsetForBottomSheetViewController:
+    (NewTabPageBottomSheetViewController*)viewController;
+
 @end
 
 // View controller managing the bottom sheet card, gestures, and subviews for
@@ -52,6 +57,9 @@
 
 // Clears state and delegates.
 - (void)invalidate;
+
+// Updates whether the omnibox is in the bottom position.
+- (void)setOmniboxInBottomPosition:(BOOL)isBottomOmnibox;
 
 // Returns the expanded offset of the bottom sheet.
 - (CGFloat)expandedOffset;

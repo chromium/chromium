@@ -65,6 +65,14 @@ BASE_FEATURE_PARAM(int,
                    kNewTabPageUICleanupArmParam,
                    static_cast<int>(NTPUICleanupVariation::kTightPadding));
 
+const char kNewTabPageRedesignStaticFakeboxParam[] = "static-fakebox";
+
+BASE_FEATURE_PARAM(bool,
+                   kNewTabPageRedesignStaticFakeboxParamFeature,
+                   &kNewTabPageRedesign,
+                   kNewTabPageRedesignStaticFakeboxParam,
+                   false);
+
 #pragma mark - Helpers
 
 bool IsMVTInBottomSheetEnabled() {
@@ -121,6 +129,11 @@ bool IsNTPHeaderTransformsForAnimationsEnabled() {
 bool IsNTPRedesignEnabled() {
   return base::FeatureList::IsEnabled(kNewTabPageRedesign) &&
          ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET;
+}
+
+bool IsNTPRedesignStaticFakeboxEnabled() {
+  return IsNTPRedesignEnabled() &&
+         kNewTabPageRedesignStaticFakeboxParamFeature.Get();
 }
 
 bool IsNewTabPageUICleanupEnabled() {
