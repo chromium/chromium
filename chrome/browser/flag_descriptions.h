@@ -8620,6 +8620,10 @@ inline constexpr char kPdfInk2Name[] = "PDF Ink Signatures";
 inline constexpr char kPdfInk2Description[] =
     "Enables the ability to annotate PDFs using a new ink library.";
 
+inline constexpr char kPdfLauncherActivityName[] = "PDF Launcher Activity";
+inline constexpr char kPdfLauncherActivityDescription[] =
+    "Enables Chrome as an option for opening PDF files on Android.";
+
 inline constexpr char kPdfSaveToDriveName[] = "Save PDF to Drive";
 inline constexpr char kPdfSaveToDriveDescription[] =
     "Enables the ability to save PDFs to Google Drive.";

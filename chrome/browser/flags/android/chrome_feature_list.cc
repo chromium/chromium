@@ -431,6 +431,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kPageAnnotationsService,
     &kPageContentProvider,
     &kPartnerCustomizationsUma,
+    &kPdfLauncherActivity,
     &kPdfReuseFragment,
     &kPersistAcrossReboots,
     &kPersistAcrossRebootsDebugLogs,
@@ -839,6 +840,7 @@ BASE_FEATURE(kPCCTMinimumHeight, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kPageAnnotationsService, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kPageContentProvider, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kPartnerCustomizationsUma, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kPdfLauncherActivity, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kPdfReuseFragment, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kPersistAcrossReboots, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kPersistAcrossRebootsDebugLogs, base::FEATURE_DISABLED_BY_DEFAULT);

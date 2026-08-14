@@ -7599,6 +7599,9 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAndroidPdfReuseFragmentName,
      flag_descriptions::kAndroidPdfReuseFragmentDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kPdfReuseFragment)},
+    {"pdf-launcher-activity", flag_descriptions::kPdfLauncherActivityName,
+     flag_descriptions::kPdfLauncherActivityDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kPdfLauncherActivity)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_PRINTING)

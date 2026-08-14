@@ -13811,6 +13811,7 @@ from previous Chrome versions.
   <int value="-259942608" label="Apb144Patch2:enabled"/>
   <int value="-258280767" label="HomeButtonRemoval:enabled"/>
   <int value="-258081634" label="AutofillAssistantDirectActions:disabled"/>
+  <int value="-257698402" label="PdfLauncherActivity:disabled"/>
   <int value="-257600773" label="MessagesPreinstall:disabled"/>
   <int value="-257478609" label="TextfieldFocusOnTapUp:enabled"/>
   <int value="-256940675" label="HelpAppSearchServiceIntegration:disabled"/>
@@ -18904,6 +18905,7 @@ from previous Chrome versions.
       label="AudioFlexibleLoopbackForSystemLoopback:enabled"/>
   <int value="1340690624" label="WebPaymentsMethodSectionOrderV2:disabled"/>
   <int value="1340970682" label="WebViewSendVariationsHeaders:enabled"/>
+  <int value="1341076472" label="PdfLauncherActivity:enabled"/>
   <int value="1342818665"
       label="EnableFingerprintingProtectionFilterInIncognito:disabled"/>
   <int value="1343050930" label="ContextualSearchUnityIntegration:enabled"/>
