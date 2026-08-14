@@ -1369,9 +1369,12 @@ const CGFloat kGeminiLiveCircleSize = 20.0;
   }
   if (IsDirectBWGEntryPoint()) {
     [self.geminiHandler
-        startGeminiFlowWithStartupState:
+        startGeminiEntryFlowWithStartupState:
             [[GeminiStartupState alloc]
-                initWithEntryPoint:gemini::EntryPoint::DirectOmniboxBadge]];
+                initWithEntryPoint:gemini::EntryPoint::DirectOmniboxBadge]
+                          baseViewController:self
+                    showSnackbarOnCompletion:YES
+                                  completion:nil];
   } else {
     RecordAIHubIconTapped();
     [self.pageActionMenuHandler showPageActionMenu];

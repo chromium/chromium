@@ -49,6 +49,8 @@ signin_metrics::AccessPoint AccessPointFromGeminiEntryPoint(
       return signin_metrics::AccessPoint::kIosGeminiButtonToolbar;
     case gemini::EntryPoint::AIHub:
     case gemini::EntryPoint::AIHubSignInSheet:
+    case gemini::EntryPoint::OmniboxChip:
+    case gemini::EntryPoint::DirectOmniboxBadge:
       return signin_metrics::AccessPoint::kIosPageActionMenu;
     case gemini::EntryPoint::ExternalAppStoreEvent:
     case gemini::EntryPoint::AppSwitcherAISummarization:

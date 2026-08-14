@@ -339,7 +339,8 @@ constexpr base::TimeDelta kStartCollapseTransitionTime = base::Seconds(5);
       GeminiStartupState* state = [[GeminiStartupState alloc]
           initWithEntryPoint:gemini::EntryPoint::OmniboxChip];
       state.prepopulatedPrompt = prompt;
-      [self.geminiHandler startGeminiFlowWithStartupState:state];
+      [self.delegate locationBarBadgeMediator:self
+          startGeminiEntryFlowWithStartupState:state];
       _tracker->NotifyEvent(
           feature_engagement::events::kIOSGeminiContextualCueChipUsed);
 

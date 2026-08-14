@@ -222,8 +222,6 @@ class LocationBarBadgeMediatorTest : public PlatformTest {
     mock_delegate_ =
         OCMProtocolMock(@protocol(LocationBarBadgeMediatorDelegate));
     mediator_.delegate = mock_delegate_;
-    mock_gemini_handler_ = OCMProtocolMock(@protocol(GeminiCommands));
-    mediator_.geminiHandler = mock_gemini_handler_;
 
     mock_contextual_sheet_handler_ =
         OCMProtocolMock(@protocol(ContextualSheetCommands));
@@ -392,12 +390,11 @@ TEST_F(LocationBarBadgeMediatorTest, TestGeminiContextualChipTimestampUpdated) {
 // Tests that tapping the gemini chip calls the BWG command handler and logs
 // FET metrics.
 TEST_F(LocationBarBadgeMediatorTest, TestGeminiChipTapped) {
-  id mock_gemini_handler = OCMProtocolMock(@protocol(GeminiCommands));
-  mediator_.geminiHandler = mock_gemini_handler;
-
-  OCMExpect([mock_gemini_handler
-      startGeminiFlowWithStartupState:[OCMArg checkWithBlock:^BOOL(
-                                                  GeminiStartupState* state) {
+  OCMExpect([mock_delegate_
+                  locationBarBadgeMediator:mediator_
+      startGeminiEntryFlowWithStartupState:[OCMArg checkWithBlock:^BOOL(
+                                                       GeminiStartupState*
+                                                           state) {
         return state.entryPoint == gemini::EntryPoint::OmniboxChip &&
                state.prepopulatedPrompt == nil;
       }]]);
@@ -409,7 +406,7 @@ TEST_F(LocationBarBadgeMediatorTest, TestGeminiChipTapped) {
       CreateBadgeConfiguration(LocationBarBadgeType::kGeminiContextualCueChip);
   config.badgeText = kTestAccessibilityLabel;
   [mediator_ badgeTapped:config];
-  EXPECT_OCMOCK_VERIFY(mock_gemini_handler);
+  EXPECT_OCMOCK_VERIFY(mock_delegate_);
 }
 // Tests that the Gemini contextual cue chip is not shown if it was recently
 // displayed.

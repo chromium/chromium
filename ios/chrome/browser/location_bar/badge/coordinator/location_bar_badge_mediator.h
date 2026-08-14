@@ -13,7 +13,6 @@
 @protocol ContextualPanelEntrypointIPHCommands;
 @protocol ContextualSheetCommands;
 class GeminiBrowserAgent;
-@protocol GeminiCommands;
 class GeminiService;
 @protocol LocationBarBadgeConsumer;
 @protocol LocationBarBadgeMediatorDelegate;
@@ -42,8 +41,6 @@ class Tracker;
 @property(nonatomic, weak) id<LocationBarBadgeConsumer> consumer;
 // The delegate for this mediator.
 @property(nonatomic, weak) id<LocationBarBadgeMediatorDelegate> delegate;
-// The command handler for Gemini commands.
-@property(nonatomic, weak) id<GeminiCommands> geminiHandler;
 // The command handler for entrypoint in-product help commands.
 @property(nonatomic, weak) id<ContextualPanelEntrypointIPHCommands>
     entrypointHelpHandler;
