@@ -16,7 +16,9 @@
 #include "chromeos/ash/components/dbus/lorgnette_manager/lorgnette_manager_client.h"
 #include "components/keyed_service/core/keyed_service.h"
 
-class Profile;
+namespace user_manager {
+class User;
+}  // namespace user_manager
 
 namespace ash {
 
@@ -69,7 +71,7 @@ class LorgnetteScannerManager : public KeyedService {
 
   static std::unique_ptr<LorgnetteScannerManager> Create(
       std::unique_ptr<ZeroconfScannerDetector> zeroconf_scanner_detector,
-      Profile* profile);
+      const user_manager::User& user);
 
   // Returns the names of all available, deduplicated scanners.
   virtual void GetScannerNames(GetScannerNamesCallback callback) = 0;

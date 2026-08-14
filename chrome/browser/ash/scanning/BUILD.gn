@@ -52,6 +52,7 @@ static_library("scanning") {
 
   deps = [
     "//ash/constants",
+    "//ash/public/cpp",
     "//ash/strings",
     "//base:i18n",
     "//chrome/app:generated_resources",
@@ -63,10 +64,10 @@ static_library("scanning") {
     "//chrome/browser/ash/printing",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/local_discovery",
-    "//chrome/browser/notifications",
     "//chrome/browser/ui/ash/holding_space",
     "//chrome/browser/ui/select_file_policy",
     "//chrome/browser/web_applications",
+    "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/dbus",
     "//chromeos/constants",
     "//chromeos/strings",
@@ -76,6 +77,7 @@ static_library("scanning") {
     "//components/pref_registry",
     "//components/prefs",
     "//components/services/app_service/public/cpp:app_types",
+    "//components/user_manager",
     "//content/public/browser",
     "//mojo/public/cpp/bindings:bindings_base",
     "//mojo/public/cpp/bindings:struct_traits",
@@ -84,6 +86,7 @@ static_library("scanning") {
     "//ui/base:types",
     "//ui/chromeos/styles:cros_tokens_color_mappings",
     "//ui/chromeos/styles:cros_tokens_color_mappings_generator",
+    "//ui/message_center",
     "//ui/message_center/public/cpp",
     "//ui/shell_dialogs",
     "//url",
@@ -132,6 +135,7 @@ source_set("unit_tests") {
   ]
 
   deps = [
+    "//ash/public/cpp",
     "//ash/webui/scanning",
     "//ash/webui/scanning/mojom",
     "//base",
@@ -170,6 +174,7 @@ source_set("unit_tests") {
     "//ui/chromeos/styles:cros_tokens_color_mappings",
     "//ui/chromeos/styles:cros_tokens_color_mappings_generator",
     "//ui/gfx/codec",
+    "//ui/message_center",
     "//ui/message_center/public/cpp",
   ]
 

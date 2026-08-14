@@ -282,8 +282,10 @@ class LorgnetteScannerManagerTest : public testing::Test {
     EXPECT_TRUE(profile_manager_->SetUp());
     TestingProfile* testing_profile =
         profile_manager_->CreateTestingProfile(kEmail);
-    fake_user_manager->AddUserWithAffiliationAndTypeAndProfile(
-        account_id, false, user_manager::UserType::kRegular, testing_profile);
+    const user_manager::User& user =
+        *fake_user_manager->AddUserWithAffiliationAndTypeAndProfile(
+            account_id, false, user_manager::UserType::kRegular,
+            testing_profile);
     fake_user_manager->LoginUser(account_id);
     fake_user_manager->SwitchActiveUser(account_id);
     user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
@@ -299,7 +301,7 @@ class LorgnetteScannerManagerTest : public testing::Test {
     fake_zeroconf_scanner_detector_ = fake_zeroconf_scanner_detector.get();
 
     lorgnette_scanner_manager_ = LorgnetteScannerManager::Create(
-        std::move(fake_zeroconf_scanner_detector), testing_profile);
+        std::move(fake_zeroconf_scanner_detector), user);
     // Set empty but successful capabilities response by default.
     lorgnette::ScannerCapabilities capabilities;
     GetLorgnetteManagerClient()->SetScannerCapabilitiesResponse(capabilities);

@@ -26,13 +26,13 @@
 #include "chrome/browser/ash/scanning/lorgnette_notification_controller.h"
 #include "chrome/browser/ash/scanning/lorgnette_scanner_manager_util.h"
 #include "chrome/browser/ash/scanning/zeroconf_scanner_detector.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/ash/components/dbus/lorgnette/lorgnette_service.pb.h"
 #include "chromeos/ash/components/dbus/lorgnette_manager/lorgnette_manager_client.h"
 #include "chromeos/ash/components/scanning/scanner.h"
 #include "components/device_event_log/device_event_log.h"
+#include "components/user_manager/user.h"
 #include "net/base/ip_address.h"
 #include "third_party/re2/src/re2/re2.h"
 
@@ -206,14 +206,14 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
  public:
   LorgnetteScannerManagerImpl(
       std::unique_ptr<ZeroconfScannerDetector> zeroconf_scanner_detector,
-      Profile* profile)
+      const user_manager::User& user)
       : zeroconf_scanner_detector_(std::move(zeroconf_scanner_detector)) {
     zeroconf_scanner_detector_->RegisterScannersDetectedCallback(
         base::BindRepeating(&LorgnetteScannerManagerImpl::OnScannersDetected,
                             weak_ptr_factory_.GetWeakPtr()));
     OnScannersDetected(zeroconf_scanner_detector_->GetScanners());
     lorgnette_notification_controller_ =
-        std::make_unique<LorgnetteNotificationController>(profile);
+        std::make_unique<LorgnetteNotificationController>(user);
   }
 
   ~LorgnetteScannerManagerImpl() override = default;
@@ -1086,10 +1086,10 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
 // static
 std::unique_ptr<LorgnetteScannerManager> LorgnetteScannerManager::Create(
     std::unique_ptr<ZeroconfScannerDetector> zeroconf_scanner_detector,
-    Profile* profile) {
+    const user_manager::User& user) {
   PRINTER_LOG(EVENT) << "LorgnetteScannerManager::Create";
   return std::make_unique<LorgnetteScannerManagerImpl>(
-      std::move(zeroconf_scanner_detector), profile);
+      std::move(zeroconf_scanner_detector), user);
 }
 
 }  // namespace ash

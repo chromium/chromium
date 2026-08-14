@@ -21,7 +21,6 @@ include_rules = [
   "+chrome/browser/ash/login/users",
   "+chrome/browser/ash/profiles",
   "+chrome/browser/local_discovery",
-  "+chrome/browser/notifications",
   "+chrome/browser/platform_util.h",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/ash/holding_space",
@@ -32,6 +31,8 @@ include_rules = [
   "+chrome/grit",
   "+chrome/test/base",
   "+chrome/test/interaction",
+
+  "+ui/message_center/message_center.h",
 ]
 
 specific_include_rules = {

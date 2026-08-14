@@ -5,20 +5,27 @@
 #include "chrome/browser/ash/scanning/lorgnette_notification_controller.h"
 
 #include <memory>
-#include <optional>
 #include <utility>
 
+#include "ash/public/cpp/notification_utils.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "base/check_deref.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/notifications/notification_display_service_tester.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/ash/components/dbus/dlcservice/fake_dlcservice_client.h"
+#include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/user.h"
+#include "components/user_manager/user_names.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/constants/lorgnette_dlc.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_types.h"
 
@@ -34,18 +41,27 @@ class LorgnetteNotificationControllerTest : public ::testing::Test {
  protected:
   void SetUp() override {
     DlcserviceClient::InitializeFake();
+    message_center::MessageCenter::Initialize();
+    user_manager::User* user =
+        fake_user_manager_->AddUser(user_manager::StubAccountId());
+    fake_user_manager_->LoginUser(user->GetAccountId());
+    AnnotatedAccountId::Set(&profile_, user->GetAccountId());
     notification_controller_ =
-        std::make_unique<LorgnetteNotificationController>(&profile_);
+        std::make_unique<LorgnetteNotificationController>(*user);
   }
 
   void TearDown() override {
     notification_controller_.reset();
+    message_center::MessageCenter::Shutdown();
     DlcserviceClient::Shutdown();
   }
 
-  std::optional<Notification> Notification() {
-    return NotificationDisplayServiceTester::Get()->GetNotification(
-        "scanning_dlc_notification");
+  const Notification* Notification() {
+    const user_manager::User& user = CHECK_DEREF(
+        BrowserContextHelper::Get()->GetUserByBrowserContext(&profile_));
+    return message_center::MessageCenter::Get()->FindVisibleNotificationById(
+        CreateUserScopedNotificationId("scanning_dlc_notification",
+                                       user.username_hash()));
   }
 
   dlcservice::DlcState CreateDlcState(dlcservice::DlcState_State state) {
@@ -83,8 +99,9 @@ class LorgnetteNotificationControllerTest : public ::testing::Test {
 
   std::unique_ptr<LorgnetteNotificationController> notification_controller_;
   content::BrowserTaskEnvironment task_environment_;
+  user_manager::TypedScopedUserManager<FakeChromeUserManager>
+      fake_user_manager_{std::make_unique<FakeChromeUserManager>()};
   TestingProfile profile_;
-  NotificationDisplayServiceTester display_service_tester_{&profile_};
 };
 
 TEST_F(LorgnetteNotificationControllerTest, TestDlcSuccessfullyInstalled) {
@@ -97,7 +114,7 @@ TEST_F(LorgnetteNotificationControllerTest, TestDlcSuccessfullyInstalled) {
                 ->current_state_for_testing(lorgnette::kSaneBackendsPfuDlcId)
                 .value(),
             LorgnetteNotificationController::DlcState::kIdle);
-  EXPECT_FALSE(Notification().has_value());
+  EXPECT_FALSE(Notification());
 }
 
 TEST_F(LorgnetteNotificationControllerTest, TestDlcInstalling) {
@@ -110,7 +127,7 @@ TEST_F(LorgnetteNotificationControllerTest, TestDlcInstalling) {
                 ->current_state_for_testing(lorgnette::kSaneBackendsPfuDlcId)
                 .value(),
             LorgnetteNotificationController::DlcState::kInstalling);
-  ASSERT_TRUE(Notification().has_value());
+  ASSERT_TRUE(Notification());
   EXPECT_EQ(u"Installing scanner software", Notification()->title());
   EXPECT_EQ(u"", Notification()->message());
   EXPECT_EQ(cros_tokens::kCrosSysPrimary, Notification()->accent_color_id());
@@ -128,7 +145,7 @@ TEST_F(LorgnetteNotificationControllerTest, TestDlcInstallFailed) {
                 ->current_state_for_testing(lorgnette::kSaneBackendsPfuDlcId)
                 .value(),
             LorgnetteNotificationController::DlcState::kInstallError);
-  ASSERT_TRUE(Notification().has_value());
+  ASSERT_TRUE(Notification());
   EXPECT_EQ(u"Can't install scanner software", Notification()->title());
   EXPECT_EQ(u"Unplug the scanner's USB cable and re-plug it to retry",
             Notification()->message());
@@ -147,7 +164,7 @@ TEST_F(LorgnetteNotificationControllerTest, TestWrongIdIntalled) {
                 ->current_state_for_testing(lorgnette::kSaneBackendsPfuDlcId)
                 .value(),
             LorgnetteNotificationController::DlcState::kIdle);
-  EXPECT_FALSE(Notification().has_value());
+  EXPECT_FALSE(Notification());
 }
 
 TEST_F(LorgnetteNotificationControllerTest, TestRealDlcFlow) {
@@ -159,7 +176,7 @@ TEST_F(LorgnetteNotificationControllerTest, TestRealDlcFlow) {
                 ->current_state_for_testing(lorgnette::kSaneBackendsPfuDlcId)
                 .value(),
             LorgnetteNotificationController::DlcState::kInstalling);
-  ASSERT_TRUE(Notification().has_value());
+  ASSERT_TRUE(Notification());
   EXPECT_EQ(u"Installing scanner software", Notification()->title());
   EXPECT_EQ(u"", Notification()->message());
   EXPECT_EQ(cros_tokens::kCrosSysPrimary, Notification()->accent_color_id());
@@ -174,7 +191,7 @@ TEST_F(LorgnetteNotificationControllerTest, TestRealDlcFlow) {
                 ->current_state_for_testing(lorgnette::kSaneBackendsPfuDlcId)
                 .value(),
             LorgnetteNotificationController::DlcState::kInstalledSuccessfully);
-  ASSERT_TRUE(Notification().has_value());
+  ASSERT_TRUE(Notification());
   EXPECT_EQ(u"Scanner software installed", Notification()->title());
   EXPECT_EQ(u"", Notification()->message());
   EXPECT_EQ(cros_tokens::kCrosSysPrimary, Notification()->accent_color_id());
@@ -190,7 +207,7 @@ TEST_F(LorgnetteNotificationControllerTest, TestRealDlcFlow) {
                 ->current_state_for_testing(lorgnette::kSaneBackendsPfuDlcId)
                 .value(),
             LorgnetteNotificationController::DlcState::kIdle);
-  EXPECT_FALSE(Notification().has_value());
+  EXPECT_FALSE(Notification());
 }
 
 }  // namespace ash

@@ -9,16 +9,18 @@
 #include <memory>
 #include <optional>
 #include <set>
+#include <string>
 
-#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
-
-class Profile;
 
 namespace message_center {
 class Notification;
 }  // namespace message_center
+
+namespace user_manager {
+class User;
+}  // namespace user_manager
 
 namespace ash {
 
@@ -32,7 +34,7 @@ class LorgnetteNotificationController : public DlcserviceClient::Observer {
     kIdle
   };
 
-  explicit LorgnetteNotificationController(Profile* profile);
+  explicit LorgnetteNotificationController(const user_manager::User& user);
   ~LorgnetteNotificationController() override;
 
   LorgnetteNotificationController(const LorgnetteNotificationController&) =
@@ -54,14 +56,14 @@ class LorgnetteNotificationController : public DlcserviceClient::Observer {
       std::unique_ptr<message_center::Notification> notification,
       const std::string& dlc_id);
 
+  std::string notification_id_;
+  std::string profile_id_;
   base::ScopedObservation<DlcserviceClient, DlcserviceClient::Observer>
       dlc_observer_{this};
   // Contains the current state of each DLC.
   std::map<std::string, DlcState> current_state_per_dlc_;
   // Set of all DLC IDs supported by LorgnetteNotificationController.
   std::set<std::string> supported_dlc_ids_;
-
-  raw_ptr<Profile> profile_;  // Not owned.
 };
 }  // namespace ash
 
