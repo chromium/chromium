@@ -64,8 +64,7 @@ PrivacyPassAthmBatchRequest::Create(const IssuerConfig& issuer_config,
     token_req.token_type = PrivateVerificationTokensParameters::kAthmTokenType;
     token_req.truncated_issuer_key_id =
         issuer_config.public_key.truncated_key_id();
-    token_req.encoded_request = std::string(
-        reinterpret_cast<const char*>(req_bytes.data()), req_bytes.size());
+    token_req.encoded_request = std::string(req_bytes.begin(), req_bytes.end());
 
     std::string marshaled_req;
     absl::Status status =
@@ -120,9 +119,8 @@ PrivacyPassAthmBatchRequest::Finalize(base::span<const uint8_t> response_body) {
   const size_t single_response_size = response_body.size() / token_count;
   const std::array<uint8_t, crypto::hash::kSha256Size> issuer_key_id =
       pvt_public_key_.key_id();
-  const std::string issuer_key_id_str(
-      reinterpret_cast<const char*>(issuer_key_id.data()),
-      issuer_key_id.size());
+  const std::string issuer_key_id_str(issuer_key_id.begin(),
+                                      issuer_key_id.end());
 
   std::vector<std::vector<uint8_t>> finalized_tokens;
   finalized_tokens.reserve(token_states_.size());
@@ -147,8 +145,7 @@ PrivacyPassAthmBatchRequest::Finalize(base::span<const uint8_t> response_body) {
     token.token_type = PrivateVerificationTokensParameters::kAthmTokenType;
     token.issuer_key_id = issuer_key_id_str;
     token.token =
-        std::string(reinterpret_cast<const char*>(finalize_result.bytes.data()),
-                    finalize_result.bytes.size());
+        std::string(finalize_result.bytes.begin(), finalize_result.bytes.end());
 
     std::string marshaled_token;
     absl::Status status =

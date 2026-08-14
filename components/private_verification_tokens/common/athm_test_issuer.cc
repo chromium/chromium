@@ -8,7 +8,12 @@
 
 #include "base/containers/span_rust.h"
 #include "base/containers/to_vector.h"
+#include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "components/private_verification_tokens/common/athm_ffi.rs.h"
+#include "components/private_verification_tokens/common/private_verification_tokens_parameters.h"
+#include "crypto/hash.h"
+#include "third_party/anonymous_tokens/src/anonymous_tokens/cpp/privacy_pass/athm_token_encodings_utils.h"
 
 namespace private_verification_tokens {
 
@@ -34,7 +39,8 @@ AthmTestIssuer::AthmTestIssuer(std::vector<uint8_t> params,
     : params_(std::move(params)),
       private_key_(std::move(private_key)),
       public_key_(std::move(public_key)),
-      public_key_proof_(std::move(public_key_proof)) {}
+      public_key_proof_(std::move(public_key_proof)),
+      key_id_(crypto::hash::Sha256(public_key_)) {}
 
 AthmTestIssuer::AthmTestIssuer(AthmTestIssuer&&) = default;
 AthmTestIssuer& AthmTestIssuer::operator=(AthmTestIssuer&&) = default;
@@ -51,6 +57,73 @@ std::optional<std::vector<uint8_t>> AthmTestIssuer::Issue(
     return std::nullopt;
   }
   return base::ToVector(result.bytes);
+}
+
+std::optional<std::vector<std::vector<uint8_t>>> AthmTestIssuer::BatchIssue(
+    const std::vector<std::vector<uint8_t>>& requests,
+    uint8_t hidden_metadata) const {
+  if (requests.empty()) {
+    return std::nullopt;
+  }
+  std::vector<std::vector<uint8_t>> responses;
+  responses.reserve(requests.size());
+  for (const auto& request : requests) {
+    anonymous_tokens::AthmTokenRequest unmarshaled_request;
+    absl::Status status = anonymous_tokens::UnmarshalAthmTokenRequest(
+        base::as_string_view(request), &unmarshaled_request);
+    if (!status.ok() ||
+        unmarshaled_request.token_type !=
+            PrivateVerificationTokensParameters::kAthmTokenType ||
+        unmarshaled_request.truncated_issuer_key_id != truncated_key_id()) {
+      return std::nullopt;
+    }
+    std::optional<std::vector<uint8_t>> response =
+        Issue(base::as_byte_span(unmarshaled_request.encoded_request),
+              hidden_metadata);
+    if (!response.has_value()) {
+      return std::nullopt;
+    }
+    responses.push_back(std::move(*response));
+  }
+  return responses;
+}
+
+std::optional<std::string> AthmTestIssuer::BatchIssue(
+    std::string_view request_body,
+    uint8_t hidden_metadata) const {
+  std::optional<PrivateVerificationTokensParameters> params =
+      GetParametersForVersion(1);
+  if (!params.has_value()) {
+    return std::nullopt;
+  }
+
+  if (request_body.empty() ||
+      request_body.size() % params->single_request_size != 0) {
+    return std::nullopt;
+  }
+
+  const size_t batch_size = request_body.size() / params->single_request_size;
+  std::vector<std::vector<uint8_t>> requests;
+  requests.reserve(batch_size);
+  for (size_t i = 0; i < batch_size; ++i) {
+    base::span<const uint8_t> single_req =
+        base::as_byte_span(request_body)
+            .subspan(i * params->single_request_size,
+                     params->single_request_size);
+    requests.push_back(base::ToVector(single_req));
+  }
+
+  std::optional<std::vector<std::vector<uint8_t>>> responses =
+      BatchIssue(requests, hidden_metadata);
+  if (!responses.has_value()) {
+    return std::nullopt;
+  }
+
+  std::string response_body;
+  for (const auto& token_resp : *responses) {
+    response_body.append(base::as_string_view(token_resp));
+  }
+  return response_body;
 }
 
 std::optional<uint8_t> AthmTestIssuer::Verify(

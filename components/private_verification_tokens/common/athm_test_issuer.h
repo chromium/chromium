@@ -5,11 +5,15 @@
 #ifndef COMPONENTS_PRIVATE_VERIFICATION_TOKENS_COMMON_ATHM_TEST_ISSUER_H_
 #define COMPONENTS_PRIVATE_VERIFICATION_TOKENS_COMMON_ATHM_TEST_ISSUER_H_
 
+#include <array>
 #include <cstdint>
 #include <optional>
+#include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/span.h"
+#include "crypto/hash.h"
 
 namespace private_verification_tokens {
 
@@ -46,11 +50,38 @@ class AthmTestIssuer {
     return public_key_proof_;
   }
   const std::vector<uint8_t>& params() const { return params_; }
+  // The 32-byte SHA-256 digest of `public_key_`.
+  const std::array<uint8_t, crypto::hash::kSha256Size>& key_id() const {
+    return key_id_;
+  }
+  // The 1-byte truncated key ID (last byte of `key_id_`) used in Privacy Pass /
+  // ATHM token request and redemption framing.
+  uint8_t truncated_key_id() const { return key_id_.back(); }
 
   // Issuer side: signs `request`, embedding `hidden_metadata`. Returns the
   // serialized token response, or nullopt on failure.
   std::optional<std::vector<uint8_t>> Issue(base::span<const uint8_t> request,
                                             uint8_t hidden_metadata) const;
+
+  // Issuer side: processes a batch of wire-formatted `AthmTokenRequest`s,
+  // unmarshaling each request, validating that the token type is
+  // `kAthmTokenType` and the truncated key ID matches `truncated_key_id()`, and
+  // signing each extracted blinded request with `hidden_metadata` via Issue().
+  // Returns a vector of serialized token responses, or nullopt if `requests` is
+  // empty, if any request fails validation/unmarshaling, or if token signing
+  // fails.
+  std::optional<std::vector<std::vector<uint8_t>>> BatchIssue(
+      const std::vector<std::vector<uint8_t>>& requests,
+      uint8_t hidden_metadata) const;
+
+  // Issuer side: processes a concatenated batch request body `request_body`
+  // (sliced into single wire-formatted request chunks according to Version 1
+  // parameters) by delegating to the vector BatchIssue() overload. Returns the
+  // concatenated serialized token responses as a string, or nullopt if
+  // `request_body` has an invalid/empty size, or if any request fails
+  // validation or signing.
+  std::optional<std::string> BatchIssue(std::string_view request_body,
+                                        uint8_t hidden_metadata) const;
 
   // Issuer side: verifies `token` and recovers the embedded hidden metadata, or
   // nullopt if the token does not verify.
@@ -66,6 +97,7 @@ class AthmTestIssuer {
   std::vector<uint8_t> private_key_;
   std::vector<uint8_t> public_key_;
   std::vector<uint8_t> public_key_proof_;
+  std::array<uint8_t, crypto::hash::kSha256Size> key_id_;
 };
 
 // A self-contained test client for Anonymous Tokens with Hidden Metadata
