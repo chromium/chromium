@@ -70,8 +70,9 @@ namespace blink {
 // to provide a subset of its API.
 class CORE_EXPORT CSSSelectorList : public GarbageCollected<CSSSelectorList> {
  public:
-  // Constructs an empty selector list, for which IsValid() returns false.
-  // TODO(sesse): Consider making this a singleton.
+  // Returns an empty selector list, for which IsValid() returns false.
+  // This is a thread-local singleton shared by all callers; do not mutate
+  // the object it points to.
   static CSSSelectorList* Empty();
 
   // Do not call; for Empty() and AdoptSelectorVector() only.

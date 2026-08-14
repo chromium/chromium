@@ -30,17 +30,27 @@
 
 #include "base/compiler_specific.h"
 #include "third_party/blink/renderer/core/css/css_selector.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/wtf/leak_annotations.h"
+#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "third_party/blink/renderer/platform/wtf/thread_specific.h"
 
 namespace blink {
 
 CSSSelectorList* CSSSelectorList::Empty() {
-  CSSSelectorList* list =
-      MakeGarbageCollected<CSSSelectorList>(base::PassKey<CSSSelectorList>());
-  new (list->first_selector_) CSSSelector();
-  list->first_selector_[0].SetMatch(CSSSelector::kInvalidList);
-  DCHECK(list->IsInvalidWithoutUnparsed());
-  return list;
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(ThreadSpecific<Persistent<CSSSelectorList>>,
+                                  empty_list, ());
+  Persistent<CSSSelectorList>& persistent = *empty_list;
+  if (!persistent) [[unlikely]] {
+    persistent =
+        MakeGarbageCollected<CSSSelectorList>(base::PassKey<CSSSelectorList>());
+    new (persistent->first_selector_) CSSSelector();
+    persistent->first_selector_[0].SetMatch(CSSSelector::kInvalidList);
+    DCHECK(persistent->IsInvalidWithoutUnparsed());
+    LEAK_SANITIZER_IGNORE_OBJECT(&persistent);
+  }
+  return persistent.Get();
 }
 
 CSSSelectorList* CSSSelectorList::Copy() const {
