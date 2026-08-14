@@ -36,6 +36,7 @@ source_set("signin") {
 
   if (enable_dice_support) {
     sources += [
+      "account_preview_utils.h",
       "chrome_signout_confirmation_prompt.h",
       "cross_device_signin_qr_bubble.h",
       "dice_migration_service.h",
@@ -107,6 +108,7 @@ source_set("impl") {
 
   if (enable_dice_support) {
     sources += [
+      "account_preview_utils.cc",
       "chrome_signout_confirmation_prompt.cc",
       "dice_migration_service.cc",
       "dice_migration_service_factory.cc",
@@ -279,7 +281,10 @@ if (enable_dice_support) {
   source_set("unit_tests") {
     testonly = true
 
-    sources = [ "promos/signin_promo_tab_helper_unittest.cc" ]
+    sources = [
+      "account_preview_utils_unittest.cc",
+      "promos/signin_promo_tab_helper_unittest.cc",
+    ]
 
     deps = [
       ":signin",

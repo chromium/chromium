@@ -1437,6 +1437,25 @@ Chromium is unable to recover your settings.
         <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_CREATE_BUBBLE_DESC" desc="Body of the web signin interception bubble. It is shown when the user signs in on the web while they already have another account present in the current profile.">
           <ph name="EXISTING_USER">$1<ex>Elisa</ex></ph> is already signed in.  To keep your browsing separate, sign in to Chromium in your own profile as <ph name="USER_EMAIL_ADDRESS">$2<ex>foo@gmail.com</ex></ph>.
         </message>
+        <!-- Account Preview Multi-User / Profile Separation Intercept Promo Subtitles -->
+        <message name="IDS_ACCOUNT_PREVIEW_PROFILE_SEPARATION_SUBTITLE_PASSWORDS_WITH_DEVICE" desc="Body of the web signin interception bubble with account preview, informing the user they can keep accounts separate and access passwords from their other device.">
+          <ph name="EXISTING_USER">$1<ex>Elisa</ex></ph> is already signed in. To keep your browsing separate, sign in to Chromium in your own profile as <ph name="USER_EMAIL_ADDRESS">$2<ex>bob.beckett@gmail.com</ex></ph>. You’ll also get your passwords and more from <ph name="DEVICE">$3<ex>your phone</ex></ph>.
+        </message>
+        <message name="IDS_ACCOUNT_PREVIEW_PROFILE_SEPARATION_SUBTITLE_BOOKMARKS_WITH_DEVICE" desc="Body of the web signin interception bubble with account preview, informing the user they can keep accounts separate and access bookmarks from their other device.">
+          <ph name="EXISTING_USER">$1<ex>Elisa</ex></ph> is already signed in. To keep your browsing separate, sign in to Chromium in your own profile as <ph name="USER_EMAIL_ADDRESS">$2<ex>bob.beckett@gmail.com</ex></ph>. You’ll also get your bookmarks and more from <ph name="DEVICE">$3<ex>your phone</ex></ph>.
+        </message>
+        <message name="IDS_ACCOUNT_PREVIEW_PROFILE_SEPARATION_SUBTITLE_SAVED_INFO_WITH_DEVICE" desc="Body of the web signin interception bubble with account preview, informing the user they can keep accounts separate and access saved info (such as autofill data, addresses, and payment methods) from their other device.">
+          <ph name="EXISTING_USER">$1<ex>Elisa</ex></ph> is already signed in. To keep your browsing separate, sign in to Chromium in your own profile as <ph name="USER_EMAIL_ADDRESS">$2<ex>bob.beckett@gmail.com</ex></ph>. You’ll also get your saved info and more from <ph name="DEVICE">$3<ex>your phone</ex></ph>.
+        </message>
+        <message name="IDS_ACCOUNT_PREVIEW_PROFILE_SEPARATION_SUBTITLE_PASSWORDS" desc="Body of the web signin interception bubble with account preview, informing the user they can keep accounts separate and access passwords on all their devices.">
+          <ph name="EXISTING_USER">$1<ex>Elisa</ex></ph> is already signed in. To keep your browsing separate, sign in to Chromium in your own profile as <ph name="USER_EMAIL_ADDRESS">$2<ex>bob.beckett@gmail.com</ex></ph>. You’ll also get your passwords and more on all your devices.
+        </message>
+        <message name="IDS_ACCOUNT_PREVIEW_PROFILE_SEPARATION_SUBTITLE_BOOKMARKS" desc="Body of the web signin interception bubble with account preview, informing the user they can keep accounts separate and access bookmarks on all their devices.">
+          <ph name="EXISTING_USER">$1<ex>Elisa</ex></ph> is already signed in. To keep your browsing separate, sign in to Chromium in your own profile as <ph name="USER_EMAIL_ADDRESS">$2<ex>bob.beckett@gmail.com</ex></ph>. You’ll also get your bookmarks and more on all your devices.
+        </message>
+        <message name="IDS_ACCOUNT_PREVIEW_PROFILE_SEPARATION_SUBTITLE_SAVED_INFO" desc="Body of the web signin interception bubble with account preview, informing the user they can keep accounts separate and access saved info (such as autofill data, addresses, and payment methods) on all their devices.">
+          <ph name="EXISTING_USER">$1<ex>Elisa</ex></ph> is already signed in. To keep your browsing separate, sign in to Chromium in your own profile as <ph name="USER_EMAIL_ADDRESS">$2<ex>bob.beckett@gmail.com</ex></ph>. You’ll also get your saved info and more on all your devices.
+        </message>
         <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_SUBTITLE" desc="Subtitle of the Chromium Signin Bubble intercept that is shown when a signed out user signs in on the web with it's first account.">
           To get your passwords and more on all your devices, sign in to Chromium
         </message>

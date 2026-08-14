@@ -14858,6 +14858,36 @@ This can include information about installed software, files, your browser, the 
         <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_ACCEPT_TEXT" desc="Label of the Accept button of the Chrome Signin Bubble intercept that is shown when a signed out user signs in on the web with it's first account. It also uses the given name of the user.">
           Continue as <ph name="NAME">$1<ex>Bob</ex></ph>
         </message>
+        <!-- Account Preview Device names -->
+        <message name="IDS_ACCOUNT_PREVIEW_DEVICE_PHONE" desc="Text referring to the user's phone, used as a placeholder in sign-in promo subtitles (e.g. 'Sign in to get your passwords and more from your phone').">
+          your phone
+        </message>
+        <message name="IDS_ACCOUNT_PREVIEW_DEVICE_TABLET" desc="Text referring to the user's tablet, used as a placeholder in sign-in promo subtitles (e.g. 'Sign in to get your passwords and more from your tablet').">
+          your tablet
+        </message>
+        <message name="IDS_ACCOUNT_PREVIEW_DEVICE_COMPUTER" desc="Text referring to the user's computer, used as a placeholder in sign-in promo subtitles (e.g. 'Sign in to get your passwords and more from your computer').">
+          your computer
+        </message>
+
+        <!-- Account Preview Signin Promo Subtitles -->
+        <message name="IDS_ACCOUNT_PREVIEW_PROMO_SUBTITLE_PASSWORDS_WITH_DEVICE" desc="Subtitle of a sign-in promo informing the user they can access their passwords from their other device.">
+          Sign in to get your passwords and more from <ph name="DEVICE">$1<ex>your phone</ex></ph>
+        </message>
+        <message name="IDS_ACCOUNT_PREVIEW_PROMO_SUBTITLE_BOOKMARKS_WITH_DEVICE" desc="Subtitle of a sign-in promo informing the user they can access their bookmarks from their other device.">
+          Sign in to get your bookmarks and more from <ph name="DEVICE">$1<ex>your phone</ex></ph>
+        </message>
+        <message name="IDS_ACCOUNT_PREVIEW_PROMO_SUBTITLE_SAVED_INFO_WITH_DEVICE" desc="Subtitle of a sign-in promo informing the user they can access their saved info (such as autofill data, addresses, and payment methods) from their other device.">
+          Sign in to get your saved info and more from <ph name="DEVICE">$1<ex>your phone</ex></ph>
+        </message>
+        <message name="IDS_ACCOUNT_PREVIEW_PROMO_SUBTITLE_PASSWORDS" desc="Subtitle of a sign-in promo informing the user they can access their passwords on all their devices.">
+          Sign in to get your passwords and more on all your devices
+        </message>
+        <message name="IDS_ACCOUNT_PREVIEW_PROMO_SUBTITLE_BOOKMARKS" desc="Subtitle of a sign-in promo informing the user they can access their bookmarks on all their devices.">
+          Sign in to get your bookmarks and more on all your devices
+        </message>
+        <message name="IDS_ACCOUNT_PREVIEW_PROMO_SUBTITLE_SAVED_INFO" desc="Subtitle of a sign-in promo informing the user they can access their saved info (such as autofill data, addresses, and payment methods) on all their devices.">
+          Sign in to get your saved info and more on all your devices
+        </message>
         <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_ENTERPRISE_BUBBLE_DESC_MANAGED_BY_TOKEN" desc="Body of the web signin interception bubble when the new account is managed via a token">
           You just signed in a managed account, creating a new managed profile will allow you to access some resources linked to that account.
         </message>
