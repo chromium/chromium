@@ -342,7 +342,11 @@ class AsrStreamResponder final {
         base::BindOnce(&AsrStreamResponder::Cancel, base::Unretained(this)));
   }
   ~AsrStreamResponder() { Cancel(); }
-  SessionAccessor* session() { return session_.get(); }
+  void AddAudioChunk(odmm::AudioDataPtr data) {
+    if (session_) {
+      session_->AsrAddAudioChunk(std::move(data));
+    }
+  }
   ChromeMLASRStreamOutputFn CreateOutputFn() {
     return [weak_ptr = weak_ptr_factory_.GetWeakPtr(),
             task_runner = base::SequencedTaskRunner::GetCurrentDefault()](
@@ -365,6 +369,7 @@ class AsrStreamResponder final {
 
   void OnCreateDone(std::optional<odmm::AsrError> error) {
     if (error) {
+      Cancel();
       responder_.ResetWithReason(static_cast<uint32_t>(error.value()), "");
     }
   }
@@ -629,7 +634,7 @@ void SessionImpl::AsrStream(
     odmm::AsrStreamOptionsPtr options,
     mojo::PendingRemote<odmm::AsrStreamResponder> responder) {
   TRACE_EVENT("optimization_guide", "SessionImpl::AsrStream");
-  DCHECK_EQ(asr_responder_, nullptr);
+  asr_responder_.reset();
   auto cloned = session_->Clone();
   auto cloned_raw = cloned.get();  // For CreateAsrStream after std::move
   asr_responder_ = std::make_unique<AsrStreamResponder>(std::move(responder),
@@ -645,7 +650,7 @@ void SessionImpl::AsrAddAudioChunk(odmm::AudioDataPtr data) {
   if (!asr_responder_) {
     return;
   }
-  asr_responder_->session()->AsrAddAudioChunk(std::move(data));
+  asr_responder_->AddAudioChunk(std::move(data));
 }
 
 void SessionImpl::Hint(on_device_model::mojom::HintOptionsPtr options) {

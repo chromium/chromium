@@ -370,6 +370,107 @@ TEST_F(OnDeviceModelServiceTest, AsrStreamIdleTimeout) {
             static_cast<uint32_t>(ModelDisconnectReason::kIdleShutdown));
 }
 
+TEST_F(OnDeviceModelServiceTest, AsrStreamDisconnectDoesNotDisconnectSession) {
+  auto model = LoadModel();
+  mojo::Remote<mojom::Session> session;
+  model->StartSession(session.BindNewPipeAndPassReceiver(), nullptr);
+
+  class DummyResponder : public mojom::AsrStreamResponder {
+   public:
+    void OnResponse(
+        std::vector<mojom::SpeechRecognitionResultPtr> result) override {}
+  };
+  DummyResponder responder_impl;
+  mojo::PendingRemote<mojom::AsrStreamResponder> responder_remote;
+  mojo::Receiver<mojom::AsrStreamResponder> receiver(
+      &responder_impl, responder_remote.InitWithNewPipeAndPassReceiver());
+
+  auto options = mojom::AsrStreamOptions::New();
+  options->sample_rate_hz = 16000;
+  mojo::Remote<mojom::AsrStreamInput> asr_input;
+  session->AsrStream(std::move(options), asr_input.BindNewPipeAndPassReceiver(),
+                     std::move(responder_remote));
+  task_environment_.RunUntilIdle();
+
+  // Disconnect the ASR stream.
+  asr_input.reset();
+  task_environment_.RunUntilIdle();
+
+  // The session remote should remain connected and functional.
+  EXPECT_TRUE(session.is_connected());
+
+  TestResponseHolder response;
+  session->Append(MakeInput("test"), {});
+  session->Generate(mojom::GenerateOptions::New(), response.BindRemote());
+  response.WaitForCompletion();
+  EXPECT_THAT(response.responses(), ElementsAre("test"));
+}
+
+TEST_F(OnDeviceModelServiceTest, AsrStreamReuseOnExistingSession) {
+  auto model = LoadModel();
+  mojo::Remote<mojom::Session> session;
+  model->StartSession(session.BindNewPipeAndPassReceiver(), nullptr);
+
+  class DummyResponder : public mojom::AsrStreamResponder {
+   public:
+    void OnResponse(
+        std::vector<mojom::SpeechRecognitionResultPtr> result) override {}
+  };
+
+  // First ASR stream on session.
+  DummyResponder responder_impl1;
+  mojo::PendingRemote<mojom::AsrStreamResponder> responder_remote1;
+  mojo::Receiver<mojom::AsrStreamResponder> receiver1(
+      &responder_impl1, responder_remote1.InitWithNewPipeAndPassReceiver());
+  base::test::TestFuture<void> receiver1_disconnect;
+  receiver1.set_disconnect_handler(receiver1_disconnect.GetCallback());
+
+  auto options1 = mojom::AsrStreamOptions::New();
+  options1->sample_rate_hz = 16000;
+  mojo::Remote<mojom::AsrStreamInput> asr_input1;
+  session->AsrStream(std::move(options1),
+                     asr_input1.BindNewPipeAndPassReceiver(),
+                     std::move(responder_remote1));
+  task_environment_.RunUntilIdle();
+
+  auto audio_data1 = mojom::AudioData::New();
+  audio_data1->sample_rate = 16000;
+  audio_data1->channel_count = 1;
+  audio_data1->frame_count = 1;
+  audio_data1->data = {0};
+  asr_input1->AddAudioChunk(std::move(audio_data1));
+  task_environment_.RunUntilIdle();
+
+  // Second ASR stream on the same session replacing the previous stream while
+  // the first stream is still open (hot replacement).
+  DummyResponder responder_impl2;
+  mojo::PendingRemote<mojom::AsrStreamResponder> responder_remote2;
+  mojo::Receiver<mojom::AsrStreamResponder> receiver2(
+      &responder_impl2, responder_remote2.InitWithNewPipeAndPassReceiver());
+
+  auto options2 = mojom::AsrStreamOptions::New();
+  options2->sample_rate_hz = 16000;
+  mojo::Remote<mojom::AsrStreamInput> asr_input2;
+  session->AsrStream(std::move(options2),
+                     asr_input2.BindNewPipeAndPassReceiver(),
+                     std::move(responder_remote2));
+  task_environment_.RunUntilIdle();
+
+  EXPECT_TRUE(session.is_connected());
+  EXPECT_TRUE(asr_input2.is_connected());
+  EXPECT_FALSE(asr_input1.is_connected());
+  EXPECT_TRUE(receiver1_disconnect.IsReady());
+
+  auto audio_data2 = mojom::AudioData::New();
+  audio_data2->sample_rate = 16000;
+  audio_data2->channel_count = 1;
+  audio_data2->frame_count = 1;
+  audio_data2->data = {0};
+  asr_input2->AddAudioChunk(std::move(audio_data2));
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(session.is_connected());
+}
+
 TEST_F(OnDeviceModelServiceTest, Responds) {
   auto model = LoadModel();
   EXPECT_THAT(GetResponses(*model, "bar"), ElementsAre("bar"));
@@ -1468,6 +1569,15 @@ TEST_F(OnDeviceModelServiceTest, AsrStreamInitializationFailure) {
   EXPECT_TRUE(received_reason_future.Wait());
   EXPECT_EQ(std::get<0>(received_reason_future.Take()),
             static_cast<uint32_t>(mojom::AsrError::kInitializationFailed));
+
+  // The session remote should remain connected and functional after failure.
+  EXPECT_TRUE(session.is_connected());
+
+  TestResponseHolder response;
+  session->Append(MakeInput("test"), {});
+  session->Generate(mojom::GenerateOptions::New(), response.BindRemote());
+  response.WaitForCompletion();
+  EXPECT_THAT(response.responses(), ElementsAre("test"));
 }
 
 }  // namespace
