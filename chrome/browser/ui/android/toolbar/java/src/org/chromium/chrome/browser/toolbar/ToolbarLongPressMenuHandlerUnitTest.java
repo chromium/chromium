@@ -550,6 +550,30 @@ public final class ToolbarLongPressMenuHandlerUnitTest {
     @Test
     @SmallTest
     @Restriction({DeviceFormFactor.PHONE})
+    public void testDestroy_dismissesPopupMenu() {
+        mSpyPopupWindow = spy(UiWidgetFactory.getInstance().createPopupWindow(mActivity));
+        UiWidgetFactory.setInstance(mMockUiWidgetFactory);
+        when(mMockUiWidgetFactory.createPopupWindow(any())).thenReturn(mSpyPopupWindow);
+
+        doReturn(true).when(mUrlBar).isAttachedToWindow();
+        doReturn(mContentViewGroup).when(mSpyPopupWindow).getContentView();
+        doReturn(100).when(mContentViewGroup).getMeasuredWidth();
+        doReturn(100).when(mContentViewGroup).getMeasuredHeight();
+        doNothing()
+                .when(mSpyPopupWindow)
+                .showAtLocation(any(View.class), anyInt(), anyInt(), anyInt());
+
+        mToolbarLongPressMenuHandler.getOnLongClickListener().onLongClick(mUrlBar);
+        assertNotNull(mToolbarLongPressMenuHandler.getPopupWindowForTesting());
+
+        mToolbarLongPressMenuHandler.destroy();
+        assertFalse(mToolbarLongPressMenuHandler.getPopupWindowForTesting().isShowing());
+        verify(mActivityLifecycleDispatcher).unregister(mToolbarLongPressMenuHandler);
+    }
+
+    @Test
+    @SmallTest
+    @Restriction({DeviceFormFactor.PHONE})
     @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_EXTRA_ENTRY_POINTS)
     public void testBuildMenuItemsWithSendTabToSelf() {
         mUrl = JUnitTestGURLs.URL_1;
