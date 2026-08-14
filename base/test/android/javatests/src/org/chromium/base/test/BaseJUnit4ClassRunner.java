@@ -72,7 +72,7 @@ import java.util.ServiceLoader;
 public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
     private static final String TAG = "BaseJUnit4ClassRunnr";
 
-    // Arbirary int that must not overlap with status codes defined by
+    // Arbitrary int that must not overlap with status codes defined by
     // https://developer.android.com/reference/android/test/InstrumentationTestRunner.html#REPORT_VALUE_ID
     private static final int STATUS_CODE_TEST_DURATION = 1337;
     private static final String DURATION_BUNDLE_ID = "duration_ms";
