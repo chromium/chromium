@@ -11,6 +11,7 @@ load("./android.star", "android")
 load("./clang_all.star", "clang_all")
 load("./config.star", "config")
 load("./gn_logs.star", "gn_logs")
+load("./platform.star", "platform")
 load("./win_sdk.star", "win_sdk")
 
 def __clang_link(ctx, cmd):
@@ -294,7 +295,7 @@ def __rules(ctx):
         {
             "name": "clang-coverage/cxx",
             "action": "(.*_)?cxx",
-            "command_prefix": "\"python3\" ../../build/toolchain/clang_code_coverage_wrapper.py",
+            "command_prefix": platform.python_bin + " ../../build/toolchain/clang_code_coverage_wrapper.py",
             "inputs": [
                 "third_party/llvm-build/Release+Asserts/bin/clang++",
             ],
@@ -307,7 +308,7 @@ def __rules(ctx):
         {
             "name": "clang-coverage/cc",
             "action": "(.*_)?cc",
-            "command_prefix": "\"python3\" ../../build/toolchain/clang_code_coverage_wrapper.py",
+            "command_prefix": platform.python_bin + " ../../build/toolchain/clang_code_coverage_wrapper.py",
             "inputs": [
                 "third_party/llvm-build/Release+Asserts/bin/clang",
             ],
@@ -320,7 +321,7 @@ def __rules(ctx):
         {
             "name": "clang-coverage/objcxx",
             "action": "(.*_)?objcxx",
-            "command_prefix": "\"python3\" ../../build/toolchain/clang_code_coverage_wrapper.py",
+            "command_prefix": platform.python_bin + " ../../build/toolchain/clang_code_coverage_wrapper.py",
             "inputs": [
                 "third_party/llvm-build/Release+Asserts/bin/clang++",
             ],
@@ -333,7 +334,7 @@ def __rules(ctx):
         {
             "name": "clang-coverage/objc",
             "action": "(.*_)?objc",
-            "command_prefix": "\"python3\" ../../build/toolchain/clang_code_coverage_wrapper.py",
+            "command_prefix": platform.python_bin + " ../../build/toolchain/clang_code_coverage_wrapper.py",
             "inputs": [
                 "third_party/llvm-build/Release+Asserts/bin/clang",
             ],
@@ -364,6 +365,9 @@ def __rules(ctx):
             "name": "clang/solink",
             "action": "(.*_)?solink",
             "handler": "clang_link",
+            "inputs": [
+                "third_party/cpython3/linux-amd64:cpython3",
+            ],
             "exclude_input_patterns": [
                 "*.cc",
                 "*.h",
@@ -372,6 +376,7 @@ def __rules(ctx):
                 "*.stamp",
             ],
             "remote": remote_link,
+            "remote_command": platform.remote_python_bin,
             "restat_content": True,
             "platform_ref": "large",
             "timeout": remote_link_timeout,
@@ -395,6 +400,9 @@ def __rules(ctx):
             "name": "clang/link",
             "action": "(.*_)?link",
             "handler": "clang_link",
+            "inputs": [
+                "third_party/cpython3/linux-amd64:cpython3",
+            ],
             "exclude_input_patterns": [
                 "*.cc",
                 "*.h",
@@ -404,6 +412,7 @@ def __rules(ctx):
                 "*.stamp",
             ],
             "remote": remote_link,
+            "remote_command": platform.remote_python_bin,
             "platform_ref": "large",
             "timeout": remote_link_timeout,
         },

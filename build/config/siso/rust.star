@@ -12,6 +12,7 @@ load("./ar.star", "ar")
 load("./config.star", "config")
 load("./fuchsia.star", "fuchsia")
 load("./gn_logs.star", "gn_logs")
+load("./platform.star", "platform")
 load("./win_sdk.star", "win_sdk")
 
 def __filegroups(ctx):
@@ -191,6 +192,7 @@ def __step_config(ctx, step_config):
     rust_toolchain = [
         # TODO(b/285225184): use precomputed subtree
         "third_party/rust-toolchain:toolchain",
+        "third_party/cpython3/linux-amd64:cpython3",
     ]
     rust_link_indirect_inputs = {
         "includes": [
@@ -240,6 +242,7 @@ def __step_config(ctx, step_config):
             "handler": "rust_link_handler",
             "deps": "none",  # disable gcc scandeps
             "remote": remote_link,
+            "remote_command": platform.remote_python_bin,
             "timeout": "2m",
             "platform_ref": platform_ref,
         },
@@ -251,6 +254,7 @@ def __step_config(ctx, step_config):
             "handler": "rust_link_handler",
             "deps": "none",  # disable gcc scandeps
             "remote": remote_link,
+            "remote_command": platform.remote_python_bin,
             "timeout": "2m",
             "platform_ref": platform_ref,
         },
@@ -262,6 +266,7 @@ def __step_config(ctx, step_config):
             "handler": "rust_link_handler",
             "deps": "none",  # disable gcc scandeps
             "remote": remote_link,
+            "remote_command": platform.remote_python_bin,
             "timeout": "2m",
             "platform_ref": platform_ref,
         },
@@ -272,6 +277,7 @@ def __step_config(ctx, step_config):
             "indirect_inputs": rust_compile_indirect_inputs,
             "deps": "none",  # disable gcc scandeps
             "remote": remote,
+            "remote_command": platform.remote_python_bin,
             "timeout": "2m",
             "platform_ref": platform_ref,
         },
@@ -282,62 +288,68 @@ def __step_config(ctx, step_config):
             "indirect_inputs": rust_compile_indirect_inputs,
             "deps": "none",  # disable gcc scandeps
             "remote": remote,
+            "remote_command": platform.remote_python_bin,
             "timeout": "2m",
             "platform_ref": platform_ref,
         },
         {
             "name": "rust/run_build_script",
-            "command_prefix": "python3 ../../build/rust/gni_impl/run_build_script.py",
+            "command_prefix": platform.python_bin + " ../../build/rust/gni_impl/run_build_script.py",
             "inputs": [
                 "third_party/rust-toolchain:toolchain",
             ],
             "handler": "rust_build_handler",
             "remote": (remote and config.get(ctx, "cog")) or config.get(ctx, "default-remote"),
             "timeout": "2m",
+            "remote_command": platform.remote_python_bin,
         },
         {
             "name": "rust/find_std_rlibs",
-            "command_prefix": "python3 ../../build/rust/std/find_std_rlibs.py",
+            "command_prefix": platform.python_bin + " ../../build/rust/std/find_std_rlibs.py",
             "inputs": [
                 "third_party/rust-toolchain:toolchain",
             ],
             "remote": (remote and config.get(ctx, "cog")) or config.get(ctx, "default-remote"),
             "timeout": "2m",
+            "remote_command": platform.remote_python_bin,
         },
         {
             "name": "rust/clippy",
-            "command_prefix": "python3 ../../build/rust/gni_impl/clippy_wrapper.py",
+            "command_prefix": platform.python_bin + " ../../build/rust/gni_impl/clippy_wrapper.py",
             "inputs": rust_toolchain,
             "indirect_inputs": rust_link_indirect_inputs,
             "remote": remote,
             "timeout": "2m",
             "platform_ref": platform_ref,
+            "remote_command": platform.remote_python_bin,
         },
         {
             # rust/bindgen fails remotely when *.d does not exist.
             # TODO(b/356496947): need to run scandeps?
             "name": "rust/bindgen",
-            "command_prefix": "python3 ../../build/rust/gni_impl/run_bindgen.py",
+            "command_prefix": platform.python_bin + " ../../build/rust/gni_impl/run_bindgen.py",
             "inputs": rust_toolchain + clang_inputs,
             "remote": False,
             "timeout": "2m",
         },
         {
             "name": "rust/rustc_print_cfg",
-            "command_prefix": "python3 ../../build/rust/gni_impl/rustc_print_cfg.py",
+            "command_prefix": platform.python_bin + " ../../build/rust/gni_impl/rustc_print_cfg.py",
             "inputs": [
                 "third_party/rust-toolchain:toolchain",
             ],
             "remote": remote,
             "timeout": "2m",
+            "remote_command": platform.remote_python_bin,
         },
         {
             "name": "rust/cpp_api_from_rust",
-            "command_prefix": "python3 ../../build/rust/gni_impl/cpp_api_from_rust_wrapper.py",
+            "command_prefix": platform.python_bin + " ../../build/rust/gni_impl/cpp_api_from_rust_wrapper.py",
             "inputs": rust_toolchain + clang_inputs,
             "indirect_inputs": rust_compile_indirect_inputs,
             "remote": remote,
             "timeout": "2m",
+            "remote_command": platform.remote_python_bin,
         },
     ])
     return step_config

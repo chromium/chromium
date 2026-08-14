@@ -24,6 +24,15 @@ load("./simple.star", "simple")
 load("./typescript_all.star", "typescript_all")
 load("./windows.star", chromium_windows = "chromium")
 
+def __setup_python(ctx, step_config):
+    for rule in step_config["rules"]:
+        if rule.get("remote_command") == platform.remote_python_bin:
+            inputs = rule.get("inputs", [])
+            if "third_party/cpython3/linux-amd64:cpython3" not in inputs:
+                inputs.append("third_party/cpython3/linux-amd64:cpython3")
+                rule["inputs"] = inputs
+    return step_config
+
 def __disable_remote(ctx, step_config):
     gn_logs_data = gn_logs.read(ctx)
     if gn_logs_data.get("use_remoteexec") == "true":
@@ -65,6 +74,9 @@ def init(ctx):
                 "excludes": [
                     "*.json",
                     "*.proto",
+                    # Evaluating pyc files causes cache invalidation
+                    # and potential non determinism with SHA256 generation.
+                    "*.pyc",
                     "*.xml",
                 ],
             },
@@ -75,6 +87,7 @@ def init(ctx):
         "executables": [
             "third_party/node/linux/node-linux-x64/bin/node",
             "third_party/typescript/linux-amd64/src/lib/tsc",
+            "third_party/cpython3/linux-amd64/bin/python3",
         ],
     }
     step_config = blink_all.step_config(ctx, step_config)
@@ -89,12 +102,14 @@ def init(ctx):
 
     step_config = denylist.step_config(ctx, step_config)
 
+    step_config = __setup_python(ctx, step_config)
     step_config = __disable_remote(ctx, step_config)
     step_config = __unset_timeout(ctx, step_config)
 
     filegroups = {}
     filegroups.update(blink_all.filegroups(ctx))
     filegroups.update(host.filegroups(ctx))
+    filegroups.update(platform.filegroups(ctx))
     filegroups.update(rust.filegroups(ctx))
     filegroups.update(simple.filegroups(ctx))
     filegroups.update(typescript_all.filegroups(ctx))

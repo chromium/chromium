@@ -11,6 +11,7 @@ load("./config.star", "config")
 load("./cros.star", "cros")
 load("./devtools_frontend.star", "devtools_frontend")
 load("./nasm_linux.star", "nasm")
+load("./platform.star", "platform")
 load("./proto_linux.star", "proto")
 load("./reclient.star", "reclient")
 load("./v8.star", "v8")
@@ -70,65 +71,74 @@ def __step_config(ctx, step_config):
     step_config["rules"].extend([
         {
             "name": "write_buildflag_header",
-            "command_prefix": "python3 ../../build/write_buildflag_header.py",
+            "command_prefix": platform.python_bin + " ../../build/write_buildflag_header.py",
             "remote": config.get(ctx, "cog") or config.get(ctx, "default-remote"),
             "timeout": "2m",
+            "remote_command": platform.remote_python_bin,
         },
         {
             "name": "write_build_date_header",
-            "command_prefix": "python3 ../../base/write_build_date_header.py",
+            "command_prefix": platform.python_bin + " ../../base/write_build_date_header.py",
             "remote": config.get(ctx, "cog") or config.get(ctx, "default-remote"),
             "timeout": "2m",
+            "remote_command": platform.remote_python_bin,
         },
         {
             "name": "version_py",
-            "command_prefix": "python3 ../../build/util/version.py",
+            "command_prefix": platform.python_bin + " ../../build/util/version.py",
             "remote": config.get(ctx, "cog") or config.get(ctx, "default-remote"),
             "timeout": "2m",
+            "remote_command": platform.remote_python_bin,
         },
         {
             "name": "perfetto/touch_file",
-            "command_prefix": "python3 ../../third_party/perfetto/tools/touch_file.py",
+            "command_prefix": platform.python_bin + " ../../third_party/perfetto/tools/touch_file.py",
             "remote": config.get(ctx, "cog") or config.get(ctx, "default-remote"),
             "replace": True,
             "timeout": "2m",
+            "remote_command": platform.remote_python_bin,
         },
         {
             "name": "perfetto/write_buildflag_header",
-            "command_prefix": "python3 ../../third_party/perfetto/gn/write_buildflag_header.py",
+            "command_prefix": platform.python_bin + " ../../third_party/perfetto/gn/write_buildflag_header.py",
             "remote": config.get(ctx, "cog") or config.get(ctx, "default-remote"),
             "timeout": "2m",
+            "remote_command": platform.remote_python_bin,
         },
         {
             "name": "perfetto/gen_tp_table_headers",
-            "command_prefix": "python3 ../../third_party/perfetto/tools/gen_tp_table_headers.py",
+            "command_prefix": platform.python_bin + " ../../third_party/perfetto/tools/gen_tp_table_headers.py",
             "inputs": [
                 "third_party/perfetto/python:python",
                 "third_party/perfetto/src/trace_processor:trace_processor",
             ],
             "remote": config.get(ctx, "cog") or config.get(ctx, "default-remote"),
             "timeout": "2m",
+            "remote_command": platform.remote_python_bin,
         },
         {
             "name": "perfetto/gen_cc_proto_descriptor",
-            "command_prefix": "python3 ../../third_party/perfetto/tools/gen_cc_proto_descriptor.py",
+            "command_prefix": platform.python_bin + " ../../third_party/perfetto/tools/gen_cc_proto_descriptor.py",
             "remote": config.get(ctx, "cog") or config.get(ctx, "default-remote"),
             "timeout": "2m",
+            "remote_command": platform.remote_python_bin,
         },
         {
             # b/331716896: local fails due to link(2) error.
             "name": "generate_fontconfig_cache",
-            "command_prefix": "python3 ../../build/gn_run_binary.py generate_fontconfig_caches",
+            "command_prefix": platform.python_bin + " ../../build/gn_run_binary.py generate_fontconfig_caches",
             "remote": config.get(ctx, "cog") or config.get(ctx, "default-remote"),
             "timeout": "2m",
+            "remote_command": platform.remote_python_bin,
         },
         {
             "name": "dump_app_syms",
-            "command_prefix": "python3 ../../build/linux/dump_app_syms.py",
+            "command_prefix": platform.python_bin + " ../../build/linux/dump_app_syms.py",
             "handler": "dump_app_syms",
             "remote": config.get(ctx, "remote-link") or config.get(ctx, "cog") or config.get(ctx, "default-remote"),
             "platform_ref": "large",
             "timeout": "30m",
+            "remote_command": platform.remote_python_bin,
         },
     ])
 

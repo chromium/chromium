@@ -41,11 +41,12 @@ def __step_config(ctx, step_config):
     step_config["rules"].extend([
         {
             "name": "devtools-frontend/typescript/ts_library",
-            "command_prefix": "python3 ../../third_party/devtools-frontend/src/scripts/build/typescript/ts_library.py",
+            "command_prefix": platform.python_bin + " ../../third_party/devtools-frontend/src/scripts/build/typescript/ts_library.py",
             "remote": config.get(ctx, "default-remote"),
             "output_local": True,
             "timeout": "2m",
             "platform_ref": "large",
+            "remote_command": platform.remote_python_bin,
         },
         {
             "name": "devtools-frontend/esbuild",
@@ -53,13 +54,15 @@ def __step_config(ctx, step_config):
             "remote": config.get(ctx, "default-remote"),
             "timeout": "2m",
             "platform_ref": "large",
+            "remote_command": platform.remote_python_bin,
         },
         {
             "name": "devtools-frontend/build/generate_css_js_files",
-            "command_prefix": "python3 ../../third_party/node/node.py ../../third_party/devtools-frontend/src/scripts/build/generate_css_js_files.js",
+            "command_prefix": platform.python_bin + " ../../third_party/node/node.py ../../third_party/devtools-frontend/src/scripts/build/generate_css_js_files.js",
             "remote": config.get(ctx, "default-remote"),
             "output_local": True,
             "timeout": "2m",
+            "remote_command": platform.remote_python_bin,
         },
     ])
     return step_config

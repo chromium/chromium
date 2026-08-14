@@ -6,6 +6,7 @@
 
 load("@builtin//struct.star", "module")
 load("./config.star", "config")
+load("./platform.star", "platform")
 
 def __step_config(ctx, step_config):
     step_config["rules"].extend([
@@ -17,7 +18,7 @@ def __step_config(ctx, step_config):
             "action": "__chrome_app_generated_resources__strings_grit.*",
             "remote": config.get(ctx, "googlechrome"),
             # Only runs on Linux workers.
-            "remote_command": "python3",
+            "remote_command": platform.remote_python_bin,
             "platform_ref": "large",
         },
         {
@@ -28,7 +29,7 @@ def __step_config(ctx, step_config):
             "action": "__components_strings_components_strings__strings_grit.*",
             "remote": config.get(ctx, "googlechrome"),
             # Only runs on Linux workers.
-            "remote_command": "python3",
+            "remote_command": platform.remote_python_bin,
             "platform_ref": "large",
         },
     ])

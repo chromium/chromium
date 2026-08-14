@@ -10,6 +10,7 @@ load("@builtin//path.star", "path")
 load("@builtin//struct.star", "module")
 load("./config.star", "config")
 load("./gn_logs.star", "gn_logs")
+load("./platform.star", "platform")
 
 # TODO: crbug.com/323091468 - Propagate target android ABI and
 # android SDK version from GN, and remove the hardcoded filegroups.
@@ -60,20 +61,22 @@ def __step_config(ctx, step_config):
         # See also https://chromium.googlesource.com/chromium/src/build/+/HEAD/android/docs/java_toolchain.md
         {
             "name": "android/write_build_config",
-            "command_prefix": "python3 ../../build/android/gyp/write_build_config.py",
+            "command_prefix": platform.python_bin + " ../../build/android/gyp/write_build_config.py",
             "handler": "android_write_build_config",
             "remote": remote_run,
             "timeout": "2m",
+            "remote_command": platform.remote_python_bin,
         },
         {
             "name": "android/ijar",
-            "command_prefix": "python3 ../../build/android/gyp/ijar.py",
+            "command_prefix": platform.python_bin + " ../../build/android/gyp/ijar.py",
             "remote": remote_run,
             "timeout": "2m",
+            "remote_command": platform.remote_python_bin,
         },
         {
             "name": "android/turbine",
-            "command_prefix": "python3 ../../build/android/gyp/turbine.py",
+            "command_prefix": platform.python_bin + " ../../build/android/gyp/turbine.py",
             "handler": "android_turbine",
             # TODO: crbug.com/396220357 - fix gn to remove unnecessary deps
             "exclude_input_patterns": [
@@ -97,10 +100,11 @@ def __step_config(ctx, step_config):
             "remote": remote_run and not config.get(ctx, "no-remote-javac"),
             "platform_ref": "large",
             "timeout": "2m",
+            "remote_command": platform.remote_python_bin,
         },
         {
             "name": "android/compile_resources",
-            "command_prefix": "python3 ../../build/android/gyp/compile_resources.py",
+            "command_prefix": platform.python_bin + " ../../build/android/gyp/compile_resources.py",
             "handler": "android_compile_resources",
             "exclude_input_patterns": [
                 "*.a",
@@ -114,10 +118,11 @@ def __step_config(ctx, step_config):
             ],
             "remote": remote_run,
             "timeout": "5m",
+            "remote_command": platform.remote_python_bin,
         },
         {
             "name": "android/compile_java",
-            "command_prefix": "python3 ../../build/android/gyp/compile_java.py",
+            "command_prefix": platform.python_bin + " ../../build/android/gyp/compile_java.py",
             "handler": "android_compile_java",
             "exclude_input_patterns": [
                 "*.a",
@@ -137,10 +142,11 @@ def __step_config(ctx, step_config):
             "remote": remote_run and not config.get(ctx, "no-remote-javac"),
             "platform_ref": "large",
             "timeout": "2m",
+            "remote_command": platform.remote_python_bin,
         },
         {
             "name": "android/errorprone",
-            "command_prefix": "python3 ../../build/android/gyp/errorprone.py",
+            "command_prefix": platform.python_bin + " ../../build/android/gyp/errorprone.py",
             "handler": "android_compile_java",
             "exclude_input_patterns": [
                 "*.a",
@@ -157,10 +163,11 @@ def __step_config(ctx, step_config):
             # obj/chrome/android/chrome_java__errorprone.stamp step takes too
             # long.
             "timeout": "6m",
+            "remote_command": platform.remote_python_bin,
         },
         {
             "name": "android/compile_kt",
-            "command_prefix": "python3 ../../build/android/gyp/compile_kt.py",
+            "command_prefix": platform.python_bin + " ../../build/android/gyp/compile_kt.py",
             "handler": "android_compile_java",
             "exclude_input_patterns": [
                 "*.a",
@@ -180,10 +187,11 @@ def __step_config(ctx, step_config):
             "remote": remote_run,
             "platform_ref": "large",
             "timeout": "2m",
+            "remote_command": platform.remote_python_bin,
         },
         {
             "name": "android/dex",
-            "command_prefix": "python3 ../../build/android/gyp/dex.py",
+            "command_prefix": platform.python_bin + " ../../build/android/gyp/dex.py",
             "handler": "android_dex",
             "exclude_input_patterns": [
                 "*.a",
@@ -202,16 +210,18 @@ def __step_config(ctx, step_config):
             "remote": remote_run,
             "platform_ref": "large",
             "timeout": "2m",
+            "remote_command": platform.remote_python_bin,
         },
         {
             "name": "android/filter_zip",
-            "command_prefix": "python3 ../../build/android/gyp/filter_zip.py",
+            "command_prefix": platform.python_bin + " ../../build/android/gyp/filter_zip.py",
             "remote": remote_run,
             "timeout": "2m",
+            "remote_command": platform.remote_python_bin,
         },
         {
             "name": "android/generate_resource_allowlist",
-            "command_prefix": "python3 ../../tools/resources/generate_resource_allowlist.py",
+            "command_prefix": platform.python_bin + " ../../tools/resources/generate_resource_allowlist.py",
             "indirect_inputs": {
                 "includes": ["*.o", "*.a"],
             },
@@ -221,15 +231,16 @@ def __step_config(ctx, step_config):
         },
         {
             "name": "android/trace_event_bytecode_rewriter",
-            "command_prefix": "python3 ../../build/android/gyp/trace_event_bytecode_rewriter.py",
+            "command_prefix": platform.python_bin + " ../../build/android/gyp/trace_event_bytecode_rewriter.py",
             "handler": "android_trace_event_bytecode_rewriter",
             "remote": remote_run,
             "platform_ref": "large",
             "timeout": "10m",
+            "remote_command": platform.remote_python_bin,
         },
         {
             "name": "android/proguard/local",
-            "command_prefix": "python3 ../../build/android/gyp/proguard.py",
+            "command_prefix": platform.python_bin + " ../../build/android/gyp/proguard.py",
             "action_outs": [
                 # http://crbug.com/396004680#comment15: It slows down CQ build.
                 # It's better to run it locally.
@@ -239,7 +250,7 @@ def __step_config(ctx, step_config):
         },
         {
             "name": "android/proguard",
-            "command_prefix": "python3 ../../build/android/gyp/proguard.py",
+            "command_prefix": platform.python_bin + " ../../build/android/gyp/proguard.py",
             "handler": "android_proguard",
             "exclude_input_patterns": [
                 "*.a",
@@ -254,10 +265,11 @@ def __step_config(ctx, step_config):
             "remote": remote_run,
             "platform_ref": "large",
             "timeout": "10m",
+            "remote_command": platform.remote_python_bin,
         },
         {
             "name": "android/trace_references",
-            "command_prefix": "python3 ../../build/android/gyp/tracereferences.py",
+            "command_prefix": platform.python_bin + " ../../build/android/gyp/tracereferences.py",
             "handler": "android_trace_references",
             "exclude_input_patterns": [
                 "*.a",
@@ -272,10 +284,11 @@ def __step_config(ctx, step_config):
             "remote": remote_run_static_analysis,
             "platform_ref": "large",
             "timeout": "10m",
+            "remote_command": platform.remote_python_bin,
         },
         {
             "name": "android/apkbuilder",
-            "command_prefix": "python3 ../../build/android/gyp/apkbuilder.py",
+            "command_prefix": platform.python_bin + " ../../build/android/gyp/apkbuilder.py",
             "handler": "android_apkbuilder",
             "remote": config.get(ctx, "remote-link") or config.get(ctx, "default-remote") or config.get(ctx, "builder"),
             "platform_ref": "large",
@@ -285,10 +298,11 @@ def __step_config(ctx, step_config):
                 "*.proto",
                 "*.o",
             ],
+            "remote_command": platform.remote_python_bin,
         },
         {
             "name": "android/create_size_info_files",
-            "command_prefix": "python3 ../../build/android/gyp/create_size_info_files.py",
+            "command_prefix": platform.python_bin + " ../../build/android/gyp/create_size_info_files.py",
             "handler": "android_create_size_info_files",
             "remote": remote_run,
             "platform_ref": "large",
@@ -300,6 +314,7 @@ def __step_config(ctx, step_config):
                 "*.inc",
                 "*.cpp",
             ],
+            "remote_command": platform.remote_python_bin,
         },
     ])
     return step_config

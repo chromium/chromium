@@ -30,7 +30,7 @@ def __step_config(ctx, step_config):
             "remote": remote_run,
             "timeout": "2m",
             "platform_ref": "large",
-            "remote_command": "python3",  # only run on Linux worker even for CI Windows.
+            "remote_command": platform.remote_python_bin,  # only run on Linux worker even for CI Windows.
         },
     ])
 
@@ -47,12 +47,14 @@ def __step_config(ctx, step_config):
                 # needs to read the generated .mojom files. But, the inputs are
                 # not specified in the build graph correctly.
                 "output_local": True,
+                "remote_command": platform.remote_python_bin,
             },
             {
                 "name": "blink/build_web_idl_database",
                 "command_prefix": platform.python_bin + " ../../third_party/blink/renderer/bindings/scripts/build_web_idl_database.py",
                 "remote": remote_run,
                 "timeout": "2m",
+                "remote_command": platform.remote_python_bin,
             },
         ])
     return step_config

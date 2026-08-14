@@ -8,6 +8,7 @@ load("@builtin//path.star", "path")
 load("@builtin//struct.star", "module")
 load("./clang_mac.star", "clang")
 load("./config.star", "config")
+load("./platform.star", "platform")
 
 def __filegroups(ctx):
     fg = {}
@@ -63,17 +64,17 @@ def __step_config(ctx, step_config):
     step_config["rules"].extend([
         {
             "name": "codesign",
-            "command_prefix": "python3 ../../build/config/apple/codesign.py ",
+            "command_prefix": platform.python_bin + " ../../build/config/apple/codesign.py",
             "handler": "codesign",
         },
         {
             "name": "package_framework",
-            "command_prefix": "python3 ../../build/config/mac/package_framework.py ",
+            "command_prefix": platform.python_bin + " ../../build/config/mac/package_framework.py",
             "handler": "package_framework",
         },
         {
             "name": "download_from_google_storage",
-            "command_prefix": "python3 ../../third_party/depot_tools/download_from_google_storage.py ",
+            "command_prefix": platform.python_bin + " ../../third_party/depot_tools/download_from_google_storage.py",
             "handler": "download_from_google_storage",
         },
     ])

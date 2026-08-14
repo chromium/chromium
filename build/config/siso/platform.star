@@ -7,14 +7,26 @@
 load("@builtin//runtime.star", "runtime")
 load("@builtin//struct.star", "module")
 
-# Python binary name. python3 or python3.exe.
-__python_bin = {
-    # is_windows => python bin
-    True: "python3.exe",
-    False: "python3",
-}[runtime.os == "windows"]
+# Python binary name for host actions.
+__python_bin = "../../third_party/cpython3/host/bin/python3"
+
+# Python binary name for remote Linux worker actions (cross-compilation from Windows/macOS).
+__remote_python_bin = "../../third_party/cpython3/linux-amd64/bin/python3"
+
+def __filegroups(ctx):
+    return {
+        "third_party/cpython3/linux-amd64:cpython3": {
+            "type": "glob",
+            "includes": [
+                "bin/python3",
+                "*.py",
+            ],
+        },
+    }
 
 platform = module(
     "platform",
+    filegroups = __filegroups,
     python_bin = __python_bin,
+    remote_python_bin = __remote_python_bin,
 )

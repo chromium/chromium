@@ -246,7 +246,7 @@ template("single_gcc_toolchain") {
             rebase_path(toolchain_coverage_instrumentation_input_file,
                         root_build_dir)
       }
-      coverage_wrapper = "\"$python_path\" ${_coverage_wrapper} "
+      coverage_wrapper = "$python_path ${_coverage_wrapper} "
     }
 
     cc = compiler_prefix + invoker.cc
