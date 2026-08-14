@@ -653,6 +653,10 @@ COLLECTION_CLASSES = (
     JavaClass('java/util/Set'),
 )
 
+# Classes provided by jni_zero.h (and used by
+# header_common.class_accessor_expression()).
+JCLASS_GLOBALS_CLASSES = (CLASS_LOADER_CLASS, OBJECT_CLASS, STRING_CLASS)
+
 OBJECT = OBJECT_CLASS.as_type()
 STRING = STRING_CLASS.as_type()
 INT = JavaType(primitive_name='int', nullable=False)

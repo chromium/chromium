@@ -6,10 +6,337 @@
 #include <iterator>
 
 #include "overridden/jni_zero_internal.h"
-#include "header.h"
 
-extern const int64_t kJniZeroHashWhole = 3865356290363738592LL;
+extern const int64_t kJniZeroHashWhole = 8964712790495820057LL;
 extern const int64_t kJniZeroHashPriority = 0LL;
+
+namespace jni_zero::internal {
+
+// Class Index Definitions.
+extern const uint16_t kClassIdx_org_jni_1zero_SampleForAnnotationProcessor = 0;
+extern const uint16_t kClassIdx_org_jni_1zero_SampleForAnnotationProcessor_00024MultiLine = 1;
+extern const uint16_t kClassIdx_org_jni_1zero_SampleForTests = 2;
+extern const uint16_t kClassIdx_org_jni_1zero_SampleForTests_00024InnerStructA = 3;
+extern const uint16_t kClassIdx_org_jni_1zero_SampleForTests_00024InnerStructB = 4;
+
+// CalledByNative Table and Indices.
+extern const uint16_t kCbnIdx_org_jni_1zero_SampleForAnnotationProcessor_00024MultiLine_foo = 0;
+extern const uint16_t kCbnIdx_org_jni_1zero_SampleForTests_Constructor__int__int = 1;
+extern const uint16_t kCbnIdx_org_jni_1zero_SampleForTests_addStructA__SampleForTests_InnerStructA__ImportsTinySample = 2;
+extern const uint16_t kCbnIdx_org_jni_1zero_SampleForTests_getClass__Class = 3;
+extern const uint16_t kCbnIdx_org_jni_1zero_SampleForTests_getFirstString__StringArray__String = 4;
+extern const uint16_t kCbnIdx_org_jni_1zero_SampleForTests_getThrowable__Throwable = 5;
+extern const uint16_t kCbnIdx_org_jni_1zero_SampleForTests_iterateAndDoSomething = 6;
+extern const uint16_t kCbnIdx_org_jni_1zero_SampleForTests_javaMethod__int__int = 7;
+extern const uint16_t kCbnIdx_org_jni_1zero_SampleForTests_jniTypesAndAnnotations__int__intArray__int__long = 8;
+extern const uint16_t kCbnIdx_org_jni_1zero_SampleForTests_methodThatThrowsException = 9;
+extern const uint16_t kCbnIdx_org_jni_1zero_SampleForTests_methodWithAnnotationParamAssignment = 10;
+extern const uint16_t kCbnIdx_org_jni_1zero_SampleForTests_methodWithGenericParams__Map__LinkedList = 11;
+extern const uint16_t kCbnIdx_org_jni_1zero_SampleForTests_packagePrivateJavaMethod = 12;
+extern const uint16_t kCbnIdx_org_jni_1zero_SampleForTests_getInnerEnum = 13;
+extern const uint16_t kCbnIdx_org_jni_1zero_SampleForTests_getInnerEnum__int = 14;
+extern const uint16_t kCbnIdx_org_jni_1zero_SampleForTests_getInnerInterface = 15;
+extern const uint16_t kCbnIdx_org_jni_1zero_SampleForTests_listTest1__List = 16;
+extern const uint16_t kCbnIdx_org_jni_1zero_SampleForTests_mapTest1__Map = 17;
+extern const uint16_t kCbnIdx_org_jni_1zero_SampleForTests_primitiveArrays__byteArray__charArray__shortArray__intArray__longArray__floatArray__doubleArray = 18;
+extern const uint16_t kCbnIdx_org_jni_1zero_SampleForTests_staticJavaMethod = 19;
+extern const uint16_t kCbnIdx_org_jni_1zero_SampleForTests_00024InnerStructA_create__long__int__String = 20;
+extern const uint16_t kCbnIdx_org_jni_1zero_SampleForTests_00024InnerStructB_getKey = 21;
+extern const uint16_t kCbnIdx_org_jni_1zero_SampleForTests_00024InnerStructB_getValue = 22;
+
+std::atomic<jclass> cached_jclasses[5];
+std::atomic<jmethodID> cached_method_ids[23];
+
+extern const char kClassNameStringPool[] =
+    "org.jni_zero.SampleForAnnotationProcessor\0"
+    "org.jni_zero.SampleForAnnotationProcessor$MultiLine\0"
+    "org.jni_zero.SampleForTests\0"
+    "org.jni_zero.SampleForTests$InnerStructA\0"
+    "org.jni_zero.SampleForTests$InnerStructB\0";
+extern const uint16_t kClassNameOffsets[5] = {
+    0,
+    42,
+    94,
+    122,
+    163,};
+
+extern const CalledByNativeDescriptor kCbnDescriptors[23] = {
+  CalledByNativeDescriptor{1, 25, 114},
+  CalledByNativeDescriptor{2, 0, 177},
+  CalledByNativeDescriptor{2, 7, 455},
+  CalledByNativeDescriptor{2, 29, 258},
+  CalledByNativeDescriptor{2, 38, 606},
+  CalledByNativeDescriptor{2, 91, 295},
+  CalledByNativeDescriptor{2, 113, 114},
+  CalledByNativeDescriptor{2, 135, 171},
+  CalledByNativeDescriptor{2, 146, 183},
+  CalledByNativeDescriptor{2, 188, 114},
+  CalledByNativeDescriptor{2, 214, 118},
+  CalledByNativeDescriptor{2, 250, 414},
+  CalledByNativeDescriptor{2, 274, 114},
+  CalledByNativeDescriptor{2, 53, 25},
+  CalledByNativeDescriptor{2, 53, 122},
+  CalledByNativeDescriptor{2, 66, 67},
+  CalledByNativeDescriptor{2, 169, 340},
+  CalledByNativeDescriptor{2, 179, 381},
+  CalledByNativeDescriptor{2, 299, 587},
+  CalledByNativeDescriptor{2, 315, 118},
+  CalledByNativeDescriptor{3, 18, 193},
+  CalledByNativeDescriptor{4, 84, 0},
+  CalledByNativeDescriptor{4, 104, 4},
+};
+
+extern const char kMethodNameStringPool[] =
+    "<init>\0"
+    "addStructA\0"
+    "create\0"
+    "foo\0"
+    "getClass\0"
+    "getFirstString\0"
+    "getInnerEnum\0"
+    "getInnerInterface\0"
+    "getKey\0"
+    "getThrowable\0"
+    "getValue\0"
+    "iterateAndDoSomething\0"
+    "javaMethod\0"
+    "jniTypesAndAnnotations\0"
+    "listTest1\0"
+    "mapTest1\0"
+    "methodThatThrowsException\0"
+    "methodWithAnnotationParamAssignment\0"
+    "methodWithGenericParams\0"
+    "packagePrivateJavaMethod\0"
+    "primitiveArrays\0"
+    "staticJavaMethod\0";
+
+extern const char kDescriptorStringPool[] =
+    "()J\0"
+    "()Ljava/lang/String;\0"
+    "()Lorg/jni_zero/SampleForTests$InnerEnum;\0"
+    "()Lorg/jni_zero/SampleForTests$InnerInterface;\0"
+    "()V\0"
+    "()Z\0"
+    "(I)Lorg/jni_zero/extrapackage/ImportsTinySample;\0"
+    "(II)I\0"
+    "(II)V\0"
+    "(I[IIJ)[I\0"
+    "(JILjava/lang/String;)Lorg/jni_zero/SampleForTests$InnerStructA;\0"
+    "(Ljava/lang/Class;)Ljava/lang/Class;\0"
+    "(Ljava/lang/Throwable;)Ljava/lang/Throwable;\0"
+    "(Ljava/util/List;)Ljava/util/Collection;\0"
+    "(Ljava/util/Map;)Ljava/util/Map;\0"
+    "(Ljava/util/Map;Ljava/util/LinkedList;)V\0"
+    "(Lorg/jni_zero/SampleForTests$InnerStructA;Lorg/jni_zero/extrapackage/ImportsTinySample;)Lorg/jni_zero/SampleForTests$InnerStructA;\0"
+    "([B[C[S[I[J[F[D)[Z\0"
+    "([Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;\0";
+
+
+}  // namespace jni_zero::internal
+
+// Weak CalledByNative Overrides.
+JNI_ZERO_ALWAYS_INLINE jobject JniWeak_org_jni_1zero_SampleForTests_Constructor__int__int(
+    JNIEnv* env,
+    int32_t foo,
+    int32_t bar) {
+  ::jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.InitMuxed<::jni_zero::MethodID::TYPE_INSTANCE>(env, ::jni_zero::internal::kCbnIdx_org_jni_1zero_SampleForTests_Constructor__int__int);
+  return env->NewObject(call_context.clazz(), call_context.method_id(), foo, bar);
+}
+
+JNI_ZERO_ALWAYS_INLINE jobject JniWeak_org_jni_1zero_SampleForTests_addStructA__SampleForTests_InnerStructA__ImportsTinySample(
+    JNIEnv* env,
+    jobject obj,
+    jobject a,
+    jobject b) {
+  ::jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.InitMuxed<::jni_zero::MethodID::TYPE_INSTANCE>(env, ::jni_zero::internal::kCbnIdx_org_jni_1zero_SampleForTests_addStructA__SampleForTests_InnerStructA__ImportsTinySample);
+  return env->CallObjectMethod(obj, call_context.method_id(), a, b);
+}
+
+JNI_ZERO_ALWAYS_INLINE jobject JniWeak_org_jni_1zero_SampleForTests_getClass__Class(
+    JNIEnv* env,
+    jobject obj,
+    jobject arg0) {
+  ::jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.InitMuxed<::jni_zero::MethodID::TYPE_INSTANCE>(env, ::jni_zero::internal::kCbnIdx_org_jni_1zero_SampleForTests_getClass__Class);
+  return env->CallObjectMethod(obj, call_context.method_id(), arg0);
+}
+
+JNI_ZERO_ALWAYS_INLINE jobject JniWeak_org_jni_1zero_SampleForTests_getFirstString__StringArray__String(
+    JNIEnv* env,
+    jobject obj,
+    jobject array,
+    jobject finalArg) {
+  ::jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.InitMuxed<::jni_zero::MethodID::TYPE_INSTANCE>(env, ::jni_zero::internal::kCbnIdx_org_jni_1zero_SampleForTests_getFirstString__StringArray__String);
+  return env->CallObjectMethod(obj, call_context.method_id(), array, finalArg);
+}
+
+JNI_ZERO_ALWAYS_INLINE jobject JniWeak_org_jni_1zero_SampleForTests_getThrowable__Throwable(
+    JNIEnv* env,
+    jobject obj,
+    jobject arg0) {
+  ::jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.InitMuxed<::jni_zero::MethodID::TYPE_INSTANCE>(env, ::jni_zero::internal::kCbnIdx_org_jni_1zero_SampleForTests_getThrowable__Throwable);
+  return env->CallObjectMethod(obj, call_context.method_id(), arg0);
+}
+
+JNI_ZERO_ALWAYS_INLINE void JniWeak_org_jni_1zero_SampleForTests_iterateAndDoSomething(
+    JNIEnv* env,
+    jobject obj) {
+  ::jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.InitMuxed<::jni_zero::MethodID::TYPE_INSTANCE>(env, ::jni_zero::internal::kCbnIdx_org_jni_1zero_SampleForTests_iterateAndDoSomething);
+  env->CallVoidMethod(obj, call_context.method_id());
+}
+
+JNI_ZERO_ALWAYS_INLINE int32_t JniWeak_org_jni_1zero_SampleForTests_javaMethod__int__int(
+    JNIEnv* env,
+    jobject obj,
+    int32_t _jcaller,
+    int32_t ret) {
+  ::jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.InitMuxed<::jni_zero::MethodID::TYPE_INSTANCE>(env, ::jni_zero::internal::kCbnIdx_org_jni_1zero_SampleForTests_javaMethod__int__int);
+  return env->CallIntMethod(obj, call_context.method_id(), _jcaller, ret);
+}
+
+JNI_ZERO_ALWAYS_INLINE jobject JniWeak_org_jni_1zero_SampleForTests_jniTypesAndAnnotations__int__intArray__int__long(
+    JNIEnv* env,
+    jobject obj,
+    int32_t foo,
+    jobject bar,
+    int32_t baz,
+    int64_t bat) {
+  ::jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.InitMuxed<::jni_zero::MethodID::TYPE_INSTANCE>(env, ::jni_zero::internal::kCbnIdx_org_jni_1zero_SampleForTests_jniTypesAndAnnotations__int__intArray__int__long);
+  return env->CallObjectMethod(obj, call_context.method_id(), foo, bar, baz, bat);
+}
+
+JNI_ZERO_ALWAYS_INLINE void JniWeak_org_jni_1zero_SampleForTests_methodThatThrowsException(
+    JNIEnv* env,
+    jobject obj) {
+  ::jni_zero::internal::JniJavaCallContext<false> call_context;
+  call_context.InitMuxed<::jni_zero::MethodID::TYPE_INSTANCE>(env, ::jni_zero::internal::kCbnIdx_org_jni_1zero_SampleForTests_methodThatThrowsException);
+  env->CallVoidMethod(obj, call_context.method_id());
+}
+
+JNI_ZERO_ALWAYS_INLINE bool JniWeak_org_jni_1zero_SampleForTests_methodWithAnnotationParamAssignment(
+    JNIEnv* env,
+    jobject obj) {
+  ::jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.InitMuxed<::jni_zero::MethodID::TYPE_INSTANCE>(env, ::jni_zero::internal::kCbnIdx_org_jni_1zero_SampleForTests_methodWithAnnotationParamAssignment);
+  return env->CallBooleanMethod(obj, call_context.method_id());
+}
+
+JNI_ZERO_ALWAYS_INLINE void JniWeak_org_jni_1zero_SampleForTests_methodWithGenericParams__Map__LinkedList(
+    JNIEnv* env,
+    jobject obj,
+    jobject _env,
+    jobject bar) {
+  ::jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.InitMuxed<::jni_zero::MethodID::TYPE_INSTANCE>(env, ::jni_zero::internal::kCbnIdx_org_jni_1zero_SampleForTests_methodWithGenericParams__Map__LinkedList);
+  env->CallVoidMethod(obj, call_context.method_id(), _env, bar);
+}
+
+JNI_ZERO_ALWAYS_INLINE void JniWeak_org_jni_1zero_SampleForTests_packagePrivateJavaMethod(
+    JNIEnv* env,
+    jobject obj) {
+  ::jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.InitMuxed<::jni_zero::MethodID::TYPE_INSTANCE>(env, ::jni_zero::internal::kCbnIdx_org_jni_1zero_SampleForTests_packagePrivateJavaMethod);
+  env->CallVoidMethod(obj, call_context.method_id());
+}
+
+JNI_ZERO_ALWAYS_INLINE jobject JniWeak_org_jni_1zero_SampleForTests_getInnerEnum(JNIEnv* env) {
+  ::jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.InitMuxed<::jni_zero::MethodID::TYPE_STATIC>(env, ::jni_zero::internal::kCbnIdx_org_jni_1zero_SampleForTests_getInnerEnum);
+  return env->CallStaticObjectMethod(call_context.clazz(), call_context.method_id());
+}
+
+JNI_ZERO_ALWAYS_INLINE jobject JniWeak_org_jni_1zero_SampleForTests_getInnerEnum__int(
+    JNIEnv* env,
+    int32_t a) {
+  ::jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.InitMuxed<::jni_zero::MethodID::TYPE_STATIC>(env, ::jni_zero::internal::kCbnIdx_org_jni_1zero_SampleForTests_getInnerEnum__int);
+  return env->CallStaticObjectMethod(call_context.clazz(), call_context.method_id(), a);
+}
+
+JNI_ZERO_ALWAYS_INLINE jobject JniWeak_org_jni_1zero_SampleForTests_getInnerInterface(JNIEnv* env) {
+  ::jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.InitMuxed<::jni_zero::MethodID::TYPE_STATIC>(env, ::jni_zero::internal::kCbnIdx_org_jni_1zero_SampleForTests_getInnerInterface);
+  return env->CallStaticObjectMethod(call_context.clazz(), call_context.method_id());
+}
+
+JNI_ZERO_ALWAYS_INLINE jobject JniWeak_org_jni_1zero_SampleForTests_listTest1__List(
+    JNIEnv* env,
+    jobject items) {
+  ::jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.InitMuxed<::jni_zero::MethodID::TYPE_STATIC>(env, ::jni_zero::internal::kCbnIdx_org_jni_1zero_SampleForTests_listTest1__List);
+  return env->CallStaticObjectMethod(call_context.clazz(), call_context.method_id(), items);
+}
+
+JNI_ZERO_ALWAYS_INLINE jobject JniWeak_org_jni_1zero_SampleForTests_mapTest1__Map(
+    JNIEnv* env,
+    jobject arg0) {
+  ::jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.InitMuxed<::jni_zero::MethodID::TYPE_STATIC>(env, ::jni_zero::internal::kCbnIdx_org_jni_1zero_SampleForTests_mapTest1__Map);
+  return env->CallStaticObjectMethod(call_context.clazz(), call_context.method_id(), arg0);
+}
+
+JNI_ZERO_ALWAYS_INLINE jobject JniWeak_org_jni_1zero_SampleForTests_primitiveArrays__byteArray__charArray__shortArray__intArray__longArray__floatArray__doubleArray(
+    JNIEnv* env,
+    jobject b,
+    jobject c,
+    jobject s,
+    jobject i,
+    jobject l,
+    jobject f,
+    jobject d) {
+  ::jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.InitMuxed<::jni_zero::MethodID::TYPE_STATIC>(env, ::jni_zero::internal::kCbnIdx_org_jni_1zero_SampleForTests_primitiveArrays__byteArray__charArray__shortArray__intArray__longArray__floatArray__doubleArray);
+  return env->CallStaticObjectMethod(
+      call_context.clazz(),
+      call_context.method_id(),
+      b,
+      c,
+      s,
+      i,
+      l,
+      f,
+      d);
+}
+
+JNI_ZERO_ALWAYS_INLINE bool JniWeak_org_jni_1zero_SampleForTests_staticJavaMethod(JNIEnv* env) {
+  ::jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.InitMuxed<::jni_zero::MethodID::TYPE_STATIC>(env, ::jni_zero::internal::kCbnIdx_org_jni_1zero_SampleForTests_staticJavaMethod);
+  return env->CallStaticBooleanMethod(call_context.clazz(), call_context.method_id());
+}
+
+JNI_ZERO_ALWAYS_INLINE jobject JniWeak_org_jni_1zero_SampleForTests_00024InnerStructA_create__long__int__String(
+    JNIEnv* env,
+    int64_t l,
+    int32_t i,
+    jobject s) {
+  ::jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.InitMuxed<::jni_zero::MethodID::TYPE_STATIC>(env, ::jni_zero::internal::kCbnIdx_org_jni_1zero_SampleForTests_00024InnerStructA_create__long__int__String);
+  return env->CallStaticObjectMethod(call_context.clazz(), call_context.method_id(), l, i, s);
+}
+
+JNI_ZERO_ALWAYS_INLINE int64_t JniWeak_org_jni_1zero_SampleForTests_00024InnerStructB_getKey(
+    JNIEnv* env,
+    jobject obj) {
+  ::jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.InitMuxed<::jni_zero::MethodID::TYPE_INSTANCE>(env, ::jni_zero::internal::kCbnIdx_org_jni_1zero_SampleForTests_00024InnerStructB_getKey);
+  return env->CallLongMethod(obj, call_context.method_id());
+}
+
+JNI_ZERO_ALWAYS_INLINE jobject JniWeak_org_jni_1zero_SampleForTests_00024InnerStructB_getValue(
+    JNIEnv* env,
+    jobject obj) {
+  ::jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.InitMuxed<::jni_zero::MethodID::TYPE_INSTANCE>(env, ::jni_zero::internal::kCbnIdx_org_jni_1zero_SampleForTests_00024InnerStructB_getValue);
+  return env->CallObjectMethod(obj, call_context.method_id());
+}
+
 
 // Forward Declarations.
 JNI_ZERO_MUXED_ENTRYPOINT jobject Muxed_org_jni_1zero_SampleForAnnotationProcessor_bar(
@@ -95,10 +422,86 @@ JNI_ZERO_MUXED_ENTRYPOINT void Muxed_org_jni_1zero_SampleForAnnotationProcessor_
     jobject view,
     jobject context,
     jobject convertedObjects);
+JNI_ZERO_MUXED_ENTRYPOINT void Muxed_org_jni_1zero_SampleForTests_addStructB(
+    JNIEnv* env,
+    int64_t nativeCPPClass,
+    jobject caller,
+    jobject b);
+JNI_ZERO_MUXED_ENTRYPOINT void Muxed_org_jni_1zero_SampleForTests_classUnderSamePackageTest(
+    JNIEnv* env,
+    jobject arg);
+JNI_ZERO_MUXED_ENTRYPOINT void Muxed_org_jni_1zero_SampleForTests_destroy(
+    JNIEnv* env,
+    int64_t nativeCPPClass,
+    jobject caller,
+    jobject bytes);
+JNI_ZERO_MUXED_ENTRYPOINT jobject Muxed_org_jni_1zero_SampleForTests_getClass(
+    JNIEnv* env,
+    jobject _env);
+JNI_ZERO_MUXED_ENTRYPOINT double Muxed_org_jni_1zero_SampleForTests_getDoubleFunction(
+    JNIEnv* env,
+    jobject ret);
+JNI_ZERO_MUXED_ENTRYPOINT float Muxed_org_jni_1zero_SampleForTests_getFloatFunction(JNIEnv* env);
+JNI_ZERO_MUXED_ENTRYPOINT jobject Muxed_org_jni_1zero_SampleForTests_getNonPODDatatype(
+    JNIEnv* env,
+    jobject _jcaller);
+JNI_ZERO_MUXED_ENTRYPOINT jobject Muxed_org_jni_1zero_SampleForTests_getThrowable(
+    JNIEnv* env,
+    jobject arg0);
+JNI_ZERO_MUXED_ENTRYPOINT int64_t Muxed_org_jni_1zero_SampleForTests_init(
+    JNIEnv* env,
+    jobject caller,
+    jobject param,
+    jobject bytes,
+    jobject convertedType,
+    jobject nonConvertedArray);
+JNI_ZERO_MUXED_ENTRYPOINT void Muxed_org_jni_1zero_SampleForTests_iterateAndDoSomethingWithStructB(
+    JNIEnv* env,
+    int64_t nativeCPPClass,
+    jobject caller);
+JNI_ZERO_MUXED_ENTRYPOINT jobject Muxed_org_jni_1zero_SampleForTests_listTest2(
+    JNIEnv* env,
+    jobject items);
+JNI_ZERO_MUXED_ENTRYPOINT jobject Muxed_org_jni_1zero_SampleForTests_mapTest2(
+    JNIEnv* env,
+    jobject arg0);
+JNI_ZERO_MUXED_ENTRYPOINT int32_t Muxed_org_jni_1zero_SampleForTests_method(
+    JNIEnv* env,
+    int64_t nativeCPPClass,
+    jobject caller,
+    jobject strings);
+JNI_ZERO_MUXED_ENTRYPOINT double Muxed_org_jni_1zero_SampleForTests_methodOtherP0(
+    JNIEnv* env,
+    int64_t nativePtr,
+    jobject caller);
+JNI_ZERO_MUXED_ENTRYPOINT jobject Muxed_org_jni_1zero_SampleForTests_primitiveArrays(
+    JNIEnv* env,
+    jobject b,
+    jobject c,
+    jobject s,
+    jobject i,
+    jobject l,
+    jobject f,
+    jobject d);
+JNI_ZERO_MUXED_ENTRYPOINT jobject Muxed_org_jni_1zero_SampleForTests_returnAString(
+    JNIEnv* env,
+    int64_t nativeCPPClass,
+    jobject caller);
+JNI_ZERO_MUXED_ENTRYPOINT int32_t Muxed_org_jni_1zero_SampleForTests_returnFromEnum(JNIEnv* env);
+JNI_ZERO_MUXED_ENTRYPOINT void Muxed_org_jni_1zero_SampleForTests_setNonPODDatatype(
+    JNIEnv* env,
+    jobject obj,
+    jobject rect);
 
 // Multiplexing Methods.
 JNI_ZERO_BOUNDARY_EXPORT void Java_J_N_V(JNIEnv* env, jclass jcaller) {
   return Muxed_org_jni_1zero_SampleForAnnotationProcessor_foo(env);
+}
+JNI_ZERO_BOUNDARY_EXPORT float Java_J_N_F(JNIEnv* env, jclass jcaller) {
+  return Muxed_org_jni_1zero_SampleForTests_getFloatFunction(env);
+}
+JNI_ZERO_BOUNDARY_EXPORT int32_t Java_J_N_I(JNIEnv* env, jclass jcaller) {
+  return Muxed_org_jni_1zero_SampleForTests_returnFromEnum(env);
 }
 JNI_ZERO_BOUNDARY_EXPORT jobject Java_J_N_O(JNIEnv* env, jclass jcaller, int32_t switch_num) {
   JNI_ZERO_DCHECK(switch_num >= 0 && switch_num < 13);
@@ -136,12 +539,18 @@ JNI_ZERO_BOUNDARY_EXPORT jobject Java_J_N_O(JNIEnv* env, jclass jcaller, int32_t
 JNI_ZERO_BOUNDARY_EXPORT bool Java_J_N_Z(JNIEnv* env, jclass jcaller) {
   return Muxed_org_jni_1zero_SampleForAnnotationProcessor_hasPhalange(env);
 }
+JNI_ZERO_BOUNDARY_EXPORT void Java_J_N_VO(JNIEnv* env, jclass jcaller, jobject p0) {
+  return Muxed_org_jni_1zero_SampleForTests_classUnderSamePackageTest(env, p0);
+}
+JNI_ZERO_BOUNDARY_EXPORT double Java_J_N_DO(JNIEnv* env, jclass jcaller, jobject p0) {
+  return Muxed_org_jni_1zero_SampleForTests_getDoubleFunction(env, p0);
+}
 JNI_ZERO_BOUNDARY_EXPORT jobject Java_J_N_OO(
     JNIEnv* env,
     jclass jcaller,
     int32_t switch_num,
     jobject p0) {
-  JNI_ZERO_DCHECK(switch_num >= 0 && switch_num < 5);
+  JNI_ZERO_DCHECK(switch_num >= 0 && switch_num < 10);
   switch (switch_num) {
     case 0:
       return Muxed_org_jni_1zero_SampleForAnnotationProcessor_bar(env, p0);
@@ -153,9 +562,78 @@ JNI_ZERO_BOUNDARY_EXPORT jobject Java_J_N_OO(
       return Muxed_org_jni_1zero_SampleForAnnotationProcessor_sendSamplesToNative(env, p0);
     case 4:
       return Muxed_org_jni_1zero_SampleForAnnotationProcessor_sendToNative(env, p0);
+    case 5:
+      return Muxed_org_jni_1zero_SampleForTests_getClass(env, p0);
+    case 6:
+      return Muxed_org_jni_1zero_SampleForTests_getNonPODDatatype(env, p0);
+    case 7:
+      return Muxed_org_jni_1zero_SampleForTests_getThrowable(env, p0);
+    case 8:
+      return Muxed_org_jni_1zero_SampleForTests_listTest2(env, p0);
+    case 9:
+      return Muxed_org_jni_1zero_SampleForTests_mapTest2(env, p0);
     default:
       __builtin_unreachable();
   }
+}
+JNI_ZERO_BOUNDARY_EXPORT void Java_J_N_VJO(JNIEnv* env, jclass jcaller, int64_t p0, jobject p1) {
+  return Muxed_org_jni_1zero_SampleForTests_iterateAndDoSomethingWithStructB(env, p0, p1);
+}
+JNI_ZERO_BOUNDARY_EXPORT void Java_J_N_VOO(JNIEnv* env, jclass jcaller, jobject p0, jobject p1) {
+  return Muxed_org_jni_1zero_SampleForTests_setNonPODDatatype(env, p0, p1);
+}
+JNI_ZERO_BOUNDARY_EXPORT double Java_J_N_DJO(JNIEnv* env, jclass jcaller, int64_t p0, jobject p1) {
+  return Muxed_org_jni_1zero_SampleForTests_methodOtherP0(env, p0, p1);
+}
+JNI_ZERO_BOUNDARY_EXPORT jobject Java_J_N_OJO(JNIEnv* env, jclass jcaller, int64_t p0, jobject p1) {
+  return Muxed_org_jni_1zero_SampleForTests_returnAString(env, p0, p1);
+}
+JNI_ZERO_BOUNDARY_EXPORT void Java_J_N_VJOO(
+    JNIEnv* env,
+    jclass jcaller,
+    int32_t switch_num,
+    int64_t p0,
+    jobject p1,
+    jobject p2) {
+  JNI_ZERO_DCHECK(switch_num >= 0 && switch_num < 2);
+  switch (switch_num) {
+    case 0:
+      return Muxed_org_jni_1zero_SampleForTests_addStructB(env, p0, p1, p2);
+    case 1:
+      return Muxed_org_jni_1zero_SampleForTests_destroy(env, p0, p1, p2);
+    default:
+      __builtin_unreachable();
+  }
+}
+JNI_ZERO_BOUNDARY_EXPORT int32_t Java_J_N_IJOO(
+    JNIEnv* env,
+    jclass jcaller,
+    int64_t p0,
+    jobject p1,
+    jobject p2) {
+  return Muxed_org_jni_1zero_SampleForTests_method(env, p0, p1, p2);
+}
+JNI_ZERO_BOUNDARY_EXPORT int64_t Java_J_N_JOOOOO(
+    JNIEnv* env,
+    jclass jcaller,
+    jobject p0,
+    jobject p1,
+    jobject p2,
+    jobject p3,
+    jobject p4) {
+  return Muxed_org_jni_1zero_SampleForTests_init(env, p0, p1, p2, p3, p4);
+}
+JNI_ZERO_BOUNDARY_EXPORT jobject Java_J_N_OOOOOOOO(
+    JNIEnv* env,
+    jclass jcaller,
+    jobject p0,
+    jobject p1,
+    jobject p2,
+    jobject p3,
+    jobject p4,
+    jobject p5,
+    jobject p6) {
+  return Muxed_org_jni_1zero_SampleForTests_primitiveArrays(env, p0, p1, p2, p3, p4, p5, p6);
 }
 JNI_ZERO_BOUNDARY_EXPORT jobject Java_J_N_OBCDFIJOOOOOOOOSZ(
     JNIEnv* env,
@@ -201,52 +679,5 @@ JNI_ZERO_BOUNDARY_EXPORT void Java_J_N_VOOOOOOOOOOOOOOOOOOO(
     jobject p17,
     jobject p18) {
   return Muxed_org_jni_1zero_SampleForAnnotationProcessor_testSpecialTypes(env, p0, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16, p17, p18);
-}
-
-// Helper Methods.
-namespace {
-
-bool RegisterNative_J_N(JNIEnv* env) {
-  static const JNINativeMethod kMethods[] = {
-        {"V",
-         "()V",
-         reinterpret_cast<void*>(Java_J_N_V)},
-         {"O",
-         "(I)Ljava/lang/Object;",
-         reinterpret_cast<void*>(Java_J_N_O)},
-         {"Z",
-         "()Z",
-         reinterpret_cast<void*>(Java_J_N_Z)},
-         {"OO",
-         "(ILjava/lang/Object;)Ljava/lang/Object;",
-         reinterpret_cast<void*>(Java_J_N_OO)},
-         {"OBCDFIJOOOOOOOOSZ",
-         "(BCDFIJLjava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;SZ)Ljava/lang/Object;",
-         reinterpret_cast<void*>(Java_J_N_OBCDFIJOOOOOOOOSZ)},
-         {"VOOOOOOOOOOOOOOOOOOO",
-         "(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)V",
-         reinterpret_cast<void*>(Java_J_N_VOOOOOOOOOOOOOOOOOOO)},
-
-  };
-  jni_zero::ScopedJavaLocalRef<jclass> native_clazz =
-      jni_zero::GetClass(env, "J.N");
-  if (env->RegisterNatives(native_clazz.obj(), kMethods, std::size(kMethods)) < 0) {
-    jni_zero::internal::HandleRegistrationError(env, native_clazz.obj(), __FILE__);
-    return false;
-  }
-
-  return true;
-}
-
-}  // namespace
-
-// Main Register Function.
-bool RegisterNatives(JNIEnv* env) {
-  // Register natives in a proxy.
-  if (!RegisterNative_J_N(env)) {
-    return false;
-  }
-
-  return true;
 }
 

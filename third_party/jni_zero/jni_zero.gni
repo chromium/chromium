@@ -513,6 +513,10 @@ template("generate_jni_impl") {
             invoker.allow_private_called_by_natives) {
           args += [ "--allow-private-called-by-natives" ]
         }
+        if (defined(invoker.use_weak_called_by_natives) &&
+            invoker.use_weak_called_by_natives) {
+          args += [ "--weak-called-by-natives" ]
+        }
 
         # Cronet needs to rename jni_zero classes
         if (defined(is_cronet_build) && is_cronet_build) {
@@ -649,6 +653,11 @@ template("generate_jni") {
     forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
     forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
 
+    # Explicit invoker.use_weak_called_by_natives so that it can be set in the
+    # invoker's outer scope.
+    use_weak_called_by_natives = defined(invoker.use_weak_called_by_natives) &&
+                                 invoker.use_weak_called_by_natives
+
     # TODO(http://crbug.com/330720762): Change to False and migrate.
     allow_private_called_by_natives = true
     metadata = {
@@ -659,6 +668,9 @@ template("generate_jni") {
           java_files = rebase_path(sources, root_build_dir)
           if (defined(invoker.module_name)) {
             module_name = invoker.module_name
+          }
+          if (use_weak_called_by_natives) {
+            use_weak_called_by_natives = true
           }
         },
       ]

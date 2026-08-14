@@ -27,17 +27,17 @@ namespace jni_zero {
 
 // Constexpr functions to extract basename(__FILE__), e.g.: ../foo/f.c -> f.c .
 constexpr const char* StrEnd(const char* s) {
-  return *s ? StrEnd(JNI_ZERO_UNSAFE_TODO(s + 1)) : s;
+  return *s ? StrEnd(JNI_ZERO_UNSAFE_BUFFERS(s + 1)) : s;
 }
 
 constexpr const char* BasenameRecursive(const char* s,
                                         const char* begin,
                                         const char* end) {
   return (*s == '/' && s < end)
-             ? (JNI_ZERO_UNSAFE_TODO(s + 1))
-             : ((s > begin)
-                    ? BasenameRecursive(JNI_ZERO_UNSAFE_TODO(s - 1), begin, end)
-                    : s);
+             ? (JNI_ZERO_UNSAFE_BUFFERS(s + 1))
+             : ((s > begin) ? BasenameRecursive(JNI_ZERO_UNSAFE_BUFFERS(s - 1),
+                                                begin, end)
+                            : s);
 }
 
 constexpr const char* Basename(const char* str) {
@@ -76,8 +76,8 @@ JNI_ZERO_COMPONENT_BUILD_EXPORT void LogMessage(LogLev,
     __builtin_unreachable();       \
   } while (0)
 #endif
-#define JNI_ZERO_XLOG(level, fmt, ...)         \
-  JNI_ZERO_UNSAFE_TODO(::jni_zero::LogMessage( \
+#define JNI_ZERO_XLOG(level, fmt, ...)            \
+  JNI_ZERO_UNSAFE_BUFFERS(::jni_zero::LogMessage( \
       level, ::jni_zero::Basename(__FILE__), __LINE__, fmt, ##__VA_ARGS__))
 #define JNI_ZERO_ILOG(fmt, ...) \
   JNI_ZERO_XLOG(::jni_zero::kLogInfo, fmt, ##__VA_ARGS__)

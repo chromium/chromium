@@ -11,6 +11,38 @@
 extern const int64_t kJniZeroHashWhole = 3865356290363738592LL;
 extern const int64_t kJniZeroHashPriority = 0LL;
 
+namespace jni_zero::internal {
+
+// Class Index Definitions.
+extern const uint16_t kClassIdx_this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor = 0;
+extern const uint16_t kClassIdx_this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_00024MultiLine = 1;
+
+// CalledByNative Table and Indices.
+extern const uint16_t kCbnIdx_this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_00024MultiLine_foo = 0;
+
+std::atomic<jclass> cached_jclasses[2];
+std::atomic<jmethodID> cached_method_ids[1];
+
+extern const char kClassNameStringPool[] =
+    "this.is.a.package.prefix.org.jni_zero.SampleForAnnotationProcessor\0"
+    "this.is.a.package.prefix.org.jni_zero.SampleForAnnotationProcessor$MultiLine\0";
+extern const uint16_t kClassNameOffsets[2] = {
+    0,
+    67,};
+
+extern const CalledByNativeDescriptor kCbnDescriptors[1] = {
+  CalledByNativeDescriptor{1, 0, 0},
+};
+
+extern const char kMethodNameStringPool[] =
+    "foo\0";
+
+extern const char kDescriptorStringPool[] =
+    "()V\0";
+
+
+}  // namespace jni_zero::internal
+
 // Forward Declarations.
 JNI_ZERO_MUXED_ENTRYPOINT jobject Muxed_org_jni_1zero_SampleForAnnotationProcessor_bar(
     JNIEnv* env,

@@ -68,6 +68,7 @@ class CliOptions:
     self.register_natives_name = None
     self.class_blocklist = None
     self.enable_jni_multiplexing = False
+    self.weak_called_by_natives = False
     self.package_prefix = None
     self.package_prefix_filter = None
     self.use_proxy_hash = False
@@ -78,6 +79,7 @@ class CliOptions:
     self.manual_jni_registration = False
     self.header_path = None
     self.impl_path = None
+    self.jni_pickle = None
     self.remove_uncalled_methods = False
     self.needs_javap = is_javap or is_gen_register_natives
     self.__dict__.update(kwargs)
@@ -91,6 +93,8 @@ class CliOptions:
 
     if self.enable_jni_multiplexing:
       ret.append('--enable-jni-multiplexing')
+    if self.weak_called_by_natives:
+      ret.append('--weak-called-by-natives')
     if self.package_prefix:
       ret += ['--package-prefix', self.package_prefix]
     if self.package_prefix_filter:
@@ -118,6 +122,8 @@ class CliOptions:
       ret += ['--header-path', self.header_path]
     if self.impl_path:
       ret += ['--impl-path', self.impl_path]
+    if self.jni_pickle:
+      ret += ['--jni-pickle', self.jni_pickle]
     if self.linker_script_path:
       ret += ['--linker-script-path', self.linker_script_path]
     if self.register_natives_name:
@@ -149,7 +155,7 @@ def _MakePrefixes(options):
   return package_prefix, module_prefix
 
 
-def _WriteMetadataJson(path, sources):
+def _WriteMetadataJson(path, sources, use_weak=False):
   modules = collections.defaultdict(list)
   for src in sources:
     module = 'module' if 'SampleModule.java' in src else ''
@@ -160,6 +166,8 @@ def _WriteMetadataJson(path, sources):
     m = {'java_files': files}
     if module:
       m['module_name'] = module
+    if use_weak:
+      m['use_weak_called_by_natives'] = True
     metadata.append(m)
   path.write_text(json.dumps(metadata))
 
@@ -231,7 +239,8 @@ class BaseTest(unittest.TestCase):
 
       options.output_dir = tdir
       cmd = options.to_args()
-      cmd += ['--allow-private-called-by-natives']
+      if not is_javap:
+        cmd += ['--allow-private-called-by-natives']
 
       if srcjar:
         srcjar_path = os.path.join(tdir, 'srcjar.jar')
@@ -286,11 +295,14 @@ class BaseTest(unittest.TestCase):
       impl_golden = f'{golden_name}-Final.cc.golden'
 
     with tempfile.TemporaryDirectory() as tdir:
-      native_sources = [os.path.join(_JAVA_SRC_DIR, f) for f in input_files]
+      native_sources = [
+          f if f.endswith('.jni.pickle') else os.path.join(_JAVA_SRC_DIR, f)
+          for f in input_files
+      ]
 
       if src_files_for_asserts_and_stubs:
         java_sources = [
-            os.path.join(_JAVA_SRC_DIR, f)
+            f if f.endswith('.jni.pickle') else os.path.join(_JAVA_SRC_DIR, f)
             for f in src_files_for_asserts_and_stubs
         ]
       else:
@@ -299,18 +311,24 @@ class BaseTest(unittest.TestCase):
       cmd = options.to_args()
 
       java_sources_file = pathlib.Path(tdir) / 'java_sources.json'
-      _WriteMetadataJson(java_sources_file, java_sources)
+      _WriteMetadataJson(java_sources_file,
+                         java_sources,
+                         use_weak=options.weak_called_by_natives)
       cmd += ['--java-sources-file', str(java_sources_file)]
       if native_sources:
         native_sources_file = pathlib.Path(tdir) / 'native_sources.json'
-        _WriteMetadataJson(native_sources_file, native_sources)
+        _WriteMetadataJson(native_sources_file,
+                           native_sources,
+                           use_weak=options.weak_called_by_natives)
         cmd += ['--native-sources-file', str(native_sources_file)]
       if priority_java_files:
         priority_java_sources = [
             os.path.join(_JAVA_SRC_DIR, f) for f in priority_java_files
         ]
         priority_java_file = pathlib.Path(tdir) / 'java_priority_sources.json'
-        _WriteMetadataJson(priority_java_file, priority_java_sources)
+        _WriteMetadataJson(priority_java_file,
+                           priority_java_sources,
+                           use_weak=options.weak_called_by_natives)
         cmd += ['--priority-java-sources-file', str(priority_java_file)]
       if priority_java_files is not None:
         cmd += ['--never-omit-switch-num']
@@ -578,9 +596,24 @@ class Tests(BaseTest):
                           generate_placeholders=True)
 
   def testMultiplexing(self):
-    self._TestGenerateFinal(['SampleForAnnotationProcessor.java'],
+    with tempfile.TemporaryDirectory() as tdir:
+      sample_for_tests_pickle = os.path.join(tdir,
+                                             'sample_for_tests.jni.pickle')
+      self._TestGenerateJni(['SampleForTests.java'],
                             enable_jni_multiplexing=True,
-                            manual_jni_registration=True)
+                            weak_called_by_natives=True,
+                            jni_pickle=sample_for_tests_pickle)
+      sample_for_annotation_processor_pickle = os.path.join(
+          tdir, 'sample_for_annotation_processor.jni.pickle')
+      self._TestGenerateJni(['SampleForAnnotationProcessor.java'],
+                            enable_jni_multiplexing=True,
+                            srcjar=True,
+                            jni_pickle=sample_for_annotation_processor_pickle)
+      self._TestGenerateFinal([
+          sample_for_annotation_processor_pickle,
+          sample_for_tests_pickle,
+      ],
+                              enable_jni_multiplexing=True)
 
   def testGenRegisterNatives(self):
     with tempfile.TemporaryDirectory() as tdir:

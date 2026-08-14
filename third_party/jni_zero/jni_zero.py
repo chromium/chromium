@@ -143,18 +143,25 @@ def _add_codegen_args(parser, *, is_final=False, is_javap=False):
     group.add_argument('--include-test-only',
                        action='store_true',
                        help='Whether to maintain ForTesting JNI methods.')
-  else:
+  elif not is_javap:
     group.add_argument(
         '--split-name',
         help='Split name that the Java classes should be loaded from.')
+    group.add_argument('--allow-private-called-by-natives',
+                       action='store_true',
+                       help='Whether to allow private @CalledByNative symbols.')
     mode_group.add_argument(
         '--per-file-natives',
         action='store_true',
         help='Generate .srcjar and .h such that a final generate-final '
         'step is not necessary')
-    group.add_argument('--allow-private-called-by-natives',
-                       action='store_true',
-                       help='Whether to allow private @CalledByNative symbols.')
+    group.add_argument(
+        '--weak-called-by-natives',
+        action='store_true',
+        help='When using --enable-jni-multiplexing, emit weak definitions for '
+        '@CalledByNative methods, so that they will function even if no '
+        'generate_final_jni() exists.')
+
 
   if is_javap:
     group.add_argument('--unchecked-exceptions',

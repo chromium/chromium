@@ -142,6 +142,13 @@ if (is_win) {
 }
 
 if (is_android) {
+  # Weak definitions needed because standalone tools (e.g. device_forwarder,
+  # devil_utils, sandbox_linux_unittests) depend on various //base libraries.
+  # As non-Java-using binaries, it doesn't really make sense for them to have
+  # a generate_final_jni() step. These binaries link JNI calls, but don't
+  # actually execute them (since doing so would crash).
+  use_weak_called_by_natives = true
+
   config("android_system_libs") {
     libs = [
       "android",
