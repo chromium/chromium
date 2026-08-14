@@ -95,6 +95,7 @@ source_set("browser_tests") {
       "privileged_web_contents_browsertest.cc",
       "pwc_api_binder_browsertest.cc",
       "pwc_navigation_throttle_browsertest.cc",
+      "pwc_security_browsertest.cc",
     ]
     deps += [ "//chrome/browser/ui" ]
   }
