@@ -15,10 +15,12 @@
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_action_container.h"
+#include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/version_info/channel.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -32,7 +34,6 @@ struct GeicButtonTestParams {
   bool geic_switch_enabled = false;
   bool disable_web_security_switch_enabled = false;
   bool glic_feature_enabled = false;
-  bool expect_geic_enabled = false;
 };
 
 class GeicButtonBrowserTest
@@ -59,17 +60,27 @@ class GeicButtonBrowserTest
     }
   }
 
+  bool ExpectGeicEnabled() const {
+    if (!GetParam().geic_switch_enabled || GetParam().glic_feature_enabled) {
+      return false;
+    }
+    const auto channel = chrome::GetChannel();
+    return (channel == version_info::Channel::CANARY ||
+            channel == version_info::Channel::UNKNOWN)
+               ? true
+               : GetParam().disable_web_security_switch_enabled;
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(GeicButtonBrowserTest, IsGeicEnabled) {
-  EXPECT_EQ(IsGeicEnabled(browser()->GetProfile()),
-            GetParam().expect_geic_enabled);
+  EXPECT_EQ(IsGeicEnabled(browser()->GetProfile()), ExpectGeicEnabled());
 }
 
 IN_PROC_BROWSER_TEST_P(GeicButtonBrowserTest, GeicButtonCreatedAndConfigured) {
-  if (!GetParam().expect_geic_enabled) {
+  if (!ExpectGeicEnabled()) {
     return;
   }
 
@@ -98,7 +109,7 @@ IN_PROC_BROWSER_TEST_P(GeicButtonBrowserTest, GeicButtonCreatedAndConfigured) {
 
 IN_PROC_BROWSER_TEST_P(GeicButtonBrowserTest,
                        ContainerNotCreatedWhenGeicAndGlicDisabled) {
-  if (GetParam().expect_geic_enabled || GetParam().glic_feature_enabled) {
+  if (ExpectGeicEnabled() || GetParam().glic_feature_enabled) {
     return;
   }
 
@@ -133,7 +144,7 @@ IN_PROC_BROWSER_TEST_P(GeicButtonBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(GeicButtonBrowserTest, GeicButtonTogglesSidePanel) {
-  if (!GetParam().expect_geic_enabled) {
+  if (!ExpectGeicEnabled()) {
     return;
   }
 
@@ -165,25 +176,22 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     GeicButtonBrowserTest,
     testing::Values(
-        // All conditions met: GEiC button is enabled.
+        // All conditions met: GEiC switch and security switch enabled.
         GeicButtonTestParams{.geic_switch_enabled = true,
                              .disable_web_security_switch_enabled = true,
-                             .glic_feature_enabled = false,
-                             .expect_geic_enabled = true},
+                             .glic_feature_enabled = false},
         // Missing --geic-enabled switch.
         GeicButtonTestParams{.geic_switch_enabled = false,
                              .disable_web_security_switch_enabled = true,
-                             .glic_feature_enabled = false,
-                             .expect_geic_enabled = false},
-        // Missing --disable-web-security switch.
+                             .glic_feature_enabled = false},
+        // Missing --disable-web-security switch (only required for
+        // non-local/canary channels).
         GeicButtonTestParams{.geic_switch_enabled = true,
                              .disable_web_security_switch_enabled = false,
-                             .glic_feature_enabled = false,
-                             .expect_geic_enabled = false},
+                             .glic_feature_enabled = false},
         // GLIC feature enabled (mutual exclusivity).
         GeicButtonTestParams{.geic_switch_enabled = true,
                              .disable_web_security_switch_enabled = true,
-                             .glic_feature_enabled = true,
-                             .expect_geic_enabled = false}));
+                             .glic_feature_enabled = true}));
 
 }  // namespace geic
