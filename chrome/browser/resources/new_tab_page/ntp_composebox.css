@@ -86,6 +86,13 @@ cr-composebox-submit::part(submit) {
   --cr-icon-button-size: 36px;
 }
 
+#inputContainer:has(.has-tabs)
+    #contextEntrypoint::part(context-menu-entrypoint-icon) {
+  inset-inline-start: unset;
+  position: relative;
+  top: unset;
+}
+
 :host-context([energy-effect-enabled_]) #contextEntrypoint::part(context-menu-entrypoint-icon) {
   inset-inline-start: calc(var(--contextual-entrypoint-and-carousel-context-entrypoint-padding-inline-start, 8px) + 1px);
   top: 11px;
@@ -133,10 +140,12 @@ cr-composebox-submit::part(submit) {
   --context-non-top-carousel-bottom-margin: 0px;
 }
 
-/* When both attachment and tool chip are present, spacing between carousel
- * and tool chip container is 18px (12px carousel margin-bottom + 6px tool chip
- * container padding-top). */
-:host([searchbox-next-enabled][show-file-carousel][in-tool-mode]) #carousel {
+/* When both attachment and tool chip/tab context are present, spacing between
+ * carousel and action row container is 18px (12px carousel margin-bottom +
+ * 6px container padding-top). */
+:host([searchbox-next-enabled][show-file-carousel][in-tool-mode]) #carousel,
+:host([searchbox-next-enabled][show-file-carousel])
+    #inputContainer:has(.has-tabs) #carousel {
   --context-non-top-carousel-bottom-margin: 12px;
 }
 
@@ -149,6 +158,8 @@ cr-composebox-submit::part(submit) {
   padding-block-end: var(--ntp-composebox-tool-chip-padding-block-end);
 }
 
+:host([searchbox-next-enabled])
+    #inputContainer:has(.has-tabs) #contextMenuContainer,
 :host([searchbox-next-enabled]) #toolChipsContainer,
 :host([searchbox-next-enabled]) #voiceToolChipsContainer {
   padding-block-end: 0;
