@@ -45,49 +45,51 @@ public class ChromeApplicationImpl extends SplitCompatApplication.Impl {
     public void onCreate() {
         super.onCreate();
 
-        if (SplitCompatApplication.isBrowserProcess()) {
-            FontPreloader.getInstance().load(getApplication());
+        // This Impl is only instantiated in the browser process; SplitChromeApplication uses the
+        // base Impl for all other processes so that the chrome split is never loaded there.
+        assert SplitCompatApplication.isBrowserProcess();
 
-            // Registers the extensions for all protos which would be in the Chrome split, whether
-            // or not we are actually building with splits.
-            AppHooks.get().registerProtoExtensions();
+        FontPreloader.getInstance().load(getApplication());
 
-            // TODO(crbug.com/40266922): Remove this after code changes allow for //components to
-            // access cached flags.
-            BrowserUiUtilsCachedFlags.getInstance()
-                    .setAsyncNotificationManagerFlag(
-                            ChromeFeatureList.sAsyncNotificationManager.isEnabled());
-            // TODO(crbug.com/423925400): Remove if finch is initialized earlier
-            SysUtils.setLowMemoryDeviceThresholdMb(
-                    ChromeFeatureList.sLowMemoryDeviceThresholdMb.getValue());
+        // Registers the extensions for all protos which would be in the Chrome split, whether
+        // or not we are actually building with splits.
+        AppHooks.get().registerProtoExtensions();
 
-            // Only trace Binder IPCs for pre-Beta channels.
-            if (VersionConstants.CHANNEL <= Channel.DEV) {
-                BinderCallsListener.getInstance().installListener();
-            }
+        // TODO(crbug.com/40266922): Remove this after code changes allow for //components to
+        // access cached flags.
+        BrowserUiUtilsCachedFlags.getInstance()
+                .setAsyncNotificationManagerFlag(
+                        ChromeFeatureList.sAsyncNotificationManager.isEnabled());
+        // TODO(crbug.com/423925400): Remove if finch is initialized earlier
+        SysUtils.setLowMemoryDeviceThresholdMb(
+                ChromeFeatureList.sLowMemoryDeviceThresholdMb.getValue());
 
-            // Initializes the support for dynamic feature modules (browser only).
-            ModuleUtil.initApplication();
-
-            if (VersionConstants.CHANNEL == Channel.CANARY) {
-                GURL.setReportDebugThrowableCallback(
-                        ChromePureJavaExceptionReporter::reportJavaException);
-            }
-
-            // Set Chrome factory for mapping BackgroundTask classes to TaskIds.
-            ChromeBackgroundTaskFactory.setAsDefault();
-            ContextualNotificationPermissionRequesterImpl.initialize();
-            PartitionResolverSupplier.setInstance(new ProfileResolver());
-
-            new ChimeDelegate().initialize();
-
-            // Initialize the AccessibilityHierarchySnapshotter. Do not include in release builds.
-            if (!BuildConfig.IS_CHROME_BRANDED) {
-                HierarchySnapshotter.initialize();
-            }
-
-            BrowserExitReasonTracker.onBrowserProcessCreated();
+        // Only trace Binder IPCs for pre-Beta channels.
+        if (VersionConstants.CHANNEL <= Channel.DEV) {
+            BinderCallsListener.getInstance().installListener();
         }
+
+        // Initializes the support for dynamic feature modules (browser only).
+        ModuleUtil.initApplication();
+
+        if (VersionConstants.CHANNEL == Channel.CANARY) {
+            GURL.setReportDebugThrowableCallback(
+                    ChromePureJavaExceptionReporter::reportJavaException);
+        }
+
+        // Set Chrome factory for mapping BackgroundTask classes to TaskIds.
+        ChromeBackgroundTaskFactory.setAsDefault();
+        ContextualNotificationPermissionRequesterImpl.initialize();
+        PartitionResolverSupplier.setInstance(new ProfileResolver());
+
+        new ChimeDelegate().initialize();
+
+        // Initialize the AccessibilityHierarchySnapshotter. Do not include in release builds.
+        if (!BuildConfig.IS_CHROME_BRANDED) {
+            HierarchySnapshotter.initialize();
+        }
+
+        BrowserExitReasonTracker.onBrowserProcessCreated();
     }
 
     @Override
@@ -104,9 +106,7 @@ public class ChromeApplicationImpl extends SplitCompatApplication.Impl {
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         // TODO(huayinz): Add observer pattern for application configuration changes.
-        if (SplitCompatApplication.isBrowserProcess()) {
-            SystemNightModeMonitor.getInstance().onApplicationConfigurationChanged();
-        }
+        SystemNightModeMonitor.getInstance().onApplicationConfigurationChanged();
     }
 
     /**
