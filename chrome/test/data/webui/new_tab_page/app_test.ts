@@ -4,10 +4,9 @@
 
 import {ActionChipsApiProxyImpl, VoiceSearchAction} from 'chrome://new-tab-page/lazy_load.js';
 import type {Module} from 'chrome://new-tab-page/lazy_load.js';
-import {ActionChipsRetrievalState, ComposeboxProxyImpl, counterfactualLoad, ModuleDescriptor, ModuleRegistry} from 'chrome://new-tab-page/lazy_load.js';
-import type {NtpComposeboxElement} from 'chrome://new-tab-page/lazy_load.js';
-import {ActionChipsHandlerRemote, ActionChipsPageCallbackRouter, IconType} from 'chrome://new-tab-page/new_tab_page.js';
-import type {ActionChipsPageRemote, CustomizeButtonsDocumentRemote, TabInfo} from 'chrome://new-tab-page/new_tab_page.js';
+import {ActionChipsRetrievalState, ComposeboxProxyImpl, counterfactualLoad, ModuleDescriptor, ModuleRegistry, NtpComposeboxElement} from 'chrome://new-tab-page/lazy_load.js';
+import {ActionChipsHandlerRemote, ActionChipsPageCallbackRouter, IconType, InputSource} from 'chrome://new-tab-page/new_tab_page.js';
+import type {ActionChipsPageRemote, CustomizeButtonsDocumentRemote, FuseboxAction, TabInfo} from 'chrome://new-tab-page/new_tab_page.js';
 import {$$, BackgroundManager, BrowserCommandProxy, CONTEXTUAL_ENTRYPOINT_ELEMENT_ID, CUSTOMIZE_CHROME_BUTTON_ELEMENT_ID, CustomizeButtonsDocumentCallbackRouter, CustomizeButtonsHandlerRemote, CustomizeButtonsProxy, CustomizeChromeSection, CustomizeDialogPage, GlifAnimationState, NewTabPageProxy, NtpCustomizeChromeEntryPoint, NtpElement, SearchboxBrowserProxy, SidePanelOpenTrigger, VoiceAction, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import type {AppElement, CustomizeButtonsElement, NtpSearchboxElement, PageRemote} from 'chrome://new-tab-page/new_tab_page.js';
 import {NtpBackgroundImageSource, PageCallbackRouter, PageHandlerRemote} from 'chrome://new-tab-page/new_tab_page.js';
@@ -1348,6 +1347,46 @@ suite('NewTabPageAppTest', () => {
       assertTrue(!!state);
       assertEquals('latest', state.text);
     });
+
+    test(
+        'action chip click opens composebox and passes fuseboxAction',
+        async () => {
+          let handleFuseboxActionArg: FuseboxAction|null = null;
+          const originalHandleFuseboxAction =
+              NtpComposeboxElement.prototype.handleFuseboxAction;
+          NtpComposeboxElement.prototype.handleFuseboxAction = function(
+              action: FuseboxAction) {
+            handleFuseboxActionArg = action;
+            originalHandleFuseboxAction.call(this, action);
+          };
+
+          const action: FuseboxAction = {
+            preselectedTool: null,
+            preferredInventory: null,
+            preselectedModel: null,
+            queryActionOverride: null,
+            preselectedInputSource: InputSource.kInputSourceGallery,
+          };
+
+          // Act.
+          app['onActionChipClick_'](new CustomEvent('action-chip-click', {
+            detail: {
+              suggestion: '',
+              files: [],
+              fuseboxAction: action,
+            },
+          }));
+          await microtasksFinished();
+
+          // Assert.
+          const composebox =
+              app.shadowRoot.querySelector<NtpComposeboxElement>('#composebox');
+          assertTrue(!!composebox);
+          assertDeepEquals(action, handleFuseboxActionArg);
+
+          NtpComposeboxElement.prototype.handleFuseboxAction =
+              originalHandleFuseboxAction;
+        });
 
     test('composebox state toggles inert attribute on siblings', async () => {
       // Arrange: Verify blocked elements do NOT have inert initially.
@@ -2838,6 +2877,7 @@ suite('NewTabPageAppTest', () => {
                 preferredInventory: null,
                 preselectedModel: ModelMode.kUnspecified,
                 queryActionOverride: null,
+                preselectedInputSource: null,
               },
             },
             tab: fakeTab,
@@ -2853,6 +2893,7 @@ suite('NewTabPageAppTest', () => {
                 preferredInventory: null,
                 preselectedModel: ModelMode.kUnspecified,
                 queryActionOverride: null,
+                preselectedInputSource: null,
               },
             },
             tab: null,
@@ -2868,6 +2909,7 @@ suite('NewTabPageAppTest', () => {
                 preferredInventory: null,
                 preselectedModel: ModelMode.kUnspecified,
                 queryActionOverride: null,
+                preselectedInputSource: null,
               },
             },
             tab: null,
@@ -3035,6 +3077,7 @@ suite('NewTabPageAppTest', () => {
                 preferredInventory: null,
                 preselectedModel: ModelMode.kUnspecified,
                 queryActionOverride: null,
+                preselectedInputSource: null,
               },
             },
             tab: {
@@ -3089,6 +3132,7 @@ suite('NewTabPageAppTest', () => {
                 preferredInventory: null,
                 preselectedModel: ModelMode.kGeminiPro,
                 queryActionOverride: null,
+                preselectedInputSource: null,
               },
             },
             tab: null,

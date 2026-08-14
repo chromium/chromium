@@ -15,10 +15,22 @@ enum QueryActionOverride {
 };
 // LINT.ThenChange(//third_party/omnibox_proto/suggest_template_info.proto:QueryActionOverride)
 
+// LINT.IfChange(InputSource)
+enum InputSource {
+  kInputSourceUnspecified = 0,
+  kInputSourceGallery = 1,
+  kInputSourceCamera = 2,
+  kInputSourceFilePicker = 3,
+  kInputSourceDrive = 4,
+};
+// LINT.ThenChange(//third_party/omnibox_proto/input_source.proto:InputSource)
+
 // TODO(crbug.com/539651790): Add more fields to FuseboxAction.
 struct FuseboxAction {
   composebox_query.mojom.ToolMode? preselected_tool;
   searchbox.mojom.SuggestInventory? preferred_inventory;
   composebox_query.mojom.ModelMode? preselected_model;
   QueryActionOverride? query_action_override;
+  // The source that should be opened, if available.
+  InputSource? preselected_input_source;
 };

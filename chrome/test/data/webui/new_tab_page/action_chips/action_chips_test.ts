@@ -123,6 +123,7 @@ suite('NewTabPageActionChipsTest', () => {
               preferredInventory: null,
               preselectedModel: ModelMode.kUnspecified,
               queryActionOverride: null,
+              preselectedInputSource: null,
               ...chip.suggestTemplateInfo.fuseboxAction,
             } :
                                                                     null,

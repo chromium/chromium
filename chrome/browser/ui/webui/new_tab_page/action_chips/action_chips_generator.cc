@@ -417,6 +417,32 @@ std::optional<ActionChipPtr> CreateWriteChipIfEligible(
   return CreateWriteChip();
 }
 
+ActionChipPtr CreateAddImageChip() {
+  ActionChipPtr chip = ActionChip::New();
+  chip->suggestion = "";
+  chip->suggest_template_info = SuggestTemplateInfo::New();
+  chip->suggest_template_info->type_icon = IconType::kDraftSpark;
+  chip->suggest_template_info->primary_text =
+      action_chips::mojom::FormattedString::New();
+  chip->suggest_template_info->primary_text->text = "Add Image";
+  chip->suggest_template_info->fusebox_action =
+      fusebox_action::mojom::FuseboxAction::New();
+  chip->suggest_template_info->fusebox_action->preselected_input_source =
+      fusebox_action::mojom::InputSource::kInputSourceGallery;
+  return chip;
+}
+
+std::optional<ActionChipPtr> CreateAddImageChipIfEligible(
+    std::string_view suggestion,
+    const AimEligibilityService* aim_eligibility_service) {
+  if (!(base::FeatureList::IsEnabled(
+            ntp_features::kNtpScaledActionChipsSmall) &&
+        ntp_features::kNtpScaledActionChipsSmallInTestMode.Get())) {
+    return std::nullopt;
+  }
+  return CreateAddImageChip();
+}
+
 std::vector<omnibox::ToolMode> GetAllowedTools(
     const AimEligibilityService* aim_eligibility_service) {
   std::vector<omnibox::ToolMode> tools;
@@ -466,9 +492,14 @@ std::vector<ActionChipPtr> CreateChipsForSteadyState(
       &CreateDeepSearchChipIfEligible,
   };
   static const GeneratorFn kOldGenerators[] = {
-      &CreateDeepSearchChipIfEligible, &CreateImageCreationChipIfEligible,
-      &CreateBrainstormChipIfEligible, &CreateLearnChipIfEligible,
+      &CreateDeepSearchChipIfEligible,
+      &CreateImageCreationChipIfEligible,
+      &CreateBrainstormChipIfEligible,
+      &CreateLearnChipIfEligible,
       &CreateWriteChipIfEligible,
+      // TODO(crbug.com/537040757): Remove from here, only adding for test
+      // purposes until the server sends new chip types.
+      &CreateAddImageChipIfEligible,
   };
 
   const base::span<GeneratorFn> generators =

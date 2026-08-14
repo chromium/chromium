@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ComposeboxElement, SubmitButtonIconType} from 'chrome://new-tab-page/lazy_load.js';
-import {$$} from 'chrome://new-tab-page/new_tab_page.js';
+import {ComposeboxElement, NtpComposeboxElement, SubmitButtonIconType} from 'chrome://new-tab-page/lazy_load.js';
+import {$$, InputSource} from 'chrome://new-tab-page/new_tab_page.js';
 import {InputType, ToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import type {ContextualEntrypointAndMenuElement} from 'chrome://resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
 import {WindowProxy as CrWindowProxy} from 'chrome://resources/cr_components/composebox/window_proxy.js';
@@ -872,6 +872,60 @@ suite(`NewTabPageComposeboxTest`, () => {
               window.getComputedStyle(voiceSearchContainer).position);
         });
   });
+
+  test(
+      'handleFuseboxAction triggers imageInput click for kInputSourceGallery',
+      async () => {
+        const composebox = new NtpComposeboxElement();
+        document.body.appendChild(composebox);
+        await microtasksFinished();
+
+        let imageInputClicked = false;
+        const imageInput =
+            composebox.$.fileInputs.shadowRoot.querySelector<HTMLInputElement>(
+                '#imageInput')!;
+        imageInput.addEventListener('click', (e: Event) => {
+          e.preventDefault();
+          imageInputClicked = true;
+        });
+
+        composebox.handleFuseboxAction({
+          preselectedTool: null,
+          preferredInventory: null,
+          preselectedModel: null,
+          queryActionOverride: null,
+          preselectedInputSource: InputSource.kInputSourceGallery,
+        });
+
+        assertTrue(imageInputClicked);
+      });
+
+  test(
+      'handleFuseboxAction triggers fileInput click for kInputSourceFilePicker',
+      async () => {
+        const composebox = new NtpComposeboxElement();
+        document.body.appendChild(composebox);
+        await microtasksFinished();
+
+        let fileInputClicked = false;
+        const fileInput =
+            composebox.$.fileInputs.shadowRoot.querySelector<HTMLInputElement>(
+                '#fileInput')!;
+        fileInput.addEventListener('click', (e: Event) => {
+          e.preventDefault();
+          fileInputClicked = true;
+        });
+
+        composebox.handleFuseboxAction({
+          preselectedTool: null,
+          preferredInventory: null,
+          preselectedModel: null,
+          queryActionOverride: null,
+          preselectedInputSource: InputSource.kInputSourceFilePicker,
+        });
+
+        assertTrue(fileInputClicked);
+      });
 });
 
 // ==========================================================
