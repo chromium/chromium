@@ -49,7 +49,7 @@ public class PropertyModel extends PropertyObservable<PropertyKey> {
         }
     }
 
-    /** The key type for read-ony boolean model properties. */
+    /** The key type for read-only boolean model properties. */
     public static class ReadableBooleanPropertyKey extends NamedPropertyKey {
         /** Constructs a new unnamed read-only boolean property key. */
         public ReadableBooleanPropertyKey() {
@@ -287,7 +287,9 @@ public class PropertyModel extends PropertyObservable<PropertyKey> {
         }
     }
 
-    private final Map<PropertyKey, ValueContainer> mData;
+    private static final Object UNSET = new Object();
+
+    private final Map<PropertyKey, @Nullable Object> mData;
     private final @Nullable Map<ReadableTransformingObjectPropertyKey<?, ?>, Function<?, ?>>
             mTransformers;
 
@@ -309,12 +311,12 @@ public class PropertyModel extends PropertyObservable<PropertyKey> {
         this(buildData(keys));
     }
 
-    private PropertyModel(Map<PropertyKey, ValueContainer> startingValues) {
+    private PropertyModel(Map<PropertyKey, @Nullable Object> startingValues) {
         this(startingValues, null);
     }
 
     private PropertyModel(
-            Map<PropertyKey, ValueContainer> startingValues,
+            Map<PropertyKey, @Nullable Object> startingValues,
             @Nullable
                     Map<ReadableTransformingObjectPropertyKey<?, ?>, Function<?, ?>> transformers) {
         mData = startingValues;
@@ -346,88 +348,76 @@ public class PropertyModel extends PropertyObservable<PropertyKey> {
     /** Get the current value from the float based key. */
     public float get(ReadableFloatPropertyKey key) {
         validateKey(key);
-        FloatContainer container = (FloatContainer) mData.get(key);
-        return container == null ? 0f : container.value;
+        Object value = mData.get(key);
+        return value == UNSET ? 0f : (float) assumeNonNull(value);
     }
 
     /** Set the value for the float based key. */
     public void set(WritableFloatPropertyKey key, float value) {
         validateKey(key);
-        FloatContainer container = (FloatContainer) mData.get(key);
-        if (container == null) {
-            container = new FloatContainer();
-            mData.put(key, container);
-        } else if (container.value == value) {
+        Object prev = mData.get(key);
+        if (prev != UNSET && (float) assumeNonNull(prev) == value) {
             return;
         }
 
-        container.value = value;
+        mData.put(key, value);
         notifyPropertyChanged(key);
     }
 
     /** Get the current value from the int based key. */
     public int get(ReadableIntPropertyKey key) {
         validateKey(key);
-        IntContainer container = (IntContainer) mData.get(key);
-        return container == null ? 0 : container.value;
+        Object value = mData.get(key);
+        return value == UNSET ? 0 : (int) assumeNonNull(value);
     }
 
     /** Set the value for the int based key. */
     public void set(WritableIntPropertyKey key, int value) {
         validateKey(key);
-        IntContainer container = (IntContainer) mData.get(key);
-        if (container == null) {
-            container = new IntContainer();
-            mData.put(key, container);
-        } else if (container.value == value) {
+        Object prev = mData.get(key);
+        if (prev != UNSET && (int) assumeNonNull(prev) == value) {
             return;
         }
 
-        container.value = value;
+        mData.put(key, value);
         notifyPropertyChanged(key);
     }
 
     /** Get the current value from the long based key. */
     public long get(ReadableLongPropertyKey key) {
         validateKey(key);
-        LongContainer container = (LongContainer) mData.get(key);
-        return container == null ? 0 : container.value;
+        Object value = mData.get(key);
+        return value == UNSET ? 0L : (long) assumeNonNull(value);
     }
 
     /** Set the value for the long based key. */
     public void set(WritableLongPropertyKey key, long value) {
         validateKey(key);
-        LongContainer container = (LongContainer) mData.get(key);
-        if (container == null) {
-            container = new LongContainer();
-            mData.put(key, container);
-        } else if (container.value == value) {
+        Object prev = mData.get(key);
+        if (prev != UNSET && (long) assumeNonNull(prev) == value) {
             return;
         }
 
-        container.value = value;
+        mData.put(key, value);
         notifyPropertyChanged(key);
     }
 
     /** Get the current value from the boolean based key. */
     public boolean get(ReadableBooleanPropertyKey key) {
         validateKey(key);
-        BooleanContainer container = (BooleanContainer) mData.get(key);
-        return container == null ? false : container.value;
+        Object value = mData.get(key);
+        return value == UNSET ? false : (boolean) assumeNonNull(value);
     }
 
     /** Set the value for the boolean based key. */
     public void set(WritableBooleanPropertyKey key, boolean value) {
         validateKey(key);
-        BooleanContainer container = (BooleanContainer) mData.get(key);
-        if (container == null) {
-            container = new BooleanContainer();
-            mData.put(key, container);
-        } else if (container.value == value) {
+        Object prev = mData.get(key);
+        if (prev != UNSET && (boolean) assumeNonNull(prev) == value) {
             return;
         }
 
-        container.value = value;
+        mData.put(key, value ? Boolean.TRUE : Boolean.FALSE);
         notifyPropertyChanged(key);
     }
 
@@ -436,8 +426,8 @@ public class PropertyModel extends PropertyObservable<PropertyKey> {
     @NullUnmarked // https://github.com/uber/NullAway/issues/1075
     public <T extends @Nullable Object> T get(ReadableObjectPropertyKey<T> key) {
         validateKey(key);
-        ObjectContainer<T> container = (ObjectContainer<T>) mData.get(key);
-        return container == null ? null : container.value;
+        Object value = mData.get(key);
+        return value == UNSET ? null : (T) value;
     }
 
     /** Set the value for the Object based key. */
@@ -446,16 +436,12 @@ public class PropertyModel extends PropertyObservable<PropertyKey> {
     public <T extends @Nullable Object> void set(
             WritableObjectPropertyKey<T> key, @Nullable T value) {
         validateKey(key);
-        ObjectContainer<T> container = (ObjectContainer<T>) mData.get(key);
-        if (container == null) {
-            container = new ObjectContainer<>(value);
-            mData.put(key, container);
-        } else if (!key.mSkipEquality && ObjectsCompat.equals(container.value, value)) {
+        Object prev = mData.get(key);
+        if (prev != UNSET && !key.mSkipEquality && ObjectsCompat.equals(prev, value)) {
             return;
-        } else {
-            container.value = value;
         }
 
+        mData.put(key, value);
         notifyPropertyChanged(key);
     }
 
@@ -466,10 +452,11 @@ public class PropertyModel extends PropertyObservable<PropertyKey> {
             ReadableTransformingObjectPropertyKey<T, V> key) {
         assumeNonNull(mTransformers);
         validateKey(key);
-        ObjectContainer<T> container = (ObjectContainer<T>) mData.get(key);
+        Object value = mData.get(key);
+        if (value == UNSET) return null;
         var transformer = (Function<T, V>) mTransformers.get(key);
         assert transformer != null : "No transformer associated with: " + key;
-        return container == null ? null : transformer.apply(container.value);
+        return transformer.apply((T) value);
     }
 
     /** Set the value for the transforming Object based key. */
@@ -478,23 +465,20 @@ public class PropertyModel extends PropertyObservable<PropertyKey> {
     public <T extends @Nullable Object, V extends @Nullable Object> void set(
             WritableTransformingObjectPropertyKey<T, V> key, T value) {
         validateKey(key);
-        ObjectContainer<T> container = (ObjectContainer<T>) mData.get(key);
-        if (container == null) {
-            container = new ObjectContainer<>(value);
-            mData.put(key, container);
-        } else if (ObjectsCompat.equals(container.value, value)) {
+        Object prev = mData.get(key);
+        if (prev != UNSET && ObjectsCompat.equals(prev, value)) {
             return;
-        } else {
-            container.value = value;
         }
+
+        mData.put(key, value);
         notifyPropertyChanged(key);
     }
 
     @Override
     public Collection<PropertyKey> getAllSetProperties() {
         List<PropertyKey> properties = new ArrayList<>();
-        for (Map.Entry<PropertyKey, ValueContainer> entry : mData.entrySet()) {
-            if (entry.getValue() != null) properties.add(entry.getKey());
+        for (Map.Entry<PropertyKey, @Nullable Object> entry : mData.entrySet()) {
+            if (entry.getValue() != UNSET) properties.add(entry.getKey());
         }
         return properties;
     }
@@ -502,7 +486,7 @@ public class PropertyModel extends PropertyObservable<PropertyKey> {
     @Override
     public Collection<PropertyKey> getAllProperties() {
         List<PropertyKey> properties = new ArrayList<>();
-        for (Map.Entry<PropertyKey, ValueContainer> entry : mData.entrySet()) {
+        for (Map.Entry<PropertyKey, @Nullable Object> entry : mData.entrySet()) {
             properties.add(entry.getKey());
         }
         return properties;
@@ -569,7 +553,7 @@ public class PropertyModel extends PropertyObservable<PropertyKey> {
 
     /** Allows constructing a new {@link PropertyModel} with read-only properties. */
     public static class Builder {
-        private final Map<PropertyKey, ValueContainer> mData;
+        private final Map<PropertyKey, @Nullable Object> mData;
         private @Nullable Map<ReadableTransformingObjectPropertyKey<?, ?>, Function<?, ?>>
                 mTransformers;
 
@@ -581,7 +565,7 @@ public class PropertyModel extends PropertyObservable<PropertyKey> {
             this(buildData(keys));
         }
 
-        private Builder(Map<PropertyKey, ValueContainer> values) {
+        private Builder(Map<PropertyKey, @Nullable Object> values) {
             mData = values;
         }
 
@@ -593,33 +577,25 @@ public class PropertyModel extends PropertyObservable<PropertyKey> {
 
         public Builder with(ReadableFloatPropertyKey key, float value) {
             validateKey(key);
-            FloatContainer container = new FloatContainer();
-            container.value = value;
-            mData.put(key, container);
+            mData.put(key, value);
             return this;
         }
 
         public Builder with(ReadableIntPropertyKey key, int value) {
             validateKey(key);
-            IntContainer container = new IntContainer();
-            container.value = value;
-            mData.put(key, container);
+            mData.put(key, value);
             return this;
         }
 
         public Builder with(ReadableLongPropertyKey key, long value) {
             validateKey(key);
-            LongContainer container = new LongContainer();
-            container.value = value;
-            mData.put(key, container);
+            mData.put(key, value);
             return this;
         }
 
         public Builder with(ReadableBooleanPropertyKey key, boolean value) {
             validateKey(key);
-            BooleanContainer container = new BooleanContainer();
-            container.value = value;
-            mData.put(key, container);
+            mData.put(key, value ? Boolean.TRUE : Boolean.FALSE);
             return this;
         }
 
@@ -627,8 +603,7 @@ public class PropertyModel extends PropertyObservable<PropertyKey> {
         public <T extends @Nullable Object> Builder with(
                 ReadableObjectPropertyKey<T> key, @Nullable T value) {
             validateKey(key);
-            ObjectContainer<T> container = new ObjectContainer<>(value);
-            mData.put(key, container);
+            mData.put(key, value);
             return this;
         }
 
@@ -678,7 +653,7 @@ public class PropertyModel extends PropertyObservable<PropertyKey> {
             if (BuildConfig.ENABLE_ASSERTS && mData.containsKey(key)) {
                 throw new IllegalArgumentException("Transforming key already exists.");
             }
-            mData.put(key, null);
+            mData.put(key, UNSET);
             // Transforming keys are typically limited to 1-2 properties (e.g. text or icon
             // transformation in views), so capacity 2 minimizes memory footprint without rehashing.
             if (mTransformers == null) mTransformers = new ArrayMap<>(2);
@@ -705,8 +680,7 @@ public class PropertyModel extends PropertyObservable<PropertyKey> {
                 Function<T, V> transformer,
                 T value) {
             withTransformingKey(key, transformer);
-            ObjectContainer<T> container = new ObjectContainer<>(value);
-            mData.put(key, container);
+            mData.put(key, value);
             return this;
         }
 
@@ -732,102 +706,18 @@ public class PropertyModel extends PropertyObservable<PropertyKey> {
     // avoid entry object allocations for typical small key sets (<= 32).
     private static final int ARRAY_MAP_KEY_THRESHOLD = 32;
 
-    private static Map<PropertyKey, ValueContainer> buildData(Collection<PropertyKey> keys) {
+    private static Map<PropertyKey, @Nullable Object> buildData(Collection<PropertyKey> keys) {
         int size = keys.size();
-        Map<PropertyKey, ValueContainer> data =
-                size <= ARRAY_MAP_KEY_THRESHOLD ? new ArrayMap<>(size) : new HashMap<>(size);
+        Map<PropertyKey, @Nullable Object> data =
+                size <= ARRAY_MAP_KEY_THRESHOLD
+                        ? new ArrayMap<PropertyKey, @Nullable Object>(size)
+                        : new HashMap<PropertyKey, @Nullable Object>(size);
         for (PropertyKey key : keys) {
             if (data.containsKey(key)) {
                 throw new IllegalArgumentException("Duplicate key: " + key);
             }
-            data.put(key, null);
+            data.put(key, UNSET);
         }
         return data;
-    }
-
-    private static class ValueContainer {}
-
-    private static class FloatContainer extends ValueContainer {
-        public float value;
-
-        @Override
-        public String toString() {
-            return value + " in " + getClass().getSimpleName();
-        }
-
-        @Override
-        public boolean equals(Object other) {
-            return other != null
-                    && other instanceof FloatContainer
-                    && ((FloatContainer) other).value == value;
-        }
-    }
-
-    private static class IntContainer extends ValueContainer {
-        public int value;
-
-        @Override
-        public String toString() {
-            return value + " in " + getClass().getSimpleName();
-        }
-
-        @Override
-        public boolean equals(Object other) {
-            return other != null
-                    && other instanceof IntContainer
-                    && ((IntContainer) other).value == value;
-        }
-    }
-
-    private static class LongContainer extends ValueContainer {
-        public long value;
-
-        @Override
-        public String toString() {
-            return value + " in " + getClass().getSimpleName();
-        }
-
-        @Override
-        public boolean equals(Object other) {
-            return other != null
-                    && other instanceof LongContainer
-                    && ((LongContainer) other).value == value;
-        }
-    }
-
-    private static class BooleanContainer extends ValueContainer {
-        public boolean value;
-
-        @Override
-        public String toString() {
-            return value + " in " + getClass().getSimpleName();
-        }
-
-        @Override
-        public boolean equals(Object other) {
-            return other != null
-                    && other instanceof BooleanContainer
-                    && ((BooleanContainer) other).value == value;
-        }
-    }
-
-    private static class ObjectContainer<T> extends ValueContainer {
-        public @Nullable T value;
-
-        public ObjectContainer(@Nullable T value) {
-            this.value = value;
-        }
-
-        @Override
-        public String toString() {
-            return (value != null ? value : "null") + " in " + getClass().getSimpleName();
-        }
-
-        @Override
-        public boolean equals(Object other) {
-            return other != null
-                    && other instanceof ObjectContainer
-                    && ObjectsCompat.equals(((ObjectContainer) other).value, value);
-        }
     }
 }

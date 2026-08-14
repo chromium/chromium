@@ -20,8 +20,6 @@ import org.chromium.ui.R;
 import org.chromium.ui.modelutil.ListObservable.ListObserver;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor.ViewBinder;
 
-import java.util.Collection;
-
 /**
  * Adapter for providing data and views to a ListView.
  *
@@ -205,15 +203,16 @@ public class ModelListAdapter extends BaseAdapter implements MVCListAdapter {
             @Nullable PropertyModel oldModel,
             View view,
             PropertyModelChangeProcessor.ViewBinder<PropertyModel, View, PropertyKey> binder) {
-        Collection<PropertyKey> setProperties = newModel.getAllSetProperties();
+        if (oldModel == null) {
+            for (PropertyKey key : newModel.getAllSetProperties()) {
+                binder.bind(newModel, view, key);
+            }
+            return;
+        }
+
         for (PropertyKey key : newModel.getAllProperties()) {
-            if (oldModel != null) {
-                // Skip binding properties that haven't changed.
-                if (newModel.compareValue(oldModel, key)) {
-                    continue;
-                }
-            } else if (!setProperties.contains(key)) {
-                // If there is no previous model, skip binding properties that haven't been set.
+            // Skip binding properties that haven't changed.
+            if (newModel.compareValue(oldModel, key)) {
                 continue;
             }
 
