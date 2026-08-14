@@ -44,16 +44,14 @@ use sequenced_task_runner::SequencedTaskRunnerHandle;
 use crate::interface::{DynMojomInterface, MojomInterface};
 use crate::marker_types::{Associated, Primary};
 use crate::message::MojomMessage;
-use crate::multiplex_router::{EndpointInfo, MultiplexRouterHandle, ResponseSender};
-use crate::remote::RouterHandle;
+use crate::multiplex_router::{EndpointInfo, MultiplexRouterHandle, ResponseSender, RouterHandle};
 
 /// This type represents either a regular mojom `Receiver`, or an
 /// `AssociatedReceiver`. See the documentation of those types for details.
 pub struct GenericReceiver<StateTy: MojomInterface, Marker> {
-    // We never actually access either field after creation, we just need to
-    // to keep them alive while the receiver is alive.
-    // TODO(crbug.com/517519181): Use an enum instead of a trait object.
-    _router: Box<dyn AsRef<MultiplexRouterHandle> + Send + Sync + 'static>,
+    router: RouterHandle,
+    // We never actually access this field after creation, we just
+    // need to keep it alive while the receiver is alive.
     _state: Arc<Mutex<StateTy>>,
     // fn() -> T acts like T, but is always `Send` and `Sync`
     _phantom: PhantomData<fn() -> Marker>,
@@ -150,7 +148,11 @@ where
         });
         let make_handle = |endpoint_info| -> RouterHandle {
             let sets_high_bit = false; // Receivers set the high bit to 0
-            Box::new(MultiplexRouterHandle::new(self.endpoint, sets_high_bit, endpoint_info))
+            RouterHandle::Primary(MultiplexRouterHandle::new(
+                self.endpoint,
+                sets_high_bit,
+                endpoint_info,
+            ))
         };
         Receiver::new(make_handle, state, runner, disconnect_handler)
     }
@@ -261,6 +263,7 @@ where
 
         return receiver_weak;
     }
+
     /// Create a new Receiver from a raw pipe endpoint, bound to the
     /// provided sequence.
     // This function isn't `pub` because users should always get their `Receiver`s
@@ -284,7 +287,7 @@ where
             runner,
         });
 
-        Self { _router: router, _state: state, _phantom: PhantomData }
+        Self { router, _state: state, _phantom: PhantomData }
     }
 
     /// This is the function which is called by the endpoint watcher
@@ -318,7 +321,7 @@ where
             let request_id = message.header.request_id;
             state.lock().expect("Mutex should never be poisoned").handle_incoming_message(
                 message,
-                sender.clone(),
+                sender.registrar_only(),
                 move |mut response: MojomMessage| {
                     response.header.request_id = request_id;
                     sender.send_message(response);
@@ -336,4 +339,19 @@ where
     // We deliberately do not implement `From` and `Into` for
     // `Receiver/PendingReceiver` pairs, because binding and unbinding are
     // stateful operations that should be done explicitly.
+}
+
+impl<StateTy> AssociatedReceiver<StateTy>
+where
+    StateTy: MojomInterface + Sized + Send + 'static,
+{
+    /// Checks if the endpoint has been associated with a specific pipe yet,
+    /// and is therefore ready to receive any messages that are sent to it.
+    ///
+    /// This only happens when the _other_ endpoint is sent via a Mojo message.
+    /// If this returns false, trying to use the endpoint (e.g. sending
+    /// messages) will panic.
+    pub fn ready_for_messages(&self) -> bool {
+        self.router.ready_for_messages()
+    }
 }

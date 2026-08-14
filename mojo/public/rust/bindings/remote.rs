@@ -42,7 +42,7 @@ use sequenced_task_runner::SequencedTaskRunnerHandle;
 use crate::interface::{DynMojomInterface, MojomInterface};
 use crate::marker_types::{Associated, Primary};
 use crate::message::MojomMessage;
-use crate::multiplex_router::{EndpointInfo, MultiplexRouterHandle, ResponseSender};
+use crate::multiplex_router::{EndpointInfo, MultiplexRouterHandle, ResponseSender, RouterHandle};
 use crate::pending_associated_endpoint_parsing::Registrar;
 
 /// This type looks very scary, but mostly it's just a map from request ID to
@@ -50,9 +50,6 @@ use crate::pending_associated_endpoint_parsing::Registrar;
 /// of what a real `ResponseCallbackTy` looks like, it's easiest to take a look
 /// at some generated code from a mojom file with an `interface`.
 type CallbackMap<T> = Arc<Mutex<HashMap<u64, <T as MojomInterface>::ResponseCallbackTy>>>;
-
-// TODO(crbug.com/517519181): Use an enum instead of a trait object.
-pub(crate) type RouterHandle = Box<dyn AsRef<MultiplexRouterHandle> + Send + Sync + 'static>;
 
 /// This type represents either a regular mojom `Remote`, or an
 /// `AssociatedRemote`. See the documentation of those types for details.
@@ -162,7 +159,11 @@ where
         });
         let make_handle = |endpoint_info| -> RouterHandle {
             let sets_high_bit = true; // Remotes set the high bit to 1
-            Box::new(MultiplexRouterHandle::new(self.endpoint, sets_high_bit, endpoint_info))
+            RouterHandle::Primary(MultiplexRouterHandle::new(
+                self.endpoint,
+                sets_high_bit,
+                endpoint_info,
+            ))
         };
         Remote::new(make_handle, runner, disconnect_handler)
     }
@@ -259,7 +260,7 @@ where
 
         // This can only fail if the other end is closed, in which case we've nothing to
         // do here (we'll get a disconnection notification separately).
-        self.router.as_ref().as_ref().send_message(message);
+        self.router.send_message(message);
     }
 
     /// This is the function which is called by the `MultiplexRouter`
@@ -291,10 +292,25 @@ where
     }
 
     pub fn as_registrar(&self) -> &impl Registrar {
-        self.router.as_ref().as_ref()
+        &self.router
     }
 }
 
 // We deliberately do not implement `From` and `Into` for
 // `Remote/PendingRemote` pairs, because binding and unbinding are
 // stateful operations that should be done explicitly.
+
+impl<T> AssociatedRemote<T>
+where
+    T: DynMojomInterface + ?Sized,
+{
+    /// Checks if the endpoint has been associated with a specific pipe yet,
+    /// and can therefore be used to send messages.
+    ///
+    /// This only happens when the _other_ endpoint is sent via a Mojo message.
+    /// If this returns false, trying to use the endpoint (e.g. sending
+    /// messages) will panic.
+    pub fn ready_for_messages(&self) -> bool {
+        self.router.ready_for_messages()
+    }
+}

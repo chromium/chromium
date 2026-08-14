@@ -392,10 +392,8 @@ impl MultiplexRouter {
                 Task::Message(message) => {
                     let handler_clone = endpoint_info.incoming_message_handler.clone();
                     let router_clone = self.clone();
-                    let response_sender = super::ResponseSender {
-                        interface_id: message.header.interface_id,
-                        router: router_clone,
-                    };
+                    let response_sender =
+                        super::ResponseSender::rust(router_clone, message.header.interface_id);
                     endpoint_info
                         .runner
                         .post_task(move || (*handler_clone)(message, response_sender));

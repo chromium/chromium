@@ -16,6 +16,7 @@ rust_static_library("bindings") {
     "multiplex_router/multiplex_router.rs",
     "multiplex_router/multiplex_router_handle.rs",
     "multiplex_router/response_sender.rs",
+    "multiplex_router/router_handle.rs",
     "pending_associated_endpoint.rs",
     "pending_associated_endpoint_parsing.rs",
     "pending_endpoint.rs",

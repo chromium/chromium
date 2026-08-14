@@ -22,7 +22,7 @@ use std::sync::{Arc, Mutex, OnceLock};
 
 use crate::interface::DynMojomInterface;
 use crate::marker_types::{IsRemote, Receiver, Remote};
-use crate::multiplex_router::{EndpointInfo, InterfaceId, MultiplexRouterHandle};
+use crate::multiplex_router::{AssociatedRouterHandle, EndpointInfo, InterfaceId, RouterHandle};
 use crate::pending_associated_endpoint_parsing::Registrar;
 
 /// The core state of a pending associated endpoint.
@@ -44,7 +44,7 @@ use crate::pending_associated_endpoint_parsing::Registrar;
 /// Upon binding, the endpoint will set `endpoint_info`, so the other endpoint
 /// can pass it to the router during serialization.
 pub(crate) struct AssociatedState {
-    pub(crate) router: Arc<OnceLock<MultiplexRouterHandle>>,
+    pub(crate) router: Arc<OnceLock<AssociatedRouterHandle>>,
     pub(crate) endpoint_info: Option<EndpointInfo>,
 }
 
@@ -101,7 +101,7 @@ pub(crate) enum AssociatedEndpointState {
     /// Used for endpoints which are created via `new_pair`.
     Shared(SharedAssociatedState),
     /// Used for endpoints which were received via Mojo message.
-    Singleton(MultiplexRouterHandle),
+    Singleton(AssociatedRouterHandle),
 }
 
 /// An `AssociatedRemote` or `AssociatedReceiver` that hasn't yet been bound to
@@ -132,7 +132,7 @@ where
         Self { state: AssociatedEndpointState::Shared(shared_state), _phantom: PhantomData }
     }
 
-    pub(crate) fn new_singleton(handle: MultiplexRouterHandle) -> Self {
+    pub(crate) fn new_singleton(handle: AssociatedRouterHandle) -> Self {
         Self { state: AssociatedEndpointState::Singleton(handle), _phantom: PhantomData }
     }
 
@@ -150,12 +150,13 @@ where
         );
     }
 
-    /// Checks if the endpoint has been associated with a specific pipe yet.
+    /// Checks if the endpoint has been associated with a specific pipe yet,
+    /// and is therefore ready to send/receive messages once bound.
     ///
     /// This only happens when the _other_ endpoint is sent via a Mojo message.
     /// If this returns false, trying to use the endpoint (e.g. sending
     /// messages) will panic.
-    pub fn can_send_messages(&self) -> bool {
+    pub fn ready_for_messages(&self) -> bool {
         match &self.state {
             AssociatedEndpointState::Singleton(_) => true,
             AssociatedEndpointState::Shared(shared_state) => {
@@ -164,25 +165,25 @@ where
         }
     }
 
-    /// Inform our underlying `MultiplexRouter` that this endpoint has just been
+    /// Inform our underlying router that this endpoint has just been
     /// bound to a sequence and is ready to start receiving messages.
     ///
     /// Returns a new handle to that router.
     ///
-    /// IMPORTANT: It is not guaranteed that the underlying `MultiplexRouter`
+    /// IMPORTANT: It is not guaranteed that the underlying router
     /// has been set yet. This only happens when the _other_ endpoint is sent
     /// via a Mojo message. In this case, the registration will be delayed until
     /// the router is set, and trying to send a message will panic. This can be
-    /// checking using `can_send_messages`.
-    pub(crate) fn register_bound(self, endpoint_info: EndpointInfo) -> crate::remote::RouterHandle {
+    /// checking using `ready_for_messages`.
+    pub(crate) fn register_bound(self, endpoint_info: EndpointInfo) -> RouterHandle {
         // If we share our state with the other endpoint, lock the mutex so we can
         // access it. Otherwise, we're a singleton, so we can just register ourselves
         // and return.
         let shared_state = match self.state {
             AssociatedEndpointState::Shared(shared_state) => shared_state,
-            AssociatedEndpointState::Singleton(handle) => {
+            AssociatedEndpointState::Singleton(mut handle) => {
                 handle.bind(endpoint_info);
-                return Box::new(handle);
+                return RouterHandle::new_associated(handle);
             }
         };
         let mut shared_state = shared_state.lock().unwrap();
@@ -191,11 +192,17 @@ where
         // completely useless to bind both endpoints.
         assert!(
             shared_state.endpoint_info.is_none(),
-            "Exactly one endpoint in each pair should be bound without being send in a message first, not both"
+            "Exactly one endpoint in each pair should be bound without being sent in a message first, not both"
         );
 
-        let router = shared_state.router.clone();
-        match router.get() {
+        // We expect this call to succeed because `shared_state.router` is only
+        // cloned in order to share the `OnceLock` with the bound endpoint, and
+        // that happens at the end of this function. So right now there should
+        // only be one reference to it.
+        match Arc::get_mut(&mut shared_state.router)
+            .expect("Router state should not be shared before binding")
+            .get_mut() // Note: This is `OnceLock::get_mut`
+        {
             Some(handle) => {
                 // If the router handle is already initialized, then we can
                 // directly inform it that we're bound now.
@@ -204,10 +211,10 @@ where
             None => {
                 // Otherwise, update the binding info in the shared state,
                 // so the other endpoint can pass it when it registers us.
-                shared_state.endpoint_info = Some(endpoint_info)
+                shared_state.endpoint_info = Some(endpoint_info);
             }
-        };
-        Box::new(router)
+        }
+        RouterHandle::Associated(Arc::clone(&shared_state.router))
     }
 
     /// Checks if both endpoints are registered with the same interface ID.
@@ -233,8 +240,9 @@ where
                 AssociatedEndpointState::Shared(shared_state),
                 AssociatedEndpointState::Singleton(handle),
             ) => {
-                handle.interface_id()
-                    == shared_state.lock().unwrap().router.get().unwrap().interface_id()
+                shared_state.lock().unwrap().router.get().is_some_and(|shared_handle| {
+                    shared_handle.interface_id() == handle.interface_id()
+                })
             }
             _ => false,
         }
@@ -244,18 +252,6 @@ where
 //////////////////////////////
 // Trait implementations
 //////////////////////////////
-
-// This trait impl is required to use Arc<OnceLock<MultiplexRouterHandle>> as
-// a router in remotes/receivers.
-// TODO(crbug.com/517519181): We may be able to remove this if we make remotes
-// and receivers hold an enum instead of a trait object.
-impl AsRef<MultiplexRouterHandle> for Arc<OnceLock<MultiplexRouterHandle>> {
-    fn as_ref(&self) -> &MultiplexRouterHandle {
-        // Use `PendingAssociatedEndpoint::can_send_messages`to see if this is
-        // going to panic.
-        self.get().expect("Associated Remotes and Receivers cannot be used before the other endpoint has been sent via a message.")
-    }
-}
 
 // We need to implement some standard traits (Debug, PartialEq) because the
 // derive macros don't handle phantom data well (they require that T implements
@@ -288,7 +284,7 @@ where
                     write!(
                         f,
                         "<{endpoint_type}. Addr: {shared_state:p}. Interface ID: {:?}. Has endpoint_info: {}>",
-                        guard.router.get().map(MultiplexRouterHandle::interface_id),
+                        guard.router.get().map(AssociatedRouterHandle::interface_id),
                         guard.endpoint_info.is_some()
                     )
                 } else {
