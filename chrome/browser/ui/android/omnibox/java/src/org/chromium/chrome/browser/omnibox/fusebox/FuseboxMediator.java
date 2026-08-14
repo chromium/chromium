@@ -621,6 +621,13 @@ import java.util.function.Supplier;
         }
         updateModelForCurrentTab();
         updateModelForRecentTabs();
+        if (OmniboxFeatures.sShowModelPicker.getValue()) {
+            InputState inputState =
+                    mComposeboxQueryControllerBridge.getInputStateSupplier().get();
+            if (inputState != null) {
+                updateModelForPopupInputState(inputState);
+            }
+        }
 
         @PopupState
         int targetState = shouldShowBottomSheetPopup ? PopupState.BOTTOM : PopupState.FLOATING;
@@ -1375,6 +1382,14 @@ import java.util.function.Supplier;
 
         mModel.set(
                 FuseboxProperties.REQUEST_TYPE_BUTTON_TEXT, getRequestTypeButtonText(inputState));
+
+        if (mModel.get(FuseboxProperties.POPUP_STATE) != PopupState.HIDDEN) {
+            updateModelForPopupInputState(inputState);
+        }
+    }
+
+    private void updateModelForPopupInputState(InputState inputState) {
+        assert OmniboxFeatures.sShowModelPicker.getValue();
 
         // TODO(https://crbug.com/480976526): Control visibility as well.
         boolean tabsEnabled =

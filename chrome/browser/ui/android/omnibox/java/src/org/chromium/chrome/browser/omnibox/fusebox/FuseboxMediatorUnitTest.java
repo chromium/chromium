@@ -1341,6 +1341,7 @@ public class FuseboxMediatorUnitTest {
                         .withToolConfigs(new byte[][] {canvasConfig.toByteArray()})
                         .build();
         mInputStateSupplier.set(state);
+        mMediator.onPlusButtonClicked();
 
         var histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -1371,6 +1372,7 @@ public class FuseboxMediatorUnitTest {
                         .withToolConfigs(new byte[][] {deepSearchConfig.toByteArray()})
                         .build();
         mInputStateSupplier.set(state);
+        mMediator.onPlusButtonClicked();
 
         var histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -1410,6 +1412,7 @@ public class FuseboxMediatorUnitTest {
                                 new byte[][] {config1.toByteArray(), config2.toByteArray()})
                         .build();
         mInputStateSupplier.set(state);
+        mMediator.onPlusButtonClicked();
 
         List<PopupButtonData> models = mModel.get(FuseboxProperties.POPUP_MODEL_BUTTON_DATA_LIST);
         assertEquals(2, models.size());
@@ -1447,6 +1450,7 @@ public class FuseboxMediatorUnitTest {
                                 new byte[][] {config1.toByteArray(), config2.toByteArray()})
                         .build();
         mInputStateSupplier.set(state);
+        mMediator.onPlusButtonClicked();
 
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
@@ -1469,6 +1473,7 @@ public class FuseboxMediatorUnitTest {
 
         InputState state0 = new InputState.Builder().build();
         mInputStateSupplier.set(state0);
+        mMediator.onPlusButtonClicked();
         assertEquals(0, mModel.get(FuseboxProperties.POPUP_MODEL_BUTTON_DATA_LIST).size());
         assertFalse(mModel.get(FuseboxProperties.POPUP_MODEL_DIVIDER_VISIBLE));
         assertFalse(mModel.get(FuseboxProperties.POPUP_MODEL_HEADER_VISIBLE));
@@ -1533,6 +1538,7 @@ public class FuseboxMediatorUnitTest {
                                 new byte[][] {config1.toByteArray(), config2.toByteArray()})
                         .build();
         mInputStateSupplier.set(state);
+        mMediator.onPlusButtonClicked();
         assertEquals(2, mModel.get(FuseboxProperties.POPUP_MODEL_BUTTON_DATA_LIST).size());
         assertFalse(mModel.get(FuseboxProperties.POPUP_MODEL_DIVIDER_VISIBLE));
         assertTrue(mModel.get(FuseboxProperties.POPUP_MODEL_HEADER_VISIBLE));
@@ -1603,6 +1609,7 @@ public class FuseboxMediatorUnitTest {
                         .withToolConfigs(new byte[][] {deepSearchConfig.toByteArray()})
                         .build();
         mInputStateSupplier.set(state);
+        mMediator.onPlusButtonClicked();
 
         try (var ignored =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -1628,6 +1635,7 @@ public class FuseboxMediatorUnitTest {
                         .withToolConfigs(new byte[][] {canvasConfig.toByteArray()})
                         .build();
         mInputStateSupplier.set(state);
+        mMediator.onPlusButtonClicked();
 
         try (var ignored =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -1662,6 +1670,7 @@ public class FuseboxMediatorUnitTest {
                                 new byte[][] {config1.toByteArray(), config2.toByteArray()})
                         .build();
         mInputStateSupplier.set(state);
+        mMediator.onPlusButtonClicked();
 
         List<PopupButtonData> models = mModel.get(FuseboxProperties.POPUP_MODEL_BUTTON_DATA_LIST);
         assertFalse(models.isEmpty());
@@ -2005,6 +2014,7 @@ public class FuseboxMediatorUnitTest {
                                 new byte[][] {config1.toByteArray(), config2.toByteArray()})
                         .build();
         mInputStateSupplier.set(state);
+        mMediator.onPlusButtonClicked();
 
         List<PopupButtonData> models = mModel.get(FuseboxProperties.POPUP_MODEL_BUTTON_DATA_LIST);
         assertFalse(models.isEmpty());
@@ -2165,6 +2175,7 @@ public class FuseboxMediatorUnitTest {
                                 })
                         .build();
         mInputStateSupplier.set(state);
+        mMediator.onPlusButtonClicked();
 
         assertTrue(isToolVisible(ToolMode.TOOL_MODE_DEEP_SEARCH_VALUE));
         assertTrue(isToolEnabled(ToolMode.TOOL_MODE_DEEP_SEARCH_VALUE));
@@ -2227,6 +2238,7 @@ public class FuseboxMediatorUnitTest {
                         .withToolConfigs(new byte[][] {canvasConfig.toByteArray()})
                         .build();
         mInputStateSupplier.set(state);
+        mMediator.onPlusButtonClicked();
 
         assertTrue(isToolEnabled(ToolMode.TOOL_MODE_CANVAS_VALUE));
         List<PopupButtonData> models = mModel.get(FuseboxProperties.POPUP_MODEL_BUTTON_DATA_LIST);
@@ -2276,6 +2288,7 @@ public class FuseboxMediatorUnitTest {
                                 })
                         .build();
         mInputStateSupplier.set(state);
+        mMediator.onPlusButtonClicked();
 
         assertTrue(isToolEnabled(ToolMode.TOOL_MODE_CANVAS_VALUE));
         List<PopupButtonData> modelButtons =
@@ -2311,6 +2324,7 @@ public class FuseboxMediatorUnitTest {
                         .build();
         mInput.setRequestType(AutocompleteRequestType.SEARCH);
         mInputStateSupplier.set(inputState);
+        mMediator.onPlusButtonClicked();
         List<PopupButtonData> modelButtons =
                 mModel.get(FuseboxProperties.POPUP_MODEL_BUTTON_DATA_LIST);
         assertEquals(2, modelButtons.size());
@@ -2338,6 +2352,7 @@ public class FuseboxMediatorUnitTest {
                         .build();
 
         mInputStateSupplier.set(state);
+        mMediator.onPlusButtonClicked();
 
         assertFalse(mModel.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_ENABLED));
         assertFalse(mModel.get(FuseboxProperties.POPUP_ATTACH_TAB_PICKER_ENABLED));
@@ -2362,6 +2377,7 @@ public class FuseboxMediatorUnitTest {
                         .build();
 
         mInputStateSupplier.set(state);
+        mMediator.onPlusButtonClicked();
 
         assertEquals("Tools Header", mModel.get(FuseboxProperties.POPUP_TOOL_HEADER_TEXT));
         assertEquals("Models Header", mModel.get(FuseboxProperties.POPUP_MODEL_HEADER_TEXT));
@@ -2385,6 +2401,7 @@ public class FuseboxMediatorUnitTest {
 
         InputState bothHidden = new InputState.Builder().build();
         mInputStateSupplier.set(bothHidden);
+        mMediator.onPlusButtonClicked();
         assertFalse(isToolVisible(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE));
         assertFalse(isToolEnabled(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE));
 
@@ -2453,6 +2470,7 @@ public class FuseboxMediatorUnitTest {
                                 new byte[][] {proConfig.toByteArray(), autoConfig.toByteArray()})
                         .build();
         mInputStateSupplier.set(state);
+        mMediator.onPlusButtonClicked();
 
         List<FuseboxProperties.PopupButtonData> models =
                 mModel.get(FuseboxProperties.POPUP_MODEL_BUTTON_DATA_LIST);
@@ -2729,6 +2747,7 @@ public class FuseboxMediatorUnitTest {
                         .withToolConfigs(new byte[][] {deepSearchConfig.toByteArray()})
                         .build();
         mInputStateSupplier.set(state);
+        mMediator.onPlusButtonClicked();
 
         List<PopupButtonData> tools = mModel.get(FuseboxProperties.POPUP_TOOL_BUTTON_DATA_LIST);
         assertEquals(1, tools.size());
@@ -2819,5 +2838,65 @@ public class FuseboxMediatorUnitTest {
         mMediator.selectFirstAttachment();
         assertTrue(mMediator.handleKeyEvent(KeyEvent.KEYCODE_ENTER, mKeyEvent));
         verify(mOnRemoveRunnable).run();
+    }
+
+    @Test
+    public void testOnInputStateChange_lazyUntilPopupShown() {
+        OmniboxFeatures.sShowModelPicker.setForTesting(true);
+        recreateMediator();
+
+        ModelConfig configAuto =
+                ModelConfig.newBuilder()
+                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE)
+                        .setMenuLabel("Auto")
+                        .build();
+        ModelConfig configPro =
+                ModelConfig.newBuilder()
+                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
+                        .setMenuLabel("Pro")
+                        .build();
+        ToolConfig deepSearchConfig =
+                ToolConfig.newBuilder()
+                        .setTool(ToolMode.TOOL_MODE_DEEP_SEARCH)
+                        .setMenuLabel("Deep Search")
+                        .setChipLabel("Deep Search Chip")
+                        .build();
+
+        InputState state =
+                new InputState.Builder()
+                        .withActiveTool(ToolMode.TOOL_MODE_DEEP_SEARCH_VALUE)
+                        .withAllowedTools(ToolMode.TOOL_MODE_DEEP_SEARCH_VALUE)
+                        .withActiveModel(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE)
+                        .withAllowedModels(
+                                ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE,
+                                ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
+                        .withModelConfigs(
+                                new byte[][] {configAuto.toByteArray(), configPro.toByteArray()})
+                        .withToolConfigs(new byte[][] {deepSearchConfig.toByteArray()})
+                        .build();
+
+        mInputStateSupplier.set(state);
+
+        // Request type button text is updated eagerly for the toolbar.
+        assertEquals(
+                "Deep Search Chip", mModel.get(FuseboxProperties.REQUEST_TYPE_BUTTON_TEXT));
+
+        // Popup properties are NOT populated while the popup is hidden.
+        List<PopupButtonData> initialTools =
+                mModel.get(FuseboxProperties.POPUP_TOOL_BUTTON_DATA_LIST);
+        List<PopupButtonData> initialModels =
+                mModel.get(FuseboxProperties.POPUP_MODEL_BUTTON_DATA_LIST);
+        assertTrue(initialTools == null || initialTools.isEmpty());
+        assertTrue(initialModels == null || initialModels.isEmpty());
+
+        // Opening the popup lazily populates popup button data.
+        mMediator.onPlusButtonClicked();
+
+        List<PopupButtonData> tools = mModel.get(FuseboxProperties.POPUP_TOOL_BUTTON_DATA_LIST);
+        List<PopupButtonData> models = mModel.get(FuseboxProperties.POPUP_MODEL_BUTTON_DATA_LIST);
+        assertNotNull(tools);
+        assertNotNull(models);
+        assertFalse(tools.isEmpty());
+        assertEquals(2, models.size());
     }
 }
