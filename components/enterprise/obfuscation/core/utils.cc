@@ -223,7 +223,25 @@ base::expected<void, Error> DeobfuscateFileInPlace(
 
   // Create and open a temporary file for deobfuscation.
   base::FilePath temp_path;
-  if (!base::CreateTemporaryFileInDir(file_path.DirName(), &temp_path)) {
+  base::FilePath temp_dir;
+#if BUILDFLAG(IS_CHROMEOS)
+  // On ChromeOS, virtual/cloud filesystems (like ODFS and DriveFS) do not
+  // support atomic renames and can have issues with creating temporary files in
+  // the same directory. For virtual filesystems (paths under /media/fuse),
+  // we create the temporary file in the local temp directory instead.
+  if (IsVirtualFilesystem(file_path)) {
+    if (!base::GetTempDir(&temp_dir)) {
+      return RecordAndReturn<void>(
+          base::unexpected(Error::kFileOperationError));
+    }
+  } else {
+    temp_dir = file_path.DirName();
+  }
+#else
+  temp_dir = file_path.DirName();
+#endif
+
+  if (!base::CreateTemporaryFileInDir(temp_dir, &temp_path)) {
     return RecordAndReturn<void>(base::unexpected(Error::kFileOperationError));
   }
 
@@ -233,6 +251,9 @@ base::expected<void, Error> DeobfuscateFileInPlace(
 
   base::File deobfuscated_file(temp_path,
                                base::File::FLAG_OPEN | base::File::FLAG_APPEND);
+  if (!deobfuscated_file.IsValid()) {
+    return RecordAndReturn<void>(base::unexpected(Error::kFileOperationError));
+  }
 
   // Get header data
   if (file.GetLength() < static_cast<int64_t>(kHeaderSize)) {
@@ -324,5 +345,12 @@ base::expected<void, Error> DeobfuscateFileInPlace(
 void RecordObfuscationResult(Error result) {
   base::UmaHistogramEnumeration(kObfuscationResultHistogram, result);
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+bool IsVirtualFilesystem(const base::FilePath& path) {
+  const base::FilePath kFusePath("/media/fuse");
+  return kFusePath == path || kFusePath.IsParent(path);
+}
+#endif
 
 }  // namespace enterprise_obfuscation
