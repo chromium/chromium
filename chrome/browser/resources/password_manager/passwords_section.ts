@@ -246,7 +246,9 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
   }
 
   private onAddPasswordClick_() {
-    this.showAddPasswordDialog_ = true;
+    this.executeIfTrustedVaultUnlocked(() => {
+      this.showAddPasswordDialog_ = true;
+    });
   }
 
   private onAddPasswordDialogClose_() {

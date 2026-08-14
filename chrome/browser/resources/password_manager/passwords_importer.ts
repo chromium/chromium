@@ -63,6 +63,7 @@ import type {ImportEntry, ImportResults, PasswordManagerProxy} from './password_
 import {ImportEntryStatus, ImportResultsStatus, PasswordManagerImpl} from './password_manager_proxy.js';
 import {getTemplate} from './passwords_importer.html.js';
 import {Page, Router} from './router.js';
+import {UserUtilMixin} from './user_utils_mixin.js';
 
 export interface PasswordsImporterElement {
   $: {
@@ -113,7 +114,7 @@ enum DialogState {
   CONFLICTS,
 }
 
-const PasswordsImporterElementBase = I18nMixin(PolymerElement);
+const PasswordsImporterElementBase = UserUtilMixin(I18nMixin(PolymerElement));
 
 export class PasswordsImporterElement extends PasswordsImporterElementBase {
   static get is() {
@@ -126,18 +127,6 @@ export class PasswordsImporterElement extends PasswordsImporterElementBase {
 
   static get properties() {
     return {
-      isUserSyncingPasswords: {
-        type: Boolean,
-        value: false,
-      },
-
-      isAccountStoreUser: {
-        type: Boolean,
-        value: false,
-      },
-
-      accountEmail: String,
-
       dialogState_: {
         type: Number,
         value: DialogState.NO_DIALOG,
@@ -185,7 +174,7 @@ export class PasswordsImporterElement extends PasswordsImporterElementBase {
 
       bannerDescription_: {
         type: String,
-        computed: 'computeBannerDescription_(isUserSyncingPasswords,' +
+        computed: 'computeBannerDescription_(isSyncingPasswords,' +
             'isAccountStoreUser, accountEmail)',
       },
     };
@@ -194,13 +183,9 @@ export class PasswordsImporterElement extends PasswordsImporterElementBase {
   static get observers() {
     return [
       'updateDefaultStore_(isAccountStoreUser)',
-      'updatePasswordsSavedToAccount_(isUserSyncingPasswords)',
+      'updatePasswordsSavedToAccount_(isSyncingPasswords)',
     ];
   }
-
-  declare isUserSyncingPasswords: boolean;
-  declare isAccountStoreUser: boolean;
-  declare accountEmail: string;
 
   declare private dialogState_: DialogState;
   // Refers both to syncing users with sync enabled for passwords and account
@@ -220,16 +205,18 @@ export class PasswordsImporterElement extends PasswordsImporterElementBase {
       PasswordManagerImpl.getInstance();
 
   launchImport() {
-    this.dialogState_ = DialogState.IN_PROGRESS;
-    // Timeout is needed to allow Polymer to render the Settings page before the
-    // system file picker has been opened.
-    setTimeout(() => {
-      if (this.isAccountStoreUser) {
-        this.dialogState_ = DialogState.STORE_PICKER;
-      } else {
-        this.selectFileHelper_();
-      }
-    }, 200);
+    this.executeIfTrustedVaultUnlocked(() => {
+      this.dialogState_ = DialogState.IN_PROGRESS;
+      // Timeout is needed to allow Polymer to render the Settings page before
+      // the system file picker has been opened.
+      setTimeout(() => {
+        if (this.isAccountStoreUser) {
+          this.dialogState_ = DialogState.STORE_PICKER;
+        } else {
+          this.selectFileHelper_();
+        }
+      }, 200);
+    });
   }
 
   private updateDefaultStore_() {
@@ -240,7 +227,7 @@ export class PasswordsImporterElement extends PasswordsImporterElementBase {
   }
 
   private updatePasswordsSavedToAccount_() {
-    this.passwordsSavedToAccount_ = this.isUserSyncingPasswords;
+    this.passwordsSavedToAccount_ = this.isSyncingPasswords;
   }
 
   private isState_(state: DialogState): boolean {
@@ -251,7 +238,7 @@ export class PasswordsImporterElement extends PasswordsImporterElementBase {
     if (this.isAccountStoreUser) {
       return this.i18n('importPasswordsGenericDescription');
     }
-    if (this.isUserSyncingPasswords) {
+    if (this.isSyncingPasswords) {
       return this.i18n(
           'importPasswordsDescriptionAccount',
           this.i18n('localPasswordManager'), this.accountEmail);
@@ -267,9 +254,11 @@ export class PasswordsImporterElement extends PasswordsImporterElementBase {
   }
 
   private onBannerClick_() {
-    if (this.isAccountStoreUser && this.isState_(DialogState.NO_DIALOG)) {
-      this.dialogState_ = DialogState.STORE_PICKER;
-    }
+    this.executeIfTrustedVaultUnlocked(() => {
+      if (this.isAccountStoreUser && this.isState_(DialogState.NO_DIALOG)) {
+        this.dialogState_ = DialogState.STORE_PICKER;
+      }
+    });
   }
 
   private closeDialog_() {
@@ -338,8 +327,10 @@ export class PasswordsImporterElement extends PasswordsImporterElementBase {
     await this.processResults_();
   }
 
-  private async onSelectFileClick_() {
-    await this.selectFileHelper_();
+  private onSelectFileClick_() {
+    this.executeIfTrustedVaultUnlocked(() => {
+      this.selectFileHelper_();
+    });
   }
 
   private async continueImportHelper_(selectedIds: number[]) {
@@ -545,7 +536,7 @@ export class PasswordsImporterElement extends PasswordsImporterElementBase {
       case ImportEntryStatus.kLongUsername:
         return this.i18n('importPasswordsLongUsername');
       case ImportEntryStatus.kConflictProfile:
-        if (this.isUserSyncingPasswords) {
+        if (this.isSyncingPasswords) {
           return this.i18n(
               'importPasswordsConflictAccount',
               this.i18n('localPasswordManager'), this.accountEmail);

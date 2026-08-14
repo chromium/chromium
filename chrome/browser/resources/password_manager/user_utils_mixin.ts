@@ -144,6 +144,22 @@ export const UserUtilMixin = dedupingMixin(
               PasswordManagerActionableError.kTrustedVaultKeyNeeded;
         }
 
+        /**
+         * Executes `action` if the trusted vault is unlocked. If the vault is
+         * locked, dispatches an event to display the unlock/recovery dialog.
+         */
+        executeIfTrustedVaultUnlocked(action: () => void) {
+          if (this.isTrustedVaultKeyNeeded()) {
+            this.dispatchEvent(
+                new CustomEvent('show-trusted-vault-error-dialog', {
+                  bubbles: true,
+                  composed: true,
+                }));
+            return;
+          }
+          action();
+        }
+
         private computeIsSyncingPasswords_(): boolean {
           return !!(this.syncInfo_?.isSyncingPasswords);
         }
@@ -168,4 +184,5 @@ export interface UserUtilMixinInterface {
   accountEmail: string;
   avatarImage: string;
   isTrustedVaultKeyNeeded(): boolean;
+  executeIfTrustedVaultUnlocked(action: () => void): void;
 }

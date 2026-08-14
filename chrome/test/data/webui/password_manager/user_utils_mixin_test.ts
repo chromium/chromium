@@ -6,8 +6,9 @@ import 'chrome://password-manager/password_manager.js';
 
 import {PasswordManagerActionableError, PasswordManagerImpl, SyncBrowserProxyImpl, UserUtilMixin} from 'chrome://password-manager/password_manager.js';
 import type {UserUtilMixinInterface} from 'chrome://password-manager/password_manager.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
@@ -73,4 +74,49 @@ suite('UserUtilMixinTest', function() {
     assertEquals(
         PasswordManagerActionableError.kNoError, element.actionableError);
   });
+
+  test(
+      'executeIfTrustedVaultUnlocked triggers dialog if vault is locked',
+      async function() {
+        loadTimeData.overrideValues({enableTrustedVaultUnlock: true});
+        passwordManager.listeners.passwordManagerActionableErrorChangedListener!
+            (chrome.passwordsPrivate.PasswordManagerActionableError
+                 .TRUSTED_VAULT_KEY_NEEDED);
+        await flushTasks();
+
+        let dialogFired = false;
+        element.addEventListener('show-trusted-vault-error-dialog', () => {
+          dialogFired = true;
+        });
+
+        let actionExecuted = false;
+        element.executeIfTrustedVaultUnlocked(() => {
+          actionExecuted = true;
+        });
+
+        assertTrue(dialogFired);
+        assertFalse(actionExecuted);
+      });
+
+  test(
+      'executeIfTrustedVaultUnlocked executes action if vault is not locked',
+      async function() {
+        loadTimeData.overrideValues({enableTrustedVaultUnlock: true});
+        passwordManager.listeners.passwordManagerActionableErrorChangedListener!
+            (chrome.passwordsPrivate.PasswordManagerActionableError.NO_ERROR);
+        await flushTasks();
+
+        let dialogFired = false;
+        element.addEventListener('show-trusted-vault-error-dialog', () => {
+          dialogFired = true;
+        });
+
+        let actionExecuted = false;
+        element.executeIfTrustedVaultUnlocked(() => {
+          actionExecuted = true;
+        });
+
+        assertFalse(dialogFired);
+        assertTrue(actionExecuted);
+      });
 });

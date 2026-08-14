@@ -452,6 +452,20 @@ suite('PasswordManagerAppTest', function() {
         assertFalse(
             !!app.shadowRoot!.querySelector('trusted-vault-error-dialog'));
       });
+
+  test('opens unlock dialog on show event', async function() {
+    app.dispatchEvent(new CustomEvent('show-trusted-vault-error-dialog', {
+      bubbles: true,
+      composed: true,
+    }));
+    await flushTasks();
+
+    const errorDialog =
+        app.shadowRoot!.querySelector<TrustedVaultErrorDialogElement>(
+            'trusted-vault-error-dialog');
+    assertTrue(!!errorDialog);
+    assertTrue(errorDialog.$.dialog.open);
+  });
 });
 
 suite('WebuiRefresh2026', function() {

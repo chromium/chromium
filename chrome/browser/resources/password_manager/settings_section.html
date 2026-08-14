@@ -117,10 +117,7 @@
       on-click="onTrustedVaultBannerClick_" external>
   </cr-link-row>
   <template is="dom-if" if="[[!passwordManagerDisabled_]]" restamp>
-    <passwords-importer account-email="[[accountEmail]]"
-        is-account-store-user="[[isAccountStoreUser]]"
-        is-user-syncing-passwords="[[isSyncingPasswords]]">
-    </passwords-importer>
+    <passwords-importer></passwords-importer>
   </template>
   <template is="dom-if" if="[[hasPasswordsToExport_]]" restamp>
     <passwords-exporter></passwords-exporter>

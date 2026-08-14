@@ -743,4 +743,25 @@ suite('PasswordsSectionTest', function() {
         !!listEntry.shadowRoot!.querySelector<MovePasswordsDialogElement>(
             '#movePasswordsDialog'));
   });
+
+  test(
+      'dispatches show-trusted-vault-error-dialog when add password clicked ' +
+          'and locked',
+      async function() {
+        loadTimeData.overrideValues({enableTrustedVaultUnlock: true});
+        Router.getInstance().navigateTo(Page.PASSWORDS);
+        const section = await createPasswordsSection();
+
+        section.actionableError =
+            PasswordManagerActionableError.kTrustedVaultKeyNeeded;
+        await flushTasks();
+
+        const eventPromise =
+            eventToPromise('show-trusted-vault-error-dialog', section);
+        const addButton = section.$.addPasswordButton;
+        assertTrue(!!addButton);
+        addButton.click();
+        await eventPromise;
+        assertFalse(!!section.shadowRoot!.querySelector('add-password-dialog'));
+      });
 });

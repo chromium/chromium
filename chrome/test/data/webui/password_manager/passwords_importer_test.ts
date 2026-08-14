@@ -5,27 +5,30 @@
 import 'chrome://password-manager/password_manager.js';
 
 import type {CrButtonElement, CrDialogElement, PasswordsImporterElement} from 'chrome://password-manager/password_manager.js';
-import {ImportEntryStatus, ImportResultsStatus, Page, PasswordManagerImpl, PluralStringProxyImpl, Router} from 'chrome://password-manager/password_manager.js';
+import {ImportEntryStatus, ImportResultsStatus, Page, PasswordManagerActionableError, PasswordManagerImpl, PluralStringProxyImpl, Router, SyncBrowserProxyImpl} from 'chrome://password-manager/password_manager.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
-import {isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
+import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
 
-
-function createPasswordsImporter(
-    isUserSyncingPasswords: boolean = false,
-    isAccountStoreUser: boolean = false,
-    accountEmail: string = ''): PasswordsImporterElement {
+async function createPasswordsImporter(
+    isSyncingPasswords: boolean = false, isAccountStoreUser: boolean = false,
+    accountEmail: string = ''): Promise<PasswordsImporterElement> {
+  const syncProxy = SyncBrowserProxyImpl.getInstance() as TestSyncBrowserProxy;
+  const passwordManager =
+      PasswordManagerImpl.getInstance() as TestPasswordManagerProxy;
+  passwordManager.data.isAccountStorageActive = isAccountStoreUser;
+  syncProxy.accountInfo = {email: accountEmail};
+  syncProxy.syncInfo = {isSyncingPasswords};
   const passwordsImporter = document.createElement('passwords-importer');
-  passwordsImporter.isUserSyncingPasswords = isUserSyncingPasswords;
-  passwordsImporter.isAccountStoreUser = isAccountStoreUser;
-  passwordsImporter.accountEmail = accountEmail;
   document.body.appendChild(passwordsImporter);
   flush();
+  await flushTasks();
   return passwordsImporter;
 }
 
@@ -98,18 +101,24 @@ async function assertErrorStateAndClose(
 suite('PasswordsImporterTest', function() {
   let passwordManager: TestPasswordManagerProxy;
   let pluralString: TestPluralStringProxy;
+  let syncProxy: TestSyncBrowserProxy;
 
   setup(function() {
+    loadTimeData.overrideValues({enableTrustedVaultUnlock: true});
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     passwordManager = new TestPasswordManagerProxy();
+    passwordManager.data.getActionableError =
+        PasswordManagerActionableError.kNoError;
     PasswordManagerImpl.setInstance(passwordManager);
     pluralString = new TestPluralStringProxy();
     PluralStringProxyImpl.setInstance(pluralString);
+    syncProxy = new TestSyncBrowserProxy();
+    SyncBrowserProxyImpl.setInstance(syncProxy);
   });
 
-  test('has correct non-syncing initial state', function() {
-    const importer = createPasswordsImporter(
-        /*isUserSyncingPasswords=*/ false, /*isAccountStoreUser=*/ false);
+  test('has correct non-syncing initial state', async function() {
+    const importer = await createPasswordsImporter(
+        /*isSyncingPasswords=*/ false, /*isAccountStoreUser=*/ false);
 
     const expectedDescription =
         importer.i18n('importPasswordsDescriptionDevice');
@@ -117,9 +126,9 @@ suite('PasswordsImporterTest', function() {
     assertTrue(importer.$.linkRow.hasAttribute('hide-icon'));
   });
 
-  test('has correct syncing initial state', function() {
-    const importer = createPasswordsImporter(
-        /*isUserSyncingPasswords=*/ true, /*isAccountStoreUser=*/ false,
+  test('has correct syncing initial state', async function() {
+    const importer = await createPasswordsImporter(
+        /*isSyncingPasswords=*/ true, /*isAccountStoreUser=*/ false,
         /*accountEmail=*/ 'test@test.com');
 
     const expectedDescription = importer.i18n(
@@ -129,9 +138,9 @@ suite('PasswordsImporterTest', function() {
     assertTrue(importer.$.linkRow.hasAttribute('hide-icon'));
   });
 
-  test('has correct initial state for account store users', function() {
-    const importer = createPasswordsImporter(
-        /*isUserSyncingPasswords=*/ false, /*isAccountStoreUser=*/ true,
+  test('has correct initial state for account store users', async function() {
+    const importer = await createPasswordsImporter(
+        /*isSyncingPasswords=*/ false, /*isAccountStoreUser=*/ true,
         /*accountEmail=*/ 'test@test.com');
 
     const expectedDescription =
@@ -141,15 +150,15 @@ suite('PasswordsImporterTest', function() {
   });
 
   test('can trigger import', async function() {
-    const importer = createPasswordsImporter();
+    const importer = await createPasswordsImporter();
 
     await triggerImportHelper(
         importer, passwordManager, '#selectFileButtonLinkRow');
   });
 
   test('store picker dialog has correct state', async function() {
-    const importer = createPasswordsImporter(
-        /*isUserSyncingPasswords=*/ false, /*isAccountStoreUser=*/ true,
+    const importer = await createPasswordsImporter(
+        /*isSyncingPasswords=*/ false, /*isAccountStoreUser=*/ true,
         /*accountEmail=*/ 'test@test.com');
 
     // Clicking on the importer row should open the STORE_PICKER dialog.
@@ -175,11 +184,10 @@ suite('PasswordsImporterTest', function() {
   });
 
   test('account store user can import passwords to device', async function() {
-    const importer = createPasswordsImporter(
-        /*isUserSyncingPasswords=*/ false,
+    const importer = await createPasswordsImporter(
+        /*isSyncingPasswords=*/ false,
         /*isAccountStoreUser=*/ true,
         /*accountEmail=*/ 'test@test.com');
-    await flushTasks();
 
     // Clicking on the importer row should open the import dialog. The
     // store picker should be shown and "account" should be the
@@ -204,17 +212,17 @@ suite('PasswordsImporterTest', function() {
 
 
   test('account store user can import passwords to account', async function() {
-    const importer = createPasswordsImporter(
-        /*isUserSyncingPasswords=*/ false,
+    const importer = await createPasswordsImporter(
+        /*isSyncingPasswords=*/ false,
         /*isAccountStoreUser=*/ true,
         /*accountEmail=*/ 'test@test.com');
-    await flushTasks();
 
     // Clicking on the importer row should open the import dialog. The
     // store picker should be shown and "account" should be the
     // default.
     importer.$.linkRow.click();
     flush();
+    await flushTasks();
     const storePicker =
         importer.shadowRoot!.querySelector<HTMLSelectElement>('#storePicker');
     assertTrue(!!storePicker);
@@ -229,11 +237,10 @@ suite('PasswordsImporterTest', function() {
   });
 
   test('non-account store user imports passwords to device', async function() {
-    const importer = createPasswordsImporter(
-        /*isUserSyncingPasswords=*/ false,
+    const importer = await createPasswordsImporter(
+        /*isSyncingPasswords=*/ false,
         /*isAccountStoreUser=*/ false,
         /*accountEmail=*/ 'test@test.com');
-    await flushTasks();
 
     // Clicking on the importer row should open the import dialog. The
     // store picker should be hidden.
@@ -249,7 +256,7 @@ suite('PasswordsImporterTest', function() {
   });
 
   test('Has correct success state with no errors', async function() {
-    const importer = createPasswordsImporter();
+    const importer = await createPasswordsImporter();
     passwordManager.setImportResults({
       status: ImportResultsStatus.kSuccess,
       numberImported: 42,
@@ -293,7 +300,7 @@ suite('PasswordsImporterTest', function() {
   });
 
   test('has correct conflicts state', async function() {
-    const importer = createPasswordsImporter();
+    const importer = await createPasswordsImporter();
     passwordManager.setImportResults({
       status: ImportResultsStatus.kConflicts,
       numberImported: 0,
@@ -350,7 +357,7 @@ suite('PasswordsImporterTest', function() {
   });
 
   test('can skip conflicts', async function() {
-    const importer = createPasswordsImporter();
+    const importer = await createPasswordsImporter();
     passwordManager.setImportResults({
       status: ImportResultsStatus.kConflicts,
       numberImported: 0,
@@ -401,7 +408,7 @@ suite('PasswordsImporterTest', function() {
   });
 
   test('can continue import with conflicts', async function() {
-    const importer = createPasswordsImporter();
+    const importer = await createPasswordsImporter();
     passwordManager.setImportResults({
       status: ImportResultsStatus.kConflicts,
       numberImported: 0,
@@ -459,7 +466,7 @@ suite('PasswordsImporterTest', function() {
   });
 
   test('correct conflicts state after failed re-auth', async function() {
-    const importer = createPasswordsImporter();
+    const importer = await createPasswordsImporter();
     passwordManager.setImportResults({
       status: ImportResultsStatus.kConflicts,
       numberImported: 0,
@@ -534,7 +541,7 @@ suite('PasswordsImporterTest', function() {
   test(
       'close button triggers file deletion with ticked checkbox',
       async function() {
-        const importer = createPasswordsImporter();
+        const importer = await createPasswordsImporter();
         passwordManager.setImportResults({
           status: ImportResultsStatus.kSuccess,
           numberImported: 42,
@@ -566,7 +573,7 @@ suite('PasswordsImporterTest', function() {
   test(
       'view passwords triggers file deletion with ticked checkbox',
       async function() {
-        const importer = createPasswordsImporter();
+        const importer = await createPasswordsImporter();
         passwordManager.setImportResults({
           status: ImportResultsStatus.kSuccess,
           numberImported: 42,
@@ -597,13 +604,14 @@ suite('PasswordsImporterTest', function() {
 
 
   test('view passwords navigates to the passwords page', async function() {
-    const importer = createPasswordsImporter();
+    const importer = await createPasswordsImporter();
     passwordManager.setImportResults({
       status: ImportResultsStatus.kSuccess,
       numberImported: 42,
       displayedEntries: [],
       fileName: 'test.csv',
     });
+    await flushTasks();
 
     await triggerImportHelper(
         importer, passwordManager, '#selectFileButtonLinkRow');
@@ -624,7 +632,7 @@ suite('PasswordsImporterTest', function() {
   });
 
   test('has correct success state with failures', async function() {
-    const importer = createPasswordsImporter();
+    const importer = await createPasswordsImporter();
     passwordManager.setImportResults({
       status: ImportResultsStatus.kSuccess,
       numberImported: 42,
@@ -723,7 +731,7 @@ suite('PasswordsImporterTest', function() {
   });
 
   test('bad format error dialog is correct', async function() {
-    const importer = createPasswordsImporter();
+    const importer = await createPasswordsImporter();
     passwordManager.setImportResults({
       status: ImportResultsStatus.kBadFormat,
       numberImported: 0,
@@ -747,7 +755,7 @@ suite('PasswordsImporterTest', function() {
   });
 
   test('unknown error error dialog is correct', async function() {
-    const importer = createPasswordsImporter();
+    const importer = await createPasswordsImporter();
     passwordManager.setImportResults({
       status: ImportResultsStatus.kIoError,
       numberImported: 0,
@@ -763,7 +771,7 @@ suite('PasswordsImporterTest', function() {
   });
 
   test('passwords per file limit error dialog is correct', async function() {
-    const importer = createPasswordsImporter();
+    const importer = await createPasswordsImporter();
     passwordManager.setImportResults({
       status: ImportResultsStatus.kNumPasswordsExceeded,
       numberImported: 0,
@@ -779,7 +787,7 @@ suite('PasswordsImporterTest', function() {
   });
 
   test('file size exceeded error dialog is correct', async function() {
-    const importer = createPasswordsImporter();
+    const importer = await createPasswordsImporter();
     passwordManager.setImportResults({
       status: ImportResultsStatus.kMaxFileSize,
       numberImported: 0,
@@ -795,7 +803,7 @@ suite('PasswordsImporterTest', function() {
   });
 
   test('already active dialog state has correct state', async function() {
-    const importer = createPasswordsImporter();
+    const importer = await createPasswordsImporter();
     passwordManager.setImportResults({
       status: ImportResultsStatus.kImportAlreadyActive,
       numberImported: 0,
@@ -823,13 +831,14 @@ suite('PasswordsImporterTest', function() {
   test(
       'for account user, dialog close restores focus to link row',
       async function() {
-        const importer = createPasswordsImporter(
-            /*isUserSyncingPasswords=*/ false,
+        const importer = await createPasswordsImporter(
+            /*isSyncingPasswords=*/ false,
             /*isAccountStoreUser=*/ true,
             /*accountEmail=*/ 'test@test.com');
 
         importer.$.linkRow.click();
         flush();
+        await flushTasks();
 
         const dialog =
             importer.shadowRoot!.querySelector<CrDialogElement>('#dialog');
@@ -838,6 +847,7 @@ suite('PasswordsImporterTest', function() {
 
         await closeDialogHelper(
             importer, passwordManager, dialog, '#cancelButton');
+        await new Promise(resolve => setTimeout(resolve, 100));
         await flushTasks();
 
         // Focus should be restored to the link row.
@@ -847,8 +857,8 @@ suite('PasswordsImporterTest', function() {
   test(
       'for non-account user, dialog close restores focus to select file button',
       async function() {
-        const importer = createPasswordsImporter(
-            /*isUserSyncingPasswords=*/ false,
+        const importer = await createPasswordsImporter(
+            /*isSyncingPasswords=*/ false,
             /*isAccountStoreUser=*/ false,
             /*accountEmail=*/ 'test@test.com');
 
@@ -874,5 +884,51 @@ suite('PasswordsImporterTest', function() {
         assertEquals(
             importer.shadowRoot!.activeElement,
             importer.$.selectFileButtonLinkRow);
+      });
+
+  test(
+      'dispatches show-trusted-vault-error-dialog when banner clicked and ' +
+          'locked',
+      async function() {
+        const importer = await createPasswordsImporter(
+            /*isSyncingPasswords=*/ true, /*isAccountStoreUser=*/ true);
+        importer.actionableError =
+            PasswordManagerActionableError.kTrustedVaultKeyNeeded;
+        await flushTasks();
+
+        const eventPromise =
+            eventToPromise('show-trusted-vault-error-dialog', importer);
+        importer.$.linkRow.click();
+        await eventPromise;
+      });
+
+  test(
+      'dispatches show-trusted-vault-error-dialog when select file clicked ' +
+          'and locked',
+      async function() {
+        const importer = await createPasswordsImporter();
+        importer.actionableError =
+            PasswordManagerActionableError.kTrustedVaultKeyNeeded;
+        await flushTasks();
+
+        const eventPromise =
+            eventToPromise('show-trusted-vault-error-dialog', importer);
+        importer.$.selectFileButtonLinkRow.click();
+        await eventPromise;
+      });
+
+  test(
+      'dispatches show-trusted-vault-error-dialog when launchImport called ' +
+          'and locked',
+      async function() {
+        const importer = await createPasswordsImporter();
+        importer.actionableError =
+            PasswordManagerActionableError.kTrustedVaultKeyNeeded;
+        await flushTasks();
+
+        const eventPromise =
+            eventToPromise('show-trusted-vault-error-dialog', importer);
+        importer.launchImport();
+        await eventPromise;
       });
 });

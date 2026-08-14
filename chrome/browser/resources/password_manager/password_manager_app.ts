@@ -195,6 +195,10 @@ export class PasswordManagerAppElement extends PasswordManagerAppElementBase {
     this.eventTracker_.add(
         collapsedQuery, 'change',
         (e: MediaQueryListEvent) => this.collapsed_ = e.matches);
+
+    this.eventTracker_.add(
+        this, 'show-trusted-vault-error-dialog',
+        () => this.showTrustedVaultErrorDialog_ = true);
   }
 
   override disconnectedCallback() {
