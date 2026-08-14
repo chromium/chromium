@@ -2,4 +2,6 @@ include_rules = [
   "+media/mojo/mojom",
   "+media/base",
   "+media/filters",
+  "+media/ffmpeg",
+  "+third_party/ffmpeg",
 ]

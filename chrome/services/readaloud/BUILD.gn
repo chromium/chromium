@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//media/media_options.gni")
+
 source_set("readaloud") {
   public = [
     "audio_renderer/read_aloud_audio_renderer.h",
@@ -24,6 +26,8 @@ source_set("readaloud") {
     "read_aloud_playback_controller.cc",
   ]
 
+  deps = [ "//media:media_buildflags" ]
+
   public_deps = [
     "//base",
     "//base:i18n",
@@ -33,6 +37,12 @@ source_set("readaloud") {
     "//media/mojo/mojom",
     "//mojo/public/cpp/bindings",
   ]
+  if (media_use_ffmpeg) {
+    deps += [
+      "//third_party/ffmpeg",
+      "//third_party/ffmpeg:ffmpeg_features",
+    ]
+  }
 }
 
 source_set("unit_tests") {
@@ -49,6 +59,9 @@ source_set("unit_tests") {
     "prefetch/prefetch_mode_scheduler_unittest.cc",
     "read_aloud_playback_controller_unittest.cc",
   ]
+
+  data = [ "//media/test/data/sfx-opus.ogg" ]
+
   deps = [
     ":mock_playback_controller",
     ":readaloud",
@@ -56,12 +69,19 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/common:mojo_bindings",
     "//media",
+    "//media:test_support",
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/test_support:test_utils",
     "//mojo/public/mojom/base",
     "//testing/gmock",
     "//testing/gtest",
   ]
+  if (media_use_ffmpeg) {
+    deps += [
+      "//third_party/ffmpeg",
+      "//third_party/ffmpeg:ffmpeg_features",
+    ]
+  }
 }
 
 source_set("mock_playback_controller") {
@@ -71,6 +91,8 @@ source_set("mock_playback_controller") {
     "mock_read_aloud_playback_controller.cc",
     "mock_read_aloud_playback_controller.h",
   ]
+
+  deps = [ "//media:media_buildflags" ]
 
   public_deps = [
     "//base",

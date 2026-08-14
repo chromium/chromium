@@ -10,6 +10,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "chrome/services/readaloud/decoded_audio_segment.h"
 
@@ -46,7 +47,17 @@ class OpusDecoderHelper {
       DecodeCallback callback);
 
  private:
+  // Callback executed on the main sequence thread once the background
+  // ThreadPool
+  // decoding task has completed. Packages the decoded buffer into a segment and
+  // executes the client's callback.
+  void OnDecodeFinished(
+      const std::vector<DecodedAudioSegment::WordTiming>& timings,
+      DecodeCallback callback,
+      scoped_refptr<media::AudioBuffer> decoded_buffer);
+
   SEQUENCE_CHECKER(sequence_checker_);
+  base::WeakPtrFactory<OpusDecoderHelper> weak_ptr_factory_{this};
 };
 
 }  // namespace readaloud
