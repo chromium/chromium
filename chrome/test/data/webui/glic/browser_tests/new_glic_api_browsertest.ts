@@ -183,10 +183,7 @@ class ApiTests extends ApiTestFixtureBase {
     assertDefined(this.host.getPinnedTabs);
     assertDefined(this.host.unpinTabs);
 
-    const tabId = (this.testParams as any).tabId;
-    const tabId2 = this.getActiveTabId();
-    // Pin both tabs.
-    assertTrue(await this.host.pinTabs([tabId]));
+    const tabId = this.testParams.tabId;
 
     const pinnedTabsUpdates = observeSequence(this.host.getPinnedTabs());
     await pinnedTabsUpdates.waitFor((tabs) => tabs.length === 2);
@@ -196,7 +193,18 @@ class ApiTests extends ApiTestFixtureBase {
     await pinnedTabsUpdates.waitFor((tabs) => tabs.length === 1);
 
     // Unpinning a tab that is not pinned should fail.
-    assertFalse(await this.host.unpinTabs([tabId, tabId2]));
+    assertFalse(await this.host.unpinTabs([tabId]));
+  }
+
+  async testUnpinAllTabs() {
+    assertDefined(this.host.getPinnedTabs);
+    assertDefined(this.host.unpinAllTabs);
+
+    const pinnedTabsUpdates = observeSequence(this.host.getPinnedTabs());
+    await pinnedTabsUpdates.waitFor((tabs) => tabs.length === 2);
+
+    // Unpin all tabs.
+    this.host.unpinAllTabs();
     await pinnedTabsUpdates.waitFor((tabs) => tabs.length === 0);
   }
 
