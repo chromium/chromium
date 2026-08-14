@@ -1708,7 +1708,7 @@ public abstract class ChromeFeatureList {
     public static final MutableFlagWithSafeDefault sControlsVisibilityFromNavigations =
             newMutableFlagWithSafeDefault(CONTROLS_VISIBILITY_FROM_NAVIGATIONS, true);
     public static final MutableFlagWithSafeDefault sCrossWindowTabGroupOperations =
-            newMutableFlagWithSafeDefault(CROSS_WINDOW_TAB_GROUP_OPERATIONS, false);
+            newMutableFlagWithSafeDefault(CROSS_WINDOW_TAB_GROUP_OPERATIONS, true);
     public static final MutableFlagWithSafeDefault sDebugToolbarPositioning =
             newMutableFlagWithSafeDefault(DEBUG_TOOLBAR_POSITIONING, false);
     public static final MutableFlagWithSafeDefault sDefaultBrowserPromoFre =
