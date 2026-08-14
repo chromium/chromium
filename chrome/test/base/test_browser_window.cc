@@ -384,9 +384,8 @@ void TestBrowserWindow::SetCloseCallback(base::OnceClosure close_callback) {
 }
 
 void TestBrowserWindow::OnBrowserCreated(BrowserWindowInterface* browser) {
-  Browser* current_browser = browser->GetBrowserForMigrationOnly();
-  if (BrowserInitState::From(current_browser)->create_params().window == this) {
-    browser_ = current_browser;
+  if (BrowserInitState::From(browser)->create_params().window == this) {
+    browser_ = browser;
     browser_collection_observation_.Reset();
   }
 }
