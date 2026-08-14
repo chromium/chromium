@@ -360,6 +360,10 @@ void ClearEmailVerificationState(PrefService* prefs,
                                  const base::Time& delete_begin,
                                  const base::Time& delete_end);
 
+// Migrates email verification preferences to lowercase and deduplicates
+// existing entries.
+void DeduplicateEmailVerificationState(PrefService* prefs);
+
 void SetFacilitatedPaymentsEwallet(PrefService* prefs, bool value);
 
 bool IsFacilitatedPaymentsEwalletEnabled(const PrefService* prefs);

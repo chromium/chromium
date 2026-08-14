@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "base/json/values_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -214,6 +215,8 @@ void MigrateDeprecatedAutofillPrefs(PrefService* pref_service) {
   pref_service->ClearPref(kAutofillRanExtraDeduplication);
   // Added 06/2026
   pref_service->ClearPref(kAutofillAiSyncedOptInStatusDeprecated);
+  // Added 08/2026
+  DeduplicateEmailVerificationState(pref_service);
 }
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
@@ -441,6 +444,68 @@ void ClearEmailVerificationState(PrefService* prefs,
     for (const std::string& key : keys_to_remove) {
       update->Remove(key);
     }
+  }
+}
+
+void DeduplicateEmailVerificationState(PrefService* prefs) {
+  const base::DictValue& state =
+      prefs->GetDict(kAutofillEmailVerificationState);
+  if (state.empty()) {
+    return;
+  }
+
+  base::DictValue migrated_state;
+  bool needs_update = false;
+
+  // Iterate through each entry in current `state`, and build `migrated_state`
+  // by making sure duplicate emails are correctly merged.
+  for (auto [email, email_data_value] : state) {
+    if (!email_data_value.is_dict()) {
+      needs_update = true;
+      continue;
+    }
+
+    const std::string lower_email = base::ToLowerASCII(email);
+    base::DictValue* migrated_entry = migrated_state.FindDict(lower_email);
+    // No existing entry for `lower_email`, so add the current entry.
+    if (!migrated_entry) {
+      // Flag `needs_update` if current email is not in lower case.
+      if (lower_email != email) {
+        needs_update = true;
+      }
+      migrated_state.Set(lower_email, email_data_value.Clone());
+      continue;
+    }
+
+    // Duplicate entry detected due to case difference (e.g. "user@example.com"
+    // and "USER@example.com"). Merge `current_entry` into `migrated_entry`.
+    needs_update = true;
+    const base::DictValue& current_entry = email_data_value.GetDict();
+
+    // Merge: prefer allowed == true if either entry was allowed.
+    const bool existing_allowed =
+        migrated_entry->FindBool("allowed").value_or(false);
+    const bool current_allowed =
+        current_entry.FindBool("allowed").value_or(false);
+    migrated_entry->Set("allowed", existing_allowed || current_allowed);
+
+    // Keep the newer timestamp and its corresponding issuer_site.
+    const std::optional<base::Time> existing_time =
+        base::ValueToTime(migrated_entry->Find("timestamp"));
+    const std::optional<base::Time> current_time =
+        base::ValueToTime(current_entry.Find("timestamp"));
+    if (!existing_time || (current_time && *current_time > *existing_time)) {
+      if (const std::string* issuer = current_entry.FindString("issuer_site")) {
+        migrated_entry->Set("issuer_site", *issuer);
+      }
+      if (current_time) {
+        migrated_entry->Set("timestamp", base::TimeToValue(*current_time));
+      }
+    }
+  }
+
+  if (needs_update) {
+    prefs->SetDict(kAutofillEmailVerificationState, std::move(migrated_state));
   }
 }
 
