@@ -839,6 +839,8 @@ virtual/webnn-service-on-cpu/*
 virtual/webnn-service-on-npu/*
 virtual/webnn-service-with-gpu/*
 virtual/lna-webrtc/wpt_internal/*
+# BG fetch requires a custom testing delegate that is currently only implemented for Content Shell.
+virtual/lna-bg-fetch/external/wpt/fetch/local-network-access/service-worker-background-fetch.tentative.https.html
 
 # Requires content plugin, see crbug.com/476646486:
 external/wpt/svg/styling/svg-filter-render-web-plugin.tentative.https.html

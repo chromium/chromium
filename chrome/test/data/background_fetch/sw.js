@@ -14,11 +14,15 @@ function postToWindowClients(msg) {
 }
 
 self.addEventListener('message', e => {
-  const fetchPromise = self.registration.backgroundFetch.fetch(
-    'sw-fetch', '/background_fetch/types_of_cheese.txt');
+  let url = '/background_fetch/types_of_cheese.txt';
+  if (e.data && e.data.url) {
+    url = e.data.url;
+  }
+  const id = 'sw-fetch-' + Math.random().toString();
+  const fetchPromise = self.registration.backgroundFetch.fetch(id, url);
   if (e.data === 'fetchnowait')
     postToWindowClients('ok');
-  else if (e.data === 'fetch')
+  else if (e.data === 'fetch' || (e.data && e.data.url))
     fetchPromise.catch(e => {
       postToWindowClients('permissionerror');
     });

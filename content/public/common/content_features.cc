@@ -175,6 +175,10 @@ BASE_FEATURE(kAudioServiceSandbox,
 // Kill switch for Background Fetch.
 BASE_FEATURE(kBackgroundFetch, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables Local Network Access checks for Background Fetch.
+BASE_FEATURE(kBackgroundFetchLocalNetworkAccess,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enable using the BackForwardCache.
 BASE_FEATURE(kBackForwardCache, base::FEATURE_ENABLED_BY_DEFAULT);
 

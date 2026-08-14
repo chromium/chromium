@@ -28,6 +28,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/download/public/background_service/background_download_service.h"
+#include "components/download/public/background_service/features.h"
 #include "components/download/public/background_service/logger.h"
 #include "components/offline_items_collection/core/offline_content_aggregator.h"
 #include "components/offline_items_collection/core/offline_content_provider.h"
@@ -35,6 +36,7 @@
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -44,6 +46,8 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/ip_address_space_overrides_test_utils.h"
 #include "third_party/blink/public/common/features.h"
 #include "url/origin.h"
 
@@ -227,6 +231,7 @@ class OfflineContentProviderObserver final
   void OnContentProviderGoingDown() override {}
 
   const OfflineItem& latest_item() const { return latest_item_; }
+  void Reset() { latest_item_ = OfflineItem(); }
 
  private:
   void Resume(const ContentId& id) { delegate_->ResumeDownload(id); }
@@ -333,6 +338,7 @@ class BackgroundFetchBrowserTest : public InProcessBrowserTest {
   // Runs the |script| and checks the result.
   void RunScriptAndCheckResultingMessage(const std::string& script,
                                          const std::string& expected_message) {
+    offline_content_provider_observer_->Reset();
     ASSERT_EQ(expected_message, RunScript(script));
   }
 
@@ -1061,4 +1067,106 @@ IN_PROC_BROWSER_TEST_P(BackgroundFetchKillswitchBrowserTest,
     ASSERT_NO_FATAL_FAILURE(RunScriptAndCheckResultingMessage(
         "StartFetchFromServiceWorker()", "permissionerror"));
   }
+}
+
+class BackgroundFetchLocalNetworkAccessBrowserTest
+    : public BackgroundFetchBrowserTest {
+ public:
+  BackgroundFetchLocalNetworkAccessBrowserTest() {
+    base::FieldTrialParams lna_params;
+    lna_params["LocalNetworkAccessChecksWarn"] = "false";
+
+    base::FieldTrialParams download_params;
+    // Set the DownloadService retry delay to 0 to prevent a 20-second timeout
+    // delay when a background fetch correctly fails due to Local Network Access
+    // restrictions.
+    download_params["retry_delay_ms"] = "0";
+
+    feature_list_.InitWithFeaturesAndParameters(
+        {{network::features::kLocalNetworkAccessChecks, lna_params},
+         {download::kDownloadServiceFeature, download_params},
+         {features::kBackgroundFetchLocalNetworkAccess, {}}},
+        {blink::features::kRestrictBackgroundFetchFromServiceWorker});
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    BackgroundFetchBrowserTest::SetUpCommandLine(command_line);
+
+    public_server_ = std::make_unique<net::EmbeddedTestServer>(
+        net::EmbeddedTestServer::TYPE_HTTPS);
+    public_server_->AddDefaultHandlers(GetChromeTestDataDir());
+    public_server_->RegisterRequestHandler(base::BindRepeating(
+        &BackgroundFetchBrowserTest::HandleRequest, base::Unretained(this)));
+    ASSERT_TRUE(public_server_->Start());
+
+    loopback_server_ = std::make_unique<net::EmbeddedTestServer>(
+        net::EmbeddedTestServer::TYPE_HTTPS);
+    loopback_server_->AddDefaultHandlers(GetChromeTestDataDir());
+    ASSERT_TRUE(loopback_server_->Start());
+
+    network::AddIpAddressSpaceOverridesToCommandLine(
+        {network::GenerateIpAddressSpaceOverride(
+             *public_server_, network::mojom::IPAddressSpace::kPublic),
+         network::GenerateIpAddressSpaceOverride(
+             *loopback_server_, network::mojom::IPAddressSpace::kLoopback)},
+        *command_line);
+  }
+
+  void SetUpBrowser(Browser* browser) override {
+    set_active_browser(browser);
+    // Load the helper page that helps drive these tests.
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser, public_server_->GetURL(kHelperPage)));
+
+    // Register the Service Worker that's required for Background Fetch. The
+    // behavior without an activated worker is covered by WPTs.
+    ASSERT_EQ("ok - service worker registered",
+              RunScript("RegisterServiceWorker()"));
+
+    test_ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
+  }
+
+  void SetPermissionForOrigin(ContentSettingsType content_type,
+                              ContentSetting setting,
+                              const GURL& origin) {
+    auto* settings_map =
+        HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile());
+    DCHECK(settings_map);
+
+    ContentSettingsPattern host_pattern =
+        ContentSettingsPattern::FromURL(origin);
+
+    settings_map->SetContentSettingCustomScope(
+        host_pattern, ContentSettingsPattern::Wildcard(), content_type,
+        setting);
+  }
+
+ protected:
+  std::unique_ptr<net::EmbeddedTestServer> public_server_;
+  std::unique_ptr<net::EmbeddedTestServer> loopback_server_;
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(BackgroundFetchLocalNetworkAccessBrowserTest, Fetch) {
+  SetPermissionForOrigin(ContentSettingsType::AUTOMATIC_DOWNLOADS,
+                         CONTENT_SETTING_ALLOW, public_server_->base_url());
+
+  GURL loopback_url =
+      loopback_server_->GetURL("/background_fetch/types_of_cheese_cors.txt");
+  std::string script =
+      "StartFetchFromWindowWithUrl('" + loopback_url.spec() + "');";
+
+  // The fetch should fail because of Local Network Access restrictions.
+  offline_content_provider_observer_->ResumeOnNextUpdate();
+  ASSERT_NO_FATAL_FAILURE(
+      RunScriptAndCheckResultingMessage(script, "backgroundfetchfail"));
+
+  // Give the needed Local Network Access permission.
+  SetPermissionForOrigin(ContentSettingsType::LOOPBACK_NETWORK,
+                         CONTENT_SETTING_ALLOW, public_server_->base_url());
+
+  // Now the fetch should succeed.
+  offline_content_provider_observer_->ResumeOnNextUpdate();
+  ASSERT_NO_FATAL_FAILURE(
+      RunScriptAndCheckResultingMessage(script, "backgroundfetchsuccess"));
 }

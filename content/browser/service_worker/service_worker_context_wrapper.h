@@ -334,6 +334,14 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
                                   const blink::StorageKey& key,
                                   FindRegistrationCallback callback);
 
+  // Similar to FindReadyRegistrationForId, but does not activate waiting
+  // versions if the registration only has a waiting version or if a waiting
+  // version is present. May return the installing version if one is present.
+  void FindRegistrationForIdWithoutActivation(
+      int64_t registration_id,
+      const blink::StorageKey& key,
+      FindRegistrationCallback callback);
+
   // Returns the registration for |registration_id|. It is guaranteed that the
   // returned registration has the activated worker.
   //
@@ -502,6 +510,7 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
 
   void DidFindRegistrationForFindImpl(
       bool include_installing_version,
+      bool activate_waiting_version,
       FindRegistrationCallback callback,
       blink::ServiceWorkerStatusCode status,
       scoped_refptr<ServiceWorkerRegistration> registration);

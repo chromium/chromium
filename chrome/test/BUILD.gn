@@ -1568,6 +1568,7 @@ if (is_android) {
       "//components/webapps/browser:test_support",
       "//components/webui/chrome_urls",
       "//content/test:android_test_message_pump_support",
+      "//services/network/public/cpp:ip_address_space_overrides_test_utils",
       "//testing/android/native_test:native_test_support",
       "//third_party/crashpad/crashpad/handler:crashpad_handler_trampoline",
       "//third_party/federated_compute:confidential_compute",

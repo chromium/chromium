@@ -1,0 +1,1 @@
+This directory is for testing the LocalNetworkAccess integration with Background Fetch.

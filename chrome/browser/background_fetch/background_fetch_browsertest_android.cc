@@ -259,3 +259,5 @@ IN_PROC_BROWSER_TEST_F(BackgroundFetchAndroidBrowserTest,
     offline_observer_.WaitForState(OfflineItemState::COMPLETE);
   }
 }
+
+// TODO: crbug.com/455486148 - Add LNA-specific resumption tests.

@@ -94,6 +94,7 @@ if (!is_android) {
       "//net:test_support",
       "//services/metrics/public/cpp:gen_ukm_builders",
       "//services/metrics/public/cpp:ukm_builders",
+      "//services/network/public/cpp:ip_address_space_overrides_test_utils",
       "//url",
     ]
   }

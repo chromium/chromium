@@ -11,9 +11,26 @@
 #include "content/browser/background_fetch/background_fetch_cross_origin_filter.h"
 #include "content/browser/background_fetch/background_fetch_data_manager.h"
 #include "content/browser/background_fetch/background_fetch_request_match_params.h"
+#include "content/browser/loader/url_loader_factory_utils.h"
+#include "content/browser/service_worker/embedded_worker_instance.h"
+#include "content/browser/service_worker/service_worker_context_wrapper.h"
+#include "content/browser/service_worker/service_worker_registration.h"
+#include "content/browser/service_worker/service_worker_version.h"
+#include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/child_process_host.h"
+#include "content/public/common/content_features.h"
+#include "mojo/public/cpp/bindings/shared_remote.h"
+#include "net/base/isolation_info.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/cors/cors.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "services/network/public/cpp/url_loader_factory_builder.h"
+#include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
+#include "services/network/public/mojom/client_security_state.mojom.h"
+#include "services/network/public/mojom/network_context.mojom.h"
+#include "services/network/public/mojom/url_loader_network_service_observer.mojom.h"
+#include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/mojom/background_fetch/background_fetch.mojom.h"
 
 namespace content {
@@ -327,6 +344,128 @@ void BackgroundFetchJobController::DidPopNextRequest(
     return;
   }
 
+  if (url_loader_factory_ ||
+      !base::FeatureList::IsEnabled(
+          features::kBackgroundFetchLocalNetworkAccess)) {
+    if (url_loader_factory_) {
+      request_info->set_url_loader_factory(url_loader_factory_);
+    }
+    std::move(request_started_callback)
+        .Run(registration_id(), request_info.get());
+    StartRequest(std::move(request_info), std::move(request_finished_callback));
+    return;
+  }
+
+  scoped_refptr<ServiceWorkerContextWrapper> service_worker_context =
+      data_manager_->service_worker_context();
+  if (service_worker_context) {
+    service_worker_context->FindRegistrationForIdWithoutActivation(
+        registration_id_.service_worker_registration_id(),
+        registration_id_.storage_key(),
+        base::BindOnce(
+            &BackgroundFetchJobController::DidGetRegistrationForRequest,
+            weak_ptr_factory_.GetWeakPtr(), std::move(request_started_callback),
+            std::move(request_finished_callback), std::move(request_info)));
+  } else {
+    DidGetRegistrationForRequest(
+        std::move(request_started_callback),
+        std::move(request_finished_callback), std::move(request_info),
+        blink::ServiceWorkerStatusCode::kErrorAbort, nullptr);
+  }
+}
+
+void BackgroundFetchJobController::InitializeUrlLoaderFactory(
+    scoped_refptr<ServiceWorkerRegistration> registration) {
+  if (url_loader_factory_ || !registration || !registration->active_version()) {
+    return;
+  }
+
+  scoped_refptr<ServiceWorkerContextWrapper> service_worker_context =
+      data_manager_->service_worker_context();
+  if (!service_worker_context) {
+    return;
+  }
+
+  StoragePartitionImpl* storage_partition =
+      service_worker_context->storage_partition();
+  if (!storage_partition) {
+    return;
+  }
+
+  int process_id = ChildProcessHost::kInvalidUniqueID;
+  if (registration->active_version()->embedded_worker()->status() ==
+      blink::EmbeddedWorkerStatus::kRunning) {
+    // TODO(crbug.com/379869738): Remove GetUnsafeValue once RendererProcessId
+    // adopts strong types.
+    process_id = registration->active_version()
+                     ->embedded_worker()
+                     ->process_id()
+                     .GetUnsafeValue();
+  }
+
+  mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver>
+      observer_remote =
+          storage_partition
+              ->CreateURLLoaderNetworkObserverForServiceOrSharedWorker(
+                  network::OriginatingProcessId::renderer(
+                      network::RendererProcessId(process_id)),
+                  registration_id_.storage_key().origin());
+
+  network::mojom::URLLoaderFactoryParamsPtr factory_params =
+      storage_partition->CreateURLLoaderFactoryParams();
+  factory_params->client_security_state =
+      registration->active_version()->BuildClientSecurityState().Clone();
+
+  if (observer_remote) {
+    factory_params->url_loader_network_observer = std::move(observer_remote);
+  }
+
+  bool bypass_redirect_checks = false;
+  DCHECK(!url_loader_factory_);
+  url_loader_factory_ = url_loader_factory::Create(
+      ContentBrowserClient::URLLoaderFactoryType::kServiceWorkerSubResource,
+      url_loader_factory::TerminalParams::ForNetworkContext(
+          storage_partition->GetNetworkContext(), std::move(factory_params),
+          url_loader_factory::HeaderClientOption::kAllow,
+          url_loader_factory::FactoryOverrideOption::kAllow),
+      url_loader_factory::ContentClientParams(
+          storage_partition->browser_context(), nullptr /* frame_host */,
+          process_id, registration_id_.storage_key().origin(),
+          net::IsolationInfo(), ukm::kInvalidSourceIdObj,
+          &bypass_redirect_checks));
+}
+
+void BackgroundFetchJobController::DidGetRegistrationForRequest(
+    RequestStartedCallback request_started_callback,
+    RequestFinishedCallback request_finished_callback,
+    scoped_refptr<BackgroundFetchRequestInfo> request_info,
+    blink::ServiceWorkerStatusCode status,
+    scoped_refptr<ServiceWorkerRegistration> registration) {
+  // If the fetch has already failed, abort. This can happen if the fetch was
+  // cancelled while we were getting the registration.
+  if (failure_reason_ != BackgroundFetchFailureReason::NONE) {
+    Abort(failure_reason_, base::DoNothing());
+    return;
+  }
+
+  if (status != blink::ServiceWorkerStatusCode::kOk || !registration ||
+      !registration->active_version()) {
+    Abort(BackgroundFetchFailureReason::SERVICE_WORKER_UNAVAILABLE,
+          base::DoNothing());
+    return;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          features::kBackgroundFetchLocalNetworkAccess)) {
+    InitializeUrlLoaderFactory(registration);
+    if (!url_loader_factory_) {
+      Abort(BackgroundFetchFailureReason::SERVICE_WORKER_UNAVAILABLE,
+            base::DoNothing());
+      return;
+    }
+    request_info->set_url_loader_factory(url_loader_factory_);
+  }
+
   std::move(request_started_callback)
       .Run(registration_id(), request_info.get());
   StartRequest(std::move(request_info), std::move(request_finished_callback));
@@ -372,12 +511,60 @@ void BackgroundFetchJobController::NotifyDownloadComplete(
   active_request_finished_callbacks_.erase(it);
 }
 
+void BackgroundFetchJobController::DidGetRegistrationForUploadData(
+    const std::string& guid,
+    BackgroundFetchDelegate::GetUploadDataCallback callback,
+    blink::ServiceWorkerStatusCode status,
+    scoped_refptr<ServiceWorkerRegistration> registration) {
+  if (status == blink::ServiceWorkerStatusCode::kOk && registration) {
+    InitializeUrlLoaderFactory(registration);
+  }
+  if (!url_loader_factory_) {
+    Abort(BackgroundFetchFailureReason::SERVICE_WORKER_UNAVAILABLE,
+          base::DoNothing());
+    std::move(callback).Run(
+        BackgroundFetchDelegate::Client::GetUploadDataResponse());
+    return;
+  }
+  GetUploadData(guid, std::move(callback));
+}
+
 void BackgroundFetchJobController::GetUploadData(
     const std::string& guid,
     BackgroundFetchDelegate::GetUploadDataCallback callback) {
-  DCHECK(active_request_map_.count(guid));
-  const auto& request = active_request_map_[guid];
-  DCHECK(request);
+  auto it = active_request_map_.find(guid);
+  if (it == active_request_map_.end() || !it->second) {
+    Abort(BackgroundFetchFailureReason::SERVICE_WORKER_UNAVAILABLE,
+          base::DoNothing());
+    std::move(callback).Run(
+        BackgroundFetchDelegate::Client::GetUploadDataResponse());
+    return;
+  }
+  const scoped_refptr<BackgroundFetchRequestInfo>& request = it->second;
+
+  if (base::FeatureList::IsEnabled(
+          features::kBackgroundFetchLocalNetworkAccess) &&
+      !url_loader_factory_) {
+    // If the factory is missing (e.g. after restart), we need to recreate it
+    // before returning the upload data.
+    scoped_refptr<ServiceWorkerContextWrapper> service_worker_context =
+        data_manager_->service_worker_context();
+    if (!service_worker_context) {
+      Abort(BackgroundFetchFailureReason::SERVICE_WORKER_UNAVAILABLE,
+            base::DoNothing());
+      std::move(callback).Run(
+          BackgroundFetchDelegate::Client::GetUploadDataResponse());
+      return;
+    }
+
+    service_worker_context->FindRegistrationForIdWithoutActivation(
+        registration_id_.service_worker_registration_id(),
+        registration_id_.storage_key(),
+        base::BindOnce(
+            &BackgroundFetchJobController::DidGetRegistrationForUploadData,
+            weak_ptr_factory_.GetWeakPtr(), guid, std::move(callback)));
+    return;
+  }
 
   if (request->request_body_size() == 0) {
     DidGetUploadData(std::move(callback), BackgroundFetchError::NONE, nullptr);
@@ -404,6 +591,8 @@ void BackgroundFetchJobController::DidGetUploadData(
 
   BackgroundFetchDelegate::Client::GetUploadDataResponse response;
   response.blob = std::move(blob);
+  response.url_loader_factory = url_loader_factory_;
+
   std::move(callback).Run(std::move(response));
 }
 
