@@ -12,7 +12,7 @@ import type {PendingEditorData} from '../skills.mojom-webui.js';
 
 import type {SkillsWebviewBridgeDelegate} from './skills_webview_bridge.js';
 import {SkillsWebviewBridge} from './skills_webview_bridge.js';
-import {getChromePathForRemoteUrl, getLoadingStageHistogramName, getRemoteUrlForChromePath, HISTOGRAM_TOTAL_INIT_LATENCY, IS_FIRST_PARTY_QUERY_PARAMETER, IS_SAVING_GEMINI_QUERY_PARAMETER, LoadingStage} from './skills_webview_bridge_constants.js';
+import {getChromePathForRemoteUrl, getLoadingStageHistogramName, getRemoteUrlForChromePath, HISTOGRAM_TOTAL_INIT_LATENCY, IS_SAVING_GEMINI_QUERY_PARAMETER, LoadingStage, SkillSource, SOURCE_QUERY_PARAMETER} from './skills_webview_bridge_constants.js';
 
 export class SkillsWebview {
   protected remoteUrl: string = '';
@@ -50,18 +50,19 @@ export class SkillsWebview {
 
     const url = new URL(this.remoteUrl);
 
-    // For dialog type urls, set query paraemters as necessary.
+    // For dialog type urls, set query parameters as necessary.
     if (loadTimeData.valueExists('dialogType')) {
       if (this.isSavingGeminiQuery()) {
         url.searchParams.set(IS_SAVING_GEMINI_QUERY_PARAMETER, 'true');
         this.promptToSend = loadTimeData.getString('skillPrompt');
       } else if (this.isFirstPartySkill()) {
         url.searchParams.set('id', loadTimeData.getString('skillId'));
-        url.searchParams.set(IS_FIRST_PARTY_QUERY_PARAMETER, 'true');
+        url.searchParams.set(SOURCE_QUERY_PARAMETER, SkillSource.FIRST_PARTY);
       } else if (this.isUserSkill()) {
         const skillId = loadTimeData.getString('skillId');
         if (skillId) {
           url.searchParams.set('id', skillId);
+          url.searchParams.set(SOURCE_QUERY_PARAMETER, SkillSource.USER);
         }
       }
     }

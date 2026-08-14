@@ -39,8 +39,15 @@ export const IS_SAVING_GEMINI_QUERY_PARAMETER = 'isSavingGeminiPrompt';
 /** Message type used by the guest to report performance metrics. */
 export const SKILLS_LOG_METRIC = 'log-metric';
 
-/** Query parameter key used to indicate the skill is a first-party skill. */
-export const IS_FIRST_PARTY_QUERY_PARAMETER = 'isFirstParty';
+/** Query parameter key used to indicate the skill source. */
+export const SOURCE_QUERY_PARAMETER = 'source';
+
+/** Skill source types for the Webview UI. */
+export enum SkillSource {
+  FIRST_PARTY = 'first-party',
+  USER = 'user',
+  PROVIDED = 'provided',
+}
 
 /**
  * Interval in milliseconds between successive handshake pings sent by the
