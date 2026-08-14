@@ -85,7 +85,6 @@ class ContextHostResolverTest : public ::testing::Test,
     DnsConfig config;
     config.nameservers.emplace_back(dns_ip, dns_protocol::kDefaultPort);
     config.doh_config = *DnsOverHttpsConfig::FromString("https://example.com");
-    EXPECT_TRUE(config.IsValid());
 
     auto dns_client =
         std::make_unique<MockDnsClient>(std::move(config), std::move(rules));

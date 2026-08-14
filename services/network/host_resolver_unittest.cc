@@ -1464,7 +1464,6 @@ net::DnsConfig CreateValidDnsConfig() {
   net::IPAddress dns_ip(192, 168, 1, 0);
   net::DnsConfig config;
   config.nameservers.emplace_back(dns_ip, net::dns_protocol::kDefaultPort);
-  EXPECT_TRUE(config.IsValid());
   return config;
 }
 

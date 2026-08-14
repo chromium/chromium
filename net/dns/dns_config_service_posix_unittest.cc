@@ -162,7 +162,7 @@ TEST(DnsConfigServicePosixTest, ConvertResStateToDnsConfig) {
   std::optional<DnsConfig> config = internal::ConvertResStateToDnsConfig(res);
   CloseResState(&res);
   ASSERT_TRUE(config.has_value());
-  EXPECT_TRUE(config->IsValid());
+  EXPECT_FALSE(config->nameservers.empty());
 
   DnsConfig expected_config;
   EXPECT_FALSE(expected_config.EqualsIgnoreHosts(config.value()));

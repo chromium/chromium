@@ -44,9 +44,6 @@ struct NET_EXPORT DnsConfig {
   // Dict only contains the number of hosts rather than the full list.
   base::DictValue ToDict() const;
 
-  bool IsValid() const {
-    return !nameservers.empty() || !doh_config.servers().empty();
-  }
 
   // List of name server addresses.
   std::vector<IPEndPoint> nameservers;

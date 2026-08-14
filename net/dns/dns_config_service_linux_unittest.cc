@@ -346,7 +346,7 @@ TEST_F(DnsConfigServiceLinuxTest, ConvertResStateToDnsConfig) {
   std::optional<DnsConfig> config = callback_helper.WaitForResult();
 
   ASSERT_TRUE(config.has_value());
-  EXPECT_TRUE(config->IsValid());
+  EXPECT_FALSE(config->nameservers.empty());
 
   DnsConfig expected_config;
   EXPECT_FALSE(expected_config.EqualsIgnoreHosts(config.value()));
@@ -450,7 +450,7 @@ TEST_F(DnsConfigServiceLinuxTest, AcceptsBasicNsswitchConfig) {
   EXPECT_TRUE(resolv_reader_->closed());
 
   ASSERT_TRUE(config.has_value());
-  EXPECT_TRUE(config->IsValid());
+  EXPECT_FALSE(config->nameservers.empty());
   EXPECT_FALSE(config->unhandled_options);
 }
 
@@ -468,7 +468,7 @@ TEST_F(DnsConfigServiceLinuxTest,
   EXPECT_TRUE(resolv_reader_->closed());
 
   ASSERT_TRUE(config.has_value());
-  EXPECT_TRUE(config->IsValid());
+  EXPECT_FALSE(config->nameservers.empty());
   EXPECT_TRUE(config->unhandled_options);
 }
 
@@ -486,7 +486,7 @@ TEST_F(DnsConfigServiceLinuxTest, RejectsNsswitchWithoutFiles) {
   EXPECT_TRUE(resolv_reader_->closed());
 
   ASSERT_TRUE(config.has_value());
-  EXPECT_TRUE(config->IsValid());
+  EXPECT_FALSE(config->nameservers.empty());
   EXPECT_TRUE(config->unhandled_options);
 }
 
@@ -506,7 +506,7 @@ TEST_F(DnsConfigServiceLinuxTest, RejectsWithExtraFiles) {
   EXPECT_TRUE(resolv_reader_->closed());
 
   ASSERT_TRUE(config.has_value());
-  EXPECT_TRUE(config->IsValid());
+  EXPECT_FALSE(config->nameservers.empty());
   EXPECT_TRUE(config->unhandled_options);
 }
 
@@ -535,7 +535,7 @@ TEST_F(DnsConfigServiceLinuxTest, IgnoresRedundantActions) {
   EXPECT_TRUE(resolv_reader_->closed());
 
   ASSERT_TRUE(config.has_value());
-  EXPECT_TRUE(config->IsValid());
+  EXPECT_FALSE(config->nameservers.empty());
   EXPECT_FALSE(config->unhandled_options);
 }
 
@@ -559,7 +559,7 @@ TEST_F(DnsConfigServiceLinuxTest, RejectsInconsistentActions) {
   EXPECT_TRUE(resolv_reader_->closed());
 
   ASSERT_TRUE(config.has_value());
-  EXPECT_TRUE(config->IsValid());
+  EXPECT_FALSE(config->nameservers.empty());
   EXPECT_TRUE(config->unhandled_options);
 }
 
@@ -581,7 +581,7 @@ TEST_F(DnsConfigServiceLinuxTest, RejectsWithBadFilesSuccessAction) {
   EXPECT_TRUE(resolv_reader_->closed());
 
   ASSERT_TRUE(config.has_value());
-  EXPECT_TRUE(config->IsValid());
+  EXPECT_FALSE(config->nameservers.empty());
   EXPECT_TRUE(config->unhandled_options);
 }
 
@@ -603,7 +603,7 @@ TEST_F(DnsConfigServiceLinuxTest, RejectsWithBadFilesNotFoundAction) {
   EXPECT_TRUE(resolv_reader_->closed());
 
   ASSERT_TRUE(config.has_value());
-  EXPECT_TRUE(config->IsValid());
+  EXPECT_FALSE(config->nameservers.empty());
   EXPECT_TRUE(config->unhandled_options);
 }
 
@@ -621,7 +621,7 @@ TEST_F(DnsConfigServiceLinuxTest, RejectsNsswitchWithoutDns) {
   EXPECT_TRUE(resolv_reader_->closed());
 
   ASSERT_TRUE(config.has_value());
-  EXPECT_TRUE(config->IsValid());
+  EXPECT_FALSE(config->nameservers.empty());
   EXPECT_TRUE(config->unhandled_options);
 }
 
@@ -643,7 +643,7 @@ TEST_F(DnsConfigServiceLinuxTest, RejectsWithBadDnsSuccessAction) {
   EXPECT_TRUE(resolv_reader_->closed());
 
   ASSERT_TRUE(config.has_value());
-  EXPECT_TRUE(config->IsValid());
+  EXPECT_FALSE(config->nameservers.empty());
   EXPECT_TRUE(config->unhandled_options);
 }
 
@@ -662,7 +662,7 @@ TEST_F(DnsConfigServiceLinuxTest, RejectsNsswitchWithMisorderedServices) {
   EXPECT_TRUE(resolv_reader_->closed());
 
   ASSERT_TRUE(config.has_value());
-  EXPECT_TRUE(config->IsValid());
+  EXPECT_FALSE(config->nameservers.empty());
   EXPECT_TRUE(config->unhandled_options);
 }
 
@@ -682,7 +682,7 @@ TEST_F(DnsConfigServiceLinuxTest, AcceptsIncompatibleNsswitchServicesAfterDns) {
   EXPECT_TRUE(resolv_reader_->closed());
 
   ASSERT_TRUE(config.has_value());
-  EXPECT_TRUE(config->IsValid());
+  EXPECT_FALSE(config->nameservers.empty());
   EXPECT_FALSE(config->unhandled_options);
 }
 
@@ -702,7 +702,7 @@ TEST_F(DnsConfigServiceLinuxTest, RejectsNsswitchMdns) {
   EXPECT_TRUE(resolv_reader_->closed());
 
   ASSERT_TRUE(config.has_value());
-  EXPECT_TRUE(config->IsValid());
+  EXPECT_FALSE(config->nameservers.empty());
   EXPECT_TRUE(config->unhandled_options);
 }
 
@@ -722,7 +722,7 @@ TEST_F(DnsConfigServiceLinuxTest, RejectsNsswitchMdns4) {
   EXPECT_TRUE(resolv_reader_->closed());
 
   ASSERT_TRUE(config.has_value());
-  EXPECT_TRUE(config->IsValid());
+  EXPECT_FALSE(config->nameservers.empty());
   EXPECT_TRUE(config->unhandled_options);
 }
 
@@ -742,7 +742,7 @@ TEST_F(DnsConfigServiceLinuxTest, RejectsNsswitchMdns6) {
   EXPECT_TRUE(resolv_reader_->closed());
 
   ASSERT_TRUE(config.has_value());
-  EXPECT_TRUE(config->IsValid());
+  EXPECT_FALSE(config->nameservers.empty());
   EXPECT_TRUE(config->unhandled_options);
 }
 
@@ -767,7 +767,7 @@ TEST_F(DnsConfigServiceLinuxTest, AcceptsNsswitchMdnsMinimal) {
   EXPECT_TRUE(resolv_reader_->closed());
 
   ASSERT_TRUE(config.has_value());
-  EXPECT_TRUE(config->IsValid());
+  EXPECT_FALSE(config->nameservers.empty());
   EXPECT_FALSE(config->unhandled_options);
 }
 
@@ -800,7 +800,7 @@ TEST_F(DnsConfigServiceLinuxTest, AcceptsNsswitchMdnsMinimalWithCommonActions) {
   EXPECT_TRUE(resolv_reader_->closed());
 
   ASSERT_TRUE(config.has_value());
-  EXPECT_TRUE(config->IsValid());
+  EXPECT_FALSE(config->nameservers.empty());
   EXPECT_FALSE(config->unhandled_options);
 }
 
@@ -823,7 +823,7 @@ TEST_F(DnsConfigServiceLinuxTest, RejectsWithBadMdnsMinimalUnavailableAction) {
   EXPECT_TRUE(resolv_reader_->closed());
 
   ASSERT_TRUE(config.has_value());
-  EXPECT_TRUE(config->IsValid());
+  EXPECT_FALSE(config->nameservers.empty());
   EXPECT_TRUE(config->unhandled_options);
 }
 
@@ -844,7 +844,7 @@ TEST_F(DnsConfigServiceLinuxTest, AcceptsNsswitchMyHostname) {
   EXPECT_TRUE(resolv_reader_->closed());
 
   ASSERT_TRUE(config.has_value());
-  EXPECT_TRUE(config->IsValid());
+  EXPECT_FALSE(config->nameservers.empty());
   EXPECT_FALSE(config->unhandled_options);
 }
 
@@ -867,7 +867,7 @@ TEST_F(DnsConfigServiceLinuxTest, RejectsWithBadMyHostnameNotFoundAction) {
   EXPECT_TRUE(resolv_reader_->closed());
 
   ASSERT_TRUE(config.has_value());
-  EXPECT_TRUE(config->IsValid());
+  EXPECT_FALSE(config->nameservers.empty());
   EXPECT_TRUE(config->unhandled_options);
 }
 
@@ -887,7 +887,7 @@ TEST_F(DnsConfigServiceLinuxTest, RejectsNsswitchResolve) {
   EXPECT_TRUE(resolv_reader_->closed());
 
   ASSERT_TRUE(config.has_value());
-  EXPECT_TRUE(config->IsValid());
+  EXPECT_FALSE(config->nameservers.empty());
   EXPECT_TRUE(config->unhandled_options);
 }
 
@@ -909,7 +909,7 @@ TEST_F(DnsConfigServiceLinuxTest,
   EXPECT_TRUE(resolv_reader_->closed());
 
   ASSERT_TRUE(config.has_value());
-  EXPECT_TRUE(config->IsValid());
+  EXPECT_FALSE(config->nameservers.empty());
   EXPECT_FALSE(config->unhandled_options);
 }
 
@@ -929,7 +929,7 @@ TEST_F(DnsConfigServiceLinuxTest,
   EXPECT_TRUE(resolv_reader_->closed());
 
   ASSERT_TRUE(config.has_value());
-  EXPECT_TRUE(config->IsValid());
+  EXPECT_FALSE(config->nameservers.empty());
   EXPECT_FALSE(config->unhandled_options);
 }
 
@@ -949,7 +949,7 @@ TEST_F(DnsConfigServiceLinuxTest, RejectsNsswitchNis) {
   EXPECT_TRUE(resolv_reader_->closed());
 
   ASSERT_TRUE(config.has_value());
-  EXPECT_TRUE(config->IsValid());
+  EXPECT_FALSE(config->nameservers.empty());
   EXPECT_TRUE(config->unhandled_options);
 }
 
@@ -972,7 +972,7 @@ TEST_F(DnsConfigServiceLinuxTest, RejectsWithBadNisNotFoundAction) {
   EXPECT_TRUE(resolv_reader_->closed());
 
   ASSERT_TRUE(config.has_value());
-  EXPECT_TRUE(config->IsValid());
+  EXPECT_FALSE(config->nameservers.empty());
   EXPECT_TRUE(config->unhandled_options);
 }
 
@@ -992,7 +992,7 @@ TEST_F(DnsConfigServiceLinuxTest, RejectsNsswitchUnknown) {
   EXPECT_TRUE(resolv_reader_->closed());
 
   ASSERT_TRUE(config.has_value());
-  EXPECT_TRUE(config->IsValid());
+  EXPECT_FALSE(config->nameservers.empty());
   EXPECT_TRUE(config->unhandled_options);
 }
 
@@ -1042,7 +1042,7 @@ TEST_F(DnsConfigServiceLinuxTest, FreshReadsAfterAdditionalTriggers) {
   std::optional<DnsConfig> config = callback_helper.WaitForResult();
 
   ASSERT_TRUE(config.has_value());
-  EXPECT_TRUE(config->IsValid());
+  EXPECT_FALSE(config->nameservers.empty());
 
   IPEndPoint expected(IPAddress(1, 2, 3, 4), 1000);
   EXPECT_THAT(config.value().nameservers, testing::ElementsAre(expected));

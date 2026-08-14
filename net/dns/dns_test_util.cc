@@ -108,7 +108,6 @@ DnsConfig CreateValidDnsConfig() {
   config.doh_config =
       *DnsOverHttpsConfig::FromString("https://dns.example.com/");
   config.secure_dns_mode = SecureDnsMode::kOff;
-  EXPECT_TRUE(config.IsValid());
   return config;
 }
 

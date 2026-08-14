@@ -4234,7 +4234,6 @@ DnsConfig CreateUpgradableDnsConfig() {
       IPEndPoint(dns_ip3, dns_protocol::kDefaultPort),
       IPEndPoint(dns_ip4, dns_protocol::kDefaultPort),
   };
-  EXPECT_TRUE(config.IsValid());
   return config;
 }
 
@@ -4877,7 +4876,6 @@ void HostResolverManagerDnsTest::AddSecureDnsRule(
 }
 
 void HostResolverManagerDnsTest::ChangeDnsConfig(const DnsConfig& config) {
-  DCHECK(config.IsValid());
   notifier_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&TestDnsConfigService::OnHostsRead,

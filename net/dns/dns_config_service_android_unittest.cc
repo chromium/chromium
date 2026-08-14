@@ -103,7 +103,6 @@ class DnsConfigServiceAndroidTest : public testing::Test,
   ~DnsConfigServiceAndroidTest() override = default;
 
   void OnConfigChanged(const DnsConfig& config) {
-    EXPECT_TRUE(config.IsValid());
     seen_config_ = true;
     real_config_ = config;
   }
@@ -269,6 +268,20 @@ TEST_F(DnsConfigServiceAndroidTest, ReadsEmptySearchSuffixes) {
   RunUntilIdle();
   ASSERT_TRUE(seen_config_);
   EXPECT_TRUE(real_config_.search.empty());
+}
+
+TEST_F(DnsConfigServiceAndroidTest, ReadsConfigWithEmptyNameservers) {
+  SKIP_ANDROID_VERSIONS_BEFORE_M();
+
+  mock_dns_server_getter_->set_retval(true);
+  mock_dns_server_getter_->set_dns_servers({});
+
+  service_->ReadConfig(base::BindRepeating(
+      &DnsConfigServiceAndroidTest::OnConfigChanged, base::Unretained(this)));
+  FastForwardBy(DnsConfigServiceAndroid::kConfigChangeDelay);
+  RunUntilIdle();
+  ASSERT_TRUE(seen_config_);
+  EXPECT_TRUE(real_config_.nameservers.empty());
 }
 
 }  // namespace

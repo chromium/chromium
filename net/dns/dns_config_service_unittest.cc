@@ -97,7 +97,7 @@ class DnsConfigServiceTest : public TestWithTaskEnvironment {
   DnsConfig MakeConfig(unsigned seed) {
     DnsConfig config;
     config.nameservers.emplace_back(IPAddress(1, 2, 3, 4), seed & 0xFFFF);
-    EXPECT_TRUE(config.IsValid());
+    EXPECT_FALSE(config.nameservers.empty());
     return config;
   }
 
@@ -129,7 +129,7 @@ class DnsConfigServiceTest : public TestWithTaskEnvironment {
   void SetUp() override {
     service_ = std::make_unique<TestDnsConfigService>();
     SetUpService(*service_);
-    EXPECT_FALSE(last_config_.IsValid());
+    EXPECT_EQ(last_config_, DnsConfig());
   }
 
   void TearDown() override {
@@ -195,7 +195,7 @@ TEST_F(DnsConfigServiceTest, FirstConfig) {
 TEST_F(DnsConfigServiceTest, Timeout) {
   DnsConfig config = MakeConfig(1);
   config.hosts = MakeHosts(1);
-  ASSERT_TRUE(config.IsValid());
+  ASSERT_FALSE(config.nameservers.empty());
 
   service_->OnConfigRead(config);
   service_->OnHostsRead(config.hosts);
