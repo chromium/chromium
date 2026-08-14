@@ -4425,8 +4425,8 @@ GraphBuilderCoreml::AddOperationForLstm(
           operand_data_type, bias_dimensions, bias_new_order));
     }
   } else if (bias_operand_id || recurrent_bias_operand_id) {
-    OperandId coreml_bias_param =
-        bias_operand_id.value_or(*recurrent_bias_operand_id);
+    OperandId coreml_bias_param = *bias_operand_id.or_else(
+        [&] { return recurrent_bias_operand_id; });
     base::span<const uint8_t> bias =
         constant_operands_->at(coreml_bias_param)->ByteSpan();
     RETURN_IF_ERROR(SetInputFromConstantReordered(
