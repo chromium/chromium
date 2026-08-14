@@ -38,6 +38,8 @@
 #include "cc/base/features.h"
 #include "chrome/browser/android/flags/chrome_cached_flags.h"  // nogncheck crbug.com/40147906
 #include "chrome/browser/flags/android/chrome_feature_list.h"
+#include "chrome/browser/glic/public/features.h"
+#include "chrome/browser/glic/suggestions/contextual_cueing_features.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker.h"
 #include "chrome/common/chrome_features.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -284,6 +286,16 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
 
   // Suppress fallback to the legacy Android edge glow shade on Desktop Android.
   feature_overrides.EnableFeature(features::kSuppressOverscrollGlow);
+
+  // Enable Glic and side panel features on Desktop Android.
+  // TODO(crbug.com/545760718): Remove when rollout is complete to all form
+  // factors.
+  feature_overrides.EnableFeature(chrome::android::kEnableAndroidSidePanel);
+  feature_overrides.EnableFeature(features::kGlic);
+  feature_overrides.EnableFeature(features::kGlicActor);
+  feature_overrides.EnableFeature(features::kGlicAndroidSidePanel);
+  feature_overrides.EnableFeature(features::kGlicRollout);
+  feature_overrides.EnableFeature(glic::kContextualCueing);
 
 #endif  // BUILDFLAG(IS_DESKTOP_ANDROID)
   // Desktop-first features which are past incubation should either end up here,

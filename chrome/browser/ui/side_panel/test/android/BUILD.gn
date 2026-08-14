@@ -67,6 +67,7 @@ source_set("browser_test_support") {
   deps = [
     "//base",
     "//chrome/browser/flags:flags_android",
+    "//chrome/browser/glic/public:features",
     "//chrome/browser/tab_list",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/browser_window/test:android_browser_test_support",

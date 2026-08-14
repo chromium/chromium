@@ -6,6 +6,7 @@
 
 #include "base/android/device_info.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
@@ -57,7 +58,12 @@ SidePanelAndroidBrowserTestBase::SidePanelAndroidBrowserTestBase() {
   // cached flag, but the default value of the cached flag won't be persisted.
   // If we don't explicitly enable the flag here, the cached flag value will
   // be `false` on subsequent runs and the tests will fail.
-  feature_list_.InitAndEnableFeature(chrome::android::kEnableAndroidSidePanel);
+  // TODO(crbug.com/546242638): Fix SidePanelCoordinatorAndroidBrowserTest
+  // failures when GlicAndroidSidePanel is enabled by default on Desktop
+  // Android.
+  feature_list_.InitWithFeatures(
+      /*enabled_features=*/{chrome::android::kEnableAndroidSidePanel},
+      /*disabled_features=*/{features::kGlicAndroidSidePanel});
 }
 
 SidePanelAndroidBrowserTestBase::~SidePanelAndroidBrowserTestBase() = default;
