@@ -6853,7 +6853,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxFuseboxAsyncInflationDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(omnibox::kOmniboxFuseboxAsyncInflation)},
 
-
     {"omnibox-multimodal-input", flag_descriptions::kOmniboxMultimodalInputName,
      flag_descriptions::kOmniboxMultimodalInputDescription, kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kOmniboxMultimodalInput,
@@ -13798,6 +13797,12 @@ const FeatureEntry kFeatureEntries[] = {
     {"critical-action-history", flag_descriptions::kCriticalActionHistoryName,
      flag_descriptions::kCriticalActionHistoryDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(critical_actions::features::kCriticalActionHistory)},
+
+    {"autofill-enable-wallet-direct-offers",
+     flag_descriptions::kAutofillEnableWalletDirectOffersName,
+     flag_descriptions::kAutofillEnableWalletDirectOffersDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableWalletDirectOffers)},
 
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum

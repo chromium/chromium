@@ -7948,6 +7948,7 @@ from previous Chrome versions.
       label="ShowProfilePickerToAllUsersExperiment:disabled"/>
   <int value="-2079396313" label="SkillsSettingsPolicyEnabled:enabled"/>
   <int value="-2079347889" label="CCTBeforeUnload:disabled"/>
+  <int value="-2078256952" label="AutofillEnableWalletDirectOffers:enabled"/>
   <int value="-2077268643" label="disable-device-enumeration"/>
   <int value="-2076848010" label="NtpComposebox:disabled"/>
   <int value="-2076313806" label="TrustTokens:disabled"/>
@@ -15922,6 +15923,7 @@ from previous Chrome versions.
       label="FramebustingNeedsSameOriginOrUserGesture:enabled"/>
   <int value="405922903" label="WebUIOmniboxSimplification:disabled"/>
   <int value="406549604" label="NtpSafeBrowsingModule:enabled"/>
+  <int value="407268987" label="AutofillEnableWalletDirectOffers:disabled"/>
   <int value="407698827" label="HindiInscriptLayout:enabled"/>
   <int value="407923796" label="EnableComposeSelectionNudge:enabled"/>
   <int value="408128088"

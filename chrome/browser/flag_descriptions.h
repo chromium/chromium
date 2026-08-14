@@ -1174,6 +1174,12 @@ inline constexpr char kAutofillEnableVcn3dsAuthenticationDescription[] =
     "card retrieval if a challenge is required, 3DS authentication is "
     "available for the card, and FIDO is not.";
 
+inline constexpr char kAutofillEnableWalletDirectOffersName[] =
+    "Enable Autofill for Wallet Direct Offers";
+inline constexpr char kAutofillEnableWalletDirectOffersDescription[] =
+    "When enabled, direct offers synced via Google Wallet will be available "
+    "for autofill into merchant promo code fields during checkout.";
+
 inline constexpr char kAutofillEnableWalletReminderNoticeName[] =
     "Enable Wallet Reminder Notice";
 inline constexpr char kAutofillEnableWalletReminderNoticeDescription[] =

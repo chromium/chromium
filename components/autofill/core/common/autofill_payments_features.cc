@@ -304,6 +304,11 @@ BASE_FEATURE(kAutofillEnableWalletBranding, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kAutofillEnableWalletBrandingV2,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, direct offers synced via Google Wallet will be available for
+// autofill into merchant promo code fields during checkout.
+BASE_FEATURE(kAutofillEnableWalletDirectOffers,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, shows the Wallet Reminder Notice after payment form submission
 // if higher-priority Autofill features (such as mandatory re-auth, VCN, or card
 // save) do not take precedence.
