@@ -64,6 +64,7 @@ class BaseTabStripRegionView : public TabStripRegionView,
   void UpdateLoadingAnimations(const base::TimeDelta& elapsed_time) override;
   std::optional<int> GetFocusedTabIndex() const override;
   const tabs::TabData& GetTabData(const tabs::TabHandle& tab) override;
+  TabHoverCardController* GetHoverCardController() override;
   views::View* GetTabAnchorViewAt(int tab_index) override;
   views::View* GetTabGroupAnchorView(
       const tab_groups::TabGroupId& group) override;

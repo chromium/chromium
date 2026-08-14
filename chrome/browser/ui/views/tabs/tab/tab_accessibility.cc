@@ -12,7 +12,9 @@
 #include "chrome/browser/ui/tabs/tab_data.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/permissions/chip/chip_controller.h"
+#include "chrome/browser/ui/views/tabs/hovercard/tab_hover_card_controller.h"
 #include "chrome/browser/ui/window_metadata/window_metadata_controller.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
@@ -186,7 +188,18 @@ std::u16string GetAccessibleTabLabel(const TabInterface* tab, bool is_for_tab) {
         tab_data.tab_resource_usage->memory_usage();
     const bool is_high_memory_usage =
         tab_data.tab_resource_usage->is_high_memory_usage();
-    if (is_high_memory_usage || is_for_tab) {
+
+    TabHoverCardController* const hover_card_controller =
+        browser_view->tab_strip_view()
+            ? browser_view->tab_strip_view()->GetHoverCardController()
+            : nullptr;
+
+    const bool hover_card_memory_usage_enabled =
+        hover_card_controller &&
+        hover_card_controller->hover_card_memory_usage_enabled();
+
+    if (is_high_memory_usage ||
+        (is_for_tab && hover_card_memory_usage_enabled)) {
       const int message_id = is_high_memory_usage ? IDS_TAB_AX_HIGH_MEMORY_USAGE
                                                   : IDS_TAB_AX_MEMORY_USAGE;
       title = l10n_util::GetStringFUTF16(message_id, title,

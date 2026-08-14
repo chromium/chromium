@@ -100,6 +100,7 @@ class HorizontalTabStripRegionViewOld : public TabStripRegionView {
   void OnDragExited() override;
   void SetTabStripObserver(TabStripObserver* observer) override;
   views::View* GetTabStripView() override;
+  TabHoverCardController* GetHoverCardController() override;
   std::unique_ptr<ExpandOnHoverLock> GetExpandOnHoverLock(
       ExpandOnHoverLockType lock_type) override;
   void OnGlassFrameEligibilityChanged(bool is_eligible) override;
