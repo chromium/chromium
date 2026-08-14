@@ -34,6 +34,7 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedObserver;
 import org.chromium.chrome.browser.magic_stack.HomeModulesConfigManager;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.CrossDeviceThemeTracker;
+import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataBase;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -59,6 +60,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Supplier;
 
@@ -87,6 +89,47 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
 
     // Fixed prefix used by CrossDevicePrefTracker for dictionary prefs with values from all devices
     private static final String CROSS_DEVICE_PREFIX = "cross_device.";
+
+    /** Container for settings (preferences and theme) to be synced across devices. */
+    @VisibleForTesting
+    static class SyncedSetupSettings {
+        private final Map<String, Object> mPrefs;
+        private final @Nullable NtpBackgroundDataBase mTheme;
+
+        SyncedSetupSettings(Map<String, Object> prefs, @Nullable NtpBackgroundDataBase theme) {
+            mPrefs = prefs;
+            mTheme = theme;
+        }
+
+        SyncedSetupSettings(Map<String, Object> prefs) {
+            this(prefs, null);
+        }
+
+        Map<String, Object> getPrefs() {
+            return mPrefs;
+        }
+
+        @Nullable NtpBackgroundDataBase getTheme() {
+            return mTheme;
+        }
+
+        @Override
+        public boolean equals(@Nullable Object o) {
+            if (this == o) return true;
+            if (!(o instanceof SyncedSetupSettings other)) return false;
+            return Objects.equals(mPrefs, other.mPrefs) && Objects.equals(mTheme, other.mTheme);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(mPrefs, mTheme);
+        }
+
+        @Override
+        public String toString() {
+            return "SyncedSetupSettings{prefs=" + mPrefs + ", theme=" + mTheme + "}";
+        }
+    }
 
     // The ServiceStatuses where we need to wait for data to come in.
     private static final Set<Integer> NOT_READY_YET_STATES =
@@ -389,15 +432,15 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
         // handling NTP settings.
         recordAction(/* nonNtp= */ false, "CheckForRemoteSettings");
         if (status == ServiceStatus.AVAILABLE) {
+            Map<String, Object> prefsToApply = getPrefsFromRemoteDevice(profile, tracker);
+            SyncedSetupSettings settingsToApply = new SyncedSetupSettings(prefsToApply);
             if (availableImmediately) {
                 // If there was no delay, apply the settings immediately (skipping the user straight
                 // to the undo prompt).
-                applyAndNotifySettingImport(
-                        profile, getPrefsFromRemoteDevice(profile, tracker), /* nonNtp= */ nonNtp);
+                applyAndNotifySettingImport(profile, settingsToApply, /* nonNtp= */ nonNtp);
             } else {
                 // If there was a delay, ask the user whether they want to apply the settings.
-                askToApplySettingImportIfNeeded(
-                        profile, getPrefsFromRemoteDevice(profile, tracker), /* nonNtp= */ nonNtp);
+                askToApplySettingImportIfNeeded(profile, settingsToApply, /* nonNtp= */ nonNtp);
             }
         } else {
             // If the status was not AVAILABLE, the user does not have their "Settings" sync toggle
@@ -478,7 +521,7 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
      * Shows a snackbar asking the user if they want to import settings from another device.
      *
      * @param profile The {@link Profile}.
-     * @param preferencesToApply The preferences that will be applied.
+     * @param settingsToApply The settings that will be applied.
      * @param nonNtp Whether only settings that apply to non-NTP pages should be considered. If
      *     true, we only check non-NTP settings to determine whether to show the snackbar, and when
      *     we apply the new settings, only non-NTP settings are applied. If false, all settings are
@@ -486,8 +529,8 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
      */
     @VisibleForTesting
     void askToApplySettingImportIfNeeded(
-            Profile profile, Map<String, Object> preferencesToApply, boolean nonNtp) {
-        if (shouldShowSnackbar(profile, preferencesToApply, nonNtp)) {
+            Profile profile, SyncedSetupSettings settingsToApply, boolean nonNtp) {
+        if (shouldShowSnackbar(profile, settingsToApply, nonNtp)) {
             Snackbar offerApplySnackbar =
                     Snackbar.make(
                             mContext.getString(R.string.synced_set_up_snackbar_ask_to_apply),
@@ -495,8 +538,7 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
                                 @Override
                                 public void onAction(@Nullable Object actionData) {
                                     recordAction(nonNtp, "Apply");
-                                    applyAndNotifySettingImport(
-                                            profile, preferencesToApply, nonNtp);
+                                    applyAndNotifySettingImport(profile, settingsToApply, nonNtp);
                                 }
                             },
                             TYPE_ACTION,
@@ -511,19 +553,26 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
         }
     }
 
+    @VisibleForTesting
+    void askToApplySettingImportIfNeeded(
+            Profile profile, Map<String, Object> preferencesToApply, boolean nonNtp) {
+        askToApplySettingImportIfNeeded(
+                profile, new SyncedSetupSettings(preferencesToApply), nonNtp);
+    }
+
     /**
      * Applies settings from another device and shows a snackbar to the user, informing them that
      * their settings were applied and offering an undo button.
      *
      * @param profile The {@link Profile}.
-     * @param preferencesToApply The preferences that will be applied.
+     * @param settingsToApply The settings that will be applied.
      * @param nonNtp Whether only settings that affect non-NTP pages should be considered (see
      *     askToApplySettingImportIfNeeded documentation above).
      */
     private void applyAndNotifySettingImport(
-            Profile profile, Map<String, Object> preferencesToApply, boolean nonNtp) {
-        if (shouldShowSnackbar(profile, preferencesToApply, nonNtp)) {
-            Map<String, Object> currentPreferences = getCurrentSettings(profile);
+            Profile profile, SyncedSetupSettings settingsToApply, boolean nonNtp) {
+        if (shouldShowSnackbar(profile, settingsToApply, nonNtp)) {
+            SyncedSetupSettings currentSettings = getCurrentSettings(profile);
             Snackbar offerUndoSnackbar =
                     Snackbar.make(
                             mContext.getString(
@@ -532,13 +581,13 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
                                 @Override
                                 public void onAction(@Nullable Object actionData) {
                                     if (nonNtp) {
-                                        applyLocalStateSettings(currentPreferences);
+                                        applyLocalStateSettings(currentSettings.getPrefs());
                                     } else {
-                                        applySettings(profile, currentPreferences);
+                                        applySettings(profile, currentSettings);
                                     }
 
                                     recordAction(nonNtp, "Undo");
-                                    askToRedoSettingImport(profile, preferencesToApply, nonNtp);
+                                    askToRedoSettingImport(profile, settingsToApply, nonNtp);
                                 }
                             },
                             Snackbar.TYPE_ACTION,
@@ -547,7 +596,7 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
                     /* actionText= */ mContext.getString(R.string.undo),
                     /* actionData= */ Map.of());
             showSnackbarAfterDialogs(offerUndoSnackbar, nonNtp);
-            applySettings(profile, preferencesToApply);
+            applySettings(profile, settingsToApply);
         } else {
             markCrossDeviceSettingImportComplete(
                     nonNtp, CrossDeviceSettingImportOutcome.NO_SETTINGS_TO_IMPORT);
@@ -559,12 +608,12 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
      * after the user hits undo).
      *
      * @param profile The {@link Profile}.
-     * @param preferencesToApply The preferences that will be applied during the redo.
+     * @param settingsToApply The settings that will be applied during the redo.
      * @param nonNtp Whether only settings that affect non-NTP pages should be considered (see
      *     askToApplySettingImportIfNeeded documentation above).
      */
     private void askToRedoSettingImport(
-            Profile profile, Map<String, Object> preferencesToApply, boolean nonNtp) {
+            Profile profile, SyncedSetupSettings settingsToApply, boolean nonNtp) {
         Snackbar offerRedoSnackbar =
                 Snackbar.make(
                         mContext.getString(R.string.synced_set_up_snackbar_removed_confirmation),
@@ -572,7 +621,7 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
                             @Override
                             public void onAction(@Nullable Object actionData) {
                                 recordAction(nonNtp, "Redo");
-                                applyAndNotifySettingImport(profile, preferencesToApply, nonNtp);
+                                applyAndNotifySettingImport(profile, settingsToApply, nonNtp);
                             }
                         },
                         TYPE_ACTION,
@@ -583,34 +632,34 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
     }
 
     /** Returns the user's current settings. */
-    private Map<String, Object> getCurrentSettings(Profile profile) {
-        Map<String, Object> result = new HashMap<>();
+    private SyncedSetupSettings getCurrentSettings(Profile profile) {
+        Map<String, Object> prefs = new HashMap<>();
 
         PrefService localStatePrefs = LocalStatePrefs.get();
         if (localStatePrefs != null) {
             String omniboxPositionPref = Pref.IS_OMNIBOX_IN_BOTTOM_POSITION;
-            result.put(omniboxPositionPref, localStatePrefs.getBoolean(omniboxPositionPref));
+            prefs.put(omniboxPositionPref, localStatePrefs.getBoolean(omniboxPositionPref));
         }
 
         PrefService userPrefs = UserPrefs.get(profile);
         if (userPrefs != null) {
             String allCardsPref = Pref.MAGIC_STACK_HOME_MODULE_ENABLED;
-            result.put(allCardsPref, userPrefs.getBoolean(allCardsPref));
+            prefs.put(allCardsPref, userPrefs.getBoolean(allCardsPref));
             for (String key : MODULE_TYPE_TO_USER_PREFS_KEY.values()) {
-                result.put(key, userPrefs.getBoolean(key));
+                prefs.put(key, userPrefs.getBoolean(key));
             }
         }
 
-        return result;
+        return new SyncedSetupSettings(prefs);
     }
 
     /**
      * @param profile The {@link Profile}.
-     * @param preferences The preferences to check.
-     * @return whether the user's current settings are different from {@param preferences}.
+     * @param settings The settings to check.
+     * @return whether the user's current settings are different from {@param settings}.
      */
     private boolean importedSettingsHavePreferenceChange(
-            Profile profile, Map<String, Object> preferences) {
+            Profile profile, SyncedSetupSettings settings) {
         if (!UserPrefs.areNativePrefsLoaded(profile)) return false;
 
         PrefService userPrefs = UserPrefs.get(profile);
@@ -618,8 +667,9 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
             return false;
         }
 
+        Map<String, Object> prefs = settings.getPrefs();
         String allCardsPref = Pref.MAGIC_STACK_HOME_MODULE_ENABLED;
-        if (importedSettingHasPreferenceChange(preferences, userPrefs, allCardsPref)) {
+        if (importedSettingHasPreferenceChange(prefs, userPrefs, allCardsPref)) {
             return true;
         }
 
@@ -627,24 +677,24 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
             @Nullable String key = MODULE_TYPE_TO_USER_PREFS_KEY.get(moduleType);
             if (key == null) continue;
 
-            if (importedSettingHasPreferenceChange(preferences, userPrefs, key)) return true;
+            if (importedSettingHasPreferenceChange(prefs, userPrefs, key)) return true;
         }
 
-        return importedSettingsAffectNonNtp(preferences);
+        return importedSettingsAffectNonNtp(prefs);
     }
 
     /**
      * @param profile The {@link Profile}.
-     * @param preferences The preferences to compare with local.
+     * @param settings The settings to compare with local.
      * @param nonNtp Whether only settings that affect non-NTP pages should be considered (see
      *     askToApplySettingImportIfNeeded documentation above).
      * @return Whether the undo/redo snackbar should be shown.
      */
     private boolean shouldShowSnackbar(
-            Profile profile, Map<String, Object> preferences, boolean nonNtp) {
+            Profile profile, SyncedSetupSettings settings, boolean nonNtp) {
         return nonNtp
-                ? importedSettingsAffectNonNtp(preferences)
-                : importedSettingsHavePreferenceChange(profile, preferences);
+                ? importedSettingsAffectNonNtp(settings.getPrefs())
+                : importedSettingsHavePreferenceChange(profile, settings);
     }
 
     /**
@@ -698,14 +748,14 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
     }
 
     /**
-     * Applies the given {@param preferencesToApply}.
+     * Applies the given {@param settingsToApply}.
      *
      * @param profile The {@link Profile}.
-     * @param preferencesToApply The preferences to apply.
+     * @param settingsToApply The settings to apply.
      */
-    private void applySettings(Profile profile, Map<String, Object> preferencesToApply) {
-        applyUserPrefSettings(profile, preferencesToApply);
-        applyLocalStateSettings(preferencesToApply);
+    private void applySettings(Profile profile, SyncedSetupSettings settingsToApply) {
+        applyUserPrefSettings(profile, settingsToApply.getPrefs());
+        applyLocalStateSettings(settingsToApply.getPrefs());
     }
 
     /**
@@ -804,10 +854,14 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
         RecordUserAction.record(action.toString());
     }
 
+    @VisibleForTesting
+    static final String CROSS_DEVICE_SETTING_IMPORT_OUTCOME_HISTOGRAM =
+            "Sync.CrossDeviceSettingImportOutcome";
+
     /** Logs outcome of cross device setting import (reports showing the feature, or why not. */
     private static void recordOutcome(@CrossDeviceSettingImportOutcome int value) {
         RecordHistogram.recordEnumeratedHistogram(
-                "Sync.CrossDeviceSettingImportOutcome",
+                CROSS_DEVICE_SETTING_IMPORT_OUTCOME_HISTOGRAM,
                 value,
                 CrossDeviceSettingImportOutcome.NUM_ENTRIES);
     }

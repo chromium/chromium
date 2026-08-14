@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.sync.synced_set_up;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -50,7 +51,10 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.magic_stack.HomeModulesConfigManager;
+import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.CrossDeviceThemeTracker;
+import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataColor;
+import org.chromium.chrome.browser.ntp_customization.theme_sync.data.PlatformType;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -58,6 +62,7 @@ import org.chromium.chrome.browser.prefs.LocalStatePrefs;
 import org.chromium.chrome.browser.prefs.LocalStatePrefsJni;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.sync.prefs.CrossDevicePrefTrackerFactory;
+import org.chromium.chrome.browser.sync.synced_set_up.CrossDeviceSettingImporter.SyncedSetupSettings;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.toolbar.ToolbarPositionController.ToolbarPositionAndSource;
@@ -1107,5 +1112,39 @@ public class CrossDeviceSettingImporterUnitTest {
         initializeCrossDeviceSettingImporter().onTabChangeOrGainFocus(mTab);
 
         verify(mCrossDeviceThemeTracker, never()).getServiceStatus();
+    }
+
+    @Test
+    public void testSyncedSetupSettings_EqualsHashCodeToString() {
+        NtpBackgroundDataColor theme1 =
+                new NtpBackgroundDataColor(
+                        mActivity, PlatformType.ANDROID, NtpThemeColorId.NTP_COLORS_BLUE, false);
+        NtpBackgroundDataColor theme2 =
+                new NtpBackgroundDataColor(
+                        mActivity, PlatformType.ANDROID, NtpThemeColorId.NTP_COLORS_BLUE, false);
+        NtpBackgroundDataColor theme3 =
+                new NtpBackgroundDataColor(
+                        mActivity, PlatformType.DESKTOP, NtpThemeColorId.NTP_COLORS_GREEN, false);
+
+        SyncedSetupSettings settings1 = new SyncedSetupSettings(Map.of("pref1", true), theme1);
+        SyncedSetupSettings settings2 = new SyncedSetupSettings(Map.of("pref1", true), theme2);
+        SyncedSetupSettings settings3 = new SyncedSetupSettings(Map.of("pref1", false), theme1);
+        SyncedSetupSettings settings4 = new SyncedSetupSettings(Map.of("pref1", true), theme3);
+        SyncedSetupSettings settings5 = new SyncedSetupSettings(Map.of("pref1", true));
+        SyncedSetupSettings settings6 = new SyncedSetupSettings(Map.of("pref1", true), null);
+
+        assertEquals(settings1, settings2);
+        assertEquals(settings1.hashCode(), settings2.hashCode());
+        assertEquals(settings5, settings6);
+        assertEquals(settings5.hashCode(), settings6.hashCode());
+
+        assertNotEquals(settings1, settings3);
+        assertNotEquals(settings1, settings4);
+        assertNotEquals(settings1, settings5);
+        assertNotEquals(settings1, null);
+        assertNotEquals(settings1, new Object());
+
+        assertTrue(settings1.toString().contains("prefs={pref1=true}"));
+        assertTrue(settings1.toString().contains("theme="));
     }
 }
