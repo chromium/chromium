@@ -90,6 +90,7 @@
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
+#include "chrome/browser/enterprise/net/enterprise_proxy_error_service_factory.h"
 #include "chrome/browser/enterprise/reporting/legacy_tech/legacy_tech_service.h"
 #include "chrome/browser/enterprise/reporting/prefs.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
@@ -255,6 +256,10 @@
 #include "components/enterprise/content/clipboard_restriction_service.h"
 #include "components/enterprise/content/pref_names.h"
 #include "components/enterprise/data_controls/content/browser/last_replaced_clipboard_data.h"
+#include "components/enterprise/net/content/enterprise_proxy_navigation_error_data.h"
+#include "components/enterprise/net/core/enterprise_proxy_error_data.h"
+#include "components/enterprise/net/core/enterprise_proxy_error_service.h"
+#include "components/enterprise/net/core/features.h"
 #include "components/enterprise/network_header_injection/core/features.h"
 #include "components/enterprise/network_header_injection/core/http_header_injection_service.h"
 #include "components/error_page/common/error.h"
@@ -8551,10 +8556,33 @@ bool ChromeContentBrowserClient::WillProvidePublicFirstPartySets() {
 
 content::mojom::AlternativeErrorPageOverrideInfoPtr
 ChromeContentBrowserClient::GetAlternativeErrorPageOverrideInfo(
-    const GURL& url,
+    content::NavigationHandle& navigation_handle,
     content::RenderFrameHost* render_frame_host,
     content::BrowserContext* browser_context,
     int32_t error_code) {
+  const GURL& url = navigation_handle.GetURL();
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  if (enterprise_net::IsEnterpriseProxyErrorHandlingEnabled() && profile) {
+    auto* error_service =
+        EnterpriseProxyErrorServiceFactory::GetForProfile(profile);
+    if (error_service) {
+      enterprise_net::EnterpriseProxyErrorDataDelegate delegate(
+          &navigation_handle);
+      std::string html_content = error_service->GetErrorPageHTML(&delegate);
+      if (!html_content.empty()) {
+        auto alternative_error_page_override_info =
+            content::mojom::AlternativeErrorPageOverrideInfo::New();
+        alternative_error_page_override_info->alternative_error_page_params.Set(
+            error_page::kOverrideErrorPage, base::Value(true));
+        alternative_error_page_override_info->alternative_error_page_params.Set(
+            "error_page_html", base::Value(std::move(html_content)));
+        alternative_error_page_override_info->alternative_error_page_params.Set(
+            "is_enterprise_proxy_error", base::Value(true));
+        return alternative_error_page_override_info;
+      }
+    }
+  }
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
   if (content::AreIsolatedWebAppsEnabled(browser_context) &&

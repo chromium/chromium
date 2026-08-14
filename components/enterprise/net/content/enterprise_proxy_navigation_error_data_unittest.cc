@@ -34,9 +34,11 @@ TEST(EnterpriseProxyNavigationErrorDataTest, AttachAndRetrieveErrorData) {
 
   EXPECT_TRUE(EnterpriseProxyNavigationErrorData::HasDisguisedErrorData(
       &mock_navigation_handle));
+  EXPECT_NE(delegate.GetDisguisedErrorData(), nullptr);
   auto* error_data =
       EnterpriseProxyNavigationErrorData::Get(&mock_navigation_handle);
   ASSERT_TRUE(error_data);
+  EXPECT_EQ(delegate.GetDisguisedErrorData(), error_data);
   EXPECT_EQ(error_data->destination_url(),
             GURL("https://destination.example.com/test"));
   EXPECT_EQ(error_data->proxy_url(), GURL("https://proxy.example.com:443"));

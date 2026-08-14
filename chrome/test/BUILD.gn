@@ -7476,6 +7476,10 @@ test("unit_tests") {
     deps += [ "//components/enterprise/idle" ]
   }
 
+  if (enterprise_proxy) {
+    deps += [ "//components/enterprise/net/core:test_support" ]
+  }
+
   if (is_linux || is_mac || is_win) {
     deps += [
       "../browser/enterprise/connectors/device_trust/key_management/browser",

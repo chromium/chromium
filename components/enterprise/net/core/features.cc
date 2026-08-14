@@ -9,6 +9,7 @@
 namespace enterprise_net {
 
 BASE_FEATURE(kEnableDynamicRouteFetching, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kEnterpriseProxyErrorHandling, base::FEATURE_DISABLED_BY_DEFAULT);
 
 constexpr size_t kDefaultPvdConfigMaxSizeBytes = 3 * 1024 * 1024;
 
@@ -18,6 +19,10 @@ const base::FeatureParam<int> kPvdConfigMaxSizeBytesParam{
 
 bool IsDynamicRouteFetchingEnabled() {
   return base::FeatureList::IsEnabled(kEnableDynamicRouteFetching);
+}
+
+bool IsEnterpriseProxyErrorHandlingEnabled() {
+  return base::FeatureList::IsEnabled(kEnterpriseProxyErrorHandling);
 }
 
 size_t GetPvdConfigMaxSizeBytes() {

@@ -41,6 +41,11 @@ EnterpriseProxyErrorDataDelegate::EnterpriseProxyErrorDataDelegate(
 
 EnterpriseProxyErrorDataDelegate::~EnterpriseProxyErrorDataDelegate() = default;
 
+const EnterpriseProxyErrorData*
+EnterpriseProxyErrorDataDelegate::GetDisguisedErrorData() const {
+  return EnterpriseProxyNavigationErrorData::Get(navigation_handle_);
+}
+
 void EnterpriseProxyErrorDataDelegate::AttachDisguisedErrorData(
     const EnterpriseProxyErrorData& error_data) {
   if (!navigation_handle_) {

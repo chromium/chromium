@@ -2845,7 +2845,7 @@ class CONTENT_EXPORT ContentBrowserClient {
   // implementation returns nullptr.
   virtual mojom::AlternativeErrorPageOverrideInfoPtr
   GetAlternativeErrorPageOverrideInfo(
-      const GURL& url,
+      content::NavigationHandle& navigation_handle,
       content::RenderFrameHost* render_frame_host,
       content::BrowserContext* browser_context,
       int32_t error_code);

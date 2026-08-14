@@ -5,4 +5,7 @@
 # Centralized target for enterprise net components.
 group("net") {
   public_deps = [ "//components/enterprise/net/core" ]
+  if (!is_ios) {
+    public_deps += [ "//components/enterprise/net/content" ]
+  }
 }

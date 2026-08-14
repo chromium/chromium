@@ -3980,6 +3980,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.Proxy.DisguisedErrorPage.ErrorCode"
+    enum="HttpResponseCode" expires_after="2027-07-01">
+  <owner>xzonghan@google.com</owner>
+  <owner>chrome-enterprise-networking-core@google.com</owner>
+  <summary>
+    Recorded when an alternative error page HTML is generated for an Enterprise
+    Proxy disguised error, logging the disguised HTTP response or error code.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.PublicSession.SessionLength" units="minutes"
     expires_after="2026-12-16">
   <owner>bfranz@chromium.org</owner>

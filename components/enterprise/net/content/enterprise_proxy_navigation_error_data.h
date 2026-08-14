@@ -51,11 +51,9 @@ class EnterpriseProxyErrorDataDelegate
   ~EnterpriseProxyErrorDataDelegate() override;
 
   // EnterpriseProxyErrorService::Delegate:
+  const EnterpriseProxyErrorData* GetDisguisedErrorData() const override;
   void AttachDisguisedErrorData(
       const EnterpriseProxyErrorData& error_data) override;
-
-  // TODO(crbug.com/507058812): Implement error page display function in the
-  // future.
 
  private:
   raw_ptr<content::NavigationHandle> navigation_handle_ = nullptr;

@@ -7,9 +7,12 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "components/enterprise/net/core/enterprise_proxy_error_data.h"
 #include "components/enterprise/net/core/enterprise_proxy_service.h"
+#include "components/enterprise/net/core/features.h"
 
 namespace enterprise_net {
 
@@ -20,6 +23,23 @@ EnterpriseProxyErrorService::EnterpriseProxyErrorService(
 }
 
 EnterpriseProxyErrorService::~EnterpriseProxyErrorService() = default;
+
+std::string EnterpriseProxyErrorService::GetErrorPageHTML(
+    Delegate* delegate) const {
+  if (!IsEnterpriseProxyErrorHandlingEnabled() || !delegate) {
+    return std::string();
+  }
+  const EnterpriseProxyErrorData* error_data =
+      delegate->GetDisguisedErrorData();
+  if (!error_data) {
+    return std::string();
+  }
+
+  base::UmaHistogramSparse("Enterprise.Proxy.DisguisedErrorPage.ErrorCode",
+                           error_data->error_code());
+
+  return GetErrorPageHTML(*error_data);
+}
 
 bool EnterpriseProxyErrorService::InterceptProxyAuthChallenge(
     const net::AuthChallengeInfo& auth_info,
@@ -41,6 +61,25 @@ bool EnterpriseProxyErrorService::InterceptProxyAuthChallenge(
       auth_info, destination_url, response_headers, std::move(eps_callback));
 
   return is_handled;
+}
+
+// TODO(crbug.com/543015665): Replace with production error page HTML/TS
+// template.
+std::string EnterpriseProxyErrorService::GetErrorPageHTML(
+    const EnterpriseProxyErrorData& error_data) const {
+  return base::StringPrintf(
+      "<!DOCTYPE html>\n"
+      "<html>\n"
+      "<head><title>Enterprise Proxy Error</title></head>\n"
+      "<body>\n"
+      "<h1>Enterprise Proxy Error</h1>\n"
+      "<p>Destination URL: <span id=\"destination-url\">%s</span></p>\n"
+      "<p>Proxy URL: <span id=\"proxy-url\">%s</span></p>\n"
+      "<p>Disguised Error Code: <span id=\"error-code\">%d</span></p>\n"
+      "</body>\n"
+      "</html>\n",
+      error_data.destination_url().spec().c_str(),
+      error_data.proxy_url().spec().c_str(), error_data.error_code());
 }
 
 void EnterpriseProxyErrorService::OnProxyAuthChallengeResult(

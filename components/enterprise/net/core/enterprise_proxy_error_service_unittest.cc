@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -61,13 +62,19 @@ constexpr char kPvdConfigJsonTemplate[] = R"({
 
 class TestDelegate : public EnterpriseProxyErrorService::Delegate {
  public:
-  explicit TestDelegate(bool* attached_flag,
+  explicit TestDelegate(bool* attached_flag = nullptr,
                         EnterpriseProxyErrorData* error_data_out = nullptr)
       : attached_flag_(attached_flag), error_data_out_(error_data_out) {}
   ~TestDelegate() override = default;
 
+  const EnterpriseProxyErrorData* GetDisguisedErrorData() const override {
+    return has_error_data_ ? &error_data_ : nullptr;
+  }
+
   void AttachDisguisedErrorData(
       const EnterpriseProxyErrorData& error_data) override {
+    has_error_data_ = true;
+    error_data_ = error_data;
     if (attached_flag_) {
       *attached_flag_ = true;
     }
@@ -79,6 +86,8 @@ class TestDelegate : public EnterpriseProxyErrorService::Delegate {
  private:
   raw_ptr<bool> attached_flag_ = nullptr;
   raw_ptr<EnterpriseProxyErrorData> error_data_out_ = nullptr;
+  bool has_error_data_ = false;
+  EnterpriseProxyErrorData error_data_;
 };
 
 base::DictValue CreateDomainPolicyEntry(const std::string& pvd_id,
@@ -100,7 +109,8 @@ class EnterpriseProxyErrorServiceTest : public testing::Test {
  public:
   EnterpriseProxyErrorServiceTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-    feature_list_.InitAndEnableFeature(kEnableDynamicRouteFetching);
+    feature_list_.InitWithFeatures(
+        {kEnableDynamicRouteFetching, kEnterpriseProxyErrorHandling}, {});
   }
 
   void SetUp() override {
@@ -302,6 +312,53 @@ TEST_F(EnterpriseProxyErrorServiceTest, CredentialFetchFailure_ReturnsNullopt) {
 
   EXPECT_TRUE(handled);
   EXPECT_FALSE(future.Get().has_value());
+}
+
+TEST_F(EnterpriseProxyErrorServiceTest, GetErrorPageHTML_NullDelegate) {
+  base::HistogramTester histogram_tester;
+  EXPECT_TRUE(error_service_->GetErrorPageHTML(nullptr).empty());
+  histogram_tester.ExpectTotalCount(
+      "Enterprise.Proxy.DisguisedErrorPage.ErrorCode", 0);
+}
+
+TEST_F(EnterpriseProxyErrorServiceTest, GetErrorPageHTML_NoDisguisedErrorData) {
+  base::HistogramTester histogram_tester;
+  TestDelegate delegate;
+  EXPECT_TRUE(error_service_->GetErrorPageHTML(&delegate).empty());
+  histogram_tester.ExpectTotalCount(
+      "Enterprise.Proxy.DisguisedErrorPage.ErrorCode", 0);
+}
+
+TEST_F(EnterpriseProxyErrorServiceTest, GetErrorPageHTML_FeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kEnterpriseProxyErrorHandling);
+
+  base::HistogramTester histogram_tester;
+  TestDelegate delegate;
+  EnterpriseProxyErrorData data(GURL("https://target.example.com/page"),
+                                GURL("https://proxy.example.com:443"), 403);
+  delegate.AttachDisguisedErrorData(data);
+
+  EXPECT_TRUE(error_service_->GetErrorPageHTML(&delegate).empty());
+  histogram_tester.ExpectTotalCount(
+      "Enterprise.Proxy.DisguisedErrorPage.ErrorCode", 0);
+}
+
+TEST_F(EnterpriseProxyErrorServiceTest, GetErrorPageHTML_ValidData) {
+  base::HistogramTester histogram_tester;
+  TestDelegate delegate;
+  EnterpriseProxyErrorData data(GURL("https://target.example.com/page"),
+                                GURL("https://proxy.example.com:443"), 403);
+  delegate.AttachDisguisedErrorData(data);
+
+  std::string html = error_service_->GetErrorPageHTML(&delegate);
+  EXPECT_FALSE(html.empty());
+  EXPECT_NE(html.find("https://target.example.com/page"), std::string::npos);
+  EXPECT_NE(html.find("https://proxy.example.com/"), std::string::npos);
+  EXPECT_NE(html.find("403"), std::string::npos);
+
+  histogram_tester.ExpectUniqueSample(
+      "Enterprise.Proxy.DisguisedErrorPage.ErrorCode", 403, 1);
 }
 
 }  // namespace enterprise_net

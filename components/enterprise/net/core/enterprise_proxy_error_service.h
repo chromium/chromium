@@ -32,6 +32,7 @@ class EnterpriseProxyErrorService : public KeyedService {
   class Delegate {
    public:
     virtual ~Delegate() = default;
+    virtual const EnterpriseProxyErrorData* GetDisguisedErrorData() const = 0;
     virtual void AttachDisguisedErrorData(
         const EnterpriseProxyErrorData& error_data) = 0;
   };
@@ -42,6 +43,10 @@ class EnterpriseProxyErrorService : public KeyedService {
   EnterpriseProxyErrorService& operator=(const EnterpriseProxyErrorService&) =
       delete;
   ~EnterpriseProxyErrorService() override;
+
+  // Generates placeholder HTML for the special error page displaying
+  // destination URL, proxy URL, and disguised error code.
+  std::string GetErrorPageHTML(Delegate* delegate) const;
 
   // Intercepts a 407 Proxy Authentication Required challenge.
   // Returns true if this challenge is handled by EnterpriseProxyErrorService
@@ -56,6 +61,8 @@ class EnterpriseProxyErrorService : public KeyedService {
           callback);
 
  private:
+  std::string GetErrorPageHTML(
+      const EnterpriseProxyErrorData& error_data) const;
   void OnProxyAuthChallengeResult(
       bool* handled_flag,
       std::unique_ptr<Delegate> delegate,

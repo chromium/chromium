@@ -24,6 +24,7 @@
 #include "content/public/common/alternative_error_page_override_info.mojom.h"
 #include "content/public/common/content_client.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/test_utils.h"
 #include "skia/ext/skia_utils_base.h"
 #include "ui/native_theme/native_theme.h"
@@ -47,10 +48,12 @@ class AlternativeErrorPageOverrideInfoBrowserTest
     web_app::test::InstallPwaForCurrentUrl(browser());
     content::BrowserContext* context = browser()->GetProfile();
 
+    content::MockNavigationHandle navigation_handle(
+        app_url, /*render_frame_host=*/nullptr);
     return content::GetContentClientForTesting()
         ->browser()
         ->GetAlternativeErrorPageOverrideInfo(
-            app_url, /*render_frame_host=*/nullptr, context,
+            navigation_handle, /*render_frame_host=*/nullptr, context,
             net::ERR_INTERNET_DISCONNECTED);
   }
 
@@ -79,11 +82,13 @@ IN_PROC_BROWSER_TEST_P(AlternativeErrorPageOverrideInfoBrowserTest,
   const GURL app_url = embedded_test_server()->GetURL("/simple.html");
   content::BrowserContext* context = browser()->GetProfile();
 
+  content::MockNavigationHandle navigation_handle(
+      app_url, /*render_frame_host=*/nullptr);
   content::mojom::AlternativeErrorPageOverrideInfoPtr info =
       content::GetContentClientForTesting()
           ->browser()
           ->GetAlternativeErrorPageOverrideInfo(
-              app_url, /*render_frame_host=*/nullptr, context,
+              navigation_handle, /*render_frame_host=*/nullptr, context,
               net::ERR_INTERNET_DISCONNECTED);
 
   // Expect mojom struct to be null.
@@ -142,11 +147,13 @@ IN_PROC_BROWSER_TEST_P(AlternativeErrorPageOverrideInfoBrowserTest,
   web_app::test::InstallPwaForCurrentUrl(browser());
   content::BrowserContext* context = browser()->GetProfile();
 
+  content::MockNavigationHandle navigation_handle(
+      app_url, /*render_frame_host=*/nullptr);
   content::mojom::AlternativeErrorPageOverrideInfoPtr info =
       content::GetContentClientForTesting()
           ->browser()
           ->GetAlternativeErrorPageOverrideInfo(
-              app_url, /*render_frame_host=*/nullptr, context,
+              navigation_handle, /*render_frame_host=*/nullptr, context,
               net::ERR_INTERNET_DISCONNECTED);
 
   // Expect mojom struct customized with HTML page title.
@@ -172,11 +179,13 @@ IN_PROC_BROWSER_TEST_P(AlternativeErrorPageOverrideInfoBrowserTest,
           app_url,
           web_app::WebAppFilter::InstalledInOperatingSystemForTesting());
   WebAppIconWaiter(profile, app_id.value()).Wait();
+  content::MockNavigationHandle navigation_handle(
+      app_url, /*render_frame_host=*/nullptr);
   content::mojom::AlternativeErrorPageOverrideInfoPtr info =
       content::GetContentClientForTesting()
           ->browser()
           ->GetAlternativeErrorPageOverrideInfo(
-              app_url, /*render_frame_host=*/nullptr, profile,
+              navigation_handle, /*render_frame_host=*/nullptr, profile,
               net::ERR_INTERNET_DISCONNECTED);
 
   // Expect mojom struct with everything (except the icon) filled out.
