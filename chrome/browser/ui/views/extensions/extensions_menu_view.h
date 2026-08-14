@@ -39,7 +39,7 @@ class ExtensionsMenuView : public views::BubbleDialogDelegateView,
   METADATA_HEADER(ExtensionsMenuView, views::BubbleDialogDelegateView)
 
  public:
-  ExtensionsMenuView(views::View* anchor_view,
+  ExtensionsMenuView(views::BubbleAnchor anchor,
                      BrowserWindowInterface* browser,
                      ExtensionsContainer* extensions_container,
                      ExtensionsContainerViews* extensions_container_views);
@@ -47,11 +47,11 @@ class ExtensionsMenuView : public views::BubbleDialogDelegateView,
   ExtensionsMenuView& operator=(const ExtensionsMenuView&) = delete;
   ~ExtensionsMenuView() override;
 
-  // Displays the ExtensionsMenu under |anchor_view|, attached to |browser|, and
+  // Displays the ExtensionsMenu with |anchor|, attached to |browser|, and
   // with the associated |extensions_container|.
   // Only one menu is allowed to be shown at a time (outside of tests).
   static views::Widget* ShowBubble(
-      views::View* anchor_view,
+      views::BubbleAnchor anchor,
       BrowserWindowInterface* browser,
       ExtensionsContainer* extensions_container,
       ExtensionsContainerViews* extensions_container_views);

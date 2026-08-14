@@ -73,8 +73,9 @@ class ExtensionsMenuViewBrowserTest : public InProcessBrowserTest {
     views::test::ReduceAnimationDuration(extensions_container());
 
     ExtensionsMenuView::ShowBubble(
-        extensions_container()->GetExtensionsButton(), browser(),
-        extensions_container()->GetToolbarViewModel(), extensions_container());
+        views::BubbleAnchor(extensions_container()->GetExtensionsButton()),
+        browser(), extensions_container()->GetToolbarViewModel(),
+        extensions_container());
     if (extensions_menu()) {
       extensions_menu()->set_close_on_deactivate(false);
     }

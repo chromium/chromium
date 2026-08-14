@@ -160,8 +160,9 @@ void ExtensionsMenuTestUtil::OpenExtensionsMenu() {
                 extensions_toolbar_);
   } else {
     bubble_dialog = std::make_unique<ExtensionsMenuView>(
-        extensions_toolbar_->GetExtensionsButton(), browser_,
-        extensions_toolbar_->GetToolbarViewModel(), extensions_toolbar_);
+        views::BubbleAnchor(extensions_toolbar_->GetExtensionsButton()),
+        browser_, extensions_toolbar_->GetToolbarViewModel(),
+        extensions_toolbar_);
     menu_view_ = views::AsViewClass<ExtensionsMenuView>(
         bubble_dialog->GetContentsView());
 

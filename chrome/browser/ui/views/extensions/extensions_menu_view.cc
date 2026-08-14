@@ -69,12 +69,11 @@ ExtensionMenuItemView* GetAsMenuItemView(views::View* view) {
 }  // namespace
 
 ExtensionsMenuView::ExtensionsMenuView(
-    views::View* anchor_view,
+    views::BubbleAnchor anchor,
     BrowserWindowInterface* browser,
     ExtensionsContainer* extensions_container,
     ExtensionsContainerViews* extensions_container_views)
-    : BubbleDialogDelegateView(views::BubbleAnchor(anchor_view),
-                               views::BubbleBorder::Arrow::TOP_RIGHT),
+    : BubbleDialogDelegateView(anchor, views::BubbleBorder::Arrow::TOP_RIGHT),
       browser_(browser),
       extensions_container_(CHECK_DEREF(extensions_container)),
       extensions_container_views_(extensions_container_views),
@@ -505,7 +504,7 @@ base::AutoReset<bool> ExtensionsMenuView::AllowInstancesForTesting() {
 
 // static
 views::Widget* ExtensionsMenuView::ShowBubble(
-    views::View* anchor_view,
+    views::BubbleAnchor anchor,
     BrowserWindowInterface* browser,
     ExtensionsContainer* extensions_container,
     ExtensionsContainerViews* extensions_container_views) {
@@ -515,7 +514,7 @@ views::Widget* ExtensionsMenuView::ShowBubble(
   DCHECK(!base::FeatureList::IsEnabled(
       extensions_features::kExtensionsMenuAccessControl));
   g_extensions_dialog = new ExtensionsMenuView(
-      anchor_view, browser, extensions_container, extensions_container_views);
+      anchor, browser, extensions_container, extensions_container_views);
   views::Widget* widget =
       views::BubbleDialogDelegateView::CreateBubble(g_extensions_dialog);
   widget->Show();
