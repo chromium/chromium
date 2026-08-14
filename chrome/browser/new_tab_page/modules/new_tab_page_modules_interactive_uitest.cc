@@ -9,11 +9,10 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/new_tab_page/modules/modules_switches.h"
-#include "content/public/common/content_features.h"
 #include "chrome/browser/new_tab_page/modules/test_support.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -27,6 +26,7 @@
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/interactive_test.h"
 
@@ -459,12 +459,12 @@ class NewTabPageModulesInteractiveTabGroupsUiTest
                  WaitForShow(kTabGroupEditorBubbleId));
   }
 
-  size_t GetTabGroupCount(Browser* browser) {
-    return browser->tab_strip_model()->group_model()->ListTabGroups().size();
+  size_t GetTabGroupCount(BrowserWindowInterface* browser) {
+    return browser->GetTabStripModel()->group_model()->ListTabGroups().size();
   }
 
-  size_t GetTabCount(Browser* browser) {
-    return browser->tab_strip_model()->count();
+  size_t GetTabCount(BrowserWindowInterface* browser) {
+    return browser->GetTabStripModel()->count();
   }
 };
 

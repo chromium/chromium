@@ -278,6 +278,7 @@ if (!is_android) {
       "//chrome/browser/autocomplete:aim_eligibility_service",
       "//chrome/browser/contextual_search",
       "//chrome/browser/ui",
+      "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/side_panel",
       "//chrome/browser/ui/side_panel:side_panel_views_dependent",
       "//chrome/browser/ui/views/user_education",

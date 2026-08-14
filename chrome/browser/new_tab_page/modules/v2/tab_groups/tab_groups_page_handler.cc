@@ -12,7 +12,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
@@ -118,11 +117,11 @@ TabGroupsPageHandler::TabGroupsPageHandler(
 TabGroupsPageHandler::~TabGroupsPageHandler() = default;
 
 void TabGroupsPageHandler::CreateNewTabGroup() {
-  auto* browser = webui::GetTabInterface(web_contents_)
-                      ->GetBrowserWindowInterface()
-                      ->GetBrowserForMigrationOnly();
-  chrome::BrowserCommandController::From(browser)->ExecuteCommand(
-      IDC_CREATE_NEW_TAB_GROUP);
+  auto* browser_window = webui::GetBrowserWindowInterface(web_contents_);
+  if (browser_window) {
+    chrome::BrowserCommandController::From(browser_window)
+        ->ExecuteCommand(IDC_CREATE_NEW_TAB_GROUP);
+  }
 }
 
 std::vector<const tab_groups::SavedTabGroup*>

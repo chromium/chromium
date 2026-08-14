@@ -402,7 +402,7 @@ IN_PROC_BROWSER_TEST_F(NtpPromoUiTest,
   ClearRegisteredPromosExcept(kNtpCustomizationPromoId);
 
   // Create a second browser window.
-  Browser* browser2 = CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* browser2 = CreateBrowser(browser()->GetProfile());
 
   RunTestSequence(
       // Set up the first browser.
