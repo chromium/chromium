@@ -1789,6 +1789,23 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/signin/WebSigninRedirectCoordinator.java:DialogState) -->
 
+<!-- LINT.IfChange(WebSigninWaitOutcome) -->
+
+<enum name="WebSigninWaitOutcome">
+  <int value="0" label="CompletedWithoutDialog"/>
+  <int value="1" label="CompletedWithDialog"/>
+  <int value="2" label="AbortedWithoutDialog"/>
+  <int value="3" label="AbortedWithDialogCancelButton"/>
+  <int value="4" label="AbortedWithDialogTouchOutside"/>
+  <int value="5" label="AbortedWithDialogOther"/>
+  <int value="6" label="AuthErrorWithoutDialog"/>
+  <int value="7" label="AuthErrorWithDialog"/>
+  <int value="8" label="OtherErrorWithoutDialog"/>
+  <int value="9" label="OtherErrorWithDialog"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/signin/WebSigninRedirectCoordinator.java:WaitOutcome) -->
+
 </enums>
 
 </histogram-configuration>

@@ -3283,6 +3283,16 @@ Signin.OAuthMultiloginResponseStatus2{PartitionSuffix} one for a long enough tim
   </summary>
 </histogram>
 
+<histogram name="Signin.ProcessMirrorHeaders.LoadingDuration.Aborted"
+    units="ms" expires_after="2027-08-11">
+  <owner>mlbipin@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
+  <summary>
+    Records the duration of the wait for WebSignin to complete before it was
+    aborted. Recorded when WebSignin is aborted.
+  </summary>
+</histogram>
+
 <histogram name="Signin.ProcessMirrorHeaders.LoadingDuration.{Result}"
     units="ms" expires_after="2027-04-22">
   <owner>mlbipin@google.com</owner>
@@ -3298,6 +3308,17 @@ Signin.OAuthMultiloginResponseStatus2{PartitionSuffix} one for a long enough tim
     <variant name="OtherError" summary="An other error occurred"/>
     <variant name="Success" summary="The web sign-in succeeded"/>
   </token>
+</histogram>
+
+<histogram name="Signin.ProcessMirrorHeaders.WaitOutcome"
+    enum="WebSigninWaitOutcome" expires_after="2027-08-11">
+  <owner>mlbipin@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
+  <summary>
+    Records the outcome of the wait for WebSignin to complete. Recorded when the
+    WebSignin process either completes or is aborted, along with whether a
+    loading dialog was shown during the wait.
+  </summary>
 </histogram>
 
 <histogram name="Signin.Promo.ImpressionsUntil.{Action}.{AccessPoint}"
