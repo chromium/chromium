@@ -605,7 +605,7 @@ void OptimizationGuideOnDeviceModelInstallerPolicy::UpdateOnDemand(
       id, priority, base::BindOnce([](update_client::Error error) {
         if (error != update_client::Error::NONE &&
             error != update_client::Error::UPDATE_IN_PROGRESS) {
-          LOG(ERROR) << "Failed to update on-device model component with error "
+          VLOG(1) << "Failed to update on-device model component with error "
                      << std::to_underlying(error);
         }
       }));
