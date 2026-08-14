@@ -7,7 +7,6 @@
 #include "build/build_config.h"
 #include "chrome/common/url_constants.h"
 #include "components/security_interstitials/core/common_string_util.h"
-#include "components/security_state/content/security_state_tab_helper.h"
 #include "components/security_state/core/security_state.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
