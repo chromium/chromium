@@ -7,6 +7,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "content/browser/preloading/prefetch/prefetch_document_manager.h"
 #include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/browser/preloading/prefetch/prefetch_match_resolver.h"
 #include "content/browser/preloading/prefetch/prefetch_service.h"
@@ -20,6 +21,7 @@
 #include "content/browser/preloading/prerender/prerender_host_registry.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/isolated_world_ids.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
@@ -227,6 +229,17 @@ class PrerendererImplBrowserTestNoPrefetchAhead
     feature_list_.InitWithFeatures(
         {}, {features::kPrerender2FallbackPrefetchSpecRules,
              blink::features::kLCPTimingPredictorPrerender2});
+  }
+};
+
+class PrerendererBackForwardCacheTest : public PrerendererImplBrowserTestBase {
+ public:
+  PrerendererBackForwardCacheTest() {
+    feature_list_.InitWithFeatures(
+        {features::kBackForwardCache,
+         features::kPrerender2FallbackPrefetchSpecRules},
+        {features::kBackForwardCacheMemoryControls,
+         blink::features::kLCPTimingPredictorPrerender2});
   }
 };
 
@@ -1771,6 +1784,42 @@ IN_PROC_BROWSER_TEST_P(PrerendererImplBrowserTestPrefetchAhead,
       // Normal navigation.
       {.path = "/title1.html", .sec_purpose_header_value = ""}};
   ASSERT_EQ(expected, GetObservedRequests());
+}
+
+// Tests that PrerendererImpl::MaybePrerender ignores candidates from an
+// inactive frame in the back/forward cache.
+IN_PROC_BROWSER_TEST_F(PrerendererBackForwardCacheTest,
+                       MaybePrerenderIgnoredWhenInactive) {
+  EXPECT_TRUE(NavigateToURL(shell(), GetUrl("/empty.html")));
+  RenderFrameHostImpl* rfh_a = static_cast<RenderFrameHostImpl*>(
+      web_contents_impl().GetPrimaryMainFrame());
+  const GlobalRenderFrameHostId rfh_id = rfh_a->GetGlobalId();
+  PrerendererImpl& prerenderer_a = GetPrerendererImpl();
+
+  // Navigate away so that rfh_a enters the back/forward cache.
+  EXPECT_TRUE(NavigateToURL(shell(), GetCrossSiteUrl("/empty.html")));
+  rfh_a = static_cast<RenderFrameHostImpl*>(RenderFrameHost::FromID(rfh_id));
+  EXPECT_TRUE(rfh_a);
+  if (!rfh_a) {
+    return;
+  }
+  EXPECT_TRUE(rfh_a->IsInLifecycleState(
+      RenderFrameHost::LifecycleState::kInBackForwardCache));
+  EXPECT_FALSE(rfh_a->IsActive());
+
+  const GURL prerender_url = GetCrossSiteUrl("/title1.html");
+  blink::mojom::SpeculationCandidatePtr candidate =
+      CreateSpeculationCandidate(prerender_url);
+
+  PreloadingPredictor enacting_predictor = GetPredictorForPreloadingTriggerType(
+      PreloadingTriggerType::kSpeculationRule);
+  EXPECT_FALSE(prerenderer_a.MaybePrerender(candidate, enacting_predictor,
+                                            PreloadingConfidence{100}));
+
+  RenderFrameHostImpl* rfh_b = static_cast<RenderFrameHostImpl*>(
+      web_contents_impl().GetPrimaryMainFrame());
+  EXPECT_NE(rfh_a, rfh_b);
+  EXPECT_FALSE(PrefetchDocumentManager::GetForCurrentDocument(rfh_b));
 }
 
 }  // namespace

@@ -355,5 +355,25 @@ TEST_F(PrerendererTest, MaybePrerenderAndShouldWaitForPrerenderResult) {
   EXPECT_TRUE(registry->FindHostByUrlForTesting(kPrerenderingUrl));
 }
 
+// Tests that PrerendererImpl::MaybePrerender ignores preloading attempts when
+// the associated frame is no longer active (e.g., in back/forward cache).
+TEST_F(PrerendererTest, MaybePrerenderIgnoredWhenInactive) {
+  PrerenderHostRegistry* registry = GetPrerenderHostRegistry();
+  PrerendererImpl prerenderer(*GetRenderFrameHost());
+
+  GetRenderFrameHost()->SetLifecycleState(
+      RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache);
+  EXPECT_FALSE(GetRenderFrameHost()->IsActive());
+
+  const GURL kPrerenderingUrl = GetSameOriginUrl("/empty.html");
+  const auto candidate = CreatePrerenderCandidate(kPrerenderingUrl);
+
+  EXPECT_FALSE(prerenderer.MaybePrerender(
+      candidate, content_preloading_predictor::kSpeculationRules,
+      PreloadingConfidence{100}));
+  EXPECT_FALSE(prerenderer.ShouldWaitForPrerenderResult(kPrerenderingUrl));
+  EXPECT_FALSE(registry->FindHostByUrlForTesting(kPrerenderingUrl));
+}
+
 }  // namespace
 }  // namespace content

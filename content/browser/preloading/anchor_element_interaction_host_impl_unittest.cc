@@ -213,5 +213,66 @@ TEST_F(AnchorElementInteractionHostImplTest,
       PredictorConfusionMatrix::kFalseNegative, 1);
 }
 
+TEST_F(AnchorElementInteractionHostImplTest, IgnoreMessagesWhenInactive) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {blink::features::kPreloadingModerateViewportHeuristics,
+       blink::features::kPreloadingEagerViewportHeuristics},
+      /*disabled_features=*/{});
+
+  auto* render_frame_host = static_cast<RenderFrameHostImpl*>(main_rfh());
+
+  std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
+  PreloadingDecider::GetOrCreateForCurrentDocument(render_frame_host)
+      ->UpdateSpeculationCandidates(candidates);
+
+  mojo::Remote<blink::mojom::AnchorElementInteractionHost> remote;
+  AnchorElementInteractionHostImpl::Create(render_frame_host,
+                                           remote.BindNewPipeAndPassReceiver());
+
+  ScopedPreloadingDeciderObserver observer(render_frame_host);
+  auto* preloading_data =
+      PreloadingDataImpl::GetOrCreateForWebContents(web_contents());
+
+  render_frame_host->SetLifecycleState(
+      RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache);
+  EXPECT_FALSE(render_frame_host->IsActive());
+
+  const auto kUrl = GURL("https://example.com/page1.html");
+
+  // 1. OnPointerDown
+  remote->OnPointerDown(kUrl, /*renderer_enacted=*/false);
+  remote.FlushForTesting();
+  EXPECT_FALSE(observer.on_pointer_down_url_.has_value());
+
+  // 2. OnPointerHoverModerate
+  remote->OnPointerHoverModerate(
+      kUrl, blink::mojom::AnchorElementPointerData::New(false, 0.0, 0.0),
+      /*renderer_enacted=*/false);
+  remote.FlushForTesting();
+  EXPECT_FALSE(observer.on_pointer_hover_url_.has_value());
+
+  // 3. OnPointerHoverEager
+  remote->OnPointerHoverEager(
+      kUrl, blink::mojom::AnchorElementPointerData::New(false, 0.0, 0.0),
+      /*renderer_enacted=*/false);
+  remote.FlushForTesting();
+  EXPECT_FALSE(observer.on_pointer_hover_url_.has_value());
+
+  // 4. OnModerateViewportHeuristicTriggered
+  remote->OnModerateViewportHeuristicTriggered(kUrl,
+                                               /*renderer_enacted=*/false);
+  remote.FlushForTesting();
+  EXPECT_EQ(preloading_data->GetPredictionsSizeForTesting(), 0u);
+
+  // 5. OnEagerViewportHeuristicTriggered
+  std::vector<blink::mojom::AnchorElementInteractionTargetPtr> targets;
+  targets.push_back(blink::mojom::AnchorElementInteractionTarget::New(
+      kUrl, /*renderer_enacted=*/false));
+  remote->OnEagerViewportHeuristicTriggered(std::move(targets));
+  remote.FlushForTesting();
+  EXPECT_EQ(preloading_data->GetPredictionsSizeForTesting(), 0u);
+}
+
 }  // namespace
 }  // namespace content

@@ -140,6 +140,9 @@ void AnchorElementInteractionHostImpl::Create(
 
 void AnchorElementInteractionHostImpl::OnPointerDown(const GURL& url,
                                                      bool renderer_enacted) {
+  if (!render_frame_host().IsActive()) {
+    return;
+  }
   auto* preloading_decider =
       PreloadingDecider::GetOrCreateForCurrentDocument(&render_frame_host());
   preloading_decider->OnPointerDown(url, renderer_enacted);
@@ -151,6 +154,9 @@ void AnchorElementInteractionHostImpl::OnPointerHoverEager(
     const GURL& url,
     blink::mojom::AnchorElementPointerDataPtr mouse_data,
     bool renderer_enacted) {
+  if (!render_frame_host().IsActive()) {
+    return;
+  }
   auto* preloading_decider =
       PreloadingDecider::GetOrCreateForCurrentDocument(&render_frame_host());
   preloading_decider->OnPointerHover(url, std::move(mouse_data),
@@ -162,6 +168,9 @@ void AnchorElementInteractionHostImpl::OnPointerHoverModerate(
     const GURL& url,
     blink::mojom::AnchorElementPointerDataPtr mouse_data,
     bool renderer_enacted) {
+  if (!render_frame_host().IsActive()) {
+    return;
+  }
   auto* preloading_decider =
       PreloadingDecider::GetOrCreateForCurrentDocument(&render_frame_host());
   preloading_decider->OnPointerHover(
@@ -174,6 +183,9 @@ void AnchorElementInteractionHostImpl::OnPointerHoverModerate(
 void AnchorElementInteractionHostImpl::OnModerateViewportHeuristicTriggered(
     const GURL& url,
     bool renderer_enacted) {
+  if (!render_frame_host().IsActive()) {
+    return;
+  }
   if (!base::FeatureList::IsEnabled(
           blink::features::kPreloadingModerateViewportHeuristics)) {
     ReportBadMessageAndDeleteThis(
@@ -191,6 +203,9 @@ void AnchorElementInteractionHostImpl::OnModerateViewportHeuristicTriggered(
 
 void AnchorElementInteractionHostImpl::OnEagerViewportHeuristicTriggered(
     std::vector<blink::mojom::AnchorElementInteractionTargetPtr> targets) {
+  if (!render_frame_host().IsActive()) {
+    return;
+  }
   if (!base::FeatureList::IsEnabled(
           blink::features::kPreloadingEagerViewportHeuristics)) {
     ReportBadMessageAndDeleteThis(
