@@ -175,6 +175,11 @@ OffscreenCanvas::OffscreenCanvas(ExecutionContext* context,
 
   OffscreenCanvasRegistry::From(execution_context_).Register(canvas_id, this);
 
+  if (HasPlaceholderCanvas() && execution_context_->IsWorkerGlobalScope()) {
+    UseCounter::Count(execution_context_,
+                      WebFeature::kOffscreenCanvasTransferToWorker);
+  }
+
   if (HasPlaceholderCanvas() &&
       execution_context_->IsDedicatedWorkerGlobalScope()) {
     WorkerAnimationFrameProvider* animation_frame_provider =

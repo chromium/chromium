@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/core/messaging/blink_transferable_message.h"
 #include "third_party/blink/renderer/core/messaging/message_channel.h"
 #include "third_party/blink/renderer/core/messaging/message_port.h"
+#include "third_party/blink/renderer/core/offscreencanvas/offscreen_canvas.h"
 #include "third_party/blink/renderer/core/script/script.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/core/testing/wait_for_event.h"
@@ -538,6 +539,49 @@ TEST_F(DedicatedWorkerTest, UseCounter) {
                             CrossThreadBindOnce(loop.QuitClosure())));
     loop.Run();
   }
+}
+
+TEST_F(DedicatedWorkerTest, OffscreenCanvasTransferToWorkerUseCounter) {
+  Page::InsertOrdinaryPageForTesting(&GetPage());
+  StartWorker();
+
+  EXPECT_FALSE(
+      GetDocument().IsUseCounted(WebFeature::kOffscreenCanvasTransferToWorker));
+
+  // Creating an OffscreenCanvas without placeholder on the main thread (window)
+  // does not count.
+  MakeGarbageCollected<OffscreenCanvas>(
+      GetDocument().domWindow(), gfx::Size(10, 10), 0, 0, kInvalidDOMNodeId);
+  EXPECT_FALSE(
+      GetDocument().IsUseCounted(WebFeature::kOffscreenCanvasTransferToWorker));
+
+  // Creating an OffscreenCanvas with placeholder on the main thread does not
+  // count.
+  MakeGarbageCollected<OffscreenCanvas>(GetDocument().domWindow(),
+                                        gfx::Size(10, 10), 1, 1, DOMNodeId{1});
+  EXPECT_FALSE(
+      GetDocument().IsUseCounted(WebFeature::kOffscreenCanvasTransferToWorker));
+
+  // Creating an OffscreenCanvas without placeholder on a worker thread does not
+  // count.
+  RunOnWorkerThread(
+      CrossThreadBindOnce([](ExecutionContext* execution_context) {
+        MakeGarbageCollected<OffscreenCanvas>(
+            execution_context, gfx::Size(10, 10), 0, 0, kInvalidDOMNodeId);
+      }));
+  EXPECT_FALSE(
+      GetDocument().IsUseCounted(WebFeature::kOffscreenCanvasTransferToWorker));
+
+  // Creating an OffscreenCanvas with placeholder on a worker thread (which
+  // occurs when an offscreen canvas is transferred to a worker) counts.
+  RunOnWorkerThread(
+      CrossThreadBindOnce([](ExecutionContext* execution_context) {
+        MakeGarbageCollected<OffscreenCanvas>(
+            execution_context, gfx::Size(10, 10), 1, 1, DOMNodeId{1});
+      }));
+
+  EXPECT_TRUE(
+      GetDocument().IsUseCounted(WebFeature::kOffscreenCanvasTransferToWorker));
 }
 
 TEST_F(DedicatedWorkerTest, TaskRunner) {

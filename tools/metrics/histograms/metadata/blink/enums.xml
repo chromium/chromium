@@ -6717,6 +6717,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5984" label="CreateBytesModuleScript"/>
   <int value="5985" label="V8ModuleNamespaceMissingDefaultWithStarExport"/>
   <int value="5986" label="V8WasmGCAllocation"/>
+  <int value="5987" label="OffscreenCanvasTransferToWorker"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
