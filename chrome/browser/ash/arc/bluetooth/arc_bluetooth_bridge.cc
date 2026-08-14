@@ -845,6 +845,12 @@ void ArcBluetoothBridge::OnGattAttributeReadRequest(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   auto* bluetooth_instance = ARC_GET_INSTANCE_FOR_METHOD(
       arc_bridge_service_->bluetooth(), RequestGattRead);
+  if (!device) {
+    LOG(WARNING) << __func__ << ": Device is null.";
+    std::move(callback).Run(BluetoothGattService::GattErrorCode::kFailed,
+                            /*value=*/std::vector<uint8_t>());
+    return;
+  }
   if (!bluetooth_instance || !IsGattOffsetValid(offset)) {
     std::move(callback).Run(BluetoothGattService::GattErrorCode::kFailed,
                             /*value=*/std::vector<uint8_t>());
@@ -903,6 +909,11 @@ void ArcBluetoothBridge::OnGattAttributeWriteRequest(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   auto* bluetooth_instance = ARC_GET_INSTANCE_FOR_METHOD(
       arc_bridge_service_->bluetooth(), RequestGattWrite);
+  if (!device) {
+    LOG(WARNING) << __func__ << ": Device is null.";
+    std::move(error_callback).Run();
+    return;
+  }
   if (!bluetooth_instance || !IsGattOffsetValid(offset)) {
     std::move(error_callback).Run();
     return;

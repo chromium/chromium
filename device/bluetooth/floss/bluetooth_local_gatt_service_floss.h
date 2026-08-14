@@ -64,6 +64,10 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLocalGattServiceFloss
   void GattServerServiceAdded(GattStatus status, GattService service) override;
   void GattServerServiceRemoved(GattStatus status, int32_t handle) override;
 
+  void GattServerConnectionState(int32_t server_id,
+                                 bool connected,
+                                 std::string address) override;
+
   void SetRegistered(bool is_registered);
   GattService ToGattService();
   void ResolveInstanceId(const GattService& service);

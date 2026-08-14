@@ -5,8 +5,10 @@
 #ifndef DEVICE_BLUETOOTH_FLOSS_BLUETOOTH_LOCAL_GATT_CHARACTERISTIC_FLOSS_H_
 #define DEVICE_BLUETOOTH_FLOSS_BLUETOOTH_LOCAL_GATT_CHARACTERISTIC_FLOSS_H_
 
+#include <set>
 #include <string>
 
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
@@ -73,6 +75,10 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLocalGattCharacteristicFloss
                               int32_t request_id,
                               bool execute_write) override;
 
+  void GattServerConnectionState(int32_t server_id,
+                                 bool connected,
+                                 std::string address) override;
+
   void ResolveInstanceId(const GattService& service);
   int32_t InstanceId() const { return floss_instance_id_; }
   NotificationType CccdNotificationType();
@@ -108,7 +114,12 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLocalGattCharacteristicFloss
   void OnWriteRequestCallback(int32_t request_id,
                               std::vector<uint8_t>& value,
                               bool needs_response,
+                              bool is_prepared_write,
                               bool success);
+
+  // Add this friend declaration so the test can access the private set
+  FRIEND_TEST_ALL_PREFIXES(BluetoothGattFlossTest,
+                           ClearPendingPreparedWritesOnDisconnect);
 
   // Cached instance of the latest pending read/write request, if one exists.
   std::optional<GattRequest> pending_request_;
@@ -137,6 +148,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLocalGattCharacteristicFloss
 
   // Descriptors contained by this characteristic.
   std::vector<std::unique_ptr<BluetoothLocalGattDescriptorFloss>> descriptors_;
+
+  // Set of remote device addresses that have pending prepared writes.
+  std::set<std::string> devices_with_pending_prepared_writes_;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.

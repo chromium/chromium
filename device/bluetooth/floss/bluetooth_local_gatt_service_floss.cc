@@ -242,4 +242,16 @@ uint32_t BluetoothLocalGattServiceFloss::NewInstanceId() {
   return instance_id_tracker_++;
 }
 
+void BluetoothLocalGattServiceFloss::GattServerConnectionState(
+    int32_t server_id,
+    bool connected,
+    std::string address) {
+  if (!connected) {
+    // Tell all characteristics that the device dropped
+    for (auto const& [handle, observer] : server_observer_by_handle_) {
+      observer->GattServerConnectionState(server_id, connected, address);
+    }
+  }
+}
+
 }  // namespace floss

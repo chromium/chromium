@@ -113,8 +113,16 @@ void BluetoothLocalGattDescriptorFloss::GattServerDescriptorReadRequest(
     return;
   }
 
-  pending_request_.emplace(GattRequest{address, request_id, offset});
   auto* device = characteristic_->service_->GetAdapter()->GetDevice(address);
+  if (!device) {
+    LOG(WARNING) << __func__ << ": Device not found: " << address;
+    FlossDBusManager::Get()->GetGattManagerClient()->SendResponse(
+        base::DoNothing(), address, request_id, GattStatus::kError, offset,
+        std::vector<uint8_t>());
+    return;
+  }
+
+  pending_request_.emplace(GattRequest{address, request_id, offset});
   BluetoothLocalGattDescriptor* descriptor =
       static_cast<BluetoothLocalGattDescriptor*>(this);
 
@@ -218,8 +226,18 @@ void BluetoothLocalGattDescriptorFloss::GattServerDescriptorWriteRequest(
     return;
   }
 
-  pending_request_.emplace(GattRequest{address, request_id, offset});
   auto* device = characteristic_->service_->GetAdapter()->GetDevice(address);
+  if (!device) {
+    LOG(WARNING) << __func__ << ": Device not found: " << address;
+    if (needs_response) {
+      FlossDBusManager::Get()->GetGattManagerClient()->SendResponse(
+          base::DoNothing(), address, request_id, GattStatus::kError, offset,
+          value);
+    }
+    return;
+  }
+
+  pending_request_.emplace(GattRequest{address, request_id, offset});
   BluetoothLocalGattDescriptor* descriptor =
       static_cast<BluetoothLocalGattDescriptor*>(this);
 
@@ -281,6 +299,10 @@ GattStatus BluetoothLocalGattDescriptorFloss::HandleCccDescriptor(
   device::BluetoothLocalGattService::Delegate* delegate =
       characteristic_->service_->delegate_;
   auto* device = characteristic_->service_->GetAdapter()->GetDevice(address);
+  if (!device) {
+    LOG(WARNING) << __func__ << ": Device not found: " << address;
+    return GattStatus::kError;
+  }
   device::BluetoothLocalGattCharacteristic* characteristic =
       static_cast<device::BluetoothLocalGattCharacteristic*>(
           &characteristic_.get());
