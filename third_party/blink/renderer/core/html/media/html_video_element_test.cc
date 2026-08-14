@@ -710,7 +710,7 @@ TEST_P(HTMLVideoElementTest, RequestSaveVideoFrame) {
   ASSERT_TRUE(FrameHost()->download_url_called());
   const auto& params = FrameHost()->download_params();
   ASSERT_TRUE(params);
-  EXPECT_TRUE(params->is_context_menu_save);
+  EXPECT_TRUE(params->should_prompt_for_save_location);
   EXPECT_TRUE(params->suggested_name.starts_with("videoframe_"));
   EXPECT_TRUE(params->url.ProtocolIs("blob"));
   EXPECT_TRUE(params->blob_url_token.is_valid());

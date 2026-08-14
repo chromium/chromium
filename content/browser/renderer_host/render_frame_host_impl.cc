@@ -8003,14 +8003,13 @@ void RenderFrameHostImpl::DownloadURL(
   std::unique_ptr<download::DownloadUrlParameters> parameters =
       CreateDownloadUrlParameters(blink_parameters->url, traffic_annotation);
   // Downloads arriving through this IPC handler always originate from web
-  // content, so treat them as content-initiated regardless of what the
-  // renderer reports in `is_context_menu_save`.
+  // content.
   parameters->set_content_initiated(true);
   parameters->set_has_user_gesture(blink_parameters->has_user_gesture &&
                                    HasTransientUserActivation());
   parameters->set_suggested_name(
       blink_parameters->suggested_name.value_or(std::u16string()));
-  parameters->set_prompt(blink_parameters->is_context_menu_save);
+  parameters->set_prompt(blink_parameters->should_prompt_for_save_location);
   parameters->set_cross_origin_redirects(
       blink_parameters->cross_origin_redirects);
   parameters->set_referrer(

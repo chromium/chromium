@@ -142,8 +142,8 @@ struct DownloadURLParams {
   // Non-null when |url| is for "data:", eg. when saving an image.
   pending_remote<Blob>? data_url_blob;
 
-  // Whether the download is from context menu.
-  bool is_context_menu_save = false;
+  // Whether to prompt the user for a destination filepath.
+  bool should_prompt_for_save_location = false;
 
   // True when the download was preceded by a recent gesture from the user.
   bool has_user_gesture = false;

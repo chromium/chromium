@@ -574,7 +574,7 @@ void HTMLVideoElement::RequestSaveVideoFrame() {
       /*is_top_level_navigation=*/false);
 
   auto params = mojom::blink::DownloadURLParams::New();
-  params->is_context_menu_save = true;
+  params->should_prompt_for_save_location = true;
   auto timestamp_ms = base::saturated_cast<uint32_t>(
       currentTime() * base::Time::kMillisecondsPerSecond);
   params->suggested_name =

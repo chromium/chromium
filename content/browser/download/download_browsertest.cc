@@ -5446,7 +5446,7 @@ IN_PROC_BROWSER_TEST_F(DownloadPrerenderTest, DiscardContextMenuSaveDownload) {
 
   auto params = blink::mojom::DownloadURLParams::New();
   params->url = kDownloadUrl;
-  params->is_context_menu_save = true;
+  params->should_prompt_for_save_location = true;
   static_cast<RenderFrameHostImpl*>(render_frame_host)
       ->DownloadURL(std::move(params));
 
@@ -5520,7 +5520,7 @@ IN_PROC_BROWSER_TEST_F(DownloadFencedFrameTest,
 
   auto params = blink::mojom::DownloadURLParams::New();
   params->url = kDownloadUrl;
-  params->is_context_menu_save = true;
+  params->should_prompt_for_save_location = true;
   static_cast<RenderFrameHostImpl*>(fenced_frame_host)
       ->DownloadURL(std::move(params));
 
