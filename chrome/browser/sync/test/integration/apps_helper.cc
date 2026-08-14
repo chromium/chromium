@@ -188,12 +188,6 @@ void SetAppLaunchOrdinalForApp(
       profile, CreateFakeAppName(app_index), app_launch_ordinal);
 }
 
-void CopyNTPOrdinals(Profile* source, Profile* destination, int index) {
-  SetPageOrdinalForApp(destination, index, GetPageOrdinalForApp(source, index));
-  SetAppLaunchOrdinalForApp(destination, index,
-                            GetAppLaunchOrdinalForApp(source, index));
-}
-
 void FixNTPOrdinalCollisions(Profile* profile) {
   SyncAppHelper::GetInstance()->FixNTPOrdinalCollisions(profile);
 }

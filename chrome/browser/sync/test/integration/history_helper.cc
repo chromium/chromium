@@ -416,16 +416,9 @@ void AddUrlToHistoryWithTimestamp(int index,
                                   const base::Time& timestamp) {
   AddToHistory(GetHistoryServiceFromClient(index), url, transition, source,
                timestamp);
-  if (sync_datatype_helper::test()->UseVerifier()) {
-    AddToHistory(HistoryServiceFactory::GetForProfile(
-                     sync_datatype_helper::test()->verifier(),
-                     ServiceAccessType::IMPLICIT_ACCESS),
-                 url, transition, source, timestamp);
-  }
 
   // Wait until the AddPage() request has completed so we know the change has
-  // filtered down to the sync observers (don't need to wait for the
-  // verifier profile since it doesn't sync).
+  // filtered down to the sync observers.
   WaitForHistoryDBThread(index);
 }
 

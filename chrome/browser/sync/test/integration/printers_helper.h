@@ -45,24 +45,14 @@ bool EditPrinterDescription(ash::SyncedPrintersManager* manager,
 // Waits for the printer store associated with |context| to load.
 void WaitForPrinterStoreToLoad(content::BrowserContext* context);
 
-// Returns the verifier store.
-ash::SyncedPrintersManager* GetVerifierPrinterStore();
-
 // Returns printer store at |index|.
 ash::SyncedPrintersManager* GetPrinterStore(int index);
-
-// Returns the number of printers in the verifier store.
-int GetVerifierPrinterCount();
 
 // Returns the number of printers in printer store |index|.
 int GetPrinterCount(int index);
 
 // Returns true if all profiles contain the same printers as profile 0.
 bool AllProfilesContainSamePrinters(std::ostream* os = nullptr);
-
-// Returns true if the verifier store and printer store |index| contain the same
-// data.
-bool ProfileContainsSamePrintersAsVerifier(int index);
 
 // A waiter that can block until we can satisfy
 // AllProfilesContainSamePrinters().

@@ -43,8 +43,8 @@ std::string InstallHostedApp(Profile* profile, int index);
 // from indices passed to InstallApp.
 std::string InstallPlatformApp(Profile* profile, int index);
 
-// Installs the hosted app for the given index to all profiles (including the
-// verifier), and returns the extension ID of the new app.
+// Installs the hosted app for the given index to all profiles, and returns the
+// extension ID of the new app.
 std::string InstallHostedAppForAllProfiles(int index);
 
 // Installs the web app for the given WebAppInstallInfo and profile. This does
@@ -99,12 +99,6 @@ syncer::StringOrdinal GetAppLaunchOrdinalForApp(Profile* profile,
 void SetAppLaunchOrdinalForApp(Profile* profile,
                                int app_index,
                                const syncer::StringOrdinal& app_launch_ordinal);
-
-// Copy the page and app launch ordinal value for the application at the given
-// index on |profile_source| to |profile_destination|.
-// The main intention of this is to properly setup the values on the verifier
-// profile in situations where the other profiles have conflicting values.
-void CopyNTPOrdinals(Profile* source, Profile* destination, int index);
 
 // Fix any NTP icon collisions that are currently in |profile|.
 void FixNTPOrdinalCollisions(Profile* profile);
@@ -173,9 +167,7 @@ class AppsStatusChangeChecker : public StatusChangeChecker,
   base::WeakPtrFactory<AppsStatusChangeChecker> weak_ptr_factory_{this};
 };
 
-// Checker to block for a set of profiles to have matching extensions lists. If
-// the verifier profile is enabled, it will be included in the set of profiles
-// to check against.
+// Checker to block for a set of profiles to have matching extensions lists.
 class AppsMatchChecker : public AppsStatusChangeChecker {
  public:
   AppsMatchChecker();

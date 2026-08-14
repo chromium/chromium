@@ -26,14 +26,7 @@ namespace search_engines_helper {
 // Used to access the search engines within a particular sync profile.
 TemplateURLService* GetServiceForBrowserContext(int profile_index);
 
-// Used to access the search engines within the verifier sync profile.
-TemplateURLService* GetVerifierService();
-
-// Compared a single TemplateURLService for a given profile to the verifier.
-// Retrns true iff their user-visible fields match.
-bool ServiceMatchesVerifier(int profile_index);
-
-// Returns true iff all TemplateURLServices match with the verifier.
+// Returns true iff all TemplateURLServices match each other.
 bool AllServicesMatch();
 bool AllServicesMatch(std::ostream* os);
 
@@ -52,12 +45,11 @@ class TemplateURLBuilder {
 };
 
 // Add a search engine based on a keyword to the service at index
-// |profile_index| and the verifier if it is used.
+// |profile_index|.
 void AddSearchEngine(int profile_index, const std::string& keyword);
 
 // Retrieves a search engine from the service at index |profile_index| with
-// original keyword |keyword| and changes its user-visible fields. Does the same
-// to the verifier, if it is used.
+// original keyword |keyword| and changes its user-visible fields.
 void EditSearchEngine(int profile_index,
                       const std::string& keyword,
                       const std::u16string& short_name,
@@ -69,7 +61,7 @@ void EditSearchEngine(int profile_index,
 void DeleteSearchEngine(int profile_index, const std::string& keyword);
 
 // Changes the search engine with |keyword| to be the new default for
-// |profile_index|. Does the same to the verifier, if it is used.
+// |profile_index|.
 void ChangeDefaultSearchProvider(int profile_index, const std::string& keyword);
 
 // Returns true if the profile at |profile_index| has a search engine matching

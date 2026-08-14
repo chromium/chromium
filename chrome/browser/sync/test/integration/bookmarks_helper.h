@@ -185,9 +185,8 @@ void ReverseChildOrder(int profile, const bookmarks::BookmarkNode* parent);
 // other. Returns true if they match.
 [[nodiscard]] bool ModelsMatch(int profile_a, int profile_b);
 
-// Checks if the bookmark models of all sync profiles match each other. Does
-// not compare them with the verifier bookmark model. Returns true if they
-// match.
+// Checks if the bookmark models of all sync profiles match each other. Returns
+// true if they match.
 [[nodiscard]] bool AllModelsMatch();
 
 // Checks if the bookmark model of profile |profile| contains any instances of

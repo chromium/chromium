@@ -113,51 +113,12 @@ TemplateURLService* GetServiceForBrowserContext(int profile_index) {
       test()->GetProfile(profile_index));
 }
 
-TemplateURLService* GetVerifierService() {
-  return TemplateURLServiceFactory::GetForProfile(test()->verifier());
-}
-
-bool ServiceMatchesVerifier(int profile_index) {
-  TemplateURLService* verifier = GetVerifierService();
-  TemplateURLService* other = GetServiceForBrowserContext(profile_index);
-
-  TemplateURLService::TemplateURLVector verifier_turls =
-      verifier->GetTemplateURLs();
-  if (verifier_turls.size() != other->GetTemplateURLs().size()) {
-    DVLOG(1) << "Verifier and other service have a different count of TURLs: "
-             << verifier_turls.size() << " vs "
-             << other->GetTemplateURLs().size() << " respectively.";
-    return false;
-  }
-
-  for (TemplateURL* verifier_turl : verifier_turls) {
-    const TemplateURL* other_turl =
-        other->GetTemplateURLForKeyword(verifier_turl->keyword());
-
-    if (!other_turl) {
-      DVLOG(1) << "The other service did not contain a TURL with keyword: "
-               << verifier_turl->keyword();
-      return false;
-    }
-    if (!TURLsMatch(*verifier_turl, *other_turl)) {
-      return false;
-    }
-  }
-
-  return true;
-}
-
 bool AllServicesMatch() {
   return AllServicesMatch(&VLOG_STREAM(1));
 }
 
 bool AllServicesMatch(std::ostream* os) {
   // Use 0 as the baseline.
-  if (test()->UseVerifier() && !ServiceMatchesVerifier(0)) {
-    *os << "TemplateURLService 0 does not match verifier.";
-    return false;
-  }
-
   for (int it = 1; it < test()->num_clients(); ++it) {
     if (!ServicesMatch(0, it, os)) {
       *os << "TemplateURLService " << it << " does not match with "
@@ -197,9 +158,6 @@ void AddSearchEngine(int profile_index, const std::string& keyword) {
   Profile* profile = test()->GetProfile(profile_index);
   TemplateURLBuilder builder(keyword);
   TemplateURLServiceFactory::GetForProfile(profile)->Add(builder.Build());
-  if (test()->UseVerifier()) {
-    GetVerifierService()->Add(builder.Build());
-  }
 }
 
 void EditSearchEngine(int profile_index,
@@ -215,14 +173,6 @@ void EditSearchEngine(int profile_index,
   ASSERT_FALSE(new_keyword.empty());
   service->ResetTemplateURL(turl, short_name, base::UTF8ToUTF16(new_keyword),
                             url);
-  // Make sure we do the same on the verifier.
-  if (test()->UseVerifier()) {
-    TemplateURL* verifier_turl = GetVerifierService()->GetTemplateURLForKeyword(
-        base::UTF8ToUTF16(keyword));
-    EXPECT_TRUE(verifier_turl);
-    GetVerifierService()->ResetTemplateURL(verifier_turl, short_name,
-                                           base::UTF8ToUTF16(new_keyword), url);
-  }
 }
 
 void DeleteSearchEngine(int profile_index, const std::string& keyword) {
@@ -231,13 +181,6 @@ void DeleteSearchEngine(int profile_index, const std::string& keyword) {
       service->GetTemplateURLForKeyword(base::UTF8ToUTF16(keyword));
   EXPECT_TRUE(turl);
   service->Remove(turl);
-  // Make sure we do the same on the verifier.
-  if (test()->UseVerifier()) {
-    TemplateURL* verifier_turl = GetVerifierService()->GetTemplateURLForKeyword(
-        base::UTF8ToUTF16(keyword));
-    EXPECT_TRUE(verifier_turl);
-    GetVerifierService()->Remove(verifier_turl);
-  }
 }
 
 void ChangeDefaultSearchProvider(int profile_index,
@@ -247,12 +190,6 @@ void ChangeDefaultSearchProvider(int profile_index,
       service->GetTemplateURLForKeyword(base::UTF8ToUTF16(keyword));
   ASSERT_TRUE(turl);
   service->SetUserSelectedDefaultSearchProvider(turl);
-  if (test()->UseVerifier()) {
-    TemplateURL* verifier_turl = GetVerifierService()->GetTemplateURLForKeyword(
-        base::UTF8ToUTF16(keyword));
-    ASSERT_TRUE(verifier_turl);
-    GetVerifierService()->SetUserSelectedDefaultSearchProvider(verifier_turl);
-  }
 }
 
 bool HasSearchEngine(int profile_index, const std::string& keyword) {
@@ -286,10 +223,6 @@ GetSearchEngineInFakeServerWithKeyword(const std::string& keyword,
 }
 
 SearchEnginesMatchChecker::SearchEnginesMatchChecker() {
-  if (test()->UseVerifier()) {
-    observations_.AddObservation(GetVerifierService());
-  }
-
   for (int i = 0; i < test()->num_clients(); ++i) {
     observations_.AddObservation(GetServiceForBrowserContext(i));
   }

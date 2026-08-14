@@ -52,8 +52,6 @@ bool SyncAppListHelper::AppListMatch(Profile* profile1, Profile* profile2) {
       AppListSyncableServiceFactory::GetForProfile(profile1);
   AppListSyncableService* service2 =
       AppListSyncableServiceFactory::GetForProfile(profile2);
-  // Note: sync item entries may not exist in verifier, but item lists should
-  // match.
   if (service1->GetModelUpdater()->ItemCount() !=
       service2->GetModelUpdater()->ItemCount()) {
     LOG(ERROR) << "Model item count: "

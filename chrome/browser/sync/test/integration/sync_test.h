@@ -165,8 +165,8 @@ class SyncTest : public PlatformBrowserTest,
   // and manages its lifetime.
   Profile* GetProfile(int index) const;
 
-  // Returns a list of all profiles including the verifier if available. Callee
-  // owns the objects and manages its lifetime.
+  // Returns a list of all profiles. Callee owns the objects and manages
+  // their lifetime.
   std::vector<raw_ptr<Profile, VectorExperimental>> GetAllProfiles();
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -220,18 +220,6 @@ class SyncTest : public PlatformBrowserTest,
   // Returns the URL to be opened in the initial tab of each profile's browser
   // window.
   virtual GURL GetInitialURL() const;
-
-  // Returns a pointer to the sync profile that is used to verify changes to
-  // individual sync profiles. Callee owns the object and manages its lifetime.
-  Profile* verifier();
-
-  // Used to determine whether the verifier profile should be updated or not.
-  // Default is to return false. Test should override this if they require
-  // different behavior.
-  // Warning: do not use verifier in new tests.
-  // TODO(crbug.com/40152770): remove verifier profile logic completely, once
-  // all tests are rewritten in a way to not use verifier.
-  virtual bool UseVerifier();
 
   // Initializes sync clients and profiles but does not sync any of them.
   [[nodiscard]] virtual bool SetupClients();
@@ -455,12 +443,6 @@ class SyncTest : public PlatformBrowserTest,
   std::map<raw_ptr<Profile, AcrossTasksDanglingUntriaged>,
            raw_ptr<FakeSyncGCMDriver, AcrossTasksDanglingUntriaged>>
       profile_to_fake_gcm_driver_;
-
-  // Sync profile against which changes to individual profiles are verified.
-  // We don't need a corresponding verifier sync client because the contents
-  // of the verifier profile are strictly local, and are not meant to be
-  // synced.
-  raw_ptr<Profile, AcrossTasksDanglingUntriaged> verifier_ = nullptr;
 
   syncer::DataTypeSet excluded_types_from_check_for_data_type_failures_;
 

@@ -258,8 +258,7 @@ std::optional<FaviconData> GetFaviconData(BookmarkModel* model,
                      node->icon_url() ? *node->icon_url() : GURL());
 }
 
-// Sets the favicon for |profile| and |node|. |profile| may be
-// |test()->verifier()|.
+// Sets the favicon for |profile| and |node|.
 void SetFaviconImpl(Profile* profile,
                     const BookmarkNode* node,
                     const GURL& icon_url,
@@ -282,8 +281,7 @@ void SetFaviconImpl(Profile* profile,
   observer.WaitUntilFaviconChangedToIconURL();
 }
 
-// Expires the favicon for |profile| and |node|. |profile| may be
-// |test()->verifier()|.
+// Expires the favicon for |profile| and |node|.
 void ExpireFaviconImpl(Profile* profile, const BookmarkNode* node) {
   favicon::FaviconService* favicon_service =
       FaviconServiceFactory::GetForProfile(profile,
@@ -301,8 +299,7 @@ void OnGotFaviconData(
   std::move(callback).Run();
 }
 
-// Deletes favicon mappings for |profile| and |node|. |profile| may be
-// |test()->verifier()|.
+// Deletes favicon mappings for |profile| and |node|.
 void DeleteFaviconMappingsImpl(Profile* profile,
                                const BookmarkNode* node,
                                FaviconSource favicon_source) {
