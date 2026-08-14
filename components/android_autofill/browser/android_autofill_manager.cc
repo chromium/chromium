@@ -99,7 +99,8 @@ void AndroidAutofillManager::OnAskForValuesToFillImpl(
     const FieldGlobalId& field_id,
     const gfx::Rect& caret_bounds,
     AutofillSuggestionTriggerSource trigger_source,
-    std::optional<PasswordSuggestionRequest> password_request) {
+    std::optional<PasswordSuggestionRequest> password_request,
+    base::ScopedClosureRunner scoped_on_after_ask_for_values_to_fill) {
   auto* provider = GetAutofillProvider();
   if (!provider) {
     return;

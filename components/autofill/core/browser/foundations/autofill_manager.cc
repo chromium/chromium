@@ -494,12 +494,31 @@ void AutofillManager::OnAskForValuesToFill(
   }
   NotifyObservers(&Observer::OnBeforeAskForValuesToFill, form.global_id(),
                   field_id, form);
+  auto scoped_on_after_ask_for_values_to_fill =
+      base::ScopedClosureRunner(base::BindOnce(
+          [](base::WeakPtr<AutofillManager> self, FormGlobalId form_id,
+             FieldGlobalId field_id) {
+            if (self) {
+              self->NotifyObservers(&Observer::OnAfterAskForValuesToFill,
+                                    form_id, field_id);
+            }
+          },
+          GetWeakPtr(), form.global_id(), field_id));
   ParseFormAsync(
       form,
-      ParsingCallback(&AutofillManager::OnAskForValuesToFillImpl, field_id,
-                      caret_bounds, trigger_source, std::move(password_request))
-          .Then(NotifyObserversCallback(&Observer::OnAfterAskForValuesToFill,
-                                        form.global_id(), field_id)));
+      base::BindOnce(
+          [](const FieldGlobalId& field_id, const gfx::Rect& caret_bounds,
+             AutofillSuggestionTriggerSource trigger_source,
+             std::optional<PasswordSuggestionRequest> password_request,
+             base::ScopedClosureRunner scoped_on_after_ask_for_values_to_fill,
+             AutofillManager& manager, const FormData& form) {
+            manager.OnAskForValuesToFillImpl(
+                form, field_id, caret_bounds, trigger_source,
+                std::move(password_request),
+                std::move(scoped_on_after_ask_for_values_to_fill));
+          },
+          field_id, caret_bounds, trigger_source, std::move(password_request),
+          std::move(scoped_on_after_ask_for_values_to_fill)));
 }
 
 void AutofillManager::OnFocusOnFormField(const FormData& form,

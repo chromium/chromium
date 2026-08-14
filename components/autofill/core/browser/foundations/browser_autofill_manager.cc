@@ -1151,7 +1151,8 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
     const FieldGlobalId& field_id,
     const gfx::Rect& caret_bounds,
     AutofillSuggestionTriggerSource trigger_source,
-    std::optional<PasswordSuggestionRequest> password_request) {
+    std::optional<PasswordSuggestionRequest> password_request,
+    base::ScopedClosureRunner scoped_on_after) {
   base::TimeTicks suggestion_generation_start_time = base::TimeTicks::Now();
 
   const FormFieldData& field = CHECK_DEREF(form.FindFieldByGlobalId(field_id));
@@ -1256,7 +1257,8 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
   if (!base::FeatureList::IsEnabled(
           features::kAutofillNewSuggestionGeneration)) {
     GenerateSuggestionsAndMaybeShowUIPhase1(form, field, trigger_source,
-                                            suggestion_generation_start_time);
+                                            suggestion_generation_start_time,
+                                            std::move(scoped_on_after));
     return;
   }
 
@@ -1271,7 +1273,8 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
           base::BindOnce(
               &BrowserAutofillManager::OnIndividualSuggestionsGenerated,
               weak_ptr_factory_.GetWeakPtr(), form, field, trigger_source,
-              context, suggestion_generation_start_time));
+              context, suggestion_generation_start_time,
+              std::move(scoped_on_after)));
 
   for (const std::unique_ptr<SuggestionGenerator>& suggestion_generator :
        suggestion_generators_) {
@@ -1287,6 +1290,7 @@ void BrowserAutofillManager::OnIndividualSuggestionsGenerated(
     AutofillSuggestionTriggerSource trigger_source,
     SuggestionsContext context,
     base::TimeTicks suggestion_generation_start_time,
+    base::ScopedClosureRunner scoped_on_after,
     std::vector<SuggestionGenerator::ReturnedSuggestions>
         returned_suggestions) {
   using SuggestionDataSource = SuggestionGenerator::SuggestionDataSource;
@@ -1368,10 +1372,11 @@ void BrowserAutofillManager::OnIndividualSuggestionsGenerated(
       [&](std::vector<Suggestion> suggestions) {
         if (TryToShowTouchToFillSuggestions(form, field, autofill_field,
                                             suggestions, trigger_source)) {
-          OnGenerateSuggestionsComplete(
-              form.global_id(), field, trigger_source, context,
-              suggestion_generation_start_time,
-              /*show_suggestions=*/false, suggestions);
+          OnGenerateSuggestionsComplete(form.global_id(), field, trigger_source,
+                                        context,
+                                        suggestion_generation_start_time,
+                                        /*show_suggestions=*/false, suggestions,
+                                        std::move(scoped_on_after));
           return;
         }
 
@@ -1383,7 +1388,8 @@ void BrowserAutofillManager::OnIndividualSuggestionsGenerated(
         }
         OnGenerateSuggestionsComplete(form.global_id(), field, trigger_source,
                                       context, suggestion_generation_start_time,
-                                      /*show_suggestions=*/true, suggestions);
+                                      /*show_suggestions=*/true, suggestions,
+                                      std::move(scoped_on_after));
       };
 
   if (prioritized_suggestions.empty()) {
@@ -1497,7 +1503,8 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase1(
     const FormData& form,
     const FormFieldData& field,
     AutofillSuggestionTriggerSource trigger_source,
-    base::TimeTicks suggestion_generation_start_time) {
+    base::TimeTicks suggestion_generation_start_time,
+    base::ScopedClosureRunner scoped_on_after) {
   // In case we cannot fetch the parsed `FormStructure` and `AutofillField`, we
   // still need to offer Autocomplete.
   // TODO(crbug.com/433224307): Consider early returning here when the cache
@@ -1509,7 +1516,7 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase1(
   auto generate_suggestions_and_maybe_show_ui_phase2 = base::BindOnce(
       &BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2,
       weak_ptr_factory_.GetWeakPtr(), form, field, trigger_source,
-      suggestion_generation_start_time);
+      suggestion_generation_start_time, std::move(scoped_on_after));
 
   // `otp_manager_` may not be instantiated on all platforms. If a focused field
   // is not classified, `autofill_field` is null but the field may be filled by
@@ -1535,6 +1542,7 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2(
     const FormFieldData& field,
     AutofillSuggestionTriggerSource trigger_source,
     base::TimeTicks suggestion_generation_start_time,
+    base::ScopedClosureRunner scoped_on_after,
     std::vector<std::string> one_time_passwords) {
   // In case we cannot fetch the parsed `FormStructure` and `AutofillField`, we
   // still need to offer Autocomplete.
@@ -1548,7 +1556,8 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2(
 
   OnGenerateSuggestionsCallback callback = base::BindOnce(
       &BrowserAutofillManager::GenerateFooter, weak_ptr_factory_.GetWeakPtr(),
-      form, field, trigger_source, context, suggestion_generation_start_time);
+      form, field, trigger_source, context, suggestion_generation_start_time,
+      std::move(scoped_on_after));
 
   // If this is a mixed content form, we show a warning message and don't offer
   // autofill. The warning is shown even if there are no autofill suggestions
@@ -1712,6 +1721,7 @@ void BrowserAutofillManager::GenerateFooter(
     AutofillSuggestionTriggerSource trigger_source,
     const SuggestionsContext& context,
     base::TimeTicks suggestion_generation_start_time,
+    base::ScopedClosureRunner scoped_on_after,
     bool show_suggestions,
     std::vector<Suggestion> suggestions) {
   std::vector<Suggestion> passkey_suggestions =
@@ -1723,7 +1733,8 @@ void BrowserAutofillManager::GenerateFooter(
 
   OnGenerateSuggestionsComplete(form.global_id(), field, trigger_source,
                                 context, suggestion_generation_start_time,
-                                show_suggestions, std::move(suggestions));
+                                show_suggestions, std::move(suggestions),
+                                std::move(scoped_on_after));
 }
 
 void BrowserAutofillManager::OnGeneratedSingleFieldFillSuggestions(
@@ -1761,7 +1772,8 @@ void BrowserAutofillManager::OnGenerateSuggestionsComplete(
     const SuggestionsContext& context,
     base::TimeTicks suggestion_generation_start_time,
     bool show_suggestions,
-    std::vector<Suggestion> suggestions) {
+    std::vector<Suggestion> suggestions,
+    base::ScopedClosureRunner scoped_on_after) {
   ReorderWebAuthnSuggestionsToFooter(suggestions);
 
   if (!suggestions.empty()) {

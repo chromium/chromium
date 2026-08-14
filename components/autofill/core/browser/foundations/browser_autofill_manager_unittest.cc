@@ -5827,6 +5827,46 @@ TEST_F(BrowserAutofillManagerTest, ShowNothingIfTouchToFillAlreadyShown) {
   EXPECT_FALSE(external_delegate()->on_suggestions_returned_seen());
 }
 
+// Tests that OnAfterAskForValuesToFill is notified strictly after
+// TryToShowTouchToFill is executed during suggestion generation.
+TEST_F(BrowserAutofillManagerTest,
+       TouchToFill_OnAfterAskForValuesToFillCalledAfterTryToShowTouchToFill) {
+  FormData form = CreateTestCreditCardFormData(/*is_https=*/true,
+                                               /*use_month_type=*/false);
+  FormsSeen({form});
+
+  MockAutofillManagerObserver observer;
+  autofill_manager().AddObserver(&observer);
+
+  bool try_to_show_ttf_called = false;
+  bool on_after_called = false;
+
+  base::RunLoop run_loop;
+  {
+    testing::InSequence s;
+    EXPECT_CALL(observer, OnBeforeAskForValuesToFill);
+    EXPECT_CALL(touch_to_fill_delegate(), TryToShowTouchToFill).WillOnce([&]() {
+      try_to_show_ttf_called = true;
+      EXPECT_FALSE(on_after_called);
+      return true;
+    });
+    EXPECT_CALL(observer, OnAfterAskForValuesToFill).WillOnce([&]() {
+      on_after_called = true;
+      EXPECT_TRUE(try_to_show_ttf_called);
+      run_loop.Quit();
+    });
+  }
+
+  TryToShowTouchToFill(form, form.fields().front(),
+                       /*form_element_was_clicked=*/true);
+  run_loop.Run();
+
+  EXPECT_TRUE(try_to_show_ttf_called);
+  EXPECT_TRUE(on_after_called);
+
+  autofill_manager().RemoveObserver(&observer);
+}
+
 // Tests that compose suggestions are not queried if Autofill has suggestions
 // itself.
 TEST_F(BrowserAutofillManagerTest, NoComposeSuggestionsByDefault) {

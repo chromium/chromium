@@ -399,7 +399,9 @@ class BrowserAutofillManager : public AutofillManager {
       const FieldGlobalId& field_id,
       const gfx::Rect& caret_bounds,
       AutofillSuggestionTriggerSource trigger_source,
-      std::optional<PasswordSuggestionRequest> password_request) override;
+      std::optional<PasswordSuggestionRequest> password_request,
+      base::ScopedClosureRunner scoped_on_after_ask_for_values_to_fill)
+      override;
   void OnSelectControlSelectionChangedImpl(
       const FormData& form,
       const FieldGlobalId& field_id) override;
@@ -511,6 +513,7 @@ class BrowserAutofillManager : public AutofillManager {
       AutofillSuggestionTriggerSource trigger_source,
       SuggestionsContext context,
       base::TimeTicks suggestion_generation_start_time,
+      base::ScopedClosureRunner scoped_on_after,
       std::vector<SuggestionGenerator::ReturnedSuggestions>
           returned_suggestions);
 
@@ -553,18 +556,21 @@ class BrowserAutofillManager : public AutofillManager {
       const FormData& form,
       const FormFieldData& field,
       AutofillSuggestionTriggerSource trigger_source,
-      base::TimeTicks suggestion_generator_start_time);
+      base::TimeTicks suggestion_generator_start_time,
+      base::ScopedClosureRunner scoped_on_after);
   void GenerateSuggestionsAndMaybeShowUIPhase2(
       const FormData& form,
       const FormFieldData& field,
       AutofillSuggestionTriggerSource trigger_source,
       base::TimeTicks suggestion_generator_start_time,
+      base::ScopedClosureRunner scoped_on_after,
       std::vector<std::string> one_time_passwords);
   void GenerateFooter(const FormData& form,
                       const FormFieldData& field,
                       AutofillSuggestionTriggerSource trigger_source,
                       const SuggestionsContext& context,
                       base::TimeTicks suggestion_generation_start_time,
+                      base::ScopedClosureRunner scoped_on_after,
                       bool show_suggestions,
                       std::vector<Suggestion> suggestions);
 
@@ -588,7 +594,8 @@ class BrowserAutofillManager : public AutofillManager {
       const SuggestionsContext& context,
       base::TimeTicks suggestion_generation_start_time,
       bool show_suggestions,
-      std::vector<Suggestion> suggestions);
+      std::vector<Suggestion> suggestions,
+      base::ScopedClosureRunner scoped_on_after);
 
   // Logs various Autofill enabled/disabled metrics when forms are seen on a
   // page for the first time.

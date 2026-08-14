@@ -5,6 +5,7 @@
 #include "base/base64.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/time/time.h"
 #include "components/autofill/core/browser/crowdsourcing/mock_autofill_crowdsourcing_manager.h"
 #include "components/autofill/core/browser/foundations/mock_autofill_manager_observer.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_manager_impl.h"
@@ -267,6 +268,12 @@ TEST_F(OtpFormEventLoggerIntegrationTest, OtpNotReady) {
 
   // Trigger field type determination to start OTP retrieval.
   test_api(autofill_manager()).OnFormsParsed({otp_form});
+
+  // Fast-forward time so the initial subscription started during form parsing
+  // expires. This ensures that when user interaction occurs, the subscription
+  // is renewed and queries the backend again, simulating that an OTP was not
+  // ready when the user interacted with the form.
+  task_environment_.FastForwardBy(base::Minutes(1));
 
   // This line marks the form as interacted with which is a prerequisite for key
   // metrics to be emitted.

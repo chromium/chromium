@@ -78,10 +78,13 @@ class BrowserAutofillManagerTestApi : public AutofillManagerTestApi {
       SuggestionsContext context,
       base::TimeTicks suggestion_generation_start_time,
       std::vector<SuggestionGenerator::ReturnedSuggestions>
-          returned_suggestions) {
+          returned_suggestions,
+      base::OnceClosure on_after_ask_for_values_to_fill = {}) {
     manager_->OnIndividualSuggestionsGenerated(
         form, field, trigger_source, std::move(context),
-        suggestion_generation_start_time, std::move(returned_suggestions));
+        suggestion_generation_start_time,
+        base::ScopedClosureRunner(std::move(on_after_ask_for_values_to_fill)),
+        std::move(returned_suggestions));
   }
 
   void SetFourDigitCombinationsInDOM(

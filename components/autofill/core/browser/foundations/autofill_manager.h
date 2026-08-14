@@ -20,6 +20,7 @@
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/functional/function_ref.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
@@ -561,7 +562,8 @@ class AutofillManager
       const FieldGlobalId& field_id,
       const gfx::Rect& caret_bounds,
       AutofillSuggestionTriggerSource trigger_source,
-      std::optional<PasswordSuggestionRequest> password_request) = 0;
+      std::optional<PasswordSuggestionRequest> password_request,
+      base::ScopedClosureRunner scoped_on_after_ask_for_values_to_fill) = 0;
   virtual void OnDidAutofillFormImpl(const FormData& form) = 0;
   virtual void SuppressAutomaticRefillsImpl(const FillId& fill_id) = 0;
   virtual void RequestRefillImpl(const FillId& fill_id) = 0;
