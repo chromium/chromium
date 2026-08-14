@@ -39,6 +39,8 @@
 #include "chrome/browser/ui/views/tabs/common/tab_strip_collection_controller.h"
 #include "chrome/browser/ui/views/tabs/common/tab_strip_utils.h"
 #include "chrome/browser/ui/views/tabs/common/tab_strip_view.h"
+#include "chrome/browser/ui/views/tabs/common/tab_view_vertical_layout.h"
+#include "chrome/browser/ui/views/tabs/shared/tab_strip_types.h"
 #include "chrome/browser/ui/views/tabs/tab/alert_indicator_button.h"
 #include "chrome/browser/ui/views/tabs/tab/glow_hover_controller.h"
 #include "chrome/browser/ui/views/tabs/tab/tab_accessibility.h"
@@ -86,10 +88,6 @@
 #include "ui/views/view_utils.h"
 
 namespace {
-constexpr int kIconDesignWidth = 16;
-constexpr int kTitleMinWidth = 10;
-constexpr int kHorizontalInset = 8;
-constexpr int kDefaultPadding = 4;
 constexpr int kFocusRingInset = 0.0f;
 
 class TabHighlightPathGenerator : public views::HighlightPathGenerator {
@@ -125,6 +123,11 @@ TabStripUserGestureDetails GetGestureDetail(const ui::Event& event) {
   }
   gesture_detail.type = type;
   return gesture_detail;
+}
+
+std::unique_ptr<TabView::LayoutManager> CreateTabViewLayout(
+    TabStripOrientation orientation) {
+  return std::make_unique<TabViewVerticalLayout>();
 }
 }  // namespace
 
@@ -325,24 +328,11 @@ TabView::TabView(TabCollectionNode* collection_node)
                   GetLayoutConstant(LayoutConstant::kVerticalTabHeight)));
   }
 
-  // Ordered vector of children to be rendered in the tab.
-  tab_children_configs_ = {
-      TabChildConfig(close_button_, kIconDesignWidth, kDefaultPadding,
-                     /*align_leading=*/false,
-                     /*expand=*/false),
-      TabChildConfig(alert_indicator_, kIconDesignWidth, kDefaultPadding,
-                     /*align_leading=*/false,
-                     /*expand=*/false, /*decorate_on_collapse=*/true),
-      TabChildConfig(icon_, kIconDesignWidth, kHorizontalInset,
-                     /*align_leading=*/true,
-                     /*expand=*/false),
-      TabChildConfig(title_, kTitleMinWidth, kDefaultPadding,
-                     /*align_leading=*/true,
-                     /*expand=*/true)};
-
   title_->SetProperty(views::kElementIdentifierKey, kVerticalTabTitleElementId);
   SetProperty(views::kElementIdentifierKey, kTabElementId);
-  SetLayoutManager(std::make_unique<views::DelegatingLayoutManager>(this));
+  // Layout manager must be set after child views are created because the
+  // vertical layout stores pointers to those children.
+  SetLayoutManager(CreateTabViewLayout(orientation_));
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
 
   // So we get don't get enter/exit on children and don't prematurely stop the
@@ -393,6 +383,14 @@ TabView::TabView(TabCollectionNode* collection_node)
 }
 
 TabView::~TabView() = default;
+
+void TabView::LayoutManager::OnInstalled(views::View* host) {
+  CHECK(IsViewClass<class TabView>(host));
+}
+
+const TabView& TabView::LayoutManager::TabView() const {
+  return static_cast<const class TabView&>(*host_view());
+}
 
 void TabView::StepLoadingAnimation(const base::TimeDelta& elapsed_time) {
   // TODO(crbug.com/467710547): Paint favicon to a layer when tab strip isn't
@@ -814,156 +812,6 @@ void TabView::UpdateLayerRoundedCorners() {
 void TabView::OnThemeChanged() {
   views::View::OnThemeChanged();
   UpdateColors();
-}
-
-gfx::Rect TabView::GetChildBounds(const gfx::Rect& container,
-                                  const TabChildConfig& config,
-                                  const bool center) const {
-  int preferred_width;
-  int preferred_height;
-  if (config.expand) {
-    preferred_width = container.width() - config.padding;
-    // The only expandable view is the views::Label. Just get the line height to
-    // make calculating bounds cheaper.
-    views::Label* label = views::AsViewClass<views::Label>(config.view);
-    CHECK(label);
-    preferred_height = label->GetLineHeight();
-  } else {
-    const gfx::Size preferred_size = config.view->GetPreferredSize();
-    preferred_width = preferred_size.width();
-    preferred_height = preferred_size.height();
-  }
-
-  // Some icons have larger sizes to account for decoration. Make a distinction
-  // between the design width and the actual width.
-  const int design_width =
-      config.expand ? container.width() - config.padding : config.min_width;
-
-  int x = container.x();
-  if (center) {
-    x += 0.5 * (container.width() - preferred_width);
-  } else if (config.align_leading) {
-    x += 0.5 * (design_width - preferred_width);
-  } else {
-    x += container.width() - 0.5 * (design_width + preferred_width);
-  }
-  const int y = container.y() + 0.5 * (container.height() - preferred_height);
-
-  return gfx::Rect(x, y, preferred_width, preferred_height);
-}
-
-bool TabView::IsChildVisible(const views::View* child_view,
-                             const int width) const {
-  if (child_view == title_) {
-    // Pinned titles should be visible in the expand on hover state when the
-    // width is sufficient to show the title.
-    return !pinned_ || IsInExpandOnHover(width);
-  }
-
-  if (child_view == alert_indicator_) {
-    if (glic_tab_underline_view_ && (alert_indicator_->showing_alert_state() ==
-                                         tabs::TabAlert::kGlicAccessing ||
-                                     alert_indicator_->showing_alert_state() ==
-                                         tabs::TabAlert::kGlicSharing)) {
-      return false;
-    }
-    return alert_indicator_->showing_alert_state().has_value();
-  }
-
-  if (child_view == icon_) {
-    return !pinned_ || !IsChildVisible(alert_indicator_, width);
-  }
-
-  if (child_view == close_button_) {
-    if (pinned_) {
-      return false;
-    }
-
-    // When uncollapsing the tabstrip, intentionally start showing the close
-    // button on active non-hovered tabs a little bit sooner than reaching the
-    // uncollapsed min width, because otherwise the close buttons in a grouped
-    // split tab will visibly show up at different times due to rounding.
-    constexpr int kUncollapsedMinWidthThreshold = 3;
-
-    if (width < UncollapsedMinWidth() - kUncollapsedMinWidthThreshold) {
-      return active_ && (hovered_ || HasFocus() ||
-                         (close_button_ && close_button_->HasFocus()));
-    }
-
-    return active_ || hovered_ || HasFocus() ||
-           (close_button_ && close_button_->HasFocus());
-  }
-
-  NOTREACHED() << "Unknown tab child view";
-}
-
-views::ProposedLayout TabView::CalculateProposedLayout(
-    const views::SizeBounds& size_bounds) const {
-  int width;
-  if (orientation_ == TabStripOrientation::kHorizontal) {
-    if (pinned_) {
-      width = tab_styling()->tab_style()->GetPinnedWidth(split_);
-    } else {
-      const int preferred_width =
-          tab_styling()->tab_style()->GetStandardWidth(split_);
-      const int minimum_width =
-          active_ ? tab_styling()->tab_style()->GetMinimumActiveWidth(split_)
-                  : tab_styling()->tab_style()->GetMinimumInactiveWidth();
-      width = std::clamp(size_bounds.width().value_or(preferred_width),
-                         minimum_width, preferred_width);
-    }
-  } else {
-    width = size_bounds.width().value_or(
-        VerticalTabStripRegionView::kUncollapsedMaxWidth);
-  }
-  const int height =
-      (orientation_ == TabStripOrientation::kHorizontal)
-          ? tab_styling()->tab_style()->GetStandardHeight()
-          : GetLayoutConstant(pinned_ ? LayoutConstant::kVerticalTabPinnedHeight
-                                      : LayoutConstant::kVerticalTabHeight);
-  views::ProposedLayout layouts;
-  layouts.host_size = gfx::Size(width, height);
-
-  gfx::Rect bounds_remaining = gfx::Rect(0, 0, width, height);
-  bounds_remaining.Inset(tab_styling()->GetContentsInsets());
-
-  // If the tab is collapsed but animating with a wider width then we shouldn't
-  // center the contents.
-  const bool is_centered = (pinned_ || collapsed_) && !IsInExpandOnHover(width);
-
-  int placed_children = 0;
-  for (const auto& child : tab_children_configs_) {
-    const bool can_render_child =
-        is_centered
-            ? (placed_children == 0)
-            : (child.min_width + child.padding < bounds_remaining.width() ||
-               placed_children < 2);
-    const bool is_child_visible = IsChildVisible(child.view, width);
-    if (is_child_visible && can_render_child) {
-      layouts.child_layouts.emplace_back(
-          child.view.get(), is_child_visible,
-          GetChildBounds(bounds_remaining, child, is_centered));
-
-      if (!is_centered) {
-        bounds_remaining.Inset(
-            child.align_leading
-                ? gfx::Insets().set_left(child.padding + child.min_width)
-                : gfx::Insets().set_right(child.padding + child.min_width));
-      }
-
-      placed_children += 1;
-    } else if (child.decorate_on_collapse) {
-      layouts.child_layouts.emplace_back(
-          child.view.get(), is_child_visible,
-          gfx::Rect(width / 2, height / 2, 0, 0));
-    } else {
-      layouts.child_layouts.emplace_back(
-          child.view.get(), is_child_visible,
-          gfx::Rect(bounds_remaining.x(), bounds_remaining.y(), 0, 0));
-    }
-  }
-
-  return layouts;
 }
 
 bool TabView::GetHitTestMask(SkPath* mask) const {

@@ -68,6 +68,8 @@ source_set("impl") {
     "tab_strip_view_layout.cc",
     "tab_view.cc",
     "tab_view.h",
+    "tab_view_vertical_layout.cc",
+    "tab_view_vertical_layout.h",
     "unpinned_tab_container_view.cc",
     "unpinned_tab_container_view_layout.cc",
   ]

@@ -26,8 +26,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/context_menu_controller.h"
-#include "ui/views/layout/delegating_layout_manager.h"
-#include "ui/views/layout/flex_layout.h"
+#include "ui/views/layout/layout_manager_base.h"
 #include "ui/views/masked_targeter_delegate.h"
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
@@ -53,7 +52,6 @@ class TabUnderlineView;
 // its states. The tab view implements its own layout and avoids using
 // FlexLayout for performance reasons.
 class TabView : public views::View,
-                public views::LayoutDelegate,
                 public views::MaskedTargeterDelegate,
                 public AlertIndicatorButton::Delegate,
                 public views::ContextMenuController,
@@ -70,6 +68,16 @@ class TabView : public views::View,
   TabView(const TabView&) = delete;
   TabView& operator=(const TabView&) = delete;
   ~TabView() override;
+
+  class LayoutManager : public views::LayoutManagerBase {
+   protected:
+    // views::LayoutManagerBase:
+    void OnInstalled(views::View* host) override;
+
+    // Casts host_view() to a TabView const ref, using static_cast. Avoids
+    // views::AsViewClass as it incurs overhead when checking metadata.
+    const TabView& TabView() const;
+  };
 
   void StepLoadingAnimation(const base::TimeDelta& elapsed_time);
 
@@ -109,6 +117,8 @@ class TabView : public views::View,
   views::BubbleBorder::Arrow GetAnchorPosition() const override;
 
  private:
+  friend class TabViewVerticalLayout;
+
   // views::View
   gfx::Size GetMinimumSize() const override;
   void Layout(PassKey) override;
@@ -133,29 +143,6 @@ class TabView : public views::View,
   // views::ViewObserver:
   void OnViewFocused(views::View* observed_view) override;
   void OnViewBlurred(views::View* observed_view) override;
-
-  struct TabChildConfig {
-    raw_ptr<views::View> view;
-    int min_width;
-    int padding;
-    bool align_leading;
-    bool expand;
-    // Some alert indicators need to decorate the close button when the tab
-    // strip is collapsed. In that case, center the child and set a size of (0,
-    // 0).
-    bool decorate_on_collapse;
-  };
-
-  gfx::Rect GetChildBounds(const gfx::Rect& container,
-                           const TabChildConfig& config,
-                           const bool center) const;
-
-  // Calculates the visibility of child view based on various states.
-  bool IsChildVisible(const views::View* child, const int width) const;
-
-  // views::LayoutDelegate
-  views::ProposedLayout CalculateProposedLayout(
-      const views::SizeBounds& size_bounds) const override;
 
   // views::MaskedTargeterDelegate:
   bool GetHitTestMask(SkPath* mask) const override;
@@ -215,8 +202,6 @@ class TabView : public views::View,
 
   raw_ptr<TabCollectionNode> collection_node_ = nullptr;
   TabStripOrientation orientation_ = TabStripOrientation::kHorizontal;
-
-  std::vector<TabChildConfig> tab_children_configs_;
 
   std::unique_ptr<TabStyleViews> tab_styling_;
 
