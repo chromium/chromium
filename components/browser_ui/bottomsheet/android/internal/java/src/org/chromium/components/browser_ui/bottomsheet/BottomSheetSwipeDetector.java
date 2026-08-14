@@ -6,6 +6,7 @@ package org.chromium.components.browser_ui.bottomsheet;
 
 import android.content.Context;
 import android.view.GestureDetector;
+import android.view.InputDevice;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 
@@ -89,10 +90,16 @@ class BottomSheetSwipeDetector extends GestureDetector.SimpleOnGestureListener {
 
         /**
          * Set the sheet's offset.
+         *
          * @param offset The target offset.
          * @param shouldAnimate Whether the sheet should animate to that position.
          */
         void setSheetOffset(float offset, boolean shouldAnimate);
+
+        /**
+         * @return Whether the UI is using large form factor configurations.
+         */
+        boolean isLargeFormFactorUiEnabled();
     }
 
     /**
@@ -106,10 +113,21 @@ class BottomSheetSwipeDetector extends GestureDetector.SimpleOnGestureListener {
             return mSheetDelegate.shouldGestureMoveSheet(e, e);
         }
 
+        private boolean isMouseEvent(MotionEvent e) {
+            if (e == null) return false;
+            return e.getToolType(0) == MotionEvent.TOOL_TYPE_MOUSE
+                    || e.isFromSource(InputDevice.SOURCE_MOUSE);
+        }
+
         @Override
         public boolean onScroll(
                 @Nullable MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
             if (e1 == null || !mSheetDelegate.shouldGestureMoveSheet(e1, e2)) return false;
+
+            if (mSheetDelegate.isLargeFormFactorUiEnabled()
+                    && (isMouseEvent(e1) || isMouseEvent(e2))) {
+                return false;
+            }
 
             // Only start scrolling if the scroll is up or down. If the user is already scrolling,
             // continue moving the sheet.
@@ -173,6 +191,11 @@ class BottomSheetSwipeDetector extends GestureDetector.SimpleOnGestureListener {
             }
 
             mIsScrolling = false;
+
+            if (mSheetDelegate.isLargeFormFactorUiEnabled()
+                    && (isMouseEvent(e1) || isMouseEvent(e2))) {
+                return true;
+            }
 
             float newOffset = mSheetDelegate.getCurrentOffsetPx() + getFlingDistance(-velocityY);
 

@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import android.view.InputDevice;
 import android.view.MotionEvent;
 
 import org.junit.Before;
@@ -56,6 +57,9 @@ public final class BottomSheetSwipeDetectorTest {
 
         /** Whether the sheet should currently be animating. */
         public boolean shouldBeAnimating;
+
+        /** Whether the ui is LFF. */
+        public boolean isLargeFormFactor;
 
         /** The current offset of the bottom sheet. */
         private float mCurrentSheetOffset;
@@ -107,6 +111,11 @@ public final class BottomSheetSwipeDetectorTest {
         public void setSheetOffset(float offset, boolean shouldAnimate) {
             mCurrentSheetOffset = offset;
             shouldBeAnimating = shouldAnimate;
+        }
+
+        @Override
+        public boolean isLargeFormFactorUiEnabled() {
+            return isLargeFormFactor;
         }
     }
 
@@ -373,5 +382,43 @@ public final class BottomSheetSwipeDetectorTest {
                 MIN_SHEET_OFFSET,
                 mSwipeableBottomSheet.getCurrentOffsetPx(),
                 MathUtils.EPSILON);
+    }
+
+    @Test
+    public void testResizeSheet_MouseDragging_LargeFormFactor_Ignored() {
+        mSwipeableBottomSheet.isLargeFormFactor = true;
+        assertEquals(
+                "The sheet should be at the minimum state.",
+                MIN_SHEET_OFFSET,
+                mSwipeableBottomSheet.getCurrentOffsetPx(),
+                MathUtils.EPSILON);
+        final float halfScreenHeight = SCREEN_HEIGHT / 2f;
+
+        // Simulate pushing down on the swipe handle and dragging mouse to resize sheet
+        float x1 = 0;
+        float y1 = SCREEN_HEIGHT;
+        float x2 = 0;
+        float y2 = halfScreenHeight;
+
+        MotionEvent down = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, x1, y1, 0);
+        down.setSource(InputDevice.SOURCE_MOUSE);
+        mSwipeDetector.onTouchEvent(down);
+
+        MotionEvent move = MotionEvent.obtain(0, 0, MotionEvent.ACTION_MOVE, x2, y2, 0);
+        move.setSource(InputDevice.SOURCE_MOUSE);
+        mSwipeDetector.onTouchEvent(move);
+
+        MotionEvent up = MotionEvent.obtain(0, 0, MotionEvent.ACTION_UP, x2, y2, 0);
+        up.setSource(InputDevice.SOURCE_MOUSE);
+        mSwipeDetector.onTouchEvent(up);
+
+        assertEquals(
+                "The sheet should still be at minimum height since mouse events are ignored on"
+                        + " large form factor.",
+                MIN_SHEET_OFFSET,
+                mSwipeableBottomSheet.getCurrentOffsetPx(),
+                MathUtils.EPSILON);
+        assertFalse(
+                "The sheet should not be set to animate.", mSwipeableBottomSheet.shouldBeAnimating);
     }
 }

@@ -43,6 +43,17 @@ found in the LICENSE file.
                 android:background="@macro/default_bg_color"
                 android:importantForAccessibility="no" />
 
+            <ImageView
+                android:id="@+id/handlebar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal|top"
+                android:paddingTop="@dimen/bottom_sheet_handlebar_padding_vertical_desktop"
+                android:paddingBottom="@dimen/bottom_sheet_handlebar_padding_vertical_desktop"
+                android:importantForAccessibility="no"
+                android:src="@drawable/drag_handlebar"
+                android:visibility="gone" />
+
             <org.chromium.components.browser_ui.bottomsheet.TouchRestrictingFrameLayout
                 android:importantForAccessibility="yes"
                 android:id="@+id/bottom_sheet_content"

@@ -22,6 +22,7 @@ import android.view.Window;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.Px;
@@ -224,6 +225,9 @@ class BottomSheet extends FrameLayout
      * easily tap-to-dismiss).
      */
     private View mCloseButton;
+
+    /** The drag handlebar view shown at the top of the sheet when requested by content. */
+    private ImageView mHandlebar;
 
     /** A handle to the FrameLayout that holds the snackbar of the bottom sheet. */
     private @Nullable FrameLayout mSnackbarContainer;
@@ -491,6 +495,16 @@ class BottomSheet extends FrameLayout
         mBottomSheetContentContainer.setBottomSheet(this);
 
         mCloseButton = findViewById(R.id.bottom_sheet_close_button);
+
+        mHandlebar = findViewById(R.id.handlebar);
+
+        assert mHandlebar != null;
+
+        mHandlebar.setOnClickListener(v -> toggleSheetState());
+        if (isLargeFormFactorUiEnabled()) {
+            mHandlebar.setPointerIcon(
+                    PointerIcon.getSystemIcon(getContext(), PointerIcon.TYPE_HAND));
+        }
 
         mSnackbarContainer = findViewById(R.id.bottom_sheet_snackbar_container);
         assert mSnackbarContainer != null;
@@ -1414,11 +1428,33 @@ class BottomSheet extends FrameLayout
         return mContainerHeight;
     }
 
+    @Override
     @VisibleForTesting
-    boolean isLargeFormFactorUiEnabled() {
+    public boolean isLargeFormFactorUiEnabled() {
         return mIsLargeFormFactor
                 && mSheetContent != null
                 && mSheetContent.supportsLargeFormFactor();
+    }
+
+    public void toggleSheetState() {
+        // Early exit if the sheet only supports one open state (FULL).
+        if (!isHalfStateEnabled() && !isPeekStateEnabled()) return;
+
+        if (mCurrentState == SheetState.FULL) {
+            // We know at least one other state is enabled here.
+            // Go to HALF if enabled, otherwise it must be PEEK.
+            setSheetState(
+                    isHalfStateEnabled() ? SheetState.HALF : SheetState.PEEK,
+                    /* animate= */ true,
+                    StateChangeReason.NONE);
+        } else if (mCurrentState == SheetState.HALF) {
+            setSheetState(SheetState.FULL, /* animate= */ true, StateChangeReason.NONE);
+        } else if (mCurrentState == SheetState.PEEK) {
+            setSheetState(
+                    isHalfStateEnabled() ? SheetState.HALF : SheetState.FULL,
+                    /* animate= */ true,
+                    StateChangeReason.NONE);
+        }
     }
 
     /**
@@ -1690,9 +1726,14 @@ class BottomSheet extends FrameLayout
                 mSheetBackground.setBackgroundResource(R.drawable.bottom_sheet_background);
                 mSheetBackground.setClipToOutline(false);
                 mFallbackShadowLayer.setVisibility(View.VISIBLE);
-                mShadowLayer.setBackgroundResource(0);
-                mShadowLayer.setPadding(0, 0, 0, 0);
             }
+        }
+
+        boolean showHandlebar = content != null && content.showHandlebar();
+        mHandlebar.setVisibility(showHandlebar ? View.VISIBLE : View.GONE);
+        if (isLargeFormFactorUiEnabled()) {
+            mHandlebar.setPointerIcon(
+                    PointerIcon.getSystemIcon(getContext(), PointerIcon.TYPE_HAND));
         }
         updateBackgroundColor();
         updateBackgroundGlow();
@@ -2177,5 +2218,13 @@ class BottomSheet extends FrameLayout
     @SheetState
     int getStateBeforeKeyboardShownForTesting() {
         return mStateBeforeKeyboardShown;
+    }
+
+    void setHandlebarForTesting(ImageView handlebar) {
+        mHandlebar = handlebar;
+    }
+
+    ImageView getHandlebarForTesting() {
+        return mHandlebar;
     }
 }

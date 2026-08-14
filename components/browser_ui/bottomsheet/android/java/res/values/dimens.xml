@@ -16,4 +16,5 @@ found in the LICENSE file.
     <dimen name="bottom_sheet_desktop_bottom_margin">24dp</dimen>
     <dimen name="bottom_sheet_large_form_factor_width">480dp</dimen>
     <dimen name="bottom_sheet_large_form_factor_edge_gap">16dp</dimen>
+    <dimen name="bottom_sheet_handlebar_padding_vertical_desktop">8dp</dimen>
 </resources>

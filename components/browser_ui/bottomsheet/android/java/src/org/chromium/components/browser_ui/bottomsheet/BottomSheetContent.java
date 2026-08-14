@@ -412,4 +412,14 @@ public interface BottomSheetContent {
     default boolean supportsLargeFormFactor() {
         return true;
     }
+
+    /**
+     * @return Whether the bottom sheet should show the drag handlebar. If true, clicking or tapping
+     *     the handlebar toggles the bottom sheet between its enabled states (e.g. HALF and FULL).
+     *     If the sheet only supports a single open state, clicking the handlebar has no effect.
+     *     Defaults to false.
+     */
+    default boolean showHandlebar() {
+        return false;
+    }
 }
