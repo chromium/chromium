@@ -90,6 +90,7 @@ void ShowContextMenu(NSMenu* menu,
 
   // Show the menu.
   [NSMenu popUpContextMenu:menu withEvent:event forView:view];
+  g_active_menu_location.reset();
 
   if (context) {
     // We expect to see the following order of events:
@@ -109,7 +110,6 @@ void ShowContextMenu(NSMenu* menu,
     dispatch_after(
         dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_MSEC),
         dispatch_get_main_queue(), ^{
-          g_active_menu_location.reset();
           ui::ElementTrackerMac::GetInstance()->NotifyMenuDoneShowing(menu);
         });
   }

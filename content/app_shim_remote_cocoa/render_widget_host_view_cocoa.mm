@@ -430,6 +430,7 @@ static NSWindow* __weak _deferredResignKeyWindow;
     _host = host;
     _hostHelper = hostHelper;
     _canBeKeyView = YES;
+    _supportsAutoFill = YES;
     _isStylusEnteringProximity = false;
     _keyboardLockActive = false;
     _textInputType = ui::TEXT_INPUT_TYPE_NONE;
