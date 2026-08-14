@@ -987,8 +987,8 @@ const ComputedStyle* GetComputedStyleForElementOrLayoutObject(
     return element->GetComputedStyle();
   }
   // Text nodes and Document.
-  if (LayoutObject* layout_object = node.GetLayoutObject()) {
-    return layout_object->Style();
+  if (const LayoutObject* layout_object = node.GetLayoutObject()) {
+    return &layout_object->StyleRef();
   }
   return nullptr;
 }
