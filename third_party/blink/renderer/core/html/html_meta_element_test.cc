@@ -440,12 +440,12 @@ TEST_F(HTMLMetaElementSimTest, ResponsiveEmbeddedSizingAllowOrigins) {
     DummyExceptionStateForTesting exception_state;
     child_doc->RequestResizeResponsiveIframe(&exception_state);
     EXPECT_EQ(!test.expected_allowed, exception_state.HadException())
-        << "Failed for alloworigins: "
+        << "Failed for allow-origins: "
         << (test.allow_origins_attr ? test.allow_origins_attr : "(missing)");
   }
 }
 
-// Test that "https:" alloworigins blocks an HTTP container frame.
+// Test that "https:" allow-origins blocks an HTTP container frame.
 TEST_F(HTMLMetaElementSimTest, ResponsiveEmbeddedSizingAllowOriginsHttp) {
   SimRequest main_resource("http://parent.example/", "text/html");
   SimRequest child_frame_resource("http://child.example/subframe.html",
@@ -480,7 +480,7 @@ TEST_F(HTMLMetaElementSimTest, ResponsiveEmbeddedSizingAllowOriginsHttp) {
   DummyExceptionStateForTesting exception_state;
   child_doc->RequestResizeResponsiveIframe(&exception_state);
   EXPECT_TRUE(exception_state.HadException())
-      << "Failed to block HTTP container frame when alloworigins is https:";
+      << "Failed to block HTTP container frame when allow-origins is https:";
 }
 
 }  // namespace blink

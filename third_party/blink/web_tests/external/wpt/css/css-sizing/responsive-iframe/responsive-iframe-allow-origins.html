@@ -1,5 +1,5 @@
 <!doctype HTML>
-<title>Test alloworigins validation for responsive iframes</title>
+<title>Test allow-origins validation for responsive iframes</title>
 <link rel="help" href="https://drafts.csswg.org/css-sizing-4/#responsive-iframes">
 <link rel="author" href="mailto:kojii@chromium.org">
 <meta name="variant" content="?origin=same,allowed=star,expect=400">
@@ -78,8 +78,8 @@ if (containerType === 'subdomain' && location.origin !== hostInfo.HTTP_REMOTE_OR
     iframe.scrolling = 'no';
 
     const fileName = (allowedType === 'missing')
-        ? 'iframe-contents-alloworigins-missing.html'
-        : 'iframe-contents-alloworigins.sub.html';
+        ? 'iframe-contents-allow-origins-missing.html'
+        : 'iframe-contents-allow-origins.sub.html';
     const resourcePath = new URL(`resources/${fileName}`, window.location.href).pathname;
     const allowedParam = computeAllowedParam();
     const query = (allowedType === 'missing') ? '' : `?allowed=${encodeURIComponent(allowedParam)}`;
