@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SpellCheckCustomDictionary in Android WebView (manual)</title>
+<link rel="help" href="https://github.com/Igalia/explainers/tree/main/spell-check-dictionary">
+<meta name="assert" content="In Android WebView, document.spellCheckCustomDictionary.addWords() suppresses the spelling squiggle for the given words across the whole document, and removeWords() restores it, on top of the Android platform spell checker.">
+
+<!--
+  This is the ANDROID WEBVIEW variant of add-remove-words-manual.html. Same API,
+  but WebView differs from desktop Chrome in ways that change what you observe:
+  spell checking is opt-in per element, the misspellings come from the Android
+  platform checker rather than Hunspell, and every check is therefore an async
+  round trip that lands with a visible delay.
+
+  For test setup and run, please refer
+  https://github.com/Igalia/explainers/blob/main/spell-check-dictionary/Android_WebView_Test_instructions.md
+-->
+
+<style>
+  :root { color-scheme: light dark; }
+  body { font: 16px/1.55 system-ui, sans-serif; margin: 12px; }
+  h1 { font-size: 20px; }
+  fieldset { margin: 0 0 18px; padding: 10px; }
+  legend { font-weight: 600; }
+  .editable {
+    border: 1px solid #888; padding: 10px; margin: 8px 0; font-size: 18px;
+    min-height: 1.6em;
+  }
+  textarea.editable { width: 100%; height: 3.2em; box-sizing: border-box; }
+  button { font-size: 16px; min-height: 44px; padding: 6px 12px; margin: 4px 4px 4px 0; }
+  .word { font-family: monospace; font-weight: 600; }
+  .status { font-family: monospace; display: block; margin: 2px 0 8px; }
+  #env, .note { border: 1px solid #999; padding: 10px; margin-bottom: 14px; }
+  #env { position: sticky; top: 0; z-index: 1; background: Canvas; }
+  .ok { color: #1a6b1a; }
+  .bad { color: #b00020; }
+  pre { overflow-x: auto; background: rgba(128,128,128,.15); padding: 8px; }
+  #summary { white-space: pre-wrap; font-family: monospace; }
+</style>
+
+<h1>SpellCheckCustomDictionary &mdash; Android WebView</h1>
+
+<div id="env"></div>
+
+<p class="note">
+  <b>What is being tested.</b> The per-document dictionary lives in the renderer
+  (<code>SpellCheckProvider::document_custom_words_</code>) and filters results
+  <i>after</i> they come back from the platform checker, so on Android it should
+  behave the same as on desktop even though the misspellings themselves are
+  found by Android, not by Hunspell. These steps check that the filtering, the
+  per-document scoping, and the caps all survive that round trip.
+</p>
+
+<!-- Test 1: WebView-only. Spell checking is opt-in per element in WebView. -->
+<fieldset>
+  <legend>1. WebView opt-in: only <code>spellcheck="true"</code> is checked</legend>
+  <p>Tap into <b>each</b> field below (Android checks text through the platform
+     checker; a field may not be checked until it is focused).</p>
+
+  <p><b>1a. Opted in.</b> Contains <span class="word">wugzz</span>.</p>
+  <div id="field1a" class="editable" spellcheck="true" contenteditable>This wugzz is misspelled.</div>
+
+  <p><b>1b. Control, no attribute.</b> Same word, no
+     <code>spellcheck</code> attribute.</p>
+  <div id="field1b" class="editable" contenteditable>This wugzz is misspelled.</div>
+
+  <ol>
+    <li>Tap into 1a: <span class="word">wugzz</span> should get a red squiggle.</li>
+    <li>Tap into 1b: it should get <b>no</b> squiggle. WebView sets
+        <code>spellcheck_enabled_by_default = false</code>, so an app's existing
+        content is never spell checked unless it opts in.</li>
+    <li>If 1a shows no squiggle either, stop: the emulator has no working spell
+        checker service (the setup doc, step 2) and no later test is meaningful.</li>
+  </ol>
+  <div class="verdict" data-test="webview-opt-in"></div>
+</fieldset>
+
+<!-- Test 2: add suppresses across the whole document. -->
+<fieldset>
+  <legend>2. <code>addWords()</code> suppresses the squiggle document-wide</legend>
+  <p>Both regions contain <span class="word">flooble</span>: one
+     <code>contenteditable</code>, one <code>&lt;textarea&gt;</code>, since
+     WebView apps use both.</p>
+  <div id="field2a" class="editable" spellcheck="true" contenteditable>A flooble in a contenteditable.</div>
+  <textarea id="field2b" class="editable" spellcheck="true">A flooble in a textarea.</textarea>
+  <button data-add='["flooble"]'>addWords(["flooble"])</button>
+  <ol>
+    <li>Tap into each region and confirm <span class="word">flooble</span> is
+        squiggled in <b>both</b>.</li>
+    <li>Tap <b>addWords</b> once. The squiggle should clear in <b>both</b>
+        regions, without any further interaction &mdash; one call covers the
+        whole document, not just the focused field.</li>
+  </ol>
+  <div class="verdict" data-test="add-document-wide"></div>
+</fieldset>
+
+<!-- Test 3: remove. The refresh is focus-driven, and on Android the answer
+     comes back asynchronously from the platform checker. -->
+<fieldset>
+  <legend>3. <code>removeWords()</code> restores the squiggle</legend>
+  <p>Field contains <span class="word">grimpy</span>.</p>
+  <div id="field3" class="editable" spellcheck="true" contenteditable>One grimpy word here</div>
+  <button data-add='["grimpy"]'>addWords(["grimpy"])</button>
+  <button data-remove='["grimpy"]'>removeWords(["grimpy"])</button>
+  <ol>
+    <li>Tap into the field, confirm <span class="word">grimpy</span> is
+        squiggled, then tap <b>addWords</b> &mdash; the squiggle clears.</li>
+    <li>Tap <b>removeWords</b>. If the field still has focus the squiggle comes
+        back on the spot; if focus moved away, tap back into the field. Either
+        way it must return <b>without typing</b>: removal clears
+        <code>SpellCheckProvider</code>'s cached result and invalidates the
+        per-document check state, and a fresh pass then runs when the editable
+        is focused by a user gesture. Unlike desktop, the answer arrives from
+        another app in the emulator, so give it a second or two before calling
+        it a failure.</li>
+    <li>If it still has not returned, type one character and delete it, and
+        record whether it returns then. That distinction matters: coming back
+        only after an edit would mean the focus-driven refresh is not reaching
+        the platform checker on Android, even though it does on desktop. Note
+        which of the two steps made the squiggle reappear.</li>
+  </ol>
+  <div class="verdict" data-test="remove-restores"></div>
+</fieldset>
+
+<!-- Test 4: verbatim matching, including a non-Latin script if the emulator's
+     spell checker supports one. -->
+<fieldset>
+  <legend>4. Matching is verbatim, and independent of script</legend>
+  <p>Matching is exact: the stored word must equal the checked word.</p>
+  <div id="field4a" class="editable" spellcheck="true" contenteditable>A brilligzzz and a Brilligzzz.</div>
+  <button data-add='["brilligzzz"]'>addWords(["brilligzzz"])</button>
+
+  <p class="note"><b>4b is optional</b> and only observable if the emulator's
+     spell checker language (the setup doc, step 2) is set to a language that flags the
+     text below. With an English-only spell checker service, Hebrew text is
+     never flagged and there is nothing to see; record 4b as N/A in that case.</p>
+  <div id="field4b" class="editable" spellcheck="true" dir="rtl" contenteditable>זה שלוס לא נכון.</div>
+  <button data-add='["שלוס"]'>addWords(["שלוס"])</button>
+
+  <ol>
+    <li>Tap into 4a. Check whether both <span class="word">brilligzzz</span> and
+        <span class="word">Brilligzzz</span> are squiggled. If the platform
+        checker leaves the capitalised form alone (some treat a capitalised
+        word as a proper noun), the case part of this test is not observable on
+        this image &mdash; record it as N/A and skip to Test 5. Gboard on
+        <code>google_apis</code> does flag it, so it is normally observable.</li>
+    <li>Tap <b>addWords(["brilligzzz"])</b>. The lower-case one clears; the
+        capitalised one <b>stays</b> squiggled. The filter is an exact string
+        match on the misspelled word
+        (<code>SpellCheck::CreateTextCheckingResults</code>), so it is verbatim,
+        not case-folded.</li>
+    <li>(Optional) Repeat for 4b with the RTL word.</li>
+  </ol>
+  <div class="verdict" data-test="verbatim"></div>
+</fieldset>
+
+<!-- Test 5: document scope. WebView instances are reused across loads, so this
+     matters more here than on desktop. -->
+<fieldset>
+  <legend>5. The dictionary is per-document, and does not survive a load</legend>
+  <p>The set is cleared in <code>SpellCheckProvider::DidCreateNewDocument()</code>.
+     A WebView is typically reused for many page loads, so a word added by one
+     page must not leak into the next.</p>
+  <div id="field5" class="editable" spellcheck="true" contenteditable>The word snorpled again.</div>
+  <button data-add='["snorpled"]'>addWords(["snorpled"])</button>
+  <button id="reload">Reload this page</button>
+  <ol>
+    <li>Tap into the field, confirm <span class="word">snorpled</span> is
+        squiggled, then tap <b>addWords</b> &mdash; the squiggle clears.</li>
+    <li>Tap <b>Reload this page</b>, come back to this field and tap into it.
+        <span class="word">snorpled</span> must be squiggled <b>again</b>: the
+        new document starts with an empty dictionary.</li>
+    <li>Reloading also resets Tests 1&ndash;4, so run this before Test 6 and
+        redo any earlier step you still need.</li>
+  </ol>
+  <div class="verdict" data-test="per-document"></div>
+</fieldset>
+
+<!-- Test 6: caps. Runs last: it fills the per-document set permanently. -->
+<fieldset>
+  <legend>6. Per-document caps (20000 words / 128 bytes per word)</legend>
+  <p><b>Run this last.</b> The bulk step fills the per-document set for the rest
+     of this document's life, so every earlier <code>addWords</code> would be
+     silently dropped afterwards. If you need the earlier tests again, reload
+     first.</p>
+  <p>Field A contains <span class="word">zzzzzqqqqq</span>, field B contains
+     <span class="word">capwordzz</span>.</p>
+  <div id="field6a" class="editable" spellcheck="true" contenteditable>zzzzzqqqqq is misspelled.</div>
+  <div id="field6b" class="editable" spellcheck="true" contenteditable>capwordzz is misspelled.</div>
+  <button data-add='["zzzzzqqqqq"]'>A: addWords(["zzzzzqqqqq"])</button>
+  <button id="bulk-add">Fill cap: addWords(21000 words + 1 over-long word)</button>
+  <button data-add='["capwordzz"]'>B: addWords(["capwordzz"])</button>
+  <ol>
+    <li><b>Below the cap.</b> Tap into field A, then tap
+        <b>A: addWords</b>. Its squiggle clears &mdash; normal behaviour below
+        the cap.</li>
+    <li><b>Fill the cap.</b> Tap <b>Fill cap</b>. WebView must not crash or ANR,
+        the page must stay scrollable and responsive, and the DevTools console
+        (the setup doc, step 6) should show <b>exactly one</b> warning:
+        <i>&ldquo;per-document word limit reached&hellip;&rdquo;</i>. The
+        warning is emitted once per document, so tapping <b>Fill cap</b> again
+        must not add a second one.</li>
+    <li><b>Above the cap.</b> Tap into field B, then tap <b>B: addWords</b>. The
+        squiggle on <span class="word">capwordzz</span> must <b>stay</b>: the
+        word is rejected because the set is full. If it clears, the cap is not
+        being enforced.</li>
+  </ol>
+  <div class="verdict" data-test="caps"></div>
+</fieldset>
+
+<h2>Results</h2>
+<button id="copy">Copy results</button>
+<div id="summary"></div>
+
+<script>
+  const env = document.getElementById('env');
+  const dict = document.spellCheckCustomDictionary;
+  const problems = [];
+  if (!window.isSecureContext) {
+    problems.push('not a secure context (serve over http://localhost or https)');
+  }
+  if (!dict) {
+    problems.push('document.spellCheckCustomDictionary is undefined ' +
+                  '(flag not applied, or WebView not restarted after setting it)');
+  }
+  env.className = problems.length ? 'bad' : 'ok';
+  env.textContent = problems.length
+    ? 'FAILED TO SET UP: ' + problems.join('; ') + '. See Setup at https://github.com/Igalia/explainers/blob/main/spell-check-dictionary/Android_WebView_Test_instructions.md.'
+    : 'Ready: document.spellCheckCustomDictionary is available over a secure context.';
+
+  function setStatus(btn, msg, bad) {
+    let s = btn.nextElementSibling;
+    if (!s || !s.classList.contains('status')) {
+      s = document.createElement('span');
+      s.className = 'status';
+      btn.after(s);
+    }
+    s.textContent = msg;
+    s.style.color = bad ? '#b00020' : '#1a6b1a';
+  }
+
+  function wire(btn, method, words) {
+    btn.addEventListener('click', () => {
+      if (!dict) {
+        setStatus(btn, 'no API', true);
+        return;
+      }
+      try {
+        dict[method](words);
+        setStatus(btn, `${method}(${words.length} word${words.length === 1 ? '' : 's'}) ok`, false);
+      } catch (e) {
+        setStatus(btn, `threw: ${e}`, true);
+      }
+    });
+  }
+
+  for (const btn of document.querySelectorAll('button[data-add]')) {
+    wire(btn, 'addWords', JSON.parse(btn.dataset.add));
+  }
+  for (const btn of document.querySelectorAll('button[data-remove]')) {
+    wire(btn, 'removeWords', JSON.parse(btn.dataset.remove));
+  }
+
+  document.getElementById('reload').addEventListener('click', () => location.reload());
+
+  const bulk = document.getElementById('bulk-add');
+  bulk.addEventListener('click', () => {
+    if (!dict) {
+      setStatus(bulk, 'no API', true);
+      return;
+    }
+    try {
+      const words = [];
+      for (let i = 0; i < 21000; i++) words.push('w' + i);
+      words.push('x'.repeat(200));  // over the 128-byte per-word limit
+      dict.addWords(words);
+      setStatus(bulk, 'addWords(21001) ok — no throw', false);
+    } catch (e) {
+      setStatus(bulk, `threw: ${e}`, true);
+    }
+  });
+
+  // PASS / FAIL / N/A per scenario, plus a copyable summary: there is no
+  // convenient place to take notes inside the emulator.
+  // Test 5 asks for a reload part way through the run, so keep the verdicts in
+  // sessionStorage: an in-memory Map would lose everything recorded so far.
+  const STORE = 'scdc-webview-verdicts';
+  const results = new Map(JSON.parse(sessionStorage.getItem(STORE) || '[]'));
+  const summary = document.getElementById('summary');
+  function renderSummary() {
+    const lines = [];
+    for (const v of document.querySelectorAll('.verdict')) {
+      lines.push(`${v.dataset.test}: ${results.get(v.dataset.test) || '-'}`);
+    }
+    summary.textContent = lines.join('\n');
+  }
+  function showRecorded(v, name, result) {
+    v.querySelector('.recorded')?.remove();
+    const span = document.createElement('span');
+    span.className = 'recorded status';
+    span.textContent = `${name}: ${result}`;
+    span.style.color = result === 'PASS' ? '#1a6b1a'
+                     : result === 'FAIL' ? '#b00020' : '';
+    v.appendChild(span);
+  }
+  for (const v of document.querySelectorAll('.verdict')) {
+    const name = v.dataset.test;
+    for (const result of ['PASS', 'FAIL', 'N/A']) {
+      const b = document.createElement('button');
+      b.textContent = result;
+      b.addEventListener('click', () => {
+        results.set(name, result);
+        sessionStorage.setItem(STORE, JSON.stringify([...results]));
+        showRecorded(v, name, result);
+        renderSummary();
+      });
+      v.appendChild(b);
+    }
+    if (results.has(name)) {
+      showRecorded(v, name, results.get(name));  // restored across Test 5's reload
+    }
+  }
+  renderSummary();
+
+  document.getElementById('copy').addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(summary.textContent);
+    } catch (e) {
+      // Clipboard access can be denied in WebView; the text is on screen anyway.
+    }
+  });
+</script>
