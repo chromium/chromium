@@ -691,6 +691,24 @@ if (!is_android) {
       "//ui/gfx/codec",
     ]
   }
+
+  source_set("test_chrome_web_ui_controller_factory") {
+    testonly = true
+    sources = [
+      "test_chrome_web_ui_controller_factory.cc",
+      "test_chrome_web_ui_controller_factory.h",
+    ]
+    public_deps = [
+      "//base",
+      "//chrome/browser/ui/webui:chrome_web_ui_controller_factory",
+      "//content/public/browser",
+    ]
+    deps = [
+      "//chrome/browser/profiles:profile",
+      "//chrome/common",
+      "//chrome/test/base:web_ui_test_data_source",
+    ]
+  }
 }
 
 source_set("web_ui_mocha_browser_test") {
