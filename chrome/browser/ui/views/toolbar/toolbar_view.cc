@@ -1710,43 +1710,20 @@ void ToolbarView::LayoutCommon() {
   // Note on layout synchronization: In Chromium UI Views, window maximize,
   // restore, or fullscreen transitions automatically invalidate container
   // geometry and invoke `ToolbarView::Layout()`. This layout pass guarantees
-  // `SetBackButtonLeadingMargin` remains reliably synchronized with window
+  // `SetIsMaximizedOrFullscreen` remains reliably synchronized with window
   // bounds without requiring supplemental widget observation hooks.
-  const bool extend_buttons_to_edge =
+  const bool is_maximized_or_fullscreen =
       browser_->GetWindow() && (browser_->GetWindow()->IsMaximized() ||
                                 browser_->GetWindow()->IsFullscreen());
-  const gfx::Insets default_insets =
-      GetLayoutInsets(LayoutInset::TOOLBAR_INTERIOR_MARGIN);
+
   if (features::IsWebUIBackForwardButtonEnabled()) {
-    // When maximized, the button's clickable area should extend to the screen
-    // edge (Fitts' law). Since the leading interior margin was set to 0 above
-    // for WebUI, we fetch the default toolbar inset directly. We check
-    // `is_rtl` so we accurately pick the physical leading inset (`right` for
-    // RTL versus `left` for LTR). WebUI CSS uses this value to replace outer
-    // margin with inner padding, stretching the click target to the screen
-    // edge while keeping the icon visually in place.
-    const int webui_margin =
-        extend_buttons_to_edge
-            ? (is_rtl ? default_insets.right() : default_insets.left())
-            : 0;
-    toolbar_webview_->SetBackButtonLeadingMargin(webui_margin);
+    toolbar_webview_->SetIsMaximizedOrFullscreen(is_maximized_or_fullscreen);
   } else {
-    const int margin = extend_buttons_to_edge ? interior_margin.left() : 0;
+    const int margin = is_maximized_or_fullscreen ? interior_margin.left() : 0;
     back_->SetLeadingMargin(margin);
   }
 
-  // When maximized or fullscreen, extend the trailing app menu button to the
-  // window edge per Fitts' law. Because `interior_margin` may have had its
-  // trailing edge zeroed out above when WebUI App Menu Button is enabled, use
-  // `default_insets` to reliably acquire the physical trailing inset (`left`
-  // in RTL versus `right` in LTR).
-  const int trailing_margin =
-      extend_buttons_to_edge
-          ? (features::IsWebUIAppMenuButtonEnabled()
-                 ? (is_rtl ? default_insets.left() : default_insets.right())
-                 : interior_margin.right())
-          : 0;
-  GetAppMenuControl()->SetTrailingMargin(trailing_margin);
+  GetAppMenuControl()->SetIsMaximizedOrFullscreen(is_maximized_or_fullscreen);
 
   if (toolbar_divider_ && extensions_container_) {
     views::ManualLayoutUtil(layout_manager_)

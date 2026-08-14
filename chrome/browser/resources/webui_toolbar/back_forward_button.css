@@ -27,21 +27,19 @@
    * total target width beyond --button-width (defined in toolbar_button.css)
    * without shrinking inner icon space or altering visual icon coordinates. */
   box-sizing: content-box;
-  /* In maximized/fullscreen windows, increasing
-   * --back-forward-button-leading-margin reduces margin-inline-start
-   * toward 0 while adding equivalent padding-inline-start and width.
-   * This stretches the #buttonWrapper click target to the screen edge
-   * (Fitts' law) while keeping the inner button at its exact visual
-   * position. The 6px fallback in var(--toolbar-interior-margin-start, 6px)
-   * corresponds to the default non-touch GetLayoutInsets(
-   * LayoutInset::TOOLBAR_INTERIOR_MARGIN).left() in layout_constants.cc.
-   * Note: We reference the logical -start variable to consistently match
-   * margin-inline-start without physical-to-logical CSS discrepancies. */
-  margin-inline-start: calc(
-      var(--toolbar-interior-margin-start, 6px) -
-      var(--back-forward-button-leading-margin, 0px));
-  padding-inline-start: var(--back-forward-button-leading-margin, 0);
+  margin-inline-start: var(--toolbar-interior-margin-start, 6px);
+  padding-inline-start: 0;
   width: var(--button-width);
+}
+
+:host(#back[window-is-maximized-or-fullscreen]) #buttonWrapper {
+  margin-inline-start: 0;
+  /* In maximized/fullscreen windows, we add the leading margin space as padding
+   * instead of margin. This stretches the #buttonWrapper click target to the
+   * screen edge (Fitts' law) while keeping the inner button at its exact visual
+   * position. We use the name 'leading margin' conceptually to align with the
+   * window layout, but it is implemented as padding here. */
+  padding-inline-start: var(--toolbar-interior-margin-start, 6px);
 }
 
 #buttonWrapper:not([disabled]):hover #button {

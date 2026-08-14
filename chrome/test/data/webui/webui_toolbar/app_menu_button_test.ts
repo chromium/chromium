@@ -180,7 +180,7 @@ suite('AppMenuButtonTest', function() {
       accessibilityText: 'App Menu accessibility',
       tooltip: 'App Menu tooltip',
       isContextMenuVisible: true,
-      trailingMargin: 0,
+      windowIsMaximizedOrFullscreen: false,
     };
     await microtasksFinished();
 
@@ -240,7 +240,7 @@ suite('AppMenuButtonTest', function() {
       accessibilityText: '',
       tooltip: '',
       isContextMenuVisible: false,
-      trailingMargin: 0,
+      windowIsMaximizedOrFullscreen: false,
     };
     await microtasksFinished();
     assertTrue(button.classList.contains('has-severity'));
@@ -275,21 +275,27 @@ suite('AppMenuButtonTest', function() {
         [true, false], toolbarUiHandler.getArgs('onAppMenuFocusChanged'));
   });
 
-  test('Trailing Margin', async function() {
-    const button = appMenuButton.$.button;
-
-    // Default is 0px
+  test('Window State Margin', async function() {
+    // Default: not maximized/fullscreen, attribute not present
+    assertFalse(
+        appMenuButton.hasAttribute('window-is-maximized-or-fullscreen'));
     assertEquals(
-        '0px', button.style.getPropertyValue('--toolbar-chip-trailing-margin'));
+        '',
+        getComputedStyle(appMenuButton)
+            .getPropertyValue('--toolbar-chip-trailing-margin')
+            .trim());
 
-    // Set non-zero margin
+    // Set window to maximized/fullscreen
     appMenuButton.state = {
       ...appMenuButton.state,
-      trailingMargin: 16,
+      windowIsMaximizedOrFullscreen: true,
     };
     await microtasksFinished();
+    assertTrue(appMenuButton.hasAttribute('window-is-maximized-or-fullscreen'));
     assertEquals(
-        '16px',
-        button.style.getPropertyValue('--toolbar-chip-trailing-margin'));
+        '6px',
+        getComputedStyle(appMenuButton)
+            .getPropertyValue('--toolbar-chip-trailing-margin')
+            .trim());
   });
 });

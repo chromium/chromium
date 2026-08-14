@@ -18,7 +18,6 @@ export function getHtml(this: BackForwardButtonElement) {
 <div id="buttonWrapper"
     title="${this.getTooltip_()}"
     ?disabled="${!this.state.enabled}"
-    style="--back-forward-button-leading-margin: ${this.leadingMargin}px;"
     @pointerdown="${this.onPointerdown_}"
     @pointerup="${this.onPointerup_}"
     @pointercancel="${this.onPointercancel_}"

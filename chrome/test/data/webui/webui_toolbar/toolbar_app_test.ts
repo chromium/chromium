@@ -132,7 +132,7 @@ function createMockNavigationState() {
           {enabled: false, shouldBeShown: true, isContextMenuVisible: false},
       forwardButtonState:
           {enabled: false, shouldBeShown: true, isContextMenuVisible: false},
-      backButtonLeadingMargin: 0,
+      windowIsMaximizedOrFullscreen: false,
     },
     homeControlState: {
       shouldBeShown: false,

@@ -8,6 +8,7 @@ import '//resources/cr_elements/icons.html.js';
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import type {MenuSourceType} from '//resources/mojo/ui/base/mojom/menu_source_type.mojom-webui.js';
 
 import {getCss} from './back_forward_button.css.js';
@@ -45,7 +46,7 @@ export class BackForwardButtonElement extends BackForwardButtonElementBase {
       ...super.properties,
       direction: {type: String},
       state: {type: Object},
-      leadingMargin: {type: Number},
+      windowIsMaximizedOrFullscreen: {type: Boolean},
       touchUi: {type: Boolean},
       glowUpEnabled: {type: Boolean},
     };
@@ -57,9 +58,18 @@ export class BackForwardButtonElement extends BackForwardButtonElementBase {
     shouldBeShown: true,
     isContextMenuVisible: false,
   };
-  accessor leadingMargin: number = 0;
+  accessor windowIsMaximizedOrFullscreen: boolean = false;
   accessor touchUi: boolean = false;
   accessor glowUpEnabled: boolean = loadTimeData.getBoolean('enableGlowUp');
+
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+    if (changedProperties.has('windowIsMaximizedOrFullscreen')) {
+      this.toggleAttribute(
+          'window-is-maximized-or-fullscreen',
+          this.windowIsMaximizedOrFullscreen);
+    }
+  }
 
   private manualRippleTriggered_: boolean = false;
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();

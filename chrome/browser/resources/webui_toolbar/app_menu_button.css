@@ -12,9 +12,22 @@
   /* Use flex layout to avoid default inline-block baseline alignment issues. */
   display: flex;
   flex-shrink: 0;
+  margin-inline-end: var(--toolbar-interior-margin-end, 6px);
+}
+
+/* In maximized/fullscreen windows, we want to stretch the #buttonWrapper
+ * click target to the screen edge (Fitts' law) while keeping the inner button
+ * at its exact visual position. The 6px fallback in
+ * var(--toolbar-interior-margin-end, 6px) corresponds to the default
+ * non-touch GetLayoutInsets(LayoutInset::TOOLBAR_INTERIOR_MARGIN).right() in
+ * layout_constants.cc. */
+:host([window-is-maximized-or-fullscreen]) {
+  margin-inline-end: 0;
+  --toolbar-chip-trailing-margin: var(--toolbar-interior-margin-end, 6px);
 }
 
 toolbar-chip-button {
+  --toolbar-chip-icon-size: var(--toolbar-button-icon-size);
   --toolbar-chip-icon-label-gap: var(--app-menu-button-image-label-padding);
   --toolbar-chip-padding-start: var(--app-menu-chip-padding-left);
   --toolbar-chip-padding-end: var(--app-menu-chip-padding-right);
@@ -42,4 +55,3 @@ toolbar-chip-button[has-label] {
   --toolbar-chip-ink-drop-hover-color: var(--color-app-menu-chip-ink-drop-hover);
   --toolbar-chip-ink-drop-ripple-color: var(--color-app-menu-chip-ink-drop-ripple);
 }
-

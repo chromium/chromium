@@ -383,7 +383,7 @@ export class ToolbarAppElement extends AppElementBase {
         shouldBeShown: true,
         isContextMenuVisible: false,
       },
-      backButtonLeadingMargin: 0,
+      windowIsMaximizedOrFullscreen: false,
     },
     homeControlState: {
       shouldBeShown:
@@ -401,7 +401,7 @@ export class ToolbarAppElement extends AppElementBase {
       accessibilityText: '',
       tooltip: '',
       isContextMenuVisible: false,
-      trailingMargin: 0,
+      windowIsMaximizedOrFullscreen: false,
     },
 
     batterySaverButtonVisible:

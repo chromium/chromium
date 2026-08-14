@@ -54,8 +54,8 @@ class AppMenuControl {
   virtual void SetTypeAndSeverity(
       AppMenuIconController::TypeAndSeverity type_and_severity) = 0;
 
-  // Sets the trailing margin.
-  virtual void SetTrailingMargin(int margin) = 0;
+  // Sets whether the window is maximized or fullscreen.
+  virtual void SetIsMaximizedOrFullscreen(bool maximized_or_fullscreen) = 0;
 
   // Returns the views::View that represents this control for pane focusing.
   // - For Views: returns the button itself (AppMenuButton).

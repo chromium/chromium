@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu.h"
@@ -157,7 +158,18 @@ void AppMenuButton::SetTypeAndSeverity(
   // this functionality.
 }
 
-void AppMenuButton::SetTrailingMargin(int margin) {
+void AppMenuButton::SetIsMaximizedOrFullscreen(bool maximized_or_fullscreen) {
+  // When maximized or fullscreen, extend the trailing app menu button to the
+  // window edge per Fitts' law. Because the parent container's interior margin
+  // may have had its trailing edge zeroed out (e.g. for WebUI toolbar), use
+  // `default_insets` to reliably acquire the physical trailing inset (`left`
+  // when mirrored/RTL versus `right` in LTR).
+  int margin = 0;
+  if (maximized_or_fullscreen) {
+    const gfx::Insets default_insets =
+        ::GetLayoutInsets(LayoutInset::TOOLBAR_INTERIOR_MARGIN);
+    margin = GetMirrored() ? default_insets.left() : default_insets.right();
+  }
   ToolbarButton::SetTrailingMargin(margin);
 }
 

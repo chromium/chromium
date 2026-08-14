@@ -59,7 +59,7 @@ toolbar_ui_api::mojom::AppMenuControlStatePtr WebUIAppMenuControl::GetState()
   state->icon_type = ToMojomIconType(type_and_severity_.type);
   state->severity = ToMojomSeverity(type_and_severity_.severity);
   state->is_context_menu_visible = IsMenuShowing();
-  state->trailing_margin = trailing_margin_;
+  state->window_is_maximized_or_fullscreen = window_is_maximized_or_fullscreen_;
 
   const std::u16string descriptive_name =
       AppMenuIconController::GetIconAccessibleName(type_and_severity_.type);
@@ -191,13 +191,13 @@ void WebUIAppMenuControl::SetTypeAndSeverity(
   delegate_->OnPreferredSizeChanged();
 }
 
-void WebUIAppMenuControl::SetTrailingMargin(int margin) {
-  if (trailing_margin_ == margin) {
+void WebUIAppMenuControl::SetIsMaximizedOrFullscreen(
+    bool maximized_or_fullscreen) {
+  if (window_is_maximized_or_fullscreen_ == maximized_or_fullscreen) {
     return;
   }
-  trailing_margin_ = margin;
+  window_is_maximized_or_fullscreen_ = maximized_or_fullscreen;
   delegate_->OnAppMenuControlStateChanged(GetState());
-  delegate_->OnPreferredSizeChanged();
 }
 
 views::View* WebUIAppMenuControl::GetFocusablePaneView() {

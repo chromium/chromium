@@ -46,7 +46,7 @@ class WebUIAppMenuControl : public AppMenuControl {
   void Focus(views::AccessiblePaneView* pane) override;
   void SetTypeAndSeverity(
       AppMenuIconController::TypeAndSeverity type_and_severity) override;
-  void SetTrailingMargin(int margin) override;
+  void SetIsMaximizedOrFullscreen(bool maximized_or_fullscreen) override;
   views::View* GetFocusablePaneView() override;
 
   // Returns the current state of the app menu control.
@@ -67,7 +67,7 @@ class WebUIAppMenuControl : public AppMenuControl {
   AppMenuIconController::TypeAndSeverity type_and_severity_{
       AppMenuIconController::IconType::kNone,
       AppMenuIconController::Severity::kNone};
-  int trailing_margin_ = 0;
+  bool window_is_maximized_or_fullscreen_ = false;
   // Caches the focus state of the button within the WebUI.
   bool focused_ = false;
   base::ObserverList<AppMenuButtonObserver>::Unchecked observer_list_;

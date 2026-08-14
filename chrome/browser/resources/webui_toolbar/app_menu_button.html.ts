@@ -17,8 +17,7 @@ export function getHtml(this: AppMenuButtonElement) {
     .ariaLabel="${this.state.accessibilityText}"
     .ariaHasPopup="${'menu'}"
     .ariaExpanded="${this.state.isContextMenuVisible ? 'true' : 'false'}"
-    .tooltip="${this.getTooltip_()}"
-    style="--toolbar-chip-trailing-margin: ${this.state.trailingMargin}px">
+    .tooltip="${this.getTooltip_()}">
   ${this.state.labelText ? html`<span>${this.state.labelText}</span>` : ''}
   <cr-icon id="icon" icon="webui-toolbar:more_vert" slot="suffix-icon">
   </cr-icon>

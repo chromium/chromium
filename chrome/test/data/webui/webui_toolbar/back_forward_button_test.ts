@@ -5,7 +5,7 @@
 import 'chrome://webui-toolbar.top-chrome/app.js';
 
 import type {MenuSourceType} from 'chrome://resources/mojo/ui/base/mojom/menu_source_type.mojom-webui.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 import {BrowserProxyImpl} from 'chrome://webui-toolbar.top-chrome/app.js';
@@ -76,7 +76,7 @@ suite('BackForwardButtonTest', function() {
     await microtasksFinished();
   });
 
-  test('Leading Margin', async function() {
+  test('Window State Margin', async function() {
     // Explicitly set --toolbar-interior-margin-start so the test assumption
     // holds across platforms regardless of touch UI mode (where interior margin
     // defaults to 0px on ChromeOS Ash).
@@ -85,19 +85,19 @@ suite('BackForwardButtonTest', function() {
     const buttonWrapper =
         backForwardButton.shadowRoot.querySelector('#buttonWrapper')!;
 
-    // Default is 0px leading margin.
-    // padding-left should be 0px, margin-left should be 6px
-    // (`calc(var(--toolbar-interior-margin-start, 6px) - 0px)`).
+    // Default: not maximized/fullscreen, attribute not present.
+    assertFalse(
+        backForwardButton.hasAttribute('window-is-maximized-or-fullscreen'));
     const style1 = window.getComputedStyle(buttonWrapper);
     assertEquals('0px', style1.paddingLeft);
     assertEquals('6px', style1.marginLeft);
 
-    // Set leading margin to 6px (`maximized window where interior margin is
-    // 6px`). padding-left should be 6px, margin-left should be 0px (`calc(6px -
-    // 6px)`).
-    backForwardButton.leadingMargin = 6;
+    // Set to maximized/fullscreen
+    backForwardButton.windowIsMaximizedOrFullscreen = true;
     await microtasksFinished();
 
+    assertTrue(
+        backForwardButton.hasAttribute('window-is-maximized-or-fullscreen'));
     const style2 = window.getComputedStyle(buttonWrapper);
     assertEquals('6px', style2.paddingLeft);
     assertEquals('0px', style2.marginLeft);
@@ -111,7 +111,7 @@ suite('BackForwardButtonTest', function() {
       isContextMenuVisible: false,
     };
     backForwardButton.direction = 'back';
-    backForwardButton.leadingMargin = 8;
+    backForwardButton.windowIsMaximizedOrFullscreen = true;
     await microtasksFinished();
 
     const buttonWrapper =
@@ -176,7 +176,7 @@ suite('BackForwardButtonTest', function() {
       isContextMenuVisible: false,
     };
     backForwardButton.direction = 'back';
-    backForwardButton.leadingMargin = 8;
+    backForwardButton.windowIsMaximizedOrFullscreen = true;
     await microtasksFinished();
 
     const buttonWrapper =

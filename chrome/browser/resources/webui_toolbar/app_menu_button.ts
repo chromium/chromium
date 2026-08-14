@@ -8,6 +8,7 @@ import './icons.js';
 import '//resources/cr_elements/icons.html.js';
 
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {AppMenuIconType, AppMenuSeverity, ContextMenuType, FocusRequestTarget} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 import type {AppMenuControlState} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 
@@ -54,7 +55,7 @@ export class AppMenuButtonElement extends AppMenuButtonElementBase {
     accessibilityText: '',
     tooltip: '',
     isContextMenuVisible: false,
-    trailingMargin: 0,
+    windowIsMaximizedOrFullscreen: false,
   };
 
   private browserProxy_ = BrowserProxyImpl.getInstance();
@@ -71,6 +72,15 @@ export class AppMenuButtonElement extends AppMenuButtonElementBase {
   override disconnectedCallback() {
     super.disconnectedCallback();
     this.browserProxy_.removeFocusRequestListener(this.focusRequestHandle_);
+  }
+
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+    if (changedProperties.has('state')) {
+      this.toggleAttribute(
+          'window-is-maximized-or-fullscreen',
+          this.state.windowIsMaximizedOrFullscreen);
+    }
   }
 
   override focus() {

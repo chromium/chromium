@@ -53,7 +53,7 @@ class AppMenuButton : public ToolbarButton, public AppMenuControl {
   void Focus(views::AccessiblePaneView* pane) override;
   void SetTypeAndSeverity(
       AppMenuIconController::TypeAndSeverity type_and_severity) override;
-  void SetTrailingMargin(int margin) override;
+  void SetIsMaximizedOrFullscreen(bool maximized_or_fullscreen) override;
   views::View* GetFocusablePaneView() override;
 
   views::MenuButtonController* menu_button_controller() const {

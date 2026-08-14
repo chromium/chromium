@@ -206,7 +206,8 @@ struct SplitTabsControlState {
 struct BackForwardControlState {
   BackForwardButtonState back_button_state;
   BackForwardButtonState forward_button_state;
-  int32 back_button_leading_margin;
+  // True if the window is maximized or fullscreen.
+  bool window_is_maximized_or_fullscreen;
 };
 
 struct HomeControlState {
@@ -261,8 +262,8 @@ struct AppMenuControlState {
 
   bool is_context_menu_visible;
 
-  // The trailing margin for the app menu control.
-  int32 trailing_margin;
+  // True if the window is maximized or fullscreen.
+  bool window_is_maximized_or_fullscreen;
 };
 
 enum AvatarToolbarButtonState {

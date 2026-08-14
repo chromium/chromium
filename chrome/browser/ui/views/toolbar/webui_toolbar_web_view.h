@@ -170,7 +170,7 @@ class WebUIToolbarWebView
     return &app_menu_control_;
   }
 
-  void SetBackButtonLeadingMargin(int margin);
+  void SetIsMaximizedOrFullscreen(bool maximized_or_fullscreen);
   void SetBackForwardEnabled(int command_id, bool enabled);
   void SetForwardVisible(bool visible);
 
@@ -604,8 +604,8 @@ class WebUIToolbarWebView
 
   base::CallbackListSubscription touch_ui_subscription_;
 
-  // Extra space to put before the back button, which is the first button.
-  int back_button_leading_margin_ = 0;
+  // True if the window is maximized or fullscreen.
+  bool window_is_maximized_or_fullscreen_ = false;
 
   // Tracks if synchronous sub-controls have been initialized once.
   bool sub_controls_initialized_ = false;
