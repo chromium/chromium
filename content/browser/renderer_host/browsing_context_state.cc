@@ -243,8 +243,9 @@ void BrowsingContextState::SetFrameName(const std::string& name,
                                         const std::string& unique_name) {
   if (name == replication_state_->name) {
     // |unique_name| shouldn't change unless |name| changes.
-    CHECK_EQ(unique_name, replication_state_->unique_name,
-             base::NotFatalUntil::M152);
+    // TODO(crbug.com/545190061): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK_EQ(unique_name, replication_state_->unique_name);
     return;
   }
 
