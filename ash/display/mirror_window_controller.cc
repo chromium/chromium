@@ -21,6 +21,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/viz/common/surfaces/surface_id.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/aura/client/capture_client.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_delegate.h"
@@ -232,7 +233,8 @@ void MirrorWindowController::UpdateWindow(
 
       aura::Window* mirror_window = host_info->mirror_window =
           new aura::Window(nullptr);
-      mirror_window->Init(ui::LAYER_SOLID_COLOR);
+      mirror_window->Init(ui::LAYER_SURFACE);
+      mirror_window->SetTransparent(true);
       host->window()->AddChild(mirror_window);
       host_info->ash_host->SetRootWindowTransformer(std::move(transformer));
 
@@ -304,8 +306,8 @@ void MirrorWindowController::UpdateWindow(
     aura::Window* mirror_window = mirroring_host_info->mirror_window;
     mirror_window->SetBounds(gfx::Rect(mirror_size));
     mirror_window->Show();
-    mirror_window->layer()->SetShowReflectedSurface(reflecting_surface_id,
-                                                    mirror_size);
+    mirror_window->layer()->AsSurface()->SetShowReflectedSurface(
+        reflecting_surface_id, mirror_size);
   }
 
   // Deleting WTHs for disconnected displays.

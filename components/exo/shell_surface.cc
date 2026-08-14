@@ -472,18 +472,19 @@ void ShellSurface::MaybeActivateSurface() {
   // Before the first CompositorFrame is submitted by SurfaceTreeHost,
   // `host_window()`'s layer doesn't have a SurfaceId yet, so set it to embed
   // the upcoming CompositorFrame.
-  if (!host_window()->layer()->GetSurfaceId()) {
+  auto* surface = host_window()->layer()->AsSurface();
+  if (!surface->GetSurfaceId()) {
     DCHECK(host_window()->GetLocalSurfaceId().parent_sequence_number() ==
                GetCurrentLocalSurfaceId().parent_sequence_number() ||
            !pending_configs_.empty());
-    host_window()->layer()->SetShowSurface(
-        host_window()->GetSurfaceId(), host_window()->bounds().size(),
-        SkColors::kWhite, cc::DeadlinePolicy::UseDefaultDeadline(),
-        false /* stretch_content_to_fill_bounds */);
-    host_window()->layer()->SetOldestAcceptableFallback(viz::SurfaceId{});
+    surface->SetShowSurface(host_window()->GetSurfaceId(),
+                            host_window()->bounds().size(),
+                            cc::DeadlinePolicy::UseDefaultDeadline(),
+                            /*stretch_content_to_fill_bounds=*/false);
+    surface->SetOldestAcceptableFallback(viz::SurfaceId{});
   }
 
-  UpdateLayerSurfaceRange(host_window()->layer(), GetCurrentLocalSurfaceId());
+  UpdateLayerSurfaceRange(surface, GetCurrentLocalSurfaceId());
 }
 
 ui::Layer* ShellSurface::GetCommitTargetLayer() {
@@ -492,7 +493,7 @@ ui::Layer* ShellSurface::GetCommitTargetLayer() {
 }
 
 const ui::Layer* ShellSurface::GetCommitTargetLayer() const {
-  if (!host_window()->layer()->GetSurfaceId()) {
+  if (!host_window()->layer()->AsSurface()->GetSurfaceId()) {
     return host_window()->layer();
   }
   // `commit_target_layer` is the layer that will have current LSI. The order of
@@ -505,6 +506,7 @@ const ui::Layer* ShellSurface::GetCommitTargetLayer() const {
   // destroyed.
   if (host_window()
           ->layer()
+          ->AsSurface()
           ->GetSurfaceId()
           ->local_surface_id()
           .parent_sequence_number() ==
@@ -512,15 +514,18 @@ const ui::Layer* ShellSurface::GetCommitTargetLayer() const {
     return host_window()->layer();
   }
 
-  if (old_layer_ &&
-      old_layer_->GetSurfaceId()->local_surface_id().parent_sequence_number() ==
-          GetCurrentLocalSurfaceId().parent_sequence_number()) {
+  if (old_layer_ && old_layer_->AsSurface()
+                            ->GetSurfaceId()
+                            ->local_surface_id()
+                            .parent_sequence_number() ==
+                        GetCurrentLocalSurfaceId().parent_sequence_number()) {
     return old_layer_.get();
   }
 
   for (const auto& config : base::Reversed(pending_configs_)) {
     if (config->old_layer &&
-        config->old_layer->GetSurfaceId()
+        config->old_layer->AsSurface()
+                ->GetSurfaceId()
                 ->local_surface_id()
                 .parent_sequence_number() ==
             GetCurrentLocalSurfaceId().parent_sequence_number()) {
@@ -945,7 +950,7 @@ void ShellSurface::OnLayerRecreated(ui::Layer* old_layer) {
   // Layer recreation may happen before the first shell_surface commit with
   // content. Disregard the old_layer in this case as the old_layer can't show
   // anything.
-  if (old_layer->GetSurfaceId()) {
+  if (old_layer->AsSurface()->GetSurfaceId()) {
     old_layer_ = old_layer->AsWeakPtr();
     // TODO(b/319939913): Remove this log when the issue is fixed.
     old_layer_->SetName(old_layer_->name() + "-old-has-surface");
@@ -1061,11 +1066,12 @@ void ShellSurface::Configure(bool ends_drag) {
 
   if (widget_ && host_window()->GetLocalSurfaceId().parent_sequence_number() !=
                      GetCurrentLocalSurfaceId().parent_sequence_number()) {
-    host_window()->layer()->SetShowSurface(
-        host_window()->GetSurfaceId(), GetClientBoundsInScreen(widget_).size(),
-        SkColors::kWhite, cc::DeadlinePolicy::UseDefaultDeadline(),
-        /*stretch_content_to_fill_bounds=*/true);
-    host_window()->layer()->SetOldestAcceptableFallback(GetSurfaceId());
+    auto* surface = host_window()->layer()->AsSurface();
+    surface->SetShowSurface(host_window()->GetSurfaceId(),
+                            GetClientBoundsInScreen(widget_).size(),
+                            cc::DeadlinePolicy::UseDefaultDeadline(),
+                            /*stretch_content_to_fill_bounds=*/true);
+    surface->SetOldestAcceptableFallback(GetSurfaceId());
   }
   // Apply origin offset and resize component at the first Commit() after this
   // configure request has been acknowledged.
@@ -1170,7 +1176,8 @@ display::Display ShellSurface::GetDisplayForInitialBounds() const {
 void ShellSurface::UpdateLayerSurfaceRange(
     ui::Layer* layer,
     const viz::LocalSurfaceId& current_lsi) {
-  auto& layer_lsi = layer->GetSurfaceId()->local_surface_id();
+  auto* surface = layer->AsSurface();
+  auto& layer_lsi = surface->GetSurfaceId()->local_surface_id();
 
   DCHECK_EQ(layer_lsi.embed_token(), current_lsi.embed_token());
   // `layer` with old parent seq should be consumed by config acks and not
@@ -1188,30 +1195,29 @@ void ShellSurface::UpdateLayerSurfaceRange(
     // `current_lsi` is behind, specify a surface range, and stretch content.
     if (layer_lsi.child_sequence_number() !=
         current_lsi.child_sequence_number()) {
-      layer->SetShowSurface(
+      surface->SetShowSurface(
           viz::SurfaceId(frame_sink_id_, {layer_lsi.parent_sequence_number(),
                                           current_lsi.child_sequence_number(),
                                           current_lsi.embed_token()}),
-          SkColors::kWhite, cc::DeadlinePolicy::UseDefaultDeadline(),
+          cc::DeadlinePolicy::UseDefaultDeadline(),
           true /* stretch_content_to_fill_bounds */);
     }
-    layer->SetOldestAcceptableFallback(
+    surface->SetOldestAcceptableFallback(
         viz::SurfaceId(frame_sink_id_, current_lsi));
   } else {
     viz::SurfaceId surface_id(frame_sink_id_, current_lsi);
     // Update the surface only when the surface id changes or the surface still
     // have an fallback, which indicates that the change needs to be
     // synchronized due to size change or scale change.
-    if (!layer->GetSurfaceId() || *layer->GetSurfaceId() != surface_id ||
-        layer->GetOldestAcceptableFallback()) {
+    if (!surface->GetSurfaceId() || *surface->GetSurfaceId() != surface_id ||
+        surface->GetOldestAcceptableFallback()) {
       // `current_lsi` has caught up to `layer`. Allow the shell_surface to
       // modify the surface layer bounds, clear the oldest fallback and disable
       // stretch.
-      layer->SetShowSurface(surface_id, layer->bounds().size(),
-                            SkColors::kWhite,
-                            cc::DeadlinePolicy::UseDefaultDeadline(),
-                            false /* stretch_content_to_fill_bounds */);
-      layer->SetOldestAcceptableFallback(viz::SurfaceId{});
+      surface->SetShowSurface(surface_id, layer->bounds().size(),
+                              cc::DeadlinePolicy::UseDefaultDeadline(),
+                              false /* stretch_content_to_fill_bounds */);
+      surface->SetOldestAcceptableFallback(viz::SurfaceId{});
     }
   }
 }

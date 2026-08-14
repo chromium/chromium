@@ -67,6 +67,9 @@ void PrintLayerHierarchyImp(const Layer* layer,
     case ui::LAYER_NINE_PATCH:
       *out << " nine_patch";
       break;
+    case ui::LAYER_SURFACE:
+      *out << " surface";
+      break;
   }
 
   if (layer->fills_bounds_opaquely()) {

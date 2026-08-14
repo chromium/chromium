@@ -117,7 +117,7 @@ void RoundedDisplayProvider::InitializeHost() {
   // identify surface.
   host_window_ = std::make_unique<aura::Window>(/*delegate=*/nullptr);
   host_window_->set_owned_by_parent(false);
-  host_window_->Init(ui::LAYER_SOLID_COLOR);
+  host_window_->Init(ui::LAYER_SURFACE);
   host_window_->SetName("RoundedDisplayHost");
   host_window_->SetEventTargetingPolicy(aura::EventTargetingPolicy::kNone);
   host_window_->SetTransparent(true);
