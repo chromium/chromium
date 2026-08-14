@@ -244,6 +244,7 @@ InspectorWebAudioAgent::BuildProtocolContext(BaseAudioContext* context) {
       .setCallbackBufferSize(context->CallbackBufferSize())
       .setMaxOutputChannelCount(context->MaxChannelCount())
       .setSampleRate(context->sampleRate())
+      .setRenderQuantumSize(context->renderQuantumSize())
       .build();
 }
 

@@ -77,6 +77,7 @@ experimental domain WebAudio
       number maxOutputChannelCount
       # Context sample rate.
       number sampleRate
+      number renderQuantumSize
 
 # Protocol object for AudioListener
   type AudioListener extends object
