@@ -2171,7 +2171,7 @@ void ContextualSearchboxHandler::OpenUrl(
           contextual_session_handle->session_id(),
           contextual_session_handle->invocation_source());
   new_contextual_session_handle->set_smart_tab_sharing_active(
-      contextual_session_handle->smart_tab_sharing_active());
+      IsSmartTabSharingActive());
   new_contextual_session_handle->set_smart_tab_sharing_toggled_since_last_turn(
       contextual_session_handle->smart_tab_sharing_toggled_since_last_turn());
   new_contextual_session_handle->set_sts_toggled_removed_contexts(

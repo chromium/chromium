@@ -33,6 +33,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/contextual_search/contextual_search_metrics_recorder.h"
 #include "components/contextual_search/contextual_search_session_handle.h"
+#include "components/contextual_search/input_state_model.h"
 #include "components/contextual_search/mock_contextual_search_session_handle.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/contextual_tasks/public/features.h"
@@ -1509,6 +1510,68 @@ TEST_F(ContextualTasksUiServiceTest, OnNavigationToAiPageIntercepted_SameTab) {
       "https://google.com/search?udm=50&q=test+query&sourceid=chrome&ccb=1");
   EXPECT_EQ(service.GetInitialUrlForTask(task.GetTaskId()),
             expected_initial_url);
+}
+
+TEST_F(ContextualTasksUiServiceTest,
+       OnNavigationToAiPageIntercepted_TransfersSessionAndInputStateModel) {
+  ContextualTasksUiService service(
+      profile_.get(), /*delegate=*/nullptr, contextual_tasks_service_.get(),
+      /*identity_manager=*/nullptr, aim_eligibility_service_.get(),
+      std::make_unique<ContextualTasksEligibilityManager>(
+          profile_->GetPrefs(), /*identity_manager=*/nullptr,
+          aim_eligibility_service_.get()),
+      /*cookie_synchronizer=*/nullptr);
+  GURL intercepted_url("https://google.com/search?udm=50&q=test+query");
+
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+  sessions::SessionTabHelper::CreateForWebContents(
+      web_contents.get(),
+      base::BindRepeating([](content::WebContents* contents) {
+        return static_cast<sessions::SessionTabHelperDelegate*>(nullptr);
+      }));
+
+  tabs::MockTabInterface tab;
+  ON_CALL(tab, GetContents).WillByDefault(Return(web_contents.get()));
+
+  auto* helper = ContextualSearchWebContentsHelper::GetOrCreateForWebContents(
+      web_contents.get());
+  auto mock_session = std::make_unique<
+      testing::NiceMock<contextual_search::MockContextualSearchSessionHandle>>();
+  contextual_search::ContextualSearchMetricsRecorder metrics_recorder(
+      contextual_search::ContextualSearchSource::kOmnibox);
+  ON_CALL(*mock_session, GetMetricsRecorder)
+      .WillByDefault(Return(&metrics_recorder));
+  mock_session->set_smart_tab_sharing_active(true);
+
+  auto input_state_model =
+      std::make_unique<contextual_search::InputStateModel>(
+          *mock_session, omnibox::SearchboxConfig(), GURL(), false, false);
+  input_state_model->SetSmartTabSharingActive(true);
+  std::vector<int32_t> selected_tabs = {123, 456};
+  helper->SetTaskSession(std::nullopt, std::move(mock_session),
+                         std::move(input_state_model), selected_tabs);
+
+  ContextualTask task(base::Uuid::GenerateRandomV4());
+  EXPECT_CALL(*contextual_tasks_service_, CreateTaskFromUrl(intercepted_url))
+      .WillOnce(Return(task));
+  EXPECT_CALL(*contextual_tasks_service_,
+              AssociateTabWithTask(
+                  task.GetTaskId(),
+                  sessions::SessionTabHelper::IdForTab(web_contents.get())))
+      .Times(1);
+  base::WeakPtrFactory weak_factory(&tab);
+
+  service.OnNavigationToAiPageIntercepted(intercepted_url,
+                                          weak_factory.GetWeakPtr(), false);
+
+  auto* task_session = helper->GetSessionForTask(task.GetTaskId());
+  ASSERT_TRUE(task_session);
+  EXPECT_TRUE(task_session->smart_tab_sharing_active().value_or(false));
+  auto taken_input_state = helper->TakeInputStateModelForTask(task.GetTaskId());
+  ASSERT_TRUE(taken_input_state);
+  EXPECT_TRUE(taken_input_state->IsSmartTabSharingActive());
+  EXPECT_EQ(helper->GetSelectedTabIds(), selected_tabs);
 }
 
 TEST_F(ContextualTasksUiServiceTest,

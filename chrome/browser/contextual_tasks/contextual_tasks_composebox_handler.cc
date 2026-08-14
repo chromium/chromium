@@ -568,6 +568,13 @@ void ContextualTasksComposeboxHandler::InitializeInputStateModel() {
       user_data->set_input_state_model(std::move(current_input_state));
       input_state_model_ = user_data->input_state_model();
 
+      smart_tab_sharing_active_for_thread_ =
+          input_state_model_->IsSmartTabSharingActive();
+      if (auto* session_handle = GetContextualSessionHandle()) {
+        session_handle->set_smart_tab_sharing_active(
+            input_state_model_->IsSmartTabSharingActive());
+      }
+
       input_state_subscription_ =
           input_state_model_->subscribe(base::BindRepeating(
               &ContextualTasksComposeboxHandler::OnInputStateChanged,

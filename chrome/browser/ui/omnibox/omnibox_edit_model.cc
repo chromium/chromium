@@ -3354,9 +3354,9 @@ OmniboxEditModel::GetOrCreateContextualSearchSessionHandle(Profile* profile) {
 
 void OmniboxEditModel::NavigateToAiModeWithContextualizer(
     const std::u16string& query_text) {
-  if (session_handle_) {
-    session_handle_.reset();
-  }
+  bool sts_active =
+      session_handle_ &&
+      session_handle_->smart_tab_sharing_active().value_or(false);
   contextual_tasks::QueryContextualizer::ContextualizeParams params;
   params.task_id = std::nullopt;
   params.query_text = base::UTF16ToUTF8(query_text);
@@ -3367,7 +3367,7 @@ void OmniboxEditModel::NavigateToAiModeWithContextualizer(
           NavigateToAiModeWithContextualizerOnContextualizationComplete,
       weak_factory_.GetWeakPtr(), query_text,
       WindowOpenDisposition::CURRENT_TAB);
-  params.enable_smart_tab_selection = false;
+  params.enable_smart_tab_selection = sts_active;
   query_contextualizer_->Contextualize(std::move(params));
 }
 

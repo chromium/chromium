@@ -341,14 +341,20 @@ void ContextualTasksUiService::OnNavigationToAiPageIntercepted(
   // propagate context from the source WebUI.
   std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
       session_handle;
+  std::unique_ptr<contextual_search::InputStateModel> input_state_model;
+  std::vector<int32_t> selected_tab_ids;
   contextual_search::ContextualSearchSource source =
       contextual_search::ContextualSearchSource::kUnknown;
   if (source_tab) {
     auto* helper = ContextualSearchWebContentsHelper::FromWebContents(
         source_tab->GetContents());
-    if (helper && helper->session_handle()) {
-      session_handle = helper->TakeSessionHandle();
-      source = session_handle->GetMetricsRecorder()->source();
+    if (helper) {
+      if (helper->session_handle()) {
+        session_handle = helper->TakeSessionHandle();
+        source = session_handle->GetMetricsRecorder()->source();
+      }
+      input_state_model = helper->TakeInputStateModel();
+      selected_tab_ids = helper->GetSelectedTabIds();
     }
   }
   base::UmaHistogramEnumeration(
@@ -453,7 +459,8 @@ void ContextualTasksUiService::OnNavigationToAiPageIntercepted(
           ContextualSearchWebContentsHelper::GetOrCreateForWebContents(
               contextual_task_web_contents);
       helper->SetTaskSession(task.GetTaskId(), std::move(session_handle),
-                             helper->TakeInputStateModel());
+                             std::move(input_state_model),
+                             std::move(selected_tab_ids));
     }
     AssociateWebContentsToTask(contextual_task_web_contents, task.GetTaskId());
   }
