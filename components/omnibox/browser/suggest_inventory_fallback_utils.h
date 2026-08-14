@@ -24,7 +24,8 @@ inline constexpr int kDefaultFallbackSuggestRelevance = 300;
 // the specified `inventory` and `{} if no fallback prompts exist. Suggest
 // inventory uses the `azi` param and is supplied by the server for currently
 // for NTP Action Chips.
-std::vector<std::u16string> GetFallbackPromptsForSuggestInventory(
+std::vector<std::pair<std::u16string, std::u16string>>
+GetFallbackPromptsForSuggestInventory(
     SuggestInventory inventory,
     size_t num_suggestions = kDefaultFallbackNumSuggestions);
 
