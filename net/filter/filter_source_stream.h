@@ -58,11 +58,7 @@ class NET_EXPORT_PRIVATE FilterSourceStream : public SourceStream {
   //   - No "Content-Encoding" HTTP header is set.
   //   - The value of "Content-Encoding" HTTP header is empty string.
   //   - An unknown encoding type is encountered.
-  //   - An encoding type is found that is not within the accepted_stream_types
-  //     set (if provided).
   static std::vector<SourceStreamType> GetContentEncodingTypes(
-      const std::optional<base::flat_set<SourceStreamType>>&
-          accepted_stream_types,
       const HttpResponseHeaders& headers);
 
   // Creates a chained decoding SourceStream by wrapping the provided `upstream`
