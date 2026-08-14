@@ -68,3 +68,16 @@ TEST_F(TabSwitcherUtilsTest, GetTheCorrectBrowser) {
                   /*is_otr_tab*/ incognito));
   }
 }
+
+// Tests that TabGridItemAspectRatio returns the default portrait aspect ratio
+// when the window scene is nil or has empty bounds.
+TEST_F(TabSwitcherUtilsTest, TestTabGridItemAspectRatioWithNilWindowScene) {
+  // Portrait container size.
+  EXPECT_NEAR(TabGridItemAspectRatio(CGSizeMake(300, 600), nil), 4. / 3.,
+              0.001);
+  // Landscape container size.
+  EXPECT_NEAR(TabGridItemAspectRatio(CGSizeMake(600, 300), nil), 4. / 3.,
+              0.001);
+  // Zero container size.
+  EXPECT_NEAR(TabGridItemAspectRatio(CGSizeZero, nil), 4. / 3., 0.001);
+}

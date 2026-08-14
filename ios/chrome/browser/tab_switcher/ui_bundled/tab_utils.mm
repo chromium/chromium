@@ -33,15 +33,18 @@ CGFloat TabGridItemAspectRatio(CGSize size, UIWindowScene* window_scene) {
   const CGFloat width = size.width;
   const CGFloat height = size.height;
 
-  CGRect screen_bounds;
-
+  CGRect screen_bounds = CGRectZero;
   if (@available(iOS 26, *)) {
     screen_bounds = window_scene.effectiveGeometry.coordinateSpace.bounds;
-  } else {
+  } else if (window_scene) {
     screen_bounds = window_scene.screen.bounds;
   }
-  const CGFloat screen_aspect_ratio =
-      CGRectGetHeight(screen_bounds) / CGRectGetWidth(screen_bounds);
+
+  const CGFloat screen_width = CGRectGetWidth(screen_bounds);
+  const CGFloat screen_height = CGRectGetHeight(screen_bounds);
+  const CGFloat screen_aspect_ratio = (screen_width > 0 && screen_height > 0)
+                                          ? screen_height / screen_width
+                                          : kPortraitAspectRatio;
 
   // On iPad Landscape with 3/4 - 1/4 Split View, the 3/4 width is just a bit
   // smaller than the height, but design-wise, a landscape aspect ratio should
