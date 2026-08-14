@@ -27,7 +27,7 @@ _default_allowed_violations = [
   "../../components/plus_addresses/core/browser/resources/internal/*",
   "../../components/vector_icons/google_chrome/*",
   "../../google_apis/internal/generate_metrics_key.py",
-  "../../third_party/search_engines_data/resources_internal/search_engines_scaled_resources.grd",
+  "../../third_party/search_engines_data/resources_internal/*",
 ]
 
 if (!is_android) {
@@ -39,7 +39,6 @@ if (!is_android) {
     "../../chrome/browser/resources/history/internal/icons.html",
     "../../chrome/browser/resources/settings/internal/icons.html",
     "../../chrome/browser/resources/webui_toolbar/internal/icons.ts",
-    "../../third_party/search_engines_data/resources_internal/search_engine_descriptions_strings.grd",
     "../../third_party/widevine/cdm/linux/x64/manifest.json",
   ]
 }
