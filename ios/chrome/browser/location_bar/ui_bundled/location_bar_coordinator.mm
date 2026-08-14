@@ -165,6 +165,9 @@ struct AIHubBadgeActiveWindowsData : public base::SupportsUserData::Data {
   raw_ptr<PrefService> _prefService;
   // Tracker for feature events.
   raw_ptr<feature_engagement::Tracker> _tracker;
+
+  // Whether this coordinator is for a text-only location bar.
+  BOOL _textOnly;
 }
 // Whether the coordinator is started.
 @property(nonatomic, assign, getter=isStarted) BOOL started;
@@ -222,9 +225,21 @@ struct AIHubBadgeActiveWindowsData : public base::SupportsUserData::Data {
   return self.viewController;
 }
 
-- (instancetype)initWithBrowser:(Browser*)browser {
+- (UILayoutGuide*)steadyViewLayoutGuide {
+  return self.viewController.steadyViewLayoutGuide;
+}
+
+- (instancetype)initWithBrowser:(Browser*)browser textOnly:(BOOL)textOnly {
   CHECK(browser);
-  return [super initWithBaseViewController:nil browser:browser];
+  self = [super initWithBaseViewController:nil browser:browser];
+  if (self) {
+    _textOnly = textOnly;
+  }
+  return self;
+}
+
+- (instancetype)initWithBrowser:(Browser*)browser {
+  return [self initWithBrowser:browser textOnly:NO];
 }
 
 - (void)start {
@@ -242,7 +257,8 @@ struct AIHubBadgeActiveWindowsData : public base::SupportsUserData::Data {
 
   BOOL isIncognito = self.isOffTheRecord;
 
-  self.viewController = [[LocationBarViewController alloc] init];
+  self.viewController =
+      [[LocationBarViewController alloc] initWithTextOnly:_textOnly];
   self.viewController.incognito = isIncognito;
   _prefService = self.profile->GetPrefs();
   self.viewController.profilePrefs = _prefService;

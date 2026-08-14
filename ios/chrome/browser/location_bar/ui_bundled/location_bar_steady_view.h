@@ -33,7 +33,8 @@
 // A simple view displaying the current URL and security status icon.
 @interface LocationBarSteadyView : UIView
 
-- (instancetype)init NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithTextOnly:(BOOL)textOnly NS_DESIGNATED_INITIALIZER;
+- (instancetype)init;
 - (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
 - (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;
 

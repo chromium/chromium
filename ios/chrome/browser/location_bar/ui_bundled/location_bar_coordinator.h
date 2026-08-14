@@ -34,6 +34,10 @@
 @property(nonatomic, strong, readonly)
     UIViewController* locationBarViewController;
 
+// The layout guide constrained to the steady view. Only available when non-text
+// only.
+@property(nonatomic, readonly) UILayoutGuide* steadyViewLayoutGuide;
+
 // Handler for Reader Mode chip commands.
 @property(nonatomic, readonly) id<ReaderModeChipCommands> readerModeChipHandler;
 
@@ -44,9 +48,11 @@
 @property(nonatomic, weak) id<OmniboxPopupPresenterDelegate>
     popupPresenterDelegate;
 
-// Initializes this Coordinator with its `browser` and a nil base view
-// controller.
-- (instancetype)initWithBrowser:(Browser*)browser NS_DESIGNATED_INITIALIZER;
+// Initializes this Coordinator with its `browser` and whether it is text-only.
+- (instancetype)initWithBrowser:(Browser*)browser
+                       textOnly:(BOOL)textOnly NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)initWithBrowser:(Browser*)browser;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;
