@@ -174,7 +174,7 @@ version = "0.6.0"
 # codecs specifically added in `features`. Enabling new codec support requires a
 # package configuration through gnrt vendor and gnrt gen.
 default-features = false
-features = ["flac", "mp3", "pcm", "vorbis", "opt-simd"]
+features = ["flac", "mpa", "pcm", "vorbis", "opt-simd"]
 
 [dependencies.syn]
 version = "2"

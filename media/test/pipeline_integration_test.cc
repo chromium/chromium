@@ -3171,6 +3171,34 @@ TEST_F(SymphoniaPipelineIntegrationTest, BasicPlayback_Vorbis_AudioOnly) {
   EXPECT_AUDIO_HASH(kBear320x240AudioHash);
 }
 
+TEST_F(SymphoniaPipelineIntegrationTest, MSE_Mpeg2ts_MP3Audio_Mp4a_6B) {
+  TestMediaSource source("bear-audio-mp4a.6B.ts",
+                         "video/mp2t; codecs=\"mp4a.6B\"", kAppendWholeFile);
+#if BUILDFLAG(ENABLE_MSE_MPEG2TS_STREAM_PARSER)
+  EXPECT_EQ(PIPELINE_OK, StartPipelineWithMediaSource(&source));
+  source.EndOfStream();
+  ASSERT_EQ(PIPELINE_OK, pipeline_status_);
+#else
+  EXPECT_EQ(
+      DEMUXER_ERROR_COULD_NOT_OPEN,
+      StartPipelineWithMediaSource(&source, kExpectDemuxerFailure, nullptr));
+#endif
+}
+
+TEST_F(SymphoniaPipelineIntegrationTest, MSE_Mpeg2ts_MP3Audio_Mp4a_69) {
+  TestMediaSource source("bear-audio-mp4a.69.ts",
+                         "video/mp2t; codecs=\"mp4a.69\"", kAppendWholeFile);
+#if BUILDFLAG(ENABLE_MSE_MPEG2TS_STREAM_PARSER)
+  EXPECT_EQ(PIPELINE_OK, StartPipelineWithMediaSource(&source));
+  source.EndOfStream();
+  ASSERT_EQ(PIPELINE_OK, pipeline_status_);
+#else
+  EXPECT_EQ(
+      DEMUXER_ERROR_COULD_NOT_OPEN,
+      StartPipelineWithMediaSource(&source, kExpectDemuxerFailure, nullptr));
+#endif
+}
+
 #endif  // BUILDFLAG(ENABLE_SYMPHONIA)
 
 #if BUILDFLAG(ENABLE_IAMF_TOOLS) && BUILDFLAG(USE_PROPRIETARY_CODECS) && \

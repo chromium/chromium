@@ -379,11 +379,20 @@ struct DecoderImpl {
     /// The boxed trait object for the `symphonia` decoder.
     decoder: Box<dyn AudioDecoder>,
 
+    /// The parameters used to configure the decoder.
+    codec_params: AudioCodecParameters,
+
+    /// The current codec ID of the active decoder instance.
+    current_codec_id: symphonia::core::codecs::audio::AudioCodecId,
+
     /// Expected bytes per sample.
     bytes_per_sample: u8,
 
     /// The codec of the audio stream.
     codec: ffi::SymphoniaAudioCodec,
+
+    /// Tracks whether the MPEG layer has already been detected and configured.
+    has_detected_layer: bool,
 }
 
 /// The opaque Rust decoder type exposed to C++ through the FFI bridge.
@@ -610,11 +619,16 @@ fn init_symphonia_decoder_impl(config: &ffi::SymphoniaDecoderConfig) -> InitResu
             SymphoniaInitError::SymphoniaError(to_symphonia_init_status(&e), e.to_string())
         })?;
 
+    let current_codec_id = codec_params.codec;
+
     Ok(SymphoniaDecoder {
         decoder_impl: Some(DecoderImpl {
             decoder,
+            codec_params,
+            current_codec_id,
             bytes_per_sample: config.bytes_per_sample,
             codec: config.codec,
+            has_detected_layer: false,
         }),
     })
 }
@@ -728,6 +742,75 @@ impl From<DecodeResult> for ffi::SymphoniaDecodeResult {
     }
 }
 
+/// Detects the MPEG audio layer (Layer 1, Layer 2, or Layer 3) from the
+/// packet's 4-byte frame header, and returns the corresponding Symphonia
+/// AudioCodecId.
+pub fn detect_mpeg_audio_codec_id(
+    data: &[u8],
+) -> Option<symphonia::core::codecs::audio::AudioCodecId> {
+    use symphonia::core::codecs::audio::well_known::*;
+    if data.len() < 4 {
+        return None;
+    }
+    // MPEG audio sync word: 11 consecutive 1 bits (0xFFE0 mask across first 2
+    // bytes).
+    if data[0] != 0xFF || (data[1] & 0xE0) != 0xE0 {
+        return None;
+    }
+    let version_bits = (data[1] >> 3) & 0x03;
+    let layer_bits = (data[1] >> 1) & 0x03;
+    // Version 01 is reserved; Layer 00 is reserved.
+    if version_bits == 0x01 || layer_bits == 0x00 {
+        return None;
+    }
+    match layer_bits {
+        3 => Some(CODEC_ID_MP1),
+        2 => Some(CODEC_ID_MP2),
+        1 => Some(CODEC_ID_MP3),
+        _ => None,
+    }
+}
+
+impl DecoderImpl {
+    /// In Chromium, all MPEG audio layers (MP1, MP2, MP3) are mapped to
+    /// AudioCodec::kMP3. Symphonia's own native demuxer (`MpaReader`) reads
+    /// the first frame header during probe and configures track params with
+    /// CODEC_ID_MP1, CODEC_ID_MP2, or CODEC_ID_MP3. However, Chromium's
+    /// demuxers (such as `EsParserMpeg1Audio` for HLS/MPEG2-TS) only know
+    /// AudioCodec::kMP3, so `SymphoniaAudioDecoder` is always initialized with
+    /// CODEC_ID_MP3.
+    ///
+    /// Symphonia's `MpaDecoder` creates a static layer-specific state based on
+    /// the initial codec ID. If incoming packets contain Layer 1 or Layer 2
+    /// (MP2) audio, `MpaDecoder` returns an invalid layer error. Ideally,
+    /// Symphonia's `MpaDecoder` could support dynamic layer switching
+    /// internally; until then, we detect the MPEG layer header and
+    /// re-instantiate the decoder for that layer to achieve full parity
+    /// with FFmpeg. TODO(crbug.com/544919881): Consider contributing
+    /// dynamic layer switching upstream to Symphonia's MpaDecoder.
+    fn maybe_update_mpeg_decoder(&mut self, packet_data: &[u8]) {
+        if !matches!(self.codec, ffi::SymphoniaAudioCodec::Mp3) || self.has_detected_layer {
+            return;
+        }
+        let Some(target_codec_id) = detect_mpeg_audio_codec_id(packet_data) else {
+            return;
+        };
+        self.has_detected_layer = true;
+        if target_codec_id == self.current_codec_id {
+            return;
+        }
+        let mut new_params = self.codec_params.clone();
+        new_params.for_codec(target_codec_id);
+        if let Ok(new_decoder) =
+            symphonia::default::get_codecs().make_audio_decoder(&new_params, &Default::default())
+        {
+            self.decoder = new_decoder;
+            self.codec_params = new_params;
+            self.current_codec_id = target_codec_id;
+        }
+    }
+}
+
 impl SymphoniaDecoder {
     /// Internal method to decode an audio packet.
     ///
@@ -740,6 +823,8 @@ impl SymphoniaDecoder {
             ffi::SymphoniaDecodeStatus::InvalidDecoderState,
             "invalid decoder state".to_string(),
         ))?;
+
+        decoder_impl.maybe_update_mpeg_decoder(packet.data);
 
         let symphonia_packet = Packet::from(packet);
         let buffer = decoder_impl
