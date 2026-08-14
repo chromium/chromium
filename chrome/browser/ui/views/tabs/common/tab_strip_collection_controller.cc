@@ -46,6 +46,7 @@
 #include "ui/views/view_utils.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ash/boca/on_task/on_task_locked_controller.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chromeos/ash/experiences/system_web_apps/types/system_web_app_delegate.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -586,6 +587,13 @@ void TabStripCollectionController::UpdateFocusModeTheme(
     browser_view_->browser_widget()->SetUserColorOverride(color);
   }
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+bool TabStripCollectionController::IsLockedForOnTask() const {
+  return ash::boca::OnTaskLockedController::From(browser_view_->browser())
+      ->is_locked_for_on_task();
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 void TabStripCollectionController::TabKeyboardFocusChangedTo(
     const tabs::TabInterface* tab) {

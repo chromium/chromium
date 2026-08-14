@@ -68,6 +68,8 @@ source_set("impl") {
     "tab_strip_view_layout.cc",
     "tab_view.cc",
     "tab_view.h",
+    "tab_view_horizontal_layout.cc",
+    "tab_view_horizontal_layout.h",
     "tab_view_vertical_layout.cc",
     "tab_view_vertical_layout.h",
     "unpinned_tab_container_view.cc",
@@ -131,7 +133,10 @@ source_set("impl") {
   ]
 
   if (is_chromeos) {
-    deps += [ "//chromeos/ash/experiences/system_web_apps/types" ]
+    deps += [
+      "//chrome/browser/ash/boca/on_task",
+      "//chromeos/ash/experiences/system_web_apps/types",
+    ]
   }
 
   public_deps = [

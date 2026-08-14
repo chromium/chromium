@@ -39,6 +39,7 @@
 #include "chrome/browser/ui/views/tabs/common/tab_strip_collection_controller.h"
 #include "chrome/browser/ui/views/tabs/common/tab_strip_utils.h"
 #include "chrome/browser/ui/views/tabs/common/tab_strip_view.h"
+#include "chrome/browser/ui/views/tabs/common/tab_view_horizontal_layout.h"
 #include "chrome/browser/ui/views/tabs/common/tab_view_vertical_layout.h"
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_types.h"
 #include "chrome/browser/ui/views/tabs/tab/alert_indicator_button.h"
@@ -127,7 +128,10 @@ TabStripUserGestureDetails GetGestureDetail(const ui::Event& event) {
 
 std::unique_ptr<TabView::LayoutManager> CreateTabViewLayout(
     TabStripOrientation orientation) {
-  return std::make_unique<TabViewVerticalLayout>();
+  if (orientation == TabStripOrientation::kVertical) {
+    return std::make_unique<TabViewVerticalLayout>();
+  }
+  return std::make_unique<TabViewHorizontalLayout>();
 }
 }  // namespace
 
@@ -320,12 +324,15 @@ TabView::TabView(TabCollectionNode* collection_node)
                                  tab->GetHandle()),
                              browser_window, tab->GetHandle()))
                          .Build());
-    glic_tab_underline_view_->SetOrientation(
-        glic::TabUnderlineView::Orientation::kVertical);
-    glic_tab_underline_view_->SetProperty(views::kViewIgnoredByLayoutKey, true);
-    glic_tab_underline_view_->SetBoundsRect(
-        gfx::Rect(0, 0, 2 * glic::TabUnderlineView::kEffectThickness,
-                  GetLayoutConstant(LayoutConstant::kVerticalTabHeight)));
+    if (orientation_ == TabStripOrientation::kVertical) {
+      glic_tab_underline_view_->SetOrientation(
+          glic::TabUnderlineView::Orientation::kVertical);
+      glic_tab_underline_view_->SetProperty(views::kViewIgnoredByLayoutKey,
+                                            true);
+      glic_tab_underline_view_->SetBoundsRect(
+          gfx::Rect(0, 0, 2 * glic::TabUnderlineView::kEffectThickness,
+                    GetLayoutConstant(LayoutConstant::kVerticalTabHeight)));
+    }
   }
 
   title_->SetProperty(views::kElementIdentifierKey, kVerticalTabTitleElementId);
@@ -473,6 +480,10 @@ SkPath TabView::GetPath() const {
 void TabView::Layout(PassKey) {
   LayoutSuperclass<views::View>(this);
   alert_indicator_->UpdateAlertIndicatorAnimation();
+  if (orientation_ == TabStripOrientation::kHorizontal) {
+    icon_->ResizeDiscardIndicatorRadiusForWidth(
+        width() - 2 * tab_styling()->tab_style()->GetBottomCornerRadius());
+  }
 }
 
 bool TabView::OnKeyPressed(const ui::KeyEvent& event) {
@@ -1054,7 +1065,12 @@ void TabView::UpdateTitle(std::u16string title,
 }
 
 void TabView::UpdateBorder() {
-  if (pinned_ && orientation_ == TabStripOrientation::kVertical) {
+  if (orientation_ == TabStripOrientation::kHorizontal) {
+    SetBorder(views::CreateEmptyBorder(tab_styling()->GetContentsInsets()));
+    return;
+  }
+
+  if (pinned_) {
     if (split_) {
       // Insets for border handled by the `SplitTabView`.
       SetBorder(views::CreateEmptyBorder(gfx::Insets(GetLayoutConstant(

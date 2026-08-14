@@ -118,6 +118,7 @@ class TabView : public views::View,
 
  private:
   friend class TabViewVerticalLayout;
+  friend class TabViewHorizontalLayout;
 
   // views::View
   gfx::Size GetMinimumSize() const override;

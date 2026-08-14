@@ -121,6 +121,11 @@ class TabStripCollectionController : public TabContextMenuController::Delegate {
   // focused tab group changes.
   void UpdateFocusModeTheme(std::optional<tab_groups::TabGroupId> group_id);
 
+#if BUILDFLAG(IS_CHROMEOS)
+  // Returns true if the tab should be locked for the task and false otherwise.
+  bool IsLockedForOnTask() const;
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
  private:
   // TabContextMenuController::Delegate:
   bool IsContextMenuCommandChecked(
