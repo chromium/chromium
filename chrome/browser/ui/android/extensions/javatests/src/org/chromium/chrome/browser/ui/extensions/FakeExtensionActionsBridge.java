@@ -108,11 +108,6 @@ public class FakeExtensionActionsBridge {
         private FakeExtensionActionsBridgeJni() {}
 
         @Override
-        public boolean extensionsEnabled(Profile profile) {
-            return true;
-        }
-
-        @Override
         public long init(ExtensionActionsBridge bridge, long taskId) {
             // Use the bridge ID as the native bridge pointer.
             return allocateBridgeId(taskId);

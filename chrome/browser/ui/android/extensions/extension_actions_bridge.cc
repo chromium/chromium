@@ -8,7 +8,6 @@
 #include <variant>
 
 #include "base/android/jni_string.h"
-#include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "ui/events/android/key_event_android.h"
@@ -42,12 +41,6 @@ static int64_t JNI_ExtensionActionsBridge_Init(
       new ExtensionActionsBridge(browser, java_object));
 }
 
-static bool JNI_ExtensionActionsBridge_ExtensionsEnabled(JNIEnv* env,
-                                                         Profile* profile) {
-  ExtensionManagement* extension_management =
-      ExtensionManagementFactory::GetForBrowserContext(profile);
-  return extension_management->ExtensionsEnabledForDesktopAndroid();
-}
 
 }  // namespace extensions
 

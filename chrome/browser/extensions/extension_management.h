@@ -118,14 +118,6 @@ class ExtensionManagement : public KeyedService,
   const std::vector<std::unique_ptr<ManagementPolicy::Provider>>& GetProviders()
       const;
 
-#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
-  // Checks if extensions are enabled for Desktop Android for the current
-  // profile. This is temporary for until extensions are ready for dogfooding.
-  // TODO(crbug.com/422307625): Remove this check once extensions are ready for
-  // dogfooding.
-  bool ExtensionsEnabledForDesktopAndroid() const;
-#endif  // BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
-
   // Returns the force install list, in format specified by
   // ExternalPolicyLoader::AddExtension().
   base::DictValue GetForceInstallList() const;
