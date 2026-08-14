@@ -20148,11 +20148,13 @@ be describing additional metrics about the same event.
       particular prompt disposition was used, if any.
     </summary>
   </metric>
+<!-- LINT.IfChange(UkmPermissionPromptOptions) -->
+
   <metric name="PromptOptions">
     <summary>
-      An enum of type UkmPromptOptions (see
-      https://source.chromium.org/search?q=class:%5CbPermissionAction%5Cb). This
-      is only emitted if the permission prompt supports additional prompt
+      An enum of type UkmPermissionPromptOptions (see
+      https://source.chromium.org/search?q=class:%5CbUkmPermissionPromptOptions%5Cb).
+      This is only emitted if the permission prompt supports additional prompt
       options, which currently is the case only for geolocation permission
       prompts when the ApproximateGeolocationPermission is enabled. In that
       case, this is either 1 (APPROXIMATE_LOCATION) or 2 (PRECISE_LOCATION) and
@@ -20160,6 +20162,8 @@ be describing additional metrics about the same event.
       &quot;precise&quot; at the time when the action was taken.
     </summary>
   </metric>
+<!-- LINT.ThenChange(//components/permissions/permission_uma_constants.h:UkmPermissionPromptOptions) -->
+
   <metric name="SatisfiedAdaptiveTriggers">
     <summary>
       A bitmask consisting of flags defined in enum type AdaptiveTriggers. A bit

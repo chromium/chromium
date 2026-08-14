@@ -599,6 +599,15 @@ enum class DismissalType {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/permissions/enums.xml:PermissionPromptDismissMethod)
 
+// LINT.IfChange(UkmPermissionPromptOptions)
+// This enum backs the UKM Permission.PromptOptions, so it must be treated as
+// append-only.
+enum class UkmPermissionPromptOptions {
+  APPROXIMATE_LOCATION = 1,
+  PRECISE_LOCATION = 2,
+};
+// LINT.ThenChange(//tools/metrics/ukm/ukm.xml:UkmPermissionPromptOptions)
+
 // LINT.IfChange(PromptDispositionSets)
 inline constexpr auto kQuietPromptDispositions =
     base::MakeFixedFlatSet<PermissionPromptDisposition>({

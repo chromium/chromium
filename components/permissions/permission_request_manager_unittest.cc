@@ -2615,9 +2615,10 @@ class PermissionRequestManagerApproximateGeolocationTest
       content_settings::features::kApproximateGeolocationPermission};
 };
 
-// Match UkmPromptOptions in permission_uma_util.cc.
-constexpr int64_t kPromptOptionsApproximate = 1;
-constexpr int64_t kPromptOptionsPrecise = 2;
+constexpr int64_t kPromptOptionsApproximate = static_cast<int64_t>(
+    permissions::UkmPermissionPromptOptions::APPROXIMATE_LOCATION);
+constexpr int64_t kPromptOptionsPrecise = static_cast<int64_t>(
+    permissions::UkmPermissionPromptOptions::PRECISE_LOCATION);
 
 TEST_P(PermissionRequestManagerApproximateGeolocationTest,
        ReportAccuracyInUmaAOnAccept) {

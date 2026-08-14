@@ -86,13 +86,6 @@ namespace {
 
 const int kPriorCountCap = 10;
 
-// This enum backs the UKM Permission.PromptOptions, so it must be treated as
-// append-only.
-enum class UkmPromptOptions {
-  APPROXIMATE_LOCATION = 1,
-  PRECISE_LOCATION = 2,
-};
-
 struct PermissionActionUkmParams {
   PermissionAction action;
   PermissionRequestGestureType gesture_type;
@@ -117,7 +110,7 @@ struct PermissionActionUkmParams {
   PredictionRequestFeatures::ActionCounts actions_counts_for_request_type;
   PredictionRequestFeatures::ActionCounts actions_counts;
   std::optional<bool> prediction_decision_held_back;
-  std::optional<UkmPromptOptions> prompt_options;
+  std::optional<UkmPermissionPromptOptions> prompt_options;
   std::optional<GeolocationAccuracy> initial_geolocation_accuracy_selection;
   std::optional<GeolocationPromptType> geolocation_prompt_type;
 };
@@ -334,12 +327,13 @@ void RecordPermissionUsageNotificationShownUkm(
   builder.Record(ukm::UkmRecorder::Get());
 }
 
-UkmPromptOptions ToUkmPromptOptions(GeolocationAccuracy accuracy) {
+UkmPermissionPromptOptions ToUkmPermissionPromptOptions(
+    GeolocationAccuracy accuracy) {
   switch (accuracy) {
     case GeolocationAccuracy::kPrecise:
-      return UkmPromptOptions::PRECISE_LOCATION;
+      return UkmPermissionPromptOptions::PRECISE_LOCATION;
     case GeolocationAccuracy::kApproximate:
-      return UkmPromptOptions::APPROXIMATE_LOCATION;
+      return UkmPermissionPromptOptions::APPROXIMATE_LOCATION;
   }
 }
 
@@ -1504,12 +1498,12 @@ void PermissionUmaUtil::RecordPermissionAction(
     RecordUmaForRevocationSourceUI(permission, source_ui);
   }
 
-  std::optional<UkmPromptOptions> ukm_prompt_options;
+  std::optional<UkmPermissionPromptOptions> ukm_prompt_options;
   if (permission == ContentSettingsType::GEOLOCATION_WITH_OPTIONS) {
     if (const auto* geolocation_options =
             std::get_if<GeolocationPromptOptions>(&prompt_options)) {
       ukm_prompt_options =
-          ToUkmPromptOptions(geolocation_options->selected_accuracy);
+          ToUkmPermissionPromptOptions(geolocation_options->selected_accuracy);
     }
   }
 
