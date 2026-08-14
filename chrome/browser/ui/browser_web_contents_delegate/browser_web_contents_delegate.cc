@@ -87,6 +87,7 @@
 #include "extensions/browser/process_map.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/common/page/drag_operation.h"
@@ -195,6 +196,19 @@ BackgroundContents* CreateBackgroundContents(
       extensions::ExtensionRegistry::Get(profile)
           ->enabled_extensions()
           .GetHostedAppByURL(opener_url);
+
+  if (!extension) {
+    return nullptr;
+  }
+
+  // Background content URLs need to be part of the extension's web extent or be
+  // blank.
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kBlockBackgroundContentsOffExtentNavigation) &&
+      !target_url.is_empty() && !target_url.SchemeIs(url::kAboutScheme) &&
+      !extension->web_extent().MatchesURL(target_url)) {
+    return nullptr;
+  }
   bool allow_js_access = extensions::BackgroundInfo::AllowJSAccess(extension);
   // Only allow a single background contents per app.
   BackgroundContents* existing =

@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/run_until.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
@@ -27,7 +28,9 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/test/browser_task_environment.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -119,6 +122,18 @@ class BackgroundContentsServiceTest : public testing::Test {
     contents_ptr->service()->AddBackgroundContents(
         std::move(contents), contents_ptr->appid(), "background");
     return contents_ptr;
+  }
+
+  scoped_refptr<const extensions::Extension> CreateHostedApp(
+      const std::string& name,
+      const GURL& url) {
+    std::string json = base::StringPrintf(
+        R"("app": {"urls": ["%s"], "launch": {"web_url": "%s"}})",
+        url.spec().c_str(), url.spec().c_str());
+    scoped_refptr<const extensions::Extension> extension =
+        extensions::ExtensionBuilder(name).AddJSON(json).Build();
+    extensions::ExtensionRegistry::Get(profile_)->AddEnabled(extension);
+    return extension;
   }
 
  protected:
@@ -260,9 +275,10 @@ TEST_F(BackgroundContentsServiceTest, RestartForceInstalledExtensionOnCrash) {
 TEST_F(BackgroundContentsServiceTest, RestoreFromPrefs) {
   BackgroundContentsService service(profile_);
 
-  // Manually set up the preference.
-  const std::string appid = "appid";
   const GURL expected_url("http://www.google.com/test");
+  scoped_refptr<const extensions::Extension> extension =
+      CreateHostedApp("test_app", expected_url);
+  const std::string appid = extension->id();
 
   {
     ScopedDictPrefUpdate update(profile_->GetPrefs(),
@@ -279,4 +295,50 @@ TEST_F(BackgroundContentsServiceTest, RestoreFromPrefs) {
   BackgroundContents* contents = service.GetAppBackgroundContents(appid);
   ASSERT_TRUE(contents);
   EXPECT_EQ(expected_url, contents->GetInitialURLForTesting());
+}
+
+// Tests that background contents stored in prefs with an off-extent URL are
+// ignored on restore.
+TEST_F(BackgroundContentsServiceTest, RestoreFromPrefsIgnoresUrlOutsideExtent) {
+  BackgroundContentsService service(profile_);
+
+  const GURL in_extent_url("http://www.google.com/test");
+  const GURL out_of_extent_url("http://attacker.example.com/test");
+  scoped_refptr<const extensions::Extension> extension =
+      CreateHostedApp("test_app", in_extent_url);
+  const std::string appid = extension->id();
+
+  {
+    ScopedDictPrefUpdate update(profile_->GetPrefs(),
+                                prefs::kRegisteredBackgroundContents);
+    base::DictValue dict;
+    dict.Set("url", out_of_extent_url.spec());
+    dict.Set("name", "test_frame");
+    update->Set(appid, std::move(dict));
+  }
+
+  service.LoadBackgroundContentsForExtension(appid);
+
+  BackgroundContents* contents = service.GetAppBackgroundContents(appid);
+  EXPECT_FALSE(contents);
+}
+
+// Tests that navigating background contents to an off-extent URL unregisters it
+// from prefs.
+TEST_F(BackgroundContentsServiceTest, NavigatedUrlOutsideExtentNotRegistered) {
+  BackgroundContentsService service(profile_);
+
+  const GURL in_extent_url("http://www.google.com/test");
+  const GURL out_of_extent_url("http://attacker.example.com/test");
+  scoped_refptr<const extensions::Extension> extension =
+      CreateHostedApp("test_app", in_extent_url);
+  const std::string appid = extension->id();
+
+  auto owned_contents =
+      std::make_unique<MockBackgroundContents>(&service, appid);
+  EXPECT_EQ(GetPrefs(profile_).size(), 0u);
+  auto* contents = AddToService(std::move(owned_contents));
+
+  contents->Navigate(out_of_extent_url);
+  EXPECT_EQ(GetPrefs(profile_).size(), 0u);
 }

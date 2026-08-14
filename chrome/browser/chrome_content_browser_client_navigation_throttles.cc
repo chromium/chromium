@@ -90,6 +90,7 @@
 #endif  // BUILDFLAG(DFMIFY_DEV_UI)
 
 #else  // BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/background/background_contents_navigation_throttle.h"
 #include "chrome/browser/devtools/devtools_navigation_throttle.h"
 #include "chrome/browser/page_info/web_view_side_panel_throttle.h"
 #include "chrome/browser/themes/theme_service_factory.h"
@@ -601,6 +602,7 @@ void CreateAndAddChromeThrottlesForNavigation(
   data_sharing::DataSharingNavigationThrottle::MaybeCreateAndAdd(registry);
 
 #if !BUILDFLAG(IS_ANDROID)
+  BackgroundContentsNavigationThrottle::MaybeCreateAndAdd(registry);
   web_app::IsolatedWebAppThrottle::MaybeCreateAndAdd(registry);
   DevToolsNavigationThrottle::MaybeCreateAndAdd(registry);
 #endif  // !BUILDFLAG(IS_ANDROID)

@@ -117,6 +117,12 @@ class BackgroundContentsService
   // an empty string if no parent application found (e.g. passed
   // BackgroundContents has already shut down).
   const std::string& GetParentApplicationId(BackgroundContents* contents) const;
+  const std::string& GetParentApplicationId(
+      content::WebContents* contents) const;
+
+  // Returns true if this BackgroundContents is in the contents_list_.
+  bool IsTracked(BackgroundContents* contents) const;
+  bool IsTracked(content::WebContents* contents) const;
 
   // Creates a new BackgroundContents using the passed |site| and
   // begins tracking the object internally so it can be shutdown if the parent
@@ -216,9 +222,6 @@ class BackgroundContentsService
   // Unregisters and deletes the BackgroundContents associated with the
   // passed extension.
   void ShutdownAssociatedBackgroundContents(const std::string& appid);
-
-  // Returns true if this BackgroundContents is in the contents_list_.
-  bool IsTracked(BackgroundContents* contents) const;
 
   // Sends out a notification when our association of background contents with
   // apps may have changed (used by BackgroundApplicationListModel to update the

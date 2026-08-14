@@ -30,15 +30,18 @@
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/extensions/application_launch.h"
 #include "chrome/common/chrome_paths.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/embedder_support/switches.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/switches.h"
 #include "extensions/test/extension_test_message_listener.h"
+#include "net/base/net_errors.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -600,4 +603,112 @@ IN_PROC_BROWSER_TEST_F(AppBackgroundPageApiTest, UnloadExtensionWhileHidden) {
   UnloadExtensionViaTask(extension->id());
   content::RunAllPendingInMessageLoop();
   ASSERT_TRUE(VerifyBackgroundMode(false));
+}
+
+// Tests that opening a background contents window with an off-extent target
+// URL is blocked.
+IN_PROC_BROWSER_TEST_F(AppBackgroundPageApiTest,
+                       NoJsBackgroundPageTargetOutsideExtent) {
+  const std::string app_manifest = base::StringPrintf(
+      R"({
+        "name": "App",
+        "version": "0.1",
+        "manifest_version": 2,
+        "app": {
+          "urls": [
+            "http://a.com/"
+          ],
+          "launch": {
+            "web_url": "http://a.com:%u/empty.html"
+          }
+        },
+        "permissions": ["background"],
+        "background": {
+          "allow_js_access": false
+        }
+      })",
+      embedded_test_server()->port());
+
+  base::FilePath app_dir;
+  ASSERT_TRUE(CreateApp(app_manifest, &app_dir));
+  ASSERT_TRUE(LoadExtension(app_dir));
+
+  const Extension* extension = GetSingleLoadedExtension();
+  ASSERT_TRUE(extension);
+
+  GURL launch_url = embedded_test_server()->GetURL("a.com", "/empty.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), launch_url));
+
+  GURL out_of_extent_url =
+      embedded_test_server()->GetURL("b.com", "/empty.html");
+  std::string script =
+      base::StringPrintf("window.open('%s', 'bg', 'background') == null;",
+                         out_of_extent_url.spec().c_str());
+  EXPECT_EQ(content::EvalJs(
+                browser()->tab_strip_model()->GetActiveWebContents(), script),
+            true);
+
+  EXPECT_FALSE(BackgroundContentsServiceFactory::GetForProfile(profile())
+                   ->GetAppBackgroundContents(extension->id()));
+  UnloadExtension(extension->id());
+}
+
+// Tests that navigating an existing background contents window to an
+// off-extent URL is blocked.
+IN_PROC_BROWSER_TEST_F(AppBackgroundPageApiTest,
+                       NoJsBackgroundPageNavigateOutsideExtent) {
+  const std::string app_manifest = base::StringPrintf(
+      R"({
+        "name": "App",
+        "version": "0.1",
+        "manifest_version": 2,
+        "app": {
+          "urls": [
+            "http://a.com/"
+          ],
+          "launch": {
+            "web_url": "http://a.com:%u/empty.html"
+          }
+        },
+        "permissions": ["background"],
+        "background": {
+          "allow_js_access": false
+        }
+      })",
+      embedded_test_server()->port());
+
+  base::FilePath app_dir;
+  ASSERT_TRUE(CreateApp(app_manifest, &app_dir));
+  ASSERT_TRUE(LoadExtension(app_dir));
+
+  const Extension* extension = GetSingleLoadedExtension();
+  ASSERT_TRUE(extension);
+
+  BackgroundContentsTestWaiter background_waiter(profile());
+  GURL launch_url = embedded_test_server()->GetURL("a.com", "/empty.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), launch_url));
+
+  std::string open_script = base::StringPrintf(
+      "window.open('%s', 'bg', 'background');", launch_url.spec().c_str());
+  EXPECT_TRUE(content::ExecJs(
+      browser()->tab_strip_model()->GetActiveWebContents(), open_script));
+  background_waiter.WaitForBackgroundContents(extension->id());
+
+  BackgroundContents* background_contents =
+      BackgroundContentsServiceFactory::GetForProfile(profile())
+          ->GetAppBackgroundContents(extension->id());
+  ASSERT_TRUE(background_contents);
+
+  GURL out_of_extent_url =
+      embedded_test_server()->GetURL("b.com", "/empty.html");
+  std::string nav_script = base::StringPrintf("window.location.href = '%s';",
+                                              out_of_extent_url.spec().c_str());
+  content::TestNavigationObserver nav_observer(
+      background_contents->web_contents());
+  EXPECT_TRUE(content::ExecJs(background_contents->web_contents(), nav_script));
+  nav_observer.Wait();
+
+  EXPECT_FALSE(nav_observer.last_navigation_succeeded());
+  EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT, nav_observer.last_net_error_code());
+  UnloadExtension(extension->id());
 }

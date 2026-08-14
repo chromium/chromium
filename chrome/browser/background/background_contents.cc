@@ -98,13 +98,15 @@ bool BackgroundContents::ShouldSuppressDialogs(WebContents* source) {
 }
 
 void BackgroundContents::PrimaryPageChanged(content::Page& page) {
-  // Note: because BackgroundContents are only available to extension apps,
+  // Note: Because `BackgroundContents` are only available to extension apps,
   // navigation is limited to urls within the app's extent. This is enforced in
-  // RenderView::decidePolicyForNavigation. If BackgroundContents become
-  // available as a part of the web platform, it probably makes sense to have
-  // some way to scope navigation of a background page to its opener's security
-  // origin. Note: if the first navigation is to a URL outside the app's
-  // extent a background page will be opened but will remain at about:blank.
+  // `Browser::CreateBackgroundContents`,
+  // `BackgroundContentsNavigationThrottle`, and `BackgroundContentsService`. If
+  // `BackgroundContents` become available as a part of the web platform, it
+  // probably makes sense to have some way to scope navigation of a background
+  // page to its opener's security origin. Note: if the first navigation is to a
+  // URL outside the app's extent a background page will be opened but will
+  // remain at about:blank.
   delegate_->OnBackgroundContentsNavigated(this);
 }
 

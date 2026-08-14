@@ -932,6 +932,7 @@ source_set("core") {
     "//chrome/browser/ai",
     "//chrome/browser/app_mode",
     "//chrome/browser/autocomplete:aim_eligibility_service",
+    "//chrome/browser/background",
     "//chrome/browser/battery",
     "//chrome/browser/bluetooth",
     "//chrome/browser/browsing_data",

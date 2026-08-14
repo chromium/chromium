@@ -14,6 +14,7 @@ source_set("background") {
 
   if (enable_background_contents) {
     sources += [
+      "background_contents_navigation_throttle.h",
       "background_contents_service.h",
       "background_contents_service_factory.h",
     ]
@@ -49,6 +50,7 @@ source_set("impl") {
 
   if (enable_background_contents) {
     sources += [
+      "background_contents_navigation_throttle.cc",
       "background_contents_service.cc",
       "background_contents_service_factory.cc",
     ]

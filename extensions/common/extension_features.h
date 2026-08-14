@@ -132,6 +132,11 @@ BASE_DECLARE_FEATURE(kApiDesktopAndroidNativeMessaging);
 // requested host permissions by default.
 BASE_DECLARE_FEATURE(kAllowWithholdingExtensionPermissionsOnInstall);
 
+// If enabled, navigations and window.open calls to URLs outside a hosted app's
+// web extent in background contents are blocked and not persisted to prefs.
+// TODO(crbug.com/511824746): Clean up in M156.
+BASE_DECLARE_FEATURE(kBlockBackgroundContentsOffExtentNavigation);
+
 // When enabled, then bad_message::ReceivedBadMessage will be called when
 // browser receives an IPC from a content script and the IPC that unexpectedly
 // claims to act on behalf of a given extension id, (i.e. even if the browser

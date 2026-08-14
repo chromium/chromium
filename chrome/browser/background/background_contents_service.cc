@@ -48,6 +48,7 @@
 #include "extensions/browser/image_loader.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/icons/extension_icon_set.h"
@@ -516,7 +517,17 @@ void BackgroundContentsService::LoadBackgroundContentsFromDictionary(
   std::string frame_name = maybe_frame_name ? *maybe_frame_name : std::string();
   std::string url = maybe_url ? *maybe_url : std::string();
 
-  LoadBackgroundContents(GURL(url), frame_name, extension_id);
+  GURL gurl(url);
+  const Extension* extension = extensions::ExtensionRegistry::Get(profile_)
+                                   ->enabled_extensions()
+                                   .GetByID(extension_id);
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kBlockBackgroundContentsOffExtentNavigation) &&
+      extension && !extension->web_extent().MatchesURL(gurl)) {
+    return;
+  }
+
+  LoadBackgroundContents(gurl, frame_name, extension_id);
 }
 
 void BackgroundContentsService::LoadBackgroundContentsFromManifests() {
@@ -653,6 +664,11 @@ bool BackgroundContentsService::IsTracked(
   return !GetParentApplicationId(background_contents).empty();
 }
 
+bool BackgroundContentsService::IsTracked(
+    content::WebContents* web_contents) const {
+  return !GetParentApplicationId(web_contents).empty();
+}
+
 void BackgroundContentsService::AddObserver(
     BackgroundContentsServiceObserver* observer) {
   observers_.AddObserver(observer);
@@ -674,6 +690,17 @@ const std::string& BackgroundContentsService::GetParentApplicationId(
   for (auto it = contents_map_.begin(); it != contents_map_.end(); ++it) {
     if (contents == it->second.contents.get())
       return it->first;
+  }
+  return base::EmptyString();
+}
+
+const std::string& BackgroundContentsService::GetParentApplicationId(
+    content::WebContents* contents) const {
+  for (const auto& [id, background_contents_info] : contents_map_) {
+    if (background_contents_info.contents &&
+        background_contents_info.contents->web_contents() == contents) {
+      return id;
+    }
   }
   return base::EmptyString();
 }
@@ -705,8 +732,17 @@ void BackgroundContentsService::OnBackgroundContentsNavigated(
       extensions::ExtensionRegistry::Get(profile_);
   const Extension* extension =
       extension_registry->enabled_extensions().GetByID(appid);
-  if (extension && BackgroundInfo::HasBackgroundPage(extension))
-    return;
+  if (extension) {
+    if (BackgroundInfo::HasBackgroundPage(extension)) {
+      return;
+    }
+    if (base::FeatureList::IsEnabled(
+            extensions_features::kBlockBackgroundContentsOffExtentNavigation) &&
+        !extension->web_extent().MatchesURL(contents->GetURL())) {
+      UnregisterBackgroundContents(contents);
+      return;
+    }
+  }
   RegisterBackgroundContents(contents);
 }
 
