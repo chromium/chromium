@@ -193,6 +193,11 @@ void BrowserInfoBarManager::Register(InfoBarSpec spec) {
   registered_specs_[spec.identifier()] = std::move(spec);
 }
 
+bool BrowserInfoBarManager::IsRegistered(
+    infobars::InfoBarDelegate::InfoBarIdentifier identifier) const {
+  return registered_specs_.contains(identifier);
+}
+
 void BrowserInfoBarManager::Show(
     tabs::TabInterface* tab,
     infobars::InfoBarDelegate::InfoBarIdentifier identifier) {

@@ -46,6 +46,10 @@ class BrowserInfoBarManager : public BrowserCollectionObserver,
   // Registers an InfoBarSpec with the manager.
   void Register(InfoBarSpec spec);
 
+  // Returns true if an InfoBarSpec with the given identifier is registered.
+  bool IsRegistered(
+      infobars::InfoBarDelegate::InfoBarIdentifier identifier) const;
+
   // Shows the InfoBar with the given identifier for a specific Tab.
   void Show(tabs::TabInterface* tab,
             infobars::InfoBarDelegate::InfoBarIdentifier identifier);
