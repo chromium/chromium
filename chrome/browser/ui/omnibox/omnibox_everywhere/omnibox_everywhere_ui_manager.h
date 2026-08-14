@@ -48,6 +48,9 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kOmniboxEverywhereElementId);
 
+  static constexpr int kPopupFixedWidth = 848;
+  static constexpr int kDefaultRestingHeight = 152;
+
   enum ContextMenuCommandId {
     kCut = 1,
     kCopy = 2,
@@ -169,6 +172,7 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
   void CreateAndInitWidget(gfx::NativeWindow context);
   void ActivateAndFocus();
   void OnEphemeralModelPrefChanged();
+  static gfx::Rect CalculateWidgetBounds(int height);
 
   std::unique_ptr<WebUIContentsWrapper> CreateContentsWrapper(Profile* profile);
 

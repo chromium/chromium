@@ -4,6 +4,10 @@
 
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_ui_manager.h"
 
+#include <memory>
+#include <utility>
+#include <vector>
+
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/run_until.h"
@@ -32,6 +36,23 @@
 #include "url/gurl.h"
 
 namespace {
+
+class ScopedScreenOverride {
+ public:
+  explicit ScopedScreenOverride(display::Screen* new_screen)
+      : old_screen_(display::Screen::SetScreenInstance(nullptr)) {
+    display::Screen::SetScreenInstance(new_screen);
+  }
+  ~ScopedScreenOverride() {
+    display::Screen::SetScreenInstance(nullptr);
+    if (old_screen_) {
+      display::Screen::SetScreenInstance(old_screen_);
+    }
+  }
+
+ private:
+  raw_ptr<display::Screen> old_screen_;
+};
 
 class TestWebUIContentsWrapper : public WebUIContentsWrapper {
  public:
@@ -146,6 +167,77 @@ TEST_F(OmniboxEverywhereUIManagerTest, ShowWhileWidgetIsHidden) {
   // Clean up.
   ui_manager->Shutdown();
   EXPECT_FALSE(ui_manager->widget());
+}
+
+// Verifies that when the widget is first shown on a standard display, its
+// initial bounds are centered and initialized with the default resting height
+// (kDefaultRestingHeight) and fixed width (kPopupFixedWidth) to prevent visual
+// resize flashing before WebUI auto-resize occurs.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_InitialBoundsMatchRestingHeight \
+  DISABLED_InitialBoundsMatchRestingHeight
+#else
+#define MAYBE_InitialBoundsMatchRestingHeight InitialBoundsMatchRestingHeight
+#endif
+TEST_F(OmniboxEverywhereUIManagerTest, MAYBE_InitialBoundsMatchRestingHeight) {
+  display::test::TestScreen test_screen(/*create_display=*/false,
+                                        /*register_screen=*/false);
+  ScopedScreenOverride screen_override(&test_screen);
+
+  display::Display display1(1, gfx::Rect(0, 0, 1920, 1080));
+  test_screen.display_list().AddDisplay(display1,
+                                        display::DisplayList::Type::PRIMARY);
+
+  auto ui_manager = CreateUIManager();
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  views::Widget* widget = ui_manager->widget();
+  ASSERT_TRUE(widget);
+
+  EXPECT_EQ(
+      widget->GetWindowBoundsInScreen(),
+      gfx::Rect(
+          536, 464,
+          omnibox_everywhere::OmniboxEverywhereUIManager::kPopupFixedWidth,
+          omnibox_everywhere::OmniboxEverywhereUIManager::
+              kDefaultRestingHeight));
+
+  ui_manager->Shutdown();
+}
+
+// Verifies that on displays with dimensions smaller than the fixed popup width,
+// widget bounds calculation clamps width and coordinates to remain fully within
+// the visible work area without overflowing or negative positioning.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_CalculateBoundsClampsToSmallDisplays \
+  DISABLED_CalculateBoundsClampsToSmallDisplays
+#else
+#define MAYBE_CalculateBoundsClampsToSmallDisplays \
+  CalculateBoundsClampsToSmallDisplays
+#endif
+TEST_F(OmniboxEverywhereUIManagerTest,
+       MAYBE_CalculateBoundsClampsToSmallDisplays) {
+  display::test::TestScreen test_screen(/*create_display=*/false,
+                                        /*register_screen=*/false);
+  ScopedScreenOverride screen_override(&test_screen);
+
+  // Display smaller than default popup width (800 < 848).
+  display::Display small_display(1, gfx::Rect(0, 0, 800, 600));
+  test_screen.display_list().AddDisplay(small_display,
+                                        display::DisplayList::Type::PRIMARY);
+
+  auto ui_manager = CreateUIManager();
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  views::Widget* widget = ui_manager->widget();
+  ASSERT_TRUE(widget);
+
+  // Width is clamped to work area width (800) and x starts at 0 (non-negative).
+  EXPECT_EQ(widget->GetWindowBoundsInScreen().x(), 0);
+  EXPECT_EQ(widget->GetWindowBoundsInScreen().width(), 800);
+  EXPECT_EQ(
+      widget->GetWindowBoundsInScreen().height(),
+      omnibox_everywhere::OmniboxEverywhereUIManager::kDefaultRestingHeight);
+
+  ui_manager->Shutdown();
 }
 
 TEST_F(OmniboxEverywhereUIManagerTest, FileChooserStateTracking) {
@@ -300,8 +392,7 @@ TEST_F(OmniboxEverywhereUIManagerTest, MAYBE_ShowPositionsOnTargetDisplay) {
   // Display 2: 800, 0, 1024, 768 (Secondary)
   display::test::TestScreen test_screen(/*create_display=*/false,
                                         /*register_screen=*/false);
-  display::Screen* old_screen = display::Screen::SetScreenInstance(nullptr);
-  display::Screen::SetScreenInstance(&test_screen);
+  ScopedScreenOverride screen_override(&test_screen);
 
   display::Display display1(1, gfx::Rect(0, 0, 800, 600));
   display::Display display2(2, gfx::Rect(800, 0, 1024, 768));
@@ -329,8 +420,6 @@ TEST_F(OmniboxEverywhereUIManagerTest, MAYBE_ShowPositionsOnTargetDisplay) {
             display::Screen::Get()->GetPrimaryDisplay().id());
 
   ui_manager->Close();
-  display::Screen::SetScreenInstance(nullptr);
-  display::Screen::SetScreenInstance(old_screen);
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -344,8 +433,7 @@ TEST_F(OmniboxEverywhereUIManagerTest,
        MAYBE_PreservePositionAcrossDisplaysOnReinvoke) {
   display::test::TestScreen test_screen(/*create_display=*/false,
                                         /*register_screen=*/false);
-  display::Screen* old_screen = display::Screen::SetScreenInstance(nullptr);
-  display::Screen::SetScreenInstance(&test_screen);
+  ScopedScreenOverride screen_override(&test_screen);
 
   display::Display display1(1, gfx::Rect(0, 0, 800, 600));
   display::Display display2(2, gfx::Rect(800, 0, 1024, 768));
@@ -372,8 +460,6 @@ TEST_F(OmniboxEverywhereUIManagerTest,
   EXPECT_EQ(widget->GetWindowBoundsInScreen(), initial_bounds);
 
   ui_manager->Close();
-  display::Screen::SetScreenInstance(nullptr);
-  display::Screen::SetScreenInstance(old_screen);
 }
 
 TEST_F(OmniboxEverywhereUIManagerTest, DrivePickerStateTracking) {

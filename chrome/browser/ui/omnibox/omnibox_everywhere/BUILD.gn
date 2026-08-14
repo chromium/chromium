@@ -71,6 +71,11 @@ source_set("impl") {
       "omnibox_everywhere_event_handler_aura.cc",
       "omnibox_everywhere_event_handler_aura.h",
     ]
+    deps += [
+      "//ui/aura",
+      "//ui/events",
+      "//ui/wm",
+    ]
   }
 }
 

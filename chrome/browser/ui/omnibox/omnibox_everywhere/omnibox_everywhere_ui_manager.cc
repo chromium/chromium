@@ -13,9 +13,6 @@
 #include "chrome/browser/file_select_helper.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/profiles/profile.h"
-#if defined(USE_AURA)
-#include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_event_handler_aura.h"
-#endif
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_prefs.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_widget_delegate.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere_service.h"
@@ -40,9 +37,9 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/strings/grit/ui_strings.h"
-#include "ui/views/background.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
+#include "ui/views/controls/webview/web_contents_set_background_color.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
@@ -54,7 +51,9 @@
 #endif
 
 #if defined(USE_AURA)
+#include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_event_handler_aura.h"
 #include "ui/aura/window.h"
+#include "ui/wm/core/window_animations.h"
 #endif
 
 namespace omnibox_everywhere {
@@ -63,9 +62,6 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(OmniboxEverywhereUIManager,
                                       kOmniboxEverywhereElementId);
 
 namespace {
-
-// Fixed popup width (800px content + 48px horizontal shadow padding).
-constexpr int kPopupFixedWidth = 848;
 
 bool IsEphemeral() {
   bool is_ephemeral = false;
@@ -212,6 +208,18 @@ void OmniboxEverywhereUIManager::ShowForProfile(Profile* profile,
   }
 }
 
+gfx::Rect OmniboxEverywhereUIManager::CalculateWidgetBounds(int height) {
+  display::Display target_display =
+      display::Screen::Get()->GetDisplayNearestPoint(
+          display::Screen::Get()->GetCursorScreenPoint());
+  gfx::Rect work_area = target_display.work_area();
+  int width = std::min(kPopupFixedWidth, work_area.width());
+  int clamped_height = std::min(height, work_area.height());
+  int x = work_area.x() + (work_area.width() - width) / 2;
+  int y = work_area.y() + (work_area.height() - clamped_height) / 2;
+  return gfx::Rect(x, y, width, clamped_height);
+}
+
 void OmniboxEverywhereUIManager::EnsureContentsWrapperInitialized(
     Profile* profile) {
   if (contents_wrapper_) {
@@ -220,6 +228,8 @@ void OmniboxEverywhereUIManager::EnsureContentsWrapperInitialized(
   contents_wrapper_ = CreateContentsWrapper(profile);
 
   if (web_contents()) {
+    views::WebContentsSetBackgroundColor::CreateForWebContentsWithColor(
+        web_contents(), SK_ColorTRANSPARENT);
     OmniboxPopupWebContentsHelper::CreateForWebContents(web_contents());
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
     // Set ViewType::kComponent so `ChromeSpeechRecognitionManagerDelegate`
@@ -276,15 +286,7 @@ void OmniboxEverywhereUIManager::CreateAndInitWidget(
     params.context = context;
   }
 
-  display::Display target_display =
-      display::Screen::Get()->GetDisplayNearestPoint(
-          display::Screen::Get()->GetCursorScreenPoint());
-  gfx::Rect work_area = target_display.work_area();
-  constexpr gfx::Size kDefaultPopupSize(kPopupFixedWidth, 632);
-  params.bounds = gfx::Rect(
-      work_area.x() + (work_area.width() - kDefaultPopupSize.width()) / 2,
-      work_area.y() + (work_area.height() - kDefaultPopupSize.height()) / 2,
-      kDefaultPopupSize.width(), kDefaultPopupSize.height());
+  params.bounds = CalculateWidgetBounds(kDefaultRestingHeight);
 
   auto web_view = std::make_unique<views::WebView>(profile_);
   web_view->SetProperty(views::kElementIdentifierKey,
@@ -293,12 +295,6 @@ void OmniboxEverywhereUIManager::CreateAndInitWidget(
   // the Views focus/accelerator system.
   web_view->set_allow_accelerators(true);
   web_view->SetWebContents(web_contents());
-  web_view->SetBackground(views::CreateSolidBackground(SK_ColorTRANSPARENT));
-  if (web_contents()) {
-    if (auto* rwhv = web_contents()->GetRenderWidgetHostView()) {
-      rwhv->SetBackgroundColor(SK_ColorTRANSPARENT);
-    }
-  }
   widget_delegate_->SetContentsView(std::move(web_view));
 
   widget_->Init(std::move(params));
@@ -318,6 +314,8 @@ void OmniboxEverywhereUIManager::CreateAndInitWidget(
 
 #if defined(USE_AURA)
   CHECK(widget_->GetNativeView());
+  wm::SetWindowVisibilityAnimationTransition(widget_->GetNativeView(),
+                                             wm::ANIMATE_NONE);
   widget_->GetNativeView()->AddPreTargetHandler(event_handler_.get());
 #endif
 }
