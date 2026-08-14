@@ -21,11 +21,6 @@ BASE_DECLARE_FEATURE(kEnforcePrivacySandboxAttestations);
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kDefaultAllowPrivacySandboxAttestations);
 
-// Gives a list of sites permission to use Privacy Sandbox features without
-// being officially enrolled.
-COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
-extern const char kPrivacySandboxEnrollmentOverrides[];
-
 #if BUILDFLAG(IS_ANDROID)
 // Allow the Privacy Sandbox Attestations component to load the pre-installed
 // attestation list from Android APK assets.

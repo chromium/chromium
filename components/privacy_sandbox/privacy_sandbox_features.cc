@@ -14,9 +14,6 @@ BASE_FEATURE(kEnforcePrivacySandboxAttestations,
 BASE_FEATURE(kDefaultAllowPrivacySandboxAttestations,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-const char kPrivacySandboxEnrollmentOverrides[] =
-    "privacy-sandbox-enrollment-overrides";
-
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kPrivacySandboxAttestationsLoadFromAPKAsset,
              base::FEATURE_ENABLED_BY_DEFAULT);

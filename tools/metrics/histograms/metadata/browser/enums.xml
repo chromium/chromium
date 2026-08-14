@@ -347,7 +347,7 @@ chromium-metrics-reviews@google.com.
   <int value="114" label="TAB_PICKUP_INFOBAR_DELEGATE (Obsolete)"/>
   <int value="115" label="LOCAL_TEST_POLICIES_APPLIED_INFOBAR"/>
   <int value="116"
-      label="BIDDING_AND_AUCTION_USER_CONSENTED_DEBUGGING_DELEGATE"/>
+      label="BIDDING_AND_AUCTION_USER_CONSENTED_DEBUGGING_DELEGATE (Obsolete)"/>
   <int value="117" label="PARCEL_TRACKING_INFOBAR_DELEGATE (Obsolete)"/>
   <int value="118"
       label="TEST_THIRD_PARTY_COOKIE_PHASEOUT_DELEGATE (Obsolete)"/>

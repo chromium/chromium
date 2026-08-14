@@ -4238,13 +4238,6 @@ inline constexpr char kNtpComposeboxUsesChromeComposeClientDescription[] =
     "Composebox will use chrome-compose client when querying suggest for "
     "unimodal typed inputs instead of chrome-omni.";
 
-inline constexpr char kPrivacySandboxEnrollmentOverridesName[] =
-    "Privacy Sandbox Enrollment Overrides";
-inline constexpr char kPrivacySandboxEnrollmentOverridesDescription[] =
-    "Allows a list of sites to use Privacy Sandbox features without them being "
-    "enrolled and attested into the Privacy Sandbox experiment. See: "
-    "https://developer.chrome.com/en/docs/privacy-sandbox/enroll/";
-
 inline constexpr char kProfileDiscOnAllPagesName[] =
     "Profile Disc on All Pages";
 inline constexpr char kProfileDiscOnAllPagesDescription[] =
@@ -4259,15 +4252,6 @@ inline constexpr char kProfileSignalsReportingEnabledDescription[] =
 inline constexpr char kOrganizerPanelName[] = "Organizer Panel";
 inline constexpr char kOrganizerPanelDescription[] =
     "Enables the Organizer Panel.";
-
-inline constexpr char kProtectedAudiencesConsentedDebugTokenName[] =
-    "Protected Audiences Consented Debug Token";
-inline constexpr char kProtectedAudiencesConsentedDebugTokenDescription[] =
-    "Enables Protected Audience Consented Debugging with the provided token. "
-    "Protected Audience auctions running on a Bidding and Auction API trusted "
-    "server with a matching token will be able to log information about the "
-    "auction to enable debugging. Note that this logging may include "
-    "information about the user's browsing history normally kept private.";
 
 inline constexpr char kPullToRefreshName[] = "Pull-to-refresh gesture";
 inline constexpr char kPullToRefreshDescription[] =

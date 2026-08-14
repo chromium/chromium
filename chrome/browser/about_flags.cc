@@ -9970,11 +9970,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ash::features::kTilingWindowResize)},
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-    {"privacy-sandbox-enrollment-overrides",
-     flag_descriptions::kPrivacySandboxEnrollmentOverridesName,
-     flag_descriptions::kPrivacySandboxEnrollmentOverridesDescription, kOsAll,
-     ORIGIN_LIST_VALUE_TYPE(privacy_sandbox::kPrivacySandboxEnrollmentOverrides,
-                            "")},
     {"autofill-enable-prefetching-risk-data-for-retrieval",
      flag_descriptions::kAutofillEnablePrefetchingRiskDataForRetrievalName,
      flag_descriptions::
@@ -10002,12 +9997,6 @@ const FeatureEntry kFeatureEntries[] = {
          "PwaNavigationCapturingTestingOverride")},
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||
         // BUILDFLAG(IS_CHROMEOS)
-
-    {"protected-audience-debug-token",
-     flag_descriptions::kProtectedAudiencesConsentedDebugTokenName,
-     flag_descriptions::kProtectedAudiencesConsentedDebugTokenDescription,
-     kOsAll,
-     STRING_VALUE_TYPE(switches::kProtectedAudiencesConsentedDebugToken, "")},
 
     {"deprecate-unload", flag_descriptions::kDeprecateUnloadName,
      flag_descriptions::kDeprecateUnloadDescription, kOsAll | kDeprecated,

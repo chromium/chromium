@@ -33,7 +33,6 @@ source_set("startup_tab") {
 source_set("startup") {
   sources = [
     "bad_flags_prompt.h",
-    "bidding_and_auction_consented_debugging_infobar_delegate.h",
     "url_util.h",
   ]
   public_deps = [
@@ -128,7 +127,6 @@ source_set("startup") {
 source_set("impl") {
   sources = [
     "bad_flags_prompt.cc",
-    "bidding_and_auction_consented_debugging_infobar_delegate.cc",
     "url_util.cc",
   ]
   deps = [

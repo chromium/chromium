@@ -19300,11 +19300,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
       </message>
     </if>
 
-    <!-- Infobar shown when Protected Audiences Debugging is enabled -->
-    <message name="IDS_PROTECTED_AUDIENCE_DEBUGGING_DISCLAIMER" desc="Text of infobar that shows up when the consented debugging feature for Protected Audiences is enabled.">
-      Protected Audiences Debugging is enabled.
-    </message>
-
     <!-- Omnibox Everywhere Screenshot Menu -->
     <message name="IDS_OMNIBOX_EVERYWHERE_SHARE_SCREENSHOT" desc="Title of the screenshot sharing menu option.">
       Share a screenshot
