@@ -86,6 +86,74 @@ public class BottomBarMetrics {
 
     // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:AndroidBottomBarGlicConvoResult)
 
+    // LINT.IfChange(AndroidBottomBarCandidateAction)
+    /** Candidate action resolved for the bottom bar's extra button container slot. */
+    @IntDef({CandidateAction.NONE, CandidateAction.GLIC, CandidateAction.AIM})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface CandidateAction {
+        int NONE = 0;
+        int GLIC = 1;
+        int AIM = 2;
+        int COUNT = 3;
+    }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:AndroidBottomBarCandidateAction)
+
+    // LINT.IfChange(AndroidBottomBarGlicIneligibilityReason)
+    /** Reasons why Glic was determined ineligible or not shown in the bottom bar. */
+    @IntDef({
+        GlicIneligibilityReason.PROFILE_INELIGIBLE,
+        GlicIneligibilityReason.COUNTRY_GEOFENCED,
+        GlicIneligibilityReason.USER_DISABLED_IN_SETTINGS
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface GlicIneligibilityReason {
+        int PROFILE_INELIGIBLE = 0;
+        int COUNTRY_GEOFENCED = 1;
+        int USER_DISABLED_IN_SETTINGS = 2;
+        int COUNT = 3;
+    }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:AndroidBottomBarGlicIneligibilityReason)
+
+    // LINT.IfChange(AndroidBottomBarAimIneligibilityReason)
+    /** Reasons why AI Mode was determined ineligible or not shown in the bottom bar. */
+    @IntDef({
+        AimIneligibilityReason.FEATURE_FLAG_DISABLED,
+        AimIneligibilityReason.COUNTRY_GEOFENCED,
+        AimIneligibilityReason.COUNTRY_IN_GLIC_SOON_LIST,
+        AimIneligibilityReason.PREEMPTED_BY_GLIC,
+        AimIneligibilityReason.DEFAULT_SEARCH_ENGINE_NOT_GOOGLE
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface AimIneligibilityReason {
+        int FEATURE_FLAG_DISABLED = 0;
+        int COUNTRY_GEOFENCED = 1;
+        int COUNTRY_IN_GLIC_SOON_LIST = 2;
+        int PREEMPTED_BY_GLIC = 3;
+        int DEFAULT_SEARCH_ENGINE_NOT_GOOGLE = 4;
+        int COUNT = 5;
+    }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:AndroidBottomBarAimIneligibilityReason)
+
+    // LINT.IfChange(AndroidBottomBarAimLaunchResult)
+    /** Results of attempting to launch AI Mode from the bottom bar. */
+    @IntDef({
+        AimLaunchResult.SUCCESS,
+        AimLaunchResult.TAB_NULL,
+        AimLaunchResult.MISSING_OR_INVALID_URL
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface AimLaunchResult {
+        int SUCCESS = 0;
+        int TAB_NULL = 1;
+        int MISSING_OR_INVALID_URL = 2;
+        int COUNT = 3;
+    }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:AndroidBottomBarAimLaunchResult)
+
     /**
      * Records the visual state of the Glic button in the bottom bar at the moment of the user
      * click.
@@ -162,12 +230,57 @@ public class BottomBarMetrics {
     }
 
     /**
-     * Records the decision and processing time taken to evaluate whether Glic should be visible.
+     * Records the decision and processing time taken to evaluate candidate extra action resolution
+     * (GLIC vs AI Mode) in the bottom bar.
      *
      * @param durationMs The elapsed time in milliseconds.
      */
-    public static void recordGlicVisibilityDecisionTime(long durationMs) {
+    public static void recordCandidateDecisionTime(long durationMs) {
         RecordHistogram.recordTimesHistogram(
-                "Android.BottomBar.GlicVisibilityDecisionTime", durationMs);
+                "Android.BottomBar.ExtraAction.CandidateDecisionTime", durationMs);
+    }
+
+    /**
+     * Records the candidate extra action resolved for the bottom bar.
+     *
+     * @param candidateAction The candidate extra action (None, Glic, or Aim).
+     */
+    public static void recordCandidateExtraAction(@CandidateAction int candidateAction) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.BottomBar.ExtraAction.CandidateResolved",
+                candidateAction,
+                CandidateAction.COUNT);
+    }
+
+    /**
+     * Records the reason why Glic was determined ineligible or not shown in the bottom bar.
+     *
+     * @param reason The ineligibility reason.
+     */
+    public static void recordGlicIneligibilityReason(@GlicIneligibilityReason int reason) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.BottomBar.Glic.IneligibilityReason",
+                reason,
+                GlicIneligibilityReason.COUNT);
+    }
+
+    /**
+     * Records the reason why AI Mode was determined ineligible or not shown in the bottom bar.
+     *
+     * @param reason The ineligibility reason.
+     */
+    public static void recordAimIneligibilityReason(@AimIneligibilityReason int reason) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.BottomBar.Aim.IneligibilityReason", reason, AimIneligibilityReason.COUNT);
+    }
+
+    /**
+     * Records the result of attempting to launch AI Mode from the bottom bar.
+     *
+     * @param result The launch result (Success, TabNull, or MissingOrInvalidUrl).
+     */
+    public static void recordAimLaunchResult(@AimLaunchResult int result) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.BottomBar.Aim.LaunchResult", result, AimLaunchResult.COUNT);
     }
 }

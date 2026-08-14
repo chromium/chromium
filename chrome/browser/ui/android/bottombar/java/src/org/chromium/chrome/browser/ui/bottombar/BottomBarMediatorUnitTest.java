@@ -56,6 +56,8 @@ import org.chromium.chrome.browser.ui.actions.ActionId;
 import org.chromium.chrome.browser.ui.actions.ActionProperties;
 import org.chromium.chrome.browser.ui.actions.ActionRegistry;
 import org.chromium.chrome.browser.ui.android.bars_common.IphIntent;
+import org.chromium.chrome.browser.ui.bottombar.BottomBarMetrics.AimIneligibilityReason;
+import org.chromium.chrome.browser.ui.bottombar.BottomBarMetrics.GlicIneligibilityReason;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.user_education.IphCommand;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
@@ -798,6 +800,64 @@ public class BottomBarMediatorUnitTest {
         // Geofencing is bypassed -> candidate resolves to GLIC immediately despite null country.
         verify(mButtonManager).setButtonVisibility(ActionId.GLIC, true);
         verify(mGlicKeyedService).addAllowedChangedObserver(any());
+    }
+
+    @Test
+    public void testCandidateExtraActionResolved_RecordsMetric() {
+        when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(true);
+        var glicWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.BottomBar.ExtraAction.CandidateResolved",
+                        BottomBarMetrics.CandidateAction.GLIC);
+        createMediator(/* shouldIncludeHomeButton= */ false);
+        glicWatcher.assertExpected();
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.ANDROID_BOTTOM_BAR_AIM,
+        ChromeFeatureList.ANDROID_BOTTOM_BAR + ":bypass_aim_geofencing/true"
+    })
+    public void testCandidateExtraActionResolved_AiMode_RecordsMetric() {
+        when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(false);
+        var aimWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.BottomBar.ExtraAction.CandidateResolved",
+                        BottomBarMetrics.CandidateAction.AIM);
+        createMediator(/* shouldIncludeHomeButton= */ false);
+        aimWatcher.assertExpected();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":show_glic_setting_toggle/true")
+    public void testUpdateGlicVisibility_DisabledInSettings_RecordsIneligibilityReason() {
+        when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(true);
+        when(mGlicEnablingJniMock.isPolicyEnforced(any())).thenReturn(false);
+        BottomBarConfigUtils.setGlicButtonEnabled(false);
+
+        var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.BottomBar.Glic.IneligibilityReason",
+                        GlicIneligibilityReason.USER_DISABLED_IN_SETTINGS);
+        createMediator(/* shouldIncludeHomeButton= */ false);
+        watcher.assertExpected();
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.ANDROID_BOTTOM_BAR_AIM,
+        ChromeFeatureList.ANDROID_BOTTOM_BAR + ":bypass_aim_geofencing/true"
+    })
+    public void testUpdateAiModeVisibility_DseNotGoogle_RecordsIneligibilityReason() {
+        when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(false);
+        when(mTemplateUrlService.isDefaultSearchEngineGoogle()).thenReturn(false);
+
+        var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.BottomBar.Aim.IneligibilityReason",
+                        AimIneligibilityReason.DEFAULT_SEARCH_ENGINE_NOT_GOOGLE);
+        createMediator(/* shouldIncludeHomeButton= */ false);
+        watcher.assertExpected();
     }
 
     private void createMediator(boolean shouldIncludeHomeButton) {

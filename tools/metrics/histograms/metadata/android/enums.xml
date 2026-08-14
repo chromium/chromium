@@ -109,6 +109,38 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/bookmarks/BookmarkAllTabsHandler.java:BookmarkAllTabsResult) -->
 
+<!-- LINT.IfChange(AndroidBottomBarAimIneligibilityReason) -->
+
+<enum name="AndroidBottomBarAimIneligibilityReason">
+  <int value="0" label="FeatureFlagDisabled"/>
+  <int value="1" label="CountryGeofenced"/>
+  <int value="2" label="CountryInGlicSoonList"/>
+  <int value="3" label="PreemptedByGlic"/>
+  <int value="4" label="DefaultSearchEngineNotGoogle"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/android/bottombar/java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarMetrics.java:AimIneligibilityReason) -->
+
+<!-- LINT.IfChange(AndroidBottomBarAimLaunchResult) -->
+
+<enum name="AndroidBottomBarAimLaunchResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="TabNull"/>
+  <int value="2" label="MissingOrInvalidUrl"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/android/bottombar/java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarMetrics.java:AimLaunchResult) -->
+
+<!-- LINT.IfChange(AndroidBottomBarCandidateAction) -->
+
+<enum name="AndroidBottomBarCandidateAction">
+  <int value="0" label="None"/>
+  <int value="1" label="Glic"/>
+  <int value="2" label="Aim"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/android/bottombar/java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarMetrics.java:CandidateAction) -->
+
 <!-- LINT.IfChange(AndroidBottomBarGlicButtonState) -->
 
 <enum name="AndroidBottomBarGlicButtonState">
@@ -129,6 +161,16 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/ui/android/bottombar/java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarMetrics.java:GlicConvoResult) -->
+
+<!-- LINT.IfChange(AndroidBottomBarGlicIneligibilityReason) -->
+
+<enum name="AndroidBottomBarGlicIneligibilityReason">
+  <int value="0" label="ProfileIneligible"/>
+  <int value="1" label="CountryGeofenced"/>
+  <int value="2" label="UserDisabledInSettings"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/android/bottombar/java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarMetrics.java:GlicIneligibilityReason) -->
 
 <!-- LINT.IfChange(AndroidBottomBarIphEvent) -->
 

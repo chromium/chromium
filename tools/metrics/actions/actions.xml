@@ -27803,6 +27803,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileBottomBar.Aim.Clicked">
+  <owner>madhavpruthi@google.com</owner>
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>polardz@google.com</owner>
+  <description>
+    Recorded when the AI Mode button in the Android Bottom Bar is clicked.
+  </description>
+</action>
+
 <action name="MobileBottomToolbarHomeButton">
   <obsolete>Removed as of 2020/09/09.</obsolete>
   <owner>mdjones@chromium.org</owner>

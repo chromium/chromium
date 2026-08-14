@@ -8,16 +8,21 @@ import android.app.Activity;
 import android.view.View;
 
 import org.chromium.base.Callback;
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.actions.ActionId;
 import org.chromium.chrome.browser.ui.actions.ActionProperties;
 import org.chromium.chrome.browser.ui.actions.ActionRegistry;
+import org.chromium.chrome.browser.ui.bottombar.BottomBarMetrics.AimLaunchResult;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
+import org.chromium.components.feature_engagement.EventConstants;
+import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
@@ -59,12 +64,23 @@ public class AiModeActionCoordinator {
 
     private void onAiModePressed(View view) {
         Tab currentTab = mTabSupplier.get();
-        if (currentTab == null) return;
+        if (currentTab == null) {
+            BottomBarMetrics.recordAimLaunchResult(AimLaunchResult.TAB_NULL);
+            return;
+        }
 
         Profile profile = currentTab.getProfile();
-        GURL url = TemplateUrlServiceFactory.getForProfile(profile).getComposeplateUrl();
+        TrackerFactory.getTrackerForProfile(profile)
+                .notifyEvent(EventConstants.ANDROID_BOTTOM_BAR_AIM_USED);
+        RecordUserAction.record("MobileBottomBar.Aim.Clicked");
+
+        TemplateUrlService templateUrlService = TemplateUrlServiceFactory.getForProfile(profile);
+        GURL url = templateUrlService != null ? templateUrlService.getComposeplateUrl() : null;
         if (url != null && url.isValid() && !url.isEmpty()) {
             currentTab.loadUrl(new LoadUrlParams(url.getSpec()));
+            BottomBarMetrics.recordAimLaunchResult(AimLaunchResult.SUCCESS);
+        } else {
+            BottomBarMetrics.recordAimLaunchResult(AimLaunchResult.MISSING_OR_INVALID_URL);
         }
     }
 

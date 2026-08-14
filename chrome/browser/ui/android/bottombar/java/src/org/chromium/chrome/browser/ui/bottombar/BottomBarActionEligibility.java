@@ -12,6 +12,8 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.glic.GlicEnabling;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.actions.ActionId;
+import org.chromium.chrome.browser.ui.bottombar.BottomBarMetrics.AimIneligibilityReason;
+import org.chromium.chrome.browser.ui.bottombar.BottomBarMetrics.GlicIneligibilityReason;
 
 import java.util.Locale;
 
@@ -140,14 +142,29 @@ public class BottomBarActionEligibility {
         String normalizedCountry = normalizeCountry(country);
         boolean bypassGlic = BottomBarConfigUtils.bypassGlicGeofencing();
         boolean isGlicAllowed = isGlicAllowedInCountry(normalizedCountry);
+        boolean isGlicProfileEnabled = GlicEnabling.isEnabledForProfile(originalProfile);
 
         // 1. GLIC (Gemini): Check if GLIC is enabled for this profile and allowed in country.
-        if (GlicEnabling.isEnabledForProfile(originalProfile) && isGlicAllowed) {
+        if (isGlicProfileEnabled && isGlicAllowed) {
             sCachedCandidateExtraAction = ActionId.GLIC;
+            BottomBarMetrics.recordAimIneligibilityReason(AimIneligibilityReason.PREEMPTED_BY_GLIC);
             if (GlicEnabling.isPolicyEnforced(originalProfile)) {
                 return ActionId.GLIC;
             }
-            return BottomBarConfigUtils.isGlicButtonEnabled() ? ActionId.GLIC : ACTION_NONE;
+            if (BottomBarConfigUtils.isGlicButtonEnabled()) {
+                return ActionId.GLIC;
+            }
+            BottomBarMetrics.recordGlicIneligibilityReason(
+                    GlicIneligibilityReason.USER_DISABLED_IN_SETTINGS);
+            return ACTION_NONE;
+        }
+
+        if (!isGlicProfileEnabled) {
+            BottomBarMetrics.recordGlicIneligibilityReason(
+                    GlicIneligibilityReason.PROFILE_INELIGIBLE);
+        } else if (!isGlicAllowed) {
+            BottomBarMetrics.recordGlicIneligibilityReason(
+                    GlicIneligibilityReason.COUNTRY_GEOFENCED);
         }
 
         // 2. Soon to be Launched: If country is GLIC Soon to be Launched (and not bypassed) -> Show
@@ -155,20 +172,28 @@ public class BottomBarActionEligibility {
         if (!bypassGlic
                 && BottomBarGeofencingConfig.GLIC_SOON_COUNTRIES.contains(normalizedCountry)) {
             sCachedCandidateExtraAction = ACTION_NONE;
+            BottomBarMetrics.recordAimIneligibilityReason(
+                    AimIneligibilityReason.COUNTRY_IN_GLIC_SOON_LIST);
             return ACTION_NONE;
         }
 
         // 3. AI Mode: Check if AIM feature flag is enabled AND (country is AIM Allowed OR bypass is
         // true).
-        if (BottomBarConfigUtils.isAimEnabled()) {
-            boolean bypassAim = BottomBarConfigUtils.bypassAimGeofencing();
-            if (bypassAim || isAimAllowedInCountry(normalizedCountry)) {
-                sCachedCandidateExtraAction = ActionId.AI_MODE;
-                return ActionId.AI_MODE;
-            }
+        if (!BottomBarConfigUtils.isAimEnabled()) {
+            sCachedCandidateExtraAction = ACTION_NONE;
+            BottomBarMetrics.recordAimIneligibilityReason(
+                    AimIneligibilityReason.FEATURE_FLAG_DISABLED);
+            return ACTION_NONE;
+        }
+
+        boolean bypassAim = BottomBarConfigUtils.bypassAimGeofencing();
+        if (bypassAim || isAimAllowedInCountry(normalizedCountry)) {
+            sCachedCandidateExtraAction = ActionId.AI_MODE;
+            return ActionId.AI_MODE;
         }
 
         sCachedCandidateExtraAction = ACTION_NONE;
+        BottomBarMetrics.recordAimIneligibilityReason(AimIneligibilityReason.COUNTRY_GEOFENCED);
         return ACTION_NONE;
     }
 

@@ -35,6 +35,8 @@ import org.chromium.chrome.browser.ui.actions.ActionId;
 import org.chromium.chrome.browser.ui.actions.ActionProperties;
 import org.chromium.chrome.browser.ui.actions.ActionRegistry;
 import org.chromium.chrome.browser.ui.android.bars_common.IphIntent;
+import org.chromium.chrome.browser.ui.bottombar.BottomBarMetrics.AimIneligibilityReason;
+import org.chromium.chrome.browser.ui.bottombar.BottomBarMetrics.CandidateAction;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
@@ -323,10 +325,21 @@ public class BottomBarMediator
 
             long startTime = SystemClock.uptimeMillis();
             BottomBarActionEligibility.getCandidateExtraAction(originalProfile, country);
-            mResolvedCandidateExtraAction =
+            Integer candidateExtraAction =
                     BottomBarActionEligibility.getCachedCandidateExtraAction();
+            mResolvedCandidateExtraAction = candidateExtraAction;
             long decisionDuration = SystemClock.uptimeMillis() - startTime;
-            BottomBarMetrics.recordGlicVisibilityDecisionTime(decisionDuration);
+            BottomBarMetrics.recordCandidateDecisionTime(decisionDuration);
+
+            @CandidateAction int candidateMetric;
+            if (candidateExtraAction != null && candidateExtraAction == ActionId.GLIC) {
+                candidateMetric = CandidateAction.GLIC;
+            } else if (candidateExtraAction != null && candidateExtraAction == ActionId.AI_MODE) {
+                candidateMetric = CandidateAction.AIM;
+            } else {
+                candidateMetric = CandidateAction.NONE;
+            }
+            BottomBarMetrics.recordCandidateExtraAction(candidateMetric);
         }
 
         updateObservers(originalProfile);
@@ -380,6 +393,11 @@ public class BottomBarMediator
 
         boolean visible =
                 mTemplateUrlService != null && mTemplateUrlService.isDefaultSearchEngineGoogle();
+
+        if (!visible) {
+            BottomBarMetrics.recordAimIneligibilityReason(
+                    AimIneligibilityReason.DEFAULT_SEARCH_ENGINE_NOT_GOOGLE);
+        }
 
         setButtonVisibility(ActionId.GLIC, /* visible= */ false);
         setButtonVisibility(ActionId.AI_MODE, visible);
