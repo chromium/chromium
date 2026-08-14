@@ -1662,7 +1662,9 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             TabbedStartupWindowPolicyDelegate.getInstance()
                     .initializeWithNative(UserPrefs.get(profile));
 
-            recordFirstAppLaunchTimestampIfNeeded();
+            if (!ChromeFeatureList.sAndroidStartupImprovements.isEnabled()) {
+                recordFirstAppLaunchTimestampIfNeeded();
+            }
             // TODO(jinsukkim): Let these classes handle the registration by themselves.
             mCompositorViewHolder = assertNonNull(getCompositorViewHolderSupplier().get());
             getTabObscuringHandler().addObserver(mCompositorViewHolder);
@@ -4032,6 +4034,10 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
 
         TipsUtils.performNotificationSchedulerSteps(
                 getProfileProviderSupplier(), getWindowAndroid());
+
+        if (ChromeFeatureList.sAndroidStartupImprovements.isEnabled()) {
+            recordFirstAppLaunchTimestampIfNeeded();
+        }
     }
 
     @Override
