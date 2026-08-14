@@ -214,13 +214,11 @@ source_set("test_support") {
   testonly = true
   public = [
     "test_omnibox_edit_model.h",
-    "test_omnibox_popup_view.h",
     "test_omnibox_view.h",
   ]
 
   sources = [
     "test_omnibox_edit_model.cc",
-    "test_omnibox_popup_view.cc",
     "test_omnibox_view.cc",
   ]
 
@@ -237,9 +235,15 @@ source_set("test_support") {
   ]
 
   if (!is_android) {
-    public += [ "test_omnibox_popup_file_selector.h" ]
+    public += [
+      "test_omnibox_popup_file_selector.h",
+      "test_omnibox_popup_view.h",
+    ]
 
-    sources += [ "test_omnibox_popup_file_selector.cc" ]
+    sources += [
+      "test_omnibox_popup_file_selector.cc",
+      "test_omnibox_popup_view.cc",
+    ]
 
     deps += [ "//chrome/browser/ui/views/location_bar" ]
   }

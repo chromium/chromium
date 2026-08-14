@@ -122,8 +122,6 @@ source_set("impl") {
 source_set("test_support") {
   testonly = true
   sources = [
-    "hid_test_utils.cc",
-    "hid_test_utils.h",
     "mock_hid_device_observer.cc",
     "mock_hid_device_observer.h",
   ]
@@ -133,6 +131,10 @@ source_set("test_support") {
   ]
   deps = [ "//chrome/browser" ]
   if (!is_android) {
+    sources += [
+      "hid_test_utils.cc",
+      "hid_test_utils.h",
+    ]
     public_deps += [ "//chrome/browser/device_notifications:test_support" ]
   }
 }
