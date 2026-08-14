@@ -18,6 +18,7 @@
 #include "base/test/test_file_util.h"
 #include "net/base/features.h"
 #include "net/disk_cache/sql/sql_read_cache_memory_monitor.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace disk_cache {
@@ -938,6 +939,84 @@ TEST_P(SqlSharedCacheIsolatedDatabaseTest,
   }
 
   EXPECT_FALSE(base::PathExists(db_file));
+}
+
+TEST_P(SqlSharedCacheIsolatedDatabaseTest, GetAllUrlHashes) {
+  SqlSharedCacheDbId db_id(1);
+  SqlSharedCacheIsolatedDatabase db("nik", temp_dir_.GetPath(), db_id,
+                                    task_runner_);
+  ASSERT_TRUE(db.Init().has_value());
+
+  // Initially empty.
+  auto hashes_or_error = db.GetAllUrlHashes();
+  ASSERT_TRUE(hashes_or_error.has_value());
+  EXPECT_TRUE(hashes_or_error->empty());
+
+  CacheEntryKey key1("0/0/https://example.com/1");
+  CacheEntryKey key2("0/0/https://example.com/2");
+  CacheEntryKey key3("0/0/https://example.com/3");
+  auto headers = base::MakeRefCounted<net::IOBufferWithSize>(4);
+  headers->span().copy_from(base::span<const uint8_t>({1, 2, 3, 4}));
+  auto body = base::MakeRefCounted<net::IOBufferWithSize>(3);
+  body->span().copy_from(base::span<const uint8_t>({5, 6, 7}));
+
+  // Insert ready entry (total_body_size = 0).
+  auto row1 = db.Insert(key1, headers, 0, nullptr);
+  ASSERT_TRUE(row1.has_value());
+
+  // Insert ready entry with body.
+  auto row2 = db.Insert(key2, headers, 3, body);
+  ASSERT_TRUE(row2.has_value());
+
+  // Insert unready entry (body not fully written).
+  auto row3 = db.Insert(key3, headers, 10, nullptr);
+  ASSERT_TRUE(row3.has_value());
+
+  hashes_or_error = db.GetAllUrlHashes();
+  ASSERT_TRUE(hashes_or_error.has_value());
+  EXPECT_THAT(*hashes_or_error,
+              testing::UnorderedElementsAre(key1.resource_url_hash().value(),
+                                            key2.resource_url_hash().value()));
+
+  // Make key3 ready by writing remaining body with set_ready=true.
+  auto body_remainder = base::MakeRefCounted<net::IOBufferWithSize>(10);
+  EXPECT_TRUE(db.WriteBody(key3, *row3, 0, body_remainder, /*set_ready=*/true)
+                  .has_value());
+
+  hashes_or_error = db.GetAllUrlHashes();
+  ASSERT_TRUE(hashes_or_error.has_value());
+  EXPECT_THAT(*hashes_or_error,
+              testing::UnorderedElementsAre(key1.resource_url_hash().value(),
+                                            key2.resource_url_hash().value(),
+                                            key3.resource_url_hash().value()));
+}
+
+TEST_P(SqlSharedCacheIsolatedDatabaseTest, GetAllUrlHashesDatabaseNotOpen) {
+  SqlSharedCacheDbId db_id(1);
+  SqlSharedCacheIsolatedDatabase db("nik", temp_dir_.GetPath(), db_id,
+                                    task_runner_);
+  // Not initialized.
+  auto hashes_or_error = db.GetAllUrlHashes();
+  ASSERT_FALSE(hashes_or_error.has_value());
+  EXPECT_EQ(hashes_or_error.error(),
+            SqlSharedCacheIsolatedDatabase::Error::kDatabaseNotOpen);
+}
+
+TEST_P(SqlSharedCacheIsolatedDatabaseTest, GetAllUrlHashesSimulateFailure) {
+  SqlSharedCacheDbId db_id(1);
+  SqlSharedCacheIsolatedDatabase db("nik", temp_dir_.GetPath(), db_id,
+                                    task_runner_);
+  ASSERT_TRUE(db.Init().has_value());
+
+  db.SetSimulateDbFailureCallbackForTesting(base::BindRepeating(
+      [](SqlSharedCacheIsolatedDatabase::OperationForTesting op) {
+        return op == SqlSharedCacheIsolatedDatabase::OperationForTesting::kRead;
+      }));
+
+  auto hashes_or_error = db.GetAllUrlHashes();
+  ASSERT_FALSE(hashes_or_error.has_value());
+  EXPECT_EQ(hashes_or_error.error(),
+            SqlSharedCacheIsolatedDatabase::Error::kFailedForTesting);
 }
 
 }  // namespace disk_cache

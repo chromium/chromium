@@ -64,6 +64,8 @@ TEST_F(SqlSharedCacheIsolatedDatabaseQueriesTest, AllQueriesHaveValidPlan) {
           {SharedCacheIsolatedDatabaseQuery::kDeleteResourceByRowId,
            "`--SEARCH resources USING INTEGER PRIMARY KEY (rowid=?)"},
           {SharedCacheIsolatedDatabaseQuery::kSelectRowidLimit1,
+           "`--SCAN resources"},
+          {SharedCacheIsolatedDatabaseQuery::kSelectHashes,
            "`--SCAN resources USING COVERING INDEX index_resources_hash"},
       });
 

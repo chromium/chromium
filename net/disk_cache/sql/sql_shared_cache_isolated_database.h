@@ -82,6 +82,10 @@ class NET_EXPORT_PRIVATE SqlSharedCacheIsolatedDatabase {
           nullptr);
   ~SqlSharedCacheIsolatedDatabase();
 
+  // Returns the hashes of all ready resource URLs stored in this isolated
+  // database.
+  base::expected<std::vector<uint32_t>, Error> GetAllUrlHashes();
+
   // Returns a PendingFileSet that represents a read-only connection to the
   // database. This PendingFileSet can be passed to another process (like a
   // sandboxed renderer) to allow it to read from the database directly.

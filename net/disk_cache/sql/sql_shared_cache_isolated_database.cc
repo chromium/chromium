@@ -130,6 +130,30 @@ SqlSharedCacheIsolatedDatabase::SqlSharedCacheIsolatedDatabase(
 
 SqlSharedCacheIsolatedDatabase::~SqlSharedCacheIsolatedDatabase() = default;
 
+base::expected<std::vector<uint32_t>, SqlSharedCacheIsolatedDatabase::Error>
+SqlSharedCacheIsolatedDatabase::GetAllUrlHashes() {
+  if (ShouldSimulateFailure(OperationForTesting::kRead)) {
+    return base::unexpected(Error::kFailedForTesting);
+  }
+  if (!db_assets_) {
+    return base::unexpected(Error::kFailedToOpenVfsFileSet);
+  }
+  if (!db_assets_->db().is_open()) {
+    return base::unexpected(Error::kDatabaseNotOpen);
+  }
+  sql::Statement statement(db_assets_->db().GetCachedStatement(
+      SQL_FROM_HERE, GetSharedCacheIsolatedDatabaseQuery(
+                         SharedCacheIsolatedDatabaseQuery::kSelectHashes)));
+  std::vector<uint32_t> hashes;
+  while (statement.Step()) {
+    hashes.push_back(statement.ColumnInt(0));
+  }
+  if (!statement.Succeeded()) {
+    return base::unexpected(Error::kFailedToExecuteStatement);
+  }
+  return hashes;
+}
+
 base::expected<sqlite_vfs::PendingFileSet,
                SqlSharedCacheIsolatedDatabase::Error>
 SqlSharedCacheIsolatedDatabase::GetSharedReadOnlyConnection() {
