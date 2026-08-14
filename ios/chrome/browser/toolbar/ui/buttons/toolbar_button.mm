@@ -88,6 +88,17 @@ UIColor* NormalTintColor() {
   return self;
 }
 
+#pragma mark - ToolbarElementWithBackground
+
+- (void)setBackgroundAlpha:(CGFloat)backgroundAlpha {
+  if (!IsGlassToolbarEnabled() || _shadowAndBackgroundRemoved) {
+    return;
+  }
+
+  _backgroundView.backgroundColor =
+      ToolbarElementBackgroundColor(_incognito, backgroundAlpha);
+}
+
 #pragma mark - HighlightButton
 
 - (NSArray<UIView*>*)highlightableViews {

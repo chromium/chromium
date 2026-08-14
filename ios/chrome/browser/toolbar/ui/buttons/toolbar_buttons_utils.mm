@@ -27,17 +27,20 @@ constexpr CGFloat kGlassDarkShadowOpacity = 0.05;
 constexpr CGFloat kGlassLightShadowOpacity = 0.16;
 }  // namespace
 
-UIColor* ToolbarElementBackgroundColor(BOOL incognito) {
+UIColor* ToolbarElementBackgroundColor(BOOL incognito, CGFloat alpha) {
   if (IsGlassToolbarEnabled()) {
     if (incognito) {
-      return [UIColor colorWithWhite:0 alpha:kGlassIncognitoBackgroundAlpha];
+      return [UIColor colorWithWhite:0
+                               alpha:kGlassIncognitoBackgroundAlpha * alpha];
     }
     return [UIColor
         colorWithDynamicProvider:^UIColor*(UITraitCollection* traitCollection) {
           if (traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark) {
-            return [UIColor colorWithWhite:0 alpha:kGlassDarkBackgroundAlpha];
+            return [UIColor colorWithWhite:0
+                                     alpha:kGlassDarkBackgroundAlpha * alpha];
           }
-          return [UIColor colorWithWhite:1.0 alpha:kGlassLightBackgroundAlpha];
+          return [UIColor colorWithWhite:1.0
+                                   alpha:kGlassLightBackgroundAlpha * alpha];
         }];
   }
   if (incognito) {

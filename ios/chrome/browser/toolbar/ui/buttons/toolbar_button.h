@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/toolbar/ui/buttons/toolbar_button_visibility.h"
+#import "ios/chrome/browser/toolbar/ui/buttons/toolbar_element_with_background.h"
 #import "ios/chrome/common/ui/elements/highlight_button.h"
 
 @protocol GeminiCommands;
@@ -15,7 +16,7 @@
 using ToolbarButtonImageLoader = UIImage* (^)(void);
 
 // Button displayed in the toolbar.
-@interface ToolbarButton : HighlightButton
+@interface ToolbarButton : HighlightButton <ToolbarElementWithBackground>
 
 // Handler for Gemini commands.
 @property(nonatomic, weak) id<GeminiCommands> geminiHandler;

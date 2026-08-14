@@ -9,6 +9,7 @@
 
 @protocol GeminiCommands;
 @class ToolbarButton;
+@protocol ToolbarElementWithBackground;
 @class ToolbarTabGridBadgeButton;
 
 // Factory for creating toolbar buttons.
@@ -28,8 +29,9 @@
 - (ToolbarButton*)makeForwardButton;
 
 // Creates a UIView containing conjoined back and forward navigation buttons.
-- (UIView*)makeConjoinedBackButton:(ToolbarButton*)backButton
-                     forwardButton:(ToolbarButton*)forwardButton;
+- (UIView<ToolbarElementWithBackground>*)
+    makeConjoinedBackButton:(ToolbarButton*)backButton
+              forwardButton:(ToolbarButton*)forwardButton;
 
 // Creates a reload button.
 - (ToolbarButton*)makeReloadButton;
