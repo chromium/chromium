@@ -1402,7 +1402,8 @@ int32_t WebContentsAccessibilityAndroid::GetRootId(JNIEnv* env) {
 
 bool WebContentsAccessibilityAndroid::IsNodeValid(JNIEnv* env,
                                                   int32_t unique_id) {
-  return GetAXFromUniqueID(unique_id) != nullptr;
+  BrowserAccessibilityAndroid* node = GetAXFromUniqueID(unique_id);
+  return node && !node->IsIgnored();
 }
 
 void WebContentsAccessibilityAndroid::HitTest(JNIEnv* env,
@@ -2299,7 +2300,11 @@ bool WebContentsAccessibilityAndroid::SetExtendedSelection(
 
   BrowserAccessibilityAndroid* start_node = GetAXFromUniqueID(start_node_id);
   BrowserAccessibilityAndroid* end_node = GetAXFromUniqueID(end_node_id);
-  if (!start_node || !end_node) {
+  // Callers can sometimes request selection on an ignored node (e.g. from
+  // stale caches). This will crash when computing text offsets or querying
+  // child counts, so strictly reject it here.
+  if (!start_node || !end_node || start_node->IsIgnored() ||
+      end_node->IsIgnored()) {
     return false;
   }
 
