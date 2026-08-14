@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/functional/callback_helpers.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_handler.h"
 #include "components/autofill/core/browser/payments/payments_churned_users_metrics.h"
@@ -174,8 +175,10 @@ PaymentsChurnedUsersBubbleController::GetConfirmationUiParams() const {
 
 base::OnceCallback<void(PaymentsUiClosedReason)>
 PaymentsChurnedUsersBubbleController::GetOnBubbleClosedCallback() {
-  return base::BindOnce(&PaymentsChurnedUsersBubbleController::OnBubbleClosed,
-                        weak_ptr_factory_.GetWeakPtr());
+  return base::IgnoreArgs<PaymentsUiClosedReason>(
+      base::BindOnce(&PaymentsChurnedUsersBubbleController::
+                         ResetBubbleViewAndInformBubbleManager,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 bool PaymentsChurnedUsersBubbleController::CanBeReshown() const {
