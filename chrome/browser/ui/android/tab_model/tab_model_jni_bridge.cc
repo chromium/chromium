@@ -832,6 +832,12 @@ void TabModelJniBridge::Ungroup(const std::set<tabs::TabHandle>& tabs) {
   Java_TabModelJniBridge_ungroup(env, jobj, tabs_to_ungroup);
 }
 
+void TabModelJniBridge::Unsplit(split_tabs::SplitTabId split_id) {
+  // TODO(https://crbug.com/480192698): Implement this once split tabs are
+  // supported on Desktop Android.
+  NOTIMPLEMENTED();
+}
+
 void TabModelJniBridge::MoveGroupTo(tab_groups::TabGroupId group_id,
                                     int index) {
   JNIEnv* env = AttachCurrentThread();

@@ -129,6 +129,7 @@ class TestTabModel : public TabModel {
       std::optional<tab_groups::TabGroupId> group_id,
       const std::set<tabs::TabHandle>& tabs) override;
   void Ungroup(const std::set<tabs::TabHandle>& tabs) override;
+  void Unsplit(split_tabs::SplitTabId split_id) override;
   void MoveGroupTo(tab_groups::TabGroupId group_id, int index) override;
   void MoveTabToWindow(tabs::TabHandle tab,
                        SessionID destination_window_id,
@@ -276,6 +277,7 @@ class OwningTestTabModel : public TabModel {
       std::optional<tab_groups::TabGroupId> group_id,
       const std::set<tabs::TabHandle>& tabs) override;
   void Ungroup(const std::set<tabs::TabHandle>& tabs) override;
+  void Unsplit(split_tabs::SplitTabId split_id) override;
   void MoveGroupTo(tab_groups::TabGroupId group_id, int index) override;
   void MoveTabToWindow(tabs::TabHandle tab,
                        SessionID destination_window_id,

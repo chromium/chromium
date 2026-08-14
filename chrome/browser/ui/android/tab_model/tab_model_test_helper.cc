@@ -299,6 +299,10 @@ void TestTabModel::Ungroup(const std::set<tabs::TabHandle>& tabs) {
   NOTIMPLEMENTED();
 }
 
+void TestTabModel::Unsplit(split_tabs::SplitTabId split_id) {
+  NOTIMPLEMENTED();
+}
+
 void TestTabModel::MoveGroupTo(tab_groups::TabGroupId group_id, int index) {
   NOTIMPLEMENTED();
 }
@@ -658,6 +662,10 @@ std::optional<tab_groups::TabGroupId> OwningTestTabModel::AddTabsToGroup(
 }
 
 void OwningTestTabModel::Ungroup(const std::set<tabs::TabHandle>& tabs) {
+  NOTIMPLEMENTED();
+}
+
+void OwningTestTabModel::Unsplit(split_tabs::SplitTabId split_id) {
   NOTIMPLEMENTED();
 }
 

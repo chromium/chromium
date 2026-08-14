@@ -445,6 +445,10 @@ void TabListBridge::Ungroup(const std::set<tabs::TabHandle>& tabs) {
   tab_strip_->RemoveFromGroup(tab_indices);
 }
 
+void TabListBridge::Unsplit(split_tabs::SplitTabId split_id) {
+  tab_strip_->RemoveSplit(split_id);
+}
+
 void TabListBridge::MoveGroupTo(tab_groups::TabGroupId group_id, int index) {
   TabGroup* tab_group = tab_strip_->group_model()->GetTabGroup(group_id);
   CHECK(tab_group) << "Tab group does not exist";

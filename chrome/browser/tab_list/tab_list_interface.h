@@ -191,6 +191,9 @@ class TabListInterface {
   // they were in.
   virtual void Ungroup(const std::set<tabs::TabHandle>& tabs) = 0;
 
+  // Unsplits all the tabs that are part of the split with `split_id`.
+  virtual void Unsplit(split_tabs::SplitTabId split_id) = 0;
+
   // Moves the tab group to `index`. The nearest valid index will be used.
   // The index assumes the group has already been removed from the tab strip.
   virtual void MoveGroupTo(tab_groups::TabGroupId group_id, int index) = 0;

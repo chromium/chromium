@@ -1033,6 +1033,29 @@ IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest, CreateSplit) {
   EXPECT_EQ(split_id2, tab_list_interface->GetTab(3)->GetSplit());
 }
 
+IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest, Unsplit) {
+  SetupTabs(browser(), 3);
+
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  ASSERT_TRUE(tab_strip_model);
+  TabListInterface* tab_list_interface = TabListInterface::From(browser());
+  ASSERT_TRUE(tab_list_interface);
+
+  std::optional<split_tabs::SplitTabId> split_id =
+      tab_list_interface->CreateSplit(
+          {tab_list_interface->GetTab(0)->GetHandle(),
+           tab_list_interface->GetTab(1)->GetHandle()});
+  ASSERT_TRUE(split_id.has_value());
+  EXPECT_EQ("0s 1s 2",
+            GetTabStripStateString(tab_strip_model, /*annotate_groups=*/true));
+
+  tab_list_interface->Unsplit(*split_id);
+  EXPECT_EQ("0 1 2",
+            GetTabStripStateString(tab_strip_model, /*annotate_groups=*/true));
+  EXPECT_FALSE(tab_list_interface->GetTab(0)->GetSplit().has_value());
+  EXPECT_FALSE(tab_list_interface->GetTab(1)->GetSplit().has_value());
+}
+
 IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest, OpenTab) {
   const GURL url1("about:blank?q=1");
   const GURL url2("about:blank?q=2");

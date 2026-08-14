@@ -114,6 +114,7 @@ class MockTabListInterface : public TabListInterface {
                const std::set<tabs::TabHandle>&),
               (override));
   MOCK_METHOD(void, Ungroup, (const std::set<tabs::TabHandle>&), (override));
+  MOCK_METHOD(void, Unsplit, (split_tabs::SplitTabId), (override));
   MOCK_METHOD(void, MoveGroupTo, (tab_groups::TabGroupId, int), (override));
   MOCK_METHOD(void,
               MoveTabToWindow,
