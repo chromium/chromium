@@ -18,7 +18,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.widget.ButtonCompat;
 
 /** View binder class for the NTP theme sync history. */
 @NullMarked
@@ -39,8 +38,8 @@ public class NtpThemeSyncHistoryContainerViewBinder {
         } else if (propertyKey == IS_VISIBLE) {
             view.setVisibility(model.get(IS_VISIBLE) ? View.VISIBLE : View.GONE);
         } else if (propertyKey == MORE_OPTIONS_CLICK_LISTENER) {
-            ButtonCompat moreOptionsTitle = view.findViewById(R.id.more_options_title);
-            moreOptionsTitle.setOnClickListener(model.get(MORE_OPTIONS_CLICK_LISTENER));
+            View moreOptionsContainer = view.findViewById(R.id.more_options_container);
+            moreOptionsContainer.setOnClickListener(model.get(MORE_OPTIONS_CLICK_LISTENER));
         }
     }
 }

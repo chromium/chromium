@@ -69,7 +69,6 @@ import org.chromium.components.prefs.PrefService;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.widget.ButtonCompat;
 
 /** Unit tests for {@link NtpCustomizationCoordinator} */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -84,7 +83,7 @@ public class NtpCustomizationCoordinatorUnitTest {
     @Mock private NtpThemeCoordinator mNtpThemeCoordinator;
     @Mock private ViewGroup mHistoryContainerView;
     @Mock private RecyclerView mRecyclerView;
-    @Mock private ButtonCompat mMoreOptionsTitle;
+    @Mock private View mMoreOptionsContainer;
     @Mock private Profile mMockProfile;
     @Mock private TemplateUrlService mMockTemplateUrlService;
     @Mock private PrefService mMockPrefService;
@@ -347,8 +346,8 @@ public class NtpCustomizationCoordinatorUnitTest {
                 .thenReturn(mHistoryContainerView);
         when(mHistoryContainerView.findViewById(R.id.ntp_theme_sync_history_recycler_view))
                 .thenReturn(mRecyclerView);
-        when(mHistoryContainerView.findViewById(R.id.more_options_title))
-                .thenReturn(mMoreOptionsTitle);
+        when(mHistoryContainerView.findViewById(R.id.more_options_container))
+                .thenReturn(mMoreOptionsContainer);
 
         mNtpCustomizationCoordinator.showBottomSheet();
     }

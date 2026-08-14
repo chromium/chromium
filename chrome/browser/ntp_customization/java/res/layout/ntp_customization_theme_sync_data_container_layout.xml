@@ -51,6 +51,7 @@ found in the LICENSE file.
             android:layout_height="wrap_content"
             app:layout_constrainedWidth="true"
             android:singleLine="true"
+            android:clickable="false"
             android:text="@string/ntp_customization_more_options_title"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
