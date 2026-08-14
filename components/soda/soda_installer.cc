@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 
+#include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "base/i18n/rtl.h"
 #include "base/metrics/histogram_functions.h"
@@ -110,9 +111,10 @@ void SodaInstaller::Init(PrefService* profile_prefs,
   if (preemptive_download_enabled) {
     global_prefs->SetBoolean(prefs::kSodaPreemptiveDownloadInitiated, true);
     base::UmaHistogramBoolean(kSodaPreemptiveDownloadStarted, true);
-    RegisterLanguage(GetDefaultLiveCaptionLanguage(
-                         base::i18n::GetConfiguredLocale(), profile_prefs),
-                     global_prefs);
+    RegisterLanguage(
+        GetDefaultLiveCaptionLanguage(base::i18n::GetConfiguredLocale(),
+                                      CHECK_DEREF(profile_prefs)),
+        global_prefs);
   }
 
   // Register SODA if a feature is actively using SODA or used it recently.

@@ -7,6 +7,7 @@
 #include "ash/constants/generative_ai_country_restrictions.h"
 #include "ash/webui/recorder_app_ui/recorder_app_ui_delegate.h"
 #include "ash/webui/recorder_app_ui/url_constants.h"
+#include "base/check_deref.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/consent_auditor/consent_auditor_factory.h"
 #include "chrome/browser/feedback/show_feedback_page.h"
@@ -69,7 +70,7 @@ std::u16string ChromeRecorderAppUIDelegate::GetLanguageDisplayName(
 std::string ChromeRecorderAppUIDelegate::GetDefaultTranscriptionLanguage() {
   return std::string(speech::GetDefaultLiveCaptionLanguage(
       g_browser_process->GetApplicationLocale(),
-      Profile::FromWebUI(web_ui_)->GetPrefs()));
+      CHECK_DEREF(Profile::FromWebUI(web_ui_)->GetPrefs())));
 }
 
 void ChromeRecorderAppUIDelegate::OpenAiFeedbackDialog(

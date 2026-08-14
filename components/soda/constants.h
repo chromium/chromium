@@ -356,7 +356,7 @@ const std::string GetRedownloadedAfterExpirationMetricForLanguage(
 // of the other languages match.
 std::string_view GetDefaultLiveCaptionLanguage(
     std::string_view application_locale,
-    PrefService* profile_prefs);
+    const PrefService& profile_prefs);
 
 // If `language_name` is Chinese variant, then return the master locale.
 // Otherwise, return `language_name`.

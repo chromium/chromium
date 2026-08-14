@@ -330,7 +330,7 @@ const std::string GetRedownloadedAfterExpirationMetricForLanguage(
 
 std::string_view GetDefaultLiveCaptionLanguage(
     std::string_view application_locale,
-    PrefService* profile_prefs) {
+    const PrefService& profile_prefs) {
   std::optional<SodaLanguagePackComponentConfig> application_locale_config =
       GetLanguageComponentConfigMatchingLanguageSubtag(application_locale);
 
@@ -340,7 +340,7 @@ std::string_view GetDefaultLiveCaptionLanguage(
   }
 
   std::string accept_languages_pref =
-      profile_prefs->GetString(language::prefs::kAcceptLanguages);
+      profile_prefs.GetString(language::prefs::kAcceptLanguages);
   for (std::string language :
        base::SplitString(accept_languages_pref, ",", base::TRIM_WHITESPACE,
                          base::SPLIT_WANT_NONEMPTY)) {

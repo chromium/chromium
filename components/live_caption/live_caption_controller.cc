@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
@@ -243,11 +244,12 @@ void LiveCaptionController::MaybeSetLiveCaptionLanguage() {
         speech::kUsEnglishLocale, global_prefs_);
     speech::SodaInstaller::GetInstance()->RegisterLanguage(
         speech::GetDefaultLiveCaptionLanguage(application_locale(),
-                                              profile_prefs()),
+                                              CHECK_DEREF(profile_prefs())),
         global_prefs_);
-    profile_prefs()->SetString(prefs::kLiveCaptionLanguageCode,
-                               speech::GetDefaultLiveCaptionLanguage(
-                                   application_locale(), profile_prefs()));
+    profile_prefs()->SetString(
+        prefs::kLiveCaptionLanguageCode,
+        speech::GetDefaultLiveCaptionLanguage(application_locale(),
+                                              CHECK_DEREF(profile_prefs())));
   }
 }
 

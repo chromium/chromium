@@ -176,7 +176,7 @@ BocaManager::BocaManager(Profile* profile,
   }
   if (ash::features::IsBabelOrcaAvailable()) {
     std::string_view caption_language = speech::GetDefaultLiveCaptionLanguage(
-        application_locale, profile->GetPrefs());
+        application_locale, CHECK_DEREF(profile->GetPrefs()));
     if (!is_consumer && base::FeatureList::IsEnabled(
                             ash::features::kOnDeviceSpeechRecognition)) {
       soda_installer_ = std::make_unique<babelorca::SodaInstaller>(
