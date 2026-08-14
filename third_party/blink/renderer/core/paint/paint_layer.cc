@@ -1935,7 +1935,7 @@ PaintLayer* PaintLayer::HitTestChildren(
   }
 
   const LayoutObject* stop_node = result.GetHitTestRequest().GetStopNode();
-  PaintLayer* stop_layer = stop_node ? stop_node->PaintingLayer() : nullptr;
+  const PaintLayer* stop_layer = result.GetHitTestRequest().GetStopLayer();
 
   PaintLayer* result_layer = nullptr;
   PaintLayerPaintOrderReverseIterator iterator(this, children_to_visit);
