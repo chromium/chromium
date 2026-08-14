@@ -15,6 +15,7 @@ import java.lang.annotation.Target;
 
 /** Defines IDs for actions that can be registered in the {@link ActionRegistry}. */
 @IntDef({
+    ActionId.NONE,
     ActionId.HOME_BUTTON,
     ActionId.TAB_SWITCHER,
     ActionId.APP_MENU,
@@ -27,6 +28,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE_USE)
 @NullMarked
 public @interface ActionId {
+    int NONE = -1;
     int HOME_BUTTON = 0;
     int TAB_SWITCHER = 1;
     int APP_MENU = 2;

@@ -14,6 +14,7 @@ import androidx.annotation.ColorInt;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -55,6 +56,7 @@ public class BottomBarCoordinator implements BottomBar, Destroyable {
      * @param homepageEnabledSupplier Supplier of whether the homepage is enabled.
      * @param visibilityDelegate Delegate to handle compositor-level visibility changes.
      * @param profileSupplier Supplier of the current profile.
+     * @param countrySupplier Supplier of the latest variations country code.
      * @param omniboxFocusStateSupplier Supplier of the omnibox focus state.
      * @param modalDialogManagerSupplier Supplier of the {@link ModalDialogManager}.
      */
@@ -66,6 +68,7 @@ public class BottomBarCoordinator implements BottomBar, Destroyable {
             NonNullObservableSupplier<Boolean> homepageEnabledSupplier,
             BottomBarMediator.VisibilityDelegate visibilityDelegate,
             NullableObservableSupplier<Profile> profileSupplier,
+            OneshotSupplier<String> countrySupplier,
             NonNullObservableSupplier<Boolean> omniboxFocusStateSupplier,
             NonNullObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
             LayoutStateProvider layoutStateProvider) {
@@ -84,7 +87,8 @@ public class BottomBarCoordinator implements BottomBar, Destroyable {
                 new BottomBarButtonManager(configs, actionRegistry, mModel, ActionId.NEW_TAB);
 
         mPromoDialogCoordinator =
-                new BottomBarPromoDialogCoordinator(context, modalDialogManagerSupplier);
+                new BottomBarPromoDialogCoordinator(
+                        context, modalDialogManagerSupplier, countrySupplier);
 
         mMediator =
                 new BottomBarMediator(
@@ -97,6 +101,7 @@ public class BottomBarCoordinator implements BottomBar, Destroyable {
                         visibilityDelegate,
                         shouldIncludeHomeButton,
                         profileSupplier,
+                        countrySupplier,
                         omniboxFocusStateSupplier,
                         mPromoDialogCoordinator,
                         actionRegistry,

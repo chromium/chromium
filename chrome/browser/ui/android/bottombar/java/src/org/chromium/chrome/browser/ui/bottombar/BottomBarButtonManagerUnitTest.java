@@ -370,6 +370,57 @@ public class BottomBarButtonManagerUnitTest {
         mManager = initManager(GLIC, HOME);
     }
 
+    @Test
+    public void testSharedContainer_RegistrationOrderIndependence() {
+        // Register AI_MODE before GLIC in configs list.
+        List<BottomBarButtonManager.ActionConfig> configs = new ArrayList<>();
+        configs.add(
+                new BottomBarButtonManager.ActionConfig(
+                        AI_MODE,
+                        mContainerExtra,
+                        mBinder,
+                        BottomBarProperties.IS_EXTRA_BUTTON_VISIBLE,
+                        /* initiallyVisible= */ false));
+        configs.add(
+                new BottomBarButtonManager.ActionConfig(
+                        GLIC,
+                        mContainerExtra,
+                        mBinder,
+                        BottomBarProperties.IS_EXTRA_BUTTON_VISIBLE,
+                        /* initiallyVisible= */ false));
+        configs.add(
+                new BottomBarButtonManager.ActionConfig(
+                        NEW_TAB,
+                        mContainerNewTab,
+                        mBinder,
+                        BottomBarProperties.IS_NEW_TAB_BUTTON_VISIBLE,
+                        /* initiallyVisible= */ true));
+
+        mManager =
+                new BottomBarButtonManager(
+                        configs, mActionRegistry, mBottomBarModel, /* centerActionId= */ NEW_TAB);
+        mManager.setListener(mListener);
+
+        PropertyModel modelGlic = new PropertyModel();
+        PropertyModel modelAiMode = new PropertyModel();
+        PropertyModel modelNewTab = new PropertyModel();
+        mSupplierGlic.set(modelGlic);
+        mSupplierAiMode.set(modelAiMode);
+        mSupplierNewTab.set(modelNewTab);
+
+        // When GLIC is set visible, it correctly sets EXTRA_BUTTON_ACTION_ID even when registered
+        // second.
+        mManager.setButtonVisibility(GLIC, /* visible= */ true);
+        assertTrue(mBottomBarModel.get(BottomBarProperties.IS_EXTRA_BUTTON_VISIBLE));
+        assertEquals(GLIC, mBottomBarModel.get(BottomBarProperties.EXTRA_BUTTON_ACTION_ID));
+
+        // When switching to AI_MODE.
+        mManager.setButtonVisibility(GLIC, /* visible= */ false);
+        mManager.setButtonVisibility(AI_MODE, /* visible= */ true);
+        assertTrue(mBottomBarModel.get(BottomBarProperties.IS_EXTRA_BUTTON_VISIBLE));
+        assertEquals(AI_MODE, mBottomBarModel.get(BottomBarProperties.EXTRA_BUTTON_ACTION_ID));
+    }
+
     private BottomBarButtonManager initManager(int centerActionId, int... actions) {
         List<BottomBarButtonManager.ActionConfig> configs = createConfigs(actions);
         BottomBarButtonManager manager =

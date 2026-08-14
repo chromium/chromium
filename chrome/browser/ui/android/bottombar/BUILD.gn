@@ -79,6 +79,7 @@ android_library("java") {
     ":java_resources",
     "//base:base_java",
     "//base:supplier_java",
+    "//base/version_info/android:version_constants_java",
     "//build/android:build_java",
     "//chrome/browser/feature_engagement:java",
     "//chrome/browser/flags:java",

@@ -470,6 +470,7 @@ public class RootUiCoordinator
     protected @Nullable OpenInAppEntryPoint mOpenInAppEntryPoint;
     protected @Nullable OmniboxChipManager mOmniboxChipManager;
     protected @Nullable ActionRegistry mActionRegistry;
+    protected @Nullable OneshotSupplierImpl<String> mCountrySupplier;
     protected @Nullable BottomBarHostManager mBottomBarHostManager;
     private @Nullable AnchoredDialogCoordinator mAnchoredDialogCoordinator;
 
@@ -2157,6 +2158,7 @@ public class RootUiCoordinator
                             mOmniboxChipManager,
                             mBottomBarHostManager,
                             mActionRegistry,
+                            mCountrySupplier,
                             (preventClose, invocationSource) ->
                                     toggleGlic(preventClose, invocationSource),
                             shouldSuppressTabStripAtStart());
@@ -2617,6 +2619,11 @@ public class RootUiCoordinator
      */
     public @Nullable FindToolbarManager getFindToolbarManager() {
         return mFindToolbarManager;
+    }
+
+    /** Returns the country {@link OneshotSupplier} for testing. */
+    public @Nullable OneshotSupplier<String> getCountrySupplierForTesting() {
+        return mCountrySupplier;
     }
 
     /**
