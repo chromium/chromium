@@ -170,7 +170,13 @@ bool CocoaWindowMoveLoop::Run() {
       // `setFrame:...` may have destroyed `this`, so do the weak check again.
       bool is_valid = [weak_cocoa_window_move_loop weak].get() == strong;
       if (is_valid) {
-        strong->last_set_frame_ = ns_frame;
+        // Read `[window frame]` rather than using `ns_frame` because
+        // `setFrame:` can trigger synchronous geometry callbacks (e.g.
+        // TabDragController resizing across display boundaries via SetBounds).
+        // Reading `[window frame]` preserves any programmatic adjustments
+        // applied during that call stack rather than overwriting with stale
+        // `ns_frame`.
+        strong->last_set_frame_ = [window frame];
         if (!has_moved) {
           has_moved = YES;
           strong->screen_disabler_.reset();
@@ -203,6 +209,13 @@ bool CocoaWindowMoveLoop::Run() {
   }
 
   return exit_reason == MOUSE_UP;
+}
+
+void CocoaWindowMoveLoop::SetBaseFrame(const NSRect& new_base_frame,
+                                       const NSPoint& new_base_mouse) {
+  base_frame_ = new_base_frame;
+  base_mouse_in_screen_ = new_base_mouse;
+  last_set_frame_ = new_base_frame;
 }
 
 void CocoaWindowMoveLoop::End() {

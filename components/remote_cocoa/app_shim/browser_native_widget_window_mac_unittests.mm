@@ -22,13 +22,14 @@
 #include "ui/accelerated_widget_mac/ca_transaction_observer.h"
 #include "ui/base/cocoa/window_size_constants.h"
 #include "ui/display/screen.h"
+#import "ui/gfx/mac/coordinate_conversion.h"
 
 using NativeWidgetMacOverlayNSWindowTest = PlatformTest;
 
 @interface NSWindow (PrivateTestAPI)
 - (void)_setFrame:(NSRect)frameRect
     fromAdjustmentToScreen:(NSScreen*)screen
-            anchorIfNeeded:(BOOL)anchor
+            anchorIfNeeded:(const CGPoint*)anchor
                    animate:(BOOL)animate;
 - (void)_setFrameAfterMove:(NSRect)frameRect;
 @end
@@ -331,7 +332,7 @@ TEST(NativeWidgetMacNSWindowTest,
 
     [window _setFrame:NSMakeRect(200, 200, 400, 400)
         fromAdjustmentToScreen:main_screen
-                anchorIfNeeded:NO
+                anchorIfNeeded:nullptr
                        animate:NO];
     EXPECT_TRUE(NSEqualRects([window frame], initial_frame));
 
@@ -419,7 +420,7 @@ TEST(NativeWidgetMacNSWindowTest,
 
     [window _setFrame:stale_appkit_frame
         fromAdjustmentToScreen:main_screen
-                anchorIfNeeded:NO
+                anchorIfNeeded:nullptr
                        animate:NO];
     EXPECT_TRUE(NSEqualRects([window frame], boundary_frame));
 
@@ -432,6 +433,106 @@ TEST(NativeWidgetMacNSWindowTest,
     [window _setFrameAfterMove:stale_appkit_frame];
     EXPECT_TRUE(NSEqualRects([window frame], stale_appkit_frame));
 
+    // Verify _setFrame:fromAdjustmentToScreen:anchorIfNeeded:animate: can be
+    // invoked safely outside the move loop with a valid or null anchor.
+    CGPoint anchor_point = CGPointMake(1600, 200);
+    [window _setFrame:boundary_frame
+        fromAdjustmentToScreen:main_screen
+                anchorIfNeeded:&anchor_point
+                       animate:NO];
+
+    EXPECT_EQ(
+        [window respondsToSelector:@selector(_setFrame:fromAdjustmentToScreen:
+                                             anchorIfNeeded:animate:)],
+        [NSWindow
+            instancesRespondToSelector:
+                @selector(
+                    _setFrame:fromAdjustmentToScreen:anchorIfNeeded:animate:)]);
+    EXPECT_EQ(
+        [window respondsToSelector:@selector(_setFrameAfterMove:)],
+        [NSWindow instancesRespondToSelector:@selector(_setFrameAfterMove:)]);
+
+    [window close];
+  }
+}
+
+// Tests that internal AppKit screen layout adjustments and _setFrameAfterMove:
+// do not cause infinite recursion or stack overflow when delegated to super.
+TEST(NativeWidgetMacNSWindowTest, AppKitScreenAdjustmentReentrancyAndSafety) {
+  display::ScopedNativeScreen screen;
+  @autoreleasepool {
+    NativeWidgetMacNSWindow* window = [[NativeWidgetMacNSWindow alloc]
+        initWithContentRect:ui::kWindowSizeDeterminedLater
+                  styleMask:NSWindowStyleMaskBorderless
+                    backing:NSBackingStoreBuffered
+                      defer:NO];
+
+    DummyNativeWidgetNSWindowHost dummy_host;
+    DummyNativeWidgetNSWindowHostHelper dummy_helper;
+    auto bridge = std::make_unique<remote_cocoa::NativeWidgetNSWindowBridge>(
+        4, &dummy_host, &dummy_helper, nullptr);
+    bridge->SetWindow(window);
+
+    NSScreen* main_screen = [NSScreen mainScreen];
+    NSRect test_frame = NSMakeRect(100, 100, 500, 400);
+
+    // 1. Calling _setFrame:fromAdjustmentToScreen:anchorIfNeeded:animate: with
+    // a valid anchor pointer outside of a move loop must not crash or recurse.
+    CGPoint anchor = CGPointMake(100, 100);
+    [window _setFrame:test_frame
+        fromAdjustmentToScreen:main_screen
+                anchorIfNeeded:&anchor
+                       animate:NO];
+
+    // 2. Calling _setFrame:fromAdjustmentToScreen:anchorIfNeeded:animate: with
+    // a null anchor pointer must not crash or recurse.
+    [window _setFrame:test_frame
+        fromAdjustmentToScreen:main_screen
+                anchorIfNeeded:nullptr
+                       animate:NO];
+
+    // 3. Calling _setFrameAfterMove: (which AppKit's implementation routes to
+    // _setFrame:fromAdjustmentToScreen:anchor:animate: ->
+    // _setFrame:fromAdjustmentToScreen:anchorIfNeeded:animate:) must complete
+    // cleanly without infinite recursion.
+    [window _setFrameAfterMove:test_frame];
+
+    [window close];
+  }
+}
+
+// Tests that setting window bounds programmatically updates the
+// CocoaWindowMoveLoop base frame during an active move loop.
+TEST(NativeWidgetMacNSWindowTest, SetBoundsUpdatesMoveLoopBaseFrame) {
+  display::ScopedNativeScreen screen;
+  @autoreleasepool {
+    NativeWidgetMacNSWindow* window = [[NativeWidgetMacNSWindow alloc]
+        initWithContentRect:ui::kWindowSizeDeterminedLater
+                  styleMask:NSWindowStyleMaskBorderless
+                    backing:NSBackingStoreBuffered
+                      defer:NO];
+
+    DummyNativeWidgetNSWindowHost dummy_host;
+    DummyNativeWidgetNSWindowHostHelper dummy_helper;
+    auto bridge = std::make_unique<remote_cocoa::NativeWidgetNSWindowBridge>(
+        4, &dummy_host, &dummy_helper, nullptr);
+    bridge->SetWindow(window);
+
+    auto move_loop = std::make_unique<remote_cocoa::CocoaWindowMoveLoop>(
+        bridge.get(), NSMakePoint(100, 100));
+    bridge->SetWindowMoveLoopForTesting(std::move(move_loop));
+
+    gfx::Rect new_bounds(500, 300, 600, 400);
+    bridge->SetBounds(new_bounds, gfx::Size(100, 100), std::nullopt);
+
+    EXPECT_EQ(gfx::ScreenRectFromNSRect([window frame]), new_bounds);
+    EXPECT_TRUE(NSEqualRects(
+        bridge->window_move_loop()->base_frame_for_testing(), [window frame]));
+    EXPECT_TRUE(
+        NSEqualRects(bridge->window_move_loop()->last_set_frame_for_testing(),
+                     [window frame]));
+
+    bridge->EndMoveLoop();
     [window close];
   }
 }

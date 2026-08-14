@@ -125,7 +125,7 @@ void OrderChildWindow(NSWindow* child_window,
 - (void)_removeFromGroups:(NSWindow*)window;
 - (void)_setFrame:(NSRect)frameRect
     fromAdjustmentToScreen:(NSScreen*)screen
-            anchorIfNeeded:(BOOL)anchor
+            anchorIfNeeded:(const CGPoint*)anchor
                    animate:(BOOL)animate;
 - (void)_setFrameAfterMove:(NSRect)frameRect;
 - (BOOL)_isNonactivatingPanel;
@@ -224,6 +224,7 @@ struct NSEdgeAndCornerThicknesses {
   BOOL _isTooltip;
   BOOL _isShufflingForOrdering;
   BOOL _miniaturizationInProgress;
+  BOOL _inSetFrameFromAdjustment;
   std::unique_ptr<NativeWidgetMacNSWindowHeadlessInfo> _headless_info;
 }
 @synthesize bridgedNativeWidgetId = _bridgedNativeWidgetId;
@@ -458,7 +459,7 @@ struct NSEdgeAndCornerThicknesses {
 // display edge. Suppress them while the move loop is active.
 - (void)_setFrame:(NSRect)frameRect
     fromAdjustmentToScreen:(NSScreen*)screen
-            anchorIfNeeded:(BOOL)anchor
+            anchorIfNeeded:(const CGPoint*)anchor
                    animate:(BOOL)animate {
   if (base::FeatureList::IsEnabled(
           remote_cocoa::features::
@@ -466,10 +467,16 @@ struct NSEdgeAndCornerThicknesses {
       _bridge && _bridge->window_move_loop()) {
     return;
   }
-  [super _setFrame:frameRect
-      fromAdjustmentToScreen:screen
-              anchorIfNeeded:anchor
-                     animate:animate];
+  if (_inSetFrameFromAdjustment) {
+    return;
+  }
+  base::AutoReset<BOOL> resetter(&_inSetFrameFromAdjustment, YES);
+  if ([NSWindow instancesRespondToSelector:_cmd]) {
+    [super _setFrame:frameRect
+        fromAdjustmentToScreen:screen
+                anchorIfNeeded:anchor
+                       animate:animate];
+  }
 }
 
 - (void)_setFrameAfterMove:(NSRect)frameRect {
@@ -479,7 +486,13 @@ struct NSEdgeAndCornerThicknesses {
       _bridge && _bridge->window_move_loop()) {
     return;
   }
-  [super _setFrameAfterMove:frameRect];
+  if (_inSetFrameFromAdjustment) {
+    return;
+  }
+  base::AutoReset<BOOL> resetter(&_inSetFrameFromAdjustment, YES);
+  if ([NSWindow instancesRespondToSelector:_cmd]) {
+    [super _setFrameAfterMove:frameRect];
+  }
 }
 
 - (NSWindow*)topmostVisibleChildModalWindow {
@@ -943,6 +956,14 @@ struct NSEdgeAndCornerThicknesses {
   if (isCommandDispatch && _commandHandler == nil &&
       self.commandDispatchParent == nil) {
     return NO;
+  }
+
+  // Private AppKit frame adjustment methods should only be advertised if the
+  // superclass implements them on this macOS version.
+  if (aSelector ==
+          @selector(_setFrame:fromAdjustmentToScreen:anchorIfNeeded:animate:) ||
+      aSelector == @selector(_setFrameAfterMove:)) {
+    return [NSWindow instancesRespondToSelector:aSelector];
   }
 
   return [super respondsToSelector:aSelector];

@@ -7199,6 +7199,11 @@ class DetachToBrowserInSeparateDisplayTabDragControllerTestDesktop
     mock_screen_.set_cursor_position(target_point2);
     ASSERT_TRUE(DragInputTo(target_point2, GetWindowHint(source_tab_strip)));
 
+    TabStrip* const detached_tab_strip =
+        GetTabStripForBrowser(detached_browser);
+    Tab* const dragged_tab = detached_tab_strip->tab_at(0);
+    EXPECT_TRUE(dragged_tab->GetBoundsInScreen().Contains(target_point2));
+
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(
@@ -7220,6 +7225,9 @@ class DetachToBrowserInSeparateDisplayTabDragControllerTestDesktop
     gfx::Point target_point2 = target_point + gfx::Vector2d(10, 10);
     mock_screen_.set_cursor_position(target_point2);
     ASSERT_TRUE(DragInputTo(target_point2, GetWindowHint(source_tab_strip)));
+
+    Tab* const dragged_tab = source_tab_strip->tab_at(0);
+    EXPECT_TRUE(dragged_tab->GetBoundsInScreen().Contains(target_point2));
 
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,

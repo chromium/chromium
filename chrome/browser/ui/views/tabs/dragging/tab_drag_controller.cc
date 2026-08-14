@@ -1031,6 +1031,10 @@ TabDragController::Liveness TabDragController::ContinueDragging(
       views::Widget* browser_widget = GetAttachedBrowserWidget();
       gfx::Rect bounds = browser_widget->GetWindowBoundsInScreen();
       if (bounds.size() != new_size) {
+        browser_widget->GetRootView()->SetSize(new_size);
+        browser_widget->LayoutRootViewIfNecessary();
+        const gfx::Vector2d drag_offset = CalculateWindowDragOffset();
+        bounds.set_origin(point_in_screen - drag_offset);
         bounds.set_size(new_size);
         browser_widget->SetBounds(bounds);
       }

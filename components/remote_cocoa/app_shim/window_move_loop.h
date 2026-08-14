@@ -32,6 +32,18 @@ class REMOTE_COCOA_APP_SHIM_EXPORT CocoaWindowMoveLoop {
   bool Run();
   void End();
 
+  // Updates the baseline window frame and mouse position. Called when the
+  // window bounds or size are updated programmatically during the drag (e.g.
+  // by TabDragController when moving across displays).
+  void SetBaseFrame(const NSRect& new_base_frame,
+                    const NSPoint& new_base_mouse);
+
+  const NSRect& base_frame_for_testing() const { return base_frame_; }
+  const NSPoint& base_mouse_for_testing() const {
+    return base_mouse_in_screen_;
+  }
+  const NSRect& last_set_frame_for_testing() const { return last_set_frame_; }
+
  private:
   enum LoopExitReason {
     ENDED_EXTERNALLY,
