@@ -190,6 +190,7 @@ class OwningTestTabModel : public TabModel {
   void SetActiveIndex(int index) override;
   void ForceCloseAllTabs() override;
   void CloseTabAt(int index) override;
+  void CloseTabsAt(const std::vector<int>& indices);
   std::unique_ptr<content::WebContents> DetachWebContents(
       tabs::TabHandle tab) override;
   tabs::TabInterface* CreateTab(

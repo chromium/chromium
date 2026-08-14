@@ -8,12 +8,15 @@
 
 #include <cstddef>
 #include <memory>
+#include <numeric>
 #include <optional>
+#include <set>
 #include <utility>
 #include <vector>
 
 #include "base/android/scoped_java_ref.h"
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
@@ -21,6 +24,7 @@
 #include "base/sequence_checker.h"
 #include "build/android_buildflags.h"
 #include "chrome/browser/android/tab_android.h"
+#include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/flags/android/chrome_session_state.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
@@ -419,37 +423,92 @@ void OwningTestTabModel::SetActiveIndex(int index) {
 
 void OwningTestTabModel::ForceCloseAllTabs() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  while (GetTabCount() > 0) {
-    CloseTabAt(GetTabCount() - 1);
-  }
+  std::vector<int> indices(GetTabCount());
+  std::iota(indices.begin(), indices.end(), 0);
+  CloseTabsAt(indices);
 }
 
 void OwningTestTabModel::CloseTabAt(int index) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK_GE(index, 0);
-  CHECK_LT(static_cast<size_t>(index), owned_tabs_.size());
-  auto tab_it = owned_tabs_.begin() + index;
-  observer_list_.Notify(&TabModelObserver::WillCloseTab, tab_it->get());
+  CloseTabsAt({index});
+}
 
-  if (active_tab_.get() == tab_it->get()) {
-    // Deselect the tab before removing it. If it was the last tab, the tab to
-    // its left (the new last tab) will become active, otherwise the tab to its
-    // right will.
+void OwningTestTabModel::CloseTabsAt(const std::vector<int>& indices) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (indices.empty()) {
+    return;
+  }
+
+  std::set<int> index_set(indices.begin(), indices.end());
+  std::vector<TabAndroid*> tabs_to_close;
+  tabs_to_close.reserve(index_set.size());
+  for (int index : index_set) {
+    CHECK_GE(index, 0);
+    CHECK_LT(static_cast<size_t>(index), owned_tabs_.size());
+    tabs_to_close.push_back(owned_tabs_[index].get());
+  }
+
+  bool is_all_tabs = (tabs_to_close.size() == owned_tabs_.size());
+
+  if (base::FeatureList::IsEnabled(
+          chrome::android::kTabClosureMethodRefactor)) {
+    observer_list_.Notify(&TabModelObserver::WillCloseTabs, tabs_to_close,
+                          is_all_tabs, /*allow_undo=*/false);
+  } else {
+    for (auto* tab : tabs_to_close) {
+      observer_list_.Notify(&TabModelObserver::WillCloseTab, tab);
+    }
+    if (is_all_tabs) {
+      observer_list_.Notify(&TabModelObserver::AllTabsAreClosing);
+    }
+  }
+
+  int active_index = GetActiveIndex();
+  bool active_tab_is_closing =
+      active_index != -1 && index_set.contains(active_index);
+
+  if (active_tab_is_closing) {
     TabAndroid* new_active_tab = nullptr;
-    if (static_cast<size_t>(index) + 1 < owned_tabs_.size()) {
-      new_active_tab = GetTabAt(index + 1);
-    } else if (index > 0) {
-      new_active_tab = GetTabAt(index - 1);
+    if (!is_all_tabs) {
+      // 1. Try to find the nearest non-closing tab to the right.
+      for (int i = active_index + 1; i < GetTabCount(); ++i) {
+        if (!index_set.contains(i)) {
+          new_active_tab = owned_tabs_[i].get();
+          break;
+        }
+      }
+      // 2. If no non-closing tab to the right, find the nearest non-closing tab
+      // to the left.
+      if (!new_active_tab) {
+        for (int i = active_index - 1; i >= 0; --i) {
+          if (!index_set.contains(i)) {
+            new_active_tab = owned_tabs_[i].get();
+            break;
+          }
+        }
+      }
     }
     SelectTab(new_active_tab, TabModel::TabSelectionType::FROM_CLOSE);
   }
 
-  // Remove the tab from the list. Its WebContents will be deleted when it goes
-  // out of scope.
-  std::unique_ptr<TabAndroid> tab = std::move(*tab_it);
-  owned_tabs_.erase(tab_it);
+  std::vector<std::unique_ptr<TabAndroid>> removed_tabs;
+  removed_tabs.reserve(index_set.size());
 
-  observer_list_.Notify(&TabModelObserver::TabRemoved, tab.get());
+  auto keep_it = owned_tabs_.begin();
+  for (size_t i = 0; i < owned_tabs_.size(); ++i) {
+    if (index_set.contains(static_cast<int>(i))) {
+      removed_tabs.push_back(std::move(owned_tabs_[i]));
+    } else {
+      // Shift remaining items to the front of the existing vector
+      *keep_it++ = std::move(owned_tabs_[i]);
+    }
+  }
+  // Erase the leftover moved-from elements at the tail end
+  owned_tabs_.erase(keep_it, owned_tabs_.end());
+
+  for (const auto& tab : removed_tabs) {
+    observer_list_.Notify(&TabModelObserver::TabRemoved, tab.get());
+  }
 }
 
 std::unique_ptr<content::WebContents> OwningTestTabModel::DetachWebContents(
