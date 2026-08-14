@@ -3190,10 +3190,14 @@ ci.builder(
                     shards = 7,
                 ),
             ),
+            "android_webview_unittests": targets.mixin(
+                ci_only = True,
+            ),
             "cc_unittests": targets.mixin(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.device.cc_unittests.filter",
                 ],
+                ci_only = True,
             ),
             "chrome_public_test_apk": targets.mixin(
                 args = [
