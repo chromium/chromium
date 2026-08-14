@@ -153,7 +153,7 @@ class SigninViewControllerDelegateViews
 
   // Creates a WebView for a dialog with the specified URL.
   static std::unique_ptr<views::WebView> CreateDialogWebView(
-      Browser* browser,
+      BrowserWindowInterface* browser,
       const GURL& url,
       int dialog_height,
       std::optional<int> dialog_width,

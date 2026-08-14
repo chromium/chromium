@@ -20,7 +20,7 @@
 
 class HistorySyncOptinHandler;
 class HistorySyncOptinUI;
-class Browser;
+class BrowserWindowInterface;
 class Profile;
 
 class HistorySyncOptinUIConfig
@@ -56,7 +56,7 @@ class HistorySyncOptinUI
           receiver);
 
   // Prepares the information to be given to the handler once ready.
-  void Initialize(Browser* browser,
+  void Initialize(BrowserWindowInterface* browser,
                   std::optional<bool> should_close_modal_dialog,
                   HistorySyncOptinHelper::FlowCompletedCallback
                       history_optin_completed_callback);
@@ -71,7 +71,7 @@ class HistorySyncOptinUI
   // Callback awaiting `CreateHistorySyncOptinHandler` to create the handlers
   // with all the needed information to display.
   void OnMojoHandlersReady(
-      Browser* browser,
+      BrowserWindowInterface* browser,
       std::optional<bool> should_close_modal_dialog,
       HistorySyncOptinHelper::FlowCompletedCallback
           history_optin_completed_callback,

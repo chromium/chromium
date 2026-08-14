@@ -20,9 +20,7 @@
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_util.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
@@ -60,11 +58,8 @@ BrowserWindowInterface* EnsureBrowser(BrowserWindowInterface* browser,
     browser = ProfileBrowserCollection::GetForProfile(profile)
                   ->GetLastActiveBrowser();
     if (!browser) {
-      Browser* new_browser =
-          CreateBrowserWindow(BrowserWindowCreateParams(profile, true))
-              ->GetBrowserForMigrationOnly();
-      chrome::AddTabAt(new_browser, GURL(), -1, true);
-      browser = new_browser;
+      browser = CreateBrowserWindow(BrowserWindowCreateParams(profile, true));
+      chrome::AddTabAt(browser, GURL(), -1, true);
     }
     browser->GetWindow()->Show();
   }

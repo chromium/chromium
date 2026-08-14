@@ -14,7 +14,6 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-class Browser;
 class BrowserWindowInterface;
 
 class SignoutConfirmationHandler
@@ -25,7 +24,7 @@ class SignoutConfirmationHandler
   SignoutConfirmationHandler(
       mojo::PendingReceiver<signout_confirmation::mojom::PageHandler> receiver,
       mojo::PendingRemote<signout_confirmation::mojom::Page> page,
-      Browser* browser,
+      BrowserWindowInterface* browser,
       ChromeSignoutConfirmationPromptVariant variant,
       size_t unsynced_data_count,
       SignoutConfirmationCallback callback);

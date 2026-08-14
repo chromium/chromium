@@ -10,7 +10,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/regional_capabilities/regional_capabilities_service_factory.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/webui/signin/history_sync_optin/history_sync_optin.mojom.h"
 #include "chrome/browser/ui/webui/signin/history_sync_optin/history_sync_optin_handler.h"
 #include "chrome/browser/ui/webui/signin/signin_url_utils.h"
@@ -145,7 +145,7 @@ void HistorySyncOptinUI::BindInterface(
 }
 
 void HistorySyncOptinUI::Initialize(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     std::optional<bool> should_close_modal_dialog,
     HistorySyncOptinHelper::FlowCompletedCallback
         history_optin_completed_callback) {
@@ -168,7 +168,7 @@ void HistorySyncOptinUI::CreateHistorySyncOptinHandler(
 }
 
 void HistorySyncOptinUI::OnMojoHandlersReady(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     std::optional<bool> should_close_modal_dialog,
     HistorySyncOptinHelper::FlowCompletedCallback
         history_optin_completed_callback,

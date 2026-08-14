@@ -24,7 +24,7 @@ namespace content {
 class DevToolsAgentHost;
 }
 
-class Browser;
+class BrowserWindowInterface;
 class DevToolsTargetsUIHandler;
 class InspectUI;
 class PortForwardingStatusSerializer;
@@ -70,7 +70,7 @@ class InspectUI : public content::WebUIController,
   void StartListeningNotifications();
   void StopListeningNotifications();
 
-  static void InspectDevices(Browser* browser);
+  static void InspectDevices(BrowserWindowInterface* browser);
 
  private:
   // content::WebContentsObserver:

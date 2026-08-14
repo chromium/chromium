@@ -17,12 +17,12 @@ class SyncService;
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kSyncPassphrasePasswordFieldId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kSyncPassphraseOkButtonFieldId);
 
-class Browser;
+class BrowserWindowInterface;
 
 // Factory function to create and show the Sync passphrase dialog.
 // `decrypt_data_callback` should return whether the passphrease was correct.
 void ShowSyncPassphraseDialog(
-    Browser& browser,
+    BrowserWindowInterface& browser,
     base::RepeatingCallback<bool(std::u16string_view)> decrypt_data_callback);
 
 // Decrypts sync data. Returns true in case of success.

@@ -969,8 +969,7 @@ void PeopleHandler::HandleShowSyncPassphraseDialog(
     return;
   }
 
-  ShowSyncPassphraseDialogAndDecryptData(
-      *browser->GetBrowserForMigrationOnly());
+  ShowSyncPassphraseDialogAndDecryptData(*browser);
 }
 
 void PeopleHandler::HandleShowAccountSettingsUI(const base::ListValue& args) {

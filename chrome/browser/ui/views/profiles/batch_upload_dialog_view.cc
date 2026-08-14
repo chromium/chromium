@@ -103,7 +103,7 @@ BatchUploadDialogView::~BatchUploadDialogView() {
 
 // static
 BatchUploadDialogView* BatchUploadDialogView::CreateBatchUploadDialogView(
-    Browser& browser,
+    BrowserWindowInterface& browser,
     std::vector<syncer::LocalDataDescription> local_data_description_list,
     BatchUploadService::EntryPoint entry_point,
     BatchUploadSelectedDataTypeItemsCallback complete_callback) {
@@ -122,7 +122,7 @@ BatchUploadDialogView* BatchUploadDialogView::CreateBatchUploadDialogView(
 }
 
 BatchUploadDialogView::BatchUploadDialogView(
-    Browser& browser,
+    BrowserWindowInterface& browser,
     std::vector<syncer::LocalDataDescription> local_data_description_list,
     BatchUploadService::EntryPoint entry_point,
     BatchUploadSelectedDataTypeItemsCallback complete_callback)
@@ -318,7 +318,7 @@ views::WebView* BatchUploadDialogView::GetWebViewForTesting() {
 // BatchUploadUIDelegate -------------------------------------------------------
 
 void BatchUploadUIDelegate::ShowBatchUploadDialogInternal(
-    Browser& browser,
+    BrowserWindowInterface& browser,
     std::vector<syncer::LocalDataDescription> local_data_description_list,
     BatchUploadService::EntryPoint entry_point,
     BatchUploadSelectedDataTypeItemsCallback complete_callback) {

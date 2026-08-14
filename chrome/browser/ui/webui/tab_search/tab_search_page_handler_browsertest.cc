@@ -31,10 +31,8 @@
 #include "chrome/browser/sessions/chrome_tab_restore_service_client.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
@@ -44,6 +42,7 @@
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_sync_service_initialized_observer.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter.h"
 #include "chrome/browser/ui/webui/metrics_reporter/mock_metrics_reporter.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search.mojom-forward.h"
@@ -70,6 +69,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_web_ui.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/base/base_window.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
 #include "ui/base/unowned_user_data/user_data_factory.h"
 #include "ui/gfx/color_utils.h"
@@ -125,10 +125,11 @@ void ExpectRecentlyClosedTab(const tab_search::mojom::RecentlyClosedTab* tab,
   EXPECT_EQ(title, tab->title);
 }
 
-[[nodiscard]] bool WaitForActiveTab(Browser* browser, const GURL& url) {
+[[nodiscard]] bool WaitForActiveTab(BrowserWindowInterface* browser,
+                                    const GURL& url) {
   return base::test::RunUntil([&]() {
-    return browser->tab_strip_model()->GetActiveWebContents() &&
-           browser->tab_strip_model()
+    return browser->GetTabStripModel()->GetActiveWebContents() &&
+           browser->GetTabStripModel()
                    ->GetActiveWebContents()
                    ->GetLastCommittedURL() == url;
   });
@@ -250,22 +251,22 @@ class TabSearchPageHandlerTest : public InProcessBrowserTest {
     profile2_ = nullptr;
 
     if (browser5_) {
-      Browser* browser = browser5_;
+      BrowserWindowInterface* browser = browser5_;
       browser5_ = nullptr;
       CloseBrowserSynchronously(browser);
     }
     if (browser4_) {
-      Browser* browser = browser4_;
+      BrowserWindowInterface* browser = browser4_;
       browser4_ = nullptr;
       CloseBrowserSynchronously(browser);
     }
     if (browser3_) {
-      Browser* browser = browser3_;
+      BrowserWindowInterface* browser = browser3_;
       browser3_ = nullptr;
       CloseBrowserSynchronously(browser);
     }
     if (browser2_) {
-      Browser* browser = browser2_;
+      BrowserWindowInterface* browser = browser2_;
       browser2_ = nullptr;
       CloseBrowserSynchronously(browser);
     }
@@ -283,12 +284,12 @@ class TabSearchPageHandlerTest : public InProcessBrowserTest {
   Profile* profile2() { return profile2_; }
 
   // The default browser.
-  Browser* browser1() { return browser(); }
+  BrowserWindowInterface* browser1() { return browser(); }
 
-  Browser* browser2() { return browser2_; }
-  Browser* browser3() { return browser3_; }
-  Browser* browser4() { return browser4_; }
-  Browser* browser5() { return browser5_; }
+  BrowserWindowInterface* browser2() { return browser2_; }
+  BrowserWindowInterface* browser3() { return browser3_; }
+  BrowserWindowInterface* browser4() { return browser4_; }
+  BrowserWindowInterface* browser5() { return browser5_; }
 
   TestTabSearchPageHandler* handler() { return handler_.get(); }
   void reset_handler() { handler_.reset(); }
@@ -314,21 +315,21 @@ class TabSearchPageHandlerTest : public InProcessBrowserTest {
   }
 
  protected:
-  Browser* CreateBrowserForTest(Profile* profile,
-                                BrowserWindowInterface::Type type) {
+  BrowserWindowInterface* CreateBrowserForTest(
+      Profile* profile,
+      BrowserWindowInterface::Type type) {
     BrowserWindowCreateParams params(type, profile, /*from_user_gesture=*/true);
-    Browser* browser =
-        CreateBrowserWindow(std::move(params))->GetBrowserForMigrationOnly();
+    BrowserWindowInterface* browser = CreateBrowserWindow(std::move(params));
     browser->GetWindow()->Show();
     return browser;
   }
 
-  void AddTabWithTitle(Browser* browser,
+  void AddTabWithTitle(BrowserWindowInterface* browser,
                        const GURL& url,
                        const std::string& title) {
     chrome::AddTabAt(browser, url, 0, true);
     content::WebContents* web_contents =
-        browser->tab_strip_model()->GetActiveWebContents();
+        browser->GetTabStripModel()->GetActiveWebContents();
     content::WaitForLoadStop(web_contents);
     content::TitleWatcher title_watcher(web_contents, base::UTF8ToUTF16(title));
     ASSERT_TRUE(content::ExecJs(
@@ -355,10 +356,10 @@ class TabSearchPageHandlerTest : public InProcessBrowserTest {
   GURL tab_url5_;
   GURL tab_url6_;
   raw_ptr<Profile> profile2_ = nullptr;
-  raw_ptr<Browser> browser2_ = nullptr;
-  raw_ptr<Browser> browser3_ = nullptr;
-  raw_ptr<Browser> browser4_ = nullptr;
-  raw_ptr<Browser> browser5_ = nullptr;
+  raw_ptr<BrowserWindowInterface> browser2_ = nullptr;
+  raw_ptr<BrowserWindowInterface> browser3_ = nullptr;
+  raw_ptr<BrowserWindowInterface> browser4_ = nullptr;
+  raw_ptr<BrowserWindowInterface> browser5_ = nullptr;
 
  private:
   content::TestWebUI web_ui_;

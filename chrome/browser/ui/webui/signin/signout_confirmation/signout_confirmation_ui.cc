@@ -8,7 +8,6 @@
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/webui/plural_string_handler.h"
@@ -61,7 +60,7 @@ SignoutConfirmationUI::~SignoutConfirmationUI() {
 WEB_UI_CONTROLLER_TYPE_IMPL(SignoutConfirmationUI)
 
 void SignoutConfirmationUI::Initialize(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     ChromeSignoutConfirmationPromptVariant variant,
     size_t unsynced_data_count,
     SignoutConfirmationCallback callback) {
@@ -110,8 +109,7 @@ void SignoutConfirmationUI::CreateSignoutConfirmationHandler(
     CHECK_IS_TEST();
     BrowserWindowInterface* browser =
         GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser();
-    Initialize(browser->GetBrowserForMigrationOnly(),
-               ChromeSignoutConfirmationPromptVariant::kNoUnsyncedData,
+    Initialize(browser, ChromeSignoutConfirmationPromptVariant::kNoUnsyncedData,
                /*unsynced_data_count=*/0, base::DoNothing());
   }
 
@@ -130,7 +128,7 @@ void SignoutConfirmationUI::RemoveObserver(Observer* observer) {
 }
 
 void SignoutConfirmationUI::OnMojoHandlersReady(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     ChromeSignoutConfirmationPromptVariant variant,
     size_t unsynced_data_count,
     SignoutConfirmationCallback callback,

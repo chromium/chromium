@@ -27,7 +27,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "url/gurl.h"
 
-class Browser;
 class MetricsReporter;
 class Profile;
 
@@ -200,7 +199,7 @@ class TabSearchPageHandler
   const raw_ptr<content::WebUI> web_ui_;
   const raw_ptr<Profile> profile_;
   const raw_ptr<TopChromeWebUIController> webui_controller_;
-  raw_ptr<Browser> browser_;
+  raw_ptr<BrowserWindowInterface> browser_;
   const raw_ptr<MetricsReporter> metrics_reporter_;
   std::unique_ptr<base::RetainingOneShotTimer> debounce_timer_;
   PrefChangeRegistrar pref_change_registrar_;

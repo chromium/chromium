@@ -32,9 +32,7 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ttc/resources/generated_tool_definitions.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/ai_overlay_dialog/page_context_monitor.h"
@@ -519,7 +517,7 @@ void AiOverlayTools::AddBookmark(AddBookmarkCallback callback) {
   }
 
   content::WebContents* active_contents =
-      browser_->tab_strip_model()->GetActiveWebContents();
+      browser_->GetTabStripModel()->GetActiveWebContents();
   if (!active_contents) {
     std::move(callback).Run(base::unexpected("No active tab"));
     return;
@@ -545,7 +543,7 @@ void AiOverlayTools::RemoveBookmark(RemoveBookmarkCallback callback) {
   }
 
   content::WebContents* active_contents =
-      browser_->tab_strip_model()->GetActiveWebContents();
+      browser_->GetTabStripModel()->GetActiveWebContents();
   if (!active_contents) {
     std::move(callback).Run(base::unexpected("No active tab"));
     return;
@@ -683,7 +681,7 @@ void FinishOpenPage(base::DictValue response,
 void AiOverlayTools::OpenPage(const std::string& query,
                               OpenPageCallback callback) {
   RecordToolCallInvoked("OpenPage");
-  TabStripModel* tab_strip = browser_ ? browser_->tab_strip_model() : nullptr;
+  TabStripModel* tab_strip = browser_ ? browser_->GetTabStripModel() : nullptr;
   if (!tab_strip) {
     std::move(callback).Run(base::unexpected("No tab strip model available"));
     return;
@@ -761,7 +759,7 @@ void AiOverlayTools::OpenPage(const std::string& query,
               std::move(cb).Run(base::unexpected("Browser closed"));
               return;
             }
-            TabStripModel* tab_strip = self->browser_->tab_strip_model();
+            TabStripModel* tab_strip = self->browser_->GetTabStripModel();
             CHECK(tab_strip);
             base::ListValue history_list;
             int current_target_id = start_target_id;

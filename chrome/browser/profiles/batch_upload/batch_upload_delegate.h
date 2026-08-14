@@ -10,7 +10,7 @@
 #include "chrome/browser/profiles/batch_upload/batch_upload_service.h"
 #include "components/sync/service/local_data_description.h"
 
-class Browser;
+class BrowserWindowInterface;
 
 using BatchUploadSelectedDataTypeItemsCallback = base::OnceCallback<void(
     const std::map<syncer::DataType,
@@ -24,7 +24,7 @@ class BatchUploadDelegate {
   // If `complete_callback` is called with no elements in the map, then the move
   // request was cancelled.
   virtual void ShowBatchUploadDialog(
-      Browser* browser,
+      BrowserWindowInterface* browser,
       std::vector<syncer::LocalDataDescription> local_data_descriptions_list,
       BatchUploadService::EntryPoint entry_point,
       BatchUploadSelectedDataTypeItemsCallback complete_callback) = 0;

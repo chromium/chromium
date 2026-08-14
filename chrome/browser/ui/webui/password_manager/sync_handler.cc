@@ -194,8 +194,7 @@ void SyncHandler::HandleOpenBatchUploadDialog(const base::ListValue& args) {
   CHECK(batch_upload);
   BrowserWindowInterface* browser =
       ProfileBrowserCollection::GetForProfile(profile_)->GetLastActiveBrowser();
-  batch_upload->OpenBatchUpload(
-      browser ? browser->GetBrowserForMigrationOnly() : nullptr, entry_point);
+  batch_upload->OpenBatchUpload(browser, entry_point);
 }
 #endif
 

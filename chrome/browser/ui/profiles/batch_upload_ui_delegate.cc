@@ -11,7 +11,7 @@ BatchUploadUIDelegate::BatchUploadUIDelegate() = default;
 BatchUploadUIDelegate::~BatchUploadUIDelegate() = default;
 
 void BatchUploadUIDelegate::ShowBatchUploadDialog(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     std::vector<syncer::LocalDataDescription> local_data_description_list,
     BatchUploadService::EntryPoint entry_point,
     BatchUploadSelectedDataTypeItemsCallback complete_callback) {

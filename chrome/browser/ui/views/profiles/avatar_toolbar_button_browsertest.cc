@@ -284,7 +284,7 @@ class MockBatchUploadDelegate : public BatchUploadDelegate {
     // a "Cancel" event.
     ON_CALL(*this, ShowBatchUploadDialog)
         .WillByDefault(
-            [&](Browser* browser,
+            [&](BrowserWindowInterface* browser,
                 const std::vector<syncer::LocalDataDescription>&
                     local_data_description_list,
                 BatchUploadService::EntryPoint entry_point,
@@ -295,7 +295,7 @@ class MockBatchUploadDelegate : public BatchUploadDelegate {
 
   MOCK_METHOD(void,
               ShowBatchUploadDialog,
-              (Browser*,
+              (BrowserWindowInterface*,
                std::vector<syncer::LocalDataDescription>,
                BatchUploadService::EntryPoint,
                BatchUploadSelectedDataTypeItemsCallback),

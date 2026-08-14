@@ -119,8 +119,8 @@ OSSettingsBrowserTestMixin::OpenOSSettings(const std::string& relative_url) {
       GetLastActiveBrowserWindowInterfaceWithAnyProfile();
 
   GURL test_url("chrome://os-settings" + relative_url);
-  content::RenderFrameHost* render_frame_host = ui_test_utils::NavigateToURL(
-      browser->GetBrowserForMigrationOnly(), test_url);
+  content::RenderFrameHost* render_frame_host =
+      ui_test_utils::NavigateToURL(browser, test_url);
 
   // Load test_api.js to register the os settings driver mojo implementation.
   static const char* script = R"(

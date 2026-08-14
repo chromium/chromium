@@ -468,7 +468,7 @@ SigninViewControllerDelegateViews::~SigninViewControllerDelegateViews() {
 
 std::unique_ptr<views::WebView>
 SigninViewControllerDelegateViews::CreateDialogWebView(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     const GURL& url,
     int dialog_height,
     std::optional<int> opt_width,

@@ -52,7 +52,7 @@ class SyncConfirmationHandler : public content::WebUIMessageHandler,
   SyncConfirmationHandler(
       Profile* profile,
       const std::unordered_map<std::string, int>& string_to_grd_id_map,
-      Browser* browser = nullptr);
+      BrowserWindowInterface* browser = nullptr);
 
   SyncConfirmationHandler(const SyncConfirmationHandler&) = delete;
   SyncConfirmationHandler& operator=(const SyncConfirmationHandler&) = delete;
@@ -140,7 +140,7 @@ class SyncConfirmationHandler : public content::WebUIMessageHandler,
 
   // Weak reference to the browser that showed the sync confirmation dialog (if
   // such a dialog exists).
-  raw_ptr<Browser> browser_;
+  raw_ptr<BrowserWindowInterface> browser_;
 
   raw_ptr<signin::IdentityManager> identity_manager_;
 

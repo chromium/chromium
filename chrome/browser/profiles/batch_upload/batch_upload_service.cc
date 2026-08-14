@@ -222,7 +222,7 @@ BatchUploadService::BatchUploadService(
 BatchUploadService::~BatchUploadService() = default;
 
 void BatchUploadService::OpenBatchUpload(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     EntryPoint entry_point,
     base::OnceCallback<void(bool)> dialog_shown_callback,
     base::OnceCallback<void()> dialog_closed_callback) {
@@ -309,7 +309,7 @@ void BatchUploadService::OnBatchUploadDialogResult(
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // `browser` may be null in tests.
-  Browser* browser = state_.dialog_state_->browser_.get();
+  BrowserWindowInterface* browser = state_.dialog_state_->browser_.get();
   if (browser) {
     state_.saving_browser_state_ =
         std::make_unique<ResettableState::SavingBrowserState>();
@@ -350,7 +350,8 @@ bool BatchUploadService::IsUserEligibleToOpenDialog() const {
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-void BatchUploadService::TriggerAvatarButtonSavingDataText(Browser* browser) {
+void BatchUploadService::TriggerAvatarButtonSavingDataText(
+    BrowserWindowInterface* browser) {
   CHECK(browser);
   CHECK(state_.saving_browser_state_);
   // Show the text.

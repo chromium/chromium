@@ -23,15 +23,14 @@
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/launch_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/extensions/extension_enable_flow.h"
 #include "chrome/browser/ui/tab_dialogs.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/apps/app_info_dialog/app_info_dialog_container.h"
 #include "chrome/browser/ui/webui/app_home/app_home.mojom-shared.h"
 #include "chrome/browser/ui/webui/extensions/extension_icon_source.h"
@@ -60,6 +59,7 @@
 #include "extensions/browser/extension_system.h"
 #include "net/base/url_util.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
+#include "ui/base/base_window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "url/gurl.h"
@@ -111,10 +111,9 @@ AppHomePageHandler::~AppHomePageHandler() {
   extension_uninstall_dialog_.reset();
 }
 
-Browser* AppHomePageHandler::GetCurrentBrowser() {
-  auto* browser = GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+BrowserWindowInterface* AppHomePageHandler::GetCurrentBrowser() {
+  return GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
       web_ui_->GetWebContents());
-  return browser ? browser->GetBrowserForMigrationOnly() : nullptr;
 }
 
 void AppHomePageHandler::LoadDeprecatedAppsDialogIfRequired() {
@@ -233,13 +232,13 @@ void AppHomePageHandler::LaunchAppInternal(
     // To give a more "launchy" experience when using the NTP launcher, we close
     // it automatically. However, if the chrome://apps page is the LAST page in
     // the browser window, then we don't close it.
-    Browser* browser = GetCurrentBrowser();
+    BrowserWindowInterface* browser = GetCurrentBrowser();
     base::WeakPtr<BrowserWindowInterface> browser_ptr;
     content::WebContents* old_contents = nullptr;
     base::WeakPtr<content::WebContents> old_contents_ptr;
     if (browser) {
       browser_ptr = browser->GetWeakPtr();
-      old_contents = browser->tab_strip_model()->GetActiveWebContents();
+      old_contents = browser->GetTabStripModel()->GetActiveWebContents();
       old_contents_ptr = old_contents->GetWeakPtr();
     }
 
@@ -262,10 +261,9 @@ void AppHomePageHandler::LaunchAppInternal(
                   apps_page_browser->GetTabStripModel()->count() > 1) {
                 // This will also destroy the handler, so do not perform
                 // any actions after.
-                chrome::CloseWebContents(
-                    apps_page_browser->GetBrowserForMigrationOnly(),
-                    old_contents.get(),
-                    /*add_to_history=*/true);
+                chrome::CloseWebContents(apps_page_browser.get(),
+                                         old_contents.get(),
+                                         /*add_to_history=*/true);
               }
             },
             browser_ptr, old_contents_ptr));
@@ -308,7 +306,7 @@ void AppHomePageHandler::ShowExtensionAppSettings(
 
 void AppHomePageHandler::CreateWebAppShortcut(const std::string& app_id,
                                               base::OnceClosure done) {
-  Browser* browser = GetCurrentBrowser();
+  BrowserWindowInterface* browser = GetCurrentBrowser();
   chrome::ShowCreateChromeAppShortcutsDialog(
       browser->GetWindow()->GetNativeWindow(), browser->GetProfile(), app_id,
       base::BindOnce(
@@ -323,7 +321,7 @@ void AppHomePageHandler::CreateWebAppShortcut(const std::string& app_id,
 void AppHomePageHandler::CreateExtensionAppShortcut(
     const extensions::Extension* extension,
     base::OnceClosure done) {
-  Browser* browser = GetCurrentBrowser();
+  BrowserWindowInterface* browser = GetCurrentBrowser();
   chrome::ShowCreateChromeAppShortcutsDialog(
       browser->GetWindow()->GetNativeWindow(), browser->GetProfile(), extension,
       base::IgnoreArgs<bool>(std::move(done)));
@@ -518,18 +516,18 @@ void AppHomePageHandler::UninstallWebApp(const std::string& web_app_id) {
       },
       weak_ptr_factory_.GetWeakPtr());
 
-  Browser* browser = GetCurrentBrowser();
+  BrowserWindowInterface* browser = GetCurrentBrowser();
   CHECK(browser);
   web_app_provider_->ui_manager().PresentUserUninstallDialog(
       web_app_id, webapps::WebappUninstallSource::kAppsPage,
-      BrowserWindow::FromBrowser(browser),
+      browser->GetWindow()->GetNativeWindow(),
       std::move(uninstall_success_callback));
   return;
 }
 
 extensions::ExtensionUninstallDialog*
 AppHomePageHandler::CreateExtensionUninstallDialog() {
-  Browser* browser = GetCurrentBrowser();
+  BrowserWindowInterface* browser = GetCurrentBrowser();
   extension_uninstall_dialog_ = extensions::ExtensionUninstallDialog::Create(
       profile_, browser->GetWindow()->GetNativeWindow(), this);
   return extension_uninstall_dialog_.get();
@@ -546,7 +544,7 @@ void AppHomePageHandler::UninstallExtensionApp(const Extension* extension) {
 
   extension_dialog_prompting_ = true;
 
-  Browser* browser = GetCurrentBrowser();
+  BrowserWindowInterface* browser = GetCurrentBrowser();
   extension_uninstall_dialog_ = extensions::ExtensionUninstallDialog::Create(
       profile_, browser->GetWindow()->GetNativeWindow(), this);
 

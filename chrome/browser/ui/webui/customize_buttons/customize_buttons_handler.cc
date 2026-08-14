@@ -20,7 +20,6 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/tab_features.h"
 #else
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #endif
 

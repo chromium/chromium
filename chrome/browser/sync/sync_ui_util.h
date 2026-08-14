@@ -14,7 +14,6 @@
 class Profile;
 
 #if !BUILDFLAG(IS_ANDROID)
-class Browser;
 class BrowserWindowInterface;
 #endif
 
@@ -99,7 +98,7 @@ bool ShouldShowSyncPassphraseError(const syncer::SyncService* service);
 #if !BUILDFLAG(IS_ANDROID)
 // Shows the sync passphrase dialog and attempts decrypting the data using the
 // provided passphrase.
-void ShowSyncPassphraseDialogAndDecryptData(Browser& browser);
+void ShowSyncPassphraseDialogAndDecryptData(BrowserWindowInterface& browser);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)

@@ -66,6 +66,7 @@ if (!is_android) {
       "//chrome/browser/ui/bookmarks",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/dialogs",
+      "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/webui",
       "//chrome/browser/ui/webui:webui_load_timer",
       "//components/bookmarks/browser",

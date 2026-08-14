@@ -21,7 +21,7 @@ class WebUI;
 struct AccountInfo;
 class BatchUploadHandler;
 class BatchUploadUI;
-class Browser;
+class BrowserWindowInterface;
 
 class BatchUploadUIConfig : public content::DefaultWebUIConfig<BatchUploadUI> {
  public:
@@ -42,7 +42,7 @@ class BatchUploadUI : public ui::MojoWebUIController,
   // Prepares the information to be given to the handler once ready.
   void Initialize(
       const AccountInfo& account_info,
-      Browser* browser,
+      BrowserWindowInterface* browser,
       std::vector<syncer::LocalDataDescription> local_data_description_list,
       base::RepeatingCallback<void(int)> update_view_height_callback,
       base::RepeatingCallback<void(bool)> allow_web_view_input_callback,
@@ -69,7 +69,7 @@ class BatchUploadUI : public ui::MojoWebUIController,
   // all the needed information to display.
   void OnMojoHandlersReady(
       const AccountInfo& account_info,
-      Browser* browser,
+      BrowserWindowInterface* browser,
       std::vector<syncer::LocalDataDescription> local_data_description_list,
       base::RepeatingCallback<void(int)> update_view_height_callback,
       base::RepeatingCallback<void(bool)> allow_web_view_input_callback,

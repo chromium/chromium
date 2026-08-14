@@ -9,7 +9,8 @@
 #include <variant>
 
 #include "base/strings/to_string.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/signin/batch_upload/batch_upload.mojom.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/grit/generated_resources.h"
@@ -163,7 +164,7 @@ BatchUploadHandler::BatchUploadHandler(
     mojo::PendingReceiver<batch_upload::mojom::PageHandler> receiver,
     mojo::PendingRemote<batch_upload::mojom::Page> page,
     const AccountInfo& account_info,
-    Browser* browser,
+    BrowserWindowInterface* browser,
     std::vector<syncer::LocalDataDescription> local_data_description_list,
     base::RepeatingCallback<void(int)> update_view_height_callback,
     base::RepeatingCallback<void(bool)> allow_web_view_input_callback,
@@ -240,7 +241,7 @@ void BatchUploadHandler::SaveToAccount(
 
     device_authenticator_ = ChromeDeviceAuthenticatorFactory::GetForProfile(
         browser_->GetProfile(),
-        browser_->tab_strip_model()
+        browser_->GetTabStripModel()
             ->GetActiveWebContents()
             ->GetTopLevelNativeWindow(),
         params);

@@ -18,7 +18,6 @@
 #include "content/public/browser/web_contents_delegate.h"
 #include "ui/views/window/dialog_delegate.h"
 
-class Browser;
 class BrowserWindowInterface;
 
 class BatchUploadDialogViewBrowserTest;
@@ -57,7 +56,7 @@ class BatchUploadDialogView : public views::DialogDelegateView,
   // Creates the dialog view and registers as a modal view.
   // The created dialog view is owned by the views system.
   static BatchUploadDialogView* CreateBatchUploadDialogView(
-      Browser& browser,
+      BrowserWindowInterface& browser,
       std::vector<syncer::LocalDataDescription> local_data_description_list,
       BatchUploadService::EntryPoint entry_point,
       BatchUploadSelectedDataTypeItemsCallback complete_callback);
@@ -77,7 +76,7 @@ class BatchUploadDialogView : public views::DialogDelegateView,
                            OpenBatchUploadDialogViewWithSaveActionSomeItems);
 
   explicit BatchUploadDialogView(
-      Browser& browser,
+      BrowserWindowInterface& browser,
       std::vector<syncer::LocalDataDescription> local_data_description_list,
       BatchUploadService::EntryPoint entry_point,
       BatchUploadSelectedDataTypeItemsCallback complete_callback);

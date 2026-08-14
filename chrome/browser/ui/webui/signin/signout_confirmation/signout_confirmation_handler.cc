@@ -10,8 +10,8 @@
 #include "base/functional/bind.h"
 #include "base/i18n/number_formatting.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -183,7 +183,7 @@ bool HasAccountExtensions(Profile* profile) {
 SignoutConfirmationHandler::SignoutConfirmationHandler(
     mojo::PendingReceiver<signout_confirmation::mojom::PageHandler> receiver,
     mojo::PendingRemote<signout_confirmation::mojom::Page> page,
-    Browser* browser,
+    BrowserWindowInterface* browser,
     ChromeSignoutConfirmationPromptVariant variant,
     size_t unsynced_data_count,
     SignoutConfirmationCallback callback)

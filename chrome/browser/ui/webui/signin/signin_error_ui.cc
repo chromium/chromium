@@ -17,7 +17,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
 #include "chrome/browser/signin/signin_ui_util.h"
-#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/browser/ui/webui/signin/signin_error_handler.h"
@@ -57,7 +57,8 @@ std::u16string SigninErrorUI::GetTitle(const std::u16string& email) {
   }
 }
 
-void SigninErrorUI::InitializeMessageHandlerWithBrowser(Browser* browser) {
+void SigninErrorUI::InitializeMessageHandlerWithBrowser(
+    BrowserWindowInterface* browser) {
   DCHECK(browser);
   Profile* webui_profile = Profile::FromWebUI(web_ui());
   std::unique_ptr<SigninErrorHandler> handler =

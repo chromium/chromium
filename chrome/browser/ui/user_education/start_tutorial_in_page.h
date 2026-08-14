@@ -15,7 +15,7 @@
 #include "components/user_education/common/tutorial/tutorial_service.h"
 #include "url/gurl.h"
 
-class Browser;
+class BrowserWindowInterface;
 
 // Utility for opening a page and starting a tutorial. The object exists
 // only as long as the operation is in progress.
@@ -78,8 +78,9 @@ class StartTutorialInPage {
 
   // Opens the page in `browser` and starts a Tutorial as described by
   // `params`. This method must be called on the UI thread.
-  static base::WeakPtr<StartTutorialInPage> Start(Browser* browser,
-                                                  Params params);
+  static base::WeakPtr<StartTutorialInPage> Start(
+      BrowserWindowInterface* browser,
+      Params params);
 
  protected:
   StartTutorialInPage();

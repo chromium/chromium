@@ -13,7 +13,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/common/url_constants.h"
@@ -78,7 +77,7 @@ DEFINE_ELEMENT_IDENTIFIER_VALUE(kSyncPassphrasePasswordFieldId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kSyncPassphraseOkButtonFieldId);
 
 void ShowSyncPassphraseDialog(
-    Browser& browser,
+    BrowserWindowInterface& browser,
     base::RepeatingCallback<bool(std::u16string_view)> decrypt_data_callback) {
   ui::DialogModel::Builder dialog_builder;
 

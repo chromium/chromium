@@ -7,14 +7,14 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/signin/signin_ui_util.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "content/public/browser/web_ui.h"
 #include "url/gurl.h"
 
-SigninErrorHandler::SigninErrorHandler(Browser* browser) : browser_(browser) {
+SigninErrorHandler::SigninErrorHandler(BrowserWindowInterface* browser)
+    : browser_(browser) {
   DCHECK(browser_);
   browser_collection_observation_.Observe(
       GlobalBrowserCollection::GetInstance());

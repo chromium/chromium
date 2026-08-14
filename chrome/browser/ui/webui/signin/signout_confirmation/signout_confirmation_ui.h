@@ -21,7 +21,7 @@ namespace content {
 class WebUI;
 }  // namespace content
 
-class Browser;
+class BrowserWindowInterface;
 class SignoutConfirmationHandler;
 class SignoutConfirmationUI;
 
@@ -60,7 +60,7 @@ class SignoutConfirmationUI
   void RemoveObserver(Observer* observer);
 
   // Prepares the information to be given to the handler once ready.
-  void Initialize(Browser* browser,
+  void Initialize(BrowserWindowInterface* browser,
                   ChromeSignoutConfirmationPromptVariant variant,
                   size_t unsynced_data_count,
                   SignoutConfirmationCallback callback);
@@ -100,7 +100,7 @@ class SignoutConfirmationUI
   // Callback awaiting `CreateSignoutConfirmationHandler` to create the handlers
   // with all the needed information to display.
   void OnMojoHandlersReady(
-      Browser* browser,
+      BrowserWindowInterface* browser,
       ChromeSignoutConfirmationPromptVariant variant,
       size_t unsynced_data_count,
       SignoutConfirmationCallback callback,

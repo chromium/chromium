@@ -13,6 +13,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/sync/sync_passphrase_dialog.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -333,7 +334,7 @@ bool ShouldShowSyncPassphraseError(const syncer::SyncService* service) {
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-void ShowSyncPassphraseDialogAndDecryptData(Browser& browser) {
+void ShowSyncPassphraseDialogAndDecryptData(BrowserWindowInterface& browser) {
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(browser.GetProfile());
   if (!sync_service) {

@@ -17,7 +17,7 @@
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/sync/service/local_data_description.h"
 
-class Browser;
+class BrowserWindowInterface;
 class BatchUploadDelegate;
 
 namespace signin {
@@ -72,7 +72,7 @@ class BatchUploadService : public KeyedService {
   // profile. `dialog_shown_callback` returns whether the dialog was shown or
   // not.
   void OpenBatchUpload(
-      Browser* browser,
+      BrowserWindowInterface* browser,
       EntryPoint entry_point,
       base::OnceCallback<void(bool)> dialog_shown_callback = base::DoNothing(),
       base::OnceCallback<void()> dialog_closed_callback = base::DoNothing());
@@ -113,7 +113,7 @@ class BatchUploadService : public KeyedService {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Changes the avatar button text to saving data and starts a timer that will
   // revert the button text on timeout.
-  void TriggerAvatarButtonSavingDataText(Browser* browser);
+  void TriggerAvatarButtonSavingDataText(BrowserWindowInterface* browser);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -137,7 +137,7 @@ class BatchUploadService : public KeyedService {
     // Fields related to the dialog currently showing.
     struct DialogState {
       // Browser that is showing the dialog.
-      raw_ptr<Browser> browser_;
+      raw_ptr<BrowserWindowInterface> browser_;
       // Entry point of the dialog.
       EntryPoint entry_point_ = EntryPoint::kPasswordManagerSettings;
       // Called when the decision about showing the dialog is made.

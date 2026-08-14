@@ -35,7 +35,7 @@ class BatchUploadDelegateMock : public BatchUploadDelegate {
   MOCK_METHOD(
       void,
       ShowBatchUploadDialog,
-      (Browser * browser,
+      (BrowserWindowInterface * browser,
        std::vector<syncer::LocalDataDescription> local_data_description_list,
        BatchUploadService::EntryPoint entry_point,
        BatchUploadSelectedDataTypeItemsCallback complete_callback),
@@ -279,7 +279,7 @@ TEST_F(BatchUploadServiceTest, LocalDataOrderBasedOnEntryPoint) {
     EXPECT_CALL(delegate_mock(),
                 ShowBatchUploadDialog(_, expected_descriptions, _, _))
         .WillOnce(
-            [&](Browser* browser,
+            [&](BrowserWindowInterface* browser,
                 const std::vector<syncer::LocalDataDescription>&
                     local_data_description_list,
                 BatchUploadService::EntryPoint entry_point,
@@ -398,7 +398,7 @@ TEST_F(BatchUploadServiceTest, LocalDataReturnedShowsDialogAndReturnIdToMove) {
   EXPECT_CALL(delegate_mock(),
               ShowBatchUploadDialog(_, expected_descriptions, _, _))
       .WillOnce(
-          [&](Browser* browser,
+          [&](BrowserWindowInterface* browser,
               const std::vector<syncer::LocalDataDescription>&
                   local_data_description_list,
               BatchUploadService::EntryPoint entry_point,
@@ -443,7 +443,7 @@ TEST_F(BatchUploadServiceTest,
   EXPECT_CALL(delegate_mock(),
               ShowBatchUploadDialog(_, expected_descriptions, _, _))
       .WillOnce(
-          [&](Browser* browser,
+          [&](BrowserWindowInterface* browser,
               const std::vector<syncer::LocalDataDescription>&
                   local_data_description_list,
               BatchUploadService::EntryPoint entry_point,
@@ -540,7 +540,7 @@ TEST_P(BatchUploadServiceWithAvatarPromoEntryPointTest,
   BatchUploadSelectedDataTypeItemsCallback returned_complete_callback;
   EXPECT_CALL(delegate_mock(), ShowBatchUploadDialog(_, _, _, _))
       .WillOnce(
-          [&](Browser* browser,
+          [&](BrowserWindowInterface* browser,
               const std::vector<syncer::LocalDataDescription>&
                   local_data_description_list,
               BatchUploadService::EntryPoint entry_point,

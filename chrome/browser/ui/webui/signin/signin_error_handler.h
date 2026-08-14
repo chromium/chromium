@@ -19,7 +19,7 @@ class SigninErrorHandler : public content::WebUIMessageHandler,
  public:
   // Constructor of a message handler that handles messages from the
   // sign-in error WebUI.
-  explicit SigninErrorHandler(Browser* browser);
+  explicit SigninErrorHandler(BrowserWindowInterface* browser);
 
   SigninErrorHandler(const SigninErrorHandler&) = delete;
   SigninErrorHandler& operator=(const SigninErrorHandler&) = delete;
@@ -73,7 +73,7 @@ class SigninErrorHandler : public content::WebUIMessageHandler,
   // Weak reference to the browser that showed the sign-in error dialog.
   // This is null when this sign-in error dialog is presented from the user
   // manager.
-  raw_ptr<Browser> browser_;
+  raw_ptr<BrowserWindowInterface> browser_;
 
   base::FilePath duplicate_profile_path_;
 

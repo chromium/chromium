@@ -13,6 +13,7 @@
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/tab_strip_internals/tab_strip_internals_observer.h"
 #include "chrome/browser/ui/webui/tab_strip_internals/tab_strip_internals_util.h"
 #include "components/sessions/core/session_id.h"

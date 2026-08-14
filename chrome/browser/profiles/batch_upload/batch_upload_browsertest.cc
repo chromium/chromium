@@ -247,7 +247,7 @@ class BatchUploadDelegateFake : public BatchUploadDelegate {
  private:
   // BatchUploadDelegate:
   void ShowBatchUploadDialog(
-      Browser* browser,
+      BrowserWindowInterface* browser,
       std::vector<syncer::LocalDataDescription> local_data_description_list,
       BatchUploadService::EntryPoint entry_point,
       BatchUploadSelectedDataTypeItemsCallback complete_callback) override {

@@ -8,7 +8,7 @@
 #include "chrome/browser/profiles/batch_upload/batch_upload_delegate.h"
 #include "components/sync/service/local_data_description.h"
 
-class Browser;
+class BrowserWindowInterface;
 
 // Implementation that creates the Batch Upload dialog UI view.
 class BatchUploadUIDelegate : public BatchUploadDelegate {
@@ -18,7 +18,7 @@ class BatchUploadUIDelegate : public BatchUploadDelegate {
 
   // BatchUploadDelegate:
   void ShowBatchUploadDialog(
-      Browser* browser,
+      BrowserWindowInterface* browser,
       std::vector<syncer::LocalDataDescription> local_data_description_list,
       BatchUploadService::EntryPoint entry_point,
       BatchUploadSelectedDataTypeItemsCallback complete_callback) override;
@@ -28,7 +28,7 @@ class BatchUploadUIDelegate : public BatchUploadDelegate {
   // `chrome/browser/ui/views/profiles/batch_upload_dialog_view.h`.
   // Triggers the creation of the main view for the Batch Upload Dialog.
   void ShowBatchUploadDialogInternal(
-      Browser& browser,
+      BrowserWindowInterface& browser,
       std::vector<syncer::LocalDataDescription> local_data_description_list,
       BatchUploadService::EntryPoint entry_point,
       BatchUploadSelectedDataTypeItemsCallback complete_callback);

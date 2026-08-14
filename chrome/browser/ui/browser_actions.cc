@@ -1603,7 +1603,7 @@ void BrowserActions::InitializeChromeMenuActions() {
           base::BindRepeating(
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
-                InspectUI::InspectDevices(bwi->GetBrowserForMigrationOnly());
+                InspectUI::InspectDevices(bwi);
               },
               bwi))
           .SetActionId(kActionDevToolsDevices)

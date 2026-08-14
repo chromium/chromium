@@ -10,10 +10,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/bookmarks/bookmark_editor.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/commerce/core/account_checker.h"
@@ -24,6 +23,7 @@
 #include "components/commerce/core/webui/webui_utils.h"
 #include "components/power_bookmarks/core/power_bookmark_utils.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/base_window.h"
 
 namespace commerce {
 

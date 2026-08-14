@@ -22,9 +22,10 @@
 #include "chrome/browser/page_load_metrics/page_load_metrics_initialize.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/task_manager/web_contents_tags.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/prefs/prefs_tab_helper.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/webui/log_web_ui_url.h"
@@ -310,7 +311,8 @@ WebUIContentsPreloadManager* WebUIContentsPreloadManager::GetInstance() {
   return s_instance.get();
 }
 
-void WebUIContentsPreloadManager::WarmupForBrowser(Browser* browser) {
+void WebUIContentsPreloadManager::WarmupForBrowser(
+    BrowserWindowInterface* browser) {
   // Most WebUIs, if not all, are hosted by a TYPE_NORMAL browser. This check
   // skips unnecessary preloading for the majority of WebUIs.
   if (browser->GetType() != BrowserWindowInterface::Type::TYPE_NORMAL) {
@@ -326,7 +328,7 @@ void WebUIContentsPreloadManager::WarmupForBrowser(Browser* browser) {
   if (IsDelayPreloadEnabled()) {
     MaybePreloadForBrowserContextLater(
         browser->GetProfile(),
-        browser->tab_strip_model()->GetActiveWebContents(),
+        browser->GetTabStripModel()->GetActiveWebContents(),
         PreloadReason::kBrowserWarmup);
   } else {
     MaybePreloadForBrowserContext(browser->GetProfile(),

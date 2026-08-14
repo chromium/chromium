@@ -19,7 +19,7 @@
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 
-class Browser;
+class BrowserWindowInterface;
 class PerProfileWebUITracker;
 
 // WebUIContentsPreloadManager is a singleton class that preloads top Chrome
@@ -68,7 +68,7 @@ class WebUIContentsPreloadManager : public ProfileObserver,
 
   // Warms up the preload manager. Depending on PreloadMode this may or may not
   // make a preloaded contents.
-  void WarmupForBrowser(Browser* browser);
+  void WarmupForBrowser(BrowserWindowInterface* browser);
 
   // Make a WebContents that shows `webui_url` under `browser_context`. If a
   // preloaded WebContents exists for the same `browser_context`, it will be

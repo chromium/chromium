@@ -20,7 +20,6 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-class Browser;
 class BrowserWindowInterface;
 class Profile;
 
@@ -32,7 +31,7 @@ class HistorySyncOptinHandler : public history_sync_optin::mojom::PageHandler,
   HistorySyncOptinHandler(
       mojo::PendingReceiver<history_sync_optin::mojom::PageHandler> receiver,
       mojo::PendingRemote<history_sync_optin::mojom::Page> page,
-      Browser* browser,
+      BrowserWindowInterface* browser,
       Profile* profile,
       std::optional<bool> should_close_modal_dialog,
       HistorySyncOptinHelper::FlowCompletedCallback

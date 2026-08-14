@@ -27,7 +27,6 @@
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_ui_util.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_live_tab_context.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -68,6 +67,7 @@
 #include "components/tabs/public/tab_interface.h"
 #include "components/user_education/common/tutorial/tutorial_identifier.h"
 #include "components/user_education/common/tutorial/tutorial_service.h"
+#include "content/public/browser/navigation_controller.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "ui/base/base_window.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -301,11 +301,7 @@ void TabSearchPageHandler::CloseWebUiTab() {
 // Tab Search UI can also hosted inside a tab and so we still need to
 // be able to handle browser window changes.
 void TabSearchPageHandler::BrowserWindowInterfaceChanged() {
-  auto* browser_window_interface =
-      webui::GetBrowserWindowInterface(web_ui_->GetWebContents());
-  browser_ = browser_window_interface
-                 ? browser_window_interface->GetBrowserForMigrationOnly()
-                 : nullptr;
+  browser_ = webui::GetBrowserWindowInterface(web_ui_->GetWebContents());
   page_->HostWindowChanged();
 }
 

@@ -25,7 +25,7 @@
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/devtools/features.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/webui/theme_source.h"
@@ -745,7 +745,7 @@ void InspectUI::InspectBrowserWithCustomFrontend(const std::string& source_id,
   bindings_enabler->GetBindings()->AttachTo(agent_host);
 }
 
-void InspectUI::InspectDevices(Browser* browser) {
+void InspectUI::InspectDevices(BrowserWindowInterface* browser) {
   base::RecordAction(base::UserMetricsAction("InspectDevices"));
   ShowSingletonTabOverwritingNTP(browser, GURL(chrome::kChromeUIInspectURL),
                                  NavigateParams::IGNORE_AND_NAVIGATE);
