@@ -8,6 +8,9 @@
 
 #include "base/check_op.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
+#include "base/task/common/task_annotator.h"
 #include "services/network/cors/cors_url_loader_factory.h"
 #include "services/network/prefetch_cache.h"
 #include "services/network/prefetch_url_loader_client.h"
@@ -16,6 +19,23 @@
 #include "services/network/resource_scheduler/resource_scheduler_client.h"
 
 namespace network {
+
+namespace {
+void LogCreateLoaderAndStartQueueTimeHistogram(bool is_outermost_main_frame) {
+  auto* task = base::TaskAnnotator::CurrentTaskForThread();
+  // Only log non-delayed tasks with a valid queue_time.
+  if (!task || task->queue_time.is_null() ||
+      !task->delayed_run_time.is_null()) {
+    return;
+  }
+
+  base::UmaHistogramTimes(
+      base::StrCat({"NetworkService.PrefetchMatchingURLLoaderFactory.QueueTime."
+                    "CreateLoaderAndStart",
+                    is_outermost_main_frame ? ".MainFrame" : ".Subframe"}),
+      base::TimeTicks::Now() - task->queue_time);
+}
+}  // namespace
 
 PrefetchMatchingURLLoaderFactory::PrefetchMatchingURLLoaderFactory(
     NetworkContext* context,
@@ -66,6 +86,7 @@ void PrefetchMatchingURLLoaderFactory::CreateLoaderAndStart(
     ResourceRequest& request,
     mojo::PendingRemote<mojom::URLLoaderClient> client,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
+  LogCreateLoaderAndStartQueueTimeHistogram(request.is_outermost_main_frame);
   // If we don't think the request should be permitted from a render process, we
   // don't try to match it and instead let CorsURLLoaderFactory deal with the
   // issue.

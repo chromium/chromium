@@ -5310,6 +5310,22 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="NetworkService.PrefetchMatchingURLLoaderFactory.QueueTime.CreateLoaderAndStart.{FrameType}"
+    units="ms" expires_after="2027-08-11">
+  <owner>nafisabedin@google.com</owner>
+  <owner>clank-performance-team@google.com</owner>
+  <summary>
+    Measures the amount of time the task to run CreateLoaderAndStart was queued
+    for a {FrameType} before running. Logged every time CreateLoaderAndStart is
+    run in PrefetchMatchingURLLoaderFactory with a valid queue time.
+  </summary>
+  <token key="FrameType">
+    <variant name="MainFrame" summary="main frame"/>
+    <variant name="Subframe" summary="subframe"/>
+  </token>
+</histogram>
+
+<histogram
     name="NetworkService.Scheduler.IOThread.NumberOfPendingTasks.{QueueName}Queue"
     units="count" expires_after="2027-01-10">
   <owner>hayato@chromium.org</owner>
