@@ -40,15 +40,6 @@ class CommandUpdaterImpl : public CommandUpdater {
   // Overriden from CommandUpdater:
   bool SupportsCommand(int id) const override;
   bool IsCommandEnabled(int id) const override;
-  bool ExecuteCommandImpl(
-      int id,
-      base::TimeTicks time_stamp,
-      std::optional<actions::ActionInvocationContext> context) override;
-  bool ExecuteCommandWithDispositionImpl(
-      int id,
-      WindowOpenDisposition disposition,
-      base::TimeTicks time_stamp,
-      std::optional<actions::ActionInvocationContext> context) override;
   void AddCommandObserver(int id, CommandObserver* observer) override;
   void RemoveCommandObserver(int id, CommandObserver* observer) override;
   void RemoveCommandObserver(CommandObserver* observer) override;
@@ -60,6 +51,12 @@ class CommandUpdaterImpl : public CommandUpdater {
   // A piece of data about a command - whether or not it is enabled, and a list
   // of objects that observe the enabled state of this command.
   struct Command;
+
+  bool ExecuteCommandWithDispositionAndContext(
+      int id,
+      WindowOpenDisposition disposition,
+      std::optional<actions::ActionInvocationContext> context,
+      base::TimeTicks time_stamp) override;
 
   // Get a Command node for a given command ID, creating an entry if it doesn't
   // exist if desired.

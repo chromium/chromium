@@ -711,7 +711,7 @@ TEST_F(BrowserCommandControllerWithBookmarksTest,
   EXPECT_EQ(0, user_action_tester.GetActionCount(
                    "WrenchMenu_Bookmarks_AlwaysShowBookmarkBar"));
   command_controller->ExecuteCommand(
-      IDC_BOOKMARK_BAR_SUBMENU_ALWAYS_SHOW,
+      IDC_BOOKMARK_BAR_SUBMENU_ALWAYS_SHOW, std::nullopt,
       blink::WebInputEvent::GetStaticTimeStampForTests());
   EXPECT_EQ(
       profile()->GetPrefs()->GetInteger(
@@ -723,7 +723,7 @@ TEST_F(BrowserCommandControllerWithBookmarksTest,
   EXPECT_EQ(0, user_action_tester.GetActionCount(
                    "WrenchMenu_Bookmarks_AlwaysHideBookmarkBar"));
   command_controller->ExecuteCommand(
-      IDC_BOOKMARK_BAR_SUBMENU_ALWAYS_HIDE,
+      IDC_BOOKMARK_BAR_SUBMENU_ALWAYS_HIDE, std::nullopt,
       blink::WebInputEvent::GetStaticTimeStampForTests());
   EXPECT_EQ(
       profile()->GetPrefs()->GetInteger(
@@ -735,7 +735,7 @@ TEST_F(BrowserCommandControllerWithBookmarksTest,
   EXPECT_EQ(0, user_action_tester.GetActionCount(
                    "WrenchMenu_Bookmarks_OnlyShowBookmarkBarOnNtp"));
   command_controller->ExecuteCommand(
-      IDC_BOOKMARK_BAR_SUBMENU_ONLY_ON_NTP,
+      IDC_BOOKMARK_BAR_SUBMENU_ONLY_ON_NTP, std::nullopt,
       blink::WebInputEvent::GetStaticTimeStampForTests());
   EXPECT_EQ(
       profile()->GetPrefs()->GetInteger(
@@ -756,7 +756,7 @@ TEST_F(BrowserCommandControllerTest,
   ASSERT_TRUE(command_controller->IsCommandEnabled(IDC_GROUP_UNGROUPED_TABS));
 
   command_controller->ExecuteCommand(
-      IDC_GROUP_UNGROUPED_TABS,
+      IDC_GROUP_UNGROUPED_TABS, std::nullopt,
       blink::WebInputEvent::GetStaticTimeStampForTests());
 
   EXPECT_EQ(

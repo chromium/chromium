@@ -813,16 +813,15 @@ bool ExecuteCommand(BrowserWindowInterface* browser,
                     int command,
                     base::TimeTicks time_stamp) {
   return browser->GetFeatures().browser_command_controller()->ExecuteCommand(
-      command, time_stamp);
+      command, std::nullopt, time_stamp);
 }
 
 bool ExecuteCommandWithContext(BrowserWindowInterface* browser,
                                int command,
                                actions::ActionInvocationContext context,
                                base::TimeTicks time_stamp) {
-  return browser->GetFeatures()
-      .browser_command_controller()
-      ->ExecuteCommandWithContext(command, std::move(context), time_stamp);
+  return browser->GetFeatures().browser_command_controller()->ExecuteCommand(
+      command, std::move(context), time_stamp);
 }
 
 bool ExecuteCommandWithDisposition(BrowserWindowInterface* browser,
@@ -831,7 +830,8 @@ bool ExecuteCommandWithDisposition(BrowserWindowInterface* browser,
                                    base::TimeTicks time_stamp) {
   return browser->GetFeatures()
       .browser_command_controller()
-      ->ExecuteCommandWithDisposition(command, disposition, time_stamp);
+      ->ExecuteCommandWithDisposition(command, disposition, std::nullopt,
+                                      time_stamp);
 }
 
 bool ExecuteCommandWithDispositionAndContext(
@@ -842,8 +842,8 @@ bool ExecuteCommandWithDispositionAndContext(
     base::TimeTicks time_stamp) {
   return browser->GetFeatures()
       .browser_command_controller()
-      ->ExecuteCommandWithDispositionAndContext(command, disposition,
-                                                std::move(context), time_stamp);
+      ->ExecuteCommandWithDisposition(command, disposition, std::move(context),
+                                      time_stamp);
 }
 
 void UpdateCommandEnabled(BrowserWindowInterface* browser,

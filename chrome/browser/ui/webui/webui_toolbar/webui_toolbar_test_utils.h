@@ -204,19 +204,6 @@ class MockCommandUpdater : public CommandUpdater {
 
   MOCK_METHOD(bool, SupportsCommand, (int id), (const, override));
   MOCK_METHOD(bool, IsCommandEnabled, (int id), (const, override));
-  MOCK_METHOD(bool,
-              ExecuteCommandImpl,
-              (int id,
-               base::TimeTicks time_stamp,
-               std::optional<actions::ActionInvocationContext> context),
-              (override));
-  MOCK_METHOD(bool,
-              ExecuteCommandWithDispositionImpl,
-              (int id,
-               WindowOpenDisposition disposition,
-               base::TimeTicks time_stamp,
-               std::optional<actions::ActionInvocationContext> context),
-              (override));
   MOCK_METHOD(void,
               AddCommandObserver,
               (int id, CommandObserver* observer),
@@ -232,6 +219,15 @@ class MockCommandUpdater : public CommandUpdater {
   MOCK_METHOD(bool, UpdateCommandEnabled, (int id, bool state), (override));
   MOCK_METHOD(void, DisableAllCommands, (), (override));
   MOCK_METHOD(std::vector<int>, GetAllIds, (), (const, override));
+
+ private:
+  MOCK_METHOD(bool,
+              ExecuteCommandWithDispositionAndContext,
+              (int id,
+               WindowOpenDisposition disposition,
+               std::optional<actions::ActionInvocationContext> context,
+               base::TimeTicks time_stamp),
+              (override));
 };
 
 MATCHER_P(MatchesIconUpdate, expected, "") {
