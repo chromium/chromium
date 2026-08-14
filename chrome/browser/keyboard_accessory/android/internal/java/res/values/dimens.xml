@@ -7,55 +7,59 @@ found in the LICENSE file.
 
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Autofill keyboard accessory dimensions -->
-    <dimen name="keyboard_accessory_bar_item_padding">8dp</dimen>
-    <dimen name="keyboard_accessory_bar_dynamic_positioning_max_width">640dp</dimen>
-    <dimen name="keyboard_accessory_bar_dynamic_positioning_horizontal_margin">20dp</dimen>
-    <dimen name="keyboard_accessory_horizontal_padding">6dp</dimen>
-    <dimen name="keyboard_accessory_sheet_title_height">48dp</dimen>
     <!-- TODO: crbug.com/385172647 - Remove redesign suffix from all dimensions. -->
-    <dimen name="keyboard_accessory_height">64dp</dimen>
-    <dimen name="keyboard_accessory_height_with_shadow">72dp</dimen>
-    <dimen name="keyboard_accessory_notch_position">24dp</dimen>
-    <dimen name="keyboard_accessory_notch_height">8dp</dimen>
-    <dimen name="keyboard_accessory_notch_tip_width">2dp</dimen>
-    <dimen name="keyboard_accessory_notch_base_width">18dp</dimen>
-    <dimen name="keyboard_accessory_notch_tip_rounding">1dp</dimen>
+    <!-- go/keep-sorted start -->
+    <dimen name="keyboard_accessory_action_button_horizontal_padding">12dp</dimen>
+    <dimen name="keyboard_accessory_bar_dynamic_positioning_horizontal_margin">20dp</dimen>
+    <dimen name="keyboard_accessory_bar_dynamic_positioning_max_width">640dp</dimen>
+    <dimen name="keyboard_accessory_bar_item_padding">8dp</dimen>
+    <dimen name="keyboard_accessory_chip_corner_radius">8dp</dimen>
+    <dimen name="keyboard_accessory_chip_end_padding">12dp</dimen>
+    <dimen name="keyboard_accessory_chip_increased_start_padding">8dp</dimen>
     <dimen name="keyboard_accessory_chip_min_height">64dp</dimen>
+    <dimen name="keyboard_accessory_chip_payments_start_padding">12dp</dimen>
+    <dimen name="keyboard_accessory_chip_start_padding">6dp</dimen>
     <dimen name="keyboard_accessory_chip_vertical_insets">8dp</dimen>
     <dimen name="keyboard_accessory_chip_vertical_insets_large_font">2dp</dimen>
-    <dimen name="keyboard_accessory_action_button_horizontal_padding">12dp</dimen>
-    <dimen name="keyboard_accessory_chip_corner_radius">8dp</dimen>
-    <dimen name="keyboard_accessory_top_inset_overlap">4dp</dimen>
-    <dimen name="keyboard_accessory_dismiss_button_padding_horizontal">20dp</dimen>
+    <dimen name="keyboard_accessory_corner_radius">14dp</dimen>
     <dimen name="keyboard_accessory_dismiss_button_margin_end">6dp</dimen>
-    <!--dimen name="keyboard_accessory_height_with_shadow">56dp</dimen-->
+    <dimen name="keyboard_accessory_dismiss_button_padding_horizontal">20dp</dimen>
+    <dimen name="keyboard_accessory_elevation">3dp</dimen>
+    <dimen name="keyboard_accessory_height">64dp</dimen>
+    <dimen name="keyboard_accessory_height_with_shadow">72dp</dimen>
+    <dimen name="keyboard_accessory_horizontal_padding">6dp</dimen>
     <dimen name="keyboard_accessory_image_top_padding">12dp</dimen>
+    <dimen name="keyboard_accessory_last_chip_peek_width">42dp</dimen>
+    <dimen name="keyboard_accessory_notch_base_width">18dp</dimen>
+    <dimen name="keyboard_accessory_notch_height">8dp</dimen>
+    <dimen name="keyboard_accessory_notch_position">24dp</dimen>
+    <dimen name="keyboard_accessory_notch_tip_rounding">1dp</dimen>
+    <dimen name="keyboard_accessory_notch_tip_width">2dp</dimen>
+    <dimen name="keyboard_accessory_payments_text_start_padding">10dp</dimen>
+    <dimen name="keyboard_accessory_scroll_shadow_width">80dp</dimen>
     <dimen name="keyboard_accessory_shadow">5dp</dimen>
-    <!--dimen name="keyboard_accessory_sheet_height">330dp</dimen-->
-    <dimen name="keyboard_accessory_sheet_divider_margin">24dp</dimen>
-    <dimen name="keyboard_accessory_sheet_footer_trailing_margin">64dp</dimen>
-    <dimen name="keyboard_accessory_sheet_padding">8dp</dimen>
-    <dimen name="keyboard_accessory_sheet_top_margin">16dp</dimen>
     <dimen name="keyboard_accessory_sheet_bottom_margin">8dp</dimen>
+    <dimen name="keyboard_accessory_sheet_divider_margin">24dp</dimen>
     <dimen name="keyboard_accessory_sheet_dynamic_positioning_max_height">640dp</dimen>
     <dimen name="keyboard_accessory_sheet_dynamic_positioning_max_width">448dp</dimen>
     <dimen name="keyboard_accessory_sheet_dynamic_positioning_padding">20dp</dimen>
-    <dimen name="keyboard_accessory_suggestion_padding">16dp</dimen>
-    <dimen name="keyboard_accessory_chip_start_padding">6dp</dimen>
-    <dimen name="keyboard_accessory_chip_increased_start_padding">8dp</dimen>
-    <dimen name="keyboard_accessory_chip_payments_start_padding">12dp</dimen>
-    <dimen name="keyboard_accessory_chip_end_padding">12dp</dimen>
-    <dimen name="keyboard_accessory_text_start_padding">6dp</dimen>
-    <dimen name="keyboard_accessory_payments_text_start_padding">10dp</dimen>
-    <dimen name="keyboard_accessory_suggestion_offset">12dp</dimen>
+    <dimen name="keyboard_accessory_sheet_footer_trailing_margin">64dp</dimen>
+    <dimen name="keyboard_accessory_sheet_padding">8dp</dimen>
+    <dimen name="keyboard_accessory_sheet_title_height">48dp</dimen>
+    <dimen name="keyboard_accessory_sheet_top_margin">16dp</dimen>
     <dimen name="keyboard_accessory_suggestion_height">48dp</dimen>
-    <dimen name="keyboard_accessory_scroll_shadow_width">80dp</dimen>
+    <dimen name="keyboard_accessory_suggestion_offset">12dp</dimen>
+    <dimen name="keyboard_accessory_suggestion_padding">16dp</dimen>
     <dimen name="keyboard_accessory_tab_icon_size">48dp</dimen>
-    <dimen name="keyboard_accessory_elevation">3dp</dimen>
-    <dimen name="keyboard_accessory_last_chip_peek_width">42dp</dimen>
-    <dimen name="keyboard_accessory_corner_radius">14dp</dimen>
+    <dimen name="keyboard_accessory_text_start_padding">6dp</dimen>
+    <dimen name="keyboard_accessory_top_inset_overlap">4dp</dimen>
+    <!-- go/keep-sorted end -->
+
+    <!-- All Passwords Bottom Sheet dimensions -->
+    <!-- go/keep-sorted start -->
     <dimen name="all_passwords_bottom_sheet_padding">20dp</dimen>
     <dimen name="all_passwords_bottom_sheet_recycler_view_padding">6dp</dimen>
     <dimen name="all_passwords_bottom_sheet_search_view_bottom_padding">8dp</dimen>
     <dimen name="all_passwords_bottom_sheet_search_view_padding">24dp</dimen>
+    <!-- go/keep-sorted end -->
 </resources>
