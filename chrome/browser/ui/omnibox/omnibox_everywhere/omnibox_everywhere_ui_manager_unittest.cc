@@ -773,6 +773,70 @@ TEST_F(OmniboxEverywhereUIManagerTest, ContextMenuCommandEnablement) {
       omnibox_everywhere::OmniboxEverywhereUIManager::kSelectAll));
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_ResizeDueToAutoResizeUpdatesWidgetBounds \
+  DISABLED_ResizeDueToAutoResizeUpdatesWidgetBounds
+#else
+#define MAYBE_ResizeDueToAutoResizeUpdatesWidgetBounds \
+  ResizeDueToAutoResizeUpdatesWidgetBounds
+#endif
+TEST_F(OmniboxEverywhereUIManagerTest,
+       MAYBE_ResizeDueToAutoResizeUpdatesWidgetBounds) {
+  display::test::TestScreen test_screen(/*create_display=*/false,
+                                        /*register_screen=*/false);
+  display::Screen* old_screen = display::Screen::SetScreenInstance(nullptr);
+  display::Screen::SetScreenInstance(&test_screen);
+  base::ScopedClosureRunner screen_restorer(base::BindOnce(
+      [](display::Screen* old_screen) {
+        display::Screen::SetScreenInstance(nullptr);
+        display::Screen::SetScreenInstance(old_screen);
+      },
+      old_screen));
+  test_screen.display_list().AddDisplay(
+      display::Display(1, gfx::Rect(0, 0, 1920, 1080)),
+      display::DisplayList::Type::PRIMARY);
+
+  auto ui_manager = CreateUIManager();
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  views::Widget* widget = ui_manager->widget();
+  ASSERT_TRUE(widget);
+
+  EXPECT_EQ(widget->GetWindowBoundsInScreen().width(), 848);
+
+  // Resize above minimum height should resize the widget height directly.
+  ui_manager->ResizeDueToAutoResize(nullptr, gfx::Size(848, 150));
+  EXPECT_EQ(widget->GetWindowBoundsInScreen().height(), 150);
+  EXPECT_EQ(widget->GetWindowBoundsInScreen().width(), 848);
+
+  // Resize below minimum height (56) should clamp to 56.
+  ui_manager->ResizeDueToAutoResize(nullptr, gfx::Size(848, 30));
+  EXPECT_EQ(widget->GetWindowBoundsInScreen().height(), 56);
+  EXPECT_EQ(widget->GetWindowBoundsInScreen().width(), 848);
+
+  // Even if widget width was temporarily modified (e.g. edge clamping),
+  // ResizeDueToAutoResize enforces the fixed width.
+  gfx::Rect clamped_bounds = widget->GetWindowBoundsInScreen();
+  clamped_bounds.set_width(400);
+  widget->SetBounds(clamped_bounds);
+  EXPECT_EQ(widget->GetWindowBoundsInScreen().width(), 400);
+
+  ui_manager->ResizeDueToAutoResize(nullptr, gfx::Size(848, 200));
+  EXPECT_EQ(widget->GetWindowBoundsInScreen().height(), 200);
+  EXPECT_EQ(widget->GetWindowBoundsInScreen().width(), 848);
+
+  // While dragging, AutoResize should be deferred.
+  ui_manager->OnWidgetUserDragStarted(widget);
+  ui_manager->ResizeDueToAutoResize(nullptr, gfx::Size(848, 300));
+  // Size remains unchanged during drag.
+  EXPECT_EQ(widget->GetWindowBoundsInScreen().height(), 200);
+
+  // When drag ends, the pending AutoResize is applied.
+  ui_manager->OnWidgetUserDragEnded(widget);
+  EXPECT_EQ(widget->GetWindowBoundsInScreen().height(), 300);
+
+  ui_manager->Close();
+}
+
 TEST_F(OmniboxEverywhereUIManagerTest,
        RebuildWidgetOnEphemeralModelPrefChangeWhenVisible) {
   if (g_browser_process && g_browser_process->local_state()) {

@@ -400,6 +400,8 @@ void OmniboxEverywhereUIManager::CleanUpWidget() {
   is_file_chooser_open_ = false;
   is_drive_picker_open_ = false;
   is_context_menu_open_ = false;
+  is_dragging_ = false;
+  pending_auto_resize_size_.reset();
   draggable_region_.reset();
   browser_collection_observation_.Reset();
 }
@@ -464,6 +466,20 @@ void OmniboxEverywhereUIManager::OnWidgetClosed(
   CleanUpWidget();
 }
 
+void OmniboxEverywhereUIManager::OnWidgetUserDragStarted(
+    views::Widget* widget) {
+  is_dragging_ = true;
+}
+
+void OmniboxEverywhereUIManager::OnWidgetUserDragEnded(views::Widget* widget) {
+  is_dragging_ = false;
+  if (pending_auto_resize_size_.has_value()) {
+    gfx::Size size = *pending_auto_resize_size_;
+    pending_auto_resize_size_.reset();
+    ResizeDueToAutoResize(web_contents(), size);
+  }
+}
+
 void OmniboxEverywhereUIManager::CloseUI() {
   Close();
 }
@@ -475,11 +491,18 @@ void OmniboxEverywhereUIManager::ShowUI() {
 void OmniboxEverywhereUIManager::ResizeDueToAutoResize(
     content::WebContents* source,
     const gfx::Size& new_size) {
-  if (widget_) {
-    constexpr int kAutoResizeMinHeight = 56;
-    gfx::Rect bounds = widget_->GetWindowBoundsInScreen();
-    bounds.set_height(std::max(new_size.height(), kAutoResizeMinHeight));
-    widget_->SetBounds(bounds);
+  if (!widget_) {
+    return;
+  }
+  if (is_dragging_) {
+    pending_auto_resize_size_ = new_size;
+    return;
+  }
+  constexpr int kAutoResizeMinHeight = 56;
+  gfx::Size target_size(kPopupFixedWidth,
+                        std::max(new_size.height(), kAutoResizeMinHeight));
+  if (widget_->GetSize() != target_size) {
+    widget_->SetSize(target_size);
   }
 }
 

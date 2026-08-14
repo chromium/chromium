@@ -87,6 +87,8 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
   // views::WidgetObserver:
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
   void OnWidgetDestroying(views::Widget* widget) override;
+  void OnWidgetUserDragStarted(views::Widget* widget) override;
+  void OnWidgetUserDragEnded(views::Widget* widget) override;
 
   // WebUIContentsWrapper::Host:
   void CloseUI() override;
@@ -196,6 +198,8 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
   bool is_file_chooser_open_ = false;
   bool is_drive_picker_open_ = false;
   bool is_context_menu_open_ = false;
+  bool is_dragging_ = false;
+  std::optional<gfx::Size> pending_auto_resize_size_;
   std::optional<SkRegion> draggable_region_;
 
   std::unique_ptr<views::UnhandledKeyboardEventHandler>
