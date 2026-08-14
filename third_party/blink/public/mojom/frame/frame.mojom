@@ -4,8 +4,8 @@
 
 module blink.mojom;
 
-import "cc/mojom/browser_controls_state.mojom";
 import "cc/mojom/browser_controls_offset_tag_modifications.mojom";
+import "cc/mojom/browser_controls_state.mojom";
 import "mojo/public/mojom/base/byte_size.mojom";
 import "mojo/public/mojom/base/byte_string.mojom";
 import "mojo/public/mojom/base/shared_memory.mojom";
@@ -22,10 +22,10 @@ import "services/network/public/mojom/network_types.mojom";
 import "services/network/public/mojom/source_location.mojom";
 import "services/network/public/mojom/storage_access_api.mojom";
 import "services/network/public/mojom/url_loader_completion_status.mojom";
-import "services/viz/public/mojom/compositing/offset_tag.mojom";
+import "services/viz/public/mojom/compositing/compositor_frame_sink.mojom";
 import "services/viz/public/mojom/compositing/frame_sink_id.mojom";
 import "services/viz/public/mojom/compositing/local_surface_id.mojom";
-import "services/viz/public/mojom/compositing/compositor_frame_sink.mojom";
+import "services/viz/public/mojom/compositing/offset_tag.mojom";
 import "skia/public/mojom/bitmap.mojom";
 import "skia/public/mojom/skcolor.mojom";
 import "skia/public/mojom/skcolor4f.mojom";
@@ -35,7 +35,6 @@ import "third_party/blink/public/mojom/choosers/popup_menu.mojom";
 import "third_party/blink/public/mojom/close_watcher/close_listener.mojom";
 import "third_party/blink/public/mojom/confidence_level.mojom";
 import "third_party/blink/public/mojom/context_menu/context_menu.mojom";
-import "third_party/blink/public/mojom/navigation/navigation_params.mojom";
 import "third_party/blink/public/mojom/css/preferred_color_scheme.mojom";
 import "third_party/blink/public/mojom/devtools/console_message.mojom";
 import "third_party/blink/public/mojom/devtools/devtools_agent.mojom";
@@ -49,7 +48,6 @@ import "third_party/blink/public/mojom/fenced_frame/fenced_frame_config.mojom";
 import "third_party/blink/public/mojom/fetch/fetch_api_request.mojom";
 import "third_party/blink/public/mojom/frame/blocked_navigation_types.mojom";
 import "third_party/blink/public/mojom/frame/frame_owner_properties.mojom";
-import "third_party/blink/public/mojom/unbounded_element/unbounded_element.mojom";
 import "third_party/blink/public/mojom/frame/frame_policy.mojom";
 import "third_party/blink/public/mojom/frame/frame_replication_state.mojom";
 import "third_party/blink/public/mojom/frame/fullscreen.mojom";
@@ -63,12 +61,13 @@ import "third_party/blink/public/mojom/frame/user_activation_update_types.mojom"
 import "third_party/blink/public/mojom/frame/view_transition_state.mojom";
 import "third_party/blink/public/mojom/input/focus_type.mojom";
 import "third_party/blink/public/mojom/input/scroll_direction.mojom";
-import "third_party/blink/public/mojom/loader/referrer.mojom";
 import "third_party/blink/public/mojom/loader/keep_alive_handle_factory.mojom";
+import "third_party/blink/public/mojom/loader/referrer.mojom";
 import "third_party/blink/public/mojom/messaging/delegated_capability.mojom";
 import "third_party/blink/public/mojom/messaging/task_attribution_id.mojom";
 import "third_party/blink/public/mojom/messaging/transferable_message.mojom";
 import "third_party/blink/public/mojom/navigation/navigation_api_history_entry_arrays.mojom";
+import "third_party/blink/public/mojom/navigation/navigation_params.mojom";
 import "third_party/blink/public/mojom/opengraph/metadata.mojom";
 import "third_party/blink/public/mojom/page/draggable_region.mojom";
 import "third_party/blink/public/mojom/page/widget.mojom";
@@ -76,6 +75,7 @@ import "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom";
 import "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom";
 import "third_party/blink/public/mojom/timing/resource_timing.mojom";
 import "third_party/blink/public/mojom/tokens/tokens.mojom";
+import "third_party/blink/public/mojom/unbounded_element/unbounded_element.mojom";
 import "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom";
 import "third_party/blink/public/mojom/widget/platform_widget.mojom";
 import "third_party/blink/public/mojom/window_features/window_features.mojom";
@@ -184,47 +184,47 @@ enum FrameOwnerElementType {
   kObject,
   kEmbed,
   kFrame,
-  kFencedframe
+  kFencedframe,
 };
 
 enum NavigationApiEntryRestoreReason {
   kBFCache,
   kPrerenderActivationPush,
-  kPrerenderActivationReplace
+  kPrerenderActivationReplace,
 };
 
 enum StorageTypeAccessed {
-    kCacheStorage,
-    kIndexedDB,
-    kFileSystem,
-    kWebLocks,
-    kLocalStorage,
-    kSessionStorage
+  kCacheStorage,
+  kIndexedDB,
+  kFileSystem,
+  kWebLocks,
+  kLocalStorage,
+  kSessionStorage,
 };
 
 // This is directly cast to a UKM enum of the same name and logged,
 // be sure not to change ordering or delete lines.
 enum WindowProxyAccessType {
-    kLocation,
-    kClosed,
-    kLength,
-    kSelf,
-    kWindow,
-    kFrames,
-    kOpener,
-    kParent,
-    kTop,
-    kPostMessage,
-    kAnonymousIndexedGetter,
-    kClose,
-    kFocus,
-    kBlur,
-    kAnonymousNamedGetter
+  kLocation,
+  kClosed,
+  kLength,
+  kSelf,
+  kWindow,
+  kFrames,
+  kOpener,
+  kParent,
+  kTop,
+  kPostMessage,
+  kAnonymousIndexedGetter,
+  kClose,
+  kFocus,
+  kBlur,
+  kAnonymousNamedGetter,
 };
 
 // The maximum number of characters of the document's title that we're willing
 // to accept in the browser process.
-const uint16 kMaxTitleChars = 4096; // 4 * 1024;
+const uint16 kMaxTitleChars = 4096;  // 4 * 1024;
 
 // This struct holds iframe's HTML attributes that are needed in the browser.
 // id, name and src are used to report back/forward cache NotRestoredReasons.
@@ -244,9 +244,11 @@ struct IframeAttributes {
   network.mojom.ConnectionAllowlist? required_connection_allowlist;
   // 'credentialless' attribute of the iframe.
   bool credentialless;
-  // 'id' attribute of the iframe. This can be optional because id might not be set.
+  // 'id' attribute of the iframe. This can be optional because id might not be
+  // set.
   string? id;
-  // 'name' attribute of the iframe. This is different from window.name, which is
+  // 'name' attribute of the iframe. This is different from window.name, which
+  // is
   // tracked in FrameReplicationState. Optional because it might not be set.
   string? name;
   // 'src' attribute of the iframe. Optional because it might not be set.
@@ -278,7 +280,6 @@ struct SubframeResourceLengths {
 // data; see `CreateCrashReportContext()`.
 const uint64 kMaxCrashReportContextSize = 65536;
 
-
 // Implemented in Browser, this interface defines frame-specific methods that
 // will be invoked from the render process (e.g. content::RenderFrameHostImpl).
 //
@@ -307,14 +308,16 @@ interface LocalFrameHost {
   // https://html.spec.whatwg.org/multipage/system-state.html#custom-handlers
   // |user_gesture| indicates if the javascript API was called in context of
   // having an active transient user gesture.
-  RegisterProtocolHandler(string scheme, url.mojom.Url url, bool user_gesture);
+  RegisterProtocolHandler(
+      string scheme, url.mojom.Url url, bool user_gesture);
 
   // Unregister the registered handler for URL requests with the given scheme.
   // |scheme|, and |url| are provided directly from javascript. See
   // https://html.spec.whatwg.org/multipage/system-state.html#custom-handlers
   // |user_gesture| indicates if the javascript API was called in context of
   // having an active transient user gesture.
-  UnregisterProtocolHandler(string scheme, url.mojom.Url url, bool user_gesture);
+  UnregisterProtocolHandler(
+      string scheme, url.mojom.Url url, bool user_gesture);
 
   // Indication that the associated frame has displayed inactive content
   // (such as an image) from an insecure source. Inactive content cannot spread
@@ -361,15 +364,16 @@ interface LocalFrameHost {
   // message is needed because, for example, a document can dynamically insert
   // a <meta> tag that causes strict mixed content checking to be enforced.
   // |policy_bitmap| is a bitfield for InsecureRequestPolicy.
-  EnforceInsecureRequestPolicy(blink.mojom.InsecureRequestPolicy policy_bitmap);
+  EnforceInsecureRequestPolicy(
+      blink.mojom.InsecureRequestPolicy policy_bitmap);
 
   // Elements of |set| are hashes of hosts to upgrade.
   EnforceInsecureNavigationsSet(array<uint32> set);
 
   // Sent when a new sudden termination disabler condition is either introduced
   // or removed.
-  SuddenTerminationDisablerChanged(bool present,
-                                   SuddenTerminationDisablerType disabler_type);
+  SuddenTerminationDisablerChanged(
+      bool present, SuddenTerminationDisablerType disabler_type);
 
   // Notifies the browser that the associated frame received a user gesture on
   // a previous navigation on the same eTLD+1. This ensures the state is
@@ -377,13 +381,13 @@ interface LocalFrameHost {
   HadStickyUserActivationBeforeNavigationChanged(bool has_gesture);
 
   // Sent by a local root to request scrolling in its parent process.
-  ScrollRectToVisibleInParentFrame(gfx.mojom.RectF rect_to_scroll,
-                                   ScrollIntoViewParams params);
+  ScrollRectToVisibleInParentFrame(
+      gfx.mojom.RectF rect_to_scroll, ScrollIntoViewParams params);
 
   // Sent by a local root to continue bubbling a logical scroll in its parent
   // process.
-  BubbleLogicalScrollInParentFrame(ScrollDirection direction,
-                                   ui.mojom.ScrollGranularity granularity);
+  BubbleLogicalScrollInParentFrame(
+      ScrollDirection direction, ui.mojom.ScrollGranularity granularity);
 
   // Sent by the renderer to indicate that a same document navigation
   // commit was requested, but was deferred by script via the NavigationApi. The
@@ -393,8 +397,8 @@ interface LocalFrameHost {
 
   // Indicates an attempt by the associated frame to navigate to |blocked_url|,
   // but the navigation was blocked because of |reason|.
-  DidBlockNavigation(url.mojom.Url blocked_url,
-                       blink.mojom.NavigationBlockedReason reason);
+  DidBlockNavigation(
+      url.mojom.Url blocked_url, blink.mojom.NavigationBlockedReason reason);
 
   // Sent when the renderer changed the progress of a load.
   DidChangeLoadProgress(double load_progress);
@@ -435,9 +439,11 @@ interface LocalFrameHost {
   // initiator of the navigation, if any. It is sent back to the renderer when
   // the navigation commits, and is limited to same-document main-frame
   // navigations initiated by the top-level document.
-  NavigateToNavigationApiKey(string key, bool has_user_gesture,
-                    mojo_base.mojom.TimeTicks actual_navigation_start,
-                    TaskAttributionId? soft_navigation_heuristics_task_id);
+  NavigateToNavigationApiKey(
+      string key,
+      bool has_user_gesture,
+      mojo_base.mojom.TimeTicks actual_navigation_start,
+      TaskAttributionId? soft_navigation_heuristics_task_id);
 
   // Called with |true| when the first navigate event handler is added, and with
   // |false| when the last navigate event handler is removed.
@@ -497,8 +503,8 @@ interface LocalFrameHost {
   // dialog was canceled.
   [Sync]
   RunModalConfirmDialog(mojo_base.mojom.String16 alert_message,
-                        bool disable_third_party_subframe_suppresion) =>
-                        (bool success);
+                        bool disable_third_party_subframe_suppresion)
+      => (bool success);
 
   // A request to run a confirm JavaScript dialog displaying
   // |alert_message| with an editable text area with |default_value|.
@@ -508,8 +514,8 @@ interface LocalFrameHost {
   [Sync]
   RunModalPromptDialog(mojo_base.mojom.String16 alert_message,
                        mojo_base.mojom.String16 default_value,
-                       bool disable_third_party_subframe_suppresion) =>
-                       (bool success, mojo_base.mojom.String16 result);
+                       bool disable_third_party_subframe_suppresion)
+      => (bool success, mojo_base.mojom.String16 result);
 
   // A request to run a confirmation JavaScript dialog. |is_reload|
   // contains it the navigation causing the unload is a reload event.
@@ -518,8 +524,8 @@ interface LocalFrameHost {
   RunBeforeUnloadConfirm(bool is_reload) => (bool success);
 
   // Notifies that the urls for the favicon of a site has been determined.
-  UpdateFaviconURL(array<FaviconURL> favicon_urls,
-                   FaviconUpdateReason reason);
+  UpdateFaviconURL(
+      array<FaviconURL> favicon_urls, FaviconUpdateReason reason);
 
   // Initiates a download based on user actions like 'ALT+click'.
   DownloadURL(DownloadURLParams params);
@@ -539,7 +545,7 @@ interface LocalFrameHost {
   //   if there is no focused element.
   // - focus_type: Focus type.
   // - editable_dom_node_id: If it's editable (including richly editable) this
-  //   is the DOMNodeId of the newly focused element. Otherwise it will be set to
+  // is the DOMNodeId of the newly focused element. Otherwise it will be set to
   //   the null value.
   FocusedElementChanged(bool is_editable_element,
                         bool is_richly_editable_element,
@@ -550,9 +556,8 @@ interface LocalFrameHost {
   // Notification that the text selection has changed.
   // Note: The second parameter is the character based offset of the
   // std::u16string text in the document.
-  TextSelectionChanged(mojo_base.mojom.BigString16 text,
-                       uint32 offset,
-                       gfx.mojom.Range range);
+  TextSelectionChanged(
+      mojo_base.mojom.BigString16 text, uint32 offset, gfx.mojom.Range range);
 
   // Show a popup menu using native controls on Mac or Android.
   // The popup menu is hidden when the mojo channel is closed.
@@ -570,9 +575,9 @@ interface LocalFrameHost {
   // This is used on platforms that do not use the native controls via
   // ShowPopupMenu, OpenDateTimeDialog, or OpenColorChooser.
   CreateNewPopupWidget(
-         pending_associated_receiver<PopupWidgetHost> popup_host,
-         pending_associated_receiver<WidgetHost> blink_widget_host,
-         pending_associated_remote<Widget> blink_widget);
+      pending_associated_receiver<PopupWidgetHost> popup_host,
+      pending_associated_receiver<WidgetHost> blink_widget_host,
+      pending_associated_remote<Widget> blink_widget);
 
   // Used to tell the parent that the user right clicked on an area of the
   // content area, and a context menu should be shown for it. The params
@@ -593,8 +598,10 @@ interface LocalFrameHost {
   //
   // Note: May only be sent once per URL per frame per committed load.
   DidLoadResourceFromMemoryCache(
-      url.mojom.Url url, string http_method,
-      string mime_type, network.mojom.RequestDestination request_destination,
+      url.mojom.Url url,
+      string http_method,
+      string mime_type,
+      network.mojom.RequestDestination request_destination,
       bool include_credentials);
 
   // Notifies the browser that frame owner properties have changed.
@@ -602,8 +609,8 @@ interface LocalFrameHost {
   // Frame owner properties currently include: name, scrollbar_mode,
   // margin_width and margin_height, among others.
   DidChangeFrameOwnerProperties(
-    blink.mojom.FrameToken child_frame_token,
-    blink.mojom.FrameOwnerProperties frame_owner_properties);
+      blink.mojom.FrameToken child_frame_token,
+      blink.mojom.FrameOwnerProperties frame_owner_properties);
 
   // Sent when a local renderer frame either updates its opener to another
   // frame identified by |opener_frame|, or, if |opener_frame| is "empty",
@@ -612,9 +619,8 @@ interface LocalFrameHost {
 
   // Notifies the browser that sandbox flags or container policy have changed
   // for a subframe of this frame.
-  DidChangeFramePolicy(
-      blink.mojom.FrameToken child_frame_token,
-      blink.mojom.FramePolicy frame_policy);
+  DidChangeFramePolicy(blink.mojom.FrameToken child_frame_token,
+                       blink.mojom.FramePolicy frame_policy);
 
   // Notifies the browser that one of the iframe attributes tracked by the
   // browser process changed.
@@ -631,8 +637,7 @@ interface LocalFrameHost {
 
   // Sent when a CloseListener becomes active so the browser can notify if
   // a close signal occurs.
-  SetCloseListener(
-      pending_remote<blink.mojom.CloseListener> listener);
+  SetCloseListener(pending_remote<blink.mojom.CloseListener> listener);
 
   // Notifies the browser that a child frame is detached from the DOM.
   Detach();
@@ -648,12 +653,11 @@ interface LocalFrameHost {
   // The stack trace is only present if
   // content.mojom.Frame.SetWantErrorMessageStackTrace has been called for this
   // frame and the log_level is kError.
-  DidAddMessageToConsole(
-      ConsoleMessageLevel log_level,
-      mojo_base.mojom.BigString16 msg,
-      uint32 line_number,
-      mojo_base.mojom.String16? source_id,
-      mojo_base.mojom.BigString16? untrusted_stack_trace);
+  DidAddMessageToConsole(ConsoleMessageLevel log_level,
+                         mojo_base.mojom.BigString16 msg,
+                         uint32 line_number,
+                         mojo_base.mojom.String16? source_id,
+                         mojo_base.mojom.BigString16? untrusted_stack_trace);
 
   // The frame's size is replicated in the browser so that the browser can
   // correctly set the initial size of the frame in case of a cross-process
@@ -666,8 +670,8 @@ interface LocalFrameHost {
   // Notifies the browser that a subframe's srcdoc attribute has changed, and
   // sends the new value to the browser. Also sent when a subframe's content
   // frame is changed.
-  DidChangeSrcDoc(blink.mojom.FrameToken child_frame_token,
-                  string srcdoc_value);
+  DidChangeSrcDoc(
+      blink.mojom.FrameToken child_frame_token, string srcdoc_value);
 
   // Notifies the browser that this frame received a message from a local frame
   // with a delegated capability (https://wicg.github.io/capability-delegation).
@@ -695,11 +699,10 @@ interface LocalFrameHost {
   // `cross_origin_exposed` determines if this event can be used with reporting
   // metadata that lives in a cross-origin frame. See the comment in
   // "fence_event.idl" for more details.
-  SendFencedFrameReportingBeacon(
-      string event_data,
-      string event_type,
-      array<ReportingDestination> destinations,
-      bool cross_origin_exposed);
+  SendFencedFrameReportingBeacon(string event_data,
+                                 string event_type,
+                                 array<ReportingDestination> destinations,
+                                 bool cross_origin_exposed);
 
   // See:
   // https://github.com/WICG/turtledove/blob/main/Fenced_Frames_Ads_Reporting.md
@@ -716,8 +719,7 @@ interface LocalFrameHost {
   // "fence_event.idl" for more details.
   //
   SendFencedFrameReportingBeaconToCustomURL(
-      url.mojom.Url destination_url,
-      bool cross_origin_exposed);
+      url.mojom.Url destination_url, bool cross_origin_exposed);
 
   // Notify the browser that there is a legacy technology used by the page.
   // The event contains the technology `type` and code location from the
@@ -728,8 +730,7 @@ interface LocalFrameHost {
   // Note that we don't guarantee any data here is valid, data will be valided
   // by the server.
   SendLegacyTechEvent(
-    string type,
-    LegacyTechEventCodeLocation code_location);
+      string type, LegacyTechEventCodeLocation code_location);
 
   // Fenced frames can send beacons automatically when an event happens.
   //
@@ -748,8 +749,6 @@ interface LocalFrameHost {
       bool once,
       bool cross_origin_exposed);
 
-
-
   // Sent by the frame in a renderer process that hosts/owns a <fencedframe>
   // element, to the browser process requesting the creation of a new fenced
   // frame tree that will host the contents of the <fencedframe> element.
@@ -759,8 +758,7 @@ interface LocalFrameHost {
   // `devtools_frame_token` - the unique identifier of the main FrameTreeNode in
   //                          the "inner" fenced frame FrameTree
   CreateFencedFrame(
-      pending_associated_receiver<blink.mojom.FencedFrameOwnerHost>
-        fenced_frame,
+      pending_associated_receiver<blink.mojom.FencedFrameOwnerHost> fenced_frame,
       RemoteFrameInterfacesFromRenderer remote_frame_interfaces,
       blink.mojom.RemoteFrameToken frame_token,
       mojo_base.mojom.UnguessableToken devtools_frame_token);
@@ -769,7 +767,7 @@ interface LocalFrameHost {
   // changes.
   // See https://drafts.csswg.org/css-view-transitions-2/#view-transition-rule
   OnViewTransitionOptInChanged(
-    ViewTransitionSameOriginOptIn view_transition_opt_in);
+      ViewTransitionSameOriginOptIn view_transition_opt_in);
 
   // Used to tell the browser the user started dragging in the content area.
   // |drag_data| contains contextual information about the pieces of the page
@@ -787,10 +785,12 @@ interface LocalFrameHost {
   IssueKeepAliveHandle(
       pending_receiver<NavigationStateKeepAliveHandle> receiver);
 
-  // Used to tell the browser that storage access was requested and whether it was allowed.
+  // Used to tell the browser that storage access was requested and whether it
+  // was allowed.
   NotifyStorageAccessed(StorageTypeAccessed storageType, bool blocked);
 
-  // Used to tell the browser to record metrics. This method should not be trusted except for metrics purposes.
+  // Used to tell the browser to record metrics. This method should not be
+  // trusted except for metrics purposes.
   RecordWindowProxyUsageMetrics(blink.mojom.FrameToken target_frame_token,
                                 WindowProxyAccessType access_type);
 
@@ -854,7 +854,8 @@ interface LocalFrame {
   // Retrieves the text surrounding the current selection for the frame up to
   // the length specified by |max_length|, along with its start and end offsets.
   GetTextSurroundingSelection(uint32 max_length)
-      => (mojo_base.mojom.String16 content, uint32 start_offset,
+      => (mojo_base.mojom.String16 content,
+          uint32 start_offset,
           uint32 end_offset);
 
   // Queues an intervention report for this frame or a specific child frame.
@@ -872,8 +873,8 @@ interface LocalFrame {
   //         `message` may be augmented with additional info about the child
   //         frame. The report is still sent from this frame, which contains
   //         the child frame's owner element.
-  SendInterventionReport(string id, string message,
-                         blink.mojom.FrameToken? child_frame_token);
+  SendInterventionReport(
+      string id, string message, blink.mojom.FrameToken? child_frame_token);
 
   // Updates this frame's FrameOwner properties, such as scrolling, margin,
   // or allowfullscreen.  This is used when this frame's parent is in
@@ -898,8 +899,8 @@ interface LocalFrame {
   ShowInterestInElement(int32 nodeID);
 
   // Add message to the frame console.
-  AddMessageToConsole(ConsoleMessageLevel level, string message,
-                    bool discard_duplicates);
+  AddMessageToConsole(
+      ConsoleMessageLevel level, string message, bool discard_duplicates);
 
   // Requests that a provisional frame swap itself into the frame tree,
   // immediately replacing the RemoteFrame that it is associated with. Normally,
@@ -971,15 +972,16 @@ interface LocalFrame {
   // guarantees. See also mojo/public/tools/bindings/README.md.
   [SupportsUrgent]
   BeforeUnload(bool is_reload, bool force_to_proceed)
-      => (bool proceed, mojo_base.mojom.TimeTicks before_unload_start_time,
+      => (bool proceed,
+          mojo_base.mojom.TimeTicks before_unload_start_time,
           mojo_base.mojom.TimeTicks before_unload_end_time,
           mojo_base.mojom.TimeTicks before_unload_dialog_opened_time,
           mojo_base.mojom.TimeTicks before_unload_dialog_closed_time);
 
   // Tells the renderer to perform the given action on the media player location
   // at the given point in the view coordinate space.
-  MediaPlayerActionAt(gfx.mojom.Point location,
-                      blink.mojom.MediaPlayerAction action);
+  MediaPlayerActionAt(
+      gfx.mojom.Point location, blink.mojom.MediaPlayerAction action);
 
   // Requests the current video frame and bounds of the media player at
   // `location`. The returned image is scaled if needed to be bounded by
@@ -993,14 +995,14 @@ interface LocalFrame {
   // their correlation with the bounds of the video frame as displayed in the
   // presentation layer. The returned bounds are also not guaranteed to
   // correspond to the result of returned video frame.
-  RequestVideoFrameAtWithBoundsHint(gfx.mojom.Point location,
-                                    gfx.mojom.Size max_size,
-                                    int32 max_area)
+  RequestVideoFrameAtWithBoundsHint(
+      gfx.mojom.Point location, gfx.mojom.Size max_size, int32 max_area)
       => (skia.mojom.BitmapN32? bitmap, gfx.mojom.Rect bounds);
 
   // Tells the renderer to perform the given action on the plugin location at
   // the given point in the view coordinate space.
-  PluginActionAt(gfx.mojom.Point location, blink.mojom.PluginActionType action);
+  PluginActionAt(
+      gfx.mojom.Point location, blink.mojom.PluginActionType action);
 
   // Request to continue running the sequential focus navigation algorithm in
   // this frame. |source_frame_token| identifies the frame that issued this
@@ -1062,11 +1064,11 @@ interface LocalFrame {
   // |wants_result| is true if the result of this execution is required by the
   // caller. If it is false, a reply is still required by Mojo, but a null value
   // should be returned to avoid issues serializing a large, unwanted reply.
-  JavaScriptMethodExecuteRequest(
-      mojo_base.mojom.String16 object_name,
-      mojo_base.mojom.String16 method_name,
-      mojo_base.mojom.ListValue arguments,
-      bool wants_result) => (mojo_base.mojom.Value result);
+  JavaScriptMethodExecuteRequest(mojo_base.mojom.String16 object_name,
+                                 mojo_base.mojom.String16 method_name,
+                                 mojo_base.mojom.ListValue arguments,
+                                 bool wants_result)
+      => (mojo_base.mojom.Value result);
 
   // Request for the renderer to execute JavaScript in the frame's context.
   //
@@ -1081,8 +1083,8 @@ interface LocalFrame {
   // should be returned to avoid issues serializing a large, unwanted reply.
   //
   JavaScriptExecuteRequest(
-      mojo_base.mojom.BigString16 javascript,
-      bool wants_result) => (mojo_base.mojom.Value result);
+      mojo_base.mojom.BigString16 javascript, bool wants_result)
+      => (mojo_base.mojom.Value result);
 
   // ONLY FOR TESTS: Same as above but this can optionally:
   // - Trigger a fake user activation notification to test functionalities that
@@ -1092,12 +1094,11 @@ interface LocalFrame {
   // Content settings are a mechanism that allows users to disable various
   // functions of the browser. One content setting disables javascript. This bit
   // controls whether this content setting is ignored or honored.
-  JavaScriptExecuteRequestForTests(
-      mojo_base.mojom.BigString16 javascript,
-      bool has_user_gesture,
-      bool resolve_promises,
-      bool honor_js_content_settings,
-      int32 world_id)
+  JavaScriptExecuteRequestForTests(mojo_base.mojom.BigString16 javascript,
+                                   bool has_user_gesture,
+                                   bool resolve_promises,
+                                   bool honor_js_content_settings,
+                                   int32 world_id)
       => (JavaScriptExecutionResultType result_type,
           mojo_base.mojom.Value result);
 
@@ -1142,8 +1143,8 @@ interface LocalFrame {
   // TextInputHost. `request_token` is a caller-defined request identifier which
   // allows matching the request with the TextInputHost response.
   [EnableIf=is_mac]
-  GetFirstRectForRange(mojo_base.mojom.UnguessableToken request_token,
-                       gfx.mojom.Range range);
+  GetFirstRectForRange(
+      mojo_base.mojom.UnguessableToken request_token, gfx.mojom.Range range);
 
   // Requests the text fragment in a given range.
   [EnableIf=is_mac]
@@ -1183,9 +1184,9 @@ interface LocalFrame {
   // Samsung Galaxy Note-specific "smart clip" stylus text getter.
   // Extracts the data at the given rect.
   [EnableIf=is_android]
-  ExtractSmartClipData(gfx.mojom.Rect rect)
-      => (mojo_base.mojom.String16 text, mojo_base.mojom.String16 html,
-              gfx.mojom.Rect clip_rect);
+  ExtractSmartClipData(gfx.mojom.Rect rect) => (mojo_base.mojom.String16 text,
+                                                mojo_base.mojom.String16 html,
+                                                gfx.mojom.Rect clip_rect);
 
   // Asks the renderer to handle a renderer-debug URL.
   HandleRendererDebugURL(url.mojom.Url url);
@@ -1221,7 +1222,8 @@ interface LocalFrame {
   // |navigation_api_key| to the browser, which is an opaque reference to a
   // session history entry for this frame. It is sent back to the renderer here
   // to indicate which traversal failed.
-  TraverseCancelled(string navigation_api_key, TraverseCancelledReason reason);
+  TraverseCancelled(
+      string navigation_api_key, TraverseCancelledReason reason);
 
   // Dispatches a (uninterceptable, uncancelable) navigate event to the current
   // document when the browser process determines that this frame will perform
@@ -1229,7 +1231,8 @@ interface LocalFrame {
   // false iff this traversal was triggered by a web API (i.e.,
   // history.back()/forward()/go() or navigation.back()/forward()/traverseTo()).
   DispatchNavigateEventForCrossDocumentTraversal(
-      url.mojom.Url url, mojo_base.mojom.ByteString page_state,
+      url.mojom.Url url,
+      mojo_base.mojom.ByteString page_state,
       bool is_browser_initiated);
 
   // Requests a one-time snapshot of the document state for a ViewTransition.
@@ -1239,9 +1242,9 @@ interface LocalFrame {
   // between old and new documents so they can share captured pixel state in
   // viz.
   SnapshotDocumentForViewTransition(
-    blink.mojom.ViewTransitionToken transition_token,
-    PageSwapEventParams page_swap_event_params) => (
-      blink.mojom.ViewTransitionState view_transition_state);
+      blink.mojom.ViewTransitionToken transition_token,
+      PageSwapEventParams page_swap_event_params)
+      => (blink.mojom.ViewTransitionState view_transition_state);
 
   // Notifies the old Document that the ViewTransition associated with a
   // navigation was aborted, for example if the navigation was cancelled before
@@ -1254,8 +1257,7 @@ interface LocalFrame {
   // For ViewTransition the event must be dispatched before snapshotting the old
   // Document with a `ViewTransition` object passed to script. So the dispatch
   // is done as a part of the `SnapshotDocumentForViewTransition` API above.
-  DispatchPageSwap(
-    PageSwapEventParams? page_swap_event_params);
+  DispatchPageSwap(PageSwapEventParams? page_swap_event_params);
 
   // Allows the browser to add a resource timing entry for a subframe
   // navigation that has failed before committing - a non-ok object navigation
@@ -1263,23 +1265,22 @@ interface LocalFrame {
   // of data received before the failure (which may be 0 for a response with no
   // body) or null if the navigation failed before reading data.
   AddResourceTimingEntryForFailedSubframeNavigation(
-    blink.mojom.FrameToken subframe_token,
-    url.mojom.Url initial_url,
-    mojo_base.mojom.TimeTicks start_time,
-    mojo_base.mojom.TimeTicks redirect_time,
-    mojo_base.mojom.TimeTicks request_start,
-    mojo_base.mojom.TimeTicks response_start,
-    mojo_base.mojom.TimeTicks completion_time,
-    uint32 response_code,
-    string mime_type,
-    network.mojom.LoadTimingInfo load_timing_info,
-    network.mojom.ConnectionInfo connection_info,
-    string alpn_negotiated_protocol,
-    bool is_secure_transport,
-    bool is_validated,
-    string normalized_server_timing,
-    SubframeResourceLengths? resource_lengths
-  );
+      blink.mojom.FrameToken subframe_token,
+      url.mojom.Url initial_url,
+      mojo_base.mojom.TimeTicks start_time,
+      mojo_base.mojom.TimeTicks redirect_time,
+      mojo_base.mojom.TimeTicks request_start,
+      mojo_base.mojom.TimeTicks response_start,
+      mojo_base.mojom.TimeTicks completion_time,
+      uint32 response_code,
+      string mime_type,
+      network.mojom.LoadTimingInfo load_timing_info,
+      network.mojom.ConnectionInfo connection_info,
+      string alpn_negotiated_protocol,
+      bool is_secure_transport,
+      bool is_validated,
+      string normalized_server_timing,
+      SubframeResourceLengths? resource_lengths);
 
   // Retrieves the scroll position of the frame.
   GetScrollPosition() => (gfx.mojom.Point scroll_position);
@@ -1297,7 +1298,8 @@ interface LocalFrame {
 //
 // This interface will only be provided when the LocalFrame is a main frame.
 interface LocalMainFrame {
-  // Requests performing a page scale animation based on the point/rect provided.
+  // Requests performing a page scale animation based on the point/rect
+  // provided.
   AnimateDoubleTapZoom(gfx.mojom.Point point, gfx.mojom.Rect rect);
 
   // Scales the view without affecting layout by using the visual viewport.
@@ -1336,7 +1338,8 @@ interface LocalMainFrame {
   // animate to the proper state.
   //
   // offset_tag_modifications consists of OffsetTags and additional metadata
-  // for moving browser controls. It is passed to the renderer and used to tag the
+  // for moving browser controls. It is passed to the renderer and used to tag
+  // the
   // browser controls scroll offsets in the compositor frame's metadata, with
   // the goal of allowing viz to scroll the top controls by applying the
   // offset. The slim::Layers for the top controls in the browser must be
@@ -1368,8 +1371,7 @@ interface LocalMainFrame {
   // Updates the frame's finalized locally differentially private
   // navigation confidence.
   FinalizeNavigationConfidence(
-    double randomized_trigger_rate,
-    ConfidenceLevel confidence);
+      double randomized_trigger_rate, ConfidenceLevel confidence);
 
   // Called when the related pages set is finalized and cannot change due to
   // previous page's mutations. Called when this (new page) is being committed.
@@ -1402,8 +1404,10 @@ interface LocalMainFrameHost {
   // in order to prevent target URLs spamming the browser.
   UpdateTargetURL(url.mojom.Url url) => ();
 
-  // Request close of the window. This corresponds to a window.close() javascript API call.
-  // Frame unload handlers should have already been called before this method is called.
+  // Request close of the window. This corresponds to a window.close()
+  // javascript API call.
+  // Frame unload handlers should have already been called before this method is
+  // called.
   RequestClose();
 
   // Request that the browser change the bounds of the window. This is the
