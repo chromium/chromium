@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/views/frame/layout/browser_view_tabbed_layout_impl.h"
+
 #include <initializer_list>
 #include <map>
 #include <memory>
@@ -29,7 +31,6 @@
 #include "chrome/browser/ui/views/frame/contents_container_view.h"
 #include "chrome/browser/ui/views/frame/custom_corners_background.h"
 #include "chrome/browser/ui/views/frame/layout/browser_view_layout.h"
-#include "chrome/browser/ui/views/frame/layout/browser_view_tabbed_layout_impl.h"
 #include "chrome/browser/ui/views/frame/multi_contents_resize_area.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
@@ -51,6 +52,8 @@
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/interactive_test_definitions.h"
 #include "ui/base/pointer/touch_ui_controller.h"
+#include "ui/compositor/compositor.h"
+#include "ui/display/display_switches.h"
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -956,4 +959,64 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTabbedLayoutImplContentLayoutUiTest,
   RunTestSequence(EnterSplitView(), ToggleVerticalTabStripCollapsed(true),
                   ClearResizeCounts(), ToggleVerticalTabStripCollapsed(false),
                   CheckResizeCounts(1U, 1U));
+}
+
+class BrowserViewHorizontalTabStripOldLayoutUiTest
+    : public BrowserViewTabbedLayoutImplUiTest {
+ public:
+  void SetUp() override {
+    test_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kSidePanelFlyoverAnimation},
+        /*disabled_features=*/{tabs::kTabStripUnification,
+                               tabs::kVerticalTabs});
+    set_open_about_blank_on_browser_launch(true);
+    InteractiveBrowserTest::SetUp();
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitchASCII(switches::kForceDeviceScaleFactor, "1.5");
+    BrowserViewTabbedLayoutImplUiTest::SetUpCommandLine(command_line);
+  }
+
+ private:
+  base::test::ScopedFeatureList test_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(BrowserViewHorizontalTabStripOldLayoutUiTest,
+                       TabStripToolbarBoundaryAt150PercentScaling) {
+  RunScheduledLayouts();
+  RunTestSequence(
+      WaitForShow(kTabStripRegionElementId),
+      WaitForShow(ToolbarView::kToolbarElementId), Do([this]() {
+        auto* const browser_view =
+            BrowserView::GetBrowserViewForBrowser(browser());
+        const float scale =
+            browser_view->GetWidget()->GetCompositor()->device_scale_factor();
+        EXPECT_EQ(scale, 1.5f);
+
+        auto* const tabstrip = browser_view->tab_strip_view();
+        auto* const toolbar = browser_view->toolbar();
+        auto* const top_container = browser_view->top_container();
+        CHECK(tabstrip);
+        CHECK(toolbar);
+        CHECK(top_container);
+
+        const gfx::Rect tabstrip_bounds = tabstrip->bounds();
+        const gfx::Rect top_container_bounds = top_container->bounds();
+        const gfx::Rect toolbar_bounds = toolbar->GetBoundsInScreen();
+
+        LOG(INFO) << "Scale: " << scale;
+        LOG(INFO) << "TabStrip DIP bounds: " << tabstrip_bounds.ToString();
+        LOG(INFO) << "TopContainer DIP bounds: "
+                  << top_container_bounds.ToString();
+        LOG(INFO) << "Toolbar Screen bounds: " << toolbar_bounds.ToString();
+
+        // In DIP coordinates, overlap is exactly 1 DIP.
+        EXPECT_EQ(tabstrip_bounds.bottom() - top_container_bounds.y(), 1);
+
+        const float tabstrip_bottom_px = tabstrip_bounds.bottom() * scale;
+        const float top_container_top_px = top_container_bounds.y() * scale;
+        LOG(INFO) << "TabStrip bottom (px): " << tabstrip_bottom_px;
+        LOG(INFO) << "TopContainer top (px): " << top_container_top_px;
+      }));
 }
