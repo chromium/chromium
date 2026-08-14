@@ -36,8 +36,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ssl/chrome_security_state_util.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
@@ -656,7 +656,7 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchXGeoEnabledBrowserTest,
 // dissemination, omitting the X-Geo header from prefetch payloads.
 IN_PROC_BROWSER_TEST_F(SearchPrefetchXGeoEnabledBrowserTest,
                        PrefetchNoXGeoHeader_Incognito) {
-  Browser* incognito_browser = CreateIncognitoBrowser();
+  BrowserWindowInterface* incognito_browser = CreateIncognitoBrowser();
   auto* search_prefetch_service = SearchPrefetchServiceFactory::GetForProfile(
       incognito_browser->GetProfile());
   EXPECT_TRUE(search_prefetch_service);
@@ -675,7 +675,7 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchXGeoEnabledBrowserTest,
 
   EXPECT_TRUE(search_prefetch_service->MaybePrefetchURL(
       prefetch_url,
-      incognito_browser->tab_strip_model()->GetActiveWebContents()));
+      incognito_browser->GetTabStripModel()->GetActiveWebContents()));
 
   // Custom wait loop for Incognito service.
   EXPECT_TRUE(base::test::RunUntil([&]() {

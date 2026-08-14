@@ -31,9 +31,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_navigation_observer_manager.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
@@ -267,7 +267,7 @@ class PrerenderOmniboxUIBrowserTest : public InProcessBrowserTest,
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(
-            [](const Browser* browser, bool ctrl_key) {
+            [](const BrowserWindowInterface* browser, bool ctrl_key) {
               EXPECT_TRUE(ui_test_utils::SendKeyPressSync(
                   browser, ui::VKEY_RETURN, ctrl_key, false, false, false));
             },

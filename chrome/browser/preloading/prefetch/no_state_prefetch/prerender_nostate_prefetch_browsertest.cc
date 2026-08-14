@@ -36,7 +36,6 @@
 #include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/task_manager/task_manager_browsertest_util.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
@@ -428,7 +427,8 @@ class NoStatePrefetchBrowserTest
   }
 
   // Clears the specified data using BrowsingDataRemover.
-  void ClearBrowsingData(Browser* browser, uint64_t remove_mask) {
+  void ClearBrowsingData(BrowserWindowInterface* browser,
+                         uint64_t remove_mask) {
     content::BrowsingDataRemover* remover =
         browser->GetProfile()->GetBrowsingDataRemover();
     content::BrowsingDataRemoverCompletionObserver observer(remover);

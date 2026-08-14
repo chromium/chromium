@@ -172,6 +172,7 @@ if (!is_android) {
       "//chrome/browser/preloading/prefetch/search_prefetch:field_trial_settings",
       "//chrome/browser/preloading/prefetch/search_prefetch:impl",
       "//chrome/browser/search_engines",
+      "//chrome/browser/ui/browser_window",
       "//chrome/test:test_support",
       "//components/embedder_support",
       "//components/no_state_prefetch/browser",
