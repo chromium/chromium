@@ -6,9 +6,9 @@
 #include <optional>
 #include <string>
 #include <string_view>
-#include <tuple>
 #include <utility>
 
+#include "base/callback_list.h"
 #include "base/command_line.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/functional/callback.h"
@@ -184,11 +184,18 @@ class InfoBarUiTest : public TestInfoBar,
   void ShowUi(const std::string& name) override;
   bool VerifyUi() override;
 
+  // InProcessBrowserTest:
+  void TearDownOnMainThread() override;
+
  private:
   using IBD = infobars::InfoBarDelegate;
 
   base::test::ScopedFeatureList feature_list_;
   MockTabSharingUI mock_tab_sharing_ui_views_;
+
+  // Held for the lifetime of the test so the extension devtools infobar does
+  // not autoclose while the test is still verifying it. See ShowUi().
+  base::CallbackListSubscription extension_dev_tools_subscription_;
 };
 
 void InfoBarUiTest::ShowUi(const std::string& name) {
@@ -241,8 +248,9 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
       break;
 
     case IBD::EXTENSION_DEV_TOOLS_INFOBAR_DELEGATE:
-      std::ignore = extensions::ExtensionDevToolsInfoBarDelegate::Create(
-          "id", "Extension", base::DoNothing());
+      extension_dev_tools_subscription_ =
+          extensions::ExtensionDevToolsInfoBarDelegate::Create(
+              "id", "Extension", base::DoNothing());
       break;
 
     case IBD::INCOGNITO_CONNECTABILITY_INFOBAR_DELEGATE: {
@@ -396,6 +404,11 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
   }
 }
 
+void InfoBarUiTest::TearDownOnMainThread() {
+  extension_dev_tools_subscription_ = {};
+  TestInfoBar::TearDownOnMainThread();
+}
+
 bool InfoBarUiTest::VerifyUi() {
   const auto* const test_info =
       testing::UnitTest::GetInstance()->current_test_info();
@@ -417,14 +430,7 @@ IN_PROC_BROWSER_TEST_P(InfoBarUiTest, MAYBE_InvokeUi_dev_tools) {
   ShowAndVerifyUi();
 }
 
-#if BUILDFLAG(IS_WIN)
-// TODO(crbug.com/480154187): This test case has been frequently failing on
-// Windows bots since 2026-01-30.
-#define MAYBE_InvokeUi_extension_dev_tools DISABLED_InvokeUi_extension_dev_tools
-#else
-#define MAYBE_InvokeUi_extension_dev_tools InvokeUi_extension_dev_tools
-#endif
-IN_PROC_BROWSER_TEST_P(InfoBarUiTest, MAYBE_InvokeUi_extension_dev_tools) {
+IN_PROC_BROWSER_TEST_P(InfoBarUiTest, InvokeUi_extension_dev_tools) {
   ShowAndVerifyUi();
 }
 
