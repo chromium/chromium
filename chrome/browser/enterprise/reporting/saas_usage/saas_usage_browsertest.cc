@@ -187,9 +187,15 @@ class SaasUsageProfileLevelTest : public policy::PolicyTest {
     if (client_) {
       for (auto* loaded_profile :
            g_browser_process->profile_manager()->GetLoadedProfiles()) {
+#if BUILDFLAG(IS_CHROMEOS)
+        enterprise_connectors::RealtimeReportingClientFactory::GetForProfile(
+            loaded_profile)
+            ->SetBrowserCloudPolicyClientForTesting(nullptr);
+#else
         enterprise_connectors::RealtimeReportingClientFactory::GetForProfile(
             loaded_profile)
             ->SetProfileCloudPolicyClientForTesting(nullptr);
+#endif
       }
       client_.reset();
     }
@@ -215,9 +221,15 @@ IN_PROC_BROWSER_TEST_F(SaasUsageProfileLevelTest, RecordsUsage) {
 
   for (auto* loaded_profile :
        g_browser_process->profile_manager()->GetLoadedProfiles()) {
+#if BUILDFLAG(IS_CHROMEOS)
+    enterprise_connectors::RealtimeReportingClientFactory::GetForProfile(
+        loaded_profile)
+        ->SetBrowserCloudPolicyClientForTesting(client_.get());
+#else
     enterprise_connectors::RealtimeReportingClientFactory::GetForProfile(
         loaded_profile)
         ->SetProfileCloudPolicyClientForTesting(client_.get());
+#endif
   }
 
   ASSERT_TRUE(embedded_test_server()->Start());
