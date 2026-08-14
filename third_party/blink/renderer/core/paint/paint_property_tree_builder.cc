@@ -602,9 +602,8 @@ static bool NeedsElementCanvasTransform(const LayoutObject& object) {
           object.GetDocument().GetExecutionContext())) {
     return false;
   }
-  return element->HasCanvasTransform();
+  return element->CanvasForDrawing() != nullptr;
 }
-
 static bool NeedsPaintOffsetTranslation(
     const LayoutObject& object,
     CompositingReasons direct_compositing_reasons,
@@ -1116,17 +1115,26 @@ void FragmentPaintPropertyTreeBuilder::UpdateElementCanvasTransform() {
     if (NeedsElementCanvasTransform(object_)) {
       const auto& element = *To<Element>(object_.GetNode());
       const auto* canvas_transform = element.GetCanvasTransformInternal();
-      DCHECK(canvas_transform);
-      TransformPaintPropertyNode::State state{{*canvas_transform}};
+      TransformPaintPropertyNode::State state{
+          {canvas_transform ? *canvas_transform : gfx::Transform()}};
       state.flattens_inherited_transform =
           context_.should_flatten_inherited_transform;
       state.rendering_context_id = context_.rendering_context_id;
       state.compositor_element_id = GetCompositorElementId(
           CompositorElementIdNamespace::kElementCanvasTransform);
-      OnUpdateTransform(properties_->UpdateElementCanvasTransform(
-          *context_.current.transform, std::move(state)));
+      auto change = properties_->UpdateElementCanvasTransform(
+          *context_.current.transform, std::move(state));
+      // Do not call `OnUpdateTransform()` here because canvas transform changes
+      // do not affect the element's rendering and should not trigger a paint
+      // invalidation.
+      if (change >= PaintPropertyChangeType::kChangedOnlySimpleValues) {
+        object_.GetFrameView()->SetPaintArtifactCompositorNeedsUpdate();
+      }
     } else {
-      OnClearTransform(properties_->ClearElementCanvasTransform());
+      // Do not call `OnClearTransform()` here to avoid a paint invalidation.
+      if (properties_->ClearElementCanvasTransform()) {
+        object_.GetFrameView()->SetPaintArtifactCompositorNeedsUpdate();
+      }
     }
   }
 
@@ -1991,8 +1999,10 @@ static void PopulateCanvasChildPaintState(HTMLCanvasElement* canvas,
       canvas->GetDocument().View()->GetAnimatedImageFrameIndexes();
 }
 
-static void PopulateCanvasChildState(const LayoutObject& object,
-                                     EffectPaintPropertyNode::State& state) {
+static void PopulateCanvasChildState(
+    const LayoutObject& object,
+    EffectPaintPropertyNode::State& state,
+    const TransformPaintPropertyNodeOrAlias& current_transform) {
   CHECK(IsA<LayoutBox>(object));
   CHECK(object.GetNode());
   HTMLCanvasElement* canvas = To<Element>(object.GetNode())->CanvasForDrawing();
@@ -2019,6 +2029,12 @@ static void PopulateCanvasChildState(const LayoutObject& object,
   PopulateCanvasChildPaintState(canvas, state.canvas_child_state->paint_state);
   state.canvas_child_state->content_effect = canvas_fragment.ContentsEffect();
   state.canvas_child_state->content_clip = canvas_fragment.ContentsClip();
+  const auto* properties = object.FirstFragment().PaintProperties();
+  DCHECK(properties);
+  state.canvas_child_state->content_transform =
+      properties->ElementCanvasTransform()
+          ? properties->ElementCanvasTransform()
+          : &current_transform;
 }
 
 static bool NeedsUnboundedWrapperNodes(const LayoutObject& object) {
@@ -2212,7 +2228,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
 
         if (state.direct_compositing_reasons.Has(
                 CompositingReason::kCanvasChild)) {
-          PopulateCanvasChildState(object_, state);
+          PopulateCanvasChildState(object_, state, *context_.current.transform);
         }
       } else {
         // The effect node CompositorElementId is used to uniquely identify

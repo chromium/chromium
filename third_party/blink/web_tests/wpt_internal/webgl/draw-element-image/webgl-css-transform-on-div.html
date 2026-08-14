@@ -1,14 +1,15 @@
 <!DOCTYPE html>
 <html class="reftest-wait">
 <head>
-  <title>texElementImage2D ignores CSS transforms</title>
+  <title>texElementImage2D reflects CSS transforms</title>
   <link rel="help" href="https://github.com/WICG/html-in-canvas">
   <link rel="match" href="webgl-css-transform-on-div-ref.html">
-  <meta name="assert" value="A div with a CSS transform paints without the transform.">
+  <meta name="fuzzy" content="maxDifference=0-100;totalPixels=0-250">
+  <meta name="assert" value="A div with a CSS transform paints with the transform.">
   <script src="/common/reftest-wait.js"></script>
   <style>
     canvas {
-      background: black;
+      background: #ccc;
       width: 100px;
       height: 100px;
     }

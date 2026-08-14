@@ -558,6 +558,7 @@ like layout, hit testing, accessibility, etc. See the
 *   **Element helpers**: The DOM `Element` class provides helpers
     `IsCanvasOrInCanvasSubtree()` and `IsInCanvasSubtree()` to easily identify
     elements participating in this feature.
+
 ### Canvas Transform
 *   **Canvas transform**: `getCanvasTransform()` and `setCanvasTransform()` on
     `Element` define a transform mapping the element's border box, before CSS

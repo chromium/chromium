@@ -5098,8 +5098,9 @@
       "Win"
     ],
     "bases": [
-      "external/wpt/html/canvas/element/manual/draw-element-image/css-transform-on-div.tentative.html"
+      "wpt_internal/html/canvas/drawElementImage/css-transform-on-div-disabled.html"
     ],
+    "exclusive_tests": "ALL",
     "args": [
       "--disable-blink-features=ElementCanvasTransform"
     ],

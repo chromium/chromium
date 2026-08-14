@@ -114,6 +114,8 @@ bool ShouldUseInfiniteCullRect(
   if (RuntimeEnabledFeatures::CanvasDrawElementEnabled(
           object.GetDocument().GetExecutionContext()) &&
       object.IsInCanvasSubtree()) {
+    // TODO(crbug.com/532229486): Support cull rects under canvas.
+    subtree_should_use_infinite_cull_rect = true;
     return true;
   }
 

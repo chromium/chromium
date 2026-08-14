@@ -623,6 +623,7 @@ PropertyTreeState GetPropertyTreeStateForPaint(
   if (layer_state.Effect().HasCanvasChildState()) {
     result.SetClip(layer_state.Effect().CanvasChildContentClip());
     result.SetEffect(layer_state.Effect().CanvasChildContentEffect());
+    result.SetTransform(layer_state.Effect().CanvasChildContentTransform());
   }
   return result;
 }
@@ -1225,9 +1226,11 @@ void PaintArtifactCompositor::Update(
         root_layer_->layer_tree_host());
 
     cc::Layer& layer = pending_layer.CcLayer();
-    const auto& transform = property_state.Transform();
     const auto& clip = property_state.Clip();
     const auto& effect = property_state.Effect();
+    const auto& transform = effect.CanvasChildId()
+                                ? effect.CanvasChildContentTransform()
+                                : property_state.Transform();
     int transform_id =
         property_tree_manager.EnsureCompositorTransformNode(transform);
     int effect_id = property_tree_manager.SwitchToEffectNodeWithSynthesizedClip(

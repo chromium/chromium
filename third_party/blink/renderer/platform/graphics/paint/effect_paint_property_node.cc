@@ -131,6 +131,7 @@ void EffectPaintPropertyNode::State::Trace(Visitor* visitor) const {
 void EffectPaintPropertyNode::CanvasChildState::Trace(Visitor* visitor) const {
   visitor->Trace(content_effect);
   visitor->Trace(content_clip);
+  visitor->Trace(content_transform);
 }
 
 EffectPaintPropertyNode::EffectPaintPropertyNode(RootTag)
@@ -245,6 +246,12 @@ const ClipPaintPropertyNode& EffectPaintPropertyNode::CanvasChildContentClip()
     const {
   CHECK(HasCanvasChildState());
   return state_.canvas_child_state->content_clip->Unalias();
+}
+
+const TransformPaintPropertyNode&
+EffectPaintPropertyNode::CanvasChildContentTransform() const {
+  CHECK(HasCanvasChildState());
+  return state_.canvas_child_state->content_transform->Unalias();
 }
 
 std::unique_ptr<JSONObject> EffectPaintPropertyNode::ToJSON() const {
