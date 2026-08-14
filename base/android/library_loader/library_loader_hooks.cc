@@ -12,6 +12,7 @@
 #include "base/android/library_loader/library_prefetcher.h"
 #include "base/android/orderfile/orderfile_buildflags.h"
 #include "base/at_exit.h"
+#include "base/debug/asan_service.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "base/library_loader_jni/LibraryLoader_jni.h"
@@ -55,6 +56,9 @@ bool LibraryLoaded(LibraryProcessType library_process_type) {
   if (g_library_process_type != PROCESS_WEBVIEW_CHILD) {
     orderfile::StartDelayedDump();
   }
+#endif
+#if defined(ADDRESS_SANITIZER)
+  base::debug::AsanService::GetInstance()->Initialize();
 #endif
 
   if (g_native_initialization_hook &&
