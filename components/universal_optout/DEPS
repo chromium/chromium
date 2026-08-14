@@ -3,6 +3,8 @@ include_rules = [
   "+components/keyed_service/core",
   "+components/pref_registry",
   "+components/prefs",
+  "+components/signin/public/base",
+  "+components/signin/public/identity_manager",
   "+components/user_prefs",
   "+components/variations/service",
 ]

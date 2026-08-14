@@ -12,6 +12,7 @@
 #import "components/variations/service/variations_service.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 
 namespace universal_optout {
 
@@ -32,7 +33,9 @@ UniversalOptOutServiceFactory::UniversalOptOutServiceFactory()
     : ProfileKeyedServiceFactoryIOS("UniversalOptOutService",
                                     ProfileSelection::kRedirectedInIncognito,
                                     ServiceCreation::kCreateWithProfile,
-                                    TestingCreation::kNoServiceForTests) {}
+                                    TestingCreation::kNoServiceForTests) {
+  DependsOn(IdentityManagerFactory::GetInstance());
+}
 
 UniversalOptOutServiceFactory::~UniversalOptOutServiceFactory() = default;
 
@@ -50,7 +53,8 @@ UniversalOptOutServiceFactory::BuildServiceInstanceFor(
   }
 
   return std::make_unique<UniversalOptOutService>(
-      CHECK_DEREF(profile->GetPrefs()), *variations_service);
+      CHECK_DEREF(profile->GetPrefs()), *variations_service,
+      CHECK_DEREF(IdentityManagerFactory::GetForProfile(profile)));
 }
 
 }  // namespace universal_optout

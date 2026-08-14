@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_UNIVERSAL_OPTOUT_UNIVERSAL_OPTOUT_SERVICE_H_
 #define COMPONENTS_UNIVERSAL_OPTOUT_UNIVERSAL_OPTOUT_SERVICE_H_
 
-#include <string>
-
 #include "base/memory/raw_ref.h"
 #include "base/scoped_observation.h"
 #include "base/time/clock.h"
@@ -18,10 +16,16 @@
 class PrefService;
 class ScopedDictPrefUpdate;
 
+namespace signin {
+class IdentityManager;
+}  // namespace signin
+
 namespace universal_optout {
 
 // Service responsible for tracking location history and determining eligibility
-// of users for Universal Opt Out.
+// of users for Universal Opt Out. For signed-out users, eligibility is
+// determined by tracking location history over a sliding window. For signed-in
+// users, eligibility is determined by the user's account capabilities.
 class UniversalOptOutService : public KeyedService,
                                public variations::VariationsService::Observer {
  public:
@@ -30,6 +34,7 @@ class UniversalOptOutService : public KeyedService,
   explicit UniversalOptOutService(
       PrefService& pref_service,
       variations::VariationsService& variations_service,
+      signin::IdentityManager& identity_manager,
       const base::Clock& clock = *base::DefaultClock::GetInstance());
 
   UniversalOptOutService(const UniversalOptOutService&) = delete;
@@ -44,6 +49,9 @@ class UniversalOptOutService : public KeyedService,
   void OnSeedFetched() override;
 
   // Returns whether the profile is eligible for Universal Opt Out.
+  // For signed-in users, this uses the AccountCapabilities signal (falling back
+  // to location history if the capability is unknown).
+  // For signed-out users, this is based on recorded location history.
   bool IsEligible() const;
 
  private:
@@ -69,6 +77,7 @@ class UniversalOptOutService : public KeyedService,
 
   raw_ref<PrefService> pref_service_;
   raw_ref<variations::VariationsService> variations_service_;
+  raw_ref<signin::IdentityManager> identity_manager_;
   raw_ref<const base::Clock> clock_;
 
   base::ScopedObservation<variations::VariationsService,

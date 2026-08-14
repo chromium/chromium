@@ -16,6 +16,9 @@
 #include "base/values.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/tribool.h"
 #include "components/universal_optout/features.h"
 #include "components/universal_optout/prefs.h"
 
@@ -94,9 +97,11 @@ EligibilityCategory GetEligibilityCategory(const base::DictValue& history_dict,
 UniversalOptOutService::UniversalOptOutService(
     PrefService& pref_service,
     variations::VariationsService& variations_service,
+    signin::IdentityManager& identity_manager,
     const base::Clock& clock)
     : pref_service_(pref_service),
       variations_service_(variations_service),
+      identity_manager_(identity_manager),
       clock_(clock) {
   variations_service_observation_.Observe(&variations_service);
   RecordLocationAndUpdateEligibility();
@@ -113,6 +118,20 @@ void UniversalOptOutService::OnSeedFetched() {
 }
 
 bool UniversalOptOutService::IsEligible() const {
+  if (identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    const CoreAccountInfo core_account_info =
+        identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+    const AccountInfo account_info =
+        identity_manager_->FindExtendedAccountInfo(core_account_info);
+    signin::Tribool capability =
+        account_info.GetAccountCapabilities().is_subject_to_universal_opt_out();
+    // If the capability is known, use it. Otherwise, fall back to location
+    // history.
+    if (capability != signin::Tribool::kUnknown) {
+      return capability == signin::Tribool::kTrue;
+    }
+  }
+
   return pref_service_->GetBoolean(prefs::kUniversalOptOutEligible);
 }
 

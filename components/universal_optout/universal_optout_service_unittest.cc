@@ -14,10 +14,18 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "components/metrics/metrics_state_manager.h"
 #include "components/metrics/test/test_enabled_state_provider.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/identity_manager/account_capabilities.h"
+#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
+#include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/signin/public/identity_manager/tribool.h"
 #include "components/universal_optout/features.h"
 #include "components/universal_optout/prefs.h"
 #include "components/variations/service/test_variations_service.h"
@@ -56,10 +64,22 @@ class UniversalOptOutServiceTest : public ::testing::Test {
     pref_service_.SetBoolean(prefs::kUniversalOptOutEnabled, false);
   }
 
+  void TearDown() override {
+    AccountCapabilities::ResetSupportedAccountCapabilityNamesForTesting();
+  }
+
   void EnableFeatureWithTargetLocations(const std::string& target_locations) {
     scoped_feature_list_.Reset();
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kUniversalOptOut, {{"target_locations", target_locations}});
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/{base::test::FeatureRefAndParams(
+                                  features::kUniversalOptOut,
+                                  {{"target_locations", target_locations}}),
+                              base::test::FeatureRefAndParams(
+                                  switches::
+                                      kReadIsSubjectToUniversalOptOutCapability,
+                                  {})},
+        /*disabled_features=*/{});
+    AccountCapabilities::ResetSupportedAccountCapabilityNamesForTesting();
   }
 
   void SetGeoLevel1(const std::string& geo_level1) {
@@ -69,7 +89,8 @@ class UniversalOptOutServiceTest : public ::testing::Test {
 
   std::unique_ptr<UniversalOptOutService> CreateService() {
     return std::make_unique<UniversalOptOutService>(
-        pref_service_, *variations_service_, test_clock_);
+        pref_service_, *variations_service_,
+        *identity_test_env_.identity_manager(), test_clock_);
   }
 
   base::Time GetCurrentDay(base::Time time) { return time.UTCMidnight(); }
@@ -83,6 +104,7 @@ class UniversalOptOutServiceTest : public ::testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  signin::IdentityTestEnvironment identity_test_env_;
   TestingPrefServiceSimple pref_service_;
   base::SimpleTestClock test_clock_;
   std::unique_ptr<metrics::TestEnabledStateProvider> enabled_state_provider_;
@@ -323,6 +345,90 @@ TEST_F(UniversalOptOutServiceTest, MultipleTargetLocations) {
   test_clock_.Advance(base::Days(1));
   auto service3 = CreateService();
   EXPECT_TRUE(service3->IsEligible());  // 2 out of 3 days eligible
+}
+
+TEST_F(UniversalOptOutServiceTest, SignedInUserEligibleWhenCapabilityIsTrue) {
+  // When signed in with is_subject_to_universal_opt_out = true, the user is
+  // eligible even if location history / pref indicates ineligibility.
+  EnableFeatureWithTargetLocations("us-fl");
+  SetGeoLevel1("us-ny");
+
+  AccountInfo account_info = identity_test_env_.MakePrimaryAccountAvailable(
+      "test@example.com", signin::ConsentLevel::kSignin);
+  AccountCapabilitiesTestMutator mutator(&account_info);
+  mutator.set_is_subject_to_universal_opt_out(true);
+  identity_test_env_.UpdateAccountInfoForAccount(account_info);
+
+  auto service = CreateService();
+  EXPECT_TRUE(service->IsEligible());
+}
+
+TEST_F(UniversalOptOutServiceTest,
+       SignedInUserIneligibleWhenCapabilityIsFalse) {
+  // When signed in with is_subject_to_universal_opt_out = false, the user is
+  // ineligible even if location history / pref indicates eligibility.
+  EnableFeatureWithTargetLocations("us-fl");
+  SetGeoLevel1("us-fl");
+
+  AccountInfo account_info = identity_test_env_.MakePrimaryAccountAvailable(
+      "test@example.com", signin::ConsentLevel::kSignin);
+  AccountCapabilitiesTestMutator mutator(&account_info);
+  mutator.set_is_subject_to_universal_opt_out(false);
+  identity_test_env_.UpdateAccountInfoForAccount(account_info);
+
+  auto service = CreateService();
+  EXPECT_FALSE(service->IsEligible());
+}
+
+TEST_F(UniversalOptOutServiceTest,
+       SignedInUserFallsBackToPrefEligibilityWhenCapabilityIsUnknown) {
+  // Signed-in user with capability kUnknown falls back to pref eligibility
+  // (which is true when in target location).
+  EnableFeatureWithTargetLocations("us-fl");
+  SetGeoLevel1("us-fl");
+
+  identity_test_env_.MakePrimaryAccountAvailable("test@example.com",
+                                                 signin::ConsentLevel::kSignin);
+
+  auto service = CreateService();
+  EXPECT_TRUE(service->IsEligible());
+}
+
+TEST_F(UniversalOptOutServiceTest,
+       SignedInUserEligibilityUpdatesWhenCapabilityChanges) {
+  EnableFeatureWithTargetLocations("us-fl");
+  SetGeoLevel1("us-ny");
+
+  AccountInfo account_info = identity_test_env_.MakePrimaryAccountAvailable(
+      "test@example.com", signin::ConsentLevel::kSignin);
+  AccountCapabilitiesTestMutator mutator(&account_info);
+  mutator.set_is_subject_to_universal_opt_out(false);
+  identity_test_env_.UpdateAccountInfoForAccount(account_info);
+
+  auto service = CreateService();
+  EXPECT_FALSE(service->IsEligible());
+
+  // Update capability to true.
+  mutator.set_is_subject_to_universal_opt_out(true);
+  identity_test_env_.UpdateAccountInfoForAccount(account_info);
+  EXPECT_TRUE(service->IsEligible());
+
+#if !BUILDFLAG(IS_CHROMEOS)
+  // User signs out; falls back to signed-out location eligibility (ineligible
+  // here since us-ny != us-fl). ClearPrimaryAccount() is unsupported on
+  // ChromeOS.
+  identity_test_env_.ClearPrimaryAccount();
+  EXPECT_FALSE(service->IsEligible());
+#endif
+}
+
+TEST_F(UniversalOptOutServiceTest, SignedOutUserFallsBackToPrefEligibility) {
+  EnableFeatureWithTargetLocations("us-fl");
+  SetGeoLevel1("us-fl");
+
+  // User is not signed in.
+  auto service = CreateService();
+  EXPECT_TRUE(service->IsEligible());
 }
 
 }  // namespace universal_optout

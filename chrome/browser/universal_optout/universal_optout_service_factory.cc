@@ -9,6 +9,7 @@
 #include "base/feature_list.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/universal_optout/features.h"
 #include "components/universal_optout/universal_optout_service.h"
 #include "components/variations/service/variations_service.h"
@@ -34,7 +35,9 @@ UniversalOptOutServiceFactory::UniversalOptOutServiceFactory()
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kRedirectedToOriginal)
               .WithGuest(ProfileSelection::kRedirectedToOriginal)
-              .Build()) {}
+              .Build()) {
+  DependsOn(IdentityManagerFactory::GetInstance());
+}
 
 UniversalOptOutServiceFactory::~UniversalOptOutServiceFactory() = default;
 
@@ -54,7 +57,8 @@ UniversalOptOutServiceFactory::BuildServiceInstanceForBrowserContext(
 
   Profile* profile = Profile::FromBrowserContext(context);
   return std::make_unique<UniversalOptOutService>(
-      CHECK_DEREF(profile->GetPrefs()), *variations_service);
+      CHECK_DEREF(profile->GetPrefs()), *variations_service,
+      CHECK_DEREF(IdentityManagerFactory::GetForProfile(profile)));
 }
 
 bool UniversalOptOutServiceFactory::ServiceIsCreatedWithBrowserContext() const {
