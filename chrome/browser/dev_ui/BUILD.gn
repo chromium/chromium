@@ -32,6 +32,7 @@ if (is_android && dfmify_dev_ui) {
       "//components/optimization_guide/optimization_guide_internals/webui:url_constants",
       "//components/private_ai/private_ai_internals/webui:url_constants",
       "//components/strings:components_strings_grit",
+      "//components/webui/regional_capabilities_internals:constants",
       "//content/public/common",
       "//device/vr/buildflags",
       "//net",

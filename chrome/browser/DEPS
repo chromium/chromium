@@ -432,6 +432,7 @@ include_rules = [
   "+components/webui/about",
   "+components/webui/chrome_urls",
   "+components/webui/flags",
+  "+components/webui/regional_capabilities_internals",
   "+components/webui/version",
   "+components/zoom",
   "+content/common/features.h",
