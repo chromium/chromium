@@ -245,7 +245,6 @@ class CONTENT_EXPORT AccountsFetcher {
   int num_pending_requests_ = 0;
   std::vector<Result> results_;
   base::TimeTicks well_known_and_config_fetched_time_;
-  base::flat_map<GURL, std::unique_ptr<NativeIdpFetcher>> native_idp_fetchers_;
 
   base::WeakPtrFactory<AccountsFetcher> weak_ptr_factory_{this};
 };

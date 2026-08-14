@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/values.h"
 #include "content/browser/webid/identity_registry.h"
@@ -19,6 +20,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/webid/identity_request_account.h"
 #include "content/public/browser/webid/identity_request_dialog_controller.h"
+#include "content/public/browser/webid/native_idp_fetcher.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/client_security_state.mojom-forward.h"
 #include "third_party/blink/public/mojom/webid/federated_request.mojom.h"
@@ -372,6 +374,17 @@ class CONTENT_EXPORT IdpNetworkRequestManager : public NetworkRequestManager {
   virtual void CacheAccountPictures(const url::Origin& idp_origin,
                                     const std::vector<GURL>& picture_urls);
 
+  // Returns an existing NativeIdpFetcher for `idp_origin`, or creates a new one
+  // via ContentBrowserClient if supported. Returns nullptr if not supported.
+  NativeIdpFetcher* GetOrCreateNativeIdpFetcher(const url::Origin& idp_origin);
+
+  // Returns an existing NativeIdpFetcher for `idp_origin`, or nullptr if none
+  // exists (e.g. native fetch was not used for accounts).
+  NativeIdpFetcher* GetNativeIdpFetcher(const url::Origin& idp_origin) const;
+
+  void SetNativeIdpFetcherForTesting(const url::Origin& idp_origin,
+                                     std::unique_ptr<NativeIdpFetcher> fetcher);
+
  private:
   // NetworkRequestManager:
   net::NetworkTrafficAnnotationTag CreateTrafficAnnotation() override;
@@ -383,6 +396,14 @@ class CONTENT_EXPORT IdpNetworkRequestManager : public NetworkRequestManager {
                                      FetchWellKnownCallback callback,
                                      FetchStatus fetch_status,
                                      const WellKnown& subdomain_well_known);
+
+  void OnNativeTokenFetched(
+      TokenRequestCallback callback,
+      ContinueOnCallback continue_on_callback,
+      RedirectToCallback redirect_to_callback,
+      RecordErrorMetricsCallback record_error_metrics_callback,
+      const GURL& token_url,
+      NativeIdpFetcher::FetchResult fetch_result);
 
   void FetchImage(const GURL& url, base::OnceClosure callback);
   void FetchCachedAccountImage(const url::Origin& idp_origin,
@@ -421,6 +442,9 @@ class CONTENT_EXPORT IdpNetworkRequestManager : public NetworkRequestManager {
 
   // The downloaded image data.
   std::map<GURL, gfx::Image> downloaded_images_;
+
+  base::flat_map<url::Origin, std::unique_ptr<NativeIdpFetcher>>
+      native_idp_fetchers_;
 
   base::WeakPtrFactory<IdpNetworkRequestManager> weak_ptr_factory_{this};
 };

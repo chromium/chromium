@@ -29,6 +29,7 @@
 #include "content/public/browser/manifest_icon_downloader.h"
 #include "content/public/browser/weak_document_ptr.h"
 #include "content/public/browser/webid/identity_request_dialog_controller.h"
+#include "content/public/browser/webid/native_idp_fetcher.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/test_renderer_host.h"
 #include "net/base/isolation_info.h"
@@ -59,6 +60,7 @@ using ::testing::_;
 using ::testing::ElementsAre;
 using ::testing::NiceMock;
 using ::testing::Return;
+using ::testing::WithArg;
 using AccountsRequestCallback =
     IdpNetworkRequestManager::AccountsRequestCallback;
 using AccountsResponseInvalidReason =
@@ -2826,6 +2828,298 @@ TEST_F(IdpNetworkRequestManagerTest, RequestAbortedOnInvalidFrame) {
   run_loop.Run();
 
   EXPECT_EQ(0, test_url_loader_factory.NumPending());
+}
+
+class MockNativeIdpFetcher : public NativeIdpFetcher {
+ public:
+  MockNativeIdpFetcher() = default;
+  ~MockNativeIdpFetcher() override = default;
+
+  MOCK_METHOD(void,
+              Fetch,
+              (const NativeIdpFetcher::RequestParams& params,
+               FetchCallback callback),
+              (override));
+};
+
+TEST_F(IdpNetworkRequestManagerTest, NativeIdpTokenSuccess) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kFedCmNativeIdPs);
+
+  GURL token_endpoint(kTestTokenEndpoint);
+  auto mock_fetcher = std::make_unique<NiceMock<MockNativeIdpFetcher>>();
+  EXPECT_CALL(
+      *mock_fetcher,
+      Fetch(testing::AllOf(
+                testing::Field(&NativeIdpFetcher::RequestParams::url,
+                               token_endpoint),
+                testing::Field(&NativeIdpFetcher::RequestParams::body,
+                               std::optional<std::string>("request_body"))),
+            _))
+      .WillOnce(WithArg<1>([](NativeIdpFetcher::FetchCallback callback) {
+        std::move(callback).Run(base::ok(R"({"token": "native_token_123"})"));
+      }));
+
+  std::unique_ptr<IdpNetworkRequestManager> manager = CreateTestManager();
+  manager->SetNativeIdpFetcherForTesting(url::Origin::Create(token_endpoint),
+                                         std::move(mock_fetcher));
+
+  base::RunLoop run_loop;
+  FetchStatus token_fetch_status;
+  TokenResult token_result;
+  auto callback =
+      base::BindLambdaForTesting([&](FetchStatus status, TokenResult&& result) {
+        token_fetch_status = status;
+        token_result = std::move(result);
+        run_loop.Quit();
+      });
+
+  manager->SendTokenRequest(token_endpoint, "account", "request_body", false,
+                            std::move(callback), base::DoNothing(),
+                            base::DoNothing(),
+                            CreateErrorMetricsCallback(run_loop));
+  run_loop.Run();
+
+  EXPECT_EQ(ParseStatus::kSuccess, token_fetch_status.parse_status);
+  EXPECT_EQ(net::HTTP_OK, token_fetch_status.response_code);
+  ASSERT_TRUE(token_result.token.has_value());
+  EXPECT_EQ("native_token_123", token_result.token->GetString());
+  EXPECT_EQ(0, test_url_loader_factory().NumPending());
+}
+
+TEST_F(IdpNetworkRequestManagerTest, NativeIdpTokenFetchError) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kFedCmNativeIdPs);
+
+  GURL token_endpoint(kTestTokenEndpoint);
+  auto mock_fetcher = std::make_unique<NiceMock<MockNativeIdpFetcher>>();
+  EXPECT_CALL(*mock_fetcher, Fetch)
+      .WillOnce(WithArg<1>([](NativeIdpFetcher::FetchCallback callback) {
+        std::move(callback).Run(
+            base::unexpected(NativeIdpFetcher::FetchError::kFetchFailed));
+      }));
+
+  std::unique_ptr<IdpNetworkRequestManager> manager = CreateTestManager();
+  manager->SetNativeIdpFetcherForTesting(url::Origin::Create(token_endpoint),
+                                         std::move(mock_fetcher));
+
+  base::RunLoop run_loop;
+  FetchStatus token_fetch_status;
+  TokenResult token_result;
+  auto callback =
+      base::BindLambdaForTesting([&](FetchStatus status, TokenResult&& result) {
+        token_fetch_status = status;
+        token_result = std::move(result);
+        run_loop.Quit();
+      });
+
+  manager->SendTokenRequest(token_endpoint, "account", "request_body", false,
+                            std::move(callback), base::DoNothing(),
+                            base::DoNothing(),
+                            CreateErrorMetricsCallback(run_loop));
+  run_loop.Run();
+
+  EXPECT_EQ(ParseStatus::kNoResponseError, token_fetch_status.parse_status);
+  EXPECT_EQ(net::ERR_FAILED, token_fetch_status.response_code);
+  EXPECT_FALSE(token_result.token.has_value());
+  ASSERT_TRUE(token_result.error.has_value());
+  EXPECT_EQ(0, test_url_loader_factory().NumPending());
+}
+
+TEST_F(IdpNetworkRequestManagerTest, NativeIdpTokenInvalidJson) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kFedCmNativeIdPs);
+
+  GURL token_endpoint(kTestTokenEndpoint);
+  auto mock_fetcher = std::make_unique<NiceMock<MockNativeIdpFetcher>>();
+  EXPECT_CALL(*mock_fetcher, Fetch)
+      .WillOnce(WithArg<1>([](NativeIdpFetcher::FetchCallback callback) {
+        std::move(callback).Run(base::ok("invalid json"));
+      }));
+
+  std::unique_ptr<IdpNetworkRequestManager> manager = CreateTestManager();
+  manager->SetNativeIdpFetcherForTesting(url::Origin::Create(token_endpoint),
+                                         std::move(mock_fetcher));
+
+  base::RunLoop run_loop;
+  FetchStatus token_fetch_status;
+  TokenResult token_result;
+  auto callback =
+      base::BindLambdaForTesting([&](FetchStatus status, TokenResult&& result) {
+        token_fetch_status = status;
+        token_result = std::move(result);
+        run_loop.Quit();
+      });
+
+  manager->SendTokenRequest(token_endpoint, "account", "request_body", false,
+                            std::move(callback), base::DoNothing(),
+                            base::DoNothing(),
+                            CreateErrorMetricsCallback(run_loop));
+  run_loop.Run();
+
+  EXPECT_EQ(ParseStatus::kInvalidResponseError,
+            token_fetch_status.parse_status);
+  EXPECT_EQ(net::HTTP_OK, token_fetch_status.response_code);
+  EXPECT_FALSE(token_result.token.has_value());
+  ASSERT_TRUE(token_result.error.has_value());
+  EXPECT_EQ(0, test_url_loader_factory().NumPending());
+}
+
+TEST_F(IdpNetworkRequestManagerTest, NativeIdpTokenErrorResponse) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kFedCmNativeIdPs);
+
+  GURL token_endpoint(kTestTokenEndpoint);
+  auto mock_fetcher = std::make_unique<NiceMock<MockNativeIdpFetcher>>();
+  EXPECT_CALL(*mock_fetcher, Fetch)
+      .WillOnce(WithArg<1>([](NativeIdpFetcher::FetchCallback callback) {
+        std::move(callback).Run(
+            base::ok(R"({"error": {"code": "access_denied"}})"));
+      }));
+
+  std::unique_ptr<IdpNetworkRequestManager> manager = CreateTestManager();
+  manager->SetNativeIdpFetcherForTesting(url::Origin::Create(token_endpoint),
+                                         std::move(mock_fetcher));
+
+  base::RunLoop run_loop;
+  FetchStatus token_fetch_status;
+  TokenResult token_result;
+  auto callback =
+      base::BindLambdaForTesting([&](FetchStatus status, TokenResult&& result) {
+        token_fetch_status = status;
+        token_result = std::move(result);
+        run_loop.Quit();
+      });
+
+  manager->SendTokenRequest(token_endpoint, "account", "request_body", false,
+                            std::move(callback), base::DoNothing(),
+                            base::DoNothing(),
+                            CreateErrorMetricsCallback(run_loop));
+  run_loop.Run();
+
+  EXPECT_EQ(ParseStatus::kSuccess, token_fetch_status.parse_status);
+  EXPECT_EQ(net::HTTP_OK, token_fetch_status.response_code);
+  EXPECT_FALSE(token_result.token.has_value());
+  ASSERT_TRUE(token_result.error.has_value());
+  EXPECT_EQ("access_denied", token_result.error->code);
+  EXPECT_EQ(0, test_url_loader_factory().NumPending());
+}
+
+TEST_F(IdpNetworkRequestManagerTest, NativeIdpTokenContinueOn) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kFedCmNativeIdPs);
+
+  GURL token_endpoint(kTestTokenEndpoint);
+  auto mock_fetcher = std::make_unique<NiceMock<MockNativeIdpFetcher>>();
+  EXPECT_CALL(*mock_fetcher, Fetch)
+      .WillOnce(WithArg<1>([](NativeIdpFetcher::FetchCallback callback) {
+        std::move(callback).Run(
+            base::ok(R"({"continue_on": "https://idp.test/continue_on_url"})"));
+      }));
+
+  std::unique_ptr<IdpNetworkRequestManager> manager = CreateTestManager();
+  manager->SetNativeIdpFetcherForTesting(url::Origin::Create(token_endpoint),
+                                         std::move(mock_fetcher));
+
+  base::RunLoop run_loop;
+  auto on_continue =
+      base::BindLambdaForTesting([&](FetchStatus status, const GURL& url) {
+        EXPECT_EQ("https://idp.test/continue_on_url", url.spec());
+        run_loop.Quit();
+      });
+
+  manager->SendTokenRequest(token_endpoint, "account", "request_body", false,
+                            base::DoNothing(), std::move(on_continue),
+                            base::DoNothing(),
+                            CreateErrorMetricsCallback(run_loop));
+  run_loop.Run();
+  EXPECT_EQ(TokenResponseType::
+                kTokenNotReceivedAndErrorNotReceivedAndContinueOnReceived,
+            token_response_type());
+  EXPECT_EQ(0, test_url_loader_factory().NumPending());
+}
+
+TEST_F(IdpNetworkRequestManagerTest,
+       NativeIdpTokenFallbackWhenNoNativeFetcher) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kFedCmNativeIdPs);
+
+  GURL token_endpoint(kTestTokenEndpoint);
+  std::unique_ptr<IdpNetworkRequestManager> manager = CreateTestManager();
+
+  AddResponse(token_endpoint, net::HTTP_OK, "application/json",
+              R"({"token": "http_token"})");
+
+  base::RunLoop run_loop;
+  FetchStatus token_fetch_status;
+  TokenResult token_result;
+  auto callback =
+      base::BindLambdaForTesting([&](FetchStatus status, TokenResult&& result) {
+        token_fetch_status = status;
+        token_result = std::move(result);
+        run_loop.Quit();
+      });
+
+  manager->SendTokenRequest(token_endpoint, "account", "request_body", false,
+                            std::move(callback), base::DoNothing(),
+                            base::DoNothing(),
+                            CreateErrorMetricsCallback(run_loop));
+  run_loop.Run();
+
+  EXPECT_EQ(ParseStatus::kSuccess, token_fetch_status.parse_status);
+  ASSERT_TRUE(token_result.token.has_value());
+  EXPECT_EQ("http_token", token_result.token->GetString());
+}
+
+TEST_F(IdpNetworkRequestManagerTest, NativeIdpTokenFallbackWhenDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kFedCmNativeIdPs);
+
+  GURL token_endpoint(kTestTokenEndpoint);
+  auto mock_fetcher = std::make_unique<NiceMock<MockNativeIdpFetcher>>();
+  EXPECT_CALL(*mock_fetcher, Fetch).Times(0);
+
+  std::unique_ptr<IdpNetworkRequestManager> manager = CreateTestManager();
+  manager->SetNativeIdpFetcherForTesting(url::Origin::Create(token_endpoint),
+                                         std::move(mock_fetcher));
+
+  AddResponse(token_endpoint, net::HTTP_OK, "application/json",
+              R"({"token": "http_token"})");
+
+  base::RunLoop run_loop;
+  FetchStatus token_fetch_status;
+  TokenResult token_result;
+  auto callback =
+      base::BindLambdaForTesting([&](FetchStatus status, TokenResult&& result) {
+        token_fetch_status = status;
+        token_result = std::move(result);
+        run_loop.Quit();
+      });
+
+  manager->SendTokenRequest(token_endpoint, "account", "request_body", false,
+                            std::move(callback), base::DoNothing(),
+                            base::DoNothing(),
+                            CreateErrorMetricsCallback(run_loop));
+  run_loop.Run();
+
+  EXPECT_EQ(ParseStatus::kSuccess, token_fetch_status.parse_status);
+  ASSERT_TRUE(token_result.token.has_value());
+  EXPECT_EQ("http_token", token_result.token->GetString());
+}
+
+TEST_F(IdpNetworkRequestManagerTest, GetOrCreateNativeIdpFetcherIdempotent) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kFedCmNativeIdPs);
+
+  url::Origin idp_origin = url::Origin::Create(GURL("https://idp.example"));
+  std::unique_ptr<IdpNetworkRequestManager> manager = CreateTestManager();
+
+  auto mock_fetcher = std::make_unique<NiceMock<MockNativeIdpFetcher>>();
+  NativeIdpFetcher* raw_fetcher = mock_fetcher.get();
+  manager->SetNativeIdpFetcherForTesting(idp_origin, std::move(mock_fetcher));
+
+  EXPECT_EQ(raw_fetcher, manager->GetNativeIdpFetcher(idp_origin));
+  EXPECT_EQ(raw_fetcher, manager->GetOrCreateNativeIdpFetcher(idp_origin));
 }
 
 }  // namespace

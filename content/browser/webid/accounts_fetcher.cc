@@ -15,7 +15,6 @@
 #include "content/browser/webid/mappers.h"
 #include "content/browser/webid/metrics.h"
 #include "content/browser/webid/webid_utils.h"
-#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/webid/federated_identity_permission_context_delegate.h"
 #include "net/http/http_status_code.h"
@@ -383,22 +382,13 @@ void AccountsFetcher::OnAccountsResponseReceived(
       permission_delegate_);
 
   if (status.parse_status != ParseStatus::kSuccess) {
-    if (IsFedCmNativeIdPsEnabled() && GetContentClient()->browser()) {
-      auto fetcher_it = native_idp_fetchers_.find(idp_config_url);
-      if (fetcher_it == native_idp_fetchers_.end()) {
-        std::unique_ptr<NativeIdpFetcher> fetcher =
-            GetContentClient()->browser()->CreateNativeIdpFetcher(
-                url::Origin::Create(idp_config_url));
-        if (fetcher) {
-          fetcher_it =
-              native_idp_fetchers_.emplace(idp_config_url, std::move(fetcher))
-                  .first;
-        }
-      }
-      if (fetcher_it != native_idp_fetchers_.end()) {
+    if (IsFedCmNativeIdPsEnabled() && network_manager_) {
+      NativeIdpFetcher* fetcher = network_manager_->GetOrCreateNativeIdpFetcher(
+          url::Origin::Create(idp_config_url));
+      if (fetcher) {
         NativeIdpFetcher::RequestParams params;
         params.url = idp_info->endpoints.accounts;
-        fetcher_it->second->Fetch(
+        fetcher->Fetch(
             params, base::BindOnce(&AccountsFetcher::OnNativeAccountsFetched,
                                    weak_ptr_factory_.GetWeakPtr(),
                                    std::move(idp_info), old_idp_signin_status,

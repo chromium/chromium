@@ -12,6 +12,7 @@
 #include "base/base64.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/callback_helpers.h"
+#include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/escape.h"
@@ -31,12 +32,14 @@
 #include "content/browser/webid/network_request_manager.h"
 #include "content/browser/webid/webid_utils.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/weak_document_ptr.h"
 #include "content/public/browser/webid/constants.h"
 #include "content/public/browser/webid/federated_identity_permission_context_delegate.h"
 #include "content/public/browser/webid/identity_request_dialog_controller.h"
+#include "content/public/browser/webid/native_idp_fetcher.h"
 #include "content/public/common/color_parser.h"
 #include "crypto/hash.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -1016,6 +1019,23 @@ void IdpNetworkRequestManager::SendTokenRequest(
     ContinueOnCallback continue_on,
     RedirectToCallback redirect_to,
     RecordErrorMetricsCallback record_error_metrics_callback) {
+  if (IsFedCmNativeIdPsEnabled()) {
+    NativeIdpFetcher* fetcher =
+        GetNativeIdpFetcher(url::Origin::Create(token_url));
+    if (fetcher) {
+      NativeIdpFetcher::RequestParams params;
+      params.url = token_url;
+      params.body = url_encoded_post_data;
+      fetcher->Fetch(
+          params,
+          base::BindOnce(&IdpNetworkRequestManager::OnNativeTokenFetched,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                         std::move(continue_on), std::move(redirect_to),
+                         std::move(record_error_metrics_callback), token_url));
+      return;
+    }
+  }
+
   std::unique_ptr<network::ResourceRequest> resource_request =
       CreateCredentialedResourceRequest(
           token_url, idp_blindness
@@ -1040,6 +1060,76 @@ void IdpNetworkRequestManager::SendTokenRequest(
       // even if the response code is non-2xx because the server may include the
       // error details with the Error API.
       /*allow_http_error_results=*/true);
+}
+
+void IdpNetworkRequestManager::OnNativeTokenFetched(
+    TokenRequestCallback callback,
+    ContinueOnCallback continue_on_callback,
+    RedirectToCallback redirect_to_callback,
+    RecordErrorMetricsCallback record_error_metrics_callback,
+    const GURL& token_url,
+    NativeIdpFetcher::FetchResult fetch_result) {
+  if (!fetch_result.has_value()) {
+    OnTokenRequestParsed(
+        std::move(callback), std::move(continue_on_callback),
+        std::move(redirect_to_callback),
+        std::move(record_error_metrics_callback), token_url,
+        FetchStatus{ParseStatus::kNoResponseError, net::ERR_FAILED},
+        /*result=*/std::nullopt);
+    return;
+  }
+
+  std::optional<base::DictValue> dict =
+      base::JSONReader::ReadDict(fetch_result.value(), base::JSON_PARSE_RFC);
+  if (!dict) {
+    OnTokenRequestParsed(
+        std::move(callback), std::move(continue_on_callback),
+        std::move(redirect_to_callback),
+        std::move(record_error_metrics_callback), token_url,
+        FetchStatus{ParseStatus::kInvalidResponseError, net::HTTP_OK},
+        /*result=*/std::nullopt);
+    return;
+  }
+
+  OnTokenRequestParsed(std::move(callback), std::move(continue_on_callback),
+                       std::move(redirect_to_callback),
+                       std::move(record_error_metrics_callback), token_url,
+                       FetchStatus{ParseStatus::kSuccess, net::HTTP_OK},
+                       std::move(dict));
+}
+
+NativeIdpFetcher* IdpNetworkRequestManager::GetOrCreateNativeIdpFetcher(
+    const url::Origin& idp_origin) {
+  auto fetcher_it = native_idp_fetchers_.find(idp_origin);
+  if (fetcher_it != native_idp_fetchers_.end()) {
+    return fetcher_it->second.get();
+  }
+  if (!GetContentClient() || !GetContentClient()->browser()) {
+    return nullptr;
+  }
+  std::unique_ptr<NativeIdpFetcher> fetcher =
+      GetContentClient()->browser()->CreateNativeIdpFetcher(idp_origin);
+  if (!fetcher) {
+    return nullptr;
+  }
+  NativeIdpFetcher* raw_fetcher = fetcher.get();
+  native_idp_fetchers_.emplace(idp_origin, std::move(fetcher));
+  return raw_fetcher;
+}
+
+NativeIdpFetcher* IdpNetworkRequestManager::GetNativeIdpFetcher(
+    const url::Origin& idp_origin) const {
+  auto fetcher_it = native_idp_fetchers_.find(idp_origin);
+  if (fetcher_it != native_idp_fetchers_.end()) {
+    return fetcher_it->second.get();
+  }
+  return nullptr;
+}
+
+void IdpNetworkRequestManager::SetNativeIdpFetcherForTesting(  // IN-TEST
+    const url::Origin& idp_origin,
+    std::unique_ptr<NativeIdpFetcher> fetcher) {
+  native_idp_fetchers_[idp_origin] = std::move(fetcher);
 }
 
 void IdpNetworkRequestManager::SendSuccessfulTokenRequestMetrics(
