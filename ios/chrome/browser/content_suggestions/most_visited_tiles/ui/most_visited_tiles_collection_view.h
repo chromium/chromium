@@ -13,6 +13,9 @@
 /// update it.
 @interface MostVisitedTilesCollectionView : UICollectionView
 
+/// Callback invoked when the collection view's content size changes.
+@property(nonatomic, copy) void (^onContentSizeChanged)(CGSize newSize);
+
 /// Initializes the collection view with `config` and `spacing` between the
 /// cells.
 - (instancetype)initWithConfig:(MostVisitedTilesConfig*)config

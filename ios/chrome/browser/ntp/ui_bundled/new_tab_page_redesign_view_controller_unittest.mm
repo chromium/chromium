@@ -4,7 +4,11 @@
 
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_redesign_view_controller.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/test/scoped_feature_list.h"
+#import "ios/chrome/browser/content_suggestions/most_visited_tiles/ui/most_visited_item.h"
+#import "ios/chrome/browser/content_suggestions/most_visited_tiles/ui/most_visited_tiles_collection_view.h"
+#import "ios/chrome/browser/content_suggestions/most_visited_tiles/ui/most_visited_tiles_config.h"
 #import "ios/chrome/browser/content_suggestions/ui/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_bottom_sheet_view_controller.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_content_delegate.h"
@@ -284,4 +288,69 @@ TEST_F(NewTabPageRedesignViewControllerTest, TestBottomSheetDidEscape) {
 
   // Calling bottomSheetViewControllerDidEscape should not crash.
   [view_controller_ bottomSheetViewControllerDidEscape:sheet];
+}
+
+// Tests that onHeightChanged callback triggers bottom sheet position update
+// when MVT is not in the bottom sheet.
+TEST_F(NewTabPageRedesignViewControllerTest,
+       TestMvtHeightChangeCallbackWhenNotInBottomSheet) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kMVTInBottomSheet);
+
+  id mock_bottom_sheet =
+      OCMClassMock([NewTabPageBottomSheetViewController class]);
+  [view_controller_ setValue:mock_bottom_sheet
+                      forKey:@"bottomSheetViewController"];
+
+  MostVisitedTilesConfig* config =
+      [[MostVisitedTilesConfig alloc] initWithLayoutGuideCenter:nil];
+  MostVisitedItem* item = [[MostVisitedItem alloc] init];
+  config.mostVisitedItems = @[ item ];
+
+  [view_controller_ setMostVisitedTilesConfig:config];
+
+  UIView* container = [view_controller_ valueForKey:@"mostVisitedView"];
+  ASSERT_TRUE(container != nil);
+
+  MostVisitedTilesCollectionView* collection_view = nil;
+  for (UIView* subview in container.subviews) {
+    if ([subview isKindOfClass:[MostVisitedTilesCollectionView class]]) {
+      collection_view = static_cast<MostVisitedTilesCollectionView*>(subview);
+      break;
+    }
+  }
+  ASSERT_TRUE(collection_view != nil);
+  ASSERT_TRUE(collection_view.onContentSizeChanged != nil);
+
+  OCMExpect([mock_bottom_sheet updateBottomSheetPositionAnimated:YES]);
+  collection_view.onContentSizeChanged(CGSizeMake(300, 100));
+  [mock_bottom_sheet verify];
+}
+
+// Tests that onHeightChanged callback is not set when MVT is in the bottom
+// sheet.
+TEST_F(NewTabPageRedesignViewControllerTest,
+       TestMvtHeightChangeCallbackWhenInBottomSheet) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kMVTInBottomSheet);
+
+  MostVisitedTilesConfig* config =
+      [[MostVisitedTilesConfig alloc] initWithLayoutGuideCenter:nil];
+  MostVisitedItem* item = [[MostVisitedItem alloc] init];
+  config.mostVisitedItems = @[ item ];
+
+  [view_controller_ setMostVisitedTilesConfig:config];
+
+  UIView* container = [view_controller_ valueForKey:@"mostVisitedView"];
+  ASSERT_TRUE(container != nil);
+
+  MostVisitedTilesCollectionView* collection_view = nil;
+  for (UIView* subview in container.subviews) {
+    if ([subview isKindOfClass:[MostVisitedTilesCollectionView class]]) {
+      collection_view = static_cast<MostVisitedTilesCollectionView*>(subview);
+      break;
+    }
+  }
+  ASSERT_TRUE(collection_view != nil);
+  EXPECT_TRUE(collection_view.onContentSizeChanged == nil);
 }

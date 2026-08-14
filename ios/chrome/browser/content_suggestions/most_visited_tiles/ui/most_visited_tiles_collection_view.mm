@@ -85,8 +85,12 @@ const int kPlusButtonIdentifier = -1;
 }
 
 - (void)setContentSize:(CGSize)contentSize {
+  CGSize oldSize = self.contentSize;
   [super setContentSize:contentSize];
   [self invalidateIntrinsicContentSize];
+  if (oldSize.height != contentSize.height && self.onContentSizeChanged) {
+    self.onContentSizeChanged(contentSize);
+  }
 }
 
 - (CGSize)intrinsicContentSize {

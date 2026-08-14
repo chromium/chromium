@@ -7,9 +7,10 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_redesign_view_controller.h"
 
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/content_suggestions/magic_stack/ui/magic_stack_module_container.h"
+#import "ios/chrome/browser/content_suggestions/magic_stack/ui/magic_stack_module_background_view.h"
 #import "ios/chrome/browser/content_suggestions/model/content_suggestions_metrics_recorder.h"
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/ui/most_visited_item.h"
+#import "ios/chrome/browser/content_suggestions/most_visited_tiles/ui/most_visited_tiles_collection_view.h"
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/ui/most_visited_tiles_config.h"
 #import "ios/chrome/browser/content_suggestions/ui/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_framing_coordinates.h"
@@ -52,6 +53,13 @@ constexpr CGFloat kExpandedSheetOmniboxTopMargin = 16.0;
 // Spacing from the top of the bottom sheet to the MVTs container when
 // resting/collapsed.
 constexpr CGFloat kRestingSheetMVTTopMargin = 12.0;
+
+// Bottom padding between the MVT collection view and the bottom of its
+// container.
+constexpr CGFloat kMVTContainerBottomPadding = 10.0;
+
+// Corner radius for the MVT container when rendered with squircle styling.
+constexpr CGFloat kMVTContainerCornerRadius = 24.0;
 
 // Top margin of the Google logo view.
 constexpr CGFloat kLogoTopMargin = 40.0;
@@ -549,11 +557,21 @@ const CGFloat kMinDragHandleHeight = 24.0;
     _mostVisitedView = nil;
     return;
   }
-  MagicStackModuleContainer* container =
-      [[MagicStackModuleContainer alloc] initWithFrame:CGRectZero noInset:YES];
-  [container configureWithConfig:config];
 
-  _mostVisitedView = container;
+  MostVisitedTilesCollectionView* collectionView =
+      [[MostVisitedTilesCollectionView alloc] initWithConfig:config];
+
+  if (!IsMVTInBottomSheetEnabled()) {
+    __weak __typeof(_bottomSheetViewController) weakBottomSheetViewController =
+        _bottomSheetViewController;
+    collectionView.onContentSizeChanged = ^(CGSize) {
+      [weakBottomSheetViewController updateBottomSheetPositionAnimated:YES];
+    };
+  }
+
+  _mostVisitedView =
+      [self createContainerForMostVisitedCollectionView:collectionView
+                                             inSquircle:YES];
 
   if (IsMVTInBottomSheetEnabled()) {
     if (_bottomSheetViewController) {
@@ -664,6 +682,40 @@ const CGFloat kMinDragHandleHeight = 24.0;
 }
 
 #pragma mark - Private
+
+// Creates a container view that wraps `collectionView` with bottom padding and
+// optional squircle background styling.
+- (UIView*)createContainerForMostVisitedCollectionView:
+               (MostVisitedTilesCollectionView*)collectionView
+                                            inSquircle:(BOOL)inSquircle {
+  UIView* container = [[UIView alloc] init];
+  container.translatesAutoresizingMaskIntoConstraints = NO;
+
+  if (inSquircle) {
+    UIView* backgroundView = [[MagicStackModuleBackgroundView alloc] init];
+    backgroundView.translatesAutoresizingMaskIntoConstraints = NO;
+    [container addSubview:backgroundView];
+    AddSameConstraints(container, backgroundView);
+    container.layer.cornerRadius = kMVTContainerCornerRadius;
+    container.clipsToBounds = YES;
+  }
+
+  collectionView.translatesAutoresizingMaskIntoConstraints = NO;
+  [container addSubview:collectionView];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [collectionView.topAnchor constraintEqualToAnchor:container.topAnchor],
+    [collectionView.leadingAnchor
+        constraintEqualToAnchor:container.leadingAnchor],
+    [collectionView.trailingAnchor
+        constraintEqualToAnchor:container.trailingAnchor],
+    [collectionView.bottomAnchor
+        constraintEqualToAnchor:container.bottomAnchor
+                       constant:-kMVTContainerBottomPadding],
+  ]];
+
+  return container;
+}
 
 // Add _mostVisitedView to the view hierarchy.
 - (void)embedMostVisitedView {
