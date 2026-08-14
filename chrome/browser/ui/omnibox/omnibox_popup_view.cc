@@ -34,3 +34,9 @@ std::u16string_view OmniboxPopupView::GetAccessibleButtonTextForResult(
 OmniboxPopupViewBrowserView* OmniboxPopupView::AsOmniboxPopupViewBrowserView() {
   return nullptr;
 }
+
+bool OmniboxPopupView::IsReverting() const {
+  return false;
+}
+
+void OmniboxPopupView::SetIsReverting(bool reverting) {}

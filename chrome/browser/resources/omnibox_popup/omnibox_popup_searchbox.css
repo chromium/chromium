@@ -77,12 +77,15 @@
   margin-bottom: var(--alignment-inset-top);
 }
 
-:host(:not([dropdown-is-visible])) #inputWrapper:hover:not(:focus-within) {
+:host(:not([dropdown-is-visible]):not([has-input-selection_]):not([is-focused_])) #inputWrapper:hover:not(:focus-within) {
   cursor: text;
   background-color: var(--color-omnibox-results-background-hovered);
 }
 
-:host(:not([dropdown-is-visible])) #inputWrapper:focus-within {
+:host(:not([dropdown-is-visible])) #inputWrapper:focus-within,
+:host([is-focused_]:not([dropdown-is-visible])) #inputWrapper,
+:host([is-focused_][has-input-selection_]) #inputWrapper {
+  --cr-searchbox-shadow: none;
   box-shadow: 0 0 0 2px var(--cr-focus-outline-color);
 }
 
@@ -140,7 +143,10 @@ cr-searchbox-input::part(searchbox-input) {
   padding-top: 0;
 }
 
-cr-searchbox-input::part(searchbox-input)::selection {
+/* When the window is inactive (top container has focus), the selection should
+   still be the same color. */
+cr-searchbox-input::part(searchbox-input)::selection,
+cr-searchbox-input::part(searchbox-input):window-inactive::selection {
   background-color: var(--color-omnibox-selection-background);
   color: var(--color-omnibox-selection-foreground);
 }

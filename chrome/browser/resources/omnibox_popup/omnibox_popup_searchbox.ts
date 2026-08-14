@@ -21,7 +21,7 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import {SelectionLineState} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import type {AutocompleteResult, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerInterface as SearchboxPageHandlerInterface} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerInterface as SearchboxPageHandlerInterface} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {browserProxyFactory, OmniboxEscapeAction} from './omnibox_popup.mojom-webui.js';
@@ -152,12 +152,30 @@ export class OmniboxPopupSearchboxElement extends
         type: Boolean,
         reflect: true,
       },
+      /**
+       * Whether the input has selection or not. Used when the widget loses
+       * activation but should still show the selection,
+       */
+      hasInputSelection_: {
+        type: Boolean,
+        reflect: true,
+      },
+      /**
+       * Whether the input has focus or not. Used when the widget loses
+       * activation but should still show the focus ring.
+       */
+      isLogicallyFocused_: {
+        type: Boolean,
+        reflect: true,
+      },
     };
   }
 
   accessor canShowSecondarySide: boolean =
       canShowSecondarySideMediaQueryList.matches;
   accessor hasSecondarySide: boolean = false;
+  accessor isLogicallyFocused_: boolean = false;
+  accessor hasInputSelection_: boolean = false;
   accessor searchboxChromeRefreshTheming: boolean =
       loadTimeData.getBoolean('searchboxCr23Theming');
   accessor searchboxSteadyStateShadow: boolean =
@@ -260,6 +278,8 @@ export class OmniboxPopupSearchboxElement extends
           this.onSetInputState_.bind(this)),
       this.popupCallbackRouter_.setFocus.addListener(
           this.onSetFocus_.bind(this)),
+      this.popupCallbackRouter_.clearAutocompleteMatches.addListener(
+          this.clearAutocompleteMatches.bind(this)),
     ];
     this.eventTracker_.add(
         document, 'selectionchange', this.onSelectionChanged_.bind(this));
@@ -436,10 +456,6 @@ export class OmniboxPopupSearchboxElement extends
     return true;
   }
 
-  override isAutocompleteResultStale(result: AutocompleteResult): boolean {
-    return super.isAutocompleteResultStale(result) || !result.matches.length;
-  }
-
   //========================================================================
   // Event handlers
   //========================================================================
@@ -568,6 +584,7 @@ export class OmniboxPopupSearchboxElement extends
    */
   private onSelectionChanged_() {
     const input = this.$.input.inputElement;
+    this.hasInputSelection_ = input.selectionStart !== input.selectionEnd;
     // Suppress selection updates during active IME text composition.
     if (this.shadowRoot.activeElement !== this.$.input || this.isComposing_) {
       return;
@@ -599,6 +616,8 @@ export class OmniboxPopupSearchboxElement extends
       this.dropdownIsVisible = false;
     }
 
+    this.isLogicallyFocused_ = state.isFocused;
+
     if (state.isFocused) {
       if (document.visibilityState === 'visible') {
         this.deferredFocusAction_ = null;
@@ -615,6 +634,8 @@ export class OmniboxPopupSearchboxElement extends
     } else {
       this.fullUrlShown_ = false;
     }
+
+    this.hasInputSelection_ = state.selection.start !== state.selection.end;
 
     this.selectRange(state.selection);
     this.getDropdownElement().unselect();
@@ -638,11 +659,11 @@ export class OmniboxPopupSearchboxElement extends
    * If hidden, defers the action until `visibilitychange`.
    */
   private onSetFocus_(isFocused: boolean) {
+    this.isLogicallyFocused_ = isFocused;
     if (isFocused) {
       if (document.visibilityState === 'visible') {
         this.deferredFocusAction_ = null;
         this.$.input.focus();
-        this.getInputElement().select();
       } else {
         // Defer focusing and selecting text if the document is currently
         // hidden, as DOM focus calls on hidden documents may be ignored.
@@ -685,7 +706,8 @@ export class OmniboxPopupSearchboxElement extends
       this.maybeShowFullUrl_();
     }
 
-    if (isFullSelection) {
+    const isLogicallyFocused = this.shadowRoot?.activeElement === this.$.input;
+    if (isFullSelection && isLogicallyFocused) {
       this.getInputElement().select();
     } else {
       this.$.input.setSelectionRange(

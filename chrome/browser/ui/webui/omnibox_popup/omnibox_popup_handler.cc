@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_view.h"
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "ui/base/models/menu_model.h"
 
@@ -56,6 +57,16 @@ void OmniboxPopupHandler::OnSelectionChanged(const gfx::Range& selection,
   }
   latest_selection_ = selection;
   show_full_url_ = show_full_url;
+
+  // Update the selection range of the native view so that when keyboard focus
+  // is transferred to the native view upon click on top container, that typed
+  // text is entered at the correct place.
+  if (controller_) {
+    if (auto* omnibox_view_views =
+            static_cast<OmniboxViewViews*>(controller_->edit_model()->view())) {
+      omnibox_view_views->SetSelectedRange(selection);
+    }
+  }
 }
 
 void OmniboxPopupHandler::Revert(uint32_t sequence_number) {
@@ -63,7 +74,13 @@ void OmniboxPopupHandler::Revert(uint32_t sequence_number) {
     return;
   }
   if (controller_) {
+    if (auto* popup_view = controller_->edit_model()->popup_view()) {
+      popup_view->SetIsReverting(true);
+    }
     controller_->edit_model()->Revert();
+    if (auto* popup_view = controller_->edit_model()->popup_view()) {
+      popup_view->SetIsReverting(false);
+    }
   }
   latest_selection_ = gfx::Range(0, 0);
 }
@@ -178,6 +195,10 @@ void OmniboxPopupHandler::SetInputState(
 
 void OmniboxPopupHandler::SetFocus(bool is_focused) {
   page_->SetFocus(is_focused);
+}
+
+void OmniboxPopupHandler::ClearAutocompleteMatches() {
+  page_->ClearAutocompleteMatches();
 }
 
 void OmniboxPopupHandler::LogEscapeAction(

@@ -418,6 +418,10 @@ bool OmniboxPopupPresenterBase::ShouldPreserveRequestedFocus() const {
   return false;
 }
 
+bool OmniboxPopupPresenterBase::IsDeactivating() const {
+  return false;
+}
+
 void OmniboxPopupPresenterBase::OnWidgetClosed(
     views::Widget::ClosedReason closed_reason) {
   is_deferred_ = false;

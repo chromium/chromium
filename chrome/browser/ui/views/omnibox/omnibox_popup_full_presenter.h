@@ -9,6 +9,9 @@
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
+#include "ui/events/event_observer.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/views/event_monitor.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -19,7 +22,8 @@ class OmniboxController;
 // Implements subclass of OmniboxPopupPresenterBase to present a single full
 // WebUI (input row + suggestions dropdown) into the Omnibox popup.
 class OmniboxPopupFullPresenter : public OmniboxPopupPresenterBase,
-                                  public views::WidgetObserver {
+                                  public views::WidgetObserver,
+                                  public ui::EventObserver {
  public:
   OmniboxPopupFullPresenter(LocationBar* location_bar,
                             OmniboxPopupPresenterDelegate& presenter_delegate,
@@ -44,6 +48,8 @@ class OmniboxPopupFullPresenter : public OmniboxPopupPresenterBase,
       const override;
   bool ShouldDetachWebContentsOnHide() const override;
 
+  bool IsDeactivating() const override;
+
  protected:
   // OmniboxPopupPresenterBase:
   // Returns true so that explicit focus requests (`focus_requested_`) are
@@ -58,10 +64,17 @@ class OmniboxPopupFullPresenter : public OmniboxPopupPresenterBase,
 
  private:
   // views::WidgetObserver:
-  // Used to close the popup and show the omnibox_view_views if the correct
-  // conditions are met.
+  // Handles window-wide focus shifts (e.g. clicking the webpage to activate
+  // the parent window or switching apps). We must use this to detect that
+  // focus has left the popup, since the `EventMonitor` is not notified if the
+  // `FocusManager` restores focus to the same native omnibox view upon window
+  // reactivation.
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
   void StopForwardingEvents();
+
+  // ui::EventObserver:
+  // Handles click events and determines if the popup should be deactivated.
+  void OnEvent(const ui::Event& event) override;
 
   void DeactivatePopupAndKillFocus();
 
@@ -69,13 +82,20 @@ class OmniboxPopupFullPresenter : public OmniboxPopupPresenterBase,
   bool is_handling_escape_key_ = false;
 
   base::ScopedObservation<views::Widget, views::WidgetObserver>
-      widget_observation_{this};
+      popup_widget_observation_{this};
+  base::ScopedObservation<views::Widget, views::WidgetObserver>
+      parent_widget_observation_{this};
+
+  // Used to determine where a click event happened to decide if the popup
+  // should be deactivated.
+  std::unique_ptr<views::EventMonitor> event_monitor_;
 
   // Timer to stop forwarding events after a short delay.
   base::OneShotTimer forward_events_timer_;
 
   // Whether the "first shown" metrics have been logged at least once.
   bool logged_first_shown_metric_ = false;
+  bool is_deactivating_ = false;
 
   base::WeakPtrFactory<OmniboxPopupFullPresenter> weak_factory_{this};
 };

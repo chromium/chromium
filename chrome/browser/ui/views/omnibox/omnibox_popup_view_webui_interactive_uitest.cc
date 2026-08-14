@@ -257,39 +257,6 @@ class OmniboxPopupViewWebUIFullV2Test : public OmniboxPopupViewWebUITest {
         {});
   }
 
-  std::unique_ptr<views::Widget> DeactivatePopupWidget() {
-    // Wait for the popup transition to complete (clearing
-    // in_popup_state_transition).
-    EXPECT_TRUE(base::test::RunUntil(
-        [&]() { return !location_bar()->in_popup_state_transition(); }));
-
-    // Since in background test runners the browser window is not natively
-    // active, focusing on the web contents will not activate the browser
-    // widget. Create a temporary dummy widget and activate it to force the main
-    // browser window (and the child popup widget) inactive.
-    auto dummy_widget = std::make_unique<views::Widget>();
-    views::Widget::InitParams params(
-        views::Widget::InitParams::CLIENT_OWNS_WIDGET,
-        views::Widget::InitParams::TYPE_WINDOW);
-    params.context = location_bar()->GetWidget()->GetNativeWindow();
-    params.bounds = gfx::Rect(0, 0, 100, 100);
-    dummy_widget->Init(std::move(params));
-    dummy_widget->Show();
-    dummy_widget->Activate();
-
-    // In background test runners, the OS blocks background applications from
-    // changing native window activation.
-    // Directly notify the presenter observer of focus loss.
-    auto* popup_view = static_cast<OmniboxPopupViewWebUI*>(
-        location_bar()->GetOmniboxPopupView());
-    auto* presenter =
-        static_cast<OmniboxPopupFullPresenter*>(popup_view->presenter());
-    static_cast<views::WidgetObserver*>(presenter)->OnWidgetActivationChanged(
-        presenter->get_widget_for_testing(), /*active=*/false);
-
-    return dummy_widget;
-  }
-
  private:
   base::test::ScopedFeatureList feature_list_full_v2_;
 };
@@ -400,81 +367,6 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewWebUIFullV2Test,
     const gfx::Range expected_selection = gfx::Range(0, 0);
     return popup_handler_check &&
            popup_handler_check->latest_selection() == expected_selection;
-  }));
-}
-
-// TODO(crbug.com/542637306): Re-enable this test on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_DeactivationClearsPopupState DISABLED_DeactivationClearsPopupState
-#else
-#define MAYBE_DeactivationClearsPopupState DeactivationClearsPopupState
-#endif
-IN_PROC_BROWSER_TEST_F(OmniboxPopupViewWebUIFullV2Test,
-                       MAYBE_DeactivationClearsPopupState) {
-  // Focus the location bar to ensure the Omnibox has active focus and the popup
-  // is open.
-  location_bar()->FocusLocation(/*is_user_initiated=*/true,
-                                /*clear_focus_if_failed=*/false);
-
-  // Verify that the popup state is initially kFull.
-  ASSERT_EQ(OmniboxPopupState::kFull,
-            controller()->popup_state_manager()->popup_state());
-
-  auto dummy_widget = DeactivatePopupWidget();
-
-  // Wait for the deferred deactivation task to run and verify that the popup
-  // state transitions to kNone.
-  EXPECT_TRUE(base::test::RunUntil([&]() {
-    return controller()->popup_state_manager()->popup_state() ==
-           OmniboxPopupState::kNone;
-  }));
-}
-
-// TODO(crbug.com/536046012): Re-enable this test.
-IN_PROC_BROWSER_TEST_F(OmniboxPopupViewWebUIFullV2Test,
-                       DISABLED_DeactivationWithTextDoesNotClearPopupState) {
-  // Focus the location bar to ensure the Omnibox has active focus and the popup
-  // is open.
-  location_bar()->FocusLocation(/*is_user_initiated=*/true,
-                                /*clear_focus_if_failed=*/false);
-
-  // Verify that the popup state is initially kFull.
-  ASSERT_EQ(OmniboxPopupState::kFull,
-            controller()->popup_state_manager()->popup_state());
-
-  omnibox_view()->SetUserText(u"test query");
-
-  auto dummy_widget = DeactivatePopupWidget();
-
-  // Wait for the deferred deactivation task to run and verify that the popup
-  // state transitions to kNone.
-  EXPECT_TRUE(base::test::RunUntil([&]() {
-    return controller()->popup_state_manager()->popup_state() !=
-           OmniboxPopupState::kNone;
-  }));
-}
-
-IN_PROC_BROWSER_TEST_F(OmniboxPopupViewWebUIFullV2Test,
-                       DeactivationWithClearedTextClearsPopupState) {
-  // Focus the location bar to ensure the Omnibox has active focus and the popup
-  // is open.
-  location_bar()->FocusLocation(/*is_user_initiated=*/true,
-                                /*clear_focus_if_failed=*/false);
-
-  // Verify that the popup state is initially kFull.
-  ASSERT_EQ(OmniboxPopupState::kFull,
-            controller()->popup_state_manager()->popup_state());
-
-  omnibox_view()->SetUserText(u"test query");
-  omnibox_view()->SetUserText(u"");
-
-  auto dummy_widget = DeactivatePopupWidget();
-
-  // Wait for the deferred deactivation task to run and verify that the popup
-  // state transitions to kNone.
-  EXPECT_TRUE(base::test::RunUntil([&]() {
-    return controller()->popup_state_manager()->popup_state() ==
-           OmniboxPopupState::kNone;
   }));
 }
 

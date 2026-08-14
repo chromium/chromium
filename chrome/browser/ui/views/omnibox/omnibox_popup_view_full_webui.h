@@ -44,6 +44,12 @@ class OmniboxPopupViewFullWebUI : public OmniboxPopupViewWebUI {
   // was already open, sends a dedicated `SetFocus(true)` Mojo IPC to ensure
   // DOM input focus in the WebUI is restored without resetting input state.
   void OnFocus(bool query_zps) override;
+  // Called when the native omnibox loses focus. Sends a dedicated
+  // `SetFocus(false)` Mojo IPC to ensure DOM input focus in the WebUI is
+  // cleared.
+  void OnBlur() override;
+  bool IsReverting() const override;
+  void SetIsReverting(bool reverting) override;
 
  private:
   // Gets the OmniboxPopupHandler associated with this view's WebUI.
@@ -54,6 +60,7 @@ class OmniboxPopupViewFullWebUI : public OmniboxPopupViewWebUI {
   std::optional<std::u16string> last_sent_text_;
   // Caches the last focus state sent to the WebUI to detect focus transitions.
   std::optional<bool> last_sent_focus_;
+  bool is_reverting_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_VIEW_FULL_WEBUI_H_
