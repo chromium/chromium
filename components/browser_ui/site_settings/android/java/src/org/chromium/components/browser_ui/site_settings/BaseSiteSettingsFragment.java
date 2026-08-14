@@ -26,10 +26,11 @@ public abstract class BaseSiteSettingsFragment extends PreferenceFragmentCompat
     /**
      * Sets the SiteSettingsDelegate instance this Fragment should use.
      *
-     * <p>This should be called by the embedding Activity.
+     * <p>This should be called by the embedding Activity. It may be called more than once for
+     * SettingsInTab, as a temporary dependency provider is used during the initial activity
+     * restore, replaced later with the actual dependencies once they become available.
      */
     public void setSiteSettingsDelegate(SiteSettingsDelegate client) {
-        assert mSiteSettingsDelegate == null;
         mSiteSettingsDelegate = client;
     }
 

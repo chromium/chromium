@@ -9,6 +9,7 @@ import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.os.Bundle;
 
 import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
@@ -31,6 +32,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.search.SettingsSearchCoordinator;
 import org.chromium.components.browser_ui.settings.SearchViewProvider;
+import org.chromium.components.browser_ui.site_settings.BaseSiteSettingsFragment;
 import org.chromium.ui.base.ActivityResultTracker;
 
 import java.util.function.Supplier;
@@ -65,6 +67,11 @@ public class FragmentDependencyProviderTest {
         public void initSearchView(SearchView searchView) {}
     }
 
+    public static class TestBaseSiteSettingsFragment extends BaseSiteSettingsFragment {
+        @Override
+        public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {}
+    }
+
     @Before
     public void setUp() {
         when(mSearchCoordinatorSupplier.get()).thenReturn(mSearchCoordinator);
@@ -97,5 +104,17 @@ public class FragmentDependencyProviderTest {
         mProvider.onFragmentAttached(null, fragment, null);
 
         assertNotNull(fragment.getObserver());
+    }
+
+    @Test
+    public void testAttachDependencies_BaseSiteSettingsFragment_canBeCalledMultipleTimes() {
+        TestBaseSiteSettingsFragment fragment = new TestBaseSiteSettingsFragment();
+        mProvider.attachDependencies(null, fragment);
+        assertNotNull(fragment.getSiteSettingsDelegate());
+
+        // Attaching dependencies again (e.g. during Activity recreation / SettingsInTab init)
+        // should update the delegate without throwing an AssertionError.
+        mProvider.attachDependencies(null, fragment);
+        assertNotNull(fragment.getSiteSettingsDelegate());
     }
 }

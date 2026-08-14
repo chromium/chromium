@@ -52,6 +52,7 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.browser_ui.settings.PaddedItemDecorationWithDivider;
+import org.chromium.components.browser_ui.site_settings.BaseSiteSettingsFragment;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.sync.SyncService;
 
@@ -448,6 +449,42 @@ public class SettingsHostFragmentTest {
     }
 
     @Test
+    public void testActivityRecreation_siteSettings_populatesDependenciesOnRestoredFragments() {
+        attachHostFragment();
+        TestSiteSettingsFragment siteSettingsFragment = new TestSiteSettingsFragment();
+        mSettingsHostFragment.showFragment(
+                siteSettingsFragment, /* addToBackStack= */ false, /* tag= */ null);
+        mSettingsHostFragment.getChildFragmentManager().executePendingTransactions();
+
+        // Simulate activity recreation (e.g. font size change, OS theme switch).
+        mActivityScenarios.getScenario().recreate();
+
+        mActivityScenarios
+                .getScenario()
+                .onActivity(
+                        activity -> {
+                            var manager = activity.getSupportFragmentManager();
+                            SettingsHostFragment restoredHost =
+                                    (SettingsHostFragment)
+                                            manager.findFragmentByTag(
+                                                    SettingsHostFragment.SETTINGS_NATIVE_PAGE_TAG);
+                            assertNotNull("Restored host fragment should exist", restoredHost);
+
+                            Fragment restoredChild = restoredHost.getActiveFragment();
+                            assertNotNull("Restored child fragment should exist", restoredChild);
+                            assertTrue(
+                                    "Restored child fragment should be BaseSiteSettingsFragment",
+                                    restoredChild instanceof BaseSiteSettingsFragment);
+
+                            BaseSiteSettingsFragment restoredSiteSettings =
+                                    (BaseSiteSettingsFragment) restoredChild;
+                            assertTrue(
+                                    "SiteSettingsDelegate should be set",
+                                    restoredSiteSettings.hasSiteSettingsDelegate());
+                        });
+    }
+
+    @Test
     public void testOnConfigurationChanged_updatesContainment() {
         attachHostFragment();
         SettingsContainmentHelper mockHelper = mock(SettingsContainmentHelper.class);
@@ -521,6 +558,17 @@ public class SettingsHostFragmentTest {
         @Override
         public Fragment onCreateInitialDetailFragment() {
             return new FirstFakeSettingsFragment();
+        }
+    }
+
+    /** Subclass of BaseSiteSettingsFragment to test dependency injection on restore. */
+    public static class TestSiteSettingsFragment extends BaseSiteSettingsFragment {
+        public TestSiteSettingsFragment() {}
+
+        @Override
+        public void onCreatePreferences(
+                @Nullable Bundle savedInstanceState, @Nullable String rootKey) {
+            setPreferenceScreen(getPreferenceManager().createPreferenceScreen(requireContext()));
         }
     }
 }
