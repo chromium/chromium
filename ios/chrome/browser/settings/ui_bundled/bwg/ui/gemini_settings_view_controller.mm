@@ -452,6 +452,14 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
         UIViewController* viewController =
             dynamicSettingsItem.action.viewController;
         if (viewController) {
+          // Dynamic view controllers (e.g., Personal Context) expose a delegate
+          // property for dismissal.
+          if ([viewController
+                  respondsToSelector:@selector(setPersonalContextDelegate:)]) {
+            [viewController
+                performSelector:@selector(setPersonalContextDelegate:)
+                     withObject:self.personalContextDelegate];
+          }
           [self.navigationController pushViewController:viewController
                                                animated:YES];
         }

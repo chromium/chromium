@@ -11,12 +11,20 @@
 
 @protocol GeminiSettingsMutator;
 
+// Delegate for Personal Context dismissal events.
+@protocol GeminiPersonalContextDelegate <NSObject>
+- (void)personalContextViewControllerDidRequestDismissal:
+    (UIViewController*)viewController;
+@end
+
 // View controller related to Gemini setting.
 @interface GeminiSettingsViewController
     : SettingsRootTableViewController <GeminiSettingsConsumer,
                                        SettingsControllerProtocol>
 
 @property(nonatomic, weak) id<GeminiSettingsMutator> mutator;
+@property(nonatomic, weak) id<GeminiPersonalContextDelegate>
+    personalContextDelegate;
 
 @end
 
