@@ -725,4 +725,12 @@ suite('ToolbarAppTest', () => {
     await checkLinearGradientRing(false);
     await checkLinearGradientRing(true);
   });
+
+  test('GetAvailableWidth', async () => {
+    app = document.createElement('toolbar-app');
+    document.body.appendChild(app);
+    await microtasksFinished();
+
+    assertEquals(window.innerWidth - app.clientWidth, app.getAvailableWidth());
+  });
 });

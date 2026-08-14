@@ -14,6 +14,7 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import type {LocationBarState} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 
+import type {ToolbarAppElement} from './app.js';
 import {BrowserProxyImpl} from './browser_proxy.js';
 import type {BrowserProxy} from './browser_proxy.js';
 import {getCss} from './location_bar.css.js';
@@ -184,29 +185,27 @@ export class LocationBarElement extends CrLitElement implements
   }
 
   /**
-   * Calculates the remaining available width for the location bar's content
-   * area. Returned available width includes the width currently taken up by the
-   * location bar. Note that this is available width in a CSS sense, so, e.g.,
-   * exterior margins are not included in the return value. Requires the
+   * Calculates the maximum width of the location bar's content area, taking
+   * into account the current size of all other controls on the toolbar and the
+   * width of the window. Note that this is available width in a CSS sense, so,
+   * e.g., exterior margins are not included in the return value. Requires the
    * location bar be displayed to accurately calculate this value.
    *
    * To achieve this without replicating CSS layout calculations (margins,
-   * padding, gaps, child visibility, walking through children), it takes the
-   * inner width of the window, subtracts the current width of the parent
-   * element, which should be the toolbar itself, and then adds back the current
-   * width of the location bar.
+   * padding, gaps, child visibility, walking through children), it adds the
+   * `ToolbarAppElement.getAvailableWidth()` to current width of the location
+   * bar.
    *
    * Always returns a value of at least LOCATION_BAR_MIN_WIDTH, even if there's
    * not that much width available.
    */
-  private getAvailableWidth(): number {
+  private getMaxAvailableWidth(): number {
     const shadowRoot = this.getRootNode() as ShadowRoot;
     if (!shadowRoot || !shadowRoot.host) {
       return 0;
     }
-    const host = shadowRoot.host as HTMLElement;
-    const availableWidth =
-        window.innerWidth - host.clientWidth + this.clientWidth;
+    const toolbarApp = shadowRoot.host as ToolbarAppElement;
+    const availableWidth = toolbarApp.getAvailableWidth() + this.clientWidth;
     // Always consider at least the minimum required width available.
     return Math.max(availableWidth, LocationBarElement.LOCATION_BAR_MIN_WIDTH);
   }
@@ -227,11 +226,11 @@ export class LocationBarElement extends CrLitElement implements
   // For the location bar, the "preferred width" is maximum width the location
   // bar will assume before space is allocated to lower priority
   // ResponsiveControls. At the end of layout, any remaining available space is
-  // allocated to the location bar by calling setToAvailableWidth(), potentially
-  // increasing its size beyond its preferred width.
+  // allocated to the location bar by calling setToMaxAvailableWidth(),
+  // potentially increasing its size beyond its preferred width.
   expandUpToPreferredWidth() {
     const width = Math.min(
-        this.getAvailableWidth(),
+        this.getMaxAvailableWidth(),
         LocationBarElement.LOCATION_BAR_PREFERRED_WIDTH);
     this.style.width = `${width}px`;
   }
@@ -250,8 +249,8 @@ export class LocationBarElement extends CrLitElement implements
   //
   // TODO(crbug.com/491791965): Should we shrink the location bar to even less
   // than the minimum if there's less width than that available?
-  setToAvailableWidth() {
-    this.style.width = `${this.getAvailableWidth()}px`;
+  setToMaxAvailableWidth() {
+    this.style.width = `${this.getMaxAvailableWidth()}px`;
   }
 
   private updateFocusWithin_() {

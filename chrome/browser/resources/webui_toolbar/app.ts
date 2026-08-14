@@ -818,10 +818,23 @@ export class ToolbarAppElement extends AppElementBase {
     // and not when a ResponsiveControl's minimum or preferred size changes, as
     // the latter could require a new layoutResponsiveControls() call, even if
     // the width of the toolbar still matches that of the window.
-    if (this.webUIToolbarFullyEnabled_ &&
-        window.innerWidth !== this.clientWidth) {
+    if (this.webUIToolbarFullyEnabled_ && this.getAvailableWidth() !== 0) {
       this.layoutResponsiveControls();
     }
+  }
+
+  /**
+   * Returns the amount of available width for the toolbar, in pixels, which is
+   * the difference between the window inner width and the current width of this
+   * element (`window.innerWidth - this.clientWidth`). This is intended to be
+   * used during layout, which attempts to size controls so that there's exactly
+   * 0 available width.
+   *
+   * Note that this value can be negative if the toolbar element's client width
+   * exceeds the window's inner width.
+   */
+  getAvailableWidth(): number {
+    return window.innerWidth - this.clientWidth;
   }
 
   /**
@@ -862,7 +875,7 @@ export class ToolbarAppElement extends AppElementBase {
 
     // Assign all remaining space to the location bar.
     if (locationBar.shouldBeShown()) {
-      locationBar.setToAvailableWidth();
+      locationBar.setToMaxAvailableWidth();
     }
 
     return true;
@@ -938,9 +951,9 @@ export class ToolbarAppElement extends AppElementBase {
           control.setToPreferredWidth();
         }
       }
-      if (window.innerWidth >= this.clientWidth) {
+      if (this.getAvailableWidth() >= 0) {
         if (locationBar.shouldBeShown()) {
-          locationBar.setToAvailableWidth();
+          locationBar.setToMaxAvailableWidth();
         }
         return;
       }
