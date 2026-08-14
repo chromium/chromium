@@ -186,6 +186,12 @@ void BrowserDelegateImpl::Close() {
   browser_->GetWindow()->Close();
 }
 
+void BrowserDelegateImpl::SetSkipWarningUserOnClose(bool skip) {
+  if (auto* unload_controller = UnloadController::From(&*browser_)) {
+    unload_controller->set_force_skip_warning_user_on_close(skip);
+  }
+}
+
 void BrowserDelegateImpl::AddTab(const GURL& url,
                                  std::optional<size_t> index,
                                  TabDisposition disposition) {

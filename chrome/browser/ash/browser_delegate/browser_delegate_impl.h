@@ -48,6 +48,7 @@ class BrowserDelegateImpl : public BrowserDelegate {
   void Activate() override;
   void Minimize() override;
   void Close() override;
+  void SetSkipWarningUserOnClose(bool skip) override;
   void AddTab(const GURL& url,
               std::optional<size_t> index,
               TabDisposition disposition) override;

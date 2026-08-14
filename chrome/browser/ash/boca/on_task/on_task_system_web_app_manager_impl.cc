@@ -25,7 +25,6 @@
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
-#include "chrome/browser/ui/unload_controller.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/ash/components/boca/on_task/activity/active_tab_tracker.h"
 #include "chromeos/ash/components/boca/on_task/on_task_blocklist.h"
@@ -111,8 +110,7 @@ void OnTaskSystemWebAppManagerImpl::CloseSystemWebAppWindow(
   }
   if (browser) {
     // Skips the tab unload process so that browser closes immediately.
-    UnloadController::From(&browser->GetBrowser())
-        ->set_force_skip_warning_user_on_close(true);
+    browser->SetSkipWarningUserOnClose(true);
     browser->Close();
   }
 }
@@ -355,8 +353,7 @@ void OnTaskSystemWebAppManagerImpl::PrepareSystemWebAppWindowForOnTask(
   OnTaskLockedController::From(&browser->GetBrowser())
       ->set_locked_for_on_task(true);
   MakeWindowResizable(browser->GetNativeWindow());
-  UnloadController::From(&browser->GetBrowser())
-      ->set_force_skip_warning_user_on_close(true);
+  browser->SetSkipWarningUserOnClose(true);
 
   // Remove the floating button on the browser window for OnTask.
   aura::Window* const native_window = browser->GetNativeWindow();

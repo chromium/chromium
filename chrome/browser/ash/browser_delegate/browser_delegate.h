@@ -147,6 +147,10 @@ class BrowserDelegate {
   // Closes the browser as soon as possible.
   virtual void Close() = 0;
 
+  // Sets whether the browser should skip warning the user (e.g. beforeunload or
+  // download warnings) when closing.
+  virtual void SetSkipWarningUserOnClose(bool skip) = 0;
+
   // Loads the given URL in a new tab.
   // If the `url` is empty the new tab-page is loaded.
   // If an `index` is given, the tab is placed at the corresponding position in
