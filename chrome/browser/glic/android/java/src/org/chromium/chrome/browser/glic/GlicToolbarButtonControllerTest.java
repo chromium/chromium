@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.glic;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
@@ -140,6 +141,12 @@ public class GlicToolbarButtonControllerTest {
 
     @Test
     public void testButtonData_OffTheRecord() {
+        Profile incognitoProfile = mock(Profile.class);
+        when(incognitoProfile.getOriginalProfile()).thenReturn(mProfile);
+        when(incognitoProfile.isOffTheRecord()).thenReturn(true);
+        when(mGlicEnablingJniMock.isEnabledForProfile(incognitoProfile)).thenReturn(false);
+        when(mGlicEnablingJniMock.isEnabledForProfile(mProfile)).thenReturn(true);
+        when(mTab.getProfile()).thenReturn(incognitoProfile);
         when(mTab.isOffTheRecord()).thenReturn(true);
         when(mTab.isIncognito()).thenReturn(true);
         ButtonData buttonData = mController.get(mTab);
@@ -148,11 +155,35 @@ public class GlicToolbarButtonControllerTest {
     }
 
     @Test
+    public void testButtonData_OffTheRecord_GlicDisabledOnOriginalProfile() {
+        Profile incognitoProfile = mock(Profile.class);
+        when(incognitoProfile.getOriginalProfile()).thenReturn(mProfile);
+        when(incognitoProfile.isOffTheRecord()).thenReturn(true);
+        when(mGlicEnablingJniMock.isEnabledForProfile(incognitoProfile)).thenReturn(false);
+        when(mGlicEnablingJniMock.isEnabledForProfile(mProfile)).thenReturn(false);
+        when(mTab.getProfile()).thenReturn(incognitoProfile);
+        when(mTab.isOffTheRecord()).thenReturn(true);
+        when(mTab.isIncognito()).thenReturn(true);
+        ButtonData buttonData = mController.get(mTab);
+
+        Assert.assertFalse(buttonData.canShow());
+    }
+
+    @Test
     public void testOnClick() {
         mController.onClick(null);
 
         verify(mToggleGlicCallback)
                 .onClick(false, GlicKeyedService.GlicInvocationSource.TOP_CHROME_BUTTON);
+    }
+
+    @Test
+    public void testOnClick_OffTheRecord() {
+        when(mTab.isOffTheRecord()).thenReturn(true);
+        when(mTab.isIncognito()).thenReturn(true);
+        mController.onClick(null);
+
+        verify(mToggleGlicCallback, never()).onClick(anyBoolean(), anyInt());
     }
 
     @Test
@@ -521,6 +552,17 @@ public class GlicToolbarButtonControllerTest {
         when(mActorService.getActiveTasks())
                 .thenReturn(Collections.singletonList(mock(ActorTask.class)));
         Assert.assertTrue(mController.shouldForciblyShowGlicButton(mProfile));
+    }
+
+    @Test
+    public void testShouldForciblyShowGlicButton_IncognitoProfile() {
+        Profile incognitoProfile = mock(Profile.class);
+        when(incognitoProfile.getOriginalProfile()).thenReturn(mProfile);
+        when(mGlicEnablingJniMock.isEnabledForProfile(incognitoProfile)).thenReturn(false);
+        when(mGlicEnablingJniMock.isEnabledForProfile(mProfile)).thenReturn(true);
+        when(mActorService.getActiveTasks())
+                .thenReturn(Collections.singletonList(mock(ActorTask.class)));
+        Assert.assertTrue(mController.shouldForciblyShowGlicButton(incognitoProfile));
     }
 
     @Test

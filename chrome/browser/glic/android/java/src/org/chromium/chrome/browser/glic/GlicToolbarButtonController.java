@@ -163,7 +163,8 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider {
      * @param profile The current profile.
      */
     public boolean shouldForciblyShowGlicButton(Profile profile) {
-        if (!AdaptiveToolbarFeatures.isGlicEnabledForAdaptiveToolbar(mActivity, profile)) {
+        if (!AdaptiveToolbarFeatures.isGlicEnabledForAdaptiveToolbar(
+                mActivity, profile.getOriginalProfile())) {
             return false;
         }
         mStateController.updateObservations(profile);
@@ -176,7 +177,8 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider {
         if (tab == null || UrlUtilities.isNtpUrl(tab.getUrl())) {
             return false;
         }
-        if (!AdaptiveToolbarFeatures.isGlicEnabledForAdaptiveToolbar(mActivity, tab.getProfile())) {
+        if (!AdaptiveToolbarFeatures.isGlicEnabledForAdaptiveToolbar(
+                mActivity, tab.getProfile().getOriginalProfile())) {
             return false;
         }
         return super.shouldShowButton(tab);

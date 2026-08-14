@@ -101,6 +101,7 @@ public class TabbedAdaptiveToolbarBehaviorTest {
 
         when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
         when(mTabModel.getProfile()).thenReturn(mProfile);
+        when(mProfile.getOriginalProfile()).thenReturn(mProfile);
 
         mBehavior =
                 new TabbedAdaptiveToolbarBehavior(
