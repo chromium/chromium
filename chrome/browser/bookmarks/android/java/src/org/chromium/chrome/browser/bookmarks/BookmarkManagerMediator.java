@@ -265,9 +265,8 @@ class BookmarkManagerMediator
                             mBookmarkQueryHandler.buildBookmarkListForParent(
                                     currentId, mCurrentPowerFilter));
                     setSearchTextAndUpdateButtonVisibility("");
-                    clearSearchBoxFocus();
-                    if (!mIsExitingSearch) {
-                        maybeAutoFocusSearchBox();
+                    if (mIsExitingSearch || !maybeAutoFocusSearchBox()) {
+                        clearSearchBoxFocus();
                     }
                 }
             };
@@ -1846,16 +1845,18 @@ class BookmarkManagerMediator
     }
 
     /** The search box only focused on LFF device with a hardware keyboard attached. */
-    private void maybeAutoFocusSearchBox() {
+    private boolean maybeAutoFocusSearchBox() {
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)
                 && DeviceInput.supportsKeyboard(mContext)) {
             mRecyclerView.post(
                     () -> {
                         // The search box might not be in the model list yet, so guard this call.
-                        if (getCurrentSearchBoxIndex() < 0) return;
+                        if (getSearchBoxPropertyModel() == null) return;
                         setSearchBoxFocusAndHideKeyboardIfNeeded(true);
                     });
+            return true;
         }
+        return false;
     }
 
     private @Nullable String getCurrentSearchText() {

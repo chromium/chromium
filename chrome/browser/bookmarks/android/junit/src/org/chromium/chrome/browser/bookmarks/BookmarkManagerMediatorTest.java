@@ -130,6 +130,7 @@ import org.chromium.components.sync.SyncService.SyncStateChangedListener;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.ui.base.Clipboard;
+import org.chromium.ui.base.DeviceInput;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.listmenu.BasicListMenu;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
@@ -2804,5 +2805,33 @@ public class BookmarkManagerMediatorTest {
 
     private void clickChildAt(BasicListMenu menu, int i) {
         menu.clickItemForTesting(i);
+    }
+
+    @Test
+    @Config(qualifiers = "sw600dp")
+    @EnableFeatures(ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_LAYOUT)
+    public void testClearSearchTextKeepsFocus_DesktopLayout() {
+        DeviceInput.setSupportsKeyboardForTesting(true);
+        doAnswer(
+                        invocation -> {
+                            ((Runnable) invocation.getArgument(0)).run();
+                            return true;
+                        })
+                .when(mRecyclerView)
+                .post(any(Runnable.class));
+
+        finishLoading();
+        mMediator.openFolder(mRootFolderId);
+
+        PropertyModel searchBoxRowPropertyModel = mMediator.getOrCreateSearchBoxPropertyModel();
+        searchBoxRowPropertyModel.get(SearchBoxProperties.FOCUS_CHANGED_CALLBACK).onResult(true);
+        assertTrue(searchBoxRowPropertyModel.get(SearchBoxProperties.HAS_FOCUS));
+
+        Callback<String> searchTextChangeCallback =
+                searchBoxRowPropertyModel.get(SearchBoxProperties.TEXT_CHANGED_CALLBACK);
+        searchTextChangeCallback.onResult("test");
+        searchTextChangeCallback.onResult("");
+
+        assertTrue(searchBoxRowPropertyModel.get(SearchBoxProperties.HAS_FOCUS));
     }
 }
