@@ -19,6 +19,7 @@ suite('SkillsAppPage', function() {
   let browserProxy: TestSkillsBrowserProxy;
 
   setup(function() {
+    loadTimeData.overrideValues({isGlicEnabled: true, isSkillsEnabled: true});
     browserProxy = new TestSkillsBrowserProxy();
     SkillsPageBrowserProxy.setInstance(browserProxy);
     window.history.replaceState({}, '', '/');
@@ -59,6 +60,22 @@ suite('SkillsAppPage', function() {
     assertEquals('/browse', CrRouter.getInstance().getPath());
 
     tabs[1]!.click();
+    await microtasksFinished();
+    assertEquals('/yourSkills', CrRouter.getInstance().getPath());
+  });
+
+  test('DrawerMenuTabsNavigateCorrectly', async function() {
+    const drawerTabs =
+        app.$.drawerMenu.shadowRoot.querySelectorAll<HTMLElement>(
+            '.cr-nav-menu-item');
+    assertTrue(!!drawerTabs);
+    assertEquals(2, drawerTabs.length);
+
+    drawerTabs[0]!.click();
+    await microtasksFinished();
+    assertEquals('/browse', CrRouter.getInstance().getPath());
+
+    drawerTabs[1]!.click();
     await microtasksFinished();
     assertEquals('/yourSkills', CrRouter.getInstance().getPath());
   });
@@ -125,9 +142,54 @@ suite('SkillsAppPage', function() {
     assertFalse(app.$.drawer.open);
     assertTrue(app.$.menu.parentElement!.hidden);
 
+    const drawerOpened = eventToPromise('cr-drawer-opened', app.$.drawer);
     app.$.toolbar.dispatchEvent(new CustomEvent('cr-toolbar-menu-click'));
-    await microtasksFinished();
+    await drawerOpened;
     assertTrue(app.$.drawer.open);
+  });
+
+  test('DrawerClosesWhenExitingNarrowMode', async function() {
+    app.$.toolbar.narrow = true;
+    await microtasksFinished();
+
+    const drawerOpened = eventToPromise('cr-drawer-opened', app.$.drawer);
+    app.$.toolbar.dispatchEvent(new CustomEvent('cr-toolbar-menu-click'));
+    await drawerOpened;
+    assertTrue(app.$.drawer.open);
+
+    const drawerClosed = eventToPromise('close', app.$.drawer);
+    app.$.toolbar.narrow = false;
+    await drawerClosed;
+    assertFalse(app.$.toolbar.showMenu);
+    assertFalse(app.$.drawer.open);
+    assertFalse(app.$.menu.parentElement!.hidden);
+  });
+
+  test('DrawerClosesCorrectly', async function() {
+    app.$.toolbar.narrow = true;
+    await microtasksFinished();
+
+    const drawerOpened = eventToPromise('cr-drawer-opened', app.$.drawer);
+    app.$.toolbar.dispatchEvent(new CustomEvent('cr-toolbar-menu-click'));
+    await drawerOpened;
+    assertTrue(app.$.drawer.open);
+
+    const drawerClosed = eventToPromise('close', app.$.drawer);
+    app.$.drawer.close();
+    await drawerClosed;
+    assertFalse(app.$.drawer.open);
+  });
+
+  test('NarrowModeDoesNotShowMenuInErrorState', async function() {
+    loadTimeData.overrideValues({isGlicEnabled: false});
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    app = document.createElement('skills-app');
+    document.body.appendChild(app);
+    await microtasksFinished();
+
+    app.$.toolbar.narrow = true;
+    await microtasksFinished();
+    assertFalse(app.$.toolbar.showMenu);
   });
 
   test('BackNavigationWorksAfterMultipleTabClicks', async function() {

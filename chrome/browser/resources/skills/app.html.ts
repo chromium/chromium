@@ -21,6 +21,12 @@ export function getHtml(this: SkillsAppElement) {
     ?show-menu="${this.shouldShowToolbarMenu_()}"
     .showSearch="${this.getErrorType_() === null}">
 </cr-toolbar>
+<cr-drawer id="drawer" heading="$i18n{skillsTitle}"
+    @close="${this.onDrawerClose_}">
+  <skills-sidebar id="drawerMenu" slot="body"
+      .selectedPage="${this.selectedPage_}">
+  </skills-sidebar>
+</cr-drawer>
 ${this.getErrorType_() !== null ? html`
   <error-page error-type="${this.getErrorType_()!}"></error-page>` : html`
   <div id="content" class="no-outline cr-scrollable">
@@ -29,12 +35,6 @@ ${this.getErrorType_() !== null ? html`
         <skills-sidebar id="menu" .selectedPage="${this.selectedPage_}">
         </skills-sidebar>
       </div>
-      <cr-drawer id="drawer" heading="$i18n{skillsTitle}"
-          @close="${this.onDrawerClose_}">
-        <skills-sidebar id="drawerMenu" slot="body"
-            .selectedPage="${this.selectedPage_}">
-        </skills-sidebar>
-      </cr-drawer>
     </div>
     <cr-page-selector id="page" attr-for-selected="page-index"
         .selected="${this.selectedPage_}">
