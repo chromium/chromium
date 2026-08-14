@@ -87,6 +87,8 @@ import java.util.function.Supplier;
 public class BookmarkManagerCoordinator
         implements SearchDelegate, BackPressHandler, OnAttachStateChangeListener {
 
+    private static final int WIDE_DISPLAY_THRESHOLD_DP = 840;
+
     private final SelectionDelegate<BookmarkId> mSelectionDelegate =
             new SelectionDelegate<>() {
                 @Override
@@ -255,6 +257,7 @@ public class BookmarkManagerCoordinator
             mDesktopNavigationCoordinator =
                     new BookmarkDesktopNavigationCoordinator(
                             activity, navigationPane, mBookmarkModel, bookmarkDelegateSupplier);
+            updateNavigationPaneVisibility(activity.getResources().getConfiguration());
         }
         BookmarkUndoController bookmarkUndoController =
                 new BookmarkUndoController(activity, mBookmarkModel, snackbarManager);
@@ -422,6 +425,7 @@ public class BookmarkManagerCoordinator
                                     padding,
                                     mRecyclerView.getPaddingBottom());
 
+                            updateNavigationPaneVisibility(newConfig);
                             updateDesktopSearchBoxMargins();
 
                             mBookmarkToolbarCoordinator.onConfigurationChanged(newConfig);
@@ -710,6 +714,14 @@ public class BookmarkManagerCoordinator
 
     public BookmarkUiPrefs getBookmarkUiPrefsForTesting() {
         return mBookmarkUiPrefs;
+    }
+
+    private void updateNavigationPaneVisibility(Configuration config) {
+        View navigationPane = mMainView.findViewById(R.id.navigation_pane);
+        if (navigationPane != null) {
+            navigationPane.setVisibility(
+                    config.screenWidthDp < WIDE_DISPLAY_THRESHOLD_DP ? View.GONE : View.VISIBLE);
+        }
     }
 
     private void updateDesktopSearchBoxMargins() {
