@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/page_info/chrome_page_info_delegate.h"
 #include "chrome/browser/ui/page_info/page_info_dialog.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view_base.h"
 #include "chrome/browser/ui/views/page_info/page_info_navigation_handler.h"
@@ -53,14 +54,16 @@ class PageInfoBubbleView : public PageInfoBubbleViewBase,
   PageInfo* presenter_for_testing() { return presenter_.get(); }
 
  private:
-  PageInfoBubbleView(views::BubbleAnchor anchor,
-                     const gfx::Rect& anchor_rect,
-                     gfx::NativeView parent_window,
-                     content::WebContents* web_contents,
-                     const GURL& url,
-                     base::OnceClosure initialized_callback,
-                     PageInfoClosingCallback closing_callback,
-                     bool allow_extended_site_info);
+  PageInfoBubbleView(
+      views::BubbleAnchor anchor,
+      const gfx::Rect& anchor_rect,
+      gfx::NativeView parent_window,
+      content::WebContents* web_contents,
+      const GURL& url,
+      base::OnceClosure initialized_callback,
+      PageInfoClosingCallback closing_callback,
+      bool allow_extended_site_info,
+      ChromePageInfoDelegate::GetBrowserCallback get_browser_callback);
 
   // PageInfoBubbleViewBase:
   gfx::Size CalculatePreferredSize(

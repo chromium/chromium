@@ -52,6 +52,13 @@ PageInfoBubbleSpecification::Builder::AddPageInfoClosingCallback(
 }
 
 PageInfoBubbleSpecification::Builder&
+PageInfoBubbleSpecification::Builder::AddGetBrowserCallback(
+    ChromePageInfoDelegate::GetBrowserCallback callback) {
+  page_info_bubble_specification_->AddGetBrowserCallback(std::move(callback));
+  return *this;
+}
+
+PageInfoBubbleSpecification::Builder&
 PageInfoBubbleSpecification::Builder::HideExtendedSiteInfo() {
   page_info_bubble_specification_->HideExtendedSiteInfo();
   return *this;
@@ -101,6 +108,11 @@ void PageInfoBubbleSpecification::AddPageInfoClosingCallback(
   page_info_closing_callback_ = std::move(callback);
 }
 
+void PageInfoBubbleSpecification::AddGetBrowserCallback(
+    ChromePageInfoDelegate::GetBrowserCallback callback) {
+  get_browser_callback_ = std::move(callback);
+}
+
 void PageInfoBubbleSpecification::HideExtendedSiteInfo() {
   show_extended_site_info_ = false;
 }
@@ -139,6 +151,11 @@ PageInfoBubbleSpecification::page_info_closing_callback() {
   return page_info_closing_callback_.is_null()
              ? base::DoNothing()
              : std::move(page_info_closing_callback_);
+}
+
+ChromePageInfoDelegate::GetBrowserCallback
+PageInfoBubbleSpecification::get_browser_callback() {
+  return get_browser_callback_;
 }
 
 bool PageInfoBubbleSpecification::show_extended_site_info() {

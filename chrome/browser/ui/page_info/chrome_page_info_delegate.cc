@@ -121,9 +121,20 @@ constexpr UrlIdentity::FormatOptions kUrlIdentityOptions{
 
 }  // namespace
 
+// static
+ChromePageInfoDelegate::GetBrowserCallback
+ChromePageInfoDelegate::DefaultGetBrowserCallback() {
+  return base::BindRepeating([](content::WebContents* contents) {
+    return GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(contents);
+  });
+}
+
 ChromePageInfoDelegate::ChromePageInfoDelegate(
-    content::WebContents* web_contents)
-    : web_contents_(web_contents) {
+    content::WebContents* web_contents,
+    GetBrowserCallback get_browser_callback)
+    : get_browser_callback_(std::move(get_browser_callback)),
+      web_contents_(web_contents) {
+  CHECK(get_browser_callback_);
 #if !BUILDFLAG(IS_ANDROID)
   sentiment_service_ =
       TrustSafetySentimentServiceFactory::GetForProfile(GetProfile());
@@ -132,6 +143,12 @@ ChromePageInfoDelegate::ChromePageInfoDelegate(
                             page_info::IsAboutThisSiteFeatureEnabled(
                                 g_browser_process->GetApplicationLocale()));
 }
+
+ChromePageInfoDelegate::ChromePageInfoDelegate(
+    content::WebContents* web_contents)
+    : ChromePageInfoDelegate(web_contents, DefaultGetBrowserCallback()) {}
+
+ChromePageInfoDelegate::~ChromePageInfoDelegate() = default;
 
 Profile* ChromePageInfoDelegate::GetProfile() const {
   return Profile::FromBrowserContext(web_contents_->GetBrowserContext());
@@ -226,8 +243,7 @@ content::PermissionResult ChromePageInfoDelegate::GetPermissionResult(
 
 #if !BUILDFLAG(IS_ANDROID)
 void ChromePageInfoDelegate::FocusWebContents() {
-  BrowserWindowInterface* browser =
-      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(web_contents_);
+  BrowserWindowInterface* browser = get_browser_callback_.Run(web_contents_);
   BrowserWebContentsDelegate::From(browser)->ActivateContents(web_contents_);
 }
 
@@ -350,28 +366,24 @@ void ChromePageInfoDelegate::ShowSiteSettings(const GURL& site_url) {
     return;
   }
 
-  BrowserWindowInterface* browser =
-      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(web_contents_);
+  BrowserWindowInterface* browser = get_browser_callback_.Run(web_contents_);
   chrome::ShowSiteSettings(browser, site_url);
 }
 
 void ChromePageInfoDelegate::ShowCookiesSettings() {
-  BrowserWindowInterface* browser =
-      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(web_contents_);
+  BrowserWindowInterface* browser = get_browser_callback_.Run(web_contents_);
   chrome::ShowSettingsSubPage(browser, chrome::kCookieSettingsSubPage);
 }
 
 void ChromePageInfoDelegate::ShowAllSitesSettingsFilteredByRwsOwner(
     const std::u16string& rws_owner) {
-  BrowserWindowInterface* browser =
-      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(web_contents_);
+  BrowserWindowInterface* browser = get_browser_callback_.Run(web_contents_);
   chrome::ShowAllSitesSettingsFilteredByRwsOwner(browser,
                                                  base::UTF16ToUTF8(rws_owner));
 }
 
 void ChromePageInfoDelegate::ShowSyncSettings() {
-  BrowserWindowInterface* browser =
-      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(web_contents_);
+  BrowserWindowInterface* browser = get_browser_callback_.Run(web_contents_);
   chrome::ShowSettingsSubPage(browser, chrome::kSyncSetupSubPage);
 }
 

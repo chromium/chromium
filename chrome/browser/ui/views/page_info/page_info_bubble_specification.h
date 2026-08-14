@@ -10,6 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/types/pass_key.h"
+#include "chrome/browser/ui/page_info/chrome_page_info_delegate.h"
 #include "chrome/browser/ui/page_info/page_info_dialog.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "ui/gfx/native_ui_types.h"
@@ -47,6 +48,12 @@ class PageInfoBubbleSpecification {
     // `callback` will run when the bubble widget is destroying.
     Builder& AddPageInfoClosingCallback(PageInfoClosingCallback callback);
 
+    // Sets a custom callback to look up the BrowserWindowInterface for the
+    // WebContents. Useful for WebContents not directly hosted as browser tabs
+    // (e.g. payment handler dialogs or modal web dialogs).
+    Builder& AddGetBrowserCallback(
+        ChromePageInfoDelegate::GetBrowserCallback callback);
+
     // Hides the extended site info section at the bottom of the page info
     // bubble.
     Builder& HideExtendedSiteInfo();
@@ -74,6 +81,8 @@ class PageInfoBubbleSpecification {
   void AddAnchorRect(gfx::Rect rect);
   void AddInitializedCallback(base::OnceClosure callback);
   void AddPageInfoClosingCallback(PageInfoClosingCallback callback);
+  void AddGetBrowserCallback(
+      ChromePageInfoDelegate::GetBrowserCallback callback);
   void HideExtendedSiteInfo();
   void ShowPermissionPage(ContentSettingsType type);
 
@@ -84,6 +93,7 @@ class PageInfoBubbleSpecification {
   gfx::Rect anchor_rect();
   base::OnceClosure initialized_callback();
   PageInfoClosingCallback page_info_closing_callback();
+  ChromePageInfoDelegate::GetBrowserCallback get_browser_callback();
   bool show_extended_site_info();
   std::optional<ContentSettingsType> permission_page_type();
 
@@ -95,6 +105,8 @@ class PageInfoBubbleSpecification {
   gfx::Rect anchor_rect_;
   base::OnceClosure initialized_callback_;
   PageInfoClosingCallback page_info_closing_callback_;
+  ChromePageInfoDelegate::GetBrowserCallback get_browser_callback_{
+      ChromePageInfoDelegate::DefaultGetBrowserCallback()};
   bool show_extended_site_info_ = true;
   std::optional<ContentSettingsType> permission_page_type_;
 };
