@@ -7,12 +7,16 @@
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/check_op.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/metrics/user_metrics.h"
 #include "base/sequence_checker.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/ash/login/lock/screen_locker.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_storage.h"
+#include "chrome/browser/ui/ash/session/session_controller_client_impl.h"
+#include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/login/session/session_termination_manager.h"
 #include "components/session_manager/core/session.h"
 #include "components/session_manager/core/session_manager.h"
@@ -31,11 +35,13 @@ ScreenLockerController& ScreenLockerController::Get() {
 }
 
 ScreenLockerController::ScreenLockerController(
+    SessionManagerClient* session_manager_client,
     SessionTerminationManager* session_termination_manager,
     session_manager::SessionManager* session_manager,
     user_manager::UserManager* user_manager,
     UserAddingScreen* user_adding_screen)
-    : session_termination_manager_(CHECK_DEREF(session_termination_manager)),
+    : session_manager_client_(CHECK_DEREF(session_manager_client)),
+      session_termination_manager_(CHECK_DEREF(session_termination_manager)),
       session_manager_(CHECK_DEREF(session_manager)),
       user_manager_(CHECK_DEREF(user_manager)),
       user_adding_screen_(CHECK_DEREF(user_adding_screen)) {
@@ -53,8 +59,7 @@ ScreenLockerController::~ScreenLockerController() {
   CHECK_EQ(g_instance, this);
   g_instance = nullptr;
 
-  // TODO(crbug.com/539761804): Change this to own the ScreenLocker object.
-  ScreenLocker::ScheduleDeletion();
+  DestroyScreenLocker();
 }
 
 void ScreenLockerController::HandleShowLockScreenRequest() {
@@ -85,6 +90,86 @@ void ScreenLockerController::HandleShowLockScreenRequest() {
   VLOG(1) << "The user session cannot be locked, logging out";
   session_termination_manager_->StopSession(
       login_manager::SessionStopReason::FAILED_TO_LOCK);
+}
+
+void ScreenLockerController::ShowLockScreen() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  base::RecordAction(base::UserMetricsAction("ScreenLocker_Show"));
+
+  if (user_manager_->IsLoggedInAsGuest()) {
+    VLOG(1) << "Refusing to lock screen for guest account";
+    return;
+  }
+
+  if (!screen_locker_) {
+    // TODO(crbug.com/546312582): Currently the callback runs synchronously, but
+    // if it runs asynchronously, an interrupting call of `HideLockScreen` may
+    // cause issues.
+    // TODO(crbug.com/545532125): Pass SessionControllerClientImpl via ctor.
+    SessionControllerClientImpl::Get()->PrepareForLock(
+        base::BindOnce(&ScreenLockerController::CreateAndInitScreenLocker,
+                       weak_factory_.GetWeakPtr()));
+  } else {
+    // TODO(crbug.com/546312582): Check if we need to abort an in-flight unlock
+    // animation if HideLockScreen was called previously.
+    VLOG(1) << "ScreenLocker already exists; calling session manager's "
+               "HandleLockScreenShown D-Bus method";
+    session_manager_client_->NotifyLockScreenShown();
+  }
+}
+
+void ScreenLockerController::HideLockScreen() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (user_manager_->IsLoggedInAsGuest()) {
+    VLOG(1) << "Refusing to hide lock screen for guest account";
+    return;
+  }
+
+  if (!screen_locker_) {
+    return;
+  }
+
+  // TODO(crbug.com/545532125): Pass SessionControllerClientImpl via ctor.
+  SessionControllerClientImpl::Get()->RunUnlockAnimation(
+      base::BindOnce(&ScreenLockerController::OnUnlockAnimationFinished,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void ScreenLockerController::CreateAndInitScreenLocker() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  screen_locker_ =
+      std::make_unique<ScreenLocker>(user_manager_->GetUnlockUsers());
+  VLOG(1) << "Created ScreenLocker " << screen_locker_.get();
+  screen_locker_->Init();
+}
+
+void ScreenLockerController::DestroyScreenLocker() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!screen_locker_) {
+    return;
+  }
+
+  VLOG(1) << "Deleting ScreenLocker " << screen_locker_.get();
+  screen_locker_.reset();
+}
+
+void ScreenLockerController::OnUnlockAnimationFinished(bool aborted) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  VLOG(1) << "ScreenLockerController::OnUnlockAnimationFinished aborted="
+          << aborted;
+  if (aborted) {
+    if (screen_locker_) {
+      screen_locker_->ResetToLockedState();
+    }
+    return;
+  }
+
+  session_manager_->SetSessionState(session_manager::SessionState::ACTIVE);
+  DestroyScreenLocker();
 }
 
 void ScreenLockerController::OnSessionStateChanged() {

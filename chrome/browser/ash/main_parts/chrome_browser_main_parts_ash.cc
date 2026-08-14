@@ -973,7 +973,7 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
   g_browser_process->metrics_service()->InitPerUserMetrics();
 
   screen_locker_controller_ = std::make_unique<ScreenLockerController>(
-      session_termination_manager_.get(),
+      SessionManagerClient::Get(), session_termination_manager_.get(),
       session_manager::SessionManager::Get(), user_manager::UserManager::Get(),
       UserAddingScreen::Get());
 

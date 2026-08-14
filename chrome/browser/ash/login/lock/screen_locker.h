@@ -17,7 +17,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_auto_reset.h"
 #include "base/memory/weak_ptr.h"
-#include "base/task/sequenced_task_runner_helpers.h"
 #include "base/time/time.h"
 #include "base/timer/wall_clock_timer.h"
 #include "chrome/browser/ash/login/challenge_response_auth_keys_loader.h"
@@ -60,8 +59,12 @@ class ScreenLocker
   ScreenLocker(const ScreenLocker&) = delete;
   ScreenLocker& operator=(const ScreenLocker&) = delete;
 
+  ~ScreenLocker() override;
+
   // Returns the default instance if it has been created.
-  static ScreenLocker* default_screen_locker() { return screen_locker_; }
+  // DEPRECATED: Use ScreenLockerController::Get().screen_locker() instead.
+  // TODO(crbug.com/539761804): Replace callers and remove this.
+  static ScreenLocker* default_screen_locker();
 
   // Returns true if the lock UI has been confirmed as displayed.
   bool locked() const { return locked_; }
@@ -90,9 +93,13 @@ class ScreenLocker
   user_manager::UserList GetUsersToShow() const;
 
   // Show the screen locker.
+  // DEPRECATED: Use ScreenLockerController::Get().ShowLockScreen() instead.
+  // TODO(crbug.com/539761804): Replace callers and remove this.
   static void Show();
 
   // Hide the screen locker.
+  // DEPRECATED: Use ScreenLockerController::Get().HideLockScreen() instead.
+  // TODO(crbug.com/539761804): Replace callers and remove this.
   static void Hide();
 
   // Returns true if authentication is enabled on the lock screen for the given
@@ -112,9 +119,7 @@ class ScreenLocker
                                   const base::TickClock* tick_clock);
 
  private:
-  friend class base::DeleteHelper<ScreenLocker>;
-
-  // TODO(crbug.com/539761804): For `ScheduleDeletion`.
+  // For `Init` and `ResetToLockedState`.
   friend class ScreenLockerController;
 
   // Track the type of the authentication that the user used to unlock the lock
@@ -139,8 +144,6 @@ class ScreenLocker
     // Callback that should be executed the authentication result is available.
     base::OnceCallback<void(bool)> callback;
   };
-
-  ~ScreenLocker() override;
 
   // Initialize and show the screen locker.
   void Init();
@@ -171,10 +174,6 @@ class ScreenLocker
   // attempt.
   void ResetToLockedState();
 
-  // If the unlock animation was not aborted, changes session state to
-  // active and schedules `ScreenLocker` deletion.
-  static void OnUnlockAnimationFinished(bool aborted);
-
   // TODO(b/271261286): we should probably not call it anymore
   void RefreshPinAndFingerprintTimeout();
 
@@ -184,10 +183,6 @@ class ScreenLocker
 
   // Called when the screen lock is ready.
   void ScreenLockReady();
-
-  // Called when screen locker is safe to delete.
-  // TODO(crbug.com/539761804): Make ScreenLockerController own this object.
-  static void ScheduleDeletion();
 
   // Returns true if `account_id` is found among logged in users.
   bool IsUserLoggedIn(const AccountId& account_id) const;
@@ -257,10 +252,6 @@ class ScreenLocker
   // from false to true, but will only change from true to false when unlock is
   // aborted. Otherwise, ScreenLocker object gets deleted when unlocked.
   bool unlock_started_ = false;
-
-  // Reference to the single instance of the screen locker object.
-  // This is used to make sure there is only one screen locker instance.
-  static ScreenLocker* screen_locker_;
 
   // The time when the screen locker object is created.
   base::Time start_time_ = base::Time::Now();
