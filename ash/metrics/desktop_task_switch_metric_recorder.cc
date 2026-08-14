@@ -8,12 +8,12 @@
 #include "ash/shell.h"
 #include "ash/wm/window_util.h"
 #include "base/metrics/user_metrics.h"
+#include "ui/aura/window.h"
 #include "ui/wm/public/activation_client.h"
 
 namespace ash {
 
-DesktopTaskSwitchMetricRecorder::DesktopTaskSwitchMetricRecorder()
-    : last_active_task_window_(nullptr) {
+DesktopTaskSwitchMetricRecorder::DesktopTaskSwitchMetricRecorder() {
   Shell::Get()->activation_client()->AddObserver(this);
 }
 
@@ -25,16 +25,17 @@ void DesktopTaskSwitchMetricRecorder::OnWindowActivated(
     ::wm::ActivationChangeObserver::ActivationReason reason,
     aura::Window* gained_active,
     aura::Window* lost_active) {
-  if (gained_active && window_util::IsWindowUserPositionable(gained_active)) {
-    if (last_active_task_window_ != gained_active &&
-        reason ==
-            ::wm::ActivationChangeObserver::ActivationReason::INPUT_EVENT) {
-      base::RecordAction(base::UserMetricsAction("Desktop_SwitchTask"));
-      Shell::Get()->metrics()->task_switch_metrics_recorder().OnTaskSwitch(
-          TaskSwitchSource::DESKTOP);
-    }
-    last_active_task_window_ = gained_active;
+  if (!gained_active || !window_util::IsWindowUserPositionable(gained_active)) {
+    return;
   }
+
+  if (last_active_task_window_.get() != gained_active &&
+      reason == ::wm::ActivationChangeObserver::ActivationReason::INPUT_EVENT) {
+    base::RecordAction(base::UserMetricsAction("Desktop_SwitchTask"));
+    Shell::Get()->metrics()->task_switch_metrics_recorder().OnTaskSwitch(
+        TaskSwitchSource::DESKTOP);
+  }
+  last_active_task_window_ = gained_active->GetWeakPtrAsWindow();
 }
 
 }  // namespace ash
