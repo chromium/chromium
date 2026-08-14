@@ -172,25 +172,61 @@ main() {
   info "Merging EasyList and extracted EasyPrivacy ad rules..."
   cat easylist.txt easy_privacy_ads_rules.txt | sort -u > candidate_rules.txt
 
-  info "Ensuring all domain block rules are \$third-party..."
-  # Convert ||domain.xyz^ rules to ||domain.xyz^$third-party
-  # to avoid matching first-party requests on the domain itself.
-  awk '
-      {
-          # Skip comments, allowlist rules (@@), and empty lines.
-          if (/^\s*!|^\s*@@|^\s*$/) {
-              print
-              next
-          }
-          # If it is a domain rule like ||domain.xyz^ without existing options.
-          if (/^\s*\|\|[^/]+\^\s*$/) {
-              print $0 "$third-party"
-              next
-          }
-          # Otherwise, print the line as is.
-          print
-      }
-  ' candidate_rules.txt > candidate_rules_third.txt
+  info "Ensuring domain and host block rules are \$third-party..."
+  # Append $third-party (or insert third-party into existing options) for
+  # pure domain (||) and host (://) blocklist rules without path slashes.
+  python3 -c '
+import sys
+
+for line in sys.stdin:
+    stripped_line = line.strip()
+    if (not stripped_line or
+        stripped_line.startswith(("!", "[", "@@")) or
+        "##" in stripped_line or "#@" in stripped_line or
+        "#?" in stripped_line or "#$" in stripped_line):
+        sys.stdout.write(line)
+        continue
+
+    rule_parts = stripped_line.split("$", 1)
+    pattern = rule_parts[0]
+    options_string = rule_parts[1] if len(rule_parts) > 1 else ""
+
+    if pattern.startswith("||"):
+        has_path = "/" in pattern[2:]
+    elif pattern.startswith("://"):
+        has_path = "/" in pattern[3:]
+    else:
+        sys.stdout.write(line)
+        continue
+
+    if has_path:
+        sys.stdout.write(line)
+        continue
+
+    option_items = (
+        [option.strip() for option in options_string.split(",")]
+        if options_string else []
+    )
+    has_party_option = any(
+        option.lstrip("~") in ("third-party", "1st-party")
+        for option in option_items
+    )
+    if has_party_option:
+        sys.stdout.write(line)
+        continue
+
+    newline_sequence = "\r\n" if line.endswith("\r\n") else "\n"
+    if options_string:
+        updated_options = f"third-party,{options_string}"
+    else:
+        updated_options = "third-party"
+    sys.stdout.write(f"{pattern}${updated_options}{newline_sequence}")
+' < candidate_rules.txt > candidate_rules_third.txt
+
+  if [[ ! -s candidate_rules_third.txt ]]; then
+    err "Failed to generate candidate_rules_third.txt (empty or missing)."
+    exit 1
+  fi
 
   local converter="${src_out_dir}/ruleset_converter"
   local indexer="${src_out_dir}/subresource_indexing_tool"
