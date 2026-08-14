@@ -1075,7 +1075,7 @@ const FeatureEntry::FeatureParam
         {"Omnibox_AskGLensIcon", "true"},
         {"Omnibox_AskGLensSearchHintText", "true"},
         {"Omnibox_AskGComposeboxLensChip", "false"},
-        {"Omnibox_AskGBlockZeroStateSuggestions", "false"},
+        {"Omnibox_AskGBlockAutoTabZeroStateSuggestions", "false"},
         {"Omnibox_AskGShowFirstDescription", "false"}};
 const FeatureEntry::FeatureParam
     kWebUiOmniboxAskGAboutThisPageCobrowsePlusVisualSelection[] = {
@@ -1089,7 +1089,7 @@ const FeatureEntry::FeatureParam
         {"Omnibox_AskGLensIcon", "false"},
         {"Omnibox_AskGLensSearchHintText", "true"},
         {"Omnibox_AskGComposeboxLensChip", "false"},
-        {"Omnibox_AskGBlockZeroStateSuggestions", "false"},
+        {"Omnibox_AskGBlockAutoTabZeroStateSuggestions", "false"},
         {"Omnibox_AskGShowFirstDescription", "false"}};
 const FeatureEntry::FeatureParam
     kWebUiOmniboxAskGAboutThisPageOmniboxComposebox[] = {
@@ -1103,7 +1103,7 @@ const FeatureEntry::FeatureParam
         {"Omnibox_AskGLensIcon", "false"},
         {"Omnibox_AskGLensSearchHintText", "true"},
         {"Omnibox_AskGComposeboxLensChip", "true"},
-        {"Omnibox_AskGBlockZeroStateSuggestions", "true"},
+        {"Omnibox_AskGBlockAutoTabZeroStateSuggestions", "true"},
         {"Omnibox_AskGShowFirstDescription", "false"}};
 const FeatureEntry::FeatureParam
     kWebUiOmniboxAskGAboutThisPageOmniboxComposeboxAndLensEntrypoint[] = {
@@ -1117,7 +1117,7 @@ const FeatureEntry::FeatureParam
         {"Omnibox_AskGLensIcon", "true"},
         {"Omnibox_AskGLensSearchHintText", "true"},
         {"Omnibox_AskGComposeboxLensChip", "false"},
-        {"Omnibox_AskGBlockZeroStateSuggestions", "true"},
+        {"Omnibox_AskGBlockAutoTabZeroStateSuggestions", "true"},
         {"Omnibox_AskGShowFirstDescription", "false"}};
 const FeatureEntry::FeatureParam
     kWebUiOmniboxAskGAboutThisPageOmniboxChipComposeboxAndLensEntrypoint[] = {
@@ -1131,7 +1131,7 @@ const FeatureEntry::FeatureParam
         {"Omnibox_AskGLensIcon", "true"},
         {"Omnibox_AskGLensSearchHintText", "true"},
         {"Omnibox_AskGComposeboxLensChip", "false"},
-        {"Omnibox_AskGBlockZeroStateSuggestions", "true"},
+        {"Omnibox_AskGBlockAutoTabZeroStateSuggestions", "true"},
         {"Omnibox_AskGShowFirstDescription", "true"}};
 
 const FeatureEntry::FeatureVariation

@@ -251,26 +251,26 @@ export function mapMojoSourceToOrigin(source: TabAttachmentSource): TabUploadOri
   return MOJO_TO_ORIGIN[source];
 }
 
-export function isSuggestedOrigin(origin?: TabUploadOrigin): boolean {
+export function isAutoAddedOrigin(origin?: TabUploadOrigin): boolean {
   return origin === TabUploadOrigin.AUTO_ADDED ||
       origin === TabUploadOrigin.CURRENT_TAB_CHIP;
 }
 
-export function hasOnlySuggestedTabs(
+export function hasOnlyAutoAddedTabs(
     files: Map<UnguessableToken, ComposeboxFile>): boolean {
   if (files.size === 0) {
     return false;
   }
   for (const file of files.values()) {
     if (file.inputType !== InputType.kBrowserTab ||
-        !isSuggestedOrigin(file.origin)) {
+        !isAutoAddedOrigin(file.origin)) {
       return false;
     }
   }
   return true;
 }
 
-export function hasOnlySuggestedTabAttachments(
+export function hasOnlyAutoAddedTabAttachments(
     attachments: SearchContextAttachment[]): boolean {
   if (attachments.length === 0) {
     return false;
@@ -280,7 +280,7 @@ export function hasOnlySuggestedTabAttachments(
       return false;
     }
     const origin = mapMojoSourceToOrigin(attachment.tabAttachment.source);
-    if (!isSuggestedOrigin(origin)) {
+    if (!isAutoAddedOrigin(origin)) {
       return false;
     }
   }

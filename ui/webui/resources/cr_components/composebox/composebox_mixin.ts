@@ -20,7 +20,7 @@ import type {BigBuffer} from '//resources/mojo/mojo/public/mojom/base/big_buffer
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
-import {ComposeboxFile, ComposeboxFileValidationError, ContextType, ContextualSearchInputStateDeletionType, FILE_VALIDATION_ERRORS_MAP, getLoadTimeBoolean, hasOnlySuggestedTabs, isContextUploadStatusTerminal, mapOriginToMojoSource, ProcessFilesError, recordBoolean, recordContextAdditionMethod, recordContextualElementClickedMetric, recordEnumerationValue, recordInputTypeShown, recordModelModeSelection, recordModelModeShown, recordToolModeSelection, recordToolModeShown, recordUserAction, TabSuggestionsState, TabUploadOrigin} from './common.js';
+import {ComposeboxFile, ComposeboxFileValidationError, ContextType, ContextualSearchInputStateDeletionType, FILE_VALIDATION_ERRORS_MAP, getLoadTimeBoolean, hasOnlyAutoAddedTabs, isContextUploadStatusTerminal, mapOriginToMojoSource, ProcessFilesError, recordBoolean, recordContextAdditionMethod, recordContextualElementClickedMetric, recordEnumerationValue, recordInputTypeShown, recordModelModeSelection, recordModelModeShown, recordToolModeSelection, recordToolModeShown, recordUserAction, TabSuggestionsState, TabUploadOrigin} from './common.js';
 import type {ComposeboxState, DriveUpload, TabUpload} from './common.js';
 import type {PageHandlerRemote} from './composebox.mojom-webui.js';
 import type {ComposeboxDropdownElement} from './composebox_dropdown.js';
@@ -1674,9 +1674,9 @@ export const ComposeboxEmbedderMixin =
           this.getInputElement().inputElement.focus();
         }
 
-        hasContent(ignoreSuggestedTab: boolean = false): boolean {
+        hasContent(ignoreAutoAddedTabs: boolean = false): boolean {
           const hasFiles = this.files.size > 0 &&
-              !(ignoreSuggestedTab && hasOnlySuggestedTabs(this.files));
+              !(ignoreAutoAddedTabs && hasOnlyAutoAddedTabs(this.files));
           return this.inputState?.activeTool !== ToolMode.kUnspecified ||
               this.input.trim().length > 0 || hasFiles;
         }

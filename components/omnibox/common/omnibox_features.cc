@@ -605,9 +605,9 @@ const base::FeatureParam<bool> kAskGShowFirstDescription{
     &kWebUIOmniboxAskGAboutThisPage, "Omnibox_AskGShowFirstDescription", false};
 const base::FeatureParam<bool> kAskGComposeboxLensChip{
     &kWebUIOmniboxAskGAboutThisPage, "Omnibox_AskGComposeboxLensChip", false};
-const base::FeatureParam<bool> kAskGBlockZeroStateSuggestions{
-    &kWebUIOmniboxAskGAboutThisPage, "Omnibox_AskGBlockZeroStateSuggestions",
-    false};
+const base::FeatureParam<bool> kAskGBlockAutoTabZeroStateSuggestions{
+    &kWebUIOmniboxAskGAboutThisPage,
+    "Omnibox_AskGBlockAutoTabZeroStateSuggestions", false};
 // Note: no new flags beyond this point.
 
 namespace flag_descriptions {

@@ -14,8 +14,7 @@ import '//resources/cr_components/localized_link/localized_link.js';
 import '//resources/cr_components/search/animated_glow.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_components/composebox/composebox_lens_search.js';
-
-import {ComposeboxFile, getLoadTimeBoolean, hasOnlySuggestedTabAttachments, mapMojoSourceToOrigin, mapUploadErrorToProcessFilesError, ProcessFilesError} from '//resources/cr_components/composebox/common.js';
+import {ComposeboxFile, getLoadTimeBoolean, hasOnlyAutoAddedTabAttachments, mapMojoSourceToOrigin, mapUploadErrorToProcessFilesError, ProcessFilesError} from '//resources/cr_components/composebox/common.js';
 import type {TabUpload} from '//resources/cr_components/composebox/common.js';
 import type {PageHandlerRemote} from '//resources/cr_components/composebox/composebox.mojom-webui.js';
 import type {ComposeboxDropdownElement} from '//resources/cr_components/composebox/composebox_dropdown.js';
@@ -169,7 +168,7 @@ export class OmniboxComposeboxElement extends ComposeboxEmbedderMixin
         changedPrivateProperties.has('askGComposeboxLensChipEnabled_')) {
       this.isLensSearchChipShown_ = this.askGComposeboxLensChipEnabled_ &&
           this.isContentSharingEnabled_ && this.isLensSearchEligible_ &&
-          !this.hasContent(/* ignoreSuggestedTab= */ true);
+          !this.hasContent(/* ignoreAutoAddedTabs= */ true);
     }
   }
 
@@ -245,14 +244,14 @@ export class OmniboxComposeboxElement extends ComposeboxEmbedderMixin
     }
 
     const blockZeroState =
-        getLoadTimeBoolean('askGBlockZeroStateSuggestions', false);
-    const hasOnlySuggested =
-        context ? hasOnlySuggestedTabAttachments(context.attachments) : false;
-    const skipImmediateQuery = blockZeroState && hasOnlySuggested;
+        getLoadTimeBoolean('askGBlockAutoTabZeroStateSuggestions', false);
+    const hasOnlyAutoAdded =
+        context ? hasOnlyAutoAddedTabAttachments(context.attachments) : false;
+    const skipImmediateQuery = blockZeroState && hasOnlyAutoAdded;
 
     // Query for ZPS even if there's no context.
-    // Skip immediate query if askGBlockZeroStateSuggestions is enabled for auto
-    // added tab attachments.
+    // Skip immediate query if askGBlockAutoTabZeroStateSuggestions is enabled for
+    // auto added tab attachments.
     // This is to prevent historical suggestions from being shown while waiting
     // for contextual suggestions from the uploaded tab during zero state.
     if (this.showZps && !skipImmediateQuery) {

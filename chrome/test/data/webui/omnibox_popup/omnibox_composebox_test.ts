@@ -49,7 +49,7 @@ suite('OmniboxComposeboxTest', () => {
 
     loadTimeData.overrideValues({
       composeboxShowZps: true,
-      askGBlockZeroStateSuggestions: false,
+      askGBlockAutoTabZeroStateSuggestions: false,
     });
 
     testProxy = new TestSearchboxBrowserProxy();
@@ -383,9 +383,10 @@ suite('OmniboxComposeboxTest', () => {
 
   test(
       'addSearchContext skips autocomplete query for tab when flag is enabled' +
-          ' and source is suggested',
+          ' and source is auto-added',
       async () => {
-        loadTimeData.overrideValues({askGBlockZeroStateSuggestions: true});
+        loadTimeData.overrideValues(
+            {askGBlockAutoTabZeroStateSuggestions: true});
 
         const initialCallCount =
             testProxy.handler.getCallCount('queryAutocomplete');
@@ -415,7 +416,8 @@ suite('OmniboxComposeboxTest', () => {
       'addSearchContext does NOT skip autocomplete query for tab when flag' +
           ' is disabled',
       async () => {
-        loadTimeData.overrideValues({askGBlockZeroStateSuggestions: false});
+        loadTimeData.overrideValues(
+            {askGBlockAutoTabZeroStateSuggestions: false});
 
         const initialCallCount =
             testProxy.handler.getCallCount('queryAutocomplete');
@@ -443,9 +445,10 @@ suite('OmniboxComposeboxTest', () => {
 
   test(
       'addSearchContext does NOT skip autocomplete query for tab when source' +
-          ' is NOT suggested',
+          ' is NOT auto-added',
       async () => {
-        loadTimeData.overrideValues({askGBlockZeroStateSuggestions: true});
+        loadTimeData.overrideValues(
+            {askGBlockAutoTabZeroStateSuggestions: true});
 
         const initialCallCount =
             testProxy.handler.getCallCount('queryAutocomplete');

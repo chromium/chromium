@@ -203,8 +203,8 @@ OmniboxPopupUI::OmniboxPopupUI(content::WebUI* web_ui)
                      omnibox::kAskGLensIcon.Get());
   source->AddBoolean("askGComposeboxLensChipEnabled",
                      omnibox::kAskGComposeboxLensChip.Get());
-  source->AddBoolean("askGBlockZeroStateSuggestions",
-                     omnibox::kAskGBlockZeroStateSuggestions.Get());
+  source->AddBoolean("askGBlockAutoTabZeroStateSuggestions",
+                     omnibox::kAskGBlockAutoTabZeroStateSuggestions.Get());
   source->AddBoolean("composeboxShowTypedSuggest",
                      omnibox::kShowComposeboxTypedSuggest.Get());
   source->AddBoolean("composeboxShowZps", omnibox::kShowComposeboxZps.Get());
