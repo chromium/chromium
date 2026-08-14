@@ -39,6 +39,8 @@ class PageInfoBubbleViewBase : public views::BubbleDialogDelegateView,
     BUBBLE_INTERNAL_PAGE,
     // Custom bubble for displaying safety tips.
     BUBBLE_SAFETY_TIP,
+    // Custom bubble for displaying suspicious site warnings.
+    BUBBLE_SUSPICIOUS_SITE,
   };
 
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kPageInfoBubbleElementIdentifier);
