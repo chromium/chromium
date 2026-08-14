@@ -19,6 +19,7 @@
 #include "base/process/launch.h"
 #include "base/process/process.h"
 #include "base/run_loop.h"
+#include "base/strings/string_view_util.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -66,7 +67,7 @@ class TestDrainer : public mojo::DataPipeDrainer::Client {
 
   // mojo::DataPipeDrainer::Client:
   void OnDataAvailable(base::span<const uint8_t> data) override {
-    data_.append(reinterpret_cast<const char*>(data.data()), data.size());
+    data_.append(base::as_string_view(data));
   }
   void OnDataComplete() override { std::move(on_complete_).Run(); }
 

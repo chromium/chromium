@@ -600,19 +600,12 @@ std::string ParseTagBuffer(const std::vector<uint8_t>& tag_buffer) {
 }
 
 std::vector<uint8_t> ReadEntireFile(const base::FilePath& file) {
-  std::optional<int64_t> file_size = base::GetFileSize(file);
-  if (!file_size.has_value()) {
-    PLOG(ERROR) << __func__ << ": Could not get file size: " << file;
-    return {};
-  }
-
-  std::vector<uint8_t> contents(file_size.value());
-  if (base::ReadFile(file, reinterpret_cast<char*>(&contents.front()),
-                     contents.size()) == -1) {
+  std::optional<std::vector<uint8_t>> contents = base::ReadFileToBytes(file);
+  if (!contents) {
     PLOG(ERROR) << __func__ << ": Could not read file: " << file;
     return {};
   }
-  return contents;
+  return std::move(*contents);
 }
 
 }  // namespace

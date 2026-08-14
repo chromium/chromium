@@ -87,7 +87,7 @@ class ScopedWinHttpProxyInfo {
   wchar_t* GlobalAlloc(const std::wstring& str) {
     const size_t size_in_bytes = (str.length() + 1) * sizeof(wchar_t);
     wchar_t* string_mem =
-        reinterpret_cast<wchar_t*>(::GlobalAlloc(GPTR, size_in_bytes));
+        static_cast<wchar_t*>(::GlobalAlloc(GPTR, size_in_bytes));
 
     if (!string_mem) {
       PLOG(ERROR) << "GlobalAlloc failed to allocate " << size_in_bytes
