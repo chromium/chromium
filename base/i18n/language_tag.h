@@ -18,15 +18,17 @@
 #include "base/i18n/internal/bcp47_parser.h"
 #include "base/i18n/internal/immutable_string.h"
 
+namespace base {
+class Value;
+}  // namespace base
+
 namespace base::i18n {
 
 class LanguageTagConverter;
-
 class LanguageTag;
-
-constexpr std::optional<LanguageTag> ParseKnownLanguageTag(
-    std::string_view tag);
-consteval LanguageTag GetKnownLanguageTag(std::string_view tag);
+consteval LanguageTag GetKnownLanguageTag(std::string_view);
+COMPONENT_EXPORT(LANGUAGE_TAG)
+std::optional<LanguageTag> ValueToLanguageTag(const base::Value&);
 
 namespace mojo {
 template <typename DataView, typename T>
@@ -185,13 +187,15 @@ class COMPONENT_EXPORT(LANGUAGE_TAG) LanguageTag {
 
  private:
   friend class LanguageTagConverter;
-  friend constexpr std::optional<LanguageTag> ParseKnownLanguageTag(
-      std::string_view tag);
-  friend consteval LanguageTag GetKnownLanguageTag(std::string_view tag);
+  friend consteval LanguageTag GetKnownLanguageTag(std::string_view);
   // Allow Mojo StructTraits to default-construct an instance during IPC
   // deserialization
   friend struct mojo::StructTraits<mojo_base::mojom::LanguageTagDataView,
                                    base::i18n::LanguageTag>;
+  // Allow base::Value conversion from and to `LanguageTag` without having to
+  // depend on ICU.
+  friend COMPONENT_EXPORT(LANGUAGE_TAG)
+      std::optional<LanguageTag> ValueToLanguageTag(const base::Value&);
 
   // Default constructor is intended for internal use by Mojo StructTraits to
   // allow for deserialization of the language tag from IPC.
@@ -227,21 +231,30 @@ COMPONENT_EXPORT(LANGUAGE_TAG)
 std::ostream& operator<<(std::ostream& os,
                          const std::optional<LanguageTag>& opt);
 
-// Parses a LanguageTag from a string_view.
-// Returns std::nullopt if `tag` is not a valid BCP 47 language tag or has
-// unknown subtags.
-constexpr std::optional<LanguageTag> ParseKnownLanguageTag(
-    std::string_view tag) {
-  std::optional<i18n_internal::ParsedBcp47Tag> parsed =
-      i18n_internal::ParseBcp47Tag(tag);
-  if (!parsed || !i18n_internal::AreSubtagsKnown(*parsed)) {
-    return std::nullopt;
-  }
-  return LanguageTag(base::span<const std::string_view>({tag}));
-}
-
 // Returns a LanguageTag checked at compile time. does not compile if tag is
 // not one of the predefined supported language tags.
+// The function expects that the tags are well-formed and normalized, which
+// means:
+// - language subtag: must be all lowercase (en).
+// - script subtag: must have only the first letter uppercase (Latn).
+// - region subtag: must be all uppercase (US).
+// - variant subtags: must be all lowercase (oxendict).
+//
+// The function currently does not support extensions or tags that have fewer
+// than 14 characters; that is when LanguageTag fits in the stack.
+//
+// Usage examples:
+//     // OK
+//   - GetKnownLanguageTag("en-US");
+//
+//     // Failed compilation: the tag is not well formed as the country code
+//     // subtag is expected to be all uppercase.
+//   - GetKnownLanguageTag("en-us");
+//
+//     // Failed compilation: the tag is not known "xx" even though it is
+//     // well-formed according to the BCP47 standard.
+//   - GetKnownLanguageTag("xx");
+//
 consteval LanguageTag GetKnownLanguageTag(std::string_view tag) {
   // It is only possible to construct `LanguageTag`s at compile-time if they
   // are small.
@@ -250,13 +263,16 @@ consteval LanguageTag GetKnownLanguageTag(std::string_view tag) {
     ERROR_TagIsTooLarge();
   }
 
-  std::optional<LanguageTag> language_tag = ParseKnownLanguageTag(tag);
-  if (!language_tag) {
+  std::optional<i18n_internal::ParsedBcp47Tag> parsed =
+      i18n_internal::ParseBcp47Tag(tag);
+  // Check if the input `tag` is a well-formed bcp47 tag and its subtags are
+  // known.
+  if (!parsed || !i18n_internal::AreSubtagsKnown(*parsed)) {
     void ERROR_TagIsUnknown();
     ERROR_TagIsUnknown();
   }
 
-  return *language_tag;
+  return LanguageTag(base::span<const std::string_view>({tag}));
 }
 
 constexpr std::optional<LanguageTag> LanguageTag::GetParentTag() const {

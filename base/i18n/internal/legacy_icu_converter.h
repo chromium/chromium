@@ -32,7 +32,7 @@ namespace base::i18n_internal {
 // unicode extensions are valid, as this function is supposed to be used to
 // prepare the input for the actual parsing that happens later when constructing
 // a LanguageTag.
-COMPONENT_EXPORT(LANGUAGE_TAG)
+COMPONENT_EXPORT(I18N_INTERNAL)
 std::optional<std::string> ConvertLegacyCodeToBcp47IfNecessary(
     std::string_view code);
 
@@ -41,7 +41,7 @@ std::optional<std::string> ConvertLegacyCodeToBcp47IfNecessary(
 //
 // See https://www.rfc-editor.org/info/rfc6067/ for the
 // BCP47 Unicode locale extension specification.
-COMPONENT_EXPORT(LANGUAGE_TAG)
+COMPONENT_EXPORT(I18N_INTERNAL)
 std::string ConvertBcp47UnicodeKeywordsToLegacyCode(
     base::span<const std::pair<std::string, std::string>> keywords);
 

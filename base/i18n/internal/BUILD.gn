@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("internal") {
+component("internal") {
   sources = [
     "bcp47_known_subtags.h",
     "bcp47_parser.h",
@@ -13,7 +13,7 @@ source_set("internal") {
   ]
   defines = [
     "BASE_I18N_IMPLEMENTATION",
-    "IS_LANGUAGE_TAG_IMPL",
+    "IS_I18N_INTERNAL_IMPL",
   ]
   public_deps = [
     ":bcp47_languages_gen",
@@ -80,8 +80,8 @@ source_set("unittests") {
     "immutable_string_unittest.cc",
   ]
   deps = [
+    ":internal",
     "//base",
-    "//base:i18n",
     "//base/test:test_support",
     "//testing/gtest",
   ]

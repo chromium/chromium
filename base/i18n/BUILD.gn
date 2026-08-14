@@ -45,6 +45,7 @@ component("language_tag") {
   ]
   deps = [
     "//base",
+    "//base/i18n/internal",
     "//base/i18n/internal:canonical_language_tags",
     "//third_party/abseil-cpp:absl",
     "//third_party/rust/icu_capi/v2:lib",
@@ -97,7 +98,7 @@ source_set("unittests") {
   ]
   deps = [
     "//base",
-    "//base:i18n",
+    "//base/i18n:language_tag",
     "//base/i18n/internal:unittests",
     "//base/test:test_support",
     "//testing/gmock",

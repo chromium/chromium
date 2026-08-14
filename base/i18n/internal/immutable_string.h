@@ -37,7 +37,7 @@ constexpr void CopyParts(base::span<const std::string_view> parts,
 // An immutable string storage that optimizes for memory usage by using a small
 // stack-allocated buffer (SSO) and falling back to a heap-allocated buffer for
 // larger strings.
-class COMPONENT_EXPORT(LANGUAGE_TAG) ImmutableString {
+class COMPONENT_EXPORT(I18N_INTERNAL) ImmutableString {
  public:
   // The size limit where we expect to keep things all in the stack.
   static constexpr size_t kSmallBufferSize = 14;
@@ -45,7 +45,7 @@ class COMPONENT_EXPORT(LANGUAGE_TAG) ImmutableString {
   // Class that stores a small (determined by `kSmallBufferSize`), fixed-size
   // and immutable string. The class is copyable and movable for convenient
   // implementation of `ImmutableString`.
-  class COMPONENT_EXPORT(LANGUAGE_TAG) StackString {
+  class COMPONENT_EXPORT(I18N_INTERNAL) StackString {
    public:
     constexpr StackString() : storage_{} {}
     explicit constexpr StackString(base::span<const std::string_view> parts)
@@ -73,7 +73,7 @@ class COMPONENT_EXPORT(LANGUAGE_TAG) ImmutableString {
   // This class stores a fixed-size, immutable string that is always stored in
   // the heap. This is basically a wrapper around base::HeapArray into a
   // copyable / movable class for convenience.
-  class COMPONENT_EXPORT(LANGUAGE_TAG) HeapString {
+  class COMPONENT_EXPORT(I18N_INTERNAL) HeapString {
    public:
     explicit HeapString(base::span<const std::string_view> parts);
     HeapString(const HeapString& other);
