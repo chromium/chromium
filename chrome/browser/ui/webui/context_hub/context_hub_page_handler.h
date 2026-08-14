@@ -59,6 +59,8 @@ class ContextHubPageHandler : public browser::context_hub::mojom::PageHandler,
   // context_hub::ContextHubService::Observer:
   void OnAutoTodosChanged(
       base::span<const context_hub::AutoTodoEntry> entries) override;
+  void OnFirstPartyAutoTodosGenerationStateChanged(bool is_generating) override;
+  void OnThirdPartyAutoTodosGenerationStateChanged(bool is_generating) override;
 
   // browser::context_hub::mojom::PageHandler:
   void GenerateFirstPartyAutoTodos(

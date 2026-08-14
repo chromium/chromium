@@ -133,6 +133,14 @@ interface Page {
   // Notifies the WebUI when the list of Auto Todos in the cache changes.
   [RuntimeFeature=kAutoTodos]
   OnAutoTodosChanged(array<AutoTodoItem> todos);
+
+  // Notifies the WebUI when First Party Auto Todos generation state changes.
+  [RuntimeFeature=kAutoTodos]
+  OnFirstPartyAutoTodosGenerationStateChanged(bool is_generating);
+
+  // Notifies the WebUI when Third Party Auto Todos generation state changes.
+  [RuntimeFeature=kAutoTodos]
+  OnThirdPartyAutoTodosGenerationStateChanged(bool is_generating);
 };
 
 // Factory used by the WebUI page (caller) to create a PageHandler in the

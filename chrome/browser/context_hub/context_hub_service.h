@@ -68,6 +68,10 @@ class ContextHubService : public KeyedService, public AutoTodosStore::Observer {
   class Observer : public base::CheckedObserver {
    public:
     virtual void OnAutoTodosChanged(base::span<const AutoTodoEntry> entries) {}
+    virtual void OnFirstPartyAutoTodosGenerationStateChanged(
+        bool is_generating) {}
+    virtual void OnThirdPartyAutoTodosGenerationStateChanged(
+        bool is_generating) {}
   };
 
   ContextHubService(
@@ -102,6 +106,9 @@ class ContextHubService : public KeyedService, public AutoTodosStore::Observer {
   void GenerateTabBasedTodos(
       std::vector<base::WeakPtr<content::WebContents>> tabs,
       AutoTodosStore::OperationCallback callback);
+
+  // Returns true if a First Party Auto Todos generation request is in flight.
+  bool IsGeneratingFirstPartyAutoTodos() const;
 
   using GetAutoTodosCallback =
       base::OnceCallback<void(std::vector<AutoTodoEntry>)>;
@@ -249,6 +256,12 @@ class ContextHubService : public KeyedService, public AutoTodosStore::Observer {
       AutoTodosStore::OperationCallback callback,
       personal_context::FetchContextResult result);
 
+  // Cleans up First Party Auto Todos generation state, notifies observers, and
+  // invokes the completion callback.
+  void FinishFirstPartyAutoTodosGeneration(
+      AutoTodosStore::OperationCallback callback,
+      bool success);
+
   // Handles the async response when APC is fetched for tabs.
   void OnTabContextsFetched(
       std::vector<
@@ -292,6 +305,9 @@ class ContextHubService : public KeyedService, public AutoTodosStore::Observer {
       tab_group_sync_service_;
   const raw_ref<page_content_annotations::PageContentExtractionService>
       page_content_extraction_service_;
+
+  // Indicates if a First Party Auto Todos generation request is in flight.
+  bool is_generating_first_party_auto_todos_ = false;
 
   // Stores the client's callback during an in-flight `GenerateTabBasedTodos`
   // request while page contexts are being extracted and model execution is

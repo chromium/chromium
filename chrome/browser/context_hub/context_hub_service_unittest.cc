@@ -67,6 +67,14 @@ class MockServiceObserver : public ContextHubService::Observer {
               OnAutoTodosChanged,
               (base::span<const AutoTodoEntry>),
               (override));
+  MOCK_METHOD(void,
+              OnFirstPartyAutoTodosGenerationStateChanged,
+              (bool),
+              (override));
+  MOCK_METHOD(void,
+              OnThirdPartyAutoTodosGenerationStateChanged,
+              (bool),
+              (override));
 };
 
 class MockPageContentExtractionService
@@ -195,6 +203,14 @@ class ContextHubServiceTest : public testing::Test {
   optimization_guide::MockRemoteModelExecutor mock_remote_model_executor_;
   tab_groups::FakeTabGroupSyncService fake_tab_group_sync_service_;
   MockPageContentExtractionService mock_page_content_extraction_service_;
+  struct PrefInitializer {
+    explicit PrefInitializer(PrefService* prefs) {
+      prefs->SetTime(prefs::kContextHubLastAutoTodosGenerationTime,
+                     base::Time::Now());
+    }
+  };
+
+  PrefInitializer pref_initializer_{profile_.GetPrefs()};
   ContextHubService service_;
 };
 
@@ -219,6 +235,7 @@ TEST_F(ContextHubServiceTest, GenerateFirstPartyAutoTodos_ServiceSuccess) {
       observation(&observer);
   observation.Observe(&service_);
 
+  EXPECT_CALL(observer, OnFirstPartyAutoTodosGenerationStateChanged(true));
   // Initial clearing of the store.
   EXPECT_CALL(observer, OnAutoTodosChanged(IsEmpty()));
   // Notification after adding the todos.
@@ -226,6 +243,7 @@ TEST_F(ContextHubServiceTest, GenerateFirstPartyAutoTodos_ServiceSuccess) {
               OnAutoTodosChanged(ElementsAre(AllOf(
                   Field(&AutoTodoEntry::title, "Test Todo"),
                   Field(&AutoTodoEntry::description, "Test Description")))));
+  EXPECT_CALL(observer, OnFirstPartyAutoTodosGenerationStateChanged(false));
 
   base::test::TestFuture<bool> future;
   service_.GenerateFirstPartyAutoTodos(future.GetCallback());
@@ -251,7 +269,9 @@ TEST_F(ContextHubServiceTest, GenerateFirstPartyAutoTodos_ServiceError) {
       observation(&observer);
   observation.Observe(&service_);
 
+  EXPECT_CALL(observer, OnFirstPartyAutoTodosGenerationStateChanged(true));
   EXPECT_CALL(observer, OnAutoTodosChanged(_)).Times(0);
+  EXPECT_CALL(observer, OnFirstPartyAutoTodosGenerationStateChanged(false));
 
   base::test::TestFuture<bool> future;
   service_.GenerateFirstPartyAutoTodos(future.GetCallback());
@@ -275,7 +295,9 @@ TEST_F(ContextHubServiceTest, GenerateFirstPartyAutoTodos_ParseError) {
       observation(&observer);
   observation.Observe(&service_);
 
+  EXPECT_CALL(observer, OnFirstPartyAutoTodosGenerationStateChanged(true));
   EXPECT_CALL(observer, OnAutoTodosChanged(_)).Times(0);
+  EXPECT_CALL(observer, OnFirstPartyAutoTodosGenerationStateChanged(false));
 
   base::test::TestFuture<bool> future;
   service_.GenerateFirstPartyAutoTodos(future.GetCallback());
@@ -283,13 +305,46 @@ TEST_F(ContextHubServiceTest, GenerateFirstPartyAutoTodos_ParseError) {
   EXPECT_FALSE(future.Get());
 }
 
+TEST_F(ContextHubServiceTest, IsGeneratingStateAccessors) {
+  EXPECT_FALSE(service_.IsGeneratingFirstPartyAutoTodos());
+
+  personal_context::FetchContextCallback saved_fetch_callback;
+  EXPECT_CALL(
+      mock_personal_context_service_,
+      FetchContext(personal_context::proto::CONTEXT_MEMORY_FEATURE_AUTO_TODOS,
+                   _, _, _))
+      .WillOnce([&](personal_context::proto::ContextMemoryFeature,
+                    const google::protobuf::MessageLite&,
+                    const personal_context::ContextMemoryRequestOptions&,
+                    personal_context::FetchContextCallback callback) {
+        saved_fetch_callback = std::move(callback);
+      });
+
+  service_.GenerateFirstPartyAutoTodos(base::DoNothing());
+  EXPECT_TRUE(service_.IsGeneratingFirstPartyAutoTodos());
+
+  std::move(saved_fetch_callback)
+      .Run(personal_context::FetchContextResult(base::unexpected(
+          personal_context::ContextMemoryError::FromExecutionError(
+              personal_context::ContextMemoryError::ExecutionError::
+                  kUnknown))));
+  EXPECT_FALSE(service_.IsGeneratingFirstPartyAutoTodos());
+}
+
 TEST_F(ContextHubServiceTest, GenerateTabBasedTodos_NoEligibleTabs) {
   // Tab was active recently (< 2 hours ago), so it is not eligible.
   auto web_contents =
       CreateEligibleTab(GURL("https://example.com"), base::Hours(1));
 
+  MockServiceObserver observer;
+  base::ScopedObservation<ContextHubService, ContextHubService::Observer>
+      observation(&observer);
+  observation.Observe(&service_);
+
   EXPECT_CALL(mock_page_content_extraction_service_,
               GetExtractedPageContentAndEligibilityForPageAsync(_, _, _))
+      .Times(0);
+  EXPECT_CALL(observer, OnThirdPartyAutoTodosGenerationStateChanged(_))
       .Times(0);
 
   base::test::TestFuture<bool> future;
@@ -446,10 +501,12 @@ TEST_F(ContextHubServiceTest,
       observation(&observer);
   observation.Observe(&service_);
 
+  EXPECT_CALL(observer, OnThirdPartyAutoTodosGenerationStateChanged(true));
   // Verify that the observer is notified of the todo being saved to the store.
   EXPECT_CALL(observer, OnAutoTodosChanged(ElementsAre(AllOf(
                             Field(&AutoTodoEntry::id, "item_1"),
                             Field(&AutoTodoEntry::title, "Todo title")))));
+  EXPECT_CALL(observer, OnThirdPartyAutoTodosGenerationStateChanged(false));
 
   base::test::TestFuture<bool> future;
   service_.GenerateTabBasedTodos({web_contents->GetWeakPtr()},

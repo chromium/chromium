@@ -122,6 +122,18 @@ export class AiTaskboxElement extends CrLitElement {
                                 (a, b) => getTabTodoPriority(a) -
                                     getTabTodoPriority(b));
                   }));
+      this.listenerIds_.push(
+          browserProxyFactory.getInstance()
+              .callbackRouter.onFirstPartyAutoTodosGenerationStateChanged
+              .addListener((isGenerating: boolean) => {
+                this.isGeneratingGmailTodos_ = isGenerating;
+              }));
+      this.listenerIds_.push(
+          browserProxyFactory.getInstance()
+              .callbackRouter.onThirdPartyAutoTodosGenerationStateChanged
+              .addListener((isGenerating: boolean) => {
+                this.isGeneratingTabTodos_ = isGenerating;
+              }));
       this.fetchAutoTodos_();
     }
   }

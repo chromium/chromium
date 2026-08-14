@@ -182,7 +182,13 @@ ContextHubService::~ContextHubService() {
     auto_todos_store_->RemoveObserver(this);
   }
   if (pending_tab_todos_callback_) {
+    observers_.Notify(&Observer::OnThirdPartyAutoTodosGenerationStateChanged,
+                      false);
     std::move(pending_tab_todos_callback_).Run(false);
+  }
+  if (is_generating_first_party_auto_todos_) {
+    observers_.Notify(&Observer::OnFirstPartyAutoTodosGenerationStateChanged,
+                      false);
   }
 }
 
@@ -205,10 +211,14 @@ void ContextHubService::OnAutoTodosChanged(
 
 void ContextHubService::GenerateFirstPartyAutoTodos(
     AutoTodosStore::OperationCallback callback) {
-  if (!auto_todos_store_) {
+  if (!auto_todos_store_ || is_generating_first_party_auto_todos_) {
     std::move(callback).Run(false);
     return;
   }
+
+  is_generating_first_party_auto_todos_ = true;
+  observers_.Notify(&Observer::OnFirstPartyAutoTodosGenerationStateChanged,
+                    true);
 
   personal_context::proto::AutoTodosRequest request_metadata;
   personal_context::ContextMemoryRequestOptions options;
@@ -219,6 +229,10 @@ void ContextHubService::GenerateFirstPartyAutoTodos(
       request_metadata, options,
       base::BindOnce(&ContextHubService::OnFirstPartyAutoTodosFetched,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+bool ContextHubService::IsGeneratingFirstPartyAutoTodos() const {
+  return is_generating_first_party_auto_todos_;
 }
 
 void ContextHubService::GenerateTabBasedTodos(
@@ -264,6 +278,8 @@ void ContextHubService::GenerateTabBasedTodos(
   // Store the callback to be invoked when page context extraction and model
   // execution are complete.
   pending_tab_todos_callback_ = std::move(callback);
+  observers_.Notify(&Observer::OnThirdPartyAutoTodosGenerationStateChanged,
+                    true);
 
   // Collects the asynchronous page content extraction results across all
   // eligible tabs. Once all tab extractions have completed, `barrier_callback`
@@ -406,6 +422,9 @@ void ContextHubService::FinishTabBasedTodosGeneration(bool success) {
   pending_tab_todos_requests_ = {};
   generated_tab_todos_.clear();
 
+  observers_.Notify(&Observer::OnThirdPartyAutoTodosGenerationStateChanged,
+                    false);
+
   if (pending_tab_todos_callback_) {
     std::move(pending_tab_todos_callback_).Run(success);
   }
@@ -415,13 +434,13 @@ void ContextHubService::OnFirstPartyAutoTodosFetched(
     AutoTodosStore::OperationCallback callback,
     personal_context::FetchContextResult result) {
   if (!result.response.has_value()) {
-    std::move(callback).Run(false);
+    FinishFirstPartyAutoTodosGeneration(std::move(callback), /*success=*/false);
     return;
   }
 
   personal_context::proto::AutoTodosResponse response;
   if (!response.ParseFromString(result.response.value().value())) {
-    std::move(callback).Run(false);
+    FinishFirstPartyAutoTodosGeneration(std::move(callback), /*success=*/false);
     return;
   }
 
@@ -453,8 +472,21 @@ void ContextHubService::OnFirstPartyAutoTodosFetched(
     entries.push_back(std::move(entry));
   }
 
-  auto_todos_store_->AddAllTodos(std::move(entries), base::DoNothing());
-  std::move(callback).Run(true);
+  auto_todos_store_->AddAllTodos(
+      std::move(entries),
+      base::BindOnce(&ContextHubService::FinishFirstPartyAutoTodosGeneration,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void ContextHubService::FinishFirstPartyAutoTodosGeneration(
+    AutoTodosStore::OperationCallback callback,
+    bool success) {
+  is_generating_first_party_auto_todos_ = false;
+  observers_.Notify(&Observer::OnFirstPartyAutoTodosGenerationStateChanged,
+                    false);
+  if (callback) {
+    std::move(callback).Run(success);
+  }
 }
 
 void ContextHubService::GetAutoTodos(GetAutoTodosCallback callback) const {
