@@ -9,7 +9,9 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/memory_mapped_file.h"
-#include "base/i18n/rtl.h"
+#include "base/i18n/icubridge/default_icu_locale.h"
+#include "base/i18n/language_tag.h"
+#include "base/i18n/tag_converters.h"
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/posix/global_descriptors.h"
@@ -20,16 +22,24 @@
 
 namespace android_webview {
 
+using ::base::i18n::GetKnownLanguageTag;
+using ::base::i18n::GetLanguageTagFromString;
+using ::base::i18n::LanguageTag;
+using ::base::i18n::SetDefaultIcuLocale;
+
 void InitIcuAndResourceBundleBrowserSide() {
   TRACE_EVENT0("startup", "InitIcuAndResourceBundleBrowserSide");
   ui::SetLocalePaksStoredInApk(true);
-  std::string locale = ui::ResourceBundle::InitSharedInstanceWithLocale(
-      base::android::GetDefaultLocaleString(), NULL,
+  std::string locale_string = ui::ResourceBundle::InitSharedInstanceWithLocale(
+      base::android::GetDefaultLocaleString(), nullptr,
       ui::ResourceBundle::LOAD_COMMON_RESOURCES);
-  if (locale.empty()) {
+  std::optional<LanguageTag> locale_tag =
+      GetLanguageTagFromString(locale_string);
+  if (!locale_tag) {
     LOG(WARNING) << "Failed to load locale .pak from apk.";
   }
-  base::i18n::SetICUDefaultLocale(locale);
+  SetDefaultIcuLocale(base::i18n::DefaultIcuLocaleSetterKey(),
+                      locale_tag.value_or(GetKnownLanguageTag("en-US")));
 
   // Try to directly mmap the resources.pak from the apk. Fall back to load
   // from file, using PATH_SERVICE, otherwise.

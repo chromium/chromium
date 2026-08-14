@@ -10,7 +10,6 @@
 
 namespace base::i18n {
 
-class ScopedDefaultIcuLocale;
 class BASE_I18N_EXPORT DefaultIcuLocaleSetterKey;
 
 // Returns the current system/library-wide default ICU locale as a
@@ -26,6 +25,17 @@ BASE_I18N_EXPORT LanguageTag GetDefaultIcuLocale();
 BASE_I18N_EXPORT void SetDefaultIcuLocale(DefaultIcuLocaleSetterKey key,
                                           const LanguageTag& language_tag);
 
+}  // namespace base::i18n
+
+// Forward declarations for DefaultIcuLocaleSetterKey.
+namespace android_webview {
+void InitIcuAndResourceBundleBrowserSide();
+}
+
+namespace base::i18n {
+
+class ScopedDefaultIcuLocale;
+
 // A capability token enforcing the C++ pass-key pattern for setting the
 // mutable default ICU locale.
 //
@@ -33,14 +43,14 @@ BASE_I18N_EXPORT void SetDefaultIcuLocale(DefaultIcuLocaleSetterKey key,
 // constructor of `DefaultIcuLocaleSetterKey` is private, only explicitly
 // friended classes can instantiate it. This prevents arbitrary production
 // code from modifying the global default ICU locale, while allowing
-// authorized test utilities (like ScopedDefaultIcuLocale) to temporarily
-// override it.
+// authorized test utilities to temporarily override it.
 class BASE_I18N_EXPORT DefaultIcuLocaleSetterKey {
  public:
   ~DefaultIcuLocaleSetterKey() = default;
 
  private:
   friend class ScopedDefaultIcuLocale;
+  friend void android_webview::InitIcuAndResourceBundleBrowserSide();
 
   DefaultIcuLocaleSetterKey() = default;
 };
