@@ -229,6 +229,7 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/browser/send_tab_to_self/model",
     "//ios/chrome/browser/sessions/model:session_restoration_service",
     "//ios/chrome/browser/sessions/model:session_restoration_service_factory",
+    "//ios/chrome/browser/settings/autofill/payments/ui",
     "//ios/chrome/browser/settings/clear_browsing_data/coordinator",
     "//ios/chrome/browser/settings/clear_browsing_data/public:constants",
     "//ios/chrome/browser/settings/google_services/public",

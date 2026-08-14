@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_cvc_storage_view_controller.h"
+#import "ios/chrome/browser/settings/autofill/payments/ui/autofill_cvc_storage_view_controller.h"
 
 #import "base/apple/foundation_util.h"
 #import "base/memory/raw_ptr.h"

@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_cvc_storage_view_coordinator.h"
+#import "ios/chrome/browser/settings/autofill/payments/coordinator/autofill_cvc_storage_view_coordinator.h"
 
 #import "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #import "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
-#import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_cvc_storage_view_controller.h"
-#import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_cvc_storage_view_mediator.h"
+#import "ios/chrome/browser/settings/autofill/payments/coordinator/autofill_cvc_storage_view_mediator.h"
+#import "ios/chrome/browser/settings/autofill/payments/ui/autofill_cvc_storage_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/grit/ios_strings.h"

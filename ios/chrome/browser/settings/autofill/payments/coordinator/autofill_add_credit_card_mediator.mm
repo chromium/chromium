@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_add_credit_card_mediator.h"
+#import "ios/chrome/browser/settings/autofill/payments/coordinator/autofill_add_credit_card_mediator.h"
 
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
@@ -13,7 +13,7 @@
 #import "components/autofill/core/browser/data_model/payments/credit_card.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
 #import "ios/chrome/browser/autofill/ui_bundled/util/autofill_credit_card_util.h"
-#import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_add_credit_card_mediator_delegate.h"
+#import "ios/chrome/browser/settings/autofill/payments/coordinator/autofill_add_credit_card_mediator_delegate.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 
 @implementation AutofillAddCreditCardMediator {

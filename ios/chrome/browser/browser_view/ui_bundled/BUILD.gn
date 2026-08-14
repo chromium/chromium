@@ -266,6 +266,7 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/send_tab_to_self/coordinator",
     "//ios/chrome/browser/send_tab_to_self/model",
     "//ios/chrome/browser/sessions/model",
+    "//ios/chrome/browser/settings/autofill/payments/coordinator",
     "//ios/chrome/browser/settings/clear_browsing_data/coordinator",
     "//ios/chrome/browser/settings/model/sync/utils",
     "//ios/chrome/browser/settings/ui_bundled/autofill",

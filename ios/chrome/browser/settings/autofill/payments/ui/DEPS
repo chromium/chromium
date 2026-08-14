@@ -1,0 +1,8 @@
+include_rules = [
+  # keep-sorted start
+  "+ios/chrome/browser/autofill/ui_bundled",
+  "+ios/chrome/browser/settings/autofill/ui",
+  "+ios/chrome/browser/settings/ui_bundled/autofill/autofill_settings_constants.h",
+  "+ios/chrome/browser/settings/ui_bundled/credit_card_scanner",
+  # keep-sorted end
+]

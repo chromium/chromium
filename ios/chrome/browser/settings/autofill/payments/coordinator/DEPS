@@ -1,0 +1,9 @@
+include_rules = [
+  # keep-sorted start
+  "+components/application_locale_storage",
+  "+ios/chrome/browser/autofill/model",
+  "+ios/chrome/browser/autofill/ui_bundled/util/autofill_credit_card_util.h",
+  "+ios/chrome/browser/settings/autofill/payments/ui",
+  "+ios/chrome/browser/settings/ui_bundled/credit_card_scanner",
+  # keep-sorted end
+]

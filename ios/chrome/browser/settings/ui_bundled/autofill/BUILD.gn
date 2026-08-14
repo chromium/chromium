@@ -4,28 +4,10 @@
 
 source_set("autofill") {
   sources = [
-    "autofill_add_credit_card_coordinator.h",
-    "autofill_add_credit_card_coordinator.mm",
-    "autofill_add_credit_card_coordinator_delegate.h",
-    "autofill_add_credit_card_mediator.h",
-    "autofill_add_credit_card_mediator.mm",
-    "autofill_add_credit_card_mediator_delegate.h",
-    "autofill_add_credit_card_view_controller.h",
-    "autofill_add_credit_card_view_controller.mm",
-    "autofill_add_credit_card_view_controller_delegate.h",
-    "autofill_add_credit_card_view_controller_presentation_delegate.h",
     "autofill_credit_card_edit_table_view_controller.h",
     "autofill_credit_card_edit_table_view_controller.mm",
     "autofill_credit_card_table_view_controller.h",
     "autofill_credit_card_table_view_controller.mm",
-    "autofill_cvc_storage_consumer.h",
-    "autofill_cvc_storage_view_controller.h",
-    "autofill_cvc_storage_view_controller.mm",
-    "autofill_cvc_storage_view_coordinator.h",
-    "autofill_cvc_storage_view_coordinator.mm",
-    "autofill_cvc_storage_view_coordinator_delegate.h",
-    "autofill_cvc_storage_view_mediator.h",
-    "autofill_cvc_storage_view_mediator.mm",
     "autofill_profile_edit_coordinator.h",
     "autofill_profile_edit_coordinator.mm",
     "autofill_profile_table_view_controller.h",
@@ -38,6 +20,8 @@ source_set("autofill") {
   public_deps = [
     "//ios/chrome/browser/settings/autofill/bnpl/coordinator",
     "//ios/chrome/browser/settings/autofill/bnpl/ui",
+    "//ios/chrome/browser/settings/autofill/payments/coordinator",
+    "//ios/chrome/browser/settings/autofill/payments/ui",
     "//ios/chrome/browser/settings/autofill/suggestions_from_gemini/coordinator",
     "//ios/chrome/browser/settings/autofill/suggestions_from_gemini/ui",
     "//ios/chrome/browser/settings/autofill/ui",
@@ -129,7 +113,6 @@ source_set("shared_ui") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "autofill_add_credit_card_mediator_unittest.mm",
     "autofill_credit_card_table_view_controller_unittest.mm",
     "autofill_profile_table_view_controller+testing.h",
     "autofill_profile_table_view_controller_unittest.mm",
@@ -158,6 +141,8 @@ source_set("unit_tests") {
     "//ios/chrome/browser/personal_context/model",
     "//ios/chrome/browser/settings/autofill/autofill_ai/ui",
     "//ios/chrome/browser/settings/autofill/bnpl/coordinator:unit_tests",
+    "//ios/chrome/browser/settings/autofill/payments/coordinator:unit_tests",
+    "//ios/chrome/browser/settings/autofill/payments/ui",
     "//ios/chrome/browser/settings/autofill/suggestions_from_gemini/coordinator:unit_tests",
     "//ios/chrome/browser/settings/autofill/suggestions_from_gemini/ui:unit_tests",
     "//ios/chrome/browser/settings/ui_bundled:settings_root",

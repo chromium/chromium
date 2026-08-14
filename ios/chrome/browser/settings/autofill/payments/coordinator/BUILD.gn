@@ -1,0 +1,57 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("coordinator") {
+  sources = [
+    "autofill_add_credit_card_coordinator.h",
+    "autofill_add_credit_card_coordinator.mm",
+    "autofill_add_credit_card_coordinator_delegate.h",
+    "autofill_add_credit_card_mediator.h",
+    "autofill_add_credit_card_mediator.mm",
+    "autofill_add_credit_card_mediator_delegate.h",
+    "autofill_cvc_storage_view_coordinator.h",
+    "autofill_cvc_storage_view_coordinator.mm",
+    "autofill_cvc_storage_view_coordinator_delegate.h",
+    "autofill_cvc_storage_view_mediator.h",
+    "autofill_cvc_storage_view_mediator.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/application_locale_storage",
+    "//components/autofill/core/browser",
+    "//components/autofill/core/common",
+    "//components/autofill/ios/browser",
+    "//components/strings",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/autofill/model",
+    "//ios/chrome/browser/autofill/ui_bundled/util",
+    "//ios/chrome/browser/settings/autofill/payments/ui",
+    "//ios/chrome/browser/settings/ui_bundled/credit_card_scanner",
+    "//ios/chrome/browser/shared/coordinator/alert",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/prefs",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/utils",
+    "//ui/base",
+    "//ui/strings",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "autofill_add_credit_card_mediator_unittest.mm" ]
+  deps = [
+    ":coordinator",
+    "//base",
+    "//base/test:test_support",
+    "//components/application_locale_storage",
+    "//components/autofill/core/browser",
+    "//components/autofill/core/browser:test_support",
+    "//ios/chrome/browser/settings/autofill/payments/ui",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}
