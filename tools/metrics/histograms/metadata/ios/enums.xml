@@ -480,6 +480,20 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Displayed"/>
 </enum>
 
+<!-- LINT.IfChange(IOSDefaultBrowserSettingsPassivePromoAction) -->
+
+<enum name="IOSDefaultBrowserSettingsPassivePromoAction">
+  <summary>
+    The action taken by the user on the Default Browser Settings Passive Promo
+    Card.
+  </summary>
+  <int value="0" label="Closed"/>
+  <int value="1" label="Action"/>
+  <int value="2" label="No Action"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/settings/ui_bundled/settings_table_view_controller.mm:IOSDefaultBrowserSettingsPassivePromoAction) -->
+
 <enum name="IOSDefaultBrowserVideoPromoAction">
   <int value="0" label="Primary Action Button"/>
   <int value="1" label="Secondary Action Button"/>

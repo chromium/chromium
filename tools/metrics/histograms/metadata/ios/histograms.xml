@@ -7398,6 +7398,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.Settings.DefaultBrowserSettingsPassivePromo"
+    enum="IOSDefaultBrowserSettingsPassivePromoAction"
+    expires_after="2027-01-03">
+  <owner>cheickcisse@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    Records the action taken by the user on the Default Browser Settings Passive
+    Promo Card (Closed, Action, or No Action).
+  </summary>
+</histogram>
+
 <histogram name="IOS.SetUpList.AllItemsCompleted" enum="Boolean"
     expires_after="2027-02-07">
   <owner>scottyoder@google.com</owner>

@@ -10,6 +10,7 @@
 #import "base/debug/dump_without_crashing.h"
 #import "base/feature_list.h"
 #import "base/memory/raw_ptr.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
@@ -59,6 +60,8 @@
 #import "ios/chrome/browser/content_notification/model/content_notification_util.h"
 #import "ios/chrome/browser/default_browser/model/features.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
+#import "ios/chrome/browser/default_browser/promo/public/features.h"
+#import "ios/chrome/browser/default_browser/promo/ui/default_browser_passive_promo_card_item.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_visibility_browser_agent.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_visibility_observer.h"
 #import "ios/chrome/browser/discover_feed/model/feed_constants.h"
@@ -228,6 +231,18 @@ struct DefaultBrowserPassivePromoActiveData
   static constexpr char key[] = "DefaultBrowserPassivePromoActiveData";
 };
 
+// Values of the UMA IOS.Settings.DefaultBrowserSettingsPassivePromo histogram.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(IOSDefaultBrowserSettingsPassivePromoAction)
+enum class IOSDefaultBrowserSettingsPassivePromoAction {
+  kClosed = 0,
+  kAction = 1,
+  kNoAction = 2,
+  kMaxValue = kNoAction,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:IOSDefaultBrowserSettingsPassivePromoAction)
+
 }  // namespace
 
 #pragma mark - SettingsTableViewController
@@ -315,8 +330,13 @@ struct DefaultBrowserPassivePromoActiveData
   // Feature engagement tracker for the signin IPH.
   raw_ptr<feature_engagement::Tracker>
       _featureEngagementTracker;
+
   // Whether the default browser passive promo cell was shown.
   BOOL _defaultBrowserPromoCellShown;
+
+  // Whether the default browser passive promo card was shown.
+  BOOL _defaultBrowserPromoCardShown;
+
   // Presenter for the signin or Level Up IPH.
   BubbleViewControllerPresenter* _bubblePresenter;
 
@@ -546,11 +566,16 @@ struct DefaultBrowserPassivePromoActiveData
 - (void)loadModel {
   [super loadModel];
 
-  // Evaluates whether the default browser passive promo cell should be shown.
-  [self evaluateDefaultBrowserPromoCellVisibility];
+  // Evaluates whether the default browser passive promo should be shown.
+  [self evaluateDefaultBrowserPassivePromoVisibility];
 
   // Sign-in section.
   [self updateSigninSection];
+
+  // Default Browser Passive card section.
+  if (_defaultBrowserPromoCardShown) {
+    [self addDefaultPassiveCardSection];
+  }
 
   // Default Browser Passive Promo section.
   if (_defaultBrowserPromoCellShown) {
@@ -694,22 +719,57 @@ struct DefaultBrowserPassivePromoActiveData
     [model removeSectionWithIdentifier:SettingsSectionIdentifierAccount];
   }
 
+  NSUInteger insertIndex = 0;
+  if ([model hasSectionForSectionIdentifier:
+                 SettingsSectionIdentifierDefaultPassiveCard]) {
+    insertIndex = 1;
+  }
+
   [model insertSectionWithIdentifier:SettingsSectionIdentifierAccount
-                             atIndex:0];
+                             atIndex:insertIndex];
   [self addAccountToSigninSection];
 
   // Temporarily place this in the first index position in case it is populated.
   // If this is not the case SettingsSectionIdentifierAccount will remain at
-  // index 0.
-  [model insertSectionWithIdentifier:SettingsSectionIdentifierSignIn atIndex:0];
+  // the insertIndex.
+  [model insertSectionWithIdentifier:SettingsSectionIdentifierSignIn
+                             atIndex:insertIndex];
   [self addPromoToSigninSection];
   [self addPromoToEnhancedSafeBrowsingSection];
+}
+
+// Adds the Default Browser passive promo card section to the table view.
+- (void)addDefaultPassiveCardSection {
+  TableViewModel<TableViewItem*>* model = self.tableViewModel;
+
+  // Insert the section at index 0 so that the promo card is displayed at the
+  // very top of the Settings page for high visibility.
+  [model insertSectionWithIdentifier:SettingsSectionIdentifierDefaultPassiveCard
+                             atIndex:0];
+  [self addDefaultPassiveCardItem];
+}
+
+// Adds the Default Browser passive promo card item to the passive card section.
+- (void)addDefaultPassiveCardItem {
+  DefaultBrowserPassivePromoCardItem* item =
+      [[DefaultBrowserPassivePromoCardItem alloc]
+          initWithType:SettingsItemTypeDefaultBrowserPassiveCard];
+  item.target = self;
+  item.closeAction = @selector(didTapDefaultBrowserPromoCardCloseButton:);
+  item.primaryAction = @selector(didTapDefaultBrowserPromoCardActionButton:);
+
+  [self.tableViewModel addItem:item
+       toSectionWithIdentifier:SettingsSectionIdentifierDefaultPassiveCard];
 }
 
 // Adds the Default Browser passive promo cell section to the table view.
 - (void)addDefaultPassiveCellSection {
   TableViewModel<TableViewItem*>* model = self.tableViewModel;
   NSUInteger insertIndex = 0;
+  if ([model hasSectionForSectionIdentifier:
+                 SettingsSectionIdentifierDefaultPassiveCard]) {
+    insertIndex = 1;
+  }
   // If the account section exists (which contains the "Google services" cell
   // when signed out, and both the user profile and Google services when signed
   // in), place the Default Passive section directly below it. This ensures that
@@ -727,13 +787,11 @@ struct DefaultBrowserPassivePromoActiveData
 
   [model insertSectionWithIdentifier:SettingsSectionIdentifierDefaultPassiveCell
                              atIndex:insertIndex];
-  [model addItem:[self defaultPassiveCellItem]
-      toSectionWithIdentifier:SettingsSectionIdentifierDefaultPassiveCell];
+  [self addDefaultPassiveCellItem];
 }
 
-// Returns a TableViewItem configured for the Default Browser passive promo
-// cell.
-- (TableViewItem*)defaultPassiveCellItem {
+// Adds the Default Browser passive promo cell item to the passive cell section.
+- (void)addDefaultPassiveCellItem {
   TableViewDetailIconItem* item = [[TableViewDetailIconItem alloc]
       initWithType:SettingsItemTypeDefaultBrowserPassiveCell];
   item.accessibilityIdentifier = kSettingsDefaultBrowserPassiveCellId;
@@ -747,7 +805,9 @@ struct DefaultBrowserPassivePromoActiveData
 
   item.iconImage = GetChromeBallSymbol();
   item.iconBackgroundColor = nil;
-  return item;
+
+  [self.tableViewModel addItem:item
+       toSectionWithIdentifier:SettingsSectionIdentifierDefaultPassiveCell];
 }
 
 // Adds the identity promo to promote the sign-in or sync state.
@@ -815,9 +875,14 @@ struct DefaultBrowserPassivePromoActiveData
     [self.tableViewModel
         removeSectionWithIdentifier:SettingsSectionIdentifierESBPromo];
   }
+  NSUInteger insertIndex = 0;
+  if ([self.tableViewModel hasSectionForSectionIdentifier:
+                               SettingsSectionIdentifierDefaultPassiveCard]) {
+    insertIndex = 1;
+  }
   [self.tableViewModel
       insertSectionWithIdentifier:SettingsSectionIdentifierESBPromo
-                          atIndex:0];
+                          atIndex:insertIndex];
 
   if (![self.tableViewModel
           hasItemForItemType:SettingsItemTypeESBPromo
@@ -1547,6 +1612,69 @@ struct DefaultBrowserPassivePromoActiveData
     [self configureHandlersForRootViewController:controller];
     [self.navigationController pushViewController:controller animated:YES];
   }
+}
+
+// Removes the Default Browser Passive Card section from the table view.
+- (void)removeDefaultPassiveCardSection {
+  SettingsSectionIdentifier sectionID =
+      SettingsSectionIdentifierDefaultPassiveCard;
+  if (![self.tableViewModel hasSectionForSectionIdentifier:sectionID]) {
+    return;
+  }
+  NSUInteger index =
+      [self.tableViewModel sectionForSectionIdentifier:sectionID];
+  __weak SettingsTableViewController* weakSelf = self;
+  [self.tableView
+      performBatchUpdates:^{
+        [weakSelf.tableViewModel removeSectionWithIdentifier:sectionID];
+        [weakSelf.tableView deleteSections:[NSIndexSet indexSetWithIndex:index]
+                          withRowAnimation:UITableViewRowAnimationFade];
+      }
+               completion:nil];
+}
+
+// User dismissed the default browser settings passive promo card.
+- (void)didTapDefaultBrowserPromoCardCloseButton:(UIButton*)sender {
+  base::UmaHistogramEnumeration(
+      "IOS.Settings.DefaultBrowserSettingsPassivePromo",
+      IOSDefaultBrowserSettingsPassivePromoAction::kClosed);
+
+  _defaultBrowserPromoCardShown = NO;
+  _featureEngagementTracker->NotifyEvent(
+      feature_engagement::events::kDefaultBrowserSettingsCardPromoUsed);
+
+  [self dismissPassivePromoWithFeature:
+            feature_engagement::kIPHiOSPromoSettingsCardDefaultBrowserFeature];
+
+  [self removeDefaultPassiveCardSection];
+}
+
+// User tapped the action button on the default browser settings passive promo
+// card.
+- (void)didTapDefaultBrowserPromoCardActionButton:(UIButton*)sender {
+  base::UmaHistogramEnumeration(
+      "IOS.Settings.DefaultBrowserSettingsPassivePromo",
+      IOSDefaultBrowserSettingsPassivePromoAction::kAction);
+
+  _defaultBrowserPromoCardShown = NO;
+  _featureEngagementTracker->NotifyEvent(
+      feature_engagement::events::kDefaultBrowserSettingsCardPromoUsed);
+
+  [self dismissPassivePromoWithFeature:
+            feature_engagement::kIPHiOSPromoSettingsCardDefaultBrowserFeature];
+
+  [self removeDefaultPassiveCardSection];
+
+  BOOL useDefaultAppsDestination =
+      IsDefaultBrowserPictureInPictureEnabled()
+          ? IsDefaultAppsPictureInPictureVariant()
+          : (IsDefaultAppsDestinationAvailable() &&
+             IsUseDefaultAppsDestinationForPromosEnabled());
+  OpenIOSDefaultBrowserSettingsPage(
+      useDefaultAppsDestination,
+      /*ui_application_to_use=*/nil,
+      HandlerForProtocol(_browser->GetCommandDispatcher(),
+                         PictureInPictureCommands));
 }
 
 #pragma mark - Actions
@@ -2405,9 +2533,8 @@ struct DefaultBrowserPassivePromoActiveData
 }
 
 // Evaluates conditions and FET states to determine if the passive default
-// browser promo cell should be visible in Settings, updating the
-// `_defaultBrowserPromoCellShown` flag.
-- (void)evaluateDefaultBrowserPromoCellVisibility {
+// browser promo (either card or cell) should be visible in Settings.
+- (void)evaluateDefaultBrowserPassivePromoVisibility {
   if (!IsIOSSettingsDefaultBrowserPromoV2Enabled()) {
     return;
   }
@@ -2418,6 +2545,10 @@ struct DefaultBrowserPassivePromoActiveData
 
   switch (CurrentSettingsDefaultBrowserPromoType()) {
     case SettingsDefaultBrowserPromoType::kSettingsDefaultBrowserCard:
+      _defaultBrowserPromoCardShown =
+          [self triggerPassivePromoIfNeeded:
+                    feature_engagement::
+                        kIPHiOSPromoSettingsCardDefaultBrowserFeature];
       break;
     case SettingsDefaultBrowserPromoType::kSettingsDefaultBrowserCell:
       _defaultBrowserPromoCellShown =
@@ -2559,6 +2690,18 @@ struct DefaultBrowserPassivePromoActiveData
         dismissPassivePromoWithFeature:
             feature_engagement::kIPHiOSPromoSettingsCellDefaultBrowserFeature];
     _defaultBrowserPromoCellShown = NO;
+  }
+
+  if (_defaultBrowserPromoCardShown) {
+    // Logs that the user dismissed the settings without taking action on the
+    // promo card.
+    base::UmaHistogramEnumeration(
+        "IOS.Settings.DefaultBrowserSettingsPassivePromo",
+        IOSDefaultBrowserSettingsPassivePromoAction::kNoAction);
+    [self
+        dismissPassivePromoWithFeature:
+            feature_engagement::kIPHiOSPromoSettingsCardDefaultBrowserFeature];
+    _defaultBrowserPromoCardShown = NO;
   }
 
   // Remove Enhanced Safe Browsing Promo.

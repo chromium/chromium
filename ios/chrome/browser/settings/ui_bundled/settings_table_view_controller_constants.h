@@ -19,7 +19,8 @@ typedef NS_ENUM(NSInteger, SettingsSectionIdentifier) {
   SettingsSectionIdentifierDebug,
   SettingsSectionIdentifierDefaults,
   SettingsSectionIdentifierESBPromo,
-  SettingsSectionIdentifierDefaultPassiveCell
+  SettingsSectionIdentifierDefaultPassiveCell,
+  SettingsSectionIdentifierDefaultPassiveCard
 };
 
 // Item types used per Setting section.
@@ -64,7 +65,8 @@ typedef NS_ENUM(NSInteger, SettingsItemType) {
   SettingsItemTypeESBPromo,
   SettingsItemTypeBWGSettings,
   SettingsItemTypeBackendPromoDebugTools,
-  SettingsItemTypeDefaultBrowserPassiveCell
+  SettingsItemTypeDefaultBrowserPassiveCell,
+  SettingsItemTypeDefaultBrowserPassiveCard
 };
 
 // The accessibility identifier of the settings TableView.
