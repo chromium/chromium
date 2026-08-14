@@ -61,6 +61,11 @@ void OVRMultiview2::framebufferTextureMultiviewOVR(GLenum target,
              ->ValidateTexFuncLayer("framebufferTextureMultiviewOVR", textarget,
                                     base_view_index + num_views - 1))
       return;
+    if (!static_cast<WebGL2RenderingContextBase*>(scoped.Context())
+             ->ValidateFramebufferFuncParameters(
+                 "framebufferTextureMultiviewOVR", target, attachment)) {
+      return;
+    }
     if (!scoped.Context()->ValidateTexFuncLevel(
             "framebufferTextureMultiviewOVR", textarget, level))
       return;
