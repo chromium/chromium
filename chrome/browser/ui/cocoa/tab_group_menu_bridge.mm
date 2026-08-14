@@ -256,8 +256,8 @@ void TabGroupMenuBridge::OnMenuItem(NSMenuItem* item) {
 
   tab_groups::TabGroupMenuAction action = it->second;
   tab_groups::SavedTabGroupUtils::PerformTabGroupMenuAction(
-      action, tab_groups::TabGroupMenuContext::MAC_SYSTEM_MENU,
-      browser->GetBrowserForMigrationOnly(), tab_group_service_);
+      action, tab_groups::TabGroupMenuContext::MAC_SYSTEM_MENU, browser,
+      tab_group_service_);
 }
 
 NSMenuItem* TabGroupMenuBridge::CreateStaticSubmenuItem(

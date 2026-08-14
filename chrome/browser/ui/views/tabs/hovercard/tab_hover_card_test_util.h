@@ -6,12 +6,13 @@
 #define CHROME_BROWSER_UI_VIEWS_TABS_HOVERCARD_TAB_HOVER_CARD_TEST_UTIL_H_
 
 #include "base/run_loop.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/tabs/hovercard/tab_hover_card_bubble_view.h"
 #include "chrome/browser/ui/views/tabs/hovercard/tab_hover_card_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "ui/gfx/animation/animation_test_api.h"
 #include "ui/views/widget/widget.h"
+
+class BrowserWindowInterface;
 
 namespace test {
 
@@ -32,7 +33,7 @@ class TabHoverCardTestUtil {
   static TabHoverCardBubbleView* WaitForHoverCardVisible(
       BrowserWindowInterface* browser);
   static bool IsHoverCardVisible(BrowserWindowInterface* browser);
-  static int GetHoverCardsSeenCount(Browser* browser);
+  static int GetHoverCardsSeenCount(BrowserWindowInterface* browser);
   static TabHoverCardBubbleView* SimulateHoverTab(
       BrowserWindowInterface* browser,
       int tab_index);

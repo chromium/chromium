@@ -56,7 +56,7 @@ class ViewTracker;
 namespace tabs {
 class TabModel;
 }
-class Browser;
+class BrowserWindowInterface;
 class EventTracker;
 class Tab;
 class TabDragControllerTest;
@@ -508,10 +508,12 @@ class TabDragController : public views::WidgetObserver,
   // If the user is dragging a single tab that is controlled by one web app,
   // and features::kTearOffWebAppTabOpensWebAppWindow is enabled,
   // returns the app id of that web app, nullopt otherwise.
-  std::optional<webapps::AppId> GetControllingAppForDrag(Browser* browser);
+  std::optional<webapps::AppId> GetControllingAppForDrag(
+      BrowserWindowInterface* browser);
 
-  // Creates and returns a new Browser to handle the drag.
-  Browser* CreateBrowserForDrag(TabDragContext* source, gfx::Size initial_size);
+  // Creates and returns a new BrowserWindowInterface to handle the drag.
+  BrowserWindowInterface* CreateBrowserForDrag(TabDragContext* source,
+                                               gfx::Size initial_size);
 
   // Returns the location of the cursor. This is either the location of the
   // mouse or the location of the current touch point.

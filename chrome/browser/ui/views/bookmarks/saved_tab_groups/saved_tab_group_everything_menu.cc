@@ -368,7 +368,7 @@ void STGEverythingMenu::ExecuteCommand(int command_id, int event_flags) {
         menu_context_ == MenuContext::kAppMenu
             ? TabGroupMenuContext::APP_MENU
             : TabGroupMenuContext::SAVED_TAB_GROUP_EVERYTHING_MENU,
-        browser_->GetBrowserForMigrationOnly(),
+        browser_,
         tab_groups::TabGroupSyncServiceFactory::GetForProfile(
             browser_->GetProfile()));
   }

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/tabs/hovercard/tab_hover_card_test_util.h"
 
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/views/frame/base_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -76,7 +77,8 @@ bool TabHoverCardTestUtil::IsHoverCardVisible(BrowserWindowInterface* browser) {
 }
 
 // static
-int TabHoverCardTestUtil::GetHoverCardsSeenCount(Browser* browser) {
+int TabHoverCardTestUtil::GetHoverCardsSeenCount(
+    BrowserWindowInterface* browser) {
   auto* controller = GetHoverCardController(browser);
   return controller ? controller->hover_cards_seen_count_for_testing() : 0;
 }

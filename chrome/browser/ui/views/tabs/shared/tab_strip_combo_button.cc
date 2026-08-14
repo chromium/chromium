@@ -192,7 +192,7 @@ void TabStripComboButton::ShowEverythingMenu() {
   }
 
   everything_menu_ = std::make_unique<tab_groups::STGEverythingMenu>(
-      everything_menu_controller_, browser_->GetBrowserForMigrationOnly(),
+      everything_menu_controller_, browser_,
       tab_groups::STGEverythingMenu::MenuContext::kVerticalTabStrip);
 
   everything_menu_->RunMenu();

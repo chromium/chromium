@@ -8,7 +8,6 @@
 #include "base/functional/bind.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
@@ -319,7 +318,7 @@ class VerticalTabDragTest
     return Do([&]() {
       BrowserWindowInterface& latest = GetLatestBrowser();
       BrowserView* browser_view =
-          BrowserView::GetBrowserViewForBrowser(static_cast<Browser*>(&latest));
+          BrowserView::GetBrowserViewForBrowser(&latest);
       views::Widget* widget = browser_view->GetWidget();
       if (!widget->IsVisible() && widget->IsMoveLoopSupported()) {
         base::RunLoop run_loop;

@@ -131,10 +131,6 @@ SkColor FakeTabSlotController::GetPaintedGroupColor(
   return SkColor();
 }
 
-Browser* FakeTabSlotController::GetBrowser() {
-  return nullptr;
-}
-
 BrowserWindowInterface* FakeTabSlotController::GetBrowserWindowInterface() {
   return nullptr;
 }

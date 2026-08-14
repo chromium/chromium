@@ -16,7 +16,6 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
 
-class Browser;
 class BrowserWindowInterface;
 class Tab;
 class TabGroup;
@@ -249,8 +248,6 @@ class TabSlotController {
 
   // Attempts to move the specified group to the right.
   virtual void ShiftGroupRight(const tab_groups::TabGroupId& group) = 0;
-
-  virtual Browser* GetBrowser() = 0;
 
   virtual BrowserWindowInterface* GetBrowserWindowInterface() = 0;
 

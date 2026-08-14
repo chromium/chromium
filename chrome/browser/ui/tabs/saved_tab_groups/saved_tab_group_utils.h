@@ -55,25 +55,26 @@ class SavedTabGroupUtils {
   static bool IsEnabledForProfile(Profile* profile);
 
   static void RemoveGroupFromTabstrip(
-      Browser* browser,
+      BrowserWindowInterface* browser,
       const tab_groups::TabGroupId& local_group);
-  static void UngroupSavedGroup(Browser* browser,
+  static void UngroupSavedGroup(BrowserWindowInterface* browser,
                                 const base::Uuid& saved_group_guid);
-  static void DeleteSavedGroup(Browser* browser,
+  static void DeleteSavedGroup(BrowserWindowInterface* browser,
                                const base::Uuid& saved_group_guid);
-  static void LeaveSharedGroup(Browser* browser,
+  static void LeaveSharedGroup(BrowserWindowInterface* browser,
                                const base::Uuid& saved_group_guid);
 
   // Open the `url` to the end of `browser` tab strip as a new ungrouped tab.
-  static void OpenUrlInNewUngroupedTab(Browser* browser, const GURL& url);
+  static void OpenUrlInNewUngroupedTab(BrowserWindowInterface* browser,
+                                       const GURL& url);
 
   static void OpenOrMoveSavedGroupToNewWindow(
-      Browser* browser,
+      BrowserWindowInterface* browser,
       const base::Uuid& saved_group_guid);
 
   // Pin the saved tab group if it's unpinned, or unpin the saved tab group if
   // it's pinned.
-  static void ToggleGroupPinState(Browser* browser,
+  static void ToggleGroupPinState(BrowserWindowInterface* browser,
                                   const base::Uuid& saved_group_guid);
 
   // Opens a saved tab group and optionally focuses it if the appropriate
@@ -88,7 +89,7 @@ class SavedTabGroupUtils {
   // runs the callback if the dialog is not shown or it shows the dialog
   // and the callback is run asynchronously through the dialog.
   static void MaybeShowSavedTabGroupDeletionDialog(
-      Browser* browser,
+      BrowserWindowInterface* browser,
       GroupDeletionReason reason,
       base::span<const TabGroupId> group_ids,
       base::OnceCallback<void(DeletionDialogController::DeletionDialogTiming)>
@@ -178,7 +179,7 @@ class SavedTabGroupUtils {
 
   static void PerformTabGroupMenuAction(const TabGroupMenuAction& action,
                                         const TabGroupMenuContext& context,
-                                        Browser* browser,
+                                        BrowserWindowInterface* browser,
                                         TabGroupSyncService* tab_group_service);
 
   static void RecordOpenSharedGroupMetrics(const TabGroupMenuContext& context);

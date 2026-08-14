@@ -237,9 +237,8 @@ void STGTabsMenuModel::ExecuteCommand(int command_id, int event_flags) {
   TabGroupSyncService* tab_group_service =
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(
           browser_->GetProfile());
-  SavedTabGroupUtils::PerformTabGroupMenuAction(
-      action, context_, browser_->GetBrowserForMigrationOnly(),
-      tab_group_service);
+  SavedTabGroupUtils::PerformTabGroupMenuAction(action, context_, browser_,
+                                                tab_group_service);
 }
 
 void STGTabsMenuModel::OnFaviconDataAvailable(

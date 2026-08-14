@@ -26,7 +26,6 @@
 #include "base/memory/raw_ref.h"
 #endif
 
-class Browser;
 class BrowserWindowInterface;
 
 namespace tab_groups {
@@ -73,7 +72,7 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView,
 
   // Shows the editor for `group`. Returns the bubble's widget.
   static std::unique_ptr<views::Widget> Show(
-      Browser* browser,
+      BrowserWindowInterface* browser,
       const tab_groups::TabGroupId& group,
       views::View* anchor_view,
       std::optional<gfx::Rect> anchor_rect,
@@ -87,7 +86,7 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView,
   void AddedToWidget() override;
 
  private:
-  TabGroupEditorBubbleView(Browser* browser,
+  TabGroupEditorBubbleView(BrowserWindowInterface* browser,
                            const tab_groups::TabGroupId& group,
                            views::View* anchor_view,
                            std::optional<gfx::Rect> anchor_rect,
@@ -178,7 +177,8 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView,
 
   // the implementation of the ungroup command. This method is static so that
   // it can be called from dialogs as a callback.
-  static void Ungroup(Browser* browser, tab_groups::TabGroupId group);
+  static void Ungroup(BrowserWindowInterface* browser,
+                      tab_groups::TabGroupId group);
 
   class TitleFieldController : public views::TextfieldController {
    public:
@@ -229,16 +229,16 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView,
   class Footer : public views::View {
     METADATA_HEADER(Footer, views::View)
    public:
-    explicit Footer(Browser* browser_);
+    explicit Footer(BrowserWindowInterface* browser_);
     ~Footer() override = default;
 
-    static void OpenLearnMorePage(const Browser* browser_);
+    static void OpenLearnMorePage(const BrowserWindowInterface* browser_);
   };
 
   TitleFieldController title_field_controller_;
   Colors colors_;
 
-  raw_ptr<Browser> browser_;
+  raw_ptr<BrowserWindowInterface> browser_;
   const tab_groups::TabGroupId group_;
 
   // Ptr access to specific children. Must be cleared and reset by

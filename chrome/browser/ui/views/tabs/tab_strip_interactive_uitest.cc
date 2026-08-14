@@ -2,10 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/views/tabs/tab_strip.h"
+
 #include "base/scoped_observation.h"
 #include "base/test/run_until.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
@@ -15,7 +18,6 @@
 #include "chrome/browser/ui/views/tabs/browser_tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/new_tab_button.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
-#include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/test/tab_strip_interactive_test_mixin.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
@@ -104,10 +106,10 @@ class TestNewTabButtonContextMenu : public TabStripInteractiveUiTest {
   }
   TabStripController* controller() { return tabstrip()->controller(); }
 
-  auto WaitForTabCount(Browser* browser, int expected_count) {
+  auto WaitForTabCount(BrowserWindowInterface* browser, int expected_count) {
     return Steps(
         PollState(kTabCountState,
-                  [browser]() { return browser->tab_strip_model()->count(); }),
+                  [browser]() { return browser->GetTabStripModel()->count(); }),
         WaitForState(kTabCountState, expected_count),
         StopObservingState(kTabCountState));
   }

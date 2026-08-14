@@ -323,9 +323,9 @@ void TabContainerImpl::OnGroupCreated(const tab_groups::TabGroupId& group) {
 
 void TabContainerImpl::OnGroupEditorOpened(
     const tab_groups::TabGroupId& group) {
-  // The context menu relies on a Browser object which is not provided in
-  // TabStripTest.
-  if (tab_slot_controller_->GetBrowser()) {
+  // The context menu relies on a BrowserWindowInterface object which is not
+  // provided in TabStripTest.
+  if (tab_slot_controller_->GetBrowserWindowInterface()) {
     group_views_[group]->header()->ShowContextMenuForViewImpl(
         this, gfx::Point(), ui::mojom::MenuSourceType::kNone);
   }

@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_metrics.h"
@@ -120,9 +121,9 @@ bool SavedTabGroupUtils::IsEnabledForProfile(Profile* profile) {
 
 // static
 void SavedTabGroupUtils::RemoveGroupFromTabstrip(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     const tab_groups::TabGroupId& local_group) {
-  Browser* const browser_with_local_group_id =
+  BrowserWindowInterface* const browser_with_local_group_id =
       browser ? browser
               : SavedTabGroupUtils::GetBrowserWithTabGroupId(local_group);
   DCHECK(browser_with_local_group_id);
@@ -131,7 +132,7 @@ void SavedTabGroupUtils::RemoveGroupFromTabstrip(
   }
 
   TabStripModel* const tab_strip_model =
-      browser_with_local_group_id->tab_strip_model();
+      browser_with_local_group_id->GetTabStripModel();
 
   const int num_tabs_in_group =
       tab_strip_model->group_model()->GetTabGroup(local_group)->tab_count();
@@ -145,7 +146,7 @@ void SavedTabGroupUtils::RemoveGroupFromTabstrip(
 }
 
 // static
-void SavedTabGroupUtils::UngroupSavedGroup(Browser* browser,
+void SavedTabGroupUtils::UngroupSavedGroup(BrowserWindowInterface* browser,
                                            const base::Uuid& saved_group_guid) {
   tab_groups::TabGroupSyncService* tab_group_service =
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(
@@ -162,8 +163,9 @@ void SavedTabGroupUtils::UngroupSavedGroup(Browser* browser,
   }
 
   base::OnceCallback<void()> ungroup_callback = base::BindOnce(
-      [](Browser* browser, const tab_groups::TabGroupId& local_group) {
-        TabStripModel* const model = browser->tab_strip_model();
+      [](BrowserWindowInterface* browser,
+         const tab_groups::TabGroupId& local_group) {
+        TabStripModel* const model = browser->GetTabStripModel();
         const gfx::Range tab_range =
             model->group_model()->GetTabGroup(local_group)->ListTabs();
 
@@ -190,7 +192,7 @@ void SavedTabGroupUtils::UngroupSavedGroup(Browser* browser,
 }
 
 // static
-void SavedTabGroupUtils::DeleteSavedGroup(Browser* browser,
+void SavedTabGroupUtils::DeleteSavedGroup(BrowserWindowInterface* browser,
                                           const base::Uuid& saved_group_guid) {
   tab_groups::TabGroupSyncService* tab_group_service =
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(
@@ -221,7 +223,7 @@ void SavedTabGroupUtils::DeleteSavedGroup(Browser* browser,
   }
 
   base::OnceCallback<void()> close_callback = base::BindOnce(
-      [](Browser* browser, const base::Uuid& saved_group_guid) {
+      [](BrowserWindowInterface* browser, const base::Uuid& saved_group_guid) {
         TabGroupSyncService* tab_group_service =
             tab_groups::TabGroupSyncServiceFactory::GetForProfile(
                 browser->GetProfile());
@@ -275,7 +277,7 @@ void SavedTabGroupUtils::DeleteSavedGroup(Browser* browser,
 }
 
 // static
-void SavedTabGroupUtils::LeaveSharedGroup(Browser* browser,
+void SavedTabGroupUtils::LeaveSharedGroup(BrowserWindowInterface* browser,
                                           const base::Uuid& saved_group_guid) {
   if (!tab_groups::SavedTabGroupUtils::SupportsSharedTabGroups()) {
     return;
@@ -310,7 +312,7 @@ void SavedTabGroupUtils::LeaveSharedGroup(Browser* browser,
 
 // static
 void SavedTabGroupUtils::MaybeShowSavedTabGroupDeletionDialog(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     GroupDeletionReason reason,
     base::span<const TabGroupId> group_ids,
     base::OnceCallback<void(DeletionDialogController::DeletionDialogTiming)>
@@ -396,8 +398,9 @@ void SavedTabGroupUtils::MaybeShowSavedTabGroupDeletionDialog(
 }
 
 // static
-void SavedTabGroupUtils::OpenUrlInNewUngroupedTab(Browser* browser,
-                                                  const GURL& url) {
+void SavedTabGroupUtils::OpenUrlInNewUngroupedTab(
+    BrowserWindowInterface* browser,
+    const GURL& url) {
   NavigateParams params(browser, url, ui::PAGE_TRANSITION_AUTO_BOOKMARK);
   params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
   params.started_from_context_menu = true;
@@ -406,7 +409,7 @@ void SavedTabGroupUtils::OpenUrlInNewUngroupedTab(Browser* browser,
 
 // static
 void SavedTabGroupUtils::OpenOrMoveSavedGroupToNewWindow(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     const base::Uuid& saved_group_guid) {
   tab_groups::TabGroupSyncService* tab_group_service =
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(
@@ -419,7 +422,7 @@ void SavedTabGroupUtils::OpenOrMoveSavedGroupToNewWindow(
   }
 
   const auto& local_group_id = save_group->local_group_id();
-  Browser* const browser_with_local_group_id =
+  BrowserWindowInterface* const browser_with_local_group_id =
       local_group_id.has_value()
           ? SavedTabGroupUtils::GetBrowserWithTabGroupId(local_group_id.value())
           : browser;
@@ -429,10 +432,14 @@ void SavedTabGroupUtils::OpenOrMoveSavedGroupToNewWindow(
     // NOTE: This action could cause `this` to be deleted. Make sure lines
     // following this have either copied data by value or hold pointers to the
     // objects it needs.
+    Browser* browser_ptr =
+        browser_with_local_group_id
+            ? browser_with_local_group_id->GetBrowserForMigrationOnly()
+            : nullptr;
     tab_group_service->OpenTabGroup(
         saved_group_guid,
         std::make_unique<TabGroupActionContextDesktop>(
-            browser_with_local_group_id, OpeningSource::kOpenedFromRevisitUi));
+            browser_ptr, OpeningSource::kOpenedFromRevisitUi));
   }
 
   // Ensure that the saved group did open in the browser.
@@ -440,14 +447,14 @@ void SavedTabGroupUtils::OpenOrMoveSavedGroupToNewWindow(
   CHECK(save_group->local_group_id().has_value());
 
   // Move the open group to a new browser window.
-  browser_with_local_group_id->tab_strip_model()
+  browser_with_local_group_id->GetTabStripModel()
       ->delegate()
       ->MoveGroupToNewWindow(save_group->local_group_id().value());
 }
 
 // static
 void SavedTabGroupUtils::ToggleGroupPinState(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     const base::Uuid& saved_group_guid) {
   tab_groups::TabGroupSyncService* tab_group_service =
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(
@@ -823,7 +830,7 @@ tabs::TabInterface* SavedTabGroupUtils::GetGroupedTab(LocalTabGroupID group_id,
 void SavedTabGroupUtils::PerformTabGroupMenuAction(
     const TabGroupMenuAction& action,
     const TabGroupMenuContext& context,
-    Browser* browser,
+    BrowserWindowInterface* browser,
     TabGroupSyncService* tab_group_service) {
   auto type = action.type;
   if (type == TabGroupMenuAction::Type::OPEN_URL) {

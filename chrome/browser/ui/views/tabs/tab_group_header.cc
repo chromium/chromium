@@ -13,8 +13,8 @@
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_group_attention_indicator.h"
@@ -329,7 +329,7 @@ void TabGroupHeader::OnMouseReleased(const ui::MouseEvent& event) {
 
     if (open_editor_bubble) {
       editor_bubble_tracker_.Opened(TabGroupEditorBubbleView::Show(
-          tab_slot_controller_->GetBrowser(), group().value(),
+          tab_slot_controller_->GetBrowserWindowInterface(), group().value(),
           /*anchor_view=*/this, /*anchor_rect=*/std::nullopt,
           /*stop_context_menu_propagation=*/false));
     } else if (toggle_collapse) {
@@ -367,7 +367,7 @@ void TabGroupHeader::OnGestureEvent(ui::GestureEvent* event) {
       break;
     case ui::EventType::kGestureLongTap: {
       editor_bubble_tracker_.Opened(TabGroupEditorBubbleView::Show(
-          tab_slot_controller_->GetBrowser(), group().value(),
+          tab_slot_controller_->GetBrowserWindowInterface(), group().value(),
           /*anchor_view=*/this, /*anchor_rect=*/std::nullopt,
           /*stop_context_menu_propagation=*/false));
       break;
@@ -495,8 +495,8 @@ void TabGroupHeader::ShowContextMenuForViewImpl(
 #endif
 
   editor_bubble_tracker_.Opened(TabGroupEditorBubbleView::Show(
-      tab_slot_controller_->GetBrowser(), group().value(), this, std::nullopt,
-      kStopContextMenuPropagation));
+      tab_slot_controller_->GetBrowserWindowInterface(), group().value(), this,
+      std::nullopt, kStopContextMenuPropagation));
 }
 
 bool TabGroupHeader::DoesIntersectRect(const views::View* target,

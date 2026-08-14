@@ -1208,10 +1208,11 @@ void TabStrip::NewTabButtonPressed(const ui::Event& event) {
   new_tab_button_pressed_start_time_ = base::TimeTicks::Now();
 
   base::RecordAction(base::UserMetricsAction("NewTab_Button"));
-  GetBrowser()->GetProfile()->SetUserData(
+  BrowserWindowInterface* const browser = GetBrowserWindowInterface();
+  browser->GetProfile()->SetUserData(
       NewTabGroupingUserData::kNewTabGroupingUserDataKey,
       std::make_unique<NewTabGroupingUserData>(
-          GetBrowser()->tab_strip_model()->GetActiveTab()->GetGroup()));
+          browser->GetTabStripModel()->GetActiveTab()->GetGroup()));
   if (event.IsMouseEvent()) {
     // Prevent the hover card from popping back in immediately. This forces a
     // normal fade-in.
@@ -1221,7 +1222,7 @@ void TabStrip::NewTabButtonPressed(const ui::Event& event) {
 
     const ui::MouseEvent& mouse = static_cast<const ui::MouseEvent&>(event);
     if (mouse.IsOnlyMiddleMouseButton()) {
-      chrome::NewTabFromClipboardURL(GetBrowser());
+      chrome::NewTabFromClipboardURL(browser);
       return;
     }
   }
@@ -2125,10 +2126,6 @@ void TabStrip::ShiftGroupLeft(const tab_groups::TabGroupId& group) {
 
 void TabStrip::ShiftGroupRight(const tab_groups::TabGroupId& group) {
   ShiftGroupRelative(group, 1);
-}
-
-Browser* TabStrip::GetBrowser() {
-  return controller_->GetBrowserWindowInterface()->GetBrowserForMigrationOnly();
 }
 
 BrowserWindowInterface* TabStrip::GetBrowserWindowInterface() {
