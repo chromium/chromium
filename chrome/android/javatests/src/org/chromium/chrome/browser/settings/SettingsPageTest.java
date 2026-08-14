@@ -14,6 +14,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.allOf;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 
 import static org.chromium.base.test.util.Batch.PER_CLASS;
@@ -40,6 +41,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.ViewUtils;
 
@@ -280,6 +282,34 @@ public class SettingsPageTest {
                     } catch (AssertionError | Exception e) {
                         return false;
                     }
+                });
+    }
+
+    @Test
+    @MediumTest
+    public void testAccessibilityPageZoomDoesNotShowPopup() {
+        mActivityTestRule.loadUrl("chrome-native://settings/");
+
+        // Click on "Accessibility" in MainSettings header pane.
+        var matcher =
+                allOf(
+                        withId(R.id.recycler_view),
+                        hasDescendant(withText(R.string.search_engine_settings)));
+        onView(matcher).perform(scrollTo(hasDescendant(withText(R.string.prefs_accessibility))));
+        onView(withText(R.string.prefs_accessibility)).perform(click());
+
+        // Verify the Accessibility preference screen is displayed.
+        onView(withText(R.string.zoom_info_preference_title)).check(matches(isDisplayed()));
+
+        // Verify the page zoom popup window is not permitted to show on the settings native page.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    var rootUiCoordinator =
+                            mActivityTestRule.getActivity().getRootUiCoordinatorForTesting();
+                    assertFalse(
+                            rootUiCoordinator
+                                    .getPageZoomManager()
+                                    .canShowPopupWindow(UrlConstants.SETTINGS_HOST));
                 });
     }
 }

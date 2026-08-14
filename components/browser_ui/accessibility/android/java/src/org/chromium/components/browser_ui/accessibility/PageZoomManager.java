@@ -130,8 +130,9 @@ public class PageZoomManager {
     }
 
     /**
-     * Returns true if the window/activity for this manager currently has window focus, the
-     * overflow menu is not showing, and the zoom event host matches the current/pending tab.
+     * Returns true if the window/activity for this manager currently has window focus, the current
+     * tab is not a native page, the overflow menu is not showing, and the zoom event host matches
+     * the current/pending tab.
      */
     public boolean canShowPopupWindow(String eventHost) {
         if (!mDelegate.canShowPopupWindow()) return false;

@@ -776,12 +776,21 @@ public class RootUiCoordinator
 
                             @Override
                             public boolean canShowPopupWindow() {
-                                return ApplicationStatus.getLastTrackedFocusedActivity()
-                                                == mActivity
-                                        && (mAppMenuCoordinator == null
-                                                || !mAppMenuCoordinator
-                                                        .getAppMenuHandler()
-                                                        .isAppMenuShowing());
+                                if (ApplicationStatus.getLastTrackedFocusedActivity()
+                                        != mActivity) {
+                                    return false;
+                                }
+                                // The zoom indicator popup is only for web pages with zoomable
+                                // content. Native pages (such as SettingsPage) render native
+                                // Android UI and shouldn't display a zoom indicator popup.
+                                Tab tab = mActivityTabProvider.get();
+                                if (tab == null || tab.isNativePage()) {
+                                    return false;
+                                }
+                                return mAppMenuCoordinator == null
+                                        || !mAppMenuCoordinator
+                                                .getAppMenuHandler()
+                                                .isAppMenuShowing();
                             }
                         });
 

@@ -151,6 +151,12 @@ public class PageZoomManagerUnitTest {
     }
 
     @Test
+    public void testCanShowPopupWindow_DelegateReturnsFalse() {
+        when(mPageZoomManagerDelegateMock.canShowPopupWindow()).thenReturn(false);
+        Assert.assertFalse(mManager.canShowPopupWindow("example.com"));
+    }
+
+    @Test
     public void testCanShowPopupWindow_NullWebContents() {
         when(mPageZoomManagerDelegateMock.canShowPopupWindow()).thenReturn(true);
         when(mPageZoomManagerDelegateMock.getWebContents()).thenReturn(null);
