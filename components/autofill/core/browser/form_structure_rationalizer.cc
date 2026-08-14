@@ -267,8 +267,10 @@ void FormStructureRationalizer::RationalizeAutocompleteAttributes(
                 features::kAutofillEnableExpirationDateImprovements)) {
           FieldType server_hint = field->server_type();
           FieldType forced_field_type =
-              field->server_type_prediction_is_override() ? field->server_type()
-                                                          : NO_SERVER_DATA;
+              field->PredictionSource() ==
+                      AutofillPredictionSource::kServerOverride
+                  ? field->server_type()
+                  : NO_SERVER_DATA;
           CreditCardFieldParser::ExpirationDateFormat format =
               CreditCardFieldParser::DetermineExpirationDateFormat(
                   *field, /*fallback_type=*/CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR,
@@ -295,8 +297,10 @@ void FormStructureRationalizer::RationalizeAutocompleteAttributes(
                 features::kAutofillEnableExpirationDateImprovements)) {
           FieldType server_hint = field->server_type();
           FieldType forced_field_type =
-              field->server_type_prediction_is_override() ? field->server_type()
-                                                          : NO_SERVER_DATA;
+              field->PredictionSource() ==
+                      AutofillPredictionSource::kServerOverride
+                  ? field->server_type()
+                  : NO_SERVER_DATA;
           // The default for select or list elements does not really matter
           // because it's practically always chosen from the select options.
           // The default for text elements was chosen base on statistics from
@@ -573,8 +577,10 @@ void FormStructureRationalizer::RationalizeCreditCardFieldPredictions(
           current_field_type == CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR) {
         FieldType server_hint = field->server_type();
         FieldType forced_field_type =
-            field->server_type_prediction_is_override() ? server_hint
-                                                        : NO_SERVER_DATA;
+            field->PredictionSource() ==
+                    AutofillPredictionSource::kServerOverride
+                ? server_hint
+                : NO_SERVER_DATA;
         CreditCardFieldParser::ExpirationDateFormat format =
             CreditCardFieldParser::DetermineExpirationDateFormat(
                 *field, /*fallback_type=*/CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR,
@@ -869,7 +875,8 @@ void FormStructureRationalizer::RationalizeStreetAddressAndAddressLine(
     if (previous_field.ComputedType().GetAddressType() !=
             ADDRESS_HOME_STREET_ADDRESS ||
         previous_field.section() != (*field)->section() ||
-        previous_field.server_type_prediction_is_override()) {
+        previous_field.PredictionSource() ==
+            AutofillPredictionSource::kServerOverride) {
       continue;
     }
     LOG_AF(log_manager)

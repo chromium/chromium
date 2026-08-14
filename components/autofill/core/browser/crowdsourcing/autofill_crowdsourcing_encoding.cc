@@ -1205,7 +1205,8 @@ void ServerPredictions::ApplyTo(FormStructure& form) const {
                                   ? field->server_predictions()[1].source()
                                   : FieldPrediction::SOURCE_UNSPECIFIED,
         .server_type_prediction_is_override =
-            field->server_type_prediction_is_override(),
+            field->PredictionSource() ==
+            AutofillPredictionSource::kServerOverride,
         .rank_in_field_signature_group =
             field_rank_map[field->GetFieldSignature()],
     });

@@ -550,11 +550,6 @@ FieldType AutofillField::server_type() const {
                    .value_or(NO_SERVER_DATA);
 }
 
-bool AutofillField::server_type_prediction_is_override() const {
-  return server_predictions_.empty() ? false
-                                     : server_predictions_[0].override();
-}
-
 void AutofillField::set_heuristic_type(HeuristicSource s, FieldType type) {
   CHECK(ToSafeFieldType(type).has_value(), base::NotFatalUntil::M142);
   local_type_predictions_[static_cast<size_t>(s)] = type;
@@ -680,8 +675,9 @@ AutofillType AutofillField::MakeAutofillType(FieldType primary_field_type,
 
 AutofillField::PredictionResult AutofillField::GetOverallPredictionResult()
     const {
-  // Server Overrides are granted precedence unconditionally.
-  if (server_type_prediction_is_override() && server_type() != NO_SERVER_DATA) {
+  // Server overrides are granted precedence unconditionally.
+  if (!server_predictions_.empty() && server_predictions_[0].override() &&
+      server_type() != NO_SERVER_DATA) {
     return {MakeAutofillType(server_type()),
             AutofillPredictionSource::kServerOverride};
   }
@@ -826,7 +822,7 @@ bool AutofillField::ShouldSuppressSuggestionsAndFillingByDefault(
   // 2. The field's type comes from a server override.
   // 3. The field type has a credit-card-related classification.
   if (html_type_ != HtmlFieldType::kUnrecognized ||
-      server_type_prediction_is_override() ||
+      PredictionSource() == AutofillPredictionSource::kServerOverride ||
       Type().GetCreditCardType() != UNKNOWN_TYPE) {
     return false;
   }

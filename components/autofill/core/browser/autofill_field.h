@@ -204,7 +204,6 @@ class AutofillField : public FormFieldData {
   FieldType heuristic_type() const;
   FieldType heuristic_type(HeuristicSource s) const;
   FieldType server_type() const;
-  bool server_type_prediction_is_override() const;
   const std::vector<FieldPrediction>& server_predictions() const {
     return server_predictions_;
   }

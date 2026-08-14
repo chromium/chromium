@@ -2573,8 +2573,10 @@ TEST_F(AutofillCrowdsourcingEncoding,
   EXPECT_EQ(form.field(1)->server_type(), NAME_LAST);
 
   // Validate that the overrides are set correctly.
-  EXPECT_TRUE(form.field(0)->server_type_prediction_is_override());
-  EXPECT_FALSE(form.field(1)->server_type_prediction_is_override());
+  EXPECT_EQ(form.field(0)->PredictionSource(),
+            AutofillPredictionSource::kServerOverride);
+  EXPECT_NE(form.field(1)->PredictionSource(),
+            AutofillPredictionSource::kServerOverride);
 
   // Validate that the server prediction won for the first field.
   EXPECT_THAT(form.field(0)->Type().GetTypes(), ElementsAre(NAME_FIRST));

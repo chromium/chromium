@@ -662,14 +662,17 @@ std::ostream& operator<<(std::ostream& buffer, const FormStructure& form) {
     }
     std::string server_type = ServerTypesToString(*field);
     const char* is_override =
-        field->server_type_prediction_is_override() ? " (manual override)" : "";
+        field->PredictionSource() == AutofillPredictionSource::kServerOverride
+            ? " (manual override)"
+            : "";
     auto html_type_description =
         field->html_type() != HtmlFieldType::kUnspecified
             ? base::StrCat(
                   {", html: ", FieldTypeToStringView(field->html_type())})
             : "";
     if (field->html_type() == HtmlFieldType::kUnrecognized &&
-        !field->server_type_prediction_is_override()) {
+        field->PredictionSource() !=
+            AutofillPredictionSource::kServerOverride) {
       html_type_description += " (disabling autofill)";
     }
 
@@ -787,7 +790,8 @@ LogBuffer& operator<<(LogBuffer& buffer, const FormStructure& form) {
       }
     }
     std::string server_type = ServerTypesToString(*field);
-    if (field->server_type_prediction_is_override()) {
+    if (field->PredictionSource() ==
+        AutofillPredictionSource::kServerOverride) {
       server_type += " (manual override)";
     }
     auto html_type_description =
@@ -796,7 +800,8 @@ LogBuffer& operator<<(LogBuffer& buffer, const FormStructure& form) {
                   {", html: ", FieldTypeToStringView(field->html_type())})
             : "";
     if (field->html_type() == HtmlFieldType::kUnrecognized &&
-        !field->server_type_prediction_is_override()) {
+        field->PredictionSource() !=
+            AutofillPredictionSource::kServerOverride) {
       html_type_description += " (disabling autofill)";
     }
 
