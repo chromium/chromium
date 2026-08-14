@@ -236,6 +236,11 @@ IN_PROC_BROWSER_TEST_F(CrComponentsMostVisitedTest, ShortcutsAutoRemovalToast) {
           "runMochaSuite('ShortcutsAutoRemovalToast');");
 }
 
+IN_PROC_BROWSER_TEST_F(CrComponentsMostVisitedTest, NonEditable) {
+  RunTest("cr_components/most_visited_test.js",
+          "runMochaSuite('NonEditable');");
+}
+
 typedef WebUIMochaBrowserTest CrComponentsThemeColorPickerTest;
 IN_PROC_BROWSER_TEST_F(CrComponentsThemeColorPickerTest, ThemeColor) {
   set_test_loader_host(chrome::kChromeUICustomizeChromeSidePanelHost);

@@ -102,6 +102,19 @@ export class MostVisitedElement extends MostVisitedElementBase {
     return {
       theme: {type: Object},
       /**
+       * If true, disables editing/removing shortcuts, hides action buttons and
+       * the add shortcut button, and prevents tile dragging.
+       */
+      nonEditable: {
+        type: Boolean,
+        reflect: true,
+      },
+      /** If true, hides the text title under each tile/button. */
+      hideTitle: {
+        type: Boolean,
+        reflect: true,
+      },
+      /**
        * If true, renders MV tiles in a single row up to 10 columns wide.
        * If false, renders MV tiles in up to 2 rows up to 5 columns wide.
        */
@@ -184,6 +197,8 @@ export class MostVisitedElement extends MostVisitedElementBase {
   }
 
   accessor theme: MostVisitedTheme|null = null;
+  accessor nonEditable: boolean = false;
+  accessor hideTitle: boolean = false;
   accessor reflowOnOverflow: boolean = false;
   accessor singleRow: boolean = false;
   accessor expandableTilesEnabled: boolean = false;
@@ -397,7 +412,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
     const shortcutCount = this.tiles_ ? this.tiles_.length : 0;
     const canShowAdd = this.expandableTilesEnabled ?
         this.showAdd_ :
-        this.maxTiles_ > shortcutCount;
+        !this.nonEditable && this.maxTiles_ > shortcutCount;
     const canShowShowMore = this.expandableTilesEnabled && this.showShowMore_;
     const canShowShowLess = this.expandableTilesEnabled && this.showShowLess_;
     const visibleShortcutCount =
@@ -449,7 +464,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
   }
 
   private computeShowAdd_(): boolean {
-    if (this.showShowMore_) {
+    if (this.nonEditable || this.showShowMore_) {
       return false;
     }
     if (!this.customLinksEnabled_) {
@@ -888,7 +903,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
   }
 
   protected onDocumentKeyDown_(e: KeyboardEvent) {
-    if (e.altKey || e.shiftKey) {
+    if (this.nonEditable || e.altKey || e.shiftKey) {
       return;
     }
 
@@ -901,6 +916,9 @@ export class MostVisitedElement extends MostVisitedElementBase {
   }
 
   protected onDragstart_(e: DragEvent) {
+    if (this.nonEditable) {
+      return;
+    }
     const item = this.tiles_[this.getCurrentTargetIndex_(e)]!;
     assert(item);
     if (!this.customLinksEnabled_ &&
@@ -1054,7 +1072,9 @@ export class MostVisitedElement extends MostVisitedElementBase {
 
     const index = this.getCurrentTargetIndex_(e);
     if (e.key === 'Delete') {
-      this.tileRemove_(index);
+      if (!this.nonEditable) {
+        this.tileRemove_(index);
+      }
       return;
     }
 
@@ -1141,7 +1161,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
   }
 
   protected onTouchstart_(e: TouchEvent) {
-    if (this.reordering_) {
+    if (this.nonEditable || this.reordering_) {
       return;
     }
     const item = this.tiles_[this.getCurrentTargetIndex_(e)]!;

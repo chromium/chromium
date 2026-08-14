@@ -36,7 +36,7 @@ export function getHtml(this: OmniboxEverywhereAppElement) {
   `}
   ${this.mostVisitedEnabled_ ? html`
     <div id="mostVisitedContainer">
-      <cr-most-visited id="mostVisited" single-row reflow-on-overflow></cr-most-visited>
+      <cr-most-visited id="mostVisited" single-row reflow-on-overflow non-editable hide-title expandable-tiles-enabled></cr-most-visited>
     </div>
   ` : ''}
 </div>

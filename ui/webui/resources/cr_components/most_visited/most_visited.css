@@ -256,6 +256,10 @@ cr-policy-indicator {
   direction: ltr;
 }
 
+:host([hide-title]) .tile-title {
+  display: none;
+}
+
 .tile.dragging {
   background-color: var(--tile-hover-color);
   transition-property: none;

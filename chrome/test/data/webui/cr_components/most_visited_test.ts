@@ -163,6 +163,8 @@ function leaveUrlInput() {
 }
 
 interface SetUpTestOptions {
+  nonEditable: boolean;
+  hideTitle: boolean;
   singleRow: boolean;
   reflowOnOverflow: boolean;
   expandableTilesEnabled: boolean;
@@ -174,6 +176,8 @@ interface SetUpTestOptions {
 
 function setUpTest(providedOptions: Partial<SetUpTestOptions> = {}) {
   const defaultOptions = {
+    nonEditable: false,
+    hideTitle: false,
     singleRow: false,
     reflowOnOverflow: false,
     expandableTilesEnabled: false,
@@ -189,6 +193,8 @@ function setUpTest(providedOptions: Partial<SetUpTestOptions> = {}) {
   createWindowProxy();
 
   mostVisited = new MostVisitedElement();
+  mostVisited.nonEditable = options.nonEditable;
+  mostVisited.hideTitle = options.hideTitle;
   mostVisited.singleRow = options.singleRow;
   mostVisited.reflowOnOverflow = options.reflowOnOverflow;
   if (options.expandableTilesEnabled) {
@@ -2306,5 +2312,69 @@ suite('ShortcutsAutoRemovalToast', () => {
     const wait = handler.whenCalled('undoMostVisitedAutoRemoval');
     autoRemovalEvent!.detail.undo();
     await wait;
+  });
+});
+
+suite('NonEditable', () => {
+  setup(async () => {
+    await setUpTest({nonEditable: true});
+  });
+
+  test('add shortcut button is hidden for custom links', async () => {
+    await addTiles(1, /*customLinksEnabled=*/ true);
+    assertAddShortcutHidden();
+  });
+
+  test('action menu button is hidden for custom links', async () => {
+    await addTiles(1, /*customLinksEnabled=*/ true);
+    const actionMenuButtons = queryAll<HTMLElement>('#actionMenuButton');
+    assertEquals(1, actionMenuButtons.length);
+    assertTrue(actionMenuButtons[0]!.hidden);
+  });
+
+  test('remove button is hidden for top sites', async () => {
+    await addTiles(1, /*customLinksEnabled=*/ false);
+    const removeButtons = queryAll<HTMLElement>('#removeButton');
+    assertEquals(1, removeButtons.length);
+    assertTrue(removeButtons[0]!.hidden);
+  });
+
+  test('delete key does not delete tile', async () => {
+    await addTiles(1, /*customLinksEnabled=*/ true);
+    const tile = queryTiles()[0]!;
+    tile.dispatchEvent(new KeyboardEvent('keydown', {key: 'Delete'}));
+    assertEquals(0, handler.getCallCount('deleteMostVisitedTile'));
+  });
+
+  test('tiles are not draggable', async () => {
+    await addTiles(1, /*customLinksEnabled=*/ true);
+    const tile = queryTiles()[0]!;
+    assertEquals('false', tile.getAttribute('draggable'));
+  });
+
+  test('show more button is shown when expandable tiles enabled', async () => {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    await setUpTest({
+      nonEditable: true,
+      expandableTilesEnabled: true,
+      maxTilesInCollapsedState: 2,
+    });
+    await addTiles(3, /*customLinksEnabled=*/ true);
+    const showMore = getShowMoreButton();
+    assertTrue(!!showMore);
+    assertFalse(showMore.hidden);
+    assertAddShortcutHidden();
+  });
+
+  test('tile titles are hidden when hideTitle is true', async () => {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    await setUpTest({
+      nonEditable: true,
+      hideTitle: true,
+    });
+    await addTiles(1, /*customLinksEnabled=*/ true);
+    const titleElements = queryAll<HTMLElement>('.tile-title');
+    assertTrue(titleElements.length > 0);
+    titleElements.forEach(el => assertTrue(el.hidden));
   });
 });

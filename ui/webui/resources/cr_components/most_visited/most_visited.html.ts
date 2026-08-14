@@ -21,21 +21,21 @@ export function getHtml(this: MostVisitedElement) {
       @mouseenter="${this.onTileMouseenter_}"
       @mouseleave="${this.onTileMouseleave_}"
       @mousedown="${this.onTileMousedown_}" @keydown="${this.onTileKeydown_}"
-      draggable="true" data-index="${index}">
+      draggable="${!this.nonEditable}" data-index="${index}">
       <a href="${item.url}" aria-label="${item.title}"
           draggable="false">
       </a>
       <cr-icon-button id="actionMenuButton" class="icon-more-vert"
           title="${this.getMoreActionText_(item.title)}"
           @click="${this.onTileActionButtonClick_}" tabindex="0"
-          ?hidden="${!this.customLinksEnabled_ &&
-            !this.isFromEnterpriseShortcut_(item.source)}"
+          ?hidden="${this.nonEditable || (!this.customLinksEnabled_ &&
+            !this.isFromEnterpriseShortcut_(item.source))}"
           data-index="${index}"></cr-icon-button>
       <cr-icon-button id="removeButton" class="icon-clear"
           title="${this.getRemoveButtonText_(item.title)}"
           @click="${this.onTileRemoveButtonClick_}" tabindex="0"
-          ?hidden="${this.customLinksEnabled_ ||
-            this.isFromEnterpriseShortcut_(item.source)}"
+          ?hidden="${this.nonEditable || (this.customLinksEnabled_ ||
+            this.isFromEnterpriseShortcut_(item.source))}"
           data-index="${index}"></cr-icon-button>
       <div class="tile-icon">
         <img src="${this.getFaviconUrl_(item.url)}" draggable="false"
@@ -48,7 +48,8 @@ export function getHtml(this: MostVisitedElement) {
           </cr-policy-indicator>
         </div>
       </div>
-      <div class="tile-title ${this.getTileTitleDirectionClass_(item)}">
+      <div class="tile-title ${this.getTileTitleDirectionClass_(item)}"
+          ?hidden="${this.hideTitle}">
         <span>${item.title}</span>
       </div>
     </div>
@@ -60,7 +61,7 @@ export function getHtml(this: MostVisitedElement) {
     <div class="tile-icon tile-icon-container">
       <div id="addShortcutIcon" draggable="false"></div>
     </div>
-    <div class="tile-title">
+    <div class="tile-title" ?hidden="${this.hideTitle}">
       <span>${this.i18n('addLinkTitle')}</span>
     </div>
   </cr-button>
@@ -72,7 +73,7 @@ export function getHtml(this: MostVisitedElement) {
       <div class="tile-icon tile-icon-container">
         <div id="showMoreIcon" draggable="false"></div>
       </div>
-      <div class="tile-title">
+      <div class="tile-title" ?hidden="${this.hideTitle}">
         <span>${this.i18n('showMore')}</span>
       </div>
     </cr-button>
@@ -83,7 +84,7 @@ export function getHtml(this: MostVisitedElement) {
       <div class="tile-icon tile-icon-container">
         <div id="showLessIcon" draggable="false"></div>
       </div>
-      <div class="tile-title">
+      <div class="tile-title" ?hidden="${this.hideTitle}">
         <span>${this.i18n('showLess')}</span>
       </div>
     </cr-button>
