@@ -110,12 +110,23 @@ using read_anything::mojom::UntrustedPage;
 using read_anything::mojom::UntrustedPageHandler;
 using read_anything::mojom::VoicePackInstallationState;
 
-class ReadAnythingUntrustedPageHandler::DistillerDelegate
+// A helper class that orchestrates page distillation using the
+// DomDistillerService.
+//
+// It triggers distillation via StartDistillation() and implements the
+// dom_distiller::ViewRequestDelegate interface to receive the results.
+//
+// It holds a dom_distiller::ViewerHandle to manage the lifetime of the active
+// distillation request. Resetting or replacing this handle cancels any
+// outstanding request, ensuring that only one distillation request is active
+// at any given time. Once distillation completes, it forwards the resulting
+// article to the enclosing ReadAnythingUntrustedPageHandler.
+class ReadAnythingUntrustedPageHandler::DomDistillerDelegate
     : public dom_distiller::ViewRequestDelegate {
  public:
-  explicit DistillerDelegate(ReadAnythingUntrustedPageHandler* handler)
+  explicit DomDistillerDelegate(ReadAnythingUntrustedPageHandler* handler)
       : handler_(handler) {}
-  ~DistillerDelegate() override = default;
+  ~DomDistillerDelegate() override = default;
 
   void StartDistillation(dom_distiller::DomDistillerService* service,
                          content::WebContents* contents) {
@@ -428,7 +439,7 @@ ReadAnythingUntrustedPageHandler::ReadAnythingUntrustedPageHandler(
           ISOLATED_WORLD_ID_CHROME_INTERNAL);
     }
 
-    distiller_delegate_ = std::make_unique<DistillerDelegate>(this);
+    distiller_delegate_ = std::make_unique<DomDistillerDelegate>(this);
   }
 
   // Enable accessibility for the top level render frame and all descendants.

@@ -396,7 +396,7 @@ class ReadAnythingUntrustedPageHandler :
   // the current url scheme in ReadAnything.DistillationScheme.
   void RecordDistillationSchemeHistogram(const GURL& url) const;
 
-  // Called by the DistillerDelegate with the result of a DomDistiller
+  // Called by the DomDistillerDelegate with the result of a DomDistiller
   // distillation.
   void ProcessDistilledArticle(
       const dom_distiller::DistilledArticleProto* article_proto);
@@ -429,8 +429,8 @@ class ReadAnythingUntrustedPageHandler :
 
   // Private implementation for dom_distiller::ViewRequestDelegate, not part of
   // the public API.
-  class DistillerDelegate;
-  std::unique_ptr<DistillerDelegate> distiller_delegate_;
+  class DomDistillerDelegate;
+  std::unique_ptr<DomDistillerDelegate> distiller_delegate_;
 
   const mojo::Receiver<read_anything::mojom::UntrustedPageHandler> receiver_;
   const mojo::Remote<read_anything::mojom::UntrustedPage> page_;
