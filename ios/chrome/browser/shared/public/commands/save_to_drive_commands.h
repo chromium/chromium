@@ -5,7 +5,11 @@
 #ifndef IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_SAVE_TO_DRIVE_COMMANDS_H_
 #define IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_SAVE_TO_DRIVE_COMMANDS_H_
 
-@class ShowSaveToDriveCommand;
+#import <Foundation/Foundation.h>
+
+namespace web {
+class DownloadTask;
+}
 
 // Commands related to Save to Drive.
 @protocol SaveToDriveCommands
@@ -14,7 +18,7 @@
 - (void)showSaveToDriveForDownload:(web::DownloadTask*)downloadTask;
 
 // Stops Save to Drive UI.
-- (void)hideSaveToDrive;
+- (void)hideSaveToDriveAnimated:(BOOL)animated;
 
 @end
 

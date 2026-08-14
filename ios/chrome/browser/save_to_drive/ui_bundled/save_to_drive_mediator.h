@@ -9,7 +9,6 @@
 
 #import "ios/chrome/browser/save_to_drive/ui_bundled/file_destination_picker_action_delegate.h"
 
-@protocol AccountPickerCommands;
 @protocol AccountPickerConsumer;
 class AuthenticationService;
 class ChromeAccountManagerService;
@@ -44,7 +43,6 @@ class DownloadTask;
            saveToDriveHandler:(id<SaveToDriveCommands>)saveToDriveHandler
     manageStorageAlertHandler:
         (id<ManageStorageAlertCommands>)manageStorageAlertHandler
-         accountPickerHandler:(id<AccountPickerCommands>)accountPickerHandler
                   prefService:(PrefService*)prefService
         authenticationService:(AuthenticationService*)authenticationService
         accountManagerService:

@@ -361,7 +361,7 @@ const char kChromeAppStoreUrl[] =
   [self hideParentAccessBottomSheet];
   [self hidePriceTrackedItems];
   [self stopReminderNotificationsCoordinator];
-  [self hideSaveToDrive];
+  [self hideSaveToDriveAnimated:NO];
   [self stopSaveToPhotos];
   [self stopSearchEngineChoiceScreen];
   [self stopSendTabToSelf];
@@ -1767,7 +1767,7 @@ const char kChromeAppStoreUrl[] =
 
 - (void)showSaveToDriveForDownload:(web::DownloadTask*)downloadTask {
   // If the Save to Drive coordinator is not nil, stop it.
-  [self hideSaveToDrive];
+  [self hideSaveToDriveAnimated:NO];
 
   _saveToDriveCoordinator = [[SaveToDriveCoordinator alloc]
       initWithBaseViewController:_baseViewController
@@ -1776,8 +1776,8 @@ const char kChromeAppStoreUrl[] =
   [_saveToDriveCoordinator start];
 }
 
-- (void)hideSaveToDrive {
-  [_saveToDriveCoordinator stop];
+- (void)hideSaveToDriveAnimated:(BOOL)animated {
+  [_saveToDriveCoordinator stopAnimated:animated];
   _saveToDriveCoordinator = nil;
 }
 

@@ -4,7 +4,6 @@
 
 source_set("commands") {
   sources = [
-    "account_picker_commands.h",
     "activity_service_commands.h",
     "activity_service_share_url_command.h",
     "activity_service_share_url_command.mm",

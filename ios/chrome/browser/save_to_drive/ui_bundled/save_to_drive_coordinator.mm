@@ -27,7 +27,6 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/chrome/browser/shared/public/commands/account_picker_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/google_one_commands.h"
 #import "ios/chrome/browser/shared/public/commands/manage_storage_alert_commands.h"
@@ -45,8 +44,7 @@
 #import "ios/web/public/web_state.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
-@interface SaveToDriveCoordinator () <AccountPickerCommands,
-                                      AccountPickerCoordinatorDelegate,
+@interface SaveToDriveCoordinator () <AccountPickerCoordinatorDelegate,
                                       AccountPickerLogger,
                                       ManageStorageAlertCommands>
 
@@ -77,8 +75,6 @@
 - (void)start {
   CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
   [dispatcher startDispatchingToTarget:self
-                           forProtocol:@protocol(AccountPickerCommands)];
-  [dispatcher startDispatchingToTarget:self
                            forProtocol:@protocol(ManageStorageAlertCommands)];
   ProfileIOS* profile = self.profile;
   drive::DriveService* driveService =
@@ -94,7 +90,6 @@
            initWithDownloadTask:_downloadTask
              saveToDriveHandler:saveToDriveHandler
       manageStorageAlertHandler:self
-           accountPickerHandler:self
                     prefService:prefService
           authenticationService:AuthenticationServiceFactory::GetForProfile(
                                     self.profile)
@@ -127,7 +122,10 @@
   _mediator.destinationPickerConsumer = _destinationPicker;
 }
 
-- (void)stop {
+#pragma mark - AnimatedCoordinator
+
+- (void)stopAnimated:(BOOL)animated {
+  [super stopAnimated:animated];
   CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
   [dispatcher stopDispatchingToTarget:self];
   [_mediator disconnect];
@@ -135,10 +133,12 @@
   [_destinationPicker willMoveToParentViewController:nil];
   [_destinationPicker removeFromParentViewController];
   _destinationPicker = nil;
-  [_alertController.presentingViewController dismissViewControllerAnimated:NO
-                                                                completion:nil];
+  [_alertController.presentingViewController
+      dismissViewControllerAnimated:animated
+                         completion:nil];
   _alertController = nil;
-  [_accountPickerCoordinator stop];
+  _accountPickerCoordinator.delegate = nil;
+  [_accountPickerCoordinator stopAnimated:animated];
   _accountPickerCoordinator = nil;
   [_signinCoordinator stop];
   _signinCoordinator = nil;
@@ -191,7 +191,7 @@
   }
   id<SaveToDriveCommands> saveToDriveCommandsHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), SaveToDriveCommands);
-  [saveToDriveCommandsHandler hideSaveToDrive];
+  [saveToDriveCommandsHandler hideSaveToDriveAnimated:NO];
 }
 
 #pragma mark - AccountPickerLogger
@@ -289,12 +289,6 @@
             baseViewController:presenter];
 }
 
-#pragma mark - AccountPickerCommands
-
-- (void)hideAccountPickerAnimated:(BOOL)animated {
-  [_accountPickerCoordinator stopAnimated:animated];
-}
-
 #pragma mark - Private
 
 - (void)openSignIn {
@@ -310,7 +304,7 @@
     // in ProfileState. This hides Save to Drive instead.
     id<SaveToDriveCommands> saveToDriveHandler = HandlerForProtocol(
         self.browser->GetCommandDispatcher(), SaveToDriveCommands);
-    [saveToDriveHandler hideSaveToDrive];
+    [saveToDriveHandler hideSaveToDriveAnimated:NO];
     return;
   }
 
@@ -362,7 +356,7 @@
   }
   id<SaveToDriveCommands> saveToDriveHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), SaveToDriveCommands);
-  [saveToDriveHandler hideSaveToDrive];
+  [saveToDriveHandler hideSaveToDriveAnimated:NO];
 }
 
 // Shows an alert letting the user know that switching profiles will cancel the
@@ -408,7 +402,7 @@
   if (!proceed) {
     id<SaveToDriveCommands> saveToDriveCommandsHandler = HandlerForProtocol(
         self.browser->GetCommandDispatcher(), SaveToDriveCommands);
-    [saveToDriveCommandsHandler hideSaveToDrive];
+    [saveToDriveCommandsHandler hideSaveToDriveAnimated:NO];
   }
 }
 
