@@ -131,7 +131,6 @@ domain Page
       identity-credentials-get
       idle-detection
       interest-cohort
-      join-ad-interest-group
       keyboard-map
       language-detector
       language-model
@@ -152,9 +151,7 @@ domain Page
       private-state-token-redemption
       publickey-credentials-create
       publickey-credentials-get
-      record-ad-auction-events
       rewriter
-      run-ad-auction
       screen-wake-lock
       serial
       # Deprecated.

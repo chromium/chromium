@@ -385,12 +385,6 @@
       permissions_policy_name: "idle-detection",
     },
     {
-      name: "JoinAdInterestGroup",
-      permissions_policy_name: "join-ad-interest-group",
-      feature_default: "EnableForAll",
-      depends_on: ["AdInterestGroupAPI"],
-    },
-    {
       name: "KeyboardMap",
       permissions_policy_name: "keyboard-map",
     },
@@ -497,21 +491,9 @@
       permissions_policy_name: "publickey-credentials-get",
     },
     {
-      name: "RecordAdAuctionEvents",
-      permissions_policy_name: "record-ad-auction-events",
-      feature_default: "EnableForAll",
-      depends_on: ["FledgeClickiness"],
-    },
-    {
       name: "Rewriter",
       permissions_policy_name: "rewriter",
       depends_on: ["AIRewriterAPI"],
-    },
-    {
-      name: "RunAdAuction",
-      permissions_policy_name: "run-ad-auction",
-      feature_default: "EnableForAll",
-      depends_on: ["AdInterestGroupAPI"],
     },
     {
       name: "ScreenWakeLock",

@@ -73,7 +73,6 @@ private-state-token-issuance
 private-state-token-redemption
 publickey-credentials-create
 publickey-credentials-get
-record-ad-auction-events
 rewriter
 screen-wake-lock
 serial

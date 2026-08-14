@@ -152,17 +152,8 @@ enum PermissionsPolicyFeature {
   // https://wicg.github.io/keyboard-map/
   kKeyboardMap = 90,
 
-  // Controls FLEDGE's runAdAuction API.
-  //
-  // See https://github.com/WICG/turtledove/blob/main/FLEDGE.md#21-initiating-an-on-device-auction
-  // for the API.
-  kRunAdAuction = 91,
-
-  // Controls FLEDGE's joinAdInterestGroup and updateAdInterestGroups APIs.
-  //
-  // See https://github.com/WICG/turtledove/blob/main/FLEDGE.md#11-joining-interest-groups
-  // for the API.
-  kJoinAdInterestGroup = 92,
+  // kRunAdAuction = 91, Removed in M153.
+  // kJoinAdInterestGroup = 92, Removed in M153.
 
   // Client Hint for the full version for each brand.
   kClientHintUAFullVersionList = 93,
@@ -316,10 +307,7 @@ enum PermissionsPolicyFeature {
   // kLocalNetwork and kLoopbackNetwork later in this file)
   kLocalNetworkAccess = 136,
 
-  // Controls Protected Audience API's view and click functionality.
-  //
-  // See https://github.com/WICG/turtledove/blob/main/FLEDGE.md#37-view-and-click-data
-  kRecordAdAuctionEvents = 137,
+  // kRecordAdAuctionEvents = 137, Removed in M153
 
   // Allows sites to delegate access to install on-device speech via the Web
   // Speech API to cross-origin iframes.
