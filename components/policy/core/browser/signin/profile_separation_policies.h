@@ -39,9 +39,15 @@ class POLICY_EXPORT ProfileSeparationPolicies {
       std::optional<int> profile_separation_data_migration_settings);
   explicit ProfileSeparationPolicies(
       const std::string& managed_accounts_signin_restrictions);
+  ProfileSeparationPolicies(
+      std::optional<int> profile_separation_settings,
+      std::optional<int> profile_separation_data_migration_settings,
+      std::optional<std::string> managed_accounts_signin_restrictions);
   ProfileSeparationPolicies(const ProfileSeparationPolicies&);
   ProfileSeparationPolicies& operator=(const ProfileSeparationPolicies&);
   ~ProfileSeparationPolicies();
+
+  bool operator==(const ProfileSeparationPolicies& other) const = default;
 
   bool Empty() const;
 

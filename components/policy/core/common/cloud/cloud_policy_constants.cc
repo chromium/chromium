@@ -89,6 +89,8 @@ const char kValueRequestDeterminePromotionEligibility[] =
     "promotion_eligibility";
 const char kValueRequestGenerateChromeProfileChallenge[] =
     "generate_chrome_profile_challenge";
+const char kValueRequestUserManagementStatusAndPolicies[] =
+    "user_management_status_and_policies";
 
 // User policy type is determined in GetChromeUserPolicyType.
 const char kChromeDevicePolicyType[] = "google/chromeos/device";

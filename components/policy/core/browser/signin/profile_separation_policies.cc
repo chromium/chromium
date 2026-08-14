@@ -21,6 +21,16 @@ ProfileSeparationPolicies::ProfileSeparationPolicies(
           managed_accounts_signin_restrictions) {}
 
 ProfileSeparationPolicies::ProfileSeparationPolicies(
+    std::optional<int> profile_separation_settings,
+    std::optional<int> profile_separation_data_migration_settings,
+    std::optional<std::string> managed_accounts_signin_restrictions)
+    : managed_accounts_signin_restrictions_(
+          std::move(managed_accounts_signin_restrictions)),
+      profile_separation_settings_(profile_separation_settings),
+      profile_separation_data_migration_settings_(
+          profile_separation_data_migration_settings) {}
+
+ProfileSeparationPolicies::ProfileSeparationPolicies(
     const ProfileSeparationPolicies& other) = default;
 
 ProfileSeparationPolicies& ProfileSeparationPolicies::operator=(

@@ -225,6 +225,7 @@ class POLICY_EXPORT DeviceManagementService {
       TYPE_POLICY_AGENT_REGISTRATION = 35,
       TYPE_DETERMINE_PROMOTION_ELIGIBILITY = 36,
       TYPE_GENERATE_CHROME_PROFILE_CHALLENGE = 37,
+      TYPE_USER_MANAGEMENT_STATUS_AND_POLICIES = 38,
     };
 
     // The set of HTTP query parameters of the request.

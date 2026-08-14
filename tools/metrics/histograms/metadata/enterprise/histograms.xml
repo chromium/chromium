@@ -346,6 +346,11 @@ chromium-metrics-reviews@google.com.
     <owner>rbock@google.com</owner>
     <owner>zmin@chromium.org</owner>
   </variant>
+  <variant name=".UserManagementStatusAndPolicies"
+      summary="User Management Status And Policies.">
+    <owner>ydago@chromium.org</owner>
+    <owner>cbe-eng@google.com</owner>
+  </variant>
 </variants>
 
 <variants name="EnterpriseReportingEventType">

@@ -102,6 +102,8 @@ POLICY_EXPORT BASE_DECLARE_FEATURE(kExportPlatformPoliciesJson);
 // policy fetching from the legacy SecureConnect endpoint to Device Management
 // Server.
 POLICY_EXPORT BASE_DECLARE_FEATURE(kMigrateSecureConnectApiToDmServer);
+POLICY_EXPORT extern const base::FeatureParam<base::TimeDelta>
+    kMigrateSecureConnectApiToDmServerFetchTimeout;
 
 }  // namespace policy::features
 

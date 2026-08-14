@@ -5508,14 +5508,38 @@ message UserManagementStatusAndPoliciesRequest {
 // Enterprise policies needed to customize the sign-in experience (such as
 // profile separation and branding).
 message SigninExperiencePolicies {
+  // Enums are explicitly defined here matching the policy integer enum values
+  // because generated policy protos (from policy definitions templates) are
+  // created at build time and do not export standalone proto enum types.
+  //
+  // NOTE: If new enum values are added to policy_templates.json / policy YAMLs
+  // for ProfileSeparationSettings or ProfileSeparationDataMigrationSettings,
+  // ensure these enums are updated accordingly.
+
+  // Values match the proto enum values of the `ProfileSeparationSettings`
+  // policy.
+  enum ProfileSeparationSettings {
+    SUGGESTED = 0;
+    ENFORCED = 1;
+    DISABLED = 2;
+  }
+
+  // Values match the proto enum values of the
+  // `ProfileSeparationDataMigrationSettings` policy.
+  enum ProfileSeparationDataMigrationSettings {
+    USER_OPT_IN = 1;
+    USER_OPT_OUT = 2;
+    ALWAYS_SEPARATE = 3;
+  }
+
   // Value for the `SyncDisabled` policy.
   optional bool sync_disabled = 1;
 
   // Value for the `ProfileSeparationSettings` policy.
-  optional int32 profile_separation_settings = 2;
+  optional ProfileSeparationSettings profile_separation_settings = 2;
 
   // Value for the `ProfileSeparationDataMigrationSettings` policy.
-  optional int32 profile_separation_data_migration_settings = 3;
+  optional ProfileSeparationDataMigrationSettings profile_separation_data_migration_settings = 3;
 
   // Value for the `BrowserThemeColor` policy.
   optional string browser_theme_color = 4;
@@ -5534,10 +5558,10 @@ message SigninExperiencePolicies {
 // request (`UserManagementStatusAndPoliciesRequest`).
 message UserManagementStatusAndPoliciesResponse {
   // Whether the user account is managed by an enterprise/domain.
-  optional bool is_managed = 1;
+  optional bool is_account_managed = 1;
 
   // Whether Chrome management is enabled for this user.
-  optional bool is_management_enabled = 2;
+  optional bool is_chrome_profile_management_enabled = 2;
 
   // Sign-in experience policies for the user, populated when
   // `should_fetch_policies` is true and management is enabled.

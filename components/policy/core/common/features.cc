@@ -101,5 +101,8 @@ BASE_FEATURE(kExportPlatformPoliciesJson,
 BASE_FEATURE(kMigrateSecureConnectApiToDmServer,
              "MigrateSecureConnectApiToDmServer",
              base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<base::TimeDelta>
+    kMigrateSecureConnectApiToDmServerFetchTimeout{
+        &kMigrateSecureConnectApiToDmServer, "fetch_timeout", base::Seconds(10)};
 
 }  // namespace policy::features
