@@ -23,4 +23,11 @@ found in the LICENSE file.
 
     <include layout="@layout/url_action_container"/>
     <include layout="@layout/fusebox_layout"/>
+    <View
+        android:id="@+id/focus_thief"
+        android:layout_width="1px"
+        android:layout_height="1px"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:importantForAccessibility="no" />
 </merge>

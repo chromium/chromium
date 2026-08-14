@@ -54,6 +54,7 @@ public class LocationBarLayout extends ConstraintLayout {
     protected final View mActivationChip;
     protected UrlBar mUrlBar;
     protected final View mLocationBarStatusView;
+    protected final View mFocusThief;
 
     protected UrlBarCoordinator mUrlCoordinator;
     protected AutocompleteCoordinator mAutocompleteCoordinator;
@@ -108,6 +109,7 @@ public class LocationBarLayout extends ConstraintLayout {
         // and its render tests are updated to set layout direction on their test containers.
         mActivationChip.setLayoutDirection(LAYOUT_DIRECTION_INHERIT);
         mMarginSpacer = findViewById(R.id.margin_spacer);
+        mFocusThief = findViewById(R.id.focus_thief);
 
         Resources res = getResources();
         mUrlActionContainerEndMargin =
@@ -628,5 +630,9 @@ public class LocationBarLayout extends ConstraintLayout {
 
     View getDeleteButton() {
         return mDeleteButton;
+    }
+
+    View getFocusThief() {
+        return mFocusThief;
     }
 }

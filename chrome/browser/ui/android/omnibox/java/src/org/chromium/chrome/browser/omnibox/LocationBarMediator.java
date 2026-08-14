@@ -3075,6 +3075,10 @@ class LocationBarMediator
         mSelectionController.reset();
         if (mUrlHasFocus) {
             mUrlCoordinator.clearFocus();
+            // Focus a different view when the UrlBar loses focus to sever any lingering IME
+            // connections. Without this, there are cases where typing with a hardware keyboard can
+            // enter text into an unfocused UrlBar.
+            mLocationBarLayout.getFocusThief().requestFocus();
         }
     }
 

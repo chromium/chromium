@@ -254,6 +254,7 @@ public class LocationBarMediatorUnitTest {
     @Mock private View mMicButton;
     @Mock private View mNavigateButton;
     @Mock private View mPlusButton;
+    @Mock private View mFocusThief;
     @Mock private Activity mActivity;
     @Mock private Window mWindow;
     @Mock private ExtensionUiBackend mExtensionUiBackend;
@@ -430,6 +431,7 @@ public class LocationBarMediatorUnitTest {
                 .findViewById(R.id.fusebox_plus_button);
         lenient().doReturn(mMicButton).when(mLocationBarLayout).getMicButton();
         lenient().doReturn(mNavigateButton).when(mLocationBarLayout).getNavigateButton();
+        lenient().doReturn(mFocusThief).when(mLocationBarLayout).getFocusThief();
 
         mMediator =
                 new LocationBarMediator(
@@ -504,6 +506,7 @@ public class LocationBarMediatorUnitTest {
                 .findViewById(R.id.fusebox_plus_button);
         lenient().doReturn(mMicButton).when(mLocationBarTablet).getMicButton();
         lenient().doReturn(mNavigateButton).when(mLocationBarTablet).getNavigateButton();
+        lenient().doReturn(mFocusThief).when(mLocationBarTablet).getFocusThief();
 
         var tabletMediator =
                 new LocationBarMediator(
@@ -1818,6 +1821,19 @@ public class LocationBarMediatorUnitTest {
     public void testEndInput_notFocused() {
         mMediator.endInput();
         verify(mUrlCoordinator, never()).clearFocus();
+    }
+
+    @Test
+    public void testEndInput_focusMovesToThief() {
+        mMediator.onFinishNativeInitialization();
+        mProfileSupplier.set(mProfile);
+        AutocompleteInput input = mSessionState.getAutocompleteInput();
+        mMediator.onUrlFocusChange(true);
+        mMediator.beginInput(input);
+        mMediator.endInput();
+
+        verify(mUrlCoordinator).clearFocus();
+        verify(mFocusThief).requestFocus();
     }
 
     @Test

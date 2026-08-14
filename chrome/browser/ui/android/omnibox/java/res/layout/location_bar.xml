@@ -29,4 +29,11 @@ small devices.
         android:visibility="gone" />
 
     <include layout="@layout/url_action_container"/>
+    <View
+        android:id="@+id/focus_thief"
+        android:layout_width="1px"
+        android:layout_height="1px"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:importantForAccessibility="no" />
 </merge>
