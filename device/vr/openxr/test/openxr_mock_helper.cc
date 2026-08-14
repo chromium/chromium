@@ -27,6 +27,9 @@
 typedef void (*SetMockOpenXrDispatchTableFn)(
     PFN_xrGetInstanceProcAddr get_instance_proc_addr);
 
+// Unwraps the type-erased message pipe handle from the device service into a
+// typed `device_test::mojom::XRTestHook` remote and binds it to the embedded
+// mock OpenXR test helper.
 void BindTestHook(mojo::ScopedMessagePipeHandle receiver) {
   OpenXrTestHelper::Get().SetTestHook(
       mojo::PendingRemote<device_test::mojom::XRTestHook>(std::move(receiver),
@@ -97,6 +100,11 @@ bool InitializeOpenXrMockTrampoline() {
 }
 
 namespace {
+// Statically registers the mock trampoline initialization and test hook binding
+// callbacks with `OpenXrPlatformHelper` upon module load in test binaries.
+// This allows `OpenXrPlatformHelper::EnsureInitialized()` to automatically load
+// and wire up the mock runtime trampoline without exposing test dependencies to
+// production targets.
 struct TrampolineRegistrar {
   TrampolineRegistrar() {
     device::OpenXrPlatformHelper::RegisterInitializeOpenXrMockTrampolineFn(

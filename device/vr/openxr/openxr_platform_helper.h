@@ -54,12 +54,19 @@ class DEVICE_VR_EXPORT OpenXrPlatformHelper {
   // e.g. specific controllers.
   static std::vector<const char*> GetOptionalExtensions();
 
+  // Registers a callback to initialize the mock OpenXR runtime trampoline in
+  // test builds. Invoked automatically during `EnsureInitialized()`.
   using InitializeOpenXrMockTrampolineFn = bool (*)();
   static void RegisterInitializeOpenXrMockTrampolineFn(
       InitializeOpenXrMockTrampolineFn fn);
 
+  // Registers a callback to bind a test hook receiver to the mock OpenXR
+  // runtime using a type-erased message pipe in test builds.
   using BindTestHookFn = void (*)(mojo::ScopedMessagePipeHandle);
   static void RegisterBindTestHookFn(BindTestHookFn fn);
+
+  // Forwards a type-erased message pipe to the registered test hook handler.
+  // Must only be called in test environments.
   static void BindHookForTesting(mojo::ScopedMessagePipeHandle receiver);
 
   virtual ~OpenXrPlatformHelper();

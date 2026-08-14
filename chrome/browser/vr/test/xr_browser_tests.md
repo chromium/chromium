@@ -11,90 +11,36 @@ These files port the framework used by XR instrumentation tests (located in
 [`//chrome/android/javatests/src/org/chromium/chrome/browser/vr/`][vr android dir]
 and documented in
 `//chrome/android/javatests/src/org/chromium/chrome/browser/vr/*.md`) for
-use in browser tests in order to test XR features on desktop platforms.
+use in browser tests in order to test XR features on desktop platforms and Android.
 
 [vr android dir]: https://chromium.googlesource.com/chromium/src/+/main/chrome/android/javatests/src/org/chromium/chrome/browser/vr
 
 This is pretty much a direct port, with the same JavaScript/HTML files being
 used for both and the Java/C++ code being functionally equivalent to each other,
-so the instrumentation test's documentation on writing tests using the framework
-is applicable here, too. As such, this documentation only covers any notable
-differences between the two implementations.
-
-## Mock XR Device
-
-Any runtime attempting to start an Immersive session needs to add a Mock Device,
-as otherwise Android tests will fail due to trying to spawn a new activity,
-which currently isn't supported.
-
-## Threading
-
-It is important to be mindful of the threading model within these tests. The
-main test thread is the same as the browser's UI thread. On Android, the
-device thread is also the browser thread. This configuration makes
-it very easy to cause a deadlock in the browser process. To avoid this, any
-`MockXRDevice` should run its mojo methods, which are synchronously queried by
-the device on the device thread, on a separate thread. Furthermore, using
-`base::WaitableEvent` will completely block the thread it is called on. Since
-this would block the browser process, `base::WaitableEvent` should not be
-used, but rather `base::RunLoop` should be used instead.
-
-## Restrictions
-
-Both the instrumentation tests and browser tests have hardware/software
-restrictions - in the case of browser tests, XR is only supported on Windows 10
-and later with a GPU that supports DirectX 11.1, or on Android. However,
-several tests exist that don't actually use XR functionality, and thus don't
-have these requirements.
-
-Runtime restrictions in browser tests are handled via the macros in
-`conditional_skipping.h`. To add a runtime requirement to a test class, simply
-append it to the `runtime_requirements_` vector that each class has. The
-test setup will automatically skip tests that don't meet all requirements.
-
-One-off skipping within a test can also be done by using the XR_CONDITIONAL_SKIP
-macro directly in a test.
-
-The bots can be made to ignore these runtime requirement checks if we expect
-the requirements to always be met (and thus we want the tests to fail if they
-aren't) via the `--ignore-runtime-requirements` argument. This takes a
-comma-separated list of requirements to ignore, or the wildcard (\*) to ignore
-all requirements. For example, `--ignore-runtime-requirements=DirectX_11.1`
-would cause a test that requires a DirectX 11.1 device to be run even if a
-suitable device is not found.
-
-New requirements can be added by adding to the `XrTestRequirement` enum in
-`conditional_skipping.h` and adding its associated checking logic in
-`conditional_skipping.cc`.
-
-## Command Line Switches
-
-Instrumentation tests are able to add and remove command line switches on a
-per-test-case basis using `@CommandLine` annotations, but equivalent
-functionality does not exist in browser tests.
-
-Instead, if different command line flags are needed, a new class will need to
-be created that extends the correct type of `*BrowserTestBase` and overrides the
-flags that are set in its `SetUp` function.
+so the instrumentation tests' documentation on writing tests using the framework
+is applicable here, too. As such, this documentation covers the test runner workflows,
+input simulation, and the underlying mock architecture.
 
 ## Compiling And Running
 
 ### Windows
 
 The tests are compiled in the `xr_browser_tests` target. This is a combination
-of the `xr_browser_tests_binary` target, which is the actual test, and the
+of the `xr_browser_tests_binary` target, which is the actual test binary, and the
 `xr_browser_tests_runner` target, which is a wrapper script that ensures special
-setup is completed before running the tests.
+setup (such as deploying the mock OpenXR runtime active runtime JSON) is completed
+before running the tests.
 
 Once compiled, the tests can be run using the following command line:
 
-`run_xr_browser_tests.py --enable-gpu --test-launcher-jobs=1
---enable-pixel-output-in-tests`
+```bash
+run_xr_browser_tests.py --enable-gpu --test-launcher-jobs=1 --enable-pixel-output-in-tests
+```
 
 Additional options such as test filtering can be found by running
 `xr_browser_tests.exe --help` and `xr_browser_tests.exe --gtest_help`.
 
-Because the "test" is actually a Python wrapper script, you may need to prepend
+Because the runner is a Python wrapper script, you may need to prepend
 `python` to the front of the command on Windows if Python file association is
 not set up on your machine.
 
@@ -160,93 +106,282 @@ either:
    out/Emu/run_xr_android_emulator_tests.py --avd-config tools/android/avd/proto/android_35_google_apis_x64.textpb --gtest_filter="WebXrVrOpenXrBrowserTest.TestMultipleEntryFromBlinkEnd"
    ```
 
-## Adding New Files
+## Writing Tests & Test Fixtures
 
-If you are adding a new test or infrastructure file to the target, you'll need
-to consider whether it's useful with the `enable_vr` gn arg set to false or not.
-If it is, then it should be included in `//chrome/test:xr_browser_tests_common`,
-otherwise it should be included in
-`//chrome/browser/vr:xr_browser_tests_vr_required`.
+### Test Class Names
 
-If including in `//chrome/test:xr_browser_tests_common`, you may need to hide
-some VR-specific functionality in the file behind `#if BUILDFLAG(ENABLE_VR)`.
-
-## Running A Test Multiple Times With Different Runtimes
-
-The macros provided by
-[`//chrome/browser/vr/test/multi_class_browser_test.h`][multi class macros]
-provide a shorthand method for running a test multiple times with different
-classes/runtimes. This is effectively the same as declaring some implementation
-function that takes a reference to some base class shared by all the subclasses
-you want to run the test with, then having each test call that implementation.
-
-These macros help cut down on boilerplate code, but if you need either:
-
-1. Class-specific setup before running the implementation
-2. Different test logic in the implementation depending on the provided class
-
-You should consider using the standard IN_PROC_BROWSER_TEST_F macros instead.
-Small snippets of runtime-specific code are acceptable, but if it affects
-readability significantly, the tests should probably remain separate.
-
-Most tests simply use the standard `WebXrVrOpenXrBrowserTest` class.
-In this case, you can instead use the `WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F`
-macro, which only needs to take the test name, further cutting down on
-boilerplate code.
-
-You can also use `WEBXR_VR_ALL_RUNTIMES_PLUS_INCOGNITO_BROWSER_TEST_F` if you
-want the same functionality as `WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F`, but
-also want the test run in Incognito mode in addition to regular Chrome.
-
-[multi class macros]: https://chromium.googlesource.com/chromium/src/+/main/chrome/browser/vr/test/multi_class_browser_test.h
-
-## Test Class Names
-
-The test classes that are used to provide feature and runtime-specific setup and
-functions are named in the following order:
+The test classes that provide feature- and runtime-specific setup and functions
+are named in the following order:
 
 1. Feature
 2. Runtime
 3. "BrowserTest"
-4. Optional Descriptor/special flags
+4. Optional Descriptor / Special Flags
 
 For example, `WebXrVrOpenXrBrowserTest` is meant for testing the WebXR for VR
-feature using the OpenXR runtime with standard flags enabled, i.e. the flags
-required for using WebXR and the OpenXR runtime with other runtimes disabled.
-`WebXrVrRuntimelessBrowserTestSensorless` on the other hand would be for
-testing WebXR for VR without any runtimes and with the orientation sensor
-device explicitly disabled.
+feature using the OpenXR runtime with standard flags enabled (i.e. the flags
+required for using WebXR and the OpenXR runtime with other runtimes disabled).
+`WebXrVrRuntimelessBrowserTestSensorless` on the other hand tests WebXR for VR
+without any runtimes and with the orientation sensor device explicitly disabled.
 
 In general, classes ending in "Base" should not be used directly.
 
-## Controller and Head Input
+### Running A Test Multiple Times With Different Runtimes
 
-The XR browser tests provide a way to plumb controller and headset data (e.g.
-currently touched/pressed buttons and poses) from the test through the runtime
-being tested. Details about what goes on under the hood can be found in
-[`//chrome/browser/vr/test/xr_browser_test_details.md`][xr details], but below
-is a quick guide on how to use them.
+The macros provided by
+[`//chrome/browser/vr/test/multi_class_browser_test.h`][multi class macros]
+provide a shorthand method for running a test multiple times with different
+classes/runtimes.
 
-[xr details]: https://chromium.googlesource.com/chromium/src/+/main/chrome/browser/vr/test/xr_browser_test_details.md
+Most tests simply use the standard `WebXrVrOpenXrBrowserTest` class.
+In this case, use the `WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F` macro, which only
+takes the test name:
 
-In order to let a test provide data to a runtime, it must create an instance of
-[`MockXRDeviceHookBase`][xr hook base] or some subclass of it. This should be
-created at the beginning of the test before any attempts to enter VR are made,
-as there are currently assumptions that prevent switching to or from the mock
-runtimes once they have been attempted to be started.
+```cpp
+WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestPresentation) {
+  t->LoadFileAndAwaitInitialization("test_presentation");
+  t->EnterSessionWithUserGestureOrFail();
+  t->EndTest();
+}
+```
+
+You can also use `WEBXR_VR_ALL_RUNTIMES_PLUS_INCOGNITO_BROWSER_TEST_F` if you
+want the test run in Incognito mode in addition to regular Chrome.
+
+[multi class macros]: https://chromium.googlesource.com/chromium/src/+/main/chrome/browser/vr/test/multi_class_browser_test.h
+
+### Restrictions & Conditional Skipping
+
+Both instrumentation tests and browser tests have hardware/software restrictions:
+for desktop browser tests, XR is supported on Windows 10 and later with a GPU that
+supports DirectX 11.1, or on Android. Several tests exist that do not use XR
+functionality and thus do not have these requirements.
+
+Runtime restrictions in browser tests are handled via macros in `conditional_skipping.h`.
+To add a runtime requirement to a test class, append it to `runtime_requirements_`.
+The test setup will automatically skip tests that don't meet all requirements.
+
+One-off skipping within a test can also be done using the `XR_CONDITIONAL_SKIP` macro:
+
+```cpp
+XR_CONDITIONAL_SKIP(runtime_requirements_, GetIgnoredRuntimeRequirements());
+```
+
+Bots can ignore runtime requirement checks via the `--ignore-runtime-requirements`
+flag (e.g. `--ignore-runtime-requirements=DirectX_11.1` or `--ignore-runtime-requirements=*`).
+
+### Command Line Switches
+
+If different command line flags are needed, create a class that extends the correct
+`*BrowserTestBase` and override the flags in its `SetUp` function.
+
+### Adding New Files
+
+If you are adding a new test or infrastructure file, consider target placement across platforms:
+
+- **Desktop (Windows)**:
+  - If the file is useful even with `enable_vr = false` (e.g. runtimeless tests), include it in `//chrome/test:xr_browser_tests_common`.
+  - If it requires VR support (`enable_vr = true`), include it in `//chrome/browser/vr:xr_browser_tests_vr_required`.
+- **Android**:
+  - Test files are included in the `android_browsertests` target in [`//chrome/test/BUILD.gn`](https://chromium.googlesource.com/chromium/src/+/main/chrome/test/BUILD.gn).
+  - Common infrastructure files belong in `:xr_browser_tests_common`.
+  - OpenXR-specific browser tests are added to the `sources` list under `if (enable_openxr)` in `android_browsertests`.
+
+## Mock Device & Input Simulation
+
+### MockXRDeviceHookBase Lifecycle
+
+In order to supply simulated head poses, controller buttons/axes, hand tracking data,
+or runtime events (such as session lost or visibility blurred), tests instantiate an
+instance of [`MockXRDeviceHookBase`][xr hook base] (or a subclass) at the start of
+the test before attempting to enter XR:
+
+```cpp
+IN_PROC_BROWSER_TEST_F(WebXrVrInputBrowserTest, TestControllerInput) {
+  MockXRDeviceHookBase mock_hook;
+  auto& controller = mock_hook.CreateMinimalGamepad(device::mojom::XRHandedness::RIGHT);
+  controller.SetTrigger(true, true, 1.0);
+  ...
+}
+```
+
+### Input Simulation with MockXRInputSource
+
+Input source state is configured via [`MockXRInputSource`][mock input source].
+
+Button identifiers (`device::XrButtonId`) and their mappings to Gamepad axes/buttonsxr
+are defined in [`//device/vr/test/webxr_test_gamepad_utils.h`][gamepad utils].
 
 [xr hook base]: https://chromium.googlesource.com/chromium/src/+/main/chrome/browser/vr/test/mock_xr_device_hook_base.h
+[mock input source]: https://chromium.googlesource.com/chromium/src/+/main/chrome/browser/vr/test/mock_xr_input_source.h
+[gamepad utils]: https://chromium.googlesource.com/chromium/src/+/main/device/vr/test/webxr_test_gamepad_utils.h
 
-Once created, the runtime being used will call the various functions inherited
-from [`VRTestHook`][vr test hook] whenever it would normally acquire or submit
-data from or to an actual device. For example, `WaitGetFrameData()` will be
-called every time the runtime would normally check the state of the headset pose
-and controllers, and `OnFrameSubmitted()` will be called each time the runtime
-submits a finished frame to the headset.
+## Test Architecture Under the Hood
 
-[vr test hook]: https://chromium.googlesource.com/chromium/src/+/main/device/vr/test/test_hook.h
+### High-Level Architecture Diagram
 
-For real examples on how to use the input capabilities, look at the tests in
-[`//chrome/browser/vr/webxr_vr_input_browser_test.cc`][input test].
+```xr
++---------------------------------------------------------------------------------------------------+
+|  [Browser Test Process]                                                                           |
+|                                                                                                   |
+|  Test Case (e.g. WebXrVrInputBrowserTest)                                                         |
+|         |                                                                                         |
+|         v                                                                                         |
+|  MockXRDeviceHookBase (implements device_test::mojom::XRTestHook)                                |
+|         |  (Runs on dedicated background MockXRDeviceHookThread to avoid UI deadlocks)            |
+|         |                                                                                         |
+|         +-- On Windows: Passes raw mojo::ScopedMessagePipeHandle across process boundary --------+
+|         |                                                                                        |
+|         +-- On Android: Binds typed PendingRemote directly in-process -----------------------+   |
++---------|-------------------------------------------------------------------------------------|---+
+          | (Windows: IPC)                                                                      | (Android: In-Process)
+          v                                                                                     v
++-------------------------------------------------------------+                                 |
+|  [Isolated XR Utility Process (Windows)]                    |                                 |
+|                                                             |                                 |
+|  XRDeviceService::BindHookForTesting(pipe)                  |                                 |
+|         | (Type-erased ScopedMessagePipeHandle)             |                                 |
+|         v                                                   |                                 |
+|  OpenXrPlatformHelper::BindHookForTesting(pipe)             |                                 |
+|         | (Static function pointer registered at startup)   |                                 |
+|         v                                                   |                                 |
+|  openxr_mock_helper.cc::BindTestHook(pipe)                  |                                 |
+|         |                                                   |                                 |
++---------|---------------------------------------------------+                                 |
+          |                                                                                     |
+          +----------------------------------->+<-----------------------------------------------+
+                                               |
+                                               v
+                             +-----------------------------------+
+                             |  OpenXrTestHelper::Get()          |
+                             |  (Embedded Mock OpenXR Runtime)   |
+                             +-----------------------------------+
+                                               ^
+                                               | (Function dispatch table)
+                             +-----------------------------------+
+                             |  openxr_mock (.dll / .so)         |
+                             |  [Thin Forwarding Trampoline]     |
+                             +-----------------------------------+
+                                               ^
+                                               | (xrNegotiateLoaderRuntimeInterface)
+                             +-----------------------------------+
+                             |  OpenXR Loader                    |
+                             +-----------------------------------+
+```
 
-[input test]: https://chromium.googlesource.com/chromium/src/+/main/chrome/browser/vr/webxr_vr_input_browser_test.cc
+### 1. The Thin Trampoline (`openxr_trampoline.cc` / `openxr_mock`)
+
+The OpenXR loader discovers and loads an external active runtime shared library
+specified by an active runtime JSON manifest:
+- **Windows**: The loader discovers the manifest path via the `XR_RUNTIME_JSON`
+  environment variable, which is set automatically by the test runner wrapper
+  script or test fixture to point to `openxr_win.json`.
+- **Android**: The loader reads the system manifest at
+  `/product/etc/openxr/1/active_runtime.json` (or `/system/etc/openxr/1/active_runtime.json`),
+  which is deployed from `openxr_android.json` to the device or emulator system
+  directory during test setup (requiring root access on physical devices or
+  `writable_system = true` in the emulator AVD config).
+
+Rather than compiling the entire mock OpenXR runtime into a separate heavy shared
+library (which previously resulted in duplicate, half-initialized `//base` singletons,
+allocator mismatches, and brittle cross-DLL state that caused crashes), `device/vr:openxr_mock`
+compiles [`device/vr/openxr/test/openxr_trampoline.cc`][trampoline cc] into a lightweight
+(~40-line C) forwarding trampoline library (`openxr_mock.dll` on Windows,
+`libopenxr_mock.so` on Android).
+
+The trampoline exposes only two C-linkage symbols:
+1. `SetMockOpenXrDispatchTable(PFN_xrGetInstanceProcAddr)`: Called by the host
+   process during initialization to pass the address of the mock implementation's
+   dispatch function (`GetMockXrGetInstanceProcAddr()`).
+2. `xrNegotiateLoaderRuntimeInterface(...)`: Called by the OpenXR loader when
+   negotiating the runtime interface, returning the stored dispatch function pointer.
+
+All actual OpenXR mock logic lives in `fake_openxr_impl_api.cc` and
+`openxr_test_helper.cc` linked directly into the host process. For more details on
+the mock runtime's internal architecture, see
+[`//device/vr/openxr/README.md#testing`][openxr testing].
+
+[trampoline cc]: https://chromium.googlesource.com/chromium/src/+/main/device/vr/openxr/test/openxr_trampoline.cc
+[openxr testing]: https://chromium.googlesource.com/chromium/src/+/main/device/vr/openxr/README.md#testing
+
+### 2. The Static Registrar (`TrampolineRegistrar` in `openxr_mock_helper.cc`)
+
+When test targets link `//device/vr:openxr_test_helper`, static initialization
+instantiates `TrampolineRegistrar` in [`openxr_mock_helper.cc`][mock helper cc]:
+
+```cpp
+struct TrampolineRegistrar {
+  TrampolineRegistrar() {
+    device::OpenXrPlatformHelper::RegisterInitializeOpenXrMockTrampolineFn(
+        &InitializeOpenXrMockTrampoline);
+    device::OpenXrPlatformHelper::RegisterBindTestHookFn(&BindTestHook);
+  }
+};
+TrampolineRegistrar g_trampoline_registrar;
+```
+
+This pattern provides two key benefits:
+- **Automatic Initialization**: On the first call to `OpenXrPlatformHelper::EnsureInitialized()`,
+  `OpenXrPlatformHelper` invokes the registered trampoline initialization function.
+  The host process loads `openxr_mock` and passes its dispatch table via `SetMockOpenXrDispatchTable`
+  automatically, without requiring tests to perform manual initialization steps.
+- **Zero Production Dependencies**: Production `OpenXrPlatformHelper` only maintains
+  two optional static function pointers guarded by `CHECK_IS_TEST()`, avoiding any
+  build dependencies on test code in production targets.
+
+[mock helper cc]: https://chromium.googlesource.com/chromium/src/+/main/device/vr/openxr/test/openxr_mock_helper.cc
+
+### 3. Test-Only Mojom & Type-Erased Message Pipe
+
+The test hook interface is defined in [`//device/vr/public/mojom/test/xr_test_hook.test-mojom`][test mojom]
+under `device_test.mojom.XRTestHook` and marked **`testonly = true`**.
+
+To prevent production services from depending on test Mojom:
+- **Windows**: The production `isolated_xr_service.mojom` interface defines
+  `BindHookForTesting(handle<message_pipe> receiver)`. `XRDeviceService` forwards the
+  raw `mojo::ScopedMessagePipeHandle` to `OpenXrPlatformHelper::BindHookForTesting`,
+  which delegates to `openxr_mock_helper.cc::BindTestHook` via the static registrar.
+  `BindTestHook` unwraps the pipe handle into a typed
+  `mojo::PendingRemote<device_test::mojom::XRTestHook>` and binds it to
+  `OpenXrTestHelper::Get().SetTestHook(...)`.
+- **Android**: Because device code runs in-process within the browser process during
+  tests, `MockXRDeviceHookBase` directly passes its typed `mojo::PendingRemote` to
+  `OpenXrTestHelper::Get().SetTestHook(...)`.
+
+[test mojom]: https://chromium.googlesource.com/chromium/src/+/main/device/vr/public/mojom/test/xr_test_hook.test-mojom
+
+### 4. Test Traits & Typemaps (`vr_public_test_typemaps`)
+
+C++ structs used for frame verification and device configuration
+(`device::ControllerFrameData`, `device::DeviceConfig`, `device::LayerData`,
+`device::ViewData`) are defined in `//device/vr/public/mojom/test:vr_public_test_typemaps`
+(`testonly = true`).
+
+[`xr_test_hook_mojom_traits.h`][mojom traits] implements `mojo::StructTraits` and
+`mojo::EnumTraits` mapping these C++ types directly to their Mojom equivalents in
+`xr_test_hook.test-mojom`.
+
+[mojom traits]: https://chromium.googlesource.com/chromium/src/+/main/device/vr/public/mojom/test/xr_test_hook_mojom_traits.h
+
+### 5. Threading Model & Synchronization
+
+Understanding the threading model is critical to writing deadlock-free tests:
+
+- **UI Thread vs Device Thread**: The main test runner executes on the browser UI
+  thread. On Android, the mock device runs in-process; on Windows, it runs in the
+  isolated service process.
+- **Dedicated Hook Thread (`MockXRDeviceHookThread`)**: `MockXRDeviceHookBase` spawns
+  a dedicated `base::Thread` upon construction. All incoming synchronous (`[Sync]`)
+  Mojo calls from the runtime (such as `WaitGetFrameData` and `OnFrameSubmitted`) are
+  serviced on this thread so they never block the main browser UI thread.
+- **Sequence Checkers**:
+  - `main_sequence_`: Protects test setup and expectation mutations (e.g. `SetHeadPose`,
+    `SimulateSessionLost`).
+  - `mock_device_sequence_`: Protects queries from the mock runtime.
+- **Frame Submission Synchronization**: In `MockXRDeviceHookBase::OnFrameSubmitted`,
+  the synchronous Mojo reply callback is executed *before* running `wait_loop_quit_closure_`.
+  This guarantees that the mock OpenXR runtime's render thread is released from its
+  synchronous IPC before the test runner thread unblocks.
+- **RunLoop vs WaitableEvent**: Never use `base::WaitableEvent` to block on the test
+  thread, as this blocks the message pump. Always use `base::RunLoop` (or
+  `WaitForTotalFrameCount`).

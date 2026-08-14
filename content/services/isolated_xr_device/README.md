@@ -18,8 +18,13 @@ interfaces used by this process are defined in `device/vr`.
 
 ## Testing
 
-This folder also defines test hooks. Tests can set this to modify the behavior
-of the `IsolatedXRRuntimeProvider` and force it to create a fake XR Device which
-the tests can fully control.
+To support browser tests without coupling production service definitions to
+test-only Mojom, `XRDeviceService::BindHookForTesting` accepts a type-erased
+`mojo::ScopedMessagePipeHandle` and forwards it to `device::OpenXrPlatformHelper::BindHookForTesting`.
+In test targets, this pipe is unwrapped by the static test hook registrar and
+bound to `OpenXrTestHelper`. See
+[`//chrome/browser/vr/test/xr_browser_tests.md`](../../../chrome/browser/vr/test/xr_browser_tests.md)
+and [`//device/vr/public/mojom/test/README.md`](../../../device/vr/public/mojom/test/README.md)
+for complete details.
 
 [components-webxr-readme]: ../../../components/webxr/README.md

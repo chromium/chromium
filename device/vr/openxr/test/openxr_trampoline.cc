@@ -7,6 +7,12 @@
 #include "third_party/openxr/src/include/openxr/openxr.h"
 #include "third_party/openxr/src/include/openxr/openxr_loader_negotiation.h"
 
+// This file compiles into the `openxr_mock` shared library (`openxr_mock.dll`
+// on Windows, `libopenxr_mock.so` on Android). It serves as a thin C-linkage
+// trampoline that satisfies the OpenXR loader's runtime negotiation requirement
+// while forwarding all OpenXR calls back to the embedded mock implementation
+// in the host process via `g_get_instance_proc_addr`.
+
 namespace {
 
 PFN_xrGetInstanceProcAddr g_get_instance_proc_addr = nullptr;

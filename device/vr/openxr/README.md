@@ -119,17 +119,18 @@ target process (the test binary/browser process on Android, or the isolated XR
 device service on Windows).
 
 To intercept calls from the OpenXR loader, we compile a lightweight trampoline shared
-library in the [`//device/vr:openxr_mock`](../../BUILD.gn) target (`libopenxr_mock.so` on
+library in the [`//device/vr:openxr_mock`](../BUILD.gn) target (`libopenxr_mock.so` on
 Android or `openxr_mock.dll` on Windows). Runtime configuration JSON files
 ([`openxr_android.json`](test/openxr_android.json) and [`openxr_win.json`](test/openxr_win.json))
 are deployed during test setup to direct the OpenXR loader to use this trampoline library as the
-active runtime.
+active runtime (discovered via the `XR_RUNTIME_JSON` environment variable on Windows,
+or by reading `/product/etc/openxr/1/active_runtime.json` on Android).
 
-During test initialization, the main process passes its OpenXR function dispatch table to this
-trampoline via `SetMockOpenXrDispatchTable()`. When the OpenXR loader negotiates the runtime
-interface, the trampoline reverse-registers and forwards all subsequent OpenXR calls back to the
-embedded implementation in the main process.
+During test initialization, `OpenXrPlatformHelper::EnsureInitialized()` automatically
+invokes the registered mock initialization callback, passing the host process's
+OpenXR function dispatch table to this trampoline via `SetMockOpenXrDispatchTable()`.
+When the OpenXR loader negotiates the runtime interface, the trampoline forwards all
+subsequent OpenXR calls back to the embedded implementation in the host process.
 
 For more details on writing and running XR browser tests, see the
-[XR Browser Tests documentation](../../../chrome/browser/vr/test/xr_browser_tests.md)
-and [XR Browser Test Details](../../../chrome/browser/vr/test/xr_browser_test_details.md).
+[XR Browser Tests documentation](../../../chrome/browser/vr/test/xr_browser_tests.md).
