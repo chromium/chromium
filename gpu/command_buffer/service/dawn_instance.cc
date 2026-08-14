@@ -97,17 +97,25 @@ std::unique_ptr<DawnInstance> DawnInstance::Create(
       dawn_search_path = module_path.AsEndingWithSeparator().AsUTF8Unsafe();
     }
   }
-  const char* dawn_search_path_c_str = dawn_search_path.c_str();
 
   dawn::native::DawnInstanceDescriptor dawn_instance_desc;
   if (dawn_instance_descriptor) {
     dawn_instance_desc = *dawn_instance_descriptor;
   }
   dawn_instance_desc.nextInChain = &dawn_toggle_desc;
+  dawn_instance_desc.platform = platform;
+#if !defined(DAWN_BREAKING_INSTANCE_DESCRIPTOR_SPANIFICATION)
+  const char* dawn_search_path_c_str = dawn_search_path.c_str();
   dawn_instance_desc.additionalRuntimeSearchPathsCount =
       dawn_search_path.empty() ? 0u : 1u;
   dawn_instance_desc.additionalRuntimeSearchPaths = &dawn_search_path_c_str;
-  dawn_instance_desc.platform = platform;
+#else
+  std::string_view dawn_search_path_view = dawn_search_path;
+  if (!dawn_search_path.empty()) {
+    dawn_instance_desc.additionalRuntimeSearchPaths =
+        base::span_from_ref(dawn_search_path_view);
+  }
+#endif
 
   // Create the instance with all the previous descriptors chained.
   wgpu::InstanceDescriptor instance_desc;
