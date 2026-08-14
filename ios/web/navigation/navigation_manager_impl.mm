@@ -661,7 +661,6 @@ void NavigationManagerImpl::GoTo(GoToParams params) {
     // GoTo(...) from detached mode is equivalent to restoring history with
     // `last_committed_item_index` updated to `index`.
     RestoreImpl(index, web_view_cache_.ReleaseCachedItems());
-    DCHECK(web_view_cache_.IsAttachedToWebView());
     return;
   }
 
@@ -984,7 +983,6 @@ void NavigationManagerImpl::LoadURLWithParams(
       cached_items.resize(next_item_index + 1);
       cached_items[next_item_index] = std::move(pending_item_);
       RestoreImpl(next_item_index, std::move(cached_items));
-      DCHECK(web_view_cache_.IsAttachedToWebView());
       return;
     }
     web_view_cache_.ResetToAttached();
@@ -999,7 +997,6 @@ void NavigationManagerImpl::LoadIfNecessary() {
     // This can happen after clearing browsing data by removing the web view.
     RestoreImpl(web_view_cache_.GetCurrentItemIndex(),
                 web_view_cache_.ReleaseCachedItems());
-    DCHECK(web_view_cache_.IsAttachedToWebView());
   } else if (!native_restore_in_progress_) {
     delegate_->LoadIfNecessary();
   }
@@ -1103,7 +1100,6 @@ void NavigationManagerImpl::Reload(ReloadType reload_type,
     // Reload from detached mode is equivalent to restoring history unchanged.
     RestoreImpl(web_view_cache_.GetCurrentItemIndex(),
                 web_view_cache_.ReleaseCachedItems());
-    DCHECK(web_view_cache_.IsAttachedToWebView());
     return;
   }
 
@@ -1184,6 +1180,21 @@ void NavigationManagerImpl::Restore(
 void NavigationManagerImpl::RestoreImpl(
     int last_committed_item_index,
     std::vector<std::unique_ptr<NavigationItemImpl>> items) {
+  if (!web_view_cache_.IsAttachedToWebView() &&
+      !delegate_->GetWebState()->IsWebUsageEnabled()) {
+    // If web usage is disabled, it is not possible to create the
+    // web view. However the embedder will call LoadIfNecessary()
+    // after re-enabling the web usage, which will call Restore().
+    // So saving the items in the WKWebViewCache is equivalent to
+    // scheduling the Restore(...) on the next load.
+    //
+    // This is a fix for https://crbug.com/532898037 (which is a
+    // crash in CRWWebController when attempting to create the
+    // web view while web usage is disabled).
+    web_view_cache_.SetCachedItems(last_committed_item_index, std::move(items));
+    return;
+  }
+
   WillRestore(items.size());
 
   // Ensure that last_committed_item_index is in range [0; items.size()-1]
@@ -1476,6 +1487,16 @@ void NavigationManagerImpl::WKWebViewCache::ResetToAttached() {
   cached_items_.clear();
   cached_current_item_index_ = -1;
   attached_to_web_view_ = true;
+}
+
+void NavigationManagerImpl::WKWebViewCache::SetCachedItems(
+    int current_item_index,
+    std::vector<std::unique_ptr<NavigationItemImpl>> cached_items) {
+  DCHECK(!IsAttachedToWebView());
+  CHECK_GE(current_item_index, 0);
+  CHECK_LT(current_item_index, static_cast<int>(cached_items.size()));
+  cached_current_item_index_ = current_item_index;
+  cached_items_ = std::move(cached_items);
 }
 
 std::vector<std::unique_ptr<NavigationItemImpl>>

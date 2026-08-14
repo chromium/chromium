@@ -285,6 +285,12 @@ class NavigationManagerImpl final : public NavigationManager {
     // must call ReleaseCachedItems() first.
     void ResetToAttached();
 
+    // Transfer ownership of cached_items and current_item_index. Must only be
+    // called if detached from the WKWebView.
+    void SetCachedItems(
+        int current_item_index,
+        std::vector<std::unique_ptr<NavigationItemImpl>> cached_items);
+
     // Returns ownership of the cached NavigationItems. This is convenient for
     // restoring session history when reattaching to a new web view.
     std::vector<std::unique_ptr<NavigationItemImpl>> ReleaseCachedItems();
