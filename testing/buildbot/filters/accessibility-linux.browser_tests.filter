@@ -240,4 +240,5 @@
 -PasswordGenerationInteractiveTest.PopupShownManuallyAndPasswordErased
 -PasswordGenerationInteractiveTest.PopupShownAndPasswordSelected
 
-# Flaky on Linux accessibility: crbug.com/450169384
+# Times out on Linux accessibility: crbug.com/546479367
+-PKIMetadataComponentChromeRootStoreMtcMetadataTest.Revocation*
