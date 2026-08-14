@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 12 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 18 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] <input type="range" style="overflow: visible; appearance: auto;">
   assert_equals: <span>.offsetTop expected 70 but got 60
 [FAIL] <input type="range" style="overflow: hidden; appearance: auto;">
@@ -24,5 +24,17 @@ Found 12 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: <span>.offsetTop expected 48 but got 45
 [FAIL] <input type="color" value="#000000" style="overflow: scroll; appearance: none;">
   assert_equals: <span>.offsetTop expected 48 but got 45
+[FAIL] <input type="image" src="data:,broken" alt="x" style="overflow: visible; appearance: auto;">
+  assert_equals: <span>.offsetTop expected 34 but got 32
+[FAIL] <input type="image" src="data:,broken" alt="x" style="overflow: hidden; appearance: auto;">
+  assert_equals: <span>.offsetTop expected 34 but got 32
+[FAIL] <input type="image" src="data:,broken" alt="x" style="overflow: scroll; appearance: auto;">
+  assert_equals: <span>.offsetTop expected 34 but got 32
+[FAIL] <input type="image" src="data:,broken" alt="x" style="overflow: visible; appearance: none;">
+  assert_equals: <span>.offsetTop expected 34 but got 32
+[FAIL] <input type="image" src="data:,broken" alt="x" style="overflow: hidden; appearance: none;">
+  assert_equals: <span>.offsetTop expected 34 but got 32
+[FAIL] <input type="image" src="data:,broken" alt="x" style="overflow: scroll; appearance: none;">
+  assert_equals: <span>.offsetTop expected 34 but got 32
 Harness: the test ran to completion.
 

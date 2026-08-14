@@ -5,8 +5,7 @@ function assertAnimationTriggerSupport() {
   assert_true(document.documentElement.style.animationTrigger !== undefined);
 }
 
-const setScrollTop = async (scroller, y) => {
-  if (scroller.scrollTop == y) return;
+const setScrollTop = (scroller, y) => {
   const scrollend_promise =
     waitForScrollEndFallbackToDelayWithoutScrollEvent(scroller);
   scroller.scrollTop = y;
@@ -55,7 +54,9 @@ function getRangeBoundariesForTest(trigger_start, trigger_end,
 // (main-thread-originating) scroll update, and one frame to let the main thread
 // observe the trigger's response to the scroll update.
 function runAndWaitForTriggerResponse(callback) {
-  return runAndWaitForFrameUpdate(callback).then(waitForNextFrame);
+  return runAndWaitForFrameUpdate(() => {
+    callback();
+  }).then(waitForNextFrame);
 }
 
 // Helper function for tests using timeline-trigger[1].
@@ -65,7 +66,7 @@ function runAndWaitForTriggerResponse(callback) {
 // [1] https://drafts.csswg.org/css-animations-2/#timeline-triggers
 const enter = (rangeBoundaries) => {
   return runAndWaitForTriggerResponse(() => {
-    return rangeBoundaries.enterTriggerRange();
+    rangeBoundaries.enterTriggerRange();
   });
 }
 
@@ -77,9 +78,9 @@ const enter = (rangeBoundaries) => {
 const exit = (rangeBoundaries, exitAbove = true) => {
   return runAndWaitForTriggerResponse(() => {
     if (exitAbove) {
-      return rangeBoundaries.exitExitRangeAbove();
+      rangeBoundaries.exitExitRangeAbove();
     } else {
-      return rangeBoundaries.exitExitRangeBelow();
+      rangeBoundaries.exitExitRangeBelow();
     }
   });
 }

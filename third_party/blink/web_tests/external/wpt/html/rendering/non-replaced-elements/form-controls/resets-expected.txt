@@ -1,5 +1,45 @@
 This is a testharness.js-based test.
-Found 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 21 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] <input type="hidden"> - align-content
+  assert_equals: expected "unsafe center" but got "normal"
+[FAIL] <input type="text"> - align-content
+  assert_equals: expected "unsafe center" but got "normal"
+[FAIL] <input type="search"> - align-content
+  assert_equals: expected "unsafe center" but got "normal"
+[FAIL] <input type="tel"> - align-content
+  assert_equals: expected "unsafe center" but got "normal"
+[FAIL] <input type="url"> - align-content
+  assert_equals: expected "unsafe center" but got "normal"
+[FAIL] <input type="email"> - align-content
+  assert_equals: expected "unsafe center" but got "normal"
+[FAIL] <input type="password"> - align-content
+  assert_equals: expected "unsafe center" but got "normal"
+[FAIL] <input type="date"> - align-content
+  assert_equals: expected "unsafe center" but got "normal"
+[FAIL] <input type="month"> - align-content
+  assert_equals: expected "unsafe center" but got "normal"
+[FAIL] <input type="week"> - align-content
+  assert_equals: expected "unsafe center" but got "normal"
+[FAIL] <input type="time"> - align-content
+  assert_equals: expected "unsafe center" but got "normal"
+[FAIL] <input type="datetime-local"> - align-content
+  assert_equals: expected "unsafe center" but got "normal"
+[FAIL] <input type="number"> - align-content
+  assert_equals: expected "unsafe center" but got "normal"
+[FAIL] <input type="color"> - align-content
+  assert_equals: expected "center" but got "normal"
+[FAIL] <input type="submit"> - align-content
+  assert_equals: expected "center" but got "normal"
+[FAIL] <input type="image"> - align-content
+  assert_equals: expected "unsafe center" but got "normal"
+[FAIL] <input type="reset"> - align-content
+  assert_equals: expected "center" but got "normal"
+[FAIL] <input type="button"> - align-content
+  assert_equals: expected "center" but got "normal"
+[FAIL] <select><optgroup><option> - align-content
+  assert_equals: expected "center" but got "normal"
+[FAIL] <button> - align-content
+  assert_equals: expected "center" but got "normal"
 [FAIL] <textarea> - overflow
   assert_equals: expected "visible" but got "auto"
 Harness: the test ran to completion.

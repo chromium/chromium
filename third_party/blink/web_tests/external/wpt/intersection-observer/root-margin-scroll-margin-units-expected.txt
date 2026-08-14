@@ -1,0 +1,27 @@
+This is a testharness.js-based test.
+[FAIL] observer.rootMargin using 'cm'
+  Failed to construct 'IntersectionObserver': rootMargin must be specified in pixels or percent.
+[FAIL] observer.scrollMargin using 'cm'
+  Failed to construct 'IntersectionObserver': scrollMargin must be specified in pixels or percent.
+[FAIL] observer.rootMargin using 'mm'
+  Failed to construct 'IntersectionObserver': rootMargin must be specified in pixels or percent.
+[FAIL] observer.scrollMargin using 'mm'
+  Failed to construct 'IntersectionObserver': scrollMargin must be specified in pixels or percent.
+[FAIL] observer.rootMargin using 'q'
+  Failed to construct 'IntersectionObserver': rootMargin must be specified in pixels or percent.
+[FAIL] observer.scrollMargin using 'q'
+  Failed to construct 'IntersectionObserver': scrollMargin must be specified in pixels or percent.
+[FAIL] observer.rootMargin using 'in'
+  Failed to construct 'IntersectionObserver': rootMargin must be specified in pixels or percent.
+[FAIL] observer.scrollMargin using 'in'
+  Failed to construct 'IntersectionObserver': scrollMargin must be specified in pixels or percent.
+[FAIL] observer.rootMargin using 'pt'
+  Failed to construct 'IntersectionObserver': rootMargin must be specified in pixels or percent.
+[FAIL] observer.scrollMargin using 'pt'
+  Failed to construct 'IntersectionObserver': scrollMargin must be specified in pixels or percent.
+[FAIL] observer.rootMargin using 'pc'
+  Failed to construct 'IntersectionObserver': rootMargin must be specified in pixels or percent.
+[FAIL] observer.scrollMargin using 'pc'
+  Failed to construct 'IntersectionObserver': scrollMargin must be specified in pixels or percent.
+Harness: the test ran to completion.
+
