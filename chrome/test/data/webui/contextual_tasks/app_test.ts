@@ -1327,5 +1327,149 @@ suite('ContextualTasksAppTest', function() {
 
     await proxy.handler.whenCalled('askGTooltipDismissed');
   });
+
+  suite('TooltipVisibility', () => {
+    let appElement: any;
+    let mockCrComposebox: any;
+
+    setup(async () => {
+      document.body.innerHTML = window.trustedTypes!.emptyHTML;
+      const proxy = new TestContextualTasksBrowserProxy('http://example.com');
+      BrowserProxyImpl.setInstance(proxy);
+
+      loadTimeData.overrideValues({
+        showOnboardingTooltip: true,
+        isOnboardingTooltipDismissCountBelowCap: true,
+        webUIOmniboxAskGAboutThisPageEnabled: true,
+        isAskGTooltipDismissCountBelowCap: true,
+        askGTooltipSessionImpressionCap: 10,
+        askGCoBrowseEnabled: true,
+        isLensSearchTooltipDismissCountBelowCap: true,
+        lensSearchTooltipSessionImpressionCap: 10,
+      });
+
+      const result = await createContextualTasksAppElement(/*url=*/ fixtureUrl);
+      appElement = result.appElement;
+
+      mockCrComposebox = {
+        getContextEntrypointElement: () => document.createElement('div'),
+        getAutomaticActiveTabChipElement: () => document.createElement('div'),
+        getLensButtonElement: () => document.createElement('div'),
+        getHasAutomaticActiveTabChipToken: () => true,
+      };
+      appElement.$.composebox.getComposebox = () => mockCrComposebox;
+    });
+
+    test('AskG shows when eligible', async () => {
+      appElement.entryPoint_ = 'omnibox_action';
+      appElement.isShownInTab_ = false;
+
+      appElement.updateTooltipVisibilityForTesting();
+      await microtasksFinished();
+
+      assertTrue(appElement.askGTooltipTarget_ !== null);
+
+      const onboardingTooltip =
+          appElement.shadowRoot.querySelector('#onboardingTooltip');
+      if (onboardingTooltip) {
+        assertFalse(onboardingTooltip.shouldShow);
+      }
+    });
+
+    test('AskG does not show when feature disabled', async () => {
+      loadTimeData.overrideValues({
+        webUIOmniboxAskGAboutThisPageEnabled: false,
+      });
+      const result = await createContextualTasksAppElement(/*url=*/ fixtureUrl);
+      appElement = result.appElement;
+      appElement.$.composebox.getComposebox = () => mockCrComposebox;
+
+      appElement.entryPoint_ = 'omnibox_action';
+      appElement.isShownInTab_ = false;
+
+      appElement.updateTooltipVisibilityForTesting();
+      await microtasksFinished();
+
+      assertEquals(null, appElement.askGTooltipTarget_);
+    });
+
+    test('AskG does not show when ineligible entry point', async () => {
+      appElement.entryPoint_ = 'toolbar';
+      appElement.isShownInTab_ = false;
+
+      appElement.updateTooltipVisibilityForTesting();
+      await microtasksFinished();
+
+      assertEquals(null, appElement.askGTooltipTarget_);
+    });
+
+    test('Onboarding is not suppressed when AskG is not eligible', async () => {
+      appElement.entryPoint_ = 'toolbar';
+      appElement.isShownInTab_ = false;
+
+      appElement.updateTooltipVisibilityForTesting();
+      await microtasksFinished();
+
+      const onboardingTooltip =
+          appElement.shadowRoot.querySelector('#onboardingTooltip');
+      assertTrue(!!onboardingTooltip);
+      assertTrue(onboardingTooltip.shouldShow);
+    });
+
+    test('Lens shows when AskG is dismissed', async () => {
+      loadTimeData.overrideValues({
+        isAskGTooltipDismissCountBelowCap: false,
+      });
+      const result = await createContextualTasksAppElement(/*url=*/ fixtureUrl);
+      appElement = result.appElement;
+      appElement.$.composebox.getComposebox = () => mockCrComposebox;
+      appElement.entryPoint_ = 'omnibox_action';
+      appElement.isShownInTab_ = false;
+
+      appElement.updateTooltipVisibilityForTesting();
+      await microtasksFinished();
+
+      assertTrue(appElement.lensSearchTooltipTarget_ !== null);
+      assertEquals(null, appElement.askGTooltipTarget_);
+    });
+
+    test(
+        'Lens does not show when AskG is dismissed but wrong entry point',
+        async () => {
+          loadTimeData.overrideValues({
+            isAskGTooltipDismissCountBelowCap: false,
+          });
+          const result =
+              await createContextualTasksAppElement(/*url=*/ fixtureUrl);
+          appElement = result.appElement;
+          appElement.$.composebox.getComposebox = () => mockCrComposebox;
+          appElement.entryPoint_ = 'toolbar';  // Ineligible
+          appElement.isShownInTab_ = false;
+
+          appElement.updateTooltipVisibilityForTesting();
+          await microtasksFinished();
+
+          assertEquals(null, appElement.lensSearchTooltipTarget_);
+        });
+
+    test(
+        'Lens does not show when AskG is dismissed but shown in tab',
+        async () => {
+          loadTimeData.overrideValues({
+            isAskGTooltipDismissCountBelowCap: false,
+          });
+          const result =
+              await createContextualTasksAppElement(/*url=*/ fixtureUrl);
+          appElement = result.appElement;
+          appElement.$.composebox.getComposebox = () => mockCrComposebox;
+          appElement.entryPoint_ = 'omnibox_action';
+          appElement.isShownInTab_ = true;  // Ineligible
+
+          appElement.updateTooltipVisibilityForTesting();
+          await microtasksFinished();
+
+          assertEquals(null, appElement.lensSearchTooltipTarget_);
+        });
+  });
   // </if>
 });

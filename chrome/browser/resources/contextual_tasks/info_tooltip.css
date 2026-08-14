@@ -36,7 +36,6 @@ cr-tooltip::part(tooltip) {
   margin-top: -5px;
 }
 
-/* Caret for Left-aligned Tooltips (copied from onboarding_tooltip.css) */
 :host([horizontal-align='left']) cr-tooltip::part(tooltip)::after {
   content: '';
   position: absolute;
@@ -49,7 +48,6 @@ cr-tooltip::part(tooltip) {
     transparent;
 }
 
-/* Caret for Right-aligned Tooltips (copied from lens_search_tooltip.css) */
 :host([horizontal-align='right']) cr-tooltip::part(tooltip)::after {
   content: '';
   position: absolute;
@@ -61,7 +59,6 @@ cr-tooltip::part(tooltip) {
     transparent;
 }
 
-/* Close Icon Button absolute positioning */
 #closeBtn {
   position: absolute;
   top: 16px;
@@ -72,7 +69,6 @@ cr-tooltip::part(tooltip) {
   margin: 0;
 }
 
-/* Add padding to prevent text from overlapping with absolute positioned close icon button */
 :host([close-button-type='icon']) cr-tooltip::part(tooltip) {
   padding-inline-end: 48px;
 }

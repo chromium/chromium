@@ -212,16 +212,12 @@ export class TooltipState {
   }
 
   constructor(
-      private isFeatureEnabled: boolean,
       private isDismissCountBelowCap: boolean,
       private sessionImpressionCap: number,
       private dismissCallback: () => void) {}
 
   shouldShow(dependencyMet: boolean = true): boolean {
     if (this.userDismissed_) {
-      return false;
-    }
-    if (!this.isFeatureEnabled) {
       return false;
     }
     if (!this.isDismissCountBelowCap) {

@@ -21,18 +21,21 @@ export function getHtml(this: ContextualTasksInfoTooltipElement) {
         </div>
         <div class="tooltip-body">
           ${this.bodyText}
-          ${this.linkUrl && this.linkText ? html`
+          ${
+      this.linkUrl && this.linkText ? html`
             <a href="${this.linkUrl}" @click="${this.onLinkClick_}">
               ${this.linkText}
             </a>
-          ` : ''}
+          ` :
+                                      ''}
         </div>
         ${
       this.closeButtonType === 'icon' ? html`
-          <cr-icon-button id="closeBtn" iron-icon="cr:clear"
+          <cr-icon-button id="closeBtn" iron-icon="cr:close"
               aria-label="$i18n{close}" @click="${this.onTooltipCloseClick_}">
           </cr-icon-button>
-        ` : ''}
+        ` :
+                                        ''}
       </div>
       ${
       this.closeButtonType === 'text' ? html`
@@ -42,7 +45,8 @@ export function getHtml(this: ContextualTasksInfoTooltipElement) {
             ${this.buttonText}
           </cr-button>
         </div>
-      ` : ''}
+      ` :
+                                        ''}
     </cr-tooltip>
   <!--_html_template_end_-->`;
 }
