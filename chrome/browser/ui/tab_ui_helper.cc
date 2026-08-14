@@ -104,12 +104,14 @@ base::CallbackListSubscription TabUIHelper::AddTabUIChangeCallback(
 }
 
 std::u16string TabUIHelper::GetTitle() const {
-  const tab_groups::SavedTabGroupWebContentsListener* wc_listener =
-      tab().GetTabFeatures()->saved_tab_group_web_contents_listener();
-  if (wc_listener) {
-    if (const std::optional<tab_groups::DeferredTabState>& deferred_tab_state =
-            wc_listener->deferred_tab_state()) {
-      return deferred_tab_state.value().title();
+  if (auto* tab_features = tab().GetTabFeatures()) {
+    const tab_groups::SavedTabGroupWebContentsListener* wc_listener =
+        tab_features->saved_tab_group_web_contents_listener();
+    if (wc_listener) {
+      if (const std::optional<tab_groups::DeferredTabState>&
+              deferred_tab_state = wc_listener->deferred_tab_state()) {
+        return deferred_tab_state.value().title();
+      }
     }
   }
 

@@ -17,6 +17,8 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/tabs/tab_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -667,4 +669,38 @@ IN_PROC_BROWSER_TEST_P(AskBeforeHttpDialogControllerUiTest,
             .LoadURLWithParams(params);
       }),
       WaitForWebContentsNavigation(kBackgroundTab, http_url));
+}
+
+// Tests that reparenting a tab with an open Ask-before-HTTP dialog into another
+// browser window preserves the dialog. Regression test for crbug.com/513637237.
+IN_PROC_BROWSER_TEST_P(AskBeforeHttpDialogControllerUiTest,
+                       ReparentTabPreservesDialog) {
+  GURL http_url = http_server()->GetURL("bad-https.com", "/simple.html");
+
+  auto* contents = GetBrowser()->tab_strip_model()->GetActiveWebContents();
+  content::NavigationController::LoadURLParams params(http_url);
+  params.transition_type = ui::PAGE_TRANSITION_LINK;
+  content::NavigateToURLBlockUntilNavigationsComplete(contents, params, 1);
+  EXPECT_EQ(http_url, contents->GetLastCommittedURL());
+
+  RunTestSequence(
+      InAnyContext(
+          WaitForShow(AskBeforeHttpDialogController::kContinueButtonId)),
+      Do([&]() {
+        // Add a placeholder tab to prevent the original browser from closing
+        // when its active tab is detached.
+        chrome::AddTabAt(GetBrowser(), GURL("about:blank"), 1,
+                         /*foreground=*/false);
+
+        // Create a second browser window and move the tab to it.
+        Browser* second_browser = CreateBrowser(GetBrowser()->GetProfile());
+        std::unique_ptr<tabs::TabModel> detached_tab =
+            GetBrowser()->tab_strip_model()->DetachTabAtForInsertion(0);
+        second_browser->tab_strip_model()->AppendTab(
+            std::move(detached_tab), /*foreground=*/true);
+      }),
+      // Verify that after reparenting, the dialog's continue button is still
+      // present and visible in the second browser window.
+      InAnyContext(
+          WaitForShow(AskBeforeHttpDialogController::kContinueButtonId)));
 }

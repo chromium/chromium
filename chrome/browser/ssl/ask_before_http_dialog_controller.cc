@@ -225,6 +225,9 @@ void AskBeforeHttpDialogController::ShowDialog(
   // dialog being dismissed for this reason doesn't trigger a "back to
   // safety" action.
   tab_dialog_params->block_new_modal = false;
+  // Ensure the dialog persists if the tab is detached and reparented into
+  // another window.
+  tab_dialog_params->close_on_detach = false;
 
   auto* tab = tabs::TabInterface::MaybeGetFromContents(web_contents);
   CHECK(tab);

@@ -559,7 +559,8 @@ void TabDialogManager::TabWillEnterBackground(TabInterface* tab_interface) {
 
 void TabDialogManager::TabWillDetach(TabInterface* tab_interface,
                                      TabInterface::DetachReason reason) {
-  if (widget_ && params_->close_on_detach) {
+  if (widget_ && (reason == TabInterface::DetachReason::kDelete ||
+                  params_->close_on_detach)) {
     CloseDialog();
   }
 }
