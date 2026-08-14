@@ -4,7 +4,10 @@
 
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_widget_delegate.h"
 
+#include "build/branding_buildflags.h"
+#include "components/vector_icons/vector_icons.h"
 #include "ui/base/hit_test.h"
+#include "ui/base/models/image_model.h"
 
 namespace omnibox_everywhere {
 
@@ -38,6 +41,18 @@ bool OmniboxEverywhereWidgetDelegate::ShouldDescendIntoChildForEventHandling(
     gfx::NativeView child,
     const gfx::Point& location) {
   return !IsPointInDraggableRegion(location);
+}
+
+ui::ImageModel OmniboxEverywhereWidgetDelegate::GetWindowIcon() {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  return ui::ImageModel::FromVectorIcon(vector_icons::kGoogleGLogoIcon);
+#else
+  return ui::ImageModel::FromVectorIcon(vector_icons::kSearchIcon);
+#endif
+}
+
+ui::ImageModel OmniboxEverywhereWidgetDelegate::GetWindowAppIcon() {
+  return GetWindowIcon();
 }
 
 }  // namespace omnibox_everywhere

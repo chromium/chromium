@@ -57,6 +57,7 @@ source_set("impl") {
     "//chrome/browser/ui/webui/omnibox_popup",
     "//components/omnibox/common:features",
     "//components/prefs",
+    "//components/vector_icons",
     "//ui/base",
     "//ui/base/accelerators/global_accelerator_listener",
     "//ui/gfx",
