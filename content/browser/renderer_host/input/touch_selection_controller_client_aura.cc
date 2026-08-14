@@ -66,8 +66,10 @@ class TouchSelectionControllerClientAura::EnvEventObserver
  private:
   // ui::EventObserver:
   void OnEvent(const ui::Event& event) override {
-    CHECK_NE(ui::TouchSelectionController::ActiveStatus::kInactive,
-             selection_controller_->active_status(), base::NotFatalUntil::M152);
+    // TODO(crbug.com/546298678): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK_NE(ui::TouchSelectionController::ActiveStatus::kInactive,
+              selection_controller_->active_status());
 
     if (event.IsMouseEvent()) {
       // Check IsMouseEventsEnabled, except on Mus, where it's disabled on touch
