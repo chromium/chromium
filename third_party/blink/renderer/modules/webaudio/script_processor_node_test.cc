@@ -8,7 +8,6 @@
 
 #include "base/synchronization/lock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_offline_audio_context_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_audiocontextrendersizecategory_unsignedlong.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -48,8 +47,6 @@ TEST(ScriptProcessorNodeTest, BufferLifetime) {
 
 TEST(ScriptProcessorNodeTest, IncompatibleRenderQuantumSize) {
   test::TaskEnvironment task_environment;
-  blink::WebRuntimeFeatures::EnableFeatureFromString(
-      "WebAudioConfigurableRenderQuantum", true);
   auto page = std::make_unique<DummyPageHolder>();
 
   OfflineAudioContextOptions* options = OfflineAudioContextOptions::Create();
@@ -73,9 +70,6 @@ TEST(ScriptProcessorNodeTest, IncompatibleRenderQuantumSize) {
     EXPECT_EQ(exception_state.CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kNotSupportedError);
   }
-
-  blink::WebRuntimeFeatures::EnableFeatureFromString(
-      "WebAudioConfigurableRenderQuantum", false);
 }
 
 }  // namespace blink

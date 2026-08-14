@@ -4905,27 +4905,6 @@
     "expires": "Dec 31, 2026"
   },
   {
-    "prefix": "web-audio-configurable-render-quantum",
-    "owners": [
-      "mjwilson@chromium.org",
-      "web-audio-team@google.com"
-    ],
-    "platforms": [
-      "Linux",
-      "Mac",
-      "Win",
-      "Android"
-    ],
-    "bases": [
-      "webaudio/BiquadFilter/biquad-render-size-hint.html",
-      "webaudio/WaveShaper/waveshaper-rendersizehint.html"
-    ],
-    "args": [
-      "--enable-features=WebAudioConfigurableRenderQuantum"
-    ],
-    "expires": "Dec 31, 2026"
-  },
-  {
     "prefix": "disable-single-axis-scroll-containers",
     "platforms": ["Linux", "Mac", "Win", "Android"],
     "bases": [

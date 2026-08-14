@@ -1971,8 +1971,6 @@ TEST_F(AudioContextTest, SuspendingRunningContextWhileInterrupted) {
 }
 
 TEST_F(AudioContextTest, RenderSizeHint) {
-  blink::WebRuntimeFeatures::EnableFeatureFromString(
-      "WebAudioConfigurableRenderQuantum", true);
   V8TestingScope scope;
 
   AudioContextOptions* options = AudioContextOptions::Create();
@@ -2030,17 +2028,12 @@ TEST_F(AudioContextTest, RenderSizeHint) {
   context = AudioContext::Create(GetFrame().DomWindow(), options,
                                  ASSERT_NO_EXCEPTION);
   EXPECT_EQ(context->renderQuantumSize(), 256u);
-
-  blink::WebRuntimeFeatures::EnableFeatureFromString(
-      "WebAudioConfigurableRenderQuantum", false);
 }
 
 TEST_F(AudioContextTest, RenderSizeHintWithResampler) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(
       ::features::kWebAudioRemoveAudioDestinationResampler);
-  blink::WebRuntimeFeatures::EnableFeatureFromString(
-      "WebAudioConfigurableRenderQuantum", true);
   V8TestingScope scope;
 
   for (unsigned quantum : {1u, 16u, 32u, 48u, 64u}) {
@@ -2055,9 +2048,6 @@ TEST_F(AudioContextTest, RenderSizeHintWithResampler) {
                                                  options, ASSERT_NO_EXCEPTION);
     EXPECT_EQ(context->renderQuantumSize(), quantum);
   }
-
-  blink::WebRuntimeFeatures::EnableFeatureFromString(
-      "WebAudioConfigurableRenderQuantum", false);
 }
 
 // The state of AudioContext is "suspended" immediately after construction

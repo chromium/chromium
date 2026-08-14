@@ -19,8 +19,6 @@ namespace blink {
 class OfflineAudioContextTest : public PageTestBase {};
 
 TEST_F(OfflineAudioContextTest, RenderSizeHint) {
-  blink::WebRuntimeFeatures::EnableFeatureFromString(
-      "WebAudioConfigurableRenderQuantum", true);
   V8TestingScope scope;
 
   OfflineAudioContextOptions* options = OfflineAudioContextOptions::Create();
@@ -91,9 +89,6 @@ TEST_F(OfflineAudioContextTest, RenderSizeHint) {
   context = OfflineAudioContext::Create(GetFrame().DomWindow(), options,
                                         ASSERT_NO_EXCEPTION);
   EXPECT_EQ(context->renderQuantumSize(), 256u);
-
-  blink::WebRuntimeFeatures::EnableFeatureFromString(
-      "WebAudioConfigurableRenderQuantum", false);
 }
 
 }  // namespace blink
