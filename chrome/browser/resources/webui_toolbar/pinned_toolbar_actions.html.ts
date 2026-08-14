@@ -16,7 +16,8 @@ ${repeat(
     (keyedState, index) => html`
       ${keyedState.state.action === PinnedToolbarAction.kDivider ? html`
         <toolbar-divider
-            class="${keyedState.exiting ? 'exiting' : ''}"
+            class="${keyedState.animateIn ? 'animate-in' : ''}
+                   ${keyedState.exiting ? 'exiting' : ''}"
             data-key="${keyedState.key}">
         </toolbar-divider>
       ` : html`
@@ -24,7 +25,8 @@ ${repeat(
             .state="${keyedState.state}"
             .poppedOut="${this.dividerIndex !== -1 &&
                           index > this.dividerIndex}"
-            class="${keyedState.exiting ? 'exiting' : ''}
+            class="${keyedState.animateIn ? 'animate-in' : ''}
+                   ${keyedState.exiting ? 'exiting' : ''}
                    ${keyedState.dragPlaceholder ? 'drag-placeholder' : ''}"
             data-key="${keyedState.key}"
             @dragover="${this.onActionDragover}"

@@ -26,9 +26,9 @@
   transition: none;
 }
 
-/* Transitions handle exit animations (collapsing to 0) and reversing exit
- * animations mid-flight (expanding back to normal). They are not used for
- * initial entry. */
+/* Transitions handle entrance animations (via @starting-style on .animate-in),
+ * exit animations (.exiting collapsing to 0), and reversing exit animations
+ * mid-flight. */
 pinned-toolbar-action,
 webui-toolbar-extension,
 toolbar-divider {
@@ -41,9 +41,9 @@ toolbar-divider {
 }
 
 @starting-style {
-  pinned-toolbar-action,
-  webui-toolbar-extension,
-  toolbar-divider {
+  pinned-toolbar-action.animate-in,
+  webui-toolbar-extension.animate-in,
+  toolbar-divider.animate-in {
     width: 0;
     margin-inline-start: 0;
     margin-inline-end: 0;

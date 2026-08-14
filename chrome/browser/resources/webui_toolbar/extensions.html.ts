@@ -15,7 +15,8 @@ ${repeat(
     (keyedState) => html`
       <webui-toolbar-extension
           .state="${keyedState.state}"
-          class="${keyedState.exiting ? 'exiting' : ''}
+          class="${keyedState.animateIn ? 'animate-in' : ''}
+                 ${keyedState.exiting ? 'exiting' : ''}
                  ${keyedState.dragPlaceholder ? 'drag-placeholder' : ''}"
           data-key="${keyedState.key}"
           @dragover="${this.onActionDragover}"
@@ -25,7 +26,8 @@ ${repeat(
 )}
 ${this.keyedStates.length > 0 ? html`
   <toolbar-divider
-      class="${this.allExiting() ? 'exiting' : ''}">
+      class="${this.animateInDivider() ? 'animate-in' : ''}
+             ${this.allExiting() ? 'exiting' : ''}">
   </toolbar-divider>
 ` : ''}
 <!--_html_template_end_-->`;

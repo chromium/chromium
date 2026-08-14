@@ -47,8 +47,11 @@ class TestContainerElement extends TestContainerBase {
   override render() {
     return html`
       <div id="container">
-        ${this.keyedStates.map(s => html`
-          <div class="item ${s.exiting ? 'exiting' : ''}"
+        ${
+        this.keyedStates.map(
+            s => html`
+          <div class="item ${s.exiting ? 'exiting' : ''} ${
+                s.animateIn ? 'animate-in' : ''}"
                data-key="${s.key}">
             ${s.state.name}
           </div>
@@ -183,15 +186,20 @@ suite('ToolbarActionContainerMixinTest', function() {
 
     assertFalse(element.hidden);
     assertEquals(2, element.keyedStates.length);
+    assertEquals(false, element.keyedStates[0]!.animateIn);
+    assertEquals(false, element.keyedStates[1]!.animateIn);
     assertTrue(element.classList.contains('initial-load'));
     assertFalse(element.allExiting());
+    assertFalse(element.animateInDivider());
   });
 
-  test('InitialLoadClassRemovedOnNonInitialUpdate', async function() {
+  test('AnimateInForNewItems', async function() {
     // First update (initial)
     element.states = [{id: 'a', name: 'Item A'}];
     await microtasksFinished();
     assertTrue(element.classList.contains('initial-load'));
+    assertEquals(1, element.keyedStates.length);
+    assertEquals(false, element.keyedStates[0]!.animateIn);
 
     // Second update (non-initial)
     element.states = [
@@ -200,18 +208,38 @@ suite('ToolbarActionContainerMixinTest', function() {
     ];
     await microtasksFinished();
     assertFalse(element.classList.contains('initial-load'));
+    assertEquals(2, element.keyedStates.length);
+    assertEquals(false, element.keyedStates[0]!.animateIn);
+    assertEquals(true, element.keyedStates[1]!.animateIn);
+    assertFalse(element.animateInDivider());
+
+    element.states = [{id: 'c', name: 'Item C'}];
+    await microtasksFinished();
+    const activeStates = element.keyedStates.filter(s => !s.exiting);
+    assertEquals(1, activeStates.length);
+    assertEquals('c', activeStates[0]!.key);
+    assertEquals(true, activeStates[0]!.animateIn);
   });
 
-  test('AllExiting', async function() {
+  test('AnimateInDividerAndAllExiting', async function() {
+    AnimationTracker.showAnimations = false;
     element.states = [{id: 'a', name: 'Item A'}];
     await microtasksFinished();
 
+    element.states = [{id: 'b', name: 'Item B'}];
+    await microtasksFinished();
 
+    assertEquals(1, element.keyedStates.length);
+    assertEquals('b', element.keyedStates[0]!.key);
+    assertFalse(element.animateInDivider());
+    assertFalse(element.allExiting());
+
+    AnimationTracker.showAnimations = true;
     element.states = [];
     await microtasksFinished();
 
     assertEquals(1, element.keyedStates.length);
-    assertEquals('a', element.keyedStates[0]!.key);
+    assertEquals('b', element.keyedStates[0]!.key);
     assertEquals(true, element.keyedStates[0]!.exiting);
     assertTrue(element.allExiting());
   });
@@ -322,7 +350,41 @@ suite('ToolbarActionContainerMixinTest', function() {
     assertFalse(element.isInitialUpdate(element.states));
     assertEquals(1, element.keyedStates.length);
     assertEquals('a', element.keyedStates[0]!.key);
+    assertEquals(true, element.keyedStates[0]!.animateIn);
     assertFalse(element.classList.contains('initial-load'));
+  });
+
+  test('AnimateInResetAfterTransitionDone', async function() {
+    element.states = [
+      {id: 'a', name: 'Item A'},
+    ];
+    await microtasksFinished();
+
+    // Initial update doesn't animate.
+    assertFalse(element.keyedStates[0]!.animateIn === true);
+
+    // Add new item.
+    element.states = [
+      {id: 'a', name: 'Item A'},
+      {id: 'b', name: 'Item B'},
+    ];
+    await microtasksFinished();
+
+    // New item should have animateIn = true.
+    assertTrue(element.keyedStates[1]!.animateIn === true);
+
+    // Simulate transitionend event for width.
+    const childElB = element.shadowRoot.querySelector('[data-key="b"]');
+    assertTrue(!!childElB);
+    childElB.dispatchEvent(new TransitionEvent('transitionend', {
+      propertyName: 'width',
+      bubbles: true,
+      composed: true,
+    }));
+    await microtasksFinished();
+
+    // animateIn should be reset to false.
+    assertFalse(element.keyedStates[1]!.animateIn === true);
   });
 
   test('ExitingItemsRemovedOnTransitionDoneMidSlideIn', async function() {
