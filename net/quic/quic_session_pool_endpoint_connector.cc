@@ -5,11 +5,11 @@
 #include "net/quic/quic_session_pool_endpoint_connector.h"
 
 #include <utility>
-#include <vector>
 
 #include "base/check_op.h"
 #include "base/functional/bind.h"
-#include "net/base/ip_endpoint.h"
+#include "net/base/address_family.h"
+#include "net/base/net_error_details.h"
 #include "net/base/net_errors.h"
 #include "net/quic/quic_session_pool_async_dns_job.h"
 
@@ -36,7 +36,8 @@ std::optional<int> QuicSessionPool::EndpointConnector::TryAdvance() {
   }
 
   while (true) {
-    std::optional<AsyncDnsJob::Candidate> candidate = ClaimNextCandidate();
+    std::optional<AsyncDnsJob::Candidate> candidate =
+        job_->TakeNextCandidate(this);
     if (!candidate.has_value()) {
       return std::nullopt;
     }
@@ -67,21 +68,18 @@ std::optional<int> QuicSessionPool::EndpointConnector::TryAdvance() {
   }
 }
 
+bool QuicSessionPool::EndpointConnector::is_attempting_ipv6() const {
+  return attempt_ && attempt_->ip_endpoint().GetFamily() == ADDRESS_FAMILY_IPV6;
+}
+
 bool QuicSessionPool::EndpointConnector::AwaitingSessionCreation() const {
   return attempt_ && !attempt_->session_creation_finished();
 }
 
 void QuicSessionPool::EndpointConnector::PopulateNetErrorDetails(
     NetErrorDetails* details) const {
-  if (attempt_) {
-    attempt_->PopulateNetErrorDetails(details);
-    return;
-  }
-  if (!last_attempt_error_.has_value()) {
-    return;
-  }
-  details->connection_info = last_attempt_details_.connection_info;
-  details->quic_connection_error = last_attempt_details_.quic_connection_error;
+  CHECK(attempt_);
+  attempt_->PopulateNetErrorDetails(details);
 }
 
 QuicSessionPool* QuicSessionPool::EndpointConnector::GetQuicSessionPool() {
@@ -101,38 +99,16 @@ void QuicSessionPool::EndpointConnector::OnConnectionFailedOnDefaultNetwork() {
 }
 
 void QuicSessionPool::EndpointConnector::OnQuicSessionCreationComplete(int rv) {
-  job_->OnSessionCreationDecided(rv);
-}
-
-std::optional<QuicSessionPool::AsyncDnsJob::Candidate>
-QuicSessionPool::EndpointConnector::ClaimNextCandidate() {
-  const std::vector<AsyncDnsJob::UsableEndpoint>& usable_endpoints =
-      job_->GetUsableEndpoints();
-  // Endpoints and the IPs within them keep the resolver's order.
-  for (bool ipv6 : {true, false}) {
-    for (const AsyncDnsJob::UsableEndpoint& usable : usable_endpoints) {
-      const std::vector<IPEndPoint>& ip_endpoints =
-          ipv6 ? usable.endpoint.ipv6_endpoints
-               : usable.endpoint.ipv4_endpoints;
-      for (const IPEndPoint& ip_endpoint : ip_endpoints) {
-        AsyncDnsJob::Candidate candidate{ip_endpoint, usable.endpoint.metadata,
-                                         usable.quic_version};
-        if (!job_->ClaimCandidate(candidate)) {
-          continue;
-        }
-        return candidate;
-      }
-    }
-  }
-  return std::nullopt;
+  job_->OnSessionCreationDecided(rv, this);
 }
 
 void QuicSessionPool::EndpointConnector::RecordAttemptFailure(int rv) {
   CHECK(attempt_);
   last_attempt_error_ = rv;
-  last_attempt_details_ = NetErrorDetails();
-  attempt_->PopulateNetErrorDetails(&last_attempt_details_);
+  NetErrorDetails details;
+  attempt_->PopulateNetErrorDetails(&details);
   attempt_.reset();
+  job_->OnAttemptFailed(rv, details);
 }
 
 void QuicSessionPool::EndpointConnector::OnAttemptComplete(int rv) {
@@ -148,7 +124,7 @@ void QuicSessionPool::EndpointConnector::OnAttemptComplete(int rv) {
     // the job can fail or keep waiting for more DNS results.
     rv = result.value_or(*last_attempt_error_);
   }
-  job_->OnConnectorComplete(rv);
+  job_->OnConnectorComplete(rv, this);
 }
 
 }  // namespace net

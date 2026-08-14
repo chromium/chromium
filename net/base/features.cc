@@ -346,6 +346,11 @@ BASE_FEATURE(kAsyncQuicSession,
 // HostResolver::ServiceEndpointRequest, for direct QUIC sessions.
 BASE_FEATURE(kAsyncDnsQuicJob, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kAsyncDnsQuicJobSlowTimerDelay,
+                   &kAsyncDnsQuicJob,
+                   TcpConnectJob::kIPv6FallbackTime);
+
 // A flag to make multiport context creation asynchronous.
 BASE_FEATURE(kAsyncMultiPortPath,
 #if !BUILDFLAG(CRONET_BUILD) && (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID))
