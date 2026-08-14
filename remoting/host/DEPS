@@ -20,7 +20,6 @@ include_rules = [
   "+remoting/protocol",
   "+remoting/signaling",
   "+remoting/tools",
-  "+sandbox/linux",
   # //remoting uses device::PowerSaveBlocker directly. See crbug.com/689423
   "+services/device/public",
   "+services/device/wake_lock/power_save_blocker",

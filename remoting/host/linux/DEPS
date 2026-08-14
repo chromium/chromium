@@ -1,5 +1,4 @@
 include_rules = [
-  "+sandbox/linux",
   "+third_party/libei",
 ]
 
