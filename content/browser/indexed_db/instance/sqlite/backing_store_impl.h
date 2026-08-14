@@ -87,7 +87,7 @@ class CONTENT_EXPORT BackingStoreImpl : public BackingStore {
   uintptr_t GetIdentifierForMemoryDump() override;
   void FlushForTesting() override;
 
-  void ReportMemoryUsage(base::trace_event::ProcessMemoryDump* pmd,
+  bool ReportMemoryUsage(base::trace_event::ProcessMemoryDump* pmd,
                          const std::string& dump_name) override;
 
   // Destroys the `DatabaseConnection` for `name`. If `locks` are provided, they

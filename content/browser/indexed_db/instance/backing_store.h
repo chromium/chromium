@@ -305,7 +305,7 @@ class BackingStore {
   virtual uintptr_t GetIdentifierForMemoryDump() = 0;
 
   //  Adds a memory dump for `this` under `dump_name`.
-  virtual void ReportMemoryUsage(base::trace_event::ProcessMemoryDump* pmd,
+  virtual bool ReportMemoryUsage(base::trace_event::ProcessMemoryDump* pmd,
                                  const std::string& dump_name) = 0;
 
   // Writes backing store files to disk in their long-term format, e.g. converts

@@ -1450,10 +1450,10 @@ uint64_t DatabaseConnection::GetSize() const {
   return used_size.InBytes();
 }
 
-void DatabaseConnection::ReportMemoryUsage(
+bool DatabaseConnection::ReportMemoryUsage(
     base::trace_event::ProcessMemoryDump* pmd,
-    const std::string& dump_name) const {
-  db_->ReportMemoryUsage(pmd, dump_name);
+    const std::string& dump_name) {
+  return db_->ReportMemoryUsage(pmd, dump_name);
 }
 
 std::unique_ptr<BackingStoreDatabaseImpl>

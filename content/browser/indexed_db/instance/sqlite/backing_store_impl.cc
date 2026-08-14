@@ -6,6 +6,7 @@
 
 #include <inttypes.h>
 
+#include <algorithm>
 #include <atomic>
 #include <limits>
 #include <memory>
@@ -23,7 +24,6 @@
 #include "base/notimplemented.h"
 #include "base/numerics/checked_math.h"
 #include "base/run_loop.h"
-#include "base/strings/stringprintf.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/memory_allocator_dump.h"
@@ -36,6 +36,7 @@
 #include "content/browser/indexed_db/instance/sqlite/backing_store_database_impl.h"
 #include "content/browser/indexed_db/instance/sqlite/database_connection.h"
 #include "content/browser/indexed_db/status.h"
+#include "third_party/abseil-cpp/absl/strings/str_format.h"
 
 namespace content::indexed_db::sqlite {
 
@@ -253,16 +254,20 @@ uintptr_t BackingStoreImpl::GetIdentifierForMemoryDump() {
   return reinterpret_cast<uintptr_t>(this);
 }
 
-void BackingStoreImpl::ReportMemoryUsage(
+bool BackingStoreImpl::ReportMemoryUsage(
     base::trace_event::ProcessMemoryDump* pmd,
     const std::string& dump_name) {
   // Create the dump as an organizational container.
   pmd->CreateAllocatorDump(dump_name);
-  for (const auto& [name, connection] : open_connections_) {
-    connection->ReportMemoryUsage(
-        pmd, base::StringPrintf("%s/sqlite_db_0x%" PRIXPTR, dump_name.c_str(),
-                                reinterpret_cast<uintptr_t>(connection.get())));
-  }
+  return std::all_of(
+      open_connections_.begin(), open_connections_.end(),
+      [&pmd, &dump_name](const auto& entry) {
+        const auto& [_, connection] = entry;
+        return connection->ReportMemoryUsage(
+            pmd,
+            absl::StrFormat("%s/sqlite_db_0x%" PRIXPTR, dump_name,
+                            reinterpret_cast<uintptr_t>(connection.get())));
+      });
 }
 
 void BackingStoreImpl::FlushForTesting() {

@@ -121,9 +121,9 @@ class CONTENT_EXPORT DatabaseConnection {
 
   // Creates a memory dump for this connection at `dump_name`, suballocated to
   // the canonical `sqlite/IndexedDB_connection/0x?` dump owned by the
-  // underlying `sql::Database`.
-  void ReportMemoryUsage(base::trace_event::ProcessMemoryDump* pmd,
-                         const std::string& dump_name) const;
+  // underlying `sql::Database`. Returns whether the dump was created.
+  bool ReportMemoryUsage(base::trace_event::ProcessMemoryDump* pmd,
+                         const std::string& dump_name);
 
   // Called when `BucketContext` is not currently serving requests. `long_idle`
   // is true if the `BucketContext` has been idle for a relatively long time,
