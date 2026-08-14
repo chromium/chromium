@@ -56,17 +56,6 @@ class ApiTests extends ApiTestFixtureBase {
     await this.advanceToNextStep();
   }
 
-  async testIsOnboardingCompleted() {
-    assertDefined(this.host.isOnboardingCompleted);
-    const completedSequence =
-        observeSequence(this.host.isOnboardingCompleted());
-    assertFalse(await completedSequence.next());
-
-    // Mark onboarding as completed.
-    await this.advanceToNextStep();
-
-    assertTrue(await completedSequence.next());
-  }
 
   async testSetOnboardingCompleted() {
     assertDefined(this.host.setOnboardingCompleted);

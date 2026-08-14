@@ -21,12 +21,14 @@
 #include "build/build_config.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_task.h"
+#include "chrome/browser/background/glic/glic_launcher_configuration.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/glic/common/glic_navigation.h"
 #include "chrome/browser/glic/experimental_triggering/glic_experimental_triggering_manager.h"
 #include "chrome/browser/glic/glic_enums.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/host/auth_controller.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/host/context/glic_tab_favicon_observer.h"
@@ -216,6 +218,7 @@ std::vector<std::string> GetTestSuiteNames() {
       "NewGlicApiTestGeminiEnterpriseSettingsPolicy",
       "NewGlicApiTestGeminiEnterpriseSettingsPolicyUnset",
       "NewGlicApiTestWithMqlsIdGetterDisabled",
+      "NewGlicOnboardingApiTest",
 #if !BUILDFLAG(IS_ANDROID)
       "NewGlicApiTestWithFileUploadPolicyEnabled",
       "NewGlicApiTestWithSkills",
@@ -644,6 +647,26 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTestForNoWebUiLoader, testNoWebUiLoader) {
   EXPECT_EQ(expect_loading, listener.SawState(mojom::WebUiState::kShowLoading));
 
   ExecuteJsTest();
+}
+
+class NewGlicOnboardingApiTest : public NewGlicApiTest {
+ public:
+  NewGlicOnboardingApiTest() {
+    glic_test_environment().SetFreStatusForNewProfiles(
+        prefs::FreStatus::kNotStarted);
+  }
+
+  void TearDownOnMainThread() override {
+    GlicProfileManager::ForceConnectionTypeForTesting(std::nullopt);
+    NewGlicApiTest::TearDownOnMainThread();
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(NewGlicOnboardingApiTest, testIsOnboardingCompleted) {
+  ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest();
+  glic::SetFRECompletion(GetProfile(), prefs::FreStatus::kCompleted);
+  ContinueJsTest();
 }
 
 class NewGlicApiTestWithDefaultTabContextEnabled : public NewGlicApiTest {
@@ -1578,7 +1601,6 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest,
                                      1);
   histogram_tester.ExpectTotalCount("Glic.Api.GetContextFromTab.Error.Text", 1);
 }
-
 #if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testPinTabsFailsWhenIncognitoWindow) {
   ASSERT_OK(OpenGlicForActiveTabAndDetach());
@@ -4220,9 +4242,13 @@ INSTANTIATE_TEST_SUITE_P(,
                          NewGlicApiTestWithExperimentalTriggeringScreenshot,
                          DefaultTestParamSet(),
                          &WithTestParams::PrintTestVariant);
-
 INSTANTIATE_TEST_SUITE_P(,
                          NewGlicApiUnresponsiveTest,
+                         DefaultTestParamSet(),
+                         &WithTestParams::PrintTestVariant);
+
+INSTANTIATE_TEST_SUITE_P(,
+                         NewGlicOnboardingApiTest,
                          DefaultTestParamSet(),
                          &WithTestParams::PrintTestVariant);
 
@@ -4269,6 +4295,7 @@ GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(GlicApiScrollToTest);
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
     NewGlicApiTestWithExperimentalTriggeringScreenshot);
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(NewGlicApiUnresponsiveTest);
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(NewGlicOnboardingApiTest);
 #if !BUILDFLAG(IS_ANDROID)
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
     NewGlicApiTestWithFileUploadPolicyEnabled);

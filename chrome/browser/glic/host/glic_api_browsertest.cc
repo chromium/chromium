@@ -880,13 +880,6 @@ class GlicOnboardingApiTest : public GlicApiTestWithOneTab {
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_P(GlicOnboardingApiTest, testIsOnboardingCompleted) {
-  ExecuteJsTest();
-
-  SetFRECompletion(browser()->GetProfile(), prefs::FreStatus::kCompleted);
-
-  ContinueJsTest();
-}
 
 IN_PROC_BROWSER_TEST_P(GlicOnboardingApiTest, testSetOnboardingCompleted) {
   ExecuteJsTest();
