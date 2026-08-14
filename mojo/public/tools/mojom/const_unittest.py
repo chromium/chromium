@@ -41,14 +41,16 @@ class ConstTest(MojomParserTestCase):
     self.WriteFile(a_mojom, 'module a; enum E { kA = 41, kB };')
     b_mojom = 'b.mojom'
     self.WriteFile(
-        b_mojom, """\
+      b_mojom,
+      """\
       import "a.mojom";
       const a.E kE1 = a.E.kB;
 
       // We also allow value names to be unqualified, implying scope from the
       // constant's type.
       const a.E kE2 = kB;
-      """)
+      """,
+    )
     self.ParseMojoms([a_mojom, b_mojom])
     a = self.LoadModule(a_mojom)
     b = self.LoadModule(b_mojom)

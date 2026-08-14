@@ -11,31 +11,37 @@ class ResultTest(MojomParserTestCase):
   def testResultResponse(self):
     a_mojom = 'a.mojom'
     self.WriteFile(
-        a_mojom, """
+      a_mojom,
+      """
         interface Test {
             Method() => result<bool, string>;
         };
-    """)
+    """,
+    )
     self.ParseMojoms([a_mojom])
     a = self.LoadModule(a_mojom)
     self.assertEqual(1, len(a.interfaces))
     self.assertEqual(1, len(a.interfaces[0].methods))
-    self.assertEqual(mojom.BOOL,
-                     a.interfaces[0].methods[0].result_response.success_kind)
-    self.assertEqual(mojom.STRING,
-                     a.interfaces[0].methods[0].result_response.failure_kind)
+    self.assertEqual(
+      mojom.BOOL, a.interfaces[0].methods[0].result_response.success_kind
+    )
+    self.assertEqual(
+      mojom.STRING, a.interfaces[0].methods[0].result_response.failure_kind
+    )
 
   def testResultResponseStructs(self):
     a_mojom = 'a.mojom'
     self.WriteFile(
-        a_mojom, """
+      a_mojom,
+      """
         struct Success {};
         struct Failure {};
 
         interface Test {
             Method() => result<Success, Failure>;
         };
-    """)
+    """,
+    )
     self.ParseMojoms([a_mojom])
     a = self.LoadModule(a_mojom)
     self.assertEqual(1, len(a.interfaces))
@@ -55,11 +61,13 @@ class ResultTest(MojomParserTestCase):
   def testResultResponseGeneratedParam(self):
     a_mojom = 'a.mojom'
     self.WriteFile(
-        a_mojom, """
+      a_mojom,
+      """
         interface Test {
             Method() => result<bool, bool>;
         };
-    """)
+    """,
+    )
     self.ParseMojoms([a_mojom])
     a = self.LoadModule(a_mojom)
     self.assertEqual(1, len(a.interfaces))

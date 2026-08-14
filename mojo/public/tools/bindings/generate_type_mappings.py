@@ -64,61 +64,87 @@ import re
 import sys
 
 sys.path.insert(
-    0,
-    os.path.join(
-        os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "mojom"))
+  0,
+  os.path.join(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "mojom"
+  ),
+)
 
 from mojom.generate.generator import WriteFile
 
 
 def CheckCppTypemapConfigs(target_name, config_filename):
-  _SUPPORTED_CONFIG_KEYS = set([
-      'types', 'traits_headers', 'traits_private_headers', 'traits_sources',
-      'traits_deps', 'traits_public_deps'
-  ])
-  _SUPPORTED_TYPE_KEYS = set([
-      'mojom', 'cpp', 'copyable_pass_by_value', 'force_serialize', 'hashable',
-      'move_only', 'non_const_ref', 'nullable_is_same_type',
-      'forward_declaration', 'default_constructible'
-  ])
+  _SUPPORTED_CONFIG_KEYS = set(
+    [
+      'types',
+      'traits_headers',
+      'traits_private_headers',
+      'traits_sources',
+      'traits_deps',
+      'traits_public_deps',
+    ]
+  )
+  _SUPPORTED_TYPE_KEYS = set(
+    [
+      'mojom',
+      'cpp',
+      'copyable_pass_by_value',
+      'force_serialize',
+      'hashable',
+      'move_only',
+      'non_const_ref',
+      'nullable_is_same_type',
+      'forward_declaration',
+      'default_constructible',
+    ]
+  )
   with open(config_filename, 'r') as f:
     for config in json.load(f):
       for key in config.keys():
         if key not in _SUPPORTED_CONFIG_KEYS:
-          raise ValueError('Invalid typemap property "%s" when processing %s' %
-                           (key, target_name))
+          raise ValueError(
+            'Invalid typemap property "%s" when processing %s'
+            % (key, target_name)
+          )
 
       types = config.get('types')
       if not types:
         raise ValueError(
-            'Typemap for %s must specify at least one type to map' %
-            target_name)
+          'Typemap for %s must specify at least one type to map' % target_name
+        )
 
       for entry in types:
         for key in entry.keys():
           if key not in _SUPPORTED_TYPE_KEYS:
             raise IOError(
-                'Invalid type property "%s" in typemap for "%s" on target %s' %
-                (key, entry.get('mojom', '(unknown)'), target_name))
+              'Invalid type property "%s" in typemap for "%s" on target %s'
+              % (key, entry.get('mojom', '(unknown)'), target_name)
+            )
 
 
 def CheckTsTypemapConfigs(target_name, config_filename):
-  _SUPPORTED_CONFIG_KEYS = set([
+  _SUPPORTED_CONFIG_KEYS = set(
+    [
       'source',
       'types',
-  ])
-  _SUPPORTED_TYPE_KEYS = set([
+    ]
+  )
+  _SUPPORTED_TYPE_KEYS = set(
+    [
       'ts',
       'ts_import',
       'converter',
       'mojom',
-  ])
+    ]
+  )
   with open(config_filename, 'r') as f:
     for config in json.load(f):
       for key in config.keys():
         if key not in _SUPPORTED_CONFIG_KEYS:
-          raise ValueError('Invalid typemap property "%s" when processing %s' %
-                           (key, target_name))
+          raise ValueError(
+            'Invalid typemap property "%s" when processing %s'
+            % (key, target_name)
+          )
 
       if not config.get('source'):
         raise ValueError('Typemap for %s must specify a source' % target_name)
@@ -126,15 +152,16 @@ def CheckTsTypemapConfigs(target_name, config_filename):
       types = config.get('types')
       if not types:
         raise ValueError(
-            'Typemap for %s must specify at least one type to map' %
-            target_name)
+          'Typemap for %s must specify at least one type to map' % target_name
+        )
 
       for entry in types:
         for key in entry.keys():
           if key not in _SUPPORTED_TYPE_KEYS:
             raise IOError(
-                'Invalid type property "%s" in typemap for "%s" on target %s' %
-                (key, entry.get('mojom', '(unknown)'), target_name))
+              'Invalid type property "%s" in typemap for "%s" on target %s'
+              % (key, entry.get('mojom', '(unknown)'), target_name)
+            )
 
 
 def ReadTypemap(path):
@@ -148,19 +175,18 @@ def LoadCppTypemapConfig(path):
     for config in json.load(f):
       for entry in config['types']:
         configs[entry['mojom']] = {
-            'typename': entry['cpp'],
-            'forward_declaration': entry.get('forward_declaration', None),
-            'public_headers': config.get('traits_headers', []),
-            'traits_headers': config.get('traits_private_headers', []),
-            'copyable_pass_by_value': entry.get('copyable_pass_by_value',
-                                                False),
-            'default_constructible': entry.get('default_constructible', True),
-            'force_serialize': entry.get('force_serialize', False),
-            'hashable': entry.get('hashable', False),
-            'move_only': entry.get('move_only', False),
-            'non_const_ref': entry.get('non_const_ref', False),
-            'nullable_is_same_type': entry.get('nullable_is_same_type', False),
-            'non_copyable_non_movable': False,
+          'typename': entry['cpp'],
+          'forward_declaration': entry.get('forward_declaration', None),
+          'public_headers': config.get('traits_headers', []),
+          'traits_headers': config.get('traits_private_headers', []),
+          'copyable_pass_by_value': entry.get('copyable_pass_by_value', False),
+          'default_constructible': entry.get('default_constructible', True),
+          'force_serialize': entry.get('force_serialize', False),
+          'hashable': entry.get('hashable', False),
+          'move_only': entry.get('move_only', False),
+          'non_const_ref': entry.get('non_const_ref', False),
+          'nullable_is_same_type': entry.get('nullable_is_same_type', False),
+          'non_copyable_non_movable': False,
         }
   return configs
 
@@ -171,58 +197,71 @@ def LoadTsTypemapConfig(path):
     for config in json.load(f):
       for entry in config['types']:
         configs[entry['mojom']] = {
-            'converter': entry['converter'],
-            # note that the source is per-config, not per-type.
-            'converter_import': config['source'],
-            'typename': entry['ts'],
-            'type_import': entry.get('ts_import', None),
+          'converter': entry['converter'],
+          # note that the source is per-config, not per-type.
+          'converter_import': config['source'],
+          'typename': entry['ts'],
+          'type_import': entry.get('ts_import', None),
         }
   return configs
 
 
 def main():
   parser = argparse.ArgumentParser(
-      description=__doc__,
-      formatter_class=argparse.RawDescriptionHelpFormatter)
+    description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+  )
   parser.add_argument(
-      '--dependency',
-      type=str,
-      action='append',
-      default=[],
-      help=('A path to another JSON typemap to merge into the output. '
-            'This may be repeated to merge multiple typemaps.'))
+    '--dependency',
+    type=str,
+    action='append',
+    default=[],
+    help=(
+      'A path to another JSON typemap to merge into the output. '
+      'This may be repeated to merge multiple typemaps.'
+    ),
+  )
   parser.add_argument(
-      '--cpp-typemap-config',
-      type=str,
-      action='store',
-      dest='cpp_config_path',
-      help=('A path to a single JSON-formatted typemap config as emitted by'
-            'GN when processing a mojom_cpp_typemap build rule.'))
+    '--cpp-typemap-config',
+    type=str,
+    action='store',
+    dest='cpp_config_path',
+    help=(
+      'A path to a single JSON-formatted typemap config as emitted by'
+      'GN when processing a mojom_cpp_typemap build rule.'
+    ),
+  )
   parser.add_argument(
-      '--ts-typemap-config',
-      type=str,
-      action='store',
-      dest='ts_config_path',
-      help=('A path to a single JSON-formatted typemap config as emitted by'
-            'GN when processing a mojom_ts_typemap build rule.'))
-  parser.add_argument('--target',
-                      type=str,
-                      default='unknown',
-                      help='The GN target name (for error reporting).')
-  parser.add_argument('--output',
-                      type=str,
-                      required=True,
-                      help='The path to which to write the generated JSON.')
+    '--ts-typemap-config',
+    type=str,
+    action='store',
+    dest='ts_config_path',
+    help=(
+      'A path to a single JSON-formatted typemap config as emitted by'
+      'GN when processing a mojom_ts_typemap build rule.'
+    ),
+  )
+  parser.add_argument(
+    '--target',
+    type=str,
+    default='unknown',
+    help='The GN target name (for error reporting).',
+  )
+  parser.add_argument(
+    '--output',
+    type=str,
+    required=True,
+    help='The path to which to write the generated JSON.',
+  )
   params, _ = parser.parse_known_args()
 
   # Additional information about the typemap configuration for the module.
   # The generator should treat this as a special "configuration" section,
   # and not as a language.
   metadata = {
-      'module_typemaps': {
-          'c++': [],
-          'typescript': [],
-      }
+    'module_typemaps': {
+      'c++': [],
+      'typescript': [],
+    }
   }
 
   cpp_typemaps = {}
@@ -244,13 +283,16 @@ def main():
   metadata['module_typemaps']['typescript'] = list(ts_typemaps.keys())
 
   WriteFile(
-      json.dumps(
-          {
-              'c++': cpp_typemaps,
-              'typescript': ts_typemaps,
-              '_metadata': metadata,
-          },
-          indent=2), params.output)
+    json.dumps(
+      {
+        'c++': cpp_typemaps,
+        'typescript': ts_typemaps,
+        '_metadata': metadata,
+      },
+      indent=2,
+    ),
+    params.output,
+  )
 
 
 if __name__ == '__main__':

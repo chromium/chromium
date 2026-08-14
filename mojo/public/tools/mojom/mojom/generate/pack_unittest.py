@@ -54,12 +54,14 @@ class PackTest(unittest.TestCase):
       self.assertEqual(offsets[i], ps.packed_fields[i].offset)
 
   def testPaddingPackedInOrder(self):
-    return self._CheckPackSequence((mojom.INT8, mojom.UINT8, mojom.INT32),
-                                   (1, 2, 3), (0, 1, 4))
+    return self._CheckPackSequence(
+      (mojom.INT8, mojom.UINT8, mojom.INT32), (1, 2, 3), (0, 1, 4)
+    )
 
   def testPaddingPackedOutOfOrder(self):
-    return self._CheckPackSequence((mojom.INT8, mojom.INT32, mojom.UINT8),
-                                   (1, 3, 2), (0, 1, 4))
+    return self._CheckPackSequence(
+      (mojom.INT8, mojom.INT32, mojom.UINT8), (1, 3, 2), (0, 1, 4)
+    )
 
   def testPaddingPackedOverflow(self):
     kinds = (mojom.INT8, mojom.INT32, mojom.INT16, mojom.INT8, mojom.INT8)
@@ -69,27 +71,47 @@ class PackTest(unittest.TestCase):
     return self._CheckPackSequence(kinds, fields, offsets)
 
   def testNullableTypes(self):
-    kinds = (mojom.STRING.MakeNullableKind(), mojom.HANDLE.MakeNullableKind(),
-             mojom.Struct('test_struct').MakeNullableKind(),
-             mojom.DCPIPE.MakeNullableKind(), mojom.Array().MakeNullableKind(),
-             mojom.DPPIPE.MakeNullableKind(),
-             mojom.Array(length=5).MakeNullableKind(),
-             mojom.MSGPIPE.MakeNullableKind(),
-             mojom.Interface('test_interface').MakeNullableKind(),
-             mojom.SHAREDBUFFER.MakeNullableKind(),
-             mojom.PendingReceiver().MakeNullableKind())
+    kinds = (
+      mojom.STRING.MakeNullableKind(),
+      mojom.HANDLE.MakeNullableKind(),
+      mojom.Struct('test_struct').MakeNullableKind(),
+      mojom.DCPIPE.MakeNullableKind(),
+      mojom.Array().MakeNullableKind(),
+      mojom.DPPIPE.MakeNullableKind(),
+      mojom.Array(length=5).MakeNullableKind(),
+      mojom.MSGPIPE.MakeNullableKind(),
+      mojom.Interface('test_interface').MakeNullableKind(),
+      mojom.SHAREDBUFFER.MakeNullableKind(),
+      mojom.PendingReceiver().MakeNullableKind(),
+    )
     fields = (1, 2, 4, 3, 5, 6, 8, 7, 9, 10, 11)
     offsets = (0, 8, 12, 16, 24, 32, 36, 40, 48, 56, 60)
     return self._CheckPackSequence(kinds, fields, offsets)
 
   def testAllTypes(self):
     return self._CheckPackSequence(
-        (mojom.BOOL, mojom.INT8, mojom.STRING, mojom.UINT8, mojom.INT16,
-         mojom.DOUBLE, mojom.UINT16, mojom.INT32, mojom.UINT32, mojom.INT64,
-         mojom.FLOAT, mojom.STRING, mojom.HANDLE, mojom.UINT64,
-         mojom.Struct('test'), mojom.Array(), mojom.STRING.MakeNullableKind()),
-        (1, 2, 4, 5, 7, 3, 6, 8, 9, 10, 11, 13, 12, 14, 15, 16, 17, 18),
-        (0, 1, 2, 4, 6, 8, 16, 24, 28, 32, 40, 44, 48, 56, 64, 72, 80, 88))
+      (
+        mojom.BOOL,
+        mojom.INT8,
+        mojom.STRING,
+        mojom.UINT8,
+        mojom.INT16,
+        mojom.DOUBLE,
+        mojom.UINT16,
+        mojom.INT32,
+        mojom.UINT32,
+        mojom.INT64,
+        mojom.FLOAT,
+        mojom.STRING,
+        mojom.HANDLE,
+        mojom.UINT64,
+        mojom.Struct('test'),
+        mojom.Array(),
+        mojom.STRING.MakeNullableKind(),
+      ),
+      (1, 2, 4, 5, 7, 3, 6, 8, 9, 10, 11, 13, 12, 14, 15, 16, 17, 18),
+      (0, 1, 2, 4, 6, 8, 16, 24, 28, 32, 40, 44, 48, 56, 64, 72, 80, 88),
+    )
 
   def testPaddingPackedOutOfOrderByOrdinal(self):
     struct = mojom.Struct('test')
@@ -182,12 +204,15 @@ class PackTest(unittest.TestCase):
     """
     struct = mojom.Struct('test')
     struct.AddField(
-        'field_3', mojom.BOOL, ordinal=3, attributes={'MinVersion': 3})
+      'field_3', mojom.BOOL, ordinal=3, attributes={'MinVersion': 3}
+    )
     struct.AddField('field_0', mojom.INT32, ordinal=0)
     struct.AddField(
-        'field_1', mojom.INT64, ordinal=1, attributes={'MinVersion': 2})
+      'field_1', mojom.INT64, ordinal=1, attributes={'MinVersion': 2}
+    )
     struct.AddField(
-        'field_2', mojom.INT64, ordinal=2, attributes={'MinVersion': 3})
+      'field_2', mojom.INT64, ordinal=2, attributes={'MinVersion': 3}
+    )
     ps = pack.PackedStruct(struct)
 
     versions = pack.GetVersionInfo(ps)
@@ -211,14 +236,12 @@ class PackTest(unittest.TestCase):
     """
     struct = mojom.Struct('test')
     struct.AddField('field_0', mojom.BOOL, ordinal=0)
-    struct.AddField('field_1',
-                    mojom.NULLABLE_BOOL,
-                    ordinal=1,
-                    attributes={'MinVersion': 1})
-    struct.AddField('field_2',
-                    mojom.NULLABLE_BOOL,
-                    ordinal=2,
-                    attributes={'MinVersion': 2})
+    struct.AddField(
+      'field_1', mojom.NULLABLE_BOOL, ordinal=1, attributes={'MinVersion': 1}
+    )
+    struct.AddField(
+      'field_2', mojom.NULLABLE_BOOL, ordinal=2, attributes={'MinVersion': 2}
+    )
     ps = pack.PackedStruct(struct)
     versions = pack.GetVersionInfo(ps)
 

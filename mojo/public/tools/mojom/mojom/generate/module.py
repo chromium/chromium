@@ -18,6 +18,7 @@ from uuid import UUID
 
 # pylint: disable=raise-missing-from
 
+
 # We use our own version of __repr__ when displaying the AST, as the
 # AST currently doesn't capture which nodes are reference (e.g. to
 # types) and which nodes are definitions. This allows us to e.g. print
@@ -45,16 +46,24 @@ def Repr(obj, as_ref=True):
   if isinstance(obj, list):
     if not obj:
       return '[]'
-    return ('[\n%s\n]' %
-            (',\n'.join('    %s' % Repr(elem, as_ref).replace('\n', '\n    ')
-                        for elem in obj)))
+    return '[\n%s\n]' % (
+      ',\n'.join(
+        '    %s' % Repr(elem, as_ref).replace('\n', '\n    ') for elem in obj
+      )
+    )
   if isinstance(obj, dict):
     if not obj:
       return '{}'
-    return ('{\n%s\n}' % (',\n'.join('    %s: %s' %
-                                     (Repr(key, as_ref).replace('\n', '\n    '),
-                                      Repr(val, as_ref).replace('\n', '\n    '))
-                                     for key, val in obj.items())))
+    return '{\n%s\n}' % (
+      ',\n'.join(
+        '    %s: %s'
+        % (
+          Repr(key, as_ref).replace('\n', '\n    '),
+          Repr(val, as_ref).replace('\n', '\n    '),
+        )
+        for key, val in obj.items()
+      )
+    )
   return repr(obj)
 
 
@@ -72,11 +81,15 @@ def GenericRepr(obj, names):
   """
 
   def ReprIndent(name, as_ref):
-    return '    %s=%s' % (name, Repr(getattr(obj, name), as_ref).replace(
-        '\n', '\n    '))
+    return '    %s=%s' % (
+      name,
+      Repr(getattr(obj, name), as_ref).replace('\n', '\n    '),
+    )
 
-  return '%s(\n%s\n)' % (obj.__class__.__name__, ',\n'.join(
-      ReprIndent(name, as_ref) for (name, as_ref) in names.items()))
+  return '%s(\n%s\n)' % (
+    obj.__class__.__name__,
+    ',\n'.join(ReprIndent(name, as_ref) for (name, as_ref) in names.items()),
+  )
 
 
 class Kind:
@@ -100,15 +113,16 @@ class Kind:
   @classmethod
   def AddSharedProperty(cls, name):
     """Adds a property |name| to |cls|, which accesses the corresponding item in
-       |shared_definition|.
+    |shared_definition|.
 
-       The reason of adding such indirection is to enable sharing definition
-       between a reference kind and its nullable variation. For example:
-         a = Struct('test_struct_1')
-         b = a.MakeNullableKind()
-         a.name = 'test_struct_2'
-         print(b.name)  # Outputs 'test_struct_2'.
+    The reason of adding such indirection is to enable sharing definition
+    between a reference kind and its nullable variation. For example:
+      a = Struct('test_struct_1')
+      b = a.MakeNullableKind()
+      a.name = 'test_struct_2'
+      print(b.name)  # Outputs 'test_struct_2'.
     """
+
     def Get(self):
       try:
         return self.shared_definition[name]
@@ -122,8 +136,11 @@ class Kind:
 
   def Repr(self, as_ref=True):
     # pylint: disable=unused-argument
-    return '<%s spec=%r is_nullable=%r>' % (self.__class__.__name__, self.spec,
-                                            self.is_nullable)
+    return '<%s spec=%r is_nullable=%r>' % (
+      self.__class__.__name__,
+      self.spec,
+      self.is_nullable,
+    )
 
   def __repr__(self):
     # Gives us a decent __repr__ for all kinds.
@@ -131,9 +148,11 @@ class Kind:
 
   def __eq__(self, rhs):
     # pylint: disable=unidiomatic-typecheck
-    return (type(self) == type(rhs)
-            and (self.spec, self.parent_kind, self.is_nullable)
-            == (rhs.spec, rhs.parent_kind, rhs.is_nullable))
+    return type(self) == type(rhs) and (
+      self.spec,
+      self.parent_kind,
+      self.is_nullable,
+    ) == (rhs.spec, rhs.parent_kind, rhs.is_nullable)
 
   def __hash__(self):
     # TODO(crbug.com/40122051): Remove this and other __hash__ methods on Kind
@@ -151,6 +170,7 @@ class ValueKind(Kind):
   still reserves space for the value type itself, even if that value itself
   is logically null.
   """
+
   def __init__(self, spec=None, is_nullable=False, module=None):
     assert spec is None or is_nullable == spec.startswith('?')
     Kind.__init__(self, spec, is_nullable, module)
@@ -228,7 +248,7 @@ class ValueKind(Kind):
     return nullable_kind
 
   def __eq__(self, rhs):
-    return (isinstance(rhs, ValueKind) and super().__eq__(rhs))
+    return isinstance(rhs, ValueKind) and super().__eq__(rhs)
 
   def __hash__(self):  # pylint: disable=useless-super-delegation
     return super().__hash__()
@@ -303,7 +323,7 @@ class ReferenceKind(Kind):
     return unnullable_kind
 
   def __eq__(self, rhs):
-    return (isinstance(rhs, ReferenceKind) and super().__eq__(rhs))
+    return isinstance(rhs, ReferenceKind) and super().__eq__(rhs)
 
   def __hash__(self):  # pylint: disable=useless-super-delegation
     return super().__hash__()
@@ -349,42 +369,42 @@ NULLABLE_PLATFORMHANDLE = ReferenceKind('?h:p', True)
 
 # Collection of all Primitive types
 PRIMITIVES = (
-    BOOL,
-    INT8,
-    INT16,
-    INT32,
-    INT64,
-    UINT8,
-    UINT16,
-    UINT32,
-    UINT64,
-    FLOAT,
-    DOUBLE,
-    NULLABLE_BOOL,
-    NULLABLE_INT8,
-    NULLABLE_INT16,
-    NULLABLE_INT32,
-    NULLABLE_INT64,
-    NULLABLE_UINT8,
-    NULLABLE_UINT16,
-    NULLABLE_UINT32,
-    NULLABLE_UINT64,
-    NULLABLE_FLOAT,
-    NULLABLE_DOUBLE,
-    STRING,
-    HANDLE,
-    DCPIPE,
-    DPPIPE,
-    MSGPIPE,
-    SHAREDBUFFER,
-    PLATFORMHANDLE,
-    NULLABLE_STRING,
-    NULLABLE_HANDLE,
-    NULLABLE_DCPIPE,
-    NULLABLE_DPPIPE,
-    NULLABLE_MSGPIPE,
-    NULLABLE_SHAREDBUFFER,
-    NULLABLE_PLATFORMHANDLE,
+  BOOL,
+  INT8,
+  INT16,
+  INT32,
+  INT64,
+  UINT8,
+  UINT16,
+  UINT32,
+  UINT64,
+  FLOAT,
+  DOUBLE,
+  NULLABLE_BOOL,
+  NULLABLE_INT8,
+  NULLABLE_INT16,
+  NULLABLE_INT32,
+  NULLABLE_INT64,
+  NULLABLE_UINT8,
+  NULLABLE_UINT16,
+  NULLABLE_UINT32,
+  NULLABLE_UINT64,
+  NULLABLE_FLOAT,
+  NULLABLE_DOUBLE,
+  STRING,
+  HANDLE,
+  DCPIPE,
+  DPPIPE,
+  MSGPIPE,
+  SHAREDBUFFER,
+  PLATFORMHANDLE,
+  NULLABLE_STRING,
+  NULLABLE_HANDLE,
+  NULLABLE_DCPIPE,
+  NULLABLE_DPPIPE,
+  NULLABLE_MSGPIPE,
+  NULLABLE_SHAREDBUFFER,
+  NULLABLE_PLATFORMHANDLE,
 )
 
 ATTRIBUTE_ALLOWED_CONTEXT = 'AllowedContext'
@@ -413,14 +433,17 @@ class NamedValue:
     self.mojom_name = mojom_name
 
   def GetSpec(self):
-    return (self.module.GetNamespacePrefix() +
-            (self.parent_kind and
-             (self.parent_kind.mojom_name + '.') or "") + self.mojom_name)
+    return (
+      self.module.GetNamespacePrefix()
+      + (self.parent_kind and (self.parent_kind.mojom_name + '.') or "")
+      + self.mojom_name
+    )
 
   def __eq__(self, rhs):
-    return (isinstance(rhs, NamedValue)
-            and (self.parent_kind, self.mojom_name) == (rhs.parent_kind,
-                                                        rhs.mojom_name))
+    return isinstance(rhs, NamedValue) and (
+      self.parent_kind,
+      self.mojom_name,
+    ) == (rhs.parent_kind, rhs.mojom_name)
 
   def __hash__(self):
     return hash((self.parent_kind, self.mojom_name))
@@ -451,9 +474,13 @@ class EnumValue(NamedValue):
     self.enum = enum
 
   def GetSpec(self):
-    return (self.module.GetNamespacePrefix() +
-            (self.parent_kind and (self.parent_kind.mojom_name + '.') or "") +
-            self.enum.mojom_name + '.' + self.mojom_name)
+    return (
+      self.module.GetNamespacePrefix()
+      + (self.parent_kind and (self.parent_kind.mojom_name + '.') or "")
+      + self.enum.mojom_name
+      + '.'
+      + self.mojom_name
+    )
 
   @property
   def name(self):
@@ -472,19 +499,23 @@ class Constant:
     self.name = stylizer.StylizeConstant(self.mojom_name)
 
   def __eq__(self, rhs):
-    return (isinstance(rhs, Constant)
-            and (self.mojom_name, self.kind, self.value,
-                 self.parent_kind) == (rhs.mojom_name, rhs.kind, rhs.value,
-                                       rhs.parent_kind))
+    return isinstance(rhs, Constant) and (
+      self.mojom_name,
+      self.kind,
+      self.value,
+      self.parent_kind,
+    ) == (rhs.mojom_name, rhs.kind, rhs.value, rhs.parent_kind)
 
 
 class Field:
-  def __init__(self,
-               mojom_name=None,
-               kind=None,
-               ordinal=None,
-               default=None,
-               attributes=None):
+  def __init__(
+    self,
+    mojom_name=None,
+    kind=None,
+    ordinal=None,
+    default=None,
+    attributes=None,
+  ):
     if self.__class__.__name__ == 'Field':
       raise Exception()
     self.mojom_name = mojom_name
@@ -505,14 +536,18 @@ class Field:
 
   @property
   def min_version(self):
-    return self.attributes.get(ATTRIBUTE_MIN_VERSION) \
-        if self.attributes else None
+    return (
+      self.attributes.get(ATTRIBUTE_MIN_VERSION) if self.attributes else None
+    )
 
   def __eq__(self, rhs):
-    return (isinstance(rhs, Field)
-            and (self.mojom_name, self.kind, self.ordinal, self.default,
-                 self.attributes) == (rhs.mojom_name, rhs.kind, rhs.ordinal,
-                                      rhs.default, rhs.attributes))
+    return isinstance(rhs, Field) and (
+      self.mojom_name,
+      self.kind,
+      self.ordinal,
+      self.default,
+      self.attributes,
+    ) == (rhs.mojom_name, rhs.kind, rhs.ordinal, rhs.default, rhs.attributes)
 
   def __hash__(self):
     return hash((self.mojom_name, self.kind, self.ordinal, self.default))
@@ -524,18 +559,23 @@ class StructField(Field):
 
 
 class UnionField(Field):
-  def __init__(self,
-               mojom_name=None,
-               kind=None,
-               ordinal=None,
-               default=None,
-               attributes=None):
+  def __init__(
+    self,
+    mojom_name=None,
+    kind=None,
+    ordinal=None,
+    default=None,
+    attributes=None,
+  ):
     Field.__init__(self, mojom_name, kind, ordinal, default, attributes)
 
   @property
   def is_default(self):
-    return self.attributes.get(ATTRIBUTE_DEFAULT, False) \
-        if self.attributes else False
+    return (
+      self.attributes.get(ATTRIBUTE_DEFAULT, False)
+      if self.attributes
+      else False
+    )
 
 
 class Feature(ReferenceKind):
@@ -613,21 +653,18 @@ class Struct(ReferenceKind):
 
   def Repr(self, as_ref=True):
     if as_ref:
-      return '<%s mojom_name=%r module=%s>' % (self.__class__.__name__,
-                                               self.mojom_name,
-                                               Repr(self.module, as_ref=True))
-    return GenericRepr(self, {
-        'mojom_name': False,
-        'fields': False,
-        'module': True
-    })
+      return '<%s mojom_name=%r module=%s>' % (
+        self.__class__.__name__,
+        self.mojom_name,
+        Repr(self.module, as_ref=True),
+      )
+    return GenericRepr(
+      self, {'mojom_name': False, 'fields': False, 'module': True}
+    )
 
-  def AddField(self,
-               mojom_name,
-               kind,
-               ordinal=None,
-               default=None,
-               attributes=None):
+  def AddField(
+    self, mojom_name, kind, ordinal=None, default=None, attributes=None
+  ):
     field = StructField(mojom_name, kind, ordinal, default, attributes)
     self.fields.append(field)
     return field
@@ -643,8 +680,9 @@ class Struct(ReferenceKind):
 
   @property
   def stable(self):
-    return self.attributes.get(ATTRIBUTE_STABLE, False) \
-        if self.attributes else False
+    return (
+      self.attributes.get(ATTRIBUTE_STABLE, False) if self.attributes else False
+    )
 
   @property
   def qualified_name(self):
@@ -655,8 +693,13 @@ class Struct(ReferenceKind):
     return '%s%s' % (prefix, self.mojom_name)
 
   def _tuple(self):
-    return (self.mojom_name, self.native_only, self.fields, self.constants,
-            self.attributes)
+    return (
+      self.mojom_name,
+      self.native_only,
+      self.fields,
+      self.constants,
+      self.attributes,
+    )
 
   def __eq__(self, rhs):
     return isinstance(rhs, Struct) and self._tuple() == rhs._tuple()
@@ -682,6 +725,7 @@ class Union(ReferenceKind):
         which Java class name to use to represent it in the generated
         bindings.
   """
+
   Kind.AddSharedProperty('mojom_name')
   Kind.AddSharedProperty('name')
   Kind.AddSharedProperty('fields')
@@ -703,8 +747,11 @@ class Union(ReferenceKind):
   def Repr(self, as_ref=True):
     if as_ref:
       return '<%s spec=%r is_nullable=%r fields=%s>' % (
-          self.__class__.__name__, self.spec, self.is_nullable, Repr(
-              self.fields))
+        self.__class__.__name__,
+        self.spec,
+        self.is_nullable,
+        Repr(self.fields),
+      )
     return GenericRepr(self, {'fields': True, 'is_nullable': False})
 
   def AddField(self, mojom_name, kind, ordinal=None, attributes=None):
@@ -719,13 +766,17 @@ class Union(ReferenceKind):
 
   @property
   def extensible(self):
-    return self.attributes.get(ATTRIBUTE_EXTENSIBLE, False) \
-        if self.attributes else False
+    return (
+      self.attributes.get(ATTRIBUTE_EXTENSIBLE, False)
+      if self.attributes
+      else False
+    )
 
   @property
   def stable(self):
-    return self.attributes.get(ATTRIBUTE_STABLE, False) \
-        if self.attributes else False
+    return (
+      self.attributes.get(ATTRIBUTE_STABLE, False) if self.attributes else False
+    )
 
   @property
   def qualified_name(self):
@@ -778,17 +829,21 @@ class Array(ReferenceKind):
   def Repr(self, as_ref=True):
     if as_ref:
       return '<%s spec=%r is_nullable=%r kind=%s length=%r>' % (
-          self.__class__.__name__, self.spec, self.is_nullable, Repr(
-              self.kind), self.length)
-    return GenericRepr(self, {
-        'kind': True,
-        'length': False,
-        'is_nullable': False
-    })
+        self.__class__.__name__,
+        self.spec,
+        self.is_nullable,
+        Repr(self.kind),
+        self.length,
+      )
+    return GenericRepr(
+      self, {'kind': True, 'length': False, 'is_nullable': False}
+    )
 
   def __eq__(self, rhs):
-    return (isinstance(rhs, Array)
-            and (self.kind, self.length) == (rhs.kind, rhs.length))
+    return isinstance(rhs, Array) and (self.kind, self.length) == (
+      rhs.kind,
+      rhs.length,
+    )
 
   def __hash__(self):
     return id(self)
@@ -801,13 +856,15 @@ class Map(ReferenceKind):
     key_kind: {Kind} The type of the keys. May be None.
     value_kind: {Kind} The type of the elements. May be None.
   """
+
   Kind.AddSharedProperty('key_kind')
   Kind.AddSharedProperty('value_kind')
 
   def __init__(self, key_kind=None, value_kind=None):
-    if (key_kind is not None and value_kind is not None):
+    if key_kind is not None and value_kind is not None:
       ReferenceKind.__init__(
-          self, 'm[' + key_kind.spec + '][' + value_kind.spec + ']')
+        self, 'm[' + key_kind.spec + '][' + value_kind.spec + ']'
+      )
       if IsNullableKind(key_kind):
         raise Exception("Nullable kinds cannot be keys in maps.")
       if IsAnyHandleKind(key_kind):
@@ -825,13 +882,19 @@ class Map(ReferenceKind):
   def Repr(self, as_ref=True):
     if as_ref:
       return '<%s spec=%r is_nullable=%r key_kind=%s value_kind=%s>' % (
-          self.__class__.__name__, self.spec, self.is_nullable,
-          Repr(self.key_kind), Repr(self.value_kind))
+        self.__class__.__name__,
+        self.spec,
+        self.is_nullable,
+        Repr(self.key_kind),
+        Repr(self.value_kind),
+      )
     return GenericRepr(self, {'key_kind': True, 'value_kind': True})
 
   def __eq__(self, rhs):
-    return (isinstance(rhs, Map) and
-            (self.key_kind, self.value_kind) == (rhs.key_kind, rhs.value_kind))
+    return isinstance(rhs, Map) and (self.key_kind, self.value_kind) == (
+      rhs.key_kind,
+      rhs.value_kind,
+    )
 
   def __hash__(self):
     return id(self)
@@ -844,8 +907,9 @@ class PendingRemote(ReferenceKind):
     if kind is not None:
       if not isinstance(kind, Interface):
         raise Exception(
-            'pending_remote<T> requires T to be an interface type. Got %r' %
-            kind.spec)
+          'pending_remote<T> requires T to be an interface type. Got %r'
+          % kind.spec
+        )
       ReferenceKind.__init__(self, 'rmt:' + kind.spec)
     else:
       ReferenceKind.__init__(self)
@@ -865,8 +929,9 @@ class PendingReceiver(ReferenceKind):
     if kind is not None:
       if not isinstance(kind, Interface):
         raise Exception(
-            'pending_receiver<T> requires T to be an interface type. Got %r' %
-            kind.spec)
+          'pending_receiver<T> requires T to be an interface type. Got %r'
+          % kind.spec
+        )
       ReferenceKind.__init__(self, 'rcv:' + kind.spec)
     else:
       ReferenceKind.__init__(self)
@@ -886,8 +951,9 @@ class PendingAssociatedRemote(ReferenceKind):
     if kind is not None:
       if not isinstance(kind, Interface):
         raise Exception(
-            'pending_associated_remote<T> requires T to be an interface ' +
-            'type. Got %r' % kind.spec)
+          'pending_associated_remote<T> requires T to be an interface '
+          + 'type. Got %r' % kind.spec
+        )
       ReferenceKind.__init__(self, 'rma:' + kind.spec)
     else:
       ReferenceKind.__init__(self)
@@ -907,8 +973,9 @@ class PendingAssociatedReceiver(ReferenceKind):
     if kind is not None:
       if not isinstance(kind, Interface):
         raise Exception(
-            'pending_associated_receiver<T> requires T to be an interface' +
-            'type. Got %r' % kind.spec)
+          'pending_associated_receiver<T> requires T to be an interface'
+          + 'type. Got %r' % kind.spec
+        )
       ReferenceKind.__init__(self, 'rca:' + kind.spec)
     else:
       ReferenceKind.__init__(self)
@@ -922,12 +989,14 @@ class PendingAssociatedReceiver(ReferenceKind):
 
 
 class Parameter:
-  def __init__(self,
-               mojom_name=None,
-               kind=None,
-               ordinal=None,
-               default=None,
-               attributes=None):
+  def __init__(
+    self,
+    mojom_name=None,
+    kind=None,
+    ordinal=None,
+    default=None,
+    attributes=None,
+  ):
     self.mojom_name = mojom_name
     self.name = None
     self.ordinal = ordinal
@@ -938,49 +1007,60 @@ class Parameter:
   def Repr(self, as_ref=True):
     # pylint: disable=unused-argument
     return '<%s mojom_name=%r kind=%s>' % (
-        self.__class__.__name__, self.mojom_name, self.kind.Repr(as_ref=True))
+      self.__class__.__name__,
+      self.mojom_name,
+      self.kind.Repr(as_ref=True),
+    )
 
   def Stylize(self, stylizer):
     self.name = stylizer.StylizeParameter(self.mojom_name)
 
   @property
   def min_version(self):
-    return self.attributes.get(ATTRIBUTE_MIN_VERSION) \
-        if self.attributes else None
+    return (
+      self.attributes.get(ATTRIBUTE_MIN_VERSION) if self.attributes else None
+    )
 
   def __eq__(self, rhs):
-    return (isinstance(rhs, Parameter)
-            and (self.mojom_name, self.ordinal, self.kind, self.default,
-                 self.attributes) == (rhs.mojom_name, rhs.ordinal, rhs.kind,
-                                      rhs.default, rhs.attributes))
+    return isinstance(rhs, Parameter) and (
+      self.mojom_name,
+      self.ordinal,
+      self.kind,
+      self.default,
+      self.attributes,
+    ) == (rhs.mojom_name, rhs.ordinal, rhs.kind, rhs.default, rhs.attributes)
 
 
 class Result:
-
   def __init__(self, method, success_kind, failure_kind):
     self.method = method
     self.success_kind = success_kind
     self.failure_kind = failure_kind
 
   def Repr(self):
-    return GenericRepr(self, {
+    return GenericRepr(
+      self,
+      {
         'success_kind': self.success_kind,
         'failure_kind': self.failure_kind,
-    })
+      },
+    )
 
   def ToResponseParam(self, module):
     result = Union(
-        "%s_%s_ResponseParam_Result" %
-        (self.method.interface.mojom_name, self.method.mojom_name), module)
-    result.AddField(
-        'success',
-        self.success_kind,
-        0,
+      "%s_%s_ResponseParam_Result"
+      % (self.method.interface.mojom_name, self.method.mojom_name),
+      module,
     )
     result.AddField(
-        'failure',
-        self.failure_kind,
-        1,
+      'success',
+      self.success_kind,
+      0,
+    )
+    result.AddField(
+      'failure',
+      self.failure_kind,
+      1,
     )
 
     param = Parameter()
@@ -1008,28 +1088,21 @@ class Method:
   def Repr(self, as_ref=True):
     if as_ref:
       return '<%s mojom_name=%r>' % (self.__class__.__name__, self.mojom_name)
-    return GenericRepr(self, {
-        'mojom_name': False,
-        'parameters': True,
-        'response_parameters': True
-    })
+    return GenericRepr(
+      self,
+      {'mojom_name': False, 'parameters': True, 'response_parameters': True},
+    )
 
-  def AddParameter(self,
-                   mojom_name,
-                   kind,
-                   ordinal=None,
-                   default=None,
-                   attributes=None):
+  def AddParameter(
+    self, mojom_name, kind, ordinal=None, default=None, attributes=None
+  ):
     parameter = Parameter(mojom_name, kind, ordinal, default, attributes)
     self.parameters.append(parameter)
     return parameter
 
-  def AddResponseParameter(self,
-                           mojom_name,
-                           kind,
-                           ordinal=None,
-                           default=None,
-                           attributes=None):
+  def AddResponseParameter(
+    self, mojom_name, kind, ordinal=None, default=None, attributes=None
+  ):
     if self.response_parameters == None:
       self.response_parameters = []
     parameter = Parameter(mojom_name, kind, ordinal, default, attributes)
@@ -1051,23 +1124,27 @@ class Method:
 
   @property
   def min_version(self):
-    return self.attributes.get(ATTRIBUTE_MIN_VERSION) \
-        if self.attributes else None
+    return (
+      self.attributes.get(ATTRIBUTE_MIN_VERSION) if self.attributes else None
+    )
 
   @property
   def sync(self):
-    return self.attributes.get(ATTRIBUTE_SYNC) \
-        if self.attributes else None
+    return self.attributes.get(ATTRIBUTE_SYNC) if self.attributes else None
 
   @property
   def allow_interrupt(self):
-    return not self.attributes.get(ATTRIBUTE_NO_INTERRUPT) \
-        if self.attributes else True
+    return (
+      not self.attributes.get(ATTRIBUTE_NO_INTERRUPT)
+      if self.attributes
+      else True
+    )
 
   @property
   def estimate_message_size(self):
-    return self.attributes.get(ATTRIBUTE_ESTIMATE_SIZE) \
-        if self.attributes else False
+    return (
+      self.attributes.get(ATTRIBUTE_ESTIMATE_SIZE) if self.attributes else False
+    )
 
   @property
   def send_validation(self):
@@ -1077,24 +1154,34 @@ class Method:
     if send_validation is None:
       return None
     if not isinstance(send_validation, Feature):
-      raise Exception("SendValidation attribute on %s must be a feature." %
-                      self.name)
+      raise Exception(
+        "SendValidation attribute on %s must be a feature." % self.name
+      )
     return send_validation
 
   @property
   def unlimited_message_size(self):
-    return self.attributes.get(ATTRIBUTE_UNLIMITED_SIZE) \
-        if self.attributes else False
+    return (
+      self.attributes.get(ATTRIBUTE_UNLIMITED_SIZE)
+      if self.attributes
+      else False
+    )
 
   @property
   def allowed_context(self):
-    return self.attributes.get(ATTRIBUTE_ALLOWED_CONTEXT) \
-        if self.attributes else None
+    return (
+      self.attributes.get(ATTRIBUTE_ALLOWED_CONTEXT)
+      if self.attributes
+      else None
+    )
 
   @property
   def supports_urgent(self):
-    return self.attributes.get(ATTRIBUTE_SUPPORTS_URGENT) \
-        if self.attributes else None
+    return (
+      self.attributes.get(ATTRIBUTE_SUPPORTS_URGENT)
+      if self.attributes
+      else None
+    )
 
   @property
   def runtime_feature(self):
@@ -1104,13 +1191,19 @@ class Method:
     if runtime_feature is None:
       return None
     if not isinstance(runtime_feature, Feature):
-      raise Exception("RuntimeFeature attribute on %s must be a feature." %
-                      self.name)
+      raise Exception(
+        "RuntimeFeature attribute on %s must be a feature." % self.name
+      )
     return runtime_feature
 
   def _tuple(self):
-    return (self.mojom_name, self.ordinal, self.parameters,
-            self.response_parameters, self.attributes)
+    return (
+      self.mojom_name,
+      self.ordinal,
+      self.parameters,
+      self.response_parameters,
+      self.attributes,
+    )
 
   def __eq__(self, rhs):
     return isinstance(rhs, Method) and self._tuple() == rhs._tuple()
@@ -1146,11 +1239,9 @@ class Interface(ReferenceKind):
   def Repr(self, as_ref=True):
     if as_ref:
       return '<%s mojom_name=%r>' % (self.__class__.__name__, self.mojom_name)
-    return GenericRepr(self, {
-        'mojom_name': False,
-        'attributes': False,
-        'methods': False
-    })
+    return GenericRepr(
+      self, {'mojom_name': False, 'attributes': False, 'methods': False}
+    )
 
   def AddMethod(self, mojom_name, ordinal=None, attributes=None):
     method = Method(self, mojom_name, ordinal, attributes)
@@ -1177,8 +1268,10 @@ class Interface(ReferenceKind):
     if isinstance(service_sandbox, Constant):
       service_sandbox = service_sandbox.value
     if not isinstance(service_sandbox, EnumValue):
-      raise Exception("ServiceSandbox attribute on %s must be an enum value." %
-                      self.module.name)
+      raise Exception(
+        "ServiceSandbox attribute on %s must be an enum value."
+        % self.module.name
+      )
     return service_sandbox
 
   @property
@@ -1189,8 +1282,9 @@ class Interface(ReferenceKind):
     if runtime_feature is None:
       return None
     if not isinstance(runtime_feature, Feature):
-      raise Exception("RuntimeFeature attribute on %s must be a feature." %
-                      self.name)
+      raise Exception(
+        "RuntimeFeature attribute on %s must be a feature." % self.name
+      )
     return runtime_feature
 
   @property
@@ -1201,8 +1295,9 @@ class Interface(ReferenceKind):
 
   @property
   def stable(self):
-    return self.attributes.get(ATTRIBUTE_STABLE, False) \
-        if self.attributes else False
+    return (
+      self.attributes.get(ATTRIBUTE_STABLE, False) if self.attributes else False
+    )
 
   @property
   def qualified_name(self):
@@ -1213,8 +1308,13 @@ class Interface(ReferenceKind):
     return '%s%s' % (prefix, self.mojom_name)
 
   def _tuple(self):
-    return (self.mojom_name, self.methods, self.enums, self.constants,
-            self.attributes)
+    return (
+      self.mojom_name,
+      self.methods,
+      self.enums,
+      self.constants,
+      self.attributes,
+    )
 
   def __eq__(self, rhs):
     return isinstance(rhs, Interface) and self._tuple() == rhs._tuple()
@@ -1234,26 +1334,29 @@ class Interface(ReferenceKind):
     try:
       u = UUID(uuid_str)
     except:
-      raise ValueError('Invalid format for Uuid attribute on interface {}. '
-                       'Expected standard RFC 4122 string representation of '
-                       'a UUID.'.format(self.mojom_name))
+      raise ValueError(
+        'Invalid format for Uuid attribute on interface {}. '
+        'Expected standard RFC 4122 string representation of '
+        'a UUID.'.format(self.mojom_name)
+      )
     return (int(u.hex[:16], 16), int(u.hex[16:], 16))
 
   @property
   def dispatch_debug_alias(self):
-    return self.attributes.get(ATTRIBUTE_DISPATCH_DEBUG_ALIAS) \
-           if self.attributes else None
+    return (
+      self.attributes.get(ATTRIBUTE_DISPATCH_DEBUG_ALIAS)
+      if self.attributes
+      else None
+    )
 
   def __hash__(self):
     return id(self)
 
 
 class EnumField:
-  def __init__(self,
-               mojom_name=None,
-               value=None,
-               attributes=None,
-               numeric_value=None):
+  def __init__(
+    self, mojom_name=None, value=None, attributes=None, numeric_value=None
+  ):
     self.mojom_name = mojom_name
     self.name = None
     self.value = value
@@ -1265,19 +1368,25 @@ class EnumField:
 
   @property
   def default(self):
-    return self.attributes.get(ATTRIBUTE_DEFAULT, False) \
-        if self.attributes else False
+    return (
+      self.attributes.get(ATTRIBUTE_DEFAULT, False)
+      if self.attributes
+      else False
+    )
 
   @property
   def min_version(self):
-    return self.attributes.get(ATTRIBUTE_MIN_VERSION) \
-        if self.attributes else None
+    return (
+      self.attributes.get(ATTRIBUTE_MIN_VERSION) if self.attributes else None
+    )
 
   def __eq__(self, rhs):
-    return (isinstance(rhs, EnumField)
-            and (self.mojom_name, self.value, self.attributes,
-                 self.numeric_value) == (rhs.mojom_name, rhs.value,
-                                         rhs.attributes, rhs.numeric_value))
+    return isinstance(rhs, EnumField) and (
+      self.mojom_name,
+      self.value,
+      self.attributes,
+      self.numeric_value,
+    ) == (rhs.mojom_name, rhs.value, rhs.attributes, rhs.numeric_value)
 
 
 class Enum(ValueKind):
@@ -1317,13 +1426,17 @@ class Enum(ValueKind):
 
   @property
   def extensible(self):
-    return self.attributes.get(ATTRIBUTE_EXTENSIBLE, False) \
-        if self.attributes else False
+    return (
+      self.attributes.get(ATTRIBUTE_EXTENSIBLE, False)
+      if self.attributes
+      else False
+    )
 
   @property
   def stable(self):
-    return self.attributes.get(ATTRIBUTE_STABLE, False) \
-        if self.attributes else False
+    return (
+      self.attributes.get(ATTRIBUTE_STABLE, False) if self.attributes else False
+    )
 
   @property
   def qualified_name(self):
@@ -1334,8 +1447,15 @@ class Enum(ValueKind):
     return '%s%s' % (prefix, self.mojom_name)
 
   def _tuple(self):
-    return (self.mojom_name, self.native_only, self.fields, self.attributes,
-            self.min_value, self.max_value, self.default_field)
+    return (
+      self.mojom_name,
+      self.native_only,
+      self.fields,
+      self.attributes,
+      self.min_value,
+      self.max_value,
+      self.default_field,
+    )
 
   def __eq__(self, rhs):
     return isinstance(rhs, Enum) and self._tuple() == rhs._tuple()
@@ -1372,13 +1492,29 @@ class Module:
     return self.Repr()
 
   def __eq__(self, rhs):
-    return (isinstance(rhs, Module)
-            and (self.path, self.attributes, self.mojom_namespace, self.imports,
-                 self.constants, self.enums, self.structs, self.unions,
-                 self.interfaces, self.features)
-            == (rhs.path, rhs.attributes, rhs.mojom_namespace, rhs.imports,
-                rhs.constants, rhs.enums, rhs.structs, rhs.unions,
-                rhs.interfaces, rhs.features))
+    return isinstance(rhs, Module) and (
+      self.path,
+      self.attributes,
+      self.mojom_namespace,
+      self.imports,
+      self.constants,
+      self.enums,
+      self.structs,
+      self.unions,
+      self.interfaces,
+      self.features,
+    ) == (
+      rhs.path,
+      rhs.attributes,
+      rhs.mojom_namespace,
+      rhs.imports,
+      rhs.constants,
+      rhs.enums,
+      rhs.structs,
+      rhs.unions,
+      rhs.interfaces,
+      rhs.features,
+    )
 
   def __hash__(self):
     return id(self)
@@ -1386,17 +1522,22 @@ class Module:
   def Repr(self, as_ref=True):
     if as_ref:
       return '<%s path=%r mojom_namespace=%r>' % (
-          self.__class__.__name__, self.path, self.mojom_namespace)
+        self.__class__.__name__,
+        self.path,
+        self.mojom_namespace,
+      )
     return GenericRepr(
-        self, {
-            'path': False,
-            'mojom_namespace': False,
-            'attributes': False,
-            'structs': False,
-            'interfaces': False,
-            'unions': False,
-            'features': False,
-        })
+      self,
+      {
+        'path': False,
+        'mojom_namespace': False,
+        'attributes': False,
+        'structs': False,
+        'interfaces': False,
+        'unions': False,
+        'features': False,
+      },
+    )
 
   def GetNamespacePrefix(self):
     return '%s.' % self.mojom_namespace if self.mojom_namespace else ''
@@ -1445,7 +1586,8 @@ class Module:
   @property
   def include_send_validation(self):
     if self.attributes and self.attributes.get(
-        ATTRIBUTE_INCLUDE_SEND_VALIDATION):
+      ATTRIBUTE_INCLUDE_SEND_VALIDATION
+    ):
       return True
     return False
 
@@ -1469,18 +1611,26 @@ def IsDoubleKind(kind):
 
 
 def IsIntegralKind(kind):
-  return (kind.spec == BOOL.spec or kind.spec == INT8.spec
-          or kind.spec == INT16.spec or kind.spec == INT32.spec
-          or kind.spec == INT64.spec or kind.spec == UINT8.spec
-          or kind.spec == UINT16.spec or kind.spec == UINT32.spec
-          or kind.spec == UINT64.spec or kind.spec == NULLABLE_BOOL.spec
-          or kind.spec == NULLABLE_INT8.spec or kind.spec == NULLABLE_INT16.spec
-          or kind.spec == NULLABLE_INT32.spec
-          or kind.spec == NULLABLE_INT64.spec
-          or kind.spec == NULLABLE_UINT8.spec
-          or kind.spec == NULLABLE_UINT16.spec
-          or kind.spec == NULLABLE_UINT32.spec
-          or kind.spec == NULLABLE_UINT64.spec)
+  return (
+    kind.spec == BOOL.spec
+    or kind.spec == INT8.spec
+    or kind.spec == INT16.spec
+    or kind.spec == INT32.spec
+    or kind.spec == INT64.spec
+    or kind.spec == UINT8.spec
+    or kind.spec == UINT16.spec
+    or kind.spec == UINT32.spec
+    or kind.spec == UINT64.spec
+    or kind.spec == NULLABLE_BOOL.spec
+    or kind.spec == NULLABLE_INT8.spec
+    or kind.spec == NULLABLE_INT16.spec
+    or kind.spec == NULLABLE_INT32.spec
+    or kind.spec == NULLABLE_INT64.spec
+    or kind.spec == NULLABLE_UINT8.spec
+    or kind.spec == NULLABLE_UINT16.spec
+    or kind.spec == NULLABLE_UINT32.spec
+    or kind.spec == NULLABLE_UINT64.spec
+  )
 
 
 def IsStringKind(kind):
@@ -1504,13 +1654,16 @@ def IsMessagePipeKind(kind):
 
 
 def IsSharedBufferKind(kind):
-  return (kind.spec == SHAREDBUFFER.spec
-          or kind.spec == NULLABLE_SHAREDBUFFER.spec)
+  return (
+    kind.spec == SHAREDBUFFER.spec or kind.spec == NULLABLE_SHAREDBUFFER.spec
+  )
 
 
 def IsPlatformHandleKind(kind):
-  return (kind.spec == PLATFORMHANDLE.spec
-          or kind.spec == NULLABLE_PLATFORMHANDLE.spec)
+  return (
+    kind.spec == PLATFORMHANDLE.spec
+    or kind.spec == NULLABLE_PLATFORMHANDLE.spec
+  )
 
 
 def IsStructKind(kind):
@@ -1574,20 +1727,33 @@ def IsObjectKind(kind):
 
 
 def IsPointerKind(kind):
-  return (IsStructKind(kind) or IsArrayKind(kind) or IsStringKind(kind)
-          or IsMapKind(kind))
+  return (
+    IsStructKind(kind)
+    or IsArrayKind(kind)
+    or IsStringKind(kind)
+    or IsMapKind(kind)
+  )
 
 
 # Please note that it doesn't include any interface kind.
 def IsAnyHandleKind(kind):
-  return (IsGenericHandleKind(kind) or IsDataPipeConsumerKind(kind)
-          or IsDataPipeProducerKind(kind) or IsMessagePipeKind(kind)
-          or IsSharedBufferKind(kind) or IsPlatformHandleKind(kind))
+  return (
+    IsGenericHandleKind(kind)
+    or IsDataPipeConsumerKind(kind)
+    or IsDataPipeProducerKind(kind)
+    or IsMessagePipeKind(kind)
+    or IsSharedBufferKind(kind)
+    or IsPlatformHandleKind(kind)
+  )
 
 
 def IsAnyInterfaceKind(kind):
-  return (IsInterfaceKind(kind) or IsAssociatedKind(kind)
-          or IsPendingRemoteKind(kind) or IsPendingReceiverKind(kind))
+  return (
+    IsInterfaceKind(kind)
+    or IsAssociatedKind(kind)
+    or IsPendingRemoteKind(kind)
+    or IsPendingReceiverKind(kind)
+  )
 
 
 def IsAnyHandleOrInterfaceKind(kind):
@@ -1595,8 +1761,9 @@ def IsAnyHandleOrInterfaceKind(kind):
 
 
 def IsAssociatedKind(kind):
-  return (IsPendingAssociatedRemoteKind(kind)
-          or IsPendingAssociatedReceiverKind(kind))
+  return IsPendingAssociatedRemoteKind(kind) or IsPendingAssociatedReceiverKind(
+    kind
+  )
 
 
 def HasCallbacks(interface):
@@ -1634,7 +1801,8 @@ def _HasProperty(kind, predicate, visited_kinds=None):
         return True
   if IsMapKind(kind):
     if _HasProperty(kind.key_kind, predicate, visited_kinds) or _HasProperty(
-        kind.value_kind, predicate, visited_kinds):
+      kind.value_kind, predicate, visited_kinds
+    ):
       return True
   return False
 
@@ -1649,47 +1817,57 @@ def _AnyMethodParameterRecursive(method, predicate, visited_kinds=None):
         return True
   return False
 
+
 # Finds out whether a method passes associated interfaces and associated
 # interface requests.
 def MethodPassesAssociatedKinds(method, visited_kinds=None):
   return _AnyMethodParameterRecursive(
-      method, IsAssociatedKind, visited_kinds=visited_kinds)
+    method, IsAssociatedKind, visited_kinds=visited_kinds
+  )
 
 
 # Determines whether a method passes interfaces.
 def MethodPassesInterfaces(method):
   return _AnyMethodParameterRecursive(method, IsInterfaceKind)
 
+
 def MethodNeedsRemoteKind(method, kind_to_check, visited_kinds=None):
 
   def needs_remote_import(reference_kind):
     return (
-        (IsInterfaceKind(reference_kind) or IsPendingRemoteKind(reference_kind)
-         or IsPendingAssociatedRemoteKind(reference_kind))
-        # if types are compared directly, it will fail
-        # but the nested reference_kind.kind matches the top level
-        # kind_to_check.
-        and kind_to_check == reference_kind.kind)
+      (
+        IsInterfaceKind(reference_kind)
+        or IsPendingRemoteKind(reference_kind)
+        or IsPendingAssociatedRemoteKind(reference_kind)
+      )
+      # if types are compared directly, it will fail
+      # but the nested reference_kind.kind matches the top level
+      # kind_to_check.
+      and kind_to_check == reference_kind.kind
+    )
 
-  return _AnyMethodParameterRecursive(method,
-                                      needs_remote_import,
-                                      visited_kinds=visited_kinds)
+  return _AnyMethodParameterRecursive(
+    method, needs_remote_import, visited_kinds=visited_kinds
+  )
 
 
 def MethodNeedsReceiverKind(method, kind_to_check, visited_kinds=None):
 
   def needs_receiver_import(reference_kind):
     return (
-        (IsPendingReceiverKind(reference_kind)
-         or IsPendingAssociatedReceiverKind(reference_kind))
-        # if types are compared directly, it will fail
-        # but the nested reference_kind.kind matches the top level
-        # kind_to_check
-        and kind_to_check == reference_kind.kind)
+      (
+        IsPendingReceiverKind(reference_kind)
+        or IsPendingAssociatedReceiverKind(reference_kind)
+      )
+      # if types are compared directly, it will fail
+      # but the nested reference_kind.kind matches the top level
+      # kind_to_check
+      and kind_to_check == reference_kind.kind
+    )
 
-  return _AnyMethodParameterRecursive(method,
-                                      needs_receiver_import,
-                                      visited_kinds=visited_kinds)
+  return _AnyMethodParameterRecursive(
+    method, needs_receiver_import, visited_kinds=visited_kinds
+  )
 
 
 def CollectSendValidationTypesFromKind(kind):

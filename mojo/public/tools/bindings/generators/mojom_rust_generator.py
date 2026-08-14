@@ -14,31 +14,32 @@ from mojom.generate.template_expander import UseJinja
 GENERATOR_PREFIX = 'rust'
 
 _mojom_primitive_type_to_rust_type = {
-    mojom.BOOL: "bool",
-    mojom.INT8: "i8",
-    mojom.INT16: "i16",
-    mojom.INT32: "i32",
-    mojom.INT64: "i64",
-    mojom.UINT8: "u8",
-    mojom.UINT16: "u16",
-    mojom.UINT32: "u32",
-    mojom.UINT64: "u64",
-    mojom.FLOAT: "f32",
-    mojom.DOUBLE: "f64",
-    mojom.STRING: "String",
-    mojom.HANDLE: "system::mojo_types::UntypedHandle",
-    mojom.MSGPIPE: "system::message_pipe::MessageEndpoint",
-    mojom.DCPIPE: "system::data_pipe::DataPipeConsumerHandle",
-    mojom.DPPIPE: "system::data_pipe::DataPipeProducerHandle",
-    # TODO(crbug.com/529331861): Support these for real
-    mojom.SHAREDBUFFER: "system::mojo_types::UntypedHandle",
-    # TODO(crbug.com/529329486): Support these for real
-    mojom.PLATFORMHANDLE: "system::mojo_types::UntypedHandle",
+  mojom.BOOL: "bool",
+  mojom.INT8: "i8",
+  mojom.INT16: "i16",
+  mojom.INT32: "i32",
+  mojom.INT64: "i64",
+  mojom.UINT8: "u8",
+  mojom.UINT16: "u16",
+  mojom.UINT32: "u32",
+  mojom.UINT64: "u64",
+  mojom.FLOAT: "f32",
+  mojom.DOUBLE: "f64",
+  mojom.STRING: "String",
+  mojom.HANDLE: "system::mojo_types::UntypedHandle",
+  mojom.MSGPIPE: "system::message_pipe::MessageEndpoint",
+  mojom.DCPIPE: "system::data_pipe::DataPipeConsumerHandle",
+  mojom.DPPIPE: "system::data_pipe::DataPipeProducerHandle",
+  # TODO(crbug.com/529331861): Support these for real
+  mojom.SHAREDBUFFER: "system::mojo_types::UntypedHandle",
+  # TODO(crbug.com/529329486): Support these for real
+  mojom.PLATFORMHANDLE: "system::mojo_types::UntypedHandle",
 }
 
 
-def _SameGNTarget(mod1: mojom.Module, mod2: mojom.Module,
-                  source_to_target_map: dict) -> bool:
+def _SameGNTarget(
+  mod1: mojom.Module, mod2: mojom.Module, source_to_target_map: dict
+) -> bool:
   return source_to_target_map[mod1.path] == source_to_target_map[mod2.path]
 
 
@@ -74,8 +75,9 @@ def _GetLocalName(ty: mojom.Kind) -> str:
   return ty.name
 
 
-def _GetQualifiedName(ty: mojom.Kind, current_module: mojom.Module,
-                      source_to_target_map: dict) -> str:
+def _GetQualifiedName(
+  ty: mojom.Kind, current_module: mojom.Module, source_to_target_map: dict
+) -> str:
   local_name = _GetLocalName(ty)
 
   # If the type was defined in this file, we can use its name unqualified
@@ -99,69 +101,87 @@ def _GetQualifiedName(ty: mojom.Kind, current_module: mojom.Module,
   return f"{extern_crate}::{ty_module_name}::{local_name}"
 
 
-def _MojomTypeToRustType(ty: mojom.Kind, current_module: mojom.Module,
-                         source_to_target_map: dict, typemap: dict) -> str:
+def _MojomTypeToRustType(
+  ty: mojom.Kind,
+  current_module: mojom.Module,
+  source_to_target_map: dict,
+  typemap: dict,
+) -> str:
   '''Return the name of the input type in rust syntax'''
   if hasattr(ty, 'qualified_name') and ty.qualified_name in typemap:
     return typemap[ty.qualified_name]['typename']
 
   if mojom.IsNullableKind(ty):
-    inner_ty = _MojomTypeToRustType(ty.MakeUnnullableKind(), current_module,
-                                    source_to_target_map, typemap)
+    inner_ty = _MojomTypeToRustType(
+      ty.MakeUnnullableKind(), current_module, source_to_target_map, typemap
+    )
     return f"Option<{inner_ty}>"
 
   if mojom.IsStructKind(ty) or mojom.IsEnumKind(ty) or mojom.IsUnionKind(ty):
     return _GetQualifiedName(ty, current_module, source_to_target_map)
 
   if mojom.IsArrayKind(ty):
-    elt_ty = _MojomTypeToRustType(ty.kind, current_module, source_to_target_map,
-                                  typemap)
+    elt_ty = _MojomTypeToRustType(
+      ty.kind, current_module, source_to_target_map, typemap
+    )
     if ty.length is not None:
       return f"[{elt_ty}; {ty.length}]"
     else:
       return f"Vec<{elt_ty}>"
 
   if mojom.IsMapKind(ty):
-    key_ty = _MojomTypeToRustType(ty.key_kind, current_module,
-                                  source_to_target_map, typemap)
+    key_ty = _MojomTypeToRustType(
+      ty.key_kind, current_module, source_to_target_map, typemap
+    )
     # Rust requires comparison operators to use floats as keys in a map
     if ty.key_kind == mojom.FLOAT or ty.key_kind == mojom.DOUBLE:
       key_ty = f"OrderedFloat<{key_ty}>"
-    value_ty = _MojomTypeToRustType(ty.value_kind, current_module,
-                                    source_to_target_map, typemap)
+    value_ty = _MojomTypeToRustType(
+      ty.value_kind, current_module, source_to_target_map, typemap
+    )
     return f"HashMap<{key_ty}, {value_ty}>"
 
   if mojom.IsPendingRemoteKind(ty):
-    interface_ty = _GetQualifiedName(ty.kind, current_module,
-                                     source_to_target_map)
+    interface_ty = _GetQualifiedName(
+      ty.kind, current_module, source_to_target_map
+    )
     return f"bindings::remote::PendingRemote<dyn {interface_ty}>"
 
   if mojom.IsPendingReceiverKind(ty):
-    interface_ty = _GetQualifiedName(ty.kind, current_module,
-                                     source_to_target_map)
+    interface_ty = _GetQualifiedName(
+      ty.kind, current_module, source_to_target_map
+    )
     return f"bindings::receiver::PendingReceiver<dyn {interface_ty}>"
 
   if mojom.IsPendingAssociatedRemoteKind(ty):
-    interface_ty = _GetQualifiedName(ty.kind, current_module,
-                                     source_to_target_map)
+    interface_ty = _GetQualifiedName(
+      ty.kind, current_module, source_to_target_map
+    )
     return f"bindings::remote::PendingAssociatedRemote<dyn {interface_ty}>"
 
   if mojom.IsPendingAssociatedReceiverKind(ty):
-    interface_ty = _GetQualifiedName(ty.kind, current_module,
-                                     source_to_target_map)
+    interface_ty = _GetQualifiedName(
+      ty.kind, current_module, source_to_target_map
+    )
     return f"bindings::receiver::PendingAssociatedReceiver<dyn {interface_ty}>"
 
   if ty not in _mojom_primitive_type_to_rust_type:
     # Raising from a jinja2 call won't display the error message
-    print(f"Mojom type {ty} is either undefined, "
-          "or not supported by the rust bindings")
+    print(
+      f"Mojom type {ty} is either undefined, "
+      "or not supported by the rust bindings"
+    )
     sys.exit(1)
 
   return _mojom_primitive_type_to_rust_type[ty]
 
 
-def _GetParseAsType(ty: mojom.Kind, current_module: mojom.Module,
-                    source_to_target_map: dict, typemap: dict) -> str:
+def _GetParseAsType(
+  ty: mojom.Kind,
+  current_module: mojom.Module,
+  source_to_target_map: dict,
+  typemap: dict,
+) -> str:
   '''Return the regular generated type name if ty is typemapped, else None'''
   if hasattr(ty, 'qualified_name') and ty.qualified_name in typemap:
     return _MojomTypeToRustType(ty, current_module, source_to_target_map, {})
@@ -170,7 +190,7 @@ def _GetParseAsType(ty: mojom.Kind, current_module: mojom.Module,
 
 def _ShouldDeriveClone(ty: mojom.Kind) -> bool:
   '''We derive clone as a convenience to the user, but we can't do so if the
-     type contains any handles, since those can't be copied.'''
+  type contains any handles, since those can't be copied.'''
   return not mojom.ContainsHandlesOrInterfaces(ty)
 
 
@@ -197,21 +217,67 @@ def _GetDuplicateEnumFields(enum: mojom.Enum):
     if field.numeric_value not in canonical_names:
       canonical_names[field.numeric_value] = field.name
     else:
-      duplicates.append({
+      duplicates.append(
+        {
           "name": field.name,
           "canonical_name": canonical_names[field.numeric_value],
-      })
+        }
+      )
   return duplicates
 
 
 _ESCAPABLE_KEYWORDS = {
-    "as", "break", "const", "continue", "crate", "else", "enum", "extern",
-    "false", "fn", "for", "if", "impl", "in", "let", "loop", "match", "mod",
-    "move", "mut", "pub", "ref", "return", "self", "Self", "static", "struct",
-    "super", "trait", "true", "type", "unsafe", "use", "where", "while",
-    "async", "await", "dyn", "abstract", "become", "box", "do", "final",
-    "macro", "override", "priv", "typeof", "unsized", "virtual", "yield",
-    "try",
+  "as",
+  "break",
+  "const",
+  "continue",
+  "crate",
+  "else",
+  "enum",
+  "extern",
+  "false",
+  "fn",
+  "for",
+  "if",
+  "impl",
+  "in",
+  "let",
+  "loop",
+  "match",
+  "mod",
+  "move",
+  "mut",
+  "pub",
+  "ref",
+  "return",
+  "self",
+  "Self",
+  "static",
+  "struct",
+  "super",
+  "trait",
+  "true",
+  "type",
+  "unsafe",
+  "use",
+  "where",
+  "while",
+  "async",
+  "await",
+  "dyn",
+  "abstract",
+  "become",
+  "box",
+  "do",
+  "final",
+  "macro",
+  "override",
+  "priv",
+  "typeof",
+  "unsized",
+  "virtual",
+  "yield",
+  "try",
 }
 
 # Path resolution keywords can't be escaped, the compiler simply won't have it.
@@ -229,7 +295,6 @@ def _EscapeRustKeyword(mojom_name: str) -> str:
 
 
 class RustStylizer(generator.Stylizer):
-
   def StylizeConstant(self, mojom_name):
     return _EscapeRustKeyword(mojom_name)
 
@@ -256,7 +321,6 @@ class RustStylizer(generator.Stylizer):
 
 
 class Generator(generator.Generator):
-
   def __init__(self, *args, **kwargs):
     super(Generator, self).__init__(*args, **kwargs)
     self.source_to_target_map = {}
@@ -274,18 +338,15 @@ class Generator(generator.Generator):
     Called by the @UseJinja decorator.
     '''
     return {
-        "to_rust_type":
-        lambda ty: _MojomTypeToRustType(ty, self.module, self.
-                                        source_to_target_map, self.typemap),
-        "get_parse_as_type":
-        lambda ty: _GetParseAsType(ty, self.module, self.source_to_target_map,
-                                   self.typemap),
-        "should_derive_clone":
-        _ShouldDeriveClone,
-        "get_canonical_enum_fields":
-        _GetCanonicalEnumFields,
-        "get_duplicate_enum_fields":
-        _GetDuplicateEnumFields,
+      "to_rust_type": lambda ty: _MojomTypeToRustType(
+        ty, self.module, self.source_to_target_map, self.typemap
+      ),
+      "get_parse_as_type": lambda ty: _GetParseAsType(
+        ty, self.module, self.source_to_target_map, self.typemap
+      ),
+      "should_derive_clone": _ShouldDeriveClone,
+      "get_canonical_enum_fields": _GetCanonicalEnumFields,
+      "get_duplicate_enum_fields": _GetDuplicateEnumFields,
     }
 
   @UseJinja("module.tmpl")
@@ -299,9 +360,9 @@ class Generator(generator.Generator):
     '''
 
     # Take all our imports and determine the set of GN targets they come from
-    imported_targets = set([
-        self.source_to_target_map[imprt.path] for imprt in self.module.imports
-    ])
+    imported_targets = set(
+      [self.source_to_target_map[imprt.path] for imprt in self.module.imports]
+    )
     # Remove our own target, since we don't import ourselves
     imported_targets -= {self.source_to_target_map[self.module.path]}
 
@@ -310,29 +371,32 @@ class Generator(generator.Generator):
 
     source_root_abs = os.path.abspath(os.path.join(os.getcwd(), "../../"))
     gen_file_dir = os.path.abspath(
-        os.path.join(os.getcwd(), "gen", os.path.dirname(self.module.path)))
+      os.path.join(os.getcwd(), "gen", os.path.dirname(self.module.path))
+    )
 
     for kind in self.module.structs + self.module.enums + self.module.unions:
-      if hasattr(kind,
-                 'qualified_name') and kind.qualified_name in self.typemap:
+      if (
+        hasattr(kind, 'qualified_name') and kind.qualified_name in self.typemap
+      ):
         traits_file = self.typemap[kind.qualified_name].get('traits_file')
         if traits_file and traits_file not in seen_files:
           traits_file_abs = os.path.abspath(
-              os.path.join(source_root_abs, traits_file))
+            os.path.join(source_root_abs, traits_file)
+          )
           rel_path = os.path.relpath(traits_file_abs, gen_file_dir)
-          typemaps_to_include.append({
-              'path':
-              rel_path,
-              'name':
-              os.path.splitext(os.path.basename(traits_file))[0]
-          })
+          typemaps_to_include.append(
+            {
+              'path': rel_path,
+              'name': os.path.splitext(os.path.basename(traits_file))[0],
+            }
+          )
           seen_files.add(traits_file)
 
     return {
-        "module": self.module,
-        "imports": imported_targets,
-        "typemaps_to_include": typemaps_to_include,
-        "typemap": self.typemap,
+      "module": self.module,
+      "imports": imported_targets,
+      "typemaps_to_include": typemaps_to_include,
+      "typemap": self.typemap,
     }
 
   def GenerateFiles(self, unparsed_args):

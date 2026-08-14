@@ -18,8 +18,8 @@ fileutil.AddLocalRepoThirdPartyDirToModulePath()
 from ply import lex
 from ply import yacc
 
-_MAX_ORDINAL_VALUE = 0xffffffff
-_MAX_ARRAY_SIZE = 0xffffffff
+_MAX_ORDINAL_VALUE = 0xFFFFFFFF
+_MAX_ARRAY_SIZE = 0xFFFFFFFF
 
 
 class ParseError(Error):
@@ -27,11 +27,12 @@ class ParseError(Error):
 
   def __init__(self, filename, message, lineno=None, snippet=None):
     Error.__init__(
-        self,
-        filename,
-        message,
-        lineno=lineno,
-        addenda=([snippet] if snippet else None))
+      self,
+      filename,
+      message,
+      lineno=lineno,
+      addenda=([snippet] if snippet else None),
+    )
 
 
 # We have methods which look like they could be functions:
@@ -86,32 +87,37 @@ class Parser:
   # renaming "module" -> "package".) Then we'll be able to have a single rule
   # for root (by making module "optional").
   def p_root_1(self, p):
-    """root : """
+    """root :"""
     p[0] = ast.Mojom(None, ast.ImportList(), [])
 
   def p_root_2(self, p):
     """root : root module"""
     if p[1].module is not None:
-      raise ParseError(self.filename,
-                       "Multiple \"module\" statements not allowed:",
-                       p[2].start.line,
-                       snippet=self._GetSnippet(p[2].start.line))
+      raise ParseError(
+        self.filename,
+        "Multiple \"module\" statements not allowed:",
+        p[2].start.line,
+        snippet=self._GetSnippet(p[2].start.line),
+      )
     if p[1].import_list.items or p[1].definition_list:
       raise ParseError(
-          self.filename,
-          "\"module\" statements must precede imports and definitions:",
-          p[2].start.line,
-          snippet=self._GetSnippet(p[2].start.line))
+        self.filename,
+        "\"module\" statements must precede imports and definitions:",
+        p[2].start.line,
+        snippet=self._GetSnippet(p[2].start.line),
+      )
     p[0] = p[1]
     p[0].module = p[2]
 
   def p_root_3(self, p):
     """root : root import"""
     if p[1].definition_list:
-      raise ParseError(self.filename,
-                       "\"import\" statements must precede definitions:",
-                       p[2].start.line,
-                       snippet=self._GetSnippet(p[2].start.line))
+      raise ParseError(
+        self.filename,
+        "\"import\" statements must precede definitions:",
+        p[2].start.line,
+        snippet=self._GetSnippet(p[2].start.line),
+      )
     p[0] = p[1]
     p[0].import_list.Append(p[2])
 
@@ -134,15 +140,15 @@ class Parser:
 
   def p_definition(self, p):
     """definition : struct
-                  | union
-                  | interface
-                  | enum
-                  | const
-                  | feature"""
+    | union
+    | interface
+    | enum
+    | const
+    | feature"""
     p[0] = p[1]
 
   def p_attribute_section_1(self, p):
-    """attribute_section : """
+    """attribute_section :"""
     p[0] = None
 
   def p_attribute_section_2(self, p):
@@ -151,7 +157,7 @@ class Parser:
     self._set_lexstate(p, 1, 3)
 
   def p_attribute_list_1(self, p):
-    """attribute_list : """
+    """attribute_list :"""
     p[0] = ast.AttributeList()
 
   def p_attribute_list_2(self, p):
@@ -174,9 +180,9 @@ class Parser:
 
   def p_attribute_2(self, p):
     """attribute : name EQUALS evaled_literal
-                 | name EQUALS nonempty_pipe_delimited_names
-                 | name EQUALS nonempty_amps_delimited_names
-                 | name EQUALS name"""
+    | name EQUALS nonempty_pipe_delimited_names
+    | name EQUALS nonempty_amps_delimited_names
+    | name EQUALS name"""
     p[0] = ast.Attribute(p[1], p[3])
     self._set_lexstate(p, 1, 3)
 
@@ -226,13 +232,13 @@ class Parser:
     self._set_lexstate(p, 2, 4)
 
   def p_struct_body_1(self, p):
-    """struct_body : """
+    """struct_body :"""
     p[0] = ast.StructBody()
 
   def p_struct_body_2(self, p):
     """struct_body : struct_body const
-                   | struct_body enum
-                   | struct_body struct_field"""
+    | struct_body enum
+    | struct_body struct_field"""
     p[0] = p[1]
     p[0].Append(p[2])
 
@@ -247,7 +253,7 @@ class Parser:
     self._set_lexstate(p, 2, 7)
 
   def p_feature_body_1(self, p):
-    """feature_body : """
+    """feature_body :"""
     p[0] = ast.FeatureBody()
 
   def p_feature_body_2(self, p):
@@ -261,7 +267,7 @@ class Parser:
     self._set_lexstate(p, 2, 7)
 
   def p_union_body_1(self, p):
-    """union_body : """
+    """union_body :"""
     p[0] = ast.UnionBody()
 
   def p_union_body_2(self, p):
@@ -275,7 +281,7 @@ class Parser:
     self._set_lexstate(p, 2, 5)
 
   def p_default_1(self, p):
-    """default : """
+    """default :"""
     p[0] = None
 
   def p_default_2(self, p):
@@ -288,18 +294,18 @@ class Parser:
     self._set_lexstate(p, 2, 7)
 
   def p_interface_body_1(self, p):
-    """interface_body : """
+    """interface_body :"""
     p[0] = ast.InterfaceBody()
 
   def p_interface_body_2(self, p):
     """interface_body : interface_body const
-                      | interface_body enum
-                      | interface_body method"""
+    | interface_body enum
+    | interface_body method"""
     p[0] = p[1]
     p[0].Append(p[2])
 
   def p_response_1(self, p):
-    """response : """
+    """response :"""
     p[0] = None
 
   def p_response_2(self, p):
@@ -325,17 +331,21 @@ class Parser:
 
     success_type = p[4]
     if success_type.nullable:
-      raise ParseError(self.filename,
-                       "success type cannot be nullable",
-                       lineno=p[4].start.line,
-                       snippet=self._GetSnippet(p.lineno(4)))
+      raise ParseError(
+        self.filename,
+        "success type cannot be nullable",
+        lineno=p[4].start.line,
+        snippet=self._GetSnippet(p.lineno(4)),
+      )
 
     error_type = p[6]
     if error_type.nullable:
-      raise ParseError(self.filename,
-                       "error type cannot be nullable",
-                       lineno=p[6].start.line,
-                       snippet=self._GetSnippet(p.lineno(6)))
+      raise ParseError(
+        self.filename,
+        "error type cannot be nullable",
+        lineno=p[6].start.line,
+        snippet=self._GetSnippet(p.lineno(6)),
+      )
 
     p[0] = ast.ResultResponse(success_type, error_type)
 
@@ -349,7 +359,7 @@ class Parser:
     self._set_lexstate(p, 2, 8)
 
   def p_parameter_list_1(self, p):
-    """parameter_list : """
+    """parameter_list :"""
     p[0] = ast.ParameterList()
 
   def p_parameter_list_2(self, p):
@@ -373,24 +383,24 @@ class Parser:
 
   def p_typename(self, p):
     """typename : nonnullable_typename QSTN
-                | nonnullable_typename"""
+    | nonnullable_typename"""
     p[0] = ast.Typename(p[1], nullable=len(p) != 2)
     self._set_lexstate(p, 1, 1)
 
   def p_nonnullable_typename(self, p):
     """nonnullable_typename : basictypename
-                            | array
-                            | fixed_array
-                            | associative_array"""
+    | array
+    | fixed_array
+    | associative_array"""
     p[0] = p[1]
 
   def p_basictypename(self, p):
     """basictypename : remotetype
-                     | receivertype
-                     | associatedremotetype
-                     | associatedreceivertype
-                     | identifier
-                     | handletype"""
+    | receivertype
+    | associatedremotetype
+    | associatedreceivertype
+    | identifier
+    | handletype"""
     p[0] = p[1]
 
   def p_remotetype(self, p):
@@ -415,17 +425,24 @@ class Parser:
 
   def p_handletype(self, p):
     """handletype : HANDLE
-                  | HANDLE LANGLE name RANGLE"""
+    | HANDLE LANGLE name RANGLE"""
     if len(p) == 2:
       p[0] = ast.Identifier(p[1])
       self._set_lexstate(p, 1, 1)
     else:
-      if p[3].name not in ('data_pipe_consumer', 'data_pipe_producer',
-                           'message_pipe', 'shared_buffer', 'platform'):
-        raise ParseError(self.filename,
-                         "Invalid handle type %r:" % p[3].name,
-                         lineno=p[3].start.line,
-                         snippet=self._GetSnippet(p.lineno(1)))
+      if p[3].name not in (
+        'data_pipe_consumer',
+        'data_pipe_producer',
+        'message_pipe',
+        'shared_buffer',
+        'platform',
+      ):
+        raise ParseError(
+          self.filename,
+          "Invalid handle type %r:" % p[3].name,
+          lineno=p[3].start.line,
+          snippet=self._GetSnippet(p.lineno(1)),
+        )
       p[0] = ast.Identifier(f"handle<{p[3]}>")
       self._set_lexstate(p, 1, 4)
 
@@ -439,10 +456,11 @@ class Parser:
     value = int(p[5])
     if value == 0 or value > _MAX_ARRAY_SIZE:
       raise ParseError(
-          self.filename,
-          "Fixed array size %d invalid:" % value,
-          lineno=p.lineno(5),
-          snippet=self._GetSnippet(p.lineno(5)))
+        self.filename,
+        "Fixed array size %d invalid:" % value,
+        lineno=p.lineno(5),
+        snippet=self._GetSnippet(p.lineno(5)),
+      )
     p[0] = ast.Array(p[3], fixed_size=value)
     self._set_lexstate(p, 1, 6)
 
@@ -452,7 +470,7 @@ class Parser:
     self._set_lexstate(p, 1, 6)
 
   def p_ordinal_1(self, p):
-    """ordinal : """
+    """ordinal :"""
     p[0] = None
 
   def p_ordinal_2(self, p):
@@ -460,10 +478,11 @@ class Parser:
     value = int(p[1][1:])
     if value > _MAX_ORDINAL_VALUE:
       raise ParseError(
-          self.filename,
-          "Ordinal value %d too large:" % value,
-          lineno=p.lineno(1),
-          snippet=self._GetSnippet(p.lineno(1)))
+        self.filename,
+        "Ordinal value %d too large:" % value,
+        lineno=p.lineno(1),
+        snippet=self._GetSnippet(p.lineno(1)),
+      )
     p[0] = ast.Ordinal(value)
     self._set_lexstate(p, 1, 1)
 
@@ -480,7 +499,7 @@ class Parser:
     self._set_lexstate(p, 2, 4)
 
   def p_enum_value_list_1(self, p):
-    """enum_value_list : """
+    """enum_value_list :"""
     p[0] = ast.EnumValueList()
 
   def p_enum_value_list_2(self, p):
@@ -498,8 +517,8 @@ class Parser:
 
   def p_enum_value(self, p):
     """enum_value : attribute_section name
-                  | attribute_section name EQUALS int
-                  | attribute_section name EQUALS identifier"""
+    | attribute_section name EQUALS int
+    | attribute_section name EQUALS identifier"""
     p[0] = ast.EnumValue(p[2], p[1], p[4] if len(p) == 5 else None)
     self._set_lexstate(p, 2, len(p) - 1)
 
@@ -510,53 +529,52 @@ class Parser:
 
   def p_constant(self, p):
     """constant : literal
-                | identifier"""
+    | identifier"""
     p[0] = p[1]
 
   def p_identifier(self, p):
     """identifier : name
-                  | name DOT identifier"""
+    | name DOT identifier"""
     p[0] = ast.Identifier(''.join(map(str, p[1:])))
     self._set_lexstate(p, 1, len(p) - 1)
 
   # Allow 'feature' to be a name literal not just a keyword.
   def p_name(self, p):
     """name : NAME
-            | FEATURE"""
+    | FEATURE"""
     p[0] = ast.Name(p[1])
     self._set_lexstate(p, 1, 1)
 
   def p_literal(self, p):
     """literal : int
-               | float
-               | TRUE
-               | FALSE
-               | DEFAULT
-               | STRING_LITERAL"""
+    | float
+    | TRUE
+    | FALSE
+    | DEFAULT
+    | STRING_LITERAL"""
     if isinstance(p[1], ast.Literal):
       p[0] = p[1]
     else:
       p[0] = ast.Literal(p.slice[1].type, p[1])
       self._set_lexstate(p, 1, 1)
 
-
   def p_int(self, p):
     """int : int_const
-           | PLUS int_const
-           | MINUS int_const"""
+    | PLUS int_const
+    | MINUS int_const"""
     p[0] = ast.Literal('int', ''.join(map(str, p[1:])))
     self._set_lexstate(p, 1, len(p) - 1)
 
   def p_int_const(self, p):
     """int_const : INT_CONST_DEC
-                 | INT_CONST_HEX"""
+    | INT_CONST_HEX"""
     p[0] = ast.Literal('int', p[1])
     self._set_lexstate(p, 1, 1)
 
   def p_float(self, p):
     """float : FLOAT_CONST
-             | PLUS FLOAT_CONST
-             | MINUS FLOAT_CONST"""
+    | PLUS FLOAT_CONST
+    | MINUS FLOAT_CONST"""
     p[0] = ast.Literal('float', ''.join(p[1:]))
     self._set_lexstate(p, 1, len(p) - 1)
 
@@ -567,16 +585,19 @@ class Parser:
       raise ParseError(self.filename, "Unexpected end of file")
 
     if e.value == 'feature':
-      raise ParseError(self.filename,
-                       "`feature` is reserved for a future mojom keyword",
-                       lineno=e.lineno,
-                       snippet=self._GetSnippet(e.lineno))
+      raise ParseError(
+        self.filename,
+        "`feature` is reserved for a future mojom keyword",
+        lineno=e.lineno,
+        snippet=self._GetSnippet(e.lineno),
+      )
 
     raise ParseError(
-        self.filename,
-        "Unexpected %r:" % e.value,
-        lineno=e.lineno,
-        snippet=self._GetSnippet(e.lineno))
+      self.filename,
+      "Unexpected %r:" % e.value,
+      lineno=e.lineno,
+      snippet=self._GetSnippet(e.lineno),
+    )
 
   def _GetSnippet(self, lineno):
     return self.source.split('\n')[lineno - 1]

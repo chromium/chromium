@@ -21,6 +21,7 @@ import sys
 # Disable lint check for finding modules:
 # pylint: disable=F0401
 
+
 def _GetDirAbove(dirname):
   """Returns the directory "above" this file containing |dirname| (which must
   also be "above" this file)."""
@@ -33,9 +34,11 @@ def _GetDirAbove(dirname):
 
 
 sys.path.insert(
-    0,
-    os.path.join(
-        os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "mojom"))
+  0,
+  os.path.join(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "mojom"
+  ),
+)
 
 from mojom.error import Error
 import mojom.fileutil as fileutil
@@ -46,20 +49,20 @@ from mojom.generate.generator import WriteFile
 
 
 _BUILTIN_GENERATORS = {
-    "c++": "mojom_cpp_generator",
-    "fuzzilli": "mojom_fuzzilli_generator",
-    "javascript": "mojom_js_generator",
-    "java": "mojom_java_generator",
-    "mojolpm": "mojom_mojolpm_generator",
-    "typescript": "mojom_ts_generator",
-    "rust": "mojom_rust_generator",
+  "c++": "mojom_cpp_generator",
+  "fuzzilli": "mojom_fuzzilli_generator",
+  "javascript": "mojom_js_generator",
+  "java": "mojom_java_generator",
+  "mojolpm": "mojom_mojolpm_generator",
+  "typescript": "mojom_ts_generator",
+  "rust": "mojom_rust_generator",
 }
 
 _BUILTIN_CHECKS = {
-    "attributes": "mojom_attributes_check",
-    "definitions": "mojom_definitions_check",
-    "features": "mojom_interface_feature_check",
-    "restrictions": "mojom_restrictions_check",
+  "attributes": "mojom_attributes_check",
+  "definitions": "mojom_definitions_check",
+  "features": "mojom_interface_feature_check",
+  "restrictions": "mojom_restrictions_check",
 }
 
 
@@ -74,7 +77,8 @@ def LoadGenerators(generators_string):
       print("Unknown generator name %s" % generator_name)
       sys.exit(1)
     generator_module = importlib.import_module(
-        "generators.%s" % _BUILTIN_GENERATORS[language])
+      "generators.%s" % _BUILTIN_GENERATORS[language]
+    )
     generators[language] = generator_module
   return generators
 
@@ -98,8 +102,13 @@ def MakeImportStackMessage(imported_filename_stack):
   """Make a (human-readable) message listing a chain of imports. (Returned
   string begins with a newline (if nonempty) and does not end with one.)"""
   return ''.join(
-      reversed(["\n  %s was imported by %s" % (a, b) for (a, b) in \
-                    zip(imported_filename_stack[1:], imported_filename_stack)]))
+    reversed(
+      [
+        "\n  %s was imported by %s" % (a, b)
+        for (a, b) in zip(imported_filename_stack[1:], imported_filename_stack)
+      ]
+    )
+  )
 
 
 class RelativePath:
@@ -116,7 +125,8 @@ class RelativePath:
 
   def relative_path(self):
     return os.path.relpath(
-        os.path.abspath(self.path), os.path.abspath(self.root))
+      os.path.abspath(self.path), os.path.abspath(self.root)
+    )
 
 
 def _GetModulePath(path, output_dir):
@@ -134,8 +144,10 @@ def ScrambleMethodOrdinals(interfaces, salt):
       while True:
         i = i + 1
         if i == 1000000:
-          raise Exception("Could not generate %d method ordinals for %s" %
-              (len(interface.methods), interface.mojom_name))
+          raise Exception(
+            "Could not generate %d method ordinals for %s"
+            % (len(interface.methods), interface.mojom_name)
+          )
         # Generate a scrambled method.ordinal value. The algorithm doesn't have
         # to be very strong, cryptographically. It just needs to be non-trivial
         # to guess the results without the secret salt, in order to make it
@@ -146,14 +158,15 @@ def ScrambleMethodOrdinals(interfaces, salt):
         # Take the first 4 bytes as a little-endian uint32.
         ordinal = struct.unpack('<L', sha256.digest()[:4])[0]
         # Trim to 31 bits, so it always fits into a Java (signed) int.
-        ordinal = ordinal & 0x7fffffff
+        ordinal = ordinal & 0x7FFFFFFF
         if ordinal in already_generated:
           continue
         already_generated.add(ordinal)
         method.ordinal = ordinal
         method.ordinal_comment = (
-            'The %s value is based on sha256(salt + "%s%d").' %
-            (ordinal, interface.mojom_name, i))
+          'The %s value is based on sha256(salt + "%s%d").'
+          % (ordinal, interface.mojom_name, i)
+        )
         break
 
 
@@ -188,8 +201,8 @@ def LoadTypemaps(typemaps, langs):
             mojom_type = type_mapping.get('mojom')
             rust_type = type_mapping.get('rust')
             language_map[mojom_type] = {
-                'typename': rust_type,
-                'traits_file': traits_file
+              'typename': rust_type,
+              'traits_file': traits_file,
             }
         loaded_typemap["rust"] = language_map
       else:
@@ -227,19 +240,28 @@ class GenerationResult:
     # The language bindings that were generated.
     self.languages = languages
 
+
 class MojomProcessor:
-  """Takes parsed mojom modules and generates language bindings from them.
-  """
+  """Takes parsed mojom modules and generates language bindings from them."""
 
   def __init__(self, files_in_module):
     self._files_to_generate = files_in_module
 
-  def _GenerateModule(self, args, remaining_args, check_modules,
-                      generator_modules, typemap, rel_filename,
-                      imported_filename_stack):
+  def _GenerateModule(
+    self,
+    args,
+    remaining_args,
+    check_modules,
+    generator_modules,
+    typemap,
+    rel_filename,
+    imported_filename_stack,
+  ):
     if rel_filename.path in imported_filename_stack:
-      print("%s: Error: Circular dependency" % rel_filename.path + \
-          MakeImportStackMessage(imported_filename_stack + [rel_filename.path]))
+      print(
+        "%s: Error: Circular dependency" % rel_filename.path
+        + MakeImportStackMessage(imported_filename_stack + [rel_filename.path])
+      )
       sys.exit(1)
 
     module_path = _GetModulePath(rel_filename, args.output_dir)
@@ -248,7 +270,8 @@ class MojomProcessor:
 
     if args.scrambled_message_id_salt_paths:
       salt = b''.join(
-          map(ReadFileContents, args.scrambled_message_id_salt_paths))
+        map(ReadFileContents, args.scrambled_message_id_salt_paths)
+      )
       ScrambleMethodOrdinals(module.interfaces, salt)
 
     generated_languages = []
@@ -260,26 +283,30 @@ class MojomProcessor:
       # Then run generation.
       for language, generator_module in generator_modules.items():
         generator = generator_module.Generator(
-            module, args.output_dir, typemap=typemap.get(language, {}),
-            variant=args.variant, bytecode_path=args.bytecode_path,
-            for_blink=args.for_blink,
-            js_generate_struct_deserializers=\
-                    args.js_generate_struct_deserializers,
-            export_attribute=args.export_attribute,
-            export_header=args.export_header,
-            generate_non_variant_code=args.generate_non_variant_code,
-            disallow_native_types=args.disallow_native_types,
-            disallow_interfaces=args.disallow_interfaces,
-            generate_message_ids=args.generate_message_ids,
-            generate_fuzzing=args.generate_fuzzing,
-            enable_kythe_annotations=args.enable_kythe_annotations,
-            extra_cpp_template_paths=args.extra_cpp_template_paths,
-            generate_extra_cpp_only=args.generate_extra_cpp_only)
+          module,
+          args.output_dir,
+          typemap=typemap.get(language, {}),
+          variant=args.variant,
+          bytecode_path=args.bytecode_path,
+          for_blink=args.for_blink,
+          js_generate_struct_deserializers=args.js_generate_struct_deserializers,
+          export_attribute=args.export_attribute,
+          export_header=args.export_header,
+          generate_non_variant_code=args.generate_non_variant_code,
+          disallow_native_types=args.disallow_native_types,
+          disallow_interfaces=args.disallow_interfaces,
+          generate_message_ids=args.generate_message_ids,
+          generate_fuzzing=args.generate_fuzzing,
+          enable_kythe_annotations=args.enable_kythe_annotations,
+          extra_cpp_template_paths=args.extra_cpp_template_paths,
+          generate_extra_cpp_only=args.generate_extra_cpp_only,
+        )
         filtered_args = []
         if hasattr(generator_module, 'GENERATOR_PREFIX'):
           prefix = '--' + generator_module.GENERATOR_PREFIX + '_'
-          filtered_args = [arg for arg in remaining_args
-                           if arg.startswith(prefix)]
+          filtered_args = [
+            arg for arg in remaining_args if arg.startswith(prefix)
+          ]
         generator.GenerateFiles(filtered_args)
         generated_languages += [language]
 
@@ -329,11 +356,13 @@ class TypemapUsageVerifier:
         RemoveUsedKind(enum, iface_kind)
 
   def VerifyAllTypemapsUsed(self):
-    for (lang, typemaps) in self.unused_typemaps.items():
+    for lang, typemaps in self.unused_typemaps.items():
       if len(typemaps) > 0:
         raise Exception(
-            f"Unused typemaps found for {lang}:\n{sorted(typemaps)},\n\n"
-            f"types declared: {sorted(self.types_seen)}")
+          f"Unused typemaps found for {lang}:\n{sorted(typemaps)},\n\n"
+          f"types declared: {sorted(self.types_seen)}"
+        )
+
 
 def _Generate(args, remaining_args):
   if args.variant == "none":
@@ -342,11 +371,13 @@ def _Generate(args, remaining_args):
   for idx, import_dir in enumerate(args.import_directories):
     tokens = import_dir.split(":")
     if len(tokens) >= 2:
-      args.import_directories[idx] = RelativePath(tokens[0], tokens[1],
-                                                  args.output_dir)
+      args.import_directories[idx] = RelativePath(
+        tokens[0], tokens[1], args.output_dir
+      )
     else:
-      args.import_directories[idx] = RelativePath(tokens[0], args.depth,
-                                                  args.output_dir)
+      args.import_directories[idx] = RelativePath(
+        tokens[0], args.depth, args.output_dir
+      )
   generator_modules = LoadGenerators(args.generators_string)
   check_modules = LoadChecks(args.checks_string)
 
@@ -366,8 +397,9 @@ def _Generate(args, remaining_args):
     if path in paths_processed:
       continue
 
-    result = processor._GenerateModule(args, remaining_args, check_modules,
-                                       generator_modules, typemap, path, [])
+    result = processor._GenerateModule(
+      args, remaining_args, check_modules, generator_modules, typemap, path, []
+    )
     typemap_verifier.RemoveUsedTypemaps(result)
     paths_processed += [path]
 
@@ -385,127 +417,186 @@ def _Precompile(args, _):
 
 def main():
   parser = argparse.ArgumentParser(
-      description="Generate bindings from mojom files.")
-  parser.add_argument("--use_bundled_pylibs", action="store_true",
-                      help="use Python modules bundled in the SDK")
+    description="Generate bindings from mojom files."
+  )
   parser.add_argument(
-      "-o",
-      "--output_dir",
-      dest="output_dir",
-      default=".",
-      help="output directory for generated files")
+    "--use_bundled_pylibs",
+    action="store_true",
+    help="use Python modules bundled in the SDK",
+  )
+  parser.add_argument(
+    "-o",
+    "--output_dir",
+    dest="output_dir",
+    default=".",
+    help="output directory for generated files",
+  )
 
   subparsers = parser.add_subparsers()
 
   generate_parser = subparsers.add_parser(
-      "generate", description="Generate bindings from mojom files.")
-  generate_parser.add_argument("filename", nargs="*",
-                               help="mojom input file")
+    "generate", description="Generate bindings from mojom files."
+  )
+  generate_parser.add_argument("filename", nargs="*", help="mojom input file")
   generate_parser.add_argument("--filelist", help="mojom input file list")
-  generate_parser.add_argument("-d", "--depth", dest="depth", default=".",
-                               help="depth from source root")
-  generate_parser.add_argument("-g",
-                               "--generators",
-                               dest="generators_string",
-                               metavar="GENERATORS",
-                               default="c++,javascript,java,mojolpm",
-                               help="comma-separated list of generators")
-  generate_parser.add_argument("-c",
-                               "--checks",
-                               dest="checks_string",
-                               metavar="CHECKS",
-                               default=",".join(_BUILTIN_CHECKS.keys()),
-                               help="comma-separated list of checks")
   generate_parser.add_argument(
-      "--gen_dir", dest="gen_directories", action="append", metavar="directory",
-      default=[], help="add a directory to be searched for the syntax trees.")
+    "-d", "--depth", dest="depth", default=".", help="depth from source root"
+  )
   generate_parser.add_argument(
-      "-I", dest="import_directories", action="append", metavar="directory",
-      default=[],
-      help="add a directory to be searched for import files. The depth from "
-           "source root can be specified for each import by appending it after "
-           "a colon")
-  generate_parser.add_argument("--typemap", action="append", metavar="TYPEMAP",
-                               default=[], dest="typemaps",
-                               help="apply TYPEMAP to generated output")
-  generate_parser.add_argument("--variant", dest="variant", default=None,
-                               help="output a named variant of the bindings")
+    "-g",
+    "--generators",
+    dest="generators_string",
+    metavar="GENERATORS",
+    default="c++,javascript,java,mojolpm",
+    help="comma-separated list of generators",
+  )
   generate_parser.add_argument(
-      "--bytecode_path", required=True, help=(
-          "the path from which to load template bytecode; to generate template "
-          "bytecode, run %s precompile BYTECODE_PATH" % os.path.basename(
-              sys.argv[0])))
-  generate_parser.add_argument("--for_blink", action="store_true",
-                               help="Use WTF types as generated types for mojo "
-                               "string/array/map.")
+    "-c",
+    "--checks",
+    dest="checks_string",
+    metavar="CHECKS",
+    default=",".join(_BUILTIN_CHECKS.keys()),
+    help="comma-separated list of checks",
+  )
   generate_parser.add_argument(
-      "--js_generate_struct_deserializers", action="store_true",
-      help="Generate javascript deserialize methods for structs in "
-      "mojom-lite.js file")
+    "--gen_dir",
+    dest="gen_directories",
+    action="append",
+    metavar="directory",
+    default=[],
+    help="add a directory to be searched for the syntax trees.",
+  )
   generate_parser.add_argument(
-      "--export_attribute", default="",
-      help="Optional attribute to specify on class declaration to export it "
-      "for the component build.")
+    "-I",
+    dest="import_directories",
+    action="append",
+    metavar="directory",
+    default=[],
+    help="add a directory to be searched for import files. The depth from "
+    "source root can be specified for each import by appending it after "
+    "a colon",
+  )
   generate_parser.add_argument(
-      "--export_header", default="",
-      help="Optional header to include in the generated headers to support the "
-      "component build.")
+    "--typemap",
+    action="append",
+    metavar="TYPEMAP",
+    default=[],
+    dest="typemaps",
+    help="apply TYPEMAP to generated output",
+  )
   generate_parser.add_argument(
-      "--generate_non_variant_code", action="store_true",
-      help="Generate code that is shared by different variants.")
+    "--variant",
+    dest="variant",
+    default=None,
+    help="output a named variant of the bindings",
+  )
   generate_parser.add_argument(
-      "--scrambled_message_id_salt_path",
-      dest="scrambled_message_id_salt_paths",
-      help="If non-empty, the path to a file whose contents should be used as"
-      "a salt for generating scrambled message IDs. If this switch is specified"
-      "more than once, the contents of all salt files are concatenated to form"
-      "the salt value.", default=[], action="append")
+    "--bytecode_path",
+    required=True,
+    help=(
+      "the path from which to load template bytecode; to generate template "
+      "bytecode, run %s precompile BYTECODE_PATH"
+      % os.path.basename(sys.argv[0])
+    ),
+  )
   generate_parser.add_argument(
-      "--extra_cpp_template_paths",
-      dest="extra_cpp_template_paths",
-      action="append",
-      metavar="path_to_template",
-      default=[],
-      help="Provide a path to a new template (.tmpl) that is used to generate "
-      "additional C++ source/header files ")
+    "--for_blink",
+    action="store_true",
+    help="Use WTF types as generated types for mojo string/array/map.",
+  )
   generate_parser.add_argument(
-      "--generate_extra_cpp_only",
-      help="If set and extra_cpp_template_paths provided, will only generate"
-      "extra_cpp_template related C++ bindings",
-      action="store_true")
+    "--js_generate_struct_deserializers",
+    action="store_true",
+    help="Generate javascript deserialize methods for structs in "
+    "mojom-lite.js file",
+  )
   generate_parser.add_argument(
-      "--disallow_native_types",
-      help="Disallows the [Native] attribute to be specified on structs or "
-      "enums within the mojom file.", action="store_true")
+    "--export_attribute",
+    default="",
+    help="Optional attribute to specify on class declaration to export it "
+    "for the component build.",
+  )
   generate_parser.add_argument(
-      "--disallow_interfaces",
-      help="Disallows interface definitions within the mojom file. It is an "
-      "error to specify this flag when processing a mojom file which defines "
-      "any interface.", action="store_true")
+    "--export_header",
+    default="",
+    help="Optional header to include in the generated headers to support the "
+    "component build.",
+  )
   generate_parser.add_argument(
-      "--generate_message_ids",
-      help="Generates only the message IDs header for C++ bindings. Note that "
-      "this flag only matters if --generate_non_variant_code is also "
-      "specified.", action="store_true")
+    "--generate_non_variant_code",
+    action="store_true",
+    help="Generate code that is shared by different variants.",
+  )
   generate_parser.add_argument(
-      "--generate_fuzzing",
-      action="store_true",
-      help="Generates additional bindings for fuzzing in JS.")
+    "--scrambled_message_id_salt_path",
+    dest="scrambled_message_id_salt_paths",
+    help="If non-empty, the path to a file whose contents should be used as"
+    "a salt for generating scrambled message IDs. If this switch is specified"
+    "more than once, the contents of all salt files are concatenated to form"
+    "the salt value.",
+    default=[],
+    action="append",
+  )
   generate_parser.add_argument(
-      "--enable_kythe_annotations",
-      action="store_true",
-      help="Adds annotations for kythe metadata generation.")
+    "--extra_cpp_template_paths",
+    dest="extra_cpp_template_paths",
+    action="append",
+    metavar="path_to_template",
+    default=[],
+    help="Provide a path to a new template (.tmpl) that is used to generate "
+    "additional C++ source/header files ",
+  )
+  generate_parser.add_argument(
+    "--generate_extra_cpp_only",
+    help="If set and extra_cpp_template_paths provided, will only generate"
+    "extra_cpp_template related C++ bindings",
+    action="store_true",
+  )
+  generate_parser.add_argument(
+    "--disallow_native_types",
+    help="Disallows the [Native] attribute to be specified on structs or "
+    "enums within the mojom file.",
+    action="store_true",
+  )
+  generate_parser.add_argument(
+    "--disallow_interfaces",
+    help="Disallows interface definitions within the mojom file. It is an "
+    "error to specify this flag when processing a mojom file which defines "
+    "any interface.",
+    action="store_true",
+  )
+  generate_parser.add_argument(
+    "--generate_message_ids",
+    help="Generates only the message IDs header for C++ bindings. Note that "
+    "this flag only matters if --generate_non_variant_code is also "
+    "specified.",
+    action="store_true",
+  )
+  generate_parser.add_argument(
+    "--generate_fuzzing",
+    action="store_true",
+    help="Generates additional bindings for fuzzing in JS.",
+  )
+  generate_parser.add_argument(
+    "--enable_kythe_annotations",
+    action="store_true",
+    help="Adds annotations for kythe metadata generation.",
+  )
 
   generate_parser.set_defaults(func=_Generate)
 
-  precompile_parser = subparsers.add_parser("precompile",
-      description="Precompile templates for the mojom bindings generator.")
-  precompile_parser.add_argument("-g",
-                                 "--generators",
-                                 dest="generators_string",
-                                 metavar="GENERATORS",
-                                 default=",".join(_BUILTIN_GENERATORS.keys()),
-                                 help="comma-separated list of generators")
+  precompile_parser = subparsers.add_parser(
+    "precompile",
+    description="Precompile templates for the mojom bindings generator.",
+  )
+  precompile_parser.add_argument(
+    "-g",
+    "--generators",
+    dest="generators_string",
+    metavar="GENERATORS",
+    default=",".join(_BUILTIN_GENERATORS.keys()),
+    help="comma-separated list of generators",
+  )
   precompile_parser.set_defaults(func=_Precompile)
 
   args, remaining_args = parser.parse_known_args()

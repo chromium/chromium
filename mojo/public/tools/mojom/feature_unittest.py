@@ -7,6 +7,7 @@ from mojom_parser_test_case import MojomParserTestCase
 
 class FeatureTest(MojomParserTestCase):
   """Tests feature parsing behavior."""
+
   def testFeatureOff(self):
     """Verifies basic parsing of feature types."""
     types = self.ExtractTypes("""
@@ -67,17 +68,21 @@ class FeatureTest(MojomParserTestCase):
     """Verifies that feature values in attributes are really feature types."""
     a_mojom = 'a.mojom'
     self.WriteFile(
-        a_mojom, 'module a;'
-        'feature F { const string name = "f";'
-        'const bool default_state = false; };')
+      a_mojom,
+      'module a;'
+      'feature F { const string name = "f";'
+      'const bool default_state = false; };',
+    )
     b_mojom = 'b.mojom'
     self.WriteFile(
-        b_mojom, 'module b;'
-        'import "a.mojom";'
-        'feature G'
-        '{const string name = "g"; const bool default_state = false;};'
-        '[Attri=a.F] interface Foo { Foo(); };'
-        '[Boink=G] interface Bar {};')
+      b_mojom,
+      'module b;'
+      'import "a.mojom";'
+      'feature G'
+      '{const string name = "g"; const bool default_state = false;};'
+      '[Attri=a.F] interface Foo { Foo(); };'
+      '[Boink=G] interface Bar {};',
+    )
     self.ParseMojoms([a_mojom, b_mojom])
     b = self.LoadModule(b_mojom)
     self.assertEqual(b.interfaces[0].attributes['Attri'].mojom_name, 'F')

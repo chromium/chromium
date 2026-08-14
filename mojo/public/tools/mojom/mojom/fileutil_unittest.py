@@ -9,6 +9,7 @@ import unittest
 
 from mojom import fileutil
 
+
 class FileUtilTest(unittest.TestCase):
   def testEnsureDirectoryExists(self):
     """Test that EnsureDirectoryExists functions correctly."""

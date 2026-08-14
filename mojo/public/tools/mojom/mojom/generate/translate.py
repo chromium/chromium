@@ -28,245 +28,245 @@ class ExtensibleEnumMode(pyenum.Enum):
 
 ### DO NOT ADD ENTRIES TO THIS LIST. ###
 _EXTENSIBLE_ENUMS_MISSING_DEFAULT_CHROMEOS = {
-    'x:arc.keymaster.mojom.Algorithm',
-    'x:arc.keymaster.mojom.Digest',
-    'x:arc.keymaster.mojom.SignatureResult',
-    'x:arc.mojom.AccessibilityActionType',
-    'x:arc.mojom.AccessibilityBooleanProperty',
-    'x:arc.mojom.AccessibilityEventIntListProperty',
-    'x:arc.mojom.AccessibilityEventIntProperty',
-    'x:arc.mojom.AccessibilityEventStringProperty',
-    'x:arc.mojom.AccessibilityEventType',
-    'x:arc.mojom.AccessibilityFilterType',
-    'x:arc.mojom.AccessibilityIntListProperty',
-    'x:arc.mojom.AccessibilityIntProperty',
-    'x:arc.mojom.AccessibilityLiveRegionType',
-    'x:arc.mojom.AccessibilityNotificationStateType',
-    'x:arc.mojom.AccessibilityRangeType',
-    'x:arc.mojom.AccessibilitySelectionMode',
-    'x:arc.mojom.AccessibilityStringListProperty',
-    'x:arc.mojom.AccessibilityStringProperty',
-    'x:arc.mojom.AccessibilityWindowBooleanProperty',
-    'x:arc.mojom.AccessibilityWindowIntListProperty',
-    'x:arc.mojom.AccessibilityWindowIntProperty',
-    'x:arc.mojom.AccessibilityWindowStringProperty',
-    'x:arc.mojom.AccessibilityWindowType',
-    'x:arc.mojom.AccountCheckStatus',
-    'x:arc.mojom.AccountUpdateType',
-    'x:arc.mojom.ActionType',
-    'x:arc.mojom.Algorithm',
-    'x:arc.mojom.AndroidIdSource',
-    'x:arc.mojom.AnrSource',
-    'x:arc.mojom.AnrType',
-    'x:arc.mojom.AppDiscoveryRequestState',
-    'x:arc.mojom.AppKillType',
-    'x:arc.mojom.AppPermission',
-    'x:arc.mojom.AppPermissionGroup',
-    'x:arc.mojom.AppReinstallState',
-    'x:arc.mojom.AppShortcutItemType',
-    'x:arc.mojom.ArcAuthCodeStatus',
-    'x:arc.mojom.ArcClipboardDragDropEvent',
-    'x:arc.mojom.ArcCorePriAbiMigEvent',
-    'x:arc.mojom.ArcDnsQuery',
-    'x:arc.mojom.ArcImageCopyPasteCompatAction',
-    'x:arc.mojom.ArcNetworkError',
-    'x:arc.mojom.ArcNetworkEvent',
-    'x:arc.mojom.ArcNotificationEvent',
-    'x:arc.mojom.ArcNotificationExpandState',
-    'x:arc.mojom.ArcNotificationPriority',
-    'x:arc.mojom.ArcNotificationRemoteInputState',
-    'x:arc.mojom.ArcNotificationShownContents',
-    'x:arc.mojom.ArcNotificationStyle',
-    'x:arc.mojom.ArcNotificationType',
-    'x:arc.mojom.ArcPipEvent',
-    'x:arc.mojom.ArcResizeLockState',
-    'x:arc.mojom.ArcSignInSuccess',
-    'x:arc.mojom.ArcTimerResult',
-    'x:arc.mojom.AudioSwitch',
-    'x:arc.mojom.BluetoothAclState',
-    'x:arc.mojom.BluetoothAdapterState',
-    'x:arc.mojom.BluetoothAdvertisingDataType',
-    'x:arc.mojom.BluetoothBondState',
-    'x:arc.mojom.BluetoothDeviceType',
-    'x:arc.mojom.BluetoothDiscoveryState',
-    'x:arc.mojom.BluetoothGattDBAttributeType',
-    'x:arc.mojom.BluetoothGattStatus',
-    'x:arc.mojom.BluetoothPropertyType',
-    'x:arc.mojom.BluetoothScanMode',
-    'x:arc.mojom.BluetoothSdpAttributeType',
-    'x:arc.mojom.BluetoothSocketType',
-    'x:arc.mojom.BluetoothStatus',
-    'x:arc.mojom.BootType',
-    'x:arc.mojom.CaptionTextShadowType',
-    'x:arc.mojom.ChangeType',
-    'x:arc.mojom.ChromeAccountType',
-    'x:arc.mojom.ChromeApp',
-    'x:arc.mojom.ChromePage',
-    'x:arc.mojom.ClockId',
-    'x:arc.mojom.CloudProvisionFlowError',
-    'x:arc.mojom.CommandResultType',
-    'x:arc.mojom.CompanionLibApiId',
-    'x:arc.mojom.ConnectionStateType',
-    'x:arc.mojom.ContentChangeType',
-    'x:arc.mojom.CpuRestrictionState',
-    'x:arc.mojom.CursorCoordinateSpace',
-    'x:arc.mojom.DataRestoreStatus',
-    'x:arc.mojom.DecoderStatus',
-    'x:arc.mojom.DeviceType',
-    'x:arc.mojom.Digest',
-    'x:arc.mojom.DisplayWakeLockType',
-    'x:arc.mojom.EapMethod',
-    'x:arc.mojom.EapPhase2Method',
-    'x:arc.mojom.FileSelectorEventType',
-    'x:arc.mojom.GMSCheckInError',
-    'x:arc.mojom.GMSSignInError',
-    'x:arc.mojom.GeneralSignInError',
-    'x:arc.mojom.GetNetworksRequestType',
-    'x:arc.mojom.HalPixelFormat',
-    'x:arc.mojom.IPAddressType',
-    'x:arc.mojom.InstallErrorReason',
-    'x:arc.mojom.KeyFormat',
-    'x:arc.mojom.KeyManagement',
-    'x:arc.mojom.KeyPurpose',
-    'x:arc.mojom.KeymasterError',
-    'x:arc.mojom.MainAccountHashMigrationStatus',
-    'x:arc.mojom.MainAccountResolutionStatus',
-    'x:arc.mojom.ManagementChangeStatus',
-    'x:arc.mojom.ManagementState',
-    'x:arc.mojom.MessageCenterVisibility',
-    'x:arc.mojom.MetricsType',
-    'x:arc.mojom.MountEvent',
-    'x:arc.mojom.NativeBridgeType',
-    'x:arc.mojom.NetworkResult',
-    'x:arc.mojom.NetworkType',
-    'x:arc.mojom.OemCryptoAlgorithm',
-    'x:arc.mojom.OemCryptoCipherMode',
-    'x:arc.mojom.OemCryptoHdcpCapability',
-    'x:arc.mojom.OemCryptoLicenseType',
-    'x:arc.mojom.OemCryptoPrivateKey',
-    'x:arc.mojom.OemCryptoProvisioningMethod',
-    'x:arc.mojom.OemCryptoResult',
-    'x:arc.mojom.OemCryptoRsaPaddingScheme',
-    'x:arc.mojom.OemCryptoUsageEntryStatus',
-    'x:arc.mojom.Padding',
-    'x:arc.mojom.PaiFlowState',
-    'x:arc.mojom.PatternType',
-    'x:arc.mojom.PressureLevel',
-    'x:arc.mojom.PrintColorMode',
-    'x:arc.mojom.PrintContentType',
-    'x:arc.mojom.PrintDuplexMode',
-    'x:arc.mojom.PrinterStatus',
-    'x:arc.mojom.ProcessState',
-    'x:arc.mojom.PurchaseState',
-    'x:arc.mojom.ReauthReason',
-    'x:arc.mojom.ScaleFactor',
-    'x:arc.mojom.SecurityType',
-    'x:arc.mojom.SegmentStyle',
-    'x:arc.mojom.SelectFilesActionType',
-    'x:arc.mojom.SetNativeChromeVoxResponse',
-    'x:arc.mojom.ShowPackageInfoPage',
-    'x:arc.mojom.SpanType',
-    'x:arc.mojom.SupportedLinkChangeSource',
-    'x:arc.mojom.TetheringClientState',
-    'x:arc.mojom.TextInputType',
-    'x:arc.mojom.TtsEventType',
-    'x:arc.mojom.VideoCodecProfile',
-    'x:arc.mojom.VideoDecodeAccelerator.Result',
-    'x:arc.mojom.VideoEncodeAccelerator.Error',
-    'x:arc.mojom.VideoFrameStorageType',
-    'x:arc.mojom.VideoPixelFormat',
-    'x:arc.mojom.WakefulnessMode',
-    'x:arc.mojom.WebApkInstallResult',
-    'x:ash.ime.mojom.InputFieldType',
-    'x:ash.ime.mojom.PersonalizationMode',
-    'x:ash.language.mojom.FeatureId',
-    'x:blink.mojom.ScrollRestorationType',
-    'x:chromeos.cdm.mojom.CdmKeyStatus',
-    'x:chromeos.cdm.mojom.CdmMessageType',
-    'x:chromeos.cdm.mojom.CdmSessionType',
-    'x:chromeos.cdm.mojom.DecryptStatus',
-    'x:chromeos.cdm.mojom.EmeInitDataType',
-    'x:chromeos.cdm.mojom.EncryptionScheme',
-    'x:chromeos.cdm.mojom.HdcpVersion',
-    'x:chromeos.cdm.mojom.OutputProtection.LinkType',
-    'x:chromeos.cdm.mojom.OutputProtection.ProtectionType',
-    'x:chromeos.cdm.mojom.PromiseException',
-    'x:chromeos.cfm.mojom.EnqueuePriority',
-    'x:chromeos.cfm.mojom.LoggerErrorCode',
-    'x:chromeos.cfm.mojom.LoggerState',
-    'x:chromeos.cros_healthd.mojom.CryptoAlgorithm',
-    'x:chromeos.cros_healthd.mojom.EncryptionState',
-    'x:chromeos.machine_learning.mojom.AnnotationUsecase',
-    'x:chromeos.machine_learning.mojom.BuiltinModelId',
-    'x:chromeos.machine_learning.mojom.CreateGraphExecutorResult',
-    'x:chromeos.machine_learning.mojom.DocumentScannerResultStatus',
-    'x:chromeos.machine_learning.mojom.EndpointReason',
-    'x:chromeos.machine_learning.mojom.EndpointerType',
-    'x:chromeos.machine_learning.mojom.ExecuteResult',
-    'x:chromeos.machine_learning.mojom.GrammarCheckerResult.Status',
-    'x:chromeos.machine_learning.mojom.HandwritingRecognizerResult.Status',
-    'x:chromeos.machine_learning.mojom.LoadHandwritingModelResult',
-    'x:chromeos.machine_learning.mojom.LoadModelResult',
-    'x:chromeos.machine_learning.mojom.Rotation',
-    'x:chromeos.network_config.mojom.ConnectionStateType',
-    'x:chromeos.network_config.mojom.DeviceStateType',
-    'x:chromeos.network_config.mojom.IPConfigType',
-    'x:chromeos.network_config.mojom.NetworkType',
-    'x:chromeos.network_config.mojom.OncSource',
-    'x:chromeos.network_config.mojom.PolicySource',
-    'x:chromeos.network_config.mojom.PortalState',
-    'x:cros.mojom.CameraClientType',
-    'x:cros.mojom.CameraMetadataSectionStart',
-    'x:cros.mojom.CameraMetadataTag',
-    'x:cros.mojom.HalPixelFormat',
-    'x:drivefs.mojom.DialogReason.Type',
-    'x:drivefs.mojom.DriveError.Type',
-    'x:drivefs.mojom.DriveFsDelegate.ExtensionConnectionStatus',
-    'x:drivefs.mojom.FileMetadata.CanPinStatus',
-    'x:drivefs.mojom.FileMetadata.Type',
-    'x:drivefs.mojom.ItemEventReason',
-    'x:drivefs.mojom.MirrorPathStatus',
-    'x:drivefs.mojom.MirrorSyncStatus',
-    'x:drivefs.mojom.QueryParameters.SortField',
-    'x:media.mojom.FillLightMode',
-    'x:media.mojom.MeteringMode',
-    'x:media.mojom.PowerLineFrequency',
-    'x:media.mojom.RedEyeReduction',
-    'x:media.mojom.ResolutionChangePolicy',
-    'x:media.mojom.VideoCaptureApi',
-    'x:media.mojom.VideoCaptureBufferType',
-    'x:media.mojom.VideoCaptureError',
-    'x:media.mojom.VideoCaptureFrameDropReason',
-    'x:media.mojom.VideoCapturePixelFormat',
-    'x:media.mojom.VideoCaptureTransportType',
-    'x:media.mojom.VideoFacingMode',
-    'x:ml.model_loader.mojom.ComputeResult',
-    'x:ml.model_loader.mojom.CreateModelLoaderResult',
-    'x:ml.model_loader.mojom.LoadModelResult',
-    'x:payments.mojom.BillingResponseCode',
-    'x:payments.mojom.CreateDigitalGoodsResponseCode',
-    'x:payments.mojom.ItemType',
-    'x:printing.mojom.PrinterType',
-    'x:test.mojom.ExtensibleEnumForUnitTestsCrOS',
+  'x:arc.keymaster.mojom.Algorithm',
+  'x:arc.keymaster.mojom.Digest',
+  'x:arc.keymaster.mojom.SignatureResult',
+  'x:arc.mojom.AccessibilityActionType',
+  'x:arc.mojom.AccessibilityBooleanProperty',
+  'x:arc.mojom.AccessibilityEventIntListProperty',
+  'x:arc.mojom.AccessibilityEventIntProperty',
+  'x:arc.mojom.AccessibilityEventStringProperty',
+  'x:arc.mojom.AccessibilityEventType',
+  'x:arc.mojom.AccessibilityFilterType',
+  'x:arc.mojom.AccessibilityIntListProperty',
+  'x:arc.mojom.AccessibilityIntProperty',
+  'x:arc.mojom.AccessibilityLiveRegionType',
+  'x:arc.mojom.AccessibilityNotificationStateType',
+  'x:arc.mojom.AccessibilityRangeType',
+  'x:arc.mojom.AccessibilitySelectionMode',
+  'x:arc.mojom.AccessibilityStringListProperty',
+  'x:arc.mojom.AccessibilityStringProperty',
+  'x:arc.mojom.AccessibilityWindowBooleanProperty',
+  'x:arc.mojom.AccessibilityWindowIntListProperty',
+  'x:arc.mojom.AccessibilityWindowIntProperty',
+  'x:arc.mojom.AccessibilityWindowStringProperty',
+  'x:arc.mojom.AccessibilityWindowType',
+  'x:arc.mojom.AccountCheckStatus',
+  'x:arc.mojom.AccountUpdateType',
+  'x:arc.mojom.ActionType',
+  'x:arc.mojom.Algorithm',
+  'x:arc.mojom.AndroidIdSource',
+  'x:arc.mojom.AnrSource',
+  'x:arc.mojom.AnrType',
+  'x:arc.mojom.AppDiscoveryRequestState',
+  'x:arc.mojom.AppKillType',
+  'x:arc.mojom.AppPermission',
+  'x:arc.mojom.AppPermissionGroup',
+  'x:arc.mojom.AppReinstallState',
+  'x:arc.mojom.AppShortcutItemType',
+  'x:arc.mojom.ArcAuthCodeStatus',
+  'x:arc.mojom.ArcClipboardDragDropEvent',
+  'x:arc.mojom.ArcCorePriAbiMigEvent',
+  'x:arc.mojom.ArcDnsQuery',
+  'x:arc.mojom.ArcImageCopyPasteCompatAction',
+  'x:arc.mojom.ArcNetworkError',
+  'x:arc.mojom.ArcNetworkEvent',
+  'x:arc.mojom.ArcNotificationEvent',
+  'x:arc.mojom.ArcNotificationExpandState',
+  'x:arc.mojom.ArcNotificationPriority',
+  'x:arc.mojom.ArcNotificationRemoteInputState',
+  'x:arc.mojom.ArcNotificationShownContents',
+  'x:arc.mojom.ArcNotificationStyle',
+  'x:arc.mojom.ArcNotificationType',
+  'x:arc.mojom.ArcPipEvent',
+  'x:arc.mojom.ArcResizeLockState',
+  'x:arc.mojom.ArcSignInSuccess',
+  'x:arc.mojom.ArcTimerResult',
+  'x:arc.mojom.AudioSwitch',
+  'x:arc.mojom.BluetoothAclState',
+  'x:arc.mojom.BluetoothAdapterState',
+  'x:arc.mojom.BluetoothAdvertisingDataType',
+  'x:arc.mojom.BluetoothBondState',
+  'x:arc.mojom.BluetoothDeviceType',
+  'x:arc.mojom.BluetoothDiscoveryState',
+  'x:arc.mojom.BluetoothGattDBAttributeType',
+  'x:arc.mojom.BluetoothGattStatus',
+  'x:arc.mojom.BluetoothPropertyType',
+  'x:arc.mojom.BluetoothScanMode',
+  'x:arc.mojom.BluetoothSdpAttributeType',
+  'x:arc.mojom.BluetoothSocketType',
+  'x:arc.mojom.BluetoothStatus',
+  'x:arc.mojom.BootType',
+  'x:arc.mojom.CaptionTextShadowType',
+  'x:arc.mojom.ChangeType',
+  'x:arc.mojom.ChromeAccountType',
+  'x:arc.mojom.ChromeApp',
+  'x:arc.mojom.ChromePage',
+  'x:arc.mojom.ClockId',
+  'x:arc.mojom.CloudProvisionFlowError',
+  'x:arc.mojom.CommandResultType',
+  'x:arc.mojom.CompanionLibApiId',
+  'x:arc.mojom.ConnectionStateType',
+  'x:arc.mojom.ContentChangeType',
+  'x:arc.mojom.CpuRestrictionState',
+  'x:arc.mojom.CursorCoordinateSpace',
+  'x:arc.mojom.DataRestoreStatus',
+  'x:arc.mojom.DecoderStatus',
+  'x:arc.mojom.DeviceType',
+  'x:arc.mojom.Digest',
+  'x:arc.mojom.DisplayWakeLockType',
+  'x:arc.mojom.EapMethod',
+  'x:arc.mojom.EapPhase2Method',
+  'x:arc.mojom.FileSelectorEventType',
+  'x:arc.mojom.GMSCheckInError',
+  'x:arc.mojom.GMSSignInError',
+  'x:arc.mojom.GeneralSignInError',
+  'x:arc.mojom.GetNetworksRequestType',
+  'x:arc.mojom.HalPixelFormat',
+  'x:arc.mojom.IPAddressType',
+  'x:arc.mojom.InstallErrorReason',
+  'x:arc.mojom.KeyFormat',
+  'x:arc.mojom.KeyManagement',
+  'x:arc.mojom.KeyPurpose',
+  'x:arc.mojom.KeymasterError',
+  'x:arc.mojom.MainAccountHashMigrationStatus',
+  'x:arc.mojom.MainAccountResolutionStatus',
+  'x:arc.mojom.ManagementChangeStatus',
+  'x:arc.mojom.ManagementState',
+  'x:arc.mojom.MessageCenterVisibility',
+  'x:arc.mojom.MetricsType',
+  'x:arc.mojom.MountEvent',
+  'x:arc.mojom.NativeBridgeType',
+  'x:arc.mojom.NetworkResult',
+  'x:arc.mojom.NetworkType',
+  'x:arc.mojom.OemCryptoAlgorithm',
+  'x:arc.mojom.OemCryptoCipherMode',
+  'x:arc.mojom.OemCryptoHdcpCapability',
+  'x:arc.mojom.OemCryptoLicenseType',
+  'x:arc.mojom.OemCryptoPrivateKey',
+  'x:arc.mojom.OemCryptoProvisioningMethod',
+  'x:arc.mojom.OemCryptoResult',
+  'x:arc.mojom.OemCryptoRsaPaddingScheme',
+  'x:arc.mojom.OemCryptoUsageEntryStatus',
+  'x:arc.mojom.Padding',
+  'x:arc.mojom.PaiFlowState',
+  'x:arc.mojom.PatternType',
+  'x:arc.mojom.PressureLevel',
+  'x:arc.mojom.PrintColorMode',
+  'x:arc.mojom.PrintContentType',
+  'x:arc.mojom.PrintDuplexMode',
+  'x:arc.mojom.PrinterStatus',
+  'x:arc.mojom.ProcessState',
+  'x:arc.mojom.PurchaseState',
+  'x:arc.mojom.ReauthReason',
+  'x:arc.mojom.ScaleFactor',
+  'x:arc.mojom.SecurityType',
+  'x:arc.mojom.SegmentStyle',
+  'x:arc.mojom.SelectFilesActionType',
+  'x:arc.mojom.SetNativeChromeVoxResponse',
+  'x:arc.mojom.ShowPackageInfoPage',
+  'x:arc.mojom.SpanType',
+  'x:arc.mojom.SupportedLinkChangeSource',
+  'x:arc.mojom.TetheringClientState',
+  'x:arc.mojom.TextInputType',
+  'x:arc.mojom.TtsEventType',
+  'x:arc.mojom.VideoCodecProfile',
+  'x:arc.mojom.VideoDecodeAccelerator.Result',
+  'x:arc.mojom.VideoEncodeAccelerator.Error',
+  'x:arc.mojom.VideoFrameStorageType',
+  'x:arc.mojom.VideoPixelFormat',
+  'x:arc.mojom.WakefulnessMode',
+  'x:arc.mojom.WebApkInstallResult',
+  'x:ash.ime.mojom.InputFieldType',
+  'x:ash.ime.mojom.PersonalizationMode',
+  'x:ash.language.mojom.FeatureId',
+  'x:blink.mojom.ScrollRestorationType',
+  'x:chromeos.cdm.mojom.CdmKeyStatus',
+  'x:chromeos.cdm.mojom.CdmMessageType',
+  'x:chromeos.cdm.mojom.CdmSessionType',
+  'x:chromeos.cdm.mojom.DecryptStatus',
+  'x:chromeos.cdm.mojom.EmeInitDataType',
+  'x:chromeos.cdm.mojom.EncryptionScheme',
+  'x:chromeos.cdm.mojom.HdcpVersion',
+  'x:chromeos.cdm.mojom.OutputProtection.LinkType',
+  'x:chromeos.cdm.mojom.OutputProtection.ProtectionType',
+  'x:chromeos.cdm.mojom.PromiseException',
+  'x:chromeos.cfm.mojom.EnqueuePriority',
+  'x:chromeos.cfm.mojom.LoggerErrorCode',
+  'x:chromeos.cfm.mojom.LoggerState',
+  'x:chromeos.cros_healthd.mojom.CryptoAlgorithm',
+  'x:chromeos.cros_healthd.mojom.EncryptionState',
+  'x:chromeos.machine_learning.mojom.AnnotationUsecase',
+  'x:chromeos.machine_learning.mojom.BuiltinModelId',
+  'x:chromeos.machine_learning.mojom.CreateGraphExecutorResult',
+  'x:chromeos.machine_learning.mojom.DocumentScannerResultStatus',
+  'x:chromeos.machine_learning.mojom.EndpointReason',
+  'x:chromeos.machine_learning.mojom.EndpointerType',
+  'x:chromeos.machine_learning.mojom.ExecuteResult',
+  'x:chromeos.machine_learning.mojom.GrammarCheckerResult.Status',
+  'x:chromeos.machine_learning.mojom.HandwritingRecognizerResult.Status',
+  'x:chromeos.machine_learning.mojom.LoadHandwritingModelResult',
+  'x:chromeos.machine_learning.mojom.LoadModelResult',
+  'x:chromeos.machine_learning.mojom.Rotation',
+  'x:chromeos.network_config.mojom.ConnectionStateType',
+  'x:chromeos.network_config.mojom.DeviceStateType',
+  'x:chromeos.network_config.mojom.IPConfigType',
+  'x:chromeos.network_config.mojom.NetworkType',
+  'x:chromeos.network_config.mojom.OncSource',
+  'x:chromeos.network_config.mojom.PolicySource',
+  'x:chromeos.network_config.mojom.PortalState',
+  'x:cros.mojom.CameraClientType',
+  'x:cros.mojom.CameraMetadataSectionStart',
+  'x:cros.mojom.CameraMetadataTag',
+  'x:cros.mojom.HalPixelFormat',
+  'x:drivefs.mojom.DialogReason.Type',
+  'x:drivefs.mojom.DriveError.Type',
+  'x:drivefs.mojom.DriveFsDelegate.ExtensionConnectionStatus',
+  'x:drivefs.mojom.FileMetadata.CanPinStatus',
+  'x:drivefs.mojom.FileMetadata.Type',
+  'x:drivefs.mojom.ItemEventReason',
+  'x:drivefs.mojom.MirrorPathStatus',
+  'x:drivefs.mojom.MirrorSyncStatus',
+  'x:drivefs.mojom.QueryParameters.SortField',
+  'x:media.mojom.FillLightMode',
+  'x:media.mojom.MeteringMode',
+  'x:media.mojom.PowerLineFrequency',
+  'x:media.mojom.RedEyeReduction',
+  'x:media.mojom.ResolutionChangePolicy',
+  'x:media.mojom.VideoCaptureApi',
+  'x:media.mojom.VideoCaptureBufferType',
+  'x:media.mojom.VideoCaptureError',
+  'x:media.mojom.VideoCaptureFrameDropReason',
+  'x:media.mojom.VideoCapturePixelFormat',
+  'x:media.mojom.VideoCaptureTransportType',
+  'x:media.mojom.VideoFacingMode',
+  'x:ml.model_loader.mojom.ComputeResult',
+  'x:ml.model_loader.mojom.CreateModelLoaderResult',
+  'x:ml.model_loader.mojom.LoadModelResult',
+  'x:payments.mojom.BillingResponseCode',
+  'x:payments.mojom.CreateDigitalGoodsResponseCode',
+  'x:payments.mojom.ItemType',
+  'x:printing.mojom.PrinterType',
+  'x:test.mojom.ExtensibleEnumForUnitTestsCrOS',
 }
 ### DO NOT ADD ENTRIES TO THIS LIST. ###
 
 ### DO NOT ADD ENTRIES TO THIS LIST. ###
 _EXTENSIBLE_ENUMS_MISSING_DEFAULT_TO_BE_FIXED = {
-    'x:fuzz.mojom.FuzzEnum',
-    'x:media_session.mojom.MediaPlaybackState',
-    'x:media_session.mojom.MediaSessionAction',
-    'x:media_session.mojom.MediaSessionImageType',
-    'x:media_session.mojom.MediaPictureInPictureState',
-    'x:media_session.mojom.MediaAudioVideoState',
-    'x:media_session.mojom.MediaImageBitmapColorType',
-    'x:media_session.mojom.MediaSessionInfo.SessionState',
-    'x:media_session.mojom.MediaSession.SuspendType',
-    'x:media_session.mojom.AudioFocusType',
-    'x:mojo.test.ExtensibleEmptyEnum',
-    'x:mojo.test.enum_default_unittest.mojom.ExtensibleEnumWithoutDefault',
-    'x:network.mojom.WebSandboxFlags',
-    'x:test.mojom.ExtensibleEnumForUnitTests',
+  'x:fuzz.mojom.FuzzEnum',
+  'x:media_session.mojom.MediaPlaybackState',
+  'x:media_session.mojom.MediaSessionAction',
+  'x:media_session.mojom.MediaSessionImageType',
+  'x:media_session.mojom.MediaPictureInPictureState',
+  'x:media_session.mojom.MediaAudioVideoState',
+  'x:media_session.mojom.MediaImageBitmapColorType',
+  'x:media_session.mojom.MediaSessionInfo.SessionState',
+  'x:media_session.mojom.MediaSession.SuspendType',
+  'x:media_session.mojom.AudioFocusType',
+  'x:mojo.test.ExtensibleEmptyEnum',
+  'x:mojo.test.enum_default_unittest.mojom.ExtensibleEnumWithoutDefault',
+  'x:network.mojom.WebSandboxFlags',
+  'x:test.mojom.ExtensibleEnumForUnitTests',
 }
 ### DO NOT ADD ENTRIES TO THIS LIST. ###
 
@@ -298,9 +298,11 @@ def _ElemsOfType(elems, elem_type, scope):
   result = [elem for elem in elems if isinstance(elem, elem_type)]
   duplicate_name = _DuplicateName(result)
   if duplicate_name:
-    raise Exception('Names in mojom must be unique within a scope. The name '
-                    '"%s" is used more than once within the scope "%s".' %
-                    (duplicate_name, scope))
+    raise Exception(
+      'Names in mojom must be unique within a scope. The name '
+      '"%s" is used more than once within the scope "%s".'
+      % (duplicate_name, scope)
+    )
   return result
 
 
@@ -315,40 +317,42 @@ def _ProcessElements(scope, elements, operations_by_type):
     element_type = type(element)
     if element_type in operations_by_type:
       if element.mojom_name.name in names_in_this_scope:
-        raise Exception('Names must be unique within a scope. The name "%s" is '
-                        'used more than once within the scope "%s".' %
-                        (duplicate_name, scope))
+        raise Exception(
+          'Names must be unique within a scope. The name "%s" is '
+          'used more than once within the scope "%s".' % (duplicate_name, scope)
+        )
       operations_by_type[element_type](element)
 
 
 def _MapKind(typename):
   map_to_kind = {
-      'bool': 'b',
-      'int8': 'i8',
-      'int16': 'i16',
-      'int32': 'i32',
-      'int64': 'i64',
-      'uint8': 'u8',
-      'uint16': 'u16',
-      'uint32': 'u32',
-      'uint64': 'u64',
-      'float': 'f',
-      'double': 'd',
-      'string': 's',
-      'handle': 'h',
-      'handle<data_pipe_consumer>': 'h:d:c',
-      'handle<data_pipe_producer>': 'h:d:p',
-      'handle<message_pipe>': 'h:m',
-      'handle<shared_buffer>': 'h:s',
-      'handle<platform>': 'h:p'
+    'bool': 'b',
+    'int8': 'i8',
+    'int16': 'i16',
+    'int32': 'i32',
+    'int64': 'i64',
+    'uint8': 'u8',
+    'uint16': 'u16',
+    'uint32': 'u32',
+    'uint64': 'u64',
+    'float': 'f',
+    'double': 'd',
+    'string': 's',
+    'handle': 'h',
+    'handle<data_pipe_consumer>': 'h:d:c',
+    'handle<data_pipe_producer>': 'h:d:p',
+    'handle<message_pipe>': 'h:m',
+    'handle<shared_buffer>': 'h:s',
+    'handle<platform>': 'h:p',
   }
 
   if isinstance(typename, ast.Typename):
     opt = '?' if typename.nullable else ''
     return f'{opt}{_MapKind(typename.identifier)}'
 
-  assert isinstance(typename,
-                    ast.Identifier), f'Got {type(typename)} ({repr(typename)})'
+  assert isinstance(typename, ast.Identifier), (
+    f'Got {type(typename)} ({repr(typename)})'
+  )
   ident = typename
 
   if isinstance(ident, ast.Array):
@@ -387,8 +391,9 @@ def _MapAttributeValue(module, kind, value):
   # Is the attribute value the name of a feature?
   try:
     # Features cannot be nested in other types, so lookup in the global scope.
-    trial = _LookupKind(module.kinds, 'x:' + value_name,
-                        _GetScopeForKind(module, kind))
+    trial = _LookupKind(
+      module.kinds, 'x:' + value_name, _GetScopeForKind(module, kind)
+    )
     if isinstance(trial, mojom.Feature):
       return trial
   except ValueError:
@@ -413,17 +418,25 @@ def _AttributeListToDict(module, kind, attribute_list):
   attributes = dict()
   for attribute in attribute_list:
     if attribute.key.name in attributes:
-      raise Exception("Duplicate key (%s) in attribute list" %
-                      attribute.key.name)
-    attributes[attribute.key.name] = _MapAttributeValue(module, kind,
-                                                        attribute.value)
+      raise Exception(
+        "Duplicate key (%s) in attribute list" % attribute.key.name
+      )
+    attributes[attribute.key.name] = _MapAttributeValue(
+      module, kind, attribute.value
+    )
   return attributes
 
 
-builtin_values = frozenset([
-    "double.INFINITY", "double.NEGATIVE_INFINITY", "double.NAN",
-    "float.INFINITY", "float.NEGATIVE_INFINITY", "float.NAN"
-])
+builtin_values = frozenset(
+  [
+    "double.INFINITY",
+    "double.NEGATIVE_INFINITY",
+    "double.NAN",
+    "float.INFINITY",
+    "float.NEGATIVE_INFINITY",
+    "float.NAN",
+  ]
+)
 
 
 def _IsBuiltinValue(value):
@@ -460,10 +473,10 @@ def _GetScopeForKind(module, kind):
   struct Foo within module 'foo', this would return ('foo', 'Foo', 'Bar')"""
   if isinstance(kind, mojom.Enum) and kind.parent_kind:
     # Enums may be nested in other kinds.
-    return _GetScopeForKind(module, kind.parent_kind) + (kind.mojom_name, )
+    return _GetScopeForKind(module, kind.parent_kind) + (kind.mojom_name,)
 
-  module_fragment = (module.mojom_namespace, ) if module.mojom_namespace else ()
-  kind_fragment = (kind.mojom_name, ) if kind else ()
+  module_fragment = (module.mojom_namespace,) if module.mojom_namespace else ()
+  kind_fragment = (kind.mojom_name,) if kind else ()
   return module_fragment + kind_fragment
 
 
@@ -472,7 +485,7 @@ def _LookupValueInScope(module, kind, identifier):
   identifier to a concrete NamedValue within the scope of the given kind."""
   scope = _GetScopeForKind(module, kind)
   for i in reversed(range(len(scope) + 1)):
-    qualified_name = '.'.join(scope[:i] + (identifier, ))
+    qualified_name = '.'.join(scope[:i] + (identifier,))
     value = module.values.get(qualified_name)
     if value:
       return value
@@ -503,8 +516,11 @@ def _LookupValue(module, parent_kind, implied_kind, ast_leaf_node):
     return value
 
   # Next look in the scope of implied_kind, if provided.
-  value = (implied_kind and implied_kind.module and _LookupValueInScope(
-      implied_kind.module, implied_kind, identifier))
+  value = (
+    implied_kind
+    and implied_kind.module
+    and _LookupValueInScope(implied_kind.module, implied_kind, identifier)
+  )
   if value:
     return value
 
@@ -539,15 +555,17 @@ def _Kind(module, kinds, spec, scope):
   if spec.startswith('?'):
     kind = _Kind(module, kinds, spec[1:], scope)
     if not hasattr(kind, 'MakeNullableKind'):
-      raise Exception("Unknown spec: %s. Check for missing imports in %s" %
-                      (spec, module.path))
+      raise Exception(
+        "Unknown spec: %s. Check for missing imports in %s"
+        % (spec, module.path)
+      )
     kind = kind.MakeNullableKind()
   elif spec.startswith('a:'):
     kind = mojom.Array(_Kind(module, kinds, spec[2:], scope))
   elif spec.startswith('a'):
     colon = spec.find(':')
     length = int(spec[1:colon])
-    kind = mojom.Array(_Kind(module, kinds, spec[colon + 1:], scope), length)
+    kind = mojom.Array(_Kind(module, kinds, spec[colon + 1 :], scope), length)
   elif spec.startswith('rmt:'):
     kind = mojom.PendingRemote(_Kind(module, kinds, spec[4:], scope))
   elif spec.startswith('rcv:'):
@@ -555,8 +573,9 @@ def _Kind(module, kinds, spec, scope):
   elif spec.startswith('rma:'):
     kind = mojom.PendingAssociatedRemote(_Kind(module, kinds, spec[4:], scope))
   elif spec.startswith('rca:'):
-    kind = mojom.PendingAssociatedReceiver(_Kind(module, kinds, spec[4:],
-                                                 scope))
+    kind = mojom.PendingAssociatedReceiver(
+      _Kind(module, kinds, spec[4:], scope)
+    )
   elif spec.startswith('m['):
     # Isolate the two types from their brackets.
 
@@ -567,10 +586,12 @@ def _Kind(module, kinds, spec, scope):
     assert spec[key_end + 1] == '[' and spec[-1] == ']'
 
     first_kind = spec[2:key_end]
-    second_kind = spec[key_end + 2:-1]
+    second_kind = spec[key_end + 2 : -1]
 
-    kind = mojom.Map(_Kind(module, kinds, first_kind, scope),
-                     _Kind(module, kinds, second_kind, scope))
+    kind = mojom.Map(
+      _Kind(module, kinds, first_kind, scope),
+      _Kind(module, kinds, second_kind, scope),
+    )
   else:
     kind = mojom.Kind(spec)
 
@@ -580,11 +601,18 @@ def _Kind(module, kinds, spec, scope):
 
 def _Import(module, import_module):
   # Copy the struct kinds from our imports into the current module.
-  importable_kinds = (mojom.Struct, mojom.Union, mojom.Enum, mojom.Interface,
-                      mojom.Feature)
+  importable_kinds = (
+    mojom.Struct,
+    mojom.Union,
+    mojom.Enum,
+    mojom.Interface,
+    mojom.Feature,
+  )
   for kind in import_module.kinds.values():
-    if (isinstance(kind, importable_kinds)
-        and kind.module.path == import_module.path):
+    if (
+      isinstance(kind, importable_kinds)
+      and kind.module.path == import_module.path
+    ):
       module.kinds[kind.spec] = kind
   # Ditto for values.
   for value in import_module.values.values():
@@ -609,14 +637,18 @@ def _Feature(module, parsed_feature):
   module.kinds[feature.spec] = feature
   feature.constants = []
   _ProcessElements(
-      parsed_feature.mojom_name, parsed_feature.body, {
-          ast.Const:
-          lambda const: feature.constants.append(
-              _Constant(module, const, feature)),
-      })
+    parsed_feature.mojom_name,
+    parsed_feature.body,
+    {
+      ast.Const: lambda const: feature.constants.append(
+        _Constant(module, const, feature)
+      ),
+    },
+  )
 
-  feature.attributes = _AttributeListToDict(module, feature,
-                                            parsed_feature.attribute_list)
+  feature.attributes = _AttributeListToDict(
+    module, feature, parsed_feature.attribute_list
+  )
   return feature
 
 
@@ -639,25 +671,28 @@ def _Struct(module, parsed_struct):
   struct.fields_data = []
   if not struct.native_only:
     _ProcessElements(
-        parsed_struct.mojom_name, parsed_struct.body, {
-            ast.Enum:
-            lambda enum: struct.enums.append(_Enum(module, enum, struct)),
-            ast.Const:
-            lambda const: struct.constants.append(
-                _Constant(module, const, struct)),
-            ast.StructField:
-            struct.fields_data.append,
-        })
+      parsed_struct.mojom_name,
+      parsed_struct.body,
+      {
+        ast.Enum: lambda enum: struct.enums.append(_Enum(module, enum, struct)),
+        ast.Const: lambda const: struct.constants.append(
+          _Constant(module, const, struct)
+        ),
+        ast.StructField: struct.fields_data.append,
+      },
+    )
 
-  struct.attributes = _AttributeListToDict(module, struct,
-                                           parsed_struct.attribute_list)
+  struct.attributes = _AttributeListToDict(
+    module, struct, parsed_struct.attribute_list
+  )
 
   # Enforce that a [Native] attribute is set to make native-only struct
   # declarations more explicit.
   if struct.native_only:
     if not struct.attributes or not struct.attributes.get('Native', False):
-      raise Exception("Native-only struct declarations must include a " +
-                      "Native attribute.")
+      raise Exception(
+        "Native-only struct declarations must include a " + "Native attribute."
+      )
 
   if struct.attributes and struct.attributes.get('CustomSerializer', False):
     struct.custom_serializer = True
@@ -680,10 +715,14 @@ def _Union(module, parsed_union):
   module.kinds[union.spec] = union
   # Stash fields parsed_union here temporarily.
   union.fields_data = []
-  _ProcessElements(parsed_union.mojom_name, parsed_union.body,
-                   {ast.UnionField: union.fields_data.append})
-  union.attributes = _AttributeListToDict(module, union,
-                                          parsed_union.attribute_list)
+  _ProcessElements(
+    parsed_union.mojom_name,
+    parsed_union.body,
+    {ast.UnionField: union.fields_data.append},
+  )
+  union.attributes = _AttributeListToDict(
+    module, union, parsed_union.attribute_list
+  )
   return union
 
 
@@ -699,13 +738,19 @@ def _StructField(module, parsed_field, struct):
   """
   field = mojom.StructField()
   field.mojom_name = parsed_field.mojom_name.name
-  field.kind = _Kind(module, module.kinds, _MapKind(parsed_field.typename),
-                     (module.mojom_namespace, struct.mojom_name))
+  field.kind = _Kind(
+    module,
+    module.kinds,
+    _MapKind(parsed_field.typename),
+    (module.mojom_namespace, struct.mojom_name),
+  )
   field.ordinal = parsed_field.ordinal.value if parsed_field.ordinal else None
-  field.default = _LookupValue(module, struct, field.kind,
-                               parsed_field.default_value)
-  field.attributes = _AttributeListToDict(module, field,
-                                          parsed_field.attribute_list)
+  field.default = _LookupValue(
+    module, struct, field.kind, parsed_field.default_value
+  )
+  field.attributes = _AttributeListToDict(
+    module, field, parsed_field.attribute_list
+  )
   return field
 
 
@@ -724,17 +769,26 @@ def _UnionField(module, parsed_field, union):
   # Disallow unions from being self-recursive.
   parsed_typename = parsed_field.typename.identifier.id
   assert parsed_typename != union.mojom_name
-  field.kind = _Kind(module, module.kinds, _MapKind(parsed_field.typename),
-                     (module.mojom_namespace, union.mojom_name))
+  field.kind = _Kind(
+    module,
+    module.kinds,
+    _MapKind(parsed_field.typename),
+    (module.mojom_namespace, union.mojom_name),
+  )
   field.ordinal = parsed_field.ordinal.value if parsed_field.ordinal else None
   field.default = None
-  field.attributes = _AttributeListToDict(module, field,
-                                          parsed_field.attribute_list)
-  if field.is_default and not mojom.IsNullableKind(field.kind) and \
-     not mojom.IsIntegralKind(field.kind):
+  field.attributes = _AttributeListToDict(
+    module, field, parsed_field.attribute_list
+  )
+  if (
+    field.is_default
+    and not mojom.IsNullableKind(field.kind)
+    and not mojom.IsIntegralKind(field.kind)
+  ):
     raise Exception(
-        '[Default] field for union %s must be nullable or integral type.' %
-        union.mojom_name)
+      '[Default] field for union %s must be nullable or integral type.'
+      % union.mojom_name
+    )
   return field
 
 
@@ -750,13 +804,19 @@ def _Parameter(module, parsed_param, interface):
   """
   parameter = mojom.Parameter()
   parameter.mojom_name = parsed_param.mojom_name.name
-  parameter.kind = _Kind(module, module.kinds, _MapKind(parsed_param.typename),
-                         (module.mojom_namespace, interface.mojom_name))
-  parameter.ordinal = (parsed_param.ordinal.value
-                       if parsed_param.ordinal else None)
+  parameter.kind = _Kind(
+    module,
+    module.kinds,
+    _MapKind(parsed_param.typename),
+    (module.mojom_namespace, interface.mojom_name),
+  )
+  parameter.ordinal = (
+    parsed_param.ordinal.value if parsed_param.ordinal else None
+  )
   parameter.default = None  # TODO(tibell): We never have these. Remove field?
-  parameter.attributes = _AttributeListToDict(module, parameter,
-                                              parsed_param.attribute_list)
+  parameter.attributes = _AttributeListToDict(
+    module, parameter, parsed_param.attribute_list
+  )
   return parameter
 
 
@@ -771,27 +831,41 @@ def _Method(module, parsed_method, interface):
     {mojom.Method} AST method.
   """
   method = mojom.Method(
-      interface,
-      parsed_method.mojom_name.name,
-      ordinal=parsed_method.ordinal.value if parsed_method.ordinal else None)
+    interface,
+    parsed_method.mojom_name.name,
+    ordinal=parsed_method.ordinal.value if parsed_method.ordinal else None,
+  )
   method.parameters = list(
-      map(lambda parameter: _Parameter(module, parameter, interface),
-          parsed_method.parameter_list))
+    map(
+      lambda parameter: _Parameter(module, parameter, interface),
+      parsed_method.parameter_list,
+    )
+  )
   # Method can only have one of result response or response parameter list.
-  assert not (parsed_method.response_parameter_list
-              and parsed_method.result_response)
+  assert not (
+    parsed_method.response_parameter_list and parsed_method.result_response
+  )
   if parsed_method.response_parameter_list is not None:
     method.response_parameters = list(
-        map(lambda parameter: _Parameter(module, parameter, interface),
-            parsed_method.response_parameter_list))
+      map(
+        lambda parameter: _Parameter(module, parameter, interface),
+        parsed_method.response_parameter_list,
+      )
+    )
   if parsed_method.result_response is not None:
     result_type = parsed_method.result_response
-    success_kind = _Kind(module, module.kinds,
-                         _MapKind(result_type.success_type),
-                         (module.mojom_namespace, interface.mojom_name))
-    failure_kind = _Kind(module, module.kinds,
-                         _MapKind(result_type.failure_type),
-                         (module.mojom_namespace, interface.mojom_name))
+    success_kind = _Kind(
+      module,
+      module.kinds,
+      _MapKind(result_type.success_type),
+      (module.mojom_namespace, interface.mojom_name),
+    )
+    failure_kind = _Kind(
+      module,
+      module.kinds,
+      _MapKind(result_type.failure_type),
+      (module.mojom_namespace, interface.mojom_name),
+    )
     result_response = mojom.Result(method, success_kind, failure_kind)
     method.result_response = result_response
     param = result_response.ToResponseParam(module)
@@ -800,15 +874,18 @@ def _Method(module, parsed_method, interface):
     module.kinds[param.kind.spec] = param.kind
     module.unions.append(param.kind)
 
-  method.attributes = _AttributeListToDict(module, method,
-                                           parsed_method.attribute_list)
+  method.attributes = _AttributeListToDict(
+    module, method, parsed_method.attribute_list
+  )
 
   # Enforce that only methods with response can have a [Sync] attribute.
   if method.sync and method.response_parameters is None:
-    raise Exception("Only methods with response can include a [Sync] "
-                    "attribute. If no response parameters are needed, you "
-                    "could use an empty response parameter list, i.e., "
-                    "\"=> ()\".")
+    raise Exception(
+      "Only methods with response can include a [Sync] "
+      "attribute. If no response parameters are needed, you "
+      "could use an empty response parameter list, i.e., "
+      "\"=> ()\"."
+    )
   # And only methods with the [Sync] attribute can specify [NoInterrupt].
   if not method.allow_interrupt and not method.sync:
     raise Exception("Only [Sync] methods can be marked [NoInterrupt].")
@@ -829,21 +906,25 @@ def _Interface(module, parsed_iface):
   interface.mojom_name = parsed_iface.mojom_name.name
   interface.spec = 'x:' + module.GetNamespacePrefix() + interface.mojom_name
   module.kinds[interface.spec] = interface
-  interface.attributes = _AttributeListToDict(module, interface,
-                                              parsed_iface.attribute_list)
+  interface.attributes = _AttributeListToDict(
+    module, interface, parsed_iface.attribute_list
+  )
   interface.enums = []
   interface.constants = []
   interface.methods_data = []
   _ProcessElements(
-      parsed_iface.mojom_name, parsed_iface.body, {
-          ast.Enum:
-          lambda enum: interface.enums.append(_Enum(module, enum, interface)),
-          ast.Const:
-          lambda const: interface.constants.append(
-              _Constant(module, const, interface)),
-          ast.Method:
-          interface.methods_data.append,
-      })
+    parsed_iface.mojom_name,
+    parsed_iface.body,
+    {
+      ast.Enum: lambda enum: interface.enums.append(
+        _Enum(module, enum, interface)
+      ),
+      ast.Const: lambda const: interface.constants.append(
+        _Constant(module, const, interface)
+      ),
+      ast.Method: interface.methods_data.append,
+    },
+  )
   return interface
 
 
@@ -860,8 +941,9 @@ def _EnumField(module, enum, parsed_field):
   field = mojom.EnumField()
   field.mojom_name = parsed_field.mojom_name.name
   field.value = _LookupValue(module, enum, None, parsed_field.value)
-  field.attributes = _AttributeListToDict(module, field,
-                                          parsed_field.attribute_list)
+  field.attributes = _AttributeListToDict(
+    module, field, parsed_field.attribute_list
+  )
   value = mojom.EnumValue(module, enum, field)
   module.values[value.GetSpec()] = value
   return field
@@ -893,17 +975,20 @@ def _ResolveNumericEnumValues(enum):
       constant = field.value.constant
       kind = constant.kind
       if not mojom.IsIntegralKind(kind) or mojom.IsBoolKind(kind):
-        raise ValueError('Enum values must be integers. %s is not an integer.' %
-                         constant.mojom_name)
+        raise ValueError(
+          'Enum values must be integers. %s is not an integer.'
+          % constant.mojom_name
+        )
       prev_value = int(constant.value, 0)
     else:
       raise Exception('Unresolved enum value for %s' % field.value.GetSpec())
 
     if prev_value in (-128, -127):
       raise Exception(
-          f'{field.mojom_name} in {enum.spec} has the value '
-          f'{prev_value}, which is reserved for blink::HashTrait\'s '
-          'default enum specialization and may not be used.')
+        f'{field.mojom_name} in {enum.spec} has the value '
+        f'{prev_value}, which is reserved for blink::HashTrait\'s '
+        'default enum specialization and may not be used.'
+      )
     field.numeric_value = prev_value
     if min_value is None or prev_value < min_value:
       min_value = prev_value
@@ -931,13 +1016,17 @@ def _Enum(module, parsed_enum, parent_kind):
     mojom_name = parent_kind.mojom_name + '.' + mojom_name
   enum.spec = 'x:%s.%s' % (module.mojom_namespace, mojom_name)
   enum.parent_kind = parent_kind
-  enum.attributes = _AttributeListToDict(module, enum,
-                                         parsed_enum.attribute_list)
+  enum.attributes = _AttributeListToDict(
+    module, enum, parsed_enum.attribute_list
+  )
 
   if not enum.native_only:
     enum.fields = list(
-        map(lambda field: _EnumField(module, enum, field),
-            parsed_enum.enum_value_list))
+      map(
+        lambda field: _EnumField(module, enum, field),
+        parsed_enum.enum_value_list,
+      )
+    )
     _ResolveNumericEnumValues(enum)
     # TODO(crbug.com/40525166): Require a default value to be
     # specified.
@@ -945,32 +1034,39 @@ def _Enum(module, parsed_enum, parent_kind):
       if field.default:
         if not enum.extensible:
           raise Exception(
-              f'Non-extensible enum {enum.spec} may not specify a default')
+            f'Non-extensible enum {enum.spec} may not specify a default'
+          )
         if enum.default_field is not None:
           raise Exception(f'Multiple [Default] enumerators in enum {enum.spec}')
         enum.default_field = field
     if enum.extensible and enum.default_field is None:
       # Python 3.10 supports match + case... but chromium requires Python 3.9
-      if (module.extensible_enum_mode ==
-          ExtensibleEnumMode.RELAXED_FOR_BACKWARDS_COMPAT_CHECK):
+      if (
+        module.extensible_enum_mode
+        == ExtensibleEnumMode.RELAXED_FOR_BACKWARDS_COMPAT_CHECK
+      ):
         # While running the backwards compatibility check, ignore errors because
         # the old version of the enum might not specify [Default].
         pass
-      elif (module.extensible_enum_mode ==
-            ExtensibleEnumMode.RELAXED_FOR_CHROMEOS):
-        if (enum.spec not in _EXTENSIBLE_ENUMS_MISSING_DEFAULT_CHROMEOS
-            and enum.spec not in _EXTENSIBLE_ENUMS_MISSING_DEFAULT_TO_BE_FIXED):
+      elif (
+        module.extensible_enum_mode == ExtensibleEnumMode.RELAXED_FOR_CHROMEOS
+      ):
+        if (
+          enum.spec not in _EXTENSIBLE_ENUMS_MISSING_DEFAULT_CHROMEOS
+          and enum.spec not in _EXTENSIBLE_ENUMS_MISSING_DEFAULT_TO_BE_FIXED
+        ):
           raise Exception(
-              f'Extensible enum {enum.spec} must specify a [Default] enumerator'
+            f'Extensible enum {enum.spec} must specify a [Default] enumerator'
           )
       elif module.extensible_enum_mode == ExtensibleEnumMode.STRICT:
         if enum.spec not in _EXTENSIBLE_ENUMS_MISSING_DEFAULT_TO_BE_FIXED:
           raise Exception(
-              f'Extensible enum {enum.spec} must specify a [Default] enumerator'
+            f'Extensible enum {enum.spec} must specify a [Default] enumerator'
           )
       else:
         raise Exception(
-            f'Unhandled ExtensibleEnumMode {module.extensible_enum_mode}')
+          f'Unhandled ExtensibleEnumMode {module.extensible_enum_mode}'
+        )
 
   module.kinds[enum.spec] = enum
 
@@ -978,8 +1074,9 @@ def _Enum(module, parsed_enum, parent_kind):
   # declarations more explicit.
   if enum.native_only:
     if not enum.attributes or not enum.attributes.get('Native', False):
-      raise Exception("Native-only enum declarations must include a " +
-                      "Native attribute.")
+      raise Exception(
+        "Native-only enum declarations must include a " + "Native attribute."
+      )
 
   return enum
 
@@ -998,13 +1095,15 @@ def _Constant(module, parsed_const, parent_kind):
   if parent_kind:
     scope = (module.mojom_namespace, parent_kind.mojom_name)
   else:
-    scope = (module.mojom_namespace, )
+    scope = (module.mojom_namespace,)
   # TODO(mpcomplete): maybe we should only support POD kinds.
-  constant.kind = _Kind(module, module.kinds, _MapKind(parsed_const.typename),
-                        scope)
+  constant.kind = _Kind(
+    module, module.kinds, _MapKind(parsed_const.typename), scope
+  )
   constant.parent_kind = parent_kind
-  constant.value = _LookupValue(module, parent_kind, constant.kind,
-                                parsed_const.value)
+  constant.value = _LookupValue(
+    module, parent_kind, constant.kind, parsed_const.value
+  )
 
   # Iteratively resolve this constant reference to a concrete value
   while isinstance(constant.value, mojom.ConstantValue):
@@ -1028,23 +1127,31 @@ def _CollectReferencedKinds(module, all_defined_kinds):
     if mojom.IsArrayKind(kind):
       return extract_referenced_user_kinds(kind.kind)
     if mojom.IsMapKind(kind):
-      return (extract_referenced_user_kinds(kind.key_kind) +
-              extract_referenced_user_kinds(kind.value_kind))
-    if (mojom.IsAssociatedKind(kind) or mojom.IsPendingRemoteKind(kind)
-        or mojom.IsPendingReceiverKind(kind)):
+      return extract_referenced_user_kinds(
+        kind.key_kind
+      ) + extract_referenced_user_kinds(kind.value_kind)
+    if (
+      mojom.IsAssociatedKind(kind)
+      or mojom.IsPendingRemoteKind(kind)
+      or mojom.IsPendingReceiverKind(kind)
+    ):
       return [kind.kind]
     if mojom.IsStructKind(kind):
       return [kind]
-    if (mojom.IsInterfaceKind(kind) or mojom.IsEnumKind(kind)
-        or mojom.IsUnionKind(kind)):
+    if (
+      mojom.IsInterfaceKind(kind)
+      or mojom.IsEnumKind(kind)
+      or mojom.IsUnionKind(kind)
+    ):
       return [kind]
     return []
 
   def sanitize_kind(kind):
     """Removes nullability from a kind"""
     if kind.spec.startswith('?'):
-      return _Kind(module, module.kinds, kind.spec[1:],
-                   (module.mojom_namespace, ''))
+      return _Kind(
+        module, module.kinds, kind.spec[1:], (module.mojom_namespace, '')
+      )
     return kind
 
   referenced_user_kinds = {}
@@ -1062,8 +1169,9 @@ def _CollectReferencedKinds(module, all_defined_kinds):
   # Also scan for references in parameter lists
   for interface in module.interfaces:
     for method in interface.methods:
-      for param in itertools.chain(method.parameters or [],
-                                   method.response_parameters or []):
+      for param in itertools.chain(
+        method.parameters or [], method.response_parameters or []
+      ):
         find_and_add_all_user_kinds(param.kind)
 
       if method.result_response:
@@ -1096,13 +1204,18 @@ def _AssertTypeIsStable(kind):
   one type that is not marked [Stable]."""
 
   def assertDependencyIsStable(dependency):
-    if (mojom.IsEnumKind(dependency) or mojom.IsStructKind(dependency)
-        or mojom.IsUnionKind(dependency) or mojom.IsInterfaceKind(dependency)):
+    if (
+      mojom.IsEnumKind(dependency)
+      or mojom.IsStructKind(dependency)
+      or mojom.IsUnionKind(dependency)
+      or mojom.IsInterfaceKind(dependency)
+    ):
       if not dependency.stable:
         raise Exception(
-            '%s is marked [Stable] but cannot be stable because it depends on '
-            '%s, which is not marked [Stable].' %
-            (kind.mojom_name, dependency.mojom_name))
+          '%s is marked [Stable] but cannot be stable because it depends on '
+          '%s, which is not marked [Stable].'
+          % (kind.mojom_name, dependency.mojom_name)
+        )
     elif mojom.IsArrayKind(dependency) or mojom.IsAnyInterfaceKind(dependency):
       assertDependencyIsStable(dependency.kind)
     elif mojom.IsMapKind(dependency):
@@ -1126,9 +1239,11 @@ def _AssertStructIsValid(kind):
   ordinals = set(map(lambda field: field.ordinal, kind.fields))
   if ordinals != expected_ordinals:
     raise Exception(
-        'Structs must use contiguous ordinals starting from 0. ' +
-        '{} is missing the following ordinals: {}.'.format(
-            kind.mojom_name, ', '.join(map(str, expected_ordinals - ordinals))))
+      'Structs must use contiguous ordinals starting from 0. '
+      + '{} is missing the following ordinals: {}.'.format(
+        kind.mojom_name, ', '.join(map(str, expected_ordinals - ordinals))
+      )
+    )
 
 
 def _Module(tree, path, imports, extensible_enum_mode: ExtensibleEnumMode):
@@ -1156,13 +1271,15 @@ def _Module(tree, path, imports, extensible_enum_mode: ExtensibleEnumMode):
   # Imports must come first, because they add to module.kinds which is used
   # by by the others.
   module.imports = [
-      _Import(module, imports[imp.import_filename]) for imp in tree.import_list
+    _Import(module, imports[imp.import_filename]) for imp in tree.import_list
   ]
   if tree.module and tree.module.attribute_list:
     assert isinstance(tree.module.attribute_list, ast.AttributeList)
     # TODO(vtl): Check for duplicate keys here.
-    module.attributes = dict((attribute.key.name, attribute.value)
-                             for attribute in tree.module.attribute_list)
+    module.attributes = dict(
+      (attribute.key.name, attribute.value)
+      for attribute in tree.module.attribute_list
+    )
 
   filename = os.path.basename(path)
   # First pass collects kinds.
@@ -1174,29 +1291,31 @@ def _Module(tree, path, imports, extensible_enum_mode: ExtensibleEnumMode):
   module.features = []
 
   _ProcessElements(
-      filename, tree.definition_list, {
-          ast.Const:
-          lambda const: module.constants.append(_Constant(module, const, None)),
-          ast.Enum:
-          lambda enum: module.enums.append(_Enum(module, enum, None)),
-          ast.Struct:
-          lambda struct: module.structs.append(_Struct(module, struct)),
-          ast.Union:
-          lambda union: module.unions.append(_Union(module, union)),
-          ast.Interface:
-          lambda interface: module.interfaces.append(
-              _Interface(module, interface)),
-          ast.Feature:
-          lambda feature: module.features.append(_Feature(module, feature)),
-      })
+    filename,
+    tree.definition_list,
+    {
+      ast.Const: lambda const: module.constants.append(
+        _Constant(module, const, None)
+      ),
+      ast.Enum: lambda enum: module.enums.append(_Enum(module, enum, None)),
+      ast.Struct: lambda struct: module.structs.append(_Struct(module, struct)),
+      ast.Union: lambda union: module.unions.append(_Union(module, union)),
+      ast.Interface: lambda interface: module.interfaces.append(
+        _Interface(module, interface)
+      ),
+      ast.Feature: lambda feature: module.features.append(
+        _Feature(module, feature)
+      ),
+    },
+  )
 
   # Second pass expands fields and methods. This allows fields and parameters
   # to refer to kinds defined anywhere in the mojom.
   all_defined_kinds = {}
   for struct in module.structs:
     struct.fields = list(
-        map(lambda field: _StructField(module, field, struct),
-            struct.fields_data))
+      map(lambda field: _StructField(module, field, struct), struct.fields_data)
+    )
     _AssignDefaultOrdinals(struct.fields)
     del struct.fields_data
     all_defined_kinds[struct.spec] = struct
@@ -1208,24 +1327,30 @@ def _Module(tree, path, imports, extensible_enum_mode: ExtensibleEnumMode):
 
   for union in module.unions:
     union.fields = list(
-        map(lambda field: _UnionField(module, field, union), union.fields_data))
+      map(lambda field: _UnionField(module, field, union), union.fields_data)
+    )
     _AssignDefaultOrdinals(union.fields)
     for field in union.fields:
       if field.is_default:
         if union.default_field is not None:
-          raise Exception('Multiple [Default] fields in union %s.' %
-                          union.mojom_name)
+          raise Exception(
+            'Multiple [Default] fields in union %s.' % union.mojom_name
+          )
         union.default_field = field
     del union.fields_data
     all_defined_kinds[union.spec] = union
     if union.extensible and union.default_field is None:
-      raise Exception('Extensible union %s must specify a [Default] field' %
-                      union.mojom_name)
+      raise Exception(
+        'Extensible union %s must specify a [Default] field' % union.mojom_name
+      )
 
   for interface in module.interfaces:
     interface.methods = list(
-        map(lambda method: _Method(module, method, interface),
-            interface.methods_data))
+      map(
+        lambda method: _Method(module, method, interface),
+        interface.methods_data,
+      )
+    )
     _AssignDefaultOrdinals(interface.methods)
     del interface.methods_data
     all_defined_kinds[interface.spec] = interface
@@ -1241,12 +1366,15 @@ def _Module(tree, path, imports, extensible_enum_mode: ExtensibleEnumMode):
   for enum in module.enums:
     all_defined_kinds[enum.spec] = enum
 
-  all_referenced_kinds = _CollectReferencedKinds(module,
-                                                 all_defined_kinds.values())
+  all_referenced_kinds = _CollectReferencedKinds(
+    module, all_defined_kinds.values()
+  )
   imported_kind_specs = set(all_referenced_kinds.keys()).difference(
-      set(all_defined_kinds.keys()))
-  module.imported_kinds = OrderedDict((spec, all_referenced_kinds[spec])
-                                      for spec in sorted(imported_kind_specs))
+    set(all_defined_kinds.keys())
+  )
+  module.imported_kinds = OrderedDict(
+    (spec, all_referenced_kinds[spec]) for spec in sorted(imported_kind_specs)
+  )
 
   generator.AddComputedData(module)
   for iface in module.interfaces:
@@ -1270,10 +1398,11 @@ def _Module(tree, path, imports, extensible_enum_mode: ExtensibleEnumMode):
 
 
 def OrderedModule(
-    tree,
-    path,
-    imports,
-    extensible_enum_mode: ExtensibleEnumMode = ExtensibleEnumMode.STRICT):
+  tree,
+  path,
+  imports,
+  extensible_enum_mode: ExtensibleEnumMode = ExtensibleEnumMode.STRICT,
+):
   """Convert parse tree to AST module.
 
   Args:

@@ -20,8 +20,10 @@ class Check(check.Check):
           previous_module = kinds[kind_name]
           if previous_module.path != module.path:
             raise check.CheckException(
-                self.module, f"multiple-definition for type {kind_name}" +
-                f"(defined in both {previous_module} and {module})")
+              self.module,
+              f"multiple-definition for type {kind_name}"
+              + f"(defined in both {previous_module} and {module})",
+            )
         kinds[kind_name] = kind.module
 
     for kind in self.module.enums + self.module.structs + self.module.unions:
@@ -29,6 +31,8 @@ class Check(check.Check):
       if kind_name in kinds:
         previous_module = kinds[kind_name]
         raise check.CheckException(
-            self.module, f"multiple-definition for type {kind_name}" +
-            f"(previous definition in {previous_module})")
+          self.module,
+          f"multiple-definition for type {kind_name}"
+          + f"(previous definition in {previous_module})",
+        )
     return True

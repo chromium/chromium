@@ -57,8 +57,10 @@ def _ResolveRelativeImportPath(path, imported_by, roots):
     if os.path.isfile(abs_path):
       return os.path.normcase(os.path.normpath(abs_path))
 
-  raise ValueError('"%s", imported by %s, does not exist in any of %s' %
-                   (path, imported_by, roots))
+  raise ValueError(
+    '"%s", imported by %s, does not exist in any of %s'
+    % (path, imported_by, roots)
+  )
 
 
 def RebaseAbsolutePath(path, roots):
@@ -110,9 +112,16 @@ def _GetModuleFilename(mojom_filename):
   return mojom_filename + '-module'
 
 
-def _EnsureInputLoaded(mojom_abspath, module_path, abs_paths, asts,
-                       dependencies, loaded_modules, module_metadata,
-                       is_chromeos: bool):
+def _EnsureInputLoaded(
+  mojom_abspath,
+  module_path,
+  abs_paths,
+  asts,
+  dependencies,
+  loaded_modules,
+  module_metadata,
+  is_chromeos: bool,
+):
   """Recursively ensures that a module and its dependencies are loaded.
 
   Args:
@@ -141,17 +150,29 @@ def _EnsureInputLoaded(mojom_abspath, module_path, abs_paths, asts,
 
   for dep_abspath, dep_path in sorted(dependencies[mojom_abspath]):
     if dep_abspath not in loaded_modules:
-      _EnsureInputLoaded(dep_abspath, dep_path, abs_paths, asts, dependencies,
-                         loaded_modules, module_metadata, is_chromeos)
+      _EnsureInputLoaded(
+        dep_abspath,
+        dep_path,
+        abs_paths,
+        asts,
+        dependencies,
+        loaded_modules,
+        module_metadata,
+        is_chromeos,
+      )
 
   imports = {}
   for imp in asts[mojom_abspath].import_list:
     path = imp.import_filename
     imports[path] = loaded_modules[abs_paths[path]]
   loaded_modules[mojom_abspath] = translate.OrderedModule(
-      asts[mojom_abspath], module_path, imports,
-      translate.ExtensibleEnumMode.RELAXED_FOR_CHROMEOS
-      if is_chromeos else translate.ExtensibleEnumMode.STRICT)
+    asts[mojom_abspath],
+    module_path,
+    imports,
+    translate.ExtensibleEnumMode.RELAXED_FOR_CHROMEOS
+    if is_chromeos
+    else translate.ExtensibleEnumMode.STRICT,
+  )
   loaded_modules[mojom_abspath].metadata = dict(module_metadata)
 
 
@@ -171,7 +192,8 @@ def _CollectAllowedImportsFromBuildMetadata(build_metadata_filename):
     with open(metadata_filename) as f:
       metadata = json.load(f)
       allowed_imports.update(
-          [os.path.normcase(to_abs(s)) for s in metadata['sources']])
+        [os.path.normcase(to_abs(s)) for s in metadata['sources']]
+      )
       for dep_metadata in metadata['deps']:
         dep_metadata = to_abs(dep_metadata)
         if dep_metadata not in processed_deps:
@@ -195,8 +217,9 @@ def _ParseAstHelper(mojom_abspath, mojom_path, enabled_features):
 
 # multiprocessing helper.
 def _SerializeHelper(mojom_abspath, mojom_path):
-  module_path = os.path.join(_SerializeHelper.output_root_path,
-                             _GetModuleFilename(mojom_path))
+  module_path = os.path.join(
+    _SerializeHelper.output_root_path, _GetModuleFilename(mojom_path)
+  )
   module_dir = os.path.dirname(module_path)
   if not os.path.exists(module_dir):
     try:
@@ -264,13 +287,15 @@ def _Shard(target_func, arg_list, processes=None):
     pool.terminate()
 
 
-def _ParseMojoms(mojom_files,
-                 input_root_paths,
-                 output_root_path,
-                 module_root_paths,
-                 enabled_features,
-                 module_metadata,
-                 allowed_imports=None):
+def _ParseMojoms(
+  mojom_files,
+  input_root_paths,
+  output_root_path,
+  module_root_paths,
+  enabled_features,
+  module_metadata,
+  allowed_imports=None,
+):
   """Parses a set of mojom files and produces serialized module outputs.
 
   Args:
@@ -301,15 +326,19 @@ def _ParseMojoms(mojom_files,
   loaded_mojom_asts = {}
   loaded_modules = {}
   input_dependencies = defaultdict(set)
-  mojom_files_to_parse = dict((os.path.normcase(abs_path),
-                               RebaseAbsolutePath(abs_path, input_root_paths))
-                              for abs_path in mojom_files)
+  mojom_files_to_parse = dict(
+    (os.path.normcase(abs_path), RebaseAbsolutePath(abs_path, input_root_paths))
+    for abs_path in mojom_files
+  )
   abs_paths = dict(
-      (path, abs_path) for abs_path, path in mojom_files_to_parse.items())
+    (path, abs_path) for abs_path, path in mojom_files_to_parse.items()
+  )
 
   logging.info('Parsing %d .mojom into ASTs', len(mojom_files_to_parse))
-  map_args = ((mojom_abspath, mojom_path, enabled_features)
-              for mojom_abspath, mojom_path in mojom_files_to_parse.items())
+  map_args = (
+    (mojom_abspath, mojom_path, enabled_features)
+    for mojom_abspath, mojom_path in mojom_files_to_parse.items()
+  )
   for mojom_abspath, ast in _Shard(_ParseAstHelper, map_args):
     loaded_mojom_asts[mojom_abspath] = ast
 
@@ -317,9 +346,9 @@ def _ParseMojoms(mojom_files,
   for mojom_abspath, ast in sorted(loaded_mojom_asts.items()):
     invalid_imports = []
     for imp in ast.import_list:
-      import_abspath = _ResolveRelativeImportPath(imp.import_filename,
-                                                  mojom_abspath,
-                                                  input_root_paths)
+      import_abspath = _ResolveRelativeImportPath(
+        imp.import_filename, mojom_abspath, input_root_paths
+      )
       if allowed_imports and import_abspath not in allowed_imports:
         invalid_imports.append(imp.import_filename)
 
@@ -330,21 +359,24 @@ def _ParseMojoms(mojom_files,
         # module. We retain record of dependencies to help with input
         # processing later.
         input_dependencies[mojom_abspath].add(
-            (import_abspath, imp.import_filename))
+          (import_abspath, imp.import_filename)
+        )
       elif import_abspath not in loaded_modules:
         # We have an import that isn't being parsed right now. It must already
         # be parsed and have a module file sitting in a corresponding output
         # location.
         module_path = _GetModuleFilename(imp.import_filename)
         module_abspath = _ResolveRelativeImportPath(
-            module_path, mojom_abspath, module_root_paths + [output_root_path])
+          module_path, mojom_abspath, module_root_paths + [output_root_path]
+        )
         with open(module_abspath, 'rb') as module_file:
           loaded_modules[import_abspath] = module.Module.Load(module_file)
 
     if invalid_imports:
       raise ValueError(
-          '\nThe file %s imports the following files not allowed by build '
-          'dependencies:\n\n%s\n' % (mojom_abspath, '\n'.join(invalid_imports)))
+        '\nThe file %s imports the following files not allowed by build '
+        'dependencies:\n\n%s\n' % (mojom_abspath, '\n'.join(invalid_imports))
+      )
   logging.info('Loaded %d modules from dependencies', len(loaded_modules))
 
   # At this point all transitive imports not listed as inputs have been loaded
@@ -353,11 +385,19 @@ def _ParseMojoms(mojom_files,
   logging.info('Ensuring inputs are loaded')
   num_existing_modules_loaded = len(loaded_modules)
   for mojom_abspath, mojom_path in mojom_files_to_parse.items():
-    _EnsureInputLoaded(mojom_abspath, mojom_path, abs_paths, loaded_mojom_asts,
-                       input_dependencies, loaded_modules, module_metadata,
-                       'is_chromeos' in enabled_features)
-  assert (num_existing_modules_loaded +
-          len(mojom_files_to_parse) == len(loaded_modules))
+    _EnsureInputLoaded(
+      mojom_abspath,
+      mojom_path,
+      abs_paths,
+      loaded_mojom_asts,
+      input_dependencies,
+      loaded_modules,
+      module_metadata,
+      'is_chromeos' in enabled_features,
+    )
+  assert num_existing_modules_loaded + len(mojom_files_to_parse) == len(
+    loaded_modules
+  )
 
   # Now we have fully translated modules for every input and every transitive
   # dependency. We can dump the modules to disk for other tools to use.
@@ -377,103 +417,114 @@ def _ParseMojoms(mojom_files,
 
 def Run(command_line):
   debug_logging = os.environ.get('MOJOM_PARSER_DEBUG', '0') != '0'
-  logging.basicConfig(level=logging.DEBUG if debug_logging else logging.WARNING,
-                      format='%(levelname).1s %(relativeCreated)6d %(message)s')
+  logging.basicConfig(
+    level=logging.DEBUG if debug_logging else logging.WARNING,
+    format='%(levelname).1s %(relativeCreated)6d %(message)s',
+  )
   logging.info('Started (%s)', os.path.basename(sys.argv[0]))
 
   arg_parser = argparse.ArgumentParser(
-      description="""
+    description="""
 Parses one or more mojom files and produces corresponding module outputs fully
 describing the definitions therein. The output is exhaustive, stable, and
 sufficient for another tool to consume and emit e.g. usable language
 bindings based on the original mojoms.""",
-      epilog="""
+    epilog="""
 Note that each transitive import dependency reachable from the input mojoms must
 either also be listed as an input or must have its corresponding compiled module
-already present in the provided output root.""")
+already present in the provided output root.""",
+  )
 
   arg_parser.add_argument(
-      '--input-root',
-      default=[],
-      action='append',
-      metavar='ROOT',
-      dest='input_root_paths',
-      help='Adds ROOT to the set of root paths against which relative input '
-      'paths should be resolved. Provided root paths are always searched '
-      'in order from longest absolute path to shortest.')
+    '--input-root',
+    default=[],
+    action='append',
+    metavar='ROOT',
+    dest='input_root_paths',
+    help='Adds ROOT to the set of root paths against which relative input '
+    'paths should be resolved. Provided root paths are always searched '
+    'in order from longest absolute path to shortest.',
+  )
   arg_parser.add_argument(
-      '--output-root',
-      action='store',
-      required=True,
-      dest='output_root_path',
-      metavar='ROOT',
-      help='Use ROOT as the root path in which the parser should emit compiled '
-      'modules for each processed input mojom. The path of emitted module is '
-      'based on the relative input path, rebased onto this root. Note that '
-      'ROOT is also searched for existing modules of any transitive imports '
-      'which were not included in the set of inputs.')
+    '--output-root',
+    action='store',
+    required=True,
+    dest='output_root_path',
+    metavar='ROOT',
+    help='Use ROOT as the root path in which the parser should emit compiled '
+    'modules for each processed input mojom. The path of emitted module is '
+    'based on the relative input path, rebased onto this root. Note that '
+    'ROOT is also searched for existing modules of any transitive imports '
+    'which were not included in the set of inputs.',
+  )
   arg_parser.add_argument(
-      '--module-root',
-      default=[],
-      action='append',
-      metavar='ROOT',
-      dest='module_root_paths',
-      help='Adds ROOT to the set of root paths to search for existing modules '
-      'of non-transitive imports. Provided root paths are always searched in '
-      'order from longest absolute path to shortest.')
+    '--module-root',
+    default=[],
+    action='append',
+    metavar='ROOT',
+    dest='module_root_paths',
+    help='Adds ROOT to the set of root paths to search for existing modules '
+    'of non-transitive imports. Provided root paths are always searched in '
+    'order from longest absolute path to shortest.',
+  )
   arg_parser.add_argument(
-      '--mojoms',
-      nargs='+',
-      dest='mojom_files',
-      default=[],
-      metavar='MOJOM_FILE',
-      help='Input mojom filename(s). Each filename must be either an absolute '
-      'path which falls within one of the given input or output roots, or a '
-      'relative path the parser will attempt to resolve using each of those '
-      'roots in unspecified order.')
+    '--mojoms',
+    nargs='+',
+    dest='mojom_files',
+    default=[],
+    metavar='MOJOM_FILE',
+    help='Input mojom filename(s). Each filename must be either an absolute '
+    'path which falls within one of the given input or output roots, or a '
+    'relative path the parser will attempt to resolve using each of those '
+    'roots in unspecified order.',
+  )
   arg_parser.add_argument(
-      '--mojom-file-list',
-      action='store',
-      metavar='LIST_FILENAME',
-      help='Input file whose contents are a list of mojoms to process. This '
-      'may be provided in lieu of --mojoms to avoid hitting command line '
-      'length limtations')
+    '--mojom-file-list',
+    action='store',
+    metavar='LIST_FILENAME',
+    help='Input file whose contents are a list of mojoms to process. This '
+    'may be provided in lieu of --mojoms to avoid hitting command line '
+    'length limtations',
+  )
   arg_parser.add_argument(
-      '--enable-feature',
-      dest='enabled_features',
-      default=[],
-      action='append',
-      metavar='FEATURE',
-      help='Enables a named feature when parsing the given mojoms. Features '
-      'are identified by arbitrary string values. Specifying this flag with a '
-      'given FEATURE name will cause the parser to process any syntax elements '
-      'tagged with an [EnableIf=FEATURE] or [EnableIfNot] attribute. If this '
-      'flag is not provided for a given FEATURE, such tagged elements are '
-      'discarded by the parser and will not be present in the compiled output.')
+    '--enable-feature',
+    dest='enabled_features',
+    default=[],
+    action='append',
+    metavar='FEATURE',
+    help='Enables a named feature when parsing the given mojoms. Features '
+    'are identified by arbitrary string values. Specifying this flag with a '
+    'given FEATURE name will cause the parser to process any syntax elements '
+    'tagged with an [EnableIf=FEATURE] or [EnableIfNot] attribute. If this '
+    'flag is not provided for a given FEATURE, such tagged elements are '
+    'discarded by the parser and will not be present in the compiled output.',
+  )
   arg_parser.add_argument(
-      '--check-imports',
-      dest='build_metadata_filename',
-      action='store',
-      metavar='METADATA_FILENAME',
-      help='Instructs the parser to check imports against a set of allowed '
-      'imports. Allowed imports are based on build metadata within '
-      'METADATA_FILENAME. This is a JSON file with a `sources` key listing '
-      'paths to the set of input mojom files being processed by this parser '
-      'run, and a `deps` key listing paths to metadata files for any '
-      'dependencies of these inputs. This feature can be used to implement '
-      'build-time dependency checking for mojom imports, where each build '
-      'metadata file corresponds to a build target in the dependency graph of '
-      'a typical build system.')
+    '--check-imports',
+    dest='build_metadata_filename',
+    action='store',
+    metavar='METADATA_FILENAME',
+    help='Instructs the parser to check imports against a set of allowed '
+    'imports. Allowed imports are based on build metadata within '
+    'METADATA_FILENAME. This is a JSON file with a `sources` key listing '
+    'paths to the set of input mojom files being processed by this parser '
+    'run, and a `deps` key listing paths to metadata files for any '
+    'dependencies of these inputs. This feature can be used to implement '
+    'build-time dependency checking for mojom imports, where each build '
+    'metadata file corresponds to a build target in the dependency graph of '
+    'a typical build system.',
+  )
   arg_parser.add_argument(
-      '--add-module-metadata',
-      dest='module_metadata',
-      default=[],
-      action='append',
-      metavar='KEY=VALUE',
-      help='Adds a metadata key-value pair to the output module. This can be '
-      'used by build toolchains to augment parsed mojom modules with product-'
-      'specific metadata for later extraction and use by custom bindings '
-      'generators.')
+    '--add-module-metadata',
+    dest='module_metadata',
+    default=[],
+    action='append',
+    metavar='KEY=VALUE',
+    help='Adds a metadata key-value pair to the output module. This can be '
+    'used by build toolchains to augment parsed mojom modules with product-'
+    'specific metadata for later extraction and use by custom bindings '
+    'generators.',
+  )
 
   args, _ = arg_parser.parse_known_args(command_line)
   if args.mojom_file_list:
@@ -482,7 +533,8 @@ already present in the provided output root.""")
 
   if not args.mojom_files:
     raise ValueError(
-        'Must list at least one mojom file via --mojoms or --mojom-file-list')
+      'Must list at least one mojom file via --mojoms or --mojom-file-list'
+    )
 
   mojom_files = list(map(os.path.abspath, args.mojom_files))
   input_roots = list(map(os.path.abspath, args.input_root_paths))
@@ -491,14 +543,23 @@ already present in the provided output root.""")
 
   if args.build_metadata_filename:
     allowed_imports = _CollectAllowedImportsFromBuildMetadata(
-        args.build_metadata_filename)
+      args.build_metadata_filename
+    )
   else:
     allowed_imports = None
 
   module_metadata = list(
-      map(lambda kvp: tuple(kvp.split('=')), args.module_metadata))
-  _ParseMojoms(mojom_files, input_roots, output_root, module_roots,
-               args.enabled_features, module_metadata, allowed_imports)
+    map(lambda kvp: tuple(kvp.split('=')), args.module_metadata)
+  )
+  _ParseMojoms(
+    mojom_files,
+    input_roots,
+    output_root,
+    module_roots,
+    args.enabled_features,
+    module_metadata,
+    allowed_imports,
+  )
   logging.info('Finished')
 
 

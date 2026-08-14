@@ -54,8 +54,13 @@ class MojomParserTestCase(unittest.TestCase):
     """Parse all input mojoms relative the temp dir."""
     out_dir = self.GetPath('out')
     args = [
-        '--input-root', self._temp_dir, '--input-root', out_dir,
-        '--output-root', out_dir, '--mojoms'
+      '--input-root',
+      self._temp_dir,
+      '--input-root',
+      out_dir,
+      '--output-root',
+      out_dir,
+      '--mojoms',
     ] + list(map(lambda mojom: os.path.join(self._temp_dir, mojom), mojoms))
     if metadata:
       args.extend(['--check-imports', self.GetPath(metadata)])

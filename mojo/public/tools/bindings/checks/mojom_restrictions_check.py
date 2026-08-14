@@ -14,9 +14,14 @@ class Check(check.Check):
 
   def _IsPassedInterface(self, candidate):
     if isinstance(
-        candidate.kind,
-        (module.PendingReceiver, module.PendingRemote,
-         module.PendingAssociatedReceiver, module.PendingAssociatedRemote)):
+      candidate.kind,
+      (
+        module.PendingReceiver,
+        module.PendingRemote,
+        module.PendingAssociatedReceiver,
+        module.PendingAssociatedRemote,
+      ),
+    ):
       return True
     return False
 
@@ -26,42 +31,51 @@ class Check(check.Check):
     if interface.require_context:
       if method.allowed_context is None:
         raise check.CheckException(
-            self.module, "method `{}` has parameter `{}` which passes interface"
-            " `{}` that requires an AllowedContext annotation but none exists.".
-            format(
-                method.mojom_name,
-                param.mojom_name,
-                interface.mojom_name,
-            ))
+          self.module,
+          "method `{}` has parameter `{}` which passes interface"
+          " `{}` that requires an AllowedContext annotation but none exists.".format(
+            method.mojom_name,
+            param.mojom_name,
+            interface.mojom_name,
+          ),
+        )
       # If a string was provided, or if an enum was not imported, this will
       # be a string and we cannot validate that it is in range.
       if not isinstance(method.allowed_context, module.EnumValue):
         raise check.CheckException(
-            self.module,
-            "method `{}` has AllowedContext={} which is not a valid enum value."
-            .format(method.mojom_name, method.allowed_context))
+          self.module,
+          "method `{}` has AllowedContext={} which is not a valid enum value.".format(
+            method.mojom_name, method.allowed_context
+          ),
+        )
       # EnumValue must be from the same enum to be compared.
       if interface.require_context.enum != method.allowed_context.enum:
         raise check.CheckException(
-            self.module, "method `{}` has parameter `{}` which passes interface"
-            " `{}` that requires AllowedContext={} but one of kind `{}` was "
-            "provided.".format(
-                method.mojom_name,
-                param.mojom_name,
-                interface.mojom_name,
-                interface.require_context.enum,
-                method.allowed_context.enum,
-            ))
+          self.module,
+          "method `{}` has parameter `{}` which passes interface"
+          " `{}` that requires AllowedContext={} but one of kind `{}` was "
+          "provided.".format(
+            method.mojom_name,
+            param.mojom_name,
+            interface.mojom_name,
+            interface.require_context.enum,
+            method.allowed_context.enum,
+          ),
+        )
       # RestrictContext enums have most privileged field first (lowest value).
       interface_value = interface.require_context.field.numeric_value
       method_value = method.allowed_context.field.numeric_value
       if interface_value < method_value:
         raise check.CheckException(
-            self.module, "RequireContext={} > AllowedContext={} for method "
-            "`{}` which passes interface `{}`.".format(
-                interface.require_context.GetSpec(),
-                method.allowed_context.GetSpec(), method.mojom_name,
-                interface.mojom_name))
+          self.module,
+          "RequireContext={} > AllowedContext={} for method "
+          "`{}` which passes interface `{}`.".format(
+            interface.require_context.GetSpec(),
+            method.allowed_context.GetSpec(),
+            method.mojom_name,
+            interface.mojom_name,
+          ),
+        )
       return True
 
   def _GatherReferencedInterfaces(self, field):

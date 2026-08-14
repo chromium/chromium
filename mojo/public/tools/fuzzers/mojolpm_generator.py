@@ -55,9 +55,11 @@ import typing
 import enum
 
 sys.path.insert(
-    0,
-    os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-                 "mojom"))
+  0,
+  os.path.join(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "mojom"
+  ),
+)
 
 from mojom import fileutil
 from mojom.generate import module
@@ -69,15 +71,15 @@ import jinja2
 
 
 class MojoLPMDefinitionType(enum.Enum):
-  """The definition type of the currently handled interface.
-  """
+  """The definition type of the currently handled interface."""
+
   REMOTE = 1  # The interface is handled by the service.
   EMULATED = 2  # The interface is "emulated" by MojoLPM.
 
 
 class MojomActionType(enum.Enum):
-  """The mojom action type. This maps directly with the mojom python API.
-  """
+  """The mojom action type. This maps directly with the mojom python API."""
+
   ASSOCIATED_RECEIVER = 'rca'
   RECEIVER = 'rcv'
   ASSOCIATED_REMOTE = 'rma'
@@ -85,8 +87,8 @@ class MojomActionType(enum.Enum):
 
 
 class MojomHandleType(enum.Enum):
-  """Identifies the specific type of a mojo handle(e.g. `handle<message_pipe>`).
-  """
+  """Identifies the specific type of a mojo handle(e.g. `handle<message_pipe>`)."""
+
   DATA_PIPE_CONSUMER = 1
   DATA_PIPE_PRODUCER = 2
   MESSAGE_PIPE = 3
@@ -98,6 +100,7 @@ class MojoLPMActionType(enum.Enum):
   """The MojoLPM action type. MojoLPM handles a limited set of actions, that
   we define in this enum.
   """
+
   NEW_ACTION = 'NewAction'
   REMOTE_ACTION = 'RemoteAction'
   RECEIVER_ACTION = 'ReceiverAction'
@@ -122,6 +125,7 @@ class MojoLPMAction:
     to generate field or message names.
     dependencies: the mojom file dependencies of this action.
   """
+
   type: MojoLPMActionType
   namespace: typing.Optional[str]
   identifier: str
@@ -180,93 +184,93 @@ _MOJOLPM_BASE_DEPENDENCY = "mojo/public/tools/fuzzers/mojolpm"
 _DEFAULT_ACTION_DEPS = frozenset([_MOJOLPM_BASE_DEPENDENCY])
 
 _EMULATED_HANDLE_ACTION_MAP = {
-    MojomHandleType.DATA_PIPE_CONSUMER: [
-        MojoLPMAction(
-            type=MojoLPMActionType.DATA_PIPE_READ,
-            namespace=None,
-            identifier="data_pipe_read_action",
-            dependencies=_DEFAULT_ACTION_DEPS,
-        ),
-        MojoLPMAction(
-            type=MojoLPMActionType.DATA_PIPE_CONSUMER_CLOSE,
-            namespace=None,
-            identifier="data_pipe_consumer_close_action",
-            dependencies=_DEFAULT_ACTION_DEPS,
-        ),
-    ],
-    MojomHandleType.DATA_PIPE_PRODUCER: [
-        MojoLPMAction(
-            type=MojoLPMActionType.DATA_PIPE_WRITE,
-            namespace=None,
-            identifier="data_pipe_write_action",
-            dependencies=_DEFAULT_ACTION_DEPS,
-        ),
-        MojoLPMAction(
-            type=MojoLPMActionType.DATA_PIPE_PRODUCER_CLOSE,
-            namespace=None,
-            identifier="data_pipe_producer_close_action",
-            dependencies=_DEFAULT_ACTION_DEPS,
-        ),
-    ],
-    MojomHandleType.SHARED_BUFFER: [
-        MojoLPMAction(
-            type=MojoLPMActionType.SHARED_BUFFER_WRITE,
-            namespace=None,
-            identifier="shared_buffer_write",
-            dependencies=_DEFAULT_ACTION_DEPS,
-        ),
-        MojoLPMAction(
-            type=MojoLPMActionType.SHARED_BUFFER_RELEASE,
-            namespace=None,
-            identifier="shared_buffer_release",
-            dependencies=_DEFAULT_ACTION_DEPS,
-        ),
-    ],
+  MojomHandleType.DATA_PIPE_CONSUMER: [
+    MojoLPMAction(
+      type=MojoLPMActionType.DATA_PIPE_READ,
+      namespace=None,
+      identifier="data_pipe_read_action",
+      dependencies=_DEFAULT_ACTION_DEPS,
+    ),
+    MojoLPMAction(
+      type=MojoLPMActionType.DATA_PIPE_CONSUMER_CLOSE,
+      namespace=None,
+      identifier="data_pipe_consumer_close_action",
+      dependencies=_DEFAULT_ACTION_DEPS,
+    ),
+  ],
+  MojomHandleType.DATA_PIPE_PRODUCER: [
+    MojoLPMAction(
+      type=MojoLPMActionType.DATA_PIPE_WRITE,
+      namespace=None,
+      identifier="data_pipe_write_action",
+      dependencies=_DEFAULT_ACTION_DEPS,
+    ),
+    MojoLPMAction(
+      type=MojoLPMActionType.DATA_PIPE_PRODUCER_CLOSE,
+      namespace=None,
+      identifier="data_pipe_producer_close_action",
+      dependencies=_DEFAULT_ACTION_DEPS,
+    ),
+  ],
+  MojomHandleType.SHARED_BUFFER: [
+    MojoLPMAction(
+      type=MojoLPMActionType.SHARED_BUFFER_WRITE,
+      namespace=None,
+      identifier="shared_buffer_write",
+      dependencies=_DEFAULT_ACTION_DEPS,
+    ),
+    MojoLPMAction(
+      type=MojoLPMActionType.SHARED_BUFFER_RELEASE,
+      namespace=None,
+      identifier="shared_buffer_release",
+      dependencies=_DEFAULT_ACTION_DEPS,
+    ),
+  ],
 }
 
 _REMOTE_HANDLE_ACTION_MAP = {
-    MojomHandleType.DATA_PIPE_PRODUCER: [
-        MojoLPMAction(
-            type=MojoLPMActionType.DATA_PIPE_READ,
-            namespace=None,
-            identifier="data_pipe_read_action",
-            dependencies=_DEFAULT_ACTION_DEPS,
-        ),
-        MojoLPMAction(
-            type=MojoLPMActionType.DATA_PIPE_CONSUMER_CLOSE,
-            namespace=None,
-            identifier="data_pipe_consumer_close_action",
-            dependencies=_DEFAULT_ACTION_DEPS,
-        ),
-    ],
-    MojomHandleType.DATA_PIPE_CONSUMER: [
-        MojoLPMAction(
-            type=MojoLPMActionType.DATA_PIPE_WRITE,
-            namespace=None,
-            identifier="data_pipe_write_action",
-            dependencies=_DEFAULT_ACTION_DEPS,
-        ),
-        MojoLPMAction(
-            type=MojoLPMActionType.DATA_PIPE_PRODUCER_CLOSE,
-            namespace=None,
-            identifier="data_pipe_producer_close_action",
-            dependencies=_DEFAULT_ACTION_DEPS,
-        ),
-    ],
-    MojomHandleType.SHARED_BUFFER: [
-        MojoLPMAction(
-            type=MojoLPMActionType.SHARED_BUFFER_WRITE,
-            namespace=None,
-            identifier="shared_buffer_write",
-            dependencies=_DEFAULT_ACTION_DEPS,
-        ),
-        MojoLPMAction(
-            type=MojoLPMActionType.SHARED_BUFFER_RELEASE,
-            namespace=None,
-            identifier="shared_buffer_release",
-            dependencies=_DEFAULT_ACTION_DEPS,
-        ),
-    ],
+  MojomHandleType.DATA_PIPE_PRODUCER: [
+    MojoLPMAction(
+      type=MojoLPMActionType.DATA_PIPE_READ,
+      namespace=None,
+      identifier="data_pipe_read_action",
+      dependencies=_DEFAULT_ACTION_DEPS,
+    ),
+    MojoLPMAction(
+      type=MojoLPMActionType.DATA_PIPE_CONSUMER_CLOSE,
+      namespace=None,
+      identifier="data_pipe_consumer_close_action",
+      dependencies=_DEFAULT_ACTION_DEPS,
+    ),
+  ],
+  MojomHandleType.DATA_PIPE_CONSUMER: [
+    MojoLPMAction(
+      type=MojoLPMActionType.DATA_PIPE_WRITE,
+      namespace=None,
+      identifier="data_pipe_write_action",
+      dependencies=_DEFAULT_ACTION_DEPS,
+    ),
+    MojoLPMAction(
+      type=MojoLPMActionType.DATA_PIPE_PRODUCER_CLOSE,
+      namespace=None,
+      identifier="data_pipe_producer_close_action",
+      dependencies=_DEFAULT_ACTION_DEPS,
+    ),
+  ],
+  MojomHandleType.SHARED_BUFFER: [
+    MojoLPMAction(
+      type=MojoLPMActionType.SHARED_BUFFER_WRITE,
+      namespace=None,
+      identifier="shared_buffer_write",
+      dependencies=_DEFAULT_ACTION_DEPS,
+    ),
+    MojoLPMAction(
+      type=MojoLPMActionType.SHARED_BUFFER_RELEASE,
+      namespace=None,
+      identifier="shared_buffer_release",
+      dependencies=_DEFAULT_ACTION_DEPS,
+    ),
+  ],
 }
 
 
@@ -278,9 +282,9 @@ def _GetProtoId(name):
   fnv = 2166136261
   for c in name:
     fnv = fnv ^ ord(c)
-    fnv = (fnv * 16777619) & 0xffffffff
+    fnv = (fnv * 16777619) & 0xFFFFFFFF
   # xor-fold to 29-bits
-  fnv = (fnv >> 29) ^ (fnv & 0x1fffffff)
+  fnv = (fnv >> 29) ^ (fnv & 0x1FFFFFFF)
   # now use a modulo to reduce to [0,2^29-1 - 1016]
   fnv = fnv % 536869895
   # now we move out the disallowed ranges
@@ -319,7 +323,8 @@ def is_data_pipe_kind(kind: module.Kind) -> bool:
   data_pipe_producer.
   """
   return module.IsDataPipeConsumerKind(kind) or module.IsDataPipeProducerKind(
-      kind)
+    kind
+  )
 
 
 def is_pending_kind(kind: module.Kind) -> bool:
@@ -327,22 +332,30 @@ def is_pending_kind(kind: module.Kind) -> bool:
   Exhaustive list: pending_remote, pending_receiver, pending_associated_remote,
   pending_associated_receiver.
   """
-  return module.IsPendingRemoteKind(kind) or module.IsPendingReceiverKind(
-      kind) or module.IsPendingAssociatedRemoteKind(
-          kind) or module.IsPendingAssociatedReceiverKind(kind)
+  return (
+    module.IsPendingRemoteKind(kind)
+    or module.IsPendingReceiverKind(kind)
+    or module.IsPendingAssociatedRemoteKind(kind)
+    or module.IsPendingAssociatedReceiverKind(kind)
+  )
 
 
 def is_interesting_kind(kind: module.Kind) -> bool:
   """Returns whether the kind is of interest for us. For instance, we are only
   interested in data_pipe kinds, pending kinds, struct kinds or union kinds.
   """
-  return is_data_pipe_kind(kind) or is_pending_kind(
-      kind) or module.IsStructKind(kind) or module.IsUnionKind(
-          kind) or module.IsSharedBufferKind(kind)
+  return (
+    is_data_pipe_kind(kind)
+    or is_pending_kind(kind)
+    or module.IsStructKind(kind)
+    or module.IsUnionKind(kind)
+    or module.IsSharedBufferKind(kind)
+  )
 
 
 def get_interesting_kind_deps(
-    kind: module.ReferenceKind) -> typing.List[module.ReferenceKind]:
+  kind: module.ReferenceKind,
+) -> typing.List[module.ReferenceKind]:
   """Returns the interesting kind deps found in the current kind. For instance,
   if the kind is an interface, this will iterate all its methods' parameters to
   search for interesting kinds. If the kind is a struct or a union, it will go
@@ -401,8 +414,9 @@ class MojoLPMActionSet:
   preserving the order of actions in order to ease debugging.
   """
 
-  def __init__(self,
-               actions: typing.Optional[typing.List[MojoLPMAction]] = None):
+  def __init__(
+    self, actions: typing.Optional[typing.List[MojoLPMAction]] = None
+  ):
     self.actions: typing.List[MojoLPMAction] = []
     self.deps: typing.List[str] = []
     if actions:
@@ -449,13 +463,11 @@ class MojoLPMGenerator(abc.ABC):
 
   @abc.abstractmethod
   def render(self, action_list: typing.List[MojoLPMActionSet]):
-    """Renders the given actions.
-    """
+    """Renders the given actions."""
 
 
 class MojoLPMJinjaGenerator(MojoLPMGenerator):
-  """Abstract class to help create a Jinja based generator.
-  """
+  """Abstract class to help create a Jinja based generator."""
 
   def __init__(self, filepath: pathlib.PurePosixPath, template_filename: str):
     """Inits the generator.
@@ -465,9 +477,14 @@ class MojoLPMJinjaGenerator(MojoLPMGenerator):
         template_filename: the filename of the template.
     """
     self.filepath: pathlib.PurePosixPath = filepath
-    self._environment = jinja2.Environment(loader=jinja2.FileSystemLoader(
-        os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                     "mojolpm_generator_templates/")))
+    self._environment = jinja2.Environment(
+      loader=jinja2.FileSystemLoader(
+        os.path.join(
+          os.path.dirname(os.path.abspath(__file__)),
+          "mojolpm_generator_templates/",
+        )
+      )
+    )
     self._environment.globals['proto_id'] = _GetProtoId
     self.template = self._environment.get_template(template_filename)
 
@@ -486,20 +503,27 @@ class MojoLPMProtoGenerator(MojoLPMJinjaGenerator):
     for action_set in action_list:
       all_actions_set.update(action_set)
     new_messages = [
-        a.mojolpm_proto_type for a in all_actions_set.actions
-        if a.type == MojoLPMActionType.NEW_ACTION
+      a.mojolpm_proto_type
+      for a in all_actions_set.actions
+      if a.type == MojoLPMActionType.NEW_ACTION
     ]
-    actions_list = [[{
-        "proto_type": a.mojolpm_proto_type,
-        "proto_identifier": a.proto_identifier,
-        "is_new_action": a.type == MojoLPMActionType.NEW_ACTION,
-    } for a in action_set.actions] for action_set in action_list]
+    actions_list = [
+      [
+        {
+          "proto_type": a.mojolpm_proto_type,
+          "proto_identifier": a.proto_identifier,
+          "is_new_action": a.type == MojoLPMActionType.NEW_ACTION,
+        }
+        for a in action_set.actions
+      ]
+      for action_set in action_list
+    ]
     context = {
-        "imports": [format_dep_for_proto(t) for t in all_actions_set.deps],
-        "new_messages": new_messages,
-        "actions_list": actions_list,
-        "basename": self.filepath.name,
-        "ensure_remote": self._ensure_remote,
+      "imports": [format_dep_for_proto(t) for t in all_actions_set.deps],
+      "new_messages": new_messages,
+      "actions_list": actions_list,
+      "basename": self.filepath.name,
+      "ensure_remote": self._ensure_remote,
     }
     proto_file = self.filepath.with_suffix('.proto')
     with pathlib.Path(proto_file).open(mode="w") as f:
@@ -525,47 +549,42 @@ class MojoLPMCppGenerator(MojoLPMJinjaGenerator):
       actions = []
       for a in action_set.actions:
         if a.type == MojoLPMActionType.NEW_ACTION:
-          actions.append({
-              "case_name":
-              "k" + snake_to_camel_case(a.proto_identifier),
-              "cpp_name":
-              a.cpp_identifier,
-              "mojo_name":
-              a.proto_identifier,
-              "is_new_action":
-              True,
-          })
+          actions.append(
+            {
+              "case_name": "k" + snake_to_camel_case(a.proto_identifier),
+              "cpp_name": a.cpp_identifier,
+              "mojo_name": a.proto_identifier,
+              "is_new_action": True,
+            }
+          )
         else:
-          actions.append({
-              "case_name":
-              "k" + snake_to_camel_case(a.proto_identifier),
-              "mojolpm_func":
-              "mojolpm::Handle" + a.type.value,
-              "mojo_name":
-              a.proto_identifier,
-              "is_new_action":
-              False,
-          })
+          actions.append(
+            {
+              "case_name": "k" + snake_to_camel_case(a.proto_identifier),
+              "mojolpm_func": "mojolpm::Handle" + a.type.value,
+              "mojo_name": a.proto_identifier,
+              "is_new_action": False,
+            }
+          )
       actions_list.append(actions)
     if self.filepath.parts[0] == 'gen':
       rebased_path = self.filepath.relative_to('gen')
     else:
       rebased_path = self.filepath
     context = {
-        'imports': [format_dep_for_cpp(t) for t in all_actions_set.deps],
-        "actions_list": actions_list,
-        "filename": rebased_path.with_suffix('.h').as_posix(),
-        "proto_filename": rebased_path.with_suffix('.pb.h').as_posix(),
-        "basename": snake_to_camel_case(self.filepath.name),
-        "proto_namespace": f'mojolpmgenerator::{self.filepath.name}',
-        "ensure_remote": self._ensure_remote,
+      'imports': [format_dep_for_cpp(t) for t in all_actions_set.deps],
+      "actions_list": actions_list,
+      "filename": rebased_path.with_suffix('.h').as_posix(),
+      "proto_filename": rebased_path.with_suffix('.pb.h').as_posix(),
+      "basename": snake_to_camel_case(self.filepath.name),
+      "proto_namespace": f'mojolpmgenerator::{self.filepath.name}',
+      "ensure_remote": self._ensure_remote,
     }
     with pathlib.Path(self.filepath.with_suffix('.h')).open(mode='w') as f:
       f.write(self.template.render(context))
 
 
 class MojoLPMGeneratorMultiplexer(MojoLPMGenerator):
-
   def __init__(self, generators: typing.List[MojoLPMGenerator]):
     self._generators = generators
 
@@ -574,8 +593,9 @@ class MojoLPMGeneratorMultiplexer(MojoLPMGenerator):
       generator.render(action_list)
 
 
-def build_handle_actions(handle_type: MojomHandleType,
-                         def_type: MojoLPMDefinitionType) -> MojoLPMActionSet:
+def build_handle_actions(
+  handle_type: MojomHandleType, def_type: MojoLPMDefinitionType
+) -> MojoLPMActionSet:
   """Builds the handle actions.
 
   Args:
@@ -587,13 +607,17 @@ def build_handle_actions(handle_type: MojomHandleType,
   """
   # Not meaningful in the context of mojolpm
   if handle_type in (
-      MojomHandleType.MESSAGE_PIPE,
-      MojomHandleType.PLATFORM,
+    MojomHandleType.MESSAGE_PIPE,
+    MojomHandleType.PLATFORM,
   ):
     return MojoLPMActionSet()
-  return MojoLPMActionSet((_REMOTE_HANDLE_ACTION_MAP[handle_type]
-                           if def_type == MojoLPMDefinitionType.REMOTE else
-                           _EMULATED_HANDLE_ACTION_MAP[handle_type]))
+  return MojoLPMActionSet(
+    (
+      _REMOTE_HANDLE_ACTION_MAP[handle_type]
+      if def_type == MojoLPMDefinitionType.REMOTE
+      else _EMULATED_HANDLE_ACTION_MAP[handle_type]
+    )
+  )
 
 
 def build_new_actions(interface: module.Interface) -> MojoLPMActionSet:
@@ -605,20 +629,22 @@ def build_new_actions(interface: module.Interface) -> MojoLPMActionSet:
   Returns:
       the set of actions to be generated.
   """
-  return MojoLPMActionSet([
+  return MojoLPMActionSet(
+    [
       MojoLPMAction(
-          type=MojoLPMActionType.NEW_ACTION,
-          namespace=interface.qualified_name,
-          identifier=camel_to_snake_case(interface.mojom_name),
-          dependencies=frozenset([f"{interface.module.path}"]),
+        type=MojoLPMActionType.NEW_ACTION,
+        namespace=interface.qualified_name,
+        identifier=camel_to_snake_case(interface.mojom_name),
+        dependencies=frozenset([f"{interface.module.path}"]),
       )
-  ])
+    ]
+  )
 
 
 def build_pending_actions(
-    action_type: MojomActionType,
-    interface: module.Interface,
-    def_type: MojoLPMDefinitionType,
+  action_type: MojomActionType,
+  interface: module.Interface,
+  def_type: MojoLPMDefinitionType,
 ) -> MojoLPMActionSet:
   """Builds a 'Pending' action for the given interface and action type.
 
@@ -631,32 +657,34 @@ def build_pending_actions(
       the set of actions to be generated.
   """
   remote_interface = {
-      MojomActionType.ASSOCIATED_RECEIVER:
-      MojoLPMActionType.ASSOCIATED_REMOTE_ACTION,
-      MojomActionType.RECEIVER: MojoLPMActionType.REMOTE_ACTION,
-      MojomActionType.ASSOCIATED_REMOTE: MojoLPMActionType.RECEIVER_ACTION,
-      MojomActionType.REMOTE: MojoLPMActionType.RECEIVER_ACTION,
+    MojomActionType.ASSOCIATED_RECEIVER: MojoLPMActionType.ASSOCIATED_REMOTE_ACTION,
+    MojomActionType.RECEIVER: MojoLPMActionType.REMOTE_ACTION,
+    MojomActionType.ASSOCIATED_REMOTE: MojoLPMActionType.RECEIVER_ACTION,
+    MojomActionType.REMOTE: MojoLPMActionType.RECEIVER_ACTION,
   }
   emulated_interface = {
-      MojomActionType.ASSOCIATED_RECEIVER: MojoLPMActionType.RECEIVER_ACTION,
-      MojomActionType.RECEIVER: MojoLPMActionType.RECEIVER_ACTION,
-      MojomActionType.ASSOCIATED_REMOTE:
-      MojoLPMActionType.ASSOCIATED_REMOTE_ACTION,
-      MojomActionType.REMOTE: MojoLPMActionType.REMOTE_ACTION,
+    MojomActionType.ASSOCIATED_RECEIVER: MojoLPMActionType.RECEIVER_ACTION,
+    MojomActionType.RECEIVER: MojoLPMActionType.RECEIVER_ACTION,
+    MojomActionType.ASSOCIATED_REMOTE: MojoLPMActionType.ASSOCIATED_REMOTE_ACTION,
+    MojomActionType.REMOTE: MojoLPMActionType.REMOTE_ACTION,
   }
-  return MojoLPMActionSet([
+  return MojoLPMActionSet(
+    [
       MojoLPMAction(
-          type=remote_interface[action_type] if def_type
-          == MojoLPMDefinitionType.REMOTE else emulated_interface[action_type],
-          namespace=interface.qualified_name,
-          identifier=camel_to_snake_case(interface.mojom_name),
-          dependencies=frozenset([f"{interface.module.path}"]),
+        type=remote_interface[action_type]
+        if def_type == MojoLPMDefinitionType.REMOTE
+        else emulated_interface[action_type],
+        namespace=interface.qualified_name,
+        identifier=camel_to_snake_case(interface.mojom_name),
+        dependencies=frozenset([f"{interface.module.path}"]),
       )
-  ])
+    ]
+  )
 
 
-def build(interface: module.Interface,
-          remote_type: MojoLPMActionType) -> MojoLPMActionSet:
+def build(
+  interface: module.Interface, remote_type: MojoLPMActionType
+) -> MojoLPMActionSet:
   """Recursively builds the actions for the given interface.
 
   Args:
@@ -669,8 +697,9 @@ def build(interface: module.Interface,
   handled_definitions = set()
   actions = MojoLPMActionSet()
 
-  def __build_impl(current: module.ReferenceKind,
-                   def_type: MojoLPMDefinitionType):
+  def __build_impl(
+    current: module.ReferenceKind, def_type: MojoLPMDefinitionType
+  ):
     kinds = get_interesting_kind_deps(current)
     for kind in kinds:
       if is_data_pipe_kind(kind):
@@ -682,7 +711,8 @@ def build(interface: module.Interface,
         continue
       if module.IsSharedBufferKind(kind):
         actions.update(
-            build_handle_actions(MojomHandleType.SHARED_BUFFER, def_type))
+          build_handle_actions(MojomHandleType.SHARED_BUFFER, def_type)
+        )
         continue
 
       child_def_type = def_type
@@ -695,17 +725,24 @@ def build(interface: module.Interface,
           # which is 'rcv' in this particular example.
           t = kind.spec.split(':')[0].lstrip('?')
           actions.update(
-              build_pending_actions(MojomActionType(t), kind.kind, def_type))
+            build_pending_actions(MojomActionType(t), kind.kind, def_type)
+          )
 
           if module.IsPendingRemoteKind(
-              kind) or module.IsPendingAssociatedRemoteKind(kind):
-            child_def_type = (MojoLPMDefinitionType.EMULATED
-                              if def_type == MojoLPMDefinitionType.REMOTE else
-                              MojoLPMDefinitionType.REMOTE)
+            kind
+          ) or module.IsPendingAssociatedRemoteKind(kind):
+            child_def_type = (
+              MojoLPMDefinitionType.EMULATED
+              if def_type == MojoLPMDefinitionType.REMOTE
+              else MojoLPMDefinitionType.REMOTE
+            )
         kind = kind.kind
 
-      assert module.IsInterfaceKind(kind) or module.IsStructKind(
-          kind) or module.IsUnionKind(kind)
+      assert (
+        module.IsInterfaceKind(kind)
+        or module.IsStructKind(kind)
+        or module.IsUnionKind(kind)
+      )
       if kind.qualified_name not in handled_definitions:
         handled_definitions.add(kind.qualified_name)
         __build_impl(kind, child_def_type)
@@ -721,8 +758,10 @@ def build(interface: module.Interface,
     else:
       action_type = MojomActionType.RECEIVER
     actions.update(
-        build_pending_actions(action_type, interface,
-                              MojoLPMDefinitionType.REMOTE))
+      build_pending_actions(
+        action_type, interface, MojoLPMDefinitionType.REMOTE
+      )
+    )
 
   handled_definitions.add(interface.qualified_name)
   __build_impl(interface, MojoLPMDefinitionType.REMOTE)
@@ -730,7 +769,8 @@ def build(interface: module.Interface,
 
 
 def get_interface_list_from_file(
-    file_path: str) -> typing.List[typing.List[str]]:
+  file_path: str,
+) -> typing.List[typing.List[str]]:
   """Reads the JSON input file and returns the interfaces list that it
   contains.
 
@@ -746,7 +786,8 @@ def get_interface_list_from_file(
 
 
 def get_interface_list_from_input(
-    interfaces: typing.List[str]) -> typing.List[typing.List[str]]:
+  interfaces: typing.List[str],
+) -> typing.List[typing.List[str]]:
   """Parses the input list of interfaces and returns a list of list that
   matches the expected format.
 
@@ -761,35 +802,42 @@ def get_interface_list_from_input(
 
 def main():
   parser = argparse.ArgumentParser(
-      description='Generate MojoLPM proto and cpp/h files.')
+    description='Generate MojoLPM proto and cpp/h files.'
+  )
   group = parser.add_mutually_exclusive_group(required=True)
   group.add_argument(
-      '-i',
-      '--input',
-      default=[],
-      nargs='+',
-      help="input(s) with format: "
-      "path/to/interface.mojom-module:InterfaceName:{Remote|AssociatedRemote}")
+    '-i',
+    '--input',
+    default=[],
+    nargs='+',
+    help="input(s) with format: "
+    "path/to/interface.mojom-module:InterfaceName:{Remote|AssociatedRemote}",
+  )
   group.add_argument('-f', '--file', help="")
-  parser.add_argument('--output_file_format',
-                      required=True,
-                      help="output file format. Files with extensions '.h' and"
-                      " '.proto' will be created.")
   parser.add_argument(
-      '-e',
-      '--ensure-remote',
-      action='store_true',
-      default=False,
-      help="For every listed remotes, ensure the 'new' action is called before"
-      " any other actions related to the remote.")
+    '--output_file_format',
+    required=True,
+    help="output file format. Files with extensions '.h' and"
+    " '.proto' will be created.",
+  )
+  parser.add_argument(
+    '-e',
+    '--ensure-remote',
+    action='store_true',
+    default=False,
+    help="For every listed remotes, ensure the 'new' action is called before"
+    " any other actions related to the remote.",
+  )
 
   args = parser.parse_args()
   output_file = pathlib.PurePosixPath(args.output_file_format)
 
-  generator = MojoLPMGeneratorMultiplexer([
+  generator = MojoLPMGeneratorMultiplexer(
+    [
       MojoLPMProtoGenerator(output_file, args.ensure_remote),
-      MojoLPMCppGenerator(output_file, args.ensure_remote)
-  ])
+      MojoLPMCppGenerator(output_file, args.ensure_remote),
+    ]
+  )
   actions: typing.List[MojoLPMActionSet] = []
   if args.file:
     interfaces = get_interface_list_from_file(args.file)

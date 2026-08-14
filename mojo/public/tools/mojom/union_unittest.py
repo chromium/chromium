@@ -19,13 +19,15 @@ class UnionTest(MojomParserTestCase):
     """Verifies that extensible unions must not have multiple default fields."""
     mojom = 'foo.mojom'
     self.WriteFile(
-        mojom, """\
+      mojom,
+      """\
                module foo;
                [Extensible] union U {
                  [Default] bool x;
                  [Default] bool y;
                };
-               """)
+               """,
+    )
     with self.assertRaisesRegex(Exception, 'Multiple \[Default\] fields'):
       self.ParseMojoms([mojom])
 
@@ -34,11 +36,13 @@ class UnionTest(MojomParserTestCase):
     integral type."""
     mojom = 'foo.mojom'
     self.WriteFile(
-        mojom, """\
+      mojom,
+      """\
                module foo;
                [Extensible] union U {
                  [Default] handle<message_pipe> p;
                };
-               """)
+               """,
+    )
     with self.assertRaisesRegex(Exception, 'must be nullable or integral'):
       self.ParseMojoms([mojom])

@@ -60,15 +60,14 @@ class CheckStableMojomCompatibilityTest(unittest.TestCase):
     delta = []
     for change in changes:
       if change.old != change.new:
-        delta.append({
-            'filename': change.filename,
-            'old': change.old,
-            'new': change.new
-        })
+        delta.append(
+          {'filename': change.filename, 'old': change.old, 'new': change.new}
+        )
 
     try:
-      check_stable_mojom_compatibility.Run(['--src-root', temp_dir],
-                                           delta=delta)
+      check_stable_mojom_compatibility.Run(
+        ['--src-root', temp_dir], delta=delta
+      )
     finally:
       shutil.rmtree(temp_dir)
 
@@ -85,255 +84,339 @@ class CheckStableMojomCompatibilityTest(unittest.TestCase):
 
   def testBasicCompatibility(self):
     """Minimal smoke test to verify acceptance of a simple valid change."""
-    self.assertBackwardCompatible([
-        Change('foo/foo.mojom',
-               old='[Stable] struct S {};',
-               new='[Stable] struct S { [MinVersion=1] int32 x; };')
-    ])
+    self.assertBackwardCompatible(
+      [
+        Change(
+          'foo/foo.mojom',
+          old='[Stable] struct S {};',
+          new='[Stable] struct S { [MinVersion=1] int32 x; };',
+        )
+      ]
+    )
 
   def testBasicIncompatibility(self):
     """Minimal smoke test to verify rejection of a simple invalid change."""
-    self.assertNotBackwardCompatible([
-        Change('foo/foo.mojom',
-               old='[Stable] struct S {};',
-               new='[Stable] struct S { int32 x; };')
-    ])
+    self.assertNotBackwardCompatible(
+      [
+        Change(
+          'foo/foo.mojom',
+          old='[Stable] struct S {};',
+          new='[Stable] struct S { int32 x; };',
+        )
+      ]
+    )
 
   def testIgnoreIfNotStable(self):
     """We don't care about types not marked [Stable]"""
-    self.assertBackwardCompatible([
-        Change('foo/foo.mojom',
-               old='struct S {};',
-               new='struct S { int32 x; };')
-    ])
+    self.assertBackwardCompatible(
+      [
+        Change(
+          'foo/foo.mojom', old='struct S {};', new='struct S { int32 x; };'
+        )
+      ]
+    )
 
   def testRename(self):
     """We can do checks for renamed types."""
-    self.assertBackwardCompatible([
-        Change('foo/foo.mojom',
-               old='[Stable] struct S {};',
-               new='[Stable, RenamedFrom="S"] struct T {};')
-    ])
-    self.assertNotBackwardCompatible([
-        Change('foo/foo.mojom',
-               old='[Stable] struct S {};',
-               new='[Stable, RenamedFrom="S"] struct T { int32 x; };')
-    ])
-    self.assertBackwardCompatible([
-        Change('foo/foo.mojom',
-               old='[Stable] struct S {};',
-               new="""\
+    self.assertBackwardCompatible(
+      [
+        Change(
+          'foo/foo.mojom',
+          old='[Stable] struct S {};',
+          new='[Stable, RenamedFrom="S"] struct T {};',
+        )
+      ]
+    )
+    self.assertNotBackwardCompatible(
+      [
+        Change(
+          'foo/foo.mojom',
+          old='[Stable] struct S {};',
+          new='[Stable, RenamedFrom="S"] struct T { int32 x; };',
+        )
+      ]
+    )
+    self.assertBackwardCompatible(
+      [
+        Change(
+          'foo/foo.mojom',
+          old='[Stable] struct S {};',
+          new="""\
                [Stable, RenamedFrom="S"]
                struct T { [MinVersion=1] int32 x; };
-               """)
-    ])
+               """,
+        )
+      ]
+    )
 
   def testNewlyStable(self):
     """We don't care about types newly marked as [Stable]."""
-    self.assertBackwardCompatible([
-        Change('foo/foo.mojom',
-               old='struct S {};',
-               new='[Stable] struct S { int32 x; };')
-    ])
+    self.assertBackwardCompatible(
+      [
+        Change(
+          'foo/foo.mojom',
+          old='struct S {};',
+          new='[Stable] struct S { int32 x; };',
+        )
+      ]
+    )
 
   def testFileRename(self):
     """Make sure we can still do compatibility checks after a file rename."""
-    self.assertBackwardCompatible([
+    self.assertBackwardCompatible(
+      [
         Change('foo/foo.mojom', old='[Stable] struct S {};', new=None),
-        Change('bar/bar.mojom',
-               old=None,
-               new='[Stable] struct S { [MinVersion=1] int32 x; };')
-    ])
-    self.assertNotBackwardCompatible([
+        Change(
+          'bar/bar.mojom',
+          old=None,
+          new='[Stable] struct S { [MinVersion=1] int32 x; };',
+        ),
+      ]
+    )
+    self.assertNotBackwardCompatible(
+      [
         Change('foo/foo.mojom', old='[Stable] struct S {};', new=None),
-        Change('bar/bar.mojom', old=None, new='[Stable] struct S { int32 x; };')
-    ])
+        Change(
+          'bar/bar.mojom', old=None, new='[Stable] struct S { int32 x; };'
+        ),
+      ]
+    )
 
   def testWithImport(self):
     """Ensure that cross-module dependencies do not break the compatibility
     checking tool."""
-    self.assertBackwardCompatible([
-        Change('foo/foo.mojom',
-               old="""\
+    self.assertBackwardCompatible(
+      [
+        Change(
+          'foo/foo.mojom',
+          old="""\
                module foo;
                [Stable] struct S {};
                """,
-               new="""\
+          new="""\
                module foo;
                [Stable] struct S { [MinVersion=2] int32 x; };
-               """),
-        Change('bar/bar.mojom',
-               old="""\
+               """,
+        ),
+        Change(
+          'bar/bar.mojom',
+          old="""\
                module bar;
                import "foo/foo.mojom";
                [Stable] struct T { foo.S s; };
                """,
-               new="""\
+          new="""\
                module bar;
                import "foo/foo.mojom";
                [Stable] struct T { foo.S s; [MinVersion=1] int32 y; };
-               """)
-    ])
+               """,
+        ),
+      ]
+    )
 
   def testWithMovedDefinition(self):
     """If a definition moves from one file to another, we should still be able
     to check compatibility accurately."""
-    self.assertBackwardCompatible([
-        Change('foo/foo.mojom',
-               old="""\
+    self.assertBackwardCompatible(
+      [
+        Change(
+          'foo/foo.mojom',
+          old="""\
                module foo;
                [Stable] struct S {};
                """,
-               new="""\
+          new="""\
                module foo;
-               """),
-        Change('bar/bar.mojom',
-               old="""\
+               """,
+        ),
+        Change(
+          'bar/bar.mojom',
+          old="""\
                module bar;
                import "foo/foo.mojom";
                [Stable] struct T { foo.S s; };
                """,
-               new="""\
+          new="""\
                module bar;
                import "foo/foo.mojom";
                [Stable, RenamedFrom="foo.S"] struct S {
                  [MinVersion=2] int32 x;
                };
                [Stable] struct T { S s; [MinVersion=1] int32 y; };
-               """)
-    ])
+               """,
+        ),
+      ]
+    )
 
-    self.assertNotBackwardCompatible([
-        Change('foo/foo.mojom',
-               old="""\
+    self.assertNotBackwardCompatible(
+      [
+        Change(
+          'foo/foo.mojom',
+          old="""\
                module foo;
                [Stable] struct S {};
                """,
-               new="""\
+          new="""\
                module foo;
-               """),
-        Change('bar/bar.mojom',
-               old="""\
+               """,
+        ),
+        Change(
+          'bar/bar.mojom',
+          old="""\
                module bar;
                import "foo/foo.mojom";
                [Stable] struct T { foo.S s; };
                """,
-               new="""\
+          new="""\
                module bar;
                import "foo/foo.mojom";
                [Stable, RenamedFrom="foo.S"] struct S { int32 x; };
                [Stable] struct T { S s; [MinVersion=1] int32 y; };
-               """)
-    ])
+               """,
+        ),
+      ]
+    )
 
   def testWithUnmodifiedImport(self):
     """Unchanged files in the filesystem are still parsed by the compatibility
     checking tool if they're imported by a changed file."""
-    self.assertBackwardCompatible([
+    self.assertBackwardCompatible(
+      [
         UnchangedFile('foo/foo.mojom', 'module foo; [Stable] struct S {};'),
-        Change('bar/bar.mojom',
-               old="""\
+        Change(
+          'bar/bar.mojom',
+          old="""\
                module bar;
                import "foo/foo.mojom";
                [Stable] struct T { foo.S s; };
                """,
-               new="""\
+          new="""\
                module bar;
                import "foo/foo.mojom";
                [Stable] struct T { foo.S s; [MinVersion=1] int32 x; };
-               """)
-    ])
+               """,
+        ),
+      ]
+    )
 
-    self.assertNotBackwardCompatible([
+    self.assertNotBackwardCompatible(
+      [
         UnchangedFile('foo/foo.mojom', 'module foo; [Stable] struct S {};'),
-        Change('bar/bar.mojom',
-               old="""\
+        Change(
+          'bar/bar.mojom',
+          old="""\
                module bar;
                import "foo/foo.mojom";
                [Stable] struct T { foo.S s; };
                """,
-               new="""\
+          new="""\
                module bar;
                import "foo/foo.mojom";
                [Stable] struct T { foo.S s; int32 x; };
-               """)
-    ])
+               """,
+        ),
+      ]
+    )
 
   def testWithPartialImport(self):
     """The compatibility checking tool correctly parses imports with partial
     paths."""
-    self.assertBackwardCompatible([
+    self.assertBackwardCompatible(
+      [
         UnchangedFile('foo/foo.mojom', 'module foo; [Stable] struct S {};'),
-        Change('foo/bar.mojom',
-               old="""\
+        Change(
+          'foo/bar.mojom',
+          old="""\
                module bar;
                import "foo/foo.mojom";
                [Stable] struct T { foo.S s; };
                """,
-               new="""\
+          new="""\
                module bar;
                import "foo.mojom";
                [Stable] struct T { foo.S s; };
-               """)
-    ])
+               """,
+        ),
+      ]
+    )
 
-    self.assertBackwardCompatible([
+    self.assertBackwardCompatible(
+      [
         UnchangedFile('foo/foo.mojom', 'module foo; [Stable] struct S {};'),
-        Change('foo/bar.mojom',
-               old="""\
+        Change(
+          'foo/bar.mojom',
+          old="""\
                module bar;
                import "foo.mojom";
                [Stable] struct T { foo.S s; };
                """,
-               new="""\
+          new="""\
                module bar;
                import "foo/foo.mojom";
                [Stable] struct T { foo.S s; };
-               """)
-    ])
+               """,
+        ),
+      ]
+    )
 
-    self.assertNotBackwardCompatible([
+    self.assertNotBackwardCompatible(
+      [
         UnchangedFile('foo/foo.mojom', 'module foo; [Stable] struct S {};'),
-        Change('bar/bar.mojom',
-               old="""\
+        Change(
+          'bar/bar.mojom',
+          old="""\
                module bar;
                import "foo/foo.mojom";
                [Stable] struct T { foo.S s; };
                """,
-               new="""\
+          new="""\
                module bar;
                import "foo.mojom";
                [Stable] struct T { foo.S s; };
-               """)
-    ])
+               """,
+        ),
+      ]
+    )
 
-    self.assertNotBackwardCompatible([
+    self.assertNotBackwardCompatible(
+      [
         UnchangedFile('foo/foo.mojom', 'module foo; [Stable] struct S {};'),
-        Change('bar/bar.mojom',
-               old="""\
+        Change(
+          'bar/bar.mojom',
+          old="""\
                module bar;
                import "foo.mojom";
                [Stable] struct T { foo.S s; };
                """,
-               new="""\
+          new="""\
                module bar;
                import "foo/foo.mojom";
                [Stable] struct T { foo.S s; };
-               """)
-    ])
+               """,
+        ),
+      ]
+    )
 
   def testNewEnumDefault(self):
     # Should be backwards compatible since it does not affect the wire format.
     # This specific case also checks that the backwards compatibility checker
     # does not throw an error due to the older version of the enum not
     # specifying [Default].
-    self.assertBackwardCompatible([
-        Change('foo/foo.mojom',
-               old='[Extensible] enum E { One };',
-               new='[Extensible] enum E { [Default] One };')
-    ])
-    self.assertBackwardCompatible([
-        Change('foo/foo.mojom',
-               old='[Extensible] enum E { [Default] One, Two, };',
-               new='[Extensible] enum E { One, [Default] Two, };')
-    ])
+    self.assertBackwardCompatible(
+      [
+        Change(
+          'foo/foo.mojom',
+          old='[Extensible] enum E { One };',
+          new='[Extensible] enum E { [Default] One };',
+        )
+      ]
+    )
+    self.assertBackwardCompatible(
+      [
+        Change(
+          'foo/foo.mojom',
+          old='[Extensible] enum E { [Default] One, Two, };',
+          new='[Extensible] enum E { One, [Default] Two, };',
+        )
+      ]
+    )

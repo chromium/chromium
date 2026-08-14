@@ -39,8 +39,9 @@ class BackwardCompatibilityChecker:
   # type specific compatibility checker is invoked.
   @singledispatchmethod
   def _CheckCompat(self, new, old):
-    raise NotImplementedError("unknown types: (%s, %s)" %
-                              (repr(new), repr(old)))
+    raise NotImplementedError(
+      "unknown types: (%s, %s)" % (repr(new), repr(old))
+    )
 
   @_CheckCompat.register(mojom.Kind)
   def _(self, new: mojom.Kind, old: mojom.Kind):
@@ -73,19 +74,20 @@ class BackwardCompatibilityChecker:
 
     # The generator will ensure that ordinal ordering is correct.
     new_fields = [
-        p.field for p in pack.PackedStruct(new).packed_fields_in_ordinal_order
+      p.field for p in pack.PackedStruct(new).packed_fields_in_ordinal_order
     ]
     old_fields = [
-        p.field for p in pack.PackedStruct(old).packed_fields_in_ordinal_order
+      p.field for p in pack.PackedStruct(old).packed_fields_in_ordinal_order
     ]
     # The fields are in ordinal order, so new fields must be at the end.
-    added_fields = new_fields[len(old_fields):]
+    added_fields = new_fields[len(old_fields) :]
 
     if len(new_fields) < len(old_fields):
       # At least one field was removed, which is not OK.
       raise CompatibilityError(
-          'Removing struct fields from struct %s is not allowed.' %
-          (new.mojom_name))
+        'Removing struct fields from struct %s is not allowed.'
+        % (new.mojom_name)
+      )
 
     for pair in zip(new_fields, old_fields):
       (new_field, old_field) = pair
@@ -93,10 +95,15 @@ class BackwardCompatibilityChecker:
         # Type or min-version mismatch between old and new versions of the same
         # ordinal field.
         raise CompatibilityError(
-            'Struct %s field with ordinal value %d have different type'
-            ' or min version, old name %s, new name %s.' %
-            (new.mojom_name, new_field.ordinal, old_field.mojom_name,
-             new_field.mojom_name))
+          'Struct %s field with ordinal value %d have different type'
+          ' or min version, old name %s, new name %s.'
+          % (
+            new.mojom_name,
+            new_field.ordinal,
+            old_field.mojom_name,
+            new_field.mojom_name,
+          )
+        )
 
     old_version = 0
     if len(old_fields):
@@ -111,19 +118,24 @@ class BackwardCompatibilityChecker:
       if field_version <= old_version:
         # A new field is being added to an existing version, which is not OK.
         raise CompatibilityError(
-            'Adding new fields to an existing MinVersion is not allowed'
-            ' for struct %s' % (new.mojom_name))
+          'Adding new fields to an existing MinVersion is not allowed'
+          ' for struct %s' % (new.mojom_name)
+        )
       if field_version < new_version:
         # The [MinVersion] of a field cannot be lower than the [MinVersion] of
         # a field with lower ordinal value.
         raise CompatibilityError(
-            'MinVersion of struct %s field %s cannot be lower than MinVersion'
-            ' of preceding fields' % (new.mojom_name, new_field))
-      if mojom.IsReferenceKind(
-          new_field.kind) and not mojom.IsNullableKind(new_field.kind):
+          'MinVersion of struct %s field %s cannot be lower than MinVersion'
+          ' of preceding fields' % (new.mojom_name, new_field)
+        )
+      if mojom.IsReferenceKind(new_field.kind) and not mojom.IsNullableKind(
+        new_field.kind
+      ):
         # New fields whose type can be nullable MUST be nullable.
-        raise CompatibilityError('New struct %s field %s must be nullable' %
-                                 (new.mojom_name, new_field))
+        raise CompatibilityError(
+          'New struct %s field %s must be nullable'
+          % (new.mojom_name, new_field)
+        )
       new_version = field_version
 
     return True
@@ -146,8 +158,9 @@ class BackwardCompatibilityChecker:
       for field in union.fields:
         if field.ordinal in fields_by_ordinal:
           raise CompatibilityError(
-              'Multiple fields with ordinal %s in union %s.' %
-              (field.ordinal, union.mojom_name))
+            'Multiple fields with ordinal %s in union %s.'
+            % (field.ordinal, union.mojom_name)
+          )
         fields_by_ordinal[field.ordinal] = field
       return fields_by_ordinal
 
@@ -181,13 +194,14 @@ class BackwardCompatibilityChecker:
   @_CheckCompat.register(mojom.Array)
   def _(self, new: mojom.Array, old: mojom.Array):
     return new.length == old.length and self.IsBackwardCompatible(
-        new.kind, old.kind)
+      new.kind, old.kind
+    )
 
   @_CheckCompat.register(mojom.Map)
   def _(self, new: mojom.Map, old: mojom.Map):
     return self.IsBackwardCompatible(
-        new.key_kind, old.key_kind) and self.IsBackwardCompatible(
-            new.value_kind, old.value_kind)
+      new.key_kind, old.key_kind
+    ) and self.IsBackwardCompatible(new.value_kind, old.value_kind)
 
   @_CheckCompat.register(mojom.PendingRemote)
   def _(self, new: mojom.PendingRemote, old: mojom.PendingRemote):
@@ -198,13 +212,17 @@ class BackwardCompatibilityChecker:
     return self.IsBackwardCompatible(new.kind, old.kind)
 
   @_CheckCompat.register(mojom.PendingAssociatedRemote)
-  def _(self, new: mojom.PendingAssociatedRemote,
-        old: mojom.PendingAssociatedRemote):
+  def _(
+    self, new: mojom.PendingAssociatedRemote, old: mojom.PendingAssociatedRemote
+  ):
     return self.IsBackwardCompatible(new.kind, old.kind)
 
   @_CheckCompat.register(mojom.PendingAssociatedReceiver)
-  def _(self, new: mojom.PendingAssociatedReceiver,
-        old: mojom.PendingAssociatedReceiver):
+  def _(
+    self,
+    new: mojom.PendingAssociatedReceiver,
+    old: mojom.PendingAssociatedReceiver,
+  ):
     return self.IsBackwardCompatible(new.kind, old.kind)
 
   @_CheckCompat.register(mojom.Interface)
@@ -233,8 +251,9 @@ class BackwardCompatibilityChecker:
       for method in interface.methods:
         if method.ordinal in methods_by_ordinal:
           raise CompatibilityError(
-              'Multiple methods with ordinal %s in interface %s.' %
-              (method.ordinal, interface.mojom_name))
+            'Multiple methods with ordinal %s in interface %s.'
+            % (method.ordinal, interface.mojom_name)
+          )
         methods_by_ordinal[method.ordinal] = method
       return methods_by_ordinal
 
@@ -247,8 +266,9 @@ class BackwardCompatibilityChecker:
         # A method was removed, which is not OK.
         return False
 
-      if not self.IsBackwardCompatible(new_method.param_struct,
-                                       old_method.param_struct):
+      if not self.IsBackwardCompatible(
+        new_method.param_struct, old_method.param_struct
+      ):
         # The parameter list is not backward-compatible, which is not OK.
         return False
 
@@ -261,8 +281,9 @@ class BackwardCompatibilityChecker:
         if new_method.response_param_struct is None:
           # A reply was removed from a message, which is not OK.
           return False
-        if not self.IsBackwardCompatible(new_method.response_param_struct,
-                                         old_method.response_param_struct):
+        if not self.IsBackwardCompatible(
+          new_method.response_param_struct, old_method.response_param_struct
+        ):
           # The new message's reply is not backward-compatible with the old
           # message's reply, which is not OK.
           return False
@@ -309,20 +330,24 @@ class BackwardCompatibilityChecker:
 
     for min_version, valid_values in old_fields.items():
       if min_version not in new_fields:
-        raise CompatibilityError('New values added to an extensible enum '
-                                 'did not specify MinVersion: %s' % new_fields)
+        raise CompatibilityError(
+          'New values added to an extensible enum '
+          'did not specify MinVersion: %s' % new_fields
+        )
 
-      if (new_fields[min_version] != valid_values):
-        if (len(new_fields[min_version]) < len(valid_values)):
+      if new_fields[min_version] != valid_values:
+        if len(new_fields[min_version]) < len(valid_values):
           raise CompatibilityError(
-              'Removing values for an existing MinVersion %s '
-              'is not allowed' % min_version)
+            'Removing values for an existing MinVersion %s '
+            'is not allowed' % min_version
+          )
 
         raise CompatibilityError(
-            'New values don\'t match old values '
-            'for an existing MinVersion %s, '
-            'please specify MinVersion equal to "Next version" '
-            'in the enum description '
-            'for the following values:\n%s' %
-            (min_version, new_fields[min_version].difference(valid_values)))
+          'New values don\'t match old values '
+          'for an existing MinVersion %s, '
+          'please specify MinVersion equal to "Next version" '
+          'in the enum description '
+          'for the following values:\n%s'
+          % (min_version, new_fields[min_version].difference(valid_values))
+        )
     return True

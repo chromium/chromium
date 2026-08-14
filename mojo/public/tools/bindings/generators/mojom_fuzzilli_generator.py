@@ -12,38 +12,38 @@ from generators.mojom_js_generator import JavaScriptStylizer
 GENERATOR_PREFIX = "fuzzilli"
 # Map primitive predicates to the fuzzilli type representation
 PRIMITIVES_MAPPING = {
-    mojom.BOOL: "boolean",
-    mojom.INT8: "integer",
-    mojom.INT16: "integer",
-    mojom.INT32: "integer",
-    mojom.INT64: "integer",
-    mojom.UINT8: "integer",
-    mojom.UINT16: "integer",
-    mojom.UINT32: "integer",
-    mojom.UINT64: "integer",
-    mojom.FLOAT: "float",
-    mojom.DOUBLE: "float",  # no dedicated `.double` type
-    mojom.STRING: "string",
+  mojom.BOOL: "boolean",
+  mojom.INT8: "integer",
+  mojom.INT16: "integer",
+  mojom.INT32: "integer",
+  mojom.INT64: "integer",
+  mojom.UINT8: "integer",
+  mojom.UINT16: "integer",
+  mojom.UINT32: "integer",
+  mojom.UINT64: "integer",
+  mojom.FLOAT: "float",
+  mojom.DOUBLE: "float",  # no dedicated `.double` type
+  mojom.STRING: "string",
 }
 # List of types skipped during profile generation.
 # These types should be hand-defined in MojoCommonProfile.swift; its definitions
 # are always used in every generated profile.
 IGNORED_TYPES = {
-    "mojoBase.mojom.BigBuffer",
-    "mojoBase.mojom.BigBufferSharedMemoryRegion",
-    "mojoBase.mojom.String16",
-    "mojoBase.mojom.BigString16",
-    "mojoBase.mojom.BigString",
-    "mojoBase.mojom.Uint128",
-    "skia.mojom.BitmapN32",
-    "skia.mojom.BitmapN32ImageInfo",
-    "skia.mojom.AlphaType",
-    "url.mojom.Url",
-    "url.mojom.SchemeHostPort",
+  "mojoBase.mojom.BigBuffer",
+  "mojoBase.mojom.BigBufferSharedMemoryRegion",
+  "mojoBase.mojom.String16",
+  "mojoBase.mojom.BigString16",
+  "mojoBase.mojom.BigString",
+  "mojoBase.mojom.Uint128",
+  "skia.mojom.BitmapN32",
+  "skia.mojom.BitmapN32ImageInfo",
+  "skia.mojom.AlphaType",
+  "url.mojom.Url",
+  "url.mojom.SchemeHostPort",
 }
 
-class Generator(generator.Generator):
 
+class Generator(generator.Generator):
   def __init__(self, *args, **kwargs):
     super(Generator, self).__init__(*args, **kwargs)
 
@@ -61,13 +61,13 @@ class Generator(generator.Generator):
 
   def GetFilters(self):
     return {
-        "callback_receiver_name": self._FormatCallbackReceiverName,
-        "format_il_type": self._ILTypeName,
-        "format_unique_name": self._FormatUniqueName,
-        "fully_qualified_name": self._FullyQualifiedName,
-        "is_synchronous_method": self._IsSynchronousMethod,
-        "namespace_as_array": self._NamespaceAsArray,
-        "to_camel": generator.ToCamel,
+      "callback_receiver_name": self._FormatCallbackReceiverName,
+      "format_il_type": self._ILTypeName,
+      "format_unique_name": self._FormatUniqueName,
+      "fully_qualified_name": self._FullyQualifiedName,
+      "is_synchronous_method": self._IsSynchronousMethod,
+      "namespace_as_array": self._NamespaceAsArray,
+      "to_camel": generator.ToCamel,
     }
 
   @staticmethod
@@ -81,15 +81,15 @@ class Generator(generator.Generator):
     self._CollectInterfaceAndTypes(self.primary_interface, is_in_js=True)
 
     return {
-        "module": self.module,
-        "primary": self.primary_interface,
-        "interface_remotes": list(self.interface_remotes.values()),
-        "interface_receivers": list(self.interface_receivers.values()),
-        "arrays": list(self.arrays.values()),
-        "enums": list(self.enums.values()),
-        "unions": list(self.unions.values()),
-        "structs": list(self.structs.values()),
-        "response_structs": list(self.response_structs.values()),
+      "module": self.module,
+      "primary": self.primary_interface,
+      "interface_remotes": list(self.interface_remotes.values()),
+      "interface_receivers": list(self.interface_receivers.values()),
+      "arrays": list(self.arrays.values()),
+      "enums": list(self.enums.values()),
+      "unions": list(self.unions.values()),
+      "structs": list(self.structs.values()),
+      "response_structs": list(self.response_structs.values()),
     }
 
   def _IsIgnoredType(self, kind):
@@ -151,7 +151,8 @@ class Generator(generator.Generator):
     if is_pending_remote or is_pending_receiver:
       # TODO(crbug.com/522372048): add handling for non-associated interfaces
       assert self._IsPendingAssociatedKind, (
-          "Only pending associated interfaces are supported.")
+        "Only pending associated interfaces are supported."
+      )
       interface = kind.kind
     else:
       interface = kind
@@ -180,7 +181,8 @@ class Generator(generator.Generator):
         self._CollectInterfaceAndTypes(param.kind, is_in_js)
 
       if not method.response_parameters or not self._IsSynchronousMethod(
-          method):
+        method
+      ):
         continue
       method.res_struct = self._CreateResponseStruct(method)
       name = self._FormatUniqueName(method.res_struct)
@@ -206,8 +208,13 @@ class Generator(generator.Generator):
       return name + "Element" if primitive_with_suffix else name
 
     # Certain kinds, such as `Array`, do not have a `module` attribute
-    prefix = "" if not kind.module else "".join(
-        generator.ToCamel(part) for part in kind.module.namespace.split("."))
+    prefix = (
+      ""
+      if not kind.module
+      else "".join(
+        generator.ToCamel(part) for part in kind.module.namespace.split(".")
+      )
+    )
 
     if mojom.IsArrayKind(kind):
       # Despite the lack of a prefix, the element's unique name ensures that
@@ -217,11 +224,15 @@ class Generator(generator.Generator):
       return f"{self._FormatUniqueName(kind.kind)}Array"
 
     if self._IsAnyPendingRemoteKind(kind) or self._IsAnyPendingReceiverKind(
-        kind):
+      kind
+    ):
       return f"{prefix}{self._FlattenKind(kind.kind)}"
 
-    if mojom.IsStructKind(kind) or mojom.IsEnumKind(kind) or mojom.IsUnionKind(
-        kind):
+    if (
+      mojom.IsStructKind(kind)
+      or mojom.IsEnumKind(kind)
+      or mojom.IsUnionKind(kind)
+    ):
       return f"{prefix}{self._FlattenKind(kind)}"
 
     if mojom.IsInterfaceKind(kind):
@@ -243,8 +254,11 @@ class Generator(generator.Generator):
         return f"js{generator.ToCamel(name)}Element"
       return name
 
-    if mojom.IsStructKind(kind) or mojom.IsEnumKind(kind) or mojom.IsUnionKind(
-        kind):
+    if (
+      mojom.IsStructKind(kind)
+      or mojom.IsEnumKind(kind)
+      or mojom.IsUnionKind(kind)
+    ):
       return f"js{self._FormatUniqueName(kind)}"
 
     if mojom.IsArrayKind(kind):
@@ -280,31 +294,43 @@ class Generator(generator.Generator):
     args = parser.parse_args(unparsed_args)
 
     primary_interface_name = args.fuzzilli_primary_interface_name
-    self.primary_interface = next((i for i in self.module.interfaces
-                                   if i.mojom_name == primary_interface_name),
-                                  None)
+    self.primary_interface = next(
+      (
+        i
+        for i in self.module.interfaces
+        if i.mojom_name == primary_interface_name
+      ),
+      None,
+    )
     if not self.primary_interface:
       raise Exception(
-          f'Unable to find primary interface "{primary_interface_name}".')
+        f'Unable to find primary interface "{primary_interface_name}".'
+      )
 
     file_name = "%s.MojoProfile.swift" % self.module.path
     self.WriteWithComment(self._GenerateFuzzilliModule(), file_name)
 
   def _IsPendingAssociatedKind(self, kind):
     return mojom.IsPendingAssociatedRemoteKind(
-        kind) or mojom.IsPendingAssociatedReceiverKind(kind)
+      kind
+    ) or mojom.IsPendingAssociatedReceiverKind(kind)
 
   def _IsAnyPendingRemoteKind(self, kind):
     return mojom.IsPendingRemoteKind(
-        kind) or mojom.IsPendingAssociatedRemoteKind(kind)
+      kind
+    ) or mojom.IsPendingAssociatedRemoteKind(kind)
 
   def _IsAnyPendingReceiverKind(self, kind):
     return mojom.IsPendingReceiverKind(
-        kind) or mojom.IsPendingAssociatedReceiverKind(kind)
+      kind
+    ) or mojom.IsPendingAssociatedReceiverKind(kind)
 
   def _IsUserType(self, kind):
-    return mojom.IsStructKind(kind) or mojom.IsEnumKind(
-        kind) or mojom.IsUnionKind(kind)
+    return (
+      mojom.IsStructKind(kind)
+      or mojom.IsEnumKind(kind)
+      or mojom.IsUnionKind(kind)
+    )
 
   # Synchronous methods return JavaScript objects in the JavaScript bindings.
   # Represent these return values as `mojom.Struct` objects, since we can then
@@ -314,14 +340,21 @@ class Generator(generator.Generator):
     res = mojom.Struct(f"{method.mojom_name}Response", method.interface.module)
     res.parent_kind = method.interface
     for res_param in method.response_parameters:
-      res.AddField(res_param.mojom_name, res_param.kind, res_param.ordinal,
-                   res_param.default, res_param.attributes)
+      res.AddField(
+        res_param.mojom_name,
+        res_param.kind,
+        res_param.ordinal,
+        res_param.default,
+        res_param.attributes,
+      )
     res.Stylize(JavaScriptStylizer())
     return res
 
   def _FormatCallbackReceiverName(self, method):
-    return (f"{self._FormatUniqueName(method.interface)}"
-            f"{generator.ToCamel(method.name)}CallbackReceiver")
+    return (
+      f"{self._FormatUniqueName(method.interface)}"
+      f"{generator.ToCamel(method.name)}CallbackReceiver"
+    )
 
   def _IsSynchronousMethod(self, method):
     return method.attributes and method.attributes['Sync']

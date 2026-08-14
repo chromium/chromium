@@ -16,8 +16,10 @@ import os.path
 # pylint: disable=no-member
 
 Location = namedtuple('Location', ('line', 'lexpos'))
-Location.__doc__ = \
-    """Location stores a node's line number and lexpos from the input stream."""
+Location.__doc__ = (
+  """Location stores a node's line number and lexpos from the input stream."""
+)
+
 
 class NodeBase:
   """Base class for nodes in the AST."""
@@ -76,8 +78,9 @@ class NodeListBase(NodeBase):
       pass
     elif isinstance(item_or_items, list):
       for item in item_or_items:
-        assert isinstance(item, self._list_item_type
-                          ), f'Got {type(item)}, want {self._list_item_type}'
+        assert isinstance(item, self._list_item_type), (
+          f'Got {type(item)}, want {self._list_item_type}'
+        )
         self.Append(item)
     else:
       assert isinstance(item_or_items, self._list_item_type)
@@ -90,13 +93,16 @@ class NodeListBase(NodeBase):
     return self.items.__iter__()
 
   def __eq__(self, other):
-    return super().__eq__(other) and \
-           self.items == other.items
+    return super().__eq__(other) and self.items == other.items
 
   # Implement this so that on failure, we get slightly more sensible output.
   def __repr__(self):
-    return self.__class__.__name__ + "([" + \
-           ", ".join([repr(elem) for elem in self.items]) + "])"
+    return (
+      self.__class__.__name__
+      + "(["
+      + ", ".join([repr(elem) for elem in self.items])
+      + "])"
+    )
 
   def Insert(self, item):
     """Inserts item at the front of the list."""
@@ -173,7 +179,6 @@ class Identifier(NodeBase):
 
 
 class Array(Identifier):
-
   def __init__(self, value_type, fixed_size=None, **kwargs):
     assert isinstance(value_type, Typename)
     assert not fixed_size or isinstance(fixed_size, int)
@@ -182,9 +187,11 @@ class Array(Identifier):
     self.fixed_size = fixed_size
 
   def __eq__(self, other):
-    return super().__eq__(other) and \
-            self.value_type == other.value_type and \
-            self.fixed_size == other.fixed_size
+    return (
+      super().__eq__(other)
+      and self.value_type == other.value_type
+      and self.fixed_size == other.fixed_size
+    )
 
 
 class Attribute(NodeBase):
@@ -197,9 +204,11 @@ class Attribute(NodeBase):
     self.value = value
 
   def __eq__(self, other):
-    return super().__eq__(other) and \
-           self.key == other.key and \
-           self.value == other.value
+    return (
+      super().__eq__(other)
+      and self.key == other.key
+      and self.value == other.value
+    )
 
 
 class AttributeList(NodeListBase):
@@ -239,15 +248,19 @@ class Const(Definition):
     self.value = value
 
   def __eq__(self, other):
-    return super().__eq__(other) and \
-           self.attribute_list == other.attribute_list and \
-           self.typename == other.typename and \
-           self.value == other.value
+    return (
+      super().__eq__(other)
+      and self.attribute_list == other.attribute_list
+      and self.typename == other.typename
+      and self.value == other.value
+    )
 
   def __repr__(self):
     return "Const(typename=%s, attribute_list=%s, value=%s)" % (
-        self.typename, self.attribute_list, self.value)
-
+      self.typename,
+      self.attribute_list,
+      self.value,
+    )
 
 
 class Enum(Definition):
@@ -261,9 +274,11 @@ class Enum(Definition):
     self.enum_value_list = enum_value_list
 
   def __eq__(self, other):
-    return super().__eq__(other) and \
-           self.attribute_list == other.attribute_list and \
-           self.enum_value_list == other.enum_value_list
+    return (
+      super().__eq__(other)
+      and self.attribute_list == other.attribute_list
+      and self.enum_value_list == other.enum_value_list
+    )
 
 
 class EnumValue(Definition):
@@ -271,16 +286,19 @@ class EnumValue(Definition):
 
   def __init__(self, mojom_name, attribute_list, value, **kwargs):
     assert attribute_list is None or isinstance(attribute_list, AttributeList)
-    assert value is None or isinstance(
-        value, (Identifier, Literal)), f'Got {type(value)}'
+    assert value is None or isinstance(value, (Identifier, Literal)), (
+      f'Got {type(value)}'
+    )
     super().__init__(mojom_name, **kwargs)
     self.attribute_list = attribute_list
     self.value = value
 
   def __eq__(self, other):
-    return super().__eq__(other) and \
-           self.attribute_list == other.attribute_list and \
-           self.value == other.value
+    return (
+      super().__eq__(other)
+      and self.attribute_list == other.attribute_list
+      and self.value == other.value
+    )
 
 
 class EnumValueList(NodeListBase):
@@ -292,6 +310,7 @@ class EnumValueList(NodeListBase):
 
 class Feature(Definition):
   """Represents a runtime feature definition."""
+
   def __init__(self, mojom_name, attribute_list, body, **kwargs):
     assert attribute_list is None or isinstance(attribute_list, AttributeList)
     assert isinstance(body, FeatureBody) or body is None
@@ -300,13 +319,18 @@ class Feature(Definition):
     self.body = body
 
   def __eq__(self, other):
-    return super().__eq__(other) and \
-           self.attribute_list == other.attribute_list and \
-           self.body == other.body
+    return (
+      super().__eq__(other)
+      and self.attribute_list == other.attribute_list
+      and self.body == other.body
+    )
 
   def __repr__(self):
     return "Feature(mojom_name = %s, attribute_list = %s, body = %s)" % (
-        self.mojom_name, self.attribute_list, self.body)
+      self.mojom_name,
+      self.attribute_list,
+      self.body,
+    )
 
 
 # This needs to be declared after `FeatureConst` and `FeatureField`.
@@ -315,7 +339,7 @@ class FeatureBody(NodeListBase):
 
   # Features are compile time helpers so all fields are initializers/consts
   # for the underlying platform feature type.
-  _list_item_type = (Const)
+  _list_item_type = Const
 
 
 class Import(NodeBase):
@@ -331,9 +355,11 @@ class Import(NodeBase):
     self.import_filename = os.path.normpath(import_filename).replace('\\', '/')
 
   def __eq__(self, other):
-    return super().__eq__(other) and \
-           self.attribute_list == other.attribute_list and \
-           self.import_filename == other.import_filename
+    return (
+      super().__eq__(other)
+      and self.attribute_list == other.attribute_list
+      and self.import_filename == other.import_filename
+    )
 
 
 class ImportList(NodeListBase):
@@ -353,13 +379,14 @@ class Interface(Definition):
     self.body = body
 
   def __eq__(self, other):
-    return super().__eq__(other) and \
-           self.attribute_list == other.attribute_list and \
-           self.body == other.body
+    return (
+      super().__eq__(other)
+      and self.attribute_list == other.attribute_list
+      and self.body == other.body
+    )
 
 
 class Literal(NodeBase):
-
   def __init__(self, value_type, value, **kwargs):
     assert isinstance(value, str)
     super().__init__(**kwargs)
@@ -373,21 +400,31 @@ class Literal(NodeBase):
     return f'Literal<{self.value_type}>({self.value})'
 
   def __eq__(self, other):
-    return super().__eq__(other) and \
-            self.value_type == other.value_type and \
-            self.value == other.value
+    return (
+      super().__eq__(other)
+      and self.value_type == other.value_type
+      and self.value == other.value
+    )
 
 
 class Method(Definition):
   """Represents a method definition."""
 
-  def __init__(self, mojom_name, attribute_list, ordinal, parameter_list,
-               response, **kwargs):
+  def __init__(
+    self,
+    mojom_name,
+    attribute_list,
+    ordinal,
+    parameter_list,
+    response,
+    **kwargs,
+  ):
     assert attribute_list is None or isinstance(attribute_list, AttributeList)
     assert ordinal is None or isinstance(ordinal, Ordinal)
     assert isinstance(parameter_list, ParameterList)
-    assert response is None or isinstance(response,
-                                          (ParameterList, ResultResponse))
+    assert response is None or isinstance(
+      response, (ParameterList, ResultResponse)
+    )
     super().__init__(mojom_name, **kwargs)
     self.attribute_list = attribute_list
     self.ordinal = ordinal
@@ -402,12 +439,14 @@ class Method(Definition):
       self.result_response = response
 
   def __eq__(self, other):
-    return (super().__eq__(other)
-            and self.attribute_list == other.attribute_list
-            and self.ordinal == other.ordinal
-            and self.parameter_list == other.parameter_list
-            and self.response_parameter_list == other.response_parameter_list
-            and self.result_response == other.result_response)
+    return (
+      super().__eq__(other)
+      and self.attribute_list == other.attribute_list
+      and self.ordinal == other.ordinal
+      and self.parameter_list == other.parameter_list
+      and self.response_parameter_list == other.response_parameter_list
+      and self.result_response == other.result_response
+    )
 
 
 # This needs to be declared after |Method|.
@@ -418,7 +457,6 @@ class InterfaceBody(NodeListBase):
 
 
 class Map(Identifier):
-
   def __init__(self, key_type, value_type, **kwargs):
     assert isinstance(key_type, Identifier), f'Got {type(key_type)}'
     assert isinstance(value_type, Typename), f'Got {type(value_type)}'
@@ -427,8 +465,11 @@ class Map(Identifier):
     self.value_type = value_type
 
   def __eq__(self, other):
-    return super().__eq__(other) and self.key_type == other.key_type \
-            and self.value_type == other.value_type
+    return (
+      super().__eq__(other)
+      and self.key_type == other.key_type
+      and self.value_type == other.value_type
+    )
 
 
 class Module(NodeBase):
@@ -442,9 +483,11 @@ class Module(NodeBase):
     self.attribute_list = attribute_list
 
   def __eq__(self, other):
-    return super().__eq__(other) and \
-           self.mojom_namespace == other.mojom_namespace and \
-           self.attribute_list == other.attribute_list
+    return (
+      super().__eq__(other)
+      and self.mojom_namespace == other.mojom_namespace
+      and self.attribute_list == other.attribute_list
+    )
 
 
 class Mojom(NodeBase):
@@ -460,14 +503,20 @@ class Mojom(NodeBase):
     self.definition_list = definition_list
 
   def __eq__(self, other):
-    return super().__eq__(other) and \
-           self.module == other.module and \
-           self.import_list == other.import_list and \
-           self.definition_list == other.definition_list
+    return (
+      super().__eq__(other)
+      and self.module == other.module
+      and self.import_list == other.import_list
+      and self.definition_list == other.definition_list
+    )
 
   def __repr__(self):
-    return "%s(%r, %r, %r)" % (self.__class__.__name__, self.module,
-                               self.import_list, self.definition_list)
+    return "%s(%r, %r, %r)" % (
+      self.__class__.__name__,
+      self.module,
+      self.import_list,
+      self.definition_list,
+    )
 
 
 class Ordinal(NodeBase):
@@ -479,8 +528,7 @@ class Ordinal(NodeBase):
     self.value = value
 
   def __eq__(self, other):
-    return super().__eq__(other) and \
-           self.value == other.value
+    return super().__eq__(other) and self.value == other.value
 
 
 class Parameter(NodeBase):
@@ -498,11 +546,13 @@ class Parameter(NodeBase):
     self.typename = typename
 
   def __eq__(self, other):
-    return super().__eq__(other) and \
-           self.mojom_name == other.mojom_name and \
-           self.attribute_list == other.attribute_list and \
-           self.ordinal == other.ordinal and \
-           self.typename == other.typename
+    return (
+      super().__eq__(other)
+      and self.mojom_name == other.mojom_name
+      and self.attribute_list == other.attribute_list
+      and self.ordinal == other.ordinal
+      and self.typename == other.typename
+    )
 
 
 class ParameterList(NodeListBase):
@@ -528,12 +578,14 @@ class ResultResponse(NodeBase):
     return f'Result<{self.success_type}, {self.failure_type}>'
 
   def __eq__(self, other):
-    return (super().__eq__(other) and self.success_type == self.success_type
-            and self.failure_type == self.failure_type)
+    return (
+      super().__eq__(other)
+      and self.success_type == self.success_type
+      and self.failure_type == self.failure_type
+    )
 
 
 class Receiver(Identifier):
-
   def __init__(self, interface, associated=False, **kwargs):
     assert isinstance(interface, Identifier)
     t = 'rca' if associated else 'rcv'
@@ -542,12 +594,14 @@ class Receiver(Identifier):
     self.associated = associated
 
   def __eq__(self, other):
-    return super().__eq__(other) and self.interface == other.interface \
-            and self.associated == other.associated
+    return (
+      super().__eq__(other)
+      and self.interface == other.interface
+      and self.associated == other.associated
+    )
 
 
 class Remote(Identifier):
-
   def __init__(self, interface, associated=False, **kwargs):
     assert isinstance(interface, Identifier)
     t = 'rma' if associated else 'rmt'
@@ -556,8 +610,11 @@ class Remote(Identifier):
     self.associated = associated
 
   def __eq__(self, other):
-    return super().__eq__(other) and self.interface == other.interface and \
-            self.associated == other.associated
+    return (
+      super().__eq__(other)
+      and self.interface == other.interface
+      and self.associated == other.associated
+    )
 
 
 class Struct(Definition):
@@ -571,26 +628,33 @@ class Struct(Definition):
     self.body = body
 
   def __eq__(self, other):
-    return super().__eq__(other) and \
-           self.attribute_list == other.attribute_list and \
-           self.body == other.body
+    return (
+      super().__eq__(other)
+      and self.attribute_list == other.attribute_list
+      and self.body == other.body
+    )
 
   def __repr__(self):
     return "Struct(mojom_name = %s, attribute_list = %s, body = %s)" % (
-        self.mojom_name, self.attribute_list, self.body)
+      self.mojom_name,
+      self.attribute_list,
+      self.body,
+    )
 
 
 class StructField(Definition):
   """Represents a struct field definition."""
 
-  def __init__(self, mojom_name, attribute_list, ordinal, typename,
-               default_value, **kwargs):
+  def __init__(
+    self, mojom_name, attribute_list, ordinal, typename, default_value, **kwargs
+  ):
     assert isinstance(mojom_name, Name)
     assert attribute_list is None or isinstance(attribute_list, AttributeList)
     assert ordinal is None or isinstance(ordinal, Ordinal)
     assert isinstance(typename, Typename), f'Expected str, got {type(typename)}'
     assert default_value is None or isinstance(
-        default_value, (Literal, Identifier)), f'Got {type(default_value)}'
+      default_value, (Literal, Identifier)
+    ), f'Got {type(default_value)}'
     super().__init__(mojom_name, **kwargs)
     self.attribute_list = attribute_list
     self.ordinal = ordinal
@@ -598,17 +662,25 @@ class StructField(Definition):
     self.default_value = default_value
 
   def __eq__(self, other):
-    return super().__eq__(other) and \
-           self.attribute_list == other.attribute_list and \
-           self.ordinal == other.ordinal and \
-           self.typename == other.typename and \
-           self.default_value == other.default_value
+    return (
+      super().__eq__(other)
+      and self.attribute_list == other.attribute_list
+      and self.ordinal == other.ordinal
+      and self.typename == other.typename
+      and self.default_value == other.default_value
+    )
 
   def __repr__(self):
-    return ("StructField(mojom_name = %s, attribute_list = %s, ordinal = %s, "
-            "typename = %s, default_value = %s") % (
-                self.mojom_name, self.attribute_list, self.ordinal,
-                self.typename, self.default_value)
+    return (
+      "StructField(mojom_name = %s, attribute_list = %s, ordinal = %s, "
+      "typename = %s, default_value = %s"
+    ) % (
+      self.mojom_name,
+      self.attribute_list,
+      self.ordinal,
+      self.typename,
+      self.default_value,
+    )
 
 
 # This needs to be declared after |StructField|.
@@ -637,9 +709,11 @@ class Typename(NodeBase):
     return f'Typename({self})'
 
   def __eq__(self, other):
-    return super().__eq__(other) and \
-            self.identifier == other.identifier and \
-            self.nullable == other.nullable
+    return (
+      super().__eq__(other)
+      and self.identifier == other.identifier
+      and self.nullable == other.nullable
+    )
 
 
 class Union(Definition):
@@ -653,9 +727,11 @@ class Union(Definition):
     self.body = body
 
   def __eq__(self, other):
-    return super().__eq__(other) and \
-           self.attribute_list == other.attribute_list and \
-           self.body == other.body
+    return (
+      super().__eq__(other)
+      and self.attribute_list == other.attribute_list
+      and self.body == other.body
+    )
 
 
 class UnionField(Definition):
@@ -670,12 +746,13 @@ class UnionField(Definition):
     self.typename = typename
 
   def __eq__(self, other):
-    return super().__eq__(other) and \
-           self.attribute_list == other.attribute_list and \
-           self.ordinal == other.ordinal and \
-           self.typename == other.typename
+    return (
+      super().__eq__(other)
+      and self.attribute_list == other.attribute_list
+      and self.ordinal == other.ordinal
+      and self.typename == other.typename
+    )
 
 
 class UnionBody(NodeListBase):
-
   _list_item_type = UnionField

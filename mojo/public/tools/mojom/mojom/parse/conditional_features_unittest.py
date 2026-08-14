@@ -7,6 +7,7 @@ import os
 import sys
 import unittest
 
+
 def _GetDirAbove(dirname):
   """Returns the directory "above" this file containing |dirname| (which must
   also be "above" this file)."""
@@ -17,6 +18,7 @@ def _GetDirAbove(dirname):
     if tail == dirname:
       return path
 
+
 try:
   importlib.util.find_spec("mojom")
 except ImportError:
@@ -26,6 +28,7 @@ import mojom.parse.conditional_features as conditional_features
 import mojom.parse.parser as parser
 
 ENABLED_FEATURES = frozenset({'red', 'green', 'blue'})
+
 
 class ConditionalFeaturesTest(unittest.TestCase):
   """Tests |mojom.parse.conditional_features|."""
@@ -344,9 +347,12 @@ class ConditionalFeaturesTest(unittest.TestCase):
       };
     """
     definition = parser.Parse(source, "my_file.mojom")
-    self.assertRaises(conditional_features.EnableIfError,
-                      conditional_features.RemoveDisabledDefinitions,
-                      definition, ENABLED_FEATURES)
+    self.assertRaises(
+      conditional_features.EnableIfError,
+      conditional_features.RemoveDisabledDefinitions,
+      definition,
+      ENABLED_FEATURES,
+    )
 
   def testMultipleEnableIfs(self):
     source = """
@@ -356,9 +362,12 @@ class ConditionalFeaturesTest(unittest.TestCase):
       };
     """
     definition = parser.Parse(source, "my_file.mojom")
-    self.assertRaises(conditional_features.EnableIfError,
-                      conditional_features.RemoveDisabledDefinitions,
-                      definition, ENABLED_FEATURES)
+    self.assertRaises(
+      conditional_features.EnableIfError,
+      conditional_features.RemoveDisabledDefinitions,
+      definition,
+      ENABLED_FEATURES,
+    )
 
   def testMultipleEnableIfs(self):
     source = """
@@ -368,9 +377,12 @@ class ConditionalFeaturesTest(unittest.TestCase):
       };
     """
     definition = parser.Parse(source, "my_file.mojom")
-    self.assertRaises(conditional_features.EnableIfError,
-                      conditional_features.RemoveDisabledDefinitions,
-                      definition, ENABLED_FEATURES)
+    self.assertRaises(
+      conditional_features.EnableIfError,
+      conditional_features.RemoveDisabledDefinitions,
+      definition,
+      ENABLED_FEATURES,
+    )
 
   def testMultipleOrFeatures(self):
     mojom_source = """

@@ -8,5 +8,6 @@ import mojom.generate.module as mojom
 
 
 def IsNativeOnlyKind(kind):
-  return (mojom.IsStructKind(kind) or mojom.IsEnumKind(kind)) and \
-      kind.native_only
+  return (
+    mojom.IsStructKind(kind) or mojom.IsEnumKind(kind)
+  ) and kind.native_only

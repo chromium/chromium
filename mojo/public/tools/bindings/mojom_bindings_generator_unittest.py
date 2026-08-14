@@ -27,20 +27,23 @@ class MojoBindingsGeneratorTest(unittest.TestCase):
   def testMakeImportStackMessage(self):
     """Tests MakeImportStackMessage()."""
     self.assertEqual(MakeImportStackMessage(["x"]), "")
-    self.assertEqual(MakeImportStackMessage(["x", "y"]),
-                     "\n  y was imported by x")
-    self.assertEqual(MakeImportStackMessage(["x", "y", "z"]),
-                     "\n  z was imported by y\n  y was imported by x")
+    self.assertEqual(
+      MakeImportStackMessage(["x", "y"]), "\n  y was imported by x"
+    )
+    self.assertEqual(
+      MakeImportStackMessage(["x", "y", "z"]),
+      "\n  z was imported by y\n  y was imported by x",
+    )
 
   def testScrambleMethodOrdinals(self):
     """Tests ScrambleMethodOrdinals()."""
     interface = FakeIface()
     interface.mojom_name = 'RendererConfiguration'
     interface.methods = [
-        FakeMethod(),
-        FakeMethod(),
-        FakeMethod(),
-        FakeMethod(explicit_ordinal=42)
+      FakeMethod(),
+      FakeMethod(),
+      FakeMethod(),
+      FakeMethod(explicit_ordinal=42),
     ]
     ScrambleMethodOrdinals([interface], "foo".encode('utf-8'))
     # These next three values are hard-coded. If the generation algorithm

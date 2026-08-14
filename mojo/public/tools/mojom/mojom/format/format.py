@@ -68,7 +68,8 @@ def _write_mojom(node, state):
             _write_const(defn, state)
         else:
             raise ValueError(
-                f'Unexpected node in Mojom definition list: {defn}')
+                f'Unexpected node in Mojom definition list: {defn}'
+            )
 
         if i != len(node.definition_list) - 1:
             state.write_line()
@@ -151,7 +152,8 @@ def _format_attribute_list(node, indent, newline=True):
                 lw.write('&'.join(x.name for x in attr.value))
             else:
                 raise ValueError(
-                    f'Unxpected value type {type(attr.value)} for {attr}')
+                    f'Unxpected value type {type(attr.value)} for {attr}'
+                )
         if i != len(node.items) - 1:
             lw.write(', ')
     lw.write(']')
@@ -219,14 +221,14 @@ def _write_comment(comment, state, indent=None):
 
             # Find a place to break the comment and wrap. The +2 is for
             # offsetting `col` by 1 and being <= `LINE_LENGTH`.
-            subline = line[:LINE_LENGTH - state.col + 2]
+            subline = line[: LINE_LENGTH - state.col + 2]
             last_space = subline.rfind(' ')
             if last_space == -1:
                 # No such break exists, so just let the line continue.
                 state.write_line(line)
                 break
             state.write_line(line[:last_space])
-            line = line[last_space + 1:]
+            line = line[last_space + 1 :]
 
 
 def _write_body(keyword, node, state, bodyattr='body'):
@@ -261,7 +263,8 @@ def _write_body(keyword, node, state, bodyattr='body'):
             if defn.comments_before:
                 start_line = defn.comments_before[0].lineno
             if start_line > body.items[i - 1].end.line + 1 or isinstance(
-                    body, ast.InterfaceBody):
+                body, ast.InterfaceBody
+            ):
                 state.write_line()
 
         if isinstance(defn, ast.Const):
@@ -383,7 +386,8 @@ def _write_parameter_list(param_list, state, prelude):
     params = [_format_parameter(param) for param in param_list]
     oneline_len = sum([len(p) for p in params]) + 2 * len(params)
     args_have_comments = any(
-        p.comments_before or p.comments_suffix for p in param_list)
+        p.comments_before or p.comments_suffix for p in param_list
+    )
 
     already_indented = False
     if not args_have_comments:
@@ -396,16 +400,22 @@ def _write_parameter_list(param_list, state, prelude):
             state.write(', '.join(params))
             state.write(')')
             return
-        if (oneline_len + state.get_indent() + len(prelude) +
-                CONTINUATION_SHIFT + 1) < LINE_LENGTH:
+        if (
+            oneline_len
+            + state.get_indent()
+            + len(prelude)
+            + CONTINUATION_SHIFT
+            + 1
+        ) < LINE_LENGTH:
             state.write_line()
             state.write(' ' * (state.get_indent() + CONTINUATION_SHIFT))
             state.write(prelude)
             state.write(', '.join(params))
             state.write(')')
             return
-        if all(state.col + len(p) + len(prelude) + 1 < LINE_LENGTH
-               for p in params):
+        if all(
+            state.col + len(p) + len(prelude) + 1 < LINE_LENGTH for p in params
+        ):
             indent = state.col - 1
             already_indented = True
             # Continue to writing each on a separate line.
@@ -428,7 +438,8 @@ def _write_parameter_list(param_list, state, prelude):
         _write_line_comments(param_node.comments_before, state, indent=indent)
         lw = LineWrapper(
             base_indent=indent,
-            already_indented=already_indented if i == 0 else False)
+            already_indented=already_indented if i == 0 else False,
+        )
         lw.write(param)
         state.write(lw.finish())
         if i != len(params) - 1:
@@ -576,7 +587,7 @@ class LineWrapper:
                 _append(remaining)
                 break
 
-            i = remaining[:LINE_LENGTH - col].rfind(' ')
+            i = remaining[: LINE_LENGTH - col].rfind(' ')
             if i == -1:
                 # The fragment has no break point within LINE_LENGTH, but see if
                 # there is any break point at all.
@@ -593,7 +604,7 @@ class LineWrapper:
 
             _append(remaining[:i])
             _next_line()
-            remaining = remaining[i + 1:]
+            remaining = remaining[i + 1 :]
         return out
 
 

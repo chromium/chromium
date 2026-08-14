@@ -21,10 +21,18 @@ import node_modules
 
 
 def MinifyFile(input_file, output_file):
-  node.RunNode([
-      node_modules.PathToTerser(), input_file, '--mangle', '--compress',
-      '--comments', 'false', '--output', output_file
-  ])
+  node.RunNode(
+    [
+      node_modules.PathToTerser(),
+      input_file,
+      '--mangle',
+      '--compress',
+      '--comments',
+      'false',
+      '--output',
+      output_file,
+    ]
+  )
 
 
 def main(argv):
@@ -37,7 +45,7 @@ def main(argv):
   # input, because in non-optimized/pre-Terser builds the input file is copied
   # to the output location with gn copy().
   out_path = os.path.join(_CWD, args.output)
-  if (os.path.exists(out_path)):
+  if os.path.exists(out_path):
     os.remove(out_path)
 
   MinifyFile(os.path.join(_CWD, args.input), out_path)

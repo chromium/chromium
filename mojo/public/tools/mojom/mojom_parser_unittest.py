@@ -16,10 +16,12 @@ class MojomParserTest(MojomParserTestCase):
     """Basic test to verify that we can parse a mojom file and get a module."""
     mojom = 'foo/bar.mojom'
     self.WriteFile(
-        mojom, """\
+      mojom,
+      """\
         module test;
         enum TestEnum { kFoo };
-        """)
+        """,
+    )
     self.ParseMojoms([mojom])
 
     m = self.LoadModule(mojom)
@@ -31,10 +33,12 @@ class MojomParserTest(MojomParserTestCase):
     """Verifies that we can parse a mojom file given an absolute path input."""
     mojom = 'foo/bar.mojom'
     self.WriteFile(
-        mojom, """\
+      mojom,
+      """\
         module test;
         enum TestEnum { kFoo };
-        """)
+        """,
+    )
     self.ParseMojoms([self.GetPath(mojom)])
 
     m = self.LoadModule(mojom)
@@ -47,13 +51,18 @@ class MojomParserTest(MojomParserTestCase):
     a = 'a.mojom'
     b = 'b.mojom'
     self.WriteFile(
-        a, """\
+      a,
+      """\
         module a;
         import "b.mojom";
-        struct Foo { b.Bar bar; };""")
-    self.WriteFile(b, """\
+        struct Foo { b.Bar bar; };""",
+    )
+    self.WriteFile(
+      b,
+      """\
         module b;
-        struct Bar {};""")
+        struct Bar {};""",
+    )
     self.ParseMojoms([a, b])
 
     ma = self.LoadModule(a)
@@ -67,27 +76,34 @@ class MojomParserTest(MojomParserTestCase):
     """Verify imports processed by a previous parser execution can be loaded
     properly when parsing a dependent mojom."""
     a = 'a.mojom'
-    self.WriteFile(a, """\
+    self.WriteFile(
+      a,
+      """\
         module a;
-        struct Bar {};""")
+        struct Bar {};""",
+    )
     self.ParseMojoms([a])
 
     b = 'b.mojom'
     self.WriteFile(
-        b, """\
+      b,
+      """\
         module b;
         import "a.mojom";
-        struct Foo { a.Bar bar; };""")
+        struct Foo { a.Bar bar; };""",
+    )
     self.ParseMojoms([b])
 
   def testMissingImport(self):
     """Verify that an import fails if the imported mojom does not exist."""
     a = 'a.mojom'
     self.WriteFile(
-        a, """\
+      a,
+      """\
         module a;
         import "non-existent.mojom";
-        struct Bar {};""")
+        struct Bar {};""",
+    )
     with self.assertRaisesRegex(ValueError, "does not exist"):
       self.ParseMojoms([a])
 
@@ -97,14 +113,19 @@ class MojomParserTest(MojomParserTestCase):
     parsed output module already on disk for it."""
     a = 'a.mojom'
     b = 'b.mojom'
-    self.WriteFile(a, """\
-        module a;
-        struct Bar {};""")
     self.WriteFile(
-        b, """\
+      a,
+      """\
+        module a;
+        struct Bar {};""",
+    )
+    self.WriteFile(
+      b,
+      """\
         module b;
         import "a.mojom";
-        struct Foo { a.Bar bar; };""")
+        struct Foo { a.Bar bar; };""",
+    )
 
     # a.mojom has not been parsed yet, so its import will fail when processing
     # b.mojom here.
@@ -120,37 +141,42 @@ class MojomParserTest(MojomParserTestCase):
     b_metadata = 'out/b.build_metadata'
     c = 'c.mojom'
     c_metadata = 'out/c.build_metadata'
-    self.WriteFile(a_metadata,
-                   json.dumps({
-                       "sources": [self.GetPath(a)],
-                       "deps": []
-                   }))
     self.WriteFile(
-        b_metadata,
-        json.dumps({
-            "sources": [self.GetPath(b)],
-            "deps": [self.GetPath(a_metadata)]
-        }))
+      a_metadata, json.dumps({"sources": [self.GetPath(a)], "deps": []})
+    )
     self.WriteFile(
-        c_metadata,
-        json.dumps({
-            "sources": [self.GetPath(c)],
-            "deps": [self.GetPath(b_metadata)]
-        }))
-    self.WriteFile(a, """\
+      b_metadata,
+      json.dumps(
+        {"sources": [self.GetPath(b)], "deps": [self.GetPath(a_metadata)]}
+      ),
+    )
+    self.WriteFile(
+      c_metadata,
+      json.dumps(
+        {"sources": [self.GetPath(c)], "deps": [self.GetPath(b_metadata)]}
+      ),
+    )
+    self.WriteFile(
+      a,
+      """\
         module a;
-        struct Bar {};""")
+        struct Bar {};""",
+    )
     self.WriteFile(
-        b, """\
+      b,
+      """\
         module b;
         import "a.mojom";
-        struct Foo { a.Bar bar; };""")
+        struct Foo { a.Bar bar; };""",
+    )
     self.WriteFile(
-        c, """\
+      c,
+      """\
         module c;
         import "a.mojom";
         import "b.mojom";
-        struct Baz { b.Foo foo; };""")
+        struct Baz { b.Foo foo; };""",
+    )
     self.ParseMojoms([a], metadata=a_metadata)
     self.ParseMojoms([b], metadata=b_metadata)
     self.ParseMojoms([c], metadata=c_metadata)
@@ -162,24 +188,25 @@ class MojomParserTest(MojomParserTestCase):
     a_metadata = 'out/a.build_metadata'
     b = 'b.mojom'
     b_metadata = 'out/b.build_metadata'
-    self.WriteFile(a_metadata,
-                   json.dumps({
-                       "sources": [self.GetPath(a)],
-                       "deps": []
-                   }))
-    self.WriteFile(b_metadata,
-                   json.dumps({
-                       "sources": [self.GetPath(b)],
-                       "deps": []
-                   }))
-    self.WriteFile(a, """\
-        module a;
-        struct Bar {};""")
     self.WriteFile(
-        b, """\
+      a_metadata, json.dumps({"sources": [self.GetPath(a)], "deps": []})
+    )
+    self.WriteFile(
+      b_metadata, json.dumps({"sources": [self.GetPath(b)], "deps": []})
+    )
+    self.WriteFile(
+      a,
+      """\
+        module a;
+        struct Bar {};""",
+    )
+    self.WriteFile(
+      b,
+      """\
         module b;
         import "a.mojom";
-        struct Foo { a.Bar bar; };""")
+        struct Foo { a.Bar bar; };""",
+    )
 
     self.ParseMojoms([a], metadata=a_metadata)
     with self.assertRaisesRegex(ValueError, "not allowed by build"):

@@ -51,8 +51,9 @@ class EnumTest(MojomParserTestCase):
     a_mojom = 'a.mojom'
     self.WriteFile(a_mojom, 'module a; enum E { kFoo=42, kBar };')
     b_mojom = 'b.mojom'
-    self.WriteFile(b_mojom,
-                   'module b; import "a.mojom"; enum F { kFoo = a.E.kBar };')
+    self.WriteFile(
+      b_mojom, 'module b; import "a.mojom"; enum F { kFoo = a.E.kBar };'
+    )
     self.ParseMojoms([a_mojom, b_mojom])
     b = self.LoadModule(b_mojom)
 
@@ -82,8 +83,9 @@ class EnumTest(MojomParserTestCase):
     a_mojom = 'a.mojom'
     self.WriteFile(a_mojom, 'module a; const int32 kFoo = 37;')
     b_mojom = 'b.mojom'
-    self.WriteFile(b_mojom,
-                   'module b; import "a.mojom"; enum F { kFoo = a.kFoo };')
+    self.WriteFile(
+      b_mojom, 'module b; import "a.mojom"; enum F { kFoo = a.kFoo };'
+    )
     self.ParseMojoms([a_mojom, b_mojom])
     b = self.LoadModule(b_mojom)
 
@@ -97,10 +99,9 @@ class EnumTest(MojomParserTestCase):
     self.WriteFile(a_mojom, 'module a; enum E { kFoo, kBar };')
     b_mojom = 'b.mojom'
     self.WriteFile(
-        b_mojom, 'module b;'
-        'import "a.mojom";'
-        '[MooCow=a.E.kFoo]'
-        'interface Foo { Foo(); };')
+      b_mojom,
+      'module b;import "a.mojom";[MooCow=a.E.kFoo]interface Foo { Foo(); };',
+    )
     self.ParseMojoms([a_mojom, b_mojom])
     b = self.LoadModule(b_mojom)
     self.assertEqual(b.interfaces[0].attributes['MooCow'].mojom_name, 'kFoo')
@@ -109,12 +110,15 @@ class EnumTest(MojomParserTestCase):
     """Verifies that constants as attributes are translated to the constant."""
     a_mojom = 'a.mojom'
     self.WriteFile(
-        a_mojom, 'module a;'
-        'enum E { kFoo, kBar };'
-        'const E kB = E.kFoo;'
-        '[Attr=kB] interface Hello { Foo(); };')
+      a_mojom,
+      'module a;'
+      'enum E { kFoo, kBar };'
+      'const E kB = E.kFoo;'
+      '[Attr=kB] interface Hello { Foo(); };',
+    )
     self.ParseMojoms([a_mojom])
     a = self.LoadModule(a_mojom)
     self.assertEqual(a.interfaces[0].attributes['Attr'].mojom_name, 'kB')
-    self.assertEqual(a.interfaces[0].attributes['Attr'].value.mojom_name,
-                     'kFoo')
+    self.assertEqual(
+      a.interfaces[0].attributes['Attr'].value.mojom_name, 'kFoo'
+    )

@@ -75,26 +75,33 @@ def _ValidateDelta(root, delta):
     try:
       ast = parser.Parse(contents, mojom)
     except Exception as e:
-      raise ParseError('encountered exception {0} while parsing {1}'.format(
-          e, mojom))
+      raise ParseError(
+        'encountered exception {0} while parsing {1}'.format(e, mojom)
+      )
 
     # Files which are generated at compile time can't be checked by this script
     # (at the moment) since they may not exist in the output directory.
     generated_files_to_skip = {
-        ('third_party/blink/public/mojom/runtime_feature_state/'
-         'runtime_feature.mojom'),
-        ('third_party/blink/public/mojom/origin_trials/'
-         'origin_trial_feature.mojom'),
+      (
+        'third_party/blink/public/mojom/runtime_feature_state/'
+        'runtime_feature.mojom'
+      ),
+      (
+        'third_party/blink/public/mojom/origin_trials/'
+        'origin_trial_feature.mojom'
+      ),
     }
 
     ast.import_list.items = [
-        x for x in ast.import_list.items
-        if x.import_filename not in generated_files_to_skip
+      x
+      for x in ast.import_list.items
+      if x.import_filename not in generated_files_to_skip
     ]
 
     for imp in ast.import_list:
-      if (not file_overrides.get(imp.import_filename)
-          and not os.path.exists(os.path.join(root, imp.import_filename))):
+      if not file_overrides.get(imp.import_filename) and not os.path.exists(
+        os.path.join(root, imp.import_filename)
+      ):
         # Speculatively construct a path prefix to locate the import_filename
         mojom_path = os.path.dirname(os.path.normpath(mojom)).split(os.sep)
         test_prefix = ''
@@ -113,8 +120,11 @@ def _ValidateDelta(root, delta):
     all_modules.update(unmodified_modules)
     all_modules.update(override_modules)
     modules[mojom] = translate.OrderedModule(
-        ast, mojom, all_modules,
-        translate.ExtensibleEnumMode.RELAXED_FOR_BACKWARDS_COMPAT_CHECK)
+      ast,
+      mojom,
+      all_modules,
+      translate.ExtensibleEnumMode.RELAXED_FOR_BACKWARDS_COMPAT_CHECK,
+    )
 
   old_modules = {}
   for mojom in old_files:
@@ -155,26 +165,29 @@ def _ValidateDelta(root, delta):
     new_name = renamed_types.get(qualified_name, qualified_name)
     if new_name not in new_types:
       raise Exception(
-          'Stable type %s appears to be deleted by this change. If it was '
-          'renamed, please add a [RenamedFrom] attribute to the new type. This '
-          'can be deleted by a subsequent change.' % qualified_name)
+        'Stable type %s appears to be deleted by this change. If it was '
+        'renamed, please add a [RenamedFrom] attribute to the new type. This '
+        'can be deleted by a subsequent change.' % qualified_name
+      )
 
     checker = compatibility_checker.BackwardCompatibilityChecker()
     try:
       if not checker.IsBackwardCompatible(new_types[new_name], kind):
         raise Exception(
-            'Stable type %s appears to have changed in a way which '
-            'breaks backward-compatibility. Please fix!\n\nIf you '
-            'believe this assessment to be incorrect, please file a '
-            'Chromium bug against the "Internals>Mojo>Bindings" '
-            'component.' % qualified_name)
-    except Exception as e:
-      raise Exception(
           'Stable type %s appears to have changed in a way which '
-          'breaks backward-compatibility: \n\n%s.\nPlease fix!\n\nIf you '
+          'breaks backward-compatibility. Please fix!\n\nIf you '
           'believe this assessment to be incorrect, please file a '
           'Chromium bug against the "Internals>Mojo>Bindings" '
-          'component.' % (qualified_name, e))
+          'component.' % qualified_name
+        )
+    except Exception as e:
+      raise Exception(
+        'Stable type %s appears to have changed in a way which '
+        'breaks backward-compatibility: \n\n%s.\nPlease fix!\n\nIf you '
+        'believe this assessment to be incorrect, please file a '
+        'Chromium bug against the "Internals>Mojo>Bindings" '
+        'component.' % (qualified_name, e)
+      )
 
 
 def Run(command_line, delta=None):
@@ -182,21 +195,23 @@ def Run(command_line, delta=None):
   change description from stdin as a JSON-encoded list, but tests may pass a
   delta directly for convenience."""
   arg_parser = argparse.ArgumentParser(
-      description='Verifies backward-compatibility of mojom type changes.',
-      epilog="""
+    description='Verifies backward-compatibility of mojom type changes.',
+    epilog="""
 This tool reads a change description from stdin and verifies that all modified
 [Stable] mojom types will retain backward-compatibility. The change description
 must be a JSON-encoded list of objects, each with a "filename" key (path to a
 changed mojom file, relative to ROOT); an "old" key whose value is a string of
 the full file contents before the change, or null if the file is being added;
 and a "new" key whose value is a string of the full file contents after the
-change, or null if the file is being deleted.""")
+change, or null if the file is being deleted.""",
+  )
   arg_parser.add_argument(
-      '--src-root',
-      required=True,
-      action='store',
-      metavar='ROOT',
-      help='The root of the source tree in which the checked mojoms live.')
+    '--src-root',
+    required=True,
+    action='store',
+    metavar='ROOT',
+    help='The root of the source tree in which the checked mojoms live.',
+  )
 
   args, _ = arg_parser.parse_known_args(command_line)
   if not delta:

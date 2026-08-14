@@ -6,6 +6,7 @@ import unittest
 
 from mojom.parse import ast
 
+
 class _TestNode(ast.NodeBase):
   """Node type for tests."""
 
@@ -16,10 +17,12 @@ class _TestNode(ast.NodeBase):
   def __eq__(self, other):
     return super().__eq__(other) and self.value == other.value
 
+
 class _TestNodeList(ast.NodeListBase):
   """Node list type for tests."""
 
   _list_item_type = _TestNode
+
 
 class ASTTest(unittest.TestCase):
   """Tests various AST classes."""

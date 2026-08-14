@@ -8,6 +8,7 @@ from mojom.generate import module as mojom
 from mojom.generate import translate
 from mojom.parse import ast
 
+
 class TranslateTest(unittest.TestCase):
   """Tests |parser.Parse()|."""
 
@@ -15,40 +16,59 @@ class TranslateTest(unittest.TestCase):
     """Tests a simple int32[]."""
     # pylint: disable=W0212
     self.assertEqual(
-        translate._MapKind(ast.Array(ast.Typename(ast.Identifier('int32')))),
-        "a:i32")
+      translate._MapKind(ast.Array(ast.Typename(ast.Identifier('int32')))),
+      "a:i32",
+    )
 
   def testAssociativeArray(self):
     """Tests a simple uint8{string}."""
     # pylint: disable=W0212
     self.assertEqual(
-        translate._MapKind(
-            ast.Map(ast.Identifier('string'),
-                    ast.Typename(ast.Identifier('uint8')))), "m[s][u8]")
+      translate._MapKind(
+        ast.Map(ast.Identifier('string'), ast.Typename(ast.Identifier('uint8')))
+      ),
+      "m[s][u8]",
+    )
 
   def testLeftToRightAssociativeArray(self):
     """Makes sure that parsing is done from right to left on the internal kinds
-       in the presence of an associative array."""
+    in the presence of an associative array."""
     # pylint: disable=W0212
     self.assertEqual(
-        translate._MapKind(
-            ast.Map(
-                ast.Identifier('string'),
-                ast.Typename(ast.Array(ast.Typename(
-                    ast.Identifier('uint8')))))), "m[s][a:u8]")
+      translate._MapKind(
+        ast.Map(
+          ast.Identifier('string'),
+          ast.Typename(ast.Array(ast.Typename(ast.Identifier('uint8')))),
+        )
+      ),
+      "m[s][a:u8]",
+    )
 
   def testTranslateSimpleUnions(self):
     """Makes sure that a simple union is translated correctly."""
-    tree = ast.Mojom(None, ast.ImportList(), [
+    tree = ast.Mojom(
+      None,
+      ast.ImportList(),
+      [
         ast.Union(
-            ast.Name("SomeUnion"), None,
-            ast.UnionBody([
-                ast.UnionField(ast.Name("a"), None, None,
-                               ast.Typename(ast.Identifier("int32"))),
-                ast.UnionField(ast.Name("b"), None, None,
-                               ast.Typename(ast.Identifier("string")))
-            ]))
-    ])
+          ast.Name("SomeUnion"),
+          None,
+          ast.UnionBody(
+            [
+              ast.UnionField(
+                ast.Name("a"), None, None, ast.Typename(ast.Identifier("int32"))
+              ),
+              ast.UnionField(
+                ast.Name("b"),
+                None,
+                None,
+                ast.Typename(ast.Identifier("string")),
+              ),
+            ]
+          ),
+        )
+      ],
+    )
 
     translation = translate.OrderedModule(tree, "mojom_tree", [])
     self.assertEqual(1, len(translation.unions))
@@ -64,10 +84,10 @@ class TranslateTest(unittest.TestCase):
 
   def testMapKindRaisesWithDuplicate(self):
     """Verifies _MapTreeForType() raises when passed two values with the same
-       name."""
+    name."""
     methods = [
-        ast.Method(ast.Name('dup'), None, None, ast.ParameterList(), None),
-        ast.Method(ast.Name('dup'), None, None, ast.ParameterList(), None)
+      ast.Method(ast.Name('dup'), None, None, ast.ParameterList(), None),
+      ast.Method(ast.Name('dup'), None, None, ast.ParameterList(), None),
     ]
     with self.assertRaises(Exception):
       translate._ElemsOfType(methods, ast.Method, 'scope')
@@ -76,63 +96,111 @@ class TranslateTest(unittest.TestCase):
     """Tests type spec translation of associated interfaces and requests."""
     # pylint: disable=W0212
     self.assertEqual(
-        translate._MapKind(
-            ast.Typename(ast.Receiver(ast.Identifier('SomeInterface'),
-                                      associated=True),
-                         nullable=True)), "?rca:x:SomeInterface")
+      translate._MapKind(
+        ast.Typename(
+          ast.Receiver(ast.Identifier('SomeInterface'), associated=True),
+          nullable=True,
+        )
+      ),
+      "?rca:x:SomeInterface",
+    )
 
   def testSelfRecursiveUnions(self):
     """Verifies _UnionField() raises when a union is self-recursive."""
-    tree = ast.Mojom(None, ast.ImportList(), [
+    tree = ast.Mojom(
+      None,
+      ast.ImportList(),
+      [
         ast.Union(
-            ast.Name("SomeUnion"), None,
-            ast.UnionBody([
-                ast.UnionField(ast.Name("a"), None, None,
-                               ast.Typename(ast.Identifier("SomeUnion")))
-            ]))
-    ])
+          ast.Name("SomeUnion"),
+          None,
+          ast.UnionBody(
+            [
+              ast.UnionField(
+                ast.Name("a"),
+                None,
+                None,
+                ast.Typename(ast.Identifier("SomeUnion")),
+              )
+            ]
+          ),
+        )
+      ],
+    )
     with self.assertRaises(Exception):
       translate.OrderedModule(tree, "mojom_tree", [])
 
-    tree = ast.Mojom(None, ast.ImportList(), [
+    tree = ast.Mojom(
+      None,
+      ast.ImportList(),
+      [
         ast.Union(
-            ast.Name("SomeUnion"), None,
-            ast.UnionBody([
-                ast.UnionField(
-                    ast.Name("a"), None, None,
-                    ast.Typename(ast.Identifier("SomeUnion"), nullable=True))
-            ]))
-    ])
+          ast.Name("SomeUnion"),
+          None,
+          ast.UnionBody(
+            [
+              ast.UnionField(
+                ast.Name("a"),
+                None,
+                None,
+                ast.Typename(ast.Identifier("SomeUnion"), nullable=True),
+              )
+            ]
+          ),
+        )
+      ],
+    )
     with self.assertRaises(Exception):
       translate.OrderedModule(tree, "mojom_tree", [])
 
   def testDuplicateAttributesException(self):
-    tree = ast.Mojom(None, ast.ImportList(), [
+    tree = ast.Mojom(
+      None,
+      ast.ImportList(),
+      [
         ast.Union(
-            ast.Name("FakeUnion"),
-            ast.AttributeList([
-                ast.Attribute(ast.Name("key1"), ast.Name("value")),
-                ast.Attribute(ast.Name("key1"), ast.Name("value"))
-            ]),
-            ast.UnionBody([
-                ast.UnionField(ast.Name("a"), None, None,
-                               ast.Typename(ast.Identifier("int32"))),
-                ast.UnionField(ast.Name("b"), None, None,
-                               ast.Typename(ast.Identifier("string")))
-            ]))
-    ])
+          ast.Name("FakeUnion"),
+          ast.AttributeList(
+            [
+              ast.Attribute(ast.Name("key1"), ast.Name("value")),
+              ast.Attribute(ast.Name("key1"), ast.Name("value")),
+            ]
+          ),
+          ast.UnionBody(
+            [
+              ast.UnionField(
+                ast.Name("a"), None, None, ast.Typename(ast.Identifier("int32"))
+              ),
+              ast.UnionField(
+                ast.Name("b"),
+                None,
+                None,
+                ast.Typename(ast.Identifier("string")),
+              ),
+            ]
+          ),
+        )
+      ],
+    )
     with self.assertRaises(Exception):
       translate.OrderedModule(tree, "mojom_tree", [])
 
   def testExtensibleEnumWithNoDefault(self):
-    tree = ast.Mojom(None, ast.ImportList(), [
+    tree = ast.Mojom(
+      None,
+      ast.ImportList(),
+      [
         ast.Enum(
-            ast.Name('TestEnum'),
-            ast.AttributeList([
-                ast.Attribute(ast.Name('Extensible'), True),
-            ]),
-            ast.EnumValueList([ast.EnumValue(ast.Name('kValue'), None, None)]))
-    ])
+          ast.Name('TestEnum'),
+          ast.AttributeList(
+            [
+              ast.Attribute(ast.Name('Extensible'), True),
+            ]
+          ),
+          ast.EnumValueList([ast.EnumValue(ast.Name('kValue'), None, None)]),
+        )
+      ],
+    )
 
     with self.assertRaises(Exception) as context:
       translate.OrderedModule(tree, 'mojom_tree', [])
@@ -140,95 +208,139 @@ class TranslateTest(unittest.TestCase):
 
     # Not allowlisted in ChromeOS so this should still warn.
     with self.assertRaises(Exception) as context:
-      translate.OrderedModule(tree,
-                              'mojom_tree', [],
-                              extensible_enum_mode=translate.ExtensibleEnumMode.
-                              RELAXED_FOR_CHROMEOS)
+      translate.OrderedModule(
+        tree,
+        'mojom_tree',
+        [],
+        extensible_enum_mode=translate.ExtensibleEnumMode.RELAXED_FOR_CHROMEOS,
+      )
     self.assertIn('must specify a [Default] enumerator', str(context.exception))
 
     # However, backwards compatibility checks always suppress this warning.
-    translate.OrderedModule(tree,
-                            'mojom_tree', [],
-                            extensible_enum_mode=translate.ExtensibleEnumMode.
-                            RELAXED_FOR_BACKWARDS_COMPAT_CHECK)
+    translate.OrderedModule(
+      tree,
+      'mojom_tree',
+      [],
+      extensible_enum_mode=translate.ExtensibleEnumMode.RELAXED_FOR_BACKWARDS_COMPAT_CHECK,
+    )
 
     # Test that temporary suppressions for non-CrOS do not throw an exception.
     temporarily_suppressed_tree = ast.Mojom(
-        ast.Module(ast.Identifier('test.mojom'), None), ast.ImportList(), [
-            ast.Enum(
-                ast.Name('ExtensibleEnumForUnitTests'),
-                ast.AttributeList([
-                    ast.Attribute(ast.Name('Extensible'), True),
-                ]),
-                ast.EnumValueList(
-                    [ast.EnumValue(ast.Name('kValue'), None, None)]))
-        ])
+      ast.Module(ast.Identifier('test.mojom'), None),
+      ast.ImportList(),
+      [
+        ast.Enum(
+          ast.Name('ExtensibleEnumForUnitTests'),
+          ast.AttributeList(
+            [
+              ast.Attribute(ast.Name('Extensible'), True),
+            ]
+          ),
+          ast.EnumValueList([ast.EnumValue(ast.Name('kValue'), None, None)]),
+        )
+      ],
+    )
 
     translate.OrderedModule(temporarily_suppressed_tree, 'mojom_tree', [])
     translate.OrderedModule(
-        temporarily_suppressed_tree,
-        'mojom_tree', [],
-        extensible_enum_mode=translate.ExtensibleEnumMode.RELAXED_FOR_CHROMEOS)
+      temporarily_suppressed_tree,
+      'mojom_tree',
+      [],
+      extensible_enum_mode=translate.ExtensibleEnumMode.RELAXED_FOR_CHROMEOS,
+    )
 
     # Test that permanent (for now) suppressions for CrOS do not throw an
     # exception–but are still treated as errors in non-ChromeOS mode.
     suppressed_for_chromeos_tree = ast.Mojom(
-        ast.Module(ast.Identifier('test.mojom'), None), ast.ImportList(), [
-            ast.Enum(
-                ast.Name('ExtensibleEnumForUnitTestsCrOS'),
-                ast.AttributeList([
-                    ast.Attribute(ast.Name('Extensible'), True),
-                ]),
-                ast.EnumValueList(
-                    [ast.EnumValue(ast.Name('kValue'), None, None)]))
-        ])
+      ast.Module(ast.Identifier('test.mojom'), None),
+      ast.ImportList(),
+      [
+        ast.Enum(
+          ast.Name('ExtensibleEnumForUnitTestsCrOS'),
+          ast.AttributeList(
+            [
+              ast.Attribute(ast.Name('Extensible'), True),
+            ]
+          ),
+          ast.EnumValueList([ast.EnumValue(ast.Name('kValue'), None, None)]),
+        )
+      ],
+    )
     with self.assertRaises(Exception) as context:
       translate.OrderedModule(suppressed_for_chromeos_tree, 'mojom_tree', [])
     self.assertIn('must specify a [Default] enumerator', str(context.exception))
     translate.OrderedModule(
-        suppressed_for_chromeos_tree,
-        'mojom_tree', [],
-        extensible_enum_mode=translate.ExtensibleEnumMode.RELAXED_FOR_CHROMEOS)
-
+      suppressed_for_chromeos_tree,
+      'mojom_tree',
+      [],
+      extensible_enum_mode=translate.ExtensibleEnumMode.RELAXED_FOR_CHROMEOS,
+    )
 
   def testEnumWithReservedValues(self):
     """Verifies that assigning reserved values to enumerators fails."""
     # -128 is reserved for the empty representation in blink::HashTraits.
-    tree = ast.Mojom(None, ast.ImportList(), [
+    tree = ast.Mojom(
+      None,
+      ast.ImportList(),
+      [
         ast.Enum(
-            ast.Name("MyEnum"), None,
-            ast.EnumValueList([
-                ast.EnumValue(ast.Name('kReserved'), None,
-                              ast.Literal('int', '-128')),
-            ]))
-    ])
+          ast.Name("MyEnum"),
+          None,
+          ast.EnumValueList(
+            [
+              ast.EnumValue(
+                ast.Name('kReserved'), None, ast.Literal('int', '-128')
+              ),
+            ]
+          ),
+        )
+      ],
+    )
     with self.assertRaises(Exception) as context:
       translate.OrderedModule(tree, "mojom_tree", [])
     self.assertIn("reserved for blink::HashTrait", str(context.exception))
 
     # -127 is reserved for the deleted representation in blink::HashTraits.
-    tree = ast.Mojom(None, ast.ImportList(), [
+    tree = ast.Mojom(
+      None,
+      ast.ImportList(),
+      [
         ast.Enum(
-            ast.Name("MyEnum"), None,
-            ast.EnumValueList([
-                ast.EnumValue(ast.Name('kReserved'), None,
-                              ast.Literal('int', '-127')),
-            ]))
-    ])
+          ast.Name("MyEnum"),
+          None,
+          ast.EnumValueList(
+            [
+              ast.EnumValue(
+                ast.Name('kReserved'), None, ast.Literal('int', '-127')
+              ),
+            ]
+          ),
+        )
+      ],
+    )
     with self.assertRaises(Exception) as context:
       translate.OrderedModule(tree, "mojom_tree", [])
     self.assertIn("reserved for blink::HashTrait", str(context.exception))
 
     # Implicitly assigning a reserved value should also fail.
-    tree = ast.Mojom(None, ast.ImportList(), [
+    tree = ast.Mojom(
+      None,
+      ast.ImportList(),
+      [
         ast.Enum(
-            ast.Name("MyEnum"), None,
-            ast.EnumValueList([
-                ast.EnumValue(ast.Name('kNotReserved'), None,
-                              ast.Literal('int', '-129')),
-                ast.EnumValue(ast.Name('kImplicitlyReserved'), None, None),
-            ]))
-    ])
+          ast.Name("MyEnum"),
+          None,
+          ast.EnumValueList(
+            [
+              ast.EnumValue(
+                ast.Name('kNotReserved'), None, ast.Literal('int', '-129')
+              ),
+              ast.EnumValue(ast.Name('kImplicitlyReserved'), None, None),
+            ]
+          ),
+        )
+      ],
+    )
     with self.assertRaises(Exception) as context:
       translate.OrderedModule(tree, "mojom_tree", [])
     self.assertIn("reserved for blink::HashTrait", str(context.exception))

@@ -12,7 +12,8 @@ class CheckException(Exception):
 
   def __str__(self):
     return "Failed mojo pre-generation check for {}:\n{}".format(
-        self.module.path, self.message)
+      self.module.path, self.message
+    )
 
 
 class Check:
@@ -20,7 +21,7 @@ class Check:
     self.module = module
 
   def CheckModule(self):
-    """ Subclass should return True if its Checks pass, and throw an
+    """Subclass should return True if its Checks pass, and throw an
     exception otherwise. CheckModule will be called immediately before
     mojom.generate.Generator.GenerateFiles()"""
     raise NotImplementedError("Subclasses must override/implement this method")
