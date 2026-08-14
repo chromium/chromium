@@ -59,6 +59,7 @@ if (is_android) {
       "//base:base_junit_test_support",
       "//base:holder_java",
       "//base:service_loader_java",
+      "//base:tristate_java",
       "//base/test:test_support_java",
       "//base/version_info/android:version_constants_java",
       "//cc:cc_java",
