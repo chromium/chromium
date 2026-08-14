@@ -9,12 +9,17 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
+import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {assertStyle, createContextualTasksAppElement, fixtureUrl, simulateLoadCommit} from './contextual_tasks_test_utils.js';
 import {TestContextualTasksBrowserProxy} from './test_contextual_tasks_browser_proxy.js';
 
 // <if expr="not is_android or enable_webui_contextual_tasks_composebox">
+import {PageHandlerRemote as ComposeboxPageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
+import {ComposeboxProxyImpl} from 'chrome://resources/cr_components/composebox/composebox_proxy.js';
+import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+
 // Remove the element to prevent background loadabort events from triggering
 // a race condition with our manual event simulation.
 async function removeThreadFrameToPreventRaceConditions() {
@@ -66,6 +71,22 @@ suite('ContextualTasksAppTest', function() {
     metrics = fakeMetricsPrivate();
     const proxy = new TestContextualTasksBrowserProxy('http://example.com');
     BrowserProxyImpl.setInstance(proxy);
+
+    // <if expr="not is_android or enable_webui_contextual_tasks_composebox">
+    const mockComposeboxPageHandler =
+        TestMock.fromClass(ComposeboxPageHandlerRemote);
+    const mockSearchboxPageHandler =
+        TestMock.fromClass(SearchboxPageHandlerRemote);
+    mockSearchboxPageHandler.setResultFor(
+        'getPageClassification',
+        Promise.resolve({metricSource: 'CO_BROWSING_COMPOSEBOX'}));
+    mockSearchboxPageHandler.setResultFor(
+        'getInputState', Promise.resolve({state: null}));
+    const searchboxCallbackRouter = new SearchboxPageCallbackRouter();
+    ComposeboxProxyImpl.setInstance(new ComposeboxProxyImpl(
+        mockComposeboxPageHandler, mockSearchboxPageHandler,
+        searchboxCallbackRouter));
+    // </if>
   });
 
   test('gets thread url', async () => {
