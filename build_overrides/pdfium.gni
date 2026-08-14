@@ -35,5 +35,8 @@ pdf_enable_fontations_override = false
 # Disable Rust-based BMP decoder in PDFium.
 pdf_enable_rust_bmp_override = false
 
+# Disable Rust-based JPEG decoder in PDFium.
+pdf_enable_rust_jpeg_override = false
+
 # Enable Rust-based PNG decoder and encoder in PDFium.
 pdf_enable_rust_png_override = true
