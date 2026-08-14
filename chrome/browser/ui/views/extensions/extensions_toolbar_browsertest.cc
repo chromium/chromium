@@ -42,10 +42,19 @@
 using PermissionsManager = extensions::PermissionsManager;
 using SitePermissionsHelper = extensions::SitePermissionsHelper;
 
-ExtensionsToolbarBrowserTest::ExtensionsToolbarBrowserTest() {
+ExtensionsToolbarBrowserTest::ExtensionsToolbarBrowserTest()
+    : ExtensionsToolbarBrowserTest({}, {}) {}
+
+ExtensionsToolbarBrowserTest::ExtensionsToolbarBrowserTest(
+    const std::vector<base::test::FeatureRef>& enabled_features,
+    const std::vector<base::test::FeatureRef>& disabled_features) {
   // Allow unpacked extensions without developer mode for testing.
-  scoped_feature_list_.InitAndDisableFeature(
+  std::vector<base::test::FeatureRef> actual_disabled_features =
+      disabled_features;
+  actual_disabled_features.push_back(
       extensions_features::kExtensionDisableUnsupportedDeveloper);
+  scoped_feature_list_.InitWithFeatures(enabled_features,
+                                        actual_disabled_features);
 }
 
 ExtensionsToolbarBrowserTest::~ExtensionsToolbarBrowserTest() = default;

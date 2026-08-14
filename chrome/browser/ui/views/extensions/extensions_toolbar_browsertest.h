@@ -38,6 +38,9 @@ class ToolbarActionView;
 class ExtensionsToolbarBrowserTest : public InProcessBrowserTest {
  public:
   ExtensionsToolbarBrowserTest();
+  ExtensionsToolbarBrowserTest(
+      const std::vector<base::test::FeatureRef>& enabled_features,
+      const std::vector<base::test::FeatureRef>& disabled_features);
   ~ExtensionsToolbarBrowserTest() override;
   ExtensionsToolbarBrowserTest(const ExtensionsToolbarBrowserTest&) = delete;
   const ExtensionsToolbarBrowserTest& operator=(

@@ -88,9 +88,6 @@ source_set("unit_tests") {
   sources = [
     "chooser_dialog_view_unittest.cc",
     "expandable_container_view_unittest.cc",
-    "extensions_toolbar_desktop_unittest.cc",
-    "extensions_toolbar_unittest.cc",
-    "extensions_toolbar_unittest.h",
   ]
   deps = [
     ":extensions_views_utils",
@@ -153,11 +150,13 @@ source_set("browser_tests") {
       "extensions_toolbar_browsertest.cc",
       "extensions_toolbar_browsertest.h",
       "extensions_toolbar_button_browsertest.cc",
+      "extensions_toolbar_desktop_browsertest.cc",
       "generic_mime_handler_chip_browsertest.cc",
       "security_dialog_tracker_browsertest.cc",
     ]
     deps += [
       ":extension_post_install_dialog_view_utils",
+      ":extensions_views_utils",
       ":security_dialog_tracker",
       ":test_support",
       "//base",
