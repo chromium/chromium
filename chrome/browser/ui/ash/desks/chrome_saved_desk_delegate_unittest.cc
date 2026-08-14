@@ -10,6 +10,7 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller_impl.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ui/ash/desks/desks_client.h"
@@ -53,6 +54,8 @@ class ChromeSavedDeskDelegateTest : public testing::Test {
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
 
+    browser_controller_.emplace();
+
     // Create a test user and profile so the `ChromeSavedDeskDelegate` does not
     // return empty result simply because of missing user profile.
     auto account_id = AccountId::FromUserEmail(kTestProfileEmail);
@@ -73,6 +76,7 @@ class ChromeSavedDeskDelegateTest : public testing::Test {
   void TearDown() override {
     chrome_saved_desk_delegate_.reset();
     profile_.reset();
+    browser_controller_.reset();
     profile_manager_.reset();
   }
 
@@ -102,11 +106,9 @@ class ChromeSavedDeskDelegateTest : public testing::Test {
 
   base::ScopedTempDir profile_dir_;
   std::unique_ptr<TestingProfile> profile_;
-
   std::unique_ptr<TestingProfileManager> profile_manager_;
-
+  std::optional<ash::BrowserControllerImpl> browser_controller_;
   std::unique_ptr<ChromeSavedDeskDelegate> chrome_saved_desk_delegate_;
-
   user_manager::ScopedUserManager user_manager_enabler_;
 };
 

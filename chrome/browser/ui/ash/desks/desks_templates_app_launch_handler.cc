@@ -26,7 +26,6 @@
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
-#include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "components/app_constants/constants.h"
 #include "components/app_restore/app_restore_data.h"
 #include "components/app_restore/app_restore_utils.h"

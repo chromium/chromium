@@ -20,6 +20,8 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/icon_standardizer.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -27,7 +29,8 @@
 #include "chrome/browser/ui/ash/desks/admin_template_service_factory.h"
 #include "chrome/browser/ui/ash/desks/chrome_desks_util.h"
 #include "chrome/browser/ui/ash/desks/desks_client.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/app_constants/constants.h"
 #include "components/app_restore/app_launch_info.h"
@@ -62,9 +65,9 @@ namespace {
 // Returns the TabStripModel that associates with `window` if the given `window`
 // contains a browser frame, otherwise returns nullptr.
 TabStripModel* GetTabstripModelForWindowIfAny(aura::Window* window) {
-  BrowserView* browser_view =
-      BrowserView::GetBrowserViewForNativeWindow(window);
-  return browser_view ? browser_view->browser()->tab_strip_model() : nullptr;
+  ash::BrowserDelegate* browser =
+      ash::BrowserController::GetInstance()->GetBrowserForWindow(window);
+  return browser ? browser->GetBrowser().GetTabStripModel() : nullptr;
 }
 
 // Returns the list of URLs that are open in `tab_strip_model`.
@@ -350,9 +353,9 @@ ChromeSavedDeskDelegate::GetAdminTemplateService() {
 }
 
 bool ChromeSavedDeskDelegate::IsWindowPersistable(aura::Window* window) const {
-  BrowserView* browser_view =
-      BrowserView::GetBrowserViewForNativeWindow(window);
-  return !(browser_view && browser_view->GetIncognito()) &&
+  ash::BrowserDelegate* browser =
+      ash::BrowserController::GetInstance()->GetBrowserForWindow(window);
+  return !(browser && browser->IsOffTheRecord()) &&
          window->GetProperty(wm::kPersistableKey);
 }
 
