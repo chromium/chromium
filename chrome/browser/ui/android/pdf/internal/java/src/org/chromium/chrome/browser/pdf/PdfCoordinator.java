@@ -10,6 +10,7 @@ import android.content.ActivityNotFoundException;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.RectF;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
@@ -298,6 +299,8 @@ public class PdfCoordinator
         @VisibleForTesting boolean mIsPdfViewSetup;
 
         @Nullable private String mViewTag;
+        // TODO(crbug.com/536943332): Track and restore the calculated current page instead of
+        // only saving the first visible page on exit edit mode or save instance state.
         private int mSavedPageIndex = -1;
         private float mSavedZoom = -1f;
         private boolean mRestorePositionPending;
@@ -385,7 +388,29 @@ public class PdfCoordinator
             // Add a persistent listener to track page changes.
             capturedView.addOnViewportChangedListener(
                     (firstVisiblePage, visiblePagesCount, pageLocations, zoomLevel) ->
-                            delegate.onViewportChanged(firstVisiblePage, zoomLevel));
+                            delegate.onViewportChanged(
+                                    calculateCurrentPage(
+                                            capturedView, firstVisiblePage, pageLocations),
+                                    zoomLevel));
+        }
+
+        @VisibleForTesting
+        static int calculateCurrentPage(
+                PdfView pdfView, int firstVisiblePage, @Nullable SparseArray<RectF> pageLocations) {
+            int currentPage = firstVisiblePage;
+            if (pageLocations != null && pdfView.getHeight() > 0) {
+                float threshold = pdfView.getHeight() / 2.0f;
+                for (int i = 0; i < pageLocations.size(); i++) {
+                    int pageIndex = pageLocations.keyAt(i);
+                    RectF rect = pageLocations.valueAt(i);
+                    if (rect.top <= threshold) {
+                        currentPage = Math.max(currentPage, pageIndex);
+                    } else {
+                        break;
+                    }
+                }
+            }
+            return currentPage;
         }
 
         /** Public no-arg constructor for FragmentManager. */
@@ -770,6 +795,11 @@ public class PdfCoordinator
         public void onSaveInstanceState(Bundle outState) {
             super.onSaveInstanceState(outState);
             outState.putString(KEY_VIEW_TAG, mViewTag);
+            if (mPdfView != null) {
+                mSavedPageIndex = mPdfView.getFirstVisiblePage();
+                mSavedZoom = mPdfView.getZoom();
+                mRestorePositionPending = true;
+            }
             outState.putInt(KEY_SAVED_PAGE_INDEX, mSavedPageIndex);
             outState.putFloat(KEY_SAVED_ZOOM, mSavedZoom);
             outState.putBoolean(KEY_RESTORE_POSITION_PENDING, mRestorePositionPending);

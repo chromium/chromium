@@ -25,9 +25,11 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.ProviderInfo;
 import android.content.pm.ResolveInfo;
 import android.database.Cursor;
+import android.graphics.RectF;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
+import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -1674,6 +1676,44 @@ public class PdfCoordinatorUnitTest {
         assertEquals(ACTION_ANNOTATE, startedIntent.getAction());
         assertEquals(Uri.parse(TEST_CONTENT_URI), startedIntent.getData());
         assertEquals("application/pdf", startedIntent.getType());
+    }
+
+    @Test
+    public void testCalculateCurrentPage() {
+        PdfView mockPdfView = org.mockito.Mockito.mock(PdfView.class);
+        when(mockPdfView.getHeight()).thenReturn(1000); // 50% threshold is y = 500
+
+        // Case 1: pageLocations is null - fallback to firstVisiblePage
+        assertEquals(
+                0,
+                PdfCoordinator.ChromePdfViewerFragment.calculateCurrentPage(mockPdfView, 0, null));
+
+        // Case 2: Page 1 top (rect.top = 600) is below 50% viewport height (threshold 500)
+        SparseArray<RectF> pageLocations = new SparseArray<>();
+        pageLocations.put(0, new RectF(0, -200, 800, 600));
+        pageLocations.put(1, new RectF(0, 600, 800, 1400));
+        assertEquals(
+                0,
+                PdfCoordinator.ChromePdfViewerFragment.calculateCurrentPage(
+                        mockPdfView, 0, pageLocations));
+
+        // Case 3: Page 1 top (rect.top = 450) crosses 50% viewport height (threshold 500)
+        pageLocations.put(0, new RectF(0, -350, 800, 450));
+        pageLocations.put(1, new RectF(0, 450, 800, 1250));
+        assertEquals(
+                1,
+                PdfCoordinator.ChromePdfViewerFragment.calculateCurrentPage(
+                        mockPdfView, 0, pageLocations));
+
+        // Case 4: Multiple pages visible, page 2 crosses threshold, page 3 is below threshold
+        SparseArray<RectF> multiPageLocations = new SparseArray<>();
+        multiPageLocations.put(1, new RectF(0, -600, 800, 200));
+        multiPageLocations.put(2, new RectF(0, 200, 800, 1000));
+        multiPageLocations.put(3, new RectF(0, 1000, 800, 1800));
+        assertEquals(
+                2,
+                PdfCoordinator.ChromePdfViewerFragment.calculateCurrentPage(
+                        mockPdfView, 1, multiPageLocations));
     }
 
     @Implements(PdfView.class)
