@@ -19,6 +19,7 @@
 #include "components/page_load_metrics/browser/navigation_handle_user_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -61,9 +62,7 @@ class NavigationInitiatorPageLoadMetricsBrowserTest
       : prerender_helper_(
             base::BindRepeating(&NavigationInitiatorPageLoadMetricsBrowserTest::
                                     GetActiveWebContents,
-                                base::Unretained(this))) {}
-
-  void SetUp() override {
+                                base::Unretained(this))) {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{},
         /*disabled_features=*/
@@ -71,7 +70,9 @@ class NavigationInitiatorPageLoadMetricsBrowserTest
         // is enabled and then remove these two Features.
         {omnibox::internal::kWebUIOmniboxPopup,
          omnibox::internal::kWebUIOmniboxAimPopup});
+  }
 
+  void SetUp() override {
     prerender_helper_.RegisterServerRequestMonitor(embedded_test_server());
     InProcessBrowserTest::SetUp();
   }
@@ -538,6 +539,18 @@ class NavigationInitiatorPageLoadMetricsBFCacheBrowserTest
     : public NavigationInitiatorPageLoadMetricsBrowserTest,
       public ::testing::WithParamInterface<bool> {
  public:
+  NavigationInitiatorPageLoadMetricsBFCacheBrowserTest() {
+    if (IsBfcacheEnabled()) {
+      bfcache_feature_list_.InitWithFeaturesAndParameters(
+          content::GetDefaultEnabledBackForwardCacheFeaturesForTesting(),
+          content::GetDefaultDisabledBackForwardCacheFeaturesForTesting());
+    } else {
+      bfcache_feature_list_.InitWithFeatures(
+          /*enabled_features=*/{},
+          /*disabled_features=*/{features::kBackForwardCache});
+    }
+  }
+
   bool IsBfcacheEnabled() const { return GetParam(); }
 
   void SetUpOnMainThread() override {
@@ -549,6 +562,9 @@ class NavigationInitiatorPageLoadMetricsBFCacheBrowserTest
               TEST_REQUIRES_NO_CACHING);
     }
   }
+
+ private:
+  base::test::ScopedFeatureList bfcache_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
