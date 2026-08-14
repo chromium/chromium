@@ -5,16 +5,20 @@
 #include "chrome/browser/lens/sapisid/sapisid_module_loader.h"
 
 #include "build/branding_buildflags.h"
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace sapisid {
 
 TEST(SapisidModuleLoaderTest, LoadLibrary) {
   const auto& library = SapisidModuleLoader::GetInstance()->library();
-  // Since the Base CL does not fetch the internal module (data_deps is commented out
-  // to avoid CQ Cq-Depend limitations), the library should gracefully fail to load
-  // everywhere, whether branded or unbranded.
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_ANDROID)
+  // On branded builds, the library should be correctly built.
+  EXPECT_TRUE(library.is_valid());
+#else
+  // Unbranded builds definitely shouldn't find it.
   EXPECT_FALSE(library.is_valid());
+#endif
 }
 
 }  // namespace sapisid

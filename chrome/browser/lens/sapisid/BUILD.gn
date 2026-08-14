@@ -13,25 +13,23 @@ source_set("sapisid") {
 
   deps = [ "//base" ]
 
-  # TODO(crbug.com/534400256): Uncomment this in a follow-up CL once the internal CL lands.
-  # if (is_chrome_branded) {
-  #   data_deps = [ "//internal/chrome/browser/lens/sapisid:generate_sapisid_module" ]
-  # }
+  if (is_chrome_branded && !is_android) {
+    data_deps =
+        [ "//chrome/browser/internal/lens/sapisid:generate_sapisid_module" ]
+  }
 }
 
 if (is_mac) {
-  # TODO(crbug.com/534400256): Uncomment this in a follow-up CL once the internal CL lands.
-  # if (is_chrome_branded) {
-  #   bundle_data("sapisid_bundle_data") {
-  #     sources = [ "$root_out_dir/sapisid.so" ]
-  #     outputs = [ "{{bundle_contents_dir}}/Libraries/{{source_file_part}}" ]
-  #     public_deps = [ "//internal/chrome/browser/lens/sapisid:generate_sapisid_module" ]
-  #   }
-  # } else {
-  #   group("sapisid_bundle_data") {
-  #   }
-  # }
-  group("sapisid_bundle_data") {
+  if (is_chrome_branded) {
+    bundle_data("sapisid_bundle_data") {
+      sources = [ "$root_out_dir/sapisid.so" ]
+      outputs = [ "{{bundle_contents_dir}}/Libraries/libsapisid.dylib" ]
+      public_deps =
+          [ "//chrome/browser/internal/lens/sapisid:generate_sapisid_module" ]
+    }
+  } else {
+    group("sapisid_bundle_data") {
+    }
   }
 }
 
@@ -45,4 +43,17 @@ source_set("unit_tests") {
     "//build:branding_buildflags",
     "//testing/gtest",
   ]
+
+  if (is_mac && is_chrome_branded) {
+    data_deps = [ ":copy_sapisid_for_tests" ]
+  }
+}
+
+if (is_mac && is_chrome_branded) {
+  copy("copy_sapisid_for_tests") {
+    testonly = true
+    sources = [ "$root_out_dir/sapisid.so" ]
+    outputs = [ "$root_out_dir/Libraries/libsapisid.dylib" ]
+    deps = [ "//chrome/browser/internal/lens/sapisid:generate_sapisid_module" ]
+  }
 }

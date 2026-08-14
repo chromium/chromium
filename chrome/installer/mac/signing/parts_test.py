@@ -94,6 +94,7 @@ class TestGetParts(unittest.TestCase):
         config = test_config.TestConfig()
         all_parts = parts.get_parts(config)
         self.assertIn('libchromecompaneros.dylib', all_parts)
+        self.assertIn('libsapisid.dylib', all_parts)
         self.assertEqual(
             'libchromecompaneros',
             all_parts['libchromecompaneros.dylib'].identifier,
@@ -103,6 +104,7 @@ class TestGetParts(unittest.TestCase):
         config = test_config.TestConfigNonChromeBranded()
         all_parts = parts.get_parts(config)
         self.assertNotIn('libchromecompaneros.dylib', all_parts)
+        self.assertNotIn('libsapisid.dylib', all_parts)
 
     def test_part_options(self):
         all_parts = parts.get_parts(test_config.TestConfig())
