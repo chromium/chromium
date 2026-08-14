@@ -86,6 +86,9 @@ const CGFloat kMaxFontSize = 24;
 #pragma mark - Public
 
 - (CGFloat)feedHeaderHeight {
+  if (![self shouldShowHeader]) {
+    return 0;
+  }
   return kDiscoverFeedHeaderHeight;
 }
 
@@ -94,8 +97,11 @@ const CGFloat kMaxFontSize = 24;
     return;
   }
   [self.titleLabel removeFromSuperview];
-  self.titleLabel = [self createTitleLabel];
-  [self.container addSubview:self.titleLabel];
+  self.titleLabel = nil;
+  if ([self shouldShowHeader]) {
+    self.titleLabel = [self createTitleLabel];
+    [self.container addSubview:self.titleLabel];
+  }
   if ([self.NTPDelegate isGoogleDefaultSearchEngine]) {
     [self removeCustomSearchEngineView];
   } else {
@@ -107,11 +113,23 @@ const CGFloat kMaxFontSize = 24;
 #pragma mark - Private
 
 - (void)configureHeaderViews {
-  self.titleLabel = [self createTitleLabel];
-  [self.container addSubview:self.titleLabel];
+  if ([self shouldShowHeader]) {
+    self.titleLabel = [self createTitleLabel];
+    [self.container addSubview:self.titleLabel];
+  }
   if (![self.NTPDelegate isGoogleDefaultSearchEngine]) {
     [self addCustomSearchEngineView];
   }
+}
+
+// Returns whether the Discover feed header should be shown. When NO, the
+// header view is hidden, its height is 0, and the title label is not created.
+- (BOOL)shouldShowHeader {
+  if (IsNewTabPageUICleanupEnabled() &&
+      [self.NTPDelegate isGoogleDefaultSearchEngine]) {
+    return NO;
+  }
+  return YES;
 }
 
 // Configures and returns the feed header's title label.
@@ -157,8 +175,12 @@ const CGFloat kMaxFontSize = 24;
   }
   self.feedHeaderConstraints = [[NSMutableArray alloc] init];
 
+  self.view.hidden = ![self shouldShowHeader];
+
   [self anchorContainer];
-  [self anchorTitleLabel];
+  if (self.titleLabel) {
+    [self anchorTitleLabel];
+  }
   if (![self.NTPDelegate isGoogleDefaultSearchEngine]) {
     [self anchorCustomSearchEngineView];
   }
