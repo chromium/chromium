@@ -1778,7 +1778,7 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="3763752038825281594">Anteriormente, no permitiste que este sitio usara tu <ph name="PERMISSION" /></translation>
 <translation id="3765588406864124894">Buzón 9</translation>
 <translation id="3767485424735936570">La política del administrador no recomienda copiar y pegar este contenido en <ph name="VM_NAME" />.</translation>
-<translation id="3769584711865378220"><ph name="URL" /> quiere cambiar el acceso a la ubicación de aproximada a precisa</translation>
+<translation id="3769584711865378220"><ph name="URL" /> quiere cambiar el acceso a la ubicación de Aproximada a Precisa</translation>
 <translation id="3772211998634047851">Papel (bond)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, presiona Tab y, luego, Intro para crear una nueva nota en Google Keep rápidamente</translation>
 <translation id="3780694243617746492">Bandeja de salida</translation>
@@ -1795,7 +1795,7 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="3795624560191557077">Cambiaste recientemente una contraseña que se encontró en una violación de la seguridad de los datos pública. En caso de problemas, el Administrador de contraseñas de Google puede ayudarte a acceder.</translation>
 <translation id="3798449238516105146">Versión</translation>
 <translation id="3799805948399000906">Se necesita la fuente</translation>
-<translation id="3800436529451849929">Desde <ph name="SITE" /></translation>
+<translation id="3800436529451849929">De <ph name="SITE" /></translation>
 <translation id="3801297763951514916">Visitas con frecuencia</translation>
 <translation id="380329542618494757">Nombre</translation>
 <translation id="3803481123869276674">Cuando realices compras en Chrome, verás la billetera electrónica como opción</translation>
@@ -2117,7 +2117,7 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="4277529130885813215">Usar otro dispositivo</translation>
 <translation id="4277937682389409325">Dirección local</translation>
 <translation id="4278090321534187713">Se inhabilitan las tarjetas que no acepta este comercio</translation>
-<translation id="4278390842282768270">Permitido</translation>
+<translation id="4278390842282768270">Con permiso</translation>
 <translation id="4281245629646759298">Amarillo claro</translation>
 <translation id="4281998142035485137">{0,plural, =1{¿Quieres abrir un archivo confidencial?}other{¿Quieres abrir archivos confidenciales?}}</translation>
 <translation id="4282280603030594840">Compra de vehículos</translation>
@@ -2323,7 +2323,7 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="4644567637638438744">Los archivos solo se pueden subir si accedes a Microsoft OneDrive</translation>
 <translation id="4644670975240021822">Orden inverso hacia abajo</translation>
 <translation id="4648262692072505866">El hash debe tener el formato SHA-256.</translation>
-<translation id="4652266463001779298">No se permite</translation>
+<translation id="4652266463001779298">Sin permiso</translation>
 <translation id="4652440160515225514">Tu organización bloqueó este sitio porque infringe una política.</translation>
 <translation id="4658638640878098064">Grapa en la esquina superior izquierda</translation>
 <translation id="4658801711339831733">Se guardó el escaneo en Google Drive</translation>
@@ -2375,7 +2375,7 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="4730977633786878901">Opiniones</translation>
 <translation id="4731638775147756694">El administrador bloqueó esta aplicación</translation>
 <translation id="4732860731866514038">Descargando el paquete del idioma <ph name="LANGUAGE" />… <ph name="PERCENT" />%</translation>
-<translation id="4733082559415072992"><ph name="URL" /> desea usar la ubicación de tu dispositivo</translation>
+<translation id="4733082559415072992"><ph name="URL" /> quiere usar la ubicación de tu dispositivo</translation>
 <translation id="473414950835101501">Usar las cámaras</translation>
 <translation id="4736825316280949806">Reinicia Chromium.</translation>
 <translation id="4736934858538408121">Tarjeta virtual</translation>
@@ -2404,7 +2404,7 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="4764680219299728632">Cocinas, cocinas encimeras y hornos</translation>
 <translation id="4764776831041365478">Es posible que la página web en <ph name="URL" /> no funcione temporalmente o se haya trasladado de manera permanente a una nueva dirección web.</translation>
 <translation id="4766713847338118463">Grapas dobles en la parte inferior</translation>
-<translation id="4768816584204270288">Cuando pagas a lo largo del tiempo, se completa un número de tarjeta virtual único. Puedes hacer clic para copiar y pegar los detalles de la tarjeta de esta compra.</translation>
+<translation id="4768816584204270288">Cuando pagas en cuotas, se completa un número de tarjeta virtual único. Puedes hacer clic para copiar y pegar los detalles de la tarjeta de esta compra.</translation>
 <translation id="4768864802656530630">Registros detallados del sistema. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="4771249073710170730">Radiocontrol y modelismo</translation>
 <translation id="4771973620359291008">Se ha producido un error desconocido.</translation>
@@ -2963,7 +2963,7 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> te redireccionó demasiadas veces.</translation>
 <translation id="5619721953841297650">Ajuste predeterminado</translation>
 <translation id="5624120631404540903">Administrar contraseñas</translation>
-<translation id="5627344039351500898">Cambiar a precisa</translation>
+<translation id="5627344039351500898">Cambiar a Precisa</translation>
 <translation id="5628060911499153873">Guarda tu información para completar tareas más rápido en los productos de Google. Tu información se guarda en <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> para <ph name="ACCOUNT" />.</translation>
 <translation id="5629630648637658800">Error al cargar la configuración de la política</translation>
 <translation id="5630981295558454585">Botón Preguntar a Google acerca de esta página, actívalo para preguntar a Google acerca de esta página</translation>
@@ -4478,7 +4478,7 @@ Detalles adicionales:
 <translation id="79682505114836835">El valor "<ph name="VALUE" />" es un código hexadecimal de color no válido.</translation>
 <translation id="7968982339740310781">Ver los detalles</translation>
 <translation id="7972714317346275248">PKCS N. º 1, SHA-384 con encriptación RSA</translation>
-<translation id="7976053965094442846">Emisores de Compra ahora y paga después disponibles para pagar a lo largo del tiempo. Teclado oculto.</translation>
+<translation id="7976053965094442846">Emisores de Compra ahora y paga después disponibles para pagar en cuotas. Teclado oculto.</translation>
 <translation id="7976214039405368314">Demasiadas solicitudes</translation>
 <translation id="7977538094055660992">Dispositivo de salida</translation>
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{Hace <ph name="TIME_COUNT" /> min}=1{Hace <ph name="TIME_COUNT" /> h}other{Hace <ph name="TIME_COUNT" /> días}}</translation>
@@ -4487,7 +4487,7 @@ Detalles adicionales:
 <translation id="7983008347525536475">Vehículos deportivos utilitarios</translation>
 <translation id="7984945080620862648">No puedes visitar <ph name="SITE" /> ahora porque el sitio web envió credenciales confusas que Chrome no puede procesar. Los ataques y errores de red suelen ser temporales, por lo que es posible que esta página funcione más tarde.</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
-<translation id="7987087088851949178">La lista de emisores de Compra ahora y paga después disponibles para pagar a lo largo del tiempo está totalmente abierta.</translation>
+<translation id="7987087088851949178">La lista de emisores de Compra ahora y paga después disponibles para pagar en cuotas está totalmente abierta.</translation>
 <translation id="799149739215780103">Encuadernado</translation>
 <translation id="7992044431894087211">Se reanudó el uso compartido de la pantalla con <ph name="APPLICATION_TITLE" /></translation>
 <translation id="799384093520583425">Tu organización bloqueó el uso de Herramientas para desarrolladores en esta página</translation>
@@ -4963,7 +4963,7 @@ Detalles adicionales:
 <translation id="8772387130037509473">Yoga y pilates</translation>
 <translation id="877348612833018844">{0,plural, =1{¿Quieres mover este archivo confidencial?}other{¿Quieres mover estos archivos confidenciales?}}</translation>
 <translation id="8775347646940100151">Papel (con membrete)</translation>
-<translation id="8775863327608679820">La lista de emisores de Compra ahora y paga después disponibles para pagar a lo largo del tiempo está abierta a media altura.</translation>
+<translation id="8775863327608679820">La lista de emisores de Compra ahora y paga después disponibles para pagar en cuotas está abierta a media altura.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8781278378794969337">Botón Traducir página: actívalo para traducir esta página con Google Traductor</translation>
 <translation id="8785658048882205566">Motocicletas</translation>

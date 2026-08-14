@@ -834,7 +834,7 @@
 <translation id="4532845899244822526">选择文件夹</translation>
 <translation id="4535755320005483982">共享“<ph name="GROUP_TITLE" />”标签页分组</translation>
 <translation id="4537137366307982887">提示通知选择启用底部动作条已以最大高度显示</translation>
-<translation id="4537987892902330164">您已以 <ph name="NAME_OR_EMAIL" /> 的身份保持登录状态。</translation>
+<translation id="4537987892902330164">您已使用 <ph name="NAME_OR_EMAIL" /> 的身份登录。</translation>
 <translation id="4543131175509360848">无通行密钥表格</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> 个标签页}other{<ph name="TAB_COUNT_MANY" /> 个标签页，<ph name="TAB_COUNT_INCOGNITO" /> 个无痕式标签页}}</translation>
 <translation id="4558311620361989323">网页快捷键</translation>
