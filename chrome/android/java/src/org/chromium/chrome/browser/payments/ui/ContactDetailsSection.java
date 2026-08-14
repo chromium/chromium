@@ -19,8 +19,6 @@ import org.chromium.components.payments.Section;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 /** The data to show in the contact details section where the user can select something. */
@@ -112,14 +110,9 @@ public class ContactDetailsSection extends SectionInformation {
 
         // Order the contacts so the ones that have most of the required information are put first.
         // The sort is stable, so contacts with the same relevance score are sorted by frecency.
-        Collections.sort(
-                contacts,
-                new Comparator<>() {
-                    @Override
-                    public int compare(AutofillContact a, AutofillContact b) {
-                        return b.getRelevanceScore() - a.getRelevanceScore();
-                    }
-                });
+        contacts.sort(
+                (AutofillContact a, AutofillContact b) ->
+                        b.getRelevanceScore() - a.getRelevanceScore());
 
         // This algorithm is quadratic, but since the number of contacts is generally very small
         // ( < 10) a faster but more complicated algorithm would be overkill.

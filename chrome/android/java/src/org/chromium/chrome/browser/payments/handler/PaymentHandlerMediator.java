@@ -132,14 +132,10 @@ import java.lang.annotation.RetentionPolicy;
         mInputProtector = inputProtector;
 
         mActivityStateListener =
-                new ActivityStateListener() {
-                    @Override
-                    public void onActivityStateChange(
-                            Activity activity, @ActivityState int newState) {
-                        if (newState == ActivityState.DESTROYED) {
-                            mCloseReason = CloseReason.ACTIVITY_DIED;
-                            mHandler.post(mHider);
-                        }
+                (Activity _, int newState) -> {
+                    if (newState == ActivityState.DESTROYED) {
+                        mCloseReason = CloseReason.ACTIVITY_DIED;
+                        mHandler.post(mHider);
                     }
                 };
         ApplicationStatus.registerStateListenerForActivity(mActivityStateListener, activity);

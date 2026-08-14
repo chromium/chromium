@@ -75,11 +75,12 @@ import org.chromium.content_public.browser.WebContents;
 
     /**
      * Invoked when the visible area of the content container changes.
+     *
      * @param heightPx The height of the visible area of the Payment Handler UI content container,
-     *         in pixels.
+     *     in pixels.
      */
     /* package */ void onContentVisibleHeightChanged(int heightPx) {
-        LayoutParams params = (LayoutParams) mThinWebView.getLayoutParams();
+        LayoutParams params = mThinWebView.getLayoutParams();
         params.height = Math.max(0, heightPx);
         mThinWebView.setLayoutParams(params);
     }

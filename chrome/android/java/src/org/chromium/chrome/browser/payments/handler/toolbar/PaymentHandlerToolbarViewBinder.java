@@ -44,16 +44,18 @@ import org.chromium.ui.modelutil.PropertyModel;
             view.mSecurityIconView.setContentDescription(description);
         } else if (PaymentHandlerToolbarProperties.SECURITY_ICON_ON_CLICK_CALLBACK == propertyKey) {
             view.mSecurityIconView.setOnClickListener(
-                    (v) -> {
-                        model.get(PaymentHandlerToolbarProperties.SECURITY_ICON_ON_CLICK_CALLBACK)
-                                .run();
-                    });
+                    _ ->
+                            model.get(
+                                            PaymentHandlerToolbarProperties
+                                                    .SECURITY_ICON_ON_CLICK_CALLBACK)
+                                    .run());
         } else if (PaymentHandlerToolbarProperties.CLOSE_BUTTON_ON_CLICK_CALLBACK == propertyKey) {
             view.mCloseButton.setOnClickListener(
-                    (v) -> {
-                        model.get(PaymentHandlerToolbarProperties.CLOSE_BUTTON_ON_CLICK_CALLBACK)
-                                .run();
-                    });
+                    _ ->
+                            model.get(
+                                            PaymentHandlerToolbarProperties
+                                                    .CLOSE_BUTTON_ON_CLICK_CALLBACK)
+                                    .run());
         } else if (PaymentHandlerToolbarProperties.CLOSE_BUTTON_VISIBILITY == propertyKey) {
             view.mCloseButton.setVisibility(
                     model.get(PaymentHandlerToolbarProperties.CLOSE_BUTTON_VISIBILITY)
