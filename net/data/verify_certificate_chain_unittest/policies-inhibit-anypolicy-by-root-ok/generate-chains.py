@@ -7,6 +7,7 @@ that uses anyPolicy. Should succeed since anyPolicy is still allowed for
 intermediate."""
 
 import sys
+
 sys.path += ['../..']
 
 import gencerts
@@ -17,11 +18,13 @@ root.get_extensions().set_property('inhibitAnyPolicy', 'critical,1')
 
 # Intermediate certificate.
 intermediate = gencerts.create_intermediate_certificate('Intermediate', root)
-intermediate.get_extensions().set_property('policyConstraints',
-                                           'critical,requireExplicitPolicy:0')
+intermediate.get_extensions().set_property(
+  'policyConstraints', 'critical,requireExplicitPolicy:0'
+)
 
-intermediate.get_extensions().set_property('certificatePolicies',
-                                           'critical,anyPolicy')
+intermediate.get_extensions().set_property(
+  'certificatePolicies', 'critical,anyPolicy'
+)
 
 # Target certificate.
 target = gencerts.create_end_entity_certificate('Target', intermediate)

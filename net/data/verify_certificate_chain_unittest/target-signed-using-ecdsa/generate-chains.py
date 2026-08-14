@@ -8,6 +8,7 @@ certificate holds an EC key, and target certificate holds an RSA key. The
 target certificate has a valid signature using ECDSA."""
 
 import sys
+
 sys.path += ['../..']
 
 import gencerts
@@ -17,8 +18,11 @@ root = gencerts.create_self_signed_root_certificate('Root')
 
 # Intermediate using an EC key for the P-384 curve.
 intermediate = gencerts.create_intermediate_certificate('Intermediate', root)
-intermediate.set_key(gencerts.get_or_generate_ec_key(
-    'secp384r1', gencerts.create_key_path(intermediate.name)))
+intermediate.set_key(
+  gencerts.get_or_generate_ec_key(
+    'secp384r1', gencerts.create_key_path(intermediate.name)
+  )
+)
 
 # Target certificate contains an RSA key (but is signed using ECDSA).
 target = gencerts.create_end_entity_certificate('Target', intermediate)

@@ -11,6 +11,7 @@ subjectKeyIdentifier.
 """
 
 import sys
+
 sys.path += ['../..']
 
 import gencerts

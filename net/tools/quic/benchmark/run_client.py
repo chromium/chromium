@@ -27,6 +27,7 @@ Usage: This invocation
   the flags --address, --port, --quic_binary_dir, etc.
 """
 
+
 def Timestamp(datetm=None):
   """Get the timestamp in microseconds.
   Args:
@@ -40,9 +41,11 @@ def Timestamp(datetm=None):
   timestamp = (diff.days * 86400 + diff.seconds) * 1000000 + diff.microseconds
   return timestamp
 
+
 class PageloadExperiment:
-  def __init__(self, use_wget, quic_binary_dir, quic_server_address,
-               quic_server_port):
+  def __init__(
+    self, use_wget, quic_binary_dir, quic_server_address, quic_server_port
+  ):
     """Initialize PageloadExperiment.
 
     Args:
@@ -56,8 +59,9 @@ class PageloadExperiment:
     self.quic_server_address = quic_server_address
     self.quic_server_port = quic_server_port
     if not use_wget and not os.path.isfile(quic_binary_dir + '/quic_client'):
-      raise IOError('There is no quic_client in the given dir: %s.'
-                    % quic_binary_dir)
+      raise IOError(
+        'There is no quic_client in the given dir: %s.' % quic_binary_dir
+      )
 
   @classmethod
   def ReadPages(cls, json_file):
@@ -97,13 +101,16 @@ class PageloadExperiment:
       cmd = 'wget -O -'
     else:
       cmd = '%s/quic_client --port=%s --address=%s' % (
-          self.quic_binary_dir, self.quic_server_port, self.quic_server_address)
+        self.quic_binary_dir,
+        self.quic_server_port,
+        self.quic_server_address,
+      )
     cmd_in_list = shlex.split(cmd)
     cmd_in_list.extend(urls)
     start_time = Timestamp()
-    ps_proc = subprocess.Popen(cmd_in_list,
-                               stdout=subprocess.PIPE,
-                               stderr=subprocess.PIPE)
+    ps_proc = subprocess.Popen(
+      cmd_in_list, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+    )
     _std_out, std_err = ps_proc.communicate()
     end_time = Timestamp()
     delta_time = end_time - start_time
@@ -126,7 +133,7 @@ class PageloadExperiment:
       num_it: Number of iterations to run in this experiment.
     """
     page_list = self.ReadPages(infile)
-    header = [urls[0].rsplit('/', 1)[1] for urls in  page_list]
+    header = [urls[0].rsplit('/', 1)[1] for urls in page_list]
     header0 = 'wget' if self.use_wget else 'quic'
     header = [header0] + header
 
@@ -158,29 +165,36 @@ class PageloadExperiment:
 
 def main():
   parser = OptionParser()
-  parser.add_option('--use_wget', dest='use_wget', action='store_true',
-                    default=False)
+  parser.add_option(
+    '--use_wget', dest='use_wget', action='store_true', default=False
+  )
   # Note that only debug version generates the log containing packets
   # information.
-  parser.add_option('--quic_binary_dir', dest='quic_binary_dir',
-                    default='../../../../out/Debug')
+  parser.add_option(
+    '--quic_binary_dir', dest='quic_binary_dir', default='../../../../out/Debug'
+  )
   # For whatever server address you specify, you need to run the
   # quic_server on that machine and populate it with the cache containing
   # the URLs requested in the --infile.
-  parser.add_option('--address', dest='quic_server_address',
-                    default='127.0.0.1')
-  parser.add_option('--port', dest='quic_server_port',
-                    default='5002')
+  parser.add_option(
+    '--address', dest='quic_server_address', default='127.0.0.1'
+  )
+  parser.add_option('--port', dest='quic_server_port', default='5002')
   parser.add_option('--delay_file', dest='delay_file', default='delay.csv')
-  parser.add_option('--packets_file', dest='packets_file',
-                    default='packets.csv')
+  parser.add_option(
+    '--packets_file', dest='packets_file', default='packets.csv'
+  )
   parser.add_option('--infile', dest='infile', default='test_urls.json')
   (options, _) = parser.parse_args()
 
-  exp = PageloadExperiment(options.use_wget, options.quic_binary_dir,
-                           options.quic_server_address,
-                           options.quic_server_port)
+  exp = PageloadExperiment(
+    options.use_wget,
+    options.quic_binary_dir,
+    options.quic_server_address,
+    options.quic_server_port,
+  )
   exp.RunExperiment(options.infile, options.delay_file, options.packets_file)
+
 
 if __name__ == '__main__':
   sys.exit(main())

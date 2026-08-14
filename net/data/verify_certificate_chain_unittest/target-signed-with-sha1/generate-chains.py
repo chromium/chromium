@@ -6,6 +6,7 @@
 certificate."""
 
 import sys
+
 sys.path += ['../..']
 
 import gencerts

@@ -7,6 +7,7 @@
 clientAuth + any, and the target sets serverAuth + clientAuth."""
 
 import sys
+
 sys.path += ['../..']
 
 import gencerts
@@ -16,13 +17,15 @@ root = gencerts.create_self_signed_root_certificate('Root')
 
 # Intermediate certificate.
 intermediate = gencerts.create_intermediate_certificate('Intermediate', root)
-intermediate.get_extensions().set_property('extendedKeyUsage',
-                                           'clientAuth,anyExtendedKeyUsage')
+intermediate.get_extensions().set_property(
+  'extendedKeyUsage', 'clientAuth,anyExtendedKeyUsage'
+)
 
 # Target certificate.
 target = gencerts.create_end_entity_certificate('Target', intermediate)
-target.get_extensions().set_property('extendedKeyUsage',
-                                     'serverAuth,clientAuth')
+target.get_extensions().set_property(
+  'extendedKeyUsage', 'serverAuth,clientAuth'
+)
 
 chain = [target, intermediate, root]
 gencerts.write_chain(__doc__, chain, 'chain.pem')

@@ -30,7 +30,8 @@ import re
 #  * Group 1 of the match is file path (relative to //src) where the
 #    expected errors were read from.
 #  * Group 2 of the match is the actual error text
-failed_test_regex = re.compile(r"""
+failed_test_regex = re.compile(
+  r"""
 Cert path errors don't match expectations \((.+?)\)
 
 EXPECTED:
@@ -40,7 +41,9 @@ ACTUAL:
 
 ((?:.|\n)*?)
 ===> Use net/data/verify_certificate_chain_unittest/rebase-errors.py to rebaseline.
-""", re.MULTILINE)
+""",
+  re.MULTILINE,
+)
 
 
 def read_file_to_string(path):
@@ -120,7 +123,6 @@ def main():
     else:
       print('Unknown file extension')
       sys.exit(1)
-
 
 
 if __name__ == "__main__":

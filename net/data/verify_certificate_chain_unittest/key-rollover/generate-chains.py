@@ -38,6 +38,7 @@ All of these chains should verify successfully.
 """
 
 import sys
+
 sys.path += ['../..']
 
 import gencerts
@@ -48,40 +49,53 @@ JANUARY_2_2015_UTC = '150102120000Z'
 
 # Self-signed root certificates. Same name, different keys.
 oldroot = gencerts.create_self_signed_root_certificate('Root')
-oldroot.set_validity_range(gencerts.JANUARY_1_2015_UTC,
-                           gencerts.JANUARY_1_2016_UTC)
+oldroot.set_validity_range(
+  gencerts.JANUARY_1_2015_UTC, gencerts.JANUARY_1_2016_UTC
+)
 newroot = gencerts.create_self_signed_root_certificate('Root')
 newroot.set_validity_range(JANUARY_2_2015_UTC, gencerts.JANUARY_1_2016_UTC)
 # Root with the new key signed by the old key.
 newrootrollover = gencerts.create_intermediate_certificate('Root', oldroot)
 newrootrollover.set_key(newroot.get_key())
-newrootrollover.set_validity_range(JANUARY_2_2015_UTC,
-                                   gencerts.JANUARY_1_2016_UTC)
+newrootrollover.set_validity_range(
+  JANUARY_2_2015_UTC, gencerts.JANUARY_1_2016_UTC
+)
 
 # Intermediate signed by oldroot.
-oldintermediate = gencerts.create_intermediate_certificate('Intermediate',
-                                                         oldroot)
-oldintermediate.set_validity_range(gencerts.JANUARY_1_2015_UTC,
-                                   gencerts.JANUARY_1_2016_UTC)
+oldintermediate = gencerts.create_intermediate_certificate(
+  'Intermediate', oldroot
+)
+oldintermediate.set_validity_range(
+  gencerts.JANUARY_1_2015_UTC, gencerts.JANUARY_1_2016_UTC
+)
 # Intermediate signed by newroot. Same key as oldintermediate.
-newintermediate = gencerts.create_intermediate_certificate('Intermediate',
-                                                         newroot)
+newintermediate = gencerts.create_intermediate_certificate(
+  'Intermediate', newroot
+)
 newintermediate.set_key(oldintermediate.get_key())
-newintermediate.set_validity_range(JANUARY_2_2015_UTC,
-                                   gencerts.JANUARY_1_2016_UTC)
+newintermediate.set_validity_range(
+  JANUARY_2_2015_UTC, gencerts.JANUARY_1_2016_UTC
+)
 
 # Target certificate.
 target = gencerts.create_end_entity_certificate('Target', oldintermediate)
-target.set_validity_range(gencerts.JANUARY_1_2015_UTC,
-                          gencerts.JANUARY_1_2016_UTC)
+target.set_validity_range(
+  gencerts.JANUARY_1_2015_UTC, gencerts.JANUARY_1_2016_UTC
+)
 
-gencerts.write_chain(__doc__,
-    [target, oldintermediate, oldroot], out_pem="oldchain.pem")
-gencerts.write_chain(__doc__,
-    [target, newintermediate, newrootrollover, oldroot],
-    out_pem="rolloverchain.pem")
-gencerts.write_chain(__doc__,
-    [target, newintermediate, newroot, newrootrollover, oldroot],
-    out_pem="longrolloverchain.pem")
-gencerts.write_chain(__doc__,
-    [target, newintermediate, newroot], out_pem="newchain.pem")
+gencerts.write_chain(
+  __doc__, [target, oldintermediate, oldroot], out_pem="oldchain.pem"
+)
+gencerts.write_chain(
+  __doc__,
+  [target, newintermediate, newrootrollover, oldroot],
+  out_pem="rolloverchain.pem",
+)
+gencerts.write_chain(
+  __doc__,
+  [target, newintermediate, newroot, newrootrollover, oldroot],
+  out_pem="longrolloverchain.pem",
+)
+gencerts.write_chain(
+  __doc__, [target, newintermediate, newroot], out_pem="newchain.pem"
+)

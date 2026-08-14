@@ -7,6 +7,7 @@
 incorrect signatures."""
 
 import sys
+
 sys.path += ['../..']
 
 import gencerts
@@ -20,14 +21,16 @@ root = gencerts.create_self_signed_root_certificate('Root')
 wrong_root = gencerts.create_self_signed_root_certificate('Root')
 
 # Intermediate certificate to include in the certificate chain.
-intermediate = gencerts.create_intermediate_certificate('Intermediate',
-                                                        wrong_root)
+intermediate = gencerts.create_intermediate_certificate(
+  'Intermediate', wrong_root
+)
 
 # Actual intermediate that was used to sign the target certificate. It has the
 # same subject as expected, but a different RSA key from the certificate
 # included in the actual chain.
-wrong_intermediate = gencerts.create_intermediate_certificate('Intermediate',
-                                                              root)
+wrong_intermediate = gencerts.create_intermediate_certificate(
+  'Intermediate', root
+)
 
 # Target certificate, signed using |wrong_intermediate| NOT |intermediate|.
 target = gencerts.create_end_entity_certificate('Target', wrong_intermediate)

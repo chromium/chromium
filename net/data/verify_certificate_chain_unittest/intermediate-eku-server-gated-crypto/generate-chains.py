@@ -7,9 +7,11 @@
 gated crypto rather than serverAuth."""
 
 import sys
+
 sys.path += ['../..']
 
 import gencerts
+
 
 def generate_chain(intermediate_digest_algorithm):
   # Self-signed root certificate.
@@ -18,20 +20,22 @@ def generate_chain(intermediate_digest_algorithm):
   # Intermediate certificate.
   intermediate = gencerts.create_intermediate_certificate('Intermediate', root)
   intermediate.set_signature_hash(intermediate_digest_algorithm)
-  intermediate.get_extensions().set_property('extendedKeyUsage',
-                                             'nsSGC')
+  intermediate.get_extensions().set_property('extendedKeyUsage', 'nsSGC')
 
   # Target certificate.
   target = gencerts.create_end_entity_certificate('Target', intermediate)
-  target.get_extensions().set_property('extendedKeyUsage',
-                                   'serverAuth,clientAuth')
+  target.get_extensions().set_property(
+    'extendedKeyUsage', 'serverAuth,clientAuth'
+  )
   # TODO(eroman): Set subjectAltName by default rather than specifically in
   # this test.
   target.get_extensions().set_property('subjectAltName', 'DNS:test.example')
 
   chain = [target, intermediate, root]
-  gencerts.write_chain(__doc__, chain,
-                       '%s-chain.pem' % intermediate_digest_algorithm)
+  gencerts.write_chain(
+    __doc__, chain, '%s-chain.pem' % intermediate_digest_algorithm
+  )
+
 
 # Generate two chains, whose only difference is the digest algorithm used for
 # the intermediate's signature.

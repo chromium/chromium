@@ -7,6 +7,7 @@
 key (512-bit modulus)."""
 
 import sys
+
 sys.path += ['../..']
 
 import gencerts
@@ -16,8 +17,11 @@ root = gencerts.create_self_signed_root_certificate('Root')
 
 # Intermediate with a very weak key size (512-bit RSA).
 intermediate = gencerts.create_intermediate_certificate('Intermediate', root)
-intermediate.set_key(gencerts.get_or_generate_rsa_key(
-    512, gencerts.create_key_path(intermediate.name)))
+intermediate.set_key(
+  gencerts.get_or_generate_rsa_key(
+    512, gencerts.create_key_path(intermediate.name)
+  )
+)
 
 # Target certificate.
 target = gencerts.create_end_entity_certificate('Target', intermediate)

@@ -23,8 +23,10 @@ output_filename = sys.argv[2]
 # Load PEM block.
 with open(input_filename, 'r') as f:
   match = re.search(
-      r"-----BEGIN CERTIFICATE-----\n(.+)-----END CERTIFICATE-----\n", f.read(),
-      re.DOTALL)
+    r"-----BEGIN CERTIFICATE-----\n(.+)-----END CERTIFICATE-----\n",
+    f.read(),
+    re.DOTALL,
+  )
 text = match.group(1)
 
 # Perform Base64 decoding.

@@ -24,7 +24,7 @@ def ToDER(obj):
     big_endian = bytearray()
     val = obj
     while val != 0:
-      big_endian.append(val & 0xff)
+      big_endian.append(val & 0xFF)
       val >>= 8
 
     if len(big_endian) == 0 or big_endian[-1] >= 128:
@@ -46,7 +46,7 @@ def TagAndLength(tag, length):
   elif length < 65535:
     der.append(0x82)
     der.append(length >> 8)
-    der.append(length & 0xff)
+    der.append(length & 0xFF)
   else:
     assert False
 
@@ -147,7 +147,7 @@ class OID(object):
       else:
         octets = bytearray()
         while x != 0:
-          v = x & 0x7f
+          v = x & 0x7F
           if len(octets) > 0:
             v |= 0x80
           octets.append(v)

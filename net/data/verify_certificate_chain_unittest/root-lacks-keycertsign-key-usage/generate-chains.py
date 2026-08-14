@@ -6,14 +6,16 @@
 contain keyCertSign."""
 
 import sys
+
 sys.path += ['../..']
 
 import gencerts
 
 # Self-signed root certificate without keyCertSign.
 root = gencerts.create_self_signed_root_certificate('Root')
-root.get_extensions().set_property('keyUsage',
-                                   'critical,digitalSignature,keyEncipherment')
+root.get_extensions().set_property(
+  'keyUsage', 'critical,digitalSignature,keyEncipherment'
+)
 
 # Intermediate certificate.
 intermediate = gencerts.create_intermediate_certificate('Intermediate', root)

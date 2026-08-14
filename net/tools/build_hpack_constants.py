@@ -281,25 +281,27 @@ EOS (256)  |11111111|11111111|11111111|111111      3fffffff  [30]
 count = 0
 spec_lines = SPEC_DATA_DRAFT_08.splitlines()
 for l in spec_lines:
-  m = re.match(
-    r"^\s*('.+'|EOS)? \( *(\d+)\)  \|([10\|]+) +\w+  \[ ?(\d+)\]", l)
+  m = re.match(r"^\s*('.+'|EOS)? \( *(\d+)\)  \|([10\|]+) +\w+  \[ ?(\d+)\]", l)
   if m:
     g = m.groups()
     spec_comment = g[0]
     spec_bitstring = g[2]
-    bitstring = spec_bitstring.replace('|','').ljust(32,'0')
+    bitstring = spec_bitstring.replace('|', '').ljust(32, '0')
     bitvalue = int(bitstring, 2)
     bitcount = g[3]
     valueid = g[1]
     comment = '  // %s' % spec_bitstring
     if spec_comment:
-        comment = '  // %3s %s' % (spec_comment, spec_bitstring)
+      comment = '  // %3s %s' % (spec_comment, spec_bitstring)
     else:
-        comment = '  //     %s' % spec_bitstring
-    print('    {0x%08xul, %02s, %03s},%s' % (
-      bitvalue, bitcount, valueid, comment))
-    assert int(valueid) == count, "Expected data for %s, got %s." % (count,
-                                                                     valueid)
+      comment = '  //     %s' % spec_bitstring
+    print(
+      '    {0x%08xul, %02s, %03s},%s' % (bitvalue, bitcount, valueid, comment)
+    )
+    assert int(valueid) == count, "Expected data for %s, got %s." % (
+      count,
+      valueid,
+    )
     count += 1
 print("Total: %s" % count)
 assert count == 257, "Expected 257 values, got %d." % count

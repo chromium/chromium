@@ -6,6 +6,7 @@
 to clientAuth. Neither the root nor the intermediate have an EKU."""
 
 import sys
+
 sys.path += ['../..']
 
 import gencerts
@@ -19,7 +20,8 @@ intermediate = gencerts.create_intermediate_certificate('Intermediate', root)
 # Target certificate.
 target = gencerts.create_end_entity_certificate('Target', intermediate)
 target.get_extensions().set_property(
-    'extendedKeyUsage',
-    'clientAuth,serverAuth,codeSigning,OCSPSigning,timeStamping')
+  'extendedKeyUsage',
+  'clientAuth,serverAuth,codeSigning,OCSPSigning,timeStamping',
+)
 chain = [target, intermediate, root]
 gencerts.write_chain(__doc__, chain, 'chain.pem')

@@ -7,25 +7,30 @@ intermediate that uses policy mappings. Should pass, since policy mapping will
 be allowed on the intermediate."""
 
 import sys
+
 sys.path += ['../..']
 
 import gencerts
 
 # Self-signed root certificate.
 root = gencerts.create_self_signed_root_certificate('Root')
-root.get_extensions().set_property('policyConstraints',
-                                   'critical,inhibitPolicyMapping:1')
+root.get_extensions().set_property(
+  'policyConstraints', 'critical,inhibitPolicyMapping:1'
+)
 
 # Intermediate certificate.
 intermediate = gencerts.create_intermediate_certificate('Intermediate', root)
-intermediate.get_extensions().set_property('policyConstraints',
-                                           'critical,requireExplicitPolicy:0')
+intermediate.get_extensions().set_property(
+  'policyConstraints', 'critical,requireExplicitPolicy:0'
+)
 
-intermediate.get_extensions().set_property('certificatePolicies',
-                                           'critical,1.2.3.4')
+intermediate.get_extensions().set_property(
+  'certificatePolicies', 'critical,1.2.3.4'
+)
 
-intermediate.get_extensions().set_property('policyMappings',
-                                           'critical,@policy_mappings')
+intermediate.get_extensions().set_property(
+  'policyMappings', 'critical,@policy_mappings'
+)
 policy_mappings = intermediate.config.get_section('policy_mappings')
 policy_mappings.set_property('1.2.3.4', '1.2.3.5')
 

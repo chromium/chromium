@@ -5,17 +5,20 @@
 
 import os
 import sys
+
 sys.path += ['..']
 
 import gencerts
 
 # Generate the keys -- the same key is used between all intermediate certs and
 # between all leaf certs.
-root_key = gencerts.get_or_generate_rsa_key(2048,
-                                            gencerts.create_key_path('root'))
+root_key = gencerts.get_or_generate_rsa_key(
+  2048, gencerts.create_key_path('root')
+)
 i_key = gencerts.get_or_generate_rsa_key(2048, gencerts.create_key_path('i'))
-leaf_key = gencerts.get_or_generate_rsa_key(2048,
-                                            gencerts.create_key_path('leaf'))
+leaf_key = gencerts.get_or_generate_rsa_key(
+  2048, gencerts.create_key_path('leaf')
+)
 
 # Self-signed root certificate.
 root = gencerts.create_self_signed_root_certificate('Root')
@@ -92,8 +95,9 @@ nc = nc_permit_o1.config.get_section('nc')
 nc.add_property('permitted;dirName.1', 'nc_1')
 nc_1 = nc_permit_o1.config.get_section('nc_1')
 nc_1.add_property('organizationName', 'O1')
-gencerts.write_string_to_file(nc_permit_o1.get_cert_pem(),
-                              'nc-int-permit-o1.pem')
+gencerts.write_string_to_file(
+  nc_permit_o1.get_cert_pem(), 'nc-int-permit-o1.pem'
+)
 
 # Create a name-constrained intermediate that has O1 as a permitted
 # organizationName, but encoded as a BMPString within a directoryName
@@ -101,15 +105,17 @@ gencerts.write_string_to_file(nc_permit_o1.get_cert_pem(),
 nc_permit_bmp_o1 = gencerts.create_intermediate_certificate('NC2', root)
 nc_permit_bmp_o1.set_key(i_key)
 # 2048 = 0x0800, B_ASN1_BMPSTRING
-nc_permit_bmp_o1.config.get_section('req').set_property('string_mask',
-                                                        'MASK:2048')
+nc_permit_bmp_o1.config.get_section('req').set_property(
+  'string_mask', 'MASK:2048'
+)
 nc_permit_bmp_o1.config.get_section('req').set_property('utf8', 'no')
 nc = nc_permit_bmp_o1.config.get_section('nc')
 nc.add_property('permitted;dirName.1', 'nc_1')
 nc_1 = nc_permit_bmp_o1.config.get_section('nc_1')
 nc_1.add_property('organizationName', 'O1')
-gencerts.write_string_to_file(nc_permit_bmp_o1.get_cert_pem(),
-                              'nc-int-permit-bmp-o1.pem')
+gencerts.write_string_to_file(
+  nc_permit_bmp_o1.get_cert_pem(), 'nc-int-permit-bmp-o1.pem'
+)
 
 # Create a name-constrained intermediate that has O1 as a permitted
 # commonName in a directoryName nameConstraint
@@ -120,8 +126,9 @@ nc = nc_permit_cn.config.get_section('nc')
 nc.add_property('permitted;dirName.1', 'nc_1')
 nc_1 = nc_permit_cn.config.get_section('nc_1')
 nc_1.add_property('commonName', 'O1')
-gencerts.write_string_to_file(nc_permit_cn.get_cert_pem(),
-                              'nc-int-permit-cn.pem')
+gencerts.write_string_to_file(
+  nc_permit_cn.get_cert_pem(), 'nc-int-permit-cn.pem'
+)
 
 # Create a name-constrainted intermediate that has O1 as an excluded
 # commonName in a directoryName nameConstraint
@@ -132,8 +139,9 @@ nc = nc_exclude_o1.config.get_section('nc')
 nc.add_property('excluded;dirName.1', 'nc_1')
 nc_1 = nc_exclude_o1.config.get_section('nc_1')
 nc_1.add_property('organizationName', 'O1')
-gencerts.write_string_to_file(nc_exclude_o1.get_cert_pem(),
-                              'nc-int-exclude-o1.pem')
+gencerts.write_string_to_file(
+  nc_exclude_o1.get_cert_pem(), 'nc-int-exclude-o1.pem'
+)
 
 # Create a name-constrained intermediate that does not have a directoryName
 # nameConstraint
@@ -142,15 +150,17 @@ nc_permit_dns.set_key(i_key)
 nc_permit_dns.get_extensions().set_property('nameConstraints', 'critical,@nc')
 nc = nc_permit_dns.config.get_section('nc')
 nc.add_property('permitted;DNS.1', 'test.invalid')
-gencerts.write_string_to_file(nc_permit_dns.get_cert_pem(),
-                              'nc-int-permit-dns.pem')
+gencerts.write_string_to_file(
+  nc_permit_dns.get_cert_pem(), 'nc-int-permit-dns.pem'
+)
 
 # Create a name-constrained intermediate with multiple directoryName
 # nameConstraints
 nc_permit_o2_o1_o3 = gencerts.create_intermediate_certificate('NC6', root)
 nc_permit_o2_o1_o3.set_key(i_key)
-nc_permit_o2_o1_o3.get_extensions().set_property('nameConstraints',
-                                                 'critical,@nc')
+nc_permit_o2_o1_o3.get_extensions().set_property(
+  'nameConstraints', 'critical,@nc'
+)
 nc = nc_permit_o2_o1_o3.config.get_section('nc')
 nc.add_property('permitted;dirName.1', 'nc_1')
 nc_1 = nc_permit_o2_o1_o3.config.get_section('nc_1')
@@ -164,8 +174,9 @@ nc.add_property('permitted;dirName.3', 'nc_3')
 nc_3 = nc_permit_o2_o1_o3.config.get_section('nc_3')
 nc_3.add_property('organizationName', 'O3')
 
-gencerts.write_string_to_file(nc_permit_o2_o1_o3.get_cert_pem(),
-                              'nc-int-permit-o2-o1-o3.pem')
+gencerts.write_string_to_file(
+  nc_permit_o2_o1_o3.get_cert_pem(), 'nc-int-permit-o2-o1-o3.pem'
+)
 
 ## Create leaf certs (note: The issuer name does not matter for these tests)
 
@@ -195,4 +206,3 @@ dn.clear_properties()
 dn.add_property('0.organizationName', 'O1')
 dn.add_property('commonName', 'Leaf')
 gencerts.write_string_to_file(leaf_o1.get_cert_pem(), 'leaf-o1.pem')
-

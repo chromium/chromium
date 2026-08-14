@@ -6,6 +6,7 @@
 on the intermediate and leaf. Should pass."""
 
 import sys
+
 sys.path += ['../..']
 
 import gencerts
@@ -13,17 +14,20 @@ import gencerts
 # Self-signed root certificate.
 root = gencerts.create_self_signed_root_certificate('Root')
 root.get_extensions().set_property('certificatePolicies', 'critical,1.2.3.4')
-root.get_extensions().set_property('policyMappings',
-                                   'critical,@policy_mappings')
+root.get_extensions().set_property(
+  'policyMappings', 'critical,@policy_mappings'
+)
 policy_mappings = root.config.get_section('policy_mappings')
 policy_mappings.set_property('1.2.3.4', '1.2.3.5')
 
 # Intermediate certificate.
 intermediate = gencerts.create_intermediate_certificate('Intermediate', root)
-intermediate.get_extensions().set_property('policyConstraints',
-                                           'critical,requireExplicitPolicy:0')
-intermediate.get_extensions().set_property('certificatePolicies',
-                                           'critical,1.2.3.5')
+intermediate.get_extensions().set_property(
+  'policyConstraints', 'critical,requireExplicitPolicy:0'
+)
+intermediate.get_extensions().set_property(
+  'certificatePolicies', 'critical,1.2.3.5'
+)
 
 # Target certificate.
 target = gencerts.create_end_entity_certificate('Target', intermediate)

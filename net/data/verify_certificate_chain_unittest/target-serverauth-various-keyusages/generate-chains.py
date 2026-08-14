@@ -7,6 +7,7 @@
 type and key usages."""
 
 import sys
+
 sys.path += ['../..']
 
 import gencerts
@@ -22,15 +23,18 @@ intermediate = gencerts.create_intermediate_certificate('Intermediate', root)
 
 KEYS = {
   'rsa': gencerts.get_or_generate_rsa_key(
-      2048, gencerts.create_key_path('Target-rsa')),
+    2048, gencerts.create_key_path('Target-rsa')
+  ),
   'ec': gencerts.get_or_generate_ec_key(
-      'secp384r1', gencerts.create_key_path('Target-ec'))
-};
-
-KEY_USAGES = [ 'decipherOnly',
-               'digitalSignature',
-               'keyAgreement',
-               'keyEncipherment' ]
+    'secp384r1', gencerts.create_key_path('Target-ec')
+  ),
+}
+KEY_USAGES = [
+  'decipherOnly',
+  'digitalSignature',
+  'keyAgreement',
+  'keyEncipherment',
+]
 
 # The proper key usage depends on the key purpose (serverAuth in this case),
 # and the key type. Generate a variety of combinations.
@@ -39,16 +43,19 @@ for key_type in sorted(KEYS.keys()):
     # Target certificate.
     target = gencerts.create_end_entity_certificate('Target', intermediate)
     target.get_extensions().set_property('extendedKeyUsage', 'serverAuth')
-    target.get_extensions().set_property('keyUsage',
-                                         'critical,%s' % (key_usage))
+    target.get_extensions().set_property(
+      'keyUsage', 'critical,%s' % (key_usage)
+    )
 
     # Set the key.
     target.set_key(KEYS[key_type])
 
     # Write the chain.
     chain = [target, intermediate, root]
-    description = ('Certificate chain where the target certificate uses a %s '
-                   'key and has the single key usage %s') % (key_type.upper(),
-                                                             key_usage)
-    gencerts.write_chain(description, chain,
-                         '%s-%s.pem' % (key_type, key_usage))
+    description = (
+      'Certificate chain where the target certificate uses a %s '
+      'key and has the single key usage %s'
+    ) % (key_type.upper(), key_usage)
+    gencerts.write_chain(
+      description, chain, '%s-%s.pem' % (key_type, key_usage)
+    )

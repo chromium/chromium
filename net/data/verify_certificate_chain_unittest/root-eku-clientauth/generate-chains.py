@@ -7,6 +7,7 @@
 usage to clientAuth."""
 
 import sys
+
 sys.path += ['../..']
 
 import gencerts

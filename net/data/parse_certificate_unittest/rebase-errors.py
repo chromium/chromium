@@ -37,7 +37,8 @@ import re
 #  * Group 1 of the match is file path (relative to //src) where the
 #    expected errors were read from.
 #  * Group 2 of the match is the actual error text
-failed_test_regex = re.compile(r"""
+failed_test_regex = re.compile(
+  r"""
 Cert errors don't match expectations \((.+?)\)
 
 EXPECTED:
@@ -47,7 +48,9 @@ ACTUAL:
 
 ((?:.|\n)*?)
 ===> Use net/data/parse_certificate_unittest/rebase-errors.py to rebaseline.
-""", re.MULTILINE)
+""",
+  re.MULTILINE,
+)
 
 
 # Regular expression to find the ERRORS block (and any text above it) in a PEM
@@ -55,12 +58,15 @@ ACTUAL:
 # (since it looks for an -----END to precede it).
 #  * Group 1 of the match is the ERRORS block content and any comments
 #    immediately above it.
-errors_block_regex = re.compile(r""".*
+errors_block_regex = re.compile(
+  r""".*
 -----END .*?-----
 (.*?
 -----BEGIN ERRORS-----
 .*?
------END ERRORS-----)""", re.MULTILINE | re.DOTALL)
+-----END ERRORS-----)""",
+  re.MULTILINE | re.DOTALL,
+)
 
 
 def read_file_to_string(path):
@@ -94,8 +100,7 @@ def fixup_pem_file(path, actual_errors):
   if not m:
     contents += errors_block_text
   else:
-    contents = replace_string(contents, m.start(1), m.end(1),
-                              errors_block_text)
+    contents = replace_string(contents, m.start(1), m.end(1), errors_block_text)
 
   # Update the file.
   write_string_to_file(contents, path)

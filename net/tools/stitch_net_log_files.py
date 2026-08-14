@@ -15,7 +15,7 @@ import re
 import sys
 
 
-USAGE ='''Usage: stitch_net_log_files.py <INPROGRESS_DIR> [<OUTPUT_PATH>]
+USAGE = '''Usage: stitch_net_log_files.py <INPROGRESS_DIR> [<OUTPUT_PATH>]
 
 Will copy all the files in <INPROGRESS_DIR> and write the their content into a
 NetLog file at path <OUTPUT_PATH>.
@@ -42,8 +42,9 @@ def get_ordered_event_files():
 
   paths = glob.glob("event_file_*.json")
   paths = sorted(paths, key=get_event_file_sort_key)
-  sys.stdout.write("Identified %d event files:\n  %s\n" %
-                   (len(paths), "\n  ".join(paths)))
+  sys.stdout.write(
+    "Identified %d event files:\n  %s\n" % (len(paths), "\n  ".join(paths))
+  )
   return paths
 
 

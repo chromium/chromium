@@ -7,6 +7,7 @@
 violates this by issuing another (non-self-issued) intermediate."""
 
 import sys
+
 sys.path += ['../..']
 
 import gencerts
@@ -16,14 +17,17 @@ root = gencerts.create_self_signed_root_certificate('Root')
 
 # Intermediate with pathlen 0
 intermediate1 = gencerts.create_intermediate_certificate('Intermediate1', root)
-intermediate1.get_extensions().set_property('basicConstraints',
-                                            'critical,CA:true,pathlen:0')
+intermediate1.get_extensions().set_property(
+  'basicConstraints', 'critical,CA:true,pathlen:0'
+)
 
 # Another intermediate (with the same pathlen restriction)
-intermediate2 = gencerts.create_intermediate_certificate('Intermediate2',
-                                                       intermediate1)
-intermediate2.get_extensions().set_property('basicConstraints',
-                                            'critical,CA:true,pathlen:0')
+intermediate2 = gencerts.create_intermediate_certificate(
+  'Intermediate2', intermediate1
+)
+intermediate2.get_extensions().set_property(
+  'basicConstraints', 'critical,CA:true,pathlen:0'
+)
 
 # Target certificate.
 target = gencerts.create_end_entity_certificate('Target', intermediate2)

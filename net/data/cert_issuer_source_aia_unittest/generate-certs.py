@@ -5,17 +5,20 @@
 
 import os
 import sys
+
 sys.path += ['..']
 
 import gencerts
 
 # Generate the keys -- the same key is used for all intermediates and end entity
 # certificates.
-root_key = gencerts.get_or_generate_rsa_key(2048,
-                                            gencerts.create_key_path('root'))
+root_key = gencerts.get_or_generate_rsa_key(
+  2048, gencerts.create_key_path('root')
+)
 i_key = gencerts.get_or_generate_rsa_key(2048, gencerts.create_key_path('i'))
 target_key = gencerts.get_or_generate_rsa_key(
-    2048, gencerts.create_key_path('target'))
+  2048, gencerts.create_key_path('target')
+)
 
 # Self-signed root certificate.
 root = gencerts.create_self_signed_root_certificate('Root')
@@ -123,18 +126,22 @@ gencerts.write_string_to_file(target.get_cert_pem(), 'target_file_aia.pem')
 target = gencerts.create_end_entity_certificate('target', i_invalid_url_aia)
 target.set_key(target_key)
 target.get_extensions().set_property('subjectAltName', 'DNS:target')
-gencerts.write_string_to_file(target.get_cert_pem(),
-                             'target_invalid_url_aia.pem')
+gencerts.write_string_to_file(
+  target.get_cert_pem(), 'target_invalid_url_aia.pem'
+)
 
 target = gencerts.create_end_entity_certificate('target', i_file_and_http_aia)
 target.set_key(target_key)
 target.get_extensions().set_property('subjectAltName', 'DNS:target')
-gencerts.write_string_to_file(target.get_cert_pem(),
-                            'target_file_and_http_aia.pem')
+gencerts.write_string_to_file(
+  target.get_cert_pem(), 'target_file_and_http_aia.pem'
+)
 
-target = gencerts.create_end_entity_certificate('target',
-                                                i_invalid_and_http_aia)
+target = gencerts.create_end_entity_certificate(
+  'target', i_invalid_and_http_aia
+)
 target.set_key(target_key)
 target.get_extensions().set_property('subjectAltName', 'DNS:target')
-gencerts.write_string_to_file(target.get_cert_pem(),
-                              'target_invalid_and_http_aia.pem')
+gencerts.write_string_to_file(
+  target.get_cert_pem(), 'target_invalid_and_http_aia.pem'
+)

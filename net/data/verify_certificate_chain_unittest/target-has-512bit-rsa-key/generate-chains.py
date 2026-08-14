@@ -7,6 +7,7 @@
 with a 512-bit modulus (weak)."""
 
 import sys
+
 sys.path += ['../..']
 
 import gencerts
@@ -19,8 +20,9 @@ intermediate = gencerts.create_intermediate_certificate('Intermediate', root)
 
 # Target certificate.
 target = gencerts.create_end_entity_certificate('Target', intermediate)
-target.set_key(gencerts.get_or_generate_rsa_key(
-    512, gencerts.create_key_path(target.name)))
+target.set_key(
+  gencerts.get_or_generate_rsa_key(512, gencerts.create_key_path(target.name))
+)
 
 chain = [target, intermediate, root]
 gencerts.write_chain(__doc__, chain, 'chain.pem')

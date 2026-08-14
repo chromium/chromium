@@ -6,6 +6,7 @@
 MD5 in the signature algorithm."""
 
 import sys
+
 sys.path += ['../..']
 
 import gencerts

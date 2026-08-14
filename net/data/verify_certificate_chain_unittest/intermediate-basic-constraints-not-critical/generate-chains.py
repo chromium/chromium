@@ -7,6 +7,7 @@
 not marked as critical."""
 
 import sys
+
 sys.path += ['../..']
 
 import gencerts

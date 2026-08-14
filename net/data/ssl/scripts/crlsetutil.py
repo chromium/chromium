@@ -91,15 +91,15 @@ def _parse_asn1_element(der_bytes):
   header_length = 2
 
   if length & 0x80:
-    num_length_bytes = length & 0x7f
+    num_length_bytes = length & 0x7F
     length = 0
     for i in range(2, 2 + num_length_bytes):
       length <<= 8
       length += der_bytes[i]
     header_length = 2 + num_length_bytes
 
-  contents = der_bytes[:header_length + length]
-  rest = der_bytes[header_length + length:]
+  contents = der_bytes[: header_length + length]
+  rest = der_bytes[header_length + length :]
 
   return (tag, header_length, contents, rest)
 
@@ -117,12 +117,14 @@ class ASN1Iterator(object):
   def step_into(self):
     """Begins processing the inner contents of the next ASN.1 element"""
     (self._tag, self._header_length, self._contents, self._rest) = (
-        _parse_asn1_element(self._contents[self._header_length:]))
+      _parse_asn1_element(self._contents[self._header_length :])
+    )
 
   def step_over(self):
     """Skips/ignores the next ASN.1 element"""
     (self._tag, self._header_length, self._contents, self._rest) = (
-        _parse_asn1_element(self._rest))
+      _parse_asn1_element(self._rest)
+    )
 
   def tag(self):
     """Returns the ASN.1 tag of the current element"""
@@ -134,7 +136,7 @@ class ASN1Iterator(object):
 
   def encoded_value(self):
     """Returns the encoded value of the current element (i.e. without header)"""
-    return self._contents[self._header_length:]
+    return self._contents[self._header_length :]
 
 
 def _der_cert_to_spki(der_bytes):
@@ -249,8 +251,9 @@ def pem_cert_file_to_serial(pem_filename):
 
 def main():
   parser = optparse.OptionParser(description=sys.modules[__name__].__doc__)
-  parser.add_option('-o', '--output',
-                    help='Specifies the output file. The default is stdout.')
+  parser.add_option(
+    '-o', '--output', help='Specifies the output file. The default is stdout.'
+  )
   options, _ = parser.parse_args()
   outfile = sys.stdout
   if options.output and options.output != '-':
@@ -258,41 +261,40 @@ def main():
 
   config = json.load(sys.stdin)
   blocked_spkis = [
-      base64.b64encode(pem_cert_file_to_spki_hash(pem_file)).decode('ascii')
-      for pem_file in config.get('BlockedBySPKI', [])
+    base64.b64encode(pem_cert_file_to_spki_hash(pem_file)).decode('ascii')
+    for pem_file in config.get('BlockedBySPKI', [])
   ]
   parents = {
-      pem_cert_file_to_spki_hash(pem_file): [
-          pem_cert_file_to_serial(issued_cert_file)
-          for issued_cert_file in issued_certs
-      ]
-      for pem_file, issued_certs in config.get('BlockedByHash', {}).items()
+    pem_cert_file_to_spki_hash(pem_file): [
+      pem_cert_file_to_serial(issued_cert_file)
+      for issued_cert_file in issued_certs
+    ]
+    for pem_file, issued_certs in config.get('BlockedByHash', {}).items()
   }
   limited_subjects = {
-      base64.b64encode(pem_cert_file_to_subject_hash(pem_file)).decode('ascii'):
-      [
-          base64.b64encode(pem_cert_file_to_spki_hash(filename)).decode('ascii')
-          for filename in allowed_pems
-      ]
-      for pem_file, allowed_pems in config.get('LimitedSubjects', {}).items()
+    base64.b64encode(pem_cert_file_to_subject_hash(pem_file)).decode('ascii'): [
+      base64.b64encode(pem_cert_file_to_spki_hash(filename)).decode('ascii')
+      for filename in allowed_pems
+    ]
+    for pem_file, allowed_pems in config.get('LimitedSubjects', {}).items()
   }
   known_interception_spkis = [
-      base64.b64encode(pem_cert_file_to_spki_hash(pem_file)).decode('ascii')
-      for pem_file in config.get('KnownInterceptionSPKIs', [])
+    base64.b64encode(pem_cert_file_to_spki_hash(pem_file)).decode('ascii')
+    for pem_file in config.get('KnownInterceptionSPKIs', [])
   ]
   blocked_interception_spkis = [
-      base64.b64encode(pem_cert_file_to_spki_hash(pem_file)).decode('ascii')
-      for pem_file in config.get('BlockedInterceptionSPKIs', [])
+    base64.b64encode(pem_cert_file_to_spki_hash(pem_file)).decode('ascii')
+    for pem_file in config.get('BlockedInterceptionSPKIs', [])
   ]
   header_json = {
-      'Version': 0,
-      'ContentType': 'CRLSet',
-      'Sequence': int(config.get("Sequence", 1)),
-      'NumParents': len(parents),
-      'BlockedSPKIs': blocked_spkis,
-      'LimitedSubjects': limited_subjects,
-      'KnownInterceptionSPKIs': known_interception_spkis,
-      'BlockedInterceptionSPKIs': blocked_interception_spkis
+    'Version': 0,
+    'ContentType': 'CRLSet',
+    'Sequence': int(config.get("Sequence", 1)),
+    'NumParents': len(parents),
+    'BlockedSPKIs': blocked_spkis,
+    'LimitedSubjects': limited_subjects,
+    'KnownInterceptionSPKIs': known_interception_spkis,
+    'BlockedInterceptionSPKIs': blocked_interception_spkis,
   }
   header = json.dumps(header_json)
   outfile.write(struct.pack('<H', len(header)))

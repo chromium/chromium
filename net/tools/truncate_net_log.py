@@ -34,6 +34,7 @@ Parameters:
           1.5m  -->  1.5 MiB
 '''
 
+
 def get_file_size(path):
   '''Returns the filesize of |path| in bytes'''
   return os.stat(path).st_size
@@ -55,8 +56,9 @@ def truncate_log_file(in_path, out_path, desired_size):
         # The final line before polledData closes the events array, and hence
         # ends in "],". The check for polledData is more for documentation
         # sake.
-        if inside_events and (line.startswith('"polledData": {' or
-                              line.endswith('],\n'))):
+        if inside_events and (
+          line.startswith('"polledData": {' or line.endswith('],\n'))
+        ):
           inside_events = False
 
         # If this is an event line and need to drop more bytes, go ahead and
@@ -72,8 +74,10 @@ def truncate_log_file(in_path, out_path, desired_size):
           inside_events = True
 
   sys.stdout.write(
-      'Truncated file from %d to %d bytes\n' % (orig_size,
-                                                get_file_size(out_path)))
+    'Truncated file from %d to %d bytes\n'
+    % (orig_size, get_file_size(out_path))
+  )
+
 
 def parse_filesize_str(filesize_str):
   '''Parses a string representation of a file size into a byte value, or None

@@ -7,6 +7,7 @@
 extension."""
 
 import sys
+
 sys.path += ['../..']
 
 import gencerts
@@ -16,8 +17,9 @@ root = gencerts.create_self_signed_root_certificate('Root')
 
 # Intermediate that has an unknown critical extension.
 intermediate = gencerts.create_intermediate_certificate('Intermediate', root)
-intermediate.get_extensions().add_property('1.2.3.4',
-                                           'critical,DER:01:02:03:04')
+intermediate.get_extensions().add_property(
+  '1.2.3.4', 'critical,DER:01:02:03:04'
+)
 
 # Target certificate.
 target = gencerts.create_end_entity_certificate('Target', intermediate)

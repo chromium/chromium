@@ -108,7 +108,6 @@ class Key(object):
   def __init__(self, path):
     self.path = path
 
-
   def get_path(self):
     """Returns the path to a file that contains the key contents."""
     return self.path
@@ -126,17 +125,20 @@ def get_or_generate_key(generation_arguments, path):
     key_contents = subprocess.check_output(generation_arguments, text=True)
 
     # Prepend the generation parameters to the key file.
-    write_string_to_file(generation_arguments_str + '\n' + key_contents,
-                         path)
+    write_string_to_file(generation_arguments_str + '\n' + key_contents, path)
   else:
     # If the path already exists, confirm that it is for the expected key type.
     first_line = read_file_to_string(path).splitlines()[0]
     if first_line != generation_arguments_str:
-      sys.stderr.write(('\nERROR: The existing key file:\n  %s\nis not '
-           'compatible with the requested parameters:\n  "%s" vs "%s".\n'
-           'Delete the file if you want to re-generate it with the new '
-           'parameters, otherwise pick a new filename\n') % (
-               path, first_line, generation_arguments_str))
+      sys.stderr.write(
+        (
+          '\nERROR: The existing key file:\n  %s\nis not '
+          'compatible with the requested parameters:\n  "%s" vs "%s".\n'
+          'Delete the file if you want to re-generate it with the new '
+          'parameters, otherwise pick a new filename\n'
+        )
+        % (path, first_line, generation_arguments_str)
+      )
       sys.exit(1)
 
   return Key(path)
@@ -152,8 +154,9 @@ def get_or_generate_ec_key(named_curve, path):
   """Retrieves an existing key from a file if the path exists. Otherwise
   generates an EC key with the specified named curve and saves it to the
   path."""
-  return get_or_generate_key(['openssl', 'ecparam', '-name', named_curve,
-                              '-genkey'], path)
+  return get_or_generate_key(
+    ['openssl', 'ecparam', '-name', named_curve, '-genkey'], path
+  )
 
 
 def create_key_path(base_name):
@@ -216,13 +219,16 @@ class Certificate(object):
     # testing (since want to generate some flawed certificates) these are set
     # on a per-certificate basis rather than automatically when signing.
     if cert_type == TYPE_END_ENTITY:
-      self.get_extensions().set_property('keyUsage',
-              'critical,digitalSignature,keyEncipherment')
-      self.get_extensions().set_property('extendedKeyUsage',
-              'serverAuth,clientAuth')
+      self.get_extensions().set_property(
+        'keyUsage', 'critical,digitalSignature,keyEncipherment'
+      )
+      self.get_extensions().set_property(
+        'extendedKeyUsage', 'serverAuth,clientAuth'
+      )
     else:
-      self.get_extensions().set_property('keyUsage',
-              'critical,keyCertSign,cRLSign')
+      self.get_extensions().set_property(
+        'keyUsage', 'critical,keyCertSign,cRLSign'
+      )
       self.get_extensions().set_property('basicConstraints', 'critical,CA:true')
 
     # Tracks whether the PEM file for this certificate has been written (since
@@ -234,39 +240,34 @@ class Certificate(object):
     # based on the file system path, and will increment this for each signed
     # certificate.
     if not os.path.exists(self.get_serial_path()):
-      write_string_to_file('%s\n' % self.make_serial_number(),
-                           self.get_serial_path())
+      write_string_to_file(
+        '%s\n' % self.make_serial_number(), self.get_serial_path()
+      )
     if not os.path.exists(self.get_database_path()):
       write_string_to_file('', self.get_database_path())
-
 
   def set_validity_range(self, start_date, end_date):
     """Sets the Validity notBefore and notAfter properties for the
     certificate"""
     self.validity_flags = ['-startdate', start_date, '-enddate', end_date]
 
-
   def set_signature_hash(self, md):
     """Sets the hash function that will be used when signing this certificate.
     Can be sha1, sha256, sha512, md5, etc."""
     self.md_flags = ['-md', md]
 
-
   def get_extensions(self):
     return self.config.get_section('req_ext')
-
 
   def get_subject(self):
     """Returns the configuration section responsible for the subject of the
     certificate. This can be used to alter the subject to be more complex."""
     return self.config.get_section('req_dn')
 
-
   def get_path(self, suffix):
     """Forms a path to an output file for this certificate, containing the
     indicated suffix. The certificate's name will be used as its basis."""
     return os.path.join(g_tmp_dir, '%s%s' % (self.path_id, suffix))
-
 
   def get_name_path(self, suffix):
     """Forms a path to an output file for this CA, containing the indicated
@@ -274,11 +275,9 @@ class Certificate(object):
     path."""
     return get_path_in_tmp_dir(self.name, suffix)
 
-
   def set_key(self, key):
     assert self.finalized is False
     self.set_key_internal(key)
-
 
   def set_key_internal(self, key):
     self.key = key
@@ -287,21 +286,18 @@ class Certificate(object):
     section = self.config.get_section('root_ca')
     section.set_property('private_key', self.key.get_path())
 
-
   def get_key(self):
     if self.key is None:
       self.set_key_internal(
-          get_or_generate_rsa_key(2048, create_key_path(self.name)))
+        get_or_generate_rsa_key(2048, create_key_path(self.name))
+      )
     return self.key
-
 
   def get_cert_path(self):
     return self.get_path('.pem')
 
-
   def get_serial_path(self):
     return self.get_name_path('.serial')
-
 
   def make_serial_number(self):
     """Returns a hex number that is generated based on the certificate file
@@ -334,18 +330,14 @@ class Certificate(object):
 
     return serial_bytes.hex()
 
-
   def get_csr_path(self):
     return self.get_path('.csr')
-
 
   def get_database_path(self):
     return self.get_name_path('.db')
 
-
   def get_config_path(self):
     return self.get_path('.cnf')
-
 
   def get_cert_pem(self):
     # Finish generating a .pem file for the certificate.
@@ -354,14 +346,13 @@ class Certificate(object):
     # Read the certificate data.
     return read_file_to_string(self.get_cert_path())
 
-
   def finalize(self):
     """Finishes the certificate creation process. This generates any needed
     key, creates and signs the CSR. On completion the resulting PEM file can be
     found at self.get_cert_path()"""
 
     if self.finalized:
-      return # Already finalized, no work needed.
+      return  # Already finalized, no work needed.
 
     self.finalized = True
 
@@ -378,14 +369,30 @@ class Certificate(object):
 
     # Create a CSR.
     subprocess.check_call(
-        ['openssl', 'req', '-new',
-         '-key', self.key.get_path(),
-         '-out', self.get_csr_path(),
-         '-config', self.get_config_path()])
+      [
+        'openssl',
+        'req',
+        '-new',
+        '-key',
+        self.key.get_path(),
+        '-out',
+        self.get_csr_path(),
+        '-config',
+        self.get_config_path(),
+      ]
+    )
 
-    cmd = ['openssl', 'ca', '-batch', '-in',
-        self.get_csr_path(), '-out', self.get_cert_path(), '-config',
-        self.issuer.get_config_path()]
+    cmd = [
+      'openssl',
+      'ca',
+      '-batch',
+      '-in',
+      self.get_csr_path(),
+      '-out',
+      self.get_cert_path(),
+      '-config',
+      self.issuer.get_config_path(),
+    ]
 
     if self.issuer == self:
       cmd.append('-selfsign')
@@ -396,7 +403,6 @@ class Certificate(object):
 
     # Run the 'openssl ca' command.
     subprocess.check_call(cmd)
-
 
   def init_config(self):
     """Initializes default properties in the certificate .cnf file that are
@@ -488,8 +494,9 @@ class Certificate(object):
     section.set_property('crlDistributionPoints', '@crl_info')
 
     section = self.config.get_section('issuer_info')
-    section.set_property('caIssuers;URI.0',
-                        'http://url-for-aia/%s.cer' % (self.name))
+    section.set_property(
+      'caIssuers;URI.0', 'http://url-for-aia/%s.cer' % (self.name)
+    )
 
     section = self.config.get_section('crl_info')
     section.set_property('URI.0', 'http://url-for-crl/%s.crl' % (self.name))
@@ -503,7 +510,11 @@ def text_data_to_pem(block_header, text_data):
   # b64encode takes in bytes and returns bytes.
   pem_data = base64.b64encode(text_data.encode('utf8')).decode('utf8')
   return '%s\n-----BEGIN %s-----\n%s\n-----END %s-----\n' % (
-      text_data, block_header, pem_data, block_header)
+    text_data,
+    block_header,
+    pem_data,
+    block_header,
+  )
 
 
 def write_chain(description, chain, out_pem):
@@ -546,9 +557,12 @@ def init(invoking_script_path):
   actual_cwd = os.path.realpath(os.getcwd())
   if actual_cwd != expected_cwd:
     sys.stderr.write(
-        ('Your current working directory must be that containing the python '
-         'scripts:\n%s\nas the script may reference paths relative to this\n')
-        % (expected_cwd))
+      (
+        'Your current working directory must be that containing the python '
+        'scripts:\n%s\nas the script may reference paths relative to this\n'
+      )
+      % (expected_cwd)
+    )
     sys.exit(1)
 
   # Use an output directory that is a sibling of the invoking script.
@@ -574,5 +588,6 @@ def create_self_signed_end_entity_certificate(name):
 
 def create_end_entity_certificate(name, issuer):
   return Certificate(name, TYPE_END_ENTITY, issuer)
+
 
 init(sys.argv[0])

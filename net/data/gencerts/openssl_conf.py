@@ -12,6 +12,7 @@ are grouped into "sections".
 [1] https://www.openssl.org/docs/manmaster/apps/config.html
 """
 
+
 class Property(object):
   """Represents a key/value pair in OpenSSL .cnf files.
 
@@ -26,10 +27,10 @@ class Property(object):
     name = 'baseConstraints'
     value = 'critical, CA:false'
   """
+
   def __init__(self, name, value):
     self.name = name
     self.value = value
-
 
   def write_to(self, out):
     """Outputs this property to .cnf file."""
@@ -45,10 +46,10 @@ class Section(object):
     name = 'CA_root'
     properties = [Property('preserve', 'true')]
   """
+
   def __init__(self, name):
     self.name = name
     self.properties = []
-
 
   def ensure_property_name_not_duplicated(self, name):
     """Raises an exception of there is more than 1 property named |name|."""
@@ -58,7 +59,6 @@ class Section(object):
         count += 1
     if count > 1:
       raise Exception('Duplicate property: %s' % (name))
-
 
   def set_property(self, name, value):
     """Replaces, adds, or removes a Property from the Section:
@@ -86,11 +86,9 @@ class Section(object):
 
     self.add_property(name, value)
 
-
   def add_property(self, name, value):
     """Adds a property (allows duplicates)"""
     self.properties.append(Property(name, value))
-
 
   def remove_property(self, name):
     """Removes the property with the indicated name, if it exists.
@@ -104,11 +102,9 @@ class Section(object):
         self.properties.pop(i)
         return
 
-
   def clear_properties(self):
     """Removes all configured properties."""
     self.properties = []
-
 
   def write_to(self, out):
     """Outputs the section in the format used by .cnf files"""
@@ -120,9 +116,9 @@ class Section(object):
 
 class Config(object):
   """Represents a .cnf (configuration) file in OpenSSL"""
+
   def __init__(self):
     self.sections = []
-
 
   def get_section(self, name):
     """Gets or creates a section with the given name."""
@@ -132,7 +128,6 @@ class Config(object):
     new_section = Section(name)
     self.sections.append(new_section)
     return new_section
-
 
   def write_to_file(self, path):
     """Outputs the Config to a .cnf files."""

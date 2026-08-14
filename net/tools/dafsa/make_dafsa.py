@@ -195,7 +195,17 @@ The bytes in the generated array has the following meaning:
 import argparse
 import sys
 
-from typing import Any, Dict, FrozenSet, Iterable, List, MutableSequence, Sequence, Tuple, Union
+from typing import (
+  Any,
+  Dict,
+  FrozenSet,
+  Iterable,
+  List,
+  MutableSequence,
+  Sequence,
+  Tuple,
+  Union,
+)
 
 # Use of Any below is because mypy doesn't support recursive types.
 SinkNode = Union[None, None]  # weird hack to get around lack of TypeAlias.
@@ -227,6 +237,7 @@ def to_dafsa(words: Iterable[str]) -> DAFSA:
     if len(word) == 1:
       return chr(ord(word[0]) & 0x0F), [None]
     return word[0], [ToNodes(word[1:])]
+
   return [ToNodes(word) for word in words]
 
 
@@ -305,7 +316,7 @@ def join_suffixes(dafsa: DAFSA) -> DAFSA:
   """Generates a new DAFSA where nodes that represent the same word lists
   towards the sink are merged.
   """
-  nodemap: Dict[FrozenSet[str], Node] = {frozenset(('', )): None}
+  nodemap: Dict[FrozenSet[str], Node] = {frozenset(('',)): None}
 
   def join(node: Node) -> Node:
     """Returns a matching node. A new node is created if no matching node
@@ -345,7 +356,7 @@ def top_sort(dafsa: DAFSA) -> Sequence[NonSinkNode]:
       incoming[id(node)] -= 1
 
   waiting: List[NonSinkNode] = [
-      node for node in dafsa if node and incoming[id(node)] == 0
+    node for node in dafsa if node and incoming[id(node)] == 0
   ]
   nodes: List[NonSinkNode] = []
 
@@ -361,8 +372,9 @@ def top_sort(dafsa: DAFSA) -> Sequence[NonSinkNode]:
   return nodes
 
 
-def encode_links(children: Sequence[Node], offsets: Dict[int, int],
-                 current: int) -> Iterable[int]:
+def encode_links(
+  children: Sequence[Node], offsets: Dict[int, int], current: int
+) -> Iterable[int]:
   """Encodes a list of children as one, two or three byte offsets."""
   if not children[0]:
     # This is an <end_label> node and no links follow such nodes
@@ -370,7 +382,7 @@ def encode_links(children: Sequence[Node], offsets: Dict[int, int],
     return []
   guess = 3 * len(children)
   assert children
-  children = sorted(children, key = lambda x: -offsets[id(x)])
+  children = sorted(children, key=lambda x: -offsets[id(x)])
   while True:
     offset = current + guess
     buf: List[int] = []
@@ -398,7 +410,7 @@ def encode_links(children: Sequence[Node], offsets: Dict[int, int],
       break
     guess = len(buf)
   # Set most significant bit to mark end of links in this node.
-  buf[last] |= (1 << 7)
+  buf[last] |= 1 << 7
   buf.reverse()
   return buf
 
@@ -415,11 +427,10 @@ def encode_prefix(label: str) -> MutableSequence[int]:
 
 
 def encode_label(label: str) -> Iterable[int]:
-  """Encodes a node label as a list of bytes with a trailing high byte >0x80.
-  """
+  """Encodes a node label as a list of bytes with a trailing high byte >0x80."""
   buf = encode_prefix(label)
   # Set most significant bit to mark end of label in this node.
-  buf[0] |= (1 << 7)
+  buf[0] |= 1 << 7
   return buf
 
 
@@ -429,8 +440,11 @@ def encode(dafsa: DAFSA) -> Sequence[int]:
   offsets: Dict[int, int] = {}
 
   for node in reversed(top_sort(dafsa)):
-    if (len(node[1]) == 1 and node[1][0] and
-        (offsets[id(node[1][0])] == len(output))):
+    if (
+      len(node[1]) == 1
+      and node[1][0]
+      and (offsets[id(node[1][0])] == len(output))
+    ):
       output.extend(encode_prefix(node[0]))
     else:
       output.extend(encode_links(node[1], offsets, len(output)))
@@ -452,7 +466,7 @@ def to_cxx(data: Sequence[int], namespace: str) -> str:
   text += 'const unsigned char kDafsa[%s] = {\n' % len(data)
   for i in range(0, len(data), 12):
     text += '  '
-    text += ', '.join('0x%02x' % byte for byte in data[i:i + 12])
+    text += ', '.join('0x%02x' % byte for byte in data[i : i + 12])
     text += ',\n'
   text += '};\n'
   text += f"}}  // namespace {namespace}\n"
@@ -481,8 +495,9 @@ def parse_gperf(infile: Iterable[str], reverse: bool) -> Iterable[str]:
     # Technically the DAFSA format can support return values in the range
     # [0-31], but only the first three bits have any defined meaning.
     if not line.endswith(('0', '1', '2', '3', '4', '5', '6', '7')):
-      raise InputError('Expected value to be in the range of 0-7, found "%s"' %
-                       line[-1])
+      raise InputError(
+        'Expected value to be in the range of 0-7, found "%s"' % line[-1]
+      )
   if reverse:
     return [line[-4::-1] + line[-1] for line in lines]
   else:
@@ -491,20 +506,25 @@ def parse_gperf(infile: Iterable[str], reverse: bool) -> Iterable[str]:
 
 def main() -> int:
   parser = argparse.ArgumentParser()
-  parser.add_argument('--reverse', action='store_const', const=True,
-                      default=False)
-  parser.add_argument('infile', nargs='?', type=argparse.FileType('r'),
-                      default=sys.stdin)
-  parser.add_argument('outfile', nargs='?', type=argparse.FileType('w'),
-                      default=sys.stdout)
   parser.add_argument(
-      '--namespace',
-      action='store',
-      required=True,
-      help='the C++ namespace in which to place the generated buffer')
+    '--reverse', action='store_const', const=True, default=False
+  )
+  parser.add_argument(
+    'infile', nargs='?', type=argparse.FileType('r'), default=sys.stdin
+  )
+  parser.add_argument(
+    'outfile', nargs='?', type=argparse.FileType('w'), default=sys.stdout
+  )
+  parser.add_argument(
+    '--namespace',
+    action='store',
+    required=True,
+    help='the C++ namespace in which to place the generated buffer',
+  )
   args = parser.parse_args()
   args.outfile.write(
-      words_to_cxx(parse_gperf(args.infile, args.reverse), args.namespace))
+    words_to_cxx(parse_gperf(args.infile, args.reverse), args.namespace)
+  )
   return 0
 
 

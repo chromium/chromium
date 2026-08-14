@@ -64,9 +64,11 @@ FOOTER = b"""\
 #endif  // NET_CERT_ROOT_CERT_LIST_GENERATED_H_
 """
 
+
 def _GetInputFile(src_relative_file_path):
   """Converts a src/-relative path into a path that can be opened."""
   return os.path.join(SRC_DIR, src_relative_file_path)
+
 
 def ClangFormat(filename):
   formatter = 'clang-format'
@@ -74,9 +76,10 @@ def ClangFormat(filename):
     formatter += '.bat'
   return call([formatter, '-i', '-style=chromium', filename])
 
+
 def main():
   if len(sys.argv) > 1:
-    print >>sys.stderr, 'No arguments expected!'
+    print >> sys.stderr, 'No arguments expected!'
     sys.stderr.write(__doc__)
     return 1
 
@@ -89,11 +92,13 @@ def main():
       cpp_str = ''.join('0x{:02X}, '.format(x) for x in bytearray.fromhex(spki))
       log_id = int(data['id'])
       header_file.write(
-          ('{ { %s },\n%d }, ' % (cpp_str, log_id)).encode('utf-8'))
+        ('{ { %s },\n%d }, ' % (cpp_str, log_id)).encode('utf-8')
+      )
 
     header_file.write(FOOTER)
 
   return ClangFormat(_GetInputFile(ROOT_CERT_LIST_PATH))
+
 
 if __name__ == '__main__':
   sys.exit(main())

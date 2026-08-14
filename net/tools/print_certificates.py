@@ -23,19 +23,28 @@ def read_file_to_string(path):
 
 def read_certificates_data_from_server(hostname):
   """Uses openssl to fetch the PEM-encoded certificates for an SSL server."""
-  p = subprocess.Popen(["openssl", "s_client", "-showcerts",
-                        "-servername", hostname,
-                        "-connect", hostname + ":443"],
-                        stdin=subprocess.PIPE,
-                        stdout=subprocess.PIPE,
-                        stderr=subprocess.PIPE)
+  p = subprocess.Popen(
+    [
+      "openssl",
+      "s_client",
+      "-showcerts",
+      "-servername",
+      hostname,
+      "-connect",
+      hostname + ":443",
+    ],
+    stdin=subprocess.PIPE,
+    stdout=subprocess.PIPE,
+    stderr=subprocess.PIPE,
+  )
   result = p.communicate()
 
   if p.returncode == 0:
     return result[0]
 
-  sys.stderr.write("Failed getting certificates for %s:\n%s\n" % (
-      hostname, result[1]))
+  sys.stderr.write(
+    "Failed getting certificates for %s:\n%s\n" % (hostname, result[1])
+  )
   return b""
 
 
@@ -75,14 +84,15 @@ def extract_certificates_from_pem(pem_bytes):
   certificates_der = []
 
   regex = re.compile(
-      rb'-----BEGIN (CERTIFICATE|PKCS7)-----(.*?)(-----END \1-----|$)',
-      re.DOTALL)
+    rb'-----BEGIN (CERTIFICATE|PKCS7)-----(.*?)(-----END \1-----|$)', re.DOTALL
+  )
 
   for match in regex.finditer(pem_bytes):
     if not match.group(3):
       sys.stderr.write(
-          "\nUnterminated %s block, input is corrupt or truncated\n" %
-          match.group(1))
+        "\nUnterminated %s block, input is corrupt or truncated\n"
+        % match.group(1)
+      )
       continue
     der = base64.b64decode(strip_all_whitespace(match.group(2)))
     if match.group(1) == b'CERTIFICATE':
@@ -95,7 +105,8 @@ def extract_certificates_from_pem(pem_bytes):
 
 def extract_certificates_from_der_pkcs7(der_bytes):
   pkcs7_certs_pem = process_data_with_command(
-      ['openssl','pkcs7','-print_certs', '-inform', 'DER'], der_bytes)
+    ['openssl', 'pkcs7', '-print_certs', '-inform', 'DER'], der_bytes
+  )
   # The output will be one or more PEM encoded certificates.
   # (Or CRLS, but those will be ignored.)
   if pkcs7_certs_pem:
@@ -153,6 +164,7 @@ class ByteReader:
   consumed, and will throw an exception if attempting to read past the end of
   the string.
   """
+
   def __init__(self, data):
     self.data = data
     self.pos = 0
@@ -163,16 +175,19 @@ class ByteReader:
     return i
 
   def consume_int16(self):
-    return ((self.consume_byte() << 8) + self.consume_byte())
+    return (self.consume_byte() << 8) + self.consume_byte()
 
   def consume_int24(self):
-    return ((self.consume_byte() << 16) + (self.consume_byte() << 8) +
-            self.consume_byte())
+    return (
+      (self.consume_byte() << 16)
+      + (self.consume_byte() << 8)
+      + self.consume_byte()
+    )
 
   def consume_bytes(self, n):
-    b = self.data[self.pos:self.pos+n]
+    b = self.data[self.pos : self.pos + n]
     if len(b) != n:
-      raise IndexError('requested:%d bytes  actual:%d bytes'%(n, len(b)))
+      raise IndexError('requested:%d bytes  actual:%d bytes' % (n, len(b)))
     self.pos += n
     return b
 
@@ -184,14 +199,16 @@ def decode_tls10_certificate_message(reader):
   message_length = reader.consume_int24()
   if reader.remaining_byte_count() != message_length:
     raise RuntimeError(
-        'message_length(%d) != remaining_byte_count(%d)\n' % (
-            message_length, reader.remaining_byte_count()))
+      'message_length(%d) != remaining_byte_count(%d)\n'
+      % (message_length, reader.remaining_byte_count())
+    )
 
   certificate_list_length = reader.consume_int24()
   if reader.remaining_byte_count() != certificate_list_length:
     raise RuntimeError(
-        'certificate_list_length(%d) != remaining_byte_count(%d)\n' % (
-            certificate_list_length, reader.remaining_byte_count()))
+      'certificate_list_length(%d) != remaining_byte_count(%d)\n'
+      % (certificate_list_length, reader.remaining_byte_count())
+    )
 
   certificates_der = []
   while reader.remaining_byte_count():
@@ -205,8 +222,9 @@ def decode_tls13_certificate_message(reader):
   message_length = reader.consume_int24()
   if reader.remaining_byte_count() != message_length:
     raise RuntimeError(
-        'message_length(%d) != remaining_byte_count(%d)\n' % (
-            message_length, reader.remaining_byte_count()))
+      'message_length(%d) != remaining_byte_count(%d)\n'
+      % (message_length, reader.remaining_byte_count())
+    )
 
   # Ignore certificate_request_context.
   certificate_request_context_length = reader.consume_byte()
@@ -215,8 +233,9 @@ def decode_tls13_certificate_message(reader):
   certificate_list_length = reader.consume_int24()
   if reader.remaining_byte_count() != certificate_list_length:
     raise RuntimeError(
-        'certificate_list_length(%d) != remaining_byte_count(%d)\n' % (
-            certificate_list_length, reader.remaining_byte_count()))
+      'certificate_list_length(%d) != remaining_byte_count(%d)\n'
+      % (certificate_list_length, reader.remaining_byte_count())
+    )
 
   certificates_der = []
   while reader.remaining_byte_count():
@@ -291,10 +310,12 @@ def extract_certificates(source_bytes):
 
 def process_data_with_command(command, data):
   try:
-    p = subprocess.Popen(command,
-                         stdin=subprocess.PIPE,
-                         stdout=subprocess.PIPE,
-                         stderr=subprocess.PIPE)
+    p = subprocess.Popen(
+      command,
+      stdin=subprocess.PIPE,
+      stdout=subprocess.PIPE,
+      stderr=subprocess.PIPE,
+    )
   except OSError as e:
     if e.errno == errno.ENOENT:
       sys.stderr.write("Failed to execute %s\n" % command[0])
@@ -312,13 +333,15 @@ def process_data_with_command(command, data):
 
 
 def openssl_text_pretty_printer(certificate_der, unused_certificate_number):
-  return process_data_with_command(["openssl", "x509", "-text", "-inform",
-                                   "DER", "-noout"], certificate_der)
+  return process_data_with_command(
+    ["openssl", "x509", "-text", "-inform", "DER", "-noout"], certificate_der
+  )
 
 
 def pem_pretty_printer(certificate_der, unused_certificate_number):
-  return process_data_with_command(["openssl", "x509", "-inform", "DER",
-                                   "-outform", "PEM"], certificate_der)
+  return process_data_with_command(
+    ["openssl", "x509", "-inform", "DER", "-outform", "PEM"], certificate_der
+  )
 
 
 def der2ascii_pretty_printer(certificate_der, unused_certificate_number):
@@ -344,9 +367,10 @@ def pretty_print_certificates(certificates_der, pretty_printers):
   # only allow a single certificate to be output.
   if pretty_printers == [der_printer]:
     if len(certificates_der) > 1:
-      sys.stderr.write("DER output only supports a single certificate, "
-                       "ignoring %d remaining certs\n" % (
-                           len(certificates_der) - 1))
+      sys.stderr.write(
+        "DER output only supports a single certificate, "
+        "ignoring %d remaining certs\n" % (len(certificates_der) - 1)
+      )
     return certificates_der[0]
 
   result = b""
@@ -363,11 +387,13 @@ def pretty_print_certificates(certificates_der, pretty_printers):
 
 def parse_outputs(outputs):
   pretty_printers = []
-  output_map = {"der2ascii": der2ascii_pretty_printer,
-                "openssl_text": openssl_text_pretty_printer,
-                "pem": pem_pretty_printer,
-                "header": header_pretty_printer,
-                "der": der_printer}
+  output_map = {
+    "der2ascii": der2ascii_pretty_printer,
+    "openssl_text": openssl_text_pretty_printer,
+    "pem": pem_pretty_printer,
+    "header": header_pretty_printer,
+    "der": der_printer,
+  }
   for output_name in outputs.split(','):
     if output_name not in output_map:
       sys.stderr.write("Invalid output type: %s\n" % output_name)
@@ -381,10 +407,14 @@ def parse_outputs(outputs):
 
 def main():
   parser = argparse.ArgumentParser(
-      description=__doc__, formatter_class=argparse.RawTextHelpFormatter)
+    description=__doc__, formatter_class=argparse.RawTextHelpFormatter
+  )
 
-  parser.add_argument('sources', metavar='SOURCE', nargs='*',
-                      help='''Each SOURCE can be one of:
+  parser.add_argument(
+    'sources',
+    metavar='SOURCE',
+    nargs='*',
+    help='''Each SOURCE can be one of:
   (1) A server name such as www.google.com.
   (2) A PEM [*] file containing one or more CERTIFICATE or PKCS7 blocks
   (3) A file containing one or more DER ASCII certificates
@@ -399,13 +429,16 @@ read from stdin.
 
 [*] Parsing of PEM files is relaxed - leading indentation
 whitespace will be stripped (needed for copy-pasting data
-from NetLogs).''')
+from NetLogs).''',
+  )
 
-  parser.add_argument('--output',
-                      dest='outputs',
-                      action='store',
-                      default="header,openssl_text,pem",
-                      help='output formats to use. Default: %(default)s')
+  parser.add_argument(
+    '--output',
+    dest='outputs',
+    action='store',
+    default="header,openssl_text,pem",
+    help='output formats to use. Default: %(default)s',
+  )
 
   args = parser.parse_args()
 
@@ -421,7 +454,8 @@ from NetLogs).''')
     certificates_der.extend(extract_certificates(source_bytes))
 
   sys.stdout.buffer.write(
-      pretty_print_certificates(certificates_der, pretty_printers))
+    pretty_print_certificates(certificates_der, pretty_printers)
+  )
 
 
 if __name__ == "__main__":

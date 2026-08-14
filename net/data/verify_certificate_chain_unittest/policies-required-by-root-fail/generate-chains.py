@@ -7,14 +7,16 @@ meaning an explicit policy should be required and the chain should fail to
 verify if the root constraints are enforced."""
 
 import sys
+
 sys.path += ['../..']
 
 import gencerts
 
 # Self-signed root certificate.
 root = gencerts.create_self_signed_root_certificate('Root')
-root.get_extensions().set_property('policyConstraints',
-                                   'critical,requireExplicitPolicy:2')
+root.get_extensions().set_property(
+  'policyConstraints', 'critical,requireExplicitPolicy:2'
+)
 
 # Intermediate certificate.
 intermediate = gencerts.create_intermediate_certificate('Intermediate', root)
