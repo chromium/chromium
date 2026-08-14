@@ -1555,31 +1555,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest,
 
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
-                       testGetContextFromTabFailDifferentlyBasedOnPermission) {
-  TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
-  // For unfocused unpinned tabs, getTabContext call fail with different error
-  // messages based on context sharing permission state.
-  const int tab_id =
-      GetTabId(browser()->tab_strip_model()->GetActiveWebContents());
-  RunTestSequence(AddInstrumentedTab(kSecondTab, page_url()));
-
-  ExecuteJsTest({.params = base::Value(base::DictValue().Set(
-                     "tabId", base::NumberToString(tab_id)))});
-
-  // Two different permission errors should have been reported.
-  EXPECT_THAT(
-      histogram_tester->GetAllSamplesForPrefix(
-          "Glic.Api.GetContextFromTab.Error"),
-      UnorderedElementsAre(
-          Pair("Glic.Api.GetContextFromTab.Error.Text",
-               BucketsAre(
-                   Bucket(GlicGetContextFromTabError::
-                              kPermissionDeniedContextPermissionNotEnabled,
-                          1),
-                   Bucket(GlicGetContextFromTabError::kPermissionDenied, 1)))));
-}
-
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
                        testGetContextFromTabFailsIfNotPinned) {
   TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
   TrackGlicInstanceWithId(GetGlicInstance()->id());
