@@ -597,7 +597,7 @@ export class TrackedElementManager {
       return;
     }
 
-    const bounds: RectF = visible ? this.getElementBounds_(element) :
+    const bounds: RectF = visible ? this.getElementBounds_(trackedElement) :
                                     {x: 0, y: 0, width: 0, height: 0};
 
     const update = {visible, bounds, element};
@@ -647,22 +647,19 @@ export class TrackedElementManager {
     });
   }
 
-  private getElementBounds_(element: HTMLElement): RectF {
+  private getElementBounds_(trackedElement: TrackedElementData): RectF {
     const rect: RectF = {x: 0, y: 0, width: 0, height: 0};
-    const bounds = element.getBoundingClientRect();
+    const bounds = trackedElement.element.getBoundingClientRect();
     rect.x = bounds.x;
     rect.y = bounds.y;
     rect.width = bounds.width;
     rect.height = bounds.height;
 
-    const trackedElement = this.getDataForElement_(element);
-    if (trackedElement) {
-      const padding = trackedElement.padding;
-      rect.x -= padding.left;
-      rect.y -= padding.top;
-      rect.width += padding.left + padding.right;
-      rect.height += padding.top + padding.bottom;
-    }
+    const padding = trackedElement.padding;
+    rect.x -= padding.left;
+    rect.y -= padding.top;
+    rect.width += padding.left + padding.right;
+    rect.height += padding.top + padding.bottom;
     return rect;
   }
 
