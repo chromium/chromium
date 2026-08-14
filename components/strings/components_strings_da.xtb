@@ -610,8 +610,10 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2045871135676061132">Konvolut Personlig</translation>
 <translation id="2048261947532620704">Oversætter siden</translation>
 <translation id="2055016614992422886">Samtale</translation>
+<translation id="2058468041496756763">Du kan til enhver tid ændre din søgemaskine i Chrome-indstillingerne. Hvis du ikke kan se din foretrukne søgemaskine, kan du foretage en søgning på dens website. Du kan se den angivet som en søgemaskine, du har besøgt for nylig, i Chrome-indstillingerne, og du kan angive den som din standardsøgemaskine.</translation>
 <translation id="2059166748188874810">Kommune</translation>
 <translation id="2059202684901022309">22 x 34 tommer</translation>
+<translation id="2063929825539050431">Hvis du hurtigt vil sende denne side til en anden enhed, skal du holde fingeren på adresselinjen</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 forslag}one{# forslag}other{# forslag}}</translation>
 <translation id="2066969741541525119">Det website, du er på vej til, er blokeret af din organisation</translation>
 <translation id="2071156619270205202">Dette kort er ikke kvalificeret til et virtuelt kortnummer</translation>
@@ -3720,6 +3722,7 @@ Yderligere oplysninger:
 <translation id="7379321689415048316">Chrome kan udfylde svære felter, som standardautofyld muligvis ikke kan</translation>
 <translation id="7380398842872229465">10 x 15 tommer</translation>
 <translation id="7381551826960739226">Automatisk udfyldning af betalingsmetoder er deaktiveret, fordi formularen ikke anvender en sikker forbindelse.</translation>
+<translation id="7382980704744807223">Mistænkelig</translation>
 <translation id="7388594495505979117">{0,plural, =1{Din enhed genstarter om 1 minut}one{Din enhed genstarter om # minut}other{Din enhed genstarter om # minutter}}</translation>
 <translation id="7393475648162498734">Se, hvilke bonusser og fordele der er tilgængelige for dine kort, når du betaler</translation>
 <translation id="7393971683644170444">Opretter forbindelse til din kortudbyder…</translation>
@@ -4191,6 +4194,7 @@ Yderligere oplysninger:
 <translation id="8175796834047840627">Chrome tilbyder at gemme dine kort på din Google-konto, fordi du er logget ind. Du kan ændre dette i indstillingerne.</translation>
 <translation id="8176440868214972690">Administratoren af denne enhed har sendt nogle oplysninger til følgende websites, f.eks. indstillinger eller politikker.</translation>
 <translation id="818254048113802060">{0,plural, =1{<ph name="FILE_NAME" /> blev blokeret på grund af indhold}one{<ph name="FILE_COUNT" /> fil blev blokeret på grund af indhold}other{<ph name="FILE_COUNT" /> filer blev blokeret på grund af indhold}}</translation>
+<translation id="8186171296341598122">Du kan til enhver tid ændre din søgemaskine i Chromium-indstillingerne. Hvis du ikke kan se din foretrukne søgemaskine, kan du foretage en søgning på dens website. Du kan se den angivet som en søgemaskine, du har besøgt for nylig, i Chromium-indstillingerne, og du kan angive den som din standardsøgemaskine.</translation>
 <translation id="8188830160449823068">IBAN er kun gemt på enheden</translation>
 <translation id="8189557652711717875">Den søgemaskine, du vælger, anvendes til funktioner som f.eks. søgning via adresselinjen og fra billeder på websider.</translation>
 <translation id="8190193880870196235">Administreres af en udvidelse</translation>

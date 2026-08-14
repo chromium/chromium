@@ -610,8 +610,10 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2045871135676061132">Sobre personal</translation>
 <translation id="2048261947532620704">Traduciendo página</translation>
 <translation id="2055016614992422886">Conversación</translation>
+<translation id="2058468041496756763">Puedes cambiar tu buscador cuando quieras en la configuración de Chrome. Si no ves tu buscador preferido, puedes hacer una búsqueda desde su sitio. Lo verás en la lista de buscadores visitados recientemente en la configuración de Chrome y podrás definirlo como predeterminado.</translation>
 <translation id="2059166748188874810">Municipio</translation>
 <translation id="2059202684901022309">22x34 pulgadas</translation>
+<translation id="2063929825539050431">Para enviar rápidamente esta página a otro dispositivo, mantén pulsada la barra de direcciones</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{Una sugerencia}other{# sugerencias}}</translation>
 <translation id="2066969741541525119">Tu organización ha bloqueado el sitio al que quieres acceder</translation>
 <translation id="2071156619270205202">Esta tarjeta no reúne los requisitos necesarios para un número de tarjeta virtual.</translation>
@@ -3720,6 +3722,7 @@ Más información:
 <translation id="7379321689415048316">Chrome puede autocompletar campos difíciles que la función Autocompletar estándar podría pasar por alto</translation>
 <translation id="7380398842872229465">10x15 pulgadas</translation>
 <translation id="7381551826960739226">La opción de autocompletado de los métodos de pago está inhabilitada porque este formulario no utiliza una conexión segura.</translation>
+<translation id="7382980704744807223">Sospechosa</translation>
 <translation id="7388594495505979117">{0,plural, =1{Tu dispositivo se reiniciará dentro de 1 minuto}other{Tu dispositivo se reiniciará dentro de # minutos}}</translation>
 <translation id="7393475648162498734">Muestra las recompensas y ventajas disponibles para tus tarjetas al tramitar una compra</translation>
 <translation id="7393971683644170444">Conectando con el proveedor de tu tarjeta...</translation>
@@ -4191,6 +4194,7 @@ Más información:
 <translation id="8175796834047840627">Chrome te ofrece guardar las tarjetas en tu cuenta de Google porque has iniciado sesión. Puedes cambiar esta opción en los ajustes.</translation>
 <translation id="8176440868214972690">El administrador de este dispositivo ha enviado algunos datos (como ajustes o políticas) a los siguientes sitios web.</translation>
 <translation id="818254048113802060">{0,plural, =1{<ph name="FILE_NAME" /> se ha bloqueado debido al contenido}other{<ph name="FILE_COUNT" /> archivos se han bloqueado debido al contenido}}</translation>
+<translation id="8186171296341598122">Puedes cambiar tu buscador cuando quieras en la configuración de Chromium. Si no ves tu buscador preferido, puedes hacer una búsqueda desde su sitio. Lo verás en la lista de buscadores visitados recientemente en la configuración de Chromium y podrás establecerlo como predeterminado.</translation>
 <translation id="8188830160449823068">IBAN guardado solo en el dispositivo</translation>
 <translation id="8189557652711717875">El buscador que elijas se usará para funciones como buscar desde la barra de direcciones y desde imágenes en páginas web.</translation>
 <translation id="8190193880870196235">Gestionado por una extensión</translation>

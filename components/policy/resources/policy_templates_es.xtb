@@ -4196,6 +4196,14 @@ Si una conexión no supera esta comprobación, se producirá el error ERR_SSL_KE
 <translation id="366494444808132420">Permitir integraciones de Gemini.</translation>
 <translation id="3665437376055221832">Pedirle al usuario que realice una acción solo si no hay ningún certificado que coincida con la selección automática.</translation>
 <translation id="3671773704245936868">Inhabilitar el resaltado del foco del teclado</translation>
+<translation id="367258298235646178">Permite a los administradores personalizar el aspecto de las marcas de agua aplicadas por las reglas de Prevención de la pérdida de datos (DLP). Esto incluye establecer la opacidad del relleno o del contorno, definir el tamaño de la fuente y configurar la zona horaria de la marca de tiempo.
+Si no se definen esta política o algunos valores, Chrome usará su comportamiento predeterminado para las marcas de agua.
+Los valores predeterminados en ordenadores son: opacidad del relleno 4, opacidad del contorno 6 y tamaño de la fuente 24. En iOS, los valores predeterminados son: opacidad del relleno 10, opacidad del contorno 15 y tamaño de la fuente 16. En todas las plataformas, la zona horaria de la marca de tiempo se define de forma predeterminada como "user_device" (zona horaria local del dispositivo del usuario).
+
+La opacidad del relleno es un porcentaje que va del 0 (totalmente transparente) al 100 (totalmente opaco).
+La opacidad del contorno es un porcentaje que va del 0 (totalmente transparente) al 100 (totalmente opaco).
+El tamaño de la fuente se especifica en puntos.
+La zona horaria de la marca de tiempo especifica el identificador de zona horaria de la IANA (por ejemplo, "America/Toronto") que se usa para dar formato a las marcas de tiempo en marcas de agua (disponibles a partir de Chrome 152), que sigue los nombres de la base de datos de zonas horarias de la IANA (https://www.iana.org/time-zones).</translation>
 <translation id="3674010627788940405">No admitir encabezados de solicitud CORS sin comodín.</translation>
 <translation id="3675248815331229366">Si se define esta política, podrás establecer una lista de patrones de URL que especifiquen qué sitios no pueden acceder a la geolocalización del usuario ni solicitarle permiso para hacerlo.
 
@@ -11185,11 +11193,6 @@ Si se inhabilita la política <ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" />, el 
 
       Si no se asigna ningún valor a esta política, no se aplicará la selección automática en ningún sitio web.</translation>
 <translation id="7937766917976512374">Permitir o denegar captura de vídeo</translation>
-<translation id="7937825205289116563">Si se habilita esta política o no se define, se permitirá que se usen firmas específicas para la aplicación nativa que se crea al instalar una aplicación web progresiva (PWA). De esta forma, cada aplicación instalada tiene una identidad única para los componentes del sistema de <ph name="MAC_OS_NAME" />.
-
-Si se inhabilita esta política, todas las aplicaciones nativas creadas al instalar aplicaciones web progresivas tendrán la misma identidad. Esto puede interferir con la funcionalidad de <ph name="MAC_OS_NAME" />.
-
-Por ello, esta política solo debe inhabilitarse si usas una solución de seguridad de endpoints que bloquee las aplicaciones con una firma específica.</translation>
 <translation id="7941528208359969119">Permitir que se hagan comprobaciones de <ph name="OCSP_CRL_LABEL" /> online</translation>
 <translation id="7941975817681987555">No predecir las acciones de red en ninguna conexión de red</translation>
 <translation id="794447754389837404">Bloquear el acceso a la red privada en la API Direct Sockets en estos sitios</translation>
@@ -11776,7 +11779,6 @@ Si no se le asigna ningún valor, el control con gestos faciales se inhabilitar�
 <translation id="8330437518362176921">Usar solo la URL de actualización proporcionada en la política al descargar y actualizar aplicaciones de kiosco de Chrome</translation>
 <translation id="8331479227794770304">Habilitar teclas persistentes</translation>
 <translation id="8332822245414537447">Inhabilitar la comprobación de uso de claves RSA</translation>
-<translation id="8333141477131859004">Permitir la función Autocompletar mejorada y mejorar los modelos de IA.</translation>
 <translation id="8334685561819743286">Inhabilitar la autocorrección en el teclado físico cuando los usuarios escriban</translation>
 <translation id="8336986243404088829">Esta política mitiga los ataques de memoria de procesos cruzados de canal lateral aislando el proceso de renderizado en el núcleo de la CPU e impidiendo que otros procesos compartan el mismo núcleo. La mitigación es compatible con <ph name="MS_WIN_NAME" /> 11 24H2 y versiones posteriores. Si el SO no admite la programación necesaria, esta política no tendrá ningún efecto. Esta política puede ralentizar el rendimiento en algunas situaciones exigentes, de forma similar a inhabilitar Hyper-Threading. Para obtener más información, consulta https://learn.microsoft.com/es-es/windows/win32/api/winnt/ns-winnt-process_mitigation_side_channel_isolation_policy.
       Si se habilita esta política, no se programará ningún otro proceso en el mismo núcleo de CPU cuando se esté ejecutando el proceso de renderizado.
@@ -12871,17 +12873,6 @@ Si no se define esta política, <ph name="PRODUCT_NAME" /> recogerá y subirá e
 <translation id="9053841574218808519">Ejecutar siempre los complementos que no estén obsoletos</translation>
 <translation id="9055866143096316150">Disminuir el nivel de las solicitudes de wake lock de pantalla a solicitudes de wake lock del sistema</translation>
 <translation id="9057159618445405645">Usar el comportamiento predeterminado del navegador Chrome</translation>
-<translation id="9061455386353325110">Especifica si los usuarios pueden permitir que <ph name="PRODUCT_NAME" /> use IA generativa para entender mejor los formularios y ayudarlos a rellenar más campos.
-
-Si se asigna el valor 0, permite que se use la función y que Google utilice datos relevantes para mejorar sus modelos de IA. Según la función, los datos pertinentes pueden ser peticiones, entradas, resultados, materiales de origen y comentarios escritos. 0 es el valor predeterminado, excepto en los casos indicados abajo.
-
-Si se asigna el valor 1, permite que se use la función, pero no permite que Google mejore los modelos con el contenido de los usuarios (incluyendo peticiones, entradas, resultados, materiales de origen y comentarios escritos). 1 es el valor predeterminado de los usuarios de empresa que se gestionan en <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> y de las cuentas de centro educativo que se gestionan en <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
-
-Si se asigna el valor 2, no se permite la función.
-
-Si no se define esta política, su comportamiento lo determinará la política <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
-
-Para obtener más información sobre el tratamiento de datos en las funciones de IA generativa, consulta https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="9061609750723054419">Controlar la visibilidad del aviso de gestión en la página Nueva pestaña de los navegadores gestionados</translation>
 <translation id="9063485115966829754">El visor de PDFs usa la arquitectura GuestView.</translation>
 <translation id="9064546884927958824">Si se establece la política, podrás definir una lista de patrones de URL donde se especifique qué sitios podrían mostrar imágenes.

@@ -4184,6 +4184,14 @@ Si le résultat de la vérification n'est pas concluant pour une connexion, l'er
 <translation id="366494444808132420">Autoriser les intégrations de Gemini.</translation>
 <translation id="3665437376055221832">N'inviter l'utilisateur que si la règle de sélection automatique n'établit de correspondance avec aucun certificat.</translation>
 <translation id="3671773704245936868">Désactiver la mise en surbrillance des éléments sélectionnés au clavier</translation>
+<translation id="367258298235646178">Permet aux administrateurs de personnaliser l'apparence des filigranes appliqués par les règles de Protection contre la perte de données. Cela inclut la définition de l'opacité du remplissage/du contour, de la taille de la police et du code temporel du fuseau horaire.
+Si cette règle ou certaines valeurs ne sont pas définies, Chrome utilisera son comportement par défaut pour les filigranes.
+Les valeurs par défaut sur ordinateur sont les suivantes : opacité du remplissage à 4, opacité du contour à 6 et taille de police à 24. Sur iOS, les valeurs par défaut sont les suivantes : opacité du remplissage à 10, opacité du contour à 15 et taille de police à 16. Sur toutes les plates-formes, le code temporel du fuseau horaire est défini par défaut sur "user_device" (fuseau horaire local de l'appareil de l'utilisateur).
+
+L'opacité du remplissage est un pourcentage compris entre 0 (totalement transparent) et 100 (totalement opaque).
+L'opacité du contour est un pourcentage compris entre 0 (totalement transparent) et 100 (totalement opaque).
+La taille de police est indiquée en points.
+Le champ "Code temporel du fuseau horaire" spécifie l'identifiant de fuseau horaire IANA (par exemple, "America/Toronto") utilisé pour formater les codes temporels du filigrane (pris en charge à partir de Chrome 152), qui utilise les noms de la base de données des fuseaux horaires IANA (https://www.iana.org/time-zones).</translation>
 <translation id="3674010627788940405">Ne prend pas en charge les en-têtes de requêtes CORS sans caractères génériques.</translation>
 <translation id="3675248815331229366">Définir cette règle vous permet de définir une liste de formats d'URL indiquant les sites non autorisés à accéder à la géolocalisation de l'utilisateur et qui ne peuvent pas demander l'autorisation de le faire à l'utilisateur.
 
@@ -11132,11 +11140,6 @@ Si la règle <ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" /> est désactivée, ell
 
       Si cette règle n'est pas configurée, aucune sélection automatique n'est effectuée pour aucun site.</translation>
 <translation id="7937766917976512374">Autoriser ou interdire la capture vidéo</translation>
-<translation id="7937825205289116563">Si cette règle est activée ou qu'elle n'est pas configurée, les signatures ponctuelles sont autorisées pour l'appli native créée lors de l'installation d'une progressive web app (PWA). Cela garantit que chaque appli installée a une identité unique pour les composants système <ph name="MAC_OS_NAME" />.
-
-Si cette règle est désactivée, toutes les applis natives créées lors de l'installation de PWA auront la même identité. Cela peut interférer avec la fonctionnalité <ph name="MAC_OS_NAME" />.
-
-Désactivez cette règle uniquement si vous utilisez une solution de sécurité des points de terminaison qui bloque les applis avec une signature ponctuelle.</translation>
 <translation id="7941528208359969119">Autoriser l'exécution de vérifications <ph name="OCSP_CRL_LABEL" /> en ligne</translation>
 <translation id="7941975817681987555">Ne pas prédire d'actions réseau lors d'une connexion au réseau</translation>
 <translation id="794447754389837404">Bloquer l'accès au réseau privé dans l'API Direct Sockets sur ces sites</translation>
@@ -11716,7 +11719,6 @@ Si cette règle n'est pas configurée, la commande par le visage est désactivé
 <translation id="8330437518362176921">N'utiliser que l'URL de mise à jour fournie par la règle pour télécharger et mettre à jour les applis Chrome Kiosk</translation>
 <translation id="8331479227794770304">Activer les touches rémanentes</translation>
 <translation id="8332822245414537447">Désactiver la vérification de l'utilisation des clés RSA</translation>
-<translation id="8333141477131859004">Autoriser la saisie automatique améliorée et améliorer les modèles d'IA.</translation>
 <translation id="8334685561819743286">Désactiver la correction automatique lors de la saisie au clavier physique</translation>
 <translation id="8336986243404088829">Cette règle atténue les attaques de mémoire en traitement croisé par canal auxiliaire en isolant le processus de rendu sur le cœur de processeur et en empêchant d'autres processus de partager le même cœur. L'atténuation est compatible avec <ph name="MS_WIN_NAME" /> 11 24H2 et versions ultérieures. Si l'OS ne dispose pas de la prise en charge de la planification requise, cette règle n'aura aucun effet. Cette règle peut ralentir les performances dans certains scénarios exigeants analogues à la désactivation de l'hyperthreading. Pour en savoir plus, consultez https://learn.microsoft.com/fr-fr/windows/win32/api/winnt/ns-winnt-process_mitigation_side_channel_isolation_policy
       Si cette règle est activée, aucun autre processus ne sera planifié sur le même cœur de processeur lorsque le processus de rendu est en cours d'exécution.
@@ -12803,17 +12805,6 @@ Si cette règle n'est pas configurée, <ph name="PRODUCT_NAME" /> peut, par déf
 <translation id="9053841574218808519">Toujours exécuter les plug-ins non obsolètes</translation>
 <translation id="9055866143096316150">Rétrograder les demandes de wakelocks forçant l'activation de l'écran en demandes de wakelocks système</translation>
 <translation id="9057159618445405645">Utiliser le comportement par défaut du navigateur Chrome</translation>
-<translation id="9061455386353325110">Indique si les utilisateurs peuvent autoriser <ph name="PRODUCT_NAME" /> à utiliser l'IA générative pour mieux comprendre les formulaires et les aider à remplir plus de champs.
-
-0 = Permettre d'utiliser la fonctionnalité tout en autorisant Google à utiliser des données pertinentes pour améliorer ses modèles d'IA. Selon la fonctionnalité, les données pertinentes peuvent inclure des prompts, des entrées, des sorties, des documents source et des commentaires écrits. 0 est la valeur par défaut, sauf pour les exceptions ci-dessous.
-
-1 = Permettre d'utiliser la fonctionnalité, mais ne pas autoriser Google à améliorer ses modèles à l'aide du contenu des utilisateurs (y compris les prompts, les entrées, les sorties, les documents source et les commentaires écrits). 1 est la valeur par défaut pour les utilisateurs de la version Enterprise gérés par <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> et pour les comptes Education gérés par <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
-
-2 = Ne pas autoriser la fonctionnalité.
-
-Si la règle n'est pas configurée, son comportement est déterminé par la règle <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
-
-Pour en savoir plus sur la gestion des données pour les fonctionnalités d'IA générative, veuillez consulter https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="9061609750723054419">Contrôler la visibilité de l'avis de gestion sur la page "Nouvel onglet" des navigateurs gérés</translation>
 <translation id="9063485115966829754">La visionneuse de PDF utilise l'architecture GuestView.</translation>
 <translation id="9064546884927958824">Permet de dresser la liste des formats d'URL pour lesquels les sites peuvent afficher des images.

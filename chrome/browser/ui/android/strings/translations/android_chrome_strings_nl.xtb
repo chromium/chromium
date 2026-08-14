@@ -532,6 +532,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="3161699713309727585"><ph name="BUTTON_TEXT" />, wordt geopend in een nieuw tabblad</translation>
 <translation id="3166827708714933426">Sneltoetsen voor tabbladen en vensters</translation>
 <translation id="3167258285411721858">Je kunt de mobiele site opvragen voor <ph name="HOST_NAME" /></translation>
+<translation id="3177338796769255211">Log in om onder andere je bookmarks op al je apparaten te gebruiken</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, meervoudig geselecteerd vastgezet incognitotabblad met geluid uit</translation>
 <translation id="3189635831478931757">Tabbladgroep <ph name="GROUP_TITLE" /></translation>
 <translation id="3200536777393523575">Je huidige venster sluiten?</translation>
@@ -928,6 +929,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
 <translation id="4807098396393229769">Naam op kaart</translation>
 <translation id="480990236307250886">Open de homepage</translation>
+<translation id="4816492930507672669">Aanpassen aan pagina</translation>
 <translation id="4822710610088666676">Tabbladgroep <ph name="TAB_GROUP_TITLE" /> gesloten en opgeslagen</translation>
 <translation id="4834250788637067901">Betaalmethoden, aanbiedingen en adressen via Google Pay</translation>
 <translation id="4835385943915508971">Chrome heeft geen toegang tot de gevraagde bron.</translation>
@@ -1314,7 +1316,6 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="6411219469806822692">Kan niet verder omhoog gaan. Probeer hoger op de pagina te beginnen.</translation>
 <translation id="6412215853589222273"><ph name="TAB_TITLE" />, tabblad met meerdere selecties</translation>
 <translation id="641643625718530986">Afdrukken…</translation>
-<translation id="6427723330233512782">Aanpassen aan hoogte</translation>
 <translation id="6433501201775827830">Je zoekmachine kiezen</translation>
 <translation id="6434309073475700221">Verwijderen</translation>
 <translation id="6435307030888827407">Uitgelogd blijven</translation>

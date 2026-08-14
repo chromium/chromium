@@ -4354,6 +4354,14 @@ menyertakan keduanya di sertifikat RSA yang ditujukan untuk HTTPS.</translation>
 <translation id="366494444808132420">Izinkan integrasi Gemini.</translation>
 <translation id="3665437376055221832">Hanya minta pengguna saat tidak ada sertifikat yang cocok dengan pemilihan otomatis.</translation>
 <translation id="3671773704245936868">Nonaktifkan penyorotan fokus keyboard</translation>
+<translation id="367258298235646178">Mengizinkan administrator menyesuaikan tampilan watermark yang diterapkan oleh aturan Pencegahan Kebocoran Data (DLP). Penyesuaian ini mencakup setelan opasitas isian/garis tepi, penentuan ukuran font, serta setelan zona waktu untuk stempel waktu.
+Jika kebijakan ini atau beberapa nilainya tidak disetel, Chrome akan menggunakan perilaku watermark default.
+Nilai defaultnya di desktop adalah: opasitas isian 4, opasitas garis tepi 6, dan ukuran font 24. Di iOS, nilai defaultnya adalah: opasitas isian 10, opasitas garis tepi 15, dan ukuran font 16. Di semua platform, zona waktu stempel waktu secara default adalah 'user_device' (zona waktu perangkat lokal pengguna).
+
+'Opasitas Isian' adalah persentase dari 0 (sepenuhnya transparan) hingga 100 (sepenuhnya buram).
+'Opasitas Garis Tepi' adalah persentase dari 0 (sepenuhnya transparan) hingga 100 (sepenuhnya buram).
+'Ukuran Font' ditentukan dalam satuan poin.
+'Zona Waktu Stempel Waktu' menentukan ID zona waktu IANA (mis., 'America/Toronto') yang digunakan untuk memformat stempel waktu watermark (didukung mulai Chrome 152 ke atas), yang mengacu pada nama-nama di Database Zona Waktu IANA ( https://www.iana.org/time-zones ).</translation>
 <translation id="3674010627788940405">Jangan dukung header permintaan non-karakter pengganti CORS.</translation>
 <translation id="3675248815331229366">Jika kebijakan ini disetel, Anda dapat menetapkan daftar pola URL yang menentukan situs yang tidak diizinkan untuk mengakses geolokasi pengguna, dan juga tidak diizinkan untuk meminta izin pengguna untuk melakukannya.
 
@@ -11597,11 +11605,6 @@ Jika kebijakan <ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" /> disetel ke Nonaktif
 
       Jika kebijakan tidak disetel, tidak akan ada pemilihan otomatis untuk situs apa pun.</translation>
 <translation id="7937766917976512374">Izinkan atau tolak penangkapan video</translation>
-<translation id="7937825205289116563">Jika kebijakan ini disetel ke Aktif atau tidak disetel, penggunaan tanda tangan ad-hoc akan diaktifkan untuk aplikasi native yang dibuat saat menginstal Progressive Web Application (PWA). Hal ini memastikan bahwa setiap aplikasi yang diinstal memiliki identitas unik untuk komponen sistem <ph name="MAC_OS_NAME" />.
-
-Jika kebijakan ini disetel ke Nonaktif, setiap aplikasi native yang dibuat saat menginstal Progressive Web Application akan memiliki identitas yang sama. Hal ini dapat mengganggu fungsi <ph name="MAC_OS_NAME" />.
-
-Nonaktifkan kebijakan ini hanya jika Anda menggunakan solusi keamanan endpoint yang memblokir aplikasi dengan tanda tangan ad-hoc.</translation>
 <translation id="7941528208359969119">Izinkan pelaksanaan pemeriksaan <ph name="OCSP_CRL_LABEL" /> online</translation>
 <translation id="7941975817681987555">Jangan memprediksi tindakan jaringan di koneksi jaringan apa pun</translation>
 <translation id="794447754389837404">Memblokir akses jaringan pribadi di Direct Sockets API di situs ini</translation>
@@ -12201,7 +12204,6 @@ Jika kebijakan ini tidak disetel, fitur kontrol dengan wajah mula-mula akan dino
 <translation id="8330437518362176921">Hanya menggunakan URL update yang disediakan oleh kebijakan saat mendownload dan mengupdate aplikasi Kiosk Chrome</translation>
 <translation id="8331479227794770304">Aktifkan tombol lengket</translation>
 <translation id="8332822245414537447">Nonaktifkan pemeriksaan penggunaan kunci RSA</translation>
-<translation id="8333141477131859004">Izinkan isi otomatis yang ditingkatkan dan tingkatkan kualitas model AI.</translation>
 <translation id="8334685561819743286">Nonaktifkan koreksi otomatis keyboard fisik saat pengguna mengetik</translation>
 <translation id="8336986243404088829">Kebijakan ini mengurangi serangan side channel lintas proses pada memori dengan mengisolasi proses perender di core CPU dan mencegah proses lain berbagi core yang sama. Mitigasi ini didukung di versi <ph name="MS_WIN_NAME" /> 11 24H2 dan yang lebih baru. Jika OS tidak memiliki dukungan penjadwalan yang diperlukan, kebijakan ini tidak akan berpengaruh. Kebijakan ini mungkin memperlambat performa dalam beberapa skenario yang berat, mirip seperti saat menonaktifkan hyperthreading. Untuk mengetahui informasi selengkapnya, lihat https://learn.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-process_mitigation_side_channel_isolation_policy
       Jika kebijakan ini disetel ke aktif, semua proses lain tidak akan dijadwalkan pada core CPU yang sama saat proses perender berjalan.
@@ -13344,17 +13346,6 @@ Jika kebijakan tidak disetel, <ph name="PRODUCT_NAME" /> akan mengumpulkan dan m
 <translation id="9053841574218808519">Selalu jalankan plugin yang masih berlaku</translation>
 <translation id="9055866143096316150">Demosikan permintaan penguncian layar saat aktif ke permintaan penguncian layar saat aktif di sistem</translation>
 <translation id="9057159618445405645">Gunakan perilaku browser Chrome default</translation>
-<translation id="9061455386353325110">Menentukan apakah pengguna dapat mengizinkan <ph name="PRODUCT_NAME" /> menggunakan AI Generatif untuk memahami formulir dengan lebih baik dan membantunya mengisi lebih banyak kolom.
-
-Nilai 0 = Mengizinkan penggunaan fitur ini, sekaligus mengizinkan Google menggunakan data yang relevan untuk meningkatkan kualitas model AI-nya. Data yang relevan mungkin mencakup perintah, input, output, materi referensi, dan masukan tertulis, bergantung pada fiturnya. Nilai 0 adalah nilai default, kecuali jika dinyatakan lain di bawah.
-
-Nilai 1 = Mengizinkan penggunaan fitur ini, tetapi tidak mengizinkan Google meningkatkan kualitas model menggunakan konten pengguna (termasuk perintah, input, output, materi referensi, dan masukan tertulis). Nilai 1 adalah nilai default untuk pengguna Enterprise yang dikelola oleh <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> dan untuk akun Education yang dikelola oleh <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
-
-Nilai 2 = Tidak mengizinkan penggunaan fitur ini.
-
-Jika kebijakan ini tidak disetel, perilakunya akan ditentukan oleh kebijakan <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
-
-Untuk mengetahui informasi selengkapnya tentang penanganan data untuk fitur AI generatif, lihat https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="9061609750723054419">Mengontrol visibilitas notifikasi pengelolaan di Halaman Tab Baru untuk browser terkelola</translation>
 <translation id="9063485115966829754">Penampil PDF menggunakan arsitektur GuestView.</translation>
 <translation id="9064546884927958824">Jika kebijakan ini disetel, Anda akan dapat menetapkan daftar pola URL yang menentukan situs yang dapat menampilkan gambar.

@@ -532,6 +532,7 @@
 <translation id="3161699713309727585"><ph name="BUTTON_TEXT" />, ಹೊಸ ಟ್ಯಾಬ್‌ನಲ್ಲಿ ತೆರೆಯುತ್ತದೆ</translation>
 <translation id="3166827708714933426">ಟ್ಯಾಬ್ ಮತ್ತು ವಿಂಡೋ ಶಾರ್ಟ್‌ಕಟ್‌ಗಳು</translation>
 <translation id="3167258285411721858">ನೀವು <ph name="HOST_NAME" /> ಗಾಗಿ ಮೊಬೈಲ್ ಸೈಟ್ ಅನ್ನು ವಿನಂತಿಸಬಹುದು</translation>
+<translation id="3177338796769255211">ನಿಮ್ಮ ಎಲ್ಲಾ ಸಾಧನಗಳಲ್ಲಿ ನಿಮ್ಮ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು ಮತ್ತು ಇತ್ಯಾದಿಗಳನ್ನು ಪಡೆಯಲು ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, ಬಹು ಆಯ್ಕೆಮಾಡಿದ ಪಿನ್ ಮಾಡಲಾದ ಮ್ಯೂಟ್ ಆಗಿರುವ ಅಜ್ಞಾತ ಟ್ಯಾಬ್</translation>
 <translation id="3189635831478931757"><ph name="GROUP_TITLE" /> ಟ್ಯಾಬ್ ಗುಂಪು</translation>
 <translation id="3200536777393523575">ನಿಮ್ಮ ಪ್ರಸ್ತುತ ವಿಂಡೋವನ್ನು ಮುಚ್ಚಬೇಕೆ?</translation>
@@ -927,6 +928,7 @@
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
 <translation id="4807098396393229769">ಕಾರ್ಡ್‌ನಲ್ಲಿರುವ ಹೆಸರು</translation>
 <translation id="480990236307250886">ಹೋಮ್ ತೆರೆಯಿರಿ</translation>
+<translation id="4816492930507672669">ಪುಟಕ್ಕೆ ಹೊಂದಿಸು</translation>
 <translation id="4822710610088666676"><ph name="TAB_GROUP_TITLE" /> ಟ್ಯಾಬ್ ಗುಂಪನ್ನು ಮುಚ್ಚಲಾಗಿದೆ ಮತ್ತು ಸೇವ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="4834250788637067901">Google Pay ಅನ್ನು ಬಳಸುತ್ತಿರುವ ಪಾವತಿ ವಿಧಾನಗಳು, ಆಫರ್‌ಗಳು ಮತ್ತು ವಿಳಾಸಗಳು</translation>
 <translation id="4835385943915508971">ವಿನಂತಿಸಿದ ಸಂಪನ್ಮೂಲದಲ್ಲಿ Chrome ಪ್ರವೇಶವನ್ನು ಹೊಂದಿಲ್ಲ.</translation>
@@ -1313,7 +1315,6 @@
 <translation id="6411219469806822692">ಮೇಲಕ್ಕೆ ಹೋಗಲು ಸಾಧ್ಯವಿಲ್ಲ. ಪುಟದ ಇನ್ನು ಮೇಲಿನಿಂದ ಪ್ರಾರಂಭಿಸಲು ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="6412215853589222273"><ph name="TAB_TITLE" />, ಬಹು ಆಯ್ಕೆ ಮಾಡಿದ ಟ್ಯಾಬ್</translation>
 <translation id="641643625718530986">ಮುದ್ರಿಸು...</translation>
-<translation id="6427723330233512782">ಎತ್ತರಕ್ಕೆ ತಕ್ಕಂತೆ ಹೊಂದಿಸಿ</translation>
 <translation id="6433501201775827830">ನಿಮ್ಮ ಹುಡುಕಾಟದ ಇಂಜಿನ್ ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="6434309073475700221">ತಿರಸ್ಕರಿಸಿ</translation>
 <translation id="6435307030888827407">ಸೈನ್ ಔಟ್ ಆಗಿಯೇ ಇರಿ</translation>

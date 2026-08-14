@@ -532,6 +532,7 @@
 <translation id="3161699713309727585"><ph name="BUTTON_TEXT" />, адкрыецца ў новай укладцы</translation>
 <translation id="3166827708714933426">Спалучэнні клавіш для працы з укладкамі і вокнамі</translation>
 <translation id="3167258285411721858">Вы можаце запытаць мабільную версію сайта <ph name="HOST_NAME" /></translation>
+<translation id="3177338796769255211">Увайдзіце, каб атрымаць доступ да закладак і іншых даных на ўсіх сваіх прыладах</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, замацаваная ўкладка ў рэжыме інкогніта з выключаным гукам, выбраная разам з іншымі ўкладкамі</translation>
 <translation id="3189635831478931757">Група ўкладак "<ph name="GROUP_TITLE" />"</translation>
 <translation id="3200536777393523575">Закрыць гэта акно?</translation>
@@ -928,6 +929,7 @@
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
 <translation id="4807098396393229769">Імя на картцы</translation>
 <translation id="480990236307250886">Адкрыць галоўную старонку</translation>
+<translation id="4816492930507672669">Дапасаваць да памераў старонкі</translation>
 <translation id="4822710610088666676">Група ўкладак "<ph name="TAB_GROUP_TITLE" />" закрыта і захавана</translation>
 <translation id="4834250788637067901">Спосабы аплаты, прапановы і адрасы, якія выкарыстоўваюць Google Pay</translation>
 <translation id="4835385943915508971">Chrome не мае доступу да запытанай крыніцы.</translation>
@@ -1314,7 +1316,6 @@
 <translation id="6411219469806822692">Не ўдаецца перамясціцца вышэй. Паспрабуйце пачаць з месца, якое б знаходзілася вышэй на старонцы.</translation>
 <translation id="6412215853589222273"><ph name="TAB_TITLE" />, выбраная ўкладка</translation>
 <translation id="641643625718530986">Друк…</translation>
-<translation id="6427723330233512782">Дапасаваць да вышыні экрана</translation>
 <translation id="6433501201775827830">Выберыце пошукавую сістэму</translation>
 <translation id="6434309073475700221">Адхіліць</translation>
 <translation id="6435307030888827407">Не ўваходзіць</translation>

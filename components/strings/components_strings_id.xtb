@@ -611,8 +611,10 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="2045871135676061132">Envelope Personal</translation>
 <translation id="2048261947532620704">Menerjemahkan halaman</translation>
 <translation id="2055016614992422886">Percakapan</translation>
+<translation id="2058468041496756763">Anda dapat mengubah mesin telusur kapan saja di setelan Chrome. Jika mesin telusur pilihan Anda tidak ada, Anda dapat melakukan penelusuran langsung dari situs mesin telusur tersebut. Anda akan melihatnya tercantum sebagai mesin telusur yang baru-baru ini dibuka di setelan Chrome, dan Anda dapat menjadikannya sebagai default.</translation>
 <translation id="2059166748188874810">Kotamadya</translation>
 <translation id="2059202684901022309">22 x 34 inci (55 x 86 cm)</translation>
+<translation id="2063929825539050431">Untuk mengirim halaman ini dengan cepat ke perangkat lain, sentuh lama kolom URL</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 saran}other{# saran}}</translation>
 <translation id="2066969741541525119">Situs yang akan dibuka diblokir oleh organisasi Anda</translation>
 <translation id="2071156619270205202">Kartu ini tidak memenuhi syarat untuk nomor kartu virtual.</translation>
@@ -3718,6 +3720,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="7379321689415048316">Chrome dapat mengisi otomatis kolom sulit yang mungkin dilewati fitur isi otomatis standar</translation>
 <translation id="7380398842872229465">10 x 15 inci (25 x 38 cm)</translation>
 <translation id="7381551826960739226">Pengisian otomatis metode pembayaran dinonaktifkan karena formulir ini tidak menggunakan koneksi yang aman.</translation>
+<translation id="7382980704744807223">Mencurigakan</translation>
 <translation id="7388594495505979117">{0,plural, =1{Perangkat Anda akan dimulai ulang dalam 1 menit}other{Perangkat Anda akan dimulai ulang dalam # menit}}</translation>
 <translation id="7393475648162498734">Tampilkan reward dan manfaat yang tersedia untuk kartu Anda saat checkout</translation>
 <translation id="7393971683644170444">Menghubungkan ke penyedia kartu Anda...</translation>
@@ -4189,6 +4192,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="8175796834047840627">Chrome menawarkan untuk menyimpan informasi kartu ke Akun Google Anda karena Anda sedang login. Anda dapat mengubah perilaku ini di setelan.</translation>
 <translation id="8176440868214972690">Administrator perangkat ini telah mengirim beberapa info ke situs berikut, seperti setelan atau kebijakan.</translation>
 <translation id="818254048113802060">{0,plural, =1{<ph name="FILE_NAME" /> diblokir karena konten}other{<ph name="FILE_COUNT" /> file diblokir karena konten}}</translation>
+<translation id="8186171296341598122">Anda dapat mengubah mesin telusur kapan saja di setelan Chromium. Jika mesin telusur pilihan Anda tidak ada, Anda dapat melakukan penelusuran langsung dari situs mesin telusur tersebut. Anda akan melihatnya tercantum sebagai mesin telusur yang baru-baru ini dibuka di setelan Chromium, dan Anda dapat menjadikannya sebagai default.</translation>
 <translation id="8188830160449823068">IBAN disimpan ke perangkat saja</translation>
 <translation id="8189557652711717875">Mesin telusur yang Anda pilih akan digunakan untuk fitur seperti menelusuri dari kolom URL dan dari gambar di halaman web.</translation>
 <translation id="8190193880870196235">Dikelola oleh ekstensi</translation>

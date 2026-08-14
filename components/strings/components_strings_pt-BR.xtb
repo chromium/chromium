@@ -149,6 +149,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1243027604378859286">Autor:</translation>
 <translation id="1246424317317450637">Negrito</translation>
 <translation id="1247030632403369975">Alumínio</translation>
+<translation id="1249643768796040660">Remover essa informação</translation>
 <translation id="1253846494229886276">Salvando captura de tela</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (sincronizados)</translation>
 <translation id="1255931290436977164">Passaporte</translation>
@@ -1635,7 +1636,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="3795624560191557077">Você mudou recentemente uma senha encontrada em uma violação de dados pública. Em caso de problemas, o Gerenciador de senhas do Google pode ajudar você a fazer login.</translation>
 <translation id="3798449238516105146">Versão</translation>
 <translation id="3799805948399000906">Fonte solicitada</translation>
-<translation id="3800436529451849929">A partir de <ph name="SITE" /></translation>
+<translation id="3800436529451849929">De <ph name="SITE" /></translation>
 <translation id="3801297763951514916">Você visita com frequência</translation>
 <translation id="380329542618494757">Nome</translation>
 <translation id="3803481123869276674">Mostrar a carteira digital como opção para pagamento ao fazer compras no Chrome</translation>
@@ -3722,6 +3723,7 @@ Mais detalhes:
 <translation id="7379321689415048316">O Chrome poderá preencher campos difíceis que o preenchimento automático padrão não conseguir completar</translation>
 <translation id="7380398842872229465">10 x 15 pol.</translation>
 <translation id="7381551826960739226">O preenchimento automático das formas de pagamento está desativado porque este formulário não usa uma conexão segura.</translation>
+<translation id="7382980704744807223">Suspeito</translation>
 <translation id="7388594495505979117">{0,plural, =1{Seu dispositivo será reiniciado em 1 minuto}one{Seu dispositivo será reiniciado em # minuto}other{Seu dispositivo será reiniciado em # minutos}}</translation>
 <translation id="7393475648162498734">Mostrar recompensas e benefícios disponíveis para seus cartões na finalização da compra</translation>
 <translation id="7393971683644170444">Conectando ao emissor do seu cartão…</translation>

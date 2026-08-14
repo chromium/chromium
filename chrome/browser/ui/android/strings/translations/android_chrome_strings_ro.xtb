@@ -532,6 +532,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="3161699713309727585"><ph name="BUTTON_TEXT" />, se deschide într-o filă nouă</translation>
 <translation id="3166827708714933426">Comenzi rapide pentru file și ferestre</translation>
 <translation id="3167258285411721858">Poți solicita site-ul mobil pentru <ph name="HOST_NAME" /></translation>
+<translation id="3177338796769255211">Conectează-te pentru a-ți accesa marcajele și altele pe toate dispozitivele</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, filă incognito fixată cu sunetul dezactivat și selectare multiplă</translation>
 <translation id="3189635831478931757">Grupul de file <ph name="GROUP_TITLE" /></translation>
 <translation id="3200536777393523575">Închizi fereastra actuală?</translation>
@@ -928,6 +929,7 @@ Contul Google poate să ofere alte forme ale istoricului de navigare, cum ar fi 
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
 <translation id="4807098396393229769">Numele de pe card</translation>
 <translation id="480990236307250886">Deschide pagina de pornire</translation>
+<translation id="4816492930507672669">Încadrați în pagină</translation>
 <translation id="4822710610088666676">Grupul de file <ph name="TAB_GROUP_TITLE" /> a fost închis și salvat</translation>
 <translation id="4834250788637067901">Metode de plată, oferte și adrese care folosesc Google Pay</translation>
 <translation id="4835385943915508971">Chrome nu are acces la resursa solicitată.</translation>
@@ -1314,7 +1316,6 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="6411219469806822692">Nu se poate selecta mai sus. Începe selecția în pagină de mai sus.</translation>
 <translation id="6412215853589222273"><ph name="TAB_TITLE" />, filă cu selectare multiplă</translation>
 <translation id="641643625718530986">Printați...</translation>
-<translation id="6427723330233512782">Încadrează pe înălțime</translation>
 <translation id="6433501201775827830">Alege motorul de căutare</translation>
 <translation id="6434309073475700221">Renunță</translation>
 <translation id="6435307030888827407">Rămâi deconectat(ă)</translation>

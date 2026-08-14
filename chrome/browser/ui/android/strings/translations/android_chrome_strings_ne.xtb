@@ -532,6 +532,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="3161699713309727585"><ph name="BUTTON_TEXT" />, नयाँ ट्याबमा खुल्छ</translation>
 <translation id="3166827708714933426">ट्याब र विन्डोका सर्टकटहरू</translation>
 <translation id="3167258285411721858">तपाईं <ph name="HOST_NAME" /> को मोबाइल साइटको लिंक माग्न सक्नुहुन्छ</translation>
+<translation id="3177338796769255211">आफ्ना सबै डिभाइसमा आफ्ना बुकमार्कलगायतका कुरा प्राप्त गर्न साइन इन गर्नुहोस्</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, एकभन्दा बढी विकल्प चयन गरिएको पिन गरिएको म्युट गरिएको इन्कोग्निटो ट्याब</translation>
 <translation id="3189635831478931757"><ph name="GROUP_TITLE" /> नामक ट्याब समूह</translation>
 <translation id="3200536777393523575">आफ्नो हालको विन्डो बन्द गर्ने हो?</translation>
@@ -927,6 +928,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
 <translation id="4807098396393229769">कार्डमा रहेको नाम</translation>
 <translation id="480990236307250886">गृह पृष्ठ खोल्नुहोस्</translation>
+<translation id="4816492930507672669">पृष्ठमा अटाउनुहोस्</translation>
 <translation id="4822710610088666676"><ph name="TAB_GROUP_TITLE" /> वटा ट्याब समूह बन्द र सेभ गरियो</translation>
 <translation id="4834250788637067901">Google Pay प्रयोग गर्दा इम्पोर्ट गरिने भुक्तानी विधि, अफर र ठेगानाहरू</translation>
 <translation id="4835385943915508971">Chrome सँग अनुरोध गरिएको स्रोत माथिको पहुँच छैन।</translation>
@@ -1313,7 +1315,6 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="6411219469806822692">योभन्दा माथि जान मिल्दैन। यो पेजको अझै माथिल्लो भागबाट ड्रयाग गरी हेर्नुहोस्।</translation>
 <translation id="6412215853589222273"><ph name="TAB_TITLE" />, एकभन्दा बढी विकल्प चयन गरिएको ट्याब</translation>
 <translation id="641643625718530986">प्रिन्ट गर्नुहोस्...</translation>
-<translation id="6427723330233512782">उचाइअनुसार मिलाउनुहोस्</translation>
 <translation id="6433501201775827830">आफ्नो सर्च इन्जिन छनौट गर्नुहोस्</translation>
 <translation id="6434309073475700221">त्याग्नुहोस्</translation>
 <translation id="6435307030888827407">साइन आउट अवस्थामा रहिरहनुहोस्</translation>

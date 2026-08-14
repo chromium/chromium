@@ -4181,6 +4181,14 @@ Als je dit beleid instelt, kunnen gebruikers het niet wijzigen. Als je het belei
 <translation id="366494444808132420">Gemini-integraties toestaan</translation>
 <translation id="3665437376055221832">De gebruiker alleen vragen als geen enkel certificaat overeenkomt met de automatische selectie.</translation>
 <translation id="3671773704245936868">Markering toetsenbordfocus uitzetten</translation>
+<translation id="367258298235646178">Hiermee kunnen beheerders het uiterlijk van watermerken aanpassen die worden toegepast door regels voor Gegevensverlies voorkomen (Data Loss Prevention, DLP). Dit omvat het instellen van de ondoorzichtigheid van de opvulling/omtrek, het definiëren van de lettergrootte en het instellen van de tijdzone van de tijdstempel.
+Als je dit beleid of bepaalde waarden niet instelt, gebruikt Chrome het standaardgedrag voor watermerken.
+De standaardwaarden op desktop zijn: ondoorzichtigheid van opvulling op 4, ondoorzichtigheid van omtrek op 6 en lettergrootte op 24. Op iOS zijn de standaardwaarden: ondoorzichtigheid van opvulling op 10, ondoorzichtigheid van omtrek op 15 en lettergrootte op 16. Op alle platforms is tijdzone van tijdstempel standaard ingesteld op user_device (lokale tijdzone van het apparaat van de gebruiker).
+
+De ondoorzichtigheid van de opvulling is een percentage van 0 (volledig transparant) tot 100 (volledig ondoorzichtig).
+De ondoorzichtigheid van de omtrek is een percentage van 0 (volledig transparant) tot 100 (volledig ondoorzichtig).
+De lettergrootte wordt aangegeven in punten.
+De tijdzone van het tijdstempel geeft de IANA-tijdzone-ID aan (bijv. 'America/Toronto') die wordt gebruikt voor het opmaken van tijdstempels voor watermerken (ondersteund vanaf Chrome 152 en hoger). Deze ID's volgen de namen in de IANA Time Zone Database (https://www.iana.org/time-zones).</translation>
 <translation id="3674010627788940405">CORS-verzoekheaders zonder jokertekens niet ondersteunen.</translation>
 <translation id="3675248815331229366">Als je het beleid instelt, kun je een lijst met URL-patronen instellen voor sites die geen toegang tot de geolocatie van de gebruiker hebben en die de gebruiker ook niet om toestemming kunnen vragen.
 
@@ -11087,11 +11095,6 @@ Als je het beleid <ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" /> niet toepast, he
 
       Als je het beleid niet instelt, worden clientcertificaten voor geen enkele site automatisch geselecteerd.</translation>
 <translation id="7937766917976512374">Het opnemen van video's toestaan of weigeren</translation>
-<translation id="7937825205289116563">Als je het beleid toepast of niet instelt, wordt het gebruik van ad-hoc-handtekeningen aangezet voor de systeemeigen app die wordt gemaakt bij de installatie van een progressive web-app (PWA). Hierdoor heeft elke geïnstalleerde app een unieke identiteit voor <ph name="MAC_OS_NAME" />-systeemcomponenten.
-
-Als je het beleid niet toepast, heeft elke systeemeigen app die wordt gemaakt bij het installeren van progressive web-apps dezelfde identiteit. Dit kan de <ph name="MAC_OS_NAME" />-functionaliteit verstoren.
-
-Zet het beleid alleen uit als je een oplossing voor beveiliging van eindpunten gebruikt die apps met een ad-hoc-handtekening blokkeert.</translation>
 <translation id="7941528208359969119">Toestaan dat online <ph name="OCSP_CRL_LABEL" />-checks worden uitgevoerd</translation>
 <translation id="7941975817681987555">Geen netwerkacties voorspellen voor een netwerkverbinding</translation>
 <translation id="794447754389837404">Toegang tot privénetwerken blokkeren in de Direct Sockets API op deze sites</translation>
@@ -11669,7 +11672,6 @@ Als je dit beleid niet instelt, staat gezichtsbediening in eerste instantie uit,
 <translation id="8330437518362176921">Alleen de door het beleid geleverde update-URL gebruiken als Chrome-kiosk-apps worden gedownload en geüpdatet</translation>
 <translation id="8331479227794770304">Plaktoetsen aanzetten</translation>
 <translation id="8332822245414537447">Controle van RSA-sleutelgebruik uitzetten</translation>
-<translation id="8333141477131859004">Verbeterd automatisch invullen toestaan en AI-modellen verbeteren.</translation>
 <translation id="8334685561819743286">Automatische correctie op fysiek toetsenbord als gebruikers typen uitzetten</translation>
 <translation id="8336986243404088829">Dit beleid beperkt geheugenaanvallen tussen processen via zijkanalen door het renderproces te isoleren op de CPU-kern en te voorkomen dat andere processen dezelfde kern delen. De mitigatie wordt ondersteund in <ph name="MS_WIN_NAME" /> 11 24H2 en hoger. Als het OS niet de vereiste planningsondersteuning heeft, heeft dit beleid geen effect. Dit beleid kan de prestaties vertragen in sommige veeleisende scenario's, vergelijkbaar met het uitzetten van hyperthreading. Ga voor meer informatie naar https://learn.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-process_mitigation_side_channel_isolation_policy
 Als je dit beleid toepast, worden alle andere processen niet gepland op dezelfde CPU-kern wanneer het renderproces wordt uitgevoerd.
@@ -12756,17 +12758,6 @@ Als je het beleid niet instelt, kan <ph name="PRODUCT_NAME" /> deze logboeken st
 <translation id="9053841574218808519">Plug-ins die niet verouderd zijn, altijd uitvoeren</translation>
 <translation id="9055866143096316150">Wake lock-verzoeken voor het scherm verlagen naar wake lock-verzoeken voor het systeem</translation>
 <translation id="9057159618445405645">Het standaardgedrag van de Chrome-browser gebruiken</translation>
-<translation id="9061455386353325110">Hiermee bepaal je of gebruikers <ph name="PRODUCT_NAME" /> generatieve AI kunnen laten gebruiken om formulieren beter te begrijpen en meer velden te laten invullen.
-
-0 = Hiermee wordt toegestaan dat de functie wordt gebruikt en dat Google relevante gegevens gebruikt om de AI-modellen te verbeteren. Relevante gegevens kunnen prompts, invoer, uitvoer, bronmateriaal en geschreven feedback zijn, afhankelijk van de functie. 0 is de standaardwaarde, behalve zoals hieronder aangegeven.
-
-1 = Hiermee wordt toegestaan dat de functie wordt gebruikt, maar wordt niet toegestaan dat Google modellen verbetert met content van gebruikers (waaronder prompts, invoer, uitvoer, bronmateriaal en geschreven feedback). 1 is de standaardwaarde voor zakelijke gebruikers die worden beheerd door <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> en voor onderwijsaccounts die worden beheerd door <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
-
-2 = Hiermee wordt de functie niet toegestaan.
-
-Als je het beleid niet instelt, wordt het gedrag bepaald door het beleid <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
-
-Ga naar https://support.google.com/chrome/a?p=generative_ai_settings voor meer informatie over gegevensverwerking voor generatieve AI-functies.</translation>
 <translation id="9061609750723054419">De zichtbaarheid van de beheermelding op de pagina Nieuw tabblad voor beheerde browsers beheren</translation>
 <translation id="9063485115966829754">De pdf-viewer gebruikt de GuestView-architectuur.</translation>
 <translation id="9064546884927958824">Als je het beleid instelt, kun je een lijst met URL-patronen opgeven van sites die afbeeldingen mogen weergeven.

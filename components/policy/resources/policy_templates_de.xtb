@@ -4186,6 +4186,14 @@ Verbindungen, die diese Prüfung nicht bestehen, schlagen mit dem Fehler ERR_SSL
 <translation id="366494444808132420">Gemini-Integrationen zulassen.</translation>
 <translation id="3665437376055221832">Nutzer nur dann auffordern, wenn kein Zertifikat zur automatischen Auswahl passt.</translation>
 <translation id="3671773704245936868">„Objekt mit Tastaturfokus hervorheben“ deaktivieren</translation>
+<translation id="367258298235646178">Ermöglicht Administratoren, das Erscheinungsbild von Wasserzeichen anzupassen, die durch Regeln zum Schutz vor Datenverlust (Data Loss Prevention, DLP) angewendet werden. Dazu gehört auch das Festlegen der Füllungsdeckkraft, der Konturdeckkraft, der Schriftgröße und der Zeitzone für den Zeitstempel.
+Wenn diese Richtlinie oder einige Werte nicht konfiguriert sind, verwendet Chrome die Standardwerte für Wasserzeichen.
+Die Standardwerte auf Desktop-Computern sind: Füllungsdeckkraft bei 4, Konturdeckkraft bei 6 und Schriftgröße bei 24. Unter iOS sind die Standardwerte: Füllungsdeckkraft bei 10, Konturdeckkraft bei 15 und Schriftgröße bei 16. Auf allen Plattformen ist die Zeitzone des Zeitstempels standardmäßig auf „user_device“ (Zeitzone des lokalen Geräts des Nutzers) festgelegt.
+
+Die „Füllungsdeckkraft“ ist ein Prozentwert von 0 (völlig durchsichtig) bis 100 (völlig undurchsichtig).
+Die „Konturdeckkraft“ ist ein Prozentwert von 0 (völlig durchsichtig) bis 100 (völlig undurchsichtig).
+Der Wert für „Schriftgröße“ wird in Punkten angegeben.
+Die „Zeitstempel-Zeitzone“ gibt die IANA-Zeitzonen-ID (z. B. America/Toronto) an, die zum Formatieren von Zeitstempeln in Wasserzeichen verwendet wird (ab Chrome 152 unterstützt). Sie entspricht den Namen in der IANA-Zeitzonendatenbank (https://www.iana.org/time-zones).</translation>
 <translation id="3674010627788940405">CORS-Anfrageheader ohne Platzhalter nicht unterstützen.</translation>
 <translation id="3675248815331229366">Wenn diese Richtlinie konfiguriert ist, kannst du eine Liste mit URL-Mustern erstellen, die Websites angeben, die nicht auf den Standort des Nutzers zugreifen dürfen und auch keine Nutzerberechtigung dafür anfordern können.
 
@@ -11114,11 +11122,6 @@ Wenn die Richtlinie „<ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" />“ deaktivi
 
       Wenn die Richtlinie nicht konfiguriert ist, findet für keine Website eine automatische Auswahl statt.</translation>
 <translation id="7937766917976512374">Videoaufzeichnung gestatten oder ablehnen</translation>
-<translation id="7937825205289116563">Wenn diese Richtlinie aktiviert oder nicht konfiguriert ist, ist die Verwendung von Ad‑hoc‑Signaturen für die native Anwendung erlaubt, die bei der Installation einer progressiven Webanwendung (PWA) erstellt wird. So wird sichergestellt, dass jede installierte Anwendung eine eindeutige Identität für <ph name="MAC_OS_NAME" />-Systemkomponenten hat.
-
-Wenn die Richtlinie deaktiviert ist, hat jede native Anwendung, die bei der Installation von progressiven Webanwendungen erstellt wird, dieselbe Identität. Dies kann die Funktionalität von <ph name="MAC_OS_NAME" /> beeinträchtigen.
-
-Deaktiviere die Richtlinie nur, wenn du eine Endpunkt-Sicherheitslösung verwendest, die Anwendungen mit einer Ad‑hoc-Signatur blockiert.</translation>
 <translation id="7941528208359969119">Ausführung von Onlineprüfungen von <ph name="OCSP_CRL_LABEL" /> zulassen</translation>
 <translation id="7941975817681987555">Netzwerkaktionen nicht über Netzwerkverbindungen vervollständigen</translation>
 <translation id="794447754389837404">Privaten Netzwerkzugriff in der Direct Sockets API auf diesen Websites blockieren</translation>
@@ -11696,7 +11699,6 @@ Ist die Richtlinie nicht konfiguriert, ist die Mimik-Steuerung anfangs deaktivie
 <translation id="8330437518362176921">Nur die durch die Richtlinie bereitgestellte Update-URL beim Herunterladen und Aktualisieren von Kiosk-Chrome-Apps verwenden</translation>
 <translation id="8331479227794770304">Einfingerbedienung aktivieren</translation>
 <translation id="8332822245414537447">Prüfung der RSA-Schlüsselverwendung deaktivieren</translation>
-<translation id="8333141477131859004">Erweitertes Autofill zulassen und KI‑Modelle verbessern.</translation>
 <translation id="8334685561819743286">Autokorrektur bei Nutzung der physischen Tastatur beim Tippen deaktivieren</translation>
 <translation id="8336986243404088829">Diese Richtlinie schwächt prozessübergreifende Seitenkanalangriffe auf den Arbeitsspeicher ab, indem sie den Rendererprozess auf dem CPU-Kern isoliert und verhindert, dass andere Prozesse denselben Kern verwenden. Die Abschwächung wird unter <ph name="MS_WIN_NAME" /> 11 24H2 und höher unterstützt. Wenn das Betriebssystem die erforderliche Planung nicht unterstützt, hat diese Richtlinie keine Auswirkungen. Diese Richtlinie kann in einigen anspruchsvollen Szenarien die Leistung beeinträchtigen, ähnlich wie beim Deaktivieren des Hyper-Threading. Weitere Informationen findest du unter https://learn.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-process_mitigation_side_channel_isolation_policy.
       Wenn diese Richtlinie aktiviert ist, werden keine anderen Prozesse auf demselben CPU-Kern geplant, wenn gerade der Rendererprozess ausgeführt wird.
@@ -12786,17 +12788,6 @@ Wenn die Richtlinie nicht konfiguriert ist, kann <ph name="PRODUCT_NAME" /> dies
 <translation id="9053841574218808519">Plug-ins, die nicht veraltet sind, immer ausführen</translation>
 <translation id="9055866143096316150">Bildschirm-Wakelock-Anfragen auf den Status von System-Wakelocks zurückstufen</translation>
 <translation id="9057159618445405645">Standardverhalten des Chrome-Browsers verwenden</translation>
-<translation id="9061455386353325110">Gibt an, ob Nutzer generative KI in <ph name="PRODUCT_NAME" /> zulassen dürfen, damit Inhalte von Formularen besser erkannt und leichter ausgefüllt werden können.
-
-„0“ = Die Funktion darf verwendet werden und Google darf relevante Daten nutzen, um seine KI‑Modelle zu verbessern. Relevante Daten können je nach Funktion Prompts, Eingaben, Ausgaben, Quellmaterialien und schriftliches Feedback sein. „0“ ist der Standardwert, sofern unten nicht anders angegeben.
-
-„1“ = Die Funktion darf verwendet werden, Google darf aber keine Modelle mithilfe von Nutzerinhalten (einschließlich Prompts, Eingaben, Ausgaben, Quellmaterialien und schriftlichen Feedbacks) verbessern. „1“ ist der Standardwert für Unternehmensnutzer, die über die <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> verwaltet werden, sowie für Konten von Bildungseinrichtungen, die über <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> verwaltet werden.
-
-„2“ = Die Funktion darf nicht verwendet werden.
-
-Wenn die Richtlinie nicht konfiguriert ist, wird das Verhalten der Funktion durch die Richtlinie „<ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />“ bestimmt.
-
-Weitere Informationen zur Datenverarbeitung bei auf generativer KI basierenden Funktionen findest du unter https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="9061609750723054419">Sichtbarkeit des Verwaltungshinweises auf der Seite „Neuer Tab“ für verwaltete Browser steuern</translation>
 <translation id="9063485115966829754">Der PDF-Viewer verwendet die GuestView-Architektur.</translation>
 <translation id="9064546884927958824">Wenn diese Richtlinie konfiguriert ist, kannst du eine Liste mit URL‑Mustern erstellen, durch die angegeben wird, welche Websites Bilder anzeigen dürfen.

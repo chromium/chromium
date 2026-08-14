@@ -532,6 +532,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="3161699713309727585"><ph name="BUTTON_TEXT" /> (wird in einem neuen Tab geöffnet)</translation>
 <translation id="3166827708714933426">Tastenkombinationen für Tabs und Fenster</translation>
 <translation id="3167258285411721858">Du kannst die mobile Website für <ph name="HOST_NAME" /> anfordern</translation>
+<translation id="3177338796769255211">Melde dich an, damit du deine Lesezeichen und andere Daten auf allen deinen Geräten abrufen kannst</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, mehrfach ausgewählter, angepinnter, stummgeschalteter Inkognitotab</translation>
 <translation id="3189635831478931757"><ph name="GROUP_TITLE" />, Tabgruppe</translation>
 <translation id="3200536777393523575">Aktuelles Fenster schließen?</translation>
@@ -928,6 +929,7 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
 <translation id="4807098396393229769">Name auf der Karte</translation>
 <translation id="480990236307250886">Startseite öffnen</translation>
+<translation id="4816492930507672669">An Seite anpassen</translation>
 <translation id="4822710610088666676">„<ph name="TAB_GROUP_TITLE" />“-Tabgruppe geschlossen und gespeichert</translation>
 <translation id="4834250788637067901">Zahlungsmethoden, Angebote und Adressen aus Google Pay</translation>
 <translation id="4835385943915508971">Chrome hat keinen Zugriff auf die angeforderte Ressource.</translation>
@@ -1314,7 +1316,6 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="6411219469806822692">Screenshot kann nicht nach oben erweitert werden. Beginne weiter oben auf der Seite.</translation>
 <translation id="6412215853589222273">„<ph name="TAB_TITLE" />“, mehrfach ausgewählter Tab</translation>
 <translation id="641643625718530986">Drucken...</translation>
-<translation id="6427723330233512782">An Höhe anpassen</translation>
 <translation id="6433501201775827830">Wähle deine Suchmaschine</translation>
 <translation id="6434309073475700221">Verwerfen</translation>
 <translation id="6435307030888827407">Abgemeldet bleiben</translation>

@@ -4083,7 +4083,6 @@
 <translation id="4110485659976215879">Ескертуді қалпына келтіру</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (офлайн)</translation>
 <translation id="4113743276555482284">Файл құпия сөзі</translation>
-<translation id="4114391251600134209">{COUNT,plural, =0{Ешқандай құпия сөз сақталмаған}=1{1 құпия сөз тексерілді}other{{COUNT} құпия сөз тексерілді}}</translation>
 <translation id="4114524937989710624">Google Drive қызметіндегі соңғы іс-әрекеттерге оңай оралуға көмектесетін файлдарды көріп тұрсыз.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -6983,7 +6982,6 @@
 <translation id="6425556984042222041">Мәтінді дыбыстау жылдамдығы</translation>
 <translation id="642729974267661262">Дыбысты ойнатуға рұқсаты жоқтар</translation>
 <translation id="6427752304227226701">Қауіпті сайт туралы шағымдану...</translation>
-<translation id="6427938854876261655">{COUNT,plural, =0{Ешқандай құпия сөз сақталмаған.}=1{{COUNT} құпия сөз тексерілуде...}other{{COUNT} құпия сөз тексерілуде...}}</translation>
 <translation id="6429384232893414837">Жаңарту кезінде қате шықты</translation>
 <translation id="6430202563517028640">Сілтемені оқу тізіміне қосу</translation>
 <translation id="6430814529589430811">Base64 кодталған ASCII, бір сертификат</translation>

@@ -4254,6 +4254,14 @@ Le connessioni che non superano il controllo non andranno a buon fine e restitui
 <translation id="366494444808132420">Consenti le integrazioni di Gemini.</translation>
 <translation id="3665437376055221832">Richiedi la selezione da parte dell'utente quando nessun certificato corrisponde alla selezione automatica.</translation>
 <translation id="3671773704245936868">Disattiva l'evidenziazione dell'elemento attivo tramite tastiera</translation>
+<translation id="367258298235646178">Consente agli amministratori di personalizzare l'aspetto delle filigrane applicate dalle regole di Prevenzione della perdita di dati (DLP). Ciò include la possibilità di impostare l'opacità del riempimento e del contorno, definire le dimensioni del carattere e configurare il fuso orario del timestamp.
+Se questa policy o alcuni valori non vengono configurati, Chrome utilizzerà il comportamento predefinito per le filigrane.
+I valori predefiniti su computer sono: opacità del riempimento a 4, opacità del contorno a 6 e dimensioni del carattere a 24. Su iOS, i valori predefiniti sono: opacità del riempimento a 10, opacità del contorno a 15, dimensioni del carattere a 16. Su tutte le piattaforme, il fuso orario del timestamp è impostato per impostazione predefinita su "user_device" (fuso orario del dispositivo locale dell'utente).
+
+"Opacità riempimento" è una percentuale compresa tra 0 (completamente trasparente) e 100 (completamente opaco).
+"Opacità contorno" è una percentuale compresa tra 0 (completamente trasparente) e 100 (completamente opaco).
+La voce "Dimensioni carattere" è espressa in punti.
+"Fuso orario timestamp" specifica l'identificatore del fuso orario IANA (ad es. "America/Toronto") utilizzato per formattare i timestamp della filigrana (supportato a partire da Chrome 152 e versioni successive), che segue i nomi nel database dei fusi orari IANA (https://www.iana.org/time-zones).</translation>
 <translation id="3674010627788940405">Le intestazioni delle richieste CORS senza caratteri jolly non sono supportate.</translation>
 <translation id="3675248815331229366">La configurazione della policy consente di impostare un elenco di pattern URL che specificano i siti che non possono accedere alla localizzazione dell'utente e non possono nemmeno richiedere l'autorizzazione dell'utente per questo scopo.
 
@@ -11307,11 +11315,6 @@ Se la policy <ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" /> viene impostata su Di
 
       Se la policy non viene configurata, non viene eseguita la selezione automatica per nessun sito.</translation>
 <translation id="7937766917976512374">Consenti o nega acquisizione video</translation>
-<translation id="7937825205289116563">Se la policy viene attivata o se non viene configurata, è possibile utilizzare firme ad hoc per l'applicazione nativa creata durante l'installazione di un'applicazione web progressiva (PWA). In questo modo, ogni applicazione installata ha un'identità univoca per i componenti di sistema di <ph name="MAC_OS_NAME" />.
-
-Se la policy viene disattivata, tutte le applicazioni native create durante l'installazione di applicazioni web progressive (PWA) avranno la stessa identità. Questo può interferire con la funzionalità di <ph name="MAC_OS_NAME" />.
-
-Disattiva la policy solo se utilizzi una soluzione di sicurezza degli endpoint che blocca le applicazioni con una firma ad hoc.</translation>
 <translation id="7941528208359969119">Consenti l'esecuzione dei controlli <ph name="OCSP_CRL_LABEL" /> online</translation>
 <translation id="7941975817681987555">Non prevedere le azioni di rete su qualsiasi connessione di rete</translation>
 <translation id="794447754389837404">Blocca l'accesso alla rete privata nell'API Direct Sockets su questi siti</translation>
@@ -11893,7 +11896,6 @@ Se la policy non viene configurata, inizialmente i controlli con il volto sono d
 <translation id="8330437518362176921">Utilizza solo l'URL di aggiornamento fornito dalla policy durante il download e l'aggiornamento delle app di Chrome Kiosk</translation>
 <translation id="8331479227794770304">Attiva tasti permanenti</translation>
 <translation id="8332822245414537447">Disattiva il controllo dell'utilizzo delle chiavi RSA</translation>
-<translation id="8333141477131859004">Consenti la compilazione automatica avanzata e migliora i modelli di AI.</translation>
 <translation id="8334685561819743286">Disattiva la correzione automatica sulla tastiera fisica durante la digitazione da parte degli utenti</translation>
 <translation id="8336986243404088829">Questa policy mitiga gli attacchi alla memoria tra processi tramite canali laterali isolando il processo di rendering sul core della CPU e impedendo ad altri processi di condividere lo stesso core. La mitigazione è supportata su <ph name="MS_WIN_NAME" /> 11 24H2 e versioni successive. Se il sistema operativo non dispone del supporto di pianificazione richiesto, questa policy non avrà alcun effetto. Questa policy potrebbe rallentare le prestazioni in alcuni scenari impegnativi, in modo simile alla disattivazione dell'hyperthreading. Per maggiori informazioni, consulta la pagina https://learn.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-process_mitigation_side_channel_isolation_policy
       Se questa policy è abilitata, nessun altro processo verrà pianificato sullo stesso core della CPU quando è in esecuzione il processo di rendering.
@@ -13011,17 +13013,6 @@ Se la policy non viene configurata, per impostazione predefinita <ph name="PRODU
 <translation id="9053841574218808519">Esegui sempre i plug-in non obsoleti</translation>
 <translation id="9055866143096316150">Retrocedi le richieste di wakelock dello schermo a richieste di wakelock del sistema</translation>
 <translation id="9057159618445405645">Utilizza il comportamento predefinito del browser Chrome</translation>
-<translation id="9061455386353325110">Specifica se gli utenti possono consentire a <ph name="PRODUCT_NAME" /> di utilizzare l'AI generativa per comprendere meglio i moduli e offrire aiuto nella compilazione di più campi.
-
-0 = Consente di utilizzare la funzionalità e permette al contempo a Google di utilizzare i dati pertinenti per migliorare i propri modelli di AI. A seconda della funzionalità, tra i dati pertinenti sono inclusi prompt, input, output, materiali originali e feedback scritto. 0 è il valore predefinito, ad eccezione dei casi riportati di seguito.
-
-1 = Consente di utilizzare la funzionalità, ma non consente a Google di migliorare i modelli utilizzando i contenuti degli utenti (inclusi prompt, input, output, materiali originali e feedback scritto). 1 è il valore predefinito per gli utenti aziendali gestiti da <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> e per gli account Education gestiti da <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
-
-2 = Non consente di utilizzare la funzionalità.
-
-Se la policy non viene configurata, il relativo comportamento viene determinato dalla policy <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
-
-Per ulteriori informazioni sulla gestione dei dati per le funzionalità di AI generativa, visita la pagina https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="9061609750723054419">Controlla la visibilità dell'avviso di gestione nella pagina Nuova scheda per i browser gestiti</translation>
 <translation id="9063485115966829754">Il visualizzatore PDF utilizza l'architettura GuestView.</translation>
 <translation id="9064546884927958824">Se la policy viene configurata, puoi impostare un elenco di pattern URL che specificano i siti che possono mostrare immagini.

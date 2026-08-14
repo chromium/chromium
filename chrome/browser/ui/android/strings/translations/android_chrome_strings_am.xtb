@@ -532,6 +532,7 @@
 <translation id="3161699713309727585"><ph name="BUTTON_TEXT" />፣ በአዲስ ትር ውስጥ ይከፍታል</translation>
 <translation id="3166827708714933426">የትር እና የመስኮት አቋራጮች</translation>
 <translation id="3167258285411721858">የ<ph name="HOST_NAME" />ን የተንቀሳቃሽ ስልክ ጣቢያ መጠየቅ ይችላሉ</translation>
+<translation id="3177338796769255211">የእርስዎን እልባቶች እና ሌሎችንም በሁሉም መሣሪያዎችዎ ላይ ለማግኘት በመለያ ይግቡ</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />፣ ብዙ የተመረጠ ፒን የተደረገ ድምፀ-ከል የተደረገ ማንነት የማያሳውቅ ትር</translation>
 <translation id="3189635831478931757"><ph name="GROUP_TITLE" /> የትር ቡድን</translation>
 <translation id="3200536777393523575">የአሁን መስኮትዎ ይዘጋ?</translation>
@@ -928,6 +929,7 @@
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
 <translation id="4807098396393229769">በካርድ ላይ ያለ ስም</translation>
 <translation id="480990236307250886">መነሻ ገጹን ክፈት</translation>
+<translation id="4816492930507672669">ገጹን አመጣጥን</translation>
 <translation id="4822710610088666676"><ph name="TAB_GROUP_TITLE" /> የትር ቡድን ተዘግቷል እና ተቀምጧል</translation>
 <translation id="4834250788637067901">Google Payን የሚጠቀሙ የመክፈያ ዘዴዎች፣ ቅናሾች እና አድራሻዎች</translation>
 <translation id="4835385943915508971">Chrome የተጠየቀው ግብዓት መዳረሻ የለውም።</translation>
@@ -1314,7 +1316,6 @@
 <translation id="6411219469806822692">ከዚህ በላይ ከፍ ማለት አይቻልም። ገጹ ላይ ከፍ ብለው ለመጀመር ይሞክሩ።</translation>
 <translation id="6412215853589222273"><ph name="TAB_TITLE" />፣ ብዙ የተመረጠ ትር</translation>
 <translation id="641643625718530986">አትም…</translation>
-<translation id="6427723330233512782">ከቁመት ጋር አመጣጥን</translation>
 <translation id="6433501201775827830">የእርስዎን የፍለጋ ፕሮግራም ይምረጡ</translation>
 <translation id="6434309073475700221">ጣለው</translation>
 <translation id="6435307030888827407">ዘግተው እንደወጡ ይቆዩ</translation>

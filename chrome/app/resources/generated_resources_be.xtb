@@ -4082,7 +4082,6 @@
 <translation id="4110485659976215879">Аднавіць адпраўку заўваг</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (па-за сеткай)</translation>
 <translation id="4113743276555482284">Пароль файла</translation>
-<translation id="4114391251600134209">{COUNT,plural, =0{Няма захаваных пароляў}=1{1 пароль правераны}one{{COUNT} пароль правераны}few{{COUNT} паролі правераны}many{{COUNT} пароляў правераны}other{{COUNT} пароля правераны}}</translation>
 <translation id="4114524937989710624">Вы бачыце прапанаваныя вам файлы, выкарыстоўваючы якія, можна з лёгкасцю пераходзіць да сваіх апошніх дзеянняў на Google Дыску.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -6986,7 +6985,6 @@
 <translation id="6425556984042222041">Хуткасць сінтэзу маўлення</translation>
 <translation id="642729974267661262">Не дазволена прайграваць гук</translation>
 <translation id="6427752304227226701">Паскардзіцца на небяспечны сайт…</translation>
-<translation id="6427938854876261655">{COUNT,plural, =0{Няма захаваных пароляў.}=1{Ідзе праверка {COUNT} пароля...}one{Ідзе праверка {COUNT} пароля...}few{Ідзе праверка {COUNT} пароляў...}many{Ідзе праверка {COUNT} пароляў...}other{Ідзе праверка {COUNT} пароля...}}</translation>
 <translation id="6429384232893414837">Памылка абнаўлення</translation>
 <translation id="6430202563517028640">Дадаць спасылку ў Спіс на прагляд</translation>
 <translation id="6430814529589430811">ASCII з шыфраваннем Base64, адзін сертыфікат</translation>

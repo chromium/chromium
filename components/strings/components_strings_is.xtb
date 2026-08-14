@@ -610,8 +610,10 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2045871135676061132">Umslag: persónulegt</translation>
 <translation id="2048261947532620704">Þýðir síðu</translation>
 <translation id="2055016614992422886">Samtal</translation>
+<translation id="2058468041496756763">Þú getur skipt um leitarvél hvenær sem er í stillingum Chrome. Ef þú sérð ekki leitarvélina sem þú vilt nota geturðu leitað á vefsvæði hennar. Þú munt sjá hana skráða sem nýlega heimsótta leitarvél í stillingum Chrome og þú getur stillt hana sem sjálfgefna.</translation>
 <translation id="2059166748188874810">Sveitarfélag</translation>
 <translation id="2059202684901022309">22 x 34 to.</translation>
+<translation id="2063929825539050431">Til að senda þessa síðu í annað tæki á fljótlegan hátt skaltu halda veffangastikunni inni</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{Ein tillaga}one{# tillaga}other{# tillögur}}</translation>
 <translation id="2066969741541525119">Fyrirtækið þitt hefur lokað á vefsvæðið sem þú ert að reyna að opna</translation>
 <translation id="2071156619270205202">Þetta kort er ekki gjaldgengt fyrir sýndarkortsnúmer.</translation>
@@ -3719,6 +3721,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="7379321689415048316">Chrome getur fyllt út erfiða reiti sem stöðluð sjálfvirk útfylling gæti misst af</translation>
 <translation id="7380398842872229465">10 x 15 to.</translation>
 <translation id="7381551826960739226">Sjálfvirk útfylling greiðslumáta er óvirk vegna þess að eyðublaðið notast ekki við örugga tengingu.</translation>
+<translation id="7382980704744807223">Grunsamlegt</translation>
 <translation id="7388594495505979117">{0,plural, =1{Tækið verður endurræst eftir 1 mínútu}one{Tækið verður endurræst eftir # mínútu}other{Tækið verður endurræst eftir # mínútur}}</translation>
 <translation id="7393475648162498734">Sjáðu hvaða fríðindi eru í boði fyrir kortin þín þegar þú gengur frá greiðslu</translation>
 <translation id="7393971683644170444">Tengist kortaútgefanda ...</translation>
@@ -4190,6 +4193,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="8175796834047840627">Chrome býður þér að vista kortin þín á Google-reikningnum vegna þess að þú ert innskráð(ur). Þú getur breytt þessu í stillingunum.</translation>
 <translation id="8176440868214972690">Stjórnandi tækisins hefur sent einhverjar upplýsingar á eftirfarandi vefsvæði, á borð við stillingar og reglur.</translation>
 <translation id="818254048113802060">{0,plural, =1{Lokað var á <ph name="FILE_NAME" /> vegna efnis}one{Lokað var á <ph name="FILE_COUNT" /> skrá vegna efnis}other{Lokað var á <ph name="FILE_COUNT" /> skrár vegna efnis}}</translation>
+<translation id="8186171296341598122">Þú getur skipt um leitarvél hvenær sem er í stillingum Chromium. Ef þú sérð ekki leitarvélina sem þú vilt nota geturðu leitað á vefsvæði hennar. Þú munt sjá hana á listanum yfir nýlega heimsóttar leitarvélar í stillingum Chromium og þú getur stillt hana sem sjálfgefna.</translation>
 <translation id="8188830160449823068">IBAN-númer aðeins vistað í tækinu</translation>
 <translation id="8189557652711717875">Leitarvélin sem þú velur verður notuð við eiginleika á borð við að leita frá veffangastikunni og frá myndum á vefsíðum.</translation>
 <translation id="8190193880870196235">Stjórnað af viðbót</translation>

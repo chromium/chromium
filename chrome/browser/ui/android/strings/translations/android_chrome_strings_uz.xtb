@@ -532,6 +532,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="3161699713309727585"><ph name="BUTTON_TEXT" /> yangi sahifada ochiladi</translation>
 <translation id="3166827708714933426">Varaq va oynalar bilan ishlash</translation>
 <translation id="3167258285411721858"><ph name="HOST_NAME" /> saytining mobil versiyasini talab qilish mumkin</translation>
+<translation id="3177338796769255211">Barcha qurilmalaringizda bukmarklar va boshqalarni uchun hisobingizga kiring.</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, ovozsiz qilingan mahkamlangan inkognito varaq bir necha marta tanlandi</translation>
 <translation id="3189635831478931757"><ph name="GROUP_TITLE" /> varaqlar guruhi</translation>
 <translation id="3200536777393523575">Joriy oyna yopilsinmi?</translation>
@@ -928,6 +929,7 @@ Google hisobingiz orqali amalga oshirgan qidiruvlaringiz, brauzer tarixi va bosh
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
 <translation id="4807098396393229769">Karta egasining ismi</translation>
 <translation id="480990236307250886">Bosh sahifani ochish</translation>
+<translation id="4816492930507672669">Sahifa hajmiga moslash</translation>
 <translation id="4822710610088666676">Varaqlar guruhi (<ph name="TAB_GROUP_TITLE" />) yopildi va saqlandi</translation>
 <translation id="4834250788637067901">Google Pay xizmatidagi bank kartalari, takliflar va manzillar</translation>
 <translation id="4835385943915508971">So‘ralgan manbadan foydalanish uchun Chrome brauzeriga ruxsat berilmagan.</translation>
@@ -1314,7 +1316,6 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="6411219469806822692">Bundan tepasi olinmaydi. Sahifaning yuqori qismidan qayta boshlang.</translation>
 <translation id="6412215853589222273"><ph name="TAB_TITLE" />, koʻp tanlangan varaq</translation>
 <translation id="641643625718530986">Chop etish…</translation>
-<translation id="6427723330233512782">Balandlik asosida moslash</translation>
 <translation id="6433501201775827830">Qidiruv tizimini tanlang</translation>
 <translation id="6434309073475700221">Bekor qilish</translation>
 <translation id="6435307030888827407">Hisobga kirilmasin</translation>

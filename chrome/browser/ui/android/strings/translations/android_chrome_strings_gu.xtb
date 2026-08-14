@@ -532,6 +532,7 @@
 <translation id="3161699713309727585"><ph name="BUTTON_TEXT" />, નવા ટૅબમાં ખૂલે છે</translation>
 <translation id="3166827708714933426">ટૅબ અને વિંડો શૉર્ટકટ્સ</translation>
 <translation id="3167258285411721858">તમે <ph name="HOST_NAME" /> માટે મોબાઇલ સાઇટની વિનંતી કરી શકો છો</translation>
+<translation id="3177338796769255211">તમારા બધા ડિવાઇસ પર બુકમાર્ક અને બીજું ઘણું મેળવવા માટે, સાઇન ઇન કરો</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, એકથી વધુ પસંદ કરેલું, પિન કરેલું, મ્યૂટ કરેલું છૂપું ટૅબ</translation>
 <translation id="3189635831478931757"><ph name="GROUP_TITLE" /> ટૅબનું ગ્રૂપ</translation>
 <translation id="3200536777393523575">તમારી હાલની વિન્ડો બંધ કરીએ?</translation>
@@ -928,6 +929,7 @@
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
 <translation id="4807098396393229769">કાર્ડ પરનું નામ</translation>
 <translation id="480990236307250886">હોમ પેજ ખોલો</translation>
+<translation id="4816492930507672669">પેજ જેટલું ફિટ કરો</translation>
 <translation id="4822710610088666676"><ph name="TAB_GROUP_TITLE" /> ટૅબનું ગ્રૂપ બંધ છે અને સાચવ્યું છે</translation>
 <translation id="4834250788637067901">Google Payનો ઉપયોગ કરતી ચુકવણી પદ્ધતિઓ, ઑફરો અને સરનામાં</translation>
 <translation id="4835385943915508971">Chrome ને વિનંતી કરેલ સંસાધનની ઍક્સેસ નથી.</translation>
@@ -1314,7 +1316,6 @@
 <translation id="6411219469806822692">વધુ ઉપર જઈ શકાતું નથી. પેજ પર વધુ ઉપરથી શરૂ કરીને જુઓ.</translation>
 <translation id="6412215853589222273"><ph name="TAB_TITLE" />, એકથી વધુ પસંદ કરેલા ટૅબ</translation>
 <translation id="641643625718530986">પ્રિન્ટ…</translation>
-<translation id="6427723330233512782">ઊંચાઈ અનુસાર ફિટ કરો</translation>
 <translation id="6433501201775827830">તમારું શોધ એન્જિન પસંદ કરો</translation>
 <translation id="6434309073475700221">કાઢી નાખો</translation>
 <translation id="6435307030888827407">સાઇન આઉટ થયેલા રહો</translation>

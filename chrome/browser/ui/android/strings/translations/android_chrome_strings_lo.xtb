@@ -532,6 +532,7 @@
 <translation id="3161699713309727585"><ph name="BUTTON_TEXT" />, ເປີດໃນແຖບໃໝ່</translation>
 <translation id="3166827708714933426">ທາງລັດແຖບ ແລະ ໜ້າຈໍ</translation>
 <translation id="3167258285411721858">ທ່ານສາມາດຂໍເວັບໄຊມືຖືສຳລັບ <ph name="HOST_NAME" /> ໄດ້</translation>
+<translation id="3177338796769255211">ເຂົ້າສູ່ລະບົບເພື່ອຮັບບຸກມາກ ແລະ ຂໍ້ມູນອື່ນໆຂອງທ່ານໃນອຸປະກອນທຸກເຄື່ອງຂອງທ່ານ</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, ແຖບບໍ່ເປີດເຜີຍຕົວຕົນທີ່ປິດສຽງຢູ່ ແລະ ປັກໝຸດເຊິ່ງເລືອກໄວ້ຫຼາຍແຖບ</translation>
 <translation id="3189635831478931757">ກຸ່ມແຖບ <ph name="GROUP_TITLE" /></translation>
 <translation id="3200536777393523575">ປິດໜ້າຈໍປັດຈຸບັນຂອງທ່ານບໍ?</translation>
@@ -928,6 +929,7 @@
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
 <translation id="4807098396393229769">ຊື່​ຢູ່ໃນ​ບັດ</translation>
 <translation id="480990236307250886">ເປີດໜ້າຫຼັກ</translation>
+<translation id="4816492930507672669">ຈັດພໍດີກັບຫນ້າ</translation>
 <translation id="4822710610088666676">ປິດ ແລະ ບັນທຶກກຸ່ມແຖບ <ph name="TAB_GROUP_TITLE" /> ແລ້ວ</translation>
 <translation id="4834250788637067901">ວິທີການຈ່າຍເງິນ, ຂໍ້ສະເໜີ ແລະ ທີ່ຢູ່ໂດຍໃຊ້ Google Pay</translation>
 <translation id="4835385943915508971">Chrome ບໍ່ມີການເຂົ້າເຖິງຊັບພະຍາກອນທີ່ຮ້ອງຂໍ.</translation>
@@ -1314,7 +1316,6 @@
 <translation id="6411219469806822692">ບໍ່ສາມາດຂຶ້ນໄປສູງກວ່ານີ້ໄດ້. ໃຫ້ລອງເລີ່ມຈາກທາງເທິງຂອງໜ້າ.</translation>
 <translation id="6412215853589222273"><ph name="TAB_TITLE" />, ແຖບທີ່ເລືອກຫຼາຍລາຍການ</translation>
 <translation id="641643625718530986">ພິມ</translation>
-<translation id="6427723330233512782">ຂະຫຍາຍພໍດີຄວາມສູງ</translation>
 <translation id="6433501201775827830">ເລືອກໂປຣແກຣມຊອກຫາຂອງທ່ານ</translation>
 <translation id="6434309073475700221">ກໍາຈັດຖິ້ມ</translation>
 <translation id="6435307030888827407">ອອກຈາກລະບົບໄວ້</translation>

@@ -4288,6 +4288,14 @@ HTTPS'ye yönelik RSA sertifikalarına her ikisini de eklemelidir.</translation>
 <translation id="366494444808132420">Gemini entegrasyonlarına izin ver.</translation>
 <translation id="3665437376055221832">Yalnızca otomatik seçimle eşleşen sertifika olmadığında kullanıcıdan seçim yapmasını iste.</translation>
 <translation id="3671773704245936868">Klavye odağını vurgulamayı devre dışı bırak</translation>
+<translation id="367258298235646178">Yöneticilere, Veri Kaybını Önleme (DLP) kuralları tarafından uygulanan filigranların görünümünü özelleştirme olanağı tanır. Dolgu/çizgi opaklığının ayarlanması, yazı tipi boyutunun belirlenmesi ve zaman damgası saat diliminin ayarlanması buna dahildir.
+Bu politika veya bazı değerler ayarlanmazsa Chrome, varsayılan filigran davranışını kullanır.
+Masaüstünde varsayılan değerler şunlardır: dolgu opaklığı 4, çizgi opaklığı 6, yazı tipi boyutu 24. iOS'te varsayılan değerler şunlardır: dolgu opaklığı 10, çizgi opaklığı 15, yazı tipi boyutu 16. Tüm platformlarda zaman damgası saat dilimi varsayılan olarak "user_device" (kullanıcının yerel cihaz saat dilimi) şeklinde ayarlanır.
+
+"Dolgu Opaklığı", 0 (tamamen şeffaf) ile 100 (tamamen opak) arasında bir yüzdedir.
+"Çizgi Opaklığı", 0 (tamamen şeffaf) ile 100 (tamamen opak) arasında bir yüzdedir.
+"Yazı Tipi Boyutu" değeri punto cinsinden belirtilir.
+"Zaman Damgası Saat Dilimi", filigran zaman damgalarını biçimlendirmek için kullanılan IANA saat dilimi tanımlayıcısını (ör. "Amerika/Toronto") (Chrome 152 ve sonraki sürümlerde desteklenir) belirtir. Bu tanımlayıcı, IANA Saat Dilimi Veritabanı'ndaki ( https://www.iana.org/time-zones ) adları kullanır.</translation>
 <translation id="3674010627788940405">CORS joker karakter olmayan istek başlıklarını destekleme.</translation>
 <translation id="3675248815331229366">Bu politikayı ayarlayarak kullanıcının coğrafi konumuna erişmesine izin verilmeyen ve bunu yapmak için kullanıcı izni istemesi engellenen sitelerin belirtildiği URL kalıplarının listesini oluşturabilirsiniz.
 
@@ -11337,11 +11345,6 @@ Politika, Devre Dışı değerine ayarlanır veya ayarlanmadan bırakılırsa ku
 
       Politikayı ayarlamadan bırakırsanız hiçbir site için otomatik seçim gerçekleşmez.</translation>
 <translation id="7937766917976512374">Video yakalamaya izin verme veya reddetme</translation>
-<translation id="7937825205289116563">Politika, Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa progresif web uygulaması (PWA) yüklenirken oluşturulan yerel uygulama için geçici imzaların kullanılmasına izin verilir. Bu sayede, yüklü her uygulamanın <ph name="MAC_OS_NAME" /> sistem bileşenleri için benzersiz bir kimliği olur.
-
-Politika, Devre Dışı değerine ayarlanırsa progresif web uygulaması (PWA) yüklenirken oluşturulan her yerel uygulamanın kimliği aynı olur. Bu durum, <ph name="MAC_OS_NAME" /> işlevlerini etkileyebilir.
-
-Politikayı yalnızca geçici imza içeren uygulamaların engellendiği bir uç nokta güvenlik çözümü kullanıyorsanız devre dışı bırakın.</translation>
 <translation id="7941528208359969119">Online <ph name="OCSP_CRL_LABEL" /> kontrollerinin yapılmasına izin ver</translation>
 <translation id="7941975817681987555">Ağ bağlantılarında ağ işlemlerini tahmin etme</translation>
 <translation id="794447754389837404">Bu sitelerde Direct Sockets API'deki özel ağ erişimini engelle</translation>
@@ -11942,7 +11945,6 @@ Bu politika ayarlanmadan bırakılırsa yüzle kumanda başlangıçta devre dı�
 <translation id="8330437518362176921">Kiosk Chrome uygulamalarını indirirken ve güncellerken yalnızca politika tarafından sağlanan güncelleme URL'sini kullan</translation>
 <translation id="8331479227794770304">Yapışkan tuşları etkinleştir</translation>
 <translation id="8332822245414537447">RSA anahtarı kullanma kontrolünü devre dışı bırak</translation>
-<translation id="8333141477131859004">Gelişmiş otomatik doldurma özelliğine izin ver ve yapay zeka modellerini daha iyi hale getir.</translation>
 <translation id="8334685561819743286">Kullanıcılar yazarken fiziksel klavyede otomatik düzeltme özelliğini devre dışı bırak</translation>
 <translation id="8336986243404088829">Bu politika, oluşturucu sürecini CPU çekirdeğinde ayrı tutarak ve diğer süreçlerin aynı çekirdeği paylaşmasını engelleyerek yan kanal çapraz işleme bellek saldırılarını azaltır. Çözüm, <ph name="MS_WIN_NAME" /> 11 24H2 ve sonraki sürümlerde desteklenir. İşletim sisteminde gerekli planlama desteği yoksa bu politikanın hiçbir etkisi olmaz. Bu politika, hiper iş parçacığı devre dışı bırakıldığında olduğu gibi bazı zorlu senaryolarda performansı yavaşlatabilir. Daha fazla bilgiyi https://learn.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-process_mitigation_side_channel_isolation_policy adresinde bulabilirsiniz.
       Bu politika etkinleştirilirse oluşturucu süreci çalışırken diğer tüm süreçler aynı CPU çekirdeğinde planlanmaz.
@@ -13053,17 +13055,6 @@ Politika ayarlanmadan bırakılırsa <ph name="PRODUCT_NAME" /> varsayılan olar
 <translation id="9053841574218808519">Eski olmayan eklentileri her zaman çalıştır</translation>
 <translation id="9055866143096316150">Ekran uyanık kalma kilidi isteklerini, sistem uyanık kalma kilidi isteklerine düşür</translation>
 <translation id="9057159618445405645">Varsayılan Chrome tarayıcı davranışını kullan</translation>
-<translation id="9061455386353325110">Kullanıcıların, <ph name="PRODUCT_NAME" /> hizmetinin formları daha iyi anlamak ve daha fazla alanı doldurmalarına yardımcı olmak için üretken yapay zekayı kullanıp kullanamayacağını belirtir.
-
-0 = Özelliğin kullanılmasına izin verirken Google'ın yapay zeka modellerini iyileştirmek için ilgili verileri kullanmasına izin verir. İlgili veriler arasında özelliğe bağlı olarak istemler, girişler, çıkışlar, kaynak materyaller ve yazılı geri bildirimler yer alabilir. Aşağıdaki değerler belirtilmediği sürece varsayılan değer 0'dır.
-
-1 = Özelliğin kullanılmasına izin verir ancak Google'ın kullanıcıların içeriklerini (istemler, girişler, çıkışlar, kaynak materyaller ve yazılı geri bildirimler dahil) kullanarak modelleri iyileştirmesine izin vermez. <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> tarafından yönetilen kurumsal kullanıcılar ve <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> tarafından yönetilen eğitim hesapları için varsayılan değer 1'dir.
-
-2 = Özelliğe izin vermez.
-
-Politika ayarlanmadan bırakılırsa davranışı <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> politikasına göre belirlenir.
-
-Üretken yapay zeka özelliklerinde verilerin nasıl işlendiği hakkında daha fazla bilgi için lütfen https://support.google.com/chrome/a?p=generative_ai_settings adresine göz atın.</translation>
 <translation id="9061609750723054419">Yönetilen tarayıcılar için yeni sekme sayfasındaki yönetim bildiriminin görünürlüğünü kontrol edin</translation>
 <translation id="9063485115966829754">PDF görüntüleyici, GuestView mimarisini kullanır.</translation>
 <translation id="9064546884927958824">Politikayı ayarlayarak, görselleri olan siteleri belirten URL kalıplarının listesini oluşturabilirsiniz.

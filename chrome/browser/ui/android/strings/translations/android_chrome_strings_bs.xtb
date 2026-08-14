@@ -532,6 +532,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="3161699713309727585"><ph name="BUTTON_TEXT" />, otvara se na novoj kartici</translation>
 <translation id="3166827708714933426">Kartice i prečice prozora</translation>
 <translation id="3167258285411721858">Za <ph name="HOST_NAME" /> možete zatražiti web lokaciju za mobilne uređaje</translation>
+<translation id="3177338796769255211">Prijavite se da pristupite svojim oznakama i drugom na svim uređajima</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, višestruko odabrana zakačena anonimna kartica s isključenim zvukom</translation>
 <translation id="3189635831478931757">Grupa kartica <ph name="GROUP_TITLE" /></translation>
 <translation id="3200536777393523575">Zatvoriti trenutni prozor?</translation>
@@ -928,6 +929,7 @@ Vaš Google račun može imati druge oblike historije pregledanja kao što su pr
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
 <translation id="4807098396393229769">Ime i prezime na kartici</translation>
 <translation id="480990236307250886">Otvorite početnu stranicu</translation>
+<translation id="4816492930507672669">Prilagodi stranici</translation>
 <translation id="4822710610088666676">Zatvorena je i sačuvana grupa kartica <ph name="TAB_GROUP_TITLE" /></translation>
 <translation id="4834250788637067901">Načini plaćanja, ponude i adrese iz Google Paya</translation>
 <translation id="4835385943915508971">Chrome nema pristup traženom resursu.</translation>
@@ -1314,7 +1316,6 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="6411219469806822692">Nije moguće pomjeriti više. Pokušajte započeti na višem mjestu na stranici.</translation>
 <translation id="6412215853589222273"><ph name="TAB_TITLE" />, višestruko odabrana kartica</translation>
 <translation id="641643625718530986">Štampaj…</translation>
-<translation id="6427723330233512782">Prilagodi visini</translation>
 <translation id="6433501201775827830">Odaberite pretraživač</translation>
 <translation id="6434309073475700221">Odbaci</translation>
 <translation id="6435307030888827407">Nastavi bez prijave</translation>

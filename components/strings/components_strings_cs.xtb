@@ -610,8 +610,10 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2045871135676061132">Obálka osobní</translation>
 <translation id="2048261947532620704">Překlad stránky</translation>
 <translation id="2055016614992422886">Konverzace</translation>
+<translation id="2058468041496756763">Vyhledávač si můžete v nastavení Chromu kdykoli změnit. Pokud svůj preferovaný vyhledávač nevidíte, můžete vyhledávat na jeho webu. V nastavení Chromu pak bude k dispozici v seznamu nedávno navštívených vyhledávačů a budete ho moct nastavit jako výchozí.</translation>
 <translation id="2059166748188874810">Samosprávná oblast</translation>
 <translation id="2059202684901022309">22 × 34 palců</translation>
+<translation id="2063929825539050431">Podržením adresního řádku můžete tuto stránku rychle odeslat do jiného zařízení</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 návrh}few{# návrhy}many{# návrhu}other{# návrhů}}</translation>
 <translation id="2066969741541525119">Web, na který se pokoušíte přejít, je vaší organizací blokován</translation>
 <translation id="2071156619270205202">Tato karta není pro číslo virtuální karty vhodná.</translation>
@@ -3714,6 +3716,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7379321689415048316">Chrome dokáže automaticky vyplnit i obtížná pole, se kterými si standardní automatické vyplňování nemusí poradit</translation>
 <translation id="7380398842872229465">10 × 15″</translation>
 <translation id="7381551826960739226">Automatické vyplňování platebních metod je zakázáno, protože tento formulář nepoužívá zabezpečené připojení.</translation>
+<translation id="7382980704744807223">Podezřelé</translation>
 <translation id="7388594495505979117">{0,plural, =1{Zařízení se za 1 minutu restartuje}few{Zařízení se za # minuty restartuje}many{Zařízení se za # minuty restartuje}other{Zařízení se za # minut restartuje}}</translation>
 <translation id="7393475648162498734">Při placení ukázat, jaké odměny a výhody jsou pro vaše karty k dispozici.</translation>
 <translation id="7393971683644170444">Připojování k vydavateli karty…</translation>
@@ -4185,6 +4188,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="8175796834047840627">Chrome vám nabízí uložení karet do účtu Google, protože jste přihlášeni. Toto chování můžete změnit v Nastavení.</translation>
 <translation id="8176440868214972690">Administrátor tohoto zařízení odeslal určité informace (například nastavení nebo zásady) následujícím webům.</translation>
 <translation id="818254048113802060">{0,plural, =1{Soubor <ph name="FILE_NAME" /> byl kvůli obsahu zablokován}few{<ph name="FILE_COUNT" /> soubory byly kvůli obsahu zablokovány}many{<ph name="FILE_COUNT" /> souboru bylo kvůli obsahu zablokováno}other{<ph name="FILE_COUNT" /> souborů bylo kvůli obsahu zablokováno}}</translation>
+<translation id="8186171296341598122">Vyhledávač si můžete v nastavení Chromia kdykoli změnit. Pokud svůj preferovaný vyhledávač nevidíte, můžete vyhledávat na jeho webu. V nastavení Chromia pak bude k dispozici v seznamu nedávno navštívených vyhledávačů a budete ho moct nastavit jako výchozí.</translation>
 <translation id="8188830160449823068">Kód IBAN je uložen pouze v zařízení</translation>
 <translation id="8189557652711717875">Vybraný vyhledávač se bude používat pro funkce, jako je vyhledávání z adresního řádku a z obrázků na webových stránkách.</translation>
 <translation id="8190193880870196235">Spravováno rozšířením</translation>

@@ -532,6 +532,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="3161699713309727585"><ph name="BUTTON_TEXT" />, otevře se na nové kartě</translation>
 <translation id="3166827708714933426">Zkratky pro okna a karty</translation>
 <translation id="3167258285411721858">Můžete požádat o web <ph name="HOST_NAME" /> pro mobily</translation>
+<translation id="3177338796769255211">Přihlaste se a používejte záložky a další obsah na všech svých zařízeních</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, jedna z několika vybraných připnutých ztlumených anonymních karet</translation>
 <translation id="3189635831478931757">Skupina karet <ph name="GROUP_TITLE" /></translation>
 <translation id="3200536777393523575">Zavřít aktuální okno?</translation>
@@ -928,6 +929,7 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
 <translation id="4807098396393229769">Jméno na kartě</translation>
 <translation id="480990236307250886">Otevřít domovskou stránku</translation>
+<translation id="4816492930507672669">Přizpůsobit na stránku</translation>
 <translation id="4822710610088666676">Skupina karet <ph name="TAB_GROUP_TITLE" /> byla zavřena a uložena</translation>
 <translation id="4834250788637067901">Platební metody, nabídky a adresy z Google Pay</translation>
 <translation id="4835385943915508971">Chrome k požadovanému zdroji nemá přístup.</translation>
@@ -1314,7 +1316,6 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="6411219469806822692">Výše už přejít nelze. Zkuste začít výše na stránce.</translation>
 <translation id="6412215853589222273"><ph name="TAB_TITLE" />, jedna z několika vybraných karet</translation>
 <translation id="641643625718530986">Tisk…</translation>
-<translation id="6427723330233512782">Přizpůsobit výšce</translation>
 <translation id="6433501201775827830">Vyberte vyhledávač</translation>
 <translation id="6434309073475700221">Zahodit</translation>
 <translation id="6435307030888827407">Odhlásit trvale</translation>

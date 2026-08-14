@@ -149,6 +149,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1243027604378859286">Autore:</translation>
 <translation id="1246424317317450637">Grassetto</translation>
 <translation id="1247030632403369975">Alluminio</translation>
+<translation id="1249643768796040660">Rimuovi queste informazioni</translation>
 <translation id="1253846494229886276">Salvataggio screenshot in corso…</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (sincronizzati)</translation>
 <translation id="1255931290436977164">Passaporto</translation>
@@ -610,8 +611,10 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2045871135676061132">Busta Personal</translation>
 <translation id="2048261947532620704">Traduzione della pagina in corso…</translation>
 <translation id="2055016614992422886">Conversazione</translation>
+<translation id="2058468041496756763">Puoi modificare il motore di ricerca in qualsiasi momento nelle impostazioni di Chrome. Se non vedi il tuo motore di ricerca preferito, puoi eseguire una ricerca dal sito. Lo vedrai elencato come motore di ricerca visitato di recente nelle impostazioni di Chrome e potrai impostarlo come predefinito.</translation>
 <translation id="2059166748188874810">Comune</translation>
 <translation id="2059202684901022309">55,8 × 86,3 cm</translation>
+<translation id="2063929825539050431">Per inviare rapidamente questa pagina a un altro dispositivo, tocca e tieni premuta la barra degli indirizzi</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 suggerimento}other{# suggerimenti}}</translation>
 <translation id="2066969741541525119">Il sito che stai per visitare è stato bloccato dalla tua organizzazione</translation>
 <translation id="2071156619270205202">Questa carta non è idonea per un numero di carta virtuale.</translation>
@@ -3716,6 +3719,7 @@ Ulteriori dettagli:
 <translation id="7379321689415048316">Chrome può compilare automaticamente i campi difficili che la compilazione automatica standard potrebbe non riuscire a compilare</translation>
 <translation id="7380398842872229465">10 x 15 in</translation>
 <translation id="7381551826960739226">La compilazione automatica dei metodi di pagamento è disattivata perché questo modulo non utilizza una connessione sicura.</translation>
+<translation id="7382980704744807223">Download sospetto</translation>
 <translation id="7388594495505979117">{0,plural, =1{Il tuo dispositivo verrà riavviato tra 1 minuto}other{Il tuo dispositivo verrà riavviato tra # minuti}}</translation>
 <translation id="7393475648162498734">Mostra i premi e i vantaggi disponibili per le tue carte al momento del pagamento</translation>
 <translation id="7393971683644170444">Connessione al fornitore della carta in corso…</translation>
@@ -4187,6 +4191,7 @@ Ulteriori dettagli:
 <translation id="8175796834047840627">Chrome chiede se vuoi salvare le tue carte nel tuo Account Google perché hai eseguito l'accesso. Puoi modificare questo comportamento nelle impostazioni.</translation>
 <translation id="8176440868214972690">L'amministratore di questo dispositivo ha inviato alcune informazioni, quali impostazioni o policy, ai siti web indicati di seguito.</translation>
 <translation id="818254048113802060">{0,plural, =1{Blocco del file <ph name="FILE_NAME" /> a causa di contenuti}other{Blocco di <ph name="FILE_COUNT" /> file a causa di contenuti}}</translation>
+<translation id="8186171296341598122">Puoi modificare il motore di ricerca in qualsiasi momento nelle impostazioni di Chromium. Se non vedi il tuo motore di ricerca preferito, puoi eseguire una ricerca dal sito. Lo vedrai elencato come motore di ricerca visitato di recente nelle impostazioni di Chromium e potrai impostarlo come predefinito.</translation>
 <translation id="8188830160449823068">IBAN salvato solo sul dispositivo</translation>
 <translation id="8189557652711717875">Il motore di ricerca scelto verrà utilizzato per funzionalità quali la ricerca dalla barra degli indirizzi e dalle immagini nelle pagine web.</translation>
 <translation id="8190193880870196235">Gestita tramite un'estensione</translation>

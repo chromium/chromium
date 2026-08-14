@@ -3,7 +3,6 @@
 <translationbundle lang="it">
 <translation id="1184166532603925201">Quando sei in modalità Incognito, Chrome impedisce ai siti di utilizzare i cookie di terze parti</translation>
 <translation id="1569440020357229235">Quando sei in modalità Incognito, i siti non possono utilizzare i cookie di terze parti. Se un sito che si basa su questi cookie non funziona, puoi <ph name="BEGIN_LINK" />provare a concedere a quel sito l'accesso temporaneo ai cookie di terze parti<ph name="END_LINK" />.</translation>
-<translation id="19426210786412737">Le impostazioni di Chrome attuali sono state aggiornate per consentire ai siti web di accedere ai cookie di terze parti. Puoi modificare questa impostazione in qualsiasi momento.</translation>
 <translation id="2004697686368036666">Le funzionalità su alcuni siti potrebbero non essere disponibili</translation>
 <translation id="2183376768278472507">Se un sito non funziona come previsto, puoi provare a consentire i cookie di terze parti del sito specifico che stai visitando</translation>
 <translation id="2235344399760031203">I cookie di terze parti sono bloccati</translation>
@@ -19,7 +18,6 @@
 <translation id="5677928146339483299">Bloccato</translation>
 <translation id="6196640612572343990">Blocca cookie di terze parti</translation>
 <translation id="6308169245546905162">I siti possono utilizzare i cookie di terze parti per conoscere le azioni che esegui su altri siti</translation>
-<translation id="6494210367693221285">Le impostazioni di Chromium attuali sono state aggiornate per consentire ai siti web di accedere ai cookie di terze parti. Puoi modificare questa impostazione in qualsiasi momento.</translation>
 <translation id="6710025070089118043">I siti non possono utilizzare i cookie di terze parti per personalizzare contenuti e annunci e per conoscere le azioni che esegui su altri siti, a meno che non concedi l'accesso ai siti correlati</translation>
 <translation id="7315780377187123731">Scopri di più sull'opzione Blocca cookie di terze parti</translation>
 <translation id="7374493521304367420">I siti possono comunque utilizzare i cookie per vedere la tua attività di navigazione sul loro sito</translation>
@@ -27,8 +25,6 @@
 <translation id="7538480403395139206">Scopri di più sull'opzione Consenti cookie di terze parti</translation>
 <translation id="8200078544056087897">Le funzionalità del sito che si basano sui cookie di terze parti dovrebbero funzionare come previsto</translation>
 <translation id="839994149685752920">I siti possono utilizzare cookie di terze parti per personalizzare contenuti e annunci</translation>
-<translation id="8428213095426709021">Impostazioni</translation>
-<translation id="8712637175834984815">Ok</translation>
 <translation id="9039924186462989565">Quando sei in modalità Incognito, Chromium impedisce ai siti di utilizzare i cookie di terze parti</translation>
 <translation id="9162335340010958530">I siti non possono utilizzare i cookie di terze parti per personalizzare contenuti e annunci e conoscere le azioni che esegui su altri siti, a meno che non consenti ai siti correlati di accedervi</translation>
 </translationbundle>

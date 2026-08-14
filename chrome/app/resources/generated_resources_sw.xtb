@@ -4095,7 +4095,6 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4110485659976215879">Rejesha onyo</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (haipo mtandaoni)</translation>
 <translation id="4113743276555482284">Nenosiri la faili</translation>
-<translation id="4114391251600134209">{COUNT,plural, =0{Hakuna manenosiri yaliyohifadhiwa}=1{Nenosiri 1 limekaguliwa}other{Manenosiri {COUNT} yamekaguliwa}}</translation>
 <translation id="4114524937989710624">Unapata faili zilizopendekezwa ili kukusaidia urejee kwa urahisi kwenye shughuli za hivi majuzi katika Hifadhi ya Google.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -7000,7 +6999,6 @@ Unaweza kukabidhi kitendo hiki swichi nyingi.</translation>
 <translation id="6425556984042222041">Kasi ya kusoma maandishi kwa sauti</translation>
 <translation id="642729974267661262">Zisizoruhusiwa kucheza sauti</translation>
 <translation id="6427752304227226701">Ripoti tovuti &amp;isiyo salama...</translation>
-<translation id="6427938854876261655">{COUNT,plural, =0{Hakuna manenosiri yaliyohifadhiwa.}=1{Inakagua nenosiri {COUNT}...}other{Inakagua manenosiri {COUNT}…}}</translation>
 <translation id="6429384232893414837">Hitilafu ya kusasisha</translation>
 <translation id="6430202563517028640">Weka kiungo kwenye orodha ya kusoma</translation>
 <translation id="6430814529589430811">ASCII iliyosimbwa kwa Base64, cheti kimoja</translation>

@@ -532,6 +532,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="3161699713309727585"><ph name="BUTTON_TEXT" />, odpre se na novem zavihku</translation>
 <translation id="3166827708714933426">Bližnjice za zavihke in okna</translation>
 <translation id="3167258285411721858">Za <ph name="HOST_NAME" /> lahko zahtevate spletno mesto za mobilne naprave.</translation>
+<translation id="3177338796769255211">Prijavite se, da boste lahko dostopali do zaznamkov in drugih podatkov v vseh napravah</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, večkrat izbrani pripeti anonimni zavihek z izklopljenim zvokom</translation>
 <translation id="3189635831478931757">Skupina zavihkov <ph name="GROUP_TITLE" /></translation>
 <translation id="3200536777393523575">Želite zapreti trenutno okno?</translation>
@@ -764,6 +765,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="4180726336228139707">Samo v tej napravi</translation>
 <translation id="4181841719683918333">Jeziki</translation>
 <translation id="4188221736490993796">Razvrsti od Ž do A</translation>
+<translation id="4188638484665452040">Gemini je odpet</translation>
 <translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome je temu spletnemu mestu preprečil pošiljanje obvestil zaradi neželene ali zavajajoče vsebine}one{Chrome je tem spletnim mestom preprečil pošiljanje obvestil zaradi neželene ali zavajajoče vsebine}two{Chrome je tema spletnima mestoma preprečil pošiljanje obvestil zaradi neželene ali zavajajoče vsebine}few{Chrome je tem spletnim mestom preprečil pošiljanje obvestil zaradi neželene ali zavajajoče vsebine}other{Chrome je tem spletnim mestom preprečil pošiljanje obvestil zaradi neželene ali zavajajoče vsebine}}</translation>
 <translation id="4195643157523330669">Odpri v novem zavihku</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 zavihek v tej napravi}one{# zavihek v tej napravi}two{# zavihka v tej napravi}few{# zavihki v tej napravi}other{# zavihkov v tej napravi}}</translation>
@@ -928,6 +930,7 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
 <translation id="4807098396393229769">Ime na kartici</translation>
 <translation id="480990236307250886">Odpri domačo stran</translation>
+<translation id="4816492930507672669">Prilagodi strani</translation>
 <translation id="4822710610088666676">Skupina zavihkov »<ph name="TAB_GROUP_TITLE" />« je zaprta in shranjena</translation>
 <translation id="4834250788637067901">Plačilna sredstva, ponudbe in naslovi z Googlom Pay</translation>
 <translation id="4835385943915508971">Chrome nima dostopa do zahtevanega vira</translation>
@@ -1314,7 +1317,6 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="6411219469806822692">Višje se ni mogoče pomakniti. Poskusite začeti višje na strani.</translation>
 <translation id="6412215853589222273"><ph name="TAB_TITLE" />, večkrat izbrani zavihek</translation>
 <translation id="641643625718530986">Tiskanje …</translation>
-<translation id="6427723330233512782">Prilagodi višini</translation>
 <translation id="6433501201775827830">Izbira iskalnika</translation>
 <translation id="6434309073475700221">Zavrzi</translation>
 <translation id="6435307030888827407">Ostanite odjavljeni</translation>
@@ -1838,6 +1840,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="8393700583063109961">Pošlji sporočilo</translation>
 <translation id="8396098434728053815">Deli tudi zvok zavihka</translation>
 <translation id="8398389123831319859">Dvakrat se dotaknite in pridržite, če želite preklopiti na anonimni način</translation>
+<translation id="8412037385861858490">Zaradi zaščite vašega dela v Chromu si bo organizacija lahko ogledala nekatere podatke ali jih upravljala, ko boste prijavljeni v Chrome. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="8413126021676339697">Prikaži celotno zgodovino</translation>
 <translation id="8413795581997394485">Ščiti pred spletnimi mesti, prenosi in razširitvami, za katere vemo, da so nevarni. Ko obiščete spletno mesto, Chrome Googlu pošlje zakriti del URL-ja prek strežnika za zasebnost, ki skrije vaš naslov IP. Če spletno mesto naredi kaj sumljivega, se pošljejo tudi celotni URL-ji in delčki vsebine strani.</translation>
 <translation id="8414396119627470038">Prijavite se v storitev <ph name="SITE_ETLD_PLUS_ONE" /> s podatki za <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>

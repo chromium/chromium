@@ -610,8 +610,10 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2045871135676061132">Sobre persoal</translation>
 <translation id="2048261947532620704">Traducindo páxina</translation>
 <translation id="2055016614992422886">Conversa</translation>
+<translation id="2058468041496756763">Podes cambiar o buscador en calquera momento na configuración de Chrome. Se non ves o teu buscador preferido, podes facer unha busca desde o seu sitio. Verás que aparece como buscador visitado recentemente na configuración de Chrome e poderás definilo como predeterminado.</translation>
 <translation id="2059166748188874810">Concello</translation>
 <translation id="2059202684901022309">22 × 34 in</translation>
+<translation id="2063929825539050431">Para enviar rapidamente esta páxina a outro dispositivo, mantén premida a barra de enderezos</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 suxestión}other{# suxestións}}</translation>
 <translation id="2066969741541525119">A túa organización bloqueou o sitio ao que queres acceder</translation>
 <translation id="2071156619270205202">Esta tarxeta non é apta para asociarlle un número de tarxeta virtual.</translation>
@@ -3719,6 +3721,7 @@ Detalles adicionais:
 <translation id="7379321689415048316">Chrome pode encher automaticamente campos difíciles que a función de autocompletar estándar podería pasar por alto</translation>
 <translation id="7380398842872229465">10 x 15 polgadas</translation>
 <translation id="7381551826960739226">A opción de autocompletado dos métodos de pago automático está desactivada porque este formulario non utiliza unha conexión segura.</translation>
+<translation id="7382980704744807223">Descarga sospeitosa</translation>
 <translation id="7388594495505979117">{0,plural, =1{O dispositivo reiniciarase en 1 minuto}other{O dispositivo reiniciarase en # minutos}}</translation>
 <translation id="7393475648162498734">Mostra que recompensas e beneficios ofrecen as túas tarxetas ao tramitar as compras</translation>
 <translation id="7393971683644170444">Establecendo conexión co provedor da túa tarxeta...</translation>
@@ -4190,6 +4193,7 @@ Detalles adicionais:
 <translation id="8175796834047840627">Chrome permíteche gardar as túas tarxetas na túa Conta de Google porque tes a sesión iniciada. Podes cambiar esta opción na configuración cando queiras.</translation>
 <translation id="8176440868214972690">O administrador deste dispositivo enviou algúns datos (por exemplo, opcións de configuración ou políticas) aos seguintes sitios web.</translation>
 <translation id="818254048113802060">{0,plural, =1{Bloqueouse <ph name="FILE_NAME" /> debido ao contido}other{Bloqueáronse <ph name="FILE_COUNT" /> ficheiros debido ao contido}}</translation>
+<translation id="8186171296341598122">Podes cambiar o buscador en calquera momento na configuración de Chromium. Se non ves o teu buscador preferido, podes facer unha busca desde o seu sitio. Verás que aparece como buscador visitado recentemente na configuración de Chromium e poderás definilo como predeterminado.</translation>
 <translation id="8188830160449823068">Esta IBAN gardouse só no dispositivo</translation>
 <translation id="8189557652711717875">O buscador que escollas usarase para funcións como facer buscas desde a barra de enderezos e a partir de imaxes nas páxinas web.</translation>
 <translation id="8190193880870196235">Permiso xestionado por unha extensión</translation>

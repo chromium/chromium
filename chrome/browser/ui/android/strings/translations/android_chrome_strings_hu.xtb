@@ -532,6 +532,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="3161699713309727585"><ph name="BUTTON_TEXT" />, új lapon nyílik meg</translation>
 <translation id="3166827708714933426">Lapokkal és ablakokkal kapcsolatos billentyűparancsok</translation>
 <translation id="3167258285411721858">Kérheti mobilwebhely megjelenítését a következőhöz: <ph name="HOST_NAME" /></translation>
+<translation id="3177338796769255211">Bejelentkezve valamennyi eszközén hozzáférhet könyvjelzőihez és egyebekhez.</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, több kiválasztott rögzített némított inkognitó lap</translation>
 <translation id="3189635831478931757"><ph name="GROUP_TITLE" /> lapcsoport</translation>
 <translation id="3200536777393523575">Bezárja az aktuális ablakot?</translation>
@@ -928,6 +929,7 @@ Előfordulhat, hogy Google-fiókjában (a <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
 <translation id="4807098396393229769">A kártyán feltüntetett név</translation>
 <translation id="480990236307250886">A kezdőoldal megnyitása</translation>
+<translation id="4816492930507672669">Igazítás az oldalmérethez</translation>
 <translation id="4822710610088666676"><ph name="TAB_GROUP_TITLE" /> lapcsoport bezárva és mentve</translation>
 <translation id="4834250788637067901">A Google Pay szolgáltatásban használt fizetési módok, ajánlatok és címek</translation>
 <translation id="4835385943915508971">A Chrome nem fér hozzá a kért forráshoz.</translation>
@@ -1314,7 +1316,6 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="6411219469806822692">Nem lehet feljebb menni. Próbálkozzon a lap fentebbi részével való kezdéssel.</translation>
 <translation id="6412215853589222273"><ph name="TAB_TITLE" />, több kiválasztott lap</translation>
 <translation id="641643625718530986">Nyomtatás…</translation>
-<translation id="6427723330233512782">Igazítás a magassághoz</translation>
 <translation id="6433501201775827830">Keresőmotor kiválasztása</translation>
 <translation id="6434309073475700221">Elvetés</translation>
 <translation id="6435307030888827407">Kijelentkezve maradok</translation>

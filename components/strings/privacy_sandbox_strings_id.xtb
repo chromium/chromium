@@ -3,7 +3,6 @@
 <translationbundle lang="id">
 <translation id="1184166532603925201">Jika Anda menggunakan mode Samaran, Chrome akan memblokir situs agar tidak menggunakan cookie pihak ketiga</translation>
 <translation id="1569440020357229235">Jika Anda menggunakan mode Samaran, situs tidak dapat menggunakan cookie pihak ketiga. Jika situs yang mengandalkan cookie ini tidak berfungsi, Anda dapat <ph name="BEGIN_LINK" />mencoba memberi situs tersebut akses sementara ke cookie pihak ketiga<ph name="END_LINK" />.</translation>
-<translation id="19426210786412737">Setelan Chrome Anda saat ini telah diperbarui untuk mengizinkan situs mengakses cookie pihak ketiga. Anda dapat mengubah setelan ini kapan saja.</translation>
 <translation id="2004697686368036666">Fitur tertentu di beberapa situs mungkin tidak berfungsi</translation>
 <translation id="2183376768278472507">Jika situs tidak berfungsi sebagaimana mestinya, Anda dapat mencoba mengizinkan cookie pihak ketiga untuk situs tertentu yang Anda buka</translation>
 <translation id="2235344399760031203">Cookie pihak ketiga diblokir</translation>
@@ -19,7 +18,6 @@
 <translation id="5677928146339483299">Diblokir</translation>
 <translation id="6196640612572343990">Blokir cookie pihak ketiga</translation>
 <translation id="6308169245546905162">Situs dapat menggunakan cookie pihak ketiga untuk mempelajari tindakan yang Anda lakukan di situs lain</translation>
-<translation id="6494210367693221285">Setelan Chromium Anda saat ini telah diperbarui untuk mengizinkan situs mengakses cookie pihak ketiga. Anda dapat mengubah setelan ini kapan saja.</translation>
 <translation id="6710025070089118043">Situs tidak dapat menggunakan cookie pihak ketiga untuk mempersonalisasi konten dan iklan, serta mempelajari tindakan yang Anda lakukan di situs lain, kecuali jika Anda memberi situs terkait akses ke cookie tersebut</translation>
 <translation id="7315780377187123731">Selengkapnya tentang opsi Blokir cookie pihak ketiga</translation>
 <translation id="7374493521304367420">Situs masih dapat menggunakan cookie untuk melihat aktivitas penjelajahan di situsnya sendiri</translation>
@@ -27,8 +25,6 @@
 <translation id="7538480403395139206">Selengkapnya tentang opsi Izinkan cookie pihak ketiga</translation>
 <translation id="8200078544056087897">Fitur situs yang mengandalkan cookie pihak ketiga akan berfungsi sebagaimana mestinya</translation>
 <translation id="839994149685752920">Situs dapat menggunakan cookie pihak ketiga untuk mempersonalisasi konten dan iklan</translation>
-<translation id="8428213095426709021">Setelan</translation>
-<translation id="8712637175834984815">Oke</translation>
 <translation id="9039924186462989565">Jika Anda menggunakan mode Samaran, Chromium akan memblokir situs agar tidak menggunakan cookie pihak ketiga</translation>
 <translation id="9162335340010958530">Situs tidak dapat menggunakan cookie pihak ketiga untuk mempersonalisasi konten dan iklan, serta mempelajari tindakan yang Anda lakukan di situs lain, kecuali jika Anda mengizinkan situs terkait mengaksesnya</translation>
 </translationbundle>

@@ -532,6 +532,7 @@
 <translation id="3161699713309727585"><ph name="BUTTON_TEXT" />, បើកក្នុងផ្ទាំងថ្មី</translation>
 <translation id="3166827708714933426">ផ្លូវកាត់ផ្ទាំង និងផ្ទាំងវិនដូ</translation>
 <translation id="3167258285411721858">អ្នកអាចស្នើសុំគេហទំព័រសម្រាប់​ឧបករណ៍​ចល័តសម្រាប់ <ph name="HOST_NAME" /></translation>
+<translation id="3177338796769255211">ចូលគណនី ដើម្បី​ទទួលបាន​ចំណាំ​របស់អ្នក និងអ្វីៗជាច្រើនទៀត​នៅលើ​ឧបករណ៍​ទាំងអស់​របស់អ្នក</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, ផ្ទាំងឯកជន​ដែលបានបិទសំឡេងដែលបាន​ខ្ទាស់ និងបានជ្រើសរើស​ច្រើន</translation>
 <translation id="3189635831478931757">ក្រុមផ្ទាំង <ph name="GROUP_TITLE" /></translation>
 <translation id="3200536777393523575">បិទ​វិនដូ​បច្ចុប្បន្ន​របស់អ្នកឬ?</translation>
@@ -764,6 +765,7 @@
 <translation id="4180726336228139707">តែ​នៅ​លើ​ឧបករណ៍​នេះ​ប៉ុណ្ណោះ</translation>
 <translation id="4181841719683918333">ភាសា</translation>
 <translation id="4188221736490993796">តម្រៀប​តាមលំដាប់ Z ទៅ A</translation>
+<translation id="4188638484665452040">បានដកខ្ទាស់ Gemini</translation>
 <translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome បានបញ្ឈប់​គេហទំព័រនេះ​មិនឱ្យផ្ញើ​ការជូនដំណឹង ដោយសារតែ​ខ្លឹមសារបញ្ឆោត ឬ​ឥតបានការ}other{Chrome បានបញ្ឈប់​គេហទំព័រ​ទាំងនេះ​មិនឱ្យ​ផ្ញើការជូនដំណឹង ដោយសារតែ​ខ្លឹមសារបញ្ឆោត ឬ​ឥតបានការ}}</translation>
 <translation id="4195643157523330669">បើកនៅក្នុងផ្ទាំងថ្មី</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{ផ្ទាំង 1 នៅលើ​ឧបករណ៍នេះ}other{ផ្ទាំង # នៅលើ​ឧបករណ៍នេះ}}</translation>
@@ -928,6 +930,7 @@
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
 <translation id="4807098396393229769">ឈ្មោះនៅលើកាត</translation>
 <translation id="480990236307250886">បើកទំព័រដើម</translation>
+<translation id="4816492930507672669">សមនឹងទំព័រ</translation>
 <translation id="4822710610088666676">បានបិទ និងរក្សាទុកក្រុមផ្ទាំង <ph name="TAB_GROUP_TITLE" /></translation>
 <translation id="4834250788637067901">វិធី​បង់ប្រាក់ ការផ្ដល់ជូន និង​អាសយដ្ឋាន​ដែលប្រើ Google Pay</translation>
 <translation id="4835385943915508971">Chrome មិន​អាច​ចូល​ប្រើ​ធនធាន​ដែល​បាន​ស្នើ​នេះ​ទេ​។​</translation>
@@ -1314,7 +1317,6 @@
 <translation id="6411219469806822692">មិនអាចរំកិលទៅខាងលើជាងនេះទៀតបានទេ។ សូមសាកល្បងចាប់ផ្ដើមពីផ្នែកខាងលើជាងនេះនៅលើទំព័រ។</translation>
 <translation id="6412215853589222273"><ph name="TAB_TITLE" />, ផ្ទាំង​ដែលបាន​ជ្រើសរើស​ច្រើន</translation>
 <translation id="641643625718530986">បោះពុម្ព…</translation>
-<translation id="6427723330233512782">ប៉ុន​កម្ពស់</translation>
 <translation id="6433501201775827830">ជ្រើសរើស​ម៉ាស៊ីន​ស្វែងរករបស់អ្នក</translation>
 <translation id="6434309073475700221">កម្ចាត់</translation>
 <translation id="6435307030888827407">បន្ត​ចេញពី​គណនី</translation>
@@ -1838,6 +1840,7 @@
 <translation id="8393700583063109961">ផ្ញើ​សារ</translation>
 <translation id="8396098434728053815">ចែករំលែក​សំឡេង​របស់ផ្ទាំង​ផងដែរ</translation>
 <translation id="8398389123831319859">ចុចពីរ​ដង រួច​សង្កត់​ឱ្យជាប់ ដើម្បី​ប្ដូរទៅ​មុខងារ​ឯកជន</translation>
+<translation id="8412037385861858490">ដើម្បីរក្សាសុវត្ថិភាពការងាររបស់អ្នកនៅលើ Chrome ស្ថាប័នរបស់អ្នកនឹងអាចមើល ឬគ្រប់គ្រងព័ត៌មានមួយចំនួន នៅពេលអ្នកចូលគណនី Chrome។ <ph name="BEGIN_LINK" />ស្វែងយល់បន្ថែម<ph name="END_LINK" /></translation>
 <translation id="8413126021676339697">បង្ហាញប្រវត្តិពេញលេញ</translation>
 <translation id="8413795581997394485">ការពារ​ពី​គេហទំព័រ ការទាញយក និង​កម្មវិធី​បន្ថែម​ដែល​ត្រូវគេស្គាល់ថា​មាន​គ្រោះថ្នាក់។ នៅពេលអ្នក​ចូលមើល​គេហទំព័រ Chrome បញ្ជូនផ្នែក​ដែលបានបំភ័ន្តណាមួយរបស់ URL ទៅ Google តាមរយៈ​ម៉ាស៊ីនមេ​ឯកជនភាព​ដែលលាក់​អាសយដ្ឋាន IP របស់អ្នក។ ប្រសិនបើ​គេហទំព័រ​ធ្វើអ្វីម្យ៉ាង​ដែលគួរឱ្យសង្ស័យ URL ពេញលេញ និងផ្នែក​នៃខ្លឹមសារ​ទំព័រ​ក៏ត្រូវបានបញ្ជូនផងដែរ។</translation>
 <translation id="8414396119627470038">ចូល <ph name="SITE_ETLD_PLUS_ONE" /> តាមរយៈ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>

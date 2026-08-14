@@ -532,6 +532,7 @@
 <translation id="3161699713309727585"><ph name="BUTTON_TEXT" />, नवीन टॅबमध्ये उघडते</translation>
 <translation id="3166827708714933426">टॅब आणि विंडो शॉर्टकट</translation>
 <translation id="3167258285411721858">तुम्ही <ph name="HOST_NAME" /> साठी मोबाइल साइटची विनंती करू शकता</translation>
+<translation id="3177338796769255211">तुमच्या सर्व डिव्हाइसवर तुमचे बुकमार्क आणि आणखी बरेच काही मिळवण्यासाठी साइन इन करा</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, मल्टीसिलेक्ट केलेला पिन केलेला म्यूट केलेला गुप्त टॅब</translation>
 <translation id="3189635831478931757"><ph name="GROUP_TITLE" /> टॅब गट</translation>
 <translation id="3200536777393523575">तुमची सद्य विंडो बंद करायची आहे का?</translation>
@@ -764,6 +765,7 @@
 <translation id="4180726336228139707">फक्त या डिव्हाइसवर</translation>
 <translation id="4181841719683918333">भाषा</translation>
 <translation id="4188221736490993796">ज्ञ-अ नुसार क्रमाने लावा</translation>
+<translation id="4188638484665452040">Gemini अनपिन केले आहे</translation>
 <translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{स्पॅम किंवा फसवा आशय यामुळे Chrome ने या साइटला नोटिफिकेशन पाठवण्यापासून थांबवले आहे}other{स्पॅम किंवा फसवा आशय यामुळे Chrome ने या साइटना नोटिफिकेशन पाठवण्यापासून थांबवले आहे}}</translation>
 <translation id="4195643157523330669">नवीन टॅबमध्ये उघडा</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{या डिव्हाइसवर १ टॅब आहे}other{या डिव्हाइसवर # टॅब आहेत}}</translation>
@@ -928,6 +930,7 @@
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
 <translation id="4807098396393229769">कार्डवरील नाव</translation>
 <translation id="480990236307250886">होम पेज उघडा</translation>
+<translation id="4816492930507672669">पृष्‍ठानुरुप करा</translation>
 <translation id="4822710610088666676"><ph name="TAB_GROUP_TITLE" /> टॅब गट बंद आणि सेव्ह केला आहे</translation>
 <translation id="4834250788637067901">Google Pay वापरून पेमेंट पद्धती, ऑफर आणि अ‍ॅड्रेस</translation>
 <translation id="4835385943915508971">Chrome ला विनंती केलेल्या संसाधनांचा ॲक्सेस नाही.</translation>
@@ -1314,7 +1317,6 @@
 <translation id="6411219469806822692">यापेक्षा वर जाऊ शकत नाही. पेजच्या आणखी वरून सुरुवात करून पहा.</translation>
 <translation id="6412215853589222273"><ph name="TAB_TITLE" />, मल्टीसिलेक्ट केलेला टॅब</translation>
 <translation id="641643625718530986">प्रिंट करा...</translation>
-<translation id="6427723330233512782">उंचीनुसार फिट करा</translation>
 <translation id="6433501201775827830">तुमचे शोध इंजीन निवडा</translation>
 <translation id="6434309073475700221">टाकून द्या</translation>
 <translation id="6435307030888827407">साइन आउट केलेले रहा</translation>
@@ -1838,6 +1840,7 @@
 <translation id="8393700583063109961">संदेश पाठवा</translation>
 <translation id="8396098434728053815">टॅब ऑडिओदेखील शेअर करा</translation>
 <translation id="8398389123831319859">गुप्त मोडवर स्विच करण्यासाठी दोनदा टॅप करून धरून ठेवा</translation>
+<translation id="8412037385861858490">Chrome वर तुमचे काम सुरक्षित ठेवण्यासाठी, तुम्ही Chrome मध्ये साइन-इन केलेले असताना तुमची संस्था विशिष्ट माहिती पाहू किंवा व्यवस्थापित करू शकेल. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="8413126021676339697">संपूर्ण इतिहास दर्शवा</translation>
 <translation id="8413795581997394485">धोकादायक म्हणून ओळखल्या जाणार्‍या साइट, डाउनलोड आणि एक्स्टेंशन यापासून संरक्षण करते. तुम्ही साइटला भेट देता, तेव्हा Chrome तुमचा आयपी अ‍ॅड्रेस लपवणार्‍या गोपनीयता सर्व्हरद्वारे Google ला URL चा क्लिष्ट भाग पाठवते. साइटने काहीतरी संशयास्पद केल्यास, पूर्ण URLs आणि पेज आशयाचे भागदेखील पाठवले जातात.</translation>
 <translation id="8414396119627470038"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> वापरून <ph name="SITE_ETLD_PLUS_ONE" /> मध्ये साइन इन करा</translation>

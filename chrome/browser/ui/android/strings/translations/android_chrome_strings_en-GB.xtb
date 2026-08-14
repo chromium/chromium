@@ -532,6 +532,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="3161699713309727585"><ph name="BUTTON_TEXT" />, opens in a new tab</translation>
 <translation id="3166827708714933426">Tab and window shortcuts</translation>
 <translation id="3167258285411721858">You can request the mobile site for <ph name="HOST_NAME" /></translation>
+<translation id="3177338796769255211">Sign in to get your bookmarks and more on all your devices</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, multi-selected pinned muted Incognito tab</translation>
 <translation id="3189635831478931757"><ph name="GROUP_TITLE" /> tab group</translation>
 <translation id="3200536777393523575">Close your current window?</translation>
@@ -928,6 +929,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
 <translation id="4807098396393229769">Name on card</translation>
 <translation id="480990236307250886">Open the homepage</translation>
+<translation id="4816492930507672669">Fit to page</translation>
 <translation id="4822710610088666676"><ph name="TAB_GROUP_TITLE" /> tab group closed and saved</translation>
 <translation id="4834250788637067901">Payment methods, offers and addresses using Google Pay</translation>
 <translation id="4835385943915508971">Chrome does not have access to the requested resource.</translation>
@@ -1314,7 +1316,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6411219469806822692">Can\u2019t go higher. Try starting from further up the page.</translation>
 <translation id="6412215853589222273"><ph name="TAB_TITLE" />, multiselected tab</translation>
 <translation id="641643625718530986">Print…</translation>
-<translation id="6427723330233512782">Fit to height</translation>
 <translation id="6433501201775827830">Choose your search engine</translation>
 <translation id="6434309073475700221">Discard</translation>
 <translation id="6435307030888827407">Stay signed out</translation>

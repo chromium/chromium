@@ -4166,6 +4166,14 @@ SwiftShader 曾用于在没有 GPU 加速的系统（例如无头系统或虚拟
 <translation id="366494444808132420">允许集成 Gemini。</translation>
 <translation id="3665437376055221832">仅当没有任何证书与自动选择政策匹配时才提示用户。</translation>
 <translation id="3671773704245936868">禁止使用键盘焦点突出显示</translation>
+<translation id="367258298235646178">允许管理员自定义数据泄露防护 (DLP) 规则应用的水印外观，包括设置填充/轮廓不透明度、定义字号以及设置时间戳时区。
+如果未设置此政策或某些值，Chrome 将使用其默认水印行为。
+桌面设备上的默认值如下：填充不透明度为 4，轮廓不透明度为 6，字号为 24。在 iOS 上，默认值如下：填充不透明度为 10，轮廓不透明度为 15，字号为 16。在所有平台上，时间戳时区默认为“user_device”（用户设备的本地时区）。
+
+“填充不透明度”是介于 0（完全透明）到 100（完全不透明）之间的百分比。
+“轮廓不透明度”是介于 0（完全透明）到 100（完全不透明）之间的百分比。
+“字号”以磅为单位。
+“时间戳时区”指定了用于设置水印时间戳格式的 IANA 时区标识符（例如“America/Toronto”，自 Chrome 152 起支持），该标识符遵循 IANA 时区数据库 (https://www.iana.org/time-zones) 中的名称。</translation>
 <translation id="3674010627788940405">不支持 CORS 非通配符式请求标头。</translation>
 <translation id="3675248815331229366">通过设置此政策，您可以创建一个网址格式列表，从而指定哪些网站不得访问用户的地理定位信息且无法请求用户授予相应权限。
 
@@ -11039,11 +11047,6 @@ Gemini 只能在部分国家/地区启用，并且仅支持部分语言。设置
 
       如果此政策未设置，系统将不会为任何网站自动选择证书。</translation>
 <translation id="7937766917976512374">是否允许视频捕获</translation>
-<translation id="7937825205289116563">如果已启用或未设置此政策，系统会允许在安装渐进式 Web 应用 (PWA) 时为创建的原生应用使用临时签名。这可确保每个已安装的应用都有一个对于 <ph name="MAC_OS_NAME" /> 系统组件唯一的身份。
-
-如果已停用此政策，安装渐进式 Web 应用时创建的每个原生应用都将具有相同的身份。这可能会干扰 <ph name="MAC_OS_NAME" /> 功能。
-
-仅当使用的端点安全解决方案会阻止使用临时签名的应用时，才应停用此政策。</translation>
 <translation id="7941528208359969119">允许执行在线 <ph name="OCSP_CRL_LABEL" /> 检查</translation>
 <translation id="7941975817681987555">采用任何网络连接时，均不预测网络操作</translation>
 <translation id="794447754389837404">禁止在这些网站上通过 Direct Sockets API 访问专用网络</translation>
@@ -11608,7 +11611,6 @@ Gemini 只能在部分国家/地区启用，并且仅支持部分语言。设置
 <translation id="8330437518362176921">下载和更新自助服务终端 Chrome 应用时仅使用政策提供的更新网址</translation>
 <translation id="8331479227794770304">启用粘滞键</translation>
 <translation id="8332822245414537447">停用 RSA 密钥用法检查</translation>
-<translation id="8333141477131859004">允许使用增强型自动填充功能并改进 AI 模型。</translation>
 <translation id="8334685561819743286">在用户输入内容时停用实体键盘自动更正功能</translation>
 <translation id="8336986243404088829">此政策可将渲染程序进程隔离到单个 CPU 核心，并阻止其他进程共享该核心，从而缓解边信道跨进程内存攻击。<ph name="MS_WIN_NAME" /> 11 24H2 及更高版本支持此缓解措施。如果操作系统没有所需的调度支持，此政策将没有任何效力。在某些高负载场景下，此政策可能会导致性能降低，其影响类似于停用超线程功能。如需了解详情，请参阅 https://learn.microsoft.com/zh-cn/windows/win32/api/winnt/ns-winnt-process_mitigation_side_channel_isolation_policy
       如果启用此政策，当渲染程序进程运行时，所有其他进程都不会被调度到同一 CPU 核心上。
@@ -12694,17 +12696,6 @@ Gemini 只能在部分国家/地区启用，并且仅支持部分语言。设置
 <translation id="9053841574218808519">始终运行未过时的插件</translation>
 <translation id="9055866143096316150">将屏幕唤醒锁定请求降级为系统唤醒锁定请求</translation>
 <translation id="9057159618445405645">使用默认的 Chrome 浏览器行为</translation>
-<translation id="9061455386353325110">指定用户能否让 <ph name="PRODUCT_NAME" /> 使用生成式 AI 更好地了解表单并帮助他们填写更多字段。
-
-0 表示允许使用此功能，同时允许 Google 使用相关数据改进其 AI 模型。相关数据可能包括提示、输入、输出、素材和书面反馈，具体取决于相应功能。除非下文另有说明，否则默认值是 0。
-
-1 表示允许使用此功能，但不允许 Google 使用用户内容（包括提示、输入、输出、素材和书面反馈）改进模型。对于受 <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />管理的企业用户和受 <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> 管理的教育版账号，默认值是 1。
-
-2 表示不允许使用此功能。
-
-如果此政策未设置，其行为将由 <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> 政策决定。
-
-如需详细了解生成式 AI 功能的数据处理机制，请访问 https://support.google.com/chrome/a?p=generative_ai_settings。</translation>
 <translation id="9061609750723054419">控制是否在受管浏览器的“新标签页”页面上显示管理通知</translation>
 <translation id="9063485115966829754">PDF 查看器使用 GuestView 架构。</translation>
 <translation id="9064546884927958824">通过设置此政策，您可以设置一个网址格式列表，从而指定哪些网站可以显示图片。

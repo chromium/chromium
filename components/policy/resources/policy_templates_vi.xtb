@@ -4225,6 +4225,14 @@ dùng tuỳ chọn sử dụng khoá "keyEncipherment". Nếu không chắc ch�
 <translation id="366494444808132420">Cho phép tích hợp Gemini.</translation>
 <translation id="3665437376055221832">Chỉ nhắc người dùng khi không có chứng chỉ nào khớp với chính sách tự động chọn.</translation>
 <translation id="3671773704245936868">Tắt tính năng làm nổi bật tiêu điểm bằng bàn phím</translation>
+<translation id="367258298235646178">Cho phép quản trị viên tuỳ chỉnh hình thức của hình mờ được áp dụng theo quy tắc của quy trình Ngăn chặn mất dữ liệu (DLP). Phạm vi tuỳ chỉnh bao gồm cài đặt độ mờ của phần tô/viền, xác định cỡ chữ và cài đặt múi giờ của dấu thời gian.
+Nếu bạn không đặt chính sách này hoặc một số giá trị, Chrome sẽ sử dụng chế độ mặc định của hình mờ.
+Giá trị mặc định trên máy tính: độ mờ của phần tô là 4, độ mờ của viền là 6, cỡ chữ là 24. Giá trị mặc định trên iOS: độ mờ của phần tô là 10, độ mờ của viền là 15, cỡ chữ là 16. Trên tất cả các nền tảng, múi giờ của dấu thời gian mặc định là "user_device" (múi giờ trên thiết bị của người dùng).
+
+"Độ mờ phần tô" là tỷ lệ phần trăm từ 0 (trong suốt hoàn toàn) đến 100 (mờ hoàn toàn).
+"Độ mờ viền" là tỷ lệ phần trăm từ 0 (trong suốt hoàn toàn) đến 100 (mờ hoàn toàn).
+"Cỡ chữ" được xác định theo điểm.
+"Múi giờ của dấu thời gian" chỉ định giá trị nhận dạng múi giờ IANA (ví dụ: "America/Toronto") dùng để định dạng dấu thời gian của hình mờ (được hỗ trợ kể từ Chrome 152 trở đi), theo tên trong Cơ sở dữ liệu múi giờ IANA (https://www.iana.org/time-zones).</translation>
 <translation id="3674010627788940405">Không hỗ trợ các tiêu đề của yêu cầu không phải ký tự đại diện CORS.</translation>
 <translation id="3675248815331229366">Nếu đặt chính sách này, bạn có thể thiết lập danh sách các mẫu URL chỉ định những trang web không được phép truy cập vào thông tin định vị vị trí của người dùng và cũng không được phép yêu cầu người dùng cấp quyền để làm vậy.
 
@@ -11322,11 +11330,6 @@ Nếu bạn đặt chính sách <ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" /> th
 
       Nếu bạn không đặt chính sách này thì Chrome sẽ không được tự động chọn đối với bất cứ trang web nào.</translation>
 <translation id="7937766917976512374">Cho phép hoặc từ chối quay video</translation>
-<translation id="7937825205289116563">Nếu bạn đặt chính sách này thành Bật hoặc không đặt chính sách này, thì người dùng có thể sử dụng chữ ký đặc biệt cho ứng dụng gốc được tạo ra khi cài đặt Ứng dụng web tiến bộ (PWA). Điều này đảm bảo rằng mỗi ứng dụng được cài đặt đều có danh tính riêng đối với các thành phần hệ thống <ph name="MAC_OS_NAME" />.
-
-Nếu bạn đặt chính sách này thành Tắt, thì mọi ứng dụng gốc được tạo ra khi cài đặt Ứng dụng web tiến bộ sẽ có cùng một danh tính. Điều này có thể ảnh hưởng đến chức năng của <ph name="MAC_OS_NAME" />.
-
-Bạn chỉ nên tắt chính sách này nếu đang sử dụng giải pháp bảo mật điểm cuối có tác dụng chặn các ứng dụng có chữ ký đặc biệt.</translation>
 <translation id="7941528208359969119">Cho phép thực hiện hoạt động kiểm tra <ph name="OCSP_CRL_LABEL" /> trực tuyến</translation>
 <translation id="7941975817681987555">Không dự đoán tác vụ mạng trên kết nối mạng bất kỳ</translation>
 <translation id="794447754389837404">Chặn quyền truy cập vào mạng riêng tư trong Direct Sockets API trên các trang web này</translation>
@@ -11917,7 +11920,6 @@ Nếu bạn không đặt chính sách này, thì ban đầu, tính năng điề
 <translation id="8330437518362176921">Chỉ sử dụng URL cập nhật do chính sách cung cấp khi tải xuống và cập nhật các ứng dụng Kiosk Chrome</translation>
 <translation id="8331479227794770304">Bật phím cố định</translation>
 <translation id="8332822245414537447">Tắt tuỳ chọn kiểm tra việc sử dụng khoá RSA</translation>
-<translation id="8333141477131859004">Cho phép tính năng tự động điền nâng cao và tham gia cải tiến mô hình AI.</translation>
 <translation id="8334685561819743286">Tắt tính năng tự động sửa lỗi khi nhập bằng bàn phím vật lý khi người dùng đánh máy</translation>
 <translation id="8336986243404088829">Chính sách này giúp giảm thiểu các cuộc tấn công kênh bên xuyên tiến trình vào bộ nhớ bằng cách cô lập tiến trình kết xuất trên lõi CPU và ngăn các tiến trình khác dùng chung một lõi. Biện pháp giảm thiểu này được hỗ trợ trên <ph name="MS_WIN_NAME" /> 11 24H2 trở lên. Nếu hệ điều hành không hỗ trợ lập lịch biểu như yêu cầu, chính sách này sẽ không có hiệu lực. Chính sách này có thể làm giảm hiệu suất trong một số trường hợp cần nhiều tài nguyên, tương tự như việc tắt tính năng siêu tạo luồng. Để biết thêm thông tin, hãy tham khảo https://learn.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-process_mitigation_side_channel_isolation_policy
       Nếu bạn bật chính sách này, tất cả các tiến trình khác sẽ không được lên lịch trên cùng một lõi CPU khi tiến trình kết xuất đang chạy.
@@ -13018,17 +13020,6 @@ Nếu bạn không đặt chính sách này, <ph name="PRODUCT_NAME" /> sẽ m�
 <translation id="9053841574218808519">Luôn chạy trình bổ trợ không lỗi thời</translation>
 <translation id="9055866143096316150">Giảm hạng yêu cầu khóa chế độ thức của màn hình thành yêu cầu khóa chế độ thức của hệ thống</translation>
 <translation id="9057159618445405645">Sử dụng chế độ mặc định của trình duyệt Chrome</translation>
-<translation id="9061455386353325110">Chỉ định xem người dùng có thể cho phép <ph name="PRODUCT_NAME" /> sử dụng AI tạo sinh để hiểu rõ hơn về các biểu mẫu và điền nhiều trường hơn hay không.
-
-0 = Cho phép sử dụng tính năng này và cho phép Google sử dụng dữ liệu liên quan để cải tiến các mô hình AI. Tuỳ thuộc vào tính năng, dữ liệu liên quan có thể bao gồm câu lệnh, thông tin đầu vào, thông tin đầu ra, tài liệu nguồn và phản hồi bằng văn bản. 0 là giá trị mặc định, trừ phi có ghi chú bên dưới.
-
-1 = Cho phép sử dụng tính năng nhưng không cho phép Google sử dụng nội dung của người dùng (bao gồm câu lệnh, thông tin đầu vào, thông tin đầu ra, tài liệu nguồn và phản hồi bằng văn bản) để cải tiến các mô hình. 1 là giá trị mặc định cho Người dùng doanh nghiệp do <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> quản lý và Tài khoản thuộc tổ chức giáo dục do <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> quản lý.
-
-2 = Không cho phép sử dụng tính năng này.
-
-Nếu bạn không đặt chính sách này thì hành vi của chính sách sẽ do chính sách <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> xác định.
-
-Để biết thêm thông tin về cách xử lý dữ liệu cho các tính năng AI tạo sinh, vui lòng truy cập https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="9061609750723054419">Kiểm soát chế độ hiển thị của thông báo quản lý trên Trang thẻ mới cho trình duyệt được quản lý</translation>
 <translation id="9063485115966829754">Trình xem PDF sử dụng cấu trúc GuestView.</translation>
 <translation id="9064546884927958824">Khi đặt chính sách này, bạn có thể tạo danh sách các mẫu URL để chỉ định những trang web được phép hiển thị hình ảnh.

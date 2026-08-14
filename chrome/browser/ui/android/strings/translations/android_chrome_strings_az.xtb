@@ -532,6 +532,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="3161699713309727585"><ph name="BUTTON_TEXT" />, yeni tabda açılır</translation>
 <translation id="3166827708714933426">Panel və pəncərə qısayolları</translation>
 <translation id="3167258285411721858"><ph name="HOST_NAME" /> üçün mobil sayt tələb edə bilərsiniz</translation>
+<translation id="3177338796769255211">Daxil olaraq bütün cihazlarda əlfəcin və s. əldə edin</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, Çoxseçimli, bərkidilmiş, susdurulmuş anonim tab</translation>
 <translation id="3189635831478931757"><ph name="GROUP_TITLE" /> tab qrupu</translation>
 <translation id="3200536777393523575">Cari pəncərə bağlansın?</translation>
@@ -928,6 +929,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
 <translation id="4807098396393229769">Kart Adı</translation>
 <translation id="480990236307250886">Əsas səhifəni açın</translation>
+<translation id="4816492930507672669">Səhifəyə uyğunlaşsın</translation>
 <translation id="4822710610088666676"><ph name="TAB_GROUP_TITLE" /> tab qrupu bağlandı və yadda saxlandı</translation>
 <translation id="4834250788637067901">Google Pay istifadə edən ödəniş metodları, təkliflər və ünvanlar</translation>
 <translation id="4835385943915508971">Chrome'un sorğulanan mənbəyə girişi yoxdur.</translation>
@@ -1312,7 +1314,6 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="6411219469806822692">Bundan yuxarıya keçmək olmur. Səhifənin yuxarısından başlamağı sınayın.</translation>
 <translation id="6412215853589222273"><ph name="TAB_TITLE" />, Çoxseçimli tab</translation>
 <translation id="641643625718530986">Çap edin...</translation>
-<translation id="6427723330233512782">Hündürlüyə uyğunlaşdırın</translation>
 <translation id="6433501201775827830">Axtarış sistemini seçin</translation>
 <translation id="6434309073475700221">Ləğv edin</translation>
 <translation id="6435307030888827407">Hesaba giriş etməyin</translation>

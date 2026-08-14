@@ -149,6 +149,7 @@
 <translation id="1243027604378859286">المؤلف:</translation>
 <translation id="1246424317317450637">غامق</translation>
 <translation id="1247030632403369975">ألومنيوم</translation>
+<translation id="1249643768796040660">إزالة هذه المعلومات</translation>
 <translation id="1253846494229886276">جارٍ حفظ لقطة الشاشة</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />، <ph name="TYPE_2" /> (تمت المزامنة)</translation>
 <translation id="1255931290436977164">جواز سفر</translation>
@@ -2182,7 +2183,7 @@
 <translation id="4730977633786878901">عرض المراجعات</translation>
 <translation id="4731638775147756694">حظَر مشرفك هذا التطبيق.</translation>
 <translation id="4732860731866514038">جارٍ تنزيل حزمة اللغة <ph name="LANGUAGE" />… %<ph name="PERCENT" /></translation>
-<translation id="4733082559415072992">يريد <ph name="URL" /> استخدام الموقع الجغرافي لجهازك.</translation>
+<translation id="4733082559415072992">يريد <ph name="URL" /> استخدام الموقع الجغرافي لجهازك</translation>
 <translation id="473414950835101501">استخدام الكاميرات</translation>
 <translation id="4736825316280949806">‏إعادة تشغيل Chromium</translation>
 <translation id="4736934858538408121">البطاقة الافتراضية</translation>
@@ -3722,6 +3723,7 @@
 <translation id="7379321689415048316">‏يمكن لمتصفّح Chrome ملء الحقول الصعبة التي قد لا ترصدها ميزة "الملء التلقائي" العادية</translation>
 <translation id="7380398842872229465">10 × 15 بوصة</translation>
 <translation id="7381551826960739226">تم إيقاف الملء التلقائي لطرق الدفع لأنّ هذا النموذج لا يستخدم اتصالاً آمنًا.</translation>
+<translation id="7382980704744807223">الملف مريب</translation>
 <translation id="7388594495505979117">{0,plural, =1{ستتم إعادة تشغيل جهازك بعد دقيقة واحدة}zero{ستتم إعادة تشغيل جهازك بعد # دقيقة}two{ستتم إعادة تشغيل جهازك بعد دقيقتين}few{ستتم إعادة تشغيل جهازك بعد # دقائق}many{ستتم إعادة تشغيل جهازك بعد # دقيقة}other{ستتم إعادة تشغيل جهازك بعد # دقيقة}}</translation>
 <translation id="7393475648162498734">يتيح هذا الإعداد عرض المكافآت والمزايا المتاحة لبطاقاتك عند الدفع.</translation>
 <translation id="7393971683644170444">جارٍ الاتصال بمقدّم بطاقتك...</translation>

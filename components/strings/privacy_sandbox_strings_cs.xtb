@@ -3,7 +3,6 @@
 <translationbundle lang="cs">
 <translation id="1184166532603925201">V anonymním režimu Chrome webům používání souborů cookie třetích stran blokuje</translation>
 <translation id="1569440020357229235">V anonymním režimu nemůžou weby používat soubory cookie třetích stran. Pokud web, který se spoléhá na tyhle soubory cookie, ​​nefunguje, můžete mu <ph name="BEGIN_LINK" />zkusit udělit dočasný přístup k souborům cookie třetích stran<ph name="END_LINK" />.</translation>
-<translation id="19426210786412737">Nastavení Chromu bylo aktualizováno a povoluje teď webům přístup k souborům cookie třetích stran. Toto nastavení můžete kdykoli změnit.</translation>
 <translation id="2004697686368036666">Některé weby můžou přestat fungovat</translation>
 <translation id="2183376768278472507">Pokud některý web nefunguje správně, můžete soubory cookie třetích stran zkusit pro konkrétní navštívený web povolit</translation>
 <translation id="2235344399760031203">Soubory cookie třetích stran jsou blokovány</translation>
@@ -19,7 +18,6 @@
 <translation id="5677928146339483299">Blokováno</translation>
 <translation id="6196640612572343990">Blokovat soubory cookie třetích stran</translation>
 <translation id="6308169245546905162">Weby můžou pomocí souborů cookie třetích stran sledovat, co provádíte na jiných webech</translation>
-<translation id="6494210367693221285">Nastavení prohlížeče Chromium bylo aktualizováno a povoluje teď webům přístup k souborům cookie třetích stran. Toto nastavení můžete kdykoli změnit.</translation>
 <translation id="6710025070089118043">Weby nemůžou používat soubory cookie třetích stran k personalizaci obsahu a reklam ani ke sledování vaší činnosti na jiných webech, pokud k nim souvisejícím webům nedáte přístup</translation>
 <translation id="7315780377187123731">Další informace o možnosti Blokovat soubory cookie třetích stran</translation>
 <translation id="7374493521304367420">Weby můžou dál používat soubory cookie ke sledování aktivity procházení na svých stránkách</translation>
@@ -27,8 +25,6 @@
 <translation id="7538480403395139206">Další informace o možnosti Povolit soubory cookie třetích stran</translation>
 <translation id="8200078544056087897">Funkce webů založené na souborech cookie třetích stran by měly fungovat správně</translation>
 <translation id="839994149685752920">Weby můžou používat soubory cookie třetích stran k personalizaci obsahu a reklam</translation>
-<translation id="8428213095426709021">Nastavení</translation>
-<translation id="8712637175834984815">Rozumím</translation>
 <translation id="9039924186462989565">V anonymním režimu Chromium webům používání souborů cookie třetích stran blokuje</translation>
 <translation id="9162335340010958530">Weby nemůžou používat soubory cookie třetích stran k personalizaci obsahu a reklam ani ke sledování vaší činnosti na jiných webech, pokud k nim souvisejícím webům nepovolíte přístup</translation>
 </translationbundle>

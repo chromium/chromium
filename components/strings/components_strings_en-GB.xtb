@@ -610,8 +610,10 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2045871135676061132">Envelope Personal</translation>
 <translation id="2048261947532620704">Translating page</translation>
 <translation id="2055016614992422886">Conversation</translation>
+<translation id="2058468041496756763">You can change your search engine at any time in Chrome’s settings. If you don't see your preferred search engine, you can perform a search from their site. You'll see it listed as a recently visited search engine in Chrome settings, and you can make it your default.</translation>
 <translation id="2059166748188874810">Municipality</translation>
 <translation id="2059202684901022309">22 in x 34 in</translation>
+<translation id="2063929825539050431">To quickly send this page to another device, touch and hold the address bar</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 suggestion}other{# suggestions}}</translation>
 <translation id="2066969741541525119">The site ahead is blocked by your organisation</translation>
 <translation id="2071156619270205202">This card is not eligible for virtual card number.</translation>
@@ -3720,6 +3722,7 @@ Additional details:
 <translation id="7379321689415048316">Chrome can autofill difficult fields that standard autofill might miss</translation>
 <translation id="7380398842872229465">10 in x 15 in</translation>
 <translation id="7381551826960739226">Automatic payment methods filling is disabled because this form does not use a secure connection.</translation>
+<translation id="7382980704744807223">Suspicious</translation>
 <translation id="7388594495505979117">{0,plural, =1{Your device will restart in 1 minute}other{Your device will restart in # minutes}}</translation>
 <translation id="7393475648162498734">Show which rewards and benefits are available for your cards at checkout</translation>
 <translation id="7393971683644170444">Connecting to your card provider…</translation>
@@ -3829,7 +3832,7 @@ Additional details:
 <translation id="7552846755917812628">Try the following tips:</translation>
 <translation id="7554242657529665960">From your administrator: '<ph name="ADMIN_MESSAGE" />'</translation>
 <translation id="7554475479213504905">Reload and show anyway</translation>
-<translation id="7554791636758816595">New Tab</translation>
+<translation id="7554791636758816595">New tab</translation>
 <translation id="7556328470713619625">Use a passkey</translation>
 <translation id="7559278538486662777">This app can't be resized.</translation>
 <translation id="7561784249784255101">Digital versatile disc</translation>
@@ -4191,6 +4194,7 @@ Additional details:
 <translation id="8175796834047840627">Chrome is offering to save your cards in your Google Account because you are signed in. You can change this behaviour in settings.</translation>
 <translation id="8176440868214972690">The administrator of this device has sent some info to the following websites, like settings or policies.</translation>
 <translation id="818254048113802060">{0,plural, =1{<ph name="FILE_NAME" /> was blocked because of content}other{<ph name="FILE_COUNT" /> files were blocked because of content}}</translation>
+<translation id="8186171296341598122">You can change your search engine at any time in Chromium's settings. If you don't see your preferred search engine, you can perform a search from their site. You'll see it listed as a recently visited search engine in Chromium settings, and you can make it your default.</translation>
 <translation id="8188830160449823068">IBAN saved to device only</translation>
 <translation id="8189557652711717875">The search engine that you choose will be used for features such as searching from the address bar and from images on web pages.</translation>
 <translation id="8190193880870196235">Managed by an extension</translation>

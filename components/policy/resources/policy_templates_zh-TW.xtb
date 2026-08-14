@@ -4076,6 +4076,14 @@ SwiftShader 曾在沒有 GPU 加速功能的系統 (例如無頭系統或虛擬�
 <translation id="366494444808132420">允許整合 Gemini。</translation>
 <translation id="3665437376055221832">只在沒有任何符合自動選取政策的憑證時提示使用者。</translation>
 <translation id="3671773704245936868">停用鍵盤焦點醒目顯示功能</translation>
+<translation id="367258298235646178">允許管理員自訂資料遺失防護 (DLP) 規則套用的浮水印外觀，包括設定填滿/外框不透明度、定義字型大小，以及設定時間戳記時區。
+如果未設定這項政策或部分值，Chrome 會採用預設浮水印行為。
+電腦版的預設值如下：填滿不透明度為 4、外框不透明度為 6、字型大小為 24。iOS 版的預設值如下：填滿不透明度為 10、外框不透明度為 15、字型大小為 16。在所有平台上，時間戳記時區預設為「user_device」(使用者裝置的當地時區)。
+
+「填滿不透明度」是百分比，範圍從 0 (完全透明) 到 100 (完全不透明)。
+「外框不透明度」是百分比，範圍從 0 (完全透明) 到 100 (完全不透明)。
+「字型大小」以點為指定單位。
+「時間戳記時區」指定用於設定浮水印時間戳記格式的 IANA 時區 ID (例如「America/Toronto」)，支援 Chrome 152 以上版本。這個 ID 採用 IANA 時區資料庫 (https://www.iana.org/time-zones) 中的名稱。</translation>
 <translation id="3674010627788940405">不支援 CORS 非萬用字元要求標頭。</translation>
 <translation id="3675248815331229366">設定這項政策後，你可以使用網址模式清單，指定哪些網站不得存取使用者的地理位置，也不能要求使用者授予這項權限。
 
@@ -10850,11 +10858,6 @@ Topics API 已淘汰，因此這項政策已在 <ph name="PRODUCT_NAME" /> 144 �
 
       如果未設定這項政策，Chrome 不會自動選取任何網站的用戶端憑證。</translation>
 <translation id="7937766917976512374">允許或拒絕擷取視訊</translation>
-<translation id="7937825205289116563">如果將這項政策設為啟用或不設定，可以在安裝漸進式網頁應用程式 (PWA) 時，為建立的原生應用程式使用臨時簽名。這麼做可確保每個安裝的應用程式都有專屬的身分，供 <ph name="MAC_OS_NAME" /> 系統元件識別之用。
-
-如果將這項政策設為停用，在安裝漸進式網頁應用程式時建立的每個原生應用程式都會具有相同身分。這可能會干擾 <ph name="MAC_OS_NAME" /> 的功能。
-
-建議只有在使用的端點安全性解決方案會封鎖帶有臨時簽名的應用程式時，才停用這項政策。</translation>
 <translation id="7941528208359969119">允許執行線上 <ph name="OCSP_CRL_LABEL" /> 檢查</translation>
 <translation id="7941975817681987555">無論使用任何網路連線，皆不預測網路動作</translation>
 <translation id="794447754389837404">禁止這些網站透過 Direct Sockets API 存取私人網路</translation>
@@ -11415,7 +11418,6 @@ Topics API 已淘汰，因此這項政策已在 <ph name="PRODUCT_NAME" /> 144 �
 <translation id="8330437518362176921">下載及更新 Kiosk Chrome 應用程式時，只使用政策提供的更新網址</translation>
 <translation id="8331479227794770304">啟用相黏鍵</translation>
 <translation id="8332822245414537447">停用 RSA 金鑰用途檢查功能</translation>
-<translation id="8333141477131859004">允許使用強化版自動填入功能，並協助改良 AI 模型。</translation>
 <translation id="8334685561819743286">使用者在實體鍵盤上輸入內容時不提供自動更正</translation>
 <translation id="8336986243404088829">這項政策會將轉譯器程序隔離在 CPU 核心，並禁止其他程序共用同一個核心，藉此防範旁路跨程序記憶體攻擊。<ph name="MS_WIN_NAME" /> 11 24H2 以上版本支援這項緩解措施。如果 OS 不支援必要的排程功能，這項政策就不會生效。這項政策在某些高需求情境可能會降低效能，類似於停用超執行緒。詳情請參閱 https://learn.microsoft.com/zh-tw/windows/win32/api/winnt/ns-winnt-process_mitigation_side_channel_isolation_policy
       如果啟用這項政策，轉譯器程序執行時，其他程序就不會安排在同一個 CPU 核心上執行。
@@ -12493,17 +12495,6 @@ Topics API 已淘汰，因此這項政策已在 <ph name="PRODUCT_NAME" /> 144 �
 <translation id="9053841574218808519">一律執行未過期的外掛程式</translation>
 <translation id="9055866143096316150">將螢幕 Wake Lock 使用要求降級為系統 Wake Lock 使用要求</translation>
 <translation id="9057159618445405645">使用 Chrome 瀏覽器預設行為</translation>
-<translation id="9061455386353325110">指定使用者能否讓 <ph name="PRODUCT_NAME" /> 使用生成式 AI 來進一步辨識表單，協助填寫更多欄位。
-
-0 = 允許使用這項功能，並允許 Google 運用相關資料改善 AI 模型。相關資料可能包括提示詞、輸入內容、輸出內容、來源資料和文字意見回饋 (視功能而定)。預設值為 0，但以下註明的情形除外。
-
-1 = 允許使用這項功能，但不允許 Google 運用使用者的內容 (包括提示詞、輸入內容、輸出內容、來源資料和文字意見回饋) 改善模型。如果是 <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />管理的企業版使用者，以及 <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> 管理的教育版帳戶，預設值為 1。
-
-2 = 不允許使用這項功能。
-
-如果不設定這項政策，系統會根據 <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> 政策決定其行為。
-
-如要進一步瞭解生成式 AI 功能的資料處理方式，請前往 https://support.google.com/chrome/a?p=generative_ai_settings。</translation>
 <translation id="9061609750723054419">在受管理瀏覽器中，控管新分頁管理聲明的顯示設定</translation>
 <translation id="9063485115966829754">PDF 檢視器採用 GuestView 架構。</translation>
 <translation id="9064546884927958824">設定這項政策後，你可以使用網址模式清單，指定能夠顯示圖片的網站。

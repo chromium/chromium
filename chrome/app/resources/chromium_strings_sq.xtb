@@ -153,6 +153,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="2635452620547538388">Verifiko që je ti për të përdorur dhe ruajtur të dhënat e Chromium në llogarinë tënde <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="2636783171884046627">Për t'u larguar ose për t'u kthyer te Gemini në Chromium, përdor shkurtoren e tastierës.</translation>
 <translation id="2637732208198500597">{COUNT,plural, =0{"Mbrojtja e përparuar" kërkon që të hapësh përsëri Chromium për të zbatuar një përditësim}=1{"Mbrojtja e përparuar" kërkon që të hapësh përsëri Chromium për të zbatuar një përditësim. Dritarja jote "e fshehtë" nuk do të rihapet.}other{"Mbrojtja e përparuar" kërkon që të hapësh përsëri Chromium për të zbatuar një përditësim. # dritaret e tua "të fshehta" nuk do të rihapen.}}</translation>
+<translation id="263863604136125912">Nis Chromium</translation>
 <translation id="2648074677641340862">Ndodhi një gabim në sistemin operativ gjatë instalimit. Shkarko përsëri Chromium.</translation>
 <translation id="2661879430930417727">Nëse e ndan një pajisje, miqtë dhe familja mund të shfletojnë veçmas dhe ta konfigurojnë Chromium pikërisht ashtu si dëshirojnë</translation>
 <translation id="2676569452213089702">Qasu me lehtësi për të përdorur Gemini në Chromium në pajisjen tënde, edhe nëse Chromium është i minimizuar.</translation>

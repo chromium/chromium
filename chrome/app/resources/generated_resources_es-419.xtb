@@ -1356,6 +1356,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2044750031738659219">{0,plural, =1{Cerrar la sesión de invitado}other{Cerrar la sesión de invitado (# ventanas)}}</translation>
 <translation id="204497730941176055">Nombre de la plantilla de certificado de Microsoft</translation>
 <translation id="2045211794962848221">No volverás a ver este mensaje específico</translation>
+<translation id="2045482258469113155">¿Quieres redireccionar a <ph name="URL" />?</translation>
 <translation id="2045540927991079503">Abrir vínculo como</translation>
 <translation id="2045838962742066664">Escritura mediante combinación de teclas</translation>
 <translation id="2046702855113914483">Ramen</translation>
@@ -1456,6 +1457,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2135787500304447609">&amp;Reanudar</translation>
 <translation id="2136476978468204130">La frase de contraseña que ingresaste es incorrecta</translation>
 <translation id="2137128126782078222">No permitir notificaciones de <ph name="WEBSITE" /></translation>
+<translation id="2137871148058020508">Ayuda en el producto: Las traducciones de PDF aparecen en el panel lateral del modo de lectura</translation>
 <translation id="2139919072249842737">Botón de configuración</translation>
 <translation id="2140788884185208305">Estado de la batería</translation>
 <translation id="2142328300403846845">Abrir vínculo como</translation>
@@ -1789,6 +1791,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2399699884460174994">Se activaron las Notificaciones</translation>
 <translation id="2399939490305346086">Datos de acceso de la llave de seguridad</translation>
 <translation id="240006516586367791">Controles multimedia</translation>
+<translation id="2405057019351885107">El navegador que te permite hacer más</translation>
 <translation id="2405887402346713222">Números de serie del dispositivo y los componentes</translation>
 <translation id="2406153734066939945">¿Quieres borrar este perfil y sus datos?</translation>
 <translation id="2406942743794219791">Confirma el motor de búsqueda predeterminado que quieres</translation>
@@ -2807,7 +2810,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3157387275655328056">Agregar a la Lista de lectura</translation>
 <translation id="3157931365184549694">Restaurar</translation>
 <translation id="3158033540161634471">Configura tu huella</translation>
-<translation id="3158203338449343164">Dejar de fijar la búsqueda de pestañas</translation>
+<translation id="3158203338449343164">Dejar de fijar Búsqueda de pestañas</translation>
 <translation id="3158770568048368350">Es posible que esta acción desconecte tu red móvil por un breve instante</translation>
 <translation id="3159335509547415276">Más información sobre cuentas bloqueadas</translation>
 <translation id="3159493096109238499">Beige</translation>
@@ -4082,7 +4085,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4110485659976215879">Restablecer advertencia</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (sin conexión)</translation>
 <translation id="4113743276555482284">Contraseña del archivo</translation>
-<translation id="4114391251600134209">{COUNT,plural, =0{No hay contraseñas guardadas}=1{Se revisó 1 contraseña}other{Se revisaron {COUNT} contraseñas}}</translation>
 <translation id="4114524937989710624">Estás viendo archivos sugeridos para que puedas regresar a la actividad más reciente en Google Drive.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -4886,6 +4888,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="4754590344707355551">Mejora tu navegador con extensiones</translation>
 <translation id="4756378406049221019">Detener/volver a cargar</translation>
 <translation id="4756388243121344051">&amp;Historial</translation>
+<translation id="4756627014339714615">Redireccionar</translation>
 <translation id="4756671452988984333">Texto para audio</translation>
 <translation id="4759202969060787081">No abrir</translation>
 <translation id="4759238208242260848">Descargas</translation>
@@ -5177,6 +5180,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="4964455510556214366">Disposición</translation>
 <translation id="4964544790384916627">Anclar ventana</translation>
 <translation id="4964673849688379040">Verificando…</translation>
+<translation id="4966391178172868170">Mover el cursor para seleccionar en la pantalla</translation>
 <translation id="4966972803217407697">Estás en modo Incógnito</translation>
 <translation id="4967227914555989138">Agregar nota</translation>
 <translation id="4967360192915400530">Descargar archivo peligroso</translation>
@@ -5591,6 +5595,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5293170712604732402">Restablecer la configuración a los valores predeterminados originales</translation>
 <translation id="5294068591166433464">Si un sitio intenta robar tu contraseña, o si descargas un archivo dañino, es posible que Chrome también envíe las URLs, con partes del contenido de la página, a Google.</translation>
 <translation id="5294618183559481278">Tu <ph name="DEVICE_TYPE" /> utiliza un sensor integrado para detectar personas que estén frente a tu dispositivo. Toda la información se procesa automáticamente en tu dispositivo y, luego, se borra. Los datos de sensores nunca se envían a Google. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
+<translation id="5294922869942863768">Las traducciones de PDF aparecen en el panel lateral del modo de lectura</translation>
 <translation id="5296350763804564124">Escucha descripciones por voz para usar el dispositivo sin mirar la pantalla. Las descripciones en braille están disponibles con un dispositivo conectado.</translation>
 <translation id="5296536303670088158">Tienes la seguridad más sólida de Chrome contra sitios web dañinos</translation>
 <translation id="5297005732522718715">Actualizar la configuración de la conexión mediante dispositivo móvil</translation>
@@ -5772,7 +5777,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5446836766119801744">⌥L</translation>
 <translation id="5447289297870286353">Generar ideas</translation>
 <translation id="5449551289610225147">Contraseña no válida</translation>
-<translation id="5449588825071916739">Agregar a favoritos todas las pestañas</translation>
+<translation id="5449588825071916739">Agregar todas las pestañas a favoritos</translation>
 <translation id="5449716055534515760">Cerrar ven&amp;tana</translation>
 <translation id="5449932659532574495"><ph name="TURN_ON_BLUETOOTH_LINK" /> para explorar dispositivos Bluetooth</translation>
 <translation id="5450469615146335984">Selecciona una combinación de teclas para cada acción</translation>
@@ -6192,6 +6197,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5796956053441619942">La URL del dispositivo remoto no es compatible</translation>
 <translation id="5798079537501238810">Los sitios pueden instalar controladores de pago.</translation>
 <translation id="5798086737841799234">Ingresa el código de confirmación</translation>
+<translation id="5798574502832537664">Selecciona texto en una página para obtener una definición o más información sobre un tema</translation>
 <translation id="579915268381781820">Se quitó la llave de seguridad.</translation>
 <translation id="5799508265798272974">Máquina virtual de Linux: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5799638114236977894">Intercambiar con la vista derecha</translation>
@@ -6394,6 +6400,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5948476936444935795">Cancelar la importación</translation>
 <translation id="5949795028157144515">El Modo de desarrollador está desactivado. Se inhabilitaron algunas extensiones.</translation>
 <translation id="594993197557058302">Presiona entre 1 y 4 teclas modificadoras (Ctrl, Alt, Mayúsculas, Búsqueda o Selector) y 1 tecla más. También puedes seleccionar una sola tecla.</translation>
+<translation id="5950318713575418497">Traducir archivos PDF</translation>
 <translation id="5950762317146173294">Este archivo puede ser un virus o software malicioso</translation>
 <translation id="5951303645598168883"><ph name="ORIGIN" /> desea usar fuentes locales</translation>
 <translation id="5951624318208955736">Monitor</translation>
@@ -6982,7 +6989,6 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6425556984042222041">Velocidad para texto a voz</translation>
 <translation id="642729974267661262">No puede reproducir sonido</translation>
 <translation id="6427752304227226701">Denunciar un sitio &amp;no seguro…</translation>
-<translation id="6427938854876261655">{COUNT,plural, =0{No hay contraseñas guardadas.}=1{Revisando {COUNT} contraseña…}other{Revisando {COUNT} contraseñas…}}</translation>
 <translation id="6429384232893414837">Error en la actualización</translation>
 <translation id="6430202563517028640">Agregar vínculo a la lista de lectura</translation>
 <translation id="6430814529589430811">Certificado único ASCII con codificación Base64</translation>
@@ -7037,6 +7043,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6464825623202322042">Este dispositivo</translation>
 <translation id="6465841119675156448">Sin Internet</translation>
 <translation id="6466258437571594570">Los sitios no podrán interrumpirte para preguntarte si quieres recibir notificaciones</translation>
+<translation id="6466936665940546351">Verifica tu identidad para agregar contraseñas y obtenerlas en todos los dispositivos con tu Cuenta de Google</translation>
 <translation id="6467230443178397264">Escanear <ph name="FILE_NAME" /></translation>
 <translation id="6467304607960172345">Optimizar los videos en pantalla completa</translation>
 <translation id="6467377768028664108">Tu <ph name="DEVICE_TYPE" /> te permitirá lo siguiente:</translation>
@@ -7368,6 +7375,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6718728708077839052">Administrar permisos de la app principal</translation>
 <translation id="671928215901716392">Bloquear pantalla</translation>
 <translation id="6719839880830057298">Se completó la carga del archivo</translation>
+<translation id="6720077015462788541">Guarda y usa tus contraseñas en todos los dispositivos</translation>
 <translation id="6721744718589119342">Recibir correos electrónicos con más información o actualizaciones</translation>
 <translation id="6721770155320398589">Límite de carga</translation>
 <translation id="6721972322305477112">&amp;Archivo</translation>
@@ -7386,6 +7394,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6729493062119577923">Actividad del grupo de pestañas compartido</translation>
 <translation id="6730744976532805323">Comparte la pestaña actual con Gemini, incluso cuando cambias de pestaña.</translation>
 <translation id="6731848763586448407">Probar la vista dividida apilada</translation>
+<translation id="6732655176147074089">Mueve rápidamente el cursor del mouse de un lado a otro para seleccionar en la pantalla</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (ID: <ph name="EXTENSION_OR_APP_ID" />)</translation>
 <translation id="6736243959894955139">Dirección</translation>
 <translation id="6737663862851963468">Quitar el ticket de Kerberos</translation>
@@ -8781,6 +8790,7 @@ Presiona un interruptor o tecla que ya esté asignado para quitar la asignación
 <translation id="7807711621188256451">Permitir siempre que <ph name="HOST" /> acceda a la cámara</translation>
 <translation id="7810202088502699111">Se bloquearon las ventanas emergentes en esta página.</translation>
 <translation id="7810367892333449285">El formato de tu entrada debe ser <ph name="LPA_0" />$<ph name="LPA_1" />dirección SM-DP+<ph name="LPA_2" />$<ph name="LPA_3" />ID para coincidencias opcional<ph name="LPA_4" /></translation>
+<translation id="7810951505946824824">Chrome es una realidad gracias al proyecto de código abierto Chromium y a otros software de <ph name="BEGIN_HIGHLIGHT" />código abierto<ph name="END_HIGHLIGHT" />.</translation>
 <translation id="7811263553491007091">Vuelve a intentarlo o selecciona uno de los temas generados anteriormente a continuación.</translation>
 <translation id="7811926937048662341">Haz clic con el botón derecho aquí y selecciona “Mostrar las pestañas verticalmente”</translation>
 <translation id="7811986034759500329">Configurar en la configuración del sistema</translation>
@@ -10615,6 +10625,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="9220820413868316583">Levanta el dedo y vuelve a intentarlo.</translation>
 <translation id="922152298093051471">Personalizar Chrome</translation>
 <translation id="9222839391870847423">Duración: <ph name="DURATION" /></translation>
+<translation id="9223158240932249417">No se pueden mostrar acciones de texto</translation>
 <translation id="923306663772315007">Enviar a tu &amp;dispositivo</translation>
 <translation id="923467487918828349">Mostrar todos</translation>
 <translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{Para administrarla, abre Extensiones}other{Para administrarlas, abre Extensiones}}</translation>

@@ -532,6 +532,7 @@ Ngumuntu onomushwana wakho wokungena kuphela ongafunda idatha yakho ebetheliwe. 
 <translation id="3161699713309727585">I-<ph name="BUTTON_TEXT" />, ivuleka kuthebhu entsha</translation>
 <translation id="3166827708714933426">Izinqamuleli zethebhu nezewindi</translation>
 <translation id="3167258285411721858">Ungacela isayithi leselula le-<ph name="HOST_NAME" /></translation>
+<translation id="3177338796769255211">Ngena ngemvume ukuze uthole amabhukhimakhi akho nokunye okwengeziwe kuwo wonke amadivayisi akho</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, Ithebhu ye-Incognito Ephiniwe Ethulisiwe Enokukhethwa Okuningi</translation>
 <translation id="3189635831478931757">Iqembu lethebhu le-<ph name="GROUP_TITLE" /></translation>
 <translation id="3200536777393523575">Vala iwindi okulo?</translation>
@@ -928,6 +929,7 @@ I-akhawunti yakho ye-Google ingaba namanye amafomu omlando okuphequlula afana no
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
 <translation id="4807098396393229769">Igama kukhadi</translation>
 <translation id="480990236307250886">Vula ikhasi lasekhaya</translation>
+<translation id="4816492930507672669">Linganisa kukhasi</translation>
 <translation id="4822710610088666676">Iqembu lethebhu ye-<ph name="TAB_GROUP_TITLE" /> livaliwe futhi lalondolozwa</translation>
 <translation id="4834250788637067901">Izindlela zokukhokha, imititilizo, namakheli asebenzisa i-Google Pay</translation>
 <translation id="4835385943915508971">I-Chrome ayinakho ukufinyelela kusisetshenziswa esiceliwe.</translation>
@@ -1314,7 +1316,6 @@ Isibonelo, amanye amawebhusayithi angaphendula lesi sicelo ngokukubonisa izikhan
 <translation id="6411219469806822692">Ayikwazi ukuya phezulu kakhulu Zama ukuqala phezulu kakhulu ekhasini.</translation>
 <translation id="6412215853589222273"><ph name="TAB_TITLE" />, Ithebhu Enokukhethwa Okuningi</translation>
 <translation id="641643625718530986">Phrinta…</translation>
-<translation id="6427723330233512782">Linganisa nokuphakama</translation>
 <translation id="6433501201775827830">Khetha injini yakho yokusesha</translation>
 <translation id="6434309073475700221">Lahla</translation>
 <translation id="6435307030888827407">Hlala uphume ngemvume</translation>

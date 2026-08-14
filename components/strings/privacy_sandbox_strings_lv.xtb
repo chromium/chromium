@@ -3,7 +3,6 @@
 <translationbundle lang="lv">
 <translation id="1184166532603925201">Inkognito režīmā pārlūkā Chrome vietnēm ir liegts izmantot trešo pušu sīkfailus.</translation>
 <translation id="1569440020357229235">Inkognito režīmā vietnes nevar izmantot trešo pušu sīkfailus. Ja kāda vietne, kura paļaujas uz šiem sīkfailiem, nedarbojas, varat <ph name="BEGIN_LINK" />mēģināt piešķirt šai vietnei īslaicīgu piekļuvi trešo pušu sīkfailiem<ph name="END_LINK" />.</translation>
-<translation id="19426210786412737">Jūsu pašreizējie Chrome iestatījumi ir atjaunināti, lai vietnēm būtu atļauts piekļūt trešo pušu sīkfailiem. Jebkurā laikā varat mainīt šo iestatījumu.</translation>
 <translation id="2004697686368036666">Noteiktās vietnēs funkcijas var nedarboties.</translation>
 <translation id="2183376768278472507">Ja kāda vietne nedarbojas paredzētajā veidā, varat mēģināt atļaut trešo pušu sīkfailus apmeklētajā vietnē.</translation>
 <translation id="2235344399760031203">Trešo pušu sīkfaili ir bloķēti</translation>
@@ -19,7 +18,6 @@
 <translation id="5677928146339483299">Bloķēti</translation>
 <translation id="6196640612572343990">Bloķēt trešo pušu sīkfailus</translation>
 <translation id="6308169245546905162">Vietnes drīkst izmantot trešo pušu sīkfailus, lai iegūtu informāciju par jūsu darbībām citās vietnēs.</translation>
-<translation id="6494210367693221285">Jūsu pašreizējie Chromium iestatījumi ir atjaunināti, lai vietnēm būtu atļauts piekļūt trešo pušu sīkfailiem. Jebkurā laikā varat mainīt šo iestatījumu.</translation>
 <translation id="6710025070089118043">Vietnes nedrīkst izmantot trešo pušu sīkfailus, lai personalizētu saturu un reklāmas, kā arī iegūtu informāciju par jūsu darbībām citās vietnēs, ja vien nepiešķirat saistītajām vietnēm piekļuvi šiem sīkfailiem.</translation>
 <translation id="7315780377187123731">Plašāka informācija par opciju “Bloķēt trešo pušu sīkfailus”</translation>
 <translation id="7374493521304367420">Vietnes joprojām var izmantot sīkfailus, lai skatītu pārlūkošanas darbības tajās.</translation>
@@ -27,8 +25,6 @@
 <translation id="7538480403395139206">Plašāka informācija par opciju “Atļaut trešo pušu sīkfailus”</translation>
 <translation id="8200078544056087897">Vietņu funkcijas, kuras paļaujas uz trešo pušu sīkfailiem, darbosies paredzētajā veidā.</translation>
 <translation id="839994149685752920">Vietnes drīkst izmantot trešo pušu sīkfailus, lai personalizētu saturu un reklāmas.</translation>
-<translation id="8428213095426709021">Iestatījumi</translation>
-<translation id="8712637175834984815">Labi</translation>
 <translation id="9039924186462989565">Inkognito režīmā pārlūkā Chromium vietnēm ir liegts izmantot trešo pušu sīkfailus.</translation>
 <translation id="9162335340010958530">Vietnes nedrīkst izmantot trešo pušu sīkfailus, lai personalizētu saturu un reklāmas, kā arī iegūtu informāciju par jūsu darbībām citās vietnēs, ja vien neatļaujat saistītajām vietnēm piekļūt šiem sīkfailiem.</translation>
 </translationbundle>

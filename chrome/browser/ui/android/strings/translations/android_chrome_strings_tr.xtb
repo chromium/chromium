@@ -532,6 +532,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="3161699713309727585"><ph name="BUTTON_TEXT" />, yeni sekmede açılır</translation>
 <translation id="3166827708714933426">Sekme ve pencere kısayolları</translation>
 <translation id="3167258285411721858"><ph name="HOST_NAME" /> mobil sitesini isteyebilirsiniz</translation>
+<translation id="3177338796769255211">Yer işaretlerinize ve daha fazlasına tüm cihazlarınızdan ulaşmak için oturum açın</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, Birden Çok Seçili Sesi Kapalı Sabit Gizli Sekme</translation>
 <translation id="3189635831478931757"><ph name="GROUP_TITLE" /> sekme grubu</translation>
 <translation id="3200536777393523575">Geçerli pencereniz kapatılsın mı?</translation>
@@ -928,6 +929,7 @@ Diğer Google hizmetlerinden yapılan aramalar ve etkinlikler gibi Google hesab�
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
 <translation id="4807098396393229769">Kartın üzerindeki ad</translation>
 <translation id="480990236307250886">Ana sayfayı aç</translation>
+<translation id="4816492930507672669">Sayfaya sığdır</translation>
 <translation id="4822710610088666676"><ph name="TAB_GROUP_TITLE" /> sekme grubu kapatıldı ve kaydedildi</translation>
 <translation id="4834250788637067901">Google Pay'i kullanan ödeme yöntemleri, teklifler ve adresler</translation>
 <translation id="4835385943915508971">Chrome, istenen kaynağa erişemiyor.</translation>
@@ -1314,7 +1316,6 @@ Diğer Google hizmetlerinden yapılan aramalar ve etkinlikler gibi Google hesab�
 <translation id="6411219469806822692">Daha yukarı çıkılamıyor. Sayfanın daha yukarısından başlamayı deneyin.</translation>
 <translation id="6412215853589222273"><ph name="TAB_TITLE" />, Birden Çok Seçili Sekme</translation>
 <translation id="641643625718530986">Yazdır…</translation>
-<translation id="6427723330233512782">Yüksekliğe sığdır</translation>
 <translation id="6433501201775827830">Arama motorunuzu seçin</translation>
 <translation id="6434309073475700221">Kapat</translation>
 <translation id="6435307030888827407">Oturumu kapalı tut</translation>

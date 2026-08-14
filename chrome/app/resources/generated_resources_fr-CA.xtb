@@ -4087,7 +4087,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4110485659976215879">Restaurer l'avertissement</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (hors ligne)</translation>
 <translation id="4113743276555482284">Mot de passe du fichier</translation>
-<translation id="4114391251600134209">{COUNT,plural, =0{Aucun mot de passe enregistré}=1{1 mot de passe vérifié}one{{COUNT} mot de passe vérifié}other{{COUNT} mots de passe vérifiés}}</translation>
 <translation id="4114524937989710624">Des fichiers suggérés sont affichés pour vous permettre de reprendre votre activité la plus récente dans Google Disque de façon conviviale.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -5775,6 +5774,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="5444281205834970653">Supprimer et continuer</translation>
 <translation id="5444452275167152925">Importés de ChromeOS</translation>
 <translation id="5445400788035474247">10x</translation>
+<translation id="5446836766119801744">⌥L</translation>
 <translation id="5447289297870286353">Faire du remue-méninges</translation>
 <translation id="5449551289610225147">Mot de passe non valide</translation>
 <translation id="5449588825071916739">Ajouter tous les onglets aux favoris</translation>
@@ -6989,7 +6989,6 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6425556984042222041">Vitesse de la synthèse vocale</translation>
 <translation id="642729974267661262">Non autorisés à faire jouer des sons</translation>
 <translation id="6427752304227226701">Signaler un site dangereux…</translation>
-<translation id="6427938854876261655">{COUNT,plural, =0{Aucun mot de passe enregistré.}=1{Vérification de {COUNT} mot de passe…}one{Vérification de {COUNT} mots de passe...}other{Vérification de {COUNT} mots de passe...}}</translation>
 <translation id="6429384232893414837">Erreur de mise à jour</translation>
 <translation id="6430202563517028640">Ajouter le lien à la Liste de lecture</translation>
 <translation id="6430814529589430811">Certificat unique codé base64 ASCII</translation>
@@ -8144,6 +8143,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7311244614769792472">Aucun résultat trouvé</translation>
 <translation id="7312040805247765153">Impossible d'installer l'appli</translation>
 <translation id="7312210124139670355">Votre administrateur est en train de réinitialiser votre carte eSIM. Cette opération peut prendre quelques minutes.</translation>
+<translation id="731239254927333251">Alt+L</translation>
 <translation id="7313539585802573958">Couleurs du rétroéclairage du clavier</translation>
 <translation id="7314722166530073269">{NUM_EVENTS,plural, =1{Impossible de dater 1 événement; il n'est pas affiché}one{Impossible de dater # événement; il n'est pas affiché}other{Impossible de dater # événement; ils ne sont pas affichés}}</translation>
 <translation id="7314865262803554456">Vous ne recevrez pas de notification lorsque l'enregistrement commencera.</translation>

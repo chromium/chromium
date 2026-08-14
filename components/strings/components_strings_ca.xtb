@@ -149,6 +149,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1243027604378859286">Autor:</translation>
 <translation id="1246424317317450637">Negreta</translation>
 <translation id="1247030632403369975">Alumini</translation>
+<translation id="1249643768796040660">Suprimeix aquesta informació</translation>
 <translation id="1253846494229886276">S'està desant la captura de pantalla</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (informació sincronitzada)</translation>
 <translation id="1255931290436977164">Passaport</translation>
@@ -3722,6 +3723,7 @@ Detalls addicionals:
 <translation id="7379321689415048316">Chrome pot emplenar automàticament els camps difícils que l'emplenament automàtic estàndard podria ometre</translation>
 <translation id="7380398842872229465">10 x 15 polzades</translation>
 <translation id="7381551826960739226">L'emplenament automàtic de formes de pagament està desactivat perquè aquest formulari no utilitza una connexió segura.</translation>
+<translation id="7382980704744807223">Baixada sospitosa</translation>
 <translation id="7388594495505979117">{0,plural, =1{El dispositiu es reiniciarà d'aquí a 1 minut}other{El dispositiu es reiniciarà d'aquí a # minuts}}</translation>
 <translation id="7393475648162498734">Mostra quines recompenses i quins avantatges tens disponibles per a les targetes en el moment de tramitar la compra</translation>
 <translation id="7393971683644170444">S'està connectant amb el proveïdor de la targeta...</translation>

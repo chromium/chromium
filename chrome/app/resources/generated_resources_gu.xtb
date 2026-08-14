@@ -1356,6 +1356,7 @@
 <translation id="2044750031738659219">{0,plural, =1{અતિથિ વિન્ડો બંધ કરો}one{અતિથિ (# વિન્ડો) બંધ કરો}other{અતિથિ (# વિન્ડો) બંધ કરો}}</translation>
 <translation id="204497730941176055">Microsoft પ્રમાણપત્ર નમૂના નામ</translation>
 <translation id="2045211794962848221">તમને આ ચોક્કસ મેસેજ ફરીથી દેખાશે નહીં</translation>
+<translation id="2045482258469113155">તેના બદલે <ph name="URL" /> પર રીડાયરેક્ટ કરીએ?</translation>
 <translation id="2045540927991079503">લિંકને આ તરીકે ખોલો</translation>
 <translation id="2045838962742066664">શૉર્ટહેન્ડ ટાઇપિંગ</translation>
 <translation id="2046702855113914483">રામેન - જાપાનના એક પ્રકારના નૂડલ</translation>
@@ -1456,6 +1457,7 @@
 <translation id="2135787500304447609">&amp;ફરી શરૂ કરો</translation>
 <translation id="2136476978468204130">તમે દાખલ કરેલો પાસફ્રેઝ ખોટો છે</translation>
 <translation id="2137128126782078222"><ph name="WEBSITE" />માંથી નોટિફિકેશનની મંજૂરી આપશો નહીં</translation>
+<translation id="2137871148058020508">પ્રોડક્ટમાંથી મદદ: PDF અનુવાદો વાંચન મોડની બાજુની પૅનલમાં દેખાય છે</translation>
 <translation id="2139919072249842737">સેટઅપ કરો બટન</translation>
 <translation id="2140788884185208305">બૅટરીની ક્ષમતા</translation>
 <translation id="2142328300403846845">આ રીતે લિંક ખોલો</translation>
@@ -1790,6 +1792,7 @@
 <translation id="2399699884460174994">નોટિફિકેશન ચાલુ કર્યા</translation>
 <translation id="2399939490305346086">સુરક્ષા કોડનો સાઇન ઇન ડેટા</translation>
 <translation id="240006516586367791">મીડિયા નિયંત્રણો</translation>
+<translation id="2405057019351885107">બ્રાઉઝર જે વધુ કામ કરે છે</translation>
 <translation id="2405887402346713222">ડિવાઇસ અને ઘટકના અનુક્રમ નંબર</translation>
 <translation id="2406153734066939945">આ પ્રોફાઇલ અને તેનો ડેટા ડિલીટ કરીએ?</translation>
 <translation id="2406942743794219791">તમને ડિફૉલ્ટ તરીકે જોઈતું શોધ એન્જિન કન્ફર્મ કરો</translation>
@@ -4083,7 +4086,6 @@
 <translation id="4110485659976215879">ચેતવણી રિસ્ટોર કરો</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (ઑફલાઇન)</translation>
 <translation id="4113743276555482284">ફાઇલનો પાસવર્ડ</translation>
-<translation id="4114391251600134209">{COUNT,plural, =0{કોઈ સાચવેલો પાસવર્ડ નથી}=1{1 પાસવર્ડ ચેક કરવામાં આવ્યો}one{{COUNT} પાસવર્ડ ચેક કરવામાં આવ્યો}other{{COUNT} પાસવર્ડ ચેક કરવામાં આવ્યા}}</translation>
 <translation id="4114524937989710624">Google Driveમાં તમારી સૌથી તાજેતરની પ્રવૃત્તિ પર સરળતાથી પાછા ફરવામાં તમારી સહાય કરવા માટે, તમે સૂચવેલી ફાઇલો જોઈ રહ્યાં છો.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -4887,6 +4889,7 @@
 <translation id="4754590344707355551">તમારા બ્રાઉઝરને એક્સ્ટેન્શન વડે વધારો</translation>
 <translation id="4756378406049221019">રોકો/ફરીથી લોડ કરો</translation>
 <translation id="4756388243121344051">&amp;ઇતિહાસ</translation>
+<translation id="4756627014339714615">રીડાયરેક્ટ</translation>
 <translation id="4756671452988984333">ઑડિયો માટેની ટેક્સ્ટ</translation>
 <translation id="4759202969060787081">ખોલશો નહીં</translation>
 <translation id="4759238208242260848">ડાઉનલોડ્સ</translation>
@@ -5178,6 +5181,7 @@
 <translation id="4964455510556214366">ગોઠવણી</translation>
 <translation id="4964544790384916627">ડૉક વિન્ડો</translation>
 <translation id="4964673849688379040">તપાસી રહ્યું છે...</translation>
+<translation id="4966391178172868170">સ્ક્રીન પરથી પસંદ કરવા માટે કર્સરને હલાવો</translation>
 <translation id="4966972803217407697">તમે છૂપા મોડમાં છો</translation>
 <translation id="4967227914555989138">કોઈ નોંધ ઉમેરો</translation>
 <translation id="4967360192915400530">જોખમી ફાઇલ ડાઉનલોડ કરો</translation>
@@ -5592,6 +5596,7 @@
 <translation id="5293170712604732402">સેટિંગને તેમના મૂળ ડિફૉલ્ટ પર રિસ્ટોર કરો</translation>
 <translation id="5294068591166433464">જો કોઈ સાઇટ તમારો પાસવર્ડ ચોરી કરવાનો પ્રયાસ કરે અથવા તમે કોઈ નુકસાનકારક ફાઇલ ડાઉનલોડ કરો, ત્યારે Chrome પેજ પરના કન્ટેન્ટના બિટ સહિત URLs પણ Googleને મોકલી શકે છે</translation>
 <translation id="5294618183559481278">તમારા ડિવાઇસની સ્ક્રીનની સામે કોઈ અન્ય વ્યક્તિની હાજરીની ભાળ મેળવવા માટે, તમારું <ph name="DEVICE_TYPE" /> બિલ્ટ-ઇન સેન્સરનો ઉપયોગ કરે છે. બધા ડેટા પર પ્રક્રિયા તરત જ તમારા ડિવાઇસમાં કરવામાં આવે છે અને પછી ડિલીટ કરવામાં આવે છે. સેન્સરનો ડેટા ક્યારેય Googleને મોકલવામાં આવતો નથી. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
+<translation id="5294922869942863768">PDF અનુવાદો વાંચન મોડની બાજુની પૅનલમાં દેખાય છે</translation>
 <translation id="5296350763804564124">બોલાયેલો પ્રતિસાદ સાંભળો, જેથી સ્ક્રીનની સામે જોયા વિના તમે તમારા ડિવાઇસનો ઉપયોગ કરી શકો. કનેક્ટ કરેલા ડિવાઇસ સાથે બ્રેઇલમાં પ્રતિસાદ આપવાની સુવિધા ઉપલબ્ધ છે.</translation>
 <translation id="5296536303670088158">હાનિકારક વેબસાઇટ સામે તમે Chromeની સૌથી સશક્ત સુરક્ષા ધરાવો છો</translation>
 <translation id="5297005732522718715">ઇન્ટરનેટ શેર કરવાની સુવિધાનું કન્ફિગ્યુરેશન રિફ્રેશ કરો</translation>
@@ -6194,6 +6199,7 @@
 <translation id="5796956053441619942">રિમોટ ડિવાઇસમાંથી URL સપોર્ટ કરતું નથી</translation>
 <translation id="5798079537501238810">સાઇટ ચુકવણી હૅન્ડલર ઇન્સ્ટૉલ કરી શકે છે</translation>
 <translation id="5798086737841799234">કન્ફર્મેશન કોડ દાખલ કરો</translation>
+<translation id="5798574502832537664">પેજ પર ટેક્સ્ટ પસંદ કરીને કોઈ વિષયની વ્યાખ્યા મેળવો અથવા તેના વિશે વધુ જાણો</translation>
 <translation id="579915268381781820">તમારો સુરક્ષા કોડ કાઢી નાખવામાં આવ્યો હતો.</translation>
 <translation id="5799508265798272974">Linux વર્ચ્યુઅલ મશીન: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5799638114236977894">જમણા વ્યૂ સાથે સ્વૉપ કરો</translation>
@@ -6397,6 +6403,7 @@ USB ડિવાઇસ</translation>
 <translation id="5948476936444935795">આયાત કરવાનું રદ કરો</translation>
 <translation id="5949795028157144515">ડેવલપર મોડ બંધ છે. અમુક એક્સ્ટેન્શન બંધ કરવામાં આવ્યા હતા.</translation>
 <translation id="594993197557058302">1-4 મૉડિફાયર કી (ctrl, alt, shift, શોધ, અથવા લૉન્ચર) અને વધુ 1 કી દબાવો. તમે કોઈ એક કી પણ પસંદ કરી શકો છો.</translation>
+<translation id="5950318713575418497">PDFsનો અનુવાદ કરો</translation>
 <translation id="5950762317146173294">આ ફાઇલ કોઈ વાયરસ કે માલવેર હોઈ શકે છે</translation>
 <translation id="5951303645598168883"><ph name="ORIGIN" /> સ્થાનિક ફૉન્ટનો ઉપયોગ કરવા માગે છે</translation>
 <translation id="5951624318208955736">મૉનિટર</translation>
@@ -6985,7 +6992,6 @@ USB ડિવાઇસ</translation>
 <translation id="6425556984042222041">ટેક્સ્ટ ટૂ સ્પીચની ઝડપ</translation>
 <translation id="642729974267661262">સાઉન્ડ ચલાવવાની મંજૂરી નથી</translation>
 <translation id="6427752304227226701">અસલામત સાઇટની જાણ કરો...</translation>
-<translation id="6427938854876261655">{COUNT,plural, =0{કોઈ સાચવેલો પાસવર્ડ નથી.}=1{{COUNT} પાસવર્ડ ચેક કરી રહ્યાં છીએ...}one{{COUNT} પાસવર્ડ ચેક કરી રહ્યાં છીએ...}other{{COUNT} પાસવર્ડ ચેક કરી રહ્યાં છીએ...}}</translation>
 <translation id="6429384232893414837">અપડેટમાં ભૂલ</translation>
 <translation id="6430202563517028640">વાંચન સૂચિમાં લિંક ઉમેરો</translation>
 <translation id="6430814529589430811">Base64-encoded ASCII, એકલ પ્રમાણપત્ર</translation>
@@ -7040,6 +7046,7 @@ USB ડિવાઇસ</translation>
 <translation id="6464825623202322042">આ ઉપકરણ</translation>
 <translation id="6465841119675156448">ઇન્ટરનેટ વિના</translation>
 <translation id="6466258437571594570">નોટિફિકેશન મોકલવાનું પૂછીને સાઇટ તમને ખલેલ પહોંચાડી શકશે નહીં</translation>
+<translation id="6466936665940546351">પાસવર્ડ ઉમેરવા અને તમારા Google એકાઉન્ટ વડે તમામ ડિવાઇસ પર તે મેળવવા માટે, તમારી ઓળખની ચકાસણી કરો</translation>
 <translation id="6467230443178397264"><ph name="FILE_NAME" /> સ્કૅન કરો</translation>
 <translation id="6467304607960172345">પૂર્ણસ્ક્રીન વીડિયો ઑપ્ટિમાઇઝ કરો</translation>
 <translation id="6467377768028664108">પછી તમારું <ph name="DEVICE_TYPE" /> આમ કરી શકશે:</translation>
@@ -7373,6 +7380,7 @@ USB ડિવાઇસ</translation>
 <translation id="6718728708077839052">માતાપિતાની ઍપ માટે પરવાનગીઓ મેનેજ કરો</translation>
 <translation id="671928215901716392">સ્ક્રીન લૉક કરો</translation>
 <translation id="6719839880830057298">ફાઇલ અપલોડ કરવાનું પૂર્ણ થયું</translation>
+<translation id="6720077015462788541">તમારા બધા ડિવાઇસ પર તમારા પાસવર્ડ સાચવો અને તેનો ઉપયોગ કરો</translation>
 <translation id="6721744718589119342">વધુ માહિતી અથવા અપડેટ માટે, અમે તમને ઇમેઇલ મોકલી શકીએ છીએ</translation>
 <translation id="6721770155320398589">ચાર્જની મર્યાદા</translation>
 <translation id="6721972322305477112">&amp;File</translation>
@@ -7391,6 +7399,7 @@ USB ડિવાઇસ</translation>
 <translation id="6729493062119577923">શેર કરેલા ટૅબના ગ્રૂપની ઍક્ટિવિટી</translation>
 <translation id="6730744976532805323">તમે ટૅબ સ્વિચ કરો, છતાં વર્તમાન ટૅબને Gemini સાથે શેર કરે છે</translation>
 <translation id="6731848763586448407">સ્ટૅક કરેલો વિભાજિત વ્યૂ અજમાવો</translation>
+<translation id="6732655176147074089">સ્ક્રીન પરથી પસંદ કરવા માટે માઉસ કર્સરને ઝડપથી આગળ-પાછળ હલાવો</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (ID: <ph name="EXTENSION_OR_APP_ID" />)</translation>
 <translation id="6736243959894955139">સરનામું</translation>
 <translation id="6737663862851963468">Kerberos ટિકિટ કાઢી નાખો</translation>
@@ -8786,6 +8795,7 @@ USB ડિવાઇસ</translation>
 <translation id="7807711621188256451"><ph name="HOST" />ને હંમેશા તમારા કૅમેરાને ઍક્સેસ કરવાની મંજૂરી આપો</translation>
 <translation id="7810202088502699111">આ પેજ પરનાં પૉપ-અપ બ્લૉક હતા.</translation>
 <translation id="7810367892333449285">તમારી એન્ટ્રી આ ફૉર્મેટમાં હોવી જોઈએ <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ ઍડ્રેસ<ph name="LPA_2" />$<ph name="LPA_3" />વૈકલ્પિક મેળ ખાતું ID<ph name="LPA_4" /></translation>
+<translation id="7810951505946824824">Chrome, Chromium ઓપન સૉર્સ પ્રોજેક્ટ અને અન્ય <ph name="BEGIN_HIGHLIGHT" />ઓપન સૉર્સ<ph name="END_HIGHLIGHT" /> સૉફ્ટવેર દ્વારા શક્ય બન્યું છે.</translation>
 <translation id="7811263553491007091">ફરીથી પ્રયાસ કરો અથવા નીચેનામાંથી અગાઉ જનરેટ કરેલી થીમમાંથી કોઈ એક પસંદ કરો.</translation>
 <translation id="7811926937048662341">અહીં રાઇટ ક્લિક કરો અને “ટૅબને ઊભી રીતે બતાવો” પસંદ કરો</translation>
 <translation id="7811986034759500329">સિસ્ટમના સેટિંગમાં જઈને સેટ કરો</translation>
@@ -10615,6 +10625,7 @@ USB ડિવાઇસ</translation>
 <translation id="9220820413868316583">આંગળી ઉપાડી લો પછી ફરી પ્રયાસ કરો.</translation>
 <translation id="922152298093051471">Chrome કસ્ટમાઇઝ કરો</translation>
 <translation id="9222839391870847423">અવધિ: <ph name="DURATION" /></translation>
+<translation id="9223158240932249417">ટેક્સ્ટ સંબંધિત ક્રિયાઓ બતાવવાની મંજૂરી નથી</translation>
 <translation id="923306663772315007">તમારા &amp;ડિવાઇસ પર મોકલો</translation>
 <translation id="923467487918828349">બધું બતાવો</translation>
 <translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{તેને મેનેજ કરવા માટે, એક્સ્ટેન્શન ખોલો}one{તેમને મેનેજ કરવા માટે, એક્સ્ટેન્શન ખોલો}other{તેમને મેનેજ કરવા માટે, એક્સ્ટેન્શન ખોલો}}</translation>

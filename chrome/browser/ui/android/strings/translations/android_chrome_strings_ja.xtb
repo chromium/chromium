@@ -532,6 +532,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="3161699713309727585"><ph name="BUTTON_TEXT" />、新しいタブで開く</translation>
 <translation id="3166827708714933426">タブとウィンドウのショートカット</translation>
 <translation id="3167258285411721858"><ph name="HOST_NAME" /> のモバイルサイトをリクエストできます</translation>
+<translation id="3177338796769255211">ログインすると、すべてのデバイスで同じブックマークやその他の設定を使用できるようになります</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />、複数選択されたミュート中の固定のシークレット タブ</translation>
 <translation id="3189635831478931757"><ph name="GROUP_TITLE" /> タブグループ</translation>
 <translation id="3200536777393523575">現在のウィンドウを閉じますか？</translation>
@@ -928,6 +929,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="4794291718671962615">（<ph name="MEGABYTES" />）<ph name="URL" /></translation>
 <translation id="4807098396393229769">カード名義人（半角英文字）</translation>
 <translation id="480990236307250886">ホームページを開く</translation>
+<translation id="4816492930507672669">ページサイズに合わせる</translation>
 <translation id="4822710610088666676">「<ph name="TAB_GROUP_TITLE" />」タブグループを閉じて保存しました</translation>
 <translation id="4834250788637067901">Google Pay を使用したお支払方法、クーポン、住所</translation>
 <translation id="4835385943915508971">Chrome はリクエストされたリソースにアクセスできません。</translation>
@@ -1207,7 +1209,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="605721222689873409">YY</translation>
 <translation id="606985262342505139">タブのボトムシートが画面全体に表示されています</translation>
 <translation id="6071995715087444295">Google アカウントにログインし、不正使用されたパスワードを確認してください</translation>
-<translation id="6078323886959318429">ショートカットを追加</translation>
+<translation id="6078323886959318429">追加</translation>
 <translation id="6085886413119427067">ウェブサイトに安全に接続する方法を決定します</translation>
 <translation id="6087286598828478206">ブロックしてグループから退出しますか？</translation>
 <translation id="6091464625487374759">ツールバーに Gemini が表示されるようになりました。固定したツールは、アイコンを長押しするといつでも変更できます。</translation>
@@ -1314,7 +1316,6 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="6411219469806822692">上に移動できません。ページの上のほうから始めてみてください。</translation>
 <translation id="6412215853589222273"><ph name="TAB_TITLE" />、複数選択されたタブ</translation>
 <translation id="641643625718530986">印刷...</translation>
-<translation id="6427723330233512782">高さに合わせる</translation>
 <translation id="6433501201775827830">検索サービスの選択</translation>
 <translation id="6434309073475700221">破棄</translation>
 <translation id="6435307030888827407">ログアウト状態を保持する</translation>

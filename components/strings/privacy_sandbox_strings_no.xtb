@@ -3,7 +3,6 @@
 <translationbundle lang="no">
 <translation id="1184166532603925201">Når du er i inkognitomodus, blokkerer Chrome nettsteder fra å bruke informasjonskapsler fra tredjeparter</translation>
 <translation id="1569440020357229235">Når du er i inkognitomodus, kan ikke nettsteder bruke informasjonskapsler fra tredjeparter. Hvis et nettsted som er avhengig av slike informasjonskapsler, ikke fungerer, kan du <ph name="BEGIN_LINK" />prøve å gi det midlertidig tilgang til informasjonskapsler fra tredjeparter<ph name="END_LINK" />.</translation>
-<translation id="19426210786412737">De aktive Chrome-innstillingene dine er oppdatert, slik at nettsteder kan bruke informasjonskapsler fra tredjeparter. Du kan endre denne innstillingen når som helst.</translation>
 <translation id="2004697686368036666">Det kan hende at funksjoner på noen nettsteder ikke fungerer</translation>
 <translation id="2183376768278472507">Hvis et nettsted ikke fungerer som forventet, kan du prøve å tillate informasjonskapsler fra tredjeparter for det aktuelle nettstedet</translation>
 <translation id="2235344399760031203">Informasjonskapsler fra tredjeparter er blokkert</translation>
@@ -19,7 +18,6 @@
 <translation id="5677928146339483299">Blokkert</translation>
 <translation id="6196640612572343990">Blokker informasjonskapsler fra tredjeparter</translation>
 <translation id="6308169245546905162">Nettsteder kan bruke informasjonskapsler fra tredjeparter for å finne ut hva du gjør på andre nettsteder</translation>
-<translation id="6494210367693221285">De aktive Chromium-innstillingene dine er oppdatert, slik at nettsteder kan bruke informasjonskapsler fra tredjeparter. Du kan endre denne innstillingen når som helst.</translation>
 <translation id="6710025070089118043">Nettsteder kan ikke bruke informasjonskapsler fra tredjeparter for å tilpasse innhold og annonser eller finne ut hva du gjør på andre nettsteder, med mindre du gir relaterte nettsteder tilgang til dem</translation>
 <translation id="7315780377187123731">Mer om alternativet for å blokkere informasjonskapsler fra tredjeparter</translation>
 <translation id="7374493521304367420">Nettsteder kan fortsatt bruke informasjonskapsler for å se nettleseraktivitet på sitt eget nettsted</translation>
@@ -27,8 +25,6 @@
 <translation id="7538480403395139206">Mer om alternativet for å tillate informasjonskapsler fra tredjeparter</translation>
 <translation id="8200078544056087897">Nettstedsfunksjoner som er avhengige av informasjonskapsler fra tredjeparter, skal fungere som forventet</translation>
 <translation id="839994149685752920">Nettsteder kan bruke informasjonskapsler fra tredjeparter for å tilpasse innhold og annonser</translation>
-<translation id="8428213095426709021">Innstillinger</translation>
-<translation id="8712637175834984815">Greit</translation>
 <translation id="9039924186462989565">Når du er i inkognitomodus, blokkerer Chromium nettsteder fra å bruke informasjonskapsler fra tredjeparter</translation>
 <translation id="9162335340010958530">Nettsteder kan ikke bruke informasjonskapsler fra tredjeparter for å tilpasse innhold og annonser eller for å finne ut hva du gjør på andre nettsteder, med mindre du gir relaterte nettsteder tilgang til dem</translation>
 </translationbundle>

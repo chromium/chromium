@@ -610,8 +610,10 @@
 <translation id="2045871135676061132">Personal 信封</translation>
 <translation id="2048261947532620704">正在翻譯頁面</translation>
 <translation id="2055016614992422886">對話</translation>
+<translation id="2058468041496756763">你可隨時在 Chrome 設定中變更搜尋引擎設定。如果看不到偏好的搜尋引擎，你可以在其網站上執行搜尋查詢。這會在 Chrome 設定中列為最近瀏覽過的搜尋引擎，並可以設定為預設值。</translation>
 <translation id="2059166748188874810">自治市</translation>
 <translation id="2059202684901022309">22 x 34 吋</translation>
+<translation id="2063929825539050431">按住網址列，即可快速將此頁面傳送至其他裝置</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 個建議}other{# 個建議}}</translation>
 <translation id="2066969741541525119">您的機構已封鎖您要瀏覽的網站</translation>
 <translation id="2071156619270205202">此卡不能建立虛擬卡號。</translation>
@@ -3719,6 +3721,7 @@
 <translation id="7379321689415048316">Chrome 可自動填入標準自動填入功能可能遺漏的複雜欄位</translation>
 <translation id="7380398842872229465">10 x 15 吋</translation>
 <translation id="7381551826960739226">此表格未使用安全連線，因此自動付款方式填入功能已停用。</translation>
+<translation id="7382980704744807223">可疑</translation>
 <translation id="7388594495505979117">{0,plural, =1{裝置將於 1 分鐘後重新啟動}other{裝置將於 # 分鐘後重新啟動}}</translation>
 <translation id="7393475648162498734">結帳時顯示付款卡可享有哪些獎賞和禮遇</translation>
 <translation id="7393971683644170444">正在連接發卡機構…</translation>
@@ -4190,6 +4193,7 @@
 <translation id="8175796834047840627">由於您已登入，因此 Chrome 提議將您的付款卡儲存至 Google 帳戶。您可以在設定中變更此行為。</translation>
 <translation id="8176440868214972690">此裝置的管理員已將一些資訊 (例如設定或政策) 傳送到以下網站。</translation>
 <translation id="818254048113802060">{0,plural, =1{「<ph name="FILE_NAME" />」因內容而被封鎖}other{<ph name="FILE_COUNT" /> 個檔案因內容而被封鎖}}</translation>
+<translation id="8186171296341598122">你可隨時在 Chromium 設定中變更搜尋引擎設定。如果看不到偏好的搜尋引擎，你可以在其網站上執行搜尋查詢。這會在 Chromium 設定中列為最近瀏覽過的搜尋引擎，並可以設定為預設值。</translation>
 <translation id="8188830160449823068">IBAN 僅儲存至裝置</translation>
 <translation id="8189557652711717875">你選擇的搜尋引擎將用於多種功能，例如網址列搜尋和網頁上的圖片搜尋。</translation>
 <translation id="8190193880870196235">由擴充程式管理</translation>

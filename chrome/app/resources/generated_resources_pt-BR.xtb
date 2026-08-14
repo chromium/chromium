@@ -1886,6 +1886,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2458379781610688953">Atualize a conta, <ph name="EMAIL" /></translation>
 <translation id="2459703812219683497">Código de ativação detectado</translation>
 <translation id="2459706890611560967">Retomar transmissão da guia para <ph name="DEVICE_NAME" /></translation>
+<translation id="245979889539926662">Compartilhar uma captura de tela</translation>
 <translation id="2460150227008936698">{COUNT,plural, =0{Expira hoje}=1{Expira amanhã}one{Expira em # dia}other{Expira em # dias}}</translation>
 <translation id="2460482211073772897">Em outras pastas</translation>
 <translation id="2460826998961521840">Para usar as chaves de acesso salvas na sua Conta do Google</translation>
@@ -4098,7 +4099,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4110485659976215879">Restaurar aviso</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (off-line)</translation>
 <translation id="4113743276555482284">Senha do arquivo</translation>
-<translation id="4114391251600134209">{COUNT,plural, =0{Nenhuma senha salva}=1{1 senha verificada}one{{COUNT} senha verificada}other{{COUNT} senhas verificadas}}</translation>
 <translation id="4114524937989710624">Você está vendo arquivos sugeridos para voltar de forma simples à sua atividade mais recente no Google Drive.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -7004,7 +7004,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6425556984042222041">Velocidade de conversão de texto em voz</translation>
 <translation id="642729974267661262">Bloquear a reprodução de sons</translation>
 <translation id="6427752304227226701">Denunciar site não seguro…</translation>
-<translation id="6427938854876261655">{COUNT,plural, =0{Nenhuma senha salva.}=1{Verificando {COUNT} senha…}one{Verificando {COUNT} senha…}other{Verificando {COUNT} senhas…}}</translation>
 <translation id="6429384232893414837">Erro de atualização</translation>
 <translation id="6430202563517028640">Adicionar link à lista de leitura</translation>
 <translation id="6430814529589430811">ASCII codificado na Base64, certificado único</translation>

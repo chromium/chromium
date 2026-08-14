@@ -532,6 +532,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="3161699713309727585"><ph name="BUTTON_TEXT" />, opnast í nýjum flipa</translation>
 <translation id="3166827708714933426">Flýtilyklar flipa og glugga</translation>
 <translation id="3167258285411721858">Þú getur óskað eftir snjallvef fyrir <ph name="HOST_NAME" /></translation>
+<translation id="3177338796769255211">Skráðu þig inn til að fá bókamerkin þín og fleira í öllum tækjunum þínum</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, margvalinn festur huliðsflipi með slökkt á hljóði</translation>
 <translation id="3189635831478931757">Flipahópur: <ph name="GROUP_TITLE" /></translation>
 <translation id="3200536777393523575">Loka núverandi glugga?</translation>
@@ -928,6 +929,7 @@ Google reikningurinn þinn kann að vera með annars konar vefskoðunarferil, sv
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
 <translation id="4807098396393229769">Nafn á korti</translation>
 <translation id="480990236307250886">Opna heimasíðuna</translation>
+<translation id="4816492930507672669">Laga að síðu</translation>
 <translation id="4822710610088666676"><ph name="TAB_GROUP_TITLE" /> flipahópur lokaður og vistaður</translation>
 <translation id="4834250788637067901">Greiðslumátar, tilboð og heimilisföng sem nota Google Pay</translation>
 <translation id="4835385943915508971">Chrome hefur ekki aðgang að umbeðnu tilfangi.</translation>
@@ -1314,7 +1316,6 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="6411219469806822692">Kemst ekki ofar. Prófaðu að byrja ofar á síðunni.</translation>
 <translation id="6412215853589222273"><ph name="TAB_TITLE" />, margvalinn flipi</translation>
 <translation id="641643625718530986">Prenta...</translation>
-<translation id="6427723330233512782">Laga að hæð</translation>
 <translation id="6433501201775827830">Veldu leitarvélina þína</translation>
 <translation id="6434309073475700221">Fleygja</translation>
 <translation id="6435307030888827407">Vera áfram útskráð(ur)</translation>

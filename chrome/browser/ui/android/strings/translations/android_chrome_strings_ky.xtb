@@ -532,6 +532,7 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="3161699713309727585"><ph name="BUTTON_TEXT" />, жаңы өтмөктө ачылат</translation>
 <translation id="3166827708714933426">Өтмөктүн жана терезенин кыска жолдору</translation>
 <translation id="3167258285411721858"><ph name="HOST_NAME" /> мобилдик түзмөктөгү сайтын сурана аласыз</translation>
+<translation id="3177338796769255211">Бардык түзмөктөрүңүздө кыстармаларды жана башка нерселерди алуу үчүн аккаунтуңузга кириңиз</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, көп жолу тандалган жана кадалган жашыруун өтмөктө үн басылган</translation>
 <translation id="3189635831478931757"><ph name="GROUP_TITLE" /> өтмөктөр тобу</translation>
 <translation id="3200536777393523575">Учурдагы терезе жабылсынбы?</translation>
@@ -928,6 +929,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
 <translation id="4807098396393229769">Картадагы ысым</translation>
 <translation id="480990236307250886">Башкы бетти ачуу</translation>
+<translation id="4816492930507672669">Баракка чактоо</translation>
 <translation id="4822710610088666676"><ph name="TAB_GROUP_TITLE" /> өтмөктөр тобу жабылды жана сакталды</translation>
 <translation id="4834250788637067901">Google Pay'ди колдонгон төлөм ыкмалары, сунуштар жана даректер</translation>
 <translation id="4835385943915508971">Суралган булакка Chrome’дун кирүү мүмкүнчүлүгү жок.</translation>
@@ -1314,7 +1316,6 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="6411219469806822692">Өйдөрөөк өтүү мүмкүн эмес. Барактын өйдө жагынан баштап көрүңүз.</translation>
 <translation id="6412215853589222273"><ph name="TAB_TITLE" />, Көп жолу тандалган өтмөк</translation>
 <translation id="641643625718530986">Басып чыгаруу…</translation>
-<translation id="6427723330233512782">Экрандын бийиктигине чактоо</translation>
 <translation id="6433501201775827830">Издөө куралын тандаңыз</translation>
 <translation id="6434309073475700221">Жарактан чыгаруу</translation>
 <translation id="6435307030888827407">Аккаунтума кирбейм</translation>

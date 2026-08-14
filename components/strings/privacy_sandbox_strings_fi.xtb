@@ -3,7 +3,6 @@
 <translationbundle lang="fi">
 <translation id="1184166532603925201">Kun olet incognito-tilassa, Chrome estää sivustoja käyttämästä kolmannen osapuolen evästeitä</translation>
 <translation id="1569440020357229235">Kun olet incognito-tilassa, sivustot eivät voi käyttää kolmannen osapuolen evästeitä. Jos näihin evästeisiin luottava sivusto ei toimi, voit <ph name="BEGIN_LINK" />kokeilla antaa sille väliaikaisen pääsyn kolmannen osapuolen evästeisiin<ph name="END_LINK" />.</translation>
-<translation id="19426210786412737">Nykyiset Chrome-asetuksesi on päivitetty sallimaan verkkosivustoille pääsy kolmannen osapuolen evästeisiin. Voit muuttaa asetusta milloin tahansa.</translation>
 <translation id="2004697686368036666">Joidenkin sivustojen ominaisuudet eivät välttämättä toimi</translation>
 <translation id="2183376768278472507">Jos sivusto ei toimi odotetulla tavalla, voit kokeilla sallia kolmannen osapuolen evästeet tietyllä sivustolla</translation>
 <translation id="2235344399760031203">Kolmannen osapuolen evästeet on estetty</translation>
@@ -19,7 +18,6 @@
 <translation id="5677928146339483299">Estetty</translation>
 <translation id="6196640612572343990">Estä kolmannen osapuolen evästeet</translation>
 <translation id="6308169245546905162">Sivustot voivat käyttää kolmannen osapuolen evästeitä saadakseen tietoa toiminnoistasi muilla sivustoilla</translation>
-<translation id="6494210367693221285">Nykyiset Chromium-asetuksesi on päivitetty sallimaan sivustoille pääsy kolmannen osapuolen evästeisiin. Voit muuttaa asetusta milloin tahansa.</translation>
 <translation id="6710025070089118043">Sivustot eivät voi käyttää kolmannen osapuolen evästeitä personoidakseen sisältöä ja mainoksia tai saadakseen tietoa muilla sivustoilla tekemistäsi toimista, ellet anna aiheeseen liittyvien sivustojen käyttää niitä</translation>
 <translation id="7315780377187123731">Lisätietoja "Estä kolmannen osapuolen evästeet" ‑vaihtoehdosta</translation>
 <translation id="7374493521304367420">Sivustot voivat edelleen seurata evästeiden avulla selaustoimintaasi omalla sivustollaan</translation>
@@ -27,8 +25,6 @@
 <translation id="7538480403395139206">Lisätietoa "Salli kolmannen osapuolen evästeet" ‑vaihtoehdosta</translation>
 <translation id="8200078544056087897">Kolmannen osapuolen evästeisiin perustuvien sivuston ominaisuuksien pitäisi toimia odotetusti</translation>
 <translation id="839994149685752920">Sivustot voivat käyttää kolmannen osapuolen evästeitä personoidakseen sisältöä ja mainoksia</translation>
-<translation id="8428213095426709021">Asetukset</translation>
-<translation id="8712637175834984815">Selvä</translation>
 <translation id="9039924186462989565">Kun olet incognito-tilassa, Chromium estää sivustoja käyttämästä kolmannen osapuolen evästeitä</translation>
 <translation id="9162335340010958530">Sivustot eivät voi käyttää kolmannen osapuolen evästeitä personoidakseen sisältöä ja mainoksia tai saadakseen tietoa muilla sivustoilla tekemistäsi toimista, ellet salli toisiinsa liittyville sivustoille pääsyä niihin</translation>
 </translationbundle>

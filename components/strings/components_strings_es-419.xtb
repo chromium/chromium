@@ -610,8 +610,10 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2045871135676061132">Sobre Personal</translation>
 <translation id="2048261947532620704">Traduciendo página</translation>
 <translation id="2055016614992422886">Conversación</translation>
+<translation id="2058468041496756763">Puedes cambiar el motor de búsqueda en cualquier momento desde la configuración de Chrome. Si no ves tu motor de búsqueda preferido, puedes realizar una búsqueda desde su sitio. Lo verás en la lista de motores de búsqueda visitados recientemente en la configuración de Chrome y podrás establecerlo como predeterminado.</translation>
 <translation id="2059166748188874810">Municipalidad</translation>
 <translation id="2059202684901022309">55.88 × 86.36 cm</translation>
+<translation id="2063929825539050431">Para enviar rápidamente esta página a otro dispositivo, mantén presionada la barra de direcciones</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 sugerencia}other{# sugerencias}}</translation>
 <translation id="2066969741541525119">Tu organización bloqueó el sitio que intentas abrir</translation>
 <translation id="2071156619270205202">Esta tarjeta no admite un número de tarjeta virtual.</translation>
@@ -1616,7 +1618,7 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="3765588406864124894">Buzón 9</translation>
 <translation id="3766505784424699541">Comparte automáticamente las pestañas pertinentes en esta ventana si están relacionadas con este hilo para obtener respuestas más personalizadas.</translation>
 <translation id="3767485424735936570">La política del administrador no recomienda copiar y pegar este contenido en <ph name="VM_NAME" />.</translation>
-<translation id="3769584711865378220"><ph name="URL" /> quiere cambiar el acceso a la ubicación de aproximada a precisa</translation>
+<translation id="3769584711865378220"><ph name="URL" /> quiere cambiar el acceso a la ubicación de Aproximada a Precisa</translation>
 <translation id="3772211998634047851">Papel (bond)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, presiona Tab y, luego, Intro para crear una nueva nota en Google Keep rápidamente</translation>
 <translation id="3778045607993018262">La cuenta de Pix se vinculará a <ph name="ACCOUNT_EMAIL" />. Para desactivar la detección de códigos de Pix, ve a la <ph name="BEGIN_LINK1" />configuración de Chrome<ph name="END_LINK1" /></translation>
@@ -2181,7 +2183,7 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="4730977633786878901">Opiniones</translation>
 <translation id="4731638775147756694">El administrador bloqueó esta aplicación</translation>
 <translation id="4732860731866514038">Descargando el paquete del idioma <ph name="LANGUAGE" />… <ph name="PERCENT" />%</translation>
-<translation id="4733082559415072992"><ph name="URL" /> desea usar la ubicación de tu dispositivo</translation>
+<translation id="4733082559415072992"><ph name="URL" /> quiere usar la ubicación de tu dispositivo</translation>
 <translation id="473414950835101501">Usar las cámaras</translation>
 <translation id="4736825316280949806">Reinicia Chromium.</translation>
 <translation id="4736934858538408121">Tarjeta virtual</translation>
@@ -2727,7 +2729,7 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> te redireccionó demasiadas veces.</translation>
 <translation id="5619721953841297650">Ajuste predeterminado</translation>
 <translation id="5624120631404540903">Administrar contraseñas</translation>
-<translation id="5627344039351500898">Cambiar a precisa</translation>
+<translation id="5627344039351500898">Cambiar a Precisa</translation>
 <translation id="5628060911499153873">Guarda tu información para completar tareas más rápido en los productos de Google. Tu información se guarda en <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> para <ph name="ACCOUNT" />.</translation>
 <translation id="5629630648637658800">Error al cargar la configuración de la política</translation>
 <translation id="5630981295558454585">Botón Preguntar a Google acerca de esta página, actívalo para preguntar a Google acerca de esta página</translation>
@@ -3721,6 +3723,7 @@ Detalles adicionales:
 <translation id="7379321689415048316">Chrome puede autocompletar campos difíciles que la función de autocompletar estándar podría omitir</translation>
 <translation id="7380398842872229465">25.4 × 38.1 cm (10 × 15 in)</translation>
 <translation id="7381551826960739226">El llenado automático de las formas de pago se inhabilitó porque este formulario no usa una conexión segura.</translation>
+<translation id="7382980704744807223">Sospechosa</translation>
 <translation id="7388594495505979117">{0,plural, =1{El dispositivo se reiniciará dentro de 1 minuto}other{El dispositivo se reiniciará dentro de # minutos}}</translation>
 <translation id="7393475648162498734">Muestra qué recompensas y beneficios están disponibles para tus tarjetas durante la confirmación de la compra.</translation>
 <translation id="7393971683644170444">Estableciendo conexión con el proveedor de tu tarjeta…</translation>
@@ -4192,6 +4195,7 @@ Detalles adicionales:
 <translation id="8175796834047840627">Como accediste a tu cuenta, Chrome te ofrece guardar tus tarjetas en tu Cuenta de Google. Puedes modificar este comportamiento en la configuración.</translation>
 <translation id="8176440868214972690">El administrador de este dispositivo envió parte de la información, como la configuración o las políticas, a los siguientes sitios web.</translation>
 <translation id="818254048113802060">{0,plural, =1{Se bloqueó el archivo <ph name="FILE_NAME" /> debido al contenido}other{Se bloquearon <ph name="FILE_COUNT" /> archivos debido al contenido}}</translation>
+<translation id="8186171296341598122">Puedes cambiar el motor de búsqueda en cualquier momento desde la configuración de Chromium. Si no ves tu motor de búsqueda preferido, puedes realizar una búsqueda desde su sitio. Lo verás en la lista de motores de búsqueda visitados recientemente en la configuración de Chromium y podrás establecerlo como predeterminado.</translation>
 <translation id="8188830160449823068">El IBAN solo se guardó en el dispositivo</translation>
 <translation id="8189557652711717875">El motor de búsqueda que elijas se usará para funciones como realizar búsquedas en la barra de direcciones o a partir de imágenes en páginas web.</translation>
 <translation id="8190193880870196235">Administrado por una extensión</translation>

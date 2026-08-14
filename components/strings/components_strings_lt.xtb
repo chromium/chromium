@@ -149,6 +149,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1243027604378859286">Autorius:</translation>
 <translation id="1246424317317450637">Pusjuodis</translation>
 <translation id="1247030632403369975">Aliuminis</translation>
+<translation id="1249643768796040660">Pašalinti šią informaciją</translation>
 <translation id="1253846494229886276">Išsaugoma ekrano kopija</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (sinchronizuota)</translation>
 <translation id="1255931290436977164">Pasas</translation>
@@ -3723,6 +3724,7 @@ Papildoma išsami informacija:
 <translation id="7379321689415048316">„Chrome“ gali automatiškai užpildyti sudėtingus laukus, kurių standartinė automatinio pildymo funkcija gali nepastebėti</translation>
 <translation id="7380398842872229465">10 x 15 col.</translation>
 <translation id="7381551826960739226">Automatinis mokėjimo metodų pildymas neleidžiamas, nes šiai formai nenaudojamas saugus ryšys.</translation>
+<translation id="7382980704744807223">Įtartinas</translation>
 <translation id="7388594495505979117">{0,plural, =1{Įrenginys bus paleistas iš naujo po vienos minutės}one{Įrenginys bus paleistas iš naujo po # minutės}few{Įrenginys bus paleistas iš naujo po # minučių}many{Įrenginys bus paleistas iš naujo po # minutės}other{Įrenginys bus paleistas iš naujo po # minučių}}</translation>
 <translation id="7393475648162498734">Atsiskaitant parodyti, kokios premijos ir privilegijos pasiekiamos kortelėms</translation>
 <translation id="7393971683644170444">Prisijungiama prie kortelės išdavėjo sistemos...</translation>

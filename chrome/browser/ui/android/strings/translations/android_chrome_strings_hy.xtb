@@ -532,6 +532,7 @@
 <translation id="3161699713309727585"><ph name="BUTTON_TEXT" />, բացվում է նոր ներդիրում</translation>
 <translation id="3166827708714933426">Ներդիրների և պատուհանների դյուրանցումներ</translation>
 <translation id="3167258285411721858">Դուք կարող եք <ph name="HOST_NAME" /> կայքի բջջային տարբերակը խնդրել</translation>
+<translation id="3177338796769255211">Մուտք գործեք՝ ձեր էջանիշները և մյուս տվյալները ձեր բոլոր սարքերում օգտագործելու համար</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, ընտրված մի քանի ինկոգնիտո ներդիրներից մեկը, որն ամրացված է, և որի ձայնն անջատված է</translation>
 <translation id="3189635831478931757"><ph name="GROUP_TITLE" /> ներդիրների խումբ</translation>
 <translation id="3200536777393523575">Փակե՞լ ընթացիկ պատուհանը</translation>
@@ -928,6 +929,7 @@
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
 <translation id="4807098396393229769">Քարտապանի անունը</translation>
 <translation id="480990236307250886">Բացել գլխավոր էջը</translation>
+<translation id="4816492930507672669">Հարմարեցնել էջին</translation>
 <translation id="4822710610088666676">«<ph name="TAB_GROUP_TITLE" />» ներդիրների խումբը փակվեց և պահվեց</translation>
 <translation id="4834250788637067901">Վճարման եղանակներ, առաջարկներ ու հասցեներ Google Pay-ից</translation>
 <translation id="4835385943915508971">Հարցված ռեսուրսը հասանելի չէ Chrome-ին:</translation>
@@ -1314,7 +1316,6 @@
 <translation id="6411219469806822692">Հնարավոր չէ ավելի վերևից նշել։ Փորձեք նշել էջի վերևից։</translation>
 <translation id="6412215853589222273">«<ph name="TAB_TITLE" />» ներդիր, ընտրվածներից մեկը</translation>
 <translation id="641643625718530986">Տպել…</translation>
-<translation id="6427723330233512782">Հարմարեցնել բարձրությանը</translation>
 <translation id="6433501201775827830">Ընտրեք որոնիչը</translation>
 <translation id="6434309073475700221">Հրաժարվել</translation>
 <translation id="6435307030888827407">Չմտնել հաշիվ</translation>

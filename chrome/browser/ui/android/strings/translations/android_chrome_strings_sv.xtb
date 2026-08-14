@@ -532,6 +532,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="3161699713309727585"><ph name="BUTTON_TEXT" />, öppnas på en ny flik</translation>
 <translation id="3166827708714933426">Kortkommandon för flikar och fönster</translation>
 <translation id="3167258285411721858">Du kan begära den mobila webbplatsen för <ph name="HOST_NAME" /></translation>
+<translation id="3177338796769255211">Logga in om du vill ha dina bokmärken med mera på alla dina enheter</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, fäst inkognitoflik med ljud av som har valts tillsammans med andra</translation>
 <translation id="3189635831478931757">Flikgruppen <ph name="GROUP_TITLE" /></translation>
 <translation id="3200536777393523575">Vill du stänga det aktuella fönstret?</translation>
@@ -929,6 +930,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
 <translation id="4807098396393229769">Namn på kort</translation>
 <translation id="480990236307250886">Öppna startsidan</translation>
+<translation id="4816492930507672669">Anpassa till sida</translation>
 <translation id="4822710610088666676">Flikgruppen <ph name="TAB_GROUP_TITLE" /> har stängts och sparats</translation>
 <translation id="4834250788637067901">Betalningsmetoder, erbjudanden och adresser med Google Pay</translation>
 <translation id="4835385943915508971">Chrome har inte tillgång till den begärda resursen.</translation>
@@ -1315,7 +1317,6 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6411219469806822692">Markeringen kan inte utökas mer i riktning uppåt. Testa att börja någonstans högre upp på sidan.</translation>
 <translation id="6412215853589222273"><ph name="TAB_TITLE" />, flik som har valts flera gånger</translation>
 <translation id="641643625718530986">Skriv ut …</translation>
-<translation id="6427723330233512782">Anpassa efter höjd</translation>
 <translation id="6433501201775827830">Välj sökmotor</translation>
 <translation id="6434309073475700221">Släng</translation>
 <translation id="6435307030888827407">Förbli utloggad</translation>

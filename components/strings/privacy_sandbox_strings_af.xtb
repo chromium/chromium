@@ -3,7 +3,6 @@
 <translationbundle lang="af">
 <translation id="1184166532603925201">Chrome blokkeer werwe om derdepartywebkoekies te gebruik wanneer jy in Incognitomodus is</translation>
 <translation id="1569440020357229235">Werwe kan nie derdepartywebkoekies gebruik wanneer jy in Incognitomodus is nie. As ’n werf wat op hierdie webkoekies staatmaak nie werk nie, kan jy <ph name="BEGIN_LINK" />probeer om vir daardie werf tydelike toegang tot derdepartywebkoekies te gee<ph name="END_LINK" />.</translation>
-<translation id="19426210786412737">Jou huidige Chrome-instellings is opgedateer sodat webwerwe toegang tot derdepartywebkoekies kan kry. Jy kan hierdie instelling enige tyd verander.</translation>
 <translation id="2004697686368036666">Kenmerke op sommige werwe sal dalk nie werk nie</translation>
 <translation id="2183376768278472507">As ’n werf nie na verwagting werk nie, kan jy probeer om derdepartywebkoekies tydelik toe te laat vir ’n spesifieke werf wat jy besoek</translation>
 <translation id="2235344399760031203">Derdepartywebkoekies word geblokkeer</translation>
@@ -19,7 +18,6 @@
 <translation id="5677928146339483299">Geblokkeer</translation>
 <translation id="6196640612572343990">Blokkeer derdepartywebkoekies</translation>
 <translation id="6308169245546905162">Werwe kan derdepartywebkoekies gebruik om uit te vind oor handelinge wat jy op ander werwe uitvoer</translation>
-<translation id="6494210367693221285">Jou huidige Chromium-instellings is opgedateer sodat webwerwe toegang tot derdepartywebkoekies kan kry. Jy kan hierdie instelling enige tyd verander.</translation>
 <translation id="6710025070089118043">Werwe kan nie derdepartywebkoekies gebruik om inhoud en advertensies te personaliseer en uit te vind oor handelinge wat jy op ander werwe uitvoer nie, mits jy verwante werwe toegang daartoe gee</translation>
 <translation id="7315780377187123731">Meer oor die opsie “Blokkeer derdepartywebkoekies”</translation>
 <translation id="7374493521304367420">Werwe kan steeds webkoekies gebruik om blaai-aktiwiteit op hul eie werf te sien</translation>
@@ -27,8 +25,6 @@
 <translation id="7538480403395139206">Meer oor die opsie “Laat derdepartywebkoekies toe”</translation>
 <translation id="8200078544056087897">Werfkenmerke wat op derdepartywebkoekies staatmaak, behoort na verwagting te werk</translation>
 <translation id="839994149685752920">Werwe kan derdepartywebkoekies gebruik om inhoud en advertensies te personaliseer</translation>
-<translation id="8428213095426709021">Instellings</translation>
-<translation id="8712637175834984815">Het dit</translation>
 <translation id="9039924186462989565">Chromium blokkeer werwe om derdepartywebkoekies te gebruik wanneer jy in Incognitomodus is</translation>
 <translation id="9162335340010958530">Werwe kan nie derdepartywebkoekies gebruik om inhoud en advertensies te personaliseer en uit te vind oor handelinge wat jy op ander werwe uitvoer nie, mits jy verwante werwe toelaat om toegang daartoe te verkry</translation>
 </translationbundle>

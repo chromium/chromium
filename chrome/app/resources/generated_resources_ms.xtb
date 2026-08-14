@@ -4098,7 +4098,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="4110485659976215879">Pulihkan amaran</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (luar talian)</translation>
 <translation id="4113743276555482284">Kata laluan fail</translation>
-<translation id="4114391251600134209">{COUNT,plural, =0{Tiada kata laluan yang disimpan}=1{1 kata laluan disemak}other{{COUNT} kata laluan disemak}}</translation>
 <translation id="4114524937989710624">Anda melihat fail yang dicadangkan untuk membantu anda kembali ke aktiviti anda baru-baru ini dalam Google Drive dengan mudah.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -7003,7 +7002,6 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="6425556984042222041">Kadar teks ke pertuturan</translation>
 <translation id="642729974267661262">Tidak dibenarkan untuk memainkan bunyi</translation>
 <translation id="6427752304227226701">Laporkan laman yang tidak selamat...</translation>
-<translation id="6427938854876261655">{COUNT,plural, =0{Tiada kata laluan yang disimpan.}=1{Menyemak {COUNT} kata laluan...}other{Menyemak {COUNT} kata laluan…}}</translation>
 <translation id="6429384232893414837">Ralat kemas kini</translation>
 <translation id="6430202563517028640">Tambahkan pautan pada senarai bacaan</translation>
 <translation id="6430814529589430811">Base64 terkod ASCII, sijil tunggal</translation>

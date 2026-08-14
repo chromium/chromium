@@ -532,6 +532,7 @@
 <translation id="3161699713309727585"><ph name="BUTTON_TEXT" /> เปิดในแท็บใหม่</translation>
 <translation id="3166827708714933426">แป้นพิมพ์ลัดสำหรับแท็บและหน้าต่าง</translation>
 <translation id="3167258285411721858">คุณขอเว็บไซต์เวอร์ชันมือถือสำหรับ <ph name="HOST_NAME" /> ได้</translation>
+<translation id="3177338796769255211">ลงชื่อเข้าใช้เพื่อรับบุ๊กมาร์กและอื่นๆ ในอุปกรณ์ทุกเครื่อง</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, แท็บที่ไม่ระบุตัวตนที่ปักหมุดซึ่งเลือกไว้หลายแท็บและปิดเสียง</translation>
 <translation id="3189635831478931757">กลุ่มแท็บ <ph name="GROUP_TITLE" /></translation>
 <translation id="3200536777393523575">ปิดหน้าต่างปัจจุบันใช่ไหม</translation>
@@ -928,6 +929,7 @@
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
 <translation id="4807098396393229769">ชื่อบนบัตร</translation>
 <translation id="480990236307250886">เปิดหน้าแรก</translation>
+<translation id="4816492930507672669">พอดีกับหน้า</translation>
 <translation id="4822710610088666676">ปิดและบันทึกกลุ่มแท็บ "<ph name="TAB_GROUP_TITLE" />" แล้ว</translation>
 <translation id="4834250788637067901">วิธีการชำระเงิน ข้อเสนอ และที่อยู่จาก Google Pay</translation>
 <translation id="4835385943915508971">Chrome ไม่มีสิทธิ์เข้าถึงทรัพยากรที่ขอ</translation>
@@ -1314,7 +1316,6 @@
 <translation id="6411219469806822692">ขึ้นไปสูงกว่านี้ไม่ได้ ลองเริ่มลากจากด้านบนของหน้า</translation>
 <translation id="6412215853589222273"><ph name="TAB_TITLE" />, แท็บที่เลือกไว้หลายแท็บ</translation>
 <translation id="641643625718530986">พิมพ์…</translation>
-<translation id="6427723330233512782">พอดีกับความสูง</translation>
 <translation id="6433501201775827830">เลือกเครื่องมือค้นหา</translation>
 <translation id="6434309073475700221">ทิ้ง</translation>
 <translation id="6435307030888827407">อยู่ในโหมดออกจากระบบ</translation>

@@ -4086,7 +4086,6 @@ Quer pará-lo?</translation>
 <translation id="4110485659976215879">Restaurar aviso</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (offline)</translation>
 <translation id="4113743276555482284">Palavra-passe do ficheiro</translation>
-<translation id="4114391251600134209">{COUNT,plural, =0{Não existem palavras-passe guardadas}=1{1 palavra-passe verificada}other{{COUNT} palavras-passe verificadas}}</translation>
 <translation id="4114524937989710624">Está a ver ficheiros sugeridos que ajudam a voltar facilmente para a sua atividade mais recente no Google Drive.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -6992,7 +6991,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6425556984042222041">Taxa da conversão de texto em voz</translation>
 <translation id="642729974267661262">Sem autorização para reproduzir som</translation>
 <translation id="6427752304227226701">Denunciar um &amp;site inseguro…</translation>
-<translation id="6427938854876261655">{COUNT,plural, =0{Não existem palavras-passe guardadas.}=1{A verificar {COUNT} palavra-passe…}other{A verificar {COUNT} palavras-passe…}}</translation>
 <translation id="6429384232893414837">Atualizar erro</translation>
 <translation id="6430202563517028640">Adicionar link à Lista de leitura</translation>
 <translation id="6430814529589430811">Certificado único, ASCII codificado em Base64</translation>

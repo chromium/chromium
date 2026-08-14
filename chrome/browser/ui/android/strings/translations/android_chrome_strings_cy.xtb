@@ -533,6 +533,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <ph name="BUTTON_TEXT" /> yn agor mewn tab newydd</translation>
 <translation id="3166827708714933426">Llwybrau byr tabiau a ffenestri</translation>
 <translation id="3167258285411721858">Gallwch ofyn am y wefan symudol ar gyfer <ph name="HOST_NAME" /></translation>
+<translation id="3177338796769255211">Mewngofnodwch i gael eich nodau tudalen a rhagor ar eich holl ddyfeisiau</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, Tab Anhysbys wedi'i Binio a'i Ddistewi a Aml-ddewisir</translation>
 <translation id="3189635831478931757">Grŵp tabiau <ph name="GROUP_TITLE" /></translation>
 <translation id="3200536777393523575">Cau eich ffenestr bresennol?</translation>
@@ -765,6 +766,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="4180726336228139707">Ar y ddyfais hon yn unig</translation>
 <translation id="4181841719683918333">Ieithoedd</translation>
 <translation id="4188221736490993796">Trefnu yn ôl Z i A</translation>
+<translation id="4188638484665452040">Gemini heb ei binio</translation>
 <translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{Gwnaeth Chrome atal y wefan hon rhag anfon hysbysiadau oherwydd e-bost sothach neu gynnwys dichellgar}zero{Gwnaeth Chrome atal y gwefannau hyn rhag anfon hysbysiadau oherwydd e-bost sothach neu gynnwys dichellgar}two{Gwnaeth Chrome atal y gwefannau hyn rhag anfon hysbysiadau oherwydd e-bost sothach neu gynnwys dichellgar}few{Gwnaeth Chrome atal y gwefannau hyn rhag anfon hysbysiadau oherwydd e-bost sothach neu gynnwys dichellgar}many{Gwnaeth Chrome atal y gwefannau hyn rhag anfon hysbysiadau oherwydd e-bost sothach neu gynnwys dichellgar}other{Gwnaeth Chrome atal y gwefannau hyn rhag anfon hysbysiadau oherwydd e-bost sothach neu gynnwys dichellgar}}</translation>
 <translation id="4195643157523330669">Agor mewn tab newydd</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 tab ar y ddyfais hon}zero{# tab ar y ddyfais hon}two{# dab ar y ddyfais hon}few{# thab ar y ddyfais hon}many{# thab ar y ddyfais hon}other{# tab ar y ddyfais hon}}</translation>
@@ -929,6 +931,7 @@ Mae'n bosib y bydd gan eich cyfrif Google fathau eraill o hanes pori megis chwil
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
 <translation id="4807098396393229769">Enw ar y cerdyn</translation>
 <translation id="480990236307250886">Agor y dudalen hafan</translation>
+<translation id="4816492930507672669">Ffitio i'r dudalen</translation>
 <translation id="4822710610088666676"><ph name="TAB_GROUP_TITLE" /> grŵp tabiau wedi'i gau a'i gadw</translation>
 <translation id="4834250788637067901">Dulliau talu, cynigion a chyfeiriadau sy'n defnyddio Google Pay</translation>
 <translation id="4835385943915508971">Nid oes gan Chrome fynediad at yr adnodd y gofynnwyd amdano.</translation>
@@ -1315,7 +1318,6 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="6411219469806822692">Methu â mynd yn uwch. Rhowch gynnig ar ddechrau o uwch i fyny'r dudalen.</translation>
 <translation id="6412215853589222273"><ph name="TAB_TITLE" />, Tab Aml-ddewisedig</translation>
 <translation id="641643625718530986">Argraffu…</translation>
-<translation id="6427723330233512782">Ffitio i uchder</translation>
 <translation id="6433501201775827830">Dewiswch eich peiriant chwilio</translation>
 <translation id="6434309073475700221">Gwaredu</translation>
 <translation id="6435307030888827407">Aros wedi'ch allgofnodi</translation>
@@ -1839,6 +1841,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chrome yn eich cyfr
 <translation id="8393700583063109961">Anfon neges</translation>
 <translation id="8396098434728053815">Rhannu sain tab hefyd</translation>
 <translation id="8398389123831319859">Tapiwch ddwywaith a daliwch i newid i'r modd Anhysbys</translation>
+<translation id="8412037385861858490">Er mwyn diogelu eich gwaith ar Chrome, bydd eich sefydliad yn gallu gweld neu reoli gwybodaeth benodol pan fyddwch wedi mewngofnodi i Chrome. <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
 <translation id="8413126021676339697">Dangos hanes llawn</translation>
 <translation id="8413795581997394485">Yn amddiffyn rhag gwefannau, lawrlwythiadau ac estyniadau y gwyddys eu bod yn beryglus. Pan fyddwch yn ymweld â gwefan, mae Chrome yn anfon rhan o'r URL sydd wedi'i dwyllo at Google drwy weinydd preifatrwydd sy'n cuddio eich cyfeiriad IP. Os yw gwefan yn gwneud rhywbeth amheus, bydd URL llawn a darnau o gynnwys tudalen hefyd yn cael eu hanfon.</translation>
 <translation id="8414396119627470038">Mewngofnodwch i <ph name="SITE_ETLD_PLUS_ONE" /> gyda <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>

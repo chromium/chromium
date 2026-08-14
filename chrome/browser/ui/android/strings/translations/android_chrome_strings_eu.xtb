@@ -532,6 +532,7 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="3161699713309727585"><ph name="BUTTON_TEXT" />, beste fitxa batean irekiko da</translation>
 <translation id="3166827708714933426">Fitxetarako eta leihoetarako lasterbideak</translation>
 <translation id="3167258285411721858"><ph name="HOST_NAME" /> webgunearen mugikorretarako bertsioa eska dezakezu</translation>
+<translation id="3177338796769255211">Hasi saioa laster-markak eta bestelako datuak gailu guztietan lortzeko</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" /> fitxa, beste batzuekin batera hautatuta, ezkutuko modukoa, ainguratuta, audioa desaktibatuta</translation>
 <translation id="3189635831478931757"><ph name="GROUP_TITLE" /> fitxa taldea</translation>
 <translation id="3200536777393523575">Oraingo leihoa itxi nahi duzu?</translation>
@@ -928,6 +929,7 @@ Baliteke Google-ko kontuak arakatze-historiako bestelako datu batzuk (adibidez, 
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
 <translation id="4807098396393229769">Txartelean ageri den izena</translation>
 <translation id="480990236307250886">Ireki orri nagusia</translation>
+<translation id="4816492930507672669">Egokitu orrira</translation>
 <translation id="4822710610088666676"><ph name="TAB_GROUP_TITLE" /> fitxa taldea itxi eta gorde da</translation>
 <translation id="4834250788637067901">Google Pay-rekin erabiltzen dituzun ordainketa-metodoak, eskaintzak eta helbideak</translation>
 <translation id="4835385943915508971">Chrome-k ez du eskatutako baliabiderako sarbiderik.</translation>
@@ -1314,7 +1316,6 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="6411219469806822692">Ezin zara gehiago igo. Hasi gorago orrian.</translation>
 <translation id="6412215853589222273"><ph name="TAB_TITLE" />, fitxa bat baino gehiago hautatuta</translation>
 <translation id="641643625718530986">Inprimatu…</translation>
-<translation id="6427723330233512782">Doitu altuerara</translation>
 <translation id="6433501201775827830">Aukeratu bilatzailea</translation>
 <translation id="6434309073475700221">Baztertu</translation>
 <translation id="6435307030888827407">Ez hasi saioa</translation>

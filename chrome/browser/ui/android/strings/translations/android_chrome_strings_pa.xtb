@@ -532,6 +532,7 @@
 <translation id="3161699713309727585"><ph name="BUTTON_TEXT" />, ਨਵੀਂ ਟੈਬ ਵਿੱਚ ਖੁੱਲ੍ਹਦਾ ਹੈ</translation>
 <translation id="3166827708714933426">ਟੈਬ ਅਤੇ ਵਿੰਡੋ ਸ਼ਾਰਟਕੱਟ</translation>
 <translation id="3167258285411721858">ਤੁਸੀਂ <ph name="HOST_NAME" /> ਲਈ ਮੋਬਾਈਲ ਸਾਈਟ ਦੀ ਬੇਨਤੀ ਕਰ ਸਕਦੇ ਹੋ</translation>
+<translation id="3177338796769255211">ਆਪਣੇ ਸਾਰੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਆਪਣੇ ਬੁੱਕਮਾਰਕ ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, ਇੱਕ ਤੋਂ ਵੱਧ ਚੁਣੀਆਂ ਗਈਆਂ ਅਜਿਹੀਆਂ ਇਨਕੋਗਨਿਟੋ ਟੈਬਾਂ, ਜਿਨ੍ਹਾਂ ਨੂੰ ਪਿੰਨ ਅਤੇ ਮਿਊਟ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="3189635831478931757"><ph name="GROUP_TITLE" /> ਟੈਬ ਗਰੁੱਪ</translation>
 <translation id="3200536777393523575">ਕੀ ਤੁਹਾਡੀ ਮੌਜੂਦਾ ਵਿੰਡੋ ਨੂੰ ਬੰਦ ਕਰਨਾ ਹੈ?</translation>
@@ -928,6 +929,7 @@
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
 <translation id="4807098396393229769">ਕਾਰਡ ਤੇ ਨਾਮ</translation>
 <translation id="480990236307250886">ਹੋਮ ਪੇਜ ਖੋਲ੍ਹੋ</translation>
+<translation id="4816492930507672669">ਸਫ਼ੇ ਤੇ ਫਿਟ</translation>
 <translation id="4822710610088666676"><ph name="TAB_GROUP_TITLE" /> ਟੈਬ ਗਰੁੱਪ ਨੂੰ ਬੰਦ ਅਤੇ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="4834250788637067901">Google Pay ਦੀ ਵਰਤੋਂ ਕਰਨ ਵਾਲੀਆਂ ਭੁਗਤਾਨ ਵਿਧੀਆਂ, ਪੇਸ਼ਕਸ਼ਾਂ ਅਤੇ ਪਤੇ</translation>
 <translation id="4835385943915508971">Chrome ਦੀ ਬੇਨਤੀ ਕੀਤੇ ਸਰੋਤ 'ਤੇ ਪਹੁੰਚ ਨਹੀਂ ਹੈ।</translation>
@@ -1314,7 +1316,6 @@
 <translation id="6411219469806822692">ਇਸ ਤੋਂ ਉੱਪਰ ਨਹੀਂ ਜਾ ਸਕਦੇ। ਪੰਨੇ 'ਤੇ ਥੋੜ੍ਹਾ ਉੱਪਰ ਤੋਂ ਸ਼ੁਰੂਆਤ ਕਰਕੇ ਦੇਖੋ।</translation>
 <translation id="6412215853589222273"><ph name="TAB_TITLE" />, ਇੱਕ ਤੋਂ ਵੱਧ ਚੁਣੀਆਂ ਗਈਆਂ ਟੈਬਾਂ</translation>
 <translation id="641643625718530986">ਪ੍ਰਿੰਟ…</translation>
-<translation id="6427723330233512782">ਉਚਾਈ ਅਨੁਸਾਰ ਫਿੱਟ ਕਰੋ</translation>
 <translation id="6433501201775827830">ਆਪਣਾ ਖੋਜ ਇੰਜਣ ਚੁਣੋ</translation>
 <translation id="6434309073475700221">ਬਰਖਾਸਤ</translation>
 <translation id="6435307030888827407">ਸਾਈਨ-ਆਊਟ ਰਹੋ</translation>

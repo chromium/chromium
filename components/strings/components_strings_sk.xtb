@@ -610,8 +610,10 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2045871135676061132">Obálka Personal</translation>
 <translation id="2048261947532620704">Stránka sa prekladá</translation>
 <translation id="2055016614992422886">Konverzácia</translation>
+<translation id="2058468041496756763">Vyhľadávač môžete kedykoľvek zmeniť v nastaveniach Chromu. Ak sa váš preferovaný vyhľadávač nezobrazuje, môžete uskutočniť vyhľadávanie na jeho webe. V nastaveniach Chromu ho uvidíte ako nedávno navštívený vyhľadávač a môžete ho nastaviť ako predvolený.</translation>
 <translation id="2059166748188874810">Správna jednotka</translation>
 <translation id="2059202684901022309">22 × 34 palcov</translation>
+<translation id="2063929825539050431">Ak chcete túto stránku rýchlo odoslať do iného zariadenia, pridržte panel s adresou</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 návrh}few{# návrhy}many{# návrhu}other{# návrhov}}</translation>
 <translation id="2066969741541525119">Web, na ktorý sa chystáte prejsť, je blokovaný vašou organizáciou</translation>
 <translation id="2071156619270205202">Táto karta nespĺňa podmienky na pridelenie čísla virtuálnej karty.</translation>
@@ -3715,6 +3717,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="7379321689415048316">Chrome dokáže automaticky dopĺňať zložité polia, ktoré štandardné automatické dopĺňanie nemusí rozpoznať</translation>
 <translation id="7380398842872229465">10 × 15 palcov</translation>
 <translation id="7381551826960739226">Automatické dopĺňanie spôsobov platby je deaktivované, pretože tento formulár nepoužíva zabezpečené pripojenie.</translation>
+<translation id="7382980704744807223">Podozrivé</translation>
 <translation id="7388594495505979117">{0,plural, =1{Vaše zariadenie sa reštartuje o 1 minútu}few{Vaše zariadenie sa reštartuje o # minúty}many{Vaše zariadenie sa reštartuje o # minúty}other{Vaše zariadenie sa reštartuje o # minút}}</translation>
 <translation id="7393475648162498734">Zobrazte si, ktoré odmeny a výhody sú k dispozícii pre vaše karty pri platbe.</translation>
 <translation id="7393971683644170444">Pripája sa k poskytovateľovi karty…</translation>
@@ -4186,6 +4189,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="8175796834047840627">Chrome poskytuje možnosť uložiť karty v účte Google, pretože ste sa prihlásili. Toto správanie môžete zmeniť v nastaveniach.</translation>
 <translation id="8176440868214972690">Správca tohto zariadenia odoslal na nasledujúce weby nejaké informácie, napríklad nastavenia alebo pravidlá.</translation>
 <translation id="818254048113802060">{0,plural, =1{Súbor <ph name="FILE_NAME" /> bol zablokovaný na základe obsahu}few{<ph name="FILE_COUNT" /> súbory boli zablokované na základe obsahu}many{<ph name="FILE_COUNT" /> files were blocked because of content}other{<ph name="FILE_COUNT" /> súborov bolo zablokovaných na základe obsahu}}</translation>
+<translation id="8186171296341598122">Vyhľadávač môžete kedykoľvek zmeniť v nastaveniach prehliadača Chromium. Ak sa váš preferovaný vyhľadávač nezobrazuje, môžete uskutočniť vyhľadávanie na jeho webe. V nastaveniach prehliadača Chromium ho uvidíte ako nedávno navštívený vyhľadávač a môžete ho nastaviť ako predvolený.</translation>
 <translation id="8188830160449823068">Číslo IBAN bolo uložené iba v zariadení</translation>
 <translation id="8189557652711717875">Vybraný vyhľadávač bude použitý v prípade funkcií, ako je vyhľadávanie na paneli s adresou a v obrázkoch na webových stránkach.</translation>
 <translation id="8190193880870196235">Spravované rozšírením</translation>

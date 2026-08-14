@@ -610,8 +610,10 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2045871135676061132">Umschlag Personal</translation>
 <translation id="2048261947532620704">Seite wird übersetzt</translation>
 <translation id="2055016614992422886">Unterhaltung</translation>
+<translation id="2058468041496756763">Du kannst deine Suchmaschine jederzeit in den Einstellungen von Chrome ändern. Wenn deine bevorzugte Suchmaschine nicht angezeigt wird, kannst du eine Suche auf der entsprechenden Website durchführen. Dann wird diese Suchmaschine in den Chrome-Einstellungen als zuletzt verwendete Suchmaschine aufgeführt und du kannst sie als Standard festlegen.</translation>
 <translation id="2059166748188874810">Gemeinde</translation>
 <translation id="2059202684901022309">22 x 34 Zoll</translation>
+<translation id="2063929825539050431">Halte die Adressleiste gedrückt, um diese Seite schnell an ein anderes Gerät zu senden</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 Vorschlag}other{# Vorschläge}}</translation>
 <translation id="2066969741541525119">Die angeforderte Website wird von deiner Organisation blockiert</translation>
 <translation id="2071156619270205202">Für diese Karte ist keine virtuelle Kartennummer verfügbar.</translation>
@@ -3718,6 +3720,7 @@ Weitere Details:
 <translation id="7379321689415048316">Chrome kann auch Felder automatisch ausfüllen, die von der Standard-Autofill-Funktion möglicherweise nicht erkannt werden</translation>
 <translation id="7380398842872229465">10 × 15 Zoll</translation>
 <translation id="7381551826960739226">Die Funktion zum automatischen Ausfüllen der Zahlungsmethoden ist deaktiviert, da dieses Formular keine verschlüsselte Verbindung nutzt.</translation>
+<translation id="7382980704744807223">Verdächtig</translation>
 <translation id="7388594495505979117">{0,plural, =1{Dein Gerät startet in 1 Minute neu}other{Dein Gerät startet in # Minuten neu}}</translation>
 <translation id="7393475648162498734">Anzeigen, welche Prämien und Vorteile für deine Karten an der Kasse verfügbar sind</translation>
 <translation id="7393971683644170444">Verbindung zu deinem Kartenanbieter wird hergestellt…</translation>
@@ -4189,6 +4192,7 @@ Weitere Details:
 <translation id="8175796834047840627">Chrome bietet dir die Möglichkeit, die Karten in deinem Google-Konto zu speichern, weil du angemeldet bist. Du kannst dies in den Einstellungen ändern.</translation>
 <translation id="8176440868214972690">Der Administrator dieses Geräts hat Informationen wie z. B. Einstellungen oder Richtlinien an folgende Websites gesendet.</translation>
 <translation id="818254048113802060">{0,plural, =1{<ph name="FILE_NAME" /> wurde aufgrund des Inhalts blockiert}other{<ph name="FILE_COUNT" /> Dateien wurden aufgrund des Inhalts blockiert}}</translation>
+<translation id="8186171296341598122">Du kannst deine Suchmaschine jederzeit in den Einstellungen von Chromium ändern. Wenn deine bevorzugte Suchmaschine nicht angezeigt wird, kannst du eine Suche auf der entsprechenden Website durchführen. Dann wird diese Suchmaschine in den Chromium-Einstellungen als zuletzt verwendete Suchmaschine aufgeführt und du kannst sie als Standard festlegen.</translation>
 <translation id="8188830160449823068">IBAN nur auf dem Gerät gespeichert</translation>
 <translation id="8189557652711717875">Die von dir ausgewählte Suchmaschine wird für Funktionen wie die Suche über die Adressleiste oder die Suche anhand von Bildern auf Webseiten verwendet.</translation>
 <translation id="8190193880870196235">Wird über eine Erweiterung verwaltet</translation>

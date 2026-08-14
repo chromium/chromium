@@ -532,6 +532,7 @@
 <translation id="3161699713309727585"><ph name="BUTTON_TEXT" />, шинэ табд нээгдэнэ</translation>
 <translation id="3166827708714933426">Таб, цонхны товчлол</translation>
 <translation id="3167258285411721858">Та <ph name="HOST_NAME" />-н мобайл сайтыг хүсэх боломжтой</translation>
+<translation id="3177338796769255211">Хавчуурга болон бусад зүйлээ бүх төхөөрөмж дээрээ авахын тулд нэвтэрнэ үү</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, Олноороо сонгогдож, бэхлэгдсэн, дууг нь хаасан нууцлалтай таб</translation>
 <translation id="3189635831478931757"><ph name="GROUP_TITLE" /> табын бүлэг</translation>
 <translation id="3200536777393523575">Одоогийн цонхоо хаах уу?</translation>
@@ -928,6 +929,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
 <translation id="4807098396393229769">Картан дээрх нэр</translation>
 <translation id="480990236307250886">Нүүр хуудсыг нээх</translation>
+<translation id="4816492930507672669">Хуудсанд тааруулах</translation>
 <translation id="4822710610088666676"><ph name="TAB_GROUP_TITLE" /> табын бүлгийг хааж, хадгалсан</translation>
 <translation id="4834250788637067901">Google Pay-г ашиглаж буй төлбөрийн хэрэгсэл, санал болон хаяг</translation>
 <translation id="4835385943915508971">Chrome хүсэлт тавьсан нөөцөд хандах эрхгүй.</translation>
@@ -1314,7 +1316,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="6411219469806822692">Илүү дээшлэх боломжгүй. Дараагийн хуудасны дээд хэсгээс эхлүүлж үзнэ үү.</translation>
 <translation id="6412215853589222273"><ph name="TAB_TITLE" />, Олноор нь сонгосон таб</translation>
 <translation id="641643625718530986">Хэвлэх...</translation>
-<translation id="6427723330233512782">Өндөрт тааруулах</translation>
 <translation id="6433501201775827830">Хайлтын системээ сонгоно уу</translation>
 <translation id="6434309073475700221">Хэрэгсэхгүй байх</translation>
 <translation id="6435307030888827407">Гарсан хэвээр байх</translation>

@@ -149,6 +149,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="1243027604378859286">Autor:</translation>
 <translation id="1246424317317450637">Paks</translation>
 <translation id="1247030632403369975">Alumiinium</translation>
+<translation id="1249643768796040660">Eemalda see teave</translation>
 <translation id="1253846494229886276">Ekraanipildi salvestamine</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (sünkroonitud)</translation>
 <translation id="1255931290436977164">Pass</translation>
@@ -610,8 +611,10 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2045871135676061132">Ümbrik Isiklik</translation>
 <translation id="2048261947532620704">Lehe tõlkimine</translation>
 <translation id="2055016614992422886">Vestlus</translation>
+<translation id="2058468041496756763">Saate oma otsingumootorit Chrome'i seadetes alati muuta. Kui teie eelistatud otsingumootorit ei kuvata, võite selle saidil otsingu teha. Näete seda Chrome'i seadetes hiljuti külastatud otsingumootorina ja saate selle määrata oma vaikeotsingumootoriks.</translation>
 <translation id="2059166748188874810">Vald</translation>
 <translation id="2059202684901022309">22 × 34 tolli</translation>
+<translation id="2063929825539050431">Selle lehe kiireks saatmiseks teise seadmesse puudutage pikalt aadressiriba</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 soovitus}other{# soovitust}}</translation>
 <translation id="2066969741541525119">Teie organisatsioon on selle saidi blokeerinud</translation>
 <translation id="2071156619270205202">Seda kaarti ei saa virtuaalkaardi numbrina kasutada.</translation>
@@ -3720,6 +3723,7 @@ Lisateave:
 <translation id="7379321689415048316">Chrome saab automaatselt täita keerukaid välju, mida tavaline automaattäide ei pruugi tuvastada.</translation>
 <translation id="7380398842872229465">10 × 15 tolli</translation>
 <translation id="7381551826960739226">Automaatne makseviiside täitmine on keelatud, sest see vorm ei kasuta turvalist ühendust.</translation>
+<translation id="7382980704744807223">Kahtlane</translation>
 <translation id="7388594495505979117">{0,plural, =1{Teie seade taaskäivitub 1 minuti pärast}other{Teie seade taaskäivitub # minuti pärast}}</translation>
 <translation id="7393475648162498734">Näidake kassas, millised preemiad ja eelised on teie kaartide jaoks saadaval</translation>
 <translation id="7393971683644170444">Ühenduse loomine teie kaardi pakkujaga...</translation>
@@ -4191,6 +4195,7 @@ Lisateave:
 <translation id="8175796834047840627">Chrome pakub võimalust salvestada kaardid teie Google'i kontole, kuna olete sisse logitud. Seda käitumist saab seadetes muuta.</translation>
 <translation id="8176440868214972690">Seadme administraator on järgmistele veebisaitidele teatud teavet saatnud, näiteks seadete ja eeskirjade teavet.</translation>
 <translation id="818254048113802060">{0,plural, =1{<ph name="FILE_NAME" /> blokeeriti sisu tõttu}other{<ph name="FILE_COUNT" /> faili blokeeriti sisu tõttu}}</translation>
+<translation id="8186171296341598122">Saate oma otsingumootorit Chromiumi seadetes alati muuta. Kui teie eelistatud otsingumootorit ei kuvata, võite selle saidil otsingu teha. Näete seda Chromiumi seadetes hiljuti külastatud otsingumootorite loendis ja saate selle oma vaikeotsingumootoriks määrata.</translation>
 <translation id="8188830160449823068">IBAN salvestati ainult seadmesse</translation>
 <translation id="8189557652711717875">Teie valitavat otsingumootorit kasutatakse funktsioonide jaoks, nagu otsimine aadressiribalt ja veebilehtedel olevatelt piltidelt.</translation>
 <translation id="8190193880870196235">Haldab laiendus</translation>

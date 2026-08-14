@@ -149,6 +149,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1243027604378859286">Autori:</translation>
 <translation id="1246424317317450637">Të trashësuara</translation>
 <translation id="1247030632403369975">Alumin</translation>
+<translation id="1249643768796040660">Hiq këto informacione</translation>
 <translation id="1253846494229886276">Po ruhet pamja e ekranit</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (sinkronizuar)</translation>
 <translation id="1255931290436977164">Pasaporta</translation>
@@ -610,8 +611,10 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2045871135676061132">Zarf personal</translation>
 <translation id="2048261947532620704">Faqja po përkthet</translation>
 <translation id="2055016614992422886">Bisedë</translation>
+<translation id="2058468041496756763">Mund ta ndryshosh motorin e kërkimit në çdo kohë te cilësimet e Chrome. Nëse nuk e shikon motorin e preferuar të kërkimit, mund të kryesh një kërkim nga sajti i tyre. Do ta shohësh të listuar si një motor kërkimi të vizituar së fundi te cilësimet e Chrome dhe mund ta bësh atë të parazgjedhurin tënd.</translation>
 <translation id="2059166748188874810">Komunë</translation>
 <translation id="2059202684901022309">22 x 34 inç</translation>
+<translation id="2063929825539050431">Për ta dërguar me shpejtësi këtë faqe në një pajisje tjetër, prek dhe mbaj shtypur shiritin e adresave</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 sugjerim}other{# sugjerime}}</translation>
 <translation id="2066969741541525119">Sajti ku je drejtuar është bllokuar nga organizata jote</translation>
 <translation id="2071156619270205202">Kjo kartë nuk është e përshtatshme për numrin e kartës virtuale.</translation>
@@ -3718,6 +3721,7 @@ Detaje shtesë:
 <translation id="7379321689415048316">Chrome mund të plotësojë automatikisht fushat e vështira që mund të mos mbulohen nga plotësimi automatik standard</translation>
 <translation id="7380398842872229465">10 x 15 inç</translation>
 <translation id="7381551826960739226">Plotësimi automatik i mënyrave të pagesës është çaktivizuar sepse ky formular nuk përdor një lidhje të sigurt.</translation>
+<translation id="7382980704744807223">I dyshimtë</translation>
 <translation id="7388594495505979117">{0,plural, =1{Pajisja do të riniset pas 1 minute}other{Pajisja do të riniset pas # minutash}}</translation>
 <translation id="7393475648162498734">Shfaq se cilat shpërblime dhe përfitime ofrohen për kartat e tua në përfundim të blerjes</translation>
 <translation id="7393971683644170444">Po lidhet me ofruesin e kartës sate...</translation>
@@ -4189,6 +4193,7 @@ Detaje shtesë:
 <translation id="8175796834047840627">Chrome po ofron që të ruash kartat e tua në "Llogarinë tënde të Google" sepse je i identifikuar. Mund ta ndryshosh këtë sjellje te cilësimet.</translation>
 <translation id="8176440868214972690">Administratori i kësaj pajisjeje ka dërguar disa informacione te sajtet e mëposhtme të uebit, si p.sh. cilësime ose politika.</translation>
 <translation id="818254048113802060">{0,plural, =1{<ph name="FILE_NAME" /> është bllokuar për shkak të përmbajtjes}other{<ph name="FILE_COUNT" /> skedarë janë bllokuar për shkak të përmbajtjes}}</translation>
+<translation id="8186171296341598122">Mund ta ndryshosh motorin e kërkimit në çdo kohë te cilësimet e Chromium. Nëse nuk e shikon motorin e preferuar të kërkimit, mund të kryesh një kërkim nga sajti i tyre. Do ta shohësh të listuar si një motor kërkimi të vizituar së fundi te cilësimet e Chromium dhe mund ta bësh atë të parazgjedhurin tënd.</translation>
 <translation id="8188830160449823068">Numri IBAN është ruajtur vetëm në pajisje</translation>
 <translation id="8189557652711717875">Motori i kërkimit që ti zgjedh do të përdoret për veçori të tilla, si p.sh. për kërkimin nga shiriti i adresave dhe nga imazhet në faqet e uebit.</translation>
 <translation id="8190193880870196235">Menaxhuar nga një shtesë</translation>

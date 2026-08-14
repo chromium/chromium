@@ -532,6 +532,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="3161699713309727585"><ph name="BUTTON_TEXT" />, s'ouvre dans un nouvel onglet</translation>
 <translation id="3166827708714933426">Raccourcis liés aux onglets et aux fenêtres</translation>
 <translation id="3167258285411721858">Vous pouvez demander le site mobile de <ph name="HOST_NAME" /></translation>
+<translation id="3177338796769255211">Connectez-vous pour accéder à vos favoris et plus sur tous vos appareils</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, onglet de navigation privée épinglé multisélectionné avec son coupé</translation>
 <translation id="3189635831478931757">Groupe d'onglets <ph name="GROUP_TITLE" /></translation>
 <translation id="3200536777393523575">Fermer la fenêtre active ?</translation>
@@ -928,6 +929,7 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
 <translation id="4807098396393229769">Titulaire de la carte</translation>
 <translation id="480990236307250886">Ouvrir la page d'accueil</translation>
+<translation id="4816492930507672669">Ajuster à la page</translation>
 <translation id="4822710610088666676">Groupe d'onglets <ph name="TAB_GROUP_TITLE" /> fermé et enregistré</translation>
 <translation id="4834250788637067901">Modes de paiement, offres et adresses utilisant Google Pay</translation>
 <translation id="4835385943915508971">Chrome n'a pas accès à la ressource demandée.</translation>
@@ -1314,7 +1316,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6411219469806822692">Impossible d'aller plus haut. Essayez de commencer plus haut sur la page.</translation>
 <translation id="6412215853589222273"><ph name="TAB_TITLE" />, onglet multisélectionné</translation>
 <translation id="641643625718530986">Imprimer…</translation>
-<translation id="6427723330233512782">Ajuster à la hauteur</translation>
 <translation id="6433501201775827830">Sélectionnez votre moteur de recherche</translation>
 <translation id="6434309073475700221">Supprimer</translation>
 <translation id="6435307030888827407">Rester déconnecté</translation>

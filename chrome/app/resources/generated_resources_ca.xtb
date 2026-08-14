@@ -4082,7 +4082,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4110485659976215879">Restaura l'advertiment</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (sense connexió)</translation>
 <translation id="4113743276555482284">Contrasenya del fitxer</translation>
-<translation id="4114391251600134209">{COUNT,plural, =0{No hi ha cap contrasenya desada}=1{1 contrasenya comprovada}other{{COUNT} contrasenyes comprovades}}</translation>
 <translation id="4114524937989710624">Veus suggeriments de fitxers per ajudar-te a trobar fàcilment la teva activitat més recent a Google Drive.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -6984,7 +6983,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6425556984042222041">Velocitat de text a parla</translation>
 <translation id="642729974267661262">Sense permís per reproduir so</translation>
 <translation id="6427752304227226701">Informa d'un lloc web no segur...</translation>
-<translation id="6427938854876261655">{COUNT,plural, =0{No hi ha cap contrasenya desada.}=1{S'està comprovant {COUNT} contrasenya...}other{S'estan comprovant {COUNT} contrasenyes…}}</translation>
 <translation id="6429384232893414837">Error d'actualització</translation>
 <translation id="6430202563517028640">Afegeix l'enllaç a la llista de lectura</translation>
 <translation id="6430814529589430811">ASCII codificat en Base64, certificat únic</translation>

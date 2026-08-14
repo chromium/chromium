@@ -532,6 +532,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="3161699713309727585"><ph name="BUTTON_TEXT" />, si apre in una nuova scheda</translation>
 <translation id="3166827708714933426">Scorciatoie di finestre e schede</translation>
 <translation id="3167258285411721858">Puoi richiedere il sito mobile di <ph name="HOST_NAME" /></translation>
+<translation id="3177338796769255211">Accedi per avere a disposizione i tuoi preferiti e altri dati su tutti i dispositivi</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, schede Incognito con audio disattivato fissate selezionate</translation>
 <translation id="3189635831478931757">Gruppo di schede <ph name="GROUP_TITLE" /></translation>
 <translation id="3200536777393523575">Chiudere la finestra corrente?</translation>
@@ -928,6 +929,7 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
 <translation id="4807098396393229769">Nome sulla carta di credito</translation>
 <translation id="480990236307250886">Apri pagina iniziale</translation>
+<translation id="4816492930507672669">Adatta alla pagina</translation>
 <translation id="4822710610088666676">Gruppo di schede <ph name="TAB_GROUP_TITLE" /> chiuso e salvato</translation>
 <translation id="4834250788637067901">Metodi di pagamento, offerte e indirizzi che utilizzano Google Pay</translation>
 <translation id="4835385943915508971">Chrome non ha accesso alla risorsa richiesta.</translation>
@@ -1314,7 +1316,6 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="6411219469806822692">Non puoi scorrere più in alto di così. Prova a partire da un punto più in alto nella pagina.</translation>
 <translation id="6412215853589222273"><ph name="TAB_TITLE" />, schede selezionate</translation>
 <translation id="641643625718530986">Stampa…</translation>
-<translation id="6427723330233512782">Adatta all'altezza</translation>
 <translation id="6433501201775827830">Scegli il motore di ricerca</translation>
 <translation id="6434309073475700221">Elimina</translation>
 <translation id="6435307030888827407">Continua senza eseguire l'accesso</translation>

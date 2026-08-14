@@ -610,8 +610,10 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2045871135676061132">Envelope Personal</translation>
 <translation id="2048261947532620704">Isinasalin ang page</translation>
 <translation id="2055016614992422886">Pag-uusap</translation>
+<translation id="2058468041496756763">Puwede mong palitan ang iyong search engine anumang oras sa mga setting ng Chrome. Kung hindi mo nakikita ang gusto mong search engine, puwede kang maghanap mula sa site nito. Makikita mo itong nakalista bilang kamakailang binisitang search engine sa mga setting ng Chrome, at puwede mo itong gawing iyong default.</translation>
 <translation id="2059166748188874810">Munisipalidad</translation>
 <translation id="2059202684901022309">22 x 34 in</translation>
+<translation id="2063929825539050431">Para mabilis na maipadala ang page na ito sa ibang device, pindutin nang matagal ang address bar</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 suhestyon}one{# suhestyon}other{# na suhestyon}}</translation>
 <translation id="2066969741541525119">Na-block ng iyong organisasyon ang pupuntahang site</translation>
 <translation id="2071156619270205202">Hindi kwalipikado ang card na ito para sa virtual card number.</translation>
@@ -3720,6 +3722,7 @@ Mga karagdagang detalye:
 <translation id="7379321689415048316">Mao-autofill ng Chrome ang mahihirap na field na posibleng mapalampas ng karaniwang autofill</translation>
 <translation id="7380398842872229465">10 x 15 in</translation>
 <translation id="7381551826960739226">Na-disable ang awtomatikong pagpunan ng mga paraan ng pagbabayad dahil hindi gumagamit ng secure na koneksyon ang form na ito.</translation>
+<translation id="7382980704744807223">Kahina-hinala</translation>
 <translation id="7388594495505979117">{0,plural, =1{Magre-restart ang iyong device pagkalipas ng 1 minuto}one{Magre-restart ang iyong device pagkalipas ng # minuto}other{Magre-restart ang iyong device pagkalipas ng # na minuto}}</translation>
 <translation id="7393475648162498734">Ipakita kung aling mga reward at benepisyo ang available para sa iyong card kapag nag-checkout</translation>
 <translation id="7393971683644170444">Kumokonekta sa iyong provider ng card...</translation>
@@ -4191,6 +4194,7 @@ Mga karagdagang detalye:
 <translation id="8175796834047840627">Nag-aalok ang Chrome na i-save ang iyong mga card sa Google Account mo dahil naka-sign in ka. Maaari mong baguhin ang gawing ito sa mga setting.</translation>
 <translation id="8176440868214972690">Nagpadala ang administrator ng device na ito ng ilang impormasyon sa mga sumusunod na website, tulad ng mga setting o patakaran.</translation>
 <translation id="818254048113802060">{0,plural, =1{Na-block ang <ph name="FILE_NAME" /> dahil sa content}one{<ph name="FILE_COUNT" /> file ang na-block dahil sa content}other{<ph name="FILE_COUNT" /> na file ang na-block dahil sa content}}</translation>
+<translation id="8186171296341598122">Puwede mong palitan ang iyong search engine anumang oras sa mga setting ng Chromium. Kung hindi mo nakikita ang gusto mong search engine, puwede kang maghanap mula sa site nito. Makikita mo itong nakalista bilang kamakailang binisitang search engine sa mga setting ng Chromium, at puwede mo itong gawing iyong default.</translation>
 <translation id="8188830160449823068">Sa device lang na-save ang IBAN</translation>
 <translation id="8189557652711717875">Gagamitin ang search engine na pipiliin mo para sa mga feature na tulad ng paghahanap mula sa address bar at mula sa mga larawan sa mga web page.</translation>
 <translation id="8190193880870196235">Pinamamahalaan ng isang extension</translation>

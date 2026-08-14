@@ -532,6 +532,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="3161699713309727585"><ph name="BUTTON_TEXT" />, avautuu uudelle välilehdelle</translation>
 <translation id="3166827708714933426">Välilehti- ja ikkunapikanäppäimet</translation>
 <translation id="3167258285411721858">Voit pyytää mobiilisivustoa osoitteesta <ph name="HOST_NAME" /></translation>
+<translation id="3177338796769255211">Kirjaudu sisään, niin voit käyttää esimerkiksi kirjanmerkkejä kaikilla laitteilla</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, monivalittu kiinnitetty ja mykistetty incognito-välilehti</translation>
 <translation id="3189635831478931757">Välilehtiryhmä <ph name="GROUP_TITLE" /></translation>
 <translation id="3200536777393523575">Suljetaanko nykyinen ikkuna?</translation>
@@ -928,6 +929,7 @@ Google-tililläsi voi olla muita selaushistoriatietoja, kuten hakuja ja toiminta
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
 <translation id="4807098396393229769">Kortissa oleva nimi</translation>
 <translation id="480990236307250886">Avaa oma etusivu</translation>
+<translation id="4816492930507672669">Sovita sivulle</translation>
 <translation id="4822710610088666676">Välilehtiryhmä (<ph name="TAB_GROUP_TITLE" />) suljettu ja tallennettu</translation>
 <translation id="4834250788637067901">Maksutavat, tarjoukset ja osoitteet Google Payta käyttäen</translation>
 <translation id="4835385943915508971">Chromella ei ole pyydetyn resurssin käyttöoikeutta.</translation>
@@ -1314,7 +1316,6 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="6411219469806822692">Ylemmäs ei pääse. Kokeile aloittaa ylempää sivulta.</translation>
 <translation id="6412215853589222273"><ph name="TAB_TITLE" />, monivalittu välilehti</translation>
 <translation id="641643625718530986">Tulosta…</translation>
-<translation id="6427723330233512782">Sovita korkeuteen</translation>
 <translation id="6433501201775827830">Valitse hakukone</translation>
 <translation id="6434309073475700221">Hylkää</translation>
 <translation id="6435307030888827407">Pysy uloskirjautuneena</translation>

@@ -532,6 +532,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="3161699713309727585"><ph name="BUTTON_TEXT" />; ábrese nunha pestana nova</translation>
 <translation id="3166827708714933426">Atallos da ventá e da pestana</translation>
 <translation id="3167258285411721858">Podes solicitar o sitio para móbiles para o anfitrión <ph name="HOST_NAME" /></translation>
+<translation id="3177338796769255211">Inicia sesión para poder acceder aos teus marcadores e moito máis en todos os teus dispositivos</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, pestana do modo de incógnito fixada, silenciada e multiseleccionada</translation>
 <translation id="3189635831478931757">Grupo de pestanas <ph name="GROUP_TITLE" /></translation>
 <translation id="3200536777393523575">Queres pechar a ventá actual?</translation>
@@ -928,6 +929,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
 <translation id="4807098396393229769">Nome que aparece na tarxeta</translation>
 <translation id="480990236307250886">Abre a páxina de inicio</translation>
+<translation id="4816492930507672669">Axustar á páxina</translation>
 <translation id="4822710610088666676"><ph name="TAB_GROUP_TITLE" /> grupo de pestanas pechado e gardado</translation>
 <translation id="4834250788637067901">Métodos de pago, ofertas e enderezos que usan Google Pay</translation>
 <translation id="4835385943915508971">Chrome non ten acceso ao recurso solicitado.</translation>
@@ -1314,7 +1316,6 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="6411219469806822692">Non se pode seguir subindo. Proba a comezar desde máis arriba na páxina.</translation>
 <translation id="6412215853589222273"><ph name="TAB_TITLE" />, pestana multiseleccionada</translation>
 <translation id="641643625718530986">Imprimir...</translation>
-<translation id="6427723330233512782">Axustar á altura</translation>
 <translation id="6433501201775827830">Selecciona o motor de busca</translation>
 <translation id="6434309073475700221">Descartar</translation>
 <translation id="6435307030888827407">Permanecer coa sesión pechada</translation>

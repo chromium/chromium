@@ -532,6 +532,7 @@
 <translation id="3161699713309727585"><ph name="BUTTON_TEXT" />, പുതിയ ടാബിൽ തുറക്കുന്നു</translation>
 <translation id="3166827708714933426">ടാബ്, വിൻഡോ കുറുക്കുവഴികൾ</translation>
 <translation id="3167258285411721858">നിങ്ങൾക്ക് <ph name="HOST_NAME" /> എന്നതിനുള്ള മൊബൈൽ സൈറ്റ് അഭ്യർത്ഥിക്കാം</translation>
+<translation id="3177338796769255211">ബുക്ക്‌മാർക്കുകളും മറ്റും നിങ്ങളുടെ എല്ലാ ഉപകരണങ്ങളിലും നേടുന്നതിന് സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, മൾട്ടിസെലക്റ്റ് ചെയ്ത, പിൻ ചെയ്ത, മ്യൂട്ട് ചെയ്ത അദൃശ്യ ടാബ്</translation>
 <translation id="3189635831478931757"><ph name="GROUP_TITLE" /> ടാബ് ഗ്രൂപ്പ്</translation>
 <translation id="3200536777393523575">നിങ്ങളുടെ നിലവിലെ വിൻഡോ അടയ്ക്കണോ?</translation>
@@ -928,6 +929,7 @@
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
 <translation id="4807098396393229769">കാര്‍‌ഡിലെ നാമം</translation>
 <translation id="480990236307250886">ഹോംപേജ് തുറക്കുക</translation>
+<translation id="4816492930507672669">പേജിന് യുക്തമാക്കുക</translation>
 <translation id="4822710610088666676"><ph name="TAB_GROUP_TITLE" /> ഒരു ടാബ് ഗ്രൂപ്പ് അടയ്‌ക്കുകയും സംരക്ഷിക്കുകയും ചെയ്‌തു</translation>
 <translation id="4834250788637067901">Google Pay ഉപയോഗിക്കുന്ന പേയ്മെന്റ് രീതികളും ഓഫറുകളും വിലാസങ്ങളും</translation>
 <translation id="4835385943915508971">അഭ്യർത്ഥിച്ച ഉറവിടത്തിലേക്ക് Chrome-ന് ആക്‌സസ് ഇല്ല.</translation>
@@ -1314,7 +1316,6 @@
 <translation id="6411219469806822692">മുകളിലേക്ക് പോകാനാകില്ല. പേജിന്റെ കുറച്ച് കൂടെ മുകളിൽ നിന്ന് ആരംഭിക്കാൻ ശ്രമിക്കൂ.</translation>
 <translation id="6412215853589222273"><ph name="TAB_TITLE" />, മൾട്ടിസെലക്റ്റ് ചെയ്ത ടാബ്</translation>
 <translation id="641643625718530986">പ്രിന്‍റ് ചെയ്യുക…</translation>
-<translation id="6427723330233512782">ഉയരത്തിന് അനുയോജ്യമാക്കുക</translation>
 <translation id="6433501201775827830">നിങ്ങളുടെ തിരയൽ യന്ത്രം തിരഞ്ഞെടുക്കുക</translation>
 <translation id="6434309073475700221">നിരാകരിക്കുക</translation>
 <translation id="6435307030888827407">സൈൻ ഔട്ട് ചെയ്‌ത നിലയിൽ തുടരുക</translation>

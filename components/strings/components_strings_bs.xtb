@@ -610,8 +610,10 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="2045871135676061132">Koverta Personal</translation>
 <translation id="2048261947532620704">Stranica se prevodi</translation>
 <translation id="2055016614992422886">Razgovor</translation>
+<translation id="2058468041496756763">Možete promijeniti pretraživač bilo kada u postavkama Chromea. Ako ne vidite željeni pretraživač, možete izvršiti pretraživanje s njegove web lokacije. Prikazat će se na listi nedavno posjećenih pretraživača u postavkama Chromea i možete ga postaviti kao zadanog.</translation>
 <translation id="2059166748188874810">Općina</translation>
 <translation id="2059202684901022309">22 x 34 in</translation>
+<translation id="2063929825539050431">Da brzo pošaljete ovu stranicu na drugi uređaj, dodirnite i zadržite traku za adresu</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{Jedan prijedlog}one{# prijedlog}few{# prijedloga}other{# prijedloga}}</translation>
 <translation id="2066969741541525119">Vaša organizacija je blokirala web lokaciju koja slijedi</translation>
 <translation id="2071156619270205202">Ova kartica ne ispunjava uslove za broj virtuelne kartice.</translation>
@@ -3720,6 +3722,7 @@ Dodatni detalji:
 <translation id="7379321689415048316">Chrome može automatski popuniti složena polja koja standardno automatsko popunjavanje može propustiti</translation>
 <translation id="7380398842872229465">10 x 15 in</translation>
 <translation id="7381551826960739226">Automatsko popunjavanje sredstava plaćanja je onemogućeno jer ovaj obrazac ne koristi sigurnu vezu.</translation>
+<translation id="7382980704744807223">Sumnjivo</translation>
 <translation id="7388594495505979117">{0,plural, =1{Uređaj će se ponovo pokrenuti za 1 min}one{Uređaj će se ponovo pokrenuti za # min}few{Uređaj će se ponovo pokrenuti za # min}other{Uređaj će se ponovo pokrenuti za # min}}</translation>
 <translation id="7393475648162498734">Show which rewards and benefits are available for your cards at checkout</translation>
 <translation id="7393971683644170444">Povezivanje s pružaocem usluga kartice…</translation>
@@ -4191,6 +4194,7 @@ Dodatni detalji:
 <translation id="8175796834047840627">Chrome vam nudi pohranjivanje vaših kartica na Google računu zato što ste prijavljeni. Ovo ponašanje možete promjeniti u postavkama</translation>
 <translation id="8176440868214972690">Administrator ovog uređaja je poslao određene informacije web lokacijama u nastavku, naprimjer postavke ili pravila.</translation>
 <translation id="818254048113802060">{0,plural, =1{Fajl <ph name="FILE_NAME" /> je blokiran zbog sadržaja}one{<ph name="FILE_COUNT" /> fajl je blokiran zbog sadržaja}few{<ph name="FILE_COUNT" /> fajla su blokirana zbog sadržaja}other{<ph name="FILE_COUNT" /> fajlova je blokirano zbog sadržaja}}</translation>
+<translation id="8186171296341598122">Možete promijeniti pretraživač bilo kada u postavkama Chromiuma. Ako ne vidite željeni pretraživač, možete izvršiti pretraživanje s njegove web lokacije. Prikazat će se na listi nedavno posjećenih pretraživača u postavkama Chromiuma i možete ga postaviti kao zadanog.</translation>
 <translation id="8188830160449823068">IBAN sačuvan samo na uređaj</translation>
 <translation id="8189557652711717875">Pretraživač koji odaberete će se koristiti za funkcije kao što je pretraživanje iz trake za adresu i sa slika na web lokacijama.</translation>
 <translation id="8190193880870196235">Upravlja ekstenzija</translation>

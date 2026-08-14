@@ -532,6 +532,7 @@
 <translation id="3161699713309727585"><ph name="BUTTON_TEXT" />，喺新分頁開啟</translation>
 <translation id="3166827708714933426">分頁和視窗快速鍵</translation>
 <translation id="3167258285411721858">您可向 <ph name="HOST_NAME" /> 要求取得流動網站</translation>
+<translation id="3177338796769255211">登入帳戶即可在任何裝置上存取自己的書籤及其他內容</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />，複選咗已經靜音嘅固定無痕式分頁</translation>
 <translation id="3189635831478931757">「<ph name="GROUP_TITLE" />」分頁群組</translation>
 <translation id="3200536777393523575">要關閉目前的視窗嗎？</translation>
@@ -928,6 +929,7 @@
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
 <translation id="4807098396393229769">信用卡持有人姓名</translation>
 <translation id="480990236307250886">開啟首頁</translation>
+<translation id="4816492930507672669">依頁面大小調整</translation>
 <translation id="4822710610088666676">已關閉並儲存「<ph name="TAB_GROUP_TITLE" />」分頁群組</translation>
 <translation id="4834250788637067901">使用 Google Pay 儲存的付款方法、優惠和地址</translation>
 <translation id="4835385943915508971">Chrome 沒有要求資源的存取權。</translation>
@@ -1314,7 +1316,6 @@
 <translation id="6411219469806822692">無法再往上移動。請嘗試從上一頁開始。</translation>
 <translation id="6412215853589222273"><ph name="TAB_TITLE" />，複選嘅分頁</translation>
 <translation id="641643625718530986">列印…</translation>
-<translation id="6427723330233512782">調整成與畫面等高</translation>
 <translation id="6433501201775827830">選取您的搜尋引擎</translation>
 <translation id="6434309073475700221">捨棄</translation>
 <translation id="6435307030888827407">保持不登入狀態</translation>

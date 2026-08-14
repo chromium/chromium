@@ -532,6 +532,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="3161699713309727585"><ph name="BUTTON_TEXT" />, avaneb uuel vahelehel</translation>
 <translation id="3166827708714933426">Vahelehe ja akna otseteed</translation>
 <translation id="3167258285411721858">Saate taotleda hosti <ph name="HOST_NAME" /> mobiilisaiti</translation>
+<translation id="3177338796769255211">Logige sisse, et saada kõigis oma seadmetes juurdepääs oma järjehoidjatele ja muule</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, mitmikvalikuga kinnitatud vaigistatud inkognito vaheleht</translation>
 <translation id="3189635831478931757">Vahelehegrupp <ph name="GROUP_TITLE" /></translation>
 <translation id="3200536777393523575">Kas sulgeda praegune aken?</translation>
@@ -928,6 +929,7 @@ Veebisaidil <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
 <translation id="4807098396393229769">Kaardil olev nimi</translation>
 <translation id="480990236307250886">Ava avaleht</translation>
+<translation id="4816492930507672669">Sobita lehele</translation>
 <translation id="4822710610088666676">Vahelehegrupp „<ph name="TAB_GROUP_TITLE" />“ on salvestatud ja suletud</translation>
 <translation id="4834250788637067901">Makseviisid, pakkumised ja aadressid, mis kasutavad Google Payd</translation>
 <translation id="4835385943915508971">Chrome'il pole soovitud allikale juurdepääsu.</translation>
@@ -1314,7 +1316,6 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="6411219469806822692">Kõrgemale ei saa minna. Alustage lehel eestpoolt.</translation>
 <translation id="6412215853589222273"><ph name="TAB_TITLE" />, mitmikvalikuga vaheleht</translation>
 <translation id="641643625718530986">Printimine ...</translation>
-<translation id="6427723330233512782">Sobita kõrgusega</translation>
 <translation id="6433501201775827830">Valige oma otsingumootor</translation>
 <translation id="6434309073475700221">Loobu</translation>
 <translation id="6435307030888827407">Jää väljalogituks</translation>

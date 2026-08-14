@@ -532,6 +532,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="3161699713309727585"><ph name="BUTTON_TEXT" /> (se abre en otra pestaña)</translation>
 <translation id="3166827708714933426">Combinaciones de teclas de pestañas y ventanas</translation>
 <translation id="3167258285411721858">Puedes solicitar el sitio web móvil de <ph name="HOST_NAME" /></translation>
+<translation id="3177338796769255211">Inicia sesión para acceder a tus marcadores y otras cosas en todos tus dispositivos</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, pestaña de Incógnito silenciada y fijada en selección múltiple</translation>
 <translation id="3189635831478931757">Grupo de pestañas <ph name="GROUP_TITLE" /></translation>
 <translation id="3200536777393523575">¿Cerrar la ventana actual?</translation>
@@ -928,6 +929,7 @@ Es posible que tu cuenta de Google tenga otros tipos de historial de navegación
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
 <translation id="4807098396393229769">Titular de la tarjeta</translation>
 <translation id="480990236307250886">Abrir la página principal</translation>
+<translation id="4816492930507672669">Ajustar a página</translation>
 <translation id="4822710610088666676">Grupo de pestañas <ph name="TAB_GROUP_TITLE" /> cerrado y guardado</translation>
 <translation id="4834250788637067901">Métodos de pago, ofertas y direcciones que usan Google Pay</translation>
 <translation id="4835385943915508971">Chrome no tiene acceso al recurso solicitado.</translation>
@@ -1314,7 +1316,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="6411219469806822692">No se puede ir más arriba. Intenta empezar desde más arriba de la página.</translation>
 <translation id="6412215853589222273"><ph name="TAB_TITLE" />, pestaña en selección múltiple</translation>
 <translation id="641643625718530986">Imprimir…</translation>
-<translation id="6427723330233512782">Ajustar a la altura</translation>
 <translation id="6433501201775827830">Elige tu buscador</translation>
 <translation id="6434309073475700221">Descartar</translation>
 <translation id="6435307030888827407">Mantener sesión cerrada</translation>

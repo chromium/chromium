@@ -1886,6 +1886,7 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="2458379781610688953">Diweddaru'r cyfrif, <ph name="EMAIL" /></translation>
 <translation id="2459703812219683497">Mae cod gweithredu wedi'i ganfod</translation>
 <translation id="2459706890611560967">Ail-ddechrau tab castio i <ph name="DEVICE_NAME" /></translation>
+<translation id="245979889539926662">Rhannu sgrinlun</translation>
 <translation id="2460150227008936698">{COUNT,plural, =0{Yn darfod heddiw}=1{Yn darfod yfory}two{Yn darfod mewn # ddiwrnod}few{Yn darfod mewn # diwrnod}many{Yn darfod mewn # diwrnod}other{Yn darfod mewn # diwrnod}}</translation>
 <translation id="2460482211073772897">Mewn ffolderi eraill</translation>
 <translation id="2460826998961521840">I ddefnyddio allweddi sydd wedi'u cadw yn eich Cyfrif Google</translation>
@@ -4098,7 +4099,6 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="4110485659976215879">Adfer y rhybudd</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (all-lein)</translation>
 <translation id="4113743276555482284">Cyfrinair ffeil</translation>
-<translation id="4114391251600134209">{COUNT,plural, =0{Nid oes unrhyw gyfrineiriau sydd wedi'u cadw}=1{1 cyfrinair wedi'i wirio}two{{COUNT} gyfrinair wedi'u gwirio}few{{COUNT} chyfrinair wedi'u gwirio}many{{COUNT} chyfrinair wedi'u gwirio}other{{COUNT} cyfrinair wedi'u gwirio}}</translation>
 <translation id="4114524937989710624">Rydych yn gweld ffeiliau a awgrymir i'ch helpu i ddychwelyd yn hawdd i'ch gweithgarwch diweddaraf yn Google Drive.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -7003,7 +7003,6 @@ Gallwch aseinio sawl switsh i'r weithred hon.</translation>
 <translation id="6425556984042222041">Cyfradd testun i leferydd</translation>
 <translation id="642729974267661262">Ni chaniateir chwarae sain</translation>
 <translation id="6427752304227226701">Adrodd am wefan &amp;anniogel...</translation>
-<translation id="6427938854876261655">{COUNT,plural, =0{Nid oes unrhyw gyfrineiriau sydd wedi'u cadw.}=1{Wrthi'n gwirio {COUNT} cyfrinair...}two{Wrthi'n gwirio {COUNT} gyfrinair...}few{Wrthi'n gwirio {COUNT} chyfrinair...}many{Wrthi'n gwirio {COUNT} chyfrinair...}other{Wrthi'n gwirio {COUNT} cyfrinair...}}</translation>
 <translation id="6429384232893414837">Gwall diweddaru</translation>
 <translation id="6430202563517028640">Ychwanegu dolen at y rhestr ddarllen</translation>
 <translation id="6430814529589430811">ASCII sylfaen 64 wedi'i hencodio, tystysgrif sengl</translation>

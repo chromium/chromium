@@ -11574,11 +11574,6 @@ Se a política <ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" /> for definida como d
 
       Se a política não for definida, não haverá seleção automática para nenhum site.</translation>
 <translation id="7937766917976512374">Permitir ou negar captura de vídeo</translation>
-<translation id="7937825205289116563">Se a política for ativada ou deixada sem definição, será possível usar assinaturas ad hoc no app nativo criado ao instalar um App Web Progressivo (PWA). Isso garante que cada aplicativo instalado tenha uma identidade exclusiva para os componentes do sistema <ph name="MAC_OS_NAME" />.
-
-Se a política for desativada, todos os apps nativos criados na instalação de Apps Web Progressivos terão a mesma identidade. Isso pode interferir na funcionalidade do <ph name="MAC_OS_NAME" />.
-
-Desative a política somente se você estiver usando uma solução de segurança de endpoint que bloqueie aplicativos com uma assinatura ad-hoc.</translation>
 <translation id="7941528208359969119">Permitir a realização de verificações on-line de <ph name="OCSP_CRL_LABEL" /></translation>
 <translation id="7941975817681987555">Não prever ações da rede em nenhuma conexão de rede</translation>
 <translation id="794447754389837404">Bloquear o acesso à rede particular na API Direct Sockets nestes sites</translation>
@@ -12178,7 +12173,6 @@ Quando esta política não é definida, o controle facial fica desativado, mas p
 <translation id="8330437518362176921">Usar apenas o URL de atualização fornecido pela política para fazer o download e a atualização de apps do Chrome para quiosque</translation>
 <translation id="8331479227794770304">Ativar tecla aderente</translation>
 <translation id="8332822245414537447">Desativar a verificação de uso da Chave RSA</translation>
-<translation id="8333141477131859004">Permitir o preenchimento automático aprimorado e melhorar os modelos de IA.</translation>
 <translation id="8334685561819743286">Desativar a correção automática do teclado físico durante a digitação</translation>
 <translation id="8336986243404088829">Esta política mitiga ataques de memória em processo cruzado de canal lateral, isolando o processo do renderizador no núcleo da CPU e impedindo que outros processos compartilhem o mesmo núcleo. A mitigação é compatível com o <ph name="MS_WIN_NAME" /> 11 24H2 e versões mais recentes. Se o SO não tiver o suporte de programação necessário, esta política não terá efeito. Esta política pode diminuir o desempenho em alguns cenários exigentes, de forma semelhante à desativação do hyperthreading. Para mais informações, acesse https://learn.microsoft.com/pt-br/windows/win32/api/winnt/ns-winnt-process_mitigation_side_channel_isolation_policy
       Se esta política estiver ativada, todos os outros processos não serão programados no mesmo núcleo da CPU quando o processo do renderizador estiver em execução.
@@ -13317,17 +13311,6 @@ Se a política é deixada sem definição, o <ph name="PRODUCT_NAME" /> pode col
 <translation id="9053841574218808519">Sempre executar plug-ins que não estão desatualizados</translation>
 <translation id="9055866143096316150">Rebaixar solicitações de wake lock da tela para solicitações de wake lock do sistema</translation>
 <translation id="9057159618445405645">Usar o comportamento padrão do navegador Chrome</translation>
-<translation id="9061455386353325110">Especifica se os usuários podem permitir que o <ph name="PRODUCT_NAME" /> use a IA generativa para entender melhor os formulários e ajudar a preencher mais campos.
-
-Se ela for definida como 0, o recurso será habilitado e os dados relevantes poderão ser usados pelo Google para melhorar os modelos de IA. Esses dados podem incluir comandos, entradas, saídas, fontes e feedback por escrito, dependendo do recurso. O valor padrão é 0, exceto quando indicado de outra forma abaixo.
-
-Se a política for definida como 1, o recurso será habilitado, mas o Google não poderá usar o conteúdo dos usuários (incluindo comandos, entradas, saídas, fontes e feedback por escrito) para melhorar os modelos. 1 é o valor padrão para usuários corporativos gerenciados pelo <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> e contas de ensino gerenciadas pelo <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
-
-Se ela for definida como 2, o recurso não será habilitado.
-
-Se for deixada sem definição, o comportamento será determinado pela política <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
-
-Para mais informações sobre como tratar dados de recursos de IA generativa, consulte https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="9061609750723054419">Controlar a visibilidade do aviso de gerenciamento na página "Nova guia" para navegadores gerenciados</translation>
 <translation id="9063485115966829754">O visualizador de PDF usa a arquitetura do GuestView.</translation>
 <translation id="9064546884927958824">Se a política for definida, você poderá fazer uma lista de padrões de URL que especificam sites que podem exibir imagens.

@@ -610,8 +610,10 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2045871135676061132">Kirjekuori Henkilökohtainen</translation>
 <translation id="2048261947532620704">Sivua käännetään</translation>
 <translation id="2055016614992422886">Keskustelu</translation>
+<translation id="2058468041496756763">Voit vaihtaa hakukoneen milloin tahansa Chromen asetuksista. Jos et näe haluamaasi hakukonetta, voit tehdä haun sen sivustolta. Se näkyy äskettäin käytettyjen hakukoneiden listalla Chromen asetuksissa, ja voit asettaa sen oletukseksi.</translation>
 <translation id="2059166748188874810">Paikkakunta</translation>
 <translation id="2059202684901022309">22 x 34 tuumaa</translation>
+<translation id="2063929825539050431">Jos haluat lähettää tämän sivun nopeasti toiselle laitteelle, kosketa osoitepalkkia pitkään</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 ehdotus}other{# ehdotusta}}</translation>
 <translation id="2066969741541525119">Organisaatiosi on merkinnyt tämän sivuston</translation>
 <translation id="2071156619270205202">Tälle kortille ei ole saatavilla virtuaalista korttinumeroa.</translation>
@@ -3721,6 +3723,7 @@ Lisätietoja:
 <translation id="7379321689415048316">Chrome voi täyttää automaattisesti vaikeita kenttiä, jotka tavallinen automaattinen täyttö ei välttämättä havaitse</translation>
 <translation id="7380398842872229465">10 x 15 tuumaa</translation>
 <translation id="7381551826960739226">Automaattinen maksutapojen täyttäminen on poistettu käytöstä, koska tämä lomake ei käytä turvallista yhteyttä.</translation>
+<translation id="7382980704744807223">Epäilyttävä</translation>
 <translation id="7388594495505979117">{0,plural, =1{Laitteesi käynnistyy uudelleen 1 minuutin kuluttua}other{Laitteesi käynnistyy uudelleen # minuutin kuluttua}}</translation>
 <translation id="7393475648162498734">Näytä korteilla saatavat palkinnot ja edut kassalla</translation>
 <translation id="7393971683644170444">Muodostetaan yhteyttä kortin myöntäjään…</translation>
@@ -4192,6 +4195,7 @@ Lisätietoja:
 <translation id="8175796834047840627">Chrome tarjoaa korttien tallentamista Google-tilillesi, koska olet kirjautuneena sisään. Voit muuttaa tätä koska tahansa asetuksista.</translation>
 <translation id="8176440868214972690">Laitteen järjestelmänvalvoja on lähettänyt seuraaville verkkosivustoille joitakin tietoja, esim. asetuksia tai käytäntöjä.</translation>
 <translation id="818254048113802060">{0,plural, =1{<ph name="FILE_NAME" /> estetty sisällön vuoksi}other{<ph name="FILE_COUNT" /> tiedostoa estetty sisällön vuoksi}}</translation>
+<translation id="8186171296341598122">Voit vaihtaa hakukoneen milloin tahansa Chromiumin asetuksista. Jos et näe haluamaasi hakukonetta, voit tehdä haun sen sivustolta. Se näkyy äskettäin käytettyjen hakukoneiden listalla Chromiumin asetuksissa, ja voit asettaa sen oletukseksi.</translation>
 <translation id="8188830160449823068">IBAN tallennettu vain laitteelle</translation>
 <translation id="8189557652711717875">Valitsemaasi hakukonetta käytetään esimerkiksi hakujen tekemiseen osoitepalkin kautta ja kuvien etsimiseen verkkosivuilta.</translation>
 <translation id="8190193880870196235">Laajennuksen hallinnoima</translation>

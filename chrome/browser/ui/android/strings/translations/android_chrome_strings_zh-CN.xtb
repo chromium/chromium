@@ -532,6 +532,7 @@
 <translation id="3161699713309727585"><ph name="BUTTON_TEXT" />，在新标签页中打开</translation>
 <translation id="3166827708714933426">标签页和窗口快捷键</translation>
 <translation id="3167258285411721858">您可以请求访问 <ph name="HOST_NAME" /> 的移动网站</translation>
+<translation id="3177338796769255211">登录即可将书签等信息同步到您的所有设备上</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />，已选择的多个固定无痕式标签页之一，已设为静音</translation>
 <translation id="3189635831478931757">“<ph name="GROUP_TITLE" />”标签页分组</translation>
 <translation id="3200536777393523575">关闭当前窗口？</translation>
@@ -928,6 +929,7 @@
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
 <translation id="4807098396393229769">持卡人姓名</translation>
 <translation id="480990236307250886">打开主页</translation>
+<translation id="4816492930507672669">适应页面</translation>
 <translation id="4822710610088666676">已关闭并保存“<ph name="TAB_GROUP_TITLE" />”标签页分组</translation>
 <translation id="4834250788637067901">Google Pay 中存储的支付方式、优惠和地址信息</translation>
 <translation id="4835385943915508971">Chrome 无权访问请求的资源。</translation>
@@ -1314,7 +1316,6 @@
 <translation id="6411219469806822692">无法继续向上滚动屏幕了。请尝试从页面中更靠上的位置开始截屏。</translation>
 <translation id="6412215853589222273"><ph name="TAB_TITLE" />，已多选的标签页</translation>
 <translation id="641643625718530986">打印…</translation>
-<translation id="6427723330233512782">适应高度</translation>
 <translation id="6433501201775827830">选择搜索引擎</translation>
 <translation id="6434309073475700221">舍弃</translation>
 <translation id="6435307030888827407">保持未登录状态</translation>

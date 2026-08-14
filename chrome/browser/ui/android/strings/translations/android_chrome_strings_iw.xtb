@@ -532,6 +532,7 @@
 <translation id="3161699713309727585">‫<ph name="BUTTON_TEXT" />, פתיחה בכרטיסייה חדשה</translation>
 <translation id="3166827708714933426">מקשי קיצור לכרטיסיות ולחלונות</translation>
 <translation id="3167258285411721858">ניתן לבקש את האתר לנייד של <ph name="HOST_NAME" /></translation>
+<translation id="3177338796769255211">לאחר הכניסה לחשבון, הסימניות ונתונים נוספים יופיעו בכל המכשירים שלך</translation>
 <translation id="3181145110929454111">‫<ph name="TAB_TITLE" />, כרטיסייה פרטית מתוך סדרת כרטיסיות פרטית שנבחרו והוצמדו, והתוכן בה מושתק</translation>
 <translation id="3189635831478931757">קבוצת הכרטיסיות "<ph name="GROUP_TITLE" />"</translation>
 <translation id="3200536777393523575">לסגור את החלון הנוכחי?</translation>
@@ -928,6 +929,7 @@
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
 <translation id="4807098396393229769">שם על הכרטיס</translation>
 <translation id="480990236307250886">פתיחת דף הבית</translation>
+<translation id="4816492930507672669">התאמה לדף</translation>
 <translation id="4822710610088666676">קבוצת הכרטיסיות <ph name="TAB_GROUP_TITLE" /> נסגרה ונשמרה</translation>
 <translation id="4834250788637067901">‏אמצעי תשלום, מבצעים וכתובות שנשמרו ב‑Google Pay</translation>
 <translation id="4835385943915508971">‏ל-Chrome אין גישה למשאב המבוקש.</translation>
@@ -1314,7 +1316,6 @@
 <translation id="6411219469806822692">אי אפשר לזוז למעלה יותר. יש לנסות להתחיל מחלק גבוה יותר בדף.</translation>
 <translation id="6412215853589222273">‫<ph name="TAB_TITLE" />, כרטיסייה מתוך סדרת כרטיסיות שנבחרה</translation>
 <translation id="641643625718530986">הדפסה…</translation>
-<translation id="6427723330233512782">התאמה לגובה</translation>
 <translation id="6433501201775827830">בחירת מנוע החיפוש</translation>
 <translation id="6434309073475700221">מחיקה</translation>
 <translation id="6435307030888827407">לא להיכנס לחשבון</translation>

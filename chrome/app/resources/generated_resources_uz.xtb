@@ -4088,7 +4088,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="4110485659976215879">Ogohlantirishni tiklash</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (oflayn)</translation>
 <translation id="4113743276555482284">Fayl paroli</translation>
-<translation id="4114391251600134209">{COUNT,plural, =0{Hech qanday parol saqlanmagan}=1{1 ta parol tekshirildi}other{{COUNT} ta parol tekshirildi}}</translation>
 <translation id="4114524937989710624">Google Drive xizmatidagi oxirgi harakatlarga qaytishni osonlashtirish uchun tavsiya etilgan fayllar chiqyapti.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -6992,7 +6991,6 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6425556984042222041">Matnni nutqqa aylantirish tezligi</translation>
 <translation id="642729974267661262">Ovozni ijro qilish taqiqlangan</translation>
 <translation id="6427752304227226701">Xavfsiz &amp;emas sayt haqida xabar berish...</translation>
-<translation id="6427938854876261655">{COUNT,plural, =0{Hech qanday parol saqlanmagan.}=1{{COUNT} ta parol tekshirilmoqda...}other{{COUNT} ta parol tekshirilmoqda...}}</translation>
 <translation id="6429384232893414837">Yangilashda xatolik yuz berdi</translation>
 <translation id="6430202563517028640">Havolani saqlangan sahifalarga qoʻshish</translation>
 <translation id="6430814529589430811">Base64 shifrida kodlangan ASCII yagona sertifikati</translation>

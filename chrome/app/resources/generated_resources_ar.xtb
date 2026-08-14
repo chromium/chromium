@@ -4086,7 +4086,6 @@
 <translation id="4110485659976215879">استعادة التحذير</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (غير متصل بالإنترنت)</translation>
 <translation id="4113743276555482284">كلمة مرور الملف</translation>
-<translation id="4114391251600134209">{COUNT,plural, =0{ما مِن كلمات مرور محفوظة}=1{تم التحقّق من كلمة مرور واحدة}two{تم التحقّق من كلمتَي مرور ({COUNT})}few{تم التحقّق من {COUNT} كلمات مرور}many{تم التحقّق من {COUNT} كلمة مرور}other{تم التحقّق من {COUNT} كلمة مرور}}</translation>
 <translation id="4114524937989710624">‏تظهر لك ملفات مُقترحة لمساعدتك في الرجوع بسهولة إلى آخر نشاط أجريته في Google Drive.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -6991,7 +6990,6 @@
 <translation id="6425556984042222041">معدّل "تحويل النص إلى كلام"</translation>
 <translation id="642729974267661262">المواقع الإلكترونية التي لا يُسمح لها بتشغيل الصوت</translation>
 <translation id="6427752304227226701">الإبلاغ عن موقع إلكتروني غير آمن…</translation>
-<translation id="6427938854876261655">{COUNT,plural, =0{ما مِن كلمات مرور محفوظة.}=1{جارٍ التحقّق من كلمة مرور واحدة ({COUNT})...}two{جارٍ التحقّق من كلمتَي مرور ({COUNT})…}few{جارٍ التحقّق من {COUNT} كلمات مرور…}many{جارٍ التحقّق من {COUNT} كلمة مرور…}other{جارٍ التحقّق من {COUNT} كلمة مرور…}}</translation>
 <translation id="6429384232893414837">خطأ في التحديث</translation>
 <translation id="6430202563517028640">إضافة الرابط إلى "قائمة القراءة"</translation>
 <translation id="6430814529589430811">‏حفظ شهادة واحدة بتشفير ASCII المرمّز باستخدام Base64</translation>

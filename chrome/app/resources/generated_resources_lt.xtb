@@ -4098,7 +4098,6 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4110485659976215879">Atkurti perspėjimą</translation>
 <translation id="4112194537011183136">„<ph name="DEVICE_NAME" />“ (neprisijungta)</translation>
 <translation id="4113743276555482284">Failo slaptažodis</translation>
-<translation id="4114391251600134209">{COUNT,plural, =0{Nėra išsaugotų slaptažodžių}=1{Patikrintas 1 slaptažodis}one{Patikrintas {COUNT} slaptažodis}few{Patikrinti {COUNT} slaptažodžiai}many{Patikrinta {COUNT} slaptažodžio}other{Patikrinta {COUNT} slaptažodžių}}</translation>
 <translation id="4114524937989710624">Rodomi siūlomi failai, skirti padėti jums lengvai grįžti prie pastarosios veiklos „Google“ diske.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -7004,7 +7003,6 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="6425556984042222041">Teksto į kalbą sparta</translation>
 <translation id="642729974267661262">Neleidžiama leisti garso</translation>
 <translation id="6427752304227226701">Pranešti apie &amp;nesaugią svetainę...</translation>
-<translation id="6427938854876261655">{COUNT,plural, =0{Nėra išsaugotų slaptažodžių.}=1{Tikrinamas {COUNT} slaptažodis...}one{Tikrinamas {COUNT} slaptažodis…}few{Tikrinami {COUNT} slaptažodžiai…}many{Tikrinama {COUNT} slaptažodžio…}other{Tikrinama {COUNT} slaptažodžių…}}</translation>
 <translation id="6429384232893414837">Atnaujinimo klaida</translation>
 <translation id="6430202563517028640">Pridėti nuorodą prie skaitymo sąrašo</translation>
 <translation id="6430814529589430811">„Base64“ užkoduotas ASCII, vienas sertifikatas</translation>

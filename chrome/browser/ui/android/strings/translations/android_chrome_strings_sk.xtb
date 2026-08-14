@@ -532,6 +532,7 @@
 <translation id="3161699713309727585"><ph name="BUTTON_TEXT" />, otvorí sa na novej karte</translation>
 <translation id="3166827708714933426">Skratky pre karty a okná</translation>
 <translation id="3167258285411721858">Môžete požiadať o mobilný web pre <ph name="HOST_NAME" /></translation>
+<translation id="3177338796769255211">Prihláste sa a používajte záložky a ďalší obsah vo všetkých svojich zariadeniach</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, viackrát vybraná pripnutá karta inkognito s vypnutým zvukom</translation>
 <translation id="3189635831478931757">Skupina kariet <ph name="GROUP_TITLE" /></translation>
 <translation id="3200536777393523575">Chcete aktuálne okno zavrieť?</translation>
@@ -928,6 +929,7 @@ Váš účet Google môže mať na adrese <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
 <translation id="4807098396393229769">Meno na karte</translation>
 <translation id="480990236307250886">Otvoriť domovskú stránku</translation>
+<translation id="4816492930507672669">Prispôsobiť stránke</translation>
 <translation id="4822710610088666676">Skupina kariet <ph name="TAB_GROUP_TITLE" /> bola zavretá a uložená</translation>
 <translation id="4834250788637067901">Spôsoby platby, ponuky a adresy používajúce Google Pay</translation>
 <translation id="4835385943915508971">Chrome nemá prístup k požadovanému zdroju.</translation>
@@ -1314,7 +1316,6 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="6411219469806822692">Vyššie to už nejde. Skúste začať vyššie na stránke.</translation>
 <translation id="6412215853589222273"><ph name="TAB_TITLE" />, viackrát vybraná karta</translation>
 <translation id="641643625718530986">Tlačiť...</translation>
-<translation id="6427723330233512782">Prispôsobiť výške</translation>
 <translation id="6433501201775827830">Výber vyhľadávača</translation>
 <translation id="6434309073475700221">Zahodiť</translation>
 <translation id="6435307030888827407">Pokračovať bez prihlásenia</translation>
