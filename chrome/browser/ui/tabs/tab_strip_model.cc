@@ -1891,6 +1891,15 @@ void TabStripModel::UpdateSplitLayout(
     split_tabs::RecordSplitTabOrientationChanged(source.value());
   }
 
+  if (auto* const user_ed = BrowserUserEducationInterface::From(
+          delegate_->GetBrowserWindowInterface());
+      tabs::IsSplitViewHorizontalIndirectAccessEnabled() && user_ed &&
+      tab_layout == split_tabs::SplitTabLayout::kStacked) {
+    user_ed->NotifyFeaturePromoFeatureUsed(
+        feature_engagement::kIPHSplitViewHorizontalIndirectAccessFeature,
+        FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
+  }
+
   NotifySplitTabVisualsChanged(
       split_id, old_visual_data, *split_data->visual_data(),
       SplitTabChange::SplitVisualChangeReason::kLayoutUpdated);
@@ -1976,6 +1985,20 @@ split_tabs::SplitTabId TabStripModel::AddToNewSplit(
   AddToSplitImpl(split_id, indices, active_index(), visual_data,
                  SplitTabChange::SplitTabAddReason::kNewSplitTabAdded);
   split_tabs::LogSplitViewCreatedUKM(this, split_id);
+
+  if (auto* const user_ed = BrowserUserEducationInterface::From(
+          delegate_->GetBrowserWindowInterface());
+      tabs::IsSplitViewHorizontalIndirectAccessEnabled() && user_ed) {
+    if (visual_data.split_layout() == split_tabs::SplitTabLayout::kStacked) {
+      user_ed->NotifyFeaturePromoFeatureUsed(
+          feature_engagement::kIPHSplitViewHorizontalIndirectAccessFeature,
+          FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
+    } else {
+      user_ed->MaybeShowFeaturePromo(
+          feature_engagement::kIPHSplitViewHorizontalIndirectAccessFeature);
+    }
+  }
+
   return split_id;
 }
 

@@ -841,6 +841,8 @@ should be able to be added at any place in this file.
       summary="For Smart Tab Sharing feature."/>
   <variant name="_SmartTabSharingTryItFeature"
       summary="For Smart Tab Sharing Try It custom UI feature."/>
+  <variant name="_SplitViewHorizontalIndirectAccessFeature"
+      summary="For the indirect access branch for top/bottom splits."/>
   <variant name="_SupervisedUserProfileSignin"
       summary="For displaying the supervised user sign-in IPH."/>
   <variant name="_TabAudioMuting" summary="For TabAudioMuting feature."/>

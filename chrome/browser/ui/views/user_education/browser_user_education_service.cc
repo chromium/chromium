@@ -2003,6 +2003,22 @@ void MaybeRegisterChromeFeaturePromos(
                        "Triggered when user performs Google searches and is "
                        "eligible for the promo.")));
 #endif  // BUILDFLAG(IS_WIN)
+
+  // kIPHSplitViewHorizontalIndirectAccessFeature:
+  if (tabs::IsSplitViewHorizontalIndirectAccessEnabled()) {
+    registry.RegisterFeature(std::move(
+        FeaturePromoSpecification::CreateForSnoozePromo(
+            feature_engagement::kIPHSplitViewHorizontalIndirectAccessFeature,
+            kToolbarSplitTabsToolbarButtonElementId,
+            IDS_SPLIT_VIEW_HORIZONTAL_INDIRECT_ACCESS_IPH_BODY)
+            .SetBubbleTitleText(
+                IDS_SPLIT_VIEW_HORIZONTAL_INDIRECT_ACCESS_IPH_TITLE)
+            .SetBubbleArrow(HelpBubbleArrow::kTopLeft)
+            .SetMetadata(152, "charlesmeng@chromium.org",
+                         "Triggered when the split view horizontal feature is "
+                         "enabled with the direct access feature param off, "
+                         "and the user creates a side by side split.")));
+  }
 }
 
 void MaybeRegisterChromeFeaturePromos(

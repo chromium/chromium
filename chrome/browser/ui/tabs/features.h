@@ -96,6 +96,8 @@ BASE_DECLARE_FEATURE(kTabStripUnification);
 
 BASE_DECLARE_FEATURE(kMigrateEverythingMenuPinnedToTabstrip);
 
+bool IsSplitViewHorizontalIndirectAccessEnabled();
+
 bool IsVerticalTabsFeatureEnabled();
 
 bool IsVerticalTabsExpandOnHoverFeatureEnabled();

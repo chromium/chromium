@@ -693,6 +693,8 @@ chromium-metrics-reviews@google.com.
       summary="Smart Tab Sharing feature"/>
   <variant name="IPH_SmartTabSharingTryItFeature"
       summary="Smart Tab Sharing Try It custom UI feature"/>
+  <variant name="IPH_SplitViewHorizontalIndirectAccessFeature"
+      summary="Top/bottom splits indirect access IPH"/>
   <variant name="IPH_SupervisedUserProfileSignin"
       summary="informing supervised users about parental controls"/>
   <variant name="IPH_TabAudioMuting" summary="muting tab audio"/>
