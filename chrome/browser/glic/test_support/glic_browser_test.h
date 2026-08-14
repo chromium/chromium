@@ -534,7 +534,7 @@ class GlicBrowserTestMixin : public T {
           if (!target) {
             return true;
           }
-          return !target->HasActiveEmbedder();
+          return !target->HasActiveEmbedder() && !target->IsShowing();
         },
         "Failed to close Glic UI");
     if (!success) {
