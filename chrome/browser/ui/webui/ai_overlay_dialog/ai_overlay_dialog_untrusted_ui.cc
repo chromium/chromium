@@ -101,8 +101,9 @@ AiOverlayDialogUntrustedUI::AiOverlayDialogUntrustedUI(content::WebUI* web_ui)
         base::StrCat({"connect-src 'self' ",
                       "wss://generativelanguage.googleapis.com ",
                       ttc_bundle_url.GetWithEmptyPath().spec(), ";"}));
-    html_source->AddString("ttcBundleUrl", ttc_bundle_url.spec());
   }
+  html_source->AddString(
+      "ttcBundleUrl", ttc_bundle_url.is_valid() ? ttc_bundle_url.spec() : "");
 
   bool enable_debug_logs =
       command_line->HasSwitch(switches::kEnableTtcDebugLogs);

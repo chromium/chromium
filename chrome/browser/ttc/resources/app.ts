@@ -653,7 +653,10 @@ export class AppElement extends CrLitElement {
     this.initializationState = InitializationState.CONNECTING;
 
     try {
-      const ttcBundleUrl = loadTimeData.getString('ttcBundleUrl') ||
+      const ttcBundleUrl =
+          (loadTimeData.valueExists('ttcBundleUrl') ?
+               loadTimeData.getString('ttcBundleUrl') :
+               '') ||
           DEFAULT_TTC_BUNDLE_URL;
       const bundle = await this.initializeResourceBundle(ttcBundleUrl);
 
