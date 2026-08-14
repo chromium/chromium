@@ -1959,7 +1959,8 @@ void MaybeRegisterChromeFeaturePromos(
 #if BUILDFLAG(IS_WIN)
   // kIPHSearchPromotionFeature:
   // Query the Finch experiment arm at registration time to decide which
-  // localized strings (Arm A or Arm B) should populate this promo bubble.
+  // localized strings (Arm A promo only vs Arms B, C, D promo and install)
+  // should populate this promo bubble.
   //
   // TODO(b/467255671): Re-evaluate tracking feature usage to suppress
   // the promo once experiments are complete. Similarly if launch
@@ -1971,7 +1972,9 @@ void MaybeRegisterChromeFeaturePromos(
   int dismiss_id = IDS_SEARCH_PROMOTION_IPH_DISMISS_ARM_A;
   int title_id = IDS_SEARCH_PROMOTION_IPH_TITLE_ARM_A;
 
-  if (arm_str == feature_engagement::kSearchPromotionArmB) {
+  if (arm_str == feature_engagement::kSearchPromotionArmB ||
+      arm_str == feature_engagement::kSearchPromotionArmC ||
+      arm_str == feature_engagement::kSearchPromotionArmD) {
     body_id = IDS_SEARCH_PROMOTION_IPH_BODY_ARM_B;
     cta_id = IDS_SEARCH_PROMOTION_IPH_CTA_ARM_B;
     dismiss_id = IDS_SEARCH_PROMOTION_IPH_DISMISS_ARM_B;

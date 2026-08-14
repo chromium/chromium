@@ -1896,6 +1896,8 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
   <token key="Arm">
     <variant name="ArmA" summary="Arm A (promo only)"/>
     <variant name="ArmB" summary="Arm B (promo and install)"/>
+    <variant name="ArmC" summary="Arm C (medium engagement promo and install)"/>
+    <variant name="ArmD" summary="Arm D (power engagement promo and install)"/>
   </token>
 </histogram>
 

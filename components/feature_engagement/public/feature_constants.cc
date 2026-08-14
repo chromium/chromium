@@ -1120,6 +1120,8 @@ constinit const base::FeatureParam<std::string> kSearchPromotionExtensionId{
 constinit const base::FeatureParam<std::string> kSearchPromotionInstructionsUrl{
     &kIPHSearchPromotionFeature, "instructions_url",
     "https://www.google.com/chrome/landing/google-search-extension-edge/"};
+constinit const base::FeatureParam<std::string> kSearchPromotionMinPehVersion{
+    &kIPHSearchPromotionFeature, "min_peh_version", "153.0.8001.0"};
 #endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace feature_engagement

@@ -499,10 +499,14 @@ COMPONENT_EXPORT(FEATURE_ENGAGEMENT_FEATURE_CONSTANTS)
 BASE_DECLARE_FEATURE_PARAM(std::string, kSearchPromotionExtensionId);
 COMPONENT_EXPORT(FEATURE_ENGAGEMENT_FEATURE_CONSTANTS)
 BASE_DECLARE_FEATURE_PARAM(std::string, kSearchPromotionInstructionsUrl);
+COMPONENT_EXPORT(FEATURE_ENGAGEMENT_FEATURE_CONSTANTS)
+BASE_DECLARE_FEATURE_PARAM(std::string, kSearchPromotionMinPehVersion);
 
 inline constexpr char kSearchPromotionArmDefault[] = "disabled";
 inline constexpr char kSearchPromotionArmA[] = "arm_a";
 inline constexpr char kSearchPromotionArmB[] = "arm_b";
+inline constexpr char kSearchPromotionArmC[] = "arm_c";
+inline constexpr char kSearchPromotionArmD[] = "arm_d";
 #endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace feature_engagement

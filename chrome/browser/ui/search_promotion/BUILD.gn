@@ -45,6 +45,7 @@ source_set("search_promotion") {
     "//chrome/browser/ui/user_education",
     "//components/feature_engagement/public",
     "//components/google/core/common",
+    "//components/segmentation_platform/embedder/default_model",
     "//components/segmentation_platform/public",
     "//components/tabs:public",
   ]
@@ -62,6 +63,7 @@ source_set("unit_tests") {
     "//chrome/test/user_education",
     "//components/feature_engagement/public",
     "//components/feature_engagement/test:test_support",
+    "//components/segmentation_platform/embedder/default_model",
     "//components/segmentation_platform/public",
     "//components/segmentation_platform/public:test_support",
     "//components/tabs:test_support",
