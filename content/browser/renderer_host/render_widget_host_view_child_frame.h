@@ -120,6 +120,8 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
       gfx::Vector2d cursor_offset_in_dip,
       gfx::Rect drag_obj_rect_in_dip,
       blink::mojom::DragEventSourceInfoPtr event_info) override;
+  void ReportScrollJankStats(uint32_t total_frames,
+                             uint32_t janky_frames) override;
 #endif
   RenderWidgetHostViewBase* GetRootView() override;
 #if BUILDFLAG(IS_WIN)
@@ -222,6 +224,10 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
   void OnRenderFrameSubmission() override {}
   void OnLocalSurfaceIdChanged(
       const cc::RenderFrameMetadata& metadata) override {}
+#if BUILDFLAG(IS_ANDROID)
+  void OnReportScrollJankStats(uint32_t total_frames,
+                               uint32_t janky_frames) override;
+#endif
 
   // viz::HostFrameSinkClient implementation.
   void OnFirstSurfaceActivation(const viz::SurfaceInfo& surface_info) override;

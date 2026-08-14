@@ -196,6 +196,9 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
       blink::mojom::DragEventSourceInfoPtr event_info) = 0;
 
   virtual void SetTouchpadOverscrollHistoryNavigation(bool enabled) {}
+
+  virtual void ReportScrollJankStats(uint32_t total_frames,
+                                     uint32_t janky_frames) {}
 #endif
 
   // For HiDPI capture mode, allow applying a render scale multiplier

@@ -7,6 +7,9 @@
 #include <atomic>
 #include <string>
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/android_info.h"
+#endif
 #include "base/feature_list.h"
 #include "build/build_config.h"
 
@@ -271,6 +274,20 @@ BASE_FEATURE_PARAM(double,
 
 BASE_FEATURE(kScrollJankV4MetricFastScrollContinuityRequiresSameDirection,
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+#if BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kScrollJankV4MetricReportAndroidAppJankStats,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool ShouldScrollJankV4MetricReportAndroidAppJankStats() {
+  if (base::android::android_info::sdk_int() <
+      base::android::android_info::SDK_VERSION_BAKLAVA) {
+    return false;
+  }
+  return base::FeatureList::IsEnabled(
+      features::kScrollJankV4MetricReportAndroidAppJankStats);
+}
+#endif
 
 BASE_FEATURE(kManualBeginFrame, base::FEATURE_DISABLED_BY_DEFAULT);
 

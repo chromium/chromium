@@ -834,6 +834,17 @@ bool ViewAndroid::IsCheckHitEligible() const {
          hit_test_callback_.is_null() || hit_test_callback_.Run();
 }
 
+void ViewAndroid::ReportScrollJankStats(uint32_t total_frames,
+                                        uint32_t janky_frames) {
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> delegate(GetViewAndroidDelegate(env));
+  if (delegate.is_null()) {
+    return;
+  }
+  Java_ViewAndroidDelegate_reportScrollJankStats(env, delegate, total_frames,
+                                                 janky_frames);
+}
+
 }  // namespace ui
 
 DEFINE_JNI(ViewAndroidDelegate)

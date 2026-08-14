@@ -9,6 +9,9 @@
 #include "base/observer_list.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
+#if BUILDFLAG(IS_ANDROID)
+#include "cc/base/features.h"
+#endif
 #include "content/browser/renderer_host/frame_token_message_queue.h"
 
 namespace content {
@@ -173,6 +176,27 @@ void RenderFrameMetadataProviderImpl::OnRootScrollOffsetChanged(
     const gfx::PointF& root_scroll_offset) {
   for (Observer& observer : observers_)
     observer.OnRootScrollOffsetChanged(root_scroll_offset);
+}
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
+void RenderFrameMetadataProviderImpl::ReportScrollJankStats(
+    uint32_t total_frames,
+    uint32_t janky_frames) {
+  if (!features::ShouldScrollJankV4MetricReportAndroidAppJankStats()) {
+    return;
+  }
+
+  // Sanitize the inputs to prevent renderers from reporting non-sensical scroll
+  // jank statistics to the OS.
+  constexpr uint32_t kMaxTotalFrames = 5 * 60 * 120;  // 5 minutes @ 120 Hz.
+  if (janky_frames > total_frames || total_frames > kMaxTotalFrames) {
+    return;
+  }
+
+  for (Observer& observer : observers_) {
+    observer.OnReportScrollJankStats(total_frames, janky_frames);
+  }
 }
 #endif
 

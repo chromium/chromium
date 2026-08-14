@@ -99,6 +99,10 @@ class CONTENT_EXPORT RenderFrameMetadataProviderImpl
   void OnRootScrollOffsetChanged(
       const gfx::PointF& root_scroll_offset) override;
 #endif
+#if BUILDFLAG(IS_ANDROID)
+  void ReportScrollJankStats(uint32_t total_frames,
+                             uint32_t janky_frames) override;
+#endif
 
   base::ObserverList<Observer>::UncheckedAndDanglingUntriaged observers_;
 

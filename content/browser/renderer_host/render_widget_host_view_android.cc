@@ -1222,6 +1222,12 @@ void RenderWidgetHostViewAndroid::OnRootScrollOffsetChanged(
   gesture_listener_manager_->OnRootScrollOffsetChanged(root_scroll_offset_dip);
 }
 
+void RenderWidgetHostViewAndroid::OnReportScrollJankStats(
+    uint32_t total_frames,
+    uint32_t janky_frames) {
+  ReportScrollJankStats(total_frames, janky_frames);
+}
+
 void RenderWidgetHostViewAndroid::Focus() {
   if (view_.HasFocus())
     GotFocus();
@@ -3954,6 +3960,11 @@ void RenderWidgetHostViewAndroid::SetTouchpadOverscrollHistoryNavigation(
   if (overscroll_controller_) {
     overscroll_controller_->SetTouchpadOverscrollHistoryNavigation(enabled);
   }
+}
+
+void RenderWidgetHostViewAndroid::ReportScrollJankStats(uint32_t total_frames,
+                                                        uint32_t janky_frames) {
+  view_.ReportScrollJankStats(total_frames, janky_frames);
 }
 
 void RenderWidgetHostViewAndroid::OnUnconfirmedTapConvertedToTap() {

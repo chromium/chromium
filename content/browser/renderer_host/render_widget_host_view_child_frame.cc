@@ -488,6 +488,14 @@ void RenderWidgetHostViewChildFrame::RequestInputBackForDragAndDrop(
       std::move(bitmap), std::move(cursor_offset_in_dip),
       std::move(drag_obj_rect_in_dip), std::move(event_info));
 }
+
+void RenderWidgetHostViewChildFrame::ReportScrollJankStats(
+    uint32_t total_frames,
+    uint32_t janky_frames) {
+  if (auto* root_view = GetRootView()) {
+    root_view->ReportScrollJankStats(total_frames, janky_frames);
+  }
+}
 #endif
 
 RenderWidgetHostViewBase* RenderWidgetHostViewChildFrame::GetRootView() {
@@ -1054,6 +1062,14 @@ void RenderWidgetHostViewChildFrame::CopyFromSurface(
       GetCurrentSurfaceId(), std::move(request),
       /*capture_exact_surface_id=*/false, timeout);
 }
+
+#if BUILDFLAG(IS_ANDROID)
+void RenderWidgetHostViewChildFrame::OnReportScrollJankStats(
+    uint32_t total_frames,
+    uint32_t janky_frames) {
+  ReportScrollJankStats(total_frames, janky_frames);
+}
+#endif
 
 void RenderWidgetHostViewChildFrame::OnFirstSurfaceActivation(
     const viz::SurfaceInfo& surface_info) {}

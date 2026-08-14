@@ -51,6 +51,10 @@ class MockRenderFrameMetadataObserverClient
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   MOCK_METHOD1(OnRootScrollOffsetChanged, void(const gfx::PointF& offset));
 #endif
+#if BUILDFLAG(IS_ANDROID)
+  MOCK_METHOD2(ReportScrollJankStats,
+               void(uint32_t total_frames, uint32_t janky_frames));
+#endif
 
  private:
   mojo::Receiver<cc::mojom::blink::RenderFrameMetadataObserverClient>

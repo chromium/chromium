@@ -181,4 +181,9 @@ interface RenderFrameMetadataObserverClient {
   // Only called if UpdateRootScrollOffsetUpdateFrequency() has been called.
   [EnableIf=is_android|is_ios]
   OnRootScrollOffsetChanged(gfx.mojom.PointF root_scroll_offset);
+
+  // Notified when a scroll gesture finishes with scroll jank v4 statistics to
+  // report to the OS. janky_frames must be less than or equal to total_frames.
+  [EnableIf=is_android]
+  ReportScrollJankStats(uint32 total_frames, uint32 janky_frames);
 };

@@ -269,6 +269,15 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(
     kScrollJankV4MetricFastScrollContinuityRequiresSameDirection);
 
+#if BUILDFLAG(IS_ANDROID)
+// When enabled, the V4 scroll jank metric will report statistics via
+// `View.reportAppJankStats()` on Android at the end of each damaging scroll.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(
+    kScrollJankV4MetricReportAndroidAppJankStats);
+
+bool ShouldScrollJankV4MetricReportAndroidAppJankStats();
+#endif
+
 // When enabled, AsyncLayerTreeFrameSink will generate its own BeginFrameArgs
 // when auto_needs_begin_frame_ is enabled.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kManualBeginFrame);

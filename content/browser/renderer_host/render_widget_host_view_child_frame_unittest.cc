@@ -225,7 +225,12 @@ class MockRenderWidgetHostView : public TestRenderWidgetHostView {
     return true;
   }
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_ANDROID)
+  MOCK_METHOD(void,
+              ReportScrollJankStats,
+              (uint32_t total_frames, uint32_t janky_frames),
+              (override));
+#elif BUILDFLAG(IS_MAC)
   MOCK_METHOD(void,
               ShowSharePicker,
               (const std::string& title,
@@ -872,5 +877,39 @@ TEST_F(RenderWidgetHostViewChildFrameTest, SelectionBoundsClampedToViewBounds) {
   child_view->Destroy();
   connector->SetRootRenderWidgetHostView(nullptr);
 }
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(RenderWidgetHostViewChildFrameTest, ReportScrollJankStats) {
+  auto root_view =
+      std::make_unique<testing::NiceMock<MockRenderWidgetHostView>>(
+          widget_host_.get());
+  RenderWidgetHostViewChildFrame* child_view =
+      RenderWidgetHostViewChildFrame::Create(widget_host_.get(),
+                                             display::ScreenInfos());
+  std::unique_ptr<MockFrameConnector> connector =
+      std::make_unique<MockFrameConnector>();
+  connector->SetView(child_view, false);
+  connector->SetRootRenderWidgetHostView(root_view.get());
+  child_view->SetFrameConnector(connector.get());
+
+  {
+    EXPECT_CALL(*root_view, ReportScrollJankStats(/*total_frames=*/100,
+                                                  /*janky_frames=*/10))
+        .Times(1);
+    child_view->OnReportScrollJankStats(/*total_frames=*/100,
+                                        /*janky_frames=*/10);
+  }
+
+  {
+    EXPECT_CALL(*root_view,
+                ReportScrollJankStats(/*total_frames=*/50, /*janky_frames=*/5))
+        .Times(1);
+    child_view->ReportScrollJankStats(/*total_frames=*/50, /*janky_frames=*/5);
+  }
+
+  child_view->Destroy();
+  connector->SetRootRenderWidgetHostView(nullptr);
+}
+#endif
 
 }  // namespace content

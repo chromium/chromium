@@ -4,11 +4,14 @@
 
 package org.chromium.ui.base;
 
+import android.app.jank.AppJankStats;
+import android.app.jank.RelativeFrameTimeHistogram;
 import android.content.ClipData;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Process;
 import android.text.TextUtils;
 import android.util.SparseArray;
 import android.view.MotionEvent;
@@ -713,5 +716,23 @@ public class ViewAndroidDelegate {
     private static @Nullable View getView(long nativeScopedAnchorViewPtr) {
         WeakReference<View> viewRef = sNativeViewMap.get(nativeScopedAnchorViewPtr);
         return viewRef == null ? null : viewRef.get();
+    }
+
+    @CalledByNative
+    private void reportScrollJankStats(long totalFrames, long jankyFrames) {
+        View view = getContainerView();
+        if (view == null || Build.VERSION.SDK_INT < Build.VERSION_CODES.BAKLAVA) {
+            return;
+        }
+        view.reportAppJankStats(
+                new AppJankStats(
+                        Process.myUid(),
+                        /* widgetId= */ "chromium_web_contents",
+                        /* navigationComponent= */ null,
+                        AppJankStats.WIDGET_CATEGORY_SCROLL,
+                        AppJankStats.WIDGET_STATE_SCROLLING,
+                        totalFrames,
+                        jankyFrames,
+                        new RelativeFrameTimeHistogram()));
     }
 }

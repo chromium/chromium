@@ -265,6 +265,8 @@ class UI_ANDROID_EXPORT ViewAndroid {
   // event to a prerendered (and hidden) view.
   bool IsCheckHitEligible() const;
 
+  void ReportScrollJankStats(uint32_t total_frames, uint32_t janky_frames);
+
  protected:
   void RemoveAllChildren(bool attached_to_window);
 
