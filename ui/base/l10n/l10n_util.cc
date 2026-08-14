@@ -286,6 +286,16 @@ std::u16string GetDisplayNameForLocaleWithoutCountry(
                                  disallow_default);
 }
 
+std::u16string GetDisplayNameForLocale(
+    const base::i18n::LanguageTag& locale,
+    const base::i18n::LanguageTag& display_locale,
+    bool is_for_ui,
+    bool disallow_default) {
+  return GetDisplayNameForLocale(locale.tag_string(),
+                                 display_locale.tag_string(), is_for_ui,
+                                 disallow_default);
+}
+
 std::u16string GetDisplayNameForLocale(std::string_view locale,
                                        std::string_view display_locale,
                                        bool is_for_ui,

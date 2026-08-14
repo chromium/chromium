@@ -100,6 +100,18 @@ std::u16string GetDisplayNameForLocale(std::string_view locale,
                                        bool is_for_ui,
                                        bool disallow_default = false);
 
+// This method behaves exactly like the string_view overload of
+// GetDisplayNameForLocale but accepts base::i18n::LanguageTag inputs.
+// It is strongly preferred to use this method over the string_view one when
+// LanguageTag objects are already available, as it guarantees type safety and
+// avoids redundant string copies or parsing.
+COMPONENT_EXPORT(UI_BASE)
+std::u16string GetDisplayNameForLocale(
+    const base::i18n::LanguageTag& locale,
+    const base::i18n::LanguageTag& display_locale,
+    bool is_for_ui,
+    bool disallow_default = false);
+
 // Returns the display name of the `country_code` in `display_locale`.
 // Returns an empty string if `country_code` is empty.
 COMPONENT_EXPORT(UI_BASE)
