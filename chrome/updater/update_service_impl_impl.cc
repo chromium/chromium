@@ -221,6 +221,7 @@ std::wstring GetTextForUpdateClientInstallError(int error_code,
         update_client::InstallError::INSTALL_VERIFICATION_FAILED);
     INSTALL_SWITCH_ENTRY(update_client::InstallError::MISSING_INSTALL_PARAMS);
     INSTALL_SWITCH_ENTRY(update_client::InstallError::LAUNCH_PROCESS_FAILED);
+    INSTALL_SWITCH_ENTRY(update_client::InstallError::INSTALL_PATH_ERROR);
     INSTALL_SWITCH_ENTRY(update_client::InstallError::CUSTOM_ERROR_BASE);
     default:
       return GetLocalizedStringF(IDS_GENERIC_INSTALL_ERROR_BASE,

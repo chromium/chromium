@@ -445,6 +445,12 @@ INSTANTIATE_TEST_SUITE_P(
              IDS_GENERIC_INSTALL_ERROR_BASE,
              L"update_client::InstallError::LAUNCH_PROCESS_FAILED"))},
         {UpdateService::ErrorCategory::kInstall,
+         std::to_underlying(update_client::InstallError::INSTALL_PATH_ERROR),
+         "en",
+         base::WideToUTF8(GetLocalizedStringF(
+             IDS_GENERIC_INSTALL_ERROR_BASE,
+             L"update_client::InstallError::INSTALL_PATH_ERROR"))},
+        {UpdateService::ErrorCategory::kInstall,
          std::to_underlying(update_client::InstallError::CUSTOM_ERROR_BASE),
          "en",
          base::WideToUTF8(GetLocalizedStringF(

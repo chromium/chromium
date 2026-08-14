@@ -7,10 +7,10 @@
 #include <memory>
 #include <optional>
 #include <string>
-#include <tuple>
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/containers/flat_map.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
@@ -63,7 +63,7 @@ TestConfigurator::TestConfigurator(PrefService* pref_service)
       updater_state_provider_(base::BindRepeating(
           [](bool /*is_machine*/) { return UpdaterStateAttributes(); })),
       is_network_connection_metered_(false) {
-  std::ignore = crx_cache_root_temp_dir_.CreateUniqueTempDir();
+  CHECK(crx_cache_root_temp_dir_.CreateUniqueTempDir());
   crx_cache_ =
       base::MakeRefCounted<CrxCache>(crx_cache_root_temp_dir_.GetPath().Append(
           FILE_PATH_LITERAL("crx_cache")));

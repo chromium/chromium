@@ -9,7 +9,6 @@
 #include <optional>
 #include <string>
 #include <string_view>
-#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -535,7 +534,7 @@ InstallerResult RunApplicationInstaller(
     int exit_code = -1;
     base::TerminationStatus final_status =
         base::TerminationStatus::TERMINATION_STATUS_MAX_ENUM;
-    std::ignore = base::GetAppOutputWithExitCodeAndTimeout(
+    base::GetAppOutputWithExitCodeAndTimeout(
         cmdline, true, nullptr, &exit_code, timeout - timer.Elapsed(), options,
         [&](const base::Process& process, std::string_view partial_output) {
           if (!partial_output.empty()) {

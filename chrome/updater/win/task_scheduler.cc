@@ -416,7 +416,7 @@ class TaskSchedulerV2 final : public TaskScheduler {
     if (use_task_subfolders_) {
       // Try to delete \\Company\Product first and \\Company second.
       if (DeleteFolderIfEmpty(GetTaskSubfolderName())) {
-        std::ignore = DeleteFolderIfEmpty(GetTaskCompanyFolder());
+        DeleteFolderIfEmpty(GetTaskCompanyFolder());
       }
     }
 
@@ -1329,7 +1329,7 @@ class TaskSchedulerV2 final : public TaskScheduler {
 
   // If the task folder specified by |folder_name| is empty, try to delete it.
   // Ignore failures. Returns true if the folder is successfully deleted.
-  [[nodiscard]] bool DeleteFolderIfEmpty(const std::wstring& folder_name) {
+  bool DeleteFolderIfEmpty(const std::wstring& folder_name) {
     // Try deleting if empty. Race conditions here should be handled by the API.
     Microsoft::WRL::ComPtr<ITaskFolder> root_task_folder;
     HRESULT hr = task_service_->GetFolder(base::win::ScopedBstr(L"\\").Get(),

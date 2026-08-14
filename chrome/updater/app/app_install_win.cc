@@ -869,11 +869,11 @@ void AppInstallControllerImpl::LoadLogo(const std::string& app_id,
     return;
   }
 
-  if (::PostMessage(progress_hwnd, ui::WM_SET_APP_LOGO,
-                    reinterpret_cast<WPARAM>(standalone_bitmap.get()), 0)) {
-    std::ignore = standalone_bitmap.release();
-  } else {
+  const HBITMAP bitmap_handle = standalone_bitmap.release();
+  if (!::PostMessage(progress_hwnd, ui::WM_SET_APP_LOGO,
+                     reinterpret_cast<WPARAM>(bitmap_handle), 0)) {
     VLOG(1) << __func__ << "::PostMessage failed";
+    ::DeleteObject(bitmap_handle);
   }
 }
 
