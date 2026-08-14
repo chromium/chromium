@@ -10,6 +10,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/password_manager/factories/profile_password_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_gpm_pin_sheet_view.h"
 #include "chrome/browser/ui/views/webauthn/combined_selector_sheet_view.h"
@@ -128,7 +129,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthnImmediateGetTest,
 
 IN_PROC_BROWSER_TEST_F(WebAuthnImmediateGetTest,
                        ImmediateMediationNotAllowedIncognito) {
-  Browser* incognito_browser = CreateIncognitoBrowser();
+  BrowserWindowInterface* incognito_browser = CreateIncognitoBrowser();
   ui_test_utils::BrowserActivationWaiter(incognito_browser).WaitForActivation();
   RunTestSequenceInContext(
       BrowserElements::From(incognito_browser)->GetContext(),

@@ -12,7 +12,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/singleton_tabs.h"
@@ -105,7 +105,7 @@ void PasskeyUnlockManager::NotifyObservers() {
 }
 
 void PasskeyUnlockManager::OpenTabWithPasskeyUnlockChallenge(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     trusted_vault::TrustedVaultUserActionTriggerForUMA trigger) {
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(browser->GetProfile());

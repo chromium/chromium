@@ -323,8 +323,8 @@ class GPMEnclaveController : public AuthenticatorRequestDialogModel::Observer,
   int GetFailedPINAttemptCount();
   void SetFailedPINAttemptCount(int count);
 
-  // BrowserIsApp returns true if the current `Browser` is `TYPE_APP`. (I.e. a
-  // PWA.)
+  // BrowserIsApp returns true if the current `BrowserWindowInterface` is
+  // `TYPE_APP`. (I.e. a PWA.)
   bool BrowserIsApp() const;
 
   // Configures the user-visible method of authenticating for security domain

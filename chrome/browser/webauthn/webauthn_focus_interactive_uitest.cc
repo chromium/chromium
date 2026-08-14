@@ -8,6 +8,7 @@
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/webauthn/authenticator_request_scheduler.h"
 #include "chrome/browser/webauthn/chrome_authenticator_request_delegate.h"
@@ -131,7 +132,8 @@ IN_PROC_BROWSER_TEST_F(WebAuthnFocusTest, FailWhenTabFocusChangesWhileRunning) {
   // trusted site.
   virtual_device_factory()->mutable_state()->simulate_press_callback =
       base::BindRepeating(
-          [](Browser* browser, device::VirtualFidoDevice* device) {
+          [](BrowserWindowInterface* browser,
+             device::VirtualFidoDevice* device) {
             chrome::NewTab(browser, NewTabTypes::kNoUserAction);
             return true;
           },
@@ -170,7 +172,8 @@ IN_PROC_BROWSER_TEST_F(WebAuthnFocusTest, SucceedWithDevtoolsOpen) {
 IN_PROC_BROWSER_TEST_F(WebAuthnFocusTest, SucceedWithNewWindowOpen) {
   virtual_device_factory()->mutable_state()->simulate_press_callback =
       base::BindRepeating(
-          [](Browser* browser, device::VirtualFidoDevice* device) {
+          [](BrowserWindowInterface* browser,
+             device::VirtualFidoDevice* device) {
             chrome::NewWindow(browser);
             return ui_test_utils::BringBrowserWindowToFront(
                 GetLastActiveBrowserWindowInterfaceWithAnyProfile());

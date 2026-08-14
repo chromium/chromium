@@ -18,7 +18,7 @@
 #include "components/webauthn/core/browser/passkey_model.h"
 #include "components/webauthn/core/browser/passkey_model_change.h"
 
-class Browser;
+class BrowserWindowInterface;
 
 namespace syncer {
 class SyncService;
@@ -76,7 +76,7 @@ class PasskeyUnlockManager : public KeyedService,
 
   // Opens a browser tab with a challenge for unlocking passkeys.
   static void OpenTabWithPasskeyUnlockChallenge(
-      Browser* browser,
+      BrowserWindowInterface* browser,
       trusted_vault::TrustedVaultUserActionTriggerForUMA trigger);
 
   // Methods providing the UI strings. Results depend on the experiment arms
