@@ -108,6 +108,7 @@
 #include "content/public/test/background_color_change_waiter.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/download_test_observer.h"
 #include "content/public/test/no_renderer_crashes_assertion.h"
 #include "content/public/test/test_utils.h"
 #include "net/base/filename_util.h"
@@ -1068,6 +1069,73 @@ IN_PROC_BROWSER_TEST_P(WebAppBrowserTest, DesktopPWAsOpenLinksInNewTab) {
   EXPECT_EQ(model2->active_index(), 2);
   EXPECT_EQ(param.navigated_or_inserted_contents,
             model2->GetActiveWebContents());
+}
+
+// Tests that when a download is opened in a new window from within a PWA,
+// the newly created PWA window automatically closes once the download starts.
+IN_PROC_BROWSER_TEST_P(WebAppBrowserTest, DownloadInNewWindowAutoCloses) {
+  const GURL app_url =
+      embedded_https_test_server().GetURL("app.com", "/web_apps/basic.html");
+  const webapps::AppId app_id = InstallPWA(app_url);
+  Browser* const app_browser = LaunchWebAppBrowserAndWait(app_id);
+  ASSERT_TRUE(app_browser);
+  EXPECT_EQ(1, app_browser->tab_strip_model()->count());
+  EXPECT_TRUE(web_app::AppBrowserController::IsWebApp(app_browser));
+
+  const GURL download_url =
+      embedded_https_test_server().GetURL("app.com", "/download-test1.lib");
+
+  content::DownloadTestObserverTerminal observer(
+      app_browser->GetProfile()->GetDownloadManager(), 1,
+      content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_ACCEPT);
+
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
+  NavigateParams params(app_browser, download_url, ui::PAGE_TRANSITION_LINK);
+  params.disposition = WindowOpenDisposition::NEW_POPUP;
+  ui_test_utils::NavigateToURL(&params);
+
+  Browser* download_browser = browser_created_observer.Wait();
+  ASSERT_TRUE(download_browser);
+  EXPECT_NE(app_browser, download_browser);
+  EXPECT_TRUE(web_app::AppBrowserController::IsWebApp(download_browser));
+
+  ui_test_utils::BrowserDestroyedObserver browser_destroyed_observer(
+      download_browser);
+
+  observer.WaitForFinished();
+  browser_destroyed_observer.Wait();
+
+  EXPECT_EQ(1, app_browser->tab_strip_model()->count());
+  EXPECT_EQ(app_url, app_browser->tab_strip_model()
+                         ->GetActiveWebContents()
+                         ->GetLastCommittedURL());
+}
+
+IN_PROC_BROWSER_TEST_P(WebAppBrowserTest, DownloadInSameWindowDoesNotClose) {
+  const GURL app_url =
+      embedded_https_test_server().GetURL("app.com", "/web_apps/basic.html");
+  const webapps::AppId app_id = InstallPWA(app_url);
+  Browser* const app_browser = LaunchWebAppBrowserAndWait(app_id);
+  ASSERT_TRUE(app_browser);
+  EXPECT_EQ(1, app_browser->tab_strip_model()->count());
+
+  const GURL download_url =
+      embedded_https_test_server().GetURL("app.com", "/download-test1.lib");
+
+  content::DownloadTestObserverTerminal observer(
+      app_browser->GetProfile()->GetDownloadManager(), 1,
+      content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_ACCEPT);
+
+  EXPECT_TRUE(
+      content::ExecJs(app_browser->tab_strip_model()->GetActiveWebContents(),
+                      "window.location.href = '" + download_url.spec() + "';"));
+
+  observer.WaitForFinished();
+
+  EXPECT_EQ(1, app_browser->tab_strip_model()->count());
+  EXPECT_EQ(app_url, app_browser->tab_strip_model()
+                         ->GetActiveWebContents()
+                         ->GetLastCommittedURL());
 }
 
 // Tests that desktop PWAs are opened at the correct size.

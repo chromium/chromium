@@ -39,6 +39,7 @@
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/download/bubble/download_toolbar_ui_controller.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "extensions/browser/extension_util.h"
 #endif
 
@@ -262,13 +263,14 @@ void DownloadUIController::OnDownloadUpdated(content::DownloadManager* manager,
     BrowserWindowInterface* browser =
         GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
             web_contents);
-    // If the download occurs in a new tab, and it's not a save page
-    // download (started before initial navigation completed) close it.
-    // Avoid calling CloseContents if the tab is not in this browser's tab strip
-    // model; this can happen if the download was initiated by something
+    // If the download occurs in a new tab (or web app window), and it's not a
+    // save page download (started before initial navigation completed) close
+    // it. Avoid calling CloseContents if the tab is not in this browser's tab
+    // strip model; this can happen if the download was initiated by something
     // internal to Chrome, such as by the app list.
     if (browser && web_contents->GetController().IsInitialNavigation() &&
-        browser->GetTabStripModel()->count() > 1 &&
+        (browser->GetTabStripModel()->count() > 1 ||
+         web_app::AppBrowserController::IsWebApp(browser)) &&
         browser->GetTabStripModel()->GetIndexOfWebContents(web_contents) !=
             TabStripModel::kNoTab &&
         !item->IsSavePackageDownload()) {
