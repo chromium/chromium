@@ -47,6 +47,7 @@ class SequencedTaskRunner;
 namespace disk_cache {
 
 class BackendCleanupTracker;
+class SharedCacheClientRemote;
 class SqlEntryImpl;
 
 // Provides a concrete implementation of the disk cache backend that stores
@@ -128,6 +129,9 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
   void OnBrowserIdle() override;
 
   bool SupportsSharedCache() const;
+  void RegisterSharedCacheClientRemote(
+      const net::NetworkIsolationKey& network_isolation_key,
+      std::unique_ptr<SharedCacheClientRemote> client);
   void OnEntryEligibleForSharedCache(
       const std::string& key,
       const GURL& url,

@@ -14,6 +14,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "net/base/features.h"
 #include "net/disk_cache/backend_cleanup_tracker.h"
+#include "net/disk_cache/sql/shared_cache_client_remote.h"
 #include "net/disk_cache/sql/sql_persistent_store.h"
 #include "net/disk_cache/sql/sql_shared_cache_handle.h"
 #include "net/disk_cache/sql/sql_shared_cache_isolated_database.h"
@@ -72,6 +73,50 @@ void SqlSharedCache::InitIsolatedDatabase(
              base::expected<void, SqlSharedCacheIsolatedDatabase::Error>
                  result) { std::move(callback).Run(result.has_value()); },
           std::move(callback)));
+
+  for (ClientsMap::iterator it(&clients_); !it.IsAtEnd(); it.Advance()) {
+    isolated_database_
+        .AsyncCall(&SqlSharedCacheIsolatedDatabase::GetSharedReadOnlyConnection)
+        .Then(base::BindOnce(&SqlSharedCache::OnPendingFileSetForClient,
+                             weak_factory_.GetWeakPtr(), it.GetCurrentKey()));
+  }
+}
+
+void SqlSharedCache::RegisterClient(
+    std::unique_ptr<SharedCacheClientRemote> client) {
+  CHECK(client);
+  auto* client_ptr = client.get();
+  auto client_id = clients_.Add(std::move(client));
+  client_ptr->SetDisconnectHandler(
+      base::BindOnce(&SqlSharedCache::OnClientDisconnected,
+                     weak_factory_.GetWeakPtr(), client_id, CreateHandle()));
+
+  if (isolated_database_) {
+    isolated_database_
+        .AsyncCall(&SqlSharedCacheIsolatedDatabase::GetSharedReadOnlyConnection)
+        .Then(base::BindOnce(&SqlSharedCache::OnPendingFileSetForClient,
+                             weak_factory_.GetWeakPtr(), client_id));
+  }
+}
+
+void SqlSharedCache::OnPendingFileSetForClient(
+    ClientId client_id,
+    base::expected<sqlite_vfs::PendingFileSet,
+                   SqlSharedCacheIsolatedDatabase::Error> result) {
+  if (!result.has_value()) {
+    return;
+  }
+  auto* client = clients_.Lookup(client_id);
+  if (!client) {
+    return;
+  }
+  client->Initialize(std::move(*result));
+}
+
+void SqlSharedCache::OnClientDisconnected(
+    ClientId client_id,
+    scoped_refptr<SqlSharedCacheHandle> handle) {
+  clients_.Remove(client_id);
 }
 
 scoped_refptr<SqlSharedCacheHandle> SqlSharedCache::CreateHandle() {

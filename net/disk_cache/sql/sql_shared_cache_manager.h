@@ -32,6 +32,7 @@
 namespace disk_cache {
 
 class BackendCleanupTracker;
+class SharedCacheClientRemote;
 class SqlPersistentStore;
 
 // Manages the creation, lookup, and lifecycle of `SqlSharedCache` instances.
@@ -88,8 +89,24 @@ class NET_EXPORT_PRIVATE SqlSharedCacheManager {
       base::RepeatingCallback<void(const CacheEntryKey&)>
           on_entry_copied_callback = {});
 
+  // Registers a remote shared cache client for the given NetworkIsolationKey.
+  // The client will be notified with a read-only database connection once
+  // available.
+  void RegisterClient(const net::NetworkIsolationKey& network_isolation_key,
+                      std::unique_ptr<SharedCacheClientRemote> client);
+
   // Sets a flag to simulate index database operation failures for testing.
   void SetSimulateDbFailureForTesting(bool fail);
+
+  size_t GetSharedCachesSizeForTest() const { return shared_caches_.size(); }
+
+  size_t GetSharedCachesByDbIdSizeForTest() const {
+    return shared_caches_by_shared_cache_db_id_.size();
+  }
+
+  size_t GetSharedCachesByNikSizeForTest() const {
+    return shared_caches_by_nik_string_.size();
+  }
 
  private:
   friend class SqlSharedCacheManagerTest;

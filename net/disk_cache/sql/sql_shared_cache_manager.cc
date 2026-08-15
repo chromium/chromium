@@ -11,6 +11,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/task/thread_pool.h"
 #include "net/disk_cache/backend_cleanup_tracker.h"
+#include "net/disk_cache/sql/shared_cache_client_remote.h"
 #include "net/disk_cache/sql/sql_persistent_store.h"
 
 namespace disk_cache {
@@ -427,6 +428,20 @@ void SqlSharedCacheManager::OnProcessEntryCompleted(
   }
   ProcessNextNikGroup(std::move(groups), abort_flag, std::move(all_unprocessed),
                       std::move(callback), std::move(on_entry_copied_callback));
+}
+
+void SqlSharedCacheManager::RegisterClient(
+    const net::NetworkIsolationKey& network_isolation_key,
+    std::unique_ptr<SharedCacheClientRemote> client) {
+  GetCacheByNik(network_isolation_key, /*require_shared_cache_db_id=*/false,
+                base::BindOnce(
+                    [](std::unique_ptr<SharedCacheClientRemote> client,
+                       scoped_refptr<SqlSharedCacheHandle> handle) {
+                      if (handle) {
+                        (*handle)->RegisterClient(std::move(client));
+                      }
+                    },
+                    std::move(client)));
 }
 
 void SqlSharedCacheManager::SetSimulateDbFailureForTesting(bool fail) {

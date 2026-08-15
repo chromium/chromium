@@ -37,12 +37,13 @@
 #include "net/base/test_completion_callback.h"
 #include "net/disk_cache/backend_cleanup_tracker.h"
 #include "net/disk_cache/disk_cache_test_util.h"
-#include "net/disk_cache/sql/entry_db_handle.h"
+#include "net/disk_cache/sql/mock_shared_cache_client_remote.h"
 #include "net/disk_cache/sql/sql_async_task_manager.h"
 #include "net/disk_cache/sql/sql_backend_constants.h"
 #include "net/disk_cache/sql/sql_entry_impl.h"
 #include "net/disk_cache/sql/sql_shared_cache.h"
 #include "net/disk_cache/sql/sql_shared_cache_handle.h"
+#include "net/disk_cache/sql/sql_shared_cache_isolated_database_reader.h"
 #include "net/disk_cache/sql/sql_shared_cache_manager.h"
 #include "net/http/http_cache.h"
 #include "net/http/http_response_headers.h"
@@ -4008,6 +4009,90 @@ class SqlBackendImplSharedCacheTest : private SqlBackendImplFeatureInitializer,
     EXPECT_TRUE(result->shared_cache_resource_id.has_value());
   }
 };
+
+TEST_F(SqlBackendImplSharedCacheTest, ProcessSharedCacheEligibleEntries) {
+  auto backend = CreateBackendAndInit();
+
+  const net::SchemefulSite kSite(GURL("https://example.test"));
+  const net::NetworkIsolationKey kNik(kSite, kSite);
+  const std::string kKey = "0/0/https://example.test/";
+  const GURL kUrl("https://example.test");
+  const std::string kData = "Hello Shared Cache";
+
+  CreateAndRegisterSharedCacheEntry(backend.get(), kKey, kData, kNik);
+  backend->RunUntilAllTasksCompleteForTest();
+
+  EXPECT_EQ(backend->GetSharedCacheEligibleEntriesCountForTest(), 1u);
+
+  // Register client
+  auto client = std::make_unique<MockSharedCacheClientRemote>();
+  auto* client_ptr = client.get();
+  backend->RegisterSharedCacheClientRemote(kNik, std::move(client));
+
+  base::RunLoop process_run_loop;
+  backend->ProcessSharedCacheEligibleEntriesForTest(
+      base::ScopedClosureRunner(process_run_loop.QuitClosure()),
+      /*on_entry_copied_callback=*/base::NullCallback());
+
+  client_ptr->WaitUntilInitialized();
+  process_run_loop.Run();
+  backend->RunUntilAllTasksCompleteForTest();
+
+  VerifySharedCacheResourceIdExists(backend.get(), kKey);
+
+  EXPECT_TRUE(client_ptr->initialize_called());
+  EXPECT_TRUE(client_ptr->has_disconnect_handler());
+
+  // Use pending_file_set_ to read
+  SqlSharedCacheIsolatedDatabaseReader reader(client_ptr->TakePendingFileSet());
+
+  std::optional<SqlSharedCacheIsolatedDatabaseReader::Response> response =
+      reader.ReadResponse(kUrl.spec());
+  ASSERT_TRUE(response);
+  EXPECT_GT(response->GetBodySize(), 0);
+
+  std::vector<uint8_t> buffer(kData.size());
+  EXPECT_TRUE(response->ReadBody(buffer));
+  EXPECT_EQ(std::string(buffer.begin(), buffer.end()), kData);
+
+  // Call disconnect_handler
+  auto* manager =
+      backend->GetSqlStoreForTest()->shared_cache_manager_for_testing();
+  EXPECT_EQ(manager->GetSharedCachesSizeForTest(), 1u);
+  EXPECT_EQ(manager->GetSharedCachesByDbIdSizeForTest(), 1u);
+  EXPECT_EQ(manager->GetSharedCachesByNikSizeForTest(), 1u);
+
+  client_ptr->RunDisconnectHandler();
+
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return manager->GetSharedCachesSizeForTest() == 0u; }));
+
+  // Verify empty
+  EXPECT_EQ(manager->GetSharedCachesByDbIdSizeForTest(), 0u);
+  EXPECT_EQ(manager->GetSharedCachesByNikSizeForTest(), 0u);
+}
+
+TEST_F(SqlBackendImplSharedCacheTest,
+       RegisterSharedCacheClientRemoteTransientNik) {
+  auto backend = CreateBackendAndInit();
+  auto transient_nik = net::NetworkIsolationKey::CreateTransientForTesting();
+  ASSERT_TRUE(transient_nik.IsTransient());
+
+  bool client_destroyed = false;
+  auto client = std::make_unique<MockSharedCacheClientRemote>();
+  client->SetOnDestroyHandler(
+      base::BindLambdaForTesting([&]() { client_destroyed = true; }));
+
+  backend->RegisterSharedCacheClientRemote(transient_nik, std::move(client));
+
+  // The client should be destroyed immediately because transient NIKs are
+  // ignored.
+  EXPECT_TRUE(client_destroyed);
+
+  auto* manager =
+      backend->GetSqlStoreForTest()->shared_cache_manager_for_testing();
+  EXPECT_EQ(manager->GetSharedCachesSizeForTest(), 0u);
+}
 
 TEST_F(SqlBackendImplSharedCacheTest,
        ProcessSharedCacheEligibleEntriesMultipleNiks) {

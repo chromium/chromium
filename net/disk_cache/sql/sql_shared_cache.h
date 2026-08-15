@@ -7,6 +7,7 @@
 
 #include <atomic>
 
+#include "base/containers/id_map.h"
 #include "base/containers/queue.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -26,6 +27,7 @@
 namespace disk_cache {
 
 class BackendCleanupTracker;
+class SharedCacheClientRemote;
 class SqlPersistentStore;
 class SqlSharedCacheHandle;
 
@@ -130,7 +132,14 @@ class NET_EXPORT_PRIVATE SqlSharedCache {
           base::expected<scoped_refptr<SqlSharedCacheBlobHandle>,
                          SqlSharedCacheIsolatedDatabase::Error>)> callback);
 
+  // Registers a remote client to receive database connection handles.
+  void RegisterClient(std::unique_ptr<SharedCacheClientRemote> client);
+
  private:
+  using ClientId = int32_t;
+  using ClientsMap =
+      base::IDMap<std::unique_ptr<SharedCacheClientRemote>, ClientId>;
+
   // Entry Copying Call Flow Overview:
   //
   // CopyEntries()
@@ -213,6 +222,13 @@ class NET_EXPORT_PRIVATE SqlSharedCache {
       SqlPersistentStore::ReadResultOrErrorCallback callback,
       SqlSharedCacheIsolatedDatabase::ReadResultOrError result);
 
+  void OnPendingFileSetForClient(
+      ClientId client_id,
+      base::expected<sqlite_vfs::PendingFileSet,
+                     SqlSharedCacheIsolatedDatabase::Error> result);
+  void OnClientDisconnected(ClientId client_id,
+                            scoped_refptr<SqlSharedCacheHandle> handle);
+
   const std::string nik_string_;
   const raw_ref<SqlPersistentStore> store_;
   const base::FilePath directory_;
@@ -236,6 +252,8 @@ class NET_EXPORT_PRIVATE SqlSharedCache {
   std::optional<SqlSharedCacheRowId> current_copy_row_id_;
 
   base::RepeatingCallback<void(const CacheEntryKey&)> on_entry_copied_callback_;
+
+  ClientsMap clients_;
 
   base::WeakPtrFactory<SqlSharedCache> weak_factory_{this};
 };

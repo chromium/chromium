@@ -41,6 +41,7 @@
 #include "net/base/net_errors.h"
 #include "net/disk_cache/backend_cleanup_tracker.h"
 #include "net/disk_cache/cache_util.h"
+#include "net/disk_cache/sql/shared_cache_client_remote.h"
 #include "net/disk_cache/sql/sql_async_task_token.h"
 #include "net/disk_cache/sql/sql_entry_impl.h"
 #include "net/disk_cache/sql/sql_persistent_store.h"
@@ -1017,6 +1018,18 @@ void SqlBackendImpl::OnBrowserIdle() {
 
 bool SqlBackendImpl::SupportsSharedCache() const {
   return !!store_->GetSharedCacheManager();
+}
+
+void SqlBackendImpl::RegisterSharedCacheClientRemote(
+    const net::NetworkIsolationKey& network_isolation_key,
+    std::unique_ptr<SharedCacheClientRemote> client) {
+  if (network_isolation_key.IsTransient()) {
+    return;
+  }
+  if (store_ && store_->GetSharedCacheManager()) {
+    store_->GetSharedCacheManager()->RegisterClient(network_isolation_key,
+                                                    std::move(client));
+  }
 }
 
 void SqlBackendImpl::OnEntryEligibleForSharedCache(

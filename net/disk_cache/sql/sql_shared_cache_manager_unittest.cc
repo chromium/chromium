@@ -9,9 +9,11 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -19,6 +21,7 @@
 #include "net/base/network_isolation_key.h"
 #include "net/base/schemeful_site.h"
 #include "net/disk_cache/backend_cleanup_tracker.h"
+#include "net/disk_cache/sql/mock_shared_cache_client_remote.h"
 #include "net/disk_cache/sql/sql_persistent_store.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -96,6 +99,19 @@ class SqlSharedCacheManagerTest : public testing::TestWithParam<bool> {
 
   SqlSharedCacheManager* GetManager() {
     return store_->shared_cache_manager_for_testing();
+  }
+
+  net::NetworkIsolationKey CreateNik(const std::string& url_str) {
+    net::SchemefulSite site((GURL(url_str)));
+    return net::NetworkIsolationKey(site, site);
+  }
+
+  void GetCacheByNik(
+      const net::NetworkIsolationKey& nik,
+      bool require_shared_cache_db_id,
+      base::OnceCallback<void(scoped_refptr<SqlSharedCacheHandle>)> callback) {
+    GetManager()->GetCacheByNik(nik, require_shared_cache_db_id,
+                                std::move(callback));
   }
 
   void FlushPendingTask() {
@@ -498,6 +514,260 @@ TEST_P(SqlSharedCacheManagerTest, DeleteResourcesMultipleCaches) {
   EXPECT_FALSE(read_res2.has_value());
   EXPECT_EQ(read_res2.error(),
             SqlSharedCacheIsolatedDatabase::Error::kEntryNotFound);
+}
+
+TEST_P(SqlSharedCacheManagerTest, RegisterClientNewCache) {
+  auto* manager = GetManager();
+  net::NetworkIsolationKey nik = CreateNik("https://example.com");
+
+  auto client = std::make_unique<MockSharedCacheClientRemote>();
+  auto* client_ptr = client.get();
+
+  EXPECT_EQ(manager->GetSharedCachesSizeForTest(), 0u);
+
+  manager->RegisterClient(nik, std::move(client));
+
+  // Wait for the cache to be registered in the manager, which involves
+  // async DB access. The disconnect handler is set during cache creation.
+  client_ptr->WaitUntilDisconnectHandlerSet();
+
+  // The cache is created but client is not initialized because there is no DB
+  // ID yet.
+  EXPECT_EQ(manager->GetSharedCachesSizeForTest(), 1u);
+  EXPECT_FALSE(client_ptr->initialize_called());
+}
+
+TEST_P(SqlSharedCacheManagerTest, RegisterClientExistingCacheNoDbId) {
+  auto* manager = GetManager();
+  net::NetworkIsolationKey nik = CreateNik("https://example.com");
+
+  auto client1 = std::make_unique<MockSharedCacheClientRemote>();
+  auto* client_ptr1 = client1.get();
+
+  auto client2 = std::make_unique<MockSharedCacheClientRemote>();
+  auto* client_ptr2 = client2.get();
+
+  EXPECT_EQ(manager->GetSharedCachesSizeForTest(), 0u);
+
+  // Register the first client.
+  manager->RegisterClient(nik, std::move(client1));
+
+  // Register the second client immediately before db_task_runner finishes.
+  manager->RegisterClient(nik, std::move(client2));
+
+  client_ptr1->WaitUntilDisconnectHandlerSet();
+  client_ptr2->WaitUntilDisconnectHandlerSet();
+
+  // Both clients registered, but neither is initialized.
+  EXPECT_EQ(manager->GetSharedCachesSizeForTest(), 1u);
+  EXPECT_FALSE(client_ptr1->initialize_called());
+  EXPECT_FALSE(client_ptr2->initialize_called());
+
+  // Requesting the cache with require_shared_cache_db_id=true allocates a DB ID
+  // and initializes the underlying isolated database.
+  base::test::TestFuture<scoped_refptr<SqlSharedCacheHandle>> future;
+  GetCacheByNik(nik, /*require_shared_cache_db_id=*/true, future.GetCallback());
+  scoped_refptr<SqlSharedCacheHandle> keep_alive_handle = future.Take();
+  ASSERT_TRUE(keep_alive_handle);
+
+  // Both clients should now be initialized.
+  client_ptr1->WaitUntilInitialized();
+  client_ptr2->WaitUntilInitialized();
+
+  EXPECT_EQ(client_ptr1->initialize_call_count(), 1u);
+  EXPECT_EQ(client_ptr2->initialize_call_count(), 1u);
+}
+
+TEST_P(SqlSharedCacheManagerTest,
+       RegisterClientWhileInitIsolatedDatabaseInFlight) {
+  auto* manager = GetManager();
+  net::NetworkIsolationKey nik = CreateNik("https://example.com");
+
+  auto client1 = std::make_unique<MockSharedCacheClientRemote>();
+  auto* client_ptr1 = client1.get();
+
+  auto client2 = std::make_unique<MockSharedCacheClientRemote>();
+  auto* client_ptr2 = client2.get();
+
+  auto client3 = std::make_unique<MockSharedCacheClientRemote>();
+  auto* client_ptr3 = client3.get();
+
+  // 1. Register client1 before InitIsolatedDatabase.
+  manager->RegisterClient(nik, std::move(client1));
+  client_ptr1->WaitUntilDisconnectHandlerSet();
+  EXPECT_EQ(client_ptr1->initialize_call_count(), 0u);
+
+  // 2. Request cache with require_shared_cache_db_id=true to trigger
+  // InitIsolatedDatabase asynchronously.
+  base::test::TestFuture<scoped_refptr<SqlSharedCacheHandle>> future;
+  GetCacheByNik(nik, /*require_shared_cache_db_id=*/true, future.GetCallback());
+
+  // 3. Immediately register client2 while InitIsolatedDatabase is in flight.
+  manager->RegisterClient(nik, std::move(client2));
+
+  scoped_refptr<SqlSharedCacheHandle> keep_alive_handle = future.Take();
+  ASSERT_TRUE(keep_alive_handle);
+
+  // 4. Register client3 after DB initialization is complete.
+  manager->RegisterClient(nik, std::move(client3));
+
+  // Wait for all clients to be initialized.
+  client_ptr1->WaitUntilInitialized();
+  client_ptr2->WaitUntilInitialized();
+  client_ptr3->WaitUntilInitialized();
+  FlushPendingTask();
+
+  // Verify that each client is initialized exactly once.
+  EXPECT_EQ(client_ptr1->initialize_call_count(), 1u);
+  EXPECT_EQ(client_ptr2->initialize_call_count(), 1u);
+  EXPECT_EQ(client_ptr3->initialize_call_count(), 1u);
+}
+
+TEST_P(SqlSharedCacheManagerTest, RegisterClientExistingCacheWithDbId) {
+  auto* manager = GetManager();
+  net::NetworkIsolationKey nik = CreateNik("https://example.com");
+
+  auto client1 = std::make_unique<MockSharedCacheClientRemote>();
+  auto* client_ptr1 = client1.get();
+
+  EXPECT_EQ(manager->GetSharedCachesSizeForTest(), 0u);
+
+  // Force creation of a DB ID by requesting with
+  // require_shared_cache_db_id=true.
+  base::test::TestFuture<scoped_refptr<SqlSharedCacheHandle>> future;
+  GetCacheByNik(nik, /*require_shared_cache_db_id=*/true, future.GetCallback());
+  scoped_refptr<SqlSharedCacheHandle> keep_alive_handle = future.Get();
+
+  EXPECT_TRUE(keep_alive_handle);
+
+  EXPECT_EQ(manager->GetSharedCachesSizeForTest(), 1u);
+  EXPECT_EQ(manager->GetSharedCachesByDbIdSizeForTest(), 1u);
+
+  // Register the first client. The cache should already have a db_id.
+  manager->RegisterClient(nik, std::move(client1));
+
+  // Now it should be initialized because the DB ID exists.
+  client_ptr1->WaitUntilInitialized();
+  EXPECT_TRUE(client_ptr1->initialize_called());
+}
+
+TEST_P(SqlSharedCacheManagerTest, RegisterClientDifferentNik) {
+  auto* manager = GetManager();
+  net::NetworkIsolationKey nik1 = CreateNik("https://example.com");
+  net::NetworkIsolationKey nik2 = CreateNik("https://example.net");
+
+  auto client1 = std::make_unique<MockSharedCacheClientRemote>();
+  auto* client_ptr1 = client1.get();
+
+  auto client2 = std::make_unique<MockSharedCacheClientRemote>();
+  auto* client_ptr2 = client2.get();
+
+  EXPECT_EQ(manager->GetSharedCachesSizeForTest(), 0u);
+
+  manager->RegisterClient(nik1, std::move(client1));
+  manager->RegisterClient(nik2, std::move(client2));
+
+  client_ptr1->WaitUntilDisconnectHandlerSet();
+  client_ptr2->WaitUntilDisconnectHandlerSet();
+
+  EXPECT_EQ(manager->GetSharedCachesSizeForTest(), 2u);
+  EXPECT_FALSE(client_ptr1->initialize_called());
+  EXPECT_FALSE(client_ptr2->initialize_called());
+}
+
+TEST_P(SqlSharedCacheManagerTest, ClientDisconnected) {
+  auto* manager = GetManager();
+  net::NetworkIsolationKey nik = CreateNik("https://example.com");
+
+  auto client = std::make_unique<MockSharedCacheClientRemote>();
+  auto* client_ptr = client.get();
+
+  manager->RegisterClient(nik, std::move(client));
+  client_ptr->WaitUntilDisconnectHandlerSet();
+
+  EXPECT_EQ(manager->GetSharedCachesSizeForTest(), 1u);
+  EXPECT_TRUE(client_ptr->has_disconnect_handler());
+
+  // Simulate client disconnection.
+  client_ptr->RunDisconnectHandler();
+
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return manager->GetSharedCachesSizeForTest() == 0u; }));
+}
+
+TEST_P(SqlSharedCacheManagerTest, ClientDisconnectBeforeDbInit) {
+  auto* manager = GetManager();
+  net::NetworkIsolationKey nik = CreateNik("https://example.com");
+
+  auto client = std::make_unique<MockSharedCacheClientRemote>();
+  auto* client_ptr = client.get();
+
+  manager->RegisterClient(nik, std::move(client));
+  client_ptr->WaitUntilDisconnectHandlerSet();
+
+  EXPECT_EQ(manager->GetSharedCachesSizeForTest(), 1u);
+
+  // Disconnect before DB initialization.
+  client_ptr->RunDisconnectHandler();
+
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return manager->GetSharedCachesSizeForTest() == 0u; }));
+
+  FlushPendingTask();
+  EXPECT_EQ(manager->GetSharedCachesSizeForTest(), 0u);
+}
+
+TEST_P(SqlSharedCacheManagerTest, PartialClientDisconnect) {
+  auto* manager = GetManager();
+  net::NetworkIsolationKey nik = CreateNik("https://example.com");
+
+  auto client1 = std::make_unique<MockSharedCacheClientRemote>();
+  auto* client_ptr1 = client1.get();
+
+  auto client2 = std::make_unique<MockSharedCacheClientRemote>();
+  auto* client_ptr2 = client2.get();
+
+  manager->RegisterClient(nik, std::move(client1));
+  manager->RegisterClient(nik, std::move(client2));
+
+  client_ptr1->WaitUntilDisconnectHandlerSet();
+  client_ptr2->WaitUntilDisconnectHandlerSet();
+
+  EXPECT_EQ(manager->GetSharedCachesSizeForTest(), 1u);
+
+  // Disconnect the first client. The cache should remain alive because client2
+  // is still connected.
+  client_ptr1->RunDisconnectHandler();
+
+  FlushPendingTask();
+  EXPECT_EQ(manager->GetSharedCachesSizeForTest(), 1u);
+
+  // Disconnect the second client. Now the cache should be destroyed.
+  client_ptr2->RunDisconnectHandler();
+
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return manager->GetSharedCachesSizeForTest() == 0u; }));
+}
+
+TEST_P(SqlSharedCacheManagerTest, RegisterClientDbFailure) {
+  auto* manager = GetManager();
+  manager->SetSimulateDbFailureForTesting(true);
+
+  net::NetworkIsolationKey nik = CreateNik("https://example.com");
+
+  base::RunLoop destroy_run_loop;
+  auto client = std::make_unique<MockSharedCacheClientRemote>();
+  client->SetOnDestroyHandler(destroy_run_loop.QuitClosure());
+
+  EXPECT_EQ(manager->GetSharedCachesSizeForTest(), 0u);
+
+  manager->RegisterClient(nik, std::move(client));
+
+  // The client should be destroyed because DB initialization fails and
+  // the manager drops the client.
+  destroy_run_loop.Run();
+
+  EXPECT_EQ(manager->GetSharedCachesSizeForTest(), 0u);
 }
 
 }  // namespace disk_cache
