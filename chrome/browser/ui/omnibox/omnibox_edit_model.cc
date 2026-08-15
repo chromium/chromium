@@ -2921,16 +2921,16 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
     }
   }
 
+  if (disposition != WindowOpenDisposition::NEW_BACKGROUND_TAB && view_) {
+    base::AutoReset<bool> tmp(&in_revert_, true);
+    view_->RevertAll();  // Revert the box to its unedited state.
+  }
+
   if (action) {
     OmniboxEditModelActionClient action_client(
         *(autocomplete_controller()->autocomplete_provider_client()), *this);
     controller_->client()->ExecuteAction(
         action, disposition, match_selection_timestamp, action_client);
-  }
-
-  if (disposition != WindowOpenDisposition::NEW_BACKGROUND_TAB && view_) {
-    base::AutoReset<bool> tmp(&in_revert_, true);
-    view_->RevertAll();  // Revert the box to its unedited state.
   }
 
   if (!action) {

@@ -2458,6 +2458,36 @@ TEST_F(OmniboxEditModelTest, OpenComposeboxForAskG) {
             OmniboxPopupState::kAim);
 }
 
+TEST_F(OmniboxEditModelTest, OpenMatchWithActionPreservesPopupState) {
+  class TestAimAction : public OmniboxAction {
+   public:
+    TestAimAction()
+        : OmniboxAction(OmniboxAction::LabelStrings(), GURL()) {}
+    void Execute(ExecutionContext& context) const override {
+      context.client_->OpenComposeboxForAskG();
+    }
+
+   protected:
+    ~TestAimAction() override = default;
+  };
+
+  AutocompleteMatch match(
+      controller()->autocomplete_controller()->search_provider(), 1000, false,
+      AutocompleteMatchType::SEARCH_SUGGEST);
+  match.takeover_action = base::MakeRefCounted<TestAimAction>();
+
+  EXPECT_NE(controller()->popup_state_manager()->popup_state(),
+            OmniboxPopupState::kAim);
+
+  model()->OnSetFocus(false);
+  model()->OpenMatchForTesting(
+      match, WindowOpenDisposition::CURRENT_TAB, GURL(), std::u16string(),
+      /*index=*/0, base::TimeTicks::Now());
+
+  EXPECT_EQ(controller()->popup_state_manager()->popup_state(),
+            OmniboxPopupState::kAim);
+}
+
 TEST_F(OmniboxEditModelContextualSearchTest,
        OpenComposeboxForAskGPopulatesContext) {
   const GURL expected_url("https://example.com/test-page");
