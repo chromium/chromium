@@ -53,7 +53,9 @@ promise_test(async () => {
   assert_equals(initialSelectStyle.fontFamily, 'Ahem', 'Select should use author font initially');
 
   internals.setSuggestedValue(select, 'v2');
-  const selectStyle = window.getComputedStyle(select);
+  const shadowRoot = internals.shadowRoot(select);
+  const popoverText = shadowRoot ? getElementByPseudoId(shadowRoot, '-internal-select-autofill-preview-text') : null;
+  const selectStyle = window.getComputedStyle(popoverText || select);
   assert_not_equals(selectStyle.fontFamily, 'Ahem',
     'Select should not use author font in preview state.');
 }, 'Autofill preview should not use author fonts for select');
