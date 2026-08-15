@@ -286,8 +286,73 @@ IN_PROC_BROWSER_TEST_F(ChromeRegisterProtocolHandlerBrowserTest, FencedFrame) {
   ASSERT_EQ(0u, registry->GetHandlersFor(url.GetScheme()).size());
 }
 
-using RegisterProtocolHandlerExtensionBrowserTest =
-    extensions::ExtensionBrowserTest;
+class RegisterProtocolHandlerExtensionBrowserTest
+    : public extensions::ExtensionBrowserTest {
+ public:
+  void SetUpOnMainThread() override {
+    extensions::ExtensionBrowserTest::SetUpOnMainThread();
+
+    // Disable OS-level registration, as
+    // ChromeRegisterProtocolHandlerBrowserTest does; see
+    // TestProtocolHandlerRegistryDelegate above. Without it these tests do a
+    // real OS round trip for every default they register, and its asynchronous
+    // reply clears the default handler again on the platforms where
+    // ShouldRemoveHandlersNotInOS() is true.
+    ProtocolHandlerRegistryFactory::GetForBrowserContext(
+        browser()->GetProfile())
+        ->SetDelegateForTesting(
+            std::make_unique<TestProtocolHandlerRegistryDelegate>());
+  }
+};
+
+// A handler registered from a privileged extension page via
+// navigator.registerProtocolHandler must be associated with the registering
+// extension and removed when that extension is uninstalled.
+IN_PROC_BROWSER_TEST_F(RegisterProtocolHandlerExtensionBrowserTest,
+                       HandlerRemovedOnExtensionUninstall) {
+#if BUILDFLAG(IS_MAC)
+  ASSERT_TRUE(test::RegisterAppWithLaunchServices());
+#endif
+  permissions::PermissionRequestManager::FromWebContents(
+      browser()->tab_strip_model()->GetActiveWebContents())
+      ->set_auto_response_for_test(
+          permissions::PermissionRequestManager::ACCEPT_ALL);
+
+  const extensions::Extension* extension =
+      LoadExtension(test_data_dir_.AppendASCII("protocol_handler"));
+  ASSERT_NE(nullptr, extension);
+  const std::string extension_id = extension->id();
+
+  ProtocolHandlerRegistry* registry =
+      ProtocolHandlerRegistryFactory::GetForBrowserContext(
+          browser()->GetProfile());
+
+  // Register a handler from the extension page via the JS API. The waiter must
+  // only cover the registration; see the comment in
+  // JsHandlerDoesNotOverrideNonExtensionDefault.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL("chrome-extension://" + extension_id + "/test.html")));
+  {
+    ProtocolHandlerChangeWaiter waiter(registry);
+    ASSERT_TRUE(content::ExecJs(
+        browser()->tab_strip_model()->GetActiveWebContents(),
+        "navigator.registerProtocolHandler('geo', 'test.html?%s', 'test');"));
+    waiter.Wait();
+  }
+  ASSERT_TRUE(registry->IsHandledProtocol("geo"));
+
+  // The handler must be associated with the registering extension so that it
+  // is visible to extension cleanup.
+  ProtocolHandlerRegistry::ProtocolHandlerList extension_handlers =
+      registry->GetExtensionProtocolHandlers(extension_id);
+  ASSERT_EQ(1u, extension_handlers.size());
+  EXPECT_EQ("geo", extension_handlers[0].protocol());
+
+  // Uninstalling the extension must remove the handler it registered.
+  UninstallExtension(extension_id);
+  EXPECT_FALSE(registry->IsHandledProtocol("geo"));
+  EXPECT_TRUE(registry->GetExtensionProtocolHandlers().empty());
+}
 
 IN_PROC_BROWSER_TEST_F(RegisterProtocolHandlerExtensionBrowserTest, Basic) {
 #if BUILDFLAG(IS_MAC)
@@ -305,13 +370,14 @@ IN_PROC_BROWSER_TEST_F(RegisterProtocolHandlerExtensionBrowserTest, Basic) {
   std::string handler_url =
       "chrome-extension://" + extension->id() + "/test.html";
 
-  // Register the handler.
+  // Register the handler. The waiter must only cover the registration; see the
+  // comment in JsHandlerDoesNotOverrideNonExtensionDefault.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(handler_url)));
   {
     ProtocolHandlerRegistry* registry =
         ProtocolHandlerRegistryFactory::GetForBrowserContext(
             browser()->GetProfile());
     ProtocolHandlerChangeWaiter waiter(registry);
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(handler_url)));
     ASSERT_TRUE(content::ExecJs(
         browser()->tab_strip_model()->GetActiveWebContents(),
         "navigator.registerProtocolHandler('geo', 'test.html?%s', 'test');"));
@@ -324,6 +390,108 @@ IN_PROC_BROWSER_TEST_F(RegisterProtocolHandlerExtensionBrowserTest, Basic) {
                                                    ->tab_strip_model()
                                                    ->GetActiveWebContents()
                                                    ->GetLastCommittedURL());
+}
+
+// A handler registered from an extension page via
+// navigator.registerProtocolHandler uses the elevated kExtension security
+// level, so it must not take the default away from a pre-existing
+// non-extension default handler.
+IN_PROC_BROWSER_TEST_F(RegisterProtocolHandlerExtensionBrowserTest,
+                       JsHandlerDoesNotOverrideNonExtensionDefault) {
+#if BUILDFLAG(IS_MAC)
+  ASSERT_TRUE(test::RegisterAppWithLaunchServices());
+#endif
+  permissions::PermissionRequestManager::FromWebContents(
+      browser()->tab_strip_model()->GetActiveWebContents())
+      ->set_auto_response_for_test(
+          permissions::PermissionRequestManager::ACCEPT_ALL);
+
+  ProtocolHandlerRegistry* registry =
+      ProtocolHandlerRegistryFactory::GetForBrowserContext(
+          browser()->GetProfile());
+
+  // A non-extension (e.g. WebAPI/PWA) handler is already the default for 'geo'.
+  ProtocolHandler non_extension_handler =
+      ProtocolHandler::CreateProtocolHandler(
+          "geo", GURL("https://non-extension.example/%s"));
+  registry->OnAcceptRegisterProtocolHandler(non_extension_handler);
+  ASSERT_TRUE(registry->IsDefault(non_extension_handler));
+
+  const extensions::Extension* extension =
+      LoadExtension(test_data_dir_.AppendASCII("protocol_handler"));
+  ASSERT_NE(nullptr, extension);
+
+  // Register a 'geo' handler from the extension page via the JS API. The waiter
+  // only covers the registration itself: it quits on the first registry change,
+  // so arming it before the navigation would let an unrelated change satisfy it
+  // and return before the handler is stored.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL("chrome-extension://" + extension->id() + "/test.html")));
+  {
+    ProtocolHandlerChangeWaiter waiter(registry);
+    ASSERT_TRUE(content::ExecJs(
+        browser()->tab_strip_model()->GetActiveWebContents(),
+        "navigator.registerProtocolHandler('geo', 'test.html?%s', 'test');"));
+    waiter.Wait();
+  }
+
+  // The extension handler is registered, but the non-extension handler must
+  // remain the default.
+  EXPECT_EQ(1u, registry->GetExtensionProtocolHandlers(extension->id()).size());
+  EXPECT_TRUE(registry->IsDefault(non_extension_handler));
+  EXPECT_FALSE(registry->GetHandlerFor("geo").IsExtensionHandler());
+}
+
+// When the pre-existing default is itself an extension handler, a handler
+// registered from an extension page via navigator.registerProtocolHandler may
+// become the default: the restriction is only against overriding a
+// non-extension handler.
+IN_PROC_BROWSER_TEST_F(RegisterProtocolHandlerExtensionBrowserTest,
+                       JsHandlerOverridesExtensionDefault) {
+#if BUILDFLAG(IS_MAC)
+  ASSERT_TRUE(test::RegisterAppWithLaunchServices());
+#endif
+  permissions::PermissionRequestManager::FromWebContents(
+      browser()->tab_strip_model()->GetActiveWebContents())
+      ->set_auto_response_for_test(
+          permissions::PermissionRequestManager::ACCEPT_ALL);
+
+  ProtocolHandlerRegistry* registry =
+      ProtocolHandlerRegistryFactory::GetForBrowserContext(
+          browser()->GetProfile());
+
+  // Another extension's handler is already the default for 'geo'.
+  ProtocolHandler other_extension_handler =
+      ProtocolHandler::CreateExtensionProtocolHandler(
+          "geo", GURL("https://other-extension.example/%s"),
+          "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+  other_extension_handler.Confirm();
+  registry->OnAcceptRegisterProtocolHandler(other_extension_handler);
+  ASSERT_TRUE(registry->IsDefault(other_extension_handler));
+
+  const extensions::Extension* extension =
+      LoadExtension(test_data_dir_.AppendASCII("protocol_handler"));
+  ASSERT_NE(nullptr, extension);
+
+  // Register a 'geo' handler from the extension page via the JS API. The waiter
+  // must only cover the registration; see the comment in
+  // JsHandlerDoesNotOverrideNonExtensionDefault.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL("chrome-extension://" + extension->id() + "/test.html")));
+  {
+    ProtocolHandlerChangeWaiter waiter(registry);
+    ASSERT_TRUE(content::ExecJs(
+        browser()->tab_strip_model()->GetActiveWebContents(),
+        "navigator.registerProtocolHandler('geo', 'test.html?%s', 'test');"));
+    waiter.Wait();
+  }
+
+  // The newly registered extension handler overrides the previous extension
+  // default.
+  EXPECT_FALSE(registry->IsDefault(other_extension_handler));
+  const ProtocolHandler& new_default = registry->GetHandlerFor("geo");
+  ASSERT_TRUE(new_default.extension_id().has_value());
+  EXPECT_EQ(extension->id(), *new_default.extension_id());
 }
 
 class ChromeRegisterProtocolHandlerAndServiceWorkerInterceptor

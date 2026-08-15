@@ -118,6 +118,24 @@ bool ProtocolHandler::IsValid() const {
   return blink::IsValidCustomHandlerScheme(protocol_, security_level_);
 }
 
+bool ProtocolHandler::IsAllowedExtensionHandler() const {
+  // A handler that claims extension-level privileges (kExtensionFeatures, which
+  // relaxes the HTML-spec restrictions to allow e.g. cross-origin target URLs
+  // and the ext+/chrome-extension schemes) must be associated with the
+  // extension that registered it. Extension cleanup -- uninstall/disable
+  // handling and the periodic sanity check -- keys off the extension id, so a
+  // handler with the elevated level but no id can never be removed and its
+  // privileges would persist even after the extension is gone. This also drops
+  // orphaned handlers persisted by builds that predate recording the extension
+  // id at registration time. This check is layered on top of, and kept
+  // separate from, the HTML-spec validity enforced by IsValid().
+  if (security_level_ ==
+      blink::ProtocolHandlerSecurityLevel::kExtensionFeatures) {
+    return IsExtensionHandler();
+  }
+  return true;
+}
+
 bool ProtocolHandler::IsSameOrigin(const ProtocolHandler& handler) const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return handler.url().DeprecatedGetOriginAsURL() ==

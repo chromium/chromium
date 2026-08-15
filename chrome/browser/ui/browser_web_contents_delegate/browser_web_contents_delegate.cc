@@ -1256,8 +1256,11 @@ blink::mojom::DisplayMode BrowserWebContentsDelegate::GetDisplayMode(
   return blink::mojom::DisplayMode::kBrowser;
 }
 
-blink::ProtocolHandlerSecurityLevel
-BrowserWebContentsDelegate::GetProtocolHandlerSecurityLevel(
+namespace {
+
+// Returns the extension that owns `requesting_frame` when the frame is hosted
+// in a privileged extension process, or null otherwise.
+const extensions::Extension* GetExtensionForProtocolHandler(
     content::RenderFrameHost* requesting_frame) {
   content::BrowserContext* context = requesting_frame->GetBrowserContext();
   extensions::ProcessMap* process_map = extensions::ProcessMap::Get(context);
@@ -1267,9 +1270,41 @@ BrowserWebContentsDelegate::GetProtocolHandlerSecurityLevel(
   if (owner_extension &&
       process_map->IsPrivilegedExtensionProcess(
           *owner_extension, requesting_frame->GetProcess()->GetID())) {
-    return blink::ProtocolHandlerSecurityLevel::kExtensionFeatures;
+    return owner_extension;
   }
-  return blink::ProtocolHandlerSecurityLevel::kStrict;
+  return nullptr;
+}
+
+// Creates a ProtocolHandler for a navigator.registerProtocolHandler request.
+// Handlers registered from a privileged extension page are tagged with the
+// owning extension's id so that they are removed when the extension is
+// disabled or uninstalled.
+custom_handlers::ProtocolHandler CreateProtocolHandlerForFrame(
+    content::RenderFrameHost* requesting_frame,
+    const std::string& protocol,
+    const GURL& url) {
+  if (const extensions::Extension* extension =
+          GetExtensionForProtocolHandler(requesting_frame)) {
+    custom_handlers::ProtocolHandler handler =
+        custom_handlers::ProtocolHandler::CreateExtensionProtocolHandler(
+            protocol, url, extension->id());
+    // Handlers registered via the JS API go through the permission prompt and
+    // so are confirmed at registration time, unlike manifest handlers.
+    handler.Confirm();
+    return handler;
+  }
+  return custom_handlers::ProtocolHandler::CreateProtocolHandler(
+      protocol, url, blink::ProtocolHandlerSecurityLevel::kStrict);
+}
+
+}  // namespace
+
+blink::ProtocolHandlerSecurityLevel
+BrowserWebContentsDelegate::GetProtocolHandlerSecurityLevel(
+    content::RenderFrameHost* requesting_frame) {
+  return GetExtensionForProtocolHandler(requesting_frame)
+             ? blink::ProtocolHandlerSecurityLevel::kExtensionFeatures
+             : blink::ProtocolHandlerSecurityLevel::kStrict;
 }
 
 void BrowserWebContentsDelegate::RegisterProtocolHandler(
@@ -1286,8 +1321,7 @@ void BrowserWebContentsDelegate::RegisterProtocolHandler(
       content::WebContents::FromRenderFrameHost(requesting_frame);
 
   custom_handlers::ProtocolHandler handler =
-      custom_handlers::ProtocolHandler::CreateProtocolHandler(
-          protocol, url, GetProtocolHandlerSecurityLevel(requesting_frame));
+      CreateProtocolHandlerForFrame(requesting_frame, protocol, url);
 
   // The parameters's normalization process defined in the spec has been already
   // applied in the WebContentImpl class, so at this point it shouldn't be
@@ -1354,8 +1388,7 @@ void BrowserWebContentsDelegate::UnregisterProtocolHandler(
   }
 
   custom_handlers::ProtocolHandler handler =
-      custom_handlers::ProtocolHandler::CreateProtocolHandler(
-          protocol, url, GetProtocolHandlerSecurityLevel(requesting_frame));
+      CreateProtocolHandlerForFrame(requesting_frame, protocol, url);
 
   custom_handlers::ProtocolHandlerRegistry* registry =
       ProtocolHandlerRegistryFactory::GetForBrowserContext(context);
