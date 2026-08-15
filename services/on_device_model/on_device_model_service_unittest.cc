@@ -662,19 +662,43 @@ TEST_F(OnDeviceModelServiceTest, MultipleSessionsAppend) {
 TEST_F(OnDeviceModelServiceTest, CountTokens) {
   auto model = LoadModel();
 
+  std::vector<std::string> inputs = {"cheese", "more", "cheddar"};
+
   TestResponseHolder response;
   mojo::Remote<mojom::Session> session;
   model->StartSession(session.BindNewPipeAndPassReceiver(), nullptr);
-  session->Append(MakeInput("cheese"), {});
-  session->Append(MakeInput("more"), {});
+  session->Append(MakeInput(inputs.at(0)), {});
+  session->Append(MakeInput(inputs.at(1)), {});
 
-  std::string input = "cheddar";
-  session->Append(MakeInput(input), {});
+  session->Append(MakeInput(inputs.at(2)), {});
   session->Generate(mojom::GenerateOptions::New(), response.BindRemote());
   response.WaitForCompletion();
 
-  // 3 context.
-  EXPECT_THAT(response.output_token_count(), 3);
+  constexpr int kEosTokenCount = 1;
+  EXPECT_THAT(response.output_token_count(), inputs.size() + kEosTokenCount);
+}
+
+// TODO(crbug.com/540118700): Remove once the legacy engine has been removed and
+// all of these unittests use context_usage by default.
+TEST_F(OnDeviceModelServiceTest, CountTokensWithTokenDecodedSet) {
+  base::AutoReset<bool> calculate_tokens_decoded =
+      fake_ml::EnableCalculateTokensDecodedForTesting();
+  auto model = LoadModel();
+
+  std::vector<std::string> inputs = {"cheese", "more", "cheddar"};
+
+  TestResponseHolder response;
+  mojo::Remote<mojom::Session> session;
+  model->StartSession(session.BindNewPipeAndPassReceiver(), nullptr);
+  session->Append(MakeInput(inputs.at(0)), {});
+  session->Append(MakeInput(inputs.at(1)), {});
+
+  session->Append(MakeInput(inputs.at(2)), {});
+  session->Generate(mojom::GenerateOptions::New(), response.BindRemote());
+  response.WaitForCompletion();
+
+  constexpr int kEosTokenCount = 1;
+  EXPECT_THAT(response.output_token_count(), inputs.size() + kEosTokenCount);
 }
 
 TEST_F(OnDeviceModelServiceTest, AppendWithTokenLimits) {
@@ -913,8 +937,6 @@ TEST_F(OnDeviceModelServiceTest, AppendWithImages) {
               ElementsAre("cheddar[Bitmap of size 7x21]cheese",
                           "bleu[Bitmap of size 63x42]cheese"));
 }
-
-
 
 TEST_F(OnDeviceModelServiceTest, GpuBlocked) {
   // The fake implementation of ChromeML always blocks GPU by default.

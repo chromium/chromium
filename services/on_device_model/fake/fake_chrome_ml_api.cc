@@ -128,6 +128,10 @@ size_t TokenizeBytes(const void* user_data,
   return bytes_len;
 }
 
+// TODO(crbug.com/540118700): Remove once the legacy engine has been removed and
+// all of these unittests use context_usage by default.
+bool g_calculate_tokens_decoded = false;
+
 }  // namespace
 
 void InitDawnProcs(const DawnProcTable& procs) {}
@@ -302,17 +306,22 @@ bool SessionGenerate(ChromeMLSession session,
                      const ChromeMLGenerateOptions* options,
                      ChromeMLCancel cancel) {
   auto* instance = reinterpret_cast<FakeSessionInstance*>(session);
-  auto OutputChunk = [output_fn =
-                          *options->output_fn](const std::string& chunk) {
+  int output_chunks = 0;
+  auto OutputChunk = [&](const std::string& chunk) {
     ChromeMLExecutionOutput output = {};
     if (chunk.empty()) {
       output.status = ChromeMLExecutionStatus::kComplete;
-      output_fn(&output);
+      if (g_calculate_tokens_decoded) {
+        constexpr int kEosTokenCount = 1;
+        output.tokens_decoded = output_chunks + kEosTokenCount;
+      }
+      (*options->output_fn)(&output);
       return;
     }
     output.status = ChromeMLExecutionStatus::kInProgress;
     output.text = chunk.c_str();
-    output_fn(&output);
+    output_chunks++;
+    (*options->output_fn)(&output);
   };
 
   if (instance->model_instance->backend_type ==
@@ -555,6 +564,10 @@ const ChromeMLAPI g_api = {
 const ChromeMLAPI* GetFakeMlApi() {
   g_api.SetConstraintFns(ml::GetConstraintFns());
   return &g_api;
+}
+
+base::AutoReset<bool> EnableCalculateTokensDecodedForTesting() {
+  return {&g_calculate_tokens_decoded, true};
 }
 
 }  // namespace fake_ml

@@ -1124,8 +1124,6 @@ void AILanguageModel::OnPromptOutputComplete() {
     item.input->pieces.push_back(
         InputPiece::NewText(prompt_state_->response()));
     item.input->pieces.push_back(InputPiece::NewToken(ml::Token::kEnd));
-    // One extra token for the end token on the model output.
-    item.tokens++;
   }
 
   auto responder = prompt_state_->TakeResponder();

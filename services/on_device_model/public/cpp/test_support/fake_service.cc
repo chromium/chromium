@@ -372,12 +372,13 @@ void FakeOnDeviceSession::GenerateImpl(
     remote->OnToolCalls(std::move(tool_calls));
   }
 
-  if (options->max_output_tokens &&
-      output_token_count > options->max_output_tokens) {
-    output_token_count = options->max_output_tokens;
-  }
   auto summary = mojom::ResponseSummary::New();
-  summary->output_token_count = output_token_count;
+  constexpr int kEosTokenCount = 1;
+  summary->output_token_count = output_token_count + kEosTokenCount;
+  if (options->max_output_tokens &&
+      summary->output_token_count > options->max_output_tokens) {
+    summary->output_token_count = options->max_output_tokens;
+  }
   remote->OnComplete(std::move(summary));
 }
 

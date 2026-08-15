@@ -178,6 +178,12 @@ struct ChromeMLGenerateOutput {
   // calls during generation.
   const ChromeMLToolCall* tool_calls = nullptr;
   size_t tool_calls_size = 0;
+
+  // The tokens decoded after generate has completed. Should be -1 if `status`
+  // is not `kComplete`. If `tokens_decoded` is -1 and `status` is `kComplete`,
+  // then the caller will have to determine tokens decoded via callback
+  // counting.
+  int tokens_decoded = -1;
 };
 using ChromeMLExecutionOutput = ChromeMLGenerateOutput;
 

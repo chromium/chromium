@@ -2035,7 +2035,8 @@ TEST_F(SessionImplTest, TokenCounts) {
   ASSERT_TRUE(response_.GetFinalStatus());
   EXPECT_EQ(response_.value(), "execute:foo max:1024");
   EXPECT_EQ(response_.input_token_count(), strlen("execute:foo"));
-  EXPECT_EQ(response_.output_token_count(), strlen("execute:foo max:1024"));
+  // +1 accounts for the terminating EOS/End-of-turn token.
+  EXPECT_EQ(response_.output_token_count(), strlen("execute:foo max:1024") + 1);
 }
 
 TEST_F(SessionImplTest, ResponseConstraintOnExecute) {
