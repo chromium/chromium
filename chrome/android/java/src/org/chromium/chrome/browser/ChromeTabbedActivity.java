@@ -753,6 +753,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                         this::getIntent,
                         this::shouldIgnoreIntent,
                         this::isTablet,
+                        this::isFromRecreating,
                         mTabModelProfileSupplier,
                         new IncognitoRestoreAppLaunchDrawBlockerFactory(
                                 this::getSavedInstanceState,
@@ -2615,6 +2616,20 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                 } else {
                     mAppLaunchDrawBlocker.onActiveTabAvailable();
                 }
+
+                // During Activity recreation, delay unblocking pre-draw until the native
+                // compositor swaps the first frame to avoid a blank page flash.
+                if (isFromRecreating()) {
+                    getCompositorViewHolderSupplier()
+                            .addSyncObserverAndCallIfNonNull(
+                                    cvh ->
+                                            cvh.addDidSwapBuffersCallback(
+                                                    mAppLaunchDrawBlocker
+                                                            ::onActiveTabAvailableForRecreation));
+                } else {
+                    mAppLaunchDrawBlocker.onActiveTabAvailableForRecreation();
+                }
+
                 // Launch history as a resumption of a previous Chrome journey.
                 maybeLaunchHistory();
             }
@@ -2724,6 +2739,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
         }
 
         mAppLaunchDrawBlocker.onActiveTabAvailable();
+        mAppLaunchDrawBlocker.onActiveTabAvailableForRecreation();
         // Launch history as a fresh instance of Chrome.
         maybeLaunchHistory();
     }
@@ -3728,18 +3744,13 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
     protected TabModelOrchestrator createTabModelOrchestrator() {
         boolean tabMergingEnabled =
                 mMultiInstanceManager != null && mMultiInstanceManager.isTabModelMergingEnabled();
-        Bundle bundle = getSavedInstanceState();
-        boolean isFromRecreating = false;
-        if (bundle != null) {
-            isFromRecreating = bundle.getBoolean(IS_FROM_RECREATING);
-        }
         mTabModelOrchestrator =
                 new TabbedModeTabModelOrchestrator(
                         tabMergingEnabled,
                         getLifecycleDispatcher(),
                         CipherLazyHolder.sCipherInstance,
                         () -> mIsRecreating,
-                        isFromRecreating);
+                        isFromRecreating());
         mTabModelStartupInfoSupplier = ObservableSuppliers.createMonotonic();
         mTabModelOrchestrator.setStartupInfoObservableSupplier(mTabModelStartupInfoSupplier);
         return mTabModelOrchestrator;

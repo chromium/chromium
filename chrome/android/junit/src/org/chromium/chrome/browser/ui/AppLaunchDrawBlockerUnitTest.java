@@ -71,6 +71,7 @@ public class AppLaunchDrawBlockerUnitTest {
     @Mock private TemplateUrlService mTemplateUrlService;
     @Mock private Supplier<Boolean> mShouldIgnoreIntentSupplier;
     @Mock private Supplier<Boolean> mIsTabletSupplier;
+    @Mock private Supplier<Boolean> mIsRecreatingSupplier;
 
     private final SettableMonotonicObservableSupplier<Profile> mProfileSupplier =
             ObservableSuppliers.createMonotonic();
@@ -103,6 +104,7 @@ public class AppLaunchDrawBlockerUnitTest {
 
         when(mShouldIgnoreIntentSupplier.get()).thenReturn(false);
         when(mIsTabletSupplier.get()).thenReturn(false);
+        when(mIsRecreatingSupplier.get()).thenReturn(false);
         when(mIncognitoRestoreAppLaunchDrawBlockerFactoryMock.create(
                         eq(mIntentSupplier),
                         eq(mShouldIgnoreIntentSupplier),
@@ -116,6 +118,7 @@ public class AppLaunchDrawBlockerUnitTest {
                         mIntentSupplier,
                         mShouldIgnoreIntentSupplier,
                         mIsTabletSupplier,
+                        mIsRecreatingSupplier,
                         mProfileSupplier,
                         mIncognitoRestoreAppLaunchDrawBlockerFactoryMock);
         validateConstructorAndCaptureObservers();
@@ -365,6 +368,27 @@ public class AppLaunchDrawBlockerUnitTest {
         }
 
         verify(mIncognitoRestoreAppLaunchDrawBlockerMock, times(1)).shouldBlockDraw();
+    }
+
+    @Test
+    @SmallTest
+    public void testBlockDrawOnRecreation() {
+        ChromeSharedPreferences.getInstance()
+                .writeInt(
+                        ChromePreferenceKeys.APP_LAUNCH_LAST_KNOWN_ACTIVE_TAB_STATE,
+                        ActiveTabState.OTHER);
+        when(mIsRecreatingSupplier.get()).thenReturn(true);
+        mInflationObserver.onPostInflationStartup();
+        verify(mViewTreeObserver, times(1))
+                .addOnPreDrawListener(mOnPreDrawListenerArgumentCaptor.capture());
+
+        OnPreDrawListener listener = mOnPreDrawListenerArgumentCaptor.getValue();
+        assertFalse("Draw should be blocked during recreation.", listener.onPreDraw());
+
+        // Tab is now available for recreation.
+        mAppLaunchDrawBlocker.onActiveTabAvailableForRecreation();
+        assertTrue("Draw should no longer be blocked.", listener.onPreDraw());
+        verify(mViewTreeObserver, times(1)).removeOnPreDrawListener(listener);
     }
 
     private void validateConstructorAndCaptureObservers() {

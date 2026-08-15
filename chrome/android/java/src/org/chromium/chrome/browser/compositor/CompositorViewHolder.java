@@ -1856,8 +1856,19 @@ public class CompositorViewHolder extends FrameLayout
         return mBrowserControlsManager.getFullscreenManager();
     }
 
+    /** Add a callback to be run on the next didSwapBuffers. */
+    public void addDidSwapBuffersCallback(Runnable runnable) {
+        if (mHasDrawnOnce) {
+            runnable.run();
+            return;
+        }
+        mDidSwapBuffersCallbacks.add(runnable);
+        updateNeedsSwapBuffersCallback();
+    }
+
     /**
      * Sets a browser controls manager.
+     *
      * @param manager A browser controls manager.
      */
     public void setBrowserControlsManager(BrowserControlsManager manager) {

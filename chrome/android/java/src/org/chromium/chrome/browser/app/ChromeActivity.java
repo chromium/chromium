@@ -684,9 +684,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
             Intent intent = getIntent();
             if (0 != (intent.getFlags() & Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY)) {
                 getLaunchCauseMetrics().onLaunchFromRecents();
-            } else if (getSavedInstanceState() != null
-                    && getSavedInstanceState()
-                            .getBoolean(ChromeActivity.IS_FROM_RECREATING, false)) {
+            } else if (isFromRecreating()) {
                 getLaunchCauseMetrics().onRecreated();
             } else {
                 getLaunchCauseMetrics().onReceivedIntent();
@@ -2120,6 +2118,14 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
             mAcceleratorManager.destroy();
             mAcceleratorManager = null;
         }
+    }
+
+    /**
+     * @return Whether the activity is being launched as a recreation from a previous instance.
+     */
+    protected boolean isFromRecreating() {
+        return getSavedInstanceState() != null
+                && getSavedInstanceState().getBoolean(IS_FROM_RECREATING, false);
     }
 
     /**
