@@ -62,7 +62,7 @@ export {ViewerSaveToDriveControlsElement} from './elements/viewer_save_to_drive_
 export {ViewerSidePanelElement} from './elements/viewer_side_panel.js';
 export {ViewerTextBottomToolbarElement} from './elements/viewer_text_bottom_toolbar.js';
 // </if>
-export {PAINTED_ATTRIBUTE, ViewerThumbnailElement} from './elements/viewer_thumbnail.js';
+export {LANDSCAPE_WIDTH, PAINTED_ATTRIBUTE, PORTRAIT_WIDTH, ViewerThumbnailElement} from './elements/viewer_thumbnail.js';
 export {ViewerThumbnailBarElement} from './elements/viewer_thumbnail_bar.js';
 export {ViewerToolbarElement} from './elements/viewer_toolbar.js';
 export {GestureDetector} from './gesture_detector.js';
