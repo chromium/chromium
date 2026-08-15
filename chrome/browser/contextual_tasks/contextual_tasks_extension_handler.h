@@ -189,6 +189,8 @@ class ContextualTasksExtensionHandler
   void OpenProfilePicker() override;
   void GetPageClassification(GetPageClassificationCallback callback) override;
   void OnThumbnailRemoved() override;
+  void StartScreenshare(bool prefer_entire_screen,
+                        StartScreenshareCallback callback) override;
 
  private:
   friend class content::DocumentUserData<ContextualTasksExtensionHandler>;

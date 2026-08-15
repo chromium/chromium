@@ -473,3 +473,9 @@ ContextualTasksExtensionHandler::GetOrCreateInputStateModel() {
   }
   return user_data->GetOrCreateInputStateModel(*session_handle);
 }
+
+void ContextualTasksExtensionHandler::StartScreenshare(
+    bool prefer_entire_screen,
+    StartScreenshareCallback callback) {
+  std::move(callback).Run(std::nullopt);
+}

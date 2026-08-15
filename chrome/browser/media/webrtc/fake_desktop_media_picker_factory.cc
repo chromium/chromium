@@ -64,7 +64,8 @@ void FakeDesktopMediaPicker::Show(
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   EXPECT_EQ(expectation_->expect_audio, params.request_audio);
-  EXPECT_EQ(params.modality, ui::mojom::ModalType::kChild);
+  EXPECT_TRUE(params.modality == ui::mojom::ModalType::kChild ||
+              params.modality == ui::mojom::ModalType::kWindow);
 
   if (!expectation_->cancelled) {
     // Post a task to call the callback asynchronously.

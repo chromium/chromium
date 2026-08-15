@@ -61,6 +61,7 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
       'setSmartComposeStats',
       'setSmartTabSharingActive',
       'showContextMenu',
+      'startScreenshare',
       'stopAutocomplete',
       'submitQuery',
       'toggleSuggestionGroupIdVisibility',
@@ -294,6 +295,11 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
   getSmartTabSharingActive() {
     this.methodCalled('getSmartTabSharingActive');
     return Promise.resolve({active: false});
+  }
+
+  startScreenshare(preferEntireScreen: boolean) {
+    this.methodCalled('startScreenshare', {preferEntireScreen});
+    return Promise.resolve({token: null});
   }
 }
 

@@ -565,6 +565,19 @@ interface PageHandler {
   // Opens the profile picker for switching profiles.
   OpenProfilePicker();
 
+  // Triggers screensharing (window or entire screen picker).
+  // `prefer_entire_screen` is a hint indicating whether the screen picker
+  // should default to selecting the entire screen (true) or a window
+  // (false).
+  // Returns a token on success, or null if the selection was cancelled, failed
+  // to start, or if there is already an active screensharing session.
+  // The token is used by the WebUI to create a placeholder chip synchronously,
+  // and subsequently to associate it with the captured screenshot details
+  // delivered asynchronously via `Page.AddFileContext()`. It can also be used
+  // to delete the context via `DeleteContext()`.
+  StartScreenshare(bool prefer_entire_screen)
+      => (mojo_base.mojom.UnguessableToken? token);
+
   // Gets the page classification for the current context.
   GetPageClassification() => (string metricSource);
 

@@ -18,6 +18,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/types/expected.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
@@ -45,11 +46,25 @@
 #include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
+#include "media/base/media_switches.h"
+#include "skia/ext/image_operations.h"
+#include "ui/base/base_window.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
+#include "ui/gfx/geometry/size.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "base/task/bind_post_task.h"
+#include "chrome/browser/media/webrtc/desktop_media_picker.h"
+#include "chrome/browser/media/webrtc/desktop_media_picker_controller.h"
+#include "chrome/browser/media/webrtc/desktop_media_picker_factory_impl.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere_service.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere_service_factory.h"
+#include "chrome/grit/branded_strings.h"
+#include "content/public/browser/browser_thread.h"
+#include "content/public/browser/desktop_capture.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/codec/png_codec.h"
 #endif
 #include "chrome/browser/ui/webui/cr_components/searchbox/contextual_searchbox_tab_favicon_helper.h"
 #include "chrome/browser/ui/webui/cr_components/searchbox/searchbox_utils.h"
@@ -186,6 +201,25 @@ content::WebContents* GetActiveTabWebContents(
   }
   return web_contents;
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+constexpr char kScreenshotFileName[] = "Screenshot.png";
+constexpr char kScreenshotMimeType[] = "image/png";
+
+ContextualSearchboxHandler::ProcessedScreenshot ProcessScreenshotInBackground(
+    const SkBitmap& bitmap) {
+  ContextualSearchboxHandler::ProcessedScreenshot result;
+  std::optional<std::vector<uint8_t>> png_bytes =
+      gfx::PNGCodec::EncodeBGRASkBitmap(bitmap,
+                                        /*discard_transparency=*/false);
+  if (png_bytes) {
+    result.png_bytes = std::move(*png_bytes);
+  }
+  // TODO(crbug.com/532197177): Populate result.thumbnail_data_url with the
+  // optimized base64 thumbnail URL.
+  return result;
+}
+#endif
 
 }  // namespace
 
@@ -2355,5 +2389,154 @@ ContextualSearchboxHandler::GetDriveDisclaimerController() {
             std::move(fpop_service));
   }
   return drive_disclaimer_controller_.get();
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+void ContextualSearchboxHandler::StartScreenshare(
+    bool prefer_entire_screen,
+    StartScreenshareCallback callback) {
+#if !BUILDFLAG(IS_ANDROID)
+  if (screenshare_picker_controller_ || is_capturing_) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+  FallbackToChromeDefaultPicker(prefer_entire_screen, std::move(callback));
+#else
+  std::move(callback).Run(std::nullopt);
+#endif
+}
+
+#if !BUILDFLAG(IS_ANDROID)
+void ContextualSearchboxHandler::FallbackToChromeDefaultPicker(
+    bool prefer_entire_screen,
+    StartScreenshareCallback callback) {
+  if (screenshare_picker_controller_ || is_capturing_) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+  screenshare_picker_controller_ =
+      std::make_unique<DesktopMediaPickerController>(picker_factory_);
+
+  DesktopMediaPicker::Params picker_params(
+      DesktopMediaPicker::Params::RequestSource::kGlic);
+  picker_params.web_contents = nullptr;
+  picker_params.includable_web_contents_filter =
+      base::BindRepeating([](content::WebContents*) { return true; });
+
+  gfx::NativeWindow parent_window = gfx::NativeWindow();
+  auto* browser_window = webui::GetBrowserWindowInterface(web_contents_);
+  if (browser_window && browser_window->GetWindow()) {
+    parent_window = browser_window->GetWindow()->GetNativeWindow();
+  } else {
+    parent_window = web_contents_->GetTopLevelNativeWindow();
+  }
+
+  picker_params.context = parent_window;
+  picker_params.parent = parent_window;
+  picker_params.app_name = l10n_util::GetStringUTF16(IDS_PRODUCT_NAME);
+  picker_params.target_name = picker_params.app_name;
+  picker_params.modality = ui::mojom::ModalType::kWindow;
+
+  std::vector<DesktopMediaList::Type> sources = {
+      DesktopMediaList::Type::kScreen, DesktopMediaList::Type::kWindow};
+  picker_params.preferred_display_surface =
+      prefer_entire_screen ? blink::mojom::PreferredDisplaySurface::MONITOR
+                           : blink::mojom::PreferredDisplaySurface::WINDOW;
+
+  screenshare_picker_controller_->Show(
+      picker_params, sources,
+      base::BindOnce(&ContextualSearchboxHandler::OnChromeDefaultPickerResults,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void ContextualSearchboxHandler::OnChromeDefaultPickerResults(
+    StartScreenshareCallback callback,
+    const std::string& err,
+    content::DesktopMediaID source) {
+  screenshare_picker_controller_.reset();
+  if (source.is_null()) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+  CaptureAndUploadScreenshot(source, std::move(callback));
+}
+
+void ContextualSearchboxHandler::CaptureAndUploadScreenshot(
+    content::DesktopMediaID source,
+    StartScreenshareCallback callback) {
+  is_capturing_ = true;
+  auto captured_callback = base::BindPostTask(
+      content::GetUIThreadTaskRunner({}),
+      base::BindOnce(&ContextualSearchboxHandler::OnScreenshotCaptured,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+
+  content::GetIOThreadTaskRunner({})->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&content::desktop_capture::CaptureScreenshot, source,
+                     std::move(captured_callback)),
+      base::BindOnce(&ContextualSearchboxHandler::OnScreenshotRequestCreated,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ContextualSearchboxHandler::OnScreenshotCaptured(
+    StartScreenshareCallback callback,
+    const SkBitmap& bitmap) {
+  is_capturing_ = false;
+  active_screenshot_request_.reset();
+  if (bitmap.empty()) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+      base::BindOnce(&ProcessScreenshotInBackground, bitmap),
+      base::BindOnce(&ContextualSearchboxHandler::OnScreenshotProcessed,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void ContextualSearchboxHandler::OnScreenshotRequestCreated(
+    std::unique_ptr<content::desktop_capture::ScreenshotCaptureRequest>
+        request) {
+  if (is_capturing_) {
+    active_screenshot_request_ = std::move(request);
+  }
+}
+
+void ContextualSearchboxHandler::OnScreenshotProcessed(
+    StartScreenshareCallback callback,
+    ProcessedScreenshot result) {
+  if (result.png_bytes.empty()) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
+  auto file_info_mojom = searchbox::mojom::SelectedFileInfo::New();
+  file_info_mojom->file_name = kScreenshotFileName;
+  file_info_mojom->mime_type = kScreenshotMimeType;
+  file_info_mojom->is_deletable = true;
+  file_info_mojom->selection_time = base::Time::Now();
+  file_info_mojom->image_data_url = result.thumbnail_data_url;
+
+  mojo_base::BigBuffer file_bytes(std::move(result.png_bytes));
+  AddFileContextFromBrowser(
+      kScreenshotFileName, kScreenshotMimeType, std::move(file_bytes),
+      /*image_encoding_options=*/CreateImageEncodingOptions(),
+      base::BindOnce(
+          [](StartScreenshareCallback callback,
+             base::WeakPtr<ContextualSearchboxHandler> handler,
+             searchbox::mojom::SelectedFileInfoPtr file_info_mojom,
+             base::expected<base::UnguessableToken,
+                            contextual_search::ContextUploadErrorType> result) {
+            std::optional<base::UnguessableToken> token = std::nullopt;
+            if (result.has_value() && handler) {
+              token = result.value();
+              handler->SearchboxHandler::AddFileContextFromBrowser(
+                  result.value(), std::move(file_info_mojom));
+            }
+            std::move(callback).Run(token);
+          },
+          std::move(callback), weak_ptr_factory_.GetWeakPtr(),
+          std::move(file_info_mojom)));
 }
 #endif

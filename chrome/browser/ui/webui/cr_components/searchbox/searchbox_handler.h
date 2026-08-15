@@ -199,6 +199,8 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
   void OnDriveUploadClicked(OnDriveUploadClickedCallback callback) override;
   void OpenProfilePicker() override {}
   void GetPageClassification(GetPageClassificationCallback callback) override;
+  void StartScreenshare(bool prefer_entire_screen,
+                        StartScreenshareCallback callback) override {}
 #if !BUILDFLAG(IS_ANDROID)
   void SetSmartTabSharingActive(bool active) override;
   void GetSmartTabSharingActive(
