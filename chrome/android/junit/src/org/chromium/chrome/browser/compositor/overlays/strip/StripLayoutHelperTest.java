@@ -4618,25 +4618,6 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    public void testSelectedTabClose_PrioritizesParentTab() {
-        // Initialize and select the tab at index 1.
-        initializeTest(1);
-
-        // Set tab 0 as the parent tab of tab 1.
-        Tab parentTab = mModel.getTabAt(0);
-        Tab childTab = mModel.getTabAt(1);
-        int parentId = parentTab.getId();
-        when(childTab.getParentId()).thenReturn(parentId);
-
-        // Fake a close button click on the selected child tab at index 1.
-        closeTabAt(/* index= */ 1);
-
-        // Verify that the parent tab (index 0) was selected instead of positional fallback (index
-        // 1/2).
-        verify(mModel).setIndex(eq(0), anyInt());
-    }
-
-    @Test
     public void testChangingModelClearsTabHoverState() {
         // Initialize hover card, then hover on a tab.
         initializeTabHoverTest();

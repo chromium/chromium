@@ -159,6 +159,7 @@ public class NextTabSelectionUtilUnitTest {
     }
 
     @Test
+    @DisableFeatures({ChromeFeatureList.TAB_OPENER_TRACKING})
     public void testGetNextTabIfClosed_ParentTab() {
         when(mTabModel.isActiveModel()).thenReturn(true);
         when(mTabModelDelegate.getCurrentModel()).thenReturn(mTabModel);
@@ -337,6 +338,7 @@ public class NextTabSelectionUtilUnitTest {
     }
 
     @Test
+    @DisableFeatures({ChromeFeatureList.TAB_OPENER_TRACKING})
     public void testGetNextTabIfClosed_CrossModelParentTab() {
         when(mTabModel.isActiveModel()).thenReturn(true);
         when(mTabModelDelegate.getCurrentModel()).thenReturn(mTabModel);

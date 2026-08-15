@@ -396,7 +396,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
         }
         mTabOpenerTrackerHelper = TabOpenerTrackerHelper.create();
         if (mTabOpenerTrackerHelper != null) {
-            addObserver(mTabOpenerTrackerHelper);
+            mTabModelObservers.addObserver(mTabOpenerTrackerHelper);
         }
 
         initializeNative(activityType, customTabProfileType, tabModelType);
