@@ -334,9 +334,8 @@ TEST_F(PaymentsChurnedUsersManagerTest, ClosedCallbackAddsStrike) {
   EXPECT_EQ(strike_database.GetStrikes(), 1);
 }
 
-// Tests that accepting the UI clears any existing strikes from the strike
-// database.
-TEST_F(PaymentsChurnedUsersManagerTest, AcceptCallbackClearsStrikes) {
+// Tests that accepting the UI adds max strikes to the strike database.
+TEST_F(PaymentsChurnedUsersManagerTest, AcceptCallbackAddsMaxStrikes) {
   feature_list_.InitAndEnableFeature(
       features::kAutofillEnableResurrectingPaymentsUsers);
   manager_ = std::make_unique<PaymentsChurnedUsersManager>(&autofill_client());
@@ -346,11 +345,6 @@ TEST_F(PaymentsChurnedUsersManagerTest, AcceptCallbackClearsStrikes) {
 
   PaymentsChurnedUsersStrikeDatabase strike_database(
       autofill_client().GetStrikeDatabase());
-  strike_database.AddStrikes(strike_database.GetMaxStrikesLimit() - 1);
-  EXPECT_EQ(strike_database.GetStrikes(),
-            strike_database.GetMaxStrikesLimit() - 1);
-  task_environment_.FastForwardBy(base::Days(8));
-
   base::OnceClosure accept_callback;
   EXPECT_CALL(*payments_client(),
               ShowPaymentsChurnedUsersUI(testing::_, testing::_, testing::_))
@@ -363,7 +357,7 @@ TEST_F(PaymentsChurnedUsersManagerTest, AcceptCallbackClearsStrikes) {
   ASSERT_TRUE(accept_callback);
   std::move(accept_callback).Run();
 
-  EXPECT_EQ(strike_database.GetStrikes(), 0);
+  EXPECT_EQ(strike_database.GetStrikes(), strike_database.GetMaxStrikesLimit());
 }
 
 // Tests that the NotShownReason metric is logged correctly for off the record.
