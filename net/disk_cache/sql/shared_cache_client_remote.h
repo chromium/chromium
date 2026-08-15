@@ -5,6 +5,9 @@
 #ifndef NET_DISK_CACHE_SQL_SHARED_CACHE_CLIENT_REMOTE_H_
 #define NET_DISK_CACHE_SQL_SHARED_CACHE_CLIENT_REMOTE_H_
 
+#include <cstdint>
+#include <vector>
+
 #include "base/functional/callback.h"
 #include "components/sqlite_vfs/pending_file_set.h"
 #include "net/base/net_export.h"
@@ -25,6 +28,10 @@ class NET_EXPORT SharedCacheClientRemote {
   // Sends the read-only file set for the isolated cache database to the remote
   // client, allowing it to initialize its local database connection.
   virtual void Initialize(sqlite_vfs::PendingFileSet pending_file_set) = 0;
+
+  // Notifies the remote client that new resources matching the given URL
+  // hashes have been added to the shared cache.
+  virtual void OnResourcesAdded(const std::vector<uint32_t>& new_hashes) = 0;
 
   // Sets the disconnect handler callback that is invoked when the remote
   // client connection is severed.

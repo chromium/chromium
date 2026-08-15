@@ -23,6 +23,7 @@
 #include "net/disk_cache/backend_cleanup_tracker.h"
 #include "net/disk_cache/sql/mock_shared_cache_client_remote.h"
 #include "net/disk_cache/sql/sql_persistent_store.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -768,6 +769,72 @@ TEST_P(SqlSharedCacheManagerTest, RegisterClientDbFailure) {
   destroy_run_loop.Run();
 
   EXPECT_EQ(manager->GetSharedCachesSizeForTest(), 0u);
+}
+
+TEST_P(SqlSharedCacheManagerTest,
+       RegisterClientExistingCacheWithDbIdAndHashes) {
+  auto* manager = GetManager();
+  net::NetworkIsolationKey nik = CreateNik("https://example.com");
+
+  // Force creation of a DB ID.
+  base::test::TestFuture<scoped_refptr<SqlSharedCacheHandle>> future;
+  GetCacheByNik(nik, /*require_shared_cache_db_id=*/true, future.GetCallback());
+  scoped_refptr<SqlSharedCacheHandle> keep_alive_handle = future.Take();
+  ASSERT_TRUE(keep_alive_handle);
+
+  // Insert an entry into the isolated database.
+  const std::string kKey1 = "0/0/https://example.com/res1";
+  const std::string kKey2 = "0/0/https://example.com/res2";
+  CacheEntryKey entry_key1(kKey1);
+  CacheEntryKey entry_key2(kKey2);
+  const std::string kData = "Data";
+  auto buffer = base::MakeRefCounted<net::StringIOBuffer>(kData);
+
+  base::test::TestFuture<base::expected<SqlSharedCacheRowId,
+                                        SqlSharedCacheIsolatedDatabase::Error>>
+      insert_future1;
+  (*keep_alive_handle)
+      ->isolated_database_for_testing()
+      .AsyncCall(&SqlSharedCacheIsolatedDatabase::Insert)
+      .WithArgs(entry_key1, /*headers=*/nullptr, kData.size(), buffer)
+      .Then(insert_future1.GetCallback());
+  FlushPendingTask();
+  ASSERT_TRUE(insert_future1.Take().has_value());
+
+  base::test::TestFuture<base::expected<SqlSharedCacheRowId,
+                                        SqlSharedCacheIsolatedDatabase::Error>>
+      insert_future2;
+  (*keep_alive_handle)
+      ->isolated_database_for_testing()
+      .AsyncCall(&SqlSharedCacheIsolatedDatabase::Insert)
+      .WithArgs(entry_key2, /*headers=*/nullptr, kData.size(), buffer)
+      .Then(insert_future2.GetCallback());
+  FlushPendingTask();
+  ASSERT_TRUE(insert_future2.Take().has_value());
+
+  // Release the keep-alive handle so the cache instance is destroyed.
+  keep_alive_handle = nullptr;
+  FlushPendingTask();
+  EXPECT_EQ(manager->GetSharedCachesSizeForTest(), 0u);
+
+  // Register client for the existing NIK with stored resources.
+  // The newly created cache should load existing hashes from the database.
+  auto client = std::make_unique<MockSharedCacheClientRemote>();
+  auto* client_ptr = client.get();
+  manager->RegisterClient(nik, std::move(client));
+
+  client_ptr->WaitUntilInitialized();
+  client_ptr->WaitUntilOnResourcesAdded();
+
+  EXPECT_TRUE(client_ptr->initialize_called());
+  EXPECT_TRUE(client_ptr->on_resources_added_called());
+  EXPECT_EQ(client_ptr->new_hashes().size(), 2u);
+
+  std::vector<uint32_t> expected_hashes = {
+      static_cast<uint32_t>(entry_key1.resource_url_hash().value()),
+      static_cast<uint32_t>(entry_key2.resource_url_hash().value())};
+  EXPECT_THAT(client_ptr->new_hashes(),
+              testing::UnorderedElementsAreArray(expected_hashes));
 }
 
 }  // namespace disk_cache

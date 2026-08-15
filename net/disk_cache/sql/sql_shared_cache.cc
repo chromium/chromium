@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/hash/hash.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 #include "base/state_transitions.h"
@@ -74,6 +75,10 @@ void SqlSharedCache::InitIsolatedDatabase(
                  result) { std::move(callback).Run(result.has_value()); },
           std::move(callback)));
 
+  isolated_database_.AsyncCall(&SqlSharedCacheIsolatedDatabase::GetAllUrlHashes)
+      .Then(base::BindOnce(&SqlSharedCache::OnHashesLoaded,
+                           weak_factory_.GetWeakPtr()));
+
   for (ClientsMap::iterator it(&clients_); !it.IsAtEnd(); it.Advance()) {
     isolated_database_
         .AsyncCall(&SqlSharedCacheIsolatedDatabase::GetSharedReadOnlyConnection)
@@ -91,6 +96,12 @@ void SqlSharedCache::RegisterClient(
       base::BindOnce(&SqlSharedCache::OnClientDisconnected,
                      weak_factory_.GetWeakPtr(), client_id, CreateHandle()));
 
+  if (cached_hashes_.has_value()) {
+    std::vector<uint32_t> hashes(cached_hashes_->begin(),
+                                 cached_hashes_->end());
+    client_ptr->OnResourcesAdded(hashes);
+  }
+
   if (isolated_database_) {
     isolated_database_
         .AsyncCall(&SqlSharedCacheIsolatedDatabase::GetSharedReadOnlyConnection)
@@ -102,17 +113,36 @@ void SqlSharedCache::RegisterClient(
 void SqlSharedCache::OnPendingFileSetForClient(
     ClientId client_id,
     base::expected<sqlite_vfs::PendingFileSet,
-                   SqlSharedCacheIsolatedDatabase::Error> result) {
-  if (!result.has_value()) {
+                   SqlSharedCacheIsolatedDatabase::Error> pending_file_set) {
+  if (!pending_file_set.has_value()) {
     return;
   }
   auto* client = clients_.Lookup(client_id);
   if (!client) {
     return;
   }
-  client->Initialize(std::move(*result));
+  client->Initialize(std::move(*pending_file_set));
 }
 
+void SqlSharedCache::OnHashesLoaded(
+    base::expected<std::vector<uint32_t>, SqlSharedCacheIsolatedDatabase::Error>
+        hashes) {
+  if (!cached_hashes_.has_value()) {
+    cached_hashes_ = absl::flat_hash_set<uint32_t>();
+  }
+  if (!hashes.has_value()) {
+    return;
+  }
+  for (auto hash : *hashes) {
+    cached_hashes_->insert(hash);
+  }
+
+  if (!hashes->empty()) {
+    for (ClientsMap::iterator it(&clients_); !it.IsAtEnd(); it.Advance()) {
+      it.GetCurrentValue()->OnResourcesAdded(*hashes);
+    }
+  }
+}
 void SqlSharedCache::OnClientDisconnected(
     ClientId client_id,
     scoped_refptr<SqlSharedCacheHandle> handle) {
@@ -158,12 +188,14 @@ void SqlSharedCache::CopyEntries(
 
 void SqlSharedCache::CopyNextEntry() {
   if (pending_copy_entries_.empty() ||
-      copy_abort_flag_->data.load(std::memory_order_relaxed)) {
+      (copy_abort_flag_ &&
+       copy_abort_flag_->data.load(std::memory_order_relaxed))) {
     FinishCopy();
     return;
   }
   auto entry = std::move(pending_copy_entries_.front());
   pending_copy_entries_.pop();
+  current_entry_hash_ = base::PersistentHash(entry.url.spec());
   const auto key = entry.key;
   store_->OpenEntry(
       key, base::BindOnce(&SqlSharedCache::OnEntryOpenedForSharedCache,
@@ -342,8 +374,15 @@ void SqlSharedCache::MoveBlobsToSharedCache(
 }
 
 void SqlSharedCache::OnCopyEntryComplete(const CacheEntryKey& key) {
-  // Resource redirection via SqlPersistentStore::MoveBlobsToSharedCache and
-  // Mojo client notifications will be hooked up in a follow-up CL.
+  CHECK(current_entry_hash_);
+  // `cached_hashes_` is guaranteed to be populated by `OnHashesLoaded` which
+  // was scheduled on the database task runner during `InitIsolatedDatabase`
+  // prior to any entry copy operations on the same sequence.
+  CHECK(cached_hashes_.has_value());
+  if (cached_hashes_->insert(*current_entry_hash_).second) {
+    copy_new_hashes_.push_back(*current_entry_hash_);
+  }
+  current_entry_hash_.reset();
   current_copy_row_id_ = std::nullopt;
   if (on_entry_copied_callback_) {
     on_entry_copied_callback_.Run(key);
@@ -357,10 +396,18 @@ void SqlSharedCache::OnCopyEntryFailed() {
         .WithArgs(*current_copy_row_id_);
     current_copy_row_id_ = std::nullopt;
   }
+  current_entry_hash_.reset();
   CopyNextEntry();
 }
 
 void SqlSharedCache::FinishCopy() {
+  if (!copy_new_hashes_.empty()) {
+    for (ClientsMap::iterator it(&clients_); !it.IsAtEnd(); it.Advance()) {
+      it.GetCurrentValue()->OnResourcesAdded(copy_new_hashes_);
+    }
+    copy_new_hashes_.clear();
+  }
+
   CHECK(copy_callback_);
   CHECK(!current_copy_row_id_);
   on_entry_copied_callback_.Reset();

@@ -25,6 +25,16 @@ void MockSharedCacheClientRemote::Initialize(
   }
 }
 
+void MockSharedCacheClientRemote::OnResourcesAdded(
+    const std::vector<uint32_t>& new_hashes) {
+  new_hashes_ = new_hashes;
+  on_resources_added_call_count_++;
+  if (on_resources_added_quit_closure_ &&
+      on_resources_added_call_count_ >= on_resources_added_expected_calls_) {
+    std::move(on_resources_added_quit_closure_).Run();
+  }
+}
+
 void MockSharedCacheClientRemote::SetDisconnectHandler(
     base::OnceClosure disconnect_handler) {
   disconnect_handler_ = std::move(disconnect_handler);
@@ -39,6 +49,17 @@ void MockSharedCacheClientRemote::WaitUntilInitialized() {
   }
   base::RunLoop run_loop;
   initialize_quit_closure_ = run_loop.QuitClosure();
+  run_loop.Run();
+}
+
+void MockSharedCacheClientRemote::WaitUntilOnResourcesAdded(
+    size_t expected_calls) {
+  if (on_resources_added_call_count_ >= expected_calls) {
+    return;
+  }
+  on_resources_added_expected_calls_ = expected_calls;
+  base::RunLoop run_loop;
+  on_resources_added_quit_closure_ = run_loop.QuitClosure();
   run_loop.Run();
 }
 

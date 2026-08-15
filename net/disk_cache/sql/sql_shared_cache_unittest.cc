@@ -20,12 +20,14 @@
 #include "base/test/test_future.h"
 #include "net/base/features.h"
 #include "net/disk_cache/backend_cleanup_tracker.h"
+#include "net/disk_cache/sql/mock_shared_cache_client_remote.h"
 #include "net/disk_cache/sql/sql_persistent_store.h"
 #include "net/disk_cache/sql/sql_shared_cache_handle.h"
 #include "net/disk_cache/sql/sql_shared_cache_isolated_database.h"
 #include "net/disk_cache/sql/sql_shared_cache_manager.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_response_info.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace disk_cache {
@@ -617,6 +619,56 @@ TEST_P(SqlSharedCacheTest, CopyEntriesParseResponseInfoMismatch) {
   EXPECT_TRUE(unprocessed.empty());
 
   VerifyIsolatedDatabaseEntryNotFound(*cache, kKey, SqlSharedCacheRowId(1));
+}
+
+TEST_P(SqlSharedCacheTest,
+       CopyEntriesPartialFailureNotifiesOnlySuccessfulHashes) {
+  auto handle = CreateAndInitStoreAndCache();
+  auto* cache = handle->get();
+
+  auto client = std::make_unique<MockSharedCacheClientRemote>();
+  auto* client_ptr = client.get();
+  cache->RegisterClient(std::move(client));
+
+  client_ptr->WaitUntilInitialized();
+  client_ptr->WaitUntilOnResourcesAdded(1);
+  EXPECT_TRUE(client_ptr->new_hashes().empty());
+
+  const CacheEntryKey kKeyValid(
+      "credential_key/post_key/https://example.com/valid");
+  const CacheEntryKey kKeyInvalid(
+      "credential_key/post_key/https://example.com/invalid");
+  const std::string kData = "valid data";
+  auto response_info = CreateTestHttpResponseInfo();
+
+  PopulateStoreEntry(kKeyValid, response_info, kData);
+
+  base::queue<SqlPersistentStore::SharedCacheEligibleEntry> entries;
+  entries.push(CreateEligibleEntry(kKeyValid, GURL("https://example.com/valid"),
+                                   response_info));
+  // kKeyInvalid does not exist in store, so opening it will fail.
+  entries.push(CreateEligibleEntry(
+      kKeyInvalid, GURL("https://example.com/invalid"), response_info));
+
+  auto abort_flag =
+      base::MakeRefCounted<base::RefCountedData<std::atomic_bool>>(
+          std::in_place, false);
+  base::test::TestFuture<
+      base::queue<SqlPersistentStore::SharedCacheEligibleEntry>>
+      copy_future;
+  cache->CopyEntries(std::move(entries), abort_flag, copy_future.GetCallback());
+
+  client_ptr->WaitUntilOnResourcesAdded(2);
+  async_task_manager_.RunUntilAllTasksCompleteForTest();
+  auto unprocessed = copy_future.Take();
+  EXPECT_TRUE(unprocessed.empty());
+
+  EXPECT_EQ(client_ptr->on_resources_added_call_count(), 2u);
+  EXPECT_THAT(client_ptr->new_hashes(),
+              testing::ElementsAre(static_cast<uint32_t>(
+                  kKeyValid.resource_url_hash().value())));
+
+  client_ptr->RunDisconnectHandler();
 }
 
 TEST_P(SqlSharedCacheTest, CopyEntriesResponseTruncatedSkipped) {
