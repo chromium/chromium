@@ -16,7 +16,6 @@ import android.view.View;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.MathUtils;
-import org.chromium.base.SysUtils;
 import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
@@ -516,13 +515,10 @@ public class StripLayoutUtils {
                             LocalizationUtils.isLayoutRtl());
         }
 
-        // On a low-end device adjust the card to account for the shadow length of the background
-        // drawable.
-        if (SysUtils.isLowEndDevice()) {
-            hoverCardXDp -=
-                    context.getResources().getDimension(R.dimen.tab_hover_card_elevation)
-                            / displayDensity;
-        }
+        // Adjust the card to account for the shadow length of the background drawable.
+        hoverCardXDp -=
+                context.getResources().getDimension(R.dimen.popup_menu_shadow_length)
+                        / displayDensity;
 
         float windowHorizontalMarginDp =
                 context.getResources().getDimension(R.dimen.tab_hover_card_window_horizontal_margin)
@@ -539,13 +535,10 @@ public class StripLayoutUtils {
         // 4. Determine the vertical position of the hover card.
         float hoverCardYDp = height + topPadding;
 
-        // On a low-end device adjust the card to account for the shadow length of the background
-        // drawable.
-        if (SysUtils.isLowEndDevice()) {
-            hoverCardYDp -=
-                    context.getResources().getDimension(R.dimen.tab_hover_card_elevation)
-                            / displayDensity;
-        }
+        // Adjust the card to account for the shadow length of the background drawable.
+        hoverCardYDp -=
+                context.getResources().getDimension(R.dimen.popup_menu_shadow_length)
+                        / displayDensity;
 
         return new float[] {hoverCardXDp * displayDensity, hoverCardYDp * displayDensity};
     }

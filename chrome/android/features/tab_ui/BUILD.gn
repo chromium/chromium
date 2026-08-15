@@ -72,7 +72,6 @@ android_resources("java_resources") {
     "java/res/drawable/tab_group_list_top_item_background.xml",
     "java/res/drawable/tab_group_share_notice_bottom_sheet_illustration_bg.xml",
     "java/res/drawable/tab_group_start_icon_bg.xml",
-    "java/res/drawable/tab_hover_card_background.xml",
     "java/res/drawable/tab_label_background.xml",
     "java/res/drawable/tab_label_icon_background.xml",
     "java/res/drawable/tab_list_editor_share_icon.xml",

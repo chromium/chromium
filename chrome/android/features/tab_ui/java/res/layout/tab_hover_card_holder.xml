@@ -12,14 +12,17 @@ found in the LICENSE file.
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:visibility="gone"
+    android:theme="@style/ThemeOverlay.BrowserUI.NoElevationShadow"
     android:elevation="@dimen/tab_hover_card_elevation"
-    android:background="@drawable/tab_hover_card_background">
+    android:background="@drawable/popup_bg_shadow_16dp">
 
     <LinearLayout
         android:id="@+id/content_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:background="@drawable/popup_bg_shape_16dp"
+        android:clipToOutline="true">
 
         <TextView
             android:id="@+id/title"

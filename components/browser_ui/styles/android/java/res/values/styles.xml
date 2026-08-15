@@ -62,8 +62,14 @@ found in the LICENSE file.
         <item name="android:textAppearance">@style/TextAppearance.TextLarge.Primary</item>
     </style>
 
+    <!-- Theme overlay that hides elevation shadows. -->
+    <style name="ThemeOverlay.BrowserUI.NoElevationShadow" parent="">
+        <item name="android:outlineAmbientShadowColor">@android:color/transparent</item>
+        <item name="android:outlineSpotShadowColor">@android:color/transparent</item>
+    </style>
+
     <!-- Basic theme for an overflow menu displayed in Chrome. -->
-    <style name="Base.OverflowMenuThemeOverlay" parent="">
+    <style name="Base.OverflowMenuThemeOverlay" parent="ThemeOverlay.BrowserUI.NoElevationShadow">
         <item name="android:popupMenuStyle">@android:style/Widget.Material.PopupMenu</item>
         <item name="android:popupBackground">@null</item>
         <item name="android:colorControlHighlight">@color/control_highlight_color</item>

@@ -94,7 +94,6 @@ found in the LICENSE file.
     <dimen name="tab_hover_card_footer_row_spacing">8dp</dimen>
     <dimen name="tab_hover_card_footer_text_end_padding">24dp</dimen>
     <dimen name="tab_hover_card_url_top_margin">4dp</dimen>
-    <dimen name="tab_hover_card_corner_radius">8dp</dimen>
     <dimen name="tab_hover_card_elevation">6dp</dimen>
     <dimen name="inactive_tab_hover_card_x_offset">16dp</dimen>
 

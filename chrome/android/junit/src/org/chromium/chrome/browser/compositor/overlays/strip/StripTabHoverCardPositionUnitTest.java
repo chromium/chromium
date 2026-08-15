@@ -125,7 +125,9 @@ public class StripTabHoverCardPositionUnitTest {
                         mTabHoverCardView, false, 10, 20, STRIP_STACK_HEIGHT, topPadding);
         mTabHoverCardView.show(mHoveredTab, position[0], position[1]);
 
-        verify(mTabHoverCardView).setY(STRIP_STACK_HEIGHT + topPadding);
+        float cardShadowLength =
+                mContext.getResources().getDimension(R.dimen.popup_menu_shadow_length);
+        verify(mTabHoverCardView).setY(STRIP_STACK_HEIGHT + topPadding - cardShadowLength);
         verify(mTabHoverCardView).setVisibility(eq(View.VISIBLE));
     }
 
@@ -137,9 +139,18 @@ public class StripTabHoverCardPositionUnitTest {
                         mTabHoverCardView, false, 10, 0, STRIP_STACK_HEIGHT, 0f);
         float inactiveTabCardXOffset =
                 mContext.getResources().getDimension(R.dimen.inactive_tab_hover_card_x_offset);
+        float cardShadowLength =
+                mContext.getResources().getDimension(R.dimen.popup_menu_shadow_length);
         assertEquals(
-                "Card x position is incorrect.", 10f + inactiveTabCardXOffset, position[0], 0f);
-        assertEquals("Card y position is incorrect.", STRIP_STACK_HEIGHT, position[1], 0f);
+                "Card x position is incorrect.",
+                10f + inactiveTabCardXOffset - cardShadowLength,
+                position[0],
+                0f);
+        assertEquals(
+                "Card y position is incorrect.",
+                STRIP_STACK_HEIGHT - cardShadowLength,
+                position[1],
+                0f);
     }
 
     @Test
@@ -151,10 +162,18 @@ public class StripTabHoverCardPositionUnitTest {
                         mTabHoverCardView, false, 10, 0, STRIP_STACK_HEIGHT, topPadding);
         float inactiveTabCardXOffset =
                 mContext.getResources().getDimension(R.dimen.inactive_tab_hover_card_x_offset);
+        float cardShadowLength =
+                mContext.getResources().getDimension(R.dimen.popup_menu_shadow_length);
         assertEquals(
-                "Card x position is incorrect.", 10f + inactiveTabCardXOffset, position[0], 0f);
+                "Card x position is incorrect.",
+                10f + inactiveTabCardXOffset - cardShadowLength,
+                position[0],
+                0f);
         assertEquals(
-                "Card y position is incorrect.", STRIP_STACK_HEIGHT + topPadding, position[1], 0f);
+                "Card y position is incorrect.",
+                STRIP_STACK_HEIGHT + topPadding - cardShadowLength,
+                position[1],
+                0f);
     }
 
     @Test
@@ -165,9 +184,15 @@ public class StripTabHoverCardPositionUnitTest {
         // Set simulated hovered tab drawX for expected hover card position.
         float[] position =
                 StripLayoutUtils.getHoverCardPosition(
-                        mTabHoverCardView, true, 10f, TAB_WIDTH, STRIP_STACK_HEIGHT, 0f);
-        assertEquals("Card x position is incorrect.", 10f, position[0], 0f);
-        assertEquals("Card y position is incorrect.", STRIP_STACK_HEIGHT, position[1], 0f);
+                        mTabHoverCardView, true, 20f, TAB_WIDTH, STRIP_STACK_HEIGHT, 0f);
+        float cardShadowLength =
+                mContext.getResources().getDimension(R.dimen.popup_menu_shadow_length);
+        assertEquals("Card x position is incorrect.", 20f - cardShadowLength, position[0], 0f);
+        assertEquals(
+                "Card y position is incorrect.",
+                STRIP_STACK_HEIGHT - cardShadowLength,
+                position[1],
+                0f);
     }
 
     @Test
@@ -227,10 +252,16 @@ public class StripTabHoverCardPositionUnitTest {
         // Set simulated hovered tab drawX and width for expected hover card position.
         float[] position =
                 StripLayoutUtils.getHoverCardPosition(
-                        mTabHoverCardView, false, 28, mHoverCardWidth - 2f, STRIP_STACK_HEIGHT, 0f);
+                        mTabHoverCardView, false, 40, mHoverCardWidth - 2f, STRIP_STACK_HEIGHT, 0f);
         float detachedCardOffset =
                 mContext.getResources().getDimension(R.dimen.inactive_tab_hover_card_x_offset);
-        assertEquals("Card x position is incorrect.", 26f - detachedCardOffset, position[0], 0f);
+        float cardShadowLength =
+                mContext.getResources().getDimension(R.dimen.popup_menu_shadow_length);
+        assertEquals(
+                "Card x position is incorrect.",
+                38f - detachedCardOffset - cardShadowLength,
+                position[0],
+                0f);
     }
 
     @Test
@@ -243,7 +274,7 @@ public class StripTabHoverCardPositionUnitTest {
         float detachedCardOffset =
                 mContext.getResources().getDimension(R.dimen.inactive_tab_hover_card_x_offset);
         float cardShadowLength =
-                mContext.getResources().getDimension(R.dimen.tab_hover_card_elevation);
+                mContext.getResources().getDimension(R.dimen.popup_menu_shadow_length);
         assertEquals(
                 "Card x position is incorrect.",
                 10f + detachedCardOffset - cardShadowLength,

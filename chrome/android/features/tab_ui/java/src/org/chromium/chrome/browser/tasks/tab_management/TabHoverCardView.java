@@ -22,7 +22,6 @@ import androidx.core.view.ViewCompat;
 
 import org.chromium.base.Callback;
 import org.chromium.base.MathUtils;
-import org.chromium.base.SysUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -125,7 +124,6 @@ public class TabHoverCardView extends FrameLayout {
         mAlertStatusView = mContentView.findViewById(R.id.alert_status);
         mMemoryUsageView = mContentView.findViewById(R.id.memory_usage);
         mThumbnailView = mContentView.findViewById(R.id.thumbnail);
-        maybeUpdateBackgroundOnLowEndDevice();
     }
 
     @Override
@@ -227,8 +225,15 @@ public class TabHoverCardView extends FrameLayout {
                 TabUiThemeProvider.getTabHoverCardTextColorSecondary(getContext(), incognito));
 
         ViewCompat.setBackgroundTintList(
-                this,
+                mContentView,
                 TabUiThemeProvider.getTabHoverCardBackgroundTintList(getContext(), incognito));
+    }
+
+    @Override
+    public @Nullable ColorStateList getBackgroundTintList() {
+        return mContentView != null
+                ? ViewCompat.getBackgroundTintList(mContentView)
+                : super.getBackgroundTintList();
     }
 
     public void destroy() {
@@ -238,12 +243,6 @@ public class TabHoverCardView extends FrameLayout {
             mTabModelSelector.getCurrentTabModelSupplier().removeObserver(mCurrentTabModelObserver);
             mTabModelSelector = null;
         }
-    }
-
-    void maybeUpdateBackgroundOnLowEndDevice() {
-        if (!SysUtils.isLowEndDevice()) return;
-        mContentView.setBackgroundResource(R.drawable.popup_bg_8dp);
-        setBackground(null);
     }
 
     private void unsubscribeFromTab() {
