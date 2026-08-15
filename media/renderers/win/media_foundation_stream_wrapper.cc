@@ -106,7 +106,8 @@ HRESULT MediaFoundationStreamWrapper::RuntimeClassInitialize(
                 << ", is_encrypted=" << is_encrypted_;
 
   media_log_ = std::move(media_log);
-  if (base::FeatureList::IsEnabled(kMediaFoundationBatchRead)) {
+  batch_read_enabled_ = base::FeatureList::IsEnabled(kMediaFoundationBatchRead);
+  if (batch_read_enabled_) {
     if (kBatchReadCount.Get() < 1 || kBatchReadCount.Get() > 500) {
       DLOG(WARNING) << "batch_read_count_=" << kBatchReadCount.Get()
                     << " is out of range [1,500], "
@@ -208,6 +209,9 @@ void MediaFoundationStreamWrapper::Flush() {
   while (!post_flush_buffers_.empty()) {
     post_flush_buffers_.pop();
   }
+
+  // Mark any batched read still in flight as predating this flush.
+  ++flush_generation_;
 }
 
 bool MediaFoundationStreamWrapper::HasEnded() const {
@@ -328,11 +332,12 @@ void MediaFoundationStreamWrapper::ProcessRequestsIfPossible() {
         batch_read_count_,
         base::BindOnce(
             &MediaFoundationStreamWrapper::OnDemuxerStreamReadBuffers,
-            weak_factory_.GetWeakPtr()));
+            weak_factory_.GetWeakPtr(), flush_generation_));
   }
 }
 
 void MediaFoundationStreamWrapper::OnDemuxerStreamReadBuffers(
+    uint32_t flush_generation,
     DemuxerStream::Status status,
     DemuxerStream::DecoderBufferVector buffers) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
@@ -344,6 +349,30 @@ void MediaFoundationStreamWrapper::OnDemuxerStreamReadBuffers(
     base::AutoLock auto_lock(lock_);
     DCHECK(pending_stream_read_);
     pending_stream_read_ = false;
+
+    // A read requested before a flush returns buffers from the position
+    // playback seeked away from. It cannot be cancelled: the demuxer has
+    // already fulfilled it, and MojoDemuxerStreamAdapter has no way to discard
+    // a batch it is still reassembling. Drop the buffers here and let the read
+    // issued below refill from the new position. A non-kOk status carries no
+    // buffer of its own and is kept, as OnDemuxerStreamRead() needs it to
+    // report a config change.
+    if (batch_read_enabled_ && flush_generation != flush_generation_ &&
+        status == DemuxerStream::Status::kOk && !buffers.empty()) {
+      DVLOG_FUNC(2) << "dropping " << buffers.size() << " stale buffer(s)";
+      // An end of stream buffer has no timestamp, so it is traced as -1.
+      const auto& first = buffers.front();
+      const auto& last = buffers.back();
+      TRACE_EVENT_INSTANT(
+          "media", "MFDropStaleBatchRead",
+          "StreamType:", DemuxerStream::GetTypeName(stream_type_),
+          "flush_generation", flush_generation_, "dropped_buffer_count",
+          buffers.size(), "first_timestamp_us",
+          first->end_of_stream() ? -1 : first->timestamp().InMicroseconds(),
+          "last_timestamp_us",
+          last->end_of_stream() ? -1 : last->timestamp().InMicroseconds());
+      buffers.clear();
+    }
 
     DemuxerStream::DecoderBufferVector pending_buffers =
         (status == DemuxerStream::Status::kOk)

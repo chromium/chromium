@@ -96,8 +96,10 @@ class MEDIA_EXPORT MediaFoundationStreamWrapper
   void ProcessRequestsIfPossible();
   void OnDemuxerStreamRead(DemuxerStream::Status status,
                            scoped_refptr<DecoderBuffer> buffer);
-  // Receive the data from MojoDemuxerStreamAdapter.
-  void OnDemuxerStreamReadBuffers(DemuxerStream::Status status,
+  // Receive the data from MojoDemuxerStreamAdapter. |flush_generation| is the
+  // value |flush_generation_| had when the read was requested.
+  void OnDemuxerStreamReadBuffers(uint32_t flush_generation,
+                                  DemuxerStream::Status status,
                                   DemuxerStream::DecoderBufferVector buffers);
 
   // IMFMediaStream implementation - it is in general running in MF threadpool
@@ -194,6 +196,15 @@ class MEDIA_EXPORT MediaFoundationStreamWrapper
   // call. The actual returned buffer count could be less according to
   // DemuxerStream::Read() API.
   uint32_t batch_read_count_ = 1;
+
+  // Whether kMediaFoundationBatchRead is enabled.
+  bool batch_read_enabled_ = false;
+
+  // Incremented by every Flush(). A read stamped with an older value was
+  // requested before that flush, so its buffers are from the position playback
+  // seeked away from. Only ever compared for equality, which stays correct if
+  // the counter wraps.
+  uint32_t flush_generation_ GUARDED_BY(lock_) = 0;
 
   bool stream_ended_ = false;
   GUID last_key_id_ = GUID_NULL;
