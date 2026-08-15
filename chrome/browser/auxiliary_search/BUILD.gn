@@ -67,6 +67,7 @@ source_set("unit_tests") {
   deps = [
     ":auxiliary_search",
     "//base/test:test_support",
+    "//chrome/common:constants",
     "//components/history/core/test",
     "//components/ntp_tiles",
     "//components/page_content_annotations/core:test_support",

@@ -18,6 +18,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "chrome/common/pref_names.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/test/history_service_test_util.h"
 #include "components/page_content_annotations/core/page_content_annotations_service.h"
@@ -134,7 +135,26 @@ class MockDelegate : public AuxiliarySearchDonationService::Delegate {
               (std::vector<AuxiliarySearchDonationService::HistoryData>,
                CoreAccountInfo),
               (override));
+  MOCK_METHOD(void, SetBrowsingDataDonationEnabled, (bool), (override));
 };
+
+TEST_F(AuxiliarySearchDonationServiceTest, BrowsingDataDonationPrefChanged) {
+  base::test::TestFuture<bool> future;
+  auto delegate = std::make_unique<MockDelegate>();
+  EXPECT_CALL(*delegate, SetBrowsingDataDonationEnabled(_))
+      .WillRepeatedly(InvokeFuture(future));
+  AuxiliarySearchDonationService service(
+      page_content_annotations_service(), mock_ranking_service(),
+      identity_manager(), test_pref_service(), std::move(delegate));
+
+  test_pref_service()->SetBoolean(
+      prefs::kAuxiliarySearchBrowsingDataDonationEnabled, false);
+  EXPECT_FALSE(future.Take());
+
+  test_pref_service()->SetBoolean(
+      prefs::kAuxiliarySearchBrowsingDataDonationEnabled, true);
+  EXPECT_TRUE(future.Take());
+}
 
 TEST_F(AuxiliarySearchDonationServiceTest, IgnoresRemoteVisits) {
   AuxiliarySearchDonationService service(

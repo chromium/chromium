@@ -13,12 +13,14 @@
 
 #include "base/android/application_status_listener.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/page_content_annotations/core/page_content_annotations_service.h"
+#include "components/prefs/pref_member.h"
 #include "components/visited_url_ranking/public/visited_url_ranking_service.h"
 #include "url/gurl.h"
 
@@ -74,6 +76,7 @@ class AuxiliarySearchDonationService
     virtual ~Delegate() = default;
     virtual void DonateHistoryEntries(std::vector<HistoryData> entries,
                                       CoreAccountInfo account_info) = 0;
+    virtual void SetBrowsingDataDonationEnabled(bool enabled) = 0;
   };
 
   explicit AuxiliarySearchDonationService(
@@ -112,6 +115,7 @@ class AuxiliarySearchDonationService
       std::vector<HistoryData> entries,
       const visited_url_ranking::URLVisitsMetadata& metadata);
   void OnApplicationStateChanged(base::android::ApplicationState state);
+  void OnBrowsingDataDonationPrefChanged();
 
   const raw_ref<page_content_annotations::PageContentAnnotationsService>
       page_content_annotations_service_;
@@ -119,6 +123,7 @@ class AuxiliarySearchDonationService
   const raw_ref<signin::IdentityManager> identity_manager_;
   const raw_ref<PrefService> pref_service_;
   std::unique_ptr<Delegate> delegate_;
+  BooleanPrefMember is_browsing_data_donation_enabled_;
   std::unique_ptr<base::android::ApplicationStatusListener>
       application_status_listener_;
   base::OneShotTimer donation_timer_;

@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.auxiliary_search;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import androidx.annotation.VisibleForTesting;
 import androidx.appsearch.app.AppSearchBatchResult;
 import androidx.appsearch.app.AppSearchSchema;
@@ -14,6 +12,7 @@ import androidx.appsearch.app.GenericDocument;
 import androidx.appsearch.app.PackageIdentifier;
 import androidx.appsearch.app.PutDocumentsRequest;
 import androidx.appsearch.app.SetSchemaRequest;
+import androidx.appsearch.app.SetSchemaResponse;
 import androidx.appsearch.builtintypes.Account;
 import androidx.appsearch.builtintypes.WebPage;
 import androidx.appsearch.exceptions.AppSearchException;
@@ -28,12 +27,14 @@ import org.jni_zero.JniType;
 
 import org.chromium.base.Log;
 import org.chromium.base.ServiceLoaderUtil;
+import org.chromium.build.annotations.AlwaysInline;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.signin.base.CoreAccountInfo;
 
 import java.io.Closeable;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -71,16 +72,26 @@ class AuxiliarySearchDonationServiceBridge implements Closeable {
     // for reference.
     @VisibleForTesting static final String ACCOUNT_TYPE_GOOGLE = "com.google";
 
-    // Future which holds the `AppSearchSession` after initialization.
-    // "Awaiting" this will ensure the session is initialized and the schema is set.
+    // Future which holds the `AppSearchSession` after initialization and any subsequent schema
+    // updates. "Awaiting" this will ensure the session is initialized and the schema is set.
     //
     // Null iff the Android version does not support the AppSearch APIs OR there are no available
     // apps to donate to (e.g. in a build without an `AuxiliarySearchHooks` implementation).
-    @VisibleForTesting final @Nullable ListenableFuture<AppSearchSession> mSessionFuture;
+    @VisibleForTesting @Nullable ListenableFuture<AppSearchSession> mSessionFuture;
 
     @CalledByNative
     public AuxiliarySearchDonationServiceBridge(boolean isBrowsingDataDonationEnabled) {
-        mSessionFuture = setUpSessionFuture(isBrowsingDataDonationEnabled);
+        // As this function is @CalledByNative, we must add a `getPackagesForBrowsingDataVisibility`
+        // check here to prevent AppSearch code (schemas) from being compiled into open source APKs.
+        Set<PackageIdentifier> packages = getPackagesForBrowsingDataVisibility();
+        if (packages == null) {
+            mSessionFuture = null;
+            return;
+        }
+
+        mSessionFuture =
+                AppSearchStorageFactory.getInstance().createSearchSessionAsync(DATABASE_NAME);
+        setSchema(packages, isBrowsingDataDonationEnabled);
     }
 
     @CalledByNative
@@ -88,7 +99,11 @@ class AuxiliarySearchDonationServiceBridge implements Closeable {
             @JniType("std::vector<AuxiliarySearchDonationService::HistoryData>")
                     List<WebPage> pages,
             @JniType("std::optional<CoreAccountInfo>") @Nullable CoreAccountInfo coreAccountInfo) {
-        if (mSessionFuture == null || pages.isEmpty()) {
+        // As this function is @CalledByNative, we must add a `getPackagesForBrowsingDataVisibility`
+        // check here to prevent AppSearch code from being compiled into open source APKs.
+        if (getPackagesForBrowsingDataVisibility() == null
+                || mSessionFuture == null
+                || pages.isEmpty()) {
             return;
         }
         Account account = fromCoreAccountInfo(coreAccountInfo);
@@ -149,16 +164,73 @@ class AuxiliarySearchDonationServiceBridge implements Closeable {
     @CalledByNative
     @Override
     public void close() {
-        if (mSessionFuture != null) {
-            var _ =
-                    Futures.transform(
-                            mSessionFuture,
-                            session -> {
-                                session.close();
-                                return null;
-                            },
-                            MoreExecutors.directExecutor());
+        // As this function is @CalledByNative, we must add a `getPackagesForBrowsingDataVisibility`
+        // check here to prevent AppSearch code (`session.close()`) from being compiled into open
+        // source APKs.
+        if (getPackagesForBrowsingDataVisibility() == null || mSessionFuture == null) {
+            return;
         }
+        var _ =
+                Futures.transform(
+                        mSessionFuture,
+                        session -> {
+                            session.close();
+                            return null;
+                        },
+                        MoreExecutors.directExecutor());
+    }
+
+    // Differs from `AuxiliarySearchDonor`, which only calls `setSchemaAsync` if the last set
+    // schema version (stored in prefs) differs from the "current" schema version.
+    //
+    // From the `AppSearchSession#setSchemaAsync` documentation:
+    // > Upon creating an `AppSearchSession`, `setSchemaAsync` should be called.
+    // > If the schema needs to be updated, or it has not been previously set,
+    // > then the provided schema will be saved and persisted to disk.
+    // > Otherwise, `setSchemaAsync` is handled efficiently as a no-op call.
+    @CalledByNative
+    public void setSchema(boolean isBrowsingDataDonationEnabled) {
+        // As this function is @CalledByNative, we must add a `getPackagesForBrowsingDataVisibility`
+        // check here to prevent AppSearch code (schemas) from being compiled into open source APKs.
+        Set<PackageIdentifier> packages = getPackagesForBrowsingDataVisibility();
+        if (packages == null) {
+            return;
+        }
+        setSchema(packages, isBrowsingDataDonationEnabled);
+    }
+
+    private void setSchema(Set<PackageIdentifier> packages, boolean isBrowsingDataDonationEnabled) {
+        if (mSessionFuture == null) {
+            return;
+        }
+        mSessionFuture =
+                Futures.transformAsync(
+                        mSessionFuture,
+                        session -> {
+                            ListenableFuture<SetSchemaResponse> schemaFuture =
+                                    session.setSchemaAsync(
+                                            createSetSchemaRequest(
+                                                    packages, isBrowsingDataDonationEnabled));
+                            Futures.addCallback(
+                                    schemaFuture,
+                                    new FutureCallback<SetSchemaResponse>() {
+                                        @Override
+                                        public void onSuccess(SetSchemaResponse result) {}
+
+                                        @Override
+                                        public void onFailure(Throwable t) {
+                                            Log.w(
+                                                    TAG,
+                                                    "Failed to update schema visibility in"
+                                                            + " AppSearch.",
+                                                    t);
+                                        }
+                                    },
+                                    MoreExecutors.directExecutor());
+                            return Futures.transform(
+                                    schemaFuture, _ -> session, MoreExecutors.directExecutor());
+                        },
+                        MoreExecutors.directExecutor());
     }
 
     @CalledByNative
@@ -188,46 +260,26 @@ class AuxiliarySearchDonationServiceBridge implements Closeable {
                 .build();
     }
 
-    private static @Nullable ListenableFuture<AppSearchSession> setUpSessionFuture(
-            boolean isBrowsingDataDonationEnabled) {
-        // Check for available consumer apps to ensure this gets optimised out by R8 if it can
-        // statically determine that there are no consumers of this data.
+    // Returns the list of known consumer packages for browsing data. This is statically guaranteed
+    // to be null by R8 if the current build does not have any known consumers (e.g. open source
+    // builds).
+    // All uses of AppSearch code MUST be guarded behind null-checking this return value to ensure
+    // that AppSearch code does not significantly bloat open source APK binary size - this will be
+    // checked by the android-binary-size trybot. See
+    // docs/speed/binary_size/android_binary_size_trybot.md for more details.
+    @AlwaysInline
+    private static @Nullable Set<PackageIdentifier> getPackagesForBrowsingDataVisibility() {
         AuxiliarySearchHooks hooks = ServiceLoaderUtil.maybeCreate(AuxiliarySearchHooks.class);
-        if (hooks == null || hooks.getPackagesForBrowsingDataVisibility().isEmpty()) {
+        if (hooks == null) {
             return null;
         }
-
-        AppSearchStorageFactory factory = AppSearchStorageFactory.getInstance();
-
-        ListenableFuture<AppSearchSession> sessionFuture =
-                factory.createSearchSessionAsync(DATABASE_NAME);
-
-        if (sessionFuture == null) {
-            // AppSearch is not available on this device.
-            return null;
-        }
-
-        // Differs from `AuxiliarySearchDonor`, which only calls `setSchemaAsync` if the last set
-        // schema version (stored in prefs) differs from the "current" schema version.
-        //
-        // From the `AppSearchSession#setSchemaAsync` documentation:
-        // > Upon creating an `AppSearchSession`, `setSchemaAsync` should be called.
-        // > If the schema needs to be updated, or it has not been previously set,
-        // > then the provided schema will be saved and persisted to disk.
-        // > Otherwise, `setSchemaAsync` is handled efficiently as a no-op call.
-        return Futures.transformAsync(
-                sessionFuture,
-                session ->
-                        Futures.transform(
-                                session.setSchemaAsync(
-                                        createSetSchemaRequest(isBrowsingDataDonationEnabled)),
-                                _ -> session,
-                                MoreExecutors.directExecutor()),
-                MoreExecutors.directExecutor());
+        Set<PackageIdentifier> packages = hooks.getPackagesForBrowsingDataVisibility();
+        return packages.isEmpty() ? null : packages;
     }
 
     @VisibleForTesting
-    static SetSchemaRequest createSetSchemaRequest(boolean isBrowsingDataDonationEnabled)
+    static SetSchemaRequest createSetSchemaRequest(
+            Set<PackageIdentifier> packages, boolean isBrowsingDataDonationEnabled)
             throws AppSearchException {
         var builder = new SetSchemaRequest.Builder();
         // Delete old documents incompatible with the new schema.
@@ -255,12 +307,7 @@ class AuxiliarySearchDonationServiceBridge implements Closeable {
         builder.setSchemaTypeDisplayedBySystem(CHROME_WEB_PAGE_SCHEMA_NAME, /* displayed= */ false);
 
         if (isBrowsingDataDonationEnabled) {
-            // Always inlined by R8 - this method is only called by `setUpSessionFuture` if `hooks`
-            // is non-null.
-            AuxiliarySearchHooks hooks = ServiceLoaderUtil.maybeCreate(AuxiliarySearchHooks.class);
-            assumeNonNull(hooks);
-            for (PackageIdentifier packageIdentifier :
-                    hooks.getPackagesForBrowsingDataVisibility()) {
+            for (PackageIdentifier packageIdentifier : packages) {
                 builder.setSchemaTypeVisibilityForPackage(
                         CHROME_WEB_PAGE_SCHEMA_NAME, /* visible= */ true, packageIdentifier);
             }

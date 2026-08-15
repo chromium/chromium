@@ -12,6 +12,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -98,6 +99,17 @@ public class AuxiliarySearchDonationServiceBridgeUnitTest {
         assertEquals(
                 AuxiliarySearchDonationServiceBridge.HISTORY_DOCUMENT_TTL_MILLIS,
                 webPage.getDocumentTtlMillis());
+    }
+
+    @Test
+    public void testConstructor_noConsumerPackages() {
+        when(mMockHooks.getPackagesForBrowsingDataVisibility()).thenReturn(Set.of());
+        var bridge =
+                new AuxiliarySearchDonationServiceBridge(/* isBrowsingDataDonationEnabled= */ true);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        assertNull(bridge.mSessionFuture);
+        verify(mMockFactory, never()).createSearchSessionAsync(any());
     }
 
     @Test
@@ -205,6 +217,117 @@ public class AuxiliarySearchDonationServiceBridgeUnitTest {
                                 AuxiliarySearchDonationServiceBridge.CHROME_WEB_PAGE_SCHEMA_NAME,
                                 Set.of())
                         .isEmpty());
+    }
+
+    @Test
+    public void testSetSchema_updatesSchema() {
+        when(mMockFactory.createSearchSessionAsync(anyString()))
+                .thenReturn(Futures.immediateFuture(mMockSession));
+        when(mMockSession.setSchemaAsync(any())).thenReturn(Futures.immediateFuture(null));
+
+        var bridge =
+                new AuxiliarySearchDonationServiceBridge(/* isBrowsingDataDonationEnabled= */ true);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        bridge.setSchema(/* isBrowsingDataDonationEnabled= */ false);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        verify(mMockSession, times(2)).setSchemaAsync(mSetSchemaRequestCaptor.capture());
+        SetSchemaRequest updatedRequest = mSetSchemaRequestCaptor.getValue();
+        assertTrue(
+                updatedRequest
+                        .getSchemasVisibleToPackages()
+                        .getOrDefault(
+                                AuxiliarySearchDonationServiceBridge.CHROME_WEB_PAGE_SCHEMA_NAME,
+                                Set.of())
+                        .isEmpty());
+
+        bridge.setSchema(/* isBrowsingDataDonationEnabled= */ true);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        verify(mMockSession, times(3)).setSchemaAsync(mSetSchemaRequestCaptor.capture());
+        SetSchemaRequest reenabledRequest = mSetSchemaRequestCaptor.getValue();
+        assertEquals(
+                TEST_INTELLIGENCE_PACKAGES,
+                reenabledRequest
+                        .getSchemasVisibleToPackages()
+                        .get(AuxiliarySearchDonationServiceBridge.CHROME_WEB_PAGE_SCHEMA_NAME));
+    }
+
+    @Test
+    public void testSetSchema_noConsumerPackages() {
+        when(mMockFactory.createSearchSessionAsync(anyString()))
+                .thenReturn(Futures.immediateFuture(mMockSession));
+        when(mMockSession.setSchemaAsync(any())).thenReturn(Futures.immediateFuture(null));
+        var bridge =
+                new AuxiliarySearchDonationServiceBridge(/* isBrowsingDataDonationEnabled= */ true);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        // Consumer packages become unavailable.
+        when(mMockHooks.getPackagesForBrowsingDataVisibility()).thenReturn(Set.of());
+        bridge.setSchema(/* isBrowsingDataDonationEnabled= */ false);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        // Should only have been called once during construction, not for the second setSchema call.
+        verify(mMockSession, times(1)).setSchemaAsync(any());
+    }
+
+    @Test
+    public void testSetSchema_unsupportedAndroidVersion() {
+        // mMockFactory.createSearchSessionAsync returns null by default.
+        var bridge =
+                new AuxiliarySearchDonationServiceBridge(/* isBrowsingDataDonationEnabled= */ true);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        bridge.setSchema(/* isBrowsingDataDonationEnabled= */ false);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        // Should not crash.
+    }
+
+    @Test
+    public void testSetSchema_futureFailure_logsWarning() {
+        when(mMockFactory.createSearchSessionAsync(anyString()))
+                .thenReturn(Futures.immediateFuture(mMockSession));
+        when(mMockSession.setSchemaAsync(any()))
+                .thenReturn(Futures.immediateFuture(null))
+                .thenReturn(Futures.immediateFailedFuture(new RuntimeException("IPC error")));
+        // Suppress log spam in tests.
+        ShadowLog.stream = null;
+        var bridge =
+                new AuxiliarySearchDonationServiceBridge(/* isBrowsingDataDonationEnabled= */ true);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        bridge.setSchema(/* isBrowsingDataDonationEnabled= */ false);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        assertTrue(
+                "Expected schema warning log was not found",
+                ShadowLog.getLogs().stream()
+                        .anyMatch(
+                                item ->
+                                        EXPECTED_LOG_TAG.equals(item.tag)
+                                                && item.type == Log.WARN
+                                                && item.throwable instanceof RuntimeException));
+    }
+
+    @Test
+    public void testSetSchema_sessionFailure_doesNotLogWarning() {
+        when(mMockFactory.createSearchSessionAsync(anyString()))
+                .thenReturn(Futures.immediateFailedFuture(new RuntimeException("Session error")));
+        // Suppress log spam in tests.
+        ShadowLog.stream = null;
+        var bridge =
+                new AuxiliarySearchDonationServiceBridge(/* isBrowsingDataDonationEnabled= */ true);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        bridge.setSchema(/* isBrowsingDataDonationEnabled= */ false);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        verify(mMockSession, never()).setSchemaAsync(any());
+        assertTrue(
+                "Warning log was unexpectedly found when session failed",
+                ShadowLog.getLogs().stream().noneMatch(item -> EXPECTED_LOG_TAG.equals(item.tag)));
     }
 
     @Test
@@ -371,6 +494,32 @@ public class AuxiliarySearchDonationServiceBridgeUnitTest {
         assertTrue(
                 "Warning log was unexpectedly found when session failed",
                 ShadowLog.getLogs().stream().noneMatch(item -> EXPECTED_LOG_TAG.equals(item.tag)));
+    }
+
+    @Test
+    public void testDonateHistory_schemaUpdateFailure_doesNotDonate() {
+        when(mMockFactory.createSearchSessionAsync(anyString()))
+                .thenReturn(Futures.immediateFuture(mMockSession));
+        when(mMockSession.setSchemaAsync(any()))
+                .thenReturn(Futures.immediateFuture(null))
+                .thenReturn(
+                        Futures.immediateFailedFuture(new RuntimeException("Schema update error")));
+        // Suppress log spam in tests.
+        ShadowLog.stream = null;
+        var bridge =
+                new AuxiliarySearchDonationServiceBridge(/* isBrowsingDataDonationEnabled= */ true);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        bridge.setSchema(/* isBrowsingDataDonationEnabled= */ false);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        WebPage page =
+                AuxiliarySearchDonationServiceBridge.createHistoryDocument(
+                        TEST_ID, TEST_URL, TEST_TITLE, TEST_LAST_VISITED);
+        bridge.donateHistory(List.of(page), /* coreAccountInfo= */ null);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        verify(mMockSession, never()).putAsync(any());
     }
 
     @Test

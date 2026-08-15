@@ -131,10 +131,14 @@ AuxiliarySearchDonationService::AuxiliarySearchDonationService(
               // Listener is destroyed at destructor, and
               // object will be alive for any callback.
               base::Unretained(this)))) {
+  is_browsing_data_donation_enabled_.Init(
+      prefs::kAuxiliarySearchBrowsingDataDonationEnabled, &pref_service_.get(),
+      base::BindRepeating(
+          &AuxiliarySearchDonationService::OnBrowsingDataDonationPrefChanged,
+          weak_factory_.GetWeakPtr()));
   if (!testing_delegate) {
     testing_delegate = std::make_unique<AuxiliarySearchDonationServiceBridge>(
-        pref_service_->GetBoolean(
-            prefs::kAuxiliarySearchBrowsingDataDonationEnabled));
+        is_browsing_data_donation_enabled_.GetValue());
   }
   delegate_ = std::move(testing_delegate);
   page_content_annotations_service_->AddObserver(
@@ -272,4 +276,9 @@ void AuxiliarySearchDonationService::OnApplicationStateChanged(
       donation_timer_.IsRunning()) {
     donation_timer_.FireNow();
   }
+}
+
+void AuxiliarySearchDonationService::OnBrowsingDataDonationPrefChanged() {
+  delegate_->SetBrowsingDataDonationEnabled(
+      is_browsing_data_donation_enabled_.GetValue());
 }
