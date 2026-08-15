@@ -100,7 +100,7 @@ import {SubmitButtonIconType} from '//resources/cr_components/composebox/compose
     ` : ''}
   </div>
   ${this.lazyRender_ && this.ntpNextFeaturesEnabled_
-  && this.isActionChipsVisible_ ? html`
+  && this.isActionChipsVisible_ && this.composeboxEnabled ? html`
     <ntp-action-chips
         ?show-background="${this.showActionChipsBackground_()}"
         @action-chip-click="${this.onActionChipClick_}"
