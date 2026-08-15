@@ -1200,8 +1200,8 @@ suite('ContextualTasksComposeboxTest', () => {
 // =============================================================================
 [true, false].forEach(useFork => {
   suite(
-     `ContextualTasksComposeboxForkSmokeTest (useContextualTasksComposeboxFork =
-        ${useFork})`,
+      `ContextualTasksComposeboxForkSmokeTest ` +
+          `(useContextualTasksComposeboxFork = ${useFork})`,
       () => {
         let testProxy: TestContextualTasksBrowserProxy;
         let mockComposeboxPageHandler: TestMock<ComposeboxPageHandlerRemote>&
@@ -1526,6 +1526,9 @@ suite('ContextualTasksComposeboxTest', () => {
           let clearAutocompleteMatchesCallCount = 0;
           let queryAutocompleteCallCount = 0;
 
+          wrapper.isZeroState = true;
+          simulateUserInput(innerComposebox.getInputElement().$.input, '');
+
           innerComposebox.clearAutocompleteMatches = () => {
             clearAutocompleteMatchesCallCount++;
           };
@@ -1534,8 +1537,6 @@ suite('ContextualTasksComposeboxTest', () => {
             queryAutocompleteCallCount++;
           };
 
-          wrapper.isZeroState = true;
-          simulateUserInput(innerComposebox.getInputElement().$.input, '');
           wrapper.clearInputAndFocus(false);
           assertEquals(
               0, clearAutocompleteMatchesCallCount,
@@ -2000,6 +2001,8 @@ suite('ContextualTasksComposeboxTest', () => {
           // <if expr="not is_android">
           mockComposeboxPageHandler.setResultFor(
               'getSmartTabSharingActive', Promise.resolve({active: false}));
+          mockSearchboxPageHandler.setResultFor(
+              'getSmartTabSharingActive', Promise.resolve({active: false}));
           // </if>
           mockSearchboxPageHandler.setResultFor(
               'getRecentTabs', Promise.resolve({tabs: []}));
@@ -2155,9 +2158,17 @@ suite('ContextualTasksComposeboxTest', () => {
             async () => {
               mockComposeboxPageHandler.setResultFor(
                   'getSmartTabSharingActive', Promise.resolve({active: true}));
+              mockSearchboxPageHandler.setResultFor(
+                  'getSmartTabSharingActive', Promise.resolve({active: true}));
               await mountApp(/*smartTabSharingVisible=*/ true);
               assertEquals(
-                  1, mockComposeboxPageHandler.getCallCount('getSmartTabSharingActive'));
+                  1,
+                  mockSearchboxPageHandler.getCallCount(
+                      'getSmartTabSharingActive'));
+              assertEquals(
+                  useFork ? 1 : 0,
+                  mockComposeboxPageHandler.getCallCount(
+                      'getSmartTabSharingActive'));
               await microtasksFinished();
               assertTrue(parts.innerComposebox.smartTabSharingActive);
             });
@@ -2167,14 +2178,20 @@ suite('ContextualTasksComposeboxTest', () => {
             async () => {
               await mountApp(/*smartTabSharingVisible=*/ false);
               assertEquals(
-                  0, mockComposeboxPageHandler.getCallCount('getSmartTabSharingActive'));
+                  0,
+                  mockSearchboxPageHandler.getCallCount(
+                      'getSmartTabSharingActive'));
+              assertEquals(
+                  0,
+                  mockComposeboxPageHandler.getCallCount(
+                      'getSmartTabSharingActive'));
             });
 
         test('SmartTabSharingActiveChangedFiresMojo', async () => {
           await mountApp(/*smartTabSharingVisible=*/ false);
           const entrypointAndMenu = getEntrypointAndMenu();
 
-          mockComposeboxPageHandler.reset();
+          mockSearchboxPageHandler.reset();
 
           entrypointAndMenu.dispatchEvent(
               new CustomEvent('smart-tab-sharing-active-changed', {
@@ -2183,11 +2200,11 @@ suite('ContextualTasksComposeboxTest', () => {
                 composed: true,
               }));
 
-          const activeArg = await mockComposeboxPageHandler.whenCalled(
+          const activeArg = await mockSearchboxPageHandler.whenCalled(
               'setSmartTabSharingActive');
           assertEquals(
               1,
-              mockComposeboxPageHandler.getCallCount(
+              mockSearchboxPageHandler.getCallCount(
                   'setSmartTabSharingActive'));
           assertEquals(true, activeArg);
         });
@@ -2224,7 +2241,9 @@ suite('ContextualTasksComposeboxTest', () => {
                     detail: {
                       id: 1,
                       title: 'Shared tab',
-                      url: {url: 'https://example.com/'},
+                      // WebUI maps Mojo URL to a string, which is passed to
+                      // `new URL()`.
+                      url: 'https://example.com/',
                       delayUpload: false,
                       origin: TabUploadOrigin.CURRENT_TAB_CHIP,
                     },
@@ -2241,7 +2260,7 @@ suite('ContextualTasksComposeboxTest', () => {
                     bubbles: true,
                     composed: true,
                   }));
-              const activeArg = await mockComposeboxPageHandler.whenCalled(
+              const activeArg = await mockSearchboxPageHandler.whenCalled(
                   'setSmartTabSharingActive');
               assertEquals(true, activeArg);
               await microtasksFinished();
