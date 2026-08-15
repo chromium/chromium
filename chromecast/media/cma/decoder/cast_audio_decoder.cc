@@ -35,6 +35,11 @@
 #include "media/base/sample_format.h"
 #include "media/base/status.h"
 #include "media/filters/ffmpeg_audio_decoder.h"
+#include "media/media_buildflags.h"
+
+#if BUILDFLAG(ENABLE_SYMPHONIA)
+#include "media/filters/symphonia_audio_decoder.h"
+#endif
 
 namespace chromecast {
 namespace media {
@@ -79,11 +84,21 @@ class CastAudioDecoderImpl : public CastAudioDecoder {
         (output_format_ == kOutputSigned16 ? kSampleFormatS16
                                            : kSampleFormatPlanarF32);
 
-    decoder_ = std::make_unique<::media::FFmpegAudioDecoder>(task_runner_,
-                                                             &media_log_);
+    auto media_config =
+        media::DecoderConfigAdapter::ToMediaAudioDecoderConfig(input_config_);
+#if BUILDFLAG(ENABLE_SYMPHONIA)
+    if (::media::SymphoniaAudioDecoder::IsCodecSupported(
+            media_config.codec())) {
+      decoder_ = std::make_unique<::media::SymphoniaAudioDecoder>(task_runner_,
+                                                                  &media_log_);
+    } else
+#endif
+    {
+      decoder_ = std::make_unique<::media::FFmpegAudioDecoder>(task_runner_,
+                                                               &media_log_);
+    }
     decoder_->Initialize(
-        media::DecoderConfigAdapter::ToMediaAudioDecoderConfig(input_config_),
-        nullptr,
+        media_config, nullptr,
         base::BindRepeating(&CastAudioDecoderImpl::OnInitialized, weak_this_),
         base::BindRepeating(&CastAudioDecoderImpl::OnDecoderOutput, weak_this_),
         base::NullCallback());
