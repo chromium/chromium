@@ -450,27 +450,42 @@ public class ContentTextSelectionTest {
         setUpTestCorrectSelectionMenuItemsAddedForInputSelection();
         PendingSelectionMenu menu =
                 mSelectionPopupController.getPendingSelectionMenu(MenuType.DROPDOWN);
+        boolean shareAllowed =
+                mSelectionPopupController.isSelectActionModeAllowed(
+                        ActionModeCallbackHelper.MENU_ITEM_SHARE);
+        boolean webSearchAllowed =
+                mSelectionPopupController.isSelectActionModeAllowed(
+                        ActionModeCallbackHelper.MENU_ITEM_WEB_SEARCH);
 
-        List<ItemMatcher> matchers =
-                List.of(
-                        hasTitle("Phone"),
-                        isDivider(),
-                        hasId(R.id.select_action_menu_cut),
-                        hasId(R.id.select_action_menu_copy),
-                        hasId(android.R.id.paste),
-                        hasId(R.id.select_action_menu_select_all),
-                        isDivider(),
-                        hasTitle("testTextProcessingItem"));
+        List<ItemMatcher> matchers = new ArrayList<>();
+        matchers.add(hasTitle("Phone"));
+        matchers.add(isDivider());
+        matchers.add(hasId(R.id.select_action_menu_cut));
+        matchers.add(hasId(R.id.select_action_menu_copy));
+        matchers.add(hasId(android.R.id.paste));
+        matchers.add(hasId(R.id.select_action_menu_select_all));
+        if (webSearchAllowed) matchers.add(hasId(R.id.select_action_menu_web_search));
+        matchers.add(isDivider());
+        matchers.add(hasTitle("testTextProcessingItem"));
+        if (shareAllowed) matchers.add(hasId(R.id.select_action_menu_share));
+
         TestSelectionDropdownMenuDelegate dropdownDelegate =
                 new TestSelectionDropdownMenuDelegate();
         MVCListAdapter.ModelList items = menu.getMenuAsDropdown(dropdownDelegate);
         verifyMenu(items, matchers, dropdownDelegate);
         // Check correct processText intent state is sent to 3rd party apps.
+        Activity activityDropdown = mActivityTestRule.getActivity();
+        SelectionMenuItem textProcessingItemDropdown = null;
+        for (SelectionMenuItem item : menu.getMenuItemsForTesting()) {
+            if ("testTextProcessingItem".equals(item.getTitle(activityDropdown))) {
+                textProcessingItemDropdown = item;
+                break;
+            }
+        }
+        Assert.assertNotNull(textProcessingItemDropdown);
         Assert.assertFalse(
-                menu.getMenuItemsForTesting()
-                        .get(menu.getMenuItemsForTesting().size() - 1)
-                        .intent
-                        .getBooleanExtra(Intent.EXTRA_PROCESS_TEXT_READONLY, false));
+                textProcessingItemDropdown.intent.getBooleanExtra(
+                        Intent.EXTRA_PROCESS_TEXT_READONLY, false));
     }
 
     @Test
@@ -538,12 +553,11 @@ public class ContentTextSelectionTest {
                 mSelectionPopupController.isSelectActionModeAllowed(
                         ActionModeCallbackHelper.MENU_ITEM_WEB_SEARCH);
 
-        // Map | Copy Select All [Web Search] | testTextProcessingItem [Share]
+        // Map | Copy [Web Search] | testTextProcessingItem [Share]
         ArrayList<ItemMatcher> matchers = new ArrayList<>();
         matchers.add(hasTitle("Map"));
         matchers.add(isDivider());
         matchers.add(hasId(R.id.select_action_menu_copy));
-        matchers.add(hasId(R.id.select_action_menu_select_all));
         if (webSearchAllowed) matchers.add(hasId(R.id.select_action_menu_web_search));
         matchers.add(isDivider());
         // The text processing menu item we created is added to the menu.
@@ -697,7 +711,7 @@ public class ContentTextSelectionTest {
         DOMUtils.longPressNode(mWebContents, "empty_input_text");
         waitForPastePopupStatus(true);
         waitForInsertion(true);
-        Assert.assertFalse(mSelectionPopupController.canSelectAll());
+        Assert.assertFalse(mSelectionPopupController.canSelectAll(MenuType.FLOATING));
     }
 
     @Test
@@ -710,7 +724,7 @@ public class ContentTextSelectionTest {
         DOMUtils.longPressNode(mWebContents, "whitespace_input_text");
         waitForPastePopupStatus(true);
         waitForInsertion(true);
-        Assert.assertTrue(mSelectionPopupController.canSelectAll());
+        Assert.assertTrue(mSelectionPopupController.canSelectAll(MenuType.FLOATING));
     }
 
     @Test

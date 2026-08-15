@@ -77,7 +77,7 @@ public class TextSelectionActionMenuDelegate implements SelectionActionMenuDeleg
             String selectedText) {
         mSelectedText = selectedText;
         List<SelectionMenuItem> items = new ArrayList<>();
-        if (shouldShowReadingMode(menuType)) {
+        if (shouldShowReadingMode(menuType, isSelectionReadOnly)) {
             items.add(
                     new SelectionMenuItem.Builder(R.string.contextmenu_open_in_reading_mode)
                             .setId(R.id.contextmenu_open_in_reading_mode)
@@ -218,8 +218,8 @@ public class TextSelectionActionMenuDelegate implements SelectionActionMenuDeleg
         }
     }
 
-    private boolean shouldShowReadingMode(@MenuType int menuType) {
-        if (mTab.isDestroyed()) return false;
+    private boolean shouldShowReadingMode(@MenuType int menuType, boolean isSelectionReadOnly) {
+        if (mTab.isDestroyed() || !isSelectionReadOnly) return false;
 
         GURL pageUrl = mTab.getUrl();
         if (pageUrl == null || !pageUrl.isValid()) return false;

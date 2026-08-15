@@ -184,6 +184,18 @@ public class TextSelectionActionMenuDelegateTest {
     }
 
     @Test
+    public void testGetAdditionalMenuItems_editable() {
+        List<SelectionMenuItem> items =
+                mDelegate.getAdditionalMenuItems(
+                        MenuType.DROPDOWN,
+                        /* isSelectionPassword= */ false,
+                        /* isSelectionReadOnly= */ false,
+                        /* selectedText= */ "test");
+
+        assertFalse(containsId(items, R.id.contextmenu_open_in_reading_mode));
+    }
+
+    @Test
     public void testAskGemini_shownOnFloatingMenu() {
         enableAskGeminiForSelection();
 

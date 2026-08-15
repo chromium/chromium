@@ -72,11 +72,11 @@ public class SelectActionMenuHelper {
 
         boolean canPaste();
 
-        boolean canShare();
+        boolean canShare(@MenuType int menuType);
 
-        boolean canSelectAll();
+        boolean canSelectAll(@MenuType int menuType);
 
-        boolean canWebSearch();
+        boolean canWebSearch(@MenuType int menuType);
 
         boolean canPasteAsPlainText();
     }
@@ -203,11 +203,11 @@ public class SelectActionMenuHelper {
             } else if (item == DefaultItem.PASTE_AS_PLAIN_TEXT) {
                 if (delegate.canPasteAsPlainText()) menuItems.add(pasteAsPlainText(context, pos));
             } else if (item == DefaultItem.SHARE) {
-                if (delegate.canShare()) menuItems.add(share(context, pos, menuType));
+                if (delegate.canShare(menuType)) menuItems.add(share(context, pos, menuType));
             } else if (item == DefaultItem.SELECT_ALL) {
-                if (delegate.canSelectAll()) menuItems.add(selectAll(pos));
+                if (delegate.canSelectAll(menuType)) menuItems.add(selectAll(pos));
             } else if (item == DefaultItem.WEB_SEARCH) {
-                if (delegate.canWebSearch()) {
+                if (delegate.canWebSearch(menuType)) {
                     menuItems.add(
                             webSearch(
                                     context,

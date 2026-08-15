@@ -109,10 +109,10 @@ public class SelectActionMenuHelperTest {
         when(mDelegate.canCut()).thenReturn(true);
         when(mDelegate.canCopy()).thenReturn(true);
         when(mDelegate.canPaste()).thenReturn(true);
-        when(mDelegate.canSelectAll()).thenReturn(true);
-        when(mDelegate.canWebSearch()).thenReturn(true);
+        when(mDelegate.canSelectAll(anyInt())).thenReturn(true);
+        when(mDelegate.canWebSearch(anyInt())).thenReturn(true);
         when(mDelegate.canPasteAsPlainText()).thenReturn(true);
-        when(mDelegate.canShare()).thenReturn(true);
+        when(mDelegate.canShare(anyInt())).thenReturn(true);
     }
 
     @Test
@@ -149,6 +149,24 @@ public class SelectActionMenuHelperTest {
         assertEquals(R.id.select_action_menu_select_all, menuItems.get(4).id);
         assertEquals(R.id.select_action_menu_web_search, menuItems.get(5).id);
         assertEquals(R.id.select_action_menu_share, menuItems.get(6).id);
+    }
+
+    @Test
+    @Feature({"TextInput"})
+    public void testDefaultMenuItemsOrder_dropdown_cannotSelectAll() {
+        when(mDelegate.canSelectAll(MenuType.DROPDOWN)).thenReturn(false);
+        PendingSelectionMenu pendingMenu = new PendingSelectionMenu(mContext);
+        pendingMenu.addAll(
+                SelectActionMenuHelper.getDefaultItems(
+                        mContext, mDelegate, MenuType.DROPDOWN, "test", null));
+        List<SelectionMenuItem> menuItems = pendingMenu.getMenuItemsForTesting();
+        assertEquals(6, menuItems.size());
+        assertEquals(R.id.select_action_menu_cut, menuItems.get(0).id);
+        assertEquals(R.id.select_action_menu_copy, menuItems.get(1).id);
+        assertEquals(android.R.id.paste, menuItems.get(2).id);
+        assertEquals(android.R.id.pasteAsPlainText, menuItems.get(3).id);
+        assertEquals(R.id.select_action_menu_web_search, menuItems.get(4).id);
+        assertEquals(R.id.select_action_menu_share, menuItems.get(5).id);
     }
 
     @Test

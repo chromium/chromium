@@ -1111,17 +1111,17 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
 
     /** Checks if share action is available. */
     @Override
-    public boolean canShare() {
+    public boolean canShare(@MenuType int menuType) {
         return hasSelection()
-                && !isFocusedNodeEditable()
+                && (menuType == MenuType.DROPDOWN || !isFocusedNodeEditable())
                 && isSelectActionModeAllowed(MENU_ITEM_SHARE);
     }
 
     /** Checks if web search action is available. */
     @Override
-    public boolean canWebSearch() {
+    public boolean canWebSearch(@MenuType int menuType) {
         return hasSelection()
-                && !isFocusedNodeEditable()
+                && (menuType == MenuType.DROPDOWN || !isFocusedNodeEditable())
                 && !isIncognito()
                 && isSelectActionModeAllowed(MENU_ITEM_WEB_SEARCH);
     }
@@ -1483,8 +1483,8 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
      * @return true if the current selection can select all.
      */
     @Override
-    public boolean canSelectAll() {
-        return mCanSelectAll;
+    public boolean canSelectAll(@MenuType int menuType) {
+        return mCanSelectAll && (menuType == MenuType.FLOATING || isFocusedNodeEditable());
     }
 
     /**
