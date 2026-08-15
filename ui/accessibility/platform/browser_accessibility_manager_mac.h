@@ -103,6 +103,8 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityManagerMac
   friend class BrowserAccessibilityManager;
 
   friend class content::BrowserAccessibilityCocoaBrowserTest;
+
+  friend class BrowserAccessibilityMacTest;
 };
 
 }  // namespace ui

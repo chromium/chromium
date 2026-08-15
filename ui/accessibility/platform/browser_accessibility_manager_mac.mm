@@ -615,6 +615,12 @@ void BrowserAccessibilityManagerMac::OnSubtreeWillBeReparented(AXTree* tree,
   }
 }
 
+// TODO(crbug.com/545879268): the userInfo object returned by this function is
+// has different values than the userInfo object returned by WebKit for
+// selection changed notifications. WebKit's userInfo object respects
+// userIntent. If there is a VoiceOver bug that occurs at the same time this
+// event is emitted, it may be due to a difference in these values. See the
+// linked bug for a proposed refactor of this logic.
 NSDictionary* BrowserAccessibilityManagerMac::
     GetUserInfoForSelectedTextChangedNotification() {
   NSMutableDictionary* user_info = [NSMutableDictionary dictionary];
@@ -626,20 +632,27 @@ NSDictionary* BrowserAccessibilityManagerMac::
   user_info[NSAccessibilityTextSelectionChangedFocus] = @YES;
 
   // Try to detect when the text selection changes due to a focus change.
-  // This is necessary so that VoiceOver also announces information about the
-  // element that contains this selection.
-  // TODO(mrobinson): Determine definitively what the type of this text
-  // selection change is. This requires passing this information here from
-  // blink.
   BrowserAccessibility* focus_object = GetFocus();
   DCHECK(focus_object);
+  bool focus_changed = focus_object != GetFromAXNode(GetLastFocusedNode());
 
-  if (focus_object != GetFromAXNode(GetLastFocusedNode())) {
-    user_info[NSAccessibilityTextStateChangeTypeKey] =
-        @(AXTextStateChangeTypeSelectionMove);
-  } else {
+  // Detect when the text selection changes due to character inputs or
+  // deletions.
+  bool text_changed = !text_edits_.empty();
+
+  if (focus_changed == text_changed) {
     user_info[NSAccessibilityTextStateChangeTypeKey] =
         @(AXTextStateChangeTypeUnknown);
+  } else if (focus_changed) {
+    // This key is necessary so that VoiceOver also announces information about
+    // the element that contains this selection.
+    user_info[NSAccessibilityTextStateChangeTypeKey] =
+        @(AXTextStateChangeTypeSelectionMove);
+  } else if (text_changed) {
+    // This key prevents a bug where VoiceOver repeats placeholder
+    // information in text inputs while the user is typing.
+    user_info[NSAccessibilityTextStateChangeTypeKey] =
+        @(AXTextStateChangeTypeEdit);
   }
 
   focus_object = focus_object->PlatformGetLowestPlatformAncestor();

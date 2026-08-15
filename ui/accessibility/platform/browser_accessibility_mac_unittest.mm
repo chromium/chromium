@@ -317,6 +317,12 @@ class BrowserAccessibilityMacTest : public CocoaTest {
     ASSERT_TRUE(manager_->OnAccessibilityEvents(event_bundle));
   }
 
+  NSDictionary* GetUserInfoForSelectedTextChangedNotification() {
+    auto* manager_mac =
+        static_cast<BrowserAccessibilityManagerMac*>(manager_.get());
+    return manager_mac->GetUserInfoForSelectedTextChangedNotification();
+  }
+
   AXNodeData root_;
   BrowserAccessibilityCocoa* __strong accessibility_;
   TestAXNodeIdDelegate node_id_delegate_;
@@ -478,6 +484,56 @@ TEST_F(BrowserAccessibilityMacTest, TestComputeTextEdit) {
   text_edit = [accessibility_ computeTextEdit];
   EXPECT_EQ(u"new", text_edit.deleted_text);
   EXPECT_EQ(u"old", text_edit.inserted_text);
+}
+
+TEST_F(BrowserAccessibilityMacTest,
+       UserInfoForSelectedTextChangedNotificationIsEditForTextEdits) {
+  // Firing focus events requires a real delegate and events must not be
+  // suppressed for lack of window focus.
+  BrowserAccessibilityManager::NeverSuppressOrDelayEventsForTesting();
+  TestAXPlatformTreeManagerDelegate delegate;
+  delegate.is_root_frame_ = true;
+
+  root_ = AXNodeData();
+  root_.id = 1;
+  root_.role = ax::mojom::Role::kTextField;
+  root_.AddState(ax::mojom::State::kEditable);
+  AXTreeUpdate initial_update = MakeAXTreeUpdateForTesting(root_);
+  manager_ = std::make_unique<BrowserAccessibilityManagerMac>(
+      initial_update, node_id_delegate_, &delegate);
+  accessibility_ = ObjCCastStrict<BrowserAccessibilityCocoa>(
+      manager_->GetBrowserAccessibilityRoot()->GetNativeViewAccessible().Get());
+
+  // Move focus onto the text field. This also syncs the manager's notion of
+  // the "last focused node" with the current focus, so that a subsequent
+  // selected-text-changed notification won't be attributed to a focus move.
+  AXUpdatesAndEvents focus_bundle;
+  focus_bundle.updates.resize(1);
+  focus_bundle.updates[0].has_tree_data = true;
+  focus_bundle.updates[0].tree_data = initial_update.tree_data;
+  focus_bundle.updates[0].tree_data.focus_id = root_.id;
+  ASSERT_TRUE(manager_->OnAccessibilityEvents(focus_bundle));
+
+  // Focus hasn't moved and there are no pending text edits, so the change type
+  // should be unknown. This may change with crbug.com/545879268.
+  NSDictionary* user_info = GetUserInfoForSelectedTextChangedNotification();
+  EXPECT_NSEQ(@(AXTextStateChangeTypeUnknown),
+              user_info[NSAccessibilityTextStateChangeTypeKey]);
+
+  // Simulate the user typing a character into the field. Focus doesn't move,
+  // but a text edit is now pending for the focused node.
+  root_.SetValue("a");
+  AXUpdatesAndEvents edit_bundle;
+  edit_bundle.updates.resize(1);
+  edit_bundle.updates[0].nodes.push_back(root_);
+  ASSERT_TRUE(manager_->OnAccessibilityEvents(edit_bundle));
+
+  // This should not change with crbug.com/545879268, or if a change is
+  // necessary, make sure it does not cause the regression reported in
+  // https://issues.chromium.org/issues/512582992.
+  user_info = GetUserInfoForSelectedTextChangedNotification();
+  EXPECT_NSEQ(@(AXTextStateChangeTypeEdit),
+              user_info[NSAccessibilityTextStateChangeTypeKey]);
 }
 
 // Test Mac-specific table APIs.
