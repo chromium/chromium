@@ -8,14 +8,10 @@ option optimize_for = LITE_RUNTIME;
 
 package lens;
 
-// From third_party/omnibox_proto
 import "tool_mode.proto";
 import "tool_substate.proto";
 import "model_mode.proto";
-
-// From components/optimization_guide/proto/features
 import "actions_data.proto";
-
 import "aim_query.proto";
 import "modality_chip_props.proto";
 

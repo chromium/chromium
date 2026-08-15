@@ -337,6 +337,10 @@ enum IconResourceIds {
   // Icon: Google Symbols:sort_spark:FILL@0;ROND@50;wght@400;GRAD@0;opsz@24
   // AIM Threads History icon.
   SORT_SPARK = 106;
+
+  // Icon: Google Symbols:acute:FILL@0;ROND@50;wght@400;GRAD@0;opsz@24
+  // AIM 'Fast' model icon.
+  ACUTE = 107;
 }
 
 enum IconPositions {

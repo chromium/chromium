@@ -6,7 +6,6 @@
 # See README.chromium for details.
 
 import("//components/proto_extras/proto_extras.gni")
-import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 _proto_files = [

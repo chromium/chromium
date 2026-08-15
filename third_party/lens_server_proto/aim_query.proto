@@ -47,7 +47,6 @@ message LensImageQueryData {
   // Deprecated fields to match the Silk LensImageQueryData.
   reserved 3, 5;
 }
-
 // Metadata for context for the turn.
 message ContextTurnMetadata {
   int64 context_id = 1;
@@ -62,7 +61,6 @@ message ContextTurnMetadata {
     TabMetadata tab_metadata = 2;
   }
 }
-
 // The AIM model mode that is applied to a query.
 // Next ID: 4
 enum ModelMode {

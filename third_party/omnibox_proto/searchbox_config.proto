@@ -19,7 +19,7 @@ import "section_config.proto";
 import "tool_config.proto";
 
 // Configuration for the AI searchbox (e.g. input plate and fusebox)
-// Next ID: 13
+// Next ID: 15
 message SearchboxConfig {
   // The rule set to use for the searchbox.
   // This is deprecated (only used for legacy xGA client and Chrome)
@@ -50,4 +50,9 @@ message SearchboxConfig {
   optional string hint_text = 9;
 
 
+
+  // Account check token and timestamp for Safari-to-iGA redirect
+  // reconciliation.
+  string account_check_token = 13;
+  string account_check_timestamp = 14;
 }

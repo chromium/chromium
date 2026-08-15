@@ -1233,6 +1233,10 @@ ui::ImageModel OmniboxContextMenuController::GetIconForModel(
       return ui::ImageModel::FromVectorIcon(
           features::IsRoundedIconsEnabled() ? kTimerIcon : kTimerOldIcon,
           ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize);
+    case omnibox::ModelMode::MODEL_MODE_GEMINI_FLASH_LATEST:
+      return ui::ImageModel::FromVectorIcon(
+          kAcuteIcon, ui::kColorMenuIcon,
+          ui::SimpleMenuModel::kDefaultIconSize);
     default:
       return ui::ImageModel();
   }

@@ -254,6 +254,12 @@ export class ContextualActionMenuElement extends
           icon: 'composebox:timer',
         },
       ],
+      [
+        ModelMode.kGeminiFlashLatest,
+        {
+          icon: 'composebox:acute',
+        },
+      ],
     ]);
   }
 

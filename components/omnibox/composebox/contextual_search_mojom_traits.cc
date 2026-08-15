@@ -127,6 +127,12 @@ UsedModelMode EnumTraits<UsedModelMode, omnibox::ModelMode>::ToMojom(
       return UsedModelMode::kGeminiProAutoroute;
     case omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_NO_GEN_UI:
       return UsedModelMode::kGeminiProNoGenUi;
+    case omnibox::ModelMode::MODEL_MODE_GEMINI_FLASH_LATEST:
+      return UsedModelMode::kGeminiFlashLatest;
+    case omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_LATEST:
+      return UsedModelMode::kGeminiProLatest;
+    case omnibox::ModelMode::MODEL_MODE_GEMINI_PREVIEW:
+      return UsedModelMode::kGeminiPreview;
     // The proto compiler generates these sentinel values. We must handle them
     // to satisfy the compiler's exhaustiveness check (since we don't have a
     // default case), but they should never be encountered in practice.
@@ -152,6 +158,12 @@ omnibox::ModelMode EnumTraits<UsedModelMode, omnibox::ModelMode>::FromMojom(
       return omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_AUTOROUTE;
     case UsedModelMode::kGeminiProNoGenUi:
       return omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_NO_GEN_UI;
+    case UsedModelMode::kGeminiFlashLatest:
+      return omnibox::ModelMode::MODEL_MODE_GEMINI_FLASH_LATEST;
+    case UsedModelMode::kGeminiProLatest:
+      return omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_LATEST;
+    case UsedModelMode::kGeminiPreview:
+      return omnibox::ModelMode::MODEL_MODE_GEMINI_PREVIEW;
   }
   NOTREACHED();
 }

@@ -22,6 +22,9 @@ import "url_param.proto";
 // LINT.IfChange(ModelConfig)
 message ModelConfig {
   // The model mode.
+  // Note: Clients should use the *Value accessor variant (e.g. getModelValue())
+  // rather than enum accessors to be future-proof against new open enum values
+  // served by the backend without requiring client updates.
   ModelMode model = 1;
   // The label for the model in a menu.
   string menu_label = 2;

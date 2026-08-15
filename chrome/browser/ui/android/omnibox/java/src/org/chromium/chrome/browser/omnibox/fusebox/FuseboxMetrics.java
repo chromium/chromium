@@ -54,7 +54,10 @@ public class FuseboxMetrics {
     // LINT.IfChange(ToolMode)
     @VisibleForTesting /* package */ static final int TOOL_MODE_HISTOGRAM_BOUND = 12;
     // LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/enums.xml:OmniboxToolMode)
-    @VisibleForTesting /* package */ static final int MODEL_MODE_HISTOGRAM_BOUND = 5;
+    // LINT.IfChange(ModelMode)
+    @VisibleForTesting /* package */ static final int MODEL_MODE_HISTOGRAM_BOUND = 8;
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/enums.xml:OmniboxModelMode)
 
     // LINT.IfChange(AiModeActivationSource)
     @IntDef({

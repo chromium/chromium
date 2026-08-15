@@ -224,8 +224,11 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(OmniboxModelMode) -->
 
 <variants name="OmniboxModelMode">
+  <variant name="GeminiFlashLatest" summary="Gemini Flash Latest model"/>
+  <variant name="GeminiPreview" summary="Gemini Preview model"/>
   <variant name="GeminiPro" summary="Gemini Pro model"/>
   <variant name="GeminiProAutoroute" summary="Gemini Pro Autoroute model"/>
+  <variant name="GeminiProLatest" summary="Gemini Pro Latest model"/>
   <variant name="GeminiProNoGenUi" summary="Gemini Pro No-Gen-UI model"/>
   <variant name="GeminiRegular" summary="Gemini Regular model"/>
   <variant name="Unspecified" summary="Unspecified model"/>
