@@ -16,9 +16,9 @@ export function getHtml(this: ExtensionsMv2DeprecationPanelElement) {
 <div class="panel-background" id="panelContainer">
   <div class="panel-header">
     <cr-icon aria-hidden="true"
-        icon="${this.webuiRoundedIconsEnabled_
-            ? 'extensions-icons:chrome-extension'
-            : 'extensions-icons:my_extensions-old'}"
+        icon="${this.webuiRoundedIconsEnabled_ ?
+            'extensions-icons:chrome-extension' :
+            'extensions-icons:my_extensions-old'}"
         class="panel-header-icon">
     </cr-icon>
     <div class="panel-header-text">
@@ -52,7 +52,8 @@ export function getHtml(this: ExtensionsMv2DeprecationPanelElement) {
               ?hidden="${!this.showActionMenu_(item)}">
           </cr-icon-button>
         </div>
-      </div>`)}
+      </div>
+    `)}
 
     <cr-action-menu id="actionMenu">
       <button class="dropdown-item" id="findAlternativeAction"

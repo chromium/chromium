@@ -31,24 +31,26 @@ this text can be found by Ctrl + F because it isn't hidden. -->
       ${this.showAccountUploadButton_() ? html`
         <cr-icon-button id="account-upload-button" class="no-overlap"
             title="$i18n{itemUpload}" aria-label="$i18n{itemUpload}"
-            iron-icon="${this.webuiRoundedIconsEnabled_
-                ? 'extensions-icons:cloud-upload'
-                : 'extensions-icons:extension_cloud_upload-old'}"
+            iron-icon="${this.webuiRoundedIconsEnabled_ ?
+                'extensions-icons:cloud-upload' :
+                'extensions-icons:extension_cloud_upload-old'}"
             aria-describedby="a11yAssociation" @click="${this.onUploadClick_}">
-        </cr-icon-button>` : ''}
+        </cr-icon-button>
+      ` : ''}
       ${this.showDevReloadButton_() ? html`
         <cr-icon-button id="dev-reload-button" class="icon-refresh no-overlap"
             title="$i18n{itemReload}" aria-label="$i18n{itemReload}"
             aria-describedby="a11yAssociation" @click="${this.onReloadClick_}">
-        </cr-icon-button>` : ''}
+        </cr-icon-button>
+      ` : ''}
     </div>
 
     ${this.showSafetyCheck_ ? html`
       <div id="safetyCheckWarningContainer" class="message-container">
         <cr-icon aria-hidden="true"
-            icon="${this.webuiRoundedIconsEnabled_
-                ? 'extensions-icons:chrome-extension'
-                : 'extensions-icons:my_extensions-old'}"
+            icon="${this.webuiRoundedIconsEnabled_ ?
+                'extensions-icons:chrome-extension' :
+                'extensions-icons:my_extensions-old'}"
             class="message-icon">
         </cr-icon>
         <div class="message-text">
@@ -65,7 +67,8 @@ this text can be found by Ctrl + F because it isn't hidden. -->
         <cr-button class="action-button" @click="${this.onRemoveClick_}">
           $i18n{remove}
         </cr-button>
-      </div>` : ''}
+      </div>
+    ` : ''}
 
     ${this.shouldShowMv2DeprecationMessage_() ? html`
       <div id="mv2DeprecationMessage" class="message-container">
@@ -92,13 +95,14 @@ this text can be found by Ctrl + F because it isn't hidden. -->
         </cr-icon-button>
         <cr-action-menu id="actionMenu">
           <button class="dropdown-item" id="findAlternativeAction"
-              ?hidden="${!this.
-                  shouldShowMv2DeprecationFindAlternativeAction_()}"
+              ?hidden="${
+                  !this.shouldShowMv2DeprecationFindAlternativeAction_()}"
               @click="${this.onFindAlternativeActionClick_}">
             $i18n{mv2DeprecationPanelFindAlternativeButton}
           </button>
         </cr-action-menu>
-      </div>` : ''}
+      </div>
+    ` : ''}
     <div class="cr-row first control-line" id="enable-section">
       <span class="${this.computeEnabledStyle_()}">
         ${this.computeEnabledText_()}
@@ -113,7 +117,8 @@ this text can be found by Ctrl + F because it isn't hidden. -->
           <cr-button id="terminated-reload-button" class="action-button"
               @click="${this.onReloadClick_}">
             $i18n{itemReload}
-          </cr-button>` : ''}
+          </cr-button>
+        ` : ''}
         <cr-tooltip-icon id="parentDisabledPermissionsToolTip"
             ?hidden="${!this.data.disableReasons.parentDisabledPermissions}"
             tooltip-text="$i18n{parentDisabledPermissions}"
@@ -122,8 +127,7 @@ this text can be found by Ctrl + F because it isn't hidden. -->
         </cr-tooltip-icon>
         <cr-toggle id="enableToggle"
             aria-label="${this.getEnableToggleAriaLabel_()}"
-            aria-describedby="name"
-            ?checked="${this.isEnabled_()}"
+            aria-describedby="name" ?checked="${this.isEnabled_()}"
             @change="${this.onEnableToggleChange_}"
             ?disabled="${!this.isEnableToggleEnabled_()}"
             ?hidden="${!this.showEnableToggle_()}">
@@ -143,7 +147,8 @@ this text can be found by Ctrl + F because it isn't hidden. -->
             <cr-button id="warnings-reload-button" class="action-button"
                 @click="${this.onReloadClick_}">
               $i18n{itemReload}
-            </cr-button>` : ''}
+            </cr-button>
+          ` : ''}
         </div>
         <div class="cr-row continuation warning" id="suspicious-warning"
             ?hidden="${!this.data.disableReasons.suspiciousInstall}">
@@ -187,13 +192,14 @@ this text can be found by Ctrl + F because it isn't hidden. -->
           <cr-icon class="warning-icon" icon="cr:warning-filled"></cr-icon>
           <span>$i18n{itemUnsupportedDeveloperModeDetails}</span>
         </div>
-      </div>` : ''}
+      </div>
+    ` : ''}
     ${this.showAllowlistWarning_() ? html`
       <div id="allowlist-warning" class="cr-row continuation">
         <cr-icon class="warning-icon"
-            icon="${this.webuiRoundedIconsEnabled_
-                ? 'extensions-icons:android-security-privacy-alert'
-                : 'extensions-icons:safebrowsing_warning-old'}">
+            icon="${this.webuiRoundedIconsEnabled_ ?
+                'extensions-icons:android-security-privacy-alert' :
+                'extensions-icons:safebrowsing_warning-old'}">
         </cr-icon>
         <span class="cr-secondary-text">
           $i18n{itemAllowlistWarning}
@@ -202,7 +208,8 @@ this text can be found by Ctrl + F because it isn't hidden. -->
             $i18n{learnMore}
           </a>
         </span>
-      </div>` : ''}
+      </div>
+    ` : ''}
     <div class="section">
       <div class="section-title" role="heading" aria-level="2">
         $i18n{itemDescriptionLabel}
@@ -248,10 +255,12 @@ this text can be found by Ctrl + F because it isn't hidden. -->
                     data-index="${index}" @click="${this.onInspectClick_}">
                   ${this.computeInspectLabel_(item)}
                 </a>
-              </li>`)}
+              </li>
+            `)}
           </ul>
         </div>
-      </div>` : ''}
+      </div>
+    ` : ''}
     <div class="section hr">
       <div class="section-title" role="heading" aria-level="2">
         $i18n{itemPermissions}
@@ -267,9 +276,11 @@ this text can be found by Ctrl + F because it isn't hidden. -->
               ${item.message}
               <ul ?hidden="${!item.submessages.length}">
                 ${item.submessages.map(submessage => html`
-                  <li>${submessage}</li>`)}
+                  <li>${submessage}</li>
+                `)}
               </ul>
-            </li>`)}
+            </li>
+          `)}
           <li ?hidden="${this.showSiteAccessSection_()}">
             $i18n{itemSiteAccessEmpty}
           </li>
@@ -289,23 +300,25 @@ this text can be found by Ctrl + F because it isn't hidden. -->
           ${this.showFreeformRuntimeHostPermissions_() ? html`
             <extensions-runtime-host-permissions
                 .permissions="${this.data.permissions.runtimeHostPermissions!}"
-                ?enable-enhanced-site-controls="${this
-                    .enableEnhancedSiteControls}"
+                ?enable-enhanced-site-controls="${
+                    this.enableEnhancedSiteControls}"
                 .delegate="${this.delegate as ServiceInterface}"
                 item-id="${this.data.id}">
-            </extensions-runtime-host-permissions>` : ''}
+            </extensions-runtime-host-permissions>
+          ` : ''}
           ${this.showHostPermissionsToggleList_() ? html`
             <extensions-host-permissions-toggle-list
                 .permissions="${this.data.permissions.runtimeHostPermissions!}"
-                ?enable-enhanced-site-controls="${this.
-                    enableEnhancedSiteControls}"
+                ?enable-enhanced-site-controls="${
+                    this.enableEnhancedSiteControls}"
                 .delegate="${this.delegate as ServiceInterface}"
                 item-id="${this.data.id}">
-            </extensions-host-permissions-toggle-list>` : ''}
+            </extensions-host-permissions-toggle-list>
+          ` : ''}
           ${this.showEnableAccessRequestsToggle_() ? html`
             <extensions-toggle-row id="show-access-requests-toggle"
-                ?checked="${this.data.showAccessRequestsInToolbar}"
-                class="hr" @change="${this.onShowAccessRequestsChange_}">
+                ?checked="${this.data.showAccessRequestsInToolbar}" class="hr"
+                @change="${this.onShowAccessRequestsChange_}">
               <div id="access-toggle-and-link">
                 <span>$i18n{itemShowAccessRequestsInToolbar}</span>
                 <a class="link-icon-button"
@@ -315,18 +328,21 @@ this text can be found by Ctrl + F because it isn't hidden. -->
                   <cr-icon icon="cr:help"></cr-icon>
                 </a>
               </div>
-            </extensions-toggle-row>` : ''}
+            </extensions-toggle-row>
+          ` : ''}
         </div>
-      </div>` : ''}
-      ${this.showUserScriptSectionToggle_() ? html`
-        <extensions-toggle-row id="allow-user-scripts"
-        ?checked="${this.data.userScriptsAccess.isActive}" class="hr"
-              @change="${this.onAllowUserScriptsChange_}">
-          <div>
-            <div>$i18n{itemAllowUserScripts}</div>
-            <div class="section-content">$i18n{userScriptInfoWarning}</div>
-          </div>
-        </extensions-toggle-row>` : ''}
+      </div>
+    ` : ''}
+    ${this.showUserScriptSectionToggle_() ? html`
+      <extensions-toggle-row id="allow-user-scripts"
+          ?checked="${this.data.userScriptsAccess.isActive}" class="hr"
+          @change="${this.onAllowUserScriptsChange_}">
+        <div>
+          <div>$i18n{itemAllowUserScripts}</div>
+          <div class="section-content">$i18n{userScriptInfoWarning}</div>
+        </div>
+      </extensions-toggle-row>
+    ` : ''}
     ${this.hasDependentExtensions_() ? html`
       <div class="section hr">
         <div class="section-title" role="heading" aria-level="2">
@@ -335,12 +351,15 @@ this text can be found by Ctrl + F because it isn't hidden. -->
         <div class="section-content">
           <ul id="dependent-extensions-list">
             ${this.data.dependentExtensions.map(item => html`
-              <li>${this.computeDependentEntry_(item)}</li>`)}
+              <li>${this.computeDependentEntry_(item)}</li>
+            `)}
           </ul>
         </div>
-      </div>` : ''}
+      </div>
+    ` : ''}
     <cr-link-row class="hr" id="siteSettings" label="$i18n{siteSettings}"
-        @click="${this.onSiteSettingsClick_}" external></cr-link-row>
+        @click="${this.onSiteSettingsClick_}" external>
+    </cr-link-row>
     ${this.shouldShowOptionsSection_() ? html`
       <div id="options-section">
         ${this.canPinToToolbar_() ? html`
@@ -348,7 +367,8 @@ this text can be found by Ctrl + F because it isn't hidden. -->
               ?checked="${this.data.pinnedToToolbar!}" class="hr"
               @change="${this.onPinnedToToolbarChange_}">
             <span>$i18n{itemPinToToolbar}</span>
-          </extensions-toggle-row>` : ''}
+          </extensions-toggle-row>
+        ` : ''}
         ${this.shouldShowIncognitoOption_() ? html`
           <extensions-toggle-row id="allow-incognito"
               ?checked="${this.data.incognitoAccess.isActive}" class="hr"
@@ -361,7 +381,8 @@ this text can be found by Ctrl + F because it isn't hidden. -->
                 $i18n{pendingChangeWarning}
               </div>
             </div>
-          </extensions-toggle-row>` : ''}
+          </extensions-toggle-row>
+        ` : ''}
         ${this.data.fileAccess.isEnabled ? html`
           <extensions-toggle-row id="allow-on-file-urls"
               ?checked="${this.data.fileAccess.isActive}" class="hr"
@@ -373,19 +394,21 @@ this text can be found by Ctrl + F because it isn't hidden. -->
                 $i18n{pendingChangeWarning}
               </div>
             </div>
-          </extensions-toggle-row>` : ''}
+          </extensions-toggle-row>
+        ` : ''}
         ${this.data.errorCollection.isEnabled ? html`
           <extensions-toggle-row id="collect-errors"
               ?checked="${this.data.errorCollection.isActive}" class="hr"
               @change="${this.onCollectErrorsChange_}">
             <span>$i18n{itemCollectErrors}</span>
-          </extensions-toggle-row>` : ''}
-      </div>` : ''}
+          </extensions-toggle-row>
+        ` : ''}
+      </div>
+    ` : ''}
     <cr-link-row class="hr" id="extensionsOptions"
         ?disabled="${!this.isEnabled_()}"
-        ?hidden="${!this.shouldShowOptionsLink_()}"
-        label="$i18n{itemOptions}" @click="${this.onExtensionOptionsClick_}"
-        external>
+        ?hidden="${!this.shouldShowOptionsLink_()}" label="$i18n{itemOptions}"
+        @click="${this.onExtensionOptionsClick_}" external>
     </cr-link-row>
     <cr-link-row class="hr" id="extensionsActivityLogLink"
         ?hidden="${!this.showActivityLog}" label="$i18n{viewActivityLog}"

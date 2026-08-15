@@ -26,7 +26,8 @@ export function getHtml(this: ExtensionsSitePermissionsListElement) {
       <cr-icon-button class="icon-more-vert no-overlap" data-site="${item}"
           @click="${this.onDotsClick_}">
       </cr-icon-button>
-    </div>`)}
+    </div>
+  `)}
 </div>
 
 <cr-action-menu id="siteActionMenu">
@@ -48,14 +49,16 @@ ${this.showEditSiteUrlDialog_ ? html`
   <site-permissions-edit-url-dialog .delegate="${this.delegate}"
       .siteToEdit="${this.siteToEdit_}" .siteSet="${this.siteSet}"
       @close="${this.onEditSiteUrlDialogClose_}">
-  </site-permissions-edit-url-dialog>` : ''}
+  </site-permissions-edit-url-dialog>
+` : ''}
 
 ${this.showEditSitePermissionsDialog_ ? html`
   <site-permissions-edit-permissions-dialog .delegate="${this.delegate}"
       .extensions="${this.extensions}" .site="${this.siteToEdit_ || ''}"
       .originalSiteSet="${this.siteSet}"
       @close="${this.onEditSitePermissionsDialogClose_}">
-  </site-permissions-edit-permissions-dialog>` : ''}
+  </site-permissions-edit-permissions-dialog>
+` : ''}
 <!--_html_template_end_-->`;
   // clang-format on
 }

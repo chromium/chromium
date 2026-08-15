@@ -23,9 +23,9 @@ export function getHtml(this: ExtensionsSitePermissionsBySiteElement) {
       ${this.siteGroups_.map((item, index) => html`
         <site-permissions-site-group .data="${item}"
             .delegate="${this.delegate as ServiceInterface}"
-            .extensions="${this.extensions}"
-            list-index="${index}">
-        </site-permissions-site-group>`)}
+            .extensions="${this.extensions}" list-index="${index}">
+        </site-permissions-site-group>
+      `)}
     </div>
   </div>
 </div>

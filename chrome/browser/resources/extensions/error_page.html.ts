@@ -20,7 +20,8 @@ export function getHtml(this: ExtensionsErrorPageElement) {
         <cr-icon-button id="dev-reload-button" class="icon-refresh no-overlap"
             title="$i18n{itemReload}" aria-label="$i18n{itemReload}"
             aria-describedby="a11yAssociation" @click="${this.onReloadClick_}">
-        </cr-icon-button>` : ''}
+        </cr-icon-button>
+      ` : ''}
       <cr-button @click="${this.onClearAllClick_}"
           ?hidden="${!this.entries_.length}">
         $i18n{clearAll}
@@ -41,8 +42,7 @@ export function getHtml(this: ExtensionsErrorPageElement) {
                 <div id="${entry.id}" class="error-message">
                   ${entry.message}
                 </div>
-                <div class="cr-icon ${this.iconName_(index)}">
-                </div>
+                <div class="cr-icon ${this.iconName_(index)}"></div>
               </div>
               <div class="separator"></div>
               <cr-icon-button class="icon-delete-gray"
@@ -76,22 +76,26 @@ export function getHtml(this: ExtensionsErrorPageElement) {
                           ?hidden="${!this.shouldDisplayFrame_(item.url)}"
                           class="${this.getStackFrameClass_(item)}">
                         ${this.getStackTraceLabel_(item)}
-                      </li>`)}
+                      </li>
+                    `)}
                   </ul>
-                  ${(entry as chrome.developerPrivate.RuntimeError)
-                      .canInspect ? html`
-                  <cr-button class="view-devtools-button"
-                      data-error-index="${index}"
-                      @click="${this.onViewInDevToolsClick_}">
+                  ${(entry as chrome.developerPrivate.RuntimeError).canInspect ?
+                      html`
+                    <cr-button class="view-devtools-button"
+                        data-error-index="${index}"
+                        @click="${this.onViewInDevToolsClick_}">
                       $i18n{viewInDevTools}
-                  </cr-button>` : ''}` : ''}
+                    </cr-button>
+                  ` : ''}
+                ` : ''}
                 <extensions-code-section .code="${this.code_}"
                     ?is-active="${this.isOpened_(index)}"
                     could-not-display-code="$i18n{noErrorsToShow}">
                 </extensions-code-section>
               </div>
             </cr-collapse>
-          </div>`)}
+          </div>
+        `)}
       </div>
     </div>
   </div>

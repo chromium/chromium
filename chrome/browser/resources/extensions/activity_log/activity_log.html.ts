@@ -18,7 +18,8 @@ export function getHtml(this: ExtensionsActivityLogElement) {
           aria-label="$i18n{back}" @click="${this.onCloseButtonClick_}">
       </cr-icon-button>
       ${!this.isPlaceholder_() ? html`
-        <img id="icon" src="${this.getExtensionIconUrl_()}" alt="">` : ''}
+        <img id="icon" src="${this.getExtensionIconUrl_()}" alt="">
+      ` : ''}
       <div class="cr-title-text">
         ${this.getActivityLogHeading_()}
       </div>
@@ -32,7 +33,8 @@ export function getHtml(this: ExtensionsActivityLogElement) {
         ${this.isHistoryTabSelected_() ? html`
           <activity-log-history extension-id="${this.extensionInfo.id}"
               .delegate="${this.delegate as ServiceInterface}">
-          </activity-log-history>` : ''}
+          </activity-log-history>
+        ` : ''}
       </div>
       <div>
         <activity-log-stream extension-id="${this.extensionInfo.id}"

@@ -38,7 +38,8 @@ export function getHtml(this: SitePermissionsEditPermissionsDialogElement) {
             name="${chrome.developerPrivate.SiteSet.EXTENSION_SPECIFIED}"
             label="$i18n{editSitePermissionsCustomizePerExtension}">
         </cr-radio-button>
-      </cr-radio-group>` : ''}
+      </cr-radio-group>
+    ` : ''}
   </div>
   <div slot="body">
     ${this.showExtensionSiteAccessData_() ? html`
@@ -51,26 +52,31 @@ export function getHtml(this: SitePermissionsEditPermissionsDialogElement) {
                 ?disabled="${item.addedByPolicy}"
                 @change="${this.onHostAccessChange_}" data-index="${index}">
               <option value="${chrome.developerPrivate.HostAccess.ON_CLICK}"
-                  .selected="${this.isSelected_(item.id, item.siteAccess,
+                  .selected="${this.isSelected_(
+                      item.id, item.siteAccess,
                       chrome.developerPrivate.HostAccess.ON_CLICK)}">
                 $i18n{sitePermissionsAskOnEveryVisit}
               </option>
               <option
-                  value="${chrome.developerPrivate.HostAccess
-                      .ON_SPECIFIC_SITES}"
-                  .selected="${this.isSelected_(item.id, item.siteAccess,
+                  value="${
+                      chrome.developerPrivate.HostAccess.ON_SPECIFIC_SITES}"
+                  .selected="${this.isSelected_(
+                      item.id, item.siteAccess,
                       chrome.developerPrivate.HostAccess.ON_SPECIFIC_SITES)}">
                 $i18n{sitePermissionsAlwaysOnThisSite}
               </option>
               <option value="${chrome.developerPrivate.HostAccess.ON_ALL_SITES}"
-                  .selected="${this.isSelected_(item.id, item.siteAccess,
+                  .selected="${this.isSelected_(
+                      item.id, item.siteAccess,
                       chrome.developerPrivate.HostAccess.ON_ALL_SITES)}"
                   ?disabled="${!item.canRequestAllSites}">
                 $i18n{sitePermissionsAlwaysOnAllSites}
               </option>
             </select>
-          </div>`)}
-      </div>` : ''}
+          </div>
+        `)}
+      </div>
+    ` : ''}
   </div>
   <div slot="button-container">
     <cr-button class="cancel-button" @click="${this.onCancelClick_}">

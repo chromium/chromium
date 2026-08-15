@@ -43,7 +43,8 @@ export function getHtml(this: ExtensionsPackDialogElement) {
 ${this.lastResponse_ ? html`
   <extensions-pack-dialog-alert .model="${this.lastResponse_}"
       @close="${this.onAlertClose_}">
-  </extensions-pack-dialog-alert>` : ''}
+  </extensions-pack-dialog-alert>
+` : ''}
 <!--_html_template_end_-->`;
   // clang-format on
 }

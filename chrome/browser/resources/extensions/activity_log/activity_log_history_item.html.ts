@@ -36,7 +36,8 @@ export function getHtml(this: ActivityLogHistoryItemElement) {
       <span class="page-url-count" ?hidden="${!this.shouldShowPageUrlCount_()}">
         ${item.count}
       </span>
-    </div>`)}
+    </div>
+  `)}
 </div>
 <!--_html_template_end_-->`;
   // clang-format on

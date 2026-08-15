@@ -30,7 +30,8 @@ export function getHtml(this: ActivityLogStreamItemElement) {
       <div class="list-item">
         <span class="index">${item.index}</span>
         <span class="arg">${item.arg}</span>
-      </div>`)}
+      </div>
+    `)}
   </div>
   <div id="web-request-section" ?hidden="${!this.hasWebRequestInfo_()}">
     <span class="expanded-data-heading">$i18n{webRequestInfoHeading}</span>

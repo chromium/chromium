@@ -21,8 +21,11 @@ export function getHtml(this: ActivityLogStreamElement) {
   </cr-search-field>
   <cr-button id="toggle-stream-button" @click="${this.onToggleButtonClick_}">
     <span>
-      ${this.isStreamOn_ ?
-          html`$i18n{stopActivityStream}` : html`$i18n{startActivityStream}`}
+      ${this.isStreamOn_ ? html`
+        $i18n{stopActivityStream}
+      ` : html`
+        $i18n{startActivityStream}
+      `}
     </span>
   </cr-button>
   <cr-button class="clear-activities-button"
@@ -43,17 +46,16 @@ export function getHtml(this: ActivityLogStreamElement) {
     ?hidden="${!this.shouldShowEmptySearchMessage_()}">
   $i18n{noSearchResults}
 </div>
-<div class="activity-table-headings"
-    ?hidden="${this.isFilteredStreamEmpty_()}">
+<div class="activity-table-headings" ?hidden="${this.isFilteredStreamEmpty_()}">
   <span id="activity-type">$i18n{activityLogTypeColumn}</span>
   <span id="activity-key">$i18n{activityLogNameColumn}</span>
   <span id="activity-time">$i18n{activityLogTimeColumn}</span>
 </div>
-<cr-infinite-list id="activityList" .items="${this.filteredActivityStream_}" item-size="56"
-    chunk-size="10"
+<cr-infinite-list id="activityList" .items="${this.filteredActivityStream_}"
+    item-size="56" chunk-size="10"
     .template="${(item: StreamItem) => html`
-        <activity-log-stream-item .data="${item}">
-        </activity-log-stream-item>`}">
+      <activity-log-stream-item .data="${item}"></activity-log-stream-item>
+    `}">
 </cr-infinite-list>
 <!--_html_template_end_-->`;
   // clang-format on

@@ -29,10 +29,12 @@ export function getHtml(this: SitePermissionsSiteGroupElement) {
     <cr-expand-button no-hover id="expand-sites-button"
         ?expanded="${this.expanded_}"
         @expanded-changed="${this.onExpandedChanged_}">
-    </cr-expand-button>` : html`
+    </cr-expand-button>
+  ` : html`
     <cr-icon-button class="subpage-arrow" id="edit-one-site-button"
         @click="${this.onEditSiteClick_}">
-    </cr-icon-button>`}
+    </cr-icon-button>
+  `}
 </div>
 <div id="sites-list" ?hidden="${!this.expanded_}">
   ${this.data.sites.map((item, index) => html`
@@ -55,7 +57,8 @@ export function getHtml(this: SitePermissionsSiteGroupElement) {
       <cr-icon-button class="subpage-arrow" data-index="${index}"
           @click="${this.onEditSiteInListClick_}">
       </cr-icon-button>
-    </div>`)}
+    </div>
+  `)}
 </div>
 
 ${this.showEditSitePermissionsDialog_ ? html`
@@ -63,7 +66,8 @@ ${this.showEditSitePermissionsDialog_ ? html`
       .extensions="${this.extensions}" .site="${this.siteToEdit_!.site}"
       .originalSiteSet="${this.siteToEdit_!.siteSet}"
       @close="${this.onEditSitePermissionsDialogClose_}">
-  </site-permissions-edit-permissions-dialog>` : ''}
+  </site-permissions-edit-permissions-dialog>
+` : ''}
 <!--_html_template_end_-->`;
   // clang-format on
 }

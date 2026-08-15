@@ -47,12 +47,13 @@ ${!this.enableEnhancedSiteControls ? html`
         </select>
       </div>
     </div>
-  </div>` : html`
+  </div>
+` : html`
   <div id="new-permissions-mode">
     <div id="new-section-heading">
       <div id="new-section-heading-title">
         <span id="new-section-heading-text">
-            $i18n{newHostPermissionsHeading}
+          $i18n{newHostPermissionsHeading}
         </span>
         <a class="link-icon-button"
             aria-label="$i18n{permissionsLearnMoreLabel}"
@@ -91,7 +92,8 @@ ${!this.enableEnhancedSiteControls ? html`
         </cr-button>
       </div>
     </div>
-  </div>`}
+  </div>
+`}
 
 ${this.showSpecificSites_() ? html`
   <ul id="hosts">
@@ -115,13 +117,15 @@ ${this.showSpecificSites_() ? html`
             title="$i18n{hostPermissionsEdit}"
             ?hidden="${this.enableEnhancedSiteControls}">
         </cr-icon-button>
-      </li>`)}
+      </li>
+    `)}
     <li ?hidden="${this.enableEnhancedSiteControls}">
       <a id="add-host" is="action-link" @click="${this.onAddHostClick_}">
         $i18n{itemSiteAccessAddHost}
       </a>
     </li>
-  </ul>` : ''}
+  </ul>
+` : ''}
 
 <cr-action-menu id="hostActionMenu" role-description="$i18n{menu}">
   <button class="dropdown-item" id="action-menu-edit"
@@ -135,13 +139,13 @@ ${this.showSpecificSites_() ? html`
 </cr-action-menu>
 ${this.showHostDialog_ ? html`
   <extensions-runtime-hosts-dialog
-      .delegate="${this.delegate as ServiceInterface}"
-      .itemId="${this.itemId}"
+      .delegate="${this.delegate as ServiceInterface}" .itemId="${this.itemId}"
       .enableEnhancedSiteControls="${this.enableEnhancedSiteControls}"
       .currentSite="${this.hostDialogModel_}"
       .updateHostAccess="${this.dialogShouldUpdateHostAccess_()}"
       @close="${this.onHostDialogClose_}" @cancel="${this.onHostDialogCancel_}">
-  </extensions-runtime-hosts-dialog>` : ''}
+  </extensions-runtime-hosts-dialog>
+` : ''}
 ${this.showRemoveSiteDialog_ ? html`
   <cr-dialog id="removeSitesDialog"
       @cancel="${this.onRemoveSitesWarningCancel_}" show-on-attach>
@@ -156,7 +160,8 @@ ${this.showRemoveSiteDialog_ ? html`
         $i18n{remove}
       </cr-button>
     </div>
-  </cr-dialog>` : ''}
+  </cr-dialog>
+` : ''}
 <!--_html_template_end_-->`;
   // clang-format on
 }

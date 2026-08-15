@@ -51,8 +51,8 @@ export function getHtml(this: ActivityLogHistoryElement) {
 </div>
 <div id="activity-list" ?hidden="${!this.shouldShowActivities_()}">
   ${this.activityData_.map(item => html`
-    <activity-log-history-item .data="${item}">
-    </activity-log-history-item>`)}
+    <activity-log-history-item .data="${item}"></activity-log-history-item>
+  `)}
 </div>
 <!--_html_template_end_-->`;
   // clang-format on

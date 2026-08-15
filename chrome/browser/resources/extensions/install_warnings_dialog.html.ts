@@ -13,7 +13,9 @@ export function getHtml(this: InstallWarningsDialogElement) {
   <div slot="title">$i18n{installWarnings}</div>
   <div slot="body">
     <ul>
-      ${this.installWarnings.map(item => html`<li>${item}</li>`)}
+      ${this.installWarnings.map(item => html`
+        <li>${item}</li>
+      `)}
     </ul>
   </div>
   <div slot="button-container">

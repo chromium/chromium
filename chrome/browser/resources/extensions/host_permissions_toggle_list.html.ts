@@ -36,8 +36,8 @@ ${this.getSortedHosts_().map(item => html`
   <div class="toggle-section site-toggle">
     <extensions-toggle-row ?checked="${this.isItemChecked_(item)}"
         class="host-toggle no-end-padding"
-        ?disabled="${this.allowedOnAllHosts_()}"
-        data-host="${item.host}" @change="${this.onHostAccessChange_}">
+        ?disabled="${this.allowedOnAllHosts_()}" data-host="${item.host}"
+        @change="${this.onHostAccessChange_}">
       <div class="site-row">
         <div class="site-favicon"
             .style="background-image:${this.getFaviconUrl_(item.host)}"
@@ -46,13 +46,15 @@ ${this.getSortedHosts_().map(item => html`
         <span>${item.host}</span>
       </div>
     </extensions-toggle-row>
-  </div>`)}
+  </div>
+`)}
 
 ${this.showMatchingRestrictedSitesDialog_ ? html`
   <extensions-restricted-sites-dialog
       .firstRestrictedSite="${this.matchingRestrictedSites_[0]!}"
       @close="${this.onMatchingRestrictedSitesDialogClose_}">
-  </extensions-restricted-sites-dialog>` : ''}
+  </extensions-restricted-sites-dialog>
+` : ''}
 <!--_html_template_end_-->`;
   // clang-format on
 }

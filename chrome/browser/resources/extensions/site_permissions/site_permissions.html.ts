@@ -18,7 +18,8 @@ export function getHtml(this: ExtensionsSitePermissionsElement) {
             .extensions="${this.extensions}" header="$i18n{permittedSites}"
             .siteSet="${chrome.developerPrivate.SiteSet.USER_PERMITTED}"
             .sites="${this.permittedSites}">
-        </site-permissions-list>` : ''}
+        </site-permissions-list>
+      ` : ''}
       <site-permissions-list .delegate="${this.delegate}"
           .extensions="${this.extensions}" header="$i18n{restrictedSites}"
           .siteSet="${chrome.developerPrivate.SiteSet.USER_RESTRICTED}"

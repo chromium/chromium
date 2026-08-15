@@ -19,7 +19,8 @@ export function getHtml(this: ExtensionsItemListElement) {
         <extensions-review-panel .extensions="${this.unsafeExtensions_}"
             .delegate="${this.delegate as ServiceInterface}">
         </extensions-review-panel>
-      </div>` : ''}
+      </div>
+    ` : ''}
 
     ${this.shouldShowMv2DeprecationPanel_() ? html`
       <div class="items-container panel">
@@ -28,7 +29,8 @@ export function getHtml(this: ExtensionsItemListElement) {
             .delegate="${this.delegate as ServiceInterface}"
             ?show-title="${this.showSafetyCheckReviewPanel_}">
         </extensions-mv2-deprecation-panel>
-      </div>` : ''}
+      </div>
+    ` : ''}
 
     <div id="no-items" class="empty-list-message"
         ?hidden="${!this.shouldShowEmptyItemsMessage_()}">
@@ -47,7 +49,8 @@ export function getHtml(this: ExtensionsItemListElement) {
       <h2 class="section-header items-container">
         <span class="section-header-contents">
           <span>$i18n{extensionsSectionHeader}</span>
-          <span id="pinned-toggle-container" ?hidden="${!this.showExtensionsPinnedByDefault_}">
+          <span id="pinned-toggle-container"
+              ?hidden="${!this.showExtensionsPinnedByDefault_}">
             <span id="pinned-toggle-label">$i18n{pinNewExtensions}</span>
             <cr-toggle id="pinned-toggle"
                 ?checked="${this.extensionsPinnedByDefault}"
@@ -68,7 +71,8 @@ export function getHtml(this: ExtensionsItemListElement) {
                   this.hasSafetyCheckTriggeringExtension_()}"
               .delegate="${this.delegate as ServiceInterface}"
               ?in-dev-mode="${this.inDevMode}">
-          </extensions-item>`, 6)}
+          </extensions-item>
+        `, 6)}
       </div>
     </div>
 
@@ -81,7 +85,8 @@ export function getHtml(this: ExtensionsItemListElement) {
           <extensions-item id="${item.id}" .data="${item}"
               .delegate="${this.delegate as ServiceInterface}"
               ?in-dev-mode="${this.inDevMode}">
-          </extensions-item>`, 6)}
+          </extensions-item>
+        `, 6)}
       </div>
     </div>
   </div>

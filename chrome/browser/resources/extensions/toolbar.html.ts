@@ -26,18 +26,19 @@ export function getHtml(this: ToolbarElement) {
         aria-labelledby="devModeLabel">
     </cr-toggle>
   </div>
-  <if expr="is_android">
-    <picture slot="product-logo">
-      <source media="(prefers-color-scheme: dark)"
-          srcset="//resources/images/chrome_logo_dark.svg">
-      <img srcset="images/product_logo.png" role="presentation">
-    </picture>
-  </if>
+<if expr="is_android">
+  <picture slot="product-logo">
+    <source media="(prefers-color-scheme: dark)"
+        srcset="//resources/images/chrome_logo_dark.svg">
+    <img srcset="images/product_logo.png" role="presentation">
+  </picture>
+</if>
 </cr-toolbar>
 ${this.showPackDialog_ ? html`
   <extensions-pack-dialog .delegate="${this.delegate as ServiceInterface}"
       @close="${this.onPackDialogClose_}">
-  </extensions-pack-dialog>` : ''}
+  </extensions-pack-dialog>
+` : ''}
 <div id="devDrawer" ?expanded="${this.expanded_}">
   <div id="buttonStrip">
     <cr-button ?hidden="${!this.canLoadUnpacked_()}" id="loadUnpacked"
