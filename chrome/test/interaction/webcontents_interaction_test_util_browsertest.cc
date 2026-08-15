@@ -2625,8 +2625,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilInteractiveTest,
                 content::WebContents::CreateParams(browser()->GetProfile()));
         new_contents->GetController().CopyStateFrom(
             &original_contents->GetController(), true);
-        browser()->tab_strip_model()->DiscardWebContentsAt(
-            0, std::move(new_contents));
+        browser()->tab_strip_model()->DiscardWebContents(
+            original_contents, std::move(new_contents));
       })),
       WaitForHide(kWebContentsElementId),
       // This has to be done on a fresh message loop.

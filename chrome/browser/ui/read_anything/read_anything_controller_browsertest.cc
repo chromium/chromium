@@ -2728,8 +2728,8 @@ IN_PROC_BROWSER_TEST_F(
           content::WebContents::CreateParams(browser()->GetProfile()));
   content::WebContents* new_contents_ptr = new_contents.get();
 
-  browser()->tab_strip_model()->DiscardWebContentsAt(0,
-                                                     std::move(new_contents));
+  browser()->tab_strip_model()->DiscardWebContents(old_contents,
+                                                   std::move(new_contents));
 
   // Verify original controller is observing the new contents
   EXPECT_EQ(controller->GetSidePanelControllerForTesting()->web_contents(),
@@ -2768,8 +2768,8 @@ IN_PROC_BROWSER_TEST_F(
           content::WebContents::CreateParams(browser()->GetProfile()));
   content::WebContents* new_contents_ptr = new_contents.get();
 
-  browser()->tab_strip_model()->DiscardWebContentsAt(0,
-                                                     std::move(new_contents));
+  browser()->tab_strip_model()->DiscardWebContents(tab1->GetContents(),
+                                                   std::move(new_contents));
 
   // Verify that the new contents can be navigated without crashing the
   // controllers

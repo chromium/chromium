@@ -264,7 +264,8 @@ class AskBeforeHttpDialogControllerUiTest
     std::unique_ptr<content::WebContents> new_contents =
         content::WebContents::Create(
             content::WebContents::CreateParams(GetBrowser()->GetProfile()));
-    return tab_strip->DiscardWebContentsAt(index, std::move(new_contents));
+    return tab_strip->DiscardWebContents(tab_strip->GetWebContentsAt(index),
+                                         std::move(new_contents));
   }
 
  private:

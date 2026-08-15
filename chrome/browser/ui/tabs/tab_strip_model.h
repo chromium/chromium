@@ -328,11 +328,11 @@ class TabStripModel {
   // `close_types` is a bitmask of CloseTypes.
   void CloseWebContentsAt(int index, uint32_t close_types);
 
-  // Discards the WebContents at `index` and replaces it with `new_contents`.
-  // The WebContents that was at `index` is returned and its ownership returns
+  // Discards `contents` and replaces it with `new_contents`.
+  // The WebContents that was discarded is returned and its ownership returns
   // to the caller.
-  std::unique_ptr<content::WebContents> DiscardWebContentsAt(
-      int index,
+  std::unique_ptr<content::WebContents> DiscardWebContents(
+      content::WebContents* contents,
       std::unique_ptr<content::WebContents> new_contents);
 
   // Detaches the tab at the specified index for reinsertion into another tab

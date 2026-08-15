@@ -88,9 +88,9 @@ IN_PROC_BROWSER_TEST_F(PageLiveStateDecoratorHelperTabsBrowserTest,
       &PageLiveStateDecorator::Data::IsPinnedTab, true);
 
   // Replace with new contents.
-  browser()->tab_strip_model()->DiscardWebContentsAt(
-      0, content::WebContents::Create(
-             content::WebContents::CreateParams(browser()->GetProfile())));
+  browser()->tab_strip_model()->DiscardWebContents(
+      contents, content::WebContents::Create(content::WebContents::CreateParams(
+                    browser()->GetProfile())));
 
   // Check pinned status of replaced contents.
   contents = browser()->tab_strip_model()->GetWebContentsAt(0);

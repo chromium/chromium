@@ -134,7 +134,8 @@ class TabMenuBridgeTest : public ::testing::Test {
     int index = ModelIndexForTabNamed(old_name);
     if (index >= 0) {
       std::unique_ptr<content::WebContents> old_contents =
-          model()->DiscardWebContentsAt(index, CreateWebContents(new_name));
+          model()->DiscardWebContents(model()->GetWebContentsAt(index),
+                                      CreateWebContents(new_name));
       // Let the old WebContents be destroyed here.
     }
   }

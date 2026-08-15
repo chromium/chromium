@@ -283,9 +283,8 @@ IN_PROC_BROWSER_TEST_F(TabContextualizationControllerBrowserTest,
           content::WebContents::CreateParams(browser()->GetProfile()));
   discarded_contents->GetController().CopyStateFrom(
       &original_contents->GetController(), /*needs_reload=*/true);
-  browser()->tab_strip_model()->DiscardWebContentsAt(
-      browser()->tab_strip_model()->active_index(),
-      std::move(discarded_contents));
+  browser()->tab_strip_model()->DiscardWebContents(
+      original_contents, std::move(discarded_contents));
 
   content::WebContents* active_contents =
       browser()->tab_strip_model()->GetActiveWebContents();

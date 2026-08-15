@@ -1368,8 +1368,8 @@ IN_PROC_BROWSER_TEST_F(TabListBridgeWebContentsDiscardDisabledBrowserTest,
   content::WebContents* new_contents_ptr = new_contents.get();
 
   // Replace the WebContents.
-  auto discarded_contents =
-      tab_strip_model->DiscardWebContentsAt(0, std::move(new_contents));
+  auto discarded_contents = tab_strip_model->DiscardWebContents(
+      old_contents, std::move(new_contents));
 
   // We should have received one TAB_REPLACED event.
   auto event = observer.ReadEvent(Event::Type::TAB_REPLACED);

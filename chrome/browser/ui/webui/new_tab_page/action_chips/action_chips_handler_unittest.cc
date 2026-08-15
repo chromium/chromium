@@ -252,11 +252,11 @@ class TabStripModelFixture {
     return ptr;
   }
 
-  std::unique_ptr<content::WebContents> DiscardWebContentsAt(
-      int index,
+  std::unique_ptr<content::WebContents> DiscardWebContents(
+      content::WebContents* contents,
       std::unique_ptr<content::WebContents> new_contents) {
-    return tab_strip_model_->DiscardWebContentsAt(index,
-                                                  std::move(new_contents));
+    return tab_strip_model_->DiscardWebContents(contents,
+                                                std::move(new_contents));
   }
 
   void Activate(int index) { tab_strip_model_->ActivateTabAt(index); }
@@ -646,9 +646,10 @@ TEST_F(ActionChipsHandlerTest, DiscardWebContentsDoesNotCrash) {
   // handled correctly, because the old_contents (which is the one handler is
   // watching) loses its UserData during discard.
   EXPECT_THAT(tab_strip_model_fixture_
-                  ->DiscardWebContentsAt(
-                      0, content::WebContentsTester::CreateTestWebContents(
-                             profile_.get(), nullptr))
+                  ->DiscardWebContents(
+                      web_ui_->GetWebContents(),
+                      content::WebContentsTester::CreateTestWebContents(
+                          profile_.get(), nullptr))
                   .get(),
               Eq(web_ui_->GetWebContents()));
 }

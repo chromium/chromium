@@ -368,8 +368,9 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest,
   std::unique_ptr<content::WebContents> new_contents =
       content::WebContents::Create(params);
   content::WebContents* raw_new_contents = new_contents.get();
-  browser()->tab_strip_model()->DiscardWebContentsAt(0,
-                                                     std::move(new_contents));
+  browser()->tab_strip_model()->DiscardWebContents(
+      browser()->tab_strip_model()->GetWebContentsAt(0),
+      std::move(new_contents));
 
   permissions::PermissionRequestManager* manager =
       permissions::PermissionRequestManager::FromWebContents(raw_new_contents);

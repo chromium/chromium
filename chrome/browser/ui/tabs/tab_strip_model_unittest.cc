@@ -4699,7 +4699,7 @@ TEST_F(TabStripModelTest, ReplaceSendsSelected) {
 
   std::unique_ptr<WebContents> new_contents = CreateWebContents();
   WebContents* raw_new_contents = new_contents.get();
-  tabstrip()->DiscardWebContentsAt(0, std::move(new_contents));
+  tabstrip()->DiscardWebContents(raw_first_contents, std::move(new_contents));
 
   ASSERT_EQ(2, observer()->GetStateCount());
 
@@ -4726,7 +4726,7 @@ TEST_F(TabStripModelTest, ReplaceSendsSelected) {
   // And replace it.
   new_contents = CreateWebContents();
   raw_new_contents = new_contents.get();
-  tabstrip()->DiscardWebContentsAt(1, std::move(new_contents));
+  tabstrip()->DiscardWebContents(raw_third_contents, std::move(new_contents));
 
   ASSERT_EQ(1, observer()->GetStateCount());
 
@@ -6800,7 +6800,7 @@ TEST_F(TabStripModelTest, DanglingOpener) {
 
   // Replace the WebContents at index 0 with a new WebContents.
   std::unique_ptr<WebContents> replaced_contents =
-      tabstrip()->DiscardWebContentsAt(0, CreateWebContentsWithID(5));
+      tabstrip()->DiscardWebContents(contents_2, CreateWebContentsWithID(5));
   EXPECT_EQ(contents_2, replaced_contents.get());
   replaced_contents.reset();
   EXPECT_EQ("5 0", GetTabStripStateString(tabstrip()));

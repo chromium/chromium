@@ -466,14 +466,15 @@ int TabStripModel::InsertDetachedTabAt(
   return InsertTabAtImpl(index, std::move(tab), add_types, group);
 }
 
-std::unique_ptr<content::WebContents> TabStripModel::DiscardWebContentsAt(
-    int index,
+std::unique_ptr<content::WebContents> TabStripModel::DiscardWebContents(
+    content::WebContents* contents,
     std::unique_ptr<WebContents> new_contents) {
   ReentrancyCheck reentrancy_check(&reentrancy_guard_);
 
   delegate()->WillAddWebContents(new_contents.get());
 
-  CHECK(ContainsIndex(index));
+  int index = GetIndexOfWebContents(contents);
+  CHECK_NE(index, kNoTab);
 
   FixOpeners(index);
 

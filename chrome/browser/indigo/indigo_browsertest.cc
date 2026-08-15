@@ -946,8 +946,9 @@ IN_PROC_BROWSER_TEST_F(IndigoBrowserTest, TabDiscarding) {
   std::unique_ptr<content::WebContents> new_contents =
       content::WebContents::Create(
           content::WebContents::CreateParams(browser()->GetProfile()));
-  browser()->tab_strip_model()->DiscardWebContentsAt(0,
-                                                     std::move(new_contents));
+  browser()->tab_strip_model()->DiscardWebContents(
+      browser()->tab_strip_model()->GetWebContentsAt(0),
+      std::move(new_contents));
 
   // Switch back to the discarded tab and navigate it again.
   browser()->tab_strip_model()->ActivateTabAt(0);

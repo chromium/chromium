@@ -706,8 +706,9 @@ IN_PROC_BROWSER_TEST_F(TabGroupSyncDelegateBrowserTest, ReorderDiscardedTab) {
   std::unique_ptr<content::WebContents> replacement_web_contents =
       content::WebContents::Create(
           content::WebContents::CreateParams(browser()->GetProfile()));
-  browser()->tab_strip_model()->DiscardWebContentsAt(
-      0, std::move(replacement_web_contents));
+  browser()->tab_strip_model()->DiscardWebContents(
+      browser()->tab_strip_model()->GetWebContentsAt(0),
+      std::move(replacement_web_contents));
   browser()->tab_strip_model()->MoveWebContentsAt(0, 1, true, group_id);
 
   EXPECT_EQ(saved_group->saved_tabs()[0].local_tab_id().value(), second_tab_id);
