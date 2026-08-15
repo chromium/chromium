@@ -52,10 +52,12 @@ public class VerticalTabRailLayout extends ConstraintLayout {
     private View mSearchButton;
     private View mHeaderSpacer;
     private View mNewTabButton;
-    private @Nullable ImageButton mIncognitoButton;
+    private ImageButton mIncognitoButton;
     private @Px int mMinSingleButtonRowWidthPx;
-    private @Px int mHeaderButtonSizePx;
+    private @Px int mButtonSizePx;
     private @Px int mHeaderButtonGapPx;
+    private @Px int mIncognitoChipSizePx;
+    private @Px int mFooterButtonGapPx;
     private @RailCollapseState int mCollapseState = RailCollapseState.EXPANDED;
     // Cache for the last applied collapse state to prevent redundant header layout updates.
     private @RailCollapseState int mLastAppliedCollapseState = RailCollapseState.UNKNOWN;
@@ -111,20 +113,22 @@ public class VerticalTabRailLayout extends ConstraintLayout {
                 mNewTabButton, getContext().getString(R.string.accessibility_toolbar_btn_new_tab));
 
         mIncognitoButton = findViewById(R.id.new_incognito_tab_button);
-        if (mIncognitoButton != null) {
-            TooltipCompat.setTooltipText(
-                    mIncognitoButton,
-                    getContext().getString(R.string.accessibility_toolbar_btn_new_incognito_tab));
-        }
+        assert mIncognitoButton != null;
+        TooltipCompat.setTooltipText(
+                mIncognitoButton,
+                getContext().getString(R.string.accessibility_toolbar_btn_new_incognito_tab));
 
         // Update header dimensions
         Resources res = getContext().getResources();
-        mHeaderButtonSizePx = res.getDimensionPixelSize(R.dimen.vertical_tabs_header_button_size);
+        mButtonSizePx = res.getDimensionPixelSize(R.dimen.vertical_tabs_header_button_size);
         mHeaderButtonGapPx = res.getDimensionPixelSize(R.dimen.vertical_tabs_header_button_gap);
+        mIncognitoChipSizePx =
+                res.getDimensionPixelSize(R.dimen.vertical_tabs_footer_button_height);
+        mFooterButtonGapPx = res.getDimensionPixelSize(R.dimen.vertical_tabs_footer_button_gap);
         int horizontalPadding =
                 res.getDimensionPixelSize(R.dimen.vertical_tabs_rail_horizontal_margin) * 2;
         mMinSingleButtonRowWidthPx =
-                mHeaderButtonSizePx * HEADER_BUTTON_COUNT_SINGLE_ROW
+                mButtonSizePx * HEADER_BUTTON_COUNT_SINGLE_ROW
                         + mHeaderButtonGapPx * (HEADER_BUTTON_COUNT_SINGLE_ROW - 1)
                         + horizontalPadding;
         updateHeaderLayoutForWidth(getTargetWidth());
@@ -156,7 +160,7 @@ public class VerticalTabRailLayout extends ConstraintLayout {
     }
 
     /** Returns the incognito chip button view. */
-    public @Nullable ImageButton getIncognitoButton() {
+    public ImageButton getIncognitoButton() {
         return mIncognitoButton;
     }
 
@@ -324,8 +328,8 @@ public class VerticalTabRailLayout extends ConstraintLayout {
         boolean isManuallyExpanded = mCollapseState == RailCollapseState.EXPANDED;
         ViewGroup.MarginLayoutParams collapseParams =
                 (ViewGroup.MarginLayoutParams) mCollapseButton.getLayoutParams();
-        collapseParams.width = mHeaderButtonSizePx;
-        collapseParams.height = mHeaderButtonSizePx;
+        collapseParams.width = mButtonSizePx;
+        collapseParams.height = mButtonSizePx;
         collapseParams.bottomMargin =
                 showSingleRowHeader
                         ? 0
@@ -363,8 +367,8 @@ public class VerticalTabRailLayout extends ConstraintLayout {
 
         LinearLayout.LayoutParams gridParams =
                 (LinearLayout.LayoutParams) mGridButton.getLayoutParams();
-        gridParams.width = fillRowSpace ? 0 : mHeaderButtonSizePx;
-        gridParams.height = mHeaderButtonSizePx;
+        gridParams.width = fillRowSpace ? 0 : mButtonSizePx;
+        gridParams.height = mButtonSizePx;
         gridParams.weight = fillRowSpace ? 1.0f : 0.0f;
         gridParams.setMarginEnd(isCollapsed ? 0 : mHeaderButtonGapPx);
         gridParams.bottomMargin = isCollapsed ? mHeaderButtonGapPx : 0;
@@ -379,8 +383,8 @@ public class VerticalTabRailLayout extends ConstraintLayout {
         // Search button
         LinearLayout.LayoutParams searchParams =
                 (LinearLayout.LayoutParams) mSearchButton.getLayoutParams();
-        searchParams.width = fillRowSpace ? 0 : mHeaderButtonSizePx;
-        searchParams.height = mHeaderButtonSizePx;
+        searchParams.width = fillRowSpace ? 0 : mButtonSizePx;
+        searchParams.height = mButtonSizePx;
         searchParams.weight = fillRowSpace ? 1.0f : 0.0f;
         mSearchButton.setBackgroundResource(
                 isCollapsed
@@ -389,23 +393,49 @@ public class VerticalTabRailLayout extends ConstraintLayout {
                                 ? R.drawable.vertical_tabs_left_rounded_button_background
                                 : R.drawable.vertical_tabs_right_rounded_button_background));
 
-        // New tab button
-        // TODO(crbug.com/537032526): Handle footer layout transitions when rail collapses.
-        mFooterContainer.setGravity(
-                isCollapsed ? Gravity.CENTER_HORIZONTAL : Gravity.CENTER_VERTICAL);
-        LinearLayout.LayoutParams newTabParams =
-                (LinearLayout.LayoutParams) mNewTabButton.getLayoutParams();
-        int newTabHeight = res.getDimensionPixelSize(R.dimen.vertical_tabs_footer_button_height);
-        newTabParams.width =
-                isCollapsed ? mHeaderButtonSizePx : ViewGroup.LayoutParams.MATCH_PARENT;
-        newTabParams.height = isCollapsed ? mHeaderButtonSizePx : newTabHeight;
-        newTabParams.weight = 0.0f;
-
         mCollapseButton.setLayoutParams(collapseParams);
         mTabActionButtonsContainer.setLayoutParams(tabActionParams);
         mGridButton.setLayoutParams(gridParams);
         mSearchButton.setLayoutParams(searchParams);
+        updateFooterLayout();
+    }
+
+    /**
+     * Updates footer container and child view layout parameters based on the current rail collapse
+     * state and incognito button visibility.
+     */
+    void updateFooterLayout() {
+        boolean isCollapsed = mCollapseState == RailCollapseState.COLLAPSED;
+        boolean isIncognitoVisible = mIncognitoButton.getVisibility() == View.VISIBLE;
+
+        mFooterContainer.setOrientation(
+                isCollapsed ? LinearLayout.VERTICAL : LinearLayout.HORIZONTAL);
+        mFooterContainer.setGravity(
+                isCollapsed ? Gravity.CENTER_HORIZONTAL : Gravity.CENTER_VERTICAL);
+
+        Resources res = getResources();
+        int newTabHeight = res.getDimensionPixelSize(R.dimen.vertical_tabs_footer_button_height);
+
+        LinearLayout.LayoutParams newTabParams =
+                (LinearLayout.LayoutParams) mNewTabButton.getLayoutParams();
+        newTabParams.width =
+                isCollapsed
+                        ? mButtonSizePx
+                        : (isIncognitoVisible ? 0 : ViewGroup.LayoutParams.MATCH_PARENT);
+        newTabParams.height = isCollapsed ? mButtonSizePx : newTabHeight;
+        newTabParams.weight = (!isCollapsed && isIncognitoVisible) ? 1.0f : 0.0f;
+        newTabParams.bottomMargin = (isCollapsed && isIncognitoVisible) ? mFooterButtonGapPx : 0;
+        newTabParams.setMarginEnd(0);
         mNewTabButton.setLayoutParams(newTabParams);
+
+        LinearLayout.LayoutParams incognitoParams =
+                (LinearLayout.LayoutParams) mIncognitoButton.getLayoutParams();
+        incognitoParams.width = isCollapsed ? mButtonSizePx : mIncognitoChipSizePx;
+        incognitoParams.height = isCollapsed ? mButtonSizePx : mIncognitoChipSizePx;
+        incognitoParams.weight = 0.0f;
+        incognitoParams.setMarginStart(
+                (!isCollapsed && isIncognitoVisible) ? mFooterButtonGapPx : 0);
+        mIncognitoButton.setLayoutParams(incognitoParams);
     }
 
     @Px

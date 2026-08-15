@@ -588,9 +588,13 @@ public class VerticalTabRailLayoutUnitTest {
 
     @Test
     @SmallTest
-    public void testBindIncognitoButtonVisibility() {
+    public void testBindIncognitoButtonVisibilityAndLayout() {
         View incognitoButton = mRailLayout.findViewById(R.id.new_incognito_tab_button);
+        View newTabButton = mRailLayout.findViewById(R.id.new_tab_button);
+        LinearLayout footerContainer = mRailLayout.findViewById(R.id.vertical_tab_footer_container);
         assertNotNull(incognitoButton);
+        assertNotNull(newTabButton);
+        assertNotNull(footerContainer);
 
         // Initially gone
         assertEquals(View.GONE, incognitoButton.getVisibility());
@@ -600,6 +604,38 @@ public class VerticalTabRailLayoutUnitTest {
         VerticalTabListViewBinder.bind(
                 mModel, mRailLayout, VerticalTabListProperties.IS_INCOGNITO_BUTTON_VISIBLE);
         assertEquals(View.VISIBLE, incognitoButton.getVisibility());
+
+        // In expanded state with incognito button visible
+        mRailLayout.setCollapseState(RailCollapseState.EXPANDED);
+        assertEquals(LinearLayout.HORIZONTAL, footerContainer.getOrientation());
+        LinearLayout.LayoutParams newTabParams =
+                (LinearLayout.LayoutParams) newTabButton.getLayoutParams();
+        LinearLayout.LayoutParams incognitoParams =
+                (LinearLayout.LayoutParams) incognitoButton.getLayoutParams();
+        assertEquals(1.0f, newTabParams.weight, 0.01f);
+        assertEquals(0, newTabParams.width);
+        int expectedChipSize =
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.vertical_tabs_footer_button_height);
+        assertEquals(expectedChipSize, incognitoParams.width);
+        assertEquals(expectedChipSize, incognitoParams.height);
+
+        // In collapsed state
+        mRailLayout.setCollapseState(RailCollapseState.COLLAPSED);
+        assertEquals(LinearLayout.VERTICAL, footerContainer.getOrientation());
+        LinearLayout.LayoutParams collapsedNewTabParams =
+                (LinearLayout.LayoutParams) newTabButton.getLayoutParams();
+        LinearLayout.LayoutParams collapsedIncognitoParams =
+                (LinearLayout.LayoutParams) incognitoButton.getLayoutParams();
+        int expectedCollapsedSize =
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.vertical_tabs_header_button_size);
+        assertEquals(expectedCollapsedSize, collapsedNewTabParams.width);
+        assertEquals(expectedCollapsedSize, collapsedNewTabParams.height);
+        assertEquals(expectedCollapsedSize, collapsedIncognitoParams.width);
+        assertEquals(expectedCollapsedSize, collapsedIncognitoParams.height);
 
         // Set gone again
         mModel.set(VerticalTabListProperties.IS_INCOGNITO_BUTTON_VISIBLE, false);

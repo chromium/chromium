@@ -55,10 +55,10 @@ public class VerticalTabListViewBinder {
                     model.get(VerticalTabListProperties.ON_NEW_TAB_CLICK_LISTENER));
         } else if (VerticalTabListProperties.IS_INCOGNITO_BUTTON_VISIBLE == propertyKey) {
             View incognitoButton = view.getIncognitoButton();
-            if (incognitoButton != null) {
-                boolean visible = model.get(VerticalTabListProperties.IS_INCOGNITO_BUTTON_VISIBLE);
-                incognitoButton.setVisibility(visible ? View.VISIBLE : View.GONE);
-            }
+            assert incognitoButton != null;
+            boolean visible = model.get(VerticalTabListProperties.IS_INCOGNITO_BUTTON_VISIBLE);
+            incognitoButton.setVisibility(visible ? View.VISIBLE : View.GONE);
+            view.updateFooterLayout();
             // TODO(crbug.com/537032526): Bind ON_INCOGNITO_CLICK_LISTENER to handle click actions.
         } else if (VerticalTabListProperties.ON_COLLAPSE_CLICK_LISTENER == propertyKey) {
             View collapseButton = view.findViewById(R.id.collapse_button);
