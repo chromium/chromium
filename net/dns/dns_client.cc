@@ -155,10 +155,18 @@ class DnsClientImpl : public DnsClient {
   }
 
   bool CanUseInsecureDnsTransactions() const override {
-    const DnsConfig& config = GetEffectiveConfig();
-    return !config.nameservers.empty() &&
-           insecure_dns_mode_ != InsecureDnsMode::kDisabled &&
-           !config.unhandled_options && !config.dns_over_tls_active;
+    switch (insecure_dns_mode_) {
+      case InsecureDnsMode::kDisabled:
+        return false;
+      case InsecureDnsMode::kEnabledPlatform:
+      case InsecureDnsMode::kEnabledPlatformNoSystem:
+        return true;
+      case InsecureDnsMode::kEnabledBuiltIn: {
+        const DnsConfig& config = GetEffectiveConfig();
+        return !config.nameservers.empty() && !config.unhandled_options &&
+               !config.dns_over_tls_active;
+      }
+    }
   }
 
   bool CanQueryAdditionalTypesViaInsecureDns() const override {

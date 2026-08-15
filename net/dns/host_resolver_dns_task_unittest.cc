@@ -131,13 +131,9 @@ class HostResolverDnsTaskTest : public WithTaskEnvironment,
     resolve_context_ = std::make_unique<ResolveContext>(
         request_context_.get(), /*enable_caching=*/false);
     dns_client_ = DnsClient::CreateClient(/*net_log=*/nullptr);
-    DnsConfig config;
-    // The IP address doesn't matter; it's only necessary for SetSystemConfig to
-    // have an effect.
-    config.nameservers.emplace_back(IPAddress(192, 168, 1, 5), 53);
-    CHECK(dns_client_->SetSystemConfig(config));
+    dns_client_->SetSystemConfig(DnsConfig());
     // Allow non-DnsTransactionFactory::AttemptMode::kHttp attempts to be made.
-    dns_client_->SetInsecureEnabled(InsecureDnsMode::kEnabledBuiltIn,
+    dns_client_->SetInsecureEnabled(InsecureDnsMode::kEnabledPlatform,
                                     /*additional_types_enabled=*/true);
   }
 

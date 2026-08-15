@@ -11,6 +11,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "build/build_config.h"
 #include "net/base/features.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
@@ -198,6 +199,84 @@ TEST_F(DnsClientTest, InsecureEnabledPlatformNoSystem) {
   EXPECT_TRUE(client_->CanUseInsecureDnsTransactions());
   EXPECT_TRUE(client_->CanQueryAdditionalTypesViaInsecureDns());
 }
+
+// InsecureDnsMode::{kEnabledPlatform, kEnabledPlatformNoSystem} are currently
+// only supported on Android.
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(DnsClientTest, InsecureEnabledPlatform_EmptyNameservers) {
+  client_->SetInsecureEnabled(InsecureDnsMode::kEnabledPlatform,
+                              /*additional_types_enabled=*/true);
+  client_->SetSystemConfig(DnsConfig());
+
+  EXPECT_EQ(client_->GetInsecureDnsMode(), InsecureDnsMode::kEnabledPlatform);
+  EXPECT_TRUE(client_->CanUseInsecureDnsTransactions());
+  EXPECT_TRUE(client_->CanQueryAdditionalTypesViaInsecureDns());
+  EXPECT_FALSE(client_->FallbackFromInsecureTransactionPreferred());
+}
+
+TEST_F(DnsClientTest, InsecureEnabledPlatform_UnhandledOptionsAndDoT) {
+  client_->SetInsecureEnabled(InsecureDnsMode::kEnabledPlatform,
+                              /*additional_types_enabled=*/true);
+  DnsConfig config = ValidConfigWithDoh(false /* doh_only */);
+  config.unhandled_options = true;
+  config.dns_over_tls_active = true;
+  client_->SetSystemConfig(config);
+
+  EXPECT_EQ(client_->GetInsecureDnsMode(), InsecureDnsMode::kEnabledPlatform);
+  EXPECT_TRUE(client_->CanUseInsecureDnsTransactions());
+  EXPECT_TRUE(client_->CanQueryAdditionalTypesViaInsecureDns());
+  EXPECT_FALSE(client_->FallbackFromInsecureTransactionPreferred());
+}
+
+TEST_F(DnsClientTest, InsecureEnabledPlatformNoSystem_EmptyNameservers) {
+  client_->SetInsecureEnabled(InsecureDnsMode::kEnabledPlatformNoSystem,
+                              /*additional_types_enabled=*/true);
+  client_->SetSystemConfig(DnsConfig());
+
+  EXPECT_EQ(client_->GetInsecureDnsMode(),
+            InsecureDnsMode::kEnabledPlatformNoSystem);
+  EXPECT_TRUE(client_->CanUseInsecureDnsTransactions());
+  EXPECT_TRUE(client_->CanQueryAdditionalTypesViaInsecureDns());
+  EXPECT_FALSE(client_->FallbackFromInsecureTransactionPreferred());
+}
+
+TEST_F(DnsClientTest, InsecureEnabledPlatformNoSystem_UnhandledOptionsAndDoT) {
+  client_->SetInsecureEnabled(InsecureDnsMode::kEnabledPlatformNoSystem,
+                              /*additional_types_enabled=*/true);
+  DnsConfig config = ValidConfigWithDoh(false /* doh_only */);
+  config.unhandled_options = true;
+  config.dns_over_tls_active = true;
+  client_->SetSystemConfig(config);
+
+  EXPECT_EQ(client_->GetInsecureDnsMode(),
+            InsecureDnsMode::kEnabledPlatformNoSystem);
+  EXPECT_TRUE(client_->CanUseInsecureDnsTransactions());
+  EXPECT_TRUE(client_->CanQueryAdditionalTypesViaInsecureDns());
+  EXPECT_FALSE(client_->FallbackFromInsecureTransactionPreferred());
+}
+
+TEST_F(DnsClientTest, InsecureEnabledPlatformNoSystem_NoConfigOnStartup) {
+  client_->SetInsecureEnabled(InsecureDnsMode::kEnabledPlatformNoSystem,
+                              /*additional_types_enabled=*/true);
+  EXPECT_EQ(client_->GetSystemConfigForTesting(), std::nullopt);
+  EXPECT_EQ(client_->GetInsecureDnsMode(),
+
+            InsecureDnsMode::kEnabledPlatformNoSystem);
+  EXPECT_TRUE(client_->CanUseInsecureDnsTransactions());
+  EXPECT_TRUE(client_->CanQueryAdditionalTypesViaInsecureDns());
+  EXPECT_FALSE(client_->FallbackFromInsecureTransactionPreferred());
+}
+
+TEST_F(DnsClientTest, InsecureEnabledPlatform_NoConfigOnStartup) {
+  client_->SetInsecureEnabled(InsecureDnsMode::kEnabledPlatform,
+                              /*additional_types_enabled=*/true);
+  EXPECT_EQ(client_->GetSystemConfigForTesting(), std::nullopt);
+  EXPECT_EQ(client_->GetInsecureDnsMode(), InsecureDnsMode::kEnabledPlatform);
+  EXPECT_TRUE(client_->CanUseInsecureDnsTransactions());
+  EXPECT_TRUE(client_->CanQueryAdditionalTypesViaInsecureDns());
+  EXPECT_FALSE(client_->FallbackFromInsecureTransactionPreferred());
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 TEST_F(DnsClientTest, UnhandledOptions) {
   client_->SetInsecureEnabled(InsecureDnsMode::kEnabledBuiltIn,

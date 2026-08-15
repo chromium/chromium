@@ -4440,6 +4440,9 @@ const std::vector<uint8_t> kNxdomainDnsResponse = {
 
 TEST_F(DnsTransactionTest, PlatformAttemptSuccess) {
   if (__builtin_available(android 29, *)) {
+    config_ = DnsConfig();
+    ConfigureFactory();
+
     auto [fd, write_fd] =
         MockAndroidDnsPlatformAttemptDelegate::CreateFdWithUnreadData();
 
@@ -4470,6 +4473,9 @@ TEST_F(DnsTransactionTest, PlatformAttemptSuccess) {
 
 TEST_F(DnsTransactionTest, PlatformAttemptPropagatesTargetNetwork) {
   if (__builtin_available(android 29, *)) {
+    config_ = DnsConfig();
+    ConfigureFactory();
+
     constexpr handles::NetworkHandle kTestNetworkHandle = 123;
     auto [fd, write_fd] =
         MockAndroidDnsPlatformAttemptDelegate::CreateFdWithUnreadData();
@@ -4504,6 +4510,9 @@ TEST_F(DnsTransactionTest, PlatformAttemptPropagatesTargetNetwork) {
 
 TEST_F(DnsTransactionTestWithMockTime, PlatformAttemptTimeout) {
   if (__builtin_available(android 29, *)) {
+    config_ = DnsConfig();
+    ConfigureFactory();
+
     auto [fd, write_fd] =
         MockAndroidDnsPlatformAttemptDelegate::CreateFdWithNoData();
 
@@ -4530,7 +4539,8 @@ TEST_F(DnsTransactionTestWithMockTime, PlatformAttemptTimeout) {
 
 TEST_F(DnsTransactionTest, PlatformAttemptUsesSuffixSearchList) {
   if (__builtin_available(android 29, *)) {
-    config_.search.push_back("com");
+    config_ = DnsConfig();
+    config_.search = {"com"};
     config_.ndots = 1;
     ConfigureFactory();
     auto [first_query_fd, first_query_write_fd] =
@@ -4579,6 +4589,7 @@ TEST_F(DnsTransactionTestWithMockTime, PlatformAttemptRetryAndFallback) {
         features::kDnsPlatformFailFastAndRetry);
 
     // Allow 2 attempts.
+    config_ = DnsConfig();
     config_.attempts = 2;
     ConfigureFactory();
 
@@ -4643,6 +4654,7 @@ TEST_F(DnsTransactionTestWithMockTime,
         features::kDnsPlatformFailFastAndRetry,
         {{"cancel_previous_attempt_on_retry", "true"}});
 
+    config_ = DnsConfig();
     config_.attempts = 2;
     ConfigureFactory();
 
@@ -4707,6 +4719,7 @@ TEST_F(DnsTransactionTestWithMockTime,
     scoped_feature_list.InitAndEnableFeature(
         features::kDnsPlatformFailFastAndRetry);
 
+    config_ = DnsConfig();
     ConfigureFactory();
 
     base::TimeDelta initial_fallback =

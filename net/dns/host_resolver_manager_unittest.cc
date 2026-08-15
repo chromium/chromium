@@ -5026,6 +5026,58 @@ TEST_F(HostResolverManagerDnsTest,
                   testing::ElementsAre(CreateExpected("192.168.2.47", 1212)))));
 }
 
+// InsecureDnsMode::{kEnabledPlatform, kEnabledPlatformNoSystem} are currently
+// only supported on Android.
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(HostResolverManagerDnsTest,
+       DnsPlatform_ScheduledOnStartupWithEmptyConfig) {
+  resolver_->SetInsecureDnsClientEnabled(InsecureDnsMode::kEnabledPlatform,
+                                         /*additional_dns_types_enabled=*/true);
+
+  ResolveHostResponseHelper response(resolver_->CreateRequest(
+      HostPortPair("ok", 80), NetworkAnonymizationKey(),
+      handles::kInvalidNetworkHandle, NetLogWithSource(), std::nullopt,
+      resolve_context_.get()));
+  EXPECT_THAT(response.result_error(), IsOk());
+  EXPECT_THAT(response.request()->GetAddressResults(),
+              testing::UnorderedElementsAre(CreateExpected("127.0.0.1", 80),
+                                            CreateExpected("::1", 80)));
+}
+
+TEST_F(HostResolverManagerDnsTest,
+       DnsPlatform_ScheduledWhenTransitioningToEmptyNameservers) {
+  resolver_->SetInsecureDnsClientEnabled(InsecureDnsMode::kEnabledPlatform,
+                                         /*additional_dns_types_enabled=*/true);
+
+  // Transition to an empty config with 0 nameservers.
+  ChangeDnsConfig(DnsConfig());
+
+  ResolveHostResponseHelper response(resolver_->CreateRequest(
+      HostPortPair("ok", 80), NetworkAnonymizationKey(),
+      handles::kInvalidNetworkHandle, NetLogWithSource(), std::nullopt,
+      resolve_context_.get()));
+  EXPECT_THAT(response.result_error(), IsOk());
+  EXPECT_THAT(response.request()->GetAddressResults(),
+              testing::UnorderedElementsAre(CreateExpected("127.0.0.1", 80),
+                                            CreateExpected("::1", 80)));
+}
+
+TEST_F(HostResolverManagerDnsTest,
+       DnsPlatformNoSystem_ResolvesWithoutSystemFallback) {
+  resolver_->SetInsecureDnsClientEnabled(
+      InsecureDnsMode::kEnabledPlatformNoSystem,
+      /*additional_dns_types_enabled=*/true);
+
+  ResolveHostResponseHelper response(resolver_->CreateRequest(
+      HostPortPair("4ok", 80), NetworkAnonymizationKey(),
+      handles::kInvalidNetworkHandle, NetLogWithSource(), std::nullopt,
+      resolve_context_.get()));
+  EXPECT_THAT(response.result_error(), IsOk());
+  EXPECT_THAT(response.request()->GetAddressResults(),
+              testing::ElementsAre(CreateExpected("127.0.0.1", 80)));
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // RFC 6761 localhost names should always resolve to loopback.
 TEST_F(HostResolverManagerDnsTest, LocalhostLookup) {
   // Add a rule resolving localhost names to a non-loopback IP and test

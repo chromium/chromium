@@ -508,15 +508,12 @@ class MockDnsTransactionFactory::MockTransaction final : public DnsTransaction {
     bool secure = false;
     switch (attempt_mode) {
       case AttemptMode::kClassic:
+      case AttemptMode::kPlatform:
         secure = false;
         break;
       case AttemptMode::kHttp:
         secure = true;
         break;
-      case AttemptMode::kPlatform:
-        // Currently we do not expect AttemptMode::kPlatform to be used in
-        // tests that mock DnsTransaction.
-        NOTREACHED();
     }
     // Do not allow matching any rules if transaction is secure and no DoH
     // servers are available.
@@ -803,10 +800,17 @@ bool MockDnsClient::CanUseSecureDnsTransactions() const {
 }
 
 bool MockDnsClient::CanUseInsecureDnsTransactions() const {
-  const DnsConfig& config = GetEffectiveConfig();
-  return !config.nameservers.empty() &&
-         insecure_dns_mode_ != InsecureDnsMode::kDisabled &&
-         !config.dns_over_tls_active;
+  switch (insecure_dns_mode_) {
+    case InsecureDnsMode::kDisabled:
+      return false;
+    case InsecureDnsMode::kEnabledPlatform:
+    case InsecureDnsMode::kEnabledPlatformNoSystem:
+      return true;
+    case InsecureDnsMode::kEnabledBuiltIn: {
+      const DnsConfig& config = GetEffectiveConfig();
+      return !config.nameservers.empty() && !config.dns_over_tls_active;
+    }
+  }
 }
 
 bool MockDnsClient::CanQueryAdditionalTypesViaInsecureDns() const {
