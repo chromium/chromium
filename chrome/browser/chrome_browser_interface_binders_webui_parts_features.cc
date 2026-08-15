@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chrome_browser_interface_binders_webui_parts.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
+#include "chrome/browser/glic/experimental_opt_in/glic_experimental_opt_in_ui.h"
 #include "chrome/browser/glic/host/glic_ui.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/ui/webui/private_ai_internals/private_ai_internals_ui.h"
@@ -113,6 +114,9 @@ void PopulateChromeWebUIFrameBindersPartsFeatures(
                                            glic::GlicUI>(map);
     RegisterWebUIControllerInterfaceBinder<
         glic::mojom::GlicPreloadHandlerFactory, glic::GlicUI>(map);
+    RegisterWebUIControllerInterfaceBinder<
+        glic::mojom::ExperimentalOptInPageHandler,
+        glic::GlicExperimentalOptInUI>(map);
   }
 
   if (glic::GlicEnabling::IsInternalsWebUIEnabled(Profile::FromBrowserContext(

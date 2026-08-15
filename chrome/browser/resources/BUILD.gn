@@ -21,6 +21,7 @@ group("resources") {
   public_deps = [
     "contextual_tasks:resources",
     "glic:resources",
+    "glic/experimental_opt_in:resources",
     "saved_tab_groups_unsupported:resources",
     "segmentation_internals:resources",
     "//components/enterprise/connectors/resources",
@@ -64,7 +65,6 @@ group("resources") {
       "drive_picker_host/untrusted:resources",
       "feedback:resources",
       "gaia_auth_host:resources",
-      "glic/experimental_opt_in:resources",
       "glic/selection_overlay:resources",
       "history:resources",
       "indigo:resources",
