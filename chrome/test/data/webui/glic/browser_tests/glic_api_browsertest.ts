@@ -477,10 +477,6 @@ class ApiTests extends ApiTestFixtureBase {
 
 
 
-  async testOpenOsMediaPermissionSettings() {
-    assertDefined(this.host.openOsPermissionSettingsMenu);
-    this.host.openOsPermissionSettingsMenu('media');
-  }
 
   async testOpenOsGeoPermissionSettings() {
     assertDefined(this.host.openOsPermissionSettingsMenu);

@@ -53,6 +53,8 @@
 #include "chrome/browser/glic/test_support/glic_histogram_tester.h"
 #include "chrome/browser/glic/test_support/new_glic_api_test.h"
 #include "chrome/browser/interstitials/security_interstitial_page_test_utils.h"
+#include "chrome/browser/permissions/system/mock_platform_handle.h"
+#include "chrome/browser/permissions/system/system_permission_settings.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -70,6 +72,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/favicon/core/favicon_driver.h"
 #include "components/favicon/core/favicon_driver_observer.h"
@@ -220,6 +223,7 @@ std::vector<std::string> GetTestSuiteNames() {
       "NewGlicApiTestGeminiEnterpriseSettingsPolicyUnset",
       "NewGlicApiTestWithMqlsIdGetterDisabled",
       "NewGlicOnboardingApiTest",
+      "NewGlicApiTestSystemSettingsTest",
 #if !BUILDFLAG(IS_ANDROID)
       "NewGlicApiTestWithFileUploadPolicyEnabled",
       "NewGlicApiTestWithSkills",
@@ -662,6 +666,47 @@ class NewGlicOnboardingApiTest : public NewGlicApiTest {
     NewGlicApiTest::TearDownOnMainThread();
   }
 };
+
+class NewGlicApiTestSystemSettingsTest : public NewGlicApiTest {
+ public:
+  NewGlicApiTestSystemSettingsTest() {
+    system_permission_settings::SetInstanceForTesting(&mock_platform_handle);
+    // Glic initialization queries initial state for various system permissions
+    // (such as Geolocation, Microphone, and Camera). Return default values
+    // for all unspecified permissions to prevent unexpected mock call failures.
+    EXPECT_CALL(mock_platform_handle, IsAllowed(testing::_))
+        .Times(testing::AnyNumber())
+        .WillRepeatedly(testing::Return(true));
+    EXPECT_CALL(mock_platform_handle, IsDenied(testing::_))
+        .Times(testing::AnyNumber())
+        .WillRepeatedly(testing::Return(false));
+    EXPECT_CALL(mock_platform_handle, CanPrompt(testing::_))
+        .Times(testing::AnyNumber())
+        .WillRepeatedly(testing::Return(true));
+  }
+
+  ~NewGlicApiTestSystemSettingsTest() override {
+    system_permission_settings::SetInstanceForTesting(nullptr);
+  }
+
+  testing::NiceMock<system_permission_settings::MockPlatformHandle>
+      mock_platform_handle;
+};
+
+IN_PROC_BROWSER_TEST_P(NewGlicApiTestSystemSettingsTest,
+                       testOpenOsMediaPermissionSettings) {
+  ASSERT_OK(OpenGlicForActiveTab());
+  base::test::TestFuture<void> signal;
+  EXPECT_CALL(
+      mock_platform_handle,
+      OpenSystemSettings(testing::_, ContentSettingsType::MEDIASTREAM_MIC))
+      .WillOnce(base::test::InvokeFuture(signal));
+
+  // Trigger the openOsPermissionSettingsMenu API with 'media'.
+  ExecuteJsTest();
+  // Wait for OpenSystemSettings to be called.
+  EXPECT_TRUE(signal.Wait());
+}
 
 IN_PROC_BROWSER_TEST_P(NewGlicOnboardingApiTest, testIsOnboardingCompleted) {
   ASSERT_OK(OpenGlicForActiveTab());
@@ -4290,6 +4335,11 @@ INSTANTIATE_TEST_SUITE_P(,
                          DefaultTestParamSet(),
                          &WithTestParams::PrintTestVariant);
 
+INSTANTIATE_TEST_SUITE_P(,
+                         NewGlicApiTestSystemSettingsTest,
+                         DefaultTestParamSet(),
+                         &WithTestParams::PrintTestVariant);
+
 #if !BUILDFLAG(IS_ANDROID)
 INSTANTIATE_TEST_SUITE_P(,
                          NewGlicApiTestWithFileUploadPolicyEnabled,
@@ -4334,6 +4384,7 @@ GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
     NewGlicApiTestWithExperimentalTriggeringScreenshot);
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(NewGlicApiUnresponsiveTest);
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(NewGlicOnboardingApiTest);
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(NewGlicApiTestSystemSettingsTest);
 #if !BUILDFLAG(IS_ANDROID)
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
     NewGlicApiTestWithFileUploadPolicyEnabled);
