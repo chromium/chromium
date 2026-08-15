@@ -313,7 +313,170 @@ cr-spinner {
 }
 
 
+/* Android-only (Clank) chip styles, all scoped to :host([is-android]). */
+:host([is-android]) #imgChip {
+  align-items: center;
+  display: inline-flex;
+  height: 48px;
+}
+
+:host([is-android]) #imgChipContent {
+  align-items: center;
+  border-radius: 12px;
+  box-sizing: border-box;
+  display: flex;
+  height: 40px;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+  width: 64px;
+}
+
+:host([is-android]) #imgChipStateLayer {
+  align-items: center;
+  box-sizing: border-box;
+  display: flex;
+  gap: 12px;
+  inset: 0;
+  justify-content: center;
+  padding: 6px 8px;
+  position: absolute;
+}
+
+:host([is-android]) #imgChipLeadingSlot {
+  flex-shrink: 0;
+  height: 18px;
+  width: 18px;
+}
+
+:host([is-android]) #removeImgButton {
+  --cr-icon-button-fill-color:
+      var(--color-composebox-image-chip-remove-button-icon-color, #1F1F1F);
+  --cr-icon-button-icon-size: 18px;
+  --cr-icon-button-margin-end: 0;
+  --cr-icon-button-margin-start: 0;
+  --cr-icon-button-size: 18px;
+  background-color:
+      var(--color-composebox-image-chip-remove-button-background, #FFF);
+  border-radius: 100px;
+  flex-shrink: 0;
+  opacity: 0.64;
+}
+
+:host([is-android]) #tabChip {
+  align-items: center;
+  display: inline-flex;
+  height: 48px;
+}
+
+:host([is-android]) #tabChip[hidden] {
+  display: none;
+}
+
+:host([is-android]) #tabChipContent {
+  align-items: center;
+  background-color: var(--color-composebox-tab-chip-background, #F0F4F9);
+  border-radius: 12px;
+  box-sizing: border-box;
+  display: flex;
+  gap: 8px;
+  height: 40px;
+  max-width: 132px;
+  padding: 0 8px;
+  width: 132px;
+}
+
+:host([is-android]) #documentChip .title,
+:host([is-android]) #tabChip .title {
+  flex: 1;
+  font-size: 14px;
+  line-height: 20px;
+  margin: 0;
+}
+
+:host([is-android]) #removeDocumentButton,
+:host([is-android]) #removeTabButton {
+  --cr-icon-button-icon-size: 18px;
+  --cr-icon-button-margin-end: 0;
+  --cr-icon-button-margin-start: 0;
+  --cr-icon-button-size: 18px;
+  flex-shrink: 0;
+}
+
+:host([is-android]) #removeDocumentButton {
+  --cr-icon-button-fill-color:
+      var(--color-composebox-document-chip-foreground, #1F1F1F);
+}
+
+:host([is-android]) #removeTabButton {
+  --cr-icon-button-fill-color:
+      var(--color-composebox-tab-chip-foreground, #1F1F1F);
+}
+
+:host([is-android]) #tabThumbnail cr-composebox-tab-favicon {
+  background-size: contain;
+  border-radius: 4px;
+  height: 24px;
+  width: 24px;
+}
+
+:host([is-android]) #tabThumbnail {
+  align-items: center;
+  border-radius: 3px;
+  display: flex;
+  flex-shrink: 0;
+  height: 24px;
+  justify-content: center;
+  position: relative;
+  width: 24px;
+}
+
+:host([is-android]) #documentChip {
+  align-items: center;
+  display: inline-flex;
+  height: 48px;
+}
+
+:host([is-android]) #documentChipContent {
+  align-items: center;
+  background-color: var(--color-composebox-document-chip-background, #F0F4F9);
+  border-radius: 12px;
+  box-sizing: border-box;
+  display: flex;
+  gap: 8px;
+  height: 40px;
+  max-width: 132px;
+  padding: 0 8px;
+  width: 132px;
+}
+
+:host([is-android]) #documentThumbnail {
+  --document-icon-size: 16px;
+  --pdf-icon-size: 16px;
+  align-items: center;
+  display: flex;
+  flex-shrink: 0;
+  height: 24px;
+  justify-content: center;
+  width: 24px;
+}
+
+/* No dedicated icon background on Clank. */
+:host([is-android]) .document-icon {
+  background-color: transparent;
+}
+
 @media (forced-colors: active) {
+  :host([is-android]) #documentChipContent,
+  :host([is-android]) #imgChipContent,
+  :host([is-android]) #tabChipContent {
+    border: 1px solid ButtonText;
+  }
+  :host([is-android]) #removeDocumentButton,
+  :host([is-android]) #removeImgButton,
+  :host([is-android]) #removeTabButton {
+    --cr-icon-button-fill-color: ButtonText;
+  }
   .chip,
   .img-chip {
     border: 1px solid ButtonText;

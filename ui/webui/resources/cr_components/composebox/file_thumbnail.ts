@@ -12,6 +12,7 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
+import {getLoadTimeBoolean} from './common.js';
 import type {ComposeboxFile} from './common.js';
 import {ContextUploadStatus, InputType} from './composebox_query.mojom-webui.js';
 import {getCss} from './file_thumbnail.css.js';
@@ -41,6 +42,11 @@ export class ComposeboxFileThumbnailElement extends CrLitElement {
   static override get properties() {
     return {
       file: {type: Object},
+      isAndroid_: {
+        type: Boolean,
+        reflect: true,
+        attribute: 'is-android',
+      },
       isUploading_: {
         type: Boolean,
         reflect: true,
@@ -74,6 +80,9 @@ export class ComposeboxFileThumbnailElement extends CrLitElement {
 
   protected accessor tabFaviconChipsToCoinsEnabled_: boolean =
       loadTimeData.getBoolean('tabFaviconChipsToCoinsEnabled');
+
+  protected accessor isAndroid_: boolean =
+      getLoadTimeBoolean('isAndroid', false);
 
   protected accessor isUploading_: boolean = false;
 
