@@ -41,6 +41,12 @@ void PrintImpl(const FuseboxAction& action, int indent, std::ostream* os) {
   } else {
     *os << ind << "  query_action_override: null,\n";
   }
+  if (action.preselected_input_source) {
+    *os << ind << "  preselected_input_source: "
+        << static_cast<int>(*action.preselected_input_source) << ",\n";
+  } else {
+    *os << ind << "  preselected_input_source: null,\n";
+  }
   if (action.searchbox_override) {
     *os << ind << "  searchbox_override: "
         << static_cast<int>(*action.searchbox_override) << ",\n";

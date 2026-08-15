@@ -19,6 +19,19 @@ mojom::FuseboxActionPtr SyncFuseboxActionProtoToMojo(
   if (proto.has_preferred_inventory()) {
     mojo_action->preferred_inventory = proto.preferred_inventory();
   }
+  if (proto.has_preselected_model()) {
+    mojo_action->preselected_model = proto.preselected_model();
+  }
+  if (proto.has_preselected_input_source()) {
+    auto maybe_valid_input_source =
+        static_cast<mojom::InputSource>(proto.preselected_input_source());
+    if (mojom::IsKnownEnumValue(maybe_valid_input_source)) {
+      mojo_action->preselected_input_source = maybe_valid_input_source;
+    } else {
+      NOTREACHED() << "Unknown InputSource "
+                   << proto.preselected_input_source();
+    }
+  }
   if (proto.has_query_action_override()) {
     auto maybe_valid_query_action_override =
         static_cast<mojom::QueryActionOverride>(proto.query_action_override());
