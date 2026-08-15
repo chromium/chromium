@@ -246,7 +246,7 @@ BASE_FEATURE(kEnforceGamepadPermissionsPolicy,
 // Note: This feature remains disabled if
 // blink::features::kTreatMhtmlInitialDocumentLoadsAsCrossDocument is disabled.
 BASE_FEATURE(kEnforceSameDocumentOriginInvariants,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Content counterpart of ExperimentalContentSecurityPolicyFeatures in
 // third_party/blink/renderer/platform/runtime_enabled_features.json5. Enables
