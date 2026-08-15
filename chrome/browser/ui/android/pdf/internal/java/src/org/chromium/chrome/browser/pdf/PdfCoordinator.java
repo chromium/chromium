@@ -817,7 +817,9 @@ public class PdfCoordinator
         @Override
         public void onLoadDocumentSuccess(PdfDocument pdfDocument) {
             super.onLoadDocumentSuccess(pdfDocument);
-            maybeHideToolBoxForUnsupportedEdit();
+            if (!PdfUtils.isInlinePdfV2Enabled()) {
+                maybeHideToolBoxForUnsupportedEdit();
+            }
             if (PdfUtils.isInlinePdfV2Enabled() && mPdfView != null) {
                 mPdfView.setFormFillingEnabled(
                         PdfUtils.isInlinePdfV2FormFillingEnabled() && !isEditModeEnabled());
