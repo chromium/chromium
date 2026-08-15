@@ -179,7 +179,7 @@ found in the LICENSE file.
     <dimen name="ntp_search_box_max_width">680dp</dimen>
     <dimen name="ntp_search_box_action_button_margin">8dp</dimen>
     <dimen name="mvt_container_top_padding">16dp</dimen>
-    <dimen name="mvt_container_top_padding_small">8dp</dimen>
+    <dimen name="mvt_container_top_padding_small">10dp</dimen>
     <dimen name="mvt_container_bottom_padding">22dp</dimen>
     <dimen name="mvt_container_bottom_padding_small">16dp</dimen>
     <dimen name="mvt_container_top_margin_medium">24dp</dimen>
