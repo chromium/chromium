@@ -5,10 +5,12 @@
 import {ComposeboxElement, NtpComposeboxElement, SubmitButtonIconType} from 'chrome://new-tab-page/lazy_load.js';
 import {$$, InputSource, QueryActionOverride} from 'chrome://new-tab-page/new_tab_page.js';
 import {InputType, ToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
+import type {ComposeboxToolChipElement} from 'chrome://resources/cr_components/composebox/composebox_tool_chip.js';
 import type {ContextualEntrypointAndMenuElement} from 'chrome://resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
 import {WindowProxy as CrWindowProxy} from 'chrome://resources/cr_components/composebox/window_proxy.js';
 import type {SearchAnimatedGlowElement} from 'chrome://resources/cr_components/search/animated_glow.js';
 import {createAutocompleteResultForTesting, createSearchMatchForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
+import type {CrIconElement} from 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {SelectedFileInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -405,6 +407,74 @@ suite(`NewTabPageComposeboxTest`, () => {
     await testProxy.element.keepMenuOpenForMultiSelection();
     assertTrue(openMenuCalled);
   });
+
+  test(
+      'tool chip uses Clank layout for ImageGen and Canvas on Android',
+      async () => {
+        createComposeboxElement(testProxy, {
+          searchboxNextEnabled: true,
+        });
+        testProxy.element.searchboxLayoutMode = 'Compact';
+        testProxy.element.inToolMode = true;
+
+        try {
+          // Guard off: ImageGen renders the legacy layout.
+          loadTimeData.overrideValues({isAndroid: false});
+          testProxy.searchboxCallbackRouterRemote.onInputStateChanged(
+              new MockInputState({activeTool: ToolMode.kImageGen}));
+          await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
+          await microtasksFinished();
+
+          let chip = testProxy.element.shadowRoot
+                         .querySelector<ComposeboxToolChipElement>(
+                             '#toolChipsContainer cr-composebox-tool-chip');
+          assertTrue(
+              !!chip!.shadowRoot.querySelector('#leftCloseIcon'),
+              'ImageGen should render the legacy layout when isAndroid is' +
+                  ' false');
+          assertEquals(
+              'composebox:nanoBanana-custom',
+              chip!.shadowRoot.querySelector<CrIconElement>('.tool-icon')!.icon,
+              'ImageGen should keep the legacy banana icon when isAndroid is' +
+                  ' false');
+
+          // Guard on: ImageGen and Canvas render the Clank layout.
+          loadTimeData.overrideValues({isAndroid: true});
+          testProxy.searchboxCallbackRouterRemote.onInputStateChanged(
+              new MockInputState({activeTool: ToolMode.kImageGen}));
+          await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
+          await microtasksFinished();
+
+          chip = testProxy.element.shadowRoot
+                     .querySelector<ComposeboxToolChipElement>(
+                         '#toolChipsContainer cr-composebox-tool-chip');
+          assertTrue(
+              !!chip!.shadowRoot.querySelector('.chip-close-icon'),
+              'ImageGen should render the Clank close icon when isAndroid is' +
+                  ' true');
+          assertEquals(
+              'composebox:nanoBanana-clank',
+              chip!.shadowRoot
+                  .querySelector<CrIconElement>('.chip-leading-icon')!.icon,
+              'ImageGen should use the Clank banana icon when isAndroid is' +
+                  ' true');
+
+          testProxy.searchboxCallbackRouterRemote.onInputStateChanged(
+              new MockInputState({activeTool: ToolMode.kCanvas}));
+          await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
+          await microtasksFinished();
+
+          chip = testProxy.element.shadowRoot
+                     .querySelector<ComposeboxToolChipElement>(
+                         '#toolChipsContainer cr-composebox-tool-chip');
+          assertTrue(
+              !!chip!.shadowRoot.querySelector('.chip-close-icon'),
+              'Canvas should render the Clank close icon when isAndroid is' +
+                  ' true');
+        } finally {
+          loadTimeData.overrideValues({isAndroid: false});
+        }
+      });
 
   // Required to test how the voice chips are integrated into NTP html
   // (event listeners, id's, classes, etc.):

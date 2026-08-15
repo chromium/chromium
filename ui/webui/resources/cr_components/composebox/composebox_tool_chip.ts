@@ -8,6 +8,7 @@ import '//resources/cr_elements/cr_icon/cr_icon.js';
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
+import {getLoadTimeBoolean} from './common.js';
 import {ToolMode} from './composebox_query.mojom-webui.js';
 import type {InputState} from './composebox_query.mojom-webui.js';
 import {getCss} from './composebox_tool_chip.css.js';
@@ -72,12 +73,30 @@ export class ComposeboxToolChipElement extends I18nMixinLit
       case ToolMode.kDeepSearch:
         return 'composebox:travel-explore';
       case ToolMode.kImageGen:
-        return 'composebox:nanoBanana-custom';
+        return this.isClankMode_() ? 'composebox:nanoBanana-clank' :
+                                     'composebox:nanoBanana-custom';
       case ToolMode.kCanvas:
         return 'composebox:draft-spark';
       default:
         return '';
     }
+  }
+
+  protected isClankMode_(): boolean {
+    if (!getLoadTimeBoolean('isAndroid', false)) {
+      return false;
+    }
+    const tool = this.inputState?.activeTool;
+    return tool === ToolMode.kCanvas || tool === ToolMode.kImageGen;
+  }
+
+  protected getModeClasses_(): string {
+    if (!this.isClankMode_()) {
+      return '';
+    }
+    return this.inputState?.activeTool === ToolMode.kImageGen ?
+        'clank image-gen' :
+        'clank';
   }
 
   protected onClick_() {
