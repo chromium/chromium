@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {ComposeboxElement, NtpComposeboxElement, SubmitButtonIconType} from 'chrome://new-tab-page/lazy_load.js';
-import {$$, InputSource} from 'chrome://new-tab-page/new_tab_page.js';
+import {$$, InputSource, QueryActionOverride} from 'chrome://new-tab-page/new_tab_page.js';
 import {InputType, ToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import type {ContextualEntrypointAndMenuElement} from 'chrome://resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
 import {WindowProxy as CrWindowProxy} from 'chrome://resources/cr_components/composebox/window_proxy.js';
@@ -928,7 +928,6 @@ suite(`NewTabPageComposeboxTest`, () => {
 
         assertTrue(fileInputClicked);
       });
-
   test(
       'handleFuseboxAction opens tab picker for kInputSourceTabPicker',
       async () => {
@@ -947,6 +946,41 @@ suite(`NewTabPageComposeboxTest`, () => {
         });
 
         assertTrue(composebox.shareTabsFlyoutOpen);
+      });
+
+  test(
+      'hint action sets the placeholder and survives input state updates',
+      async () => {
+        const composebox = new NtpComposeboxElement();
+        document.body.appendChild(composebox);
+        await microtasksFinished();
+        await composebox.updateComplete;
+        await composebox.getInputElement().updateComplete;
+        const input = composebox.getInputElement().$.input;
+
+        await composebox.handleFuseboxAction(
+            {
+              preselectedTool: null,
+              preferredInventory: null,
+              preselectedModel: null,
+              queryActionOverride: QueryActionOverride.kHint,
+              preselectedInputSource: null,
+              searchboxOverride: null,
+            },
+            'chip hint');
+        await composebox.updateComplete;
+        await composebox.getInputElement().updateComplete;
+        assertEquals('chip hint', input.getAttribute('placeholder'));
+
+        // An asynchronous input state update carrying its own hint must not
+        // clobber the active chip hint.
+        testProxy.searchboxCallbackRouterRemote.onInputStateChanged(
+            new MockInputState({hintText: 'server hint'}));
+        await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
+        await microtasksFinished();
+        await composebox.updateComplete;
+        await composebox.getInputElement().updateComplete;
+        assertEquals('chip hint', input.getAttribute('placeholder'));
       });
 });
 
