@@ -206,11 +206,6 @@ void AgentSchedulingGroupHost::RenderProcessHostDestroyed(
   SetState(LifecycleState::kRenderProcessHostDestroyed);
 }
 
-void AgentSchedulingGroupHost::OnBadMessageReceived() {
-  // If a bad message is received, it should be treated the same as a bad
-  // message on the renderer-wide channel (i.e., kill the renderer).
-  return process_->OnBadMessageReceived();
-}
 
 void AgentSchedulingGroupHost::OnAssociatedInterfaceRequest(
     const std::string& interface_name,

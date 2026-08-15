@@ -4334,13 +4334,6 @@ void RenderProcessHostImpl::OnChannelError() {
   ProcessDied(info);
 }
 
-void RenderProcessHostImpl::OnBadMessageReceived() {
-  // Message de-serialization failed. We consider this a capital crime. Kill
-  // the renderer if we have one.
-  LOG(ERROR) << "bad message, terminating renderer.";
-  bad_message::ReceivedBadMessage(this,
-                                  bad_message::RPH_DESERIALIZATION_FAILED);
-}
 
 BrowserContext* RenderProcessHostImpl::GetBrowserContext() {
   return browser_context_;
