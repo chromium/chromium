@@ -10871,6 +10871,9 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kLensOverlayTranslateLanguagesName,
      flag_descriptions::kLensOverlayTranslateLanguagesDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(lens::features::kLensOverlayTranslateLanguages)},
+    {"ai-overlay-dialog", flag_descriptions::kAiOverlayDialogName,
+     flag_descriptions::kAiOverlayDialogDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kAiOverlayDialog)},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
     {"glic", flag_descriptions::kGlicName, flag_descriptions::kGlicDescription,

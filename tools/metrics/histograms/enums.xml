@@ -13088,6 +13088,7 @@ from previous Chrome versions.
   <int value="-488228498"
       label="ContextualSuggestionsAblateOthersWhenPresent:enabled"/>
   <int value="-488160318" label="PrepopulatedEnginesShadowVariants:disabled"/>
+  <int value="-487990005" label="AiOverlayDialog:enabled"/>
   <int value="-487324278" label="TpcdSupportSettings:enabled"/>
   <int value="-487294731" label="EnablePerfettoSystemTracing:disabled"/>
   <int value="-487009324" label="HttpHeadersInjection:disabled"/>
@@ -16224,6 +16225,7 @@ from previous Chrome versions.
   <int value="504717928" label="PasswordsWeaknessCheck:disabled"/>
   <int value="504994663" label="GenericSensor:disabled"/>
   <int value="505094700" label="ExtensionTabContextMenu:enabled"/>
+  <int value="505346437" label="AiOverlayDialog:disabled"/>
   <int value="505381354" label="FastCheckout:enabled"/>
   <int value="505561325" label="OpenXR:disabled"/>
   <int value="505804530" label="SyncAccessHandleAllSyncSurface:disabled"/>

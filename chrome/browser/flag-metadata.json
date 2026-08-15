@@ -101,6 +101,15 @@
     "expiry_milestone": 155
   },
   {
+    "name": "ai-overlay-dialog",
+    "owners": [
+      "gklassen@chromium.org",
+      "bokan@chromium.org",
+      "//chrome/browser/ui/webui/ai_overlay_dialog/OWNERS"
+    ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "aim-3p-entrypoint",
     "owners": [ "manukh@chromium.org", "chrome-desktop-search@google.com" ],
     "expiry_milestone": 160
