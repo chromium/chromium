@@ -324,10 +324,13 @@ const tests = [
 
     try {
       // Fast scroll down to page 50.
+      const whenProcessed =
+          eventToPromise('thumbnails-processed-for-testing', thumbnailBar);
       scroller.scrollTop = 49 * thumbnailHeight;
       const thumbnail = thumbnailBar.getThumbnailForPage(50);
       chrome.test.assertTrue(thumbnail !== null);
       await whenThumbnailPainted(thumbnail);
+      await whenProcessed;
 
       // Destination page 50 should be requested.
       chrome.test.assertTrue(requestedPages.includes(49));
@@ -347,6 +350,8 @@ const tests = [
 
     try {
       // Fast scroll through the thumbnail bar in steps of 5 pages.
+      const whenProcessed =
+          eventToPromise('thumbnails-processed-for-testing', thumbnailBar);
       for (let page = 5; page <= 45; page += 5) {
         scroller.scrollTop = page * thumbnailHeight;
         await new Promise(resolve => setTimeout(resolve, 10));
@@ -355,14 +360,15 @@ const tests = [
       const thumbnail = thumbnailBar.getThumbnailForPage(45);
       chrome.test.assertTrue(thumbnail !== null);
       await whenThumbnailPainted(thumbnail);
+      await whenProcessed;
 
       // Destination page near page 45 should be requested.
       chrome.test.assertTrue(requestedPages.includes(44));
 
-      // TODO(crbug.com/393000992): Intermediate thumbnails scrolled past should
-      // not be requested once debounced. Currently, all pages are requested.
-      chrome.test.assertTrue(requestedPages.some(pageIndex => pageIndex < 35));
-      chrome.test.assertTrue(requestedPages.length >= 30);
+      // Intermediate thumbnails scrolled past are debounced, cutting total
+      // requests down to 15 or fewer.
+      chrome.test.assertFalse(requestedPages.includes(0));
+      chrome.test.assertTrue(requestedPages.length <= 15);
 
       chrome.test.succeed();
     } finally {
