@@ -6,8 +6,10 @@ package org.chromium.chrome.browser.tab;
 
 import android.app.Activity;
 import android.graphics.Rect;
+import android.util.Pair;
 import android.util.SparseIntArray;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import androidx.annotation.ColorInt;
@@ -73,8 +75,8 @@ class TabViewManagerImpl implements TabViewManager, Comparator<TabViewProvider> 
     private final PriorityQueue<TabViewProvider> mTabViewProviders;
     private final TabImpl mTab;
     private @Nullable View mCurrentView;
-    private final SettableMonotonicObservableSupplier<Rect> mBrowserControlsMarginsSupplier =
-            ObservableSuppliers.createMonotonic();
+    private final SettableMonotonicObservableSupplier<Pair<Integer, Integer>>
+            mBrowserControlsMarginsSupplier = ObservableSuppliers.createMonotonic();
     private @Nullable Destroyable mMarginsAdapter;
 
     TabViewManagerImpl(TabImpl tab) {
@@ -163,10 +165,23 @@ class TabViewManagerImpl implements TabViewManager, Comparator<TabViewProvider> 
         }
     }
 
-    private void updateViewMargins(Rect viewMargins) {
+    private void updateViewMargins(Pair<Integer, Integer> viewMargins) {
         if (viewMargins == null) return;
 
-        mViewMargins.set(viewMargins);
+        int topMargin = viewMargins.first;
+        int bottomMargin = viewMargins.second;
+
+        int leftMargin = 0;
+        int rightMargin = 0;
+        if (mCurrentView != null) {
+            ViewGroup.LayoutParams oldlayoutParams = mCurrentView.getLayoutParams();
+            if (oldlayoutParams instanceof ViewGroup.MarginLayoutParams oldMarginLayoutParams) {
+                leftMargin = oldMarginLayoutParams.leftMargin;
+                rightMargin = oldMarginLayoutParams.rightMargin;
+            }
+        }
+
+        mViewMargins.set(leftMargin, topMargin, rightMargin, bottomMargin);
         updateViewMargins();
     }
 

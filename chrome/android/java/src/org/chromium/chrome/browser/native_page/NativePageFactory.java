@@ -13,7 +13,7 @@ import static org.chromium.chrome.browser.url_constants.UrlOverrideUtils.isNtpOv
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Rect;
+import android.util.Pair;
 import android.view.View;
 
 import androidx.annotation.VisibleForTesting;
@@ -694,7 +694,7 @@ public class NativePageFactory {
 
         @Override
         public Destroyable createDefaultMarginAdapter(
-                SettableMonotonicObservableSupplier<Rect> supplierImpl) {
+                SettableMonotonicObservableSupplier<Pair<Integer, Integer>> supplierImpl) {
             return BrowserControlsMarginAdapter.create(mBrowserControlsStateProvider, supplierImpl);
         }
 

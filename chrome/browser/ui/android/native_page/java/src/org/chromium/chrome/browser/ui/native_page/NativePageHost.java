@@ -5,7 +5,7 @@
 package org.chromium.chrome.browser.ui.native_page;
 
 import android.content.Context;
-import android.graphics.Rect;
+import android.util.Pair;
 import android.view.View;
 
 import org.chromium.base.lifetime.Destroyable;
@@ -51,8 +51,12 @@ public interface NativePageHost {
     /**
      * Creates a default margin adapter. Once created, the NativePage is responsible for calling
      * destroy() to clean-up the adapter once it is no longer needed.
+     *
+     * @param supplierImpl A supplier for the {@link Pair} that holds a top margin (the first value
+     *     in the Pair) and a bottom margin (the second value in the Pair).
      */
-    Destroyable createDefaultMarginAdapter(SettableMonotonicObservableSupplier<Rect> supplierImpl);
+    Destroyable createDefaultMarginAdapter(
+            SettableMonotonicObservableSupplier<Pair<Integer, Integer>> supplierImpl);
 
     /**
      * @return A {@link EdgeToEdgePadAdjuster} to update the edge-to-edge pad.
