@@ -43,6 +43,20 @@ def _absolute(p: pathlib.Path) -> pathlib.Path:
     return pathlib.Path(os.path.abspath(p))
 
 
+def _relpath(path, start) -> str:
+    """Like os.path.relpath, but falls back to an absolute path.
+
+    On Windows, os.path.relpath raises ValueError when `path` and `start` are on
+    different drives (e.g. a toolchain header on C: while the output dir is on
+    D:), because no relative path can cross drive letters. In that case return
+    the absolute path, which is still valid in a modulemap.
+    """
+    try:
+        return os.path.relpath(path, start)
+    except ValueError:
+        return os.path.abspath(path)
+
+
 def _format_clang_args(args, os):
     if os != 'win':
         return args
@@ -54,7 +68,7 @@ def _format_clang_args(args, os):
 
 # Usually ../.., but not always.
 _SRC_PREFIX = pathlib.Path(
-    os.path.relpath(pathlib.Path(__file__).parents[3], os.getcwd())
+    _relpath(pathlib.Path(__file__).parents[3], os.getcwd())
 )
 
 
@@ -478,7 +492,7 @@ def combine_modulemaps(
     modified_modules: set[str],
 ) -> str:
     """Generates the combined modulemap output string from dependencies."""
-    custom_header_prefix = os.path.relpath(
+    custom_header_prefix = _relpath(
         _SRC_PREFIX / 'buildtools/third_party/libc++', out.parent
     )
 
@@ -487,7 +501,7 @@ def combine_modulemaps(
         if module_name:
             s.write(f'module "{module_name}" [system] {{\n')
         for mm in modulemaps:
-            prefix = os.path.relpath(mm.parent, out.parent)
+            prefix = _relpath(mm.parent, out.parent)
 
             def rebase_path(p: str) -> str:
                 if p == '__assertion_handler':
@@ -508,7 +522,7 @@ def combine_modulemaps(
             s.write('\n')
 
         for header in headers:
-            header.path = pathlib.Path(os.path.relpath(header.path, out.parent))
+            header.path = pathlib.Path(_relpath(header.path, out.parent))
         # Sort by path for determinism.
         headers.sort()
 
@@ -541,7 +555,7 @@ def combine_modulemaps(
             s.write('}\n')
 
         for content, source_modulemap in extra_modules:
-            prefix = os.path.relpath(source_modulemap.parent, out.parent)
+            prefix = _relpath(source_modulemap.parent, out.parent)
 
             def rebase_path(p: str) -> str:
                 return os.path.normpath(os.path.join(prefix, p))
