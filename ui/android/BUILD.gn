@@ -322,6 +322,7 @@ android_resources("ui_java_resources") {
     "java/res/drawable/ic_search_24dp.xml",
     "java/res/drawable/list_menu_background.xml",
     "java/res/drawable/outline_chevron_right_24dp.xml",
+    "java/res/drawable/popup_bg_shadow_24dp_baseline.xml",
     "java/res/drawable/popup_bg_shape_24dp_baseline.xml",
     "java/res/drawable/span_background.xml",
     "java/res/drawable/transition_expand_less_expand_more_black_24dp.xml",
