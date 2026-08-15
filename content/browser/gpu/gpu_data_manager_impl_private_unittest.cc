@@ -487,11 +487,11 @@ TEST_F(GpuDataManagerImplPrivateTest, FallbackFromGraphite) {
   EXPECT_EQ(gpu::GpuMode::HARDWARE_GRAPHITE, manager->GetGpuMode());
 
   manager->FallBackToNextGpuMode();
-#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
-  EXPECT_EQ(gpu::GpuMode::SOFTWARE_GL, manager->GetGpuMode());
-#else
-  EXPECT_EQ(gpu::GpuMode::HARDWARE_GL, manager->GetGpuMode());
-#endif
+  if constexpr (GpuDataManagerImplPrivate::kSupportsGpuModeHardwareGL) {
+    EXPECT_EQ(gpu::GpuMode::HARDWARE_GL, manager->GetGpuMode());
+  } else {
+    EXPECT_EQ(gpu::GpuMode::SOFTWARE_GL, manager->GetGpuMode());
+  }
 }
 #endif  // !BUILDFLAG(IS_FUCHSIA)
 
@@ -500,9 +500,12 @@ TEST_F(GpuDataManagerImplPrivateTest, FallbackFromGraphite) {
 #if !BUILDFLAG(IS_FUCHSIA)
 // Graphite mode: gr_context_type is kGraphiteDawn and fallback list contains
 // kGL for the hardware fallback.
-#if !(BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64))
 TEST_F(GpuDataManagerImplPrivateTest,
        UpdateGpuPreferences_GraphiteModeFallbackIsGL) {
+  if constexpr (!GpuDataManagerImplPrivate::kSupportsGpuModeHardwareGL) {
+    GTEST_SKIP() << "HARDWARE_GL isn't supported";
+  }
+
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kEnableSkiaGraphite);
 
@@ -531,6 +534,10 @@ TEST_F(GpuDataManagerImplPrivateTest,
 // GL mode: gr_context_type is kGL and there are no hardware fallbacks left.
 TEST_F(GpuDataManagerImplPrivateTest,
        UpdateGpuPreferences_GLModeNoHardwareFallback) {
+  if constexpr (!GpuDataManagerImplPrivate::kSupportsGpuModeHardwareGL) {
+    GTEST_SKIP() << "HARDWARE_GL isn't supported";
+  }
+
   base::test::ScopedCommandLine command_line;
   command_line.GetProcessCommandLine()->AppendSwitch(
       switches::kDisableSkiaGraphite);
@@ -555,10 +562,14 @@ TEST_F(GpuDataManagerImplPrivateTest,
 #endif
 }
 
-// After falling back from Graphite to GL, fallback_gr_context_types has no hardware
-// types since no hardware modes remain.
+// After falling back from Graphite to GL, fallback_gr_context_types has no
+// hardware types since no hardware modes remain.
 TEST_F(GpuDataManagerImplPrivateTest,
        UpdateGpuPreferences_AfterGraphiteFallbackToGL) {
+  if constexpr (!GpuDataManagerImplPrivate::kSupportsGpuModeHardwareGL) {
+    GTEST_SKIP() << "HARDWARE_GL isn't supported";
+  }
+
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kEnableSkiaGraphite);
 
@@ -593,6 +604,10 @@ TEST_F(GpuDataManagerImplPrivateTest,
     GTEST_SKIP();
   }
 
+  if constexpr (!GpuDataManagerImplPrivate::kSupportsGpuModeHardwareGL) {
+    GTEST_SKIP() << "HARDWARE_GL isn't supported";
+  }
+
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kEnableSkiaGraphite);
 
@@ -618,7 +633,6 @@ TEST_F(GpuDataManagerImplPrivateTest,
   EXPECT_EQ(prefs.fallback_gr_context_types[2], gpu::GrContextType::kNone);
 #endif
 }
-#endif  // !(BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64))
 
 // All GPU features are enabled: gpu_mode_ stays HARDWARE_GRAPHITE.
 TEST_F(GpuDataManagerImplPrivateTest,
@@ -662,11 +676,11 @@ TEST_F(GpuDataManagerImplPrivateTest,
       gpu::kGpuFeatureStatusDisabled;
 
   manager->UpdateGpuFeatureInfo(gpu_feature_info, std::nullopt);
-#if !(BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64))
-  EXPECT_EQ(gpu::GpuMode::HARDWARE_GL, manager->GetGpuMode());
-#else
-  EXPECT_EQ(gpu::GpuMode::DISPLAY_COMPOSITOR, manager->GetGpuMode());
-#endif
+  if constexpr (GpuDataManagerImplPrivate::kSupportsGpuModeHardwareGL) {
+    EXPECT_EQ(gpu::GpuMode::HARDWARE_GL, manager->GetGpuMode());
+  } else {
+    EXPECT_EQ(gpu::GpuMode::DISPLAY_COMPOSITOR, manager->GetGpuMode());
+  }
 }
 
 // No hardware mode is available: the UpdateGpuFeatureInfo loop walks past
@@ -731,11 +745,11 @@ TEST_F(GpuDataManagerImplPrivateTest, NoDefaultFallbackToSwiftShaderForGanesh) {
                                     });
 
   ScopedGpuDataManagerImplPrivate manager;
-#if !(BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64))
-  EXPECT_EQ(gpu::GpuMode::HARDWARE_GL, manager->GetGpuMode());
+  if constexpr (GpuDataManagerImplPrivate::kSupportsGpuModeHardwareGL) {
+    EXPECT_EQ(gpu::GpuMode::HARDWARE_GL, manager->GetGpuMode());
 
-  manager->FallBackToNextGpuMode();
-#endif  // !(BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64))
+    manager->FallBackToNextGpuMode();
+  }
   EXPECT_EQ(gpu::GpuMode::DISPLAY_COMPOSITOR, manager->GetGpuMode());
 }
 
@@ -746,11 +760,12 @@ TEST_F(GpuDataManagerImplPrivateTest, ExplicitFallbackToSwiftShaderForGanesh) {
       switches::kEnableUnsafeSwiftShader);
 
   ScopedGpuDataManagerImplPrivate manager;
-#if !(BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64))
-  EXPECT_EQ(gpu::GpuMode::HARDWARE_GL, manager->GetGpuMode());
+  if constexpr (GpuDataManagerImplPrivate::kSupportsGpuModeHardwareGL) {
+    EXPECT_EQ(gpu::GpuMode::HARDWARE_GL, manager->GetGpuMode());
 
-  manager->FallBackToNextGpuMode();
-#endif  // !(BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64))
+    // An extra fallback is required if this platform supports Ganesh.
+    manager->FallBackToNextGpuMode();
+  }
   EXPECT_EQ(gpu::GpuMode::SOFTWARE_GL, manager->GetGpuMode());
 }
 
@@ -765,11 +780,12 @@ TEST_F(GpuDataManagerImplPrivateTest,
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kEnableUnsafeSwiftShader);
   ScopedGpuDataManagerImplPrivate manager;
-#if !(BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64))
-  EXPECT_EQ(gpu::GpuMode::HARDWARE_GL, manager->GetGpuMode());
+  if constexpr (GpuDataManagerImplPrivate::kSupportsGpuModeHardwareGL) {
+    EXPECT_EQ(gpu::GpuMode::HARDWARE_GL, manager->GetGpuMode());
 
-  manager->FallBackToNextGpuMode();
-#endif  // !(BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64))
+    // An extra fallback is required if this platform supports Ganesh.
+    manager->FallBackToNextGpuMode();
+  }
   gpu::GpuMode expected_mode = gpu::GpuMode::DISPLAY_COMPOSITOR;
   EXPECT_EQ(expected_mode, manager->GetGpuMode());
 }
@@ -788,11 +804,12 @@ TEST_F(GpuDataManagerImplPrivateTest,
   feature_list.InitAndDisableFeature(features::kAllowSwiftShaderFallback);
 
   ScopedGpuDataManagerImplPrivate manager;
-#if !(BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64))
-  EXPECT_EQ(gpu::GpuMode::HARDWARE_GL, manager->GetGpuMode());
+  if constexpr (GpuDataManagerImplPrivate::kSupportsGpuModeHardwareGL) {
+    EXPECT_EQ(gpu::GpuMode::HARDWARE_GL, manager->GetGpuMode());
 
-  manager->FallBackToNextGpuMode();
-#endif  // !(BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64))
+    // An extra fallback is required if this platform supports Ganesh.
+    manager->FallBackToNextGpuMode();
+  }
   gpu::GpuMode expected_mode = gpu::GpuMode::DISPLAY_COMPOSITOR;
   EXPECT_EQ(expected_mode, manager->GetGpuMode());
 }
@@ -807,10 +824,10 @@ TEST_F(GpuDataManagerImplPrivateTest,
   ScopedGpuDataManagerImplPrivate manager;
   EXPECT_EQ(gpu::GpuMode::HARDWARE_GRAPHITE, manager->GetGpuMode());
 
-  // On Mac-ARM we don't fall back to Ganesh from Graphite.
-#if !(BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64))
-  manager->FallBackToNextGpuMode();
-#endif
+  if constexpr (GpuDataManagerImplPrivate::kSupportsGpuModeHardwareGL) {
+    // An extra fallback is required if this platform supports Ganesh.
+    manager->FallBackToNextGpuMode();
+  }
   manager->FallBackToNextGpuMode();
 
   gpu::GpuMode expected_mode = gpu::GpuMode::DISPLAY_COMPOSITOR;
@@ -829,10 +846,10 @@ TEST_F(GpuDataManagerImplPrivateTest,
   ScopedGpuDataManagerImplPrivate manager;
   EXPECT_EQ(gpu::GpuMode::HARDWARE_GRAPHITE, manager->GetGpuMode());
 
-  // On Mac-ARM we don't fall back to Ganesh from Graphite.
-#if !(BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64))
-  manager->FallBackToNextGpuMode();
-#endif
+  if constexpr (GpuDataManagerImplPrivate::kSupportsGpuModeHardwareGL) {
+    // An extra fallback is required if this platform supports Ganesh.
+    manager->FallBackToNextGpuMode();
+  }
   manager->FallBackToNextGpuMode();
 
   EXPECT_EQ(gpu::GpuMode::SOFTWARE_GL, manager->GetGpuMode());
@@ -853,10 +870,10 @@ TEST_F(GpuDataManagerImplPrivateTest,
 
   manager->FallBackToNextGpuMode();
 
-  // On Mac-ARM we don't fall back to Ganesh from Graphite.
-#if !(BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64))
-  manager->FallBackToNextGpuMode();
-#endif
+  if constexpr (GpuDataManagerImplPrivate::kSupportsGpuModeHardwareGL) {
+    // An extra fallback is required if this platform supports Ganesh.
+    manager->FallBackToNextGpuMode();
+  }
 
   gpu::GpuMode expected_mode = gpu::GpuMode::DISPLAY_COMPOSITOR;
   EXPECT_EQ(expected_mode, manager->GetGpuMode());
@@ -878,10 +895,10 @@ TEST_F(GpuDataManagerImplPrivateTest,
   ScopedGpuDataManagerImplPrivate manager;
   EXPECT_EQ(gpu::GpuMode::HARDWARE_GRAPHITE, manager->GetGpuMode());
 
-  // On Mac-ARM we don't fall back to Ganesh from Graphite.
-#if !(BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64))
-  manager->FallBackToNextGpuMode();
-#endif
+  if constexpr (GpuDataManagerImplPrivate::kSupportsGpuModeHardwareGL) {
+    // An extra fallback is required if this platform supports Ganesh.
+    manager->FallBackToNextGpuMode();
+  }
   manager->FallBackToNextGpuMode();
 
   gpu::GpuMode expected_mode = gpu::GpuMode::DISPLAY_COMPOSITOR;
