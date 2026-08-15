@@ -7,9 +7,7 @@ package org.chromium.chrome.browser.omnibox.suggestions.base;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.res.ColorStateList;
-import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.Drawable.ConstantState;
 import android.os.Bundle;
@@ -24,7 +22,6 @@ import android.widget.ImageView;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
-import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.view.ViewCompat;
 import androidx.core.widget.ImageViewCompat;
@@ -41,7 +38,6 @@ import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonPropertie
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties.Action;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.styles.ChromeColors;
-import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor.ViewBinder;
@@ -73,18 +69,8 @@ public abstract class BaseSuggestionViewBinder<T extends View>
 
     private static @BrandedColorScheme int sFocusableDrawableStateTheme;
     private static boolean sFocusableDrawableStateInNightMode;
-    private static boolean sDimensionsInitialized;
-    private static @Px int sEdgeSize;
-    private static @Px int sEdgeSizeLargeIcon;
-    private static @Px int sSideSpacing;
-    private static @Px int sLargeIconRoundingRadius;
-    private static @Px int sSmallIconRoundingRadius;
-    private static @Px int sDecorationIconWidth;
-    private static @Px int sContentHeight;
-    private static @Px int sCompactContentHeight;
-    private static @Px int sContentVerticalPadding;
 
-    protected OmniboxResourceProvider getResourceProvider(PropertyModel model) {
+    protected static OmniboxResourceProvider getResourceProvider(PropertyModel model) {
         OmniboxResourceProvider provider = model.get(SuggestionCommonProperties.RESOURCE_PROVIDER);
         return assumeNonNull(provider);
     }
@@ -92,16 +78,11 @@ public abstract class BaseSuggestionViewBinder<T extends View>
     @Override
     @SuppressLint("ClickableViewAccessibility")
     public void bind(PropertyModel model, BaseSuggestionView<T> view, PropertyKey propertyKey) {
-        if (!sDimensionsInitialized) {
-            initializeDimensions(view.getContext(), getResourceProvider(model));
-            sDimensionsInitialized = true;
-        }
-
         view.setSuggestionDimensions(
-                sDecorationIconWidth,
-                sContentHeight,
-                sCompactContentHeight,
-                sContentVerticalPadding);
+                getResourceProvider(model).getSuggestionDecorationIconSizeWidth(),
+                getResourceProvider(model).getSuggestionContentHeight(),
+                getResourceProvider(model).getSuggestionCompactContentHeight(),
+                getResourceProvider(model).getSuggestionContentVerticalPadding());
 
         bindContent(model, view.contentView, propertyKey);
         ActionChipsBinder.bind(model, view.actionChipsView, propertyKey);
@@ -111,7 +92,8 @@ public abstract class BaseSuggestionViewBinder<T extends View>
                     model.get(BaseSuggestionViewProperties.ACTION_CHIP_LEAD_IN_SPACING));
         } else if (SuggestionCommonProperties.APPLY_SIDE_SPACING == propertyKey) {
             view.applySideSpacing(
-                    model.get(SuggestionCommonProperties.APPLY_SIDE_SPACING), sSideSpacing);
+                    model.get(SuggestionCommonProperties.APPLY_SIDE_SPACING),
+                    getResourceProvider(model).getSideSpacing());
         } else if (BaseSuggestionViewProperties.ICON == propertyKey) {
             updateSuggestionIcon(model, view);
         } else if (SuggestionCommonProperties.LAYOUT_DIRECTION == propertyKey) {
@@ -247,7 +229,11 @@ public abstract class BaseSuggestionViewBinder<T extends View>
 
         if (sds != null) {
             // Ensure the decoration icon size does not exceed the maximum edge size.
-            int edgeSize = sds.isLarge ? sEdgeSizeLargeIcon : sEdgeSize;
+            OmniboxResourceProvider resourceProvider = getResourceProvider(model);
+            int edgeSize =
+                    sds.isLarge
+                            ? resourceProvider.getEdgeSizeLargeIcon()
+                            : resourceProvider.getEdgeSize();
             boolean isTall = sds.drawable.getIntrinsicHeight() > sds.drawable.getIntrinsicWidth();
             rciv.getLayoutParams().width = isTall ? ViewGroup.LayoutParams.WRAP_CONTENT : edgeSize;
             rciv.getLayoutParams().height = isTall ? edgeSize : ViewGroup.LayoutParams.WRAP_CONTENT;
@@ -262,7 +248,9 @@ public abstract class BaseSuggestionViewBinder<T extends View>
 
             rciv.setClipToOutline(sds.useRoundedCorners);
             baseView.decorationIconOutline.setRadius(
-                    sds.isLarge ? sLargeIconRoundingRadius : sSmallIconRoundingRadius);
+                    sds.isLarge
+                            ? resourceProvider.getLargeIconRoundingRadius()
+                            : resourceProvider.getSmallIconRoundingRadius());
         }
 
         rciv.setVisibility(sds == null ? View.GONE : View.VISIBLE);
@@ -377,35 +365,7 @@ public abstract class BaseSuggestionViewBinder<T extends View>
     }
 
     public static void resetCachedResources() {
-        sDimensionsInitialized = false;
         sFocusableDrawableState = null;
-    }
-
-    @VisibleForTesting
-    static void initializeDimensions(Context context, OmniboxResourceProvider resourceProvider) {
-        Resources resources = context.getResources();
-
-        if (OmniboxCapabilities.isDesktopPlatform()) {
-            sEdgeSize =
-                    resources.getDimensionPixelSize(
-                            R.dimen.omnibox_desktop_small_decoration_icon_size);
-            sEdgeSizeLargeIcon =
-                    resources.getDimensionPixelSize(
-                            R.dimen.omnibox_desktop_large_decoration_icon_size);
-        } else {
-            sEdgeSize = resources.getDimensionPixelSize(R.dimen.omnibox_suggestion_24dp_icon_size);
-            sEdgeSizeLargeIcon =
-                    resources.getDimensionPixelSize(R.dimen.omnibox_suggestion_36dp_icon_size);
-        }
-        sSideSpacing = resourceProvider.getSideSpacing();
-        sLargeIconRoundingRadius =
-                resources.getDimensionPixelSize(R.dimen.omnibox_large_icon_rounding_radius);
-        sSmallIconRoundingRadius =
-                resources.getDimensionPixelSize(R.dimen.omnibox_small_icon_rounding_radius);
-        sDecorationIconWidth = resourceProvider.getSuggestionDecorationIconSizeWidth();
-        sCompactContentHeight = resourceProvider.getSuggestionCompactContentHeight();
-        sContentHeight = resourceProvider.getSuggestionContentHeight();
-        sContentVerticalPadding = resourceProvider.getSuggestionContentVerticalPadding();
     }
 
     /**

@@ -440,6 +440,32 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
         return mCache.getDimen(R.dimen.omnibox_suggestion_side_spacing_smallest);
     }
 
+    /** Gets the edge size of a suggestion icon. */
+    public @Px int getEdgeSize() {
+        if (OmniboxCapabilities.isDesktopPlatform()) {
+            return mCache.getDimen(R.dimen.omnibox_desktop_small_decoration_icon_size);
+        }
+        return mCache.getDimen(R.dimen.omnibox_suggestion_24dp_icon_size);
+    }
+
+    /** Gets the edge size of a large suggestion icon. */
+    public @Px int getEdgeSizeLargeIcon() {
+        if (OmniboxCapabilities.isDesktopPlatform()) {
+            return mCache.getDimen(R.dimen.omnibox_desktop_large_decoration_icon_size);
+        }
+        return mCache.getDimen(R.dimen.omnibox_suggestion_36dp_icon_size);
+    }
+
+    /** Gets the rounding radius of a large suggestion icon. */
+    public @Px int getLargeIconRoundingRadius() {
+        return mCache.getDimen(R.dimen.omnibox_large_icon_rounding_radius);
+    }
+
+    /** Gets the rounding radius of a small suggestion icon. */
+    public @Px int getSmallIconRoundingRadius() {
+        return mCache.getDimen(R.dimen.omnibox_small_icon_rounding_radius);
+    }
+
     /** Get most visited carousel top padding. */
     public @Px int getMostVisitedCarouselTopPadding() {
         return mCache.getDimen(R.dimen.omnibox_carousel_suggestion_padding_smaller);
