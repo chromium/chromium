@@ -79,47 +79,38 @@ TEST_F(DictationOverlayViewTest, StateTransitionsUpdateSubviews) {
       DictationOverlayView::kMicButtonElementIdForTesting, context);
   views::View* waveform_view = tracker->GetFirstMatchingView(
       DictationOverlayView::kWaveformElementIdForTesting, context);
-  views::View* finalizing_image = tracker->GetFirstMatchingView(
-      DictationOverlayView::kFinalizingImageElementIdForTesting, context);
 
   ASSERT_NE(mic_button, nullptr);
   ASSERT_NE(waveform_view, nullptr);
-  ASSERT_NE(finalizing_image, nullptr);
 
-  // Initial state (kInactive): mic_button visible, waveform and finalizing
-  // hidden.
+  // Initial state (kInactive): mic_button visible, waveform hidden.
   EXPECT_EQ(overlay->state_for_testing(), UiState::kInactive);
   EXPECT_TRUE(mic_button->GetVisible());
   EXPECT_FALSE(waveform_view->GetVisible());
-  EXPECT_FALSE(finalizing_image->GetVisible());
 
   // Transition to kInitializing: mic_button visible.
   overlay->SetState(UiState::kInitializing);
   EXPECT_EQ(overlay->state_for_testing(), UiState::kInitializing);
   EXPECT_TRUE(mic_button->GetVisible());
   EXPECT_FALSE(waveform_view->GetVisible());
-  EXPECT_FALSE(finalizing_image->GetVisible());
 
-  // Transition to kTranscribing: waveform visible, mic and finalizing hidden.
+  // Transition to kTranscribing: waveform visible, mic hidden.
   overlay->SetState(UiState::kTranscribing);
   EXPECT_EQ(overlay->state_for_testing(), UiState::kTranscribing);
   EXPECT_FALSE(mic_button->GetVisible());
   EXPECT_TRUE(waveform_view->GetVisible());
-  EXPECT_FALSE(finalizing_image->GetVisible());
 
-  // Transition to kFinalizing: finalizing visible, mic and waveform hidden.
+  // Transition to kFinalizing: waveform visible (with wave animation).
   overlay->SetState(UiState::kFinalizing);
   EXPECT_EQ(overlay->state_for_testing(), UiState::kFinalizing);
   EXPECT_FALSE(mic_button->GetVisible());
-  EXPECT_FALSE(waveform_view->GetVisible());
-  EXPECT_TRUE(finalizing_image->GetVisible());
+  EXPECT_TRUE(waveform_view->GetVisible());
 
   // Transition back to kInactive: mic_button visible.
   overlay->SetState(UiState::kInactive);
   EXPECT_EQ(overlay->state_for_testing(), UiState::kInactive);
   EXPECT_TRUE(mic_button->GetVisible());
   EXPECT_FALSE(waveform_view->GetVisible());
-  EXPECT_FALSE(finalizing_image->GetVisible());
 }
 
 TEST_F(DictationOverlayViewTest, AudioLevelPropagatesToWaveform) {
@@ -163,16 +154,12 @@ TEST_F(DictationOverlayViewTest, SubviewSizingAndMargin) {
       DictationOverlayView::kMicButtonElementIdForTesting, context);
   views::View* waveform_view = tracker->GetFirstMatchingView(
       DictationOverlayView::kWaveformElementIdForTesting, context);
-  views::View* finalizing_image = tracker->GetFirstMatchingView(
-      DictationOverlayView::kFinalizingImageElementIdForTesting, context);
 
   ASSERT_NE(mic_button, nullptr);
   ASSERT_NE(waveform_view, nullptr);
-  ASSERT_NE(finalizing_image, nullptr);
 
   // Subviews are sized to 20x20 when active.
   EXPECT_EQ(mic_button->GetPreferredSize(), gfx::Size(20, 20));
-  EXPECT_EQ(finalizing_image->GetPreferredSize(), gfx::Size(20, 20));
 
   // Inactive state overlay preferred size is a 32x32 circle (20px content +
   // 12px inset).
@@ -201,12 +188,9 @@ TEST_F(DictationOverlayViewTest, ClicksToggleActiveStream) {
       DictationOverlayView::kMicButtonElementIdForTesting, context);
   views::View* waveform_view = tracker->GetFirstMatchingView(
       DictationOverlayView::kWaveformElementIdForTesting, context);
-  views::View* finalizing_image = tracker->GetFirstMatchingView(
-      DictationOverlayView::kFinalizingImageElementIdForTesting, context);
 
   ASSERT_NE(mic_button, nullptr);
   ASSERT_NE(waveform_view, nullptr);
-  ASSERT_NE(finalizing_image, nullptr);
 
   ui::MouseEvent click_event(ui::EventType::kMousePressed, gfx::Point(),
                              gfx::Point(), base::TimeTicks::Now(), 0, 0);

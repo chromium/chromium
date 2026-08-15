@@ -42,8 +42,6 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(DictationOverlayView,
                                       kMicButtonElementIdForTesting);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(DictationOverlayView,
                                       kWaveformElementIdForTesting);
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(DictationOverlayView,
-                                      kFinalizingImageElementIdForTesting);
 
 namespace {
 
@@ -82,16 +80,6 @@ class DictationOverlayContentsView : public views::View {
         DictationOverlayView::kWaveformElementIdForTesting);
     waveform_view->SetVisible(false);
     waveform_view_ = AddChildView(std::move(waveform_view));
-
-    auto finalizing_image = std::make_unique<views::ImageView>();
-    finalizing_image->SetImage(ui::ImageModel::FromVectorIcon(
-        views::kMoreHorizIcon, ui::kColorSysOnSurface, 20));
-    finalizing_image->SetPreferredSize(gfx::Size(20, 20));
-    finalizing_image->SetProperty(
-        views::kElementIdentifierKey,
-        DictationOverlayView::kFinalizingImageElementIdForTesting);
-    finalizing_image->SetVisible(false);
-    finalizing_image_ = AddChildView(std::move(finalizing_image));
   }
 
   ~DictationOverlayContentsView() override = default;
@@ -104,17 +92,14 @@ class DictationOverlayContentsView : public views::View {
 
     bool mic_visible = false;
     bool waveform_visible = false;
-    bool finalizing_dots_visible = false;
     switch (state) {
       case UiState::kInactive:
       case UiState::kInitializing:
         mic_visible = true;
         break;
       case UiState::kTranscribing:
-        waveform_visible = true;
-        break;
       case UiState::kFinalizing:
-        finalizing_dots_visible = true;
+        waveform_visible = true;
         break;
     }
 
@@ -122,8 +107,6 @@ class DictationOverlayContentsView : public views::View {
 
     waveform_view_->SetVisible(waveform_visible);
     waveform_view_->SetState(state);
-
-    finalizing_image_->SetVisible(finalizing_dots_visible);
 
     PreferredSizeChanged();
   }
@@ -141,7 +124,6 @@ class DictationOverlayContentsView : public views::View {
   UiState state_ = UiState::kInactive;
   raw_ptr<views::ImageButton> mic_button_ = nullptr;
   raw_ptr<WaveformViewButton> waveform_view_ = nullptr;
-  raw_ptr<views::ImageView> finalizing_image_ = nullptr;
 };
 
 BEGIN_METADATA(DictationOverlayContentsView)
