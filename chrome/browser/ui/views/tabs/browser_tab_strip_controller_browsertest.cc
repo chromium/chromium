@@ -375,3 +375,191 @@ IN_PROC_BROWSER_TEST_F(BrowserTabStripControllerTest,
   EXPECT_TRUE(tabstrip()->tab_container_for_testing()->InTabClose());
   EXPECT_EQ(tab_strip_model()->count(), 1);
 }
+
+class BrowserTabStripControllerTestFocusFreezing
+    : public BrowserTabStripControllerTest {
+ public:
+  BrowserTabStripControllerTestFocusFreezing() {
+    scoped_feature_list_.InitWithFeatures({features::kTabGroupsFocusing},
+                                          {tabs::kTabStripUnification});
+  }
+  ~BrowserTabStripControllerTestFocusFreezing() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(BrowserTabStripControllerTestFocusFreezing,
+                       FocusingGroupFreezesUnfocusedTabs) {
+  controller()->CreateNewTab(NewTabTypes::kNewTabCommand);
+  controller()->CreateNewTab(NewTabTypes::kNewTabCommand);
+  controller()->CreateNewTab(NewTabTypes::kNewTabCommand);
+  ASSERT_EQ(tab_strip_model()->count(), 4);
+
+  const tab_groups::TabGroupId group1 =
+      tab_strip_model()->AddToNewGroup({0, 1});
+  tab_strip_model()->AddToNewGroup({2});
+
+  EXPECT_FALSE(tabstrip()->tab_at(0)->HasFreezingVote(
+      FreezingVoteReason::kFocusedGroup));
+  EXPECT_FALSE(tabstrip()->tab_at(1)->HasFreezingVote(
+      FreezingVoteReason::kFocusedGroup));
+  EXPECT_FALSE(tabstrip()->tab_at(2)->HasFreezingVote(
+      FreezingVoteReason::kFocusedGroup));
+  EXPECT_FALSE(tabstrip()->tab_at(3)->HasFreezingVote(
+      FreezingVoteReason::kFocusedGroup));
+
+  // Focus on group1. Unpinned tabs outside group1 should be frozen.
+  controller()->SetFocusedGroup(group1);
+  EXPECT_FALSE(tabstrip()->tab_at(0)->HasFreezingVote(
+      FreezingVoteReason::kFocusedGroup));
+  EXPECT_FALSE(tabstrip()->tab_at(1)->HasFreezingVote(
+      FreezingVoteReason::kFocusedGroup));
+  EXPECT_TRUE(tabstrip()->tab_at(2)->HasFreezingVote(
+      FreezingVoteReason::kFocusedGroup));
+  EXPECT_TRUE(tabstrip()->tab_at(3)->HasFreezingVote(
+      FreezingVoteReason::kFocusedGroup));
+
+  // Unfocus group1. All tabs should be unfrozen.
+  controller()->SetFocusedGroup(std::nullopt);
+  EXPECT_FALSE(tabstrip()->tab_at(0)->HasFreezingVote(
+      FreezingVoteReason::kFocusedGroup));
+  EXPECT_FALSE(tabstrip()->tab_at(1)->HasFreezingVote(
+      FreezingVoteReason::kFocusedGroup));
+  EXPECT_FALSE(tabstrip()->tab_at(2)->HasFreezingVote(
+      FreezingVoteReason::kFocusedGroup));
+  EXPECT_FALSE(tabstrip()->tab_at(3)->HasFreezingVote(
+      FreezingVoteReason::kFocusedGroup));
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserTabStripControllerTestFocusFreezing,
+                       PinnedTabsAreNotFrozenWhenUnfocused) {
+  controller()->CreateNewTab(NewTabTypes::kNewTabCommand);
+  controller()->CreateNewTab(NewTabTypes::kNewTabCommand);
+  controller()->CreateNewTab(NewTabTypes::kNewTabCommand);
+  ASSERT_EQ(tab_strip_model()->count(), 4);
+
+  tab_strip_model()->SetTabPinned(0, true);
+  const tab_groups::TabGroupId group1 =
+      tab_strip_model()->AddToNewGroup({1, 2});
+
+  // Focus on group1.
+  controller()->SetFocusedGroup(group1);
+  // Pinned tab (0) and focused group tabs (1, 2) should not be frozen.
+  EXPECT_FALSE(tabstrip()->tab_at(0)->HasFreezingVote(
+      FreezingVoteReason::kFocusedGroup));
+  EXPECT_FALSE(tabstrip()->tab_at(1)->HasFreezingVote(
+      FreezingVoteReason::kFocusedGroup));
+  EXPECT_FALSE(tabstrip()->tab_at(2)->HasFreezingVote(
+      FreezingVoteReason::kFocusedGroup));
+  // Unpinned ungrouped tab (3) should be frozen.
+  EXPECT_TRUE(tabstrip()->tab_at(3)->HasFreezingVote(
+      FreezingVoteReason::kFocusedGroup));
+
+  // Pin tab 3. Once pinned, it moves to index 1 and should not be frozen.
+  tab_strip_model()->SetTabPinned(3, true);
+  EXPECT_FALSE(tabstrip()->tab_at(1)->HasFreezingVote(
+      FreezingVoteReason::kFocusedGroup));
+
+  // Unpin the tab (now at index 1). It moves after the pinned tabs (to index 1)
+  // and becomes unpinned outside the focused group, so it should be frozen.
+  tab_strip_model()->SetTabPinned(1, false);
+  EXPECT_TRUE(tabstrip()->tab_at(1)->HasFreezingVote(
+      FreezingVoteReason::kFocusedGroup));
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserTabStripControllerTestFocusFreezing,
+                       SwitchingFocusedGroupsUpdatesFreezing) {
+  controller()->CreateNewTab(NewTabTypes::kNewTabCommand);
+  controller()->CreateNewTab(NewTabTypes::kNewTabCommand);
+  controller()->CreateNewTab(NewTabTypes::kNewTabCommand);
+  ASSERT_EQ(tab_strip_model()->count(), 4);
+
+  const tab_groups::TabGroupId group1 =
+      tab_strip_model()->AddToNewGroup({0, 1});
+  const tab_groups::TabGroupId group2 =
+      tab_strip_model()->AddToNewGroup({2, 3});
+
+  // Focus group1.
+  controller()->SetFocusedGroup(group1);
+  EXPECT_FALSE(tabstrip()->tab_at(0)->HasFreezingVote(
+      FreezingVoteReason::kFocusedGroup));
+  EXPECT_FALSE(tabstrip()->tab_at(1)->HasFreezingVote(
+      FreezingVoteReason::kFocusedGroup));
+  EXPECT_TRUE(tabstrip()->tab_at(2)->HasFreezingVote(
+      FreezingVoteReason::kFocusedGroup));
+  EXPECT_TRUE(tabstrip()->tab_at(3)->HasFreezingVote(
+      FreezingVoteReason::kFocusedGroup));
+
+  // Switch focus to group2.
+  controller()->SetFocusedGroup(group2);
+  EXPECT_TRUE(tabstrip()->tab_at(0)->HasFreezingVote(
+      FreezingVoteReason::kFocusedGroup));
+  EXPECT_TRUE(tabstrip()->tab_at(1)->HasFreezingVote(
+      FreezingVoteReason::kFocusedGroup));
+  EXPECT_FALSE(tabstrip()->tab_at(2)->HasFreezingVote(
+      FreezingVoteReason::kFocusedGroup));
+  EXPECT_FALSE(tabstrip()->tab_at(3)->HasFreezingVote(
+      FreezingVoteReason::kFocusedGroup));
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserTabStripControllerTestFocusFreezing,
+                       CollapseAndFocusFreezingVotesAreIndependent) {
+  controller()->CreateNewTab(NewTabTypes::kNewTabCommand);
+  controller()->CreateNewTab(NewTabTypes::kNewTabCommand);
+  controller()->CreateNewTab(NewTabTypes::kNewTabCommand);
+  ASSERT_EQ(tab_strip_model()->count(), 4);
+
+  const tab_groups::TabGroupId group1 =
+      tab_strip_model()->AddToNewGroup({0, 1});
+  const tab_groups::TabGroupId group2 =
+      tab_strip_model()->AddToNewGroup({2, 3});
+
+  // Collapse group2.
+  tabstrip()->ToggleTabGroupCollapsedState(group2);
+  EXPECT_FALSE(tabstrip()->tab_at(0)->HasFreezingVote(
+      FreezingVoteReason::kCollapsedGroup));
+  EXPECT_FALSE(tabstrip()->tab_at(1)->HasFreezingVote(
+      FreezingVoteReason::kCollapsedGroup));
+  EXPECT_TRUE(tabstrip()->tab_at(2)->HasFreezingVote(
+      FreezingVoteReason::kCollapsedGroup));
+  EXPECT_TRUE(tabstrip()->tab_at(3)->HasFreezingVote(
+      FreezingVoteReason::kCollapsedGroup));
+  EXPECT_FALSE(tabstrip()->tab_at(2)->HasFreezingVote(
+      FreezingVoteReason::kFocusedGroup));
+  EXPECT_FALSE(tabstrip()->tab_at(3)->HasFreezingVote(
+      FreezingVoteReason::kFocusedGroup));
+
+  // Focus group1 while group2 is collapsed.
+  controller()->SetFocusedGroup(group1);
+  EXPECT_FALSE(tabstrip()->tab_at(0)->HasFreezingVote());
+  EXPECT_FALSE(tabstrip()->tab_at(1)->HasFreezingVote());
+  // Tabs in group2 now have both collapsed and unfocused freezing votes.
+  EXPECT_TRUE(tabstrip()->tab_at(2)->HasFreezingVote(
+      FreezingVoteReason::kCollapsedGroup));
+  EXPECT_TRUE(tabstrip()->tab_at(2)->HasFreezingVote(
+      FreezingVoteReason::kFocusedGroup));
+  EXPECT_TRUE(tabstrip()->tab_at(2)->HasFreezingVote());
+  EXPECT_TRUE(tabstrip()->tab_at(3)->HasFreezingVote(
+      FreezingVoteReason::kCollapsedGroup));
+  EXPECT_TRUE(tabstrip()->tab_at(3)->HasFreezingVote(
+      FreezingVoteReason::kFocusedGroup));
+  EXPECT_TRUE(tabstrip()->tab_at(3)->HasFreezingVote());
+
+  // Unfocus group1. Unfocused votes should be released, but collapsed votes
+  // remain.
+  controller()->SetFocusedGroup(std::nullopt);
+  EXPECT_TRUE(tabstrip()->tab_at(2)->HasFreezingVote(
+      FreezingVoteReason::kCollapsedGroup));
+  EXPECT_FALSE(tabstrip()->tab_at(2)->HasFreezingVote(
+      FreezingVoteReason::kFocusedGroup));
+  EXPECT_TRUE(tabstrip()->tab_at(2)->HasFreezingVote());
+
+  // Expand group2. Collapsed votes are released.
+  tabstrip()->ToggleTabGroupCollapsedState(group2);
+  EXPECT_FALSE(tabstrip()->tab_at(2)->HasFreezingVote(
+      FreezingVoteReason::kCollapsedGroup));
+  EXPECT_FALSE(tabstrip()->tab_at(2)->HasFreezingVote(
+      FreezingVoteReason::kFocusedGroup));
+  EXPECT_FALSE(tabstrip()->tab_at(2)->HasFreezingVote());
+}

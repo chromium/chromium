@@ -199,6 +199,8 @@ void BrowserTabStripController::InitFromModel(TabStrip* tabstrip) {
     OnGlassFrameEligibilityChanged(
         service->IsBrowserWindowEligible(browser_view_->browser()));
   }
+
+  UpdateAllTabsFocusFreezing();
 }
 
 void BrowserTabStripController::Reset() {
@@ -593,6 +595,9 @@ void BrowserTabStripController::OnTabStripModelChanged(
                                .is_pinned = tab_interface->IsPinned()});
       }
       AddTabs(tabs_to_add);
+      for (const auto& contents : change.GetInsert()->contents) {
+        UpdateTabFocusFreezing(contents.index);
+      }
       break;
     }
     case TabStripModelChange::kRemoved: {
@@ -723,6 +728,7 @@ void BrowserTabStripController::OnTabGroupChanged(
 void BrowserTabStripController::OnTabPinnedStateChanged(tabs::TabInterface* tab,
                                                         int model_index) {
   tabstrip_->OnTabPinnedStateChanged(model_index, tab->IsPinned());
+  UpdateTabFocusFreezing(model_index);
 }
 
 void BrowserTabStripController::TabGroupedStateChanged(
@@ -740,6 +746,8 @@ void BrowserTabStripController::TabGroupedStateChanged(
   if (new_group.has_value()) {
     tabstrip_->OnGroupContentsChanged(new_group.value());
   }
+
+  UpdateTabFocusFreezing(index);
 }
 
 void BrowserTabStripController::OnSplitTabChanged(
@@ -795,6 +803,8 @@ void BrowserTabStripController::OnTabGroupFocusChanged(
   UpdateFocusModeTheme(new_group_id);
   browser_view_->browser_widget()->ThemeChanged();
   browser_view_->GetWidget()->non_client_view()->frame_view()->SchedulePaint();
+
+  UpdateAllTabsFocusFreezing();
 }
 
 void BrowserTabStripController::UpdateFocusModeTheme(
@@ -816,6 +826,34 @@ void BrowserTabStripController::UpdateFocusModeTheme(
 
   if (browser_view_ && browser_view_->browser_widget()) {
     browser_view_->browser_widget()->SetUserColorOverride(color);
+  }
+}
+
+void BrowserTabStripController::UpdateTabFocusFreezing(int model_index) {
+  if (!features::IsTabGroupsFocusFreezingEnabled()) {
+    return;
+  }
+  if (!model_->ContainsIndex(model_index)) {
+    return;
+  }
+  Tab* tab = tabstrip_->tab_at(model_index);
+  const std::optional<tab_groups::TabGroupId> focused_group =
+      model_->GetFocusedGroup();
+  if (focused_group.has_value() && !tab->data().pinned &&
+      tab->group() != focused_group.value()) {
+    tab->CreateFreezingVote(FreezingVoteReason::kFocusedGroup,
+                            model_->GetWebContentsAt(model_index));
+  } else {
+    tab->ReleaseFreezingVote(FreezingVoteReason::kFocusedGroup);
+  }
+}
+
+void BrowserTabStripController::UpdateAllTabsFocusFreezing() {
+  if (!features::IsTabGroupsFocusFreezingEnabled()) {
+    return;
+  }
+  for (int i = 0; i < tabstrip_->GetTabCount(); ++i) {
+    UpdateTabFocusFreezing(i);
   }
 }
 

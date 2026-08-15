@@ -144,6 +144,10 @@ class BrowserTabStripController : public TabStripController,
   // focused tab group changes.
   void UpdateFocusModeTheme(std::optional<tab_groups::TabGroupId> group_id);
 
+  // Updates freezing votes when focus mode or tab membership changes.
+  void UpdateTabFocusFreezing(int model_index);
+  void UpdateAllTabsFocusFreezing();
+
   BrowserFrameView* GetFrameView();
   const BrowserFrameView* GetFrameView() const;
 
