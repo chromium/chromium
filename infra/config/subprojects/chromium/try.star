@@ -44,6 +44,13 @@ luci.bucket(
                 # Need to add project-scoped accounts here to trigger builders
                 # in Turbo CI mode. The "projects" field below only applies to
                 # builders triggered fully through LUCI.
+                # NOTE: Please get explicit approval from Chrome resource owners
+                # before adding projects here, as Chromium's machine resources
+                # are primarily for Chromium.
+                # Dawn traffic into Chromium is contained within GPU-specific
+                # pools.
+                "dawn-scoped@luci-project-accounts.iam.gserviceaccount.com",
+                # V8 is mostly grandfathered into triggering Chromium builds.
                 "v8-scoped@luci-project-accounts.iam.gserviceaccount.com",
             ],
             projects = [p for p in [
