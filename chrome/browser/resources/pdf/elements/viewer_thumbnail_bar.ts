@@ -62,10 +62,6 @@ export class ViewerThumbnailBarElement extends CrLitElement {
   private pluginController_: PluginController = PluginController.getInstance();
   private tracker_: EventTracker = new EventTracker();
 
-  // TODO(dhoss): Remove `this.inTest` when implemented a mock plugin
-  // controller.
-  inTest: boolean = false;
-
   constructor() {
     super();
 
@@ -107,7 +103,7 @@ export class ViewerThumbnailBarElement extends CrLitElement {
             }
             thumbnail.setPainted();
 
-            if (!this.isPluginActive_ || this.inTest) {
+            if (!this.isPluginActive_) {
               return;
             }
 

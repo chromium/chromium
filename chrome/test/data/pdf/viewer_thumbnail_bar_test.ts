@@ -10,7 +10,6 @@ import {eventToPromise, microtasksFinished, whenAttributeIs} from 'chrome://webu
 function createThumbnailBar(): ViewerThumbnailBarElement {
   document.body.innerHTML = '';
   const thumbnailBar = document.createElement('viewer-thumbnail-bar');
-  thumbnailBar.inTest = true;
   document.body.appendChild(thumbnailBar);
   return thumbnailBar;
 }
