@@ -652,7 +652,7 @@
 <translation id="1470084204649225129">{NUM_TABS,plural, =1{Sekmeyi Yeni Gruba Ekle}other{Sekmeleri Yeni Gruba Ekle}}</translation>
 <translation id="1470946456740188591">Metin imleciyle göz atmayı açmak veya kapatmak için Ctrl+Arama+7 kısayolunu kullanın</translation>
 <translation id="1471034383866732283">Okuma modu bu sayfada ana içeriği bulamıyor</translation>
-<translation id="1472675084647422956">Daha fazla göster</translation>
+<translation id="1472675084647422956">Daha fazla</translation>
 <translation id="1473223074251193484">Tethering Yapılandırmasını Ayarla</translation>
 <translation id="1473616112002966036">&amp;Video Karesi</translation>
 <translation id="1473927070149284123">Tekrar deneyin veya bir ağa manuel olarak bağlanın</translation>
@@ -1467,7 +1467,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2051555741181591333">Hotspot'u otomatik olarak devre dışı bırak</translation>
 <translation id="2051669996101374349">Mümkün olduğunda HTTPS kullanın ve HTTPS'yi desteklemeyen siteleri yüklemeden önce uyarı alın. Gelişmiş Koruma'yı etkinleştirdiğiniz için bu ayarı değiştiremezsiniz.</translation>
 <translation id="2052572566310583903">Diğer cihazlarınızda yüklü</translation>
-<translation id="2052723746739622752">Gemini'ın sabitlemesini kaldır</translation>
+<translation id="2052723746739622752">Gemini'ın Sabitlemesini Kaldır</translation>
 <translation id="2058456167109518507">Cihaz algılandı</translation>
 <translation id="2059913712424898428">Saat dilimi</translation>
 <translation id="2060375639911876205">eSIM profilini kaldır</translation>
@@ -5729,7 +5729,7 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="513555878193063507">Yeni APN ekle</translation>
 <translation id="5136343472380336530">Her iki cihazın da kilidinin açık ve birbirine yakın olduğundan, Bluetooth ayarlarının etkin olduğundan emin olun. <ph name="LINK_BEGIN" />Daha fazla bilgi<ph name="LINK_END" /></translation>
 <translation id="5136529877787728692">F7</translation>
-<translation id="5138227688689900538">Daha az göster</translation>
+<translation id="5138227688689900538">Daha az</translation>
 <translation id="5139823398361067371">Güvenlik anahtarınızın PIN'ini girin. PIN kodunu bilmiyorsanız güvenlik anahtarını sıfırlamanız gerekir.</translation>
 <translation id="5139955368427980650">&amp;Aç</translation>
 <translation id="5140742218917419811">Kullanılacak tuşlar</translation>

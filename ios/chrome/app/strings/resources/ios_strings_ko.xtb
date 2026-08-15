@@ -487,7 +487,7 @@
 <translation id="2640733327287333451">사용자 이름 없음 ••••••</translation>
 <translation id="264215785133931186">조금 전에 확인됨</translation>
 <translation id="2647434099613338025">언어 추가</translation>
-<translation id="2648812801228676606"><ph name="NAME_OR_EMAIL" /> 계정으로 로그인된 상태를 유지했습니다</translation>
+<translation id="2648812801228676606"><ph name="NAME_OR_EMAIL" /> 계정으로 로그인한 상태입니다.</translation>
 <translation id="2649592894792404568">Google 비밀번호 관리자 데이터를 삭제하려고 합니다</translation>
 <translation id="2652129567809778422">비밀번호 선택</translation>
 <translation id="2658056020748144467">파일을 열 수 없음</translation>
@@ -662,7 +662,7 @@
 <translation id="3280562213547448728">음성 검색</translation>
 <translation id="3289505634533552500">음성 검색</translation>
 <translation id="3295904109373959849">탭 그룹 그리드</translation>
-<translation id="3301639354590628973">계정을 전환하시겠습니까?</translation>
+<translation id="3301639354590628973">계정을 전환하시겠어요?</translation>
 <translation id="3302837541200840455"><ph name="TAB_TITLE" />, 새 활동</translation>
 <translation id="3305294846493618482">더보기</translation>
 <translation id="3311748811247479259">사용 안함</translation>
