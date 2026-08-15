@@ -1886,6 +1886,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2458379781610688953">Atnaujinti paskyrą, <ph name="EMAIL" /></translation>
 <translation id="2459703812219683497">Aptiktas aktyvinimo kodas</translation>
 <translation id="2459706890611560967">Tęsti skirtuko perdavimą į „<ph name="DEVICE_NAME" />“</translation>
+<translation id="245979889539926662">Bendrinti ekrano kopiją</translation>
 <translation id="2460150227008936698">{COUNT,plural, =0{Galiojimo laikas baigsis šiandien}=1{Galiojimo laikas baigsis rytoj}one{Galiojimo laikas baigsis po # dienos}few{Galiojimo laikas baigsis po # dienų}many{Galiojimo laikas baigsis po # dienos}other{Galiojimo laikas baigsis po # dienų}}</translation>
 <translation id="2460482211073772897">Kituose aplankuose</translation>
 <translation id="2460826998961521840">Jei norite naudoti „Google“ paskyroje išsaugotus prieigos raktus</translation>

@@ -765,6 +765,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="4180726336228139707">このデバイスのみ</translation>
 <translation id="4181841719683918333">言語</translation>
 <translation id="4188221736490993796">降順で並べ替え</translation>
+<translation id="4188638484665452040">Gemini の固定を解除しました</translation>
 <translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{スパムまたは虚偽のコンテンツのため、このサイトからの通知の送信を停止しました}other{スパムまたは虚偽のコンテンツのため、これらのサイトからの通知の送信を停止しました}}</translation>
 <translation id="4195643157523330669">新しいタブで開く</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{このデバイスの 1 個のタブ}other{このデバイスの # 個のタブ}}</translation>
@@ -1839,6 +1840,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="8393700583063109961">メッセージを送信</translation>
 <translation id="8396098434728053815">タブの音声も共有する</translation>
 <translation id="8398389123831319859">シークレット モードに切り替えるには、ダブルタップして長押しします</translation>
+<translation id="8412037385861858490">Chrome での作業を保護するため、Chrome へのログイン中、組織は特定の情報を表示または管理できます。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="8413126021676339697">全履歴を表示</translation>
 <translation id="8413795581997394485">危険だと認識されているサイト、ダウンロード、拡張機能から保護します。ユーザーがサイトにアクセスすると、Chrome はユーザーの IP アドレスを隠すプライバシー サーバーを介して、URL の一部を難読化して Google に送信します。サイトで不審な動作が検出された場合は、URL 全体とページ コンテンツの一部も送信されます。</translation>
 <translation id="8414396119627470038"><ph name="SITE_ETLD_PLUS_ONE" /> に <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> の情報を使用してログイン</translation>

@@ -1872,6 +1872,7 @@
 <translation id="2458379781610688953">Ажурирајте налог, <ph name="EMAIL" /></translation>
 <translation id="2459703812219683497">Откривен је активациони кôд</translation>
 <translation id="2459706890611560967">Наставите пребацивање картице на <ph name="DEVICE_NAME" /></translation>
+<translation id="245979889539926662">Дели снимак екрана</translation>
 <translation id="2460150227008936698">{COUNT,plural, =0{Истиче данас}=1{Истиче сутра}one{Истиче за # дан}few{Истиче за # дана}other{Истиче за # дана}}</translation>
 <translation id="2460482211073772897">У другим фолдерима</translation>
 <translation id="2460826998961521840">Да бисте користили приступне кључеве сачуване на Google налогу</translation>

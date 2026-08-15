@@ -765,6 +765,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="4180726336228139707">यो डिभाइसमा मात्र</translation>
 <translation id="4181841719683918333">भाषाहरू</translation>
 <translation id="4188221736490993796">Z देखि A को क्रममा क्रमबद्ध गर्नुहोस्</translation>
+<translation id="4188638484665452040">Gemini अनपिन गरिएको छ</translation>
 <translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{स्प्याम वा भ्रामक सामग्रीका कारण Chrome ले यो साइटलाई नोटिफिकेसन पठाउन रोक लगाएको छ}other{स्प्याम वा भ्रामक सामग्रीका कारण Chrome ले यी साइटहरूलाई नोटिफिकेसन पठाउन रोक लगाएको छ}}</translation>
 <translation id="4195643157523330669">नयाँ ट्याबमा खोल्नुहोस्</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{यो डिभाइसको एउटा ट्याब}other{यो डिभाइसको # वटा ट्याब}}</translation>
@@ -1838,6 +1839,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="8393700583063109961">म्यासेज पठाउनुहोस्</translation>
 <translation id="8396098434728053815">ट्याब अडियो पनि सेयर गर्नुहोस्</translation>
 <translation id="8398389123831319859">इन्कोग्निटो मोड प्रयोग गर्न डबल ट्याप गरी थिचिरहनुहोस्</translation>
+<translation id="8412037385861858490">Chrome मा तपाईंको कार्य सुरक्षित राख्न तपाईंको सङ्गठनले तपाईं Chrome मा साइन इन अवस्थामा हुँदा निश्चित जानकारी हेर्न वा व्यवस्थापन गर्न सक्ने छ। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="8413126021676339697">पूर्ण इतिहास देखाउनुहोस्</translation>
 <translation id="8413795581997394485">खतरनाक मानिने साइट, डाउनलोड र एक्स्टेन्सनहरूबाट सुरक्षित राख्छ। तपाईं वेबसाइटमा जाँदा Chrome ले तपाईंको IP एड्रेस लुकाउने निजी सर्भरमार्फत Google लाई URL को अस्पष्ट भाग पठाउँछ। वेबसाइटमा कुनै शंकास्पद गतिविधि भएका खण्डमा पूरै URL र पेजमा भएका केही सामग्री पनि पठाइन्छन्।</translation>
 <translation id="8414396119627470038"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> मार्फत <ph name="SITE_ETLD_PLUS_ONE" /> मा साइन इन गर्नुहोस्</translation>

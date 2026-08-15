@@ -1873,6 +1873,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2458379781610688953">Përditëso llogarinë, <ph name="EMAIL" /></translation>
 <translation id="2459703812219683497">U zbulua kod aktivizimi</translation>
 <translation id="2459706890611560967">Vazhdo transmetimin e skedës te <ph name="DEVICE_NAME" /></translation>
+<translation id="245979889539926662">Ndaj një pamje ekrani</translation>
 <translation id="2460150227008936698">{COUNT,plural, =0{Skadon sot}=1{Skadon nesër}other{Skadon për # ditë}}</translation>
 <translation id="2460482211073772897">Në dosje të tjera</translation>
 <translation id="2460826998961521840">Për të përdorur çelësat e kalimit nga "Llogaria e Google"</translation>

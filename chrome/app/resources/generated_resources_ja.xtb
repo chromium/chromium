@@ -1872,6 +1872,7 @@
 <translation id="2458379781610688953">アカウントを更新（<ph name="EMAIL" />）</translation>
 <translation id="2459703812219683497">アクティベーション コードを検出しました</translation>
 <translation id="2459706890611560967"><ph name="DEVICE_NAME" /> へのタブのキャストを再開する</translation>
+<translation id="245979889539926662">スクリーンショットを共有</translation>
 <translation id="2460150227008936698">{COUNT,plural, =0{今日で期限切れ}=1{明日で期限切れ}other{あと # 日で期限切れ}}</translation>
 <translation id="2460482211073772897">他のフォルダ</translation>
 <translation id="2460826998961521840">Google アカウントに保存されているパスキーを使用するには</translation>

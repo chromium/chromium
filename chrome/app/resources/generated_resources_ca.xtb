@@ -1873,6 +1873,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2458379781610688953">Actualitza el compte, <ph name="EMAIL" /></translation>
 <translation id="2459703812219683497">S'ha detectat un codi d'activació</translation>
 <translation id="2459706890611560967">Reprèn l'emissió de la pestanya a <ph name="DEVICE_NAME" /></translation>
+<translation id="245979889539926662">Comparteix una captura de pantalla</translation>
 <translation id="2460150227008936698">{COUNT,plural, =0{Caduca avui}=1{Caduca demà}other{Caduca d'aquí a # dies}}</translation>
 <translation id="2460482211073772897">En altres carpetes</translation>
 <translation id="2460826998961521840">Per usar claus d'accés del Compte de Google</translation>

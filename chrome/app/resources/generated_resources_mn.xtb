@@ -1885,6 +1885,7 @@
 <translation id="2458379781610688953">Бүртгэл шинэчлэх, <ph name="EMAIL" /></translation>
 <translation id="2459703812219683497">Идэвхжүүлэх код илэрсэн</translation>
 <translation id="2459706890611560967"><ph name="DEVICE_NAME" />-д дамжуулахыг үргэлжлүүлэх</translation>
+<translation id="245979889539926662">Дэлгэцийн агшин хуваалцах</translation>
 <translation id="2460150227008936698">{COUNT,plural, =0{Өнөөдөр хугацаа нь дуусна}=1{Маргааш хугацаа нь дуусна}other{# хоногийн дараа хугацаа нь дуусна}}</translation>
 <translation id="2460482211073772897">Бусад фолдерт</translation>
 <translation id="2460826998961521840">Google Бүртгэлдээ хадгалсан нэвтрэх түлхүүрийг ашиглахын тулд</translation>

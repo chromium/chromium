@@ -599,7 +599,7 @@
 <translation id="2027465737841872819">بلاستيك</translation>
 <translation id="2027707238798802149">البطاقة غير متوفّرة</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />التحقق من الخادم الوكيل والجدار الناري<ph name="END_LINK" /></translation>
-<translation id="2033550997390154638">‏يتم تنفيذ هذه العملية في Chrome باستخدام علامات سطر الأوامر التي تم ضبطها يدويًا. ويُرجى العِلم أنّ علامات سطر الأوامر قد تتغيّر في أي وقت ولا يُقدَم دعم بخصوصها.</translation>
+<translation id="2033550997390154638">‏يتم تنفيذ هذه العملية في Chrome باستخدام علامات سطر الأوامر التي تم ضبطها يدويًا. ويُرجى العِلم أنّ علامات سطر الأوامر قد تتغيّر في أي وقت ولا يُقدَّم دعم بخصوصها.</translation>
 <translation id="2033900728810589426">لا يمكن أن يكون الاختصار مطابقًا للكلمة الرئيسية لمزوِّد البحث التلقائي المحددة من قِبل <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />‏: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">الحفظ على أي حال</translation>
 <translation id="2036514476578229158">‏لقد طلبت زيارة هذا الموقع الإلكتروني. يمكن لأحد والدَيك الرد على هذا الطلب في تطبيق Family Link.</translation>
@@ -2134,7 +2134,7 @@
 <translation id="4644567637638438744">‏لا يمكن تحميل الملفات إلا إذا كنت مسجِّلاً الدخول إلى Microsoft OneDrive</translation>
 <translation id="4644670975240021822">ترتيب عكسي والوجه للأسفل</translation>
 <translation id="4648262692072505866">‏يجب أن يكون تنسيق التجزئة SHA-256.</translation>
-<translation id="4652266463001779298">غير مسموح به</translation>
+<translation id="4652266463001779298">غير مسموح بها</translation>
 <translation id="4652440160515225514">حظرت مؤسستك هذا الموقع الإلكتروني لأنه ينتهك إحدى السياسات.</translation>
 <translation id="4658638640878098064">وضع دبوس أعلى اليسار</translation>
 <translation id="4658801711339831733">‏تم حفظ الصورة الممسوحة ضوئيًا في Google Drive</translation>

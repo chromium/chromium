@@ -765,6 +765,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="4180726336228139707">Csak ezen az eszközön</translation>
 <translation id="4181841719683918333">Nyelvek</translation>
 <translation id="4188221736490993796">Rendezés Z-től A-ig</translation>
+<translation id="4188638484665452040">A Gemini rögzítése megszüntetve</translation>
 <translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{A Chrome spam vagy megtévesztő tartalom miatt megakadályozta, hogy ez a webhely értesítéseket küldjön}other{A Chrome spam vagy megtévesztő tartalom miatt megakadályozta, hogy ezek a webhelyek értesítéseket küldjenek}}</translation>
 <translation id="4195643157523330669">Megnyitás új lapon</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 lap ezen az eszközön}other{# lap ezen az eszközön}}</translation>
@@ -1839,6 +1840,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="8393700583063109961">Üzenet küldése</translation>
 <translation id="8396098434728053815">A lap hangja is legyen megosztva</translation>
 <translation id="8398389123831319859">Koppintson duplán, és tartsa lenyomva az ujját az inkognitó módba való váltáshoz</translation>
+<translation id="8412037385861858490">A Chrome-ban végzett munka biztonsága érdekében a szervezete képes lehet bizonyos információk megtekintésére vagy kezelésére, amikor Ön be van jelentkezve a Chrome-ba. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
 <translation id="8413126021676339697">Az összes előzmény</translation>
 <translation id="8413795581997394485">Védelmet nyújt az ismert veszélyes webhelyekkel, letöltésekkel és bővítményekkel szemben. Amikor Ön felkeresi valamelyik webhelyet, a Chrome az URL obfuszkált részét egy olyan adatvédelmi szerveren keresztül küldi el a Google-nak, amely elrejti az Ön IP-címét. Ha valamelyik oldalon gyanús műveletet észlel, akkor a böngésző a teljes URL-eket és az oldal tartalmának egyes részeit is elküldi.</translation>
 <translation id="8414396119627470038">Jelentkezzen be a(z) <ph name="SITE_ETLD_PLUS_ONE" /> webhelyre a következővel: <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>

@@ -10175,7 +10175,7 @@ Not: Bu politikayı, saat dilimini otomatik olarak çözümlemek için kullanıy
       Politikayı False (Yanlış) değerine ayarlamak kullanıcıların, uygulamaların ve uzantıların Tam ekran moduna giremeyeceği anlamına gelir.</translation>
 <translation id="7180529638251181928"><ph name="YOUTUBE_PRODUCT_NAME" /> uygulamasında Kısıtlı Mod'u zorunlu kılma</translation>
 <translation id="718126088895133062">Bu politika, bu cihaz için <ph name="PLUGIN_VM_NAME" /> lisanslama kullanıcı kimliğini belirtmektedir.</translation>
-<translation id="7182622189057326705">Paylaşılan pano özelliği Chrome'dan kaldırıldığı için bu politikanın desteği sonlandırıldı ve geçerliliği sona erdi.
+<translation id="7182622189057326705">Paylaşılan pano özelliği Chrome'dan kaldırıldığı için bu politika artık geçersizdir.
 
 Orijinal açıklama:
 Paylaşılan Pano özelliğini etkinleştirin. Bu özellik, senkronizasyon etkin durumda olup kullanıcı oturum açmışken kullanıcıların Chrome Masaüstü cihazlar ve bir Android cihaz arasında kısa mesaj göndermesine olanak tanır.

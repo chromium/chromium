@@ -1873,6 +1873,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2458379781610688953">Atualize a conta, <ph name="EMAIL" /></translation>
 <translation id="2459703812219683497">Código de ativação detetado</translation>
 <translation id="2459706890611560967">Retomar transmissão do separador para <ph name="DEVICE_NAME" /></translation>
+<translation id="245979889539926662">Partilhar captura de ecrã</translation>
 <translation id="2460150227008936698">{COUNT,plural, =0{Expira hoje}=1{Expira amanhã}other{Expira dentro de # dias}}</translation>
 <translation id="2460482211073772897">Noutras pastas</translation>
 <translation id="2460826998961521840">Para usar chaves de acesso guardadas na sua Conta Google</translation>

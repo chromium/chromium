@@ -1176,7 +1176,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1901213235765457754">Yêu cầu quản trị viên cập nhật ứng dụng này</translation>
 <translation id="1901303067676059328">Chọn &amp;tất cả</translation>
 <translation id="1901760057081700494">Múi giờ hiện tại là <ph name="TIME_ZONE_ENTRY" />. Để múi giờ tự động cập nhật, hãy <ph name="BEGIN_LINK" />bật quyền truy cập thông tin vị trí của hệ thống<ph name="END_LINK" />.</translation>
-<translation id="1903124137025773109">Địa chỉ nhà riêng có thể giúp bạn hoàn thành công việc trên các dịch vụ của Google, như đường đi trên Google Maps và kết quả phù hợp hơn trên Tìm kiếm. Bạn có thể chỉnh sửa hoặc xoá địa chỉ trong <ph name="BEGIN_LINK" />Tài khoản Google<ph name="END_LINK" /> <ph name="USERNAME" />.</translation>
+<translation id="1903124137025773109">Địa chỉ nhà riêng có thể giúp bạn hoàn tất các việc trên các dịch vụ của Google, chẳng hạn như nhận kết quả trên Tìm kiếm và chỉ dẫn đường đi trên Google Maps phù hợp hơn. Bạn có thể chỉnh sửa hoặc xoá địa chỉ trong <ph name="BEGIN_LINK" />Tài khoản Google<ph name="END_LINK" /> <ph name="USERNAME" />.</translation>
 <translation id="1904580727789512086">Các URL bạn truy cập sẽ được lưu vào Tài khoản Google của bạn</translation>
 <translation id="190530012637606145">Cảnh báo cho bạn về tất cả các kết nối không an toàn, kể cả mạng nội bộ riêng tư</translation>
 <translation id="1906181697255754968">Các trang web thường truy cập vào tệp và thư mục trên thiết bị của bạn để áp dụng những tính năng như tự động lưu công việc</translation>
@@ -1633,7 +1633,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="225716114209817872">Tối đa</translation>
 <translation id="2259337945538989999">Để truy cập các thẻ mà bạn mở trên những thiết bị khác, hãy xác minh danh tính của bạn. Bạn có thể dừng đồng bộ hoá bất cứ lúc nào trong phần cài đặt. Google có thể cá nhân hoá dịch vụ Tìm kiếm và các dịch vụ khác dựa trên nhật ký của bạn.</translation>
 <translation id="22614517036276112">Tài liệu này hoặc thiết bị của bạn không đáp ứng một số chính sách bảo mật của tổ chức. Hãy trao đổi với quản trị viên của bạn để biết những vấn đề cần khắc phục.</translation>
-<translation id="2261825061465157168">Địa chỉ nơi làm việc có thể giúp bạn hoàn thành công việc trên các dịch vụ của Google, như đường đi trên Google Maps và kết quả phù hợp hơn trên Tìm kiếm. Bạn có thể chỉnh sửa hoặc xoá địa chỉ trong <ph name="BEGIN_LINK" />Tài khoản Google<ph name="END_LINK" /> <ph name="USERNAME" />.</translation>
+<translation id="2261825061465157168">Địa chỉ nơi làm việc có thể giúp bạn hoàn tất các việc trên các dịch vụ của Google, chẳng hạn như nhận kết quả trên Tìm kiếm và chỉ dẫn đường đi trên Google Maps phù hợp hơn. Bạn có thể chỉnh sửa hoặc xoá địa chỉ trong <ph name="BEGIN_LINK" />Tài khoản Google<ph name="END_LINK" /> <ph name="USERNAME" />.</translation>
 <translation id="2262477216570151239">Độ trễ trước khi lặp lại</translation>
 <translation id="2263371730707937087">Tốc độ làm mới màn hình</translation>
 <translation id="2263679799334060788">Ý kiến phản hồi của bạn sẽ giúp chúng tôi cải tiến Google Cast và chúng tôi rất trân trọng ý kiến đó.
@@ -6816,7 +6816,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6266984048393265562">Tuỳ chỉnh hồ sơ</translation>
 <translation id="6267166720438879315">Chọn một chứng chỉ để xác thực bạn với <ph name="HOST_NAME" /></translation>
 <translation id="6268252012308737255">Mở bằng <ph name="APP" /></translation>
-<translation id="6269392226729599142">Khôi phục chế độ xem Chia đôi màn hình</translation>
+<translation id="6269392226729599142">Khôi phục chế độ xem chia đôi màn hình</translation>
 <translation id="6270309713620950855">Tắt tiếng thông báo nhắc nhở</translation>
 <translation id="6270391203985052864">Các trang web có thể yêu cầu gửi thông báo</translation>
 <translation id="6270770586500173387">Gửi <ph name="BEGIN_LINK1" />thông tin hệ thống và ứng dụng<ph name="END_LINK1" /> cũng như <ph name="BEGIN_LINK2" />số liệu<ph name="END_LINK2" /></translation>

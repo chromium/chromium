@@ -1873,6 +1873,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2458379781610688953">Atjaunināt kontu (<ph name="EMAIL" />)</translation>
 <translation id="2459703812219683497">Konstatēts aktivizācijas kods</translation>
 <translation id="2459706890611560967">Atsākt cilnes apraidi ierīcē <ph name="DEVICE_NAME" /></translation>
+<translation id="245979889539926662">Kopīgot ekrānuzņēmumu</translation>
 <translation id="2460150227008936698">{COUNT,plural, =0{Derīguma termiņš beigsies šodien}=1{Derīguma termiņš beigsies rīt}zero{Derīguma termiņš beigsies pēc # dienām}one{Derīguma termiņš beigsies pēc # dienas}other{Derīguma termiņš beigsies pēc # dienām}}</translation>
 <translation id="2460482211073772897">Citās mapēs</translation>
 <translation id="2460826998961521840">Lai izmantotu piekļuves atslēgas, kas saglabātas jūsu Google kontā</translation>

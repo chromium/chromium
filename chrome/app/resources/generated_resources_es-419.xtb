@@ -1166,7 +1166,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1901213235765457754">Pídele al administrador que actualice esta app</translation>
 <translation id="1901303067676059328">Seleccionar &amp;todo</translation>
 <translation id="1901760057081700494">Actualmente, la zona horaria está configurada como <ph name="TIME_ZONE_ENTRY" />. Para actualizar automáticamente la zona horaria, <ph name="BEGIN_LINK" />activa el acceso a la ubicación del sistema<ph name="END_LINK" />.</translation>
-<translation id="1903124137025773109">Tu dirección de casa puede ayudarte a realizar tareas en los servicios de Google, como obtener resultados de la Búsqueda más relevantes y direcciones en Google Maps. Puedes editar o borrar tu dirección en tu <ph name="BEGIN_LINK" />Cuenta de Google<ph name="END_LINK" /> <ph name="USERNAME" />.</translation>
+<translation id="1903124137025773109">Tu dirección de casa puede ayudarte a realizar tareas en los servicios de Google, como obtener resultados de la Búsqueda más relevantes e instrucciones sobre cómo llegar a un lugar en Google Maps. Puedes editar o borrar tu dirección en tu <ph name="BEGIN_LINK" />Cuenta de Google<ph name="END_LINK" /> <ph name="USERNAME" />.</translation>
 <translation id="1904580727789512086">Las URLs que visitas se guardan en tu Cuenta de Google</translation>
 <translation id="190530012637606145">Te advierte sobre todas las conexiones no seguras, incluidas las intranets privadas</translation>
 <translation id="1906181697255754968">Por lo general los sitios acceden a archivos y carpetas de tu dispositivo para habilitar funciones, como la de guardar las tareas de forma automática.</translation>
@@ -1623,7 +1623,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="225716114209817872">Máximo</translation>
 <translation id="2259337945538989999">Para obtener las pestañas de tus otros dispositivos, verifica tu identidad. Puedes detener la sincronización en cualquier momento desde la configuración. Es posible que Google personalice la Búsqueda y otros servicios en función de tu historial.</translation>
 <translation id="22614517036276112">Este documento o tu dispositivo no cumplen con algunas de las políticas de seguridad de tu organización. Consulta con el administrador qué tienes que corregir.</translation>
-<translation id="2261825061465157168">Tu dirección de trabajo puede ayudarte a realizar tareas en los servicios de Google, como obtener resultados de la Búsqueda más relevantes y direcciones en Google Maps. Puedes editar o borrar tu dirección en tu <ph name="BEGIN_LINK" />Cuenta de Google<ph name="END_LINK" /> <ph name="USERNAME" />.</translation>
+<translation id="2261825061465157168">Tu dirección de trabajo puede ayudarte a realizar tareas en los servicios de Google, como obtener resultados de la Búsqueda más relevantes e instrucciones sobre cómo llegar a un lugar en Google Maps. Puedes editar o borrar tu dirección en tu <ph name="BEGIN_LINK" />Cuenta de Google<ph name="END_LINK" /> <ph name="USERNAME" />.</translation>
 <translation id="2262477216570151239">Tiempo para repetición</translation>
 <translation id="2263371730707937087">Frecuencia de actualización de la pantalla</translation>
 <translation id="2263679799334060788">Agradecemos tus comentarios, ya que nos ayudan a mejorar Google Cast. Si quieres obtener asistencia para solucionar problemas de transmisión, visita el <ph name="BEGIN_LINK" />Centro de ayuda<ph name="END_LINK" />.</translation>

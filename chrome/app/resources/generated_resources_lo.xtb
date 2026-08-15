@@ -1885,6 +1885,7 @@
 <translation id="2458379781610688953">ອັບເດດບັນຊີ, <ph name="EMAIL" /></translation>
 <translation id="2459703812219683497">ລຶບລະຫັດການເປີດນຳໃຊ້ແລ້ວ</translation>
 <translation id="2459706890611560967">ສົ່ງສັນຍານແຖບໄປຫາ <ph name="DEVICE_NAME" /> ຕໍ່</translation>
+<translation id="245979889539926662">ແບ່ງປັນຮູບໜ້າຈໍ</translation>
 <translation id="2460150227008936698">{COUNT,plural, =0{ໝົດອາຍຸມື້ນີ້}=1{ໝົດອາຍຸມື້ອື່ນ}other{ໝົດອາຍຸໃນອີກ # ມື້}}</translation>
 <translation id="2460482211073772897">ໃນໂຟນເດີອື່ນ</translation>
 <translation id="2460826998961521840">ເພື່ອໃຊ້ກະແຈຜ່ານທີ່ບັນທຶກໄວ້ໃນບັນຊີ Google ຂອງທ່ານ</translation>

@@ -1190,7 +1190,7 @@
 <translation id="1910736334623230603">여러 이미지를 검색할 수 없습니다. 한 번에 이미지 하나씩 추가하세요.</translation>
 <translation id="1910908536872421421">테스트용 Chrome v<ph name="BROWSER_VERSION" />은(는) 자동 테스트 전용입니다. 정기적인 탐색을 하려면 자동으로 업데이트되는 표준 버전의 Chrome을 사용하세요.</translation>
 <translation id="1913734973620799732">{NUM_TABS,plural, =1{브라우저 속도를 저하시키는 탭 일시중지}other{브라우저 속도를 저하시키는 탭 일시중지}}</translation>
-<translation id="1913749768968678106">전송, 저장, 공유</translation>
+<translation id="1913749768968678106">캐스팅, 저장, 공유</translation>
 <translation id="19147273405311768">툴바를 기본 설정으로 재설정</translation>
 <translation id="1915073950770830761">canary</translation>
 <translation id="1915307458270490472">종료</translation>
@@ -2705,7 +2705,7 @@
 <translation id="3048917188684939573">전송 및 기기 로그</translation>
 <translation id="3049356453907822148">새로운 스킬 추가</translation>
 <translation id="3051250416341590778">디스플레이 크기</translation>
-<translation id="3051676221004664500">“<ph name="SELECTION" />” 번역(&amp;T)</translation>
+<translation id="3051676221004664500">&amp;“<ph name="SELECTION" />” 번역</translation>
 <translation id="3053273573829329829">사용자 PIN 사용</translation>
 <translation id="3053274730492362225">깜박이지 않음</translation>
 <translation id="3057938290530993634">다음에 쉽게 액세스할 수 있도록 자주 방문하는 웹사이트를 고정하려면 길게 탭하세요.</translation>
@@ -5126,7 +5126,7 @@
 <translation id="4913573660390710463">향상된 기능을 갖춘 패키징된 웹 애플리케이션에 액세스합니다. <ph name="BEGIN_LINK_LEARN_MORE" />자세히 알아보기<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4913695564084524048">앱 데이터를 찾을 수 없습니다.</translation>
 <translation id="4915961947098019832">이미지 표시가 허용됨</translation>
-<translation id="4916140032692201190">선택한 텍스트 번역(&amp;T)</translation>
+<translation id="4916140032692201190">&amp;선택 영역 번역</translation>
 <translation id="491779113051926205">ChromeOS 트래픽 카운터</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" />에서 '<ph name="EXTENSION_NAME" />' 확장 프로그램과 통신하려고 합니다.</translation>
 <translation id="4918086044614829423">수락</translation>
@@ -9516,7 +9516,7 @@
 <translation id="8351316842353540018">항상 접근성 옵션 표시</translation>
 <translation id="8351419472474436977">이 확장 프로그램이 프록시 설정을 제어할 수 있게 되었으며, 따라서 사용자가 온라인에서 수행하는 모든 작업을 변경 및 중단하고 엿볼 수 있게 되었음을 의미합니다. 이와 같이 변경된 이유가 확실하지 않다면 이 설정을 사용하지 않는 것이 좋습니다.</translation>
 <translation id="8352287103893778223">탭 그룹 제목</translation>
-<translation id="8353420862507374944">전송, 저장, 공유</translation>
+<translation id="8353420862507374944">캐스팅, 저장, 공유</translation>
 <translation id="8353683614194668312">앱의 권한:</translation>
 <translation id="8354125743472063725"><ph name="APP_NAME" />에 허용하는 권한은 이 앱에도 허용됩니다. <ph name="BEGIN_LINK" />상위 앱의 권한 관리<ph name="END_LINK" /></translation>
 <translation id="8356197132883132838"><ph name="TITLE" /> - <ph name="COUNT" />개</translation>
@@ -9669,7 +9669,7 @@
 <translation id="8477241577829954800">대체됨</translation>
 <translation id="8477384620836102176">일반(&amp;G)</translation>
 <translation id="8477446666255316832">다음번에 더 빠르게 로그인하세요</translation>
-<translation id="8477548388161793571">선택한 텍스트 번역(&amp;T)</translation>
+<translation id="8477548388161793571">&amp;선택 영역 번역</translation>
 <translation id="8478346767369317046">직장</translation>
 <translation id="8479176401914456949">잘못된 코드입니다. 다시 시도해 보세요.</translation>
 <translation id="8480869669560681089"><ph name="VENDOR_NAME" />의 알 수 없는 기기</translation>

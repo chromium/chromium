@@ -110,6 +110,7 @@ Nove oznake se ne mogu sačuvati na računu dok ne izbrišete neke. Ako se sada 
 <translation id="322254490661677575">Da koristite i sačuvate podatke Chromea na Google računu, unesite pristupni izraz.</translation>
 <translation id="3303503998967553377">Koristite radnje u Chromeu u iOS-u</translation>
 <translation id="3348862487678490430">Dodavanje stavke na listu za čitanje u Chromeu</translation>
+<translation id="3350281376951945723">Brže otvarajte linkove kada postavite Chrome kao zadani preglednik</translation>
 <translation id="3357827134511189025">Prijavljujte se putem sačuvanih lozinki i pristupnih ključeva iz bilo koje aplikacije koristeći Chrome za automatsko popunjavanje</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{Ovo se dešava kad se Chrome ne koristi {THRESHOLD} minutu}one{Ovo se dešava kad se Chrome ne koristi {THRESHOLD} minutu}few{Ovo se dešava kad se Chrome ne koristi {THRESHOLD} minute}other{Ovo se dešava kad se Chrome ne koristi {THRESHOLD} minuta}}</translation>
 <translation id="3367797402528056312">Završite postavljanje Chromea</translation>

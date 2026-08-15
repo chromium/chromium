@@ -1886,6 +1886,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2458379781610688953">Аккаунтту жаңыртуу, <ph name="EMAIL" /></translation>
 <translation id="2459703812219683497">Жандандыруу коду аныкталды</translation>
 <translation id="2459706890611560967">Өтмөктү <ph name="DEVICE_NAME" /> түзмөгүнө чыгарууну улантуу</translation>
+<translation id="245979889539926662">Скриншотту бөлүшүү</translation>
 <translation id="2460150227008936698">{COUNT,plural, =0{Мөөнөтү бүгүн бүтөт}=1{Мөөнөтү эртең бүтөт}other{Мөөнөтү # күндөн кийин бүтөт}}</translation>
 <translation id="2460482211073772897">Башка папкаларда</translation>
 <translation id="2460826998961521840">Google аккаунтуңузда сакталган киргизүүчү ачкычтарды колдонуу үчүн</translation>

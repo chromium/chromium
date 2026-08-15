@@ -765,6 +765,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="4180726336228139707">Numai pe acest dispozitiv</translation>
 <translation id="4181841719683918333">Limbi</translation>
 <translation id="4188221736490993796">Sortează de la Z la A</translation>
+<translation id="4188638484665452040">S-a anulat fixarea Gemini</translation>
 <translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome a împiedicat acest site să trimită notificări din cauza spamului sau a conținutului înșelător}few{Chrome a împiedicat aceste site-uri să trimită notificări din cauza spamului sau a conținutului înșelător}other{Chrome a împiedicat aceste site-uri să trimită notificări din cauza spamului sau a conținutului înșelător}}</translation>
 <translation id="4195643157523330669">Deschide în filă nouă</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{O filă pe acest dispozitiv}few{# file pe acest dispozitiv}other{# de file pe acest dispozitiv}}</translation>
@@ -1839,6 +1840,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome
 <translation id="8393700583063109961">Trimite un mesaj</translation>
 <translation id="8396098434728053815">Permite accesul și la conținutul audio din filă</translation>
 <translation id="8398389123831319859">Atinge de două ori și ține apăsat pentru a intra în modul incognito</translation>
+<translation id="8412037385861858490">Pentru a-ți proteja activitatea în Chrome, organizația ta va putea să vadă sau să gestioneze anumite informații când te conectezi la Chrome. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="8413126021676339697">Afișează întregul istoric</translation>
 <translation id="8413795581997394485">Protejează împotriva site-urilor, descărcărilor și extensiilor despre care se știe că sunt periculoase. Când accesezi un site, Chrome trimite la Google o parte obscurizată a adresei URL printr-un server pentru confidențialitate care îți ascunde adresa IP. Dacă un site are un comportament suspect, sunt trimise și adresele URL complete și fragmente din conținutul paginilor.</translation>
 <translation id="8414396119627470038">Conectează-te la <ph name="SITE_ETLD_PLUS_ONE" /> de pe <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>

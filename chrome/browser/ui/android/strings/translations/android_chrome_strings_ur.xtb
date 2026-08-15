@@ -765,6 +765,7 @@
 <translation id="4180726336228139707">صرف اس آلے پر</translation>
 <translation id="4181841719683918333">زبانیں</translation>
 <translation id="4188221736490993796">‏Z سے A کے لحاظ سے ترتیب دیں</translation>
+<translation id="4188638484665452040">‏‫Gemini کو غیر پن کیا گیا</translation>
 <translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{‏اسپام یا گمراہ کن مواد کی وجہ سے Chrome نے اس سائٹ کو اطلاعات بھیجنے سے روک دیا}other{‏اسپام یا گمراہ کن مواد کی وجہ سے Chrome نے ان سائٹس کو اطلاعات بھیجنے سے روک دیا}}</translation>
 <translation id="4195643157523330669">نئے ٹیب میں کھولیں</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{اس آلہ پر 1 ٹیب}other{اس آلہ پر # ٹیبز}}</translation>
@@ -1839,6 +1840,7 @@
 <translation id="8393700583063109961">پیغام بھیجیں</translation>
 <translation id="8396098434728053815">ٹیب آڈیو کا بھی اشتراک کریں</translation>
 <translation id="8398389123831319859">پوشیدگی پر سوئچ کرنے کے لیے دو بار تھپتھپائیں اور دبائے رکھیں</translation>
+<translation id="8412037385861858490">‏‫Chrome پر اپنے کام کو محفوظ بنانے کے لیے، آپ کے Chrome میں سائن ان ہونے پر آپ کی تنظیم کچھ معلومات دیکھ سکے گی یا ان کا نظم کر سکے گی۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="8413126021676339697">مکمل سرگزشت دکھائیں</translation>
 <translation id="8413795581997394485">‏خطرناک مانی جانے والی ویب سائٹس، ڈاؤن لوڈز اور ایکسٹینشنز سے حفاظت کریں۔ جب آپ کسی سائٹ کو ملاحظہ کرتے ہیں تو Chrome رازداری کے سرور کے ذریعے URL کا ایک مبہم حصہ Google کو بھیجتا ہے جو آپ کا IP پتہ چھپاتا ہے۔ کسی سائٹ پر کچھ مشکوک لگنے پر مکمل URLs اور صفحہ کے مواد کے بِٹس بھی بھیجے جاتے ہیں۔</translation>
 <translation id="8414396119627470038"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> کے ساتھ <ph name="SITE_ETLD_PLUS_ONE" /> میں سائن ان کریں</translation>

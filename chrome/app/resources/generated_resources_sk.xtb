@@ -1873,6 +1873,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2458379781610688953">Aktualizovať účet, <ph name="EMAIL" /></translation>
 <translation id="2459703812219683497">Aktivačný kód bol rozpoznaný</translation>
 <translation id="2459706890611560967">Pokračovať v prenose karty do zariadenia <ph name="DEVICE_NAME" /></translation>
+<translation id="245979889539926662">Zdieľanie snímky obrazovky</translation>
 <translation id="2460150227008936698">{COUNT,plural, =0{Vyprší dnes}=1{Vyprší zajtra}few{Vyprší o # dni}many{Vyprší o # dňa}other{Vyprší o # dní}}</translation>
 <translation id="2460482211073772897">V iných priečinkoch</translation>
 <translation id="2460826998961521840">Ak chcete používať prístupové kľúče uložené v účte Google</translation>

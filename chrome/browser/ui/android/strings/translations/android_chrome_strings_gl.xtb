@@ -765,6 +765,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="4180726336228139707">Só neste dispositivo</translation>
 <translation id="4181841719683918333">Idiomas</translation>
 <translation id="4188221736490993796">Ordenar do Z ao A</translation>
+<translation id="4188638484665452040">Deixouse de fixar Gemini</translation>
 <translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome evitou que este sitio enviase notificacións debido a spam ou contido enganoso}other{Chrome evitou que estes sitios enviasen notificacións debido a spam ou contido enganoso}}</translation>
 <translation id="4195643157523330669">Abrir en pestana nova</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 pestana neste dispositivo}other{# pestanas neste dispositivo}}</translation>
@@ -1839,6 +1840,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="8393700583063109961">Enviar mensaxe</translation>
 <translation id="8396098434728053815">Compartir tamén audio da pestana</translation>
 <translation id="8398389123831319859">Toca dúas veces o botón e manteno premido para cambiar ao modo de incógnito</translation>
+<translation id="8412037385861858490">Para protexer o teu traballo en Chrome, a túa organización poderá ver ou xestionar certa información cando teñas a sesión iniciada en Chrome. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="8413126021676339697">Mostrar historial completo</translation>
 <translation id="8413795581997394485">Protéxete contra os sitios, as descargas e as extensións que se consideren perigosos. Cando visitas un sitio, Chrome envíalle unha parte confusa do URL a Google mediante un servidor de privacidade que oculta o teu enderezo IP. Se un sitio ten un comportamento sospeitoso, tamén se enviarán os URL completos e fragmentos do contido das páxinas.</translation>
 <translation id="8414396119627470038">Inicia sesión en <ph name="SITE_ETLD_PLUS_ONE" /> con <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>

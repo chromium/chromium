@@ -149,6 +149,7 @@
 <translation id="1243027604378859286">作者：</translation>
 <translation id="1246424317317450637">粗体</translation>
 <translation id="1247030632403369975">铝</translation>
+<translation id="1249643768796040660">移除此信息</translation>
 <translation id="1253846494229886276">正在保存屏幕截图</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />、<ph name="TYPE_2" />（已同步）</translation>
 <translation id="1255931290436977164">护照</translation>
@@ -598,7 +599,7 @@
 <translation id="2027465737841872819">塑料</translation>
 <translation id="2027707238798802149">卡不可用</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />检查代理服务器和防火墙<ph name="END_LINK" /></translation>
-<translation id="2033550997390154638">此 Chrome 实例正在运行，并且手动设置了命令行 flag。请注意，命令行 flag 可能会随时发生变化，并且不受支持。</translation>
+<translation id="2033550997390154638">此 Chrome 实例在运行时使用了手动设置的命令行 flag。请注意，命令行 flag 随时可能更改，且不在官方支持范围内。</translation>
 <translation id="2033900728810589426">下述快捷字词不能与 <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> 所定义的默认搜索服务提供商关键字相同：<ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">仍然保存</translation>
 <translation id="2036514476578229158">你已请求访问此网站。你的家长可在 Family Link 内回复。</translation>

@@ -1886,6 +1886,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2458379781610688953">Uppfæra reikning, <ph name="EMAIL" /></translation>
 <translation id="2459703812219683497">Virkjunarkóði greindist</translation>
 <translation id="2459706890611560967">Halda áfram að varpa flipa yfir í <ph name="DEVICE_NAME" /></translation>
+<translation id="245979889539926662">Deila skjámynd</translation>
 <translation id="2460150227008936698">{COUNT,plural, =0{Rennur út í dag}=1{Rennur út á morgun}one{Rennur út eftir # dag}other{Rennur út eftir # daga}}</translation>
 <translation id="2460482211073772897">Í öðrum möppum</translation>
 <translation id="2460826998961521840">Til að nota aðgangslykla sem eru vistaðir á Google-reikningnum þínum</translation>

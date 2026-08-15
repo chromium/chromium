@@ -765,6 +765,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="4180726336228139707">Yalnız bu cihazda</translation>
 <translation id="4181841719683918333">Dillər</translation>
 <translation id="4188221736490993796">Z-dən A-ya sıralayın</translation>
+<translation id="4188638484665452040">Gemini-ın bərkidilməsi ləğv edildi</translation>
 <translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{Spam və ya aldadıcı kontent səbəbindən Chrome bu saytın bildiriş göndərməsini dayandırdı}other{Spam və ya aldadıcı kontent səbəbindən Chrome bu saytların bildiriş göndərməsini dayandırdı}}</translation>
 <translation id="4195643157523330669">Yeni tabda açın</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{Bu cihazda 1 tab}other{Bu cihazda # tab}}</translation>
@@ -1837,6 +1838,7 @@ Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chrome datasını 
 <translation id="8393700583063109961">Mesaj göndərin</translation>
 <translation id="8396098434728053815">Tab audiosunu da paylaşın</translation>
 <translation id="8398389123831319859">Anonim rejimə keçmək üçün iki dəfə toxunub saxlayın</translation>
+<translation id="8412037385861858490">Chrome-dakı işinizi qorumaq məqsədilə təşkilatınız Chrome-a daxil olduqda müəyyən məlumatlara baxa və ya onları idarə edə biləcək. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="8413126021676339697">Tam tarixçəni göstərin</translation>
 <translation id="8413795581997394485">Təhlükəli sayt, endirmə və artırmalardan qoruyur. Sayta daxil olduqda Chrome IP ünvanını gizlədən məxfilik serveri vasitəsilə URL-in qarışıq bir hissəsini Google-a göndərir. Sayt şübhəli nəsə edərsə, tam URL və kiçik səhifə kontenti nümunələri də göndərilir.</translation>
 <translation id="8414396119627470038"><ph name="SITE_ETLD_PLUS_ONE" /> saytına <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ilə daxil olun</translation>

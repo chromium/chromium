@@ -1884,6 +1884,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2458379781610688953">Fiók frissítése, <ph name="EMAIL" /></translation>
 <translation id="2459703812219683497">Aktivációs kód észlelve</translation>
 <translation id="2459706890611560967">Lap következőre való átküldésének folytatása: <ph name="DEVICE_NAME" /></translation>
+<translation id="245979889539926662">Képernyőkép megosztása</translation>
 <translation id="2460150227008936698">{COUNT,plural, =0{Ma jár le}=1{Holnap jár le}other{# napon belül lejár}}</translation>
 <translation id="2460482211073772897">Más mappákban</translation>
 <translation id="2460826998961521840">A Google-fiókjába mentett azonosítókulcsok használatához</translation>

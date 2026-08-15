@@ -765,6 +765,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="4180726336228139707">Samo na ovom uređaju</translation>
 <translation id="4181841719683918333">Jezici</translation>
 <translation id="4188221736490993796">Sortiraj od Z do A</translation>
+<translation id="4188638484665452040">Gemini je otkačen</translation>
 <translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome je sprečio ovaj sajt da šalje obaveštenja zbog nepoželjnog ili obmanjujućeg sadržaja}one{Chrome je sprečio ove sajtove da šalju obaveštenja zbog nepoželjnog ili obmanjujućeg sadržaja}few{Chrome je sprečio ove sajtove da šalju obaveštenja zbog nepoželjnog ili obmanjujućeg sadržaja}other{Chrome je sprečio ove sajtove da šalju obaveštenja zbog nepoželjnog ili obmanjujućeg sadržaja}}</translation>
 <translation id="4195643157523330669">Otvori na novoj kartici</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 kartica na ovom uređaju}one{# kartica na ovom uređaju}few{# kartice na ovom uređaju}other{# kartica na ovom uređaju}}</translation>
@@ -1839,6 +1840,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chrome p
 <translation id="8393700583063109961">Pošaljite poruku</translation>
 <translation id="8396098434728053815">Deli i zvuk kartice</translation>
 <translation id="8398389123831319859">Dvaput dodirnite i zadržite da biste prešli u režim bez arhiviranja</translation>
+<translation id="8412037385861858490">Da bi zaštitila vaš rad u Chrome-u, organizacija će moći da pregleda određene informacije ili upravlja njima ako ste prijavljeni u Chrome. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="8413126021676339697">Prikaži svu istoriju</translation>
 <translation id="8413795581997394485">Štiti vas od sajtova, preuzimanja i dodataka za koje se zna da su štetni. Kada posetite sajt, Chrome šalje maskirani deo URL-a Google-u preko servera za privatnost koji krije IP adresu. Ako sajt radi nešto sumnjivo, šalju se i celi URL-ovi i delovi sadržaja stranice.</translation>
 <translation id="8414396119627470038">Prijavite se na <ph name="SITE_ETLD_PLUS_ONE" /> uz <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>

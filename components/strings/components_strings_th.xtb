@@ -599,7 +599,7 @@
 <translation id="2027465737841872819">พลาสติก</translation>
 <translation id="2027707238798802149">บัตรใช้งานไม่ได้</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />ตรวจสอบพร็อกซีและไฟร์วอลล์<ph name="END_LINK" /></translation>
-<translation id="2033550997390154638">อินสแตนซ์ของ Chrome นี้กำลังทำงานโดยมีการตั้งค่า Flag บรรทัดคำสั่งด้วยตนเอง โปรดทราบว่า Flag บรรทัดคำสั่งอาจเปลี่ยนแปลงได้ทุกเมื่อและไม่ได้รับการสนับสนุน</translation>
+<translation id="2033550997390154638">อินสแตนซ์ของ Chrome นี้กำลังทำงานโดยมีการตั้งค่า Flag บรรทัดคำสั่งด้วยตนเอง โปรดทราบว่า Flag บรรทัดคำสั่งอาจเปลี่ยนแปลงได้ทุกเมื่อและไม่ได้รับการรองรับ</translation>
 <translation id="2033900728810589426">ทางลัดต้องไม่เหมือนกับคีย์เวิร์ดของผู้ให้บริการการค้นหาเริ่มต้นที่กำหนดโดย <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">บันทึกเลย</translation>
 <translation id="2036514476578229158">คุณขอเข้าชมเว็บไซต์นี้ ผู้ปกครองจะตอบกลับได้ใน Family Link</translation>

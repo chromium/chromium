@@ -765,6 +765,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="4180726336228139707">Tik šiame įrenginyje</translation>
 <translation id="4181841719683918333">Kalbos</translation>
 <translation id="4188221736490993796">Rūšiuoti nuo Ž iki A</translation>
+<translation id="4188638484665452040">„Gemini“ atsegtas</translation>
 <translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{„Chrome“ sustabdė šios svetainės pranešimų siuntimą dėl šlamšto arba apgaulingo turinio}one{„Chrome“ sustabdė šių svetainių pranešimų siuntimą dėl šlamšto arba apgaulingo turinio}few{„Chrome“ sustabdė šių svetainių pranešimų siuntimą dėl šlamšto arba apgaulingo turinio}many{„Chrome“ sustabdė šių svetainių pranešimų siuntimą dėl šlamšto arba apgaulingo turinio}other{„Chrome“ sustabdė šių svetainių pranešimų siuntimą dėl šlamšto arba apgaulingo turinio}}</translation>
 <translation id="4195643157523330669">Atidaryti naujame skirtuke</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{Vienas skirtukas šiame įrenginyje}one{# skirtukas šiame įrenginyje}few{# skirtukai šiame įrenginyje}many{# skirtuko šiame įrenginyje}other{# skirtukų šiame įrenginyje}}</translation>
@@ -1839,6 +1840,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />ištrinkite „Chro
 <translation id="8393700583063109961">Siųsti pranešimą</translation>
 <translation id="8396098434728053815">Taip pat bendrinti skirtuko garso įrašą</translation>
 <translation id="8398389123831319859">Dukart palieskite ir palaikykite, kad perjungtumėte į inkognito režimą</translation>
+<translation id="8412037385861858490">Kad apsaugotų jūsų darbą sistemoje „Chrome“, jūsų organizacija galės peržiūrėti arba tvarkyti tam tikrą informaciją, kai būsite prisijungę prie „Chrome“. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="8413126021676339697">Rodyti visą istoriją</translation>
 <translation id="8413795581997394485">Apsaugo nuo svetainių, atsisiuntimų ir plėtinių, kurie yra žinomi kaip pavojingi. Kai apsilankote svetainėje, „Chrome“ siunčia klaidinančią URL dalį „Google“ per privatumo serverį, slepiantį jūsų IP adresą. Jei svetainė atlieka ką nors įtartino, siunčiami ir visi URL bei puslapio turinio dalys.</translation>
 <translation id="8414396119627470038">Prisijungimas prie <ph name="SITE_ETLD_PLUS_ONE" /> naudojant <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>

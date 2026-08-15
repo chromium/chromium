@@ -765,6 +765,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="4180726336228139707">Vetëm në këtë pajisje</translation>
 <translation id="4181841719683918333">Gjuhët</translation>
 <translation id="4188221736490993796">Rendit nga Zh-ja në A</translation>
+<translation id="4188638484665452040">Gemini u zhgozhdua</translation>
 <translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome e ndaloi këtë sajt që të mos dërgojë njoftime për shkak të përmbajtjeve të bezdisshme ose mashtruese}other{Chrome i ndaloi këto sajte që të mos dërgojnë njoftime për shkak të përmbajtjeve të bezdisshme ose mashtruese}}</translation>
 <translation id="4195643157523330669">Hape në një skedë të re</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 skedë në këtë pajisje}other{# skeda në këtë pajisje}}</translation>
@@ -1839,6 +1840,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="8393700583063109961">Dërgo mesazh</translation>
 <translation id="8396098434728053815">Ndaj po ashtu audion e skedës</translation>
 <translation id="8398389123831319859">Trokit dy herë dhe mbaj shtypur për të kaluar te modaliteti "I fshehtë"</translation>
+<translation id="8412037385861858490">Për të siguruar punën tënde në Chrome, organizata jote do të mund të shikojë ose të menaxhojë informacione të caktuara kur je i identifikuar në Chrome. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="8413126021676339697">Shfaq historikun e plotë</translation>
 <translation id="8413795581997394485">Të mbron kundër sajteve, shkarkimeve dhe shtesave që njihen si të rrezikshme. Kur ti viziton një sajt, Chrome dërgon një pjesë të pakuptueshme të URL-së te Google nëpërmjet një serveri të privatësisë që e fsheh adresën tënde IP. Nëse një sajt bën diçka të dyshimtë, dërgohen edhe URL-të e plota dhe pjesët e përmbajtjeve të faqeve.</translation>
 <translation id="8414396119627470038">Identifikohu në <ph name="SITE_ETLD_PLUS_ONE" /> me <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>

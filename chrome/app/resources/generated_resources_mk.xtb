@@ -1886,6 +1886,7 @@
 <translation id="2458379781610688953">Ажурирајте ја сметката, <ph name="EMAIL" /></translation>
 <translation id="2459703812219683497">Кодот за активација е препознаен</translation>
 <translation id="2459706890611560967">Продолжи со емитување картичка на <ph name="DEVICE_NAME" /></translation>
+<translation id="245979889539926662">Споделете слика од екранот</translation>
 <translation id="2460150227008936698">{COUNT,plural, =0{Истекува денес}=1{Истекува утре}one{Истекува за # ден}other{Истекува за # дена}}</translation>
 <translation id="2460482211073772897">Во други папки</translation>
 <translation id="2460826998961521840">За да ги користите криптографските клучеви зачувани во вашата сметка на Google</translation>

@@ -765,6 +765,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="4180726336228139707">Faqat shu qurilmada</translation>
 <translation id="4181841719683918333">Tillar</translation>
 <translation id="4188221736490993796">Teskari alifbo tartibida saralash</translation>
+<translation id="4188638484665452040">Gemini paneli yechildi</translation>
 <translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{Spam yoki aldovchi kontent sababli Chrome bu saytga bildirishnoma yuborishni taqiqladi}other{Spam yoki aldovchi kontent sababli Chrome bu saytlarga bildirishnoma yuborishni taqiqladi}}</translation>
 <translation id="4195643157523330669">Yangi varaqda ochish</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{Bu qurilmada 1 ta varaq}other{Bu qurilmada # ta varaq}}</translation>
@@ -1839,6 +1840,7 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chrome ma�
 <translation id="8393700583063109961">Xabar yuborish</translation>
 <translation id="8396098434728053815">Shuningdek, varaqdagi audioga kirishga ruxsat bering</translation>
 <translation id="8398389123831319859">Inkognito rejimiga kirish uchun ikki marta tegining va ushlab turing</translation>
+<translation id="8412037385861858490">Chromeda ishingiz xavfsizligini taʼminlash uchun Chromega kirganingizda tashkilotingiz ayrim maʼlumotlarni koʻrishi yoki boshqarishi mumkin. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="8413126021676339697">Barcha tarixni ko‘rsatish</translation>
 <translation id="8413795581997394485">Xavfli ekanligi maʼlum boʻlgan saytlar, yuklanmalar va kengaytmalardan himoya qiladi. Sayt ochilganda Chrome himoyalangan URL parchasini IP manzilni yashiruvchi maxfiy server orqali Googlega yuboradi. Saytda shubhali harakatlar aniqlansa, toʻliq URL manzillar va sahifa kontentidan parcha ham yuboriladi.</translation>
 <translation id="8414396119627470038"><ph name="SITE_ETLD_PLUS_ONE" /> saytiga <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> hisobi bilan kirish</translation>

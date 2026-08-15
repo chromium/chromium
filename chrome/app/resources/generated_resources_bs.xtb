@@ -1883,6 +1883,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2458379781610688953">Ažurirajte račun, <ph name="EMAIL" /></translation>
 <translation id="2459703812219683497">Otkriven je kôd za aktivaciju</translation>
 <translation id="2459706890611560967">Nastavljanje emitiranja kartice na uređaju <ph name="DEVICE_NAME" /></translation>
+<translation id="245979889539926662">Podijeli snimak ekrana</translation>
 <translation id="2460150227008936698">{COUNT,plural, =0{Ističe danas}=1{Ističe sutra}one{Ističe za # dan}few{Ističe za # dana}other{Ističe za # dana}}</translation>
 <translation id="2460482211073772897">U drugim folderima</translation>
 <translation id="2460826998961521840">Da koristite pristupne ključeve sačuvane na Google računu</translation>

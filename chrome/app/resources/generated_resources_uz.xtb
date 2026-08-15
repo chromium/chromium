@@ -1878,6 +1878,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2458379781610688953">Hisobni yangilash, <ph name="EMAIL" /></translation>
 <translation id="2459703812219683497">Aktivatsiya kodi aniqlandi</translation>
 <translation id="2459706890611560967">Varaqning <ph name="DEVICE_NAME" /> qurilmasiga translatsiyasini davom ettirish</translation>
+<translation id="245979889539926662">Skrinshot ulashish</translation>
 <translation id="2460150227008936698">{COUNT,plural, =0{Muddati bugun tugaydi}=1{Muddati ertaga tugaydi}other{Muddati # kundan keyin tugaydi}}</translation>
 <translation id="2460482211073772897">Boshqa jildlarda</translation>
 <translation id="2460826998961521840">Google hisobingizdagi kalitlardan foydalanish uchun</translation>
@@ -5116,7 +5117,7 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="4913573660390710463">Kengaytirilgan imkoniyatlarga ega paketli veb-ilovalardan foydalaning. <ph name="BEGIN_LINK_LEARN_MORE" />Batafsil<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4913695564084524048">Ilova maʼlumotlari topilmadi</translation>
 <translation id="4915961947098019832">Rasmlarni koʻrsatishga ruxsat berilgan</translation>
-<translation id="4916140032692201190">&amp;Tanlangan matn tarjimasi</translation>
+<translation id="4916140032692201190">Tanlangan matn &amp;tarjimasi</translation>
 <translation id="491779113051926205">ChromeOS trafik hisoblagichlari</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> “<ph name="EXTENSION_NAME" />” kengaytmasiga ruxsat so‘ramoqda</translation>
 <translation id="4918086044614829423">Qabul qilish</translation>

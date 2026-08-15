@@ -1873,6 +1873,7 @@
 <translation id="2458379781610688953">ანგარიშის განახლება, <ph name="EMAIL" /></translation>
 <translation id="2459703812219683497">აღმოჩენილია აქტივაციის კოდი</translation>
 <translation id="2459706890611560967"><ph name="DEVICE_NAME" />-ზე ჩანართის ტრანსლირების გაგრძელება</translation>
+<translation id="245979889539926662">ეკრანის ანაბეჭდის გაზიარება</translation>
 <translation id="2460150227008936698">{COUNT,plural, =0{მოქმედების ვადა იწურება დღეს}=1{მოქმედების ვადა იწურება ხვალ}other{მოქმედების ვადა იწურება # დღეში}}</translation>
 <translation id="2460482211073772897">სხვა საქაღალდეებში</translation>
 <translation id="2460826998961521840">თქვენს Google ანგარიშში შენახული წვდომის გასაღებების გამოსაყენებლად</translation>
