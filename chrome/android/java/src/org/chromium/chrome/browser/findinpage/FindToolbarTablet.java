@@ -10,18 +10,24 @@ import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Rect;
+import android.transition.ChangeBounds;
+import android.transition.Transition;
 import android.util.AttributeSet;
 import android.view.View;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.AnchorSide;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.HeightType;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs;
+import org.chromium.chrome.browser.ui.side_ui.SideUiObserver;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.ui.interpolators.Interpolators;
 
 /** A tablet specific version of the {@link FindToolbar}. */
 @NullMarked
-public class FindToolbarTablet extends FindToolbar {
+public class FindToolbarTablet extends FindToolbar implements SideUiObserver {
     private static final int ENTER_EXIT_ANIMATION_DURATION_MS = 200;
     private static final int MAKE_ROOM_ANIMATION_DURATION_MS = 200;
 
@@ -33,9 +39,12 @@ public class FindToolbarTablet extends FindToolbar {
     private ObjectAnimator mAnimationLeave;
 
     private final int mYInsetPx;
+    private int mBaseMarginEnd;
+    private int mCurrentSideUiMarginEnd;
 
     /**
      * Creates an instance of a {@link FindToolbarTablet}.
+     *
      * @param context The Context to create the {@link FindToolbarTablet} under.
      * @param attrs The AttributeSet used to create the {@link FindToolbarTablet}.
      */
@@ -53,8 +62,8 @@ public class FindToolbarTablet extends FindToolbar {
 
         Resources resources = getContext().getResources();
         int width = resources.getDimensionPixelSize(R.dimen.find_in_page_popup_width);
-        int endMargin = resources.getDimensionPixelOffset(R.dimen.find_in_page_popup_margin_end);
-        int translateWidth = width + endMargin;
+        mBaseMarginEnd = resources.getDimensionPixelOffset(R.dimen.find_in_page_popup_margin_end);
+        int translateWidth = width + mBaseMarginEnd;
 
         mAnimationEnter = ObjectAnimator.ofFloat(this, View.TRANSLATION_X, translateWidth, 0);
         mAnimationEnter.setDuration(ENTER_EXIT_ANIMATION_DURATION_MS);
@@ -174,6 +183,7 @@ public class FindToolbarTablet extends FindToolbar {
             View anchorView = getRootView().findViewById(R.id.control_container);
             var lp = (MarginLayoutParams) getLayoutParams();
             lp.topMargin = anchorView.getBottom() - mYInsetPx;
+            lp.setMarginEnd(mBaseMarginEnd + mCurrentSideUiMarginEnd);
             setLayoutParams(lp);
             nextAnimator = mAnimationEnter;
         } else if (!show && getVisibility() != View.GONE && mCurrentAnimation != mAnimationLeave) {
@@ -187,6 +197,39 @@ public class FindToolbarTablet extends FindToolbar {
             mCurrentAnimation = nextAnimator;
             startAnimationOverContent(nextAnimator);
             postInvalidateOnAnimation();
+        }
+    }
+
+    /**
+     * Prepares a {@link ChangeBounds} transition targeting this view when visible so that opening,
+     * closing, or resizing any Side UI animates the Find in page popup smoothly.
+     */
+    @Override
+    public @Nullable Transition onPreSideUiSpecsChange(SideUiSpecs sideUiSpecs) {
+        if (getVisibility() != View.VISIBLE) return null;
+        ChangeBounds changeBounds = new ChangeBounds();
+        changeBounds.addTarget(this);
+        return changeBounds;
+    }
+
+    /**
+     * Adjusts the end margin of the toolbar when a Side UI container is active on the anchor side
+     * with {@link HeightType#WEB_CONTENTS} (e.g. in Vertical Tabs mode where the parent toolbar
+     * does not shrink).
+     */
+    @Override
+    public void onSideUiSpecsChanged(SideUiSpecs sideUiSpecs) {
+        int anchorSide =
+                getLayoutDirection() == View.LAYOUT_DIRECTION_RTL
+                        ? AnchorSide.LEFT
+                        : AnchorSide.RIGHT;
+        mCurrentSideUiMarginEnd =
+                sideUiSpecs.getHeightType(anchorSide) == HeightType.WEB_CONTENTS
+                        ? sideUiSpecs.getWidth(anchorSide)
+                        : 0;
+        if (getLayoutParams() instanceof MarginLayoutParams lp) {
+            lp.setMarginEnd(mBaseMarginEnd + mCurrentSideUiMarginEnd);
+            setLayoutParams(lp);
         }
     }
 }

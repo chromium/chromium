@@ -56,6 +56,8 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.side_panel.AndroidSidePanelEnabledFn;
+import org.chromium.chrome.browser.ui.side_ui.SideUiObserver;
+import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.text.VerticallyFixedEditText;
@@ -114,6 +116,7 @@ public class FindToolbar extends LinearLayout implements BackPressHandler {
     private WindowAndroid mWindowAndroid;
     private @Nullable FindInPageBridge mFindInPageBridge;
     private @Nullable FindToolbarObserver mObserver;
+    private @Nullable SideUiStateProvider mSideUiStateProvider;
 
     /** Most recently entered search text (globally, in non-incognito tabs). */
     private String mLastUserSearch = "";
@@ -376,6 +379,32 @@ public class FindToolbar extends LinearLayout implements BackPressHandler {
     @Initializer
     public void setBrowserControlsStateProvider(BrowserControlsStateProvider provider) {
         mBrowserControlsStateProvider = provider;
+    }
+
+    /**
+     * Sets the {@link SideUiStateProvider} to observe side UI changes.
+     *
+     * @param provider The {@link SideUiStateProvider} instance.
+     */
+    public void setSideUiStateProvider(@Nullable SideUiStateProvider provider) {
+        // Only subclasses that implement SideUiObserver (such as FindToolbarTablet) observe Side UI
+        // changes.
+        if (mSideUiStateProvider != null && this instanceof SideUiObserver observer) {
+            mSideUiStateProvider.removeObserver(observer);
+        }
+        mSideUiStateProvider = provider;
+        if (mSideUiStateProvider != null && this instanceof SideUiObserver observer) {
+            mSideUiStateProvider.addObserver(observer);
+            observer.onSideUiSpecsChanged(mSideUiStateProvider.getCurrentSideUiSpecs());
+        }
+    }
+
+    /** Cleans up observers and listeners. */
+    public void destroy() {
+        if (mSideUiStateProvider != null && this instanceof SideUiObserver observer) {
+            mSideUiStateProvider.removeObserver(observer);
+            mSideUiStateProvider = null;
+        }
     }
 
     @Override

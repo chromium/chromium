@@ -2346,6 +2346,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         assumeNonNull(mHistoryNavigationCoordinator)
                                 .setSideUiStateProvider(provider));
         mSideUiStateProviderSupplier.onAvailable(
+                provider -> assumeNonNull(mFindToolbarManager).setSideUiStateProvider(provider));
+        mSideUiStateProviderSupplier.onAvailable(
                 provider -> mRootUiTabObserver.setSideUiStateProvider(provider));
         mSideUiStateProviderSupplier.set(mSideUiCoordinator);
         if (mTopControlsLockCoordinator != null) {

@@ -15,6 +15,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -30,6 +31,7 @@ public class FindToolbarManager {
     private final BackPressManager mBackPressManager;
     private final FrameLayout mSecondaryUiContainer;
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
+    private @Nullable SideUiStateProvider mSideUiStateProvider;
 
     /**
      * Creates an instance of a {@link FindToolbarManager}.
@@ -96,6 +98,7 @@ public class FindToolbarManager {
             mFindToolbar.setActionModeCallbackForTextEdit(mCallback);
             mFindToolbar.setSecondaryUiContainer(mSecondaryUiContainer);
             mFindToolbar.setBrowserControlsStateProvider(mBrowserControlsStateProvider);
+            mFindToolbar.setSideUiStateProvider(mSideUiStateProvider);
             mFindToolbar.setObserver(
                     new FindToolbarObserver() {
                         @Override
@@ -120,6 +123,25 @@ public class FindToolbarManager {
             mBackPressManager.addHandler(mFindToolbar, BackPressHandler.Type.FIND_TOOLBAR);
         }
         mFindToolbar.activate();
+    }
+
+    /**
+     * Sets the {@link SideUiStateProvider} to observe side UI changes.
+     *
+     * @param sideUiStateProvider The {@link SideUiStateProvider} object.
+     */
+    public void setSideUiStateProvider(@Nullable SideUiStateProvider sideUiStateProvider) {
+        mSideUiStateProvider = sideUiStateProvider;
+        if (mFindToolbar != null) {
+            mFindToolbar.setSideUiStateProvider(mSideUiStateProvider);
+        }
+    }
+
+    /** Destroys the {@link FindToolbarManager} and cleans up observers. */
+    public void destroy() {
+        if (mFindToolbar != null) {
+            mFindToolbar.destroy();
+        }
     }
 
     /** Sets the find query text string. */

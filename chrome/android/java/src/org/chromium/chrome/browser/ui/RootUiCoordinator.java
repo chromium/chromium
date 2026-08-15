@@ -1052,7 +1052,10 @@ public class RootUiCoordinator
             mIncognitoStateProvider = null;
         }
 
-        if (mFindToolbarManager != null) mFindToolbarManager.removeObserver(mFindToolbarObserver);
+        if (mFindToolbarManager != null) {
+            mFindToolbarManager.removeObserver(mFindToolbarObserver);
+            mFindToolbarManager.destroy();
+        }
 
         var modalDialogManager = mModalDialogManagerSupplier.get();
         if (mModalDialogManagerObserver != null && modalDialogManager != null) {
