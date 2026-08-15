@@ -31,7 +31,7 @@
 // the 'static_spki_hashes' and 'bad_static_spki_hashes' fields in 'pinsets'
 // refer to, and the timestamp at which the pins list was last updated.
 //
-// Last updated: 2026-05-21 13:40 UTC
+// Last updated: 2026-08-15 14:12 UTC
 //
 {
   "pinsets": [
@@ -1882,6 +1882,26 @@
     },
     {
       "name": "ytimg.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "gmail.co.ug",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.ug",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "youtube.co.ug",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "youtube.ug",
       "include_subdomains": true,
       "pins": "google"
     }
