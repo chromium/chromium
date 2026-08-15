@@ -131,15 +131,18 @@ std::optional<LanguageTag> GetLanguageTagFromString(std::string_view tag) {
 }
 
 IcuLocaleConverter::IcuLocaleConverter() {
-  std::vector<std::pair<std::string, icu::Locale>> locales;
-
-#define IMPL_LANGUAGECODE_TAG_NAME(tag, name)                            \
-  {                                                                      \
-    UErrorCode status = U_ZERO_ERROR;                                    \
-    locales.emplace_back(tag, icu::Locale::forLanguageTag(tag, status)); \
-  }
+  static constexpr const char* kCanonicalLanguageTags[] = {
+#define IMPL_LANGUAGECODE_TAG_NAME(tag, name) tag,
 #include "base/i18n/internal/canonical_language_tags.inc"
 #undef IMPL_LANGUAGECODE_TAG_NAME
+  };
+
+  std::vector<std::pair<std::string, icu::Locale>> locales;
+  locales.reserve(std::size(kCanonicalLanguageTags));
+  for (const char* tag : kCanonicalLanguageTags) {
+    UErrorCode status = U_ZERO_ERROR;
+    locales.emplace_back(tag, icu::Locale::forLanguageTag(tag, status));
+  }
 
   cached_locales_ =
       base::flat_map<std::string, icu::Locale>(std::move(locales));
