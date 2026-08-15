@@ -256,6 +256,13 @@ class PaymentsNetworkInterfaceTest : public PaymentsNetworkInterfaceTestBase,
     bnpl_url_response_details_ = std::move(response_details);
   }
 
+  void OnDidGetWalletReminderNotice(
+      PaymentsRpcResult result,
+      const GetWalletReminderNoticeResponseDetails& response_details) {
+    result_ = result;
+    wallet_reminder_notice_response_details_ = response_details;
+  }
+
  protected:
   std::unique_ptr<PaymentsNetworkInterface> payments_network_interface_;
 
@@ -446,6 +453,11 @@ class PaymentsNetworkInterfaceTest : public PaymentsNetworkInterfaceTestBase,
     return bnpl_url_response_details_;
   }
 
+  const GetWalletReminderNoticeResponseDetails&
+  wallet_reminder_notice_response_details() const {
+    return wallet_reminder_notice_response_details_;
+  }
+
   base::WeakPtr<PaymentsNetworkInterfaceTest> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
@@ -471,6 +483,9 @@ class PaymentsNetworkInterfaceTest : public PaymentsNetworkInterfaceTestBase,
   // Server generated instrument ID through the creation of a BNPL payment
   // instrument.
   std::string instrument_id_;
+  // The response details retrieved from a GetWalletReminderNoticeRequest.
+  GetWalletReminderNoticeResponseDetails
+      wallet_reminder_notice_response_details_;
 
  private:
   std::optional<UnmaskDetails> unmask_details_;
@@ -2085,6 +2100,70 @@ TEST_P(PaymentsNetworkInterfaceTestWithPaymentsRpcResultParam,
     EXPECT_EQ(bnpl_url_response_details()->failure_url_prefix,
               GURL("http://failure-url.test/"));
     EXPECT_EQ(bnpl_url_response_details()->context_token, "CONTEXT_TOKEN");
+  }
+}
+
+// Test GetWalletReminderNotice() with all the different PaymentsRpcResults.
+TEST_P(PaymentsNetworkInterfaceTestWithPaymentsRpcResultParam,
+       GetWalletReminderNotice) {
+  GetWalletReminderNoticeRequestDetails request_details;
+  request_details.app_locale = "en-US";
+  request_details.billing_customer_number = 555666777888;
+  request_details.billable_service_number = 1234;
+
+  payments_network_interface_->GetWalletReminderNotice(
+      request_details,
+      base::BindOnce(
+          &PaymentsNetworkInterfaceTest::OnDidGetWalletReminderNotice,
+          GetWeakPtr()));
+  IssueOAuthToken();
+
+  PaymentsRpcResult result = GetParam();
+  switch (result) {
+    case PaymentsRpcResult::kSuccess:
+      ReturnResponse(payments_network_interface_.get(), net::HTTP_OK,
+                     "{ \"legal_message\": {"
+                     "    \"line\": ["
+                     "      {\"template\": \"some legal message line\"}],"
+                     "    \"token\": \"some_token\""
+                     "}, "
+                     "\"has_user_been_shown_reminder\": true }");
+      break;
+    case PaymentsRpcResult::kTryAgainFailure:
+      ReturnResponse(payments_network_interface_.get(), net::HTTP_OK,
+                     "{ \"error\": { \"code\": \"INTERNAL\", "
+                     "\"api_error_reason\": \"ANYTHING_ELSE\"} }");
+      break;
+    case PaymentsRpcResult::kPermanentFailure:
+      ReturnResponse(payments_network_interface_.get(), net::HTTP_OK,
+                     "{ \"error\": { \"code\": \"ANYTHING_ELSE\" } }");
+      break;
+    case PaymentsRpcResult::kNetworkError:
+      ReturnResponse(payments_network_interface_.get(),
+                     net::HTTP_REQUEST_TIMEOUT, "");
+      break;
+    case PaymentsRpcResult::kClientSideTimeout:
+      ReturnResponse(payments_network_interface_.get(), net::ERR_TIMED_OUT, "");
+      break;
+    case PaymentsRpcResult::kVcnRetrievalTryAgainFailure:
+    case PaymentsRpcResult::kVcnRetrievalPermanentFailure:
+    case PaymentsRpcResult::kNone:
+      NOTREACHED();
+  }
+
+  AssertIncludedInRequest("\"language_code\":\"en-US\"");
+  AssertIncludedInRequest("\"external_customer_id\":\"555666777888\"");
+  AssertIncludedInRequest("\"billable_service\":1234");
+
+  EXPECT_EQ(result, result_);
+  if (result == PaymentsRpcResult::kSuccess) {
+    EXPECT_EQ(
+        wallet_reminder_notice_response_details().legal_message_lines.size(),
+        1u);
+    EXPECT_EQ(wallet_reminder_notice_response_details().acknowledgement_token,
+              "some_token");
+    EXPECT_TRUE(
+        wallet_reminder_notice_response_details().has_user_been_shown_reminder);
   }
 }
 

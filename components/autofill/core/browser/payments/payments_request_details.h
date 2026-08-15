@@ -627,6 +627,49 @@ struct UpdateBnplPaymentInstrumentRequestDetails {
       UpdateBnplPaymentInstrumentType::kUnknown;
 };
 
+// Information required to make a GetWalletReminderNotice request.
+struct GetWalletReminderNoticeRequestDetails {
+  GetWalletReminderNoticeRequestDetails();
+  GetWalletReminderNoticeRequestDetails(
+      const GetWalletReminderNoticeRequestDetails& other);
+  GetWalletReminderNoticeRequestDetails& operator=(
+      const GetWalletReminderNoticeRequestDetails& other);
+  GetWalletReminderNoticeRequestDetails(
+      GetWalletReminderNoticeRequestDetails&&);
+  GetWalletReminderNoticeRequestDetails& operator=(
+      GetWalletReminderNoticeRequestDetails&&);
+  ~GetWalletReminderNoticeRequestDetails();
+
+  // `app_locale` is the Chrome locale.
+  std::string app_locale;
+  // The billing customer number for the account this request is sent to.
+  int64_t billing_customer_number = 0;
+  // The billable service number defined to distinguish this request.
+  int billable_service_number = 0;
+};
+
+// Information retrieved from a GetWalletReminderNotice request.
+struct GetWalletReminderNoticeResponseDetails {
+  GetWalletReminderNoticeResponseDetails();
+  GetWalletReminderNoticeResponseDetails(
+      const GetWalletReminderNoticeResponseDetails& other);
+  GetWalletReminderNoticeResponseDetails& operator=(
+      const GetWalletReminderNoticeResponseDetails& other);
+  GetWalletReminderNoticeResponseDetails(
+      GetWalletReminderNoticeResponseDetails&&);
+  GetWalletReminderNoticeResponseDetails& operator=(
+      GetWalletReminderNoticeResponseDetails&&);
+  ~GetWalletReminderNoticeResponseDetails();
+
+  // Used to show the legal message.
+  LegalMessageLines legal_message_lines;
+  // An opaque token that will be sent back to the Payments server after the
+  // user is shown the reminder.
+  std::string acknowledgement_token;
+  // Used to track if the user has already been shown the reminder.
+  bool has_user_been_shown_reminder = false;
+};
+
 }  // namespace autofill::payments
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_PAYMENTS_REQUEST_DETAILS_H_

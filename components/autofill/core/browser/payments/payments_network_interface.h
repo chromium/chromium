@@ -246,6 +246,13 @@ class PaymentsNetworkInterface : public PaymentsNetworkInterfaceBase {
       base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult result)>
           callback);
 
+  // Requests the Wallet reminder notice legal message and acknowledgment token.
+  virtual void GetWalletReminderNotice(
+      const GetWalletReminderNoticeRequestDetails& request_details,
+      base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
+                              const GetWalletReminderNoticeResponseDetails&)>
+          callback);
+
  private:
   friend class PaymentsNetworkInterfaceTest;
 };
