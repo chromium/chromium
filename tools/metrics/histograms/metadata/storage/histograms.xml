@@ -937,11 +937,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LevelDBEnv.DeleteTableBackupFile" enum="BooleanSuccess"
-    expires_after="2025-04-27">
-  <owner>ayui@chromium.org</owner>
+    expires_after="2027-07-01">
+  <owner>leimy@chromium.org</owner>
+  <owner>rahsin@microsoft.com</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
     Tracks the success rate of deleting an unused leveldb table backup file.
+
+    Warning: this histogram was expired from 2025/04 to 2026/08; data may be
+    missing.
   </summary>
 </histogram>
 
@@ -961,12 +965,16 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LevelDBEnv.{LevelDBEnvTypes}IOError"
-    enum="LevelDBIOErrorMethods" expires_after="2026-06-26">
-  <owner>ayui@chromium.org</owner>
+    enum="LevelDBIOErrorMethods" expires_after="2027-07-01">
+  <owner>leimy@chromium.org</owner>
+  <owner>rahsin@microsoft.com</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
     Methods where leveldb's Chromium environment has IO errors.
     {LevelDBEnvTypes}
+
+    Warning: this histogram was expired from 2026/06 to 2026/08; data may be
+    missing.
   </summary>
   <token key="LevelDBEnvTypes" variants="LevelDBEnvTypes">
     <variant name=""/>
@@ -974,13 +982,17 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LevelDBEnv.{LevelDBEnvTypes}MissingFiles" units="files"
-    expires_after="2026-06-26">
-  <owner>ayui@chromium.org</owner>
+    expires_after="2027-07-01">
+  <owner>leimy@chromium.org</owner>
+  <owner>rahsin@microsoft.com</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
     Number of backup files found without corresponding ldb files. As measured by
     GetChildren when used in LevelDB clients other than IndexedDB.
     {LevelDBEnvTypes}
+
+    Warning: this histogram was expired from 2026/06 to 2026/08; data may be
+    missing.
   </summary>
   <token key="LevelDBEnvTypes" variants="LevelDBEnvTypes">
     <variant name=""/>
@@ -988,8 +1000,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LevelDBWrapper.CommitDelay" units="ms"
-    expires_after="2026-11-01">
-  <owner>ayui@chromium.org</owner>
+    expires_after="2027-07-01">
+  <owner>leimy@chromium.org</owner>
+  <owner>rahsin@microsoft.com</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
     Delay between the browser process receiving changes and those changes being
@@ -1099,7 +1112,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="LocalStorage.RendererAreaCacheHit"
     enum="LocalStorageRendererAreaCacheHitEnum" expires_after="2027-07-08">
-  <owner>ayui@chromium.org</owner>
+  <owner>leimy@chromium.org</owner>
+  <owner>rahsin@microsoft.com</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
     The renderer side cache hit rate metrics for new HTML5 LocalStorage DB
@@ -1139,30 +1153,34 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MojoLevelDBEnv.IOError" enum="LevelDBIOErrorMethods"
-    expires_after="2026-06-26">
-  <owner>ayui@chromium.org</owner>
+    expires_after="2027-07-01">
+  <owner>leimy@chromium.org</owner>
+  <owner>rahsin@microsoft.com</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
     Methods where leveldb's Mojo environment has IO errors. This histogram has
     expired between M87-106.
+
+    Warning: this histogram was expired from 2026/06 to 2026/08; data may be
+    missing.
   </summary>
 </histogram>
 
 <histogram name="Storage.Blob.FileReaderLoader.DataPipeNotReadableMojoError"
-    enum="FileReaderLoaderMojoResult" expires_after="2026-07-01">
+    enum="FileReaderLoaderMojoResult" expires_after="2027-07-01">
   <owner>estade@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
     Recorded when FileReaderLoader.FailureType2 records a data pipe not readable
     error. This is the specific type of Mojo error.
 
-    Warning: this histogram was expired from 2025/02 to 2025/06; data may be
-    missing.
+    Warning: this histogram was expired from 2025/02 to 2025/06 and from 2026/07
+    to 2026/08; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="Storage.Blob.FileReaderLoader.FailureType2"
-    enum="FileReaderLoaderFailureType" expires_after="2026-05-03">
+    enum="FileReaderLoaderFailureType" expires_after="2027-07-01">
   <owner>estade@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -1172,16 +1190,22 @@ chromium-metrics-reviews@google.com.
     renderer-side implementation. For the read error category, see
     Storage.Blob.FileReaderLoader.ReadError for a breakdown of the specific read
     error reasons.
+
+    Warning: this histogram was expired from 2026/05 to 2026/08; data may be
+    missing.
   </summary>
 </histogram>
 
 <histogram name="Storage.Blob.FileReaderLoader.ReadError2" enum="NetErrorCodes"
-    expires_after="2026-05-03">
+    expires_after="2027-07-01">
   <owner>estade@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
     The error code reported by the blob system while trying to read a blob in
     the FileReaderLoader.
+
+    Warning: this histogram was expired from 2026/05 to 2026/08; data may be
+    missing.
   </summary>
 </histogram>
 
@@ -1895,8 +1919,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Storage.SessionStorage.RendererAreaCacheHit"
-    enum="LocalStorageRendererAreaCacheHitEnum" expires_after="2026-10-12">
-  <owner>ayui@chromium.org</owner>
+    enum="LocalStorageRendererAreaCacheHitEnum" expires_after="2027-07-01">
+  <owner>leimy@chromium.org</owner>
+  <owner>rahsin@microsoft.com</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
     The renderer side cache hit rate metrics for new HTML5 SessionStorage DB
