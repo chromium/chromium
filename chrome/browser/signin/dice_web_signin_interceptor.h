@@ -240,7 +240,7 @@ class DiceWebSigninInterceptor : public KeyedService,
   FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptorTest, StateResetTest);
   FRIEND_TEST_ALL_PREFIXES(
       DiceWebSigninInterceptorTestWithAccountPreview,
-      InterceptChromeSigninBubbleWithAccountPreviewDataDelayedCallbackAfterReset);
+      InterceptBubbleWithAccountPreviewDataDelayedCallbackAfterReset);
   FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptorTest,
                            MultiUserInterceptionPrimaryNotConnectedSameName);
   FRIEND_TEST_ALL_PREFIXES(ManagedProfileRequiredNavigationThrottleTest,

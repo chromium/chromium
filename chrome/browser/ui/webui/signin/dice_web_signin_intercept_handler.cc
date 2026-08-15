@@ -426,6 +426,20 @@ std::string DiceWebSigninInterceptHandler::GetBodyText() {
         IDS_SIGNIN_DICE_WEB_INTERCEPT_CREATE_BUBBLE_DESC_SUPERVISED,
         base::UTF8ToUTF16(intercepted_account().GetEmail()));
   }
+
+  if (bubble_parameters_.interception_type ==
+          WebSigninInterceptor::SigninInterceptionType::kMultiUser &&
+      bubble_parameters_.account_preview_preference.has_value()) {
+    if (std::optional<std::string> subtitle =
+            signin::GetAccountPreviewProfileSeparationSubtitle(
+                primary_account().GetGivenName().value_or(""),
+                intercepted_account().GetEmail(),
+                *bubble_parameters_.account_preview_preference);
+        subtitle.has_value() && !subtitle->empty()) {
+      return *subtitle;
+    }
+  }
+
   return l10n_util::GetStringFUTF8(
       IDS_SIGNIN_DICE_WEB_INTERCEPT_CREATE_BUBBLE_DESC,
       base::UTF8ToUTF16(primary_account().GetGivenName().value_or("")),

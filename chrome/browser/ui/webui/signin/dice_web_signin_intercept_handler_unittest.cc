@@ -288,16 +288,8 @@ class DiceWebSigninInterceptHandlerTest
  public:
   DiceWebSigninInterceptHandlerTest() {
     AccountCapabilitiesTestMutator mutator(&intercepted_account);
-    switch (GetParam().is_supervised) {
-      case signin::Tribool::kTrue:
-        mutator.set_is_subject_to_parental_controls(true);
-        break;
-      case signin::Tribool::kFalse:
-        mutator.set_is_subject_to_parental_controls(false);
-        break;
-      default:
-        break;
-    }
+    mutator.set_is_subject_to_parental_controls(GetParam().is_supervised ==
+                                                signin::Tribool::kTrue);
   }
 
  protected:
@@ -343,6 +335,54 @@ TEST_P(DiceWebSigninInterceptHandlerTest, CheckStrings) {
     EXPECT_TRUE(*parameters.FindBool("useV2Design"));
   }
   ExpectStringsMatch(parameters, GetParam().expected_strings.Run());
+}
+
+TEST_P(DiceWebSigninInterceptHandlerTest, BodyTextWithAccountPreviewData) {
+  if (GetParam().is_supervised == signin::Tribool::kTrue) {
+    // Supervised users show parental controls description regardless of
+    // preview data.
+    return;
+  }
+  if (GetParam().interception_type !=
+      WebSigninInterceptor::SigninInterceptionType::kMultiUser) {
+    // Only MultiUser uses account preview data in GetBodyText().
+    return;
+  }
+
+  // Test with best data type (passwords) and device (phone).
+  signin::AccountPreviewDataService::AccountPreviewPreference pref;
+  pref.preferred_data_types.push_back(
+      {syncer::PASSWORDS, signin::SyncDataQuartile::kAboveQ3});
+  pref.other_device_form_factor =
+      sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_PHONE;
+
+  base::DictValue parameters =
+      GetInterceptionParameters(pref, "Primary Profile 1");
+  std::u16string device_str =
+      l10n_util::GetStringUTF16(IDS_ACCOUNT_PREVIEW_DEVICE_PHONE);
+  std::string expected_body_text = l10n_util::GetStringFUTF8(
+      IDS_ACCOUNT_PREVIEW_PROFILE_SEPARATION_SUBTITLE_PASSWORDS_WITH_DEVICE,
+      base::UTF8ToUTF16(primary_account.GetGivenName().value_or("")),
+      base::UTF8ToUTF16(intercepted_account.GetEmail()), device_str);
+  const std::string* body_text_ptr = parameters.FindString("bodyText");
+  ASSERT_TRUE(body_text_ptr);
+  EXPECT_EQ(*body_text_ptr, expected_body_text);
+
+  // Test with best data type (bookmarks) and no specific device.
+  signin::AccountPreviewDataService::AccountPreviewPreference pref_no_device;
+  pref_no_device.preferred_data_types.push_back(
+      {syncer::BOOKMARKS, signin::SyncDataQuartile::kAboveQ3});
+
+  base::DictValue parameters_no_device =
+      GetInterceptionParameters(pref_no_device, "Primary Profile 2");
+  std::string expected_body_text_no_device = l10n_util::GetStringFUTF8(
+      IDS_ACCOUNT_PREVIEW_PROFILE_SEPARATION_SUBTITLE_BOOKMARKS,
+      base::UTF8ToUTF16(primary_account.GetGivenName().value_or("")),
+      base::UTF8ToUTF16(intercepted_account.GetEmail()));
+  const std::string* body_text_no_device_ptr =
+      parameters_no_device.FindString("bodyText");
+  ASSERT_TRUE(body_text_no_device_ptr);
+  EXPECT_EQ(*body_text_no_device_ptr, expected_body_text_no_device);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

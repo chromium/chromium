@@ -2538,19 +2538,34 @@ TEST_F(DiceWebSigninInterceptorTest,
 }
 
 class DiceWebSigninInterceptorTestWithAccountPreview
-    : public DiceWebSigninInterceptorTest {
+    : public DiceWebSigninInterceptorTest,
+      public testing::WithParamInterface<
+          WebSigninInterceptor::SigninInterceptionType> {
  public:
   DiceWebSigninInterceptorTestWithAccountPreview() {
     feature_list_.InitAndEnableFeature(
         switches::kEnableAccountPreviewPreferredAccount);
   }
 
+  WebSigninInterceptor::SigninInterceptionType GetInterceptionType() const {
+    return GetParam();
+  }
+
+  AccountInfo SetUpPrimaryAccountIfNeeded() {
+    if (GetInterceptionType() ==
+        WebSigninInterceptor::SigninInterceptionType::kMultiUser) {
+      return identity_test_env()->MakePrimaryAccountAvailable(
+          "primary@example.com", signin::ConsentLevel::kSignin);
+    }
+    return AccountInfo();
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_F(DiceWebSigninInterceptorTestWithAccountPreview,
-       InterceptChromeSigninBubbleWithAccountPreviewData) {
+TEST_P(DiceWebSigninInterceptorTestWithAccountPreview,
+       InterceptBubbleWithAccountPreviewData) {
   auto fake_service = std::make_unique<signin::TestAccountPreviewDataService>();
   fake_service->set_defer_callbacks(true);
   signin::TestAccountPreviewDataService* raw_fake_service = fake_service.get();
@@ -2561,6 +2576,7 @@ TEST_F(DiceWebSigninInterceptorTestWithAccountPreview,
             return std::move(fake_service);
           }));
 
+  AccountInfo primary_account_info = SetUpPrimaryAccountIfNeeded();
   AccountInfo account_info =
       identity_test_env()->MakeAccountAvailable("alice@example.com");
   MakeValidAccountInfo(&account_info);
@@ -2573,9 +2589,9 @@ TEST_F(DiceWebSigninInterceptorTestWithAccountPreview,
       sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_PHONE;
 
   WebSigninInterceptor::Delegate::BubbleParameters expected_parameters(
-      WebSigninInterceptor::SigninInterceptionType::kChromeSignin,
+      GetInterceptionType(),
       /*intercepted_account=*/account_info,
-      /*primary_account=*/AccountInfo(),
+      /*primary_account=*/primary_account_info,
       /*profile_highlight_color=*/SkColor(),
       /*show_link_data_option=*/false,
       /*show_managed_disclaimer=*/false,
@@ -2598,8 +2614,8 @@ TEST_F(DiceWebSigninInterceptorTestWithAccountPreview,
   testing::Mock::VerifyAndClearExpectations(mock_delegate());
 }
 
-TEST_F(DiceWebSigninInterceptorTestWithAccountPreview,
-       InterceptChromeSigninBubbleWithAccountPreviewDataSupervisedAccount) {
+TEST_P(DiceWebSigninInterceptorTestWithAccountPreview,
+       InterceptBubbleWithAccountPreviewDataSupervisedAccount) {
   auto fake_service = std::make_unique<signin::TestAccountPreviewDataService>();
   fake_service->set_defer_callbacks(true);
   signin::TestAccountPreviewDataService* raw_fake_service = fake_service.get();
@@ -2610,6 +2626,7 @@ TEST_F(DiceWebSigninInterceptorTestWithAccountPreview,
             return std::move(fake_service);
           }));
 
+  AccountInfo primary_account_info = SetUpPrimaryAccountIfNeeded();
   AccountInfo account_info =
       identity_test_env()->MakeAccountAvailable("alice@example.com");
   MakeValidAccountInfoWithoutCapabilities(&account_info);
@@ -2619,9 +2636,9 @@ TEST_F(DiceWebSigninInterceptorTestWithAccountPreview,
   identity_test_env()->UpdateAccountInfoForAccount(account_info);
 
   WebSigninInterceptor::Delegate::BubbleParameters expected_parameters(
-      WebSigninInterceptor::SigninInterceptionType::kChromeSignin,
+      GetInterceptionType(),
       /*intercepted_account=*/account_info,
-      /*primary_account=*/AccountInfo(),
+      /*primary_account=*/primary_account_info,
       /*profile_highlight_color=*/SkColor(),
       /*show_link_data_option=*/false,
       /*show_managed_disclaimer=*/false,
@@ -2645,8 +2662,8 @@ TEST_F(DiceWebSigninInterceptorTestWithAccountPreview,
   testing::Mock::VerifyAndClearExpectations(mock_delegate());
 }
 
-TEST_F(DiceWebSigninInterceptorTestWithAccountPreview,
-       InterceptChromeSigninBubbleWithAccountPreviewDataTimeout) {
+TEST_P(DiceWebSigninInterceptorTestWithAccountPreview,
+       InterceptBubbleWithAccountPreviewDataTimeout) {
   auto fake_service = std::make_unique<signin::TestAccountPreviewDataService>();
   fake_service->set_defer_callbacks(true);
   signin::TestAccountPreviewDataService* raw_fake_service = fake_service.get();
@@ -2657,15 +2674,16 @@ TEST_F(DiceWebSigninInterceptorTestWithAccountPreview,
             return std::move(fake_service);
           }));
 
+  AccountInfo primary_account_info = SetUpPrimaryAccountIfNeeded();
   AccountInfo account_info =
       identity_test_env()->MakeAccountAvailable("alice@example.com");
   MakeValidAccountInfo(&account_info);
   identity_test_env()->UpdateAccountInfoForAccount(account_info);
 
   WebSigninInterceptor::Delegate::BubbleParameters expected_parameters(
-      WebSigninInterceptor::SigninInterceptionType::kChromeSignin,
+      GetInterceptionType(),
       /*intercepted_account=*/account_info,
-      /*primary_account=*/AccountInfo(),
+      /*primary_account=*/primary_account_info,
       /*profile_highlight_color=*/SkColor(),
       /*show_link_data_option=*/false,
       /*show_managed_disclaimer=*/false,
@@ -2690,9 +2708,8 @@ TEST_F(DiceWebSigninInterceptorTestWithAccountPreview,
   testing::Mock::VerifyAndClearExpectations(mock_delegate());
 }
 
-TEST_F(
-    DiceWebSigninInterceptorTestWithAccountPreview,
-    InterceptChromeSigninBubbleWithAccountPreviewDataDelayedCallbackAfterReset) {
+TEST_P(DiceWebSigninInterceptorTestWithAccountPreview,
+       InterceptBubbleWithAccountPreviewDataDelayedCallbackAfterReset) {
   auto fake_service = std::make_unique<signin::TestAccountPreviewDataService>();
   fake_service->set_defer_callbacks(true);
   signin::TestAccountPreviewDataService* raw_fake_service = fake_service.get();
@@ -2703,14 +2720,19 @@ TEST_F(
             return std::move(fake_service);
           }));
 
+  AccountInfo primary_account_info = SetUpPrimaryAccountIfNeeded();
   AccountInfo account_info_a =
       identity_test_env()->MakeAccountAvailable("alice@example.com");
   MakeValidAccountInfo(&account_info_a);
+  account_info_a =
+      AccountInfo::Builder(account_info_a).SetGivenName("Alice").Build();
   identity_test_env()->UpdateAccountInfoForAccount(account_info_a);
 
   AccountInfo account_info_b =
       identity_test_env()->MakeAccountAvailable("bob@example.com");
   MakeValidAccountInfo(&account_info_b);
+  account_info_b =
+      AccountInfo::Builder(account_info_b).SetGivenName("Bob").Build();
   identity_test_env()->UpdateAccountInfoForAccount(account_info_b);
 
   signin::AccountPreviewDataService::AccountPreviewPreference pref_a;
@@ -2726,9 +2748,9 @@ TEST_F(
       sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_DESKTOP;
 
   WebSigninInterceptor::Delegate::BubbleParameters expected_parameters_b(
-      WebSigninInterceptor::SigninInterceptionType::kChromeSignin,
+      GetInterceptionType(),
       /*intercepted_account=*/account_info_b,
-      /*primary_account=*/AccountInfo(),
+      /*primary_account=*/primary_account_info,
       /*profile_highlight_color=*/SkColor(),
       /*show_link_data_option=*/false,
       /*show_managed_disclaimer=*/false,
@@ -2772,6 +2794,23 @@ TEST_F(
 
   testing::Mock::VerifyAndClearExpectations(mock_delegate());
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    DiceWebSigninInterceptorTestWithAccountPreview,
+    testing::Values(WebSigninInterceptor::SigninInterceptionType::kChromeSignin,
+                    WebSigninInterceptor::SigninInterceptionType::kMultiUser),
+    [](const testing::TestParamInfo<
+        WebSigninInterceptor::SigninInterceptionType>& info) {
+      switch (info.param) {
+        case WebSigninInterceptor::SigninInterceptionType::kChromeSignin:
+          return "ChromeSignin";
+        case WebSigninInterceptor::SigninInterceptionType::kMultiUser:
+          return "MultiUser";
+        default:
+          NOTREACHED();
+      }
+    });
 
 TEST_F(DiceWebSigninInterceptorTest,
        InterceptShouldNotShowWaitForAccountInfoAvailableMetricRecorded) {

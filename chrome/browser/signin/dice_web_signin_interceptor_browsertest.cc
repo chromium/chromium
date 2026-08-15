@@ -1037,6 +1037,61 @@ IN_PROC_BROWSER_TEST_F(
                          pref))));
 }
 
+IN_PROC_BROWSER_TEST_F(
+    DiceWebSigninInterceptorSigninBubbleWithAccountPreviewBrowserTest,
+    MultiUserSigninInterceptWithAccountPreviewPreference) {
+  // Set up for Multi user signin interception.
+  AccountInfo primary_account_info =
+      identity_test_env()->MakePrimaryAccountAvailable(
+          "bob@example.com", signin::ConsentLevel::kSignin);
+  AccountInfo secondary_account_info = MakeAccountInfoAvailableAndUpdate(
+      "alice@example.com", /*hosted_domain=*/std::string());
+
+  signin::AccountPreviewDataService::AccountPreviewPreference pref;
+  pref.preferred_data_types.push_back(
+      {syncer::BOOKMARKS, signin::SyncDataQuartile::kAboveQ3});
+  pref.other_device_form_factor =
+      sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_PHONE;
+  GetTestAccountPreviewDataService(GetProfile())->SetPreviewPreference(pref);
+
+  // Add a tab.
+  GURL intercepted_url = embedded_test_server()->GetURL("/defaultresponse");
+  content::WebContents* web_contents = AddTab(intercepted_url);
+
+  // Intercept.
+  FakeDiceWebSigninInterceptorDelegate* source_interceptor_delegate =
+      GetInterceptorDelegate(GetProfile());
+  DiceWebSigninInterceptor* interceptor =
+      DiceWebSigninInterceptorFactory::GetForProfile(GetProfile());
+  source_interceptor_delegate->set_expected_interception_type(
+      WebSigninInterceptor::SigninInterceptionType::kMultiUser);
+  source_interceptor_delegate->set_expected_interception_result(
+      SigninInterceptionResult::kAccepted);
+  ProfileWaiter waiter;
+  interceptor->MaybeInterceptWebSignin(
+      web_contents, secondary_account_info.account_id,
+      signin_metrics::AccessPoint::kWebSignin,
+      /*is_new_account=*/true,
+      /*is_sync_signin=*/false,
+      /*primary_is_connected=*/signin::Tribool::kUnknown);
+  interceptor->OnDiceSigninSessionComplete(secondary_account_info.account_id,
+                                           {});
+
+  EXPECT_TRUE(source_interceptor_delegate->intercept_bubble_shown());
+  EXPECT_THAT(
+      source_interceptor_delegate->last_bubble_parameters(),
+      testing::Optional(testing::AllOf(
+          testing::Field(
+              &DiceWebSigninInterceptorDelegate::BubbleParameters::
+                  interception_type,
+              WebSigninInterceptor::SigninInterceptionType::kMultiUser),
+          testing::Field(&DiceWebSigninInterceptorDelegate::BubbleParameters::
+                             account_preview_preference,
+                         pref))));
+
+  waiter.WaitForProfileAdded();
+}
+
 IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorSigninBubbleBrowserTest,
                        ChromeSigninInterceptDeclined) {
   base::HistogramTester histogram_tester;

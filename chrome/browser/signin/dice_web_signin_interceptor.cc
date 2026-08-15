@@ -1217,6 +1217,7 @@ void DiceWebSigninInterceptor::OnInterceptionReadyToBeProcessed(
   // Treat intercepts that require account preview fetching.
   if (!state_->account_preview_fetch_started_) {
     switch (*interception_type) {
+      case WebSigninInterceptor::SigninInterceptionType::kMultiUser:
       case WebSigninInterceptor::SigninInterceptionType::kChromeSignin: {
         if (!base::FeatureList::IsEnabled(
                 switches::kEnableAccountPreviewPreferredAccount)) {
@@ -1259,7 +1260,6 @@ void DiceWebSigninInterceptor::OnInterceptionReadyToBeProcessed(
       case WebSigninInterceptor::SigninInterceptionType::
           kEnterpriseAcceptManagement:
       case WebSigninInterceptor::SigninInterceptionType::kEnterprise:
-      case WebSigninInterceptor::SigninInterceptionType::kMultiUser:
         break;
       case WebSigninInterceptor::SigninInterceptionType::kEnterpriseOIDC:
         NOTREACHED() << "This interception type should not happen in DICE";
