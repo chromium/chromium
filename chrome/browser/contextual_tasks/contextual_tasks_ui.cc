@@ -418,6 +418,10 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
                 .session_allows_drag_and_drop = session_allows_drag_and_drop}));
 #endif  // BUILDFLAG(ENABLE_WEBUI_CONTEXTUAL_TASKS_COMPOSEBOX)
 
+  // Determine and cache tab input support on initialization.
+  are_tab_inputs_supported_on_init_ =
+      contextual_tasks::IsTabSharingEligible(profile);
+
   // Determine and cache contextual tasks eligibility on initialization. This
   // prevents the expand button from dynamically appearing or changing state
   // mid-session, avoiding a jarring user experience.
@@ -1465,7 +1469,7 @@ bool ContextualTasksUI::CanUpdateSuggestedTabContext(
     }
   }
 
-  if (!is_contextual_tasks_eligible_on_init_) {
+  if (!are_tab_inputs_supported_on_init_) {
     return false;
   }
 

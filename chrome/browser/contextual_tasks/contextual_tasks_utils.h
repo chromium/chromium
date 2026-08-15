@@ -56,6 +56,10 @@ void RecordErrorPageShown(contextual_search::ContextualSearchSource source);
 void RecordInnerFrameContentsHttpResponseCode(int http_status_code,
                                               bool is_zero_state);
 
+// Returns true if tab sharing and tab input capabilities are supported
+// for the given profile (checking AIM and Fusebox eligibility).
+bool IsTabSharingEligible(Profile* profile);
+
 // Returns true if the given URL is valid to show as a suggested tab.
 // `profile` and `site_exclusion_detail` must be non-null.
 bool IsValidUrlForSuggestedTab(const GURL& url,

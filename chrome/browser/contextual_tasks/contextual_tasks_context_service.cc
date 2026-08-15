@@ -355,10 +355,9 @@ bool ContextualTasksContextService::GetIsSmartTabSharingEnabled(
     return false;
   }
   // Users can open the Contextual Tasks side panel even when they are not
-  // eligible for cobrowsing (and thus not eligible to add tabs or use Smart Tab
-  // Sharing). Explicitly check entry point eligibility here so Smart Tab
-  // Sharing UI and features are hidden when ineligible.
-  if (!EntryPointEligibilityManager::IsEligible(profile)) {
+  // eligible for cobrowsing. Explicitly check tab sharing eligibility here
+  // so Smart Tab Sharing UI and features are hidden when ineligible.
+  if (!contextual_tasks::IsTabSharingEligible(profile)) {
     return false;
   }
   if (profile->GetPrefs() &&
