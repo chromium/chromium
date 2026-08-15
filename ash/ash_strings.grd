@@ -4460,6 +4460,9 @@ No devices connected.
       <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_SELECT_PREVIOU_TAB" desc="Label for accelerator action - Go to previous tab.">
         Go to previous tab
       </message>
+      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_SHOW_READING_MODE" desc="Label for accelerator action - Open/close reading mode.">
+        Open/close reading mode
+      </message>
       <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_GO_TO_TAB_IN_RANGE" desc="Label for accelerator action - Go through tabs 1 to 8.">
         Go through tabs 1 to 8
       </message>

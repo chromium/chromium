@@ -113,6 +113,7 @@ enum NonConfigurableActions {
   kBrowserPageUp,
   kBrowserPageDown,
   kBrowserNewSplitView,
+  kBrowserShowReadingMode,
   // Ambient action ids:
   kAmbientDragLinkInSameTab,
   kAmbientCycleForwardMRU,
@@ -497,6 +498,7 @@ inline constexpr uint32_t kAcceleratorLayouts[] = {
     AcceleratorAction::kToggleFullscreenMagnifier,
     AcceleratorAction::kMagnifierZoomIn,
     AcceleratorAction::kMagnifierZoomOut,
+    NonConfigurableActions::kBrowserShowReadingMode,
 
     // Accessibility > Accessbility navigation
     AcceleratorAction::kAccessibilityAction,
