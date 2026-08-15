@@ -1342,15 +1342,23 @@ Document& HTMLConstructionSite::OwnerDocumentForCurrentNode() {
   // be re-targeted to the .content() document of the template. This function is
   // used in those places. The spec needs to be updated to reflect this
   // behavior, and when that happens, a link to the spec should be placed here.
-  if (auto* template_element = DynamicTo<HTMLTemplateElement>(*CurrentNode())) {
+  ContainerNode* parent = CurrentNode();
+  while (auto* template_element = DynamicTo<HTMLTemplateElement>(parent)) {
+    if (auto* patch = template_element->GetPatch()) {
+      if (!patch->is_buffered()) {
+        parent = patch->parent();
+        continue;
+      }
+    }
     // If the Document was detached in the middle of parsing, The template
     // element won't be able to initialize its contents. Fallback to the
-    // current node's document in that case..
+    // current node's document in that case.
     if (auto* insertion_target = template_element->InsertionTarget()) {
       return insertion_target->GetDocument();
     }
+    return template_element->GetDocument();
   }
-  return CurrentNode()->GetDocument();
+  return parent->GetDocument();
 }
 
 // "look up a custom element definition" for a token
@@ -1415,7 +1423,9 @@ Element* HTMLConstructionSite::CreateElement(
   // document fragment, the custom element registry should be null.
   if (open_elements_.StackDepth() > 1) {
     if (auto* tmpl = DynamicTo<HTMLTemplateElement>(CurrentNode())) {
-      if (tmpl->IsShadowRootModeTemplate()) {
+      if (tmpl->GetPatch() && !tmpl->GetPatch()->is_buffered()) {
+        // Keep custom_element_registry_
+      } else if (tmpl->IsShadowRootModeTemplate()) {
         // For declarative shadow root templates, the insertion target is the
         // shadow root itself. Use the shadow root's registry so elements get
         // the correct tree scope registry (null for scoped-waiting, global

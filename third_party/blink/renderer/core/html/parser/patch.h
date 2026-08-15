@@ -25,6 +25,7 @@ class Patch : public GarbageCollected<Patch> {
   void Apply(HTMLConstructionSiteTask&);
   void Finalize(HTMLTemplateElement*);
   bool is_buffered() const { return is_buffered_; }
+  ContainerNode* parent() const { return parent_; }
   void Trace(Visitor* visitor) const;
 
   Patch(base::PassKey<Patch>,
