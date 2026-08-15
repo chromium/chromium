@@ -510,6 +510,7 @@ build_webui("build") {
     "performance_page/tab_discard/exception_entry.css",
     "performance_page/tab_discard/exception_list.css",
     "performance_page/tab_discard/exception_tabbed_add_dialog.css",
+    "privacy_page/personalization_options.css",
     "privacy_page/privacy_guide/privacy_guide_fragment_shared.css",
     "reset_page/reset_profile_banner.css",
     "reset_page/reset_profile_dialog.css",

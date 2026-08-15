@@ -7,12 +7,10 @@ import 'chrome://settings/lazy_load.js';
 
 import type {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {SettingsPersonalizationOptionsElement} from 'chrome://settings/lazy_load.js';
 import {loadTimeData, PrivacyPageBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-import {isChildVisible} from 'chrome://webui-test/test_util.js';
+import {isChildVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestPrivacyPageBrowserProxy} from './test_privacy_page_browser_proxy.js';
 
@@ -35,8 +33,7 @@ suite('MetricsReporting', function() {
     page.remove();
   });
 
-  test('hidden when metrics consent restructure is enabled', async function() {
-    await flushTasks();
+  test('hidden when metrics consent restructure is enabled', function() {
     assertFalse(isChildVisible(page, '#metricsReportingControl'));
   });
 });
@@ -45,14 +42,13 @@ suite('MetricsConsentRestructureDisabled', function() {
   let testBrowserProxy: TestPrivacyPageBrowserProxy;
   let page: SettingsPersonalizationOptionsElement;
 
-  setup(async function() {
+  setup(function() {
     loadTimeData.overrideValues({shouldUseMetricsConsentRestructure: false});
     testBrowserProxy = new TestPrivacyPageBrowserProxy();
     PrivacyPageBrowserProxyImpl.setInstance(testBrowserProxy);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     page = document.createElement('settings-personalization-options');
     document.body.appendChild(page);
-    await flushTasks();
   });
 
   teardown(function() {
@@ -63,9 +59,9 @@ suite('MetricsConsentRestructureDisabled', function() {
       'changes to whether metrics reporting is enabled/managed',
       async function() {
         await testBrowserProxy.whenCalled('getMetricsReporting');
-        await flushTasks();
+        await microtasksFinished();
 
-        const control = page.shadowRoot!.querySelector<CrToggleElement>(
+        const control = page.shadowRoot.querySelector<CrToggleElement>(
             '#metricsReportingControl');
         assertTrue(!!control);
         assertEquals(
@@ -81,7 +77,7 @@ suite('MetricsConsentRestructureDisabled', function() {
           managed: !testBrowserProxy.metricsReporting.managed,
         };
         webUIListenerCallback('metrics-reporting-change', changedMetrics);
-        flush();
+        await microtasksFinished();
 
         assertEquals(changedMetrics.enabled, control.checked);
         assertEquals(changedMetrics.managed, control.disabled);
@@ -98,46 +94,47 @@ suite('MetricsConsentRestructureDisabled', function() {
 
   test('metrics reporting restart button', async function() {
     await testBrowserProxy.whenCalled('getMetricsReporting');
-    flush();
+    await microtasksFinished();
 
     // Restart button should be hidden by default (in any state).
-    assertFalse(!!page.shadowRoot!.querySelector('#restart'));
+    assertFalse(!!page.shadowRoot.querySelector('#restart'));
 
     // Simulate toggling via policy.
     webUIListenerCallback('metrics-reporting-change', {
       enabled: false,
       managed: true,
     });
+    await microtasksFinished();
 
     // No restart button should show because the value is managed.
-    assertFalse(!!page.shadowRoot!.querySelector('#restart'));
+    assertFalse(!!page.shadowRoot.querySelector('#restart'));
 
     webUIListenerCallback('metrics-reporting-change', {
       enabled: true,
       managed: true,
     });
-    flush();
+    await microtasksFinished();
 
     // Changes in policy should not show the restart button because the value
     // is still managed.
-    assertFalse(!!page.shadowRoot!.querySelector('#restart'));
+    assertFalse(!!page.shadowRoot.querySelector('#restart'));
 
     // Remove the policy and toggle the value.
     webUIListenerCallback('metrics-reporting-change', {
       enabled: false,
       managed: false,
     });
-    flush();
+    await microtasksFinished();
 
     // Now the restart button should be showing.
-    assertTrue(!!page.shadowRoot!.querySelector('#restart'));
+    assertTrue(!!page.shadowRoot.querySelector('#restart'));
 
     // Receiving the same values should have no effect.
     webUIListenerCallback('metrics-reporting-change', {
       enabled: false,
       managed: false,
     });
-    flush();
-    assertTrue(!!page.shadowRoot!.querySelector('#restart'));
+    await microtasksFinished();
+    assertTrue(!!page.shadowRoot.querySelector('#restart'));
   });
 });
