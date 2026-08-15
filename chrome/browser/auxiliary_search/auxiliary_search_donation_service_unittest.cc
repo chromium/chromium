@@ -169,6 +169,36 @@ TEST_F(AuxiliarySearchDonationServiceTest, IgnoresRemoteVisits) {
   service.OnPageContentAnnotated(remote_visit, CreateAnnotationsResult());
 }
 
+TEST_F(AuxiliarySearchDonationServiceTest,
+       IgnoresVisitsWhenBrowsingDataDonationDisabled) {
+  test_pref_service()->SetBoolean(
+      prefs::kAuxiliarySearchBrowsingDataDonationEnabled, false);
+  AuxiliarySearchDonationService service(
+      page_content_annotations_service(), mock_ranking_service(),
+      identity_manager(), test_pref_service(),
+      std::make_unique<NiceMock<MockDelegate>>());
+
+  EXPECT_CALL(*mock_ranking_service(), FetchURLVisitAggregates(_, _)).Times(0);
+
+  service.OnPageContentAnnotated(CreateLocalVisit(), CreateAnnotationsResult());
+  task_environment().FastForwardBy(service.GetDonationDelay());
+}
+
+TEST_F(AuxiliarySearchDonationServiceTest,
+       DisablingBrowsingDataDonationCancelsDonationTimer) {
+  AuxiliarySearchDonationService service(
+      page_content_annotations_service(), mock_ranking_service(),
+      identity_manager(), test_pref_service(),
+      std::make_unique<NiceMock<MockDelegate>>());
+
+  EXPECT_CALL(*mock_ranking_service(), FetchURLVisitAggregates(_, _)).Times(0);
+
+  service.OnPageContentAnnotated(CreateLocalVisit(), CreateAnnotationsResult());
+  test_pref_service()->SetBoolean(
+      prefs::kAuxiliarySearchBrowsingDataDonationEnabled, false);
+  task_environment().FastForwardBy(service.GetDonationDelay());
+}
+
 TEST_F(AuxiliarySearchDonationServiceTest, FetchesLocalVisitAfterDelay) {
   AuxiliarySearchDonationService service(
       page_content_annotations_service(), mock_ranking_service(),

@@ -161,10 +161,12 @@ void AuxiliarySearchDonationService::RegisterProfilePrefs(
 void AuxiliarySearchDonationService::OnPageContentAnnotated(
     const page_content_annotations::HistoryVisit& visit,
     const page_content_annotations::PageContentAnnotationsResult& result) {
-  // Ignore annotations from remote visits (navigation ID is 0).
+  // Ignore annotations from remote visits (navigation ID is 0) or if browsing
+  // data donation is disabled.
   if (result.GetType() !=
           page_content_annotations::AnnotationType::kContentVisibility ||
-      visit.navigation_id == 0) {
+      visit.navigation_id == 0 ||
+      !is_browsing_data_donation_enabled_.GetValue()) {
     return;
   }
 
@@ -281,4 +283,7 @@ void AuxiliarySearchDonationService::OnApplicationStateChanged(
 void AuxiliarySearchDonationService::OnBrowsingDataDonationPrefChanged() {
   delegate_->SetBrowsingDataDonationEnabled(
       is_browsing_data_donation_enabled_.GetValue());
+  if (!is_browsing_data_donation_enabled_.GetValue()) {
+    donation_timer_.Stop();
+  }
 }
