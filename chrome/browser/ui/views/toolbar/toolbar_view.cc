@@ -575,8 +575,7 @@ void ToolbarView::Init() {
   }
 
   if (!features::IsWebUIAvatarButtonEnabled()) {
-    avatar_ =
-        AddChildView(std::make_unique<AvatarToolbarButton>(browser_view_));
+    avatar_ = AddChildView(std::make_unique<AvatarToolbarButton>(browser_));
     bool show_avatar_toolbar_button =
         AvatarToolbarButtonInterface::CanShowForProfile(browser_->GetProfile());
     avatar_->SetVisible(show_avatar_toolbar_button);

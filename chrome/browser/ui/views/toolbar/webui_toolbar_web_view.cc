@@ -525,8 +525,7 @@ void WebUIToolbarWebView::AddedToWidget() {
 
 void WebUIToolbarWebView::OnThemeChanged() {
   views::View::OnThemeChanged();
-  UpdateProfileThemeColors(browser_->GetBrowserForMigrationOnly(),
-                           GetColorProvider());
+  UpdateProfileThemeColors(browser_, GetColorProvider());
   avatar_control_.UpdateIcon();
   if (location_bar_) {
     location_bar_->OnThemeChanged();

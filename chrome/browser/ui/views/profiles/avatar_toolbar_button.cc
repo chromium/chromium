@@ -13,14 +13,13 @@
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/profiles/profile_colors_util.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button_state_manager.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
@@ -39,7 +38,9 @@
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_host.h"
 #include "ui/views/controls/button/button_controller.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_utils.h"
 
 namespace {
 
@@ -50,18 +51,18 @@ constexpr int kAvatarIconEnlargement = 1;
 
 }  // namespace
 
-AvatarToolbarButton::AvatarToolbarButton(BrowserView* browser_view)
+AvatarToolbarButton::AvatarToolbarButton(BrowserWindowInterface* browser)
     : ToolbarButton(base::BindRepeating(&AvatarToolbarButton::ButtonPressed,
                                         base::Unretained(this),
                                         /*is_source_accelerator=*/false)),
-      state_manager_(*this, browser_view->browser()),
+      state_manager_(*this, browser),
       slide_animation_(this) {
   state_manager_.InitializeStates();
 #if BUILDFLAG(IS_CHROMEOS)
   // On CrOS this button should only show as badging for Incognito, Guest and
   // captivie portal signin. It's only enabled for non captive portal Incognito
   // where a menu is available for closing all Incognito windows.
-  Profile* profile = browser_view->browser()->GetProfile();
+  Profile* profile = browser->GetProfile();
   CHECK(profile);
   SetEnabled(profile->IsOffTheRecord() && !profile->IsGuestSession() &&
              !profile->GetOTRProfileID().IsCaptivePortal());

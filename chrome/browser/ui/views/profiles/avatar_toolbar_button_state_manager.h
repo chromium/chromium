@@ -22,7 +22,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/geometry/insets.h"
 
-class Browser;
+class BrowserWindowInterface;
 class Profile;
 
 namespace ui {
@@ -222,14 +222,14 @@ class AvatarToolbarButtonStateManager
 
   explicit AvatarToolbarButtonStateManager(
       AvatarToolbarButtonInterface& avatar_control,
-      Browser* browser);
+      BrowserWindowInterface* browser);
   ~AvatarToolbarButtonStateManager() override;
 
   // This needs to be separated from the constructor since it might call
   // updates, which will try to access the `StateManager`.
   void InitializeStates();
 
-  Browser* browser() const { return browser_; }
+  BrowserWindowInterface* browser() const { return browser_; }
 
   // Returns the active state provider. This is guaranteed to be non-null after
   // initialization.
@@ -307,7 +307,7 @@ class AvatarToolbarButtonStateManager
 
  private:
   // Creates all main states and attach listeners.
-  void CreateStatesAndListeners(Browser* browser);
+  void CreateStatesAndListeners(BrowserWindowInterface* browser);
 
   // StateObserver:
   void OnStateProviderUpdateRequest(StateProvider* requesting_state) override;
@@ -361,7 +361,7 @@ class AvatarToolbarButtonStateManager
 
   base::flat_map<ButtonState, std::unique_ptr<StateProvider>> states_;
   raw_ref<AvatarToolbarButtonInterface> avatar_control_;
-  const raw_ptr<Browser> browser_;
+  const raw_ptr<BrowserWindowInterface> browser_;
 
   // Active state per the last request to `ComputeButtonActiveState()`.
   // Pointer to the active element of `states_` with the highest priority.

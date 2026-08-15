@@ -18,7 +18,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/events/event.h"
 
-class BrowserView;
+class BrowserWindowInterface;
 struct AccountInfo;
 class StateProvider;
 class AvatarToolbarButtonTestAccessor;
@@ -34,7 +34,7 @@ class AvatarToolbarButton : public ToolbarButton,
  public:
   using Observer = AvatarToolbarButtonInterface::Observer;
 
-  explicit AvatarToolbarButton(BrowserView* browser);
+  explicit AvatarToolbarButton(BrowserWindowInterface* browser);
   AvatarToolbarButton(const AvatarToolbarButton&) = delete;
   AvatarToolbarButton& operator=(const AvatarToolbarButton&) = delete;
   ~AvatarToolbarButton() override;

@@ -75,9 +75,15 @@ toolbar_ui_api::mojom::AvatarToolbarButtonState MapAvatarState(
 WebUIAvatarToolbarButton::WebUIAvatarToolbarButton(
     WebUIToolbarControlDelegate* delegate)
     : delegate_(delegate) {
+  // Only build the state manager when `delegate_` is backed by a real,
+  // legacy Browser -- lightweight test doubles that stub out
+  // GetBrowserForMigrationOnly() to return null (see e.g.
+  // WebUILocationBarTest) don't set up a full browser_process environment
+  // (notably no ProfileManager), which AvatarToolbarButtonStateManager's
+  // initialization depends on.
   if (delegate_->GetBrowser()->GetBrowserForMigrationOnly()) {
     state_manager_ = std::make_unique<AvatarToolbarButtonStateManager>(
-        *this, delegate_->GetBrowser()->GetBrowserForMigrationOnly());
+        *this, delegate_->GetBrowser());
     state_manager_->InitializeStates();
   }
 }
