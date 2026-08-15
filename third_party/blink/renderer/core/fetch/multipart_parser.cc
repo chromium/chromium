@@ -68,9 +68,9 @@ bool MultipartParser::AppendData(base::span<const char> bytes) {
           ParseDataAndDelimiter(bytes);
         }
         if (matcher_.IsMatchComplete()) {
-          // Prepare for a delimiter suffix.
-          matcher_ = DelimiterSuffixMatcher();
-          state_ = State::kParsingDelimiterSuffix;
+          // Determine whether the first boundary is followed by a delimiter
+          // suffix or a close delimiter suffix.
+          state_ = State::kParsingDelimiterOrCloseDelimiterSuffix;
         }
         break;
 
@@ -151,7 +151,8 @@ bool MultipartParser::AppendData(base::span<const char> bytes) {
       case State::kParsingDelimiterOrCloseDelimiterSuffix:
         // Determine whether this is a delimiter suffix or a close
         // delimiter suffix.
-        // This state can be reached only after part octets are parsed.
+        // This state can be reached after either a preamble or part octets are
+        // parsed.
         if (bytes.front() == '-') {
           // Prepare for a close delimiter suffix.
           matcher_ = CloseDelimiterSuffixMatcher();
@@ -166,7 +167,8 @@ bool MultipartParser::AppendData(base::span<const char> bytes) {
       case State::kParsingCloseDelimiterSuffix:
         // Parse "--", transport padding and "\r\n" after a delimiter
         // (a delimiter and "--" constitute a close delimiter).
-        // This state can be reached only after part octets are parsed.
+        // This state can be reached after either a preamble or part octets are
+        // parsed.
         for (;;) {
           if (matcher_.NumMatchedBytes() == 2u) {
             ParseTransportPadding(bytes);
