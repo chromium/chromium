@@ -28,6 +28,10 @@ BASE_DECLARE_FEATURE(kTranslateOpenSettings);
 // user to the fluent language model.
 BASE_DECLARE_FEATURE(kDisableGeoLanguageModel);
 
+// When enabled, this feature disables querying ULP languages from GmsCore and
+// the creation of the ULP language model.
+BASE_DECLARE_FEATURE(kDisableGmsCoreUlp);
+
 }  // namespace language
 
 #endif  // COMPONENTS_LANGUAGE_CORE_COMMON_LANGUAGE_EXPERIMENTS_H_

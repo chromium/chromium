@@ -34,6 +34,7 @@
 #include "base/i18n/language_tag.h"
 #include "base/i18n/tag_converters.h"
 #include "chrome/browser/language/android/language_bridge.h"
+#include "components/language/core/common/language_experiments.h"
 
 using language::ULPMetricsLogger;
 #endif
@@ -150,13 +151,15 @@ void PrepareLanguageModels(Profile* const profile,
   }
 
   // On Android, additionally create a ULPLanguageModel and populate it with
-  // ULP data.
+  // ULP data if not disabled.
 #if BUILDFLAG(IS_ANDROID)
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock()},
-      base::BindOnce(&language::LanguageBridge::GetULPLanguagesFromDevice,
-                     profile->GetProfileUserName()),
-      base::BindOnce(&CreateAndAddULPLanguageModel, profile));
+  if (!base::FeatureList::IsEnabled(language::kDisableGmsCoreUlp)) {
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock()},
+        base::BindOnce(&language::LanguageBridge::GetULPLanguagesFromDevice,
+                       profile->GetProfileUserName()),
+        base::BindOnce(&CreateAndAddULPLanguageModel, profile));
+  }
 #endif
 }
 
