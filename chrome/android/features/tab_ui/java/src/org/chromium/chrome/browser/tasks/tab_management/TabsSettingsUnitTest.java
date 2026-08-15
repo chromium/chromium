@@ -35,11 +35,14 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchConfigManager;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchControllerFactory;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchHooks;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchUtils;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -349,5 +352,77 @@ public class TabsSettingsUnitTest {
                 .removeEntry(
                         indexProvider.getUniqueId(
                                 TabsSettings.PREF_SHARE_TITLES_AND_URLS_WITH_OS_LEARN_MORE));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.AUXILIARY_SEARCH_HISTORY_DONATION)
+    public void testLaunchTabsSettingsShareBrowsingData_Enabled_Checked() {
+        when(mPrefServiceMock.getBoolean(Pref.AUXILIARY_SEARCH_BROWSING_DATA_DONATION_ENABLED))
+                .thenReturn(true);
+
+        TabsSettings tabsSettings = launchFragment();
+        ChromeSwitchPreference switchPref =
+                tabsSettings.findPreference(
+                        TabsSettings.PREF_SHARE_BROWSING_DATA_WITH_ON_DEVICE_INTELLIGENCE_SWITCH);
+        assertTrue(switchPref.isVisible());
+        assertEquals(
+                mActivity.getString(
+                        R.string.share_browsing_data_with_on_device_intelligence_setting_text),
+                switchPref.getSummary());
+        assertTrue(switchPref.isChecked());
+
+        switchPref.onClick();
+
+        assertFalse(switchPref.isChecked());
+        verify(mPrefServiceMock)
+                .setBoolean(Pref.AUXILIARY_SEARCH_BROWSING_DATA_DONATION_ENABLED, false);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.AUXILIARY_SEARCH_HISTORY_DONATION)
+    public void testLaunchTabsSettingsShareBrowsingData_Enabled_Unchecked() {
+        when(mPrefServiceMock.getBoolean(Pref.AUXILIARY_SEARCH_BROWSING_DATA_DONATION_ENABLED))
+                .thenReturn(false);
+
+        TabsSettings tabsSettings = launchFragment();
+        ChromeSwitchPreference switchPref =
+                tabsSettings.findPreference(
+                        TabsSettings.PREF_SHARE_BROWSING_DATA_WITH_ON_DEVICE_INTELLIGENCE_SWITCH);
+        assertTrue(switchPref.isVisible());
+        assertFalse(switchPref.isChecked());
+
+        switchPref.onClick();
+
+        assertTrue(switchPref.isChecked());
+        verify(mPrefServiceMock)
+                .setBoolean(Pref.AUXILIARY_SEARCH_BROWSING_DATA_DONATION_ENABLED, true);
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.AUXILIARY_SEARCH_HISTORY_DONATION)
+    public void testLaunchTabsSettingsShareBrowsingData_Disabled() {
+        TabsSettings tabsSettings = launchFragment();
+        ChromeSwitchPreference switchPref =
+                tabsSettings.findPreference(
+                        TabsSettings.PREF_SHARE_BROWSING_DATA_WITH_ON_DEVICE_INTELLIGENCE_SWITCH);
+        assertFalse(switchPref.isVisible());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.AUXILIARY_SEARCH_HISTORY_DONATION)
+    public void testSearchableIndex_isShareBrowsingDataWithOnDeviceIntelligenceEnabled_True() {
+        var indexProvider = TabsSettings.SEARCH_INDEX_DATA_PROVIDER;
+        indexProvider.updateDynamicPreferences(mActivity, mSearchIndexDataMock, mProfileMock);
+        String pref = TabsSettings.PREF_SHARE_BROWSING_DATA_WITH_ON_DEVICE_INTELLIGENCE_SWITCH;
+        verify(mSearchIndexDataMock, times(0)).removeEntry(indexProvider.getUniqueId(pref));
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.AUXILIARY_SEARCH_HISTORY_DONATION)
+    public void testSearchableIndex_isShareBrowsingDataWithOnDeviceIntelligenceEnabled_False() {
+        var indexProvider = TabsSettings.SEARCH_INDEX_DATA_PROVIDER;
+        indexProvider.updateDynamicPreferences(mActivity, mSearchIndexDataMock, mProfileMock);
+        String pref = TabsSettings.PREF_SHARE_BROWSING_DATA_WITH_ON_DEVICE_INTELLIGENCE_SWITCH;
+        verify(mSearchIndexDataMock).removeEntry(indexProvider.getUniqueId(pref));
     }
 }

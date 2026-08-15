@@ -390,6 +390,7 @@ public abstract class ChromeFeatureList {
     public static final String AUTO_PICTURE_IN_PICTURE_ANDROID = "AutoPictureInPictureAndroid";
     public static final String AUTO_REVOKE_SUSPICIOUS_NOTIFICATION =
             "AutoRevokeSuspiciousNotification";
+    public static final String AUXILIARY_SEARCH_HISTORY_DONATION = "AuxiliarySearchHistoryDonation";
     public static final String AVOID_DOUBLE_MULTIWINDOW_CHANGES = "AvoidDoubleMultiwindowChanges";
     public static final String BACKGROUND_THREAD_POOL_FIELD_TRIAL =
             "BackgroundThreadPoolFieldTrial";
@@ -1686,6 +1687,8 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(ANDROID_TIPS_NOTIFICATIONS_V2, false);
     public static final MutableFlagWithSafeDefault sAndroidZoomImmersive =
             newMutableFlagWithSafeDefault(ANDROID_ZOOM_IMMERSIVE, false);
+    public static final MutableFlagWithSafeDefault sAuxiliarySearchHistoryDonation =
+            newMutableFlagWithSafeDefault(AUXILIARY_SEARCH_HISTORY_DONATION, false);
     public static final MutableFlagWithSafeDefault sBookmarksBarContextMenu =
             newMutableFlagWithSafeDefault(BOOKMARKS_BAR_CONTEXT_MENU, false);
     public static final MutableFlagWithSafeDefault sBookmarksBarNTP =

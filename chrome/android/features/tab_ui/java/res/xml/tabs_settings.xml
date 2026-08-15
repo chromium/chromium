@@ -25,4 +25,7 @@ found in the LICENSE file.
         android:key="share_titles_and_urls_with_os_learn_more"
         android:summary="@string/share_titles_and_urls_with_os_learn_more_setting_text"
         app:allowDividerBelow="true"/>
+    <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
+        android:key="share_browsing_data_with_on_device_intelligence_switch"
+        android:summary="@string/share_browsing_data_with_on_device_intelligence_setting_text"/>
 </PreferenceScreen>
