@@ -7218,6 +7218,24 @@
             ]
         }
     ],
+    "ContextualTasksCookiePrefetch": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ContextualTasksCookiePrefetch"
+                    ]
+                }
+            ]
+        }
+    ],
     "ContextualTasksDesktop": [
         {
             "platforms": [
