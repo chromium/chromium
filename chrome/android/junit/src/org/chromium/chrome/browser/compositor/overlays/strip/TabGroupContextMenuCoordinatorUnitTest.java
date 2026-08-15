@@ -48,7 +48,6 @@ import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
-import org.chromium.base.MathUtils;
 import org.chromium.base.Token;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
@@ -98,6 +97,7 @@ import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupsFeatureMap;
 import org.chromium.ui.KeyboardVisibilityDelegate;
+import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
@@ -1339,11 +1339,14 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         TabGroupColorPickerContainer colorPicker =
                 container.findViewById(R.id.color_picker_container);
 
-        int minWidthPx = mActivity.getResources().getDimensionPixelSize(R.dimen.list_menu_width);
+        int minWidthPx = mActivity.getResources().getDimensionPixelSize(R.dimen.menu_width_min);
         int maxWidthPx =
                 mActivity
                         .getResources()
                         .getDimensionPixelSize(R.dimen.tab_strip_group_context_menu_max_width);
+        int marginPx =
+                mActivity.getResources().getDimensionPixelSize(R.dimen.menu_horizontal_margin);
+        int windowWidthPx = mActivity.getResources().getDisplayMetrics().widthPixels;
 
         int expectedWidth;
         int singleRowWidth = colorPicker.getSingleRowWidth();
@@ -1355,19 +1358,17 @@ public class TabGroupContextMenuCoordinatorUnitTest {
 
         // Also considers list item widths.
         ListAdapter listAdapter = listView.getAdapter();
-        int maxItemWidth = 0;
-        for (int i = 0; i < listAdapter.getCount(); i++) {
-            View listItem = listAdapter.getView(i, null, listView);
-            listItem.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-            maxItemWidth = Math.max(maxItemWidth, listItem.getMeasuredWidth());
-        }
+        int[] contentDimensions =
+                UiUtils.computeListAdapterContentDimensions(listAdapter, listView);
+        expectedWidth = Math.max(expectedWidth, contentDimensions[0]);
 
-        expectedWidth = Math.max(expectedWidth, maxItemWidth);
         expectedWidth =
-                MathUtils.clamp(
+                UiUtils.computeMenuWidth(
                         expectedWidth + listView.getPaddingLeft() + listView.getPaddingRight(),
                         minWidthPx,
-                        maxWidthPx);
+                        maxWidthPx,
+                        marginPx,
+                        windowWidthPx);
 
         assertEquals("Menu width is incorrect", expectedWidth, width);
     }

@@ -18,6 +18,7 @@ import android.graphics.drawable.Drawable;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ListView;
 
 import androidx.annotation.LayoutRes;
 import androidx.annotation.StyleRes;
@@ -137,10 +138,24 @@ public class TabOverflowMenuHolder<T> {
                                         .getDimension(R.dimen.tab_overflow_menu_elevation));
 
         if (isFlyout) {
+            int minWidthPx = mContext.getResources().getDimensionPixelSize(R.dimen.menu_width_min);
+            int marginPx =
+                    mContext.getResources().getDimensionPixelSize(R.dimen.menu_horizontal_margin);
+            int windowWidthPx = mContext.getResources().getDisplayMetrics().widthPixels;
+            int contentWidthPx = UiUtils.computeListAdapterContentDimensions(adapter, mListView)[0];
+            int popupWidthPx =
+                    UiUtils.computeMenuWidth(
+                            contentWidthPx
+                                    + mListView.getPaddingLeft()
+                                    + mListView.getPaddingRight(),
+                            minWidthPx,
+                            popupMaxWidthPx,
+                            marginPx,
+                            windowWidthPx);
+
+            builder.setDesiredContentWidth(popupWidthPx);
             builder.setAnimationStyle(R.style.PopupWindowAnimFade);
             builder.setSpecCalculator(new FlyoutPopupSpecCalculator());
-            builder.setDesiredContentWidth(
-                    UiUtils.computeListAdapterContentDimensions(adapter, mListView)[0]);
         } else {
             // Override animation style or animate from anchor as default.
             if (animStyle == Resources.ID_NULL) {
@@ -169,6 +184,14 @@ public class TabOverflowMenuHolder<T> {
                     }
                     destroy();
                 });
+    }
+
+    public void setDesiredContentWidth(int width) {
+        mMenuWindow.updateDesiredContentSize(width, 0, false);
+    }
+
+    ListView getListView() {
+        return mListView;
     }
 
     AnchoredPopupWindow getMenuWindow() {

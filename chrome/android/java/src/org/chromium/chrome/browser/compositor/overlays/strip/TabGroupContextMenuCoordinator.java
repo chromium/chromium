@@ -20,7 +20,6 @@ import android.database.DataSetObserver;
 import android.text.Editable;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.View.MeasureSpec;
 import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.view.inputmethod.EditorInfo;
@@ -30,7 +29,6 @@ import android.widget.ListView;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.MathUtils;
 import org.chromium.base.Token;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.MonotonicNonNull;
@@ -60,6 +58,7 @@ import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tasks.tab_management.TabOverflowMenuHolder;
 import org.chromium.chrome.browser.tasks.tab_management.TabShareUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabStripReorderingHelper;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiUtils;
@@ -81,6 +80,7 @@ import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
 import org.chromium.ui.KeyboardVisibilityDelegate;
+import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.modelutil.MVCListAdapter;
@@ -535,22 +535,21 @@ public class TabGroupContextMenuCoordinator extends TabStripReorderingHelper<Tok
                 });
     }
 
-    private void setScrollabilityAndSize(ListView listView, ListAdapter listAdapter) {
-        boolean isInSubmenu = (listAdapter.getItemViewType(0) == SUBMENU_HEADER);
-        listView.setScrollContainer(isInSubmenu);
-
-        int minWidth = getDimensionPixelSize(R.dimen.list_menu_width);
+    @Override
+    protected int[] getDesiredContentDimensions(ListAdapter adapter, ListView listView) {
+        boolean isInSubmenu = (adapter.getItemViewType(0) == SUBMENU_HEADER);
+        int minWidth = getDimensionPixelSize(R.dimen.menu_width_min);
         int absoluteMaxWidth =
                 getDimensionPixelSize(R.dimen.tab_strip_group_context_menu_max_width);
+        int margin = getDimensionPixelSize(R.dimen.menu_horizontal_margin);
+        int windowWidth = mContext.getResources().getDisplayMetrics().widthPixels;
 
-        int totalHeight = 0;
         int maxItemWidth = 0;
 
         // When not in a submenu, the menu also includes a title editor and a color picker.
         // We need to ensure that the menu width is large enough to accommodate these
         // components as well. The color picker is the one we care about, since the other is an
         // text editing box that will match its parent's width.
-        View container = ((ViewGroup) assumeNonNull(mContentView)).getChildAt(0);
         if (!isInSubmenu && mTabGroupColorPickerCoordinator != null) {
             TabGroupColorPickerContainer colorPicker =
                     mTabGroupColorPickerCoordinator.getContainerView();
@@ -567,25 +566,40 @@ public class TabGroupContextMenuCoordinator extends TabStripReorderingHelper<Tok
             }
         }
 
-        for (int i = 0; i < listAdapter.getCount(); i++) {
-            View listItem = listAdapter.getView(i, null, listView);
-            listItem.measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED);
-            totalHeight += listItem.getMeasuredHeight();
-            maxItemWidth = Math.max(maxItemWidth, listItem.getMeasuredWidth());
-        }
+        int[] contentDimensions = UiUtils.computeListAdapterContentDimensions(adapter, listView);
+        maxItemWidth = Math.max(maxItemWidth, contentDimensions[0]);
 
         int width =
-                MathUtils.clamp(
+                UiUtils.computeMenuWidth(
                         maxItemWidth + listView.getPaddingLeft() + listView.getPaddingRight(),
                         minWidth,
-                        absoluteMaxWidth);
+                        absoluteMaxWidth,
+                        margin,
+                        windowWidth);
+        return new int[] {width, contentDimensions[1]};
+    }
+
+    private void setScrollabilityAndSize(ListView listView, ListAdapter listAdapter) {
+        boolean isInSubmenu = (listAdapter.getItemViewType(0) == SUBMENU_HEADER);
+        listView.setScrollContainer(isInSubmenu);
+
+        int[] dimensions = getDesiredContentDimensions(listAdapter, listView);
+        int width = dimensions[0];
+        int totalHeight = dimensions[1];
 
         // Set the width on the ScrollView's child (the LinearLayout) to ensure all components
         // (title editor, color picker, and list items) share the same width and dividers
         // extend to the full width of the menu.
+        View container = ((ViewGroup) assumeNonNull(mContentView)).getChildAt(0);
         ViewGroup.LayoutParams containerParams = container.getLayoutParams();
         containerParams.width = width;
         container.setLayoutParams(containerParams);
+
+        TabOverflowMenuHolder<Token> menuHolder = getMenuHolder();
+        if (menuHolder != null) {
+            // This needs to be called again since the width may have changed with the data.
+            menuHolder.setDesiredContentWidth(width);
+        }
 
         ViewGroup.LayoutParams params = listView.getLayoutParams();
         params.height = totalHeight + listView.getPaddingTop() + listView.getPaddingBottom();

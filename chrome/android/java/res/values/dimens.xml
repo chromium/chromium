@@ -509,9 +509,9 @@ found in the LICENSE file.
     <dimen name="autofill_loading_dialog_spinner_size">36dp</dimen>
 
     <!-- tab strip context menu-->
-    <dimen name="tab_strip_group_context_menu_max_width">392dp</dimen>
-    <dimen name="tab_strip_context_menu_min_width">200dp</dimen>
-    <dimen name="tab_strip_context_menu_max_width">300dp</dimen>
+    <dimen name="tab_strip_group_context_menu_max_width">@dimen/menu_width_max</dimen>
+    <dimen name="tab_strip_context_menu_min_width">@dimen/menu_width_min</dimen>
+    <dimen name="tab_strip_context_menu_max_width">@dimen/menu_width_max</dimen>
 
     <!-- Text selection context menu dimensions -->
     <dimen name="text_selection_context_menu_max_width">800dp</dimen>
