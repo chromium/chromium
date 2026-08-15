@@ -1618,7 +1618,13 @@ void BrowserView::Show() {
   if (base::FeatureList::IsEnabled(features::kArtificialUIDelay)) {
     base::PlatformThread::Sleep(features::kViewsUIDelayDuration.Get());
   }
+
+  // Guard against destruction by platform event handlers called during Show().
+  auto weak_ptr = weak_ptr_factory_.GetWeakPtr();
   browser_widget_->Show();
+  if (!weak_ptr) {
+    return;
+  }
 
   OnWindowDidShow();
 
