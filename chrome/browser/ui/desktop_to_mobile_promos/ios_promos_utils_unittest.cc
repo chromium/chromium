@@ -7,6 +7,7 @@
 #include "base/json/values_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "chrome/browser/sync/prefs/cross_device_pref_tracker/cross_device_pref_tracker_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -45,6 +46,13 @@ class IOSPromosUtilsTest : public testing::Test {
   IOSPromosUtilsTest() {
     feature_list_.InitAndEnableFeature(
         sync_preferences::features::kEnableCrossDevicePrefTracker);
+    scoped_profile_selections_ = std::make_unique<
+        profiles::testing::ScopedProfileSelectionsForFactoryTesting>(
+        CrossDevicePrefTrackerFactory::GetInstance(),
+        ProfileSelections::Builder()
+            .WithRegular(ProfileSelection::kOriginalOnly)
+            .WithAshInternals(ProfileSelection::kNone)
+            .Build());
   }
   ~IOSPromosUtilsTest() override = default;
 
@@ -95,6 +103,8 @@ class IOSPromosUtilsTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
   base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<profiles::testing::ScopedProfileSelectionsForFactoryTesting>
+      scoped_profile_selections_;
   std::unique_ptr<TestingProfile> profile_;
 };
 
