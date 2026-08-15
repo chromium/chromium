@@ -636,7 +636,7 @@
 <translation id="1470084204649225129">{NUM_TABS,plural, =1{新しいグループに追加}other{新しいグループに追加}}</translation>
 <translation id="1470946456740188591">カーソル ブラウジングをオンまたはオフにするには、Ctrl+検索+7 ショートカット キーを使用します</translation>
 <translation id="1471034383866732283">リーディング モードで、このページのメイン コンテンツを検出できません</translation>
-<translation id="1472675084647422956">表示項目を増やす</translation>
+<translation id="1472675084647422956">さらに表示</translation>
 <translation id="1473223074251193484">テザリング設定を行う</translation>
 <translation id="1473616112002966036">動画フレーム(&amp;V)</translation>
 <translation id="1476088332184200792">デバイスにコピー</translation>
@@ -6781,7 +6781,7 @@
 <translation id="6077131872140550515">優先ネットワークから削除</translation>
 <translation id="6077476112742402730">音声入力</translation>
 <translation id="6078199831684941650">バージョン <ph name="VERSION" /> に更新しました</translation>
-<translation id="6078323886959318429">ショートカットを追加</translation>
+<translation id="6078323886959318429">追加</translation>
 <translation id="6078752646384677957">マイクと音声のレベルを確認してください。</translation>
 <translation id="608029822688206592">ネットワークが見つかりません。SIM を挿入してもう一度お試しください。</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> - 名前のないグループの一部</translation>
@@ -7494,7 +7494,7 @@
 <translation id="6619243162837544323">ネットワークの状態</translation>
 <translation id="6619801788773578757">キオスク アプリケーションを追加</translation>
 <translation id="6619990499523117484">PIN を確認してください</translation>
-<translation id="6621282332208609777">Google で検索または URL を入力</translation>
+<translation id="6621282332208609777">Google に質問または URL を入力</translation>
 <translation id="6621391692573306628">このタブを別のデバイスに送信するには、両方のデバイスで Chrome にログインしてください</translation>
 <translation id="6622980291894852883">画像を引き続きブロックする</translation>
 <translation id="6624036901798307345">タブレット モードのときに、ツールバーのタブカウンタ ボタンをタップして、各タブのサムネイルが表示された新しいタブバーを開きます。</translation>

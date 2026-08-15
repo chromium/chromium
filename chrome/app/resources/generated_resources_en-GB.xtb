@@ -918,7 +918,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1679810534535368772">Are you sure that you want to exit?</translation>
 <translation id="167997285881077031">Text-to-speech voice settings</translation>
 <translation id="1682195225331129001">Try now</translation>
-<translation id="1682548588986054654">New Incognito Window</translation>
+<translation id="1682548588986054654">New Incognito window</translation>
 <translation id="1682696837763999627">Big mouse cursor</translation>
 <translation id="1682867089915960590">Turn on Caret Browsing?</translation>
 <translation id="1686550358074589746">Enable glide typing</translation>
@@ -1806,7 +1806,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2334384018887664164">You can allowlist sites that you trust in content settings</translation>
 <translation id="233471714539944337">Sensitive content</translation>
 <translation id="2335758110242123814">Open group</translation>
-<translation id="2336228925368920074">Bookmark All Tabs...</translation>
+<translation id="2336228925368920074">Bookmark all tabs...</translation>
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2340152924294936648">Allow <ph name="EXTENSION_NAME" /> to read and change this site</translation>
 <translation id="2340239562261172947"><ph name="FILE_NAME" /> can't be downloaded securely</translation>
@@ -2568,7 +2568,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2883143988769190738">This extension requests the following permissions:</translation>
 <translation id="2884070497102362193">Test your battery, CPU, memory, connectivity and more</translation>
 <translation id="2885129935310217435">There is a button with the same name. Please choose another one.</translation>
-<translation id="2885378588091291677">Task Manager</translation>
+<translation id="2885378588091291677">Task manager</translation>
 <translation id="2886119409731773154">This may take up to 30 minutes</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
 <translation id="288734198558082692"><ph name="DEVICE" /> and <ph name="NUMBER_OF_DEVICES" /> others</translation>
@@ -3777,7 +3777,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="377050016711188788">Ice-cream</translation>
 <translation id="3771290962915251154">This setting is disabled because parental controls are on</translation>
 <translation id="3771294271822695279">Video Files</translation>
-<translation id="3771721161825963003">Show Tabs Vertically</translation>
+<translation id="3771721161825963003">Show tabs vertically</translation>
 <translation id="3771851622616482156">You'll be signed out of this site, including in open tabs</translation>
 <translation id="3772046291955677288">I have read and agree to the <ph name="BEGIN_LINK1" />Google Terms of Service<ph name="END_LINK1" /> and <ph name="BEGIN_LINK2" />Chrome and Chrome OS additional Terms of Service<ph name="END_LINK2" />.</translation>
 <translation id="3774059845329307709">Serial number</translation>
@@ -5999,7 +5999,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5444452275167152925">Imported from ChromeOS</translation>
 <translation id="5445400788035474247">10x</translation>
 <translation id="5449551289610225147">Invalid password</translation>
-<translation id="5449588825071916739">Bookmark All Tabs</translation>
+<translation id="5449588825071916739">Bookmark all tabs</translation>
 <translation id="5449716055534515760">Close Win&amp;dow</translation>
 <translation id="5449932659532574495"><ph name="TURN_ON_BLUETOOTH_LINK" /> to explore Bluetooth devices</translation>
 <translation id="5450469615146335984">Select a shortcut for each action</translation>
@@ -8792,7 +8792,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7552846755917812628">Try the following tips:</translation>
 <translation id="7553242001898162573">Enter your password</translation>
 <translation id="755472745191515939">Your administrator doesn't allow this language</translation>
-<translation id="7554791636758816595">New Tab</translation>
+<translation id="7554791636758816595">New tab</translation>
 <translation id="7556228616802995437">Recent chats and threads</translation>
 <translation id="7557194624273628371">Linux port forwarding</translation>
 <translation id="7561196759112975576">Always</translation>
@@ -10465,7 +10465,7 @@ This can include information about installed software, files, your browser, the 
 <translation id="8793390639824829328">Sites use this feature to scroll and zoom shared tabs</translation>
 <translation id="8793895150509408038">View site details for <ph name="SITE" /> from the <ph name="SECTION_HEADER" /> list</translation>
 <translation id="879413103056696865">While the hotspot is on, your <ph name="PHONE_NAME" /> will:</translation>
-<translation id="8795916974678578410">New Window</translation>
+<translation id="8795916974678578410">New window</translation>
 <translation id="8797459392481275117">Never translate this site</translation>
 <translation id="8798099450830957504">Default</translation>
 <translation id="8800034312320686233">Site not working?</translation>
@@ -11075,7 +11075,7 @@ This can include information about installed software, files, your browser, the 
 <translation id="93766956588638423">Repair extension</translation>
 <translation id="939598580284253335">Enter passphrase</translation>
 <translation id="939736085109172342">New folder</translation>
-<translation id="940212040923880623">&amp;Find and Edit</translation>
+<translation id="940212040923880623">Find and edit</translation>
 <translation id="942296794412775122">Microphone on/off</translation>
 <translation id="942488123151518958">Pause (k)</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> is sharing a Chrome tab and audio.</translation>

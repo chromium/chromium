@@ -315,7 +315,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1465457928007067810">IBAN, Google Hesabınıza kaydedildi</translation>
 <translation id="1467432559032391204">Sola</translation>
 <translation id="1471514598850585811">Dizüstü bilgisayar</translation>
-<translation id="1472675084647422956">Daha fazla göster</translation>
+<translation id="1472675084647422956">Daha fazla</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">Yazma konusunda yardım almak için en az 3 kelime girin</translation>
 <translation id="147358896496811705">2A0</translation>
@@ -2664,7 +2664,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="5136841603454277753">Doğru kodu girin</translation>
 <translation id="5137761395480718572">Bu uygulama kablosuz ağ kimlik bilgileri yüklemek için izin istiyor. Kurulumdan sonra <ph name="DEVICE_TYPE" /> cihazınız katılımcı kablosuz ağlara otomatik olarak bağlanacaktır. Bu kimlik bilgilerini kaldırmak için uygulamayı kaldırın. <ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">Sanal kart şu anda kullanılamıyor. Lütfen bankanızla iletişim kurun.</translation>
-<translation id="5138227688689900538">Daha az göster</translation>
+<translation id="5138227688689900538">Daha az</translation>
 <translation id="5140155249377545621">Sürücü belgeleri</translation>
 <translation id="5143310416385956149">Tarama, OneDrive'a kaydedildi</translation>
 <translation id="5144613843429436866">Bu site için <ph name="PERMISSION" /> iznini verdiniz</translation>

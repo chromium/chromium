@@ -1238,7 +1238,7 @@
 <translation id="1910908536872421421">테스트용 Chrome v<ph name="BROWSER_VERSION" />은(는) 자동 테스트 전용입니다. 정기적인 탐색을 하려면 자동으로 업데이트되는 표준 버전의 Chrome을 사용하세요.</translation>
 <translation id="1912867150686509584">Calendar에서 더 많은 회의 보기</translation>
 <translation id="1913734973620799732">{NUM_TABS,plural, =1{브라우저 속도를 저하시키는 탭 일시중지}other{브라우저 속도를 저하시키는 탭 일시중지}}</translation>
-<translation id="1913749768968678106">전송, 저장, 공유</translation>
+<translation id="1913749768968678106">캐스팅, 저장, 공유</translation>
 <translation id="19147273405311768">툴바를 기본 설정으로 재설정</translation>
 <translation id="1915073950770830761">canary</translation>
 <translation id="1915307458270490472">종료</translation>
@@ -9867,7 +9867,7 @@
 <translation id="8351316842353540018">항상 접근성 옵션 표시</translation>
 <translation id="8351419472474436977">이 확장 프로그램이 프록시 설정을 제어할 수 있게 되었으며, 따라서 사용자가 온라인에서 수행하는 모든 작업을 변경 및 중단하고 엿볼 수 있게 되었음을 의미합니다. 이와 같이 변경된 이유가 확실하지 않다면 이 설정을 사용하지 않는 것이 좋습니다.</translation>
 <translation id="8352287103893778223">탭 그룹 제목</translation>
-<translation id="8353420862507374944">전송, 저장, 공유</translation>
+<translation id="8353420862507374944">캐스팅, 저장, 공유</translation>
 <translation id="8353683614194668312">앱의 권한:</translation>
 <translation id="8354125743472063725"><ph name="APP_NAME" />에 허용하는 권한은 이 앱에도 허용됩니다. <ph name="BEGIN_LINK" />상위 앱의 권한 관리<ph name="END_LINK" /></translation>
 <translation id="8356197132883132838"><ph name="TITLE" /> - <ph name="COUNT" />개</translation>

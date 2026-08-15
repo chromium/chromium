@@ -2664,7 +2664,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="5136841603454277753">Saisissez le bon code</translation>
 <translation id="5137761395480718572">Cette appli demande l'autorisation d'installer des identifiants Wi-Fi. Après la configuration, votre <ph name="DEVICE_TYPE" /> se connectera automatiquement aux réseaux Wi-Fi participants. Pour supprimer ces identifiants, désinstallez l'appli. <ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">La carte virtuelle n'est pas disponible pour le moment. Veuillez contacter votre banque.</translation>
-<translation id="5138227688689900538">Afficher moins</translation>
+<translation id="5138227688689900538">Moins</translation>
 <translation id="5140155249377545621">Permis de conduire</translation>
 <translation id="5143310416385956149">Scan enregistré dans OneDrive</translation>
 <translation id="5144613843429436866">Autorisation accordée pour ce site : <ph name="PERMISSION" /></translation>
