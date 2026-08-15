@@ -227,8 +227,10 @@ class ReadAloudService
   void OnDistillationFailed(
       dom_distiller::DistillationParseResult reason) override;
 
-  // Initializes the connection to the utility process.
-  void Initialize();
+  // Stops any active playback session and restarts the service lifecycle for
+  // the given `web_contents`, triggering page distillation and ensuring the
+  // utility process is connected.
+  void Initialize(content::WebContents* web_contents);
 
   dom_distiller::ViewerHandle* GetViewerHandleForTesting() const {
     return viewer_handle_.get();
@@ -248,6 +250,7 @@ class ReadAloudService
 
   void EnsurePlaybackControllerConnected();
   void OnUtilityDisconnect();
+  void ResetUtilityConnection();
   PlaybackState GetCurrentPlaybackState() const;
 
   raw_ptr<Profile> profile_;

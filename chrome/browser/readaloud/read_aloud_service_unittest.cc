@@ -134,6 +134,9 @@ class FakePlaybackController
   void SetTextContent(
       std::vector<read_aloud::mojom::TextSegmentPtr> segments) override {
     received_segments_ = std::move(segments);
+    if (set_text_content_callback_) {
+      std::move(set_text_content_callback_).Run();
+    }
   }
 
   void Play() override {}
@@ -144,6 +147,10 @@ class FakePlaybackController
   void SetPlaybackRate(float rate) override {}
   void FlushBuffers() override {}
 
+  void set_text_content_callback(base::OnceClosure callback) {
+    set_text_content_callback_ = std::move(callback);
+  }
+
   const std::vector<read_aloud::mojom::TextSegmentPtr>& received_segments() const {
     return received_segments_;
   }
@@ -151,6 +158,7 @@ class FakePlaybackController
  private:
   mojo::Receiver<read_aloud::mojom::ReadAloudPlaybackController> receiver_{this};
   std::vector<read_aloud::mojom::TextSegmentPtr> received_segments_;
+  base::OnceClosure set_text_content_callback_;
 };
 
 }  // namespace
@@ -246,7 +254,7 @@ TEST_F(ReadAloudServiceTest, DistillPageAndArticleReady) {
         return std::make_unique<dom_distiller::ViewerHandle>(base::DoNothing());
       });
 
-  service()->DistillPage(web_contents());
+  service()->Initialize(web_contents());
 
   EXPECT_NE(GetViewerHandle(), nullptr);
   ASSERT_NE(delegate_ptr, nullptr);
@@ -296,7 +304,7 @@ TEST_F(ReadAloudServiceTest, DistillPageAndArticleReady_EmptyPageHtml) {
         return std::make_unique<dom_distiller::ViewerHandle>(base::DoNothing());
       });
 
-  service()->DistillPage(web_contents());
+  service()->Initialize(web_contents());
   ASSERT_NE(delegate_ptr, nullptr);
 
   // Distilled article where second page is empty string.
@@ -333,7 +341,7 @@ TEST_F(ReadAloudServiceTest, UtilityDisconnectTriggersErrorAndStop) {
   EXPECT_CALL(*delegate_ptr_mock, OnNativeDestroyed()).Times(1);
 
   // Force service connection to bind fake controller:
-  service()->Initialize();
+  service()->Initialize(web_contents());
 
   // Simulating utility process crash by destroying receiver.
   fake_controller()->Reset();
@@ -407,7 +415,6 @@ TEST_F(ReadAloudServiceTest, ShutdownClearsHandle) {
           std::make_unique<dom_distiller::ViewerHandle>(base::DoNothing()))));
 
   service()->Play(web_contents());
-  service()->DistillPage(web_contents());
   EXPECT_NE(nullptr, GetViewerHandle());
 
   service()->Shutdown();
@@ -462,7 +469,6 @@ TEST_F(ReadAloudServiceTest, PrimaryPageChangedStopsAndDetachesObserver) {
           std::make_unique<dom_distiller::ViewerHandle>(base::DoNothing()))));
 
   service()->Play(web_contents());
-  service()->DistillPage(web_contents());
   EXPECT_NE(nullptr, GetViewerHandle());
 
   auto delegate = std::make_unique<testing::StrictMock<MockDelegate>>();
@@ -480,6 +486,78 @@ TEST_F(ReadAloudServiceTest, PrimaryPageChangedStopsAndDetachesObserver) {
   EXPECT_EQ(nullptr, service()->web_contents());
 
   EXPECT_CALL(*delegate_ptr, OnNativeDestroyed()).Times(1);
+}
+
+TEST_F(ReadAloudServiceTest, UtilityProcessLifecycle) {
+  NavigateAndCommit(GURL("https://www.example.com/article"));
+
+  SetFakeController(std::make_unique<FakePlaybackController>());
+
+  // Mock distiller calls:
+  dom_distiller::ViewRequestDelegate* distiller_delegate = nullptr;
+  EXPECT_CALL(*mock_distiller_service(),
+              CreateDefaultDistillerPageWithHandle(testing::_))
+      .Times(2)  // We will Play twice.
+      .WillRepeatedly(
+          [](std::unique_ptr<dom_distiller::SourcePageHandle> handle) {
+            return std::make_unique<dom_distiller::test::MockDistillerPage>();
+          });
+
+  EXPECT_CALL(*mock_distiller_service(),
+              ViewUrlIgnoreCache(service(), testing::_,
+                                 GURL("https://www.example.com/article")))
+      .Times(2)
+      .WillRepeatedly([&](dom_distiller::ViewRequestDelegate* delegate,
+                          std::unique_ptr<dom_distiller::DistillerPage> page,
+                          const GURL& url) {
+        distiller_delegate = delegate;
+        return std::make_unique<dom_distiller::ViewerHandle>(base::DoNothing());
+      });
+
+  // Call Play() (First Session) - should start the first distillation.
+  service()->Play(web_contents());
+  EXPECT_EQ(web_contents(), service()->web_contents());
+  ASSERT_NE(nullptr, distiller_delegate);
+
+  // Simulate article ready - should connect to utility player and bind.
+  dom_distiller::DistilledArticleProto proto;
+  dom_distiller::DistilledPageProto* page = proto.add_pages();
+  page->set_html("Content");
+  base::RunLoop run_loop;
+  fake_controller()->set_text_content_callback(run_loop.QuitClosure());
+  distiller_delegate->OnArticleReady(&proto);
+  run_loop.Run();
+
+  // Verify segments were received by fake controller.
+  EXPECT_EQ(1u, fake_controller()->received_segments().size());
+
+  // Call Stop() - should disconnect utility player.
+  service()->Stop();
+  EXPECT_EQ(nullptr, service()->web_contents());
+
+  // Reset fake controller to ensure we can detect a new connection.
+  fake_controller()->Reset();
+
+  // Call Play() again (Second Session) - should start a second distillation
+  // because we previously stopped the session.
+  distiller_delegate = nullptr;
+  service()->Play(web_contents());
+  ASSERT_NE(nullptr, distiller_delegate);
+
+  // Simulate article ready again - should reconnect.
+  base::RunLoop run_loop2;
+  fake_controller()->set_text_content_callback(run_loop2.QuitClosure());
+  distiller_delegate->OnArticleReady(&proto);
+  run_loop2.Run();
+
+  // Verify new segments were received (proving reconnection).
+  EXPECT_EQ(1u, fake_controller()->received_segments().size());
+
+  // Call Play() while already playing (same WebContents) - should NOT reconnect
+  // or re-distill a third time. The distiller mock expectations of `.Times(2)`
+  // set at the top of this test case will fail if a third distillation is
+  // triggered.
+  service()->Play(web_contents());
 }
 
 TEST_F(ReadAloudServiceTest,

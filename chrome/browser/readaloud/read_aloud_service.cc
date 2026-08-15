@@ -38,13 +38,8 @@ void ReadAloudService::Play(content::WebContents* new_web_contents) {
     return;
   }
 
-  // If a new WebContents is available, stop active playback, start
-  // observing the new WebContents, and create a new playback session.
   if (new_web_contents != web_contents()) {
-    Stop();
-    Observe(new_web_contents);
-    active_session_ =
-        std::make_unique<ReadAloudPlaybackSession>(new_web_contents, this);
+    Initialize(new_web_contents);
   }
 
   PlaybackState previous_state = GetCurrentPlaybackState();
@@ -87,6 +82,9 @@ void ReadAloudService::Stop() {
   // Cancel any ongoing page distillation request and reset timing metrics.
   viewer_handle_.reset();
   distillation_start_time_ = base::TimeTicks();
+
+  // Stopping the Utility Process and any of their connections.
+  ResetUtilityConnection();
 
   // Notify the UI/client delegate if the playback state transitioned.
   PlaybackState current_state = GetCurrentPlaybackState();
@@ -181,9 +179,6 @@ void ReadAloudService::Shutdown() {
     delegate_->OnNativeDestroyed();
     delegate_.reset();
   }
-  utility_observer_receiver_.reset();
-  utility_player_.reset();
-  player_factory_.reset();
 }
 
 void ReadAloudService::DistillPage(content::WebContents* web_contents) {
@@ -229,7 +224,6 @@ void ReadAloudService::OnArticleReady(
     return;
   }
 
-  EnsurePlaybackControllerConnected();
   if (!utility_player_.is_bound()) {
     return;
   }
@@ -253,7 +247,15 @@ void ReadAloudService::OnArticleReady(
 void ReadAloudService::OnArticleUpdated(
     dom_distiller::ArticleDistillationUpdate article_update) {}
 
-void ReadAloudService::Initialize() {
+void ReadAloudService::Initialize(content::WebContents* new_web_contents) {
+  if (!new_web_contents) {
+    return;
+  }
+  Stop();
+  Observe(new_web_contents);
+  active_session_ =
+      std::make_unique<ReadAloudPlaybackSession>(new_web_contents, this);
+  DistillPage(new_web_contents);
   EnsurePlaybackControllerConnected();
 }
 
@@ -299,13 +301,16 @@ void ReadAloudService::EnsurePlaybackControllerConnected() {
 }
 
 void ReadAloudService::OnUtilityDisconnect() {
-  utility_observer_receiver_.reset();
-  utility_player_.reset();
-  player_factory_.reset();
   Stop();
   if (delegate_) {
     delegate_->OnPlaybackError("Utility process disconnected");
   }
+}
+
+void ReadAloudService::ResetUtilityConnection() {
+  utility_observer_receiver_.reset();
+  utility_player_.reset();
+  player_factory_.reset();
 }
 
 void ReadAloudService::OnDistillationFailed(
