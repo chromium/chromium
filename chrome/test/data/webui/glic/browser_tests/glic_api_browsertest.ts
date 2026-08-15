@@ -478,10 +478,6 @@ class ApiTests extends ApiTestFixtureBase {
 
 
 
-  async testOpenOsGeoPermissionSettings() {
-    assertDefined(this.host.openOsPermissionSettingsMenu);
-    this.host.openOsPermissionSettingsMenu('geolocation');
-  }
 
   async testGetOsMicrophonePermissionStatusAllowed() {
     assertDefined(this.host.getOsMicrophonePermissionStatus);

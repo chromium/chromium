@@ -1344,20 +1344,6 @@ class GlicApiTestSystemSettingsTest : public GlicApiTestWithOneTab {
       mock_platform_handle;
 };
 
-
-IN_PROC_BROWSER_TEST_P(GlicApiTestSystemSettingsTest,
-                       testOpenOsGeoPermissionSettings) {
-  base::test::TestFuture<void> signal;
-  EXPECT_CALL(mock_platform_handle,
-              OpenSystemSettings(testing::_, ContentSettingsType::GEOLOCATION))
-      .WillOnce(base::test::InvokeFuture(signal));
-
-  // Trigger the openOsPermissionSettingsMenu API with 'geolocation'.
-  ExecuteJsTest();
-  // Wait for OpenSystemSettings to be called.
-  EXPECT_TRUE(signal.Wait());
-}
-
 IN_PROC_BROWSER_TEST_P(GlicApiTestSystemSettingsTest,
                        testGetOsMicrophonePermissionStatusAllowed) {
   EXPECT_CALL(mock_platform_handle,

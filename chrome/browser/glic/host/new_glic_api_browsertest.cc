@@ -708,6 +708,20 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTestSystemSettingsTest,
   EXPECT_TRUE(signal.Wait());
 }
 
+IN_PROC_BROWSER_TEST_P(NewGlicApiTestSystemSettingsTest,
+                       testOpenOsGeoPermissionSettings) {
+  ASSERT_OK(OpenGlicForActiveTab());
+  base::test::TestFuture<void> signal;
+  EXPECT_CALL(mock_platform_handle,
+              OpenSystemSettings(testing::_, ContentSettingsType::GEOLOCATION))
+      .WillOnce(base::test::InvokeFuture(signal));
+
+  // Trigger the openOsPermissionSettingsMenu API with 'geolocation'.
+  ExecuteJsTest();
+  // Wait for OpenSystemSettings to be called.
+  EXPECT_TRUE(signal.Wait());
+}
+
 IN_PROC_BROWSER_TEST_P(NewGlicOnboardingApiTest, testIsOnboardingCompleted) {
   ASSERT_OK(OpenGlicForActiveTab());
   ExecuteJsTest();
