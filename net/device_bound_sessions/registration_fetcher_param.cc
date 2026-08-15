@@ -57,6 +57,7 @@ RegistrationFetcherParam::~RegistrationFetcherParam() = default;
 
 RegistrationFetcherParam::RegistrationFetcherParam(
     GURL registration_endpoint,
+    url::Origin referring_origin,
     std::vector<crypto::SignatureVerifier::SignatureAlgorithm> supported_algos,
     std::optional<std::string> challenge,
     std::optional<std::string> authorization,
@@ -65,6 +66,7 @@ RegistrationFetcherParam::RegistrationFetcherParam(
     std::optional<Session::Id> provider_session_id,
     AttestationMode attestation_mode)
     : registration_endpoint_(std::move(registration_endpoint)),
+      referring_origin_(std::move(referring_origin)),
       supported_algos_(std::move(supported_algos)),
       challenge_(std::move(challenge)),
       authorization_(std::move(authorization)),
@@ -197,8 +199,9 @@ std::optional<RegistrationFetcherParam> RegistrationFetcherParam::ParseItem(
   }
 
   return RegistrationFetcherParam(
-      std::move(registration_endpoint), std::move(supported_algos),
-      std::move(challenge), std::move(authorization), std::move(provider_key),
+      std::move(registration_endpoint), url::Origin::Create(request_url),
+      std::move(supported_algos), std::move(challenge),
+      std::move(authorization), std::move(provider_key),
       std::move(provider_url), std::move(provider_session_id),
       aik_required ? AttestationMode::kRequired : AttestationMode::kNone);
 }
@@ -256,10 +259,15 @@ RegistrationFetcherParam RegistrationFetcherParam::CreateInstanceForTesting(
     std::optional<std::string> provider_key,
     std::optional<GURL> provider_url,
     std::optional<Session::Id> provider_session_id,
-    AttestationMode attestation_mode) {
+    AttestationMode attestation_mode,
+    std::optional<url::Origin> maybe_referring_origin) {
+  url::Origin referring_origin =
+      maybe_referring_origin ? std::move(*maybe_referring_origin)
+                             : url::Origin::Create(registration_endpoint);
   return RegistrationFetcherParam(
-      std::move(registration_endpoint), std::move(supported_algos),
-      std::move(challenge), std::move(authorization), std::move(provider_key),
+      std::move(registration_endpoint), std::move(referring_origin),
+      std::move(supported_algos), std::move(challenge),
+      std::move(authorization), std::move(provider_key),
       std::move(provider_url), std::move(provider_session_id),
       attestation_mode);
 }

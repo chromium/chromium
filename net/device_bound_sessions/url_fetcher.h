@@ -7,14 +7,16 @@
 
 #include "base/memory/weak_ptr.h"
 #include "net/base/net_export.h"
+#include "net/url_request/redirect_info.h"
 #include "net/url_request/url_request.h"
+#include "url/origin.h"
 
 namespace net {
 class URLRequestContext;
 class SSLCertRequestInfo;
 class X509Certificate;
 class SSLPrivateKey;
-}
+}  // namespace net
 
 namespace net::device_bound_sessions {
 
@@ -22,6 +24,7 @@ class NET_EXPORT URLFetcher : public URLRequest::Delegate {
  public:
   URLFetcher(const URLRequestContext* context,
              GURL url,
+             const url::Origin& referring_origin,
              std::optional<net::NetLogSource> net_log_source,
              bool is_refresh);
   ~URLFetcher() override;
@@ -45,6 +48,14 @@ class NET_EXPORT URLFetcher : public URLRequest::Delegate {
   // Always cancel requests on SSL errors, this is the default implementation
   // of OnSSLCertificateError.
 
+  // Intercept HTTP 3xx redirects to re-synchronize W3C Fetch Metadata,
+  // evaluate cross-origin/same-site origin relationships, and strictly
+  // abort insecure (https -> http) protocol downgrades to prevent plaintext
+  // DBSC session token leakage.
+  void OnReceivedRedirect(URLRequest* request,
+                          const RedirectInfo& redirect_info,
+                          bool* defer_redirect) override;
+
   // This is always called unless the request is deleted before it is called.
   void OnResponseStarted(URLRequest* request, int net_error) override;
 
@@ -62,6 +73,7 @@ class NET_EXPORT URLFetcher : public URLRequest::Delegate {
   std::string data_received_;
   int net_error_ = OK;
   base::OnceClosure callback_;
+  const url::Origin referring_origin_;
 
   base::WeakPtrFactory<URLFetcher> weak_factory_{this};
 };

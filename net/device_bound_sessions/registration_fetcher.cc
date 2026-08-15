@@ -16,6 +16,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/functional/concurrent_closures.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/rand_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -27,6 +28,7 @@
 #include "net/base/features.h"
 #include "net/base/net_errors.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "net/base/url_util.h"
 #include "net/device_bound_sessions/registration_request_param.h"
 #include "net/device_bound_sessions/session_binding_utils.h"
 #include "net/device_bound_sessions/session_challenge_param.h"
@@ -35,6 +37,7 @@
 #include "net/device_bound_sessions/session_key.h"
 #include "net/device_bound_sessions/session_params.h"
 #include "net/device_bound_sessions/url_fetcher.h"
+#include "net/http/http_request_headers.h"
 #include "net/log/net_log_event_type.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/url_request_context.h"
@@ -205,6 +208,7 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
  public:
   RegistrationFetcherImpl(
       const GURL& fetcher_endpoint,
+      url::Origin referring_origin,
       std::optional<std::string> session_identifier,
       SessionService& session_service,
       unexportable_keys::UnexportableKeyService& key_service,
@@ -215,6 +219,7 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
       const std::optional<url::Origin>& original_request_initiator,
       unexportable_keys::BackgroundTaskPriority priority)
       : fetcher_endpoint_(fetcher_endpoint),
+        referring_origin_(std::move(referring_origin)),
         session_identifier_(std::move(session_identifier)),
         session_service_(session_service),
         key_service_(key_service),
@@ -374,13 +379,9 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
     // TODO(crbug.com/495096658): Assert that `IsForRefreshRequest()` is false
     // once the tests are fixed.
     url_fetcher_ = std::make_unique<URLFetcher>(
-        context_, well_known_url, net_log_source_, IsForRefreshRequest());
-    url_fetcher_->request().set_method("GET");
-    url_fetcher_->request().set_disallow_credentials();
-    url_fetcher_->request().set_site_for_cookies(
-        isolation_info_.site_for_cookies());
-    url_fetcher_->request().set_initiator(original_request_initiator_);
-    url_fetcher_->request().set_isolation_info(isolation_info_);
+        context_, well_known_url, referring_origin_, net_log_source_,
+        IsForRefreshRequest());
+    ConfigureWellKnownRequest(url_fetcher_->request());
     url_fetcher_->Start(base::BindOnce(
         &RegistrationFetcherImpl::OnProviderWellKnownRequestComplete,
         GetWeakPtr(), request_params.TakeChallenge(),
@@ -409,9 +410,40 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
   }
 
  private:
+  // Consolidates common URLRequest initialization, credential isolation, and
+  // W3C Resource-Isolation 'no-cors'/'empty' Fetch-Metadata parameters utilized
+  // uniformly across both Discovery (GET) and Registration (POST) DBSC
+  // operations.
+  // TODO(crbug.com/546625323): Stop duplicating request header and
+  // Fetch-Metadata population logic, and explore offloading header construction
+  // to `SessionService` or reusing `//services/network/sec_header_helpers.h`.
+  void SetupCommonFetchMetadata(URLRequest& request) {
+    request.set_site_for_cookies(site_for_cookies_);
+    request.set_initiator(original_request_initiator_);
+    request.set_isolation_info(isolation_info_);
+
+    request.SetExtraRequestHeaderByName(kSecFetchModeHeaderName, "no-cors",
+                                        /*overwrite=*/true);
+    request.SetExtraRequestHeaderByName(kSecFetchDestHeaderName, "empty",
+                                        /*overwrite=*/true);
+    request.SetExtraRequestHeaderByName(
+        kSecFetchSiteHeaderName,
+        SecFetchSiteForReferringOrigin(referring_origin_, request.url()),
+        /*overwrite=*/true);
+  }
+
+  // Configures and decorates an outbound `.well-known` DBSC discovery
+  // URLRequest via a side-effect-free, credentialless HTTP GET operation.
+  void ConfigureWellKnownRequest(URLRequest& request) {
+    request.set_method("GET");
+    request.set_disallow_credentials();
+    SetupCommonFetchMetadata(request);
+  }
+
   void StartFetcherEndpointRequest() {
     url_fetcher_ = std::make_unique<URLFetcher>(
-        context_, fetcher_endpoint_, net_log_source_, IsForRefreshRequest());
+        context_, fetcher_endpoint_, referring_origin_, net_log_source_,
+        IsForRefreshRequest());
     ConfigureRequest(url_fetcher_->request());
     if (last_registration_token_.has_value()) {
       url_fetcher_->request().SetExtraRequestHeaderByName(
@@ -438,13 +470,9 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
     replacements.SetPathStr("/.well-known/device-bound-sessions");
     GURL well_known_url = fetcher_endpoint_.ReplaceComponents(replacements);
     url_fetcher_ = std::make_unique<URLFetcher>(
-        context_, well_known_url, net_log_source_, IsForRefreshRequest());
-    url_fetcher_->request().set_method("GET");
-    url_fetcher_->request().set_disallow_credentials();
-    url_fetcher_->request().set_site_for_cookies(
-        isolation_info_.site_for_cookies());
-    url_fetcher_->request().set_initiator(original_request_initiator_);
-    url_fetcher_->request().set_isolation_info(isolation_info_);
+        context_, well_known_url, referring_origin_, net_log_source_,
+        IsForRefreshRequest());
+    ConfigureWellKnownRequest(url_fetcher_->request());
     url_fetcher_->Start(base::BindOnce(
         &RegistrationFetcherImpl::OnRelyingPartyWellKnownRequestComplete,
         GetWeakPtr(), std::move(challenge), std::move(authorization)));
@@ -624,9 +652,17 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
     request.set_method("POST");
     request.SetLoadFlags(LOAD_DISABLE_CACHE);
 
-    request.set_site_for_cookies(site_for_cookies_);
-    request.set_initiator(original_request_initiator_);
-    request.set_isolation_info(isolation_info_);
+    // Apply baseline W3C Fetch-Metadata ('no-cors', 'empty', 'Sec-Fetch-Site')
+    // and isolation boundaries utilized across all DBSC request pipelines.
+    SetupCommonFetchMetadata(request);
+
+    // The endpoint may be a different (same-site) origin from the response or
+    // session that configured it, so attach `Origin` and Fetch Metadata
+    // headers reflecting that relationship. These requests don't go through
+    // `network::URLLoader`, which would otherwise add them.
+    request.SetExtraRequestHeaderByName(HttpRequestHeaders::kOrigin,
+                                        referring_origin_.Serialize(),
+                                        /*overwrite=*/true);
 
     if (IsForRefreshRequest()) {
       request.SetExtraRequestHeaderByName(
@@ -808,13 +844,9 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
       GURL well_known_url =
           fetcher_endpoint_.ReplaceComponents(std::move(replacements));
       url_fetcher_ = std::make_unique<URLFetcher>(
-          context_, well_known_url, net_log_source_, /*is_refresh=*/false);
-      url_fetcher_->request().set_method("GET");
-      url_fetcher_->request().set_disallow_credentials();
-      url_fetcher_->request().set_site_for_cookies(
-          isolation_info_.site_for_cookies());
-      url_fetcher_->request().set_initiator(original_request_initiator_);
-      url_fetcher_->request().set_isolation_info(isolation_info_);
+          context_, well_known_url, referring_origin_, net_log_source_,
+          /*is_refresh=*/false);
+      ConfigureWellKnownRequest(url_fetcher_->request());
       url_fetcher_->Start(base::BindOnce(
           &RegistrationFetcherImpl::
               OnSubdomainRegistrationWellKnownRequestComplete,
@@ -927,6 +959,10 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
   // Refers to the endpoint this class will use when triggering a registration
   // or refresh request.
   GURL fetcher_endpoint_;
+  // The origin that configured `fetcher_endpoint_`: the origin of the response
+  // carrying the registration header, or the scope origin of the session being
+  // refreshed.
+  url::Origin referring_origin_;
   // Populated iff this is a refresh request (not a registration request).
   std::optional<std::string> session_identifier_;
   const raw_ref<SessionService> session_service_;
@@ -973,6 +1009,7 @@ std::unique_ptr<RegistrationFetcher> RegistrationFetcher::CreateFetcher(
     unexportable_keys::BackgroundTaskPriority priority) {
   return std::make_unique<RegistrationFetcherImpl>(
       request_params.TakeRegistrationEndpoint(),
+      request_params.TakeReferringOrigin(),
       request_params.TakeSessionIdentifier(), session_service, key_service,
       context, isolation_info, site_for_cookies, net_log_source,
       original_request_initiator, priority);

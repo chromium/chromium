@@ -4,11 +4,19 @@
 
 #include "net/device_bound_sessions/url_fetcher.h"
 
+#include <optional>
+#include <utility>
+
+#include "base/check.h"
 #include "base/feature_list.h"
 #include "net/base/features.h"
 #include "net/base/io_buffer.h"
+#include "net/base/net_errors.h"
+#include "net/base/url_util.h"
 #include "net/cert/x509_certificate.h"
+#include "net/device_bound_sessions/session_binding_utils.h"
 #include "net/device_bound_sessions/session_service.h"
+#include "net/http/http_request_headers.h"
 #include "net/ssl/ssl_cert_request_info.h"
 #include "net/ssl/ssl_private_key.h"
 #include "net/url_request/url_request_context.h"
@@ -56,6 +64,7 @@ constexpr int kBufferSize = 4096;
 
 URLFetcher::URLFetcher(const URLRequestContext* context,
                        GURL url,
+                       const url::Origin& referring_origin,
                        std::optional<net::NetLogSource> net_log_source,
                        bool is_refresh)
     : request_(context->CreateRequest(url,
@@ -67,7 +76,8 @@ URLFetcher::URLFetcher(const URLRequestContext* context,
                                       net::handles::kInvalidNetworkHandle,
                                       /*is_for_websockets=*/false,
                                       net_log_source)),
-      buf_(base::MakeRefCounted<IOBufferWithSize>(kBufferSize)) {
+      buf_(base::MakeRefCounted<IOBufferWithSize>(kBufferSize)),
+      referring_origin_(referring_origin) {
   if (is_refresh &&
       base::FeatureList::IsEnabled(
           net::features::
@@ -82,6 +92,42 @@ URLFetcher::~URLFetcher() = default;
 void URLFetcher::Start(base::OnceClosure complete_callback) {
   callback_ = std::move(complete_callback);
   request_->Start();
+}
+
+void URLFetcher::OnReceivedRedirect(URLRequest* request,
+                                    const RedirectInfo& redirect_info,
+                                    bool* defer_redirect) {
+  CHECK_EQ(request, request_.get());
+
+  // 1. Strict Protocol-Downgrade Defense:
+  // DBSC authentication state and cryptographic headers are strictly bound to
+  // authenticated, cryptographic origins. Redirects targeting unencrypted or
+  // non-trustworthy (HTTP) transports are rejected immediately to guarantee
+  // zero plaintext leakage of session cookies and tokens.
+  if (!IsSecure(redirect_info.new_url)) {
+    request->CancelWithError(net::ERR_UNSAFE_REDIRECT);
+    *defer_redirect = true;
+    return;
+  }
+
+  // 2. Fetch-Metadata Synchronization:
+  // Since `Sec-Fetch-Site` is dynamically calculated based on the relationship
+  // between the `referring_origin_` and the target URI, HTTP redirects across
+  // cross-origin boundaries render the initial header state stale.
+  // Directly append the updated 'Sec-Fetch-Site' assertion onto the active
+  // URLRequest before allowing the redirect execution chain to proceed.
+  std::string_view updated_sec_fetch_site =
+      SecFetchSiteForReferringOrigin(referring_origin_, redirect_info.new_url);
+  request->SetExtraRequestHeaderByName(kSecFetchSiteHeaderName,
+                                       updated_sec_fetch_site,
+                                       /*overwrite=*/true);
+
+  // 3. Synchronous Redirection Dispatch:
+  // For synchronous //net URLRequest delegates, setting `*defer_redirect =
+  // false` instructs the net::URLRequest state-machine to automatically forward
+  // the redirect wire request upon returning from this callback, absorbing all
+  // SetExtraRequestHeaderByName modifications.
+  *defer_redirect = false;
 }
 
 void URLFetcher::OnResponseStarted(URLRequest* request, int net_error) {

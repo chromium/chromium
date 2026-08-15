@@ -26,6 +26,7 @@ RegistrationRequestParam RegistrationRequestParam::CreateForRegistration(
     RegistrationFetcherParam&& fetcher_param) {
   return RegistrationRequestParam(
       fetcher_param.TakeRegistrationEndpoint(),
+      fetcher_param.TakeReferringOrigin(),
       /*session_identifier=*/std::nullopt, fetcher_param.TakeChallenge(),
       fetcher_param.TakeAuthorization(), fetcher_param.attestation_mode());
 }
@@ -34,7 +35,8 @@ RegistrationRequestParam RegistrationRequestParam::CreateForRegistration(
 RegistrationRequestParam RegistrationRequestParam::CreateForRefresh(
     const Session& session) {
   return RegistrationRequestParam(
-      session.refresh_url(), session.id().value(), session.cached_challenge(),
+      session.refresh_url(), session.origin(), session.id().value(),
+      session.cached_challenge(),
       /*authorization=*/std::nullopt, AttestationMode::kNone);
 }
 
@@ -44,19 +46,26 @@ RegistrationRequestParam RegistrationRequestParam::CreateForTesting(
     std::optional<std::string> session_identifier,
     std::optional<std::string> challenge,
     std::optional<std::string> authorization,
-    AttestationMode attestation_mode) {
+    AttestationMode attestation_mode,
+    std::optional<url::Origin> maybe_referring_origin) {
+  url::Origin referring_origin =
+      maybe_referring_origin ? std::move(*maybe_referring_origin)
+                             : url::Origin::Create(registration_endpoint);
   return RegistrationRequestParam(
-      registration_endpoint, std::move(session_identifier),
-      std::move(challenge), std::move(authorization), attestation_mode);
+      registration_endpoint, std::move(referring_origin),
+      std::move(session_identifier), std::move(challenge),
+      std::move(authorization), attestation_mode);
 }
 
 RegistrationRequestParam::RegistrationRequestParam(
     const GURL& registration_endpoint,
+    url::Origin referring_origin,
     std::optional<std::string> session_identifier,
     std::optional<std::string> challenge,
     std::optional<std::string> authorization,
     AttestationMode attestation_mode)
     : registration_endpoint_(registration_endpoint),
+      referring_origin_(std::move(referring_origin)),
       session_identifier_(std::move(session_identifier)),
       challenge_(std::move(challenge)),
       authorization_(std::move(authorization)),

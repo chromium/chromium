@@ -26,6 +26,12 @@ class Time;
 
 namespace net::device_bound_sessions {
 
+// Canonical W3C Fetch-Metadata header identifiers utilized by Device Bound
+// Session Credentials (DBSC) for outbound discovery and redirect-tracking.
+NET_EXPORT extern const char kSecFetchSiteHeaderName[];
+NET_EXPORT extern const char kSecFetchModeHeaderName[];
+NET_EXPORT extern const char kSecFetchDestHeaderName[];
+
 // Formats an attestation statement into a dictionary.
 base::DictValue NET_EXPORT CreateAttestationValue(
     const crypto::AttestationStatement& attestation_statement);
@@ -62,6 +68,14 @@ std::optional<std::string> NET_EXPORT AppendSignatureToHeaderAndPayload(
 // Returns true if `url`'s scheme is cryptographic or if it's localhost. This
 // uses the same definition of secure connections that cookies use.
 bool NET_EXPORT IsSecure(const GURL& url);
+
+// Translates a Chromium-native `OriginRelation` evaluated between a referring
+// origin and a destination URI into its W3C-standard HTTP string literal
+// representation
+// ("same-origin", "same-site", or "cross-site").
+NET_EXPORT std::string_view SecFetchSiteForReferringOrigin(
+    const url::Origin& referring_origin,
+    const GURL& target_url);
 
 // If `request` does not have a session usage listed for `session_key`, or if
 // that session usage is smaller than `new_usage`, then `new_usage` will be set

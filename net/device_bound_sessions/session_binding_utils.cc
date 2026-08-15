@@ -11,6 +11,7 @@
 #include "base/containers/span.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_view_util.h"
 #include "base/time/time.h"
@@ -31,7 +32,7 @@ namespace {
 
 // Source: JSON Web Signature and Encryption Algorithms
 // https://www.iana.org/assignments/jose/jose.xhtml
-std::string SignatureAlgorithmToString(
+std::string_view SignatureAlgorithmToString(
     crypto::SignatureVerifier::SignatureAlgorithm algorithm) {
   switch (algorithm) {
     case crypto::SignatureVerifier::ECDSA_SHA256:
@@ -192,8 +193,26 @@ std::optional<std::string> AppendSignatureToHeaderAndPayload(
       {header_and_payload, ".", Base64UrlEncode(as_string_view(signature))});
 }
 
+const char kSecFetchSiteHeaderName[] = "Sec-Fetch-Site";
+const char kSecFetchModeHeaderName[] = "Sec-Fetch-Mode";
+const char kSecFetchDestHeaderName[] = "Sec-Fetch-Dest";
+
 bool IsSecure(const GURL& url) {
   return url.SchemeIsCryptographic() || IsLocalhost(url);
+}
+
+std::string_view SecFetchSiteForReferringOrigin(
+    const url::Origin& referring_origin,
+    const GURL& target_url) {
+  switch (GetOriginRelation(target_url, referring_origin)) {
+    case OriginRelation::kSameOrigin:
+      return "same-origin";
+    case OriginRelation::kSameSite:
+      return "same-site";
+    case OriginRelation::kCrossSite:
+      return "cross-site";
+  }
+  NOTREACHED();
 }
 
 }  // namespace net::device_bound_sessions

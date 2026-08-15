@@ -64,6 +64,8 @@ TEST(RegistrationFetcherParamTest, BasicValid) {
   const auto& param = params[0];
   EXPECT_EQ(param.registration_endpoint(),
             GURL("https://www.example.com/startsession"));
+  EXPECT_EQ(param.referring_origin(),
+            url::Origin::Create(registration_request));
   EXPECT_THAT(param.supported_algos(),
               UnorderedElementsAre(ECDSA_SHA256, RSA_PKCS1_SHA256));
   EXPECT_EQ(param.challenge(), "c1");
@@ -471,6 +473,8 @@ TEST(RegistrationFetcherParamTest, FullUrl) {
   const auto& param = params[0];
   EXPECT_EQ(param.registration_endpoint(),
             GURL("https://accounts.example.com/startsession"));
+  EXPECT_EQ(param.referring_origin(),
+            url::Origin::Create(registration_request));
   EXPECT_THAT(param.supported_algos(),
               UnorderedElementsAre(ECDSA_SHA256, RSA_PKCS1_SHA256));
   EXPECT_EQ(param.challenge(), "c1");

@@ -16,6 +16,7 @@
 #include "net/http/http_response_headers.h"
 #include "net/http/structured_headers.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace net::device_bound_sessions {
 
@@ -59,9 +60,15 @@ class NET_EXPORT RegistrationFetcherParam {
       std::optional<std::string> provider_key = std::nullopt,
       std::optional<GURL> provider_url = std::nullopt,
       std::optional<Session::Id> provider_session_id = std::nullopt,
-      AttestationMode attestation_mode = AttestationMode::kNone);
+      AttestationMode attestation_mode = AttestationMode::kNone,
+      std::optional<url::Origin> maybe_referring_origin = std::nullopt);
 
   const GURL& registration_endpoint() const { return registration_endpoint_; }
+
+  // The origin of the response that supplied the registration header. May
+  // differ from the origin of `registration_endpoint()` when the header
+  // specified a different origin within the same site.
+  const url::Origin& referring_origin() const { return referring_origin_; }
 
   base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
   supported_algos() const {
@@ -87,6 +94,7 @@ class NET_EXPORT RegistrationFetcherParam {
   AttestationMode attestation_mode() const { return attestation_mode_; }
 
   GURL TakeRegistrationEndpoint() { return std::move(registration_endpoint_); }
+  url::Origin TakeReferringOrigin() { return std::move(referring_origin_); }
 
   std::optional<std::string> TakeChallenge() { return std::move(challenge_); }
 
@@ -97,6 +105,7 @@ class NET_EXPORT RegistrationFetcherParam {
  private:
   RegistrationFetcherParam(
       GURL registration_endpoint,
+      url::Origin referring_origin,
       std::vector<crypto::SignatureVerifier::SignatureAlgorithm>
           supported_algos,
       std::optional<std::string> challenge,
@@ -111,6 +120,7 @@ class NET_EXPORT RegistrationFetcherParam {
       const structured_headers::ParameterizedMember& session_registration);
 
   GURL registration_endpoint_;
+  url::Origin referring_origin_;
   std::vector<crypto::SignatureVerifier::SignatureAlgorithm> supported_algos_;
   std::optional<std::string> challenge_;
   std::optional<std::string> authorization_;

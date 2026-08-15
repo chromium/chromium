@@ -22,6 +22,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace net::device_bound_sessions {
 
@@ -334,6 +335,39 @@ TEST(SessionBindingUtilsTest,
           "inner_jws", RSA_PKCS1_SHA256, invalid_spki, "aud",
           {.format = kTpm, .statement = {1, 2, 3}, .signature = {4, 5, 6}}),
       std::nullopt);
+}
+
+TEST(SessionBindingUtilsTest, SecFetchSiteForReferringOrigin) {
+  // Validate that W3C Sec-Fetch-Site string-literal translation correctly
+  // resolves 'same-origin', 'same-site', and 'cross-site' origin relationships,
+  // including strictness against unencrypted/HTTP protocol-mismatches.
+  url::Origin referring_origin =
+      url::Origin::Create(GURL("https://www.example.com"));
+
+  // 1. Same-Origin: Matching cryptographic scheme, eTLD+1, and subdomain.
+  EXPECT_EQ(
+      SecFetchSiteForReferringOrigin(
+          referring_origin, GURL("https://www.example.com/path/to/resource")),
+      "same-origin");
+
+  // 2. Same-Site: Matching cryptographic scheme and eTLD+1, but differing
+  // subdomain boundaries.
+  EXPECT_EQ(
+      SecFetchSiteForReferringOrigin(
+          referring_origin, GURL("https://subdomain.example.com/endpoint")),
+      "same-site");
+
+  // 3. Cross-Site: Disjoint registrable domain (eTLD+1).
+  EXPECT_EQ(SecFetchSiteForReferringOrigin(
+                referring_origin, GURL("https://www.other-origin.org/")),
+            "cross-site");
+
+  // 4. Cryptographic Protocol Mismatch: HTTPS referrer targeting an unencrypted
+  // HTTP endpoint yields a cross-site classification due to SchemefulSite
+  // isolation.
+  EXPECT_EQ(SecFetchSiteForReferringOrigin(
+                referring_origin, GURL("http://www.example.com/insecure")),
+            "cross-site");
 }
 
 }  // namespace net::device_bound_sessions
