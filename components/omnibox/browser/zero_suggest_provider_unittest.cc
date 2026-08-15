@@ -28,6 +28,7 @@
 #include "components/omnibox/browser/mock_autocomplete_provider_client.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
+#include "components/omnibox/browser/suggest_inventory_fallback_utils.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
 #include "components/omnibox/browser/zero_suggest_cache_service.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
@@ -2463,8 +2464,9 @@ TEST_F(ZeroSuggestProviderTest,
 
   EXPECT_TRUE(base::test::RunUntil([&] { return provider_->done(); }));
 
-  // Should contain 3 fallback matches.
-  EXPECT_EQ(provider_->matches().size(), 3u);
+  // Should contain fallback matches.
+  EXPECT_EQ(provider_->matches().size(),
+            omnibox::kDefaultFallbackNumSuggestions);
   for (const auto& match : provider_->matches()) {
     EXPECT_EQ(match.type, AutocompleteMatchType::SEARCH_SUGGEST);
     EXPECT_FALSE(match.contents.empty());
