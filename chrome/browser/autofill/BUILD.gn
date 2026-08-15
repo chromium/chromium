@@ -327,9 +327,13 @@ if (!is_android) {
 
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-    sources = [ "autofill_interactive_uitest.cc" ]
+    sources = [
+      "at_memory_interactive_uitest.cc",
+      "autofill_interactive_uitest.cc",
+    ]
 
     deps = [
+      ":autofill",
       ":test_support",
       ":test_support_ui",
       "//base",
