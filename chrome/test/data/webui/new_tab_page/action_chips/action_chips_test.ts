@@ -6,7 +6,7 @@ import 'chrome://new-tab-page/lazy_load.js';
 
 import {ActionChipsApiProxyImpl, ActionChipsRetrievalState} from 'chrome://new-tab-page/lazy_load.js';
 import type {ActionChipClickDetail, ActionChipsElement} from 'chrome://new-tab-page/lazy_load.js';
-import {ActionChipsHandlerRemote, ActionChipsPageCallbackRouter as PageCallbackRouter, IconType, QueryActionOverride, SearchboxOverride, SuggestInventory} from 'chrome://new-tab-page/new_tab_page.js';
+import {ActionChipsHandlerRemote, ActionChipsPageCallbackRouter as PageCallbackRouter, IconType, InputSource, QueryActionOverride, SearchboxOverride, SuggestInventory} from 'chrome://new-tab-page/new_tab_page.js';
 import type {ActionChip, ActionChipsPageRemote as PageRemote, TabInfo} from 'chrome://new-tab-page/new_tab_page.js';
 import {WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import type {TabUpload} from 'chrome://resources/cr_components/composebox/common.js';
@@ -368,6 +368,42 @@ suite('NewTabPageActionChipsTest', () => {
          preferredInventory: SuggestInventory.kConversationStarters,
          queryActionOverride: QueryActionOverride.kPaste,
          searchboxOverride: SearchboxOverride.kComposebox,
+       },
+       suggestion: '',
+     },
+     {
+       name: 'brainstorm',
+       iconType: IconType.kLightbulb,
+       iconClass: '.icon-type-lightbulb',
+       fuseboxAction: {
+         preferredInventory: SuggestInventory.kBrainstorm,
+       },
+       suggestion: '',
+     },
+     {
+       name: 'attach file',
+       iconType: IconType.kAttachFile,
+       iconClass: '.icon-type-attach-file',
+       fuseboxAction: {
+         preselectedInputSource: InputSource.kInputSourceGallery,
+       },
+       suggestion: '',
+     },
+     {
+       name: 'help me learn',
+       iconType: IconType.kSchool,
+       iconClass: '.icon-type-school',
+       fuseboxAction: {
+         preferredInventory: SuggestInventory.kHelpMeLearn,
+       },
+       suggestion: '',
+     },
+     {
+       name: 'write or edit',
+       iconType: IconType.kInkPen,
+       iconClass: '.icon-type-ink-pen',
+       fuseboxAction: {
+         preferredInventory: SuggestInventory.kWriteOrEdit,
        },
        suggestion: '',
      },

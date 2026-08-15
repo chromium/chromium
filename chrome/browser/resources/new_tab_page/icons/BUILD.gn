@@ -12,6 +12,7 @@ generate_grd("build_grdp") {
   grd_prefix = "new_tab_page"
   out_grd = "$target_gen_dir/resources.grdp"
   input_files = [
+    "attach_file.svg",
     "chevron.svg",
     "copy.svg",
     "drag_drop_illustration.svg",
@@ -20,10 +21,13 @@ generate_grd("build_grdp") {
     "generic_globe.svg",
     "google_logo.svg",
     "info.svg",
+    "ink_pen.svg",
+    "lightbulb.svg",
     "link.svg",
     "mail.svg",
     "mic.svg",
     "offline_dialog.svg",
+    "school.svg",
     "share_unfilled.svg",
     "twitter.svg",
     "banana.svg",

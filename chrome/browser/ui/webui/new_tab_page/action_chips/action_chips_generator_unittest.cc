@@ -310,7 +310,7 @@ const ActionChipPtr& GetStaticStarterChip() {
 
 MATCHER(BrainstormChip, "") {
   return arg && arg->suggest_template_info &&
-         arg->suggest_template_info->type_icon == IconType::kDraftSpark &&
+         arg->suggest_template_info->type_icon == IconType::kLightbulb &&
          arg->suggest_template_info->primary_text &&
          arg->suggest_template_info->primary_text->text ==
              l10n_util::GetStringUTF8(IDS_NTP_ACTION_CHIP_BRAINSTORM_HEADING) &&
@@ -325,7 +325,7 @@ MATCHER(BrainstormChip, "") {
 
 MATCHER(LearnChip, "") {
   return arg && arg->suggest_template_info &&
-         arg->suggest_template_info->type_icon == IconType::kDraftSpark &&
+         arg->suggest_template_info->type_icon == IconType::kSchool &&
          arg->suggest_template_info->primary_text &&
          arg->suggest_template_info->primary_text->text ==
              l10n_util::GetStringUTF8(
@@ -341,7 +341,7 @@ MATCHER(LearnChip, "") {
 
 MATCHER(WriteChip, "") {
   return arg && arg->suggest_template_info &&
-         arg->suggest_template_info->type_icon == IconType::kDraftSpark &&
+         arg->suggest_template_info->type_icon == IconType::kInkPen &&
          arg->suggest_template_info->primary_text &&
          arg->suggest_template_info->primary_text->text ==
              l10n_util::GetStringUTF8(IDS_NTP_ACTION_CHIP_WRITE_EDIT_HEADING) &&
@@ -1583,6 +1583,7 @@ TEST(ActionChipsGeneratorTest, SteadyStateFallbackChipsHavePreferredInventory) {
 
   // Brainstorm chip.
   EXPECT_TRUE(actual[0]->suggestion.empty());
+  EXPECT_EQ(actual[0]->suggest_template_info->type_icon, IconType::kLightbulb);
   ASSERT_TRUE(actual[0]->suggest_template_info->fusebox_action);
   EXPECT_EQ(
       actual[0]->suggest_template_info->fusebox_action->preferred_inventory,
@@ -1590,6 +1591,7 @@ TEST(ActionChipsGeneratorTest, SteadyStateFallbackChipsHavePreferredInventory) {
 
   // Help me learn chip.
   EXPECT_TRUE(actual[1]->suggestion.empty());
+  EXPECT_EQ(actual[1]->suggest_template_info->type_icon, IconType::kSchool);
   ASSERT_TRUE(actual[1]->suggest_template_info->fusebox_action);
   EXPECT_EQ(
       actual[1]->suggest_template_info->fusebox_action->preferred_inventory,
@@ -1597,6 +1599,7 @@ TEST(ActionChipsGeneratorTest, SteadyStateFallbackChipsHavePreferredInventory) {
 
   // Write or edit chip.
   EXPECT_TRUE(actual[2]->suggestion.empty());
+  EXPECT_EQ(actual[2]->suggest_template_info->type_icon, IconType::kInkPen);
   ASSERT_TRUE(actual[2]->suggest_template_info->fusebox_action);
   EXPECT_EQ(
       actual[2]->suggest_template_info->fusebox_action->preferred_inventory,
