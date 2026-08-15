@@ -843,6 +843,12 @@ BASE_DECLARE_FEATURE(kFullscreenRefactoring);
 // Returns true if the FullscreenRefactoring feature or ChromeNext is enabled.
 bool IsFullscreenRefactoringEnabled();
 
+// Enables the FullscreenEasedTransitions feature.
+BASE_DECLARE_FEATURE(kFullscreenEasedTransitions);
+
+// Returns true if the FullscreenEasedTransitions feature is enabled.
+bool IsFullscreenEasedTransitionsEnabled();
+
 // Enables the AskAboutThisPage feature.
 BASE_DECLARE_FEATURE(kAskAboutThisPage);
 

@@ -11,9 +11,15 @@
 #import "base/functional/callback_helpers.h"
 #import "base/metrics/histogram_functions.h"
 #import "ios/chrome/browser/fullscreen/public/fullscreen_metrics.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/common/material_timing.h"
 
 namespace {
+// The nominal scroll distance (in points) that maps to a full (0.0 to 1.0)
+// transition. In practice, scrolling past X% of this distance triggers the
+// animated transition to complete the rest.
+static constexpr CGFloat kEasedTransitionScrollDistance = 250.0;
+
 // Updates the fractional `progress` of the fullscreen UI layer by interpreting
 // a `scroll` distance. Evaluates the `scroll` as a percentage of the total
 // compressible space (`delta`) and clamps the result between 0.0 (fullscreen)
@@ -52,16 +58,25 @@ void FullscreenBrowserAgent::IncrementalScroll(CGFloat amount, PassKey) {
     return;
   }
 
+  if (IsFullscreenEasedTransitionsEnabled() && is_animating_) {
+    return;
+  }
+
   CGFloat pre_scroll_top_progress = top_progress_;
   CGFloat pre_scroll_bottom_progress = bottom_progress_;
 
-  CGFloat top_delta = max_insets_.top - min_insets_.top;
-  UpdateProgress(top_progress_, amount, top_delta);
-  CGFloat bottom_delta = max_insets_.bottom - min_insets_.bottom;
-  if (bottom_delta > 0) {
-    UpdateProgress(bottom_progress_, amount, bottom_delta);
-  } else {
+  if (IsFullscreenEasedTransitionsEnabled()) {
+    UpdateProgress(top_progress_, amount, kEasedTransitionScrollDistance);
     bottom_progress_ = top_progress_;
+  } else {
+    CGFloat top_delta = max_insets_.top - min_insets_.top;
+    UpdateProgress(top_progress_, amount, top_delta);
+    CGFloat bottom_delta = max_insets_.bottom - min_insets_.bottom;
+    if (bottom_delta > 0) {
+      UpdateProgress(bottom_progress_, amount, bottom_delta);
+    } else {
+      bottom_progress_ = top_progress_;
+    }
   }
 
   if (pre_scroll_top_progress == top_progress_ &&
@@ -115,17 +130,26 @@ void FullscreenBrowserAgent::UpdateProgressAndBroadcast(
   bottom_progress_ = bottom_progress;
 
   if (animated) {
-    base::TimeDelta duration = base::Seconds(kMaterialDuration1);
+    is_animating_ = true;
+    base::TimeDelta duration = IsFullscreenEasedTransitionsEnabled()
+                                   ? base::Seconds(kMaterialDuration3)
+                                   : base::Seconds(kMaterialDuration1);
     auto update_state = base::CallbackToBlock(
         base::BindOnce(&FullscreenBrowserAgent::NotifyObserversOfUpdatedState,
                        weak_ptr_factory_.GetWeakPtr(), duration));
     auto completion_block = base::CallbackToBlock(
         base::BindOnce(&FullscreenBrowserAgent::AnimationDidComplete,
                        weak_ptr_factory_.GetWeakPtr(), transition));
-    [UIView animateWithDuration:kMaterialDuration1
+    [UIView animateWithDuration:duration.InSecondsF()
+                          delay:0.0
+                        options:UIViewAnimationOptionAllowUserInteraction
                      animations:update_state
                      completion:completion_block];
   } else {
+    is_animating_ = false;
+    settled_state_ = (transition == FullscreenTransition::kEnterFullscreen)
+                         ? FullscreenState::kUICollapsed
+                         : FullscreenState::kUIExpanded;
     NotifyObserversOfUpdatedState();
     NotifyFullscreenDidTransition(transition);
   }
@@ -164,7 +188,11 @@ void FullscreenBrowserAgent::NotifyObserversOfUpdatedState(
 void FullscreenBrowserAgent::AnimationDidComplete(
     FullscreenTransition transition,
     bool finished) {
+  is_animating_ = false;
   if (finished) {
+    settled_state_ = (transition == FullscreenTransition::kEnterFullscreen)
+                         ? FullscreenState::kUICollapsed
+                         : FullscreenState::kUIExpanded;
     NotifyFullscreenDidTransition(transition);
   }
 }

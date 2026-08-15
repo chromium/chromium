@@ -813,6 +813,11 @@ inline constexpr char kForceStartupSigninPromoDescription[] =
     "When enabled, the startup sign-in promo is always displayed when starting "
     "Chrome.";
 
+inline constexpr char kFullscreenEasedTransitionsName[] =
+    "FullscreenEasedTransitions";
+inline constexpr char kFullscreenEasedTransitionsDescription[] =
+    "Enables eased, animated threshold transitions into and out of fullscreen.";
+
 inline constexpr char kFullscreenRefactoringName[] = "FullscreenRefactoring";
 inline constexpr char kFullscreenRefactoringDescription[] =
     "Enables the FullscreenRefactoring feature.";

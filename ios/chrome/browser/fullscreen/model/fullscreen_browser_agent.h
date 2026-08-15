@@ -71,6 +71,12 @@ class FullscreenBrowserAgent : public BrowserUserData<FullscreenBrowserAgent> {
   CGFloat top_progress() const { return top_progress_; }
   CGFloat bottom_progress() const { return bottom_progress_; }
 
+  // Returns whether an animated transition is currently in progress.
+  bool is_animating() const { return is_animating_; }
+
+  // Returns the last settled fullscreen state (kUIExpanded or kUICollapsed).
+  FullscreenState settled_state() const { return settled_state_; }
+
   // Returns the duration of the current animation, if this is called inside of
   // an animation block while animating in or out of Fullscreen. Otherwise
   // returns zero.
@@ -171,6 +177,12 @@ class FullscreenBrowserAgent : public BrowserUserData<FullscreenBrowserAgent> {
   // True if the agent is currently broadcasting WillUpdateState. Used to
   // ensure AddObscuredInset() is only called a the correct time.
   bool updating_insets_ = false;
+
+  // True if an animated fullscreen transition is currently in progress.
+  bool is_animating_ = false;
+
+  // The last settled fullscreen state (kUIExpanded or kUICollapsed).
+  FullscreenState settled_state_ = FullscreenState::kUIExpanded;
 
   // The animation duration for the current transition.
   base::TimeDelta animation_duration_ = base::TimeDelta();

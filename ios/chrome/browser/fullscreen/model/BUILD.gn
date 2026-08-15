@@ -15,6 +15,7 @@ source_set("model") {
     "//ios/chrome/browser/fullscreen/public:metrics",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/common:timing",
   ]
 }

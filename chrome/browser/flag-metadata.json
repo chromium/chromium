@@ -5269,6 +5269,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "fullscreen-eased-transitions",
+    "owners": [ "scottyoder@google.com", "bling-pandamonium@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "fullscreen-refactoring",
     "owners": [ "scottyoder@google.com", "meridian@google.com" ],
     "expiry_milestone": 152
