@@ -217,6 +217,7 @@ source_set("browser_tests") {
         "//chrome/browser/sync",
         "//chrome/browser/ui/browser_window",
         "//chrome/browser/ui/signin",
+        "//chrome/browser/ui/views/profiles:avatar_toolbar_button",
         "//chrome/browser/ui/webui/signin",
         "//chrome/browser/ui/webui/signin:login_ui_service",
         "//chrome/browser/ui/webui/signin:test_support_ui",

@@ -1326,7 +1326,6 @@ static_library("ui") {
         # the following headers get modularized:
         # - c/b/ui/browser.h
         # - c/b/ui/views/frame/browser_view.h
-        # - c/b/ui/views/toolbar/avatar_toolbar_button_interface.h
         "//chrome/browser/ui/views/search_ai_mode:impl",
       ]
     }
@@ -2762,11 +2761,6 @@ static_library("ui") {
       "views/javascript_tab_modal_dialog_view_views.cc",
       "views/javascript_tab_modal_dialog_view_views.h",
       "views/login_handler_views.cc",
-      "views/profiles/avatar_toolbar_button.cc",
-      "views/profiles/avatar_toolbar_button.h",
-      "views/profiles/avatar_toolbar_button_state_manager.cc",
-      "views/profiles/avatar_toolbar_button_state_manager.h",
-      "views/profiles/avatar_toolbar_button_types.h",
       "views/session_crashed_bubble_view.cc",
       "views/session_crashed_bubble_view.h",
       "views/simple_web_view_dialog.cc",
@@ -2857,8 +2851,6 @@ static_library("ui") {
       "views/tabs/z_orderable_tab_container_element.h",
       "views/task_manager_view.cc",
       "views/task_manager_view.h",
-      "views/toolbar/avatar_toolbar_button_interface.cc",
-      "views/toolbar/avatar_toolbar_button_interface.h",
       "views/upgrade_notification_controller.cc",
       "views/upgrade_notification_controller.h",
       "views/web_apps/create_shortcut_confirmation_view.cc",
@@ -3054,6 +3046,8 @@ static_library("ui") {
       "//chrome/browser/ui/views/permissions:impl",
       "//chrome/browser/ui/views/permissions/chip",
       "//chrome/browser/ui/views/permissions/chip:impl",
+      "//chrome/browser/ui/views/profiles:avatar_toolbar_button",
+      "//chrome/browser/ui/views/profiles:avatar_toolbar_button_impl",
       "//chrome/browser/ui/views/promos",
       "//chrome/browser/ui/views/qrcode_generator",
       "//chrome/browser/ui/views/select_audio_output",
@@ -3401,6 +3395,10 @@ static_library("ui") {
       # c/b/ui/views/frame/browser_view.h
       # c/b/ui/views/frame/contents_web_view.h
       "//chrome/browser/ui/views/permissions:impl",
+
+      # TODO(crbug.com/353332589): Remove this circular dependency when
+      # views/profiles/profile_menu_coordinator.h gets modularized.
+      "//chrome/browser/ui/views/profiles:avatar_toolbar_button_impl",
     ]
 
     if (is_linux) {

@@ -30,6 +30,7 @@ source_set("impl") {
     "//chrome/browser/ui/signin",
     "//chrome/browser/ui/views:layout_provider",
     "//chrome/browser/ui/views/frame:toolbar_button_provider",
+    "//chrome/browser/ui/views/toolbar",
   ]
 }
 
@@ -43,6 +44,7 @@ source_set("browser_tests") {
     "//chrome/browser/ui/test:dialog",
     "//chrome/browser/ui/views/frame:toolbar_button_provider",
     "//chrome/browser/ui/views/profiles:profiles_pixel_test_utils",
+    "//chrome/browser/ui/views/toolbar",
     "//chrome/test:test_support",
   ]
 }
