@@ -670,6 +670,30 @@ struct GetWalletReminderNoticeResponseDetails {
   bool has_user_been_shown_reminder = false;
 };
 
+// Information required to make a RecordLegalReminderAcknowledgment request.
+struct RecordLegalReminderAcknowledgmentRequestDetails {
+  RecordLegalReminderAcknowledgmentRequestDetails();
+  RecordLegalReminderAcknowledgmentRequestDetails(
+      const RecordLegalReminderAcknowledgmentRequestDetails& other);
+  RecordLegalReminderAcknowledgmentRequestDetails& operator=(
+      const RecordLegalReminderAcknowledgmentRequestDetails& other);
+  RecordLegalReminderAcknowledgmentRequestDetails(
+      RecordLegalReminderAcknowledgmentRequestDetails&&);
+  RecordLegalReminderAcknowledgmentRequestDetails& operator=(
+      RecordLegalReminderAcknowledgmentRequestDetails&&);
+  ~RecordLegalReminderAcknowledgmentRequestDetails();
+
+  // `app_locale` is the Chrome locale.
+  std::string app_locale;
+  // The billing customer number for the account this request is sent to.
+  int64_t billing_customer_number = 0;
+  // The billable service number defined to distinguish this request.
+  int billable_service_number = 0;
+  // An opaque token that will be sent back to the Payments server after the
+  // user is shown the reminder.
+  std::string legal_message_token;
+};
+
 }  // namespace autofill::payments
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_PAYMENTS_REQUEST_DETAILS_H_

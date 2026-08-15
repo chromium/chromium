@@ -263,6 +263,10 @@ class PaymentsNetworkInterfaceTest : public PaymentsNetworkInterfaceTestBase,
     wallet_reminder_notice_response_details_ = response_details;
   }
 
+  void OnDidRecordLegalReminderAcknowledgment(PaymentsRpcResult result) {
+    result_ = result;
+  }
+
  protected:
   std::unique_ptr<PaymentsNetworkInterface> payments_network_interface_;
 
@@ -2165,6 +2169,58 @@ TEST_P(PaymentsNetworkInterfaceTestWithPaymentsRpcResultParam,
     EXPECT_TRUE(
         wallet_reminder_notice_response_details().has_user_been_shown_reminder);
   }
+}
+
+// Test RecordLegalReminderAcknowledgment() with all the different
+// PaymentsRpcResults.
+TEST_P(PaymentsNetworkInterfaceTestWithPaymentsRpcResultParam,
+       RecordLegalReminderAcknowledgment) {
+  RecordLegalReminderAcknowledgmentRequestDetails request_details;
+  request_details.app_locale = "en-US";
+  request_details.billing_customer_number = 555666777888;
+  request_details.billable_service_number = 1234;
+  request_details.legal_message_token = "some_token";
+
+  payments_network_interface_->RecordLegalReminderAcknowledgment(
+      request_details,
+      base::BindOnce(
+          &PaymentsNetworkInterfaceTest::OnDidRecordLegalReminderAcknowledgment,
+          GetWeakPtr()));
+  IssueOAuthToken();
+
+  PaymentsRpcResult result = GetParam();
+  switch (result) {
+    case PaymentsRpcResult::kSuccess:
+      ReturnResponse(payments_network_interface_.get(), net::HTTP_OK, "{}");
+      break;
+    case PaymentsRpcResult::kTryAgainFailure:
+      ReturnResponse(payments_network_interface_.get(), net::HTTP_OK,
+                     "{ \"error\": { \"code\": \"INTERNAL\", "
+                     "\"api_error_reason\": \"ANYTHING_ELSE\"} }");
+      break;
+    case PaymentsRpcResult::kPermanentFailure:
+      ReturnResponse(payments_network_interface_.get(), net::HTTP_OK,
+                     "{ \"error\": { \"code\": \"ANYTHING_ELSE\" } }");
+      break;
+    case PaymentsRpcResult::kNetworkError:
+      ReturnResponse(payments_network_interface_.get(),
+                     net::HTTP_REQUEST_TIMEOUT, "");
+      break;
+    case PaymentsRpcResult::kClientSideTimeout:
+      ReturnResponse(payments_network_interface_.get(), net::ERR_TIMED_OUT, "");
+      break;
+    case PaymentsRpcResult::kVcnRetrievalTryAgainFailure:
+    case PaymentsRpcResult::kVcnRetrievalPermanentFailure:
+    case PaymentsRpcResult::kNone:
+      NOTREACHED();
+  }
+
+  AssertIncludedInRequest("\"language_code\":\"en-US\"");
+  AssertIncludedInRequest("\"external_customer_id\":\"555666777888\"");
+  AssertIncludedInRequest("\"billable_service\":1234");
+  AssertIncludedInRequest("\"legal_message_token\":\"some_token\"");
+
+  EXPECT_EQ(result, result_);
 }
 
 }  // namespace

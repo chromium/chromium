@@ -253,6 +253,12 @@ class PaymentsNetworkInterface : public PaymentsNetworkInterfaceBase {
                               const GetWalletReminderNoticeResponseDetails&)>
           callback);
 
+  // Records the user acknowledgment after the Wallet reminder notice is shown.
+  virtual void RecordLegalReminderAcknowledgment(
+      const RecordLegalReminderAcknowledgmentRequestDetails& request_details,
+      base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult)>
+          callback);
+
  private:
   friend class PaymentsNetworkInterfaceTest;
 };

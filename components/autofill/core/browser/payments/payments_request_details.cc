@@ -354,4 +354,21 @@ GetWalletReminderNoticeResponseDetails::operator=(
 GetWalletReminderNoticeResponseDetails::
     ~GetWalletReminderNoticeResponseDetails() = default;
 
+RecordLegalReminderAcknowledgmentRequestDetails::
+    RecordLegalReminderAcknowledgmentRequestDetails() = default;
+RecordLegalReminderAcknowledgmentRequestDetails::
+    RecordLegalReminderAcknowledgmentRequestDetails(
+        const RecordLegalReminderAcknowledgmentRequestDetails&) = default;
+RecordLegalReminderAcknowledgmentRequestDetails&
+RecordLegalReminderAcknowledgmentRequestDetails::operator=(
+    const RecordLegalReminderAcknowledgmentRequestDetails& other) = default;
+RecordLegalReminderAcknowledgmentRequestDetails::
+    RecordLegalReminderAcknowledgmentRequestDetails(
+        RecordLegalReminderAcknowledgmentRequestDetails&&) = default;
+RecordLegalReminderAcknowledgmentRequestDetails&
+RecordLegalReminderAcknowledgmentRequestDetails::operator=(
+    RecordLegalReminderAcknowledgmentRequestDetails&&) = default;
+RecordLegalReminderAcknowledgmentRequestDetails::
+    ~RecordLegalReminderAcknowledgmentRequestDetails() = default;
+
 }  // namespace autofill::payments
