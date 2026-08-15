@@ -245,7 +245,7 @@ views::ProposedLayout TabStripViewLayout::CalculateVerticalLayout(
                                      separator_bounds);
 
   // Place the unpinned container using the entire available width, we do not
-  // inset the x value by |region_horizontal_padding| here because, when the tab
+  // inset the x value by `region_horizontal_padding` here because, when the tab
   // strip is collapsed, tab groups need to draw the group colored line in this
   // space.
   gfx::Rect unpinned_container_bounds(0, y, size_bounds.width().value(),

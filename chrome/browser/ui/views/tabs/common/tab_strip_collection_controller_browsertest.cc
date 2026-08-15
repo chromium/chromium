@@ -391,9 +391,9 @@ IN_PROC_BROWSER_TEST_P(TabGroupHoverCardTest,
       hover_card_controller()->hover_card_for_testing();
   ASSERT_TRUE(bubble);
 
-  // There should be 2 excess tabs. Note that the group has |n_tabs+1| tabs
+  // There should be 2 excess tabs. Note that the group has `n_tabs + 1` tabs
   // because of the initial tab made in the browser, and the call to
-  // |GroupAllUngroupedTabs|.
+  // `GroupAllUngroupedTabs`.
   std::u16string expected_footer = l10n_util::GetStringFUTF16(
       IDS_TAB_GROUPS_HOVER_CARD_FOOTER, base::NumberToString16(2));
   EXPECT_EQ(bubble->GetGroupFooterViewForTesting()->GetText(), expected_footer);

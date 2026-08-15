@@ -29,7 +29,7 @@ struct TabCardData {
   FadeLabelViewData domain_data;
   AlertFooterRowData alert_data;
 
-  // The |CollaborationMessagingRowData| needs the Widget from the
+  // The `CollaborationMessagingRowData` needs the Widget from the
   // TabHoverCardBubbleView so we make it in that class instead of here.
   gfx::Image collaboration_avatar;
   bool show_collaboration_messaging = false;
@@ -69,7 +69,7 @@ class HoverCardAnchorTarget {
   // its hover card.
   virtual bool NeedsToShowThumbnail() const = 0;
 
-  // Determines if |this| is a valid target.
+  // Determines if `this` is a valid target.
   virtual bool IsValidHoverCardTarget() const = 0;
 
   const CardData& data() const { return hover_card_data_; }

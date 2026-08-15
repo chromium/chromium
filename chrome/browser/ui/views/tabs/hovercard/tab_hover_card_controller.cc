@@ -89,7 +89,7 @@ base::TimeDelta GetShowDelay(BrowserWindowInterface* browser,
   // Delay is calculated as a logarithmic scale and bounded by a minimum width
   // based on the width of a pinned tab and a maximum of the standard width.
   // Once we reach standard width for the tab, we add an additional
-  // |max_width_additional_delay| delay to the computed delay value since the
+  // `max_width_additional_delay` delay to the computed delay value since the
   // standard width should provide enough information of the tab reducing the
   // overall value provided by the hovercard.
   //

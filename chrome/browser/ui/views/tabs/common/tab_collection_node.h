@@ -76,7 +76,7 @@ class TabCollectionNode {
   // Returns nullptr if no such node exists.
   TabCollectionNode* GetChildNodeOfType(const Type type);
 
-  // Creates a new child and adds it at model_index. If |perform_initialization|
+  // Creates a new child and adds it at model_index. If `perform_initialization`
   // is true, then the entire subtree of the node data will be constructed as
   // well, if not, then only the view for the child is constructed and added.
   void AddNewChild(base::PassKey<TabCollectionNode> pass_key,

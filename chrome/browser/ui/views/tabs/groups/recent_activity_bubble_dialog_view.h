@@ -100,7 +100,7 @@ class RecentActivityBubbleDialogView : public LocationBarBubbleDelegateView,
   // 3-dot menu button, and the close button.
   void CreateTitleView();
 
-  // Displays a context menu anchored to |source|, allowing users to access
+  // Displays a context menu anchored to `source`, allowing users to access
   // additional actions like "See All Activity".
   void ShowOptionsMenu(views::Button* source);
 

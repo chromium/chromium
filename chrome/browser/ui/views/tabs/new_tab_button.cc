@@ -171,7 +171,7 @@ void NewTabButtonMenuModel::AddNewTabInGroupItem() {
       menu_item_label = l10n_util::GetPluralStringFUTF16(
           IDS_NEW_TAB_IN_GROUP_NO_NAME, num_tabs);
     } else {
-      // "New tab in |group_name|".
+      // "New tab in `group_name`.".
       menu_item_label =
           l10n_util::GetStringFUTF16(IDS_NEW_TAB_IN_GROUP, group_name);
     }

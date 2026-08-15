@@ -499,7 +499,7 @@ views::View* TabStripView::AddScrollViewContents(
     unpinned_tabs_container_view_ = container;
     return unpinned_tabs_scroll_view_->SetContents(std::move(view));
   }
-  // |view| should only ever be UnpinnedTabContainerView or
+  // `view` should only ever be UnpinnedTabContainerView or
   // PinnedTabContainerView.
   auto* container = views::AsViewClass<PinnedTabContainerView>(view.get());
   CHECK(container);
@@ -518,7 +518,7 @@ void TabStripView::RemoveScrollViewContents(views::View* view) {
     pinned_tabs_scroll_view_->SetContents(nullptr);
     return;
   }
-  // |view| should only ever be UnpinnedTabContainerView or
+  // `view` should only ever be UnpinnedTabContainerView or
   // PinnedTabContainerView.
   NOTREACHED();
 }

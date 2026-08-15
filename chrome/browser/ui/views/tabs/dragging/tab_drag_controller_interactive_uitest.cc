@@ -435,8 +435,8 @@ class BrowserChangeWaiter : public BrowserCollectionObserver {
       return;
     }
     // Browser addition/removal callbacks can be called multiple times, calling
-    // |Quit()| each time.
-    // So make sure that the |closure_| still gets to run if multiple |Quit()|
+    // `Quit()` each time.
+    // So make sure that the `closure_` still gets to run if multiple `Quit()`
     // calls happen in quick succession.
     quit_called_ = true;
     if (closure_) {
@@ -1112,7 +1112,7 @@ class DetachToBrowserTabDragControllerTest
     observer.Wait();
   }
 
-  // Executes |task| once the |new_browser| exists in the BrowserCollection and
+  // Executes `task` once the `new_browser` exists in the BrowserCollection and
   // its widget is visible. Effectively guarantees execution safely after
   // TabDragController's VisibilityWaiter has exited. A generic asynchronous
   // browser waiter that intercepts OnBrowserCreated and queues a

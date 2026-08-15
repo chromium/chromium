@@ -33,7 +33,7 @@ constexpr int kThumbTrailingPadding = 4;
 
 RoundedScrollBar::Thumb::Thumb(RoundedScrollBar* scroll_bar)
     : views::BaseScrollBarThumb(scroll_bar), scroll_bar_(scroll_bar) {
-  // |scroll_bar| isn't done being constructed; it's not safe to do anything
+  // `scroll_bar` isn't done being constructed; it's not safe to do anything
   // that might reference it yet.
 }
 
