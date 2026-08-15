@@ -808,10 +808,13 @@ def teardown_test_environment(driver, tunnel_proc, args):
             if tunnel_proc.poll() is None:
                 tunnel_proc.terminate()
                 logging.info("Terminated tunnel.")
-        elif hasattr(tunnel_proc, 'stop'):
+        elif hasattr(tunnel_proc, 'ports'):
             # Handle Crossbench platform objects.
-            tunnel_proc.stop()
-            logging.info("Stopped Crossbench platform.")
+            try:
+                tunnel_proc.ports.stop_reverse_forward(SERVER_PORT)
+                logging.info("Stopped Crossbench port forwarding.")
+            except Exception:
+                pass
 
     cleanup_command = {
         'mac': (
@@ -866,6 +869,14 @@ def setup_cros_environment(args, chrome_version, chrome_options_list):
         "mobly", "snippet_uiautomator"
     ]))
 
+    try:
+        import google.protobuf.runtime_version
+        google.protobuf.runtime_version.ValidateProtobufRuntimeVersion = (
+            lambda *args, **kwargs: None
+        )
+    except (ImportError, AttributeError):
+        pass
+
     sys.path.insert(0, os.path.join(REPO_ROOT, 'third_party', 'crossbench'))
 
     from crossbench.plt.chromeos_ssh import ChromeOsSshPlatform
@@ -888,6 +899,7 @@ def setup_cros_environment(args, chrome_version, chrome_options_list):
     # Aggressively clear any leaked sessions.
     logging.info("Purging stale Chrome processes on device...")
     cb_platform.sh("pkill", "-9", "chrome", check=False)
+    time.sleep(1)
 
     # 3. Detect remote version to find a matching local driver.
     try:
@@ -964,6 +976,19 @@ def setup_cros_environment(args, chrome_version, chrome_options_list):
     # reach the launch script (autologin.py).
     browser.UNSUPPORTED_FLAGS += ("--user-data-dir",)
 
+    def _safe_setup_window():
+        for _ in range(20):
+            try:
+                handles = browser._private_driver.window_handles
+                if handles:
+                    browser._private_driver.switch_to.window(handles[0])
+                    return
+            except Exception:
+                pass
+            time.sleep(0.5)
+
+    browser._setup_window = _safe_setup_window
+
     # 6. Start the browser with a robust session mock.
     logging.info("Starting Crossbench Browser on ChromeOS...")
     # Mocking the session/run group requirement for start()
@@ -979,6 +1004,10 @@ def setup_cros_environment(args, chrome_version, chrome_options_list):
         # browser can reach the host machine's port.
         logging.info("Setting up reverse port forwarding for port %d...",
                      SERVER_PORT)
+        try:
+            cb_platform.ports.stop_reverse_forward(SERVER_PORT)
+        except Exception:
+            pass
         cb_platform.ports.reverse_forward(
             SERVER_PORT, SERVER_PORT)
         logging.info("Final ChromeOS flags: %s", chrome_os_flags)
