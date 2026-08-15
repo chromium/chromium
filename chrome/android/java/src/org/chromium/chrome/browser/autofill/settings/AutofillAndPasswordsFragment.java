@@ -331,6 +331,11 @@ public class AutofillAndPasswordsFragment extends ChromeBaseSettingsFragment {
     }
 
     @Override
+    public @Nullable String getMainMenuKey() {
+        return "autofill_and_passwords";
+    }
+
+    @Override
     public int getAnimationType() {
         return AnimationType.PROPERTY;
     }
