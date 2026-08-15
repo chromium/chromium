@@ -114,7 +114,13 @@ bundle_data("test_expectations_metadata") {
   outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
 }
 
+config("xctest_header_config") {
+  framework_dirs = [ "$ios_sdk_platform_path/Developer/Library/Frameworks" ]
+  include_dirs = [ "$ios_sdk_platform_path/Developer/usr/lib" ]
+}
+
 source_set("test_expectations") {
+  public_configs = [ ":xctest_header_config" ]
   testonly = true
   sources = [
     "test_expectations.h",

@@ -372,6 +372,145 @@ TEST_F(TestExpectationsTest, FourOutcomesDescription) {
               [entry expectedOutcomeDescription]);
 }
 
+// Tests that an unmatched expected failure issue type returns kUnmatched.
+TEST_F(TestExpectationsTest, UnmatchedExpectedFailure) {
+  TestExpectationEntry* entry = [[TestExpectationEntry alloc] init];
+  entry.type = TestExpectationTypeFailure;
+  entry.bug = @"crbug.com/123";
+
+  TestExpectationMatchResult result =
+      [entry matchesIssueType:XCTIssueTypeUnmatchedExpectedFailure
+           compactDescription:@"Unmatched expected failure"];
+
+  EXPECT_EQ(TestExpectationMatchResult::kUnmatched, result);
+}
+
+// Tests that a standard assertion failure matches a failure expectation.
+TEST_F(TestExpectationsTest, AssertionFailureIsMatched) {
+  TestExpectationEntry* entry = [[TestExpectationEntry alloc] init];
+  entry.type = TestExpectationTypeFailure;
+  entry.bug = @"crbug.com/123";
+
+  TestExpectationMatchResult result =
+      [entry matchesIssueType:XCTIssueTypeAssertionFailure
+           compactDescription:@"Assertion failure"];
+
+  EXPECT_EQ(TestExpectationMatchResult::kMatched, result);
+}
+
+// Tests that an EarlGrey assertion failure (uncaught exception with halt
+// message) matches a failure expectation rather than being treated as a crash.
+TEST_F(TestExpectationsTest,
+       EarlGreyAssertionFailureMatchesFailureExpectation) {
+  TestExpectationEntry* entry = [[TestExpectationEntry alloc] init];
+  entry.type = TestExpectationTypeFailure;
+  entry.bug = @"crbug.com/123";
+
+  TestExpectationMatchResult result =
+      [entry matchesIssueType:XCTIssueTypeUncaughtException
+           compactDescription:
+               @"Immediately halt execution of testcase: assert failed"];
+
+  EXPECT_EQ(TestExpectationMatchResult::kMatched, result);
+}
+
+// Tests that an EarlGrey assertion failure mismatches a crash expectation.
+TEST_F(TestExpectationsTest,
+       EarlGreyAssertionFailureMismatchesCrashExpectation) {
+  TestExpectationEntry* entry = [[TestExpectationEntry alloc] init];
+  entry.type = TestExpectationTypeCrash;
+  entry.bug = @"crbug.com/123";
+
+  TestExpectationMatchResult result =
+      [entry matchesIssueType:XCTIssueTypeUncaughtException
+           compactDescription:
+               @"Immediately halt execution of testcase: assert failed"];
+
+  EXPECT_EQ(TestExpectationMatchResult::kMismatched, result);
+}
+
+// Tests that an EarlGrey host app crash (uncaught exception containing
+// EarlGreyInternalTestInterruptException) matches a crash expectation.
+TEST_F(TestExpectationsTest, EarlGreyCrashMatchesCrashExpectation) {
+  TestExpectationEntry* entry = [[TestExpectationEntry alloc] init];
+  entry.type = TestExpectationTypeCrash;
+  entry.bug = @"crbug.com/123";
+
+  TestExpectationMatchResult result =
+      [entry matchesIssueType:XCTIssueTypeUncaughtException
+           compactDescription:@"Immediately halt execution of testcase "
+                              @"(EarlGreyInternalTestInterruptException)"];
+
+  EXPECT_EQ(TestExpectationMatchResult::kMatched, result);
+}
+
+// Tests that an EarlGrey host app crash mismatches a failure expectation.
+TEST_F(TestExpectationsTest, EarlGreyCrashMismatchesFailureExpectation) {
+  TestExpectationEntry* entry = [[TestExpectationEntry alloc] init];
+  entry.type = TestExpectationTypeFailure;
+  entry.bug = @"crbug.com/123";
+
+  TestExpectationMatchResult result =
+      [entry matchesIssueType:XCTIssueTypeUncaughtException
+           compactDescription:@"Immediately halt execution of testcase "
+                              @"(EarlGreyInternalTestInterruptException)"];
+
+  EXPECT_EQ(TestExpectationMatchResult::kMismatched, result);
+}
+
+// Tests that an uncaught exception mismatches a failure-only expectation.
+TEST_F(TestExpectationsTest, CrashMismatchForFailureExpectation) {
+  TestExpectationEntry* entry = [[TestExpectationEntry alloc] init];
+  entry.type = TestExpectationTypeFailure;
+  entry.bug = @"crbug.com/123";
+
+  TestExpectationMatchResult result =
+      [entry matchesIssueType:XCTIssueTypeUncaughtException
+           compactDescription:@"Uncaught exception"];
+
+  EXPECT_EQ(TestExpectationMatchResult::kMismatched, result);
+}
+
+// Tests that an assertion failure matches when both crash and failure are
+// expected.
+TEST_F(TestExpectationsTest, CrashAndFailureMatchesAssertionFailure) {
+  TestExpectationEntry* entry = [[TestExpectationEntry alloc] init];
+  entry.type = TestExpectationTypeCrash | TestExpectationTypeFailure;
+  entry.bug = @"crbug.com/123";
+
+  TestExpectationMatchResult result =
+      [entry matchesIssueType:XCTIssueTypeAssertionFailure
+           compactDescription:@"Assertion failure"];
+
+  EXPECT_EQ(TestExpectationMatchResult::kMatched, result);
+}
+
+// Tests that a crash matches when both crash and failure are expected.
+TEST_F(TestExpectationsTest, CrashAndFailureMatchesCrash) {
+  TestExpectationEntry* entry = [[TestExpectationEntry alloc] init];
+  entry.type = TestExpectationTypeCrash | TestExpectationTypeFailure;
+  entry.bug = @"crbug.com/123";
+
+  TestExpectationMatchResult result =
+      [entry matchesIssueType:XCTIssueTypeUncaughtException
+           compactDescription:@"Uncaught exception"];
+
+  EXPECT_EQ(TestExpectationMatchResult::kMatched, result);
+}
+
+// Tests that a thrown error is treated as a crash.
+TEST_F(TestExpectationsTest, ThrownErrorMatchesCrashExpectation) {
+  TestExpectationEntry* entry = [[TestExpectationEntry alloc] init];
+  entry.type = TestExpectationTypeCrash;
+  entry.bug = @"crbug.com/123";
+
+  TestExpectationMatchResult result =
+      [entry matchesIssueType:XCTIssueTypeThrownError
+           compactDescription:@"Error domain error 1"];
+
+  EXPECT_EQ(TestExpectationMatchResult::kMatched, result);
+}
+
 struct TagMatchingTestCase {
   const char* test_name;
   const char* content;

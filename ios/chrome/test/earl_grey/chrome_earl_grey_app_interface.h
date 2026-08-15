@@ -834,6 +834,9 @@ enum class TipsNotificationType;
 // animating.
 + (BOOL)isViewAnimatingWithAccessibilityID:(NSString*)accessibilityID;
 
+// Programmatically crashes the host application.
++ (void)induceCrash;
+
 @end
 
 #endif  // IOS_CHROME_TEST_EARL_GREY_CHROME_EARL_GREY_APP_INTERFACE_H_

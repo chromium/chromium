@@ -2288,4 +2288,8 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   EG_TEST_HELPER_ASSERT_TRUE(matched, errorString);
 }
 
+- (void)induceCrash {
+  [ChromeEarlGreyAppInterface induceCrash];
+}
+
 @end

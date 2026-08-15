@@ -1153,6 +1153,9 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // Hides Reader mode in the current tab.
 - (void)hideReaderMode;
 
+// Programmatically crashes the host application.
+- (void)induceCrash;
+
 @end
 
 #endif  // IOS_CHROME_TEST_EARL_GREY_CHROME_EARL_GREY_H_

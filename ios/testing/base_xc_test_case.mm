@@ -22,6 +22,10 @@ struct TestState {
 // Configures XCTExpectFailureWithOptions for expected failure or crash.
 - (void)configureExpectedFailureForExpectation:
     (TestExpectationEntry*)expectation;
+// Handles an issue reported by XCTest and determines whether it matches the
+// given expectation, updating test state accordingly.
+- (BOOL)handleIssue:(XCTIssue*)issue
+     forExpectation:(TestExpectationEntry*)expectation;
 @end
 
 @implementation BaseXCTestCase
@@ -63,6 +67,22 @@ struct TestState {
   }
 }
 
+- (BOOL)handleIssue:(XCTIssue*)issue
+     forExpectation:(TestExpectationEntry*)expectation {
+  TestExpectationMatchResult result =
+      [expectation matchesIssueType:issue.type
+                 compactDescription:issue.compactDescription];
+  if (result == TestExpectationMatchResult::kMatched) {
+    _testState.issue_occurred = true;
+    _testState.matched_expectation = true;
+    return YES;
+  }
+  if (result == TestExpectationMatchResult::kMismatched) {
+    _testState.issue_occurred = true;
+  }
+  return NO;
+}
+
 - (void)configureExpectedFailureForExpectation:
     (TestExpectationEntry*)expectation {
   TestExpectationType type = expectation.type;
@@ -73,43 +93,19 @@ struct TestState {
   // to fail consistently, and it is a failure if the test passes).
   options.strict = !(type & TestExpectationTypePass);
 
+  __weak BaseXCTestCase* weakSelf = self;
   options.issueMatcher = ^BOOL(XCTIssue* issue) {
-    self->_testState.issue_occurred = true;
-    BOOL didCrash = issue.type == XCTIssueTypeUncaughtException ||
-                    issue.type == XCTIssueTypeThrownError;
-
-    // EarlGrey aborts test execution on assertion failures by raising an
-    // EarlGreyInternalTestInterruptException. This is part of the standard
-    // failure flow, not an unexpected crash, so classify it as a failure
-    // rather than a crash. Check for both the exception class name and
-    // the interrupt description because XCTest's formatting of uncaught
-    // exceptions can vary across iOS SDK versions.
-    if (didCrash) {
-      NSString* description = issue.compactDescription;
-      if ([description
-              containsString:@"EarlGreyInternalTestInterruptException"] ||
-          [description
-              containsString:@"Immediately halt execution of testcase"]) {
-        didCrash = NO;
-      }
-    }
-
-    BOOL matches = didCrash ? ((type & TestExpectationTypeCrash) != 0)
-                            : ((type & TestExpectationTypeFailure) != 0);
-    if (matches) {
-      self->_testState.matched_expectation = true;
-    } else {
-      NSString* actualOutcome = didCrash ? @"Crash" : @"Failure";
-      NSLog(@"%@", [expectation
-                       unmetExpectationMessageWithActualOutcome:actualOutcome]);
-    }
-    return matches;
+    return [weakSelf handleIssue:issue forExpectation:expectation];
   };
 
   if (options.strict) {
     [self addTeardownBlock:^{
-      if (!self->_testState.matched_expectation &&
-          !self->_testState.issue_occurred) {
+      BaseXCTestCase* strongSelf = weakSelf;
+      if (!strongSelf) {
+        return;
+      }
+      if (!strongSelf->_testState.matched_expectation &&
+          !strongSelf->_testState.issue_occurred) {
         NSLog(@"%@",
               [expectation unmetExpectationMessageWithActualOutcome:@"Pass"]);
       }

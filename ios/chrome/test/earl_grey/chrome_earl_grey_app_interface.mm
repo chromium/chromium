@@ -1905,4 +1905,8 @@ int watchRunNumber = 0;
   return NO;
 }
 
++ (void)induceCrash {
+  abort();
+}
+
 @end

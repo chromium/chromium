@@ -12,6 +12,19 @@
 #import "build/build_config.h"
 #import "ui/base/device_form_factor.h"
 
+namespace {
+
+// Message used by EarlGrey in `_XCTFailureHandler` when halting a test due to
+// an assertion failure.
+NSString* const kEarlGreyHaltExecutionMessage =
+    @"Immediately halt execution of testcase";
+
+// Exception name used by EarlGrey when a host application crash occurs.
+NSString* const kEarlGreyInterruptExceptionName =
+    @"EarlGreyInternalTestInterruptException";
+
+}  // namespace
+
 @implementation TestExpectationEntry
 
 - (NSString*)expectedOutcomeDescription {
@@ -71,6 +84,32 @@
       stringWithFormat:@"Unmet test expectation (%@): expected %@, actual %@.",
                        [self locationDescription], expectedOutcome,
                        actualOutcome];
+}
+
+- (TestExpectationMatchResult)matchesIssueType:(XCTIssueType)issueType
+                            compactDescription:(NSString*)compactDescription {
+  if (issueType == XCTIssueTypeUnmatchedExpectedFailure) {
+    return TestExpectationMatchResult::kUnmatched;
+  }
+
+  BOOL didCrash = (issueType == XCTIssueTypeUncaughtException ||
+                   issueType == XCTIssueTypeThrownError);
+
+  if (didCrash) {
+    if ([compactDescription containsString:kEarlGreyHaltExecutionMessage] &&
+        ![compactDescription containsString:kEarlGreyInterruptExceptionName]) {
+      didCrash = NO;
+    }
+  }
+
+  BOOL matches = didCrash ? ((self.type & TestExpectationTypeCrash) != 0)
+                          : ((self.type & TestExpectationTypeFailure) != 0);
+  if (!matches) {
+    NSString* actualOutcome = didCrash ? @"Crash" : @"Failure";
+    NSLog(@"%@", [self unmetExpectationMessageWithActualOutcome:actualOutcome]);
+    return TestExpectationMatchResult::kMismatched;
+  }
+  return TestExpectationMatchResult::kMatched;
 }
 
 @end
