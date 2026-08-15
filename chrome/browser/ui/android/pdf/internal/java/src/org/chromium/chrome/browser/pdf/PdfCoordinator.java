@@ -162,6 +162,7 @@ public class PdfCoordinator
     private boolean mIsPdfLoaded;
 
     boolean mIsInitialZoomPass = true;
+    private boolean mIsDefaultZoomPending;
 
     private int mFindInPageCount;
 
@@ -907,9 +908,14 @@ public class PdfCoordinator
             }
         }
 
-        void setDefaultZoom(int pageIndex) {
+        void setDefaultZoom(int pageIndex, @Nullable Consumer<Float> onComplete) {
             PdfView pdfView = mPdfView;
-            if (pdfView == null) return;
+            if (pdfView == null) {
+                if (onComplete != null) {
+                    PostTask.postTask(TaskTraits.UI_DEFAULT, () -> onComplete.accept(1.0f));
+                }
+                return;
+            }
 
             // 1. Get the viewport width in actual screen pixels
             int viewportWidthPx =
@@ -922,15 +928,33 @@ public class PdfCoordinator
             runWithPageInfo(
                     pageIndex,
                     pageInfo -> {
+                        if (pageInfo == null) {
+                            if (onComplete != null) {
+                                PostTask.postTask(
+                                        TaskTraits.UI_DEFAULT, () -> onComplete.accept(1.0f));
+                            }
+                            return;
+                        }
                         float newZoom =
                                 calculateFitToPageZoom(
                                         pageInfo,
                                         /* fitToPage= */ false,
                                         pdfView,
                                         /* zoomRatio= */ viewportWidthDp >= 600 ? 0.6f : 1.0f);
-                        pdfView.post(
+                        PostTask.postTask(
+                                TaskTraits.UI_DEFAULT,
                                 () -> {
-                                    pdfView.setZoom(newZoom);
+                                    float zoomToReport = newZoom;
+                                    if (!mRestorePositionPending) {
+                                        pdfView.setZoom(newZoom);
+                                    } else {
+                                        zoomToReport = pdfView.getZoom();
+                                    }
+                                    pdfView.setHorizontalPageSpacing(2);
+                                    pdfView.setVerticalPageSpacing(2);
+                                    if (onComplete != null) {
+                                        onComplete.accept(zoomToReport);
+                                    }
                                 });
                     });
         }
@@ -972,13 +996,19 @@ public class PdfCoordinator
             return Math.max(pdfView.getMinZoom(), Math.min(newZoom, pdfView.getMaxZoom()));
         }
 
-        private void runWithPageInfo(int pageIndex, Consumer<PageInfo> action) {
+        private void runWithPageInfo(int pageIndex, Consumer<@Nullable PageInfo> action) {
             PdfView pdfView = mPdfView;
-            if (pdfView == null) return;
+            if (pdfView == null) {
+                action.accept(null);
+                return;
+            }
 
             // pdfDocument can legitimately be null during tab teardown or concurrent switches.
             PdfDocument pdfDocument = pdfView.getPdfDocument();
-            if (pdfDocument == null) return;
+            if (pdfDocument == null) {
+                action.accept(null);
+                return;
+            }
 
             int pageCount = pdfDocument.getPageCount();
             int safePageIndex = getSafePageIndex(pageIndex, pageCount);
@@ -998,11 +1028,13 @@ public class PdfCoordinator
                                     action.accept((PageInfo) result);
                                 } else {
                                     Log.w(TAG, "Failed to get page info. Result: " + result);
+                                    action.accept(null);
                                 }
                             }
                         });
             } catch (PdfDocument.DocumentClosedException e) {
                 Log.w(TAG, "Failed to get page info", e);
+                action.accept(null);
             }
         }
 
@@ -1013,10 +1045,14 @@ public class PdfCoordinator
             runWithPageInfo(
                     pageIndex,
                     pageInfo -> {
+                        if (pageInfo == null) {
+                            return;
+                        }
                         float newZoom =
                                 calculateFitToPageZoom(
                                         pageInfo, fitToPage, pdfView, /* zoomRatio= */ 1.0f);
-                        pdfView.post(
+                        PostTask.postTask(
+                                TaskTraits.UI_DEFAULT,
                                 () -> {
                                     pdfView.setZoom(newZoom);
                                     // Scroll to the top of the page after zooming.
@@ -1240,9 +1276,12 @@ public class PdfCoordinator
                 mProgressBar.setVisibility(View.GONE);
                 try {
                     mIsInitialZoomPass = true;
-                    mChromePdfViewerFragment.setDocumentUri(mUri);
-                    mChromePdfViewerFragment.setFilePath(mPdfFilePath);
-                    mChromePdfViewerFragment.setFileName(mTitle);
+                    mIsDefaultZoomPending = false;
+                    if (!mUri.equals(mChromePdfViewerFragment.getDocumentUri())) {
+                        mChromePdfViewerFragment.setDocumentUri(mUri);
+                        mChromePdfViewerFragment.setFilePath(mPdfFilePath);
+                        mChromePdfViewerFragment.setFileName(mTitle);
+                    }
                 } catch (IllegalArgumentException e) {
                     Log.e(TAG, "Load pdf fails due to invalid uri.", e);
                 } finally {
@@ -1480,18 +1519,31 @@ public class PdfCoordinator
         // AndroidX PDF Viewport is not initialized to 100% zoom on the initial pass. For PDF V2, we
         // hide the view until the first viewport change is detected and set to 100% zoom.
         if (PdfUtils.isInlinePdfV2Enabled() && mIsInitialZoomPass) {
+            if (mIsDefaultZoomPending) {
+                return;
+            }
             ChromePdfViewerFragment fragment = mChromePdfViewerFragment;
             if (fragment != null) {
                 PdfView pdfView = fragment.mPdfView;
                 if (pdfView != null && pdfView.getPdfDocument() != null && pdfView.getWidth() > 0) {
-                    fragment.setDefaultZoom(pageIndex);
-                    mIsInitialZoomPass = false;
-                    View fragmentContainerView = mView.findViewById(mFragmentContainerViewId);
-                    if (fragmentContainerView != null
-                            && fragmentContainerView.getVisibility() != View.VISIBLE) {
-                        fragmentContainerView.setVisibility(View.VISIBLE);
-                        pdfView.requestFocus();
-                    }
+                    mIsDefaultZoomPending = true;
+                    fragment.setDefaultZoom(
+                            pageIndex,
+                            (defaultZoom) -> {
+                                mIsInitialZoomPass = false;
+                                mIsDefaultZoomPending = false;
+                                if (mToolbarCoordinator != null) {
+                                    mToolbarCoordinator.setDefaultZoomLevel(defaultZoom);
+                                    mToolbarCoordinator.onViewportChanged(pageIndex, defaultZoom);
+                                }
+                                View fragmentContainerView =
+                                        mView.findViewById(mFragmentContainerViewId);
+                                if (fragmentContainerView != null
+                                        && fragmentContainerView.getVisibility() != View.VISIBLE) {
+                                    fragmentContainerView.setVisibility(View.VISIBLE);
+                                    pdfView.requestFocus();
+                                }
+                            });
                     return;
                 }
             }
@@ -1544,6 +1596,7 @@ public class PdfCoordinator
         mChromePdfViewerFragment.runWithPageInfo(
                 0,
                 pageInfo -> {
+                    if (pageInfo == null) return;
                     // Fetch properties on a background thread to avoid UI thread block
                     PostTask.postTask(
                             TaskTraits.USER_VISIBLE,
@@ -1653,5 +1706,10 @@ public class PdfCoordinator
                 .setPositiveButton(
                         R.string.pdf_properties_close, (dialog, which) -> dialog.dismiss())
                 .show();
+    }
+
+    @VisibleForTesting
+    @Nullable PdfToolbarCoordinator getToolbarCoordinatorForTesting() {
+        return mToolbarCoordinator;
     }
 }
