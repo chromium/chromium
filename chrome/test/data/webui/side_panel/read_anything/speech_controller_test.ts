@@ -1027,6 +1027,94 @@ suite('SpeechController', () => {
   });
 
   test(
+      'playFromContentPosition after line focus change when paused reads from new position',
+      async () => {
+        chrome.readingMode.isLineFocusEnabled = true;
+        const text1 = 'First line. ';
+        const text2 = 'Second line after scroll. ';
+        const text3 = 'Third line.';
+        const node1 = document.createTextNode(text1);
+        const node2 = document.createTextNode(text2);
+        const node3 = document.createTextNode(text3);
+        nodeStore.setDomNode(node1, 1);
+        nodeStore.setDomNode(node2, 2);
+        nodeStore.setDomNode(node3, 3);
+
+        const segment1 = {
+          node: ReadAloudNode.create(node1)!,
+          start: 0,
+          length: text1.length,
+        };
+        const segment2 = {
+          node: ReadAloudNode.create(node2)!,
+          start: 0,
+          length: text2.length,
+        };
+        const segment3 = {
+          node: ReadAloudNode.create(node3)!,
+          start: 0,
+          length: text3.length,
+        };
+
+        const allSegments = [[segment1], [segment2], [segment3]];
+        const allContent = [text1, text2, text3];
+        let currentSegmentIndex = 0;
+
+        readAloudModel.resetSpeechToBeginning = () => {
+          readAloudModel.methodCalled('resetSpeechToBeginning');
+          currentSegmentIndex = 0;
+          readAloudModel.setCurrentTextSegments(
+              allSegments[currentSegmentIndex]!);
+          readAloudModel.setCurrentTextContent(
+              allContent[currentSegmentIndex]!);
+        };
+
+        readAloudModel.moveSpeechForward = () => {
+          readAloudModel.methodCalled('moveSpeechForward');
+          if (currentSegmentIndex < allSegments.length - 1) {
+            currentSegmentIndex++;
+            readAloudModel.setCurrentTextSegments(
+                allSegments[currentSegmentIndex]!);
+            readAloudModel.setCurrentTextContent(
+                allContent[currentSegmentIndex]!);
+          }
+        };
+
+        readAloudModel.setCurrentTextSegments(
+            allSegments[currentSegmentIndex]!);
+        readAloudModel.setCurrentTextContent(allContent[currentSegmentIndex]!);
+
+        const element = document.createElement('p');
+        element.appendChild(node1);
+        element.appendChild(node2);
+        element.appendChild(node3);
+        document.body.appendChild(element);
+
+        speechController.setHasSpeechBeenTriggered(true);
+
+        const range = document.createRange();
+        range.selectNode(node2);
+        const rect = range.getClientRects().item(0);
+        assertTrue(!!rect);
+        const position = document.caretPositionFromPoint(rect.left, rect.top);
+
+        let nextGranularityCalls = 0;
+        highlighter.onWillMoveToNextGranularity = () => {
+          nextGranularityCalls++;
+        };
+
+        speechController.onLineFocusChange(position);
+        speechController.onPlayPauseToggle(element);
+        await speech.whenCalled('speak');
+
+        // We expect it to have called moveSpeechForward to reach node2
+        assertEquals(1, readAloudModel.getCallCount('moveSpeechForward'));
+        // We verify that it bypassed adding previous highlights for performance
+        assertEquals(0, nextGranularityCalls);
+        assertTrue(onPlayingFromPosition);
+      });
+
+  test(
       'playFromContentPosition with invalid node plays from next node',
       async () => {
         const text = 'This text does not have the target node.';
