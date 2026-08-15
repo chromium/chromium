@@ -33,7 +33,7 @@
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/utf_string_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/task_runner.h"
 #include "base/task/task_traits.h"
@@ -318,9 +318,11 @@ base::FilePath StartProcmonLogging() {
   const base::FilePath pmc_path(GetTestFilePath("ProcmonConfiguration.pmc"));
   CHECK(base::PathExists(pmc_path));
 
-  const base::FilePath pml_file(
-      dest_dir.Append(base::UTF8ToWide(base::UnlocalizedTimeFormatWithPattern(
-          base::Time::Now(), "yyMMdd-HHmmss.'PML'"))));
+  base::Time::Exploded exploded;
+  base::Time::Now().LocalExplode(&exploded);
+  const base::FilePath pml_file(dest_dir.AppendASCII(base::StringPrintf(
+      "%02d%02d%02d-%02d%02d%02d.PML", exploded.year % 100, exploded.month,
+      exploded.day_of_month, exploded.hour, exploded.minute, exploded.second)));
 
   const std::wstring& cmdline = base::StrCat(
       {kProcmonPath, L" /AcceptEula /LoadConfig ",
