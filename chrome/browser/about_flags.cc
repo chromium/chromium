@@ -2580,6 +2580,7 @@ const FeatureEntry::FeatureParam kAndroidVerticalTabs_IncognitoButton[] = {
 const FeatureEntry::FeatureParam kAndroidVerticalTabs_All[] = {
     {"external_drag", "true"},
     {"auto_resize", "true"},
+    {"group_hover_card", "true"},
     {"multi_select", "true"},
     {"incognito_button", "true"}};
 const FeatureEntry::FeatureParam kAndroidVerticalTabs_EnableByDefault[] = {

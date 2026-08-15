@@ -199,7 +199,7 @@ found in the LICENSE file.
     <dimen name="pinned_tab_strip_height">72dp</dimen>
     <dimen name="pinned_tab_strip_gap">4dp</dimen>
 
-    <!-- Dimens for vertical tabs -->
+    <!-- Dimens for Vertical Tabs -->
     <dimen name="vertical_tabs_rail_horizontal_margin">12dp</dimen>
     <dimen name="vertical_tabs_scrollbar_margin_end">-9dp</dimen>
     <dimen name="vertical_tabs_scrollbar_padding_end">9dp</dimen>
@@ -224,8 +224,7 @@ found in the LICENSE file.
     <dimen name="vertical_tab_spine_width">2dp</dimen>
     <dimen name="vertical_tab_spine_radius">4dp</dimen>
 
-    <!-- Dimens for vertical pinned tabs -->
-    <!-- TODO(crbug.com/509226293): A11y requires touch target to be a minimum of 48dp. -->
+    <!-- Dimens for Vertical Tabs pinned tabs -->
     <dimen name="vertical_tab_pinned_item_width">42dp</dimen>
     <dimen name="vertical_tab_pinned_item_min_width">32dp</dimen>
     <dimen name="vertical_tab_pinned_item_height">32dp</dimen>
@@ -233,20 +232,29 @@ found in the LICENSE file.
     <dimen name="vertical_tab_pinned_item_ai_indicator_margin_start">2dp</dimen>
     <dimen name="vertical_tab_pinned_item_margin_bottom">4dp</dimen>
 
-    <!-- New Tab button dimens.-->
+    <!-- Dimens for Vertical Tabs New Tab button.-->
     <dimen name="vertical_tabs_footer_button_height">32dp</dimen>
     <dimen name="vertical_tabs_new_tab_button_margin_top">8dp</dimen>
     <dimen name="vertical_tabs_new_tab_button_margin_bottom">12dp</dimen>
     <dimen name="vertical_tabs_new_tab_button_corner_radius">8dp</dimen>
     <dimen name="vertical_tabs_footer_button_gap">8dp</dimen>
 
-    <!-- Vertical Tabs Header dimens. -->
+    <!-- Dimens for Vertical Tabs Header. -->
     <dimen name="vertical_tabs_button_corner_radius_small">2dp</dimen>
     <dimen name="vertical_tabs_header_margin_vertical">4dp</dimen>
     <dimen name="vertical_tabs_header_padding_vertical">8dp</dimen>
     <dimen name="vertical_tabs_header_button_size">32dp</dimen>
     <dimen name="vertical_tabs_header_button_padding">4dp</dimen>
     <dimen name="vertical_tabs_header_button_gap">2dp</dimen>
+
+    <!-- Dimens for Vertical Tabs tab group hover cards. -->
+    <dimen name="tab_group_hover_card_corner_radius">16dp</dimen>
+    <dimen name="tab_group_hover_card_border_width">1dp</dimen>
+    <dimen name="tab_group_hover_card_color_icon_size">12dp</dimen>
+    <dimen name="tab_group_hover_card_color_icon_margin_end">8dp</dimen>
+    <dimen name="tab_group_hover_card_header_margin_bottom">8dp</dimen>
+    <dimen name="tab_group_hover_card_child_item_padding_vertical">4dp</dimen>
+    <dimen name="tab_group_hover_card_excess_tabs_margin_top">4dp</dimen>
 
     <!-- Dimens for tab search -->
     <dimen name="tab_search_overlay_width">264dp</dimen>

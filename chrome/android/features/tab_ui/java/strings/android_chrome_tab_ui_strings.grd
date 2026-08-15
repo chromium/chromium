@@ -1070,6 +1070,12 @@
       <message name="IDS_TAB_HOVER_CARD_MEMORY_USAGE" desc="Text at the bottom of a hovercard that shows how much memory a specific tab is using.">
         Memory usage: <ph name="MEMORY_USAGE">%1$s<ex>300 MB</ex></ph>
       </message>
+      <message name="IDS_TAB_GROUP_HOVER_CARD_EXCESS_TABS" desc="Footer text in the tab group hover card showing the number of remaining tabs in the group that are not displayed in the preview list.">
+        {TABS_COUNT, plural,
+          =1 {+<ph name="TABS_COUNT_ONE">%1$d<ex>1</ex></ph> more}
+          other {+<ph name="TABS_COUNT_MANY">%1$d<ex>8</ex></ph> more}
+        }
+      </message>
 
       <!-- Tab context menu -->
       <message name="IDS_SELECT_TAB" desc="Content description for an action which selects a singular tab.">

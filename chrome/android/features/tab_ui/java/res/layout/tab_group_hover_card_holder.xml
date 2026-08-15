@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<org.chromium.chrome.browser.tasks.tab_management.TabGroupHoverCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/vertical_tab_group_hover_card_holder"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:visibility="gone"
+    android:elevation="@dimen/tab_hover_card_elevation"
+    android:background="@drawable/tab_group_hover_card_background">
+
+    <LinearLayout
+        android:id="@+id/content_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/tab_hover_card_text_content_margin"
+        android:orientation="vertical">
+
+        <!-- Tab group header row containing color indicator and group title. -->
+        <LinearLayout
+            android:id="@+id/group_header_row"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/tab_group_hover_card_header_margin_bottom"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            tools:ignore="UseCompoundDrawables">
+
+            <ImageView
+                android:id="@+id/group_color_icon"
+                android:layout_width="@dimen/tab_group_hover_card_color_icon_size"
+                android:layout_height="@dimen/tab_group_hover_card_color_icon_size"
+                android:layout_marginEnd="@dimen/tab_group_hover_card_color_icon_margin_end"
+                android:src="@drawable/tab_group_dialog_color_icon"
+                android:importantForAccessibility="no" />
+
+            <TextView
+                android:id="@+id/group_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textDirection="locale"
+                android:textAppearance="@style/TextAppearance.TextMediumThick.Primary" />
+        </LinearLayout>
+
+        <!-- Child tab preview rows (up to 5). -->
+        <TextView
+            android:id="@+id/group_child_tab_1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingVertical="@dimen/tab_group_hover_card_child_item_padding_vertical"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:visibility="gone"
+            android:textDirection="locale"
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+
+        <TextView
+            android:id="@+id/group_child_tab_2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingVertical="@dimen/tab_group_hover_card_child_item_padding_vertical"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:visibility="gone"
+            android:textDirection="locale"
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+
+        <TextView
+            android:id="@+id/group_child_tab_3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingVertical="@dimen/tab_group_hover_card_child_item_padding_vertical"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:visibility="gone"
+            android:textDirection="locale"
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+
+        <TextView
+            android:id="@+id/group_child_tab_4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingVertical="@dimen/tab_group_hover_card_child_item_padding_vertical"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:visibility="gone"
+            android:textDirection="locale"
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+
+        <TextView
+            android:id="@+id/group_child_tab_5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingVertical="@dimen/tab_group_hover_card_child_item_padding_vertical"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:visibility="gone"
+            android:textDirection="locale"
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+
+        <!-- Excess tabs count footer shown when the group has more than 5 tabs. -->
+        <TextView
+            android:id="@+id/group_excess_tabs"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/tab_group_hover_card_excess_tabs_margin_top"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:visibility="gone"
+            android:textDirection="locale"
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+    </LinearLayout>
+</org.chromium.chrome.browser.tasks.tab_management.TabGroupHoverCardView>
