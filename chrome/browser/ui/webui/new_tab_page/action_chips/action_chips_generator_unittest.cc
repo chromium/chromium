@@ -1188,7 +1188,8 @@ TEST(ActionChipGeneratorTest, NewEndpointOptOutFallsBackToStaticOnFailure) {
                                   Eq(std::cref(GetStaticDeepSearchChip()))));
 }
 
-TEST(ActionChipGeneratorTest, NewEndpointEmptyResponseReturnsEmptyChips) {
+std::vector<ActionChipPtr> GenerateActionChipsForEmptyRemoteResponse(
+    const std::vector<base::test::FeatureRefAndParams>& enabled_features = {}) {
   EnvironmentFixture env;
   base::HistogramTester histogram_tester;
   const GURL page_url("https://www.google.com/");
@@ -1206,10 +1207,16 @@ TEST(ActionChipGeneratorTest, NewEndpointEmptyResponseReturnsEmptyChips) {
             return nullptr;
           }));
 
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeatureWithParameters(
-      ntp_features::kNtpNextFeatures,
-      {{ntp_features::kNtpNextShowStaticTextParam.name, "false"}});
+  std::vector<base::test::FeatureRefAndParams> features_to_enable = {
+      {ntp_features::kNtpNextFeatures,
+       {{ntp_features::kNtpNextShowStaticTextParam.name, "false"}}}};
+  for (const auto& feature : enabled_features) {
+    features_to_enable.push_back(feature);
+  }
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(features_to_enable,
+                                             /*disabled_features=*/{});
 
   base::RunLoop run_loop;
   std::vector<ActionChipPtr> actual;
@@ -1217,11 +1224,26 @@ TEST(ActionChipGeneratorTest, NewEndpointEmptyResponseReturnsEmptyChips) {
                                         actual);
   run_loop.Run();
 
-  EXPECT_TRUE(actual.empty());
   histogram_tester.ExpectUniqueSample("NewTabPage.ActionChips.RequestStatus",
                                       ActionChipsRequestStatus::kSuccess, 1);
   histogram_tester.ExpectUniqueSample("NewTabPage.ActionChips.SuggestionCount",
                                       0, 1);
+  return actual;
+}
+
+TEST(ActionChipGeneratorTest, NewEndpointEmptyResponseFallsBackToStaticChips) {
+  // Old generators (default): Deep Search, Create Images.
+  EXPECT_THAT(GenerateActionChipsForEmptyRemoteResponse(),
+              ElementsAre(Eq(std::cref(GetStaticDeepSearchChip())),
+                          Eq(std::cref(GetStaticImageGenerationChip()))));
+}
+
+TEST(ActionChipGeneratorTest,
+     NewEndpointEmptyResponseFallsBackToStaticChipsWithScaledChips) {
+  // New generators (scaled chips enabled): Brainstorm, Learn, Write.
+  EXPECT_THAT(GenerateActionChipsForEmptyRemoteResponse(
+                  {{ntp_features::kNtpScaledActionChips, {}}}),
+              ElementsAre(BrainstormChip(), LearnChip(), WriteChip()));
 }
 
 TEST(ActionChipGeneratorTest, NewEndpointParseErrorFallsBackToStaticChips) {

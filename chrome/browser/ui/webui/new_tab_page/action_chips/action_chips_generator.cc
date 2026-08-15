@@ -663,35 +663,41 @@ void ActionChipsGeneratorImpl::GenerateActionChipsFromRemoteResponse(
     base::OnceCallback<void(std::vector<ActionChipPtr>)> callback,
     RemoteSuggestionsServiceSimple::ActionChipSuggestionsResult&& result) {
   RecordActionChipsRequestStatus(result);
-  if (!result.has_value()) {
+
+  std::vector<ActionChipPtr> chips;
+  if (result.has_value()) {
+    const size_t max_num_chips = GetMaxNumChips();
+    for (const auto& suggestion : *result) {
+      if (chips.size() >= max_num_chips) {
+        break;
+      }
+      std::optional<ParsedActionChipData> parsed_data =
+          ExtractActionChipData(suggestion, page_vertical);
+      if (!parsed_data.has_value()) {
+        continue;
+      }
+
+      ActionChipPtr chip = ActionChip::New();
+      chip->suggest_template_info =
+          std::move(parsed_data->suggest_template_info);
+
+      chip->suggestion = base::UTF16ToUTF8(suggestion.suggestion());
+      if (parsed_data->group_id ==
+          omnibox::GROUP_AI_MODE_CONTEXTUAL_SEARCH_ACTION) {
+        if (tab) {
+          chip->tab = tab->Clone();
+        }
+      }
+      chips.push_back(std::move(chip));
+    }
+  }
+
+  // Fall back to steady-state chips if the remote response did not yield any
+  // valid chips.
+  if (chips.empty()) {
     std::move(callback).Run(
         CreateChipsForSteadyState(std::move(tab), aim_eligibility_service_));
     return;
-  }
-
-  const size_t max_num_chips = GetMaxNumChips();
-  std::vector<ActionChipPtr> chips;
-  for (const auto& suggestion : *result) {
-    if (chips.size() >= max_num_chips) {
-      break;
-    }
-    std::optional<ParsedActionChipData> parsed_data =
-        ExtractActionChipData(suggestion, page_vertical);
-    if (!parsed_data.has_value()) {
-      continue;
-    }
-
-    ActionChipPtr chip = ActionChip::New();
-    chip->suggest_template_info = std::move(parsed_data->suggest_template_info);
-
-    chip->suggestion = base::UTF16ToUTF8(suggestion.suggestion());
-    if (parsed_data->group_id ==
-        omnibox::GROUP_AI_MODE_CONTEXTUAL_SEARCH_ACTION) {
-      if (tab) {
-        chip->tab = tab->Clone();
-      }
-    }
-    chips.push_back(std::move(chip));
   }
   std::move(callback).Run(std::move(chips));
 }
