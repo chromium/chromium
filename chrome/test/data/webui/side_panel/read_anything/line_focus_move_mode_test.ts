@@ -706,6 +706,7 @@ suite('LineFocusMoveMode', () => {
 
     test('onTextLocationsChange scrolls to re-center line focus', () => {
       const container = createShortContainer();
+      model.setCurrentLineIndex(0);
       mode.onTextLocationsChange(container, 10);
       assertNotEquals(0, scrollDiffReceived);
     });
@@ -725,6 +726,34 @@ suite('LineFocusMoveMode', () => {
       assertLT(model.getMinY(), defaultHeight);
       assertEquals(3, model.getTextBounds().length);
     });
+
+    test(
+        'onTextLocationsChange initializes focal point when current line index is null',
+        () => {
+          const container = createShortContainer();
+          model.setCurrentLineIndex(null);
+          model.setFocalPoint(0);
+
+          mode.onTextLocationsChange(container, defaultHeight);
+
+          assertLT(0, model.getFocalPoint());
+          assertEquals(null, model.getCurrentLineIndex());
+          assertTrue(notifiedVisualPositionChange);
+        });
+
+    test(
+        'onTextLocationsChange preserves existing focal point when current line index is null',
+        () => {
+          const container = createShortContainer();
+          const existingFocalPoint = 150;
+          model.setCurrentLineIndex(null);
+          model.setFocalPoint(existingFocalPoint);
+
+          mode.onTextLocationsChange(container, defaultHeight);
+
+          assertEquals(existingFocalPoint, model.getFocalPoint());
+          assertEquals(null, model.getCurrentLineIndex());
+        });
 
     test('onTextLocationsChange moves to new focal point', () => {
       const container = createShortContainer();

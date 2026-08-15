@@ -416,6 +416,15 @@ export class LineFocusCursorMoveMode extends LineFocusMoveMode {
     if (currentIndex !== null) {
       const newFocalPoint = this.styleMode_.getDesiredCenter(currentIndex);
       this.setFocalPoint(newFocalPoint, LineFocusNotificationType.VISUAL);
+    } else if (this.model_.getFocalPoint() === 0) {
+      // After content finishes rendering, set the focal point. This
+      // prevents scenarios where read aloud starts playing before the focal
+      // point is set (i.e. on a first open if the mouse cursor hasn't
+      // entered the main content panel), which would mean the line focus
+      // window would be missing or "stuck" at the top of the page while
+      // read aloud continues reading behind the scrim.
+      const firstVisible = this.getFirstVisibleFocalPoint_();
+      this.setFocalPoint(firstVisible, LineFocusNotificationType.VISUAL);
     } else if (this.model_.getMinY() > this.model_.getFocalPoint()) {
       this.initializeSnapIndex(/*isForward=*/ true);
     }
