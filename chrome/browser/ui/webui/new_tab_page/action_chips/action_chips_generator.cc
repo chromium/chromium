@@ -47,6 +47,8 @@
 #include "components/url_formatter/url_formatter.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/omnibox_proto/groups.pb.h"
+#include "third_party/omnibox_proto/input_type.pb.h"
+#include "third_party/omnibox_proto/input_type_config.pb.h"
 #include "third_party/omnibox_proto/page_vertical.pb.h"
 #include "third_party/omnibox_proto/suggest_inventory.pb.h"
 #include "third_party/omnibox_proto/suggest_template_info.pb.h"
@@ -482,6 +484,20 @@ std::vector<omnibox::ToolMode> GetAllowedTools(
   return tools;
 }
 
+std::vector<omnibox::InputType> GetAllowedInputs(
+    const AimEligibilityService* aim_eligibility_service) {
+  std::vector<omnibox::InputType> inputs;
+  if (aim_eligibility_service == nullptr) {
+    return inputs;
+  }
+  const omnibox::SearchboxConfig* searchbox_config =
+      aim_eligibility_service->GetSearchboxConfig();
+  for (const auto& input_type_config : searchbox_config->input_type_configs()) {
+    inputs.push_back(input_type_config.input_type());
+  }
+  return inputs;
+}
+
 TabInfoPtr CreateTabInfo(const TabIdGenerator& tab_id_generator,
                          const TabInterface& tab) {
   TabInfoPtr tab_info = TabInfo::New();
@@ -649,7 +665,8 @@ void ActionChipsGeneratorImpl::GenerateActionChipsFromNewEndpoint(
 
   auto [title, url] = GetTitleAndUrl(tab);
   loader_ = remote_suggestions_service_simple_->GetActionChipSuggestions(
-      title, url, GetAllowedTools(aim_eligibility_service_), page_vertical,
+      title, url, GetAllowedTools(aim_eligibility_service_),
+      GetAllowedInputs(aim_eligibility_service_), page_vertical,
       base::BindOnce(
           &ActionChipsGeneratorImpl::GenerateActionChipsFromRemoteResponse,
           this->weak_factory_.GetWeakPtr(),

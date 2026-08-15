@@ -26,6 +26,7 @@
 #include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "net/base/net_errors.h"
+#include "third_party/omnibox_proto/input_type.pb.h"
 #include "third_party/omnibox_proto/page_vertical.pb.h"
 #include "third_party/omnibox_proto/tool_mode.pb.h"
 #include "url/origin.h"
@@ -122,6 +123,7 @@ ParseZeroSuggestionsResponse(AutocompleteProviderClient* client,
 std::string CreateAdditionalQueryParams(
     base::optional_ref<const std::u16string> title,
     base::span<const omnibox::ToolMode> allowed_tools,
+    base::span<const omnibox::InputType> allowed_inputs,
     base::optional_ref<const omnibox::PageVertical> page_vertical) {
   std::vector<std::string> params;
 
@@ -133,6 +135,16 @@ std::string CreateAdditionalQueryParams(
     }
     params.push_back(
         base::StrCat({"ats=", base::JoinString(allowed_tools_strings, ",")}));
+  }
+
+  if (!allowed_inputs.empty()) {
+    std::vector<std::string> allowed_inputs_strings;
+    allowed_inputs_strings.reserve(allowed_inputs.size());
+    for (const auto& input : allowed_inputs) {
+      allowed_inputs_strings.push_back(base::NumberToString(input));
+    }
+    params.push_back(
+        base::StrCat({"aits=", base::JoinString(allowed_inputs_strings, ",")}));
   }
 
   if (title.has_value()) {
@@ -207,6 +219,7 @@ RemoteSuggestionsServiceSimpleImpl::GetActionChipSuggestions(
     base::optional_ref<const std::u16string> title,
     base::optional_ref<const GURL> url,
     base::span<const omnibox::ToolMode> allowed_tools,
+    base::span<const omnibox::InputType> allowed_inputs,
     base::optional_ref<const omnibox::PageVertical> page_vertical,
     base::OnceCallback<
         void(RemoteSuggestionsServiceSimple::ActionChipSuggestionsResult&&)>
@@ -215,8 +228,8 @@ RemoteSuggestionsServiceSimpleImpl::GetActionChipSuggestions(
   if (url.has_value()) {
     search_terms_args.current_page_url = url->spec();
   }
-  search_terms_args.additional_query_params =
-      CreateAdditionalQueryParams(title, allowed_tools, page_vertical);
+  search_terms_args.additional_query_params = CreateAdditionalQueryParams(
+      title, allowed_tools, allowed_inputs, page_vertical);
   search_terms_args.page_classification =
       metrics::OmniboxEventProto::NTP_ZPS_PREFETCH;
   search_terms_args.request_source =

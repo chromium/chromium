@@ -31,6 +31,7 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/omnibox_proto/input_type.pb.h"
 #include "third_party/omnibox_proto/page_vertical.pb.h"
 #include "third_party/omnibox_proto/tool_mode.pb.h"
 #include "url/gurl.h"
@@ -100,6 +101,7 @@ struct GetSuggestURLOptions {
   std::optional<std::string> page_url;
   std::optional<std::string> title;
   std::vector<omnibox::ToolMode> allowed_tools;
+  std::vector<omnibox::InputType> allowed_inputs;
   std::optional<omnibox::PageVertical> page_vertical;
 };
 
@@ -133,6 +135,16 @@ GURL GetSuggestURL(const GetSuggestURLOptions& options,
     }
     additional_query_params.push_back(
         base::StrCat({"ats=", base::JoinString(allowed_tools_strings, ",")}));
+
+    if (!options.allowed_inputs.empty()) {
+      std::vector<std::string> allowed_inputs_strings;
+      allowed_inputs_strings.reserve(options.allowed_inputs.size());
+      for (const auto& input : options.allowed_inputs) {
+        allowed_inputs_strings.push_back(base::NumberToString(input));
+      }
+      additional_query_params.push_back(base::StrCat(
+          {"aits=", base::JoinString(allowed_inputs_strings, ",")}));
+    }
 
     if (options.title.has_value()) {
       additional_query_params.push_back(base::StrCat(
@@ -210,12 +222,26 @@ class ServiceTestContext {
       base::optional_ref<const std::u16string> title,
       base::optional_ref<const GURL> url,
       base::span<const omnibox::ToolMode> allowed_tools,
+      base::span<const omnibox::InputType> allowed_inputs,
       base::optional_ref<const omnibox::PageVertical> page_vertical,
       base::OnceCallback<
           void(RemoteSuggestionsServiceSimple::ActionChipSuggestionsResult&&)>
           callback) {
-    loader_ = service_.GetActionChipSuggestions(
-        title, url, allowed_tools, page_vertical, std::move(callback));
+    loader_ = service_.GetActionChipSuggestions(title, url, allowed_tools,
+                                                allowed_inputs, page_vertical,
+                                                std::move(callback));
+  }
+
+  void GetActionChipSuggestions(
+      base::optional_ref<const std::u16string> title,
+      base::optional_ref<const GURL> url,
+      base::span<const omnibox::ToolMode> allowed_tools,
+      base::optional_ref<const omnibox::PageVertical> page_vertical,
+      base::OnceCallback<
+          void(RemoteSuggestionsServiceSimple::ActionChipSuggestionsResult&&)>
+          callback) {
+    GetActionChipSuggestions(title, url, allowed_tools, /*allowed_inputs=*/{},
+                             page_vertical, std::move(callback));
   }
 
   void CancelRequest() { loader_.reset(); }
@@ -560,6 +586,52 @@ TEST(RemoteSuggestionsServiceSimpleTest,
 }
 
 TEST(RemoteSuggestionsServiceSimpleTest,
+     GetActionChipSuggestionsWithAllowedInputs) {
+  EnvironmentFixture env;
+  ServiceTestContext context;
+
+  RemoteSuggestionsServiceSimple::ActionChipSuggestionsResult actual;
+  const std::u16string title = u"page title";
+  const GURL current_url("https://example.com/");
+  const std::vector<omnibox::ToolMode> allowed_tools = {
+      omnibox::ToolMode::TOOL_MODE_IMAGE_GEN};
+  const std::vector<omnibox::InputType> allowed_inputs = {
+      omnibox::InputType::INPUT_TYPE_LENS_IMAGE,
+      omnibox::InputType::INPUT_TYPE_LENS_FILE};
+
+  context.GetActionChipSuggestions(
+      title, current_url, allowed_tools, allowed_inputs, std::nullopt,
+      base::BindLambdaForTesting(
+          [&actual,
+           &env](RemoteSuggestionsServiceSimple::ActionChipSuggestionsResult&&
+                     result) {
+            actual = std::move(result);
+            env.run_loop().Quit();
+          }));
+
+  const GURL suggest_url = GetSuggestURL({.page_url = current_url.spec(),
+                                          .title = base::UTF16ToUTF8(title),
+                                          .allowed_tools = allowed_tools,
+                                          .allowed_inputs = allowed_inputs,
+                                          .page_vertical = std::nullopt},
+                                         context.client());
+
+  ASSERT_TRUE(
+      context.client().test_url_loader_factory()->IsPending(suggest_url.spec()))
+      << GeneratePendingRequestsDebugMsg(
+             *context.client().test_url_loader_factory(), suggest_url.spec());
+
+  std::string value;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(suggest_url, "aits", &value));
+  EXPECT_EQ(value,
+            base::StrCat({base::NumberToString(static_cast<int>(
+                              omnibox::InputType::INPUT_TYPE_LENS_IMAGE)),
+                          ",",
+                          base::NumberToString(static_cast<int>(
+                              omnibox::InputType::INPUT_TYPE_LENS_FILE))}));
+}
+
+TEST(RemoteSuggestionsServiceSimpleTest,
      GetActionChipSuggestionsWithoutPageVertical) {
   EnvironmentFixture env;
   ServiceTestContext context;
@@ -883,7 +955,8 @@ TEST(RemoteSuggestionsServiceSimpleTest,
   const std::vector<omnibox::ToolMode> allowed_tools = {
       omnibox::ToolMode::TOOL_MODE_IMAGE_GEN};
   std::unique_ptr<network::SimpleURLLoader> loader =
-      service->GetActionChipSuggestions(title, url, allowed_tools, std::nullopt,
+      service->GetActionChipSuggestions(title, url, allowed_tools,
+                                        /*allowed_inputs=*/{}, std::nullopt,
                                         callback.Get());
 
   // Destroy the service.
