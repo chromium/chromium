@@ -7770,10 +7770,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutoRevokeSuspiciousNotificationDescription,
      kOsAndroid,
      FEATURE_VALUE_TYPE(safe_browsing::kAutoRevokeSuspiciousNotification)},
-
-    {"use-p-link-in-help", flag_descriptions::kUsePLinkInHelpName,
-     flag_descriptions::kUsePLinkInHelpDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kUsePLinkInHelp)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
     {"gemini-antiscam-protections-metrics-only",

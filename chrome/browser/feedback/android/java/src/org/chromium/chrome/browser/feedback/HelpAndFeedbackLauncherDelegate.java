@@ -50,11 +50,6 @@ public interface HelpAndFeedbackLauncherDelegate {
         return P_LINK_URL_PREFIX + helpContext;
     }
 
-    // TODO(crbug.com/365755043): Remove once downstream call has migrated.
-    static void launchFallbackSupportUri(Context context) {
-        launchFallbackSupportUri(context, null);
-    }
-
     /**
      * Handles the fallback help case of opening the URL in the browser.
      *
