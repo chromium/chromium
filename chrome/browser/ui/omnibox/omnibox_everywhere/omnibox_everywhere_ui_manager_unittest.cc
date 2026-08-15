@@ -773,7 +773,8 @@ TEST_F(OmniboxEverywhereUIManagerTest, ContextMenuCommandEnablement) {
       omnibox_everywhere::OmniboxEverywhereUIManager::kSelectAll));
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
+// TODO(crbug.com/546710681): Re-enable test on linux
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 #define MAYBE_ResizeDueToAutoResizeUpdatesWidgetBounds \
   DISABLED_ResizeDueToAutoResizeUpdatesWidgetBounds
 #else
