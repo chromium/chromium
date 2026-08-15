@@ -743,6 +743,94 @@ TEST_F(ZeroSuggestProviderTest, SendRequestForThreadsSuggestionNtpComposebox) {
   EXPECT_EQ(3U, provider_->matches().size());
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(ZeroSuggestProviderTest, FallbackMatchesOnEmptyResponse) {
+  EXPECT_CALL(*client_, IsAuthenticated())
+      .WillRepeatedly(testing::Return(true));
+  AutocompleteInput input = ZeroPrefixInputForComposebox();
+  input.set_suggest_inventory(
+      omnibox::SuggestInventory::SUGGEST_INVENTORY_BRAINSTORM);
+  provider_->Start(input, false);
+
+  EXPECT_FALSE(provider_->done());
+  EXPECT_EQ(1, test_loader_factory()->NumPending());
+
+  std::string json_response(R"(["", [], [], [], {}])");
+
+  test_loader_factory()->AddResponse(
+      test_loader_factory()->GetPendingRequest(0)->request.url.spec(),
+      json_response);
+
+  EXPECT_TRUE(base::test::RunUntil([&] { return provider_->done(); }));
+
+  // The network response is empty, so it should fallback to canned matches.
+  EXPECT_EQ(omnibox::kDefaultFallbackNumSuggestions,
+            provider_->matches().size());
+  for (const auto& match : provider_->matches()) {
+    EXPECT_EQ(AutocompleteMatchType::SEARCH_SUGGEST, match.type);
+    EXPECT_EQ(omnibox::GROUP_AI_MODE_ZERO_SUGGEST_CANNED,
+              match.suggestion_group_id);
+  }
+}
+
+TEST_F(ZeroSuggestProviderTest, FallbackMatchesOnNetworkError) {
+  EXPECT_CALL(*client_, IsAuthenticated())
+      .WillRepeatedly(testing::Return(true));
+  AutocompleteInput input = ZeroPrefixInputForComposebox();
+  input.set_suggest_inventory(
+      omnibox::SuggestInventory::SUGGEST_INVENTORY_BRAINSTORM);
+  provider_->Start(input, false);
+
+  EXPECT_FALSE(provider_->done());
+  EXPECT_EQ(1, test_loader_factory()->NumPending());
+
+  // Simulate a network error by returning an HTTP 404 response.
+  test_loader_factory()->AddResponse(
+      test_loader_factory()->GetPendingRequest(0)->request.url.spec(),
+      /*content=*/"", net::HTTP_NOT_FOUND);
+
+  EXPECT_TRUE(base::test::RunUntil([&] { return provider_->done(); }));
+
+  // The network response failed, so it should fallback to canned matches.
+  EXPECT_EQ(omnibox::kDefaultFallbackNumSuggestions,
+            provider_->matches().size());
+  for (const auto& match : provider_->matches()) {
+    EXPECT_EQ(AutocompleteMatchType::SEARCH_SUGGEST, match.type);
+    EXPECT_EQ(omnibox::GROUP_AI_MODE_ZERO_SUGGEST_CANNED,
+              match.suggestion_group_id);
+  }
+}
+
+TEST_F(ZeroSuggestProviderTest, FallbackMatchesOnParseFailure) {
+  EXPECT_CALL(*client_, IsAuthenticated())
+      .WillRepeatedly(testing::Return(true));
+  AutocompleteInput input = ZeroPrefixInputForComposebox();
+  input.set_suggest_inventory(
+      omnibox::SuggestInventory::SUGGEST_INVENTORY_BRAINSTORM);
+  provider_->Start(input, false);
+
+  EXPECT_FALSE(provider_->done());
+  EXPECT_EQ(1, test_loader_factory()->NumPending());
+
+  // Simulate a parsing error by returning invalid JSON.
+  test_loader_factory()->AddResponse(
+      test_loader_factory()->GetPendingRequest(0)->request.url.spec(),
+      R"(this is not valid json)");
+
+  EXPECT_TRUE(base::test::RunUntil([&] { return provider_->done(); }));
+
+  // The network response failed to parse, so it should fallback to canned
+  // matches.
+  EXPECT_EQ(omnibox::kDefaultFallbackNumSuggestions,
+            provider_->matches().size());
+  for (const auto& match : provider_->matches()) {
+    EXPECT_EQ(AutocompleteMatchType::SEARCH_SUGGEST, match.type);
+    EXPECT_EQ(omnibox::GROUP_AI_MODE_ZERO_SUGGEST_CANNED,
+              match.suggestion_group_id);
+  }
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 TEST_F(ZeroSuggestProviderTest, SendRequestWithLensInteractionResponse) {
   AutocompleteInput input = ZeroPrefixInputForLens();
   lens::proto::LensOverlaySuggestInputs lens_overlay_suggest_inputs;
