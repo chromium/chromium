@@ -22,6 +22,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/cookies.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
@@ -47,10 +48,13 @@ void AppendCookieToVectorIfMatchAndHasHostPermission(
     const Extension* extension,
     std::vector<Cookie>* match_vector,
     const net::CookiePartitionKeyCollection& cookie_partition_key_collection) {
-  // Ignore any cookie whose domain doesn't match the extension's
-  // host permissions.
+  // Ignore any cookie whose domain doesn't match the extension's page access
+  // controls. Pass kUnknownTabId because cookie operations are profile-wide
+  // rather than tab-bound.
   GURL cookie_domain_url = cookies_helpers::GetURLFromCanonicalCookie(cookie);
-  if (!extension->permissions_data()->HasHostPermission(cookie_domain_url)) {
+  if (extension->permissions_data()->GetPageAccess(
+          cookie_domain_url, extension_misc::kUnknownTabId, nullptr) !=
+      PermissionsData::PageAccess::kAllowed) {
     return;
   }
   // Filter the cookie using the match filter.

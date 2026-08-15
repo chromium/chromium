@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/test/gtest_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/api/cookies/cookies_helpers.h"
 #include "chrome/common/extensions/api/cookies.h"
@@ -22,6 +23,9 @@
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/buildflags/buildflags.h"
+#include "extensions/common/extension_builder.h"
+#include "extensions/common/extension_features.h"
+#include "extensions/common/permissions/permissions_data.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -303,6 +307,90 @@ TEST_F(ExtensionCookiesTest, PartitionKeySerialization) {
   // dies when a cookie is attempted to be created.
   EXPECT_CHECK_DEATH(cookies_helpers::CreateCookie(*nonce_cookie, "0"));
   EXPECT_CHECK_DEATH(cookies_helpers::CreateCookie(*opaque_cookie, "0"));
+}
+
+namespace {
+
+std::vector<Cookie> GetMatchingCookiesForExtension(
+    const Extension* extension,
+    const std::string& domain = "example.com") {
+  auto cookie = net::CanonicalCookie::CreateUnsafeCookieForTesting(
+      "ABC", "DEF", domain, "/", base::Time(), base::Time(), base::Time(),
+      base::Time(), false, false, net::CookieSameSite::NO_RESTRICTION,
+      net::COOKIE_PRIORITY_DEFAULT, net::CookieSourceType::kOther);
+  if (!cookie) {
+    return {};
+  }
+
+  base::DictValue dict;
+  dict.Set("storeId", "0");
+  auto details = GetAll::Params::Details::FromValue(dict);
+  if (!details) {
+    return {};
+  }
+
+  std::vector<Cookie> match_vector;
+  cookies_helpers::AppendMatchingCookiesFromCookieListToVector(
+      {*cookie}, &details.value(), extension, &match_vector,
+      net::CookiePartitionKeyCollection());
+  return match_vector;
+}
+
+}  // namespace
+
+// Ensures cookies from domains explicitly blocked by the user are excluded from
+// matches.
+TEST_F(ExtensionCookiesTest, AppendMatchingCookiesWithUserBlockedSite) {
+  base::test::ScopedFeatureList feature_list(
+      extensions_features::kExtensionsMenuAccessControl);
+
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("Test Extension")
+          .AddHostPermission("<all_urls>")
+          .Build();
+
+  constexpr int kContextId = 1;
+  extension->permissions_data()->SetContextId(kContextId);
+
+  // Mark example.com as user-blocked.
+  URLPatternSet user_blocked_hosts;
+  URLPattern pattern(URLPattern::SCHEME_ALL, "*://*.example.com/*");
+  user_blocked_hosts.AddPattern(pattern);
+  PermissionsData::SetUserHostRestrictions(kContextId,
+                                           std::move(user_blocked_hosts),
+                                           /*user_allowed_hosts=*/{});
+
+  // Since example.com is user-blocked, the cookie must not be matched.
+  EXPECT_TRUE(GetMatchingCookiesForExtension(extension.get()).empty());
+}
+
+// Ensures cookies from domains with withheld host permissions are excluded from
+// matches.
+TEST_F(ExtensionCookiesTest, AppendMatchingCookiesWithWithheldPermissions) {
+  base::test::ScopedFeatureList feature_list(
+      extensions_features::kExtensionsMenuAccessControl);
+
+  base::ListValue host_permissions;
+  host_permissions.Append("*://*.example.com/*");
+
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("Test Extension")
+          .SetManifestKey("host_permissions", std::move(host_permissions))
+          .Build();
+
+  // Withhold the host permission from the extension.
+  URLPatternSet withheld_hosts;
+  withheld_hosts.AddPattern(
+      URLPattern(URLPattern::SCHEME_ALL, "*://*.example.com/*"));
+
+  extension->permissions_data()->SetPermissions(
+      std::make_unique<PermissionSet>(),
+      std::make_unique<PermissionSet>(APIPermissionSet(),
+                                      ManifestPermissionSet(),
+                                      withheld_hosts.Clone(), URLPatternSet()));
+
+  // Since the permission is withheld, the cookie must not be matched.
+  EXPECT_TRUE(GetMatchingCookiesForExtension(extension.get()).empty());
 }
 
 }  // namespace extensions
