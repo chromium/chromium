@@ -67,6 +67,7 @@
 #include "net/ssl/test_static_ech_mode_getter.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/gtest_util.h"
+#include "net/test/ssl_test_util.h"
 #include "net/test/test_data_directory.h"
 #include "net/test/test_with_task_environment.h"
 #include "net/third_party/quiche/src/quiche/common/http/http_header_block.h"
@@ -256,6 +257,29 @@ class QuicChromiumClientSessionTest
       quic::QuicTime::Delta yield_after_duration =
           quic::QuicTime::Delta::FromMilliseconds(
               kQuicYieldAfterDurationMilliseconds)) {
+    InitializeInternal(&crypto_client_stream_factory_,
+                       migrate_session_on_network_change_v2,
+                       session_creation_initiator, establishment_reason,
+                       yield_after_packets, yield_after_duration);
+  }
+
+  void InitializeWithoutMockCrypto() {
+    InitializeInternal(QuicCryptoClientStreamFactory::GetDefaultFactory(),
+                       /*migrate_session_on_network_change_v2=*/false,
+                       MultiplexedSessionCreationInitiator::kUnknown,
+                       QuicSessionEstablishmentReason::kNoSessionExisted,
+                       kQuicYieldAfterPacketsRead,
+                       quic::QuicTime::Delta::FromMilliseconds(
+                           kQuicYieldAfterDurationMilliseconds));
+  }
+
+  void InitializeInternal(
+      QuicCryptoClientStreamFactory* crypto_client_stream_factory,
+      bool migrate_session_on_network_change_v2,
+      MultiplexedSessionCreationInitiator session_creation_initiator,
+      QuicSessionEstablishmentReason establishment_reason,
+      int yield_after_packets,
+      quic::QuicTime::Delta yield_after_duration) {
     if (socket_data_) {
       socket_factory_.AddSocketDataProvider(socket_data_.get());
     }
@@ -282,7 +306,7 @@ class QuicChromiumClientSessionTest
                             base::Unretained(this)));
     session_ = std::make_unique<TestingQuicChromiumClientSession>(
         connection, std::move(socket),
-        /*stream_factory=*/nullptr, &crypto_client_stream_factory_, &clock_,
+        /*stream_factory=*/nullptr, crypto_client_stream_factory, &clock_,
         transport_security_state_.get(), &ssl_config_service_,
         base::WrapUnique(static_cast<QuicServerInfo*>(nullptr)),
         QuicSessionAliasKey(url::SchemeHostPort(), session_key_),
@@ -3382,6 +3406,7 @@ TEST_P(QuicChromiumClientSessionTest, ECHModeDisabled) {
 
   quic::QuicSSLConfig config = session_->GetSSLConfig();
   EXPECT_FALSE(config.ech_grease_enabled);
+  EXPECT_FALSE(config.reject_unusable_ech_config);
   EXPECT_TRUE(config.ech_config_list.empty());
 
   CompleteCryptoHandshake();
@@ -3419,10 +3444,39 @@ TEST_P(QuicChromiumClientSessionTest, ECHModeStrictWithConfigs) {
 
   quic::QuicSSLConfig config = session_->GetSSLConfig();
   EXPECT_TRUE(config.ech_grease_enabled);
+  EXPECT_TRUE(config.reject_unusable_ech_config);
   EXPECT_EQ(config.ech_config_list,
             std::string(ech_config_list.begin(), ech_config_list.end()));
 
   CompleteCryptoHandshake();
+}
+
+// Test that, if EchMode is kStrict and ECH configs are unusable, CryptoConnect
+// fails.
+TEST_P(QuicChromiumClientSessionTest, ECHModeStrictUnusableConfig) {
+  ssl_config_service_.SetEchModeGetter(
+      std::make_unique<TestStaticEchModeGetter>(EchMode::kStrict,
+                                                kServerHostname));
+  std::vector<uint8_t> ech_config_list;
+  bssl::UniquePtr<SSL_ECH_KEYS> keys =
+      MakeTestEchKeys(kServerHostname, /*max_name_len=*/64, &ech_config_list);
+  ASSERT_TRUE(keys);
+  ASSERT_GT(ech_config_list.size(), 4u);
+  ech_config_list[2] ^= 1;
+
+  client_maker_.SetEncryptionLevel(quic::ENCRYPTION_INITIAL);
+  MockQuicData quic_data(version_);
+  quic_data.AddWrite(SYNCHRONOUS, ERR_IO_PENDING);
+  quic_data.AddRead(ASYNC, ERR_IO_PENDING);
+  quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
+  quic_data.AddSocketDataToFactory(&socket_factory_);
+
+  InitializeWithoutMockCrypto();
+  test::QuicChromiumClientSessionPeer::SetEchConfigList(session_.get(),
+                                                        ech_config_list);
+
+  EXPECT_THAT(session_->CryptoConnect(callback_.callback()),
+              IsError(ERR_QUIC_HANDSHAKE_FAILED));
 }
 
 // Test that, if EchMode is kOpportunistic, ECH GREASE is enabled in
@@ -3440,7 +3494,33 @@ TEST_P(QuicChromiumClientSessionTest, ECHModeOpportunistic) {
 
   quic::QuicSSLConfig config = session_->GetSSLConfig();
   EXPECT_TRUE(config.ech_grease_enabled);
+  EXPECT_FALSE(config.reject_unusable_ech_config);
   EXPECT_TRUE(config.ech_config_list.empty());
+
+  CompleteCryptoHandshake();
+}
+
+// Test that, if EchMode is kOpportunistic and ECH configs are unusable,
+// CryptoConnect silently succeeds without ECH.
+TEST_P(QuicChromiumClientSessionTest, ECHModeOpportunisticUnusableConfig) {
+  ssl_config_service_.SetEchModeGetter(
+      std::make_unique<TestStaticEchModeGetter>(EchMode::kOpportunistic,
+                                                kServerHostname));
+  std::vector<uint8_t> ech_config_list;
+  bssl::UniquePtr<SSL_ECH_KEYS> keys =
+      MakeTestEchKeys(kServerHostname, /*max_name_len=*/64, &ech_config_list);
+  ASSERT_TRUE(keys);
+  ASSERT_GT(ech_config_list.size(), 4u);
+  ech_config_list[2] ^= 1;
+
+  MockQuicData quic_data(version_);
+  quic_data.AddWrite(SYNCHRONOUS, client_maker_.MakeInitialSettingsPacket(1));
+  quic_data.AddRead(ASYNC, ERR_IO_PENDING);
+  quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
+  quic_data.AddSocketDataToFactory(&socket_factory_);
+  Initialize();
+  test::QuicChromiumClientSessionPeer::SetEchConfigList(session_.get(),
+                                                        ech_config_list);
 
   CompleteCryptoHandshake();
 }

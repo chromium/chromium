@@ -1835,6 +1835,7 @@ int SSLClientSocketImpl::ConfigureEch() {
       if (ssl_config_.ech_config_list.empty()) {
         return ERR_STRICT_ECH_REQUIRED;
       }
+      SSL_set_reject_unusable_ech_config(ssl_.get(), 1);
       [[fallthrough]];
     case EchMode::kOpportunistic:
       // TODO(crbug.com/41482204): Enable this unconditionally.

@@ -6320,6 +6320,35 @@ TEST_F(SSLClientSocketTest, ECHModeStrictHasConfig) {
   EXPECT_TRUE(ssl_info.encrypted_client_hello);
 }
 
+// Test that, if EchMode is kStrict and the client only supports TLS 1.2, the
+// connection fails because ECH requires TLS 1.3.
+TEST_F(SSLClientSocketTest, ECHModeStrictTLS12) {
+  std::vector<uint8_t> ech_config_list;
+  bssl::UniquePtr<SSL_ECH_KEYS> keys =
+      MakeTestEchKeys("public.example", /*max_name_len=*/64, &ech_config_list);
+  ASSERT_TRUE(keys);
+
+  SSLServerConfig server_config;
+  server_config.version_max = SSL_PROTOCOL_VERSION_TLS1_2;
+  ASSERT_TRUE(
+      StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, server_config));
+
+  SSLContextConfig context_config;
+  context_config.ech_enabled = true;
+  context_config.version_max = SSL_PROTOCOL_VERSION_TLS1_2;
+  ssl_config_service_->UpdateSSLConfigAndNotify(context_config);
+  ssl_config_service_->SetEchModeGetter(
+      std::make_unique<TestStaticEchModeGetter>(EchMode::kStrict,
+                                                host_port_pair().host()));
+
+  SSLConfig client_config;
+  client_config.version_max_override = SSL_PROTOCOL_VERSION_TLS1_2;
+  client_config.ech_config_list = std::move(ech_config_list);
+  int rv;
+  ASSERT_TRUE(CreateAndConnectSSLClientSocket(client_config, &rv));
+  EXPECT_THAT(rv, IsError(ERR_SSL_PROTOCOL_ERROR));
+}
+
 // Test that, if EchMode is kOpportunistic, the connection succeeds even
 // without ECH configs.
 TEST_F(SSLClientSocketTest, ECHModeOpportunistic) {
@@ -6349,6 +6378,75 @@ TEST_F(SSLClientSocketTest, ECHModeOpportunistic) {
   ASSERT_TRUE(CreateAndConnectSSLClientSocket(SSLConfig(), &rv));
   EXPECT_THAT(rv, IsOk());
   EXPECT_TRUE(ran_callback);
+}
+
+// Test that, if EchMode is kStrict and the ECHConfigList only contains unusable
+// configs (e.g. unsupported KEM ID/version), the connection fails because ECH
+// cannot be negotiated.
+TEST_F(SSLClientSocketTest, ECHModeStrictUnusableConfig) {
+  std::vector<uint8_t> ech_config_list;
+  bssl::UniquePtr<SSL_ECH_KEYS> keys =
+      MakeTestEchKeys("public.example", /*max_name_len=*/64, &ech_config_list);
+  ASSERT_TRUE(keys);
+
+  // Mutate the ECHConfig version so that the config is unsupported/unusable,
+  // while remaining syntactically valid length-prefixed format.
+  // Bytes 0-1 are the list length, bytes 2-3 are the ECHConfig version.
+  ASSERT_GT(ech_config_list.size(), 4u);
+  ech_config_list[2] ^= 1;
+
+  SSLServerConfig server_config;
+  server_config.ech_keys = std::move(keys);
+  ASSERT_TRUE(
+      StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, server_config));
+
+  SSLContextConfig context_config;
+  context_config.ech_enabled = true;
+  ssl_config_service_->UpdateSSLConfigAndNotify(context_config);
+  ssl_config_service_->SetEchModeGetter(
+      std::make_unique<TestStaticEchModeGetter>(EchMode::kStrict,
+                                                host_port_pair().host()));
+
+  SSLConfig client_config;
+  client_config.ech_config_list = std::move(ech_config_list);
+  int rv;
+  ASSERT_TRUE(CreateAndConnectSSLClientSocket(client_config, &rv));
+  EXPECT_THAT(rv, IsError(ERR_SSL_PROTOCOL_ERROR));
+}
+
+// Test that, if EchMode is kOpportunistic and the ECHConfigList only contains
+// unusable configs, the client silently falls back to plaintext without ECH
+// instead of failing the handshake.
+TEST_F(SSLClientSocketTest, ECHModeOpportunisticUnusableConfig) {
+  std::vector<uint8_t> ech_config_list;
+  bssl::UniquePtr<SSL_ECH_KEYS> keys =
+      MakeTestEchKeys("public.example", /*max_name_len=*/64, &ech_config_list);
+  ASSERT_TRUE(keys);
+
+  // Mutate the ECHConfig version so that the config is unsupported/unusable.
+  ASSERT_GT(ech_config_list.size(), 4u);
+  ech_config_list[2] ^= 1;
+
+  SSLServerConfig server_config;
+  server_config.ech_keys = std::move(keys);
+  ASSERT_TRUE(
+      StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, server_config));
+
+  SSLContextConfig context_config;
+  context_config.ech_enabled = true;
+  ssl_config_service_->UpdateSSLConfigAndNotify(context_config);
+  ssl_config_service_->SetEchModeGetter(
+      std::make_unique<TestStaticEchModeGetter>(EchMode::kOpportunistic,
+                                                host_port_pair().host()));
+
+  SSLConfig client_config;
+  client_config.ech_config_list = std::move(ech_config_list);
+  int rv;
+  ASSERT_TRUE(CreateAndConnectSSLClientSocket(client_config, &rv));
+  EXPECT_THAT(rv, IsOk());
+  SSLInfo ssl_info;
+  EXPECT_TRUE(sock_->GetSSLInfo(&ssl_info));
+  EXPECT_FALSE(ssl_info.encrypted_client_hello);
 }
 
 struct SSLHandshakeDetailsParams {

@@ -1745,8 +1745,10 @@ quic::QuicSSLConfig QuicChromiumClientSession::GetSSLConfig() const {
       // Explicitly listed to ensure the switch is exhaustive, forcing compiler
       // errors if new EchModes are added in the future.
       break;
-    case EchMode::kOpportunistic:
     case EchMode::kStrict:
+      config.reject_unusable_ech_config = true;
+      [[fallthrough]];
+    case EchMode::kOpportunistic:
       // kStrict must fail on empty ech_config_list. But GetSSLConfig cannot
       // propagate errors, so kStrict is enforced in CryptoConnect instead.
       config.ech_grease_enabled = true;
