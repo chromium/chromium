@@ -3463,9 +3463,11 @@ void StoragePartitionImpl::OverrideDeviceBoundSessionManagerForTesting(
   DCHECK(initialized_);
   device_bound_session_manager_.reset();
 
-  mojo::MakeSelfOwnedReceiver(
-      std::move(device_bound_session_manager),
-      device_bound_session_manager_.BindNewPipeAndPassReceiver());
+  if (device_bound_session_manager) {
+    mojo::MakeSelfOwnedReceiver(
+        std::move(device_bound_session_manager),
+        device_bound_session_manager_.BindNewPipeAndPassReceiver());
+  }
 }
 
 void StoragePartitionImpl::GetQuotaSettings(

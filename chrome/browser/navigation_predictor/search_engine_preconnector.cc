@@ -36,6 +36,7 @@
 
 #if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 #include "chrome/browser/net/device_bound_session_prewarmer.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #endif
 
 namespace {
@@ -214,31 +215,6 @@ void SearchEnginePreconnector::StartPreconnecting(bool with_startup_delay) {
   preconnector_started_ = true;
   timer_.Stop();
 
-#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
-  // TODO(crbug.com/544602735): Implement the DeviceBoundSessionPrewarmer as a
-  // KeyedService.
-  if (base::FeatureList::IsEnabled(
-          features::kDeviceBoundSessionsDsePrewarmer) &&
-      !device_bound_session_prewarmer_) {
-    device_bound_session_prewarmer_ =
-        std::make_unique<DeviceBoundSessionPrewarmer>(base::BindRepeating(
-            [](content::BrowserContext* browser_context) {
-              return browser_context->GetDefaultStoragePartition()
-                  ->GetDeviceBoundSessionManager();
-            },
-            browser_context_));
-    device_bound_session_prewarmer_->Start(
-        base::BindRepeating(
-            [](base::WeakPtr<SearchEnginePreconnector> preconnector) {
-              return preconnector
-                         ? preconnector->GetDefaultSearchEngineOriginURL()
-                         : GURL();
-            },
-            GetWeakPtr()),
-        /*is_startup_prewarm=*/true);
-  }
-#endif
-
   if (with_startup_delay) {
     StartPreconnectWithDelay(
         base::Milliseconds(base::GetFieldTrialParamByFeatureAsInt(
@@ -248,13 +224,18 @@ void SearchEnginePreconnector::StartPreconnecting(bool with_startup_delay) {
     return;
   }
 
-  PreconnectDSE();
+  PreconnectDSE(/*is_startup=*/false);
 }
 
-void SearchEnginePreconnector::PreconnectDSE() {
+void SearchEnginePreconnector::PreconnectDSE(bool is_startup) {
   DCHECK(ShouldBeEnabledForOffTheRecord() ||
          !browser_context_->IsOffTheRecord());
   DCHECK(!timer_.IsRunning());
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+  absl::Cleanup reset_prewarmer = [this] {
+    device_bound_session_prewarmer_.reset();
+  };
+#endif
   if (!base::FeatureList::IsEnabled(features::kPreconnectToSearch)) {
     return;
   }
@@ -309,6 +290,32 @@ void SearchEnginePreconnector::PreconnectDSE() {
                                                "skip_in_background",
                                                kDefaultSkipInBackground) ||
       is_browser_app_likely_in_foreground) {
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+    std::move(reset_prewarmer).Cancel();
+    // TODO(crbug.com/544602735): Implement the DeviceBoundSessionPrewarmer as a
+    // KeyedService.
+    if (base::FeatureList::IsEnabled(
+            features::kDeviceBoundSessionsDsePrewarmer) &&
+        !device_bound_session_prewarmer_) {
+      device_bound_session_prewarmer_ =
+          std::make_unique<DeviceBoundSessionPrewarmer>(base::BindRepeating(
+              [](content::BrowserContext* browser_context) {
+                return browser_context->GetDefaultStoragePartition()
+                    ->GetDeviceBoundSessionManager();
+              },
+              browser_context_));
+      device_bound_session_prewarmer_->Start(
+          base::BindRepeating(
+              [](base::WeakPtr<SearchEnginePreconnector> preconnector) {
+                return preconnector
+                           ? preconnector->GetDefaultSearchEngineOriginURL()
+                           : GURL();
+              },
+              GetWeakPtr()),
+          is_startup);
+    }
+#endif
+
     net::SchemefulSite schemeful_site(preconnect_url);
     auto network_anonymziation_key =
         net::NetworkAnonymizationKey::CreateSameSite(std::move(schemeful_site));
@@ -418,9 +425,11 @@ void SearchEnginePreconnector::StartPreconnectWithDelay(
     PreconnectTriggerEvent event) {
   RecordPreconnectAttemptHistogram(delay, event);
   //  Set/Reset the timer to fire after the specified `delay`.
-  timer_.Start(FROM_HERE, delay,
-               base::BindOnce(&SearchEnginePreconnector::PreconnectDSE,
-                              base::Unretained(this)));
+  timer_.Start(
+      FROM_HERE, delay,
+      base::BindOnce(
+          &SearchEnginePreconnector::PreconnectDSE, base::Unretained(this),
+          /*is_startup=*/event == PreconnectTriggerEvent::kInitialPreconnect));
 }
 
 content::PreconnectManager& SearchEnginePreconnector::GetPreconnectManager() {
@@ -454,7 +463,7 @@ void SearchEnginePreconnector::OnWebContentsVisibilityChanged(
 
   // Attempt reconnect again in case the visibility has changed after the last
   // preconnect attempt so that we will preconnect sooner.
-  PreconnectDSE();
+  PreconnectDSE(/*is_startup=*/false);
 }
 
 bool SearchEnginePreconnector::IsPreconnectEnabled() {

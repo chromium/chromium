@@ -161,6 +161,12 @@ class SearchEnginePreconnector
     is_short_session_for_testing_ = is_short_session;
   }
 
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+  bool HasDeviceBoundSessionPrewarmerForTesting() const {
+    return !!device_bound_session_prewarmer_;
+  }
+#endif
+
  private:
   FRIEND_TEST_ALL_PREFIXES(
       SearchEnginePreconnectorWithPreconnect2FeatureBrowserTest,
@@ -195,7 +201,7 @@ class SearchEnginePreconnector
 
   // Preconnects to the default search engine synchronously. Preconnects in
   // uncredentialed mode.
-  void PreconnectDSE();
+  void PreconnectDSE(bool is_startup);
 
   // Runs `PreconnectDSE` after the `delay`.
   void StartPreconnectWithDelay(base::TimeDelta delay,
