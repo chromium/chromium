@@ -262,6 +262,7 @@ class FullscreenWaiter {
   };
 
   FullscreenWaiter(BrowserWindowInterface* browser, Expectation expecation);
+  FullscreenWaiter(FullscreenController* controller, Expectation expectation);
 
   FullscreenWaiter(const FullscreenWaiter&) = delete;
   FullscreenWaiter& operator=(const FullscreenWaiter&) = delete;

@@ -601,19 +601,26 @@ bool MaximizeAndWaitUntilUIUpdateDone(BrowserWindowInterface& browser) {
 
 FullscreenWaiter::FullscreenWaiter(BrowserWindowInterface* browser,
                                    FullscreenWaiter::Expectation expectation)
+    : FullscreenWaiter(browser->GetFeatures()
+                           .exclusive_access_manager()
+                           ->fullscreen_controller(),
+                       std::move(expectation)) {}
+
+FullscreenWaiter::FullscreenWaiter(FullscreenController* controller,
+                                   FullscreenWaiter::Expectation expectation)
     : expectation_(std::move(expectation)),
-      controller_(browser->GetFeatures()
-                      .exclusive_access_manager()
-                      ->fullscreen_controller()),
+      controller_(controller),
       // Sometimes, the wait is called on a sequeunce, e.g.
       // as a part of interactive_ui_tests's RunTestSequence.
       // To handle that case, we can process pending task posted to the
       // sequence in nested RunLoop.
       run_loop_(base::RunLoop::Type::kNestableTasksAllowed),
-      satisfied_(IsSatisfied()) {
-  subscription_ = controller_->RegisterOnFullscreenStateChanged(
-      base::BindRepeating(&FullscreenWaiter::OnFullscreenStateChanged,
-                          base::Unretained(this)));
+      satisfied_(controller_ ? IsSatisfied() : true) {
+  if (controller_) {
+    subscription_ = controller_->RegisterOnFullscreenStateChanged(
+        base::BindRepeating(&FullscreenWaiter::OnFullscreenStateChanged,
+                            base::Unretained(this)));
+  }
 }
 
 FullscreenWaiter::~FullscreenWaiter() = default;

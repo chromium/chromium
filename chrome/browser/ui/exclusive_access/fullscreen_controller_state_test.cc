@@ -9,13 +9,10 @@
 
 #include "build/build_config.h"
 #include "chrome/browser/fullscreen.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_test.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
@@ -225,8 +222,7 @@ bool FullscreenControllerStateTest::InvokeEvent(Event event) {
 
   // Figure out the fullscreen mode expectation.
   ui_test_utils::FullscreenWaiter::Expectation expectation;
-  content::WebContents* const active_tab =
-      GetBrowser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* const active_tab = GetActiveWebContents();
   // If event is {ENTER,EXIT}_TAB_FULLSCREEN and `active_tab` is
   // being captured, fullscreen mode won't be updated.
   if ((event != ENTER_TAB_FULLSCREEN && event != EXIT_TAB_FULLSCREEN) ||
@@ -253,7 +249,8 @@ bool FullscreenControllerStateTest::InvokeEvent(Event event) {
         break;
     }
   }
-  ui_test_utils::FullscreenWaiter waiter(GetBrowser(), expectation);
+  ui_test_utils::FullscreenWaiter waiter(GetFullscreenController(),
+                                         expectation);
 
   debugging_log_ << "  InvokeEvent(" << std::left
                  << std::setw(kMaxStateNameLength) << GetEventString(event)
@@ -523,13 +520,6 @@ void FullscreenControllerStateTest::VerifyWindowStateExpectations(
 }
 
 void FullscreenControllerStateTest::TearDown() {}
-
-FullscreenController* FullscreenControllerStateTest::GetFullscreenController() {
-  return GetBrowser()
-      ->GetFeatures()
-      .exclusive_access_manager()
-      ->fullscreen_controller();
-}
 
 std::string FullscreenControllerStateTest::GetTransitionTableAsString() const {
   std::ostringstream output;
