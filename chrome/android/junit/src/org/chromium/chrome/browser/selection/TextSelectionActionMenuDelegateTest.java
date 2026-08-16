@@ -394,7 +394,10 @@ public class TextSelectionActionMenuDelegateTest {
         when(mTemplateUrl.getKeyword()).thenReturn("google");
         when(mTemplateUrlService.getFullNameFromTemplateUrl("google")).thenReturn("Google");
 
-        Context context = ApplicationProvider.getApplicationContext();
+        Context context =
+                new android.view.ContextThemeWrapper(
+                        ApplicationProvider.getApplicationContext(),
+                        R.style.Theme_BrowserUI_DayNight);
         String title = mDelegate.getWebSearchMenuItemTitle(context, "test query");
 
         assertEquals(
@@ -405,7 +408,10 @@ public class TextSelectionActionMenuDelegateTest {
     @Test
     public void testGetWebSearchMenuItemTitle_nullOrEmpty() {
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
-        Context context = ApplicationProvider.getApplicationContext();
+        Context context =
+                new android.view.ContextThemeWrapper(
+                        ApplicationProvider.getApplicationContext(),
+                        R.style.Theme_BrowserUI_DayNight);
 
         // TemplateUrl null
         when(mTemplateUrlService.getDefaultSearchEngineTemplateUrl()).thenReturn(null);
@@ -420,5 +426,28 @@ public class TextSelectionActionMenuDelegateTest {
         // Selected text empty
         when(mTemplateUrlService.getFullNameFromTemplateUrl("google")).thenReturn("Google");
         assertNull(mDelegate.getWebSearchMenuItemTitle(context, ""));
+    }
+
+    @Test
+    public void testGetWebSearchMenuItemTitle_longTextTruncated() {
+        TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
+        when(mTemplateUrlService.getDefaultSearchEngineTemplateUrl()).thenReturn(mTemplateUrl);
+        when(mTemplateUrl.getKeyword()).thenReturn("google");
+        when(mTemplateUrlService.getFullNameFromTemplateUrl("google")).thenReturn("Google");
+
+        Context context =
+                new android.view.ContextThemeWrapper(
+                        ApplicationProvider.getApplicationContext(),
+                        R.style.Theme_BrowserUI_DayNight);
+        String longText = "a".repeat(1000);
+        String title = mDelegate.getWebSearchMenuItemTitle(context, longText);
+
+        assertNotNull(title);
+        assertTrue(
+                title.startsWith(
+                        context.getString(R.string.contextmenu_search_web_for_text, "Google", "")
+                                .replace("\"", "")));
+        assertTrue(title.endsWith("\""));
+        assertTrue(title.length() < longText.length());
     }
 }

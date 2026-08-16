@@ -6,12 +6,17 @@ package org.chromium.chrome.browser.selection;
 
 import android.content.Context;
 import android.content.pm.ResolveInfo;
+import android.content.res.Resources;
+import android.text.TextPaint;
 import android.text.TextUtils;
+import android.view.ContextThemeWrapper;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
 import androidx.annotation.VisibleForTesting;
+import androidx.core.widget.TextViewCompat;
 
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.SelectionActionMenuClientWrapper.MenuType;
@@ -30,6 +35,7 @@ import org.chromium.chrome.browser.share.link_to_text.LinkToTextCoordinator;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetUtils;
 import org.chromium.chrome.browser.ui.side_panel.AndroidSidePanelEnabledFn;
+import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
@@ -178,7 +184,56 @@ public class TextSelectionActionMenuDelegate implements SelectionActionMenuDeleg
         if (TextUtils.isEmpty(fullName)) return null;
         String sanitizedText = SelectionUtils.sanitizeTextForMenu(selectedText);
         if (sanitizedText.isEmpty()) return null;
-        return context.getString(R.string.contextmenu_search_web_for_text, fullName, sanitizedText);
+
+        String fullText =
+                context.getString(
+                        R.string.contextmenu_search_web_for_text, fullName, sanitizedText);
+        String template =
+                context.getString(R.string.contextmenu_search_web_for_text, fullName, "%s");
+        int separatorIndex = template.indexOf("%s");
+        if (separatorIndex == -1) {
+            return fullText;
+        }
+
+        String suffix = template.substring(separatorIndex + 2);
+        if (!fullText.endsWith(suffix)) {
+            return fullText;
+        }
+        String textBeforeSuffix = fullText.substring(0, fullText.length() - suffix.length());
+        return getTruncatedText(context, textBeforeSuffix, suffix);
+    }
+
+    private String getTruncatedText(Context context, String textBeforeSuffix, String suffix) {
+        int availableTextWidth = getAvailableTextWidth(context);
+        Context themedContext = new ContextThemeWrapper(context, R.style.Theme_BrowserUI_DayNight);
+        TextView placeholderTextView = new TextView(themedContext);
+        TextViewCompat.setTextAppearance(
+                placeholderTextView, BrowserUiListMenuUtils.getDefaultTextAppearanceStyle());
+        TextPaint paint = placeholderTextView.getPaint();
+
+        float suffixWidth = paint.measureText(suffix);
+        float remainingWidth = availableTextWidth - suffixWidth;
+
+        CharSequence truncatedText =
+                TextUtils.ellipsize(
+                        textBeforeSuffix, paint, remainingWidth, TextUtils.TruncateAt.END);
+        return truncatedText + suffix;
+    }
+
+    private int getAvailableTextWidth(Context context) {
+        Resources res = context.getResources();
+        int viewportWidthPx =
+                (mTab.getView() != null && mTab.getView().getWidth() > 0)
+                        ? mTab.getView().getWidth()
+                        : res.getDisplayMetrics().widthPixels;
+        int maxWidthPx = res.getDimensionPixelSize(R.dimen.text_selection_context_menu_max_width);
+        int gutterPx =
+                res.getDimensionPixelSize(R.dimen.text_selection_context_menu_viewport_gutter);
+        int maxMenuWidthPx = Math.min(viewportWidthPx - 2 * gutterPx, maxWidthPx);
+
+        int itemPadding = res.getDimensionPixelSize(R.dimen.list_menu_item_horizontal_padding) * 2;
+        int safetyBufferPx = (int) Math.ceil(1 * res.getDisplayMetrics().density);
+        return maxMenuWidthPx - itemPadding - safetyBufferPx;
     }
 
     // TODO(b/543135302): Move Ask Gemini menu enabling checks and feature params into GlicEnabling

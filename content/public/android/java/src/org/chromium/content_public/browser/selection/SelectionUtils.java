@@ -42,13 +42,16 @@ public class SelectionUtils {
     }
 
     /**
-     * Truncates oversized selected text for display in menu items.
+     * Sanitizes and truncates oversized selected text for display in menu items.
      *
      * @param text The selected text.
-     * @return Truncated text with an ellipsis if it exceeds MAX_SELECTION_TEXT_LENGTH_FOR_MENU.
+     * @return Sanitized text with single-line whitespace, truncated if it exceeds
+     *     MAX_SEARCH_QUERY_LENGTH.
      */
     public static String sanitizeTextForMenu(String text) {
-        return sanitizeQuery(text, MAX_SEARCH_QUERY_LENGTH);
+        if (TextUtils.isEmpty(text)) return "";
+        String cleanText = text.replaceAll("\\s+", " ").trim();
+        return sanitizeQuery(cleanText, MAX_SEARCH_QUERY_LENGTH);
     }
 
     /**
