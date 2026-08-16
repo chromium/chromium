@@ -112,7 +112,7 @@ IN_PROC_BROWSER_TEST_P(GeicButtonBrowserTest, GeicButtonCreatedAndConfigured) {
 
   GeicButton* button = container->GetGeicButtonForTesting();
   ASSERT_NE(container->GetGeicButtonForTesting(), nullptr);
-  EXPECT_EQ(container->GetGlicButton(), nullptr);
+  EXPECT_EQ(container->GetGlicButtonForTesting(), nullptr);
 
   // Check tooltip text.
   EXPECT_EQ(button->GetTooltipText(),

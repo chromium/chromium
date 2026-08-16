@@ -305,10 +305,6 @@ TabStripActionContainer::~TabStripActionContainer() {
   }
 }
 
-views::LabelButton* TabStripActionContainer::GetGlicButton() {
-  return glic_button_;
-}
-
 void TabStripActionContainer::AddedToWidget() {
   views::View::AddedToWidget();
   if (glic_split_button_controller_ &&

@@ -105,7 +105,7 @@ class TabStripActionContainerBrowserTest : public InProcessBrowserTest {
  protected:
   glic::TabStripGlicButton* GlicNudgeButton() {
     return views::AsViewClass<glic::TabStripGlicButton>(
-        tab_strip_action_container()->GetGlicButton());
+        tab_strip_action_container()->GetGlicButtonForTesting());
   }
 
   glic::TabStripGlicActorTaskIcon* GlicActorTaskIcon() {

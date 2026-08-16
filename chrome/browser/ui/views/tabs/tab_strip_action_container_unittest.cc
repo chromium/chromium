@@ -202,12 +202,12 @@ class TabStripActionContainerTest : public ChromeViewsTestBase {
 
 TEST_F(TabStripActionContainerTest, MAYBE(GlicButtonDrawing)) {
   BuildGlicContainer(/*use_otr_profile=*/false);
-  EXPECT_TRUE(tab_strip_action_container_->GetGlicButton());
+  EXPECT_TRUE(tab_strip_action_container_->GetGlicButtonForTesting());
 }
 
 TEST_F(TabStripActionContainerTest, GlicButtonUnsupportedProfile) {
   BuildGlicContainer(/*use_otr_profile=*/true);
-  EXPECT_FALSE(tab_strip_action_container_->GetGlicButton());
+  EXPECT_FALSE(tab_strip_action_container_->GetGlicButtonForTesting());
 }
 
 TEST_F(TabStripActionContainerTest,
@@ -229,7 +229,7 @@ TEST_F(TabStripActionContainerTest,
             tab_strip_action_container_->glic_actor_button_container()
                 ->children()[1]);
 
-  ASSERT_EQ(tab_strip_action_container_->GetGlicButton(),
+  ASSERT_EQ(tab_strip_action_container_->GetGlicButtonForTesting(),
             tab_strip_action_container_->children()[1]);
 #endif  // !BUILDFLAG(IS_MAC)
 }
@@ -256,7 +256,7 @@ TEST_F(TabStripActionContainerTest, MAYBE(OrdersButtonsCorrectlyWhenShown)) {
       tab_strip_action_container_->glic_actor_button_container()->children(),
       SizeIs(3));
 
-  ASSERT_EQ(tab_strip_action_container_->GetGlicButton(),
+  ASSERT_EQ(tab_strip_action_container_->GetGlicButtonForTesting(),
             tab_strip_action_container_->glic_actor_button_container()
                 ->children()[1]);
   ASSERT_EQ(tab_strip_action_container_->glic_actor_task_icon(),
@@ -271,7 +271,8 @@ TEST_F(TabStripActionContainerTest, MAYBE(GlicButtonUpdateLabel)) {
   glic_nudge_controller()->UpdateNudgeLabel(
       web_contents(), "TEST", /*prompt_suggestion=*/std::nullopt,
       /*activity=*/std::nullopt, base::NullCallback());
-  ASSERT_EQ(tab_strip_action_container_->GetGlicButton()->GetText(), u"TEST");
+  ASSERT_EQ(tab_strip_action_container_->GetGlicButtonForTesting()->GetText(),
+            u"TEST");
 }
 
 TEST_F(TabStripActionContainerTest, MAYBE(GlicButtonHideNudgeOnTabChange)) {
@@ -282,10 +283,11 @@ TEST_F(TabStripActionContainerTest, MAYBE(GlicButtonHideNudgeOnTabChange)) {
       web_contents(), "TEST", /*prompt_suggestion=*/std::nullopt,
       /*activity=*/std::nullopt, base::NullCallback());
   ASSERT_TRUE(tab_strip_action_container_->GetIsShowingGlicNudge());
-  ASSERT_EQ(tab_strip_action_container_->GetGlicButton()->GetText(), u"TEST");
+  ASSERT_EQ(tab_strip_action_container_->GetGlicButtonForTesting()->GetText(),
+            u"TEST");
 
   SimulateActiveTabChanged();
   ASSERT_FALSE(tab_strip_action_container_->GetIsShowingGlicNudge());
-  ASSERT_EQ(tab_strip_action_container_->GetGlicButton()->GetText(),
+  ASSERT_EQ(tab_strip_action_container_->GetGlicButtonForTesting()->GetText(),
             u"Ask Gemini");
 }

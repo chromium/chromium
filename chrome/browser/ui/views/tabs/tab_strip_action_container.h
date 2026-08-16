@@ -106,7 +106,7 @@ class TabStripActionContainer : public views::View,
     return animation_session_.get();
   }
 
-  views::LabelButton* GetGlicButton();
+  views::LabelButton* GetGlicButtonForTesting() { return glic_button_; }
   geic::GeicButton* GetGeicButtonForTesting() { return geic_button_; }
 
   glic::TabStripGlicActorTaskIcon* glic_actor_task_icon() {
