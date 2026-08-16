@@ -90,7 +90,7 @@
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Значок для отпр. предпросм. листа</translation>
 <translation id="3776329373944672717">Название группы вкладок "<ph name="TITLE_OF_GROUP" />"</translation>
-<translation id="3810973564298564668">Управление</translation>
+<translation id="3810973564298564668">Настроить</translation>
 <translation id="3849789634341518784">{TAB_COUNT,plural, =1{Открепить вкладку}one{Открепить вкладки}few{Открепить вкладки}many{Открепить вкладки}other{Открепить вкладки}}</translation>
 <translation id="3940195383040445971">Отслеживать цены на вкладках</translation>
 <translation id="3940717704786481856">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> новая вкладка, закрыто: <ph name="ANY_CLOSED" />}one{<ph name="MANY_ADDED" /> новая вкладка, закрыто: <ph name="ANY_CLOSED" />}few{<ph name="MANY_ADDED" /> новые вкладки, закрыто: <ph name="ANY_CLOSED" />}many{<ph name="MANY_ADDED" /> новых вкладок, закрыто: <ph name="ANY_CLOSED" />}other{<ph name="MANY_ADDED" /> новой вкладки, закрыто: <ph name="ANY_CLOSED" />}}</translation>
