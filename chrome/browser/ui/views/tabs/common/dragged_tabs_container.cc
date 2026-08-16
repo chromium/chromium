@@ -453,10 +453,10 @@ gfx::Vector2d DraggedTabsContainer::GetDraggingViewPositionForBounds(
     const gfx::Vector2d& target_offset) const {
   gfx::Vector2d target(IsHorizontalDragSupported()
                            ? dragging_views_bounding_box.x() + target_offset.x()
-                           : target_offset.x(),
+                           : 0,
                        IsVerticalDragSupported()
                            ? dragging_views_bounding_box.y() + target_offset.y()
-                           : target_offset.y());
+                           : 0);
   double value = drag_start_animation_.GetCurrentValue();
   if (drag_start_animation_.is_animating()) {
     if (auto it = animating_views_start_offsets_.find(dragging_view);
