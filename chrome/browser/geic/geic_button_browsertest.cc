@@ -4,9 +4,23 @@
 
 #include "chrome/browser/geic/geic_button.h"
 
+#include <optional>
+
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
+
+// Mirrors the GN condition gating //chrome/test/base:scoped_channel_override —
+// the class is declared for all branded builds but only linked on these
+// platforms.
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && \
+    (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX))
+#define GEIC_SUPPORTS_CHANNEL_OVERRIDE 1
+#else
+#define GEIC_SUPPORTS_CHANNEL_OVERRIDE 0
+#endif
+
 #include "chrome/browser/geic/geic_enabling.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -20,7 +34,11 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#if GEIC_SUPPORTS_CHANNEL_OVERRIDE
+#include "chrome/test/base/scoped_channel_override.h"
+#endif
 #include "components/version_info/channel.h"
+#include "components/version_info/version_info.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -34,6 +52,10 @@ struct GeicButtonTestParams {
   bool geic_switch_enabled = false;
   bool disable_web_security_switch_enabled = false;
   bool glic_feature_enabled = false;
+#if GEIC_SUPPORTS_CHANNEL_OVERRIDE
+  std::optional<chrome::ScopedChannelOverride::Channel> channel_override;
+#endif
+  bool expect_enabled = false;
 };
 
 class GeicButtonBrowserTest
@@ -41,6 +63,11 @@ class GeicButtonBrowserTest
       public testing::WithParamInterface<GeicButtonTestParams> {
  public:
   GeicButtonBrowserTest() {
+#if GEIC_SUPPORTS_CHANNEL_OVERRIDE
+    if (GetParam().channel_override.has_value()) {
+      channel_override_.emplace(*GetParam().channel_override);
+    }
+#endif
     if (GetParam().glic_feature_enabled) {
       feature_list_.InitAndEnableFeature(features::kGlic);
     } else {
@@ -60,18 +87,12 @@ class GeicButtonBrowserTest
     }
   }
 
-  bool ExpectGeicEnabled() const {
-    if (!GetParam().geic_switch_enabled || GetParam().glic_feature_enabled) {
-      return false;
-    }
-    const auto channel = chrome::GetChannel();
-    return (channel == version_info::Channel::CANARY ||
-            channel == version_info::Channel::UNKNOWN)
-               ? true
-               : GetParam().disable_web_security_switch_enabled;
-  }
+  bool ExpectGeicEnabled() const { return GetParam().expect_enabled; }
 
  private:
+#if GEIC_SUPPORTS_CHANNEL_OVERRIDE
+  std::optional<chrome::ScopedChannelOverride> channel_override_;
+#endif
   base::test::ScopedFeatureList feature_list_;
 };
 
@@ -179,19 +200,57 @@ INSTANTIATE_TEST_SUITE_P(
         // All conditions met: GEiC switch and security switch enabled.
         GeicButtonTestParams{.geic_switch_enabled = true,
                              .disable_web_security_switch_enabled = true,
-                             .glic_feature_enabled = false},
+                             .glic_feature_enabled = false,
+                             .expect_enabled = true},
         // Missing --geic-enabled switch.
         GeicButtonTestParams{.geic_switch_enabled = false,
                              .disable_web_security_switch_enabled = true,
-                             .glic_feature_enabled = false},
-        // Missing --disable-web-security switch (only required for
-        // non-local/canary channels).
-        GeicButtonTestParams{.geic_switch_enabled = true,
-                             .disable_web_security_switch_enabled = false,
-                             .glic_feature_enabled = false},
+                             .glic_feature_enabled = false,
+                             .expect_enabled = false},
         // GLIC feature enabled (mutual exclusivity).
         GeicButtonTestParams{.geic_switch_enabled = true,
                              .disable_web_security_switch_enabled = true,
-                             .glic_feature_enabled = true}));
+                             .glic_feature_enabled = true,
+                             .expect_enabled = false}));
+
+#if GEIC_SUPPORTS_CHANNEL_OVERRIDE
+INSTANTIATE_TEST_SUITE_P(
+    ChannelOverride,
+    GeicButtonBrowserTest,
+    testing::Values(
+        // Branded Stable channel without --disable-web-security:
+        // Enabled on non-official developer builds, disabled on official
+        // builds.
+        GeicButtonTestParams{
+            .geic_switch_enabled = true,
+            .disable_web_security_switch_enabled = false,
+            .glic_feature_enabled = false,
+            .channel_override = chrome::ScopedChannelOverride::Channel::kStable,
+            .expect_enabled = !version_info::IsOfficialBuild()},
+        // Branded Stable channel with --disable-web-security -> enabled.
+        GeicButtonTestParams{
+            .geic_switch_enabled = true,
+            .disable_web_security_switch_enabled = true,
+            .glic_feature_enabled = false,
+            .channel_override = chrome::ScopedChannelOverride::Channel::kStable,
+            .expect_enabled = true},
+        // Branded Canary channel without --disable-web-security -> enabled.
+        GeicButtonTestParams{
+            .geic_switch_enabled = true,
+            .disable_web_security_switch_enabled = false,
+            .glic_feature_enabled = false,
+            .channel_override = chrome::ScopedChannelOverride::Channel::kCanary,
+            .expect_enabled = true}));
+#else
+INSTANTIATE_TEST_SUITE_P(
+    Default,
+    GeicButtonBrowserTest,
+    testing::Values(
+        // Unbranded/developer builds without --disable-web-security -> enabled.
+        GeicButtonTestParams{.geic_switch_enabled = true,
+                             .disable_web_security_switch_enabled = false,
+                             .glic_feature_enabled = false,
+                             .expect_enabled = true}));
+#endif
 
 }  // namespace geic

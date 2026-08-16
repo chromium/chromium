@@ -1,6 +1,3 @@
-  // TODO(crbug.com/545155625): Remove --disable-web-security requirement
-  // before teamfood. Currently required so users see a security warning
-  // banner if led to enabling this via social engineering.
 // Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -13,6 +10,7 @@
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
 #include "components/version_info/channel.h"
+#include "components/version_info/version_info.h"
 #include "content/public/common/content_switches.h"
 
 namespace geic {
@@ -26,8 +24,13 @@ bool IsGeicEnabled(Profile* profile) {
     return false;
   }
   const auto channel = chrome::GetChannel();
-  if (channel != version_info::Channel::UNKNOWN &&
-      channel != version_info::Channel::CANARY &&
+  const bool is_developer_build = !version_info::IsOfficialBuild() ||
+                                  channel == version_info::Channel::UNKNOWN ||
+                                  channel == version_info::Channel::CANARY;
+  // TODO(crbug.com/545155625): Remove --disable-web-security requirement before
+  // teamfood. Currently required so users see a security warning banner if led
+  // to enabling this via social engineering.
+  if (!is_developer_build &&
       !command_line->HasSwitch(::switches::kDisableWebSecurity)) {
     return false;
   }
