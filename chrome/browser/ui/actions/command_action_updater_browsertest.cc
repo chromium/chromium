@@ -205,7 +205,8 @@ IN_PROC_BROWSER_TEST_F(CommandActionUpdaterBrowserTest,
 IN_PROC_BROWSER_TEST_F(
     CommandActionUpdaterBrowserTest,
     ExecuteToggleVerticalTabsCollapsePreservesKeyboardShortcutSource) {
-  actions::ActionItem* root = BrowserActions::From(browser())->root_action_item();
+  actions::ActionItem* root =
+      BrowserActions::From(browser())->root_action_item();
   ASSERT_TRUE(root);
   actions::ActionItem* toggle_action = actions::ActionManager::Get().FindAction(
       kActionToggleCollapseVertical, root);
@@ -251,6 +252,9 @@ IN_PROC_BROWSER_TEST_F(
       actions::ActionItem::InvokeActionCallback());
 }
 
+// Verifies that actions can be retrieved using the scope / root item correctly.
+// This prevents regressions against a bug where two same-named actions defined
+// in different namespaces would collide.
 IN_PROC_BROWSER_TEST_F(CommandActionUpdaterBrowserTest,
                        ClipboardCommandsMapToActionsNamespace) {
   actions::ActionItem* root =
@@ -289,4 +293,17 @@ IN_PROC_BROWSER_TEST_F(CommandActionUpdaterBrowserTest,
   chrome::BrowserCommandController::From(browser())->UpdateCommandEnabled(
       IDC_PASTE, false);
   EXPECT_FALSE(paste_action->GetEnabled());
+}
+
+// Verifies that the download action is registered on all platforms,
+// specifically ChromeOS where it performs a different behavior.
+IN_PROC_BROWSER_TEST_F(CommandActionUpdaterBrowserTest,
+                       ShowDownloadsActionIsRegisteredAndEnabled) {
+  actions::ActionItem* root =
+      BrowserActions::From(browser())->root_action_item();
+  ASSERT_TRUE(root);
+  actions::ActionItem* downloads_action =
+      actions::ActionManager::Get().FindAction(kActionShowDownloads, root);
+  ASSERT_TRUE(downloads_action);
+  EXPECT_TRUE(downloads_action->GetEnabled());
 }

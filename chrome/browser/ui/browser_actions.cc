@@ -1802,7 +1802,6 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
           .Build());
   CastToolbarButtonUtil::AddCastChildActions(media_router_action, bwi);
 
-#if !BUILDFLAG(IS_CHROMEOS)
   // TODO(crbug.com/435220196): Ideally this action would have
   // DownloadToolbarUIController passed in as a dependency directly.
   root_action_item_->AddChild(
@@ -1810,9 +1809,17 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
           base::BindRepeating(
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
+#if BUILDFLAG(IS_CHROMEOS)
+                // ChromeOS does not use DownloadToolbarUIController (downloads
+                // are managed via the Ash shelf/holding space), so directly
+                // open the downloads WebUI page instead of showing the toolbar
+                // bubble.
+                chrome::ShowDownloads(webui::GetBrowserForOpeningWebUi(bwi));
+#else
                 if (auto* controller = DownloadToolbarUIController::From(bwi)) {
                   controller->InvokeUI();
                 }
+#endif
               },
               bwi),
           kActionShowDownloads, IDS_SHOW_DOWNLOADS, IDS_TOOLTIP_DOWNLOAD_ICON,
@@ -1820,7 +1827,6 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
               ? kDownloadIcon
               : kDownloadToolbarButtonChromeRefreshOldIcon)
           .Build());
-#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   if (tab_groups::SavedTabGroupUtils::SupportsSharedTabGroups()) {
     root_action_item_->AddChild(
@@ -3196,7 +3202,6 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
               bwi))
           .SetActionId(kActionGroupUngroupedTabs)
           .Build());
-
 
   root_action_item_->AddChild(
       actions::ActionItem::Builder(
