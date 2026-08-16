@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-edition = "2023";
+syntax = "proto3";
 
 package cast_receiver;
 
@@ -13,7 +13,6 @@ import "components/cast_receiver/proto/keyboard_input_service.proto";
 import "components/cast_receiver/proto/mouse_input_service.proto";
 import "components/cast_receiver/proto/touch_input_service.proto";
 
-option features.field_presence = IMPLICIT;
 option java_multiple_files = true;
 option java_package = "com.google.pixel.exo.proto";
 option java_outer_classname = "InputEventProto";

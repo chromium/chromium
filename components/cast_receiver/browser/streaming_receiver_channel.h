@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/cast/message_port/message_port.h"
 #include "components/cast_receiver/proto/display_info.pb.h"
@@ -25,21 +26,20 @@ namespace cast_receiver {
 
 class InputCapabilities;
 class InputEvent;
-class MessagePortService;
 
-// Represents a channel for transmitting various messages over the connected
-// channels.
-//
-// This class manages the control port (for bootstrap) and the sub-channels
-// (for input events and capabilities) using MessagePortService.
-class StreamingReceiverChannel {
+// Represents a channel for transmitting Exo bootstrap and input messages over
+// the primary Cast transport port.
+class StreamingReceiverChannel
+    : public cast_api_bindings::MessagePort,
+      public cast_api_bindings::MessagePort::Receiver {
  public:
   using BootstrapCallback = base::OnceCallback<void(ExoBootstrapMessage)>;
 
-  StreamingReceiverChannel(MessagePortService* message_port_service,
-                           std::optional<DisplayInfo> display_info,
-                           BootstrapCallback bootstrap_cb);
-  ~StreamingReceiverChannel();
+  StreamingReceiverChannel(
+      std::unique_ptr<cast_api_bindings::MessagePort> port,
+      std::optional<DisplayInfo> display_info,
+      BootstrapCallback bootstrap_cb);
+  ~StreamingReceiverChannel() override;
 
   StreamingReceiverChannel(const StreamingReceiverChannel&) = delete;
   StreamingReceiverChannel& operator=(const StreamingReceiverChannel&) = delete;
@@ -50,65 +50,79 @@ class StreamingReceiverChannel {
   // Sends InputCapabilities to the sender.
   void SendInputCapabilities(const InputCapabilities& capabilities);
 
- private:
-  class SubChannelHandler : public cast_api_bindings::MessagePort::Receiver {
-   public:
-    SubChannelHandler(std::string_view name,
-                      std::unique_ptr<cast_api_bindings::MessagePort> port);
-    ~SubChannelHandler() override;
+  base::WeakPtr<StreamingReceiverChannel> GetWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
 
-    cast_api_bindings::MessagePort* port() { return port_.get(); }
+  // Sends an Exo message wrapped in JSON over the underlying port.
+  void SendMessage(const std::string& sender_id,
+                   const std::string& message_namespace,
+                   const std::string& message);
+
+  // cast_api_bindings::MessagePort implementation:
+  bool PostMessage(std::string_view message) override;
+  bool PostMessageWithTransferables(
+      std::string_view message,
+      std::vector<std::unique_ptr<cast_api_bindings::MessagePort>> ports)
+      override;
+  void SetReceiver(
+      cast_api_bindings::MessagePort::Receiver* receiver) override;
+  void Close() override;
+  bool CanPostMessage() const override;
+
+  // cast_api_bindings::MessagePort::Receiver implementation:
+  bool OnMessage(std::string_view message,
+                 std::vector<std::unique_ptr<cast_api_bindings::MessagePort>>
+                     ports) override;
+  void OnPipeError() override;
+
+ private:
+  class SubChannelHandler {
+   public:
+    SubChannelHandler(std::string_view name, std::string_view message_namespace);
+    ~SubChannelHandler();
+
     const std::string& name() const { return name_; }
+    const std::string& message_namespace() const { return namespace_; }
 
    private:
-    // cast_api_bindings::MessagePort::Receiver implementation:
-    bool OnMessage(std::string_view message,
-                   std::vector<std::unique_ptr<cast_api_bindings::MessagePort>>
-                       ports) override;
-    void OnPipeError() override;
-
     std::string name_;
-    std::unique_ptr<cast_api_bindings::MessagePort> port_;
+    std::string namespace_;
   };
 
   std::unique_ptr<SubChannelHandler> ConnectSubChannel(
+      std::string_view name,
       std::string_view namespace_name);
-
-  // Handler for the bootstrap control port.
-  class BootstrapHandler : public cast_api_bindings::MessagePort::Receiver {
-   public:
-    BootstrapHandler(StreamingReceiverChannel* owner,
-                     std::unique_ptr<cast_api_bindings::MessagePort> port);
-    ~BootstrapHandler() override;
-
-    cast_api_bindings::MessagePort* port() { return port_.get(); }
-
-   private:
-    // cast_api_bindings::MessagePort::Receiver implementation:
-    bool OnMessage(std::string_view message,
-                   std::vector<std::unique_ptr<cast_api_bindings::MessagePort>>
-                       ports) override;
-    void OnPipeError() override;
-
-    StreamingReceiverChannel* const owner_;
-    std::unique_ptr<cast_api_bindings::MessagePort> port_;
-  };
-  friend class BootstrapHandler;
-
-  void OnBootstrapRequest(const ExoBootstrapMessage& request);
-  void SendBootstrapResponse(const ExoBootstrapMessage& request);
-  void NotifyComplete(ExoBootstrapMessage request);
 
   bool SendProtoMessage(SubChannelHandler* handler,
                         const google::protobuf::MessageLite& message);
 
-  MessagePortService* const message_port_service_;
+  void OnBootstrapRequest(const ExoBootstrapMessage& request);
+  void SendBootstrapResponse(const ExoBootstrapMessage& request);
+
+  std::unique_ptr<cast_api_bindings::MessagePort> port_;
   std::optional<DisplayInfo> display_info_;
   BootstrapCallback bootstrap_cb_;
 
+  struct PendingMessage {
+    PendingMessage(
+        std::string_view msg,
+        std::vector<std::unique_ptr<cast_api_bindings::MessagePort>> ports);
+    ~PendingMessage();
+    PendingMessage(PendingMessage&&);
+    PendingMessage& operator=(PendingMessage&&);
+
+    std::string message;
+    std::vector<std::unique_ptr<cast_api_bindings::MessagePort>> ports;
+  };
+
+  raw_ptr<cast_api_bindings::MessagePort::Receiver> receiver_ = nullptr;
+  std::vector<PendingMessage> pending_messages_;
+  std::string last_sender_id_ = "SystemSender";
+  int64_t next_transaction_id_ = 1;
+
   std::unique_ptr<SubChannelHandler> input_event_handler_;
   std::unique_ptr<SubChannelHandler> input_capabilities_handler_;
-  std::unique_ptr<BootstrapHandler> bootstrap_handler_;
 
   base::WeakPtrFactory<StreamingReceiverChannel> weak_factory_{this};
 };

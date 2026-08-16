@@ -39,7 +39,10 @@ mojom("mojom") {
 }
 
 source_set("conversions") {
-  visibility += [ "//components/mirroring/service/*" ]
+  visibility += [
+    "//components/cast_receiver/browser/*",
+    "//components/mirroring/service/*",
+  ]
   public = [ "message_serialization.h" ]
   sources = [ "message_serialization.cc" ]
   public_deps = [ "//base" ]

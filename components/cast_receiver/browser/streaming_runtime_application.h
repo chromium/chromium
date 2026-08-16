@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_CAST_RECEIVER_BROWSER_STREAMING_RUNTIME_APPLICATION_H_
 #define COMPONENTS_CAST_RECEIVER_BROWSER_STREAMING_RUNTIME_APPLICATION_H_
 
-#include "base/sequence_checker.h"
+#include "base/memory/raw_ptr.h"
 #include "components/cast_receiver/browser/public/application_config.h"
 #include "components/cast_receiver/browser/runtime_application_base.h"
 #include "components/cast_receiver/browser/streaming_input_capabilities_observer.h"
@@ -59,7 +59,7 @@ class StreamingRuntimeApplication final
   // Object responsible for maintaining the lifetime of the streaming session.
   std::unique_ptr<StreamingReceiverSessionClient> receiver_session_client_;
 
-  std::unique_ptr<StreamingReceiverChannel> streaming_receiver_channel_;
+  base::WeakPtr<StreamingReceiverChannel> streaming_receiver_channel_;
 
   std::unique_ptr<StreamingInputObserver> streaming_input_observer_;
   std::unique_ptr<StreamingInputCapabilitiesObserver>

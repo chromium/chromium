@@ -45,7 +45,10 @@ const char kInitialConnectMessage[] = R"(
         "urn:x-cast:com.google.cast.webrtc",
         "urn:x-cast:com.google.cast.remoting",
         "urn:x-cast:com.google.cast.inject",
-        "urn:x-cast:com.google.cast.media"
+        "urn:x-cast:com.google.cast.media",
+        "urn:x-cast:com.google.cast.exo.bootstrap",
+        "urn:x-cast:com.google.cast.exo.input",
+        "urn:x-cast:com.google.cast.exo.capability"
       ],
       "version": "2.0.0",
       "messagesVersion": "1.0"

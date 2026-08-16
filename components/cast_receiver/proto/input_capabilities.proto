@@ -2,15 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-edition = "2023";
+syntax = "proto3";
 
 package cast_receiver;
 
 option optimize_for = LITE_RUNTIME;
 
-import "google/protobuf/cpp_features.proto";
-
-option features.(pb.cpp).string_type = VIEW;
 option java_multiple_files = true;
 option java_package = "com.google.pixel.exo.proto";
 option java_outer_classname = "InputCapabilitiesProto";
