@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ref.h"
 #include "base/types/expected.h"
 #include "components/password_manager/core/browser/import/import_results.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -84,7 +85,7 @@ class PasswordImporter {
   using DeleteFileCallback =
       base::RepeatingCallback<bool(const base::FilePath&)>;
 
-  explicit PasswordImporter(SavedPasswordsPresenter* presenter,
+  explicit PasswordImporter(SavedPasswordsPresenter& presenter,
                             bool user_confirmation_required = false);
   PasswordImporter(const PasswordImporter&) = delete;
   PasswordImporter& operator=(const PasswordImporter&) = delete;
@@ -201,7 +202,7 @@ class PasswordImporter {
   // base::DeleteFile, unless it's changed for testing purposes.
   DeleteFileCallback delete_function_;
 
-  const raw_ptr<SavedPasswordsPresenter> presenter_;
+  const raw_ref<SavedPasswordsPresenter> presenter_;
 
   // Whether the user must confirm before the imported passwords are added to
   // the store.

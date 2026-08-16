@@ -8,6 +8,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/barrier_closure.h"
+#import "base/check_deref.h"
 #import "base/rand_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/thread_pool.h"
@@ -87,7 +88,8 @@ std::string DataToString(NSData* data) {
     _credentialImportManager.delegate = self;
     _delegate = delegate;
     _passwordImporter = std::make_unique<password_manager::PasswordImporter>(
-        savedPasswordsPresenter, /*user_confirmation_required=*/true);
+        CHECK_DEREF(savedPasswordsPresenter),
+        /*user_confirmation_required=*/true);
     CHECK(passkeyModel);
     _passkeyImporter =
         std::make_unique<webauthn::PasskeyImporter>(*passkeyModel);

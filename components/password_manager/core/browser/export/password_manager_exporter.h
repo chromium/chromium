@@ -10,7 +10,7 @@
 #include <string_view>
 
 #include "base/files/file_path.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/password_manager/core/browser/export/export_progress_status.h"
@@ -45,9 +45,9 @@ class PasswordManagerExporter {
   using SetPosixFilePermissionsCallback =
       base::RepeatingCallback<bool(const base::FilePath&, int)>;
 
-  explicit PasswordManagerExporter(SavedPasswordsPresenter* presenter,
-                                   ProgressCallback on_progress,
-                                   base::OnceClosure completion_callback);
+  PasswordManagerExporter(SavedPasswordsPresenter& presenter,
+                          ProgressCallback on_progress,
+                          base::OnceClosure completion_callback);
 
   PasswordManagerExporter(const PasswordManagerExporter&) = delete;
   PasswordManagerExporter& operator=(const PasswordManagerExporter&) = delete;
@@ -108,7 +108,7 @@ class PasswordManagerExporter {
   void Cleanup();
 
   // The source of the password list which will be exported.
-  const raw_ptr<SavedPasswordsPresenter> presenter_;
+  const raw_ref<SavedPasswordsPresenter> presenter_;
 
   // Callback to the UI.
   ProgressCallback on_progress_;

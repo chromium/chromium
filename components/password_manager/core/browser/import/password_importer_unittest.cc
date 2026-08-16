@@ -51,7 +51,7 @@ const char kTestFileName[] = "test_only.csv";
 
 class PasswordImporterTest : public testing::Test {
  public:
-  PasswordImporterTest() : receiver_{&service_}, importer_(&presenter_) {
+  PasswordImporterTest() : receiver_{&service_}, importer_(presenter_) {
     CHECK(temp_directory_.CreateUniqueTempDir());
     mojo::PendingRemote<mojom::CSVPasswordParser> pending_remote{
         receiver_.BindNewPipeAndPassRemote()};

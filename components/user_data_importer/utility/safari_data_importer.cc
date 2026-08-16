@@ -287,7 +287,7 @@ SafariDataImporter::SafariDataImporter(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE})),
       blocking_worker_(blocking_queue_, std::move(bookmark_parser)),
       password_importer_(std::make_unique<password_manager::PasswordImporter>(
-          presenter,
+          CHECK_DEREF(presenter),
           /*user_confirmation_required=*/true)),
       client_(CHECK_DEREF(client)),
       payments_data_manager_(CHECK_DEREF(payments_data_manager)),

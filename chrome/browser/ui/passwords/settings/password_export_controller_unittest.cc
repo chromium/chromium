@@ -147,9 +147,10 @@ class FakeCancellingSelectFileDialogFactory
 class MockPasswordManagerExporter
     : public password_manager::PasswordManagerExporter {
  public:
-  MockPasswordManagerExporter()
+  explicit MockPasswordManagerExporter(
+      password_manager::SavedPasswordsPresenter& presenter)
       : password_manager::PasswordManagerExporter(
-            nullptr,
+            presenter,
             base::BindRepeating(
                 [](const password_manager::PasswordExportInfo&) -> void {}),
             base::MockOnceClosure().Get()) {}
@@ -188,7 +189,7 @@ class PasswordExportControllerTest : public ChromeRenderViewHostTestHarness {
     ui::SelectFileDialog::SetFactory(
         std::make_unique<TestSelectFileDialogFactory>(temp_file_path()));
     controller_ = std::make_unique<PasswordExportController>(
-        &presenter(),
+        presenter(),
         /*on_export_progress_callback=*/base::DoNothing());
 
     store_->Init();
@@ -224,7 +225,7 @@ class PasswordExportControllerTest : public ChromeRenderViewHostTestHarness {
 
 TEST_F(PasswordExportControllerTest, PasswordExport) {
   std::unique_ptr<MockPasswordManagerExporter> mock_password_manager_exporter =
-      std::make_unique<StrictMock<MockPasswordManagerExporter>>();
+      std::make_unique<StrictMock<MockPasswordManagerExporter>>(presenter());
 
   EXPECT_CALL(*mock_password_manager_exporter, GetProgressStatus())
       .WillRepeatedly(
@@ -239,7 +240,7 @@ TEST_F(PasswordExportControllerTest, PasswordExport) {
 
 TEST_F(PasswordExportControllerTest, ExportInProgressPreventsSubsequentExport) {
   auto mock_exporter_ptr =
-      std::make_unique<StrictMock<MockPasswordManagerExporter>>();
+      std::make_unique<StrictMock<MockPasswordManagerExporter>>(presenter());
   auto* mock_exporter = mock_exporter_ptr.get();
 
   // Set up the mock to claim it's already working.
@@ -258,7 +259,7 @@ TEST_F(PasswordExportControllerTest, CancelExportFileSelection) {
       std::make_unique<FakeCancellingSelectFileDialogFactory>());
 
   std::unique_ptr<MockPasswordManagerExporter> mock_password_manager_exporter =
-      std::make_unique<StrictMock<MockPasswordManagerExporter>>();
+      std::make_unique<StrictMock<MockPasswordManagerExporter>>(presenter());
 
   EXPECT_CALL(*mock_password_manager_exporter, GetProgressStatus())
       .WillRepeatedly(
@@ -272,7 +273,7 @@ TEST_F(PasswordExportControllerTest, CancelExportFileSelection) {
 
 TEST_F(PasswordExportControllerTest, CancelExport) {
   std::unique_ptr<MockPasswordManagerExporter> mock_password_manager_exporter =
-      std::make_unique<StrictMock<MockPasswordManagerExporter>>();
+      std::make_unique<StrictMock<MockPasswordManagerExporter>>(presenter());
 
   EXPECT_CALL(*mock_password_manager_exporter, GetProgressStatus())
       .WillRepeatedly(

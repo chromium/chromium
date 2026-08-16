@@ -201,15 +201,14 @@ std::optional<CredentialUIEntry> GetConflictingCredential(
 }
 
 std::vector<StoredCredential> GetMatchingStoredCredentials(
-    SavedPasswordsPresenter* presenter,
+    const SavedPasswordsPresenter& presenter,
     const CredentialUIEntry& credential,
     PasswordForm::Store store) {
   // Returns matching local credentials for a given `credential`, excluding
   // grouped credentials with different `signon_realm`.
-  CHECK(presenter);
   std::vector<StoredCredential> results;
   for (StoredCredential& stored_credential :
-       presenter->GetCorrespondingStoredCredentials(credential)) {
+       presenter.GetCorrespondingStoredCredentials(credential)) {
     if (stored_credential.signon_realm == credential.GetFirstSignonRealm() &&
         store == stored_credential.in_store) {
       results.push_back(std::move(stored_credential));
@@ -345,7 +344,7 @@ bool DefaultDeleteFunction(const base::FilePath& file) {
 
 void ProcessParsedCredential(
     const CredentialUIEntry& imported_credential,
-    SavedPasswordsPresenter* presenter,
+    const SavedPasswordsPresenter& presenter,
     const std::map<std::u16string, std::vector<CredentialUIEntry>>&
         credentials_by_username,
     PasswordForm::Store to_store,
@@ -419,7 +418,7 @@ GroupCredentialsByUsername(
 
 }  // namespace
 
-PasswordImporter::PasswordImporter(SavedPasswordsPresenter* presenter,
+PasswordImporter::PasswordImporter(SavedPasswordsPresenter& presenter,
                                    bool user_confirmation_required)
     : delete_function_(base::BindRepeating(&DefaultDeleteFunction)),
       presenter_(presenter),
@@ -593,7 +592,7 @@ void PasswordImporter::ConsumePasswords(
       continue;
     }
 
-    ProcessParsedCredential(credential.value(), presenter_,
+    ProcessParsedCredential(credential.value(), presenter_.get(),
                             credentials_by_username, to_store,
                             incoming_passwords, conflicts, results,
                             notes_metrics, duplicates_count);

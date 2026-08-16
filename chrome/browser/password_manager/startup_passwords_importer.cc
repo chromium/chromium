@@ -41,7 +41,7 @@ StartupPasswordsImporter::StartupPasswordsImporter(Profile* profile)
           affiliation_service, profile_store, account_store);
 
   password_importer_ = std::make_unique<password_manager::PasswordImporter>(
-      saved_passwords_presenter_.get());
+      *saved_passwords_presenter_);
 }
 
 StartupPasswordsImporter::~StartupPasswordsImporter() = default;

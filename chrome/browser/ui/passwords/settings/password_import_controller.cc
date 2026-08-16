@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/select_file_policy/chrome_select_file_policy.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/grit/branded_strings.h"
+#include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -60,10 +61,8 @@ void PostAsyncResult(
 }  // namespace
 
 PasswordImportController::PasswordImportController(
-    SavedPasswordsPresenter* presenter)
-    : presenter_(presenter) {
-  CHECK(presenter_);
-}
+    SavedPasswordsPresenter& presenter)
+    : presenter_(presenter) {}
 
 PasswordImportController::~PasswordImportController() {
   // There may be open file selection dialogs. We need to let them know that we
@@ -178,8 +177,7 @@ void PasswordImportController::ImportPasswordsFromPath(
     const base::FilePath& path) {
   CHECK(!import_results_callback_.is_null());
   if (!importer_) {
-    importer_ =
-        std::make_unique<PasswordImporter>(presenter_);
+    importer_ = std::make_unique<PasswordImporter>(presenter_.get());
   }
   importer_->Import(path, to_store_, std::move(import_results_callback_));
 }

@@ -9,11 +9,10 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/passwords/settings/password_export_controller_interface.h"
 #include "components/password_manager/core/browser/export/password_manager_exporter.h"
-#include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 
 namespace content {
@@ -22,6 +21,7 @@ class WebContents;
 
 namespace password_manager {
 struct PasswordExportInfo;
+class SavedPasswordsPresenter;
 }
 // Handles the exporting of passwords to a file.
 class PasswordExportController : public PasswordExportControllerInterface,
@@ -33,7 +33,7 @@ class PasswordExportController : public PasswordExportControllerInterface,
   // |presenter| provides the credentials which can be exported.
   // |on_export_progress_callback| will be called with updates to the progress
   // of exporting.
-  PasswordExportController(password_manager::SavedPasswordsPresenter* presenter,
+  PasswordExportController(password_manager::SavedPasswordsPresenter& presenter,
                            ExportProgressCallback on_export_progress_callback);
 
   PasswordExportController(const PasswordExportController&) = delete;
@@ -72,7 +72,7 @@ class PasswordExportController : public PasswordExportControllerInterface,
   // We store |presenter_| and
   // |on_export_progress_callback_| to use them to create a new
   // PasswordManagerExporter instance for each export.
-  const raw_ptr<password_manager::SavedPasswordsPresenter> presenter_;
+  const raw_ref<password_manager::SavedPasswordsPresenter> presenter_;
   ExportProgressCallback on_export_progress_callback_;
 
   base::FilePath last_exported_path_;

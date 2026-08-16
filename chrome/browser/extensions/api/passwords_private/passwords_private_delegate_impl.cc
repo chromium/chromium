@@ -337,9 +337,9 @@ PasswordsPrivateDelegateImpl::PasswordsPrivateDelegateImpl(
                                  account_password_store,
                                  passkey_model),
       password_import_controller_(std::make_unique<PasswordImportController>(
-          &saved_passwords_presenter_)),
+          saved_passwords_presenter_)),
       password_export_controller_(std::make_unique<PasswordExportController>(
-          &saved_passwords_presenter_,
+          saved_passwords_presenter_,
           base::BindRepeating(
               &PasswordsPrivateDelegateImpl::OnPasswordsExportProgress,
               base::Unretained(this)))),

@@ -8,11 +8,14 @@
 #include <memory>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "chrome/browser/ui/passwords/settings/password_import_controller_interface.h"
 #include "components/password_manager/core/browser/import/password_importer.h"
-#include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
+
+namespace password_manager {
+class SavedPasswordsPresenter;
+}
 
 // Handles the importing of a password file to the Password Manager.
 class PasswordImportController : public PasswordImportControllerInterface,
@@ -20,7 +23,7 @@ class PasswordImportController : public PasswordImportControllerInterface,
  public:
   // |presenter| provides the credentials which can be imported.
   explicit PasswordImportController(
-      password_manager::SavedPasswordsPresenter* presenter);
+      password_manager::SavedPasswordsPresenter& presenter);
 
   PasswordImportController(const PasswordImportController&) = delete;
   PasswordImportController& operator=(const PasswordImportController&) = delete;
@@ -52,7 +55,7 @@ class PasswordImportController : public PasswordImportControllerInterface,
   std::unique_ptr<password_manager::PasswordImporter> importer_;
   scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
 
-  const raw_ptr<password_manager::SavedPasswordsPresenter> presenter_;
+  const raw_ref<password_manager::SavedPasswordsPresenter> presenter_;
 
   // |import_results_callback_|, |to_store_| are stored in the controller
   // while the file is being selected.

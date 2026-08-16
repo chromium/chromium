@@ -226,10 +226,10 @@ class PasswordImportControllerTest : public ChromeRenderViewHostTestHarness {
     // associated with a new factory.
     ui::SelectFileDialog::SetFactory(
         std::make_unique<TestSelectFileDialogFactory>(temp_file_path()));
-    controller_ = std::make_unique<PasswordImportController>(&presenter());
+    controller_ = std::make_unique<PasswordImportController>(presenter());
 
     auto importer =
-        std::make_unique<password_manager::PasswordImporter>(&presenter_);
+        std::make_unique<password_manager::PasswordImporter>(presenter());
     mojo::PendingRemote<password_manager::mojom::CSVPasswordParser>
         pending_remote{receiver.BindNewPipeAndPassRemote()};
     importer->SetServiceForTesting(std::move(pending_remote));

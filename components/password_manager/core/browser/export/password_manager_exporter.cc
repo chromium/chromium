@@ -62,7 +62,7 @@ bool DefaultDeleteFunction(const base::FilePath& file) {
 }  // namespace
 
 PasswordManagerExporter::PasswordManagerExporter(
-    SavedPasswordsPresenter* presenter,
+    SavedPasswordsPresenter& presenter,
     ProgressCallback on_progress,
     base::OnceClosure completion_callback)
     : presenter_(presenter),

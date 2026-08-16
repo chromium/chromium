@@ -92,7 +92,7 @@ class PasswordManagerExporterTest : public testing::Test {
  public:
   PasswordManagerExporterTest()
       : task_environment_(base::test::TaskEnvironment::MainThreadType::UI),
-        exporter_(&presenter_,
+        exporter_(presenter_,
                   mock_on_progress_.Get(),
                   mock_completion_callback_.Get()),
         destination_path_(kNullFileName) {
