@@ -3019,7 +3019,7 @@
     "expires": "Apr 1, 2027"
   },
   {
-    "prefix": "speculation-rules-renderer-side-heuristics",
+    "prefix": "speculation-rules-browser-side-heuristics",
     "platforms": [
       "Linux",
       "Mac",
@@ -3027,12 +3027,11 @@
     ],
     "bases": [
       "external/wpt/speculation-rules/prefetch",
-      "external/wpt/speculation-rules/speculation-tags",
-      "external/wpt/speculation-rules/speculation-measurement"
+      "external/wpt/speculation-rules/speculation-tags"
     ],
     "exclusive_tests": [],
     "args": [
-      "--enable-features=SpeculationRulesRendererSideHeuristics"
+      "--disable-features=SpeculationRulesRendererSideHeuristics"
     ],
     "owners": [
       "yoavweiss@chromium.org",

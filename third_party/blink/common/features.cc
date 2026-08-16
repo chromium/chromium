@@ -1788,7 +1788,7 @@ BASE_FEATURE_PARAM(base::TimeDelta,
 // non-immediate candidates on the renderer side (see the declaration in
 // features.h for details).
 BASE_FEATURE(kSpeculationRulesRendererSideHeuristics,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPreloadingHeuristicsMLModel, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(int,
