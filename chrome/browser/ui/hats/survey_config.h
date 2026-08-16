@@ -99,6 +99,7 @@ extern const char kHatsSurveyTriggerWhatsNew[];
 extern const char kHatsSurveyTriggerReadingModeExit[];
 #else   // BUILDFLAG(IS_ANDROID)
 extern const char kHatsSurveyTriggerAndroidStartupSurvey[];
+extern const char kHatsSurveyTriggerRedWarningAndroid[];
 extern const char kHatsSurveyTriggerSigninFirstRun[];
 extern const char kHatsSurveyTriggerSigninWeb[];
 extern const char kHatsSurveyTriggerSigninNtpSigninButton[];

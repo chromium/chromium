@@ -25,11 +25,40 @@ const std::vector<std::string> GetExcludedCountries() {
   return {"cn"};
 }
 
-const char kFlaggedUrl[] = "flagged_url";
+const char kFlaggedUrl[] = "Flagged URL";
 
-const char kMainFrameUrl[] = "main_frame_url";
+const char kMainFrameUrl[] = "Main frame URL";
 
-const char kReferrerUrl[] = "referrer_url";
+const char kReferrerUrl[] = "Referrer URL";
 
-const char kUserActivityWithUrls[] = "user_activity_with_urls";
+const char kReferringApp[] = "Referring app";
+
+const char kTimeWarningVisible[] = "Time warning visible";
+
+const char kUserActivityWithUrls[] = "User activity with URLs";
+
+const char kUserAction[] = "User action";
+
+const char kLearnMoreClicked[] = "Learn more clicked";
+
+const char kShowMoreClicked[] = "Show more clicked";
+
+const char kOpenDiagnostic[] = "Open diagnostic clicked";
+
+const char kRepeatVisit[] = "Repeat visit";
+
+const char kReportPhishingErrorClicked[] = "Report phishing error clicked";
+
+const char kReportType[] = "Report type";
+
+const char kUserActionUnknown[] = "UNKNOWN";
+
+const char kUserActionProceed[] = "PROCEED";
+
+const char kUserActionDontProceed[] = "DONT_PROCEED";
+
+const char kUserActionCloseTab[] = "CLOSE_TAB";
+
+const char kUserActionNavigateAway[] = "NAVIGATE_AWAY";
+
 }  // namespace safe_browsing

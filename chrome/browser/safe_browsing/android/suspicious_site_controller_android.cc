@@ -522,7 +522,7 @@ void SuspiciousSiteControllerAndroid::MaybeTriggerHatsSurvey(
 
   HatsService::SurveyOptions survey_options(
       /*custom_invitation=*/
-      l10n_util::GetStringUTF16(IDS_SUSPICIOUS_SITE_HATS_CUSTOM_INVITATION));
+      l10n_util::GetStringUTF16(IDS_SAFE_BROWSING_HATS_CUSTOM_INVITATION));
   hats_service->LaunchSurveyForWebContents(
       kHatsSurveyTriggerSuspiciousSiteWarning, web_contents(), bits_data,
       string_data, /*success_callback=*/base::DoNothing(),

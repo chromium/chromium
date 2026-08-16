@@ -422,6 +422,18 @@ constexpr base::FeatureParam<std::string> kRedWarningSurveyDidProceedFilter{
     &kRedWarningSurvey, "RedWarningSurveyDidProceedFilter",
     /*default_value=*/"TRUE,FALSE"};
 
+BASE_FEATURE(kRedWarningSurveyAndroid, base::FEATURE_DISABLED_BY_DEFAULT);
+constexpr base::FeatureParam<std::string> kRedWarningSurveyAndroidTriggerId{
+    &kRedWarningSurveyAndroid, "RedWarningSurveyAndroidTriggerId",
+    /*default_value=*/""};
+constexpr base::FeatureParam<std::string>
+    kRedWarningSurveyAndroidProceedTriggerId{
+        &kRedWarningSurveyAndroid, "RedWarningSurveyAndroidProceedTriggerId",
+        /*default_value=*/""};
+constexpr base::FeatureParam<std::string> kRedWarningSurveyAndroidHeedTriggerId{
+    &kRedWarningSurveyAndroid, "RedWarningSurveyAndroidHeedTriggerId",
+    /*default_value=*/""};
+
 BASE_FEATURE(kRelaunchNotificationForAdvancedProtection,
              base::FEATURE_ENABLED_BY_DEFAULT);
 

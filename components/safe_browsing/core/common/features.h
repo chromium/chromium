@@ -412,6 +412,19 @@ extern const base::FeatureParam<std::string> kRedWarningSurveyReportTypeFilter;
 // Specifies the HaTS survey's identifier.
 extern const base::FeatureParam<std::string> kRedWarningSurveyTriggerId;
 
+// Enables HaTS surveys for Android users encountering red warnings.
+BASE_DECLARE_FEATURE(kRedWarningSurveyAndroid);
+// Specifies the HaTS survey trigger ID for general Android red warnings.
+extern const base::FeatureParam<std::string> kRedWarningSurveyAndroidTriggerId;
+// Specifies the HaTS survey trigger ID for Android red warnings when the user
+// proceeded past the warning.
+extern const base::FeatureParam<std::string>
+    kRedWarningSurveyAndroidProceedTriggerId;
+// Specifies the HaTS survey trigger ID for Android red warnings when the user
+// heeded the warning (did not proceed).
+extern const base::FeatureParam<std::string>
+    kRedWarningSurveyAndroidHeedTriggerId;
+
 // If enabled, advanced protection program users are shown relaunch to apply
 // update required.
 BASE_DECLARE_FEATURE(kRelaunchNotificationForAdvancedProtection);

@@ -23,6 +23,7 @@
 #include "components/permissions/permission_hats_trigger_helper.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/safe_browsing/core/common/safebrowsing_constants.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/variations/service/google_groups_manager.h"
 #include "extensions/common/extension_features.h"
@@ -36,7 +37,6 @@
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"  // nogncheck
 #include "components/performance_manager/public/features.h"  // nogncheck
 #include "components/permissions/constants.h"                // nogncheck
-#include "components/safe_browsing/core/common/safebrowsing_constants.h"  // nogncheck
 #else
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #endif  // #if !BUILDFLAG(IS_ANDROID)
@@ -179,6 +179,7 @@ constexpr char kHatsSurveyTriggerWallpaperSearch[] = "wallpaper-search";
 
 #else   // BUILDFLAG(IS_ANDROID)
 constexpr char kHatsSurveyTriggerAndroidStartupSurvey[] = "startup_survey";
+constexpr char kHatsSurveyTriggerRedWarningAndroid[] = "red-warning-android";
 constexpr char kHatsSurveyTriggerSigninFirstRun[] = "signin-first-run";
 constexpr char kHatsSurveyTriggerSigninWeb[] = "signin-web";
 constexpr char kHatsSurveyTriggerSigninNtpSigninButton[] =
@@ -879,6 +880,22 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       &switches::kChromeAndroidIdentitySurveyBookmarkPromo,
       kHatsSurveyTriggerSigninBookmarkPromo, "o2YBX3ZJc0tK1KeaPYj0UveLWhmf",
       std::vector<std::string>{}, signin_string_psd_fields);
+
+  // Red Warning Android surveys.
+  survey_configs.emplace_back(
+      &safe_browsing::kRedWarningSurveyAndroid,
+      kHatsSurveyTriggerRedWarningAndroid,
+      safe_browsing::kRedWarningSurveyAndroidTriggerId.Get(),
+      std::vector<std::string>{safe_browsing::kLearnMoreClicked,
+                               safe_browsing::kOpenDiagnostic,
+                               safe_browsing::kRepeatVisit,
+                               safe_browsing::kReportPhishingErrorClicked,
+                               safe_browsing::kShowMoreClicked},
+      std::vector<std::string>{
+          safe_browsing::kFlaggedUrl, safe_browsing::kMainFrameUrl,
+          safe_browsing::kReferrerUrl, safe_browsing::kReferringApp,
+          safe_browsing::kReportType, safe_browsing::kTimeWarningVisible,
+          safe_browsing::kUserAction, safe_browsing::kUserActivityWithUrls});
 
   // Suspicious Site Warning surveys.
   survey_configs.emplace_back(
