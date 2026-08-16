@@ -10,6 +10,8 @@
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/loader/resource/link_dictionary_resource.h"
+#include "third_party/blink/renderer/core/mathml/mathml_element.h"
+#include "third_party/blink/renderer/core/mathml_names.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
@@ -71,7 +73,8 @@ bool RelList::ValidateTokenValue(const AtomicString& token_value,
   } else if ((GetElement().HasTagName(html_names::kATag) ||
               GetElement().HasTagName(html_names::kAreaTag) ||
               GetElement().HasTagName(html_names::kFormTag) ||
-              GetElement().HasTagName(svg_names::kATag)) &&
+              GetElement().HasTagName(svg_names::kATag) ||
+              GetElement().HasTagName(mathml_names::kATag)) &&
              SupportedTokensAnchorAndAreaAndForm().Contains(token_value)) {
     return true;
   }

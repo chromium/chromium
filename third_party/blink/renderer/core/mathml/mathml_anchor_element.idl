@@ -10,6 +10,8 @@ interface MathMLAnchorElement : MathMLElement {
     [CEReactions, Reflect] attribute DOMString download;
 
     [CEReactions, Reflect] attribute DOMString ping;
+    [CEReactions, Reflect] attribute DOMString rel;
+    [SameObject, PutForwards=value] readonly attribute DOMTokenList relList;
 };
 
 MathMLAnchorElement includes HyperlinkElementUtils;
