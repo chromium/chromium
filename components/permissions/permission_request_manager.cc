@@ -2034,7 +2034,7 @@ void PermissionRequestManager::OnTabWillDiscardContents(
     content::WebContents* new_contents) {
   // Runs on the manager of old_contents — the only object that exists
   // before the swap and is subscribed to the tab. The replacement's manager
-  // already exists (TabStripModel::DiscardWebContentsAt() attaches tab
+  // already exists (TabStripModel::DiscardWebContents() attaches tab
   // helpers before the swap) but cannot discover the TabInterface itself:
   // the TabLookupFromWebContents entry moves over only after this
   // notification returns. Hand it over explicitly.
