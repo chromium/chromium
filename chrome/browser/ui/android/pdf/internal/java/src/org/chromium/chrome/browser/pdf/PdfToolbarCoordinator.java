@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.pdf;
 
 import android.graphics.drawable.ColorDrawable;
-import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewStub;
 import android.widget.ListView;
@@ -30,7 +29,7 @@ import java.util.List;
 
 /** The top-level component responsible for the setup and lifecycle of the PDF Toolbar MVC stack. */
 @NullMarked
-public class PdfToolbarCoordinator implements View.OnClickListener, View.OnKeyListener {
+public class PdfToolbarCoordinator implements View.OnClickListener {
     private static final float THRESHOLD_DOWNLOAD_DP = 800f;
 
     private static final float THRESHOLD_FIT_DP = 700f;
@@ -42,7 +41,7 @@ public class PdfToolbarCoordinator implements View.OnClickListener, View.OnKeyLi
     private final PdfToolbarActionsDelegate mDelegate;
     private final PropertyModelChangeProcessor<PropertyModel, PdfToolbar, PropertyKey>
             mPropertyModelChangeProcessor;
-    private final List<Float> mZoomLevels =
+    private final List<Float> mDisplayZoomLevels =
             List.of(
                     0.25f, 0.33f, 0.5f, 0.67f, 0.75f, 0.8f, 0.9f, 1.0f, 1.1f, 1.25f, 1.5f, 1.75f,
                     2.0f, 2.5f, 3.0f, 4.0f, 5.0f);
@@ -91,15 +90,20 @@ public class PdfToolbarCoordinator implements View.OnClickListener, View.OnKeyLi
     @Override
     public void onClick(View view) {
         int actionId = view.getId();
-        float currentZoomFactor = mModel.get(PdfToolbarProperties.ZOOM_LEVEL);
         int currentPageNumber = mModel.get(PdfToolbarProperties.CURRENT_PAGE_NUMBER);
 
         if (actionId == R.id.zoom_increase_button) {
-            PdfUtils.recordToolbarAction(PdfUtils.PdfToolbarAction.ZOOM_IN);
-            mDelegate.changeZoomLevel(getNextEngineZoomLevel(currentZoomFactor, true));
+            Float nextZoomLevel = getNextEngineZoomLevel(/* increase= */ true);
+            if (nextZoomLevel != null) {
+                PdfUtils.recordToolbarAction(PdfUtils.PdfToolbarAction.ZOOM_IN);
+                mDelegate.changeZoomLevel(nextZoomLevel);
+            }
         } else if (actionId == R.id.zoom_decrease_button) {
-            PdfUtils.recordToolbarAction(PdfUtils.PdfToolbarAction.ZOOM_OUT);
-            mDelegate.changeZoomLevel(getNextEngineZoomLevel(currentZoomFactor, false));
+            Float nextZoomLevel = getNextEngineZoomLevel(/* increase= */ false);
+            if (nextZoomLevel != null) {
+                PdfUtils.recordToolbarAction(PdfUtils.PdfToolbarAction.ZOOM_OUT);
+                mDelegate.changeZoomLevel(nextZoomLevel);
+            }
         } else if (actionId == R.id.fit_to_page_button) {
             boolean showFitToPage = mModel.get(PdfToolbarProperties.SHOW_FIT_TO_PAGE_ICON);
             PdfUtils.recordToolbarAction(
@@ -274,39 +278,55 @@ public class PdfToolbarCoordinator implements View.OnClickListener, View.OnKeyLi
         }
     }
 
-    private float getNextEngineZoomLevel(float currentDisplayZoom, boolean increase) {
-        int matchedIndex = -1;
-        for (int i = 0; i < mZoomLevels.size(); i++) {
-            // Use a small epsilon to account for float inaccuracies when calculating display zoom.
-            if (Math.abs(mZoomLevels.get(i) - currentDisplayZoom) <= ZOOM_EPSILON) {
-                matchedIndex = i;
-                break;
-            }
+    /**
+     * Sets the default engine zoom level used to normalize display zoom levels.
+     *
+     * @param defaultZoomLevel The raw engine zoom level corresponding to 100% display zoom.
+     */
+    public void setDefaultZoomLevel(float defaultZoomLevel) {
+        if (defaultZoomLevel > 0f) {
+            mDefaultZoomLevel = defaultZoomLevel;
         }
+    }
 
-        if (matchedIndex != -1) {
-            int targetIndex =
-                    increase
-                            ? Math.min(mZoomLevels.size() - 1, matchedIndex + 1)
-                            : Math.max(0, matchedIndex - 1);
-            return getEngineZoomLevel(mZoomLevels.get(targetIndex));
-        }
+    /**
+     * Returns the next engine zoom level based on the current display zoom level and the direction
+     * of the zoom change.
+     *
+     * @param increase Whether to increase the zoom level.
+     * @return The next engine zoom level, or null if the zoom level cannot be changed.
+     */
+    public @Nullable Float getNextEngineZoomLevel(boolean increase) {
+        float currentDisplayZoom = mModel.get(PdfToolbarProperties.ZOOM_LEVEL);
 
         if (increase) {
-            for (float zoom : mZoomLevels) {
-                if (zoom > currentDisplayZoom) {
-                    return getEngineZoomLevel(zoom);
+            if (currentDisplayZoom >= mDisplayZoomLevels.get(mDisplayZoomLevels.size() - 1)) {
+                // Already at max zoom, return null to indicate no change.
+                return null;
+            }
+            // Find the smallest value strictly greater than currentDisplayZoom
+            for (float level : mDisplayZoomLevels) {
+                if (level > currentDisplayZoom + ZOOM_EPSILON) {
+                    return getEngineZoomLevel(level);
                 }
             }
-            return getEngineZoomLevel(mZoomLevels.get(mZoomLevels.size() - 1));
+            // currentDisplayZoom is slightly below max zoom, so just return max zoom.
+            return getEngineZoomLevel(mDisplayZoomLevels.get(mDisplayZoomLevels.size() - 1));
+
         } else {
-            for (int i = mZoomLevels.size() - 1; i >= 0; i--) {
-                float zoom = mZoomLevels.get(i);
-                if (zoom < currentDisplayZoom) {
-                    return getEngineZoomLevel(zoom);
+            if (currentDisplayZoom <= mDisplayZoomLevels.get(0)) {
+                // Already at min zoom, return null to indicate no change.
+                return null;
+            }
+            // Find the largest value strictly smaller than currentDisplayZoom
+            for (int i = mDisplayZoomLevels.size() - 1; i >= 0; i--) {
+                float level = mDisplayZoomLevels.get(i);
+                if (level < currentDisplayZoom - ZOOM_EPSILON) {
+                    return getEngineZoomLevel(level);
                 }
             }
-            return getEngineZoomLevel(mZoomLevels.get(0));
+            // currentDisplayZoom is slightly above min zoom, so just return min zoom.
+            return getEngineZoomLevel(mDisplayZoomLevels.get(0));
         }
     }
 
@@ -328,17 +348,6 @@ public class PdfToolbarCoordinator implements View.OnClickListener, View.OnKeyLi
     @VisibleForTesting
     float getDefaultZoomLevel() {
         return mDefaultZoomLevel;
-    }
-
-    /**
-     * Sets the default engine zoom level used to normalize display zoom levels.
-     *
-     * @param defaultZoomLevel The raw engine zoom level corresponding to 100% display zoom.
-     */
-    public void setDefaultZoomLevel(float defaultZoomLevel) {
-        if (defaultZoomLevel > 0f) {
-            mDefaultZoomLevel = defaultZoomLevel;
-        }
     }
 
     /**
@@ -366,8 +375,8 @@ public class PdfToolbarCoordinator implements View.OnClickListener, View.OnKeyLi
         float displayZoomLevel = getDisplayZoomLevel(zoomLevel);
         // Fetch absolute state from engine as the single source of truth.
         // Keep the model 1-indexed.
-        float minZoom = mZoomLevels.get(0);
-        float maxZoom = mZoomLevels.get(mZoomLevels.size() - 1);
+        float minZoom = mDisplayZoomLevels.get(0);
+        float maxZoom = mDisplayZoomLevels.get(mDisplayZoomLevels.size() - 1);
         mModel.set(PdfToolbarProperties.CURRENT_PAGE_NUMBER, firstVisiblePage + 1);
         mModel.set(PdfToolbarProperties.ZOOM_LEVEL, displayZoomLevel);
         mModel.set(
@@ -385,24 +394,6 @@ public class PdfToolbarCoordinator implements View.OnClickListener, View.OnKeyLi
             // Convert to 0-based index for the delegate.
             mDelegate.navigateToPage(pageNumber - 1);
         }
-    }
-
-    @Override
-    public boolean onKey(View v, int keyCode, KeyEvent event) {
-        if (event.getAction() == KeyEvent.ACTION_DOWN && event.isCtrlPressed()) {
-            float currentZoomFactor = mModel.get(PdfToolbarProperties.ZOOM_LEVEL);
-            if (keyCode == KeyEvent.KEYCODE_EQUALS
-                    || keyCode == KeyEvent.KEYCODE_PLUS
-                    || keyCode == KeyEvent.KEYCODE_NUMPAD_ADD) {
-                mDelegate.changeZoomLevel(getNextEngineZoomLevel(currentZoomFactor, true));
-                return true;
-            } else if (keyCode == KeyEvent.KEYCODE_MINUS
-                    || keyCode == KeyEvent.KEYCODE_NUMPAD_SUBTRACT) {
-                mDelegate.changeZoomLevel(getNextEngineZoomLevel(currentZoomFactor, false));
-                return true;
-            }
-        }
-        return false;
     }
 
     private void onWidthChanged(int widthPx) {

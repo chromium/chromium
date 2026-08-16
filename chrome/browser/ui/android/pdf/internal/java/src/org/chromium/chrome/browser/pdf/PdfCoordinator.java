@@ -1392,6 +1392,21 @@ public class PdfCoordinator
     }
 
     /**
+     * Changes the zoom level of the PDF page.
+     *
+     * @param decrease Whether to decrease the zoom level.
+     * @return True if the PDF page can be zoomed out, false otherwise.
+     */
+    @Override
+    public boolean changeZoomLevel(boolean decrease) {
+        if (mToolbarCoordinator == null) return false;
+        Float nextZoomLevel = mToolbarCoordinator.getNextEngineZoomLevel(/* increase= */ !decrease);
+        if (nextZoomLevel == null) return false;
+        changeZoomLevel(nextZoomLevel);
+        return true;
+    }
+
+    /**
      * Sets the zoom level to a specified amount.
      *
      * @param zoomLevel The new value of the zoom.
@@ -1461,7 +1476,6 @@ public class PdfCoordinator
         if (mToolbarCoordinator != null) {
             pdfView.setFocusable(true);
             pdfView.setFocusableInTouchMode(true);
-            pdfView.setOnKeyListener(mToolbarCoordinator);
         }
     }
 

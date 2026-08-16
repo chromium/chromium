@@ -385,6 +385,33 @@ public class PdfPageUnitTest {
     }
 
     @Test
+    public void testChangeZoomLevel() {
+        String encodedUrl = PdfUtils.encodePdfPageUrl(CONTENT_URL);
+        PdfPage pdfPage =
+                new PdfPage(
+                        mMockNativePageHost,
+                        mMockTab,
+                        mActivity,
+                        encodedUrl,
+                        mPdfInfo,
+                        DEFAULT_TAB_TITLE,
+                        mPdfFragmentViewTracker);
+        Assert.assertNotNull(pdfPage);
+
+        // Current zoom level is 1.0f.
+        // Decrease zoom level (decrease = true) -> next level should be 0.9f, which is valid, so it
+        // returns true.
+        Assert.assertTrue(pdfPage.changeZoomLevel(/* decrease= */ true));
+
+        // Simulate viewport update so the model reflects the current zoom level.
+        ((PdfCoordinator) pdfPage.mPdfCoordinator).onViewportChanged(0, 0.9f);
+
+        // Increase zoom level (decrease = false) -> next level should be 1.0f, which is valid, so
+        // it returns true.
+        Assert.assertTrue(pdfPage.changeZoomLevel(/* decrease= */ false));
+    }
+
+    @Test
     public void testCreatePdfPage_WithPdfLink_Https() throws Exception {
         testCreatePdfPage_WithPdfLink(mPdfPageUrl);
     }

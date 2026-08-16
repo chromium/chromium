@@ -8,7 +8,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
@@ -19,7 +18,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -700,43 +698,36 @@ public class PdfToolbarCoordinatorUnitTest {
     }
 
     @Test
-    public void testKeyboardShortcuts_zoomIn() {
-        // Current zoom is 1.0f (set in setUp)
-        // Next zoom should be 1.1f
-        KeyEvent event =
-                new KeyEvent(
-                        0,
-                        0,
-                        KeyEvent.ACTION_DOWN,
-                        KeyEvent.KEYCODE_EQUALS,
-                        0,
-                        KeyEvent.META_CTRL_ON);
-        assertTrue(mPdfToolbarCoordinator.onKey(mPdfPageView, KeyEvent.KEYCODE_EQUALS, event));
-        verify(mDelegate).changeZoomLevel(1.1f);
+    public void testGetNextEngineZoomLevel_increase() {
+        // Current zoom is 1.0f
+        mPdfToolbarCoordinator.onViewportChanged(98, 1.0f);
+        assertEquals(1.1f, mPdfToolbarCoordinator.getNextEngineZoomLevel(true), 0.001f);
+
+        // Zoom level not in list: 1.05f
+        mPdfToolbarCoordinator.onViewportChanged(98, 1.05f);
+        assertEquals(1.1f, mPdfToolbarCoordinator.getNextEngineZoomLevel(true), 0.001f);
     }
 
     @Test
-    public void testKeyboardShortcuts_zoomOut() {
-        // Current zoom is 1.0f (set in setUp)
-        // Previous zoom should be 0.9f
-        KeyEvent event =
-                new KeyEvent(
-                        0,
-                        0,
-                        KeyEvent.ACTION_DOWN,
-                        KeyEvent.KEYCODE_MINUS,
-                        0,
-                        KeyEvent.META_CTRL_ON);
-        assertTrue(mPdfToolbarCoordinator.onKey(mPdfPageView, KeyEvent.KEYCODE_MINUS, event));
-        verify(mDelegate).changeZoomLevel(0.9f);
+    public void testGetNextEngineZoomLevel_decrease() {
+        // Current zoom is 1.0f
+        mPdfToolbarCoordinator.onViewportChanged(98, 1.0f);
+        assertEquals(0.9f, mPdfToolbarCoordinator.getNextEngineZoomLevel(false), 0.001f);
+
+        // Zoom level not in list: 1.05f
+        mPdfToolbarCoordinator.onViewportChanged(98, 1.05f);
+        assertEquals(1.0f, mPdfToolbarCoordinator.getNextEngineZoomLevel(false), 0.001f);
     }
 
     @Test
-    public void testKeyboardShortcuts_noCtrl() {
-        // Simulate "=" without CTRL
-        KeyEvent event = new KeyEvent(0, 0, KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_EQUALS, 0, 0);
-        assertFalse(mPdfToolbarCoordinator.onKey(mPdfPageView, KeyEvent.KEYCODE_EQUALS, event));
-        verify(mDelegate, org.mockito.Mockito.never()).changeZoomLevel(anyFloat());
+    public void testGetNextEngineZoomLevel_boundary() {
+        // Max zoom is 5.0f
+        mPdfToolbarCoordinator.onViewportChanged(98, 5.0f);
+        org.junit.Assert.assertNull(mPdfToolbarCoordinator.getNextEngineZoomLevel(true));
+
+        // Min zoom is 0.25f
+        mPdfToolbarCoordinator.onViewportChanged(98, 0.25f);
+        org.junit.Assert.assertNull(mPdfToolbarCoordinator.getNextEngineZoomLevel(false));
     }
 
     @Test

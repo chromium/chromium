@@ -231,6 +231,26 @@ public class PdfCoordinatorUnitTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
+    @Config(shadows = {ShadowPdfView.class})
+    public void testChangeZoomLevel_Boolean() {
+        createPdfCoordinator();
+        ShadowPdfView shadowPdfView = Shadow.extract(mPdfView);
+
+        // Current zoom level is 1.0f.
+        // Decrease zoom level (decrease = true) -> should go to 0.9f.
+        assertTrue(mPdfCoordinator.changeZoomLevel(/* decrease= */ true));
+        assertEquals(0.9f, shadowPdfView.mZoom, 0.001f);
+
+        // Simulate viewport update so the model reflects the current zoom level.
+        mPdfCoordinator.onViewportChanged(0, 0.9f);
+
+        // Increase zoom level (decrease = false) -> should go back to 1.0f.
+        assertTrue(mPdfCoordinator.changeZoomLevel(/* decrease= */ false));
+        assertEquals(1.0f, shadowPdfView.mZoom, 0.001f);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
     public void testOnLinkClicked_RejectsDangerousSchemes() {
         when(mProfile.isOffTheRecord()).thenReturn(false);
         createPdfCoordinator();

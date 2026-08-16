@@ -1283,10 +1283,10 @@ public class KeyboardShortcuts {
                     menuOrKeyboardActionController.onMenuOrKeyboardAction(R.id.print_id, false);
                     return true;
                 case KeyboardShortcutsSemanticMeaning.ZOOM_IN:
-                    ZoomController.zoomInPage(currentWebContents);
+                    ZoomController.zoomInPage(currentTab);
                     return true;
                 case KeyboardShortcutsSemanticMeaning.ZOOM_OUT:
-                    ZoomController.zoomOutPage(currentWebContents);
+                    ZoomController.zoomOutPage(currentTab);
                     return true;
                 case KeyboardShortcutsSemanticMeaning.ZOOM_RESET:
                     ZoomController.zoomResetPage(currentWebContents, browserContextHandle);
