@@ -673,7 +673,7 @@
 <translation id="3792938779249970121">Выбор аккаунта</translation>
 <translation id="3795154175078851242">Скопировать изображение со ссылкой</translation>
 <translation id="3807999512799921804">Выбранная и закрепленная вкладка инкогнито "<ph name="TAB_TITLE" />" с включенным звуком</translation>
-<translation id="3810973564298564668">Управление</translation>
+<translation id="3810973564298564668">Настроить</translation>
 <translation id="3819178904835489326">Удаленные скачивания: <ph name="NUMBER_OF_DOWNLOADS" /></translation>
 <translation id="3823019343150397277">Код IBAN</translation>
 <translation id="3824259034819781947">Прикрепить файлы</translation>
@@ -1209,7 +1209,7 @@
 <translation id="605721222689873409">ГГ</translation>
 <translation id="606985262342505139">Нижний экран вкладки открыт полностью</translation>
 <translation id="6071995715087444295">Чтобы проверить наличие раскрытых паролей, войдите в аккаунт Google</translation>
-<translation id="6078323886959318429">Добавить ярлык</translation>
+<translation id="6078323886959318429">Новый ярлык</translation>
 <translation id="6085886413119427067">Определяет, как подключаться к сайтам, используя защищенное соединение.</translation>
 <translation id="6087286598828478206">Заблокировать и выйти из группы?</translation>
 <translation id="6091464625487374759">Gemini теперь на панели инструментов. Чтобы изменить закрепленный инструмент, нажмите на его значок и удерживайте.</translation>
