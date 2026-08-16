@@ -33,6 +33,7 @@
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/color/color_provider_manager.h"
 #include "ui/compositor/compositor.h"
@@ -1569,6 +1570,14 @@ FocusTraversable* Widget::GetFocusTraversable() {
 }
 
 void Widget::ThemeChanged() {
+  if (base::FeatureList::IsEnabled(::features::kThemeChangeOptimization)) {
+    const ui::ColorProviderKey current_key = GetColorProviderKey();
+    if (last_color_provider_key_ && *last_color_provider_key_ == current_key) {
+      return;
+    }
+    last_color_provider_key_ = current_key;
+  }
+
   if (root_view_) {
     root_view_->ThemeChanged();
   }

@@ -32,6 +32,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/color_provider_key.h"
@@ -6828,6 +6829,82 @@ TEST_F(WidgetTest, InputProtectionForwardsToProtector) {
   EXPECT_FALSE(
       widget->input_protector_for_testing()->IsPossiblyUnintendedInteraction(
           dummy_event, /*allow_key_events=*/false, widget->GetRootView()));
+}
+
+namespace {
+
+class ThemeChangeTrackingView : public View {
+  METADATA_HEADER(ThemeChangeTrackingView, View)
+
+ public:
+  void OnThemeChanged() override {
+    View::OnThemeChanged();
+    ++theme_changed_count_;
+  }
+  int theme_changed_count() const { return theme_changed_count_; }
+
+ private:
+  int theme_changed_count_ = 0;
+};
+
+BEGIN_METADATA(ThemeChangeTrackingView)
+END_METADATA
+
+}  // namespace
+
+TEST_F(WidgetTest, ThemeChangedShortCircuitRedundantUpdates) {
+  base::test::ScopedFeatureList feature_list(
+      ::features::kThemeChangeOptimization);
+
+  std::unique_ptr<Widget> widget =
+      CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
+  auto* tracking_view =
+      widget->SetContentsView(std::make_unique<ThemeChangeTrackingView>());
+
+  // Initial ThemeChanged() should propagate to the view tree.
+  widget->ThemeChanged();
+  const int initial_count = tracking_view->theme_changed_count();
+  EXPECT_GT(initial_count, 0);
+
+  // Calling ThemeChanged() again with an identical ColorProviderKey should
+  // short-circuit.
+  widget->ThemeChanged();
+  EXPECT_EQ(tracking_view->theme_changed_count(), initial_count);
+
+  // Modifying the key (e.g. via color mode override) should trigger
+  // propagation.
+  widget->SetColorModeOverride(ui::ColorProviderKey::ColorMode::kDark);
+  EXPECT_EQ(tracking_view->theme_changed_count(), initial_count + 1);
+
+  // Calling ThemeChanged() again with the same override should short-circuit.
+  widget->ThemeChanged();
+  EXPECT_EQ(tracking_view->theme_changed_count(), initial_count + 1);
+
+  // Modifying user color override should trigger propagation again.
+  widget->SetUserColorOverride(SK_ColorRED);
+  EXPECT_EQ(tracking_view->theme_changed_count(), initial_count + 2);
+
+  // Redundant call should short-circuit.
+  widget->ThemeChanged();
+  EXPECT_EQ(tracking_view->theme_changed_count(), initial_count + 2);
+}
+
+TEST_F(WidgetTest, ThemeChangedDoesNotShortCircuitWhenFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(::features::kThemeChangeOptimization);
+
+  std::unique_ptr<Widget> widget =
+      CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
+  auto* tracking_view =
+      widget->SetContentsView(std::make_unique<ThemeChangeTrackingView>());
+
+  widget->ThemeChanged();
+  const int initial_count = tracking_view->theme_changed_count();
+  EXPECT_GT(initial_count, 0);
+
+  // Calling ThemeChanged() again should not short-circuit when disabled.
+  widget->ThemeChanged();
+  EXPECT_EQ(tracking_view->theme_changed_count(), initial_count + 1);
 }
 
 }  // namespace views::test

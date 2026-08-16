@@ -1852,6 +1852,10 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // True if input protection is enabled for this widget.
   bool input_event_activation_protection_enabled_ = false;
 
+  // The last ColorProviderKey used to update the widget's theme. Used to
+  // short-circuit redundant ThemeChanged() calls.
+  std::optional<ui::ColorProviderKey> last_color_provider_key_;
+
   // Indicates whether there is an autosize task in the task queue. Also used to
   // cancel the autosize task in testing.
   base::WeakPtrFactory<Widget> autosize_task_factory_{this};
