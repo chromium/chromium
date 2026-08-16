@@ -126,6 +126,32 @@ public class AutofillSettingsSearchTest {
 
     @Test
     @SmallTest
+    public void testSearchSaveAndFillPaymentMethods() {
+        searchSettings("payment");
+
+        onViewWaiting( // Wait for debounce and Search results to appear.
+                        allOf(
+                                withId(android.R.id.title),
+                                withText(R.string.autofill_enable_credit_cards_toggle_label)))
+                .perform(click());
+
+        onView(
+                        allOf(
+                                withText(R.string.autofill_payments_title),
+                                withParent(withId(R.id.action_bar))))
+                .check(matches(isDisplayed()));
+        onView(
+                        allOf(
+                                hasDescendant(
+                                        withText(
+                                                R.string
+                                                        .autofill_enable_credit_cards_toggle_label)),
+                                isHighlighted()))
+                .check(matches(isDisplayed()));
+    }
+
+    @Test
+    @SmallTest
     public void testSearchContact() {
         searchSettings("contact");
 
@@ -139,6 +165,30 @@ public class AutofillSettingsSearchTest {
         onView(
                         allOf(
                                 hasDescendant(withText(R.string.autofill_contact_info_title)),
+                                isHighlighted()))
+                .check(matches(isDisplayed()));
+    }
+
+    @Test
+    @SmallTest
+    public void testSearchSaveAndFillAddresses() {
+        searchSettings("address");
+
+        onViewWaiting( // Wait for debounce and Search results to appear.
+                        allOf(
+                                withId(android.R.id.title),
+                                withText(R.string.autofill_enable_profiles_toggle_label)))
+                .perform(click());
+
+        onView(
+                        allOf(
+                                withText(R.string.autofill_contact_info_title),
+                                withParent(withId(R.id.action_bar))))
+                .check(matches(isDisplayed()));
+        onView(
+                        allOf(
+                                hasDescendant(
+                                        withText(R.string.autofill_enable_profiles_toggle_label)),
                                 isHighlighted()))
                 .check(matches(isDisplayed()));
     }
@@ -159,6 +209,27 @@ public class AutofillSettingsSearchTest {
 
     @Test
     @SmallTest
+    public void testSearchTravelOptIn() {
+        searchSettings("travel");
+
+        onViewWaiting( // Wait for debounce and Search results to appear.
+                        allOf(
+                                withId(android.R.id.title),
+                                withText(R.string.autofill_travel_opt_in_toggle_label)))
+                .perform(click());
+
+        onView(allOf(withText(R.string.autofill_travel_title), withParent(withId(R.id.action_bar))))
+                .check(matches(isDisplayed()));
+        onView(
+                        allOf(
+                                hasDescendant(
+                                        withText(R.string.autofill_travel_opt_in_toggle_label)),
+                                isHighlighted()))
+                .check(matches(isDisplayed()));
+    }
+
+    @Test
+    @SmallTest
     public void testSearchIdentity() {
         searchSettings("identity");
 
@@ -172,6 +243,32 @@ public class AutofillSettingsSearchTest {
         onView(
                         allOf(
                                 hasDescendant(withText(R.string.autofill_identity_docs_title)),
+                                isHighlighted()))
+                .check(matches(isDisplayed()));
+    }
+
+    @Test
+    @SmallTest
+    public void testSearchIdentityDocsOptIn() {
+        searchSettings("identity");
+
+        onViewWaiting( // Wait for debounce and Search results to appear.
+                        allOf(
+                                withId(android.R.id.title),
+                                withText(R.string.autofill_identity_docs_opt_in_toggle_label)))
+                .perform(click());
+
+        onView(
+                        allOf(
+                                withText(R.string.autofill_identity_docs_title),
+                                withParent(withId(R.id.action_bar))))
+                .check(matches(isDisplayed()));
+        onView(
+                        allOf(
+                                hasDescendant(
+                                        withText(
+                                                R.string
+                                                        .autofill_identity_docs_opt_in_toggle_label)),
                                 isHighlighted()))
                 .check(matches(isDisplayed()));
     }
