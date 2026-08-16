@@ -3548,3 +3548,153 @@ IN_PROC_BROWSER_TEST_F(BrowserDestructorBrowserTest,
   // which will call second_browser->OnThemeChanged().
   CloseBrowserSynchronously(second_browser);
 }
+
+// Ensure crashed tabs are not reloaded when selected. crbug.com/41007585
+IN_PROC_BROWSER_TEST_F(BrowserTest, ReloadCrashedTab) {
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+
+  // Start with a single foreground tab.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+  content::WebContents* contents1 = tab_strip_model->GetActiveWebContents();
+
+  EXPECT_TRUE(tab_strip_model->IsTabSelected(0));
+  EXPECT_FALSE(contents1->IsLoading());
+
+  // Add a second tab in the background.
+  ASSERT_TRUE(AddTabAtIndex(1, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
+  content::WebContents* contents2 = tab_strip_model->GetWebContentsAt(1);
+
+  // Switch active tab back to index 0.
+  tab_strip_model->ActivateTabAt(
+      0, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
+
+  EXPECT_EQ(2, tab_strip_model->count());
+  EXPECT_EQ(0, tab_strip_model->active_index());
+  EXPECT_FALSE(contents2->IsLoading());
+
+  // Simulate the second tab crashing.
+  content::CrashTab(contents2);
+  EXPECT_TRUE(contents2->IsCrashed());
+
+  // Selecting the second tab does not cause a load or clear the crash.
+  tab_strip_model->ActivateTabAt(
+      1, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
+  EXPECT_TRUE(tab_strip_model->IsTabSelected(1));
+  EXPECT_FALSE(contents2->IsLoading());
+  EXPECT_TRUE(contents2->IsCrashed());
+}
+
+// This tests a workaround which is not necessary on Mac.
+// https://crbug.com/41317454
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_SetBackgroundColorForNewTab DISABLED_SetBackgroundColorForNewTab
+#else
+#define MAYBE_SetBackgroundColorForNewTab SetBackgroundColorForNewTab
+#endif
+IN_PROC_BROWSER_TEST_F(BrowserTest, MAYBE_SetBackgroundColorForNewTab) {
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL("data:text/html,<body style='background-color:red;'>")));
+
+  // Add a second tab in the background.
+  chrome::AddTabAt(browser(), GURL(), -1, /*foreground=*/false);
+  content::WebContents* contents2 = tab_strip_model->GetWebContentsAt(1);
+
+  tab_strip_model->ActivateTabAt(
+      1, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
+  ASSERT_TRUE(
+      contents2->GetPrimaryMainFrame()->GetView()->GetBackgroundColor());
+  EXPECT_EQ(SK_ColorRED,
+            *contents2->GetPrimaryMainFrame()->GetView()->GetBackgroundColor());
+}
+
+#if BUILDFLAG(ENABLE_PRINTING)
+// Ensure the print command gets disabled when a tab crashes.
+IN_PROC_BROWSER_TEST_F(BrowserTest, DisablePrintOnCrashedTab) {
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+  content::WebContents* contents = tab_strip_model->GetActiveWebContents();
+
+  CommandUpdater* command_updater =
+      browser()->GetFeatures().browser_command_controller();
+
+  EXPECT_FALSE(contents->IsCrashed());
+  EXPECT_TRUE(command_updater->IsCommandEnabled(IDC_PRINT));
+  EXPECT_TRUE(chrome::CanPrint(browser()));
+
+  content::CrashTab(contents);
+
+  EXPECT_TRUE(contents->IsCrashed());
+  EXPECT_FALSE(command_updater->IsCommandEnabled(IDC_PRINT));
+  EXPECT_FALSE(chrome::CanPrint(browser()));
+}
+#endif  // BUILDFLAG(ENABLE_PRINTING)
+
+// Ensure the zoom-in and zoom-out commands get disabled when a tab crashes.
+IN_PROC_BROWSER_TEST_F(BrowserTest, DisableZoomOnCrashedTab) {
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+  content::WebContents* contents = tab_strip_model->GetActiveWebContents();
+
+  zoom::ZoomController* zoom_controller =
+      zoom::ZoomController::FromWebContents(contents);
+  EXPECT_TRUE(
+      zoom_controller->SetZoomLevel(zoom_controller->GetDefaultZoomLevel()));
+
+  CommandUpdater* command_updater =
+      browser()->GetFeatures().browser_command_controller();
+
+  EXPECT_TRUE(zoom_controller->IsAtDefaultZoom());
+  EXPECT_FALSE(contents->IsCrashed());
+  EXPECT_TRUE(command_updater->IsCommandEnabled(IDC_ZOOM_PLUS));
+  EXPECT_TRUE(command_updater->IsCommandEnabled(IDC_ZOOM_MINUS));
+  EXPECT_TRUE(chrome::CanZoomIn(contents));
+  EXPECT_TRUE(chrome::CanZoomOut(contents));
+
+  content::CrashTab(contents);
+
+  EXPECT_TRUE(contents->IsCrashed());
+  EXPECT_FALSE(command_updater->IsCommandEnabled(IDC_ZOOM_PLUS));
+  EXPECT_FALSE(command_updater->IsCommandEnabled(IDC_ZOOM_MINUS));
+  EXPECT_FALSE(chrome::CanZoomIn(contents));
+  EXPECT_FALSE(chrome::CanZoomOut(contents));
+}
+
+using BrowserBookmarkBarTest = InProcessBrowserTest;
+
+IN_PROC_BROWSER_TEST_F(BrowserBookmarkBarTest, StateOnActiveTabChanged) {
+  const BookmarkBarController* controller =
+      BookmarkBarController::From(browser());
+  ASSERT_TRUE(controller);
+
+  EXPECT_EQ(BookmarkBar::HIDDEN, controller->bookmark_bar_state());
+
+  // Navigate to normal page.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+  EXPECT_EQ(BookmarkBar::HIDDEN, controller->bookmark_bar_state());
+
+  // Toggle bookmark bar on.
+  chrome::ToggleBookmarkBar(browser());
+  EXPECT_EQ(BookmarkBar::SHOW, controller->bookmark_bar_state());
+
+  // Open a new tab to NTP.
+  ASSERT_TRUE(
+      AddTabAtIndex(1, GURL("chrome://newtab"), ui::PAGE_TRANSITION_TYPED));
+  EXPECT_EQ(BookmarkBar::SHOW, controller->bookmark_bar_state());
+
+  // Switch back to 1st tab.
+  browser()->tab_strip_model()->ActivateTabAt(
+      0, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
+  EXPECT_EQ(BookmarkBar::SHOW, controller->bookmark_bar_state());
+
+  // Toggle bookmark bar off.
+  chrome::ToggleBookmarkBar(browser());
+  EXPECT_EQ(BookmarkBar::HIDDEN, controller->bookmark_bar_state());
+}
