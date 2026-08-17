@@ -263,20 +263,7 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
     private boolean mIsSafeModeEnabled;
     private boolean mIsMultiProcessEnabled;
 
-    public static class InitInfo {
-        // Timestamp of init start and duration, used in the
-        // 'WebView.Startup.CreationTime.Stage1.FactoryInit' trace event.
-        public long mStartTime;
-        public long mDuration;
-
-        // Timestamp of the framework getProvider() method start and elapsed time until init is
-        // finished, used in the 'WebView.Startup.CreationTime.TotalFactoryInitTime'
-        // trace event.
-        public long mTotalFactoryInitStartTime;
-        public long mTotalFactoryInitDuration;
-    }
-
-    private final InitInfo mInitInfo = new InitInfo();
+    private FactoryStartupTimings mStartupTimings;
 
     /** Thread-safe way to set the one and only WebViewChromiumFactoryProvider. */
     private static void setSingleton(WebViewChromiumFactoryProvider provider) {
@@ -373,7 +360,7 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
     @SuppressWarnings({"NoContextGetApplicationContext"})
     private void initialize(WebViewDelegate webViewDelegate) {
         // Capture startup init time before anything else.
-        mInitInfo.mStartTime = SystemClock.uptimeMillis();
+        long startTime = SystemClock.uptimeMillis();
         // Use `ScopedSysTraceEvent` until `EarlyTraceEvent` is potentially enabled further down.
         try (ScopedSysTraceEvent e1 =
                 ScopedSysTraceEvent.scoped("WebViewChromiumFactoryProvider.initialize")) {
@@ -723,47 +710,7 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
             setSingleton(this);
         }
 
-        mInitInfo.mDuration = SystemClock.uptimeMillis() - mInitInfo.mStartTime;
-        RecordHistogram.recordTimesHistogram(
-                "Android.WebView.Startup.CreationTime.Stage1.FactoryInit", mInitInfo.mDuration);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            WebViewFactory.StartupTimestamps startupTimestamps =
-                    mWebViewDelegate.getStartupTimestamps();
-            mInitInfo.mTotalFactoryInitStartTime = startupTimestamps.getWebViewLoadStart();
-            mInitInfo.mTotalFactoryInitDuration =
-                    SystemClock.uptimeMillis() - mInitInfo.mTotalFactoryInitStartTime;
-            RecordHistogram.recordTimesHistogram(
-                    "Android.WebView.Startup.CreationTime.TotalFactoryInitTime",
-                    mInitInfo.mTotalFactoryInitDuration);
-            if (Looper.myLooper() == Looper.getMainLooper()) {
-                RecordHistogram.recordTimesHistogram(
-                        "Android.WebView.Startup.CreationTime.TotalFactoryInitTime.MainLooper",
-                        mInitInfo.mTotalFactoryInitDuration);
-            } else {
-                RecordHistogram.recordTimesHistogram(
-                        "Android.WebView.Startup.CreationTime.TotalFactoryInitTime.NotMainLooper",
-                        mInitInfo.mTotalFactoryInitDuration);
-            }
-            RecordHistogram.recordTimesHistogram(
-                    "Android.WebView.Startup.CreationTime.CreateContextTime",
-                    startupTimestamps.getCreateContextEnd()
-                            - startupTimestamps.getCreateContextStart());
-            RecordHistogram.recordTimesHistogram(
-                    "Android.WebView.Startup.CreationTime.AssetsAddTime",
-                    startupTimestamps.getAddAssetsEnd() - startupTimestamps.getAddAssetsStart());
-            RecordHistogram.recordTimesHistogram(
-                    "Android.WebView.Startup.CreationTime.GetClassLoaderTime",
-                    startupTimestamps.getGetClassLoaderEnd()
-                            - startupTimestamps.getGetClassLoaderStart());
-            RecordHistogram.recordTimesHistogram(
-                    "Android.WebView.Startup.CreationTime.NativeLoadTime",
-                    startupTimestamps.getNativeLoadEnd() - startupTimestamps.getNativeLoadStart());
-            RecordHistogram.recordTimesHistogram(
-                    "Android.WebView.Startup.CreationTime.GetProviderClassForNameTime",
-                    startupTimestamps.getProviderClassForNameEnd()
-                            - startupTimestamps.getProviderClassForNameStart());
-        }
+        mStartupTimings = new FactoryStartupTimings(startTime, webViewDelegate);
 
         AconfigFlaggedApiDelegate delegate = AconfigFlaggedApiDelegate.getInstance();
         boolean isNativeWebViewZygoteEnabled =
@@ -1004,8 +951,10 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
         return GlueApiHelperForR.createPacProcessor();
     }
 
-    public InitInfo getInitInfo() {
-        return mInitInfo;
+    void recordInitTraces() {
+        if (mStartupTimings != null) {
+            mStartupTimings.recordInitTraces();
+        }
     }
 
     private boolean shouldEnableContextExperiment() {

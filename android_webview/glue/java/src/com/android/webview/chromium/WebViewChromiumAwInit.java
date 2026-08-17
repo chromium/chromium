@@ -54,7 +54,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.EarlyTraceEvent;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.TraceEvent;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LoaderErrors;
 import org.chromium.base.library_loader.ProcessInitException;
@@ -506,11 +505,7 @@ public class WebViewChromiumAwInit {
 
         // Also create the trace events for the earlier WebViewChromiumFactoryProvider init, which
         // happens before tracing is ready.
-        TraceEvent.webViewStartupTotalFactoryInit(
-                mFactory.getInitInfo().mTotalFactoryInitStartTime,
-                mFactory.getInitInfo().mTotalFactoryInitDuration);
-        TraceEvent.webViewStartupStage1(
-                mFactory.getInitInfo().mStartTime, mFactory.getInitInfo().mDuration);
+        mFactory.recordInitTraces();
     }
 
     /**

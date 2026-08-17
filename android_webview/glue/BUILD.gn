@@ -48,6 +48,7 @@ android_library("glue_java") {
     "java/src/com/android/webview/chromium/CookieManagerAdapter.java",
     "java/src/com/android/webview/chromium/DrawFunctor.java",
     "java/src/com/android/webview/chromium/DrawGLFunctor.java",
+    "java/src/com/android/webview/chromium/FactoryStartupTimings.java",
     "java/src/com/android/webview/chromium/GeolocationPermissionsAdapter.java",
     "java/src/com/android/webview/chromium/GlueApiHelperForQ.java",
     "java/src/com/android/webview/chromium/GlueApiHelperForR.java",
