@@ -20,9 +20,6 @@ include_rules = [
   "+chrome/browser/ash/profiles",
   "+chrome/browser/ash/settings",
   "+chrome/browser/ash/system",
-  "+chrome/browser/browser_process.h",
-  "+chrome/browser/browser_process_platform_part.h",
-  "+chrome/browser/global_features.h",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/ash",
   "+chrome/browser/ui/ash/assistant",
@@ -35,3 +32,12 @@ include_rules = [
   "+chrome/grit",
   "+chrome/test/base",
 ]
+
+specific_include_rules = {
+  "lock_screen_reauth_manager_factory\\.cc": [
+    "+chrome/browser/browser_process.h",
+  ],
+  "screen_locker_unittest\\.cc": [
+    "+chrome/browser/global_features.h",
+  ],
+}

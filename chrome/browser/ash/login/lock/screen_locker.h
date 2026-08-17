@@ -14,6 +14,7 @@
 #include "ash/public/cpp/login_types.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_auto_reset.h"
 #include "base/memory/weak_ptr.h"
@@ -36,7 +37,17 @@
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 
+class ApplicationLocaleStorage;
 class PrefChangeRegistrar;
+class PrefService;
+
+namespace network {
+class SharedURLLoaderFactory;
+}  // namespace network
+
+namespace policy {
+class BrowserPolicyConnectorAsh;
+}  // namespace policy
 
 namespace ash {
 
@@ -54,7 +65,15 @@ class ScreenLocker
  public:
   using AuthenticateCallback = base::OnceCallback<void(bool auth_success)>;
 
-  explicit ScreenLocker(const user_manager::UserList& users);
+  // `local_state`, `application_locale_storage`, and
+  // `browser_policy_connector_ash` must be non-null and must outlive `this`.
+  // `shared_url_loader_factory` must be non-null.
+  ScreenLocker(
+      PrefService* local_state,
+      const ApplicationLocaleStorage* application_locale_storage,
+      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
+      policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
+      const user_manager::UserList& users);
 
   ScreenLocker(const ScreenLocker&) = delete;
   ScreenLocker& operator=(const ScreenLocker&) = delete;
@@ -231,6 +250,13 @@ class ScreenLocker
   // session_manager::UnlockType, used by the reporting team to report
   // lock/unlock events.
   session_manager::UnlockType TransformUnlockType();
+
+  const raw_ref<PrefService> local_state_;
+  const raw_ref<const ApplicationLocaleStorage> application_locale_storage_;
+  const scoped_refptr<network::SharedURLLoaderFactory>
+      shared_url_loader_factory_;
+  const raw_ref<policy::BrowserPolicyConnectorAsh>
+      browser_policy_connector_ash_;
 
   // Users that can unlock the device.
   user_manager::UserList users_;

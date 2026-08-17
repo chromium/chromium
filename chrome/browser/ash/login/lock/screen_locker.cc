@@ -42,9 +42,6 @@
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/login/login_screen_client_impl.h"
 #include "chrome/browser/ui/ash/login/user_adding_screen.h"
@@ -71,6 +68,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "services/device/public/mojom/fingerprint.mojom-shared.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/image/image.h"
@@ -110,10 +108,19 @@ chromeos::CertificateProviderService* GetLoginScreenCertProviderService() {
 //////////////////////////////////////////////////////////////////////////////
 // ScreenLocker, public:
 
-ScreenLocker::ScreenLocker(const user_manager::UserList& users)
-    : users_(users),
-      // TODO(crbug.com/404133029): Avoid using g_browser_process.
-      challenge_response_auth_keys_loader_(g_browser_process->local_state()) {
+ScreenLocker::ScreenLocker(
+    PrefService* local_state,
+    const ApplicationLocaleStorage* application_locale_storage,
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
+    policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
+    const user_manager::UserList& users)
+    : local_state_(CHECK_DEREF(local_state)),
+      application_locale_storage_(CHECK_DEREF(application_locale_storage)),
+      shared_url_loader_factory_(std::move(shared_url_loader_factory)),
+      browser_policy_connector_ash_(CHECK_DEREF(browser_policy_connector_ash)),
+      users_(users),
+      challenge_response_auth_keys_loader_(&local_state_.get()) {
+  CHECK(shared_url_loader_factory_);
   CHECK(base::CurrentUIThread::IsSet());
 
   content::GetDeviceService().BindFingerprint(
@@ -154,17 +161,9 @@ void ScreenLocker::Init() {
 
   // Create ViewScreenLocker that calls into the views-based lock screen via
   // mojo.
-  // TODO(crbug.com/404133029): Avoid using g_browser_process.
-  PrefService* local_state = g_browser_process->local_state();
-  ApplicationLocaleStorage* application_locale_storage =
-      g_browser_process->GetFeatures()->application_locale_storage();
-  scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory =
-      g_browser_process->shared_url_loader_factory();
-  policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash =
-      g_browser_process->platform_part()->browser_policy_connector_ash();
   views_screen_locker_ = std::make_unique<ViewsScreenLocker>(
-      local_state, application_locale_storage,
-      std::move(shared_url_loader_factory), browser_policy_connector_ash);
+      &local_state_.get(), &application_locale_storage_.get(),
+      shared_url_loader_factory_, &browser_policy_connector_ash_.get());
 
   // Create and display lock screen.
   CHECK(LoginScreenClientImpl::HasInstance());
@@ -365,9 +364,8 @@ void ScreenLocker::AuthenticateWithChallengeResponse(
     return;
   }
 
-  // TODO(crbug.com/404133029): Avoid using g_browser_process.
-  if (!ChallengeResponseAuthKeysLoader::CanAuthenticateUser(
-          CHECK_DEREF(g_browser_process->local_state()), account_id)) {
+  if (!ChallengeResponseAuthKeysLoader::CanAuthenticateUser(local_state_.get(),
+                                                            account_id)) {
     LOG(ERROR)
         << "Challenge-response authentication isn't supported for the user";
     if (auth_status_consumer_for_testing_) {

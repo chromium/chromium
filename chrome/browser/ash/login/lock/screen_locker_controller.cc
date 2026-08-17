@@ -22,6 +22,7 @@
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace ash {
 
@@ -35,16 +36,25 @@ ScreenLockerController& ScreenLockerController::Get() {
 }
 
 ScreenLockerController::ScreenLockerController(
+    PrefService* local_state,
+    const ApplicationLocaleStorage* application_locale_storage,
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
+    policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
     SessionManagerClient* session_manager_client,
     SessionTerminationManager* session_termination_manager,
     session_manager::SessionManager* session_manager,
     user_manager::UserManager* user_manager,
     UserAddingScreen* user_adding_screen)
-    : session_manager_client_(CHECK_DEREF(session_manager_client)),
+    : local_state_(CHECK_DEREF(local_state)),
+      application_locale_storage_(CHECK_DEREF(application_locale_storage)),
+      shared_url_loader_factory_(std::move(shared_url_loader_factory)),
+      browser_policy_connector_ash_(CHECK_DEREF(browser_policy_connector_ash)),
+      session_manager_client_(CHECK_DEREF(session_manager_client)),
       session_termination_manager_(CHECK_DEREF(session_termination_manager)),
       session_manager_(CHECK_DEREF(session_manager)),
       user_manager_(CHECK_DEREF(user_manager)),
       user_adding_screen_(CHECK_DEREF(user_adding_screen)) {
+  CHECK(shared_url_loader_factory_);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!g_instance);
   g_instance = this;
@@ -139,8 +149,10 @@ void ScreenLockerController::HideLockScreen() {
 void ScreenLockerController::CreateAndInitScreenLocker() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  screen_locker_ =
-      std::make_unique<ScreenLocker>(user_manager_->GetUnlockUsers());
+  screen_locker_ = std::make_unique<ScreenLocker>(
+      &local_state_.get(), &application_locale_storage_.get(),
+      shared_url_loader_factory_, &browser_policy_connector_ash_.get(),
+      user_manager_->GetUnlockUsers());
   VLOG(1) << "Created ScreenLocker " << screen_locker_.get();
   screen_locker_->Init();
 }
