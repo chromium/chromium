@@ -50,12 +50,12 @@ template <>
 struct COMPONENT_EXPORT(FIRST_PARTY_SETS_MOJOM_TRAITS)
     StructTraits<network::mojom::FirstPartySetMetadataDataView,
                  net::FirstPartySetMetadata> {
-  static std::optional<net::FirstPartySetEntry> frame_entry(
+  static const std::optional<net::FirstPartySetEntry>& frame_entry(
       const net::FirstPartySetMetadata& m) {
     return m.frame_entry();
   }
 
-  static std::optional<net::FirstPartySetEntry> top_frame_entry(
+  static const std::optional<net::FirstPartySetEntry>& top_frame_entry(
       const net::FirstPartySetMetadata& m) {
     return m.top_frame_entry();
   }
