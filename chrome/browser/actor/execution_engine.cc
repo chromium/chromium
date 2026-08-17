@@ -168,7 +168,14 @@ ExecutionEngine::NavigationDecisionCallback TrackPendingNavigation(
       .Then(std::move(wrapped));
 }
 
-struct NavigationResponseContext : public origin_gating::GatingDecisionContext {
+struct OriginGatingDecisionContext
+    : public origin_gating::GatingDecisionContext {
+  // Whether the destination origin is considered sensitive. Nullopt until
+  // optimization guide has been queried.
+  std::optional<bool> destination_is_sensitive;
+};
+
+struct NavigationResponseContext : public OriginGatingDecisionContext {
   NavigationResponseContext(ukm::SourceId ukm_id,
                             bool skip,
                             base::ScopedUmaHistogramTimer gating_timer)
@@ -185,7 +192,7 @@ struct NavigationResponseContext : public origin_gating::GatingDecisionContext {
 // Context for page-action gating. Carries the tab's WebContents so that the
 // tab-specific predicates (error document, SafeBrowsing observer) can inspect
 // it.
-struct PageActionGatingContext : public origin_gating::GatingDecisionContext {
+struct PageActionGatingContext : public OriginGatingDecisionContext {
   explicit PageActionGatingContext(
       base::WeakPtr<content::WebContents> web_contents)
       : web_contents(std::move(web_contents)) {}
@@ -196,7 +203,7 @@ struct PageActionGatingContext : public origin_gating::GatingDecisionContext {
 
 // Blocks acting on a tab whose primary main frame is showing an error document.
 origin_gating::Decision BlockTabErrorDocument(
-    const origin_gating::GatingDecisionContext* context,
+    origin_gating::GatingDecisionContext* context,
     const GURL& source,
     const GURL& destination) {
   content::WebContents* web_contents =
@@ -211,7 +218,7 @@ origin_gating::Decision BlockTabErrorDocument(
 // SafeBrowsing Delayed Warnings experiment can delay some SafeBrowsing warnings
 // until user interaction; such a page has a user interaction observer attached.
 origin_gating::Decision BlockSafeBrowsingWarningIfSafetyChecksEnabled(
-    const origin_gating::GatingDecisionContext* context,
+    origin_gating::GatingDecisionContext* context,
     const GURL& source,
     const GURL& destination) {
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
@@ -229,7 +236,7 @@ origin_gating::Decision BlockSafeBrowsingWarningIfSafetyChecksEnabled(
 
 CustomPredicate CreateSafetyListPredicate() {
   return CustomPredicate(
-      base::BindRepeating([](const origin_gating::GatingDecisionContext*,
+      base::BindRepeating([](origin_gating::GatingDecisionContext*,
                              const GURL& source_url,
                              const GURL& destination_url) {
         const GURL& effective_source =
@@ -263,21 +270,37 @@ void IsNonSensitiveUrl(Profile* profile,
 
 void BlockSensitiveUrl(
     Profile* profile,
-    const origin_gating::GatingDecisionContext* context,
+    origin_gating::GatingDecisionContext* context,
     const GURL& source,
     const GURL& destination,
     base::OnceCallback<void(origin_gating::Decision)> callback) {
-  IsNonSensitiveUrl(profile, context, source, destination,
-                    base::BindOnce([](bool not_sensitive) {
-                      return not_sensitive
-                                 ? origin_gating::Decision::kNoDecision
+  CHECK_NE(context, nullptr);
+  auto* decision_context = static_cast<OriginGatingDecisionContext*>(context);
+  if (decision_context->destination_is_sensitive.has_value()) {
+    std::move(callback).Run(decision_context->destination_is_sensitive
+                                ? origin_gating::Decision::kBlocked
+                                : origin_gating::Decision::kNoDecision);
+    return;
+  }
+  IsNonSensitiveUrl(
+      profile, context, source, destination,
+      base::BindOnce(
+          [](OriginGatingDecisionContext* decision_context,
+             bool not_sensitive) {
+            decision_context->destination_is_sensitive = !not_sensitive;
+            return not_sensitive ? origin_gating::Decision::kNoDecision
                                  : origin_gating::Decision::kBlocked;
-                    }).Then(std::move(callback)));
+          },
+          // Passing `decision_context` as a raw pointer is safe here because
+          // the pointee is owned by `callback`, and won't be freed until after
+          // `callback` executes.
+          decision_context)
+          .Then(std::move(callback)));
 }
 
 void BlockSensitiveUrlWhenNavigationGatingDisabled(
     Profile* profile,
-    const origin_gating::GatingDecisionContext* context,
+    origin_gating::GatingDecisionContext* context,
     const GURL& source,
     const GURL& destination,
     base::OnceCallback<void(origin_gating::Decision)> callback) {
@@ -291,7 +314,7 @@ void BlockSensitiveUrlWhenNavigationGatingDisabled(
 
 void BlockSensitiveUrlWhenPromptsDisabled(
     Profile* profile,
-    const origin_gating::GatingDecisionContext* context,
+    origin_gating::GatingDecisionContext* context,
     const GURL& source,
     const GURL& destination,
     base::OnceCallback<void(origin_gating::Decision)> callback) {
@@ -305,7 +328,7 @@ void BlockSensitiveUrlWhenPromptsDisabled(
 
 origin_gating::Decision BlockLookalikeUrl(
     Profile* profile,
-    const origin_gating::GatingDecisionContext* context,
+    origin_gating::GatingDecisionContext* context,
     const GURL& source,
     const GURL& destination) {
   auto* lookalike_service = LookalikeUrlServiceFactory::GetForProfile(profile);
@@ -330,7 +353,7 @@ origin_gating::Decision BlockLookalikeUrl(
 
 origin_gating::Decision BlockIfSafeBrowsingDisabled(
     Profile* profile,
-    const origin_gating::GatingDecisionContext* context,
+    origin_gating::GatingDecisionContext* context,
     const GURL& source,
     const GURL& destination) {
   bool is_safe_browsing_enabled = false;
@@ -345,7 +368,7 @@ origin_gating::Decision BlockIfSafeBrowsingDisabled(
 }
 
 origin_gating::Decision AllowIfSafetyChecksDisabled(
-    const origin_gating::GatingDecisionContext* context,
+    origin_gating::GatingDecisionContext* context,
     const GURL& source,
     const GURL& destination) {
   return IsActorSafetyCheckDisabled() ? origin_gating::Decision::kAllowed
@@ -747,16 +770,15 @@ ExecutionEngine::ShouldDeferNavigation(
 
   const url::Origin source_origin = OriginOrPrecursorIfOpaque(
       GetPrimaryMainFrame(navigation_handle)->GetLastCommittedOrigin());
-  auto context = std::make_unique<NavigationResponseContext>(
-      GetPrimaryMainFrame(navigation_handle)->GetPageUkmSourceId(),
-      navigation_handle.IsInPrerenderedMainFrame(), std::move(timer));
   auto event = GateableEvent::kNavigationResponse;
   auto wrapped_callback = TrackPendingNavigation(
       pending_navigation_cancellations_, std::move(callback),
       /*arg_for_cancel_callback=*/false);
   origin_gating_checker_.ComputeGatingDecision(
-      std::move(context), event, source_origin.GetURL(),
-      navigation_handle.GetURL(),
+      std::make_unique<NavigationResponseContext>(
+          GetPrimaryMainFrame(navigation_handle)->GetPageUkmSourceId(),
+          navigation_handle.IsInPrerenderedMainFrame(), std::move(timer)),
+      event, source_origin.GetURL(), navigation_handle.GetURL(),
       base::BindOnce(
           &ExecutionEngine::OnComputedGatingDecision, GetWeakPtr(),
           std::move(wrapped_callback),
@@ -846,11 +868,26 @@ void ExecutionEngine::DoesOriginRequireUserConfirmation(
     std::move(callback).Run(/*requires_user_confirmation=*/false);
     return;
   }
+  CHECK_NE(context, nullptr);
+  auto* decision_context = static_cast<OriginGatingDecisionContext*>(context);
+  if (decision_context->destination_is_sensitive.has_value()) {
+    std::move(callback).Run(decision_context->destination_is_sensitive.value());
+    return;
+  }
 
   IsNonSensitiveUrl(task_->GetProfile(), context, source, destination,
-                    base::BindOnce([](bool not_sensitive) {
-                      return !not_sensitive;
-                    }).Then(std::move(callback)));
+                    base::BindOnce(
+                        [](OriginGatingDecisionContext* decision_context,
+                           bool not_sensitive) {
+                          decision_context->destination_is_sensitive =
+                              !not_sensitive;
+                          return !not_sensitive;
+                        },
+                        // Passing `decision_context` as a raw pointer is safe
+                        // here because the pointee is owned by `callback`, and
+                        // won't be freed until after `callback` executes.
+                        decision_context)
+                        .Then(std::move(callback)));
 }
 
 void ExecutionEngine::EvaluateEnterprisePolicy(
@@ -1573,7 +1610,8 @@ void ExecutionEngine::IsAcceptableNavigationDestination(
     DecisionCallbackWithReason callback) {
   auto event = GateableEvent::kNavigationRequest;
   origin_gating_checker_.ComputeGatingDecision(
-      /*context=*/nullptr, event, /*source=*/GURL(), url,
+      std::make_unique<OriginGatingDecisionContext>(), event, /*source=*/GURL(),
+      url,
       base::BindOnce(&ResolveGatingDecision,
                      journal_->CreatePendingAsyncEntry(
                          url, task_->id(), MakeBrowserTrackUUID(task_->id()),

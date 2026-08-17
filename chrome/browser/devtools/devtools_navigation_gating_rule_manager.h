@@ -71,7 +71,7 @@ class DevToolsNavigationGatingRuleManager
   explicit DevToolsNavigationGatingRuleManager(std::string_view rules_json);
 
   origin_gating::Decision EvaluateRules(
-      const origin_gating::GatingDecisionContext* context,
+      origin_gating::GatingDecisionContext* context,
       const GURL& source,
       const GURL& destination) const;
 

@@ -161,7 +161,7 @@ void DevToolsNavigationGatingRuleManager::OnNoVerdict(
 }
 
 origin_gating::Decision DevToolsNavigationGatingRuleManager::EvaluateRules(
-    const origin_gating::GatingDecisionContext* context,
+    origin_gating::GatingDecisionContext*,
     const GURL& source,
     const GURL& destination) const {
   if (!MayBlockNavigation()) {

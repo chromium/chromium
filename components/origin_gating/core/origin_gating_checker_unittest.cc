@@ -769,8 +769,8 @@ TEST_F(OriginGatingCheckerTest,
 
 TEST_F(OriginGatingCheckerTest, AsyncCustomPredicate_Allowed_ShortCircuits) {
   CustomPredicate custom(
-      base::BindRepeating([](const GatingDecisionContext* context,
-                             const GURL& source, const GURL& destination,
+      base::BindRepeating([](GatingDecisionContext*, const GURL& source,
+                             const GURL& destination,
                              base::OnceCallback<void(Decision)> callback) {
         EXPECT_EQ(source, GURL("https://example.com"));
         EXPECT_EQ(destination, GURL("https://foo.com"));
@@ -799,8 +799,8 @@ TEST_F(OriginGatingCheckerTest, AsyncCustomPredicate_Allowed_ShortCircuits) {
 TEST_F(OriginGatingCheckerTest,
        AsyncCustomPredicate_NoDecision_FallsBackToDelegate) {
   CustomPredicate custom(
-      base::BindRepeating([](const GatingDecisionContext* context,
-                             const GURL& source, const GURL& destination,
+      base::BindRepeating([](GatingDecisionContext*, const GURL& source,
+                             const GURL& destination,
                              base::OnceCallback<void(Decision)> callback) {
         std::move(callback).Run(Decision::kNoDecision);
       }),
@@ -827,7 +827,7 @@ TEST_F(OriginGatingCheckerTest,
 
 TEST_F(OriginGatingCheckerTest, SyncCustomPredicate_Allowed_ShortCircuits) {
   CustomPredicate custom(
-      base::BindRepeating([](const GatingDecisionContext*, const GURL& source,
+      base::BindRepeating([](GatingDecisionContext*, const GURL& source,
                              const GURL& destination) {
         EXPECT_EQ(source, GURL("https://example.com"));
         EXPECT_EQ(destination, GURL("https://foo.com"));
@@ -856,8 +856,9 @@ TEST_F(OriginGatingCheckerTest, SyncCustomPredicate_Allowed_ShortCircuits) {
 TEST_F(OriginGatingCheckerTest,
        SyncCustomPredicate_NoDecision_FallsBackToDelegate) {
   CustomPredicate custom(
-      base::BindRepeating([](const GatingDecisionContext*, const GURL&,
-                             const GURL&) { return Decision::kNoDecision; }),
+      base::BindRepeating([](GatingDecisionContext*, const GURL&, const GURL&) {
+        return Decision::kNoDecision;
+      }),
       "my_custom_predicate");
 
   OriginGatingChecker checker(
@@ -972,8 +973,8 @@ TEST_F(OriginGatingCheckerTest,
 TEST_F(OriginGatingCheckerTest, PredicateSkipped_WhenEventNotApplicable) {
   // A custom predicate that would allow, but is restricted to kPageAction only.
   CustomPredicate page_action_only(
-      base::BindRepeating([](const GatingDecisionContext* context,
-                             const GURL& source, const GURL& destination,
+      base::BindRepeating([](GatingDecisionContext*, const GURL& source,
+                             const GURL& destination,
                              base::OnceCallback<void(Decision)> callback) {
         std::move(callback).Run(Decision::kAllowed);
       }),
@@ -1010,8 +1011,8 @@ TEST_F(OriginGatingCheckerTest, PredicateSkipped_WhenEventNotApplicable) {
 
 TEST_F(OriginGatingCheckerTest, PredicateRuns_WhenEventApplicable) {
   CustomPredicate page_action_only(
-      base::BindRepeating([](const GatingDecisionContext* context,
-                             const GURL& source, const GURL& destination,
+      base::BindRepeating([](GatingDecisionContext*, const GURL& source,
+                             const GURL& destination,
                              base::OnceCallback<void(Decision)> callback) {
         std::move(callback).Run(Decision::kAllowed);
       }),
@@ -1044,8 +1045,8 @@ TEST_F(OriginGatingCheckerTest, EventReachesPredicateAndDelegate) {
   // The custom predicate returns kNoDecision so evaluation reaches the
   // delegate, allowing us to assert the event is threaded through both hops.
   CustomPredicate observing_predicate(
-      base::BindRepeating([](const GatingDecisionContext* context,
-                             const GURL& source, const GURL& destination,
+      base::BindRepeating([](GatingDecisionContext*, const GURL& source,
+                             const GURL& destination,
                              base::OnceCallback<void(Decision)> callback) {
         std::move(callback).Run(Decision::kNoDecision);
       }),

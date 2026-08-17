@@ -21,13 +21,13 @@ namespace origin_gating {
 class CustomPredicate {
  public:
   using AsyncPredicate = base::RepeatingCallback<void(
-      const GatingDecisionContext* context,
+      GatingDecisionContext* context,
       const GURL& source,
       const GURL& destination,
       base::OnceCallback<void(Decision)> callback)>;
 
   using SyncPredicate =
-      base::RepeatingCallback<Decision(const GatingDecisionContext* context,
+      base::RepeatingCallback<Decision(GatingDecisionContext* context,
                                        const GURL& source,
                                        const GURL& destination)>;
 
