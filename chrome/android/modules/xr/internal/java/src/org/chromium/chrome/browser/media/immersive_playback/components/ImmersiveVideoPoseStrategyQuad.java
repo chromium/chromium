@@ -16,12 +16,13 @@ import org.chromium.ui.xr.scenecore.XrVector3;
  */
 @NullMarked
 class ImmersiveVideoPoseStrategyQuad implements ImmersiveVideoPoseStrategy {
-    static final XrVector3 DEFAULT_PLAYER_TRANSLATION = XrVector3.create(0f, 0f, 0.5f);
+    static final XrVector3 DEFAULT_PLAYER_TRANSLATION = XrVector3.create(0f, 0f, -1.5f);
     static final XrVector3 CONTROL_OFFSET_Z = XrVector3.create(0f, 0f, 0.04f);
     // Emulates MovableComponent's OpenXR FLAG_SCALE_WITH_DISTANCE depth amplification.
     private static final float DEPTH_SENSITIVITY = 3.0f;
     private final ImmersiveVideoPoseManager.Delegate mDelegate;
-    private XrPose mPlayerPose;
+    private XrPose mAnchorPose = XrPose.getIdentity();
+    private @Nullable XrPose mPlayerPose;
     private @Nullable XrPose mDragStartPlayerPose;
     private float mHitPointToOriginDistance;
     private @Nullable XrVector3 mGrabPointToCenterOffset;
@@ -29,7 +30,12 @@ class ImmersiveVideoPoseStrategyQuad implements ImmersiveVideoPoseStrategy {
 
     public ImmersiveVideoPoseStrategyQuad(ImmersiveVideoPoseManager.Delegate delegate) {
         mDelegate = delegate;
-        mPlayerPose = XrPose.create(DEFAULT_PLAYER_TRANSLATION);
+    }
+
+    @Override
+    public void setAnchorPose(@Nullable XrPose anchorPose) {
+        mAnchorPose = anchorPose != null ? anchorPose : XrPose.getIdentity();
+        mPlayerPose = getDefaultPlayerPanelPose();
     }
 
     @Override
@@ -39,7 +45,7 @@ class ImmersiveVideoPoseStrategyQuad implements ImmersiveVideoPoseStrategy {
 
     @Override
     public void onPlayerPanelDragStart(XrVector3 origin, XrVector3 direction) {
-        mDragStartPlayerPose = mPlayerPose;
+        mDragStartPlayerPose = getPlayerPanelPose();
         mStartOrigin = origin;
         XrVector3 normalizedDirection = direction.toNormalized();
         XrVector3 initialTranslation = mDragStartPlayerPose.getTranslation();
@@ -95,12 +101,18 @@ class ImmersiveVideoPoseStrategyQuad implements ImmersiveVideoPoseStrategy {
         mPlayerPose = XrPose.create(proposedTranslation, newRotation);
     }
 
-    @Override
-    public void onControlPanelPoseChanged(XrPose pose) {}
+    private XrPose getDefaultPlayerPanelPose() {
+        XrQuaternion yawRotation = XrQuaternion.fromYaw(mAnchorPose.getRotation().getYaw());
+        XrPose yawAnchorPose = XrPose.create(mAnchorPose.getTranslation(), yawRotation);
+        return XrPose.create(yawAnchorPose.transformPoint(DEFAULT_PLAYER_TRANSLATION), yawRotation);
+    }
 
     @Override
     public XrPose getPlayerPanelPose() {
-        return mPlayerPose;
+        if (mPlayerPose != null) {
+            return mPlayerPose;
+        }
+        return getDefaultPlayerPanelPose();
     }
 
     @Override

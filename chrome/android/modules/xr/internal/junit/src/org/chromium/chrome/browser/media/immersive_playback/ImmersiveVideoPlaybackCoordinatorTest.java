@@ -10,6 +10,8 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doThrow;
@@ -34,6 +36,7 @@ import com.google.android.material.slider.Slider;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
@@ -42,6 +45,8 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.media.immersive_playback.components.ImmersiveVideoControlAutoHideManager;
 import org.chromium.chrome.browser.media.immersive_playback.components.ImmersiveVideoControlCoordinator;
@@ -59,11 +64,14 @@ import org.chromium.ui.xr.scenecore.XrInteractableComponent;
 import org.chromium.ui.xr.scenecore.XrMovableComponent;
 import org.chromium.ui.xr.scenecore.XrPanelEntityHolder;
 import org.chromium.ui.xr.scenecore.XrPose;
+import org.chromium.ui.xr.scenecore.XrQuaternion;
 import org.chromium.ui.xr.scenecore.XrResizableComponent;
 import org.chromium.ui.xr.scenecore.XrSceneCoreSessionManager;
+import org.chromium.ui.xr.scenecore.XrSpace;
 import org.chromium.ui.xr.scenecore.XrSurfaceEntityShape;
 import org.chromium.ui.xr.scenecore.XrSurfaceEntityStereoMode;
 import org.chromium.ui.xr.scenecore.XrSurfaceEntityView;
+import org.chromium.ui.xr.scenecore.XrVector3;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -74,6 +82,17 @@ import java.util.function.Consumer;
 @Config(manifest = Config.NONE)
 @SuppressWarnings("unchecked")
 public class ImmersiveVideoPlaybackCoordinatorTest {
+    static {
+        XrModuleProviderImpl.initialize();
+    }
+
+    private static final XrVector3 ANCHOR_TRANSLATION = XrVector3.create(1f, 2f, 3f);
+    private static final float ANCHOR_YAW_DEGREES = 90f;
+    private static final float ANCHOR_YAW_RADIANS = (float) Math.toRadians(ANCHOR_YAW_DEGREES);
+    private static final XrPose ANCHOR_POSE =
+            XrPose.create(ANCHOR_TRANSLATION, XrQuaternion.fromYaw(ANCHOR_YAW_RADIANS));
+    private static final float EPSILON = 1e-4f;
+
     @Mock private ImmersiveVideoControlCoordinator.Delegate mVideoControlDelegate;
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private XrSceneCoreSessionManager mXrSceneCoreSessionManager;
@@ -87,6 +106,8 @@ public class ImmersiveVideoPlaybackCoordinatorTest {
     @Mock private XrPanelEntityHolder mControlPanelHolder;
     @Mock private XrInteractableComponent mInteractableComponent;
     @Mock private XrEntityHolder mActivitySpaceEntity;
+    private final SettableNullableObservableSupplier<XrPose> mHeadPoseSupplier =
+            ObservableSuppliers.createNullable();
 
     private ImmersiveVideoPlaybackCoordinator mCoordinator;
     private Activity mActivity;
@@ -107,6 +128,11 @@ public class ImmersiveVideoPlaybackCoordinatorTest {
         when(mControlPanelHolder.getParent()).thenReturn(mActivitySpaceEntity);
         when(mXrSceneCoreSessionManager.getMainPanelEntity()).thenReturn(mMainPanelEntity);
         when(mXrSceneCoreSessionManager.getActivitySpaceEntity()).thenReturn(mActivitySpaceEntity);
+        when(mXrSceneCoreSessionManager.getHeadPoseInActivitySpace())
+                .thenReturn(XrPose.getIdentity());
+        when(mXrSceneCoreSessionManager.getHeadPoseObservableSupplier())
+                .thenReturn(mHeadPoseSupplier);
+        when(mXrSceneCoreSessionManager.startHeadPoseTracking()).thenReturn(true);
         when(mXrSceneCoreSessionManager.createPanelEntity(any(), any()))
                 .thenReturn(mControlPanelHolder);
         when(mCompositorView.getView()).thenReturn(mSurfaceEntityView);
@@ -201,7 +227,6 @@ public class ImmersiveVideoPlaybackCoordinatorTest {
         verify(mSurfaceEntityHolder).setSurfaceStereoMode(XrSurfaceEntityStereoMode.SIDE_BY_SIDE);
 
         verify(mSurfaceMovableComponent).setMovable(false, false);
-        verify(mControlPanelMovableComponent).setMovable(true, false);
 
         clearInvocations(mSurfaceMovableComponent);
         clearInvocations(mControlPanelMovableComponent);
@@ -216,7 +241,6 @@ public class ImmersiveVideoPlaybackCoordinatorTest {
         verify(mSurfaceEntityHolder).setSurfaceStereoMode(XrSurfaceEntityStereoMode.TOP_BOTTOM);
 
         verify(mSurfaceMovableComponent).setMovable(false, false);
-        verify(mControlPanelMovableComponent).setMovable(false, false);
 
         clearInvocations(mSurfaceMovableComponent);
         clearInvocations(mControlPanelMovableComponent);
@@ -573,6 +597,100 @@ public class ImmersiveVideoPlaybackCoordinatorTest {
         assertEquals(panel, testParent.getReceivedChild());
     }
 
+    /** Tests that head tracking is enabled upon initialization and disabled upon disposal. */
+    @Test
+    @UiThreadTest
+    public void testHeadTrackingEnabled_Lifecycle() {
+        // Head tracking is enabled on construction and started on show()
+        verify(mXrSceneCoreSessionManager).setHeadTrackingEnabled(true);
+        verify(mXrSceneCoreSessionManager).startHeadPoseTracking();
+
+        // Disposing coordinator stops tracking and disables head tracking
+        mCoordinator.dispose();
+        verify(mXrSceneCoreSessionManager).stopHeadPoseTracking();
+        verify(mXrSceneCoreSessionManager).setHeadTrackingEnabled(false);
+    }
+
+    /** Tests that head pose updates automatically update player and control panel poses. */
+    @Test
+    @UiThreadTest
+    public void testHeadPoseUpdates_UpdatePoses() {
+        clearInvocations(mSurfaceEntityHolder);
+
+        mHeadPoseSupplier.set(ANCHOR_POSE);
+        ShadowLooper.idleMainLooper();
+
+        ArgumentCaptor<XrPose> playerPoseCaptor = ArgumentCaptor.forClass(XrPose.class);
+        verify(mSurfaceEntityHolder).setEntityPose(playerPoseCaptor.capture(), eq(XrSpace.ACTIVITY));
+        XrPose expectedPlayerPose =
+                XrPose.create(
+                        ANCHOR_POSE.transformPoint(
+                                XrVector3.create(0f, 0f, -1.5f)),
+                        ANCHOR_POSE.getRotation());
+        assertPoseEquals(expectedPlayerPose, playerPoseCaptor.getValue());
+    }
+
+    /** Tests that head pose tracking automatically times out and unregisters after 500ms. */
+    @Test
+    @UiThreadTest
+    public void testHeadPoseTracking_TimesOutAfterDelay() {
+        clearInvocations(mXrSceneCoreSessionManager);
+
+        // Advance looper past HEAD_POSE_TRACKING_DURATION_MS (500ms)
+        ShadowLooper.idleMainLooper(500, TimeUnit.MILLISECONDS);
+
+        verify(mXrSceneCoreSessionManager).stopHeadPoseTracking();
+
+        // Further head pose changes should not trigger pose updates
+        clearInvocations(mSurfaceEntityHolder);
+        mHeadPoseSupplier.set(ANCHOR_POSE);
+        ShadowLooper.idleMainLooper();
+        verify(mSurfaceEntityHolder, never()).setEntityPose(any(), anyInt());
+    }
+
+    /** Tests that changing projection type fetches current head pose and updates anchor. */
+    @Test
+    @UiThreadTest
+    public void testProjectionChange_UpdatesAnchorPoseFromHeadPose() {
+        when(mXrSceneCoreSessionManager.getHeadPoseInActivitySpace()).thenReturn(ANCHOR_POSE);
+
+        clearInvocations(mSurfaceEntityHolder);
+        mCoordinator.onFormatSelected(
+                ImmersiveStereoMode.MONO, ImmersiveProjectionType.SPHERE);
+        ShadowLooper.idleMainLooper();
+
+        verify(mXrSceneCoreSessionManager).getHeadPoseInActivitySpace();
+        ArgumentCaptor<XrPose> playerPoseCaptor = ArgumentCaptor.forClass(XrPose.class);
+        verify(mSurfaceEntityHolder).setEntityPose(playerPoseCaptor.capture(), eq(XrSpace.ACTIVITY));
+        assertEquals(ANCHOR_POSE.getTranslation(), playerPoseCaptor.getValue().getTranslation());
+    }
+
+    /** Tests that reshowing control panel in curved mode fetches head pose to update anchor. */
+    @Test
+    @UiThreadTest
+    public void testShowControlPanel_UpdatesAnchorPoseInNonQuadMode() {
+        // Switch to Hemisphere mode
+        mCoordinator.onFormatSelected(
+                ImmersiveStereoMode.MONO, ImmersiveProjectionType.HEMISPHERE);
+        ShadowLooper.idleMainLooper();
+
+        // Dismiss the control panel first
+        mCoordinator.onPlayerPanelClicked();
+        ShadowLooper.idleMainLooper();
+
+        clearInvocations(mXrSceneCoreSessionManager);
+        clearInvocations(mControlPanelHolder);
+
+        when(mXrSceneCoreSessionManager.getHeadPoseInActivitySpace()).thenReturn(ANCHOR_POSE);
+
+        // Re-show control panel by clicking player panel
+        mCoordinator.onPlayerPanelClicked();
+        ShadowLooper.idleMainLooper();
+
+        verify(mXrSceneCoreSessionManager).getHeadPoseInActivitySpace();
+        verify(mControlPanelHolder).setEntityPose(any(XrPose.class), eq(XrSpace.PARENT));
+    }
+
     /** Test subclass that allows injecting mocked dependencies by overriding protected methods. */
     private static class TestImmersiveVideoPlaybackCoordinator
             extends ImmersiveVideoPlaybackCoordinator {
@@ -644,5 +762,16 @@ public class ImmersiveVideoPlaybackCoordinatorTest {
             mReceivedEvents.clear();
             mReceivedChild = null;
         }
+    }
+
+    private void assertVectorEquals(XrVector3 expected, XrVector3 actual) {
+        assertEquals(expected.getX(), actual.getX(), EPSILON);
+        assertEquals(expected.getY(), actual.getY(), EPSILON);
+        assertEquals(expected.getZ(), actual.getZ(), EPSILON);
+    }
+
+    private void assertPoseEquals(XrPose expected, XrPose actual) {
+        assertVectorEquals(expected.getTranslation(), actual.getTranslation());
+        assertEquals(expected.getRotation().getYaw(), actual.getRotation().getYaw(), EPSILON);
     }
 }

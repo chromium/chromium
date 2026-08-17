@@ -12,7 +12,7 @@ import org.chromium.ui.xr.scenecore.XrVector3;
 
 /**
  * Pose management strategy for sphere projection mode. Assumes the control panel is not parented to
- * the player panel and is positioned independently in world space.
+ * the player panel and is positioned independently in world space following the sphere's rotation.
  */
 @NullMarked
 class ImmersiveVideoPoseStrategySphere implements ImmersiveVideoPoseStrategy {
@@ -22,8 +22,8 @@ class ImmersiveVideoPoseStrategySphere implements ImmersiveVideoPoseStrategy {
                     ImmersiveVideoPoseStrategyQuad.CONTROL_OFFSET_Z);
 
     private final ImmersiveVideoPoseManager.Delegate mDelegate;
-    private @Nullable XrPose mControlPose;
-    private float mCurrentYaw;
+    protected XrPose mAnchorPose = XrPose.getIdentity();
+    protected @Nullable Float mCurrentYaw;
     private float mDragStartYaw;
     private float mStartOffsetYaw;
 
@@ -32,20 +32,20 @@ class ImmersiveVideoPoseStrategySphere implements ImmersiveVideoPoseStrategy {
     }
 
     @Override
-    public void onPlayerPanelPoseChanged(XrPose pose) {
-        mCurrentYaw = pose.getRotation().getYaw();
+    public void setAnchorPose(@Nullable XrPose anchorPose) {
+        mAnchorPose = anchorPose != null ? anchorPose : XrPose.getIdentity();
+        mCurrentYaw = mAnchorPose.getRotation().getYaw();
     }
 
     @Override
-    public void onControlPanelPoseChanged(XrPose pose) {
-        mControlPose = pose;
+    public void onPlayerPanelPoseChanged(XrPose pose) {
         mCurrentYaw = pose.getRotation().getYaw();
     }
 
     @Override
     public void onPlayerPanelDragStart(XrVector3 origin, XrVector3 direction) {
         mDragStartYaw = calculateYawFromRay(origin, direction, mDelegate.getCurveRadius());
-        mStartOffsetYaw = mCurrentYaw;
+        mStartOffsetYaw = getCurrentYaw();
     }
 
     @Override
@@ -64,17 +64,26 @@ class ImmersiveVideoPoseStrategySphere implements ImmersiveVideoPoseStrategy {
         mCurrentYaw = mStartOffsetYaw - deltaYaw * DRAG_SENSITIVITY;
     }
 
+    protected float getCurrentYaw() {
+        return mCurrentYaw != null ? mCurrentYaw : 0f;
+    }
+
     @Override
     public XrPose getPlayerPanelPose() {
-        return XrPose.create(XrVector3.getZero(), XrQuaternion.fromYaw(mCurrentYaw));
+        return XrPose.create(mAnchorPose.getTranslation(), XrQuaternion.fromYaw(getCurrentYaw()));
     }
 
     @Override
     public XrPose getControlPanelPose() {
-        return mControlPose != null ? mControlPose : XrPose.create(getOffset());
+        XrPose anchorYawPose =
+                XrPose.create(
+                        mAnchorPose.getTranslation(),
+                        XrQuaternion.fromYaw(mAnchorPose.getRotation().getYaw()));
+        return XrPose.create(
+                anchorYawPose.transformPoint(getOffset()), anchorYawPose.getRotation());
     }
 
-    private XrVector3 getOffset() {
+    protected XrVector3 getOffset() {
         return XrVector3.create(0f, -mDelegate.getLayoutHeight() / 2f, 0f).plus(CONTROL_OFFSET_Z);
     }
 

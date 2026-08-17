@@ -36,12 +36,18 @@ public class ImmersiveVideoPoseManagerTest {
     private static final float EPSILON = 1e-4f;
 
     // Default Z distance of the player panel in QUAD mode.
-    private static final float DEFAULT_PLAYER_Z = 0.5f;
+    private static final float DEFAULT_PLAYER_Z = -1.5f;
     // Forward Z offset of the control panel relative to the player panel.
     private static final float CONTROL_OFFSET_Z = 0.04f;
     // In SPHERE/HEMISPHERE mode, the default control panel Z in unrotated world space is
-    // DEFAULT_PLAYER_Z + CONTROL_OFFSET_Z (0.54m).
+    // DEFAULT_PLAYER_Z + CONTROL_OFFSET_Z (-1.46m).
     private static final float WORLD_CONTROL_OFFSET_Z = DEFAULT_PLAYER_Z + CONTROL_OFFSET_Z;
+
+    private static final XrVector3 ANCHOR_TRANSLATION = XrVector3.create(1f, 2f, 3f);
+    private static final float ANCHOR_YAW_DEGREES = 90f;
+    private static final float ANCHOR_YAW_RADIANS = (float) Math.toRadians(ANCHOR_YAW_DEGREES);
+    private static final XrPose ANCHOR_POSE =
+            XrPose.create(ANCHOR_TRANSLATION, XrQuaternion.fromYaw(ANCHOR_YAW_RADIANS));
 
     @Mock private ImmersiveVideoPoseManager.Delegate mDelegate;
 
@@ -54,6 +60,7 @@ public class ImmersiveVideoPoseManagerTest {
         when(mDelegate.getLayoutHeight()).thenReturn(QUAD_LAYOUT_HEIGHT);
         when(mDelegate.getCurveRadius()).thenReturn(DEFAULT_CURVE_RADIUS);
         mManager = new ImmersiveVideoPoseManager(mDelegate);
+        mManager.setAnchorPose(XrPose.create(XrVector3.getZero()));
         mManager.updateStrategy(XrSurfaceEntityShape.QUAD);
     }
 
@@ -87,18 +94,18 @@ public class ImmersiveVideoPoseManagerTest {
     @Test
     public void testQuadMode_DragPoseUpdates() {
         XrVector3 startOrigin = XrVector3.create(0f, 0f, 0f);
-        XrVector3 startDirection = XrVector3.create(0f, 0f, 1f);
+        XrVector3 startDirection = XrVector3.create(0f, 0f, -1f);
 
         mManager.onPlayerPanelDragStart(startOrigin, startDirection);
 
-        XrVector3 updateDirection = XrVector3.create(1f, 2f, 1f);
+        XrVector3 updateDirection = XrVector3.create(1f, 2f, -1f);
         mManager.onPlayerPanelDragUpdate(startOrigin, updateDirection);
 
-        // Given drag update direction ray (1, 2, 1) and initial distance 0.5m:
-        // ||(1, 2, 1)|| = sqrt(6). Projected position is 0.5 * direction / ||direction||.
-        float expectedX = (float) (0.5 / Math.sqrt(6.0));
-        float expectedY = (float) (1.0 / Math.sqrt(6.0));
-        float expectedZ = (float) (0.5 / Math.sqrt(6.0));
+        // Given drag update direction ray (1, 2, -1) and initial distance 1.5m:
+        // ||(1, 2, -1)|| = sqrt(6). Projected position is 1.5 * direction / ||direction||.
+        float expectedX = (float) (1.5 / Math.sqrt(6.0));
+        float expectedY = (float) (3.0 / Math.sqrt(6.0));
+        float expectedZ = -(float) (1.5 / Math.sqrt(6.0));
         float currentDistance =
                 (float)
                         Math.sqrt(
@@ -106,18 +113,14 @@ public class ImmersiveVideoPoseManagerTest {
                                         + expectedY * expectedY
                                         + expectedZ * expectedZ);
         float expectedYaw = -expectedX / currentDistance;
-        XrPose actualPose = mManager.getPlayerPanelPose();
-        assertEquals(expectedX, actualPose.getTranslation().getX(), EPSILON);
-        assertEquals(expectedY, actualPose.getTranslation().getY(), EPSILON);
-        assertEquals(expectedZ, actualPose.getTranslation().getZ(), EPSILON);
-        assertEquals(expectedYaw, actualPose.getRotation().getYaw(), EPSILON);
+        XrPose expectedPose =
+                XrPose.create(
+                        XrVector3.create(expectedX, expectedY, expectedZ),
+                        XrQuaternion.fromYaw(expectedYaw));
+        assertPoseEquals(expectedPose, mManager.getPlayerPanelPose());
 
         mManager.onPlayerPanelDragEnd(startOrigin, updateDirection);
-        XrPose endPose = mManager.getPlayerPanelPose();
-        assertEquals(expectedX, endPose.getTranslation().getX(), EPSILON);
-        assertEquals(expectedY, endPose.getTranslation().getY(), EPSILON);
-        assertEquals(expectedZ, endPose.getTranslation().getZ(), EPSILON);
-        assertEquals(expectedYaw, endPose.getRotation().getYaw(), EPSILON);
+        assertPoseEquals(expectedPose, mManager.getPlayerPanelPose());
     }
 
     @Test
@@ -149,12 +152,12 @@ public class ImmersiveVideoPoseManagerTest {
         XrPose expectedPlayerPose = XrPose.create(XrVector3.getZero(), expectedRotation);
         assertEquals(expectedPlayerPose, mManager.getPlayerPanelPose());
 
-        // Verify control panel pose queries (world space, since parent is null in curved mode).
-        // Y is offset downward by half the sphere layout height (-0.3m), and Z is at
-        // WORLD_CONTROL_OFFSET_Z (0.54m).
+        // Verify control panel pose in SPHERE mode does not follow sphere rotation.
+        float radius = Math.abs(WORLD_CONTROL_OFFSET_Z);
         float expectedControlY = -SPHERE_LAYOUT_HEIGHT / 2f;
+        XrVector3 expectedControlTrans = XrVector3.create(0f, expectedControlY, -radius);
         XrPose expectedControlPose =
-                XrPose.create(XrVector3.create(0f, expectedControlY, WORLD_CONTROL_OFFSET_Z));
+                XrPose.create(expectedControlTrans, XrQuaternion.getIdentity());
         assertEquals(expectedControlPose, mManager.getControlPanelPose());
 
         // Verify that when switching back to QUAD mode, the player panel starts with its default
@@ -166,93 +169,208 @@ public class ImmersiveVideoPoseManagerTest {
     }
 
     @Test
-    public void testSphereMode_ControlPanelMoveUpdates() {
-        mManager.updateStrategy(XrSurfaceEntityShape.SPHERE);
-        when(mDelegate.getLayoutHeight()).thenReturn(SPHERE_LAYOUT_HEIGHT);
+    public void testHemisphereMode_PoseUpdates() {
+        mManager.updateStrategy(XrSurfaceEntityShape.HEMISPHERE);
+        assertEquals(XrPose.getIdentity(), mManager.getPlayerPanelPose());
 
-        // Move control panel in SPHERE mode
-        XrVector3 controlTrans = XrVector3.create(5f, 6f, 7f);
-        XrQuaternion controlRot = getQuaternionFromAxisAngle(0f, 1f, 0f, 90f);
-        XrPose controlPose = XrPose.create(controlTrans, controlRot);
+        XrPose newPose =
+                XrPose.create(
+                        XrVector3.create(0f, 0f, 0f),
+                        XrQuaternion.fromYaw((float) Math.toRadians(45f)));
+        mManager.onPlayerPanelPoseChanged(newPose);
 
-        mManager.onControlPanelPoseChanged(controlPose);
+        assertEquals(newPose, mManager.getPlayerPanelPose());
 
-        assertEquals(controlPose, mManager.getControlPanelPose());
+        // Verify control panel pose in HEMISPHERE mode follows hemisphere rotation.
+        float radius = Math.abs(WORLD_CONTROL_OFFSET_Z);
+        float expectedControlYaw = (float) Math.toRadians(45f);
+        float expectedControlX = -(float) (radius * Math.sin(expectedControlYaw));
+        float expectedControlZ = -(float) (radius * Math.cos(expectedControlYaw));
+        float expectedControlY = -QUAD_LAYOUT_HEIGHT / 2f;
+        XrPose expectedControlPose =
+                XrPose.create(
+                        XrVector3.create(expectedControlX, expectedControlY, expectedControlZ),
+                        XrQuaternion.fromYaw(expectedControlYaw));
+        assertPoseEquals(expectedControlPose, mManager.getControlPanelPose());
+    }
 
-        // Verify that when creating a fresh manager, it resets to default pose.
-        mManager = new ImmersiveVideoPoseManager(mDelegate);
-        mManager.updateStrategy(XrSurfaceEntityShape.QUAD);
+    @Test
+    public void testQuadMode_AnchorPose() {
+        mManager.setAnchorPose(ANCHOR_POSE);
+
+        XrPose expectedPlayerPose =
+                XrPose.create(
+                        ANCHOR_POSE.transformPoint(
+                                XrVector3.create(0f, 0f, DEFAULT_PLAYER_Z)),
+                        ANCHOR_POSE.getRotation());
+        assertPoseEquals(expectedPlayerPose, mManager.getPlayerPanelPose());
+
+        // Setting anchor pose to null defaults back to identity anchor.
+        mManager.setAnchorPose(null);
         assertEquals(
                 XrPose.create(XrVector3.create(0f, 0f, DEFAULT_PLAYER_Z)),
                 mManager.getPlayerPanelPose());
     }
 
     @Test
-    public void testHemisphereMode_ControlPanelMoveUpdates() {
-        mManager.updateStrategy(XrSurfaceEntityShape.HEMISPHERE);
-        assertEquals(XrPose.getIdentity(), mManager.getPlayerPanelPose());
+    public void testSphereMode_AnchorPoseAndDecoupledControl() {
+        mManager.updateStrategy(XrSurfaceEntityShape.SPHERE);
+        when(mDelegate.getLayoutHeight()).thenReturn(SPHERE_LAYOUT_HEIGHT);
 
-        XrVector3 controlTrans = XrVector3.create(1f, 2f, 3f);
-        XrQuaternion controlRot = getQuaternionFromAxisAngle(0f, 1f, 0f, 90f);
-        XrPose controlPose = XrPose.create(controlTrans, controlRot);
+        mManager.setAnchorPose(ANCHOR_POSE);
 
-        mManager.onControlPanelPoseChanged(controlPose);
+        // Player panel translation is placed at the anchor translation, with anchor yaw.
+        assertEquals(ANCHOR_TRANSLATION, mManager.getPlayerPanelPose().getTranslation());
+        assertEquals(
+                ANCHOR_YAW_RADIANS,
+                mManager.getPlayerPanelPose().getRotation().getYaw(),
+                EPSILON);
 
-        // In HEMISPHERE mode, when the control panel moves to (1, 2, 3) rotated +90 deg around Y:
-        // 1. The unrotated local offset from control panel to player panel is:
-        //    localX = 0, localY = QUAD_LAYOUT_HEIGHT / 2 (+0.25m), localZ = -WORLD_CONTROL_OFFSET_Z
-        // (-0.54m).
-        // 2. Rotating (0, 0.25, -0.54) by +90 deg around Y transforms (x, y, z) -> (z, y, -x):
-        //    rotatedX = -0.54m, rotatedY = +0.25m, rotatedZ = 0m.
-        // 3. Adding to controlTrans (1, 2, 3):
-        //    expectedX = 1 - 0.54 = 0.46m, expectedY = 2 + 0.25 = 2.25m, expectedZ = 3 + 0 = 3.00m.
-        float localOffsetY = QUAD_LAYOUT_HEIGHT / 2f;
-        float expectedPlayerX = controlTrans.getX() - WORLD_CONTROL_OFFSET_Z;
-        float expectedPlayerY = controlTrans.getY() + localOffsetY;
-        float expectedPlayerZ = controlTrans.getZ();
+        // Control panel pose is computed from the anchor pose.
+        XrPose expectedControlPose =
+                XrPose.create(
+                        ANCHOR_POSE.transformPoint(
+                                XrVector3.create(
+                                        0f, -SPHERE_LAYOUT_HEIGHT / 2f, WORLD_CONTROL_OFFSET_Z)),
+                        ANCHOR_POSE.getRotation());
+        assertPoseEquals(expectedControlPose, mManager.getControlPanelPose());
 
-        XrPose actualPose = mManager.getPlayerPanelPose();
-        assertEquals(expectedPlayerX, actualPose.getTranslation().getX(), EPSILON);
-        assertEquals(expectedPlayerY, actualPose.getTranslation().getY(), EPSILON);
-        assertEquals(expectedPlayerZ, actualPose.getTranslation().getZ(), EPSILON);
-        assertEquals(controlRot, actualPose.getRotation());
-        assertEquals(controlPose, mManager.getControlPanelPose());
+        // Rotate the sphere player panel (e.g. user rotates video sphere).
+        mManager.onPlayerPanelPoseChanged(
+                XrPose.create(
+                        ANCHOR_TRANSLATION,
+                        XrQuaternion.fromYaw((float) Math.toRadians(120f))));
+        assertEquals(
+                (float) Math.toRadians(120f),
+                mManager.getPlayerPanelPose().getRotation().getYaw(),
+                EPSILON);
 
-        XrVector3 dragTrans = XrVector3.create(10f, 11f, 12f);
-        XrQuaternion dragRot = getQuaternionFromAxisAngle(1f, 0f, 0f, 180f);
-        mManager.onPlayerPanelPoseChanged(XrPose.create(dragTrans, dragRot));
+        // Verify control panel pose in SPHERE mode does NOT follow sphere rotation.
+        assertEquals(
+                expectedControlPose.getRotation().getYaw(),
+                mManager.getControlPanelPose().getRotation().getYaw(),
+                EPSILON);
 
-        // Dragging/moving the player panel in HEMISPHERE mode is ignored;
-        // player panel pose remains tied to the control panel pose.
-        XrPose endPose = mManager.getPlayerPanelPose();
-        assertEquals(expectedPlayerX, endPose.getTranslation().getX(), EPSILON);
-        assertEquals(expectedPlayerY, endPose.getTranslation().getY(), EPSILON);
-        assertEquals(expectedPlayerZ, endPose.getTranslation().getZ(), EPSILON);
+        // Updating anchor pose updates the control panel to the new anchor yaw.
+        XrPose newAnchor =
+                XrPose.create(
+                        XrVector3.create(0f, 0f, 0f),
+                        XrQuaternion.fromYaw((float) Math.toRadians(60f)));
+        mManager.setAnchorPose(newAnchor);
+        assertEquals(
+                (float) Math.toRadians(60f),
+                mManager.getControlPanelPose().getRotation().getYaw(),
+                EPSILON);
     }
 
     @Test
-    public void testHemisphereMode_ControlPanelMoveUpdatesWithXRotation() {
+    public void testHemisphereMode_AnchorPoseYawPreservation() {
+        mManager = new ImmersiveVideoPoseManager(mDelegate);
+        // Initial anchor pose sets initial yaw.
+        mManager.setAnchorPose(ANCHOR_POSE);
         mManager.updateStrategy(XrSurfaceEntityShape.HEMISPHERE);
 
-        XrVector3 controlTrans = XrVector3.create(1f, 2f, 3f);
-        XrQuaternion controlRot = getQuaternionFromAxisAngle(1f, 0f, 0f, 90f);
-        XrPose controlPose = XrPose.create(controlTrans, controlRot);
+        assertEquals(ANCHOR_TRANSLATION, mManager.getPlayerPanelPose().getTranslation());
+        assertEquals(
+                ANCHOR_YAW_RADIANS,
+                mManager.getPlayerPanelPose().getRotation().getYaw(),
+                EPSILON);
 
-        mManager.onControlPanelPoseChanged(controlPose);
+        // User rotates the hemisphere to 120 degrees.
+        mManager.onPlayerPanelPoseChanged(
+                XrPose.create(
+                        ANCHOR_TRANSLATION,
+                        XrQuaternion.fromYaw((float) Math.toRadians(120f))));
+        assertEquals(
+                (float) Math.toRadians(120f),
+                mManager.getPlayerPanelPose().getRotation().getYaw(),
+                EPSILON);
+        // In HEMISPHERE mode, control panel follows hemisphere rotation.
+        assertEquals(
+                (float) Math.toRadians(120f),
+                mManager.getControlPanelPose().getRotation().getYaw(),
+                EPSILON);
 
-        // Rotating by +90 deg around X transforms (x, y, z) -> (x, -z, y):
-        // rotatedX = 0m, rotatedY = +WORLD_CONTROL_OFFSET_Z (+0.54m), rotatedZ = +localOffsetY
-        // (+0.25m).
-        float localOffsetY = QUAD_LAYOUT_HEIGHT / 2f;
-        float expectedPlayerX = controlTrans.getX();
-        float expectedPlayerY = controlTrans.getY() + WORLD_CONTROL_OFFSET_Z;
-        float expectedPlayerZ = controlTrans.getZ() + localOffsetY;
+        // Subsequent anchor pose update (e.g. head movement / recenter) updates translation but
+        // preserves the user's yaw rotation.
+        XrPose secondAnchor =
+                XrPose.create(
+                        XrVector3.create(2f, 2f, 2f),
+                        XrQuaternion.fromYaw(0f));
+        mManager.setAnchorPose(secondAnchor);
 
-        XrPose actualPose = mManager.getPlayerPanelPose();
-        assertEquals(expectedPlayerX, actualPose.getTranslation().getX(), EPSILON);
-        assertEquals(expectedPlayerY, actualPose.getTranslation().getY(), EPSILON);
-        assertEquals(expectedPlayerZ, actualPose.getTranslation().getZ(), EPSILON);
-        assertEquals(controlRot, actualPose.getRotation());
+        assertEquals(secondAnchor.getTranslation(), mManager.getPlayerPanelPose().getTranslation());
+        assertEquals(
+                (float) Math.toRadians(120f),
+                mManager.getPlayerPanelPose().getRotation().getYaw(),
+                EPSILON);
+        assertEquals(
+                (float) Math.toRadians(120f),
+                mManager.getControlPanelPose().getRotation().getYaw(),
+                EPSILON);
+    }
+
+    @Test
+    public void testHemisphereMode_DragUpdatesRotateBothPlayerAndControl() {
+        mManager.updateStrategy(XrSurfaceEntityShape.HEMISPHERE);
+        when(mDelegate.getLayoutHeight()).thenReturn(QUAD_LAYOUT_HEIGHT);
+        when(mDelegate.getCurveRadius()).thenReturn(DEFAULT_CURVE_RADIUS);
+
+        XrVector3 startOrigin = XrVector3.create(0f, 0f, 0f);
+        XrVector3 startDirection = XrVector3.create(0f, 0f, -1f);
+        mManager.onPlayerPanelDragStart(startOrigin, startDirection);
+
+        // Ray angled right by 30 degrees
+        float angleRadians = (float) Math.toRadians(30f);
+        XrVector3 updateDirection =
+                XrVector3.create(
+                        (float) Math.sin(angleRadians), 0f, -(float) Math.cos(angleRadians));
+        mManager.onPlayerPanelDragUpdate(startOrigin, updateDirection);
+
+        float expectedYaw = (float) Math.toRadians(-60f);
+        assertEquals(expectedYaw, mManager.getPlayerPanelPose().getRotation().getYaw(), EPSILON);
+        assertEquals(expectedYaw, mManager.getControlPanelPose().getRotation().getYaw(), EPSILON);
+    }
+
+    @Test
+    public void testStrategySwitching_PreservesAnchorPose() {
+        mManager.setAnchorPose(ANCHOR_POSE);
+
+        // Switch to SPHERE
+        mManager.updateStrategy(XrSurfaceEntityShape.SPHERE);
+        assertEquals(ANCHOR_TRANSLATION, mManager.getPlayerPanelPose().getTranslation());
+        assertEquals(
+                ANCHOR_YAW_RADIANS,
+                mManager.getPlayerPanelPose().getRotation().getYaw(),
+                EPSILON);
+
+        // Switch to HEMISPHERE
+        mManager.updateStrategy(XrSurfaceEntityShape.HEMISPHERE);
+        assertEquals(ANCHOR_TRANSLATION, mManager.getPlayerPanelPose().getTranslation());
+        assertEquals(
+                ANCHOR_YAW_RADIANS,
+                mManager.getPlayerPanelPose().getRotation().getYaw(),
+                EPSILON);
+
+        // Switch to QUAD
+        mManager.updateStrategy(XrSurfaceEntityShape.QUAD);
+        XrPose expectedQuadPlayerPose =
+                XrPose.create(
+                        ANCHOR_POSE.transformPoint(
+                                XrVector3.create(0f, 0f, DEFAULT_PLAYER_Z)),
+                        ANCHOR_POSE.getRotation());
+        assertPoseEquals(expectedQuadPlayerPose, mManager.getPlayerPanelPose());
+    }
+
+    private void assertVectorEquals(XrVector3 expected, XrVector3 actual) {
+        assertEquals(expected.getX(), actual.getX(), EPSILON);
+        assertEquals(expected.getY(), actual.getY(), EPSILON);
+        assertEquals(expected.getZ(), actual.getZ(), EPSILON);
+    }
+
+    private void assertPoseEquals(XrPose expected, XrPose actual) {
+        assertVectorEquals(expected.getTranslation(), actual.getTranslation());
+        assertEquals(expected.getRotation().getYaw(), actual.getRotation().getYaw(), EPSILON);
     }
 
     private XrQuaternion getQuaternionFromAxisAngle(

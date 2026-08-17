@@ -10,12 +10,16 @@ import static org.chromium.chrome.browser.media.immersive_playback.ImmersiveVide
 
 import android.app.Activity;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.View;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Callback;
 import org.chromium.base.DeviceInfo;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.media.immersive_playback.components.ImmersiveVideoControlAutoHideManager;
 import org.chromium.chrome.browser.media.immersive_playback.components.ImmersiveVideoControlCoordinator;
 import org.chromium.chrome.browser.media.immersive_playback.components.ImmersiveVideoFormatCoordinator;
@@ -41,6 +45,8 @@ public class ImmersiveVideoPlaybackCoordinator
                 ImmersiveVideoFormatCoordinator.Delegate,
                 ImmersiveVideoPlayerCoordinator.Delegate,
                 ImmersiveVideoPoseManager.Delegate {
+    private static final long HEAD_POSE_TRACKING_DURATION_MS = 500L;
+
     private final XrEntityHolder mActivitySpaceEntity;
     private final ImmersiveVideoPlaybackDelegate mPlaybackDelegate;
     private final ImmersiveVideoPlayerCoordinator mPlayerCoordinator;
@@ -48,6 +54,10 @@ public class ImmersiveVideoPlaybackCoordinator
     private final ImmersiveVideoFormatCoordinator mFormatCoordinator;
     private final ImmersiveVideoControlAutoHideManager mAutoHideManager;
     private final ImmersiveVideoPoseManager mPoseManager;
+    private final XrSceneCoreSessionManager mSessionManager;
+    private final Callback<@Nullable XrPose> mHeadPoseCallback = this::onHeadPoseReady;
+    private final Handler mHandler = new Handler(Looper.getMainLooper());
+    private final Runnable mStopHeadTrackingRunnable = this::stopHeadPoseTracking;
     private @ImmersiveStereoMode int mStereoMode = ImmersiveStereoMode.MONO;
     private @ImmersiveProjectionType int mProjectionType = ImmersiveProjectionType.QUAD;
 
@@ -78,6 +88,8 @@ public class ImmersiveVideoPlaybackCoordinator
             WindowAndroid windowAndroid,
             ImmersiveVideoPlaybackDelegate playbackDelegate,
             XrSceneCoreSessionManager xrSessionManager) {
+        mSessionManager = xrSessionManager;
+        mSessionManager.setHeadTrackingEnabled(true);
         mActivitySpaceEntity = xrSessionManager.getActivitySpaceEntity();
         mPlayerCoordinator = createPlayerCoordinator(activity, windowAndroid, xrSessionManager);
         mPoseManager = new ImmersiveVideoPoseManager(this);
@@ -101,16 +113,37 @@ public class ImmersiveVideoPlaybackCoordinator
     public CompositorView show() {
         mPlayerCoordinator.show();
         mPlayerCoordinator.setInteractable(true);
+        startHeadPoseTracking();
         showControlPanel();
         return mPlayerCoordinator.getCompositorView();
     }
 
     /** Disposes the coordinator and its components. */
     public void dispose() {
+        stopHeadPoseTracking();
+        mSessionManager.setHeadTrackingEnabled(false);
         mAutoHideManager.stopTimer();
         mFormatCoordinator.dispose();
         mControlCoordinator.dispose();
         mPlayerCoordinator.dispose();
+    }
+
+    /**
+     * Starts tracking the head pose and updating the UI. This is only needed during the start time
+     * to establish the initial pose of the video player.
+     */
+    private void startHeadPoseTracking() {
+        mHandler.removeCallbacks(mStopHeadTrackingRunnable);
+        if (mSessionManager.startHeadPoseTracking()) {
+            mSessionManager.getHeadPoseObservableSupplier().addSyncObserver(mHeadPoseCallback);
+            mHandler.postDelayed(mStopHeadTrackingRunnable, HEAD_POSE_TRACKING_DURATION_MS);
+        }
+    }
+
+    private void stopHeadPoseTracking() {
+        mHandler.removeCallbacks(mStopHeadTrackingRunnable);
+        mSessionManager.getHeadPoseObservableSupplier().removeObserver(mHeadPoseCallback);
+        mSessionManager.stopHeadPoseTracking();
     }
 
     /**
@@ -162,6 +195,9 @@ public class ImmersiveVideoPlaybackCoordinator
 
     /** Shows the playback control panel and restarts the auto-hide timer. */
     public void showControlPanel() {
+        if (mProjectionType != ImmersiveProjectionType.QUAD) {
+            mPoseManager.setAnchorPose(mSessionManager.getHeadPoseInActivitySpace());
+        }
         mControlCoordinator.show(getControlPanelParent());
         updateControlPanel();
         mAutoHideManager.startTimer();
@@ -214,6 +250,11 @@ public class ImmersiveVideoPlaybackCoordinator
     public void onPlayerPanelDragEnd(XrVector3 origin, XrVector3 direction) {
         mAutoHideManager.onPlayerPanelMovingChanged(false);
         mPoseManager.onPlayerPanelDragEnd(origin, direction);
+        updatePose();
+    }
+
+    private void onHeadPoseReady(@Nullable XrPose anchorPose) {
+        mPoseManager.setAnchorPose(anchorPose);
         updatePose();
     }
 
@@ -317,6 +358,7 @@ public class ImmersiveVideoPlaybackCoordinator
 
         if (mProjectionType != projectionType) {
             mProjectionType = projectionType;
+            mPoseManager.setAnchorPose(mSessionManager.getHeadPoseInActivitySpace());
             mPoseManager.updateStrategy(shape);
         }
         mPlayerCoordinator.updateVideoLayout(mode, shape);
@@ -339,13 +381,8 @@ public class ImmersiveVideoPlaybackCoordinator
     }
 
     private void updateControlPanel() {
-        mControlCoordinator.setMovable(shouldControlPanelBeMovable());
         mControlCoordinator.setParent(getControlPanelParent());
         mControlCoordinator.updatePose(mPoseManager.getControlPanelPose());
-    }
-
-    private boolean shouldControlPanelBeMovable() {
-        return mProjectionType == ImmersiveProjectionType.HEMISPHERE;
     }
 
     private XrEntityHolder getControlPanelParent() {

@@ -26,14 +26,27 @@ public class ImmersiveVideoPoseManager implements ImmersiveVideoPoseStrategy {
 
     private final Delegate mDelegate;
     private @Nullable ImmersiveVideoPoseStrategy mStrategy;
+    private @Nullable XrPose mAnchorPose;
 
     public ImmersiveVideoPoseManager(Delegate delegate) {
         mDelegate = delegate;
     }
 
+    /** Sets the anchor pose and updates the active strategy. */
+    @Override
+    public void setAnchorPose(@Nullable XrPose anchorPose) {
+        mAnchorPose = anchorPose;
+        if (mStrategy != null) {
+            mStrategy.setAnchorPose(anchorPose);
+        }
+    }
+
     /** Updates the active projection strategy. */
     public void updateStrategy(@XrSurfaceEntityShape int shape) {
         mStrategy = createStrategy(shape);
+        if (mAnchorPose != null) {
+            mStrategy.setAnchorPose(mAnchorPose);
+        }
     }
 
     private ImmersiveVideoPoseStrategy createStrategy(@XrSurfaceEntityShape int shape) {
