@@ -307,6 +307,9 @@ def fuzz_target_builder(
         branch_selector = None,
         max_concurrent_invocations = None,
         gn_extra_configs = [],
+        gn_extra_configs_for_ci = [],
+        gclient_apply_configs = [],
+        gclient_apply_configs_for_ci = [],
         use_component_build = True,
         chromium_extra_apply_configs = [],
         clusterfuzz_archive_name_prefix = None,
@@ -379,7 +382,6 @@ def fuzz_target_builder(
         chromium_extra_apply_configs = [
             "clobber",
         ] + chromium_extra_apply_configs,
-        gn_extra_configs = gn_configs,
         use_component_build = use_component_build,
         contact_team_email = contact_team_email,
         **kwargs
@@ -396,6 +398,8 @@ def fuzz_target_builder(
             builderless = builderless,
             console_category = fuzzing_engine,
             properties = properties,
+            gclient_apply_configs = gclient_apply_configs + gclient_apply_configs_for_ci,
+            gn_extra_configs = gn_configs + gn_extra_configs_for_ci,
             **kwargs
         )
 
@@ -442,6 +446,8 @@ def fuzz_target_builder(
             ] + swarming_mixins,
         ),
         console_category = fuzzing_engine + "-tests",
+        gclient_apply_configs = gclient_apply_configs,
+        gn_extra_configs = gn_configs,
         **kwargs
     )
 
@@ -781,7 +787,13 @@ libfuzzer_linux_asan_high_end_builder(
     build_config = builder_config.build_config.RELEASE,
     clusterfuzz_archive_path = "linux-release-asan/libfuzzer-high-end-linux-release",
     console_short_name = "linux high end",
+    gclient_apply_configs_for_ci = [
+        "checkout_mesa",
+    ],
     gn_extra_configs = ["mojo_fuzzer"],
+    gn_extra_configs_for_ci = [
+        "tint_mesa_fuzz",
+    ],
 )
 
 libfuzzer_linux_asan_high_end_builder(
@@ -789,7 +801,13 @@ libfuzzer_linux_asan_high_end_builder(
     build_config = builder_config.build_config.DEBUG,
     clusterfuzz_archive_path = "linux-debug-asan/libfuzzer-high-end-linux-debug",
     console_short_name = "linux high dbg",
+    gclient_apply_configs_for_ci = [
+        "checkout_mesa",
+    ],
     gn_extra_configs = ["sanitizer_coverage_skip_stdlib_and_absl"],
+    gn_extra_configs_for_ci = [
+        "tint_mesa_fuzz",
+    ],
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
 )
 
@@ -1094,8 +1112,14 @@ libfuzzer_linux_asan_builder(
     clusterfuzz_archive_schema_version = 1,
     console_short_name = "linux",
     execution_timeout = 5 * time.hour,
+    gclient_apply_configs_for_ci = [
+        "checkout_mesa",
+    ],
     gn_extra_configs = [
         "mojo_fuzzer",
+    ],
+    gn_extra_configs_for_ci = [
+        "tint_mesa_fuzz",
     ],
     # Schedule more concurrent builds only on trunk to reduce blamelist sizes.
     max_concurrent_invocations = 5 if settings.is_main else None,
@@ -1112,8 +1136,14 @@ libfuzzer_linux_asan_builder(
     clusterfuzz_archive_path = "linux-debug-asan/libfuzzer-linux-debug",
     console_short_name = "linux-dbg",
     execution_timeout = 5 * time.hour,
+    gclient_apply_configs_for_ci = [
+        "checkout_mesa",
+    ],
     gn_extra_configs = [
         "disable_seed_corpus",
+    ],
+    gn_extra_configs_for_ci = [
+        "tint_mesa_fuzz",
     ],
     max_concurrent_invocations = 5,
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
@@ -1136,9 +1166,15 @@ libfuzzer_linux_asan_builder(
     clusterfuzz_archive_path = "linux-release-asan/libfuzzer-asan-brp-v2-linux-release",
     console_short_name = "linux-asan-brp-v2",
     execution_timeout = 4 * time.hour,
+    gclient_apply_configs_for_ci = [
+        "checkout_mesa",
+    ],
     gn_extra_configs = [
         "mojo_fuzzer",
         "enable_asan_backup_ref_ptr_v2",
+    ],
+    gn_extra_configs_for_ci = [
+        "tint_mesa_fuzz",
     ],
     max_concurrent_invocations = 4,
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
@@ -1172,9 +1208,15 @@ libfuzzer_linux_builder(
     clusterfuzz_archive_path = "linux-release-ubsan/libfuzzer-linux-release",
     console_short_name = "linux-ubsan",
     execution_timeout = 5 * time.hour,
+    gclient_apply_configs_for_ci = [
+        "checkout_mesa",
+    ],
     gn_extra_configs = [
         "ubsan_security_non_vptr",
         "disable_seed_corpus",
+    ],
+    gn_extra_configs_for_ci = [
+        "tint_mesa_fuzz",
     ],
     max_concurrent_invocations = 5,
     sanitizer = "ubsan",
@@ -1201,6 +1243,12 @@ libfuzzer_linux_v8_arm64_builder(
     build_config = builder_config.build_config.RELEASE,
     clusterfuzz_archive_path = "linux-release-asan-arm64-sim/libfuzzer-v8-arm64-linux-release",
     console_short_name = "arm64",
+    gclient_apply_configs_for_ci = [
+        "checkout_mesa",
+    ],
+    gn_extra_configs_for_ci = [
+        "tint_mesa_fuzz",
+    ],
 )
 
 libfuzzer_linux_v8_arm64_builder(
@@ -1208,6 +1256,12 @@ libfuzzer_linux_v8_arm64_builder(
     build_config = builder_config.build_config.DEBUG,
     clusterfuzz_archive_path = "linux-debug-asan-arm64-sim/libfuzzer-v8-arm64-linux-debug",
     console_short_name = "arm64-dbg",
+    gclient_apply_configs_for_ci = [
+        "checkout_mesa",
+    ],
+    gn_extra_configs_for_ci = [
+        "tint_mesa_fuzz",
+    ],
 )
 
 libfuzzer_linux_asan_builder(
@@ -1216,8 +1270,14 @@ libfuzzer_linux_asan_builder(
     target_bits = 32,
     clusterfuzz_archive_path = "linux32-release-asan/libfuzzer-linux32-release",
     console_short_name = "linux32",
+    gclient_apply_configs_for_ci = [
+        "checkout_mesa",
+    ],
     gn_extra_configs = [
         "disable_seed_corpus",
+    ],
+    gn_extra_configs_for_ci = [
+        "tint_mesa_fuzz",
     ],
     max_concurrent_invocations = 3,
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
@@ -1243,6 +1303,12 @@ libfuzzer_linux32_v8_arm_builder(
     build_config = builder_config.build_config.RELEASE,
     clusterfuzz_archive_path = "linux32-release-asan-arm-sim/libfuzzer-v8-arm-linux32-release",
     console_short_name = "arm",
+    gclient_apply_configs_for_ci = [
+        "checkout_mesa",
+    ],
+    gn_extra_configs_for_ci = [
+        "tint_mesa_fuzz",
+    ],
     siso_remote_jobs = siso.remote_jobs.DEFAULT,
 )
 
@@ -1251,6 +1317,12 @@ libfuzzer_linux32_v8_arm_builder(
     build_config = builder_config.build_config.DEBUG,
     clusterfuzz_archive_path = "linux32-debug-asan-arm-sim/libfuzzer-v8-arm-linux32-debug",
     console_short_name = "arm-dbg",
+    gclient_apply_configs_for_ci = [
+        "checkout_mesa",
+    ],
+    gn_extra_configs_for_ci = [
+        "tint_mesa_fuzz",
+    ],
 )
 
 libfuzzer_linux_asan_builder(
