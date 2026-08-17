@@ -43072,6 +43072,33 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Settings.AiPage.InlineCueMenu.AddSiteClicked">
+  <owner>wusirui@google.com</owner>
+  <owner>naai-xfn@google.com</owner>
+  <description>
+    Recorded when the user clicks 'Add site' to add a site block exception on
+    the inline cue settings subpage.
+  </description>
+</action>
+
+<action name="Settings.AiPage.InlineCueMenu.Disabled">
+  <owner>wusirui@google.com</owner>
+  <owner>naai-xfn@google.com</owner>
+  <description>
+    Recorded when the user toggles off the inline cue feature on the settings
+    subpage.
+  </description>
+</action>
+
+<action name="Settings.AiPage.InlineCueMenu.Enabled">
+  <owner>wusirui@google.com</owner>
+  <owner>naai-xfn@google.com</owner>
+  <description>
+    Recorded when the user toggles on the inline cue feature on the settings
+    subpage.
+  </description>
+</action>
+
 <action name="Settings.AiPage.PasswordChangeEntryPointClick">
   <owner>vsemeniuk@google.com</owner>
   <owner>rainhard@chromium.org</owner>

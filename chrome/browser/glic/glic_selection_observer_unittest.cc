@@ -2,18 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_selection_observer.h"
 
 #include <string>
 
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/glic/browser_ui/glic_nudge_controller.h"
+#include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
@@ -75,10 +77,10 @@ class TestGlicSelectionObserver : public GlicSelectionObserver {
     }
   }
 
-  void DismissUI(bool keep_nudge) override {
+  void DismissUI(DismissReason reason) override {
     dismiss_ui_called_ = true;
-    dismiss_ui_kept_nudge_ = keep_nudge;
-    GlicSelectionObserver::DismissUI(keep_nudge);
+    dismiss_ui_reason_ = reason;
+    GlicSelectionObserver::DismissUI(reason);
   }
 
   const std::optional<std::u16string>& last_processed_text() const {
@@ -88,13 +90,15 @@ class TestGlicSelectionObserver : public GlicSelectionObserver {
   int update_count() const { return update_count_; }
 
   bool dismiss_ui_called() const { return dismiss_ui_called_; }
-  bool dismiss_ui_kept_nudge() const { return dismiss_ui_kept_nudge_; }
+  std::optional<DismissReason> dismiss_ui_reason() const {
+    return dismiss_ui_reason_;
+  }
 
   void Reset() {
     last_processed_text_.reset();
     update_count_ = 0;
     dismiss_ui_called_ = false;
-    dismiss_ui_kept_nudge_ = false;
+    dismiss_ui_reason_ = std::nullopt;
     call_base_update_selection_state_ = false;
     mock_panel_showing_ = false;
     send_context_called_ = false;
@@ -164,7 +168,7 @@ class TestGlicSelectionObserver : public GlicSelectionObserver {
   std::optional<std::u16string> last_processed_text_;
   int update_count_ = 0;
   bool dismiss_ui_called_ = false;
-  bool dismiss_ui_kept_nudge_ = false;
+  std::optional<DismissReason> dismiss_ui_reason_;
 
   bool call_base_update_selection_state_ = false;
   bool mock_panel_showing_ = false;
@@ -620,8 +624,7 @@ TEST_F(GlicSelectionObserverTest, InputEventsDismissUI) {
   tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
                                                        &mock_tab);
 
-  // Keyboard events should dismiss UI with keep_nudge = false.
-  // The nudge should be dismissed.
+  // Keyboard events should dismiss UI with DismissReason::kExternal.
   EXPECT_CALL(mock_tab, GetBrowserWindowInterface())
       .WillRepeatedly(testing::Return(nullptr));
   blink::WebKeyboardEvent key_event(
@@ -632,12 +635,12 @@ TEST_F(GlicSelectionObserverTest, InputEventsDismissUI) {
                              InputEventSource::kUnknown);
   task_environment()->RunUntilIdle();
   EXPECT_TRUE(observer->dismiss_ui_called());
-  EXPECT_FALSE(observer->dismiss_ui_kept_nudge());
+  EXPECT_EQ(observer->dismiss_ui_reason(),
+            GlicSelectionObserver::DismissReason::kExternal);
   testing::Mock::VerifyAndClearExpectations(&mock_tab);
   observer->Reset();
 
-  // Mouse clicks should dismiss UI with keep_nudge = false.
-  // The nudge should be dismissed.
+  // Mouse clicks should dismiss UI with DismissReason::kExternal.
   EXPECT_CALL(mock_tab, GetBrowserWindowInterface())
       .WillRepeatedly(testing::Return(nullptr));
   blink::WebMouseEvent mouse_event(
@@ -650,12 +653,12 @@ TEST_F(GlicSelectionObserverTest, InputEventsDismissUI) {
                              InputEventSource::kUnknown);
   task_environment()->RunUntilIdle();
   EXPECT_TRUE(observer->dismiss_ui_called());
-  EXPECT_FALSE(observer->dismiss_ui_kept_nudge());
+  EXPECT_EQ(observer->dismiss_ui_reason(),
+            GlicSelectionObserver::DismissReason::kExternal);
   testing::Mock::VerifyAndClearExpectations(&mock_tab);
   observer->Reset();
 
-  // Scroll events should dismiss UI with keep_nudge = true.
-  // The nudge should NOT be dismissed.
+  // Scroll events should dismiss UI with DismissReason::kExternal.
   EXPECT_CALL(mock_tab, GetBrowserWindowInterface()).Times(0);
   blink::WebMouseWheelEvent scroll_event(
       blink::WebInputEvent::Type::kMouseWheel,
@@ -666,7 +669,8 @@ TEST_F(GlicSelectionObserverTest, InputEventsDismissUI) {
                              InputEventSource::kUnknown);
   task_environment()->RunUntilIdle();
   EXPECT_TRUE(observer->dismiss_ui_called());
-  EXPECT_TRUE(observer->dismiss_ui_kept_nudge());
+  EXPECT_EQ(observer->dismiss_ui_reason(),
+            GlicSelectionObserver::DismissReason::kExternal);
   testing::Mock::VerifyAndClearExpectations(&mock_tab);
   observer->Reset();
 }
@@ -677,7 +681,8 @@ TEST_F(GlicSelectionObserverTest, PrimaryMainFrameResizedDismissesUI) {
 
   observer->PrimaryMainFrameWasResized(/*width_changed=*/true);
   EXPECT_TRUE(observer->dismiss_ui_called());
-  EXPECT_TRUE(observer->dismiss_ui_kept_nudge());
+  EXPECT_EQ(observer->dismiss_ui_reason(),
+            GlicSelectionObserver::DismissReason::kExternal);
 }
 
 TEST_F(GlicSelectionObserverTest, OnLinkGeneratedSuccess) {
@@ -887,7 +892,8 @@ TEST_F(GlicSelectionObserverTest, SelectionShowOnShiftClick) {
 
   // Expect UI to be dismissed.
   EXPECT_TRUE(observer->dismiss_ui_called());
-  EXPECT_FALSE(observer->dismiss_ui_kept_nudge());
+  EXPECT_EQ(observer->dismiss_ui_reason(),
+            GlicSelectionObserver::DismissReason::kExternal);
   observer->Reset();
 
   // Simulate MouseDown with Shift modifier.
@@ -1258,6 +1264,20 @@ TEST_F(GlicSelectionObserverTest, ContinuousMoveDoesNotTriggerShake) {
   simulate_mouse_move(100.0f, 0.0f);
 
   EXPECT_FALSE(observer->trigger_region_capture_called());
+}
+
+TEST_F(GlicSelectionObserverTest, SelectionWordCountMetrics) {
+  base::HistogramTester histogram_tester;
+
+  std::u16string text = u"   one   two\nthree\t ";
+  GlicSelectionObserver::InvokeGlicFromSelectionAffordance(
+      text, /*is_widget=*/true, web_contents()->GetWeakPtr(),
+      GlicNudgeActivity::kNudgeClicked);
+
+  histogram_tester.ExpectUniqueSample(
+      "Glic.Selection.WidgetClicked.SelectionLength.PreFre", text.length(), 1);
+  histogram_tester.ExpectUniqueSample(
+      "Glic.Selection.WidgetClicked.SelectionWordCount.PreFre", 3, 1);
 }
 
 }  // namespace glic

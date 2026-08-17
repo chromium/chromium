@@ -17,6 +17,7 @@
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/background/glic/glic_launcher_configuration.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/context/glic_sharing_utils.h"
 #include "chrome/browser/glic/public/context/glic_sharing_manager.h"
@@ -32,6 +33,9 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/common/chrome_features.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/metrics/profile_metrics_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
@@ -306,6 +310,30 @@ void GlicMetrics::RecordGlicProfilePreferences() {
       profile_prefs->GetBoolean(prefs::kGlicShakeTriggerEnabled));
   base::UmaHistogramBoolean("Glic.Preferences.ActuationOnWeb",
                             enabling_->GetUserEnabledActuationOnWeb());
+
+#if !BUILDFLAG(IS_ANDROID)
+  HostContentSettingsMap* settings_map =
+      HostContentSettingsMapFactory::GetForProfile(profile_);
+  if (settings_map) {
+    base::UmaHistogramBoolean("Glic.Selection.InlineCueMenuEnabled",
+                              settings_map->GetDefaultContentSetting(
+                                  ContentSettingsType::INLINE_CUE_MENU,
+                                  nullptr) == CONTENT_SETTING_ALLOW);
+
+    ContentSettingsForOneType exceptions = settings_map->GetSettingsForOneType(
+        ContentSettingsType::INLINE_CUE_MENU);
+    bool has_site_exceptions = false;
+    for (const auto& exception : exceptions) {
+      if (exception.GetContentSetting() == CONTENT_SETTING_BLOCK &&
+          !exception.primary_pattern.MatchesAllHosts()) {
+        has_site_exceptions = true;
+        break;
+      }
+    }
+    base::UmaHistogramBoolean("Glic.Selection.HasSiteExceptions",
+                              has_site_exceptions);
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 void GlicMetrics::OnTrustFirstOnboardingAccept() {

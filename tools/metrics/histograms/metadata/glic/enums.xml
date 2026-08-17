@@ -1115,6 +1115,8 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Widget Shown"/>
   <int value="2" label="Nudge Clicked"/>
   <int value="3" label="Widget Clicked"/>
+  <int value="4" label="Widget Dismissed By Button"/>
+  <int value="5" label="Widget Dismissed By Click Outside"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/glic_selection_observer.cc:GlicSelectionAction) -->

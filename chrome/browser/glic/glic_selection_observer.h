@@ -12,6 +12,7 @@
 #include "base/callback_list.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -56,6 +57,14 @@ class GlicSelectionObserver
     : public content::WebContentsObserver,
       public content::RenderWidgetHost::InputEventObserver {
  public:
+  enum class DismissReason {
+    kActionTaken,  // User clicked Ask Gemini, Copy, Copy Link, or Open in Side
+                   // Panel.
+    kCloseButton,  // User clicked the close button on the widget.
+    kExternal,  // Click outside, focus change, scroll, resize, navigation, or
+                // ESC key.
+  };
+
   explicit GlicSelectionObserver(content::WebContents* web_contents);
   ~GlicSelectionObserver() override;
 
@@ -70,7 +79,7 @@ class GlicSelectionObserver
 
   // Dismisses the selection UI (widget and/or nudge).
   // Virtual for testing.
-  virtual void DismissUI(bool keep_nudge);
+  virtual void DismissUI(DismissReason reason);
 
   // Returns true if the selection prompt is enabled for the current profile.
   virtual bool IsSelectionPromptEnabled() const;
@@ -195,6 +204,8 @@ class GlicSelectionObserver
   bool is_selecting_ = false;
   // True when an inline explanation is currently being fetched or displayed.
   bool is_explaining_ = false;
+  // True if a dismissal metric has already been recorded for the shown widget.
+  bool dismissal_recorded_ = false;
 
   void ProcessMouseMoveForShake(const blink::WebMouseEvent& mouse_event);
   void ResetShakeDetector();
@@ -221,6 +232,8 @@ class GlicSelectionObserver
   std::unique_ptr<ExplainSelectionTrigger> explain_selection_trigger_;
 
   friend class GlicSelectionObserverTest;
+  FRIEND_TEST_ALL_PREFIXES(GlicSelectionObserverTest,
+                           SelectionWordCountMetrics);
 
  protected:
   // True if the user temporarily blocked the selection widget for the current

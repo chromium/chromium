@@ -130,6 +130,8 @@ export class InlineCueMenuPageElement extends InlineCueMenuPageElementBase {
   }
 
   private onAddSiteClick_() {
+    chrome.metricsPrivate.recordUserAction(
+        'Settings.AiPage.InlineCueMenu.AddSiteClicked');
     this.showAddSiteDialog_ = true;
   }
 
@@ -180,6 +182,13 @@ export class InlineCueMenuPageElement extends InlineCueMenuPageElementBase {
   }
 
   private onMainToggleChange_() {
+    if (this.$.mainToggle.checked) {
+      chrome.metricsPrivate.recordUserAction(
+          'Settings.AiPage.InlineCueMenu.Enabled');
+    } else {
+      chrome.metricsPrivate.recordUserAction(
+          'Settings.AiPage.InlineCueMenu.Disabled');
+    }
     this.browserProxy.setDefaultValueForContentType(
         ContentSettingsTypes.INLINE_CUE_MENU,
         this.$.mainToggle.checked ? ContentSetting.ALLOW :

@@ -2772,6 +2772,28 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Glic.Selection.HasSiteExceptions" enum="Boolean"
+    expires_after="2026-12-31">
+  <owner>wusirui@google.com</owner>
+  <owner>naai-xfn@google.com</owner>
+  <summary>
+    Recorded when the GlicKeyedService for a profile is created. Recorded once
+    per profile initialization. This logs whether the profile has at least one
+    blocked origin site exception for the inline cue.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Selection.InlineCueMenuEnabled" enum="BooleanEnabled"
+    expires_after="2026-12-31">
+  <owner>wusirui@google.com</owner>
+  <owner>naai-xfn@google.com</owner>
+  <summary>
+    Recorded when the GlicKeyedService for a profile is created. Recorded once
+    per profile initialization. This logs whether the inline cue is enabled in
+    default content settings.
+  </summary>
+</histogram>
+
 <histogram name="Glic.Selection.NudgeClicked.SelectionLength.{FreState}"
     units="characters" expires_after="2026-12-31">
   <owner>gklassen@chromium.org</owner>
@@ -2793,6 +2815,48 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the length of the selected text (in characters) when the Glic
     selection widget is clicked.
+  </summary>
+  <token key="FreState">
+    <variant name="PostFre" summary="User has accepted the FRE"/>
+    <variant name="PreFre" summary="User has not accepted the FRE"/>
+  </token>
+</histogram>
+
+<histogram name="Glic.Selection.WidgetClicked.SelectionWordCount.{FreState}"
+    units="words" expires_after="2026-12-31">
+  <owner>wusirui@google.com</owner>
+  <owner>naai-xfn@google.com</owner>
+  <summary>
+    Records the number of words in the selected text when the inline cue is
+    clicked by the user. Recorded once per click on any widget action button.
+  </summary>
+  <token key="FreState">
+    <variant name="PostFre" summary="User has accepted the FRE"/>
+    <variant name="PreFre" summary="User has not accepted the FRE"/>
+  </token>
+</histogram>
+
+<histogram name="Glic.Selection.WidgetShown.SelectionLength.{FreState}"
+    units="characters" expires_after="2026-12-31">
+  <owner>wusirui@google.com</owner>
+  <owner>naai-xfn@google.com</owner>
+  <summary>
+    Records the length of the selected text (in characters) whenever the inline
+    cue is shown to the user.
+  </summary>
+  <token key="FreState">
+    <variant name="PostFre" summary="User has accepted the FRE"/>
+    <variant name="PreFre" summary="User has not accepted the FRE"/>
+  </token>
+</histogram>
+
+<histogram name="Glic.Selection.WidgetShown.SelectionWordCount.{FreState}"
+    units="words" expires_after="2026-12-31">
+  <owner>wusirui@google.com</owner>
+  <owner>naai-xfn@google.com</owner>
+  <summary>
+    Records the number of words in the selected text whenever the inline cue is
+    shown to the user.
   </summary>
   <token key="FreState">
     <variant name="PostFre" summary="User has accepted the FRE"/>

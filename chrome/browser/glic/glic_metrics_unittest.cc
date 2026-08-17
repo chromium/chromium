@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/context/glic_focused_tab_manager.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
@@ -31,6 +32,9 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
@@ -303,6 +307,12 @@ TEST_F(GlicMetricsTest, RecordGlicProfilePreferences) {
                                         true, 1);
   histogram_tester().ExpectUniqueSample("Glic.Preferences.ActuationOnWeb", true,
                                         1);
+#if !BUILDFLAG(IS_ANDROID)
+  histogram_tester().ExpectUniqueSample("Glic.Selection.InlineCueMenuEnabled",
+                                        true, 1);
+  histogram_tester().ExpectUniqueSample("Glic.Selection.HasSiteExceptions",
+                                        false, 1);
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   // Set up preferences to false.
   profile()->GetPrefs()->SetBoolean(prefs::kGlicPinnedToTabstrip, false);
@@ -315,6 +325,16 @@ TEST_F(GlicMetricsTest, RecordGlicProfilePreferences) {
                                     false);
   profile()->GetPrefs()->SetBoolean(prefs::kGlicShakeTriggerEnabled, false);
   enabling()->SetUserEnabledActuationOnWeb(false);
+
+#if !BUILDFLAG(IS_ANDROID)
+  HostContentSettingsMap* settings_map =
+      HostContentSettingsMapFactory::GetForProfile(profile());
+  settings_map->SetDefaultContentSetting(ContentSettingsType::INLINE_CUE_MENU,
+                                         CONTENT_SETTING_BLOCK);
+  settings_map->SetContentSettingDefaultScope(
+      GURL("https://example.com"), GURL("https://example.com"),
+      ContentSettingsType::INLINE_CUE_MENU, CONTENT_SETTING_BLOCK);
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   metrics()->RecordGlicProfilePreferences();
 
@@ -358,6 +378,18 @@ TEST_F(GlicMetricsTest, RecordGlicProfilePreferences) {
                                        1);
   histogram_tester().ExpectBucketCount("Glic.Preferences.ActuationOnWeb", false,
                                        1);
+
+#if !BUILDFLAG(IS_ANDROID)
+  histogram_tester().ExpectBucketCount("Glic.Selection.InlineCueMenuEnabled",
+                                       true, 1);
+  histogram_tester().ExpectBucketCount("Glic.Selection.InlineCueMenuEnabled",
+                                       false, 1);
+
+  histogram_tester().ExpectBucketCount("Glic.Selection.HasSiteExceptions", true,
+                                       1);
+  histogram_tester().ExpectBucketCount("Glic.Selection.HasSiteExceptions",
+                                       false, 1);
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 TEST_F(GlicMetricsTest, Basic) {

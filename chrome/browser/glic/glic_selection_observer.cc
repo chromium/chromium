@@ -11,6 +11,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
+#include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -46,8 +47,6 @@
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/toasts/toast_features.h"
-#include "components/skills/features.h"
-#include "components/skills/public/skills_service.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -61,6 +60,8 @@
 #include "components/shared_highlighting/core/common/shared_highlighting_features.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/skills/features.h"
+#include "components/skills/public/skills_service.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/clipboard_types.h"
 #include "content/public/browser/render_frame_host.h"
@@ -106,11 +107,21 @@ enum class GlicSelectionAction {
   kWidgetShown = 1,
   kNudgeClicked = 2,
   kWidgetClicked = 3,
-  kMaxValue = kWidgetClicked
+  kWidgetDismissedByButton = 4,
+  kWidgetDismissedByClickOutside = 5,
+  kMaxValue = kWidgetDismissedByClickOutside
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicSelectionAction)
 
-
+size_t CountWords(std::u16string_view text) {
+  size_t count = 0;
+  base::StringView16Tokenizer tokenizer(
+      text, u"", base::StringView16Tokenizer::WhitespacePolicy::kSkipOver);
+  while (tokenizer.GetNext()) {
+    ++count;
+  }
+  return count;
+}
 
 mojom::AdditionalContextPtr CreateAdditionalContext(
     content::WebContents* web_contents,
@@ -345,7 +356,7 @@ void GlicSelectionObserver::PrimaryPageChanged(content::Page& page) {
 }
 
 void GlicSelectionObserver::PrimaryMainFrameWasResized(bool width_changed) {
-  DismissUI(/*keep_nudge=*/true);
+  DismissUI(DismissReason::kExternal);
 }
 
 void GlicSelectionObserver::OnWebContentsLostFocus(
@@ -405,7 +416,7 @@ void GlicSelectionObserver::ProcessInputEvent(
 
       is_key_selection_ = false;
       bounds_retry_count_ = 0;
-      DismissUI(/*keep_nudge=*/false);
+      DismissUI(DismissReason::kExternal);
 
       // Workaround for a bug in Blink: when a user single-clicks directly on
       // top of an existing selection, Blink collapses the selection on MouseUp
@@ -450,7 +461,7 @@ void GlicSelectionObserver::ProcessInputEvent(
       if (is_key_selection_) {
         break;
       }
-      DismissUI(/*keep_nudge=*/false);
+      DismissUI(DismissReason::kExternal);
       const auto& keyboard_event =
           static_cast<const blink::WebKeyboardEvent&>(*event);
 #if BUILDFLAG(IS_MAC)
@@ -486,7 +497,7 @@ void GlicSelectionObserver::ProcessInputEvent(
     case blink::WebInputEvent::Type::kGestureScrollBegin:
     case blink::WebInputEvent::Type::kMouseWheel:
       ResetShakeDetector();
-      DismissUI(/*keep_nudge=*/true);
+      DismissUI(DismissReason::kExternal);
       break;
 
     default:
@@ -545,8 +556,24 @@ void GlicSelectionObserver::OnTextSelectionChanged(
   }
 }
 
-void GlicSelectionObserver::DismissUI(bool keep_nudge) {
+void GlicSelectionObserver::DismissUI(DismissReason reason) {
   if (widget_delegate_ && !is_explaining_) {
+    if (!dismissal_recorded_ && reason != DismissReason::kActionTaken) {
+      bool is_post_fre = false;
+      if (web_contents()) {
+        Profile* profile =
+            Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+        is_post_fre = GlicEnabling::HasConsentedForProfile(profile);
+      }
+      const char* histogram_suffix = is_post_fre ? ".PostFre" : ".PreFre";
+      GlicSelectionAction action =
+          (reason == DismissReason::kCloseButton)
+              ? GlicSelectionAction::kWidgetDismissedByButton
+              : GlicSelectionAction::kWidgetDismissedByClickOutside;
+      base::UmaHistogramEnumeration(
+          base::StrCat({"Glic.Selection.Action", histogram_suffix}), action);
+    }
+    dismissal_recorded_ = true;
     widget_delegate_->CloseWidget();
   }
 }
@@ -599,6 +626,10 @@ void GlicSelectionObserver::InvokeGlicFromSelectionAffordance(
         base::StrCat(
             {"Glic.Selection.WidgetClicked.SelectionLength", histogram_suffix}),
         selected_text.length());
+    base::UmaHistogramCounts1000(
+        base::StrCat({"Glic.Selection.WidgetClicked.SelectionWordCount",
+                      histogram_suffix}),
+        CountWords(selected_text));
   } else {
     base::UmaHistogramCounts1000(
         base::StrCat(
@@ -756,12 +787,21 @@ void GlicSelectionObserver::ShowSelectionAffordance(
       base::UmaHistogramEnumeration(
           base::StrCat({"Glic.Selection.Action", histogram_suffix}),
           GlicSelectionAction::kWidgetShown);
+      base::UmaHistogramCounts1000(
+          base::StrCat(
+              {"Glic.Selection.WidgetShown.SelectionLength", histogram_suffix}),
+          selected_text.length());
+      base::UmaHistogramCounts1000(
+          base::StrCat({"Glic.Selection.WidgetShown.SelectionWordCount",
+                        histogram_suffix}),
+          CountWords(selected_text));
 
       widget_delegate_ = std::make_unique<GlicSelectionWidgetDelegate>(
           *action_delegate_, *bounds, web_contents()->GetContainerBounds(),
           std::u16string(selected_text));
       widget_delegate_->set_parent_window(platform_util::GetViewForWindow(
           web_contents()->GetTopLevelNativeWindow()));
+      dismissal_recorded_ = false;
       widget_delegate_->ShowWidget();
       if (features::kGlicSelectionShowCopyButtons.Get()) {
         RequestLinkGeneration(selected_frame);
@@ -824,7 +864,7 @@ bool GlicSelectionObserver::ShouldShowSelectionWidget() {
 void GlicSelectionObserver::OnHide() {
   is_hidden_on_current_page_ = true;
 
-  DismissUI(/*keep_nudge=*/false);
+  DismissUI(DismissReason::kCloseButton);
   ShowHiddenToast(ToastId::kGlicSelectionHiddenForSite);
 }
 
@@ -1040,7 +1080,7 @@ void GlicSelectionObserver::OnAskGemini() {
     }
     return;
   }
-  DismissUI(/*keep_nudge=*/false);
+  DismissUI(DismissReason::kActionTaken);
   InvokeGlicFromSelectionAffordance(last_selected_text_, /*is_widget=*/true,
                                     web_contents()->GetWeakPtr(),
                                     GlicNudgeActivity::kNudgeClicked);
@@ -1079,7 +1119,7 @@ void GlicSelectionObserver::OnAskGeminiWithSkill(
     }
   }
 
-  DismissUI(/*keep_nudge=*/false);
+  DismissUI(DismissReason::kActionTaken);
   InvokeGlicFromSelectionAffordance(
       last_selected_text_, /*is_widget=*/true, web_contents()->GetWeakPtr(),
       GlicNudgeActivity::kNudgeClicked, /*prompt_override=*/u"", skill,
@@ -1155,7 +1195,7 @@ void GlicSelectionObserver::OnAskGeminiForQuery(const std::u16string& query) {
     }
     return;
   }
-  DismissUI(/*keep_nudge=*/false);
+  DismissUI(DismissReason::kActionTaken);
   InvokeGlicFromSelectionAffordance(query, /*is_widget=*/true,
                                     web_contents()->GetWeakPtr(),
                                     GlicNudgeActivity::kNudgeClicked);
@@ -1165,7 +1205,7 @@ void GlicSelectionObserver::OnAskGeminiMoreAboutThis(
     const std::u16string& selected_text,
     const std::string& explanation_text) {
   is_explaining_ = false;
-  DismissUI(/*keep_nudge=*/false);
+  DismissUI(DismissReason::kActionTaken);
   std::u16string prompt = selected_text;
   if (!selected_text.starts_with(u"Tell me more about") &&
       selected_text == last_selected_text_) {
@@ -1192,12 +1232,12 @@ void GlicSelectionObserver::OnInlineExplanationUpdate(
 }
 
 void GlicSelectionObserver::OnCopy() {
-  DismissUI(/*keep_nudge=*/false);
+  DismissUI(DismissReason::kActionTaken);
   web_contents()->Copy();
 }
 
 void GlicSelectionObserver::OnCopyLink() {
-  DismissUI(/*keep_nudge=*/false);
+  DismissUI(DismissReason::kActionTaken);
   content::RenderFrameHost* selected_frame =
       last_selection_frame_token_.has_value()
           ? content::RenderFrameHost::FromFrameToken(
@@ -1209,7 +1249,7 @@ void GlicSelectionObserver::OnCopyLink() {
 }
 
 void GlicSelectionObserver::OnOpenInSidePanel() {
-  DismissUI(/*keep_nudge=*/false);
+  DismissUI(DismissReason::kActionTaken);
   InvokeGlicFromSelectionAffordance(last_selected_text_, /*is_widget=*/true,
                                     web_contents()->GetWeakPtr(),
                                     GlicNudgeActivity::kNudgeClicked);
