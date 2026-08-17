@@ -40,7 +40,7 @@ namespace password_manager {
 class PasswordFeatureManager;
 class PasswordManagerSettingsService;
 struct StoredCredential;
-}
+}  // namespace password_manager
 
 class PrefService;
 
@@ -112,9 +112,6 @@ class ChromePasswordChangeService
       password_manager::StoredCredential credential,
       content::WebContents* web_contents,
       PasswordChangeFromCheckupDelegate::StateChangeCallback callback);
-
-  // Stops the password change flow from the Password Checkup page.
-  virtual void StopPasswordChangeFromCheckup();
 #endif
 
   // PasswordChangeServiceInterface implementation.

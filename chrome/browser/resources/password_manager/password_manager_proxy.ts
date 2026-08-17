@@ -461,9 +461,10 @@ export interface PasswordManagerProxy {
   requestChangePassword(credential_id: number): void;
 
   /**
-   * Stops an ongoing password change flow started from Password Checkup.
+   * Stops an ongoing password change flow started from Password Checkup for the
+   * given credential.
    */
-  stopPasswordChange(): void;
+  stopPasswordChange(credentialId: number): void;
 
   /**
    * Opens/activates the tab where the automatic password change flow is
@@ -978,8 +979,8 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
     this.handler.startPasswordChange(credentialId);
   }
 
-  stopPasswordChange(): void {
-    this.handler.stopPasswordChange();
+  stopPasswordChange(credentialId: number): void {
+    this.handler.stopPasswordChange(credentialId);
   }
 
   openPasswordChangeTab(id: number): void {

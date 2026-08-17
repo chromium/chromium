@@ -469,8 +469,8 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
     this.methodCalled('requestChangePassword', id);
   }
 
-  stopPasswordChange(): void {
-    this.methodCalled('stopPasswordChange');
+  stopPasswordChange(id: number): void {
+    this.methodCalled('stopPasswordChange', id);
   }
 
   openPasswordChangeTab(id: number): void {

@@ -559,15 +559,15 @@ TEST_F(PasswordManagerUIHandlerUnitTest, ContinueImport_CallsDelegate) {
 
 TEST_F(PasswordManagerUIHandlerUnitTest,
        StartPasswordChange_CallsServiceAndUpdatesState) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      password_change::features::kPasswordChangeWithGlic);
+
   InitPresenter();
   const GURL kTestUrl("https://example.com/login");
   const std::u16string kTestUsername = u"testuser";
   CreateAndSeedPasswordForm(kTestUrl, kTestUsername,
                             /*actor_login_approved=*/true);
-
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      password_change::features::kPasswordChangeWithGlic);
 
   PasswordChangeServiceFactory::GetInstance()->SetTestingFactory(
       profile_.get(), base::BindRepeating([](content::BrowserContext* context)
@@ -706,9 +706,9 @@ TEST_F(PasswordManagerUIHandlerUnitTest,
   ASSERT_TRUE(captured_callback);
 
   testing::InSequence s;
-  EXPECT_CALL(mock_page_,
-              OnPasswordAutomaticChangeStateUpdated(
-                  kCredentialId, mojom::PasswordAutomaticChangeState::kInactive));
+  EXPECT_CALL(mock_page_, OnPasswordAutomaticChangeStateUpdated(
+                              kCredentialId,
+                              mojom::PasswordAutomaticChangeState::kInactive));
   EXPECT_CALL(mock_page_,
               OnPasswordAutomaticChangeStateUpdated(
                   kCredentialId,
@@ -731,8 +731,8 @@ TEST_F(PasswordManagerUIHandlerUnitTest,
               OnPasswordAutomaticChangeStateUpdated(
                   kCredentialId, mojom::PasswordAutomaticChangeState::kError));
 
-  captured_callback.Run(
-      PasswordChangeFromCheckupDelegate::PasswordAutomaticChangeState::kInactive);
+  captured_callback.Run(PasswordChangeFromCheckupDelegate::
+                            PasswordAutomaticChangeState::kInactive);
   captured_callback.Run(PasswordChangeFromCheckupDelegate::
                             PasswordAutomaticChangeState::kAttemptingSignIn);
   captured_callback.Run(PasswordChangeFromCheckupDelegate::
@@ -828,6 +828,110 @@ TEST_F(PasswordManagerUIHandlerUnitTest,
 }
 
 TEST_F(PasswordManagerUIHandlerUnitTest,
+       StopPasswordChange_StopsSpecificDelegateAndUpdatesState) {
+  InitPresenter();
+  const GURL kTestUrl1("https://example1.com/login");
+  const std::u16string kTestUsername1 = u"testuser1";
+  CreateAndSeedPasswordForm(kTestUrl1, kTestUsername1,
+                            /*actor_login_approved=*/true);
+
+  const GURL kTestUrl2("https://example2.com/login");
+  const std::u16string kTestUsername2 = u"testuser2";
+  CreateAndSeedPasswordForm(kTestUrl2, kTestUsername2,
+                            /*actor_login_approved=*/true);
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      password_change::features::kPasswordChangeWithGlic);
+
+  PasswordChangeServiceFactory::GetInstance()->SetTestingFactory(
+      profile_.get(), base::BindRepeating([](content::BrowserContext* context)
+                                              -> std::unique_ptr<KeyedService> {
+        return std::make_unique<testing::NiceMock<MockPasswordChangeService>>();
+      }));
+
+  auto* mock_service = static_cast<MockPasswordChangeService*>(
+      PasswordChangeServiceFactory::GetForProfile(profile_.get()));
+  ASSERT_TRUE(mock_service);
+
+  const int kCredentialId1 = 1;
+  const int kCredentialId2 = 2;
+
+  PasswordForm form1;
+  form1.url = kTestUrl1;
+  form1.signon_realm = kTestUrl1.spec();
+  form1.username_value = kTestUsername1;
+  EXPECT_CALL(mock_delegate(), GetCredentialFromId(kCredentialId1))
+      .WillRepeatedly(Return(CredentialUIEntry(form1)));
+
+  PasswordForm form2;
+  form2.url = kTestUrl2;
+  form2.signon_realm = kTestUrl2.spec();
+  form2.username_value = kTestUsername2;
+  EXPECT_CALL(mock_delegate(), GetCredentialFromId(kCredentialId2))
+      .WillRepeatedly(Return(CredentialUIEntry(form2)));
+
+  auto delegate1 = std::make_unique<PasswordChangeFromCheckupDelegate>();
+  auto mock_actuator1 =
+      std::make_unique<NiceMock<MockPasswordChangeActuator>>();
+  auto* mock_actuator_ptr1 = mock_actuator1.get();
+  delegate1->set_actuator_for_testing(std::move(mock_actuator1));
+
+  auto delegate2 = std::make_unique<PasswordChangeFromCheckupDelegate>();
+  auto mock_actuator2 =
+      std::make_unique<NiceMock<MockPasswordChangeActuator>>();
+  auto* mock_actuator_ptr2 = mock_actuator2.get();
+  delegate2->set_actuator_for_testing(std::move(mock_actuator2));
+
+  EXPECT_CALL(*mock_service, StartPasswordChangeFromCheckup(
+                                 testing::_, web_contents_.get(), testing::_))
+      .WillOnce(
+          [&](password_manager::StoredCredential credential,
+              content::WebContents* contents,
+              PasswordChangeFromCheckupDelegate::StateChangeCallback callback) {
+            delegate1->StartPasswordChangeFlow(std::move(credential),
+                                               contents->GetWeakPtr(),
+                                               std::move(callback));
+            return delegate1->GetWeakPtr();
+          })
+      .WillOnce(
+          [&](password_manager::StoredCredential credential,
+              content::WebContents* contents,
+              PasswordChangeFromCheckupDelegate::StateChangeCallback callback) {
+            delegate2->StartPasswordChangeFlow(std::move(credential),
+                                               contents->GetWeakPtr(),
+                                               std::move(callback));
+            return delegate2->GetWeakPtr();
+          });
+
+  handler().StartPasswordChange(kCredentialId1);
+  handler().StartPasswordChange(kCredentialId2);
+
+  // delegate1's actuator is cancelled when StopPasswordChange(kCredentialId1)
+  // is called.
+  EXPECT_CALL(*mock_actuator_ptr1, Cancel()).Times(1);
+  // delegate2's actuator is not cancelled during
+  // StopPasswordChange(kCredentialId1)
+  EXPECT_CALL(*mock_actuator_ptr2, Cancel()).Times(0);
+
+  EXPECT_CALL(mock_page_, OnPasswordAutomaticChangeStateUpdated(
+                              kCredentialId1,
+                              mojom::PasswordAutomaticChangeState::kInactive));
+  EXPECT_CALL(mock_page_,
+              OnPasswordAutomaticChangeStateUpdated(kCredentialId2, testing::_))
+      .Times(0);
+
+  handler().StopPasswordChange(kCredentialId1);
+  mock_page_.FlushForTesting();
+
+  // Subsequent call to StopPasswordChange for kCredentialId1 should be no-op.
+  handler().StopPasswordChange(kCredentialId1);
+  testing::Mock::VerifyAndClearExpectations(mock_actuator_ptr2);
+  // delegate2's actuator will be cancelled upon destruction of the test
+  EXPECT_CALL(*mock_actuator_ptr2, Cancel()).Times(1);
+}
+
+TEST_F(PasswordManagerUIHandlerUnitTest,
        OpenPasswordChangeTab_InvalidCredentialId_NoOp) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
@@ -835,6 +939,16 @@ TEST_F(PasswordManagerUIHandlerUnitTest,
 
   // Calling with non-existent credential ID should not crash.
   handler().OpenPasswordChangeTab(999);
+}
+
+TEST_F(PasswordManagerUIHandlerUnitTest,
+       StopPasswordChange_InvalidCredentialId_NoOp) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      password_change::features::kPasswordChangeWithGlic);
+
+  // Calling with non-existent credential ID should not crash.
+  handler().StopPasswordChange(999);
 }
 
 }  // namespace password_manager

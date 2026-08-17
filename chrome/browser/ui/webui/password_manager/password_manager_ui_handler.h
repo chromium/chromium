@@ -93,7 +93,7 @@ class PasswordManagerUIHandler
 
   void StartPasswordChange(int credential_id) override;
 
-  void StopPasswordChange() override;
+  void StopPasswordChange(int credential_id) override;
 
   void OpenPasswordChangeTab(int credential_id) override;
 

@@ -174,7 +174,7 @@ export class CheckupListItemElement extends CheckupListItemElementBase {
 
   private onCancelAutoChangeClick_() {
     this.isCancelDisabled_ = true;
-    PasswordManagerImpl.getInstance().stopPasswordChange();
+    PasswordManagerImpl.getInstance().stopPasswordChange(this.item.id);
   }
 
   private onAlreadyChangedClick_(e: Event) {

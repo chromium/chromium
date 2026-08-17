@@ -189,4 +189,47 @@ suite('CheckupListItemTest', function() {
           assertTrue(isVisible(more));
         }
       });
+
+  test(
+      'clicking cancelAutoChangeButton calls stopPasswordChange with id',
+      async function() {
+        const element = await createCheckupListItem(
+            PasswordAutomaticChangeState.kChangingPassword);
+
+        const cancelButton =
+            element.shadowRoot!.querySelector<HTMLButtonElement>(
+                '#cancelAutoChangeButton');
+        assertTrue(!!cancelButton);
+        assertTrue(isVisible(cancelButton));
+        assertFalse(cancelButton.disabled);
+
+        cancelButton.click();
+        assertEquals(1, passwordManager.getCallCount('stopPasswordChange'));
+        const credentialId = passwordManager.getArgs('stopPasswordChange')[0];
+        assertEquals(element.item.id, credentialId);
+
+        await flushTasks();
+        assertTrue(cancelButton.disabled);
+      });
+
+  test(
+      'changing passwordChangeState re-enables cancel button',
+      async function() {
+        const element = await createCheckupListItem(
+            PasswordAutomaticChangeState.kChangingPassword);
+
+        const cancelButton =
+            element.shadowRoot!.querySelector<HTMLButtonElement>(
+                '#cancelAutoChangeButton');
+        assertTrue(!!cancelButton);
+        cancelButton.click();
+        await flushTasks();
+        assertTrue(cancelButton.disabled);
+
+        // State changes to another active state.
+        element.passwordChangeState =
+            PasswordAutomaticChangeState.kConfirmingChangedPassword;
+        await flushTasks();
+        assertFalse(cancelButton.disabled);
+      });
 });

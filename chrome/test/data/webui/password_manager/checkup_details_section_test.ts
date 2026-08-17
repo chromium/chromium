@@ -1023,7 +1023,9 @@ suite('CheckupDetailsSectionTest', function() {
 
                 // Click cancel.
                 cancelButton.click();
-                await passwordManager.whenCalled('stopPasswordChange');
+                const id =
+                    await passwordManager.whenCalled('stopPasswordChange');
+                assertEquals(insecureCredential.id, id);
                 listItem.passwordChangeState =
                     PasswordAutomaticChangeState.kInactive;
                 await flushTasks();
