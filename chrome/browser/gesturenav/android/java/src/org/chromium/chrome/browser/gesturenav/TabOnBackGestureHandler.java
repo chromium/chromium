@@ -31,7 +31,7 @@ public class TabOnBackGestureHandler implements UserData {
         return tab.getUserDataHost().setUserData(USER_DATA_KEY, new TabOnBackGestureHandler(tab));
     }
 
-    private final long mNativePtr;
+    private long mNativePtr;
 
     private TabOnBackGestureHandler(Tab tab) {
         mNativePtr = TabOnBackGestureHandlerJni.get().init(tab);
@@ -42,6 +42,7 @@ public class TabOnBackGestureHandler implements UserData {
             @BackGestureEventSwipeEdge int edge,
             boolean forward,
             boolean isGestureMode) {
+        if (mNativePtr == 0) return;
         TabOnBackGestureHandlerJni.get()
                 .onBackStarted(mNativePtr, progress, edge, forward, isGestureMode);
     }
@@ -57,15 +58,18 @@ public class TabOnBackGestureHandler implements UserData {
             @BackGestureEventSwipeEdge int edge,
             boolean forward,
             boolean isGestureMode) {
+        if (mNativePtr == 0) return false;
         return TabOnBackGestureHandlerJni.get()
                 .onBackProgressed(mNativePtr, progress, edge, forward, isGestureMode);
     }
 
     public void onBackCancelled(boolean isGestureMode) {
+        if (mNativePtr == 0) return;
         TabOnBackGestureHandlerJni.get().onBackCancelled(mNativePtr, isGestureMode);
     }
 
     public void onBackInvoked(boolean isGestureMode) {
+        if (mNativePtr == 0) return;
         TabOnBackGestureHandlerJni.get().onBackInvoked(mNativePtr, isGestureMode);
     }
 
@@ -76,7 +80,10 @@ public class TabOnBackGestureHandler implements UserData {
 
     @Override
     public void destroy() {
-        TabOnBackGestureHandlerJni.get().destroy(mNativePtr);
+        if (mNativePtr != 0) {
+            TabOnBackGestureHandlerJni.get().destroy(mNativePtr);
+            mNativePtr = 0;
+        }
     }
 
     @NativeMethods
