@@ -17,6 +17,7 @@
 #include "components/tabs/public/tab_collection.h"
 #include "components/tabs/public/tab_collection_observer.h"
 #include "components/tabs/public/tab_collection_storage.h"
+#include "components/tabs/public/tab_collection_types.h"
 #include "components/tabs/public/tab_group_tab_collection.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/tabs/public/unpinned_tab_collection.h"
@@ -150,13 +151,15 @@ void TabStripCollection::MoveTabsRecursive(
 
   for (auto& tab_or_collection : tab_or_collections) {
     TabCollection* src_parent_collection = nullptr;
-    if (std::holds_alternative<TabInterface*>(tab_or_collection)) {
-      TabInterface* tab_ptr = std::get<TabInterface*>(tab_or_collection);
+    if (std::holds_alternative<DanglingUntriagedTabInterface>(
+            tab_or_collection)) {
+      TabInterface* tab_ptr =
+          std::get<DanglingUntriagedTabInterface>(tab_or_collection);
       src_parent_collection = tab_ptr->GetParentCollection(GetPassKey());
       MoveTabImpl(tab_ptr, move_position);
     } else {
       TabCollection* collection_ptr =
-          std::get<TabCollection*>(tab_or_collection);
+          std::get<DanglingUntriagedTabCollection>(tab_or_collection);
       src_parent_collection = collection_ptr->GetParentCollection();
       MoveCollectionImpl(collection_ptr, move_position);
     }
@@ -195,11 +198,13 @@ TabCollection::Position TabStripCollection::GetMovePosition(
   std::set<tabs::TabInterface*> tabs_moved;
   std::set<tabs::TabCollection*> collections_moved;
   for (const auto& tab_or_collection : tab_or_collections) {
-    if (std::holds_alternative<TabInterface*>(tab_or_collection)) {
-      tabs_moved.insert(std::get<TabInterface*>(tab_or_collection));
+    if (std::holds_alternative<DanglingUntriagedTabInterface>(
+            tab_or_collection)) {
+      tabs_moved.insert(
+          std::get<DanglingUntriagedTabInterface>(tab_or_collection));
     } else {
       TabCollection* collection_ptr =
-          std::get<TabCollection*>(tab_or_collection);
+          std::get<DanglingUntriagedTabCollection>(tab_or_collection);
       collections_moved.insert(collection_ptr);
     }
   }
@@ -771,15 +776,18 @@ TabCollection::Position TabStripCollection::GetInsertionDetails(
 TabCollection::Position TabStripCollection::GetNodePosition(
     ChildPtr tab_or_collection) {
   TabCollection::Position node_position;
-  if (std::holds_alternative<TabInterface*>(tab_or_collection)) {
-    TabInterface* tab_ptr = std::get<TabInterface*>(tab_or_collection);
+  if (std::holds_alternative<DanglingUntriagedTabInterface>(
+          tab_or_collection)) {
+    TabInterface* tab_ptr =
+        std::get<DanglingUntriagedTabInterface>(tab_or_collection);
     TabCollection* src_parent_collection =
         tab_ptr->GetParentCollection(GetPassKey());
     return TabCollection::Position{
         src_parent_collection->GetHandle(),
         src_parent_collection->GetIndexOfTab(tab_ptr).value()};
   } else {
-    TabCollection* collection_ptr = std::get<TabCollection*>(tab_or_collection);
+    TabCollection* collection_ptr =
+        std::get<DanglingUntriagedTabCollection>(tab_or_collection);
     TabCollection* src_parent_collection =
         collection_ptr->GetParentCollection();
     return TabCollection::Position{

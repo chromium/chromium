@@ -56,6 +56,7 @@
 #include "chrome/grit/theme_resources.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/tabs/public/tab_alert.h"
+#include "components/tabs/public/tab_collection_types.h"
 #include "components/tabs/public/tab_interface.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkPathBuilder.h"
@@ -1223,7 +1224,8 @@ const tabs::TabInterface* TabView::GetTabInterface() const {
   if (!collection_node_) {
     return nullptr;
   }
-  return std::get<const tabs::TabInterface*>(collection_node_->GetNodeData());
+  return std::get<tabs::ConstDanglingUntriagedTabInterface>(
+      collection_node_->GetNodeData());
 }
 
 void TabView::UpdateHoverCard(HoverCardAnchorTarget* target,

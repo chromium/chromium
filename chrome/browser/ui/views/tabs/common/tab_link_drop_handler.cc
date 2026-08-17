@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/tabs/common/tab_collection_node.h"
+#include "components/tabs/public/tab_collection_types.h"
 #include "components/tabs/public/tab_group_tab_collection.h"
 #include "components/tabs/public/tab_interface.h"
 
@@ -16,7 +17,7 @@ namespace {
 const TabGroup& TabGroupDataFromNode(const TabCollectionNode& node) {
   CHECK_EQ(node.type(), TabCollectionNode::Type::GROUP);
   const auto* collection = static_cast<const tabs::TabGroupTabCollection*>(
-      std::get<const tabs::TabCollection*>(node.GetNodeData()));
+      std::get<tabs::ConstDanglingUntriagedTabCollection>(node.GetNodeData()));
   CHECK(collection);
   const auto* group_data = collection->GetTabGroup();
   CHECK(group_data);
@@ -54,7 +55,8 @@ std::optional<BrowserRootView::DropIndex>
 TabLinkDropHandler::GetDropIndexForTab(
     const TabCollectionNode& node,
     std::optional<DragPositionHint> position_hint) const {
-  const auto* tab = std::get<const tabs::TabInterface*>(node.GetNodeData());
+  const tabs::TabInterface* tab =
+      std::get<tabs::ConstDanglingUntriagedTabInterface>(node.GetNodeData());
   CHECK(tab);
   int index = tab_strip_model_->GetIndexOfTab(tab);
 
@@ -134,8 +136,9 @@ TabLinkDropHandler::GetDropIndexForSplit(
     const TabCollectionNode& node,
     std::optional<DragPositionHint> position_hint) const {
   const TabCollectionNode* first_tab_node = node.children()[0].get();
-  auto* tab_interface =
-      std::get<const tabs::TabInterface*>(first_tab_node->GetNodeData());
+  const tabs::TabInterface* tab_interface =
+      std::get<tabs::ConstDanglingUntriagedTabInterface>(
+          first_tab_node->GetNodeData());
   CHECK(tab_interface);
   int index = tab_strip_model_->GetIndexOfTab(tab_interface);
   if (position_hint == DragPositionHint::kAfter) {

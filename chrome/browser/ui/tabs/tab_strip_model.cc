@@ -97,6 +97,7 @@
 #include "components/tabs/public/pinned_tab_collection.h"
 #include "components/tabs/public/split_tab_collection.h"
 #include "components/tabs/public/split_tab_data.h"
+#include "components/tabs/public/tab_collection_types.h"
 #include "components/tabs/public/tab_group_tab_collection.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/tabs/public/tab_strip_collection.h"
@@ -5615,22 +5616,25 @@ void TabStripModel::GroupCloseStopped(const tab_groups::TabGroupId& group) {
 }
 
 std::optional<int> TabStripModel::DetermineNewSelectedIndex(
-    std::variant<tabs::TabInterface*, tabs::TabCollection*> tab_or_collection)
+    std::variant<tabs::DanglingUntriagedTabInterface,
+                 tabs::DanglingUntriagedTabCollection> tab_or_collection)
     const {
   int start_index;
   int block_size;
 
-  if (std::holds_alternative<tabs::TabInterface*>(tab_or_collection)) {
+  if (std::holds_alternative<tabs::DanglingUntriagedTabInterface>(
+          tab_or_collection)) {
     if (count() == 1) {
       return std::nullopt;
     }
 
-    tabs::TabInterface* tab = std::get<tabs::TabInterface*>(tab_or_collection);
+    tabs::TabInterface* tab =
+        std::get<tabs::DanglingUntriagedTabInterface>(tab_or_collection);
     start_index = GetIndexOfTab(tab);
     block_size = 1;
   } else {
     tabs::TabCollection* collection =
-        std::get<tabs::TabCollection*>(tab_or_collection);
+        std::get<tabs::DanglingUntriagedTabCollection>(tab_or_collection);
 
     if (count() == static_cast<int>(collection->TabCountRecursive())) {
       return std::nullopt;
@@ -5672,12 +5676,14 @@ std::optional<int> TabStripModel::DetermineNewSelectedIndex(
   // Fourth preference is a tab that belongs in the same parent collection as
   // `tab_or_collection`.
   const tabs::TabCollection* parent_collection_detached_object = nullptr;
-  if (std::holds_alternative<tabs::TabInterface*>(tab_or_collection)) {
-    tabs::TabInterface* tab = std::get<tabs::TabInterface*>(tab_or_collection);
+  if (std::holds_alternative<tabs::DanglingUntriagedTabInterface>(
+          tab_or_collection)) {
+    tabs::TabInterface* tab =
+        std::get<tabs::DanglingUntriagedTabInterface>(tab_or_collection);
     parent_collection_detached_object = tab->GetParentCollection();
   } else {
     tabs::TabCollection* collection =
-        std::get<tabs::TabCollection*>(tab_or_collection);
+        std::get<tabs::DanglingUntriagedTabCollection>(tab_or_collection);
     parent_collection_detached_object = collection->GetParentCollection();
   }
 

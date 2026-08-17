@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/views/tabs/horizontal/horizontal_tab_strip_overflow_indicator_view.h"
 #include "chrome/browser/ui/views/tabs/hovercard/tab_hover_card_controller.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_scroll_bar.h"
+#include "components/tabs/public/tab_collection_types.h"
 #include "components/tabs/public/tab_group.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
@@ -259,7 +260,8 @@ void TabStripView::OnChildMoved(TabCollectionNode* moved_node) {
   if (active_tab) {
     if (moved_node->type() == TabCollectionNode::Type::TAB) {
       const tabs::TabInterface* tab =
-          std::get<const tabs::TabInterface*>(moved_node->GetNodeData());
+          std::get<tabs::ConstDanglingUntriagedTabInterface>(
+              moved_node->GetNodeData());
       is_active_tab = (tab == active_tab);
     } else if (moved_node->type() == TabCollectionNode::Type::SPLIT) {
       is_active_tab =
@@ -276,7 +278,8 @@ void TabStripView::OnChildMoved(TabCollectionNode* moved_node) {
     switch (moved_node->type()) {
       case TabCollectionNode::Type::TAB: {
         const tabs::TabInterface* tab =
-            std::get<const tabs::TabInterface*>(moved_node->GetNodeData());
+            std::get<tabs::ConstDanglingUntriagedTabInterface>(
+                moved_node->GetNodeData());
         OnTabChanged(tab);
         break;
       }

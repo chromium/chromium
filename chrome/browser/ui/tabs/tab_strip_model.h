@@ -35,6 +35,7 @@
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "components/tabs/public/tab_collection.h"
+#include "components/tabs/public/tab_collection_types.h"
 #include "components/tabs/public/tab_interface.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "ui/base/models/list_selection_model.h"
@@ -1399,7 +1400,8 @@ class TabStripModel {
 
   // Determine where to shift selection after a tab or collection is closed.
   std::optional<int> DetermineNewSelectedIndex(
-      std::variant<tabs::TabInterface*, tabs::TabCollection*> tab_or_collection)
+      std::variant<tabs::DanglingUntriagedTabInterface,
+                   tabs::DanglingUntriagedTabCollection> tab_or_collection)
       const;
 
   std::vector<std::pair<tabs::TabInterface*, int>> GetTabsAndIndicesInSplit(

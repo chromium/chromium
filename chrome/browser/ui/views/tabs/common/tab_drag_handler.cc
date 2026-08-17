@@ -28,6 +28,7 @@
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/split_tab_collection.h"
 #include "components/tabs/public/tab_collection.h"
+#include "components/tabs/public/tab_collection_types.h"
 #include "components/tabs/public/tab_group.h"
 #include "components/tabs/public/tab_group_tab_collection.h"
 #include "components/tabs/public/tab_interface.h"
@@ -110,7 +111,7 @@ ui::mojom::DragEventSource EventSourceFromEvent(const ui::LocatedEvent& event) {
 const TabGroup& TabGroupDataFromNode(const TabCollectionNode& node) {
   CHECK_EQ(node.type(), TabCollectionNode::Type::GROUP);
   const auto* collection = static_cast<const tabs::TabGroupTabCollection*>(
-      std::get<const tabs::TabCollection*>(node.GetNodeData()));
+      std::get<tabs::ConstDanglingUntriagedTabCollection>(node.GetNodeData()));
   CHECK(collection);
   const auto* group_data = collection->GetTabGroup();
   CHECK(group_data);
@@ -148,19 +149,22 @@ std::optional<tab_groups::TabGroupId> GetContainerGroupId(
 int GetInsertionIndexForNode(const TabCollectionNode& node,
                              const TabStripModel& tab_strip_model) {
   if (node.type() == TabCollectionNode::Type::TAB) {
-    const auto* tab = std::get<const tabs::TabInterface*>(node.GetNodeData());
+    const tabs::TabInterface* tab =
+        std::get<tabs::ConstDanglingUntriagedTabInterface>(node.GetNodeData());
     int index = tab_strip_model.GetIndexOfTab(tab);
     return index;
   } else if (node.type() == TabCollectionNode::Type::GROUP) {
     const auto* group_collection =
         static_cast<const tabs::TabGroupTabCollection*>(
-            std::get<const tabs::TabCollection*>(node.GetNodeData()));
+            std::get<tabs::ConstDanglingUntriagedTabCollection>(
+                node.GetNodeData()));
     const auto* group_data = group_collection->GetTabGroup();
     gfx::Range range = group_data->ListTabs();
     return range.start();
   } else if (node.type() == TabCollectionNode::Type::SPLIT) {
     const auto* split_collection = static_cast<const tabs::SplitTabCollection*>(
-        std::get<const tabs::TabCollection*>(node.GetNodeData()));
+        std::get<tabs::ConstDanglingUntriagedTabCollection>(
+            node.GetNodeData()));
     const auto* split_data = split_collection->data();
     gfx::Range range = split_data->GetIndexRange();
     return range.start();
@@ -242,8 +246,9 @@ TabDragHandlerImpl::DragInitData TabDragHandlerImpl::GetDragInitDataForTabDrag(
   DragInitData drag_init_data;
   drag_init_data.dragged_views.reserve(selected_tabs.size());
 
-  const auto* source_tab =
-      std::get<const tabs::TabInterface*>(source_node.GetNodeData());
+  const tabs::TabInterface* source_tab =
+      std::get<tabs::ConstDanglingUntriagedTabInterface>(
+          source_node.GetNodeData());
   CHECK(source_tab);
 
   std::map<tab_groups::TabGroupId, TabSlotView*> dragged_groups;
@@ -486,7 +491,8 @@ views::View* TabDragHandlerImpl::ViewFromTabSlot(TabSlotView* view) const {
   const TabCollectionNode& node = slot_view->node();
 
   if (node.type() == TabCollectionNode::Type::TAB) {
-    const auto* tab = std::get<const tabs::TabInterface*>(node.GetNodeData());
+    const tabs::TabInterface* tab =
+        std::get<tabs::ConstDanglingUntriagedTabInterface>(node.GetNodeData());
     CHECK(tab);
 
     if (auto group_id = tab->GetGroup();
@@ -669,7 +675,8 @@ content::WebContents* TabDragHandlerImpl::GetContentsForTab(TabSlotView* view) {
     return nullptr;
   }
   const tabs::TabInterface* tab =
-      std::get<const tabs::TabInterface*>(slot_view->node().GetNodeData());
+      std::get<tabs::ConstDanglingUntriagedTabInterface>(
+          slot_view->node().GetNodeData());
   CHECK(tab);
   return tab->GetContents();
 }
@@ -874,7 +881,8 @@ TabSlotView& TabDragHandlerImpl::GetOrCreateSlotViewForNode(
     switch (node.type()) {
       case TabCollectionNode::Type::TAB: {
         const tabs::TabInterface* tab =
-            std::get<const tabs::TabInterface*>(node.GetNodeData());
+            std::get<tabs::ConstDanglingUntriagedTabInterface>(
+                node.GetNodeData());
         CHECK(tab);
         dragged_slot_view.SetGroup(tab->GetGroup());
         dragged_slot_view.SetSplit(tab->GetSplit());

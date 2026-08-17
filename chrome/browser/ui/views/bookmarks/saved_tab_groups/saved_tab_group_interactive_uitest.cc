@@ -58,6 +58,7 @@
 #include "components/search/ntp_features.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
+#include "components/tabs/public/tab_collection_types.h"
 #include "components/tabs/public/tab_group.h"
 #include "content/public/browser/favicon_status.h"
 #include "content/public/browser/navigation_entry.h"
@@ -222,8 +223,8 @@ class SavedTabGroupInteractiveTestBase
                           views::AsViewClass<TabCloseButton>(view)) {
                     if (const auto* tab_view = views::AsViewClass<TabView>(
                             tab_close_button->parent())) {
-                      const auto* tab_interface =
-                          std::get<const tabs::TabInterface*>(
+                      const tabs::TabInterface* tab_interface =
+                          std::get<tabs::ConstDanglingUntriagedTabInterface>(
                               tab_view->collection_node()->GetNodeData());
                       return browser->tab_strip_model()->GetIndexOfTab(
                                  tab_interface) == target_index;

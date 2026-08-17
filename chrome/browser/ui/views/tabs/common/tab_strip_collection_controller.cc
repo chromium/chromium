@@ -434,9 +434,10 @@ void TabStripCollectionController::ShowTabContextMenu(
     const gfx::Point& point,
     ui::mojom::MenuSourceType source_type) {
   tabs::ConstChildPtr node_data = collection_node->GetNodeData();
-  CHECK(std::holds_alternative<const tabs::TabInterface*>(node_data));
+  CHECK(std::holds_alternative<tabs::ConstDanglingUntriagedTabInterface>(
+      node_data));
   const tabs::TabInterface* tab =
-      std::get<const tabs::TabInterface*>(node_data);
+      std::get<tabs::ConstDanglingUntriagedTabInterface>(node_data);
 
   std::optional<int> tab_index = model_->GetIndexOfTab(tab);
   if (!tab_index.has_value()) {

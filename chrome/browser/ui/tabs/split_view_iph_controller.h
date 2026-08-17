@@ -9,6 +9,7 @@
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#include "components/tabs/public/tab_collection_types.h"
 #include "components/tabs/public/tab_interface.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
@@ -71,8 +72,7 @@ class SplitViewIphController : public TabStripModelObserver {
   // Two most recently active tabs. Front is current active tab, end is previous
   // active tab. When a third tab becomes active, push to front, which will
   // evict the oldest from the end.
-  base::circular_deque<raw_ptr<tabs::TabInterface, DanglingUntriaged>>
-      recent_tabs_;
+  base::circular_deque<tabs::DanglingUntriagedTabInterface> recent_tabs_;
 
   ui::ScopedUnownedUserData<SplitViewIphController> scoped_data_;
 };

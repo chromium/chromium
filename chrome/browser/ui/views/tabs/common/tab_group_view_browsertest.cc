@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/views/test/vertical_tabs_browser_test_mixin.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/data_sharing/public/features.h"
+#include "components/tabs/public/tab_collection_types.h"
 #include "components/tabs/public/tab_group.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/vector_icons/vector_icons.h"
@@ -131,7 +132,8 @@ class TabGroupViewTest
 
   const tabs::TabInterface* GetTabInterfaceForNode(
       const TabCollectionNode* node) {
-    return std::get<const tabs::TabInterface*>(node->GetNodeData());
+    return std::get<tabs::ConstDanglingUntriagedTabInterface>(
+        node->GetNodeData());
   }
 };
 

@@ -15,6 +15,7 @@
 #include "components/tabs/public/supports_handles.h"
 #include "components/tabs/public/tab_collection_observer.h"
 #include "components/tabs/public/tab_collection_storage.h"
+#include "components/tabs/public/tab_collection_types.h"
 #include "components/tabs/public/tab_interface.h"
 
 namespace tabs {
@@ -48,15 +49,19 @@ TabCollection::TabIterator::TabIterator(TabInterface* tab)
 
     for (; it != frame_children.cend(); ++it) {
       const Child& p = *it;
-      if (std::holds_alternative<TabInterface*>(last_child_ptr)) {
+      if (std::holds_alternative<DanglingUntriagedTabInterface>(
+              last_child_ptr)) {
         if (auto* tab_ptr = std::get_if<ScopedTab>(&p)) {
-          if (tab_ptr->get() == std::get<TabInterface*>(last_child_ptr)) {
+          if (tab_ptr->get() ==
+              std::get<DanglingUntriagedTabInterface>(last_child_ptr)) {
             break;
           }
         }
-      } else if (std::holds_alternative<TabCollection*>(last_child_ptr)) {
-        if (auto* col_ptr = std::get_if<std::unique_ptr<TabCollection>>(&p)) {
-          if (col_ptr->get() == std::get<TabCollection*>(last_child_ptr)) {
+      } else if (std::holds_alternative<DanglingUntriagedTabCollection>(
+                     last_child_ptr)) {
+        if (auto col_ptr = std::get_if<std::unique_ptr<TabCollection>>(&p)) {
+          if (col_ptr->get() ==
+              std::get<DanglingUntriagedTabCollection>(last_child_ptr)) {
             break;
           }
         }

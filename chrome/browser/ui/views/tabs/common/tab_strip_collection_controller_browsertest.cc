@@ -49,6 +49,7 @@
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/toolbar/app_menu_control.h"
 #include "chrome/browser/ui/views/toolbar/reload_button.h"
+#include "components/tabs/public/tab_collection_types.h"
 #include "content/public/common/content_features.h"
 #include "ui/events/test/event_generator.h"
 #endif
@@ -88,7 +89,8 @@ IN_PROC_BROWSER_TEST_P(TabStripCollectionControllerBrowserTest,
   ASSERT_TRUE(first_tab_node);
 
   const tabs::TabInterface* tab =
-      std::get<const tabs::TabInterface*>(first_tab_node->GetNodeData());
+      std::get<tabs::ConstDanglingUntriagedTabInterface>(
+          first_tab_node->GetNodeData());
   std::optional<int> tab_index =
       browser()->tab_strip_model()->GetIndexOfTab(tab);
   ASSERT_TRUE(tab_index.has_value());

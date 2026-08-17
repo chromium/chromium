@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/views/tabs/hovercard/tab_hover_card_controller.h"
 #include "chrome/browser/ui/views/tabs/tab/glow_hover_controller.h"
 #include "components/tabs/public/tab_collection.h"
+#include "components/tabs/public/tab_collection_types.h"
 #include "components/tabs/public/tab_interface.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/rect.h"
@@ -189,7 +190,8 @@ void SplitTabView::ResetCollectionNode() {
 
 void SplitTabView::OnDataChanged() {
   const tabs::TabCollection* tab_collection =
-      std::get<const tabs::TabCollection*>(collection_node_->GetNodeData());
+      std::get<tabs::ConstDanglingUntriagedTabCollection>(
+          collection_node_->GetNodeData());
   const std::vector<tabs::TabInterface*> tabs =
       tab_collection->GetTabsRecursive();
   pinned_ = tabs[0]->IsPinned();

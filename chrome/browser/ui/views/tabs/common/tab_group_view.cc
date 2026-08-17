@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/views/tabs/hovercard/tab_hover_card_controller.h"
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_types.h"
 #include "components/tabs/public/tab_collection_storage.h"
+#include "components/tabs/public/tab_collection_types.h"
 #include "components/tabs/public/tab_group.h"
 #include "components/tabs/public/tab_group_tab_collection.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -48,7 +49,8 @@ constexpr int kGroupLineCornerRadius = 4;
 const TabGroup* GetTabGroupFromNode(TabCollectionNode* node) {
   CHECK(node);
   return static_cast<const tabs::TabGroupTabCollection*>(
-             std::get<const tabs::TabCollection*>(node->GetNodeData()))
+             std::get<tabs::ConstDanglingUntriagedTabCollection>(
+                 node->GetNodeData()))
       ->GetTabGroup();
 }
 }  // namespace
