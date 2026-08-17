@@ -602,8 +602,9 @@ void ExistingUserController::PerformLogin(
   if (!login_performer_.get() || num_login_attempts_ <= 1) {
     // Only one instance of LoginPerformer should exist at a time.
     login_performer_.reset(nullptr);
-    login_performer_ =
-        std::make_unique<ChromeLoginPerformer>(this, AuthEventsRecorder::Get());
+    login_performer_ = std::make_unique<ChromeLoginPerformer>(
+        &local_state_.get(), shared_url_loader_factory_,
+        &browser_policy_connector_ash_.get(), this, AuthEventsRecorder::Get());
   }
   // If plain text password is available, computes its salt, hash, and length,
   // and saves them in `user_context`. They will be saved to prefs when user
@@ -1276,8 +1277,9 @@ void ExistingUserController::LoginAsGuest() {
 
   // Only one instance of LoginPerformer should exist at a time.
   login_performer_.reset(nullptr);
-  login_performer_ =
-      std::make_unique<ChromeLoginPerformer>(this, AuthEventsRecorder::Get());
+  login_performer_ = std::make_unique<ChromeLoginPerformer>(
+      &local_state_.get(), shared_url_loader_factory_,
+      &browser_policy_connector_ash_.get(), this, AuthEventsRecorder::Get());
   login_performer_->LoginOffTheRecord();
   SendAccessibilityAlert(
       l10n_util::GetStringUTF8(IDS_CHROMEOS_ACC_LOGIN_SIGNIN_OFFRECORD));
@@ -1593,8 +1595,9 @@ void ExistingUserController::LoginAsPublicSessionInternal(
   SYSLOG(INFO) << "MGS: Performing login for account";
   // Only one instance of LoginPerformer should exist at a time.
   login_performer_.reset(nullptr);
-  login_performer_ =
-      std::make_unique<ChromeLoginPerformer>(this, AuthEventsRecorder::Get());
+  login_performer_ = std::make_unique<ChromeLoginPerformer>(
+      &local_state_.get(), shared_url_loader_factory_,
+      &browser_policy_connector_ash_.get(), this, AuthEventsRecorder::Get());
   login_performer_->LoginAsPublicSession(user_context);
   SendAccessibilityAlert(
       l10n_util::GetStringUTF8(IDS_CHROMEOS_ACC_LOGIN_SIGNIN_PUBLIC_ACCOUNT));

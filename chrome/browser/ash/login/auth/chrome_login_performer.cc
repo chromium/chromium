@@ -5,8 +5,11 @@
 #include "chrome/browser/ash/login/auth/chrome_login_performer.h"
 
 #include <memory>
+#include <utility>
 
 #include "ash/constants/ash_paths.h"
+#include "base/check.h"
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/path_service.h"
 #include "base/task/task_traits.h"
@@ -17,22 +20,30 @@
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_local_account_policy_service.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/early_prefs/early_prefs_reader.h"
 #include "chromeos/ash/components/osauth/impl/early_login_auth_policy_connector.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/user_login_permission_tracker.h"
 #include "components/account_id/account_id.h"
+#include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/account_managed_status_finder.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace ash {
 
-ChromeLoginPerformer::ChromeLoginPerformer(Delegate* delegate,
-                                           AuthEventsRecorder* metrics_recorder)
-    : LoginPerformer(delegate, metrics_recorder) {}
+ChromeLoginPerformer::ChromeLoginPerformer(
+    PrefService* local_state,
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
+    policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
+    Delegate* delegate,
+    AuthEventsRecorder* metrics_recorder)
+    : LoginPerformer(delegate, metrics_recorder),
+      local_state_(CHECK_DEREF(local_state)),
+      shared_url_loader_factory_(std::move(shared_url_loader_factory)),
+      browser_policy_connector_ash_(CHECK_DEREF(browser_policy_connector_ash)) {
+  CHECK(shared_url_loader_factory_);
+}
 
 ChromeLoginPerformer::~ChromeLoginPerformer() = default;
 
@@ -105,14 +116,11 @@ void ChromeLoginPerformer::RunOnlineAllowlistCheck(
     base::OnceClosure success_callback,
     base::OnceClosure failure_callback) {
   // On cloud managed devices, reconfirm login permission with the server.
-  policy::BrowserPolicyConnectorAsh* connector =
-      g_browser_process->platform_part()->browser_policy_connector_ash();
-  if (connector->IsCloudManaged() && wildcard_match &&
+  if (browser_policy_connector_ash_->IsCloudManaged() && wildcard_match &&
       signin::AccountManagedStatusFinder::MayBeEnterpriseUserBasedOnEmail(
           account_id.GetUserEmail())) {
-    // TODO(crbug.com/404133029): Avoid using g_browser_process.
     wildcard_login_checker_ = std::make_unique<policy::WildcardLoginChecker>(
-        g_browser_process->shared_url_loader_factory());
+        shared_url_loader_factory_);
     if (refresh_token.empty()) {
       NOTREACHED() << "Refresh token must be present.";
     } else {
@@ -162,8 +170,8 @@ void ChromeLoginPerformer::OnEarlyPrefsRead(
       std::make_unique<EarlyLoginAuthPolicyConnector>(
           context->GetAccountId(), std::move(early_prefs_reader_)));
   auth_factor_updater_ = std::make_unique<AuthFactorUpdater>(
-      g_browser_process->local_state(),
-      AuthParts::Get()->GetAuthPolicyConnector(), UserDataAuthClient::Get());
+      &local_state_.get(), AuthParts::Get()->GetAuthPolicyConnector(),
+      UserDataAuthClient::Get());
   auth_factor_updater_->Run(std::move(context), std::move(callback));
 }
 
@@ -173,10 +181,8 @@ scoped_refptr<Authenticator> ChromeLoginPerformer::CreateAuthenticator() {
 
 bool ChromeLoginPerformer::CheckPolicyForUser(const AccountId& account_id) {
   // Login is not allowed if policy could not be loaded for the account.
-  policy::BrowserPolicyConnectorAsh* connector =
-      g_browser_process->platform_part()->browser_policy_connector_ash();
   policy::DeviceLocalAccountPolicyService* policy_service =
-      connector->GetDeviceLocalAccountPolicyService();
+      browser_policy_connector_ash_->GetDeviceLocalAccountPolicyService();
   return policy_service &&
          policy_service->IsPolicyAvailableForUser(account_id.GetUserEmail());
 }

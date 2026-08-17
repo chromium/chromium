@@ -30,6 +30,8 @@
 #include "chrome/browser/ash/app_mode/retry_runner.h"
 #include "chrome/browser/ash/login/auth/chrome_login_performer.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
@@ -150,6 +152,10 @@ class SigninPerformer : public LoginPerformer::Delegate, public CancellableJob {
       : local_state_(CHECK_DEREF(local_state)),
         on_done_(std::move(on_done)),
         login_performer_(std::make_unique<ChromeLoginPerformer>(
+            &local_state_.get(),
+            // TODO(crbug.com/404129026): Avoid using g_browser_process.
+            g_browser_process->shared_url_loader_factory(),
+            g_browser_process->platform_part()->browser_policy_connector_ash(),
             this,
             AuthEventsRecorder::Get())) {}
 
