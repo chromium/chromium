@@ -6944,17 +6944,6 @@
       name: "WebGLOnWebGPU",
     },
     {
-      // Launch feature flag for WebGPU Compatibility Mode
-      // https://chromestatus.com/feature/6436406437871616
-      name: "WebGPUCompatibilityMode",
-      origin_trial_feature_name: "WebGPUCompatibilityMode",
-      status: "stable",
-      base_feature: "none",
-      public: true,
-      // Also enabled as part of all experimental WebGPU features.
-      implied_by: ["WebGPUExperimentalFeatures"],
-    },
-    {
       // WebGPU developer features are deliberately not enabled by experimental
       // web platform features.
       name: "WebGPUDeveloperFeatures",
@@ -6976,10 +6965,6 @@
       public: true,
     },
     {
-      name: "WebGPUImmediatesFeature",
-      status: "stable",
-    },
-    {
       // Enables GPUBuffer::mapSync for WebGPU.
       name: "WebGPUMapSyncOnWorkers",
       status: "experimental",
@@ -6992,10 +6977,6 @@
       name: "WebGPUMultithreadDawnWireOnWorkers",
       status: "experimental",
       implied_by: ["WebGPUMapSyncOnWorkers"],
-    },
-    {
-      name: "WebGPUTransientAttachment",
-      status: "stable",
     },
     {
       name: "WebHID",

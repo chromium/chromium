@@ -14,7 +14,5 @@ typedef [EnforceRange] unsigned long GPUTextureUsageFlags;
     const GPUFlagsConstant TEXTURE_BINDING = 4;
     const GPUFlagsConstant STORAGE_BINDING = 8;
     const GPUFlagsConstant RENDER_ATTACHMENT = 16;
-};
-[RuntimeEnabled=WebGPUTransientAttachment] partial namespace GPUTextureUsage {
     const GPUFlagsConstant TRANSIENT_ATTACHMENT = 32;
 };

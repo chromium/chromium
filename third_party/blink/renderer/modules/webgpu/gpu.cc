@@ -87,12 +87,8 @@ wgpu::RequestAdapterOptions AsDawnType(
 
   wgpu::RequestAdapterOptions dawn_options;
   dawn_options.forceFallbackAdapter = webgpu_options->forceFallbackAdapter();
-
-  if (RuntimeEnabledFeatures::WebGPUCompatibilityModeEnabled(
-          execution_context)) {
     dawn_options.featureLevel =
         AsDawnFeatureLevel(webgpu_options->featureLevel());
-  }
 
   if (webgpu_options->hasPowerPreference()) {
     dawn_options.powerPreference =
@@ -356,18 +352,6 @@ void GPU::RequestAdapterImpl(
         "requestAdapter() on Windows. See https://crbug.com/369219127");
   }
 #endif
-
-  if (options->featureLevel() == "compatibility" &&
-      !RuntimeEnabledFeatures::WebGPUCompatibilityModeEnabled(
-          execution_context)) {
-    AddConsoleWarning(
-        execution_context,
-        "Beware! featureLevel was set to \"compatibility\", but this request "
-        "is being ignored. Compatibility restrictions will start being "
-        "enforced as soon as Chromium ships Compatibility Mode, potentially "
-        "breaking this webpage. See "
-        "https://github.com/gpuweb/gpuweb/issues/4266");
-  }
 
   wgpu::RequestAdapterOptions dawn_options =
       AsDawnType(options, execution_context);
