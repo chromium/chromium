@@ -19,7 +19,9 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeFeatureMap;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.bookmarks.BookmarkBarVisibilityState;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.prefs.PrefChangeRegistrar.PrefObserver;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -299,6 +301,49 @@ public class BookmarkBarUtils {
         } else {
             setDevicePrefBookmarkBarVisibilityState(state, fromKeyboardShortcut);
         }
+    }
+
+    /**
+     * Returns true if the Bookmark Bar should be visible based on the visibility state and the
+     * current state of the Tab. The feature is visible when it is allowed in the given context, and
+     * the bookmark bar visibility state UserPref or DevicePref is set to a value that allows it to
+     * be enabled in the current context. When set to ONLY_SHOW_ON_NTP, the visibility is evaluated
+     * against the active tab.
+     *
+     * @param context The context in which compatibility should be assessed.
+     * @param profile The profile for which the user UserPref should be assessed.
+     * @param isXrFullSpaceMode Supplier for whether the device is in XR full space mode.
+     * @param activeTab The currently active tab, if any.
+     * @return Whether the Bookmark Bar is currently visible.
+     */
+    public static boolean isBookmarkBarVisibleForState(
+            Context context,
+            @Nullable Profile profile,
+            boolean isXrFullSpaceMode,
+            @Nullable Tab activeTab) {
+        if (sBookmarkBarVisibleForTesting != null) {
+            return sBookmarkBarVisibleForTesting;
+        }
+
+        if (isXrFullSpaceMode || !isActivityStateBookmarkBarCompatible(context)) {
+            return false;
+        }
+
+        // On Desktop, we sync with the UserPrefs.
+        // On tablets we use the device preference logic (policy (pref service) > local pref
+        // (shared pref)).
+        @BookmarkBarVisibilityState
+        int visibilityState =
+                shouldUseProfileUserPrefs()
+                        ? getUserPrefsBookmarkBarVisibilityState(profile)
+                        : getDevicePrefBookmarkBarVisibilityState(profile);
+
+        if (visibilityState == BookmarkBarVisibilityState.ALWAYS_SHOW) {
+            return true;
+        } else if (visibilityState == BookmarkBarVisibilityState.ONLY_SHOW_ON_NTP) {
+            return activeTab != null && UrlUtilities.isNtpUrl(activeTab.getUrl());
+        }
+        return false;
     }
 
     // ---------------------------------------------------------------------------------------------

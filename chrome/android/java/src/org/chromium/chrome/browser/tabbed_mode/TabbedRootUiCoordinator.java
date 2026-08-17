@@ -417,11 +417,22 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         @Override
         public void onObservingDifferentTab(@Nullable Tab tab) {
             swapToTab(tab);
+            updateBookmarkBarVisibility();
         }
 
         @Override
         public void onTitleUpdated(Tab tab) {
             setActivityTitle(tab, /* isHub= */ false);
+        }
+
+        @Override
+        public void onUrlUpdated(Tab tab) {
+            updateBookmarkBarVisibility();
+        }
+
+        @Override
+        public void onContentChanged(Tab tab) {
+            updateBookmarkBarVisibility();
         }
 
         private void swapToTab(@Nullable Tab tab) {
@@ -1323,9 +1334,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         @Override
                         public void onVisibilityChanged_TriState(
                                 @BookmarkBarVisibilityState int visibilityState) {
-                            // TODO(crbug.com/542276874): Add proper NTP treatment here.
-                            updateBookmarkBarIfNecessary(
-                                    visibilityState == BookmarkBarVisibilityState.ALWAYS_SHOW);
+                            updateBookmarkBarIfNecessary(getBookmarkBarVisibility());
                         }
                     };
             mBookmarkBarVisibilityProvider.addObserver(mBookmarkBarVisibilityObserver);
@@ -2864,10 +2873,27 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         }
     }
 
+    private void updateBookmarkBarVisibility() {
+        // Because tab events can arrive before native initialization finishes (or after
+        // destruction), verify that the provider and profile are available before updating.
+        if (mBookmarkBarVisibilityProvider == null || mProfileSupplier.get() == null) {
+            return;
+        }
+
+        updateBookmarkBarIfNecessary(getBookmarkBarVisibility());
+    }
+
     @Override
     public boolean getBookmarkBarVisibility() {
-        return BookmarkBarUtils.isBookmarkBarVisible(
-                mActivity, mProfileSupplier.get(), mXrSpaceModeObservableSupplier.get());
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.BOOKMARKS_BAR_NTP)) {
+            return BookmarkBarUtils.isBookmarkBarVisible(
+                    mActivity, mProfileSupplier.get(), mXrSpaceModeObservableSupplier.get());
+        }
+        return BookmarkBarUtils.isBookmarkBarVisibleForState(
+                mActivity,
+                mProfileSupplier.get(),
+                mXrSpaceModeObservableSupplier.get(),
+                mActivityTabProvider.get());
     }
 
     public int getBookmarkBarHeight() {

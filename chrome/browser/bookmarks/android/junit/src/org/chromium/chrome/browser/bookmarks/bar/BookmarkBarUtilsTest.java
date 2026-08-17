@@ -12,6 +12,8 @@ import static org.mockito.Mockito.when;
 
 import static org.chromium.base.test.util.HistogramWatcher.newBuilder;
 
+import android.app.Activity;
+
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.filters.SmallTest;
 
@@ -32,11 +34,13 @@ import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.OverrideContextWrapperTestRule;
 import org.chromium.components.bookmarks.BookmarkBarVisibilityState;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.ui.base.TestActivity;
+import org.chromium.url.JUnitTestGURLs;
 
 /** Unit tests for {@link BookmarkBarUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -54,10 +58,13 @@ public class BookmarkBarUtilsTest {
 
     @Mock private PrefService mPrefService;
     @Mock private Profile mProfile;
+    @Mock private Tab mTab;
     @Mock private UserPrefsJni mUserPrefsJni;
+    private Activity mActivity;
 
     @Before
     public void setUp() {
+        mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
         when(mUserPrefsJni.get(mProfile)).thenReturn(mPrefService);
 
@@ -98,6 +105,15 @@ public class BookmarkBarUtilsTest {
                 .thenReturn(hasRecommendation);
         when(mPrefService.isFollowingRecommendation(Pref.BOOKMARK_BAR_VISIBILITY_STATE))
                 .thenReturn(isFollowing);
+    }
+
+    private void setUserPrefState(@BookmarkBarVisibilityState int state) {
+        setIntegerPref(
+                /* isManaged= */ false,
+                /* managedPolicyValue= */ BookmarkBarVisibilityState.ALWAYS_HIDE,
+                /* hasRecommendation= */ false,
+                /* isFollowing= */ false,
+                /* currentUserPref= */ state);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -954,5 +970,68 @@ public class BookmarkBarUtilsTest {
         assertEquals(
                 BookmarkBarVisibilityState.ALWAYS_HIDE,
                 BookmarkBarUtils.getDevicePrefBookmarkBarVisibilityState(mProfile));
+    }
+
+    @Test
+    @SmallTest
+    @Features.EnableFeatures(ChromeFeatureList.BOOKMARKS_BAR_NTP)
+    public void testIsBookmarkBarVisibleForState_Desktop() {
+        mOverrideContextRule.setIsDesktop(true);
+        BookmarkBarUtils.setActivityStateBookmarkBarCompatibleForTesting(true);
+
+        // 1. ALWAYS_SHOW: returns true for both NTP and standard pages.
+        setUserPrefState(BookmarkBarVisibilityState.ALWAYS_SHOW);
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
+        assertTrue(BookmarkBarUtils.isBookmarkBarVisibleForState(mActivity, mProfile, false, mTab));
+        assertTrue(BookmarkBarUtils.isBookmarkBarVisibleForState(mActivity, mProfile, false, null));
+
+        // 2. ALWAYS_HIDE: returns false for all pages.
+        setUserPrefState(BookmarkBarVisibilityState.ALWAYS_HIDE);
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.NTP_URL);
+        assertFalse(
+                BookmarkBarUtils.isBookmarkBarVisibleForState(mActivity, mProfile, false, mTab));
+
+        // 3. ONLY_SHOW_ON_NTP: returns true only on NTP.
+        setUserPrefState(BookmarkBarVisibilityState.ONLY_SHOW_ON_NTP);
+        assertFalse(
+                BookmarkBarUtils.isBookmarkBarVisibleForState(mActivity, mProfile, false, null));
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
+        assertFalse(
+                BookmarkBarUtils.isBookmarkBarVisibleForState(mActivity, mProfile, false, mTab));
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.NTP_URL);
+        assertTrue(BookmarkBarUtils.isBookmarkBarVisibleForState(mActivity, mProfile, false, mTab));
+    }
+
+    @Test
+    @SmallTest
+    @Features.EnableFeatures(ChromeFeatureList.BOOKMARKS_BAR_NTP)
+    public void testIsBookmarkBarVisibleForState_Tablet() {
+        mOverrideContextRule.setIsDesktop(false);
+        BookmarkBarUtils.setActivityStateBookmarkBarCompatibleForTesting(true);
+
+        // 1. ALWAYS_SHOW on tablet.
+        BookmarkBarUtils.setDevicePrefBookmarkBarVisibilityState(
+                BookmarkBarVisibilityState.ALWAYS_SHOW, /* fromKeyboardShortcut= */ false);
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
+        assertTrue(BookmarkBarUtils.isBookmarkBarVisibleForState(mActivity, mProfile, false, mTab));
+        assertTrue(BookmarkBarUtils.isBookmarkBarVisibleForState(mActivity, mProfile, false, null));
+
+        // 2. ALWAYS_HIDE on tablet.
+        BookmarkBarUtils.setDevicePrefBookmarkBarVisibilityState(
+                BookmarkBarVisibilityState.ALWAYS_HIDE, /* fromKeyboardShortcut= */ false);
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.NTP_URL);
+        assertFalse(
+                BookmarkBarUtils.isBookmarkBarVisibleForState(mActivity, mProfile, false, mTab));
+
+        // 3. ONLY_SHOW_ON_NTP on tablet.
+        BookmarkBarUtils.setDevicePrefBookmarkBarVisibilityState(
+                BookmarkBarVisibilityState.ONLY_SHOW_ON_NTP, /* fromKeyboardShortcut= */ false);
+        assertFalse(
+                BookmarkBarUtils.isBookmarkBarVisibleForState(mActivity, mProfile, false, null));
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
+        assertFalse(
+                BookmarkBarUtils.isBookmarkBarVisibleForState(mActivity, mProfile, false, mTab));
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.NTP_URL);
+        assertTrue(BookmarkBarUtils.isBookmarkBarVisibleForState(mActivity, mProfile, false, mTab));
     }
 }
