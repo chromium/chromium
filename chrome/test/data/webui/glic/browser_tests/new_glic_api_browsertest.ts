@@ -400,6 +400,11 @@ class ApiTests extends ApiTestFixtureBase {
     assertTrue(await this.host.getOsMicrophonePermissionStatus());
   }
 
+  async testGetOsMicrophonePermissionStatusNotAllowed() {
+    assertDefined(this.host.getOsMicrophonePermissionStatus);
+    assertFalse(await this.host.getOsMicrophonePermissionStatus());
+  }
+
   async testPinTabsFailsWhenIncognitoWindow() {
     assertDefined(this.host.pinTabs);
     assertDefined(this.host.getPinnedTabs);

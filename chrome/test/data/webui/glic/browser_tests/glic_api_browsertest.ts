@@ -480,10 +480,6 @@ class ApiTests extends ApiTestFixtureBase {
 
 
 
-  async testGetOsMicrophonePermissionStatusNotAllowed() {
-    assertDefined(this.host.getOsMicrophonePermissionStatus);
-    assertFalse(await this.host.getOsMicrophonePermissionStatus());
-  }
 
   // Test navigating unsuccessfully after client connection.
   async testNavigateToBadPage() {

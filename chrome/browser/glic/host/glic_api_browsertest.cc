@@ -176,7 +176,6 @@ std::vector<std::string> GetTestSuiteNames() {
       "GlicApiTest",
       "GlicApiTestWithOneTab",
       "GlicApiTestWithFastTimeout",
-      "GlicApiTestSystemSettingsTest",
       "GlicApiTestWithOneTabAndCachedUserProfile",
 
       "DISABLED_GlicApiTestWithOneTabAndPreloading",
@@ -1330,31 +1329,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithDaisyChain, testNewTabMetrics) {
   }));
 }
 
-class GlicApiTestSystemSettingsTest : public GlicApiTestWithOneTab {
- public:
-  GlicApiTestSystemSettingsTest() {
-    system_permission_settings::SetInstanceForTesting(&mock_platform_handle);
-  }
-
-  ~GlicApiTestSystemSettingsTest() override {
-    system_permission_settings::SetInstanceForTesting(nullptr);
-  }
-
-  testing::NiceMock<system_permission_settings::MockPlatformHandle>
-      mock_platform_handle;
-};
-
-IN_PROC_BROWSER_TEST_P(GlicApiTestSystemSettingsTest,
-                       testGetOsMicrophonePermissionStatusNotAllowed) {
-  EXPECT_CALL(mock_platform_handle,
-              IsAllowed(ContentSettingsType::MEDIASTREAM_MIC))
-      .WillOnce(testing::Return(false));
-
-  // Trigger the GetOsMicrophonePermissionStatus API and check if it returns
-  // false as mocked by this test.
-  ExecuteJsTest();
-}
-
 // TODO(crbug.com/508719420): Flaky time out.
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithFastTimeout,
                        DISABLED_testNavigateToAboutBlank) {
@@ -1985,10 +1959,6 @@ INSTANTIATE_TEST_SUITE_P(,
                          &WithTestParams::PrintTestVariant);
 INSTANTIATE_TEST_SUITE_P(,
                          GlicApiTestRuntimeFeatureOff,
-                         DefaultTestParamSet(),
-                         &WithTestParams::PrintTestVariant);
-INSTANTIATE_TEST_SUITE_P(,
-                         GlicApiTestSystemSettingsTest,
                          DefaultTestParamSet(),
                          &WithTestParams::PrintTestVariant);
 INSTANTIATE_TEST_SUITE_P(,
