@@ -50,6 +50,9 @@ void SaasUsageReportUploaderDesktop::UploadReport(
 }
 
 bool SaasUsageReportUploaderDesktop::IsProfileReporting() const {
+#if BUILDFLAG(IS_CHROMEOS)
+  return false;
+#else
   if (!profile_) {
     return false;
   }
@@ -58,6 +61,7 @@ bool SaasUsageReportUploaderDesktop::IsProfileReporting() const {
   // Server will use profile id from the report to distinguish between browser
   // and profile reports.
   return !enterprise_util::IsProfileAffiliated(profile_);
+#endif
 }
 
 }  // namespace enterprise_reporting
