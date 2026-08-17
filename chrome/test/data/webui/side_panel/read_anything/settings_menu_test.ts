@@ -432,7 +432,10 @@ suite('SettingsMenuElement', () => {
     assertFalse(linksItem.hasAttribute('aria-expanded'));
 
     // Open the font submenu.
+    const whenFired =
+        eventToPromise(ToolbarEvent.OPEN_SETTINGS_SUBMENU, settingsMenu);
     fontItem.click();
+    await whenFired;
     await microtasksFinished();
 
     menuItems =
