@@ -11,7 +11,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -138,18 +137,6 @@ public class EducationalTipModuleBuilderUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.SEGMENTATION_PLATFORM_EPHEMERAL_CARD_RANKER})
-    @DisableFeatures({ChromeFeatureList.EDUCATIONAL_TIP_DEFAULT_BROWSER_PROMO_CARD})
-    public void testBuildEducationalTipDefaultBrowserModule_NotEligible() {
-        EducationalTipModuleBuilder moduleBuilderForDefaultBrowser =
-                new EducationalTipModuleBuilder(ModuleType.DEFAULT_BROWSER_PROMO, mActionDelegate);
-
-        assertFalse(moduleBuilderForDefaultBrowser.build(mModuleDelegate, mBuildCallback));
-        verify(mBuildCallback, never()).onResult(any(ModuleProvider.class));
-    }
-
-    @Test
-    @SmallTest
     @EnableFeatures({
         ChromeFeatureList.SEGMENTATION_PLATFORM_EPHEMERAL_CARD_RANKER,
     })
@@ -243,22 +230,6 @@ public class EducationalTipModuleBuilderUnitTest {
                 new EducationalTipModuleBuilder(setupListModule, mActionDelegate);
 
         // Even though the global feature is disabled, it should build because SUL is active.
-        assertTrue(builder.build(mModuleDelegate, mBuildCallback));
-        verify(mBuildCallback).onResult(any(ModuleProvider.class));
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures({ChromeFeatureList.SEGMENTATION_PLATFORM_EPHEMERAL_CARD_RANKER})
-    @DisableFeatures({ChromeFeatureList.EDUCATIONAL_TIP_DEFAULT_BROWSER_PROMO_CARD})
-    public void testBuild_SetupList_BypassesSpecificKillSwitch() {
-        int dbModule = ModuleType.DEFAULT_BROWSER_PROMO;
-        when(mSetupListManager.isSetupListActive()).thenReturn(true);
-        when(mSetupListManager.isSetupListModule(dbModule)).thenReturn(true);
-        EducationalTipModuleBuilder builder =
-                new EducationalTipModuleBuilder(dbModule, mActionDelegate);
-
-        // Even though the DB specific flag is disabled, it should build because SUL is active.
         assertTrue(builder.build(mModuleDelegate, mBuildCallback));
         verify(mBuildCallback).onResult(any(ModuleProvider.class));
     }

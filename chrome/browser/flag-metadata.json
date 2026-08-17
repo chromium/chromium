@@ -3675,11 +3675,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "enable-educational-tip-default-browser-promo-card",
-    "owners": [ "hanxi@chromium.org", "xinyiji@chromium.org", "clank-start@chromium.org" ],
-    "expiry_milestone": 160
-  },
-  {
     "name": "enable-enterprise-watermarking-ios",
     "owners": [ "mxlg@google.com", "bling-enterprise@google.com" ],
     "expiry_milestone": 160

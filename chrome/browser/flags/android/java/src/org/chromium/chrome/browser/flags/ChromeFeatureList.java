@@ -529,8 +529,6 @@ public abstract class ChromeFeatureList {
     public static final String EDGE_TO_EDGE_TABLET = "EdgeToEdgeTablet";
     public static final String EDGE_TO_EDGE_USE_BACKUP_NAVBAR_INSETS =
             "EdgeToEdgeUseBackupNavbarInsets";
-    public static final String EDUCATIONAL_TIP_DEFAULT_BROWSER_PROMO_CARD =
-            "EducationalTipDefaultBrowserPromoCard";
     public static final String EMAIL_VERIFICATION_ANDROID = "EmailVerificationAndroid";
     public static final String EMPTY_TAB_LIST_ANIMATION_KILL_SWITCH =
             "EmptyTabListAnimationKillSwitch";
@@ -1122,8 +1120,6 @@ public abstract class ChromeFeatureList {
             newCachedFlag(EDGE_TO_EDGE_USE_BACKUP_NAVBAR_INSETS, true);
     public static final CachedFlag sEdgelessTopInset =
             newCachedFlag(EDGELESS_TOP_INSET, /* defaultValue= */ false);
-    public static final CachedFlag sEducationalTipDefaultBrowserPromoCard =
-            newCachedFlag(EDUCATIONAL_TIP_DEFAULT_BROWSER_PROMO_CARD, true);
     public static final CachedFlag sEnableAndroidEnterpriseScreenshotProtection =
             newCachedFlag(
                     ENABLE_ANDROID_ENTERPRISE_SCREENSHOT_PROTECTION,
@@ -1548,7 +1544,6 @@ public abstract class ChromeFeatureList {
                     sEdgeToEdgeTablet,
                     sEdgeToEdgeUseBackupNavbarInsets,
                     sEdgelessTopInset,
-                    sEducationalTipDefaultBrowserPromoCard,
                     sEnableAndroidEnterpriseScreenshotProtection,
                     sEnableAndroidSidePanel,
                     sEnableAndroidSidePanelDevFeature,

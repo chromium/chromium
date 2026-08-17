@@ -12,7 +12,6 @@ import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.magic_stack.ModuleProvider;
@@ -43,11 +42,6 @@ public class EducationalTipModuleBuilder implements ModuleProviderBuilder {
             ModuleDelegate moduleDelegate, Callback<ModuleProvider> onModuleBuiltCallback) {
         if (!SetupListModuleUtils.isSetupListModule(mModuleType)) {
             if (!EducationalTipModuleUtils.isEducationalTipActive()) {
-                return false;
-            }
-
-            if (mModuleType == ModuleType.DEFAULT_BROWSER_PROMO
-                    && !ChromeFeatureList.sEducationalTipDefaultBrowserPromoCard.isEnabled()) {
                 return false;
             }
         }
