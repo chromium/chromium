@@ -2,13 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ui/views/widget/native_widget_mac.h"
+
 #import <Cocoa/Cocoa.h>
 
+#include <vector>
+
+#include "base/functional/bind.h"
 #import "base/mac/mac_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_multi_source_observation.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/test/ui_controls.h"
 #import "ui/base/test/windowed_nsnotification_observer.h"
+#include "ui/events/event.h"
 #import "ui/events/test/cocoa_test_event_utils.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/textfield/textfield.h"
@@ -17,8 +26,8 @@
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/test/widget_activation_waiter.h"
 #include "ui/views/test/widget_test.h"
-#include "ui/views/widget/native_widget_mac.h"
 #include "ui/views/widget/native_widget_private.h"
+#include "ui/views/widget/widget_observer.h"
 
 namespace views::test {
 
@@ -189,7 +198,193 @@ NSData* ViewAsTIFF(NSView* view) {
   return [bitmap TIFFRepresentation];
 }
 
+bool IsAppActive() {
+  return [NSApp isActive];
+}
+
+bool IsWidgetKeyWindow(Widget* widget) {
+  return widget->GetNativeWindow().GetNativeNSWindow().keyWindow;
+}
+
+bool ActivateFinder() {
+  NSArray<NSRunningApplication*>* finder_apps = [NSRunningApplication
+      runningApplicationsWithBundleIdentifier:@"com.apple.finder"];
+  if (finder_apps.count == 0) {
+    return false;
+  }
+  return [finder_apps.firstObject
+      activateWithOptions:NSApplicationActivateIgnoringOtherApps];
+}
+
+class ShowWidgetOnMousePressedView : public View {
+  METADATA_HEADER(ShowWidgetOnMousePressedView, View)
+
+ public:
+  ShowWidgetOnMousePressedView(Widget* widget_to_show, bool* show_called)
+      : widget_to_show_(widget_to_show), show_called_(show_called) {}
+
+  ShowWidgetOnMousePressedView(const ShowWidgetOnMousePressedView&) = delete;
+  ShowWidgetOnMousePressedView& operator=(const ShowWidgetOnMousePressedView&) =
+      delete;
+
+ private:
+  bool OnMousePressed(const ui::MouseEvent& event) override {
+    *show_called_ = true;
+    widget_to_show_->Show();
+    return true;
+  }
+
+  raw_ptr<Widget> widget_to_show_;
+  raw_ptr<bool> show_called_;
+};
+
+BEGIN_METADATA(ShowWidgetOnMousePressedView)
+END_METADATA
+
+class WidgetActivationRecorder : public WidgetObserver {
+ public:
+  WidgetActivationRecorder(Widget* first, Widget* second) {
+    widget_observations_.AddObservation(first);
+    widget_observations_.AddObservation(second);
+  }
+
+  WidgetActivationRecorder(const WidgetActivationRecorder&) = delete;
+  WidgetActivationRecorder& operator=(const WidgetActivationRecorder&) = delete;
+
+  ~WidgetActivationRecorder() override = default;
+
+  const std::vector<raw_ptr<Widget, VectorExperimental>>& activated_widgets()
+      const {
+    return activated_widgets_;
+  }
+
+ private:
+  void OnWidgetActivationChanged(Widget* widget, bool active) override {
+    if (active) {
+      activated_widgets_.push_back(widget);
+    }
+  }
+
+  std::vector<raw_ptr<Widget, VectorExperimental>> activated_widgets_;
+  base::ScopedMultiSourceObservation<Widget, WidgetObserver>
+      widget_observations_{this};
+};
+
+void InstallShowWidgetOnMousePressedView(Widget* event_widget,
+                                         Widget* widget_to_show,
+                                         bool* show_called) {
+  auto view = std::make_unique<ShowWidgetOnMousePressedView>(widget_to_show,
+                                                             show_called);
+  view->SetBoundsRect(gfx::Rect(100, 100));
+  if (event_widget->client_view()) {
+    event_widget->client_view()->AddChildView(std::move(view));
+  } else {
+    event_widget->SetContentsView(std::move(view));
+  }
+}
+
 }  // namespace
+
+TEST_P(NativeWidgetMacInteractiveUITest,
+       ShowWidgetFromActivationIndependentWidgetWhileAppInactive) {
+  // TODO(crbug.com/445214951): Flaky on mac-vm builder for macOS 15.
+  if (kTestDisabledForVirtualMachineMac) {
+    GTEST_SKIP() << "Disabled on macOS Sequoia for virtual machines.";
+  }
+
+  WidgetTest::WaitForSystemAppActivation();
+
+  WidgetAutoclosePtr browser_widget(MakeWidget());
+  browser_widget->SetBounds(gfx::Rect(120, 120, 100, 100));
+  ShowKeyWindow(browser_widget.get());
+
+  bool show_called = false;
+  WidgetAutoclosePtr activation_independent_widget(MakeWidget());
+  activation_independent_widget->SetBounds(gfx::Rect(100, 100, 100, 100));
+  InstallShowWidgetOnMousePressedView(activation_independent_widget.get(),
+                                      browser_widget.get(), &show_called);
+  activation_independent_widget->SetZOrderLevel(
+      ui::ZOrderLevel::kFloatingWindow);
+  activation_independent_widget->SetActivationIndependence(true);
+  ShowKeyWindow(activation_independent_widget.get());
+  ASSERT_TRUE(activation_independent_widget->IsActive());
+  ASSERT_TRUE(browser_widget->IsVisible());
+
+  if (!ActivateFinder()) {
+    GTEST_SKIP() << "Unable to activate Finder.";
+  }
+  views::test::PropertyWaiter app_deactivation_waiter(
+      base::BindRepeating(&IsAppActive), false);
+  ASSERT_TRUE(app_deactivation_waiter.Wait());
+  views::test::PropertyWaiter key_window_deactivation_waiter(
+      base::BindRepeating(
+          &IsWidgetKeyWindow,
+          base::Unretained(activation_independent_widget.get())),
+      false);
+  ASSERT_TRUE(key_window_deactivation_waiter.Wait());
+  EXPECT_TRUE(activation_independent_widget->IsVisible());
+
+  NSEvent* mouse_down = cocoa_test_event_utils::LeftMouseDownAtPointInWindow(
+      NSMakePoint(50, 50),
+      activation_independent_widget->GetNativeWindow().GetNativeNSWindow());
+  [NSApp sendEvent:mouse_down];
+  EXPECT_TRUE(show_called);
+  EXPECT_TRUE(browser_widget->IsVisible());
+
+  views::test::PropertyWaiter widget_activation_waiter(
+      base::BindRepeating(&Widget::IsActive,
+                          base::Unretained(browser_widget.get())),
+      true);
+  EXPECT_TRUE(widget_activation_waiter.Wait());
+  EXPECT_TRUE(browser_widget->GetNativeWindow().GetNativeNSWindow().keyWindow);
+}
+
+TEST_P(NativeWidgetMacInteractiveUITest,
+       ShowInactiveWidgetDoesNotActivatePreviousKeyWindowFirst) {
+  // TODO(crbug.com/445214951): Flaky on mac-vm builder for macOS 15.
+  if (kTestDisabledForVirtualMachineMac) {
+    GTEST_SKIP() << "Disabled on macOS Sequoia for virtual machines.";
+  }
+
+  WidgetTest::WaitForSystemAppActivation();
+
+  WidgetAutoclosePtr target_widget(MakeWidget());
+  target_widget->SetBounds(gfx::Rect(120, 120, 100, 100));
+  ShowKeyWindow(target_widget.get());
+
+  WidgetAutoclosePtr previous_key_widget(MakeWidget());
+  previous_key_widget->SetBounds(gfx::Rect(100, 100, 100, 100));
+  ShowKeyWindow(previous_key_widget.get());
+  ASSERT_TRUE(previous_key_widget->IsActive());
+  ASSERT_TRUE(target_widget->IsVisible());
+  ASSERT_FALSE(target_widget->IsActive());
+
+  if (!ActivateFinder()) {
+    GTEST_SKIP() << "Unable to activate Finder.";
+  }
+  views::test::PropertyWaiter app_deactivation_waiter(
+      base::BindRepeating(&IsAppActive), false);
+  ASSERT_TRUE(app_deactivation_waiter.Wait());
+  views::test::PropertyWaiter previous_key_window_deactivation_waiter(
+      base::BindRepeating(&IsWidgetKeyWindow,
+                          base::Unretained(previous_key_widget.get())),
+      false);
+  ASSERT_TRUE(previous_key_window_deactivation_waiter.Wait());
+
+  WidgetActivationRecorder activation_recorder(previous_key_widget.get(),
+                                               target_widget.get());
+  target_widget->Show();
+  views::test::PropertyWaiter target_widget_activation_waiter(
+      base::BindRepeating(&Widget::IsActive,
+                          base::Unretained(target_widget.get())),
+      true);
+  EXPECT_TRUE(target_widget_activation_waiter.Wait());
+  EXPECT_TRUE(target_widget->GetNativeWindow().GetNativeNSWindow().keyWindow);
+
+  const auto& activated_widgets = activation_recorder.activated_widgets();
+  ASSERT_EQ(1u, activated_widgets.size());
+  EXPECT_EQ(target_widget.get(), activated_widgets.front());
+}
 
 class TestBubbleView : public BubbleDialogDelegateView {
  public:

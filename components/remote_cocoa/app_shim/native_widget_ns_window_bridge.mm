@@ -1039,10 +1039,14 @@ void NativeWidgetNSWindowBridge::SetVisibilityState(
     parent_->OrderChildren();
 
   if (new_state == WindowVisibilityState::kShowAndActivateWindow) {
-    [window_ makeKeyAndOrderFront:nil];
+    // Activate the app before `makeKeyAndOrderFront:`. If the order is
+    // reversed while the app is inactive, AppKit will not send
+    // NSWindowDidBecomeKeyNotification, causing Widget::IsActive() to
+    // incorrectly return false.
     if (![window_ activationIndependence]) {
       [NSApp activateIgnoringOtherApps:YES];
     }
+    [window_ makeKeyAndOrderFront:nil];
   } else if (new_state == WindowVisibilityState::kShowInactive && !parent_ &&
              ![window_ isMiniaturized]) {
     if ([[NSApp mainWindow] screen] == [window_ screen] ||
