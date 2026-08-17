@@ -28,7 +28,8 @@ namespace {
 const CGFloat kButtonStackViewSpacing = 8.0;
 
 // The height for the quick actions button row.
-const CGFloat kQuickActionsHeight = 44.0;
+constexpr CGFloat kQuickActionsHeight = 44.0;
+constexpr CGFloat kQuickActionsHeightUICleanup = 50.0;
 
 // The border radius for a quick action button.
 const CGFloat kButtonCornerRadius = 24.0;
@@ -71,9 +72,12 @@ UIColor* ButtonBackgroundColor(NewTabPageColorPalette* color_palette) {
   [self.view addSubview:_buttonStackView];
 
   AddSameConstraints(_buttonStackView, self.view);
-  [NSLayoutConstraint
-      activateConstraints:@[ [_buttonStackView.heightAnchor
-                              constraintEqualToConstant:kQuickActionsHeight] ]];
+  [NSLayoutConstraint activateConstraints:@[
+    [_buttonStackView.heightAnchor
+        constraintEqualToConstant:IsNewTabPageUICleanupEnabled()
+                                      ? kQuickActionsHeightUICleanup
+                                      : kQuickActionsHeight]
+  ]];
   if (IsAimEnabledInNtp()) {
     _aimButton =
         [self createButtonWithSymbol:SymbolMagnifyingglassSpark
@@ -101,7 +105,10 @@ UIColor* ButtonBackgroundColor(NewTabPageColorPalette* color_palette) {
 }
 
 - (CGSize)preferredContentSize {
-  return CGSizeMake(super.preferredContentSize.width, kQuickActionsHeight);
+  return CGSizeMake(super.preferredContentSize.width,
+                    IsNewTabPageUICleanupEnabled()
+                        ? kQuickActionsHeightUICleanup
+                        : kQuickActionsHeight);
 }
 
 #pragma mark - Private
