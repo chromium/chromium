@@ -3432,7 +3432,9 @@ void LocalFrameView::UpdateStyleAndLayout() {
 
   // Second pass: run autosize until it stabilizes
   if (auto_size_info_) {
-    while (auto_size_info_->AutoSizeIfNeeded()) {
+    bool should_reset_for_layout = did_layout;
+    while (auto_size_info_->AutoSizeIfNeeded(should_reset_for_layout)) {
+      should_reset_for_layout = false;
       base::AutoReset<bool> reset(&is_being_auto_sized_, true);
       did_layout |= UpdateStyleAndLayoutInternal();
     }
