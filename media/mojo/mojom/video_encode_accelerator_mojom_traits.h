@@ -242,19 +242,19 @@ class StructTraits<media::mojom::BitstreamBufferMetadataDataView,
       const media::BitstreamBufferMetadata& bbm) {
     return bbm;
   }
-  static std::optional<media::SVCGenericMetadata> svc_generic(
+  static const std::optional<media::SVCGenericMetadata>& svc_generic(
       const media::BitstreamBufferMetadata& bbm) {
     return bbm.svc_generic;
   }
-  static std::optional<gfx::Size> encoded_size(
+  static const std::optional<gfx::Size>& encoded_size(
       const media::BitstreamBufferMetadata& bbm) {
     return bbm.encoded_size;
   }
-  static std::optional<gfx::ColorSpace> encoded_color_space(
+  static const std::optional<gfx::ColorSpace>& encoded_color_space(
       const media::BitstreamBufferMetadata& bbm) {
     return bbm.encoded_color_space;
   }
-  static std::optional<media::YuvPsnr> yuv_psnr(
+  static const std::optional<media::YuvPsnr>& yuv_psnr(
       const media::BitstreamBufferMetadata& bbm) {
     return bbm.yuv_psnr;
   }
