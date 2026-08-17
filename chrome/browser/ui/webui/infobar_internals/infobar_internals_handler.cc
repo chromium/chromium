@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/infobar_internals/infobar_internals_handler.h"
 
 #include <memory>
+#include <ranges>
 #include <string>
 #include <utility>
 #include <vector>
@@ -20,22 +21,28 @@
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/devtools/devtools_infobar_delegate.h"
 #include "chrome/browser/devtools/devtools_window.h"
+#include "chrome/browser/devtools/global_confirm_info_bar.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/infobars/browser_infobar_manager.h"
 #include "chrome/browser/infobars/infobar_features.h"
+#include "chrome/browser/infobars/simple_alert_infobar_creator.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/collected_cookies_infobar_delegate.h"
 #include "chrome/browser/ui/omnibox/alternate_nav_infobar_delegate.h"
 #include "chrome/browser/ui/page_info/page_info_infobar_delegate.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/site_data/page_specific_site_data_dialog_controller.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/infobars/content/content_infobar_manager.h"
+#include "components/infobars/core/simple_alert_infobar_delegate.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/prefs/pref_service.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/common/buildflags.h"
@@ -182,6 +189,13 @@ void InfoBarInternalsHandler::GetInfoBars(GetInfoBarsCallback callback) {
       "prevents the infobar from being shown, then shows the infobar. "
       "This can only be triggered on Mac."));
 #endif
+
+  infobar_list.emplace_back(InfoBarEntry::New(
+      /*type=*/InfoBarType::kLocalTestPoliciesApplied,
+      /*name=*/"Local Test Policies Applied",
+      /*description=*/
+      "The Local Test Policies Applied infobar warns the user that local "
+      "test policies are active."));
 
   infobar_list.emplace_back(InfoBarEntry::New(
       /*type=*/InfoBarType::kPageInfo, /*name=*/"Page Info",
@@ -429,6 +443,27 @@ bool InfoBarInternalsHandler::TriggerInfoBarInternal(InfoBarType type) {
       return false;
     }
 #endif
+    case InfoBarType::kLocalTestPoliciesApplied: {
+      if (infobars::IsInfoBarMigrated(
+              infobars::InfoBarDelegate::LOCAL_TEST_POLICIES_APPLIED_INFOBAR)) {
+        auto* browser_infobar_manager =
+            infobars::BrowserInfoBarManager::From(g_browser_process);
+        if (!browser_infobar_manager) {
+          return false;
+        }
+        browser_infobar_manager->ShowGlobally(
+            infobars::InfoBarDelegate::LOCAL_TEST_POLICIES_APPLIED_INFOBAR);
+      } else {
+        GlobalConfirmInfoBar::Show(std::make_unique<SimpleAlertInfoBarDelegate>(
+            infobars::InfoBarDelegate::LOCAL_TEST_POLICIES_APPLIED_INFOBAR,
+            /*vector_icon=*/nullptr,
+            l10n_util::GetStringUTF16(IDS_LOCAL_TEST_POLICIES_ENABLED),
+            /*auto_expire=*/false, /*should_animate=*/false,
+            /*closeable=*/false,
+            infobars::InfoBarDelegate::InfobarPriority::kLow));
+      }
+      return true;
+    }
     case InfoBarType::kPageInfo: {
       if (!bwi || !bwi->GetActiveTabInterface()) {
         return false;

@@ -40,12 +40,16 @@ enum InfoBarType {
   [EnableIf=is_mac]
   kKeystone,
 
+  // Local test policies infobar.
+  kLocalTestPoliciesApplied,
+
   // Page Info infobar.
   kPageInfo,
 
   // PDF infobar. Can only be triggered on Windows or Mac.
   [EnableIf=is_win|is_mac]
   kPdf,
+
   // Reload plugin infobar.
   [EnableIf=enable_plugins]
   kReloadPlugin,
