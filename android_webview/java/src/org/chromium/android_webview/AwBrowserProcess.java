@@ -106,6 +106,15 @@ public final class AwBrowserProcess {
     private static final TaskRunner sSequencedTaskRunner =
             PostTask.createSequencedTaskRunner(TaskTraits.BEST_EFFORT_MAY_BLOCK);
 
+    /** Delegate interface for callbacks needed during WebView global startup. */
+    public interface StartupDelegate {
+        /** Wait until it's possible to access Android resources defined in the Chromium APK. */
+        void waitForJavaResourcesSetup();
+
+        /** Returns whether to use native sandboxed services. */
+        boolean shouldForceNativeSandboxedServices();
+    }
+
     private static String sWebViewPackageName;
     private static @ApkType int sApkType;
     private static @Nullable String sProcessDataDirSuffix;
@@ -207,7 +216,7 @@ public final class AwBrowserProcess {
      * Configures child process launcher. This is required only if child services are used in
      * WebView.
      */
-    public static void configureChildProcessLauncher(boolean isNativeWebViewZygoteEnabled) {
+    public static void configureChildProcessLauncher(boolean forceNativeSandboxedServices) {
         final boolean isExternalService = true;
         final boolean bindToCaller = true;
         final boolean ignoreVisibilityForImportance = true;
@@ -218,7 +227,7 @@ public final class AwBrowserProcess {
                 LibraryProcessType.PROCESS_WEBVIEW_CHILD,
                 bindToCaller,
                 ignoreVisibilityForImportance,
-                isNativeWebViewZygoteEnabled);
+                forceNativeSandboxedServices);
 
         ChildProcessLauncherHelper.initialize();
     }
