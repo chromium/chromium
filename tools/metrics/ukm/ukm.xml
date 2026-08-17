@@ -10324,8 +10324,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="GameControls.ButtonOptionsMenuFunctionTriggered">
-  <owner>cuicuiruan@google.com</owner>
-  <owner>pjlee@google.com</owner>
+  <owner>phshah@chromium.org</owner>
   <owner>arc-gaming@google.com</owner>
   <summary>
     Logged when Game Controls' options menu button functions are triggered.
@@ -10338,8 +10337,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="GameControls.EditDeleteMenuFuctionTriggered">
-  <owner>cuicuiruan@google.com</owner>
-  <owner>pjlee@google.com</owner>
+  <owner>phshah@chromium.org</owner>
   <owner>arc-gaming@google.com</owner>
   <summary>
     Logged when Game Controls edit-delete menu functions are triggered.
@@ -10352,8 +10350,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="GameControls.EditingListFunctionTriggered">
-  <owner>cuicuiruan@google.com</owner>
-  <owner>pjlee@google.com</owner>
+  <owner>phshah@chromium.org</owner>
   <owner>arc-gaming@google.com</owner>
   <summary>
     Logged when Game Controls editing list functions are triggered.
@@ -10366,7 +10363,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="GameControls.PlayGameWithGameControls">
-  <owner>cuicuiruan@google.com</owner>
+  <owner>phshah@chromium.org</owner>
   <owner>arc-gaming@google.com</owner>
   <summary>
     Log once whether the ARC game is played with Game Controls per game session.
@@ -10381,8 +10378,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="GameControls.ToggleWithMappingSource">
-  <owner>cuicuiruan@google.com</owner>
-  <owner>pjlee@google.com</owner>
+  <owner>phshah@chromium.org</owner>
   <owner>arc-gaming@google.com</owner>
   <summary>
     Logged when Game Controls feature or hint is toggled on or off.
@@ -10405,7 +10401,6 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="GameDashboard.ControlsFeatureToggleState">
-  <owner>cuicuiruan@google.com</owner>
   <owner>phshah@chromium.org</owner>
   <owner>arc-gaming@google.com</owner>
   <summary>
@@ -10419,7 +10414,6 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="GameDashboard.ControlsHintToggleSource">
-  <owner>cuicuiruan@google.com</owner>
   <owner>phshah@chromium.org</owner>
   <owner>arc-gaming@google.com</owner>
   <summary>
@@ -10438,7 +10432,6 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="GameDashboard.EditControlsWithEmptyState">
-  <owner>cuicuiruan@google.com</owner>
   <owner>phshah@chromium.org</owner>
   <owner>arc-gaming@google.com</owner>
   <summary>
@@ -10452,7 +10445,6 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="GameDashboard.FunctionTriggered">
-  <owner>cuicuiruan@google.com</owner>
   <owner>phshah@chromium.org</owner>
   <owner>arc-gaming@google.com</owner>
   <summary>
@@ -10466,7 +10458,6 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="GameDashboard.RecordingStartSource">
-  <owner>cuicuiruan@google.com</owner>
   <owner>phshah@chromium.org</owner>
   <owner>arc-gaming@google.com</owner>
   <summary>
@@ -10480,7 +10471,6 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="GameDashboard.ScreenshotTakeSource">
-  <owner>cuicuiruan@google.com</owner>
   <owner>phshah@chromium.org</owner>
   <owner>arc-gaming@google.com</owner>
   <summary>
@@ -10494,7 +10484,6 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="GameDashboard.ToggleMainMenu">
-  <owner>cuicuiruan@google.com</owner>
   <owner>phshah@chromium.org</owner>
   <owner>arc-gaming@google.com</owner>
   <summary>
@@ -10514,7 +10503,6 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="GameDashboard.ToolbarClickToExpandState">
-  <owner>cuicuiruan@google.com</owner>
   <owner>phshah@chromium.org</owner>
   <owner>arc-gaming@google.com</owner>
   <summary>
@@ -10528,7 +10516,6 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="GameDashboard.ToolbarNewLocation">
-  <owner>cuicuiruan@google.com</owner>
   <owner>phshah@chromium.org</owner>
   <owner>arc-gaming@google.com</owner>
   <summary>
@@ -10542,7 +10529,6 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="GameDashboard.ToolbarToggleState">
-  <owner>cuicuiruan@google.com</owner>
   <owner>phshah@chromium.org</owner>
   <owner>arc-gaming@google.com</owner>
   <summary>
@@ -10556,7 +10542,6 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="GameDashboard.WelcomeDialogNotificationToggleState">
-  <owner>cuicuiruan@google.com</owner>
   <owner>phshah@chromium.org</owner>
   <owner>arc-gaming@google.com</owner>
   <summary>
@@ -10571,8 +10556,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="GamingInputOverlay.ActionRepositionOperationType">
-  <owner>pjlee@google.com</owner>
-  <owner>cuicuiruan@google.com</owner>
+  <owner>phshah@chromium.org</owner>
   <owner>arc-gaming@google.com</owner>
   <summary>
     An event that is logged when key mapping position is changed.
@@ -10592,8 +10576,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="GamingInputOverlay.ActionRepositionWindowStateType">
-  <owner>pjlee@google.com</owner>
-  <owner>cuicuiruan@google.com</owner>
+  <owner>phshah@chromium.org</owner>
   <owner>arc-gaming@google.com</owner>
   <summary>
     An event that is logged when key mapping position is changed.
@@ -10613,8 +10596,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="GamingInputOverlay.ButtonGroupRepositionOperationType">
-  <owner>pjlee@google.com</owner>
-  <owner>cuicuiruan@google.com</owner>
+  <owner>phshah@chromium.org</owner>
   <owner>arc-gaming@google.com</owner>
   <summary>
     An event that is logged when button group position is changed.
@@ -10634,8 +10616,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="GamingInputOverlay.ButtonGroupRepositionWindowStateType">
-  <owner>pjlee@google.com</owner>
-  <owner>cuicuiruan@google.com</owner>
+  <owner>phshah@chromium.org</owner>
   <owner>arc-gaming@google.com</owner>
   <summary>
     An event that is logged when menu entry position is changed.
@@ -10655,8 +10636,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="GamingInputOverlay.Customization">
-  <owner>pjlee@google.com</owner>
-  <owner>cuicuiruan@google.com</owner>
+  <owner>phshah@chromium.org</owner>
   <owner>arc-gaming@google.com</owner>
   <summary>
     An event for gaming input overlay that is logged when users enter into edit
@@ -10677,8 +10657,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="GamingInputOverlay.Feature">
-  <owner>pjlee@google.com</owner>
-  <owner>cuicuiruan@google.com</owner>
+  <owner>phshah@chromium.org</owner>
   <owner>arc-gaming@google.com</owner>
   <summary>
     An event for gaming input overlay that is logged when the input overlay
@@ -10699,8 +10678,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="GamingInputOverlay.MappingHint">
-  <owner>pjlee@google.com</owner>
-  <owner>cuicuiruan@google.com</owner>
+  <owner>phshah@chromium.org</owner>
   <owner>arc-gaming@google.com</owner>
   <summary>
     An event for gaming input overlay that is logged when the mapping hint state
@@ -10721,8 +10699,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="GamingInputOverlay.MenuEntryRepositionOperationType">
-  <owner>pjlee@google.com</owner>
-  <owner>cuicuiruan@google.com</owner>
+  <owner>phshah@chromium.org</owner>
   <owner>arc-gaming@google.com</owner>
   <summary>
     An event that is logged when key mapping position is changed.
@@ -10742,8 +10719,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="GamingInputOverlay.MenuEntryRepositionWindowStateType">
-  <owner>pjlee@google.com</owner>
-  <owner>cuicuiruan@google.com</owner>
+  <owner>phshah@chromium.org</owner>
   <owner>arc-gaming@google.com</owner>
   <summary>
     An event that is logged when menu entry position is changed.

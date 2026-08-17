@@ -1207,8 +1207,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Arc.GameControls.ButtonOptionsMenuFunctionTriggered"
     enum="GameControlsButtonOptionsMenuFunction" expires_after="2026-04-26">
-  <owner>cuicuiruan@google.com</owner>
-  <owner>pjlee@google.com</owner>
+  <owner>phshah@chromium.org</owner>
   <owner>arc-gaming@google.com</owner>
   <summary>
     Records how often a specific function within the game controls button
@@ -1218,8 +1217,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Arc.GameControls.EditDeleteMenuFuctionTriggered"
     enum="GameControlsEditDeleteMenuFunction" expires_after="2027-01-03">
-  <owner>cuicuiruan@google.com</owner>
-  <owner>pjlee@google.com</owner>
+  <owner>phshah@chromium.org</owner>
   <owner>arc-gaming@google.com</owner>
   <summary>
     Records how often a specific function within the game controls edit/delete
@@ -1229,8 +1227,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Arc.GameControls.EditingListFunctionTriggered"
     enum="GameControlsEditingListFunction" expires_after="2027-01-03">
-  <owner>cuicuiruan@google.com</owner>
-  <owner>pjlee@google.com</owner>
+  <owner>phshah@chromium.org</owner>
   <owner>arc-gaming@google.com</owner>
   <summary>
     Records how often a specific function within the game controls editing list
@@ -1240,7 +1237,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Arc.GameControls.PlayGameWithGameControls" enum="Boolean"
     expires_after="2026-11-15">
-  <owner>cuicuiruan@google.com</owner>
+  <owner>phshah@chromium.org</owner>
   <owner>arc-gaming@google.com</owner>
   <summary>
     Records wheather users play the game with the Game Controls feature. It
@@ -1252,8 +1249,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Arc.GameControls.{FeatureOrHint}ToggleWithMappingSource.{OnOrOff}"
     enum="GameControlsMappingSource" expires_after="2026-02-22">
-  <owner>cuicuiruan@google.com</owner>
-  <owner>pjlee@google.com</owner>
+  <owner>phshah@chromium.org</owner>
   <owner>arc-gaming@google.com</owner>
   <summary>
     Records the game controls feature or hint is toggled on or off with current
@@ -1340,7 +1336,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Arc.InputOverlay.ActionRepositionOperationType"
     enum="ArcInputOverlayRepositionOperationType" expires_after="2024-02-04">
-  <owner>cuicuiruan@google.com</owner>
+  <owner>phshah@chromium.org</owner>
   <owner>arc-gaming@google.com</owner>
   <summary>
     Records the Action reposition operation types, including touchscreen drag,
@@ -1351,7 +1347,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Arc.InputOverlay.ButtonGroupRepositionOperationType"
     enum="ArcInputOverlayRepositionOperationType" expires_after="2023-12-19">
-  <owner>cuicuiruan@google.com</owner>
+  <owner>phshah@chromium.org</owner>
   <owner>arc-gaming@google.com</owner>
   <summary>
     Records the button group reposition operation types, including touchscreen
@@ -1362,7 +1358,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Arc.InputOverlay.Customized" enum="BooleanEnabled"
     expires_after="2023-10-15">
-  <owner>cuicuiruan@google.com</owner>
+  <owner>phshah@chromium.org</owner>
   <owner>arc-gaming@google.com</owner>
   <summary>
     Count the usage of input overlay editing feature on all associated apps. The
@@ -1373,7 +1369,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Arc.InputOverlay.FeatureState" enum="BooleanEnabled"
     expires_after="2023-08-27">
-  <owner>cuicuiruan@google.com</owner>
+  <owner>phshah@chromium.org</owner>
   <owner>arc-gaming@google.com</owner>
   <summary>
     Check whether users play the game with input overlay feature enabled or
@@ -1386,7 +1382,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Arc.InputOverlay.MappingHintState" enum="BooleanEnabled"
     expires_after="2023-08-27">
-  <owner>cuicuiruan@google.com</owner>
+  <owner>phshah@chromium.org</owner>
   <owner>arc-gaming@google.com</owner>
   <summary>
     Check whether users play the game with input overlay mapping hint enabled or
@@ -1399,7 +1395,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Arc.InputOverlay.MenuEntryRepositionOperationType"
     enum="ArcInputOverlayRepositionOperationType" expires_after="2023-12-19">
-  <owner>cuicuiruan@google.com</owner>
+  <owner>phshah@chromium.org</owner>
   <owner>arc-gaming@google.com</owner>
   <summary>
     Records the menu entry button reposition operation types, including
@@ -1410,7 +1406,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Arc.InputOverlay.{UI}RepositionWindowStateType"
     enum="ArcInputOverlayWindowStateType" expires_after="2023-08-28">
-  <owner>cuicuiruan@google.com</owner>
+  <owner>phshah@chromium.org</owner>
   <owner>arc-gaming@google.com</owner>
   <summary>
     Records the window state type when {UI} reposition happens. Records the
