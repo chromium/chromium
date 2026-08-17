@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/storage/storage_pressure_bubble_view.h"
 
-#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/storage_pressure_bubble.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -34,7 +33,6 @@ IN_PROC_BROWSER_TEST_F(StoragePressureBubbleViewTest, InvokeUi_default) {
 }
 
 IN_PROC_BROWSER_TEST_F(StoragePressureBubbleViewTest, AcceptDialog) {
-  base::HistogramTester histogram_tester;
   views::NamedWidgetShownWaiter widget_waiter(
       views::test::AnyWidgetTestPasskey{}, "StoragePressureBubbleView");
 
@@ -54,15 +52,9 @@ IN_PROC_BROWSER_TEST_F(StoragePressureBubbleViewTest, AcceptDialog) {
                 ->GetActiveWebContents()
                 ->GetVisibleURL(),
             GURL("chrome://settings/content/all?sort=data-stored"));
-
-  histogram_tester.ExpectBucketCount("Storage.StoragePressure.Bubble",
-                                     /*kOpenedAllSites=*/2, 1);
-  histogram_tester.ExpectBucketCount("Storage.StoragePressure.Bubble",
-                                     /*kIgnored=*/1, 0);
 }
 
 IN_PROC_BROWSER_TEST_F(StoragePressureBubbleViewTest, CancelDialog) {
-  base::HistogramTester histogram_tester;
   views::NamedWidgetShownWaiter widget_waiter(
       views::test::AnyWidgetTestPasskey{}, "StoragePressureBubbleView");
 
@@ -77,9 +69,4 @@ IN_PROC_BROWSER_TEST_F(StoragePressureBubbleViewTest, CancelDialog) {
   destroy_waiter.Wait();
 
   EXPECT_EQ(browser()->tab_strip_model()->count(), initial_tab_count);
-
-  histogram_tester.ExpectBucketCount("Storage.StoragePressure.Bubble",
-                                     /*kOpenedAllSites=*/2, 0);
-  histogram_tester.ExpectBucketCount("Storage.StoragePressure.Bubble",
-                                     /*kIgnored=*/1, 1);
 }

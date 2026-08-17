@@ -11,7 +11,6 @@
 #include <string_view>
 #include <utility>
 
-#include "base/metrics/histogram_macros.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -60,26 +59,6 @@ static const int kTimesIgnoredForSuppression = 3;
 // <= kMaxBookmarks, then we just use those bookmarks. Otherwise we filter all
 // bookmarks on site engagement > 0, sort, and trim to kMaxBookmarks.
 static const int kMaxBookmarks = 5;
-
-// We need this to be a macro, as the histogram macros cache their pointers
-// after the first call, so when we change the uma name we check fail if we're
-// just a method.
-#define RECORD_UMA_FOR_IMPORTANT_REASON(uma_name, uma_count_name,              \
-                                        reason_bitfield)                       \
-  do {                                                                         \
-    int count = 0;                                                             \
-    int32_t bitfield = (reason_bitfield);                                      \
-    for (int i = 0; i < ImportantReason::REASON_BOUNDARY; i++) {               \
-      if ((bitfield >> i) & 1) {                                               \
-        count++;                                                               \
-        UMA_HISTOGRAM_ENUMERATION((uma_name), static_cast<ImportantReason>(i), \
-                                  ImportantReason::REASON_BOUNDARY);           \
-      }                                                                        \
-    }                                                                          \
-    UMA_HISTOGRAM_EXACT_LINEAR(                                                \
-        (uma_count_name), count,                                               \
-        static_cast<int>(ImportantReason::REASON_BOUNDARY));                   \
-  } while (0)
 
 void RecordIgnore(base::DictValue& dict) {
   int times_ignored = dict.FindInt(kNumTimesIgnoredName).value_or(0);
@@ -356,7 +335,6 @@ std::set<std::string> ImportantSitesUtil::GetInstalledRegisterableDomains(
 std::vector<ImportantDomainInfo>
 ImportantSitesUtil::GetImportantRegisterableDomains(Profile* profile,
                                                     size_t max_results) {
-  SCOPED_UMA_HISTOGRAM_TIMER("Storage.ImportantSites.GenerationTime");
   std::map<std::string, ImportantDomainInfo> important_info;
   std::map<GURL, double> engagement_map;
 
@@ -390,11 +368,7 @@ ImportantSitesUtil::GetImportantRegisterableDomains(Profile* profile,
       continue;
     }
 
-    int32_t reason_bitfield = domain_info.reason_bitfield;
     final_list.push_back(std::move(domain_info));
-    RECORD_UMA_FOR_IMPORTANT_REASON(
-        "Storage.ImportantSites.GeneratedReason",
-        "Storage.ImportantSites.GeneratedReasonCount", reason_bitfield);
   }
 
   return final_list;

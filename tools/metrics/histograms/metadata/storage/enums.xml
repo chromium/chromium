@@ -274,14 +274,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/indexeddb/indexeddb.mojom:IDBTransactionMode) -->
 
-<enum name="ImportantSitesReason">
-  <int value="0" label="Engagement"/>
-  <int value="1" label="Durable"/>
-  <int value="2" label="Bookmarks"/>
-  <int value="3" label="Home Screen"/>
-  <int value="4" label="Notifications"/>
-</enum>
-
 <!-- LINT.IfChange(IndexedDbSqliteSpecificEvent) -->
 
 <enum name="IndexedDbSqliteSpecificEvent">
@@ -632,12 +624,6 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Not provided"/>
   <int value="1" label="Not persisted"/>
   <int value="2" label="Persisted"/>
-</enum>
-
-<enum name="StoragePressureBubbleUserAction">
-  <int value="0" label="The bubble was shown."/>
-  <int value="1" label="The user ignored the bubble."/>
-  <int value="2" label="The user clicked on the positive button."/>
 </enum>
 
 <enum name="TopLevelStorageAccessRequestOutcome">

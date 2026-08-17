@@ -32,9 +32,6 @@ class StoragePressureBubbleView : public views::BubbleDialogDelegateView {
 
   const raw_ptr<BrowserWindowInterface> bwi_;
   const url::Origin origin_;
-  // Whether or not the user opened the all sites page from the notification
-  // positive button.
-  bool ignored_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_STORAGE_STORAGE_PRESSURE_BUBBLE_VIEW_H_
