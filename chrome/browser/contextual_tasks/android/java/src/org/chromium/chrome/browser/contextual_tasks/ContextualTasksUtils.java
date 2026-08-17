@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.contextual_tasks;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.FeatureList;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -66,8 +67,21 @@ public final class ContextualTasksUtils {
                 .getReplacementUrl(currentText, selectionStart, selectionEnd, functionalGurl);
     }
 
+    /**
+     * Returns whether the Contextual Tasks UI is enabled. Must be called after native is
+     * initialized.
+     *
+     * @return True if Contextual Tasks UI is enabled.
+     */
+    public static boolean isContextualTasksUiEnabled() {
+        assert FeatureList.isNativeInitialized();
+        return ContextualTasksUtilsJni.get().isContextualTasksUiEnabled();
+    }
+
     @NativeMethods
     public interface Natives {
+        boolean isContextualTasksUiEnabled();
+
         @JniType("GURL")
         GURL getContextualTasksDisplayUrl(
                 @JniType("content::WebContents*") WebContents webContents);

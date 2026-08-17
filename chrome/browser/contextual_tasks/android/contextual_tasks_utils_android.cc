@@ -6,6 +6,7 @@
 
 #include "base/android/jni_string.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/contextual_tasks/public/features.h"
 #include "components/omnibox/browser/location_bar_model_util.h"
 #include "content/public/browser/web_contents.h"
 #include "url/android/gurl_android.h"
@@ -16,6 +17,10 @@
 
 using base::android::ConvertUTF8ToJavaString;
 using base::android::ScopedJavaLocalRef;
+
+static bool JNI_ContextualTasksUtils_IsContextualTasksUiEnabled(JNIEnv* env) {
+  return contextual_tasks::IsContextualTasksUIEnabled();
+}
 
 static GURL JNI_ContextualTasksUtils_GetContextualTasksDisplayUrl(
     JNIEnv* env,

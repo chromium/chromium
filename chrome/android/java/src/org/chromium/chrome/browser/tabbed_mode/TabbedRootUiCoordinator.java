@@ -91,6 +91,7 @@ import org.chromium.chrome.browser.compositor.overlays.strip.TabContextMenuCoord
 import org.chromium.chrome.browser.contextmenu.ChromeContextMenuPopulator;
 import org.chromium.chrome.browser.contextmenu.ChromeContextMenuPopulatorFactory;
 import org.chromium.chrome.browser.contextual_tasks.ContextualTasksBridge;
+import org.chromium.chrome.browser.contextual_tasks.ContextualTasksUtils;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.data_sharing.DataSharingNotificationManager;
 import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
@@ -1445,7 +1446,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         }
         NewTabPageLocationPolicyManager.getInstance().onFinishNativeInitialization(originalProfile);
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_TASKS)) {
+        if (ContextualTasksUtils.isContextualTasksUiEnabled()) {
             if (mChromeAndroidTaskSupplier.get() != null) {
                 mContextualTasksBridge = new ContextualTasksBridge(originalProfile, mWindowAndroid);
                 mChromeAndroidTaskSupplier
