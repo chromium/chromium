@@ -2563,7 +2563,7 @@ public class CronetUrlRequestContextTest {
     }
 
     /**
-     * @returns the thread priority of {@code engine}'s network thread.
+     * @return the thread priority of {@code engine}'s network thread.
      */
     private static class ApiHelper {
         public static boolean doesContextExistForNetwork(CronetEngine engine, Network network)
@@ -2583,7 +2583,7 @@ public class CronetUrlRequestContextTest {
     }
 
     /**
-     * @returns the thread priority of {@code engine}'s network thread.
+     * @return the thread priority of {@code engine}'s network thread.
      */
     private FutureTask<Integer> getThreadPriorityTask() {
         return new FutureTask<>(
