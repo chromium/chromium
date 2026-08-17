@@ -8,6 +8,7 @@
 
 #import "base/memory/raw_ptr.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/popup_menu/overflow_menu/public/features.h"
 #import "ios/chrome/browser/shared/ui/util/color_palette/color_palette_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -160,4 +161,14 @@ NewTabPageColorPalette* DefaultNTPColorPalette() {
       [UIColor colorNamed:@"fake_omnibox_solid_background_color"];
   color_palette.darkColor = [UIColor colorNamed:kBlueColor];
   return color_palette;
+}
+
+UIColor* NTPModuleBackgroundColor(NewTabPageColorPalette* color_palette) {
+  if (color_palette) {
+    return color_palette.secondaryCellColor;
+  }
+
+  return [UIColor colorNamed:IsNewTabPageUICleanupEnabled()
+                                 ? kSurfaceContainerLowColor
+                                 : kBackgroundColor];
 }

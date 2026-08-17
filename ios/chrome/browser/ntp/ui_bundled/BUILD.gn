@@ -35,6 +35,7 @@ source_set("theme") {
     "theme_utils.mm",
   ]
   deps = [
+    ":feature_flags",
     "//base",
     "//components/sync/protocol",
     "//ios/chrome/browser/popup_menu/overflow_menu/public:features",

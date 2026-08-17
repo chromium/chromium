@@ -17,7 +17,6 @@
 #import "ios/chrome/browser/content_suggestions/magic_stack/public/magic_stack_constants.h"
 #import "ios/chrome/browser/content_suggestions/magic_stack/ui/magic_stack_collection_view.h"
 #import "ios/chrome/browser/content_suggestions/public/ntp_home_constants.h"
-#import "ios/chrome/browser/content_suggestions/ui/cells/content_suggestions_cells_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/content_suggestions/ui/content_suggestions_view_controller.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_image_view.h"
@@ -27,6 +26,7 @@
 #import "ios/chrome/browser/ntp/ui_bundled/feed_header_view_controller.h"
 #import "ios/chrome/browser/ntp/ui_bundled/feed_wrapper_view_controller.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette_util.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_content_delegate.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
@@ -1120,9 +1120,7 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
   NewTabPageColorPalette* colorPalette =
       [self.traitCollection objectForNewTabPageTrait];
 
-  _feedContainer.backgroundColor = colorPalette
-                                       ? colorPalette.secondaryCellColor
-                                       : [UIColor colorNamed:kBackgroundColor];
+  _feedContainer.backgroundColor = NTPModuleBackgroundColor(colorPalette);
 }
 
 - (void)setNTPShortcutsHandler:

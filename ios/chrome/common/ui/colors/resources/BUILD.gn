@@ -102,6 +102,7 @@ bundle_data_xcassets("resources") {
     "Assets.xcassets/static_grey_700_color.colorset/Contents.json",
     "Assets.xcassets/static_grey_900_color.colorset/Contents.json",
     "Assets.xcassets/surface_container_color.colorset/Contents.json",
+    "Assets.xcassets/surface_container_low_color.colorset/Contents.json",
     "Assets.xcassets/tab_group_cyan_color.colorset/Contents.json",
     "Assets.xcassets/tab_group_favicons_background_color.colorset/Contents.json",
     "Assets.xcassets/tab_group_green_color.colorset/Contents.json",

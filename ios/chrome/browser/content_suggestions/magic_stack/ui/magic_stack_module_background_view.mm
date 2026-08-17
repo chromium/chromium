@@ -5,11 +5,11 @@
 #import "ios/chrome/browser/content_suggestions/magic_stack/ui/magic_stack_module_background_view.h"
 
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette_util.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_image_background_trait.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_trait.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 @implementation MagicStackModuleBackgroundView {
@@ -85,9 +85,7 @@
 
   NewTabPageColorPalette* colorPalette =
       [self.traitCollection objectForNewTabPageTrait];
-  backgroundColorView.backgroundColor =
-      colorPalette ? colorPalette.secondaryCellColor
-                   : [UIColor colorNamed:kBackgroundColor];
+  backgroundColorView.backgroundColor = NTPModuleBackgroundColor(colorPalette);
 
   [self updateFadedState];
 }
