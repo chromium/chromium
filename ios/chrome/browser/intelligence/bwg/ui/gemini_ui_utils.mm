@@ -6,6 +6,7 @@
 
 #import "base/check.h"
 #import "base/check_op.h"
+#import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/shared/ui/buildflags.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -192,6 +193,25 @@ CAGradientLayer* CreateGeminiBlueGradientLayer(CGSize size,
                 withHorizontalFittingPriority:UILayoutPriorityRequired
                       verticalFittingPriority:UILayoutPriorityFittingSizeLevel]
           .height;
+}
+
++ (UITextView*)createFootnoteViewWithAttributedText:
+    (NSAttributedString*)attributedText {
+  UITextView* footnoteTextView = [[UITextView alloc] init];
+  footnoteTextView.backgroundColor = [UIColor clearColor];
+  footnoteTextView.scrollEnabled = NO;
+  footnoteTextView.editable = NO;
+  footnoteTextView.textDragInteraction.enabled = NO;
+  footnoteTextView.textContainerInset = UIEdgeInsetsZero;
+  footnoteTextView.adjustsFontForContentSizeCategory = YES;
+  footnoteTextView.maximumContentSizeCategory =
+      UIContentSizeCategoryAccessibilityMedium;
+  footnoteTextView.linkTextAttributes =
+      @{NSForegroundColorAttributeName : [UIColor colorNamed:kBlue600Color]};
+  footnoteTextView.attributedText = attributedText;
+  footnoteTextView.accessibilityIdentifier =
+      kGeminiFootNoteTextViewAccessibilityIdentifier;
+  return footnoteTextView;
 }
 
 @end

@@ -41,6 +41,10 @@
 + (CGFloat)contentHeightForView:(UIView*)targetView
              withContainerWidth:(CGFloat)containerWidth;
 
+// Creates a styled footnote UITextView with `attributedText`.
++ (UITextView*)createFootnoteViewWithAttributedText:
+    (NSAttributedString*)attributedText;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_UI_GEMINI_UI_UTILS_H_

@@ -37,7 +37,10 @@
 // Did refuse Live onboarding.
 - (void)didRefuseLiveOnboarding;
 
-// Handles tap on learn about your choices.
+// Handles tap on a consent link action.
+- (void)didTapConsentLinkWithAction:(NSString*)actionString;
+
+// Handles opening a new tab given a URL.
 - (void)openNewTabWithURL:(const GURL&)URL;
 
 @end
