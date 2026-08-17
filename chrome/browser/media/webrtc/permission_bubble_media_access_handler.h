@@ -85,8 +85,23 @@ class PermissionBubbleMediaAccessHandler
   // WebContentsCollection::Observer:
   void WebContentsDestroyed(content::WebContents* web_contents) override;
 
+  struct DismissalRecord {
+    GURL origin;
+    blink::mojom::MediaStreamRequestResult result;
+    base::TimeTicks timestamp;
+    bool has_audio = false;
+    bool has_video = false;
+  };
+
   int64_t next_request_id_ = 0;
   RequestsMaps pending_requests_;
+
+  // Records dismissed prompts to avoid duplicate permission prompts when speech
+  // API and mojo send follow up requests programmatically. Successful requests
+  // are ignored since prompts do not need to be created and shown after a
+  // prompt is accepted.
+  std::map<content::WebContents*, std::vector<DismissalRecord>>
+      recent_dismissals_;
 
   WebContentsCollection web_contents_collection_;
 

@@ -1134,3 +1134,257 @@ IN_PROC_BROWSER_TEST_F(MediaStreamDevicesControllerTest,
   EXPECT_EQ(2, callbacks_run);
   EXPECT_EQ(1, prompt_factory()->TotalRequestCount());
 }
+
+IN_PROC_BROWSER_TEST_F(MediaStreamDevicesControllerTest,
+                       DenyFirstRequestAutoResolvesSubsequentRequestsInQueue) {
+  // Setup.
+  InitWithUrl(embedded_test_server()->GetURL("/simple.html"));
+
+  content::MediaStreamRequest request1 = CreateRequestWithType(
+      example_audio_id(), std::string(),
+      /*request_pan_tilt_zoom_permission=*/false, blink::MEDIA_GENERATE_STREAM);
+
+  content::MediaStreamRequest request2 = CreateRequestWithType(
+      example_audio_id(), std::string(),
+      /*request_pan_tilt_zoom_permission=*/false, blink::MEDIA_GENERATE_STREAM);
+
+  content::MediaStreamRequest request3 = CreateRequestWithType(
+      example_audio_id(), std::string(),
+      /*request_pan_tilt_zoom_permission=*/false, blink::MEDIA_GENERATE_STREAM);
+
+  base::RunLoop run_loop;
+  int callbacks_run = 0;
+
+  auto callback = base::BindRepeating(
+      [](int* callbacks_run, base::RepeatingClosure quit_closure,
+         const blink::mojom::StreamDevicesSet& stream_devices_set,
+         MediaStreamRequestResult result,
+         std::unique_ptr<content::MediaStreamUI> ui) {
+        EXPECT_NE(MediaStreamRequestResult::OK, result);
+        (*callbacks_run)++;
+        if (*callbacks_run == 3) {
+          quit_closure.Run();
+        }
+      },
+      base::Unretained(&callbacks_run), run_loop.QuitClosure());
+
+  prompt_factory()->set_response_type(
+      permissions::PermissionRequestManager::DENY_ALL);
+
+  permission_bubble_media_access_handler_->HandleRequest(
+      GetWebContents(), request1, callback, nullptr);
+  permission_bubble_media_access_handler_->HandleRequest(
+      GetWebContents(), request2, callback, nullptr);
+  permission_bubble_media_access_handler_->HandleRequest(
+      GetWebContents(), request3, callback, nullptr);
+
+  run_loop.Run();
+
+  // Expect 3 are processed all at the same since they are in
+  // the media request queue at the same time and have the same
+  // origin. Thus, only 1 prompt is shown.
+  EXPECT_EQ(3, callbacks_run);
+  EXPECT_EQ(1, prompt_factory()->TotalRequestCount());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    MediaStreamDevicesControllerTest,
+    AcceptFirstRequestAutoResolvesSubsequentRequestsInQueue) {
+  // Setup.
+  InitWithUrl(embedded_test_server()->GetURL("/simple.html"));
+
+  content::MediaStreamRequest request1 = CreateRequestWithType(
+      example_audio_id(), std::string(),
+      /*request_pan_tilt_zoom_permission=*/false, blink::MEDIA_GENERATE_STREAM);
+
+  content::MediaStreamRequest request2 = CreateRequestWithType(
+      example_audio_id(), std::string(),
+      /*request_pan_tilt_zoom_permission=*/false, blink::MEDIA_GENERATE_STREAM);
+
+  content::MediaStreamRequest request3 = CreateRequestWithType(
+      example_audio_id(), std::string(),
+      /*request_pan_tilt_zoom_permission=*/false, blink::MEDIA_GENERATE_STREAM);
+
+  base::RunLoop run_loop;
+  int callbacks_run = 0;
+
+  auto callback = base::BindRepeating(
+      [](int* callbacks_run, base::RepeatingClosure quit_closure,
+         const blink::mojom::StreamDevicesSet& stream_devices_set,
+         MediaStreamRequestResult result,
+         std::unique_ptr<content::MediaStreamUI> ui) {
+        EXPECT_EQ(MediaStreamRequestResult::OK, result);
+        (*callbacks_run)++;
+        if (*callbacks_run == 3) {
+          quit_closure.Run();
+        }
+      },
+      base::Unretained(&callbacks_run), run_loop.QuitClosure());
+
+  prompt_factory()->set_response_type(
+      permissions::PermissionRequestManager::ACCEPT_ALL);
+
+  permission_bubble_media_access_handler_->HandleRequest(
+      GetWebContents(), request1, callback, nullptr);
+  permission_bubble_media_access_handler_->HandleRequest(
+      GetWebContents(), request2, callback, nullptr);
+  permission_bubble_media_access_handler_->HandleRequest(
+      GetWebContents(), request3, callback, nullptr);
+
+  run_loop.Run();
+
+  // Expect 3 are processed all at the same time since they are in
+  // the media request queue at the same time and have the same
+  // origin. Thus, only 1 prompt is shown.
+  EXPECT_EQ(3, callbacks_run);
+  EXPECT_EQ(1, prompt_factory()->TotalRequestCount());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    MediaStreamDevicesControllerTest,
+    AcceptFirstRequestDoesNotAutoResolveMixedRequestInQueue) {
+  InitWithUrl(embedded_test_server()->GetURL("/simple.html"));
+
+  // Create and accept requests.
+  content::MediaStreamRequest request1 = CreateRequestWithType(
+      example_audio_id(), std::string(),
+      /*request_pan_tilt_zoom_permission=*/false, blink::MEDIA_GENERATE_STREAM);
+
+  content::MediaStreamRequest request2 = CreateRequestWithType(
+      example_audio_id(), example_video_id(),
+      /*request_pan_tilt_zoom_permission=*/false, blink::MEDIA_GENERATE_STREAM);
+
+  base::RunLoop run_loop;
+  int callbacks_run = 0;
+
+  auto callback = base::BindRepeating(
+      [](int* callbacks_run, base::RepeatingClosure quit_closure,
+         const blink::mojom::StreamDevicesSet& stream_devices_set,
+         MediaStreamRequestResult result,
+         std::unique_ptr<content::MediaStreamUI> ui) {
+        EXPECT_EQ(MediaStreamRequestResult::OK, result);
+        (*callbacks_run)++;
+        if (*callbacks_run == 2) {
+          quit_closure.Run();
+        }
+      },
+      base::Unretained(&callbacks_run), run_loop.QuitClosure());
+
+  prompt_factory()->set_response_type(
+      permissions::PermissionRequestManager::ACCEPT_ALL);
+
+  permission_bubble_media_access_handler_->HandleRequest(
+      GetWebContents(), request1, callback, nullptr);
+  permission_bubble_media_access_handler_->HandleRequest(
+      GetWebContents(), request2, callback, nullptr);
+
+  run_loop.Run();
+
+  // Since `request1` is Audio-only and `request2` is Audio+Video, strict match
+  // prevents deduplicating `request2` with `request1` when `result` == `OK`.
+  // Both callbacks run, and 2 prompts are shown.
+  EXPECT_EQ(2, callbacks_run);
+  EXPECT_EQ(2, prompt_factory()->TotalRequestCount());
+}
+
+IN_PROC_BROWSER_TEST_F(MediaStreamDevicesControllerTest,
+                       DenyFirstRequestAutoResolvesMixedRequestInQueue) {
+  InitWithUrl(embedded_test_server()->GetURL("/simple.html"));
+
+  // Create and deny tests.
+  content::MediaStreamRequest request1 = CreateRequestWithType(
+      example_audio_id(), std::string(),
+      /*request_pan_tilt_zoom_permission=*/false, blink::MEDIA_GENERATE_STREAM);
+
+  content::MediaStreamRequest request2 = CreateRequestWithType(
+      example_audio_id(), example_video_id(),
+      /*request_pan_tilt_zoom_permission=*/false, blink::MEDIA_GENERATE_STREAM);
+
+  base::RunLoop run_loop;
+  int callbacks_run = 0;
+
+  auto callback = base::BindRepeating(
+      [](int* callbacks_run, base::RepeatingClosure quit_closure,
+         const blink::mojom::StreamDevicesSet& stream_devices_set,
+         MediaStreamRequestResult result,
+         std::unique_ptr<content::MediaStreamUI> ui) {
+        EXPECT_NE(MediaStreamRequestResult::OK, result);
+        (*callbacks_run)++;
+        if (*callbacks_run == 2) {
+          quit_closure.Run();
+        }
+      },
+      base::Unretained(&callbacks_run), run_loop.QuitClosure());
+
+  prompt_factory()->set_response_type(
+      permissions::PermissionRequestManager::DENY_ALL);
+
+  permission_bubble_media_access_handler_->HandleRequest(
+      GetWebContents(), request1, callback, nullptr);
+  permission_bubble_media_access_handler_->HandleRequest(
+      GetWebContents(), request2, callback, nullptr);
+
+  run_loop.Run();
+
+  // On failure (`result != OK`), overlap matching applies so `request2`
+  // (Audio+Video) is deduplicated with `request1` (Audio-only). Both callbacks
+  // fail, and only 1 prompt is shown.
+  EXPECT_EQ(2, callbacks_run);
+  EXPECT_EQ(1, prompt_factory()->TotalRequestCount());
+}
+
+IN_PROC_BROWSER_TEST_F(MediaStreamDevicesControllerTest,
+                       RecentDismissalRateLimitsNonUserGestureFollowUpRequest) {
+  InitWithUrl(embedded_test_server()->GetURL("/simple.html"));
+
+  // Create and dismiss requests.
+  content::MediaStreamRequest request1 = CreateRequestWithType(
+      example_audio_id(), std::string(),
+      /*request_pan_tilt_zoom_permission=*/false, blink::MEDIA_GENERATE_STREAM);
+  request1.user_gesture = true;
+
+  content::MediaStreamRequest request2 = CreateRequestWithType(
+      example_audio_id(), std::string(),
+      /*request_pan_tilt_zoom_permission=*/false, blink::MEDIA_GENERATE_STREAM);
+  request2.user_gesture = false;
+
+  prompt_factory()->set_response_type(
+      permissions::PermissionRequestManager::DISMISS);
+
+  base::RunLoop run_loop1;
+  permission_bubble_media_access_handler_->HandleRequest(
+      GetWebContents(), request1,
+      base::BindOnce(
+          [](base::RepeatingClosure quit_closure,
+             const blink::mojom::StreamDevicesSet& stream_devices_set,
+             MediaStreamRequestResult result,
+             std::unique_ptr<content::MediaStreamUI> ui) {
+            EXPECT_EQ(MediaStreamRequestResult::PERMISSION_DISMISSED, result);
+            quit_closure.Run();
+          },
+          run_loop1.QuitClosure()),
+      nullptr);
+  run_loop1.Run();
+
+  EXPECT_EQ(1, prompt_factory()->TotalRequestCount());
+
+  base::RunLoop run_loop2;
+  permission_bubble_media_access_handler_->HandleRequest(
+      GetWebContents(), request2,
+      base::BindOnce(
+          [](base::RepeatingClosure quit_closure,
+             const blink::mojom::StreamDevicesSet& stream_devices_set,
+             MediaStreamRequestResult result,
+             std::unique_ptr<content::MediaStreamUI> ui) {
+            EXPECT_EQ(MediaStreamRequestResult::PERMISSION_DISMISSED, result);
+            quit_closure.Run();
+          },
+          run_loop2.QuitClosure()),
+      nullptr);
+  run_loop2.Run();
+
+  // Request 2 should be rate-limited by `recent_dismissals_` since
+  // `user_gesture` is false and sent within 1000ms of `request1`'s dismissal.
+  // Total prompt count remains 1.
+  EXPECT_EQ(1, prompt_factory()->TotalRequestCount());
+}
