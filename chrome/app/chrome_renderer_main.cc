@@ -16,11 +16,20 @@
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
 
+#include <timeapi.h>
+
 #include "base/dcheck_is_on.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/debug/handle_hooks_win.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/win/current_module.h"
+#include "base/win/win_util.h"
 #include "chrome/app/startup_timestamps.h"
+#include "chrome/chrome_elf/chrome_elf_main.h"
 #include "chrome/install_static/initialize_from_primary_module.h"
+#include "chrome/install_static/install_details.h"
+#include "content/public/common/content_switches.h"
 #define DLLEXPORT __declspec(dllexport)
 #endif
 
@@ -51,9 +60,36 @@ DLLEXPORT int __cdecl ChromeRendererMain(
       base::TimeTicks() + base::Microseconds(preread_end_ticks)};
   ChromeMainDelegate chrome_main_delegate(timestamps);
   content::ContentMainParams params(&chrome_main_delegate);
+
+  // The process should crash when going through abnormal termination, but we
+  // must be sure to reset this setting when ChromeRendererMain returns
+  // normally.
+  auto crash_on_detach_resetter = base::ScopedClosureRunner(
+      base::BindOnce(&base::win::SetShouldCrashOnProcessDetach,
+                     base::win::ShouldCrashOnProcessDetach()));
+  base::win::SetShouldCrashOnProcessDetach(true);
+  base::win::SetAbortBehaviorForCrashReporting();
   params.instance = instance;
   params.sandbox_info = sandbox_info;
+
+  // Pass chrome_elf's copy of DumpProcessWithoutCrash resolved via load-time
+  // dynamic linking.
+  base::debug::SetDumpWithoutCrashingFunction(&DumpProcessWithoutCrash);
+
+  // Verify that chrome_elf and this module (chrome_renderer.dll) have the same
+  // version.
+  if (install_static::InstallDetails::Get().VersionMismatch()) {
+    base::debug::DumpWithoutCrashing();
+  }
+  base::CommandLine::Init(0, nullptr);
   base::PoissonAllocationSampler::Init();
+
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          ::switches::kRaiseTimerFrequency)) {
+    // Raise the timer interrupt frequency and leave it raised.
+    timeBeginPeriod(1);
+  }
+
   return content::ContentMain(std::move(params));
 }
 #elif BUILDFLAG(IS_POSIX)
