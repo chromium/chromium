@@ -128,6 +128,7 @@
 #include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync_file_system/mock_remote_file_sync_service.h"
 #include "chrome/browser/sync_file_system/remote_file_sync_service.h"
 #include "chrome/browser/sync_file_system/sync_file_system_service.h"
@@ -1472,7 +1473,8 @@ class DriveFsTestVolume : public TestVolume {
 
     EXPECT_FALSE(integration_service_);
     integration_service_ = new drive::DriveIntegrationService(
-        g_browser_process->local_state(), profile, std::string(),
+        g_browser_process->local_state(), profile,
+        IdentityManagerFactory::GetForProfile(profile), std::string(),
         root_path().Append("v1"), CreateDriveFsBootstrapListener());
 
     return integration_service_;

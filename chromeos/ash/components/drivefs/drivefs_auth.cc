@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/drivefs/drivefs_auth.h"
 
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "components/account_id/account_id.h"
 #include "components/signin/public/base/consent_level.h"
@@ -18,10 +19,12 @@ namespace drivefs {
 
 DriveFsAuth::DriveFsAuth(const base::Clock* clock,
                          const base::FilePath& profile_path,
+                         signin::IdentityManager* identity_manager,
                          std::unique_ptr<base::OneShotTimer> timer,
                          Delegate* delegate)
     : clock_(clock),
       profile_path_(profile_path),
+      identity_manager_(CHECK_DEREF(identity_manager)),
       timer_(std::move(timer)),
       delegate_(delegate) {}
 
@@ -51,12 +54,6 @@ void DriveFsAuth::GetAccessToken(bool use_cached,
     return;
   }
 
-  signin::IdentityManager* identity_manager = delegate_->GetIdentityManager();
-  if (!identity_manager) {
-    std::move(callback).Run(mojom::AccessTokenStatus::kAuthError,
-                            mojom::AccessToken::New());
-    return;
-  }
   get_access_token_callback_ = std::move(callback);
   // Timer is cancelled when it is destroyed, so use base::Unretained().
   timer_->Start(
@@ -64,7 +61,7 @@ void DriveFsAuth::GetAccessToken(bool use_cached,
       base::BindOnce(&DriveFsAuth::AuthTimeout, base::Unretained(this)));
   access_token_fetcher_ =
       std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
-          signin::OAuthConsumerId::kDrivefsAuth, identity_manager,
+          signin::OAuthConsumerId::kDrivefsAuth, &identity_manager_.get(),
           base::BindOnce(&DriveFsAuth::GotChromeAccessToken,
                          base::Unretained(this)),
           signin::PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable,

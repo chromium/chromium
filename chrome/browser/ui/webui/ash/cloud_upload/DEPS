@@ -44,6 +44,7 @@ specific_include_rules = {
 
   "drive_upload_handler_browsertest\\.cc": [
     "+chrome/browser/browser_process.h",
+    "+chrome/browser/signin/identity_manager_factory.h",
   ],
 
   "cloud_upload_ui\\.cc": [

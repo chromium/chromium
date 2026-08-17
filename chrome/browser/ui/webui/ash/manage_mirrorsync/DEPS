@@ -23,4 +23,7 @@ specific_include_rules = {
   ".*browsertest\\.cc": [
     "+chrome/browser/browser_process.h",
   ],
+  "manage_mirrorsync_dialog_browsertest\\.cc": [
+    "+chrome/browser/signin/identity_manager_factory.h",
+  ],
 }

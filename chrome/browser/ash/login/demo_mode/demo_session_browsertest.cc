@@ -32,6 +32,7 @@
 #include "chrome/browser/chrome_browser_main.h"
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/test/base/browser_process_platform_part_test_api_chromeos.h"
@@ -657,8 +658,9 @@ class DemoSessionLoginIdleHandlerTest : public DemoSessionLoginTest {
     fake_drivefs_helper_ =
         std::make_unique<drive::FakeDriveFsHelper>(profile, mount_path);
     auto* integration_service = new drive::DriveIntegrationService(
-        g_browser_process->local_state(), profile, std::string(), mount_path,
-        fake_drivefs_helper_->CreateFakeDriveFsListenerFactory());
+        g_browser_process->local_state(), profile,
+        IdentityManagerFactory::GetForProfile(profile), std::string(),
+        mount_path, fake_drivefs_helper_->CreateFakeDriveFsListenerFactory());
     return integration_service;
   }
 

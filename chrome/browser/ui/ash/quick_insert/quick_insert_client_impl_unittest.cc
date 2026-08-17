@@ -28,6 +28,7 @@
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/ash/quick_insert/quick_insert_file_suggester.h"
 #include "chrome/browser/ui/webui/ash/mako/mako_bubble_coordinator.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
@@ -127,8 +128,9 @@ std::unique_ptr<KeyedService> BuildTestDriveIntegrationService(
   fake_drivefs_helper =
       std::make_unique<drive::FakeDriveFsHelper>(profile, mount_path);
   auto service = std::make_unique<drive::DriveIntegrationService>(
-      TestingBrowserProcess::GetGlobal()->local_state(), profile, "drivefs",
-      mount_path, fake_drivefs_helper->CreateFakeDriveFsListenerFactory());
+      TestingBrowserProcess::GetGlobal()->local_state(), profile,
+      IdentityManagerFactory::GetForProfile(profile), "drivefs", mount_path,
+      fake_drivefs_helper->CreateFakeDriveFsListenerFactory());
 
   // Wait until the DriveIntegrationService is initialized.
   while (!service->IsMounted() || !service->GetDriveFsInterface()) {

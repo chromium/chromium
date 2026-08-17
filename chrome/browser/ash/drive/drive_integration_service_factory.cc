@@ -86,7 +86,8 @@ DriveIntegrationServiceFactory::BuildServiceInstanceForBrowserContext(
   Profile* profile = Profile::FromBrowserContext(context);
   if (!factory_for_test_) {
     return std::make_unique<DriveIntegrationService>(
-        g_browser_process->local_state(), profile, std::string(),
+        g_browser_process->local_state(), profile,
+        IdentityManagerFactory::GetForProfile(profile), std::string(),
         base::FilePath());
   } else {
     return base::WrapUnique(factory_for_test_->Run(profile));

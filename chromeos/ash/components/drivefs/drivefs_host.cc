@@ -280,6 +280,7 @@ class DriveFsHost::MountState : public DriveFsSession {
 
 DriveFsHost::DriveFsHost(
     const base::FilePath& profile_path,
+    signin::IdentityManager* identity_manager,
     DriveFsHost::Delegate* delegate,
     DriveFsHost::MountObserver* mount_observer,
     network::NetworkConnectionTracker* network_connection_tracker,
@@ -296,6 +297,7 @@ DriveFsHost::DriveFsHost(
       account_token_delegate_(
           std::make_unique<DriveFsAuth>(clock,
                                         profile_path,
+                                        identity_manager,
                                         std::make_unique<base::OneShotTimer>(),
                                         delegate)) {
   DCHECK(delegate_);

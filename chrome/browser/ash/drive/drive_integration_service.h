@@ -124,6 +124,7 @@ class DriveIntegrationService : public KeyedService,
   DriveIntegrationService(
       PrefService* local_state,
       Profile* profile,
+      signin::IdentityManager* identity_manager,
       const std::string& test_mount_point_name,
       const base::FilePath& test_cache_root,
       DriveFsMojoListenerFactory test_drivefs_mojo_listener_factory = {});

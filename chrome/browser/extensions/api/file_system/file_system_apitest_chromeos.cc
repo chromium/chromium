@@ -26,6 +26,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/file_system/consent_provider_impl.h"
 #include "chrome/browser/extensions/component_loader.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_paths.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
@@ -168,7 +169,8 @@ class FileSystemApiTestForDrive : public PlatformAppBrowserTest {
     SetUpTestFileHierarchy();
 
     integration_service_ = new drive::DriveIntegrationService(
-        g_browser_process->local_state(), profile, "",
+        g_browser_process->local_state(), profile,
+        IdentityManagerFactory::GetForProfile(profile), "",
         test_cache_root_.GetPath(),
         fake_drivefs_helper_->CreateFakeDriveFsListenerFactory());
     return integration_service_;
@@ -273,7 +275,8 @@ class FileSystemApiTestForRequestFileSystem : public PlatformAppBrowserTest {
         profile, drivefs_root_.GetPath().Append("drive-user"));
 
     return new drive::DriveIntegrationService(
-        g_browser_process->local_state(), profile, "", {},
+        g_browser_process->local_state(), profile,
+        IdentityManagerFactory::GetForProfile(profile), "", {},
         fake_drivefs_helper_->CreateFakeDriveFsListenerFactory());
   }
 

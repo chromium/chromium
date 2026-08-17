@@ -34,6 +34,10 @@ namespace network {
 class NetworkConnectionTracker;
 }  // namespace network
 
+namespace signin {
+class IdentityManager;
+}  // namespace signin
+
 namespace drivefs {
 namespace mojom {
 
@@ -114,7 +118,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsHost {
         mojom::MirrorSyncErrorListPtr error_list) = 0;
   };
 
+  // `identity_manager` must not be nullptr and must outlive this.
   DriveFsHost(const base::FilePath& profile_path,
+              signin::IdentityManager* identity_manager,
               Delegate* delegate,
               MountObserver* mount_observer,
               network::NetworkConnectionTracker* network_connection_tracker,

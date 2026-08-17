@@ -30,6 +30,7 @@
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/ash/account_manager/scoped_fake_account_manager_dialog.h"
 #include "chrome/browser/ui/ash/projector/projector_app_client_impl.h"
 #include "chrome/browser/ui/ash/projector/projector_utils.h"
@@ -162,6 +163,7 @@ class ProjectorClientTest : public InProcessBrowserTest {
     // The integration service is owned by `KeyedServiceFactory`.
     auto* integration_service = new drive::DriveIntegrationService(
         g_browser_process->local_state(), profile,
+        IdentityManagerFactory::GetForProfile(profile),
         /*test_mount_point_name=*/std::string(), mount_path,
         fake_drivefs_helpers_[profile]->CreateFakeDriveFsListenerFactory());
     return integration_service;

@@ -10,6 +10,7 @@
 #include "chrome/browser/ash/drive/drivefs_test_support.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 
 namespace drive {
 
@@ -33,7 +34,8 @@ DriveIntegrationServiceBrowserTestBase::CreateDriveIntegrationService(
   fake_drivefs_helpers_[profile] =
       std::make_unique<drive::FakeDriveFsHelper>(profile, mount_path);
   auto* integration_service = new drive::DriveIntegrationService(
-      g_browser_process->local_state(), profile, std::string(), mount_path,
+      g_browser_process->local_state(), profile,
+      IdentityManagerFactory::GetForProfile(profile), std::string(), mount_path,
       fake_drivefs_helpers_[profile]->CreateFakeDriveFsListenerFactory());
   return integration_service;
 }

@@ -54,4 +54,8 @@ specific_include_rules = {
   ".*unittest\\.cc": [
     "+chrome/browser/search_engines",
   ],
+
+  "quick_insert_client_impl_unittest\\.cc": [
+    "+chrome/browser/signin/identity_manager_factory.h",
+  ],
 }

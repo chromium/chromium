@@ -62,4 +62,7 @@ specific_include_rules = {
   "demo_setup_browsertest\\.cc": [
     "+chrome/grit",
   ],
+  "demo_session_browsertest\\.cc": [
+    "+chrome/browser/signin/identity_manager_factory.h",
+  ]
 }

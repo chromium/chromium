@@ -70,6 +70,7 @@
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -1230,7 +1231,8 @@ class DriveTest : public TestAccountBrowserTest {
         std::make_unique<test::FakeSimpleDriveFsHelper>(profile,
                                                         drive_mount_point_);
     return new DriveIntegrationService(
-        g_browser_process->local_state(), profile, "", drive_mount_point_,
+        g_browser_process->local_state(), profile,
+        IdentityManagerFactory::GetForProfile(profile), "", drive_mount_point_,
         fake_drivefs_helpers_[profile]->CreateFakeDriveFsListenerFactory());
   }
 
