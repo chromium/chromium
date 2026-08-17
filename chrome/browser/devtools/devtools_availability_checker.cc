@@ -161,22 +161,6 @@ bool IsInspectionAllowed(Profile* profile, content::WebContents* web_contents) {
     }
   }
 
-  // Exhaustively check every frame to prevent subframe bypasses
-  // and identify restricted extensions even on error pages.
-  bool is_blocked = false;
-  web_contents->ForEachRenderFrameHostWithAction(
-      [&](content::RenderFrameHost* frame) {
-        if (!IsInspectionAllowed(profile, frame->GetLastCommittedURL())) {
-          is_blocked = true;
-          return content::RenderFrameHost::FrameIterationAction::kStop;
-        }
-        return content::RenderFrameHost::FrameIterationAction::kContinue;
-      });
-
-  if (is_blocked) {
-    return false;
-  }
-
   // Fall back to the general enum policy for the tab context.
   using Availability = policy::DeveloperToolsAvailability;
   Availability availability = GetDevToolsAvailability(profile);
@@ -184,24 +168,7 @@ bool IsInspectionAllowed(Profile* profile, content::WebContents* web_contents) {
     case Availability::kDisallowed:
       return false;
     case Availability::kAllowed:
-      return true;
     case Availability::kDisallowedForForceInstalledExtensions:
-#if !BUILDFLAG(IS_ANDROID)
-      if (web_app::AreWebAppsEnabled(profile)) {
-        const webapps::AppId* app_id =
-            web_app::WebAppTabHelper::GetAppId(web_contents);
-        auto* web_app_provider =
-            web_app::WebAppProvider::GetForWebContents(web_contents);
-        if (app_id && web_app_provider) {
-          const web_app::WebApp* web_app =
-              web_app_provider->registrar_unsafe().GetAppById(*app_id);
-          if (web_app && (web_app->IsKioskInstalledApp() ||
-                          web_app->IsIwaPolicyInstalledApp())) {
-            return false;
-          }
-        }
-      }
-#endif
       return true;
     default:
       NOTREACHED() << "Unknown developer tools policy";
