@@ -1372,7 +1372,9 @@ public class AwContents implements SmartClipProvider {
         mPrimaryInternalAccessAdapter = internalAccessAdapter;
         setInternalAccessAdapter(internalAccessAdapter);
         mPrimaryContainerView = newContainerView;
+        mDisplayCutoutController.unregisterContainerView(mContainerView);
         setContainerView(newContainerView);
+        mDisplayCutoutController.registerContainerView(newContainerView);
     }
 
     private void setContainerView(ViewGroup newContainerView) {

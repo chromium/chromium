@@ -154,6 +154,17 @@ public class AwDisplayCutoutController {
     }
 
     /**
+     * Unregister a container view to listen to window insets.
+     *
+     * @param containerView A container View, such as fullscreen view.
+     */
+    public void unregisterContainerView(View containerView) {
+        if (DEBUG) Log.i(TAG, "unregisterContainerView");
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) return;
+        containerView.setOnApplyWindowInsetsListener(null);
+    }
+
+    /**
      * Set the current container view.
      *
      * @param containerView The current container view.
