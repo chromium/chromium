@@ -23,6 +23,7 @@
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "content/public/test/browser_test.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/views/layout/animating_layout_manager_test_util.h"
@@ -68,10 +69,9 @@ class StubSendTabToSelfBubbleController : public SendTabToSelfBubbleController {
   }
 
   AccountInfo GetSharingAccountInfo() override {
-    AccountInfo info;
-    info.email = "user@host.com";
-    info.account_image = gfx::Image(gfx::test::CreateImageSkia(96, 96));
-    return info;
+    return AccountInfo::Builder(GaiaId("test_gaia"), "user@host.com")
+        .SetAvatarImage(gfx::Image(gfx::test::CreateImageSkia(96, 96)))
+        .Build();
   }
 
  private:

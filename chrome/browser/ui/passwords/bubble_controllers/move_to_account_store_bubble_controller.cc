@@ -91,11 +91,9 @@ gfx::Image MoveToAccountStoreBubbleController::GetProfileIcon(int size) {
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
   DCHECK(!primary_account_info.IsEmpty());
 
-  gfx::Image account_icon = primary_account_info.account_image;
-  if (account_icon.IsEmpty()) {
-    account_icon = ui::ResourceBundle::GetSharedInstance().GetImageNamed(
-        profiles::GetPlaceholderAvatarIconResourceID());
-  }
+  gfx::Image account_icon = primary_account_info.GetAvatarImage().value_or(
+      ui::ResourceBundle::GetSharedInstance().GetImageNamed(
+          profiles::GetPlaceholderAvatarIconResourceID()));
   return profiles::GetSizedAvatarIcon(account_icon,
                                       /*width=*/size, /*height=*/size,
                                       profiles::SHAPE_CIRCLE);

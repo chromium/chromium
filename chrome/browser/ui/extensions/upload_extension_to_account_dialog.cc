@@ -54,11 +54,11 @@ void ShowUploadExtensionToAccountDialog(Profile* profile,
           .AddParagraph(ui::DialogModelLabel(l10n_util::GetStringFUTF16(
               IDS_EXTENSIONS_MOVE_TO_ACCOUNT_DIALOG_SUBTITLE,
               ui_util::GetFixupExtensionNameForUIDisplay(extension.name()))))
-          .AddMenuItem(
-              ui::ImageModel::FromImage(profiles::GetSizedAvatarIcon(
-                  account_info.account_image, 16, 16, profiles::SHAPE_CIRCLE)),
-              base::UTF8ToUTF16(account_info.email), base::DoNothing(),
-              ui::DialogModelMenuItem::Params().SetIsEnabled(false))
+          .AddMenuItem(ui::ImageModel::FromImage(profiles::GetSizedAvatarIcon(
+                           account_info.GetAvatarImage().value_or(gfx::Image()),
+                           16, 16, profiles::SHAPE_CIRCLE)),
+                       base::UTF8ToUTF16(account_info.email), base::DoNothing(),
+                       ui::DialogModelMenuItem::Params().SetIsEnabled(false))
           .AddOkButton(
               std::move(accept_callback),
               ui::DialogModel::Button::Params().SetLabel(

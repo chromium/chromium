@@ -21,6 +21,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -55,10 +56,9 @@ class SendTabToSelfBubbleControllerMock : public SendTabToSelfBubbleController {
   }
 
   AccountInfo GetSharingAccountInfo() override {
-    AccountInfo info;
-    info.email = "user@host.com";
-    info.account_image = gfx::Image(gfx::test::CreateImageSkia(96, 96));
-    return info;
+    return AccountInfo::Builder(GaiaId("test_gaia"), "user@host.com")
+        .SetAvatarImage(gfx::Image(gfx::test::CreateImageSkia(96, 96)))
+        .Build();
   }
 
   MOCK_METHOD(void,

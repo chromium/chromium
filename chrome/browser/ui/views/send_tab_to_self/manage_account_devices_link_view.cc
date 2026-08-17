@@ -60,7 +60,8 @@ std::unique_ptr<views::View> BuildManageAccountDevicesLinkView(
 
   AccountInfo account = controller->GetSharingAccountInfo();
   DCHECK(!account.IsEmpty());
-  gfx::ImageSkia square_avatar = account.account_image.AsImageSkia();
+  gfx::ImageSkia square_avatar =
+      account.GetAvatarImage().value_or(gfx::Image()).AsImageSkia();
   // The color used in `circle_mask` is irrelevant as long as it's opaque; only
   // the alpha channel matters.
   gfx::ImageSkia circle_mask =

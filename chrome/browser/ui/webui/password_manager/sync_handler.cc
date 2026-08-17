@@ -4,12 +4,15 @@
 
 #include "chrome/browser/ui/webui/password_manager/sync_handler.h"
 
+#include <optional>
+
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync/sync_ui_util.h"
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_utils.h"
@@ -157,14 +160,15 @@ void SyncHandler::HandleGetSyncInfo(const base::ListValue& args) {
 base::DictValue SyncHandler::GetAccountInfo() const {
   signin::IdentityManager* identity_manager(
       IdentityManagerFactory::GetInstance()->GetForProfile(profile_));
-  auto stored_account = identity_manager->FindExtendedAccountInfo(
+  AccountInfo stored_account = identity_manager->FindExtendedAccountInfo(
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
 
   base::DictValue dict;
   dict.Set("email", stored_account.email);
-  const auto& avatar_image = stored_account.account_image;
-  if (!avatar_image.IsEmpty()) {
-    dict.Set("avatarImage", webui::GetBitmapDataUrl(avatar_image.AsBitmap()));
+  const std::optional<gfx::Image> avatar_image =
+      stored_account.GetAvatarImage();
+  if (avatar_image.has_value()) {
+    dict.Set("avatarImage", webui::GetBitmapDataUrl(avatar_image->AsBitmap()));
   }
   return dict;
 }

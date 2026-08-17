@@ -540,8 +540,9 @@ ProfileSubMenuModel::ProfileSubMenuModel(
                         ThemeServiceFactory::GetForProfile(profile),
                         /*background_color_id=*/ui::kColorMenuBackground,
                         *color_provider))
-              : std::make_pair(account_info.account_image,
-                               AvatarIconType::kNonPlaceholder);
+              : std::make_pair(
+                    account_info.GetAvatarImage().value_or(gfx::Image()),
+                    AvatarIconType::kNonPlaceholder);
       // The avatar image can be empty if the account image hasn't been
       // fetched yet, if there is no image, or in tests.
       // Keep the default vector icon for placeholder avatars so that

@@ -219,7 +219,7 @@ void ManagedUserProfileNoticeHandler::OnBrowserDidClose(
 
 void ManagedUserProfileNoticeHandler::OnExtendedAccountInfoUpdated(
     const AccountInfo& info) {
-  if (info.account_id == account_id_ && !info.account_image.IsEmpty()) {
+  if (info.account_id == account_id_ && info.GetAvatarImage().has_value()) {
     UpdateProfileInfo(profile_path_);
   }
 }

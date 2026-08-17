@@ -19,6 +19,7 @@
 #include "components/grit/components_scaled_resources.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/strings/grit/components_strings.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -390,9 +391,10 @@ TEST_P(AutofillSaveCardUiInfoTestForUploadSave, VerifyCommonAttributes) {
   card.SetNickname(u"My Card");
   LegalMessageLines legal_message_lines(
       {TestLegalMessageLine("example message")});
-  AccountInfo account_info;
-  account_info.account_image = gfx::test::CreateImage(11, 17);
-  account_info.email = "example email";
+  AccountInfo account_info =
+      AccountInfo::Builder(GaiaId("test_id"), "example email")
+          .SetAvatarImage(gfx::test::CreateImage(11, 17))
+          .Build();
 
   auto ui_info = AutofillSaveCardUiInfo::CreateForUploadSave(
       /*options=*/{}, card, legal_message_lines, account_info,

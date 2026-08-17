@@ -285,6 +285,15 @@ TEST_F(AccountInfoTest, GettersPopulatedAccountInfo) {
   EXPECT_EQ(info.GetLocale(), "fr");
 }
 
+TEST_F(AccountInfoTest, SetAvatarImage) {
+  AccountInfo info = AccountInfo::Builder(GaiaId("test_id"), "test@example.com")
+                         .SetAvatarImage(gfx::test::CreateImage(/*size=*/24))
+                         .Build();
+  EXPECT_NE(info.GetAvatarImage(), std::nullopt);
+  EXPECT_EQ(info.GetAvatarImage()->Width(), 24);
+  EXPECT_EQ(info.GetAvatarImage()->Height(), 24);
+}
+
 TEST_F(AccountInfoTest, DeprecatedSentinelValues) {
   AccountInfo info = AccountInfo::Builder(GaiaId("test_id"), "test@example.com")
                          .SetHostedDomain(kNoHostedDomainFound)

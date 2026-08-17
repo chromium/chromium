@@ -215,14 +215,11 @@ void LabeledTextfieldWithErrorMessage::MaybeAnnounceError() {
 }
 
 ui::ImageModel GetProfileAvatar(const AccountInfo& account_info) {
-  // Get the user avatar icon.
-  gfx::Image account_avatar = account_info.account_image;
-
-  // Check if the avatar is empty, and if so, replace it with a placeholder.
-  if (account_avatar.IsEmpty()) {
-    account_avatar = ui::ResourceBundle::GetSharedInstance().GetImageNamed(
-        profiles::GetPlaceholderAvatarIconResourceID());
-  }
+  // Get the user avatar icon. If the avatar is empty, replace it with a
+  // placeholder.
+  gfx::Image account_avatar = account_info.GetAvatarImage().value_or(
+      ui::ResourceBundle::GetSharedInstance().GetImageNamed(
+          profiles::GetPlaceholderAvatarIconResourceID()));
 
   int avatar_size = views::TypographyProvider::Get().GetLineHeight(
       views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_SECONDARY);

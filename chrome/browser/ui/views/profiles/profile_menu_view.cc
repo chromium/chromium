@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/profiles/profile_menu_view.h"
 
 #include <algorithm>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -814,7 +815,9 @@ ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
           base::UTF8ToUTF16(account_info_for_promos.GetGivenName().value_or(
               account_info_for_promos.GetEmail())));
       gfx::Image account_image;
-      if (!account_info_for_promos.GetAvatarImage().has_value()) {
+      if (std::optional<gfx::Image> maybe_avatar_image =
+              account_info_for_promos.GetAvatarImage();
+          !maybe_avatar_image.has_value()) {
         // No account image, use a placeholder.
         ProfileAttributesEntry* profile_attributes =
             g_browser_process->profile_manager()
@@ -829,7 +832,7 @@ ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
                     ->GetColorProvider()
                     ->GetColor(ui::kColorButtonBackgroundProminent)));
       } else {
-        account_image = account_info_for_promos.account_image;
+        account_image = *maybe_avatar_image;
       }
       params.button_image =
           ui::ImageModel::FromImage(profiles::GetSizedAvatarIcon(

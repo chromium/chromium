@@ -174,10 +174,10 @@ AccountInfo::GetLastDownloadedAvatarUrlWithSize() const {
 }
 
 std::optional<gfx::Image> AccountInfo::GetAvatarImage() const {
-  if (account_image.IsEmpty()) {
+  if (account_image_.IsEmpty()) {
     return std::nullopt;
   }
-  return account_image;
+  return account_image_;
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -362,7 +362,7 @@ AccountInfo::Builder& AccountInfo::Builder::SetLastDownloadedAvatarUrlWithSize(
 
 AccountInfo::Builder& AccountInfo::Builder::SetAvatarImage(
     const gfx::Image& avatar_image) {
-  account_info_.account_image = avatar_image;
+  account_info_.account_image_ = avatar_image;
   return *this;
 }
 
@@ -465,11 +465,12 @@ base::android::ScopedJavaLocalRef<jobject> ConvertToJavaAccountInfo(
                 env, maybe_hosted_domain->empty() ? kNoHostedDomainFound
                                                   : *maybe_hosted_domain)
           : nullptr;
+  std::optional<gfx::Image> maybe_account_image = account_info.GetAvatarImage();
   base::android::ScopedJavaLocalRef<jobject> account_image =
-      account_info.account_image.IsEmpty()
-          ? nullptr
-          : gfx::ConvertToJavaBitmap(
-                *account_info.account_image.AsImageSkia().bitmap());
+      maybe_account_image.has_value()
+          ? gfx::ConvertToJavaBitmap(
+                *maybe_account_image->AsImageSkia().bitmap())
+          : nullptr;
   return signin::Java_AccountInfo_Constructor(
       env, account_info.GetAccountId(), std::string(account_info.GetEmail()),
       account_info.GetGaiaId(),

@@ -72,13 +72,14 @@ SaveAddressBubbleController::GetHeaderImages() const {
       // so these numbers are exclusively for ..._AVATAR50_X135_Y54.
       static constexpr gfx::Point kAvatarPosition{135, 54};
       static constexpr size_t kAvatarSize{50};
-      return HeaderImages{
-          .light = profiles::EmbedAvatarOntoImage(
-              IDR_MIGRATE_ADDRESS_AVATAR50_X135_Y54, account->account_image,
-              kAvatarPosition, kAvatarSize),
-          .dark = profiles::EmbedAvatarOntoImage(
-              IDR_MIGRATE_ADDRESS_AVATAR50_X135_Y54_DARK,
-              account->account_image, kAvatarPosition, kAvatarSize)};
+      gfx::Image avatar_image =
+          account->GetAvatarImage().value_or(gfx::Image());
+      return HeaderImages{.light = profiles::EmbedAvatarOntoImage(
+                              IDR_MIGRATE_ADDRESS_AVATAR50_X135_Y54,
+                              avatar_image, kAvatarPosition, kAvatarSize),
+                          .dark = profiles::EmbedAvatarOntoImage(
+                              IDR_MIGRATE_ADDRESS_AVATAR50_X135_Y54_DARK,
+                              avatar_image, kAvatarPosition, kAvatarSize)};
     }
   }
 

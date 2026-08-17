@@ -1517,9 +1517,11 @@ void BocaAppHandler::SetAccountImage(user_manager::User* user) {
 
   AccountInfo maybe_account_info =
       identity_manager->FindExtendedAccountInfoByGaiaId(account_id.GetGaiaId());
-  if (!maybe_account_info.IsEmpty()) {
+  if (std::optional<gfx::Image> avatar_image =
+          maybe_account_info.GetAvatarImage();
+      avatar_image.has_value()) {
     user_identity_.set_photo_url(
-        webui::GetBitmapDataUrl(maybe_account_info.account_image.AsBitmap()));
+        webui::GetBitmapDataUrl(avatar_image->AsBitmap()));
   }
 }
 

@@ -139,7 +139,8 @@ gfx::Image GetGaiaAccountImage(Profile* profile) {
         ->FindExtendedAccountInfoByAccountId(
             identity_manager->GetPrimaryAccountId(
                 signin::ConsentLevel::kSignin))
-        .account_image;
+        .GetAvatarImage()
+        .value_or(gfx::Image());
   }
   return gfx::Image();
 }

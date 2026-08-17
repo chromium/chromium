@@ -385,7 +385,7 @@ TEST_F(DevToolsUIBindingsSyncInfoTest, ImageAlwaysProvided) {
       "sync@devtools.dev", signin::ConsentLevel::kSignin);
   sync_service_->SetSignedIn(signin::ConsentLevel::kSignin, account_info);
 
-  EXPECT_TRUE(account_info.account_image.IsEmpty());
+  EXPECT_FALSE(account_info.GetAvatarImage().has_value());
 
   base::DictValue info =
       DevToolsUIBindings::GetSyncInformationForProfile(&profile_);
