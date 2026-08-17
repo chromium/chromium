@@ -7,6 +7,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/test/test_mock_time_task_runner.h"
@@ -98,7 +99,9 @@ class WebAuthFlowBrowserTest : public PlatformBrowserTest {
 
   void TearDownOnMainThread() override {
     // Ensures any timer tasks finish.
-    timeout_task_runner_->RunUntilIdle();
+    if (timeout_task_runner_) {
+      timeout_task_runner_->FastForwardUntilNoTasksRemain();
+    }
     if (web_auth_flow_) {
       DeleteWebAuthFlow();
     }
@@ -841,6 +844,15 @@ IN_PROC_BROWSER_TEST_F(WebAuthFlowBrowserTest,
   EXPECT_TRUE(web_auth_flow());
   EXPECT_FALSE(web_auth_flow()->web_contents());
   EXPECT_EQ(GetAllBrowserWindowInterfaces().size(), initial_browser_count);
+}
+
+IN_PROC_BROWSER_TEST_F(WebAuthFlowBrowserTest, StartAfterShutdownStarted) {
+  GetProfile()->NotifyWillBeDestroyed();
+  ASSERT_TRUE(GetProfile()->ShutdownStarted());
+
+  const GURL auth_url = embedded_test_server()->GetURL("/title1.html");
+  EXPECT_DCHECK_DEATH(
+      StartWebAuthFlow(auth_url, WebAuthFlow::Mode::INTERACTIVE));
 }
 
 #if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)

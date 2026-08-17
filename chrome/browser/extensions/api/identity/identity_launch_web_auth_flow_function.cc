@@ -104,6 +104,13 @@ IdentityLaunchWebAuthFlowFunction::~IdentityLaunchWebAuthFlowFunction() {
 
 ExtensionFunction::ResponseAction IdentityLaunchWebAuthFlowFunction::Run() {
   Profile* profile = Profile::FromBrowserContext(browser_context());
+  if (!profile || profile->ShutdownStarted()) {
+    Error error = Error::kBrowserContextShutDown;
+
+    RecordHistogramFunctionResult(error);
+    return RespondNow(ExtensionFunction::Error(ErrorToString(error)));
+  }
+
   if (profile->IsOffTheRecord()) {
     Error error = Error::kOffTheRecord;
 
@@ -182,6 +189,15 @@ void IdentityLaunchWebAuthFlowFunction::StartAuthFlow(
     WebAuthFlow::AbortOnLoad abort_on_load_for_non_interactive,
     std::optional<base::TimeDelta> timeout_for_non_interactive,
     std::optional<gfx::Rect> popup_bounds) {
+  if (did_respond()) {
+    return;
+  }
+
+  if (!profile || profile->ShutdownStarted()) {
+    OnBrowserContextShutdown();
+    return;
+  }
+
   auth_flow_ = std::make_unique<WebAuthFlow>(
       this, profile, auth_url, mode, user_gesture(),
       abort_on_load_for_non_interactive, timeout_for_non_interactive,

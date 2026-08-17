@@ -121,6 +121,7 @@ void WebAuthFlow::SetClockForTesting(
 void WebAuthFlow::Start() {
   DCHECK(profile_);
   DCHECK(!profile_->IsOffTheRecord());
+  DCHECK(!profile_->ShutdownStarted());
 
   content::WebContents::CreateParams params(profile_);
   web_contents_ = content::WebContents::Create(params);
