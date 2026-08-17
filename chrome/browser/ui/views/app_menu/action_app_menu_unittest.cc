@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "chrome/browser/ui/views/app_menu/app_menu_action_helper.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -91,7 +92,8 @@ class ActionAppMenuTest : public ChromeViewsTestBase {
             .Build());
     actions::ActionManager::Get().AddAction(std::move(root));
 
-    auto app_menu_root = actions::ActionItem::Builder().Build();
+    auto app_menu_root =
+        actions::ActionItem::Builder().SetActionId(kActionAppMenuRoot).Build();
     root_action_ =
         actions::ActionManager::Get().AddAction(std::move(app_menu_root));
     widget_ = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
@@ -99,7 +101,6 @@ class ActionAppMenuTest : public ChromeViewsTestBase {
         views::Button::PressedCallback(), u"Menu"));
     browser_actions_ =
         std::make_unique<BrowserActions>(&mock_window_interface_);
-    browser_actions_->set_app_menu_root_for_testing(root_action_);
   }
 
   void TearDown() override {
@@ -178,7 +179,7 @@ TEST_F(ActionAppMenuTest, ProxySyncsWithDelegateAndInvokes) {
       actions::ActionManager::Get().FindAction(kActionShowPasswordManager);
   ASSERT_NE(delegate, nullptr);
 
-  actions::ActionItem* root = browser_actions_->app_menu_root();
+  actions::ActionItem* root = app_menu::GetAppMenuRoot(&mock_window_interface_);
   actions::ActionItem* passwords_proxy = root->GetChildren()
                                              .children()[0]
                                              ->GetChildren()

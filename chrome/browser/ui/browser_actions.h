@@ -36,7 +36,6 @@ class BrowserActions {
   static std::u16string GetCleanTitleAndTooltipText(std::u16string string);
 
   actions::ActionItem* root_action_item() const { return root_action_item_; }
-  actions::ActionItem* app_menu_root() const { return app_menu_root_; }
 
   // Initialization is separate from construction to allow more precise timing.
   void InitializeBrowserActions();
@@ -47,10 +46,6 @@ class BrowserActions {
 
   void set_root_action_item_for_testing(actions::ActionItem* item) {
     root_action_item_ = item;
-  }
-
-  void set_app_menu_root_for_testing(actions::ActionItem* item) {
-    app_menu_root_ = item;
   }
 
  private:
@@ -67,7 +62,6 @@ class BrowserActions {
   void AddListeners();
 
   raw_ptr<actions::ActionItem> root_action_item_ = nullptr;
-  raw_ptr<actions::ActionItem> app_menu_root_ = nullptr;
   std::unique_ptr<BrowserActionPrefsListener> browser_action_prefs_listener_;
   const raw_ref<BrowserWindowInterface> bwi_;
   const raw_ref<Profile> profile_;

@@ -7,10 +7,12 @@
 #include <memory>
 
 #include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/actions/action_id.h"
+#include "ui/actions/actions.h"
 #include "ui/base/l10n/l10n_util.h"
 
 DEFINE_UI_CLASS_PROPERTY_TYPE(app_menu::DisplayType)
@@ -67,6 +69,13 @@ std::unique_ptr<AppMenuSectionActionItem> CreateAppMenuSectionActionItem(
   }
 
   return section_item;
+}
+
+actions::ActionItem* GetAppMenuRoot(
+    BrowserWindowInterface* browser_window_interface) {
+  return actions::ActionManager::Get().FindAction(
+      kActionAppMenuRoot,
+      BrowserActions::From(browser_window_interface)->root_action_item());
 }
 
 }  // namespace app_menu

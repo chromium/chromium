@@ -547,6 +547,7 @@
   E(kActionWalletReminderNotice) \
 
 #define SUBMENU_ACTION_IDS                                                     \
+  E(kActionAppMenuRoot)                                                        \
   E(kActionMenuBookmarksSubmenu, kBookmarksMenuId)                             \
   E(kActionMenuPasswordsAndAutofillSubmenu, kPasswordsAndAutofillMenuId)       \
   E(kActionMenuReadingListSubmenu, kReadingListMenuId)                         \

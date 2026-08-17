@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_section_action_item.h"
 #include "ui/actions/actions.h"
 #include "ui/base/class_property.h"
@@ -35,6 +36,9 @@ std::unique_ptr<AppMenuSectionActionItem> CreateAppMenuSectionActionItem(
     std::u16string text,
     DisplayType display_type,
     std::optional<ui::ColorId> container_color);
+
+actions::ActionItem* GetAppMenuRoot(
+    BrowserWindowInterface* browser_window_interface);
 
 }  // namespace app_menu
 

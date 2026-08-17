@@ -31,15 +31,12 @@ ActionAppMenu::ActionAppMenu(BrowserWindowInterface* browser_window_interface,
                              base::RepeatingClosure on_menu_closed_callback)
     : browser_window_interface_(browser_window_interface),
       on_menu_closed_callback_(std::move(on_menu_closed_callback)) {
-  CreateMenuHierarchy(
-      BrowserActions::From(browser_window_interface)->app_menu_root());
+  CreateMenuHierarchy(app_menu::GetAppMenuRoot(browser_window_interface));
 }
 
 ActionAppMenu::~ActionAppMenu() {
   command_to_action_map_.clear();
-  BrowserActions::From(browser_window_interface_)
-      ->app_menu_root()
-      ->ResetActionList();
+  app_menu::GetAppMenuRoot(browser_window_interface_)->ResetActionList();
 }
 
 void ActionAppMenu::CreateMenuHierarchy(actions::ActionItem* root) {
@@ -92,8 +89,7 @@ void ActionAppMenu::RunMenu(views::MenuButtonController* host) {
   root_ = root.get();
 
   const auto* provider = ChromeLayoutProvider::Get();
-  PopulateMenu(
-      root_, BrowserActions::From(browser_window_interface_)->app_menu_root());
+  PopulateMenu(root_, app_menu::GetAppMenuRoot(browser_window_interface_));
 
   root_->set_children_use_full_width(true);
   views::SubmenuView* submenu = root_->CreateSubmenu();
@@ -137,9 +133,7 @@ void ActionAppMenu::OnMenuClosed(views::MenuItemView* menu) {
   if (on_menu_closed_callback_) {
     on_menu_closed_callback_.Run();
   }
-  BrowserActions::From(browser_window_interface_)
-      ->app_menu_root()
-      ->ResetActionList();
+  app_menu::GetAppMenuRoot(browser_window_interface_)->ResetActionList();
 }
 
 const gfx::FontList* ActionAppMenu::GetLabelFontList(int id) const {
