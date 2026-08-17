@@ -110,6 +110,12 @@ class PlatformAuthNavigationThrottleTest : public testing::Test {
     SetupOriginFilteringExpectations();
   }
 
+  void TearDown() override {
+    if (manager().IsEnabled()) {
+      EnableManager(manager(), false);
+    }
+  }
+
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   content::RenderViewHostTestEnabler rvh_test_enabler_;
