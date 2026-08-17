@@ -46,4 +46,11 @@ public interface AuxiliarySearchHooks {
     default @Nullable String getSupportedPackageName() {
         return null;
     }
+
+    /** Returns whether browsing data donation is supported on the device. */
+    default boolean isBrowsingDataDonationSupported() {
+        // TODO(crbug.com/512359034): Set this to default false once the internal parts are
+        // implemented.
+        return true;
+    }
 }

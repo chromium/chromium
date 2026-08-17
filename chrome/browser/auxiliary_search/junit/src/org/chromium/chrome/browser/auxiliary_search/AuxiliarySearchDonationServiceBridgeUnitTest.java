@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.auxiliary_search;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -82,6 +83,24 @@ public class AuxiliarySearchDonationServiceBridgeUnitTest {
                 .thenReturn(TEST_INTELLIGENCE_PACKAGES);
         ServiceLoaderUtil.setInstanceForTesting(AuxiliarySearchHooks.class, mMockHooks);
         AppSearchStorageFactory.setInstanceForTesting(mMockFactory);
+    }
+
+    @Test
+    public void testIsBrowsingDataDonationSupported_hooksNull() {
+        ServiceLoaderUtil.setInstanceForTesting(AuxiliarySearchHooks.class, null);
+        assertFalse(AuxiliarySearchDonationServiceBridge.isBrowsingDataDonationSupported());
+    }
+
+    @Test
+    public void testIsBrowsingDataDonationSupported_hooksFalse() {
+        when(mMockHooks.isBrowsingDataDonationSupported()).thenReturn(false);
+        assertFalse(AuxiliarySearchDonationServiceBridge.isBrowsingDataDonationSupported());
+    }
+
+    @Test
+    public void testIsBrowsingDataDonationSupported_hooksTrue() {
+        when(mMockHooks.isBrowsingDataDonationSupported()).thenReturn(true);
+        assertTrue(AuxiliarySearchDonationServiceBridge.isBrowsingDataDonationSupported());
     }
 
     @Test

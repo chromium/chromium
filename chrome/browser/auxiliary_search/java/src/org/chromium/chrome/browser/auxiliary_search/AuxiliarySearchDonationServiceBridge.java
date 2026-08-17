@@ -80,6 +80,12 @@ class AuxiliarySearchDonationServiceBridge implements Closeable {
     @VisibleForTesting @Nullable ListenableFuture<AppSearchSession> mSessionFuture;
 
     @CalledByNative
+    static boolean isBrowsingDataDonationSupported() {
+        AuxiliarySearchHooks hooks = ServiceLoaderUtil.maybeCreate(AuxiliarySearchHooks.class);
+        return hooks != null && hooks.isBrowsingDataDonationSupported();
+    }
+
+    @CalledByNative
     public AuxiliarySearchDonationServiceBridge(boolean isBrowsingDataDonationEnabled) {
         // As this function is @CalledByNative, we must add a `getPackagesForBrowsingDataVisibility`
         // check here to prevent AppSearch code (schemas) from being compiled into open source APKs.
