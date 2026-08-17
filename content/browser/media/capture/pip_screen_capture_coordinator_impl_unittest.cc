@@ -135,8 +135,8 @@ class PipScreenCaptureCoordinatorImplTest : public testing::Test {
   void TearDown() override { coordinator_->ResetForTesting(); }
 
  protected:
-  content::BrowserTaskEnvironment task_environment_;
   base::test::ScopedFeatureList feature_list_;
+  content::BrowserTaskEnvironment task_environment_;
   raw_ptr<PipScreenCaptureCoordinatorImpl> coordinator_;
 };
 

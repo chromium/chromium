@@ -70,8 +70,8 @@ class PrePrefetchContainerTest : public testing::Test {
   }
 
  private:
-  content::BrowserTaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  content::BrowserTaskEnvironment task_environment_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   std::unique_ptr<TestBrowserContext> browser_context_;
   base::WeakPtr<BrowserContext> browser_context_weak_;

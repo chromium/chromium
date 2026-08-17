@@ -5,7 +5,6 @@
 #include "content/renderer/accessibility/annotations/ax_image_annotator.h"
 
 #include "base/strings/stringprintf.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_discardable_memory_allocator.h"
 #include "content/renderer/accessibility/annotations/ax_annotators_manager.h"
 #include "content/renderer/accessibility/render_accessibility_impl_test.h"
@@ -143,7 +142,6 @@ class AXImageAnnotatorTest : public RenderAccessibilityImplTest {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   MockImageAnnotationService mock_annotator_service_;
   base::TestDiscardableMemoryAllocator discardable_memory_allocator;
 };

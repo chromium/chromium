@@ -74,8 +74,8 @@ class SchedulerLoopQuarantineTaskObserverTest : public ::testing::Test {
     // function and that the string parses properly.
     EXPECT_TRUE(!GetQuarantineConfigJson().empty());
   }
-  BrowserTaskEnvironment task_environment_;
   base::test::ScopedFeatureList feature_list_;
+  BrowserTaskEnvironment task_environment_;
 };
 
 TEST_F(SchedulerLoopQuarantineTaskObserverTest, QuarantinePausesBetweenTasks) {

@@ -115,11 +115,11 @@ class CodeCacheHostImplTest : public testing::Test,
   }
 
  protected:
+  base::test::ScopedFeatureList feature_list_;
   BrowserTaskEnvironment task_environment_;
   base::HistogramTester histogram_tester;
   std::vector<ChildProcessId> added_renderers_;
   TestBrowserContext browser_context_;
-  base::test::ScopedFeatureList feature_list_;
   base::ScopedTempDir temp_dir_;
   scoped_refptr<GeneratedCodeCacheContext> generated_code_cache_context_;
 };

@@ -315,8 +315,8 @@ const char16_t kTestTitle2[] = u"Test Title 2";
 
 }  // namespace
 
-class MediaInternalsAudioFocusTest : public RenderViewHostTestHarness,
-                                     public MediaInternalsTestBase {
+class MediaInternalsAudioFocusTest : public MediaInternalsTestBase,
+                                     public RenderViewHostTestHarness {
  public:
   MediaInternalsAudioFocusTest() = default;
   ~MediaInternalsAudioFocusTest() override = default;
