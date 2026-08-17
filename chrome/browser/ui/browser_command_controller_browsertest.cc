@@ -88,7 +88,12 @@
 #endif
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-#include "chrome/common/chrome_features.h"
+#include "extensions/buildflags/buildflags.h"
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/extensions/chrome_test_extension_loader.h"
+#include "extensions/common/extension.h"
+#include "extensions/test/test_extension_dir.h"
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 
 namespace chrome {
@@ -708,6 +713,60 @@ using CreateShortcutBrowserCommandControllerNavTest =
     BrowserCommandControllerBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserCommandControllerNavTest,
+                       BrowserNoSiteNotEnabled) {
+  EXPECT_FALSE(chrome::IsCommandEnabled(browser(), IDC_CREATE_SHORTCUT));
+}
+
+IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserCommandControllerNavTest,
+                       DisabledForOTRProfile) {
+  Browser* incognito_browser = CreateIncognitoBrowser();
+  ASSERT_TRUE(incognito_browser);
+  EXPECT_FALSE(
+      chrome::IsCommandEnabled(incognito_browser, IDC_CREATE_SHORTCUT));
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL valid_url(embedded_test_server()->GetURL("/title1.html"));
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(incognito_browser, valid_url));
+  EXPECT_FALSE(
+      chrome::IsCommandEnabled(incognito_browser, IDC_CREATE_SHORTCUT));
+}
+
+IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserCommandControllerNavTest,
+                       DisabledForGuestProfile) {
+  Browser* guest_browser = CreateGuestBrowser();
+  ASSERT_TRUE(guest_browser);
+  EXPECT_FALSE(chrome::IsCommandEnabled(guest_browser, IDC_CREATE_SHORTCUT));
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL valid_url(embedded_test_server()->GetURL("/title1.html"));
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(guest_browser, valid_url));
+  EXPECT_FALSE(chrome::IsCommandEnabled(guest_browser, IDC_CREATE_SHORTCUT));
+}
+
+IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserCommandControllerNavTest,
+                       DisabledForSystemProfile) {
+  // System profiles do not have a browser window, so desktop shortcuts cannot
+  // be created.
+  EXPECT_FALSE(browser()->GetProfile()->IsSystemProfile());
+  EXPECT_FALSE(chrome::IsCommandEnabled(browser(), IDC_CREATE_SHORTCUT));
+}
+
+IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserCommandControllerNavTest,
+                       EnabledValidUrl) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL valid_url(embedded_test_server()->GetURL("/title1.html"));
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), valid_url));
+  EXPECT_TRUE(chrome::IsCommandEnabled(browser(), IDC_CREATE_SHORTCUT));
+}
+
+IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserCommandControllerNavTest,
+                       InvalidSchemeDisabled) {
+  EXPECT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("chrome://version")));
+  EXPECT_FALSE(chrome::IsCommandEnabled(browser(), IDC_CREATE_SHORTCUT));
+}
+
+IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserCommandControllerNavTest,
                        ErrorUrlDisabled) {
   ASSERT_TRUE(embedded_test_server()->Start());
   // This returns a 404 server error, and cannot be unit-tested, since a valid
@@ -717,6 +776,30 @@ IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserCommandControllerNavTest,
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), error_url));
   EXPECT_FALSE(chrome::IsCommandEnabled(browser(), IDC_CREATE_SHORTCUT));
 }
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserCommandControllerNavTest,
+                       ChromeExtensionSchemeEnabled) {
+  extensions::TestExtensionDir test_dir;
+  test_dir.WriteManifest(R"(
+    {
+      "name": "Test Extension",
+      "version": "0.1",
+      "manifest_version": 3
+    }
+  )");
+  test_dir.WriteFile(FILE_PATH_LITERAL("resource.html"),
+                     "<html><body>Test</body></html>");
+  extensions::ChromeTestExtensionLoader loader(browser()->GetProfile());
+  scoped_refptr<const extensions::Extension> extension =
+      loader.LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), extension->GetResourceURL("resource.html")));
+  EXPECT_TRUE(chrome::IsCommandEnabled(browser(), IDC_CREATE_SHORTCUT));
+}
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 
