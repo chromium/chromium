@@ -98,4 +98,5 @@ executable("gcp_setup") {
     "//content/public/common:static_switches",
   ]
   configs += [ "//build/config/win:windowed" ]
+  ldflags = [ "/DEPENDENTLOADFLAG:0x800" ]
 }

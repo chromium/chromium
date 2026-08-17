@@ -18,6 +18,7 @@
 #include "base/environment.h"
 #include "base/file_version_info.h"
 #include "base/files/file.h"
+#include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/process/launch.h"
@@ -327,6 +328,10 @@ void GcpSetupTest::ExpectRequiredRegistryEntriesToBePresent() {
 }
 
 void GcpSetupTest::SetUp() {
+  if (!::IsUserAnAdmin()) {
+    GTEST_SKIP() << "Test requires administrative privileges.";
+  }
+
   // Get the path to the setup exe (this exe during unit tests) and the
   // chrome version.
   GetModulePathAndProductVersion(&module_path_, &product_version_);
@@ -354,10 +359,6 @@ void GcpSetupTest::SetUp() {
   ASSERT_TRUE(scoped_temp_progdata_dir_.CreateUniqueTempDir());
   programdata_override_ = std::make_unique<base::ScopedPathOverride>(
       base::DIR_COMMON_APP_DATA, scoped_temp_progdata_dir_.GetPath());
-
-  if (!::IsUserAnAdmin()) {
-    GTEST_SKIP() << "Test requires administrative privileges.";
-  }
 
   ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
 
@@ -703,6 +704,32 @@ TEST_F(GcpSetupTest, MAYBE_DoUninstallWithExtension) {
   EXPECT_TRUE(fake_scoped_lsa_policy_factory()
                   ->private_data()[kLsaKeyGaiaUsername]
                   .empty());
+}
+
+TEST_F(GcpSetupTest, RelaunchUninstallerStagesUnderSystemTemp) {
+#if defined(COMPONENT_BUILD)
+  GTEST_SKIP() << "RelaunchUninstaller is not supported in component builds.";
+#else
+  base::ScopedTempDir system_temp;
+  EXPECT_TRUE(system_temp.CreateUniqueTempDir());
+  base::ScopedPathOverride system_temp_override(base::DIR_SYSTEM_TEMP,
+                                                system_temp.GetPath());
+
+  base::ScopedTempDir source_dir;
+  EXPECT_TRUE(source_dir.CreateUniqueTempDir());
+  base::FilePath installer_path =
+      source_dir.GetPath().Append(FILE_PATH_LITERAL("gcp_setup.exe"));
+  EXPECT_TRUE(base::WriteFile(installer_path, "stub"));
+
+  RelaunchUninstaller(installer_path);
+
+  base::FileEnumerator enumerator(system_temp.GetPath(), /*recursive=*/false,
+                                  base::FileEnumerator::DIRECTORIES,
+                                  FILE_PATH_LITERAL("gcp*"));
+  base::FilePath staged_dir = enumerator.Next();
+  EXPECT_FALSE(staged_dir.empty());
+  EXPECT_TRUE(base::PathExists(staged_dir.Append(installer_path.BaseName())));
+#endif  // defined(COMPONENT_BUILD)
 }
 
 TEST_F(GcpSetupTest, ValidLsaWithNoExistingUser) {
