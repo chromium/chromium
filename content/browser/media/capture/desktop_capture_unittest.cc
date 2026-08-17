@@ -164,7 +164,15 @@ class DesktopCaptureMacTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
 };
 
-TEST_F(DesktopCaptureMacTest, CancelMacNativePickerBeforeCapture) {
+// TODO(crbug.com/547843376): Re-enable this test once the bug is fixed.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_CancelMacNativePickerBeforeCapture \
+  DISABLED_CancelMacNativePickerBeforeCapture
+#else
+#define MAYBE_CancelMacNativePickerBeforeCapture \
+  CancelMacNativePickerBeforeCapture
+#endif
+TEST_F(DesktopCaptureMacTest, MAYBE_CancelMacNativePickerBeforeCapture) {
   bool callback_run = false;
   DesktopMediaID mac_source(DesktopMediaID::TYPE_SCREEN, 123);
   mac_source.id_type = DesktopMediaID::IdType::kNativePickerSession;
