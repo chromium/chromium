@@ -26,7 +26,7 @@
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/metrics/chrome_metrics_service_client.h"
 #include "chrome/browser/metrics/chrome_metrics_services_manager_client.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/url_constants.h"
@@ -127,7 +127,7 @@ class MetricsServiceBrowserTest : public InProcessBrowserTest {
 
     // Kill the process for one of the tabs by navigating to |crashy_url|.
     content::RenderProcessHostWatcher observer(
-        browser()->tab_strip_model()->GetActiveWebContents(),
+        browser()->GetTabStripModel()->GetActiveWebContents(),
         content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
     // Opens one tab.
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(crashy_url)));

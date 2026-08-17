@@ -14,7 +14,7 @@
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/chrome_paths.h"
 #include "components/metrics/enabled_state_provider.h"
 #include "components/metrics/metrics_features.h"

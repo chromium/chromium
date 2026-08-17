@@ -8,7 +8,7 @@
 #include "base/run_loop.h"
 #include "base/time/time.h"
 #include "chrome/browser/metrics/ukm_background_recorder_service.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/history/core/browser/history_service.h"
 #include "content/public/test/browser_test.h"

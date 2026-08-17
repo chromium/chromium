@@ -65,8 +65,8 @@
 #include "url/url_constants.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -91,7 +91,7 @@ namespace metrics {
 namespace {
 
 #if !BUILDFLAG(IS_ANDROID)
-typedef Browser* PlatformBrowser;
+using PlatformBrowser = BrowserWindowInterface*;
 #else
 typedef std::unique_ptr<TestTabModel> PlatformBrowser;
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -185,10 +185,10 @@ class UkmBrowserTestBase : public SyncTest {
 
 #if !BUILDFLAG(IS_ANDROID)
   ukm::UkmSource* NavigateAndGetSource(const GURL& url,
-                                       Browser* browser,
+                                       BrowserWindowInterface* browser,
                                        ukm::UkmTestHelper* ukm_test_helper) {
     content::NavigationHandleObserver observer(
-        browser->tab_strip_model()->GetActiveWebContents(), url);
+        browser->GetTabStripModel()->GetActiveWebContents(), url);
     EXPECT_TRUE(ui_test_utils::NavigateToURL(browser, url));
     const ukm::SourceId source_id = ukm::ConvertToSourceId(
         observer.navigation_id(), ukm::SourceIdType::NAVIGATION_ID);
@@ -468,12 +468,13 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, RegularPlusGuestCheck) {
   std::unique_ptr<SyncServiceImplHarness> harness =
       EnableSyncForProfile(profile);
 
-  Browser* regular_browser = CreateBrowser(profile);
+  BrowserWindowInterface* regular_browser = CreateBrowser(profile);
   EXPECT_TRUE(ukm_test_helper.IsRecordingEnabled());
   uint64_t original_client_id = ukm_test_helper.GetClientId();
 
   // Create browser for guest profile.
-  Browser* guest_browser = InProcessBrowserTest::CreateGuestBrowser();
+  BrowserWindowInterface* guest_browser =
+      InProcessBrowserTest::CreateGuestBrowser();
   EXPECT_FALSE(ukm_test_helper.IsRecordingEnabled());
 
   CloseBrowserSynchronously(guest_browser);
@@ -497,7 +498,7 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, ProfilePickerCheck) {
   std::unique_ptr<SyncServiceImplHarness> harness =
       EnableSyncForProfile(profile);
 
-  Browser* regular_browser = CreateBrowser(profile);
+  BrowserWindowInterface* regular_browser = CreateBrowser(profile);
   ASSERT_TRUE(ukm_test_helper.IsRecordingEnabled());
 
   // ProfilePicker creates a SystemProfile.
@@ -530,13 +531,13 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, OpenNonSyncCheck) {
   std::unique_ptr<SyncServiceImplHarness> harness =
       EnableSyncForProfile(profile);
 
-  Browser* sync_browser = CreateBrowser(profile);
+  BrowserWindowInterface* sync_browser = CreateBrowser(profile);
   EXPECT_TRUE(ukm_test_helper.IsRecordingEnabled());
   uint64_t original_client_id = ukm_test_helper.GetClientId();
   EXPECT_NE(0U, original_client_id);
 
   Profile* nonsync_profile = CreateNonSyncProfile();
-  Browser* nonsync_browser = CreateBrowser(nonsync_profile);
+  BrowserWindowInterface* nonsync_browser = CreateBrowser(nonsync_profile);
   EXPECT_FALSE(ukm_test_helper.IsRecordingEnabled());
 
   CloseBrowserSynchronously(nonsync_browser);
@@ -598,7 +599,7 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, LogProtoData) {
   std::unique_ptr<SyncServiceImplHarness> harness =
       EnableSyncForProfile(profile);
 
-  Browser* sync_browser = CreateBrowser(profile);
+  BrowserWindowInterface* sync_browser = CreateBrowser(profile);
   EXPECT_TRUE(ukm_test_helper.IsRecordingEnabled());
   uint64_t original_client_id = ukm_test_helper.GetClientId();
   EXPECT_NE(0U, original_client_id);
@@ -717,7 +718,7 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, NetworkProviderPopulatesSystemProfile) {
   std::unique_ptr<SyncServiceImplHarness> harness =
       EnableSyncForProfile(profile);
 
-  Browser* sync_browser = CreateBrowser(profile);
+  BrowserWindowInterface* sync_browser = CreateBrowser(profile);
   EXPECT_TRUE(ukm_test_helper.IsRecordingEnabled());
   uint64_t original_client_id = ukm_test_helper.GetClientId();
   EXPECT_NE(0U, original_client_id);
@@ -822,7 +823,7 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, SingleDisableExtensionsSyncCheck) {
   std::unique_ptr<SyncServiceImplHarness> harness =
       EnableSyncForProfile(profile);
 
-  Browser* sync_browser = CreateBrowser(profile);
+  BrowserWindowInterface* sync_browser = CreateBrowser(profile);
   EXPECT_TRUE(ukm_test_helper.IsRecordingEnabled());
   EXPECT_TRUE(ukm_test_helper.IsExtensionRecordingEnabled());
   uint64_t original_client_id = ukm_test_helper.GetClientId();
@@ -855,7 +856,7 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, MultiDisableExtensionsSyncCheck) {
   std::unique_ptr<SyncServiceImplHarness> harness1 =
       EnableSyncForProfile(profile1);
 
-  Browser* browser1 = CreateBrowser(profile1);
+  BrowserWindowInterface* browser1 = CreateBrowser(profile1);
   EXPECT_TRUE(ukm_test_helper.IsRecordingEnabled());
   uint64_t original_client_id = ukm_test_helper.GetClientId();
   EXPECT_NE(0U, original_client_id);
@@ -863,7 +864,7 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, MultiDisableExtensionsSyncCheck) {
   Profile* profile2 = CreateNonSyncProfile();
   std::unique_ptr<SyncServiceImplHarness> harness2 =
       EnableSyncForProfile(profile2);
-  Browser* browser2 = CreateBrowser(profile2);
+  BrowserWindowInterface* browser2 = CreateBrowser(profile2);
   EXPECT_TRUE(ukm_test_helper.IsRecordingEnabled());
   EXPECT_TRUE(ukm_test_helper.IsExtensionRecordingEnabled());
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -900,7 +901,7 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, LogsTabId) {
   Profile* profile = ProfileManager::GetLastUsedProfileIfLoaded();
   std::unique_ptr<SyncServiceImplHarness> harness =
       EnableSyncForProfile(profile);
-  Browser* sync_browser = CreateBrowser(profile);
+  BrowserWindowInterface* sync_browser = CreateBrowser(profile);
 
   const ukm::UkmSource* first_source =
       NavigateAndGetSource(embedded_test_server()->GetURL("/title1.html"),
@@ -934,7 +935,7 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, LogsPreviousSourceId) {
   Profile* profile = ProfileManager::GetLastUsedProfileIfLoaded();
   std::unique_ptr<SyncServiceImplHarness> harness =
       EnableSyncForProfile(profile);
-  Browser* sync_browser = CreateBrowser(profile);
+  BrowserWindowInterface* sync_browser = CreateBrowser(profile);
 
   const ukm::UkmSource* first_source =
       NavigateAndGetSource(embedded_test_server()->GetURL("/title1.html"),
@@ -948,15 +949,15 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, LogsPreviousSourceId) {
 
   // Open a new tab with window.open.
   content::WebContents* opener =
-      sync_browser->tab_strip_model()->GetActiveWebContents();
+      sync_browser->GetTabStripModel()->GetActiveWebContents();
   GURL new_tab_url = embedded_test_server()->GetURL("/title3.html");
   content::TestNavigationObserver waiter(new_tab_url);
   waiter.StartWatchingNewWebContents();
   EXPECT_TRUE(content::ExecJs(
       opener, content::JsReplace("window.open($1)", new_tab_url)));
   waiter.Wait();
-  EXPECT_NE(opener, sync_browser->tab_strip_model()->GetActiveWebContents());
-  ukm::SourceId new_id = sync_browser->tab_strip_model()
+  EXPECT_NE(opener, sync_browser->GetTabStripModel()->GetActiveWebContents());
+  ukm::SourceId new_id = sync_browser->GetTabStripModel()
                              ->GetActiveWebContents()
                              ->GetPrimaryMainFrame()
                              ->GetPageUkmSourceId();
@@ -982,7 +983,7 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, LogsOpenerSource) {
   Profile* profile = ProfileManager::GetLastUsedProfileIfLoaded();
   std::unique_ptr<SyncServiceImplHarness> harness =
       EnableSyncForProfile(profile);
-  Browser* sync_browser = CreateBrowser(profile);
+  BrowserWindowInterface* sync_browser = CreateBrowser(profile);
 
   const ukm::UkmSource* first_source =
       NavigateAndGetSource(embedded_test_server()->GetURL("/title1.html"),
@@ -994,15 +995,15 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, LogsOpenerSource) {
 
   // Open a new tab with window.open.
   content::WebContents* opener =
-      sync_browser->tab_strip_model()->GetActiveWebContents();
+      sync_browser->GetTabStripModel()->GetActiveWebContents();
   GURL new_tab_url = embedded_test_server()->GetURL("/title2.html");
   content::TestNavigationObserver waiter(new_tab_url);
   waiter.StartWatchingNewWebContents();
   EXPECT_TRUE(content::ExecJs(
       opener, content::JsReplace("window.open($1)", new_tab_url)));
   waiter.Wait();
-  EXPECT_NE(opener, sync_browser->tab_strip_model()->GetActiveWebContents());
-  ukm::SourceId new_id = sync_browser->tab_strip_model()
+  EXPECT_NE(opener, sync_browser->GetTabStripModel()->GetActiveWebContents());
+  ukm::SourceId new_id = sync_browser->GetTabStripModel()
                              ->GetActiveWebContents()
                              ->GetPrimaryMainFrame()
                              ->GetPageUkmSourceId();
@@ -1063,7 +1064,7 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, MultiSyncSignoutCheck) {
   std::unique_ptr<SyncServiceImplHarness> harness1 =
       EnableSyncForProfile(profile1);
 
-  Browser* browser1 = CreateBrowser(profile1);
+  BrowserWindowInterface* browser1 = CreateBrowser(profile1);
   EXPECT_TRUE(ukm_test_helper.IsRecordingEnabled());
   uint64_t original_client_id = ukm_test_helper.GetClientId();
   EXPECT_NE(0U, original_client_id);
@@ -1071,7 +1072,7 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, MultiSyncSignoutCheck) {
   Profile* profile2 = CreateNonSyncProfile();
   std::unique_ptr<SyncServiceImplHarness> harness2 =
       EnableSyncForProfile(profile2);
-  Browser* browser2 = CreateBrowser(profile2);
+  BrowserWindowInterface* browser2 = CreateBrowser(profile2);
   EXPECT_TRUE(ukm_test_helper.IsRecordingEnabled());
   EXPECT_EQ(original_client_id, ukm_test_helper.GetClientId());
 
@@ -1097,7 +1098,7 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, ServiceListenerInitFailedCheck) {
   std::unique_ptr<SyncServiceImplHarness> harness =
       EnableSyncForProfile(profile);
 
-  Browser* sync_browser = CreateBrowser(profile);
+  BrowserWindowInterface* sync_browser = CreateBrowser(profile);
   EXPECT_FALSE(ukm_test_helper.IsRecordingEnabled());
   CloseBrowserSynchronously(sync_browser);
 }
@@ -1122,7 +1123,7 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, MetricsReportingCheck) {
   std::unique_ptr<SyncServiceImplHarness> harness =
       EnableSyncForProfile(profile);
 
-  Browser* sync_browser = CreateBrowser(profile);
+  BrowserWindowInterface* sync_browser = CreateBrowser(profile);
   EXPECT_TRUE(ukm_test_helper.IsRecordingEnabled());
 
   CloseBrowserSynchronously(sync_browser);
@@ -1209,7 +1210,7 @@ IN_PROC_BROWSER_TEST_P(UkmConsentParamBrowserTest, GroupPolicyConsentCheck) {
   std::unique_ptr<SyncServiceImplHarness> harness =
       EnableSyncForProfile(profile);
 
-  Browser* sync_browser = CreateBrowser(profile);
+  BrowserWindowInterface* sync_browser = CreateBrowser(profile);
 
   // The input param controls whether we set the prefs related to group policy
   // enabled or not. Based on its value, we should report the same value for
@@ -1240,7 +1241,7 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, EvictObsoleteSources) {
   Profile* profile = ProfileManager::GetLastUsedProfileIfLoaded();
   std::unique_ptr<SyncServiceImplHarness> harness =
       EnableSyncForProfile(profile);
-  Browser* sync_browser = CreateBrowser(profile);
+  BrowserWindowInterface* sync_browser = CreateBrowser(profile);
 
   ukm::SourceId source_id1 = ukm::kInvalidSourceId;
   ukm::SourceId source_id2 = ukm::kInvalidSourceId;
@@ -1256,7 +1257,7 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, EvictObsoleteSources) {
   // Gather source id from the NavigationHandle assigned to navigations that
   // start with the expected URL.
   content::NavigationHandleObserver tab_1_observer(
-      sync_browser->tab_strip_model()->GetActiveWebContents(), test_urls[0]);
+      sync_browser->GetTabStripModel()->GetActiveWebContents(), test_urls[0]);
   // Navigate to a test URL in this new tab.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(sync_browser, test_urls[0]));
   // Get the source id associated to the last committed navigation, which could
@@ -1282,7 +1283,7 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, EvictObsoleteSources) {
   ASSERT_TRUE(AddTabAtIndexToBrowser(sync_browser, 2, GURL(url::kAboutBlankURL),
                                      ui::PAGE_TRANSITION_TYPED, true));
   content::NavigationHandleObserver tab_2_observer(
-      sync_browser->tab_strip_model()->GetActiveWebContents(), test_urls[1]);
+      sync_browser->GetTabStripModel()->GetActiveWebContents(), test_urls[1]);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(sync_browser, test_urls[1]));
   source_id2 = ukm::ConvertToSourceId(tab_2_observer.navigation_id(),
                                       ukm::SourceIdType::NAVIGATION_ID);
@@ -1304,7 +1305,7 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, EvictObsoleteSources) {
   // Close the tab corresponding to source 1, this should mark source 1 as
   // obsolete. Next report will still contain source 1 because we might have
   // associated entries before it was closed.
-  sync_browser->tab_strip_model()->CloseWebContentsAt(
+  sync_browser->GetTabStripModel()->CloseWebContentsAt(
       1, TabCloseTypes::CLOSE_NONE);
 
   ukm_test_helper.BuildAndStoreLog();
@@ -1363,7 +1364,7 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest,
   Profile* profile = ProfileManager::GetLastUsedProfileIfLoaded();
   std::unique_ptr<SyncServiceImplHarness> harness =
       EnableSyncForProfile(profile);
-  Browser* sync_browser = CreateBrowser(profile);
+  BrowserWindowInterface* sync_browser = CreateBrowser(profile);
 
   // First navigation.
   const ukm::SourceId source_id1 =
@@ -1420,7 +1421,7 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, NotMarkSourcesIfNavigationNotCommitted) {
   Profile* profile = ProfileManager::GetLastUsedProfileIfLoaded();
   std::unique_ptr<SyncServiceImplHarness> harness =
       EnableSyncForProfile(profile);
-  Browser* sync_browser = CreateBrowser(profile);
+  BrowserWindowInterface* sync_browser = CreateBrowser(profile);
 
   // An example navigation that commits.
   const GURL test_url_with_commit =
@@ -1609,7 +1610,7 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTestForAppConsent,
       UnifiedConsentServiceFactory::GetForProfile(profile);
   std::unique_ptr<SyncServiceImplHarness> harness =
       EnableSyncForProfile(profile);
-  Browser* sync_browser = CreateBrowser(profile);
+  BrowserWindowInterface* sync_browser = CreateBrowser(profile);
 
   const std::vector<GURL> test_urls = {
       embedded_test_server()->GetURL("/title1.html"),

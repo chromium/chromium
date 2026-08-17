@@ -17,6 +17,7 @@
 #include "components/variations/synthetic_trials.h"
 
 class BrowserProcessImpl;
+class BrowserWindowInterface;
 class CampaignsManagerClientImpl;
 class ChromeMetricsServiceClient;
 class ChromePasswordManagerClient;
@@ -176,7 +177,7 @@ class ChromeMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
   friend class ChromePasswordManagerClient;
   friend class NavigationMetricsRecorder;
   friend class ChromeBrowserMainExtraPartsGpu;
-  friend class Browser;
+  friend class BrowserWindowInterface;
   friend class BrowserProcessImpl;
   friend class GlobalFeatures;
   friend class subscription_eligibility::SubscriptionEligibilityMetricsProvider;

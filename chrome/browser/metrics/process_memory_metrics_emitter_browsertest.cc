@@ -24,7 +24,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/tracing.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -80,12 +80,12 @@ enum class ValueRestriction { NONE, ABOVE_ZERO };
 
 // Returns the number of renderers associated with top-level frames in
 // |browser|. There can be other renderers in the process (e.g. spare renderer).
-int GetNumRenderers(Browser* browser) {
+int GetNumRenderers(BrowserWindowInterface* browser) {
   // Since multiple tabs can be hosted in the same process, RenderProcessHosts
   // need to be deduped.
   std::set<content::RenderProcessHost*> render_process_hosts;
-  for (int i = 0; i < browser->tab_strip_model()->count(); ++i) {
-    render_process_hosts.insert(browser->tab_strip_model()
+  for (int i = 0; i < browser->GetTabStripModel()->count(); ++i) {
+    render_process_hosts.insert(browser->GetTabStripModel()
                                     ->GetWebContentsAt(i)
                                     ->GetSiteInstance()
                                     ->GetProcess());

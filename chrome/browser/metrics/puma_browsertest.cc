@@ -26,7 +26,7 @@
 #include "third_party/zlib/google/compression_utils.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #else
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
@@ -53,7 +53,7 @@ enum class TestEnum {
 }  // namespace
 
 #if !BUILDFLAG(IS_ANDROID)
-typedef Browser* PlatformBrowser;
+using PlatformBrowser = BrowserWindowInterface*;
 #else
 typedef std::unique_ptr<TestTabModel> PlatformBrowser;
 #endif  // !BUILDFLAG(IS_ANDROID)

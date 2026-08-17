@@ -87,6 +87,7 @@
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/test/base/android/android_ui_test_utils.h"
 #else
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/test/base/ui_test_utils.h"
 #endif
 
@@ -401,7 +402,7 @@ class VariationsHttpHeadersBrowserTest : public PlatformBrowserTest {
             /*create_if_needed=*/true);
     OpenUrlInNewTab(otr_profile, GetWebContents(), url);
 #else
-    Browser* incognito =
+    BrowserWindowInterface* incognito =
         CreateIncognitoBrowser(chrome_test_utils::GetProfile(this));
     SetBrowser(incognito);
     NavigateToURL(url);
