@@ -11,6 +11,51 @@ import common
 import java_types
 
 
+class _StringPool:
+  """Builds a sorted contiguous string pool with embedded null terminators."""
+
+  def __init__(self, name, num_bits, strings):
+    assert num_bits in (16, 32)
+    self.name = name
+    self._offsets = {}
+    self._strings = []
+    self._num_bits = num_bits
+
+    offset = 0
+    for s in sorted(set(strings)):
+      self._offsets[s] = offset
+      self._strings.append(s)
+      offset += len(s.encode('utf-8')) + 1
+
+    max_offset = 2**num_bits
+    if offset >= max_offset:
+      raise Exception(f'Overflow: {name} string pool size '
+                      f'({offset}) exceeds uint{num_bits}_t max ({max_offset})')
+
+  def offset_for(self, s):
+    return self._offsets[s]
+
+  def write_offsets_array(self, sb, keys):
+    name = self.name.replace('StringPool', 'Offsets')
+    assert name != self.name, name
+    offsets = self._offsets
+    sb(f'extern const uint{self._num_bits}_t {name}[{len(keys)}] = {{')
+    for key in keys:
+      sb(f'\n    {offsets[key]},')
+    sb('};\n')
+
+  def write_values(self, sb):
+    strings = self._strings
+    if not strings:
+      sb(f'extern const char {self.name}[] = "";\n')
+    else:
+      sb(f'extern const char {self.name}[] =')
+      for s in self._strings:
+        escaped = s.replace('\\', '\\\\').replace('"', '\\"')
+        sb(f'\n    "{escaped}\\0"')
+      sb(';\n')
+
+
 def _jni_field_function_name(field, is_setter):
   if field.java_type.is_primitive():
     call = common.capitalize(field.java_type.primitive_name)
@@ -38,8 +83,8 @@ def field_accessor(sb, jni_class, field):
     sb(f'jclass clazz = {class_accessor};\n')
     sb('JNI_ZERO_DCHECK(clazz);\n')
     with sb.statement():
-      sb(f'::jni_zero::internal::InitializeFieldID<{field_id_type}>(env, clazz, '
-         f'"{field.name}", "{field.java_type.to_descriptor()}", '
+      sb(f'::jni_zero::internal::InitializeFieldID<{field_id_type}>('
+         f'env, clazz, "{field.name}", "{field.java_type.to_descriptor()}", '
          f'&cached_field_id)')
     sb('return cached_field_id.load(std::memory_order_relaxed);\n')
   sb('}\n\n')
@@ -137,19 +182,212 @@ def _jni_function_name(called_by_native):
   return f'Call{call}Method'
 
 
-def method_definition(sb, jni_class, cbn, *, allow_unused):
+def index_decls(sb, jni_classes):
+  decls = []
+  for jni_class in jni_classes:
+    for cbn in jni_class.called_by_natives:
+      if not cbn.is_test_only:
+        index_var = (f'kCbnIdx_{cbn.muxed_name}')
+        decls.append(f'extern const uint16_t {index_var};\n')
+  if decls:
+    with sb.section('CalledByNative Indices'):
+      with sb.namespace('jni_zero::internal'):
+        for decl in decls:
+          sb(decl)
+
+
+def registration_metadata(sb, sorted_classes, called_by_natives):
+  class_to_index = {c: idx for idx, c in enumerate(sorted_classes)}
+  class_names = [c.full_name for c in sorted_classes]
+  class_name_pool = _StringPool('kClassNameStringPool', 16, class_names)
+  method_name_pool = _StringPool('kMethodNameStringPool', 16,
+                                 (cbn.name for cbn in called_by_natives))
+  descriptor_pool = _StringPool('kDescriptorStringPool', 32,
+                                (cbn.signature.to_descriptor()
+                                 for cbn in called_by_natives))
+  cbn_details = []
+  if called_by_natives:
+    for cbn in called_by_natives:
+      cls_idx = class_to_index[cbn.java_class]
+      name_offset = method_name_pool.offset_for(cbn.name)
+      desc_offset = descriptor_pool.offset_for(cbn.signature.to_descriptor())
+      cbn_details.append((cls_idx, name_offset, desc_offset))
+
+  classes_count = len(sorted_classes)
+  called_by_native_count = len(called_by_natives)
+
+  with sb.namespace('jni_zero::internal'):
+    with sb.section('Class Index Definitions.'):
+      for idx, java_class in enumerate(sorted_classes):
+        index_var = f'kClassIdx_{java_class.to_cpp()}'
+        sb(f'extern const uint16_t {index_var} = {idx};\n')
+
+    with sb.section('CalledByNative Table and Indices.'):
+      for idx, cbn in enumerate(called_by_natives):
+        index_var = f'kCbnIdx_{cbn.muxed_name}'
+        sb(f'extern const uint16_t {index_var} = {idx};\n')
+
+    sb(f'std::atomic<jclass> cached_jclasses[{classes_count}];\n')
+    sb('std::atomic<jmethodID> '
+       f'cached_method_ids[{called_by_native_count}];\n\n')
+
+    class_name_pool.write_values(sb)
+    class_name_pool.write_offsets_array(sb, class_names)
+    sb('\n')
+
+    sb('extern const CalledByNativeDescriptor '
+       f'kCbnDescriptors[{called_by_native_count}] = {{\n')
+    with sb.indent(2):
+      for cls_idx, name_off, desc_off in cbn_details:
+        sb('CalledByNativeDescriptor{'
+           f'{cls_idx}, {name_off}, {desc_off}}},\n')
+    sb('};\n\n')
+
+    method_name_pool.write_values(sb)
+    sb('\n')
+
+    descriptor_pool.write_values(sb)
+    sb('\n')
+
+  weak_called_by_natives = [cbn for cbn in called_by_natives if cbn.is_weak]
+  if weak_called_by_natives:
+    with sb.section('Weak CalledByNative Overrides.'):
+      for cbn in weak_called_by_natives:
+        _overriding_method_definition(sb, cbn)
+
+
+def _raw_return_type(cbn):
+  return cbn.return_type.to_proxy().to_cpp()
+
+
+def _raw_params(cbn):
+  params = ['JNIEnv* env']
+  if not cbn.static:
+    params.append('jobject obj')
+  params.extend(f'{p.java_type.to_cpp()} {p.cpp_name()}'
+                for p in cbn.params.to_proxy())
+  return params
+
+
+def _call_context(sb, cbn, receiver_obj, *, is_muxing):
+  java_class = cbn.java_class
+  return_type = cbn.return_type
+  checked_str = 'false' if cbn.unchecked else 'true'
+  if cbn.static and not cbn.is_constructor:
+    method_id_type = 'TYPE_STATIC'
+  else:
+    method_id_type = 'TYPE_INSTANCE'
+
+  if is_muxing:
+    index_var = f'kCbnIdx_{cbn.muxed_name}'
+    receiver_arg = 'call_context.clazz()' if cbn.static else receiver_obj
+    sb(f'::jni_zero::internal::JniJavaCallContext<{checked_str}> '
+       f'call_context;\n')
+    with sb.statement():
+      sb(f'call_context.InitMuxed<::jni_zero::MethodID::{method_id_type}>('
+         f'env, ::jni_zero::internal::{index_var})')
+    return receiver_arg
+
+  sb('static std::atomic<jmethodID> cached_method_id(nullptr);\n')
+  class_accessor = header_common.class_accessor_expression(java_class)
+  receiver_arg = 'clazz' if cbn.static else receiver_obj
+
+  sb(f'jclass clazz = {class_accessor};\n')
+  if return_type.is_void():
+    sb(f'CHECK_CLAZZ(env, {receiver_arg}, clazz);\n')
+  else:
+    default_value = return_type.to_cpp_default_value()
+    sb(f'CHECK_CLAZZ(env, {receiver_arg}, clazz, {default_value});\n')
+
+  sb(f'::jni_zero::internal::JniJavaCallContext<{checked_str}> '
+     f'call_context;\n')
+  with sb.statement():
+    sb(f'call_context.Init<::jni_zero::MethodID::{method_id_type}>')
+    sb.param_list([
+        'env', 'clazz', f'"{cbn.name}"', f'"{cbn.signature.to_descriptor()}"',
+        '&cached_method_id'
+    ])
+  return receiver_arg
+
+
+def _overriding_method_definition(sb, cbn):
+  java_class = cbn.java_class
+  raw_func_name = f'JniWeak_{cbn.muxed_name}'
+  raw_ret_type = _raw_return_type(cbn)
+
+  sb(f'JNI_ZERO_ALWAYS_INLINE {raw_ret_type} {raw_func_name}')
+  with sb.param_list() as plist:
+    plist.extend(_raw_params(cbn))
+
+  with sb.block(after='\n'):
+    receiver_arg = _call_context(sb, cbn, 'obj', is_muxing=True)
+
+    param_names = [p.cpp_name() for p in cbn.params]
+    call_args = [receiver_arg, 'call_context.method_id()'] + param_names
+
+    with sb.statement():
+      if cbn.is_constructor:
+        sb('return env->NewObject')
+        sb.param_list(call_args)
+      else:
+        if not cbn.return_type.is_void():
+          sb('return ')
+        sb(f'env->{_jni_function_name(cbn)}')
+        sb.param_list(call_args)
+
+
+def _weak_method_definition(sb, cbn):
+  raw_func_name = f'JniWeak_{cbn.muxed_name}'
+  raw_ret_type = _raw_return_type(cbn)
+
+  sb(f'[[gnu::weak]] inline {raw_ret_type} {raw_func_name}')
+  sb.param_list(_raw_params(cbn))
+
+  with sb.block(after='\n'):
+    receiver_arg = _call_context(sb, cbn, 'obj', is_muxing=False)
+    param_names = [p.cpp_name() for p in cbn.params]
+    call_args = [receiver_arg, 'call_context.method_id()'] + param_names
+
+    with sb.statement():
+      if cbn.is_constructor:
+        sb('return env->NewObject')
+        sb.param_list(call_args)
+      else:
+        if not cbn.return_type.is_void():
+          sb('return ')
+        sb(f'env->{_jni_function_name(cbn)}')
+        sb.param_list(call_args)
+
+
+def weak_muxed_methods(sb, jni_classes):
+  for jni_class in jni_classes:
+    for cbn in jni_class.called_by_natives:
+      if not cbn.is_test_only:
+        _weak_method_definition(sb, cbn)
+
+
+def method_definition(sb,
+                      jni_class,
+                      cbn,
+                      *,
+                      is_muxing=False,
+                      use_weak_called_by_natives=False,
+                      allow_unused=False):
+  if not is_muxing:
+    use_weak_called_by_natives = False
   java_class = jni_class.java_class
-  java_class_name = java_class.nested_name
   return_type = cbn.return_type
   is_void = return_type.is_void()
+  func_name = f'Java_{java_class.nested_name}_{cbn.method_id_function_name}'
   return_type_cpp = _return_type_cpp_non_mirror(return_type)
 
-  # Mirror classes use these functions, but if a mirror function is templated,
-  # it does not count as a usage unless the template is instantiated.
-  if allow_unused:
-    sb('[[maybe_unused]] ')
-  sb(f'static {return_type_cpp} ')
-  sb(f'Java_{java_class_name}_{cbn.method_id_function_name}')
+  if is_muxing:
+    sb(f'inline {return_type_cpp} ')
+  else:
+    if allow_unused or cbn.is_test_only:
+      sb('[[maybe_unused]] ')
+    sb(f'static {return_type_cpp} ')
+  sb(f'{func_name}')
   with sb.param_list() as plist:
     plist.append('JNIEnv* env')
     if not cbn.static:
@@ -158,40 +396,27 @@ def method_definition(sb, jni_class, cbn, *, allow_unused):
                  for p in cbn.params)
 
   with sb.block(after='\n'):
-    sb('static std::atomic<jmethodID> cached_method_id(nullptr);\n')
-    class_accessor = header_common.class_accessor_expression(java_class)
-    receiver_arg = 'clazz' if cbn.static else 'obj.obj()'
+    if not use_weak_called_by_natives:
+      receiver_arg = _call_context(sb, cbn, 'obj.obj()', is_muxing=is_muxing)
 
-    sb(f'jclass clazz = {class_accessor};\n')
-    if is_void:
-      sb(f'CHECK_CLAZZ(env, {receiver_arg}, clazz);\n')
+    if use_weak_called_by_natives:
+      call_args = ['env']
+      if not cbn.static:
+        call_args.append('obj.obj()')
     else:
-      default_value = return_type.to_cpp_default_value()
-      sb(f'CHECK_CLAZZ(env, {receiver_arg}, clazz, {default_value});\n')
-
-    checked_str = 'false' if cbn.unchecked else 'true'
-    sb(f'::jni_zero::internal::JniJavaCallContext<{checked_str}> '
-       f'call_context;\n')
-    with sb.statement():
-      if cbn.static and not cbn.is_constructor:
-        method_id_type = 'TYPE_STATIC'
-      else:
-        method_id_type = 'TYPE_INSTANCE'
-      sb(f'call_context.Init<::jni_zero::MethodID::{method_id_type}>')
-      sb.param_list([
-          'env', 'clazz', f'"{cbn.name}"', f'"{cbn.signature.to_descriptor()}"',
-          '&cached_method_id'
-      ])
-
-    param_rvalues = [_prep_param(sb, p) for p in cbn.params]
+      call_args = [receiver_arg, 'call_context.method_id()']
+    call_args.extend(_prep_param(sb, p) for p in cbn.params)
 
     if not is_void:
       return_rvalue = '_ret'
-      sb(f'auto _ret = ')
+      sb('auto _ret = ')
 
     with sb.statement():
-      sb(f'env->{_jni_function_name(cbn)}')
-      sb.param_list([receiver_arg, 'call_context.method_id()'] + param_rvalues)
+      if use_weak_called_by_natives:
+        sb(f'::JniWeak_{cbn.muxed_name}')
+      else:
+        sb(f'env->{_jni_function_name(cbn)}')
+      sb.param_list(call_args)
 
     if not is_void:
       if return_type.is_primitive() or return_type.converted_type:
@@ -212,8 +437,8 @@ def method_definition(sb, jni_class, cbn, *, allow_unused):
         sb(f'{jobject_type} _ret2 = static_cast<{jobject_type}>(_ret);\n')
 
       with sb.statement():
-        sb(f'return ::jni_zero::ScopedJavaLocalRef<{jobject_type}>::Adopt(env, '
-           f'{return_rvalue})')
+        sb(f'return ::jni_zero::ScopedJavaLocalRef<{jobject_type}>::'
+           f'Adopt(env, {return_rvalue})')
 
 
 def _gen_t_names(generics):
@@ -395,7 +620,8 @@ def _mirrored_field_setter(sb, java_type, field):
 
     if not field.java_type.is_primitive():
       param_rvalue = f'{param_rvalue}.obj()'
-    elif field.java_type.primitive_name == 'int' and not field.java_type.converted_type:
+    elif (field.java_type.primitive_name == 'int'
+          and not field.java_type.converted_type):
       param_rvalue = f'as_jint({param_rvalue})'
 
     field_id_accessor = _field_id_accessor_name(java_class, field)

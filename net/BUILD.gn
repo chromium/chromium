@@ -2633,6 +2633,8 @@ if (is_linux || is_chromeos || is_mac) {
 
 if (is_android) {
   generate_jni("net_jni_headers") {
+    # quic_server links this code.
+    use_weak_called_by_natives = true
     sources = [
       "android/java/src/org/chromium/net/AndroidCertVerifyResult.java",
       "android/java/src/org/chromium/net/AndroidKeyStore.java",

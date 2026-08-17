@@ -7,9 +7,9 @@ import contextlib
 import dataclasses
 import filecmp
 import os
+import pathlib
 import shutil
 import tempfile
-import pathlib
 import zipfile
 
 
