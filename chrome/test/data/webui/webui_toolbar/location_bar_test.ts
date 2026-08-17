@@ -34,6 +34,7 @@ suite('LocationBar', function() {
           icon: {handleId: 0n},
           securityLevel: 0,
           text: '',
+          tooltip: '',
           accessibilityState: {
             label: accessibilityLabel,
             description: accessibilityDescription,
@@ -81,6 +82,7 @@ suite('LocationBar', function() {
           icon: {handleId: 0n},
           securityLevel: 0,
           text: 'Not secure',
+          tooltip: 'View site information',
           accessibilityState: {
             label: 'Not secure',
             description: '',

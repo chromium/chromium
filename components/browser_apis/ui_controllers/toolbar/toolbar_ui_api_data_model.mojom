@@ -692,6 +692,7 @@ struct SecurityChipState {
   IconHandle icon;
   SecurityLevel security_level;
   mojo_base.mojom.String16 text;
+  mojo_base.mojom.String16 tooltip;
   SecurityChipAccessibilityState accessibility_state;
   bool is_clickable;
   // True specifically when the text is exactly "Dangerous" (e.g. Malware). This

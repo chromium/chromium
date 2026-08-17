@@ -90,6 +90,7 @@ export class LocationBarElement extends CrLitElement implements
         icon: {handleId: 0n},
         securityLevel: 0,
         text: '',
+        tooltip: '',
         accessibilityState: {
           label: '',
           description: '',

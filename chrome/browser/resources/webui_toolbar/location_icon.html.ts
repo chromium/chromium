@@ -10,6 +10,7 @@ export function getHtml(this: LocationIconElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
 <button id="container" type="button"
+    title="${this.state.tooltip}"
     aria-label="${this.state.accessibilityState.label}"
     aria-description="${this.state.accessibilityState.description}"
     tabindex="${this.state.isClickable ? '0' : '-1'}"

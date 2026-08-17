@@ -432,6 +432,7 @@ export class ToolbarAppElement extends AppElementBase {
           icon: {handleId: 0n},
           securityLevel: 0,
           text: '',
+          tooltip: '',
           accessibilityState: {
             label: '',
             description: '',

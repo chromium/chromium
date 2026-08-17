@@ -67,6 +67,7 @@ export class LocationIconElement extends LocationIconElementBase {
     icon: {handleId: 0n},
     securityLevel: 0,
     text: '',
+    tooltip: '',
     accessibilityState: {
       label: '',
       description: '',

@@ -62,6 +62,7 @@ CreateValidNavigationControlsState() {
                   toolbar_ui_api::IconHandle(),
                   toolbar_ui_api::mojom::SecurityLevel::kNone,
                   /*text=*/std::u16string(),
+                  /*tooltip=*/std::u16string(),
                   toolbar_ui_api::mojom::SecurityChipAccessibilityState::New(
                       /*label=*/std::u16string(),
                       /*description=*/std::u16string()),

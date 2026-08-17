@@ -157,6 +157,7 @@ function createMockNavigationState() {
           icon: {handleId: 0n},
           securityLevel: 0,
           text: '',
+          tooltip: '',
           isClickable: false,
           isTextDangerous: false,
           isVisible: true,

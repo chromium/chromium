@@ -60,6 +60,7 @@ suite('LocationIconTest', function() {
       icon: {handleId: 10n},
       securityLevel: 0,
       text: 'Not secure',
+      tooltip: '',
       isClickable: true,
       isTextDangerous: false,
       isVisible: true,
@@ -83,6 +84,26 @@ suite('LocationIconTest', function() {
     assertEquals(10n, iconContainer.iconHandle.handleId);
   });
 
+  test('Tooltip rendering', async function() {
+    locationIcon.state = {
+      icon: {handleId: 0n},
+      securityLevel: 0,
+      text: '',
+      tooltip: 'View site information',
+      isClickable: true,
+      isTextDangerous: false,
+      isVisible: true,
+      accessibilityState: {
+        label: '',
+        description: '',
+      },
+    };
+    await microtasksFinished();
+
+    const container = locationIcon.$.container;
+    assertEquals('View site information', container.title);
+  });
+
   test('Dangerous text', async function() {
     locationIcon.style.setProperty(
         '--color-omnibox-security-chip-dangerous-background', 'rgb(0, 0, 255)');
@@ -93,6 +114,7 @@ suite('LocationIconTest', function() {
       icon: {handleId: 0n},
       securityLevel: 3,  // DANGEROUS
       text: 'Dangerous',
+      tooltip: '',
       isClickable: true,
       isTextDangerous: true,
       isVisible: true,
@@ -119,6 +141,7 @@ suite('LocationIconTest', function() {
       icon: {handleId: 0n},
       securityLevel: 3,  // DANGEROUS
       text: 'Not secure',
+      tooltip: '',
       isClickable: true,
       isTextDangerous: false,
       isVisible: true,
@@ -141,6 +164,7 @@ suite('LocationIconTest', function() {
       icon: {handleId: 0n},
       securityLevel: 4,  // WARNING
       text: 'Not secure',
+      tooltip: '',
       isClickable: true,
       isTextDangerous: false,
       isVisible: true,
@@ -160,6 +184,7 @@ suite('LocationIconTest', function() {
       icon: {handleId: 0n},
       securityLevel: 0,
       text: '',
+      tooltip: '',
       isClickable: false,
       isTextDangerous: false,
       isVisible: true,
@@ -185,6 +210,7 @@ suite('LocationIconTest', function() {
       icon: {handleId: 0n},
       securityLevel: 0,
       text: '',
+      tooltip: '',
       isClickable: true,
       isTextDangerous: false,
       isVisible: true,
@@ -230,6 +256,7 @@ suite('LocationIconTest', function() {
       icon: {handleId: 0n},
       securityLevel: 0,
       text: '',
+      tooltip: '',
       accessibilityState: {
         label: '',
         description: '',
