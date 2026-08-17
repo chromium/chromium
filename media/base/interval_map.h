@@ -142,7 +142,7 @@ class IntervalMapConstIterator {
   // current interval. (But should always have a different value.)
   // Not allowed if we're already at map_->begin().
   void operator--() {
-    DCHECK(iter_ != map_->begin());
+    CHECK(iter_ != map_->begin());
     --iter_;
   }
 
@@ -173,7 +173,7 @@ class IntervalMap {
   // Defaults to ValueType().
   ValueType operator[](const KeyType& k) const {
     typename MapType::const_iterator i = map_.upper_bound(k);
-    DCHECK(i != map_.begin());
+    CHECK(i != map_.begin());
     --i;
     return i->second;
   }
@@ -226,7 +226,7 @@ class IntervalMap {
   // Always returns a valid iterator.
   const_iterator find(KeyType k) const {
     typename MapType::const_iterator iter = map_.upper_bound(k);
-    DCHECK(iter != map_.begin());
+    CHECK(iter != map_.begin());
     --iter;
     return const_iterator(&map(), iter);
   }
