@@ -480,27 +480,27 @@ public class FuseboxMediatorUnitTest {
     @Test
     public void initialState_isDisabled() {
         mMediator.endInput();
-        assertEquals(FuseboxState.DISABLED, mModel.get(FuseboxProperties.FUSEBOX_STATE).intValue());
+        assertEquals(FuseboxState.DISABLED, mModel.get(FuseboxProperties.FUSEBOX_STATE));
     }
 
     @Test
     public void testAutocompleteStateChange_updatesFuseboxState() {
         mInput.setAutocompleteState(AutocompleteState.STANDBY);
         recreateMediator();
-        assertEquals(FuseboxState.DISABLED, mModel.get(FuseboxProperties.FUSEBOX_STATE).intValue());
+        assertEquals(FuseboxState.DISABLED, mModel.get(FuseboxProperties.FUSEBOX_STATE));
 
         mInput.setAutocompleteState(AutocompleteState.ENABLED);
-        assertEquals(FuseboxState.COMPACT, mModel.get(FuseboxProperties.FUSEBOX_STATE).intValue());
+        assertEquals(FuseboxState.COMPACT, mModel.get(FuseboxProperties.FUSEBOX_STATE));
 
         mInput.setAutocompleteState(AutocompleteState.STANDBY);
-        assertEquals(FuseboxState.DISABLED, mModel.get(FuseboxProperties.FUSEBOX_STATE).intValue());
+        assertEquals(FuseboxState.DISABLED, mModel.get(FuseboxProperties.FUSEBOX_STATE));
     }
 
     @Test
     public void beginInput_withStandbyNoFocusState_isDisabled() {
         mInput.setAutocompleteState(AutocompleteState.STANDBY_NO_FOCUS);
         recreateMediator();
-        assertEquals(FuseboxState.DISABLED, mModel.get(FuseboxProperties.FUSEBOX_STATE).intValue());
+        assertEquals(FuseboxState.DISABLED, mModel.get(FuseboxProperties.FUSEBOX_STATE));
     }
 
     @Test
@@ -510,20 +510,19 @@ public class FuseboxMediatorUnitTest {
         mMediator.endInput();
         mMediator.beginInput(createSession());
 
-        assertNotEquals(PopupState.HIDDEN, (int) mModel.get(FuseboxProperties.POPUP_STATE));
+        assertNotEquals(PopupState.HIDDEN, mModel.get(FuseboxProperties.POPUP_STATE));
     }
 
     @Test
     public void beginInput_isNotDisabled() {
-        assertNotEquals(
-                FuseboxState.DISABLED, mModel.get(FuseboxProperties.FUSEBOX_STATE).intValue());
+        assertNotEquals(FuseboxState.DISABLED, mModel.get(FuseboxProperties.FUSEBOX_STATE));
     }
 
     @Test
     public void startInAiMode_isExpanded() {
         mInput.setRequestType(AutocompleteRequestType.AI_MODE);
         recreateMediator();
-        assertEquals(FuseboxState.EXPANDED, mModel.get(FuseboxProperties.FUSEBOX_STATE).intValue());
+        assertEquals(FuseboxState.EXPANDED, mModel.get(FuseboxProperties.FUSEBOX_STATE));
     }
 
     @Test
@@ -532,7 +531,7 @@ public class FuseboxMediatorUnitTest {
         mInput.setRequestType(AutocompleteRequestType.SEARCH);
         recreateMediator();
 
-        assertEquals(FuseboxState.COMPACT, mModel.get(FuseboxProperties.FUSEBOX_STATE).intValue());
+        assertEquals(FuseboxState.COMPACT, mModel.get(FuseboxProperties.FUSEBOX_STATE));
     }
 
     @Test
@@ -542,7 +541,7 @@ public class FuseboxMediatorUnitTest {
         mInput.setRequestType(AutocompleteRequestType.AI_MODE);
         recreateMediator();
 
-        assertEquals(FuseboxState.EXPANDED, mModel.get(FuseboxProperties.FUSEBOX_STATE).intValue());
+        assertEquals(FuseboxState.EXPANDED, mModel.get(FuseboxProperties.FUSEBOX_STATE));
     }
 
     @Test
@@ -553,7 +552,7 @@ public class FuseboxMediatorUnitTest {
 
         assertEquals(
                 BackgroundStyle.ALWAYS_VISIBLE_WIDE,
-                mModel.get(FuseboxProperties.PLUS_BUTTON_BACKGROUND_STYLE).intValue());
+                mModel.get(FuseboxProperties.PLUS_BUTTON_BACKGROUND_STYLE));
     }
 
     @Test
@@ -564,7 +563,7 @@ public class FuseboxMediatorUnitTest {
 
         assertEquals(
                 BackgroundStyle.INTERACT_ONLY_SMALL,
-                mModel.get(FuseboxProperties.PLUS_BUTTON_BACKGROUND_STYLE).intValue());
+                mModel.get(FuseboxProperties.PLUS_BUTTON_BACKGROUND_STYLE));
     }
 
     @Test
@@ -575,7 +574,7 @@ public class FuseboxMediatorUnitTest {
 
         assertEquals(
                 BackgroundStyle.INTERACT_ONLY_SMALL,
-                mModel.get(FuseboxProperties.PLUS_BUTTON_BACKGROUND_STYLE).intValue());
+                mModel.get(FuseboxProperties.PLUS_BUTTON_BACKGROUND_STYLE));
     }
 
     @Test
@@ -585,7 +584,7 @@ public class FuseboxMediatorUnitTest {
 
         addAttachment("title", "token", FuseboxAttachmentType.ATTACHMENT_IMAGE);
 
-        assertEquals(FuseboxState.EXPANDED, mModel.get(FuseboxProperties.FUSEBOX_STATE).intValue());
+        assertEquals(FuseboxState.EXPANDED, mModel.get(FuseboxProperties.FUSEBOX_STATE));
     }
 
     @Test
@@ -593,11 +592,11 @@ public class FuseboxMediatorUnitTest {
         recreateMediator();
 
         addAttachment("title", "token", FuseboxAttachmentType.ATTACHMENT_IMAGE);
-        assertEquals(FuseboxState.EXPANDED, mModel.get(FuseboxProperties.FUSEBOX_STATE).intValue());
+        assertEquals(FuseboxState.EXPANDED, mModel.get(FuseboxProperties.FUSEBOX_STATE));
 
         mModel.get(FuseboxProperties.REQUEST_TYPE_BUTTON_CLICKED).run();
 
-        assertEquals(FuseboxState.COMPACT, mModel.get(FuseboxProperties.FUSEBOX_STATE).intValue());
+        assertEquals(FuseboxState.COMPACT, mModel.get(FuseboxProperties.FUSEBOX_STATE));
     }
 
     @Test
@@ -608,7 +607,7 @@ public class FuseboxMediatorUnitTest {
 
         mMediator.setIsTextWrapping(true);
 
-        assertEquals(FuseboxState.EXPANDED, mModel.get(FuseboxProperties.FUSEBOX_STATE).intValue());
+        assertEquals(FuseboxState.EXPANDED, mModel.get(FuseboxProperties.FUSEBOX_STATE));
     }
 
     @Test
@@ -619,7 +618,7 @@ public class FuseboxMediatorUnitTest {
 
         mMediator.setIsTextWrapping(true);
 
-        assertEquals(FuseboxState.COMPACT, mModel.get(FuseboxProperties.FUSEBOX_STATE).intValue());
+        assertEquals(FuseboxState.COMPACT, mModel.get(FuseboxProperties.FUSEBOX_STATE));
     }
 
     @Test
@@ -628,7 +627,7 @@ public class FuseboxMediatorUnitTest {
         mInput.setRequestType(AutocompleteRequestType.AI_MODE);
         recreateMediator();
 
-        assertEquals(FuseboxState.EXPANDED, mModel.get(FuseboxProperties.FUSEBOX_STATE).intValue());
+        assertEquals(FuseboxState.EXPANDED, mModel.get(FuseboxProperties.FUSEBOX_STATE));
     }
 
     @Test
@@ -636,7 +635,7 @@ public class FuseboxMediatorUnitTest {
         mInput.setAutocompleteState(AutocompleteState.STANDBY);
         recreateMediator();
 
-        assertEquals(FuseboxState.DISABLED, mModel.get(FuseboxProperties.FUSEBOX_STATE).intValue());
+        assertEquals(FuseboxState.DISABLED, mModel.get(FuseboxProperties.FUSEBOX_STATE));
     }
 
     @Test
@@ -644,7 +643,7 @@ public class FuseboxMediatorUnitTest {
         mInput.setAutocompleteState(AutocompleteState.STANDBY_NO_FOCUS);
         recreateMediator();
 
-        assertEquals(FuseboxState.DISABLED, mModel.get(FuseboxProperties.FUSEBOX_STATE).intValue());
+        assertEquals(FuseboxState.DISABLED, mModel.get(FuseboxProperties.FUSEBOX_STATE));
     }
 
     @Test
@@ -796,13 +795,12 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void endInput_clearsState() {
-        assertNotEquals(
-                FuseboxState.DISABLED, mModel.get(FuseboxProperties.FUSEBOX_STATE).intValue());
+        assertNotEquals(FuseboxState.DISABLED, mModel.get(FuseboxProperties.FUSEBOX_STATE));
         addAttachment("title", "token", FuseboxAttachmentType.ATTACHMENT_IMAGE);
         assertTrue(mHasAttachmentsSupplier.get());
 
         mMediator.endInput();
-        assertEquals(FuseboxState.DISABLED, mModel.get(FuseboxProperties.FUSEBOX_STATE).intValue());
+        assertEquals(FuseboxState.DISABLED, mModel.get(FuseboxProperties.FUSEBOX_STATE));
         assertFalse(mHasAttachmentsSupplier.get());
     }
 
@@ -813,11 +811,11 @@ public class FuseboxMediatorUnitTest {
 
         // Show popup.
         runnable.run();
-        assertEquals(PopupState.FLOATING, (int) mModel.get(FuseboxProperties.POPUP_STATE));
+        assertEquals(PopupState.FLOATING, mModel.get(FuseboxProperties.POPUP_STATE));
 
         // Hide popup.
         runnable.run();
-        assertEquals(PopupState.HIDDEN, (int) mModel.get(FuseboxProperties.POPUP_STATE));
+        assertEquals(PopupState.HIDDEN, mModel.get(FuseboxProperties.POPUP_STATE));
     }
 
     @Test
@@ -1105,22 +1103,20 @@ public class FuseboxMediatorUnitTest {
 
         mInput.setAutocompleteState(AutocompleteState.STANDBY);
         assertFalse(mModel.get(FuseboxProperties.ATTACHMENTS_VISIBLE));
-        assertEquals(FuseboxState.DISABLED, mModel.get(FuseboxProperties.FUSEBOX_STATE).intValue());
+        assertEquals(FuseboxState.DISABLED, mModel.get(FuseboxProperties.FUSEBOX_STATE));
 
         mInput.setAutocompleteState(AutocompleteState.ENABLED);
         assertTrue(mModel.get(FuseboxProperties.ATTACHMENTS_VISIBLE));
-        assertEquals(FuseboxState.EXPANDED, mModel.get(FuseboxProperties.FUSEBOX_STATE).intValue());
+        assertEquals(FuseboxState.EXPANDED, mModel.get(FuseboxProperties.FUSEBOX_STATE));
     }
 
     @Test
     public void dedicatedButton_clearsAttachmentsAndAbandonsSession() {
         addAttachment("title", "token1", FuseboxAttachmentType.ATTACHMENT_TAB);
-        assertEquals(
-                AutocompleteRequestType.AI_MODE, (int) mModel.get(FuseboxProperties.REQUEST_TYPE));
+        assertEquals(AutocompleteRequestType.AI_MODE, mModel.get(FuseboxProperties.REQUEST_TYPE));
 
         mModel.get(FuseboxProperties.REQUEST_TYPE_BUTTON_CLICKED).run();
-        assertEquals(
-                AutocompleteRequestType.SEARCH, (int) mModel.get(FuseboxProperties.REQUEST_TYPE));
+        assertEquals(AutocompleteRequestType.SEARCH, mModel.get(FuseboxProperties.REQUEST_TYPE));
         assertEquals(0, mAttachments.size());
     }
 
@@ -1229,31 +1225,23 @@ public class FuseboxMediatorUnitTest {
         addAttachment("title1", "token1", FuseboxAttachmentType.ATTACHMENT_IMAGE);
         assertEquals(
                 AutocompleteRequestType.IMAGE_GENERATION,
-                (int) mModel.get(FuseboxProperties.REQUEST_TYPE));
-        assertEquals(PopupState.HIDDEN, (int) mModel.get(FuseboxProperties.POPUP_STATE));
+                mModel.get(FuseboxProperties.REQUEST_TYPE));
+        assertEquals(PopupState.HIDDEN, mModel.get(FuseboxProperties.POPUP_STATE));
     }
 
     @Test
     public void testUpdateVisualsForState_colorScheme() {
         mMediator.updateVisualsForState(BrandedColorScheme.APP_DEFAULT);
-        assertEquals(
-                BrandedColorScheme.APP_DEFAULT,
-                mModel.get(FuseboxProperties.COLOR_SCHEME).intValue());
+        assertEquals(BrandedColorScheme.APP_DEFAULT, mModel.get(FuseboxProperties.COLOR_SCHEME));
 
         mMediator.updateVisualsForState(BrandedColorScheme.INCOGNITO);
-        assertEquals(
-                BrandedColorScheme.INCOGNITO,
-                mModel.get(FuseboxProperties.COLOR_SCHEME).intValue());
+        assertEquals(BrandedColorScheme.INCOGNITO, mModel.get(FuseboxProperties.COLOR_SCHEME));
 
         mMediator.updateVisualsForState(BrandedColorScheme.LIGHT_BRANDED_THEME);
-        assertEquals(
-                BrandedColorScheme.APP_DEFAULT,
-                mModel.get(FuseboxProperties.COLOR_SCHEME).intValue());
+        assertEquals(BrandedColorScheme.APP_DEFAULT, mModel.get(FuseboxProperties.COLOR_SCHEME));
 
         mMediator.updateVisualsForState(BrandedColorScheme.DARK_BRANDED_THEME);
-        assertEquals(
-                BrandedColorScheme.APP_DEFAULT,
-                mModel.get(FuseboxProperties.COLOR_SCHEME).intValue());
+        assertEquals(BrandedColorScheme.APP_DEFAULT, mModel.get(FuseboxProperties.COLOR_SCHEME));
     }
 
     @Test
@@ -1815,16 +1803,16 @@ public class FuseboxMediatorUnitTest {
     @Test
     public void testCompactMode() {
         recreateMediator();
-        assertEquals(FuseboxState.COMPACT, mModel.get(FuseboxProperties.FUSEBOX_STATE).intValue());
+        assertEquals(FuseboxState.COMPACT, mModel.get(FuseboxProperties.FUSEBOX_STATE));
 
         mInput.setRequestType(AutocompleteRequestType.AI_MODE);
-        assertEquals(FuseboxState.EXPANDED, mModel.get(FuseboxProperties.FUSEBOX_STATE).intValue());
+        assertEquals(FuseboxState.EXPANDED, mModel.get(FuseboxProperties.FUSEBOX_STATE));
 
         mInput.setRequestType(AutocompleteRequestType.SEARCH);
-        assertEquals(FuseboxState.COMPACT, mModel.get(FuseboxProperties.FUSEBOX_STATE).intValue());
+        assertEquals(FuseboxState.COMPACT, mModel.get(FuseboxProperties.FUSEBOX_STATE));
 
         mMediator.setIsTextWrapping(true);
-        assertEquals(FuseboxState.EXPANDED, mModel.get(FuseboxProperties.FUSEBOX_STATE).intValue());
+        assertEquals(FuseboxState.EXPANDED, mModel.get(FuseboxProperties.FUSEBOX_STATE));
     }
 
     @Test

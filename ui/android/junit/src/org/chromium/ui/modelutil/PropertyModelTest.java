@@ -9,6 +9,8 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.Mockito.verify;
 
+import androidx.annotation.IntDef;
+
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -19,13 +21,17 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.build.BuildConfig;
+import org.chromium.ui.modelutil.PropertyModel.ReadableIntDefPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableFloatPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableIntDefPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableTransformingObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyObservable.PropertyObserver;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -35,6 +41,14 @@ import java.util.function.Function;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class PropertyModelTest {
+    @IntDef({TestIntDef.VAL_A, TestIntDef.VAL_B, TestIntDef.VAL_C})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface TestIntDef {
+        int VAL_A = 0;
+        int VAL_B = 1;
+        int VAL_C = 2;
+    }
+
     @Rule public ExpectedException thrown = ExpectedException.none();
 
     public static WritableBooleanPropertyKey BOOLEAN_PROPERTY_A = new WritableBooleanPropertyKey();
@@ -48,6 +62,15 @@ public class PropertyModelTest {
     public static WritableIntPropertyKey INT_PROPERTY_A = new WritableIntPropertyKey();
     public static WritableIntPropertyKey INT_PROPERTY_B = new WritableIntPropertyKey();
     public static WritableIntPropertyKey INT_PROPERTY_C = new WritableIntPropertyKey();
+
+    public static WritableIntDefPropertyKey<TestIntDef> INT_DEF_PROPERTY_A =
+            new WritableIntDefPropertyKey<>(TestIntDef.VAL_A);
+    public static WritableIntDefPropertyKey<TestIntDef> INT_DEF_PROPERTY_B =
+            new WritableIntDefPropertyKey<>(TestIntDef.VAL_A);
+    public static WritableIntDefPropertyKey<TestIntDef> INT_DEF_PROPERTY_C =
+            new WritableIntDefPropertyKey<>(TestIntDef.VAL_C, "int_def_c");
+    public static ReadableIntDefPropertyKey<TestIntDef> READABLE_INT_DEF_PROPERTY =
+            new ReadableIntDefPropertyKey<>(TestIntDef.VAL_A, "readable_int_def");
 
     public static WritableObjectPropertyKey<Object> OBJECT_PROPERTY_A =
             new WritableObjectPropertyKey<>();
@@ -143,6 +166,33 @@ public class PropertyModelTest {
     }
 
     private void verifyIntUpdate(PropertyModel model, WritableIntPropertyKey key, int value) {
+        @SuppressWarnings("unchecked")
+        PropertyObserver<PropertyKey> observer = Mockito.mock(PropertyObserver.class);
+        model.addObserver(observer);
+        Mockito.<PropertyObserver>reset(observer);
+
+        model.set(key, value);
+        verify(observer).onPropertyChanged(model, key);
+        assertThat(model.get(key), equalTo(value));
+
+        model.removeObserver(observer);
+    }
+
+    @Test
+    public void intDefUpdates() {
+        PropertyModel model =
+                new PropertyModel(INT_DEF_PROPERTY_A, INT_DEF_PROPERTY_B, INT_DEF_PROPERTY_C);
+
+        verifyIntDefUpdate(model, INT_DEF_PROPERTY_A, TestIntDef.VAL_A);
+        verifyIntDefUpdate(model, INT_DEF_PROPERTY_B, TestIntDef.VAL_B);
+        verifyIntDefUpdate(model, INT_DEF_PROPERTY_C, TestIntDef.VAL_C);
+
+        verifyIntDefUpdate(model, INT_DEF_PROPERTY_A, TestIntDef.VAL_C);
+        verifyIntDefUpdate(model, INT_DEF_PROPERTY_B, TestIntDef.VAL_A);
+    }
+
+    private void verifyIntDefUpdate(
+            PropertyModel model, WritableIntDefPropertyKey<TestIntDef> key, @TestIntDef int value) {
         @SuppressWarnings("unchecked")
         PropertyObserver<PropertyKey> observer = Mockito.mock(PropertyObserver.class);
         model.addObserver(observer);
@@ -253,12 +303,14 @@ public class PropertyModelTest {
                                 BOOLEAN_PROPERTY_A,
                                 FLOAT_PROPERTY_A,
                                 INT_PROPERTY_A,
+                                INT_DEF_PROPERTY_A,
                                 OBJECT_PROPERTY_A)
                         .withTransformingKey(TRANSFORMING_OBJECT_PROPERTY_A, o -> o)
                         .build();
         model.set(BOOLEAN_PROPERTY_A, true);
         model.set(FLOAT_PROPERTY_A, 1f);
         model.set(INT_PROPERTY_A, -1);
+        model.set(INT_DEF_PROPERTY_A, TestIntDef.VAL_B);
 
         Object obj1 = new Object();
         model.set(OBJECT_PROPERTY_A, obj1);
@@ -274,6 +326,7 @@ public class PropertyModelTest {
         model.set(BOOLEAN_PROPERTY_A, true);
         model.set(FLOAT_PROPERTY_A, 1f);
         model.set(INT_PROPERTY_A, -1);
+        model.set(INT_DEF_PROPERTY_A, TestIntDef.VAL_B);
         model.set(OBJECT_PROPERTY_A, obj1);
         model.set(TRANSFORMING_OBJECT_PROPERTY_A, obj2);
 
@@ -445,5 +498,62 @@ public class PropertyModelTest {
         Assert.assertFalse(
                 "TRANSFORMING_OBJECT_PROPERTY_B should not be equal",
                 model1.compareValue(model2, TRANSFORMING_OBJECT_PROPERTY_B));
+    }
+
+    @Test
+    public void testCompareValue_IntDef() {
+        PropertyModel model1 =
+                new PropertyModel(INT_DEF_PROPERTY_A, INT_DEF_PROPERTY_B, INT_DEF_PROPERTY_C);
+        model1.set(INT_DEF_PROPERTY_A, TestIntDef.VAL_A);
+        model1.set(INT_DEF_PROPERTY_B, TestIntDef.VAL_B);
+        model1.set(INT_DEF_PROPERTY_C, TestIntDef.VAL_C);
+
+        PropertyModel model2 =
+                new PropertyModel(INT_DEF_PROPERTY_A, INT_DEF_PROPERTY_B, INT_DEF_PROPERTY_C);
+        model2.set(INT_DEF_PROPERTY_A, TestIntDef.VAL_A);
+        model2.set(INT_DEF_PROPERTY_B, TestIntDef.VAL_C);
+
+        Assert.assertTrue(
+                "INT_DEF_PROPERTY_A should be equal",
+                model1.compareValue(model2, INT_DEF_PROPERTY_A));
+        Assert.assertFalse(
+                "INT_DEF_PROPERTY_B should not be equal",
+                model1.compareValue(model2, INT_DEF_PROPERTY_B));
+        Assert.assertFalse(
+                "INT_DEF_PROPERTY_C should not be equal",
+                model1.compareValue(model2, INT_DEF_PROPERTY_C));
+    }
+
+    @Test
+    public void builderWithIntDef() {
+        PropertyModel model =
+                new PropertyModel.Builder(
+                                INT_DEF_PROPERTY_A, INT_DEF_PROPERTY_B, READABLE_INT_DEF_PROPERTY)
+                        .with(INT_DEF_PROPERTY_A, TestIntDef.VAL_B)
+                        .with(READABLE_INT_DEF_PROPERTY, TestIntDef.VAL_C)
+                        .build();
+        assertThat(model.get(INT_DEF_PROPERTY_A), equalTo(TestIntDef.VAL_B));
+        assertThat(model.get(INT_DEF_PROPERTY_B), equalTo(TestIntDef.VAL_A));
+        assertThat(model.get(READABLE_INT_DEF_PROPERTY), equalTo(TestIntDef.VAL_C));
+        assertThat(
+                PropertyModel.getFromModelOrDefault(model, INT_DEF_PROPERTY_A, TestIntDef.VAL_A),
+                equalTo(TestIntDef.VAL_B));
+        assertThat(
+                PropertyModel.getFromModelOrDefault(model, INT_DEF_PROPERTY_C, TestIntDef.VAL_C),
+                equalTo(TestIntDef.VAL_C));
+        assertThat(model.containsKeyEqualTo(INT_DEF_PROPERTY_A, TestIntDef.VAL_B), equalTo(true));
+        assertThat(model.containsKeyEqualTo(INT_DEF_PROPERTY_A, TestIntDef.VAL_A), equalTo(false));
+    }
+
+    @Test
+    public void intDefDefaultValue() {
+        PropertyModel model = new PropertyModel(INT_DEF_PROPERTY_C);
+        assertThat(model.get(INT_DEF_PROPERTY_C), equalTo(TestIntDef.VAL_C));
+    }
+
+    @Test
+    public void intDefKeyNames() {
+        assertThat(INT_DEF_PROPERTY_C.toString(), equalTo("int_def_c"));
+        assertThat(READABLE_INT_DEF_PROPERTY.toString(), equalTo("readable_int_def"));
     }
 }

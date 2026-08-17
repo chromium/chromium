@@ -42,7 +42,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.omnibox.FuseboxSessionState;
 import org.chromium.chrome.browser.omnibox.R;
-import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.BackgroundStyle;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -51,7 +50,6 @@ import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager.ScrimClient;
 import org.chromium.components.metrics.OmniboxEventProtosIntDef.PageClassification;
 import org.chromium.components.omnibox.AutocompleteInput;
-import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -214,16 +212,6 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
         mModel =
                 new PropertyModel.Builder(FuseboxProperties.ALL_KEYS)
                         .with(FuseboxProperties.FUSEBOX_LAYOUT_MODE, getFuseboxLayoutMode())
-                        .with(FuseboxProperties.FUSEBOX_STATE, FuseboxState.DISABLED)
-                        .with(FuseboxProperties.REQUEST_TYPE, AutocompleteRequestType.SEARCH)
-                        .with(
-                                FuseboxProperties.PLUS_BUTTON_BACKGROUND_STYLE,
-                                BackgroundStyle.INTERACT_ONLY_SMALL)
-                        // May not be correct, but the view side struggles to deal with a null here.
-                        // Init with a default, and it will be corrected by the mediator before it
-                        // matters.
-                        .with(FuseboxProperties.COLOR_SCHEME, BrandedColorScheme.APP_DEFAULT)
-                        .with(FuseboxProperties.POPUP_STATE, PopupState.HIDDEN)
                         .with(
                                 FuseboxProperties.POPUP_IS_BOTTOM_SHEET,
                                 OmniboxFeatures.shouldShowBottomSheetPopup())

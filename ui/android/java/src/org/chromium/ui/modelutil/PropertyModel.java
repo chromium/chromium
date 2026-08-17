@@ -145,6 +145,62 @@ public class PropertyModel extends PropertyObservable<PropertyKey> {
         }
     }
 
+    /**
+     * The key type for read-only integer model properties with an IntDef type.
+     *
+     * @param <T> The IntDef annotation type being tracked by the key.
+     */
+    public static class ReadableIntDefPropertyKey<T> extends ReadableIntPropertyKey {
+        /** The default value for this property when unset in the model. */
+        public final int defaultValue;
+
+        /**
+         * Constructs a new unnamed read-only integer IntDef property key with a default value.
+         *
+         * @param defaultValue The default value when unset.
+         */
+        public ReadableIntDefPropertyKey(int defaultValue) {
+            this(defaultValue, null);
+        }
+
+        /**
+         * Constructs a new named read-only integer IntDef property key, e.g. for use in debugging.
+         *
+         * @param defaultValue The default value when unset.
+         * @param name The optional name of the property.
+         */
+        public ReadableIntDefPropertyKey(int defaultValue, @Nullable String name) {
+            super(name);
+            this.defaultValue = defaultValue;
+        }
+    }
+
+    /**
+     * The key type for mutable integer model properties with an IntDef type.
+     *
+     * @param <T> The IntDef annotation type being tracked by the key.
+     */
+    public static final class WritableIntDefPropertyKey<T> extends ReadableIntDefPropertyKey<T> {
+        /**
+         * Constructs a new unnamed writable integer IntDef property key with a default value.
+         *
+         * @param defaultValue The default value when unset.
+         */
+        public WritableIntDefPropertyKey(int defaultValue) {
+            super(defaultValue, null);
+        }
+
+        /**
+         * Constructs a new named writable integer IntDef property key, e.g. for use in debugging.
+         *
+         * @param defaultValue The default value when unset.
+         * @param name The optional name of the property.
+         */
+        public WritableIntDefPropertyKey(int defaultValue, @Nullable String name) {
+            super(defaultValue, name);
+        }
+    }
+
     /** The key type for read-only long model properties. */
     public static class ReadableLongPropertyKey extends NamedPropertyKey {
         /** Constructs a new unnamed read-only long property key. */
@@ -371,8 +427,27 @@ public class PropertyModel extends PropertyObservable<PropertyKey> {
         return value == UNSET ? 0 : (int) assumeNonNull(value);
     }
 
+    /** Get the current value from the int-def based key. */
+    public int get(ReadableIntDefPropertyKey<?> key) {
+        validateKey(key);
+        Object value = mData.get(key);
+        return value == UNSET ? key.defaultValue : (int) assumeNonNull(value);
+    }
+
     /** Set the value for the int based key. */
     public void set(WritableIntPropertyKey key, int value) {
+        validateKey(key);
+        Object prev = mData.get(key);
+        if (prev != UNSET && (int) assumeNonNull(prev) == value) {
+            return;
+        }
+
+        mData.put(key, value);
+        notifyPropertyChanged(key);
+    }
+
+    /** Set the value for the int-def based key. */
+    public void set(WritableIntDefPropertyKey<?> key, int value) {
         validateKey(key);
         Object prev = mData.get(key);
         if (prev != UNSET && (int) assumeNonNull(prev) == value) {
