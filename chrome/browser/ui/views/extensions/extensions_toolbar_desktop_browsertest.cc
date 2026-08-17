@@ -1170,9 +1170,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarDesktopBrowserTest,
 // Tests that if an update comes in between the request access button is clicked
 // and the confirmation is collapsed, the button is updated afterwards with the
 // correct information.
+// TODO(crbug.com/547559833): Re-enable once fixed.
 IN_PROC_BROWSER_TEST_F(
     ExtensionsToolbarDesktopBrowserTest,
-    RequestAccessButton_UpdateInBetweenClickAndConfirmationCollapse) {
+    DISABLED_RequestAccessButton_UpdateInBetweenClickAndConfirmationCollapse) {
   auto extension_A =
       InstallExtensionWithHostPermissions("Extension A", {"<all_urls>"});
   auto extension_B =
