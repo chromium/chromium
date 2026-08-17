@@ -43,6 +43,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
@@ -235,6 +236,7 @@ public class TabItemPickerCoordinatorUnitTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE)
     public void testOnCachedTabIdsRetrieved_filtersAndShowsTabs() {
         // Mock the window manager to return a valid selector upon request
         when(TabWindowManagerSingleton.getInstance()

@@ -192,7 +192,7 @@ BASE_FEATURE(kHideAimEntrypointOnUserInput,
 BASE_FEATURE(kHideAimEntrypointForUrlSuggestions, DISABLED);
 
 // When enabled, the multimodal input button is shown in the Omnibox.
-BASE_FEATURE(kOmniboxMultimodalInput, DISABLED);
+BASE_FEATURE(kOmniboxMultimodalInput, ENABLED);
 
 // An additional gate to the behavior of OmniboxMultimodalInput on desktop.
 BASE_FEATURE(kAndroidDesktopAimGate, ENABLED);
