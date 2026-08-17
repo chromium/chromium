@@ -37,6 +37,8 @@
 namespace autofill {
 
 class AutofillField;
+class AutofillClient;
+class FormStructure;
 
 namespace autofill_metrics {
 class FormEventLoggerBase;
@@ -941,6 +943,10 @@ class AutofillMetrics {
   // Logs the user action taken on the Autofill AI private inference notice.
   static void LogAutofillAiPrivateInferenceNoticeInteraction(
       PopupNoticeInteractions interaction);
+
+  // Logs metrics about the filling readiness of the submitted form.
+  static void LogFillingReadinessMetrics(const FormStructure& form,
+                                         AutofillClient& client);
 };
 
 #if defined(UNIT_TEST)

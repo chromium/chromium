@@ -31,6 +31,8 @@
 #include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_type.h"
+#include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
@@ -41,6 +43,7 @@
 #include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_types.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 #include "components/autofill/core/browser/metrics/form_events/form_event_logger_base.h"
 #include "components/autofill/core/browser/metrics/form_events/form_events.h"
@@ -48,6 +51,7 @@
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
+#include "components/autofill/core/browser/suggestions/suggestion_util.h"
 #include "components/autofill/core/browser/ui/autofill_image_fetcher_base.h"
 #include "components/autofill/core/browser/ui/payments/autofill_progress_ui_type.h"
 #include "components/autofill/core/browser/ui/popup_interaction.h"
@@ -1612,6 +1616,54 @@ void AutofillMetrics::LogAutofillAiPrivateInferenceNoticeInteraction(
     PopupNoticeInteractions interaction) {
   base::UmaHistogramEnumeration(
       "Autofill.Ai.PrivateInferenceNoticeInteractions", interaction);
+}
+
+// static
+void AutofillMetrics::LogFillingReadinessMetrics(const FormStructure& form,
+                                                 AutofillClient& client) {
+  DenseSet<FormType> form_types =
+      form.GetFormTypes(GetAcUnrecognizedBehavior(client));
+  bool card_form = form_types.contains(FormType::kCreditCardForm);
+  bool address_form = form_types.contains(FormType::kAddressForm);
+
+  bool autofill_ai_form = std::ranges::any_of(
+      form, [](const std::unique_ptr<AutofillField>& field) {
+        return field->Type().GetGroups().contains(FieldTypeGroup::kAutofillAi);
+      });
+
+  int required_types = 0;
+  if (address_form) {
+    ++required_types;
+  }
+  if (card_form) {
+    ++required_types;
+  }
+  if (autofill_ai_form) {
+    ++required_types;
+  }
+
+  if (required_types == 0) {
+    return;
+  }
+
+  PersonalDataManager& pdm = client.GetPersonalDataManager();
+  int available_types = 0;
+  if (address_form && !pdm.address_data_manager().GetProfiles().empty()) {
+    available_types++;
+  }
+  if (card_form && !pdm.payments_data_manager().GetCreditCards().empty()) {
+    available_types++;
+  }
+  if (autofill_ai_form && client.GetEntityDataManager() &&
+      !client.GetEntityDataManager()->GetEntityInstances().empty()) {
+    available_types++;
+  }
+  base::UmaHistogramExactLinear(
+      base::StrCat({"Autofill.KeyMetrics.FillingReadiness."
+                    "AvailableRequiredDataSources.Required",
+                    base::NumberToString(required_types)}),
+      available_types,
+      /*exclusive_max=*/5);
 }
 
 }  // namespace autofill

@@ -3208,5 +3208,42 @@ TEST_F(AutofillMetricsSeamlessnessTest, CreditCardFormRecordOnIFrames) {
               UkmEventsAre(expected_events));
 }
 
+// Tests that Autofill.KeyMetrics.FillingReadiness.AvailableRequiredDataSources
+// correctly evaluates the form requirements and the user's available data.
+TEST_F(AutofillMetricsTest, FormRequirementsAndAvailabilityMetrics) {
+  // Setup user data: Ensure the user has at least one Address profile
+  // but explicitly has zero Credit Cards available.
+  personal_data().test_address_data_manager().AddProfile(
+      test::GetFullProfile());
+  personal_data().test_payments_data_manager().ClearAllLocalData();
+  personal_data().test_payments_data_manager().ClearCreditCards();
+
+  // Create a form that requires precisely 2 distinct data sources:
+  // 1. An address data source (ADDRESS_HOME_LINE1)
+  // 2. A payments data source (CREDIT_CARD_NUMBER)
+  FormData form = test::GetFormData(
+      {.fields = {{.role = ADDRESS_HOME_LINE1}, {.role = CREDIT_CARD_NUMBER}}});
+
+  auto form_structure = std::make_unique<FormStructure>(form);
+  form_structure->field(0)->set_server_predictions(
+      {test::CreateFieldPrediction(ADDRESS_HOME_LINE1)});
+  form_structure->field(1)->set_server_predictions(
+      {test::CreateFieldPrediction(CREDIT_CARD_NUMBER)});
+
+  base::HistogramTester histogram_tester;
+
+  AutofillMetrics::LogFillingReadinessMetrics(*form_structure,
+                                              autofill_client());
+
+  // We expect the `.Required2` histogram to be used since the form requires
+  // both Address and Payments data.
+  // We expect the recorded sample to be `1` since the user only has Address
+  // data available (Credit Cards were cleared).
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.KeyMetrics.FillingReadiness.AvailableRequiredDataSources."
+      "Required2",
+      1, 1);
+}
+
 }  // namespace
 }  // namespace autofill::autofill_metrics

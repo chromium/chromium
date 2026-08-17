@@ -5691,6 +5691,24 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <token key="Profile" variants="ProfileIndex"/>
 </histogram>
 
+<histogram
+    name="Autofill.KeyMetrics.FillingReadiness.AvailableRequiredDataSources.Required{RequiredDataSourcesCount}"
+    units="count" expires_after="2027-02-07">
+  <owner>luchenpeng@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Logs the number of distinct data types (Address, Payments, Forms AI)
+    available to the user that are actually required by the submitted form.
+    Logged once per form submission, specifically for forms that require
+    {RequiredDataSourcesCount} data types.
+  </summary>
+  <token key="RequiredDataSourcesCount">
+    <variant name="1" summary="1"/>
+    <variant name="2" summary="2"/>
+    <variant name="3" summary="3"/>
+  </token>
+</histogram>
+
 <histogram name="Autofill.KeyMetrics.FillingReadiness.{FormType}{Profile}"
     enum="BooleanAutofillFillingReadiness" expires_after="2026-12-12">
   <owner>battre@chromium.org</owner>
