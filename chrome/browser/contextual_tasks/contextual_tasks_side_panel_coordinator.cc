@@ -428,7 +428,16 @@ void ContextualTasksSidePanelCoordinator::Close() {
 }
 
 void ContextualTasksSidePanelCoordinator::OpenInZeroState() {
-  DisassociateAllTabsFromCurrentTask();
+  // Disassociate only the active tab from its current task so that Show()
+  // creates a fresh zero-state task for this tab, without affecting any
+  // background tabs that may still be associated with the previous task.
+  TabListInterface* tab_list = TabListInterface::From(browser_window_);
+  if (tab_list) {
+    tabs::TabInterface* active_tab_interface = tab_list->GetActiveTab();
+    if (active_tab_interface && active_tab_interface->GetContents()) {
+      DisassociateTabFromTask(active_tab_interface->GetContents());
+    }
+  }
 
   if (content::WebContents* active_contents = GetActiveWebContents()) {
     MaybeDetachWebContents(active_contents);
@@ -1095,8 +1104,7 @@ void ContextualTasksSidePanelCoordinator::DisassociateAllTabsFromCurrentTask() {
   std::optional<ContextualTask> current_task = GetCurrentTask();
   if (current_task) {
     if (contextual_tasks::kShowEntryPoint.Get() ==
-            contextual_tasks::EntryPointOption::kToolbarEphemeralBranded &&
-        current_task->GetThread().has_value()) {
+        contextual_tasks::EntryPointOption::kToolbarEphemeralBranded) {
       return;
     }
 

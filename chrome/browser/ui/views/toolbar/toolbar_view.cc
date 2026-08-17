@@ -447,7 +447,7 @@ void ToolbarView::Init() {
         AddChildView(std::make_unique<SplitTabsToolbarButton>(browser_));
   }
 
-  if (base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks) &&
+  if (contextual_tasks::IsContextualTasksUIEnabled() &&
       contextual_tasks::kShowEntryPoint.Get() ==
           contextual_tasks::EntryPointOption::kToolbarEphemeralBranded) {
     auto button = std::make_unique<ContextualTasksButton>(browser_);
@@ -1656,7 +1656,7 @@ void ToolbarView::LayoutCommon() {
       GetLayoutInsets(LayoutInset::TOOLBAR_INTERIOR_MARGIN);
 
   auto* vts_controller = tabs::VerticalTabStripStateController::From(browser_);
-  if (base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks) &&
+  if (contextual_tasks::IsContextualTasksUIEnabled() &&
       (contextual_tasks::kShowEntryPoint.Get() ==
        contextual_tasks::EntryPointOption::kToolbarEphemeralBranded) &&
       (!vts_controller || !vts_controller->ShouldDisplayVerticalTabs())) {
