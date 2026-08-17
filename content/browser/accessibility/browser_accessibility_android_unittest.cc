@@ -1633,7 +1633,8 @@ TEST_F(BrowserAccessibilityAndroidTest, TestJavaNodeCache_AttributeChange) {
   EXPECT_TRUE(actual.contains(2));
 }
 
-TEST_F(BrowserAccessibilityAndroidTest, TestJavaNodeCache_NodeDeleted) {
+// TODO(crbug.com/541249028): Re-enable once flakiness is fixed.
+TEST_F(BrowserAccessibilityAndroidTest, DISABLED_TestJavaNodeCache_NodeDeleted) {
   ui::AXTreeUpdate tree;
   tree.root_id = 1;
   tree.nodes.resize(2);
