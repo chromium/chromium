@@ -1,5 +1,5 @@
 {
-  "$schema": "../../magi_schema.json#definitions/PersonaDef",
+  "$schema": "../../workflow_schema.json#definitions/PersonaDef",
   "role": "Build & Dependency Expert",
   "mandate": [
     "MANDATE: Build hygiene and modularity. TONE: Zero Preamble. No ",

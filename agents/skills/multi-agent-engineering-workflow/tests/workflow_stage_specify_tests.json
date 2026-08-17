@@ -1,9 +1,9 @@
 {
-  "$schema": "./magi_test_schemas.json#/definitions/Scenario",
+  "$schema": "./workflow_test_schemas.json#/definitions/Scenario",
   "name": "Specify Stage Tests",
   "description": "Verify steps in Specify stage.",
   "base_inputs": {
-    "project_spec": "testdata/project.magi.json"
+    "project_spec": "testdata/project.workflow.json"
   },
   "cases": [
     {
@@ -19,11 +19,11 @@
       },
       "expected_outputs": {
         "files_created": [
-          "testdata/project.magi.json"
+          "testdata/project.workflow.json"
         ],
         "valid_json": true,
         "content_patterns": {
-          "testdata/project.magi.json": "\"execution_path\": \"FAST_PATH\""
+          "testdata/project.workflow.json": "\"execution_path\": \"FAST_PATH\""
         }
       }
     },
@@ -40,11 +40,11 @@
       },
       "expected_outputs": {
         "files_created": [
-          "testdata/project.magi.json"
+          "testdata/project.workflow.json"
         ],
         "valid_json": true,
         "content_patterns": {
-          "testdata/project.magi.json": "\"execution_path\": \"RIGOR_PATH\""
+          "testdata/project.workflow.json": "\"execution_path\": \"RIGOR_PATH\""
         }
       }
     },
@@ -62,11 +62,11 @@
       },
       "expected_outputs": {
         "files_created": [
-          "testdata/project.magi.json"
+          "testdata/project.workflow.json"
         ],
         "valid_json": true,
         "content_patterns": {
-          "testdata/project.magi.json": "\"orchestration_pattern\": \"CENTRALIZED\""
+          "testdata/project.workflow.json": "\"orchestration_pattern\": \"CENTRALIZED\""
         }
       }
     },
@@ -84,11 +84,11 @@
       },
       "expected_outputs": {
         "files_created": [
-          "testdata/project.magi.json"
+          "testdata/project.workflow.json"
         ],
         "valid_json": true,
         "content_patterns": {
-          "testdata/project.magi.json": "\"orchestration_pattern\": \"DECENTRALIZED\""
+          "testdata/project.workflow.json": "\"orchestration_pattern\": \"DECENTRALIZED\""
         }
       }
     }

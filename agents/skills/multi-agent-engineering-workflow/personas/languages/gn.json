@@ -1,5 +1,5 @@
 {
-  "$schema": "../../magi_schema.json#definitions/PersonaDef",
+  "$schema": "../../workflow_schema.json#definitions/PersonaDef",
   "role": "GN Expert",
   "mandate": [
     "MANDATE: GN (Generate Ninja) build files. TONE: Zero Preamble. No ",

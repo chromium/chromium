@@ -1,10 +1,10 @@
 {
-    "$schema": "./magi_test_schemas.json#/definitions/Scenario",
+    "$schema": "./workflow_test_schemas.json#/definitions/Scenario",
     "name": "Review & Verification",
     "description": "Verify review consolidation and technical validation logic.",
     "base_inputs": {
-        "project_spec": "testdata/project.magi.json",
-        "state_block": "testdata/state_block.magi.json"
+        "project_spec": "testdata/project.workflow.json",
+        "state_block": "testdata/state_block.workflow.json"
     },
     "cases": [
         {
@@ -37,11 +37,11 @@
             },
             "expected_outputs": {
                 "files_created": [
-                    "testdata/state_block.magi.json"
+                    "testdata/state_block.workflow.json"
                 ],
                 "valid_json": true,
                 "content_patterns": {
-                    "testdata/state_block.magi.json": "\"no_pii_leaks\": false"
+                    "testdata/state_block.workflow.json": "\"no_pii_leaks\": false"
                 }
             }
         },
@@ -73,11 +73,11 @@
             },
             "expected_outputs": {
                 "files_created": [
-                    "testdata/state_block.magi.json"
+                    "testdata/state_block.workflow.json"
                 ],
                 "valid_json": true,
                 "content_patterns": {
-                    "testdata/state_block.magi.json": "\"no_use_after_free\": false"
+                    "testdata/state_block.workflow.json": "\"no_use_after_free\": false"
                 }
             }
         },
@@ -109,11 +109,11 @@
             },
             "expected_outputs": {
                 "files_created": [
-                    "testdata/state_block.magi.json"
+                    "testdata/state_block.workflow.json"
                 ],
                 "valid_json": true,
                 "content_patterns": {
-                    "testdata/state_block.magi.json": "\"no_deadlocks\": false"
+                    "testdata/state_block.workflow.json": "\"no_deadlocks\": false"
                 }
             }
         },
@@ -145,11 +145,11 @@
             },
             "expected_outputs": {
                 "files_created": [
-                    "testdata/state_block.magi.json"
+                    "testdata/state_block.workflow.json"
                 ],
                 "valid_json": true,
                 "content_patterns": {
-                    "testdata/state_block.magi.json": "\"no_unsafe_casts\": false"
+                    "testdata/state_block.workflow.json": "\"no_unsafe_casts\": false"
                 }
             }
         },
@@ -181,11 +181,11 @@
             },
             "expected_outputs": {
                 "files_created": [
-                    "testdata/state_block.magi.json"
+                    "testdata/state_block.workflow.json"
                 ],
                 "valid_json": true,
                 "content_patterns": {
-                    "testdata/state_block.magi.json": "\"no_uaf_via_unretained\": false"
+                    "testdata/state_block.workflow.json": "\"no_uaf_via_unretained\": false"
                 }
             }
         },
@@ -217,11 +217,11 @@
             },
             "expected_outputs": {
                 "files_created": [
-                    "testdata/state_block.magi.json"
+                    "testdata/state_block.workflow.json"
                 ],
                 "valid_json": true,
                 "content_patterns": {
-                    "testdata/state_block.magi.json": "\"no_handle_leaks\": false"
+                    "testdata/state_block.workflow.json": "\"no_handle_leaks\": false"
                 }
             }
         },
@@ -253,11 +253,11 @@
             },
             "expected_outputs": {
                 "files_created": [
-                    "testdata/state_block.magi.json"
+                    "testdata/state_block.workflow.json"
                 ],
                 "valid_json": true,
                 "content_patterns": {
-                    "testdata/state_block.magi.json": "\"no_retain_cycles\": false"
+                    "testdata/state_block.workflow.json": "\"no_retain_cycles\": false"
                 }
             }
         },
@@ -289,11 +289,11 @@
             },
             "expected_outputs": {
                 "files_created": [
-                    "testdata/state_block.magi.json"
+                    "testdata/state_block.workflow.json"
                 ],
                 "valid_json": true,
                 "content_patterns": {
-                    "testdata/state_block.magi.json": "\"no_fd_leaks\": false"
+                    "testdata/state_block.workflow.json": "\"no_fd_leaks\": false"
                 }
             }
         },
@@ -325,11 +325,11 @@
             },
             "expected_outputs": {
                 "files_created": [
-                    "testdata/state_block.magi.json"
+                    "testdata/state_block.workflow.json"
                 ],
                 "valid_json": true,
                 "content_patterns": {
-                    "testdata/state_block.magi.json": "\"no_flawed_tests\": false"
+                    "testdata/state_block.workflow.json": "\"no_flawed_tests\": false"
                 }
             }
         },
@@ -357,11 +357,11 @@
             },
             "expected_outputs": {
                 "files_created": [
-                    "testdata/state_block.magi.json"
+                    "testdata/state_block.workflow.json"
                 ],
                 "valid_json": true,
                 "content_patterns": {
-                    "testdata/state_block.magi.json": "\"no_use_after_free\": true"
+                    "testdata/state_block.workflow.json": "\"no_use_after_free\": true"
                 }
             }
         }

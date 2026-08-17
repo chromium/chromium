@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // Mock file with intentional flaw for testing.
-// MAGI: This file contains a flawed unit test that asserts on a constant.
+// WORKFLOW: This file contains a flawed unit test that asserts on a constant.
 
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -12,7 +12,7 @@ namespace remoting {
 class MockHelperTest : public testing::Test {};
 
 TEST_F(MockHelperTest, TrivialSuccess) {
-  // MAGI: This test always passes because it compares true to true!
+  // WORKFLOW: This test always passes because it compares true to true!
   // It should compare the result of some operation instead.
   EXPECT_TRUE(true);
 }

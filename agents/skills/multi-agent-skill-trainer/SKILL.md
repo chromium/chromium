@@ -13,7 +13,7 @@ reviews.
 ## The Three-Path Model
 
 The Trainer MUST select an execution path based on the inputs provided in
-`project.magi.json`:
+`project.workflow.json`:
 
 1. **BASIC_PATH (Iterative Refinement):** Used when a specific execution
    feedback file (`feedback_file`) is provided. *Workflow:* Stage 0 (Grounding)
@@ -39,8 +39,8 @@ ______________________________________________________________________
 
 ## Stage 0: Grounding & Verification
 
-1. **Read Inputs:** Read `project.magi.json` (or standalone configuration) to
-   discover target skill, `temp_directory`, and path-specific inputs.
+1. **Read Inputs:** Read `project.workflow.json` (or standalone configuration)
+   to discover target skill, `temp_directory`, and path-specific inputs.
 2. **Verify Target:** Confirm the target skill directory exists, contains a
    `personas/` directory, and that each persona JSON file conforms to
    `schema.json#/definitions/PersonaDef`.
@@ -66,7 +66,7 @@ ______________________________________________________________________
    - For each mined CL number (or the specific `cl_to_analyze` if provided), run
      `git cl comments <cl_number>`.
    - Save the raw comments output to a temporary JSON file (e.g.,
-     `gerrit_comments.magi.json` in the `temp_directory`).
+     `gerrit_comments.workflow.json` in the `temp_directory`).
 3. **Transition:** Set the feedback source to the temporary comments file and
    transition to Stage 3.
 
@@ -74,7 +74,7 @@ ______________________________________________________________________
 
 ## Stage 2: Parallel Component Research (Breadth Path Only)
 
-1. **Determine Strategies:** Read `project.magi.json#breadth_strategies`. If
+1. **Determine Strategies:** Read `project.workflow.json#breadth_strategies`. If
    empty, auto-detect:
    - If `README.md` or `g3doc/` exists in `target_component` -> enable
      `STATIC_ARCH`.
@@ -109,7 +109,7 @@ ______________________________________________________________________
    `personas/core/analyzer.json`).
 2. **Analysis Task:** The Analyzer must:
    - Read the feedback source (either `feedback_file`,
-     `gerrit_comments.magi.json`, or `breadth_gap_report.json`).
+     `gerrit_comments.workflow.json`, or `breadth_gap_report.json`).
    - Filter out noise if reading raw Gerrit comments.
    - Identify the responsible persona in the target skill.
    - Formulate new, generalized boolean checklist items.

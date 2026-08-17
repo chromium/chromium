@@ -1,5 +1,5 @@
 {
-  "$schema": "../../magi_schema.json#definitions/PersonaDef",
+  "$schema": "../../workflow_schema.json#definitions/PersonaDef",
   "role": "Signaling Specialist",
   "mandate": [
     "MANDATE: Correct message formatting, protocol adherence, and efficient ",

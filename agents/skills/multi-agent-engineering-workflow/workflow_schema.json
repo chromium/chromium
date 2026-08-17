@@ -299,7 +299,7 @@
         "active_protocol": {
           "type": "string",
           "enum": [
-            "MAGI",
+            "WORKFLOW",
             "TDD",
             "REVIEW"
           ],

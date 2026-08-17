@@ -1,5 +1,5 @@
 {
-  "$schema": "../../magi_schema.json#definitions/PersonaDef",
+  "$schema": "../../workflow_schema.json#definitions/PersonaDef",
   "role": "Readability Expert",
   "mandate": [
     "MANDATE: Code clarity and \"Clean Code\" principles. TONE: Zero Preamble. ",

@@ -1,5 +1,5 @@
 {
-  "$schema": "../../magi_schema.json#definitions/PersonaDef",
+  "$schema": "../../workflow_schema.json#definitions/PersonaDef",
   "role": "Codec & Performance Specialist",
   "mandate": [
     "MANDATE: Video/audio encoding/decoding and performance optimization in ",

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // Mock file with intentional flaw for testing.
-// MAGI: This file contains a Linux file descriptor leak.
+// WORKFLOW: This file contains a Linux file descriptor leak.
 
 #include "socket_handler_linux.h"
 
@@ -15,14 +15,14 @@ namespace remoting {
 bool SomeCondition() { return true; }
 
 void ReadConfig() {
-  // MAGI: Opening a file but not closing the file descriptor on all paths.
+  // WORKFLOW: Opening a file but not closing the file descriptor on all paths.
   int fd = open("config.txt", O_RDONLY);
   if (fd < 0) {
     return;
   }
 
   if (SomeCondition()) {
-    // MAGI: Early return without closing file descriptor!
+    // WORKFLOW: Early return without closing file descriptor!
     return;
   }
 

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // Mock file with intentional flaw for testing.
-// MAGI: This file contains a Windows handle leak.
+// WORKFLOW: This file contains a Windows handle leak.
 
 #include "file_manager_win.h"
 
@@ -14,14 +14,14 @@ namespace remoting {
 bool SomeCondition() { return true; }
 
 void ProcessFile() {
-  // MAGI: Opening a file handle but not closing it on all paths.
+  // WORKFLOW: Opening a file handle but not closing it on all paths.
   HANDLE hFile = CreateFile(L"test.txt", GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
   if (hFile == INVALID_HANDLE_VALUE) {
     return;
   }
 
   if (SomeCondition()) {
-    // MAGI: Early return without closing handle!
+    // WORKFLOW: Early return without closing handle!
     return;
   }
 

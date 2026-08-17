@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // Mock file with intentional flaw for testing.
-// MAGI: This file contains a use-after-free bug via base::Unretained.
+// WORKFLOW: This file contains a use-after-free bug via base::Unretained.
 
 #include "bind_post_task_helper.h"
 
@@ -23,7 +23,7 @@ BindPostTaskHelper::~BindPostTaskHelper() = default;
 void BindPostTaskHelper::ScheduleWork() {
   Worker* worker = new Worker();
   // Schedules work on the background thread.
-  // MAGI: Using base::Unretained on a raw pointer that is deleted immediately after!
+  // WORKFLOW: Using base::Unretained on a raw pointer that is deleted immediately after!
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&Worker::DoWork, base::Unretained(worker)));

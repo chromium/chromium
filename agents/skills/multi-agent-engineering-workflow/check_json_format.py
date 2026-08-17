@@ -2,7 +2,7 @@
 # Copyright 2026 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""JSON formatting linter and fixer for MAGI protocol files.
+"""JSON formatting linter and fixer for workflow protocol files.
 
 This script enforces 2-space indentation and a single trailing newline for
 JSON files within the multi-agent-engineering-workflow directory, while
@@ -17,7 +17,7 @@ import sys
 # Files that should use 4-space indentation instead of the 2-space default.
 # Relative to the multi-agent-engineering-workflow directory.
 INDENT_OVERRIDES = {
-    'tests/magi_stage_refine_tests.json': 4,
+    'tests/workflow_stage_refine_tests.json': 4,
 }
 
 
@@ -73,8 +73,8 @@ def CheckFormatting(file_path, fix=False):
       was fixed).
       lint_errors is a list of strings describing Joining Rule violations.
     """
-    magi_dir = os.path.dirname(os.path.abspath(__file__))
-    rel_path = os.path.relpath(file_path, magi_dir)
+    skill_dir = os.path.dirname(os.path.abspath(__file__))
+    rel_path = os.path.relpath(file_path, skill_dir)
     # Use Unix-style slashes for the override check.
     rel_path_unix = rel_path.replace(os.sep, '/')
     expected_indent = INDENT_OVERRIDES.get(rel_path_unix, 2)
@@ -117,20 +117,20 @@ def CheckFormatting(file_path, fix=False):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="MAGI JSON Formatter")
+    parser = argparse.ArgumentParser(description="Workflow JSON Formatter")
     parser.add_argument('files', nargs='*', help="Files to check/fix")
     parser.add_argument(
         '--fix', action='store_true', help="Fix formatting errors"
     )
     args = parser.parse_args()
 
-    magi_dir = os.path.dirname(os.path.abspath(__file__))
+    skill_dir = os.path.dirname(os.path.abspath(__file__))
 
     files_to_process = args.files
     if not files_to_process:
         # Default to all JSON files in the multi-agent-engineering-workflow
         # directory (excluding .temp).
-        for root, dirs, files in os.walk(magi_dir):
+        for root, dirs, files in os.walk(skill_dir):
             if '.temp' in dirs:
                 dirs.remove('.temp')
             for f in files:

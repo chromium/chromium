@@ -52,7 +52,7 @@
         "complexity_level": { "type": "string", "enum": ["LOW", "MEDIUM", "HIGH"] },
         "active_protocol": {
           "type": "string",
-          "enum": ["MAGI", "TDD", "REVIEW"],
+          "enum": ["WORKFLOW", "TDD", "REVIEW"],
           "description": "Identifies the active protocol for tagging and tracking."
         }
       },

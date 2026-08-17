@@ -27,7 +27,7 @@ perform full-file overwrites. It must use a 3-way merge approach.
 The Compile Gate is an empirical check.
 
 1. **Execution:** Synthesis runs the build command for the configured
-   `build_targets` in `project.magi.json`.
+   `build_targets` in `project.workflow.json`.
 2. **Analysis:**
    - **Green Build:** If the compilation succeeds, Synthesis records the build
      logs and proceeds to test execution.

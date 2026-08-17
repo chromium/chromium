@@ -1,5 +1,5 @@
 {
-  "$schema": "../../magi_schema.json#definitions/PersonaDef",
+  "$schema": "../../workflow_schema.json#definitions/PersonaDef",
   "role": "LLM Behavior & Grounding Expert",
   "mandate": [
     "MANDATE: Large Language Model (LLM) behavior, prompt engineering, and ",

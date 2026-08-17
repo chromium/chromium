@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "MAGI Test Harness Schemas",
+  "title": "Workflow Test Harness Schemas",
   "definitions": {
     "Scenario": {
       "type": "object",

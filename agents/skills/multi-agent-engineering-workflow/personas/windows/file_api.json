@@ -1,5 +1,5 @@
 {
-  "$schema": "../../magi_schema.json#definitions/PersonaDef",
+  "$schema": "../../workflow_schema.json#definitions/PersonaDef",
   "role": "Windows File API Expert",
   "mandate": [
     "MANDATE: Correct, safe, and efficient use of Windows file system APIs in ",

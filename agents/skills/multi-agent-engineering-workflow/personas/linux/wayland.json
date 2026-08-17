@@ -1,5 +1,5 @@
 {
-  "$schema": "../../magi_schema.json#definitions/PersonaDef",
+  "$schema": "../../workflow_schema.json#definitions/PersonaDef",
   "role": "Linux Wayland Expert",
   "mandate": [
     "MANDATE: Correct and idiomatic integration with Wayland compositors. ",

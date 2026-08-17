@@ -1,7 +1,7 @@
 # Harness-Specific Drivers (Orchestration Patterns)
 
 The Orchestrator MUST adjust its behavior and instruction set based on the
-`project.magi.json#environment/orchestration_pattern` to optimize for the
+`project.workflow.json#environment/orchestration_pattern` to optimize for the
 specific CLI harness.
 
 ## 1. CENTRALIZED (Simulated MAS / JETSKI)
@@ -16,7 +16,7 @@ Optimized for single-threaded harnesses without native background routing.
   stage into a single turn. This includes reading all necessary personas, source
   files, and state files in parallel (`wait_for_previous: false`).
 - **Proactive State Recovery:** The Orchestrator MUST start every turn by
-  reading `state_block.magi.json` to ground its context, making the protocol
+  reading `state_block.workflow.json` to ground its context, making the protocol
   resilient to turn interruptions or context loss.
 - **Direct Prompt Injection:** The Orchestrator SHOULD read the
   `personas/**/*.json` files and inject their `mandate` and `checklist` directly
@@ -37,7 +37,7 @@ CLI).
 - **Signaling over Coordination:** Agents SHOULD use `next_stage` signals to
   trigger successor agents directly through the harness.
 - **Lean Monitoring:** The Orchestrator's context SHOULD remain lean. It
-  monitors high-level "Checkpoints" (e.g., `project.magi.json` and
-  `state_block.magi.json` updates) rather than every interim tool call.
+  monitors high-level "Checkpoints" (e.g., `project.workflow.json` and
+  `state_block.workflow.json` updates) rather than every interim tool call.
 - **Parallel Synthesis:** Leverage the harness's ability to run multiple
   specialized agents in parallel without centralized serialization.

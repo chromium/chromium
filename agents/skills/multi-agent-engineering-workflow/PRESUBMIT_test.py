@@ -2,7 +2,7 @@
 # Copyright 2026 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""Unit tests for MAGI presubmit checks."""
+"""Unit tests for workflow presubmit checks."""
 
 import json
 import os
@@ -66,7 +66,7 @@ class MockInputApi:
         )
 
 
-class MagiPresubmitTest(unittest.TestCase):
+class WorkflowPresubmitTest(unittest.TestCase):
     def setUp(self):
         self.mock_input = MockInputApi()
         self.mock_output = MagicMock()
@@ -78,14 +78,14 @@ class MagiPresubmitTest(unittest.TestCase):
     @patch('os.walk')
     def testReachability(self, mock_walk, mock_getsize, mock_exists):
         # Setup filesystem: SKILL.md -> LINKED.md, ORPHAN.md
-        magi_dir = os.path.normpath(
+        skill_dir = os.path.normpath(
             os.path.join(
                 os.path.abspath('fake_repo'),
                 'agents/skills/multi-agent-engineering-workflow',
             )
         )
         mock_walk.return_value = [
-            (magi_dir, [], ['SKILL.md', 'LINKED.md', 'ORPHAN.md'])
+            (skill_dir, [], ['SKILL.md', 'LINKED.md', 'ORPHAN.md'])
         ]
         mock_getsize.return_value = 100
         mock_exists.return_value = True
@@ -135,14 +135,14 @@ class MagiPresubmitTest(unittest.TestCase):
             'agents/skills/multi-agent-engineering-workflow/SKILL.md': long_line
         }
 
-        magi_dir = os.path.normpath(
+        skill_dir = os.path.normpath(
             os.path.join(
                 os.path.abspath('fake_repo'),
                 'agents/skills/multi-agent-engineering-workflow',
             )
         )
         with (
-            patch('os.walk', return_value=[(magi_dir, [], ['SKILL.md'])]),
+            patch('os.walk', return_value=[(skill_dir, [], ['SKILL.md'])]),
             patch('os.path.getsize', return_value=100),
         ):
             results = PRESUBMIT.CheckMarkdownFiles(
@@ -170,14 +170,14 @@ class MagiPresubmitTest(unittest.TestCase):
             'agents/skills/multi-agent-engineering-workflow/SKILL.md': content
         }
 
-        magi_dir = os.path.normpath(
+        skill_dir = os.path.normpath(
             os.path.join(
                 os.path.abspath('fake_repo'),
                 'agents/skills/multi-agent-engineering-workflow',
             )
         )
         with (
-            patch('os.walk', return_value=[(magi_dir, [], ['SKILL.md'])]),
+            patch('os.walk', return_value=[(skill_dir, [], ['SKILL.md'])]),
             patch('os.path.getsize', return_value=100),
         ):
             results = PRESUBMIT.CheckMarkdownFiles(
@@ -201,14 +201,14 @@ class MagiPresubmitTest(unittest.TestCase):
             )
         }
 
-        magi_dir = os.path.normpath(
+        skill_dir = os.path.normpath(
             os.path.join(
                 os.path.abspath('fake_repo'),
                 'agents/skills/multi-agent-engineering-workflow',
             )
         )
         with (
-            patch('os.walk', return_value=[(magi_dir, [], ['SKILL.md'])]),
+            patch('os.walk', return_value=[(skill_dir, [], ['SKILL.md'])]),
             patch('os.path.getsize', return_value=100),
         ):
             results = PRESUBMIT.CheckMarkdownFiles(
@@ -232,7 +232,7 @@ class MagiPresubmitTest(unittest.TestCase):
             )
         }
         with (
-            patch('os.walk', return_value=[(magi_dir, [], ['SKILL.md'])]),
+            patch('os.walk', return_value=[(skill_dir, [], ['SKILL.md'])]),
             patch('os.path.getsize', return_value=100),
         ):
             results = PRESUBMIT.CheckMarkdownFiles(
@@ -258,7 +258,7 @@ class MagiPresubmitTest(unittest.TestCase):
             )
         }
         with (
-            patch('os.walk', return_value=[(magi_dir, [], ['SKILL.md'])]),
+            patch('os.walk', return_value=[(skill_dir, [], ['SKILL.md'])]),
             patch('os.path.getsize', return_value=100),
         ):
             results = PRESUBMIT.CheckMarkdownFiles(
@@ -331,7 +331,7 @@ class MagiPresubmitTest(unittest.TestCase):
         self.mock_input.affected_files = [
             MockAffectedFile(
                 'agents/skills/multi-agent-engineering-workflow/'
-                'state_block.magi.json'
+                'state_block.workflow.json'
             ),
             MockAffectedFile(
                 'agents/skills/multi-agent-engineering-workflow/'
@@ -340,7 +340,7 @@ class MagiPresubmitTest(unittest.TestCase):
         ]
         self.mock_input.files_content = {
             'agents/skills/multi-agent-engineering-workflow/'
-            'state_block.magi.json': valid_json,
+            'state_block.workflow.json': valid_json,
             'agents/skills/multi-agent-engineering-workflow/'
             'personas/core/security.json': (
                 '{"checklist": {"checked_xyz": "Desc"}}'
@@ -382,7 +382,7 @@ class MagiPresubmitTest(unittest.TestCase):
         invalid_json = '{"iteration": 1, "active_constraints": []}'
         self.mock_input.files_content = {
             'agents/skills/multi-agent-engineering-workflow/'
-            'state_block.magi.json': invalid_json
+            'state_block.workflow.json': invalid_json
         }
         with patch(
             'builtins.open', unittest.mock.mock_open(read_data=schema_json)
@@ -403,7 +403,7 @@ class MagiPresubmitTest(unittest.TestCase):
         )
         self.mock_input.files_content = {
             'agents/skills/multi-agent-engineering-workflow/'
-            'state_block.magi.json': invalid_stage_json
+            'state_block.workflow.json': invalid_stage_json
         }
         with patch(
             'builtins.open', unittest.mock.mock_open(read_data=schema_json)
@@ -425,7 +425,7 @@ class MagiPresubmitTest(unittest.TestCase):
         )
         self.mock_input.files_content = {
             'agents/skills/multi-agent-engineering-workflow/'
-            'state_block.magi.json': wrong_type_json
+            'state_block.workflow.json': wrong_type_json
         }
         with patch(
             'builtins.open', unittest.mock.mock_open(read_data=schema_json)
@@ -450,7 +450,7 @@ class MagiPresubmitTest(unittest.TestCase):
         self.mock_input.affected_files = [
             MockAffectedFile(
                 'agents/skills/multi-agent-engineering-workflow/'
-                'state_block.magi.json'
+                'state_block.workflow.json'
             ),
             MockAffectedFile(
                 'agents/skills/multi-agent-engineering-workflow/'
@@ -459,7 +459,7 @@ class MagiPresubmitTest(unittest.TestCase):
         ]
         self.mock_input.files_content = {
             'agents/skills/multi-agent-engineering-workflow/'
-            'state_block.magi.json': (invalid_checklist_json),
+            'state_block.workflow.json': (invalid_checklist_json),
             'agents/skills/multi-agent-engineering-workflow/'
             'personas/core/security.json': (
                 '{"checklist": {"checked_xyz": "Desc"}}'
@@ -514,12 +514,12 @@ class MagiPresubmitTest(unittest.TestCase):
         self.mock_input.affected_files = [
             MockAffectedFile(
                 'agents/skills/multi-agent-engineering-workflow/'
-                'project.magi.json'
+                'project.workflow.json'
             )
         ]
         self.mock_input.files_content = {
             'agents/skills/multi-agent-engineering-workflow/'
-            'project.magi.json': valid_json
+            'project.workflow.json': valid_json
         }
 
         # We need to mock the schema file
@@ -553,7 +553,7 @@ class MagiPresubmitTest(unittest.TestCase):
         invalid_json = '{"goal": "Test"}'
         self.mock_input.files_content = {
             'agents/skills/multi-agent-engineering-workflow/'
-            'project.magi.json': invalid_json
+            'project.workflow.json': invalid_json
         }
         with patch(
             'builtins.open', unittest.mock.mock_open(read_data=schema_json)
@@ -573,12 +573,12 @@ class MagiPresubmitTest(unittest.TestCase):
         self.mock_input.affected_files = [
             MockAffectedFile(
                 'agents/skills/multi-agent-engineering-workflow/'
-                'review.security.magi.1.json'
+                'review.security.workflow.1.json'
             )
         ]
         self.mock_input.files_content = {
             'agents/skills/multi-agent-engineering-workflow/'
-            'review.security.magi.1.json': valid_json
+            'review.security.workflow.1.json': valid_json
         }
 
         schema_json = (
@@ -605,7 +605,7 @@ class MagiPresubmitTest(unittest.TestCase):
         )
         self.mock_input.files_content = {
             'agents/skills/multi-agent-engineering-workflow/'
-            'review.security.magi.1.json': invalid_verdict_json
+            'review.security.workflow.1.json': invalid_verdict_json
         }
         with patch(
             'builtins.open', unittest.mock.mock_open(read_data=schema_json)
@@ -625,12 +625,12 @@ class MagiPresubmitTest(unittest.TestCase):
         self.mock_input.affected_files = [
             MockAffectedFile(
                 'agents/skills/multi-agent-engineering-workflow/'
-                'constraints.magi.2.json'
+                'constraints.workflow.2.json'
             )
         ]
         self.mock_input.files_content = {
             'agents/skills/multi-agent-engineering-workflow/'
-            'constraints.magi.2.json': valid_json
+            'constraints.workflow.2.json': valid_json
         }
 
         schema_json = (
@@ -663,12 +663,12 @@ class MagiPresubmitTest(unittest.TestCase):
         self.mock_input.affected_files = [
             MockAffectedFile(
                 'agents/skills/multi-agent-engineering-workflow/'
-                'constraints.magi.1.json'
+                'constraints.workflow.1.json'
             )
         ]
         self.mock_input.files_content = {
             'agents/skills/multi-agent-engineering-workflow/'
-            'constraints.magi.1.json': invalid_constraints
+            'constraints.workflow.1.json': invalid_constraints
         }
         schema_json = (
             '{"definitions": {"Constraints": {"required": ["iteration", '
@@ -796,12 +796,12 @@ class MagiPresubmitTest(unittest.TestCase):
         self.mock_input.affected_files = [
             MockAffectedFile(
                 'agents/skills/multi-agent-engineering-workflow/'
-                'project.magi.json'
+                'project.workflow.json'
             )
         ]
         self.mock_input.files_content = {
             'agents/skills/multi-agent-engineering-workflow/'
-            'project.magi.json': invalid_type_json
+            'project.workflow.json': invalid_type_json
         }
         schema_json = (
             '{"definitions": {"ProjectSpec": {"required": [], '
@@ -826,7 +826,7 @@ class MagiPresubmitTest(unittest.TestCase):
         )
         self.mock_input.files_content = {
             'agents/skills/multi-agent-engineering-workflow/'
-            'project.magi.json': invalid_elem_json
+            'project.workflow.json': invalid_elem_json
         }
         with patch(
             'builtins.open', unittest.mock.mock_open(read_data=schema_json)
@@ -848,12 +848,12 @@ class MagiPresubmitTest(unittest.TestCase):
         self.mock_input.affected_files = [
             MockAffectedFile(
                 'agents/skills/multi-agent-engineering-workflow/'
-                'project.magi.json'
+                'project.workflow.json'
             )
         ]
         self.mock_input.files_content = {
             'agents/skills/multi-agent-engineering-workflow/'
-            'project.magi.json': invalid_env_1
+            'project.workflow.json': invalid_env_1
         }
         schema_json = '{"definitions": {"ProjectSpec": {"required": []}}}'
 
@@ -879,7 +879,7 @@ class MagiPresubmitTest(unittest.TestCase):
         )
         self.mock_input.files_content = {
             'agents/skills/multi-agent-engineering-workflow/'
-            'project.magi.json': invalid_env_2
+            'project.workflow.json': invalid_env_2
         }
         with patch(
             'builtins.open', unittest.mock.mock_open(read_data=schema_json)
@@ -904,7 +904,7 @@ class MagiPresubmitTest(unittest.TestCase):
         )
         self.mock_input.files_content = {
             'agents/skills/multi-agent-engineering-workflow/'
-            'project.magi.json': invalid_env_3
+            'project.workflow.json': invalid_env_3
         }
         with patch(
             'builtins.open', unittest.mock.mock_open(read_data=schema_json)
@@ -928,7 +928,7 @@ class MagiPresubmitTest(unittest.TestCase):
         )
         self.mock_input.files_content = {
             'agents/skills/multi-agent-engineering-workflow/'
-            'project.magi.json': invalid_env_4
+            'project.workflow.json': invalid_env_4
         }
         with patch(
             'builtins.open', unittest.mock.mock_open(read_data=schema_json)
@@ -953,7 +953,7 @@ class MagiPresubmitTest(unittest.TestCase):
         )
         self.mock_input.files_content = {
             'agents/skills/multi-agent-engineering-workflow/'
-            'project.magi.json': invalid_env_5
+            'project.workflow.json': invalid_env_5
         }
         with patch(
             'builtins.open', unittest.mock.mock_open(read_data=schema_json)
@@ -977,12 +977,12 @@ class MagiPresubmitTest(unittest.TestCase):
         self.mock_input.affected_files = [
             MockAffectedFile(
                 'agents/skills/multi-agent-engineering-workflow/'
-                'tests/magi_stage_generate_tests.json'
+                'tests/workflow_stage_generate_tests.json'
             )
         ]
         self.mock_input.files_content = {
             'agents/skills/multi-agent-engineering-workflow/'
-            'tests/magi_stage_generate_tests.json': valid_json
+            'tests/workflow_stage_generate_tests.json': valid_json
         }
         results = PRESUBMIT.CheckTestJsonFiles(
             self.mock_input, self.mock_output
@@ -993,7 +993,7 @@ class MagiPresubmitTest(unittest.TestCase):
         invalid_json = '{"name": "Test", "cases": []}'
         self.mock_input.files_content = {
             'agents/skills/multi-agent-engineering-workflow/'
-            'tests/magi_stage_generate_tests.json': invalid_json
+            'tests/workflow_stage_generate_tests.json': invalid_json
         }
         results = PRESUBMIT.CheckTestJsonFiles(
             self.mock_input, self.mock_output
@@ -1008,7 +1008,7 @@ class MagiPresubmitTest(unittest.TestCase):
         )
         self.mock_input.files_content = {
             'agents/skills/multi-agent-engineering-workflow/'
-            'tests/magi_stage_generate_tests.json': invalid_override_json
+            'tests/workflow_stage_generate_tests.json': invalid_override_json
         }
         results = PRESUBMIT.CheckTestJsonFiles(
             self.mock_input, self.mock_output
@@ -1027,9 +1027,9 @@ class MagiPresubmitTest(unittest.TestCase):
         self.assertTrue(any('is in the .temp/ directory' in r for r in results))
 
     def testSchemaHealth(self):
-        # Validate that the actual magi_schema.json on disk is valid.
+        # Validate that the actual workflow_schema.json on disk is valid.
         schema_path = os.path.join(
-            os.path.dirname(__file__), 'magi_schema.json'
+            os.path.dirname(__file__), 'workflow_schema.json'
         )
         with open(schema_path, 'r', encoding='utf-8') as f:
             schema = json.load(f)
@@ -1040,12 +1040,12 @@ class MagiPresubmitTest(unittest.TestCase):
         self.assertIn('PersonaDef', schema['definitions'])
 
     def testTestDataConsistency(self):
-        # Ensure our testdata/project.magi.json is valid against the real
+        # Ensure our testdata/project.workflow.json is valid against the real
         # schema.
-        magi_dir = os.path.dirname(__file__)
-        schema_path = os.path.join(magi_dir, 'magi_schema.json')
+        skill_dir = os.path.dirname(__file__)
+        schema_path = os.path.join(skill_dir, 'workflow_schema.json')
         project_path = os.path.join(
-            magi_dir, 'tests', 'testdata', 'project.magi.json'
+            skill_dir, 'tests', 'testdata', 'project.workflow.json'
         )
 
         with open(schema_path, 'r', encoding='utf-8') as f:
@@ -1057,12 +1057,12 @@ class MagiPresubmitTest(unittest.TestCase):
         self.mock_input.affected_files = [
             MockAffectedFile(
                 'agents/skills/multi-agent-engineering-workflow/'
-                'tests/testdata/project.magi.json'
+                'tests/testdata/project.workflow.json'
             )
         ]
         self.mock_input.files_content = {
             'agents/skills/multi-agent-engineering-workflow/'
-            'tests/testdata/project.magi.json': json.dumps(project)
+            'tests/testdata/project.workflow.json': json.dumps(project)
         }
 
         # We need to mock 'builtins.open' because PRESUBMIT.py reads the
@@ -1135,12 +1135,12 @@ class MagiPresubmitTest(unittest.TestCase):
         self.mock_input.affected_files = [
             MockAffectedFile(
                 'agents/skills/multi-agent-engineering-workflow/'
-                'state_block.magi.json'
+                'state_block.workflow.json'
             )
         ]
         self.mock_input.files_content = {
             'agents/skills/multi-agent-engineering-workflow/'
-            'state_block.magi.json': invalid_json
+            'state_block.workflow.json': invalid_json
         }
         schema_json = '{"definitions": {"StateBlock": {"required": []}}}'
         with patch(
@@ -1162,7 +1162,7 @@ class MagiPresubmitTest(unittest.TestCase):
         )
         self.mock_input.files_content = {
             'agents/skills/multi-agent-engineering-workflow/'
-            'state_block.magi.json': wrong_stage_json
+            'state_block.workflow.json': wrong_stage_json
         }
         with patch(
             'builtins.open', unittest.mock.mock_open(read_data=schema_json)

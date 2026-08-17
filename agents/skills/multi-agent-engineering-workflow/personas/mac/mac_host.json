@@ -1,5 +1,5 @@
 {
-  "$schema": "../../magi_schema.json#definitions/PersonaDef",
+  "$schema": "../../workflow_schema.json#definitions/PersonaDef",
   "role": "Mac Host Expert",
   "mandate": [
     "MANDATE: Mac-specific host architecture and permissions. TONE: Zero ",

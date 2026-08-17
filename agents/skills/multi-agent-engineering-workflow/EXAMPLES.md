@@ -1,13 +1,13 @@
-# MAGI Example Configurations
+# Workflow Example Configurations
 
-This file contains full JSON examples for configurations used in the MAGI
-protocol.
+This file contains full JSON examples for configurations used in the Multi-Agent
+Engineering Workflow protocol.
 
-## `project.magi.json`
+## `project.workflow.json`
 
 ```json
 {
-  "$schema": "./magi_schema.json#definitions/ProjectSpec",
+  "$schema": "./workflow_schema.json#definitions/ProjectSpec",
   "task_type": "IMPLEMENTATION",
   "execution_path": "RIGOR_PATH",
   "complexity_level": "MEDIUM",
@@ -35,11 +35,11 @@ protocol.
 }
 ```
 
-## `state_block.magi.json`
+## `state_block.workflow.json`
 
 ```json
 {
-  "$schema": "./magi_schema.json#definitions/StateBlock",
+  "$schema": "./workflow_schema.json#definitions/StateBlock",
   "checklist": {
     "[Merged keys from selected rulesets]": false
   },

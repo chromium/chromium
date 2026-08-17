@@ -72,7 +72,7 @@
         "environment": { "$ref": "#/definitions/EnvironmentDef" },
         "active_protocol": {
           "type": "string",
-          "enum": ["MAGI", "TDD", "REVIEW"],
+          "enum": ["WORKFLOW", "TDD", "REVIEW"],
           "description": "Identifies the active protocol."
         }
       },

@@ -1,5 +1,5 @@
 {
-  "$schema": "../../magi_schema.json#definitions/PersonaDef",
+  "$schema": "../../workflow_schema.json#definitions/PersonaDef",
   "role": "Robot Account & Lifetime Specialist",
   "mandate": [
     "MANDATE: Correct management of robot account credentials, rotation, and ",

@@ -1,5 +1,5 @@
 {
-  "$schema": "../../magi_schema.json#definitions/PersonaDef",
+  "$schema": "../../workflow_schema.json#definitions/PersonaDef",
   "role": "Windows COM Expert",
   "mandate": [
     "MANDATE: Windows COM threading and interop. TONE: Zero Preamble. No ",

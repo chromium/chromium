@@ -4,12 +4,12 @@
 
 # Mock BUILD.gn for testing.
 
-# Template to strip MAGI comments from test files and rename them on copy
+# Template to strip workflow comments from test files and rename them on copy
 # to prevent the agent from anchoring on filenames that indicate the flaw.
-template("strip_magi") {
+template("strip_workflow") {
   action(target_name) {
     testonly = true
-    script = "strip_magi_comments.py"
+    script = "strip_workflow_comments.py"
     inputs = [ invoker.source ]
     outputs = [ invoker.output ]
     args = [
@@ -22,74 +22,74 @@ template("strip_magi") {
 }
 
 # CC Files
-strip_magi("strip_sample_ipc") {
-  source = "sample_ipc.cc.magi.test"
+strip_workflow("strip_sample_ipc") {
+  source = "sample_ipc.cc.workflow.test"
   output = "$target_gen_dir/sample_ipc.cc"
 }
 
-strip_magi("strip_unsafe_threading") {
-  source = "unsafe_threading.cc.magi.test"
+strip_workflow("strip_unsafe_threading") {
+  source = "unsafe_threading.cc.workflow.test"
   output = "$target_gen_dir/thread_safe_manager.cc"
 }
 
-strip_magi("strip_unsafe_casting") {
-  source = "unsafe_casting.cc.magi.test"
+strip_workflow("strip_unsafe_casting") {
+  source = "unsafe_casting.cc.workflow.test"
   output = "$target_gen_dir/type_converter.cc"
 }
 
-strip_magi("strip_complex_uaf") {
-  source = "complex_uaf.cc.magi.test"
+strip_workflow("strip_complex_uaf") {
+  source = "complex_uaf.cc.workflow.test"
   output = "$target_gen_dir/bind_post_task_helper.cc"
 }
 
-strip_magi("strip_win_handle_leak") {
-  source = "win_handle_leak.cc.magi.test"
+strip_workflow("strip_win_handle_leak") {
+  source = "win_handle_leak.cc.workflow.test"
   output = "$target_gen_dir/file_manager_win.cc"
 }
 
-strip_magi("strip_mac_retain_cycle") {
-  source = "mac_retain_cycle.mm.magi.test"
+strip_workflow("strip_mac_retain_cycle") {
+  source = "mac_retain_cycle.mm.workflow.test"
   output = "$target_gen_dir/notification_delegate.mm"
 }
 
-strip_magi("strip_linux_fd_leak") {
-  source = "linux_fd_leak.cc.magi.test"
+strip_workflow("strip_linux_fd_leak") {
+  source = "linux_fd_leak.cc.workflow.test"
   output = "$target_gen_dir/socket_handler_linux.cc"
 }
 
-strip_magi("strip_mock_helper_unittest") {
-  source = "tautological_assert_test.cc.magi.test"
+strip_workflow("strip_mock_helper_unittest") {
+  source = "tautological_assert_test.cc.workflow.test"
   output = "$target_gen_dir/mock_helper_unittest.cc"
 }
 
 # H Files
-strip_magi("strip_unsafe_threading_h") {
-  source = "unsafe_threading.h.magi.test"
+strip_workflow("strip_unsafe_threading_h") {
+  source = "unsafe_threading.h.workflow.test"
   output = "$target_gen_dir/thread_safe_manager.h"
 }
 
-strip_magi("strip_unsafe_casting_h") {
-  source = "unsafe_casting.h.magi.test"
+strip_workflow("strip_unsafe_casting_h") {
+  source = "unsafe_casting.h.workflow.test"
   output = "$target_gen_dir/type_converter.h"
 }
 
-strip_magi("strip_complex_uaf_h") {
-  source = "complex_uaf.h.magi.test"
+strip_workflow("strip_complex_uaf_h") {
+  source = "complex_uaf.h.workflow.test"
   output = "$target_gen_dir/bind_post_task_helper.h"
 }
 
-strip_magi("strip_win_handle_leak_h") {
-  source = "win_handle_leak.h.magi.test"
+strip_workflow("strip_win_handle_leak_h") {
+  source = "win_handle_leak.h.workflow.test"
   output = "$target_gen_dir/file_manager_win.h"
 }
 
-strip_magi("strip_mac_retain_cycle_h") {
-  source = "mac_retain_cycle.h.magi.test"
+strip_workflow("strip_mac_retain_cycle_h") {
+  source = "mac_retain_cycle.h.workflow.test"
   output = "$target_gen_dir/notification_delegate.h"
 }
 
-strip_magi("strip_linux_fd_leak_h") {
-  source = "linux_fd_leak.h.magi.test"
+strip_workflow("strip_linux_fd_leak_h") {
+  source = "linux_fd_leak.h.workflow.test"
   output = "$target_gen_dir/socket_handler_linux.h"
 }
 

@@ -22,10 +22,10 @@ ______________________________________________________________________
 
 ## Stage 0: Environment Grounding & Safety Verification
 
-1. **Discover Environment:** Read `project.magi.json` to ground the VCS (`GIT`
-   or `JJ`), repo type (`CHROMIUM` or `GOOGLE_INTERNAL`), and output
+1. **Discover Environment:** Read `project.workflow.json` to ground the VCS
+   (`GIT` or `JJ`), repo type (`CHROMIUM` or `GOOGLE_INTERNAL`), and output
    directories.
-2. **Initialize State:** Create or read `tdd_state.magi.json`. If creating,
+2. **Initialize State:** Create or read `tdd_state.workflow.json`. If creating,
    initialize state block fields (`loop_counters` set to `{}`, `iteration` set
    to `1`, `stage_attempts` set to `{}`, `next_stage` set to `"SCAFFOLDING"`,
    and `verification_status` set to `"PENDING"`). If reading, preserve or
@@ -37,7 +37,7 @@ ______________________________________________________________________
 ## Stage 1: API Scaffolding (Scaffold)
 
 1. **API Design:** Invoke the Scoper sub-agent to read the goal from
-   `project.magi.json`.
+   `project.workflow.json`.
 2. **Create Scaffold:** The Scoper must create or modify files to define class
    interfaces, method signatures, GN build rules, and Mojo pipes. Leaving
    implementations stubbed (e.g. `NOTIMPLEMENTED()`).
@@ -68,10 +68,11 @@ ______________________________________________________________________
 
 1. **Parallel Implement:** Invoke Implementation subagents in parallel to
    implement the stubs from the Base Scaffold.
-2. **Incorporate Constraints:** If `constraints.magi.json` is present (from a
-   previous review cycle, conforming to `schema.json#/definitions/Constraints`),
-   the implementation subagents must resolve the list of issues specified in the
-   `constraints` array field of that object.
+2. **Incorporate Constraints:** If `constraints.workflow.json` is present (from
+   a previous review cycle, conforming to
+   `schema.json#/definitions/Constraints`), the implementation subagents must
+   resolve the list of issues specified in the `constraints` array field of that
+   object.
 3. **3-Way Merge:** Invoke the Synthesis agent to merge the parallel drafts
    following [synthesis_merge.md](./references/synthesis_merge.md). Synthesis
    must use a surgical 3-way merge (Base Scaffold + Draft A + Draft B) to
@@ -92,7 +93,7 @@ ______________________________________________________________________
    - Report the verification status (PASSED or FAILED) and build/test logs.
 3. **Loop Check:** The TDD skill orchestrator reads the verification status:
    - If tests pass, set `verification_status: PASSED` and
-     `next_stage: COMPLETED` in `tdd_state.magi.json`.
+     `next_stage: COMPLETED` in `tdd_state.workflow.json`.
    - If tests fail due to implementation bugs, increment loop counters and loop
      back to Stage 3 for refinement.
    - If loop count exceeds the limit (default 3), abort and set

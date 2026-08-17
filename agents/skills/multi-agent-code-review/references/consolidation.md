@@ -17,7 +17,7 @@ apply a strict Logical AND.
      checklist is `true` if and only if **all** scanners asserted `true`. If any
      scanner asserts `false`, the consolidated key is `false`.
 3. **Actionable Constraints:** For every `false` key, generate a concrete
-   instruction in `constraints.magi.json` describing what must be fixed.
+   instruction in `constraints.workflow.json` describing what must be fixed.
 
 ## Oscillation Detection
 
@@ -29,7 +29,7 @@ The Consolidation agent must set `oscillation_detected = true` if:
 
 1. **Checklist Key Toggle:** A specific checklist key toggles state (`true` ->
    `false` -> `true`) across consecutive iterations.
-2. **Static Constraints:** The generated `constraints.magi.json` file is
+2. **Static Constraints:** The generated `constraints.workflow.json` file is
    identical in content across two consecutive iterations, indicating no
    progress is being made.
 

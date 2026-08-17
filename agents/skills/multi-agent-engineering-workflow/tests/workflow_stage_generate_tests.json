@@ -1,10 +1,10 @@
 {
-  "$schema": "./magi_test_schemas.json#/definitions/Scenario",
+  "$schema": "./workflow_test_schemas.json#/definitions/Scenario",
   "name": "Generate Stage Tests",
   "description": "Verify steps in Generate stage.",
   "base_inputs": {
-    "project_spec": "testdata/project.magi.json",
-    "state_block": "testdata/state_block.magi.json"
+    "project_spec": "testdata/project.workflow.json",
+    "state_block": "testdata/state_block.workflow.json"
   },
   "cases": [
     {

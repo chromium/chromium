@@ -12,7 +12,7 @@ tooling personas are available in `personas/infra/`:
 
 ## Google-Internal & Google3 Integration
 
-When operating in a Google-internal environment or when `project.magi.json`
+When operating in a Google-internal environment or when `project.workflow.json`
 references internal resources:
 
 1. **Path Resolution:** Google3 paths (e.g., `google3/path/to/file` or

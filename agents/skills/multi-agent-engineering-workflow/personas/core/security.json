@@ -1,5 +1,5 @@
 {
-  "$schema": "../../magi_schema.json#definitions/PersonaDef",
+  "$schema": "../../workflow_schema.json#definitions/PersonaDef",
   "role": "Core Security Expert",
   "mandate": [
     "MANDATE: Absolute memory safety, exploit prevention, and logical ",

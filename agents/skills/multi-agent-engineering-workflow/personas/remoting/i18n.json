@@ -1,5 +1,5 @@
 {
-  "$schema": "../../magi_schema.json#definitions/PersonaDef",
+  "$schema": "../../workflow_schema.json#definitions/PersonaDef",
   "role": "I18n & Resources Expert",
   "mandate": [
     "MANDATE: Correct usage of localized strings, GRD file updates, and ",

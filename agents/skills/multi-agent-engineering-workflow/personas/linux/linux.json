@@ -1,5 +1,5 @@
 {
-  "$schema": "../../magi_schema.json#definitions/PersonaDef",
+  "$schema": "../../workflow_schema.json#definitions/PersonaDef",
   "role": "Linux Host Expert",
   "mandate": [
     "MANDATE: Linux-specific host implementation beyond Wayland. TONE: Zero ",

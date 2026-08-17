@@ -179,7 +179,7 @@ Define loop limits for feedback cycles (e.g., maximum 3 iterations for review lo
 
 For complex workflows with detailed instructions, keeping all stage rules in a
 single `SKILL.md` will lead to context bloat. To optimize context usage (based
-on MAGI best practices):
+on workflow best practices):
 
 - **Minimal `SKILL.md`**: The main `SKILL.md` should only contain the high-level
   orchestration state machine, stage names, and routing logic.

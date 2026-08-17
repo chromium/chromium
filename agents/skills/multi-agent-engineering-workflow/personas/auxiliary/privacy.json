@@ -1,5 +1,5 @@
 {
-  "$schema": "../../magi_schema.json#definitions/PersonaDef",
+  "$schema": "../../workflow_schema.json#definitions/PersonaDef",
   "role": "Privacy & Metrics Expert",
   "mandate": [
     "MANDATE: Data protection and observability. TONE: Zero Preamble. No ",

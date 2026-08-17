@@ -5,8 +5,8 @@
 #include "base/logging.h"
 
 #define CONCAT_LOG(x) LOG(x)
-#define MAGI_LOG CONCAT_LOG(INFO)
+#define WORKFLOW_LOG CONCAT_LOG(INFO)
 
 void MockFunction() {
-  MAGI_LOG << "Hello World";
+  WORKFLOW_LOG << "Hello World";
 }

@@ -1,5 +1,5 @@
 {
-  "$schema": "../../magi_schema.json#definitions/PersonaDef",
+  "$schema": "../../workflow_schema.json#definitions/PersonaDef",
   "role": "Core Auditor",
   "mandate": [
     "MANDATE: Consistency with existing patterns, modularity, and ",

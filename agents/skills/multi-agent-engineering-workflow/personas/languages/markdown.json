@@ -1,5 +1,5 @@
 {
-  "$schema": "../../magi_schema.json#definitions/PersonaDef",
+  "$schema": "../../workflow_schema.json#definitions/PersonaDef",
   "role": "Markdown Expert",
   "mandate": [
     "MANDATE: Markdown formatting and documentation. TONE: Zero Preamble. No ",

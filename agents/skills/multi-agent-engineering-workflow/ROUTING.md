@@ -1,4 +1,4 @@
-# MAGI Module Routing Index
+# Multi-Agent Workflow Module Routing Index
 
 This file acts as a routing catalog for the Orchestrator. It identifies the
 technical rulesets and implementation modules available for execution and
@@ -58,7 +58,7 @@ Use these when modifying specific technical domains like media or networking.
 
 ## System Meta-Scanners
 
-Use these when auditing or modifying the MAGI protocol itself.
+Use these when auditing or modifying the workflow protocol itself.
 
 - **LLM Behavior & Grounding Expert:** Hallucination prevention, prompt
   engineering, state machine safety. *Path:* `personas/ai/llm.json`

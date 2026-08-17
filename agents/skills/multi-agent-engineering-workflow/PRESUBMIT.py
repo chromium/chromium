@@ -3,8 +3,8 @@
 # found in the LICENSE file.
 """Presubmit script for multi-agent-engineering-workflow.
 
-This script enforces structural integrity and formatting for the MAGI protocol
-markdown documentation and persona cheat sheets.
+This script enforces structural integrity and formatting for the workflow
+protocol markdown documentation and persona cheat sheets.
 """
 
 import collections
@@ -121,7 +121,7 @@ def _ValidateSchema(output_api, f, content, active_schema):
 def CheckMarkdownFiles(input_api, output_api):
     results = []
     repo_root = input_api.change.RepositoryRoot()
-    magi_dir = input_api.PresubmitLocalPath()
+    skill_dir = input_api.PresubmitLocalPath()
 
     def FileFilter(affected_file):
         return input_api.FilterSourceFile(
@@ -142,7 +142,7 @@ def CheckMarkdownFiles(input_api, output_api):
 
     # 2. Identify all markdown files in the directory for reachability.
     all_markdown_files = set()
-    for root, _, files in os.walk(magi_dir):
+    for root, _, files in os.walk(skill_dir):
         for file in files:
             # Skip README.md as it is intended for humans and not part of the
             # agent's operational graph.
@@ -286,7 +286,7 @@ def CheckMarkdownFiles(input_api, output_api):
 
                 # Add to reachability graph (only for local markdown files)
                 if full_path.endswith('.md') and _IsSafePath(
-                    input_api, full_path, magi_dir
+                    input_api, full_path, skill_dir
                 ):
                     graph[md_file].append(full_path)
 
@@ -311,7 +311,7 @@ def CheckMarkdownFiles(input_api, output_api):
 
     # Scenario 4: Reachability (BFS from SKILL.md)
     skill_md_path = input_api.os_path.normpath(
-        input_api.os_path.join(magi_dir, 'SKILL.md')
+        input_api.os_path.join(skill_dir, 'SKILL.md')
     )
     if skill_md_path not in graph:
         results.append(
@@ -375,8 +375,8 @@ def CheckMarkdownFiles(input_api, output_api):
 def CheckJsonFiles(input_api, output_api):
     results = []
 
-    magi_dir = input_api.PresubmitLocalPath()
-    schema_path = input_api.os_path.join(magi_dir, 'magi_schema.json')
+    skill_dir = input_api.PresubmitLocalPath()
+    schema_path = input_api.os_path.join(skill_dir, 'workflow_schema.json')
 
     affected_files_map = {
         af.AbsoluteLocalPath(): af
@@ -401,13 +401,15 @@ def CheckJsonFiles(input_api, output_api):
         schema = json.loads(schema_content_str)
     except ValueError as e:
         results.append(
-            output_api.PresubmitError(f'Invalid magi_schema.json: {e}')
+            output_api.PresubmitError(f'Invalid workflow_schema.json: {e}')
         )
         return results
 
     if not isinstance(schema, dict):
         results.append(
-            output_api.PresubmitError('magi_schema.json must be a JSON object.')
+            output_api.PresubmitError(
+                'workflow_schema.json must be a JSON object.'
+            )
         )
         return results
 
@@ -442,7 +444,7 @@ def CheckJsonFiles(input_api, output_api):
             affected_file,
             files_to_check=(
                 r'.*(state_block|project|review(\..+)?|constraints)'
-                r'\.magi(\.\d+)?\.json$',
+                r'\.workflow(\.\d+)?\.json$',
                 r'.*personas/.*\.json$',
             ),
         )
@@ -744,25 +746,21 @@ def CheckJsonFiles(input_api, output_api):
 
 def CheckTestJsonFiles(input_api, output_api):
     results = []
-    magi_dir = input_api.PresubmitLocalPath()
+    skill_dir = input_api.PresubmitLocalPath()
+    expected_dir = input_api.os_path.join(skill_dir, 'tests')
 
     def FileFilter(affected_file):
         absolute_path = affected_file.AbsoluteLocalPath()
-        expected_dir = input_api.os_path.join(magi_dir, 'tests')
         filename = input_api.os_path.basename(absolute_path)
         return input_api.os_path.dirname(
             absolute_path
         ) == expected_dir and bool(
-            re.match(r'^magi_stage_.*_tests\.json$', filename)
+            re.match(r'^workflow_stage_.*_tests\.json$', filename)
         )
 
     for f in input_api.AffectedFiles(
         file_filter=FileFilter, include_deletes=False
     ):
-        filename = input_api.os_path.basename(f.LocalPath())
-        if filename == "magi_test_schemas.json":
-            continue
-
         content_str = input_api.ReadFile(f)
         if not content_str.strip():
             continue

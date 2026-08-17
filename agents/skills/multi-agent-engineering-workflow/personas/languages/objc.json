@@ -1,5 +1,5 @@
 {
-  "$schema": "../../magi_schema.json#definitions/PersonaDef",
+  "$schema": "../../workflow_schema.json#definitions/PersonaDef",
   "role": "Objective-C Expert",
   "mandate": [
     "MANDATE: Objective-C/C++ for Mac/iOS integration. TONE: Zero Preamble. ",

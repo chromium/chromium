@@ -1,5 +1,5 @@
 {
-  "$schema": "../../magi_schema.json#definitions/PersonaDef",
+  "$schema": "../../workflow_schema.json#definitions/PersonaDef",
   "role": "WebRTC External Expert",
   "mandate": [
     "MANDATE: Correct usage of the //third_party/webrtc API and signaling ",

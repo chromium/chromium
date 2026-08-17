@@ -5,9 +5,9 @@ description: >-
   coding tasks using multi-agent debate and TDD.
 ---
 
-# Multi-Agent Engineering Workflow (MAGI Protocol)
+# Multi-Agent Engineering Workflow
 
-This skill acts as the high-level Orchestrator for the MAGI protocol, a
+This skill acts as the high-level Orchestrator for the workflow protocol, a
 consensus-driven multi-agent framework designed to resolve complex software
 engineering problems. It coordinates scoping, TDD implementation, consensus
 reviews, and deployment by aggregating specialized sub-skills.
@@ -15,7 +15,7 @@ reviews, and deployment by aggregating specialized sub-skills.
 ## The Two-Path Model
 
 The Orchestrator MUST select an execution path based on the task's complexity
-and ambiguity (defined in `project.magi.json`):
+and ambiguity (defined in `project.workflow.json`):
 
 1. **FAST_PATH (Efficiency):** Used for low-complexity, low-ambiguity tasks.
    *Workflow:* Scoping -> TDD/Direct Synthesis -> Single Auditor.
@@ -27,8 +27,8 @@ ______________________________________________________________________
 
 ## Global Mandates & Invariants
 
-All subagents invoked under the MAGI protocol MUST adhere to these invariants to
-ensure harness compatibility and workspace safety.
+All subagents invoked under the workflow protocol MUST adhere to these
+invariants to ensure harness compatibility and workspace safety.
 
 ### 1. Tone Mandate (Signal-to-Noise)
 
@@ -49,7 +49,7 @@ names (e.g. `update_topic`, `read_file`, `write_file`). Use generic terms like
 
 ### 3. Environment Grounding Mandate
 
-All sub-agents MUST read `project.magi.json#environment` immediately upon
+All sub-agents MUST read `project.workflow.json#environment` immediately upon
 invocation to discover the active VCS (`JJ` or `GIT`) and Harness (`JETSKI` or
 `GENERIC_CLI`). They MUST adjust their tool usage natively. All interim files
 (drafts, reviews, logs) must be saved in the configured `temp_directory` to
@@ -62,19 +62,20 @@ ______________________________________________________________________
 ### Stage 0: Initialization & Scoping
 
 1. Ground the environment, discover active VCS, and verify tool availability.
-2. Investigate the initial request and write `project.magi.json` to configure
-   the project (VCS, temp directories, target files) and define the goal.
+2. Investigate the initial request and write `project.workflow.json` to
+   configure the project (VCS, temp directories, target files) and define the
+   goal.
 3. Read the `temp_directory` and `execution_path` from the generated
-   `project.magi.json`.
-4. Clean up any leftover state files (`tdd_state.magi.json`,
-   `review_state.magi.json`, `constraints.magi.json`) in the configured
+   `project.workflow.json`.
+4. Clean up any leftover state files (`tdd_state.workflow.json`,
+   `review_state.workflow.json`, `constraints.workflow.json`) in the configured
    `temp_directory` to ensure a clean start.
 
 ### Stage 1: TDD Implementation
 
 1. Invoke the
    [multi-agent-tdd-implementation](../multi-agent-tdd-implementation/SKILL.md)
-   skill (passing any active `constraints.magi.json` if iterating).
+   skill (passing any active `constraints.workflow.json` if iterating).
 2. Wait for completion and verify that the synthesis build/test target compiles.
 
 ### Stage 2: Consensus Review & Audit
@@ -87,7 +88,7 @@ ______________________________________________________________________
    "Big Three" scanners (Security, Performance, Auditor) and any domain
    specialists.
 3. Read the consolidated `verdict` and `next_stage` from
-   `review_state.magi.json`:
+   `review_state.workflow.json`:
    - **ACCEPT** (or `next_stage: COMPLETED`): Transition to Stage 3.
    - **REJECT** (or `next_stage: SYNTHESIS`): If `oscillation_detected == false`
      and global iterations < 3, loop back to Stage 1. Else, escalate to the
@@ -105,12 +106,12 @@ ______________________________________________________________________
 
 ## Workspace Management & Isolation
 
-- **Interim File Isolation:** Place all draft files (`*.magi`, `*.magi.*`) in
-  the configured `temp_directory` (e.g.
+- **Interim File Isolation:** Place all draft files (`*.workflow`,
+  `*.workflow.*`) in the configured `temp_directory` (e.g.
   `agents/skills/multi-agent-engineering-workflow/.temp/`).
 - **Cleanup:** The release skill MUST delete the temporary directory at the end
   of a successful run.
-- **VCS & Staging Workflows:** Upgrades to MAGI configuration files (via
+- **VCS & Staging Workflows:** Upgrades to workflow configuration files (via
   [multi-agent-skill-trainer](../multi-agent-skill-trainer/SKILL.md)) must be
   branched and uploaded as separate secondary CLs.
 
@@ -123,7 +124,7 @@ ______________________________________________________________________
   patterns and complexity.
 - **JSON Configuration Contract**: Consult [EXAMPLES.md](./EXAMPLES.md) for the
   exact schema and examples of the configuration JSON files
-  (`project.magi.json`, `review_state.magi.json`, etc.).
+  (`project.workflow.json`, `review_state.workflow.json`, etc.).
 - **Testing Protocol**: Consult [SKILL_TEST_PLAN.md](./SKILL_TEST_PLAN.md) and
   [SKILL_TEST.md](./SKILL_TEST.md) for verification procedures and unit tests.
 - **Harness & Orchestration Patterns**: Consult
@@ -133,12 +134,6 @@ ______________________________________________________________________
 
 ## Roadmap & Architecture TODOs
 
-- **TODO(MAGI Protocol Terminology):** While this skill is named
-  `multi-agent-engineering-workflow`, the underlying state specifications
-  (`project.magi.json`, `review_state.magi.json`, `tdd_state.magi.json`,
-  `TAG=magi`) currently retain legacy "MAGI" naming for backwards compatibility.
-  Planned refactor: transition state files and schema identifiers to a
-  generalized `project.workflow.json` protocol.
 - **TODO(Expanded Engineering Phases):**
   - Integrate upstream design phases (e.g., generating design documents, class
     diagrams, and sequence diagrams).

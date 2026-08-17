@@ -2,7 +2,7 @@
 # Copyright 2026 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""Helper script to run MAGI presubmit checks locally."""
+"""Helper script to run workflow presubmit checks locally."""
 
 import os
 import re
@@ -123,10 +123,10 @@ def find_repo_root(start_dir):
 def main():
     # Collect all files in the current directory and tests directory
     files = []
-    magi_dir = os.path.dirname(os.path.abspath(__file__))
-    repo_root = find_repo_root(magi_dir)
+    skill_dir = os.path.dirname(os.path.abspath(__file__))
+    repo_root = find_repo_root(skill_dir)
 
-    for root, _dirs, filenames in os.walk(magi_dir):
+    for root, _dirs, filenames in os.walk(skill_dir):
         if '.temp' in root.split(os.sep):
             continue
         for filename in filenames:

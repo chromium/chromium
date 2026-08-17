@@ -2,11 +2,11 @@
 # Copyright 2026 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""Automated test runner for MAGI unit tests.
+"""Automated test runner for workflow unit tests.
 
-This script reads test cases from tests/magi_phase_[N]_tests.json and executes
-them by invoking agents and verifying outputs. It supports both Jetski and
-Generic CLI environments.
+This script reads test cases from tests/workflow_stage_[N]_tests.json and
+executes them by invoking agents and verifying outputs. It supports both
+Jetski and Generic CLI environments.
 """
 
 import argparse
@@ -148,7 +148,7 @@ def run_test_case(case, base_inputs, invoker, original_test_dir):
 
         # Construct prompt based on inputs (Simplified for prototype)
         prompt = (
-            f"Execute MAGI stage {case.get('stage', 'unknown')} "
+            f"Execute workflow stage {case.get('stage', 'unknown')} "
             f"step {case.get('step', 'unknown')} with inputs: "
             f"{json.dumps(inputs)}"
         )
@@ -249,7 +249,7 @@ def run_test_case(case, base_inputs, invoker, original_test_dir):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="MAGI Test Runner")
+    parser = argparse.ArgumentParser(description="Workflow Test Runner")
     parser.add_argument('--tests', required=True, help="Path to test JSON file")
     parser.add_argument(
         '--harness',

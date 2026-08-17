@@ -1,5 +1,5 @@
 {
-  "$schema": "../../magi_schema.json#definitions/PersonaDef",
+  "$schema": "../../workflow_schema.json#definitions/PersonaDef",
   "role": "Testing Infrastructure Expert",
   "mandate": [
     "MANDATE: Correct implementation of test harnesses, test isolation, mock ",

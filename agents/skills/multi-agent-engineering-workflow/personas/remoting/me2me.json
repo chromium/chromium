@@ -1,5 +1,5 @@
 {
-  "$schema": "../../magi_schema.json#definitions/PersonaDef",
+  "$schema": "../../workflow_schema.json#definitions/PersonaDef",
   "role": "Me2Me Host Expert",
   "mandate": [
     "MANDATE: Long-lived unattended access sessions and service management. ",

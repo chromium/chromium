@@ -1,0 +1,14 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef AGENTS_SKILLS_MULTI_AGENT_ENGINEERING_WORKFLOW_TESTS_TESTDATA_SOCKET_HANDLER_LINUX_H_
+#define AGENTS_SKILLS_MULTI_AGENT_ENGINEERING_WORKFLOW_TESTS_TESTDATA_SOCKET_HANDLER_LINUX_H_
+
+namespace remoting {
+
+void ReadConfig();
+
+}  // namespace remoting
+
+#endif  // AGENTS_SKILLS_MULTI_AGENT_ENGINEERING_WORKFLOW_TESTS_TESTDATA_SOCKET_HANDLER_LINUX_H_

@@ -1,8 +1,8 @@
-# MAGI Test Protocol (SKILL_TEST.md)
+# Multi-Agent Engineering Workflow Test Protocol (SKILL_TEST.md)
 
-This document describes the protocol used to validate the MAGI (Modular
-Automated Guided Iteration) sub-agents and prevent regressions in the protocol
-execution. It defines "unit" tests for each stage of the MAGI protocol.
+This document describes the protocol used to validate the Multi-Agent
+Engineering Workflow sub-agents and prevent regressions in the protocol
+execution. It defines "unit" tests for each stage of the workflow protocol.
 
 ## Objective
 
@@ -30,20 +30,20 @@ To prevent automated tooling (like static analyzers) from flagging intentional
 flaws in test data, and to prevent humans from trying to fix them:
 
 1. **Extension:** Files containing intentional flaws MUST use the extension
-   `.magi.test` (e.g., `complex_uaf.cc.magi.test`).
+   `.workflow.test` (e.g., `complex_uaf.cc.workflow.test`).
 2. **Descriptive Pre-Copy Naming:** The source file in the repository SHOULD
-   have a name that indicates the flaw (e.g., `complex_uaf.cc.magi.test`) to
+   have a name that indicates the flaw (e.g., `complex_uaf.cc.workflow.test`) to
    make it clear to humans what is being tested.
 3. **Realistic Copied Naming:** The build system MUST rename the file to a
    normal, realistic name when copying it and stripping comments (e.g.,
    `bind_post_task_helper.cc`) to prevent the agent from anchoring on the
    filename.
-4. **Realistic Code:** Class names, function names, and non-MAGI comments in the
-   file MUST be structured as if the code was valid and expected to work.
-5. **Annotations:** Annotate the files with `// MAGI: <comment>` to describe the
-   flaw or reproduction steps for humans.
+4. **Realistic Code:** Class names, function names, and non-workflow comments in
+   the file MUST be structured as if the code was valid and expected to work.
+5. **Annotations:** Annotate the files with `// WORKFLOW: <comment>` to describe
+   the flaw or reproduction steps for humans.
 6. **Preprocessing:** The `BUILD.gn` file MUST contain a GN `action` to copy
-   these files, rename them, and strip out the `// MAGI:` comments.
+   these files, rename them, and strip out the `// WORKFLOW:` comments.
 7. **Test Only:** All test targets in `BUILD.gn` MUST be marked
    `testonly = true`.
 8. **Line Numbers:** Line numbers in test cases are OPTIONAL and should
@@ -55,10 +55,10 @@ ______________________________________________________________________
 
 ## Test Cases Structure
 
-Test cases are defined in `magi_stage_[name]_tests.json` conforming to
-`magi_test_schemas.json`. Each test case includes:
+Test cases are defined in `workflow_stage_[name]_tests.json` conforming to
+`workflow_test_schemas.json`. Each test case includes:
 
-1. **Stage:** The MAGI stage being tested.
+1. **Stage:** The workflow stage being tested.
 2. **Name:** Descriptive name of the test.
 3. **Inputs:** Mock files or state provided to the agent.
 4. **Expected Outputs:**
@@ -72,11 +72,11 @@ ______________________________________________________________________
 ## How to Run Tests
 
 Run a specific test file from the skill's root directory:
-`python3 run_magi_tests.py --tests tests/magi_stage_generate_tests.json`
+`python3 run_workflow_tests.py --tests tests/workflow_stage_generate_tests.json`
 
 Run all tests using a shell loop from the skill's root directory:
-`for f in tests/magi_stage_*_tests.json; do \`
-`  python3 run_magi_tests.py --tests "$f"; done`
+`for f in tests/workflow_stage_*_tests.json; do \`
+`  python3 run_workflow_tests.py --tests "$f"; done`
 
 ## How to Run Presubmit Checks
 

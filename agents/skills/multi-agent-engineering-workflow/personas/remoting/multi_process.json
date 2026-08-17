@@ -1,5 +1,5 @@
 {
-  "$schema": "../../magi_schema.json#definitions/PersonaDef",
+  "$schema": "../../workflow_schema.json#definitions/PersonaDef",
   "role": "Multi-Process Host Expert",
   "mandate": [
     "MANDATE: Correct inter-process communication (Mojo), process lifecycle ",

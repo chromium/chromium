@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // Mock file with intentional flaw for testing.
-// MAGI: This file contains an unsafe reinterpret_cast.
+// WORKFLOW: This file contains an unsafe reinterpret_cast.
 
 #include "type_converter.h"
 
@@ -13,7 +13,7 @@ void DerivedA::MethodA() {}
 void DerivedB::MethodB() {}
 
 void ConvertType(Base* base_ptr) {
-  // MAGI: Unsafely casting Base* to DerivedA* using reinterpret_cast instead of static_cast or custom type check.
+  // WORKFLOW: Unsafely casting Base* to DerivedA* using reinterpret_cast instead of static_cast or custom type check.
   DerivedA* a_ptr = reinterpret_cast<DerivedA*>(base_ptr);
   a_ptr->MethodA();
 }

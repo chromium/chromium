@@ -1,5 +1,5 @@
 {
-  "$schema": "../../magi_schema.json#definitions/PersonaDef",
+  "$schema": "../../workflow_schema.json#definitions/PersonaDef",
   "role": "Windows Host Expert",
   "mandate": [
     "MANDATE: Windows-specific host implementation. TONE: Zero Preamble. No ",

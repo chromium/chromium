@@ -2,7 +2,7 @@
 # Copyright 2026 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""Script to strip MAGI stage comments from files for testing."""
+"""Script to strip workflow stage comments from files for testing."""
 
 import argparse
 import re
@@ -11,7 +11,7 @@ import sys
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Strip MAGI comments from files"
+        description="Strip workflow comments from files"
     )
     parser.add_argument("--input", required=True, help="Input file")
     parser.add_argument("--output", required=True, help="Output file")
@@ -21,8 +21,10 @@ def main():
         with open(args.input, 'r', encoding='utf-8') as f:
             content = f.read()
 
-        # Strip lines containing // MAGI: (must be on their own line)
-        cleaned_content = re.sub(r'(?m)^[ \t]*// MAGI:.*(?:\n|$)', '', content)
+        # Strip lines containing // WORKFLOW: (must be on their own line)
+        cleaned_content = re.sub(
+            r'(?m)^[ \t]*// WORKFLOW:.*(?:\n|$)', '', content
+        )
 
         with open(args.output, 'w', encoding='utf-8') as f:
             f.write(cleaned_content)
