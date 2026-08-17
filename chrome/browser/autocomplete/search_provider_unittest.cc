@@ -4077,6 +4077,19 @@ TEST_F(SearchProviderTest, DuplicateCardAnswer) {
 }
 
 TEST_F(SearchProviderTest, CopyAnswerToVerbatim) {
+  TemplateURLData google_template_url_data;
+  google_template_url_data.SetShortName(u"g");
+  google_template_url_data.SetURL(
+      "https://www.google.com/search?q={searchTerms}");
+  google_template_url_data.suggestions_url =
+      "https://www.google.com/suggest?q={searchTerms}";
+
+  TemplateURLService* turl_model =
+      TemplateURLServiceFactory::GetForProfile(profile_.get());
+  TemplateURL* template_url =
+      turl_model->Add(std::make_unique<TemplateURL>(google_template_url_data));
+  turl_model->SetUserSelectedDefaultSearchProvider(template_url);
+
   QueryForInput(u"weather los angeles ", false, false);
 
   AutocompleteMatch match;

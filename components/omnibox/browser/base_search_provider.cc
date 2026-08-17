@@ -128,27 +128,32 @@ AutocompleteMatch BaseSearchProvider::CreateSearchSuggestion(
   if (!template_url)
     return match;
   match.keyword = template_url->keyword();
+  bool is_google = search::TemplateURLIsGoogle(template_url, search_terms_data);
   // If SuggestTemplateInfo is available, use it. Otherwise, continue
   // populating information from EntityInfo.
   const auto& suggest_template_info = suggestion.suggest_template_info();
   if (suggest_template_info) {
     match.suggest_template = suggest_template_info;
-    if (suggest_template_info->has_image()) {
-      match.image_dominant_color =
-          suggest_template_info->image().dominant_color();
-      match.image_url = GURL(suggest_template_info->image().url());
+  }
+  if (is_google) {
+    if (suggest_template_info) {
+      if (suggest_template_info->has_image()) {
+        match.image_dominant_color =
+            suggest_template_info->image().dominant_color();
+        match.image_url = GURL(suggest_template_info->image().url());
+      }
+    } else {
+      match.image_dominant_color = suggestion.entity_info().dominant_color();
+      match.image_url = GURL(suggestion.entity_info().image_url());
     }
-  } else {
-    match.image_dominant_color = suggestion.entity_info().dominant_color();
-    match.image_url = GURL(suggestion.entity_info().image_url());
+    match.answer_template = suggestion.answer_template();
+    match.answer_type = suggestion.answer_type();
   }
   match.entity_id = suggestion.entity_info().entity_id();
   match.website_uri = suggestion.entity_info().website_uri();
   match.contents = suggestion.match_contents();
   match.contents_class = suggestion.match_contents_class();
   match.suggestion_group_id = suggestion.suggestion_group_id();
-  match.answer_template = suggestion.answer_template();
-  match.answer_type = suggestion.answer_type();
   match.suggest_type = suggestion.suggest_type();
   for (const int subtype : suggestion.subtypes()) {
     match.subtypes.insert(SuggestSubtypeForNumber(subtype));
@@ -231,7 +236,6 @@ AutocompleteMatch BaseSearchProvider::CreateSearchSuggestion(
   match.transition = suggestion.from_keyword() ? ui::PAGE_TRANSITION_KEYWORD
                                                : ui::PAGE_TRANSITION_GENERATED;
 
-  bool is_google = search::TemplateURLIsGoogle(template_url, search_terms_data);
   // Attach Actions in Suggest to the newly created match on Android if Google
   // is the default search engine.
   if ((is_android || is_ios) && is_google) {

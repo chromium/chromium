@@ -123,7 +123,7 @@ class BaseSearchProviderTest : public BaseSearchProviderTestFixture,
 
 TEST_F(BaseSearchProviderTest, PreserveAnswersWhenDeduplicating) {
   TemplateURLData data;
-  data.SetURL("http://foo.com/url?bar={searchTerms}");
+  data.SetURL("https://www.google.com/search?q={searchTerms}");
   auto template_url = std::make_unique<TemplateURL>(data);
 
   TestBaseSearchProvider::MatchMap map;
@@ -205,7 +205,7 @@ TEST_F(BaseSearchProviderTest, PreserveAnswersWhenDeduplicating) {
 
 TEST_F(BaseSearchProviderTest, PreserveImageWhenDeduplicating) {
   TemplateURLData data;
-  data.SetURL("http://foo.com/url?bar={searchTerms}");
+  data.SetURL("https://www.google.com/search?q={searchTerms}");
   auto template_url = std::make_unique<TemplateURL>(data);
 
   TestBaseSearchProvider::MatchMap map;
@@ -774,7 +774,7 @@ TEST_F(BaseSearchProviderTest, CreateActionInSuggest_SchemeValidation) {
 
 TEST_F(BaseSearchProviderTest, SuggestTemplateInfoPopulatesMatch) {
   TemplateURLData data;
-  data.SetURL("http://foo.com/url?bar={searchTerms}");
+  data.SetURL("https://www.google.com/search?q={searchTerms}");
   auto template_url = std::make_unique<TemplateURL>(data);
 
   TestBaseSearchProvider::MatchMap map;
@@ -817,4 +817,54 @@ TEST_F(BaseSearchProviderTest, SuggestTemplateInfoPopulatesMatch) {
   EXPECT_EQ(suggest_template_info.image().dominant_color(),
             match.image_dominant_color);
   EXPECT_EQ("gs_ssp=abc", match.search_terms_args->additional_query_params);
+}
+
+TEST_F(BaseSearchProviderTest, AnswerAndImageOnlyPopulatedForGoogle) {
+  std::u16string query = u"weather";
+  omnibox::RichAnswerTemplate answer_template;
+  answer_template.add_answers()->mutable_headline()->set_text("72°F");
+
+  omnibox::EntityInfo entity_info;
+  entity_info.set_image_url("https://example.com/image.png");
+  entity_info.set_dominant_color("#ffffff");
+
+  SearchSuggestionParser::SuggestResult result(
+      query, AutocompleteMatchType::SEARCH_SUGGEST, omnibox::TYPE_QUERY,
+      /*subtypes=*/{}, /*from_keyword=*/false,
+      /*navigational_intent=*/omnibox::NAV_INTENT_NONE,
+      /*relevance=*/1300, /*relevance_from_server=*/true,
+      /*input_text=*/query);
+  result.SetRichAnswerTemplate(answer_template);
+  result.SetEntityInfo(entity_info);
+
+  // 1. Non-Google search engine: fields should NOT be populated.
+  {
+    TemplateURLData non_google_data;
+    non_google_data.SetURL("https://evil.com/search?q={searchTerms}");
+    auto non_google_turl = std::make_unique<TemplateURL>(non_google_data);
+    TestBaseSearchProvider::MatchMap map;
+    provider_->AddMatchToMap(
+        result, AutocompleteInput(), non_google_turl.get(),
+        client_->GetTemplateURLService()->search_terms_data(),
+        TemplateURLRef::NO_SUGGESTION_CHOSEN, false, false, &map);
+    ASSERT_EQ(1U, map.size());
+    EXPECT_FALSE(map.begin()->second.answer_template.has_value());
+    EXPECT_TRUE(map.begin()->second.image_url.is_empty());
+  }
+
+  // 2. Google search engine: fields SHOULD be populated.
+  {
+    TemplateURLData google_data;
+    google_data.SetURL("https://www.google.com/search?q={searchTerms}");
+    auto google_turl = std::make_unique<TemplateURL>(google_data);
+    TestBaseSearchProvider::MatchMap map;
+    provider_->AddMatchToMap(
+        result, AutocompleteInput(), google_turl.get(),
+        client_->GetTemplateURLService()->search_terms_data(),
+        TemplateURLRef::NO_SUGGESTION_CHOSEN, false, false, &map);
+    ASSERT_EQ(1U, map.size());
+    EXPECT_TRUE(map.begin()->second.answer_template.has_value());
+    EXPECT_EQ("https://example.com/image.png",
+              map.begin()->second.image_url.spec());
+  }
 }
