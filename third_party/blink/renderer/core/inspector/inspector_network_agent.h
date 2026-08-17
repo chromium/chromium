@@ -425,6 +425,11 @@ class CORE_EXPORT InspectorNetworkAgent final
   InspectorAgentState::Integer max_post_data_size_;
   InspectorAgentState::Boolean report_direct_socket_traffic_;
   InspectorAgentState::Boolean is_durable_messages_enabled_;
+  InspectorAgentState::Boolean network_state_offline_;
+  InspectorAgentState::Double network_state_latency_;
+  InspectorAgentState::Double network_state_download_throughput_;
+  InspectorAgentState::Double network_state_upload_throughput_;
+  InspectorAgentState::String network_state_connection_type_;
 };
 
 }  // namespace blink

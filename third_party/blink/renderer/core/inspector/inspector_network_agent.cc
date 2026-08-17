@@ -744,6 +744,17 @@ std::unique_ptr<protocol::Network::TrustTokenParams> BuildTrustTokenParams(
   return protocol_params;
 }
 
+// According to the Chrome DevTools Protocol, negative throughput values
+// disable throttling. Any non-negative value (>= 0) is considered an active
+// override, with 0 representing full throttling.
+bool IsActiveNetworkStateOverride(bool offline,
+                                  double latency,
+                                  double download_throughput,
+                                  double upload_throughput) {
+  return offline || latency > 0 || download_throughput >= 0 ||
+         upload_throughput >= 0;
+}
+
 void SetNetworkStateOverride(bool offline,
                              double latency,
                              double download_throughput,
@@ -751,12 +762,8 @@ void SetNetworkStateOverride(bool offline,
                              WebConnectionType type) {
   // TODO(dgozman): networkStateNotifier is per-process. It would be nice to
   // have per-frame override instead.
-
-  // According to the Chrome DevTools Protocol, negative throughput values
-  // disable throttling. Any non-negative value (>= 0) is considered an active
-  // override, with 0 representing full throttling.
-  if (offline || latency > 0 || download_throughput >= 0 ||
-      upload_throughput >= 0) {
+  if (IsActiveNetworkStateOverride(offline, latency, download_throughput,
+                                   upload_throughput)) {
     std::optional<double> download_mbps;
     if (download_throughput >= 0) {
       download_mbps = download_throughput / (1024 * 1024 / 8);
@@ -830,6 +837,19 @@ void InspectorNetworkAgent::Init(CoreProbeSink* instrumenting_agents,
 void InspectorNetworkAgent::Restore() {
   if (enabled_.Get()) {
     Enable();
+  }
+  if (IsActiveNetworkStateOverride(network_state_offline_.Get(),
+                                   network_state_latency_.Get(),
+                                   network_state_download_throughput_.Get(),
+                                   network_state_upload_throughput_.Get())) {
+    std::optional<String> connection_type;
+    if (!network_state_connection_type_.Get().empty()) {
+      connection_type = network_state_connection_type_.Get();
+    }
+    overrideNetworkState(
+        network_state_offline_.Get(), network_state_latency_.Get(),
+        network_state_download_throughput_.Get(),
+        network_state_upload_throughput_.Get(), std::move(connection_type));
   }
   if (!blocked_patterns_cbor_.Get().empty()) {
     protocol::Array<protocol::Network::BlockPattern> blocked_patterns;
@@ -2608,6 +2628,12 @@ protocol::Response InspectorNetworkAgent::overrideNetworkState(
       return protocol::Response::ServerError("Unknown connection type");
   }
 
+  network_state_offline_.Set(offline);
+  network_state_latency_.Set(latency);
+  network_state_download_throughput_.Set(download_throughput);
+  network_state_upload_throughput_.Set(upload_throughput);
+  network_state_connection_type_.Set(connection_type.value_or(String()));
+
   if (worker_or_worklet_global_scope_) {
     if (worker_or_worklet_global_scope_->IsServiceWorkerGlobalScope() ||
         worker_or_worklet_global_scope_->IsSharedWorkerGlobalScope()) {
@@ -2835,7 +2861,13 @@ InspectorNetworkAgent::InspectorNetworkAgent(
       report_direct_socket_traffic_(&agent_state_,
                                     /*default_value=*/false),
       is_durable_messages_enabled_(&agent_state_,
-                                   /*default_value=*/false) {
+                                   /*default_value=*/false),
+      network_state_offline_(&agent_state_, /*default_value=*/false),
+      network_state_latency_(&agent_state_, /*default_value=*/0),
+      network_state_download_throughput_(&agent_state_, /*default_value=*/-1),
+      network_state_upload_throughput_(&agent_state_, /*default_value=*/-1),
+      network_state_connection_type_(&agent_state_,
+                                     /*default_value=*/String()) {
   DCHECK((IsMainThread() &&
           (!worker_or_worklet_global_scope_ ||
            worker_or_worklet_global_scope_->IsWorkletGlobalScope())) ||

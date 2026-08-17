@@ -1,0 +1,7 @@
+Verifies that the navigator.onLine override survives cross-document navigations.
+navigator.onLine: false
+navigator.onLine after same-origin navigation: false
+navigator.onLine after cross-origin navigation: false
+navigator.onLine after clearing the override: true
+navigator.onLine after navigating without the override: true
+
