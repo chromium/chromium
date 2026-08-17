@@ -79,7 +79,12 @@ class UpdaterImpl : public DynamicIIDsMultImpl<IUpdater, IUpdater2> {
   HRESULT RuntimeClassInitialize();
 
   // Overrides for IUpdater.
+  // Callable by non-admin COM callers. This is by design, as retrieving the
+  // updater version is safe.
   IFACEMETHODIMP GetVersion(BSTR* version) override;
+
+  // Callable by non-admin COM callers. This is by design, as fetching policies
+  // is safe.
   IFACEMETHODIMP FetchPolicies(IUpdaterCallback* callback) override;
 
   // Returns `E_ACCESSDENIED` if the COM caller is not admin for a `system` app.
@@ -90,6 +95,11 @@ class UpdaterImpl : public DynamicIIDsMultImpl<IUpdater, IUpdater2> {
                              const wchar_t* version,
                              const wchar_t* existence_checker_path,
                              IUpdaterCallback* callback) override;
+
+  // Callable by non-admin COM callers. This is by design, as these methods only
+  // trigger tasks, update checks, or updates for already-registered
+  // applications. Update payloads are cryptographically verified, mitigating
+  // privilege escalation risks.
   IFACEMETHODIMP RunPeriodicTasks(IUpdaterCallback* callback) override;
   IFACEMETHODIMP CheckForUpdate(const wchar_t* app_id,
                                 LONG priority,
@@ -113,6 +123,10 @@ class UpdaterImpl : public DynamicIIDsMultImpl<IUpdater, IUpdater2> {
                          const wchar_t* install_data_index,
                          LONG priority,
                          IUpdaterObserver* observer) override;
+
+  // Callable by non-admin COM callers. This is by design, as canceling an
+  // install is a request state modification for a registered application and
+  // does not install new software.
   IFACEMETHODIMP CancelInstalls(const wchar_t* app_id) override;
 
   // Returns `E_ACCESSDENIED` if the COM caller is not admin for a `system` app.
@@ -122,6 +136,9 @@ class UpdaterImpl : public DynamicIIDsMultImpl<IUpdater, IUpdater2> {
                               const wchar_t* install_data,
                               const wchar_t* install_settings,
                               IUpdaterObserver* observer) override;
+
+  // Callable by non-admin COM callers. This is by design, as querying app
+  // states is a read-only operation.
   IFACEMETHODIMP GetAppStates(IUpdaterAppStatesCallback* callback) override;
 
   // Overrides for IUpdater2.

@@ -890,9 +890,17 @@ to use.
 
 Certain methods in these interfaces require the callers to be admin (enforced in
 the individual methods via `IsCOMCallerAllowed`). This is because the
-corresponding methods allow for unrestricted functionality, such as installing
-any app that the updater supports. For non-admins, these COM methods will fail
-with `E_ACCESSDENIED`.
+corresponding methods allow for unrestricted functionality, such as registering
+new applications, installing arbitrary apps, or running local installers
+(e.g., `RegisterApp`, `Install`, `RunInstaller`). For non-admins, these COM
+methods will fail with `E_ACCESSDENIED`.
+
+By design, methods that only trigger update checks, perform updates, or
+query/cancel updating for already-registered applications (e.g.,
+`CheckForUpdate`, `Update`, `UpdateAll`, `CancelInstalls`, `GetAppStates`) are
+callable by non-admin COM callers. These are safe to expose because the update
+payloads are cryptographically verified before execution, preventing privilege
+escalation.
 
 #### COM System Service
 The updater installs an `internal` SxS system service for the new version
