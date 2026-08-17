@@ -55,7 +55,8 @@ struct GPU_IPC_COMMON_EXPORT StructTraits<
     return shared_image.creation_sync_token_;
   }
 
-  static std::string debug_label(const gpu::ExportedSharedImage& shared_image) {
+  static const std::string& debug_label(
+      const gpu::ExportedSharedImage& shared_image) {
     return shared_image.debug_label_;
   }
 
