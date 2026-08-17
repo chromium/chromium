@@ -445,7 +445,10 @@ public class BottomBarCoordinatorUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR_AIM)
+    @EnableFeatures({
+        ChromeFeatureList.ANDROID_BOTTOM_BAR_AIM,
+        ChromeFeatureList.ANDROID_BOTTOM_BAR + ":bypass_aim_geofencing/true"
+    })
     public void testExtraButton_WhenAiModeEligible_ShowsAiModeContentDescriptionAndTooltip() {
         GlicEnabling.setEnabledForTesting(false);
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
@@ -723,7 +726,8 @@ public class BottomBarCoordinatorUnitTest {
     @Test
     @EnableFeatures({
         ChromeFeatureList.ANDROID_BOTTOM_BAR,
-        ChromeFeatureList.ANDROID_BOTTOM_BAR_AIM
+        ChromeFeatureList.ANDROID_BOTTOM_BAR_AIM,
+        ChromeFeatureList.ANDROID_BOTTOM_BAR + ":bypass_aim_geofencing/true"
     })
     public void testCountrySupplier_DelayedSupply_AuCountry_BindsAiMode() {
         GlicEnabling.setEnabledForTesting(/* isEnabled= */ true);

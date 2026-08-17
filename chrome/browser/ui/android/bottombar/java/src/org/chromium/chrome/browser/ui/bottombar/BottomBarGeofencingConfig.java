@@ -32,66 +32,14 @@ public final class BottomBarGeofencingConfig {
             Collections.unmodifiableList(
                     Arrays.asList(
                             // keep-sorted start
+                            "in", // India
                             "us" // United States
                             // keep-sorted end
                             ));
 
     /** Countries where GLIC (Gemini) is launching soon (currently gated). */
-    public static final List<String> GLIC_SOON_COUNTRIES =
-            Collections.unmodifiableList(
-                    Arrays.asList(
-                            // keep-sorted start
-                            "in" // India
-                            // keep-sorted end
-                            ));
+    public static final List<String> GLIC_SOON_COUNTRIES = Collections.emptyList();
 
     /** Countries where AI Mode (search fallback) is allowed. */
-    public static final List<String> AIM_ALLOWED_COUNTRIES =
-            Collections.unmodifiableList(
-                    Arrays.asList(
-                            // keep-sorted start
-                            "ag", // Antigua and Barbuda
-                            "ar", // Argentina
-                            "au", // Australia
-                            "bb", // Barbados
-                            "bo", // Bolivia
-                            "br", // Brazil
-                            "bs", // The Bahamas
-                            "bz", // Belize
-                            "ca", // Canada
-                            "cl", // Chile
-                            "co", // Colombia
-                            "cr", // Costa Rica
-                            "dm", // Dominica
-                            "do", // Dominican Republic
-                            "ec", // Ecuador
-                            "gd", // Grenada
-                            "gt", // Guatemala
-                            "gy", // Guyana
-                            "hn", // Honduras
-                            "ht", // Haiti
-                            "id", // Indonesia
-                            "in", // India
-                            "jm", // Jamaica
-                            "kn", // Saint Kitts and Nevis
-                            "kr", // South Korea
-                            "lc", // Saint Lucia
-                            "mx", // Mexico
-                            "ni", // Nicaragua
-                            "nz", // New Zealand
-                            "pa", // Panama
-                            "pe", // Peru
-                            "ph", // Philippines
-                            "py", // Paraguay
-                            "sg", // Singapore
-                            "sr", // Suriname
-                            "sv", // El Salvador
-                            "tt", // Trinidad and Tobago
-                            "us", // United States
-                            "uy", // Uruguay
-                            "vc", // Saint Vincent and the Grenadines
-                            "ve", // Venezuela
-                            "vn" // Vietnam
-                            // keep-sorted end
-                            ));
+    public static final List<String> AIM_ALLOWED_COUNTRIES = Collections.emptyList();
 }

@@ -280,7 +280,10 @@ public class BottomBarPromoDialogCoordinatorUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR_AIM)
+    @EnableFeatures({
+        ChromeFeatureList.ANDROID_BOTTOM_BAR_AIM,
+        ChromeFeatureList.ANDROID_BOTTOM_BAR + ":bypass_aim_geofencing/true"
+    })
     public void testMaybeShowPromoDialog_AimSuccessfulShow() {
         when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(false);
         when(mTracker.shouldTriggerHelpUi(FeatureConstants.ANDROID_BOTTOM_BAR_AIM_PROMO_DIALOG))
@@ -309,7 +312,10 @@ public class BottomBarPromoDialogCoordinatorUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR_AIM)
+    @EnableFeatures({
+        ChromeFeatureList.ANDROID_BOTTOM_BAR_AIM,
+        ChromeFeatureList.ANDROID_BOTTOM_BAR + ":bypass_aim_geofencing/true"
+    })
     public void testAimPositiveButtonClickDismissesAndNotifiesAccepted() {
         when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(false);
         when(mTracker.shouldTriggerHelpUi(FeatureConstants.ANDROID_BOTTOM_BAR_AIM_PROMO_DIALOG))

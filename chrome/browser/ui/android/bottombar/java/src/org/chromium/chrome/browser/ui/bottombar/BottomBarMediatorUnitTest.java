@@ -619,7 +619,10 @@ public class BottomBarMediatorUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR_AIM)
+    @EnableFeatures({
+        ChromeFeatureList.ANDROID_BOTTOM_BAR_AIM,
+        ChromeFeatureList.ANDROID_BOTTOM_BAR + ":bypass_aim_geofencing/true"
+    })
     public void testDseChangedDynamically_WhenAiModeCandidate_TogglesVisibilityWithoutSwapping() {
         // In "us" with GLIC disabled, candidate resolves to AI_MODE.
         when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(false);
@@ -769,7 +772,7 @@ public class BottomBarMediatorUnitTest {
     }
 
     @Test
-    public void testDeferredCandidateResolution_LateIndia_SoonCountry() {
+    public void testDeferredCandidateResolution_LateIndia_AllowedCountry() {
         mCountrySupplier = new OneshotSupplierImpl<>();
         when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(true);
 
@@ -778,15 +781,13 @@ public class BottomBarMediatorUnitTest {
         verify(mButtonManager).setButtonVisibility(ActionId.GLIC, false);
         verify(mButtonManager).setButtonVisibility(ActionId.AI_MODE, false);
 
-        // Country arrives as "in" (Soon country).
+        // Country arrives as "in" (Allowed country).
         mCountrySupplier.set("in");
         RobolectricUtil.runAllBackgroundAndUi();
 
-        // Both buttons remain hidden, no dynamic observers attached.
-        verify(mButtonManager, times(2)).setButtonVisibility(ActionId.GLIC, false);
-        verify(mButtonManager, times(2)).setButtonVisibility(ActionId.AI_MODE, false);
-        verify(mGlicKeyedService, never()).addAllowedChangedObserver(any());
-        verify(mTemplateUrlService, never()).addObserver(any());
+        // Candidate resolves to GLIC and becomes visible.
+        verify(mButtonManager).setButtonVisibility(ActionId.GLIC, true);
+        verify(mGlicKeyedService).addAllowedChangedObserver(any());
     }
 
     @Test

@@ -154,29 +154,35 @@ public class BottomBarActionEligibilityUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR_AIM)
+    @EnableFeatures({
+        ChromeFeatureList.ANDROID_BOTTOM_BAR_AIM,
+        ChromeFeatureList.ANDROID_BOTTOM_BAR + ":bypass_aim_geofencing/true"
+    })
     public void testGetCandidateExtraAction_GlicEnabled_NonUS() {
         when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(true);
-        // Australia: Not allowed for Glic, but allowed for AIM -> Candidate should be AI Mode.
+        // Australia: Not allowed for Glic, but allowed for AIM (bypassed) -> Candidate should be AI
+        // Mode.
         assertEquals(
                 ActionId.AI_MODE,
                 BottomBarActionEligibility.getCandidateExtraAction(mProfile, "au"));
     }
 
     @Test
-    public void testGetCandidateExtraAction_GlicSoonCountry() {
+    public void testGetCandidateExtraAction_GlicEnabled_India() {
         when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(true);
-        // India (Soon country -> Should show nothing)
+        // India is allowed for Glic -> Candidate should be GLIC.
         assertEquals(
-                BottomBarActionEligibility.ACTION_NONE,
-                BottomBarActionEligibility.getCandidateExtraAction(mProfile, "in"));
+                ActionId.GLIC, BottomBarActionEligibility.getCandidateExtraAction(mProfile, "in"));
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR_AIM)
+    @EnableFeatures({
+        ChromeFeatureList.ANDROID_BOTTOM_BAR_AIM,
+        ChromeFeatureList.ANDROID_BOTTOM_BAR + ":bypass_aim_geofencing/true"
+    })
     public void testGetCandidateExtraAction_AiMode_Eligible() {
         when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(false);
-        // Australia (AIM allowed)
+        // Australia (AIM allowed via bypass)
         assertEquals(
                 ActionId.AI_MODE,
                 BottomBarActionEligibility.getCandidateExtraAction(mProfile, "au"));
@@ -193,7 +199,10 @@ public class BottomBarActionEligibilityUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR_AIM)
+    @EnableFeatures({
+        ChromeFeatureList.ANDROID_BOTTOM_BAR_AIM,
+        ChromeFeatureList.ANDROID_BOTTOM_BAR + ":bypass_aim_geofencing/true"
+    })
     public void testGetCandidateExtraAction_AiMode_DseNotGoogle() {
         when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(false);
         // Candidate is still AI_MODE; DSE check is handled dynamically by Mediator.
@@ -334,9 +343,9 @@ public class BottomBarActionEligibilityUnitTest {
 
     @Test
     public void testGeofencing_IsAimAllowedInCountry() {
-        assertTrue(BottomBarActionEligibility.isAimAllowedInCountry("us"));
-        assertTrue(BottomBarActionEligibility.isAimAllowedInCountry("au"));
-        assertTrue(BottomBarActionEligibility.isAimAllowedInCountry("AU"));
+        assertFalse(BottomBarActionEligibility.isAimAllowedInCountry("us"));
+        assertFalse(BottomBarActionEligibility.isAimAllowedInCountry("au"));
+        assertFalse(BottomBarActionEligibility.isAimAllowedInCountry("AU"));
         assertFalse(BottomBarActionEligibility.isAimAllowedInCountry("fr"));
         assertFalse(BottomBarActionEligibility.isAimAllowedInCountry(/* country= */ null));
         assertFalse(BottomBarActionEligibility.isAimAllowedInCountry(""));
@@ -458,15 +467,6 @@ public class BottomBarActionEligibilityUnitTest {
                         GlicIneligibilityReason.COUNTRY_GEOFENCED);
         BottomBarActionEligibility.getCandidateExtraAction(mProfile, "au");
         glicCountryGeofencedWatcher.assertExpected();
-
-        // 4. Country in soon list -> CountryInGlicSoonList recorded for AIM.
-        when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(true);
-        var soonListWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "Android.BottomBar.Aim.IneligibilityReason",
-                        AimIneligibilityReason.COUNTRY_IN_GLIC_SOON_LIST);
-        BottomBarActionEligibility.getCandidateExtraAction(mProfile, "in");
-        soonListWatcher.assertExpected();
     }
 
     @Test

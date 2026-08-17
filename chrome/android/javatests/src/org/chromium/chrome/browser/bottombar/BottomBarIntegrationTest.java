@@ -122,7 +122,8 @@ public class BottomBarIntegrationTest {
     @MediumTest
     @CommandLineFlags.Add({"variations-override-country=au"})
     @EnableFeatures({
-        ChromeFeatureList.ANDROID_BOTTOM_BAR + ":show_glic_setting_toggle/false",
+        ChromeFeatureList.ANDROID_BOTTOM_BAR
+                + ":show_glic_setting_toggle/false/bypass_aim_geofencing/true",
         ChromeFeatureList.ANDROID_BOTTOM_BAR_AIM
     })
     public void testBottomBarExtraButton_WithAuCountry_ShowsAiModeButton() {
