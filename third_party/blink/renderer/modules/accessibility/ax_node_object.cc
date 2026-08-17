@@ -4214,9 +4214,6 @@ float AXNodeObject::GetTextIndent() const {
   // Text-indent applies to lines or blocks, but not text.
   if (IsTextObject() || !GetLayoutObject())
     return 0.0f;
-  const ComputedStyle* style = GetLayoutObject()->Style();
-  if (!style)
-    return 0.0f;
 
   const blink::LayoutBlock* layout_block =
       GetLayoutObject()->InclusiveContainingBlock();
