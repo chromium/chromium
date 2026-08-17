@@ -399,60 +399,18 @@ void EnableSyncFromMultiAccountPromo(Profile* profile,
 std::vector<AccountInfo> GetOrderedAccountsForDisplay(
     const signin::IdentityManager* identity_manager,
     bool restrict_to_accounts_eligible_for_sync) {
-  // Fetch account ids for accounts that have a token and are in cookie jar.
-  std::vector<AccountInfo> accounts_with_tokens =
-      identity_manager->GetExtendedAccountInfoForAccountsWithRefreshToken();
-  signin::AccountsInCookieJarInfo accounts_in_jar =
-      identity_manager->GetAccountsInCookieJar();
-  // Compute the default account.
-  CoreAccountId default_account_id =
-      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
-
-  std::vector<AccountInfo> accounts;
-
-  // First, add the primary account (if available), even if it is not in the
-  // cookie jar.
-  std::vector<AccountInfo>::iterator it = std::ranges::find(
-      accounts_with_tokens, default_account_id, &AccountInfo::account_id);
-
-  if (it != accounts_with_tokens.end()) {
-    accounts.push_back(std::move(*it));
-  }
-
-  // Then, add the other accounts in the order of the accounts in the cookie
-  // jar.
-  for (auto& account_info :
-       accounts_in_jar.GetPotentiallyInvalidSignedInAccounts()) {
-    DCHECK(!account_info.id.empty());
-    if (account_info.id == default_account_id ||
-        (restrict_to_accounts_eligible_for_sync &&
-         !signin::IsUsernameAllowedByPatternFromPrefs(
-             g_browser_process->local_state(), account_info.email))) {
-      continue;
-    }
-
-    // Only insert the account if it has a refresh token, because we need the
-    // account info.
-    it = std::ranges::find(accounts_with_tokens, account_info.id,
-                           &AccountInfo::account_id);
-
-    if (it != accounts_with_tokens.end()) {
-      accounts.push_back(std::move(*it));
-    }
-  }
-  return accounts;
+  const PrefService* prefs = restrict_to_accounts_eligible_for_sync
+                                 ? g_browser_process->local_state()
+                                 : nullptr;
+  return signin::GetOrderedAccountsForDisplay(identity_manager, prefs);
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)
 
 AccountInfo GetSingleAccountForPromos(
     const signin::IdentityManager* identity_manager) {
-  std::vector<AccountInfo> accounts = GetOrderedAccountsForDisplay(
-      identity_manager, /*restrict_to_accounts_eligible_for_sync=*/true);
-  if (!accounts.empty()) {
-    return accounts[0];
-  }
-  return AccountInfo();
+  return signin::GetDefaultAccountForPromo(identity_manager,
+                                           g_browser_process->local_state());
 }
 
 #endif  // !BUILDFLAG(IS_CHROMEOS)

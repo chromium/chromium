@@ -4,18 +4,22 @@
 
 #include "components/signin/public/identity_manager/identity_utils.h"
 
+#include <algorithm>
 #include <string>
 #include <string_view>
+#include <vector>
 
 #include "base/check.h"
 #include "base/containers/to_vector.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/gaia/gaia_auth_util.h"
@@ -23,6 +27,14 @@
 #include "third_party/icu/source/i18n/unicode/regex.h"
 
 namespace signin {
+
+namespace {
+
+bool IsAccountAllowed(const PrefService* prefs, const std::string& email) {
+  return !prefs || IsUsernameAllowedByPatternFromPrefs(prefs, email);
+}
+
+}  // namespace
 
 bool IsUsernameAllowedByPattern(std::string_view username,
                                 std::string_view pattern) {
@@ -62,6 +74,10 @@ bool IsUsernameAllowedByPattern(std::string_view username,
 
 bool IsUsernameAllowedByPatternFromPrefs(const PrefService* prefs,
                                          const std::string& username) {
+  if (!prefs) {
+    return true;
+  }
+
   return IsUsernameAllowedByPattern(
       username, prefs->GetString(prefs::kGoogleServicesUsernamePattern));
 }
@@ -91,6 +107,92 @@ base::flat_set<GaiaId> GetAllGaiaIdsForKeyedPreferences(
   }
 
   return gaia_ids;
+}
+
+std::vector<AccountInfo> GetOrderedAccountsForDisplay(
+    const IdentityManager* identity_manager,
+    const PrefService* prefs) {
+  CHECK(identity_manager);
+
+  std::vector<AccountInfo> accounts;
+  CoreAccountId primary_account_id =
+      identity_manager->GetPrimaryAccountId(ConsentLevel::kSignin);
+
+  // 1. Primary account (if any) is always first, even if it is not in the
+  // cookie jar.
+  if (!primary_account_id.empty()) {
+    AccountInfo primary_account = identity_manager->FindExtendedAccountInfo(
+        identity_manager->GetPrimaryAccountInfo(ConsentLevel::kSignin));
+    if (!primary_account.email.empty() &&
+        IsAccountAllowed(prefs, primary_account.email)) {
+      accounts.push_back(std::move(primary_account));
+    }
+  }
+
+#if BUILDFLAG(IS_IOS)
+  // 2. On iOS: Device accounts are returned in system keychain order.
+  for (const AccountInfo& account : identity_manager->GetAccountsOnDevice()) {
+    if (account.account_id == primary_account_id) {
+      continue;
+    }
+    AccountInfo extended_info =
+        identity_manager->FindExtendedAccountInfo(account);
+    // Some device accounts may not be in Chrome.
+    const AccountInfo& account_to_use =
+        extended_info.IsEmpty() ? account : extended_info;
+    if (IsAccountAllowed(prefs, account_to_use.email)) {
+      accounts.push_back(account_to_use);
+    }
+  }
+#elif BUILDFLAG(IS_ANDROID)
+  // 3. On Android: ProfileOAuth2TokenServiceDelegateAndroid stores accounts in
+  // a std::vector<CoreAccountId> directly populated from
+  // AccountManagerFacade.getAccounts(). Because insertion order is preserved
+  // (unlike Desktop/iOS token service delegates which use a map or set),
+  // GetExtendedAccountInfoForAccountsWithRefreshToken() safely and
+  // deterministically returns device accounts in the OS AccountManager order
+  // (with the device's primary/default Google account at index 0).
+  for (const AccountInfo& account :
+       identity_manager->GetExtendedAccountInfoForAccountsWithRefreshToken()) {
+    if (account.account_id == primary_account_id) {
+      continue;
+    }
+    if (IsAccountAllowed(prefs, account.email)) {
+      accounts.push_back(account);
+    }
+  }
+#else
+  // 4. On Desktop: Token service stores accounts in an unordered std::map, so
+  // the default account ordering is determined by the Gaia cookie jar.
+  std::vector<AccountInfo> accounts_with_tokens =
+      identity_manager->GetExtendedAccountInfoForAccountsWithRefreshToken();
+  AccountsInCookieJarInfo accounts_in_jar =
+      identity_manager->GetAccountsInCookieJar();
+
+  for (const gaia::ListedAccount& listed_account :
+       accounts_in_jar.GetPotentiallyInvalidSignedInAccounts()) {
+    if (listed_account.id == primary_account_id) {
+      continue;
+    }
+    if (!IsAccountAllowed(prefs, listed_account.email)) {
+      continue;
+    }
+    auto it = std::ranges::find(accounts_with_tokens, listed_account.id,
+                                &AccountInfo::account_id);
+    if (it != accounts_with_tokens.end()) {
+      accounts.push_back(*it);
+    }
+  }
+#endif
+
+  return accounts;
+}
+
+AccountInfo GetDefaultAccountForPromo(const IdentityManager* identity_manager,
+                                      const PrefService* prefs) {
+  std::vector<AccountInfo> accounts =
+      GetOrderedAccountsForDisplay(identity_manager, prefs);
+  return accounts.empty() ? AccountInfo() : std::move(accounts.front());
 }
 
 }  // namespace signin

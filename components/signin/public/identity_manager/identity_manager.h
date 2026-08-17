@@ -418,7 +418,7 @@ class IdentityManager : public KeyedService,
   // Gets all accounts on the device, including the ones from other profiles, in
   // the order provided by the system (usually the order in which the accounts
   // were added).
-  [[nodiscard]] std::vector<AccountInfo> GetAccountsOnDevice();
+  [[nodiscard]] std::vector<AccountInfo> GetAccountsOnDevice() const;
 #endif
 
   // Overrides the value of the given account capability for the account.

@@ -24,6 +24,8 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_utils.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/service/sync_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -498,30 +500,26 @@ AccountPreviewDataServiceImpl::ComputePreferredAccount() const {
   CHECK(base::FeatureList::IsEnabled(
       switches::kEnableAccountPreviewPreferredAccount));
 
-  std::vector<AccountPreviewHeuristicContext> contexts;
-  // TODO(crbug.com/530144650): Ensure that the order of accounts is consistent
-  // between platforms, having the first account as the default account for
-  // promos.
+  // Get candidate accounts in platform display priority order (where index 0 is
+  // the platform's default account for promos).
+  std::vector<AccountInfo> ordered_accounts =
+      GetOrderedAccountsForDisplay(identity_manager_, pref_service_);
+
 #if BUILDFLAG(IS_ANDROID)
   std::optional<GaiaId> external_app_account =
       ReadExternalAppAccountFromPrefs();
 #endif
-  for (const CoreAccountInfo& account : GetAccountsWithValidRefreshTokens()) {
+  std::vector<AccountPreviewHeuristicContext> contexts;
+  for (const AccountInfo& account : ordered_accounts) {
     auto cache_it = cached_data_.find(account.gaia);
     if (cache_it == cached_data_.end()) {
       continue;
     }
 
-    AccountInfo extended_info =
-        identity_manager_->FindExtendedAccountInfo(account);
-    if (extended_info.IsEmpty()) {
-      continue;
-    }
-
     AccountPreviewHeuristicContext context;
     context.gaia_id = account.gaia;
-    context.is_managed = extended_info.IsManaged() == signin::Tribool::kTrue;
-    context.is_child = extended_info.IsChildAccount() == signin::Tribool::kTrue;
+    context.is_managed = account.IsManaged() == signin::Tribool::kTrue;
+    context.is_child = account.IsChildAccount() == signin::Tribool::kTrue;
     context.preview_data = &cache_it->second;
 
 #if BUILDFLAG(IS_ANDROID)

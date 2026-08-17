@@ -73,6 +73,8 @@ class IdentityUtilsTest : public testing::Test {
     return identity_test_env_.identity_manager();
   }
 
+  IdentityTestEnvironment* identity_test_env() { return &identity_test_env_; }
+
   sync_preferences::TestingPrefServiceSyncable* pref_service() {
     return &pref_service_;
   }
@@ -221,5 +223,105 @@ TEST_F(IdentityUtilsTest, GetAllGaiaIdsForKeyedPreferences) {
       testing::UnorderedElementsAre(account_info.gaia, GaiaId("0"),
                                     GaiaId("1")));
 }
+
+TEST_F(IdentityUtilsTest, GetOrderedAccountsForDisplayNoAccounts) {
+  EXPECT_TRUE(GetOrderedAccountsForDisplay(identity_manager()).empty());
+  EXPECT_TRUE(GetDefaultAccountForPromo(identity_manager()).IsEmpty());
+}
+
+TEST_F(IdentityUtilsTest, GetOrderedAccountsForDisplayPrimaryAccount) {
+  AccountInfo primary_account = MakePrimaryAccountAvailable();
+  std::vector<AccountInfo> accounts =
+      GetOrderedAccountsForDisplay(identity_manager());
+  ASSERT_EQ(accounts.size(), 1u);
+  EXPECT_EQ(accounts[0].account_id, primary_account.account_id);
+  EXPECT_EQ(GetDefaultAccountForPromo(identity_manager()).account_id,
+            primary_account.account_id);
+}
+
+#if BUILDFLAG(IS_IOS)
+TEST_F(IdentityUtilsTest, GetOrderedAccountsForDisplayDeviceOrderOnIOS) {
+  AccountInfo account1 =
+      identity_test_env()->MakeAccountAvailable("alpha@example.com");
+  AccountInfo account2 =
+      identity_test_env()->MakeAccountAvailable("beta@example.com");
+
+  std::vector<AccountInfo> accounts =
+      GetOrderedAccountsForDisplay(identity_manager());
+  ASSERT_EQ(accounts.size(), 2u);
+  EXPECT_EQ(accounts[0].account_id, account1.account_id);
+  EXPECT_EQ(accounts[1].account_id, account2.account_id);
+  EXPECT_EQ(GetDefaultAccountForPromo(identity_manager()).account_id,
+            account1.account_id);
+
+  // Filter by pattern so only beta is allowed.
+  pref_service()->SetString(prefs::kGoogleServicesUsernamePattern, "beta@.*");
+  std::vector<AccountInfo> filtered_accounts =
+      GetOrderedAccountsForDisplay(identity_manager(), pref_service());
+  ASSERT_EQ(filtered_accounts.size(), 1u);
+  EXPECT_EQ(filtered_accounts[0].account_id, account2.account_id);
+  EXPECT_EQ(
+      GetDefaultAccountForPromo(identity_manager(), pref_service()).account_id,
+      account2.account_id);
+}
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(IdentityUtilsTest, GetOrderedAccountsForDisplayDeviceOrderOnAndroid) {
+  AccountInfo account1 =
+      identity_test_env()->MakeAccountAvailable("alpha@example.com");
+  AccountInfo account2 =
+      identity_test_env()->MakeAccountAvailable("beta@example.com");
+
+  std::vector<AccountInfo> accounts =
+      GetOrderedAccountsForDisplay(identity_manager());
+  ASSERT_EQ(accounts.size(), 2u);
+  EXPECT_EQ(accounts[0].account_id, account1.account_id);
+  EXPECT_EQ(accounts[1].account_id, account2.account_id);
+  EXPECT_EQ(GetDefaultAccountForPromo(identity_manager()).account_id,
+            account1.account_id);
+
+  // Filter by pattern so only beta is allowed.
+  pref_service()->SetString(prefs::kGoogleServicesUsernamePattern, "beta@.*");
+  std::vector<AccountInfo> filtered_accounts =
+      GetOrderedAccountsForDisplay(identity_manager(), pref_service());
+  ASSERT_EQ(filtered_accounts.size(), 1u);
+  EXPECT_EQ(filtered_accounts[0].account_id, account2.account_id);
+  EXPECT_EQ(
+      GetDefaultAccountForPromo(identity_manager(), pref_service()).account_id,
+      account2.account_id);
+}
+#endif
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+TEST_F(IdentityUtilsTest, GetOrderedAccountsForDisplayCookieOrderOnDesktop) {
+  AccountInfo account1 =
+      identity_test_env()->MakeAccountAvailable("alpha@example.com");
+  AccountInfo account2 =
+      identity_test_env()->MakeAccountAvailable("beta@example.com");
+
+  // Cookie jar specifies beta first, then alpha.
+  identity_test_env()->SetCookieAccounts(
+      {{account2.email, account2.gaia}, {account1.email, account1.gaia}});
+
+  std::vector<AccountInfo> accounts =
+      GetOrderedAccountsForDisplay(identity_manager());
+  ASSERT_EQ(accounts.size(), 2u);
+  EXPECT_EQ(accounts[0].account_id, account2.account_id);
+  EXPECT_EQ(accounts[1].account_id, account1.account_id);
+  EXPECT_EQ(GetDefaultAccountForPromo(identity_manager()).account_id,
+            account2.account_id);
+
+  // Filter by pattern so only alpha is allowed.
+  pref_service()->SetString(prefs::kGoogleServicesUsernamePattern, "alpha@.*");
+  std::vector<AccountInfo> filtered_accounts =
+      GetOrderedAccountsForDisplay(identity_manager(), pref_service());
+  ASSERT_EQ(filtered_accounts.size(), 1u);
+  EXPECT_EQ(filtered_accounts[0].account_id, account1.account_id);
+  EXPECT_EQ(
+      GetDefaultAccountForPromo(identity_manager(), pref_service()).account_id,
+      account1.account_id);
+}
+#endif
 
 }  // namespace signin

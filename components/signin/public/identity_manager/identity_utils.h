@@ -6,8 +6,11 @@
 #define COMPONENTS_SIGNIN_PUBLIC_IDENTITY_MANAGER_IDENTITY_UTILS_H_
 
 #include <string>
+#include <string_view>
+#include <vector>
 
 #include "base/containers/flat_set.h"
+#include "components/signin/public/identity_manager/account_info.h"
 
 class GaiaId;
 class PrefService;
@@ -40,6 +43,25 @@ bool IsUsernameAllowedByPatternFromPrefs(const PrefService* prefs,
 base::flat_set<GaiaId> GetAllGaiaIdsForKeyedPreferences(
     const IdentityManager* identity_manager,
     const AccountsInCookieJarInfo& accounts_in_cookie_jar_info);
+
+// Returns the candidate accounts in priority order for display in sign-in
+// promos or UI.
+// - If signed in to Chrome, the primary account is always returned first.
+// - On iOS: device accounts in system keychain order.
+// - On Android: accounts with refresh tokens in device order.
+// - On Desktop: accounts with refresh tokens in Gaia cookie jar order.
+//
+// If `prefs` is provided, accounts disallowed by enterprise pattern policies
+// (`prefs::kGoogleServicesUsernamePattern`) are filtered out.
+std::vector<AccountInfo> GetOrderedAccountsForDisplay(
+    const IdentityManager* identity_manager,
+    const PrefService* prefs = nullptr);
+
+// Returns the single default account that should be promoted in sign-in promos
+// (the first account in `GetOrderedAccountsForDisplay()`), or an empty
+// AccountInfo if no eligible account is found.
+AccountInfo GetDefaultAccountForPromo(const IdentityManager* identity_manager,
+                                      const PrefService* prefs = nullptr);
 
 }  // namespace signin
 

@@ -99,6 +99,8 @@ class AccountPreviewDataServiceTest : public testing::Test {
   void SetUp() override {
     AccountPreviewDataService::RegisterProfilePrefs(prefs_.registry());
     SigninPrefs::RegisterProfilePrefs(prefs_.registry());
+    prefs_.registry()->RegisterStringPref(prefs::kGoogleServicesUsernamePattern,
+                                          std::string());
     prefs_.registry()->RegisterBooleanPref(prefs::kSigninAllowed, true);
     prefs_.SetBoolean(prefs::kSigninAllowed, true);
     identity_test_env_.SetAutomaticIssueOfAccessTokens(true);
@@ -418,6 +420,10 @@ TEST_F(AccountPreviewDataServiceTest, GetPreferredAccountForPromo) {
       identity_test_env_.MakeAccountAvailable("account1@gmail.com");
   AccountInfo account2 =
       identity_test_env_.MakeAccountAvailable("account2@gmail.com");
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  identity_test_env_.SetCookieAccounts(
+      {{account1.email, account1.gaia}, {account2.email, account2.gaia}});
+#endif
 
   all_data_available_loop.Run();
 
@@ -425,6 +431,60 @@ TEST_F(AccountPreviewDataServiceTest, GetPreferredAccountForPromo) {
   EXPECT_THAT(service_->GetPreferredAccountForPromo(),
               testing::Optional(testing::Field(
                   &AccountPreviewPreference::gaia_id, account1.gaia)));
+}
+#endif
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+TEST_F(AccountPreviewDataServiceTest,
+       GetPreferredAccountForPromoRespectsDefaultAccountOrderCookieJar) {
+  AllDataAvailableWaiter waiter(service_.get());
+
+  AccountInfo account1 =
+      identity_test_env_.MakeAccountAvailable("account1@gmail.com");
+  AccountInfo account2 =
+      identity_test_env_.MakeAccountAvailable("account2@gmail.com");
+
+  // On Desktop, specify account2 first in the cookie jar.
+  identity_test_env_.SetCookieAccounts(
+      {{account2.email, account2.gaia}, {account1.email, account1.gaia}});
+
+  // Resolve pending fetches for both accounts.
+  SimulateSuccessfulFetch(&test_url_loader_factory_);
+  SimulateSuccessfulFetch(&test_url_loader_factory_);
+
+  waiter.Wait();
+
+  // With both accounts having identical preview data, the tie is broken in
+  // favor of the default promo account from cookie jar (account2).
+  EXPECT_THAT(service_->GetPreferredAccountForPromo(),
+              testing::Optional(testing::Field(
+                  &AccountPreviewPreference::gaia_id, account2.gaia)));
+}
+#endif
+
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+TEST_F(AccountPreviewDataServiceTest,
+       GetPreferredAccountForPromoRespectsDefaultAccountOrderDeviceOrder) {
+  AllDataAvailableWaiter waiter(service_.get());
+
+  // On Mobile, make account2 available first so it becomes the default device
+  // account.
+  AccountInfo account2 =
+      identity_test_env_.MakeAccountAvailable("account2@gmail.com");
+  AccountInfo account1 =
+      identity_test_env_.MakeAccountAvailable("account1@gmail.com");
+
+  // Resolve pending fetches for both accounts.
+  SimulateSuccessfulFetch(&test_url_loader_factory_);
+  SimulateSuccessfulFetch(&test_url_loader_factory_);
+
+  waiter.Wait();
+
+  // With both accounts having identical preview data, the tie is broken in
+  // favor of the first signed-in/default device account (account2).
+  EXPECT_THAT(service_->GetPreferredAccountForPromo(),
+              testing::Optional(testing::Field(
+                  &AccountPreviewPreference::gaia_id, account2.gaia)));
 }
 #endif
 
@@ -1736,6 +1796,10 @@ TEST_F(AccountPreviewDataServiceTest,
       identity_test_env_.MakeAccountAvailable("user1@gmail.com");
   AccountInfo account2 =
       identity_test_env_.MakeAccountAvailable("user2@gmail.com");
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  identity_test_env_.SetCookieAccounts(
+      {{account1.email, account1.gaia}, {account2.email, account2.gaia}});
+#endif
 
   MockSuccessfulFetch(&test_url_loader_factory_);
   AllDataAvailableWaiter waiter(service_.get());
