@@ -52,6 +52,7 @@ UIImage* GetAtMemorySearchItemIcon(autofill::MemoryDataType entity_type,
     _title = base::SysUTF16ToNSString(result.value);
     _subtitle = base::SysUTF16ToNSString(result.type_name);
     _icon = GetAtMemorySearchItemIcon(result.type, isPersonalContext);
+    _index = index;
   }
   return self;
 }

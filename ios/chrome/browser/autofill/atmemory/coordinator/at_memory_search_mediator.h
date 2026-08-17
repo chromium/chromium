@@ -24,12 +24,16 @@ class WebState;
 @protocol AtMemoryFillCommands;
 @protocol AtMemorySearchConsumer;
 @protocol AtMemoryCommands;
+@protocol AtMemorySearchResultCommands;
 
 // Mediator for AtMemory search feature page.
 @interface AtMemorySearchMediator : NSObject <AtMemorySearchMutator>
 
 // Handler for filling commands.
 @property(nonatomic, weak) id<AtMemoryFillCommands> fillHandler;
+
+// Handler for actions related to the AtMemory search results.
+@property(nonatomic, weak) id<AtMemorySearchResultCommands> searchResultHandler;
 
 // Handler for AtMemory commands.
 @property(nonatomic, weak) id<AtMemoryCommands> atMemoryHandler;

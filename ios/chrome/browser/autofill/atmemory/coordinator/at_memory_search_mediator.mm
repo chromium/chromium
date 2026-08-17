@@ -20,6 +20,7 @@
 #import "components/personal_context/first_run/personal_context_first_run_service.h"
 #import "ios/chrome/browser/autofill/atmemory/public/at_memory_commands.h"
 #import "ios/chrome/browser/autofill/atmemory/public/at_memory_fill_commands.h"
+#import "ios/chrome/browser/autofill/atmemory/public/at_memory_search_result_commands.h"
 #import "ios/chrome/browser/autofill/atmemory/ui/at_memory_search_consumer.h"
 #import "ios/chrome/browser/autofill/atmemory/ui/at_memory_search_item.h"
 #import "ios/web/public/web_state.h"
@@ -83,6 +84,7 @@ constexpr std::string_view kNoticeInteractionsHistogram =
   _firstRunService = nullptr;
   _searchResults.reset();
   _atMemoryHandler = nil;
+  _searchResultHandler = nil;
 }
 
 #pragma mark - Consumer
@@ -148,6 +150,14 @@ constexpr std::string_view kNoticeInteractionsHistogram =
 - (void)didSelectSearchResultItem:(AtMemorySearchItem*)item {
   [self.fillHandler fillWithContent:item.title];
   [self.atMemoryHandler dismissAtMemory];
+}
+
+- (void)openGranularFillForSearchResultAtIndex:(NSInteger)index {
+  if (!_searchResults.has_value()) {
+    return;
+  }
+  [self.searchResultHandler
+      showAtMemoryGranularFillWithResult:_searchResults->entries[index]];
 }
 
 #pragma mark - Private

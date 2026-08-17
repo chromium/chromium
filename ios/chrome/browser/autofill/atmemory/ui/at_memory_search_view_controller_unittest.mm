@@ -87,12 +87,10 @@ TEST_F(AtMemorySearchViewControllerTest, TestSetSearchResults) {
   UITableViewCell* cell = [view_controller_.tableView.dataSource
                   tableView:view_controller_.tableView
       cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
-  ASSERT_NE(cell, nil);
 
   TableViewCellContentConfiguration* config =
       base::apple::ObjCCastStrict<TableViewCellContentConfiguration>(
           cell.contentConfiguration);
-  ASSERT_NE(config, nil);
   EXPECT_NSEQ(config.title, kPassportValue);
   EXPECT_NSEQ(config.subtitle, kPassportTypeName);
 }

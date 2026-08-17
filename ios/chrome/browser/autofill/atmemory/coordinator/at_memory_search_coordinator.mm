@@ -56,6 +56,7 @@
                           webState:webState
                    firstRunService:firstRunService];
   _mediator.fillHandler = self.fillHandler;
+  _mediator.searchResultHandler = self.searchResultHandler;
   _mediator.atMemoryHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), AtMemoryCommands);
   _mediator.consumer = _atMemorySearchViewController;

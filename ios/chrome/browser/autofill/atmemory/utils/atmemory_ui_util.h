@@ -36,4 +36,13 @@ NSString* GetAtMemoryGranularFillAttributeLabelAccessibilityIdentifier(
 NSString* GetAtMemoryGranularFillChipButtonAccessibilityIdentifier(
     NSString* attribute_name);
 
+// Returns the accessibility identifier for the search result cell
+// corresponding to `title`.
+NSString* GetAtMemorySearchResultCellAccessibilityIdentifier(NSString* title);
+
+// Returns the accessibility identifier for the search result's info button
+// corresponding to `title`.
+NSString* GetAtMemorySearchResultInfoButtonAccessibilityIdentifier(
+    NSString* title);
+
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_ATMEMORY_UTILS_ATMEMORY_UI_UTIL_H_

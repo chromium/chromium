@@ -14,6 +14,7 @@
 #import "components/personal_context/first_run/personal_context_first_run_service.h"
 #import "ios/chrome/browser/autofill/atmemory/public/at_memory_commands.h"
 #import "ios/chrome/browser/autofill/atmemory/public/at_memory_fill_commands.h"
+#import "ios/chrome/browser/autofill/atmemory/public/at_memory_search_result_commands.h"
 #import "ios/chrome/browser/autofill/atmemory/ui/at_memory_search_consumer.h"
 #import "ios/chrome/browser/autofill/atmemory/ui/at_memory_search_item.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -73,6 +74,20 @@ class FakePersonalContextFirstRunService
 
 }  // namespace
 
+// Fake implementation of AtMemorySearchResultCommands to intercept granular
+// fill requests and verify it was called.
+@interface FakeAtMemorySearchResultHandler
+    : NSObject <AtMemorySearchResultCommands>
+@property(nonatomic, assign) BOOL wasCalled;
+@end
+
+@implementation FakeAtMemorySearchResultHandler
+- (void)showAtMemoryGranularFillWithResult:
+    (const autofill::MemorySearchResult&)result {
+  self.wasCalled = YES;
+}
+@end
+
 class AtMemorySearchMediatorTest : public PlatformTest {
  protected:
   void SetUp() override {
@@ -90,6 +105,7 @@ class AtMemorySearchMediatorTest : public PlatformTest {
     PlatformTest::TearDown();
   }
 
+  // Creates an AtMemorySearchMediator.
   void CreateMediator() {
     mediator_ = [[AtMemorySearchMediator alloc]
         initWithAtMemoryQueryService:&mock_query_service_
@@ -164,6 +180,31 @@ TEST_F(AtMemorySearchMediatorTest,
 
   EXPECT_OCMOCK_VERIFY(mock_fill_handler);
   EXPECT_OCMOCK_VERIFY(mock_at_memory_handler);
+}
+
+// Tests that opening granular fill for a search result invokes the handler.
+TEST_F(AtMemorySearchMediatorTest, OpensGranularFillForSearchResult) {
+  CreateMediator();
+
+  FakeAtMemorySearchResultHandler* fake_handler =
+      [[FakeAtMemorySearchResultHandler alloc] init];
+  mediator_.searchResultHandler = fake_handler;
+
+  autofill::MemorySearchResults fake_results(
+      autofill::MemorySearchStatus::kFinalResponseSuccess);
+  fake_results.entries.push_back(
+      autofill::MemorySearchResult(autofill::MemoryDataType::kPassportNumber,
+                                   base::SysNSStringToUTF16(kPassportTypeName),
+                                   base::SysNSStringToUTF16(kPassportValue)));
+
+  EXPECT_CALL(mock_query_service_, Query)
+      .WillOnce(base::test::RunCallback<3>(fake_results));
+
+  [mediator_ startSearchWithQuery:kSearchQuery];
+
+  [mediator_ openGranularFillForSearchResultAtIndex:0];
+
+  EXPECT_TRUE(fake_handler.wasCalled);
 }
 
 // Parameters for AtMemorySearchMediatorErrorTest.

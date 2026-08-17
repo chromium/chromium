@@ -57,4 +57,11 @@ extern NSString* const
 extern NSString* const
     kAtMemoryGranularFillChipButtonAccessibilityIdentifierPrefix;
 
+// Accessibility identifier prefix for the AtMemory search result cell.
+extern NSString* const kAtMemorySearchResultCellAccessibilityIdentifierPrefix;
+
+// Accessibility identifier prefix for the AtMemory search result info button.
+extern NSString* const
+    kAtMemorySearchResultInfoButtonAccessibilityIdentifierPrefix;
+
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_ATMEMORY_PUBLIC_AT_MEMORY_CONSTANTS_H_

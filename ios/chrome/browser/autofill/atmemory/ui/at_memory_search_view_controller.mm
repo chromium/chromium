@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/autofill/atmemory/ui/at_memory_search_consumer.h"
 #import "ios/chrome/browser/autofill/atmemory/ui/at_memory_search_item.h"
 #import "ios/chrome/browser/autofill/atmemory/ui/at_memory_search_mutator.h"
+#import "ios/chrome/browser/autofill/atmemory/utils/atmemory_ui_util.h"
 #import "ios/chrome/browser/shared/ui/buildflags.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/content_configuration/activity_indicator_content_configuration.h"
@@ -179,6 +180,10 @@ enum class ItemIdentifier {
 
 - (void)handleCancelButton {
   [self.atMemoryHandler dismissAtMemory];
+}
+
+- (void)handleInfoButtonTap:(UIButton*)sender {
+  [self.mutator openGranularFillForSearchResultAtIndex:sender.tag];
 }
 
 #pragma mark - AtMemorySearchConsumer
@@ -440,8 +445,27 @@ enum class ItemIdentifier {
       [TableViewCellContentConfiguration dequeueTableViewCell:tableView];
   cell.contentConfiguration = configuration;
   cell.selectionStyle = UITableViewCellSelectionStyleNone;
+  cell.accessibilityIdentifier =
+      GetAtMemorySearchResultCellAccessibilityIdentifier(itemIdentifier.title);
+
+  cell.accessoryView = [self infoButtonForSearchItem:itemIdentifier];
 
   return cell;
+}
+
+// Returns a configured info button for the given search result `item`.
+- (UIButton*)infoButtonForSearchItem:(AtMemorySearchItem*)item {
+  UIButton* infoButton = [UIButton buttonWithType:UIButtonTypeInfoLight];
+  [infoButton setImage:SymbolWithPointSize(SymbolInfoCircle, kIconPointSize)
+              forState:UIControlStateNormal];
+  infoButton.tintColor = [UIColor colorNamed:kBlueColor];
+  infoButton.tag = item.index;
+  infoButton.accessibilityIdentifier =
+      GetAtMemorySearchResultInfoButtonAccessibilityIdentifier(item.title);
+  [infoButton addTarget:self
+                 action:@selector(handleInfoButtonTap:)
+       forControlEvents:UIControlEventTouchUpInside];
+  return infoButton;
 }
 
 // Returns the table view cell for the "Search" state.

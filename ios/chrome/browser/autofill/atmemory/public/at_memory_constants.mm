@@ -40,3 +40,9 @@ NSString* const
 
 NSString* const kAtMemoryGranularFillChipButtonAccessibilityIdentifierPrefix =
     @"AtMemoryGranularFillChipButton_";
+
+NSString* const kAtMemorySearchResultCellAccessibilityIdentifierPrefix =
+    @"AtMemorySearchResultCell_";
+
+NSString* const kAtMemorySearchResultInfoButtonAccessibilityIdentifierPrefix =
+    @"AtMemorySearchResultInfoButton_";

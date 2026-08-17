@@ -77,3 +77,18 @@ NSString* GetAtMemoryGranularFillChipButtonAccessibilityIdentifier(
           @"%@%@", kAtMemoryGranularFillChipButtonAccessibilityIdentifierPrefix,
           attribute_name];
 }
+
+NSString* GetAtMemorySearchResultCellAccessibilityIdentifier(NSString* title) {
+  return [NSString
+      stringWithFormat:@"%@%@",
+                       kAtMemorySearchResultCellAccessibilityIdentifierPrefix,
+                       title];
+}
+
+NSString* GetAtMemorySearchResultInfoButtonAccessibilityIdentifier(
+    NSString* title) {
+  return [NSString
+      stringWithFormat:
+          @"%@%@", kAtMemorySearchResultInfoButtonAccessibilityIdentifierPrefix,
+          title];
+}

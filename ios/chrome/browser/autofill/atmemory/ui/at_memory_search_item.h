@@ -24,6 +24,9 @@ struct MemorySearchResult;
 // Icon representing the entity type of the item.
 @property(nonatomic, strong, readonly) UIImage* icon;
 
+// Index of the search result item.
+@property(nonatomic, assign, readonly) NSInteger index;
+
 // Initializes the item from a memory search `result` and its `index`.
 - (instancetype)initWithMemorySearchResult:
                     (const autofill::MemorySearchResult&)result
