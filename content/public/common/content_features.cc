@@ -390,7 +390,6 @@ const base::FeatureParam<bool> kUrgentDiscardIgnoreWorkers{
 // When this feature is enabled, partial storage cleanup will be
 // disabled for the GPU disk cache. (Performance improvement)
 BASE_FEATURE(kDisablePartialStorageCleanupForGPUDiskCache,
-             "PerformStorageCleanupForGPUDiskCache",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enable drawing under System Bars within DisplayCutout.

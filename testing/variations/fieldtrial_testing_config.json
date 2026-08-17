@@ -9324,25 +9324,6 @@
             ]
         }
     ],
-    "DisablePartialStorageCleanupForGPUDiskCache": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "DisablePartialStorageCleanupForGPUDiskCache"
-                    ]
-                }
-            ]
-        }
-    ],
     "DisablePerProfileMetrics": [
         {
             "platforms": [
@@ -16392,25 +16373,6 @@
                     },
                     "enable_features": [
                         "LogOnDeviceMetricsOnStartup"
-                    ]
-                }
-            ]
-        }
-    ],
-    "LogicalClearHttpCache": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "LogicalClearHttpCache"
                     ]
                 }
             ]
@@ -23560,6 +23522,26 @@
                     },
                     "enable_features": [
                         "SpeculativeServiceWorkerWarmUp"
+                    ]
+                }
+            ]
+        }
+    ],
+    "SpeedUpClearSiteDataCacheDeletion": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DisablePartialStorageCleanupForGPUDiskCache",
+                        "LogicalClearHttpCache"
                     ]
                 }
             ]

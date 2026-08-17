@@ -565,9 +565,8 @@ void ClearCookiesMatchingInfo(content::StoragePartition* partition,
 
 
 void ClearData(content::StoragePartition* partition, base::RunLoop* run_loop) {
-  base::Time time;
   partition->ClearData(StoragePartition::REMOVE_DATA_MASK_SHADER_CACHE,
-                       blink::StorageKey(), time, time,
+                       blink::StorageKey(), base::Time(), base::Time::Max(),
                        run_loop->QuitClosure());
 }
 
