@@ -129,7 +129,6 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
@@ -261,8 +260,7 @@ void DefaultBindingsDelegate::OpenInNewTab(const std::string& url) {
   // TODO(https://crbug.com/403946437): We should definitely understand why this
   // happens.
   if (browser) {
-    browser->GetBrowserForMigrationOnly()->OpenURL(
-        params, /*navigation_handle_callback=*/{});
+    browser->OpenURL(params, /*navigation_handle_callback=*/{});
   }
 #endif
 }
@@ -282,8 +280,7 @@ void DefaultBindingsDelegate::OpenSearchResultsInNewTab(
   content::OpenURLParams params(GURL(url), content::Referrer(),
                                 WindowOpenDisposition::NEW_FOREGROUND_TAB,
                                 ui::PAGE_TRANSITION_LINK, false);
-  browser->GetBrowserForMigrationOnly()->OpenURL(
-      params, /*navigation_handle_callback=*/{});
+  browser->OpenURL(params, /*navigation_handle_callback=*/{});
 #endif
 }
 

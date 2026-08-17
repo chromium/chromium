@@ -7,7 +7,7 @@
 #include "chrome/test/base/chrome_test_utils.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 DevToolsProtocolTestBase::DevToolsProtocolTestBase() = default;
@@ -25,6 +25,6 @@ content::WebContents* DevToolsProtocolTestBase::web_contents() {
 #if BUILDFLAG(IS_ANDROID)
   return chrome_test_utils::GetActiveWebContents(this);
 #else
-  return browser()->tab_strip_model()->GetWebContentsAt(0);
+  return browser()->GetTabStripModel()->GetWebContentsAt(0);
 #endif  // BUILDFLAG(IS_ANDROID)
 }

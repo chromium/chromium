@@ -20,7 +20,6 @@
 #include "chrome/browser/badging/badge_manager.h"
 #include "chrome/browser/badging/badge_manager_factory.h"
 #include "chrome/browser/devtools/protocol/devtools_protocol_test_support.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
@@ -1062,7 +1061,7 @@ IN_PROC_BROWSER_TEST_F(PWAProtocolTest,
                                                    app_id);
   auto* web_contents_after =
       app_browser->GetFeatures().tab_strip_model()->GetActiveWebContents();
-  EXPECT_NE(app_browser->GetBrowserForMigrationOnly(), browser());
+  EXPECT_NE(app_browser, browser());
   EXPECT_EQ(web_contents_before, web_contents_after);
   // Use a page target API to verify the WebContents is still attached.
   ASSERT_TRUE(

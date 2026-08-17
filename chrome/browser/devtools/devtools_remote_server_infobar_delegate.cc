@@ -15,7 +15,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/devtools/global_confirm_info_bar.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
@@ -65,9 +64,8 @@ std::u16string DevToolsRemoteServerInfobarDelegate::GetButtonLabel(
 
 bool DevToolsRemoteServerInfobarDelegate::Accept() {
   // See comment in GetButtons() above.
-  BrowserWindowInterface* active =
+  BrowserWindowInterface* browser =
       GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser();
-  Browser* browser = active ? active->GetBrowserForMigrationOnly() : nullptr;
   if (!browser) {
     return ConfirmInfoBarDelegate::Accept();
   }

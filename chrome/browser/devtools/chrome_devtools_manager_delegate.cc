@@ -539,9 +539,7 @@ void ChromeDevToolsManagerDelegate::AcceptDebugging(AcceptCallback callback) {
       std::move(callback));
   BrowserWindowInterface* last_active =
       GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser();
-  DevToolsConnectionDialog::Show(
-      last_active ? last_active->GetBrowserForMigrationOnly() : nullptr,
-      std::move(wrapped_callback));
+  DevToolsConnectionDialog::Show(last_active, std::move(wrapped_callback));
 }
 
 void ChromeDevToolsManagerDelegate::SetActiveWebSocketConnections(

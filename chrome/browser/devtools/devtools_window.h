@@ -29,7 +29,6 @@
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"  // nogncheck crbug.com/40147906
 #endif
 
-class Browser;
 class BrowserWindowInterface;
 class BrowserWindow;
 class Profile;

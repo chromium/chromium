@@ -145,8 +145,8 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"  // nogncheck
 #include "chrome/browser/ui/tabs/tab_enums.h"
@@ -2722,7 +2722,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutoOpenerTest, MAYBE_TestAutoOpenForTabs) {
                                        false));
     observer.WaitForLoad();
   }
-  Browser* new_browser = nullptr;
+  BrowserWindowInterface* new_browser = nullptr;
   {
     DevToolsWindowCreationObserver observer;
     new_browser = CreateBrowser(browser()->GetProfile());
@@ -4465,11 +4465,12 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest,
       browser()->tab_strip_model()->GetWebContentsAt(0), true);
   DispatchOnTestSuite(window, "waitForDebuggerPaused");
 
-  Browser* another_browser = CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* another_browser =
+      CreateBrowser(browser()->GetProfile());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(another_browser, pause_url));
   DevToolsWindow* another_window =
       DevToolsWindowTesting::OpenDevToolsWindowSync(
-          another_browser->tab_strip_model()->GetWebContentsAt(0), true);
+          another_browser->GetTabStripModel()->GetWebContentsAt(0), true);
   DispatchOnTestSuite(another_window, "waitForDebuggerPaused");
 
   histograms.ExpectBucketCount(
@@ -4533,17 +4534,17 @@ IN_PROC_BROWSER_TEST_F(DevToolsProcessPerSiteUpToMainFrameThresholdTest,
 
   OpenDevToolsWindow(kDebuggerTestPage, false);
 
-  Browser* browser1 = CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* browser1 = CreateBrowser(browser()->GetProfile());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser1, url));
 
-  Browser* browser2 = CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* browser2 = CreateBrowser(browser()->GetProfile());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser2, url));
 
-  ASSERT_NE(browser1->tab_strip_model()
+  ASSERT_NE(browser1->GetTabStripModel()
                 ->GetActiveWebContents()
                 ->GetPrimaryMainFrame()
                 ->GetProcess(),
-            browser2->tab_strip_model()
+            browser2->GetTabStripModel()
                 ->GetActiveWebContents()
                 ->GetPrimaryMainFrame()
                 ->GetProcess());
@@ -4593,25 +4594,25 @@ IN_PROC_BROWSER_TEST_F(DevToolsProcessPerSiteTest,
                        MAYBE_DevToolsSharedProcessInfobar) {
   const GURL url = embedded_test_server()->GetURL("foo.test", "/hello.html");
 
-  Browser* browser1 = CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* browser1 = CreateBrowser(browser()->GetProfile());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser1, url));
 
-  Browser* browser2 = CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* browser2 = CreateBrowser(browser()->GetProfile());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser2, url));
 
-  ASSERT_EQ(browser1->tab_strip_model()
+  ASSERT_EQ(browser1->GetTabStripModel()
                 ->GetActiveWebContents()
                 ->GetPrimaryMainFrame()
                 ->GetProcess(),
-            browser2->tab_strip_model()
+            browser2->GetTabStripModel()
                 ->GetActiveWebContents()
                 ->GetPrimaryMainFrame()
                 ->GetProcess());
 
   auto* window = DevToolsWindowTesting::OpenDevToolsWindowSync(
-      browser1->tab_strip_model()->GetActiveWebContents(), true);
+      browser1->GetTabStripModel()->GetActiveWebContents(), true);
   auto* infobar_manager = infobars::ContentInfoBarManager::FromWebContents(
-      browser1->tab_strip_model()->GetActiveWebContents());
+      browser1->GetTabStripModel()->GetActiveWebContents());
   ASSERT_EQ(infobar_manager->infobars().size(), 1u);
   ASSERT_EQ(infobar_manager->infobars()[0]->GetIdentifier(),
             infobars::InfoBarDelegate::DEV_TOOLS_SHARED_PROCESS_DELEGATE);

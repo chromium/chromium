@@ -11,20 +11,21 @@
 #include "chrome/browser/devtools/chrome_devtools_manager_delegate.h"
 #include "chrome/browser/devtools/devtools_browser_context_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
+#include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/common/url_utils.h"
+#include "ui/base/base_window.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace {
@@ -33,12 +34,7 @@ NavigateParams CreateNavigateParams(Profile* profile,
                                     ui::PageTransition transition,
                                     bool new_window,
                                     bool background,
-                                    BrowserWindowInterface* bwi) {
-  Browser* browser = nullptr;
-  if (!new_window && bwi) {
-    browser = bwi->GetBrowserForMigrationOnly();
-  }
-
+                                    BrowserWindowInterface* browser) {
   DCHECK(new_window || browser);
   NavigateParams params(profile, url, transition);
   if (new_window) {

@@ -4,7 +4,6 @@
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
 #include "chrome/browser/devtools/devtools_policy_dialog.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/browser/web_contents.h"

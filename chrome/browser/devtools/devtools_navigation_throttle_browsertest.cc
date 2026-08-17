@@ -5,7 +5,6 @@
 #include "chrome/browser/devtools/devtools_navigation_throttle.h"
 
 #include "base/command_line.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"

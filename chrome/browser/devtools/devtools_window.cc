@@ -114,7 +114,6 @@
 #else
 #include "chrome/browser/devtools/devtools_policy_dialog.h"
 #include "chrome/browser/devtools/devtools_ui_controller.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"  // nogncheck crbug.com/40147906
@@ -2077,8 +2076,7 @@ void DevToolsWindow::CreateDevToolsBrowser() {
     return;
   }
   browser_ = CreateBrowserWindow(
-                 BrowserWindowCreateParams::CreateForDevTools(profile_))
-                 ->GetBrowserForMigrationOnly();
+      BrowserWindowCreateParams::CreateForDevTools(profile_));
   browser_->GetTabStripModel()->AddWebContents(
       OwnedMainWebContents::TakeWebContents(
           std::move(owned_main_web_contents_)),
