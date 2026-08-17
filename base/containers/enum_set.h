@@ -5,6 +5,7 @@
 #ifndef BASE_CONTAINERS_ENUM_SET_H_
 #define BASE_CONTAINERS_ENUM_SET_H_
 
+#include <bit>
 #include <bitset>
 #include <compare>
 #include <cstddef>
@@ -70,8 +71,102 @@ class EnumSet {
   using value_type = EnumType;
 
  private:
-  // Declaration needed by Iterator.
-  using EnumBitSet = std::bitset<kValueCount>;
+  // Provides a subset of the functionality of std::bitset, with a smaller
+  // memory footprint for small bitsets.
+  template <typename T, size_t N>
+  class IntegralBitset {
+    static_assert(std::is_unsigned_v<T>);
+    static_assert(N <= sizeof(T) * 8);
+
+   public:
+    constexpr IntegralBitset() = default;
+    constexpr explicit IntegralBitset(T bits) : bits_(bits & Mask()) {}
+
+    constexpr bool test(size_t pos) const { return (bits_ & Bit(pos)) != 0; }
+
+    constexpr void set(size_t pos) { bits_ |= Bit(pos); }
+    constexpr void set() { bits_ = Mask(); }
+
+    constexpr void reset(size_t pos) { bits_ &= ~Bit(pos); }
+    constexpr void reset() { bits_ = 0; }
+
+    constexpr bool none() const { return bits_ == 0; }
+    constexpr bool any() const { return bits_ != 0; }
+
+    constexpr size_t count() const {
+      return static_cast<size_t>(std::popcount(bits_));
+    }
+
+    friend constexpr IntegralBitset operator&(IntegralBitset a,
+                                              IntegralBitset b) {
+      return IntegralBitset(a.bits_ & b.bits_, kNoMask);
+    }
+    constexpr IntegralBitset& operator&=(IntegralBitset other) {
+      bits_ &= other.bits_;
+      return *this;
+    }
+
+    friend constexpr IntegralBitset operator|(IntegralBitset a,
+                                              IntegralBitset b) {
+      return IntegralBitset(a.bits_ | b.bits_, kNoMask);
+    }
+    constexpr IntegralBitset& operator|=(IntegralBitset other) {
+      bits_ |= other.bits_;
+      return *this;
+    }
+    constexpr IntegralBitset operator~() const {
+      return IntegralBitset(~bits_);  // The constructor will apply Mask().
+    }
+
+    friend constexpr bool operator==(IntegralBitset a,
+                                     IntegralBitset b) = default;
+
+    constexpr std::string to_string() const {
+      return std::bitset<N>(bits_).to_string();
+    }
+    constexpr uint64_t to_ullong() const { return bits_; }
+
+    // Allows an EnumSet to be used in absl hash containers.
+    template <typename H>
+    friend H AbslHashValue(H h, IntegralBitset b) {
+      return H::combine(std::move(h), b.bits_);
+    }
+
+   private:
+    // This constructor can reduce code bloat by avoiding the dependency on N
+    // through Mask().
+    enum NoMaskTag { kNoMask };
+    constexpr IntegralBitset(T bits, NoMaskTag) : bits_(bits) {
+      DCHECK_EQ(bits_ & Mask(), bits_);
+    }
+
+    static constexpr T Bit(size_t pos) {
+      DCHECK_LT(pos, N);
+      return static_cast<T>(T{1} << pos);
+    }
+
+    static constexpr T Mask()
+      requires(N == sizeof(T) * 8)
+    {
+      return static_cast<T>(~T{0});
+    }
+    static constexpr T Mask()
+      requires(N < sizeof(T) * 8)
+    {
+      return static_cast<T>((T{1} << N) - 1);
+    }
+    T bits_ = 0;
+  };
+
+  using EnumBitSet = std::conditional_t<
+      kValueCount <= 8,
+      IntegralBitset<uint8_t, kValueCount>,
+      std::conditional_t<
+          kValueCount <= 16,
+          IntegralBitset<uint16_t, kValueCount>,
+          std::conditional_t<kValueCount <= 32,
+                             IntegralBitset<uint32_t, kValueCount>,
+                             std::bitset<kValueCount>>>>;
 
  public:
   // Iterator is a forward-only read-only iterator for EnumSet. It follows the
@@ -295,7 +390,7 @@ class EnumSet {
 
   // Returns true iff the given value is in range and a member of our set.
   constexpr bool Has(E value) const {
-    return InRange(value) && enums_[ToIndex(value)];
+    return InRange(value) && enums_.test(ToIndex(value));
   }
 
   // Returns true iff the given set is a subset of our set.

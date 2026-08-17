@@ -46,6 +46,31 @@ using TestEnumExtremeSet = EnumSet<TestEnumExtreme,
 class EnumSetTest : public ::testing::Test {};
 class EnumSetDeathTest : public ::testing::Test {};
 
+TEST_F(EnumSetTest, Size) {
+  enum class E {
+    kV0,
+    kV7 = 7,
+    kV8 = 8,
+    kV15 = 15,
+    kV16 = 16,
+    kV31 = 31,
+    kV32 = 32,
+    kV63 = 63,
+    kV127 = 127,
+  };
+  static_assert(sizeof(EnumSet<E, E::kV0, E::kV0>) == 1);
+  static_assert(sizeof(EnumSet<E, E::kV0, E::kV7>) == 1);
+  static_assert(sizeof(EnumSet<E, E::kV7, E::kV8>) == 1);
+  static_assert(sizeof(EnumSet<E, E::kV8, E::kV15>) == 1);
+  static_assert(sizeof(EnumSet<E, E::kV0, E::kV8>) == 2);
+  static_assert(sizeof(EnumSet<E, E::kV0, E::kV15>) == 2);
+  static_assert(sizeof(EnumSet<E, E::kV0, E::kV16>) == 4);
+  static_assert(sizeof(EnumSet<E, E::kV0, E::kV31>) == 4);
+  static_assert(sizeof(EnumSet<E, E::kV0, E::kV32>) == 8);
+  static_assert(sizeof(EnumSet<E, E::kV0, E::kV63>) == 8);
+  static_assert(sizeof(EnumSet<E, E::kV0, E::kV127>) > 8);
+}
+
 TEST_F(EnumSetTest, ClassConstants) {
   EXPECT_EQ(TestEnum::kTestMin, TestEnumSet::kMinValue);
   EXPECT_EQ(TestEnum::kTestMax, TestEnumSet::kMaxValue);
