@@ -28,6 +28,7 @@
 namespace autofill {
 
 class BrowserAutofillManager;
+class FormStructure;
 class LogBuffer;
 
 // Used for histograms. Do not reorder.
@@ -60,7 +61,8 @@ class OtpManagerImpl : public OtpManager, public AutofillManager::Observer {
   // OtpManager:
   // Returns any cached OTPs (if they exist) and renews a subscription so that
   // incoming OTPs can be reported.
-  void GetOtpSuggestions(const url::Origin& origin,
+  void GetOtpSuggestions(const FormStructure& form,
+                         const url::Origin& origin,
                          GetOtpSuggestionsCallback callback) override;
 
   // AutofillManager::Observer:

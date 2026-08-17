@@ -16,6 +16,7 @@
 namespace autofill {
 
 class AutofillClient;
+class FormStructure;
 
 // Utility class to observe if a WebContents (with all of its frames)
 // - moves from having 0 OTP fields to >0 OTP fields (only focusable fields are
@@ -55,6 +56,12 @@ class OtpFieldDetector : public AutofillManager::Observer {
   // Returns whether at present any frame of the WebContents contains at least
   // one OTP field.
   bool IsOtpFieldPresent() const;
+
+  // Returns true if the `form` contains at least one focusable `ONE_TIME_CODE`
+  // field. If `kAutofillRestrictOtpToSameTldPlusOne` is enabled, also requires
+  // that all focusable `ONE_TIME_CODE` fields in the `form` are same-site with
+  // the main frame's origin.
+  [[nodiscard]] static bool IsOtpForm(const FormStructure& form);
 
   // AutofillManager::Observer:
 

@@ -22,12 +22,7 @@
 
 namespace autofill {
 
-namespace {
-
-// Returns true if the form contains at least one ONE_TIME_CODE field and
-// all ONE_TIME_CODE fields in the form are same-site with the main frame's
-// origin.
-[[nodiscard]] bool IsOtpForm(const FormStructure& form) {
+bool OtpFieldDetector::IsOtpForm(const FormStructure& form) {
   const bool restrict_to_same_tld = base::FeatureList::IsEnabled(
       features::kAutofillRestrictOtpToSameTldPlusOne);
 
@@ -53,17 +48,6 @@ namespace {
 
   return has_otp_field;
 }
-
-// Returns true if the `form_id` in `manager` contains at least one ONE_TIME_CODE
-// field and all ONE_TIME_CODE fields in the form are same-site with the main
-// frame's origin.
-[[nodiscard]] bool IsOtpForm(const AutofillManager& manager,
-                             FormGlobalId form_id) {
-  const FormStructure* form_structure = manager.FindCachedFormById(form_id);
-  return form_structure && IsOtpForm(*form_structure);
-}
-
-}  // namespace
 
 OtpFieldDetector::OtpFieldDetector(AutofillClient* client) {
   if (client) {
@@ -101,7 +85,8 @@ void OtpFieldDetector::OnFieldTypesDetermined(AutofillManager& manager,
                                               FormGlobalId form,
                                               FieldTypeSource source,
                                               bool small_forms_were_parsed) {
-  if (IsOtpForm(manager, form)) {
+  const FormStructure* form_structure = manager.FindCachedFormById(form);
+  if (form_structure && IsOtpForm(*form_structure)) {
     AddFormAndNotifyIfNecessary(form);
   } else {
     RemoveFormAndNotifyIfNecessary(form);

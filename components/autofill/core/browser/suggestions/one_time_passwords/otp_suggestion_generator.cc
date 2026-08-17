@@ -86,7 +86,7 @@ void OtpSuggestionGenerator::GenerateSuggestions(
   }
 
   otp_manager_->GetOtpSuggestions(
-      trigger_field.origin(),
+      *form_structure, trigger_field.origin(),
       base::BindOnce(&OtpSuggestionGenerator::OnOtpReturned,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }

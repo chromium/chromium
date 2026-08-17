@@ -24,6 +24,7 @@
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
+#include "components/autofill/core/browser/integrators/one_time_tokens/otp_field_detector.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_phish_guard_delegate.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/common/autofill_internals/log_message.h"
@@ -67,8 +68,14 @@ OtpManagerImpl::OtpManagerImpl(BrowserAutofillManager& owner,
 OtpManagerImpl::~OtpManagerImpl() = default;
 
 void OtpManagerImpl::GetOtpSuggestions(
+    const FormStructure& form,
     const url::Origin& origin,
     OtpManagerImpl::GetOtpSuggestionsCallback callback) {
+  if (!OtpFieldDetector::IsOtpForm(form)) {
+    std::move(callback).Run({});
+    return;
+  }
+
   // TODO(crbug.com/415273270) This is just a hack to prepopulate the OTPs in
   // case no real backend is triggered. The feature definition should migrate to
   // autofill.
@@ -124,11 +131,7 @@ void OtpManagerImpl::OnFieldTypesDetermined(
     return;
   }
 
-  const bool form_contains_otp_field = std::ranges::any_of(
-      form->fields(), [](const std::unique_ptr<AutofillField>& field) {
-        return field->Type().GetTypes().contains(ONE_TIME_CODE);
-      });
-  if (!form_contains_otp_field) {
+  if (!OtpFieldDetector::IsOtpForm(*form)) {
     return;
   }
 

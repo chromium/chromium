@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/autofill_type.h"
@@ -23,6 +24,7 @@
 
 namespace autofill {
 
+using ::base::test::RunOnceCallback;
 using ::testing::Field;
 using ::testing::IsEmpty;
 using ::testing::Pair;
@@ -49,10 +51,7 @@ TEST_F(OtpSuggestionGeneratorTest, GenerateOtpSuggestions) {
   form_structure.field(0)->SetTypeTo(AutofillType(ONE_TIME_CODE), std::nullopt);
 
   EXPECT_CALL(otp_manager(), GetOtpSuggestions)
-      .WillOnce([](const url::Origin& origin,
-                   OtpManager::GetOtpSuggestionsCallback callback) {
-        std::move(callback).Run(std::vector<std::string>{"123456"});
-      });
+      .WillOnce(RunOnceCallback<2>(std::vector<std::string>{"123456"}));
 
   base::MockCallback<
       base::OnceCallback<void(SuggestionGenerator::ReturnedSuggestions)>>

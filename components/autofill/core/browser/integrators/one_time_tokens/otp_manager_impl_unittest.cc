@@ -6,6 +6,7 @@
 
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/clock.h"
@@ -17,6 +18,7 @@
 #include "components/autofill/core/browser/foundations/with_test_autofill_client_driver_manager.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_manager_impl_test_api.h"
 #include "components/autofill/core/browser/test_utils/autofill_form_test_utils.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
@@ -26,11 +28,12 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using autofill::test::FormDescription;
-using autofill::test::GetServerTypes;
-using base::test::RunOnceCallback;
-using one_time_tokens::OneTimeTokenServiceImpl;
-using ::testing::_;
+using ::autofill::test::FormDescription;
+using ::autofill::test::GetServerTypes;
+using ::base::test::RunOnceCallback;
+using ::one_time_tokens::OneTimeTokenServiceImpl;
+using ::testing::Test;
+
 namespace autofill {
 
 namespace {
@@ -67,7 +70,7 @@ class MockOtpPhishGuardDelegate : public OtpPhishGuardDelegate {
 
 }  // namespace
 
-class OtpManagerImplTest : public testing::Test,
+class OtpManagerImplTest : public Test,
                            public WithTestAutofillClientDriverManager<> {
  public:
   OtpManagerImplTest() : one_time_token_service_(&sms_otp_backend_, nullptr) {}
@@ -85,8 +88,9 @@ class OtpManagerImplTest : public testing::Test,
     test_field_.set_origin(url::Origin::Create(GURL("https://example.test")));
   }
 
-  void AddForm(const FormDescription& form_description) {
+  const FormStructure* AddForm(const FormDescription& form_description) {
     FormData form = test::GetFormData(form_description);
+    FormGlobalId form_id = form.global_id();
     auto form_structure = std::make_unique<FormStructure>(form);
     test_api(*form_structure).SetFieldTypes(GetServerTypes(form_description));
     test_api(*form_structure).AssignSections();
@@ -97,26 +101,36 @@ class OtpManagerImplTest : public testing::Test,
     // This would typically happen during parsing but is skipped if a form is
     // injected via the test API.
     autofill_manager().NotifyObservers(
-        &TestBrowserAutofillManager::Observer::OnFieldTypesDetermined,
-        form.global_id(),
+        &TestBrowserAutofillManager::Observer::OnFieldTypesDetermined, form_id,
         TestBrowserAutofillManager::Observer::FieldTypeSource::kAutofillAiModel,
         /*small_forms_were_parsed=*/false);
+    return autofill_manager().FindCachedFormById(form_id);
   }
 
-  void AddFormWithOtpField() {
+  const FormStructure* AddFormWithOtpField(
+      std::optional<url::Origin> field_origin = std::nullopt,
+      std::optional<url::Origin> main_frame_origin = std::nullopt,
+      bool is_focusable = true) {
     FormDescription form_description = {
-        .fields = {
-            {.server_type = ONE_TIME_CODE, .label = u"OTP", .name = u"otp"},
-        }};
-    AddForm(form_description);
+        .fields =
+            {
+                {.server_type = ONE_TIME_CODE,
+                 .is_focusable = is_focusable,
+                 .label = u"OTP",
+                 .name = u"otp",
+                 .origin = field_origin},
+            },
+        .main_frame_origin = main_frame_origin,
+    };
+    return AddForm(form_description);
   }
 
-  void AddFormWithFirstNameField() {
+  const FormStructure* AddFormWithFirstNameField() {
     FormDescription form_description = {
         .fields = {
             {.server_type = NAME_FIRST, .label = u"First name", .name = u"fn"},
         }};
-    AddForm(form_description);
+    return AddForm(form_description);
   }
 
   MockOtpPhishGuardDelegate& otp_phish_guard_delegate() {
@@ -169,10 +183,12 @@ TEST_F(OtpManagerImplTest, GetOtpSuggestions_TriggersFirstRetrieval) {
       .WillOnce(RunOnceCallback<2>(false));
 
   // Observing an OTP field is supposed to trigger an SMS OTP request.
-  AddFormWithOtpField();
+  const FormStructure* form = AddFormWithOtpField();
+  ASSERT_TRUE(form);
 
   base::test::TestFuture<const std::vector<std::string>> future;
-  otp_manager.GetOtpSuggestions(test_field_.origin(), future.GetCallback());
+  otp_manager.GetOtpSuggestions(*form, test_field_.origin(),
+                                future.GetCallback());
 
   ASSERT_EQ(future.Get().size(), 1u);
   EXPECT_EQ(future.Get()[0], otp.value());
@@ -200,10 +216,12 @@ TEST_F(OtpManagerImplTest, GetOtpSuggestions_DoesNotTriggerWhileInProgress) {
       .WillOnce(RunOnceCallback<2>(false));
 
   // Observing an OTP field is supposed to trigger an SMS OTP request.
-  AddFormWithOtpField();
+  const FormStructure* form = AddFormWithOtpField();
+  ASSERT_TRUE(form);
 
   base::test::TestFuture<const std::vector<std::string>> future;
-  otp_manager.GetOtpSuggestions(test_field_.origin(), future.GetCallback());
+  otp_manager.GetOtpSuggestions(*form, test_field_.origin(),
+                                future.GetCallback());
 
   // The future should not be ready yet, as the SMS backend has not responded.
   EXPECT_FALSE(future.IsReady());
@@ -231,21 +249,25 @@ TEST_F(OtpManagerImplTest, GetOtpSuggestions_FetchesSmsOnlyOnce) {
       .WillOnce(RunOnceCallback<2>(false));
 
   // Observing an OTP field is supposed to trigger an SMS OTP request.
-  AddFormWithOtpField();
+  const FormStructure* form1 = AddFormWithOtpField();
+  ASSERT_TRUE(form1);
 
   base::test::TestFuture<const std::vector<std::string>> future1;
-  otp_manager.GetOtpSuggestions(test_field_.origin(), future1.GetCallback());
+  otp_manager.GetOtpSuggestions(*form1, test_field_.origin(),
+                                future1.GetCallback());
 
   ASSERT_EQ(future1.Get().size(), 1u);
   EXPECT_EQ(future1.Get()[0], otp.value());
 
   // Adding a second OTP form should not trigger a new SMS OTP retrieval.
   EXPECT_CALL(sms_otp_backend_, RetrieveSmsOtp).Times(0);
-  AddFormWithOtpField();
+  const FormStructure* form2 = AddFormWithOtpField();
+  ASSERT_TRUE(form2);
 
   // The results of the first result should still be delivered.
   base::test::TestFuture<const std::vector<std::string>> future2;
-  otp_manager.GetOtpSuggestions(test_field_.origin(), future2.GetCallback());
+  otp_manager.GetOtpSuggestions(*form2, test_field_.origin(),
+                                future2.GetCallback());
 
   ASSERT_EQ(future2.Get().size(), 1u);
   EXPECT_EQ(future2.Get()[0], otp.value());
@@ -273,17 +295,20 @@ TEST_F(OtpManagerImplTest, GetOtpSuggestions_NewCallInvalidatesOldCallback) {
       .WillOnce(RunOnceCallback<2>(false));
 
   // Observing an OTP field is supposed to trigger an SMS OTP request.
-  AddFormWithOtpField();
+  const FormStructure* form = AddFormWithOtpField();
+  ASSERT_TRUE(form);
 
   base::test::TestFuture<const std::vector<std::string>> future1;
-  otp_manager.GetOtpSuggestions(test_field_.origin(), future1.GetCallback());
+  otp_manager.GetOtpSuggestions(*form, test_field_.origin(),
+                                future1.GetCallback());
 
   // The future should not be ready yet, as the SMS backend has not responded.
   EXPECT_FALSE(future1.IsReady());
 
   // Call GetOtpSuggestions again. This should invalidate the first callback.
   base::test::TestFuture<const std::vector<std::string>> future2;
-  otp_manager.GetOtpSuggestions(test_field_.origin(), future2.GetCallback());
+  otp_manager.GetOtpSuggestions(*form, test_field_.origin(),
+                                future2.GetCallback());
 
   // The first future should still not be ready.
   EXPECT_FALSE(future1.IsReady());
@@ -315,10 +340,12 @@ TEST_F(OtpManagerImplTest, GetOtpSuggestions_EmptyOtpIsNotStored) {
       .WillOnce(RunOnceCallback<2>(false));
 
   // Observing an OTP field is supposed to trigger an SMS OTP request.
-  AddFormWithOtpField();
+  const FormStructure* form = AddFormWithOtpField();
+  ASSERT_TRUE(form);
 
   base::test::TestFuture<const std::vector<std::string>> future;
-  otp_manager.GetOtpSuggestions(test_field_.origin(), future.GetCallback());
+  otp_manager.GetOtpSuggestions(*form, test_field_.origin(),
+                                future.GetCallback());
 
   EXPECT_TRUE(future.Get().empty());
 }
@@ -345,12 +372,14 @@ TEST_F(OtpManagerImplTest, GetOtpSuggestions_FiltersExpiredOtps) {
       .WillOnce(RunOnceCallback<2>(false));
 
   // Observing an OTP field is supposed to trigger an SMS OTP request.
-  AddFormWithOtpField();
+  const FormStructure* form = AddFormWithOtpField();
+  ASSERT_TRUE(form);
 
   // Request suggestions. The future should not be ready yet, as the SMS
   // backend has not responded.
   base::test::TestFuture<const std::vector<std::string>> future1;
-  otp_manager.GetOtpSuggestions(test_field_.origin(), future1.GetCallback());
+  otp_manager.GetOtpSuggestions(*form, test_field_.origin(),
+                                future1.GetCallback());
   EXPECT_FALSE(future1.IsReady());
 
   // Now, let the SMS backend respond.
@@ -365,7 +394,8 @@ TEST_F(OtpManagerImplTest, GetOtpSuggestions_FiltersExpiredOtps) {
 
   // Verify that the OTP is now expired and not returned.
   base::test::TestFuture<const std::vector<std::string>> future2;
-  otp_manager.GetOtpSuggestions(test_field_.origin(), future2.GetCallback());
+  otp_manager.GetOtpSuggestions(*form, test_field_.origin(),
+                                future2.GetCallback());
   EXPECT_FALSE(future2.IsReady());
 }
 
@@ -390,10 +420,12 @@ TEST_F(OtpManagerImplTest, GetOtpSuggestions_SafetyCheckReturnsFalse) {
       });
 
   // Observing an OTP field is supposed to trigger an SMS OTP request.
-  AddFormWithOtpField();
+  const FormStructure* form = AddFormWithOtpField();
+  ASSERT_TRUE(form);
 
   base::test::TestFuture<const std::vector<std::string>> future;
-  otp_manager.GetOtpSuggestions(test_field_.origin(), future.GetCallback());
+  otp_manager.GetOtpSuggestions(*form, test_field_.origin(),
+                                future.GetCallback());
 
   // The phish guard check is in progress, so the future should not be ready.
   EXPECT_FALSE(future.IsReady());
@@ -432,10 +464,12 @@ TEST_F(OtpManagerImplTest, GetOtpSuggestions_SafetyCheckReturnsTrue) {
       });
 
   // Observing an OTP field is supposed to trigger an SMS OTP request.
-  AddFormWithOtpField();
+  const FormStructure* form = AddFormWithOtpField();
+  ASSERT_TRUE(form);
 
   base::test::TestFuture<const std::vector<std::string>> future;
-  otp_manager.GetOtpSuggestions(test_field_.origin(), future.GetCallback());
+  otp_manager.GetOtpSuggestions(*form, test_field_.origin(),
+                                future.GetCallback());
 
   // The phish guard check is in progress, so the future should not be ready.
   EXPECT_FALSE(future.IsReady());
@@ -468,10 +502,12 @@ TEST_F(OtpManagerImplTest, GetOtpSuggestions_NoPhishingDelegate) {
       .WillOnce(RunOnceCallback<0>(otp));
 
   // Observing an OTP field is supposed to trigger an SMS OTP request.
-  AddFormWithOtpField();
+  const FormStructure* form = AddFormWithOtpField();
+  ASSERT_TRUE(form);
 
   base::test::TestFuture<const std::vector<std::string>> future;
-  otp_manager.GetOtpSuggestions(test_field_.origin(), future.GetCallback());
+  otp_manager.GetOtpSuggestions(*form, test_field_.origin(),
+                                future.GetCallback());
 
   ASSERT_EQ(future.Get().size(), 1u);
   EXPECT_EQ(future.Get()[0], otp.value());
@@ -500,10 +536,12 @@ TEST_F(OtpManagerImplTest, OnOtpAvailable_LoggedEvenIfPhishGuardBlocks) {
       });
 
   // Observing an OTP field triggers retrieval.
-  AddFormWithOtpField();
+  const FormStructure* form = AddFormWithOtpField();
+  ASSERT_TRUE(form);
 
   base::test::TestFuture<const std::vector<std::string>> future;
-  otp_manager.GetOtpSuggestions(test_field_.origin(), future.GetCallback());
+  otp_manager.GetOtpSuggestions(*form, test_field_.origin(),
+                                future.GetCallback());
 
   // Simulate unsafe site (phishing detection).
   std::move(phish_guard_callback).Run(true);
@@ -536,10 +574,12 @@ TEST_F(OtpManagerImplTest, OnOtpAvailable_NotLoggedIfNoPendingCallback) {
                   callback) { sms_backend_callback = std::move(callback); });
 
   // Observing an OTP field triggers retrieval.
-  AddFormWithOtpField();
+  const FormStructure* form = AddFormWithOtpField();
+  ASSERT_TRUE(form);
 
   base::test::TestFuture<const std::vector<std::string>> future;
-  otp_manager.GetOtpSuggestions(test_field_.origin(), future.GetCallback());
+  otp_manager.GetOtpSuggestions(*form, test_field_.origin(),
+                                future.GetCallback());
 
   // Simulate a focus on a form field. This should clear the pending callback.
   otp_manager.OnBeforeFocusOnFormField(autofill_manager(), FormGlobalId(),
@@ -576,8 +616,12 @@ TEST_F(OtpManagerImplTest, OnBeforeFocusOnFormField_ClearsPendingCallback) {
                   base::expected<one_time_tokens::OneTimeToken,
                                  one_time_tokens::OneTimeTokenRetrievalError>)>
                   callback) { sms_backend_callback = std::move(callback); });
+  const FormStructure* form = AddFormWithOtpField();
+  ASSERT_TRUE(form);
+
   base::test::TestFuture<const std::vector<std::string>> future;
-  otp_manager.GetOtpSuggestions(test_field_.origin(), future.GetCallback());
+  otp_manager.GetOtpSuggestions(*form, test_field_.origin(),
+                                future.GetCallback());
 
   // The future should not be ready yet, as the SMS backend has not responded.
   EXPECT_FALSE(future.IsReady());
@@ -615,8 +659,12 @@ TEST_F(OtpManagerImplTest, OnBeforeFocusOnNonFormField_ClearsPendingCallback) {
                                  one_time_tokens::OneTimeTokenRetrievalError>)>
                   callback) { sms_backend_callback = std::move(callback); });
 
+  const FormStructure* form = AddFormWithOtpField();
+  ASSERT_TRUE(form);
+
   base::test::TestFuture<const std::vector<std::string>> future;
-  otp_manager.GetOtpSuggestions(test_field_.origin(), future.GetCallback());
+  otp_manager.GetOtpSuggestions(*form, test_field_.origin(),
+                                future.GetCallback());
 
   // The future should not be ready yet, as the SMS backend has not responded.
   EXPECT_FALSE(future.IsReady());
@@ -648,12 +696,170 @@ TEST_F(OtpManagerImplTest, SelectMostRecentToken) {
   OtpManagerImpl otp_manager(autofill_manager(), &one_time_token_service_);
   test_api(otp_manager).SetReceivedOtps(tokens);
 
-  auto selected_token = otp_manager.SelectMostRecentToken();
+  std::optional<one_time_tokens::OneTimeToken> selected_token =
+      otp_manager.SelectMostRecentToken();
   ASSERT_TRUE(selected_token.has_value());
   EXPECT_EQ(selected_token->value(), "456");
 
   test_api(otp_manager).SetReceivedOtps({});
   EXPECT_FALSE(otp_manager.SelectMostRecentToken().has_value());
+}
+
+// Tests that when `kAutofillRestrictOtpToSameTldPlusOne` is enabled, no query
+// is issued to the SMS backend if the OTP field is in a cross-origin iframe
+// with mismatched TLD+1.
+TEST_F(OtpManagerImplTest, CrossOriginOtpFormFeatureEnabledNoQueryIssued) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kAutofillRestrictOtpToSameTldPlusOne);
+
+  OtpManagerImpl otp_manager(autofill_manager(), &one_time_token_service_);
+
+  EXPECT_CALL(sms_otp_backend_, RetrieveSmsOtp).Times(0);
+  AddFormWithOtpField(
+      /*field_origin=*/url::Origin::Create(GURL("https://attacker.test")),
+      /*main_frame_origin=*/url::Origin::Create(GURL("https://example.test")));
+}
+
+// Tests that when `kAutofillRestrictOtpToSameTldPlusOne` is enabled, a query is
+// issued to the SMS backend if the OTP field is in a same-TLD+1 iframe.
+TEST_F(OtpManagerImplTest, SameTldPlusOneOtpFormFeatureEnabledQueryIssued) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kAutofillRestrictOtpToSameTldPlusOne);
+
+  OtpManagerImpl otp_manager(autofill_manager(), &one_time_token_service_);
+
+  EXPECT_CALL(sms_otp_backend_, RetrieveSmsOtp).Times(1);
+  AddFormWithOtpField(
+      /*field_origin=*/url::Origin::Create(GURL("https://sub.example.test")),
+      /*main_frame_origin=*/url::Origin::Create(GURL("https://example.test")));
+}
+
+// Tests that when `kAutofillRestrictOtpToSameTldPlusOne` is disabled, a query
+// is issued even if the OTP field has a mismatched TLD+1.
+TEST_F(OtpManagerImplTest, CrossOriginOtpFormFeatureDisabledQueryIssued) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kAutofillRestrictOtpToSameTldPlusOne);
+
+  OtpManagerImpl otp_manager(autofill_manager(), &one_time_token_service_);
+
+  EXPECT_CALL(sms_otp_backend_, RetrieveSmsOtp).Times(1);
+  AddFormWithOtpField(
+      /*field_origin=*/url::Origin::Create(GURL("https://attacker.test")),
+      /*main_frame_origin=*/url::Origin::Create(GURL("https://example.test")));
+}
+
+// Tests that `GetOtpSuggestions` immediately returns empty suggestions without
+// checking phishing or querying backend when the form contains a cross-origin
+// OTP field and `kAutofillRestrictOtpToSameTldPlusOne` is enabled.
+TEST_F(OtpManagerImplTest,
+       GetOtpSuggestionsCrossOriginFormFeatureEnabledReturnsEmpty) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kAutofillRestrictOtpToSameTldPlusOne);
+
+  OtpManagerImpl otp_manager(autofill_manager(), &one_time_token_service_);
+
+  EXPECT_CALL(sms_otp_backend_, RetrieveSmsOtp).Times(0);
+  EXPECT_CALL(otp_phish_guard_delegate(), StartOtpPhishGuardCheck).Times(0);
+
+  const FormStructure* form = AddFormWithOtpField(
+      /*field_origin=*/url::Origin::Create(GURL("https://attacker.test")),
+      /*main_frame_origin=*/url::Origin::Create(GURL("https://example.test")));
+  ASSERT_TRUE(form);
+
+  base::test::TestFuture<const std::vector<std::string>> future;
+  otp_manager.GetOtpSuggestions(
+      *form, url::Origin::Create(GURL("https://attacker.test")),
+      future.GetCallback());
+
+  EXPECT_TRUE(future.IsReady());
+  EXPECT_TRUE(future.Get().empty());
+}
+
+// Tests that `GetOtpSuggestions` returns OTP suggestions when the form is on a
+// same-TLD+1 origin and `kAutofillRestrictOtpToSameTldPlusOne` is enabled.
+TEST_F(OtpManagerImplTest,
+       GetOtpSuggestionsSameTldPlusOneFormFeatureEnabledReturnsOtp) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kAutofillRestrictOtpToSameTldPlusOne);
+
+  OtpManagerImpl otp_manager(autofill_manager(), &one_time_token_service_);
+
+  one_time_tokens::OneTimeToken otp(one_time_tokens::OneTimeTokenType::kSmsOtp,
+                                    kDefaultOtpValue, base::TimeTicks::Now());
+  EXPECT_CALL(sms_otp_backend_, RetrieveSmsOtp)
+      .WillOnce(RunOnceCallback<0>(otp));
+  EXPECT_CALL(otp_phish_guard_delegate(), StartOtpPhishGuardCheck)
+      .WillOnce(RunOnceCallback<2>(false));
+
+  const FormStructure* form = AddFormWithOtpField(
+      /*field_origin=*/url::Origin::Create(GURL("https://sub.example.test")),
+      /*main_frame_origin=*/url::Origin::Create(GURL("https://example.test")));
+  ASSERT_TRUE(form);
+
+  base::test::TestFuture<const std::vector<std::string>> future;
+  otp_manager.GetOtpSuggestions(
+      *form, url::Origin::Create(GURL("https://sub.example.test")),
+      future.GetCallback());
+
+  ASSERT_EQ(future.Get().size(), 1u);
+  EXPECT_EQ(future.Get()[0], otp.value());
+}
+
+// Tests that `GetOtpSuggestions` returns OTP suggestions on mismatched TLD+1
+// when `kAutofillRestrictOtpToSameTldPlusOne` is disabled.
+TEST_F(OtpManagerImplTest,
+       GetOtpSuggestionsCrossOriginFormFeatureDisabledReturnsOtp) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kAutofillRestrictOtpToSameTldPlusOne);
+
+  OtpManagerImpl otp_manager(autofill_manager(), &one_time_token_service_);
+
+  one_time_tokens::OneTimeToken otp(one_time_tokens::OneTimeTokenType::kSmsOtp,
+                                    kDefaultOtpValue, base::TimeTicks::Now());
+  EXPECT_CALL(sms_otp_backend_, RetrieveSmsOtp)
+      .WillOnce(RunOnceCallback<0>(otp));
+  EXPECT_CALL(otp_phish_guard_delegate(), StartOtpPhishGuardCheck)
+      .WillOnce(RunOnceCallback<2>(false));
+
+  const FormStructure* form = AddFormWithOtpField(
+      /*field_origin=*/url::Origin::Create(GURL("https://attacker.test")),
+      /*main_frame_origin=*/url::Origin::Create(GURL("https://example.test")));
+  ASSERT_TRUE(form);
+
+  base::test::TestFuture<const std::vector<std::string>> future;
+  otp_manager.GetOtpSuggestions(
+      *form, url::Origin::Create(GURL("https://attacker.test")),
+      future.GetCallback());
+
+  ASSERT_EQ(future.Get().size(), 1u);
+  EXPECT_EQ(future.Get()[0], otp.value());
+}
+
+// Tests that `GetOtpSuggestions` immediately returns empty suggestions if the
+// OTP field is not focusable.
+TEST_F(OtpManagerImplTest, GetOtpSuggestionsUnfocusableOtpFieldReturnsEmpty) {
+  OtpManagerImpl otp_manager(autofill_manager(), &one_time_token_service_);
+
+  EXPECT_CALL(sms_otp_backend_, RetrieveSmsOtp).Times(0);
+  EXPECT_CALL(otp_phish_guard_delegate(), StartOtpPhishGuardCheck).Times(0);
+
+  const FormStructure* form = AddFormWithOtpField(
+      /*field_origin=*/std::nullopt, /*main_frame_origin=*/std::nullopt,
+      /*is_focusable=*/false);
+  ASSERT_TRUE(form);
+
+  base::test::TestFuture<const std::vector<std::string>> future;
+  otp_manager.GetOtpSuggestions(*form, test_field_.origin(),
+                                future.GetCallback());
+
+  EXPECT_TRUE(future.IsReady());
+  EXPECT_TRUE(future.Get().empty());
 }
 
 }  // namespace autofill

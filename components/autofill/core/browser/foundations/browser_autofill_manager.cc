@@ -1420,9 +1420,10 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase1(
   // still need to offer Autocomplete.
   // TODO(crbug.com/433224307): Consider early returning here when the cache
   // starts storing all forms and fields.
-  AutofillField* autofill_field =
-      FindMutableFormAndField(form.global_id(), field.global_id())
-          .autofill_field;
+  MutableFormAndField form_and_field =
+      FindMutableFormAndField(form.global_id(), field.global_id());
+  FormStructure* form_structure = form_and_field.form_structure;
+  AutofillField* autofill_field = form_and_field.autofill_field;
 
   auto generate_suggestions_and_maybe_show_ui_phase2 = base::BindOnce(
       &BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2,
@@ -1432,14 +1433,14 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase1(
   // `otp_manager_` may not be instantiated on all platforms. If a focused field
   // is not classified, `autofill_field` is null but the field may be filled by
   // autocomplete.
-  if (otp_manager_ && autofill_field &&
+  if (otp_manager_ && form_structure && autofill_field &&
       autofill_field->Type().GetTypes().contains(ONE_TIME_CODE)) {
     if (!client().IsContextSecure()) {
       std::move(generate_suggestions_and_maybe_show_ui_phase2).Run({});
       return;
     }
     otp_manager_->GetOtpSuggestions(
-        field.origin(),
+        *form_structure, field.origin(),
         std::move(generate_suggestions_and_maybe_show_ui_phase2));
     return;
   }

@@ -13,6 +13,8 @@
 
 namespace autofill {
 
+class FormStructure;
+
 // The OtpManager helps the BrowserAutofillManager filling OTPs into webforms.
 //
 // One instance per frame, owned by the BrowserAutofillManager.
@@ -35,7 +37,8 @@ class OtpManager {
   // an OTP arrived. That's bad for cooperative behavior. Instead the callback
   // should return immediately when no OTPs are cached but the Autofill UI
   // should be updated once OTPs arrive.
-  virtual void GetOtpSuggestions(const url::Origin& origin,
+  virtual void GetOtpSuggestions(const FormStructure& form,
+                                 const url::Origin& origin,
                                  GetOtpSuggestionsCallback callback) = 0;
 };
 

@@ -7157,7 +7157,7 @@ TEST_F(BrowserAutofillManagerOtpSuggestionsTest, OtpSuggestions) {
   // suggests that.
   const std::vector<std::string> otp_values = {"123456"};
   EXPECT_CALL(otp_manager(), GetOtpSuggestions)
-      .WillOnce(RunOnceCallback<1>(otp_values));
+      .WillOnce(RunOnceCallback<2>(otp_values));
   OnAskForValuesToFill(form, form.fields()[0]);
   EXPECT_TRUE(external_delegate()->on_suggestions_returned_seen());
 
