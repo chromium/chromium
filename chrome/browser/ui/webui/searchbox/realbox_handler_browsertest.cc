@@ -455,8 +455,12 @@ IN_PROC_BROWSER_TEST_P(RealboxHandlerTest, MatchVectorIcons) {
         // An empty resource name is effectively a blank icon.
         EXPECT_TRUE(svg_name.empty());
       } else if (is_bookmark) {
-        EXPECT_EQ("//resources/cr_components/searchbox/icons/bookmark_cr23.svg",
-                  svg_name);
+        EXPECT_EQ(
+            features::IsWebUIRoundedIconsEnabled()
+                ? "//resources/cr_components/searchbox/icons/bookmark_cr23.svg"
+                : "//resources/cr_components/searchbox/icons/"
+                  "bookmark_cr23_old.svg",
+            svg_name);
       } else {
         EXPECT_FALSE(svg_name.empty());
       }
@@ -476,11 +480,20 @@ IN_PROC_BROWSER_TEST_P(RealboxHandlerTest, AnswerVectorIcons) {
     const std::string& svg_name =
         handler_->AutocompleteIconToResourceName(vector_icon);
     if (is_bookmark) {
-      EXPECT_EQ("//resources/cr_components/searchbox/icons/bookmark_cr23.svg",
-                svg_name);
+      EXPECT_EQ(
+          features::IsWebUIRoundedIconsEnabled()
+              ? "//resources/cr_components/searchbox/icons/bookmark_cr23.svg"
+              : "//resources/cr_components/searchbox/icons/"
+                "bookmark_cr23_old.svg",
+          svg_name);
     } else {
       EXPECT_FALSE(svg_name.empty());
-      EXPECT_NE("search.svg", svg_name);
+      EXPECT_NE(
+          features::IsWebUIRoundedIconsEnabled()
+              ? "//resources/cr_components/searchbox/icons/search_cr23.svg"
+              : "//resources/cr_components/searchbox/icons/"
+                "search_cr23_old.svg",
+          svg_name);
     }
   }
 }

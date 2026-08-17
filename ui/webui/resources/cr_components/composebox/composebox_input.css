@@ -61,7 +61,7 @@
 }
 
 #aimIcon {
-  -webkit-mask-image: var(--search-spark-icon-url, url(//resources/cr_components/searchbox/icons/search_spark.svg));
+  -webkit-mask-image: var(--search-spark-icon-url, url(//resources/cr_components/searchbox/icons/search_spark_old.svg));
   -webkit-mask-position: center;
   -webkit-mask-repeat: no-repeat;
   -webkit-mask-size: cover;
@@ -338,3 +338,8 @@
   }
 }
 
+:host-context([webui-rounded-icons]) {
+  #aimIcon {
+    -webkit-mask-image: var(--search-spark-icon-url, url(//resources/cr_components/searchbox/icons/search_spark.svg));
+  }
+}

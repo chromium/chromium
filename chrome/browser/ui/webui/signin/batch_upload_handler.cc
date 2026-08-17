@@ -151,8 +151,8 @@ GURL ComputeIconUrl(const syncer::LocalDataItemModel::Icon& icon) {
   }
 
   if (std::holds_alternative<syncer::LocalDataItemModel::FolderIcon>(icon)) {
-    return GURL(features::IsRoundedIconsEnabled() ? kFolderIconUrl
-                                                  : kFolderOldIconUrl);
+    return GURL(features::IsWebUIRoundedIconsEnabled() ? kFolderIconUrl
+                                                       : kFolderOldIconUrl);
   }
 
   NOTREACHED() << "Unsupported icon type, index: " << icon.index();
