@@ -20,8 +20,8 @@ class IOSChromeScopedTestingVariationsService {
 
   variations::VariationsService* Get();
 
-  std::unique_ptr<metrics::MetricsStateManager> metrics_state_manager_;
   std::unique_ptr<metrics::TestEnabledStateProvider> enabled_state_provider_;
+  std::unique_ptr<metrics::MetricsStateManager> metrics_state_manager_;
   std::unique_ptr<variations::VariationsService> variations_service_;
   std::unique_ptr<variations::SyntheticTrialRegistry> synthetic_trial_registry_;
 };

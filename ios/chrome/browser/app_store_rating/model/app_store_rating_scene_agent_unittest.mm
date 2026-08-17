@@ -116,8 +116,8 @@ class ScopedVariationsService {
     variations_service_->OverrideStoredPermanentCountry("us");
   }
 
-  std::unique_ptr<metrics::MetricsStateManager> metrics_state_manager_;
   std::unique_ptr<metrics::TestEnabledStateProvider> enabled_state_provider_;
+  std::unique_ptr<metrics::MetricsStateManager> metrics_state_manager_;
   std::unique_ptr<variations::VariationsService> variations_service_;
 };
 
