@@ -297,6 +297,13 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
   feature_overrides.EnableFeature(features::kGlicRollout);
   feature_overrides.EnableFeature(glic::kContextualCueing);
 
+  // As of writing, the only devices that can make use of browsing history
+  // donation are desktop devices.
+  // TODO(crbug.com/546011402): Remove this heuristic once we can detect
+  // whether the data consumer will actually use the data.
+  feature_overrides.EnableFeature(
+      chrome::android::kAuxiliarySearchHistoryDonation);
+
 #endif  // BUILDFLAG(IS_DESKTOP_ANDROID)
   // Desktop-first features which are past incubation should either end up here,
   // or to a finch trial that enables it for all form factors.
