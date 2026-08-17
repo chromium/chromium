@@ -608,6 +608,16 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
     guest_otr_active_services.insert("UniversalOptOutService");
   }
 
+  // On ChromeOS, Guest session startup navigates to chrome://newtab (a WebUI)
+  // by default, whereas Desktop CreateGuestBrowser() navigates to about:blank.
+  // Loading a WebUI initializes the embedded WebUI toolbar
+  // (WebUIToolbarWebView), which opts into V2 resource loading and
+  // instantiates ThemeColorsSourceManager for the Guest OTR profile.
+  if (base::FeatureList::IsEnabled(
+          features::kWebUIInProcessResourceLoadingV2)) {
+    guest_otr_active_services.insert("ThemeColorsSourceManager");
+  }
+
 #if BUILDFLAG(IS_CHROMEOS)
   EXPECT_TRUE(user_manager::UserManager::Get()->IsLoggedInAsGuest());
   // ChromeOS Guest mode starts with the guest otr profile.
