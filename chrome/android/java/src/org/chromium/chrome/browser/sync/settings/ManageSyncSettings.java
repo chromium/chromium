@@ -27,6 +27,7 @@ import androidx.preference.Preference;
 
 import org.chromium.base.CallbackController;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
@@ -63,6 +64,8 @@ import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.components.regional_capabilities.RegionalCapabilitiesService;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
+import org.chromium.components.signin.SigninFeatureMap;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
@@ -447,6 +450,10 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                     requireContext(),
                     profile,
                     ((ModalDialogManagerHolder) getActivity()).getModalDialogManager());
+            if (DeviceInfo.isDesktop()
+                    && SigninFeatureMap.isEnabled(SigninFeatures.SIGN_OUT_OF_CHROME)) {
+                mSignOutPreference.setTitle(R.string.manage_sync_settings_sign_out_of_chrome);
+            }
         }
         mSignOutPreference.setSnackbarManagerSupplier(assumeNonNull(mSnackbarManagerSupplier));
     }

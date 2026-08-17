@@ -825,6 +825,10 @@ BASE_DECLARE_FEATURE(kSigninWindows10DepreciationStateBypassForTesting);
 COMPONENT_EXPORT(SIGNIN_SWITCHES) bool IsSigninWindows10DepreciationState();
 
 #if BUILDFLAG(IS_ANDROID)
+// Feature to show "Sign out of Chrome" string to android desktop users.
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kSignOutOfChrome);
+
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kSkipCheckForAccountManagementOnSignin);
 #endif  // BUILDFLAG(IS_ANDROID)

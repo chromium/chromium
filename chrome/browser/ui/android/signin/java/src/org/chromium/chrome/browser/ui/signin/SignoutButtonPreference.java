@@ -57,6 +57,9 @@ public class SignoutButtonPreference extends Preference implements ContainmentIt
         super.onBindViewHolder(holder);
 
         ButtonCompat button = (ButtonCompat) holder.findViewById(R.id.sign_out_button);
+        if (getTitle() != null) {
+            button.setText(getTitle());
+        }
         button.setOnClickListener(
                 (View v) -> {
                     assert !mProfile.isChild();

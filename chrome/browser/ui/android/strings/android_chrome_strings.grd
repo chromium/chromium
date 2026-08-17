@@ -2172,6 +2172,9 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_ACCOUNT_MANAGEMENT_SIGN_OUT" desc="Button text for signing out of Chrome">
         Sign out of Chrome
       </message>
+      <message name="IDS_MANAGE_SYNC_SETTINGS_SIGN_OUT_OF_CHROME" desc="Button text for signing out of Chrome on the manage sync settings screen">
+        Sign out of Chrome
+      </message>
 
       <!-- Child accounts -->
       <message name="IDS_ACCOUNT_MANAGEMENT_HEADER_NO_PARENTAL_DATA" desc="String saying that child should go to parent for help for child account.">
