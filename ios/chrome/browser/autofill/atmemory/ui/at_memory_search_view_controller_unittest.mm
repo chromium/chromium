@@ -8,6 +8,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/integrators/at_memory/memory_search_result.h"
 #import "ios/chrome/browser/autofill/atmemory/public/at_memory_constants.h"
+#import "ios/chrome/browser/autofill/atmemory/ui/at_memory_inline_notice_view.h"
 #import "ios/chrome/browser/autofill/atmemory/ui/at_memory_search_item.h"
 #import "ios/chrome/browser/autofill/atmemory/ui/at_memory_search_mutator.h"
 #import "ios/chrome/browser/shared/ui/table_view/content_configuration/table_view_cell_content_configuration.h"
@@ -133,11 +134,11 @@ TEST_F(AtMemorySearchViewControllerTest, TestSearchState) {
   UITableViewCell* cell = [view_controller_.tableView.dataSource
                   tableView:view_controller_.tableView
       cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
-  ASSERT_NE(cell, nil);
   EXPECT_TRUE(cell.userInteractionEnabled);
 
   TableViewCellContentConfiguration* configuration =
-      (TableViewCellContentConfiguration*)cell.contentConfiguration;
+      base::apple::ObjCCastStrict<TableViewCellContentConfiguration>(
+          cell.contentConfiguration);
   EXPECT_NSEQ(configuration.title, search_controller.searchBar.text);
 }
 
@@ -156,8 +157,71 @@ TEST_F(AtMemorySearchViewControllerTest, TestFetchingState) {
   UITableViewCell* cell = [view_controller_.tableView.dataSource
                   tableView:view_controller_.tableView
       cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
-  ASSERT_NE(cell, nil);
   EXPECT_FALSE(cell.userInteractionEnabled);
+}
+
+// Tests that the table view displays the notice cell when notice is visible
+// in the initial state.
+TEST_F(AtMemorySearchViewControllerTest, TestNoticeVisibleInInitialState) {
+  [view_controller_ setNoticeVisible:YES];
+
+  EXPECT_EQ(view_controller_.tableView.numberOfSections, 1);
+  EXPECT_EQ([view_controller_.tableView numberOfRowsInSection:0], 1);
+
+  UITableViewCell* cell = [view_controller_.tableView.dataSource
+                  tableView:view_controller_.tableView
+      cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
+  EXPECT_EQ(cell.selectionStyle, UITableViewCellSelectionStyleNone);
+
+  AtMemoryInlineNoticeConfiguration* config =
+      base::apple::ObjCCastStrict<AtMemoryInlineNoticeConfiguration>(
+          cell.contentConfiguration);
+  EXPECT_EQ((id)config.delegate, (id)view_controller_);
+}
+
+// Tests that toggling notice visibility dynamically updates the table view
+// sections and rows.
+TEST_F(AtMemorySearchViewControllerTest, TestNoticeToggleVisibility) {
+  [view_controller_ setNoticeVisible:NO];
+  EXPECT_EQ(view_controller_.tableView.numberOfSections, 0);
+
+  [view_controller_ setNoticeVisible:YES];
+  EXPECT_EQ(view_controller_.tableView.numberOfSections, 1);
+  EXPECT_EQ([view_controller_.tableView numberOfRowsInSection:0], 1);
+
+  [view_controller_ setNoticeVisible:NO];
+  EXPECT_EQ(view_controller_.tableView.numberOfSections, 0);
+
+  [view_controller_ setNoticeVisible:NO];
+  EXPECT_EQ(view_controller_.tableView.numberOfSections, 0);
+}
+
+// Tests that tapping the OK button on the notice informs the mutator to
+// acknowledge the privacy notice.
+TEST_F(AtMemorySearchViewControllerTest, TestNoticeOKTappedNotifiesMutator) {
+  id mock_mutator = OCMProtocolMock(@protocol(AtMemorySearchMutator));
+  view_controller_.mutator = mock_mutator;
+
+  OCMExpect([mock_mutator acknowledgePrivacyNotice]);
+
+  [(id<AtMemoryInlineNoticeViewDelegate>)view_controller_
+      inlineNoticeViewDidTapOK:nil];
+
+  EXPECT_OCMOCK_VERIFY(mock_mutator);
+}
+
+// Tests that tapping the Settings link on the notice informs the mutator.
+TEST_F(AtMemorySearchViewControllerTest,
+       TestNoticeSettingsTappedNotifiesMutator) {
+  id mock_mutator = OCMProtocolMock(@protocol(AtMemorySearchMutator));
+  view_controller_.mutator = mock_mutator;
+
+  OCMExpect([mock_mutator didTapSettingsLink]);
+
+  [(id<AtMemoryInlineNoticeViewDelegate>)view_controller_
+      inlineNoticeViewDidTapSettings:nil];
+
+  EXPECT_OCMOCK_VERIFY(mock_mutator);
 }
 
 // Parameters for AtMemorySearchViewControllerErrorTest.
@@ -186,7 +250,6 @@ TEST_P(AtMemorySearchViewControllerErrorTest, TestErrorState) {
   UITableViewCell* cell = [view_controller_.tableView.dataSource
                   tableView:view_controller_.tableView
       cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
-  ASSERT_NE(cell, nil);
   EXPECT_EQ(cell.contentView.alpha, param.expected_alpha);
   EXPECT_EQ(cell.userInteractionEnabled,
             param.expected_user_interaction_enabled);
