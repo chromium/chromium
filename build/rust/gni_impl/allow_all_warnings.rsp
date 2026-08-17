@@ -8,6 +8,7 @@
 -Aconflicting_repr_hints
 -Adangerous_implicit_autorefs
 -Adefault_overrides_default_fields
+-Adeprecated
 -Adeprecated_in_future
 -Adeprecated_safe_2024
 -Aderef_into_dyn_supertrait

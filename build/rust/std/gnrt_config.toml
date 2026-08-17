@@ -106,6 +106,8 @@ extra_input_roots = [
   '../../backtrace/src',
   '../../core/**/*.md',
   '../../core/src/primitive_docs.rs',
+  '../../core/src/attribute_docs.rs',
+  '../../core/src/keyword_docs.rs',
   '../../portable-simd/crates/core_simd/src/core_simd_docs.md',
   '../../portable-simd/crates/std_float/src',
   '../../stdarch/crates/core_arch/src/core_arch_docs.md',

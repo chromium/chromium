@@ -40,12 +40,11 @@ import zlib
 # These fields are written by //tools/clang/scripts/upload_revision.py, and
 # should not be changed manually.
 # They are also read by build/config/compiler/BUILD.gn.
-CLANG_REVISION = 'llvmorg-23-init-19482-g53d18800'
-CLANG_SUB_REVISION = 22
+CLANG_REVISION = 'llvmorg-24-init-3796-g20e97c4b'
+CLANG_SUB_REVISION = 2
 
 PACKAGE_VERSION = '%s-%s' % (CLANG_REVISION, CLANG_SUB_REVISION)
-# TODO(crbug.com/534655507): Bump to 24 in next Clang roll.
-RELEASE_VERSION = '23'
+RELEASE_VERSION = '24'
 
 CDS_URL = os.environ.get(
   'CDS_CLANG_BUCKET_OVERRIDE',
@@ -419,11 +418,6 @@ def main():
     'local development.',
   )
   args = parser.parse_args()
-
-  # TODO(crbug.com/534655507): Remove in next Clang roll.
-  if args.llvm_force_head_revision:
-    global RELEASE_VERSION
-    RELEASE_VERSION = '24'
 
   if args.print_clang_version:
     print(RELEASE_VERSION)

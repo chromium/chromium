@@ -990,11 +990,6 @@ def main():
     STAMP_FILE, \
     FORCE_HEAD_REVISION_FILE
 
-  # TODO(crbug.com/534655507): Remove in next Clang roll.
-  if args.llvm_force_head_revision:
-    global RELEASE_VERSION
-    RELEASE_VERSION = '24'
-
   if (args.pgo or args.thinlto) and not args.bootstrap:
     print('--pgo/--thinlto requires --bootstrap')
     return 1
