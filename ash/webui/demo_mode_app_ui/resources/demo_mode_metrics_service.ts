@@ -118,11 +118,14 @@ export enum PillarButton {
  * These values are persisted to logs, so entries should not be renumbered and
  * numeric values should never be reused.
  */
+// LINT.IfChange(DemoModeHighlightsError)
 enum DemoModeHighlightsError {
   ATTRACTION_LOOP_TIMESTAMP_INVALID = 0,
   PAGE_VIEW_DURATION_INVALID = 1,
   DETAILS_PAGE_VIEW_DURATION_INVALID = 2,
+  COUNT = DETAILS_PAGE_VIEW_DURATION_INVALID + 1,
 }
+// LINT.ThenChange(//tools/metrics/histograms/metadata/ash/enums.xml:DemoModeHighlightsError)
 
 /**
  * A map between the Page in this js file and DemoModeHighlightsAction enum in
@@ -190,7 +193,7 @@ class DemoMetricsService {
       chrome.metricsPrivateIndividualApis.recordEnumerationValue(
           'DemoMode.Highlights.FirstInteraction',
           FirstInteractionActionMap.get(action)!,
-          FirstInteractionActionMap.get('MAX_VALUE')!);
+          FirstInteractionActionMap.get('MAX_VALUE')! + 1);
       this.firstInteractionRecorded = true;
     }
   }
@@ -261,9 +264,8 @@ class DemoMetricsService {
    * Record error in highlight app.
    */
   private recordError_(error: DemoModeHighlightsError) {
-    const maxValue = Object.keys(DemoModeHighlightsError).length;
     chrome.metricsPrivateIndividualApis.recordEnumerationValue(
-        'DemoMode.Highlights.Error', error, maxValue);
+        'DemoMode.Highlights.Error', error, DemoModeHighlightsError.COUNT);
   }
 }
 

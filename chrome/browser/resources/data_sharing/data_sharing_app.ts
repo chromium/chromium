@@ -70,8 +70,9 @@ enum DataSharingIntentType {
   OPEN_LEARN_MORE_URL = 12,
   ACCEPT_JOIN_AND_OPEN = 13,
   ABANDON_JOIN = 14,
+  COUNT = ABANDON_JOIN + 1,
 }
-// LINT.ThenChange(tools/metrics/histograms/metadata/data_sharing/enums.xml:DataSharingIntentType)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/data_sharing/enums.xml:DataSharingIntentType)
 
 enum ProgressType {
   UNKNOWN = 'Unknown',
@@ -399,7 +400,7 @@ export class DataSharingApp extends CustomElement implements Logger {
         'DataSharing.Intent.' + this.getProgressType(event.progress);
     chrome.metricsPrivate.recordEnumerationValue(
         intentMetricName, this.getDataSharingIntentType(event.intentType),
-        Object.keys(DataSharingIntentType).length);
+        DataSharingIntentType.COUNT);
 
     if (event.intentType === LoggingIntent.ABANDON_JOIN) {
       this.abandonJoin_ = true;

@@ -1590,17 +1590,27 @@ Unknown properties are collapsed to zero. -->
   <int value="200" label="2.0"/>
 </enum>
 
+<!-- LINT.IfChange(CrosSelectToSpeakStartSpeechMethod) -->
+
 <enum name="CrosSelectToSpeakStartSpeechMethod">
   <int value="0" label="Hold Search and click or drag"/>
   <int value="1" label="Search + S to read selection"/>
   <int value="2" label="Context menu option to read selection"/>
 </enum>
 
+<!-- LINT.ThenChange(//chrome/browser/resources/chromeos/accessibility/select_to_speak/metrics_utils.ts:StartSpeechMethod) -->
+
+<!-- LINT.IfChange(CrosSelectToSpeakStateChangeEvent) -->
+
 <enum name="CrosSelectToSpeakStateChangeEvent">
   <int value="0" label="Start selection"/>
   <int value="1" label="Cancel speech"/>
   <int value="2" label="Cancel selection"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/resources/chromeos/accessibility/select_to_speak/metrics_utils.ts:StateChangeEvent) -->
+
+<!-- LINT.IfChange(CrosSelectToSpeakTtsEngineUsed) -->
 
 <enum name="CrosSelectToSpeakTtsEngineUsed">
   <int value="0" label="Unknown"/>
@@ -1609,6 +1619,10 @@ Unknown properties are collapsed to zero. -->
   <int value="3" label="Google local TTS"/>
   <int value="4" label="Google network TTS"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/resources/chromeos/accessibility/select_to_speak/metrics_utils.ts:TtsEngineUsed) -->
+
+<!-- LINT.IfChange(CrosSwitchAccessError) -->
 
 <enum name="CrosSwitchAccessError">
   <int value="0" label="Unknown"/>
@@ -1627,7 +1641,11 @@ Unknown properties are collapsed to zero. -->
   <int value="13" label="Next invalid"/>
   <int value="14" label="Previous invalid"/>
   <int value="15" label="Invalid selection bounds"/>
+  <int value="16" label="Uninitialized"/>
+  <int value="17" label="Duplicate initialization"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/resources/chromeos/accessibility/switch_access/switch_access_constants.ts:ErrorType) -->
 
 <!-- LINT.IfChange(DependencyParserModelState) -->
 

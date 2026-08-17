@@ -23,6 +23,7 @@ export enum ActionResponse {
  * These values are persisted to logs and should not be renumbered or reused.
  * See tools/metrics/histograms/enums.xml.
  */
+// LINT.IfChange(ErrorType)
 export enum ErrorType {
   UNKNOWN = 0,
   PREFERENCE_TYPE = 1,
@@ -42,7 +43,9 @@ export enum ErrorType {
   INVALID_SELECTION_BOUNDS = 15,
   UNINITIALIZED = 16,
   DUPLICATE_INITIALIZATION = 17,
+  COUNT = DUPLICATE_INITIALIZATION + 1,
 }
+// LINT.ThenChange(//tools/metrics/histograms/metadata/accessibility/enums.xml:CrosSwitchAccessError)
 
 /** The different types of menus and sub-menus that can be shown. */
 export enum MenuType {

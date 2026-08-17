@@ -46,7 +46,7 @@ chromium-metrics-reviews@google.com.
   <int value="14" label="Abandoned join"/>
 </enum>
 
-<!-- LINT.ThenChange(chrome/browser/resources/data_sharing/data_sharing_app.ts:DataSharingIntentType) -->
+<!-- LINT.ThenChange(//chrome/browser/resources/data_sharing/data_sharing_app.ts:DataSharingIntentType) -->
 
 <enum name="DataSharingUserAction">
   <int value="0" label="Share link in share flow"/>

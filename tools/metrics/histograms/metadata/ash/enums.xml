@@ -675,11 +675,15 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="15" label="Google Built-in button click"/>
 </enum>
 
+<!-- LINT.IfChange(DemoModeHighlightsError) -->
+
 <enum name="DemoModeHighlightsError">
   <int value="0" label="Attract loop break timestamp is invalid"/>
   <int value="1" label="Page view duration is invalid"/>
   <int value="2" label="Details page view duration is invalid"/>
 </enum>
+
+<!-- LINT.ThenChange(//ash/webui/demo_mode_app_ui/resources/demo_mode_metrics_service.ts:DemoModeHighlightsError) -->
 
 <enum name="DemoModeIdleLogoutWarningEvent">
   <int value="0" label="Shown"/>

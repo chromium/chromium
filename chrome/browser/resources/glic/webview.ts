@@ -33,6 +33,7 @@ enum WebviewExitReason {
   FAILED_TO_LAUNCH = 6,
   INTEGRITY_FAILURE = 7,
   UNKNOWN = 8,
+  COUNT = UNKNOWN + 1,
 }
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicWebviewExitReason)
 
@@ -457,7 +458,7 @@ export class WebviewController {
     chrome.histograms.recordEnumerationValue(
         'Glic.Session.WebClientCrash.ExitReason',
         webviewExitReasonStringToEnum(event.reason),
-        Object.keys(WEBVIEW_EXIT_REASON_MAP).length);
+        WebviewExitReason.COUNT);
     if (event.reason !== 'normal') {
       this.destroyHost(WebClientState.ERROR);
       chrome.histograms.recordUserAction('GlicSessionWebClientCrash');
