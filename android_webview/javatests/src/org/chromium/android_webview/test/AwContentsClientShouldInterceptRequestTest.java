@@ -36,7 +36,10 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import android.os.Build;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.MaxAndroidSdkLevel;
+import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.TestFileUtil;
 import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
@@ -1987,6 +1990,8 @@ public class AwContentsClientShouldInterceptRequestTest extends AwParameterizedT
 
     @Test
     @MediumTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.S)
+    @MaxAndroidSdkLevel(Build.VERSION_CODES.S_V2)
     @Feature({"AndroidWebView", "Network"})
     public void testInterceptRequestAllowsThreadBlocking() throws Throwable {
         // This test asserts that WebView is resilient against blocking operations on the thread
