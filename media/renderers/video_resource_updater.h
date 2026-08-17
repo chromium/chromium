@@ -143,11 +143,13 @@ class MEDIA_EXPORT VideoResourceUpdater
                                            viz::SharedImageFormat si_format,
                                            const gfx::ColorSpace& color_space,
                                            SkAlphaType alpha_type,
+                                           bool is_overlay_candidate,
                                            VideoFrame::ID unique_id);
   FrameResource* AllocateResource(const gfx::Size& size,
                                   viz::SharedImageFormat format,
                                   const gfx::ColorSpace& color_space,
-                                  SkAlphaType alpha_type);
+                                  SkAlphaType alpha_type,
+                                  bool is_overlay_candidate);
 
   // Create a copy of a texture-backed source video frame in a new GL_TEXTURE_2D
   // texture. This is used when there are multiple GPU threads (Android WebView)

@@ -404,25 +404,17 @@ class VideoResourceUpdater::FrameResource {
                 viz::SharedImageFormat format,
                 const gfx::ColorSpace& color_space,
                 SkAlphaType alpha_type,
-                bool use_gpu_memory_buffer_resources,
+                bool is_overlay_candidate,
                 gpu::SharedImageInterface* shared_image_interface)
       : id_(frame_resource_id), is_software_(false) {
     DCHECK(shared_image_interface);
-    // TODO(crbug.com/40239769): Set `overlay_candidate` for multiplanar
-    // formats.
-    const bool overlay_candidate = format.is_single_plane() &&
-                                   use_gpu_memory_buffer_resources &&
-                                   shared_image_interface->GetCapabilities()
-                                       .supports_scanout_shared_images &&
-                                   CanCreateNativeBufferForFormat(format);
-
     // These SharedImages will be sent over to the display compositor as
     // TransferableResources. RasterInterface which in turn uses RasterDecoder
     // writes the contents of video frames into SharedImages.
     gpu::SharedImageUsageSet shared_image_usage =
         gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
         gpu::SHARED_IMAGE_USAGE_RASTER_WRITE;
-    if (overlay_candidate) {
+    if (is_overlay_candidate) {
       shared_image_usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
     }
     shared_image_ = shared_image_interface->CreateSharedImage(
@@ -692,6 +684,7 @@ VideoResourceUpdater::RecycleOrAllocateResource(
     viz::SharedImageFormat si_format,
     const gfx::ColorSpace& color_space,
     SkAlphaType alpha_type,
+    bool is_overlay_candidate,
     VideoFrame::ID unique_id) {
   FrameResource* recyclable_resource = nullptr;
   for (auto& resource : all_resources_) {
@@ -721,14 +714,16 @@ VideoResourceUpdater::RecycleOrAllocateResource(
   }
 
   // There was nothing available to reuse or recycle. Allocate a new resource.
-  return AllocateResource(resource_size, si_format, color_space, alpha_type);
+  return AllocateResource(resource_size, si_format, color_space, alpha_type,
+                          is_overlay_candidate);
 }
 
 VideoResourceUpdater::FrameResource* VideoResourceUpdater::AllocateResource(
     const gfx::Size& size,
     viz::SharedImageFormat format,
     const gfx::ColorSpace& color_space,
-    SkAlphaType alpha_type) {
+    SkAlphaType alpha_type,
+    bool is_overlay_candidate) {
   const uint32_t resource_id = next_plane_resource_id_++;
 
   if (software_compositor()) {
@@ -739,8 +734,7 @@ VideoResourceUpdater::FrameResource* VideoResourceUpdater::AllocateResource(
   } else {
     all_resources_.push_back(std::make_unique<FrameResource>(
         resource_id, size, format, color_space, alpha_type,
-        use_gpu_memory_buffer_resources_,
-        context_provider_->SharedImageInterface()));
+        is_overlay_candidate, context_provider_->SharedImageInterface()));
   }
   return all_resources_.back().get();
 }
@@ -764,7 +758,7 @@ VideoFrameExternalResource VideoResourceUpdater::CopyHardwareResource(
   const VideoFrame::ID no_unique_id;  // Do not recycle referenced textures.
   FrameResource* hardware_resource = RecycleOrAllocateResource(
       output_resource_size, copy_si_format, copy_color_space, copy_alpha_type,
-      no_unique_id);
+      /*is_overlay_candidate=*/false, no_unique_id);
   CHECK(!hardware_resource->is_software());
   hardware_resource->add_ref();
 
@@ -790,13 +784,10 @@ VideoFrameExternalResource VideoResourceUpdater::CopyHardwareResource(
   hardware_resource->UpdateSyncToken(sync_token);
   gpu::RasterScopedAccess::EndAccess(std::move(dst_ri_access));
 
-  viz::TransferableResource::MetadataOverride overrides = {
-      .is_overlay_candidate = false,
-  };
   auto transferable_resource = viz::TransferableResource::Make(
       hardware_resource->shared_image(),
       viz::TransferableResource::ResourceSource::kVideo,
-      hardware_resource->sync_token(), overrides);
+      hardware_resource->sync_token());
 
   transferable_resource.hdr_metadata = video_frame->hdr_metadata();
   transferable_resource.needs_detiling = video_frame->metadata().needs_detiling;
@@ -1188,10 +1179,16 @@ VideoFrameExternalResource VideoResourceUpdater::CreateForSoftwareFrame(
   gfx::ColorSpace output_color_space = video_frame->ColorSpace();
   SkAlphaType output_alpha_type =
       software_compositor() ? kPremul_SkAlphaType : kUnpremul_SkAlphaType;
-  if (!software_compositor() && use_gpu_memory_buffer_resources_ &&
+  // Only set overlay candidate for single planar frames, since multiplanar
+  // frames that are triplanar are not supported.
+  const bool is_overlay_candidate =
+      !software_compositor() && output_si_format.is_single_plane() &&
+      CanCreateNativeBufferForFormat(output_si_format) &&
+      use_gpu_memory_buffer_resources_ &&
       context_provider_->SharedImageInterface()
           ->GetCapabilities()
-          .supports_scanout_shared_images) {
+          .supports_scanout_shared_images;
+  if (is_overlay_candidate) {
     // Overlays can only work with Premul alpha types.
     output_alpha_type = kPremul_SkAlphaType;
   }
@@ -1242,7 +1239,7 @@ VideoFrameExternalResource VideoResourceUpdater::CreateForSoftwareFrame(
   // to create a single multiplanar resource.
   FrameResource* frame_resource = RecycleOrAllocateResource(
       output_resource_size, output_si_format, output_color_space,
-      output_alpha_type, video_frame->unique_id());
+      output_alpha_type, is_overlay_candidate, video_frame->unique_id());
   frame_resource->add_ref();
 
   // The formats must match.
