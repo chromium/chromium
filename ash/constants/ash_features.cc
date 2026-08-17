@@ -1800,10 +1800,6 @@ BASE_FEATURE(kTrafficCountersForWiFiTesting, base::FEATURE_DISABLED_BY_DEFAULT);
 // Enables trilinear filtering.
 BASE_FEATURE(kTrilinearFiltering, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables the Device Trust connector client code on unmanaged devices
-BASE_FEATURE(kUnmanagedDeviceDeviceTrustConnectorEnabled,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Use the Android staging SM-DS server when fetching pending eSIM profiles.
 BASE_FEATURE(kUseAndroidStagingSmds, base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -3199,11 +3195,6 @@ bool IsTrilinearFilteringEnabled() {
   static bool use_trilinear_filtering =
       base::FeatureList::IsEnabled(kTrilinearFiltering);
   return use_trilinear_filtering;
-}
-
-bool IsUnmanagedDeviceDeviceTrustConnectorFeatureEnabled() {
-  return base::FeatureList::IsEnabled(
-      kUnmanagedDeviceDeviceTrustConnectorEnabled);
 }
 
 bool ShouldUseAndroidStagingSmds() {

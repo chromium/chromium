@@ -39,7 +39,6 @@
 #endif  // #if BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "ash/constants/ash_features.h"
 #include "chrome/browser/ash/attestation/mock_tpm_challenge_key.h"
 #include "chrome/browser/ash/attestation/tpm_challenge_key.h"
 #include "chrome/browser/ash/attestation/tpm_challenge_key_result.h"
@@ -232,19 +231,14 @@ class DeviceTrustDelayedManagementBrowserTest
       : DeviceTrustBrowserTest(GetParam()) {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/
-        {
-            kDTCKeyUploadedBySharedAPIEnabled,
-#if BUILDFLAG(IS_CHROMEOS)
-            ash::features::kUnmanagedDeviceDeviceTrustConnectorEnabled
-#endif  // BUILDFLAG(IS_CHROMEOS)
-        },
+        {kDTCKeyUploadedBySharedAPIEnabled},
         /*disabled_features=*/{});
   }
 };
 
 // Tests that the device trust navigation throttle does not get created when
 // there is no user management and later gets created when user management is
-// added to the same context, unless the feature flag is disabled.
+// added to the same context.
 IN_PROC_BROWSER_TEST_P(DeviceTrustDelayedManagementBrowserTest,
                        ManagementAddedAfterFirstCreationTry) {
   content::MockNavigationHandle mock_nav_handle(web_contents());
@@ -800,12 +794,11 @@ INSTANTIATE_TEST_SUITE_P(
 class DeviceTrustBrowserTestForUnmanagedDevices
     : public DeviceTrustBrowserTest,
       public testing::WithParamInterface<
-          /* 3 boolean variables that define the flow on unmanaged devices
+          /* 2 boolean variables that define the flow on unmanaged devices
           (crOS):
           - if the user is managed
-          - if user-level inline flow is enabled
-          - if UnmanagedDeviceDeviceTrustConnectorEnabled feature is enabled*/
-          testing::tuple<bool, bool, bool>> {
+          - if user-level inline flow is enabled */
+          testing::tuple<bool, bool>> {
  protected:
   DeviceTrustBrowserTestForUnmanagedDevices()
       : DeviceTrustBrowserTest(DeviceTrustConnectorState({
@@ -814,25 +807,17 @@ class DeviceTrustBrowserTestForUnmanagedDevices
                 .is_managed = testing::get<0>(GetParam()),
                 .is_inline_policy_enabled = testing::get<1>(GetParam()),
             }),
-        })) {
-    scoped_feature_list_.InitWithFeatureState(
-        ash::features::kUnmanagedDeviceDeviceTrustConnectorEnabled,
-        is_unmanaged_device_feature_enabled());
-  }
+        })) {}
 
   bool is_user_managed() { return testing::get<0>(GetParam()); }
   bool is_user_inline_flow_enabled() { return testing::get<1>(GetParam()); }
-  bool is_unmanaged_device_feature_enabled() {
-    return testing::get<2>(GetParam());
-  }
 };
 
 IN_PROC_BROWSER_TEST_P(DeviceTrustBrowserTestForUnmanagedDevices,
                        AttestationFullFlow) {
   TriggerUrlNavigation();
 
-  if (!is_unmanaged_device_feature_enabled() || !is_user_managed() ||
-      !is_user_inline_flow_enabled()) {
+  if (!is_user_managed() || !is_user_inline_flow_enabled()) {
     VerifyNoInlineFlowOccurred();
     return;
   }
@@ -840,28 +825,17 @@ IN_PROC_BROWSER_TEST_P(DeviceTrustBrowserTestForUnmanagedDevices,
   VerifyAttestationFlowSuccessful();
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    ManagedUser,
-    DeviceTrustBrowserTestForUnmanagedDevices,
-    testing::Combine(
-        /*is_user_managed=*/testing::Values(true),
-        /*is_user_inline_flow_enabled=*/testing::Bool(),
-        /*is_unmanaged_device_feature_enabled=*/testing::Values(true)));
+INSTANTIATE_TEST_SUITE_P(ManagedUser,
+                         DeviceTrustBrowserTestForUnmanagedDevices,
+                         testing::Combine(
+                             /*is_user_managed=*/testing::Values(true),
+                             /*is_user_inline_flow_enabled=*/testing::Bool()));
 INSTANTIATE_TEST_SUITE_P(
     UnmanagedUser,
     DeviceTrustBrowserTestForUnmanagedDevices,
     testing::Combine(
         /*is_user_managed=*/testing::Values(false),
-        /*is_user_inline_flow_enabled=*/testing::Values(false),
-        /*is_unmanaged_device_feature_enabled=*/testing::Values(true)));
-
-INSTANTIATE_TEST_SUITE_P(
-    FeatureFlag,
-    DeviceTrustBrowserTestForUnmanagedDevices,
-    testing::Combine(
-        /*is_user_managed=*/testing::Values(true),
-        /*is_user_inline_flow_enabled=*/testing::Values(true),
-        /*is_unmanaged_device_feature_enabled=*/testing::Values(true)));
+        /*is_user_inline_flow_enabled=*/testing::Values(false)));
 
 class DeviceTrustBrowserTestSignalsContractForUnmanagedDevices
     : public DeviceTrustBrowserTest {
@@ -873,10 +847,7 @@ class DeviceTrustBrowserTestSignalsContractForUnmanagedDevices
                 .is_managed = true,
                 .is_inline_policy_enabled = true,
             }),
-        })) {
-    scoped_feature_list_.InitWithFeatureState(
-        ash::features::kUnmanagedDeviceDeviceTrustConnectorEnabled, true);
-  }
+        })) {}
 };
 
 // Tests that signal values respect the expected format and is filled-out

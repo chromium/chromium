@@ -4,8 +4,6 @@
 
 #include "components/device_signals/core/browser/ash/user_permission_service_ash.h"
 
-#include "ash/constants/ash_features.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/device_signals/core/browser/mock_user_delegate.h"
 #include "components/device_signals/core/browser/pref_names.h"
@@ -44,9 +42,7 @@ class TestManagementService : public policy::ManagementService {
 
 class UserPermissionServiceAshTest : public testing::Test {
  protected:
-  explicit UserPermissionServiceAshTest(
-      bool feature_unmanaged_device_enabled = true)
-      : feature_unmanaged_device_enabled_(feature_unmanaged_device_enabled) {
+  UserPermissionServiceAshTest() {
     RegisterProfilePrefs(test_prefs_.registry());
 
     auto mock_user_delegate =
@@ -55,12 +51,6 @@ class UserPermissionServiceAshTest : public testing::Test {
 
     permission_service_ = std::make_unique<UserPermissionServiceAsh>(
         &management_service_, std::move(mock_user_delegate), &test_prefs_);
-  }
-
-  void SetUp() override {
-    feature_list_.InitWithFeatureState(
-        ash::features::kUnmanagedDeviceDeviceTrustConnectorEnabled,
-        feature_unmanaged_device_enabled_);
   }
 
   void SetDeviceAsCloudManaged(bool is_managed = true) {
@@ -101,11 +91,8 @@ class UserPermissionServiceAshTest : public testing::Test {
   raw_ptr<testing::StrictMock<MockUserDelegate>, DanglingUntriaged>
       mock_user_delegate_;
   TestingPrefServiceSimple test_prefs_;
-  base::test::ScopedFeatureList feature_list_;
 
   std::unique_ptr<UserPermissionServiceAsh> permission_service_;
-
-  const bool feature_unmanaged_device_enabled_;
 };
 
 // Tests that ShouldCollectConsent should always return false on CrOS, as the
@@ -182,28 +169,5 @@ TEST_F(UserPermissionServiceAshTest,
   EXPECT_EQ(permission_service_->CanCollectReportSignals(),
             UserPermission::kUnsupported);
 }
-
-class UserPermissionServiceAshFlagTest
-    : public UserPermissionServiceAshTest,
-      public ::testing::WithParamInterface<bool> {
- protected:
-  UserPermissionServiceAshFlagTest()
-      : UserPermissionServiceAshTest(GetParam()) {}
-};
-
-TEST_P(UserPermissionServiceAshFlagTest, CanCollectSignals_UnmanagedDevice) {
-  SetDeviceAsCloudManaged(/*is_managed=*/false);
-  SetUserAsCloudManaged();
-
-  EXPECT_EQ(
-      permission_service_->CanCollectSignals(),
-      GetParam() ? UserPermission::kGranted : UserPermission::kUnsupported);
-  EXPECT_EQ(permission_service_->CanCollectReportSignals(),
-            UserPermission::kUnsupported);
-}
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         UserPermissionServiceAshFlagTest,
-                         testing::Bool());
 
 }  // namespace device_signals
