@@ -8,6 +8,17 @@ found in the LICENSE file.
 
 <histograms>
 
+<histogram name="VoiceTyping.FirstRunExitStatus"
+    enum="DictationFirstRunExitStatus" expires_after="2027-06-01">
+  <owner>amyasinghal@google.com</owner>
+  <owner>src/chrome/browser/dictation/OWNERS</owner>
+  <summary>
+    Records how the Dictation First Run Experience (FRE) onboarding dialog was
+    exited (Completed, Cancelled, or Other). Recorded whenever the FRE dialog is
+    closed.
+  </summary>
+</histogram>
+
 <histogram name="VoiceTyping.IsEnabledOnProfileInit" enum="BooleanEnabled"
     expires_after="2027-06-01">
   <owner>amyasinghal@google.com</owner>

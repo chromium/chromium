@@ -9,12 +9,26 @@
 
 namespace dictation {
 
+inline constexpr std::string_view kFirstRunExitStatusHistogramName =
+    "VoiceTyping.FirstRunExitStatus";
 inline constexpr std::string_view kIsEnabledOnProfileInitHistogramName =
     "VoiceTyping.IsEnabledOnProfileInit";
 inline constexpr std::string_view kSessionStartSourceHistogramName =
     "VoiceTyping.SessionStartSource";
 inline constexpr std::string_view kStreamStartTriggerHistogramName =
     "VoiceTyping.StreamStartTrigger";
+
+// Exit status of the Dictation First Run Experience (FRE) dialog.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(DictationFirstRunExitStatus)
+enum class DictationFirstRunExitStatus {
+  kCompleted = 0,  // User accepted/allowed dictation
+  kCancelled = 1,  // User clicked "No thanks" / cancel, or pressed Esc
+  kAbandoned = 2,  // Abandoned: started session elsewhere, closed tab, etc.
+  kMaxValue = kAbandoned,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/voice_typing/enums.xml:DictationFirstRunExitStatus)
 
 // Entry points for starting a Dictation session.
 // These values are persisted to logs. Entries should not be renumbered and
@@ -53,6 +67,9 @@ enum class DictationStreamStartTrigger {
   kMaxValue = kHotkeyToggleExistingSession,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/voice_typing/enums.xml:DictationStreamStartTrigger)
+
+// Records how the Dictation FRE dialog was exited.
+void RecordDictationFirstRunExitStatus(DictationFirstRunExitStatus status);
 
 // Records whether Dictation is overall enabled (feature and policies enabled)
 // when DictationKeyedService is initialized for a profile.

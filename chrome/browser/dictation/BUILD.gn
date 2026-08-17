@@ -2,6 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+source_set("metrics") {
+  public = [ "metrics.h" ]
+  sources = [ "metrics.cc" ]
+  public_deps = [ "//base" ]
+}
+
 source_set("dictation") {
   public = [
     "application_registration_delegate.h",
@@ -12,7 +18,6 @@ source_set("dictation") {
     "features.h",
     "local_hotkey_manager.h",
     "logging.h",
-    "metrics.h",
     "onboarding_manager.h",
     "session_controller.h",
     "session_controller_delegate.h",
@@ -29,6 +34,7 @@ source_set("dictation") {
     "//content/public/browser",
   ]
   deps = [
+    ":metrics",
     "//chrome/browser/ui/views/dictation",
     "//components/prefs",
   ]
@@ -50,7 +56,6 @@ source_set("impl") {
     "listener_stream_provider.h",
     "local_hotkey_manager.cc",
     "logging.cc",
-    "metrics.cc",
     "onboarding_manager.cc",
     "session_controller.cc",
     "session_state.cc",
@@ -61,6 +66,7 @@ source_set("impl") {
 
   deps = [
     ":dictation",
+    ":metrics",
     "//base",
     "//chrome/browser/component_updater",
     "//chrome/browser/extensions",
@@ -129,6 +135,7 @@ source_set("unit_tests") {
 
   deps = [
     ":impl",
+    ":metrics",
     ":test_support",
     "//base/test:test_support",
     "//chrome/browser/ui:test_support",
@@ -152,6 +159,7 @@ source_set("browser_tests") {
   ]
   deps = [
     ":impl",
+    ":metrics",
     ":test_support",
     "//chrome/browser/glic/test_support",
     "//chrome/browser/policy:test_support",

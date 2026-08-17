@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "build/branding_buildflags.h"
+#include "chrome/browser/dictation/metrics.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
@@ -242,6 +243,22 @@ void OnboardingDialogController::OnDialogAccepted(
 }
 
 void OnboardingDialogController::Close(views::Widget::ClosedReason reason) {
+  DictationFirstRunExitStatus status;
+  switch (reason) {
+    case views::Widget::ClosedReason::kAcceptButtonClicked:
+      status = DictationFirstRunExitStatus::kCompleted;
+      break;
+    case views::Widget::ClosedReason::kCancelButtonClicked:
+    case views::Widget::ClosedReason::kEscKeyPressed:
+    case views::Widget::ClosedReason::kCloseButtonClicked:
+      status = DictationFirstRunExitStatus::kCancelled;
+      break;
+    default:
+      status = DictationFirstRunExitStatus::kAbandoned;
+      break;
+  }
+  RecordDictationFirstRunExitStatus(status);
+
   widget_.reset();
   if (close_callback_) {
     std::move(close_callback_).Run();

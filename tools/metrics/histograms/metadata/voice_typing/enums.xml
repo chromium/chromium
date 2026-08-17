@@ -15,6 +15,17 @@ this directory.
 
 <enums>
 
+<!-- LINT.IfChange(DictationFirstRunExitStatus) -->
+
+<enum name="DictationFirstRunExitStatus">
+  <int value="0" label="Completed (Allowed)"/>
+  <int value="1" label="Cancelled (No thanks / Esc)"/>
+  <int value="2"
+      label="Abandoned (Started session elsewhere, closed tab, etc.)"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/dictation/metrics.h:DictationFirstRunExitStatus) -->
+
 <!-- LINT.IfChange(DictationSessionEntryPoint) -->
 
 <enum name="DictationSessionEntryPoint">

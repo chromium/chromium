@@ -8,6 +8,10 @@
 
 namespace dictation {
 
+void RecordDictationFirstRunExitStatus(DictationFirstRunExitStatus status) {
+  base::UmaHistogramEnumeration(kFirstRunExitStatusHistogramName, status);
+}
+
 void RecordDictationIsEnabledOnProfileInit(bool is_enabled) {
   base::UmaHistogramBoolean(kIsEnabledOnProfileInitHistogramName, is_enabled);
 }
