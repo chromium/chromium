@@ -105,8 +105,8 @@ void IconUtilTest::CheckAllIconSizes(const base::FilePath& icon_filename,
 
   // Determine how many icons to expect, based on |max_icon_size|.
   int expected_num_icons = 0;
-  for (size_t i = 0; i < IconUtil::kNumIconDimensions; ++i) {
-    if (UNSAFE_TODO(IconUtil::kIconDimensions[i]) > max_icon_size) {
+  for (int dimension : IconUtil::kIconDimensions) {
+    if (dimension > max_icon_size) {
       break;
     }
     ++expected_num_icons;
@@ -128,7 +128,7 @@ void IconUtilTest::CheckAllIconSizes(const base::FilePath& icon_filename,
   const IconUtil::ICONDIR* icon_dir =
       UNSAFE_TODO(reinterpret_cast<const IconUtil::ICONDIR*>(icon_data.data()));
   EXPECT_EQ(expected_num_icons, icon_dir->idCount);
-  ASSERT_GE(IconUtil::kNumIconDimensions, icon_dir->idCount);
+  ASSERT_GE(IconUtil::kIconDimensions.size(), icon_dir->idCount);
   ASSERT_GE(icon_data.length(),
             sizeof(IconUtil::ICONDIR) +
                 icon_dir->idCount * sizeof(IconUtil::ICONDIRENTRY));
@@ -137,7 +137,7 @@ void IconUtilTest::CheckAllIconSizes(const base::FilePath& icon_filename,
     const IconUtil::ICONDIRENTRY* entry = &UNSAFE_TODO(icon_dir->idEntries[i]);
     // Mod 256 because as a special case in ICONDIRENTRY, the value 0 represents
     // a width or height of 256.
-    int expected_size = UNSAFE_TODO(IconUtil::kIconDimensions[i]) % 256;
+    int expected_size = IconUtil::kIconDimensions[i] % 256;
     EXPECT_EQ(expected_size, static_cast<int>(entry->bWidth));
     EXPECT_EQ(expected_size, static_cast<int>(entry->bHeight));
     if (entry->bWidth == 0 && entry->bHeight == 0) {
@@ -450,10 +450,11 @@ TEST_F(IconUtilTest, TestCreateImageFamilyFromIconResource) {
 // This tests that kNumIconDimensionsUpToMediumSize has the correct value.
 TEST_F(IconUtilTest, TestNumIconDimensionsUpToMediumSize) {
   ASSERT_LE(IconUtil::kNumIconDimensionsUpToMediumSize,
-            IconUtil::kNumIconDimensions);
-  EXPECT_EQ(IconUtil::kMediumIconSize,
-            UNSAFE_TODO(IconUtil::kIconDimensions)
-                [IconUtil::kNumIconDimensionsUpToMediumSize - 1]);
+            IconUtil::kIconDimensions.size());
+  EXPECT_EQ(
+      IconUtil::kMediumIconSize,
+      IconUtil::kIconDimensions[IconUtil::kNumIconDimensionsUpToMediumSize -
+                                1]);
 }
 
 TEST_F(IconUtilTest, TestTransparentIcon) {

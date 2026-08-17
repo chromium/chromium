@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -64,18 +65,6 @@ namespace web_app {
 
 namespace {
 
-#if BUILDFLAG(IS_MAC)
-const int kDesiredIconSizesForShortcut[] = {16, 32, 128, 256, 512};
-#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-// Linux supports icons of any size. FreeDesktop Icon Theme Specification states
-// that "Minimally you should install a 48x48 icon in the hicolor theme."
-const int kDesiredIconSizesForShortcut[] = {16, 32, 48, 128, 256, 512};
-#elif BUILDFLAG(IS_WIN)
-const int* kDesiredIconSizesForShortcut = IconUtil::kIconDimensions;
-#else
-const int kDesiredIconSizesForShortcut[] = {32};
-#endif
-
 #if BUILDFLAG(IS_WIN)
 base::LazyThreadPoolCOMSTATaskRunner g_shortcuts_task_runner =
     LAZY_COM_STA_TASK_RUNNER_INITIALIZER(
@@ -88,14 +77,6 @@ base::LazyThreadPoolSequencedTaskRunner g_shortcuts_task_runner =
         base::TaskTraits({base::MayBlock(), base::TaskPriority::USER_VISIBLE,
                           base::TaskShutdownBehavior::BLOCK_SHUTDOWN}));
 #endif
-
-size_t GetNumDesiredIconSizesForShortcut() {
-#if BUILDFLAG(IS_WIN)
-  return IconUtil::kNumIconDimensions;
-#else
-  return std::size(kDesiredIconSizesForShortcut);
-#endif
-}
 
 void CreatePlatformShortcutsAndPostCallback(
     const base::FilePath& shortcut_data_path,
@@ -420,8 +401,22 @@ base::FilePath GetOsIntegrationResourcesDirectoryForApp(
 }
 
 base::span<const int> GetDesiredIconSizesForShortcut() {
-  return UNSAFE_TODO(base::span<const int>(
-      kDesiredIconSizesForShortcut, GetNumDesiredIconSizesForShortcut()));
+#if BUILDFLAG(IS_MAC)
+  static constexpr int kDesiredIconSizesForShortcut[] = {16, 32, 128, 256, 512};
+  return kDesiredIconSizesForShortcut;
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  // Linux supports icons of any size. FreeDesktop Icon Theme Specification
+  // states that "Minimally you should install a 48x48 icon in the hicolor
+  // theme."
+  static constexpr int kDesiredIconSizesForShortcut[] = {16,  32,  48,
+                                                         128, 256, 512};
+  return kDesiredIconSizesForShortcut;
+#elif BUILDFLAG(IS_WIN)
+  return IconUtil::kIconDimensions;
+#else
+  static constexpr int kDesiredIconSizesForShortcut[] = {32};
+  return kDesiredIconSizesForShortcut;
+#endif
 }
 
 gfx::ImageSkia CreateDefaultApplicationIcon(int size) {

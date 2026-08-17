@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/base/dragdrop/os_exchange_data_provider_win.h"
 
 #include <objbase.h>
@@ -27,6 +22,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
@@ -80,6 +76,8 @@ STGMEDIUM CreateIdListStorageForFileName(const base::FilePath& path);
 // Creates a File Descriptor for the creation of a file to the given URL and
 // returns a handle to it.
 STGMEDIUM CreateStorageForFileDescriptor(const base::FilePath& path);
+void PopulateFileDescriptorName(FILEDESCRIPTORW& dsc,
+                                const base::FilePath& path);
 
 const ClipboardFormatType& GetRendererTaintFormatType();
 const ClipboardFormatType& GetFromPrivilegedFormatType();
@@ -134,10 +132,10 @@ void ScopedTargetDevice::Reset(const DVTARGETDEVICE* source) {
   if (source && source->tdSize >= sizeof(DVTARGETDEVICE)) {
     device_ = static_cast<DVTARGETDEVICE*>(::CoTaskMemAlloc(source->tdSize));
     if (device_) {
-      auto source_span = base::span<const uint8_t>(
-          reinterpret_cast<const uint8_t*>(source), source->tdSize);
-      auto dest_span = base::span<uint8_t>(reinterpret_cast<uint8_t*>(device_),
-                                           source->tdSize);
+      auto source_span = UNSAFE_TODO(base::span<const uint8_t>(
+          reinterpret_cast<const uint8_t*>(source), source->tdSize));
+      auto dest_span = UNSAFE_TODO(base::span<uint8_t>(
+          reinterpret_cast<uint8_t*>(device_), source->tdSize));
       dest_span.copy_from(source_span);
     }
   }
@@ -267,10 +265,11 @@ HRESULT FormatEtcEnumerator::Next(ULONG count,
 
   // This method copies count elements into |elements_array|.
   ULONG index = 0;
+  auto elements = UNSAFE_TODO(base::span(elements_array, count));
   while (cursor_ < contents_.size() && index < count) {
     ScopedFormatEtc copy = contents_[cursor_];
-    elements_array[index] = copy.format_etc;
-    elements_array[index].ptd = copy.target_device.release();
+    elements[index] = copy.format_etc;
+    elements[index].ptd = copy.target_device.release();
     ++cursor_;
     ++index;
   }
@@ -577,12 +576,12 @@ void OSExchangeDataProviderWin::SetVirtualFileContentsForTesting(
   data_->contents_.push_back(DataObjectImpl::StoredDataInfo::TakeStorageMedium(
       ClipboardFormatType::FileDescriptorType().ToFormatEtc(), storage));
 
+  auto fgd =
+      UNSAFE_TODO(base::span<FILEDESCRIPTORW>(descriptor->fgd, num_files));
   for (size_t i = 0; i < num_files; i++) {
     // Fill in each FILEDESCRIPTORW with file name.
-    descriptor->fgd[i].dwFlags |= static_cast<DWORD>(FD_UNICODE);
-    std::wstring file_name = filenames_and_contents[i].first.value();
-    wcsncpy_s(descriptor->fgd[i].cFileName, MAX_PATH, file_name.c_str(),
-              std::min(file_name.size(), static_cast<size_t>(MAX_PATH - 1u)));
+    fgd[i].dwFlags |= static_cast<DWORD>(FD_UNICODE);
+    PopulateFileDescriptorName(fgd[i], filenames_and_contents[i].first);
 
     // Add the contents of each file as CFSTR_FILECONTENTS.
     SetVirtualFileContentAtIndexForTesting(filenames_and_contents[i].second,
@@ -631,19 +630,18 @@ void OSExchangeDataProviderWin::SetVirtualFileContentsWithDirectoriesForTesting(
   data_->contents_.push_back(DataObjectImpl::StoredDataInfo::TakeStorageMedium(
       ClipboardFormatType::FileDescriptorType().ToFormatEtc(), storage));
 
+  auto fgd =
+      UNSAFE_TODO(base::span<FILEDESCRIPTORW>(descriptor->fgd, num_files));
   for (size_t i = 0; i < num_files; i++) {
-    descriptor->fgd[i].dwFlags |= static_cast<DWORD>(FD_UNICODE);
-    std::wstring file_name = filenames_and_contents[i].first.value();
-    wcsncpy_s(descriptor->fgd[i].cFileName, MAX_PATH, file_name.c_str(),
-              std::min(file_name.size(), static_cast<size_t>(MAX_PATH - 1u)));
+    fgd[i].dwFlags |= static_cast<DWORD>(FD_UNICODE);
+    PopulateFileDescriptorName(fgd[i], filenames_and_contents[i].first);
 
     if (std::find(directory_indices.begin(), directory_indices.end(), i) !=
         directory_indices.end()) {
       // A directory entry carries the directory attribute and no content
       // stream, just as a real ZIP folder advertises it.
-      descriptor->fgd[i].dwFlags |= static_cast<DWORD>(FD_ATTRIBUTES);
-      descriptor->fgd[i].dwFileAttributes |=
-          static_cast<DWORD>(FILE_ATTRIBUTE_DIRECTORY);
+      fgd[i].dwFlags |= static_cast<DWORD>(FD_ATTRIBUTES);
+      fgd[i].dwFileAttributes |= static_cast<DWORD>(FILE_ATTRIBUTE_DIRECTORY);
       continue;
     }
 
@@ -1379,7 +1377,9 @@ STGMEDIUM CreateStorageForBytes(const void* data, size_t bytes) {
   HANDLE handle = GlobalAlloc(GPTR, bytes);
   if (handle) {
     base::win::ScopedHGlobal<uint8_t*> scoped(handle);
-    memcpy(scoped.data(), data, bytes);
+    auto src =
+        UNSAFE_TODO(base::span(static_cast<const uint8_t*>(data), bytes));
+    base::span(scoped).copy_prefix_from(src);
   }
 
   return STGMEDIUM{
@@ -1401,8 +1401,9 @@ STGMEDIUM CreateStorageForString(std::string_view data) {
   HANDLE handle = GlobalAlloc(GPTR, data.size() + 1);
   if (handle) {
     base::win::ScopedHGlobal<uint8_t*> scoped(handle);
-    memcpy(scoped.data(), data.data(), data.size());
-    scoped.data()[data.size()] = 0;
+    auto [bytes_part, null_part] = base::span(scoped).split_at(data.size());
+    bytes_part.copy_from(base::as_byte_span(data));
+    null_part[0] = 0;
   }
 
   return STGMEDIUM{
@@ -1410,12 +1411,14 @@ STGMEDIUM CreateStorageForString(std::string_view data) {
 }
 
 STGMEDIUM CreateStorageForString(std::u16string_view data) {
-  const size_t size = data.size() * sizeof(char16_t);
-  HANDLE handle = GlobalAlloc(GPTR, size + sizeof(char16_t));
+  const size_t size = (data.size() + 1) * sizeof(char16_t);
+  HANDLE handle = GlobalAlloc(GPTR, size);
   if (handle) {
     base::win::ScopedHGlobal<uint8_t*> scoped(handle);
-    memcpy(scoped.data(), data.data(), size);
-    memset(scoped.data() + size, 0, sizeof(char16_t));
+    auto [bytes_part, null_part] =
+        base::span(scoped).split_at(data.size() * sizeof(char16_t));
+    bytes_part.copy_from(base::as_byte_span(data));
+    std::ranges::fill(null_part.first<sizeof(char16_t)>(), 0);
   }
 
   return STGMEDIUM{
@@ -1424,7 +1427,7 @@ STGMEDIUM CreateStorageForString(std::u16string_view data) {
 
 LPITEMIDLIST PIDLNext(LPITEMIDLIST pidl) {
   return reinterpret_cast<LPITEMIDLIST>(
-      reinterpret_cast<BYTE*>(pidl) + pidl->mkid.cb);
+      UNSAFE_TODO(reinterpret_cast<BYTE*>(pidl) + pidl->mkid.cb));
 }
 
 size_t PIDLSize(LPITEMIDLIST pidl) {
@@ -1439,7 +1442,7 @@ size_t PIDLSize(LPITEMIDLIST pidl) {
 
 LPITEMIDLIST GetNthPIDL(CIDA* cida, int n) {
   return reinterpret_cast<LPITEMIDLIST>(
-      reinterpret_cast<LPBYTE>(cida) + cida->aoffset[n]);
+      UNSAFE_TODO(reinterpret_cast<LPBYTE>(cida) + cida->aoffset[n]));
 }
 
 LPITEMIDLIST GetPidlFromPath(const base::FilePath& path) {
@@ -1485,29 +1488,37 @@ STGMEDIUM CreateIdListStorageForFileName(const base::FilePath& path) {
   CIDA* cida = locked_mem.data();
   cida->cidl = 1;     // We have one PIDL (not including the 0th root PIDL).
   cida->aoffset[0] = kFirstPIDLOffset;
-  cida->aoffset[1] = kFirstPIDLOffset + kFirstPIDLSize;
+  UNSAFE_TODO(cida->aoffset[1] = kFirstPIDLOffset + kFirstPIDLSize);
   LPITEMIDLIST idl = GetNthPIDL(cida, 0);
   idl->mkid.cb = 0;
   idl->mkid.abID[0] = 0;
   idl = GetNthPIDL(cida, 1);
-  memcpy(idl, pidl, kSecondPIDLSize);
+  UNSAFE_TODO(memcpy(idl, pidl, kSecondPIDLSize));
 
   STGMEDIUM storage = {
       .tymed = TYMED_HGLOBAL, .hGlobal = hdata, .pUnkForRelease = nullptr};
   return storage;
 }
 
-STGMEDIUM CreateStorageForFileDescriptor(const base::FilePath& path) {
+void PopulateFileDescriptorName(FILEDESCRIPTORW& dsc,
+                                const base::FilePath& path) {
   std::wstring file_name = path.value();
-  DCHECK(!file_name.empty());
+  auto filename_span = base::span(dsc.cFileName);
+  auto src = base::span(file_name).first(
+      std::min(file_name.size(), static_cast<size_t>(MAX_PATH - 1)));
+  filename_span.copy_prefix_from(src);
+  filename_span[src.size()] = 0;
+}
+
+STGMEDIUM CreateStorageForFileDescriptor(const base::FilePath& path) {
+  DCHECK(!path.empty());
   HANDLE hdata = GlobalAlloc(GPTR, sizeof(FILEGROUPDESCRIPTORW));
   base::win::ScopedHGlobal<FILEGROUPDESCRIPTORW*> locked_mem(hdata);
 
   FILEGROUPDESCRIPTORW* descriptor = locked_mem.data();
   descriptor->cItems = 1;
   descriptor->fgd[0].dwFlags = FD_LINKUI;
-  wcsncpy_s(descriptor->fgd[0].cFileName, MAX_PATH, file_name.c_str(),
-            std::min(file_name.size(), static_cast<size_t>(MAX_PATH - 1u)));
+  PopulateFileDescriptorName(descriptor->fgd[0], path);
 
   STGMEDIUM storage = {
       .tymed = TYMED_HGLOBAL, .hGlobal = hdata, .pUnkForRelease = nullptr};

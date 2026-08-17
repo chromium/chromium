@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/354829279): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/gfx/win/icon_util.h"
 
 #include <windows.h>
@@ -15,6 +10,7 @@
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/containers/auto_spanification_helper.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
@@ -84,8 +80,7 @@ bool BuildResizedImageFamily(const gfx::ImageFamily& image_family,
   bool has_bigger_than_medium = biggest->Width() > IconUtil::kMediumIconSize ||
                                 biggest->Height() > IconUtil::kMediumIconSize;
 
-  for (size_t i = 0; i < IconUtil::kNumIconDimensions; ++i) {
-    int dimension = IconUtil::kIconDimensions[i];
+  for (int dimension : IconUtil::kIconDimensions) {
     // Windows' "Large icons" view displays icons at full size only if there is
     // a 256x256 (kLargeIconSize) image in the .ico file. Otherwise, it shrinks
     // icons to 48x48 (kMediumIconSize). Therefore, if there is no source icon
@@ -154,23 +149,21 @@ void ConvertImageFamilyToBitmaps(
 // this array sorted. Also note that the maximum icon image size we can handle
 // is 256 by 256. See:
 // http://msdn.microsoft.com/en-us/library/windows/desktop/aa511280.aspx#size
-const int IconUtil::kIconDimensions[] = {
-  8,    // Recommended by the MSDN as a nice to have icon size.
-  10,   // Used by the Shell (e.g. for shortcuts).
-  14,   // Recommended by the MSDN as a nice to have icon size.
-  16,   // Toolbar, Application and Shell icon sizes.
-  22,   // Recommended by the MSDN as a nice to have icon size.
-  24,   // Used by the Shell (e.g. for shortcuts).
-  32,   // Toolbar, Dialog and Wizard icon size.
-  40,   // Quick Launch.
-  48,   // Alt+Tab icon size.
-  64,   // Recommended by the MSDN as a nice to have icon size.
-  96,   // Recommended by the MSDN as a nice to have icon size.
-  128,  // Used by the Shell (e.g. for shortcuts).
-  256   // Used by Vista onwards for large icons.
+const std::array<int, 13> IconUtil::kIconDimensions = {
+    8,    // Recommended by the MSDN as a nice to have icon size.
+    10,   // Used by the Shell (e.g. for shortcuts).
+    14,   // Recommended by the MSDN as a nice to have icon size.
+    16,   // Toolbar, Application and Shell icon sizes.
+    22,   // Recommended by the MSDN as a nice to have icon size.
+    24,   // Used by the Shell (e.g. for shortcuts).
+    32,   // Toolbar, Dialog and Wizard icon size.
+    40,   // Quick Launch.
+    48,   // Alt+Tab icon size.
+    64,   // Recommended by the MSDN as a nice to have icon size.
+    96,   // Recommended by the MSDN as a nice to have icon size.
+    128,  // Used by the Shell (e.g. for shortcuts).
+    256   // Used by Vista onwards for large icons.
 };
-
-const size_t IconUtil::kNumIconDimensions = std::size(kIconDimensions);
 const size_t IconUtil::kNumIconDimensionsUpToMediumSize = 9;
 
 base::win::ScopedGDIObject<HICON> IconUtil::CreateHICONFromSkBitmap(
@@ -199,7 +192,8 @@ base::win::ScopedGDIObject<HICON> IconUtil::CreateHICONFromSkBitmap(
   if (!dib.is_valid() || !bits)
     return base::win::ScopedGDIObject<HICON>();
 
-  memcpy(bits, bitmap.getPixels(), bitmap.width() * bitmap.height() * 4);
+  size_t num_pixels = bitmap.width() * bitmap.height();
+  UNSAFE_TODO(memcpy(bits, bitmap.getPixels(), num_pixels * sizeof(uint32_t)));
 
   // Icons are generally created using an AND and XOR masks where the AND
   // specifies boolean transparency (the pixel is either opaque or
@@ -210,8 +204,8 @@ base::win::ScopedGDIObject<HICON> IconUtil::CreateHICONFromSkBitmap(
   // are zero. So the monochrome bitmap is created with all pixels transparent
   // for this case. Otherwise, it is created with all pixels opaque.
   bool bitmap_has_alpha_channel =
-      PixelsHaveAlpha(static_cast<const uint32_t*>(bitmap.getPixels()),
-                      bitmap.width() * bitmap.height());
+      PixelsHaveAlpha(base::subtle::reinterpret_span<const uint32_t>(
+          UNSAFE_SKBITMAP_TO_BYTES_SPAN(bitmap)));
 
   base::HeapArray<uint8_t> mask_bits;
   if (!bitmap_has_alpha_channel) {
@@ -278,9 +272,11 @@ std::unique_ptr<gfx::ImageFamily> IconUtil::CreateImageFamilyFromIconResource(
 
   const GRPICONDIR* icon_dir =
       reinterpret_cast<const GRPICONDIR*>(icon_dir_data);
+  auto entries = UNSAFE_TODO(base::span<const GRPICONDIRENTRY>(
+      icon_dir->idEntries, icon_dir->idCount));
   std::unique_ptr<gfx::ImageFamily> result(new gfx::ImageFamily);
   for (size_t i = 0; i < icon_dir->idCount; ++i) {
-    const GRPICONDIRENTRY* entry = &icon_dir->idEntries[i];
+    const GRPICONDIRENTRY* entry = &entries[i];
     if (entry->bWidth != 0 || entry->bHeight != 0) {
       // Ignore the low-bit-depth versions of the icon.
       if (entry->wBitCount != 32)
@@ -454,7 +450,9 @@ SkBitmap IconUtil::CreateSkBitmapFromHICONHelper(HICON icon,
   //
   // We start by drawing the AND mask into our DIB.
   size_t num_pixels = s.GetArea();
-  memset(bits, 0, num_pixels * 4);
+  auto pixels = UNSAFE_TODO(
+      base::span<uint32_t>(static_cast<uint32_t*>(bits), num_pixels));
+  std::ranges::fill(pixels, 0);
   ::DrawIconEx(dib_dc.Get(), 0, 0, icon, s.width(), s.height(), 0, nullptr,
                DI_MASK);
 
@@ -462,28 +460,28 @@ SkBitmap IconUtil::CreateSkBitmapFromHICONHelper(HICON icon,
   // an alpha channel.
   auto opaque = base::HeapArray<bool>::Uninit(num_pixels);
   for (size_t i = 0; i < num_pixels; ++i)
-    opaque[i] = !static_cast<uint32_t*>(bits)[i];
+    opaque[i] = !pixels[i];
 
   // Then draw the image itself which is really the XOR mask.
-  memset(bits, 0, num_pixels * 4);
+  std::ranges::fill(pixels, 0);
   ::DrawIconEx(dib_dc.Get(), 0, 0, icon, s.width(), s.height(), 0, nullptr,
                DI_NORMAL);
-  memcpy(bitmap.getPixels(), bits, num_pixels * 4);
+  auto bitmap_pixels = base::subtle::reinterpret_span<uint32_t>(
+      UNSAFE_SKBITMAP_TO_BYTES_SPAN(bitmap));
+  bitmap_pixels.copy_from(pixels);
 
   // Finding out whether the bitmap has an alpha channel.
-  bool bitmap_has_alpha_channel = PixelsHaveAlpha(
-      static_cast<const uint32_t*>(bitmap.getPixels()), num_pixels);
+  bool bitmap_has_alpha_channel = PixelsHaveAlpha(bitmap_pixels);
 
   // If the bitmap does not have an alpha channel, we need to build it using
   // the previously captured AND mask. Otherwise, we are done.
   if (!bitmap_has_alpha_channel) {
-    uint32_t* p = static_cast<uint32_t*>(bitmap.getPixels());
-    for (size_t i = 0; i < num_pixels; ++p, ++i) {
-      DCHECK_EQ((*p & 0xff000000), 0u);
+    for (size_t i = 0; i < num_pixels; ++i) {
+      DCHECK_EQ((bitmap_pixels[i] & 0xff000000), 0u);
       if (opaque[i])
-        *p |= 0xff000000;
+        bitmap_pixels[i] |= 0xff000000;
       else
-        *p &= 0x00ffffff;
+        bitmap_pixels[i] &= 0x00ffffff;
     }
   }
 
@@ -537,12 +535,15 @@ bool IconUtil::CreateIconFileFromImageFamily(
   // - 1 because there is already one ICONDIRENTRY in ICONDIR.
   DWORD icon_dir_count = image_count - 1;
 
+  auto entries =
+      UNSAFE_TODO(base::span<ICONDIRENTRY>(icon_dir->idEntries, image_count));
+
   DWORD offset = sizeof(ICONDIR) + (sizeof(ICONDIRENTRY) * icon_dir_count);
   for (size_t i = 0; i < bitmap_count; i++) {
     ICONIMAGE* image = reinterpret_cast<ICONIMAGE*>(&buffer[offset]);
     DCHECK_LT(offset, buffer_size);
     size_t icon_image_size = 0;
-    SetSingleIconImageInformation(bitmaps[i], i, icon_dir, image, offset,
+    SetSingleIconImageInformation(bitmaps[i], entries[i], image, offset,
                                   &icon_image_size);
     DCHECK_GT(icon_image_size, 0U);
     offset += icon_image_size;
@@ -550,14 +551,15 @@ bool IconUtil::CreateIconFileFromImageFamily(
 
   // Add the PNG entry, if necessary.
   if (png_bytes.get()) {
-    ICONDIRENTRY* entry = &icon_dir->idEntries[bitmap_count];
-    entry->bWidth = 0;
-    entry->bHeight = 0;
-    entry->wPlanes = 1;
-    entry->wBitCount = 32;
-    entry->dwBytesInRes = static_cast<DWORD>(png_bytes->size());
-    entry->dwImageOffset = offset;
-    memcpy(&buffer[offset], png_bytes->front(), png_bytes->size());
+    ICONDIRENTRY& entry = entries[bitmap_count];
+    entry.bWidth = 0;
+    entry.bHeight = 0;
+    entry.wPlanes = 1;
+    entry.wBitCount = 32;
+    entry.dwBytesInRes = static_cast<DWORD>(png_bytes->size());
+    entry.dwImageOffset = offset;
+    auto png_data = base::span<const uint8_t>(*png_bytes);
+    base::span(buffer).subspan(offset).copy_prefix_from(png_data);
     offset += png_bytes->size();
   }
 
@@ -575,19 +577,19 @@ bool IconUtil::CreateIconFileFromImageFamily(
   return base::ImportantFileWriter::WriteFileAtomically(icon_path, data);
 }
 
-bool IconUtil::PixelsHaveAlpha(const uint32_t* pixels, size_t num_pixels) {
-  for (const uint32_t* end = pixels + num_pixels; pixels != end; ++pixels) {
-    if ((*pixels & 0xff000000) != 0)
+bool IconUtil::PixelsHaveAlpha(base::span<const uint32_t> pixels) {
+  for (uint32_t pixel : pixels) {
+    if ((pixel & 0xff000000) != 0) {
       return true;
+    }
   }
-
   return false;
 }
 
 void IconUtil::InitializeBitmapHeader(BITMAPV5HEADER* header, int width,
                                       int height) {
   DCHECK(header);
-  memset(header, 0, sizeof(BITMAPV5HEADER));
+  *header = {};
   header->bV5Size = sizeof(BITMAPV5HEADER);
 
   // Note that icons are created using top-down DIBs so we must negate the
@@ -616,12 +618,10 @@ void IconUtil::InitializeBitmapHeader(BITMAPV5HEADER* header, int width,
 }
 
 void IconUtil::SetSingleIconImageInformation(const SkBitmap& bitmap,
-                                             size_t index,
-                                             ICONDIR* icon_dir,
+                                             ICONDIRENTRY& entry,
                                              ICONIMAGE* icon_image,
                                              DWORD image_offset,
                                              size_t* image_byte_count) {
-  DCHECK(icon_dir);
   DCHECK(icon_image);
   DCHECK_GT(image_offset, 0U);
   DCHECK(image_byte_count);
@@ -635,12 +635,12 @@ void IconUtil::SetSingleIconImageInformation(const SkBitmap& bitmap,
                               &xor_mask_size,
                               &bytes_in_resource);
 
-  icon_dir->idEntries[index].bWidth = static_cast<BYTE>(bitmap.width());
-  icon_dir->idEntries[index].bHeight = static_cast<BYTE>(bitmap.height());
-  icon_dir->idEntries[index].wPlanes = 1;
-  icon_dir->idEntries[index].wBitCount = 32;
-  icon_dir->idEntries[index].dwBytesInRes = bytes_in_resource;
-  icon_dir->idEntries[index].dwImageOffset = image_offset;
+  entry.bWidth = static_cast<BYTE>(bitmap.width());
+  entry.bHeight = static_cast<BYTE>(bitmap.height());
+  entry.wPlanes = 1;
+  entry.wBitCount = 32;
+  entry.dwBytesInRes = bytes_in_resource;
+  entry.dwImageOffset = image_offset;
   icon_image->icHeader.biSize = sizeof(BITMAPINFOHEADER);
 
   // The width field in the BITMAPINFOHEADER structure accounts for the height
@@ -667,7 +667,8 @@ void IconUtil::SetSingleIconImageInformation(const SkBitmap& bitmap,
   // only zeros essentially means we'll initially treat all the pixels as
   // opaque.
   unsigned char* image_addr = reinterpret_cast<unsigned char*>(icon_image);
-  unsigned char* xor_mask_addr = image_addr + sizeof(BITMAPINFOHEADER);
+  unsigned char* xor_mask_addr =
+      UNSAFE_TODO(image_addr + sizeof(BITMAPINFOHEADER));
 
   // Make sure pixels are not premultiplied by alpha.
   SkBitmap unpremul_bitmap = SkBitmapOperations::UnPreMultiply(bitmap);
@@ -683,9 +684,8 @@ void IconUtil::CopySkBitmapBitsIntoIconBuffer(const SkBitmap& bitmap,
   size_t bitmap_size = bitmap.height() * bitmap.width() * 4;
   DCHECK_EQ(buffer_size, bitmap_size);
   for (size_t i = 0; i < bitmap_size; i += bitmap.width() * 4) {
-    memcpy(buffer + bitmap_size - bitmap.width() * 4 - i,
-           bitmap_ptr + i,
-           bitmap.width() * 4);
+    UNSAFE_TODO(memcpy(buffer + bitmap_size - bitmap.width() * 4 - i,
+                       bitmap_ptr + i, bitmap.width() * 4));
   }
 }
 
