@@ -21,6 +21,7 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "build/build_config.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -1248,8 +1249,14 @@ class ChromeAimEligibilityServiceOAuthBrowserTest
   base::test::ScopedFeatureList feature_list_;
 };
 
+// TODO(crbug.com/541665465): Test is flaky on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_RequestIncludesOAuthToken DISABLED_RequestIncludesOAuthToken
+#else
+#define MAYBE_RequestIncludesOAuthToken RequestIncludesOAuthToken
+#endif
 IN_PROC_BROWSER_TEST_F(ChromeAimEligibilityServiceOAuthBrowserTest,
-                       RequestIncludesOAuthToken) {
+                       MAYBE_RequestIncludesOAuthToken) {
   // Setup: Make a primary account available with a refresh token.
   auto* identity_manager = identity_test_env()->identity_manager();
   AccountInfo primary_account_info = signin::MakeAccountAvailable(
