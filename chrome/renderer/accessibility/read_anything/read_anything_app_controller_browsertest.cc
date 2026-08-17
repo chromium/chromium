@@ -5948,7 +5948,6 @@ TEST_F(ReadAnythingAppControllerReadabilitySelectTextTest,
   // requires_post_process_selection to false.
   EXPECT_FALSE(model().requires_post_process_selection());
 }
-
 TEST_F(ReadAnythingAppControllerReadabilitySelectTextTest,
        ProcessModelUpdates_Readability_RequiresDistillation) {
   // Provide  "stale" content.
@@ -5958,12 +5957,14 @@ TEST_F(ReadAnythingAppControllerReadabilitySelectTextTest,
 
   // Sanity check: Ensure content is actually there before we start.
   ASSERT_EQ(controller().GetDomDistillerContentHtml(), stale_content);
+  EXPECT_TRUE(controller().RequiresDistillation());
 
   EXPECT_CALL(page_handler_, RequestReadabilityDistillation()).Times(1);
 
   ProcessModelUpdates();
 
   EXPECT_FALSE(model().requires_readability_distillation());
+  EXPECT_FALSE(controller().RequiresDistillation());
   EXPECT_TRUE(controller().GetDomDistillerContentHtml().empty());
 }
 

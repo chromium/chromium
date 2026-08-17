@@ -2483,7 +2483,9 @@ int ReadAnythingAppController::GetDistillationMethod() const {
 bool ReadAnythingAppController::RequiresDistillation() {
   // DOM distiller distillation doesn't queue distillations so return false.
   if (model_.is_readability_next_distillation_method()) {
-    return false;
+    // Act as a "lock" and hold off UI updates (and subsequent speech start)
+    // during active Readability distillation to prevent race conditions.
+    return model_.requires_readability_distillation();
   }
   return model_.requires_distillation();
 }
