@@ -118,6 +118,13 @@ TEST(LanguageTagMatcherTest, NoMatch) {
   EXPECT_THAT(matcher.Match(LanguageTagOrDie("fr-FR")), Eq(std::nullopt));
 }
 
+TEST(LanguageTagMatcherTest, NoMatchEnglishPreferredAgainstNonEnglish) {
+  std::vector<LanguageTag> supported = {LanguageTagOrDie("fr")};
+  LanguageTagMatcher matcher = LanguageTagMatcher::Create(supported);
+
+  EXPECT_THAT(matcher.Match(LanguageTagOrDie("en")), Eq(std::nullopt));
+}
+
 TEST(LanguageTagMatcherTest, SpanishLatinAmerica) {
   std::vector<LanguageTag> supported = {LanguageTagOrDie("es-419"),
                                         LanguageTagOrDie("es")};

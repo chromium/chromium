@@ -247,8 +247,10 @@ class LanguageTagPreferenceGraph {
       }
     }
 
-    // Cache the result for this node.
-    SetDistance(current, best_result.closest_supported, best_result.distance);
+    // Cache the result for this node if a supported locale was reachable.
+    if (best_result.distance < std::numeric_limits<float>::max()) {
+      SetDistance(current, best_result.closest_supported, best_result.distance);
+    }
     return best_result;
   }
 
