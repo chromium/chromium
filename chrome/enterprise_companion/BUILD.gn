@@ -111,6 +111,7 @@ source_set("base") {
     "url_loader_factory_provider.cc",
     "url_loader_factory_provider.h",
   ]
+  public_deps = [ "//base" ]
   deps = [
     ":branding_header",
     ":client",
@@ -118,7 +119,6 @@ source_set("base") {
     ":installer_paths",
     ":version_header",
     "mojom/",
-    "//base",
     "//chrome/enterprise_companion/device_management_storage",
     "//chrome/enterprise_companion/proto",
     "//chrome/enterprise_companion/telemetry_logger",
