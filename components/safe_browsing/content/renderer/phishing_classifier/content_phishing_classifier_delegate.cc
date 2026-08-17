@@ -24,6 +24,7 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_local_frame.h"
+#include "url/origin.h"
 
 namespace safe_browsing {
 
@@ -31,13 +32,6 @@ namespace {
 
 GURL StripRef(const GURL& url) {
   GURL::Replacements replacements;
-  replacements.ClearRef();
-  return url.ReplaceComponents(replacements);
-}
-
-GURL StripQueryAndRef(const GURL& url) {
-  GURL::Replacements replacements;
-  replacements.ClearQuery();
   replacements.ClearRef();
   return url.ReplaceComponents(replacements);
 }
@@ -377,12 +371,12 @@ void ContentPhishingClassifierDelegate::ClassificationDone(
     }
   }
 
-  // In the process of classifiation, especially on pages that are single page
+  // In the process of classification, especially on pages that are single page
   // applications (SPAs), the URL could change due to pushState, etc. Check once
-  // more that the URL still matches, ignoring ref and query.
+  // more that the origins still match.
   if (result == mojom::PhishingDetectorResult::SUCCESS) {
-    DCHECK(StripQueryAndRef(last_url_sent_to_classifier_) ==
-           StripQueryAndRef(GURL(verdict.url())))
+    DCHECK(url::Origin::Create(last_url_sent_to_classifier_)
+               .IsSameOriginWith(GURL(verdict.url())))
         << "URL mismatch: " << last_url_sent_to_classifier_.spec() << " vs "
         << verdict.url();
   }

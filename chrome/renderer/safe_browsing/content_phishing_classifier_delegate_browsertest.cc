@@ -888,6 +888,57 @@ TEST_P(ContentPhishingClassifierDelegateTest,
 }
 
 TEST_P(ContentPhishingClassifierDelegateTest,
+       ClassificationDoneWithUrlPathMismatch) {
+  SetScorer(/*model_version=*/1);
+  ASSERT_TRUE(classifier_->is_ready());
+
+  GURL url("http://host.test/index.html");
+  EXPECT_CALL(*classifier_, CancelPendingClassification())
+      .Times(testing::AnyNumber());
+  LoadHTMLWithUrlOverride("<html><body>phish</body></html>",
+                          url.spec().c_str());
+  Mock::VerifyAndClearExpectations(classifier_);
+
+  bool callback_called = false;
+  StartPhishingDetectionWithCallback(
+      url, base::BindOnce(
+               [](bool* called, mojom::PhishingDetectorResult result,
+                  std::optional<mojo_base::ProtoWrapper> proto) {
+                 *called = true;
+                 EXPECT_EQ(mojom::PhishingDetectorResult::SUCCESS, result);
+                 ASSERT_TRUE(proto.has_value());
+                 auto verdict_out = proto->As<ClientPhishingRequest>();
+                 ASSERT_TRUE(verdict_out.has_value());
+                 EXPECT_EQ("http://host.test/different_path.html",
+                           verdict_out->url());
+               },
+               &callback_called));
+
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(*classifier_, BeginClassification(_))
+        .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
+    delegate_->PageCaptured(/*preliminary_capture=*/false);
+    run_loop.Run();
+    Mock::VerifyAndClearExpectations(classifier_);
+  }
+
+  // Now run the callback to simulate the classifier finishing.
+  // Set verdict URL to have a different path.
+  ClientPhishingRequest verdict;
+  verdict.set_url("http://host.test/different_path.html");
+  verdict.set_client_score(0.8f);
+  verdict.set_is_phishing(false);
+
+  // This should not crash on DCHECK even though URLs differ by path.
+  RunAndVerifyClassificationDone(verdict);
+
+  EXPECT_TRUE(callback_called);
+
+  EXPECT_CALL(*classifier_, CancelPendingClassification());
+}
+
+TEST_P(ContentPhishingClassifierDelegateTest,
        NewPageLoadWhileBrowserRequestWaitsForLoad) {
   base::HistogramTester histograms;
   SetScorer(/*model_version=*/1);
