@@ -472,6 +472,7 @@ export class ToolbarAppElement extends AppElementBase {
   private hasReadState_ = false;
   private initializeSessionId_: number = 0;
   private resizeObserver_?: ResizeObserver;
+  private layoutPending_: boolean = false;
   private dragOverListener_ = (e: DragEvent) => this.onDragOver_(e);
   private dropListener_ = (e: DragEvent) => this.onDrop_(e);
   private keyDownListener_ = (e: KeyboardEvent) => this.onKeyDown_(e);
@@ -820,8 +821,21 @@ export class ToolbarAppElement extends AppElementBase {
     // the latter could require a new layoutResponsiveControls() call, even if
     // the width of the toolbar still matches that of the window.
     if (this.webUIToolbarFullyEnabled_ && this.getAvailableWidth() !== 0) {
-      this.layoutResponsiveControls();
+      this.scheduleLayoutResponsiveControls_();
     }
+  }
+
+  private scheduleLayoutResponsiveControls_() {
+    if (this.layoutPending_) {
+      return;
+    }
+    this.layoutPending_ = true;
+    requestAnimationFrame(() => {
+      this.layoutPending_ = false;
+      if (this.isConnected) {
+        this.layoutResponsiveControls();
+      }
+    });
   }
 
   /**
