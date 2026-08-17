@@ -84,24 +84,34 @@ TrackedElementWebUI::~TrackedElementWebUI() {
 }
 
 gfx::Rect TrackedElementWebUI::GetScreenBounds() const {
-  gfx::Rect result;
+  gfx::Rect result = GetBoundsInWebContents();
   content::WebContents* const contents = handler_->web_contents();
   if (contents) {
-    // Use the last known bounds, but if the bounds are empty, make them 1x1 so
-    // there's something to anchor to.
-    result = gfx::ToRoundedRect(last_known_bounds_);
-    if (result.width() < 1) {
-      result.set_width(1);
-    }
-    if (result.height() < 1) {
-      result.set_height(1);
-    }
     // To get the screen coordinates, have to offset by the coordinates of the
     // viewport.
     result.Offset(contents->GetContainerBounds().OffsetFromOrigin());
   }
   return result;
 }
+
+gfx::Rect TrackedElementWebUI::GetBoundsInWebContents() const {
+  // Use the last known bounds, but if the bounds are empty, make them 1x1 so
+  // there's something to anchor to.
+  gfx::Rect result = gfx::ToRoundedRect(last_known_bounds_);
+  if (result.width() < 1) {
+    result.set_width(1);
+  }
+  if (result.height() < 1) {
+    result.set_height(1);
+  }
+  return result;
+}
+
+#if !BUILDFLAG(IS_ANDROID)
+views::WebView* TrackedElementWebUI::GetWebView() const {
+  return handler_ ? handler_->GetWebView() : nullptr;
+}
+#endif
 
 gfx::NativeView TrackedElementWebUI::GetNativeView() const {
   auto* const contents = handler_->web_contents();

@@ -60,7 +60,7 @@ class InteractionTestUtilBrowser {
       ui::TrackedElement* element,
       const std::string& screenshot_name,
       const std::string& baseline_cl,
-      const ScreenshotOptions& options = {});
+      ScreenshotOptions options = {});
 
   // As `CompareScreenshot()` but takes a screenshot of the entire surface
   // containing `element_in_surface`, not just the element itself. Be careful

@@ -14,6 +14,10 @@
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/native_ui_types.h"
 
+namespace views {
+class WebView;
+}
+
 namespace ui {
 
 class TrackedElementHandler;
@@ -83,6 +87,14 @@ class TrackedElementWebUI : public ui::TrackedElement {
 
   // Returns a new visibility lock.
   std::unique_ptr<TrackedElementVisibilityLock> LockVisible();
+
+  // Returns the bounds of the element in local WebContents DIP coordinates.
+  gfx::Rect GetBoundsInWebContents() const;
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Returns the host WebView for this WebUI element, if any.
+  views::WebView* GetWebView() const;
+#endif
 
  private:
   friend class TrackedElementHandler;

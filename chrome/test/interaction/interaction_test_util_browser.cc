@@ -37,6 +37,7 @@
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
+#include "ui/webui/tracked_element/tracked_element_web_ui.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "ui/base/interaction/interaction_test_util_mac.h"
@@ -127,6 +128,8 @@ views::View* GetScreenshotTargetView(ui::TrackedElement* element) {
     return view_el->view();
   } else if (auto* const page_el = element->AsA<TrackedElementWebContents>()) {
     return page_el->owner()->GetWebView();
+  } else if (auto* const webui_el = element->AsA<ui::TrackedElementWebUI>()) {
+    return webui_el->GetWebView();
   }
   return nullptr;
 }
@@ -425,11 +428,21 @@ ui::test::ActionResult InteractionTestUtilBrowser::CompareScreenshot(
     ui::TrackedElement* element,
     const std::string& screenshot_name,
     const std::string& baseline_cl,
-    const ScreenshotOptions& options) {
+    ScreenshotOptions options) {
   views::View* const view = GetScreenshotTargetView(element);
   if (!view) {
     return ui::test::ActionResult::kNotAttempted;
   }
+
+  if (auto* const webui_el = element->AsA<ui::TrackedElementWebUI>()) {
+    if (!options.region.has_value()) {
+      options.region = webui_el->GetBoundsInWebContents();
+    } else {
+      options.region->Offset(
+          webui_el->GetBoundsInWebContents().OffsetFromOrigin());
+    }
+  }
+
   return CompareScreenshotCommon(view, options, screenshot_name, baseline_cl);
 }
 

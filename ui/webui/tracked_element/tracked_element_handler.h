@@ -34,6 +34,14 @@ namespace user_education {
 class HelpBubbleHandlerBase;
 }  // namespace user_education
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "ui/views/view_tracker.h"
+
+namespace views {
+class WebView;
+}
+#endif
+
 namespace ui {
 
 class InteractionTestUtilSimulatorWebUI;
@@ -93,6 +101,14 @@ class TrackedElementHandler
           help_bubble_handler) {
     help_bubble_handler_ = help_bubble_handler;
   }
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Returns the host WebView for this WebUI, if any. Note that for backgrounded
+  // tabs, there will not be a WebView, and this should only be used if you
+  // absolutely need the view itself (e.g. for screenshotting or anchoring).
+  views::WebView* GetWebView() const;
+  void SetWebViewForTesting(views::WebView* web_view);
+#endif
 
   void BindInterface(
       mojo::PendingReceiver<tracked_element::mojom::TrackedElementHandler>
@@ -191,6 +207,12 @@ class TrackedElementHandler
 
   bool is_web_contents_visible_ = false;
   base::WeakPtr<user_education::HelpBubbleHandlerBase> help_bubble_handler_;
+#if !BUILDFLAG(IS_ANDROID)
+  // Caches the host WebView once located (or set in tests). Marked mutable so
+  // it can be lazily populated in the const GetWebView() method, while using
+  // ViewTracker to safely handle WebView destruction without dangling pointers.
+  mutable views::ViewTracker web_view_tracker_;
+#endif
   mojo::Receiver<tracked_element::mojom::TrackedElementHandler> receiver_;
   mojo::Remote<tracked_element::mojom::TrackedElementManager> manager_remote_;
 

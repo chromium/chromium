@@ -85,6 +85,7 @@ if (!is_android) {
       "//chrome/test/base:in_process_browser_test",
       "//chrome/test/base:test_switches",
       "//ui/base:test_support",
+      "//ui/webui/tracked_element",
     ]
   }
 }

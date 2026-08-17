@@ -16,11 +16,43 @@
 #include "ui/base/interaction/element_highlighter.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
-#include "ui/webui/resources/js/tracked_element/tracked_element.mojom.h"
 #include "ui/webui/tracked_element/element_highlighter_webui.h"
 #include "ui/webui/tracked_element/tracked_element_web_ui.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "ui/views/controls/webview/webview.h"
+#include "ui/views/view_utils.h"
+#include "ui/views/widget/widget.h"
+#endif
+
 namespace ui {
+
+#if !BUILDFLAG(IS_ANDROID)
+namespace {
+
+views::WebView* FindWebViewWithContentsRecursive(
+    views::View* from_view,
+    const content::WebContents* contents) {
+  if (!from_view || !contents) {
+    return nullptr;
+  }
+  auto* const web_view = views::AsViewClass<views::WebView>(from_view);
+  if (web_view && web_view->web_contents() == contents) {
+    return web_view;
+  }
+
+  for (views::View* const child_view : from_view->children()) {
+    auto* const result = FindWebViewWithContentsRecursive(child_view, contents);
+    if (result) {
+      return result;
+    }
+  }
+
+  return nullptr;
+}
+
+}  // namespace
+#endif
 
 TrackedElementHandler::TrackedElementHandler(
     content::WebUIController* controller)
@@ -381,5 +413,35 @@ void TrackedElementHandler::ReportBadMessage(
       "\"%s\"",
       description, id->native_identifier, id->secondary_identifier));
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+void TrackedElementHandler::SetWebViewForTesting(views::WebView* web_view) {
+  web_view_tracker_.SetView(web_view);
+}
+
+views::WebView* TrackedElementHandler::GetWebView() const {
+  if (!web_contents()) {
+    return nullptr;
+  }
+  if (auto* const view = web_view_tracker_.view()) {
+    if (auto* const web_view = views::AsViewClass<views::WebView>(view)) {
+      if (web_view->web_contents() == web_contents()) {
+        return web_view;
+      }
+    }
+  }
+  auto* const widget = views::Widget::GetWidgetForNativeWindow(
+      web_contents()->GetTopLevelNativeWindow());
+  if (!widget) {
+    return nullptr;
+  }
+  auto* const web_view = FindWebViewWithContentsRecursive(
+      widget->GetContentsView(), web_contents());
+  if (web_view) {
+    web_view_tracker_.SetView(web_view);
+  }
+  return web_view;
+}
+#endif
 
 }  // namespace ui

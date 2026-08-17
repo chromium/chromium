@@ -27,7 +27,10 @@ source_set("tracked_element") {
   ]
 
   if (!is_android) {
-    deps += [ "//ui/views" ]
+    deps += [
+      "//ui/views",
+      "//ui/views/controls/webview",
+    ]
   }
 }
 

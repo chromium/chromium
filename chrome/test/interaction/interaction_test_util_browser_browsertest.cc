@@ -38,6 +38,7 @@
 #include "ui/views/style/typography.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
+#include "ui/webui/tracked_element/tracked_element_handler.h"
 
 namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
@@ -98,6 +99,49 @@ IN_PROC_BROWSER_TEST_F(InteractionTestUtilBrowserTest,
                              /*screenshot_name=*/"AppMenuButton",
                              /*baseline_cl=*/"6956367",
                              []() { return gfx::Rect(4, 4, 20, 20); }));
+}
+
+IN_PROC_BROWSER_TEST_F(InteractionTestUtilBrowserTest,
+                       CompareScreenshot_TrackedElementWebUI) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestWebUIElementId);
+  auto* const web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  auto handler = std::make_unique<ui::TrackedElementHandler>(
+      web_contents, BrowserElements::From(browser())->GetContext(),
+      std::vector<ui::ElementIdentifier>{kTestWebUIElementId});
+  handler->TrackedElementVisibilityChanged(
+      tracked_element::mojom::TrackedElementIdentifier::New(
+          kTestWebUIElementId.GetName(), "1"),
+      true, gfx::RectF(10, 10, 50, 20));
+
+  RunTestSequence(WaitForShow(kTestWebUIElementId),
+                  SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
+                                          kSkipPixelTestsReason),
+                  Screenshot(kTestWebUIElementId,
+                             /*screenshot_name=*/"WebUIElement",
+                             /*baseline_cl=*/"1234567"));
+}
+
+IN_PROC_BROWSER_TEST_F(InteractionTestUtilBrowserTest,
+                       CompareScreenshot_TrackedElementWebUIWithClipBounds) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestWebUIElementId);
+  auto* const web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  auto handler = std::make_unique<ui::TrackedElementHandler>(
+      web_contents, BrowserElements::From(browser())->GetContext(),
+      std::vector<ui::ElementIdentifier>{kTestWebUIElementId});
+  handler->TrackedElementVisibilityChanged(
+      tracked_element::mojom::TrackedElementIdentifier::New(
+          kTestWebUIElementId.GetName(), "1"),
+      true, gfx::RectF(10, 10, 50, 20));
+
+  RunTestSequence(WaitForShow(kTestWebUIElementId),
+                  SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
+                                          kSkipPixelTestsReason),
+                  Screenshot(kTestWebUIElementId,
+                             /*screenshot_name=*/"WebUIElement",
+                             /*baseline_cl=*/"1234567",
+                             []() { return gfx::Rect(2, 2, 10, 10); }));
 }
 
 class ScreenshotSurfaceTestDialog : public views::BubbleDialogDelegateView {

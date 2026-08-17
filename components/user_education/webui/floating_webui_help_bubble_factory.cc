@@ -20,44 +20,15 @@ namespace user_education {
 
 namespace {
 
-// Searches `from_view` recursively (depth-first) for a WebView with `contents`.
-views::WebView* FindWebViewWithContentsRecursive(
-    views::View* from_view,
-    const content::WebContents* contents) {
-  auto* const web_view = views::AsViewClass<views::WebView>(from_view);
-  if (web_view && web_view->web_contents() == contents) {
-    return web_view;
-  }
-
-  for (views::View* const child_view : from_view->children()) {
-    auto* const result = FindWebViewWithContentsRecursive(child_view, contents);
-    if (result) {
-      return result;
-    }
-  }
-
-  return nullptr;
-}
-
 // Attempts to extract the host WebView from `element`; returns null if
 // `element` is not a TrackedElementWebUI or the host view
 // cannot be determined.
 views::WebView* GetWebViewForElement(const ui::TrackedElement* element) {
-  if (!element->IsA<ui::TrackedElementWebUI>()) {
-    return nullptr;
+  if (const auto* const element_webui =
+          element->AsA<ui::TrackedElementWebUI>()) {
+    return element_webui->GetWebView();
   }
-
-  const auto* const element_webui = element->AsA<ui::TrackedElementWebUI>();
-  auto* const contents = element_webui->handler()->web_contents();
-  if (!contents) {
-    return nullptr;
-  }
-  auto* const widget = views::Widget::GetWidgetForNativeWindow(
-      contents->GetTopLevelNativeWindow());
-  if (!widget) {
-    return nullptr;
-  }
-  return FindWebViewWithContentsRecursive(widget->GetContentsView(), contents);
+  return nullptr;
 }
 
 }  // namespace

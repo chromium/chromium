@@ -34,6 +34,7 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/webui/resources/js/tracked_element/tracked_element.mojom.h"
 #include "ui/webui/tracked_element/tracked_element_handler_document_singleton.h"
 #include "ui/webui/tracked_element/tracked_element_web_ui.h"
@@ -823,7 +824,67 @@ TEST_F(TrackedElementHandlerWidgetTest, GetNativeView) {
   webview->SetWebContents(nullptr);
   widget->CloseNow();
 }
+
+TEST_F(TrackedElementHandlerWidgetTest, GetWebView) {
+  handler_remote()->TrackedElementVisibilityChanged(
+      MakeId(kTestElementIdentifier1, kTestSecondaryId1), true, kElementBounds);
+  tracked_element_handler_remote_.FlushForTesting();
+
+  auto* const element =
+      ui::ElementTracker::GetElementTracker()->GetElementInAnyContext(
+          kTestElementIdentifier1);
+  ASSERT_TRUE(element);
+  auto* const webui_element = element->AsA<TrackedElementWebUI>();
+  ASSERT_TRUE(webui_element);
+
+  // Before widget is initialized, GetWebView() should return nullptr.
+  EXPECT_EQ(nullptr, handler_->GetWebView());
+  EXPECT_EQ(nullptr, webui_element->GetWebView());
+
+  auto widget = std::make_unique<views::Widget>();
+  views::Widget::InitParams params =
+      CreateParams(views::Widget::InitParams::TYPE_WINDOW);
+  params.ownership = views::Widget::InitParams::CLIENT_OWNS_WIDGET;
+  widget->Init(std::move(params));
+  widget->Show();
+
+  auto* webview = widget->SetClientContentsView(
+      std::make_unique<views::WebView>(browser_context_.get()));
+  webview->SetWebContents(web_contents_.get());
+
+  // Should discover the WebView automatically.
+  EXPECT_EQ(webview, handler_->GetWebView());
+  EXPECT_EQ(webview, webui_element->GetWebView());
+
+  // Explicitly setting WebView should also work.
+  auto custom_webview =
+      std::make_unique<views::WebView>(browser_context_.get());
+  custom_webview->SetWebContents(web_contents_.get());
+  handler_->SetWebViewForTesting(custom_webview.get());
+  EXPECT_EQ(custom_webview.get(), handler_->GetWebView());
+  handler_->SetWebViewForTesting(webview);
+  EXPECT_EQ(webview, handler_->GetWebView());
+
+  custom_webview->SetWebContents(nullptr);
+  webview->SetWebContents(nullptr);
+  widget->CloseNow();
+}
 #endif
+
+TEST_F(TrackedElementHandlerTest, GetBoundsInWebContents) {
+  handler_remote()->TrackedElementVisibilityChanged(
+      MakeId(kTestElementIdentifier1, kTestSecondaryId1), true, kElementBounds);
+  tracked_element_handler_remote_.FlushForTesting();
+
+  auto* const element =
+      ui::ElementTracker::GetElementTracker()->GetElementInAnyContext(
+          kTestElementIdentifier1);
+  ASSERT_TRUE(element);
+  auto* const webui_element = element->AsA<TrackedElementWebUI>();
+  ASSERT_TRUE(webui_element);
+  EXPECT_EQ(gfx::ToRoundedRect(kElementBounds),
+            webui_element->GetBoundsInWebContents());
+}
 
 class TestWebUIController : public content::WebUIController {
  public:
