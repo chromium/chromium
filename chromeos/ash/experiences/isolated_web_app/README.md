@@ -8,4 +8,4 @@ Currently, it implements the `window.setShape` API.
 * The Blink frontend lives in
   `//third_party/blink/renderer/modules/set_shape/`.
 * The browser tests verifying this API and its allowlist
-  behavior live in `//chrome/browser/ash/isolated_web_app/`.
+  behavior live in `//chrome/browser/ash/set_shape/`.

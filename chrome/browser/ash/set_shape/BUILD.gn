@@ -10,7 +10,7 @@ source_set("browser_tests") {
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
   sources = [
-    "blink_extensions_browsertest.cc",
+    "set_shape_allowlist_browsertest.cc",
     "set_shape_browsertest.cc",
   ]
 
