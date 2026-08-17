@@ -474,14 +474,11 @@ public class ContextMenuTest extends AwParameterizedTest {
                 () -> mHelper.showContextMenu(params, mTestContainerView));
 
         mCoordinator = mHelper.getCoordinatorForTesting();
-        Assert.assertNotNull("Coordinator should be created for links", mCoordinator);
 
         if (menuItems == DISABLED) {
-            Assert.assertTrue(
-                    "Context menu should not be shown if there are no items",
-                    mCoordinator.getDialogForTesting() == null
-                            && mCoordinator.getPopupWindowForTesting() == null);
+            Assert.assertNull("Coordinator should be destroyed when disabled", mCoordinator);
         } else {
+            Assert.assertNotNull("Coordinator should be created for links", mCoordinator);
             assertMenuItemsAreEqual(mCoordinator, expectedItems);
         }
     }

@@ -123,9 +123,10 @@ public class AwContextMenuCoordinator {
         mParams.destroy();
     }
 
-    void displayMenu() {
+    boolean displayMenu() {
         if (mItems.isEmpty()) {
-            return;
+            dismiss();
+            return false;
         }
 
         View layout =
@@ -181,6 +182,7 @@ public class AwContextMenuCoordinator {
         } else {
             showAsDialog(layout);
         }
+        return true;
     }
 
     /**
