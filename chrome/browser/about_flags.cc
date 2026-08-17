@@ -12915,6 +12915,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDevToolsEnableDurableMessagesDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kDevToolsEnableDurableMessages)},
 
+    {"devtools-mobile-safe-area-emulation",
+     flag_descriptions::kDevToolsMobileSafeAreaEmulationName,
+     flag_descriptions::kDevToolsMobileSafeAreaEmulationDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kDevToolsMobileSafeAreaEmulation)},
+
     {"unthrottle-async-touch-moves",
      flag_descriptions::kUnthrottleAsyncTouchMovesName,
      flag_descriptions::kUnthrottleAsyncTouchMovesDescription, kOsAll,

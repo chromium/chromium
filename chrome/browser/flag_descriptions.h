@@ -2059,6 +2059,11 @@ inline constexpr char kDevToolsInstrumentationBreakpointsName[] =
 inline constexpr char kDevToolsInstrumentationBreakpointsDescription[] =
     "Enables instrumentation breakpoints in DevTools.";
 
+inline constexpr char kDevToolsMobileSafeAreaEmulationName[] =
+    "Mobile safe area emulation in DevTools";
+inline constexpr char kDevToolsMobileSafeAreaEmulationDescription[] =
+    "Enables mobile safe area emulation in DevTools.";
+
 inline constexpr char kDevToolsPlusButtonName[] =
     "Enable the Plus Button in DevTools";
 inline constexpr char kDevToolsPlusButtonDescription[] =

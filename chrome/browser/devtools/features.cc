@@ -250,4 +250,8 @@ BASE_FEATURE(kDevToolsSourceMapScopesInSourcesPanel,
 
 // Whether the A11y Announcements recording subpane is enabled in DevTools.
 BASE_FEATURE(kDevToolsAriaLiveRecording, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Whether mobile safe area emulation is enabled in DevTools.
+BASE_FEATURE(kDevToolsMobileSafeAreaEmulation,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace features
