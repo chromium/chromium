@@ -107,6 +107,7 @@ void AnchorElementUtils::UpdateHref(Element& element,
   }
   element.PseudoStateChanged(CSSSelector::kPseudoLink);
   element.PseudoStateChanged(CSSSelector::kPseudoVisited);
+  element.PseudoStateChanged(CSSSelector::kPseudoLinkTo);
   if (was_link != is_link) {
     element.PseudoStateChanged(CSSSelector::kPseudoWebkitAnyLink);
     element.PseudoStateChanged(CSSSelector::kPseudoAnyLink);
