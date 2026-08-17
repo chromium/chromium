@@ -712,8 +712,8 @@ void WorkspaceWindowResizer::Drag(const gfx::PointF& location_in_parent,
   gfx::Rect bounds = CalculateBoundsForDrag(location_in_parent);
   AdjustBoundsForMainWindow(sticky_size, &bounds);
 
-  auto weak_this = GetWeakPtr();
   if (bounds != GetTarget()->bounds()) {
+    WindowResizer::ScopedDeleteBlocker blocker(this);
     if (!did_move_or_resize_) {
       if (!details().restore_bounds_in_parent.IsEmpty()) {
         window_state()->ClearRestoreBounds();
@@ -722,12 +722,9 @@ void WorkspaceWindowResizer::Drag(const gfx::PointF& location_in_parent,
             // Update the maximized window so that it looks like it has been
             // restored (i.e. update the caption buttons and height of the
             // browser frame).
-
             window_state()->window()->SetProperty(kFrameRestoreLookKey, true);
-            CHECK(weak_this);
             CrossFadeAnimation(window_state()->window(), bounds,
                                /*maximize=*/false);
-            CHECK(weak_this);
 
             base::RecordAction(
                 base::UserMetricsAction("WindowDrag_Unmaximize"));
@@ -737,14 +734,13 @@ void WorkspaceWindowResizer::Drag(const gfx::PointF& location_in_parent,
         }
       }
       RestackWindows();
-      CHECK(weak_this);
     }
     did_move_or_resize_ = true;
   }
 
   if (!attached_windows_.empty()) {
+    WindowResizer::ScopedDeleteBlocker blocker(this);
     LayoutAttachedWindows(&bounds);
-    CHECK(weak_this);
   }
   if (aura::Window* window = GetTarget(); bounds != window->bounds()) {
     // If a window is snapped, then starts drag to unsnap, at this point its
@@ -752,12 +748,14 @@ void WorkspaceWindowResizer::Drag(const gfx::PointF& location_in_parent,
     // ratio which would be using the restore or normal bounds.
     auto* window_state = WindowState::Get(window);
     window_state->set_can_update_snap_ratio(false);
+    base::WeakPtr<WorkspaceWindowResizer> resizer(
+        weak_ptr_factory_.GetWeakPtr());
     SetBoundsDuringResize(bounds);
     window_state->set_can_update_snap_ratio(true);
     // SetBounds needs to be called to update the layout which affects where the
     // phantom window is drawn. Keep track if the window was destroyed during
     // the drag and quit early if so.
-    if (!weak_this) {
+    if (!resizer) {
       return;
     }
   }
