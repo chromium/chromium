@@ -331,10 +331,12 @@ ModelContext::ModelContext(Document& document)
       script_tool_host_remote_(document.GetExecutionContext()),
       model_context_host_remote_(document.GetExecutionContext()),
       model_context_receiver_(this, document.GetExecutionContext()) {
-  document.GetExecutionContext()->GetBrowserInterfaceBroker().GetInterface(
-      model_context_host_remote_.BindNewPipeAndPassReceiver(task_runner_));
-  model_context_host_remote_->BindModelContext(
-      model_context_receiver_.BindNewPipeAndPassRemote(task_runner_));
+  if (auto* execution_context = document.GetExecutionContext()) {
+    execution_context->GetBrowserInterfaceBroker().GetInterface(
+        model_context_host_remote_.BindNewPipeAndPassReceiver(task_runner_));
+    model_context_host_remote_->BindModelContext(
+        model_context_receiver_.BindNewPipeAndPassRemote(task_runner_));
+  }
 }
 
 void ModelContext::ForEachScriptTool(
