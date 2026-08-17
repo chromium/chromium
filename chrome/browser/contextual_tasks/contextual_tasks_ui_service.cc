@@ -261,6 +261,40 @@ void LoadUrlInSidePanel(content::WebContents* web_contents, const GURL& url) {
                                         std::string());
 }
 
+// Returns true if `web_contents` corresponds to an active tab that is attached
+// as context in the current contextual search session.
+bool IsActiveTabInContext(content::WebContents* web_contents) {
+  if (!contextual_tasks::IsContextualTasksUIEnabled() || !web_contents) {
+    return false;
+  }
+
+  SessionID current_tab_id = SessionTabHelper::IdForTab(web_contents);
+  if (!current_tab_id.is_valid()) {
+    return false;
+  }
+
+  auto* helper =
+      ContextualSearchWebContentsHelper::FromWebContents(web_contents);
+  if (!helper || !helper->session_handle()) {
+    return false;
+  }
+
+  auto* session_handle = helper->session_handle();
+  for (const auto& file : session_handle->GetSubmittedContextFileInfos()) {
+    if (file.tab_session_id.has_value() &&
+        file.tab_session_id.value() == current_tab_id) {
+      return true;
+    }
+  }
+  for (const auto& file : session_handle->GetUploadedContextFileInfos()) {
+    if (file.tab_session_id.has_value() &&
+        file.tab_session_id.value() == current_tab_id) {
+      return true;
+    }
+  }
+  return false;
+}
+
 }  // namespace
 
 ContextualTasksUiService::ContextualTasksUiService(
@@ -1160,8 +1194,10 @@ bool ContextualTasksUiService::ShouldRedirectIneligibleRequest(
 
   // Bypasses the redirect check if the session was started from Lens and the
   // Lens side panel unification feature is enabled (either as an active
-  // session or a pending session for the given task ID).
-  if (IsSessionAllowedWhileIneligible(source_contents, task_id)) {
+  // session or a pending session for the given task ID), or if the active tab
+  // is present in context on the WebContents.
+  if (IsSessionAllowedWhileIneligible(source_contents, task_id) ||
+      IsActiveTabInContext(source_contents)) {
     return false;
   }
 
@@ -1189,6 +1225,8 @@ bool ContextualTasksUiService::IsSessionAllowedWhileIneligible(
     return false;
   }
 
+  // Allow cobrowse session if we reached here from lens entry points. It will
+  // end up in opening the side panel.
   if (web_contents) {
     auto* helper =
         ContextualSearchWebContentsHelper::FromWebContents(web_contents);
@@ -2185,7 +2223,8 @@ bool ContextualTasksUiService::HandleNavigationImpl(
   // Navigations to the AI URL in the topmost frame should always be
   // intercepted.
   if (is_nav_to_ai) {
-    if (!aim_eligibility_service_->IsCobrowseEligible()) {
+    if (!aim_eligibility_service_->IsCobrowseEligible() &&
+        !IsActiveTabInContext(source_contents)) {
       OMNIBOX_LOG("nav_trace")
           << "ContextualTasks navigation trace: HandleNavigationImpl "
              "returning false, nav to AI but not cobrowse eligible";
