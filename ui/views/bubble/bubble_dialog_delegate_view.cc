@@ -1067,6 +1067,21 @@ ax::mojom::Role BubbleDialogDelegate::GetAccessibleWindowRole() {
   return ax::mojom::Role::kAlertDialog;
 }
 
+std::u16string BubbleDialogDelegate::GetAccessibleWindowTitle() const {
+  if (!GetAccessibleTitle().empty()) {
+    return GetAccessibleTitle();
+  }
+  // If the window title is displayed visually in the bubble frame (as a label
+  // or heading), return an empty string so that the dialog container's
+  // accessible name is set to kAttributeExplicitlyEmpty. This prevents screen
+  // readers from announcing the title twice (once for the dialog container and
+  // once for the title label).
+  if (ShouldShowWindowTitle() && !GetWindowTitle().empty()) {
+    return std::u16string();
+  }
+  return GetWindowTitle();
+}
+
 gfx::Rect BubbleDialogDelegate::GetDesiredBubbleBounds() {
   CHECK(use_custom_frame())
       << "GetBubbleBounds() for native frame dialogs is not supported.";
