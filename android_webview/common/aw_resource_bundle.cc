@@ -13,12 +13,10 @@
 #include "base/i18n/language_tag.h"
 #include "base/i18n/tag_converters.h"
 #include "base/logging.h"
-#include "base/path_service.h"
 #include "base/posix/global_descriptors.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/resource/resource_bundle_android.h"
-#include "ui/base/ui_base_paths.h"
 
 namespace android_webview {
 
@@ -41,12 +39,8 @@ void InitIcuAndResourceBundleBrowserSide() {
   SetDefaultIcuLocale(base::i18n::DefaultIcuLocaleSetterKey(),
                       locale_tag.value_or(GetKnownLanguageTag("en-US")));
 
-  // Try to directly mmap the resources.pak from the apk. Fall back to load
-  // from file, using PATH_SERVICE, otherwise.
-  base::FilePath pak_file_path;
-  base::PathService::Get(ui::DIR_RESOURCE_PAKS_ANDROID, &pak_file_path);
-  pak_file_path = pak_file_path.AppendASCII("resources.pak");
-  ui::LoadMainAndroidPackFile("assets/resources.pak", pak_file_path);
+  // We only load the resources.pak from the apk.
+  ui::LoadMainAndroidPackFile("assets/resources.pak", base::FilePath());
 }
 
 void InitResourceBundleRendererSide() {

@@ -53,7 +53,6 @@ import org.chromium.base.ApkInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.EarlyTraceEvent;
 import org.chromium.base.Log;
-import org.chromium.base.PathService;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.library_loader.LibraryLoader;
@@ -177,12 +176,6 @@ public class WebViewChromiumAwInit {
 
     private volatile boolean mShouldInitializeDefaultProfile = true;
 
-    // TODO: DIR_RESOURCE_PAKS_ANDROID needs to live somewhere sensible,
-    // inlined here for simplicity setting up the HTMLViewer demo. Unfortunately
-    // it can't go into base.PathService, as the native constant it refers to
-    // lives in the ui/ layer. See ui/base/ui_base_paths.h
-    private static final int DIR_RESOURCE_PAKS_ANDROID = 3003;
-
     WebViewChromiumAwInit(WebViewChromiumFactoryProvider factory) {
         mFactory = factory;
         // Do not make calls into 'factory' in this ctor - this ctor is called from the
@@ -236,10 +229,6 @@ public class WebViewChromiumAwInit {
                     DualTraceEvent.scoped("LibraryLoader.ensureInitialized")) {
                 LibraryLoader.getInstance().ensureInitialized();
             }
-
-            // TODO(crbug.com/400414092): PathService overrides should be obsolete now.
-            PathService.override(PathService.DIR_MODULE, "/system/lib/");
-            PathService.override(DIR_RESOURCE_PAKS_ANDROID, "/system/framework/webview/paks");
 
             initPlatSupportLibrary();
             AwContentsStatics.setCheckClearTextPermitted(
