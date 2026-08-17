@@ -160,18 +160,6 @@ bool EventForwarder::OnTouchEvent(JNIEnv* env,
       JNI_MotionEvent::Java_MotionEvent_getRawY(env, motion_event) - pos_y_0,
       for_touch_handle, &pointer0, pointer1.get(), is_latest_event_resampled);
 
-  if (send_touch_moves_to_observers ||
-      android_action !=
-          MotionEventAndroid::GetAndroidAction(MotionEvent::Action::MOVE)) {
-    // Don't send touch moves to observers. Currently we just have one observer
-    // which shouldn't be affected by this. This is a temporary change until we
-    // have confirmed touch moves are not required by the observer and we can
-    // cleanup the observer API.
-    // TODO(b/328601354): Confirm touch moves are not required, and if they are
-    // not required cleanup the observer API.
-    observers_.Notify(&Observer::OnTouchEvent, *event);
-  }
-
   return view_->OnTouchEvent(*event);
 }
 
