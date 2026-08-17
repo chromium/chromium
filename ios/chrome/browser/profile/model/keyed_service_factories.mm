@@ -301,6 +301,7 @@ void EnsureProfileKeyedServiceFactoriesBuilt() {
   segmentation_platform::SegmentationPlatformServiceFactory::GetInstance();
   supervised_user::FamilyLinkSettingsServiceFactory::GetInstance();
   supervised_user::ListFamilyMembersServiceFactory::GetInstance();
+  supervised_user::SupervisedUserServiceFactory::GetInstance();
   supervised_user::SupervisedUserUrlFilteringServiceFactory::GetInstance();
   tab_groups::TabGroupSyncServiceFactory::GetInstance();
   translate::TranslateRankerFactory::GetInstance();

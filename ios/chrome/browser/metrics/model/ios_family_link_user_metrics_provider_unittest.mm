@@ -27,6 +27,7 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/model/identity_test_environment_browser_state_adaptor.h"
+#import "ios/chrome/browser/supervised_user/model/child_account_service_factory.h"
 #import "ios/chrome/browser/supervised_user/model/family_link_settings_service_factory.h"
 #import "ios/chrome/browser/supervised_user/model/supervised_user_service_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
@@ -61,6 +62,11 @@ class IOSFamilyLinkUserMetricsProviderTest : public PlatformTest {
               const std::string& email,
               bool is_subject_to_parental_controls,
               bool is_opted_in_to_parental_supervision) {
+    // Ensure that the Child stack is properly initialized.
+    CHECK(ChildAccountServiceFactory::GetForProfile(profile));
+    CHECK(
+        supervised_user::SupervisedUserServiceFactory::GetForProfile(profile));
+
     AccountInfo account = signin::MakePrimaryAccountAvailable(
         IdentityManagerFactory::GetForProfile(profile), email,
         signin::ConsentLevel::kSignin);

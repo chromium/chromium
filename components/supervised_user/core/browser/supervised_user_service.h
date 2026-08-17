@@ -40,7 +40,6 @@ enum class Channel;
 }  // namespace version_info
 
 namespace supervised_user {
-class FamilyLinkSettingsService;
 
 // Represents custodian data - who is responsible for managing the supervised
 // user's settings.
@@ -140,17 +139,12 @@ class SupervisedUserService : public KeyedService {
       signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       PrefService& user_prefs,
-      FamilyLinkSettingsService& settings_service,
       std::unique_ptr<FamilyLinkUrlFilter> url_filter,
       std::unique_ptr<SupervisedUserService::PlatformDelegate>
           platform_delegate,
       const DeviceParentalControls& device_parental_controls);
 
  private:
-  // Activates the service which controls managed settings of url filtering and
-  // incognito mode.
-  void SetSettingsServiceActive(bool active);
-
   void OnCustodianInfoChanged();
   void OnSupervisedUserIdChanged();
 
@@ -170,8 +164,6 @@ class SupervisedUserService : public KeyedService {
   void OnIncognitoModeAvailabilityChanged();
 
   const raw_ref<PrefService> user_prefs_;
-
-  const raw_ref<FamilyLinkSettingsService> settings_service_;
 
   raw_ptr<signin::IdentityManager> identity_manager_;
 

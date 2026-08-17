@@ -11,6 +11,8 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
+#include "chrome/browser/supervised_user/child_accounts/child_account_service_factory.h"
+#include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_test_util.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -73,6 +75,11 @@ class FamilyLinkUserMetricsProviderTest : public testing::Test {
         /*is_supervised_profile=*/is_subject_to_parental_controls,
         /*is_new_profile=*/std::nullopt,
         /*policy_service=*/std::nullopt, /*shared_url_loader_factory=*/nullptr);
+
+    // Services are lazily created, so we need to access them to force their
+    // creation.
+    CHECK(SupervisedUserServiceFactory::GetForProfile(profile));
+    CHECK(ChildAccountServiceFactory::GetForProfile(profile));
 
     AccountInfo account = signin::MakePrimaryAccountAvailable(
         IdentityManagerFactory::GetForProfile(profile), test_email,
@@ -574,8 +581,8 @@ class
 
       // Services are lazily created, so we need to access them to force their
       // creation.
-      CHECK(SupervisedUserServiceFactory::GetInstance()->GetForProfile(
-          unsupervised_profile));
+      CHECK(SupervisedUserServiceFactory::GetForProfile(unsupervised_profile));
+      CHECK(ChildAccountServiceFactory::GetForProfile(unsupervised_profile));
     }
   }
 

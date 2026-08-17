@@ -77,7 +77,6 @@ std::unique_ptr<KeyedService> SupervisedUserServiceFactory::BuildInstanceFor(
           profile->GetProfileKey()));
   return std::make_unique<SupervisedUserService>(
       identity_manager, url_loader_factory, *profile->GetPrefs(),
-      family_link_settings_service,
       std::make_unique<FamilyLinkUrlFilter>(
           family_link_settings_service, *profile->GetPrefs(),
           std::make_unique<FilterDelegateImpl>(),

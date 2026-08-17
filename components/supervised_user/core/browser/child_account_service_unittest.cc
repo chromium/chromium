@@ -66,6 +66,7 @@ class ChildAccountServiceTest : public ::testing::Test {
 
     child_account_service_ = std::make_unique<ChildAccountService>(
         syncable_pref_service_, identity_test_environment_->identity_manager(),
+        family_link_settings_service_,
         /*check_user_child_status_callback=*/base::DoNothing());
 
     child_account_service_->Init();
@@ -235,5 +236,30 @@ TEST_F(ChildAccountServiceTest, GoogleSafeSearchNotForcedAfterSignOut) {
       policy::policy_prefs::kForceGoogleSafeSearch));
 }
 #endif
+
+TEST_F(ChildAccountServiceTest, FamilyLinkSettingsServiceActiveState) {
+  // Initial state should be inactive as there is no supervised primary account.
+  EXPECT_FALSE(family_link_settings_service_.IsActive());
+
+  // Sign in with a supervised account.
+  AccountInfo account_info =
+      identity_test_environment_->MakePrimaryAccountAvailable(
+          kEmail, signin::ConsentLevel::kSignin);
+  supervised_user::UpdateSupervisionStatusForAccount(
+      account_info, identity_test_environment_->identity_manager(),
+      /*is_subject_to_parental_controls=*/true);
+
+  // Settings service should now be active.
+  EXPECT_TRUE(family_link_settings_service_.IsActive());
+
+  // Sign out not supported on ChromeOS.
+#if !BUILDFLAG(IS_CHROMEOS)
+  // Sign out.
+  identity_test_environment_->ClearPrimaryAccount();
+
+  // Settings service should be deactivated.
+  EXPECT_FALSE(family_link_settings_service_.IsActive());
+#endif
+}
 
 }  // namespace supervised_user

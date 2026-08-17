@@ -911,7 +911,6 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
 #endif
     "StorageFrontend",
     "StorageNotificationService",
-    "SupervisedUserService",
     "SystemInfoAPI",
     "TCPServerSocketEventDispatcher",
     "TCPSocketEventDispatcher",

@@ -14,6 +14,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/safe_search_api/fake_url_checker_client.h"
 #include "components/safe_search_api/url_checker_client.h"
+#include "components/supervised_user/core/browser/child_account_service.h"
 #include "components/supervised_user/core/browser/device_parental_controls_url_filter.h"
 #include "components/supervised_user/core/browser/family_link_url_filter.h"
 #include "components/supervised_user/core/browser/supervised_user_metrics_service.h"
@@ -211,12 +212,17 @@ SupervisedUserTestEnvironment::SupervisedUserTestEnvironment(
 #endif  // BUILDFLAG(IS_ANDROID)
 
   pref_store_environment_.ConfigureInitialValues(initial_state);
+  child_account_service_ = std::make_unique<ChildAccountService>(
+      *pref_store_environment_.pref_service(),
+      identity_test_env_.identity_manager(),
+      *pref_store_environment_.settings_service(),
+      /*check_user_child_status_callback=*/base::DoNothing());
+  child_account_service_->Init();
   service_ = std::make_unique<SupervisedUserService>(
       identity_test_env_.identity_manager(),
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           &test_url_loader_factory_),
       *pref_store_environment_.pref_service(),
-      *pref_store_environment_.settings_service(),
       std::make_unique<FamilyLinkUrlFilter>(
           *pref_store_environment_.settings_service(),
           *pref_store_environment_.pref_service(),
@@ -230,7 +236,7 @@ SupervisedUserTestEnvironment::SupervisedUserTestEnvironment(
       *service_.get(), std::make_unique<DeviceParentalControlsUrlFilter>(
                            pref_store_environment_.device_parental_controls(),
                            std::make_unique<UrlCheckerClientWrapper>(
-                               device_parental_controls_url_checker_client_)));
+                                device_parental_controls_url_checker_client_)));
   metrics_service_ = std::make_unique<SupervisedUserMetricsService>(
       pref_store_environment_.pref_service(), *service_.get(),
       *url_filtering_service_.get(),
@@ -243,6 +249,7 @@ SupervisedUserTestEnvironment::~SupervisedUserTestEnvironment() = default;
 void SupervisedUserTestEnvironment::Shutdown() {
   metrics_service_->Shutdown();
   service_->Shutdown();
+  child_account_service_->Shutdown();
   pref_store_environment_.Shutdown();
 }
 
@@ -324,6 +331,10 @@ FamilyLinkUrlFilter* SupervisedUserTestEnvironment::family_link_url_filter()
 FamilyLinkSettingsService*
 SupervisedUserTestEnvironment::family_link_settings_service() {
   return pref_store_environment_.settings_service();
+}
+ChildAccountService* SupervisedUserTestEnvironment::child_account_service()
+    const {
+  return child_account_service_.get();
 }
 SupervisedUserService* SupervisedUserTestEnvironment::service() const {
   return service_.get();

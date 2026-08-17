@@ -14,6 +14,7 @@
 #include "base/no_destructor.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -38,11 +39,21 @@ using ::base::BindRepeating;
 ChildAccountService::ChildAccountService(
     PrefService& user_prefs,
     signin::IdentityManager* identity_manager,
+    FamilyLinkSettingsService& family_link_settings_service,
     base::OnceCallback<void(bool)> check_user_child_status_callback)
     : identity_manager_(identity_manager),
+      family_link_settings_service_(family_link_settings_service),
       user_prefs_(user_prefs),
       check_user_child_status_callback_(
-          std::move(check_user_child_status_callback)) {}
+          std::move(check_user_child_status_callback)) {
+  // Takes care of initializing the family link settings service from storage.
+  pref_change_registrar_.Init(&user_prefs);
+  pref_change_registrar_.Add(
+      prefs::kSupervisedUserId,
+      BindRepeating(&ChildAccountService::OnSupervisionStatusChanged,
+                    base::Unretained(this)));
+  OnSupervisionStatusChanged();
+}
 
 ChildAccountService::~ChildAccountService() = default;
 
@@ -141,6 +152,11 @@ void ChildAccountService::SetSupervisionStatusAndNotifyObservers(
   // It's possible the supervision status change is caused by sign-in /
   // sign-out event, which would also update the Google auth state.
   OnAuthStateUpdated();
+}
+
+void ChildAccountService::OnSupervisionStatusChanged() {
+  family_link_settings_service_->SetActive(
+      IsSubjectToParentalControls(user_prefs_.get()));
 }
 
 void ChildAccountService::OnPrimaryAccountChanged(

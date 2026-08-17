@@ -19,6 +19,7 @@
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/supervised_user/android/supervised_user_service_platform_delegate.h"
+#include "chrome/browser/supervised_user/child_accounts/child_account_service_factory.h"
 #include "chrome/browser/supervised_user/family_link_settings_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_test_util.h"
@@ -28,6 +29,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/safe_search_api/fake_url_checker_client.h"
+#include "components/supervised_user/core/browser/child_account_service.h"
 #include "components/supervised_user/core/browser/family_link_url_filter.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
@@ -76,6 +78,14 @@ class ClassifyUrlNavigationThrottleTestBase
                                 BuildTestSupervisedUserService,
                             base::Unretained(this)));
     return builder.Build();
+  }
+
+  void SetUp() override {
+    ChromeRenderViewHostTestHarness::SetUp();
+    // Initialize the ChildAccountService which is responsible for wiring up
+    // the supervision status to the FamilyLinkSettingsService (that ultimately
+    // configures the url filtering, for the family link supervised users).
+    ChildAccountServiceFactory::GetForProfile(profile());
   }
 
   std::unique_ptr<content::MockNavigationThrottleRegistry>
@@ -150,7 +160,6 @@ class ClassifyUrlNavigationThrottleTestBase
             profile->GetProfileKey()));
     return std::make_unique<SupervisedUserService>(
         identity_manager, url_loader_factory, *profile->GetPrefs(),
-        settings_service,
         std::make_unique<FamilyLinkUrlFilter>(
             settings_service, *profile->GetPrefs(),
             std::make_unique<FakeURLFilterDelegate>(),

@@ -18,6 +18,7 @@
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/signin/test_signin_client_builder.h"
+#include "chrome/browser/supervised_user/child_accounts/child_account_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_test_util.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/supervised_user/core/browser/proto/families_common.pb.h"
@@ -77,6 +78,8 @@ class FamilyInfoFeedbackSourceForChildFilterBehaviorTest
     identity_test_env_profile_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile_.get());
     j_feedback_source_ = CreateJavaObjectForTesting();
+
+    CHECK(ChildAccountServiceFactory::GetForProfile(profile_.get()));
   }
 
  protected:
