@@ -658,15 +658,11 @@ std::unique_ptr<net::test_server::HttpResponse> HandleImageQueryOrCloseSocket(
 - (void)testDeleteEntries {
   AddEntriesAndEnterEdit();
   TapEntry(kReadTitle2);
-  // This Check is necessary as there is an animation when prior to entering the
-  // edit mode.
-  if (iOS26_OR_ABOVE()) {
-    id<GREYMatcher> toolbarButtonMatcher =
-        chrome_test_util::ToolbarButtonWithID(
-            kReadingListToolbarDeleteButtonID);
-    [ChromeEarlGrey
-        waitForSufficientlyVisibleElementWithMatcher:toolbarButtonMatcher];
-  }
+  // Wait for the delete button to be sufficiently visible prior to tapping.
+  id<GREYMatcher> toolbarDeleteButtonMatcher =
+      chrome_test_util::ToolbarButtonWithID(kReadingListToolbarDeleteButtonID);
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:toolbarDeleteButtonMatcher];
 
   AssertToolbarButtonVisibleWithID(kReadingListToolbarDeleteButtonID);
   AssertNavigationBarButtonVisibleWithID(
@@ -696,6 +692,8 @@ std::unique_ptr<net::test_server::HttpResponse> HandleImageQueryOrCloseSocket(
 
   TapToolbarButtonWithID(kReadingListNavigationBarSelectButtonID);
   TapEntry(kReadTitle);
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:toolbarDeleteButtonMatcher];
   TapToolbarButtonWithID(kReadingListToolbarDeleteButtonID);
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(
@@ -704,9 +702,13 @@ std::unique_ptr<net::test_server::HttpResponse> HandleImageQueryOrCloseSocket(
                                        @"_UITableViewHeaderFooterContentView")),
                                    nil)] assertWithMatcher:grey_nil()];
 
+  AssertNavigationBarButtonVisibleWithID(
+      kReadingListNavigationBarSelectButtonID);
   TapToolbarButtonWithID(kReadingListNavigationBarSelectButtonID);
   TapEntry(kUnreadTitle);
   TapEntry(kUnreadTitle2);
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:toolbarDeleteButtonMatcher];
   TapToolbarButtonWithID(kReadingListToolbarDeleteButtonID);
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(

@@ -77,7 +77,6 @@ crbug.com/508127830 [ iOS27 Device ] SearchEngineTestCase/testOpenSecondWindow [
 crbug.com/540429004 [ iPhone15 ] XCallbackURLEGTest/testIncognitoTextSearchWithProfileSwitch [ Skip ]
 
 # Gardening suppression 2026-07-31
-crbug.com/541234527 ReadingListTestCase/testDeleteEntries [ Pass Failure ]
 crbug.com/541234788 [ iPhone Simulator ] SaveToDriveTestCase/testDownloadToDriveAppUninstalledUpdatesButton [ Pass Failure ]
 crbug.com/541234336 CardUnmaskAuthenticationSelectionEgtest/testDismissInputViaSwipe [ Pass Failure ]
 crbug.com/541236854 ComposeboxTestCase/testAttachUnrealizedTab [ Pass Failure ]
