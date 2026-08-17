@@ -18,8 +18,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.TriState;
-import org.chromium.base.TriStateUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -104,7 +102,7 @@ public class VoiceRecognitionIntentHandler {
 
     private final WindowAndroid mWindowAndroid;
     private @Nullable Long mQueryStartTimeMs;
-    private @TriState int mIsVoiceSearchEnabledCached;
+    private @Nullable Boolean mIsVoiceSearchEnabledCached;
     private boolean mRegisteredActivityStateListener;
     private final ApplicationStatus.ApplicationStateListener mApplicationStateListener =
             this::onApplicationStateChange;
@@ -122,7 +120,7 @@ public class VoiceRecognitionIntentHandler {
 
     private void onApplicationStateChange(@ApplicationState int newState) {
         if (newState == ApplicationState.HAS_PAUSED_ACTIVITIES) {
-            mIsVoiceSearchEnabledCached = TriState.NOT_SET;
+            mIsVoiceSearchEnabledCached = null;
         }
     }
 
@@ -132,9 +130,8 @@ public class VoiceRecognitionIntentHandler {
         if (mWindowAndroid.getActivity().get() == null) return false;
         if (!VoiceRecognitionUtil.isVoiceSearchPermittedByPolicy(false)) return false;
 
-        if (mIsVoiceSearchEnabledCached == TriState.NOT_SET) {
-            mIsVoiceSearchEnabledCached =
-                    TriStateUtils.from(VoiceRecognitionUtil.isVoiceSearchEnabled(mWindowAndroid));
+        if (mIsVoiceSearchEnabledCached == null) {
+            mIsVoiceSearchEnabledCached = VoiceRecognitionUtil.isVoiceSearchEnabled(mWindowAndroid);
 
             if (!mRegisteredActivityStateListener) {
                 ApplicationStatus.registerApplicationStateListener(mApplicationStateListener);
@@ -142,7 +139,7 @@ public class VoiceRecognitionIntentHandler {
             }
         }
 
-        return mIsVoiceSearchEnabledCached == TriState.TRUE;
+        return mIsVoiceSearchEnabledCached;
     }
 
     /**
