@@ -295,6 +295,7 @@ public class SettingsPageTest {
 
     @Test
     @MediumTest
+    @Restriction(DeviceFormFactor.PHONE) // TODO(crbug.com/547765865): Fix for tablets/auto.
     public void testAccessibilityPageZoomDoesNotShowPopup() {
         mActivityTestRule.loadUrl("chrome-native://settings/");
 
