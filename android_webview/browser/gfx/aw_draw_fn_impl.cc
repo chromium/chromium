@@ -352,15 +352,19 @@ void AwDrawFnImpl::DrawVk(AwDrawFn_DrawVkParams* params) {
       CreateHRDrawParams(params, color_space.get());
   OverlaysParams overlays_params = CreateOverlaysParams(params);
 
-  DCHECK(!scoped_secondary_cb_draw_);
+  CHECK(!scoped_secondary_cb_draw_);
 
-  // Set the draw contexct in |vulkan_context_provider_|, so the SkiaRenderer
+  // Set the draw context in |vulkan_context_provider_|, so the SkiaRenderer
   // and SkiaOutputSurface* will use it as frame render target.
   scoped_secondary_cb_draw_.emplace(vulkan_context_provider_.get(),
                                     std::move(draw_context));
   render_thread_manager_.DrawOnRT(
       hr_params, overlays_params,
       base::BindOnce(&AwDrawFnImpl::ReportRenderingThreads, functor_handle_));
+  // Viz recording is synchronous and complete; detach draw state from provider
+  // so other active WebViews can safely record on the shared provider before
+  // PostDrawVk() is called.
+  scoped_secondary_cb_draw_->RecordingFinished();
 }
 
 void AwDrawFnImpl::PostDrawVk(AwDrawFn_PostDrawVkParams* params) {
@@ -374,7 +378,7 @@ void AwDrawFnImpl::PostDrawVk(AwDrawFn_PostDrawVkParams* params) {
     return;
   }
 
-  DCHECK(scoped_secondary_cb_draw_);
+  CHECK(scoped_secondary_cb_draw_);
   scoped_secondary_cb_draw_.reset();
 }
 
