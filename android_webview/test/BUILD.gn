@@ -882,6 +882,7 @@ test("android_webview_unittests") {
     "../browser/prefetch/aw_prefetch_manager_unittest.cc",
     "../browser/prefetch/aw_preloading_utils_unittest.cc",
     "../browser/renderer_host/auto_login_parser_unittest.cc",
+    "../browser/request_matcher/aw_request_matcher_unittest.cc",
     "../browser/safe_browsing/aw_ping_manager_factory_unittest.cc",
     "../browser/safe_browsing/aw_safe_browsing_allowlist_manager_unittest.cc",
     "../browser/state_serializer_unittest.cc",

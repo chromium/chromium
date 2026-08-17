@@ -63,6 +63,7 @@ include_rules = [
   "+components/tracing/common",
   "+components/url_formatter",
   "+components/url_matcher",
+  "+components/url_pattern",
   "+components/user_prefs",
   "+components/variations",
   "+components/visitedlink/browser",
