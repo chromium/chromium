@@ -59,6 +59,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kWebViewForceWebAuthn,
     &features::kWebViewGateTextSizeAdjustOnTextAutosizing,
     &features::kWebViewHyperlinkContextMenu,
+    &features::kWebViewInitInConstructor,
     &features::kWebViewInvokeZoomPickerOnGSU,
     &features::kWebViewMixedContentAutoupgrades,
     &features::kWebViewMoveWorkToProviderInit,

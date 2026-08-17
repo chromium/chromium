@@ -27407,6 +27407,21 @@
             ]
         }
     ],
+    "WebViewInitInConstructor": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WebViewInitInConstructor"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebViewInterceptedCookieHeader": [
         {
             "platforms": [

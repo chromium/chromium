@@ -56,6 +56,8 @@ import android.webkit.WebViewProvider;
 import android.webkit.WebViewRenderProcess;
 import android.webkit.WebViewRenderProcessClient;
 
+import androidx.annotation.UiThread;
+
 import com.android.webview.chromium.ApiCallLogger.ApiCall;
 import com.android.webview.chromium.ApiCallLogger.ApiCallUserAction;
 import com.android.webview.chromium.ApiCallLogger.SystemApiCall;
@@ -144,13 +146,12 @@ class WebViewChromium
     private boolean mEvaluateJavaScriptCalled;
     private boolean mGetAccessibilityNodeProviderCalledWhenAwContentsNull;
     private boolean mIsDestroyed;
+    private boolean mInitCalled;
 
     static void enableSlowWholeDocumentDraw() {
         sRecordWholeDocumentEnabledByApi = true;
     }
 
-    // This does not touch any global / non-threadsafe state, but note that
-    // init is called right after and is NOT threadsafe.
     public WebViewChromium(
             WebViewChromiumFactoryProvider factory,
             WebView webView,
@@ -170,6 +171,9 @@ class WebViewChromium
             factory.addWebViewAssetPath(mWebView.getContext());
             mSharedWebViewChromium = new SharedWebViewChromium(mFactory.getRunQueue(), mAwInit);
             mAwInit.maybeSetChromiumUiThread(Looper.myLooper());
+            if (shouldEnableInitInConstructor()) {
+                init(null, false);
+            }
         }
     }
 
@@ -191,12 +195,25 @@ class WebViewChromium
         ApiCallLogger.recordWebViewApiCall(
                 ApiCall.WEBVIEW_CHROMIUM_INIT,
                 ApiCallUserAction.WEBVIEW_INSTANCE_WEBVIEW_CHROMIUM_INIT);
+        if (privateBrowsing) {
+            throw new IllegalArgumentException("Private browsing is not supported in WebView.");
+        }
+        // setWillNotDraw(false) is required since WebView draws its own contents using its
+        // container view. If this is ever not the case we should remove this, as it removes
+        // Android's gatherTransparentRegion optimization for the view.
+        //
+        // This needs to happen before `onDraw` so we are putting it here. It is not sufficient
+        // to call this during `WebViewChromium#ctor` because the value can be clobbered by the
+        // WebView framework constructor (when invoking parent class constructors) after
+        // `WebViewChromium#ctor` has run.
+        mWebView.setWillNotDraw(false);
+        if (mInitCalled) {
+            return;
+        }
+        mInitCalled = true;
         long startTime = SystemClock.uptimeMillis();
         boolean wasChromiumAlreadyInitialized = mAwInit.isChromiumInitialized();
         try (DualTraceEvent ignored = DualTraceEvent.scoped("WebViewChromium.init")) {
-            if (privateBrowsing) {
-                throw new IllegalArgumentException("Private browsing is not supported in WebView.");
-            }
             // Needed for https://crbug.com/1417872
             mWebView.setDefaultFocusHighlightEnabled(false);
             if (shouldEnableStartupNonBlockingWebViewConstructor()) {
@@ -225,6 +242,7 @@ class WebViewChromium
         StartupMetrics.webViewInstanceCreated(startTime, wasChromiumAlreadyInitialized);
     }
 
+    @UiThread
     private void initForReal() {
         try (DualTraceEvent ignored = DualTraceEvent.scoped("WebViewChromium.initForReal")) {
             ApiCallLogger.recordWebViewApiCall(
@@ -3437,5 +3455,10 @@ class WebViewChromium
                 || WebViewCachedFlags.get()
                         .isCachedFeatureEnabled(
                                 AwFeatures.POST_CHROMIUM_STARTUP_IN_WEBVIEW_CONSTRUCTOR);
+    }
+
+    private boolean shouldEnableInitInConstructor() {
+        return WebViewCachedFlags.get()
+                .isCachedFeatureEnabled(AwFeatures.WEBVIEW_INIT_IN_CONSTRUCTOR);
     }
 }

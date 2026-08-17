@@ -61,6 +61,7 @@ extern const base::FeatureParam<bool> kWebViewHttpCacheQuotaApiForceBackendInit;
 BASE_DECLARE_FEATURE(kWebViewHyperlinkContextMenu);
 BASE_DECLARE_FEATURE(kWebViewIgnoreDuplicateNavs);
 extern const base::FeatureParam<base::TimeDelta> kWebViewDuplicateNavThreshold;
+BASE_DECLARE_FEATURE(kWebViewInitInConstructor);
 BASE_DECLARE_FEATURE(kWebViewInvokeZoomPickerOnGSU);
 BASE_DECLARE_FEATURE(kWebViewLatchedCookiePolicy);
 BASE_DECLARE_FEATURE(kWebViewMemoryProfilingClient);
