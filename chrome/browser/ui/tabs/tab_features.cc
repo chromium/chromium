@@ -75,6 +75,7 @@
 #include "chrome/browser/ui/performance_controls/tab_resource_usage_tab_helper.h"
 #include "chrome/browser/ui/read_anything/read_anything_controller.h"
 #include "chrome/browser/ui/read_anything/read_anything_side_panel_controller.h"
+#include "chrome/browser/ui/search_engine_choice/search_engine_choice_tab_helper.h"
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
@@ -518,6 +519,11 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
   zero_suggest_prefetch_tab_helper_ =
       std::make_unique<ZeroSuggestPrefetchTabHelper>(tab.GetContents());
 
+  if (SearchEngineChoiceTabHelper::IsHelperNeeded()) {
+    search_engine_choice_tab_helper_ =
+        std::make_unique<SearchEngineChoiceTabHelper>(tab.GetContents());
+  }
+
   from_gws_navigation_and_keep_alive_request_observer_ =
       FromGWSNavigationAndKeepAliveRequestObserver::MaybeCreate(
           tab.GetContents());
@@ -717,6 +723,11 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
 
   security_state_event_observer_ =
       std::make_unique<SecurityStateEventObserver>(new_contents);
+
+  if (search_engine_choice_tab_helper_) {
+    search_engine_choice_tab_helper_ =
+        std::make_unique<SearchEngineChoiceTabHelper>(new_contents);
+  }
 
   sync_sessions_router_.reset();
   sync_sessions_router_ =

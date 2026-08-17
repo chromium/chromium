@@ -193,7 +193,6 @@
 #include "chrome/browser/ui/read_anything/read_anything_side_panel_controller.h"
 #include "chrome/browser/ui/sad_tab_helper.h"
 #include "chrome/browser/ui/search/search_tab_helper.h"
-#include "chrome/browser/ui/search_engine_choice/search_engine_choice_tab_helper.h"
 #include "chrome/browser/ui/sync/browser_synced_tab_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/uma_browsing_activity_observer.h"
@@ -734,10 +733,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents,
   // created, which is gated by enable_browser_autofill.
   if (enable_browser_autofill) {
     ManagePasswordsUIController::CreateForWebContents(web_contents);
-  }
-
-  if (SearchEngineChoiceTabHelper::IsHelperNeeded()) {
-    SearchEngineChoiceTabHelper::CreateForWebContents(web_contents);
   }
 
   if (!webui_browser::IsWebUIBrowserEnabled()) {

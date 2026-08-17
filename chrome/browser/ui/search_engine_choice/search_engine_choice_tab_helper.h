@@ -8,7 +8,6 @@
 #include <optional>
 
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_user_data.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace content {
@@ -19,10 +18,11 @@ class Browser;
 
 // Helper class which watches `web_contents` to determine whether there is an
 // appropriate opportunity to show the SearchEngineChoiceDialogView.
-class SearchEngineChoiceTabHelper
-    : public content::WebContentsObserver,
-      public content::WebContentsUserData<SearchEngineChoiceTabHelper> {
+// It is owned by the tab's TabFeatures, which only creates it when
+// IsHelperNeeded() returns true.
+class SearchEngineChoiceTabHelper : public content::WebContentsObserver {
  public:
+  explicit SearchEngineChoiceTabHelper(content::WebContents* web_contents);
   SearchEngineChoiceTabHelper(const SearchEngineChoiceTabHelper&) = delete;
   SearchEngineChoiceTabHelper& operator=(const SearchEngineChoiceTabHelper&) =
       delete;
@@ -36,10 +36,6 @@ class SearchEngineChoiceTabHelper
   static bool IsHelperNeeded();
 
  private:
-  friend class content::WebContentsUserData<SearchEngineChoiceTabHelper>;
-
-  explicit SearchEngineChoiceTabHelper(content::WebContents* web_contents);
-
   // content::WebContentsObserver:
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
@@ -48,8 +44,6 @@ class SearchEngineChoiceTabHelper
   // Shows the dialog if the user is eligible and if the tab is in compatible
   // state (e.g. visible, loaded, suitable URL).
   void MaybeShowDialog();
-
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
 // Implemented in

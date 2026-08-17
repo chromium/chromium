@@ -31,9 +31,7 @@ SearchEngineChoiceTabHelper::~SearchEngineChoiceTabHelper() = default;
 
 SearchEngineChoiceTabHelper::SearchEngineChoiceTabHelper(
     content::WebContents* web_contents)
-    : WebContentsObserver(web_contents),
-      content::WebContentsUserData<SearchEngineChoiceTabHelper>(*web_contents) {
-}
+    : WebContentsObserver(web_contents) {}
 
 // static
 bool SearchEngineChoiceTabHelper::IsHelperNeeded() {
@@ -116,5 +114,3 @@ void SearchEngineChoiceTabHelper::MaybeShowDialog() {
 
   SearchEngineChoiceDialog::Show(*browser->GetBrowserForMigrationOnly());
 }
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(SearchEngineChoiceTabHelper);

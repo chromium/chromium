@@ -59,6 +59,7 @@ class QwacWebContentsObserver;
 class ReadAnythingController;
 class ReadAnythingSidePanelController;
 class RecordReplayPageActionController;
+class SearchEngineChoiceTabHelper;
 class SearchPromotionNavigationObserver;
 class SecurityStateEventObserver;
 class SidePanelRegistry;
@@ -630,6 +631,10 @@ class TabFeatures {
 
   std::unique_ptr<lens::TabContextualizationController>
       tab_contextualization_controller_;
+
+  // Watches for an opportunity to show the search engine choice dialog.
+  // Only created when SearchEngineChoiceTabHelper::IsHelperNeeded().
+  std::unique_ptr<SearchEngineChoiceTabHelper> search_engine_choice_tab_helper_;
 
   std::unique_ptr<BookmarkBarPreloadPipelineManager>
       bookmarkbar_preload_pipeline_manager_;
