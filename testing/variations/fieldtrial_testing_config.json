@@ -16932,8 +16932,8 @@
                     "enable_features": [
                         "KillSpareRenderOnMemoryPressure",
                         "MultipleSpareRPHs",
-                        "SpareRPHUseCriticalMemoryPressure",
-                        "kSpareRPHKeepOneAliveOnMemoryPressure"
+                        "SpareRPHKeepOneAliveOnMemoryPressure",
+                        "SpareRPHUseCriticalMemoryPressure"
                     ]
                 },
                 {
@@ -16944,8 +16944,8 @@
                     "enable_features": [
                         "KillSpareRenderOnMemoryPressure",
                         "MultipleSpareRPHs",
-                        "SpareRPHUseCriticalMemoryPressure",
-                        "kSpareRPHKeepOneAliveOnMemoryPressure"
+                        "SpareRPHKeepOneAliveOnMemoryPressure",
+                        "SpareRPHUseCriticalMemoryPressure"
                     ]
                 }
             ]
