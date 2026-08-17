@@ -873,9 +873,18 @@ IN_PROC_BROWSER_TEST_F(InitialWebUISurfaceSyncBrowserTest,
 
 #if BUILDFLAG(IS_WIN)
 
+class InitialWebUIMinimizedWindowBrowserTest
+    : public InitialWebUIBrowserTestBase {
+ public:
+  InitialWebUIMinimizedWindowBrowserTest()
+      : InitialWebUIBrowserTestBase(
+            {{features::kWebUIReloadButton,
+              {{"WebUIReloadButtonDeferBrowserViewShow", "true"}}}}) {}
+};
+
 // Tests that the duration metrics are not recorded for windows created as
 // minimized.
-IN_PROC_BROWSER_TEST_F(InitialWebUINavigationBrowserTest,
+IN_PROC_BROWSER_TEST_F(InitialWebUIMinimizedWindowBrowserTest,
                        InitiallyMinimizedWindowSkipsMetrics) {
   base::HistogramTester histogram_tester;
 
@@ -924,7 +933,7 @@ IN_PROC_BROWSER_TEST_F(InitialWebUINavigationBrowserTest,
 
 // Tests that the duration metrics should be skipped for the windows that are
 // restored as minimized.
-IN_PROC_BROWSER_TEST_F(InitialWebUINavigationBrowserTest,
+IN_PROC_BROWSER_TEST_F(InitialWebUIMinimizedWindowBrowserTest,
                        SessionRestoreMinimizedWindow) {
   Profile* profile = browser()->GetProfile();
 

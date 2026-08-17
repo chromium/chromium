@@ -4096,7 +4096,7 @@ IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonPasskeyUnlockErrorBrowserTest,
   AvatarToolbarButtonTestAccessor avatar_accessor(browser());
   ASSERT_TRUE(base::test::RunUntil([browser = browser()]() {
     InitialWebUIManager* manager = InitialWebUIManager::From(browser);
-    return !manager || !manager->IsShowPending();
+    return !manager || !manager->IsInitialWebUIPending();
   }));
   SigninWithImageAndClearGreetingAndSyncPromo(browser(), avatar,
                                               u"test@gmail.com");

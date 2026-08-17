@@ -46,6 +46,9 @@ class InitialWebUIManager {
 
   bool IsShowPending() const;
 
+  // Returns true if the initial WebUI is still loading.
+  bool IsInitialWebUIPending() const;
+
   // Notifies that the web UI toolbar has finished loading. It will also call
   // `Show()` from the `window_` if `is_show_pending_` is true.
   void OnWebUIToolbarLoaded();

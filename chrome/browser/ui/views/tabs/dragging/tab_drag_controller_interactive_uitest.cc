@@ -3708,7 +3708,8 @@ class DetachTabWithDeferredShowDragControllerTest
   DetachTabWithDeferredShowDragControllerTest() {
     deferred_show_feature_list_.InitWithFeaturesAndParameters(
         {{features::kInitialWebUI, {}},
-         {features::kWebUIReloadButton, {}},
+         {features::kWebUIReloadButton,
+          {{features::kWebUIReloadButtonDeferBrowserViewShow.name, "true"}}},
          {features::kArtificialUIDelay,
           {{"initial_web_ui_delay_duration", "2s"},
            {"views_ui_delay_duration", "0ms"}}}},

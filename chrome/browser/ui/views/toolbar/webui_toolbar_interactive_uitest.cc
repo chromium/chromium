@@ -365,7 +365,7 @@ class WebUIToolbarViewsInteractiveUiTest
     // OS.
     ASSERT_TRUE(base::test::RunUntil([browser = browser()]() {
       InitialWebUIManager* manager = InitialWebUIManager::From(browser);
-      return !manager || !manager->IsShowPending();
+      return !manager || !manager->IsInitialWebUIPending();
     }));
   }
 
@@ -1220,7 +1220,7 @@ class WebUIToolbarViewsLocationBarInteractiveUiTest
     // Wait for the toolbar to load.
     ASSERT_TRUE(base::test::RunUntil([browser = browser()]() {
       InitialWebUIManager* manager = InitialWebUIManager::From(browser);
-      return !manager || !manager->IsShowPending();
+      return !manager || !manager->IsInitialWebUIPending();
     }));
   }
 
@@ -1772,7 +1772,7 @@ class WebUIToolbarFocusInteractiveUiTestBase
     // Wait for the toolbar to load.
     ASSERT_TRUE(base::test::RunUntil([browser = browser()]() {
       InitialWebUIManager* manager = InitialWebUIManager::From(browser);
-      return !manager || !manager->IsShowPending();
+      return !manager || !manager->IsInitialWebUIPending();
     }));
   }
 

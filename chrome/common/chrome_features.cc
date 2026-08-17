@@ -1997,7 +1997,7 @@ const base::FeatureParam<base::TimeDelta>
 // When this is enabled, the `BrowserView` will not show until the reload button
 // has finished loading.
 const base::FeatureParam<bool> kWebUIReloadButtonDeferBrowserViewShow{
-    &kWebUIReloadButton, "WebUIReloadButtonDeferBrowserViewShow", true};
+    &kWebUIReloadButton, "WebUIReloadButtonDeferBrowserViewShow", false};
 // When this is enabled, the WebUI toolbar will be pre-warmed during browser
 // initialization.
 const base::FeatureParam<bool> kWebUIReloadButtonPrewarmWebUI{

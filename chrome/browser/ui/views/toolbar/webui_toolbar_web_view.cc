@@ -729,6 +729,13 @@ void WebUIToolbarWebView::OnPageInitialized() {
   SetInitializationState(InitializationState::kInitialized);
   MaybeInitializePageDependentControls();
 
+  if (pending_focus_request_) {
+    if (WebUIToolbarUI* web_ui = GetWebUIToolbarUI()) {
+      web_ui->OnFocusRequested(*pending_focus_request_);
+    }
+    pending_focus_request_.reset();
+  }
+
   if (auto* manager = InitialWebUIManager::From(browser_)) {
     manager->OnWebUIToolbarLoaded();
   }
@@ -1536,8 +1543,12 @@ void WebUIToolbarWebView::OnFocusRequested(
     toolbar_ui_api::mojom::FocusRequestTarget target) {
   // We need to focus the WebView as well, besides the JS focus.
   web_view_->RequestFocus();
-  if (WebUIToolbarUI* web_ui = GetWebUIToolbarUI()) {
-    web_ui->OnFocusRequested(target);
+  if (initialization_state_ == InitializationState::kInitialized) {
+    if (WebUIToolbarUI* web_ui = GetWebUIToolbarUI()) {
+      web_ui->OnFocusRequested(target);
+    }
+  } else {
+    pending_focus_request_ = target;
   }
 }
 

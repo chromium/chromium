@@ -224,7 +224,7 @@ class WebUILocationBarInteractiveUiTest : public TestBase {
     // OS.
     ASSERT_TRUE(base::test::RunUntil([browser = browser()]() {
       InitialWebUIManager* manager = InitialWebUIManager::From(browser);
-      return !manager || !manager->IsShowPending();
+      return !manager || !manager->IsInitialWebUIPending();
     }));
   }
 

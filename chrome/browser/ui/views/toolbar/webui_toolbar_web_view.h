@@ -623,6 +623,11 @@ class WebUIToolbarWebView
   // See GetFlexSpecification() for more information.
   bool location_bar_takes_priority_ = false;
 
+  // Pending focus request when focus is requested before WebUI page is
+  // initialized.
+  std::optional<toolbar_ui_api::mojom::FocusRequestTarget>
+      pending_focus_request_;
+
   base::WeakPtrFactory<DependencyProvider> weak_factory_{this};
 
   // This WeakPtrFactory is used to keep tabs on pending state pushes, and then
