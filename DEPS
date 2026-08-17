@@ -2458,7 +2458,7 @@ deps = {
   },
 
   'src/third_party/nlohmann_json/src':
-    Var('chromium_git') + '/external/github.com/nlohmann/json.git'+ '@' + '3565f40229515411177c196ec912a06307802ed6',
+    Var('chromium_git') + '/external/github.com/nlohmann/json.git'+ '@' + '55f93686c01528224f448c19128836e7df245f72',
 
   'src/third_party/jsoncpp/source':
     Var('chromium_git') + '/external/github.com/open-source-parsers/jsoncpp.git'
