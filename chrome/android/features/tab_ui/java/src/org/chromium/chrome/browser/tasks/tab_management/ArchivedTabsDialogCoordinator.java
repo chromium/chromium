@@ -283,7 +283,7 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                 }
 
                 @Override
-                public void onTabSelecting(int tabId, boolean fromActionButton) {
+                public void onTabSelecting(int tabId) {
                     mIsOpeningLastItem = getArchivedTabCount() == 1;
                     Tab tab = mArchivedTabModel.getTabById(tabId);
                     assumeNonNull(tab);

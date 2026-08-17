@@ -190,7 +190,7 @@ public class NestedLayoutDelegateUnitTest {
 
         verify(mMediator).updateTabGroupProperties(mTab1, headerModel, TabGroupColorId.BLUE);
         verify(mMediator).updateFaviconForTab(headerModel, mTab1, null, null);
-        verify(mMediator).updateDescriptionString(mTab1, headerModel);
+        verify(mMediator).updateDescriptionString(headerModel);
         verify(mMediator).updateActionButtonDescriptionString(mTab1, headerModel);
         verify(mMediator).updateThumbnailFetcher(headerModel, TAB1_ID);
 

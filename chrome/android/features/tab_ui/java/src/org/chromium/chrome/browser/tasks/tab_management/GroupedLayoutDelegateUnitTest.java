@@ -240,7 +240,7 @@ public class GroupedLayoutDelegateUnitTest {
 
         verify(mMediator).updateTabGroupProperties(mTab1, model, TabGroupColorId.BLUE);
         verify(mMediator).updateFaviconForTab(model, mTab1, null, null);
-        verify(mMediator).updateDescriptionString(mTab1, model);
+        verify(mMediator).updateDescriptionString(model);
         verify(mMediator).updateActionButtonDescriptionString(mTab1, model);
         verify(mMediator).updateThumbnailFetcher(model, TAB1_ID);
     }

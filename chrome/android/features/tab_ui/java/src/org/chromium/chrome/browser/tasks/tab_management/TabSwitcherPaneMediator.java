@@ -333,7 +333,7 @@ public class TabSwitcherPaneMediator
     }
 
     @Override
-    public void onTabSelecting(int tabId, boolean fromActionButton) {
+    public void onTabSelecting(int tabId) {
         mOnTabClickCallback.onResult(tabId);
     }
 

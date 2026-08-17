@@ -99,7 +99,7 @@ abstract class TabListLayoutDelegate implements TabGroupObserver {
 
         mMediator.updateTabGroupProperties(tab, model, newColor);
         mMediator.updateFaviconForTab(model, tab, null, null);
-        mMediator.updateDescriptionString(tab, model);
+        mMediator.updateDescriptionString(model);
         mMediator.updateActionButtonDescriptionString(tab, model);
         mMediator.updateThumbnailFetcher(model, tab.getId());
     }

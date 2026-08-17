@@ -877,11 +877,6 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
         mTabListCoordinator.setRecyclerViewPosition(position);
     }
 
-    /** Returns the {@link Rect} of the recyclerview in global coordinates. */
-    public Rect getRecyclerViewRect() {
-        return mTabListCoordinator.getRecyclerViewLocation();
-    }
-
     /**
      * @param tabId The tab ID to get a rect for.
      * @return a {@link Rect} for the tab's thumbnail (may be an empty rect if the tab is not
@@ -1074,7 +1069,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                     mTabListCoordinator,
                     mParentView,
                     /* priceWelcomeMessageReviewActionProvider= */ mMediator,
-                    (tabId) -> mMediator.onTabSelecting(tabId, false));
+                    mMediator::onTabSelecting);
             mMessageManager.addObserver(mMessageUpdateObserver);
             if (priceWelcomeMessageController != null) {
                 priceWelcomeMessageController.addObserver(mPriceMessageUpdateObserver);

@@ -225,10 +225,10 @@ public class TabUiMetricsHelper {
                 RecordUserAction.record("TabGridDialog.RemoveFromGroup.TabMultiSelect");
                 break;
             case TabListEditorActionMetricGroups.UNSELECTED:
-                RecordUserAction.record("TabMultiSelect.TabUnselected");
+                RecordUserAction.record("TabMultiSelectV2.TabUnselected");
                 break;
             case TabListEditorActionMetricGroups.SELECTED:
-                RecordUserAction.record("TabMultiSelect.TabSelected");
+                RecordUserAction.record("TabMultiSelectV2.TabSelected");
                 break;
             case TabListEditorActionMetricGroups.PIN_TABS:
                 RecordUserAction.record("TabMultiSelectV2.TabsPinned");
