@@ -449,6 +449,11 @@ def invoke_swift_compiler(args, extras_args, build_cache_dir, output_file_map):
         for xcc_arg in args.xcc_args:
             swiftc_args.extend(['-Xcc', xcc_arg])
 
+    # Handle optional -enable-upcoming-feature arguments.
+    if args.upcoming_features:
+        for feature in args.upcoming_features:
+            swiftc_args.extend(['-enable-upcoming-feature', feature])
+
     # Handle -whole-module-optimization flag.
     num_threads = max(1, multiprocessing.cpu_count() // 2)
     if args.whole_module_optimization:
@@ -730,6 +735,13 @@ def main(args):
         action='append',
         dest='xcc_args',
         help='add argument to the clang compiler',
+    )
+
+    parser.add_argument(
+        '-enable-upcoming-feature',
+        action='append',
+        dest='upcoming_features',
+        help='enable an upcoming Swift feature (SE-0362)',
     )
 
     parsed, extras = parser.parse_known_args(args)
