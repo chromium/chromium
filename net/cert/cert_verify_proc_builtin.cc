@@ -648,11 +648,9 @@ class PathBuilderDelegateImpl : public bssl::SimplePathBuilderDelegate {
     // into a place that can be shared by both.
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
     const bssl::MTCAnchor* mtc_anchor = path->trust_anchor.MTCAnchor().get();
+    CHECK_EQ(mtc_anchor->spec_version(), bssl::MTCAnchor::kPlants04);
     const TrustStoreChrome::MtcAnchorExtraData* mtc_anchor_data =
-        trust_store_->GetMTCAnchorData(mtc_anchor->spec_version() ==
-                                               bssl::MTCAnchor::kDavidben08
-                                           ? mtc_anchor->log_id()
-                                           : mtc_anchor->ca_id());
+        trust_store_->GetMTCAnchorData(mtc_anchor->ca_id());
     if (!mtc_anchor_data) {
       return;
     }
@@ -685,23 +683,21 @@ class PathBuilderDelegateImpl : public bssl::SimplePathBuilderDelegate {
     // gracefully handle a failure here.
     CHECK(bssl::der::ParseUint64(leaf->tbs().serial_number, &serial));
 
-    if (mtc_anchor->spec_version() == bssl::MTCAnchor::kPlants04) {
-      uint16_t log_number = serial >> 48;
-      if (log_number < mtc_anchor_data->signer_config.min_log_number) {
-        path->errors.GetErrorsForCert(0)->AddError(
-            bssl::cert_errors::kCertificateRevoked);
-        return;
-      }
-      // CQRP policy specifies a maximum allowable log number. The
-      // IsKnownMtcAnchor check is probably redundant here since only a known
-      // anchor would have a result in GetMTCAnchorData, but it is more
-      // future-proof to check.
-      if (trust_store_->IsKnownMtcAnchor(mtc_anchor) &&
-          log_number > kCqrpMaxMtcLogNumber) {
-        path->errors.GetErrorsForCert(0)->AddError(
-            bssl::cert_errors::kCertificateRevoked);
-        return;
-      }
+    uint16_t log_number = serial >> 48;
+    if (log_number < mtc_anchor_data->signer_config.min_log_number) {
+      path->errors.GetErrorsForCert(0)->AddError(
+          bssl::cert_errors::kCertificateRevoked);
+      return;
+    }
+    // CQRP policy specifies a maximum allowable log number. The
+    // IsKnownMtcAnchor check is probably redundant here since only a known
+    // anchor would have a result in GetMTCAnchorData, but it is more
+    // future-proof to check.
+    if (trust_store_->IsKnownMtcAnchor(mtc_anchor) &&
+        log_number > kCqrpMaxMtcLogNumber) {
+      path->errors.GetErrorsForCert(0)->AddError(
+          bssl::cert_errors::kCertificateRevoked);
+      return;
     }
 
     auto it = mtc_anchor_data->revoked_serials.upper_bound(serial);
@@ -896,19 +892,23 @@ class PathBuilderDelegateImpl : public bssl::SimplePathBuilderDelegate {
     if (path->trust_anchor.MTCAnchor() &&
         (constraint.index_not_after.has_value() ||
          constraint.index_after.has_value())) {
+      // Note: the index_not_after and index_after constraints are misnamed,
+      // they actually operate on serial numbers, not indexes. (They were named
+      // based on an older MTC draft.)
+      // TODO(crbug.com/452986180): is it plausible to rename them in the proto?
       const auto& leaf = path->certs.front();
-      uint64_t index;
-      if (!bssl::der::ParseUint64(leaf->tbs().serial_number, &index)) {
+      uint64_t serial;
+      if (!bssl::der::ParseUint64(leaf->tbs().serial_number, &serial)) {
         return false;
       }
 
       if (constraint.index_not_after.has_value() &&
-          index > constraint.index_not_after) {
+          serial > constraint.index_not_after) {
         return false;
       }
 
       if (constraint.index_after.has_value() &&
-          index <= constraint.index_after) {
+          serial <= constraint.index_after) {
         return false;
       }
     }
