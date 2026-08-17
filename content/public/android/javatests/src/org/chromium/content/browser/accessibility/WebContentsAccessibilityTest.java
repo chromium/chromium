@@ -578,11 +578,17 @@ public class WebContentsAccessibilityTest {
                 PERFORM_ACTION_ERROR, String.valueOf(expectedStartNodeId), startNode.getUniqueId());
         Assert.assertEquals(PERFORM_ACTION_ERROR, expectedStartOffset, actualStartOffset);
         Assert.assertEquals(PERFORM_ACTION_ERROR, expectedStartOffsetType, actualStartOffsetType);
+        if (actualStartOffsetType == OFFSET_TYPE_TEXT) {
+            Assert.assertTrue(PERFORM_ACTION_ERROR, startNode.isTextSelectable());
+        }
         Assert.assertNotNull(PERFORM_ACTION_ERROR, endNode);
         Assert.assertEquals(
                 PERFORM_ACTION_ERROR, String.valueOf(expectedEndNodeId), endNode.getUniqueId());
         Assert.assertEquals(PERFORM_ACTION_ERROR, expectedEndOffset, actualEndOffset);
         Assert.assertEquals(PERFORM_ACTION_ERROR, expectedEndOffsetType, actualEndOffsetType);
+        if (actualEndOffsetType == OFFSET_TYPE_TEXT) {
+            Assert.assertTrue(PERFORM_ACTION_ERROR, endNode.isTextSelectable());
+        }
     }
 
     private void printAccessibilityNodeInfoTree() {

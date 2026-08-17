@@ -1021,36 +1021,46 @@ BrowserAccessibilityManagerAndroid::ConvertChromeSelectionPositionToAndroid(
     return std::nullopt;
   }
 
-  BrowserAccessibilityAndroid* platform_ancestor =
+  BrowserAccessibilityAndroid* lowest_platform_ancestor =
       static_cast<BrowserAccessibilityAndroid*>(
           android_node->PlatformGetLowestPlatformAncestor());
-  if (!platform_ancestor) {
+  if (!lowest_platform_ancestor) {
     return std::nullopt;
   }
 
-  // If the platform ancestor is a leaf exposing text, convert tree positions to
-  // text positions to preserve character-level selection accuracy.
-  // This assumes that if a lowest platform leaf has non-empty text content
-  // (`HasTextContent()`), that text represents the rendered text of its
-  // descendants, allowing tree positions within those descendants to be
-  // converted to text positions relative to the platform ancestor.
-  if (position->IsTreePosition() && platform_ancestor->IsLeaf() &&
-      platform_ancestor->HasTextContent()) {
+  // If a tree position's lowest platform ancestor is a text-selectable leaf on
+  // the platform with text content, convert it to a text position. This will
+  // result in more accurate representation of the position on Android as the
+  // child node are flattened.
+  if (position->IsTreePosition() && lowest_platform_ancestor->IsLeaf() &&
+      lowest_platform_ancestor->HasTextContent() &&
+      lowest_platform_ancestor->IsTextSelectable()) {
     position = position->AsTextPosition();
   }
 
   if (position->IsTextPosition()) {
     // Move Chrome position up to the lowest leaf in Android and perform the
     // right adjustments for offset and affinity.
-    while (position->GetAnchor()->id() != platform_ancestor->GetId()) {
+    while (position->GetAnchor()->id() != lowest_platform_ancestor->GetId()) {
       position = position->CreateParentPosition();
     }
     CHECK(position->IsTextPosition());
-    return AndroidPosition{platform_ancestor, position->text_offset(),
-                           ExtendedSelectionOffsetType::OFFSET_TYPE_TEXT};
+
+    if (lowest_platform_ancestor->IsTextSelectable()) {
+      return AndroidPosition{lowest_platform_ancestor, position->text_offset(),
+                             ExtendedSelectionOffsetType::OFFSET_TYPE_TEXT};
+    }
+
+    // A non-text-selectable node can only be represented as a child offset
+    // within its (unignored) parent. If it has no unignored parent (e.g.
+    // childless root), no valid Android position can be formed.
+    if (!lowest_platform_ancestor->node()->GetUnignoredParent()) {
+      return std::nullopt;
+    }
+    position = position->AsTreePosition();
   }
 
-  // Since the parent of the target node may be ignored, find the target node in
+  // Since the parent of the target node may be ignored, find the target node
   // in Android accessibility tree, then find its parent in Android and compute
   // the offset based on that.
   // The conversion below is lossy and should be improved by including affinity
