@@ -132,8 +132,10 @@ mojom::AdditionalContextPtr CreateAdditionalContext(
   if (!selected_text.empty()) {
     auto context_data = mojom::ContextData::New();
     context_data->mime_type = kSelectionMimeType;
-    std::string utf8_text = base::UTF16ToUTF8(
-        selected_text.substr(0, kMaxSelectionLengthSentToPanel));
+    std::u16string elided_text;
+    gfx::ElideString(selected_text, kMaxSelectionLengthSentToPanel,
+                     &elided_text);
+    std::string utf8_text = base::UTF16ToUTF8(elided_text);
     context_data->data =
         mojo_base::BigBuffer(base::as_bytes(base::span(utf8_text)));
     parts.push_back(
