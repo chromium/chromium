@@ -99,6 +99,43 @@ bool IsModifierKey(const WebKeyboardEvent& event) {
   }
 }
 
+bool IsSupportedField(const WebElement& element) {
+  if (!element || !form_util::IsAccessible(element)) {
+    return false;
+  }
+  if (const auto form_control = element.DynamicTo<WebFormControlElement>()) {
+    return form_util::IsTextAreaElementOrTextInput(form_control) &&
+           form_util::GetAutofillFormControlType(form_control) !=
+               FormControlType::kInputPassword &&
+           form_control.IsEnabled() && !form_control.IsReadOnly();
+  }
+  return element.IsContentEditable() && !element.DynamicTo<WebFormElement>();
+}
+
+// Returns the offset of the caret in `element`.
+// Returns std::string::npos if `element` is not fillable by AtMemory: if it
+// not focused, not a text-type form control or contenteditable, or there is a
+// non-empty text selection.
+size_t GetCaretOffset(const WebElement& element) {
+  if (!IsSupportedField(element) || !element.ContainsFrameSelection()) {
+    return std::string::npos;
+  }
+
+  WebLocalFrame* frame = element.GetDocument().GetFrame();
+  if (!frame) {
+    return std::string::npos;
+  }
+
+  const WebRange selection =
+      frame->GetInputMethodController()->GetSelectionOffsets();
+  const int begin = selection.StartOffset();
+  const int end = selection.EndOffset();
+  if (begin != end || begin < 0) {
+    return std::string::npos;
+  }
+  return static_cast<size_t>(begin);
+}
+
 }  // namespace
 
 AtMemoryHandler::AtMemoryHandler(AutofillAgent* agent)
@@ -106,61 +143,26 @@ AtMemoryHandler::AtMemoryHandler(AutofillAgent* agent)
 
 AtMemoryHandler::~AtMemoryHandler() = default;
 
-std::optional<AtMemoryHandler::CaretInfo> AtMemoryHandler::GetCaretInfo(
-    const WebElement& element) const {
-  if (!element || !element.ContainsFrameSelection() ||
-      element.DynamicTo<WebFormElement>() ||
-      !form_util::IsAccessible(element)) {
-    return std::nullopt;
-  }
-
-  FieldType field_type;
-  if (const auto form_control = element.DynamicTo<WebFormControlElement>();
-      form_util::IsTextAreaElementOrTextInput(form_control) &&
-      form_util::GetAutofillFormControlType(form_control) !=
-          FormControlType::kInputPassword &&
-      form_control.IsEnabled() && !form_control.IsReadOnly()) {
-    field_type = FieldType::kTextTypeFormControl;
-  } else if (element.IsContentEditable()) {
-    field_type = FieldType::kContentEditable;
-  } else {
-    return std::nullopt;
-  }
-
-  WebLocalFrame* frame = element.GetDocument().GetFrame();
-  if (!frame) {
-    return std::nullopt;
-  }
-
-  const WebRange selection =
-      frame->GetInputMethodController()->GetSelectionOffsets();
-  int begin = selection.StartOffset();
-  int end = selection.EndOffset();
-  if (begin != end || begin < 0) {
-    return std::nullopt;
-  }
-  return CaretInfo{field_type, static_cast<size_t>(begin)};
-}
-
+// Returns true if the trigger string occurs before the caret in `element`.
 bool AtMemoryHandler::HasTriggerStringNextToCaret(
     const WebElement& element) const {
   const WebString trigger = WebString(GetTriggerString());
   if (trigger.IsEmpty()) {
     return false;
   }
-  std::optional<CaretInfo> info = GetCaretInfo(element);
-  if (!info) {
+  const size_t offset = GetCaretOffset(element);
+  if (offset == std::string::npos) {
     return false;
   }
   WebLocalFrame* frame = element.GetDocument().GetFrame();
   if (!frame) {
     return false;
   }
-  return info->offset >= trigger.length() &&
+  return offset >= trigger.length() &&
          frame
-             ->RangeAsText(WebRange(
-                 base::saturated_cast<int>(info->offset - trigger.length()),
-                 base::saturated_cast<int>(trigger.length())))
+             ->RangeAsText(
+                 WebRange(base::saturated_cast<int>(offset - trigger.length()),
+                          base::saturated_cast<int>(trigger.length())))
              .Equals(trigger);
 }
 
@@ -244,8 +246,8 @@ void AtMemoryHandler::DidReceiveKeyDownForAtMemoryTriggerString(
     return;
   }
 
-  const std::optional<CaretInfo> info = GetCaretInfo(element);
-  if (!info) {
+  const size_t offset = GetCaretOffset(element);
+  if (offset == std::string::npos) {
     trigger_state_ = {};
     return;
   }
@@ -263,7 +265,7 @@ void AtMemoryHandler::DidReceiveKeyDownForAtMemoryTriggerString(
   };
 
   if (trigger_state_.last_element_id != element_id ||
-      !is_plausible_offset(trigger_state_.last_offset, info->offset) ||
+      !is_plausible_offset(trigger_state_.last_offset, offset) ||
       now - trigger_state_.last_time > kCoherentKeyDownThreshold) {
     trigger_state_ = {};
   }
@@ -285,7 +287,7 @@ void AtMemoryHandler::DidReceiveKeyDownForAtMemoryTriggerString(
   trigger_state_ = {.seen_trigger = trigger_state_.seen_trigger,
                     .last_time = now,
                     .last_element_id = element_id,
-                    .last_offset = info->offset};
+                    .last_offset = offset};
   if (trigger != trigger_state_.seen_trigger) {
     // The trigger string isn't complete yet.
     return;
@@ -311,24 +313,21 @@ void AtMemoryHandler::DidReceiveKeyDownForAtMemoryTriggerString(
             if (!self) {
               return;
             }
-            WebElement element =
+            const WebElement element =
                 WebNode::FromDomNodeId(*element_id).DynamicTo<WebElement>();
-            std::optional<CaretInfo> info = self->GetCaretInfo(element);
-            if (!info) {
+            if (!IsSupportedField(element)) {
               return;
             }
-            switch (info->field_type) {
-              case FieldType::kTextTypeFormControl:
-                self->agent_->ShowSuggestions(
-                    element.DynamicTo<WebFormControlElement>(),
-                    AutofillSuggestionTriggerSource::kAtMemoryTriggerString,
-                    SynchronousFormCache(), std::nullopt);
-                break;
-              case FieldType::kContentEditable:
-                self->agent_->ShowSuggestionsForContentEditable(
-                    element,
-                    AutofillSuggestionTriggerSource::kAtMemoryTriggerString);
-                break;
+            if (auto form_control =
+                    element.DynamicTo<WebFormControlElement>()) {
+              self->agent_->ShowSuggestions(
+                  form_control,
+                  AutofillSuggestionTriggerSource::kAtMemoryTriggerString,
+                  SynchronousFormCache(), std::nullopt);
+            } else if (element.IsContentEditable()) {
+              self->agent_->ShowSuggestionsForContentEditable(
+                  element,
+                  AutofillSuggestionTriggerSource::kAtMemoryTriggerString);
             }
           },
           weak_ptr_factory_.GetWeakPtr(), element_id));

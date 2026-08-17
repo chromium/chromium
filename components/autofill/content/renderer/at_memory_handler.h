@@ -92,21 +92,6 @@ class AtMemoryHandler {
       AutofillSuggestionTriggerSource trigger_source);
 
  private:
-  enum class FieldType {
-    kTextTypeFormControl,
-    kContentEditable,
-  };
-
-  struct CaretInfo {
-    FieldType field_type = internal::IsRequired();
-    size_t offset = internal::IsRequired();
-  };
-
-  // Returns the offset of the caret in `element`. Returns std::nullopt if
-  // `element` is not fillable by AtMemory: if it not focused, not a text-type
-  // form control or contenteditable, or there is a non-empty text selection.
-  std::optional<CaretInfo> GetCaretInfo(const blink::WebElement& element) const;
-
   const blink::RendererPreferences* GetRendererPreferences() const;
 
   const std::u16string& GetTriggerString() const;
