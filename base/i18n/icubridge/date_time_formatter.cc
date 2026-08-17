@@ -341,36 +341,17 @@ std::u16string GetHourSkeleton(const std::string& skeleton,
   size_t hour_K_count = std::ranges::count(skeleton, 'K');
   size_t hour_k_count = std::ranges::count(skeleton, 'k');
 
-  bool prefer_K = false;
-  bool prefer_k = false;
-  UErrorCode status = U_ZERO_ERROR;
-  std::unique_ptr<icu::DateTimePatternGenerator> base_generator(
-      icu::DateTimePatternGenerator::createInstance(
-          IcuLocaleConverter::GetInstance().FromLanguageTag(locale), status));
-  if (U_SUCCESS(status)) {
-    status = U_ZERO_ERROR;
-    icu::UnicodeString pattern_12h =
-        base_generator->getBestPattern(icu::UnicodeString("ahm"), status);
-    if (U_SUCCESS(status) && pattern_12h.indexOf('K') != -1) {
-      prefer_K = true;
-    }
-    status = U_ZERO_ERROR;
-    icu::UnicodeString pattern_24h =
-        base_generator->getBestPattern(icu::UnicodeString("Hm"), status);
-    if (U_SUCCESS(status) && pattern_24h.indexOf('k') != -1) {
-      prefer_k = true;
-    }
-  }
-
   std::u16string output_hour_skeleton;
   size_t total_hour_count =
       hour_h_count + hour_H_count + hour_K_count + hour_k_count;
   if (options.hour_clock_type == base::k12HourClock) {
-    char16_t symbol = (hour_K_count > 0 || prefer_K) ? 'K' : 'h';
+    // Only Japanese ("ja") natively prefers the 'K' cycle.
+    bool prefers_K = (locale.language_subtag() == "ja");
+    char16_t symbol = (hour_K_count > 0 || prefers_K) ? 'K' : 'h';
     output_hour_skeleton.append(
         std::u16string(std::max<size_t>(total_hour_count, 1), symbol));
   } else if (options.hour_clock_type == base::k24HourClock) {
-    char16_t symbol = (hour_k_count > 0 || prefer_k) ? 'k' : 'H';
+    char16_t symbol = (hour_k_count > 0) ? 'k' : 'H';
     output_hour_skeleton.append(
         std::u16string(std::max<size_t>(total_hour_count, 1), symbol));
   } else {
@@ -557,32 +538,14 @@ LanguageTag GetLocaleWithHourClockType(
     return locale;
   }
 
-  UErrorCode status = U_ZERO_ERROR;
-  std::unique_ptr<icu::DateTimePatternGenerator> generator(
-      icu::DateTimePatternGenerator::createInstance(
-          IcuLocaleConverter::GetInstance().FromLanguageTag(locale), status));
-  bool prefers_K = false;
-  bool prefers_k = false;
-  if (U_SUCCESS(status)) {
-    status = U_ZERO_ERROR;
-    icu::UnicodeString pattern_12h =
-        generator->getBestPattern(icu::UnicodeString("ahm"), status);
-    if (U_SUCCESS(status) && pattern_12h.indexOf('K') != -1) {
-      prefers_K = true;
-    }
-    status = U_ZERO_ERROR;
-    icu::UnicodeString pattern_24h =
-        generator->getBestPattern(icu::UnicodeString("Hm"), status);
-    if (U_SUCCESS(status) && pattern_24h.indexOf('k') != -1) {
-      prefers_k = true;
-    }
-  }
-
   std::string hour_unicode_keyword_value;
   if (*hour_clock_type == base::k12HourClock) {
+    // Only Japanese ("ja") natively prefers the h11 (K) cycle.
+    bool prefers_K = (locale.language_subtag() == "ja");
     hour_unicode_keyword_value = prefers_K ? "h11" : "h12";
   } else {
-    hour_unicode_keyword_value = prefers_k ? "h24" : "h23";
+    // No locales natively prefer the h24 (k) cycle; they all use h23 (H).
+    hour_unicode_keyword_value = "h23";
   }
   std::optional<UnicodeExtension> u_ext =
       UnicodeExtension::FromString("u-hc-" + hour_unicode_keyword_value);
