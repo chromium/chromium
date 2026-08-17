@@ -49,6 +49,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/geometry/calculation_value.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 
 namespace blink {
 
@@ -453,8 +454,8 @@ class StyleResolverFontRelativeUnitTest
 
 TEST_P(StyleResolverFontRelativeUnitTest,
        BaseNotReusableIfFontRelativeUnitPresent) {
-  GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(UNSAFE_TODO(
-      String::Format("<div id=div style='width:1%s'>Test</div>", GetParam())));
+  GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(
+      Format("<div id=div style='width:1{}'>Test</div>", GetParam()));
   UpdateAllLifecyclePhasesForTest();
 
   Element* div = GetDocument().getElementById(AtomicString("div"));
@@ -477,8 +478,8 @@ TEST_P(StyleResolverFontRelativeUnitTest,
 
 TEST_P(StyleResolverFontRelativeUnitTest,
        BaseReusableIfNoFontAffectingAnimation) {
-  GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(UNSAFE_TODO(
-      String::Format("<div id=div style='width:1%s'>Test</div>", GetParam())));
+  GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(
+      Format("<div id=div style='width:1{}'>Test</div>", GetParam()));
   UpdateAllLifecyclePhasesForTest();
 
   Element* div = GetDocument().getElementById(AtomicString("div"));

@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/platform/testing/layer_tree_host_embedder.h"
 #include "third_party/blink/renderer/platform/testing/paint_property_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "ui/gfx/geometry/test/geometry_util.h"
 
@@ -115,11 +116,10 @@ void PaintPropertyTreeBuilderTest::SetUp() {
     if (slop_factor) {                                                         \
       auto inflated_expected = expected;                                       \
       inflated_expected.Inflate(LayoutUnit(slop_factor));                      \
-      SCOPED_TRACE(String::Format(                                             \
-          "Slow path rect: %s, Expected: %s, Inflated expected: %s",           \
-          slow_path_rect.ToString().Ascii().c_str(),                           \
-          expected.ToString().Ascii().c_str(),                                 \
-          inflated_expected.ToString().Ascii().c_str()));                      \
+      SCOPED_TRACE(                                                            \
+          Format("Slow path rect: {}, Expected: {}, Inflated expected: {}",    \
+                 slow_path_rect.ToString(), expected.ToString(),               \
+                 inflated_expected.ToString()));                               \
       EXPECT_TRUE(                                                             \
           PhysicalRect(ToEnclosingRect(slow_path_rect)).Contains(expected));   \
       EXPECT_TRUE(inflated_expected.Contains(slow_path_rect));                 \
@@ -3734,15 +3734,15 @@ TEST_P(PaintPropertyTreeBuilderTest, ReplacedContentTransformFlattening) {
 TEST_P(PaintPropertyTreeBuilderTest, ContainPaintOrStyleLayoutTreeState) {
   for (const char* containment : {"paint", "style layout"}) {
     SCOPED_TRACE(containment);
-    SetBodyInnerHTML(UNSAFE_TODO(String::Format(R"HTML(
-      <style>body { margin: 20px 30px; }</style>
+    SetBodyInnerHTML(Format(R"HTML(
+      <style>body {{ margin: 20px 30px; }}</style>
       <div id='clipper'
-          style='contain: %s; width: 300px; height: 200px;'>
+          style='contain: {}; width: 300px; height: 200px;'>
         <div id='child'
             style='position: relative; width: 400px; height: 500px;'></div>
       </div>
     )HTML",
-                                                containment)));
+                            containment));
 
     auto* clipper =
         To<LayoutBoxModelObject>(GetLayoutObjectByElementId("clipper"));

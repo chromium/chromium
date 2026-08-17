@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -61,8 +62,8 @@ String GenerateNestedHTML(size_t container_depth, size_t non_container_depth) {
   StringBuilder html;
   for (size_t ct_root_index = 1; ct_root_index <= container_depth;
        ++ct_root_index) {
-    html.AppendFormat("<div id='ct_root_%zu' containertiming='ct_%zu'>",
-                      ct_root_index, ct_root_index);
+    FormatTo(html, "<div id='ct_root_{}' containertiming='ct_{}'>",
+             ct_root_index, ct_root_index);
     for (size_t content_index = 1; content_index <= non_container_depth;
          ++content_index) {
       // Give the innermost leaf content element a CSS background image so that
@@ -71,13 +72,13 @@ String GenerateNestedHTML(size_t container_depth, size_t non_container_depth) {
       // misses and the PrePaint benchmark never exercises the fast path.
       if (ct_root_index == container_depth &&
           content_index == non_container_depth) {
-        html.AppendFormat(
-            "<div id='content_%zu_%zu' "
-            "style='background-image:linear-gradient(red,red)'>",
-            ct_root_index, content_index);
+        FormatTo(html,
+                 "<div id='content_{}_{}' "
+                 "style='background-image:linear-gradient(red,red)'>",
+                 ct_root_index, content_index);
       } else {
-        html.AppendFormat("<div id='content_%zu_%zu'>", ct_root_index,
-                          content_index);
+        FormatTo(html, "<div id='content_{}_{}'>", ct_root_index,
+                 content_index);
       }
     }
   }
@@ -97,7 +98,7 @@ String GenerateImagesHTML(size_t image_count) {
   StringBuilder html;
   html.Append("<div id='ct_root' containertiming='ct'>");
   for (size_t i = 1; i <= image_count; ++i) {
-    html.AppendFormat("<img id='image_%zu' style='width:10px;height:10px'>", i);
+    FormatTo(html, "<img id='image_{}' style='width:10px;height:10px'>", i);
   }
   html.Append("</div>");
   return html.ToString();
@@ -129,7 +130,7 @@ void RunImageAttributionBenchmark(Variant variant,
   images.ReserveInitialCapacity(static_cast<wtf_size_t>(image_count));
   for (size_t i = 1; i <= image_count; ++i) {
     Element* image =
-        document.getElementById(AtomicString(String::Format("image_%zu", i)));
+        document.getElementById(AtomicString(Format("image_{}", i)));
     ASSERT_TRUE(image);
     images.push_back(image);
   }
@@ -190,8 +191,8 @@ void RunPaintBenchmark(Variant variant,
   ContainerTiming& container_timing =
       ContainerTiming::From(*document.domWindow());
 
-  AtomicString content_id(String::Format(
-      "content_%zu_%zu", container_timing_depth, non_container_depth));
+  AtomicString content_id(
+      Format("content_{}_{}", container_timing_depth, non_container_depth));
   Element* content = document.getElementById(content_id);
   ASSERT_TRUE(content);
 
@@ -234,10 +235,10 @@ void RunInvalidationCycleBenchmark(Variant variant,
 
   ContainerTiming& container_timing =
       ContainerTiming::From(*document.domWindow());
-  AtomicString ct_root_id(String::Format("ct_root_%zu", changing_ct_root));
+  AtomicString ct_root_id(Format("ct_root_{}", changing_ct_root));
   Element* ct_root = document.getElementById(ct_root_id);
-  AtomicString content_id(String::Format(
-      "content_%zu_%zu", container_timing_depth, non_container_timing_depth));
+  AtomicString content_id(Format("content_{}_{}", container_timing_depth,
+                                 non_container_timing_depth));
   Element* content = document.getElementById(content_id);
   ASSERT_TRUE(ct_root);
   ASSERT_TRUE(content);

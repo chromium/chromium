@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/platform/scheduler/test/fake_task_runner.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "ui/gfx/geometry/transform.h"
 
@@ -302,7 +303,7 @@ class AnchorElementMetricsSenderTest : public SimTest {
     anchor->setInnerText(inner_text);
     anchor->setHref("https://foo.com");
     anchor->SetInlineStyleProperty(CSSPropertyID::kHeight,
-                                   String::Format("%dpx", height));
+                                   Format("{}px", height));
     anchor->SetInlineStyleProperty(CSSPropertyID::kDisplay, "block");
     document.body()->appendChild(anchor);
     return anchor;
@@ -737,11 +738,11 @@ TEST_F(AnchorElementMetricsSenderTest, AnchorElementLeftViewport) {
 
   SimRequest main_resource(source, "text/html");
   LoadURL(source);
-  main_resource.Complete(String::Format(
+  main_resource.Complete(Format(
       R"HTML(
         <body style="margin: 0px">
-        <div style="height: %dpx;"></div>
-        <a href="" style="width: 300px; height: %dpx;">foo</a>
+        <div style="height: {}px;"></div>
+        <a href="" style="width: 300px; height: {}px;">foo</a>
         </body>)HTML",
       2 * kViewportHeight, kViewportHeight / 2));
 
@@ -820,10 +821,10 @@ TEST_F(AnchorElementMetricsSenderTest,
 
   SimRequest main_resource(source, "text/html");
   LoadURL(source);
-  main_resource.Complete(String::Format(
+  main_resource.Complete(Format(
       R"HTML(
         <body style="margin: 0px">
-        <a href="" style="width: %dpx; height: %dpx;">foo</a>
+        <a href="" style="width: {}px; height: {}px;">foo</a>
         </body>)HTML",
       kViewportWidth, kViewportHeight / 2));
 
@@ -964,11 +965,11 @@ TEST_F(AnchorElementMetricsSenderTest, AnchorElementEnteredViewportLater) {
 
   SimRequest main_resource(source, "text/html");
   LoadURL(source);
-  main_resource.Complete(String::Format(
+  main_resource.Complete(Format(
       R"HTML(
         <body style="margin: 0px">
-        <div style="height: %dpx;"></div>
-        <a href="" style="width: 300px; height: %dpx;">foo</a>
+        <div style="height: {}px;"></div>
+        <a href="" style="width: 300px; height: {}px;">foo</a>
         </body>)HTML",
       2 * kViewportHeight, kViewportHeight / 2));
 
@@ -1223,12 +1224,12 @@ TEST_F(AnchorElementMetricsSenderTest,
   String source("https://example.com/p1");
   SimRequest main_resource(source, "text/html");
   LoadURL(source);
-  main_resource.Complete(String::Format(R"html(
+  main_resource.Complete(Format(R"html(
     <body>
-      <div style="height: %dpx;"></div>
+      <div style="height: {}px;"></div>
     </body>
   )html",
-                                        kViewportHeight + 100));
+                                kViewportHeight + 100));
 
   AddAnchor("one", 100);
   ProcessEvents(1);
@@ -1300,21 +1301,21 @@ TEST_F(AnchorElementMetricsSenderTest, PositionUpdate) {
   const int anchor_3_height = 1 * unit;
   const int pointer_down_y = 5 * unit;
 
-  main_resource.Complete(String::Format(
+  main_resource.Complete(Format(
       R"HTML(
     <body style="margin: 0px">
-      <div style="height: %dpx;"></div>
+      <div style="height: {}px;"></div>
       <a href="https://bar.com/1"
-         style="height: %dpx; display: block;">
+         style="height: {}px; display: block;">
         one
       </a>
-      <div style="height: %dpx;"></div>
+      <div style="height: {}px;"></div>
       <a href="https://bar.com/2"
-         style="height: %dpx; display: block;">
+         style="height: {}px; display: block;">
         two
       </a>
       <a href="https://bar.com/3"
-         style="height: %dpx; display: block;">
+         style="height: {}px; display: block;">
         three
       </a>
     </body>
@@ -1448,17 +1449,17 @@ TEST_F(AnchorElementMetricsSenderTest,
   String source("https://foo.com");
   SimRequest main_resource(source, "text/html");
   LoadURL(source);
-  main_resource.Complete(String::Format(R"HTML(
+  main_resource.Complete(Format(R"HTML(
     <body style="margin: 0px">
-      <div style="height: %dpx"></div>
+      <div style="height: {}px"></div>
       <a href="https://bar.com"
-         style="height: %dpx; display: block;">Bar</a>
-      <iframe height="%dpx;"></iframe>
-      <div style="height: %dpx;"></div>
+         style="height: {}px; display: block;">Bar</a>
+      <iframe height="{}px;"></iframe>
+      <div style="height: {}px;"></div>
     </body>
   )HTML",
-                                        div_1_height, anchor_height,
-                                        iframe_height, div_2_height));
+                                div_1_height, anchor_height, iframe_height,
+                                div_2_height));
   EXPECT_EQ(1u, GetDocument().links()->length());
 
   // Make the iframe remote, and add a local child to it (the child is a local
@@ -1474,12 +1475,12 @@ TEST_F(AnchorElementMetricsSenderTest,
   String iframe_source("https://foo.com/2");
   SimRequest iframe_resource(iframe_source, "text/html");
   frame_test_helpers::LoadFrameDontWait(local_child, KURL(iframe_source));
-  iframe_resource.Complete(String::Format(R"HTML(
+  iframe_resource.Complete(Format(R"HTML(
     <body>
-      <div height="%dpx"></div>
+      <div height="{}px"></div>
     </body>
   )HTML",
-                                          iframe_height * 2));
+                                  iframe_height * 2));
 
   Compositor().BeginFrame();
   ProcessEvents(/*expected_anchors=*/1);
@@ -1637,16 +1638,15 @@ TEST_F(AnchorElementMetricsSenderTest,
   String source("https://foo.com");
   SimRequest main_resource(source, "text/html");
   LoadURL(source);
-  main_resource.Complete(String::Format(R"HTML(
+  main_resource.Complete(Format(R"HTML(
     <body style="margin: 0px">
-      <div style="height: %dpx"></div>
+      <div style="height: {}px"></div>
       <a href="https://bar.com"
-         style="height: %dpx; display: block;">Bar</a>
-      <div style="height: %dpx;"></div>
+         style="height: {}px; display: block;">Bar</a>
+      <div style="height: {}px;"></div>
     </body>
   )HTML",
-                                        div_1_height, anchor_height,
-                                        div_2_height));
+                                div_1_height, anchor_height, div_2_height));
   EXPECT_EQ(1u, GetDocument().links()->length());
 
   Compositor().BeginFrame();
@@ -1738,15 +1738,15 @@ TEST_F(AnchorElementMetricsSenderTest, SubframeWithObservedAnchorsDetached) {
   SimRequest main_resource(source, "text/html");
   LoadURL(source);
   const int scroll_height_px = 100;
-  main_resource.Complete(String::Format(R"html(
+  main_resource.Complete(Format(R"html(
     <body>
-      <div style="height: %dpx;"></div>
+      <div style="height: {}px;"></div>
       <iframe width="400px" height="400px"></iframe>
       <a href="https://foo.com/one">one</a>
       <div style="height: 1000px;"></div>
     </body>
   )html",
-                                        scroll_height_px));
+                                scroll_height_px));
 
   String subframe_source("https://foo.com/iframe");
   SimRequest subframe_resource(subframe_source, "text/html");
@@ -1789,12 +1789,12 @@ TEST_F(AnchorElementMetricsSenderTest,
   String source("https://foo.com");
   SimRequest main_resource(source, "text/html");
   LoadURL(source);
-  main_resource.Complete(String::Format(R"html(
+  main_resource.Complete(R"html(
     <body>
       <iframe width="400px" height="400px"></iframe>
       <a href="https://foo.com/one">one</a>
     </body>
-  )html"));
+  )html");
 
   String subframe_source("https://foo.com/iframe");
   SimRequest subframe_resource(subframe_source, "text/html");
@@ -1832,11 +1832,11 @@ TEST_F(AnchorElementMetricsSenderTest,
   source = "https://foo.com/two";
   SimRequest main_resource_2(source, "text/html");
   LoadURL(source);
-  main_resource_2.Complete(String::Format(R"html(
+  main_resource_2.Complete(R"html(
     <body>
       <div>second page</div>
     </body>
-  )html"));
+  )html");
 
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(0u, mock_host->removed_anchor_ids_.size());
@@ -1856,11 +1856,11 @@ TEST_F(AnchorElementMetricsSenderTest,
   String source("https://foo.com");
   SimRequest main_resource(source, "text/html");
   LoadURL(source);
-  main_resource.Complete(String::Format(R"html(
+  main_resource.Complete(R"html(
     <body>
       <iframe width="400px" height="400px"></iframe>
     </body>
-  )html"));
+  )html");
 
   // Navigate the subframe.
   String subframe_source("https://foo.com/iframe");
@@ -1931,18 +1931,18 @@ TEST_F(AnchorElementMetricsSenderTest,
   SimRequest fcp_blocking_script_resource(fcp_blocking_script,
                                           "text/javascript");
 
-  main_resource.Complete(String::Format(R"html(
+  main_resource.Complete(Format(R"html(
     <body>
       <script>
-        window.onload = () => {
+        window.onload = () => {{
           const script = document.createElement("script");
-          script.src = "%s";
+          script.src = "{}";
           document.body.appendChild(script);
-        }
+        }}
       </script>
     </body>
   )html",
-                                        fcp_blocking_script.Utf8().c_str()));
+                                fcp_blocking_script));
   ProcessEvents(0);
   auto* tracker =
       AnchorElementViewportPositionTracker::MaybeGetOrCreateFor(GetDocument());
@@ -1996,11 +1996,11 @@ TEST_F(AnchorElementMetricsSenderTest, RegressionTestForCrbug384610894) {
   String source("https://foo.com");
   SimRequest main_resource(source, "text/html");
   LoadURL(source);
-  main_resource.Complete(String::Format(R"html(
+  main_resource.Complete(R"html(
     <body>
       <h1>Foo</h1>
     </body>
-  )html"));
+  )html");
   task_environment().FastForwardBy(base::Milliseconds(10));
   GetDocument().View()->UpdateAllLifecyclePhasesForTest();
   ASSERT_FALSE(PaintTiming::From(GetDocument())

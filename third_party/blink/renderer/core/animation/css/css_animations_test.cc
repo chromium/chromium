@@ -34,6 +34,8 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace {
 
@@ -403,12 +405,9 @@ String GenerateTransitionHTMLFrom(const FlagData& data) {
 
   StringBuilder builder;
   builder.Append("<style>");
-  builder.Append(
-      UNSAFE_TODO(String::Format("#test { transition:%s 1s; }", property)));
-  builder.Append(
-      UNSAFE_TODO(String::Format("#test.before { %s:%s; }", property, before)));
-  builder.Append(
-      UNSAFE_TODO(String::Format("#test.after { %s:%s; }", property, after)));
+  FormatTo(builder, "#test {{ transition:{} 1s; }}", property);
+  FormatTo(builder, "#test.before {{ {}:{}; }}", property, before);
+  FormatTo(builder, "#test.after {{ {}:{}; }}", property, after);
   builder.Append("</style>");
   builder.Append("<div id=test class=before>Test</div>");
   return builder.ToString();
@@ -422,9 +421,8 @@ String GenerateCSSAnimationHTMLFrom(const FlagData& data) {
   StringBuilder builder;
   builder.Append("<style>");
   builder.Append("@keyframes anim {");
-  builder.Append(
-      UNSAFE_TODO(String::Format("from { %s:%s; }", property, before)));
-  builder.Append(UNSAFE_TODO(String::Format("to { %s:%s; }", property, after)));
+  FormatTo(builder, "from {{ {}:{}; }}", property, before);
+  FormatTo(builder, "to {{ {}:{}; }}", property, after);
   builder.Append("}");
   builder.Append("#test.after { animation:anim 1s; }");
   builder.Append("</style>");

@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 
 namespace blink {
 
@@ -1216,9 +1217,8 @@ TEST_F(InvalidationSetToSelectorMapTest, AdoptedStylesheets) {
     test_element.sheet =
         CSSStyleSheet::Create(GetDocument(), init, ASSERT_NO_EXCEPTION);
     test_element.sheet->insertRule(
-        UNSAFE_TODO(
-            String::Format(".a .b {background: %s;}", test_element.color)),
-        0, ASSERT_NO_EXCEPTION);
+        Format(".a .b {{background: {};}}", test_element.color), 0,
+        ASSERT_NO_EXCEPTION);
     HeapVector<Member<CSSStyleSheet>> stylesheets;
     stylesheets.push_back(test_element.sheet);
     shadow_root.SetAdoptedStyleSheetsForTesting(stylesheets);

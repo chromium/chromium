@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 
 namespace blink {
 
@@ -104,14 +105,14 @@ TEST_F(AnchorElementMetricsTest, AnchorFeatureImageLink) {
 
   LoadURL("https://example.com/");
 
-  main_resource.Complete(String::Format(
+  main_resource.Complete(Format(
       R"HTML(
     <body style='margin: 0px'>
-    <div style='height: %dpx;'></div>
+    <div style='height: {}px;'></div>
     <a id='anchor' href="https://example.com/page2">
       <img height="300" width="200">
     </a>
-    <div style='height: %d;'></div>
+    <div style='height: {};'></div>
     </body>)HTML",
       kViewportHeight / 2, 10 * kViewportHeight));
 
@@ -217,12 +218,12 @@ TEST_F(AnchorElementMetricsTest, AnchorFeatureExtract) {
 
   LoadURL("https://example.com/");
 
-  main_resource.Complete(String::Format(
+  main_resource.Complete(Format(
       R"HTML(
     <body style='margin: 0px'>
-    <div style='height: %dpx;'></div>
+    <div style='height: {}px;'></div>
     <a id='anchor' href="https://b.example.com">example</a>
-    <div style='height: %d;'></div>
+    <div style='height: {};'></div>
     </body>)HTML",
       2 * kViewportHeight, 10 * kViewportHeight));
 
@@ -261,23 +262,23 @@ TEST_F(AnchorElementMetricsTest, AnchorFeatureInIframe) {
 
   LoadURL("https://example.com/page1");
 
-  main_resource.Complete(String::Format(
+  main_resource.Complete(Format(
       R"HTML(
         <body style='margin: 0px'>
-        <div style='height: %dpx;'></div>
+        <div style='height: {}px;'></div>
         <iframe id='iframe' src='https://example.com/iframe.html'
-            style='width: 300px; height: %dpx;
+            style='width: 300px; height: {}px;
             border-style: none; padding: 0px; margin: 0px;'></iframe>
-        <div style='height: %dpx;'></div>
+        <div style='height: {}px;'></div>
         </body>)HTML",
       2 * kViewportHeight, kViewportHeight / 2, 10 * kViewportHeight));
 
-  iframe_resource.Complete(String::Format(
+  iframe_resource.Complete(Format(
       R"HTML(
     <body style='margin: 0px'>
-    <div style='height: %dpx;'></div>
+    <div style='height: {}px;'></div>
     <a id='anchor' href="https://example.com/page2">example</a>
-    <div style='height: %dpx;'></div>
+    <div style='height: {}px;'></div>
     </body>)HTML",
       kViewportHeight / 2, 5 * kViewportHeight));
 

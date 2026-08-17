@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wshorten-64-to-32"
@@ -1123,14 +1124,14 @@ TEST_P(AdTrackerVanillaOrAdSimTest, StyleTagAddedByScript) {
 
   main_resource_->Complete(IsAdRun() ? kPageWithAdScript
                                      : kPageWithVanillaScript);
-  script.Complete(UNSAFE_TODO(String::Format(
+  script.Complete(Format(
       R"SCRIPT(
         let style = document.createElement("style");
-        let text = document.createTextNode(`%s`);
+        let text = document.createTextNode(`{}`);
         style.appendChild(text);
         document.head.appendChild(style);
       )SCRIPT",
-      kStylesheetWithVanillaResources)));
+      kStylesheetWithVanillaResources));
 
   // Wait for stylesheet to fetch resources.
   ad_tracker_->WaitForSubresource(vanilla_font_url);

@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/layout/svg/transformed_hit_test_location.h"
 #include "third_party/blink/renderer/core/paint/clip_path_clipper.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 
 namespace blink {
 
@@ -39,21 +40,21 @@ class SvgHitTestPerfTest : public RenderingTest {
     constexpr float column_stride = kSvgWidth / num_rows;
 
     StringBuilder html;
-    html.AppendFormat(
-        "<svg width='%.2f' height='%.2f' viewBox='0 0 %.2f %.2f' "
-        "style='cursor: auto;'>",
-        kSvgWidth, kSvgHeight, kSvgWidth, kSvgHeight);
+    FormatTo(html,
+             "<svg width='{:.2f}' height='{:.2f}' viewBox='0 0 {:.2f} {:.2f}' "
+             "style='cursor: auto;'>",
+             kSvgWidth, kSvgHeight, kSvgWidth, kSvgHeight);
 
     for (size_t row = 0; row < num_rows; ++row) {
       for (size_t column = 0; column < num_columns; ++column) {
         for (size_t i = 0; i < num_group_nodes_per_leaf; ++i)
           html.Append("<g>");
 
-        html.AppendFormat(
-            "<rect id='leaf_%zu' x='%.2f' y='%.2f' width='%.2f' height='%.2f' "
-            "/>",
-            column * row, column * column_stride, row * row_stride,
-            column_stride, row_stride);
+        FormatTo(html,
+                 "<rect id='leaf_{}' x='{:.2f}' y='{:.2f}' width='{:.2f}' "
+                 "height='{:.2f}' />",
+                 column * row, column * column_stride, row * row_stride,
+                 column_stride, row_stride);
 
         for (size_t i = 0; i < num_group_nodes_per_leaf; ++i)
           html.Append("</g>");

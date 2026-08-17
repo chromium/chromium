@@ -197,6 +197,7 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_std.h"
 #include "third_party/blink/renderer/platform/wtf/dtoa.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding_registry.h"
 #include "third_party/blink/renderer/platform/wtf/threading.h"
@@ -1007,9 +1008,8 @@ uint16_t Internals::compareTreeScopePosition(
   if (!tree_scope1 || !tree_scope2) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidAccessError,
-        UNSAFE_TODO(String::Format(
-            "The %s node is neither a document node, nor a shadow root.",
-            tree_scope1 ? "second" : "first")));
+        Format("The {} node is neither a document node, nor a shadow root.",
+               tree_scope1 ? "second" : "first"));
     return 0;
   }
   return tree_scope1->ComparePosition(*tree_scope2);

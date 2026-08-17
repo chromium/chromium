@@ -234,6 +234,7 @@
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/skia/include/core/SkTextBlob.h"
 #include "ui/base/ime/mojom/text_input_state.mojom-blink.h"
 #include "ui/base/mojom/menu_source_type.mojom-blink.h"
@@ -5188,9 +5189,8 @@ TEST_F(WebFrameTest, FindInPageMatchRects) {
     Range* result = main_frame->GetTextFinder()->ActiveMatch();
     ASSERT_TRUE(result);
     result->setEnd(result->endContainer(), result->endOffset() + 3);
-    EXPECT_EQ(
-        result->GetText(),
-        UNSAFE_TODO(String::Format("%s %02d", kFindString, result_index + 2)));
+    EXPECT_EQ(result->GetText(),
+              Format("{} {:02d}", kFindString, result_index + 2));
 
     // Verify that the expected match rect also matches the currently active
     // match.  Compare the enclosing rects to prevent precision issues caused by

@@ -94,6 +94,7 @@
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 
 namespace blink {
 namespace {
@@ -2853,9 +2854,9 @@ class ScriptedTimelineTriggerTest : public PageTestBase {
     test::RunPendingTasks();
   }
 
-  void Initialize(std::string activate = "play-forwards",
-                  std::string deactivate = "play-backwards",
-                  std::string post_setup_code = "") {
+  void Initialize(const StringView& activate = "play-forwards",
+                  const StringView& deactivate = "play-backwards",
+                  const StringView& post_setup_code = "") {
     const char html[] = R"HTML(
       <style>
       div {
@@ -2870,34 +2871,34 @@ class ScriptedTimelineTriggerTest : public PageTestBase {
 
     UpdateAllLifecyclePhasesForTest();
 
-    String make_animation_js = String::Format(
+    String make_animation_js = Format(
         R"JS(
-      function setupTriggeredAnimation() {
+      function setupTriggeredAnimation() {{
         const animation = new Animation(
           new KeyframeEffect(
             document.getElementById('target'),
             [
-              { left: "0px" },
-              { left: "100px" },
+              {{ left: "0px" }},
+              {{ left: "100px" }},
             ],
-            { duration: 300, fill: "none" }
+            {{ duration: 300, fill: "none" }}
           ));
 
-        let trigger = new TimelineTrigger([{
-          timeline: new ViewTimeline({
+        let trigger = new TimelineTrigger([{{
+          timeline: new ViewTimeline({{
             subject: document.getElementById('subject'), axis: "y"
-          }),
+          }}),
           activationRangeStart: "contain",
-          activationRangeEnd: "contain"}]);
+          activationRangeEnd: "contain"}}]);
                                        /* activate */ /* deactivate */
-        trigger.addAnimation(animation,    "%s",           "%s"       );
+        trigger.addAnimation(animation,    "{}",           "{}"       );
 
         // Run post-setup JS.
-        %s
-      }
+        {}
+      }}
       setupTriggeredAnimation();
     )JS",
-        activate.c_str(), deactivate.c_str(), post_setup_code.c_str());
+        activate, deactivate, post_setup_code);
 
     ExecuteScript(make_animation_js);
 
@@ -3114,14 +3115,14 @@ TEST_F(ScriptedTimelineTriggerTest, RemoveAnimationTarget) {
 
 TEST_F(ScriptedTimelineTriggerTest, ForbidScriptDuringActivation) {
   // Define 'then' getter. This runs synchronously.
-  std::string remove_animation_code =
+  StringView remove_animation_code(
       R"JS(Object.defineProperty(Animation.prototype, 'then', {
         get() {
           trigger.removeAnimation(animation);
           return undefined;
         }
       });
-      )JS";
+      )JS");
 
   Initialize(/* activate= */ "reset", /* deactivate= */ "none",
              /* post_sectup_code*/ remove_animation_code);

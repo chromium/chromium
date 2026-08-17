@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -946,9 +947,9 @@ TEST_P(DOMWebSocketInvalidClosingCodeTest, test) {
   EXPECT_TRUE(scope.GetExceptionState().HadException());
   EXPECT_EQ(DOMExceptionCode::kInvalidAccessError,
             scope.GetExceptionState().CodeAs<DOMExceptionCode>());
-  EXPECT_EQ(String::Format("The close code must be either 1000, or between "
-                           "3000 and 4999. %d is neither.",
-                           GetParam()),
+  EXPECT_EQ(Format("The close code must be either 1000, or between "
+                   "3000 and 4999. {} is neither.",
+                   GetParam()),
             scope.GetExceptionState().Message());
   EXPECT_EQ(DOMWebSocket::kConnecting, websocket_scope.Socket().readyState());
 }

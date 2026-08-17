@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 
 namespace blink {
 
@@ -170,12 +171,10 @@ TEST_F(HitTestingTest, HitTestWithCallback) {
   const int div_height = static_cast<int>(
       GetLayoutObjectByElementId("target")->StyleRef().Height().Pixels());
   occluder_1->SetInlineStyleProperty(CSSPropertyID::kMarginTop, "-10px");
-  occluder_2->SetInlineStyleProperty(
-      CSSPropertyID::kMarginTop,
-      String::Format("%dpx", (-div_height * 1) - 10));
-  occluder_3->SetInlineStyleProperty(
-      CSSPropertyID::kMarginTop,
-      String::Format("%dpx", (-div_height * 2) - 10));
+  occluder_2->SetInlineStyleProperty(CSSPropertyID::kMarginTop,
+                                     Format("{}px", (-div_height * 1) - 10));
+  occluder_3->SetInlineStyleProperty(CSSPropertyID::kMarginTop,
+                                     Format("{}px", (-div_height * 2) - 10));
   UpdateAllLifecyclePhasesForTest();
 
   // Set up HitNodeCb helper, and the HitNodeCb expectations.

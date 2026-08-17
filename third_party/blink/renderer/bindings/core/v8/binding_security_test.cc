@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 
 namespace blink {
 
@@ -62,20 +63,20 @@ class BindingSecurityCounterTest
 
     SimRequest main(kMainFrame, "text/html");
     SimRequest target(target_url, "text/html");
-    const String& document = UNSAFE_TODO(
-        String::Format("<!DOCTYPE html>"
-                       "<script>"
-                       "  %s"
-                       "  window.addEventListener('message', e => {"
-                       "    window.other = e.source.%s;"
-                       "    console.log('yay');"
-                       "  });"
-                       "  var w = window.open('%s');"
-                       "</script>",
-                       which_origin == OriginDisposition::SameOriginDomain
-                           ? "document.domain = 'example.com';"
-                           : "",
-                       property.Utf8().c_str(), target_url));
+    const String document = Format(
+        "<!DOCTYPE html>"
+        "<script>"
+        "  {}"
+        "  window.addEventListener('message', e => {{"
+        "    window.other = e.source.{};"
+        "    console.log('yay');"
+        "  }});"
+        "  var w = window.open('{}');"
+        "</script>",
+        which_origin == OriginDisposition::SameOriginDomain
+            ? "document.domain = 'example.com';"
+            : "",
+        property, target_url);
 
     LoadURL(kMainFrame);
     main.Complete(document);
@@ -103,23 +104,23 @@ class BindingSecurityCounterTest
     }
     SimRequest main(kMainFrame, "text/html");
     SimRequest target(target_url, "text/html");
-    const String& document = UNSAFE_TODO(
-        String::Format("<!DOCTYPE html>"
-                       "<body>"
-                       "<script>"
-                       "  %s"
-                       "  var i = document.createElement('iframe');"
-                       "  window.addEventListener('message', e => {"
-                       "    window.other = e.source.%s;"
-                       "    console.log('yay');"
-                       "  });"
-                       "  i.src = '%s';"
-                       "  document.body.appendChild(i);"
-                       "</script>",
-                       which_origin == OriginDisposition::SameOriginDomain
-                           ? "document.domain = 'example.com';"
-                           : "",
-                       property.Utf8().c_str(), target_url));
+    const String document = Format(
+        "<!DOCTYPE html>"
+        "<body>"
+        "<script>"
+        "  {}"
+        "  var i = document.createElement('iframe');"
+        "  window.addEventListener('message', e => {{"
+        "    window.other = e.source.{};"
+        "    console.log('yay');"
+        "  }});"
+        "  i.src = '{}';"
+        "  document.body.appendChild(i);"
+        "</script>",
+        which_origin == OriginDisposition::SameOriginDomain
+            ? "document.domain = 'example.com';"
+            : "",
+        property, target_url);
 
     LoadURL(kMainFrame);
     main.Complete(document);

@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/platform/fonts/shaping/font_features.h"
 #include "third_party/blink/renderer/platform/testing/font_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 
 namespace blink {
 
@@ -44,8 +45,7 @@ TEST_F(HanKerningTest, MayApply) {
           type == HanKerning::CharType::kOpenQuote ||
           type == HanKerning::CharType::kClose ||
           type == HanKerning::CharType::kCloseQuote) {
-        EXPECT_EQ(HanKerning::MayApply(text), true)
-            << String::Format("U+%06X", ch);
+        EXPECT_EQ(HanKerning::MayApply(text), true) << Format("U+{:06X}", ch);
         break;
       }
     }

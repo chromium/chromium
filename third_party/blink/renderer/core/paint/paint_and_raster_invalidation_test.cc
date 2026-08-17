@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/testing/find_cc_layer.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 
 namespace blink {
 
@@ -1039,8 +1040,8 @@ TEST_P(PaintAndRasterInvalidationTest, NoDamageDueToFloatingPointError) {
     GetDocument().View()->SetTracksRasterInvalidations(true);
     canvas->setAttribute(
         html_names::kStyleAttr,
-        AtomicString(String::Format("transform: translateX(%lfpx) scale(1.8)",
-                                    x / 1.8)));
+        AtomicString(
+            Format("transform: translateX({}px) scale(1.8)", x / 1.8)));
     UpdateAllLifecyclePhasesForTest();
     EXPECT_FALSE(GetRasterInvalidationTracking(0, "tile")->HasInvalidations());
     GetDocument().View()->SetTracksRasterInvalidations(false);

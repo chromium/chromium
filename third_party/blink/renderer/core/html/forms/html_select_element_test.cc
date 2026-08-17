@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/platform/keyboard_codes.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -149,11 +150,11 @@ TEST_F(HTMLSelectElementTest, ListBoxSuggestedOptionScrollTargetGroup) {
       "<style>nav { scroll-target-group: auto }</style>"
       "<select id='sel' size='4'>");
   for (int i = 0; i < 20; ++i) {
-    html.AppendFormat("<option id='o%d' value='v%d'>o%d</option>", i, i, i);
+    FormatTo(html, "<option id='o{}' value='v{}'>o{}</option>", i, i, i);
   }
   html.Append("</select><nav id='nav'>");
   for (int i = 0; i < 20; ++i) {
-    html.AppendFormat("<a id='a%d' href='#o%d'></a>", i, i);
+    FormatTo(html, "<a id='a{}' href='#o{}'></a>", i, i);
   }
   html.Append("</nav>");
   SetHtmlInnerHTML(html.ToString().Utf8());
@@ -189,8 +190,7 @@ TEST_F(HTMLSelectElementTest,
   StringBuilder html;
   html.Append("<!DOCTYPE HTML><select id='sel' size='4'>");
   for (int i = 0; i < 20; ++i) {
-    html.AppendFormat("<option id='o%d' value='v%d'>option %d</option>", i, i,
-                      i);
+    FormatTo(html, "<option id='o{}' value='v{}'>option {}</option>", i, i, i);
   }
   html.Append("</select>");
   SetHtmlInnerHTML(html.ToString().Utf8());
@@ -290,8 +290,7 @@ TEST_F(HTMLSelectElementTest, ListBoxAutofillPreviewDisabledFallback) {
   StringBuilder html;
   html.Append("<!DOCTYPE HTML><select id='sel' size='4'>");
   for (int i = 0; i < 20; ++i) {
-    html.AppendFormat("<option id='o%d' value='v%d'>option %d</option>", i, i,
-                      i);
+    FormatTo(html, "<option id='o{}' value='v{}'>option {}</option>", i, i, i);
   }
   html.Append("</select>");
   SetHtmlInnerHTML(html.ToString().Utf8());

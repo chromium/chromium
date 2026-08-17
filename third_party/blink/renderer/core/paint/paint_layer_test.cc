@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 
 namespace blink {
 
@@ -2093,8 +2094,8 @@ TEST_P(PaintLayerTest, HitTestOverlayResizer) {
   )HTML");
 
   for (int i = 0; i < 6; i++) {
-    Element* target_element = GetDocument().getElementById(
-        AtomicString(String::Format("target_%d", i)));
+    Element* target_element =
+        GetDocument().getElementById(AtomicString(Format("target_{}", i)));
     target_element->setAttribute(html_names::kStyleAttr,
                                  AtomicString("display: block"));
     UpdateAllLifecyclePhasesForTest();

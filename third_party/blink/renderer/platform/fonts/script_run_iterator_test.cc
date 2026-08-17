@@ -11,6 +11,7 @@
 #include "base/logging.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/threading.h"
@@ -35,8 +36,8 @@ struct ScriptExpectedRun {
 };
 
 std::ostream& operator<<(std::ostream& output, const ScriptExpectedRun& run) {
-  return output << UNSAFE_TODO(String::Format("%d:%d (%s)", run.limit, run.code,
-                                              uscript_getName(run.code)));
+  return output << Format("{}:{} ({})", run.limit, run.code,
+                          uscript_getName(run.code));
 }
 
 class MockScriptData : public ScriptData {

@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 
 namespace blink {
 
@@ -120,9 +121,8 @@ class CheckPseudoHasCacheScopeContextTest : public PageTestBase {
 
     for (ExpectedResultCacheEntry expected_result_cache_entry :
          expected_result_cache_entries) {
-      String test_name = UNSAFE_TODO(
-          String::Format("[%s] cache result of %s", query_name.Utf8().c_str(),
-                         expected_result_cache_entry.element_query));
+      String test_name = Format("[{}] cache result of {}", query_name,
+                                expected_result_cache_entry.element_query);
       Element* element =
           GetQueryRoot(document, expected_result_cache_entry.shadow_host_id)
               ->QuerySelector(
@@ -183,8 +183,8 @@ class CheckPseudoHasCacheScopeContextTest : public PageTestBase {
     CheckPseudoHasCacheScope cache_scope(document,
                                          /*within_selector_checking=*/false);
 
-    String query_name = UNSAFE_TODO(String::Format(
-        "#%s.matches('%s')", query_scope_element_id, selector_text));
+    String query_name =
+        Format("#{}.matches('{}')", query_scope_element_id, selector_text);
 
     EXPECT_EQ(expected_match_result,
               query_scope_element->matches(AtomicString(selector_text)))
@@ -218,8 +218,8 @@ class CheckPseudoHasCacheScopeContextTest : public PageTestBase {
     CheckPseudoHasCacheScope cache_scope(document,
                                          /*within_selector_checking=*/false);
 
-    String query_name = UNSAFE_TODO(String::Format(
-        "#%s.querySelectorAll('%s')", query_scope_element_id, selector_text));
+    String query_name = Format("#{}.querySelectorAll('{}')",
+                               query_scope_element_id, selector_text);
 
     StaticElementList* result =
         query_scope_node->QuerySelectorAll(AtomicString(selector_text));

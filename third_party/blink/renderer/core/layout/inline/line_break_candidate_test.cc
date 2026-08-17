@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/layout/inline/line_info.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 
 namespace blink {
 
@@ -68,7 +69,7 @@ TEST_F(LineBreakCandidateTest, Text) {
                 testing::ElementsAre(LineBreakCandidate({0, 0}, 0),
                                      LineBreakCandidate({0, 3}, {0, 2}, 30, 20),
                                      LineBreakCandidate({0, 6}, 60)))
-        << String::Format("Width=%d", width);
+        << Format("Width={}", width);
   }
 }
 
@@ -96,7 +97,7 @@ TEST_F(LineBreakCandidateTest, SoftHyphen) {
                     LineBreakCandidate({0, 3}, {0, 3}, 20, 30, 0, true),
                     LineBreakCandidate({0, 7}, {0, 7}, 50, 60, 0, true),
                     LineBreakCandidate({0, 12}, 90)))
-        << String::Format("Width=%d", width);
+        << Format("Width={}", width);
   }
 }
 
@@ -122,7 +123,7 @@ TEST_F(LineBreakCandidateTest, SoftHyphenDisabled) {
     EXPECT_THAT(candidates,
                 testing::ElementsAre(LineBreakCandidate({0, 0}, 0),
                                      LineBreakCandidate({0, 11}, 90)))
-        << String::Format("Width=%d", width);
+        << Format("Width={}", width);
   }
 }
 
@@ -149,7 +150,7 @@ TEST_F(LineBreakCandidateTest, Span) {
                                      LineBreakCandidate({0, 3}, {0, 2}, 30, 20),
                                      LineBreakCandidate({4, 7}, {2, 6}, 70, 60),
                                      LineBreakCandidate({4, 11}, 110)))
-        << String::Format("Width=%d", width);
+        << Format("Width={}", width);
   }
 }
 
@@ -175,7 +176,7 @@ TEST_F(LineBreakCandidateTest, SpanMidWord) {
                 testing::ElementsAre(LineBreakCandidate({0, 0}, 0),
                                      LineBreakCandidate({4, 7}, {4, 6}, 70, 60),
                                      LineBreakCandidate({4, 11}, 110)))
-        << String::Format("Width=%d", width);
+        << Format("Width={}", width);
   }
 }
 
@@ -202,7 +203,7 @@ TEST_F(LineBreakCandidateTest, SpanCloseAfterSpace) {
                                      LineBreakCandidate({0, 3}, {0, 2}, 30, 20),
                                      LineBreakCandidate({4, 7}, {2, 6}, 70, 60),
                                      LineBreakCandidate({4, 11}, 110)))
-        << String::Format("Width=%d", width);
+        << Format("Width={}", width);
   }
 }
 
@@ -232,14 +233,14 @@ TEST_F(LineBreakCandidateTest, TrailingSpacesCollapsed) {
                                   LineBreakCandidate({0, 4}, {0, 3}, 40, 30),
                                   LineBreakCandidate({4, 4}, {0, 3}, 40, 30),
                                   LineBreakCandidate({4, 7}, 70)))
-          << String::Format("Width=%d", width);
+          << Format("Width={}", width);
       continue;
     }
     EXPECT_THAT(candidates,
                 testing::ElementsAre(LineBreakCandidate({0, 0}, 0),
                                      LineBreakCandidate({0, 4}, {0, 3}, 40, 30),
                                      LineBreakCandidate({4, 7}, 70)))
-        << String::Format("Width=%d", width);
+        << Format("Width={}", width);
   }
 }
 
@@ -267,7 +268,7 @@ TEST_F(LineBreakCandidateTest, AtomicInline) {
                 testing::ElementsAre(LineBreakCandidate({0, 0}, 0),
                                      LineBreakCandidate({1, 1}, 10),
                                      LineBreakCandidate({2, 2}, 20)))
-        << String::Format("Width=%d", width);
+        << Format("Width={}", width);
   }
 }
 
@@ -298,7 +299,7 @@ TEST_F(LineBreakCandidateTest, AtomicInlineBr) {
     EXPECT_THAT(candidates, testing::ElementsAre(
                                 LineBreakCandidate({0, 0}, 0),
                                 LineBreakCandidate({2, 2}, {1, 1}, 10, 10)))
-        << String::Format("Width=%d", width);
+        << Format("Width={}", width);
   }
 }
 
@@ -331,7 +332,7 @@ TEST_F(LineBreakCandidateTest, AtomicInlineTrailingSpaces) {
                                 // TODO(kojii): {3,2} should be {4,2}.
                                 LineBreakCandidate({3, 2}, {2, 1}, 20, 10),
                                 LineBreakCandidate({7, 4}, {5, 4}, 40, 40)))
-        << String::Format("Width=%d", width);
+        << Format("Width={}", width);
   }
 }
 
@@ -360,7 +361,7 @@ TEST_F(LineBreakCandidateTest, ForcedBreak) {
                                 LineBreakCandidate({1, 7}, {0, 6}, 60, 60),
                                 LineBreakCandidate({2, 10}, {2, 9}, 90, 80),
                                 LineBreakCandidate({3, 15}, {2, 14}, 130, 130)))
-        << String::Format("Width=%d", width);
+        << Format("Width={}", width);
   }
 }
 
@@ -394,7 +395,7 @@ TEST_F(LineBreakCandidateTest, OutOfFlowPositioned) {
                                 LineBreakCandidate({0, 19}, {0, 18}, 190, 180),
                                 LineBreakCandidate({0, 22}, {0, 21}, 220, 210),
                                 LineBreakCandidate({0, 24}, {0, 24}, 240, 240)))
-        << String::Format("Width=%d", width);
+        << Format("Width={}", width);
   }
 }
 

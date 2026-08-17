@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/platform/scheduler/test/fake_frame_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/test/recording_task_time_observer.h"
 #include "third_party/blink/renderer/platform/scheduler/test/task_environment.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 
 using testing::ElementsAreArray;
 
@@ -53,8 +54,8 @@ int TimeTicksToIntMs(const base::TimeTicks& time) {
 
 void RecordTimelineTask(Vector<String>* timeline,
                         const base::TickClock* clock) {
-  timeline->push_back(String::Format("run RecordTimelineTask @ %d",
-                                     TimeTicksToIntMs(clock->NowTicks())));
+  timeline->push_back(Format("run RecordTimelineTask @ {}",
+                             TimeTicksToIntMs(clock->NowTicks())));
 }
 
 void AppendToVectorTestTask(Vector<String>* vector, String value) {
@@ -68,8 +69,8 @@ void AppendToVectorIdleTestTask(Vector<String>* vector,
 }
 
 void TimelineIdleTestTask(Vector<String>* timeline, base::TimeTicks deadline) {
-  timeline->push_back(String::Format("run TimelineIdleTestTask deadline %d",
-                                     TimeTicksToIntMs(deadline)));
+  timeline->push_back(Format("run TimelineIdleTestTask deadline {}",
+                             TimeTicksToIntMs(deadline)));
 }
 
 class WorkerThreadSchedulerForTest : public WorkerThreadScheduler {
@@ -112,7 +113,7 @@ class WorkerThreadSchedulerForTest : public WorkerThreadScheduler {
       base::TimeDelta* next_long_idle_period_delay_out) override {
     if (timeline_) {
       timeline_->push_back(
-          String::Format("CanEnterLongIdlePeriod @ %d", TimeTicksToIntMs(now)));
+          Format("CanEnterLongIdlePeriod @ {}", TimeTicksToIntMs(now)));
     }
     return WorkerThreadScheduler::CanEnterLongIdlePeriod(
         now, next_long_idle_period_delay_out);
@@ -120,8 +121,8 @@ class WorkerThreadSchedulerForTest : public WorkerThreadScheduler {
 
   void IsNotQuiescent() override {
     if (timeline_) {
-      timeline_->push_back(String::Format(
-          "IsNotQuiescent @ %d", TimeTicksToIntMs(clock_->NowTicks())));
+      timeline_->push_back(
+          Format("IsNotQuiescent @ {}", TimeTicksToIntMs(clock_->NowTicks())));
     }
     WorkerThreadScheduler::IsNotQuiescent();
   }
@@ -193,13 +194,13 @@ class WorkerThreadSchedulerTest : public testing::Test {
   }
 
   void RunUntilIdle() {
-    timeline_.push_back(String::Format(
-        "RunUntilIdle begin @ %d",
+    timeline_.push_back(Format(
+        "RunUntilIdle begin @ {}",
         TimeTicksToIntMs(task_environment_.GetMockTickClock()->NowTicks())));
     // RunUntilIdle with auto-advancing for the mock clock.
     task_environment_.FastForwardUntilNoTasksRemain();
-    timeline_.push_back(String::Format(
-        "RunUntilIdle end @ %d",
+    timeline_.push_back(Format(
+        "RunUntilIdle end @ {}",
         TimeTicksToIntMs(task_environment_.GetMockTickClock()->NowTicks())));
   }
 
@@ -377,8 +378,8 @@ TEST_F(WorkerThreadSchedulerTest, TestPostIdleTaskAfterRunningUntilIdle) {
 void PostIdleTask(Vector<String>* timeline,
                   const base::TickClock* clock,
                   SingleThreadIdleTaskRunner* idle_task_runner) {
-  timeline->push_back(String::Format("run PostIdleTask @ %d",
-                                     TimeTicksToIntMs(clock->NowTicks())));
+  timeline->push_back(
+      Format("run PostIdleTask @ {}", TimeTicksToIntMs(clock->NowTicks())));
 
   idle_task_runner->PostIdleTask(
       FROM_HERE, base::BindOnce(&TimelineIdleTestTask, timeline));

@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 
 namespace blink {
 
@@ -1654,11 +1655,11 @@ TEST_F(ModelContextMetricsTest, RecordToolCountHistogram) {
   task_environment().FastForwardBy(base::Seconds(2));
   for (int i = 2; i <= 4; i++) {
     // clang-format off
-    EvalJsString(String::Format(R"JS(document.modelContext.registerTool({
+    EvalJsString(Format(R"JS(document.modelContext.registerTool({{
       execute: () => "true",
-      name: "tool%d",
-      description: "Tool%d",
-    }))JS", i, i).Utf8());
+      name: "tool{}",
+      description: "Tool{}",
+    }}))JS", i, i).Utf8());
     // clang-format on
   }
 
@@ -1725,9 +1726,9 @@ TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_ToolChangeOnNameChange) {
 
   int mutation_count = EvalJsInteger("window.testMutations.length");
   for (int i = 0; i < mutation_count; ++i) {
-    String script = String::Format(
+    String script = Format(
         "window.toolchangeCount = 0;"
-        "var m = window.testMutations[%d];"
+        "var m = window.testMutations[{}];"
         "var el = document.getElementById(m.id);"
         "eval(m.script);",
         i);
@@ -1737,9 +1738,8 @@ TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_ToolChangeOnNameChange) {
       return EvalJsInteger("window.toolchangeCount") == 2;
     })) << "Failed on mutation "
         << i << ": "
-        << EvalJsString(String::Format("window.testMutations[%d].script", i)
-                            .Utf8()
-                            .c_str());
+        << EvalJsString(
+               Format("window.testMutations[{}].script", i).Utf8().c_str());
   }
 }
 

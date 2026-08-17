@@ -82,6 +82,7 @@
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "ui/base/mojom/window_show_state.mojom-blink.h"
 #include "ui/gfx/geometry/size_f.h"
 
@@ -4133,14 +4134,13 @@ TEST_F(StyleEngineTest, HasViewportUnitFlags) {
     SCOPED_TRACE(data.value);
     auto holder = std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
     Document& document = holder->GetDocument();
-    document.body()->SetInnerHTMLWithoutTrustedTypes(
-        UNSAFE_TODO(String::Format(R"HTML(
+    document.body()->SetInnerHTMLWithoutTrustedTypes(Format(R"HTML(
       <style>
-        div { width: %s; }
+        div {{ width: {}; }}
       </style>
       <div id=target></div>
     )HTML",
-                                   data.value)));
+                                                            data.value));
     document.View()->UpdateAllLifecyclePhasesForTest();
 
     Element* target = document.getElementById(AtomicString("target"));
@@ -6786,7 +6786,7 @@ TEST_F(StyleEngineTest, CSSComparisonFunctionsUseCount) {
 TEST_F(StyleEngineTest, MathDepthOverflow) {
   css_test_helpers::RegisterProperty(
       GetDocument(), "--int16-max", "<integer>",
-      String::Format("%i", std::numeric_limits<int16_t>::max()), false);
+      String::Number(std::numeric_limits<int16_t>::max()), false);
 
   GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>

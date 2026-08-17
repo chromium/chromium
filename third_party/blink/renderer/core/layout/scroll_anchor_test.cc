@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 
 namespace blink {
 
@@ -75,7 +76,7 @@ class ScrollAnchorTest : public SimTest {
 
   void SetHeight(Element* element, int height) {
     element->setAttribute(html_names::kStyleAttr,
-                          AtomicString(String::Format("height: %dpx", height)));
+                          AtomicString(Format("height: {}px", height)));
     Update();
   }
 
