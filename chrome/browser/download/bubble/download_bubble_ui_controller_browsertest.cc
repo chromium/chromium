@@ -22,7 +22,6 @@
 #include "chrome/browser/download/offline_item_model_manager_factory.h"
 #include "chrome/browser/offline_items_collection/offline_content_aggregator_factory.h"
 #include "chrome/browser/profiles/profile_key.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/download/public/common/download_danger_type.h"
@@ -58,7 +57,7 @@ const char kProviderNamespace[] = "mock_namespace";
 
 class MockDownloadDisplayController : public DownloadDisplayController {
  public:
-  MockDownloadDisplayController(Browser* browser,
+  MockDownloadDisplayController(BrowserWindowInterface* browser,
                                 DownloadBubbleUIController* bubble_controller)
       : DownloadDisplayController(nullptr, browser, bubble_controller) {
     bubble_controller->SetDownloadDisplayController(this);

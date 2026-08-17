@@ -63,7 +63,6 @@
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_browsertest_util.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -1296,7 +1295,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, KnownSize) {
 // Test that when downloading an item in Incognito mode, we don't crash when
 // closing the last Incognito window (http://crbug.com/40882961).
 IN_PROC_BROWSER_TEST_F(DownloadTest, IncognitoDownload) {
-  Browser* incognito = CreateIncognitoBrowser();
+  BrowserWindowInterface* incognito = CreateIncognitoBrowser();
   ASSERT_TRUE(incognito);
   int window_count = GlobalBrowserCollection::GetInstance()->GetSize();
   EXPECT_EQ(2, window_count);
@@ -1367,7 +1366,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, DownloadTest_IncognitoRegular) {
       base::BindOnce(&VerifyNewDownloadId, download_id + 1));
 
   // Setup an incognito window.
-  Browser* incognito = CreateIncognitoBrowser();
+  BrowserWindowInterface* incognito = CreateIncognitoBrowser();
   ASSERT_TRUE(incognito);
   int window_count = GlobalBrowserCollection::GetInstance()->GetSize();
   EXPECT_EQ(2, window_count);
@@ -2816,9 +2815,9 @@ IN_PROC_BROWSER_TEST_P(PdfDownloadTestSplitCacheEnabled,
   EnableFileChooser(true);
   SetAllowOpenDownload(true);
 
-  Browser* download_browser = browser();
+  BrowserWindowInterface* download_browser = browser();
   content::WebContents* web_contents =
-      download_browser->tab_strip_model()->GetActiveWebContents();
+      download_browser->GetTabStripModel()->GetActiveWebContents();
 
   // Navigate to a PDF.
   GURL url = https_test_server()->GetURL("a.test", "/pdf/test.pdf");
@@ -2831,7 +2830,7 @@ IN_PROC_BROWSER_TEST_P(PdfDownloadTestSplitCacheEnabled,
       web_contents->GetPrimaryMainFrame(), url);
 
   // Open a newer browser window that the download should be opened in.
-  Browser* latest_tabbed_browser =
+  BrowserWindowInterface* latest_tabbed_browser =
       ui_test_utils::OpenNewEmptyWindowAndWaitUntilActivated(
           browser()->GetProfile());
   ASSERT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
@@ -2850,10 +2849,11 @@ IN_PROC_BROWSER_TEST_P(PdfDownloadTestSplitCacheEnabled,
 
   // The download was opened in the most recently active browser, not the
   // original browser it was downloaded in.
-  EXPECT_EQ(download_browser->tab_strip_model()->GetIndexOfWebContents(new_tab),
-            TabStripModel::kNoTab);
+  EXPECT_EQ(
+      download_browser->GetTabStripModel()->GetIndexOfWebContents(new_tab),
+      TabStripModel::kNoTab);
   EXPECT_NE(
-      latest_tabbed_browser->tab_strip_model()->GetIndexOfWebContents(new_tab),
+      latest_tabbed_browser->GetTabStripModel()->GetIndexOfWebContents(new_tab),
       TabStripModel::kNoTab);
 }
 #endif
@@ -4851,7 +4851,8 @@ namespace {
 class DisableSafeBrowsingOnInProgressDownload
     : public content::DownloadTestObserver {
  public:
-  explicit DisableSafeBrowsingOnInProgressDownload(Browser* browser)
+  explicit DisableSafeBrowsingOnInProgressDownload(
+      BrowserWindowInterface* browser)
       : DownloadTestObserver(DownloadManagerForBrowser(browser),
                              1,
                              ON_DANGEROUS_DOWNLOAD_QUIT),
@@ -4881,7 +4882,7 @@ class DisableSafeBrowsingOnInProgressDownload
   }
 
  private:
-  raw_ptr<Browser> browser_;
+  raw_ptr<BrowserWindowInterface> browser_;
   bool final_state_seen_;
 };
 
@@ -5128,7 +5129,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, DISABLED_DownloadAndWait) {
 // not visible after closing the Incognito window.
 IN_PROC_BROWSER_TEST_F(DownloadTest,
                        DISABLED_IncognitoDownloadSurfaceVisibility) {
-  Browser* incognito = CreateIncognitoBrowser();
+  BrowserWindowInterface* incognito = CreateIncognitoBrowser();
   ASSERT_TRUE(incognito);
 
   // Download a file in the Incognito window and wait.
@@ -5170,7 +5171,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, MAYBE_NewWindow) {
   GURL url =
       embedded_test_server()->GetURL("/" + std::string(kDownloadTest1Path));
 
-  const Browser* first_browser = browser();
+  const BrowserWindowInterface* first_browser = browser();
 
   // Download a file in a new window and wait.
   DownloadAndWaitWithDisposition(browser(), url,
@@ -5180,16 +5181,17 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, MAYBE_NewWindow) {
   // When the download finishes, the download surface SHOULD NOT be visible in
   // the first window.
   ExpectWindowCountAfterDownload(2);
-  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+  EXPECT_EQ(1, browser()->GetTabStripModel()->count());
   // Download surface should close.
   EXPECT_FALSE(
       IsDownloadDetailedUiVisible(BrowserWindow::FromBrowser(browser())));
 
   // The download surface SHOULD be visible in the second window.
-  Browser* download_browser = ui_test_utils::GetBrowserNotInSet({browser()});
+  BrowserWindowInterface* download_browser =
+      ui_test_utils::GetBrowserNotInSet({browser()});
   ASSERT_TRUE(download_browser);
   EXPECT_NE(download_browser, browser());
-  EXPECT_EQ(1, download_browser->tab_strip_model()->count());
+  EXPECT_EQ(1, download_browser->GetTabStripModel()->count());
   EXPECT_TRUE(IsDownloadDetailedUiVisible(
       BrowserWindow::FromBrowser(download_browser)));
 
@@ -5200,7 +5202,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, MAYBE_NewWindow) {
   EXPECT_EQ(first_browser, browser());
   ExpectWindowCountAfterDownload(1);
 
-  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+  EXPECT_EQ(1, browser()->GetTabStripModel()->count());
   // Download surface should close.
   EXPECT_FALSE(
       IsDownloadDetailedUiVisible(BrowserWindow::FromBrowser(browser())));
@@ -5343,7 +5345,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, WebAppDownloadOnlyShowsUiInWebAppWindow) {
   // Load an app.
   webapps::AppId app_id = web_app::test::InstallDummyWebApp(
       browser()->GetProfile(), "testapp", embedded_test_server()->GetURL("/"));
-  Browser* app_browser =
+  BrowserWindowInterface* app_browser =
       web_app::LaunchWebAppBrowserAndWait(browser()->GetProfile(), app_id);
 
   DownloadAndWait(app_browser, url);
@@ -5363,7 +5365,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest,
   // Load an app.
   webapps::AppId app_id = web_app::test::InstallDummyWebApp(
       browser()->GetProfile(), "testapp", embedded_test_server()->GetURL("/"));
-  Browser* app_browser =
+  BrowserWindowInterface* app_browser =
       web_app::LaunchWebAppBrowserAndWait(browser()->GetProfile(), app_id);
 
   DownloadAndWait(browser(), url);
@@ -5382,7 +5384,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, DownloadFromWebApp) {
   // Load an app.
   webapps::AppId app_id = web_app::test::InstallDummyWebApp(
       browser()->GetProfile(), "testapp", embedded_test_server()->GetURL("/"));
-  Browser* app_browser =
+  BrowserWindowInterface* app_browser =
       web_app::LaunchWebAppBrowserAndWait(browser()->GetProfile(), app_id);
 
   DownloadAndWait(app_browser, url);

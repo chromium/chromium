@@ -15,7 +15,6 @@
 #include "chrome/browser/download/download_ui_model.h"
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/image_decoder/image_decoder.h"  // nogncheck crbug.com/40147906
-#include "chrome/browser/ui/browser.h"  // nogncheck crbug.com/40147906
 #endif
 #include "components/download/public/common/download_item.h"
 #include "components/offline_items_collection/core/offline_item.h"
@@ -23,6 +22,7 @@
 #include "ui/message_center/public/cpp/notification_delegate.h"
 #include "ui/native_theme/native_theme.h"
 
+class BrowserWindowInterface;
 class SkBitmap;
 
 namespace test {

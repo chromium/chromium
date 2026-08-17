@@ -19,7 +19,7 @@
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -471,7 +471,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerDownloadBrowserTest,
 // OTR storage partition's interceptor wiring.
 IN_PROC_BROWSER_TEST_F(ServiceWorkerDownloadBrowserTest,
                        IncognitoDirectDownloadServedByServiceWorker) {
-  Browser* incognito = CreateIncognitoBrowser();
+  BrowserWindowInterface* incognito = CreateIncognitoBrowser();
   ASSERT_TRUE(incognito);
 
   // Mirror the per-browser download prefs setup the base fixture does for
@@ -486,7 +486,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerDownloadBrowserTest,
   GURL page_url = embedded_test_server()->GetURL(kPagePath);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(incognito, page_url));
   content::WebContents* web_contents =
-      incognito->tab_strip_model()->GetActiveWebContents();
+      incognito->GetTabStripModel()->GetActiveWebContents();
   EXPECT_EQ(true, content::EvalJs(web_contents, "window.swReady"));
 
   auto params = std::make_unique<download::DownloadUrlParameters>(

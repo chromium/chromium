@@ -44,7 +44,7 @@
 #include "ui/color/color_id.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "components/url_formatter/elide_url.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/views/vector_icons.h"

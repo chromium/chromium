@@ -13,10 +13,9 @@
 #include <string>
 
 #include "base/logging.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "ui/base/base_window.h"
 #include "ui/views/win/hwnd_util.h"
 
 namespace {

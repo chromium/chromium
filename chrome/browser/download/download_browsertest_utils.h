@@ -21,15 +21,18 @@
 #include "extensions/browser/scoped_ignore_content_verifier_for_test.h"
 #include "ui/base/window_open_disposition.h"
 
+class BrowserWindowInterface;
 class DownloadPrefs;
 
 // Gets the download manager for a browser.
-content::DownloadManager* DownloadManagerForBrowser(Browser* browser);
+content::DownloadManager* DownloadManagerForBrowser(
+    BrowserWindowInterface* browser);
 
 // Sets the kPromptForDownload pref on `browser`. Generally this should be used
 // with `prompt_for_download` false, as prompting for download location in a
 // browser test will make the download time out.
-void SetPromptForDownload(Browser* browser, bool prompt_for_download);
+void SetPromptForDownload(BrowserWindowInterface* browser,
+                          bool prompt_for_download);
 
 // DownloadTestObserver subclass that observes one download until it transitions
 // from a non-resumable state to a resumable state a specified number of
@@ -134,35 +137,37 @@ class DownloadTestBase : public InProcessBrowserTest {
   base::FilePath OriginFile(const base::FilePath& file);
 
   // Location of the file destination (place to which it is downloaded).
-  base::FilePath DestinationFile(Browser* browser, const base::FilePath& file);
+  base::FilePath DestinationFile(BrowserWindowInterface* browser,
+                                 const base::FilePath& file);
 
   content::TestDownloadResponseHandler* test_response_handler();
 
-  DownloadPrefs* GetDownloadPrefs(Browser* browser);
+  DownloadPrefs* GetDownloadPrefs(BrowserWindowInterface* browser);
 
-  base::FilePath GetDownloadDirectory(Browser* browser);
+  base::FilePath GetDownloadDirectory(BrowserWindowInterface* browser);
 
   // Create a DownloadTestObserverTerminal that will wait for the
   // specified number of downloads to finish.
-  content::DownloadTestObserver* CreateWaiter(Browser* browser,
+  content::DownloadTestObserver* CreateWaiter(BrowserWindowInterface* browser,
                                               int num_downloads);
 
   // Create a DownloadTestObserverInProgress that will wait for the
   // specified number of downloads to start.
-  content::DownloadTestObserver* CreateInProgressWaiter(Browser* browser,
-                                                        int num_downloads);
+  content::DownloadTestObserver* CreateInProgressWaiter(
+      BrowserWindowInterface* browser,
+      int num_downloads);
 
   // Create a DownloadTestObserverTerminal that will wait for the
   // specified number of downloads to finish, or for
   // a dangerous download warning to be shown.
   content::DownloadTestObserver* DangerousDownloadWaiter(
-      Browser* browser,
+      BrowserWindowInterface* browser,
       int num_downloads,
       content::DownloadTestObserver::DangerousDownloadAction
           dangerous_download_action);
 
   void CheckDownloadStatesForBrowser(
-      Browser* browser,
+      BrowserWindowInterface* browser,
       size_t num,
       download::DownloadItem::DownloadState state);
 
@@ -179,14 +184,14 @@ class DownloadTestBase : public InProcessBrowserTest {
   // |prompt_for_download| indicates whether to prompt for the download location
   // and should generally be false, since the download location prompt can
   // cause the browser test to time out.
-  void DownloadAndWaitWithDisposition(Browser* browser,
+  void DownloadAndWaitWithDisposition(BrowserWindowInterface* browser,
                                       const GURL& url,
                                       WindowOpenDisposition disposition,
                                       int browser_test_flags,
                                       bool prompt_for_download = false);
 
   // Download a file in the current tab, then wait for the download to finish.
-  void DownloadAndWait(Browser* browser,
+  void DownloadAndWait(BrowserWindowInterface* browser,
                        const GURL& url,
                        bool prompt_for_download = false);
 
@@ -194,27 +199,28 @@ class DownloadTestBase : public InProcessBrowserTest {
   // (in error or not).
   // Returning false indicates a failure of the function, and should be asserted
   // in the caller.
-  bool CheckDownload(Browser* browser,
+  bool CheckDownload(BrowserWindowInterface* browser,
                      const base::FilePath& downloaded_filename,
                      const base::FilePath& origin_filename);
 
   // A version of CheckDownload that allows complete path specification.
-  bool CheckDownloadFullPaths(Browser* browser,
+  bool CheckDownloadFullPaths(BrowserWindowInterface* browser,
                               const base::FilePath& downloaded_file,
                               const base::FilePath& origin_file);
 
   // Creates an in-progress download and returns a pointer to its DownloadItem.
   // Either supply a `browser` or the `browser()` in the test fixture will be
   // used.
-  download::DownloadItem* CreateSlowTestDownload(Browser* browser = nullptr);
+  download::DownloadItem* CreateSlowTestDownload(
+      BrowserWindowInterface* browser = nullptr);
 
-  bool RunSizeTest(Browser* browser,
+  bool RunSizeTest(BrowserWindowInterface* browser,
                    SizeTestType type,
                    const std::string& partial_indication,
                    const std::string& total_indication);
 
   void GetDownloads(
-      Browser* browser,
+      BrowserWindowInterface* browser,
       std::vector<raw_ptr<download::DownloadItem, VectorExperimental>>*
           downloads) const;
 

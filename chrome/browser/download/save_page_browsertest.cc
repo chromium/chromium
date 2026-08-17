@@ -34,9 +34,9 @@
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/download/save_package_file_picker.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
@@ -329,18 +329,17 @@ class SavePageBrowserTest : public InProcessBrowserTest {
     *dir = GetSaveDir().AppendASCII(prefix + "_files");
   }
 
-  WebContents* GetCurrentTab(Browser* browser) const {
+  WebContents* GetCurrentTab(BrowserWindowInterface* browser) const {
     WebContents* current_tab =
-        browser->tab_strip_model()->GetActiveWebContents();
+        browser->GetTabStripModel()->GetActiveWebContents();
     EXPECT_TRUE(current_tab);
     return current_tab;
   }
 
   // Returns true if and when there was a single download created, and its url
   // is |expected_url|.
-  bool VerifySavePackageExpectations(
-      Browser* browser,
-      const GURL& expected_url) const {
+  bool VerifySavePackageExpectations(BrowserWindowInterface* browser,
+                                     const GURL& expected_url) const {
     // Generally, there should only be one download item created
     // in all of these tests.  If it's already here, grab it; if not,
     // wait for it to show up.
@@ -636,7 +635,7 @@ IN_PROC_BROWSER_TEST_F(SavePageBrowserTest, SaveCompleteHTML) {
 IN_PROC_BROWSER_TEST_F(SavePageBrowserTest,
                        SaveDuringInitialNavigationIncognito) {
   // Open an Incognito window.
-  Browser* incognito = CreateIncognitoBrowser();  // Waits.
+  BrowserWindowInterface* incognito = CreateIncognitoBrowser();  // Waits.
   ASSERT_TRUE(incognito);
 
   // Create a download item creation waiter on that window.
