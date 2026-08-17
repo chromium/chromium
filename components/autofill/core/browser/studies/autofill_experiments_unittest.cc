@@ -309,14 +309,17 @@ TEST_F(AutofillExperimentsTest, IsCardUploadEnabled_TransportModeOnly) {
 TEST_F(AutofillExperimentsTest, ShouldShowIbanOnSettingsPage_FeatureEnabled) {
   // Use a supported country to verify the feature is enabled.
   EXPECT_TRUE(ShouldShowIbanOnSettingsPage("AE", &pref_service_));
+  EXPECT_TRUE(ShouldShowIbanOnSettingsPage("ae", &pref_service_));
 
   // Use an unsupported country to verify the feature is disabled.
   EXPECT_FALSE(ShouldShowIbanOnSettingsPage("US", &pref_service_));
+  EXPECT_FALSE(ShouldShowIbanOnSettingsPage("us", &pref_service_));
 
   // Use an unsupported country to verify the feature is enabled if
   // kAutofillHasSeenIban in pref is set to true.
   prefs::SetAutofillHasSeenIban(&pref_service_);
   EXPECT_TRUE(ShouldShowIbanOnSettingsPage("US", &pref_service_));
+  EXPECT_TRUE(ShouldShowIbanOnSettingsPage("us", &pref_service_));
 }
 
 TEST_F(

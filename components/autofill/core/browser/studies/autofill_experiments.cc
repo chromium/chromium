@@ -239,7 +239,7 @@ bool IsCreditCardFidoAuthenticationEnabled() {
 bool ShouldShowIbanOnSettingsPage(const std::string& user_country_code,
                                   PrefService* pref_service) {
   std::string country_code = base::ToUpperASCII(user_country_code);
-  return Iban::IsIbanApplicableInCountry(user_country_code) ||
+  return Iban::IsIbanApplicableInCountry(country_code) ||
          prefs::HasSeenIban(pref_service);
 }
 
