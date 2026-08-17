@@ -219,9 +219,6 @@ class PermissionRequestManager
       const override;
   void CalculateCurrentVariantForEmbeddedPrompt() override;
   void AdvanceOrFinalizeEmbeddedPromptFlow() override;
-  // Returns true if there is a request in progress that is initiated by an
-  // embedded permission element.
-  bool IsCurrentRequestEmbeddedPermissionElementInitiated() const;
 
   // Returns the bounds of the active permission prompt view if we're
   // displaying one.

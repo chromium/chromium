@@ -48,6 +48,11 @@ class TestPermissionsClient : public PermissionsClient {
   void SetHasDevicePermission(bool has_device_permission);
   void SetCanRequestDevicePermission(bool can_request_device_permission);
 
+  bool IsPrivilegedInternalWebUI(content::WebContents* web_contents,
+                                 const GURL& requester,
+                                 bool already_overrode_requester) override;
+  void SetIsPrivilegedInternalWebUI(bool is_privileged_internal_web_ui);
+
 #if BUILDFLAG(IS_ANDROID)
   // Gets the name of the embedder.
   const std::u16string GetClientApplicationName() const override;
@@ -64,6 +69,7 @@ class TestPermissionsClient : public PermissionsClient {
   OriginKeyedPermissionActionService origin_keyed_permission_action_service_;
   bool has_device_permission_ = true;
   bool can_request_device_permission_ = false;
+  bool is_privileged_internal_web_ui_ = false;
 };
 
 }  // namespace permissions

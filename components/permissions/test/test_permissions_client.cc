@@ -106,6 +106,18 @@ void TestPermissionsClient::SetCanRequestDevicePermission(
   can_request_device_permission_ = can_request_device_permission;
 }
 
+bool TestPermissionsClient::IsPrivilegedInternalWebUI(
+    content::WebContents* web_contents,
+    const GURL& requester,
+    bool already_overrode_requester) {
+  return is_privileged_internal_web_ui_;
+}
+
+void TestPermissionsClient::SetIsPrivilegedInternalWebUI(
+    bool is_privileged_internal_web_ui) {
+  is_privileged_internal_web_ui_ = is_privileged_internal_web_ui;
+}
+
 #if BUILDFLAG(IS_ANDROID)
 // Gets the name of the embedder.
 const std::u16string TestPermissionsClient::GetClientApplicationName() const {

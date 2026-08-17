@@ -400,6 +400,7 @@ source_set("unit_tests") {
     "//components/content_settings/browser:test_support",
     "//components/content_settings/core/browser",
     "//components/keyed_service/content",
+    "//components/omnibox/common",
     "//components/prefs:test_support",
     "//components/safety_check",
     "//components/security_state/core",

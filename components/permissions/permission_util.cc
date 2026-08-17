@@ -400,6 +400,9 @@ bool PermissionUtil::IsLowPriorityPermissionRequest(
 bool PermissionUtil::ShouldCurrentRequestUsePermissionElementSecondaryUI(
     const PermissionPrompt::Delegate* delegate,
     content::WebContents* web_contents) {
+  if (delegate->Requests().empty()) {
+    return false;
+  }
   if (permissions::PermissionsClient::
           AllowEmbeddedPermissionPromptForAllowlistedSurfaces() &&
       permissions::PermissionsClient::Get()
@@ -413,6 +416,10 @@ bool PermissionUtil::ShouldCurrentRequestUsePermissionElementSecondaryUI(
 
 bool PermissionUtil::ShouldCurrentRequestUsePermissionElementSecondaryUI(
     const PermissionPrompt::Delegate* delegate) {
+  if (delegate->Requests().empty()) {
+    return false;
+  }
+
   if (!base::FeatureList::IsEnabled(blink::features::kGeolocationElement) &&
       !base::FeatureList::IsEnabled(blink::features::kUserMediaElement) &&
       !base::FeatureList::IsEnabled(blink::features::kWebAppInstallation)) {
