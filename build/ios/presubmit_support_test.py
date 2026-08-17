@@ -11,7 +11,7 @@ import unittest
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 
-from PRESUBMIT_test_mocks import MockInputApi, MockOutputApi
+from PRESUBMIT_test_mocks import MockInputApi, MockOutputApi, MockFile
 from build.ios import presubmit_support
 
 _TEMP_FILELIST_CONTENTS = """# Copyright %d The Chromium Authors
@@ -179,6 +179,129 @@ class BundleDataPresubmit(unittest.TestCase):
             '.',
         )
         self.assertEqual([], results)
+
+
+class NotFatalUntilAdoptionTest(unittest.TestCase):
+    """Test the CheckNotFatalUntilAdoption presubmit check."""
+
+    def setUp(self):
+        self.mock_input_api = MockInputApi()
+        self.mock_input_api.change.RepositoryRoot = lambda: os.path.join(
+            os.path.dirname(__file__), '..', '..'
+        )
+        self.mock_output_api = MockOutputApi()
+
+    def testNewCheckWithoutNFU(self):
+        file = MockFile(
+            'ios/web_view/test.cc', ['  CHECK(condition);'], action='A'
+        )
+        self.mock_input_api.InitFiles([file])
+        errors = presubmit_support.CheckNotFatalUntilAdoption(
+            self.mock_input_api, self.mock_output_api
+        )
+        self.assertEqual(len(errors), 1)
+        self.assertEqual('warning', errors[0].type)
+        self.assertTrue(
+            'Consider using base::NotFatalUntil' in errors[0].message
+        )
+        self.assertTrue(
+            '//ios/web_view is used as a shared framework by other embedders'
+            in errors[0].message
+        )
+        self.assertTrue(
+            file.LocalPath() + ':1: CHECK(condition);' in errors[0].message
+        )
+
+    def testNewCheckWithNFU(self):
+        file = MockFile(
+            'ios/web_view/test.cc',
+            ['  CHECK(condition) << base::NotFatalUntil(2024, 10);'],
+            action='A',
+        )
+        self.mock_input_api.InitFiles([file])
+        errors = presubmit_support.CheckNotFatalUntilAdoption(
+            self.mock_input_api, self.mock_output_api
+        )
+        self.assertEqual(len(errors), 0)
+
+    def testCheckPromotedFromNFU(self):
+        file = MockFile(
+            'ios/web_view/test.cc',
+            ['  CHECK(condition);'],
+            old_contents=[
+                '  CHECK(condition) << base::NotFatalUntil(2024, 10);'
+            ],
+            action='M',
+        )
+        self.mock_input_api.InitFiles([file])
+        errors = presubmit_support.CheckNotFatalUntilAdoption(
+            self.mock_input_api, self.mock_output_api
+        )
+        self.assertEqual(len(errors), 0)
+
+    def testCheckModifiedWithoutPriorNFU(self):
+        # If a CHECK was already fatal (no NFU) and is modified, it should warn.
+        file = MockFile(
+            'ios/web_view/test.cc',
+            ['  CHECK(new_condition);'],
+            old_contents=['  CHECK(old_condition);'],
+            action='M',
+        )
+        self.mock_input_api.InitFiles([file])
+        errors = presubmit_support.CheckNotFatalUntilAdoption(
+            self.mock_input_api, self.mock_output_api
+        )
+        self.assertEqual(len(errors), 1)
+
+    def testMultilineNFU(self):
+        file = MockFile(
+            'ios/web_view/test.cc',
+            ['  CHECK(condition)', '      << base::NotFatalUntil(2024, 10);'],
+            action='A',
+        )
+        self.mock_input_api.InitFiles([file])
+        errors = presubmit_support.CheckNotFatalUntilAdoption(
+            self.mock_input_api, self.mock_output_api
+        )
+        self.assertEqual(len(errors), 0)
+
+    def testCheckInComment(self):
+        file = MockFile(
+            'ios/web_view/test.cc', ['  // CHECK(condition);'], action='A'
+        )
+        self.mock_input_api.InitFiles([file])
+        errors = presubmit_support.CheckNotFatalUntilAdoption(
+            self.mock_input_api, self.mock_output_api
+        )
+        self.assertEqual(len(errors), 0)
+
+
+class DiscourageCheckDerefTest(unittest.TestCase):
+    """Test the CheckDiscourageCheckDeref presubmit check."""
+
+    def setUp(self):
+        self.mock_input_api = MockInputApi()
+        self.mock_input_api.change.RepositoryRoot = lambda: os.path.join(
+            os.path.dirname(__file__), '..', '..'
+        )
+        self.mock_output_api = MockOutputApi()
+
+    def testCheckDerefUsed(self):
+        file = MockFile(
+            'ios/web_view/test.cc', ['  CHECK_DEREF(ptr);'], action='A'
+        )
+        self.mock_input_api.InitFiles([file])
+        errors = presubmit_support.CheckDiscourageCheckDeref(
+            self.mock_input_api, self.mock_output_api
+        )
+        self.assertEqual(len(errors), 1)
+        self.assertEqual('warning', errors[0].type)
+        self.assertTrue(
+            'Avoid using CHECK_DEREF in iOS/web_view code' in errors[0].message
+        )
+        self.assertTrue(
+            file.LocalPath() + ':1: CHECK_DEREF(ptr);' in errors[0].message
+        )
 
 
 if __name__ == '__main__':
