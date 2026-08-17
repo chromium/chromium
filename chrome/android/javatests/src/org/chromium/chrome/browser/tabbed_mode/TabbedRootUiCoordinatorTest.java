@@ -48,6 +48,7 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarSceneLayer;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarSceneLayerJni;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarUtils;
+import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarUtils.BookmarkBarSettingChangeOrigin;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -583,7 +584,9 @@ public class TabbedRootUiCoordinatorTest {
                         // Set the tri-state pref to ALWAYS_HIDE initially, and also boolean so
                         // tests align
                         BookmarkBarUtils.setBookmarkBarVisibilityState(
-                                profile, BookmarkBarVisibilityState.ALWAYS_HIDE, false);
+                                profile,
+                                BookmarkBarVisibilityState.ALWAYS_HIDE,
+                                BookmarkBarSettingChangeOrigin.APPEARANCE_SETTINGS);
                         if (BookmarkBarUtils.shouldUseProfileUserPrefs()) {
                             BookmarkBarUtils.setUserPrefsShowBookmarksBar(
                                     profile, false, /* fromKeyboardShortcut= */ false);
@@ -724,7 +727,7 @@ public class TabbedRootUiCoordinatorTest {
                     BookmarkBarUtils.setBookmarkBarVisibilityState(
                             profile,
                             BookmarkBarVisibilityState.ALWAYS_HIDE,
-                            /* fromKeyboardShortcut= */ false);
+                            BookmarkBarSettingChangeOrigin.APPEARANCE_SETTINGS);
                     assertEquals(
                             BookmarkBarVisibilityState.ALWAYS_HIDE,
                             BookmarkBarUtils.getBookmarkBarVisibilityState(
@@ -755,7 +758,7 @@ public class TabbedRootUiCoordinatorTest {
                     BookmarkBarUtils.setBookmarkBarVisibilityState(
                             profile,
                             BookmarkBarVisibilityState.ONLY_SHOW_ON_NTP,
-                            /* fromKeyboardShortcut= */ false);
+                            BookmarkBarSettingChangeOrigin.APPEARANCE_SETTINGS);
                     assertEquals(
                             BookmarkBarVisibilityState.ONLY_SHOW_ON_NTP,
                             BookmarkBarUtils.getBookmarkBarVisibilityState(
@@ -792,7 +795,7 @@ public class TabbedRootUiCoordinatorTest {
                     BookmarkBarUtils.setBookmarkBarVisibilityState(
                             profile,
                             BookmarkBarVisibilityState.ONLY_SHOW_ON_NTP,
-                            /* fromKeyboardShortcut= */ false);
+                            BookmarkBarSettingChangeOrigin.APPEARANCE_SETTINGS);
                     assertFalse(mTabbedRootUiCoordinator.getBookmarkBarVisibility());
                 });
 

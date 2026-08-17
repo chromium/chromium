@@ -31,6 +31,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
+import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarUtils.BookmarkBarSettingChangeOrigin;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -302,7 +303,9 @@ public class BookmarkBarUtilsTest {
     public void testBookmarkBarVisibilityState_UserPrefs_Set() {
         mOverrideContextRule.setIsDesktop(true);
         BookmarkBarUtils.setUserPrefsBookmarkBarVisibilityState(
-                mProfile, BookmarkBarVisibilityState.ONLY_SHOW_ON_NTP, false);
+                mProfile,
+                BookmarkBarVisibilityState.ONLY_SHOW_ON_NTP,
+                BookmarkBarSettingChangeOrigin.APPEARANCE_SETTINGS);
         verify(mPrefService)
                 .setInteger(
                         Pref.BOOKMARK_BAR_VISIBILITY_STATE,
@@ -410,7 +413,8 @@ public class BookmarkBarUtilsTest {
         mOverrideContextRule.setIsDesktop(false);
         ContextUtils.getAppSharedPreferences().edit().clear().apply();
         BookmarkBarUtils.setDevicePrefBookmarkBarVisibilityState(
-                BookmarkBarVisibilityState.ONLY_SHOW_ON_NTP, false);
+                BookmarkBarVisibilityState.ONLY_SHOW_ON_NTP,
+                BookmarkBarSettingChangeOrigin.APPEARANCE_SETTINGS);
         setIntegerPref(
                 /* isManaged= */ false,
                 /* managedPolicyValue= */ BookmarkBarVisibilityState.ALWAYS_HIDE,
@@ -479,7 +483,8 @@ public class BookmarkBarUtilsTest {
             testBookmarkBarVisibilityState_DevicePrefs_isEnabled_Policy_Recommended_OverriddenByDevicePrefs() {
         mOverrideContextRule.setIsDesktop(false);
         BookmarkBarUtils.setDevicePrefBookmarkBarVisibilityState(
-                BookmarkBarVisibilityState.ALWAYS_SHOW, false);
+                BookmarkBarVisibilityState.ALWAYS_SHOW,
+                BookmarkBarSettingChangeOrigin.APPEARANCE_SETTINGS);
         setIntegerPref(
                 /* isManaged= */ false,
                 /* managedPolicyValue= */ BookmarkBarVisibilityState.ALWAYS_HIDE,
@@ -768,7 +773,8 @@ public class BookmarkBarUtilsTest {
         // Case: feature allowed explicit device pref
         BookmarkBarUtils.setActivityStateBookmarkBarCompatibleForTesting(true);
         BookmarkBarUtils.setDevicePrefBookmarkBarVisibilityState(
-                BookmarkBarVisibilityState.ONLY_SHOW_ON_NTP, /* fromKeyboardShortcut= */ false);
+                BookmarkBarVisibilityState.ONLY_SHOW_ON_NTP,
+                BookmarkBarSettingChangeOrigin.APPEARANCE_SETTINGS);
         assertEquals(
                 BookmarkBarVisibilityState.ONLY_SHOW_ON_NTP,
                 BookmarkBarUtils.getBookmarkBarVisibilityState(mActivity, mProfile, false));
@@ -783,7 +789,7 @@ public class BookmarkBarUtilsTest {
         BookmarkBarUtils.setBookmarkBarVisibilityState(
                 mProfile,
                 BookmarkBarVisibilityState.ONLY_SHOW_ON_NTP,
-                /* fromKeyboardShortcut= */ false);
+                BookmarkBarSettingChangeOrigin.APPEARANCE_SETTINGS);
 
         // Case: XR full space mode is enabled.
         assertEquals(
@@ -804,7 +810,9 @@ public class BookmarkBarUtilsTest {
         // TODO(crbug.com/543113459): Add metrics testing once added to Utils.
 
         BookmarkBarUtils.setUserPrefsBookmarkBarVisibilityState(
-                mProfile, BookmarkBarVisibilityState.ALWAYS_SHOW, /* fromKeyboardShortcut= */ true);
+                mProfile,
+                BookmarkBarVisibilityState.ALWAYS_SHOW,
+                BookmarkBarSettingChangeOrigin.KEYBOARD_SHORTCUT);
         verify(mPrefService)
                 .setInteger(
                         Pref.BOOKMARK_BAR_VISIBILITY_STATE, BookmarkBarVisibilityState.ALWAYS_SHOW);
@@ -812,14 +820,16 @@ public class BookmarkBarUtilsTest {
         BookmarkBarUtils.setUserPrefsBookmarkBarVisibilityState(
                 mProfile,
                 BookmarkBarVisibilityState.ONLY_SHOW_ON_NTP,
-                /* fromKeyboardShortcut= */ true);
+                BookmarkBarSettingChangeOrigin.KEYBOARD_SHORTCUT);
         verify(mPrefService)
                 .setInteger(
                         Pref.BOOKMARK_BAR_VISIBILITY_STATE,
                         BookmarkBarVisibilityState.ONLY_SHOW_ON_NTP);
 
         BookmarkBarUtils.setUserPrefsBookmarkBarVisibilityState(
-                mProfile, BookmarkBarVisibilityState.ALWAYS_HIDE, /* fromKeyboardShortcut= */ true);
+                mProfile,
+                BookmarkBarVisibilityState.ALWAYS_HIDE,
+                BookmarkBarSettingChangeOrigin.KEYBOARD_SHORTCUT);
         verify(mPrefService)
                 .setInteger(
                         Pref.BOOKMARK_BAR_VISIBILITY_STATE, BookmarkBarVisibilityState.ALWAYS_HIDE);
@@ -833,19 +843,22 @@ public class BookmarkBarUtilsTest {
         // TODO(crbug.com/543113459): Add metrics testing once added to Utils.
 
         BookmarkBarUtils.setDevicePrefBookmarkBarVisibilityState(
-                BookmarkBarVisibilityState.ALWAYS_SHOW, /* fromKeyboardShortcut= */ true);
+                BookmarkBarVisibilityState.ALWAYS_SHOW,
+                BookmarkBarSettingChangeOrigin.KEYBOARD_SHORTCUT);
         assertEquals(
                 BookmarkBarVisibilityState.ALWAYS_SHOW,
                 BookmarkBarUtils.getDevicePrefBookmarkBarVisibilityState(mProfile));
 
         BookmarkBarUtils.setDevicePrefBookmarkBarVisibilityState(
-                BookmarkBarVisibilityState.ONLY_SHOW_ON_NTP, /* fromKeyboardShortcut= */ true);
+                BookmarkBarVisibilityState.ONLY_SHOW_ON_NTP,
+                BookmarkBarSettingChangeOrigin.KEYBOARD_SHORTCUT);
         assertEquals(
                 BookmarkBarVisibilityState.ONLY_SHOW_ON_NTP,
                 BookmarkBarUtils.getDevicePrefBookmarkBarVisibilityState(mProfile));
 
         BookmarkBarUtils.setDevicePrefBookmarkBarVisibilityState(
-                BookmarkBarVisibilityState.ALWAYS_HIDE, /* fromKeyboardShortcut= */ true);
+                BookmarkBarVisibilityState.ALWAYS_HIDE,
+                BookmarkBarSettingChangeOrigin.KEYBOARD_SHORTCUT);
         assertEquals(
                 BookmarkBarVisibilityState.ALWAYS_HIDE,
                 BookmarkBarUtils.getDevicePrefBookmarkBarVisibilityState(mProfile));
@@ -890,21 +903,24 @@ public class BookmarkBarUtilsTest {
 
         // 1. ALWAYS_SHOW on tablet.
         BookmarkBarUtils.setDevicePrefBookmarkBarVisibilityState(
-                BookmarkBarVisibilityState.ALWAYS_SHOW, /* fromKeyboardShortcut= */ false);
+                BookmarkBarVisibilityState.ALWAYS_SHOW,
+                BookmarkBarSettingChangeOrigin.APPEARANCE_SETTINGS);
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
         assertTrue(BookmarkBarUtils.isBookmarkBarVisibleForState(mActivity, mProfile, false, mTab));
         assertTrue(BookmarkBarUtils.isBookmarkBarVisibleForState(mActivity, mProfile, false, null));
 
         // 2. ALWAYS_HIDE on tablet.
         BookmarkBarUtils.setDevicePrefBookmarkBarVisibilityState(
-                BookmarkBarVisibilityState.ALWAYS_HIDE, /* fromKeyboardShortcut= */ false);
+                BookmarkBarVisibilityState.ALWAYS_HIDE,
+                BookmarkBarSettingChangeOrigin.APPEARANCE_SETTINGS);
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.NTP_URL);
         assertFalse(
                 BookmarkBarUtils.isBookmarkBarVisibleForState(mActivity, mProfile, false, mTab));
 
         // 3. ONLY_SHOW_ON_NTP on tablet.
         BookmarkBarUtils.setDevicePrefBookmarkBarVisibilityState(
-                BookmarkBarVisibilityState.ONLY_SHOW_ON_NTP, /* fromKeyboardShortcut= */ false);
+                BookmarkBarVisibilityState.ONLY_SHOW_ON_NTP,
+                BookmarkBarSettingChangeOrigin.APPEARANCE_SETTINGS);
         assertFalse(
                 BookmarkBarUtils.isBookmarkBarVisibleForState(mActivity, mProfile, false, null));
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);

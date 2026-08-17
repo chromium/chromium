@@ -75,6 +75,7 @@ import org.chromium.chrome.browser.bookmarks.BookmarkOpenerImpl;
 import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarCoordinator;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarUtils;
+import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarUtils.BookmarkBarSettingChangeOrigin;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarVisibilityProvider;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarVisibilityProvider.BookmarkBarVisibilityObserver;
 import org.chromium.chrome.browser.browser_controls.BottomOverscrollHandler;
@@ -2956,7 +2957,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 BookmarkBarUtils.setBookmarkBarVisibilityState(
                         mProfileSupplier.asNonNull().get(),
                         newState,
-                        /* fromKeyboardShortcut= */ true);
+                        BookmarkBarSettingChangeOrigin.KEYBOARD_SHORTCUT);
                 return true;
             }
         } else if (id == R.id.bookmark_bar_state_always_show_menu_id) {
@@ -2970,7 +2971,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 BookmarkBarUtils.setBookmarkBarVisibilityState(
                         profile,
                         BookmarkBarVisibilityState.ALWAYS_SHOW,
-                        /* fromKeyboardShortcut= */ false);
+                        BookmarkBarSettingChangeOrigin.APP_MENU);
                 RecordUserAction.record("MobileMenuBookmarkBarAlwaysShow");
             }
             return true;
@@ -2985,7 +2986,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 BookmarkBarUtils.setBookmarkBarVisibilityState(
                         profile,
                         BookmarkBarVisibilityState.ALWAYS_HIDE,
-                        /* fromKeyboardShortcut= */ false);
+                        BookmarkBarSettingChangeOrigin.APP_MENU);
                 RecordUserAction.record("MobileMenuBookmarkBarAlwaysHide");
             }
             return true;

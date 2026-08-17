@@ -65,6 +65,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
+import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarUtils.BookmarkBarSettingChangeOrigin;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
@@ -187,7 +188,7 @@ public class BookmarkBarTest {
                         BookmarkBarUtils.setBookmarkBarVisibilityState(
                                 activity.getProfileProviderSupplier().get().getOriginalProfile(),
                                 BookmarkBarVisibilityState.ALWAYS_HIDE,
-                                /* fromKeyboardShortcut= */ false));
+                                BookmarkBarSettingChangeOrigin.APPEARANCE_SETTINGS));
         waitForBookmarkBarVisibility(/* visible= */ false);
 
         ThreadUtils.runOnUiThreadBlocking(() -> activity.onKeyDown(evt.getKeyCode(), evt));
@@ -204,7 +205,7 @@ public class BookmarkBarTest {
                         BookmarkBarUtils.setBookmarkBarVisibilityState(
                                 activity.getProfileProviderSupplier().get().getOriginalProfile(),
                                 BookmarkBarVisibilityState.ONLY_SHOW_ON_NTP,
-                                /* fromKeyboardShortcut= */ false));
+                                BookmarkBarSettingChangeOrigin.APPEARANCE_SETTINGS));
         waitForBookmarkBarVisibility(/* visible= */ false);
 
         ThreadUtils.runOnUiThreadBlocking(() -> activity.onKeyDown(evt.getKeyCode(), evt));
@@ -502,7 +503,7 @@ public class BookmarkBarTest {
                     enabled
                             ? BookmarkBarVisibilityState.ALWAYS_SHOW
                             : BookmarkBarVisibilityState.ALWAYS_HIDE,
-                    /* fromKeyboardShortcut= */ false);
+                    BookmarkBarSettingChangeOrigin.APPEARANCE_SETTINGS);
         } else {
             BookmarkBarUtils.setUserPrefsShowBookmarksBar(
                     profile, enabled, /* fromKeyboardShortcut= */ false);

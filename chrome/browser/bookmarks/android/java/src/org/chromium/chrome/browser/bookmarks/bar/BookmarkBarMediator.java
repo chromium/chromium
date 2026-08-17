@@ -45,6 +45,7 @@ import org.chromium.chrome.browser.bookmarks.R;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarContextMenuMetrics.BookmarkBarContextMenuEntrypoint;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarContextMenuMetrics.BookmarkBarContextMenuGesture;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarUtils.BookmarkBarClickType;
+import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarUtils.BookmarkBarSettingChangeOrigin;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -733,7 +734,7 @@ class BookmarkBarMediator
                         BookmarkBarUtils.setBookmarkBarVisibilityState(
                                 profile,
                                 BookmarkBarVisibilityState.ALWAYS_HIDE,
-                                /* fromKeyboardShortcut= */ false));
+                                BookmarkBarSettingChangeOrigin.BOOKMARK_BAR_CONTEXT_MENU));
     }
 
     @Override
@@ -743,7 +744,7 @@ class BookmarkBarMediator
                         BookmarkBarUtils.setBookmarkBarVisibilityState(
                                 profile,
                                 BookmarkBarVisibilityState.ALWAYS_SHOW,
-                                /* fromKeyboardShortcut= */ false));
+                                BookmarkBarSettingChangeOrigin.BOOKMARK_BAR_CONTEXT_MENU));
     }
 
     @Override
@@ -753,7 +754,7 @@ class BookmarkBarMediator
                         BookmarkBarUtils.setBookmarkBarVisibilityState(
                                 profile,
                                 BookmarkBarVisibilityState.ONLY_SHOW_ON_NTP,
-                                /* fromKeyboardShortcut= */ false));
+                                BookmarkBarSettingChangeOrigin.BOOKMARK_BAR_CONTEXT_MENU));
     }
 
     public void setVisibility(boolean isVisible) {

@@ -101,6 +101,25 @@ public class BookmarkBarUtils {
 
     // LINT.ThenChange(/tools/metrics/histograms/metadata/bookmarks/enums.xml:BookmarkBarShownReason)
 
+    /**
+     * Enum that defines the possible origins from which the bookmark bar visibility setting can be
+     * changed.
+     */
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({
+        BookmarkBarSettingChangeOrigin.KEYBOARD_SHORTCUT,
+        BookmarkBarSettingChangeOrigin.APPEARANCE_SETTINGS,
+        BookmarkBarSettingChangeOrigin.BOOKMARK_BAR_CONTEXT_MENU,
+        BookmarkBarSettingChangeOrigin.APP_MENU,
+    })
+    public @interface BookmarkBarSettingChangeOrigin {
+        int KEYBOARD_SHORTCUT = 0;
+        int APPEARANCE_SETTINGS = 1;
+        int BOOKMARK_BAR_CONTEXT_MENU = 2;
+        int APP_MENU = 3;
+        int NUM_ENTRIES = 4;
+    }
+
     // Histogram names:
     public static final String TOGGLED_IN_SETTINGS = "Bookmarks.BookmarkBar.ToggledInSettings";
     public static final String TOGGLED_BY_KEYBOARD_SHORTCUT =
@@ -288,18 +307,20 @@ public class BookmarkBarUtils {
      *
      * @param profile The profile for which the bookmarks bar visibility should be toggled.
      * @param state The new visibility state for the bookmark bar.
-     * @param fromKeyboardShortcut True if the change was triggered by a keyboard shortcut.
+     * @param origin The origin from which the setting change was triggered.
      */
     public static void setBookmarkBarVisibilityState(
-            Profile profile, @BookmarkBarVisibilityState int state, boolean fromKeyboardShortcut) {
+            Profile profile,
+            @BookmarkBarVisibilityState int state,
+            @BookmarkBarSettingChangeOrigin int origin) {
         // This should only be called if the tri-state feature flag is enabled.
         assert ChromeFeatureMap.isEnabled(ChromeFeatureList.BOOKMARKS_BAR_NTP)
                 : "Tri-state visibility preference should not be used without feature flag.";
 
         if (shouldUseProfileUserPrefs()) {
-            setUserPrefsBookmarkBarVisibilityState(profile, state, fromKeyboardShortcut);
+            setUserPrefsBookmarkBarVisibilityState(profile, state, origin);
         } else {
-            setDevicePrefBookmarkBarVisibilityState(state, fromKeyboardShortcut);
+            setDevicePrefBookmarkBarVisibilityState(state, origin);
         }
     }
 
@@ -572,10 +593,12 @@ public class BookmarkBarUtils {
      *
      * @param profile The profile for which the user setting should be set.
      * @param state The new state for the visibility state of the bookmarks bar.
-     * @param fromKeyboardShortcut True if the change was triggered by a keyboard shortcut.
+     * @param origin The origin from which the setting change was triggered.
      */
     public static void setUserPrefsBookmarkBarVisibilityState(
-            Profile profile, @BookmarkBarVisibilityState int state, boolean fromKeyboardShortcut) {
+            Profile profile,
+            @BookmarkBarVisibilityState int state,
+            @BookmarkBarSettingChangeOrigin int origin) {
         // TODO(crbug.com/543113459): Add metrics for new tri-state setting.
         getPrefService(profile).setInteger(Pref.BOOKMARK_BAR_VISIBILITY_STATE, state);
     }
@@ -732,10 +755,10 @@ public class BookmarkBarUtils {
      * for tablets. Local overrides do not need to be propagated to the profile's PrefService.
      *
      * @param state The new device preference for the visibility state of the bookmark bar.
-     * @param fromKeyboardShortcut True if the change was triggered by a keyboard shortcut.
+     * @param origin The origin from which the setting change was triggered.
      */
     public static void setDevicePrefBookmarkBarVisibilityState(
-            @BookmarkBarVisibilityState int state, boolean fromKeyboardShortcut) {
+            @BookmarkBarVisibilityState int state, @BookmarkBarSettingChangeOrigin int origin) {
         // TODO(crbug.com/543113459): Add metrics for new tri-state setting.
         ContextUtils.getAppSharedPreferences()
                 .edit()
