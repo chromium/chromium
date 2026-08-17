@@ -49,6 +49,9 @@ export enum SkillSource {
   PROVIDED = 'provided',
 }
 
+/** Message type used by the guest to report UMA enum metrics. */
+export const SKILLS_LOG_UMA_ENUM = 'log-uma-enum';
+
 /**
  * Interval in milliseconds between successive handshake pings sent by the
  * host.

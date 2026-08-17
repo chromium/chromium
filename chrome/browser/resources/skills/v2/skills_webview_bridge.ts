@@ -7,7 +7,7 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 
 import type {PendingEditorData} from '../skills.mojom-webui.js';
 
-import {getLoadingStageHistogramName, getPrimarySkillsOrigin, getSkillsApiAllowedOrigins, HANDSHAKE_PING_INTERVAL_MS, HANDSHAKE_TIMEOUT_MS, HISTOGRAM_HANDSHAKE_RESULT, HISTOGRAM_WRITE_LATENCY, LoadingStage, SKILLS_CLOSE_DIALOG, SKILLS_DIALOG_INFO_TYPE, SKILLS_GEMINI_PROMPT_TYPE, SKILLS_HANDSHAKE_ACK, SKILLS_HANDSHAKE_TYPE, SKILLS_INVOKE_SKILL, SKILLS_LOG_METRIC, SKILLS_OPEN_FULL_PAGE_EDITOR, SKILLS_OPEN_URL, SKILLS_SEND_PROMPT, SKILLS_SHOW_TOAST, SKILLS_TOAST_CLOSED_TYPE, SKILLS_UNDO_TYPE} from './skills_webview_bridge_constants.js';
+import {getLoadingStageHistogramName, getPrimarySkillsOrigin, getSkillsApiAllowedOrigins, HANDSHAKE_PING_INTERVAL_MS, HANDSHAKE_TIMEOUT_MS, HISTOGRAM_HANDSHAKE_RESULT, HISTOGRAM_WRITE_LATENCY, LoadingStage, SKILLS_CLOSE_DIALOG, SKILLS_DIALOG_INFO_TYPE, SKILLS_GEMINI_PROMPT_TYPE, SKILLS_HANDSHAKE_ACK, SKILLS_HANDSHAKE_TYPE, SKILLS_INVOKE_SKILL, SKILLS_LOG_METRIC, SKILLS_LOG_UMA_ENUM, SKILLS_OPEN_FULL_PAGE_EDITOR, SKILLS_OPEN_URL, SKILLS_SEND_PROMPT, SKILLS_SHOW_TOAST, SKILLS_TOAST_CLOSED_TYPE, SKILLS_UNDO_TYPE} from './skills_webview_bridge_constants.js';
 
 /**
  * Returns a URLPattern given an origin pattern string that has the syntax:
@@ -223,6 +223,8 @@ export class SkillsWebviewBridge {
       this.delegate_.onCloseDialog();
     } else if (e.data.type === SKILLS_LOG_METRIC) {
       this.handleLogMetricMessage(e.data);
+    } else if (e.data.type === SKILLS_LOG_UMA_ENUM) {
+      this.handleLogUmaEnumMessage(e.data);
     } else if (e.data.type === SKILLS_OPEN_URL) {
       this.handleOpenUrlMessage(e.data);
     } else if (e.data.type === SKILLS_SEND_PROMPT) {
@@ -327,6 +329,22 @@ export class SkillsWebviewBridge {
     } else if (data.metricName === 'guest-data-save-time') {
       chrome.histograms.recordMediumTime(HISTOGRAM_WRITE_LATENCY, valueMs);
     }
+  }
+
+  private handleLogUmaEnumMessage(data: {
+    histogramName: string,
+    value: number,
+    enumSize: number,
+  }) {
+    if (typeof data.histogramName !== 'string' ||
+        !data.histogramName.startsWith('Skills.') ||
+        !Number.isInteger(data.value) || !Number.isInteger(data.enumSize) ||
+        data.value < 0 || data.value >= data.enumSize || data.enumSize <= 0) {
+      console.warn('Invalid UMA enum log payload:', data);
+      return;
+    }
+    chrome.histograms.recordEnumerationValue(
+        data.histogramName, data.value, data.enumSize);
   }
 
   private handleOpenUrlMessage(data: {url: string}) {
