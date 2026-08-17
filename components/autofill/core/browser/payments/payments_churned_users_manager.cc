@@ -131,13 +131,11 @@ void PaymentsChurnedUsersManager::OnUiClosed(
     }
 
     if (strike_database_) {
-      strike_database_->AddStrikes(strike_database_->GetMaxStrikesLimit() -
-                                   strike_database_->GetStrikes());
+      strike_database_->AddStrikes(strike_database_->GetMaxStrikesLimit());
     }
   } else if (closed_reason == PaymentsUiClosedReason::kCancelled) {
     if (strike_database_) {
-      strike_database_->AddStrikes(strike_database_->GetMaxStrikesLimit() -
-                                   strike_database_->GetStrikes());
+      strike_database_->AddStrikes(strike_database_->GetMaxStrikesLimit());
     }
   } else {
     if (strike_database_) {
