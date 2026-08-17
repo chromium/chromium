@@ -2566,6 +2566,7 @@ class DiceWebSigninInterceptorTestWithAccountPreview
 
 TEST_P(DiceWebSigninInterceptorTestWithAccountPreview,
        InterceptBubbleWithAccountPreviewData) {
+  base::HistogramTester histogram_tester;
   auto fake_service = std::make_unique<signin::TestAccountPreviewDataService>();
   fake_service->set_defer_callbacks(true);
   signin::TestAccountPreviewDataService* raw_fake_service = fake_service.get();
@@ -2612,10 +2613,15 @@ TEST_P(DiceWebSigninInterceptorTestWithAccountPreview,
   raw_fake_service->TriggerCallback(pref);
 
   testing::Mock::VerifyAndClearExpectations(mock_delegate());
+  histogram_tester.ExpectUniqueSample(
+      "Signin.Intercept.AccountPreview.TimedOut", false, 1);
+  histogram_tester.ExpectTotalCount(
+      "Signin.Intercept.AccountPreview.ResponseTime", 1);
 }
 
 TEST_P(DiceWebSigninInterceptorTestWithAccountPreview,
        InterceptBubbleWithAccountPreviewDataSupervisedAccount) {
+  base::HistogramTester histogram_tester;
   auto fake_service = std::make_unique<signin::TestAccountPreviewDataService>();
   fake_service->set_defer_callbacks(true);
   signin::TestAccountPreviewDataService* raw_fake_service = fake_service.get();
@@ -2660,10 +2666,15 @@ TEST_P(DiceWebSigninInterceptorTestWithAccountPreview,
   EXPECT_FALSE(raw_fake_service->has_pending_callback());
 
   testing::Mock::VerifyAndClearExpectations(mock_delegate());
+  histogram_tester.ExpectTotalCount("Signin.Intercept.AccountPreview.TimedOut",
+                                    0);
+  histogram_tester.ExpectTotalCount(
+      "Signin.Intercept.AccountPreview.ResponseTime", 0);
 }
 
 TEST_P(DiceWebSigninInterceptorTestWithAccountPreview,
        InterceptBubbleWithAccountPreviewDataTimeout) {
+  base::HistogramTester histogram_tester;
   auto fake_service = std::make_unique<signin::TestAccountPreviewDataService>();
   fake_service->set_defer_callbacks(true);
   signin::TestAccountPreviewDataService* raw_fake_service = fake_service.get();
@@ -2706,6 +2717,10 @@ TEST_P(DiceWebSigninInterceptorTestWithAccountPreview,
           .Get());
 
   testing::Mock::VerifyAndClearExpectations(mock_delegate());
+  histogram_tester.ExpectUniqueSample(
+      "Signin.Intercept.AccountPreview.TimedOut", true, 1);
+  histogram_tester.ExpectTotalCount(
+      "Signin.Intercept.AccountPreview.ResponseTime", 1);
 }
 
 TEST_P(DiceWebSigninInterceptorTestWithAccountPreview,

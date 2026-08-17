@@ -2385,6 +2385,28 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
+<histogram name="Signin.Intercept.AccountPreview.ResponseTime" units="ms"
+    expires_after="2027-06-01">
+  <owner>rsult@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the duration between requesting account preview preferences for an
+    intercepted account and receiving the preference response (or reaching the
+    timeout). Recorded before showing the interception bubble.
+  </summary>
+</histogram>
+
+<histogram name="Signin.Intercept.AccountPreview.TimedOut"
+    enum="BooleanTimedOut" expires_after="2027-06-01">
+  <owner>rsult@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records whether requesting account preview preferences for an intercepted
+    account timed out before receiving the preference response. Recorded before
+    showing the interception bubble.
+  </summary>
+</histogram>
+
 <histogram name="Signin.Intercept.BubbleDismissReason{Type}"
     enum="SigninInterceptionDismissReason" expires_after="2026-09-06">
   <owner>rsult@google.com</owner>

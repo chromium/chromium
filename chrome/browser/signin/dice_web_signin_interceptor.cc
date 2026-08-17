@@ -1246,12 +1246,13 @@ void DiceWebSigninInterceptor::OnInterceptionReadyToBeProcessed(
             base::BindOnce(
                 &DiceWebSigninInterceptor::OnAccountPreviewPreferenceReceived,
                 weak_factory_.GetWeakPtr(), bubble_parameters,
-                /*preference=*/std::nullopt));
+                /*is_timeout=*/true, /*preference=*/std::nullopt));
         preview_service->GetPreviewPreferenceForAccount(
             info.gaia,
             base::BindOnce(
                 &DiceWebSigninInterceptor::OnAccountPreviewPreferenceReceived,
-                weak_factory_.GetWeakPtr(), bubble_parameters));
+                weak_factory_.GetWeakPtr(), bubble_parameters,
+                /*is_timeout=*/false));
         return;
       }
       case WebSigninInterceptor::SigninInterceptionType::kProfileSwitch:
@@ -1271,17 +1272,30 @@ void DiceWebSigninInterceptor::OnInterceptionReadyToBeProcessed(
 
 void DiceWebSigninInterceptor::OnAccountPreviewPreferenceReceived(
     WebSigninInterceptor::Delegate::BubbleParameters bubble_parameters,
+    bool is_timeout,
     std::optional<signin::AccountPreviewDataService::AccountPreviewPreference>
         preference) {
-  if (state_->account_preview_timeout_timer_.IsRunning()) {
-    state_->account_preview_timeout_timer_.Stop();
-  }
-
   if (state_->was_interception_ui_displayed_ ||
       !state_->is_interception_in_progress_ ||
       !state_->interception_bubble_callback_) {
     return;
   }
+
+  base::TimeDelta elapsed_time;
+  if (is_timeout) {
+    elapsed_time = state_->account_preview_timeout_timer_.GetCurrentDelay();
+  } else {
+    CHECK(state_->account_preview_timeout_timer_.IsRunning());
+    elapsed_time = base::TimeTicks::Now() -
+                   (state_->account_preview_timeout_timer_.desired_run_time() -
+                    state_->account_preview_timeout_timer_.GetCurrentDelay());
+    state_->account_preview_timeout_timer_.Stop();
+  }
+
+  base::UmaHistogramBoolean("Signin.Intercept.AccountPreview.TimedOut",
+                            is_timeout);
+  base::UmaHistogramTimes("Signin.Intercept.AccountPreview.ResponseTime",
+                          elapsed_time);
 
   bubble_parameters.account_preview_preference = std::move(preference);
   ShowSigninInterceptionBubble(

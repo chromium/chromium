@@ -473,6 +473,7 @@ class DiceWebSigninInterceptor : public KeyedService,
 
   void OnAccountPreviewPreferenceReceived(
       WebSigninInterceptor::Delegate::BubbleParameters bubble_parameters,
+      bool is_timeout,
       std::optional<signin::AccountPreviewDataService::AccountPreviewPreference>
           preference);
 
