@@ -85,13 +85,6 @@ mojom::ActionResultCode BlockReasonToResultCode(MayActOnUrlBlockReason reason,
       for_navigation ? ActionResultCode::kTriggeredNavigationBlocked
                      : ActionResultCode::kUrlBlocked;
 
-  auto maybe_granular = [generic_block_code](
-                            mojom::ActionResultCode specific_code) {
-    return base::FeatureList::IsEnabled(kGlicGranularBlockingActionResultCodes)
-               ? specific_code
-               : generic_block_code;
-  };
-
   switch (reason) {
     case MayActOnUrlBlockReason::kAllowed:
       return ActionResultCode::kOk;
@@ -103,17 +96,15 @@ mojom::ActionResultCode BlockReasonToResultCode(MayActOnUrlBlockReason reason,
     }
     case MayActOnUrlBlockReason::kLookalikeDomain:
     case MayActOnUrlBlockReason::kBlockedByStaticList:
-      return maybe_granular(ActionResultCode::kActionsBlockedForSiteRisk);
+      return ActionResultCode::kActionsBlockedForSiteRisk;
     case MayActOnUrlBlockReason::kSafeBrowsing:
-      return maybe_granular(
-          ActionResultCode::kActionsBlockedSafeBrowsingDisabled);
+      return ActionResultCode::kActionsBlockedSafeBrowsingDisabled;
     case MayActOnUrlBlockReason::kEnterprisePolicy:
-      return maybe_granular(
-          ActionResultCode::kActionsBlockedByEnterprisePolicy);
+      return ActionResultCode::kActionsBlockedByEnterprisePolicy;
     case MayActOnUrlBlockReason::kWrongScheme:
-      return maybe_granular(ActionResultCode::kActionsBlockedForScheme);
+      return ActionResultCode::kActionsBlockedForScheme;
     case MayActOnUrlBlockReason::kTabIsErrorDocument:
-      return maybe_granular(ActionResultCode::kActionsBlockedOnErrorPage);
+      return ActionResultCode::kActionsBlockedOnErrorPage;
     case MayActOnUrlBlockReason::kIpAddress:
     case MayActOnUrlBlockReason::kOptimizationGuideBlock:
     case MayActOnUrlBlockReason::kBlockedByContainerConfig:

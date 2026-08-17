@@ -17,8 +17,6 @@ BASE_FEATURE(kGlicActionUseOptimizationGuide, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicExternalProtocolActionResultCode,
              base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kGlicGranularBlockingActionResultCodes,
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicBlockNavigationToDangerousContentTypes,
              base::FEATURE_ENABLED_BY_DEFAULT);
