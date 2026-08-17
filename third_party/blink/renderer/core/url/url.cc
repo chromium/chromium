@@ -136,8 +136,8 @@ String URL::CreatePublicURL(ExecutionContext* execution_context, Blob* blob) {
 }
 
 String URL::CreatePublicURL(ExecutionContext* execution_context,
-                            URLRegistrable* registrable) {
-  return execution_context->GetPublicURLManager().RegisterUrl(registrable);
+                            MediaSourceAttachment* attachment) {
+  return execution_context->GetPublicURLManager().RegisterUrl(attachment);
 }
 
 URLSearchParams* URL::searchParams() {

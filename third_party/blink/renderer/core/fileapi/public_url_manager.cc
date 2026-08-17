@@ -33,9 +33,10 @@
 #include "third_party/blink/public/mojom/blob/blob.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fileapi/blob.h"
-#include "third_party/blink/renderer/core/fileapi/url_registry.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/html/media/media_source_attachment.h"
+#include "third_party/blink/renderer/core/html/media/media_source_registry.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/core/workers/worklet_global_scope.h"
 #include "third_party/blink/renderer/platform/blob/blob_url.h"
@@ -138,17 +139,17 @@ mojom::blink::BlobURLStore& PublicURLManager::GetBlobURLStore() {
   }
 }
 
-String PublicURLManager::RegisterUrl(URLRegistrable* registrable) {
+String PublicURLManager::RegisterUrl(MediaSourceAttachment* attachment) {
   if (is_stopped_) {
     return String();
   }
-  CHECK(registrable);
+  CHECK(attachment);
 
   const KURL url = GenerateUrl();
   const String& url_string = url.GetString();
 
-  URLRegistry* registry = &registrable->Registry();
-  registry->RegisterURL(url, registrable);
+  MediaSourceRegistry* registry = &attachment->Registry();
+  registry->RegisterUrl(url, attachment);
   url_to_registry_.insert(url_string, registry);
 
   return CompleteRegistration(url);
@@ -209,7 +210,7 @@ void PublicURLManager::Revoke(const KURL& url) {
   auto it = url_to_registry_.find(url.GetString());
   if (it == url_to_registry_.end())
     return;
-  it->value->UnregisterURL(url);
+  it->value->UnregisterUrl(url);
   url_to_registry_.erase(it);
 }
 
@@ -243,9 +244,9 @@ void PublicURLManager::ContextDestroyed() {
     return;
 
   is_stopped_ = true;
-  for (auto& url_registry : url_to_registry_) {
-    url_registry.value->UnregisterURL(KURL(url_registry.key));
-    RemoveFromNullOriginMapIfNecessary(KURL(url_registry.key));
+  for (auto& entry : url_to_registry_) {
+    entry.value->UnregisterUrl(KURL(entry.key));
+    RemoveFromNullOriginMapIfNecessary(KURL(entry.key));
   }
   for (const auto& url : mojo_urls_)
     RemoveFromNullOriginMapIfNecessary(KURL(url));

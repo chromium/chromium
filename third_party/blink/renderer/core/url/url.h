@@ -42,7 +42,7 @@ namespace blink {
 class Blob;
 class ExceptionState;
 class ExecutionContext;
-class URLRegistrable;
+class MediaSourceAttachment;
 class URLSearchParams;
 
 class CORE_EXPORT URL final : public ScriptWrappable,
@@ -72,7 +72,7 @@ class CORE_EXPORT URL final : public ScriptWrappable,
   static bool canParse(const String& url, const String& base);
 
   static String CreatePublicURL(ExecutionContext*, Blob*);
-  static String CreatePublicURL(ExecutionContext*, URLRegistrable*);
+  static String CreatePublicURL(ExecutionContext*, MediaSourceAttachment*);
 
   KURL Url() const override { return url_; }
   void SetUrl(const KURL& url) override { url_ = url; }

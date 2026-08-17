@@ -10,19 +10,18 @@
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/thread_annotations.h"
-#include "base/types/pass_key.h"
 #include "third_party/blink/public/platform/web_time_range.h"
-#include "third_party/blink/renderer/core/html/track/audio_track.h"
-#include "third_party/blink/renderer/core/html/track/audio_track_list.h"
-#include "third_party/blink/renderer/core/html/track/video_track.h"
-#include "third_party/blink/renderer/core/html/track/video_track_list.h"
 #include "third_party/blink/renderer/modules/mediasource/attachment_creation_pass_key_provider.h"
 #include "third_party/blink/renderer/modules/mediasource/media_source.h"
 #include "third_party/blink/renderer/modules/mediasource/media_source_attachment_supplement.h"
-#include "third_party/blink/renderer/platform/heap/persistent.h"
-#include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
+#include "third_party/blink/renderer/platform/heap/cross_thread_persistent.h"
 
 namespace blink {
+
+class AudioTrack;
+class AudioTrackList;
+class VideoTrack;
+class VideoTrackList;
 
 // Concrete attachment that supports operation between a media element on the
 // main thread and the MSE API on a dedicated worker thread.
@@ -35,11 +34,9 @@ class CrossThreadMediaSourceAttachment final
 
   // The only intended callers of this constructor are restricted to those able
   // to obtain an AttachmentCreationPasskeyProvider's pass key. This method is
-  // expected to only be called in a worker thread context. The raw pointer is
-  // then adopted into a scoped_refptr by the caller (e.g.,
-  // URLMediaSource::createObjectUrl will lead to
-  // MediaSourceRegistryImpl::RegisterURL doing this scoped_refptr adoption;
-  // separately, MediaSource::handle() does this adoption immediately.)
+  // expected to only be called in a worker thread context.
+  // MediaSource::handle() creates the attachment in an owning scoped_refptr
+  // with base::MakeRefCounted.
   CrossThreadMediaSourceAttachment(MediaSource* media_source,
                                    AttachmentCreationPassKeyProvider::PassKey);
 
@@ -115,9 +112,9 @@ class CrossThreadMediaSourceAttachment final
   bool FullyAttachedOrSameThread(SourceBufferPassKey) const final
       EXCLUSIVE_LOCKS_REQUIRED(attachment_state_lock_);
 
-  // MediaSourceAttachment methods called on main thread by media element,
-  // except Unregister is called on either main or dedicated worker thread by
-  // MediaSourceRegistryImpl.
+  // MediaSourceAttachment methods called on the main thread by the media
+  // element. Unregister() is not used because MSE-in-Worker does not use object
+  // URLs.
   void Unregister() final;
   MediaSourceTracer* StartAttachingToMediaElement(HTMLMediaElement*,
                                                   bool* success) final
