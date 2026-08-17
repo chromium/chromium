@@ -84,8 +84,8 @@ class PrivacySandboxTestUtilTest {
   void ApplyTestState(StateKey key, const TestCaseItemValue& value) {
     privacy_sandbox_test_util::ApplyTestState(
         key, value, task_environment(), prefs(), host_content_settings_map(),
-        mock_delegate(), mock_privacy_sandbox_service(),
-        mock_privacy_sandbox_settings(), user_provider_, managed_provider_);
+        mock_privacy_sandbox_service(), mock_privacy_sandbox_settings(),
+        user_provider_, managed_provider_);
   }
 
   void ProvideInput(InputKey key, TestCaseItemValue value) {
@@ -103,10 +103,6 @@ class PrivacySandboxTestUtilTest {
   sync_preferences::TestingPrefServiceSyncable* prefs() { return &prefs_; }
   content::BrowserTaskEnvironment* task_environment() {
     return &browser_task_environment_;
-  }
-  privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate*
-  mock_delegate() {
-    return &mock_delegate_;
   }
   HostContentSettingsMap* host_content_settings_map() {
     return host_content_settings_map_.get();
@@ -130,7 +126,6 @@ class PrivacySandboxTestUtilTest {
   sync_preferences::TestingPrefServiceSyncable prefs_;
   scoped_refptr<HostContentSettingsMap> host_content_settings_map_;
   scoped_refptr<content_settings::CookieSettings> cookie_settings_;
-  MockPrivacySandboxSettingsDelegate mock_delegate_;
   MockPrivacySandboxServiceTestInterface mock_privacy_sandbox_service_;
   MockPrivacySandboxSettings mock_privacy_sandbox_settings_;
   raw_ptr<content_settings::MockProvider> user_provider_;
@@ -174,19 +169,6 @@ TEST_P(PrivacySandboxTestUtilBoolTest,
                 ->GetBool(),
             state);
 }
-
-TEST_P(PrivacySandboxTestUtilBoolTest, VerifyIsIncognitoStateKey) {
-  bool state = GetParam();
-  ApplyTestState(StateKey::kIsIncognito, state);
-  EXPECT_EQ(mock_delegate()->IsIncognitoProfile(), state);
-}
-
-TEST_P(PrivacySandboxTestUtilBoolTest, VerifyIsRestrictedAccountStateKey) {
-  bool state = GetParam();
-  ApplyTestState(StateKey::kIsRestrictedAccount, state);
-  EXPECT_EQ(mock_delegate()->IsPrivacySandboxRestricted(), state);
-}
-
 
 class PrivacySandboxTestUtilCookieControlsModeTest
     : public PrivacySandboxTestUtilTest,

@@ -80,7 +80,6 @@ void ApplyTestState(
     content::BrowserTaskEnvironment* task_environment,
     sync_preferences::TestingPrefServiceSyncable* testing_pref_service,
     HostContentSettingsMap* map,
-    MockPrivacySandboxSettingsDelegate* mock_delegate,
     PrivacySandboxServiceTestInterface* privacy_sandbox_service,
     privacy_sandbox::PrivacySandboxSettings* privacy_sandbox_settings,
     content_settings::MockProvider* user_content_setting_provider,
@@ -138,13 +137,10 @@ void ApplyTestState(
     }
     case (StateKey::kIsIncognito): {
       SCOPED_TRACE("State Setup: User Incognito");
-      mock_delegate->SetUpIsIncognitoProfileResponse(GetItemValue<bool>(value));
       return;
     }
     case (StateKey::kIsRestrictedAccount): {
       SCOPED_TRACE("State Setup: User restricted");
-      mock_delegate->SetUpIsPrivacySandboxRestrictedResponse(
-          GetItemValue<bool>(value));
       return;
     }
     case (StateKey::kAdvanceClockBy): {
@@ -397,22 +393,10 @@ void CheckOutput(
 MockPrivacySandboxObserver::MockPrivacySandboxObserver() = default;
 MockPrivacySandboxObserver::~MockPrivacySandboxObserver() = default;
 
-MockPrivacySandboxSettingsDelegate::MockPrivacySandboxSettingsDelegate() {
-  // Setup some reasonable default responses that generally allow APIs.
-  // Tests can further override the responses as required.
-  SetUpIsPrivacySandboxRestrictedResponse(false);
-  SetUpIsPrivacySandboxCurrentlyUnrestrictedResponse(true);
-  SetUpIsIncognitoProfileResponse(false);
-}
-
-MockPrivacySandboxSettingsDelegate::~MockPrivacySandboxSettingsDelegate() =
-    default;
-
 void RunTestCase(
     content::BrowserTaskEnvironment* task_environment,
     sync_preferences::TestingPrefServiceSyncable* testing_pref_service,
     HostContentSettingsMap* host_content_settings_map,
-    MockPrivacySandboxSettingsDelegate* mock_delegate,
     privacy_sandbox::PrivacySandboxSettings* privacy_sandbox_settings,
     PrivacySandboxServiceTestInterface* privacy_sandbox_service,
     content_settings::MockProvider* user_content_setting_provider,
@@ -423,9 +407,8 @@ void RunTestCase(
   // Setup test state.
   for (const auto& [key, value] : UnpackKeys<StateKey>(test_state)) {
     ApplyTestState(key, value, task_environment, testing_pref_service,
-                   host_content_settings_map, mock_delegate,
-                   privacy_sandbox_service, privacy_sandbox_settings,
-                   user_content_setting_provider,
+                   host_content_settings_map, privacy_sandbox_service,
+                   privacy_sandbox_settings, user_content_setting_provider,
                    managed_content_setting_provider);
   }
 

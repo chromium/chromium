@@ -35,17 +35,8 @@ class MockPrivacySandboxSettings
               IsSharedStorageSelectURLAllowed,
               (const url::Origin&, const url::Origin&, std::string*, bool*),
               (override, const));
-  MOCK_METHOD(bool, IsPrivacySandboxRestricted, (), (override, const));
-  MOCK_METHOD(bool,
-              IsPrivacySandboxCurrentlyUnrestricted,
-              (),
-              (override, const));
   MOCK_METHOD(void, AddObserver, (Observer*), (override));
   MOCK_METHOD(void, RemoveObserver, (Observer*), (override));
-  MOCK_METHOD(void,
-              SetDelegateForTesting,
-              (std::unique_ptr<Delegate>),
-              (override));
   MOCK_METHOD(bool, AreRelatedWebsiteSetsEnabled, (), (override, const));
 };
 

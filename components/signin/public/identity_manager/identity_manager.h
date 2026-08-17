@@ -58,7 +58,6 @@ class AccountFetcherService;
 class AccountTrackerService;
 class GaiaCookieManagerService;
 class NewTabPageUI;
-class PrivacySandboxSettingsDelegate;
 
 namespace signin {
 
@@ -717,7 +716,6 @@ class IdentityManager : public KeyedService,
   // TODO(crbug.com/40183609): Delete once the private calls have been
   // removed.
   friend class ::NewTabPageUI;
-  friend class ::PrivacySandboxSettingsDelegate;
 
   // Returns the extended account info for the primary account. This function
   // does not require tokens to be loaded.

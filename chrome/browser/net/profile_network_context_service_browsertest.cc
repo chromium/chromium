@@ -947,16 +947,6 @@ class ProfileNetworkContextTrustTokensBrowsertest
 IN_PROC_BROWSER_TEST_F(ProfileNetworkContextTrustTokensBrowsertest,
                        TrustTokenBlocked) {
   ProvideRequestHandlerKeyCommitmentsToNetworkService("a.test");
-  auto* privacy_sandbox_settings =
-      PrivacySandboxSettingsFactory::GetForProfile(browser()->GetProfile());
-  auto privacy_sandbox_delegate = std::make_unique<
-      privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate>();
-  privacy_sandbox_delegate->SetUpIsPrivacySandboxRestrictedResponse(
-      /*restricted=*/false);
-  privacy_sandbox_delegate->SetUpIsIncognitoProfileResponse(
-      /*incognito=*/browser()->GetProfile()->IsIncognitoProfile());
-  privacy_sandbox_settings->SetDelegateForTesting(
-      std::move(privacy_sandbox_delegate));
   auto* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile());
   Flush();

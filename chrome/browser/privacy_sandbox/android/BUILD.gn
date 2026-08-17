@@ -10,10 +10,7 @@ generate_jni("jni_headers") {
 }
 
 android_library("java") {
-  sources = [
-    "java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxBridge.java",
-    "java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxReferrer.java",
-  ]
+  sources = [ "java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxBridge.java" ]
   deps = [
     ":java_resources",
     "//base:base_java",
@@ -57,19 +54,13 @@ android_library("java") {
     "//url:gurl_java",
   ]
 
-  srcjar_deps = [
-    ":jni_headers",
-    ":privacy_sandbox_enums",
-  ]
+  srcjar_deps = [ ":jni_headers" ]
   resources_package = "org.chromium.chrome.browser.privacy_sandbox"
 }
 
 android_library("test_support_java") {
   testonly = true
-  sources = [
-    "javatests/src/org/chromium/chrome/browser/privacy_sandbox/FakePrivacySandboxBridge.java",
-    "javatests/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxTestUtils.java",
-  ]
+  sources = [ "javatests/src/org/chromium/chrome/browser/privacy_sandbox/FakePrivacySandboxBridge.java" ]
   deps = [
     ":java",
     ":java_resources",
@@ -127,8 +118,4 @@ android_resources("java_resources") {
     "//components/strings:privacy_sandbox_strings_grd",
     "//third_party/android_deps:material_design_java",
   ]
-}
-
-java_cpp_enum("privacy_sandbox_enums") {
-  sources = [ "//chrome/browser/privacy_sandbox/privacy_sandbox_utils.h" ]
 }

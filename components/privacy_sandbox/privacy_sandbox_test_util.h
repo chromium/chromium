@@ -55,38 +55,6 @@ class MockPrivacySandboxObserver
   MOCK_METHOD1(OnRelatedWebsiteSetsEnabledChanged, void(bool));
 };
 
-class MockPrivacySandboxSettingsDelegate
-    : public privacy_sandbox::PrivacySandboxSettings::Delegate {
- public:
-  MockPrivacySandboxSettingsDelegate();
-  ~MockPrivacySandboxSettingsDelegate() override;
-  void SetUpIsPrivacySandboxRestrictedResponse(bool restricted) {
-    ON_CALL(*this, IsPrivacySandboxRestricted).WillByDefault([=]() {
-      return restricted;
-    });
-  }
-
-  void SetUpIsPrivacySandboxCurrentlyUnrestrictedResponse(bool unrestricted) {
-    ON_CALL(*this, IsPrivacySandboxCurrentlyUnrestricted).WillByDefault([=]() {
-      return unrestricted;
-    });
-  }
-
-  void SetUpIsIncognitoProfileResponse(bool incognito) {
-    ON_CALL(*this, IsIncognitoProfile).WillByDefault([=]() {
-      return incognito;
-    });
-  }
-
-  MOCK_METHOD(bool, IsPrivacySandboxRestricted, (), (const, override));
-  MOCK_METHOD(bool,
-              IsPrivacySandboxCurrentlyUnrestricted,
-              (),
-              (const, override));
-
-  MOCK_METHOD(bool, IsIncognitoProfile, (), (const, override));
-};
-
 // A declarative test case is a collection of key value pairs, which each define
 // some property of the test, such as the state of the profile, the input, or
 // expected output.
@@ -204,7 +172,6 @@ void RunTestCase(
     content::BrowserTaskEnvironment* task_environment,
     sync_preferences::TestingPrefServiceSyncable* testing_pref_service,
     HostContentSettingsMap* host_content_settings_map,
-    MockPrivacySandboxSettingsDelegate* mock_delegate,
     privacy_sandbox::PrivacySandboxSettings* privacy_sandbox_settings,
     PrivacySandboxServiceTestInterface* privacy_sandbox_service,
     content_settings::MockProvider* user_content_setting_provider,
@@ -220,7 +187,6 @@ void ApplyTestState(
     content::BrowserTaskEnvironment* task_environment,
     sync_preferences::TestingPrefServiceSyncable* testing_pref_service,
     HostContentSettingsMap* map,
-    MockPrivacySandboxSettingsDelegate* mock_delegate,
     PrivacySandboxServiceTestInterface* privacy_sandbox_service,
     privacy_sandbox::PrivacySandboxSettings* privacy_sandbox_settings,
     content_settings::MockProvider* user_content_setting_provider,

@@ -15,7 +15,6 @@
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
-#include "chrome/browser/privacy_sandbox/privacy_sandbox_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "components/strings/grit/components_strings.h"

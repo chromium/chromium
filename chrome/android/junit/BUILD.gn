@@ -1084,16 +1084,6 @@ if (is_android) {
   }
 
   robolectric_library(
-      "chrome_junit_tests_org.chromium.chrome.browser.privacy_sandbox") {
-    sources = [
-      "src/org/chromium/chrome/browser/privacy_sandbox/CctHandlerTest.java",
-      "src/org/chromium/chrome/browser/privacy_sandbox/FakeCookieControlsBridge.java",
-    ]
-
-    deps = [ ":chrome_junit_tests_helper" ]
-  }
-
-  robolectric_library(
       "chrome_junit_tests_org.chromium.chrome.browser.search_engines") {
     sources = [
       "src/org/chromium/chrome/browser/search_engines/SearchEngineChoiceMetricsTest.java",

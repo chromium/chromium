@@ -34,7 +34,6 @@ class PrivacySandboxSettingsImpl : public PrivacySandboxSettings {
   // rely on this interface, they should be migrated to something better (such
   // as a dedicated test builder)
   PrivacySandboxSettingsImpl(
-      std::unique_ptr<Delegate> delegate,
       HostContentSettingsMap* host_content_settings_map,
       scoped_refptr<content_settings::CookieSettings> cookie_settings,
       PrefService* pref_service);
@@ -60,11 +59,8 @@ class PrivacySandboxSettingsImpl : public PrivacySandboxSettings {
       std::string* out_debug_message,
       bool* out_block_is_site_setting_specific) const override;
 
-  bool IsPrivacySandboxRestricted() const override;
-  bool IsPrivacySandboxCurrentlyUnrestricted() const override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
-  void SetDelegateForTesting(std::unique_ptr<Delegate> delegate) override;
 
   bool AreRelatedWebsiteSetsEnabled() const override;
 
@@ -98,7 +94,6 @@ class PrivacySandboxSettingsImpl : public PrivacySandboxSettings {
 
   base::ObserverList<Observer>::Unchecked observers_;
 
-  std::unique_ptr<Delegate> delegate_;
   raw_ptr<HostContentSettingsMap> host_content_settings_map_;
   scoped_refptr<content_settings::CookieSettings> cookie_settings_;
   raw_ptr<PrefService> pref_service_;

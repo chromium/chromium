@@ -39,7 +39,6 @@
 namespace privacy_sandbox {
 namespace {
 
-using ::privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate;
 using ::privacy_sandbox_test_util::MultipleStateKeys;
 using ::privacy_sandbox_test_util::SiteDataExceptions;
 using ::privacy_sandbox_test_util::TestCase;
@@ -80,30 +79,17 @@ class PrivacySandboxSettingsTest : public testing::Test {
   }
 
   void SetUp() override {
-    auto mock_delegate = std::make_unique<
-        testing::NiceMock<MockPrivacySandboxSettingsDelegate>>();
-    mock_delegate_ = mock_delegate.get();
-
     InitializePrefsBeforeStart();
     InitializeFeaturesBeforeStart();
-    InitializeDelegateBeforeStart();
 
     privacy_sandbox_settings_ = std::make_unique<PrivacySandboxSettingsImpl>(
-        std::move(mock_delegate), host_content_settings_map(), cookie_settings_,
-        prefs());
+        host_content_settings_map(), cookie_settings_, prefs());
   }
 
   virtual void InitializePrefsBeforeStart() {}
 
   virtual void InitializeFeaturesBeforeStart() {}
 
-  virtual void InitializeDelegateBeforeStart() {
-    mock_delegate()->SetUpIsPrivacySandboxRestrictedResponse(
-        /*restricted=*/false);
-    mock_delegate()->SetUpIsIncognitoProfileResponse(/*incognito=*/false);
-  }
-
-  MockPrivacySandboxSettingsDelegate* mock_delegate() { return mock_delegate_; }
   sync_preferences::TestingPrefServiceSyncable* prefs() { return &prefs_; }
   HostContentSettingsMap* host_content_settings_map() {
     return host_content_settings_map_.get();
@@ -127,7 +113,6 @@ class PrivacySandboxSettingsTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment browser_task_environment_;
-  raw_ptr<MockPrivacySandboxSettingsDelegate, DanglingUntriaged> mock_delegate_;
   sync_preferences::TestingPrefServiceSyncable prefs_;
   scoped_refptr<HostContentSettingsMap> host_content_settings_map_;
   scoped_refptr<content_settings::CookieSettings> cookie_settings_;
@@ -145,16 +130,7 @@ TEST_F(PrivacySandboxSettingsTest, OnRelatedWebsiteSetsEnabledChanged) {
 
   prefs()->SetBoolean(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled, true);
   testing::Mock::VerifyAndClearExpectations(&observer);
-
-  }
-
-class PrivacySandboxSettingsMockDelegateTest
-    : public PrivacySandboxSettingsTest {
- public:
-  void InitializeDelegateBeforeStart() override {
-    // Do not set default handlers so each call must be mocked.
-  }
-};
+}
 
 // Tests class for the PrivacySandboxSettings4 / M1 launch.
 class PrivacySandboxSettingsM1Test : public PrivacySandboxSettingsTest {
@@ -180,7 +156,7 @@ class PrivacySandboxSettingsM1Test : public PrivacySandboxSettingsTest {
 
     privacy_sandbox_test_util::RunTestCase(
         task_environment(), prefs(), host_content_settings_map(),
-        mock_delegate(), privacy_sandbox_settings(), nullptr, user_provider_raw,
+        privacy_sandbox_settings(), nullptr, user_provider_raw,
         managed_provider_raw, TestCase(test_state, test_input, test_output));
   }
 

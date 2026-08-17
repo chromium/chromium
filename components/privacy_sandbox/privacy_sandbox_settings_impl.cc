@@ -43,12 +43,10 @@
 namespace privacy_sandbox {
 
 PrivacySandboxSettingsImpl::PrivacySandboxSettingsImpl(
-    std::unique_ptr<Delegate> delegate,
     HostContentSettingsMap* host_content_settings_map,
     scoped_refptr<content_settings::CookieSettings> cookie_settings,
     PrefService* pref_service)
-    : delegate_(std::move(delegate)),
-      host_content_settings_map_(host_content_settings_map),
+    : host_content_settings_map_(host_content_settings_map),
       cookie_settings_(cookie_settings),
       pref_service_(pref_service) {
   CHECK(pref_service_);
@@ -67,7 +65,6 @@ PrivacySandboxSettingsImpl::~PrivacySandboxSettingsImpl() = default;
 
 void PrivacySandboxSettingsImpl::Shutdown() {
   observers_.Clear();
-  delegate_.reset();
   host_content_settings_map_ = nullptr;
   cookie_settings_.reset();
   pref_service_ = nullptr;
@@ -97,15 +94,6 @@ bool PrivacySandboxSettingsImpl::IsSharedStorageSelectURLAllowed(
   return false;
 }
 
-bool PrivacySandboxSettingsImpl::IsPrivacySandboxRestricted() const {
-  return delegate_->IsPrivacySandboxRestricted();
-}
-
-bool PrivacySandboxSettingsImpl::IsPrivacySandboxCurrentlyUnrestricted() const {
-  return delegate_->IsPrivacySandboxCurrentlyUnrestricted();
-}
-
-
 void PrivacySandboxSettingsImpl::OnRelatedWebsiteSetsEnabledPrefChanged() {
   for (auto& observer : observers_) {
     observer.OnRelatedWebsiteSetsEnabledChanged(AreRelatedWebsiteSetsEnabled());
@@ -118,11 +106,6 @@ void PrivacySandboxSettingsImpl::AddObserver(Observer* observer) {
 
 void PrivacySandboxSettingsImpl::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
-}
-
-void PrivacySandboxSettingsImpl::SetDelegateForTesting(
-    std::unique_ptr<Delegate> delegate) {
-  delegate_ = std::move(delegate);
 }
 
 bool PrivacySandboxSettingsImpl::AreRelatedWebsiteSetsEnabled() const {
