@@ -36,6 +36,7 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/color/color_provider_manager.h"
+#include "ui/color/color_provider_source_observer.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/display.h"
@@ -85,6 +86,26 @@
 namespace views {
 
 namespace {
+
+class ParentThemeObserver : public ui::ColorProviderSourceObserver {
+ public:
+  ParentThemeObserver(Widget* widget, ui::ColorProviderSource* parent)
+      : widget_(widget) {
+    parent_theme_observation_.Observe(parent);
+  }
+  ~ParentThemeObserver() override = default;
+
+  void OnColorProviderChanged() override {
+    widget_->ResetLastColorProviderKey();
+    widget_->ThemeChanged();
+  }
+
+ private:
+  raw_ptr<Widget> widget_;
+  base::ScopedObservation<ui::ColorProviderSource,
+                          ui::ColorProviderSourceObserver>
+      parent_theme_observation_{this};
+};
 
 // If `view` has a layer the layer is added to `layers`. Else this recurses
 // through the children. This is used to build a list of the layers in reverse
@@ -499,12 +520,16 @@ void Widget::Init(InitParams params) {
     parent_ = GetWidgetForNativeView(params.parent)->GetWeakPtr();
   }
 
-  // Subscripbe to parent's paint-as-active change.
+  // Subscribe to parent's paint-as-active change and theme changes.
   if (parent_) {
     parent_paint_as_active_subscription_ =
         parent_->RegisterPaintAsActiveChangedCallback(
             base::BindRepeating(&Widget::OnParentShouldPaintAsActiveChanged,
                                 base::Unretained(this)));
+    if (base::FeatureList::IsEnabled(::features::kThemeChangeOptimization)) {
+      parent_theme_observer_ =
+          std::make_unique<ParentThemeObserver>(this, parent_.get());
+    }
   }
 
   params.child |= (params.type == InitParams::TYPE_CONTROL);
@@ -2690,6 +2715,10 @@ ui::ColorProviderKey Widget::GetColorProviderKeyForTesting() const {
   return GetColorProviderKey();
 }
 
+void Widget::ResetLastColorProviderKey() {
+  last_color_provider_key_.reset();
+}
+
 void Widget::SetCheckParentForFullscreen() {
   check_parent_for_fullscreen_ = true;
 }
@@ -2858,7 +2887,7 @@ void Widget::HandleNativeWidgetReparented(Widget* parent) {
   parent_paint_as_active_lock_.reset();
   parent_paint_as_active_subscription_ = base::CallbackListSubscription();
 
-  // Lock and subscribe to parent's paint-as-active.
+  // Lock and subscribe to parent's paint-as-active and theme changes.
   if (parent) {
     if (has_lock_on_parent || native_widget_active_) {
       parent_paint_as_active_lock_ = parent->LockPaintAsActive();
@@ -2867,6 +2896,14 @@ void Widget::HandleNativeWidgetReparented(Widget* parent) {
         parent->RegisterPaintAsActiveChangedCallback(
             base::BindRepeating(&Widget::OnParentShouldPaintAsActiveChanged,
                                 base::Unretained(this)));
+    if (base::FeatureList::IsEnabled(::features::kThemeChangeOptimization)) {
+      parent_theme_observer_ =
+          std::make_unique<ParentThemeObserver>(this, parent);
+    } else {
+      parent_theme_observer_.reset();
+    }
+  } else {
+    parent_theme_observer_.reset();
   }
 
   if (old_parent) {
@@ -2968,6 +3005,7 @@ void Widget::HandleWidgetDestroying() {
   if (parent_) {
     parent_->OnChildRemoved(this);
   }
+  parent_theme_observer_.reset();
   ClearFocusManagerFromWidget();
   observers_.Notify(&WidgetObserver::OnWidgetDestroying, this);
   if (non_client_view_) {

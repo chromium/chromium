@@ -6907,4 +6907,38 @@ TEST_F(WidgetTest, ThemeChangedDoesNotShortCircuitWhenFeatureDisabled) {
   EXPECT_EQ(tracking_view->theme_changed_count(), initial_count + 1);
 }
 
+TEST_F(WidgetTest, ChildWidgetObservesParentThemeChanges) {
+  base::test::ScopedFeatureList feature_list(
+      ::features::kThemeChangeOptimization);
+
+  std::unique_ptr<Widget> parent_widget =
+      CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
+
+  Widget::InitParams child_params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_POPUP);
+  child_params.parent = parent_widget->GetNativeView();
+  child_params.child = true;
+  std::unique_ptr<Widget> child_widget =
+      CreateTestWidget(std::move(child_params));
+
+  auto* child_tracking_view = child_widget->SetContentsView(
+      std::make_unique<ThemeChangeTrackingView>());
+
+  // Initial ThemeChanged() on child.
+  child_widget->ThemeChanged();
+  const int child_initial_count = child_tracking_view->theme_changed_count();
+  EXPECT_GT(child_initial_count, 0);
+
+  // Changing parent widget's color mode should automatically propagate to child
+  // widget.
+  parent_widget->SetColorModeOverride(ui::ColorProviderKey::ColorMode::kDark);
+  EXPECT_EQ(child_tracking_view->theme_changed_count(),
+            child_initial_count + 1);
+
+  // Changing parent widget's user color should also propagate to child widget.
+  parent_widget->SetUserColorOverride(SK_ColorBLUE);
+  EXPECT_EQ(child_tracking_view->theme_changed_count(),
+            child_initial_count + 2);
+}
+
 }  // namespace views::test

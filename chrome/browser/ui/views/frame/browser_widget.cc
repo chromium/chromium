@@ -261,6 +261,10 @@ bool BrowserWidget::HandleKeyboardEvent(
 }
 
 void BrowserWidget::UserChangedTheme(BrowserThemeChangeType theme_change_type) {
+  if (base::FeatureList::IsEnabled(features::kThemeChangeOptimization)) {
+    ResetLastColorProviderKey();
+  }
+
   // kWebAppTheme is triggered by web apps and will only change colors, not the
   // frame type; just refresh the theme on all views in the browser window.
   if (theme_change_type == BrowserThemeChangeType::kWebAppTheme) {
@@ -283,13 +287,15 @@ void BrowserWidget::UserChangedTheme(BrowserThemeChangeType theme_change_type) {
     // When the browser theme changes, the NativeTheme may also change.
     SelectNativeTheme();
 
-    // Browser theme changes are directly observed by the BrowserWidget. However
-    // the other Widgets in the frame's hierarchy may inherit this new theme
-    // information in their ColorProviderKeys and thus should also be forwarded
-    // theme change notifications.
-    Widget::Widgets widgets = GetAllOwnedWidgets(GetNativeView());
-    for (Widget* widget : widgets) {
-      widget->ThemeChanged();
+    if (!base::FeatureList::IsEnabled(features::kThemeChangeOptimization)) {
+      // Browser theme changes are directly observed by the BrowserWidget.
+      // However the other Widgets in the frame's hierarchy may inherit this new
+      // theme information in their ColorProviderKeys and thus should also be
+      // forwarded theme change notifications.
+      Widget::Widgets widgets = GetAllOwnedWidgets(GetNativeView());
+      for (Widget* widget : widgets) {
+        widget->ThemeChanged();
+      }
     }
   }
 
