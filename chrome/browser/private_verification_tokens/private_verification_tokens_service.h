@@ -85,10 +85,10 @@ class PrivateVerificationTokensService : public KeyedService {
           tokens,
       base::OnceClosure callback);
 
-  // Triggers fetching tokens for issue_url if issue_url is a registered issuer
-  // and token count is low.
+  // Triggers fetching tokens for request_url if request_url origin is a
+  // registered issuer and token count is low.
   void MaybeFetchTokens(
-      const GURL& issue_url,
+      const GURL& request_url,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
   // Gets a token for the specified redeemer_origin. Returns a pair of

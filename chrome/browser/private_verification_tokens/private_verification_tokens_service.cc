@@ -241,7 +241,7 @@ void PrivateVerificationTokensService::DeleteTokensByFilter(
 }
 
 void PrivateVerificationTokensService::MaybeFetchTokens(
-    const GURL& issue_url,
+    const GURL& request_url,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (is_shutting_down_ || !url_loader_factory) {
@@ -251,7 +251,7 @@ void PrivateVerificationTokensService::MaybeFetchTokens(
   if (!is_initialized()) {
     pending_operations_.push_back(
         base::BindOnce(&PrivateVerificationTokensService::MaybeFetchTokens,
-                       weak_ptr_factory_.GetWeakPtr(), issue_url,
+                       weak_ptr_factory_.GetWeakPtr(), request_url,
                        std::move(url_loader_factory)));
     return;
   }
@@ -260,7 +260,7 @@ void PrivateVerificationTokensService::MaybeFetchTokens(
     return;
   }
 
-  url::Origin issuer = url::Origin::Create(issue_url);
+  url::Origin issuer = url::Origin::Create(request_url);
   if (!IsAntiAbuseEnabled(issuer)) {
     return;
   }
@@ -299,7 +299,7 @@ void PrivateVerificationTokensService::MaybeFetchTokens(
 
   auto fetcher =
       private_verification_tokens::PrivateVerificationTokensFetcher::Create(
-          issue_url, url_loader_factory->Clone());
+          config.issuer_request_url, url_loader_factory->Clone());
   if (!fetcher) {
     return;
   }

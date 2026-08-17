@@ -10,7 +10,6 @@
 
 #include "base/base64.h"
 #include "base/containers/span.h"
-#include "base/containers/to_vector.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -176,14 +175,16 @@ class PrivateVerificationTokensServiceTest : public testing::Test {
   }
 
   void SetTestIssuerConfig(PrivateVerificationTokensService* target_service) {
-    const url::Origin issuer_a = url::Origin::Create(GURL("https://a.com"));
+    const GURL issuer_request_url_a("https://a.com/pvt/issue");
     const url::Origin redeemer_a =
         url::Origin::Create(GURL("https://r1.a.com"));
-    const url::Origin issuer_b = url::Origin::Create(GURL("https://b.org"));
+    const GURL issuer_request_url_b("https://b.org/issue/p/i");
     const url::Origin redeemer_b =
         url::Origin::Create(GURL("https://r2.b.org"));
-    const url::Origin issuer_c = url::Origin::Create(GURL("https://c.net"));
-    const url::Origin issuer_d = url::Origin::Create(GURL("https://d.com"));
+    const GURL issuer_request_url_c("https://c.net/some/issue/path");
+    const url::Origin redeemer_c = url::Origin::Create(GURL("https://c.net"));
+    const GURL issuer_request_url_d("https://d.com/pvt/i");
+    const url::Origin redeemer_d = url::Origin::Create(GURL("https://d.com"));
     const std::string encoded_public_key =
         base::Base64Encode(test_issuer_->public_key());
     const std::string encoded_public_key_proof =
@@ -242,13 +243,14 @@ class PrivateVerificationTokensServiceTest : public testing::Test {
         }
       ]
     })",
-        issuer_a.Serialize(), encoded_public_key, encoded_public_key_proof,
-        expiration_str, redeemer_a.Serialize(), issuer_b.Serialize(),
-        encoded_public_key, encoded_public_key_proof, expiration_str,
-        redeemer_b.Serialize(), issuer_c.Serialize(), encoded_public_key,
-        encoded_public_key_proof, expiration_str, issuer_c.Serialize(),
-        issuer_d.Serialize(), encoded_public_key, encoded_public_key_proof,
-        expiration_str, issuer_d.Serialize());
+        issuer_request_url_a.spec(), encoded_public_key,
+        encoded_public_key_proof, expiration_str, redeemer_a.Serialize(),
+        issuer_request_url_b.spec(), encoded_public_key,
+        encoded_public_key_proof, expiration_str, redeemer_b.Serialize(),
+        issuer_request_url_c.spec(), encoded_public_key,
+        encoded_public_key_proof, expiration_str, redeemer_c.Serialize(),
+        issuer_request_url_d.spec(), encoded_public_key,
+        encoded_public_key_proof, expiration_str, redeemer_d.Serialize());
 
     auto config =
         private_verification_tokens::PrivateVerificationTokensIssuerConfig::
@@ -813,6 +815,7 @@ TEST_F(PrivateVerificationTokensServiceEmptyDatabaseTest,
   network::TestURLLoaderFactory test_url_loader_factory;
   test_url_loader_factory.SetInterceptor(
       base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        EXPECT_EQ(request.url, GURL("https://c.net/some/issue/path"));
         std::string request_body;
         if (request.request_body) {
           for (const auto& element : *request.request_body->elements()) {
@@ -878,6 +881,8 @@ TEST_F(PrivateVerificationTokensServiceTest,
                               test_url_loader_factory.GetSafeWeakWrapper());
 
   EXPECT_EQ(test_url_loader_factory.NumPending(), 1);
+  EXPECT_EQ(test_url_loader_factory.GetPendingRequest(0)->request.url,
+            GURL("https://a.com/pvt/issue"));
 }
 
 TEST_F(PrivateVerificationTokensServiceTest,
@@ -939,6 +944,7 @@ TEST_F(PrivateVerificationTokensServiceEmptyDatabaseTest,
   network::TestURLLoaderFactory test_url_loader_factory;
   test_url_loader_factory.SetInterceptor(
       base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        EXPECT_EQ(request.url, GURL("https://c.net/some/issue/path"));
         std::string request_body;
         if (request.request_body) {
           for (const auto& element : *request.request_body->elements()) {
