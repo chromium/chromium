@@ -2533,9 +2533,6 @@ DOMWindow* LocalDOMWindow::open(v8::Isolate* isolate,
   frame_request.GetResourceRequest().SetReferrerPolicy(
       referrer.referrer_policy);
 
-  bool has_user_gesture = LocalFrame::HasTransientUserActivation(GetFrame());
-  frame_request.GetResourceRequest().SetHasUserGesture(has_user_gesture);
-
   FrameTree::FindResult result =
       GetFrame()->Tree().FindOrCreateFrameForNavigation(
           frame_request, target.empty() ? AtomicString("_blank") : target);

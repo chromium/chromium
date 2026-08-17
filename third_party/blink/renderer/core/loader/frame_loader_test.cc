@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/policy_container.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
+#include "third_party/blink/renderer/core/loader/frame_load_request.h"
 #include "third_party/blink/renderer/core/page/chrome_client_impl.h"
 #include "third_party/blink/renderer/core/testing/mock_policy_container_host.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
@@ -323,6 +324,89 @@ TEST_F(FrameLoaderSimTest, DirectLaunchSchemeBlocked) {
   EXPECT_EQ(GetDocument().Url(), KURL("https://example.com/test.html"));
 
   SchemeRegistry::RemoveURLSchemeAsDirectLaunchForTest(kScheme);
+}
+
+class UserGestureNavigationTestWebFrameClient
+    : public frame_test_helpers::TestWebFrameClient {
+ public:
+  void BeginNavigation(std::unique_ptr<WebNavigationInfo> info) override {
+    last_has_user_gesture_ = info->url_request.HasUserGesture();
+  }
+
+  std::optional<bool> last_has_user_gesture() const {
+    return last_has_user_gesture_;
+  }
+
+ private:
+  std::optional<bool> last_has_user_gesture_;
+};
+
+TEST_F(FrameLoaderTest, StartNavigationDoesNotSpoofTargetUserGesture) {
+  UserGestureNavigationTestWebFrameClient client;
+  frame_test_helpers::WebViewHelper helper;
+  helper.Initialize(&client);
+
+  LocalFrame* target_frame = helper.LocalMainFrame()->GetFrame();
+
+  // Target frame has transient user activation.
+  LocalFrame::NotifyUserActivation(
+      target_frame, mojom::UserActivationNotificationType::kTest);
+  ASSERT_TRUE(LocalFrame::HasTransientUserActivation(target_frame));
+
+  // Initiator frame load request without user activation.
+  ResourceRequest resource_request(KURL("https://example.com/foo.html"));
+  resource_request.SetHasUserGesture(false);
+  FrameLoadRequest request(nullptr, resource_request);
+
+  target_frame->Loader().StartNavigation(request);
+
+  ASSERT_TRUE(client.last_has_user_gesture().has_value());
+  EXPECT_FALSE(client.last_has_user_gesture().value());
+}
+
+TEST_F(FrameLoaderTest, StartNavigationPropagatesInitiatorUserGesture) {
+  UserGestureNavigationTestWebFrameClient client;
+  frame_test_helpers::WebViewHelper helper;
+  helper.Initialize(&client);
+
+  LocalFrame* target_frame = helper.LocalMainFrame()->GetFrame();
+
+  // Target frame has NO transient user activation.
+  ASSERT_FALSE(LocalFrame::HasTransientUserActivation(target_frame));
+
+  // Initiator frame load request with user activation.
+  ResourceRequest resource_request(KURL("https://example.com/foo.html"));
+  resource_request.SetHasUserGesture(true);
+  FrameLoadRequest request(nullptr, resource_request);
+
+  target_frame->Loader().StartNavigation(request);
+
+  ASSERT_TRUE(client.last_has_user_gesture().has_value());
+  EXPECT_TRUE(client.last_has_user_gesture().value());
+}
+
+TEST_F(FrameLoaderTest, FrameLoadRequestCapturesInitiatorUserGesture) {
+  UserGestureNavigationTestWebFrameClient client;
+  frame_test_helpers::WebViewHelper helper;
+  helper.Initialize(&client);
+
+  LocalFrame* initiator_frame = helper.LocalMainFrame()->GetFrame();
+
+  // 1. Without user activation on initiator.
+  ASSERT_FALSE(LocalFrame::HasTransientUserActivation(initiator_frame));
+  FrameLoadRequest request1(
+      initiator_frame->DomWindow(),
+      ResourceRequest(KURL("https://example.com/foo.html")));
+  EXPECT_FALSE(request1.GetResourceRequest().HasUserGesture());
+
+  // 2. With user activation on initiator.
+  LocalFrame::NotifyUserActivation(
+      initiator_frame, mojom::UserActivationNotificationType::kTest);
+  ASSERT_TRUE(LocalFrame::HasTransientUserActivation(initiator_frame));
+  FrameLoadRequest request2(
+      initiator_frame->DomWindow(),
+      ResourceRequest(KURL("https://example.com/foo.html")));
+  EXPECT_TRUE(request2.GetResourceRequest().HasUserGesture());
 }
 
 }  // namespace blink

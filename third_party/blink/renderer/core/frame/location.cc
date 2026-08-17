@@ -333,9 +333,6 @@ void Location::SetLocation(const String& url,
   }
 
   ResourceRequestHead resource_request(completed_url);
-  resource_request.SetHasUserGesture(
-      LocalFrame::HasTransientUserActivation(incumbent_window->GetFrame()));
-
   FrameLoadRequest request(incumbent_window, resource_request);
   request.SetClientNavigationReason(ClientNavigationReason::kFrameNavigation);
   WebFrameLoadType frame_load_type = WebFrameLoadType::kStandard;

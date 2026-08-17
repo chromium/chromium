@@ -349,8 +349,6 @@ FormSubmission* FormSubmission::Create(HTMLFormElement* form,
     }
   }
   LocalFrame* form_local_frame = form->GetDocument().GetFrame();
-  resource_request->SetHasUserGesture(
-      LocalFrame::HasTransientUserActivation(form_local_frame));
   resource_request->SetFormSubmission(true);
 
   mojom::blink::TriggeringEventInfo triggering_event_info;

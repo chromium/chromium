@@ -60,6 +60,9 @@ struct CORE_EXPORT FrameLoadRequest {
   STACK_ALLOCATED();
 
  public:
+  // Automatically populates resource_request.has_user_gesture from
+  // `origin_window`'s transient user activation state when `origin_window` is
+  // non-null (defaults to false otherwise, unless already set).
   FrameLoadRequest(LocalDOMWindow* origin_window, const ResourceRequest&);
   FrameLoadRequest(LocalDOMWindow* origin_window, const ResourceRequestHead&);
   FrameLoadRequest(const FrameLoadRequest&) = delete;

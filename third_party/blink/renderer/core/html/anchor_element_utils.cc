@@ -151,6 +151,7 @@ void AnchorElementUtils::HandleDownloadAttribute(Element* element,
   request.SetSuggestedFilename(download_attr);
   request.SetRequestContext(mojom::blink::RequestContextType::DOWNLOAD);
   request.SetRequestorOrigin(window->GetSecurityOrigin());
+  request.SetHasUserGesture(LocalFrame::HasTransientUserActivation(frame));
   network::mojom::ReferrerPolicy referrer_policy = request.GetReferrerPolicy();
 
   if (referrer_policy == network::mojom::ReferrerPolicy::kDefault) {

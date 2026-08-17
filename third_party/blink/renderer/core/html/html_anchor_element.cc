@@ -494,8 +494,6 @@ void HTMLAnchorElementBase::HandleClick(MouseEvent& event) {
       link_relations_, GetDocument());
 
   LocalFrame* frame = window->GetFrame();
-  request.SetHasUserGesture(LocalFrame::HasTransientUserActivation(frame));
-
   NavigationPolicy navigation_policy = NavigationPolicyFromEvent(&event);
 
   // Respect the download attribute only if we can read the content, and the

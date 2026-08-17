@@ -715,9 +715,6 @@ void FrameLoader::StartNavigation(FrameLoadRequest& request,
                url.GetString().Utf8(), "load_type",
                static_cast<int>(frame_load_type));
 
-  resource_request.SetHasUserGesture(
-      LocalFrame::HasTransientUserActivation(frame_.Get()));
-
   if (!AllowRequestForThisFrame(request))
     return;
 
