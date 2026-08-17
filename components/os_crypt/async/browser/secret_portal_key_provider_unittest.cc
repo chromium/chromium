@@ -75,30 +75,29 @@ class SecretPortalKeyProviderTest : public testing::Test {
               mock_bus_.get(), SecretPortalKeyProvider::kServiceSecret,
               response_path_);
           EXPECT_CALL(*mock_response_proxy_, ConnectToSignal(_, _, _, _))
-              .WillOnce(
-                  [&](const std::string& interface_name,
-                      const std::string& signal_name,
-                      dbus::ObjectProxy::SignalCallback signal_callback,
-                      dbus::ObjectProxy::OnConnectedCallback
-                          on_connected_callback) {
-                    EXPECT_EQ(interface_name,
-                              SecretPortalKeyProvider::kInterfaceRequest);
-                    EXPECT_EQ(signal_name,
-                              SecretPortalKeyProvider::kSignalResponse);
+              .WillOnce([&](const std::string& interface_name,
+                            const std::string& signal_name,
+                            dbus::ObjectProxy::SignalCallback signal_callback,
+                            dbus::ObjectProxy::OnConnectedCallback
+                                on_connected_callback) {
+                EXPECT_EQ(interface_name,
+                          SecretPortalKeyProvider::kInterfaceRequest);
+                EXPECT_EQ(signal_name,
+                          SecretPortalKeyProvider::kSignalResponse);
 
-                    std::move(on_connected_callback)
-                        .Run(interface_name, signal_name, true);
+                std::move(on_connected_callback)
+                    .Run(interface_name, signal_name, true);
 
-                    dbus::Signal signal(interface_name, signal_name);
-                    dbus::MessageWriter writer(&signal);
-                    constexpr uint32_t kResponseSuccess = 0;
-                    writer.AppendUint32(kResponseSuccess);
-                    std::map<std::string, dbus_utils::Variant> dict;
-                    dict.emplace("token",
-                                 dbus_utils::Variant::Wrap<"s">(kPrefToken));
-                    dbus_utils::WriteValue(writer, dict);
-                    signal_callback.Run(&signal);
-                  });
+                dbus::Signal signal(interface_name, signal_name);
+                dbus::MessageWriter writer(&signal);
+                constexpr uint32_t kResponseSuccess = 0;
+                writer.AppendUint32(kResponseSuccess);
+                std::map<std::string, dbus_utils::Variant> dict;
+                dict.emplace("token",
+                             dbus_utils::Variant::Wrap<"s">(kPrefToken));
+                dbus_utils::WriteValue(writer, dict);
+                signal_callback.Run(&signal);
+              });
           return mock_response_proxy_.get();
         });
 

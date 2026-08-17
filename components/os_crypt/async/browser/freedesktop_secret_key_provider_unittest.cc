@@ -329,21 +329,20 @@ TEST(FreedesktopSecretKeyProviderTest, BasicHappyPath) {
 
   // GetSecrets
   auto fake_secret_span = base::as_byte_span(kFakeSecret);
-  std::map<dbus::ObjectPath,
-           std::tuple<dbus::ObjectPath, std::vector<uint8_t>,
-                      std::vector<uint8_t>, std::string>>
+  std::map<dbus::ObjectPath, std::tuple<dbus::ObjectPath, std::vector<uint8_t>,
+                                        std::vector<uint8_t>, std::string>>
       secrets;
   secrets[dbus::ObjectPath(kItemPath)] = std::make_tuple(
       dbus::ObjectPath(kSessionPath), std::vector<uint8_t>(),
       std::vector<uint8_t>(fake_secret_span.begin(), fake_secret_span.end()),
       std::string(FreedesktopSecretKeyProvider::kMimePlain));
-  EXPECT_CALL(*mock_service_proxy,
-              Call(FreedesktopSecretKeyProvider::kSecretServiceInterface,
-                   FreedesktopSecretKeyProvider::kMethodGetSecrets,
-                   MatchArgs(std::vector<dbus::ObjectPath>{
-                                 dbus::ObjectPath(kItemPath)},
-                             dbus::ObjectPath(kSessionPath)),
-                   _))
+  EXPECT_CALL(
+      *mock_service_proxy,
+      Call(FreedesktopSecretKeyProvider::kSecretServiceInterface,
+           FreedesktopSecretKeyProvider::kMethodGetSecrets,
+           MatchArgs(std::vector<dbus::ObjectPath>{dbus::ObjectPath(kItemPath)},
+                     dbus::ObjectPath(kSessionPath)),
+           _))
       .WillOnce(RespondWith(secrets));
 
   // Close
@@ -708,21 +707,20 @@ TEST(FreedesktopSecretKeyProviderTest, SearchItemsWithItemUnlockPrompt) {
 
   // GetSecrets
   auto fake_secret_span = base::as_byte_span(kFakeSecret);
-  std::map<dbus::ObjectPath,
-           std::tuple<dbus::ObjectPath, std::vector<uint8_t>,
-                      std::vector<uint8_t>, std::string>>
+  std::map<dbus::ObjectPath, std::tuple<dbus::ObjectPath, std::vector<uint8_t>,
+                                        std::vector<uint8_t>, std::string>>
       secrets;
   secrets[dbus::ObjectPath(kItemPath)] = std::make_tuple(
       dbus::ObjectPath(kSessionPath), std::vector<uint8_t>(),
       std::vector<uint8_t>(fake_secret_span.begin(), fake_secret_span.end()),
       std::string(FreedesktopSecretKeyProvider::kMimePlain));
-  EXPECT_CALL(*mock_service_proxy,
-              Call(FreedesktopSecretKeyProvider::kSecretServiceInterface,
-                   FreedesktopSecretKeyProvider::kMethodGetSecrets,
-                   MatchArgs(std::vector<dbus::ObjectPath>{
-                                 dbus::ObjectPath(kItemPath)},
-                             dbus::ObjectPath(kSessionPath)),
-                   _))
+  EXPECT_CALL(
+      *mock_service_proxy,
+      Call(FreedesktopSecretKeyProvider::kSecretServiceInterface,
+           FreedesktopSecretKeyProvider::kMethodGetSecrets,
+           MatchArgs(std::vector<dbus::ObjectPath>{dbus::ObjectPath(kItemPath)},
+                     dbus::ObjectPath(kSessionPath)),
+           _))
       .WillOnce(RespondWith(secrets));
 
   // Close

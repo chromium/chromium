@@ -303,8 +303,6 @@ bool Encryptor::DecryptString16(const std::string& ciphertext,
   return true;
 }
 
-
-
 bool Encryptor::IsEncryptionAvailable() const {
   return DefaultEncryptionProviderAvailable();
 }
