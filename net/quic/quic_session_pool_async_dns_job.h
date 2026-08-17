@@ -188,18 +188,35 @@ class QuicSessionPool::AsyncDnsJob
   // known, because a later attempt may still create a session.
   void OnSessionCreationDecided(int rv, const EndpointConnector* connector);
 
-  // Called by `connector` when it succeeded or when it ran out of untried
-  // candidates. The first connector to succeed settles the job, and the job
-  // destroys the other one together with its in-flight attempt. Running out
-  // of candidates fails the job only when the other connector has nothing in
-  // flight and DNS has finished.
+  // Called by `connector` when it settled successfully or when it ran out of
+  // untried candidates. A connector settles successfully when its attempt
+  // succeeds or when it finds an existing session through IP pooling. The job
+  // then destroys the other connector together with its in-flight attempt.
+  // Running out of candidates fails the job only when the other connector has
+  // nothing in flight and DNS has finished.
   void OnConnectorComplete(int rv, EndpointConnector* connector);
+
+  // Returns the name of the slot `connector` occupies. For logging.
+  const char* SlotName(const EndpointConnector* connector) const;
+
+  // Logs the attempt `connector` is about to start and returns its job-wide
+  // identifier. Logging only.
+  int LogAttemptStarted(const EndpointConnector* connector,
+                        const Candidate& candidate);
 
  private:
   // The result and the error details of one failed attempt.
   struct AttemptFailure {
     int rv = OK;
     NetErrorDetails details;
+  };
+
+  // How a successful job obtained its session. Failed jobs use kNone.
+  enum class SuccessSource {
+    kNone,
+    kAttemptSucceeded,
+    kActiveSession,
+    kIpPooling,
   };
 
   int DoResolveHost();
@@ -216,14 +233,15 @@ class QuicSessionPool::AsyncDnsJob
   std::optional<int> AdvanceConnector(EndpointConnector* connector);
 
   // Advances both slots and arms the slow timer once the primary connector
-  // has an attempt in flight. Returns OK when a connector succeeded, in which
-  // case the other connector has been destroyed. Returns ERR_IO_PENDING while
-  // an attempt is in flight, and std::nullopt when nothing could be started.
+  // has an attempt in flight. Returns OK when a connector settled the job, in
+  // which case the other connector has been destroyed. Returns ERR_IO_PENDING
+  // while an attempt is in flight, and std::nullopt when nothing could be
+  // started.
   std::optional<int> AdvanceConnectors();
 
-  // Called when `connector` succeeded. Destroys the other connector together
-  // with the attempt it had in flight, and moves `connector` into the primary
-  // slot when it was in the secondary one.
+  // Called when `connector` settled the job. Logs how it settled, destroys the
+  // other connector together with the attempt it had in flight, and moves
+  // `connector` into the primary slot when it was in the secondary one.
   void DestroyOtherConnector(const EndpointConnector* connector);
 
   // Starts the slow timer when the primary connector has its first attempt in
@@ -276,6 +294,12 @@ class QuicSessionPool::AsyncDnsJob
   // `endpoints`.
   bool IsSvcbOptional(base::span<const ServiceEndpoint> endpoints) const;
 
+  // Logs the job's outcome. Logging only.
+  void LogJobComplete(int rv) const;
+
+  // Logs the resolver's final result. Logging only.
+  void LogServiceEndpointRequestFinished(int rv) const;
+
   const quic::ParsedQuicVersion quic_version_;
   const raw_ptr<HostResolver> host_resolver_;
   const bool use_dns_aliases_;
@@ -302,6 +326,11 @@ class QuicSessionPool::AsyncDnsJob
   // Set once the slow timer was armed. The timer is armed at most once per
   // job.
   bool slow_timer_started_ = false;
+  // The number of attempts the connectors of this job started. Reported when
+  // the job settles.
+  size_t attempt_count_ = 0;
+  // Set before every successful completion.
+  SuccessSource success_source_ = SuccessSource::kNone;
   // The candidates already handed out for an attempt. Lives here because the
   // connectors of one job must not attempt the same candidate twice. A vector
   // because ParsedQuicVersion can be compared but not ordered, and because one

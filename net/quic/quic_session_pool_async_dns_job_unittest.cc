@@ -22,6 +22,7 @@
 #include "net/dns/public/host_resolver_results.h"
 #include "net/http/http_stream.h"
 #include "net/http/http_stream_pool_test_util.h"
+#include "net/log/test_net_log.h"
 #include "net/quic/address_utils.h"
 #include "net/quic/mock_crypto_client_stream.h"
 #include "net/quic/mock_crypto_client_stream_factory.h"
@@ -136,6 +137,8 @@ class QuicSessionPoolAsyncDnsJobTest : public QuicSessionPoolTestBase,
   }
 
   FakeServiceEndpointResolver fake_resolver_;
+  // For NetLog events test coverage.
+  RecordingNetLogObserver net_log_observer_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -180,6 +183,17 @@ TEST_P(QuicSessionPoolAsyncDnsJobTest, DnsSyncSessionEstablishmentSync) {
 
   socket_data.ExpectAllReadDataConsumed();
   socket_data.ExpectAllWriteDataConsumed();
+
+  EXPECT_FALSE(
+      net_log_observer_
+          .GetEntriesWithType(
+              NetLogEventType::QUIC_SESSION_POOL_ASYNC_DNS_JOB_ATTEMPT_STARTED)
+          .empty());
+  EXPECT_FALSE(
+      net_log_observer_
+          .GetEntriesWithType(
+              NetLogEventType::QUIC_SESSION_POOL_ASYNC_DNS_JOB_COMPLETE)
+          .empty());
 }
 
 // DNS completes synchronously; the crypto handshake completes asynchronously.
@@ -835,6 +849,13 @@ TEST_P(QuicSessionPoolAsyncDnsJobTest, HostResolutionSignalFiresOnce) {
 
   socket_data.ExpectAllReadDataConsumed();
   socket_data.ExpectAllWriteDataConsumed();
+
+  EXPECT_FALSE(
+      net_log_observer_
+          .GetEntriesWithType(
+              NetLogEventType::
+                  QUIC_SESSION_POOL_ASYNC_DNS_JOB_HOST_RESOLUTION_SIGNALED)
+          .empty());
 }
 
 // A crypto-ready partial update with no endpoint usable for QUIC keeps the
@@ -2105,6 +2126,17 @@ TEST_P(QuicSessionPoolAsyncDnsJobTest, SlowTimerStartsSecondaryThatSucceeds) {
 
   ipv4_data.ExpectAllReadDataConsumed();
   ipv4_data.ExpectAllWriteDataConsumed();
+
+  EXPECT_FALSE(
+      net_log_observer_
+          .GetEntriesWithType(
+              NetLogEventType::QUIC_SESSION_POOL_ASYNC_DNS_JOB_SLOW_TIMER_ARMED)
+          .empty());
+  EXPECT_FALSE(
+      net_log_observer_
+          .GetEntriesWithType(
+              NetLogEventType::QUIC_SESSION_POOL_ASYNC_DNS_JOB_SLOW_TIMER_FIRED)
+          .empty());
 }
 
 // The primary connector succeeds after the secondary connector started its
@@ -2380,6 +2412,12 @@ TEST_P(QuicSessionPoolAsyncDnsJobTest, SlotSwapWhenPrimaryAttemptsIpv4) {
 
   ipv6_data.ExpectAllReadDataConsumed();
   ipv6_data.ExpectAllWriteDataConsumed();
+
+  EXPECT_FALSE(
+      net_log_observer_
+          .GetEntriesWithType(
+              NetLogEventType::QUIC_SESSION_POOL_ASYNC_DNS_JOB_SLOTS_SWAPPED)
+          .empty());
 }
 
 // A fixture with the slow timer disabled through its feature param. The param
@@ -2811,6 +2849,13 @@ TEST_P(QuicSessionPoolAsyncDnsJobTest, SessionCreationSignalRace) {
 
   ipv4_data.ExpectAllReadDataConsumed();
   ipv4_data.ExpectAllWriteDataConsumed();
+
+  EXPECT_FALSE(
+      net_log_observer_
+          .GetEntriesWithType(
+              NetLogEventType::
+                  QUIC_SESSION_POOL_ASYNC_DNS_JOB_SESSION_CREATION_HELD)
+          .empty());
 }
 
 // The job settles on the other connector while the discarded attempt's

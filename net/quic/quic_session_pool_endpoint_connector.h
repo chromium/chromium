@@ -7,9 +7,11 @@
 
 #include <memory>
 #include <optional>
+#include <string_view>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "net/base/ip_endpoint.h"
 #include "net/base/net_error_details.h"
 #include "net/log/net_log_with_source.h"
 #include "net/quic/quic_session_attempt.h"
@@ -30,7 +32,7 @@ namespace net {
 // finished.
 class QuicSessionPool::EndpointConnector : public QuicSessionAttempt::Delegate {
  public:
-  explicit EndpointConnector(AsyncDnsJob* job);
+  EndpointConnector(AsyncDnsJob* job, const char* name);
 
   EndpointConnector(const EndpointConnector&) = delete;
   EndpointConnector& operator=(const EndpointConnector&) = delete;
@@ -47,6 +49,14 @@ class QuicSessionPool::EndpointConnector : public QuicSessionAttempt::Delegate {
 
   bool has_attempt() const { return attempt_ != nullptr; }
 
+  // A stable name that does not change when this connector moves between
+  // slots. For logging.
+  const char* name() const { return name_; }
+
+  // Returns the identifier of the current attempt, or nothing when there is
+  // none. For logging.
+  std::optional<int> attempt_id() const { return attempt_id_; }
+
   // True when this connector could start an attempt as soon as the job has a
   // candidate for it. The job advances such connectors when new resolver
   // results arrive.
@@ -55,6 +65,10 @@ class QuicSessionPool::EndpointConnector : public QuicSessionAttempt::Delegate {
   // True while the attempt in flight connects to an IPv6 address. The job
   // reads this when it decides which slot this connector takes.
   bool is_attempting_ipv6() const;
+
+  // Returns the address of the attempt in flight, or nothing when there is
+  // none. For logging.
+  std::optional<IPEndPoint> attempt_ip_endpoint() const;
 
   // True while an attempt is creating its session, i.e. the requests' session
   // creation signal can still fire.
@@ -80,7 +94,10 @@ class QuicSessionPool::EndpointConnector : public QuicSessionAttempt::Delegate {
   void OnAttemptComplete(int rv);
 
   const raw_ptr<AsyncDnsJob> job_;
+  const char* const name_;
   std::unique_ptr<QuicSessionAttempt> attempt_;
+  // The job-wide identifier of `attempt_`.
+  std::optional<int> attempt_id_;
   // True from Start() returning ERR_IO_PENDING until OnAttemptComplete().
   // `attempt_` alone cannot tell; it is kept after a successful completion.
   bool attempt_in_flight_ = false;

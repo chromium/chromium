@@ -2493,6 +2493,132 @@ EVENT_TYPE(QUIC_SESSION_POOL_JOB_STALE_HOST_RESOLUTION_MATCHED)
 //   }
 EVENT_TYPE(QUIC_SESSION_POOL_JOB_RESULT)
 
+// This event indicates that a QuicSessionPool::AsyncDnsJob settled. The
+// enclosing QUIC_SESSION_POOL_JOB event marks the lifetime of the job.
+//
+// The event parameters are:
+//   {
+//     "net_error": <Net error code the job settled with>,
+//     "attempt_count": <Number of attempts the job started>,
+//     "completion_reason": <"attempt_succeeded", "active_session",
+//                           "ip_pooling", or "failed">,
+//   }
+EVENT_TYPE(QUIC_SESSION_POOL_ASYNC_DNS_JOB_COMPLETE)
+
+// This event indicates that a connector of an AsyncDnsJob started an attempt.
+//
+// The event parameters are:
+//   {
+//     "attempt_id": <Job-wide identifier of the attempt>,
+//     "connector": <Stable name of the connector>,
+//     "ip_endpoint": <The IP endpoint the attempt connects to>,
+//     "address_family": <The address family of the IP endpoint>,
+//     "slot": <"primary" or "secondary", the slot of the connector>,
+//     "quic_version": <The QUIC version selected for the endpoint>,
+//     "metadata": <The endpoint metadata>,
+//     "resolution_in_flight": <True when DNS resolution had not finished>,
+//   }
+EVENT_TYPE(QUIC_SESSION_POOL_ASYNC_DNS_JOB_ATTEMPT_STARTED)
+
+// This event indicates that an attempt of an AsyncDnsJob failed.
+//
+// The event parameters are:
+//   {
+//     "attempt_id": <Job-wide identifier of the attempt>,
+//     "connector": <Stable name of the connector>,
+//     "slot": <"primary" or "secondary", the current slot of the connector>,
+//     "ip_endpoint": <The IP endpoint the attempt connected to>,
+//     "net_error": <Net error code the attempt failed with>,
+//   }
+EVENT_TYPE(QUIC_SESSION_POOL_ASYNC_DNS_JOB_ATTEMPT_FAILED)
+
+// This event indicates that an AsyncDnsJob armed its slow timer.
+//
+// The event parameters are:
+//   {
+//     "delay_ms": <The delay of the timer in milliseconds>,
+//   }
+EVENT_TYPE(QUIC_SESSION_POOL_ASYNC_DNS_JOB_SLOW_TIMER_ARMED)
+
+// This event indicates that the slow timer of an AsyncDnsJob fired.
+EVENT_TYPE(QUIC_SESSION_POOL_ASYNC_DNS_JOB_SLOW_TIMER_FIRED)
+
+// This event indicates that an AsyncDnsJob moved its connectors into the other
+// slot, so that the IPv6 side is the primary one.
+EVENT_TYPE(QUIC_SESSION_POOL_ASYNC_DNS_JOB_SLOTS_SWAPPED)
+
+// This event indicates that a connector settled an AsyncDnsJob, either by an
+// attempt succeeding or by finding an existing session through IP pooling.
+// The other connector is destroyed.
+//
+// The event parameters are:
+//   {
+//     "connector": <Stable name of the connector that settled the job>,
+//     "slot": <"primary" or "secondary", the slot of the connector that
+//              settled the job>,
+//     "completion_reason": <"attempt_succeeded" or "ip_pooling">,
+//     "attempt_id": <Identifier of the successful attempt, if there was one>,
+//     "ip_endpoint": <IP endpoint of the successful attempt, if there was
+//                     one>,
+//     "canceled_attempt_id": <Identifier of the other connector's canceled
+//                             attempt, if there was one>,
+//     "canceled_ip_endpoint": <IP endpoint of the other connector's canceled
+//                              attempt, if there was one>,
+//   }
+EVENT_TYPE(QUIC_SESSION_POOL_ASYNC_DNS_JOB_CONNECTOR_SETTLED_JOB)
+
+// This event indicates that an AsyncDnsJob received a partial resolver
+// update. The job acts on an update only when the endpoints are ready for the
+// cryptographic handshake.
+//
+// The event parameters are:
+//   {
+//     "endpoints_crypto_ready": <True when the endpoints are usable for the
+//                                cryptographic handshake>,
+//     "endpoint_count": <Number of service endpoints in the update>,
+//     "usable_endpoint_count": <Number of endpoints usable for QUIC, present
+//                               when endpoints_crypto_ready is true>,
+//   }
+EVENT_TYPE(QUIC_SESSION_POOL_ASYNC_DNS_JOB_SERVICE_ENDPOINTS_UPDATED)
+
+// This event indicates that the resolver request of an AsyncDnsJob finished.
+//
+// The event parameters are:
+//   {
+//     "net_error": <Net error code the resolution finished with>,
+//     "ignored_late_error": <True when the job kept going with a resolver
+//                            error because a connector already exists>,
+//   }
+EVENT_TYPE(QUIC_SESSION_POOL_ASYNC_DNS_JOB_SERVICE_ENDPOINT_REQUEST_FINISHED)
+
+// This event indicates that an AsyncDnsJob fired the host resolution signal of
+// its requests.
+//
+// The event parameters are:
+//   {
+//     "net_error": <Net error code the signal carried>,
+//   }
+EVENT_TYPE(QUIC_SESSION_POOL_ASYNC_DNS_JOB_HOST_RESOLUTION_SIGNALED)
+
+// This event indicates that an AsyncDnsJob held a failed session creation
+// result, because another attempt may still create a session.
+//
+// The event parameters are:
+//   {
+//     "net_error": <Net error code the held result carries>,
+//   }
+EVENT_TYPE(QUIC_SESSION_POOL_ASYNC_DNS_JOB_SESSION_CREATION_HELD)
+
+// This event indicates that an AsyncDnsJob fired the session creation signal
+// of its requests. ERR_IO_PENDING means the session was created and its
+// cryptographic handshake is still running.
+//
+// The event parameters are:
+//   {
+//     "net_error": <Net error code the signal carried>,
+//   }
+EVENT_TYPE(QUIC_SESSION_POOL_ASYNC_DNS_JOB_SESSION_CREATION_SIGNALED)
+
 // ------------------------------------------------------------------------
 // quic::QuicSession
 // ------------------------------------------------------------------------
