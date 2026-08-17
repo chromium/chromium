@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 import {HostCapability, MetricUserInputReactionType, PanelStateKind, Platform, ResponseStopCause, WebClientMode} from '/glic/glic_api/glic_api.js';
-import type {CancelActionsResult, FocusedTabData, TabData, UserProfileInfo} from '/glic/glic_api/glic_api.js';
+import type {FocusedTabData, TabData, UserProfileInfo} from '/glic/glic_api/glic_api.js';
 
 import {ApiTestFixtureBase, assertDefined, assertEquals, assertFalse, assertNotEquals, assertRejects, assertTrue, assertUndefined, checkDefined, mapObservable, observeSequence, readStream, runUntil, sleep, testMain, waitFor} from './browser_test_base.js';
 import type {SequencedSubscriber} from './browser_test_base.js';
@@ -41,12 +41,6 @@ class ApiTests extends ApiTestFixtureBase {
 
 
 
-  async testCancelActions() {
-    assertDefined(this.host.cancelActions);
-    const taskId: number = this.testParams;
-    const result: CancelActionsResult = await this.host.cancelActions(taskId);
-    await this.advanceToNextStep(result);
-  }
 
 
   async testErrorShownOnMojoPipeError() {}
