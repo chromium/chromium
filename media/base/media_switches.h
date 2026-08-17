@@ -130,6 +130,8 @@ namespace media {
 // alongside the definition of their values in the .cc file.
 
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kAVDColorSpaceChanges);
+// TODO(crbug.com/467555325): Remove after M153 reaches stable.
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kAccurateVideoFrameConverterColorSpace);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kAomVpxUsePresentationThreadType);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kAudioFocusDuckFlash);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kAutoPictureInPictureOnWindowOccluded);

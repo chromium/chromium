@@ -44,9 +44,31 @@ namespace media::internals {
 const libyuv::ArgbConstants* GetArgbConstantsForColorSpace(
     const gfx::ColorSpace& cs,
     bool is_abgr) {
-  // TODO(crbug.com/467555325): Make the destination color space dependent on
-  // the source color space.
-  return is_abgr ? &libyuv::kAbgrI601Constants : &libyuv::kArgbI601Constants;
+  const bool is_full_range = cs.GetRangeID() == gfx::ColorSpace::RangeID::FULL;
+
+  if (cs.GetMatrixID() == gfx::ColorSpace::MatrixID::BT2020_NCL) {
+    if (is_abgr) {
+      return is_full_range ? &libyuv::kAbgrV2020Constants
+                           : &libyuv::kAbgrU2020Constants;
+    }
+    return is_full_range ? &libyuv::kArgbV2020Constants
+                         : &libyuv::kArgbU2020Constants;
+  } else if (cs.GetMatrixID() == gfx::ColorSpace::MatrixID::SMPTE170M) {
+    if (is_abgr) {
+      return is_full_range ? &libyuv::kAbgrJPEGConstants
+                           : &libyuv::kAbgrI601Constants;
+    }
+    return is_full_range ? &libyuv::kArgbJPEGConstants
+                         : &libyuv::kArgbI601Constants;
+  } else {
+    // Default to BT.709
+    if (is_abgr) {
+      return is_full_range ? &libyuv::kAbgrF709Constants
+                           : &libyuv::kAbgrH709Constants;
+    }
+    return is_full_range ? &libyuv::kArgbF709Constants
+                         : &libyuv::kArgbH709Constants;
+  }
 }
 
 bool ARGBScale(const VideoFrame& src_frame,

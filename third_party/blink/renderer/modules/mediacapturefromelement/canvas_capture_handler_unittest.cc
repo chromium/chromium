@@ -139,15 +139,17 @@ class CanvasCaptureHandlerTest
     const gfx::Size& size = video_frame->visible_rect().size();
     EXPECT_EQ(expected_width, size.width());
     EXPECT_EQ(expected_height, size.height());
+
+    // Verify BT.709 full range for RGB -> YUV conversion.
     const uint8_t* y_plane =
         video_frame->visible_data(media::VideoFrame::Plane::kY);
-    EXPECT_NEAR(74, y_plane[0], kTestCanvasCaptureFrameColorErrorTolerance);
+    EXPECT_NEAR(64, y_plane[0], kTestCanvasCaptureFrameColorErrorTolerance);
     const uint8_t* u_plane =
         video_frame->visible_data(media::VideoFrame::Plane::kU);
-    EXPECT_NEAR(193, u_plane[0], kTestCanvasCaptureFrameColorErrorTolerance);
+    EXPECT_NEAR(201, u_plane[0], kTestCanvasCaptureFrameColorErrorTolerance);
     const uint8_t* v_plane =
         video_frame->visible_data(media::VideoFrame::Plane::kV);
-    EXPECT_NEAR(105, v_plane[0], kTestCanvasCaptureFrameColorErrorTolerance);
+    EXPECT_NEAR(106, v_plane[0], kTestCanvasCaptureFrameColorErrorTolerance);
     if (!opaque) {
       const uint8_t* a_plane =
           video_frame->visible_data(media::VideoFrame::Plane::kA);
