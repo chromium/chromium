@@ -1945,8 +1945,8 @@ suite('ContextualTasksComposeboxTest', () => {
             SearchboxPageHandlerRemote;
         let parts: CtComposeboxAppParts;
 
-        // Both inner elements read `smartTabSharingVisible` in
-        // connectedCallback, so the override must be applied before the mount.
+        // Both inner elements initialize `smartTabSharingVisible` from
+        // loadTimeData, so the override must be applied before the mount.
         async function mountApp(smartTabSharingVisible: boolean) {
           loadTimeData.overrideValues(
               {composeboxSmartTabSharingVisible: smartTabSharingVisible});
@@ -1999,8 +1999,6 @@ suite('ContextualTasksComposeboxTest', () => {
               TestMock.fromClass(SearchboxPageHandlerRemote);
           // Smart Tab Sharing is a desktop-only feature ([EnableIfNot=is_android] in mojom).
           // <if expr="not is_android">
-          mockComposeboxPageHandler.setResultFor(
-              'getSmartTabSharingActive', Promise.resolve({active: false}));
           mockSearchboxPageHandler.setResultFor(
               'getSmartTabSharingActive', Promise.resolve({active: false}));
           // </if>
@@ -2156,8 +2154,6 @@ suite('ContextualTasksComposeboxTest', () => {
         test(
             'fetches Smart Tab Sharing active state on connect when visible',
             async () => {
-              mockComposeboxPageHandler.setResultFor(
-                  'getSmartTabSharingActive', Promise.resolve({active: true}));
               mockSearchboxPageHandler.setResultFor(
                   'getSmartTabSharingActive', Promise.resolve({active: true}));
               await mountApp(/*smartTabSharingVisible=*/ true);
@@ -2166,7 +2162,7 @@ suite('ContextualTasksComposeboxTest', () => {
                   mockSearchboxPageHandler.getCallCount(
                       'getSmartTabSharingActive'));
               assertEquals(
-                  useFork ? 1 : 0,
+                  0,
                   mockComposeboxPageHandler.getCallCount(
                       'getSmartTabSharingActive'));
               await microtasksFinished();

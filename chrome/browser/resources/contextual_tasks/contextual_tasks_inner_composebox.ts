@@ -226,7 +226,7 @@ export class
     this.searchboxHandler_ = ComposeboxProxyImpl.getInstance().searchboxHandler;
   }
 
-  override async connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
     this.searchboxListenerIds.push(
         this.getSearchboxCallbackRouter()
@@ -237,13 +237,6 @@ export class
     // the shadow DOM persists); the initial setup happens in firstUpdated().
     if (this.hasUpdated) {
       this.syncResizeObservers_();
-    }
-    if (this.smartTabSharingSupported_ && this.smartTabSharingVisible) {
-      const {active} = await this.pageHandler_.getSmartTabSharingActive();
-      this.smartTabSharingActive = active;
-      if (active) {
-        this.clearContextForSmartTabSharingActive_();
-      }
     }
   }
 
