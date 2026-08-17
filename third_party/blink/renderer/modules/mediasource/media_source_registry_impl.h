@@ -24,7 +24,7 @@ class MediaSourceRegistryImpl final : public MediaSourceRegistry {
 
   // MediaSourceRegistry override for registering blob URLs referring to the
   // specified media source attachment.
-  void RegisterUrl(const KURL&, MediaSourceAttachment*) override;
+  void RegisterUrl(const KURL&, scoped_refptr<MediaSourceAttachment>) override;
 
   // UnregisterUrl() unregisters the attachment and removes its entry from
   // |media_sources_| if the serialized URL is present.

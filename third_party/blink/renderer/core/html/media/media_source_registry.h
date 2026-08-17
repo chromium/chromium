@@ -24,10 +24,10 @@ class CORE_EXPORT MediaSourceRegistry {
  public:
   virtual ~MediaSourceRegistry() = default;
 
-  // Registers `attachment` under the given URL and adopts its initial
-  // reference.
+  // Registers `attachment` under the given URL and retains its reference until
+  // the URL is unregistered.
   virtual void RegisterUrl(const KURL& url,
-                           MediaSourceAttachment* attachment) = 0;
+                           scoped_refptr<MediaSourceAttachment> attachment) = 0;
   virtual void UnregisterUrl(const KURL& url) = 0;
 
   // Finds the attachment, if any, registered with |url| in the

@@ -28,6 +28,7 @@
 
 #include <utility>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/types/pass_key.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-blink-forward.h"
@@ -66,7 +67,7 @@ class CORE_EXPORT PublicURLManager final
   String RegisterUrl(Blob*);
   // Returns a serialized new Blob URL and registers the MediaSourceAttachment
   // with its MediaSourceRegistry.
-  String RegisterUrl(MediaSourceAttachment*);
+  String RegisterUrl(scoped_refptr<MediaSourceAttachment>);
   // Revokes the given URL.
   void Revoke(const KURL&);
   // Resolves the provided URL to a factory capable of creating loaders for

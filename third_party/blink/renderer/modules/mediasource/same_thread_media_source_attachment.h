@@ -26,10 +26,8 @@ class SameThreadMediaSourceAttachment final
  public:
   // The only intended callers of this constructor are restricted to those able
   // to obtain an AttachmentCreationPasskeyProvider's pass key. This method is
-  // expected to only be called in window/main thread context. The raw pointer
-  // is then adopted into a scoped_refptr by the caller (e.g.,
-  // URLMediaSource::createObjectURL() will lead to
-  // MediaSourceRegistryImpl::RegisterUrl() doing this scoped_refptr adoption).
+  // expected to only be called in window/main thread context. The caller owns
+  // the new attachment in a scoped_refptr.
   // TODO(crbug.com/506273): For main-thread MediaSource's MediaSourceHandle
   // usage via srcObject, MediaSource::handle() may also call this.
   SameThreadMediaSourceAttachment(MediaSource* media_source,

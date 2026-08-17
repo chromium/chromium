@@ -44,8 +44,9 @@ void MediaSourceRegistryImpl::Init() {
   DVLOG(1) << __func__ << " instance=" << &instance;
 }
 
-void MediaSourceRegistryImpl::RegisterUrl(const KURL& url,
-                                          MediaSourceAttachment* attachment) {
+void MediaSourceRegistryImpl::RegisterUrl(
+    const KURL& url,
+    scoped_refptr<MediaSourceAttachment> attachment) {
   DCHECK(IsMainThread());
   DCHECK_EQ(&attachment->Registry(), this);
 
@@ -53,9 +54,7 @@ void MediaSourceRegistryImpl::RegisterUrl(const KURL& url,
 
   DVLOG(1) << __func__ << " url=" << url << ", IsMainThread=" << IsMainThread();
 
-  scoped_refptr<MediaSourceAttachment> attachment_ref =
-      base::AdoptRef(attachment);
-  media_sources_.Set(url.GetString(), std::move(attachment_ref));
+  media_sources_.Set(url.GetString(), std::move(attachment));
 }
 
 void MediaSourceRegistryImpl::UnregisterUrl(const KURL& url) {

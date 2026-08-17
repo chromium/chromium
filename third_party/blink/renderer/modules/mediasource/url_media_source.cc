@@ -30,6 +30,9 @@
 
 #include "third_party/blink/renderer/modules/mediasource/url_media_source.h"
 
+#include <utility>
+
+#include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/url/url.h"
@@ -74,24 +77,16 @@ String URLMediaSource::createObjectURL(ScriptState* script_state,
 
   // PassKey provider usage here ensures that we are allowed to call the
   // attachment constructor.
-  auto* attachment = new SameThreadMediaSourceAttachment(
+  auto attachment = base::MakeRefCounted<SameThreadMediaSourceAttachment>(
       source, AttachmentCreationPassKeyProvider::GetPassKey());
 
   // The creation of a ThreadSafeRefCounted attachment object, above, should
-  // have a refcount of 1 immediately. It will be adopted into a scoped_refptr
-  // in MediaSourceRegistryImpl::RegisterUrl(). See also MediaSourceAttachment
-  // (and usage in HTMLMediaElement, MediaSourceRegistry{Impl}, and MediaSource)
-  // for further detail.
+  // have a refcount of 1 immediately. See also MediaSourceAttachment (and usage
+  // in HTMLMediaElement, MediaSourceRegistry{Impl}, and MediaSource) for
+  // further detail.
   DCHECK(attachment->HasOneRef());
 
-  String url = URL::CreatePublicURL(execution_context, attachment);
-
-  // If attachment's registration failed, release its start-at-one reference to
-  // let it be destructed.
-  if (url.empty())
-    attachment->Release();
-
-  return url;
+  return URL::CreatePublicURL(execution_context, std::move(attachment));
 }
 
 }  // namespace blink

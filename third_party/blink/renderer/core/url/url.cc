@@ -26,10 +26,13 @@
 
 #include "third_party/blink/renderer/core/url/url.h"
 
+#include <utility>
+
 #include "base/auto_reset.h"
 #include "base/check.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fileapi/public_url_manager.h"
+#include "third_party/blink/renderer/core/html/media/media_source_attachment.h"
 #include "third_party/blink/renderer/core/url/dom_origin.h"
 #include "third_party/blink/renderer/core/url/url_search_params.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -136,8 +139,9 @@ String URL::CreatePublicURL(ExecutionContext* execution_context, Blob* blob) {
 }
 
 String URL::CreatePublicURL(ExecutionContext* execution_context,
-                            MediaSourceAttachment* attachment) {
-  return execution_context->GetPublicURLManager().RegisterUrl(attachment);
+                            scoped_refptr<MediaSourceAttachment> attachment) {
+  return execution_context->GetPublicURLManager().RegisterUrl(
+      std::move(attachment));
 }
 
 URLSearchParams* URL::searchParams() {

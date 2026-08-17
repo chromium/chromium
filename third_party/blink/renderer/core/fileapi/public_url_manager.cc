@@ -139,7 +139,8 @@ mojom::blink::BlobURLStore& PublicURLManager::GetBlobURLStore() {
   }
 }
 
-String PublicURLManager::RegisterUrl(MediaSourceAttachment* attachment) {
+String PublicURLManager::RegisterUrl(
+    scoped_refptr<MediaSourceAttachment> attachment) {
   if (is_stopped_) {
     return String();
   }
@@ -149,7 +150,7 @@ String PublicURLManager::RegisterUrl(MediaSourceAttachment* attachment) {
   const String& url_string = url.GetString();
 
   MediaSourceRegistry* registry = &attachment->Registry();
-  registry->RegisterUrl(url, attachment);
+  registry->RegisterUrl(url, std::move(attachment));
   url_to_registry_.insert(url_string, registry);
 
   return CompleteRegistration(url);

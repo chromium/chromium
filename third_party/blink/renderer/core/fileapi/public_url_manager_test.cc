@@ -69,8 +69,8 @@ class TestMediaSourceAttachment final : public MediaSourceAttachment {
 class FakeMediaSourceRegistry final : public MediaSourceRegistry {
  public:
   void RegisterUrl(const KURL& url,
-                   MediaSourceAttachment* attachment) override {
-    registrations.push_back(Registration{url, base::AdoptRef(attachment)});
+                   scoped_refptr<MediaSourceAttachment> attachment) override {
+    registrations.push_back(Registration{url, std::move(attachment)});
   }
 
   void UnregisterUrl(const KURL& url) override {
@@ -157,12 +157,14 @@ class PublicURLManagerTest : public testing::Test {
 };
 
 TEST_F(PublicURLManagerTest, RegisterMediaSourceAttachment) {
-  auto* attachment = new TestMediaSourceAttachment(media_source_registry_);
-  String url = url_manager().RegisterUrl(attachment);
+  auto attachment =
+      base::MakeRefCounted<TestMediaSourceAttachment>(media_source_registry_);
+  auto* attachment_ptr = attachment.get();
+  String url = url_manager().RegisterUrl(std::move(attachment));
   ASSERT_EQ(1u, media_source_registry_.registrations.size());
   EXPECT_EQ(0u, url_store_.registrations.size());
   EXPECT_EQ(url, media_source_registry_.registrations[0].url);
-  EXPECT_EQ(attachment,
+  EXPECT_EQ(attachment_ptr,
             media_source_registry_.registrations[0].attachment.get());
 
   EXPECT_TRUE(SecurityOrigin::CreateFromString(url)->IsSameOriginWith(
@@ -184,8 +186,9 @@ TEST_F(PublicURLManagerTest, RegisterMediaSourceAttachment) {
 }
 
 TEST_F(PublicURLManagerTest, ContextDestroyedUnregistersMediaSourceAttachment) {
-  auto* attachment = new TestMediaSourceAttachment(media_source_registry_);
-  String url = url_manager().RegisterUrl(attachment);
+  auto attachment =
+      base::MakeRefCounted<TestMediaSourceAttachment>(media_source_registry_);
+  String url = url_manager().RegisterUrl(std::move(attachment));
   ASSERT_EQ(1u, media_source_registry_.registrations.size());
 
   url_manager().ContextDestroyed();
@@ -194,13 +197,12 @@ TEST_F(PublicURLManagerTest, ContextDestroyedUnregistersMediaSourceAttachment) {
   EXPECT_EQ(url, media_source_registry_.unregistrations[0]);
   EXPECT_TRUE(media_source_registry_.registrations.empty());
 
-  // Registration after the manager has stopped does not transfer ownership of
-  // the attachment's initial reference.
-  auto* unregistered_attachment =
-      new TestMediaSourceAttachment(media_source_registry_);
-  EXPECT_TRUE(url_manager().RegisterUrl(unregistered_attachment).empty());
+  // Registration after the manager has stopped releases the attachment.
+  auto unregistered_attachment =
+      base::MakeRefCounted<TestMediaSourceAttachment>(media_source_registry_);
+  EXPECT_TRUE(
+      url_manager().RegisterUrl(std::move(unregistered_attachment)).empty());
   EXPECT_TRUE(media_source_registry_.registrations.empty());
-  unregistered_attachment->Release();
 }
 
 TEST_F(PublicURLManagerTest, RegisterBlob) {
