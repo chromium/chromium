@@ -76,3 +76,18 @@ source_set("interactive_ui_tests") {
     "//ui/views",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "tab_strip_flat_edge_button_unittest.cc" ]
+  deps = [
+    ":impl",
+    ":shared",
+    "//base",
+    "//chrome/test:test_support",
+    "//chrome/test/views",
+    "//testing/gtest",
+    "//ui/gfx/geometry",
+    "//ui/views",
+  ]
+}

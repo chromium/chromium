@@ -794,10 +794,12 @@ HorizontalTabStripRegionViewNew::HorizontalTabStripRegionViewNew(
 
   if (browser && ShouldShowNewTabButton(browser)) {
     auto new_tab_button = std::make_unique<shared::NewTabButton>(
-        browser,
-        GetLayoutConstant(LayoutConstant::kVerticalTabStripNewTabButtonSize),
-        GetLayoutConstant(LayoutConstant::kVerticalTabStripButtonIconSize));
+        browser, TabStripControlButton::kButtonSize.width(),
+        TabStripControlButton::kIconSize,
+        TabStripControlButton::kButtonSize.width() / 2.0f);
     new_tab_button_ = AddChildView(std::move(new_tab_button));
+    new_tab_button_->SetProperty(views::kCrossAxisAlignmentKey,
+                                 views::LayoutAlignment::kCenter);
   }
 
   reserved_grab_handle_space_ =
