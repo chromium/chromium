@@ -211,13 +211,8 @@ INSTANTIATE_TEST_SUITE_P(All,
 // (input, number input, textarea, contenteditable) opens the AtMemory popup,
 // allows searching, and replaces the trigger string with the selected value
 // upon suggestion acceptance.
-// TODO(crbug.com/546877846): Fix the popup on ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_TriggerAndFill DISABLED_TriggerAndFill
-#else
-#define MAYBE_TriggerAndFill TriggerAndFill
-#endif
-IN_PROC_BROWSER_TEST_P(AtMemoryInteractiveUiTest, MAYBE_TriggerAndFill) {
+// TODO(crbug.com/547562303): Flaky, re-enable once fixed.
+IN_PROC_BROWSER_TEST_P(AtMemoryInteractiveUiTest, DISABLED_TriggerAndFill) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/test.html")));
 
