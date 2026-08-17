@@ -493,7 +493,7 @@ crbug.com/543976493 [ win11 nvidia-0x2184 nvidia_ge_32.0.16.1074 ] conformance/e
 
 ## Mac Intel failures ##
 
-crbug.com/527353878 [ mac intel-0x3e9b angle-metal ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
+crbug.com/527353878 [ mac intel-0x3e9b angle-metal ] conformance/extensions/khr-parallel-shader-compile.html [ RetryOnFailure ]
 
 ## Mac AMD failures ##
 

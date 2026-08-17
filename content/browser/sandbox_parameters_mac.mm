@@ -13,7 +13,6 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
-#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/mac/mac_util.h"
 #include "base/no_destructor.h"
@@ -82,29 +81,33 @@ std::string GetOSVersion() {
 
 // Retrieves the users shared darwin dirs and adds it to the profile.
 void AddDarwinDirs(sandbox::SandboxSerializer* serializer) {
-  base::FilePath user_dir =
-      base::GetDarwinUserDirectory(base::DarwinUserDirectory::kUser);
-  CHECK(!user_dir.empty());
-  CHECK(serializer->SetParameter(sandbox::policy::kParamDarwinUserDir,
-                                 user_dir.value()));
-  base::FilePath user_cache_dir =
-      base::GetDarwinUserDirectory(base::DarwinUserDirectory::kUserCache);
-  CHECK(!user_cache_dir.empty());
-  CHECK(serializer->SetParameter(sandbox::policy::kParamDarwinUserCacheDir,
-                                 user_cache_dir.value()));
-  base::FilePath user_temp_dir =
-      base::GetDarwinUserDirectory(base::DarwinUserDirectory::kUserTemp);
-  CHECK(!user_temp_dir.empty());
-  CHECK(serializer->SetParameter(sandbox::policy::kParamDarwinUserTempDir,
-                                 user_temp_dir.value()));
+  char dir_path[PATH_MAX + 1];
+
+  size_t rv = confstr(_CS_DARWIN_USER_CACHE_DIR, dir_path, sizeof(dir_path));
+  PCHECK(rv != 0);
+  CHECK(serializer->SetParameter(
+      sandbox::policy::kParamDarwinUserCacheDir,
+      sandbox::policy::GetCanonicalPath(base::FilePath(dir_path)).value()));
+
+  rv = confstr(_CS_DARWIN_USER_DIR, dir_path, sizeof(dir_path));
+  PCHECK(rv != 0);
+  CHECK(serializer->SetParameter(
+      sandbox::policy::kParamDarwinUserDir,
+      sandbox::policy::GetCanonicalPath(base::FilePath(dir_path)).value()));
+
+  rv = confstr(_CS_DARWIN_USER_TEMP_DIR, dir_path, sizeof(dir_path));
+  PCHECK(rv != 0);
+  CHECK(serializer->SetParameter(
+      sandbox::policy::kParamDarwinUserTempDir,
+      sandbox::policy::GetCanonicalPath(base::FilePath(dir_path)).value()));
 }
 
 // All of the below functions populate the `serializer` with the parameters that
 // the sandbox needs to resolve information that cannot be known at build time,
 // such as the user's home directory.
-void SetupCommonSandboxParameters(sandbox::SandboxSerializer* serializer,
-                                  const base::CommandLine& target_command_line,
-                                  const base::EnvironmentMap& env) {
+void SetupCommonSandboxParameters(
+    sandbox::SandboxSerializer* serializer,
+    const base::CommandLine& target_command_line) {
   const base::CommandLine* browser_command_line =
       base::CommandLine::ForCurrentProcess();
   bool enable_logging = browser_command_line->HasSwitch(
@@ -160,28 +163,6 @@ void SetupCommonSandboxParameters(sandbox::SandboxSerializer* serializer,
       sandbox::policy::GetCanonicalPath(base::GetHomeDir()).value();
   CHECK(serializer->SetParameter(sandbox::policy::kParamHomedirAsLiteral,
                                  homedir));
-
-  auto it = env.find(base::env_vars::kDirHelperUserDirSuffix);
-  if (it != env.end()) {
-    std::string suffix = it->second;
-
-    base::FilePath user_dir =
-        base::GetDarwinUserDirectory(base::DarwinUserDirectory::kUser)
-            .Append(suffix);
-    base::FilePath cache_dir =
-        base::GetDarwinUserDirectory(base::DarwinUserDirectory::kUserCache)
-            .Append(suffix);
-    base::FilePath temp_dir =
-        base::GetDarwinUserDirectory(base::DarwinUserDirectory::kUserTemp)
-            .Append(suffix);
-
-    CHECK(serializer->SetParameter(sandbox::policy::kParamSandboxChildUserDir,
-                                   user_dir.value()));
-    CHECK(serializer->SetParameter(
-        sandbox::policy::kParamSandboxChildUserCacheDir, cache_dir.value()));
-    CHECK(serializer->SetParameter(
-        sandbox::policy::kParamSandboxChildUserTempDir, temp_dir.value()));
-  }
 }
 
 void SetupNetworkSandboxParameters(sandbox::SandboxSerializer* serializer,
@@ -268,9 +249,8 @@ void SetupWebNNModelCompilationSandboxParameters(
 
 bool SetupSandboxParameters(sandbox::mojom::Sandbox sandbox_type,
                             const base::CommandLine& command_line,
-                            const base::EnvironmentMap& env,
                             sandbox::SandboxSerializer* serializer) {
-  SetupCommonSandboxParameters(serializer, command_line, env);
+  SetupCommonSandboxParameters(serializer, command_line);
   switch (sandbox_type) {
     case sandbox::mojom::Sandbox::kAudio:
     case sandbox::mojom::Sandbox::kCdm:
