@@ -35,13 +35,25 @@ is useful when making decisions about navigations, for example whether an
 ongoing navigation needs to be cancelled or not when a new navigation is
 starting. It is also used for some security decisions, such as whether to
 display the target URL of the navigation in the address bar or not.
+
 Browser-initiated navigations are more trustworthy, as they are usually in
-response to a user interaction with the UI of the browser. Renderer-initiated
-navigations originate in the renderer process, which may be under the control of
-an attacker. Note that some renderer-initiated navigations may be considered
-user-initiated, if they were performed with a [user
+response to a user interaction with the UI of the browser, such as the address
+bar or bookmarks. These have higher privileges, such as the ability to navigate
+to `file://` or `chrome://` URLs.
+
+Renderer-initiated navigations originate in the renderer process (e.g., via a
+link click or Javascript code). Some renderer-initiated navigations may still be
+considered _user-initiated_ if they were performed with a [user
 activation](https://mustaqahmed.github.io/user-activation-v2/) (e.g., links),
 while others are not user-initiated (e.g., script navigations).
+
+Renderer-initiated navigations are considered less trustworthy and are [not
+allowed to target privileged URLs](special_case_urls.md#chrome_and-os_urls).
+This is important for security: allowing web content to navigate to `file://`,
+`chrome://`, or other such URLs would pose a medium severity risk of privilege
+escalation (e.g., creating a stepping stone of opening a file to access its
+contents via another bug) or privacy concerns (e.g., leaking their presence or
+contents via side channel attacks).
 
 
 ## Last Committed, Pending, and Visible URLs
@@ -167,11 +179,13 @@ user's attempts. Generally, a new navigation will cancel an existing one in a
 frame, but we make the following exception: a renderer-initiated navigation is
 ignored iff there is an ongoing browser-initiated navigation and the new
 navigation lacks a user activation. (This is implemented in
-`Navigator::ShouldIgnoreIncomingRendererRequest`.)
+`Navigator::ShouldIgnoreIncomingRendererRequest`.) See also the [History
+Manipulation Intervention](history_manipulation_intervention.md) for other
+mitigations against trapping a user on a page.
 
 NavigationThrottles also have an ability to cancel navigations when desired by a
-feature. Keep in mind that it is problematic to simulate a redirect by canceling
-a navigation and starting a new one, since this may lose relevant context from
+feature. Keep in mind that it is **not safe to simulate a redirect by canceling
+a navigation and starting a new one**, since this may lose relevant context from
 the original navigation (e.g., ReloadType, CSP state, Sec-Fetch-Metadata state,
 redirect chain, etc), and it will lead to unexpected observer events and metrics
 (e.g., extra navigation starts, inflated numbers of canceled navigations, etc).
@@ -205,7 +219,8 @@ to reload the URL at a later time.
 ## Interstitial Pages
 
 Interstitial pages are implemented as committed error pages. (Prior to
-[issue 448486](https://crbug.com/448486), they were implemented as overlays.)
+[issue 448486](https://crbug.com/448486), they were implemented as overlays,
+which are [no longer allowed](security/overlay-policy.md).)
 The original in-progress navigation is canceled when the interstitial is
 displayed, and Chromium repeats the navigation if the user chooses to proceed.
 

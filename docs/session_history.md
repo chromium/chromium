@@ -115,6 +115,8 @@ NavigationEntries rather than persisting and restoring.
  * Not every NavigationRequest has a pending NavigationEntry. For example,
    subframe navigations do not, and renderer-initiated main frame navigations
    may clear an existing browser-initiated pending NavigationEntry (using
-   PendingEntryRef) without replacing it with a new one.
+   PendingEntryRef) without replacing it with a new one. As a result,
+   NavigationRequests are a more reliable way of tracking state associated with
+   a pending navigation.
  * Some subframe documents may not have a corresponding FrameNavigationEntry
    after commit (e.g., see [issue 608402](https://crbug.com/608402)).

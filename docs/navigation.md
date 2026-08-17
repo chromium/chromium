@@ -1,10 +1,13 @@
 # Life of a Navigation
 
-Navigation is one of the main functions of a browser. It is the process through
-which the user loads documents. This documentation traces the life of a
-navigation from the time a URL is typed in the URL bar to the time the web page
-is completely loaded. This is one example of many types of navigations, some of
-which may start in different places (e.g., in the renderer process).
+Navigation is one of the main functions of a browser. It allows the user to
+transition within or between documents, potentially across security contexts
+(e.g., origins).
+
+This documentation traces the life of a navigation from the time a URL is typed
+in the URL bar to the time the web page is completely loaded. This is one
+example of many types of navigations, some of which may start in different
+places (e.g., in the renderer process).
 
 See also:
  * [Life of a Navigation tech talk](https://youtu.be/mX7jQsGCF6E) and
@@ -12,6 +15,10 @@ See also:
    for an overview from Chrome University.
  * [Navigation Concepts](navigation_concepts.md), for useful notes on
    navigation-related concepts in Chromium.
+ * [Session History](session_history.md), for information about back/forward
+   navigations.
+ * [Special Case URLs](special_case_urls.md), for URLs that have unusual
+   navigation behavior that may require extra consideration.
 
 [TOC]
 
@@ -70,11 +77,15 @@ At this point the response is passed from the network stack to the browser
 process to be used for rendering a new document. The browser process selects
 an appropriate renderer process for the new document based on the origin and
 headers of the response as well as the current process model and isolation
-policy. It then sends the response to the chosen process, waiting for it to
-create the document and send an acknowledgement. This acknowledgement from the
-renderer process marks the _commit_ time, when the browser process changes its
-security state to reflect the new document and creates a session history entry
-for the previous document.
+policy. The response headers may influence the origin, such as a
+`Content-Security-Policy: sandbox;` header causing the document to have an
+opaque origin. The browser process then sends the response to the chosen
+process via a "commit" IPC, waiting for it to create the document and send an
+acknowledgement via a Mojo callback. The browser process's receipt of this
+acknowledgement from the renderer process marks the authoritative _commit_ time
+for the navigation, which is when the browser process changes its security state
+to reflect the new document and creates a session history entry for the previous
+document.
 
 As part of creating the new document, the old document needs to be unloaded.
 In navigations that stay in the same renderer process, the old document is
@@ -90,8 +101,8 @@ complete.
 
 ## Loading
 
-Even once navigation is complete, the user doesn't actually see the new page
-yet. Most people use the word navigation to describe the act of moving from
+Even after navigation is complete, the user doesn't actually see the new page
+yet. Most people use the word "navigation" to describe the act of moving from
 one page to another, but in Chromium we separate that process into two phases.
 So far we have described the _navigation_ phase; once the navigation has been
 committed, Chromium moves into the _loading_ phase. Loading consists of
@@ -126,7 +137,7 @@ methods on the [WebContentsObserver] interface.
   process for it, but before it has sent it to the renderer process. It is not
   invoked for same-document navigations.
 * `DidFinishNavigation` - invoked once the navigation has committed. The commit
-  can be either an error page if the server responded with an error code or a
+  can be either an error page if the server responded with an error code or a
   successful document.
 
 
