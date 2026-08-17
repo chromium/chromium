@@ -151,7 +151,7 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
                 Features.HTTP_CACHE_MANAGER,
                 Features.WEB_VIEW_NAVIGATION_LISTENER_NAVIGATION_VISIBLE,
                 Features.NAVIGATION_GET_RESPONSE_HEADERS + Features.DEV_SUFFIX,
-                Features.WEB_CONTENT + Features.DEV_SUFFIX,
+                Features.WEB_CONTENT,
                 Features.WEBVIEW_NAVIGATE_DRAIN_PREFETCH,
                 // Add new features above. New features must include `+ Features.DEV_SUFFIX`
                 // when they're initially added (this can be removed in a future CL). The one
