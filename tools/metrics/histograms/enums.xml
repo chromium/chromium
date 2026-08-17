@@ -17738,7 +17738,6 @@ from previous Chrome versions.
   <int value="982805190" label="PageInfoAboutThisSiteMoreLangs:enabled"/>
   <int value="982983280" label="LauncherSearchControl:enabled"/>
   <int value="983084316" label="SyncUSSNigori:disabled"/>
-  <int value="983236654" label="TrackingProtection3pcd:enabled"/>
   <int value="983311394" label="tab-management-experiment-type"/>
   <int value="983461731" label="SafetyHubServicesOnStartUp:disabled"/>
   <int value="984871594" label="LensSendRawFileMediaTypes:enabled"/>
@@ -17814,7 +17813,6 @@ from previous Chrome versions.
   <int value="1004909189"
       label="ContentSuggestionsThumbnailDominantColor:disabled"/>
   <int value="1004938507" label="SafetyHubLocalPasswordsModule:enabled"/>
-  <int value="1004988656" label="TrackingProtection3pcd:disabled"/>
   <int value="1004991714" label="WebUIOmniboxDynamicAiModeButton:enabled"/>
   <int value="1005684777" label="PictureInPicture:disabled"/>
   <int value="1006080779" label="ForcePreferredIntervalForVideo:disabled"/>

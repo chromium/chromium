@@ -989,6 +989,12 @@ constexpr char kPrivacySandboxBlockedTopics[] =
     "privacy_sandbox.blocked_topics";
 constexpr char kPrivacySandboxFledgeJoinBlocked[] =
     "privacy_sandbox.fledge_join_blocked";
+constexpr char kShowRollbackUiModeB[] =
+    "tracking_protection.show_rollback_ui_mode_b";
+constexpr char kTrackingProtection3pcdEnabled[] =
+    "tracking_protection.tracking_protection_3pcd_enabled";
+constexpr char kBlockAll3pcToggleEnabled[] =
+    "tracking_protection.block_all_3pc_toggle_enabled";
 
 #if BUILDFLAG(IS_CHROMEOS)
 // Deprecated 07/2026.
@@ -1400,6 +1406,11 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterBooleanPref(kObsoleteAutofillWalletImportEnabled, true);
   registry->RegisterBooleanPref(kObsoleteAutofillWalletImportEnabledMigrated,
                                 false);
+
+  // Deprecated 08/2026.
+  registry->RegisterBooleanPref(kShowRollbackUiModeB, false);
+  registry->RegisterBooleanPref(kBlockAll3pcToggleEnabled, false);
+  registry->RegisterBooleanPref(kTrackingProtection3pcdEnabled, false);
 }
 
 }  // namespace
@@ -2733,6 +2744,11 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   profile_prefs->ClearPref(kPrivacySandboxTopicsDataAccessibleSince);
   profile_prefs->ClearPref(kPrivacySandboxBlockedTopics);
   profile_prefs->ClearPref(kPrivacySandboxFledgeJoinBlocked);
+
+  // Added 08/2026.
+  profile_prefs->ClearPref(kShowRollbackUiModeB);
+  profile_prefs->ClearPref(kBlockAll3pcToggleEnabled);
+  profile_prefs->ClearPref(kTrackingProtection3pcdEnabled);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

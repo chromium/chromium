@@ -282,7 +282,7 @@ enum {
   kBrowserColorVariant = 100220,
   kGrayscaleThemeEnabled = 100221,
   kUserColor = 100222,
-  kBlockAll3pcToggleEnabled = 100223,
+  // kBlockAll3pcToggleEnabled = 100223, (deprecated)
   // kTrackingProtectionLevel = 100224, (deprecated)
   kUserSpeakOnMuteDetectionEnabled = 100225,
   kShouldShowSpeakOnMuteOptInNudge = 100226,
@@ -1836,10 +1836,6 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
       sync_preferences::MergeBehavior::kNone}},
     {promos_prefs::kDesktopToiOSPasswordPromoOptOut,
      {syncable_prefs_ids::kDesktopToiOSPasswordPromoOptOut, syncer::PREFERENCES,
-      sync_preferences::PrefSensitivity::kNone,
-      sync_preferences::MergeBehavior::kNone}},
-    {prefs::kBlockAll3pcToggleEnabled,
-     {syncable_prefs_ids::kBlockAll3pcToggleEnabled, syncer::PREFERENCES,
       sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
     {prefs::kHttpsFirstModeIncognito,

@@ -154,19 +154,12 @@ void PrivacySandboxServiceImpl::RecordFirstPartySetsStateHistogram() {
   base::UmaHistogramEnumeration("Settings.FirstPartySets.State", rws_status);
 }
 
-void PrivacySandboxServiceImpl::RecordTrackingProtectionStateHistogram() {
-  base::UmaHistogramBoolean(
-      "Settings.TrackingProtection.Enabled",
-      pref_service_->GetBoolean(prefs::kTrackingProtection3pcdEnabled));
-}
-
 void PrivacySandboxServiceImpl::LogPrivacySandboxState() {
   // Do not record metrics for non-regular profiles.
   if (!IsRegularProfile(profile_type_)) {
     return;
   }
   RecordFirstPartySetsStateHistogram();
-  RecordTrackingProtectionStateHistogram();
 }
 
 void PrivacySandboxServiceImpl::MaybeInitializeRelatedWebsiteSetsPref() {

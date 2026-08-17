@@ -1679,16 +1679,6 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
-<histogram name="Settings.TrackingProtection.Enabled" enum="BooleanEnabled"
-    expires_after="2027-01-10">
-  <owner>fmacintosh@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Records the state of the pref that represents whether the user has the new
-    Tracking Protection prefs and UX. Logged on startup.
-  </summary>
-</histogram>
-
 </histograms>
 
 </histogram-configuration>

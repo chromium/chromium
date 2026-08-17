@@ -10,6 +10,8 @@ class PrefService;
 
 namespace prefs {
 
+// Ads prefs
+
 // Un-synced boolean pref indicating if Topics API is enabled.
 inline constexpr char kPrivacySandboxM1TopicsEnabled[] =
     "privacy_sandbox.m1.topics_enabled";
@@ -27,6 +29,7 @@ inline constexpr char kPrivacySandboxM1AdMeasurementEnabled[] =
 inline constexpr char kPrivacySandboxM1Restricted[] =
     "privacy_sandbox.m1.restricted";
 
+// RWS prefs
 
 // Boolean that indicates the user's RWS data access preference has been init,
 // so named because of the user intent it intends to represent. Currently there
@@ -44,24 +47,6 @@ inline constexpr char
 // migration of a synced Pref.
 inline constexpr char kPrivacySandboxRelatedWebsiteSetsEnabled[] =
     "privacy_sandbox.first_party_sets_enabled";
-
-// Mode B prefs start
-
-// Unsynced boolean that controls showing the Mode B rollback UI.
-inline constexpr char kShowRollbackUiModeB[] =
-    "tracking_protection.show_rollback_ui_mode_b";
-
-// Unsynced boolean that indicates whether 3PCD tracking protection (prefs + UI)
-// are enabled on the current device.
-inline constexpr char kTrackingProtection3pcdEnabled[] =
-    "tracking_protection.tracking_protection_3pcd_enabled";
-
-// Synced boolean that indicates whether the "block all 3pc" toggle on the
-// tracking protection page is enabled.
-inline constexpr char kBlockAll3pcToggleEnabled[] =
-    "tracking_protection.block_all_3pc_toggle_enabled";
-
-// Mode B prefs end
 
 }  // namespace prefs
 

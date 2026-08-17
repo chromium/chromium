@@ -25,13 +25,6 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(
       prefs::kPrivacySandboxRelatedWebsiteSetsEnabled, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-
-  // TODO: b/462419925 - Deprecate these prefs post-Mode B rollback.
-  registry->RegisterBooleanPref(prefs::kShowRollbackUiModeB, false);
-  registry->RegisterBooleanPref(
-      prefs::kBlockAll3pcToggleEnabled, false,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-  registry->RegisterBooleanPref(prefs::kTrackingProtection3pcdEnabled, false);
 }
 
 void MaybeClearAdPrivacyPrefs(PrefService* prefs) {

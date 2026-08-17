@@ -40,8 +40,6 @@ namespace {
 
 constexpr char kFirstPartySetsStateHistogram[] =
     "Settings.FirstPartySets.State";
-constexpr char kTrackingProtectionStateHistogram[] =
-    "Settings.TrackingProtection.Enabled";
 
 const base::Version& GetRelatedWebsiteSetsVersion() {
   static const base::NoDestructor<base::Version> kVersion("1.2.3");
@@ -210,22 +208,6 @@ TEST_F(PrivacySandboxServiceTest, RelatedWebsiteSetsDisabledMetric) {
   histogram_tester.ExpectUniqueSample(
       kFirstPartySetsStateHistogram,
       PrivacySandboxServiceImpl::FirstPartySetsState::kFpsDisabled, 1);
-}
-
-class TrackingProtectionHistogramTest
-    : public PrivacySandboxServiceTest,
-      public testing::WithParamInterface<bool> {};
-
-INSTANTIATE_TEST_SUITE_P(TrackingProtectionHistogramTest,
-                         TrackingProtectionHistogramTest,
-                         testing::Bool());
-
-TEST_P(TrackingProtectionHistogramTest, HistogramReflectsPref) {
-  base::HistogramTester histogram_tester;
-  prefs()->SetBoolean(prefs::kTrackingProtection3pcdEnabled, GetParam());
-  CreateService();
-  histogram_tester.ExpectUniqueSample(kTrackingProtectionStateHistogram,
-                                      GetParam(), 1);
 }
 
 TEST_F(PrivacySandboxServiceTest,

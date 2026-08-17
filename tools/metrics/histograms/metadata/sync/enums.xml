@@ -636,7 +636,7 @@ chromium-metrics-reviews@google.com.
   <int value="100220" label="BrowserColorVariant"/>
   <int value="100221" label="GrayscaleThemeEnabled"/>
   <int value="100222" label="UserColor"/>
-  <int value="100223" label="BlockAll3pcToggleEnabled"/>
+  <int value="100223" label="(Obsolete) BlockAll3pcToggleEnabled"/>
   <int value="100224" label="(Obsolete) TrackingProtectionLevel"/>
   <int value="100225" label="UserSpeakOnMuteDetectionEnabled"/>
   <int value="100226" label="ShouldShowSpeakOnMuteOptInNudge"/>
