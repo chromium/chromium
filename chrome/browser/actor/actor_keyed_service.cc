@@ -744,6 +744,19 @@ ActorUiStateManagerInterface* ActorKeyedService::GetActorUiStateManager() {
   return actor_ui_state_manager_.get();
 }
 
+void ActorKeyedService::SetTabPendingActuation(tabs::TabHandle tab_handle) {
+  if (actor_ui_state_manager_) {
+    actor_ui_state_manager_->SetTabPendingActuation(tab_handle);
+  }
+}
+
+bool ActorKeyedService::ClearTabPendingActuation(tabs::TabHandle tab_handle) {
+  if (actor_ui_state_manager_) {
+    return actor_ui_state_manager_->ClearTabPendingActuation(tab_handle);
+  }
+  return false;
+}
+
 bool ActorKeyedService::IsActiveOnTab(const tabs::TabInterface& tab) const {
   tabs::TabHandle handle = tab.GetHandle();
   for (auto [task_id, task] : GetActiveTasks()) {

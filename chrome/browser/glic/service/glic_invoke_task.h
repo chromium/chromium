@@ -97,6 +97,20 @@ class WaitForNavigationTask : public GlicInvokeTask,
   base::OnceClosure done_callback_;
 };
 
+// Task that immediately marks a tab as pending actuation to show the visual
+// indicator.
+class SetTabPendingActuationTask : public GlicInvokeTask {
+ public:
+  SetTabPendingActuationTask(Profile* profile, tabs::TabHandle tab_handle);
+  ~SetTabPendingActuationTask() override;
+  void Start(base::OnceClosure done_callback) override;
+  void OnSequenceCompleted(bool success) override;
+
+ private:
+  const raw_ptr<Profile> profile_;
+  tabs::TabHandle tab_handle_;
+};
+
 // Task that shows the Glic instance.
 class ShowInstanceTask : public GlicInvokeTask {
  public:

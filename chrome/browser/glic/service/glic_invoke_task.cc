@@ -10,6 +10,7 @@
 #include "base/strings/escape.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_clipboard_utils.h"
 #include "chrome/browser/glic/public/glic_context_menu_invocation_helper.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
@@ -153,6 +154,29 @@ void WaitForNavigationTask::DidFinishNavigation(
   Observe(nullptr);
   if (done_callback_) {
     std::move(done_callback_).Run();
+  }
+}
+
+SetTabPendingActuationTask::SetTabPendingActuationTask(
+    Profile* profile,
+    tabs::TabHandle tab_handle)
+    : profile_(profile), tab_handle_(tab_handle) {}
+
+SetTabPendingActuationTask::~SetTabPendingActuationTask() = default;
+
+void SetTabPendingActuationTask::Start(base::OnceClosure done_callback) {
+  if (auto* actor_service = actor::ActorKeyedService::Get(profile_)) {
+    actor_service->SetTabPendingActuation(tab_handle_);
+  }
+  std::move(done_callback).Run();
+}
+
+void SetTabPendingActuationTask::OnSequenceCompleted(bool success) {
+  if (success) {
+    return;
+  }
+  if (auto* actor_service = actor::ActorKeyedService::Get(profile_)) {
+    actor_service->ClearTabPendingActuation(tab_handle_);
   }
 }
 
@@ -378,7 +402,6 @@ void WaitForActuationTask::Update() {
   if (!task_started_) {
     return;
   }
-
 
   if (did_finish_ && done_callback_) {
     timer_.Stop();

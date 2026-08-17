@@ -579,5 +579,29 @@ TEST_F(ActorUiStateManagerUiEventUiTabScopedTest,
   task_environment().FastForwardBy(base::Seconds(2));
 }
 
+TEST_F(ActorUiStateManagerUiEventUiTabScopedTest,
+       SetAndClearTabPendingActuation) {
+  UiTabState expected_pending_state{
+      .actor_overlay = {.is_active = false, .border_glow_visible = false},
+      .handoff_button = {.is_active = false, .controller = kClient},
+      .tab_indicator = TabIndicatorStatus::kDynamic,
+      .border_glow_visible = false,
+  };
+  ExpectUiTabStateChange(expected_pending_state);
+  actor_ui_state_manager()->SetTabPendingActuation(mock_tab().GetHandle());
+
+  UiTabState expected_completed_state{
+      .actor_overlay = {.is_active = false, .border_glow_visible = false},
+      .handoff_button = {.is_active = false, .controller = kClient},
+      .tab_indicator = TabIndicatorStatus::kNone,
+      .border_glow_visible = false,
+  };
+  ExpectUiTabStateChange(expected_completed_state);
+  EXPECT_TRUE(actor_ui_state_manager()->ClearTabPendingActuation(
+      mock_tab().GetHandle()));
+  EXPECT_FALSE(actor_ui_state_manager()->ClearTabPendingActuation(
+      mock_tab().GetHandle()));
+}
+
 }  // namespace
 }  // namespace actor::ui

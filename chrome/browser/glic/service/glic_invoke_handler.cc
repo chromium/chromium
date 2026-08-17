@@ -241,6 +241,11 @@ void GlicInvokeHandler::Invoke() {
 
   std::vector<std::unique_ptr<GlicInvokeTask>> tasks;
 
+  if (IsActuatingFeatureMode() && IsTabTarget()) {
+    tasks.push_back(std::make_unique<SetTabPendingActuationTask>(
+        instance_->profile(), GetTab().GetHandle()));
+  }
+
   if (should_wait_for_load_ && IsTabTarget()) {
     tasks.push_back(
         std::make_unique<WaitForNavigationTask>(GetTab().GetContents()));

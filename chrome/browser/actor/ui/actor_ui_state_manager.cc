@@ -88,6 +88,13 @@ constexpr UiTabState kCompletedUiTabState = {
     .border_glow_visible = false,
 };
 
+constexpr UiTabState kPendingActuationUiTabState = {
+    .actor_overlay = {.is_active = false, .border_glow_visible = false},
+    .handoff_button = {.is_active = false, .controller = kClient},
+    .tab_indicator = TabIndicatorStatus::kDynamic,
+    .border_glow_visible = false,
+};
+
 struct TabUiUpdate {
   raw_ptr<TabInterface> tab;
   UiTabState ui_tab_state;
@@ -280,6 +287,7 @@ void ActorUiStateManager::OnUiEvent(AsyncUiEvent event,
   if (base::FeatureList::IsEnabled(features::kGlicActorUi)) {
     const TabUiUpdate update = std::visit(
         absl::Overload{[this](const StartingToActOnTab& e) -> TabUiUpdate {
+                         pending_actuation_tabs_.erase(e.tab_handle);
                          return TabUiUpdate{
                              e.tab_handle.Get(),
                              GetActorControlledUiTabState(e.task_id)};
@@ -489,5 +497,46 @@ void ActorUiStateManager::LazyInitTabTracker() {
   }
 }
 #endif
+
+void ActorUiStateManager::SetTabPendingActuation(tabs::TabHandle tab_handle) {
+  tabs::TabInterface* tab = tab_handle.Get();
+  if (!tab) {
+    return;
+  }
+  if (pending_actuation_tabs_.contains(tab_handle)) {
+    return;
+  }
+  pending_actuation_tabs_.emplace(
+      tab_handle,
+      tab->RegisterWillDetach(base::BindRepeating(
+          &ActorUiStateManager::OnPendingTabDetached, base::Unretained(this))));
+
+  if (auto* tab_controller = ActorUiTabControllerInterface::From(tab)) {
+    tab_controller->OnUiTabStateChange(kPendingActuationUiTabState,
+                                       base::DoNothing());
+  }
+}
+
+bool ActorUiStateManager::ClearTabPendingActuation(tabs::TabHandle tab_handle) {
+  if (pending_actuation_tabs_.erase(tab_handle) == 0) {
+    return false;
+  }
+
+  if (tabs::TabInterface* tab = tab_handle.Get()) {
+    if (auto* tab_controller = ActorUiTabControllerInterface::From(tab)) {
+      tab_controller->OnUiTabStateChange(kCompletedUiTabState,
+                                         base::DoNothing());
+    }
+  }
+  return true;
+}
+
+void ActorUiStateManager::OnPendingTabDetached(
+    tabs::TabInterface* tab,
+    tabs::TabInterface::DetachReason reason) {
+  if (reason == tabs::TabInterface::DetachReason::kDelete && tab) {
+    ClearTabPendingActuation(tab->GetHandle());
+  }
+}
 
 }  // namespace actor::ui

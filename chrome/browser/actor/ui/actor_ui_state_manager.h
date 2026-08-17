@@ -58,7 +58,12 @@ class ActorUiStateManager : public ActorUiStateManagerInterface {
   // Returns the tabs associated with a given task id.
   std::vector<tabs::TabInterface*> GetTabs(TaskId id);
 
+  void SetTabPendingActuation(tabs::TabHandle tab_handle) override;
+  bool ClearTabPendingActuation(tabs::TabHandle tab_handle) override;
+
  private:
+  void OnPendingTabDetached(tabs::TabInterface* tab,
+                            tabs::TabInterface::DetachReason reason);
   UiTabState GetActorControlledUiTabState(TaskId task_id);
   UiTabState GetActorControlledUiTabState(const tabs::TabInterface* tab);
   void OnTransientTaskDelayExpired(TaskId task_id);
@@ -88,6 +93,11 @@ class ActorUiStateManager : public ActorUiStateManagerInterface {
       transient_task_timers_;
 
   base::OneShotTimer notify_actor_task_state_change_debounce_timer_;
+
+  // Tracks tabs currently in a pending actuation state prior to an ActorTask
+  // starting.
+  absl::flat_hash_map<tabs::TabHandle, base::CallbackListSubscription>
+      pending_actuation_tabs_;
 
   const raw_ref<ActorKeyedService> actor_service_;
 

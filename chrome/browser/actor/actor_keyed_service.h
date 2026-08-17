@@ -127,6 +127,11 @@ class ActorKeyedService : public KeyedService,
   // The associated ActorUiStateManager for the associated profile.
   ui::ActorUiStateManagerInterface* GetActorUiStateManager();
 
+  // Sets/clears pending actuation indicator on a tab prior to an ActorTask
+  // starting.
+  void SetTabPendingActuation(tabs::TabHandle tab_handle);
+  bool ClearTabPendingActuation(tabs::TabHandle tab_handle);
+
   // Returns true if there is a task that is actively (i.e. not paused) acting
   // in the given `tab`.
   bool IsActiveOnTab(const tabs::TabInterface& tab) const;
