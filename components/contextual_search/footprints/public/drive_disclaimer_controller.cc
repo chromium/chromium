@@ -30,13 +30,6 @@ constexpr int kKnownCallerSuperrootAsms = 1;
 // transparencyandcontrol/proto/consent.proto
 constexpr int kConsentIdWorkspaceAim = 38;
 
-// ConsentEligibilityStatus enum values mapping.
-// For source definitions, see ConsentEligibilityStatus in:
-// google3/java/com/google/personalization/footprints/
-// transparencyandcontrol/proto/consent.proto
-constexpr int kEligibilityCannotConsent = 2;
-constexpr int kEligibilityAlreadyConsented = 3;
-
 }  // namespace
 
 // static
@@ -92,9 +85,11 @@ void DriveDisclaimerController::OnShouldShowMobileConsentFlowResponse(
   int32_t status = response.should_show_flow_result().eligibility().status();
   DisclaimerStatus final_status = DisclaimerStatus::kNotAccepted;
 
-  if (status == kEligibilityCannotConsent) {
+  if (status ==
+      static_cast<int32_t>(ConsentEligibilityStatus::kCannotConsent)) {
     final_status = DisclaimerStatus::kRestricted;
-  } else if (status == kEligibilityAlreadyConsented) {
+  } else if (status == static_cast<int32_t>(
+                           ConsentEligibilityStatus::kAlreadyConsented)) {
     final_status = DisclaimerStatus::kAccepted;
   } else {
     final_status = DisclaimerStatus::kNotAccepted;
