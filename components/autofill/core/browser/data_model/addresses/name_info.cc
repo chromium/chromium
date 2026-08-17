@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/data_model/addresses/contact_info.h"
+#include "components/autofill/core/browser/data_model/addresses/name_info.h"
 
 #include <stddef.h>
 
@@ -30,19 +30,16 @@
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_normalization_utils.h"
-#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_constants.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_name.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_utils.h"
-#include "components/autofill/core/browser/data_model/form_group.h"
 #include "components/autofill/core/browser/data_quality/autofill_data_util.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "third_party/icu/source/common/unicode/uchar.h"
-#include "third_party/icu/source/common/unicode/urename.h"
 #include "third_party/icu/source/common/unicode/uscript.h"
 #include "third_party/icu/source/common/unicode/utypes.h"
 #include "third_party/re2/src/re2/re2.h"
@@ -579,8 +576,9 @@ NameInfo::NameInfo(std::unique_ptr<NameFull> name,
     : name_(std::move(name)), alternative_name_(std::move(alternative_name)) {}
 
 NameInfo& NameInfo::operator=(const NameInfo& info) {
-  if (this == &info)
+  if (this == &info) {
     return *this;
+  }
 
   name_->CopyFrom(*info.name_);
   if (info.IsAlternativeNameSupported()) {
@@ -780,8 +778,9 @@ bool NameInfo::FinalizeAfterImport() {
 }
 
 bool NameInfo::operator==(const NameInfo& other) const {
-  if (this == &other)
+  if (this == &other) {
     return true;
+  }
 
   // If only one of the profiles supports the alternative name, the two
   // `NameInfo`s are different.

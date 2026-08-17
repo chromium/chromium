@@ -2,24 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/data_model/addresses/contact_info.h"
+#include "components/autofill/core/browser/data_model/addresses/name_info.h"
 
-#include <stddef.h>
+#include <optional>
+#include <string>
+#include <vector>
 
-#include "base/format_macros.h"
-#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/country_type.h"
-#include "components/autofill/core/browser/data_model/addresses/address.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_i18n_api.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
-#include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::ASCIIToUTF16;
@@ -29,10 +27,14 @@ namespace autofill {
 namespace {
 
 using i18n_model_definition::kLegacyHierarchyCountryCode;
+using ::testing::IsEmpty;
+using ::testing::Test;
+using ::testing::TestWithParam;
+using ::testing::Values;
+using ::testing::ValuesIn;
+using ::testing::WithParamInterface;
 
 constexpr char kLocale[] = "en-US";
-
-}  // namespace
 
 struct FullNameTestCase {
   std::string full_name_input;
@@ -61,7 +63,7 @@ MATCHER_P(NameIsMigrated, original_profile, "") {
          arg.GetNameInfo().GetRootForType(NAME_FULL)->AllDescendantsAreEmpty();
 }
 
-class SetFullNameTest : public testing::TestWithParam<FullNameTestCase> {};
+class SetFullNameTest : public TestWithParam<FullNameTestCase> {};
 
 TEST_P(SetFullNameTest, SetFullName) {
   auto test_case = GetParam();
@@ -81,7 +83,7 @@ TEST_P(SetFullNameTest, SetFullName) {
 }
 
 class SetFullAlternativeNameTest
-    : public testing::TestWithParam<FullAlternativeNameTestCase> {};
+    : public TestWithParam<FullAlternativeNameTestCase> {};
 
 TEST_P(SetFullAlternativeNameTest, SetFullAlternativeName) {
   auto test_case = GetParam();
@@ -101,15 +103,15 @@ TEST_P(SetFullAlternativeNameTest, SetFullAlternativeName) {
 INSTANTIATE_TEST_SUITE_P(
     SetFullAlternativeName,
     SetFullAlternativeNameTest,
-    testing::Values(
-        FullAlternativeNameTestCase{u"", u"", u""},
-        FullAlternativeNameTestCase{u"John Smith", u"John", u"Smith"},
-        FullAlternativeNameTestCase{u"やまもと あおい", u"あおい", u"やまもと"},
-        FullAlternativeNameTestCase{u"さとう さくら", u"さくら", u"さとう"},
-        FullAlternativeNameTestCase{u"たなか・あおい", u"あおい", u"たなか"},
-        FullAlternativeNameTestCase{u"スズキ-エミ", u"エミ", u"スズキ"}));
+    Values(FullAlternativeNameTestCase{u"", u"", u""},
+           FullAlternativeNameTestCase{u"John Smith", u"John", u"Smith"},
+           FullAlternativeNameTestCase{u"やまもと あおい", u"あおい",
+                                       u"やまもと"},
+           FullAlternativeNameTestCase{u"さとう さくら", u"さくら", u"さとう"},
+           FullAlternativeNameTestCase{u"たなか・あおい", u"あおい", u"たなか"},
+           FullAlternativeNameTestCase{u"スズキ-エミ", u"エミ", u"スズキ"}));
 
-class NameInfoTest : public testing::Test {
+class NameInfoTest : public Test {
  protected:
   void MergeNamesAndExpect(const NameInfo& a,
                            const NameInfo& b,
@@ -354,7 +356,7 @@ TEST_F(NameInfoTest, FinalizeAfterImportWithNameAndIncompleteAlternativeName1) {
             FieldTypeSet({ALTERNATIVE_FAMILY_NAME, ALTERNATIVE_FULL_NAME}));
 
   // ALTERNATIVE_GIVEN_NAME does not get set.
-  EXPECT_THAT(name.GetRawInfo(ALTERNATIVE_GIVEN_NAME), testing::IsEmpty());
+  EXPECT_THAT(name.GetRawInfo(ALTERNATIVE_GIVEN_NAME), IsEmpty());
 }
 
 // Tests the scenario in which the profile without an alternative full name
@@ -1287,11 +1289,13 @@ TEST_F(NameInfoTest, NameInfoWithAdditionalLastNameIsMergeable) {
 // existing one.
 TEST_F(NameInfoTest, NameInfoWithExtraMiddleNameIsMergeable) {
   NameInfo ni1 = CreateNameInfo(u"John", u"", u"Kennedy", u"", u"", u"");
-  NameInfo ni2 = CreateNameInfo(u"John", u"Fitzgerald", u"Kennedy", u"", u"", u"");
-  EXPECT_TRUE(NameInfo::AreNamesMergeable(ni1, kLegacyHierarchyCountryCode,
-                                          ni2, kLegacyHierarchyCountryCode));
+  NameInfo ni2 =
+      CreateNameInfo(u"John", u"Fitzgerald", u"Kennedy", u"", u"", u"");
+  EXPECT_TRUE(NameInfo::AreNamesMergeable(ni1, kLegacyHierarchyCountryCode, ni2,
+                                          kLegacyHierarchyCountryCode));
 
-  NameInfo expected = CreateNameInfo(u"John", u"Fitzgerald", u"Kennedy", u"", u"", u"");
+  NameInfo expected =
+      CreateNameInfo(u"John", u"Fitzgerald", u"Kennedy", u"", u"", u"");
   NameInfo actual(/*alternative_names_supported=*/false);
   NameInfo::MergeNames(ni1, kLegacyHierarchyCountryCode, ni2,
                        kLegacyHierarchyCountryCode,
@@ -1304,9 +1308,9 @@ TEST_F(NameInfoTest, SettingAndGettingNotSupportedAlternativeNames) {
                                 u"alt_family", u"alt_familyalt_given",
                                 /*should_support_alternative_name=*/false);
   ni1.FinalizeAfterImport();
-  EXPECT_THAT(ni1.GetRawInfo(ALTERNATIVE_GIVEN_NAME), testing::IsEmpty());
-  EXPECT_THAT(ni1.GetRawInfo(ALTERNATIVE_FAMILY_NAME), testing::IsEmpty());
-  EXPECT_THAT(ni1.GetRawInfo(ALTERNATIVE_FULL_NAME), testing::IsEmpty());
+  EXPECT_THAT(ni1.GetRawInfo(ALTERNATIVE_GIVEN_NAME), IsEmpty());
+  EXPECT_THAT(ni1.GetRawInfo(ALTERNATIVE_FAMILY_NAME), IsEmpty());
+  EXPECT_THAT(ni1.GetRawInfo(ALTERNATIVE_FULL_NAME), IsEmpty());
 }
 
 TEST_F(NameInfoTest,
@@ -1344,9 +1348,9 @@ TEST_F(NameInfoTest, MergingNotSupportedAlternativeNames) {
                        kLegacyHierarchyCountryCode,
                        /*newer_was_more_recently_used=*/true, result);
   EXPECT_FALSE(result.GetRawInfo(NAME_FULL).empty());
-  EXPECT_THAT(result.GetRawInfo(ALTERNATIVE_GIVEN_NAME), testing::IsEmpty());
-  EXPECT_THAT(result.GetRawInfo(ALTERNATIVE_FAMILY_NAME), testing::IsEmpty());
-  EXPECT_THAT(result.GetRawInfo(ALTERNATIVE_FULL_NAME), testing::IsEmpty());
+  EXPECT_THAT(result.GetRawInfo(ALTERNATIVE_GIVEN_NAME), IsEmpty());
+  EXPECT_THAT(result.GetRawInfo(ALTERNATIVE_FAMILY_NAME), IsEmpty());
+  EXPECT_THAT(result.GetRawInfo(ALTERNATIVE_FULL_NAME), IsEmpty());
 }
 
 TEST_F(NameInfoTest, AssigningNameInfoWithAlternativeName) {
@@ -1367,12 +1371,9 @@ TEST_F(NameInfoTest, AssigningNameInfoWithAlternativeName) {
 
   // The US profile doesn't support alternative names so they should be cleared.
   new_profile = us_profile;
-  EXPECT_THAT(new_profile.GetRawInfo(ALTERNATIVE_GIVEN_NAME),
-              testing::IsEmpty());
-  EXPECT_THAT(new_profile.GetRawInfo(ALTERNATIVE_FAMILY_NAME),
-              testing::IsEmpty());
-  EXPECT_THAT(new_profile.GetRawInfo(ALTERNATIVE_FULL_NAME),
-              testing::IsEmpty());
+  EXPECT_THAT(new_profile.GetRawInfo(ALTERNATIVE_GIVEN_NAME), IsEmpty());
+  EXPECT_THAT(new_profile.GetRawInfo(ALTERNATIVE_FAMILY_NAME), IsEmpty());
+  EXPECT_THAT(new_profile.GetRawInfo(ALTERNATIVE_FULL_NAME), IsEmpty());
 
   // Assigning a profile with alternative names should make them re-appear.
   new_profile = jp_profile;
@@ -1389,51 +1390,50 @@ struct GetStorableTypeOfTestCase {
 
 class NameInfoGetStorableTypeOfTest
     : public NameInfoTest,
-      public testing::WithParamInterface<GetStorableTypeOfTestCase> {};
+      public WithParamInterface<GetStorableTypeOfTestCase> {};
 
 TEST_P(NameInfoGetStorableTypeOfTest, GetStorableTypeOf) {
   NameInfo name_info = CreateNameInfo(u"John", u"", u"Doe", u"", u"", u"", u"",
                                       /*should_support_alternative_name=*/true);
-  EXPECT_EQ(name_info.GetStorableTypeOf(GetParam().input),
-            GetParam().expected);
+  EXPECT_EQ(name_info.GetStorableTypeOf(GetParam().input), GetParam().expected);
 }
 
 INSTANTIATE_TEST_SUITE_P(
     All,
     NameInfoGetStorableTypeOfTest,
-    testing::Values(
-        GetStorableTypeOfTestCase{NAME_MIDDLE_INITIAL,
-                                  std::make_optional(NAME_MIDDLE)},
-        GetStorableTypeOfTestCase{NAME_FULL, std::make_optional(NAME_FULL)},
-        GetStorableTypeOfTestCase{ALTERNATIVE_GIVEN_NAME,
-                                  std::make_optional(ALTERNATIVE_GIVEN_NAME)}));
+    Values(GetStorableTypeOfTestCase{NAME_MIDDLE_INITIAL,
+                                     std::make_optional(NAME_MIDDLE)},
+           GetStorableTypeOfTestCase{NAME_FULL, std::make_optional(NAME_FULL)},
+           GetStorableTypeOfTestCase{
+               ALTERNATIVE_GIVEN_NAME,
+               std::make_optional(ALTERNATIVE_GIVEN_NAME)}));
 
 INSTANTIATE_TEST_SUITE_P(
-    ContactInfoTest,
+    NameInfoTest,
     SetFullNameTest,
-    testing::Values(
-        FullNameTestCase{"", "", "", ""},
-        FullNameTestCase{"John Smith", "John", "", "Smith"},
-        FullNameTestCase{"Julien van der Poel", "Julien", "", "van der Poel"},
-        FullNameTestCase{"John J Johnson", "John", "J", "Johnson"},
-        FullNameTestCase{"John Smith, Jr.", "John", "", "Smith"},
-        FullNameTestCase{"Mr John Smith", "John", "", "Smith"},
-        FullNameTestCase{"Mr. John Smith", "John", "", "Smith"},
-        FullNameTestCase{"Mr. John Smith, M.D.", "John", "", "Smith"},
-        FullNameTestCase{"Mr. John Smith, MD", "John", "", "Smith"},
-        FullNameTestCase{"Mr. John Smith MD", "John", "", "Smith"},
-        FullNameTestCase{"William Hubert J.R.", "William", "Hubert", "J.R."},
-        FullNameTestCase{"John Ma", "John", "", "Ma"},
-        FullNameTestCase{"John Jacob Jingleheimer Smith", "John",
-                         "Jacob Jingleheimer", "Smith"},
-        FullNameTestCase{"Virgil", "", "", "Virgil"},
-        FullNameTestCase{"Murray Gell-Mann", "Murray", "", "Gell-Mann"},
-        FullNameTestCase{"Mikhail Yevgrafovich Saltykov-Shchedrin", "Mikhail",
-                         "Yevgrafovich", "Saltykov-Shchedrin"},
-        FullNameTestCase{"Arthur Ignatius Conan Doyle", "Arthur",
-                         "Ignatius Conan", "Doyle"},
-        FullNameTestCase{"Pablo Diego Ruiz y Picasso", "Pablo Diego", "",
-                         "Ruiz y Picasso"}));
+    Values(FullNameTestCase{"", "", "", ""},
+           FullNameTestCase{"John Smith", "John", "", "Smith"},
+           FullNameTestCase{"Julien van der Poel", "Julien", "",
+                            "van der Poel"},
+           FullNameTestCase{"John J Johnson", "John", "J", "Johnson"},
+           FullNameTestCase{"John Smith, Jr.", "John", "", "Smith"},
+           FullNameTestCase{"Mr John Smith", "John", "", "Smith"},
+           FullNameTestCase{"Mr. John Smith", "John", "", "Smith"},
+           FullNameTestCase{"Mr. John Smith, M.D.", "John", "", "Smith"},
+           FullNameTestCase{"Mr. John Smith, MD", "John", "", "Smith"},
+           FullNameTestCase{"Mr. John Smith MD", "John", "", "Smith"},
+           FullNameTestCase{"William Hubert J.R.", "William", "Hubert", "J.R."},
+           FullNameTestCase{"John Ma", "John", "", "Ma"},
+           FullNameTestCase{"John Jacob Jingleheimer Smith", "John",
+                            "Jacob Jingleheimer", "Smith"},
+           FullNameTestCase{"Virgil", "", "", "Virgil"},
+           FullNameTestCase{"Murray Gell-Mann", "Murray", "", "Gell-Mann"},
+           FullNameTestCase{"Mikhail Yevgrafovich Saltykov-Shchedrin",
+                            "Mikhail", "Yevgrafovich", "Saltykov-Shchedrin"},
+           FullNameTestCase{"Arthur Ignatius Conan Doyle", "Arthur",
+                            "Ignatius Conan", "Doyle"},
+           FullNameTestCase{"Pablo Diego Ruiz y Picasso", "Pablo Diego", "",
+                            "Ruiz y Picasso"}));
 
 struct NameMigrationTestCase {
   std::string name;
@@ -1443,7 +1443,7 @@ struct NameMigrationTestCase {
 
 class NameInfoNameMigrationTest
     : public NameInfoTest,
-      public testing::WithParamInterface<NameMigrationTestCase> {};
+      public WithParamInterface<NameMigrationTestCase> {};
 
 // Profiles that contain phonetic names stored in regular name fields should,
 // migrate them to the alternative name fields. Those that do have other
@@ -1466,7 +1466,7 @@ TEST_P(NameInfoNameMigrationTest, NameMigration) {
 INSTANTIATE_TEST_SUITE_P(
     All,
     NameInfoNameMigrationTest,
-    testing::Values(
+    Values(
         // Only katakana.
         NameMigrationTestCase{"メタワ", true},
         NameMigrationTestCase{"ワ 　タシ", true},
@@ -1503,4 +1503,5 @@ INSTANTIATE_TEST_SUITE_P(
         NameMigrationTestCase{"メタワ", false, AddressCountryCode("US")},
         NameMigrationTestCase{"ねこです", false, AddressCountryCode("US")}));
 
+}  // namespace
 }  // namespace autofill

@@ -320,7 +320,7 @@ and types derived from the autocomplete attribute are represented as [HtmlFieldT
 Several important subsets of FieldTypes exist:
 * Supported types of a [form group](https://source.chromium.org/chromium/chromium/src/+/refs/heads/main:components/autofill/core/browser/data_model/form_group.h):
   Every form group defines which FieldTypes it maintains. For example:
-  * The supported type of [EmailInfo](https://source.chromium.org/chromium/chromium/src/+/refs/heads/main:components/autofill/core/browser/data_model/contact_info.h;l=87;drc=10009f6ff9f3b626979c9422321686f360df7cee) is [EMAIL_ADDRESS](https://source.chromium.org/chromium/chromium/src/+/refs/heads/main:components/autofill/core/browser/data_model/contact_info.cc;l=184;drc=59b1cf76cc21ae34bc99073e963f7d268b0a5c17).
+  * The supported type of [EmailInfo](https://source.chromium.org/chromium/chromium/src/+/refs/heads/main:components/autofill/core/browser/data_model/addresses/email_info.h) is [EMAIL_ADDRESS](https://source.chromium.org/chromium/chromium/src/+/refs/heads/main:components/autofill/core/browser/data_model/addresses/email_info.cc).
   * The supported types of AutofillProfile are all name, address, phone number, etc. types.
 * Stored types of AutofillProfile: The set of types stored in AddressAutofillTable,
   defined by `AutofillProfile::kDatabaseStoredTypes`.

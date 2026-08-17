@@ -92,7 +92,7 @@ constexpr bool is_ios = !!BUILDFLAG(IS_IOS);
 // Otherwise, returns |name|.
 //
 // Note that a better way to do this would be to use SplitName from
-// src/components/autofill/core/browser/data_model/addresses/contact_info.cc.
+// src/components/autofill/core/browser/data_model/addresses/name_info.cc.
 // However, for now we want the logic of which variations of names are
 // considered to be the same to exactly match the logic applied on the Payments
 // server.
