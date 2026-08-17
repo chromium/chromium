@@ -36,6 +36,7 @@ TEST(Keypair, GenerateAndRoundtripPrivateKey) {
     EXPECT_EQ(key.IsEd25519(), k->IsEd25519());
     EXPECT_EQ(key.IsX25519(), k->IsX25519());
     EXPECT_EQ(key.IsMldsa44(), k->IsMldsa44());
+    EXPECT_EQ(key.IsMlkem768(), k->IsMlkem768());
   };
 
   expect_roundtrip(PrivateKey::GenerateRsa2048());
@@ -46,6 +47,7 @@ TEST(Keypair, GenerateAndRoundtripPrivateKey) {
   expect_roundtrip(PrivateKey::GenerateEd25519());
   expect_roundtrip(PrivateKey::GenerateX25519());
   expect_roundtrip(PrivateKey::GenerateMldsa44());
+  expect_roundtrip(PrivateKey::GenerateMlkem768());
 }
 
 TEST(Keypair, RoundtripEd25519Key) {
@@ -68,6 +70,24 @@ TEST(Keypair, RoundtripX25519Key) {
   auto pub = k.ToX25519PublicKey();
   auto npk = PublicKey::FromX25519PublicKey(pub);
   EXPECT_EQ(k.ToSubjectPublicKeyInfo(), npk.ToSubjectPublicKeyInfo());
+}
+
+TEST(Keypair, RoundtripMlkem768Key) {
+  auto k = PrivateKey::GenerateMlkem768();
+  auto priv = k.ToMlkem768PrivateKey();
+  auto nk = PrivateKey::FromMlkem768PrivateKey(priv);
+  EXPECT_EQ(k.ToPrivateKeyInfo(), nk.ToPrivateKeyInfo());
+
+  auto pub = k.ToMlkem768PublicKey();
+  auto npk = PublicKey::FromMlkem768PublicKey(pub);
+  ASSERT_TRUE(npk.has_value());
+  EXPECT_EQ(k.ToSubjectPublicKeyInfo(), npk->ToSubjectPublicKeyInfo());
+}
+
+TEST(Keypair, InvalidMlkem768PublicKey) {
+  std::array<uint8_t, 1184> invalid_pub;
+  invalid_pub.fill(0xff);
+  EXPECT_FALSE(PublicKey::FromMlkem768PublicKey(invalid_pub).has_value());
 }
 
 // Export a public key from each private key and ensure it matches the expected
@@ -107,6 +127,7 @@ TEST(Keypair, PrivateKeyPredicates) {
   EXPECT_TRUE(PrivateKey::GenerateEd25519().IsEd25519());
   EXPECT_TRUE(PrivateKey::GenerateX25519().IsX25519());
   EXPECT_TRUE(PrivateKey::GenerateMldsa44().IsMldsa44());
+  EXPECT_TRUE(PrivateKey::GenerateMlkem768().IsMlkem768());
 }
 
 TEST(Keypair, PublicKeyPredicates) {
@@ -123,6 +144,8 @@ TEST(Keypair, PublicKeyPredicates) {
       PublicKey::FromPrivateKey(PrivateKey::GenerateX25519()).IsX25519());
   EXPECT_TRUE(
       PublicKey::FromPrivateKey(PrivateKey::GenerateMldsa44()).IsMldsa44());
+  EXPECT_TRUE(
+      PublicKey::FromPrivateKey(PrivateKey::GenerateMlkem768()).IsMlkem768());
 }
 
 TEST(Keypair, X962UncompressedForm) {

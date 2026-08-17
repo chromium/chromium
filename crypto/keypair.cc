@@ -14,6 +14,7 @@
 #include "third_party/boringssl/src/include/openssl/ec.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
 #include "third_party/boringssl/src/include/openssl/mem.h"
+#include "third_party/boringssl/src/include/openssl/mlkem.h"
 #include "third_party/boringssl/src/include/openssl/rsa.h"
 
 namespace crypto::keypair {
@@ -36,9 +37,9 @@ bssl::UniquePtr<EVP_PKEY> GeneratePkey(const EVP_PKEY_ALG* alg) {
 
 base::span<const EVP_PKEY_ALG* const> SupportedEvpAlgorithms() {
   static const EVP_PKEY_ALG* kAlgs[] = {
-      EVP_pkey_rsa(),       EVP_pkey_ec_p256(), EVP_pkey_ec_p384(),
-      EVP_pkey_ec_p521(),   EVP_pkey_ed25519(), EVP_pkey_x25519(),
-      EVP_pkey_ml_dsa_44(),
+      EVP_pkey_rsa(),       EVP_pkey_ec_p256(),   EVP_pkey_ec_p384(),
+      EVP_pkey_ec_p521(),   EVP_pkey_ed25519(),   EVP_pkey_x25519(),
+      EVP_pkey_ml_dsa_44(), EVP_pkey_ml_kem_768(),
   };
   return kAlgs;
 }
@@ -145,6 +146,11 @@ PrivateKey PrivateKey::GenerateMldsa44() {
 }
 
 // static
+PrivateKey PrivateKey::GenerateMlkem768() {
+  return PrivateKey(GeneratePkey(EVP_pkey_ml_kem_768()));
+}
+
+// static
 std::optional<PrivateKey> PrivateKey::FromPrivateKeyInfo(
     base::span<const uint8_t> pki) {
   OpenSSLErrStackTracer err_tracer(FROM_HERE);
@@ -225,6 +231,17 @@ PrivateKey PrivateKey::FromX25519PrivateKey(base::span<const uint8_t, 32> key) {
   return PrivateKey(std::move(pkey));
 }
 
+// static
+PrivateKey PrivateKey::FromMlkem768PrivateKey(
+    base::span<const uint8_t, 64> key) {
+  static_assert(std::size(key) == MLKEM_SEED_BYTES);
+
+  bssl::UniquePtr<EVP_PKEY> pkey(EVP_PKEY_from_private_seed(
+      EVP_pkey_ml_kem_768(), key.data(), key.size()));
+  CHECK(pkey);
+  return PrivateKey(std::move(pkey));
+}
+
 std::vector<uint8_t> PrivateKey::ToPrivateKeyInfo() const {
   OpenSSLErrStackTracer err_tracer(FROM_HERE);
   bssl::ScopedCBB cbb;
@@ -287,6 +304,16 @@ std::array<uint8_t, 32> PrivateKey::ToX25519PrivateKey() const {
   return result;
 }
 
+std::array<uint8_t, 64> PrivateKey::ToMlkem768PrivateKey() const {
+  CHECK(IsMlkem768());
+  std::array<uint8_t, 64> result;
+  static_assert(std::size(result) == MLKEM_SEED_BYTES);
+  size_t len = std::size(result);
+  CHECK(EVP_PKEY_get_private_seed(key_.get(), result.data(), &len));
+  CHECK(len == std::size(result));
+  return result;
+}
+
 std::vector<uint8_t> PrivateKey::ToSubjectPublicKeyInfo() const {
   return ExportEVPPublicKey(key_.get());
 }
@@ -313,6 +340,16 @@ std::array<uint8_t, 32> PrivateKey::ToX25519PublicKey() const {
   return result;
 }
 
+std::array<uint8_t, 1184> PrivateKey::ToMlkem768PublicKey() const {
+  CHECK(IsMlkem768());
+  std::array<uint8_t, 1184> result;
+  static_assert(std::size(result) == MLKEM768_PUBLIC_KEY_BYTES);
+  size_t len = std::size(result);
+  CHECK(EVP_PKEY_get_raw_public_key(key_.get(), result.data(), &len));
+  CHECK(len == std::size(result));
+  return result;
+}
+
 bool PrivateKey::IsRsa() const {
   return EVP_PKEY_id(key_.get()) == EVP_PKEY_RSA;
 }
@@ -331,6 +368,10 @@ bool PrivateKey::IsX25519() const {
 
 bool PrivateKey::IsMldsa44() const {
   return EVP_PKEY_id(key_.get()) == EVP_PKEY_ML_DSA_44;
+}
+
+bool PrivateKey::IsMlkem768() const {
+  return EVP_PKEY_id(key_.get()) == EVP_PKEY_ML_KEM_768;
 }
 
 bool PrivateKey::IsEcP256() const {
@@ -455,6 +496,19 @@ PublicKey PublicKey::FromX25519PublicKey(base::span<const uint8_t, 32> key) {
   return PublicKey(std::move(pkey));
 }
 
+// static
+std::optional<PublicKey> PublicKey::FromMlkem768PublicKey(
+    base::span<const uint8_t, 1184> key) {
+  static_assert(std::size(key) == MLKEM768_PUBLIC_KEY_BYTES);
+
+  bssl::UniquePtr<EVP_PKEY> pkey(EVP_PKEY_from_raw_public_key(
+      EVP_pkey_ml_kem_768(), key.data(), key.size()));
+  if (!pkey) {
+    return std::nullopt;
+  }
+  return PublicKey(std::move(pkey));
+}
+
 std::vector<uint8_t> PublicKey::ToSubjectPublicKeyInfo() const {
   return ExportEVPPublicKey(key_.get());
 }
@@ -475,6 +529,16 @@ std::array<uint8_t, 32> PublicKey::ToEd25519PublicKey() const {
 std::array<uint8_t, 32> PublicKey::ToX25519PublicKey() const {
   CHECK(IsX25519());
   std::array<uint8_t, 32> result;
+  size_t len = std::size(result);
+  CHECK(EVP_PKEY_get_raw_public_key(key_.get(), result.data(), &len));
+  CHECK(len == std::size(result));
+  return result;
+}
+
+std::array<uint8_t, 1184> PublicKey::ToMlkem768PublicKey() const {
+  CHECK(IsMlkem768());
+  std::array<uint8_t, 1184> result;
+  static_assert(std::size(result) == MLKEM768_PUBLIC_KEY_BYTES);
   size_t len = std::size(result);
   CHECK(EVP_PKEY_get_raw_public_key(key_.get(), result.data(), &len));
   CHECK(len == std::size(result));
@@ -517,6 +581,10 @@ bool PublicKey::IsX25519() const {
 
 bool PublicKey::IsMldsa44() const {
   return EVP_PKEY_id(key_.get()) == EVP_PKEY_ML_DSA_44;
+}
+
+bool PublicKey::IsMlkem768() const {
+  return EVP_PKEY_id(key_.get()) == EVP_PKEY_ML_KEM_768;
 }
 
 bool PublicKey::IsEcP256() const {

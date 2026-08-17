@@ -23,7 +23,10 @@
 
 namespace crypto::hpke {
 
-enum class KemType { kX25519HkdfSha256 };
+enum class KemType {
+  kX25519HkdfSha256,
+  kMlkem768,
+};
 enum class KdfType { kHkdfSha256 };
 enum class AeadType { kChaCha20Poly1305, kAes128Gcm, kAes256Gcm };
 
@@ -48,8 +51,8 @@ CRYPTO_EXPORT std::optional<std::vector<uint8_t>> AuthSeal(
 // One-shot decryption in Auth mode.
 // Returns the decrypted plaintext, or nullopt on failure.
 //
-// `encrypted_data` should contain the encapsulated shared secret (32 bytes)
-// followed by the ciphertext. See RFC 9180 section 6.1.
+// `encrypted_data` should contain the encapsulated shared secret followed by
+// the ciphertext. See RFC 9180 section 6.1.
 CRYPTO_EXPORT std::optional<std::vector<uint8_t>> AuthOpen(
     const HpkeParams& params,
     const crypto::keypair::PrivateKey& receiver,
@@ -71,8 +74,8 @@ CRYPTO_EXPORT std::optional<std::vector<uint8_t>> Seal(
 // One-shot decryption in Base mode.
 // Returns the decrypted plaintext, or nullopt on failure.
 //
-// `encrypted_data` should contain the encapsulated shared secret (32 bytes)
-// followed by the ciphertext.
+// `encrypted_data` should contain the encapsulated shared secret followed by
+// the ciphertext.
 CRYPTO_EXPORT std::optional<std::vector<uint8_t>> Open(
     const HpkeParams& params,
     const crypto::keypair::PrivateKey& receiver,

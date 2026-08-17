@@ -14,17 +14,29 @@
 #include "base/notreached.h"
 #include "third_party/boringssl/src/include/openssl/curve25519.h"
 #include "third_party/boringssl/src/include/openssl/hpke.h"
+#include "third_party/boringssl/src/include/openssl/mlkem.h"
 
 namespace crypto::hpke {
 
 namespace {
 
 bool ParamsAreSupported(const HpkeParams& params) {
-  return params.kem == KemType::kX25519HkdfSha256 &&
+  return (params.kem == KemType::kX25519HkdfSha256 ||
+          params.kem == KemType::kMlkem768) &&
          params.kdf == KdfType::kHkdfSha256 &&
          (params.aead == AeadType::kChaCha20Poly1305 ||
           params.aead == AeadType::kAes128Gcm ||
           params.aead == AeadType::kAes256Gcm);
+}
+
+const EVP_HPKE_KEM* GetKem(KemType kem) {
+  switch (kem) {
+    case KemType::kX25519HkdfSha256:
+      return EVP_hpke_x25519_hkdf_sha256();
+    case KemType::kMlkem768:
+      return EVP_hpke_mlkem768();
+  }
+  NOTREACHED();
 }
 
 const EVP_HPKE_AEAD* GetAead(AeadType aead) {
@@ -35,6 +47,37 @@ const EVP_HPKE_AEAD* GetAead(AeadType aead) {
       return EVP_hpke_aes_128_gcm();
     case AeadType::kAes256Gcm:
       return EVP_hpke_aes_256_gcm();
+  }
+  NOTREACHED();
+}
+
+std::vector<uint8_t> ExportPrivateKeyRaw(
+    KemType kem,
+    const crypto::keypair::PrivateKey& key) {
+  switch (kem) {
+    case KemType::kX25519HkdfSha256: {
+      auto raw = key.ToX25519PrivateKey();
+      return std::vector<uint8_t>(std::from_range, raw);
+    }
+    case KemType::kMlkem768: {
+      auto raw = key.ToMlkem768PrivateKey();
+      return std::vector<uint8_t>(std::from_range, raw);
+    }
+  }
+  NOTREACHED();
+}
+
+std::vector<uint8_t> ExportPublicKeyRaw(KemType kem,
+                                        const crypto::keypair::PublicKey& key) {
+  switch (kem) {
+    case KemType::kX25519HkdfSha256: {
+      auto raw = key.ToX25519PublicKey();
+      return std::vector<uint8_t>(std::from_range, raw);
+    }
+    case KemType::kMlkem768: {
+      auto raw = key.ToMlkem768PublicKey();
+      return std::vector<uint8_t>(std::from_range, raw);
+    }
   }
   NOTREACHED();
 }
@@ -97,14 +140,15 @@ std::optional<std::vector<uint8_t>> AuthSeal(
     base::span<const uint8_t> ad) {
   CHECK(ParamsAreSupported(params));
 
-  auto sender_priv_raw = sender.ToX25519PrivateKey();
-  auto recipient_pub_raw = recipient.ToX25519PublicKey();
+  const EVP_HPKE_KEM* kem = GetKem(params.kem);
+  auto sender_priv_raw = ExportPrivateKeyRaw(params.kem, sender);
+  auto recipient_pub_raw = ExportPublicKeyRaw(params.kem, recipient);
 
   bssl::ScopedEVP_HPKE_KEY sender_key;
   // EVP_HPKE_KEY_init returns 1 on success and 0 on failure.
   // Failure here would likely be due to invalid key or OOM, which we CHECK.
-  CHECK(EVP_HPKE_KEY_init(sender_key.get(), EVP_hpke_x25519_hkdf_sha256(),
-                          sender_priv_raw.data(), sender_priv_raw.size()));
+  CHECK(EVP_HPKE_KEY_init(sender_key.get(), kem, sender_priv_raw.data(),
+                          sender_priv_raw.size()));
 
   bssl::ScopedEVP_HPKE_CTX sender_ctx;
   std::vector<uint8_t> encrypted_data(EVP_HPKE_MAX_ENC_LENGTH);
@@ -139,20 +183,21 @@ std::optional<std::vector<uint8_t>> AuthOpen(
     base::span<const uint8_t> ad) {
   CHECK(ParamsAreSupported(params));
 
-  if (encrypted_data.size() < X25519_PUBLIC_VALUE_LEN) {
+  const EVP_HPKE_KEM* kem = GetKem(params.kem);
+  const size_t enc_len = EVP_HPKE_KEM_enc_len(kem);
+
+  if (encrypted_data.size() < enc_len) {
     return std::nullopt;
   }
 
-  auto recipient_priv_raw = recipient.ToX25519PrivateKey();
-  auto sender_pub_raw = sender.ToX25519PublicKey();
+  auto recipient_priv_raw = ExportPrivateKeyRaw(params.kem, recipient);
+  auto sender_pub_raw = ExportPublicKeyRaw(params.kem, sender);
 
   bssl::ScopedEVP_HPKE_KEY recipient_key;
-  CHECK(EVP_HPKE_KEY_init(recipient_key.get(), EVP_hpke_x25519_hkdf_sha256(),
-                          recipient_priv_raw.data(),
+  CHECK(EVP_HPKE_KEY_init(recipient_key.get(), kem, recipient_priv_raw.data(),
                           recipient_priv_raw.size()));
 
-  auto [enc, ciphertext] =
-      encrypted_data.split_at(static_cast<size_t>(X25519_PUBLIC_VALUE_LEN));
+  auto [enc, ciphertext] = encrypted_data.split_at(enc_len);
 
   bssl::ScopedEVP_HPKE_CTX recipient_ctx;
   const EVP_HPKE_AEAD* aead = GetAead(params.aead);
@@ -180,7 +225,8 @@ std::optional<std::vector<uint8_t>> Seal(
     base::span<const uint8_t> ad) {
   CHECK(ParamsAreSupported(params));
 
-  auto recipient_pub_raw = recipient.ToX25519PublicKey();
+  const EVP_HPKE_KEM* kem = GetKem(params.kem);
+  auto recipient_pub_raw = ExportPublicKeyRaw(params.kem, recipient);
 
   bssl::ScopedEVP_HPKE_CTX sender_ctx;
   std::vector<uint8_t> encrypted_data(EVP_HPKE_MAX_ENC_LENGTH);
@@ -193,7 +239,7 @@ std::optional<std::vector<uint8_t>> Seal(
           /*out_enc=*/encrypted_data.data(),
           /*out_enc_len=*/&encapsulated_shared_secret_len,
           /*max_enc=*/encrypted_data.size(),
-          /*kem=*/EVP_hpke_x25519_hkdf_sha256(),
+          /*kem=*/kem,
           /*kdf=*/EVP_hpke_hkdf_sha256(),
           /*aead=*/aead,
           /*peer_public_key=*/recipient_pub_raw.data(),
@@ -215,18 +261,20 @@ std::optional<std::vector<uint8_t>> Open(
     base::span<const uint8_t> ad) {
   CHECK(ParamsAreSupported(params));
 
-  if (encrypted_data.size() < X25519_PUBLIC_VALUE_LEN) {
+  const EVP_HPKE_KEM* kem = GetKem(params.kem);
+  const size_t enc_len = EVP_HPKE_KEM_enc_len(kem);
+
+  if (encrypted_data.size() < enc_len) {
     return std::nullopt;
   }
 
-  auto receiver_priv_raw = receiver.ToX25519PrivateKey();
+  auto receiver_priv_raw = ExportPrivateKeyRaw(params.kem, receiver);
 
   bssl::ScopedEVP_HPKE_KEY receiver_key;
-  CHECK(EVP_HPKE_KEY_init(receiver_key.get(), EVP_hpke_x25519_hkdf_sha256(),
-                          receiver_priv_raw.data(), receiver_priv_raw.size()));
+  CHECK(EVP_HPKE_KEY_init(receiver_key.get(), kem, receiver_priv_raw.data(),
+                          receiver_priv_raw.size()));
 
-  auto [enc, ciphertext] =
-      encrypted_data.split_at(size_t{X25519_PUBLIC_VALUE_LEN});
+  auto [enc, ciphertext] = encrypted_data.split_at(enc_len);
 
   bssl::ScopedEVP_HPKE_CTX recipient_ctx;
   const EVP_HPKE_AEAD* aead = GetAead(params.aead);
