@@ -383,6 +383,28 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
   EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 2u);
 }
 
+IN_PROC_BROWSER_TEST_F(
+    SearchEngineChoiceDialogBrowserTest,
+    ComputeProfileManagementFlowConditions_AlreadyBeingShown) {
+  Profile* profile = browser()->GetProfile();
+  SearchEngineChoiceDialogService* service =
+      SearchEngineChoiceDialogServiceFactory::GetForProfile(profile);
+  ASSERT_TRUE(service);
+
+  EXPECT_EQ(
+      regional_capabilities::SearchEngineChoiceScreenConditions::kEligible,
+      service->ComputeProfileManagementFlowConditions());
+
+  // Register a dialog for `browser()`.
+  EXPECT_TRUE(service->RegisterDialog(*browser(), base::DoNothing()));
+
+  // With an open dialog registered, ComputeProfileManagementFlowConditions
+  // should return kAlreadyBeingShown instead of crashing.
+  EXPECT_EQ(regional_capabilities::SearchEngineChoiceScreenConditions::
+                kAlreadyBeingShown,
+            service->ComputeProfileManagementFlowConditions());
+}
+
 IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
                        BrowserIsRemovedFromListAfterClose) {
   Profile* profile = browser()->GetProfile();

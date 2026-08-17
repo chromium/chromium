@@ -387,10 +387,11 @@ SearchEngineChoiceDialogService::GetSearchEngines() {
 SearchEngineChoiceScreenConditions
 SearchEngineChoiceDialogService::ComputeProfileManagementFlowConditions()
     const {
-  // The profile management flow dialog is not supposed to be triggerable while
-  // there is any browser window open. Ineligibility conditions associated with
-  // browser windows are not relevant here.
-  CHECK(!browser_registry_.HasOpenDialog(), base::NotFatalUntil::M153);
+  if (browser_registry_.HasOpenDialog()) {
+    // Some steps may trigger popup browsers which can show a choice screen, see
+    // https://crbug.com/534214931.
+    return SearchEngineChoiceScreenConditions::kAlreadyBeingShown;
+  }
 
   return search_engine_choice_service_->GetDynamicChoiceScreenConditions(
       *template_url_service_,
