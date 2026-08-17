@@ -364,6 +364,11 @@ public class WebAppLaunchHandler {
 
     private @Nullable Long maybeNotifyLaunchQueue(
             WebAppLaunchParams launchParams, boolean hasSpeculativeNavigation) {
+        // Asynchronous lifecycle events can destroy the WebContents before the intent
+        // is fully processed and delivered to the launch queue.
+        if (mWebContents.isDestroyed()) {
+            return null;
+        }
         String scopeUrl = getScopeUrl(launchParams.targetUrl);
 
         if (!launchParams.newNavigationStarted) {
@@ -518,7 +523,8 @@ public class WebAppLaunchHandler {
 
     /**
      * Takes the WebContents object of the tab that is being launched and notifies the launch queue
-     * with this object and associated launch parameters.
+     * with this object and associated launch parameters. WebContents parameters must not be null.
+     * Callers must ensure they are valid.
      */
     @NativeMethods
     public interface Natives {
