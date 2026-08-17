@@ -2872,6 +2872,11 @@ source_set("browser") {
           "media/captured_surface_controller.h",
         ]
       }
+    } else {
+      sources += [
+        "media/capture/screenshot_capture_request_impl.h",
+        "media/capture/screenshot_capture_request_impl_ios.cc",
+      ]
     }
     if (use_aura) {
       sources += [
