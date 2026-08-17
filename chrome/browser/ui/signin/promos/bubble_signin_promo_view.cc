@@ -157,10 +157,10 @@ int GetSubtitleID(bool is_signin_promo,
         switch (signed_in_state) {
           case SignedInState::kSignedOut:
           case SignedInState::kWebOnlySignedIn:
-            // TODO(crbug.com/545561312): Replace with new strings.
-            return IDS_AI_SIGNIN_PROMO_SUBTITLE;
           case SignedInState::kSignInPending:
-            return IDS_AI_VERIFY_PROMO_SUBTITLE;
+            // TODO(crbug.com/545561312): Verify whether the pending state needs
+            // a different string.
+            return IDS_COMPOSEBOX_DRIVE_CONTEXT_MENU_OPTION_SIGNIN_PROMO_SUBTITLE;
           case SignedInState::kSignedIn:
           case SignedInState::kSyncing:
           case SignedInState::kSyncPaused:
