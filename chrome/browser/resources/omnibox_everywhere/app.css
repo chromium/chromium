@@ -112,6 +112,7 @@ omnibox-everywhere-omnibox::part(dropdown-content) {
 
 #mostVisitedContainer {
   -webkit-app-region: no-drag;
+  align-items: center;
   background-color: var(--color-sys-surface-container-high, #fff);
   border-radius: 20px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12), 0 1px 4px rgba(0, 0, 0, 0.08);
@@ -119,16 +120,17 @@ omnibox-everywhere-omnibox::part(dropdown-content) {
   display: flex;
   justify-content: center;
   margin-top: 10px;
-  padding: 6px 12px;
+  min-height: 80px;
+  padding: 8px 16px;
   width: 100%;
 }
 
 cr-most-visited {
   -webkit-app-region: no-drag;
-  --most-visited-tile-size: 80px;
-  --most-visited-icon-size: 36px;
-  --most-visited-title-height: 24px;
-  --most-visited-icon-margin-top: 8px;
+  --most-visited-gap: 20px;
+  --most-visited-icon-size: 48px;
+  --most-visited-tile-size: 64px;
+  align-items: center;
   display: flex;
   justify-content: center;
   width: max-content;

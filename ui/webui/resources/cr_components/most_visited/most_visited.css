@@ -36,10 +36,13 @@
 }
 
 #container {
-  --content-width: calc(var(--column-count) * var(--tile-size)
-    /* We add an extra pixel because rounding errors on different zooms can
-      * make the width shorter than it should be. */
-    + 1px);
+  --content-width: calc(
+      var(--column-count) * var(--tile-size) +
+      max(0, var(--column-count) - 1) * var(--most-visited-gap, 0px)
+      /* We add an extra pixel because rounding errors on different zooms can
+       * make the width shorter than it should be. */
+      + 1px);
+  column-gap: var(--most-visited-gap, 0);
   display: flex;
   flex-wrap: wrap;
   height: calc(var(--row-count) * var(--tile-size));
@@ -256,8 +259,25 @@ cr-policy-indicator {
   direction: ltr;
 }
 
+:host([hide-title]) #container {
+  margin-bottom: 0;
+  padding: 0;
+  width: var(--content-width);
+}
+
 :host([hide-title]) .tile-title {
   display: none;
+}
+
+:host([hide-title]) .tile,
+:host([hide-title]) #addShortcut,
+:host([hide-title]) #showMore,
+:host([hide-title]) #showLess {
+  justify-content: center;
+}
+
+:host([hide-title]) .tile-icon {
+  margin: 0;
 }
 
 .tile.dragging {
