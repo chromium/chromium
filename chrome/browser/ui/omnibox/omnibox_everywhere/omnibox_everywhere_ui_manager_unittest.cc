@@ -666,7 +666,7 @@ TEST_F(OmniboxEverywhereUIManagerTest, ContextMenuModelEditableElement) {
 
   content::ContextMenuParams params;
   params.is_editable = true;
-  ui_manager->HandleContextMenu(*rfh, params);
+  EXPECT_TRUE(ui_manager->HandleContextMenu(*rfh, params));
 
   const ui::SimpleMenuModel* model =
       ui_manager->context_menu_model_for_testing();
@@ -696,7 +696,7 @@ TEST_F(OmniboxEverywhereUIManagerTest,
   content::ContextMenuParams params;
   params.is_editable = false;
   params.selection_text = u"selected text";
-  ui_manager->HandleContextMenu(*rfh, params);
+  EXPECT_TRUE(ui_manager->HandleContextMenu(*rfh, params));
 
   const ui::SimpleMenuModel* model =
       ui_manager->context_menu_model_for_testing();
@@ -710,7 +710,7 @@ TEST_F(OmniboxEverywhereUIManagerTest,
 }
 
 TEST_F(OmniboxEverywhereUIManagerTest,
-       ContextMenuModelNonEditableElementWithoutSelection) {
+       ContextMenuSuppressedOnNonEditableBackground) {
   auto ui_manager = CreateUIManager();
   ui_manager->ShowForProfile(&profile_, GetContext());
   ASSERT_TRUE(ui_manager->widget());
@@ -719,19 +719,32 @@ TEST_F(OmniboxEverywhereUIManagerTest,
                   ->web_contents()
                   ->GetPrimaryMainFrame();
 
+  // Right-clicking on empty background space (not editable, no selection text).
   content::ContextMenuParams params;
   params.is_editable = false;
-  ui_manager->HandleContextMenu(*rfh, params);
+  params.selection_text = u"";
 
-  const ui::SimpleMenuModel* model =
-      ui_manager->context_menu_model_for_testing();
-  ASSERT_TRUE(model);
-  EXPECT_EQ(model->GetItemCount(), 3u);
-  EXPECT_EQ(model->GetCommandIdAt(0),
-            omnibox_everywhere::OmniboxEverywhereUIManager::kPaste);
-  EXPECT_EQ(model->GetTypeAt(1), ui::MenuModel::ItemType::TYPE_SEPARATOR);
-  EXPECT_EQ(model->GetCommandIdAt(2),
-            omnibox_everywhere::OmniboxEverywhereUIManager::kSelectAll);
+  bool menu_runner_created = false;
+  ui_manager->SetMenuRunnerFactoryForTesting(base::BindRepeating(
+      [](bool* created, ui::MenuModel* model,
+         base::RepeatingClosure on_closed) {
+        *created = true;
+        auto runner = std::make_unique<views::MenuRunner>(
+            model,
+            views::MenuRunner::HAS_MNEMONICS | views::MenuRunner::CONTEXT_MENU,
+            on_closed);
+        views::test::MenuRunnerTestAPI(runner.get())
+            .SetMenuRunnerHandler(std::make_unique<TestMenuRunnerHandler>());
+        return runner;
+      },
+      &menu_runner_created));
+
+  // Should return true (consumed/handled) but NOT create or open a context
+  // menu.
+  EXPECT_TRUE(ui_manager->HandleContextMenu(*rfh, params));
+  EXPECT_FALSE(menu_runner_created);
+  EXPECT_FALSE(ui_manager->is_context_menu_open_for_testing());
+  EXPECT_FALSE(ui_manager->context_menu_model_for_testing());
 }
 
 TEST_F(OmniboxEverywhereUIManagerTest, ContextMenuCommandEnablement) {

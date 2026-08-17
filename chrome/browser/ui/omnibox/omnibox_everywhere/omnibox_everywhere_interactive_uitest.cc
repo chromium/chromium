@@ -218,6 +218,60 @@ IN_PROC_BROWSER_TEST_F(OmniboxEverywhereBrowserTest,
                   InvokeViaHotkey(), CheckWidgetVisible(false));
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_CopyPasteSupportInQueryBox DISABLED_CopyPasteSupportInQueryBox
+#else
+#define MAYBE_CopyPasteSupportInQueryBox CopyPasteSupportInQueryBox
+#endif
+IN_PROC_BROWSER_TEST_F(OmniboxEverywhereBrowserTest,
+                       MAYBE_CopyPasteSupportInQueryBox) {
+  OmniboxEverywhereController* controller =
+      g_browser_process->GetFeatures()->omnibox_everywhere_controller();
+  ASSERT_TRUE(controller);
+
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOmniboxWebContentsId);
+  const DeepQuery kSearchInputElement = {
+      "omnibox-everywhere-app",
+      "omnibox-everywhere-omnibox",
+      "cr-searchbox-input",
+      "#input",
+  };
+
+  RunTestSequence(
+      InvokeViaHotkey(), CheckWidgetVisible(true),
+      WaitForOmniboxWebUIReady(kOmniboxWebContentsId),
+      // Enter initial text into search input and verify.
+      ExecuteJsAt(kOmniboxWebContentsId, kSearchInputElement,
+                  "el => { el.focus(); el.value = 'initial query'; "
+                  "el.dispatchEvent(new "
+                  "Event('input', {bubbles: true})); }"),
+      CheckJsResultAt(kOmniboxWebContentsId, kSearchInputElement,
+                      "el => el.value", "initial query"),
+      // Simulate paste into the query input element.
+      ExecuteJsAt(
+          kOmniboxWebContentsId, kSearchInputElement,
+          "el => { "
+          "  el.focus(); "
+          "  el.select(); "
+          "  const dataTransfer = new DataTransfer(); "
+          "  dataTransfer.setData('text/plain', 'pasted search query'); "
+          "  const pasteEvent = new ClipboardEvent('paste', { "
+          "    clipboardData: dataTransfer, "
+          "    bubbles: true, "
+          "    cancelable: true "
+          "  }); "
+          "  el.dispatchEvent(pasteEvent); "
+          "  if (!pasteEvent.defaultPrevented) { "
+          "    el.value = 'pasted search query'; "
+          "    el.dispatchEvent(new Event('input', {bubbles: true})); "
+          "  } "
+          "}"),
+      // Verify query box value has updated to the pasted text.
+      CheckJsResultAt(kOmniboxWebContentsId, kSearchInputElement,
+                      "el => el.value", "pasted search query"),
+      InvokeViaHotkey(), CheckWidgetVisible(false));
+}
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 #define MAYBE_IgnoreDragToMoveInNoDragRegion IgnoreDragToMoveInNoDragRegion
 #else

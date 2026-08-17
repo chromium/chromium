@@ -591,11 +591,20 @@ void OmniboxEverywhereUIManager::DraggableRegionsChanged(
 // Omnibox Everywhere is a standalone popup WebUI window without a default
 // browser-frame context menu controller. HandleContextMenu creates and displays
 // a lightweight context menu for standard text editing actions (Cut, Copy,
-// Paste, Select All) in editable controls or selected text.
+// Paste, Select All) exclusively for editable controls (query input) or
+// selected text. Non-editable background/padding areas suppress the context
+// menu.
 bool OmniboxEverywhereUIManager::HandleContextMenu(
     content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params) {
   if (!widget_ || !widget_->GetContentsView()) {
+    return true;
+  }
+
+  // Only show a context menu for editable elements (e.g. search input box)
+  // or when text is selected. Suppress context menus when right-clicking on
+  // non-editable background or container padding of the widget.
+  if (!params.is_editable && params.selection_text.empty()) {
     return true;
   }
 
@@ -618,14 +627,9 @@ bool OmniboxEverywhereUIManager::HandleContextMenu(
     context_menu_model_->AddItemWithStringId(kPaste, IDS_APP_PASTE);
     context_menu_model_->AddSeparator(ui::NORMAL_SEPARATOR);
     context_menu_model_->AddItemWithStringId(kSelectAll, IDS_APP_SELECT_ALL);
-  } else if (!params.selection_text.empty()) {
-    context_menu_model_->AddItemWithStringId(kCopy, IDS_APP_COPY);
-    context_menu_model_->AddSeparator(ui::NORMAL_SEPARATOR);
-    context_menu_model_->AddItemWithStringId(kSelectAll, IDS_APP_SELECT_ALL);
   } else {
-    // If right-clicked on container/padding area, provide Paste and Select All
-    // so the user can paste clipboard text/files directly into the input.
-    context_menu_model_->AddItemWithStringId(kPaste, IDS_APP_PASTE);
+    CHECK(!params.selection_text.empty());
+    context_menu_model_->AddItemWithStringId(kCopy, IDS_APP_COPY);
     context_menu_model_->AddSeparator(ui::NORMAL_SEPARATOR);
     context_menu_model_->AddItemWithStringId(kSelectAll, IDS_APP_SELECT_ALL);
   }
