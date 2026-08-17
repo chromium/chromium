@@ -345,6 +345,10 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
             // as we always want to show it, even if we have to scroll the title text.
             var prevTitle = titles.get(prevIndex);
             var backButton = new ChromeImageButton(mContext);
+            // Assign a stable resource ID so UI tests and accessibility tools
+            // can directly look up the title back button without looping over
+            // child views.
+            backButton.setId(R.id.back_button);
             backButton.setImageResource(R.drawable.ic_arrow_back_24dp);
             // Ensure icon isn't stretched by the larger touch target.
             backButton.setScaleType(ImageView.ScaleType.CENTER);
