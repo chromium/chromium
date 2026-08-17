@@ -937,6 +937,21 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
     }
 
     /**
+     * Sets the input method mode for the popup. See {@link PopupWindow#setInputMethodMode(int)}.
+     *
+     * <p>Use {@link PopupWindow#INPUT_METHOD_NOT_NEEDED} to keep the popup focusable (so it remains
+     * reachable by accessibility and key navigation) while preventing it from taking input-method
+     * focus. This keeps any soft keyboard shown by the anchor's window visible instead of hiding it
+     * when the popup appears. See crbug.com/544573787.
+     *
+     * @param inputMethodMode One of {@link PopupWindow#INPUT_METHOD_FROM_FOCUSABLE}, {@link
+     *     PopupWindow#INPUT_METHOD_NEEDED} or {@link PopupWindow#INPUT_METHOD_NOT_NEEDED}.
+     */
+    public void setInputMethodMode(int inputMethodMode) {
+        mPopupWindow.setInputMethodMode(inputMethodMode);
+    }
+
+    /**
      * Sets whether the popup is allowed to be clipped by the screen edges. See {@link
      * PopupWindow#setClippingEnabled(boolean)}.
      *

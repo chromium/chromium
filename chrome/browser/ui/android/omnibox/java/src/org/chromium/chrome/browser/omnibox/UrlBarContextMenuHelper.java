@@ -63,6 +63,11 @@ class UrlBarContextMenuHelper {
         mListItems = new ModelList();
 
         mListMenuHost = new ListMenuHost(mAnchorView, null);
+        // Keep the soft keyboard visible while the omnibox context menu is up. The popup stays
+        // focusable (for accessibility and key navigation) but does not take input-method focus;
+        // otherwise showing it would move IME focus off the url bar and dismiss the keyboard,
+        // making it flicker while the menu is open. See crbug.com/544573787.
+        mListMenuHost.setKeepSoftInputVisible(true);
         mListMenuHost.setDelegate(createListMenuDelegate(), false);
     }
 

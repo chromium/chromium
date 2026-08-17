@@ -13,6 +13,7 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
+import android.widget.PopupWindow;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -80,6 +81,7 @@ public class ListMenuHost
     private @Nullable ListMenuDelegate mDelegate;
     private final ObserverList<PopupMenuShownListener> mPopupListeners = new ObserverList<>();
     private boolean mTryToFitLargestItem;
+    private boolean mKeepSoftInputVisible;
     private final boolean mPositionedAtStart;
     private final boolean mPositionedAtEnd;
 
@@ -210,6 +212,20 @@ public class ListMenuHost
         mMenuMaxWidth = maxWidth;
     }
 
+    /**
+     * Sets whether the popup should keep any soft keyboard shown by the anchor's window visible.
+     *
+     * <p>Defaults to {@code false}. Set to {@code true} for menus anchored to a focused text field
+     * (e.g. the omnibox): the popup stays focusable (so it remains reachable by accessibility and
+     * key navigation) but does not take input-method focus, so showing it does not dismiss the soft
+     * keyboard. This avoids the keyboard flickering while the menu is up. See crbug.com/544573787.
+     *
+     * @param keepSoftInputVisible Whether to keep the soft keyboard visible when the menu shows.
+     */
+    public void setKeepSoftInputVisible(boolean keepSoftInputVisible) {
+        mKeepSoftInputVisible = keepSoftInputVisible;
+    }
+
     /** Init the popup window with provided attributes, called before {@link #showMenu()} */
     private void initPopupWindow() {
         if (mDelegate == null) throw new IllegalStateException("Delegate was not set.");
@@ -257,6 +273,13 @@ public class ListMenuHost
         }
 
         AnchoredPopupWindow popupMenu = builder.build();
+        if (mKeepSoftInputVisible) {
+            // Keep the popup focusable (for accessibility and key navigation) but do not let it
+            // take
+            // input-method focus, so the soft keyboard shown by the anchor stays visible instead of
+            // flickering. See crbug.com/544573787.
+            popupMenu.setInputMethodMode(PopupWindow.INPUT_METHOD_NOT_NEEDED);
+        }
         getHierarchicalMenuControllerInternal()
                 .setupFlyoutController(
                         /* flyoutHandler= */ this,

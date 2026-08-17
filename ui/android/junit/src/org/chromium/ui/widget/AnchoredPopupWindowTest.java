@@ -130,6 +130,14 @@ public final class AnchoredPopupWindowTest {
     }
 
     @Test
+    public void setInputMethodMode_delegatesToPopupWindow() {
+        AnchoredPopupWindow popupWindow =
+                createAnchorPopupWindow(/* allowNonTouchableSize= */ true);
+        popupWindow.setInputMethodMode(PopupWindow.INPUT_METHOD_NOT_NEEDED);
+        verify(mPopupWindow).setInputMethodMode(PopupWindow.INPUT_METHOD_NOT_NEEDED);
+    }
+
+    @Test
     public void setAnimationStyleNotOverrideByAnimateFromAnchor() {
         AnchoredPopupWindow popupWindow =
                 createAnchorPopupWindow(/* allowNonTouchableSize= */ true);
