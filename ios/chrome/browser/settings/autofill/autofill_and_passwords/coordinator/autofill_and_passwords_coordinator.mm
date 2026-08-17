@@ -25,7 +25,8 @@
 #import "ios/chrome/browser/settings/autofill/autofill_and_passwords/coordinator/shopping_coordinator.h"
 #import "ios/chrome/browser/settings/autofill/autofill_and_passwords/coordinator/travel_info_coordinator.h"
 #import "ios/chrome/browser/settings/autofill/autofill_and_passwords/ui/autofill_and_passwords_table_view_controller.h"
-#import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_credit_card_table_view_controller.h"
+#import "ios/chrome/browser/settings/autofill/payments/coordinator/autofill_credit_card_coordinator.h"
+#import "ios/chrome/browser/settings/autofill/payments/coordinator/autofill_credit_card_coordinator_delegate.h"
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_profile_table_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/passwords_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -61,6 +62,7 @@ enum class YourSavedInfoDataCategory {
 
 @interface AutofillAndPasswordsCoordinator () <
     AutofillAndPasswordsTableViewControllerDelegate,
+    AutofillCreditCardCoordinatorDelegate,
     AutofillSettingsCoordinatorDelegate,
     IdentityDocsCoordinatorDelegate,
     PasswordsCoordinatorDelegate,
@@ -78,6 +80,7 @@ enum class YourSavedInfoDataCategory {
   TravelInfoCoordinator* _travelInfoCoordinator;
   ShoppingCoordinator* _shoppingCoordinator;
   AutofillSettingsCoordinator* _autofillSettingsCoordinator;
+  AutofillCreditCardCoordinator* _autofillCreditCardCoordinator;
 
   AutofillAndPasswordsSigninPromoMediator* _signinPromoMediator;
   SigninCoordinator* _signinCoordinator;
@@ -167,6 +170,10 @@ enum class YourSavedInfoDataCategory {
   [_autofillSettingsCoordinator stop];
   _autofillSettingsCoordinator = nil;
 
+  _autofillCreditCardCoordinator.delegate = nil;
+  [_autofillCreditCardCoordinator stop];
+  _autofillCreditCardCoordinator = nil;
+
   [_mediator disconnect];
   _mediator = nil;
 
@@ -232,22 +239,12 @@ enum class YourSavedInfoDataCategory {
   base::UmaHistogramEnumeration(
       "Autofill.YourSavedInfoSettingsPage.CategoryLinkClick",
       YourSavedInfoDataCategory::kPayments);
-  AutofillCreditCardTableViewController* creditCardController =
-      [[AutofillCreditCardTableViewController alloc]
-          initWithBrowser:self.browser];
 
-  CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
-  creditCardController.sceneHandler =
-      HandlerForProtocol(dispatcher, SceneCommands);
-  creditCardController.browserHandler =
-      HandlerForProtocol(dispatcher, BrowserCommands);
-  creditCardController.settingsHandler =
-      HandlerForProtocol(dispatcher, SettingsCommands);
-  creditCardController.snackbarHandler =
-      HandlerForProtocol(dispatcher, SnackbarCommands);
-
-  [self.baseNavigationController pushViewController:creditCardController
-                                           animated:YES];
+  _autofillCreditCardCoordinator = [[AutofillCreditCardCoordinator alloc]
+      initWithBaseNavigationController:self.baseNavigationController
+                               browser:self.browser];
+  _autofillCreditCardCoordinator.delegate = self;
+  [_autofillCreditCardCoordinator start];
 }
 
 - (void)autofillAndPasswordsTableViewControllerDidSelectAutofillProfile:
@@ -379,6 +376,16 @@ enum class YourSavedInfoDataCategory {
   _travelInfoCoordinator.delegate = nil;
   [_travelInfoCoordinator stop];
   _travelInfoCoordinator = nil;
+}
+
+#pragma mark - AutofillCreditCardCoordinatorDelegate
+
+- (void)autofillCreditCardCoordinatorDidRemove:
+    (AutofillCreditCardCoordinator*)coordinator {
+  CHECK_EQ(_autofillCreditCardCoordinator, coordinator);
+  _autofillCreditCardCoordinator.delegate = nil;
+  [_autofillCreditCardCoordinator stop];
+  _autofillCreditCardCoordinator = nil;
 }
 
 #pragma mark - ShoppingCoordinatorDelegate

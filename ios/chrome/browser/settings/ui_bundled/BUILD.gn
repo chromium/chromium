@@ -162,6 +162,7 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/search_engines/model",
     "//ios/chrome/browser/settings/autofill/autofill_and_passwords/coordinator",
     "//ios/chrome/browser/settings/autofill/autofill_and_passwords/utils:autofill_and_passwords_item_utils",
+    "//ios/chrome/browser/settings/autofill/payments/coordinator",
     "//ios/chrome/browser/settings/google_services/coordinator",
     "//ios/chrome/browser/settings/google_services/ui",
     "//ios/chrome/browser/settings/manage_accounts/coordinator",

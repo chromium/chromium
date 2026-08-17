@@ -4,6 +4,9 @@ include_rules = [
   "+ios/chrome/browser/autofill/model",
   "+ios/chrome/browser/autofill/ui_bundled/util/autofill_credit_card_util.h",
   "+ios/chrome/browser/settings/autofill/payments/ui",
+  "+ios/chrome/browser/settings/ui_bundled/autofill",
   "+ios/chrome/browser/settings/ui_bundled/credit_card_scanner",
+  "+ios/chrome/browser/settings/ui_bundled/settings_navigation_controller.h",
+  "+ios/chrome/browser/settings/ui_bundled/settings_root_table_view_controller.h",
   # keep-sorted end
 ]

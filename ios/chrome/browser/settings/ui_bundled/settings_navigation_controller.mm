@@ -25,6 +25,8 @@
 #import "ios/chrome/browser/settings/autofill/autofill_and_passwords/coordinator/identity_docs_coordinator.h"
 #import "ios/chrome/browser/settings/autofill/autofill_and_passwords/coordinator/shopping_coordinator.h"
 #import "ios/chrome/browser/settings/autofill/autofill_and_passwords/coordinator/travel_info_coordinator.h"
+#import "ios/chrome/browser/settings/autofill/payments/coordinator/autofill_credit_card_coordinator.h"
+#import "ios/chrome/browser/settings/autofill/payments/coordinator/autofill_credit_card_coordinator_delegate.h"
 #import "ios/chrome/browser/settings/google_services/coordinator/google_services_settings_coordinator.h"
 #import "ios/chrome/browser/settings/google_services/ui/google_services_settings_view_controller.h"
 #import "ios/chrome/browser/settings/manage_accounts/coordinator/manage_accounts_coordinator.h"
@@ -93,6 +95,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 
 @interface SettingsNavigationController () <
     AutofillAndPasswordsCoordinatorDelegate,
+    AutofillCreditCardCoordinatorDelegate,
     AutofillProfileEditCoordinatorDelegate,
     AutofillSettingsCoordinatorDelegate,
     ContentSettingsCoordinatorDelegate,
@@ -138,6 +141,10 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 // Autofill profile edit coordinator.
 @property(nonatomic, strong)
     AutofillProfileEditCoordinator* autofillProfileEditCoordinator;
+
+// Autofill credit card coordinator.
+@property(nonatomic, strong)
+    AutofillCreditCardCoordinator* autofillCreditCardCoordinator;
 
 // Gemini settings coordinator.
 @property(nonatomic, strong)
@@ -569,14 +576,19 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
                                   delegate:
                                       (id<SettingsNavigationControllerDelegate>)
                                           delegate {
-  AutofillCreditCardTableViewController* controller =
-      [[AutofillCreditCardTableViewController alloc] initWithBrowser:browser];
-
   SettingsNavigationController* navigationController =
       [[SettingsNavigationController alloc]
-          initWithRootViewController:controller
+          initWithRootViewController:nil
                              browser:browser
                             delegate:delegate];
+
+  navigationController.autofillCreditCardCoordinator =
+      [[AutofillCreditCardCoordinator alloc]
+          initWithBaseNavigationController:navigationController
+                                   browser:browser];
+  navigationController.autofillCreditCardCoordinator.delegate =
+      navigationController;
+  [navigationController.autofillCreditCardCoordinator start];
 
   return navigationController;
 }
@@ -828,6 +840,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   [self stopNotificationsCoordinator];
   [self stopGeminiSettingsCoordinator];
   [self stopAutofillSettingsCoordinator];
+  [self stopAutofillCreditCardCoordinator];
   [self stopIdentityDocsCoordinator];
   [self stopShoppingCoordinator];
   [self stopTravelInfoCoordinator];
@@ -1142,6 +1155,13 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   _autofillSettingsCoordinator = nil;
 }
 
+// Stops the underlying Autofill Credit Card coordinator.
+- (void)stopAutofillCreditCardCoordinator {
+  [self.autofillCreditCardCoordinator stop];
+  self.autofillCreditCardCoordinator.delegate = nil;
+  self.autofillCreditCardCoordinator = nil;
+}
+
 #pragma mark - ContentSettingsCoordinatorDelegate
 
 - (void)contentSettingsCoordinatorViewControllerWasRemoved:
@@ -1268,6 +1288,14 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
     (AutofillSettingsCoordinator*)coordinator {
   DCHECK_EQ(_autofillSettingsCoordinator, coordinator);
   [self stopAutofillSettingsCoordinator];
+}
+
+#pragma mark - AutofillCreditCardCoordinatorDelegate
+
+- (void)autofillCreditCardCoordinatorDidRemove:
+    (AutofillCreditCardCoordinator*)coordinator {
+  DCHECK_EQ(self.autofillCreditCardCoordinator, coordinator);
+  [self stopAutofillCreditCardCoordinator];
 }
 
 #pragma mark - UIAdaptivePresentationControllerDelegate
@@ -1514,11 +1542,12 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 }
 
 - (void)showCreditCardSettings {
-  AutofillCreditCardTableViewController* controller =
-      [[AutofillCreditCardTableViewController alloc]
-          initWithBrowser:self.browser];
-  ConfigureHandlers(controller, _browser->GetCommandDispatcher());
-  [self pushViewController:controller animated:YES];
+  [self stopAutofillCreditCardCoordinator];
+  self.autofillCreditCardCoordinator = [[AutofillCreditCardCoordinator alloc]
+      initWithBaseNavigationController:self
+                               browser:self.browser];
+  self.autofillCreditCardCoordinator.delegate = self;
+  [self.autofillCreditCardCoordinator start];
 }
 
 - (void)showCreditCardDetails:(autofill::CreditCard)creditCard

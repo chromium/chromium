@@ -20,8 +20,6 @@ source_set("autofill") {
   public_deps = [
     "//ios/chrome/browser/settings/autofill/bnpl/coordinator",
     "//ios/chrome/browser/settings/autofill/bnpl/ui",
-    "//ios/chrome/browser/settings/autofill/payments/coordinator",
-    "//ios/chrome/browser/settings/autofill/payments/ui",
     "//ios/chrome/browser/settings/autofill/suggestions_from_gemini/coordinator",
     "//ios/chrome/browser/settings/autofill/suggestions_from_gemini/ui",
     "//ios/chrome/browser/settings/autofill/ui",
@@ -59,6 +57,9 @@ source_set("autofill") {
     "//ios/chrome/browser/settings/autofill/autofill_ai/coordinator",
     "//ios/chrome/browser/settings/autofill/autofill_ai/ui",
     "//ios/chrome/browser/settings/autofill/autofill_and_passwords/utils:autofill_and_passwords_item_utils",
+    "//ios/chrome/browser/settings/autofill/payments/coordinator:add_credit_card",
+    "//ios/chrome/browser/settings/autofill/payments/coordinator:cvc_storage",
+    "//ios/chrome/browser/settings/autofill/payments/ui",
     "//ios/chrome/browser/settings/autofill/ui",
     "//ios/chrome/browser/settings/autofill/utils:autofill_settings_ui_util",
     "//ios/chrome/browser/settings/ui_bundled:settings_root",

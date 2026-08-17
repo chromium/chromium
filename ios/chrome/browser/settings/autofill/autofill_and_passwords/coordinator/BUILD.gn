@@ -53,6 +53,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/settings/autofill/autofill_ai/coordinator",
     "//ios/chrome/browser/settings/autofill/autofill_ai/ui",
     "//ios/chrome/browser/settings/autofill/autofill_and_passwords/ui:autofill_and_passwords",
+    "//ios/chrome/browser/settings/autofill/payments/coordinator",
     "//ios/chrome/browser/settings/autofill/utils:autofill_settings_ui_util",
     "//ios/chrome/browser/settings/ui_bundled/autofill",
     "//ios/chrome/browser/settings/ui_bundled/password",

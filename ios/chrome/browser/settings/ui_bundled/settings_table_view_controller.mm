@@ -85,13 +85,14 @@
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/settings/autofill/autofill_and_passwords/coordinator/autofill_and_passwords_coordinator.h"
 #import "ios/chrome/browser/settings/autofill/autofill_and_passwords/utils/autofill_and_passwords_item_utils.h"
+#import "ios/chrome/browser/settings/autofill/payments/coordinator/autofill_credit_card_coordinator.h"
+#import "ios/chrome/browser/settings/autofill/payments/coordinator/autofill_credit_card_coordinator_delegate.h"
 #import "ios/chrome/browser/settings/google_services/coordinator/google_services_settings_coordinator.h"
 #import "ios/chrome/browser/settings/manage_sync/coordinator/manage_sync_settings_coordinator.h"
 #import "ios/chrome/browser/settings/model/sync/utils/identity_error_util.h"
 #import "ios/chrome/browser/settings/model/sync/utils/sync_util.h"
 #import "ios/chrome/browser/settings/ui_bundled/about_chrome_table_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/address_bar_preference/address_bar_preference_coordinator.h"
-#import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_credit_card_table_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_profile_table_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/bandwidth/bandwidth_management_table_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/bwg/coordinator/gemini_settings_coordinator.h"
@@ -251,6 +252,7 @@ enum class IOSDefaultBrowserSettingsPassivePromoAction {
     AddressBarPreferenceCoordinatorDelegate,
     AuthenticationServiceObserving,
     AutofillAndPasswordsCoordinatorDelegate,
+    AutofillCreditCardCoordinatorDelegate,
     BooleanObserver,
     ContentSettingsCoordinatorDelegate,
     DiscoverFeedVisibilityObserver,
@@ -326,6 +328,9 @@ enum class IOSDefaultBrowserSettingsPassivePromoAction {
 
   // Autofill and passwords coordinator.
   AutofillAndPasswordsCoordinator* _autofillAndPasswordsCoordinator;
+
+  // Autofill credit card coordinator.
+  AutofillCreditCardCoordinator* _autofillCreditCardCoordinator;
 
   // Feature engagement tracker for the signin IPH.
   raw_ptr<feature_engagement::Tracker>
@@ -1488,8 +1493,7 @@ enum class IOSDefaultBrowserSettingsPassivePromoAction {
       break;
     case SettingsItemTypeAutofillCreditCard:
       base::RecordAction(base::UserMetricsAction("AutofillCreditCardsViewed"));
-      controller = [[AutofillCreditCardTableViewController alloc]
-          initWithBrowser:_browser];
+      [self showCreditCardSettingsWithLevelUpWalkthroughIPH:NO];
       break;
     case SettingsItemTypeAutofillProfile:
       base::RecordAction(base::UserMetricsAction("AutofillAddressesViewed"));
@@ -2246,10 +2250,15 @@ enum class IOSDefaultBrowserSettingsPassivePromoAction {
 // Shows the Payment Methods settings page, optionally triggering the Level Up
 // Payment Methods walkthrough IPH.
 - (void)showCreditCardSettingsWithLevelUpWalkthroughIPH:(BOOL)shouldShowIPH {
-  AutofillCreditCardTableViewController* controller =
-      [[AutofillCreditCardTableViewController alloc] initWithBrowser:_browser];
-  controller.shouldShowLevelUpPaymentMethodsWalkthroughIPH = shouldShowIPH;
-  [self.navigationController pushViewController:controller animated:YES];
+  [_autofillCreditCardCoordinator stop];
+
+  _autofillCreditCardCoordinator = [[AutofillCreditCardCoordinator alloc]
+      initWithBaseNavigationController:self.navigationController
+                               browser:_browser];
+  _autofillCreditCardCoordinator.delegate = self;
+  _autofillCreditCardCoordinator.shouldShowLevelUpPaymentMethodsWalkthroughIPH =
+      shouldShowIPH;
+  [_autofillCreditCardCoordinator start];
 }
 
 // Check if the default search engine is managed by policy.
@@ -2732,6 +2741,10 @@ enum class IOSDefaultBrowserSettingsPassivePromoAction {
   _autofillAndPasswordsCoordinator.delegate = nil;
   _autofillAndPasswordsCoordinator = nil;
 
+  [_autofillCreditCardCoordinator stop];
+  _autofillCreditCardCoordinator.delegate = nil;
+  _autofillCreditCardCoordinator = nil;
+
   [_notificationsCoordinator stop];
   _notificationsCoordinator = nil;
 
@@ -3037,6 +3050,17 @@ enum class IOSDefaultBrowserSettingsPassivePromoAction {
   [_autofillAndPasswordsCoordinator stop];
   _autofillAndPasswordsCoordinator.delegate = nil;
   _autofillAndPasswordsCoordinator = nil;
+}
+
+#pragma mark - AutofillCreditCardCoordinatorDelegate
+
+- (void)autofillCreditCardCoordinatorDidRemove:
+    (AutofillCreditCardCoordinator*)coordinator {
+  CHECK_EQ(_autofillCreditCardCoordinator, coordinator,
+           base::NotFatalUntil::M157);
+  [_autofillCreditCardCoordinator stop];
+  _autofillCreditCardCoordinator.delegate = nil;
+  _autofillCreditCardCoordinator = nil;
 }
 
 #pragma mark - PasswordsCoordinatorDelegate
