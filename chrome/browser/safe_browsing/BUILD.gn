@@ -98,6 +98,7 @@ static_library("safe_browsing") {
     "//components/security_interstitials/core",
     "//components/sessions",
     "//components/signin/public/identity_manager",
+    "//components/strings:components_strings",
     "//components/url_formatter",
     "//components/user_education/product_messaging",
     "//components/vector_icons",
@@ -105,6 +106,7 @@ static_library("safe_browsing") {
     "//mojo/public/cpp/system",
     "//services/metrics/public/cpp:ukm_builders",
     "//services/preferences/public/cpp",
+    "//ui/base",
   ]
 
   if (enable_extensions) {
@@ -180,6 +182,7 @@ static_library("safe_browsing") {
       "chrome_password_reuse_detection_manager_client.h",
       "chrome_ping_manager_factory.h",
       "chrome_safe_browsing_blocking_page_factory.h",
+      "chrome_safe_browsing_hats_delegate.h",
       "chrome_safe_browsing_local_state_delegate.h",
       "chrome_safe_browsing_tab_observer_delegate.h",
       "chrome_ui_manager_delegate.h",
@@ -243,6 +246,7 @@ static_library("safe_browsing") {
       "chrome_password_reuse_detection_manager_client.cc",
       "chrome_ping_manager_factory.cc",
       "chrome_safe_browsing_blocking_page_factory.cc",
+      "chrome_safe_browsing_hats_delegate.cc",
       "chrome_safe_browsing_local_state_delegate.cc",
       "chrome_safe_browsing_tab_observer_delegate.cc",
       "chrome_ui_manager_delegate.cc",
@@ -323,6 +327,7 @@ static_library("safe_browsing") {
       "//chrome/browser/profiles:profile",
       "//chrome/browser/search_engines",
       "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/hats",
       "//chrome/browser/ui/safety_hub",
       "//chrome/common/safe_browsing:archive_analyzer_results",
       "//chrome/common/safe_browsing:binary_feature_extractor",
@@ -389,7 +394,6 @@ static_library("safe_browsing") {
       # "Safe Browsing Full" files in addition to the "basic" ones to use for
       # full safe browsing. This has some in common with "mobile."
       public += [
-        "chrome_safe_browsing_hats_delegate.h",
         "download_protection/download_feedback.h",
         "download_protection/download_feedback_service.h",
         "download_protection/download_protection_delegate_desktop.h",
@@ -453,7 +457,6 @@ static_library("safe_browsing") {
         "tailored_security/notification_handler_desktop.h",
       ]
       sources += [
-        "chrome_safe_browsing_hats_delegate.cc",
         "download_protection/download_feedback.cc",
         "download_protection/download_feedback_service.cc",
         "download_protection/download_protection_delegate_desktop.cc",
@@ -542,7 +545,6 @@ static_library("safe_browsing") {
         "//build:chromeos_buildflags",
         "//chrome/app/vector_icons",
         "//chrome/browser/safe_browsing/incident_reporting:state_store_data_proto",
-        "//chrome/browser/ui/hats",
         "//chrome/browser/ui/tabs:tab_strip",
         "//chrome/common",
         "//chrome/common/extensions",
@@ -631,7 +633,7 @@ static_library("safe_browsing") {
         "//chrome/app/vector_icons",
         "//chrome/browser/safe_browsing/android",
         "//chrome/browser/ui/android/hats",
-        "//chrome/browser/ui/hats",
+        "//chrome/browser/ui/android/tab_model",
         "//components/messages/android",
         "//components/safe_browsing:buildflags",
         "//components/safe_browsing/android:remote_database_manager",
@@ -775,6 +777,7 @@ source_set("unit_tests") {
   if (safe_browsing_mode != 0) {
     sources += [
       "chrome_password_protection_service_unittest.cc",
+      "chrome_safe_browsing_hats_delegate_unittest.cc",
       "chrome_ui_manager_delegate_unittest.cc",
       "chrome_user_population_helper_unittest.cc",
       "client_side_detection_host_unittest.cc",
