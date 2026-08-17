@@ -62,6 +62,7 @@ source_set("browser_tests") {
     "//chrome/browser/ui",
     "//chrome/browser/ui/tabs:features",
     "//chrome/test:test_support",
+    "//components/javascript_dialogs",
     "//components/tabs:public",
     "//content/test:test_support",
     "//net:test_support",

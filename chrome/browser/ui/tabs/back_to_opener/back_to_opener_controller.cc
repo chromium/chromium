@@ -86,6 +86,7 @@ TabCloseObserver* TabCloseObserver::CreateForWebContents(
   if (auto* existing = FromWebContents(web_contents)) {
     existing->close_start_time_ = close_start_time;
     existing->opener_web_contents_ = opener_web_contents;
+    existing->close_was_cancelled_ = false;
     return existing;
   }
 
@@ -107,7 +108,21 @@ TabCloseObserver::TabCloseObserver(
 
 TabCloseObserver::~TabCloseObserver() = default;
 
+void TabCloseObserver::BeforeUnloadFired(bool proceed) {
+  if (!proceed) {
+    MarkCloseCancelled();
+  }
+}
+
+void TabCloseObserver::BeforeUnloadDialogCancelled() {
+  MarkCloseCancelled();
+}
+
 void TabCloseObserver::WebContentsDestroyed() {
+  if (close_was_cancelled_) {
+    return;
+  }
+
   // Record the tab close duration.
   base::TimeDelta close_duration = base::TimeTicks::Now() - close_start_time_;
   base::UmaHistogramLongTimes(
@@ -152,6 +167,10 @@ void TabCloseObserver::WebContentsDestroyed() {
       window->Activate();
     }
   }
+}
+
+void TabCloseObserver::MarkCloseCancelled() {
+  close_was_cancelled_ = true;
 }
 
 BackToOpenerController::BackToOpenerController(tabs::TabInterface& tab)
@@ -245,7 +264,7 @@ void BackToOpenerController::GoBackToOpener() {
 
   content::WebContents* dst_contents = tab().GetContents();
   if (dst_contents && opener_web_contents_) {
-    // Record the time when ClosePage() is called to measure tab close duration.
+    // Record the time when closing starts to measure tab close duration.
     // Create TabCloseObserver to handle duration measurement and opener
     // activation after the tab is actually destroyed (after any unload
     // prompts).
@@ -253,7 +272,7 @@ void BackToOpenerController::GoBackToOpener() {
     TabCloseObserver::CreateForWebContents(dst_contents, opener_web_contents_,
                                            close_start_time);
 
-    dst_contents->ClosePage();
+    tab().Close();
   }
 }
 

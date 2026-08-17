@@ -53,10 +53,10 @@ class OpenerWebContentsObserver : public content::WebContentsObserver {
 // Observes the WebContents to measure tab close duration and activate the
 // opener tab once the tab is actually destroyed.
 //
-// ClosePage() doesn't immediately destroy the WebContents. The close process
-// may involve unload prompts, and destruction happens asynchronously. This
-// separate observer ensures we can reliably record metrics and activate the
-// opener when the WebContents is actually destroyed.
+// Closing a tab doesn't always immediately destroy the WebContents. The close
+// process may involve unload prompts, and destruction happens asynchronously.
+// This separate observer ensures we can reliably record metrics and activate
+// the opener when the WebContents is actually destroyed.
 class TabCloseObserver : public content::WebContentsObserver,
                          public content::WebContentsUserData<TabCloseObserver> {
  public:
@@ -67,6 +67,8 @@ class TabCloseObserver : public content::WebContentsObserver,
   ~TabCloseObserver() override;
 
   // content::WebContentsObserver:
+  void BeforeUnloadFired(bool proceed) override;
+  void BeforeUnloadDialogCancelled() override;
   void WebContentsDestroyed() override;
 
  private:
@@ -76,8 +78,11 @@ class TabCloseObserver : public content::WebContentsObserver,
                    base::WeakPtr<content::WebContents> opener_web_contents,
                    base::TimeTicks close_start_time);
 
+  void MarkCloseCancelled();
+
   base::TimeTicks close_start_time_;
   base::WeakPtr<content::WebContents> opener_web_contents_;
+  bool close_was_cancelled_ = false;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
