@@ -181,12 +181,27 @@ class PhysicalDeviceRecoveryFactorTest : public testing::Test {
         .local_device_registration_info();
   }
 
+  void MaybeRegisterAndExpectNotAttempted(
+      TrustedVaultRecoveryFactorRegistrationStateForUMA expected_state) {
+    base::MockCallback<LocalRecoveryFactor::RegisterCallback> register_callback;
+    EXPECT_CALL(
+        register_callback,
+        Run(TrustedVaultRegistrationStatus::kRegistrationNotAttempted, _, _));
+    base::RunLoop run_loop;
+    TrustedVaultRecoveryFactorRegistrationStateForUMA status =
+        recovery_factor()->MaybeRegister(
+            register_callback.Get().Then(run_loop.QuitClosure()));
+    run_loop.Run();
+    EXPECT_EQ(status, expected_state);
+  }
+
  private:
   std::unique_ptr<StandaloneTrustedVaultStorage> storage_ = nullptr;
   raw_ptr<FakeFileAccess> file_access_ = nullptr;
   std::unique_ptr<NiceMock<MockTrustedVaultThrottlingConnection>> connection_ =
       nullptr;
   std::unique_ptr<PhysicalDeviceRecoveryFactor> recovery_factor_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
 };
 
 TEST_F(PhysicalDeviceRecoveryFactorTest, ShouldRegisterDevice) {
@@ -254,10 +269,7 @@ TEST_F(PhysicalDeviceRecoveryFactorTest, ShouldNotRegisterIfAlreadyRegistered) {
   EXPECT_CALL(*connection(), RegisterAuthenticationFactor).Times(0);
   EXPECT_CALL(*connection(), RegisterLocalDeviceWithoutKeys).Times(0);
 
-  TrustedVaultRecoveryFactorRegistrationStateForUMA status =
-      recovery_factor()->MaybeRegister(base::DoNothing());
-  EXPECT_EQ(
-      status,
+  MaybeRegisterAndExpectNotAttempted(
       TrustedVaultRecoveryFactorRegistrationStateForUMA::kAlreadyRegisteredV1);
 }
 
@@ -276,10 +288,7 @@ TEST_F(PhysicalDeviceRecoveryFactorTest,
   EXPECT_CALL(*connection(), RegisterAuthenticationFactor).Times(0);
   EXPECT_CALL(*connection(), RegisterLocalDeviceWithoutKeys).Times(0);
 
-  TrustedVaultRecoveryFactorRegistrationStateForUMA status =
-      recovery_factor()->MaybeRegister(base::DoNothing());
-  EXPECT_EQ(
-      status,
+  MaybeRegisterAndExpectNotAttempted(
       TrustedVaultRecoveryFactorRegistrationStateForUMA::kAlreadyRegisteredV1);
 }
 
@@ -430,11 +439,7 @@ TEST_F(PhysicalDeviceRecoveryFactorTest,
   EXPECT_CALL(*connection(), RegisterAuthenticationFactor).Times(0);
   EXPECT_CALL(*connection(), RegisterLocalDeviceWithoutKeys).Times(0);
 
-  TrustedVaultRecoveryFactorRegistrationStateForUMA status =
-      recovery_factor()->MaybeRegister(base::DoNothing());
-
-  EXPECT_EQ(
-      status,
+  MaybeRegisterAndExpectNotAttempted(
       TrustedVaultRecoveryFactorRegistrationStateForUMA::kLocalKeysAreStale);
 }
 
@@ -444,18 +449,12 @@ TEST_F(PhysicalDeviceRecoveryFactorTest,
   EXPECT_CALL(*connection(), RegisterAuthenticationFactor).Times(0);
   EXPECT_CALL(*connection(), RegisterLocalDeviceWithoutKeys).Times(0);
 
-  TrustedVaultRecoveryFactorRegistrationStateForUMA status =
-      recovery_factor()->MaybeRegister(base::DoNothing());
-
-  EXPECT_EQ(
-      status,
+  MaybeRegisterAndExpectNotAttempted(
       TrustedVaultRecoveryFactorRegistrationStateForUMA::kThrottledClientSide);
 }
 
 TEST_F(PhysicalDeviceRecoveryFactorTest,
        ShouldNotAttemptKeyRecoveryWhenNotRegistered) {
-  base::test::SingleThreadTaskEnvironment environment;
-
   EXPECT_CALL(*connection(), DownloadNewKeys).Times(0);
 
   base::MockCallback<LocalRecoveryFactor::AttemptRecoveryCallback>
@@ -479,8 +478,6 @@ TEST_F(PhysicalDeviceRecoveryFactorTest,
 
 TEST_F(PhysicalDeviceRecoveryFactorTest,
        ShouldNotAttemptKeyRecoveryWhenThrottled) {
-  base::test::SingleThreadTaskEnvironment environment;
-
   // Mimic device previously registered with some keys.
   StoreKeysAndMimicDeviceRegistration(account_info(), {kVaultKey},
                                       kLastKeyVersion);
@@ -703,6 +700,61 @@ TEST_F(PhysicalDeviceRecoveryFactorTest,
   std::move(download_keys_callback)
       .Run(TrustedVaultDownloadKeysStatus::kSuccess, kNewVaultKeys,
            kServerLastKeyVersion);
+}
+
+TEST_F(PhysicalDeviceRecoveryFactorTest,
+       ShouldCancelOngoingRegistrationWhenNewRegistrationStarted) {
+  StoreKeys(account_info(), {kVaultKey}, kLastKeyVersion);
+
+  TrustedVaultConnection::RegisterAuthenticationFactorCallback
+      first_device_registration_callback;
+  EXPECT_CALL(*connection(), RegisterAuthenticationFactor)
+      .WillOnce([&](const CoreAccountInfo&, const MemberKeysSource&,
+                    const SecureBoxPublicKey&,
+                    AuthenticationFactorTypeAndRegistrationParams,
+                    TrustedVaultConnection::RegisterAuthenticationFactorCallback
+                        callback) {
+        first_device_registration_callback = std::move(callback);
+        return std::make_unique<TrustedVaultConnection::Request>();
+      });
+
+  // Start first registration.
+  base::MockCallback<LocalRecoveryFactor::RegisterCallback>
+      first_register_callback;
+  base::RunLoop first_cancelled_run_loop;
+  recovery_factor()->MaybeRegister(first_register_callback.Get().Then(
+      first_cancelled_run_loop.QuitClosure()));
+  ASSERT_FALSE(first_device_registration_callback.is_null());
+
+  // Starting a second registration should cancel the first one with
+  // kRegistrationCancelled.
+  EXPECT_CALL(
+      first_register_callback,
+      Run(TrustedVaultRegistrationStatus::kRegistrationCancelled, _, _));
+
+  TrustedVaultConnection::RegisterAuthenticationFactorCallback
+      second_device_registration_callback;
+  EXPECT_CALL(*connection(), RegisterAuthenticationFactor)
+      .WillOnce([&](const CoreAccountInfo&, const MemberKeysSource&,
+                    const SecureBoxPublicKey&,
+                    AuthenticationFactorTypeAndRegistrationParams,
+                    TrustedVaultConnection::RegisterAuthenticationFactorCallback
+                        callback) {
+        second_device_registration_callback = std::move(callback);
+        return std::make_unique<TrustedVaultConnection::Request>();
+      });
+
+  base::MockCallback<LocalRecoveryFactor::RegisterCallback>
+      second_register_callback;
+  recovery_factor()->MaybeRegister(second_register_callback.Get());
+  first_cancelled_run_loop.Run();
+  ASSERT_FALSE(second_device_registration_callback.is_null());
+
+  // Complete the second registration.
+  EXPECT_CALL(second_register_callback,
+              Run(TrustedVaultRegistrationStatus::kSuccess, _, _));
+  std::move(second_device_registration_callback)
+      .Run(TrustedVaultRegistrationStatus::kSuccess, kLastKeyVersion);
 }
 
 }  // namespace

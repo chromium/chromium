@@ -719,6 +719,11 @@ bool StoreWrappedSecrets(EnclaveLocalState::User* user,
 const char* TrustedVaultRegistrationStatusToString(
     trusted_vault::TrustedVaultRegistrationStatus status) {
   switch (status) {
+    case trusted_vault::TrustedVaultRegistrationStatus::
+        kRegistrationNotAttempted:
+      return "RegistrationNotAttempted";
+    case trusted_vault::TrustedVaultRegistrationStatus::kRegistrationCancelled:
+      return "RegistrationCancelled";
     case trusted_vault::TrustedVaultRegistrationStatus::kSuccess:
       return "Success";
     case trusted_vault::TrustedVaultRegistrationStatus::kAlreadyRegistered:

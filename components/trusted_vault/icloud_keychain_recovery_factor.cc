@@ -82,18 +82,16 @@ void ICloudKeychainRecoveryFactor::AttemptRecovery(AttemptRecoveryCallback cb) {
 
   // ICloudRecoveryKey::Retrieve() can't be cancelled, so we use a weak pointer
   // for the callback.
-  ongoing_keychain_tasks_count_++;
   ICloudRecoveryKey::Retrieve(
       base::BindOnce(
           &ICloudKeychainRecoveryFactor::OnICloudKeysRetrievedForRecovery,
-          weak_ptr_factory_.GetWeakPtr(), std::move(cb)),
+          recovery_weak_ptr_factory_.GetWeakPtr(), std::move(cb)),
       security_domain_id_, icloud_keychain_access_group_);
 }
 
 void ICloudKeychainRecoveryFactor::OnICloudKeysRetrievedForRecovery(
     AttemptRecoveryCallback cb,
     std::vector<std::unique_ptr<ICloudRecoveryKey>> local_icloud_keys) {
-  ongoing_keychain_tasks_count_--;
   if (local_icloud_keys.empty()) {
     MarkAsNotRegistered();
     FulfillRecoveryWithFailure(
@@ -229,6 +227,9 @@ ICloudKeychainRecoveryFactor::MaybeRegister(RegisterCallback cb) {
   const auto& per_user_vault = GetPrimaryAccountVault();
 
   if (per_user_vault.icloud_keychain_registration_info().registered()) {
+    FulfillRegistrationWithFailure(
+        TrustedVaultRegistrationStatus::kRegistrationNotAttempted,
+        std::move(cb));
     return TrustedVaultRecoveryFactorRegistrationStateForUMA::
         kAlreadyRegisteredV1;
   }
@@ -236,11 +237,17 @@ ICloudKeychainRecoveryFactor::MaybeRegister(RegisterCallback cb) {
   if (per_user_vault.last_registration_returned_local_data_obsolete()) {
     // Client already knows that existing vault keys (or their absence) isn't
     // sufficient for registration. Fresh keys should be obtained first.
+    FulfillRegistrationWithFailure(
+        TrustedVaultRegistrationStatus::kRegistrationNotAttempted,
+        std::move(cb));
     return TrustedVaultRecoveryFactorRegistrationStateForUMA::
         kLocalKeysAreStale;
   }
 
   if (connection_->AreRequestsThrottled(primary_account_)) {
+    FulfillRegistrationWithFailure(
+        TrustedVaultRegistrationStatus::kRegistrationNotAttempted,
+        std::move(cb));
     return TrustedVaultRecoveryFactorRegistrationStateForUMA::
         kThrottledClientSide;
   }
@@ -248,17 +255,31 @@ ICloudKeychainRecoveryFactor::MaybeRegister(RegisterCallback cb) {
   if (!StandaloneTrustedVaultStorage::HasNonConstantKey(per_user_vault)) {
     // Registration without non-constant keys isn't supported for iCloud
     // Keychain.
+    FulfillRegistrationWithFailure(
+        TrustedVaultRegistrationStatus::kRegistrationNotAttempted,
+        std::move(cb));
     return TrustedVaultRecoveryFactorRegistrationStateForUMA::
         kRegistrationWithConstantKeyNotSupported;
   }
 
+  if (ongoing_registration_callback_) {
+    // Cancel ongoing requests before starting a new one.
+    ongoing_download_registration_state_request_for_registration_ = nullptr;
+    ongoing_registration_request_ = nullptr;
+    registration_weak_ptr_factory_.InvalidateWeakPtrs();
+    FulfillRegistrationWithFailure(
+        TrustedVaultRegistrationStatus::kRegistrationCancelled,
+        std::move(ongoing_registration_callback_));
+  }
+
+  ongoing_registration_callback_ = std::move(cb);
+
   // ICloudRecoveryKey::Retrieve() can't be cancelled, so we use a weak pointer
   // for the callback.
-  ongoing_keychain_tasks_count_++;
   ICloudRecoveryKey::Retrieve(
       base::BindOnce(
           &ICloudKeychainRecoveryFactor::OnICloudKeysRetrievedForRegistration,
-          weak_ptr_factory_.GetWeakPtr(), std::move(cb)),
+          registration_weak_ptr_factory_.GetWeakPtr()),
       security_domain_id_, icloud_keychain_access_group_);
 
   // We don't know yet whether there's an existing key pair in iCloud Keychain.
@@ -270,25 +291,15 @@ ICloudKeychainRecoveryFactor::MaybeRegister(RegisterCallback cb) {
       kAttemptingRegistrationWithNewKeyPair;
 }
 
-bool ICloudKeychainRecoveryFactor::IsIdleForTesting() const {
-  return !ongoing_registration_request_ &&
-         !ongoing_download_registration_state_request_for_recovery_ &&
-         !ongoing_download_registration_state_request_for_registration_ &&
-         ongoing_keychain_tasks_count_ == 0;
-}
-
 void ICloudKeychainRecoveryFactor::OnICloudKeysRetrievedForRegistration(
-    RegisterCallback cb,
     std::vector<std::unique_ptr<ICloudRecoveryKey>> local_icloud_keys) {
-  ongoing_keychain_tasks_count_--;
   if (local_icloud_keys.empty()) {
     // No local iCloud Keychain key. We need to create a new one and register
     // it.
-    ongoing_keychain_tasks_count_++;
     ICloudRecoveryKey::Create(
         base::BindOnce(
             &ICloudKeychainRecoveryFactor::OnICloudKeyCreatedForRegistration,
-            weak_ptr_factory_.GetWeakPtr(), std::move(cb)),
+            registration_weak_ptr_factory_.GetWeakPtr()),
         security_domain_id_, icloud_keychain_access_group_);
     return;
   }
@@ -300,15 +311,13 @@ void ICloudKeychainRecoveryFactor::OnICloudKeysRetrievedForRegistration(
           base::BindOnce(&ICloudKeychainRecoveryFactor::
                              OnRecoveryFactorStateDownloadedForRegistration,
                          // `this` outlives `ongoing_request_for_registration_`.
-                         base::Unretained(this), std::move(cb),
-                         std::move(local_icloud_keys)),
+                         base::Unretained(this), std::move(local_icloud_keys)),
           base::NullCallback());
   CHECK(ongoing_download_registration_state_request_for_registration_);
 }
 
 void ICloudKeychainRecoveryFactor::
     OnRecoveryFactorStateDownloadedForRegistration(
-        RegisterCallback cb,
         std::vector<std::unique_ptr<ICloudRecoveryKey>> local_icloud_keys,
         DownloadAuthenticationFactorsRegistrationStateResult result) {
   // This method should be called only as a result of
@@ -322,7 +331,8 @@ void ICloudKeychainRecoveryFactor::
       DownloadAuthenticationFactorsRegistrationStateResult::State::kError) {
     connection_->RecordFailedRequestForThrottling(primary_account_);
     FulfillRegistrationWithFailure(
-        TrustedVaultRegistrationStatus::kNetworkError, std::move(cb));
+        TrustedVaultRegistrationStatus::kNetworkError,
+        std::move(ongoing_registration_callback_));
     return;
   }
 
@@ -339,7 +349,7 @@ void ICloudKeychainRecoveryFactor::
                                    &MemberKeys::version)
               ->version;
       base::BindPostTaskToCurrentDefault(
-          base::BindOnce(std::move(cb),
+          base::BindOnce(std::move(ongoing_registration_callback_),
                          TrustedVaultRegistrationStatus::kAlreadyRegistered,
                          last_vault_key_version, /*had_local_keys=*/true))
           .Run();
@@ -349,21 +359,18 @@ void ICloudKeychainRecoveryFactor::
 
   // None of the retrieved iCloud Keychain keys is in the security domain. We
   // need to create a new one and register it.
-  ongoing_keychain_tasks_count_++;
   ICloudRecoveryKey::Create(
       base::BindOnce(
           &ICloudKeychainRecoveryFactor::OnICloudKeyCreatedForRegistration,
-          weak_ptr_factory_.GetWeakPtr(), std::move(cb)),
+          registration_weak_ptr_factory_.GetWeakPtr()),
       security_domain_id_, icloud_keychain_access_group_);
 }
 
 void ICloudKeychainRecoveryFactor::OnICloudKeyCreatedForRegistration(
-    RegisterCallback cb,
     std::unique_ptr<ICloudRecoveryKey> local_icloud_key) {
-  ongoing_keychain_tasks_count_--;
   if (!local_icloud_key) {
     FulfillRegistrationWithFailure(TrustedVaultRegistrationStatus::kOtherError,
-                                   std::move(cb));
+                                   std::move(ongoing_registration_callback_));
     return;
   }
 
@@ -376,12 +383,11 @@ void ICloudKeychainRecoveryFactor::OnICloudKeyCreatedForRegistration(
           per_user_vault.last_vault_key_version()),
       local_icloud_key->key()->public_key(), ICloudKeychain(),
       base::BindOnce(&ICloudKeychainRecoveryFactor::OnRegistered,
-                     base::Unretained(this), std::move(cb)));
+                     base::Unretained(this)));
   CHECK(ongoing_registration_request_);
 }
 
 void ICloudKeychainRecoveryFactor::OnRegistered(
-    RegisterCallback cb,
     TrustedVaultRegistrationStatus status,
     int key_version) {
   // This method should be called only as a result of
@@ -390,8 +396,13 @@ void ICloudKeychainRecoveryFactor::OnRegistered(
   // needed anymore.
   CHECK(ongoing_registration_request_);
   ongoing_registration_request_ = nullptr;
+  CHECK(ongoing_registration_callback_);
+  RegisterCallback cb = std::move(ongoing_registration_callback_);
 
   switch (status) {
+    case TrustedVaultRegistrationStatus::kRegistrationNotAttempted:
+    case TrustedVaultRegistrationStatus::kRegistrationCancelled:
+      NOTREACHED();
     case TrustedVaultRegistrationStatus::kSuccess:
     case TrustedVaultRegistrationStatus::kAlreadyRegistered:
       // kAlreadyRegistered handled as success, because it only means that
@@ -426,9 +437,10 @@ void ICloudKeychainRecoveryFactor::OnRegistered(
 void ICloudKeychainRecoveryFactor::FulfillRegistrationWithFailure(
     TrustedVaultRegistrationStatus status,
     RegisterCallback cb) {
-  std::move(cb).Run(status,
-                    /*key_version=*/0,
-                    /*had_local_keys=*/true);
+  base::BindPostTaskToCurrentDefault(base::BindOnce(std::move(cb), status,
+                                                    /*key_version=*/0,
+                                                    /*had_local_keys=*/true))
+      .Run();
 }
 
 const UserVault& ICloudKeychainRecoveryFactor::GetPrimaryAccountVault() {

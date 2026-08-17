@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
@@ -261,6 +262,10 @@ class StandaloneTrustedVaultBackend
   // destroyed before |storage_| (i.e. the order of the fields matters).
   std::vector<std::unique_ptr<LocalRecoveryFactor>> local_recovery_factors_;
 
+  // Tracks the number of ongoing registration attempts for each recovery
+  // factor type.
+  base::flat_map<LocalRecoveryFactorType, int> ongoing_registration_attempts_;
+
   // Error state of refresh token for |primary_account_|.
   RefreshTokenErrorState refresh_token_error_state_ =
       StandaloneTrustedVaultBackend::RefreshTokenErrorState::kUnknown;
@@ -340,6 +345,8 @@ class StandaloneTrustedVaultBackend
       pending_get_is_recoverability_degraded_;
 
   std::vector<base::OnceClosure> idle_callbacks_for_testing_;
+
+  base::WeakPtrFactory<StandaloneTrustedVaultBackend> weak_ptr_factory_{this};
 };
 
 }  // namespace trusted_vault

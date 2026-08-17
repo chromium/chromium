@@ -153,21 +153,32 @@ class FakeLocalRecoveryFactor : public LocalRecoveryFactor {
   TrustedVaultRecoveryFactorRegistrationStateForUMA MaybeRegister(
       RegisterCallback callback) override {
     CHECK(connection_);
-    CHECK(register_callback_.is_null());
     maybe_register_was_called_ = true;
+
+    if (!register_callback_.is_null()) {
+      std::move(register_callback_)
+          .Run(TrustedVaultRegistrationStatus::kRegistrationCancelled, 0,
+               false);
+    }
 
     auto* per_user_vault = storage_->FindUserVault(account_.gaia);
     CHECK(per_user_vault);
 
     if (is_registered_) {
+      std::move(callback).Run(
+          TrustedVaultRegistrationStatus::kRegistrationNotAttempted, 0, false);
       return TrustedVaultRecoveryFactorRegistrationStateForUMA::
           kAlreadyRegisteredV1;
     }
     if (per_user_vault->last_registration_returned_local_data_obsolete()) {
+      std::move(callback).Run(
+          TrustedVaultRegistrationStatus::kRegistrationNotAttempted, 0, false);
       return TrustedVaultRecoveryFactorRegistrationStateForUMA::
           kLocalKeysAreStale;
     }
     if (connection_->AreRequestsThrottled(account_)) {
+      std::move(callback).Run(
+          TrustedVaultRegistrationStatus::kRegistrationNotAttempted, 0, false);
       return TrustedVaultRecoveryFactorRegistrationStateForUMA::
           kThrottledClientSide;
     }
@@ -199,10 +210,6 @@ class FakeLocalRecoveryFactor : public LocalRecoveryFactor {
       return TrustedVaultRecoveryFactorRegistrationStateForUMA::
           kAttemptingRegistrationWithNewKeyPair;
     }
-  }
-
-  bool IsIdleForTesting() const override {
-    return recovery_callback_.is_null() && register_callback_.is_null();
   }
 
   bool AttemptRecoveryWasCalled() const { return attempt_recovery_was_called_; }
@@ -281,9 +288,6 @@ class ForwardingLocalRecoveryFactor : public LocalRecoveryFactor {
   TrustedVaultRecoveryFactorRegistrationStateForUMA MaybeRegister(
       RegisterCallback callback) override {
     return delegate_->MaybeRegister(std::move(callback));
-  }
-  bool IsIdleForTesting() const override {
-    return delegate_->IsIdleForTesting();
   }
 
  private:
@@ -864,6 +868,60 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldRegisterRecoveryFactors) {
           "." + security_domain_name_for_uma(),
       /*sample=*/TrustedVaultRecoveryFactorRegistrationOutcomeForUMA::kSuccess,
       /*expected_bucket_count=*/1);
+}
+
+TEST_F(StandaloneTrustedVaultBackendTest,
+       ShouldHandleRecoveryFactorRegistrationNotAttempted) {
+  const CoreAccountInfo kAccountInfo = MakeAccountInfoWithGaiaId("user");
+  const std::vector<uint8_t> kVaultKey = {1, 2, 3};
+  const int kLastKeyVersion = 1;
+
+  backend()->StoreKeys(kAccountInfo.gaia, {kVaultKey}, kLastKeyVersion);
+
+  SetPrimaryAccountWithUnknownAuthError(kAccountInfo);
+
+  base::HistogramTester histogram_tester;
+  base::MockCallback<base::OnceClosure> idle_callback;
+  EXPECT_CALL(idle_callback, Run);
+  backend()->WaitForIdleForTesting(idle_callback.Get());
+
+  GetOrCreateRecoveryFactor(kAccountInfo)
+      ->ExpectMaybeRegisterAndRunCallback(
+          TrustedVaultRegistrationStatus::kRegistrationNotAttempted, 0, false);
+
+  // Outcome histogram should NOT be recorded for kRegistrationNotAttempted.
+  histogram_tester.ExpectTotalCount(
+      "TrustedVault.RecoveryFactorRegistrationOutcome." +
+          GetRecoveryFactorTypeForUMA(GetOrCreateRecoveryFactor(kAccountInfo)) +
+          "." + security_domain_name_for_uma(),
+      /*expected_count=*/0);
+}
+
+TEST_F(StandaloneTrustedVaultBackendTest,
+       ShouldHandleRecoveryFactorRegistrationCancelled) {
+  const CoreAccountInfo kAccountInfo = MakeAccountInfoWithGaiaId("user");
+  const std::vector<uint8_t> kVaultKey = {1, 2, 3};
+  const int kLastKeyVersion = 1;
+
+  backend()->StoreKeys(kAccountInfo.gaia, {kVaultKey}, kLastKeyVersion);
+
+  SetPrimaryAccountWithUnknownAuthError(kAccountInfo);
+
+  base::HistogramTester histogram_tester;
+  base::MockCallback<base::OnceClosure> idle_callback;
+  EXPECT_CALL(idle_callback, Run);
+  backend()->WaitForIdleForTesting(idle_callback.Get());
+
+  GetOrCreateRecoveryFactor(kAccountInfo)
+      ->ExpectMaybeRegisterAndRunCallback(
+          TrustedVaultRegistrationStatus::kRegistrationCancelled, 0, false);
+
+  // Outcome histogram should NOT be recorded for kRegistrationCancelled.
+  histogram_tester.ExpectTotalCount(
+      "TrustedVault.RecoveryFactorRegistrationOutcome." +
+          GetRecoveryFactorTypeForUMA(GetOrCreateRecoveryFactor(kAccountInfo)) +
+          "." + security_domain_name_for_uma(),
+      /*expected_count=*/0);
 }
 
 TEST_F(StandaloneTrustedVaultBackendTest,

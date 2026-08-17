@@ -28,6 +28,12 @@ class SecureBoxKeyPair;
 class SecureBoxPublicKey;
 
 enum class TrustedVaultRegistrationStatus {
+  // Used when registration was not attempted (e.g. factor is already
+  // registered or local state is not sufficient).
+  kRegistrationNotAttempted,
+  // Used when an in-flight registration was cancelled.
+  kRegistrationCancelled,
+  // Used when registration was successful.
   kSuccess,
   // Used when member corresponding to authentication factor already exists and
   // local keys that were sent as part of the request aren't stale.

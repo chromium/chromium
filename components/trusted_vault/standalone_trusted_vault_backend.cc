@@ -90,6 +90,9 @@ TrustedVaultRecoveryFactorRegistrationOutcomeForUMA
 GetRecoveryFactorRegistrationOutcomeForUMAFromResponse(
     TrustedVaultRegistrationStatus response_status) {
   switch (response_status) {
+    case TrustedVaultRegistrationStatus::kRegistrationNotAttempted:
+    case TrustedVaultRegistrationStatus::kRegistrationCancelled:
+      NOTREACHED();
     case TrustedVaultRegistrationStatus::kSuccess:
       return TrustedVaultRecoveryFactorRegistrationOutcomeForUMA::kSuccess;
     case TrustedVaultRegistrationStatus::kAlreadyRegistered:
@@ -336,10 +339,8 @@ void StandaloneTrustedVaultBackend::AttemptRecoveryFactor(
   CHECK(local_recovery_factor >= 0 &&
         local_recovery_factor < local_recovery_factors_.size());
   local_recovery_factors_[local_recovery_factor]->AttemptRecovery(
-      // |this| outlives |local_recovery_factors_|, and destroying
-      // |local_recovery_factors_| guarantees cancellation of all callbacks.
       base::BindOnce(&StandaloneTrustedVaultBackend::OnKeysRecovered,
-                     base::Unretained(this), local_recovery_factor));
+                     weak_ptr_factory_.GetWeakPtr(), local_recovery_factor));
 }
 
 void StandaloneTrustedVaultBackend::StoreKeys(
@@ -398,6 +399,7 @@ void StandaloneTrustedVaultBackend::SetPrimaryAccount(
   ongoing_add_recovery_method_request_.reset();
   // This aborts all ongoing recoveries / registrations.
   local_recovery_factors_.clear();
+  ongoing_registration_attempts_.clear();
   RemoveNonPrimaryAccountKeysIfMarkedForDeletion();
   // Make sure to call pending callbacks, now that ongoing recoveries were
   // aborted.
@@ -561,9 +563,6 @@ void StandaloneTrustedVaultBackend::AddTrustedRecoveryMethod(
     return;
   }
 
-  // |this| outlives |connection_| and
-  // |ongoing_add_recovery_method_request_|, so it's safe to use
-  // base::Unretained() here.
   ongoing_add_recovery_method_request_ =
       connection_->RegisterAuthenticationFactor(
           *primary_account_,
@@ -574,7 +573,7 @@ void StandaloneTrustedVaultBackend::AddTrustedRecoveryMethod(
           UnspecifiedAuthenticationFactorType(method_type_hint),
           base::IgnoreArgs<TrustedVaultRegistrationStatus, int>(base::BindOnce(
               &StandaloneTrustedVaultBackend::OnTrustedRecoveryMethodAdded,
-              base::Unretained(this), std::move(cb))));
+              weak_ptr_factory_.GetWeakPtr(), std::move(cb))));
 }
 
 void StandaloneTrustedVaultBackend::ClearLocalDataForAccount(
@@ -638,24 +637,22 @@ void StandaloneTrustedVaultBackend::MaybeRegisterLocalRecoveryFactors() {
   const bool should_record_metrics =
       !recovery_factor_registration_state_recorded_to_uma_;
   for (auto& factor : local_recovery_factors_) {
-    // Unretained because |this| outlives |local_recovery_factors_| (and
-    // destroying |local_recovery_factors_| cancels all callbacks).
+    const LocalRecoveryFactorType factor_type = factor->GetRecoveryFactorType();
+    ongoing_registration_attempts_[factor_type]++;
     const std::optional<TrustedVaultRecoveryFactorRegistrationStateForUMA>
         registration_state = factor->MaybeRegister(base::BindOnce(
             &StandaloneTrustedVaultBackend::OnRecoveryFactorRegistered,
-            base::Unretained(this), factor->GetRecoveryFactorType()));
+            weak_ptr_factory_.GetWeakPtr(), factor_type));
 
     if (registration_state.has_value() && should_record_metrics) {
       recovery_factor_registration_state_recorded_to_uma_ = true;
       base::UmaHistogramBoolean(
           base::StrCat({"TrustedVault.RecoveryFactorRegistered.",
-                        GetLocalRecoveryFactorNameForUma(
-                            factor->GetRecoveryFactorType()),
-                        ".", GetSecurityDomainNameForUma(security_domain_id_)}),
+                        GetLocalRecoveryFactorNameForUma(factor_type), ".",
+                        GetSecurityDomainNameForUma(security_domain_id_)}),
           factor->IsRegistered());
       RecordTrustedVaultRecoveryFactorRegistrationState(
-          factor->GetRecoveryFactorType(), security_domain_id_,
-          *registration_state);
+          factor_type, security_domain_id_, *registration_state);
     }
   }
 }
@@ -685,6 +682,20 @@ void StandaloneTrustedVaultBackend::OnRecoveryFactorRegistered(
     TrustedVaultRegistrationStatus status,
     int key_version,
     bool had_local_keys) {
+  // SetPrimaryAccount() cancels ongoing registration attempts and clears
+  // the map. However, there is a chance that a call for this callback is
+  // already scheduled at that time. Checking for <= 0 defensively covers this
+  // case.
+  if (--ongoing_registration_attempts_[local_recovery_factor_type] <= 0) {
+    ongoing_registration_attempts_.erase(local_recovery_factor_type);
+  }
+
+  if (status == TrustedVaultRegistrationStatus::kRegistrationNotAttempted ||
+      status == TrustedVaultRegistrationStatus::kRegistrationCancelled) {
+    NotifyIdleForTestingIfNecessary();
+    return;
+  }
+
   // If |primary_account_| was changed meanwhile, this callback must be
   // cancelled.
   DCHECK(primary_account_.has_value());
@@ -695,6 +706,9 @@ void StandaloneTrustedVaultBackend::OnRecoveryFactorRegistered(
       GetRecoveryFactorRegistrationOutcomeForUMAFromResponse(status));
 
   switch (status) {
+    case TrustedVaultRegistrationStatus::kRegistrationNotAttempted:
+    case TrustedVaultRegistrationStatus::kRegistrationCancelled:
+      NOTREACHED();
     case TrustedVaultRegistrationStatus::kSuccess:
     case TrustedVaultRegistrationStatus::kAlreadyRegistered:
       if (!had_local_keys) {
@@ -861,15 +875,11 @@ void StandaloneTrustedVaultBackend::NotifyIdleForTestingIfNecessary() {
   }
 
   if (ongoing_fetch_keys_.has_value() ||
+      !ongoing_registration_attempts_.empty() ||
       ongoing_add_recovery_method_request_ != nullptr ||
       pending_trusted_recovery_method_.has_value() ||
       pending_get_is_recoverability_degraded_.has_value()) {
     return;
-  }
-  for (const auto& factor : local_recovery_factors_) {
-    if (!factor->IsIdleForTesting()) {
-      return;
-    }
   }
 
   std::vector<base::OnceClosure> callbacks =

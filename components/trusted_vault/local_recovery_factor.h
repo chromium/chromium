@@ -73,13 +73,9 @@ class LocalRecoveryFactor {
   // Attempts to register the recovery factor in case it's not yet registered
   // and currently available local data is sufficient to do it. It returns an
   // enum representing the registration state, intended to be used for metric
-  // recording.
+  // recording. `cb` is guaranteed to be invoked.
   virtual TrustedVaultRecoveryFactorRegistrationStateForUMA MaybeRegister(
       RegisterCallback cb) = 0;
-
-  // Returns true if there are no ongoing requests or background tasks for this
-  // factor.
-  virtual bool IsIdleForTesting() const = 0;
 };
 
 }  // namespace trusted_vault

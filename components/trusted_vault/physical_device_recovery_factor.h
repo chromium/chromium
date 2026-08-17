@@ -48,8 +48,6 @@ class PhysicalDeviceRecoveryFactor : public LocalRecoveryFactor {
   TrustedVaultRecoveryFactorRegistrationStateForUMA MaybeRegister(
       RegisterCallback cb) override;
 
-  bool IsIdleForTesting() const override;
-
  private:
   const UserVault& GetPrimaryAccountVault();
 
@@ -61,10 +59,11 @@ class PhysicalDeviceRecoveryFactor : public LocalRecoveryFactor {
       TrustedVaultDownloadKeysStatusForUMA status_for_uma,
       AttemptRecoveryCallback cb);
 
-  void OnRegistered(RegisterCallback cb,
-                    bool had_local_keys,
+  void OnRegistered(bool had_local_keys,
                     TrustedVaultRegistrationStatus status,
                     int key_version);
+  void FulfillRegistrationWithFailure(TrustedVaultRegistrationStatus status,
+                                      RegisterCallback cb);
 
   const SecurityDomainId security_domain_id_;
   const raw_ptr<StandaloneTrustedVaultStorage> storage_;
@@ -76,6 +75,7 @@ class PhysicalDeviceRecoveryFactor : public LocalRecoveryFactor {
   // Destroying this will cancel the ongoing request.
   std::unique_ptr<TrustedVaultConnection::Request>
       ongoing_registration_request_;
+  RegisterCallback ongoing_registration_callback_;
 };
 
 }  // namespace trusted_vault

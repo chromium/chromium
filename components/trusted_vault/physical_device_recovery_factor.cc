@@ -131,6 +131,9 @@ PhysicalDeviceRecoveryFactor::MaybeRegister(RegisterCallback cb) {
 
   if (per_user_vault->local_device_registration_info().device_registered()) {
     static_assert(kCurrentDeviceRegistrationVersion == 1);
+    FulfillRegistrationWithFailure(
+        TrustedVaultRegistrationStatus::kRegistrationNotAttempted,
+        std::move(cb));
     return TrustedVaultRecoveryFactorRegistrationStateForUMA::
         kAlreadyRegisteredV1;
   }
@@ -139,11 +142,17 @@ PhysicalDeviceRecoveryFactor::MaybeRegister(RegisterCallback cb) {
     // Client already knows that existing vault keys (or their absence) isn't
     // sufficient for device registration. Fresh keys should be obtained
     // first.
+    FulfillRegistrationWithFailure(
+        TrustedVaultRegistrationStatus::kRegistrationNotAttempted,
+        std::move(cb));
     return TrustedVaultRecoveryFactorRegistrationStateForUMA::
         kLocalKeysAreStale;
   }
 
   if (connection_->AreRequestsThrottled(primary_account_)) {
+    FulfillRegistrationWithFailure(
+        TrustedVaultRegistrationStatus::kRegistrationNotAttempted,
+        std::move(cb));
     return TrustedVaultRecoveryFactorRegistrationStateForUMA::
         kThrottledClientSide;
   }
@@ -174,6 +183,16 @@ PhysicalDeviceRecoveryFactor::MaybeRegister(RegisterCallback cb) {
         });
   }
 
+  if (ongoing_registration_callback_) {
+    // Cancel ongoing request before starting a new one.
+    ongoing_registration_request_ = nullptr;
+    FulfillRegistrationWithFailure(
+        TrustedVaultRegistrationStatus::kRegistrationCancelled,
+        std::move(ongoing_registration_callback_));
+  }
+
+  ongoing_registration_callback_ = std::move(cb);
+
   // `this` outlives `ongoing_registration_request_`, so it's safe to
   // use base::Unretained() here.
   if (StandaloneTrustedVaultStorage::HasNonConstantKey(*per_user_vault)) {
@@ -184,12 +203,12 @@ PhysicalDeviceRecoveryFactor::MaybeRegister(RegisterCallback cb) {
             per_user_vault->last_vault_key_version()),
         key_pair->public_key(), LocalPhysicalDevice(),
         base::BindOnce(&PhysicalDeviceRecoveryFactor::OnRegistered,
-                       base::Unretained(this), std::move(cb), true));
+                       base::Unretained(this), true));
   } else {
     ongoing_registration_request_ = connection_->RegisterLocalDeviceWithoutKeys(
         primary_account_, key_pair->public_key(),
         base::BindOnce(&PhysicalDeviceRecoveryFactor::OnRegistered,
-                       base::Unretained(this), std::move(cb), false));
+                       base::Unretained(this), false));
   }
 
   CHECK(ongoing_registration_request_);
@@ -199,10 +218,6 @@ PhysicalDeviceRecoveryFactor::MaybeRegister(RegisterCallback cb) {
                    kAttemptingRegistrationWithExistingKeyPair
              : TrustedVaultRecoveryFactorRegistrationStateForUMA::
                    kAttemptingRegistrationWithNewKeyPair;
-}
-
-bool PhysicalDeviceRecoveryFactor::IsIdleForTesting() const {
-  return !ongoing_request_ && !ongoing_registration_request_;
 }
 
 const UserVault& PhysicalDeviceRecoveryFactor::GetPrimaryAccountVault() {
@@ -281,7 +296,6 @@ void PhysicalDeviceRecoveryFactor::FulfillRecoveryWithFailure(
 }
 
 void PhysicalDeviceRecoveryFactor::OnRegistered(
-    RegisterCallback cb,
     bool had_local_keys,
     TrustedVaultRegistrationStatus status,
     int key_version) {
@@ -291,8 +305,13 @@ void PhysicalDeviceRecoveryFactor::OnRegistered(
   // needed anymore.
   CHECK(ongoing_registration_request_);
   ongoing_registration_request_ = nullptr;
+  CHECK(ongoing_registration_callback_);
+  RegisterCallback cb = std::move(ongoing_registration_callback_);
 
   switch (status) {
+    case TrustedVaultRegistrationStatus::kRegistrationNotAttempted:
+    case TrustedVaultRegistrationStatus::kRegistrationCancelled:
+      NOTREACHED();
     case TrustedVaultRegistrationStatus::kSuccess:
     case TrustedVaultRegistrationStatus::kAlreadyRegistered:
       // kAlreadyRegistered handled as success, because it only means that
@@ -323,6 +342,15 @@ void PhysicalDeviceRecoveryFactor::OnRegistered(
   }
 
   std::move(cb).Run(status, key_version, had_local_keys);
+}
+
+void PhysicalDeviceRecoveryFactor::FulfillRegistrationWithFailure(
+    TrustedVaultRegistrationStatus status,
+    RegisterCallback cb) {
+  base::BindPostTaskToCurrentDefault(base::BindOnce(std::move(cb), status,
+                                                    /*key_version=*/0,
+                                                    /*had_local_keys=*/true))
+      .Run();
 }
 
 }  // namespace trusted_vault
