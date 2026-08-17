@@ -31,7 +31,8 @@ def _GenerateTokenName(action_suffix: minidom.Element) -> str:
     # Sometimes there is no common prefix, but there is common suffix
     if not common_prefix:
       common_prefix = os.path.commonprefix(
-          [s.split('.')[-1] for s in affected_action_nodes])
+        [s.split('.')[-1] for s in affected_action_nodes]
+      )
     # Trim any dots, if included
     common_prefix = common_prefix.strip('_.')
 
@@ -39,8 +40,10 @@ def _GenerateTokenName(action_suffix: minidom.Element) -> str:
       first_suffix_name = affected_action_nodes[0]
       token_name = f'unnamed_token_{first_suffix_name}'
       logging.warning(
-          'token %s needs to be named manually. '
-          'Affected actions: %s.', token_name, len(affected_action_nodes))
+        'token %s needs to be named manually. Affected actions: %s.',
+        token_name,
+        len(affected_action_nodes),
+      )
       action_suffix.setAttribute('name', token_name)
       return token_name
 
@@ -48,7 +51,7 @@ def _GenerateTokenName(action_suffix: minidom.Element) -> str:
     token_name = common_prefix.replace('.', '_') + '_Type'
   # For inline variants, the token name doesnt need to be descriptive.
   else:
-    token_name = "ActionType"
+    token_name = 'ActionType'
 
   action_suffix.setAttribute('name', token_name)
   return token_name
@@ -58,29 +61,33 @@ def _RemoveSuffixesComment(node, action_suffixes_name):
   """Remove suffixes related comments from |node|."""
   for child in node.childNodes:
     if child.nodeType == minidom.Node.COMMENT_NODE:
-      if ('Name completed by' in child.data
-          and action_suffixes_name in child.data):
+      if (
+        'Name completed by' in child.data and action_suffixes_name in child.data
+      ):
         node.removeChild(child)
 
 
 def _UpdateDescription(action, action_suffixes_name):
   """Appends a placeholder string to the |action|'s description node."""
   description = action.getElementsByTagName('description')
-  assert len(
-      description) == 1, 'A action should have a single description node.'
+  assert len(description) == 1, (
+    'A action should have a single description node.'
+  )
   description = description[0]
   if description.firstChild.nodeType != description.TEXT_NODE:
-    raise ValueError('description_node doesn\'t contain text.')
+    raise ValueError("description_node doesn't contain text.")
   description.firstChild.replaceWholeText(
-      '%s {%s}' % (description.firstChild.data.strip(), action_suffixes_name))
+    '%s {%s}' % (description.firstChild.data.strip(), action_suffixes_name)
+  )
 
 
 def _AreAllAffectedactionsFound(affected_actions, actions):
   """Checks that are all affected actions found in |actions|."""
   action_names = [action.getAttribute('name') for action in actions]
   return all(
-      affected_action.getAttribute('name') in action_names
-      for affected_action in affected_actions)
+    affected_action.getAttribute('name') in action_names
+    for affected_action in affected_actions
+  )
 
 
 def _GetSuffixesDict(nodes, all_actions):
@@ -118,8 +125,10 @@ def _GetSuffixesDict(nodes, all_actions):
         affected_action = affected_action.getAttribute('name')
         if affected_action in all_affected_found:
           logging.warning(
-              'action %s is already associated with other suffixes. '
-              'Please manually migrate it.', affected_action)
+            'action %s is already associated with other suffixes. '
+            'Please manually migrate it.',
+            affected_action,
+          )
           continue
         all_affected_found[affected_action] = action_suffixes
   return single_affected, all_affected_found
@@ -164,11 +173,15 @@ def _PopulateVariantsWithSuffixes(doc, node, action_suffixes, suffixes_name):
     suffix_name = suffix.getAttribute('name')
     if not suffix_name:
       logging.warning(
-          'action suffixes: %s contains empty string suffix and thus we '
-          'have to manually update the empty string variant in these base '
-          'actions: %s.', suffixes_name, ','.join(
-              h.getAttribute('name')
-              for h in action_suffixes.getElementsByTagName('affected-action')))
+        'action suffixes: %s contains empty string suffix and thus we '
+        'have to manually update the empty string variant in these base '
+        'actions: %s.',
+        suffixes_name,
+        ','.join(
+          h.getAttribute('name')
+          for h in action_suffixes.getElementsByTagName('affected-action')
+        ),
+      )
       return False
     variant = doc.createElement('variant')
     variant.setAttribute('name', separator + suffix_name)
@@ -186,7 +199,8 @@ def MigrateToInlinePatterenedAction(doc, action, action_suffix):
   action_suffix_name = _GenerateTokenName(action_suffix)
   # Update action name.
   action.setAttribute(
-      'name', '%s{%s}' % (action.getAttribute('name'), action_suffix_name))
+    'name', '%s{%s}' % (action.getAttribute('name'), action_suffix_name)
+  )
 
   # Append |action_suffixes_name| placeholder string to the summary text.
   _UpdateDescription(action, action_suffix_name)
@@ -199,8 +213,9 @@ def MigrateToInlinePatterenedAction(doc, action, action_suffix):
     token.appendChild(base_variant)
 
   # Populate <variant>s to the inline <token> node.
-  if not _PopulateVariantsWithSuffixes(doc, token, action_suffix,
-                                       action_suffix_name):
+  if not _PopulateVariantsWithSuffixes(
+    doc, token, action_suffix, action_suffix_name
+  ):
     logging.warning('action-suffix: %s needs manual effort', action_suffix_name)
     actions = action.parentNode
     actions.removeChild(action)
@@ -222,7 +237,8 @@ def MigrateToOutOflinePatterenedAction(doc, action, action_suffix):
   action_suffix_name = _GenerateTokenName(action_suffix)
   # Update action name.
   action.setAttribute(
-      'name', '%s{%s}' % (action.getAttribute('name'), action_suffix_name))
+    'name', '%s{%s}' % (action.getAttribute('name'), action_suffix_name)
+  )
 
   # Append |action_suffix_name| placeholder string to the summary text.
   _UpdateDescription(action, action_suffix_name)
@@ -240,17 +256,20 @@ def _MigrateOutOfLineVariants(doc, actions, suffixes_to_convert):
   """Converts a action-suffixes node to an out-of-line variants."""
   actions_node = actions.getElementsByTagName('actions')
   assert len(actions_node) == 1, (
-      'Actions.xml should have only one <actions> node.')
+    'Actions.xml should have only one <actions> node.'
+  )
   for suffixes in suffixes_to_convert:
     action_suffixes_name = suffixes.getAttribute('name')
     variants = doc.createElement('variants')
     variants.setAttribute('name', action_suffixes_name)
     base_variant = _GetBaseVariant(doc)
     variants.appendChild(base_variant)
-    if not _PopulateVariantsWithSuffixes(doc, variants, suffixes,
-                                         action_suffixes_name):
-      logging.warning('action_suffixes: %s needs manual effort',
-                      action_suffixes_name)
+    if not _PopulateVariantsWithSuffixes(
+      doc, variants, suffixes, action_suffixes_name
+    ):
+      logging.warning(
+        'action_suffixes: %s needs manual effort', action_suffixes_name
+      )
     else:
       actions_node[0].appendChild(variants)
       suffixes.parentNode.removeChild(suffixes)
@@ -262,7 +281,8 @@ def SuffixesToVariantsMigration(args):
   action_suffixes_nodes = actions_file.getElementsByTagName('action-suffix')
   doc = minidom.Document()
   single_affected, all_affected_found = _GetSuffixesDict(
-      action_suffixes_nodes, actions_file.getElementsByTagName('action'))
+    action_suffixes_nodes, actions_file.getElementsByTagName('action')
+  )
   suffixes_to_convert = set()
   for action in actions_file.getElementsByTagName('action'):
     name = action.getAttribute('name')
@@ -289,13 +309,17 @@ def SuffixesToVariantsMigration(args):
 if __name__ == '__main__':
   parser = argparse.ArgumentParser()
   parser.add_argument(
-      '--start',
-      help='Start migration from a certain character (inclusive).',
-      default='a')
-  parser.add_argument('--end',
-                      help='End migration at a certain character (inclusive).',
-                      default='z')
+    '--start',
+    help='Start migration from a certain character (inclusive).',
+    default='a',
+  )
+  parser.add_argument(
+    '--end',
+    help='End migration at a certain character (inclusive).',
+    default='z',
+  )
   args = parser.parse_args()
   assert len(args.start) == 1 and len(args.end) == 1, (
-      'start and end flag should only contain a single letter.')
+    'start and end flag should only contain a single letter.'
+  )
   SuffixesToVariantsMigration(args)

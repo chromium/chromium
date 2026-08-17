@@ -14,8 +14,8 @@ import chromium_src.tools.metrics.histograms.histogram_paths as histogram_paths
 import chromium_src.tools.metrics.histograms.merge_xml as merge_xml
 
 _METRIC_FILES_WITH_ENUMS = [
-    path_util.GetInputFile('tools/metrics/ukm/ukm.xml'),
-    path_util.GetInputFile('tools/metrics/private_metrics/dwa.xml'),
+  path_util.GetInputFile('tools/metrics/ukm/ukm.xml'),
+  path_util.GetInputFile('tools/metrics/private_metrics/dwa.xml'),
 ]
 
 
@@ -55,8 +55,9 @@ def get_enums_used_in_files() -> set[str]:
   enum_names = _get_enums_from_histogram_files(histogram_paths.ALL_XMLS)
   logging.info(f'Found {len(enum_names)} enums from histograms.')
 
-  metric_enum_names = (
-      _get_enums_referenced_by_metric_nodes(_METRIC_FILES_WITH_ENUMS))
+  metric_enum_names = _get_enums_referenced_by_metric_nodes(
+    _METRIC_FILES_WITH_ENUMS
+  )
   logging.info(f'Found {len(metric_enum_names)} enums from ukm, dkm, and dwa.')
 
   enum_names.update(metric_enum_names)

@@ -25,8 +25,16 @@ import chromium_src.tools.metrics.histograms.merge_xml as merge_xml
 # The allowlist of namespaces (histogram prefixes, case insensitive) that are
 # split across multiple files.
 _NAMESPACES_IN_MULTIPLE_FILES = [
-    'ash', 'autocomplete', 'browser', 'chromeos', 'fcminvalidations',
-    'graphics', 'launch', 'net', 'networkservice', 'usereducation'
+  'ash',
+  'autocomplete',
+  'browser',
+  'chromeos',
+  'fcminvalidations',
+  'graphics',
+  'launch',
+  'net',
+  'networkservice',
+  'usereducation',
 ]
 
 
@@ -52,17 +60,21 @@ def CheckNamespaces(xml_paths: List[str]):
       return node.getAttribute('name').lower().split('.')[0]
 
     namespaces_in_file = set(
-        _GetNamespace(node)
-        for node in xml_utils.IterElementsWithTag(tree, 'histogram', depth=3))
+      _GetNamespace(node)
+      for node in xml_utils.IterElementsWithTag(tree, 'histogram', depth=3)
+    )
     for namespace in namespaces_in_file:
-      if (namespace in namespaces
-          and namespace not in _NAMESPACES_IN_MULTIPLE_FILES):
+      if (
+        namespace in namespaces
+        and namespace not in _NAMESPACES_IN_MULTIPLE_FILES
+      ):
         logging.error(
-            'Namespace %s has already been used in %s. it\'s recommended to '
-            'put histograms with the same namespace in the same file. If you '
-            'intentionally want to split a namespace across multiple files, '
-            'please add the namespace to the |_NAMESPACES_IN_MULTIPLE_FILES| '
-            'in the validate_format.py.' % (namespace, namespaces[namespace]))
+          "Namespace %s has already been used in %s. it's recommended to "
+          'put histograms with the same namespace in the same file. If you '
+          'intentionally want to split a namespace across multiple files, '
+          'please add the namespace to the |_NAMESPACES_IN_MULTIPLE_FILES| '
+          'in the validate_format.py.' % (namespace, namespaces[namespace])
+        )
         has_errors = True
       namespaces[namespace] = path
 
@@ -71,7 +83,8 @@ def CheckNamespaces(xml_paths: List[str]):
 
 def _IsGlobalVariantFile(path: str) -> bool:
   return path.endswith(
-      os.path.join('tools', 'metrics', 'histograms', 'variants.xml'))
+    os.path.join('tools', 'metrics', 'histograms', 'variants.xml')
+  )
 
 
 def _CheckVariantsRegistered(xml_paths: List[str]) -> bool:
@@ -91,7 +104,8 @@ def _CheckVariantsRegistered(xml_paths: List[str]) -> bool:
     if _IsGlobalVariantFile(path):
       tree = xml.dom.minidom.parse(path)
       variants, variants_errors = extract_histograms.ExtractVariantsFromXmlTree(
-          tree)
+        tree
+      )
       has_errors = has_errors or bool(variants_errors)
       global_variants.update(variants)
       break
@@ -102,7 +116,8 @@ def _CheckVariantsRegistered(xml_paths: List[str]) -> bool:
 
     tree = xml.dom.minidom.parse(path)
     variants, variants_errors = extract_histograms.ExtractVariantsFromXmlTree(
-        tree)
+      tree
+    )
     has_errors = has_errors or bool(variants_errors)
 
     merged_variants = dict(variants)
@@ -110,7 +125,8 @@ def _CheckVariantsRegistered(xml_paths: List[str]) -> bool:
 
     for histogram in xml_utils.IterElementsWithTag(tree, 'histogram', depth=3):
       tokens, tokens_errors = extract_histograms.ExtractTokens(
-          histogram, merged_variants)
+        histogram, merged_variants
+      )
       has_errors = has_errors or bool(tokens_errors)
 
       token_keys = [token['key'] for token in tokens]
@@ -122,8 +138,11 @@ def _CheckVariantsRegistered(xml_paths: List[str]) -> bool:
       for used_token in tokens_in_name:
         if used_token not in token_keys:
           logging.error(
-              'Token {%s} is not registered in histogram %s in file %s.',
-              used_token, histogram_name, path)
+            'Token {%s} is not registered in histogram %s in file %s.',
+            used_token,
+            histogram_name,
+            path,
+          )
           has_errors = True
 
   return has_errors
@@ -140,9 +159,9 @@ def _CheckNoUnusedEnums(xml_paths: List[str]) -> bool:
       for enum_node in document.getElementsByTagName('enum'):
         if enum_node.attributes['name'].value not in enum_names:
           logging.error(
-              'Enum %s from file %s/enums.xml is not referenced by any metric.',
-              enum_node.attributes['name'].value,
-              os.path.basename(os.path.dirname(enum_file)),
+            'Enum %s from file %s/enums.xml is not referenced by any metric.',
+            enum_node.attributes['name'].value,
+            os.path.basename(os.path.dirname(enum_file)),
           )
           has_errors = True
 
@@ -152,16 +171,18 @@ def _CheckNoUnusedEnums(xml_paths: List[str]) -> bool:
 def main():
   parser = argparse.ArgumentParser()
   parser.add_argument(
-      '--xml_paths',
-      type=str,
-      nargs='*',
-      default=histogram_paths.ALL_XMLS,
-      help='An optional list of paths to XML files to validate passed as'
-      ' consecutive arguments. Production XML files are validated by default.')
+    '--xml_paths',
+    type=str,
+    nargs='*',
+    default=histogram_paths.ALL_XMLS,
+    help='An optional list of paths to XML files to validate passed as'
+    ' consecutive arguments. Production XML files are validated by default.',
+  )
   paths_to_check = parser.parse_args().xml_paths
 
-  doc = merge_xml.MergeFiles(paths_to_check,
-                             expand_owners_and_extract_components=False)
+  doc = merge_xml.MergeFiles(
+    paths_to_check, expand_owners_and_extract_components=False
+  )
   _, errors = extract_histograms.ExtractHistogramsFromDom(doc)
   errors = errors or CheckNamespaces(paths_to_check)
   errors = errors or _CheckVariantsRegistered(paths_to_check)

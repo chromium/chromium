@@ -23,6 +23,7 @@ import chromium_src.tools.metrics.common.presubmit_util as presubmit_util
 
 DWA_XML = 'dwa.xml'
 
+
 def CheckChangeOnUpload(input_api, output_api):
   result = []
   result.extend(presubmit_util.CheckChange(DWA_XML, input_api, output_api))

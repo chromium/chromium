@@ -5,14 +5,18 @@ import setup_modules  # pylint: disable=unused-import
 
 from chromium_src.tools.metrics.structured.codegen_util import FileInfo, Util
 from chromium_src.tools.metrics.structured.code_generator import (
-    EventTemplateBase, ProjectInfoBase, EventInfoBase, MetricInfoBase)
+  EventTemplateBase,
+  ProjectInfoBase,
+  EventInfoBase,
+  MetricInfoBase,
+)
 
 
 class ProjectInfoTs(ProjectInfoBase):
   """Codegen-related info about a project in Typescript."""
 
   def __init__(self, project):
-    super().__init__(project, "webui")
+    super().__init__(project, 'webui')
 
 
 class EventInfoTs(EventInfoBase):
@@ -23,7 +27,8 @@ class EventInfoTs(EventInfoBase):
 
     if self.is_event_sequence == 'true':
       self.systemUptime = (
-          '{microseconds: BigInt(Math.floor(Date.now() * 1000))}')
+        '{microseconds: BigInt(Math.floor(Date.now() * 1000))}'
+      )
     else:
       self.systemUptime = 'null'
 
@@ -54,7 +59,7 @@ class MetricInfoTs(MetricInfoBase):
       self.type_enum = ''
     else:
       if self.is_enum:
-        self.ts_type = project_info.name + "_" + metric.type
+        self.ts_type = project_info.name + '_' + metric.type
         self.type_enum = 'intValue'
       else:
         raise ValueError('Invalid metric type.')
@@ -64,11 +69,29 @@ class TemplateTypescript(EventTemplateBase):
   """Template for producing Typescript code from structured.xml, to
   be used in WebUI pages."""
 
-  def __init__(self, model, dirname, basename, file_template, project_template,
-               enum_template, event_template, metric_template,
-               metric_field_template, metric_build_code_template):
-    super().__init__(model, dirname, basename, file_template, project_template,
-                     enum_template, event_template, metric_template)
+  def __init__(
+    self,
+    model,
+    dirname,
+    basename,
+    file_template,
+    project_template,
+    enum_template,
+    event_template,
+    metric_template,
+    metric_field_template,
+    metric_build_code_template,
+  ):
+    super().__init__(
+      model,
+      dirname,
+      basename,
+      file_template,
+      project_template,
+      enum_template,
+      event_template,
+      metric_template,
+    )
     self.metric_field_template = metric_field_template
     self.metric_build_code_template = metric_build_code_template
 
@@ -78,37 +101,45 @@ class TemplateTypescript(EventTemplateBase):
       f.write(self._stamp_file())
 
   def _stamp_file(self):
-    project_code = "".join(
-        self._stamp_project(project) for project in self.model.projects)
+    project_code = ''.join(
+      self._stamp_project(project) for project in self.model.projects
+    )
     return self.file_template.format(project_code=project_code)
 
   def _stamp_project(self, project):
     project_info = ProjectInfoTs(project)
     if project_info.should_codegen:
       event_code = ''.join(
-          self._stamp_event(project_info, event) for event in project.events)
+        self._stamp_event(project_info, event) for event in project.events
+      )
       enum_code = '\n\n'.join(
-          self._stamp_enum(project_info, enum) for enum in project.enums)
-      return self.project_template.format(project=project,
-                                          enum_code=enum_code,
-                                          event_code=event_code)
-    return ""
+        self._stamp_enum(project_info, enum) for enum in project.enums
+      )
+      return self.project_template.format(
+        project=project, enum_code=enum_code, event_code=event_code
+      )
+    return ''
 
   def _stamp_event(self, project_info, event):
     event_info = EventInfoTs(event, project_info)
     metric_code = ''.join(
-        self._stamp_metric(project_info, event_info, metric)
-        for metric in event.metrics)
+      self._stamp_metric(project_info, event_info, metric)
+      for metric in event.metrics
+    )
     metric_fields = ''.join(
-        self._stamp_metric_fields(project_info, event_info, metric)
-        for metric in event.metrics)
+      self._stamp_metric_fields(project_info, event_info, metric)
+      for metric in event.metrics
+    )
     metric_build_code = ''.join(
-        self._stamp_metric_build_code(project_info, event_info, metric)
-        for metric in event.metrics)
-    return self.event_template.format(event=event_info,
-                                      metric_fields=metric_fields,
-                                      metric_code=metric_code,
-                                      metric_build_code=metric_build_code)
+      self._stamp_metric_build_code(project_info, event_info, metric)
+      for metric in event.metrics
+    )
+    return self.event_template.format(
+      event=event_info,
+      metric_fields=metric_fields,
+      metric_code=metric_code,
+      metric_build_code=metric_build_code,
+    )
 
   def _stamp_metric(self, project_info, event_info, metric):
     metric_info = MetricInfoTs(metric, project_info, event_info)
@@ -124,7 +155,8 @@ class TemplateTypescript(EventTemplateBase):
 
   def _stamp_enum(self, project_info, enum):
     variants = ',\n'.join(
-        ['{v.name} = {v.value}'.format(v=v) for v in enum.variants])
-    return self.enum_template.format(project_info=project_info,
-                                     enum=enum,
-                                     variants=variants)
+      ['{v.name} = {v.value}'.format(v=v) for v in enum.variants]
+    )
+    return self.enum_template.format(
+      project_info=project_info, enum=enum, variants=variants
+    )

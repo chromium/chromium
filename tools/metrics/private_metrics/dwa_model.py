@@ -8,7 +8,8 @@ import setup_modules  # pylint: disable=unused-import
 import chromium_src.tools.metrics.private_metrics.private_metrics_model_shared as private_metrics_model_shared
 
 DWA_XML_TYPE = private_metrics_model_shared.create_event_based_document_type(
-    'dwa-configuration')
+  'dwa-configuration'
+)
 
 
 def PrettifyXML(original_xml):

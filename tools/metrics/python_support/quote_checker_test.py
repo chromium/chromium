@@ -12,7 +12,6 @@ import chromium_src.tools.metrics.python_support.quote_checker as quote_checker
 
 
 class QuoteCheckerTest(unittest.TestCase):
-
   def _RunQuoteCheck(self, code_text, changed_lines=None):
     filepath = pathlib.Path('test_file.py')
     modified_strings = quote_checker.GetModifiedStrings(filepath, code_text)
@@ -21,10 +20,12 @@ class QuoteCheckerTest(unittest.TestCase):
 
     violations = []
     for modified_string in modified_strings:
-      if not quote_checker.CheckQuoteConsistency(modified_string,
-                                                 changed_lines):
+      if not quote_checker.CheckQuoteConsistency(
+        modified_string, changed_lines
+      ):
         report_line = sorted(
-            list(changed_lines.intersection(modified_string.lines)))[0]
+          list(changed_lines.intersection(modified_string.lines))
+        )[0]
         violations.append(report_line)
     return sorted(violations)
 
@@ -64,10 +65,10 @@ t = fr"don't {name}"
     self.assertEqual(self._RunQuoteCheck(code), [2, 3, 11, 12, 13, 14, 15])
 
   def testChangedLinesFiltering(self):
-    code = '''\
+    code = """\
 x = "hello"
 y = "world"
-'''
+"""
     # If only line 2 is changed, only line 2 is flagged
     self.assertEqual(self._RunQuoteCheck(code, changed_lines={2}), [2])
     # If no lines are changed, nothing is flagged
@@ -88,12 +89,12 @@ y = (
     self.assertEqual(self._RunQuoteCheck(code), [4])
 
   def testMultilineConcatenatedWithSingleQuoteAllowed(self):
-    code = '''\
+    code = """\
 y = (
     f"hello {name} "
     f"world's {value}"
 )
-'''
+"""
     # Entire concatenated string contains single quote, allowed.
     self.assertEqual(self._RunQuoteCheck(code), [])
 

@@ -7,8 +7,9 @@ import setup_modules  # pylint: disable=unused-import
 
 import chromium_src.tools.metrics.private_metrics.private_metrics_codegen as private_metrics_codegen
 
-HEADER = private_metrics_codegen.Template(basename="dwa_decode.h",
-                                          file_template="""\
+HEADER = private_metrics_codegen.Template(
+  basename='dwa_decode.h',
+  file_template="""\
 // Generated from gen_private_metrics_builders.py.  DO NOT EDIT!
 // source: dwa.xml
 
@@ -34,12 +35,14 @@ DecodeMap CreateDecodeMap();
 
 #endif  // {file.guard_path}
 """,
-                                          event_template="",
-                                          metric_template="",
-                                          study_template="")
+  event_template='',
+  metric_template='',
+  study_template='',
+)
 
-IMPL = private_metrics_codegen.Template(basename="dwa_decode.cc",
-                                        file_template="""\
+IMPL = private_metrics_codegen.Template(
+  basename='dwa_decode.cc',
+  file_template="""\
 // Generated from gen_private_metrics_builders.py.  DO NOT EDIT!
 // source: dwa.xml
 
@@ -56,7 +59,7 @@ std::map<uint64_t, EntryDecoder> CreateDecodeMap() {{
 
 }}  // namespace dwa::builders
 """,
-                                        event_template="""
+  event_template="""
     {{
       UINT64_C({event.hash}),
       {{
@@ -70,12 +73,13 @@ std::map<uint64_t, EntryDecoder> CreateDecodeMap() {{
       }}
     }},
 """,
-                                        metric_template="""
+  metric_template="""
     {{{event.name}::k{metric.name}NameHash, {event.name}::k{metric.name}Name}},
 """,
-                                        study_template="""
+  study_template="""
     {{{event.name}::k{study.name}NameHash, {event.name}::k{study.name}Name}},
-""")
+""",
+)
 
 
 def WriteFiles(outdir, relpath, data):

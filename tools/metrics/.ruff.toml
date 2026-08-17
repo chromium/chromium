@@ -1,0 +1,6 @@
+line-length = 80
+indent-width = 2
+
+[format]
+# As enforced by PRESUBMIT.py: _CheckQuoteConsistency
+quote-style = "single"

@@ -22,11 +22,12 @@ _SRC_ROOT = _THIS_DIR.parent.parent.parent
 # check was added. Long term we want to clean that list.
 # TODO(crbug.com/484881364): Fix this list.
 _IGNORE_LIST_PATH = _SRC_ROOT.joinpath(
-    'tools/metrics/python_support/mypy_ignore_list.txt')
+  'tools/metrics/python_support/mypy_ignore_list.txt'
+)
 
 # Specs of venv paths are applied in order of the list
 _VPYTHON_SPEC_FILES: List[pathlib.Path] = [
-    _SRC_ROOT.joinpath("tools/metrics/python_support/mypy_helpers_vpython_spec")
+  _SRC_ROOT.joinpath('tools/metrics/python_support/mypy_helpers_vpython_spec')
 ]
 
 # In order to resolve imports coming from the setup_modules.py and its tooling
@@ -35,24 +36,22 @@ _VPYTHON_SPEC_FILES: List[pathlib.Path] = [
 # The keys in the mapping are paths relative to stubs directory to create
 # the values are the paths relative to src/ to symlink.
 _STUB_MAPPINGS: Dict[str, str] = {
-    'chromium_src': '.',
-    'setup_modules_lib.py': 'tools/metrics/python_support/setup_modules_lib.py',
-    'setup_modules.py': 'tools/metrics/setup_modules.py',
-    'typ': 'third_party/catapult/third_party/typ',
+  'chromium_src': '.',
+  'setup_modules_lib.py': 'tools/metrics/python_support/setup_modules_lib.py',
+  'setup_modules.py': 'tools/metrics/setup_modules.py',
+  'typ': 'third_party/catapult/third_party/typ',
 }
 
 # List of regex patterns for errors to ignore.
 _IGNORED_ERRORS: List[str] = [
-    # Ignore issues in chromium_src/tools/metrics as they are duplicates
-    # of what we already have through analyzing "local" files.
-    r"^.*chromium_mypy_stubs_.*chromium_src.tools.metrics.*$",
-
-    # Ignore all third party errors.
-    # TODO(crbug.com/484881364): Treat them as warning instead.
-    r"^.*chromium_mypy_stubs_.*chromium_src.third_party.*$",
-
-    # TODO(crbug.com/484881364): Fix this.
-    r'^.*chromium_src.components.autofill.core.browser.data_model',
+  # Ignore issues in chromium_src/tools/metrics as they are duplicates
+  # of what we already have through analyzing "local" files.
+  r'^.*chromium_mypy_stubs_.*chromium_src.tools.metrics.*$',
+  # Ignore all third party errors.
+  # TODO(crbug.com/484881364): Treat them as warning instead.
+  r'^.*chromium_mypy_stubs_.*chromium_src.third_party.*$',
+  # TODO(crbug.com/484881364): Fix this.
+  r'^.*chromium_src.components.autofill.core.browser.data_model',
 ]
 
 _IGNORED_ERRORS_PATTERNS = [re.compile(p) for p in _IGNORED_ERRORS]
@@ -70,7 +69,6 @@ def _convert_to_windows_ignore_line_if_needed(ignore_file_entry: str) -> str:
   return ':'.join(parts)
 
 
-
 def _create_symlink(target: pathlib.Path, link_name: pathlib.Path) -> None:
   """Creates a symlink at link_name pointing to target."""
   if platform.system() == 'Windows':
@@ -80,10 +78,12 @@ def _create_symlink(target: pathlib.Path, link_name: pathlib.Path) -> None:
     absolute_link = str(link_name.resolve())
     if target.is_dir():
       mklink = subprocess.run(
-          ['cmd', '/c', 'mklink', '/j', absolute_link, absolute_target])
+        ['cmd', '/c', 'mklink', '/j', absolute_link, absolute_target]
+      )
     else:
       mklink = subprocess.run(
-          ['cmd', '/c', 'mklink', '/H', absolute_link, absolute_target])
+        ['cmd', '/c', 'mklink', '/H', absolute_link, absolute_target]
+      )
     _ = mklink.returncode  # wait for it to finish
   else:
     os.symlink(target, link_name)
@@ -130,28 +130,30 @@ def run_mypy(stub_dir: pathlib.Path, dir_to_check: str) -> List[str]:
     List[str]: A list of error lines returned by mypy.
   """
   env = os.environ.copy()
-  env["MYPYPATH"] = str(stub_dir.resolve())
+  env['MYPYPATH'] = str(stub_dir.resolve())
 
-  spec_flags = [["-vpython-spec", f"{str(p)}"] for p in _VPYTHON_SPEC_FILES]
+  spec_flags = [['-vpython-spec', f'{str(p)}'] for p in _VPYTHON_SPEC_FILES]
 
   cmd = [
-      "vpython3",
-      *itertools.chain(*spec_flags),
-      "-m",
-      "mypy",
-      "--explicit-package-bases",
-      "--no-error-summary",  # Easier to parse without the summary
-      "--hide-error-context",  # Cleaner line-by-line filtering
-      "--",
-      dir_to_check
+    'vpython3',
+    *itertools.chain(*spec_flags),
+    '-m',
+    'mypy',
+    '--explicit-package-bases',
+    '--no-error-summary',  # Easier to parse without the summary
+    '--hide-error-context',  # Cleaner line-by-line filtering
+    '--',
+    dir_to_check,
   ]
 
-  result = subprocess.run(cmd,
-                          env=env,
-                          cwd=_SRC_ROOT,
-                          capture_output=True,
-                          shell=sys.platform == 'win32',
-                          text=True)
+  result = subprocess.run(
+    cmd,
+    env=env,
+    cwd=_SRC_ROOT,
+    capture_output=True,
+    shell=sys.platform == 'win32',
+    text=True,
+  )
 
   output = result.stdout + result.stderr
   return output.splitlines()
@@ -168,8 +170,8 @@ def run_mypy_and_filter_irrelevant(dir_to_check: str) -> List[str]:
   """
   with open(_IGNORE_LIST_PATH, 'r') as f:
     ignored_errors = {
-        _convert_to_windows_ignore_line_if_needed(error.strip())
-        for error in f.readlines()
+      _convert_to_windows_ignore_line_if_needed(error.strip())
+      for error in f.readlines()
     }
 
   with _setup_stubs() as stub_dir:
@@ -197,6 +199,8 @@ def run_mypy_and_filter_irrelevant(dir_to_check: str) -> List[str]:
       filtered_errors.append(line)
 
     assert empty_lines == 0
-    print(f"MyPy found {len(filtered_errors)} issues + {ignored_patterns}"
-          f" ignored by pattern + {ignored_errors_cnt} ignored by list")
+    print(
+      f'MyPy found {len(filtered_errors)} issues + {ignored_patterns}'
+      f' ignored by pattern + {ignored_errors_cnt} ignored by list'
+    )
     return filtered_errors

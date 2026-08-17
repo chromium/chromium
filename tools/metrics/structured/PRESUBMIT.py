@@ -13,7 +13,7 @@ STRUCTURED_OLD_XML = 'sync/structured.old.xml'
 
 
 def CheckChange(input_api, output_api):
-  """ Checks that structured.xml is pretty-printed and well-formatted. """
+  """Checks that structured.xml is pretty-printed and well-formatted."""
   errors = []
 
   for file in input_api.AffectedFiles():
@@ -25,41 +25,46 @@ def CheckChange(input_api, output_api):
     if basename == STRUCTURED_XML:
       cwd = input_api.os_path.dirname(path)
       exit_code = input_api.subprocess.call(
-          [input_api.python3_executable, 'pretty_print.py', '--presubmit'],
-          cwd=cwd)
+        [input_api.python3_executable, 'pretty_print.py', '--presubmit'],
+        cwd=cwd,
+      )
       if exit_code != 0:
         errors.append(
-            output_api.PresubmitError(
-                STRUCTURED_XML +
-                ' is not prettified; run `git cl format` to fix.'))
+          output_api.PresubmitError(
+            STRUCTURED_XML + ' is not prettified; run `git cl format` to fix.'
+          )
+        )
     elif basename == STRUCTURED_OLD_XML:
       errors.append(
-          output_api.PresubmitError(
-              STRUCTURED_OLD_XML +
-              ' exists after formatting; please remove before upload.'))
+        output_api.PresubmitError(
+          STRUCTURED_OLD_XML
+          + ' exists after formatting; please remove before upload.'
+        )
+      )
 
   disabled_warnings = [
-      'bad-indentation',
-      'consider-using-from-import',
-      'consider-using-with',
-      'duplicate-code',
-      'line-too-long',
-      'missing-module-docstring',
-      'superfluous-parens',
-      'unspecified-encoding',
-      'unused-import',
+    'bad-indentation',
+    'consider-using-from-import',
+    'consider-using-with',
+    'duplicate-code',
+    'line-too-long',
+    'missing-module-docstring',
+    'superfluous-parens',
+    'unspecified-encoding',
+    'unused-import',
   ]
   errors.extend(
-      input_api.canned_checks.RunPylint(input_api,
-                                        output_api,
-                                        disabled_warnings=disabled_warnings,
-                                        version='3.2'))
+    input_api.canned_checks.RunPylint(
+      input_api, output_api, disabled_warnings=disabled_warnings, version='3.2'
+    )
+  )
 
   return errors
 
 
 def CheckChangeOnUpload(input_api, output_api):
   return CheckChange(input_api, output_api)
+
 
 def CheckChangeOnCommit(input_api, output_api):
   return CheckChange(input_api, output_api)

@@ -60,7 +60,7 @@ def ReadHistogramValues(filename: str) -> list[tuple[str, int]]:
         inside_enum = False
       else:
         # Inside enum: generate new xml entry
-        m = re.match('^{ \"([\w]+)\", \{([\w]+)', line.strip())
+        m = re.match('^{ "([\w]+)", \{([\w]+)', line.strip())
         if m:
           result.append((m.group(1), int(m.group(2))))
     else:
@@ -92,14 +92,15 @@ def UpdateHistogramDefinitions(histogram_values, document):
   # Remove existing values.
   while extension_functions_enum_node.hasChildNodes():
     extension_functions_enum_node.removeChild(
-      extension_functions_enum_node.lastChild)
+      extension_functions_enum_node.lastChild
+    )
 
   # Add a "Generated from (...)" comment
   comment = ' Generated from {0} '.format(EDITOR_COMMAND_CPP)
   extension_functions_enum_node.appendChild(document.createComment(comment))
 
   # Add values generated from policy templates.
-  for (label, value) in histogram_values:
+  for label, value in histogram_values:
     node = document.createElement('int')
     node.attributes['value'] = str(value)
     node.attributes['label'] = label

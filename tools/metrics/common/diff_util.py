@@ -32,12 +32,14 @@ def PromptUserToAcceptDiff(old_text, new_text, prompt):
   if old_text == new_text:
     logging.info('No changes detected')
     return True
-  html_diff = difflib.HtmlDiff(wrapcolumn=80).make_file(old_text.splitlines(),
-                                                        new_text.splitlines(),
-                                                        fromdesc='Original',
-                                                        todesc='Updated',
-                                                        context=True,
-                                                        numlines=5)
+  html_diff = difflib.HtmlDiff(wrapcolumn=80).make_file(
+    old_text.splitlines(),
+    new_text.splitlines(),
+    fromdesc='Original',
+    todesc='Updated',
+    context=True,
+    numlines=5,
+  )
   temp = tempfile.NamedTemporaryFile(suffix='.html', delete=False)
   try:
     html_diff = html_diff.encode()

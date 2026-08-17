@@ -62,10 +62,9 @@ def UpdatePoliciesHistogramDefinitions(policy_ids, doc):
   policy_enum_node.appendChild(doc.createComment(comment))
 
   # Add values generated from policy templates.
-  ordered_policies = [{
-      'id': id,
-      'name': name
-  } for id, name in policy_ids.items() if name]
+  ordered_policies = [
+    {'id': id, 'name': name} for id, name in policy_ids.items() if name
+  ]
 
   ordered_policies.sort(key=lambda policy: policy['id'])
   for policy in ordered_policies:
@@ -78,9 +77,10 @@ def UpdatePoliciesHistogramDefinitions(policy_ids, doc):
 def main():
   args_parser = argparse.ArgumentParser()
   args_parser.add_argument(
-      '--yes', '-y',
-      action='store_true',
-      help='Skip confirmation before diffing.',
+    '--yes',
+    '-y',
+    action='store_true',
+    help='Skip confirmation before diffing.',
   )
   args = args_parser.parse_args()
 
@@ -92,14 +92,16 @@ def main():
     f.seek(0)
     xml = f.read().decode('utf-8')
 
-  UpdatePoliciesHistogramDefinitions(policy_list_content['policies'],
-                                     histograms_doc)
+  UpdatePoliciesHistogramDefinitions(
+    policy_list_content['policies'], histograms_doc
+  )
   new_xml = histogram_configuration_model.PrettifyTree(histograms_doc)
   if args.yes:
     make_edits = True
   else:
     make_edits = diff_util.PromptUserToAcceptDiff(
-        xml, new_xml, 'Is the updated version acceptable?')
+      xml, new_xml, 'Is the updated version acceptable?'
+    )
   if make_edits:
     with open(ENUMS_PATH, 'wb') as f:
       f.write(new_xml.encode('utf-8'))

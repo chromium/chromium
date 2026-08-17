@@ -53,7 +53,8 @@ def CombineEnumsSections(doc, trees):
     xml.dom.minidom._append_child(enums_node, enum)
 
   ukm_events = GetElementsByTagName(
-      GetElementsByTagName(trees, 'ukm-configuration'), 'event')
+    GetElementsByTagName(trees, 'ukm-configuration'), 'event'
+  )
   if ukm_events:
     populate_enums.PopulateEnumsWithUkmEvents(doc, enums_node, ukm_events)
   return enums_node
@@ -102,17 +103,20 @@ def CombineHistogramsSorted(doc, trees):
 
   # Create the combined <histogram_suffixes_list> tag.
   combined_histogram_suffixes_list = doc.createElement(
-      'histogram_suffixes_list')
+    'histogram_suffixes_list'
+  )
 
-  histogram_suffixes_nodes = GetElementsByTagName(trees,
-                                                  'histogram_suffixes',
-                                                  depth=3)
-  sorted_histogram_suffixes = sorted(histogram_suffixes_nodes,
-                                     key=SortByLowerCaseName)
+  histogram_suffixes_nodes = GetElementsByTagName(
+    trees, 'histogram_suffixes', depth=3
+  )
+  sorted_histogram_suffixes = sorted(
+    histogram_suffixes_nodes, key=SortByLowerCaseName
+  )
 
   for histogram_suffixes in sorted_histogram_suffixes:
-    xml.dom.minidom._append_child(combined_histogram_suffixes_list,
-                                  histogram_suffixes)
+    xml.dom.minidom._append_child(
+      combined_histogram_suffixes_list, histogram_suffixes
+    )
 
   return [combined_histograms, combined_histogram_suffixes_list]
 
@@ -146,13 +150,16 @@ def MergeTrees(trees, should_expand_owners):
   """
   doc = xml.dom.minidom.Document()
   doc.appendChild(
-      MakeNodeWithChildren(
-          doc,
-          'histogram-configuration',
-          [CombineEnumsSections(doc, trees)] +
-          # Sort the <histogram> and <histogram_suffixes> nodes by name and
-          # return the combined nodes.
-          CombineHistogramsSorted(doc, trees)))
+    MakeNodeWithChildren(
+      doc,
+      'histogram-configuration',
+      [CombineEnumsSections(doc, trees)]
+      +
+      # Sort the <histogram> and <histogram_suffixes> nodes by name and
+      # return the combined nodes.
+      CombineHistogramsSorted(doc, trees),
+    )
+  )
   # Only perform fancy operations after |doc| becomes stable. This helps improve
   # the runtime performance.
   if should_expand_owners:
@@ -194,16 +201,17 @@ def _BuildDOMTreeWithComponentMetadata(filename_or_file):
   if isinstance(filename_or_file, str):
     # If we can find a metadata file in the same directory, we try to extract
     # a component from it.
-    metadata_filename = os.path.join(os.path.dirname(filename_or_file),
-                                     'DIR_METADATA')
+    metadata_filename = os.path.join(
+      os.path.dirname(filename_or_file), 'DIR_METADATA'
+    )
     if os.path.exists(metadata_filename):
       return _AddComponentFromMetadataFile(tree, metadata_filename)
   return tree
 
 
-def MergeFiles(filenames=[],
-               files=[],
-               expand_owners_and_extract_components=False):
+def MergeFiles(
+  filenames=[], files=[], expand_owners_and_extract_components=False
+):
   """Merges a list of histograms.xml files.
 
   Args:
@@ -219,19 +227,24 @@ def MergeFiles(filenames=[],
   # minidom.parse() takes both files and filenames:
   all_files = files + filenames
   trees = [
-      _BuildDOMTreeWithComponentMetadata(f)
-      if expand_owners_and_extract_components else xml.dom.minidom.parse(f)
-      for f in all_files
+    _BuildDOMTreeWithComponentMetadata(f)
+    if expand_owners_and_extract_components
+    else xml.dom.minidom.parse(f)
+    for f in all_files
   ]
-  return MergeTrees(trees,
-                    should_expand_owners=expand_owners_and_extract_components)
+  return MergeTrees(
+    trees, should_expand_owners=expand_owners_and_extract_components
+  )
 
 
 def PrettyPrintMergedFiles(filenames=[], files=[]):
   return histogram_configuration_model.PrettifyTree(
-      MergeFiles(filenames=filenames,
-                 files=files,
-                 expand_owners_and_extract_components=True))
+    MergeFiles(
+      filenames=filenames,
+      files=files,
+      expand_owners_and_extract_components=True,
+    )
+  )
 
 
 def main():
@@ -244,8 +257,11 @@ def main():
     # to send the merged histograms.xml to the server side. Providing |UKM_XML|
     # here is not to merge ukm.xml but to populate `UkmEventNameHash` enum
     # values.
-    f.write(PrettyPrintMergedFiles(
-      histogram_paths.ALL_XMLS + [histogram_paths.UKM_XML]))
+    f.write(
+      PrettyPrintMergedFiles(
+        histogram_paths.ALL_XMLS + [histogram_paths.UKM_XML]
+      )
+    )
 
 
 if __name__ == '__main__':

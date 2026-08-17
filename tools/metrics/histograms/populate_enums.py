@@ -28,23 +28,27 @@ def _GetEventDetails(event):
   name = event.getAttribute('name')
   # The value is UKM event name hash truncated to 31 bits. This is recorded in
   # https://cs.chromium.org/chromium/src/components/ukm/ukm_recorder_impl.cc?q=LogEventHashasUmaHistogram
-  name_hash = codegen_shared.HashName(name) & 0x7fffffff
+  name_hash = codegen_shared.HashName(name) & 0x7FFFFFFF
 
   def _HasDirectObsoleteTag(node):
     return any(
-        isinstance(child, xml.dom.minidom.Element)
-        and child.tagName == 'obsolete' for child in node.childNodes)
+      isinstance(child, xml.dom.minidom.Element) and child.tagName == 'obsolete'
+      for child in node.childNodes
+    )
 
   # The UKM event is considered obsolete if the event itself is marked as
   # obsolete with a tag or all of its metrics are marked as obsolete.
   is_event_obsolete = _HasDirectObsoleteTag(event)
   are_all_metrics_obsolete = all(
-      _HasDirectObsoleteTag(metric)
-      for metric in event.getElementsByTagName('metric'))
+    _HasDirectObsoleteTag(metric)
+    for metric in event.getElementsByTagName('metric')
+  )
 
-  return EventDetails(name=name,
-                      hash=name_hash,
-                      is_obsolete=is_event_obsolete or are_all_metrics_obsolete)
+  return EventDetails(
+    name=name,
+    hash=name_hash,
+    is_obsolete=is_event_obsolete or are_all_metrics_obsolete,
+  )
 
 
 def PopulateEnumWithUkmEvents(doc, enum, ukm_events):

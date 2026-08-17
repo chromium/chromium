@@ -273,7 +273,8 @@ class ActionXmlTest(unittest.TestCase):
     super(ActionXmlTest, self).__init__(*args, **kwargs)
     self.maxDiff = None
 
-  @parameterized.expand([
+  @parameterized.expand(
+    [
       # Test prettify already pretty XML to verify the pretty-printed version
       # is the same.
       ('AlreadyPrettyXml', PRETTY_XML, PRETTY_XML),
@@ -284,22 +285,36 @@ class ActionXmlTest(unittest.TestCase):
       # The children of <action> should be sorted in the order of <obsolete>,
       # <owner> and <description>
       ('ChildrenOrder', XML_WITH_WRONG_CHILDREN_ORDER, PRETTY_XML),
-  ])
+    ]
+  )
   def testPrettify(self, _, input_xml, expected_xml):
     result = actions_model.PrettifyTree(xml.dom.minidom.parseString(input_xml))
     self.assertMultiLineEqual(result.strip(), expected_xml)
 
-  @parameterized.expand([
+  @parameterized.expand(
+    [
       ('BadAttributeBoolean', PRETTY_XML, 'true', 'hello', 'hello'),
       ('BadSuffixNameWithSpace', PRETTY_XML, 'AppMenu', 'App Menu', 'App Menu'),
-      ('BadAffectedActionNameWithSpace', PRETTY_XML, 'AnAction', 'An Action',
-       'An Action'),
+      (
+        'BadAffectedActionNameWithSpace',
+        PRETTY_XML,
+        'AnAction',
+        'An Action',
+        'An Action',
+      ),
       ('SuffixWithBadSeparator', PRETTY_XML, '.', '-', '-'),
-      ('BadOrdering_IllegalWord', PRETTY_XML, 'ordering="suffix"',
-       'ordering="hello"', 'hello'),
-  ])
-  def testRegex(self, _, pretty_input_xml, original_string, bad_string,
-                error_string):
+      (
+        'BadOrdering_IllegalWord',
+        PRETTY_XML,
+        'ordering="suffix"',
+        'ordering="hello"',
+        'hello',
+      ),
+    ]
+  )
+  def testRegex(
+    self, _, pretty_input_xml, original_string, bad_string, error_string
+  ):
     BAD_XML = pretty_input_xml.replace(original_string, bad_string)
     with self.assertRaises(ValueError) as context:
       actions_model.PrettifyTree(xml.dom.minidom.parseString(BAD_XML))

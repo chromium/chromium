@@ -62,12 +62,13 @@ def main():
   """
   if len(sys.argv) == 1:
     merged_xml_string = merge_xml.MergeFiles(
-        histogram_paths.ALL_XMLS,
-        expand_owners_and_extract_components=True).toxml()
+      histogram_paths.ALL_XMLS, expand_owners_and_extract_components=True
+    ).toxml()
     root = ET.fromstring(merged_xml_string)
   else:
     rel_path = path_util.GetInputFile(
-        os.path.join('tools', 'metrics', 'histograms', sys.argv[1]))
+      os.path.join('tools', 'metrics', 'histograms', sys.argv[1])
+    )
     if not os.path.exists(rel_path):
       raise ValueError('A histograms.xml file does not exist in %s' % rel_path)
 

@@ -14,7 +14,9 @@ import sys
 
 import setup_modules  # pylint: disable=unused-import
 
-from chromium_src.tools.metrics.histograms.update_histogram_enum import UpdateHistogramEnum
+from chromium_src.tools.metrics.histograms.update_histogram_enum import (
+  UpdateHistogramEnum,
+)
 
 
 if __name__ == '__main__':
@@ -23,9 +25,11 @@ if __name__ == '__main__':
     sys.stderr.write(__doc__)
     sys.exit(1)
 
-  UpdateHistogramEnum('tools/metrics/histograms/metadata/stability/enums.xml',
-                      histogram_enum_name='DebugScenario',
-                      source_enum_path='content/common/debug_utils.h',
-                      start_marker='^enum class ?DebugScenario {',
-                      end_marker='^kMaxValue',
-                      calling_script=os.path.basename(__file__))
+  UpdateHistogramEnum(
+    'tools/metrics/histograms/metadata/stability/enums.xml',
+    histogram_enum_name='DebugScenario',
+    source_enum_path='content/common/debug_utils.h',
+    start_marker='^enum class ?DebugScenario {',
+    end_marker='^kMaxValue',
+    calling_script=os.path.basename(__file__),
+  )

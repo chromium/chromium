@@ -54,14 +54,16 @@ class Action(object):
     from_suffix: If True, this action was computed via a suffix.
   """
 
-  def __init__(self,
-               name: str,
-               description: str | None,
-               owners: List[str] | None,
-               not_user_triggered: bool = False,
-               obsolete: str | None = None,
-               tokens: List | None = [],
-               from_suffix: bool | None = False):
+  def __init__(
+    self,
+    name: str,
+    description: str | None,
+    owners: List[str] | None,
+    not_user_triggered: bool = False,
+    obsolete: str | None = None,
+    tokens: List | None = [],
+    from_suffix: bool | None = False,
+  ):
     self.name = name
     self.description = description
     self.owners = owners
@@ -72,14 +74,14 @@ class Action(object):
 
   def _as_equality_tuple(self):
     return (
-        self.name,
-        self.description,
-        self.owners,
-        self.not_user_triggered,
-        self.obsolete,
-        self.from_suffix,
-        # Basic token comparison: number of tokens
-        len(self.tokens or []),
+      self.name,
+      self.description,
+      self.owners,
+      self.not_user_triggered,
+      self.obsolete,
+      self.from_suffix,
+      # Basic token comparison: number of tokens
+      len(self.tokens or []),
     )
 
   def __eq__(self, other):
@@ -140,8 +142,9 @@ class Token(object):
 def ExtractVariants(variants_node: minidom.Element) -> List[Variant]:
   """Extracts a list of variants from a <variants> or <token> node."""
   variants: List[Variant] = []
-  for variant_node in xml_utils.IterElementsWithTag(variants_node, 'variant',
-                                                    1):
+  for variant_node in xml_utils.IterElementsWithTag(
+    variants_node, 'variant', 1
+  ):
     name = variant_node.getAttribute('name')
     summary = variant_node.getAttribute('summary')
     if not summary:
@@ -150,8 +153,9 @@ def ExtractVariants(variants_node: minidom.Element) -> List[Variant]:
   return variants
 
 
-def _ExtractTokens(action: minidom.Element,
-                   variants_dict: Dict[str, List[Variant]]) -> List[Token]:
+def _ExtractTokens(
+  action: minidom.Element, variants_dict: Dict[str, List[Variant]]
+) -> List[Token]:
   """Extracts tokens and variants from the given action element.
 
   Args:
@@ -169,16 +173,19 @@ def _ExtractTokens(action: minidom.Element,
   for token_node in xml_utils.IterElementsWithTag(action, 'token', 1):
     token_key = token_node.getAttribute('key')
     if token_key in tokens_seen:
-      raise ValueError(f'Action {action_name} contains duplicate token key '
-                       f'{token_key}, please ensure token keys are unique.')
+      raise ValueError(
+        f'Action {action_name} contains duplicate token key '
+        f'{token_key}, please ensure token keys are unique.'
+      )
     tokens_seen.add(token_key)
 
     token_key_format = '{' + token_key + '}'
     if token_key_format not in action_name:
       raise ValueError(
-          f'User Action {action_name} includes a token tag but the token key '
-          f'is not present in action name. Please insert the token key into '
-          f'the action name in order for the token to be added.')
+        f'User Action {action_name} includes a token tag but the token key '
+        f'is not present in action name. Please insert the token key into '
+        f'the action name in order for the token to be added.'
+      )
 
     token = Token(key=token_key)
 
@@ -188,9 +195,10 @@ def _ExtractTokens(action: minidom.Element,
       variants_name = token_node.getAttribute('variants')
       if variants_name not in variants_dict:
         raise ValueError(
-            f'The variants attribute {variants_name} of token key {token_key} '
-            f'of action {action_name} does not have a corresponding '
-            f'<variants> tag.')
+          f'The variants attribute {variants_name} of token key {token_key} '
+          f'of action {action_name} does not have a corresponding '
+          f'<variants> tag.'
+        )
       token.variants_name = variants_name
       token.variants = variants_dict[variants_name]
 
@@ -221,7 +229,7 @@ def _ExtractText(parent_dom: minidom.Element, tag_name: str) -> List[str]:
 
 
 def ParseActionFile(
-    file_content: str
+  file_content: str,
 ) -> Tuple[Dict[str, Action], List[minidom.Comment], Dict[str, List[Variant]]]:
   """Parse the XML data currently stored in the file.
 
@@ -268,30 +276,34 @@ def ParseActionFile(
     description_list = _ExtractText(action_dom, 'description')
     if len(description_list) > 1:
       raise ValueError(
-          f'User action "{action_name}" has more than one description. Exactly '
-          f'one description is needed for each user action. Please '
-          f'fix.')
+        f'User action "{action_name}" has more than one description. Exactly '
+        f'one description is needed for each user action. Please '
+        f'fix.'
+      )
     description = description_list[0] if description_list else None
 
     # There is at most one obsolete tag for each user action.
     obsolete_list = _ExtractText(action_dom, 'obsolete')
     if len(obsolete_list) > 1:
       raise ValueError(
-          f'User action "{action_name}" has more than one obsolete tag. At'
-          f' most one obsolete tag can be added for each user action. Please'
-          f' fix.')
+        f'User action "{action_name}" has more than one obsolete tag. At'
+        f' most one obsolete tag can be added for each user action. Please'
+        f' fix.'
+      )
     obsolete = obsolete_list[0] if obsolete_list else None
 
     tokens = _ExtractTokens(action_dom, variants_dict)
 
-    actions_dict[action_name] = Action(action_name, description, owners,
-                                       not_user_triggered, obsolete, tokens)
+    actions_dict[action_name] = Action(
+      action_name, description, owners, not_user_triggered, obsolete, tokens
+    )
 
   return actions_dict, comment_nodes, variants_dict
 
 
-def _CreateActionFromVariant(action: Action, variant: Variant,
-                             token: Token) -> Action:
+def _CreateActionFromVariant(
+  action: Action, variant: Variant, token: Token
+) -> Action:
   """Creates a new action by substituting token with variant in template action.
 
   The properties of returned action are derived from provided template action
@@ -315,12 +327,19 @@ def _CreateActionFromVariant(action: Action, variant: Variant,
     new_action_description = action.description + ' ' + variant.summary
   else:
     new_action_description = (
-        'Please enter the description of this user action. ' + variant.summary)
+      'Please enter the description of this user action. ' + variant.summary
+    )
 
   new_tokens = [new_token for new_token in action.tokens if new_token != token]
 
-  return Action(new_name, new_action_description, action.owners,
-                action.not_user_triggered, action.obsolete, new_tokens)
+  return Action(
+    new_name,
+    new_action_description,
+    action.owners,
+    action.not_user_triggered,
+    action.obsolete,
+    new_tokens,
+  )
 
 
 def _CreateActionVariantsFor(action: Action) -> Dict[str, Action]:
@@ -334,18 +353,21 @@ def _CreateActionVariantsFor(action: Action) -> Dict[str, Action]:
 
   current_token = action.tokens[0]
   if not current_token.variants:
-    raise ValueError(f'Action {action} does not have variants'
-                     f' for {current_token.key} token.')
+    raise ValueError(
+      f'Action {action} does not have variants for {current_token.key} token.'
+    )
 
   for variant in current_token.variants:
     ret_val |= _CreateActionVariantsFor(
-        _CreateActionFromVariant(action, variant, current_token))
+      _CreateActionFromVariant(action, variant, current_token)
+    )
 
   return ret_val
 
 
 def CreateActionsFromVariants(
-    actions_dict: Dict[str, Action]) -> Dict[str, Action]:
+  actions_dict: Dict[str, Action],
+) -> Dict[str, Action]:
   """Converts template actions dictionary into a dictionary of expanded actions
 
   We allow the actions.xml to contain tokens within the name that are linked

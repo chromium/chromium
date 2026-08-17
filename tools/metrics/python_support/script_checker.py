@@ -11,7 +11,9 @@ import subprocess
 
 import setup_modules  # pylint: disable=unused-import
 
-from chromium_src.tools.metrics.python_support.tests_helpers import TestableScript
+from chromium_src.tools.metrics.python_support.tests_helpers import (
+  TestableScript,
+)
 
 
 @dataclass(frozen=True)
@@ -38,9 +40,11 @@ class FailedScriptResult:
     """
 
 
-def check_scripts(commands_to_check: List[TestableScript],
-                  cwd: str,
-                  display_progressbar: bool = True) -> List[FailedScriptResult]:
+def check_scripts(
+  commands_to_check: List[TestableScript],
+  cwd: str,
+  display_progressbar: bool = True,
+) -> List[FailedScriptResult]:
   """Checks if the provided python scripts finish successfully.
 
   Args:
@@ -58,21 +62,23 @@ def check_scripts(commands_to_check: List[TestableScript],
   last_completed_count = -1
 
   for testable_script in commands_to_check:
-    cmd_debug_str = " ".join(testable_script.cmd)
-    print(f"Running: {cmd_debug_str}")
+    cmd_debug_str = ' '.join(testable_script.cmd)
+    print(f'Running: {cmd_debug_str}')
 
-    out_f = tempfile.TemporaryFile(mode='w+',
-                                   encoding='utf-8',
-                                   errors='replace')
-    err_f = tempfile.TemporaryFile(mode='w+',
-                                   encoding='utf-8',
-                                   errors='replace')
+    out_f = tempfile.TemporaryFile(
+      mode='w+', encoding='utf-8', errors='replace'
+    )
+    err_f = tempfile.TemporaryFile(
+      mode='w+', encoding='utf-8', errors='replace'
+    )
 
-    proc = subprocess.Popen(testable_script.cmd,
-                            stdout=out_f,
-                            stderr=err_f,
-                            shell=sys.platform == 'win32',
-                            cwd=cwd)
+    proc = subprocess.Popen(
+      testable_script.cmd,
+      stdout=out_f,
+      stderr=err_f,
+      shell=sys.platform == 'win32',
+      cwd=cwd,
+    )
     running_processes.append((testable_script, proc, out_f, err_f))
 
   while running_processes:
@@ -88,10 +94,13 @@ def check_scripts(commands_to_check: List[TestableScript],
           err_f.seek(0)
 
           failed_commands.append(
-              FailedScriptResult(command=testable_script.identifiable_name,
-                                 status_code=exit_code,
-                                 stdout=out_f.read(),
-                                 stderr=err_f.read()))
+            FailedScriptResult(
+              command=testable_script.identifiable_name,
+              status_code=exit_code,
+              stdout=out_f.read(),
+              stderr=err_f.read(),
+            )
+          )
 
         out_f.close()
         err_f.close()
@@ -114,10 +123,11 @@ def _print_progress_bar(iteration, total, length=40):
   if total == 0:
     return
 
-  percent = ("{0:.1f}").format(100 * (iteration / float(total)))
+  percent = ('{0:.1f}').format(100 * (iteration / float(total)))
   filled_length = int(length * iteration // total)
   bar = '█' * filled_length + '-' * (length - filled_length)
 
   sys.stdout.write(
-      f'\rWaiting for the scripts to finish: |{bar}| {percent}% Complete')
+    f'\rWaiting for the scripts to finish: |{bar}| {percent}% Complete'
+  )
   sys.stdout.flush()

@@ -59,14 +59,15 @@ import chromium_src.tools.metrics.common.path_util as path_util
 import chromium_src.tools.metrics.histograms.pretty_print as pretty_print
 
 SupportedTags = [
-    "added",
-    "expires",
-    "enum",
-    "os",
-    "owners",
-    "tags",
-    "units",
+  'added',
+  'expires',
+  'enum',
+  'os',
+  'owners',
+  'tags',
+  'units',
 ]
+
 
 def IsTagKnown(tag):
   return tag in SupportedTags
@@ -78,8 +79,9 @@ def IsTagValid(tag, value):
     if re.match('^M[0-9]{2,3}$', value):
       return True
     date = re.match('^([0-9]{4})-([0-9]{2})-([0-9]{2})$', value)
-    return date and datetime.date(int(date.group(1)), int(date.group(2)),
-                                  int(date.group(3)))
+    return date and datetime.date(
+      int(date.group(1)), int(date.group(2)), int(date.group(3))
+    )
   return True
 
 
@@ -107,13 +109,15 @@ def GetMetricsFromMdFile(mdfile):
   sections = re.split('\n---+\n', raw_md)
   tag_pattern = re.compile('^\* ([^:]*): (.*)$')
   for section in sections:
-    if len(section.strip()) == 0: break
+    if len(section.strip()) == 0:
+      break
     lines = section.strip().split('\n')
     # The first line should have the header, containing the name of the metric.
     header_match = re.match('^##+ ', lines[0])
-    if not header_match: continue
+    if not header_match:
+      continue
     metric = {}
-    metric['name'] = lines[0][len(header_match.group(0)):]
+    metric['name'] = lines[0][len(header_match.group(0)) :]
     for i in range(1, len(lines)):
       if len(lines[i]) == 0:
         i += 1
@@ -121,14 +125,17 @@ def GetMetricsFromMdFile(mdfile):
       match = tag_pattern.match(lines[i])
       assert match
       assert IsTagKnown(match.group(1)), 'Unknown tag: "%s".' % (match.group(1))
-      assert IsTagValid(match.group(1), match.group(2)), 'Invalid value "%s" ' \
-          'for tag "%s".' % (match.group(2), match.group(1))
+      assert IsTagValid(match.group(1), match.group(2)), (
+        'Invalid value "%s" for tag "%s".' % (match.group(2), match.group(1))
+      )
       metric[match.group(1)] = match.group(2)
     assert i < len(lines), 'No summary found for "%s"' % metric['name']
     metric['summary'] = '\n'.join(lines[i:])
     assert 'owners' in metric, 'Must have owners for "%s"' % metric['name']
-    assert 'enum' in metric or 'units' in metric, 'Metric "%s" must have ' \
-        'a unit listed in "enum" or "units".' % metric['name']
+    assert 'enum' in metric or 'units' in metric, (
+      'Metric "%s" must have '
+      'a unit listed in "enum" or "units".' % metric['name']
+    )
     metrics.append(metric)
   return metrics
 
@@ -145,14 +152,16 @@ def main():
   argv[2]: The relative path of the xml file to be added.
   """
   if len(sys.argv) != 3:
-    sys.stderr.write('Usage: %s <path-to-md-file> <path-to-histograms-file>\n' %
-                     (sys.argv[0]))
+    sys.stderr.write(
+      'Usage: %s <path-to-md-file> <path-to-histograms-file>\n' % (sys.argv[0])
+    )
     sys.exit(1)
 
   rel_path = sys.argv[2]
   with Trace('Reading histograms.xml') as t:
     xml_path = path_util.GetInputFile(
-        os.path.join('tools', 'metrics', 'histograms', rel_path))
+      os.path.join('tools', 'metrics', 'histograms', rel_path)
+    )
     with open(xml_path, 'rb') as f:
       raw_xml = f.read()
 
@@ -160,8 +169,9 @@ def main():
     tree = xml.dom.minidom.parseString(raw_xml)
     histograms = tree.getElementsByTagName('histograms')
     if histograms.length != 1:
-      sys.stderr.write('histograms.xml should have exactly one "histograms" '
-                       'section.\n');
+      sys.stderr.write(
+        'histograms.xml should have exactly one "histograms" section.\n'
+      )
       sys.exit(1)
     histograms = histograms[0]
 

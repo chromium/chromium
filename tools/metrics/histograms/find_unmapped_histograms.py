@@ -31,18 +31,25 @@ import chromium_src.tools.metrics.histograms.histogram_paths as histogram_paths
 import chromium_src.tools.metrics.histograms.merge_xml as merge_xml
 
 
-C_FILENAME = re.compile(r"""
+C_FILENAME = re.compile(
+  r"""
     .*              # Anything
     \.(cc|cpp|h|mm) # Ending in these extensions
     $               # End of string
-    """, re.VERBOSE)
-TEST_FILENAME = re.compile(r"""
+    """,
+  re.VERBOSE,
+)
+TEST_FILENAME = re.compile(
+  r"""
     .*   # Anything
     test # The word test
     \.   # A literal '.'
-    """, re.VERBOSE)
+    """,
+  re.VERBOSE,
+)
 NON_NEWLINE = re.compile(r'.+')
-CPP_COMMENT = re.compile(r"""
+CPP_COMMENT = re.compile(
+  r"""
     \s*             # Optional whitespace
     (?:             # Non-capturing group
         //.*        # C++-style comment
@@ -56,21 +63,30 @@ CPP_COMMENT = re.compile(r"""
         \*/         # End C-style comment
     )               # End group
     \s*             # Optional whitespace
-    """, re.VERBOSE);
-ADJACENT_C_STRING_REGEX = re.compile(r"""
+    """,
+  re.VERBOSE,
+)
+ADJACENT_C_STRING_REGEX = re.compile(
+  r"""
     ("      # Opening quotation mark
     [^"]*)  # Literal string contents
     "       # Closing quotation mark
     \s*     # Any number of spaces
     "       # Another opening quotation mark
-    """, re.VERBOSE)
-CONSTANT_REGEX = re.compile(r"""
+    """,
+  re.VERBOSE,
+)
+CONSTANT_REGEX = re.compile(
+  r"""
     (\w*::)*  # Optional namespace(s)
     k[A-Z]    # Match a constant identifier: 'k' followed by an uppercase letter
     \w*       # Match the rest of the constant identifier
     $         # Make sure there's only the identifier, nothing else
-    """, re.VERBOSE)
-MACRO_STRING_CONCATENATION_REGEX = re.compile(r"""
+    """,
+  re.VERBOSE,
+)
+MACRO_STRING_CONCATENATION_REGEX = re.compile(
+  r"""
     \s*                           # Optional whitespace
     (                             # Group
         (                         # Nested group
@@ -81,9 +97,11 @@ MACRO_STRING_CONCATENATION_REGEX = re.compile(r"""
         \s*                       # Optional whitespace
     ){2,}                         # Group repeated 2 or more times
     $                             # End of string
-    """, re.VERBOSE)
+    """,
+  re.VERBOSE,
+)
 HISTOGRAM_MACRO_REGEX = re.compile(
-    r"""
+  r"""
     (\w*           # Capture the whole macro name
     UMA_HISTOGRAM_ # Match the shared prefix for standard UMA histogram macros
     (\w*))         # Match the rest of the macro name, e.g. '_ENUMERATION'
@@ -91,9 +109,11 @@ HISTOGRAM_MACRO_REGEX = re.compile(
     \s*            # Match any whitespace -- especially, any newlines
     ([^,)]*)       # Capture the first parameter to the macro
     [,)]           # Match the comma/paren that delineates the first parameter
-    """, re.VERBOSE)
+    """,
+  re.VERBOSE,
+)
 HISTOGRAM_FUNCTION_REGEX = re.compile(
-    r"""
+  r"""
     (\w*           # Capture the whole function name
     UmaHistogram   # Match the shared prefix for UMA histogram functions
     (\w*))         # Match the rest of the macro name, e.g. 'Enumeration'
@@ -101,8 +121,11 @@ HISTOGRAM_FUNCTION_REGEX = re.compile(
     \s*            # Match any whitespace -- especially, any newlines
     ([^,)]*)       # Capture the first parameter to the macro
     [,)]           # Match the comma/paren that delineates the first parameter
-    """, re.VERBOSE)
-HISTOGRAM_MACRO_SUFFIXES = frozenset([
+    """,
+  re.VERBOSE,
+)
+HISTOGRAM_MACRO_SUFFIXES = frozenset(
+  [
     # Note: Order matches histogram_macros.h.
     'ENUMERATION',
     'SCALED_ENUMERATION',
@@ -152,8 +175,10 @@ HISTOGRAM_MACRO_SUFFIXES = frozenset([
     'CUSTOM_EXACT_LINEAR',
     'EVENT_LATENCY_TIMES',
     'RASTER_TIME_CUSTOM_MICROSECONDS',
-])
-OTHER_HISTOGRAM_MACROS = frozenset([
+  ]
+)
+OTHER_HISTOGRAM_MACROS = frozenset(
+  [
     'SCOPED_UMA_HISTOGRAM_TIMER',
     'SCOPED_UMA_HISTOGRAM_LONG_TIMER',
     'SCOPED_UMA_HISTOGRAM_TIMER_MICROS',
@@ -162,8 +187,10 @@ OTHER_HISTOGRAM_MACROS = frozenset([
     'SCOPED_UMA_HISTOGRAM_MICRO_TIMER',
     'SCOPED_UMA_HISTOGRAM_THREAD_TIMER',
     'SCOPED_UMA_HISTOGRAM_MICRO_THREAD_TIMER',
-])
-HISTOGRAM_FUNCTION_SUFFIXES = frozenset([
+  ]
+)
+HISTOGRAM_FUNCTION_SUFFIXES = frozenset(
+  [
     # Note: Order matches histogram_functions.h.
     'ExactLinear',
     'Enumeration',
@@ -190,7 +217,8 @@ HISTOGRAM_FUNCTION_SUFFIXES = frozenset([
     'Sparse',
     # The following function name suffixes are not defined in //base/metrics.
     'FileError',
-])
+  ]
+)
 
 
 def _git_cmd_available(command: list[str]) -> bool:
@@ -206,7 +234,7 @@ def _run_git(command: list[str]) -> str:
   # On Windows, use shell=True to get PATH interpretation.
   command = ['git'] + command
   logging.info(' '.join(command))
-  shell = (os.name == 'nt')
+  shell = os.name == 'nt'
   proc = subprocess.Popen(command, shell=shell, stdout=subprocess.PIPE)
   out = proc.communicate()[0].strip().decode('utf-8')
   return out
@@ -277,8 +305,9 @@ def _collapse_adjacent_c_strings(string: str) -> str:
     string = collapsed
 
 
-def log_non_literal_histogram(filename: str, symbol_name: str,
-                              histogram: str) -> None:
+def log_non_literal_histogram(
+  filename: str, symbol_name: str, histogram: str
+) -> None:
   """Logs a warning about a non-literal histogram name found in the source.
 
   Filters out known acceptable exceptions.
@@ -312,8 +341,12 @@ def log_non_literal_histogram(filename: str, symbol_name: str,
 
   # TODO(isherman): This is still a little noisy... needs further filtering to
   # reduce the noise.
-  logging.warning('%s: %s used with non-literal histogram name <%s>', filename,
-                  symbol_name, histogram)
+  logging.warning(
+    '%s: %s used with non-literal histogram name <%s>',
+    filename,
+    symbol_name,
+    histogram,
+  )
 
 
 def _read_chromium_histograms() -> dict[str, str]:
@@ -328,25 +361,34 @@ def _read_chromium_histograms() -> dict[str, str]:
   # Note: For functions, we don't require literals (no warnings printed), but
   # we also are limited to finding unmapped names coming from literals.
   logging.info('Scanning Chromium source for histograms functions...')
-  location_map = _find_histograms('UmaHistogram',
-                                  HISTOGRAM_FUNCTION_REGEX,
-                                  HISTOGRAM_FUNCTION_SUFFIXES, [],
-                                  require_literals=False)
+  location_map = _find_histograms(
+    'UmaHistogram',
+    HISTOGRAM_FUNCTION_REGEX,
+    HISTOGRAM_FUNCTION_SUFFIXES,
+    [],
+    require_literals=False,
+  )
 
   logging.info('Scanning Chromium source for histograms macros...')
-  location_map2 = _find_histograms('UMA_HISTOGRAM',
-                                   HISTOGRAM_MACRO_REGEX,
-                                   HISTOGRAM_MACRO_SUFFIXES,
-                                   OTHER_HISTOGRAM_MACROS,
-                                   require_literals=True)
+  location_map2 = _find_histograms(
+    'UMA_HISTOGRAM',
+    HISTOGRAM_MACRO_REGEX,
+    HISTOGRAM_MACRO_SUFFIXES,
+    OTHER_HISTOGRAM_MACROS,
+    require_literals=True,
+  )
 
   location_map.update(location_map2)
   return location_map
 
 
-def _find_histograms(grep_expression: str, regex: re.Pattern,
-                     all_suffixes: Container[str], all_others: Container[str],
-                     require_literals: bool) -> dict[str, str]:
+def _find_histograms(
+  grep_expression: str,
+  regex: re.Pattern,
+  all_suffixes: Container[str],
+  all_others: Container[str],
+  require_literals: bool,
+) -> dict[str, str]:
   """Searches the Chromium source for histogram names.
 
   If `regex` is 'UMA_HISTOGRAM', prints warnings for any invocations the macros
@@ -368,9 +410,12 @@ def _find_histograms(grep_expression: str, regex: re.Pattern,
   #   'path/to/foo.cc:420:  UMA_HISTOGRAM_COUNTS_100("FooGroup.FooName",'
   #   'path/to/bar.cc:632:  UMA_HISTOGRAM_ENUMERATION('
   locations = _run_git(['gs', grep_expression]).split('\n')
-  all_filenames = set(location.split(':')[0] for location in locations);
-  filenames = [f for f in all_filenames
-               if C_FILENAME.match(f) and not TEST_FILENAME.match(f)]
+  all_filenames = set(location.split(':')[0] for location in locations)
+  filenames = [
+    f
+    for f in all_filenames
+    if C_FILENAME.match(f) and not TEST_FILENAME.match(f)
+  ]
 
   location_map = dict()
   unknown_symbols = set()
@@ -379,16 +424,19 @@ def _find_histograms(grep_expression: str, regex: re.Pattern,
       contents = _remove_comments(f.read())
 
     for match in regex.finditer(contents):
-      line_number = contents[:match.start()].count('\n') + 1
+      line_number = contents[: match.start()].count('\n') + 1
       full_symbol_name = match.group(1)
       symbol_suffix = match.group(2)
       metric_name = _collapse_adjacent_c_strings(match.group(3).strip())
 
-      if (symbol_suffix not in all_suffixes
-          and full_symbol_name not in all_others):
-        if (full_symbol_name not in unknown_symbols):
-          logging.warning('%s:%d: Unknown symbol name: <%s>' %
-                          (filename, line_number, match.group(1)))
+      if (
+        symbol_suffix not in all_suffixes and full_symbol_name not in all_others
+      ):
+        if full_symbol_name not in unknown_symbols:
+          logging.warning(
+            '%s:%d: Unknown symbol name: <%s>'
+            % (filename, line_number, match.group(1))
+          )
           unknown_symbols.add(full_symbol_name)
         continue
 
@@ -482,18 +530,24 @@ def _cast_to_int32(n):
     return n
 
 
-def _output_csv(unmapped_histograms: Iterable[str],
-                location_map: dict[str, str]) -> None:
+def _output_csv(
+  unmapped_histograms: Iterable[str], location_map: dict[str, str]
+) -> None:
   for histogram in sorted(unmapped_histograms):
     parts = location_map[histogram].split(':')
     assert len(parts) == 2
     (filename, line_number) = parts
-    print('%s,%s,%s,%s' %
-          (filename, line_number, histogram, _hash_histogram_name(histogram)))
+    print(
+      '%s,%s,%s,%s'
+      % (filename, line_number, histogram, _hash_histogram_name(histogram))
+    )
 
 
-def _output_log(unmapped_histograms: Iterable[str],
-                location_map: dict[str, str], verbose: bool) -> None:
+def _output_log(
+  unmapped_histograms: Iterable[str],
+  location_map: dict[str, str],
+  verbose: bool,
+) -> None:
   if not unmapped_histograms:
     logging.info('Success!  No unmapped histograms found.')
     return
@@ -521,29 +575,40 @@ def main() -> None:
   # Parse command line options
   parser = optparse.OptionParser()
   parser.add_option(
-    '--root-directory', dest='root_directory', default=default_root,
-    help='scan within DIRECTORY for histograms [optional, defaults to "%s"]' %
-        default_root,
-    metavar='DIRECTORY')
+    '--root-directory',
+    dest='root_directory',
+    default=default_root,
+    help='scan within DIRECTORY for histograms [optional, defaults to "%s"]'
+    % default_root,
+    metavar='DIRECTORY',
+  )
   parser.add_option(
-      '--extra_histograms-file',
-      dest='extra_histograms_file_location',
-      default=None,
-      help='read additional histogram definitions from FILE (relative to '
-      '--root-directory) [optional]',
-      metavar='FILE')
-  parser.add_option('--csv',
-                    action='store_true',
-                    dest='output_as_csv',
-                    default=False,
-                    help=('output as csv for ease of parsing ' +
-                          '[optional, defaults to %default]'))
-  parser.add_option('--verbose',
-                    action='store_true',
-                    dest='verbose',
-                    default=False,
-                    help=('print file location and int32 hashes for ' +
-                          'histograms [optional, defaults to %default]'))
+    '--extra_histograms-file',
+    dest='extra_histograms_file_location',
+    default=None,
+    help='read additional histogram definitions from FILE (relative to '
+    '--root-directory) [optional]',
+    metavar='FILE',
+  )
+  parser.add_option(
+    '--csv',
+    action='store_true',
+    dest='output_as_csv',
+    default=False,
+    help=(
+      'output as csv for ease of parsing ' + '[optional, defaults to %default]'
+    ),
+  )
+  parser.add_option(
+    '--verbose',
+    action='store_true',
+    dest='verbose',
+    default=False,
+    help=(
+      'print file location and int32 hashes for '
+      + 'histograms [optional, defaults to %default]'
+    ),
+  )
 
   (options, args) = parser.parse_args()
   if args:
@@ -570,11 +635,13 @@ def main() -> None:
   if options.extra_histograms_file_location:
     if os.path.isfile(options.extra_histograms_file_location):
       xml_histograms2 = _read_xml_histograms(
-          options.extra_histograms_file_location)
+        options.extra_histograms_file_location
+      )
       unmapped_histograms -= xml_histograms2
     else:
-      logging.warning('No such file: %s',
-                      options.extra_histograms_file_location)
+      logging.warning(
+        'No such file: %s', options.extra_histograms_file_location
+      )
 
   if options.output_as_csv:
     _output_csv(unmapped_histograms, location_map)

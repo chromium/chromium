@@ -7,8 +7,9 @@ import setup_modules  # pylint: disable=unused-import
 
 import chromium_src.tools.metrics.private_metrics.private_metrics_codegen as private_metrics_codegen
 
-HEADER = private_metrics_codegen.Template(basename="dwa_builders.h",
-                                          file_template="""\
+HEADER = private_metrics_codegen.Template(
+  basename='dwa_builders.h',
+  file_template="""\
 // Generated from gen_private_metrics_builders.py.  DO NOT EDIT!
 // source: dwa.xml
 
@@ -28,7 +29,7 @@ namespace dwa::builders {{
 
 #endif  // {file.guard_path}
 """,
-                                          event_template="""
+  event_template="""
 class {event.name} final : public ::dwa::internal::DwaEntryBuilderBase {{
  public:
   explicit {event.name}();
@@ -45,19 +46,20 @@ class {event.name} final : public ::dwa::internal::DwaEntryBuilderBase {{
 {study_code}
 }};
 """,
-                                          metric_template="""
+  metric_template="""
   static const char k{metric.name}Name[];
   static constexpr uint64_t k{metric.name}NameHash = UINT64_C({metric.hash});
   {event.name}& Set{metric.name}(int64_t value);
 """,
-                                          study_template="""
+  study_template="""
   static constexpr char k{study.name}Name[] = "{study.raw_name}";
   static constexpr uint32_t k{study.name}NameHash = UINT32_C({study.hash});
-""")
+""",
+)
 
 IMPL = private_metrics_codegen.Template(
-    basename="dwa_builders.cc",
-    file_template="""\
+  basename='dwa_builders.cc',
+  file_template="""\
 // Generated from gen_private_metrics_builders.py.  DO NOT EDIT!
 // source: dwa.xml
 
@@ -71,7 +73,7 @@ namespace dwa::builders {{
 
 }}  // namespace dwa::builders
 """,
-    event_template="""
+  event_template="""
 const char {event.name}::kEntryName[] = "{event.raw_name}";
 const uint64_t {event.name}::kEntryNameHash;
 
@@ -93,7 +95,7 @@ const uint64_t {event.name}::kEntryNameHash;
 
 {metric_code}
 """,
-    metric_template="""
+  metric_template="""
 const char {event.name}::k{metric.name}Name[] = "{metric.raw_name}";
 const uint64_t {event.name}::k{metric.name}NameHash;
 
@@ -102,7 +104,7 @@ const uint64_t {event.name}::k{metric.name}NameHash;
   return *this;
 }}
 """,
-    study_template="""
+  study_template="""
   AddToStudiesOfInterestInternal(k{study.name}Name);
 """,
 )

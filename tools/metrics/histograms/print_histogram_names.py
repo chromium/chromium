@@ -18,7 +18,7 @@ import chromium_src.tools.metrics.histograms.histogram_utils as histogram_utils
 
 
 def histogram_xml_files():
-  return [open(f, encoding="utf-8") for f in histogram_paths.ALL_XMLS]
+  return [open(f, encoding='utf-8') for f in histogram_paths.ALL_XMLS]
 
 
 def get_histogram_diff(revision):
@@ -34,9 +34,10 @@ def get_histogram_diff(revision):
 
   def get_file_at_revision(path):
     """Returns a file-like object containing |path|'s content at |revision|"""
-    obj = "%s:%s" % (revision, path)
+    obj = '%s:%s' % (revision, path)
     contents = subprocess.check_output(
-        ("git", "cat-file", "--textconv", obj)).decode()
+      ('git', 'cat-file', '--textconv', obj)
+    ).decode()
 
     # Just store the contents in memory. histograms.xml is big, but it isn't
     # _that_ big.
@@ -60,20 +61,20 @@ def get_histogram_diff(revision):
 
 def _print_diff_names(revision):
   added_names, removed_names = get_histogram_diff(revision)
-  print("%d histograms added:" % len(added_names))
+  print('%d histograms added:' % len(added_names))
   for name in added_names:
     print(name)
 
-  print("%d histograms removed:" % len(removed_names))
+  print('%d histograms removed:' % len(removed_names))
   for name in removed_names:
     print(name)
 
 
 def main(argv):
-  parser = argparse.ArgumentParser(description="Print histogram names.")
-  parser.add_argument("--diff",
-                      type=str,
-                      help="Git revision to diff against (e.g. HEAD~)")
+  parser = argparse.ArgumentParser(description='Print histogram names.')
+  parser.add_argument(
+    '--diff', type=str, help='Git revision to diff against (e.g. HEAD~)'
+  )
   args = parser.parse_args(argv[1:])
   if args.diff is not None:
     _print_diff_names(args.diff)
@@ -83,5 +84,5 @@ def main(argv):
       print(name)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
   main(sys.argv)

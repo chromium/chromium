@@ -38,8 +38,9 @@ def _parse_default_variants() -> xml.dom.minidom.Document:
   return xml.dom.minidom.parse(variants_path)
 
 
-def get_names_from_contents(contents: Iterable[str],
-                            variants_doc: xml.dom.minidom.Document) -> Set[str]:
+def get_names_from_contents(
+  contents: Iterable[str], variants_doc: xml.dom.minidom.Document
+) -> Set[str]:
   """Returns all histogram names from the given contents.
 
   This function is different from get_names() in that it does not make
@@ -65,15 +66,17 @@ def get_names_from_contents(contents: Iterable[str],
 
 
 def _merge_histograms_with_variants(
-    content_doc: xml.dom.minidom.Document,
-    variants_doc: xml.dom.minidom.Document) -> xml.dom.minidom.Document:
+  content_doc: xml.dom.minidom.Document, variants_doc: xml.dom.minidom.Document
+) -> xml.dom.minidom.Document:
   variants_clone = variants_doc.cloneNode(True)
-  return merge_xml.MergeTrees([content_doc, variants_clone],
-                              should_expand_owners=False)
+  return merge_xml.MergeTrees(
+    [content_doc, variants_clone], should_expand_owners=False
+  )
 
 
-def get_modified_variants_blocks(old_content: str,
-                                 new_content: str) -> Set[str]:
+def get_modified_variants_blocks(
+  old_content: str, new_content: str
+) -> Set[str]:
   """Returns the names of <variants> blocks modified between old and new
   content.
   """
@@ -140,8 +143,9 @@ def _has_any_variants(content: str, variant_names: Set[str]) -> bool:
 
 
 def find_files_using_variants(
-    variant_names: Set[str],
-    histograms_paths: List[str] = histogram_paths.HISTOGRAMS_XMLS) -> List[str]:
+  variant_names: Set[str],
+  histograms_paths: List[str] = histogram_paths.HISTOGRAMS_XMLS,
+) -> List[str]:
   """Returns paths to histograms.xml files using any of the variant_names."""
   if not variant_names:
     return []

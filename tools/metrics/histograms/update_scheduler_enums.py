@@ -15,12 +15,16 @@ import sys
 
 import setup_modules  # pylint: disable=unused-import
 
-from chromium_src.tools.metrics.histograms.update_histogram_enum import UpdateHistogramEnum
+from chromium_src.tools.metrics.histograms.update_histogram_enum import (
+  UpdateHistogramEnum,
+)
 
 XML_FILE = 'tools/metrics/histograms/metadata/navigation/enums.xml'
 ENUM_NAME = 'WebSchedulerTrackedFeature'
-SOUCRE_FILE = ('third_party/blink/public/mojom/scheduler/' +
-               'web_scheduler_tracked_feature.mojom')
+SOUCRE_FILE = (
+  'third_party/blink/public/mojom/scheduler/'
+  + 'web_scheduler_tracked_feature.mojom'
+)
 START_MARKER = r'^enum WebSchedulerTrackedFeature \{'
 END_MARKER = r'^\};'
 SCRIPT = os.path.basename(__file__)
@@ -31,10 +35,12 @@ if __name__ == '__main__':
     sys.stderr.write(__doc__)
     sys.exit(1)
 
-  UpdateHistogramEnum(XML_FILE,
-                      histogram_enum_name=ENUM_NAME,
-                      source_enum_path=SOUCRE_FILE,
-                      start_marker=START_MARKER,
-                      end_marker=END_MARKER,
-                      strip_k_prefix=True,
-                      calling_script=SCRIPT)
+  UpdateHistogramEnum(
+    XML_FILE,
+    histogram_enum_name=ENUM_NAME,
+    source_enum_path=SOUCRE_FILE,
+    start_marker=START_MARKER,
+    end_marker=END_MARKER,
+    strip_k_prefix=True,
+    calling_script=SCRIPT,
+  )

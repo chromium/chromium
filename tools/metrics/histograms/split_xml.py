@@ -45,36 +45,36 @@ AGGREGATE_THRESHOLD = 20
 # A map from the histogram name to the folder name these histograms should be
 # put in.
 _PREDEFINED_NAMES_MAPPING = {
-    'BackForwardCache': 'BackForwardCache',
-    'ChromeOS': 'ChromeOS',
-    'CustomTabs': 'CustomTabs',
-    'CustomTab': 'CustomTabs',
-    'DataReductionProxy': 'DataReductionProxy',
-    'DataUse': 'DataUse',
-    'MultiDevice': 'MultiDevice',
-    'NaCl': 'NaCl',
-    'SafeBrowsing': 'SafeBrowsing',
-    'SafeBrowsingBinaryUploadRequest': 'SafeBrowsing',
-    'SafeBrowsingFCMService': 'SafeBrowsing',
-    'NewTabPage': 'NewTabPage',
-    'SiteEngagementService': 'SiteEngagementService',
-    'SiteIsolation': 'SiteIsolation',
-    'Tabs': 'Tab',
-    'TextFragmentAnchor': 'TextFragmentAnchor',
-    'TextToSpeech': 'TextToSpeech',
-    'UpdateEngine': 'UpdateEngine',
-    'WebApk': 'WebApk',
-    'WebApp': 'WebApp',
-    'WebAudio': 'WebAudio',
-    'WebAuthentication': 'WebAuthentication',
-    'WebCore': 'WebCore',
-    'WebFont': 'WebFont',
-    'WebHistory': 'WebHistory',
-    'WebRTC': 'WebRTC',
-    'WebRtcEventLogging': 'WebRTC',
-    'WebRtcTextLogging': 'WebRTC',
-    'WebUI': 'WebUI',
-    'WebUITabStrip': 'WebUI',
+  'BackForwardCache': 'BackForwardCache',
+  'ChromeOS': 'ChromeOS',
+  'CustomTabs': 'CustomTabs',
+  'CustomTab': 'CustomTabs',
+  'DataReductionProxy': 'DataReductionProxy',
+  'DataUse': 'DataUse',
+  'MultiDevice': 'MultiDevice',
+  'NaCl': 'NaCl',
+  'SafeBrowsing': 'SafeBrowsing',
+  'SafeBrowsingBinaryUploadRequest': 'SafeBrowsing',
+  'SafeBrowsingFCMService': 'SafeBrowsing',
+  'NewTabPage': 'NewTabPage',
+  'SiteEngagementService': 'SiteEngagementService',
+  'SiteIsolation': 'SiteIsolation',
+  'Tabs': 'Tab',
+  'TextFragmentAnchor': 'TextFragmentAnchor',
+  'TextToSpeech': 'TextToSpeech',
+  'UpdateEngine': 'UpdateEngine',
+  'WebApk': 'WebApk',
+  'WebApp': 'WebApp',
+  'WebAudio': 'WebAudio',
+  'WebAuthentication': 'WebAuthentication',
+  'WebCore': 'WebCore',
+  'WebFont': 'WebFont',
+  'WebHistory': 'WebHistory',
+  'WebRTC': 'WebRTC',
+  'WebRtcEventLogging': 'WebRTC',
+  'WebRtcTextLogging': 'WebRTC',
+  'WebUI': 'WebUI',
+  'WebUITabStrip': 'WebUI',
 }
 
 
@@ -84,7 +84,8 @@ def _ParseMergedXML():
   histogram_nodes = merged_histograms.getElementsByTagName('histogram')
   variants_nodes = merged_histograms.getElementsByTagName('variants')
   histogram_suffixes_nodes = merged_histograms.getElementsByTagName(
-      'histogram_suffixes')
+    'histogram_suffixes'
+  )
   return histogram_nodes, variants_nodes, histogram_suffixes_nodes
 
 
@@ -108,8 +109,9 @@ def _CreateXMLFile(comment, parent_node_string, nodes, output_dir, filename):
   doc = minidom.Document()
 
   doc.appendChild(doc.createComment(FIRST_TOP_LEVEL_COMMENT_TEMPLATE))
-  doc.appendChild(doc.createComment(SECOND_TOP_LEVEL_COMMENT_TEMPLATE %
-                                    comment))
+  doc.appendChild(
+    doc.createComment(SECOND_TOP_LEVEL_COMMENT_TEMPLATE % comment)
+  )
 
   # Create the <histogram-configuration> node for the new histograms.xml file.
   histogram_config_element = doc.createElement('histogram-configuration')
@@ -202,8 +204,9 @@ def _OutputToFolderAndXML(nodes, output_dir, key):
   # Convert CamelCase name to snake_case when creating a directory.
   output_dir = Path(output_dir) / _CamelCaseToSnakeCase(key)
   output_dir.mkdir(parents=True, exist_ok=True)
-  _CreateXMLFile(key + ' histograms', 'histograms', nodes, output_dir,
-                 'histograms.xml')
+  _CreateXMLFile(
+    key + ' histograms', 'histograms', nodes, output_dir, 'histograms.xml'
+  )
 
 
 def _WriteDocumentDict(document_dict, output_dir):
@@ -290,9 +293,13 @@ def SplitIntoMultipleHistogramXMLs(output_base_dir):
   histogram_nodes, variants_nodes, histogram_suffixes_nodes = _ParseMergedXML()
 
   # Create separate XML file for histogram suffixes.
-  _CreateXMLFile('histogram suffixes', 'histogram_suffixes_list',
-                 histogram_suffixes_nodes, output_base_dir,
-                 'histogram_suffixes_list.xml')
+  _CreateXMLFile(
+    'histogram suffixes',
+    'histogram_suffixes_list',
+    histogram_suffixes_nodes,
+    output_base_dir,
+    'histogram_suffixes_list.xml',
+  )
   document_dict = _BuildDocumentDict(histogram_nodes + variants_nodes, 0)
 
   _WriteDocumentDict(document_dict, output_base_dir)
@@ -300,4 +307,5 @@ def SplitIntoMultipleHistogramXMLs(output_base_dir):
 
 if __name__ == '__main__':
   SplitIntoMultipleHistogramXMLs(
-      path_util.GetInputFile('tools/metrics/histograms/metadata'))
+    path_util.GetInputFile('tools/metrics/histograms/metadata')
+  )

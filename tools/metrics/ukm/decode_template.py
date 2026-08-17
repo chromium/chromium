@@ -11,8 +11,9 @@ import setup_modules  # pylint: disable=unused-import
 import chromium_src.tools.metrics.ukm.codegen as codegen
 import chromium_src.tools.metrics.ukm.ukm_model as ukm_model
 
-HEADER = codegen.Template(basename="ukm_decode.h",
-                          file_template="""
+HEADER = codegen.Template(
+  basename='ukm_decode.h',
+  file_template="""
 // Generated from gen_builders.py.  DO NOT EDIT!
 // source: ukm.xml
 
@@ -40,8 +41,9 @@ const DecodeMap& GetDecodeMap();
 
 #endif  // {file.guard_path}
 """,
-                          event_template="",
-                          metric_template="")
+  event_template='',
+  metric_template='',
+)
 
 _IMPL_FILE_TEMPLATE = """
 // Generated from gen_builders.py.  DO NOT EDIT!
@@ -135,17 +137,22 @@ class DecodeImplTemplate:
       event_info = codegen.EventInfo(event)
       metrics = event[ukm_model._METRIC_TYPE.tag]
       assert len(metrics) <= 0xFFFF, (
-          f'Too many metrics in {event_info.raw_name} for uint16_t count')
+        f'Too many metrics in {event_info.raw_name} for uint16_t count'
+      )
       names.append(event_info.raw_name)
       names.extend(codegen.MetricInfo(metric).raw_name for metric in metrics)
       metric_count_rows += _METRIC_COUNT_ROW_TEMPLATE.format(
-          metric_count=len(metrics))
+        metric_count=len(metrics)
+      )
 
     name_strings = ''.join(
-        _NAME_STRING_TEMPLATE.format(name=name) for name in names)
-    return _IMPL_FILE_TEMPLATE.format(file=file_info,
-                                      name_strings=name_strings,
-                                      metric_count_rows=metric_count_rows)
+      _NAME_STRING_TEMPLATE.format(name=name) for name in names
+    )
+    return _IMPL_FILE_TEMPLATE.format(
+      file=file_info,
+      name_strings=name_strings,
+      metric_count_rows=metric_count_rows,
+    )
 
   def write_file(self, outdir, relpath, data):
     with open(os.path.join(outdir, self.basename), 'w') as output:

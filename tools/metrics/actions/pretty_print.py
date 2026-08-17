@@ -18,9 +18,12 @@ def main():
   utf8_encoding.setup_stdout_and_stderr_utf8_encoding()
 
   presubmit_util.DoPresubmitMain(
-      'actions.xml', 'actions.old.xml',
-      lambda file_content: extract_actions.UpdateXml(
-          file_content, extract_actions._GeneratedActions()))
+    'actions.xml',
+    'actions.old.xml',
+    lambda file_content: extract_actions.UpdateXml(
+      file_content, extract_actions._GeneratedActions()
+    ),
+  )
 
 
 if __name__ == '__main__':

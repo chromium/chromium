@@ -37,8 +37,8 @@ def _AddTextNodeWithNewLineAndIndent(histogram, node_to_insert_before):
     node_to_insert_before: A node before which to add the text node.
   """
   histogram.insertBefore(
-      histogram.ownerDocument.createTextNode('\n  '),
-      node_to_insert_before)
+    histogram.ownerDocument.createTextNode('\n  '), node_to_insert_before
+  )
 
 
 def _IsValidPrimaryOwnerEmail(owner_tag_text):
@@ -53,8 +53,9 @@ def _IsValidPrimaryOwnerEmail(owner_tag_text):
   if '-' in owner_tag_text:  # Check whether it's a team email address.
     return False
 
-  return (owner_tag_text.endswith('@chromium.org')
-          or owner_tag_text.endswith('@google.com'))
+  return owner_tag_text.endswith('@chromium.org') or owner_tag_text.endswith(
+    '@google.com'
+  )
 
 
 def _IsEmail(is_first_owner, owner_tag_text, histogram_name):
@@ -78,10 +79,12 @@ def _IsEmail(is_first_owner, owner_tag_text, histogram_name):
 
   if should_check_owner_email and not _IsValidPrimaryOwnerEmail(owner_tag_text):
     raise Error(
-        'The histogram {} must have a valid primary owner, i.e. a Googler '
-        'with an @google.com or @chromium.org email address. Please '
-        'manually update the histogram with a valid primary owner.'.format(
-            histogram_name))
+      'The histogram {} must have a valid primary owner, i.e. a Googler '
+      'with an @google.com or @chromium.org email address. Please '
+      'manually update the histogram with a valid primary owner.'.format(
+        histogram_name
+      )
+    )
 
   return is_email
 
@@ -121,8 +124,9 @@ def _GetHigherLevelOwnersFilePath(path):
   parent_directory = os.path.dirname(os.path.dirname(path))
   parent_owners_file_path = os.path.join(parent_directory, _OWNERS)
 
-  if (os.path.exists(parent_owners_file_path) and
-    os.path.isfile(parent_owners_file_path)):
+  if os.path.exists(parent_owners_file_path) and os.path.isfile(
+    parent_owners_file_path
+  ):
     return parent_owners_file_path
   return _GetHigherLevelOwnersFilePath(parent_owners_file_path)
 
@@ -139,13 +143,14 @@ def _GetOwnersFilePath(path):
   if _IsWellFormattedFilePath(path):
     # _SRC is removed because the file system on the machine running the code
     # may not have a(n) src directory.
-    path_without_src = path[len(SRC):]
+    path_without_src = path[len(SRC) :]
 
     return os.path.abspath(CHROMIUM_SRC_PATH / path_without_src)
 
   raise Error(
-      'The given path {} is not well-formatted. Well-formatted paths begin '
-      'with "src/" and end with "OWNERS"'.format(path))
+    'The given path {} is not well-formatted. Well-formatted paths begin '
+    'with "src/" and end with "OWNERS"'.format(path)
+  )
 
 
 def _ExtractEmailAddressesFromOWNERS(path, depth=0):
@@ -165,17 +170,20 @@ def _ExtractEmailAddressesFromOWNERS(path, depth=0):
   # It is unlikely that any chain of OWNERS files will exceed 10 redirections
   # via file:// directives.
   limit = 10
-  if (depth > limit):
-    raise Error('_ExtractEmailAddressesFromOWNERS has been called {} times. The'
-                ' path {} may be part of an OWNERS loop.'.format(limit, path))
+  if depth > limit:
+    raise Error(
+      '_ExtractEmailAddressesFromOWNERS has been called {} times. The'
+      ' path {} may be part of an OWNERS loop.'.format(limit, path)
+    )
 
   directive = 'file://'
   email_pattern = re.compile(_EMAIL_PATTERN)
   extracted_emails = []
 
   with open(path, 'r') as owners_file:
-    for line in [line.lstrip()
-                 for line in owners_file.read().splitlines() if line]:
+    for line in [
+      line.lstrip() for line in owners_file.read().splitlines() if line
+    ]:
       index = line.find(' ')
       first_word = line[:index] if index != -1 else line
 
@@ -184,14 +192,19 @@ def _ExtractEmailAddressesFromOWNERS(path, depth=0):
 
       elif first_word.startswith(directive):
         next_path = _GetOwnersFilePath(
-            os.path.join(SRC, first_word[len(directive):]))
+          os.path.join(SRC, first_word[len(directive) :])
+        )
 
         if os.path.exists(next_path) and os.path.isfile(next_path):
           extracted_emails.extend(
-              _ExtractEmailAddressesFromOWNERS(next_path, depth + 1))
+            _ExtractEmailAddressesFromOWNERS(next_path, depth + 1)
+          )
         else:
-          raise Error('The path derived from {} does not exist. '
-                      'Derived path: {}'.format(first_word, next_path))
+          raise Error(
+            'The path derived from {} does not exist. Derived path: {}'.format(
+              first_word, next_path
+            )
+          )
 
   return extracted_emails
 
@@ -205,9 +218,12 @@ def _ComponentFromDirmd(json_data, subpath):
     json_data: json object output from dirmd.
     subpath: The subpath for the directory being queried, e.g. src/storage'.
   """
-  return json_data.get('dirs', {}).get(subpath,
-                                       {}).get('buganizerPublic',
-                                               {}).get('componentId', '')
+  return (
+    json_data.get('dirs', {})
+    .get(subpath, {})
+    .get('buganizerPublic', {})
+    .get('componentId', '')
+  )
 
 
 # Memoize decorator from: https://stackoverflow.com/a/1988826
@@ -307,21 +323,27 @@ def ExtractComponentViaDirmd(path):
   root_path = str(CHROMIUM_SRC_PATH)
   path = os.path.abspath(path)
   if not path.startswith(root_path):
-    raise Error('Path {} is not a subpath of the root path {}.'.format(
-        path, root_path))
-  subpath = path[len(root_path) + 1:] or '.'  # E.g. content/public.
+    raise Error(
+      'Path {} is not a subpath of the root path {}.'.format(path, root_path)
+    )
+  subpath = path[len(root_path) + 1 :] or '.'  # E.g. content/public.
   dirmd_exe = 'dirmd'
   if sys.platform == 'win32':
     dirmd_exe = 'dirmd.bat'
-  dirmd_path = str(CHROMIUM_SRC_PATH / 'third_party' / 'depot_tools' /
-                   dirmd_exe)
+  dirmd_path = str(
+    CHROMIUM_SRC_PATH / 'third_party' / 'depot_tools' / dirmd_exe
+  )
   dirmd_command = [dirmd_path, 'read', '-form', 'sparse', root_path, path]
-  dirmd = subprocess.Popen(dirmd_command,
-                           stdout=subprocess.PIPE,
-                           stderr=subprocess.PIPE)
+  dirmd = subprocess.Popen(
+    dirmd_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+  )
   if dirmd.wait() != 0:
-    raise Error('dirmd failed: "' + ' '.join(dirmd_command) + '": ' +
-                dirmd.stderr.read().decode('utf-8'))
+    raise Error(
+      'dirmd failed: "'
+      + ' '.join(dirmd_command)
+      + '": '
+      + dirmd.stderr.read().decode('utf-8')
+    )
   json_out = json.load(dirmd.stdout)
   # On Windows, dirmd output still uses Unix path separators.
   if sys.platform == 'win32':
@@ -372,15 +394,19 @@ def ExpandHistogramsOWNERS(histograms):
     owners = [owner for owner in iter_matches(histogram, 'owner', 1)]
 
     # owner is a DOM Element with a single child, which is a DOM Text Node.
-    emails_with_dom_elements = set([
+    emails_with_dom_elements = set(
+      [
         owner.childNodes[0].data
         for owner in owners
-        if email_pattern.match(owner.childNodes[0].data)])
+        if email_pattern.match(owner.childNodes[0].data)
+      ]
+    )
 
     # component is a DOM Element with a single child, which is a DOM Text Node.
     components_with_dom_elements = set(
-        xml_utils.NormalizeString(component.childNodes[0].data)
-        for component in iter_matches(histogram, 'component', 1))
+      xml_utils.NormalizeString(component.childNodes[0].data)
+      for component in iter_matches(histogram, 'component', 1)
+    )
 
     for index, owner in enumerate(owners):
       owner_text = owner.childNodes[0].data.strip()
@@ -393,7 +419,8 @@ def ExpandHistogramsOWNERS(histograms):
         raise Error('The file at {} does not exist.'.format(path))
 
       owners_to_add = _MakeOwners(
-        owner.ownerDocument, path, emails_with_dom_elements)
+        owner.ownerDocument, path, emails_with_dom_elements
+      )
       if not owners_to_add:
         continue
 

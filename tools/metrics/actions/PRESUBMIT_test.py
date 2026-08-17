@@ -12,9 +12,10 @@ import setup_modules  # pylint: disable=unused-import
 
 import chromium_src.tools.metrics.actions.PRESUBMIT as PRESUBMIT
 
-_CONFLICTING_NAME_1 = "UserEducation.MessageAction.Cancel" \
-                      ".IPH_ScalableIphUnlockedBasedOne"
-_CONFLICTING_NAME_2 = "SidePanel.ShoppingInsights.ClosedToOpen.Glic"
+_CONFLICTING_NAME_1 = (
+  'UserEducation.MessageAction.Cancel.IPH_ScalableIphUnlockedBasedOne'
+)
+_CONFLICTING_NAME_2 = 'SidePanel.ShoppingInsights.ClosedToOpen.Glic'
 _CONFLICTING_HASHES_XML = f"""
 <actions>
 
@@ -80,7 +81,6 @@ _OWNERS_NEW_XML = """<actions>
 
 
 class PresubmitTest(unittest.TestCase):
-
   def testCheckRemovedSegmentationUserActions(self):
     mock_input_api = MagicMock()
     mock_output_api = MagicMock()
@@ -90,36 +90,41 @@ class PresubmitTest(unittest.TestCase):
     mock_output_api.PresubmitError.return_value = mock_error
 
     mock_file = MagicMock()
-    mock_file.LocalPath.return_value = os.path.join('tools', 'metrics',
-                                                    'actions', 'actions.xml')
+    mock_file.LocalPath.return_value = os.path.join(
+      'tools', 'metrics', 'actions', 'actions.xml'
+    )
     mock_input_api.AffectedFiles.return_value = [mock_file]
 
     # Mock the imported module
     mock_print_action_names = MagicMock()
-    mock_print_action_names.get_action_diff.return_value = ([], [
-        'Test.Action.Removed'
-    ], [])
+    mock_print_action_names.get_action_diff.return_value = (
+      [],
+      ['Test.Action.Removed'],
+      [],
+    )
 
     mock_generate_histogram_list = MagicMock()
     mock_generate_histogram_list.GetActualActionNames.return_value = {
-        'Test.Action.Removed'
+      'Test.Action.Removed'
     }
 
-    with patch.object(PRESUBMIT,
-                      'generate_histogram_list',
-                      mock_generate_histogram_list), \
-        patch.object(PRESUBMIT,
-                     'print_action_names',
-                     mock_print_action_names):
+    with (
+      patch.object(
+        PRESUBMIT, 'generate_histogram_list', mock_generate_histogram_list
+      ),
+      patch.object(PRESUBMIT, 'print_action_names', mock_print_action_names),
+    ):
       errors = PRESUBMIT.CheckRemovedSegmentationUserActions(
-          mock_input_api, mock_output_api)
+        mock_input_api, mock_output_api
+      )
 
     self.assertEqual(len(errors), 1)
     # Check that PresubmitError was called with the correct message
     mock_output_api.PresubmitError.assert_called_once()
     self.assertIn(
-        'The following user actions are used by segmentation platform',
-        mock_output_api.PresubmitError.call_args[0][0])
+      'The following user actions are used by segmentation platform',
+      mock_output_api.PresubmitError.call_args[0][0],
+    )
 
   def testDetectsHashConflict(self):
     mock_input_api = MagicMock()
@@ -127,15 +132,16 @@ class PresubmitTest(unittest.TestCase):
 
     mock_input_api.PresubmitLocalPath.return_value = os.path.dirname(__file__)
 
-    with tempfile.NamedTemporaryFile(mode='w+', encoding='utf-8',
-                                     delete=False) as temp_file:
+    with tempfile.NamedTemporaryFile(
+      mode='w+', encoding='utf-8', delete=False
+    ) as temp_file:
       try:
         temp_file.write(_CONFLICTING_HASHES_XML)
         temp_file.close()
 
-        errors = PRESUBMIT._CheckForHashConflicts(temp_file.name,
-                                                  mock_input_api,
-                                                  mock_output_api)
+        errors = PRESUBMIT._CheckForHashConflicts(
+          temp_file.name, mock_input_api, mock_output_api
+        )
 
         self.assertEqual(len(errors), 1)
         mock_output_api.PresubmitError.assert_called_once()
@@ -153,8 +159,9 @@ class PresubmitTest(unittest.TestCase):
     mock_output_api.PresubmitError.return_value = mock_error
     mock_file = MagicMock()
     # Path used for matching in PRESUBMIT.py
-    mock_file.LocalPath.return_value = os.path.join('tools', 'metrics',
-                                                    'actions', 'actions.xml')
+    mock_file.LocalPath.return_value = os.path.join(
+      'tools', 'metrics', 'actions', 'actions.xml'
+    )
     mock_file.OldContents.return_value = _OWNERS_OLD_XML.splitlines()
     mock_file.NewContents.return_value = _OWNERS_NEW_XML.splitlines()
 
@@ -163,23 +170,32 @@ class PresubmitTest(unittest.TestCase):
 
     errors = PRESUBMIT._CheckActionOwners(mock_input_api, mock_output_api)
 
-    self.assertEqual(len(errors), 3,
-                     f"Expected 3 errors, got {len(errors)}. Errors: {errors}")
+    self.assertEqual(
+      len(errors), 3, f'Expected 3 errors, got {len(errors)}. Errors: {errors}'
+    )
     self.assertEqual(mock_output_api.PresubmitError.call_count, 3)
 
     expected_calls = [
-        call('Action NewAction.Invalid has no valid owners. If this is an '
-             'unrelated change, you can ignore this error and bypass the '
-             'presubmit check.'),
-        call('Action ModifiedAction.ToInvalid has no valid owners. If this is '
-             'an unrelated change, you can ignore this error and bypass the '
-             'presubmit check.'),
-        call('Action OldAction.Invalid has no valid owners. If this is an '
-             'unrelated change, you can ignore this error and bypass the '
-             'presubmit check.')
+      call(
+        'Action NewAction.Invalid has no valid owners. If this is an '
+        'unrelated change, you can ignore this error and bypass the '
+        'presubmit check.'
+      ),
+      call(
+        'Action ModifiedAction.ToInvalid has no valid owners. If this is '
+        'an unrelated change, you can ignore this error and bypass the '
+        'presubmit check.'
+      ),
+      call(
+        'Action OldAction.Invalid has no valid owners. If this is an '
+        'unrelated change, you can ignore this error and bypass the '
+        'presubmit check.'
+      ),
     ]
-    mock_output_api.PresubmitError.assert_has_calls(expected_calls,
-                                                    any_order=True)
+    mock_output_api.PresubmitError.assert_has_calls(
+      expected_calls, any_order=True
+    )
+
 
 if __name__ == '__main__':
   unittest.main()

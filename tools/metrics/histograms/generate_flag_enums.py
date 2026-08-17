@@ -21,15 +21,16 @@ import chromium_src.tools.python.google.path_utils as path_utils
 
 
 def get_entries_from_unit_test(outdir: str) -> typing.List[str]:
-  """Returns `<int>` entries reported missing by the 'CheckHistograms' unittest.
-  """
+  """Returns `<int>` entries reported missing by the 'CheckHistograms' unittest."""
   subprocess.run(['autoninja', '-C', outdir, 'unit_tests'])
-  run_test_command = subprocess.run([
+  run_test_command = subprocess.run(
+    [
       os.path.join(outdir, 'unit_tests'),
-      '--gtest_filter=AboutFlagsHistogramTest.CheckHistograms'
-  ],
-                                    capture_output=True,
-                                    text=True)
+      '--gtest_filter=AboutFlagsHistogramTest.CheckHistograms',
+    ],
+    capture_output=True,
+    text=True,
+  )
   return re.findall('<int [^>]*>', run_test_command.stdout)
 
 
@@ -54,8 +55,9 @@ def add_entries_to_xml(enums_xml: str, entries: typing.List[str]) -> str:
     if find_index == -1:
       raise Exception(f'Missing {find_text} in enums.xml.')
     find_index += len(find_text)
-    enums_xml = (enums_xml[:find_index] + ' '.join(entries) +
-                 enums_xml[find_index:])
+    enums_xml = (
+      enums_xml[:find_index] + ' '.join(entries) + enums_xml[find_index:]
+    )
   return pretty_print.PrettyPrintEnums(enums_xml)
 
 
@@ -76,16 +78,18 @@ def main():
 
   parser = argparse.ArgumentParser()
   parser.add_argument(
-      'outdir',
-      nargs='?',
-      default='out/Default',
-      help='(Optional) The build output directory, defaults to out/Default.')
+    'outdir',
+    nargs='?',
+    default='out/Default',
+    help='(Optional) The build output directory, defaults to out/Default.',
+  )
   parser.add_argument(
-      '--feature',
-      help="(Optional) The feature associated with the flag added. If omitted, "
-      "will determine it by building and running `unit_tests "
-      "AboutFlagsHistogramTest.CheckHistograms`. If provided, there's no use "
-      "also providing `outdir`, as nothing needs to be built.")
+    '--feature',
+    help='(Optional) The feature associated with the flag added. If omitted, '
+    'will determine it by building and running `unit_tests '
+    "AboutFlagsHistogramTest.CheckHistograms`. If provided, there's no use "
+    'also providing `outdir`, as nothing needs to be built.',
+  )
   args = parser.parse_args()
 
   if args.feature:
@@ -111,20 +115,20 @@ def main():
   try:
     # Print any changes.
     completed_process = subprocess.run(
-        ['git', 'diff', xml_path],
-        capture_output=True,
-        encoding='utf-8',
-        check=True,
+      ['git', 'diff', xml_path],
+      capture_output=True,
+      encoding='utf-8',
+      check=True,
     )
     print(completed_process.stdout)
   except subprocess.CalledProcessError:
     # This may indicate that this is not a git repository. Output a success
     # message instead (as the enums.xml file was updated above).
     print(
-        'Successfully updated '
-        + xml_path
-        + '. Did not display a diff because this does not appear to be a git'
-        + 'repository.'
+      'Successfully updated '
+      + xml_path
+      + '. Did not display a diff because this does not appear to be a git'
+      + 'repository.'
     )
 
 

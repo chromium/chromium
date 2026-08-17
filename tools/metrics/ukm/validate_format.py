@@ -24,32 +24,54 @@ def main():
     validator = UkmXmlValidation(config)
 
     owner_check_success, owner_check_errors = (
-        validator.check_events_have_owners())
+      validator.check_events_have_owners()
+    )
     metric_check_success, metric_check_errors, metric_check_warnings = (
-        validator.check_metric_type_is_specified())
+      validator.check_metric_type_is_specified()
+    )
     aggregation_check_success, aggregation_check_errors = (
-        validator.check_local_metric_is_aggregated())
+      validator.check_local_metric_is_aggregated()
+    )
     statistic_check_success, statistic_check_errors = (
-        validator.check_statistics_non_empty_valid())
+      validator.check_statistics_non_empty_valid()
+    )
     metric_name_check_success, metric_name_check_errors = (
-        validator.check_metric_names())
+      validator.check_metric_names()
+    )
     time_unit_check_success, time_unit_check_errors = (
-        validator.check_time_metric_unit())
+      validator.check_time_metric_unit()
+    )
     event_uniqueness_success, event_uniqueness_errors = (
-        validator.check_event_names_case_insensitive_uniqueness())
+      validator.check_event_names_case_insensitive_uniqueness()
+    )
     metric_uniqueness_success, metric_uniqueness_errors = (
-        validator.check_metric_names_case_insensitive_uniqueness())
+      validator.check_metric_names_case_insensitive_uniqueness()
+    )
 
     results = {}
 
-    if not all((owner_check_success, metric_check_success,
-                aggregation_check_success, statistic_check_success,
-                metric_name_check_success, time_unit_check_success,
-                event_uniqueness_success, metric_uniqueness_success)):
-      results['Errors'] = (owner_check_errors + metric_check_errors +
-                           aggregation_check_errors + statistic_check_errors +
-                           metric_name_check_errors + time_unit_check_errors +
-                           event_uniqueness_errors + metric_uniqueness_errors)
+    if not all(
+      (
+        owner_check_success,
+        metric_check_success,
+        aggregation_check_success,
+        statistic_check_success,
+        metric_name_check_success,
+        time_unit_check_success,
+        event_uniqueness_success,
+        metric_uniqueness_success,
+      )
+    ):
+      results['Errors'] = (
+        owner_check_errors
+        + metric_check_errors
+        + aggregation_check_errors
+        + statistic_check_errors
+        + metric_name_check_errors
+        + time_unit_check_errors
+        + event_uniqueness_errors
+        + metric_uniqueness_errors
+      )
     if metric_check_warnings and not IGNORE_METRIC_CHECK_WARNINGS:
       results['Warnings'] = metric_check_warnings
 

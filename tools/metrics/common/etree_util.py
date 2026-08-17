@@ -15,6 +15,7 @@ class _FirstTagFoundError(Exception):
   This isn't actually an error. Raising this exception is how we end parsing XML
   documents early.
   """
+
   pass
 
 
@@ -83,7 +84,7 @@ def GetTopLevelContent(file_content):
   char += first_tag_column - 1
 
   # |char| is now pointing at the final character before the opening tag '<'.
-  top_content = file_content[:char + 1].strip()
+  top_content = file_content[: char + 1].strip()
   if not top_content:
     return ''
 

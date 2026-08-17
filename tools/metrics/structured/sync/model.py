@@ -22,79 +22,79 @@ import chromium_src.tools.metrics.structured.sync.model_util as util
 DEFAULT_KEY_ROTATION_PERIOD = 90
 
 # Default scope if not explicitly specified in the XML.
-DEFAULT_PROJECT_SCOPE = "device"
+DEFAULT_PROJECT_SCOPE = 'device'
 
 
 def wrap(text: str, indent: str) -> str:
-  wrapper = tw.TextWrapper(width=80,
-                           initial_indent=indent,
-                           subsequent_indent=indent)
+  wrapper = tw.TextWrapper(
+    width=80, initial_indent=indent, subsequent_indent=indent
+  )
   return wrapper.fill(tw.dedent(text))
 
 
 class Model:
   """Represents all projects in the structured.xml file.
 
-    A Model is initialized with an XML string representing the top-level of
-    the structured.xml file. This file is built from three building blocks:
-    projects, events, and metrics. These have the following attributes.
+  A Model is initialized with an XML string representing the top-level of
+  the structured.xml file. This file is built from three building blocks:
+  projects, events, and metrics. These have the following attributes.
 
-      PROJECT
-      - summary
-      - id specifier
-      - (optional) one or more targets. If undefined, defaults to 'chromium'
-      - one or more owners
-      - one or more events
+    PROJECT
+    - summary
+    - id specifier
+    - (optional) one or more targets. If undefined, defaults to 'chromium'
+    - one or more owners
+    - one or more events
 
-      EVENT
-      - summary
-      - one or more metrics
+    EVENT
+    - summary
+    - one or more metrics
 
-      METRIC
-      - summary
-      - data type
+    METRIC
+    - summary
+    - data type
 
-    The following is an example input XML.
+  The following is an example input XML.
 
-      <structured-metrics>
-      <project name="MyProject" targets="chromium">
-        <owner>owner@chromium.org</owner>
-        <id>none</id>
-        <scope>profile</scope>
-        <summary> My project. </summary>
+    <structured-metrics>
+    <project name="MyProject" targets="chromium">
+      <owner>owner@chromium.org</owner>
+      <id>none</id>
+      <scope>profile</scope>
+      <summary> My project. </summary>
 
-        <event name="MyEvent">
-          <summary> My event. </summary>
-          <metric name="MyMetric" type="int">
-            <summary> My metric. </summary>
-          </metric>
-        </event>
-      </project>
-      </structured-metrics>
+      <event name="MyEvent">
+        <summary> My event. </summary>
+        <metric name="MyMetric" type="int">
+          <summary> My metric. </summary>
+        </metric>
+      </event>
+    </project>
+    </structured-metrics>
 
-    Calling str(model) will return a canonically formatted XML string.
-    """
+  Calling str(model) will return a canonically formatted XML string.
+  """
 
-  OWNER_REGEX = r"^.+@(chromium\.org|google\.com)$"
-  NAME_REGEX = r"^[A-Za-z0-9_.]+$"
-  VARIANT_NAME_REGEX = r"^[A-Z0-9_.]+$"
-  TYPE_REGEX = r"^(hmac-string|raw-string|int|double|int-array)$"
-  ID_REGEX = r"^(none|per-project|uma)$"
-  SCOPE_REGEX = r"^(profile|device)$"
-  KEY_REGEX = r"^[0-9]+$"
-  MAX_REGEX = r"^[0-9]+$"
-  TARGET_REGEX = r"^(chromium|webui)$"
+  OWNER_REGEX = r'^.+@(chromium\.org|google\.com)$'
+  NAME_REGEX = r'^[A-Za-z0-9_.]+$'
+  VARIANT_NAME_REGEX = r'^[A-Z0-9_.]+$'
+  TYPE_REGEX = r'^(hmac-string|raw-string|int|double|int-array)$'
+  ID_REGEX = r'^(none|per-project|uma)$'
+  SCOPE_REGEX = r'^(profile|device)$'
+  KEY_REGEX = r'^[0-9]+$'
+  MAX_REGEX = r'^[0-9]+$'
+  TARGET_REGEX = r'^(chromium|webui)$'
 
   def __init__(self, xml_string: str, platform: str):
     elem = ET.fromstring(xml_string)
     util.check_attributes(elem, set())
-    util.check_children(elem, {"project"})
-    util.check_child_names_unique(elem, "project")
-    projects = util.get_compound_children(elem, "project")
+    util.check_children(elem, {'project'})
+    util.check_child_names_unique(elem, 'project')
+    projects = util.get_compound_children(elem, 'project')
     self.projects = [Project(p, platform) for p in projects]
 
   def __repr__(self):
-    projects = "\n\n".join(str(p) for p in self.projects)
+    projects = '\n\n'.join(str(p) for p in self.projects)
 
     return f"""\
 <structured-metrics>
@@ -107,7 +107,7 @@ class Model:
 def merge_models(primary: Model, other: Model) -> Model:
   """Merges two models into one."""
   primary.projects += [
-      p for p in other.projects if not re.match("Test", p.name)
+    p for p in other.projects if not re.match('Test', p.name)
   ]
   return primary
 
@@ -115,71 +115,72 @@ def merge_models(primary: Model, other: Model) -> Model:
 class Project:
   """Represents a single structured metrics project.
 
-    A Project is initialized with an XML node representing one project, eg:
+  A Project is initialized with an XML node representing one project, eg:
 
-      <project name="MyProject" cros_events="true" targets="webui,chromium">
-        <owner>owner@chromium.org</owner>
-        <id>none</id>
-        <scope>project</scope>
-        <key-rotation>60</key-rotation>
-        <summary> My project. </summary>
+    <project name="MyProject" cros_events="true" targets="webui,chromium">
+      <owner>owner@chromium.org</owner>
+      <id>none</id>
+      <scope>project</scope>
+      <key-rotation>60</key-rotation>
+      <summary> My project. </summary>
 
-        <enum name="Enum1">
-          <variant value="1">VARIANT1</variant>
-          <variant value="2">VARIANT2</variant>
-          <variant value="5">VARIANT3</variant>
-        </enum>
+      <enum name="Enum1">
+        <variant value="1">VARIANT1</variant>
+        <variant value="2">VARIANT2</variant>
+        <variant value="5">VARIANT3</variant>
+      </enum>
 
-        <event name="MyEvent">
-          <summary> My event. </summary>
-          <metric name="MyMetric" type="int">
-            <summary> My metric. </summary>
-          </metric>
-        </event>
-      </project>
+      <event name="MyEvent">
+        <summary> My event. </summary>
+        <metric name="MyMetric" type="int">
+          <summary> My metric. </summary>
+        </metric>
+      </event>
+    </project>
 
-    Calling str(project) will return a canonically formatted XML string.
-    """
+  Calling str(project) will return a canonically formatted XML string.
+  """
 
   def __init__(self, elem: ET.Element, platform: str):
-    util.check_attributes(elem, {"name"}, {"cros_events", "targets"})
-    util.check_children(elem, {"id", "summary", "owner", "event"}, {"enum"})
-    util.check_child_names_unique(elem, "event")
+    util.check_attributes(elem, {'name'}, {'cros_events', 'targets'})
+    util.check_children(elem, {'id', 'summary', 'owner', 'event'}, {'enum'})
+    util.check_child_names_unique(elem, 'event')
 
-    self.name = util.get_attr(elem, "name", Model.NAME_REGEX)
-    self.id = util.get_text_child(elem, "id", Model.ID_REGEX)
-    self.summary = util.get_text_child(elem, "summary")
-    self.owners = util.get_text_children(elem, "owner", Model.OWNER_REGEX)
+    self.name = util.get_attr(elem, 'name', Model.NAME_REGEX)
+    self.id = util.get_text_child(elem, 'id', Model.ID_REGEX)
+    self.summary = util.get_text_child(elem, 'summary')
+    self.owners = util.get_text_children(elem, 'owner', Model.OWNER_REGEX)
     self.platform = platform
 
     self.key_rotation_period = DEFAULT_KEY_ROTATION_PERIOD
     self.scope = DEFAULT_PROJECT_SCOPE
-    self.is_event_sequence_project = util.get_boolean_attr(elem, "cros_events")
+    self.is_event_sequence_project = util.get_boolean_attr(elem, 'cros_events')
 
     # Check if key-rotation is specified. If so, then change the
     # key_rotation_period.
-    if elem.find("key-rotation") is not None:
-      self.key_rotation_period = util.get_text_child(elem, "key-rotation",
-                                                     Model.KEY_REGEX)
+    if elem.find('key-rotation') is not None:
+      self.key_rotation_period = int(
+        util.get_text_child(elem, 'key-rotation', Model.KEY_REGEX)
+      )
 
     # enums need to be populated first because they are used for validation
-    util.check_child_names_unique(elem, "enum")
+    util.check_child_names_unique(elem, 'enum')
     self.enums = [
-        Enum(e, self) for e in util.get_compound_children(elem, "enum", True)
+      Enum(e, self) for e in util.get_compound_children(elem, 'enum', True)
     ]
 
-    if "targets" in elem.attrib:
-      self.targets = set(
-          util.get_optional_attr_list(elem, "targets", Model.TARGET_REGEX))
+    if 'targets' in elem.attrib:
+      targets = util.get_optional_attr_list(elem, 'targets', Model.TARGET_REGEX)
+      self.targets = set(targets) if targets else set()
     else:
       self.targets = set()
 
     # Check if scope is specified. If so, then change the scope.
-    if elem.find("scope") is not None:
-      self.scope = util.get_text_child(elem, "scope", Model.SCOPE_REGEX)
+    if elem.find('scope') is not None:
+      self.scope = util.get_text_child(elem, 'scope', Model.SCOPE_REGEX) or ''
 
     self.events = [
-        Event(e, self) for e in util.get_compound_children(elem, "event")
+      Event(e, self) for e in util.get_compound_children(elem, 'event')
     ]
 
   def has_enum(self, enum_name: str) -> bool:
@@ -187,21 +188,21 @@ class Project:
     return enum_name in enum_names
 
   def __repr__(self):
-    events = "\n\n".join(str(e) for e in self.events)
-    events = tw.indent(events, "  ")
-    summary = wrap(self.summary, indent="    ")
-    owners = "\n".join(f"  <owner>{o}</owner>" for o in self.owners)
+    events = '\n\n'.join(str(e) for e in self.events)
+    events = tw.indent(events, '  ')
+    summary = wrap(self.summary, indent='    ')
+    owners = '\n'.join(f'  <owner>{o}</owner>' for o in self.owners)
     if self.is_event_sequence_project:
       cros_events_attr = ' cros_events="true"'
     else:
-      cros_events_attr = ""
+      cros_events_attr = ''
     if self.targets:
-      targets = ' targets="' + ",".join(self.targets) + '"'
+      targets = ' targets="' + ','.join(self.targets) + '"'
     else:
-      targets = ""
+      targets = ''
 
-    enums = "\n\n".join(str(v) for v in self.enums)
-    enums = tw.indent(enums, "  ")
+    enums = '\n\n'.join(str(v) for v in self.enums)
+    enums = tw.indent(enums, '  ')
 
     return f"""\
 <project name="{self.name}"{cros_events_attr}{targets}>
@@ -220,34 +221,34 @@ class Project:
 class Enum:
   """Represents an enum value for a project.
 
-    An Enum is initialized with an XML node representing one enum, eg:
+  An Enum is initialized with an XML node representing one enum, eg:
 
-    <enum name="EnumName">
-      <variant value="1">Name1</variant>
-      <variant value="2">Name2</variant>
-      <variant value="5">Name3</variant>
-    </enum>
+  <enum name="EnumName">
+    <variant value="1">Name1</variant>
+    <variant value="2">Name2</variant>
+    <variant value="5">Name3</variant>
+  </enum>
 
-    Calling str(enum) will return a canonically formatted XML string.
-    """
+  Calling str(enum) will return a canonically formatted XML string.
+  """
 
   def __init__(self, elem: ET.Element, project: Project):
     self.project = project
-    util.check_attributes(elem, {"name"})
+    util.check_attributes(elem, {'name'})
 
-    util.check_children(elem, {"variant"})
+    util.check_children(elem, {'variant'})
 
-    self.name = util.get_attr(elem, "name", Model.NAME_REGEX)
+    self.name = util.get_attr(elem, 'name', Model.NAME_REGEX)
     self.variants = [
-        Variant(e, self)
-        for e in util.get_compound_children(elem, "variant", allow_text=True)
+      Variant(e, self)
+      for e in util.get_compound_children(elem, 'variant', allow_text=True)
     ]
     variant_names = [v.name for v in self.variants]
-    util.check_names_unique(elem, variant_names, "variant")
+    util.check_names_unique(elem, variant_names, 'variant')
 
   def __repr__(self):
     variants = '\n'.join(str(v) for v in self.variants)
-    variants = tw.indent(variants, "  ")
+    variants = tw.indent(variants, '  ')
     return f"""\
 <enum name="{self.name}">
 {variants}
@@ -257,15 +258,15 @@ class Enum:
 class Variant:
   """Represents an element of an Enum.
 
-    <variant value="1">Name1</variant>
+  <variant value="1">Name1</variant>
 
-    Calling str(variant) will return a canonically formatted XML string.
-    """
+  Calling str(variant) will return a canonically formatted XML string.
+  """
 
   def __init__(self, elem: ET.Element, enum: Enum):
-    util.check_attributes(elem, {"value"})
+    util.check_attributes(elem, {'value'})
     self.name = util.get_text(elem, Model.VARIANT_NAME_REGEX)
-    self.value = util.get_attr(elem, "value")
+    self.value = util.get_attr(elem, 'value')
     self.enum = enum
 
   def __repr__(self):
@@ -275,46 +276,48 @@ class Variant:
 class Event:
   """Represents a single structured metrics event.
 
-    An Event is initialized with an XML node representing one event, eg:
+  An Event is initialized with an XML node representing one event, eg:
 
-      <event name="MyEvent">
-        <summary> My event. </summary>
-        <metric name="MyMetric" type="int">
-          <summary> My metric. </summary>
-        </metric>
-      </event>
+    <event name="MyEvent">
+      <summary> My event. </summary>
+      <metric name="MyMetric" type="int">
+        <summary> My metric. </summary>
+      </metric>
+    </event>
 
-    Calling str(event) will return a canonically formatted XML string.
-    """
+  Calling str(event) will return a canonically formatted XML string.
+  """
 
   def __init__(self, elem: ET.Element, project: Project):
-    util.check_attributes(elem, {"name"}, {"force_record"})
+    util.check_attributes(elem, {'name'}, {'force_record'})
 
     if project.is_event_sequence_project:
-      expected_children = {"summary"}
+      expected_children = {'summary'}
     else:
-      expected_children = {"summary", "metric"}
+      expected_children = {'summary', 'metric'}
 
     util.check_children(elem, expected_children)
 
-    util.check_child_names_unique(elem, "metric")
+    util.check_child_names_unique(elem, 'metric')
 
-    self.name = util.get_attr(elem, "name", Model.NAME_REGEX)
-    self.force_record = util.get_boolean_attr(elem, "force_record")
-    self.summary = util.get_text_child(elem, "summary")
+    self.name = util.get_attr(elem, 'name', Model.NAME_REGEX)
+    self.force_record = util.get_boolean_attr(elem, 'force_record')
+    self.summary = util.get_text_child(elem, 'summary')
     self.metrics = [
-        Metric(m, project) for m in util.get_compound_children(
-            elem, "metric", project.is_event_sequence_project)
+      Metric(m, project)
+      for m in util.get_compound_children(
+        elem, 'metric', project.is_event_sequence_project
+      )
     ]
 
   def __repr__(self):
-    metrics = "\n".join(str(m) for m in self.metrics)
-    metrics = tw.indent(metrics, "  ")
-    summary = wrap(self.summary, indent="    ")
+    metrics = '\n'.join(str(m) for m in self.metrics)
+    metrics = tw.indent(metrics, '  ')
+    summary = wrap(self.summary, indent='    ')
     if self.force_record:
       force_record = ' force_record="true"'
     else:
-      force_record = ""
+      force_record = ''
 
     return f"""\
 <event name="{self.name}"{force_record}>
@@ -328,48 +331,49 @@ class Event:
 class Metric:
   """Represents a single metric.
 
-    A Metric is initialized with an XML node representing one metric, eg:
+  A Metric is initialized with an XML node representing one metric, eg:
 
-      <metric name="MyMetric" type="int">
-        <summary> My metric. </summary>
-      </metric>
+    <metric name="MyMetric" type="int">
+      <summary> My metric. </summary>
+    </metric>
 
-    Calling str(metric) will return a canonically formatted XML string.
-    """
+  Calling str(metric) will return a canonically formatted XML string.
+  """
 
   def __init__(self, elem: ET.Element, project: Project):
-    util.check_attributes(elem, {"name", "type"}, {"max"})
-    util.check_children(elem, {"summary"})
+    util.check_attributes(elem, {'name', 'type'}, {'max'})
+    util.check_children(elem, {'summary'})
 
-    self.name = util.get_attr(elem, "name", Model.NAME_REGEX)
+    self.name = util.get_attr(elem, 'name', Model.NAME_REGEX)
 
-    self.type = util.get_attr(elem, "type")
+    self.type = util.get_attr(elem, 'type')
     # If the type isn't an enum then check it it must be a builtin type.
     if project.has_enum(self.type):
       self.is_enum = True
     else:
       self.is_enum = False
-      self.type = util.get_attr(elem, "type", Model.TYPE_REGEX)
+      self.type = util.get_attr(elem, 'type', Model.TYPE_REGEX)
 
-    self.summary = util.get_text_child(elem, "summary")
+    self.summary = util.get_text_child(elem, 'summary')
 
-    if self.type == "int-array":
-      self.max_size = int(util.get_attr(elem, "max", Model.MAX_REGEX))
+    if self.type == 'int-array':
+      self.max_size = int(util.get_attr(elem, 'max', Model.MAX_REGEX))
 
-    if self.type == "raw-string" and (project.id != "none" and
-                                      not project.is_event_sequence_project):
+    if self.type == 'raw-string' and (
+      project.id != 'none' and not project.is_event_sequence_project
+    ):
       util.error(
-          elem,
-          "raw-string metrics must be in a project with id type "
-          f"'none' or sequenced project, but {project.name} has "
-          f"id type '{project.id}'",
+        elem,
+        'raw-string metrics must be in a project with id type '
+        f"'none' or sequenced project, but {project.name} has "
+        f"id type '{project.id}'",
       )
 
   def is_array(self) -> bool:
-    return "array" in self.type
+    return 'array' in self.type
 
   def __repr__(self):
-    summary = wrap(self.summary, indent="    ")
+    summary = wrap(self.summary, indent='    ')
     return f"""\
 <metric name="{self.name}" type="{self.type}">
   <summary>

@@ -28,6 +28,7 @@ import chromium_src.tools.metrics.histograms.histogram_configuration_model as hi
 class Error(Exception):
   pass
 
+
 UNIT_REWRITES = {
   'mcs': 'microseconds',
   'microsecond': 'microseconds',
@@ -177,28 +178,31 @@ def main():
   parser.add_argument('--non-interactive', action='store_true')
   parser.add_argument('--presubmit', action='store_true')
   parser.add_argument('--diff', action='store_true')
-  parser.add_argument('--cleanup',
-                      action='store_true',
-                      help='Remove the backup file after a successful run.')
+  parser.add_argument(
+    '--cleanup',
+    action='store_true',
+    help='Remove the backup file after a successful run.',
+  )
   args = parser.parse_args()
 
   utf8_encoding.setup_stdout_and_stderr_utf8_encoding()
 
   status = 0
   if 'enums.xml' in args.filepath:
-    status = presubmit_util.DoPresubmit(args, args.filepath,
-                                        'enums.before.pretty-print.xml',
-                                        PrettyPrintEnums)
+    status = presubmit_util.DoPresubmit(
+      args, args.filepath, 'enums.before.pretty-print.xml', PrettyPrintEnums
+    )
 
   elif 'histograms' in args.filepath:
     # Specify the individual directory of histograms.xml.
     status = presubmit_util.DoPresubmit(
-        args,
-        args.filepath,
-        # The backup filename should be
-        # 'path/to/histograms.before.pretty-print.xml'.
-        '.before.pretty-print.'.join(args.filepath.rsplit('.', 1)),
-        PrettyPrintHistograms)
+      args,
+      args.filepath,
+      # The backup filename should be
+      # 'path/to/histograms.before.pretty-print.xml'.
+      '.before.pretty-print.'.join(args.filepath.rsplit('.', 1)),
+      PrettyPrintHistograms,
+    )
 
   sys.exit(status)
 

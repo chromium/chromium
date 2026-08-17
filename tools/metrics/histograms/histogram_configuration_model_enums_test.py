@@ -535,8 +535,8 @@ PRETTY_XML_IFTTT_AND_REGULAR_COMMENTS = """
 
 
 class EnumXmlTest(unittest.TestCase):
-
-  @parameterized.expand([
+  @parameterized.expand(
+    [
       # Test prettify already pretty XML to verify the pretty-printed version
       # is the same.
       ('AlreadyPrettyXml', PRETTY_XML, PRETTY_XML),
@@ -550,59 +550,88 @@ class EnumXmlTest(unittest.TestCase):
       # The children of enums should be sorted in the order of
       # <summary> and <int>
       ('ChildrenOrder', XML_WRONG_CHILDREN_ORDER, PRETTY_XML),
-
       # Test prettify already pretty XML with right enum order to verify the
       # pretty-printed version is the same.
-      ('AlreadyRightOrder', PRETTY_XML_RIGHT_ENUM_ORDER,
-       PRETTY_XML_RIGHT_ENUM_ORDER),
+      (
+        'AlreadyRightOrder',
+        PRETTY_XML_RIGHT_ENUM_ORDER,
+        PRETTY_XML_RIGHT_ENUM_ORDER,
+      ),
       # Enums should be sorted in the order of their name attribute
       ('EnumOrder', XML_WRONG_ENUM_ORDER, PRETTY_XML_RIGHT_ENUM_ORDER),
-
       # Test prettify already pretty XML with comments to verify the
       # pretty-printed version is the same.
-      ('AlreadyPrettyWithComments', PRETTY_XML_WITH_COMMENTS,
-       PRETTY_XML_WITH_COMMENTS),
-      ('CommentsIndentsLineBreak', XML_WITH_COMMENTS_WRONG_INDENT_LINEBREAK,
-       PRETTY_XML_WITH_COMMENTS),
-
+      (
+        'AlreadyPrettyWithComments',
+        PRETTY_XML_WITH_COMMENTS,
+        PRETTY_XML_WITH_COMMENTS,
+      ),
+      (
+        'CommentsIndentsLineBreak',
+        XML_WITH_COMMENTS_WRONG_INDENT_LINEBREAK,
+        PRETTY_XML_WITH_COMMENTS,
+      ),
       # Tests that that LINT.IfChange / LINT.ThenChange comments are correctly
       # preserved in an already-pretty XML.
-      ('AlreadyPrettyIfttt', PRETTY_XML_WITH_IFTTT_COMMENTS,
-       PRETTY_XML_WITH_IFTTT_COMMENTS),
-      ('AlreadyPrettyIftttMiddle', PRETTY_XML_WITH_IFTTT_COMMENTS_MIDDLE,
-       PRETTY_XML_WITH_IFTTT_COMMENTS_MIDDLE),
-      ('IFTTTCommentsForEnumValues', XML_IFTTT_COMMENTS_FOR_ENUM_VALUES,
-       PRETTY_XML_IFTTT_COMMENTS_FOR_ENUM_VALUES),
-      ('IFTTTCommentsForEnumValuesUnordered',
-       XML_IFTTT_COMMENTS_FOR_ENUM_VALUES_UNORDERED,
-       PRETTY_XML_IFTTT_COMMENTS_FOR_ENUM_VALUES_UNORDERED),
-      ('IFTTTCommentsForEnumValuesMultipleBlocks',
-       XML_IFTTT_INSIDE_ENUM_MULTIPLE_BLOCKS,
-       PRETTY_IFTTT_INSIDE_ENUM_MULTIPLE_BLOCKS),
-      ('NestedIFTTTCommentsOutsideEnum', XML_NESTED_IFTTT_OUTSIDE_ENUM,
-       PRETTY_XML_NESTED_IFTTT_OUTSIDE_ENUM),
-      ('IFTTTCommentsAndRegularCommentsOnTheSameLevel',
-       PRETTY_XML_IFTTT_AND_REGULAR_COMMENTS,
-       PRETTY_XML_IFTTT_AND_REGULAR_COMMENTS),
-  ])
+      (
+        'AlreadyPrettyIfttt',
+        PRETTY_XML_WITH_IFTTT_COMMENTS,
+        PRETTY_XML_WITH_IFTTT_COMMENTS,
+      ),
+      (
+        'AlreadyPrettyIftttMiddle',
+        PRETTY_XML_WITH_IFTTT_COMMENTS_MIDDLE,
+        PRETTY_XML_WITH_IFTTT_COMMENTS_MIDDLE,
+      ),
+      (
+        'IFTTTCommentsForEnumValues',
+        XML_IFTTT_COMMENTS_FOR_ENUM_VALUES,
+        PRETTY_XML_IFTTT_COMMENTS_FOR_ENUM_VALUES,
+      ),
+      (
+        'IFTTTCommentsForEnumValuesUnordered',
+        XML_IFTTT_COMMENTS_FOR_ENUM_VALUES_UNORDERED,
+        PRETTY_XML_IFTTT_COMMENTS_FOR_ENUM_VALUES_UNORDERED,
+      ),
+      (
+        'IFTTTCommentsForEnumValuesMultipleBlocks',
+        XML_IFTTT_INSIDE_ENUM_MULTIPLE_BLOCKS,
+        PRETTY_IFTTT_INSIDE_ENUM_MULTIPLE_BLOCKS,
+      ),
+      (
+        'NestedIFTTTCommentsOutsideEnum',
+        XML_NESTED_IFTTT_OUTSIDE_ENUM,
+        PRETTY_XML_NESTED_IFTTT_OUTSIDE_ENUM,
+      ),
+      (
+        'IFTTTCommentsAndRegularCommentsOnTheSameLevel',
+        PRETTY_XML_IFTTT_AND_REGULAR_COMMENTS,
+        PRETTY_XML_IFTTT_AND_REGULAR_COMMENTS,
+      ),
+    ]
+  )
   def testPrettify(self, _, input_xml, expected_xml):
     result = histogram_configuration_model.PrettifyTree(
-        etree_util.ParseXMLString(input_xml))
+      etree_util.ParseXMLString(input_xml)
+    )
     self.assertMultiLineEqual(result.strip(), expected_xml)
 
-  @parameterized.expand([
+  @parameterized.expand(
+    [
       # The "name" attribute of <enum> only allows alphanumeric characters
       # and punctuations "." and "_". It does not allow space.
       ('BadEnumNameIllegalPunctuation', PRETTY_XML, 'Enum1', 'Enum:1'),
       ('BadEnumNameWithSpace', PRETTY_XML, 'Enum1', 'Enum 1'),
       ('BadIntValueNegative', PRETTY_XML, '1', '-5'),
-      ('BadIntValueNonNumeric', PRETTY_XML, '1', 'hello')
-  ])
+      ('BadIntValueNonNumeric', PRETTY_XML, '1', 'hello'),
+    ]
+  )
   def testRegex(self, _, pretty_input_xml, original_string, bad_string):
     BAD_XML = pretty_input_xml.replace(original_string, bad_string)
     with self.assertRaises(ValueError) as context:
       histogram_configuration_model.PrettifyTree(
-          etree_util.ParseXMLString(BAD_XML))
+        etree_util.ParseXMLString(BAD_XML)
+      )
     self.assertIn(bad_string, str(context.exception))
     self.assertIn('does not match regex', str(context.exception))
 

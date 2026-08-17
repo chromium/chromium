@@ -12,7 +12,8 @@ from chromium_src.tools.metrics.common.path_util import METRICS_TOOLS_PATH
 
 if __name__ == '__main__':
   mypy_errors = mypy_helpers.run_mypy_and_filter_irrelevant(
-      str(METRICS_TOOLS_PATH))
-  print("\n".join(f" * {error}" for error in mypy_errors))
+    str(METRICS_TOOLS_PATH)
+  )
+  print('\n'.join(f' * {error}' for error in mypy_errors))
 
   sys.exit(len(mypy_errors))

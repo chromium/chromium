@@ -14,17 +14,21 @@ import re
 
 import setup_modules  # pylint: disable=unused-import
 
-from chromium_src.components.autofill.core.browser.data_model.autofill_ai.entity_schema_parser import parse_entity_schema
+from chromium_src.components.autofill.core.browser.data_model.autofill_ai.entity_schema_parser import (
+  parse_entity_schema,
+)
 import chromium_src.tools.metrics.common.path_util as path_util
 import chromium_src.tools.metrics.histograms.update_histogram_enum as update_histogram_enum
 
 
 AUTOFILL_AI_ENTITY_DIR = (
-    'components/autofill/core/browser/data_model/autofill_ai')
+  'components/autofill/core/browser/data_model/autofill_ai'
+)
 
 FIELD_TYPES_PATH = 'components/autofill/core/browser/field_types.h'
 FIELD_PREDICTION_GROUPS_PATH = (
-    'components/autofill/core/browser/metrics/prediction_quality_metrics.cc')
+  'components/autofill/core/browser/metrics/prediction_quality_metrics.cc'
+)
 ENTITY_SCHEMA_PATH = AUTOFILL_AI_ENTITY_DIR + '/entity_schema.json'
 PREDICTION_SOURCE_PATH = 'components/autofill/core/browser/autofill_field.h'
 
@@ -61,9 +65,11 @@ def ReadEnum(filename, first_line, last_line_exclusive):
       content.append(stripped_line)
 
   ENUM_REGEX = re.compile(
-      r"""^\s*?(\w+)\s+=         # capture the enum name
+    r"""^\s*?(\w+)\s+=         # capture the enum name
           \s+(\d+)(?:,.*)?$  # capture the id
-          """, re.VERBOSE)
+          """,
+    re.VERBOSE,
+  )
 
   enums = {}
   for line in content:
@@ -81,8 +87,11 @@ def ReadFieldTypes(filename):
 
 
 def ReadFieldPredictionGroups(filename):
-  result = ReadEnum(filename, 'enum FieldTypeGroupForMetrics {',
-                    'NUM_FIELD_TYPE_GROUPS_FOR_METRICS')
+  result = ReadEnum(
+    filename,
+    'enum FieldTypeGroupForMetrics {',
+    'NUM_FIELD_TYPE_GROUPS_FOR_METRICS',
+  )
   # Strip the GROUP_ prefix because it only adds clutter.
   return {k: v.replace('GROUP_', '') for k, v in result.items()}
 
@@ -115,8 +124,9 @@ def GenerateAutofillFieldPredictionQualityByFieldType():
 def GenerateAutofillDataUtilizationByFieldType(field_types: dict[int, str]):
   result = {}
   for enum_id, enum_name in field_types.items():
-    result[64 * enum_id +
-           0] = f'{enum_name}: Not autofilled or autofilled value edited'
+    result[64 * enum_id + 0] = (
+      f'{enum_name}: Not autofilled or autofilled value edited'
+    )
     result[64 * enum_id + 1] = f'{enum_name}: Autofilled value accepted'
   return result
 
@@ -138,9 +148,9 @@ def GenerateAutofillAiReauthResultByFieldType(field_types):
 
 
 def GenerateAutofillPredictionSourceByFieldType(field_types):
-  prediction_sources = ReadEnum(PREDICTION_SOURCE_PATH,
-                                'enum class AutofillPredictionSource {',
-                                'kMaxValue')
+  prediction_sources = ReadEnum(
+    PREDICTION_SOURCE_PATH, 'enum class AutofillPredictionSource {', 'kMaxValue'
+  )
   result = {}
   for type_id, type_name in field_types.items():
     for source_id, source_name in prediction_sources.items():
@@ -155,59 +165,79 @@ def GenerateAutofillAiEntityType():
     result[enum_id] = entity['name']
   return result
 
+
 if __name__ == '__main__':
   field_types = ReadFieldTypes(FIELD_TYPES_PATH)
 
   update_histogram_enum.UpdateHistogramFromDict(
-      'tools/metrics/histograms/metadata/autofill/enums.xml',
-      'AutofillFieldType', field_types, FIELD_TYPES_PATH,
-      os.path.basename(__file__))
+    'tools/metrics/histograms/metadata/autofill/enums.xml',
+    'AutofillFieldType',
+    field_types,
+    FIELD_TYPES_PATH,
+    os.path.basename(__file__),
+  )
 
   update_histogram_enum.UpdateHistogramFromDict(
-      'tools/metrics/histograms/metadata/autofill/enums.xml',
-      'AutofilledFieldUserEditingStatusByFieldType',
-      GenerateAutofilledFieldUserEditingStatusByFieldType(field_types),
-      FIELD_TYPES_PATH, os.path.basename(__file__))
+    'tools/metrics/histograms/metadata/autofill/enums.xml',
+    'AutofilledFieldUserEditingStatusByFieldType',
+    GenerateAutofilledFieldUserEditingStatusByFieldType(field_types),
+    FIELD_TYPES_PATH,
+    os.path.basename(__file__),
+  )
 
   update_histogram_enum.UpdateHistogramFromDict(
-      'tools/metrics/histograms/metadata/autofill/enums.xml',
-      'AutofillFieldPredictionQualityByFieldType',
-      GenerateAutofillFieldPredictionQualityByFieldType(),
-      FIELD_PREDICTION_GROUPS_PATH, os.path.basename(__file__))
+    'tools/metrics/histograms/metadata/autofill/enums.xml',
+    'AutofillFieldPredictionQualityByFieldType',
+    GenerateAutofillFieldPredictionQualityByFieldType(),
+    FIELD_PREDICTION_GROUPS_PATH,
+    os.path.basename(__file__),
+  )
 
   update_histogram_enum.UpdateHistogramFromDict(
-      'tools/metrics/histograms/metadata/autofill/enums.xml',
-      'AutofillDataUtilizationByFieldType',
-      GenerateAutofillDataUtilizationByFieldType(field_types), FIELD_TYPES_PATH,
-      os.path.basename(__file__))
+    'tools/metrics/histograms/metadata/autofill/enums.xml',
+    'AutofillDataUtilizationByFieldType',
+    GenerateAutofillDataUtilizationByFieldType(field_types),
+    FIELD_TYPES_PATH,
+    os.path.basename(__file__),
+  )
 
   update_histogram_enum.UpdateHistogramFromDict(
-      'tools/metrics/histograms/metadata/autofill/enums.xml',
-      'FillingAcceptanceByFieldType',
-      GenerateFillingAcceptanceByFieldType(field_types), FIELD_TYPES_PATH,
-      os.path.basename(__file__))
+    'tools/metrics/histograms/metadata/autofill/enums.xml',
+    'FillingAcceptanceByFieldType',
+    GenerateFillingAcceptanceByFieldType(field_types),
+    FIELD_TYPES_PATH,
+    os.path.basename(__file__),
+  )
 
   update_histogram_enum.UpdateHistogramFromDict(
-      'tools/metrics/histograms/metadata/autofill/enums.xml',
-      'AutofillAiReauthResultByFieldType',
-      GenerateAutofillAiReauthResultByFieldType(field_types), FIELD_TYPES_PATH,
-      os.path.basename(__file__))
+    'tools/metrics/histograms/metadata/autofill/enums.xml',
+    'AutofillAiReauthResultByFieldType',
+    GenerateAutofillAiReauthResultByFieldType(field_types),
+    FIELD_TYPES_PATH,
+    os.path.basename(__file__),
+  )
 
   update_histogram_enum.UpdateHistogramFromDict(
-      'tools/metrics/histograms/metadata/autofill/enums.xml',
-      'AutofillPredictionSourceByFieldType',
-      GenerateAutofillPredictionSourceByFieldType(field_types),
-      FIELD_TYPES_PATH, os.path.basename(__file__))
+    'tools/metrics/histograms/metadata/autofill/enums.xml',
+    'AutofillPredictionSourceByFieldType',
+    GenerateAutofillPredictionSourceByFieldType(field_types),
+    FIELD_TYPES_PATH,
+    os.path.basename(__file__),
+  )
 
   update_histogram_enum.UpdateHistogramFromDict(
-      'tools/metrics/histograms/metadata/autofill/histograms.xml',
-      'AutofillFieldType',
-      field_types,
-      FIELD_TYPES_PATH,
-      os.path.basename(__file__),
-      update_comment=False)
+    'tools/metrics/histograms/metadata/autofill/histograms.xml',
+    'AutofillFieldType',
+    field_types,
+    FIELD_TYPES_PATH,
+    os.path.basename(__file__),
+    update_comment=False,
+  )
 
   update_histogram_enum.UpdateHistogramFromDict(
-      'tools/metrics/histograms/metadata/autofill/enums.xml',
-      'AutofillAiEntityType', GenerateAutofillAiEntityType(),
-      ENTITY_SCHEMA_PATH, os.path.basename(__file__))
+    'tools/metrics/histograms/metadata/autofill/enums.xml',
+    'AutofillAiEntityType',
+    GenerateAutofillAiEntityType(),
+    ENTITY_SCHEMA_PATH,
+    os.path.basename(__file__),
+  )

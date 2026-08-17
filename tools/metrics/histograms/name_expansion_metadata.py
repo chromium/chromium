@@ -38,6 +38,7 @@ class Variant(TypedDict, total=False):
     obsolete: Optional <obsolete> text content.
     owners: List of <owner> text content.
   """
+
   name: str
   summary: str
   obsolete: str | None
@@ -72,6 +73,7 @@ class Token(TypedDict, total=False):
     key: The key attribute that is used in histogram names/summaries as '{key}'.
     variants: The variants whose names are substituted for '{key}'.
   """
+
   key: str
   variants: list[Variant]
 

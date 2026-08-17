@@ -114,26 +114,25 @@ CONFIG_EVENT_NAMES_UNSORTED = """
 """.strip()
 
 OBSOLETE_EVENTS_PARSED = {
-    'event': {
-        "obsolete": "Some message",
-        "metric": {
-            "summary": "Some summary",
-        },
-        "metric": {
-            "summary": "Some summary",
-        },
+  'event': {
+    'obsolete': 'Some message',
+    'metric': {
+      'summary': 'Some summary',
     },
-    'event': {
-        "obsolete": "Some message",
-        "metric": {
-            "summary": "Some summary",
-        },
+    'metric': {
+      'summary': 'Some summary',
     },
+  },
+  'event': {
+    'obsolete': 'Some message',
+    'metric': {
+      'summary': 'Some summary',
+    },
+  },
 }
 
 
 class UkmXmlTest(unittest.TestCase):
-
   def __init__(self, *args, **kwargs):
     super().__init__(*args, **kwargs)
     self.maxDiff = None
@@ -178,7 +177,8 @@ class UkmXmlTest(unittest.TestCase):
     result = ukm_model.prettify_xml_and_trim_obsolete(CONFIG_EVENT_NAMES_SORTED)
     self.assertMultiLineEqual(CONFIG_EVENT_NAMES_SORTED, result.strip())
     result = ukm_model.prettify_xml_and_trim_obsolete(
-        CONFIG_EVENT_NAMES_UNSORTED)
+      CONFIG_EVENT_NAMES_UNSORTED
+    )
     self.assertMultiLineEqual(CONFIG_EVENT_NAMES_SORTED, result.strip())
 
   def test_is_not_obsolete(self):
@@ -189,8 +189,9 @@ class UkmXmlTest(unittest.TestCase):
 
   def test_trim_obsolete_event(self):
     xml_with_obsolete_event = PRETTY_XML.replace(
-        '<event name="Event1">',
-        '<event name="Event1"><obsolete>Some obsoletion message.</obsolete>')
+      '<event name="Event1">',
+      '<event name="Event1"><obsolete>Some obsoletion message.</obsolete>',
+    )
     result = ukm_model.prettify_xml_and_trim_obsolete(xml_with_obsolete_event)
 
     # The event marked obsolete is trimmed from the prettified XML.
@@ -203,11 +204,13 @@ class UkmXmlTest(unittest.TestCase):
 
   def test_trim_obsolete_metric(self):
     xml_with_obsolete_metrics = PRETTY_XML.replace(
-        '<metric name="Metric1">',
-        '<metric name="Metric1"><obsolete>Some obsoletion message.</obsolete>')
+      '<metric name="Metric1">',
+      '<metric name="Metric1"><obsolete>Some obsoletion message.</obsolete>',
+    )
     xml_with_obsolete_metrics = xml_with_obsolete_metrics.replace(
-        '<metric name="Metric2">',
-        '<metric name="Metric2"><obsolete>Some obsoletion message.</obsolete>')
+      '<metric name="Metric2">',
+      '<metric name="Metric2"><obsolete>Some obsoletion message.</obsolete>',
+    )
     result = ukm_model.prettify_xml_and_trim_obsolete(xml_with_obsolete_metrics)
 
     # The metrics marked obsolete are trimmed from the prettified XML.

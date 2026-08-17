@@ -83,7 +83,8 @@ CONFIG_EVENT_NAMES_UNSORTED = """
 """.strip()
 
 TEST_XML_TYPE = private_metrics_model_shared.create_event_based_document_type(
-    'test-configuration')
+  'test-configuration'
+)
 
 
 def prettify_xml(original_xml):
@@ -92,7 +93,6 @@ def prettify_xml(original_xml):
 
 
 class ConfigurationXmlTest(unittest.TestCase):
-
   def __init__(self, *args, **kwargs) -> None:
     super(ConfigurationXmlTest, self).__init__(*args, **kwargs)
     self.maxDiff = None

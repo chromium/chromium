@@ -15,7 +15,19 @@ import itertools
 import logging
 import sys
 import textwrap
-from typing import Any, cast, Iterable, Iterator, List, Mapping, Optional, OrderedDict, Protocol, Sequence, Tuple
+from typing import (
+  Any,
+  cast,
+  Iterable,
+  Iterator,
+  List,
+  Mapping,
+  Optional,
+  OrderedDict,
+  Protocol,
+  Sequence,
+  Tuple,
+)
 from xml.dom import minidom
 import xml.etree.ElementTree as ET
 
@@ -40,7 +52,6 @@ LevelIDsType = Tuple[int, ...]
 
 
 class Comparable(Protocol):
-
   @abc.abstractmethod
   def __lt__(self, other: Any) -> bool:
     pass
@@ -107,6 +118,7 @@ class _CommentsTree:
     xml_element: The XML element that this node represents. This is None for
       internal nodes, ant not None for leaf nodes.
   """
+
   id: int
   children: List['_CommentsTree'] = dataclasses.field(default_factory=list)
   sort_key: Optional[SortKey] = None
@@ -122,10 +134,12 @@ class _CommentsTree:
     # the key of the first child to represent the sort_key of parent and
     # we can find it using the min function.
     self.sort_key = min(
-        child.GetSortKey() for child in self.children
-        # We want to sort using the sort key from the nodes with real values,
-        # not the IFTTT comment nodes.
-        if child.GetSortKey()[0] != _IFTTT_START_PRIORITY)
+      child.GetSortKey()
+      for child in self.children
+      # We want to sort using the sort key from the nodes with real values,
+      # not the IFTTT comment nodes.
+      if child.GetSortKey()[0] != _IFTTT_START_PRIORITY
+    )
     return self.sort_key
 
   def __lt__(self, other: '_CommentsTree') -> bool:
@@ -200,7 +214,7 @@ def LastLineLength(s):
 def XmlEscape(s):
   """Returns escaped string for the given string |s|."""
   s = s.replace('&', '&amp;').replace('<', '&lt;')
-  s = s.replace('\"', '&quot;').replace('>', '&gt;')
+  s = s.replace('"', '&quot;').replace('>', '&gt;')
   return s
 
 
@@ -247,37 +261,38 @@ def _IsIFTTTBlockEnd(node: ET.Element) -> bool:
 
 def _IterNodes(root: ET.Element) -> Iterable[ET.Element]:
   """Returns an iterator over all the nodes in the given tree in the
-    preorder traversal.
-    """
+  preorder traversal.
+  """
   yield root
   for c in root:
     yield from _IterNodes(c)
 
 
 def _CalculateIFTTTCommentsLevels(
-    root: ET.Element) -> Mapping[ET.Element, LevelIDsType]:
+  root: ET.Element,
+) -> Mapping[ET.Element, LevelIDsType]:
   """Returns a mapping of nodes to the level ids of the IFTTT comments.
 
-    IFTTT comments are used to enforce that certain changes are made in
-    multiple files. The comments are used to specify the files that should
-    be changed. Since the IFTTT comments can be nested, we need to keep
-    track of the level of the comment in order to correctly sort the nodes and
-    make sure that the contents of the IFTTT are not accidentally changed.
+  IFTTT comments are used to enforce that certain changes are made in
+  multiple files. The comments are used to specify the files that should
+  be changed. Since the IFTTT comments can be nested, we need to keep
+  track of the level of the comment in order to correctly sort the nodes and
+  make sure that the contents of the IFTTT are not accidentally changed.
 
-    When new IFTTT block starts, it gets a new unique id. Level id of the
-    block is a tuple of all the ids of the parent IFTTT blocks.
+  When new IFTTT block starts, it gets a new unique id. Level id of the
+  block is a tuple of all the ids of the parent IFTTT blocks.
 
-    Args:
-      root: The root node of the tree to calculate the levels for.
-    Returns:
-      A mapping of nodes to the level ids of the IFTTT comments.
-    """
+  Args:
+    root: The root node of the tree to calculate the levels for.
+  Returns:
+    A mapping of nodes to the level ids of the IFTTT comments.
+  """
   levels = {}
   id_generator = itertools.count()
-  curr_id: LevelIDsType = (next(id_generator), )
+  curr_id: LevelIDsType = (next(id_generator),)
   for node in _IterNodes(root):
     if _IsIFTTTBlockStart(node):
-      curr_id = curr_id + (next(id_generator), )
+      curr_id = curr_id + (next(id_generator),)
 
     levels[node] = curr_id
 
@@ -287,17 +302,18 @@ def _CalculateIFTTTCommentsLevels(
 
 
 def _CreateCommentsTree(
-    subnodes_map: Mapping[ET.Element, SortKey],
-    level_ids: Mapping[ET.Element, LevelIDsType]) -> _CommentsTree:
+  subnodes_map: Mapping[ET.Element, SortKey],
+  level_ids: Mapping[ET.Element, LevelIDsType],
+) -> _CommentsTree:
   """Creates a comments tree from the given subnodes map and level ids.
 
-    Args:
-      subnodes_map: A mapping of subnode to sort key.
-      level_ids: A mapping of subnode to level ids. Level id of the IFTTT
-      block is a tuple of all the ids of the parent IFTTT blocks.
-    Returns:
-      Root of the created comments tree.
-    """
+  Args:
+    subnodes_map: A mapping of subnode to sort key.
+    level_ids: A mapping of subnode to level ids. Level id of the IFTTT
+    block is a tuple of all the ids of the parent IFTTT blocks.
+  Returns:
+    Root of the created comments tree.
+  """
   comments_root = _CommentsTree(id=_COMMENTS_ROOT_ID)
   comments_tree_dict = {_COMMENTS_ROOT_ID: comments_root}
 
@@ -314,31 +330,31 @@ def _CreateCommentsTree(
         comments_parent.children.append(comments_tree_node)
       comments_parent = comments_tree_dict[level_id]
 
-    comments_node = _CommentsTree(id=_PLACEHOLDER_COMMENT_ID,
-                                  xml_element=node,
-                                  sort_key=sort_key)
+    comments_node = _CommentsTree(
+      id=_PLACEHOLDER_COMMENT_ID, xml_element=node, sort_key=sort_key
+    )
     comments_parent.children.append(comments_node)
 
   return comments_root
 
 
 def _SortSubnodesByLevelIds(
-    parent_node: ET.Element,
-    subnodes_map: Mapping[ET.Element, SortKey],
-    level_ids: Mapping[ET.Element, LevelIDsType],
+  parent_node: ET.Element,
+  subnodes_map: Mapping[ET.Element, SortKey],
+  level_ids: Mapping[ET.Element, LevelIDsType],
 ) -> Iterable[ET.Element]:
   """Sorts the subnodes of the given parent node by the level ids in the IFTTT
-    comments tree.
-    Note that new iterator is created, the original subnodes are not modified.
+  comments tree.
+  Note that new iterator is created, the original subnodes are not modified.
 
-    Args:
-      parent_node: The parent node to sort the subnodes of.
-      subnodes_map: A mapping of subnode to sort key.
-      level_ids: A mapping of subnode to level ids. Level id of the IFTTT
-      block is a tuple of all the ids of the parent IFTTT blocks.
-    Returns:
-      An iterable of subnodes sorted by level ids.
-    """
+  Args:
+    parent_node: The parent node to sort the subnodes of.
+    subnodes_map: A mapping of subnode to sort key.
+    level_ids: A mapping of subnode to level ids. Level id of the IFTTT
+    block is a tuple of all the ids of the parent IFTTT blocks.
+  Returns:
+    An iterable of subnodes sorted by level ids.
+  """
   comments_root = _CreateCommentsTree(subnodes_map, level_ids)
   comments_root.Sort(level_ids[parent_node])
   return comments_root
@@ -347,9 +363,15 @@ def _SortSubnodesByLevelIds(
 class XmlStyle(object):
   """A class that stores all style specification for an output xml file."""
 
-  def __init__(self, attribute_order, required_attributes,
-               tags_that_have_extra_newline, tags_that_dont_indent,
-               tags_that_allow_single_line, tags_alphabetization_rules):
+  def __init__(
+    self,
+    attribute_order,
+    required_attributes,
+    tags_that_have_extra_newline,
+    tags_that_dont_indent,
+    tags_that_allow_single_line,
+    tags_alphabetization_rules,
+  ):
     self.attribute_order = attribute_order
     self.required_attributes = required_attributes
     self.tags_that_have_extra_newline = tags_that_have_extra_newline
@@ -389,10 +411,10 @@ class XmlStyle(object):
     return top_content + formatted_xml
 
   def _TransformByAlphabetizing(
-      self,
-      node: ET.Element,
-      level_ids: Optional[Mapping[ET.Element,
-                                  LevelIDsType]] = None) -> ET.Element:
+    self,
+    node: ET.Element,
+    level_ids: Optional[Mapping[ET.Element, LevelIDsType]] = None,
+  ) -> ET.Element:
     """Transform the given XML by alphabetizing nodes.
 
     Args:
@@ -417,8 +439,9 @@ class XmlStyle(object):
         subtags[subtag] = (index, key_function)
 
       # Map from the subnode to its sort key.
-      subnodes_map: OrderedDict[ET.Element,
-                                Optional[SortKey]] = collections.OrderedDict()
+      subnodes_map: OrderedDict[ET.Element, Optional[SortKey]] = (
+        collections.OrderedDict()
+      )
       # List of nodes whose sort key has not been found yet (their sort_key
       # will be set when the first suitable node is found).
       pending_nodes: List[ET.Element] = []
@@ -450,7 +473,8 @@ class XmlStyle(object):
       # Sort the subnode list.
       # After the above loops, all keys in subnodes_map are non-None.
       subnodes = _SortSubnodesByLevelIds(
-          node, cast(Mapping[ET.Element, SortKey], subnodes_map), level_ids)
+        node, cast(Mapping[ET.Element, SortKey], subnodes_map), level_ids
+      )
 
       # Remove the existing nodes
       for child in list(node):
@@ -487,7 +511,8 @@ class XmlStyle(object):
 
     # Newlines.
     newlines_after_open, newlines_before_close, newlines_after_close = (
-        self.tags_that_have_extra_newline.get(node.tag, (1, 1, 0)))
+      self.tags_that_have_extra_newline.get(node.tag, (1, 1, 0))
+    )
     # Open the tag.
     s = ' ' * indent + '<' + node.tag
 
@@ -498,40 +523,46 @@ class XmlStyle(object):
 
     attributes = node.keys()
     missing_attributes = [
-        attribute for attribute in self.required_attributes[node.tag]
-        if attribute not in attributes
+      attribute
+      for attribute in self.required_attributes[node.tag]
+      if attribute not in attributes
     ]
 
     for attribute in missing_attributes:
-      logging.error(
-          'Missing attribute "%s" in tag "%s"', attribute, node.tag)
+      logging.error('Missing attribute "%s" in tag "%s"', attribute, node.tag)
     if missing_attributes:
-      missing_attributes_str = (
-          ', '.join('"%s"' % attribute for attribute in missing_attributes))
+      missing_attributes_str = ', '.join(
+        '"%s"' % attribute for attribute in missing_attributes
+      )
       present_attributes = [
-          ' {0}="{1}"'.format(name, value)
-          for name, value in node.items()]
+        ' {0}="{1}"'.format(name, value) for name, value in node.items()
+      ]
       node_str = '<{0}{1}>'.format(node.tag, ''.join(present_attributes))
       raise Error(
-          'Missing attributes {0} in tag "{1}"'.format(
-              missing_attributes_str, node_str))
+        'Missing attributes {0} in tag "{1}"'.format(
+          missing_attributes_str, node_str
+        )
+      )
 
     # Pretty-print the attributes.
     if attributes:
       # Reorder the attributes.
       unrecognized_attributes = [
-          a for a in attributes if a not in self.attribute_order[node.tag]
+        a for a in attributes if a not in self.attribute_order[node.tag]
       ]
       attributes = [
-          a for a in self.attribute_order[node.tag] if a in attributes
+        a for a in self.attribute_order[node.tag] if a in attributes
       ]
 
       for a in unrecognized_attributes:
         logging.error('Unrecognized attribute "%s" in tag "%s"', a, node.tag)
       if unrecognized_attributes:
-        raise Error('Unrecognized attributes {0} in tag "{1}"'.format(
+        raise Error(
+          'Unrecognized attributes {0} in tag "{1}"'.format(
             ', '.join('"{0}"'.format(a) for a in unrecognized_attributes),
-            node.tag))
+            node.tag,
+          )
+        )
 
       for a in attributes:
         value = XmlEscape(node.get(a))
@@ -592,8 +623,11 @@ class XmlStyle(object):
       # Determine whether we can fit the entire node on a single line.
       close_tag = '</%s>' % node.tag
       space_left = WRAP_COLUMN - LastLineLength(s) - len(close_tag)
-      if (node.tag in self.tags_that_allow_single_line and
-          len(child_nodes) == 1 and len(child_nodes[0].strip()) <= space_left):
+      if (
+        node.tag in self.tags_that_allow_single_line
+        and len(child_nodes) == 1
+        and len(child_nodes[0].strip()) <= space_left
+      ):
         s += child_nodes[0].strip()
       else:
         s += '\n' * newlines_after_open + '\n'.join(child_nodes)

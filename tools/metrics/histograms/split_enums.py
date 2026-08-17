@@ -117,13 +117,15 @@ def _move_enums_to_file(enum_nodes, enums_file):
 def _split_enums(dir_name):
   """Splits out an enums.xml file in the specified directory."""
   histograms_file = path_util.GetInputFile(
-      f'tools/metrics/histograms/metadata/{dir_name}/histograms.xml')
+    f'tools/metrics/histograms/metadata/{dir_name}/histograms.xml'
+  )
   if not os.path.isfile(histograms_file):
     print(f'File {histograms_file} not found! Exiting.')
     return
 
   enums_file = path_util.GetInputFile(
-      f'tools/metrics/histograms/metadata/{dir_name}/enums.xml')
+    f'tools/metrics/histograms/metadata/{dir_name}/enums.xml'
+  )
 
   print(f'Reading XML files...')
 
@@ -135,12 +137,14 @@ def _split_enums(dir_name):
 
   # Only move enums that aren't referenced by other files.
   all_enum_names = _get_enums_from_files(
-      [f for f in histogram_paths.ALL_XMLS if f != histograms_file])
+    [f for f in histogram_paths.ALL_XMLS if f != histograms_file]
+  )
   candidate_enum_names = enum_names - all_enum_names
   print(f'Found {len(candidate_enum_names)} candidate enums.')
 
   enum_nodes, updated_full_xml = _extract_enum_nodes_by_names(
-      candidate_enum_names)
+    candidate_enum_names
+  )
   # There may be fewer, when some of the enums are not in the common enums.xml
   # file (for example, they may be in the target file already).
   assert len(enum_nodes) <= len(candidate_enum_names)

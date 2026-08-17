@@ -3,8 +3,7 @@
 # Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""Tests for codegen.py.
-"""
+"""Tests for codegen.py."""
 
 # TODO(crbug.com/40156926): Set up these tests to run on the tryjobs.
 
@@ -19,8 +18,11 @@ class CodegenTest(unittest.TestCase):
   """Tests for codegen.py"""
 
   def test_sanitize_name(self):
-    self.assertEqual(Util.sanitize_name('My Metric.Or::Event/Or/Project_name'),
-                     'My_Metric_Or__Event_Or_Project_name', 'chrome')
+    self.assertEqual(
+      Util.sanitize_name('My Metric.Or::Event/Or/Project_name'),
+      'My_Metric_Or__Event_Or_Project_name',
+      'chrome',
+    )
 
   def test_camel_to_snake(self):
     def check(camel, expected_snake):
@@ -45,8 +47,9 @@ class CodegenTest(unittest.TestCase):
     event_name_hash = 13593049295042080097
     project_name = 'TestProjectOne'
     event_name = 'TestEventOne'
-    self.assertEqual(Util.event_name_hash(project_name, event_name, 'chrome'),
-                     event_name_hash)
+    self.assertEqual(
+      Util.event_name_hash(project_name, event_name, 'chrome'), event_name_hash
+    )
 
 
 if __name__ == '__main__':

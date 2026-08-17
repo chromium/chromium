@@ -17,8 +17,9 @@ import chromium_src.tools.metrics.structured.sync.model as model
 class ModelTest(unittest.TestCase):
   """Tests for model.py."""
 
-  def assert_project(self, project, name, id_, summary, owners,
-                     key_rotation_period):
+  def assert_project(
+    self, project, name, id_, summary, owners, key_rotation_period
+  ):
     self.assertEqual(project.name, name)
     self.assertEqual(project.id, id_)
     self.assertEqual(project.summary.strip(), summary)
@@ -92,16 +93,27 @@ class ModelTest(unittest.TestCase):
 
     self.assertEqual(len(data.projects), 2)
     project_one, project_two = data.projects
-    self.assert_project(project_one, 'ProjectOne', 'none', 'Test project.',
-                        ('test1@chromium.org', 'test2@chromium.org'), 65)
-    self.assert_project(project_two, 'ProjectTwo', 'uma', 'Test project.',
-                        ('test@chromium.org', ),
-                        model.DEFAULT_KEY_ROTATION_PERIOD)
+    self.assert_project(
+      project_one,
+      'ProjectOne',
+      'none',
+      'Test project.',
+      ('test1@chromium.org', 'test2@chromium.org'),
+      65,
+    )
+    self.assert_project(
+      project_two,
+      'ProjectTwo',
+      'uma',
+      'Test project.',
+      ('test@chromium.org',),
+      model.DEFAULT_KEY_ROTATION_PERIOD,
+    )
 
     self.assertEqual(len(project_one.events), 2)
     self.assertEqual(len(project_two.events), 1)
     event_one, event_two = project_one.events
-    event_three, = project_two.events
+    (event_three,) = project_two.events
     self.assert_event(event_one, 'EventOne', 'Test event.')
     self.assert_event(event_two, 'EventTwo', 'Test event.')
     self.assert_event(event_three, 'EventThree', 'Test event.')
@@ -110,8 +122,8 @@ class ModelTest(unittest.TestCase):
     self.assertEqual(len(event_two.metrics), 1)
     self.assertEqual(len(event_three.metrics), 1)
     metric_one, metric_two = event_one.metrics
-    metric_three, = event_two.metrics
-    metric_four, = event_three.metrics
+    (metric_three,) = event_two.metrics
+    (metric_four,) = event_three.metrics
     self.assert_metric(metric_one, 'MetricOne', 'int', 'Test metric.')
     self.assert_metric(metric_two, 'MetricTwo', 'hmac-string', 'Test metric.')
     self.assert_metric(metric_three, 'MetricThree', 'int', 'Test metric.')

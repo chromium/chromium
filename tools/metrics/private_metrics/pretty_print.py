@@ -27,14 +27,16 @@ def main():
     pretty_print.py --diff --cleanup
   """
   parser = argparse.ArgumentParser()
-  parser.add_argument('filepath', help="relative path to XML file")
+  parser.add_argument('filepath', help='relative path to XML file')
   # The following optional flags are used by common/presubmit_util.py
-  parser.add_argument('--non-interactive', action="store_true")
-  parser.add_argument('--presubmit', action="store_true")
-  parser.add_argument('--diff', action="store_true")
-  parser.add_argument('--cleanup',
-                      action="store_true",
-                      help="Remove the backup file after a successful run.")
+  parser.add_argument('--non-interactive', action='store_true')
+  parser.add_argument('--presubmit', action='store_true')
+  parser.add_argument('--diff', action='store_true')
+  parser.add_argument(
+    '--cleanup',
+    action='store_true',
+    help='Remove the backup file after a successful run.',
+  )
 
   args = parser.parse_args()
 
@@ -42,13 +44,15 @@ def main():
 
   status = 0
   if filepath.endswith('dwa.xml'):
-    status = presubmit_util.DoPresubmit(args, filepath, 'dwa.old.xml',
-                                        dwa_model.PrettifyXML)
+    status = presubmit_util.DoPresubmit(
+      args, filepath, 'dwa.old.xml', dwa_model.PrettifyXML
+    )
   else:
     print(f'Unsupported file: {filepath}', file=sys.stderr)
     return 1
 
   return status
+
 
 if __name__ == '__main__':
   sys.exit(main())

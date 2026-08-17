@@ -11,7 +11,6 @@ import chromium_src.tools.metrics.histograms.histogram_utils as histogram_utils
 
 
 class HistogramUtilsTest(unittest.TestCase):
-
   def testGetModifiedVariantsBlocks_Added(self):
     old_content = """
 <histogram-configuration>
@@ -31,7 +30,8 @@ class HistogramUtilsTest(unittest.TestCase):
 </histogram-configuration>
 """
     modified = histogram_utils.get_modified_variants_blocks(
-        old_content, new_content)
+      old_content, new_content
+    )
     self.assertEqual(modified, {'NewVariants'})
 
   def testGetModifiedVariantsBlocks_Modified(self):
@@ -51,7 +51,8 @@ class HistogramUtilsTest(unittest.TestCase):
 </histogram-configuration>
 """
     modified = histogram_utils.get_modified_variants_blocks(
-        old_content, new_content)
+      old_content, new_content
+    )
     self.assertEqual(modified, {'MockVariants'})
 
   def testGetModifiedVariantsBlocks_Removed(self):
@@ -73,7 +74,8 @@ class HistogramUtilsTest(unittest.TestCase):
 </histogram-configuration>
 """
     modified = histogram_utils.get_modified_variants_blocks(
-        old_content, new_content)
+      old_content, new_content
+    )
     self.assertEqual(modified, {'RemovedVariants'})
 
   def testGetNamesFromContents(self):
@@ -93,8 +95,9 @@ class HistogramUtilsTest(unittest.TestCase):
 </histogram-configuration>
 """
     variants_doc = xml.dom.minidom.parseString(variants_xml)
-    names = histogram_utils.get_names_from_contents(contents.splitlines(),
-                                                    variants_doc)
+    names = histogram_utils.get_names_from_contents(
+      contents.splitlines(), variants_doc
+    )
     self.assertEqual(names, {'Test.V1', 'Test.V2'})
 
   def testFindFilesUsingVariants(self):
@@ -106,10 +109,13 @@ class HistogramUtilsTest(unittest.TestCase):
 </histogram-configuration>
 """
     from unittest.mock import patch
-    with patch.object(histogram_utils, '_path_contents',
-                      return_value=content) as mock_read:
-      files = histogram_utils.find_files_using_variants({'MockVariants'},
-                                                        ['dummy_path.xml'])
+
+    with patch.object(
+      histogram_utils, '_path_contents', return_value=content
+    ) as mock_read:
+      files = histogram_utils.find_files_using_variants(
+        {'MockVariants'}, ['dummy_path.xml']
+      )
       self.assertEqual(files, ['dummy_path.xml'])
       mock_read.assert_called_once_with('dummy_path.xml')
 

@@ -10,8 +10,7 @@ import setup_modules  # pylint: disable=unused-import
 
 import chromium_src.tools.metrics.histograms.generate_allowlist_from_histograms_file as generate_allowlist_from_histograms_file
 
-_EXPECTED_FILE_CONTENT = (
-    """// Generated from generate_allowlist_from_histograms_file.py. \
+_EXPECTED_FILE_CONTENT = """// Generated from generate_allowlist_from_histograms_file.py. \
 Do not edit!
 
 #ifndef TEST_TEST_H_
@@ -38,9 +37,9 @@ constexpr bool IsValidTestName(std::string_view s) {
 }  // namespace test_namespace
 
 #endif  // TEST_TEST_H_
-""")
+"""
 
-_EXPECTED_VARIANT_LIST = ["All", "DownloadView", "PageInfoView"]
+_EXPECTED_VARIANT_LIST = ['All', 'DownloadView', 'PageInfoView']
 
 _TEST_VARIANT_INPUT = """
 <variants name="BubbleName">
@@ -61,45 +60,49 @@ _TEST_ENUM_INPUT = """
 
 
 class VariantAllowListTest(unittest.TestCase):
-
   def testGenerateSourceFileContent(self):
-    namespace = "test_namespace"
+    namespace = 'test_namespace'
 
-    allow_list_name = "TestName"
+    allow_list_name = 'TestName'
 
     # Provide an unsorted list to ensure the list gets sorted since the check
     # function relies on being sorted.
-    variant_list = ["DownloadView", "All", "PageInfoView"]
+    variant_list = ['DownloadView', 'All', 'PageInfoView']
     content = generate_allowlist_from_histograms_file._GenerateStaticFile(
-        "test/test.h", namespace, variant_list, allow_list_name)
+      'test/test.h', namespace, variant_list, allow_list_name
+    )
     self.assertEqual(_EXPECTED_FILE_CONTENT, content)
 
   def testGenerateListFromVariants(self):
     histograms = xml.dom.minidom.parseString(_TEST_VARIANT_INPUT)
-    allow_list_name = "BubbleName"
+    allow_list_name = 'BubbleName'
     variants = generate_allowlist_from_histograms_file._GenerateValueList(
-        histograms, "variant", allow_list_name)
+      histograms, 'variant', allow_list_name
+    )
     self.assertEqual(_EXPECTED_VARIANT_LIST, variants)
 
     # Has incorrect allow list name.
-    allow_list_name = "MissingVariantsName"
+    allow_list_name = 'MissingVariantsName'
     with self.assertRaises(generate_allowlist_from_histograms_file.Error):
       generate_allowlist_from_histograms_file._GenerateValueList(
-          histograms, "variant", allow_list_name)
+        histograms, 'variant', allow_list_name
+      )
 
   def testGenerateListFromEnums(self):
     histograms = xml.dom.minidom.parseString(_TEST_ENUM_INPUT)
-    allow_list_name = "URLHashes"
+    allow_list_name = 'URLHashes'
     variants = generate_allowlist_from_histograms_file._GenerateValueList(
-        histograms, "enum", allow_list_name)
+      histograms, 'enum', allow_list_name
+    )
     self.assertEqual(_EXPECTED_ENUM_LIST, variants)
 
     # Has incorrect allow list name.
-    allow_list_name = "MissingVariantsName"
+    allow_list_name = 'MissingVariantsName'
     with self.assertRaises(generate_allowlist_from_histograms_file.Error):
       generate_allowlist_from_histograms_file._GenerateValueList(
-          histograms, "enum", allow_list_name)
+        histograms, 'enum', allow_list_name
+      )
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
   unittest.main()

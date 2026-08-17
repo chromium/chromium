@@ -53,7 +53,8 @@ def read_filtered_data(path):
     data[event_tag] = list(filter(ukm_model.is_not_obsolete, data[event_tag]))
     for event in data[event_tag]:
       event[metric_tag] = list(
-          filter(ukm_model.is_not_obsolete, event[metric_tag]))
+        filter(ukm_model.is_not_obsolete, event[metric_tag])
+      )
     return data
 
 

@@ -12,11 +12,13 @@ import setup_modules  # pylint: disable=unused-import
 import chromium_src.tools.metrics.histograms.update_histogram_enum as update_histogram_enum
 
 
-def PrecheckBadMessage(input_api,
-                       output_api,
-                       histogram_name,
-                       end_marker='^BAD_MESSAGE_MAX',
-                       strip_k_prefix=False):
+def PrecheckBadMessage(
+  input_api,
+  output_api,
+  histogram_name,
+  end_marker='^BAD_MESSAGE_MAX',
+  strip_k_prefix=False,
+):
   source_path = ''
 
   # This function is called once per bad_message.h-containing directory. Check
@@ -31,16 +33,18 @@ def PrecheckBadMessage(input_api,
   if not source_path:
     return []
 
-  START_MARKER='^enum (class )?BadMessageReason {'
+  START_MARKER = '^enum (class )?BadMessageReason {'
   presubmit_error = update_histogram_enum.CheckPresubmitErrors(
-      'tools/metrics/histograms/metadata/stability/enums.xml',
-      histogram_enum_name=histogram_name,
-      update_script_name='update_bad_message_reasons.py',
-      source_enum_path=source_path,
-      start_marker=START_MARKER,
-      end_marker=end_marker,
-      strip_k_prefix=strip_k_prefix)
+    'tools/metrics/histograms/metadata/stability/enums.xml',
+    histogram_enum_name=histogram_name,
+    update_script_name='update_bad_message_reasons.py',
+    source_enum_path=source_path,
+    start_marker=START_MARKER,
+    end_marker=end_marker,
+    strip_k_prefix=strip_k_prefix,
+  )
   if presubmit_error:
-    return [output_api.PresubmitPromptWarning(presubmit_error,
-                                              items=[source_path])]
+    return [
+      output_api.PresubmitPromptWarning(presubmit_error, items=[source_path])
+    ]
   return []

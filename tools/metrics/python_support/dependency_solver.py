@@ -20,10 +20,9 @@ import re
 from typing import Any, Dict, List, Optional, Set
 
 _IMPORT_PATTERNS = [
-    (re.compile(r'^import chromium_src\.tools\.metrics\.?(.*) as .*$'), False),
-    (re.compile(r'^import chromium_src\.tools\.metrics\.?([^ ]*)$'), False),
-    (re.compile(r'^from chromium_src\.tools\.metrics\.?(.*) import (.*)$'),
-     True)
+  (re.compile(r'^import chromium_src\.tools\.metrics\.?(.*) as .*$'), False),
+  (re.compile(r'^import chromium_src\.tools\.metrics\.?([^ ]*)$'), False),
+  (re.compile(r'^from chromium_src\.tools\.metrics\.?(.*) import (.*)$'), True),
 ]
 
 
@@ -51,13 +50,14 @@ def _resolve_fs_path(path: pathlib.Path) -> List[pathlib.Path]:
     return _get_py_files_recursive(path)
 
   raise FileNotFoundError(
-      f'Could not resolve import. Neither \'{file_candidate}\' exists, '
-      f'nor is \'{path}\' a directory.')
+    f"Could not resolve import. Neither '{file_candidate}' exists, "
+    f"nor is '{path}' a directory."
+  )
 
 
-def _process_import_match(root_path: pathlib.Path,
-                          path_group: str,
-                          symbol: Optional[str] = None) -> List[pathlib.Path]:
+def _process_import_match(
+  root_path: pathlib.Path, path_group: str, symbol: Optional[str] = None
+) -> List[pathlib.Path]:
   """Constructs the final Path from the parsed import statement.
 
   If a symbol is present, it tries to append it first as a file/sub-module.
@@ -75,8 +75,9 @@ def _process_import_match(root_path: pathlib.Path,
     return _resolve_fs_path(full_path)
 
 
-def _parse_line_dependencies(root_path: pathlib.Path, line: str,
-                             pattern: re.Pattern) -> List[pathlib.Path]:
+def _parse_line_dependencies(
+  root_path: pathlib.Path, line: str, pattern: re.Pattern
+) -> List[pathlib.Path]:
   """Returns dependencies for the line (if any) using pattern."""
   match = pattern.match(line)
   if not match:
@@ -85,14 +86,14 @@ def _parse_line_dependencies(root_path: pathlib.Path, line: str,
   path_suffix = match.group(1)
 
   return [
-      p.relative_to(root_path)
-      for p in _process_import_match(root_path, path_suffix, None)
+    p.relative_to(root_path)
+    for p in _process_import_match(root_path, path_suffix, None)
   ]
 
 
 def _parse_line_dependencies_with_symbol(
-    root_path: pathlib.Path, line: str,
-    pattern: re.Pattern) -> List[pathlib.Path]:
+  root_path: pathlib.Path, line: str, pattern: re.Pattern
+) -> List[pathlib.Path]:
   """Returns dependencies for the line (if any) using pattern."""
   match = pattern.match(line)
   if not match:
@@ -104,13 +105,15 @@ def _parse_line_dependencies_with_symbol(
   imports: List[pathlib.Path] = []
   for symbol in symbols:
     imports.extend(
-        p.relative_to(root_path)
-        for p in _process_import_match(root_path, path_suffix, symbol))
+      p.relative_to(root_path)
+      for p in _process_import_match(root_path, path_suffix, symbol)
+    )
   return imports
 
 
-def _dependencies_of(root_path: pathlib.Path,
-                     relative_path: pathlib.Path) -> List[pathlib.Path]:
+def _dependencies_of(
+  root_path: pathlib.Path, relative_path: pathlib.Path
+) -> List[pathlib.Path]:
   """Returns a list of dependencies (as Paths relative to root_path) for a file.
 
   The file is identified by relative_path within root_path.
@@ -128,7 +131,8 @@ def _dependencies_of(root_path: pathlib.Path,
     for pattern, has_symbol in _IMPORT_PATTERNS:
       if has_symbol:
         dependencies.extend(
-            _parse_line_dependencies_with_symbol(root_path, line, pattern))
+          _parse_line_dependencies_with_symbol(root_path, line, pattern)
+        )
       else:
         dependencies.extend(_parse_line_dependencies(root_path, line, pattern))
 
@@ -136,8 +140,7 @@ def _dependencies_of(root_path: pathlib.Path,
 
 
 def scan_directory_dependencies(
-    root_path: pathlib.Path,
-    report_relative_to: Optional[pathlib.Path] = None
+  root_path: pathlib.Path, report_relative_to: Optional[pathlib.Path] = None
 ) -> Dict[pathlib.Path, List[pathlib.Path]]:
   """Scans the directory for .py files and builds a dependency map.
 
@@ -146,21 +149,24 @@ def scan_directory_dependencies(
     values are lists of dependencies as relative file Paths.
   """
   root_path = pathlib.Path(root_path)
-  reporting_root = pathlib.Path(
-      report_relative_to) if report_relative_to else root_path
+  reporting_root = (
+    pathlib.Path(report_relative_to) if report_relative_to else root_path
+  )
   rel_files = [
-      p.relative_to(root_path) for p in _get_py_files_recursive(root_path)
+    p.relative_to(root_path) for p in _get_py_files_recursive(root_path)
   ]
   return {
-      (root_path / path).relative_to(reporting_root):
-      [(root_path / dep_path).relative_to(reporting_root)
-       for dep_path in _dependencies_of(root_path, path)]
-      for path in rel_files
+    (root_path / path).relative_to(reporting_root): [
+      (root_path / dep_path).relative_to(reporting_root)
+      for dep_path in _dependencies_of(root_path, path)
+    ]
+    for path in rel_files
   }
 
 
 def print_dependency_graph(
-    dependency_graph: Dict[pathlib.Path, List[pathlib.Path]]) -> None:
+  dependency_graph: Dict[pathlib.Path, List[pathlib.Path]],
+) -> None:
   """Prints a visual representation of direct dependencies for each file."""
   header_script = 'Script'
   print(f'{header_script:<50} | Dependencies')
@@ -179,9 +185,10 @@ def print_dependency_graph(
     print('-' * 80)
 
 
-def get_all_dependencies(dependency_graph: Dict[pathlib.Path,
-                                                List[pathlib.Path]],
-                         target_script: pathlib.Path) -> Set[pathlib.Path]:
+def get_all_dependencies(
+  dependency_graph: Dict[pathlib.Path, List[pathlib.Path]],
+  target_script: pathlib.Path,
+) -> Set[pathlib.Path]:
   """Returns a set of ALL dependencies (direct and indirect) for a script.
 
   Detects and handles circular dependencies safely.
@@ -191,7 +198,8 @@ def get_all_dependencies(dependency_graph: Dict[pathlib.Path,
 
   if target_script not in dependency_graph:
     raise ValueError(
-        f'Script \'{target_script}\' not found in the scanned graph.')
+      f"Script '{target_script}' not found in the scanned graph."
+    )
 
   all_dependencies: Set[pathlib.Path] = set()
   queue = [target_script]

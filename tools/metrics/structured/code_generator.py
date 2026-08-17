@@ -10,16 +10,25 @@ import setup_modules  # pylint: disable=unused-import
 from chromium_src.tools.metrics.structured.codegen_util import Util
 
 # Default target if not explicitly specified in the XML.
-DEFAULT_TARGET = "chromium"
+DEFAULT_TARGET = 'chromium'
 
 
 class EventTemplateBase(ABC):
   """EventTemplate is a base abstract class, which contains the common
-    abstract methods and common constructor to generate code for
-    structured events."""
+  abstract methods and common constructor to generate code for
+  structured events."""
 
-  def __init__(self, model, dirname, basename, file_template, project_template,
-               enum_template, event_template, metric_template):
+  def __init__(
+    self,
+    model,
+    dirname,
+    basename,
+    file_template,
+    project_template,
+    enum_template,
+    event_template,
+    metric_template,
+  ):
     self.model = model
     self.dirname = dirname
     self.basename = basename
@@ -104,8 +113,9 @@ class EventInfoBase(ABC):
     self.name = Util.sanitize_name(event.name)
     self.project_name = project_info.name
     self.platform = project_info.platform
-    self.name_hash = Util.event_name_hash(project_info.name, self.name,
-                                          project_info.platform)
+    self.name_hash = Util.event_name_hash(
+      project_info.name, self.name, project_info.platform
+    )
     self.is_event_sequence = project_info.is_event_sequence
     self.force_record = str(event.force_record).lower()
     self.metrics = event.metrics

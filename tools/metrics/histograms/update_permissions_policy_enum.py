@@ -15,7 +15,9 @@ import sys
 
 import setup_modules  # pylint: disable=unused-import
 
-from chromium_src.tools.metrics.histograms.update_histogram_enum import UpdateHistogramEnum
+from chromium_src.tools.metrics.histograms.update_histogram_enum import (
+  UpdateHistogramEnum,
+)
 
 if __name__ == '__main__':
   if len(sys.argv) > 1:
@@ -23,12 +25,16 @@ if __name__ == '__main__':
     sys.stderr.write(__doc__)
     sys.exit(1)
 
-  source_file = ('services/network/public/mojom/permissions_policy/' +
-                 'permissions_policy_feature.mojom')
-  UpdateHistogramEnum('tools/metrics/histograms/metadata/blink/enums.xml',
-                      histogram_enum_name='FeaturePolicyFeature',
-                      source_enum_path=source_file,
-                      start_marker='^enum PermissionsPolicyFeature {',
-                      end_marker='^};',
-                      strip_k_prefix=True,
-                      calling_script=os.path.basename(__file__))
+  source_file = (
+    'services/network/public/mojom/permissions_policy/'
+    + 'permissions_policy_feature.mojom'
+  )
+  UpdateHistogramEnum(
+    'tools/metrics/histograms/metadata/blink/enums.xml',
+    histogram_enum_name='FeaturePolicyFeature',
+    source_enum_path=source_file,
+    start_marker='^enum PermissionsPolicyFeature {',
+    end_marker='^};',
+    strip_k_prefix=True,
+    calling_script=os.path.basename(__file__),
+  )

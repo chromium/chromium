@@ -25,15 +25,17 @@ def _disable_luci_context():
     if saved_context is not None:
       os.environ['LUCI_CONTEXT'] = saved_context
 
+
 def main():
   tests_files_paths = list(tests_helpers.find_all_tests())
 
   filtered_tests_files_paths = [
-      os.path.relpath(p) for p in tests_files_paths
-      if p not in _EXCLUDE_TEST_FILES_PATHS
+    os.path.relpath(p)
+    for p in tests_files_paths
+    if p not in _EXCLUDE_TEST_FILES_PATHS
   ]
 
-  print(f"Running {len(filtered_tests_files_paths)} test files...")
+  print(f'Running {len(filtered_tests_files_paths)} test files...')
 
   # Hide LUCI_CONTEXT from typ so it doesn't try to upload granular test
   # results to ResultSink. typ's hierarchical test IDs violate the presubmit
@@ -41,9 +43,10 @@ def main():
   # TODO(crbug.com/488365101): Reconsider usage of typ as a runner.
   with _disable_luci_context():
     return typ.main(
-        tests=filtered_tests_files_paths,
-        top_level_dirs=tests_helpers.TEST_DIRECTORIES_RELATIVE_TO_SRC,
-        jobs=128)
+      tests=filtered_tests_files_paths,
+      top_level_dirs=tests_helpers.TEST_DIRECTORIES_RELATIVE_TO_SRC,
+      jobs=128,
+    )
 
 
 if __name__ == '__main__':

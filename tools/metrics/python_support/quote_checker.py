@@ -26,8 +26,8 @@ class _StringLiteralWithContext:
 
 
 def GetExactSource(
-    node: ast.AST,
-    file_lines: List[str],
+  node: ast.AST,
+  file_lines: List[str],
 ) -> _StringLiteralWithContext | None:
   """Retrieves the exact code source substring for the given AST node.
 
@@ -48,22 +48,28 @@ def GetExactSource(
   end_lineno = getattr(node, 'end_lineno', None)
   col_offset = getattr(node, 'col_offset', None)
   end_col_offset = getattr(node, 'end_col_offset', None)
-  if (lineno is None or end_lineno is None or col_offset is None
-      or end_col_offset is None):
+  if (
+    lineno is None
+    or end_lineno is None
+    or col_offset is None
+    or end_col_offset is None
+  ):
     return None
 
-  node_lines = file_lines[lineno - 1:end_lineno]
+  node_lines = file_lines[lineno - 1 : end_lineno]
   if not node_lines:
     raise ValueError(
-        f'Node line range {lineno}-{end_lineno} is out of bounds for file '
-        f'with {len(file_lines)} lines.')
+      f'Node line range {lineno}-{end_lineno} is out of bounds for file '
+      f'with {len(file_lines)} lines.'
+    )
 
   # Slice the end first to handle single-line node slicing correctly
   node_lines[-1] = node_lines[-1][:end_col_offset]
   node_lines[0] = node_lines[0][col_offset:]
   literal = '\n'.join(node_lines)
-  return _StringLiteralWithContext(literal=literal,
-                                   line_range=(lineno, end_lineno))
+  return _StringLiteralWithContext(
+    literal=literal, line_range=(lineno, end_lineno)
+  )
 
 
 def IsQuoteConsistent(raw_source: str) -> bool:
@@ -75,7 +81,7 @@ def IsQuoteConsistent(raw_source: str) -> bool:
   q_indices = [raw_source.find(q) for q in ("'", '"') if q in raw_source]
   if not q_indices:
     return True
-  string_no_prefix = raw_source[min(q_indices):]
+  string_no_prefix = raw_source[min(q_indices) :]
   return ("'" in string_no_prefix) or string_no_prefix.startswith('"""')
 
 
@@ -97,8 +103,8 @@ def _GetStringConstantsWithinJoinedStr(tree: ast.AST) -> Set[int]:
 
 
 def GetModifiedStrings(
-    filepath: pathlib.Path,
-    file_text: str,
+  filepath: pathlib.Path,
+  file_text: str,
 ) -> List[ModifiedString]:
   """Parses a Python file and extracts string literals and f-strings."""
   tree = ast.parse(file_text)
@@ -115,8 +121,9 @@ def GetModifiedStrings(
       continue
 
     # Skip non-string/non-bytes constants (like numbers, True/False/None)
-    if isinstance(node,
-                  ast.Constant) and not isinstance(node.value, (str, bytes)):
+    if isinstance(node, ast.Constant) and not isinstance(
+      node.value, (str, bytes)
+    ):
       continue
 
     literal_with_context = GetExactSource(node, file_lines)
@@ -124,20 +131,24 @@ def GetModifiedStrings(
       continue
 
     modified_strings.append(
-        ModifiedString(
-            raw_source=literal_with_context.literal,
-            file_path=filepath,
-            lines=set(
-                range(literal_with_context.line_range[0],
-                      literal_with_context.line_range[1] + 1)),
-        ))
+      ModifiedString(
+        raw_source=literal_with_context.literal,
+        file_path=filepath,
+        lines=set(
+          range(
+            literal_with_context.line_range[0],
+            literal_with_context.line_range[1] + 1,
+          )
+        ),
+      )
+    )
 
   return modified_strings
 
 
 def CheckQuoteConsistency(
-    source_string: ModifiedString,
-    changed_lines: Set[int],
+  source_string: ModifiedString,
+  changed_lines: Set[int],
 ) -> bool:
   """Returns True if the source_string is a valid string or wasn't modified."""
   string_modified = changed_lines.intersection(source_string.lines)

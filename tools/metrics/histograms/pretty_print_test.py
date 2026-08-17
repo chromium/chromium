@@ -97,11 +97,11 @@ PRETTY_XML = """
 
 
 class PrettyPrintHistogramsXmlTest(unittest.TestCase):
-
   def testPrettyPrinting(self):
     result = pretty_print.PrettyPrintHistograms(ORIGINAL_XML)
     self.maxDiff = None
     self.assertMultiLineEqual(PRETTY_XML, result.strip())
+
 
 if __name__ == '__main__':
   unittest.main()

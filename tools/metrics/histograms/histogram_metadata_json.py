@@ -41,6 +41,7 @@ class Description(TypedDict):
       except for "SUMMARY" (with value 1) are deprecated.
     content: The content of the description.
   """
+
   source: Literal['SUMMARY']
   content: str
 
@@ -54,6 +55,7 @@ class BucketMetadata(TypedDict, total=False):
     label: The label to describe this bucket.
     summary: An optional longer description of the bucket.
   """
+
   key: int
   label: str
   summary: str
@@ -67,6 +69,7 @@ class EnumDetails(TypedDict, total=False):
     name: Name for this enum.
     summary: Description of this enum.
   """
+
   buckets: list[BucketMetadata]
   name: str
   summary: str
@@ -78,12 +81,14 @@ class Owner(TypedDict):
   Attributes:
     email: The email of the owner.
   """
+
   email: str
 
 
 # Which direction of movement is better for the histogram values.
-ImprovementDirection = Literal['UNKNOWN', 'HIGHER_IS_BETTER', 'LOWER_IS_BETTER',
-                               'NEITHER_IS_BETTER']
+ImprovementDirection = Literal[
+  'UNKNOWN', 'HIGHER_IS_BETTER', 'LOWER_IS_BETTER', 'NEITHER_IS_BETTER'
+]
 
 
 class HistogramMetadataJSON(TypedDict, total=False):
@@ -102,6 +107,7 @@ class HistogramMetadataJSON(TypedDict, total=False):
     components: The components that this histogram applies to.
     improvement: Spec for the desired movement in values.
   """
+
   histogramName: str
   nameHash: int
   descriptions: list[Description]

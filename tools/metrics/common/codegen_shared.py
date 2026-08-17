@@ -33,8 +33,8 @@ def HashFieldTrialName(field_trial_name: str) -> int:
   # This must match the hash function in //base/metrics/metrics_hashes.cc.
   # <L: 4 bytes, little endian.
   return struct.unpack(
-      '<L',
-      hashlib.sha1(field_trial_name.encode('utf-8')).digest()[:4])[0]
+    '<L', hashlib.sha1(field_trial_name.encode('utf-8')).digest()[:4]
+  )[0]
 
 
 class FileInfo(object):

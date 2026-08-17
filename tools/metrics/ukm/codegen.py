@@ -11,6 +11,7 @@ import setup_modules  # pylint: disable=unused-import
 
 import chromium_src.tools.metrics.common.codegen_shared as codegen_shared
 
+
 class EventInfo(codegen_shared.ModelTypeInfo):
   pass
 
@@ -30,28 +31,26 @@ class Template:
 
   def _stamp_metric_code(self, file_info, event_info, metric):
     return self.metric_template.format(
-        file=file_info,
-        event=event_info,
-        metric=MetricInfo(metric))
+      file=file_info, event=event_info, metric=MetricInfo(metric)
+    )
 
   def _stamp_event_code(self, file_info, event):
     event_info = EventInfo(event)
-    metric_code = "".join(
-        self._stamp_metric_code(file_info, event_info, metric)
-        for metric in event[ukm_model._METRIC_TYPE.tag])
+    metric_code = ''.join(
+      self._stamp_metric_code(file_info, event_info, metric)
+      for metric in event[ukm_model._METRIC_TYPE.tag]
+    )
     return self.event_template.format(
-        file=file_info,
-        event=event_info,
-        metric_code=metric_code)
+      file=file_info, event=event_info, metric_code=metric_code
+    )
 
   def _stamp_file_code(self, relpath, data):
     file_info = codegen_shared.FileInfo(relpath, self.basename)
-    event_code = "".join(
-        self._stamp_event_code(file_info, event)
-        for event in data[ukm_model._EVENT_TYPE.tag])
-    return self.file_template.format(
-        file=file_info,
-        event_code=event_code)
+    event_code = ''.join(
+      self._stamp_event_code(file_info, event)
+      for event in data[ukm_model._EVENT_TYPE.tag]
+    )
+    return self.file_template.format(file=file_info, event_code=event_code)
 
   def write_file(self, outdir, relpath, data):
     """Generates code and writes it to a file.

@@ -31,45 +31,62 @@ class StudyInfo:
 class Template(object):
   """Template for producing code from dwa.xml."""
 
-  def __init__(self, basename: str, file_template: str, event_template: str,
-               metric_template: str, study_template: str) -> None:
+  def __init__(
+    self,
+    basename: str,
+    file_template: str,
+    event_template: str,
+    metric_template: str,
+    study_template: str,
+  ) -> None:
     self.basename = basename
     self.file_template = file_template
     self.event_template = event_template
     self.metric_template = metric_template
     self.study_template = study_template
 
-  def _StampMetricCode(self, file_info: codegen_shared.FileInfo,
-                       event_info: EventInfo, metric: dict) -> str:
-    return self.metric_template.format(file=file_info,
-                                       event=event_info,
-                                       metric=MetricInfo(metric))
+  def _StampMetricCode(
+    self,
+    file_info: codegen_shared.FileInfo,
+    event_info: EventInfo,
+    metric: dict,
+  ) -> str:
+    return self.metric_template.format(
+      file=file_info, event=event_info, metric=MetricInfo(metric)
+    )
 
-  def _StampStudyCode(self, file_info: codegen_shared.FileInfo,
-                      event_info: EventInfo, study: dict) -> str:
-    return self.study_template.format(file=file_info,
-                                      event=event_info,
-                                      study=StudyInfo(study))
+  def _StampStudyCode(
+    self, file_info: codegen_shared.FileInfo, event_info: EventInfo, study: dict
+  ) -> str:
+    return self.study_template.format(
+      file=file_info, event=event_info, study=StudyInfo(study)
+    )
 
-  def _StampEventCode(self, file_info: codegen_shared.FileInfo,
-                      event: dict) -> str:
+  def _StampEventCode(
+    self, file_info: codegen_shared.FileInfo, event: dict
+  ) -> str:
     event_info = EventInfo(event)
-    metric_code = "".join(
-        self._StampMetricCode(file_info, event_info, metric)
-        for metric in event[private_metrics_model_shared.METRIC_TYPE.tag])
-    study_code = "".join(
-        self._StampStudyCode(file_info, event_info, study)
-        for study in event[private_metrics_model_shared.STUDY_TYPE.tag])
-    return self.event_template.format(file=file_info,
-                                      event=event_info,
-                                      metric_code=metric_code,
-                                      study_code=study_code)
+    metric_code = ''.join(
+      self._StampMetricCode(file_info, event_info, metric)
+      for metric in event[private_metrics_model_shared.METRIC_TYPE.tag]
+    )
+    study_code = ''.join(
+      self._StampStudyCode(file_info, event_info, study)
+      for study in event[private_metrics_model_shared.STUDY_TYPE.tag]
+    )
+    return self.event_template.format(
+      file=file_info,
+      event=event_info,
+      metric_code=metric_code,
+      study_code=study_code,
+    )
 
   def _StampFileCode(self, relpath: str, data: dict) -> str:
     file_info = codegen_shared.FileInfo(relpath, self.basename)
-    event_code = "".join(
-        self._StampEventCode(file_info, event)
-        for event in data[private_metrics_model_shared.EVENT_TYPE.tag])
+    event_code = ''.join(
+      self._StampEventCode(file_info, event)
+      for event in data[private_metrics_model_shared.EVENT_TYPE.tag]
+    )
     return self.file_template.format(file=file_info, event_code=event_code)
 
   def WriteFile(self, outdir: str, relpath: str, data: dict) -> None:

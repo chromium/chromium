@@ -26,29 +26,34 @@ def _FindXmlFiles(filenames):
     for filename in file_list:
       if filename in filenames:
         # Compute the relative path of the histograms xml file.
-        file_path = os.path.relpath(os.path.join(dir_name, filename),
-                                    PATH_TO_METADATA_DIR)
+        file_path = os.path.relpath(
+          os.path.join(dir_name, filename), PATH_TO_METADATA_DIR
+        )
         files.append(
-            os.path.join('tools/metrics/histograms/metadata',
-                         file_path).replace(os.sep, '/').lower())
+          os.path.join('tools/metrics/histograms/metadata', file_path)
+          .replace(os.sep, '/')
+          .lower()
+        )
   return sorted(files)
 
 
 # The absolute path to the metadata folder.
 PATH_TO_METADATA_DIR = path_util.GetInputFile(
-    'tools/metrics/histograms/metadata')
-_ENUMS_XML_RELATIVE = ([
-    'tools/metrics/histograms/enums.xml',
-] + _FindXmlFiles(_ENUMS_XML_FILE_NAMES))
+  'tools/metrics/histograms/metadata'
+)
+_ENUMS_XML_RELATIVE = [
+  'tools/metrics/histograms/enums.xml',
+] + _FindXmlFiles(_ENUMS_XML_FILE_NAMES)
 _VARIANTS_XML_RELATIVE = [
-    'tools/metrics/histograms/variants.xml',
+  'tools/metrics/histograms/variants.xml',
 ]
 _HISTOGRAMS_XMLS_RELATIVE = _FindXmlFiles(_HISTOGRAM_XML_FILE_NAMES)
-ALL_XMLS_RELATIVE = (_ENUMS_XML_RELATIVE + _VARIANTS_XML_RELATIVE +
-                     _HISTOGRAMS_XMLS_RELATIVE)
+ALL_XMLS_RELATIVE = (
+  _ENUMS_XML_RELATIVE + _VARIANTS_XML_RELATIVE + _HISTOGRAMS_XMLS_RELATIVE
+)
 
 HISTOGRAMS_PREFIX_LIST = [
-    os.path.basename(os.path.dirname(f)) for f in _HISTOGRAMS_XMLS_RELATIVE
+  os.path.basename(os.path.dirname(f)) for f in _HISTOGRAMS_XMLS_RELATIVE
 ]
 
 ENUMS_XMLS = [path_util.GetInputFile(f) for f in _ENUMS_XML_RELATIVE]
@@ -58,24 +63,32 @@ HISTOGRAMS_XMLS = [path_util.GetInputFile(f) for f in _HISTOGRAMS_XMLS_RELATIVE]
 ALL_XMLS = [path_util.GetInputFile(f) for f in ALL_XMLS_RELATIVE]
 
 ALL_TEST_XMLS_RELATIVE = [
-    'tools/metrics/histograms/test_data/enums.xml',
-    'tools/metrics/histograms/test_data/enums2.xml',
-    'tools/metrics/histograms/test_data/histograms.xml',
-    'tools/metrics/histograms/test_data/histogram_suffixes_list.xml',
-    'tools/metrics/histograms/test_data/ukm.xml',
+  'tools/metrics/histograms/test_data/enums.xml',
+  'tools/metrics/histograms/test_data/enums2.xml',
+  'tools/metrics/histograms/test_data/histograms.xml',
+  'tools/metrics/histograms/test_data/histogram_suffixes_list.xml',
+  'tools/metrics/histograms/test_data/ukm.xml',
 ]
 ALL_TEST_XMLS = [path_util.GetInputFile(f) for f in ALL_TEST_XMLS_RELATIVE]
-(TEST_ENUMS_XML, TEST_ENUMS2_XML, TEST_HISTOGRAMS_XML, TEST_SUFFIXES_XML,
- TEST_UKM_XML) = ALL_TEST_XMLS
+(
+  TEST_ENUMS_XML,
+  TEST_ENUMS2_XML,
+  TEST_HISTOGRAMS_XML,
+  TEST_SUFFIXES_XML,
+  TEST_UKM_XML,
+) = ALL_TEST_XMLS
 
 TEST_XML_WITH_COMPONENTS_RELATIVE = (
-    'tools/metrics/histograms/test_data/components/histograms.xml')
+  'tools/metrics/histograms/test_data/components/histograms.xml'
+)
 TEST_XML_WITH_COMPONENTS = path_util.GetInputFile(
-    TEST_XML_WITH_COMPONENTS_RELATIVE)
+  TEST_XML_WITH_COMPONENTS_RELATIVE
+)
 
 # The path to the `histograms_xml_files.gni` file.
 _HISTOGRAMS_XML_FILES_GNI = path_util.GetInputFile(
-    'tools/metrics/histograms/histograms_xml_files.gni')
+  'tools/metrics/histograms/histograms_xml_files.gni'
+)
 
 _GNI_LINE_PREFIX = '  "//'
 _GNI_LINE_SUFFIX = '",\n'
@@ -106,6 +119,7 @@ def ValidateHistogramsGniFile():
 
 def main():
   UpdateHistogramsXmlGniFile()
+
 
 if __name__ == '__main__':
   main()

@@ -13,7 +13,6 @@ import chromium_src.tools.metrics.python_support.dependency_solver as dependency
 
 
 class TestDependencyResolver(unittest.TestCase):
-
   def setUp(self):
     # Create a temporary directory for each test to ensure isolation
     self.test_dir = tempfile.mkdtemp(prefix='dependency_solver_test_')
@@ -35,8 +34,9 @@ class TestDependencyResolver(unittest.TestCase):
   def test_direct_import_module(self):
     """Test: import chromium_src.tools.metrics.foo -> foo.py"""
     # Setup: Main script and the dependency
-    self._create_file('main.py',
-                      'import TEST_CASE chromium_src.tools.metrics.utils')
+    self._create_file(
+      'main.py', 'import TEST_CASE chromium_src.tools.metrics.utils'
+    )
     self._create_file('utils.py')
 
     deps = dependency_solver.scan_directory_dependencies(self.root_path)
@@ -47,8 +47,9 @@ class TestDependencyResolver(unittest.TestCase):
 
   def test_import_with_alias(self):
     """Test: import chromium_src.tools.metrics.foo as bar -> foo.py"""
-    self._create_file('main.py',
-                      'import TEST_CASE chromium_src.tools.metrics.data as d')
+    self._create_file(
+      'main.py', 'import TEST_CASE chromium_src.tools.metrics.data as d'
+    )
     self._create_file('data.py')
 
     deps = dependency_solver.scan_directory_dependencies(self.root_path)
@@ -58,8 +59,8 @@ class TestDependencyResolver(unittest.TestCase):
   def test_from_import_module(self):
     """Test: from chromium_src.tools.metrics.pkg import mod -> pkg/mod.py"""
     self._create_file(
-        'main.py',
-        'from chromium_src.tools.metrics.core import TEST_CASE logic')
+      'main.py', 'from chromium_src.tools.metrics.core import TEST_CASE logic'
+    )
     self._create_file('core/logic.py')
 
     deps = dependency_solver.scan_directory_dependencies(self.root_path)
@@ -71,9 +72,8 @@ class TestDependencyResolver(unittest.TestCase):
   def test_from_import_multiple_symbols(self):
     """Test: from ... import A, B -> checks A.py and B.py"""
     self._create_file(
-        'main.py',
-        'from chromium_src.tools.metrics.widgets import' \
-        ' TEST_CASE button, slider'
+      'main.py',
+      'from chromium_src.tools.metrics.widgets import TEST_CASE button, slider',
     )
     self._create_file('widgets/button.py')
     self._create_file('widgets/slider.py')
@@ -81,19 +81,19 @@ class TestDependencyResolver(unittest.TestCase):
     deps = dependency_solver.scan_directory_dependencies(self.root_path)
 
     expected = [
-        pathlib.Path('widgets') / 'button.py',
-        pathlib.Path('widgets') / 'slider.py'
+      pathlib.Path('widgets') / 'button.py',
+      pathlib.Path('widgets') / 'slider.py',
     ]
     self.assertCountEqual(deps[pathlib.Path('main.py')], expected)
 
   def test_symbol_fallback_to_file(self):
     """
-        Test: from ...pkg import MyClass
-        If pkg/MyClass.py does not exist, it should depend on pkg.py.
-        """
+    Test: from ...pkg import MyClass
+    If pkg/MyClass.py does not exist, it should depend on pkg.py.
+    """
     self._create_file(
-        'main.py',
-        'from chromium_src.tools.metrics.lib import TEST_CASE MyClass')
+      'main.py', 'from chromium_src.tools.metrics.lib import TEST_CASE MyClass'
+    )
     # 'lib/MyClass.py' does NOT exist, but 'lib.py' does
     self._create_file('lib.py')
 
@@ -103,20 +103,23 @@ class TestDependencyResolver(unittest.TestCase):
 
   def test_import_directory_recursive(self):
     """
-        Test: from ... import subdir
-        If 'subdir' is a folder, it should include all .py files inside it.
-        """
-    self._create_file('main.py',
-                      'from chromium_src.tools.metrics import TEST_CASE sub')
+    Test: from ... import subdir
+    If 'subdir' is a folder, it should include all .py files inside it.
+    """
+    self._create_file(
+      'main.py', 'from chromium_src.tools.metrics import TEST_CASE sub'
+    )
     self._create_file('sub/one.py')
     self._create_file('sub/nested/two.py')
 
     deps = dependency_solver.scan_directory_dependencies(self.root_path)
 
-    expected = set([
+    expected = set(
+      [
         pathlib.Path('sub') / 'nested' / 'two.py',
-        pathlib.Path('sub') / 'one.py'
-    ])
+        pathlib.Path('sub') / 'one.py',
+      ]
+    )
     self.assertEqual(set(deps[pathlib.Path('main.py')]), expected)
 
   def test_ignore_unrelated_imports(self):
@@ -138,22 +141,25 @@ import TEST_CASE chromium_src.tools.metrics.target
   def test_get_all_dependencies_transitive(self):
     """Test resolving the full dependency chain (A->B->C)."""
     # Graph: main -> middle -> leaf
-    self._create_file('main.py',
-                      'import TEST_CASE chromium_src.tools.metrics.middle')
-    self._create_file('middle.py',
-                      'import TEST_CASE chromium_src.tools.metrics.leaf')
+    self._create_file(
+      'main.py', 'import TEST_CASE chromium_src.tools.metrics.middle'
+    )
+    self._create_file(
+      'middle.py', 'import TEST_CASE chromium_src.tools.metrics.leaf'
+    )
     self._create_file('leaf.py', '')
 
     # Build graph
     graph = dependency_solver.scan_directory_dependencies(self.root_path)
 
     # Resolve for main
-    all_deps = dependency_solver.get_all_dependencies(graph,
-                                                      pathlib.Path('main.py'))
+    all_deps = dependency_solver.get_all_dependencies(
+      graph, pathlib.Path('main.py')
+    )
 
-    self.assertCountEqual(all_deps,
-                          [pathlib.Path('middle.py'),
-                           pathlib.Path('leaf.py')])
+    self.assertCountEqual(
+      all_deps, [pathlib.Path('middle.py'), pathlib.Path('leaf.py')]
+    )
 
   def test_circular_dependency_safety(self):
     """Test that circular dependencies don't cause infinite loops."""
@@ -169,8 +175,9 @@ import TEST_CASE chromium_src.tools.metrics.target
 
   def test_missing_file_error(self):
     """Test that importing a non-existent file raises FileNotFoundError."""
-    self._create_file('main.py',
-                      'import TEST_CASE chromium_src.tools.metrics.ghost')
+    self._create_file(
+      'main.py', 'import TEST_CASE chromium_src.tools.metrics.ghost'
+    )
 
     # The logic inside _dependencies_of calls _resolve_fs_path
     with self.assertRaises(FileNotFoundError):

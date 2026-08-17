@@ -14,10 +14,10 @@ _TOOLS_METRICS_RELATIVE_PATH = 'tools/metrics'
 
 # List of subdirectories to ignore completely when generating the file.
 _EXCLUDE_LIST: List[str] = [
-    'histograms/metadata',
-    'histograms/test_data',
-    '.mypy_cache',
-    'private_metrics/tests',
+  'histograms/metadata',
+  'histograms/test_data',
+  '.mypy_cache',
+  'private_metrics/tests',
 ]
 
 _TARGET_FILE_NAME = 'setup_modules.py'
@@ -79,8 +79,8 @@ def _is_excluded(path: str) -> bool:
 def _generate_helpers(tools_metrics_path_str: str):
   tools_metrics_path = Path(tools_metrics_path_str).resolve()
   chromium_src_path = Path(
-      tools_metrics_path_str.removesuffix(
-          _TOOLS_METRICS_RELATIVE_PATH)).resolve()
+    tools_metrics_path_str.removesuffix(_TOOLS_METRICS_RELATIVE_PATH)
+  ).resolve()
 
   for dirpath, _, _ in os.walk(tools_metrics_path):
     current_dir = Path(dirpath).resolve()
@@ -91,16 +91,20 @@ def _generate_helpers(tools_metrics_path_str: str):
       continue
 
     chromium_src_relative_path = Path(
-        os.path.relpath(chromium_src_path, current_dir))
+      os.path.relpath(chromium_src_path, current_dir)
+    )
     file_content = _TARGET_FILE_TEMPLATE.format(
-        chromium_src_relative_path=str(chromium_src_relative_path))
+      chromium_src_relative_path=str(chromium_src_relative_path)
+    )
     file_path = current_dir.joinpath(_TARGET_FILE_NAME)
 
-    with open(file_path, "w", encoding="utf-8") as f:
+    with open(file_path, 'w', encoding='utf-8') as f:
       f.write(file_content)
-    print(f"Generated: {file_path}"
-          f" (chromium relative path: {str(chromium_src_relative_path)})")
+    print(
+      f'Generated: {file_path}'
+      f' (chromium relative path: {str(chromium_src_relative_path)})'
+    )
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
   _generate_helpers(tools_metrics_path_str=str(Path(__file__).parent.parent))

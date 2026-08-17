@@ -20,7 +20,8 @@ import chromium_src.tools.metrics.private_metrics.dwa_builders_template as dwa_b
 import chromium_src.tools.metrics.private_metrics.dwa_decode_template as dwa_decode_template
 
 parser = argparse.ArgumentParser(
-    description='Generate Private Metrics builders')
+  description='Generate Private Metrics builders'
+)
 
 parser.add_argument('--input-dwa', help='Path to dwa.xml')
 parser.add_argument('--output', help='Path to generated files.')
@@ -39,7 +40,6 @@ def main():
     dwa_decode_template.WriteFiles(args.output, relpath_dwa, data_dwa)
 
   return 0
-
 
 
 def read_dwa(path):

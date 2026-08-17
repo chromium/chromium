@@ -14,7 +14,17 @@ those files, or convert content back into a canonicalized version of the file.
 
 import abc
 import re
-from typing import cast, Callable, Dict, Iterable, List, Optional, Set, Tuple, Union
+from typing import (
+  cast,
+  Callable,
+  Dict,
+  Iterable,
+  List,
+  Optional,
+  Set,
+  Tuple,
+  Union,
+)
 from xml.dom import minidom
 import xml.etree.ElementTree as ET
 
@@ -28,9 +38,9 @@ KeyFunc = Callable[[ET.Element], pretty_print_xml.Comparable]
 
 # Non-basic type keys for storing comments and text attributes, so they don't
 # conflict with regular keys, and can be skipped in JSON serialization.
-PRECEDING_COMMENT_KEY = ('preceding_comment')
-TRAILING_COMMENT_KEY = ('trailing_comment')
-TEXT_KEY = ('text')
+PRECEDING_COMMENT_KEY = 'preceding_comment'
+TRAILING_COMMENT_KEY = 'trailing_comment'
+TEXT_KEY = 'text'
 
 
 def IsTrailingComment(node: minidom.Comment) -> bool:
@@ -46,13 +56,16 @@ def IsTrailingComment(node: minidom.Comment) -> bool:
   only_text_next_sibling = True
   current_node: Optional[minidom.Node] = node
   while current_node:
-    if current_node.nodeType not in (minidom.Element.TEXT_NODE,
-                                     minidom.Element.COMMENT_NODE):
+    if current_node.nodeType not in (
+      minidom.Element.TEXT_NODE,
+      minidom.Element.COMMENT_NODE,
+    ):
       only_text_next_sibling = False
     current_node = current_node.nextSibling
 
   return only_text_next_sibling or node.data.strip().startswith(
-      'LINT.ThenChange')
+    'LINT.ThenChange'
+  )
 
 
 def GetPrecedingCommentsForNode(node: minidom.Element) -> List[str]:
@@ -99,9 +112,11 @@ def GetTrailingCommentsForNode(node: minidom.Element) -> List[str]:
   return comments
 
 
-def PutCommentsInNode(doc: minidom.Document, node: Union[minidom.Element,
-                                                         minidom.Document],
-                      comments: List[str]) -> None:
+def PutCommentsInNode(
+  doc: minidom.Document,
+  node: Union[minidom.Element, minidom.Document],
+  comments: List[str],
+) -> None:
   """Appends comments to the DOM node.
 
   Args:
@@ -123,13 +138,15 @@ def GetChildrenByTag(node: minidom.Element, tag: str) -> List[minidom.Element]:
     A list of DOM nodes.
   """
   return [
-      child for child in node.childNodes
-      if isinstance(child, minidom.Element) and child.tagName == tag
+    child
+    for child in node.childNodes
+    if isinstance(child, minidom.Element) and child.tagName == tag
   ]
 
 
-def GetUnexpectedChildren(node: minidom.Element,
-                          expected_tags: Iterable[str]) -> Set[str]:
+def GetUnexpectedChildren(
+  node: minidom.Element, expected_tags: Iterable[str]
+) -> Set[str]:
   """Gets a set of unexpected children from |node|."""
   existing_tags = set(child.nodeName for child in node.childNodes)
   # Ignore text and comment nodes.
@@ -149,14 +166,17 @@ class NodeType:
        the children that should be sorted, and the functions to get sort keys
        from xml nodes.
   """
+
   __metaclass__ = abc.ABCMeta
 
-  def __init__(self,
-               tag: str,
-               indent: bool = True,
-               extra_newlines: Optional[Tuple[int, int, int]] = None,
-               single_line: bool = False,
-               alphabetization: Optional[List[Tuple[str, KeyFunc]]] = None):
+  def __init__(
+    self,
+    tag: str,
+    indent: bool = True,
+    extra_newlines: Optional[Tuple[int, int, int]] = None,
+    single_line: bool = False,
+    alphabetization: Optional[List[Tuple[str, KeyFunc]]] = None,
+  ):
     self.tag = tag
     self.indent = indent
     self.extra_newlines = extra_newlines
@@ -175,8 +195,9 @@ class NodeType:
     """
 
   @abc.abstractmethod
-  def Marshall(self, doc: minidom.Document,
-               obj: XMLObjectType) -> minidom.Element:
+  def Marshall(
+    self, doc: minidom.Document, obj: XMLObjectType
+  ) -> minidom.Element:
     """Converts an object into an XML node of this type.
 
     Args:
@@ -213,9 +234,12 @@ class NodeType:
     # The base NodeType does not store comments
     return []
 
-  def MarshallIntoNode(self, doc: minidom.Document,
-                       node: Union[minidom.Element, minidom.Document],
-                       obj: XMLObjectType) -> None:
+  def MarshallIntoNode(
+    self,
+    doc: minidom.Document,
+    node: Union[minidom.Element, minidom.Document],
+    obj: XMLObjectType,
+  ) -> None:
     """Marshalls the object and appends it to a node, with comments.
 
     Args:
@@ -287,13 +311,16 @@ class TextNodeType(NodeType):
     # TextNode shouldn't have any child.
     unexpected = GetUnexpectedChildren(node, set())
     if unexpected:
-      raise ValueError('Unexpected children: %s in <%s> node' %
-                       (','.join(unexpected), self.tag))
+      raise ValueError(
+        'Unexpected children: %s in <%s> node'
+        % (','.join(unexpected), self.tag)
+      )
 
     return obj
 
-  def Marshall(self, doc: minidom.Document,
-               obj: XMLObjectType) -> minidom.Element:
+  def Marshall(
+    self, doc: minidom.Document, obj: XMLObjectType
+  ) -> minidom.Element:
     """Converts an object into an XML node of this type.
 
     Args:
@@ -365,14 +392,15 @@ class ObjectNodeType(NodeType):
     ValueError: Attributes contains duplicate definitions.
   """
 
-  def __init__(self,
-               tag: str,
-               attributes: Optional[List[Tuple[str, type,
-                                               Optional[str]]]] = None,
-               required_attributes: Optional[List[str]] = None,
-               children: Optional[List[ChildType]] = None,
-               keep_inner_text: bool = False,
-               **kwargs):
+  def __init__(
+    self,
+    tag: str,
+    attributes: Optional[List[Tuple[str, type, Optional[str]]]] = None,
+    required_attributes: Optional[List[str]] = None,
+    children: Optional[List[ChildType]] = None,
+    keep_inner_text: bool = False,
+    **kwargs,
+  ):
     NodeType.__init__(self, tag, **kwargs)
     self.attributes = attributes or []
     self.required_attributes = required_attributes or []
@@ -407,8 +435,9 @@ class ObjectNodeType(NodeType):
       if attr_re is not None:
         attr_val = obj.get(attr, '')
         if not isinstance(attr_val, str) or not re.match(attr_re, attr_val):
-          raise ValueError('%s "%s" does not match regex "%s"' %
-                           (attr, attr_val, attr_re))
+          raise ValueError(
+            '%s "%s" does not match regex "%s"' % (attr, attr_val, attr_re)
+          )
 
     if self.keep_inner_text:
       # Iterate through all the children and get their nodeValue, to account for
@@ -416,8 +445,9 @@ class ObjectNodeType(NodeType):
       text_value = ''
       child_node: Optional[minidom.Node] = node.firstChild
       while child_node:
-        text_value += (child_node.nodeValue.strip()
-                       if child_node.nodeValue else '')
+        text_value += (
+          child_node.nodeValue.strip() if child_node.nodeValue else ''
+        )
         child_node = child_node.nextSibling
 
       if text_value:
@@ -432,15 +462,19 @@ class ObjectNodeType(NodeType):
         obj[child.attr] = child.node_type.Unmarshall(nodes[0])
 
     unexpected = GetUnexpectedChildren(
-        node, set([child.node_type.tag for child in self.children]))
+      node, set([child.node_type.tag for child in self.children])
+    )
     if unexpected:
-      raise ValueError('Unexpected children: %s in <%s> node' %
-                       (','.join(unexpected), self.tag))
+      raise ValueError(
+        'Unexpected children: %s in <%s> node'
+        % (','.join(unexpected), self.tag)
+      )
 
     return obj
 
-  def Marshall(self, doc: minidom.Document,
-               obj: XMLObjectType) -> minidom.Element:
+  def Marshall(
+    self, doc: minidom.Document, obj: XMLObjectType
+  ) -> minidom.Element:
     """Converts an object into an XML node of this type.
 
     Args:
@@ -542,8 +576,8 @@ class DocumentType:
     return self.root_type.Unmarshall(root)
 
   def Parse(
-      self, input_file: Union[minidom.Document, ET.Element,
-                              str]) -> XMLObjectType:
+    self, input_file: Union[minidom.Document, ET.Element, str]
+  ) -> XMLObjectType:
     """Parses the input file, which can be minidom, ET or xml string.
 
     The flexibility of input is to accommodate the currently different
@@ -575,22 +609,17 @@ class DocumentType:
     """
     types = self.root_type.GetNodeTypes()
     return pretty_print_xml.XmlStyle(
-        attribute_order={t: types[t].GetAttributes()
-                         for t in types},
-        required_attributes={
-            t: types[t].GetRequiredAttributes()
-            for t in types
-        },
-        tags_that_have_extra_newline={
-            t: types[t].extra_newlines
-            for t in types if types[t].extra_newlines
-        },
-        tags_that_dont_indent=[t for t in types if not types[t].indent],
-        tags_that_allow_single_line=[t for t in types if types[t].single_line],
-        tags_alphabetization_rules={
-            t: types[t].alphabetization
-            for t in types if types[t].alphabetization
-        })
+      attribute_order={t: types[t].GetAttributes() for t in types},
+      required_attributes={t: types[t].GetRequiredAttributes() for t in types},
+      tags_that_have_extra_newline={
+        t: types[t].extra_newlines for t in types if types[t].extra_newlines
+      },
+      tags_that_dont_indent=[t for t in types if not types[t].indent],
+      tags_that_allow_single_line=[t for t in types if types[t].single_line],
+      tags_alphabetization_rules={
+        t: types[t].alphabetization for t in types if types[t].alphabetization
+      },
+    )
 
   def _ToXML(self, obj: XMLObjectType) -> minidom.Document:
     """Converts an object into an XML document.

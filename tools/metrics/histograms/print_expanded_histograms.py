@@ -46,19 +46,25 @@ def main(argv=sys.argv[1:]):
   """Prints expanded histograms."""
   parser = argparse.ArgumentParser(description='Print expanded histograms.')
   parser.add_argument(
-      '--pattern',
-      type=str,
-      default='.*',
-      help='The histogram name regex for histograms to be printed.')
-  parser.add_argument('--print-names-only',
-                      action='store_true',
-                      help='If set, only prints the histogram names.')
+    '--pattern',
+    type=str,
+    default='.*',
+    help='The histogram name regex for histograms to be printed.',
+  )
   parser.add_argument(
-      '--histograms-xml-file',
-      type=str,
-      default=None,
-      help=('Path to histograms.xml file. If omitted, all Chromium '
-            'histograms.xml files are processed.'))
+    '--print-names-only',
+    action='store_true',
+    help='If set, only prints the histogram names.',
+  )
+  parser.add_argument(
+    '--histograms-xml-file',
+    type=str,
+    default=None,
+    help=(
+      'Path to histograms.xml file. If omitted, all Chromium '
+      'histograms.xml files are processed.'
+    ),
+  )
   args = parser.parse_args(argv)
 
   utf8_encoding.setup_stdout_and_stderr_utf8_encoding()
@@ -82,8 +88,9 @@ def main(argv=sys.argv[1:]):
   # Extract all histograms into a dict. This is the expensive part that
   # handles expansion of suffixes and variants.
   doc = merge_xml.MergeFiles(
-      filenames=files,
-      expand_owners_and_extract_components=expand_owners_and_extract_components)
+    filenames=files,
+    expand_owners_and_extract_components=expand_owners_and_extract_components,
+  )
   histograms, had_errors = extract_histograms.ExtractHistogramsFromDom(doc)
   if had_errors:
     raise ValueError('Error parsing inputs.')

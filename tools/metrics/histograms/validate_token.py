@@ -19,15 +19,18 @@ import chromium_src.tools.metrics.common.xml_utils as xml_utils
 def _LoadGlobalVariants() -> list[str]:
   """Loads the global variants from `variants.xml`, if it exists."""
   global_variants_list: list[str] = []
-  global_variants_path: str = str(METRICS_TOOLS_PATH / 'histograms' /
-                                  'variants.xml')
+  global_variants_path: str = str(
+    METRICS_TOOLS_PATH / 'histograms' / 'variants.xml'
+  )
   if os.path.exists(global_variants_path):
     global_tree: xml.dom.minidom.Document = xml.dom.minidom.parse(
-        global_variants_path)
+      global_variants_path
+    )
     for node in xml_utils.IterElementsWithTag(global_tree, 'variants', 3):
       global_variants_name: str = node.getAttribute('name')
       global_variants_list.append(global_variants_name)
   return global_variants_list
+
 
 def ValidateTokenInFile(xml_path: str) -> bool:
   """Validates that all <token> uses <variants> defined in the file.
@@ -63,9 +66,11 @@ def ValidateTokenInFile(xml_path: str) -> bool:
     if erroneous_tokens:
       histogram_name: str = histogram.getAttribute('name')
       logging.error(
-          'Token(s) %s in histogram %s are using variants not defined in the '
-          'file, please define them before use.', ', '.join(erroneous_tokens),
-          histogram_name)
+        'Token(s) %s in histogram %s are using variants not defined in the '
+        'file, please define them before use.',
+        ', '.join(erroneous_tokens),
+        histogram_name,
+      )
       has_token_error = True
 
   return has_token_error

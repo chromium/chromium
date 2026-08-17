@@ -15,9 +15,9 @@ import chromium_src.tools.metrics.private_metrics.private_metrics_validations as
 
 def main():
   parser = argparse.ArgumentParser()
-  parser.add_argument('filepath', help="relative path to XML file")
+  parser.add_argument('filepath', help='relative path to XML file')
   # The following optional flags are used by common/presubmit_util.py
-  parser.add_argument('--presubmit', action="store_true")
+  parser.add_argument('--presubmit', action='store_true')
 
   args = parser.parse_args()
 
@@ -36,14 +36,16 @@ def main():
     validator = validation(config)
 
     owner_check_success, owner_check_errors = (
-        validator.check_events_have_owners())
+      validator.check_events_have_owners()
+    )
     metric_check_success, metric_check_errors = (
-        validator.check_metric_type_is_specified())
+      validator.check_metric_type_is_specified()
+    )
 
     results = {}
 
     if not owner_check_success or not metric_check_success:
-      results['Errors'] = (owner_check_errors + metric_check_errors)
+      results['Errors'] = owner_check_errors + metric_check_errors
 
     if 'Errors' in results:
       return results

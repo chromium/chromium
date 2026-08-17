@@ -19,7 +19,8 @@ import chromium_src.tools.metrics.histograms.update_histogram_enum as update_his
 
 
 USE_COUNTER_MOJOM_PATH = (
-    'third_party/blink/public/mojom/use_counter/metrics/css_property_id.mojom')
+  'third_party/blink/public/mojom/use_counter/metrics/css_property_id.mojom'
+)
 
 
 def EnumToCssProperty(enum_name):
@@ -40,9 +41,12 @@ def ReadCssProperties(filename):
     content = f.readlines()
 
   # Looking for a single line like "kFontWeight = 10,"
-  ENUM_REGEX = re.compile(r"""k(\w+)\s*=       # capture the enum name
+  ENUM_REGEX = re.compile(
+    r"""k(\w+)\s*=       # capture the enum name
                               \s*(\d+),?       # capture the id
-                              """, re.VERBOSE)
+                              """,
+    re.VERBOSE,
+  )
 
   properties = {}
   for line in content:
@@ -63,6 +67,9 @@ def ReadCssProperties(filename):
 
 if __name__ == '__main__':
   update_histogram_enum.UpdateHistogramFromDict(
-      'tools/metrics/histograms/metadata/blink/enums.xml',
-      'MappedCSSProperties', ReadCssProperties(USE_COUNTER_MOJOM_PATH),
-      USE_COUNTER_MOJOM_PATH, os.path.basename(__file__))
+    'tools/metrics/histograms/metadata/blink/enums.xml',
+    'MappedCSSProperties',
+    ReadCssProperties(USE_COUNTER_MOJOM_PATH),
+    USE_COUNTER_MOJOM_PATH,
+    os.path.basename(__file__),
+  )
