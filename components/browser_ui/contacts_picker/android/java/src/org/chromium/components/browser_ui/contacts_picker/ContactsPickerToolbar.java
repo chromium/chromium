@@ -17,7 +17,7 @@ import org.chromium.ui.widget.ButtonCompat;
 
 import java.util.List;
 
-/** Handles toolbar functionality for the {@ContactsPickerDialog}. */
+/** Handles toolbar functionality for the {@link ContactsPickerDialog}. */
 @NullMarked
 public class ContactsPickerToolbar extends SelectableListToolbar<ContactDetails> {
     /** A delegate that handles dialog actions. */
@@ -37,7 +37,7 @@ public class ContactsPickerToolbar extends SelectableListToolbar<ContactDetails>
         super(context, attrs);
     }
 
-    /** Set the {@ContactToolbarDelegate} for this toolbar. */
+    /** Set the {@link ContactToolbarDelegate} for this toolbar. */
     public void setDelegate(ContactsToolbarDelegate delegate) {
         mDelegate = delegate;
     }

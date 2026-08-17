@@ -33,7 +33,7 @@ public class PhotoPickerToolbar extends SelectableListToolbar<PickerBitmap> {
         super(context, attrs);
     }
 
-    /** Set the {@PhotoPickerToolbarDelegate} for this toolbar. */
+    /** Set the {@link PhotoPickerToolbarDelegate} for this toolbar. */
     public void setDelegate(PhotoPickerToolbarDelegate delegate) {
         mDelegate = delegate;
     }

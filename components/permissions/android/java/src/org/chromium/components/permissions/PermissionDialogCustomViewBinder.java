@@ -15,7 +15,7 @@ import org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawab
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/** The {@View} binder class for the PermissionDialogCustomView MVC. */
+/** The {@link View} binder class for the PermissionDialogCustomView MVC. */
 @NullMarked
 class PermissionDialogCustomViewBinder {
     public static void bind(PropertyModel model, View customView, PropertyKey propertyKey) {

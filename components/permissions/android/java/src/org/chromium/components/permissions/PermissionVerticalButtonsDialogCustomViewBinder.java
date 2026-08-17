@@ -24,7 +24,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import java.util.ArrayList;
 import java.util.List;
 
-/** The {@View} binder class for the PermissionDialogCustomView MVC. */
+/** The {@link View} binder class for the PermissionDialogCustomView MVC. */
 @NullMarked
 class PermissionVerticalButtonsDialogCustomViewBinder {
     public static void bind(PropertyModel model, View customView, PropertyKey propertyKey) {

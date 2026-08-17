@@ -279,8 +279,8 @@ public class DataSharingSDKDelegateBridge {
     }
 
     /**
-     * Set a {@DataSharingSDKDelegate} to use for testing. All subsequent calls will return the test
-     * object rather than the real object.
+     * Set a {@link DataSharingSDKDelegate} to use for testing. All subsequent calls will return the
+     * test object rather than the real object.
      */
     void overrideDelegateForTesting(DataSharingSDKDelegate delegate) {
         DataSharingSDKDelegate old = mSDKDelegateImpl;
