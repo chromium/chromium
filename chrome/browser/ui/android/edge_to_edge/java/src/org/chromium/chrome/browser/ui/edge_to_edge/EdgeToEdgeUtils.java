@@ -134,6 +134,11 @@ public class EdgeToEdgeUtils {
         return !DeviceInfo.isAutomotive() && !hasTappableNavigationBar(activity.getWindow());
     }
 
+    /** Whether the edge-to-edge feature is enabled on automotive. */
+    public static boolean isEdgeToEdgeAutomotiveEnabled() {
+        return ChromeFeatureList.sEdgeToEdgeAutomotive.isEnabled();
+    }
+
     /**
      * This is a sensitive check for whether all insets indicate or imply that the device is in
      * gesture navigation mode, and not tappable (3-button) navigation mode.
@@ -189,7 +194,7 @@ public class EdgeToEdgeUtils {
             return false;
         }
 
-        if (DeviceInfo.isAutomotive()) {
+        if (DeviceInfo.isAutomotive() && !isEdgeToEdgeAutomotiveEnabled()) {
             return false;
         }
 
@@ -261,7 +266,7 @@ public class EdgeToEdgeUtils {
                     ineligibleName, IneligibilityReason.OS_VERSION, IneligibilityReason.NUM_TYPES);
         }
 
-        if (DeviceInfo.isAutomotive()) {
+        if (DeviceInfo.isAutomotive() && !isEdgeToEdgeAutomotiveEnabled()) {
             eligible = false;
             RecordHistogram.recordEnumeratedHistogram(
                     ineligibleName, IneligibilityReason.DEVICE_TYPE, IneligibilityReason.NUM_TYPES);

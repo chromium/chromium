@@ -696,14 +696,19 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
 
     @Override
     public void setContentView(@LayoutRes int layoutResID) {
-        if (DeviceInfo.isAutomotive()
-                && getAutomotiveToolbarImplementation()
-                        == AutomotiveToolbarImplementation.WITH_TOOLBAR_VIEW) {
-            super.setContentView(AutomotiveUtils.getAutomotiveLayoutWithBackButtonToolbar(this));
-            setAutomotiveToolbarBackButtonAction();
-            ViewStub stub = findViewById(R.id.original_layout);
+        if (isAutomotiveWithToolbarView()) {
+            View automotiveLayout = inflateAutomotiveToolbarLayout();
+            ViewStub stub = automotiveLayout.findViewById(R.id.original_layout);
             stub.setLayoutResource(layoutResID);
             stub.inflate();
+
+            if (wrapContentWithEdgeToEdgeLayout()) {
+                automotiveLayout =
+                        ensureEdgeToEdgeLayoutCoordinator().wrapContentView(automotiveLayout);
+            }
+            super.setContentView(automotiveLayout);
+
+            setAutomotiveToolbarBackButtonAction();
         } else if (wrapContentWithEdgeToEdgeLayout()) {
             FrameLayout baseLayout = new FrameLayout(this);
             super.setContentView(ensureEdgeToEdgeLayoutCoordinator().wrapContentView(baseLayout));
@@ -715,58 +720,75 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
 
     @Override
     public void setContentView(View view) {
-        if (DeviceInfo.isAutomotive()
-                && getAutomotiveToolbarImplementation()
-                        == AutomotiveToolbarImplementation.WITH_TOOLBAR_VIEW) {
-            super.setContentView(AutomotiveUtils.getAutomotiveLayoutWithBackButtonToolbar(this));
-            setAutomotiveToolbarBackButtonAction();
-            LinearLayout linearLayout = findViewById(R.id.automotive_base_linear_layout);
+        boolean showToolbarOnAutomotive = isAutomotiveWithToolbarView();
+        if (showToolbarOnAutomotive) {
+            View automotiveLayout = inflateAutomotiveToolbarLayout();
+            LinearLayout linearLayout =
+                    automotiveLayout.findViewById(R.id.automotive_base_linear_layout);
             linearLayout.addView(view, LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-        } else if (wrapContentWithEdgeToEdgeLayout()) {
-            super.setContentView(ensureEdgeToEdgeLayoutCoordinator().wrapContentView(view));
-        } else {
-            super.setContentView(view);
+            view = automotiveLayout;
         }
+
+        if (wrapContentWithEdgeToEdgeLayout()) {
+            view = ensureEdgeToEdgeLayoutCoordinator().wrapContentView(view);
+        }
+        super.setContentView(view);
+
+        if (showToolbarOnAutomotive) setAutomotiveToolbarBackButtonAction();
     }
 
     @Override
     public void setContentView(View view, ViewGroup.LayoutParams params) {
-        if (DeviceInfo.isAutomotive()
-                && getAutomotiveToolbarImplementation()
-                        == AutomotiveToolbarImplementation.WITH_TOOLBAR_VIEW) {
-            super.setContentView(AutomotiveUtils.getAutomotiveLayoutWithBackButtonToolbar(this));
-            setAutomotiveToolbarBackButtonAction();
-            LinearLayout linearLayout = findViewById(R.id.automotive_base_linear_layout);
+        boolean showToolbarOnAutomotive = isAutomotiveWithToolbarView();
+        if (showToolbarOnAutomotive) {
+            View automotiveLayout = inflateAutomotiveToolbarLayout();
+            LinearLayout linearLayout =
+                    automotiveLayout.findViewById(R.id.automotive_base_linear_layout);
             linearLayout.setLayoutParams(params);
             linearLayout.addView(view, LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-        } else if (wrapContentWithEdgeToEdgeLayout()) {
-            super.setContentView(ensureEdgeToEdgeLayoutCoordinator().wrapContentView(view, params));
-        } else {
-            super.setContentView(view, params);
+            view = automotiveLayout;
         }
+
+        if (wrapContentWithEdgeToEdgeLayout()) {
+            view = ensureEdgeToEdgeLayoutCoordinator().wrapContentView(view, params);
+        }
+        super.setContentView(view, params);
+
+        if (showToolbarOnAutomotive) setAutomotiveToolbarBackButtonAction();
     }
 
     @Override
     public void addContentView(View view, ViewGroup.LayoutParams params) {
-        if (DeviceInfo.isAutomotive()
-                && params.width == MATCH_PARENT
-                && params.height == MATCH_PARENT) {
-            ViewGroup automotiveLayout =
-                    (ViewGroup)
-                            getLayoutInflater()
-                                    .inflate(
-                                            AutomotiveUtils
-                                                    .getAutomotiveLayoutWithBackButtonToolbar(this),
-                                            null);
-            super.addContentView(
-                    automotiveLayout, new LinearLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT));
-            setAutomotiveToolbarBackButtonAction();
+        boolean showToolbarOnAutomotive =
+                DeviceInfo.isAutomotive()
+                        && params.width == MATCH_PARENT
+                        && params.height == MATCH_PARENT;
+
+        if (showToolbarOnAutomotive) {
+            ViewGroup automotiveLayout = (ViewGroup) inflateAutomotiveToolbarLayout();
             automotiveLayout.addView(view, params);
-        } else if (wrapContentWithEdgeToEdgeLayout()) {
+            view = automotiveLayout;
+            params = new LinearLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT);
+        }
+
+        if (wrapContentWithEdgeToEdgeLayout()) {
             super.setContentView(ensureEdgeToEdgeLayoutCoordinator().wrapContentView(view, params));
         } else {
             super.addContentView(view, params);
         }
+
+        if (showToolbarOnAutomotive) setAutomotiveToolbarBackButtonAction();
+    }
+
+    private boolean isAutomotiveWithToolbarView() {
+        return DeviceInfo.isAutomotive()
+                && getAutomotiveToolbarImplementation()
+                        == AutomotiveToolbarImplementation.WITH_TOOLBAR_VIEW;
+    }
+
+    private View inflateAutomotiveToolbarLayout() {
+        return getLayoutInflater()
+                .inflate(AutomotiveUtils.getAutomotiveLayoutWithBackButtonToolbar(this), null);
     }
 
     protected int getAutomotiveToolbarImplementation() {
