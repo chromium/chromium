@@ -810,8 +810,9 @@ class CORE_EXPORT CSSSelector {
   //
   // Selectors with this flag set trigger "scope activation" during
   // selector matching, see SelectorChecker::MatchForScopeActivation.
-  using IsScopeContainingField = AttributeMatchField::DefineNextValue<bool, 1>;
-  // 3 free bits here.
+  using IsScopeContainingField =
+      LegacyCaseInsensitiveMatchField::DefineNextValue<bool, 1>;
+  // 6 free bits here.
   BitField bits_;
   // 32 padding bits here (on 64-bit platforms).
 

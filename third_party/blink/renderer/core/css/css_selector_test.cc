@@ -135,6 +135,41 @@ TEST(CSSSelector, Specificity_Where) {
       Specificity("*"));
 }
 
+// IsScopeContainingField and LegacyCaseInsensitiveMatchField used to share
+// a bit; make sure the two flags are independent.
+TEST(CSSSelector, ScopeContainingAndLegacyCaseInsensitiveAreIndependent) {
+  test::TaskEnvironment task_environment;
+  {
+    // A legacy case-insensitive HTML attribute selector.
+    CSSSelectorList* list = css_test_helpers::ParseSelectorList("[type=text]");
+    ASSERT_TRUE(list->IsValid());
+    const CSSSelector* selector = list->First();
+    ASSERT_TRUE(selector->IsAttributeSelector());
+    EXPECT_TRUE(selector->LegacyCaseInsensitiveMatch());
+    EXPECT_FALSE(selector->IsScopeContaining());
+  }
+  {
+    CSSSelectorList* list = css_test_helpers::ParseSelectorList(":scope");
+    ASSERT_TRUE(list->IsValid());
+    const CSSSelector* selector = list->First();
+    EXPECT_TRUE(selector->IsScopeContaining());
+    EXPECT_FALSE(selector->IsAttributeSelector());
+  }
+  {
+    // A case-sensitive attribute selector; setting the scope-containing
+    // flag on it must not turn it case-insensitive.
+    CSSSelectorList* list = css_test_helpers::ParseSelectorList("[data-x=y]");
+    ASSERT_TRUE(list->IsValid());
+    CSSSelector selector(*list->First());
+    ASSERT_TRUE(selector.IsAttributeSelector());
+    EXPECT_FALSE(selector.LegacyCaseInsensitiveMatch());
+    EXPECT_FALSE(selector.IsScopeContaining());
+    selector.SetScopeContaining(true);
+    EXPECT_TRUE(selector.IsScopeContaining());
+    EXPECT_FALSE(selector.LegacyCaseInsensitiveMatch());
+  }
+}
+
 TEST(CSSSelector, Specificity_Slotted) {
   test::TaskEnvironment task_environment;
   EXPECT_EQ(Specificity("::slotted(.a)"), Specificity(".a::first-line"));
