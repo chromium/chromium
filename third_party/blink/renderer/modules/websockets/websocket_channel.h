@@ -33,6 +33,7 @@
 
 #include <memory>
 
+#include "services/network/public/mojom/ip_address_space.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
@@ -92,7 +93,10 @@ class MODULES_EXPORT WebSocketChannel
     kCloseEventCodeMaximumUserDefined = 4999
   };
 
-  virtual bool Connect(const KURL&, const String& protocol) = 0;
+  virtual bool Connect(
+      const KURL&,
+      const String& protocol,
+      network::mojom::blink::IPAddressSpace target_address_space) = 0;
 
   // Send a Text message. `watcher` may be null. If it is non-null and the
   // return value is kWatcherWillBeCalled, then watcher->OnMessageSent() will be

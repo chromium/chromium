@@ -61,7 +61,9 @@ class CORE_EXPORT WorkerFetchContext final : public BaseFetchContext {
   bool IsIsolatedSVGChromeClient() const override;
   void CountUsage(WebFeature) const override;
   void CountDeprecation(WebFeature) const override;
-  bool ShouldBlockWebSocketByMixedContentCheck(const KURL&) const override;
+  bool ShouldBlockWebSocketByMixedContentCheck(
+      const KURL&,
+      network::mojom::blink::IPAddressSpace) const override;
   std::unique_ptr<WebSocketHandshakeThrottle> CreateWebSocketHandshakeThrottle()
       override;
   bool ShouldBlockFetchByMixedContentCheck(

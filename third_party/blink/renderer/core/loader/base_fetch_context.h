@@ -85,7 +85,9 @@ class CORE_EXPORT BaseFetchContext : public FetchContext {
   virtual net::SiteForCookies GetSiteForCookies() const = 0;
 
   virtual SubresourceFilter* GetSubresourceFilter() const = 0;
-  virtual bool ShouldBlockWebSocketByMixedContentCheck(const KURL&) const = 0;
+  virtual bool ShouldBlockWebSocketByMixedContentCheck(
+      const KURL&,
+      network::mojom::blink::IPAddressSpace target_address_space) const = 0;
   virtual std::unique_ptr<WebSocketHandshakeThrottle>
   CreateWebSocketHandshakeThrottle() = 0;
 

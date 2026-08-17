@@ -94,10 +94,17 @@ class CORE_EXPORT MixedContentChecker final {
                                        ReportingDisposition,
                                        bool is_worklet_global_scope);
 
-  static bool IsWebSocketAllowed(const FrameFetchContext&,
-                                 LocalFrame*,
-                                 const KURL&);
-  static bool IsWebSocketAllowed(WorkerFetchContext&, const KURL&);
+  static bool IsWebSocketAllowed(
+      const FrameFetchContext&,
+      LocalFrame*,
+      const KURL&,
+      network::mojom::blink::IPAddressSpace target_address_space =
+          network::mojom::blink::IPAddressSpace::kUnknown);
+  static bool IsWebSocketAllowed(
+      WorkerFetchContext&,
+      const KURL&,
+      network::mojom::blink::IPAddressSpace target_address_space =
+          network::mojom::blink::IPAddressSpace::kUnknown);
 
   static bool IsMixedContent(const SecurityOrigin*, const KURL&);
   static bool IsMixedContent(const String& origin_protocol, const KURL&);

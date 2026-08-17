@@ -1185,12 +1185,14 @@ void FrameFetchContext::CountDeprecation(WebFeature feature) const {
 }
 
 bool FrameFetchContext::ShouldBlockWebSocketByMixedContentCheck(
-    const KURL& url) const {
+    const KURL& url,
+    network::mojom::blink::IPAddressSpace target_address_space) const {
   if (GetResourceFetcherProperties().IsDetached()) {
     // TODO(yhirano): Implement the detached case.
     return false;
   }
-  return !MixedContentChecker::IsWebSocketAllowed(*this, GetFrame(), url);
+  return !MixedContentChecker::IsWebSocketAllowed(*this, GetFrame(), url,
+                                                  target_address_space);
 }
 
 std::unique_ptr<WebSocketHandshakeThrottle>

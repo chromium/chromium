@@ -17,6 +17,7 @@
 #include "net/storage_access_api/status.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/constants.h"
+#include "services/network/public/mojom/ip_address_space.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -103,7 +104,8 @@ void StreamingWebSocketClient::Connect() {
       /*throttling_profile_id=*/std::nullopt,
       // WebSocket connections are browser-wide operations not associated with
       // any page/frame, so no Connection Allowlist restrictions should apply.
-      network::GetNoOpNetworkRestrictionsId());
+      network::GetNoOpNetworkRestrictionsId(),
+      /*target_address_space=*/network::mojom::IPAddressSpace::kUnknown);
 }
 
 void StreamingWebSocketClient::InternalWrite(base::span<const uint8_t> data) {

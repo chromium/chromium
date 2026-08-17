@@ -49,6 +49,7 @@
 #include "base/strings/string_view_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/types/strong_alias.h"
+#include "services/network/public/mojom/ip_address_space.mojom-blink.h"
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/mojom/websockets/websocket_connector.mojom-blink.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
@@ -283,10 +284,14 @@ WebSocketChannelImpl::WebSocketChannelImpl(ExecutionContext* execution_context,
 
 WebSocketChannelImpl::~WebSocketChannelImpl() = default;
 
-bool WebSocketChannelImpl::Connect(const KURL& url, const String& protocol) {
+bool WebSocketChannelImpl::Connect(
+    const KURL& url,
+    const String& protocol,
+    network::mojom::blink::IPAddressSpace target_address_space) {
   DVLOG(1) << this << " Connect()";
 
-  if (GetBaseFetchContext()->ShouldBlockWebSocketByMixedContentCheck(url)) {
+  if (GetBaseFetchContext()->ShouldBlockWebSocketByMixedContentCheck(
+          url, target_address_space)) {
     has_initiated_opening_handshake_ = false;
     return false;
   }
@@ -372,7 +377,8 @@ bool WebSocketChannelImpl::Connect(const KURL& url, const String& protocol) {
       execution_context_->GetStorageAccessApiStatus(),
       handshake_client_receiver_.BindNewPipeAndPassRemote(
           execution_context_->GetTaskRunner(TaskType::kWebSocket)),
-      /*throttling_profile_id=*/devtools_throttling_token);
+      /*throttling_profile_id=*/devtools_throttling_token,
+      target_address_space);
   handshake_client_receiver_.set_disconnect_with_reason_handler(
       blink::BindOnce(&WebSocketChannelImpl::OnConnectionError,
                       WrapWeakPersistent(this), FROM_HERE));

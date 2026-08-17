@@ -9,7 +9,16 @@
 
 namespace blink {
 
-MockWebSocketChannel::MockWebSocketChannel() = default;
+using ::testing::_;
+
+MockWebSocketChannel::MockWebSocketChannel() {
+  ON_CALL(*this, Connect(_, _, _))
+      .WillByDefault([this](const KURL& url, const String& protocol,
+                            network::mojom::blink::IPAddressSpace) {
+        return Connect(url, protocol);
+      });
+  ON_CALL(*this, Connect(_, _)).WillByDefault(testing::Return(true));
+}
 MockWebSocketChannel::~MockWebSocketChannel() = default;
 
 }  // namespace blink

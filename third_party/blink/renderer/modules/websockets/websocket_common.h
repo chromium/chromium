@@ -11,6 +11,7 @@
 
 #include <optional>
 
+#include "services/network/public/mojom/ip_address_space.mojom-blink.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -42,11 +43,14 @@ class MODULES_EXPORT WebSocketCommon {
 
   // Checks |url| and |protocols| are valid, and starts a connection if they
   // are.
-  ConnectResult Connect(ExecutionContext*,
-                        const String& url,
-                        const Vector<String>& protocols,
-                        WebSocketChannel*,
-                        ExceptionState&);
+  ConnectResult Connect(
+      ExecutionContext*,
+      const String& url,
+      const Vector<String>& protocols,
+      WebSocketChannel*,
+      ExceptionState&,
+      network::mojom::blink::IPAddressSpace target_address_space =
+          network::mojom::blink::IPAddressSpace::kUnknown);
 
   // Closes the connection if |code| and |reason| are valid.
   void CloseInternal(std::optional<uint16_t> code,

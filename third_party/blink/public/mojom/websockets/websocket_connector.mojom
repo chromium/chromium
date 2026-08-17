@@ -5,6 +5,7 @@
 module blink.mojom;
 
 import "mojo/public/mojom/base/unguessable_token.mojom";
+import "services/network/public/mojom/ip_address_space.mojom";
 import "services/network/public/mojom/site_for_cookies.mojom";
 import "services/network/public/mojom/storage_access_api.mojom";
 import "services/network/public/mojom/websocket.mojom";
@@ -20,11 +21,14 @@ interface WebSocketConnector {
   // //services/network/public/mojom/network_context.mojom.  It is recommended
   // to detect mojo connection errors on |handshake_client| until the connection
   // is established. See network_context.mojom for details.
+  // |target_address_space| specifies the target IP address space for Local
+  // Network Access (LNA) checks.
   Connect(url.mojom.Url url,
           array<string> requested_protocols,
           string? user_agent,
           network.mojom.StorageAccessApiStatus storage_access_api_status,
           pending_remote<network.mojom.WebSocketHandshakeClient> handshake_client,
-          mojo_base.mojom.UnguessableToken? throttling_profile_id);
+          mojo_base.mojom.UnguessableToken? throttling_profile_id,
+          network.mojom.IPAddressSpace target_address_space);
 
 };

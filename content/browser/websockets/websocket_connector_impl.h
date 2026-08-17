@@ -16,6 +16,7 @@
 #include "net/base/isolation_info.h"
 #include "net/storage_access_api/status.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
+#include "services/network/public/mojom/ip_address_space.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/websocket.mojom.h"
 #include "third_party/blink/public/mojom/websockets/websocket_connector.mojom.h"
@@ -46,14 +47,15 @@ class WebSocketConnectorImpl final : public blink::mojom::WebSocketConnector {
   ~WebSocketConnectorImpl() override;
 
   // WebSocketConnector implementation
-  void Connect(const GURL& url,
-               const std::vector<std::string>& requested_protocols,
-               const std::optional<std::string>& user_agent,
-               net::StorageAccessApiStatus storage_access_api_status,
-               mojo::PendingRemote<network::mojom::WebSocketHandshakeClient>
-                   handshake_client,
-               const std::optional<base::UnguessableToken>&
-                   throttling_profile_id) override;
+  void Connect(
+      const GURL& url,
+      const std::vector<std::string>& requested_protocols,
+      const std::optional<std::string>& user_agent,
+      net::StorageAccessApiStatus storage_access_api_status,
+      mojo::PendingRemote<network::mojom::WebSocketHandshakeClient>
+          handshake_client,
+      const std::optional<base::UnguessableToken>& throttling_profile_id,
+      network::mojom::IPAddressSpace target_address_space) override;
 
  private:
   static void ConnectCalledByContentBrowserClient(
@@ -67,6 +69,7 @@ class WebSocketConnectorImpl final : public blink::mojom::WebSocketConnector {
       uint32_t options,
       std::optional<base::UnguessableToken> throttling_profile_id,
       const base::UnguessableToken& network_restrictions_id,
+      network::mojom::IPAddressSpace target_address_space,
       const GURL& url,
       std::vector<network::mojom::HttpHeaderPtr> additional_headers,
       mojo::PendingRemote<network::mojom::WebSocketHandshakeClient>

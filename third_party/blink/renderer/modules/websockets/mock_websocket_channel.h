@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
+#include "services/network/public/mojom/ip_address_space.mojom-blink.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
@@ -25,7 +26,13 @@ class MockWebSocketChannel : public WebSocketChannel {
   MockWebSocketChannel();
   ~MockWebSocketChannel() override;
 
-  MOCK_METHOD2(Connect, bool(const KURL&, const String&));
+  MOCK_METHOD(bool,
+              Connect,
+              (const KURL&,
+               const String&,
+               network::mojom::blink::IPAddressSpace),
+              (override));
+  MOCK_METHOD(bool, Connect, (const KURL&, const String&));
   MOCK_METHOD2(Send,
                void(const std::string&,
                     std::unique_ptr<SendCompletionWatcher>));

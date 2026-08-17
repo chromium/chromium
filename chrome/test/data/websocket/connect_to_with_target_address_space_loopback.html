@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>test ws connection</title>
+<script>
+const url = new URLSearchParams(window.location.search).get('url');
+if (!url) {
+  console.error("Failed to find 'url' search parameter in URL");
+  document.title = 'FAIL';
+  throw new Error('FAILURE');
+}
+
+// Do connection test using targetAddressSpace: 'loopback' to bypass mixed content checks.
+const ws = new WebSocket(url, { targetAddressSpace: 'loopback' });
+
+ws.onopen = () => {
+  // Set document title to 'PASS'. The test observer catches this title change
+  // to determine the result.
+  document.title = 'PASS';
+};
+
+ws.onclose = () => {
+  // Set document title to 'FAIL'.
+  document.title = 'FAIL';
+};
+
+ws.onmessage = (evt) => {
+  domAutomationController.send(evt.data);
+};
+
+ws.onerror = (evt) => {
+  console.error(`WebSocket error: '${JSON.stringify(evt, ["message", "arguments", "type", "name"])}'`);
+};
+</script>
+</head>
+</html>
+

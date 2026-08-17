@@ -6,5 +6,6 @@
 
 dictionary WebSocketInit {
     sequence<DOMString> protocols = [];
+    [RuntimeEnabled=LocalNetworkAccessWebSocketsTargetAddressSpace] IPAddressSpace targetAddressSpace;
 };
 

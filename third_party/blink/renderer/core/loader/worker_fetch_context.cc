@@ -125,11 +125,12 @@ CoreProbeSink* WorkerFetchContext::Probe() const {
 }
 
 bool WorkerFetchContext::ShouldBlockWebSocketByMixedContentCheck(
-    const KURL& url) const {
+    const KURL& url,
+    network::mojom::blink::IPAddressSpace target_address_space) const {
   // Worklets don't support WebSocket.
   DCHECK(global_scope_->IsWorkerGlobalScope());
   return !MixedContentChecker::IsWebSocketAllowed(
-      *const_cast<WorkerFetchContext*>(this), url);
+      *const_cast<WorkerFetchContext*>(this), url, target_address_space);
 }
 
 std::unique_ptr<WebSocketHandshakeThrottle>

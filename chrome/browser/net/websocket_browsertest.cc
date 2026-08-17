@@ -70,10 +70,12 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/ip_address_space_overrides_test_utils.h"
 #include "services/network/public/cpp/network_switches.h"
+#include "services/network/public/mojom/ip_address_space.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/websocket.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -184,7 +186,8 @@ class WebSocketBrowserTest : public InProcessBrowserTest {
                                              frame->GetRoutingID())),
         /*auth_handler=*/mojo::NullRemote(), std::move(header_client),
         /*throttling_profile_id=*/std::nullopt,
-        /*network_restrictions_id=*/network::GetTestNetworkRestrictionsId());
+        /*network_restrictions_id=*/network::GetTestNetworkRestrictionsId(),
+        /*target_address_space=*/network::mojom::IPAddressSpace::kUnknown);
   }
 
   void SetBlockThirdPartyCookies(bool blocked) {
@@ -324,14 +327,21 @@ class LocalNetworkAccessWebSocketsBrowserTest
               resource);
   }
 
-  // For checking that mixed content checks are bypassed properly.
-  //
-  // Note the usage of kHostLocal, as that's the only method of signaling to the
-  // mixed content checker that the websocket connection might be LNA as the
-  // WebSocket API doesn't have the fetch API's targetAddressSpace option.
+  // For checking that mixed content checks are bypassed properly when using a
+  // literal local hostname.
   void ConnectToInsecureLNAWebSocket(const std::string& resource) {
     ConnectTo(kHostB,
               net::test_server::GetWebSocketURL(ws_server_, kHostLocal,
+                                                "/echo-with-no-extension"),
+              resource);
+  }
+
+  // For checking that mixed content checks are bypassed properly when using the
+  // targetAddressSpace option on an arbitrary target hostname.
+  void ConnectToInsecureLNAWebSocketWithTargetAddressSpace(
+      const std::string& resource) {
+    ConnectTo(kHostB,
+              net::test_server::GetWebSocketURL(ws_server_, kHostA,
                                                 "/echo-with-no-extension"),
               resource);
   }
@@ -343,7 +353,10 @@ class LocalNetworkAccessWebSocketsBrowserTest
     feature_list_.InitWithFeaturesAndParameters(
         {{network::features::kLocalNetworkAccessChecks,
           {{"LocalNetworkAccessChecksWarn", "false"}}},
-         {network::features::kLocalNetworkAccessChecksWebSockets, {}}},
+         {network::features::kLocalNetworkAccessChecksWebSockets, {}},
+         {blink::features::kWebSocketOptionBag, {}},
+         {blink::features::kLocalNetworkAccessWebSocketsTargetAddressSpace,
+          {}}},
         {});
     WebSocketBrowserHTTPSConnectToTest::SetUp();
   }
@@ -403,6 +416,22 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessWebSocketsBrowserTest,
                        LNAInsecureWebSocketDeniedPermission) {
   bubble_factory()->set_response_type(DENY_ALL);
   ConnectToInsecureLNAWebSocket("/websocket/connect_to.html");
+  EXPECT_EQ("FAIL", WaitAndGetTitle());
+}
+
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessWebSocketsBrowserTest,
+                       LNAInsecureWebSocketTargetAddressSpaceHasPermission) {
+  bubble_factory()->set_response_type(ACCEPT_ALL);
+  ConnectToInsecureLNAWebSocketWithTargetAddressSpace(
+      "/websocket/connect_to_with_target_address_space_loopback.html");
+  EXPECT_EQ("PASS", WaitAndGetTitle());
+}
+
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessWebSocketsBrowserTest,
+                       LNAInsecureWebSocketTargetAddressSpaceDeniedPermission) {
+  bubble_factory()->set_response_type(DENY_ALL);
+  ConnectToInsecureLNAWebSocketWithTargetAddressSpace(
+      "/websocket/connect_to_with_target_address_space_loopback.html");
   EXPECT_EQ("FAIL", WaitAndGetTitle());
 }
 

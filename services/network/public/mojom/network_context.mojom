@@ -1541,6 +1541,11 @@ interface NetworkContext {
   // emulation for this web socket connection. Emulated network conditions
   // can be set by calling SetNetworkConditions with a matching throttling
   // profile id.
+  //
+  // |target_address_space| specifies the target IP address space expected by
+  // the client (for Local Network Access checks). When set to a value other
+  // than kUnknown, connections will be validated against this target address
+  // space.
   CreateWebSocket(
       url.mojom.Url url,
       array<string> requested_protocols,
@@ -1558,7 +1563,8 @@ interface NetworkContext {
       pending_remote<WebSocketAuthenticationHandler>? auth_handler,
       pending_remote<TrustedHeaderClient>? header_client,
       mojo_base.mojom.UnguessableToken? throttling_profile_id,
-      mojo_base.mojom.UnguessableToken network_restrictions_id);
+      mojo_base.mojom.UnguessableToken network_restrictions_id,
+      IPAddressSpace target_address_space);
 
   // Creates a WebTransport connection to |url|. |origin| is used for the
   // client indication - see

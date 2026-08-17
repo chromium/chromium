@@ -15,6 +15,7 @@
 #include "net/log/net_log.h"
 #include "net/storage_access_api/status.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
+#include "services/network/public/mojom/ip_address_space.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/websocket.mojom.h"
 #include "services/network/websocket.h"
@@ -63,7 +64,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebSocketFactory final {
       mojo::PendingRemote<mojom::WebSocketAuthenticationHandler> auth_handler,
       mojo::PendingRemote<mojom::TrustedHeaderClient> header_client,
       const std::optional<base::UnguessableToken>& throttling_profile_id,
-      const base::UnguessableToken& network_restrictions_id);
+      const base::UnguessableToken& network_restrictions_id,
+      mojom::IPAddressSpace target_address_space =
+          mojom::IPAddressSpace::kUnknown);
 
   // Returns a URLRequestContext associated with this factory.
   net::URLRequestContext* GetURLRequestContext();

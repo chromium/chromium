@@ -160,7 +160,8 @@ void EnclaveWebSocketClient::Connect() {
       /*throttling_profile_id=*/std::nullopt,
       // This is a browser-internal connection to the passkey enclave service.
       // It does not belong to any webpage, so we bypass connection allowlists.
-      network::GetNoOpNetworkRestrictionsId());
+      network::GetNoOpNetworkRestrictionsId(),
+      /*target_address_space=*/network::mojom::IPAddressSpace::kUnknown);
 }
 
 void EnclaveWebSocketClient::InternalWrite(base::span<const uint8_t> data) {

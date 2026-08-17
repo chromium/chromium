@@ -221,8 +221,7 @@ void WebSocket::WebSocketEventHandler::OnCreateURLRequest(
         GetAddressSpaceFromUrl(url_request->url());
     if (url_address_space) {
       LocalNetworkAccessChecker lna_checker(
-          url_request->url(), impl_->origin_,
-          /*required_ip_address_space=*/mojom::IPAddressSpace::kUnknown,
+          url_request->url(), impl_->origin_, impl_->required_ip_address_space_,
           impl_->client_security_state_.get(), impl_->options_);
       if (lna_checker.CheckAddressSpace(*url_address_space) ==
           LocalNetworkAccessCheckResult::kLNAPermissionRequired) {
@@ -268,7 +267,8 @@ int WebSocket::WebSocketEventHandler::OnURLRequestConnected(
     const net::TransportInfo& info,
     net::CompletionOnceCallback callback) {
   // Grab Metrics first, then do actual LNA checks.
-  if (impl_->url_loader_network_observer_) {
+  if (impl_->url_loader_network_observer_ &&
+      impl_->required_ip_address_space_ == mojom::IPAddressSpace::kUnknown) {
     impl_->url_loader_network_observer_->OnWebSocketConnectedToLocalNetwork(
         request->url(), TransportInfoToIPAddressSpace(info));
   }
@@ -280,12 +280,8 @@ int WebSocket::WebSocketEventHandler::OnURLRequestConnected(
     return net::OK;
   }
 
-  // required_ip_address_space is always kUnknown as websockets API doesn't have
-  // a targetAddressSpace parameter like fetch() does to bypass mixed content
-  // checks.
   LocalNetworkAccessChecker checker(
-      request->url(), request->initiator(),
-      /*required_ip_address_space=*/network::mojom::IPAddressSpace::kUnknown,
+      request->url(), request->initiator(), impl_->required_ip_address_space_,
       impl_->client_security_state_.get(), impl_->options_);
 
   LocalNetworkAccessCheckResult check_result = checker.Check(info);
@@ -580,7 +576,8 @@ WebSocket::WebSocket(
     std::optional<WebSocketThrottler::PendingConnection>
         pending_connection_tracker,
     base::TimeDelta delay,
-    const std::optional<base::UnguessableToken>& throttling_profile_id)
+    const std::optional<base::UnguessableToken>& throttling_profile_id,
+    mojom::IPAddressSpace required_ip_address_space)
     : factory_(factory),
       url_loader_network_observer_(std::move(url_loader_network_observer)),
       handshake_client_(std::move(handshake_client)),
@@ -593,6 +590,7 @@ WebSocket::WebSocket(
       traffic_annotation_(traffic_annotation),
       origin_(std::move(origin)),
       client_security_state_(std::move(client_security_state)),
+      required_ip_address_space_(required_ip_address_space),
       isolation_info_(isolation_info),
       has_raw_headers_access_(has_raw_headers_access),
       writable_watcher_(FROM_HERE,

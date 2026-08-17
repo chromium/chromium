@@ -245,6 +245,29 @@ bool IsUrlLNARequest(const KURL& url) {
           ip_address_space == network::mojom::IPAddressSpace::kLoopback);
 }
 
+// Skip mixed content check when we can determine that the request is a Local
+// Network Access (LNA) request. LNA checks later on will ensure that (a) the
+// request is actually an LNA request, and (b) the user has given permission
+// for the LNA request to go through.
+//
+// Reference:
+// https://wicg.github.io/local-network-access/
+bool IsWebSocketLNAAllowed(
+    network::mojom::blink::IPAddressSpace target_address_space,
+    const KURL& url) {
+  if (base::FeatureList::IsEnabled(
+          network::features::kLocalNetworkAccessChecks) &&
+      base::FeatureList::IsEnabled(
+          network::features::kLocalNetworkAccessChecksWebSockets)) {
+    return target_address_space ==
+               network::mojom::blink::IPAddressSpace::kLocal ||
+           target_address_space ==
+               network::mojom::blink::IPAddressSpace::kLoopback ||
+           IsUrlLNARequest(url);
+  }
+  return false;
+}
+
 }  // namespace
 
 static bool IsInsecureUrl(const KURL& url) {
@@ -740,7 +763,8 @@ ConsoleMessage* MixedContentChecker::CreateConsoleMessageAboutWebSocket(
 bool MixedContentChecker::IsWebSocketAllowed(
     const FrameFetchContext& frame_fetch_context,
     LocalFrame* frame,
-    const KURL& url) {
+    const KURL& url,
+    network::mojom::blink::IPAddressSpace target_address_space) {
   Frame* mixed_frame = InWhichFrameIsContentMixed(frame, url);
   if (!mixed_frame)
     return true;
@@ -764,23 +788,12 @@ bool MixedContentChecker::IsWebSocketAllowed(
         content_settings_client->AllowRunningInsecureContent(allowed, url);
   }
 
-  // Skip mixed content check when we can determine that the request is a Local
-  // Network Access (LNA) request. LNA checks later on will ensure that (a) the
-  // request is actually an LNA request, and (b) the user has given permission
-  // for the LNA request to go through.
-  //
-  // Reference:
-  // https://wicg.github.io/local-network-access/
-  if (!allowed &&
-      base::FeatureList::IsEnabled(
-          network::features::kLocalNetworkAccessChecks) &&
-      base::FeatureList::IsEnabled(
-          network::features::kLocalNetworkAccessChecksWebSockets)) {
-    if (IsUrlLNARequest(url)) {
-      allowed = true;
-    }
+  if (!allowed && IsWebSocketLNAAllowed(target_address_space, url)) {
+    allowed = true;
   }
 
+  // TODO(crbug.com/546013423): Avoid immediately downgrading the page security
+  // indicator if the connection might be subsequently blocked by LNA checks.
   if (allowed) {
     frame_fetch_context.GetContentSecurityNotifier().NotifyInsecureContentRan(
         url, (mixed_frame == &frame->Tree().Top())
@@ -805,7 +818,8 @@ bool MixedContentChecker::IsWebSocketAllowed(
 // static
 bool MixedContentChecker::IsWebSocketAllowed(
     WorkerFetchContext& worker_fetch_context,
-    const KURL& url) {
+    const KURL& url,
+    network::mojom::blink::IPAddressSpace target_address_space) {
   const FetchClientSettingsObject& fetch_client_settings_object =
       worker_fetch_context.GetResourceFetcherProperties()
           .GetFetchClientSettingsObject();
@@ -819,21 +833,8 @@ bool MixedContentChecker::IsWebSocketAllowed(
       IsWebSocketAllowedInWorker(worker_fetch_context, settings, url);
   allowed = worker_fetch_context.AllowRunningInsecureContent(allowed, url);
 
-  // Skip mixed content check when we can determine that the request is a Local
-  // Network Access (LNA) request. LNA checks later on will ensure that (a) the
-  // request is actually an LNA request, and (b) the user has given permission
-  // for the LNA request to go through.
-  //
-  // Reference:
-  // https://wicg.github.io/local-network-access/
-  if (!allowed &&
-      base::FeatureList::IsEnabled(
-          network::features::kLocalNetworkAccessChecks) &&
-      base::FeatureList::IsEnabled(
-          network::features::kLocalNetworkAccessChecksWebSockets)) {
-    if (IsUrlLNARequest(url)) {
-      allowed = true;
-    }
+  if (!allowed && IsWebSocketLNAAllowed(target_address_space, url)) {
+    allowed = true;
   }
 
   if (allowed) {

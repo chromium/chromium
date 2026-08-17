@@ -399,7 +399,8 @@ class TunnelTransport : public Transport {
         // This is a browser-internal connection for the caBLE rendezvous
         // tunnel. It does not belong to any webpage, so we bypass connection
         // allowlists.
-        /*network_restrictions_id=*/network::GetNoOpNetworkRestrictionsId());
+        /*network_restrictions_id=*/network::GetNoOpNetworkRestrictionsId(),
+        /*target_address_space=*/network::mojom::IPAddressSpace::kUnknown);
     FIDO_LOG(DEBUG) << "Creating WebSocket to " << target_.spec();
   }
 

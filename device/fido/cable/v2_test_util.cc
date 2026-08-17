@@ -83,7 +83,8 @@ class TestNetworkContext : public network::TestNetworkContext {
           auth_handler,
       mojo::PendingRemote<network::mojom::TrustedHeaderClient> header_client,
       const std::optional<base::UnguessableToken>& throttling_profile_id,
-      const base::UnguessableToken& network_restrictions_id) override {
+      const base::UnguessableToken& network_restrictions_id,
+      network::mojom::IPAddressSpace target_address_space) override {
     CHECK(url.has_path());
 
     std::string_view path = url.path();
@@ -681,7 +682,8 @@ class LateLinkingDevice : public authenticator::Transaction {
         // This is a browser-internal connection for the caBLE rendezvous
         // tunnel. It does not belong to any webpage, so we bypass connection
         // allowlists.
-        /*network_restrictions_id=*/network::GetNoOpNetworkRestrictionsId());
+        /*network_restrictions_id=*/network::GetNoOpNetworkRestrictionsId(),
+        /*target_address_space=*/network::mojom::IPAddressSpace::kUnknown);
   }
 
  private:
@@ -905,7 +907,8 @@ class HandshakeErrorDevice : public authenticator::Transaction {
         // This is a browser-internal connection for the caBLE rendezvous
         // tunnel. It does not belong to any webpage, so we bypass connection
         // allowlists.
-        /*network_restrictions_id=*/network::GetNoOpNetworkRestrictionsId());
+        /*network_restrictions_id=*/network::GetNoOpNetworkRestrictionsId(),
+        /*target_address_space=*/network::mojom::IPAddressSpace::kUnknown);
   }
 
  private:

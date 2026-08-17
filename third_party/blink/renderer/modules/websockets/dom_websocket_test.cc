@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "services/network/public/mojom/ip_address_space.mojom-blink.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -15,6 +16,7 @@
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_ip_address_space.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_string_stringsequence.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_string_stringsequence_websocketinit.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_websocket_init.h"
@@ -1024,11 +1026,15 @@ TEST(DOMWebSocketTest, OptionBagWithProtocolsSequence) {
       .WillOnce(Return(true));
 
   Vector<String> protocols_vector;
+  network::mojom::blink::IPAddressSpace target_address_space =
+      network::mojom::blink::IPAddressSpace::kUnknown;
   EXPECT_TRUE(DOMWebSocket::ParseConstructorOptions(
-      union_options, protocols_vector, scope.GetExceptionState()));
+      union_options, protocols_vector, target_address_space,
+      scope.GetExceptionState()));
 
   websocket_scope.Socket().Connect("ws://example.com/", protocols_vector,
-                                   scope.GetExceptionState());
+                                   scope.GetExceptionState(),
+                                   target_address_space);
   EXPECT_FALSE(scope.GetExceptionState().HadException());
   EXPECT_EQ(DOMWebSocket::kConnecting, websocket_scope.Socket().readyState());
 }
@@ -1046,14 +1052,113 @@ TEST(DOMWebSocketTest, OptionBagWithInvalidProtocolThrowsSyntaxError) {
           options);
 
   Vector<String> protocols_vector;
+  network::mojom::blink::IPAddressSpace target_address_space =
+      network::mojom::blink::IPAddressSpace::kUnknown;
   EXPECT_TRUE(DOMWebSocket::ParseConstructorOptions(
-      union_options, protocols_vector, scope.GetExceptionState()));
+      union_options, protocols_vector, target_address_space,
+      scope.GetExceptionState()));
 
   websocket_scope.Socket().Connect("ws://example.com/", protocols_vector,
-                                   scope.GetExceptionState());
+                                   scope.GetExceptionState(),
+                                   target_address_space);
   EXPECT_TRUE(scope.GetExceptionState().HadException());
   EXPECT_EQ(DOMExceptionCode::kSyntaxError,
             scope.GetExceptionState().CodeAs<DOMExceptionCode>());
+}
+
+TEST(DOMWebSocketTest, LegacyPrivateAliasThrowsTypeError) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  ScopedWebSocketOptionBagForTest option_bag_feature(true);
+  ScopedLocalNetworkAccessWebSocketsTargetAddressSpaceForTest lna_feature(true);
+
+  auto* options = WebSocketInit::Create();
+  options->setTargetAddressSpace(
+      V8IPAddressSpace(V8IPAddressSpace::Enum::kPrivate));
+  auto* union_options =
+      MakeGarbageCollected<V8UnionStringOrStringSequenceOrWebSocketInit>(
+          options);
+
+  DOMWebSocket* websocket =
+      DOMWebSocket::Create(scope.GetExecutionContext(), "ws://example.com/",
+                           union_options, scope.GetExceptionState());
+  EXPECT_EQ(nullptr, websocket);
+  EXPECT_TRUE(scope.GetExceptionState().HadException());
+  EXPECT_EQ(ESErrorType::kTypeError,
+            scope.GetExceptionState().CodeAs<ESErrorType>());
+  EXPECT_EQ(
+      "The targetAddressSpace option does not support the legacy 'private' "
+      "alias; use 'local' instead.",
+      scope.GetExceptionState().Message());
+}
+
+TEST(DOMWebSocketTest, UnknownTargetAddressSpaceThrowsTypeError) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  ScopedWebSocketOptionBagForTest option_bag_feature(true);
+  ScopedLocalNetworkAccessWebSocketsTargetAddressSpaceForTest lna_feature(true);
+
+  auto* options = WebSocketInit::Create();
+  options->setTargetAddressSpace(
+      V8IPAddressSpace(V8IPAddressSpace::Enum::kUnknown));
+  auto* union_options =
+      MakeGarbageCollected<V8UnionStringOrStringSequenceOrWebSocketInit>(
+          options);
+
+  DOMWebSocket* websocket =
+      DOMWebSocket::Create(scope.GetExecutionContext(), "ws://example.com/",
+                           union_options, scope.GetExceptionState());
+  EXPECT_EQ(nullptr, websocket);
+  EXPECT_TRUE(scope.GetExceptionState().HadException());
+  EXPECT_EQ(ESErrorType::kTypeError,
+            scope.GetExceptionState().CodeAs<ESErrorType>());
+  EXPECT_EQ("The targetAddressSpace option cannot be set to 'unknown'.",
+            scope.GetExceptionState().Message());
+}
+
+TEST(DOMWebSocketTest, TargetAddressSpaceFeatureDisabledDefaultsToUnknown) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  ScopedWebSocketOptionBagForTest option_bag_feature(true);
+  ScopedLocalNetworkAccessWebSocketsTargetAddressSpaceForTest lna_feature(
+      false);
+
+  auto* options = WebSocketInit::Create();
+  options->setTargetAddressSpace(
+      V8IPAddressSpace(V8IPAddressSpace::Enum::kLoopback));
+  auto* union_options =
+      MakeGarbageCollected<V8UnionStringOrStringSequenceOrWebSocketInit>(
+          options);
+
+  Vector<String> protocols_vector;
+  network::mojom::blink::IPAddressSpace target_address_space =
+      network::mojom::blink::IPAddressSpace::kUnknown;
+  EXPECT_TRUE(DOMWebSocket::ParseConstructorOptions(
+      union_options, protocols_vector, target_address_space,
+      scope.GetExceptionState()));
+  EXPECT_FALSE(scope.GetExceptionState().HadException());
+  EXPECT_EQ(network::mojom::blink::IPAddressSpace::kUnknown,
+            target_address_space);
+}
+
+TEST(DOMWebSocketTest, ConnectForwardsTargetAddressSpace) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  auto* socket =
+      DOMWebSocketWithMockChannel::Create(scope.GetExecutionContext());
+
+  EXPECT_CALL(*socket->Channel(),
+              Connect(KURL("ws://example.com/"), String(),
+                      network::mojom::blink::IPAddressSpace::kLoopback))
+      .WillOnce(Return(true));
+
+  socket->Connect("ws://example.com/", Vector<String>(), ASSERT_NO_EXCEPTION,
+                  network::mojom::blink::IPAddressSpace::kLoopback);
+
+  testing::Mock::VerifyAndClear(socket->Channel());
+  EXPECT_CALL(*socket->Channel(), Disconnect()).Times(AnyNumber());
+  socket->DidClose(WebSocketChannelClient::kClosingHandshakeIncomplete, 1006,
+                   "");
 }
 
 }  // namespace

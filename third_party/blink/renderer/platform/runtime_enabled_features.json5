@@ -3876,6 +3876,11 @@
       // network::features::kLocalNetworkAccessChecksWebRTC.
     },
     {
+      name: "LocalNetworkAccessWebSocketsTargetAddressSpace",
+      status: "experimental",
+      depends_on: ["WebSocketOptionBag"],
+    },
+    {
       name: "LockedMode",
       status: "test",
       // Enabled by features::kLockedMode.

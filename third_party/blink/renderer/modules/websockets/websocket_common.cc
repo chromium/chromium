@@ -8,6 +8,7 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "services/network/public/mojom/ip_address_space.mojom-blink.h"
 #include "third_party/blink/public/common/security_context/insecure_request_policy.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-blink.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -39,7 +40,8 @@ WebSocketCommon::ConnectResult WebSocketCommon::Connect(
     const String& url,
     const Vector<String>& protocols,
     WebSocketChannel* channel,
-    ExceptionState& exception_state) {
+    ExceptionState& exception_state,
+    network::mojom::blink::IPAddressSpace target_address_space) {
   // CompleteURL is not used here because this is expected to always be UTF-8,
   // and not match document encoding.
   url_ = KURL(execution_context->BaseURL(), url);
@@ -131,7 +133,7 @@ WebSocketCommon::ConnectResult WebSocketCommon::Connect(
   if (!protocols.empty())
     protocol_string = JoinStrings(protocols, kWebSocketSubprotocolSeparator);
 
-  if (!channel->Connect(url_, protocol_string)) {
+  if (!channel->Connect(url_, protocol_string, target_address_space)) {
     state_ = kClosed;
     exception_state.ThrowSecurityError(
         "An insecure WebSocket connection may not be initiated from a page "
