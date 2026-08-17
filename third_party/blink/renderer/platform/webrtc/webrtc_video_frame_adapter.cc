@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/webrtc/convert_to_webrtc_video_frame_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "third_party/webrtc/rtc_base/ref_counted_object.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -153,9 +154,10 @@ void WebRtcVideoFrameAdapter::SharedResources::RequestRasterContextProvider() {
 scoped_refptr<media::VideoFrame>
 WebRtcVideoFrameAdapter::SharedResources::ConstructVideoFrameFromTexture(
     scoped_refptr<media::VideoFrame> source_frame) {
-  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("webrtc"),
-               "WebRtcVideoFrameAdapter::SharedResources::"
-               "ConstructVideoFrameFromTexture");
+  TRACE_EVENT("webrtc", "ConstructVideoFrameFromTexture", "format",
+              source_frame->format(), "storage_type",
+              source_frame->storage_type(), "natural_size",
+              source_frame->natural_size().ToString());
   CHECK(source_frame->HasSharedImage());
 
   auto raster_context_provider = GetRasterContextProvider();
@@ -181,9 +183,10 @@ WebRtcVideoFrameAdapter::SharedResources::ConstructVideoFrameFromTexture(
 scoped_refptr<media::VideoFrame>
 WebRtcVideoFrameAdapter::SharedResources::ConstructVideoFrameFromGpu(
     scoped_refptr<media::VideoFrame> source_frame) {
-  TRACE_EVENT0(
-      TRACE_DISABLED_BY_DEFAULT("webrtc"),
-      "WebRtcVideoFrameAdapter::SharedResources::ConstructVideoFrameFromGpu");
+  TRACE_EVENT("webrtc", "ConstructVideoFrameFromGpu", "format",
+              source_frame->format(), "storage_type",
+              source_frame->storage_type(), "natural_size",
+              source_frame->natural_size().ToString());
   CHECK(source_frame);
   // NV12 is the only supported format.
   DCHECK_EQ(source_frame->format(), media::PIXEL_FORMAT_NV12);
@@ -199,9 +202,13 @@ WebRtcVideoFrameAdapter::SharedResources::ConstructVideoFrameFromGpu(
 void WebRtcVideoFrameAdapter::SharedResources::ScaleAndMapFrameAsync(
     scoped_refptr<media::VideoFrame> frame,
     base::OnceCallback<void(scoped_refptr<media::VideoFrame>)> callback) {
-  TRACE_EVENT0(
-      TRACE_DISABLED_BY_DEFAULT("webrtc"),
-      "WebRtcVideoFrameAdapter::SharedResources::ScaleAndMapFrameAsync");
+  int64_t track_id = frame->timestamp().InMicroseconds();
+  TRACE_EVENT_BEGIN("webrtc", "ScaleAndMapFrameAsync",
+                    perfetto::NamedTrack("ScaleAndMapFrameAsync", track_id),
+                    "format", frame->format(), "storage_type",
+                    frame->storage_type(), "natural_size",
+                    frame->natural_size().ToString());
+
   // If no scaling required for GMB frame: Can just convert to mapped frame.
   // If the frame is textured, we still need to go through the full copy
   // mechanism below, even if no scaling is needed, because it will also
@@ -236,7 +243,7 @@ void WebRtcVideoFrameAdapter::SharedResources::ScaleAndMapFrameAsync(
     scoped_refptr<media::VideoFrame> output_frame =
         pool_for_mapped_frames_.CreateFrame(media::PIXEL_FORMAT_I420, out_size,
                                             gfx::Rect(out_size), out_size,
-                                            base::TimeDelta());
+                                            frame->timestamp());
     if (output_frame) {
       auto finish_callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
           base::BindOnce(&WebRtcVideoFrameAdapter::SharedResources::
@@ -615,6 +622,12 @@ void WebRtcVideoFrameAdapter::PrepareMappedBufferAsync(
                  webrtc::VideoFrameBuffer::PreparedFrameHandler> handler,
              size_t frame_identifier, const gfx::Rect& visible_rect,
              scoped_refptr<media::VideoFrame> converted_frame) {
+            if (converted_frame) {
+              TRACE_EVENT_END(
+                  "webrtc", perfetto::NamedTrack(
+                                "ScaleAndMapFrameAsync",
+                                converted_frame->timestamp().InMicroseconds()));
+            }
             adapter->OnFramePrepared(std::move(handler), frame_identifier,
                                      visible_rect, converted_frame);
           },

@@ -20,6 +20,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/webrtc/convert_to_webrtc_video_frame_buffer.h"
 #include "third_party/blink/renderer/platform/webrtc/webrtc_video_utils.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "third_party/webrtc/rtc_base/ref_counted_object.h"
 #include "third_party/webrtc/rtc_base/time_utils.h"
 
@@ -234,6 +235,14 @@ void WebRtcVideoTrackSource::OnFrameCaptured(
         &PostOrRunOnSequence, base::SequencedTaskRunner::GetCurrentDefault(),
         std::move(result_cb));
 
+    int64_t track_id = current_frame->timestamp().InMicroseconds();
+    TRACE_EVENT_BEGIN(
+        "webrtc", "ConvertToMemoryMappedFrameAsync",
+        perfetto::NamedTrack("ConvertToMemoryMappedFrameAsync", track_id),
+        "format", current_frame->format(), "storage_type",
+        current_frame->storage_type(), "natural_size",
+        current_frame->natural_size().ToString());
+
     media::ConvertToMemoryMappedFrameAsync(current_frame,
                                            std::move(cb_on_correct_thread));
   } else {
@@ -432,6 +441,10 @@ void WebRtcVideoTrackSource::ProcessMappedFrame(
   if (it == pending_frames_.end()) {
     return;
   }
+
+  TRACE_EVENT_END(
+      "webrtc", perfetto::NamedTrack("ConvertToMemoryMappedFrameAsync",
+                                     it->frame->timestamp().InMicroseconds()));
 
   if (!mapped_frame) {
     LOG(ERROR)

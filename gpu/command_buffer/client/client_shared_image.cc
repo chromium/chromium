@@ -21,6 +21,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/process_memory_dump.h"
+#include "base/trace_event/trace_event.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/client/context_support.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
@@ -35,6 +36,7 @@
 #include "gpu/config/gpu_finch_features.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "third_party/dawn/include/dawn/wire/client/webgpu_cpp.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/buffer_usage_util.h"
 #include "ui/gfx/gpu_fence.h"
@@ -327,6 +329,13 @@ void ClientSharedImage::ScopedMapping::StartCreateAsync(
     SharedImageMetadata metadata,
     MappableBuffer* mappable_buffer,
     base::OnceCallback<void(std::unique_ptr<ScopedMapping>)> result_cb) {
+  uint64_t track_id = reinterpret_cast<uintptr_t>(mappable_buffer);
+  TRACE_EVENT_BEGIN(
+      "gpu", "ClientSharedImage::MapAsync",
+      perfetto::NamedTrack("ClientSharedImage::MapAsync", track_id), "format",
+      metadata.format.ToString(), "usage", metadata.usage.ToString(), "size",
+      metadata.size.ToString());
+
   mappable_buffer->MapAsync(
       base::BindOnce(&ClientSharedImage::ScopedMapping::FinishCreateAsync,
                      metadata, mappable_buffer, std::move(result_cb)));
@@ -338,6 +347,10 @@ void ClientSharedImage::ScopedMapping::FinishCreateAsync(
     MappableBuffer* mappable_buffer,
     base::OnceCallback<void(std::unique_ptr<ScopedMapping>)> result_cb,
     bool success) {
+  uint64_t track_id = reinterpret_cast<uintptr_t>(mappable_buffer);
+  TRACE_EVENT_END(
+      "gpu", perfetto::NamedTrack("ClientSharedImage::MapAsync", track_id));
+
   std::unique_ptr<ClientSharedImage::ScopedMapping> mapping;
   if (success) {
     mapping = ClientSharedImage::ScopedMapping::Create(
@@ -566,6 +579,9 @@ uint64_t ClientSharedImage::SignalLatestSyncToken(
 }
 
 std::unique_ptr<ClientSharedImage::ScopedMapping> ClientSharedImage::Map() {
+  TRACE_EVENT("gpu", "ClientSharedImage::Map", "format",
+              metadata_.format.ToString(), "usage", metadata_.usage.ToString(),
+              "size", metadata_.size.ToString());
   std::unique_ptr<ClientSharedImage::ScopedMapping> scoped_mapping =
       ScopedMapping::Create(metadata_, mappable_buffer_.get(),
                             /*is_already_mapped=*/false);
