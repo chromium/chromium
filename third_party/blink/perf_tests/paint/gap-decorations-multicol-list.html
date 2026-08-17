@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<script src="../resources/runner.js"></script>
+<script src="resources/paint.js"></script>
+<!-- Companion to gap-decorations-multicol.html, with a plain color list. -->
+<style>
+
+  .mc {
+    columns:10000;
+    column-gap:3px;
+    column-rule: 1px solid red;
+    column-rule-color: red, orange, blue, green, purple;
+    column-fill:auto;
+    height:100px;
+  }
+
+</style>
+<div id="container" class="mc">
+    <div style="height:250000px;"></div>
+    <div style="height: 10px; column-span: all;"></div>
+    <div style="height:250000px;"></div>
+    <div style="height: 10px; column-span: all;"></div>
+    <div style="height: 250000px;"></div>
+</div>
+<script>
+  // Measure paint / pre-paint performance of a multicol container with many
+  // columns and gap decorations.
+
+  var wide = false;
+
+  measurePaint({
+    run: function() {
+      container.style.width = wide ? "700px" : "600px";
+      wide = !wide;
+    },
+  });
+</script>
