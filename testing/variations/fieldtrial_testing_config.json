@@ -23964,23 +23964,6 @@
             ]
         }
     ],
-    "SymphoniaAudioDecoding": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "fuchsia"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SymphoniaAudioDecoding"
-                    ]
-                }
-            ]
-        }
-    ],
     "SymphoniaPcmDecoding": [
         {
             "platforms": [

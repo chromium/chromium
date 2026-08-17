@@ -1242,25 +1242,15 @@ BASE_FEATURE(kPlatformHEVCMain10EncoderSupport,
 
 #endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
 
-// SymphoniaAudioDecoder support flags. When enabled, the SymphoniaAudioDecoder will indicate
-// support for the specified codec, causing it to be used for audio decoding. If disabled,
-// the media pipeline shall fall back to a reasonable default, typically the FFmpeg audio
-// decoder.
+// SymphoniaAudioDecoder support flags. When enabled, the SymphoniaAudioDecoder
+// will indicate support for the specified codec, causing it to be used for
+// audio decoding. If disabled, the media pipeline shall fall back to a
+// reasonable default, typically the FFmpeg audio decoder.
 #if BUILDFLAG(ENABLE_SYMPHONIA)
-// Android / Fuchsia are expected to launch in M150.
-BASE_FEATURE(kSymphoniaAudioDecoding,
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
-
+BASE_FEATURE(kSymphoniaAudioDecoding, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kSymphoniaMp3Decoding, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kSymphoniaPcmDecoding, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kSymphoniaVorbisDecoding, base::FEATURE_DISABLED_BY_DEFAULT);
-
 #endif  // BUILDFLAG(ENABLE_SYMPHONIA)
 
 #if BUILDFLAG(IS_ANDROID)
