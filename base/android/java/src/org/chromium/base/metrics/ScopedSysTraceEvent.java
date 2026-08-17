@@ -28,7 +28,7 @@ public class ScopedSysTraceEvent implements AutoCloseable {
      * Trace.beginSection() / endSection() directly if it should be used repeatedly.
      *
      * @param name Trace event name.
-     * @return a {@ScopedSysTraceEvent}, or null if tracing is not enabled.
+     * @return a {@link ScopedSysTraceEvent}, or null if tracing is not enabled.
      */
     public static ScopedSysTraceEvent scoped(String name) {
         return new ScopedSysTraceEvent(name);

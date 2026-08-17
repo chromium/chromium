@@ -11,7 +11,7 @@ import androidx.annotation.DimenRes;
 
 import org.chromium.build.annotations.NullMarked;
 
-/** Helper functions for working with {@TypedValue}s. */
+/** Helper functions for working with {@link TypedValue}s. */
 @NullMarked
 public final class ValueUtils {
 

@@ -139,7 +139,8 @@ public class UiUtils {
     }
 
     /**
-     * Inserts a {@link View} into a {@link ViewGroup} after directly before a given {@View}.
+     * Inserts a {@link View} into a {@link ViewGroup} after directly before a given {@link View}.
+     *
      * @param container The {@link View} to add newView to.
      * @param newView The new {@link View} to add.
      * @param existingView The {@link View} to insert the newView before.
@@ -150,7 +151,8 @@ public class UiUtils {
     }
 
     /**
-     * Inserts a {@link View} into a {@link ViewGroup} after directly after a given {@View}.
+     * Inserts a {@link View} into a {@link ViewGroup} after directly after a given {@link View}.
+     *
      * @param container The {@link View} to add newView to.
      * @param newView The new {@link View} to add.
      * @param existingView The {@link View} to insert the newView after.

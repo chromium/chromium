@@ -336,7 +336,7 @@ public class ModalDialogProperties {
     public static final ReadableIntPropertyKey DIALOG_STYLES = new ReadableIntPropertyKey();
 
     /**
-     * The handler for back presses done on a {@ModalDialogType.APP}. By default, a back press
+     * The handler for back presses done on a {@link ModalDialogType.APP}. By default, a back press
      * dismisses the dialog.
      */
     public static final WritableObjectPropertyKey<OnBackPressedCallback>

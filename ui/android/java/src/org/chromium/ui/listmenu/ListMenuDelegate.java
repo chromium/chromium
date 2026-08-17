@@ -33,7 +33,7 @@ public interface ListMenuDelegate {
     ListMenu getListMenu();
 
     /**
-     * @param The parent {@ListItem} that contains submenu items.
+     * @param The parent {@link ListItem} that contains submenu items.
      * @return The {@link ListMenu} with the contents of the submenu.
      */
     default @Nullable ListMenu getListMenuFromItems(List<ListItem> items) {

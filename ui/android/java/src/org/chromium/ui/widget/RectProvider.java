@@ -12,7 +12,7 @@ import org.chromium.build.annotations.NullMarked;
 /** Provides a {@link Rect} object that represents a position in screen space. */
 @NullMarked
 public class RectProvider {
-    /** An observer to be notified of changes to the {@Rect} position. */
+    /** An observer to be notified of changes to the {@link Rect} position. */
     public interface Observer {
         /**
          * Called when the {@link Rect} location has changed. The new {@link Rect} can be retrieved
