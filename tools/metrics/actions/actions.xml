@@ -988,6 +988,7 @@ should be able to be added at any place in this file.
   <variant name="SidePanelDev" summary="side panel dev feature"/>
   <variant name="SideSearch" summary="side search"/>
   <variant name="TabsFromOtherDevices" summary="tabs from other devices"/>
+  <variant name="TestTabScopedEntry" summary="test tab scoped entry"/>
   <variant name="WebView" summary="web view"/>
 </variants>
 
