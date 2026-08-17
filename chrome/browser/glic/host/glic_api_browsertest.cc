@@ -1622,26 +1622,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
   ContinueJsTest();
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTest, testRegisterConversationWithEmptyId) {
-  // Open glic window.
-  RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents,
-                           /*conversation_id=*/std::nullopt));
-
-  // Verify that there is no conversation ID initially.
-  ASSERT_FALSE(GetGlicInstanceImpl()->conversation_id());
-
-  ExecuteJsTest();
-
-  // Verify that the conversation_id() still returns std::nullopt.
-  ASSERT_FALSE(GetGlicInstanceImpl()->conversation_id());
-
-  // Verify that GetConversationInfo() returns a non-null info with correct
-  // title and empty ID.
-  mojom::ConversationInfoPtr retrieved_info =
-      GetGlicInstanceImpl()->GetConversationInfo();
-  EXPECT_EQ("", retrieved_info->conversation_id);
-  EXPECT_EQ("Empty Conversation", retrieved_info->conversation_title);
-}
 
 // TODO(b/498955581): Clean up glic hibernation experiments, and test in the
 // coordinator test.

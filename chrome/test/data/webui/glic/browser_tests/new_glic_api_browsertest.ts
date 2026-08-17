@@ -1284,6 +1284,13 @@ class ApiTests extends ApiTestFixtureBase {
         CancelActionsResult.TASK_NOT_FOUND);
   }
 
+  async testRegisterConversationWithEmptyId() {
+    assertDefined(this.host.registerConversation);
+    // Register an initial conversation with a valid ID.
+    await this.host.registerConversation(
+        {conversationId: '', conversationTitle: 'Empty Conversation'});
+  }
+
   async testNotifyActOnWebCapabilityChanged() {
     assertDefined(this.host.getActOnWebCapability);
     const actOnWebCapabilitySequence =

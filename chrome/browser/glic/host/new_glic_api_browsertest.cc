@@ -3741,6 +3741,24 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testCancelActions) {
   ExecuteJsTest();
 }
 
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testRegisterConversationWithEmptyId) {
+  ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTab());
+
+  // Verify that there is no conversation ID initially.
+  ASSERT_FALSE(instance->conversation_id());
+
+  ExecuteJsTest();
+
+  // Verify that the conversation_id() still returns std::nullopt.
+  ASSERT_FALSE(instance->conversation_id());
+
+  // Verify that GetConversationInfo() returns a non-null info with correct
+  // title and empty ID.
+  mojom::ConversationInfoPtr retrieved_info = instance->GetConversationInfo();
+  EXPECT_EQ("", retrieved_info->conversation_id);
+  EXPECT_EQ("Empty Conversation", retrieved_info->conversation_title);
+}
+
 class NewGlicApiTestWithGeminiActOnWebPolicy : public NewGlicApiTest {
  public:
   NewGlicApiTestWithGeminiActOnWebPolicy() {

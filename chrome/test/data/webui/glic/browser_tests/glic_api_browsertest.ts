@@ -836,12 +836,6 @@ class ApiTests extends ApiTestFixtureBase {
     await actOnWebCapabilitySequence.waitForValue(false);
   }
 
-  async testRegisterConversationWithEmptyId() {
-    assertDefined(this.host.registerConversation);
-    // Register an initial conversation with a valid ID.
-    await this.host.registerConversation(
-        {conversationId: '', conversationTitle: 'Empty Conversation'});
-  }
 
   async testPanelWillOpenBeforeClientReady() {
     const openData = await observeSequence(this.client.panelOpenData).next();
