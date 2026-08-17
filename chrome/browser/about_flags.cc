@@ -13788,6 +13788,13 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableWalletDirectOffers)},
 
+    {"autofill-and-passwords-remove-sign-in-promo",
+     flag_descriptions::kAutofillAndPasswordsRemoveSignInPromoName,
+     flag_descriptions::kAutofillAndPasswordsRemoveSignInPromoDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillAndPasswordsRemoveSignInPromo)},
+
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

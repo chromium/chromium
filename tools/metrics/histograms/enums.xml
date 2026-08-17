@@ -15127,6 +15127,8 @@ from previous Chrome versions.
   <int value="156285060" label="UseMultipleOverlays:disabled"/>
   <int value="156345797" label="BorealisZinkGlDriver:enabled"/>
   <int value="156657549" label="DiscountAutofill:enabled"/>
+  <int value="157026953"
+      label="AutofillAndPasswordsRemoveSignInPromo:disabled"/>
   <int value="157217034" label="enable-tab-for-desktop-share"/>
   <int value="157318016" label="AutomaticTabDiscarding:enabled"/>
   <int value="158086823"
@@ -19308,6 +19310,8 @@ from previous Chrome versions.
   <int value="1458301097" label="FeedbackIncludeVariations:enabled"/>
   <int value="1458475849" label="D3D11VideoDecoder:disabled"/>
   <int value="1458583431" label="arc-use-auth-endpoint"/>
+  <int value="1458749659"
+      label="AutofillAndPasswordsRemoveSignInPromo:enabled"/>
   <int value="1459529277" label="disable-text-input-focus-manager"/>
   <int value="1459601920" label="SessionRestoreAfterCrash:enabled"/>
   <int value="1459803015" label="WebRtcEnableCaptureMultiChannelApm:enabled"/>

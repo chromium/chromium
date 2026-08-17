@@ -473,6 +473,11 @@ BASE_FEATURE(kAutofillAmbientAutofillSuppression,
 BASE_FEATURE(kAutofillAmbientAutofillSuppressionUI,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls the removal of the sign-in promotional components from the
+// Autofill and passwords settings page across platforms.
+BASE_FEATURE(kAutofillAndPasswordsRemoveSignInPromo,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, on Android desktop, the Autofill keyboard accessory will have a
 // new behavior and design.
 // TODO(crbug.com/438125774): Remove when launched.
