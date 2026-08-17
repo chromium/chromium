@@ -9,7 +9,6 @@
 #include "base/feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/ui/browser.h"
 #include "components/live_caption/pref_names.h"
 #include "components/soda/constants.h"
 #include "components/soda/soda_installer.h"

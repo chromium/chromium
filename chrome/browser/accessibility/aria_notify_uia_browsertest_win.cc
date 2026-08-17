@@ -5,7 +5,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/accessibility/uia_accessibility_event_waiter.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"

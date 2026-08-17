@@ -22,6 +22,7 @@ source_set("media_app") {
     "//chrome/browser/ash/accessibility",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/screen_ai/public:optical_character_recognizer",
+    "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/tabs:tab_strip",
     "//components/strings:components_strings_grit",
     "//content/public/browser",

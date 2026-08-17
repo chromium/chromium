@@ -16,6 +16,8 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/accessibility/platform/ax_platform_node_win.h"
 
+class BrowserWindowInterface;
+
 // A test fixture that runs an accessibility client (ax_client) in a separate
 // process. The fixture asserts that no AXPlatformNode instances are leaked
 // during teardown. Tests based on this fixture may interleave operations on
@@ -46,7 +48,7 @@ class BrowserTestWithAxClient : public InProcessBrowserTest {
   // Gives the top-level HWND of `browser` to ax_client so that it can operate
   // on it using the given client-side API; see
   // `ax_client::mojom::AxClient::Initialize()`.
-  HRESULT InitializeClient(Browser* browser);
+  HRESULT InitializeClient(BrowserWindowInterface* browser);
 
   // Instructs the client to find all nodes in the window it is watching; see
   // `ax_client::mojom::AxClient::FindAll()`.

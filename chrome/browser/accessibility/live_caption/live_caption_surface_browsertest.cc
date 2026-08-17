@@ -10,7 +10,6 @@
 #include "base/test/bind.h"
 #include "base/unguessable_token.h"
 #include "chrome/app/chrome_command_ids.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/test/base/in_process_browser_test.h"

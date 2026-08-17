@@ -10,7 +10,7 @@
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/profiles/profile_window.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
@@ -181,7 +181,7 @@ IN_PROC_BROWSER_TEST_F(EmbeddedA11yExtensionLoaderTest,
 IN_PROC_BROWSER_TEST_F(EmbeddedA11yExtensionLoaderTest,
                        InstallsOnIncognitoProfile) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
-  Browser* incognito =
+  BrowserWindowInterface* incognito =
       CreateIncognitoBrowser(profile_manager->GetLastUsedProfile());
   content::RunAllTasksUntilIdle();
 
@@ -200,7 +200,7 @@ IN_PROC_BROWSER_TEST_F(EmbeddedA11yExtensionLoaderTest,
 // CreateGuestBrowser() is not supported for ChromeOS out of the box.
 IN_PROC_BROWSER_TEST_F(EmbeddedA11yExtensionLoaderTest,
                        InstallsOnGuestProfile) {
-  Browser* guest_browser = CreateGuestBrowser();
+  BrowserWindowInterface* guest_browser = CreateGuestBrowser();
   content::RunAllTasksUntilIdle();
 
   InstallAndWaitForExtensionLoaded(
