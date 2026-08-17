@@ -41,6 +41,13 @@ extern NSString* const kAtMemorySearchCellAccessibilityIdentifier;
 // Accessibility identifier for the AtMemory fetching cell.
 extern NSString* const kAtMemoryFetchingCellAccessibilityIdentifier;
 
+// Accessibility identifier for the AtMemory "Manage Enhanced Autofill" item.
+extern NSString* const
+    kAtMemoryManageEnhancedAutofillItemAccessibilityIdentifier;
+
+// Accessibility identifier prefix for the AtMemory granular fill cell.
+extern NSString* const kAtMemoryGranularFillCellAccessibilityIdentifierPrefix;
+
 // Accessibility identifier prefix for the AtMemory granular fill attribute
 // label.
 extern NSString* const

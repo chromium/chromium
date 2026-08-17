@@ -7,8 +7,10 @@
 #import "base/check.h"
 #import "components/autofill/core/browser/integrators/at_memory/memory_search_result.h"
 #import "ios/chrome/browser/autofill/atmemory/coordinator/at_memory_granular_fill_mediator.h"
+#import "ios/chrome/browser/autofill/atmemory/public/at_memory_commands.h"
 #import "ios/chrome/browser/autofill/atmemory/ui/at_memory_granular_fill_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 
 @implementation AtMemoryGranularFillCoordinator {
@@ -46,9 +48,13 @@
   _mediator =
       [[AtMemoryGranularFillMediator alloc] initWithResult:std::move(*_result)];
   _result.reset();
+  id<AtMemoryCommands> atMemoryHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), AtMemoryCommands);
   _mediator.fillHandler = self.fillHandler;
-  _mediator.consumer = _atMemoryGranularFillViewController;
+  _mediator.atMemoryHandler = atMemoryHandler;
+  _atMemoryGranularFillViewController.atMemoryHandler = atMemoryHandler;
   _atMemoryGranularFillViewController.mutator = _mediator;
+  _mediator.consumer = _atMemoryGranularFillViewController;
 
   [self.baseNavigationController
       pushViewController:_atMemoryGranularFillViewController

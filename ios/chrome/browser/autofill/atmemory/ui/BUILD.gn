@@ -55,15 +55,19 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "at_memory_granular_fill_cell_content_configuration_unittest.mm",
+    "at_memory_granular_fill_view_controller_unittest.mm",
     "at_memory_search_view_controller_unittest.mm",
   ]
   deps = [
+    ":item",
     ":ui",
     "//base",
     "//components/autofill/core/browser",
     "//components/strings",
     "//ios/chrome/browser/autofill/atmemory/public",
     "//ios/chrome/browser/autofill/atmemory/utils",
+    "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/chrome/browser/shared/ui/table_view/cells",
     "//ios/chrome/browser/shared/ui/table_view/content_configuration",
     "//testing/gtest",
     "//third_party/ocmock",

@@ -9,6 +9,7 @@
 
 #import "ios/chrome/browser/autofill/atmemory/ui/at_memory_granular_fill_mutator.h"
 
+@protocol AtMemoryCommands;
 @protocol AtMemoryFillCommands;
 @protocol AtMemoryGranularFillConsumer;
 
@@ -24,6 +25,9 @@ struct MemorySearchResult;
 
 // Handler for filling commands.
 @property(nonatomic, weak) id<AtMemoryFillCommands> fillHandler;
+
+// Handler for AtMemory commands.
+@property(nonatomic, weak) id<AtMemoryCommands> atMemoryHandler;
 
 // Initializes the mediator by moving `result`.
 - (instancetype)initWithResult:(autofill::MemorySearchResult&&)result

@@ -6,9 +6,13 @@
 
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/atmemory/public/at_memory_commands.h"
+#import "ios/chrome/browser/autofill/atmemory/public/at_memory_constants.h"
+#import "ios/chrome/browser/autofill/atmemory/ui/at_memory_granular_fill_cell_content_configuration.h"
 #import "ios/chrome/browser/autofill/atmemory/ui/at_memory_granular_fill_item.h"
 #import "ios/chrome/browser/autofill/atmemory/ui/at_memory_granular_fill_mutator.h"
+#import "ios/chrome/browser/autofill/atmemory/utils/atmemory_ui_util.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/content_configuration/table_view_cell_content_configuration.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
@@ -148,6 +152,7 @@ enum ItemIdentifier {
 
   id itemIdentifier = [_dataSource itemIdentifierForIndexPath:indexPath];
   if ([itemIdentifier isEqual:@(kManageEnhancedAutofillItem)]) {
+    // TODO(crbug.com/522340351): Update after confirming with UX.
     [self.atMemoryHandler openAutofillSettings];
   }
 }
@@ -180,9 +185,59 @@ enum ItemIdentifier {
 - (UITableViewCell*)cellForTableView:(UITableView*)tableView
                            indexPath:(NSIndexPath*)indexPath
                       itemIdentifier:(id)itemIdentifier {
-  // TODO(crbug.com/522340351): Configure cell for granular fill item and manage
-  // enhanced autofill.
-  return [TableViewCellContentConfiguration dequeueTableViewCell:tableView];
+  if ([itemIdentifier isEqual:@(kManageEnhancedAutofillItem)]) {
+    return [self manageEnhancedAutofillCellForTableView:tableView];
+  }
+
+  if ([itemIdentifier isKindOfClass:[AtMemoryGranularFillItem class]]) {
+    return [self
+        granularFillCellForTableView:tableView
+                                item:(AtMemoryGranularFillItem*)itemIdentifier];
+  }
+
+  return nil;
+}
+
+// Returns a cell configured for the manage enhanced autofill action item.
+- (UITableViewCell*)manageEnhancedAutofillCellForTableView:
+    (UITableView*)tableView {
+  UITableViewCell* cell =
+      [TableViewCellContentConfiguration dequeueTableViewCell:tableView];
+  TableViewCellContentConfiguration* configuration =
+      [[TableViewCellContentConfiguration alloc] init];
+  configuration.title =
+      l10n_util::GetNSString(IDS_AUTOFILL_MANAGE_ENHANCED_AUTOFILL);
+  configuration.titleColor = [UIColor colorNamed:kBlueColor];
+  cell.accessibilityIdentifier =
+      kAtMemoryManageEnhancedAutofillItemAccessibilityIdentifier;
+  cell.contentConfiguration = configuration;
+  cell.accessoryType = UITableViewCellAccessoryNone;
+  cell.selectionStyle = UITableViewCellSelectionStyleDefault;
+  return cell;
+}
+
+// Returns a cell configured for a granular fill item chip.
+- (UITableViewCell*)granularFillCellForTableView:(UITableView*)tableView
+                                            item:(AtMemoryGranularFillItem*)
+                                                     item {
+  UITableViewCell* cell =
+      [TableViewCellContentConfiguration dequeueTableViewCell:tableView];
+  AtMemoryGranularFillCellContentConfiguration* configuration =
+      [AtMemoryGranularFillCellContentConfiguration cellConfiguration];
+  configuration.attributeName = item.attributeName;
+  configuration.attributeValue = item.attributeValue;
+  __weak __typeof(self) weakSelf = self;
+  configuration.selectionHandler = ^(NSString* content) {
+    if (content.length > 0) {
+      [weakSelf.mutator didSelectContent:content];
+    }
+  };
+  cell.contentConfiguration = configuration;
+  cell.accessibilityIdentifier =
+      GetAtMemoryGranularFillCellAccessibilityIdentifier(item.attributeName);
+  cell.accessoryType = UITableViewCellAccessoryNone;
+  cell.selectionStyle = UITableViewCellSelectionStyleNone;
+  return cell;
 }
 
 @end

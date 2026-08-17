@@ -110,20 +110,15 @@ TEST_F(AtMemoryUIUtilTest, TestAtMemoryGranularFillItemsForSearchResult) {
 
   NSArray<AtMemoryGranularFillItem*>* items =
       AtMemoryGranularFillItemsForSearchResult(entry);
-  ASSERT_EQ(items.count, 3u);
+  ASSERT_EQ(items.count, 2u);
 
   EXPECT_NSEQ(items[0].attributeName,
-              base::SysUTF16ToNSString(kPassportNumberTypeName));
-  EXPECT_NSEQ(items[0].attributeValue,
-              base::SysUTF16ToNSString(kPassportNumberValue));
-
-  EXPECT_NSEQ(items[1].attributeName,
               base::SysUTF16ToNSString(kPassportExpirationDateTypeName));
-  EXPECT_NSEQ(items[1].attributeValue,
+  EXPECT_NSEQ(items[0].attributeValue,
               base::SysUTF16ToNSString(kPassportExpirationDateValue));
 
-  EXPECT_NSEQ(items[2].attributeName,
+  EXPECT_NSEQ(items[1].attributeName,
               base::SysUTF16ToNSString(kPassportNameTypeName));
-  EXPECT_NSEQ(items[2].attributeValue,
+  EXPECT_NSEQ(items[1].attributeValue,
               base::SysUTF16ToNSString(kPassportNameValue));
 }

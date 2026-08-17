@@ -21,6 +21,11 @@ NSString* GetAtMemoryGranularFillTitle(
 NSArray<AtMemoryGranularFillItem*>* AtMemoryGranularFillItemsForSearchResult(
     const autofill::MemorySearchResult& result);
 
+// Returns the accessibility identifier for the granular fill cell
+// corresponding to `attribute_name`.
+NSString* GetAtMemoryGranularFillCellAccessibilityIdentifier(
+    NSString* attribute_name);
+
 // Returns the accessibility identifier for the granular fill attribute label
 // corresponding to `attribute_name`.
 NSString* GetAtMemoryGranularFillAttributeLabelAccessibilityIdentifier(

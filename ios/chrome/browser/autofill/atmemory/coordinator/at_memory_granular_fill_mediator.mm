@@ -6,8 +6,10 @@
 
 #import "base/check.h"
 #import "components/autofill/core/browser/integrators/at_memory/memory_search_result.h"
+#import "ios/chrome/browser/autofill/atmemory/public/at_memory_commands.h"
 #import "ios/chrome/browser/autofill/atmemory/public/at_memory_fill_commands.h"
 #import "ios/chrome/browser/autofill/atmemory/ui/at_memory_granular_fill_consumer.h"
+#import "ios/chrome/browser/autofill/atmemory/ui/at_memory_granular_fill_item.h"
 #import "ios/chrome/browser/autofill/atmemory/utils/atmemory_ui_util.h"
 
 @implementation AtMemoryGranularFillMediator {
@@ -34,13 +36,15 @@
 
   CHECK(_result.has_value());
   [_consumer setTitle:GetAtMemoryGranularFillTitle(*_result)];
-  // TODO(crbug.com/522340351): Set the granular fill items on the consumer.
+  [_consumer
+      setGranularFillItems:AtMemoryGranularFillItemsForSearchResult(*_result)];
 }
 
 #pragma mark - AtMemoryGranularFillMutator
 
 - (void)didSelectContent:(NSString*)content {
   [self.fillHandler fillWithContent:content];
+  [self.atMemoryHandler dismissAtMemory];
 }
 
 @end
