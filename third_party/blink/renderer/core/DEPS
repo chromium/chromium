@@ -143,9 +143,7 @@ include_rules = [
     "+ui/gfx/animation/keyframe/keyframe_model.h",
     "+ui/gfx/animation/keyframe/timing_function.h",
     "+ui/gfx/codec/png_codec.h",
-    "+ui/gfx/color_space.h",
     "+ui/gfx/geometry",
-    "+ui/gfx/hdr_metadata.h",
     "+ui/gfx/presentation_feedback.h",
     "+ui/gfx/range/range.h",
     "+ui/gfx/selection_bound.h",
@@ -225,6 +223,12 @@ specific_include_rules = {
     ],
     "scripted_idle_task_controller(_test)?.(cc|h)": [
         "+base/task/delayed_task_handle.h",
+    ],
+    "local_frame_mojo_handler.cc" : [
+        "+base/command_line.h",
+    ],
+    "timezone_controller.cc" : [
+        "+base/command_line.h",
     ],
     "xml_http_request.cc": [
         "+net/base/mime_util.h",

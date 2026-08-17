@@ -78,6 +78,7 @@
 #include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom.h"
 #include "services/tracing/public/cpp/background_tracing/background_tracing_agent_impl.h"
 #include "services/tracing/public/cpp/background_tracing/background_tracing_agent_provider_impl.h"
+#include "third_party/blink/public/common/features.h"
 
 #if BUILDFLAG(IS_POSIX)
 #include "base/posix/global_descriptors.h"
@@ -701,8 +702,13 @@ void ChildThreadImpl::Init(const Options& options) {
     // communication from the browser process (see https://crbug.com/821790 for
     // details)
     mojo::PendingRemote<device::mojom::PowerMonitor> remote_power_monitor;
-    BindHostReceiverBatched(
-        remote_power_monitor.InitWithNewPipeAndPassReceiver());
+    if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+            switches::kTopChromeWebUI) ||
+        !base::FeatureList::IsEnabled(
+            blink::features::kWebUIBypassMojoConnections)) {
+      BindHostReceiverBatched(
+          remote_power_monitor.InitWithNewPipeAndPassReceiver());
+    }
     source_ptr->Init(std::move(remote_power_monitor));
   }
 

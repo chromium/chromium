@@ -1369,6 +1369,15 @@ _CONFIG = [
         ]
     },
     {
+        'paths': [
+            'third_party/blink/renderer/core/timezone/timezone_controller.cc',
+            'third_party/blink/renderer/core/frame/local_frame_mojo_handler.cc',
+        ],
+        'allowed': [
+            'base::CommandLine',
+        ]
+    },
+    {
         'paths': ['third_party/blink/renderer/core/frame/dom_window.cc'],
         'allowed': [
             'base::MakeFixedFlatMap',

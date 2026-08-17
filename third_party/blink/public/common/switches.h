@@ -69,6 +69,7 @@ BLINK_COMMON_EXPORT extern const char kDisableReduceAcceptLanguage[];
 BLINK_COMMON_EXPORT extern const char kXSLTEnabledPolicy[];
 BLINK_COMMON_EXPORT extern const char
     kRestrictBackgroundFetchFromServiceWorker[];
+BLINK_COMMON_EXPORT extern const char kTopChromeWebUI[];
 }  // namespace switches
 }  // namespace blink
 
