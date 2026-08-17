@@ -25,7 +25,7 @@ public class DeveloperUiTestUtils {
     /**
      * Matches that a {@link ListView} has a specific number of items.
      *
-     * @param intMatcher {@line Matcher} class that matches a given integer.
+     * @param intMatcher {@link Matcher} class that matches a given integer.
      */
     public static Matcher<View> withCount(final Matcher<Integer> intMatcher) {
         return new TypeSafeMatcher<>() {

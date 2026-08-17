@@ -617,7 +617,7 @@ public class WebViewChromiumAwInit {
      * <p>If the UI thread is not set explicitly before calling this method, the main looper is
      * chosen as the UI thread.
      *
-     * @returns true if Chromium startup is finished, false if startup will be finished in the near
+     * @return true if Chromium startup is finished, false if startup will be finished in the near
      *     future. If false, caller may choose to wait on the {@code mStartupFinished} latch, or
      *     {@link WebViewStartUpCallback}.
      */
