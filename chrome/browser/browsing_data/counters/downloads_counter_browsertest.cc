@@ -48,7 +48,6 @@ class DownloadsCounterTest : public InProcessBrowserTest,
     time_ = base::Time::Now();
     items_count_ = 0;
     manager_ = browser()->GetProfile()->GetDownloadManager();
-    WaitForInitialization(manager_);
     DownloadCoreService* service =
         DownloadCoreServiceFactory::GetForBrowserContext(
             browser()->GetProfile());
@@ -56,6 +55,7 @@ class DownloadsCounterTest : public InProcessBrowserTest,
       service->InitializeHistory();
       history_ = service->GetDownloadHistory();
     }
+    WaitForInitialization(manager_);
     if (history_) {
       history_->AddObserver(this);
     }

@@ -624,6 +624,11 @@ class DownloadExtensionTest : public ExtensionApiTest {
   bool CreateHistoryDownloads(
       base::span<const HistoryDownloadInfo> history_info,
       DownloadManager::DownloadVector* items) {
+    DownloadCoreService* service =
+        DownloadCoreServiceFactory::GetForBrowserContext(current_profile());
+    if (service) {
+      service->InitializeHistory();
+    }
     DownloadIdComparator download_id_comparator;
     base::Time current = base::Time::Now();
     items->clear();
