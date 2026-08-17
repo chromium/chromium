@@ -15,7 +15,8 @@ namespace autofill {
 
 ::testing::Matcher<Suggestion> EqualsSuggestion(
     SuggestionType id,
-    const std::u16string& main_text);
+    const std::u16string& main_text,
+    bool is_main_text_primary = true);
 
 ::testing::Matcher<Suggestion> EqualsSuggestion(
     SuggestionType id,
@@ -34,16 +35,8 @@ namespace autofill {
 ::testing::Matcher<Suggestion> EqualsSuggestion(
     SuggestionType type,
     const std::u16string& main_text,
-    const bool is_main_text_primary,
+    bool is_main_text_primary,
     Suggestion::Icon icon,
-    const std::vector<std::vector<Suggestion::Text>>& labels,
-    const Suggestion::Payload& payload);
-
-::testing::Matcher<Suggestion> EqualsSuggestion(
-    SuggestionType type,
-    const std::u16string& main_text,
-    const bool is_main_text_primary,
-    Suggestion::LetterMonochromeIcon monogram_text,
     const std::vector<std::vector<Suggestion::Text>>& labels,
     const Suggestion::Payload& payload);
 

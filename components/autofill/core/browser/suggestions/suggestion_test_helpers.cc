@@ -9,23 +9,17 @@ using ::testing::AllOf;
 using ::testing::Field;
 using ::testing::Matcher;
 
-namespace {
-Matcher<Suggestion::Text> EqualsTextPrimary(const bool is_primary) {
-  return Field(&Suggestion::Text::is_primary,
-               Suggestion::Text::IsPrimary(is_primary));
-}
-}  // namespace
-
 Matcher<Suggestion> EqualsSuggestion(SuggestionType id) {
   return Field(&Suggestion::type, id);
 }
 
 Matcher<Suggestion> EqualsSuggestion(SuggestionType id,
-                                     const std::u16string& main_text) {
-  return AllOf(
-      Field(&Suggestion::type, id),
-      Field(&Suggestion::main_text,
-            Suggestion::Text(main_text, Suggestion::Text::IsPrimary(true))));
+                                     const std::u16string& main_text,
+                                     bool is_main_text_primary) {
+  return AllOf(Field(&Suggestion::type, id),
+               Field(&Suggestion::main_text,
+                     Suggestion::Text(main_text, Suggestion::Text::IsPrimary(
+                                                     is_main_text_primary))));
 }
 
 Matcher<Suggestion> EqualsSuggestion(SuggestionType id,
@@ -59,28 +53,14 @@ Matcher<Suggestion> EqualsSuggestion(SuggestionType id,
 Matcher<Suggestion> EqualsSuggestion(
     SuggestionType type,
     const std::u16string& main_text,
-    const bool is_main_text_primary,
+    bool is_main_text_primary,
     Suggestion::Icon icon,
     const std::vector<std::vector<Suggestion::Text>>& labels,
     const Suggestion::Payload& payload) {
-  return AllOf(
-      EqualsSuggestion(type, main_text, icon),
-      Field(&Suggestion::labels, labels), Field(&Suggestion::payload, payload),
-      Field(&Suggestion::main_text, EqualsTextPrimary(is_main_text_primary)));
-}
-
-Matcher<Suggestion> EqualsSuggestion(
-    SuggestionType type,
-    const std::u16string& main_text,
-    const bool is_main_text_primary,
-    Suggestion::LetterMonochromeIcon letter_icon,
-    const std::vector<std::vector<Suggestion::Text>>& labels,
-    const Suggestion::Payload& payload) {
-  return AllOf(
-      EqualsSuggestion(type, main_text), Field(&Suggestion::labels, labels),
-      Field(&Suggestion::payload, payload),
-      Field(&Suggestion::main_text, EqualsTextPrimary(is_main_text_primary)),
-      Field(&Suggestion::custom_icon, letter_icon));
+  return AllOf(EqualsSuggestion(type, main_text, is_main_text_primary),
+               Field(&Suggestion::icon, icon),
+               Field(&Suggestion::labels, labels),
+               Field(&Suggestion::payload, payload));
 }
 
 Matcher<Suggestion> HasIcon(Suggestion::Icon icon) {
