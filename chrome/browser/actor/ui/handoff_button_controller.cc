@@ -426,8 +426,8 @@ void HandoffButtonController::OnButtonPressed() {
         auto* glic_service = glic::GlicKeyedServiceFactory::GetGlicKeyedService(
             bwi->GetProfile());
         if (glic_service) {
-          glic_service->ToggleUI(bwi, /*prevent_close=*/true,
-                                 glic::mojom::InvocationSource::kHandoffButton);
+          glic_service->ShowUI(bwi,
+                               glic::mojom::InvocationSource::kHandoffButton);
         }
       }
     } else {
