@@ -519,9 +519,7 @@ void BrowserAccessibilityManagerAndroid::FireGeneratedEvent(
         wcax->HandleSliderChanged(android_node->GetUniqueId());
       } else if ((android_node->GetRole() == ax::mojom::Role::kSpinButton &&
                   !android_node->IsTextField()) ||
-                 (base::FeatureList::IsEnabled(
-                      features::kAccessibilityMeterEventsOnAndroid) &&
-                  android_node->GetRole() == ax::mojom::Role::kMeter)) {
+                 android_node->GetRole() == ax::mojom::Role::kMeter) {
         // TalkBack expects non-editable SpinButtons and Meter value to be
         // changed via state description.
         if (isNodeLikelyKnownForExperiment(wcax, android_node->GetUniqueId())) {
