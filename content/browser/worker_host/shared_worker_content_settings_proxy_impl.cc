@@ -16,7 +16,7 @@ SharedWorkerContentSettingsProxyImpl::SharedWorkerContentSettingsProxyImpl(
     const GURL& script_url,
     SharedWorkerHost* owner,
     mojo::PendingReceiver<blink::mojom::WorkerContentSettingsProxy> receiver)
-    : origin_(url::Origin::Create(script_url)),
+    : origin_(owner->GetWorkerStorageKey().origin()),
       owner_(owner),
       receiver_(this, std::move(receiver)) {}
 

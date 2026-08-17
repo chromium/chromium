@@ -8,18 +8,53 @@
 #include <utility>
 
 #include "base/metrics/histogram_macros.h"
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/mojom/worker/worker_content_settings_proxy.mojom-blink.h"
-#include "third_party/blink/renderer/platform/wtf/thread_specific.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
 SharedWorkerContentSettingsProxy::SharedWorkerContentSettingsProxy(
     mojo::PendingRemote<mojom::blink::WorkerContentSettingsProxy> host_info)
-    : host_info_(std::move(host_info)) {}
-SharedWorkerContentSettingsProxy::~SharedWorkerContentSettingsProxy() = default;
+    : host_info_(std::move(host_info)) {
+  DETACH_FROM_THREAD(worker_thread_checker_);
+}
+
+SharedWorkerContentSettingsProxy::~SharedWorkerContentSettingsProxy() {
+  DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
+}
+
+void SharedWorkerContentSettingsProxy::AllowStorageAccess(
+    StorageType storage_type,
+    base::OnceCallback<void(bool)> callback) {
+  DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
+  switch (storage_type) {
+    case StorageType::kIndexedDB:
+      GetService()->AllowIndexedDB(std::move(callback));
+      return;
+    case StorageType::kCacheStorage:
+      GetService()->AllowCacheStorage(std::move(callback));
+      return;
+    case StorageType::kWebLocks:
+      GetService()->AllowWebLocks(std::move(callback));
+      return;
+    case StorageType::kFileSystem:
+      // TODO(crbug.com/503624894): Rename RequestFileSystemAccessSync to
+      // AllowFileSystem in a follow-up.
+      GetService()->RequestFileSystemAccessSync(std::move(callback));
+      return;
+    default:
+      // TODO(crbug.com/40103756): Revisit this default in the future.
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, blink::BindOnce(std::move(callback), true));
+      return;
+  }
+}
 
 bool SharedWorkerContentSettingsProxy::AllowStorageAccessSync(
     StorageType storage_type) {
+  DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
+  // TODO(crbug.com/503624894): Remove obsolete UMA histograms in a follow-up.
   bool result = false;
   switch (storage_type) {
     case StorageType::kIndexedDB: {
@@ -43,7 +78,7 @@ bool SharedWorkerContentSettingsProxy::AllowStorageAccessSync(
       break;
     }
     default: {
-      // TODO(shuagga@microsoft.com): Revisit this default in the future.
+      // TODO(crbug.com/40103756): Revisit this default in the future.
       return true;
     }
   }
@@ -51,19 +86,14 @@ bool SharedWorkerContentSettingsProxy::AllowStorageAccessSync(
   return result;
 }
 
-// Use ThreadSpecific to ensure that |content_settings_instance_host| is
-// destructed on worker thread.
-// Each worker has a dedicated thread so this is safe.
 mojo::Remote<mojom::blink::WorkerContentSettingsProxy>&
 SharedWorkerContentSettingsProxy::GetService() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(
-      ThreadSpecific<mojo::Remote<mojom::blink::WorkerContentSettingsProxy>>,
-      content_settings_instance_host, ());
-  if (!content_settings_instance_host.IsSet()) {
+  DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
+  if (!host_remote_.is_bound()) {
     DCHECK(host_info_.is_valid());
-    content_settings_instance_host->Bind(std::move(host_info_));
+    host_remote_.Bind(std::move(host_info_));
   }
-  return *content_settings_instance_host;
+  return host_remote_;
 }
 
 }  // namespace blink

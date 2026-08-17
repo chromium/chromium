@@ -625,6 +625,7 @@ source_set("unit_tests") {
     "sensor/sensor_test_utils.cc",
     "sensor/sensor_test_utils.h",
     "service_worker/service_worker_container_test.cc",
+    "service_worker/service_worker_content_settings_proxy_test.cc",
     "service_worker/service_worker_event_queue_test.cc",
     "service_worker/service_worker_global_scope_test.cc",
     "service_worker/service_worker_installed_scripts_manager_test.cc",
