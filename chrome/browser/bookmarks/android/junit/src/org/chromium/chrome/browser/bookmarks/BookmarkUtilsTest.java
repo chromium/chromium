@@ -77,7 +77,10 @@ import java.util.List;
 /** Unit tests for {@link BookmarkUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@DisableFeatures(ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_POPUP)
+@DisableFeatures({
+    ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_LAYOUT,
+    ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_POPUP
+})
 public class BookmarkUtilsTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

@@ -45,8 +45,10 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRowProperties.ImageVisibility;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.components.browser_ui.widget.RoundedCornerImageView;
 import org.chromium.ui.base.TestActivity;
@@ -63,6 +65,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 /** Unit tests for {@link ImprovedBookmarkRow}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@DisableFeatures(ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_LAYOUT)
 public class ImprovedBookmarkRowTest {
     private static final String TITLE = "Test title";
     private static final String DESCRIPTION = "Test description";

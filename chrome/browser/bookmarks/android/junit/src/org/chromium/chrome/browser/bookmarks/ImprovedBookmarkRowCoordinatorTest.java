@@ -39,7 +39,9 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkType;
@@ -60,6 +62,7 @@ import org.chromium.url.JUnitTestGURLs;
 /** Unit tests for {@link ImprovedBookmarkRowCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@DisableFeatures(ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_LAYOUT)
 public class ImprovedBookmarkRowCoordinatorTest {
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =

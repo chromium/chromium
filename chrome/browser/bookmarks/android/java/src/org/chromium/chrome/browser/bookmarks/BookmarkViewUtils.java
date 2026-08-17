@@ -45,11 +45,12 @@ public class BookmarkViewUtils {
             return UiUtils.getTintedDrawable(context, R.drawable.ic_toolbar_24dp, tint);
         }
 
+        boolean useOutline =
+                displayPref == BookmarkRowDisplayPref.VISUAL
+                        || BookmarkUtils.isDesktopBookmarksLayoutEnabled();
         return UiUtils.getTintedDrawable(
                 context,
-                displayPref == BookmarkRowDisplayPref.VISUAL
-                        ? R.drawable.ic_folder_outline_24dp
-                        : R.drawable.ic_folder_blue_24dp,
+                useOutline ? R.drawable.ic_folder_outline_24dp : R.drawable.ic_folder_blue_24dp,
                 tint);
     }
 
@@ -126,6 +127,10 @@ public class BookmarkViewUtils {
     /** Returns the size to use when displaying an image. */
     public static int getImageIconSize(
             Resources resources, @BookmarkRowDisplayPref int displayPref) {
+        if (BookmarkUtils.isDesktopBookmarksLayoutEnabled()) {
+            return resources.getDimensionPixelSize(
+                    R.dimen.improved_bookmark_start_image_size_desktop);
+        }
         return displayPref == BookmarkRowDisplayPref.VISUAL
                 ? resources.getDimensionPixelSize(R.dimen.improved_bookmark_start_image_size_visual)
                 : resources.getDimensionPixelSize(

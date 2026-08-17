@@ -104,6 +104,7 @@ public class ImprovedBookmarkRow extends ViewLookupCachingFrameLayout
                         row);
         row.onFinishInflate();
         row.setStartImageRoundedCorners(isVisual);
+        row.setStartImageSize();
         return row;
     }
 
@@ -151,14 +152,29 @@ public class ImprovedBookmarkRow extends ViewLookupCachingFrameLayout
     void setStartImageRoundedCorners(boolean isVisual) {
         assert mStartImageView != null;
 
-        int radius =
-                getContext()
-                        .getResources()
-                        .getDimensionPixelSize(
-                                isVisual
-                                        ? R.dimen.improved_bookmark_row_outer_corner_radius
-                                        : R.dimen.improved_bookmark_icon_radius);
+        Resources res = getContext().getResources();
+        int dimenRes =
+                BookmarkUtils.isDesktopBookmarksLayoutEnabled()
+                        ? R.dimen.improved_bookmark_start_image_corner_radius_desktop
+                        : (isVisual
+                                ? R.dimen.improved_bookmark_row_outer_corner_radius
+                                : R.dimen.improved_bookmark_icon_radius);
+        int radius = res.getDimensionPixelSize(dimenRes);
         mStartImageView.setRoundedCorners(radius, radius, radius, radius);
+    }
+
+    void setStartImageSize() {
+        if (BookmarkUtils.isDesktopBookmarksLayoutEnabled() && mStartImageView != null) {
+            Resources res = getContext().getResources();
+            int size =
+                    res.getDimensionPixelSize(R.dimen.improved_bookmark_start_image_size_desktop);
+            ViewGroup.LayoutParams params = mStartImageView.getLayoutParams();
+            if (params != null) {
+                params.width = size;
+                params.height = size;
+                mStartImageView.setLayoutParams(params);
+            }
+        }
     }
 
     @Override
