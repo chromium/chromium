@@ -213,10 +213,6 @@ class SyncTest : public PlatformBrowserTest,
   // in conjunction with test parameterization.
   virtual SetupSyncMode GetSetupSyncMode() const;
 
-  // Returns whether this test relies on SHARING_MESSAGE. Used as a temporary
-  // workaround on macOS (crbug.com/501729852).
-  virtual bool TestReliesOnSharingMessage() const;
-
   // Returns the URL to be opened in the initial tab of each profile's browser
   // window.
   virtual GURL GetInitialURL() const;
