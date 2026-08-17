@@ -41,12 +41,10 @@ import org.chromium.chrome.browser.ui.favicon.FaviconHelper.FaviconImageCallback
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
-import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
 import org.chromium.components.url_formatter.UrlFormatter;
-import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.mojom.WindowOpenDisposition;
@@ -894,10 +892,7 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
      */
     private @Nullable String formatUrlForDisplay(GURL gurl) {
         String urlSpec = gurl.getSpec();
-        String scheme = gurl.getScheme();
-        if (ContentUrlConstants.ABOUT_SCHEME.equals(scheme)
-                || UrlConstants.CHROME_SCHEME.equals(scheme)
-                || UrlConstants.CHROME_NATIVE_SCHEME.equals(scheme)) {
+        if (UrlUtilities.isInternalScheme(gurl)) {
             return UrlFormatter.formatUrlForDisplayOmitHTTPScheme(urlSpec);
         }
         // This should perhaps use UrlFormatter as well, but it has used domain for a long time.
