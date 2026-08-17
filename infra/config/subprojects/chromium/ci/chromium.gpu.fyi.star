@@ -187,6 +187,7 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "Android FYI Release (Pixel 4)",
+    branch_selector = branches.selector.ANDROID_BRANCHES,
     description_html = "Runs release GPU tests on stable Pixel 4 configs",
     parent = "GPU FYI Android arm Builder",
     builder_spec = gpu_fyi_thin_tester_builder_spec(
@@ -1030,6 +1031,7 @@ gpu.ci.linux_builder(
 
 gpu.ci.linux_builder(
     name = "GPU FYI Android arm Builder",
+    branch_selector = branches.selector.ANDROID_BRANCHES,
     description_html = "Builds release Android arm binaries for GPU testing",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(

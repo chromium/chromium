@@ -4634,21 +4634,6 @@ targets.bundle(
 )
 
 targets.bundle(
-    name = "gpu_pixel_04_telemetry_tests",
-    targets = [
-        "gpu_common_and_optional_telemetry_tests",
-        "gpu_passthrough_ganesh_telemetry_tests",
-        "gpu_validating_telemetry_tests",
-        "gpu_webrtc_validating_ganesh_telemetry_test",
-        "gpu_webcodecs_validating_ganesh_telemetry_test",
-        "gpu_webgl2_conformance_gles_passthrough_telemetry_tests",
-        "gpu_webgl2_conformance_validating_telemetry_tests",
-        "gpu_webgl_conformance_gles_passthrough_ganesh_telemetry_tests",
-        "gpu_webgl_conformance_validating_ganesh_telemetry_tests",
-    ],
-)
-
-targets.bundle(
     name = "gpu_swangle_telemetry_tests",
     targets = [
         "gpu_webgl_conformance_swangle_passthrough_telemetry_tests",

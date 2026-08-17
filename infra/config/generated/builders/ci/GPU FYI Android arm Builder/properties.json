@@ -217,6 +217,10 @@
       ],
       "mirroring_builder_group_and_names": [
         {
+          "builder": "android_optional_gpu_tests_rel",
+          "group": "tryserver.chromium.android"
+        },
+        {
           "builder": "gpu-fyi-try-android-a13-32",
           "group": "tryserver.chromium.android"
         },

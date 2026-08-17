@@ -1,5 +1,172 @@
 {
-  "android_optional_gpu_tests_rel": {
+  "Android FYI Release (Pixel 4)": {
+    "gtest_tests": [
+      {
+        "args": [
+          "-v"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "module_name": "//third_party/angle/src/tests:angle_unittests",
+        "module_scheme": "gtest",
+        "name": "angle_unittests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "containment_type": "AUTO",
+          "dimensions": {
+            "device_os": "RP1A.201105.002",
+            "device_os_type": "userdebug",
+            "device_type": "flame",
+            "os": "Android",
+            "pool": "chromium.tests.gpu"
+          },
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "angle_unittests",
+        "test_id_prefix": "ninja://third_party/angle/src/tests:angle_unittests/",
+        "use_isolated_scripts_api": true
+      },
+      {
+        "args": [
+          "--use-cmd-decoder=passthrough",
+          "--use-gl=angle",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "module_name": "//gpu:gl_tests",
+        "module_scheme": "gtest",
+        "name": "gl_tests_passthrough",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "containment_type": "AUTO",
+          "dimensions": {
+            "device_os": "RP1A.201105.002",
+            "device_os_type": "userdebug",
+            "device_type": "flame",
+            "os": "Android",
+            "pool": "chromium.tests.gpu"
+          },
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
+        },
+        "test": "gl_tests",
+        "test_id_prefix": "ninja://gpu:gl_tests/"
+      },
+      {
+        "args": [
+          "--use-cmd-decoder=validating",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "module_name": "//gpu:gl_tests",
+        "module_scheme": "gtest",
+        "name": "gl_tests_validating",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "containment_type": "AUTO",
+          "dimensions": {
+            "device_os": "RP1A.201105.002",
+            "device_os_type": "userdebug",
+            "device_type": "flame",
+            "os": "Android",
+            "pool": "chromium.tests.gpu"
+          },
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "gl_tests",
+        "test_id_prefix": "ninja://gpu:gl_tests/"
+      },
+      {
+        "args": [
+          "--git-revision=${got_revision}",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "module_name": "//ui/gl:gl_unittests",
+        "module_scheme": "gtest",
+        "name": "gl_unittests",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "containment_type": "AUTO",
+          "dimensions": {
+            "device_os": "RP1A.201105.002",
+            "device_os_type": "userdebug",
+            "device_type": "flame",
+            "os": "Android",
+            "pool": "chromium.tests.gpu"
+          },
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "gl_unittests",
+        "test_id_prefix": "ninja://ui/gl:gl_unittests/"
+      },
+      {
+        "args": [
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "module_name": "//gpu:gpu_unittests",
+        "module_scheme": "gtest",
+        "name": "gpu_unittests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "containment_type": "AUTO",
+          "dimensions": {
+            "device_os": "RP1A.201105.002",
+            "device_os_type": "userdebug",
+            "device_type": "flame",
+            "os": "Android",
+            "pool": "chromium.tests.gpu"
+          },
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "gpu_unittests",
+        "test_id_prefix": "ninja://gpu:gpu_unittests/"
+      }
+    ],
     "isolated_scripts": [
       {
         "args": [
@@ -34,6 +201,7 @@
           "has_native_resultdb_integration": true
         },
         "swarming": {
+          "containment_type": "AUTO",
           "dimensions": {
             "device_os": "RP1A.201105.002",
             "device_os_type": "userdebug",
@@ -41,7 +209,9 @@
             "os": "Android",
             "pool": "chromium.tests.gpu"
           },
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "telemetry_gpu_integration_test_android_webview",
@@ -71,6 +241,7 @@
           "has_native_resultdb_integration": true
         },
         "swarming": {
+          "containment_type": "AUTO",
           "dimensions": {
             "device_os": "RP1A.201105.002",
             "device_os_type": "userdebug",
@@ -78,7 +249,9 @@
             "os": "Android",
             "pool": "chromium.tests.gpu"
           },
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "telemetry_gpu_integration_test_android_chrome",
@@ -108,6 +281,7 @@
           "has_native_resultdb_integration": true
         },
         "swarming": {
+          "containment_type": "AUTO",
           "dimensions": {
             "device_os": "RP1A.201105.002",
             "device_os_type": "userdebug",
@@ -115,7 +289,9 @@
             "os": "Android",
             "pool": "chromium.tests.gpu"
           },
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "telemetry_gpu_integration_test_android_chrome",
@@ -154,6 +330,7 @@
           "has_native_resultdb_integration": true
         },
         "swarming": {
+          "containment_type": "AUTO",
           "dimensions": {
             "device_os": "RP1A.201105.002",
             "device_os_type": "userdebug",
@@ -161,7 +338,9 @@
             "os": "Android",
             "pool": "chromium.tests.gpu"
           },
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "telemetry_gpu_integration_test_android_chrome",
@@ -200,6 +379,7 @@
           "has_native_resultdb_integration": true
         },
         "swarming": {
+          "containment_type": "AUTO",
           "dimensions": {
             "device_os": "RP1A.201105.002",
             "device_os_type": "userdebug",
@@ -207,7 +387,9 @@
             "os": "Android",
             "pool": "chromium.tests.gpu"
           },
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "telemetry_gpu_integration_test_android_chrome",
@@ -237,6 +419,7 @@
           "has_native_resultdb_integration": true
         },
         "swarming": {
+          "containment_type": "AUTO",
           "dimensions": {
             "device_os": "RP1A.201105.002",
             "device_os_type": "userdebug",
@@ -244,7 +427,9 @@
             "os": "Android",
             "pool": "chromium.tests.gpu"
           },
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "telemetry_gpu_integration_test_android_chrome",
@@ -274,6 +459,7 @@
           "has_native_resultdb_integration": true
         },
         "swarming": {
+          "containment_type": "AUTO",
           "dimensions": {
             "device_os": "RP1A.201105.002",
             "device_os_type": "userdebug",
@@ -281,7 +467,9 @@
             "os": "Android",
             "pool": "chromium.tests.gpu"
           },
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "telemetry_gpu_integration_test_android_chrome",
@@ -315,6 +503,7 @@
           "has_native_resultdb_integration": true
         },
         "swarming": {
+          "containment_type": "AUTO",
           "dimensions": {
             "device_os": "RP1A.201105.002",
             "device_os_type": "userdebug",
@@ -322,7 +511,9 @@
             "os": "Android",
             "pool": "chromium.tests.gpu"
           },
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "telemetry_gpu_integration_test_android_chrome",
@@ -361,6 +552,7 @@
           "has_native_resultdb_integration": true
         },
         "swarming": {
+          "containment_type": "AUTO",
           "dimensions": {
             "device_os": "RP1A.201105.002",
             "device_os_type": "userdebug",
@@ -368,7 +560,9 @@
             "os": "Android",
             "pool": "chromium.tests.gpu"
           },
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "telemetry_gpu_integration_test_android_chrome",
@@ -407,6 +601,7 @@
           "has_native_resultdb_integration": true
         },
         "swarming": {
+          "containment_type": "AUTO",
           "dimensions": {
             "device_os": "RP1A.201105.002",
             "device_os_type": "userdebug",
@@ -414,7 +609,9 @@
             "os": "Android",
             "pool": "chromium.tests.gpu"
           },
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "telemetry_gpu_integration_test_android_chrome",
@@ -445,6 +642,7 @@
           "has_native_resultdb_integration": true
         },
         "swarming": {
+          "containment_type": "AUTO",
           "dimensions": {
             "device_os": "RP1A.201105.002",
             "device_os_type": "userdebug",
@@ -452,7 +650,9 @@
             "os": "Android",
             "pool": "chromium.tests.gpu"
           },
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "telemetry_gpu_integration_test_android_chrome",
@@ -483,6 +683,7 @@
           "has_native_resultdb_integration": true
         },
         "swarming": {
+          "containment_type": "AUTO",
           "dimensions": {
             "device_os": "RP1A.201105.002",
             "device_os_type": "userdebug",
@@ -490,7 +691,9 @@
             "os": "Android",
             "pool": "chromium.tests.gpu"
           },
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "telemetry_gpu_integration_test_android_chrome",
@@ -520,6 +723,7 @@
           "has_native_resultdb_integration": true
         },
         "swarming": {
+          "containment_type": "AUTO",
           "dimensions": {
             "device_os": "RP1A.201105.002",
             "device_os_type": "userdebug",
@@ -527,7 +731,9 @@
             "os": "Android",
             "pool": "chromium.tests.gpu"
           },
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "telemetry_gpu_integration_test_android_chrome",
@@ -557,6 +763,7 @@
           "has_native_resultdb_integration": true
         },
         "swarming": {
+          "containment_type": "AUTO",
           "dimensions": {
             "device_os": "RP1A.201105.002",
             "device_os_type": "userdebug",
@@ -564,7 +771,9 @@
             "os": "Android",
             "pool": "chromium.tests.gpu"
           },
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "telemetry_gpu_integration_test_android_chrome",
@@ -596,6 +805,7 @@
           "has_native_resultdb_integration": true
         },
         "swarming": {
+          "containment_type": "AUTO",
           "dimensions": {
             "device_os": "RP1A.201105.002",
             "device_os_type": "userdebug",
@@ -603,7 +813,9 @@
             "os": "Android",
             "pool": "chromium.tests.gpu"
           },
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 20
         },
@@ -636,6 +848,7 @@
           "has_native_resultdb_integration": true
         },
         "swarming": {
+          "containment_type": "AUTO",
           "dimensions": {
             "device_os": "RP1A.201105.002",
             "device_os_type": "userdebug",
@@ -643,7 +856,9 @@
             "os": "Android",
             "pool": "chromium.tests.gpu"
           },
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 20
         },
@@ -675,6 +890,7 @@
           "has_native_resultdb_integration": true
         },
         "swarming": {
+          "containment_type": "AUTO",
           "dimensions": {
             "device_os": "RP1A.201105.002",
             "device_os_type": "userdebug",
@@ -682,7 +898,9 @@
             "os": "Android",
             "pool": "chromium.tests.gpu"
           },
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 6
         },
@@ -714,6 +932,7 @@
           "has_native_resultdb_integration": true
         },
         "swarming": {
+          "containment_type": "AUTO",
           "dimensions": {
             "device_os": "RP1A.201105.002",
             "device_os_type": "userdebug",
@@ -721,7 +940,9 @@
             "os": "Android",
             "pool": "chromium.tests.gpu"
           },
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 6
         },
@@ -752,6 +973,7 @@
           "has_native_resultdb_integration": true
         },
         "swarming": {
+          "containment_type": "AUTO",
           "dimensions": {
             "device_os": "RP1A.201105.002",
             "device_os_type": "userdebug",
@@ -759,12 +981,15 @@
             "os": "Android",
             "pool": "chromium.tests.gpu"
           },
+          "hard_timeout": 1800,
           "idempotent": false,
+          "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "telemetry_gpu_integration_test_android_chrome",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_android_chrome/"
       }
     ]
-  }
+  },
+  "GPU FYI Android arm Builder": {}
 }

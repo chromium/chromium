@@ -1481,93 +1481,14 @@ gpu.try_.linux_optional_builder(
     name = "android_optional_gpu_tests_rel",
     branch_selector = branches.selector.ANDROID_BRANCHES,
     description_html = "Runs GPU tests on Pixel 4 devices. Only automatically added to CLs that touch GPU-related files.",
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-            apply_configs = [
-                "android",
-            ],
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "main_builder",
-            build_config = builder_config.build_config.DEBUG,
-            target_arch = builder_config.target_arch.ARM,
-            target_bits = 32,
-            target_platform = builder_config.target_platform.ANDROID,
-        ),
-        android_config = builder_config.android_config(
-            config = "base_config",
-        ),
-    ),
+    mirrors = [
+        "ci/GPU FYI Android arm Builder",
+        "ci/Android FYI Release (Pixel 4)",
+    ],
     builder_config_settings = builder_config.try_settings(
         retry_failed_shards = False,
     ),
-    gn_args = gn_args.config(
-        configs = [
-            "gpu_tests",
-            "android_builder",
-            "android_with_static_analysis",
-            "release_builder",
-            "remoteexec",
-            "minimal_symbols",
-            "dcheck_always_on",
-            "static_angle",
-            "arm",
-        ],
-    ),
-    targets = targets.bundle(
-        targets = [
-            "gpu_pixel_04_telemetry_tests",
-            "android_webview_gpu_telemetry_tests",
-        ],
-        mixins = [
-            "has_native_resultdb_integration",
-            "gpu_pixel_4_stable",
-        ],
-        per_test_modifications = {
-            "expected_color_pixel_passthrough_ganesh_test": targets.mixin(
-                args = [
-                    # See Android FYI Release (Pixel 4).
-                    "--extra-browser-args=--disable-wcg-for-test",
-                ],
-            ),
-            "expected_color_pixel_validating_test": targets.mixin(
-                args = [
-                    # See Android FYI Release (Pixel 4).
-                    "--extra-browser-args=--disable-wcg-for-test",
-                ],
-            ),
-            "pixel_skia_gold_passthrough_ganesh_test": targets.mixin(
-                args = [
-                    # See Android FYI Release (Pixel 4).
-                    "--extra-browser-args=--disable-wcg-for-test",
-                ],
-            ),
-            "pixel_skia_gold_validating_test": targets.mixin(
-                args = [
-                    # See Android FYI Release (Pixel 4).
-                    "--extra-browser-args=--disable-wcg-for-test",
-                ],
-            ),
-            "screenshot_sync_passthrough_ganesh_tests": targets.mixin(
-                args = [
-                    # See Android FYI Release (Pixel 4).
-                    "--extra-browser-args=--disable-wcg-for-test",
-                ],
-            ),
-            "screenshot_sync_validating_tests": targets.mixin(
-                args = [
-                    # See Android FYI Release (Pixel 4).
-                    "--extra-browser-args=--disable-wcg-for-test",
-                ],
-            ),
-        },
-    ),
-    targets_settings = targets.settings(
-        browser_config = targets.browser_config.ANDROID_CHROMIUM,
-        os_type = targets.os_type.ANDROID,
-        use_android_merge_script_by_default = False,
-    ),
+    gn_args = "ci/GPU FYI Android arm Builder",
     alerts_enabled = False,
     contact_team_email = "chrome-gpu-infra@google.com",
     cq_settings = try_.cq_settings(
