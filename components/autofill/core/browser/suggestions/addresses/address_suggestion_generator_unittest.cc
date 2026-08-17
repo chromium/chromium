@@ -166,7 +166,7 @@ TEST_F(AddressSuggestionGeneratorTest,
 
   profile_1.SetRawInfo(NAME_FULL, u"Jef dean");
   profile_2.SetRawInfo(NAME_FULL, u"Larry page");
-  profile_2.SetRawInfo(ADDRESS_HOME_ZIP, u"4398125123");
+  profile_2.SetRawInfo(ADDRESS_HOME_LINE1, u"4398 Wallaby Way");
   profile_3.SetRawInfo(NAME_FULL, u"Sundar pichai");
 
   address_data().AddProfile(profile_1);
@@ -211,7 +211,7 @@ TEST_F(AddressSuggestionGeneratorTest,
   EXPECT_THAT(
       GetSuggestionsOnTypingWithPrefix(u"439"),
       ElementsAre(EqualsSuggestion(SuggestionType::kAddressEntryOnTyping,
-                                   u"4398125123"),
+                                   u"4398 Wallaby Way"),
                   EqualsSuggestion(SuggestionType::kSeparator),
                   EqualsSuggestion(SuggestionType::kManageAddress)));
 }
@@ -285,13 +285,13 @@ TEST_F(AddressSuggestionGeneratorTest,
        GetSuggestionsOnTypingForProfile_AllowOnlyOnUnclassifiedFields) {
   // 1. Set up profiles.
   AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
-  profile.SetRawInfo(ADDRESS_HOME_ZIP, u"4398125123");
+  profile.SetRawInfo(ADDRESS_HOME_LINE1, u"4398 Wallaby Way");
   address_data().AddProfile(profile);
   ASSERT_EQ(address_data().GetProfilesToSuggest().size(), 1u);
 
   // 2. Create a triggering field.
   FormFieldData email_field;
-  email_field.set_value(u"439");  // Matches ZIP, but not email.
+  email_field.set_value(u"439");  // Matches address line 1, but not email.
 
   // Test Case A: allow_only_on_unclassified_fields = false
   {
@@ -303,15 +303,15 @@ TEST_F(AddressSuggestionGeneratorTest,
         /*disabled_features=*/{});
 
     // Trigger suggestions. Since regular suggestions fail (no matching email),
-    // it falls back to "on typing" and should return the ZIP code suggestion
-    // since it is allowed on classified fields as well.
+    // it falls back to "on typing" and should return the address line 1
+    // suggestion since it is allowed on classified fields as well.
     std::vector<Suggestion> suggestions =
         GetSuggestionsForProfiles(email_field, EMAIL_ADDRESS);
 
     EXPECT_THAT(
         suggestions,
         ElementsAre(EqualsSuggestion(SuggestionType::kAddressEntryOnTyping,
-                                     u"4398125123"),
+                                     u"4398 Wallaby Way"),
                     EqualsSuggestion(SuggestionType::kSeparator),
                     EqualsSuggestion(SuggestionType::kManageAddress)));
   }

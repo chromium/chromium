@@ -101,7 +101,7 @@ BASE_FEATURE(kAutofillActorSuppressImport, base::FEATURE_DISABLED_BY_DEFAULT);
 // stored in the user's profile.
 // TODO(crbug.com/381994105): Cleanup when launched.
 BASE_FEATURE(kAutofillAddressSuggestionsOnTyping,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // This parameter enables updating the minimum number of characters a user needs
 // to type to maybe see an Autofill on typing suggestion.
@@ -140,7 +140,7 @@ BASE_FEATURE_PARAM(std::string,
                    kAutofillOnTypingFieldTypes,
                    &kAutofillAddressSuggestionsOnTyping,
                    "field_types",
-                   "");
+                   "9-83-30-60-36-13-33-7");
 
 // This parameter controls whether Autofill on typing suggestions should be
 // displayed only on unclassified fields.
@@ -153,7 +153,7 @@ BASE_FEATURE_PARAM(bool,
 // Feature flag to controls whether Autofill on typing suggestions will have a
 // strike database.
 BASE_FEATURE(kAutofillAddressSuggestionsOnTypingHasStrikeDatabase,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Feature flag controlling the display of surveys when a user declines the
 // save prompt of Autofill address and a user does not have any address stored.
