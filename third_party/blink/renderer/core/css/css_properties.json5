@@ -1078,6 +1078,7 @@
       supports_incremental_style: false,
       valid_for_keyframe: false,
       percentages_depend_on_used_value: false,
+      affected_by_zoom: true,
     },
     {
       name: "animation-range-end",
@@ -1094,6 +1095,7 @@
       supports_incremental_style: false,
       valid_for_keyframe: false,
       percentages_depend_on_used_value: false,
+      affected_by_zoom: true,
     },
     {
       name: "animation-timeline",
@@ -1178,6 +1180,7 @@
       runtime_flag: "TimelineTrigger",
       is_animation_affecting: true,
       percentages_depend_on_used_value: false,
+      affected_by_zoom: true,
     },
     {
       name: "timeline-trigger-activation-range-end",
@@ -1191,6 +1194,7 @@
       runtime_flag: "TimelineTrigger",
       is_animation_affecting: true,
       percentages_depend_on_used_value: false,
+      affected_by_zoom: true,
     },
     {
       name: "timeline-trigger-active-range-start",
@@ -1205,6 +1209,7 @@
       is_animation_affecting: true,
       percentages_depend_on_used_value: false,
       keywords: ["auto", "normal"],
+      affected_by_zoom: true,
     },
     {
       name: "timeline-trigger-active-range-end",
@@ -1219,6 +1224,7 @@
       is_animation_affecting: true,
       percentages_depend_on_used_value: false,
       keywords: ["auto", "normal"],
+      affected_by_zoom: true,
     },
     {
       name: "timeline-trigger-source",
@@ -2115,6 +2121,7 @@
       typedom_types: ["Keyword"],
       invalidate: ["compositing"],
       includes_currentcolor: true,
+      affected_by_zoom: true,
     },
     {
       name: "backface-visibility",
@@ -2271,6 +2278,7 @@
       valid_for_page_context: true,
       stored_on_extra_field: ["Background"],
       percentages_depend_on_used_value: true,
+      affected_by_zoom: true,
     },
     {
       name: "background-position-y",
@@ -2289,6 +2297,7 @@
       valid_for_page_context: true,
       stored_on_extra_field: ["Background"],
       percentages_depend_on_used_value: true,
+      affected_by_zoom: true,
     },
     {
       name: "background-repeat",
@@ -2339,6 +2348,7 @@
       typedom_types: ["Keyword", "Percentage", "Length"],
       invalidate: ["layout", "paint"],
       percentages_depend_on_used_value: false,
+      affected_by_zoom: true,
     },
     {
       name: "baseline-source",
@@ -2567,6 +2577,7 @@
       overlapping: true,
       stored_on_extra_field: ["border-image"],
       percentages_depend_on_used_value: true,
+      affected_by_zoom: true,
     },
     {
       name: "border-left-color",
@@ -2863,6 +2874,7 @@
       keywords: ["none"],
       typedom_types: ["Keyword"],
       invalidate: ["border-visual", "paint", "visual-overflow", "border-shape"],
+      affected_by_zoom: true,
     },
     {
       name: "bottom",
@@ -3057,6 +3069,7 @@
       keywords: ["auto"],
       typedom_types: ["Keyword"],
       invalidate: ["clip"],
+      affected_by_zoom: true,
     },
     {
       name: "clip-path",
@@ -3074,6 +3087,7 @@
       keywords: ["border-box", "padding-box", "content-box", "margin-box", "fill-box", "stroke-box", "view-box", "none"],
       typedom_types: ["Keyword"],
       invalidate: ["clip-path"],
+      affected_by_zoom: true,
     },
     {
       name: "clip-rule",
@@ -3180,6 +3194,7 @@
       converter: "ConvertIntrinsicDimension",
       valid_for_permission_element: true,
       invalidate: ["layout", "scroll-anchor"],
+      affected_by_zoom: true,
     },
     {
       name: "contain-intrinsic-height",
@@ -3195,6 +3210,7 @@
       converter: "ConvertIntrinsicDimension",
       valid_for_permission_element: true,
       invalidate: ["layout", "scroll-anchor"],
+      affected_by_zoom: true,
     },
     {
       name: "container-name",
@@ -3396,6 +3412,7 @@
       supports_incremental_style: true,
       invalidate: ["layout", "paint"],
       percentages_depend_on_used_value: true,
+      affected_by_zoom: true,
     },
     {
       name: "cy",
@@ -3409,6 +3426,7 @@
       supports_incremental_style: true,
       invalidate: ["layout", "paint"],
       percentages_depend_on_used_value: true,
+      affected_by_zoom: true,
     },
     {
       name: "d",
@@ -3703,6 +3721,7 @@
       runtime_flag: "CSSGridLanesLayout",
       interpolable: true,
       percentages_depend_on_used_value: true,
+      affected_by_zoom: true,
     },
     {
       name: "frame-sizing",
@@ -3729,6 +3748,7 @@
       separator: " ",
       invalidate: ["layout", "paint"],
       percentages_depend_on_used_value: true,
+      affected_by_zoom: true,
     },
     {
       name: "grid-auto-flow",
@@ -3758,6 +3778,7 @@
       separator: " ",
       invalidate: ["layout", "paint"],
       percentages_depend_on_used_value: true,
+      affected_by_zoom: true,
     },
     {
       name: "grid-column-end",
@@ -3876,6 +3897,7 @@
       typedom_types: ["Keyword"],
       invalidate: ["layout", "paint"],
       percentages_depend_on_used_value: true,
+      affected_by_zoom: true,
     },
     {
       name: "hanging-punctuation",
@@ -3913,6 +3935,7 @@
       typedom_types: ["Keyword"],
       invalidate: ["layout", "paint"],
       percentages_depend_on_used_value: true,
+      affected_by_zoom: true,
     },
     {
       name: "height",
@@ -4633,6 +4656,7 @@
       typedom_types: ["Keyword", "Position"],
       invalidate: ["paint"],
       percentages_depend_on_used_value: true,
+      affected_by_zoom: true,
     },
     {
       name: "object-view-box",
@@ -4648,6 +4672,7 @@
       keywords: ["none"],
       typedom_types: ["Keyword"],
       invalidate: ["layout", "paint"],
+      affected_by_zoom: true,
     },
     {
       name: "offset-anchor",
@@ -4663,6 +4688,7 @@
       typedom_types: ["Keyword", "Position"],
       invalidate: ["transform-data", "transform-other"],
       percentages_depend_on_used_value: true,
+      affected_by_zoom: true,
     },
     {
       name: "offset-distance",
@@ -4675,6 +4701,7 @@
       typedom_types: ["Length", "Percentage"],
       invalidate: ["transform-data", "transform-other"],
       percentages_depend_on_used_value: true,
+      affected_by_zoom: true,
     },
     {
       name: "offset-path",
@@ -4691,6 +4718,7 @@
       keywords: ["none"],
       typedom_types: ["Keyword"],
       invalidate: ["has-transform", "transform-data", "transform-other"],
+      affected_by_zoom: true,
     },
     {
       name: "offset-position",
@@ -4706,6 +4734,7 @@
       typedom_types: ["Keyword", "Position"],
       invalidate: ["has-transform", "transform-data", "transform-other"],
       percentages_depend_on_used_value: true,
+      affected_by_zoom: true,
     },
     {
       name: "offset-rotate",
@@ -4916,6 +4945,7 @@
       type_name: "std::optional<StyleOverflowClipMargin>",
       converter: "ConvertOverflowClipMargin",
       invalidate: ["box-paint-property", "layout"],
+      affected_by_zoom: true,
     },
     {
       name: "overflow-x",
@@ -5212,6 +5242,7 @@
       invalidate: ["paint"],
       // <length> never accepts percentages, but the field type requires this.
       percentages_depend_on_used_value: false,
+      affected_by_zoom: true,
     },
     {
       name: "perspective",
@@ -5243,6 +5274,7 @@
       overlapping: true,
       invalidate: ["transform-other"],
       percentages_depend_on_used_value: true,
+      affected_by_zoom: true,
     },
     {
       name: "pointer-events",
@@ -5445,6 +5477,7 @@
       supports_incremental_style: true,
       invalidate: ["layout", "paint"],
       percentages_depend_on_used_value: true,
+      affected_by_zoom: true,
     },
     {
       name: "rx",
@@ -5459,6 +5492,7 @@
       supports_incremental_style: true,
       invalidate: ["layout", "paint"],
       percentages_depend_on_used_value: true,
+      affected_by_zoom: true,
     },
     {
       name: "ry",
@@ -5473,6 +5507,7 @@
       supports_incremental_style: true,
       invalidate: ["layout", "paint"],
       percentages_depend_on_used_value: true,
+      affected_by_zoom: true,
     },
     {
       name: "scroll-axis-lock",
@@ -5897,6 +5932,7 @@
       typedom_types: ["Length", "Percentage"],
       invalidate: ["layout", "paint"],
       percentages_depend_on_used_value: true,
+      affected_by_zoom: true,
     },
     {
       name: "shape-outside",
@@ -6674,6 +6710,7 @@
       overlapping: true,
       invalidate: ["transform-data", "transform-other"],
       percentages_depend_on_used_value: true,
+      affected_by_zoom: true,
     },
     {
       name: "transform-style",
@@ -6804,6 +6841,7 @@
       is_animation_affecting: true,
       percentages_depend_on_used_value: true,
       keywords: ["auto"],
+      affected_by_zoom: true,
     },
     {
       name: "view-timeline-name",
@@ -6898,6 +6936,7 @@
       valid_for_permission_element: true,
       invalidate: ["layout", "paint"],
       percentages_depend_on_used_value: true,
+      affected_by_zoom: true,
     },
     {
       name: "y",
@@ -6912,6 +6951,7 @@
       valid_for_permission_element: true,
       invalidate: ["layout", "paint"],
       percentages_depend_on_used_value: true,
+      affected_by_zoom: true,
     },
     {
       name: "appearance",
@@ -7089,6 +7129,7 @@
       invalidate: ["filter-data"],
       includes_currentcolor: true,
       percentages_depend_on_used_value: true,
+      affected_by_zoom: true,
     },
     {
       name: "column-count",
@@ -7191,6 +7232,7 @@
       invalidate: ["paint"],
       runtime_flag: "CSSGapDecoration",
       percentages_depend_on_used_value: true,
+      affected_by_zoom: true,
     },
     {
       name: "row-rule-inset-cap-end",
@@ -7206,6 +7248,7 @@
       invalidate: ["paint"],
       runtime_flag: "CSSGapDecoration",
       percentages_depend_on_used_value: true,
+      affected_by_zoom: true,
     },
     {
       name: "column-rule-inset-cap-start",
@@ -7221,6 +7264,7 @@
       invalidate: ["paint"],
       runtime_flag: "CSSGapDecoration",
       percentages_depend_on_used_value: true,
+      affected_by_zoom: true,
     },
     {
       name: "row-rule-inset-cap-start",
@@ -7236,6 +7280,7 @@
       invalidate: ["paint"],
       runtime_flag: "CSSGapDecoration",
       percentages_depend_on_used_value: true,
+      affected_by_zoom: true,
     },
     {
       name: "column-rule-inset-junction-end",
@@ -7251,6 +7296,7 @@
       invalidate: ["paint"],
       runtime_flag: "CSSGapDecoration",
       percentages_depend_on_used_value: true,
+      affected_by_zoom: true,
     },
     {
       name: "row-rule-inset-junction-end",
@@ -7266,6 +7312,7 @@
       invalidate: ["paint"],
       runtime_flag: "CSSGapDecoration",
       percentages_depend_on_used_value: true,
+      affected_by_zoom: true,
     },
     {
       name: "column-rule-inset-junction-start",
@@ -7281,6 +7328,7 @@
       invalidate: ["paint"],
       runtime_flag: "CSSGapDecoration",
       percentages_depend_on_used_value: true,
+      affected_by_zoom: true,
     },
     {
       name: "row-rule-inset-junction-start",
@@ -7296,6 +7344,7 @@
       invalidate: ["paint"],
       runtime_flag: "CSSGapDecoration",
       percentages_depend_on_used_value: true,
+      affected_by_zoom: true,
     },
     {
       name: "column-rule-color",
@@ -7629,6 +7678,7 @@
         modifier_type: "Outset",
       },
       stored_on_extra_field: ["MaskBoxImage"],
+      affected_by_zoom: true,
     },
     {
       name: "-webkit-mask-box-image-repeat",
@@ -7673,6 +7723,7 @@
       stored_on_extra_field: ["MaskBoxImage"],
       percentages_depend_on_used_value: true,
       keywords: ["auto"],
+      affected_by_zoom: true,
     },
     {
       name: "mask-mode",
@@ -7753,6 +7804,7 @@
       },
       stored_on_extra_field: ["Mask"],
       percentages_depend_on_used_value: true,
+      affected_by_zoom: true,
     },
     {
       name: "-webkit-mask-position-y",
@@ -7764,6 +7816,7 @@
       },
       stored_on_extra_field: ["Mask"],
       percentages_depend_on_used_value: true,
+      affected_by_zoom: true,
     },
     {
       name: "mask-repeat",
@@ -7790,6 +7843,7 @@
       stored_on_extra_field: ["Mask"],
       percentages_depend_on_used_value: true,
       keywords: ["auto", "contain", "cover"],
+      affected_by_zoom: true,
     },
     {
       name: "-webkit-mask-size",
@@ -7806,6 +7860,7 @@
       // Overlaps with perspective-origin.
       legacy_overlapping: true,
       percentages_depend_on_used_value: true,
+      affected_by_zoom: true,
     },
     {
       name: "-webkit-perspective-origin-y",
@@ -7818,6 +7873,7 @@
       // Overlaps with perspective-origin.
       legacy_overlapping: true,
       percentages_depend_on_used_value: true,
+      affected_by_zoom: true,
     },
     {
       name: "-webkit-rtl-ordering",
@@ -8027,6 +8083,7 @@
       // Overlaps with transform-origin.
       legacy_overlapping: true,
       percentages_depend_on_used_value: true,
+      affected_by_zoom: true,
     },
     {
       name: "-webkit-transform-origin-y",
@@ -8039,6 +8096,7 @@
       // Overlaps with transform-origin.
       legacy_overlapping: true,
       percentages_depend_on_used_value: true,
+      affected_by_zoom: true,
     },
     {
       name: "-webkit-transform-origin-z",
@@ -8051,6 +8109,7 @@
       // Overlaps with transform-origin.
       legacy_overlapping: true,
       percentages_depend_on_used_value: true,
+      affected_by_zoom: true,
     },
     {
       name: "-webkit-user-drag",

@@ -1271,6 +1271,12 @@ const CSSValue* BaselineShift::CSSValueFromComputedStyleInternal(
 }
 
 void BaselineShift::ApplyInherit(StyleResolverState& state) const {
+  if (state.GetDocument().StandardizedBrowserZoomEnabled()) {
+    if (ApplyParentValueIfZoomChanged(state)) {
+      return;
+    }
+  }
+
   ComputedStyleBuilder& builder = state.StyleBuilder();
   builder.SetBaselineShiftType(state.ParentStyle()->BaselineShiftType());
   builder.SetBaselineShift(state.ParentStyle()->BaselineShift());
@@ -5166,6 +5172,12 @@ const CSSValue* GridTemplateColumns::CSSValueFromComputedStyleInternal(
 }
 
 void GridTemplateColumns::ApplyInherit(StyleResolverState& state) const {
+  if (state.GetDocument().StandardizedBrowserZoomEnabled()) {
+    if (ApplyParentValueIfZoomChanged(state)) {
+      return;
+    }
+  }
+
   state.StyleBuilder().SetGridTemplateColumns(
       state.ParentStyle()->SpecifiedGridTemplateColumns());
 }
@@ -5185,6 +5197,12 @@ const CSSValue* GridTemplateRows::CSSValueFromComputedStyleInternal(
 }
 
 void GridTemplateRows::ApplyInherit(StyleResolverState& state) const {
+  if (state.GetDocument().StandardizedBrowserZoomEnabled()) {
+    if (ApplyParentValueIfZoomChanged(state)) {
+      return;
+    }
+  }
+
   state.StyleBuilder().SetGridTemplateRows(
       state.ParentStyle()->SpecifiedGridTemplateRows());
 }
@@ -9704,10 +9722,13 @@ const CSSValue* TabSize::CSSValueFromComputedStyleInternal(
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
+  const blink::TabSize& tab_size = style.GetTabSize();
+  const bool is_spaces = tab_size.IsSpaces();
+  const float value =
+      tab_size.GetPixelSize(1.0) / (is_spaces ? 1.0 : style.EffectiveZoom());
   return CSSNumericLiteralValue::Create(
-      style.GetTabSize().GetPixelSize(1.0),
-      style.GetTabSize().IsSpaces() ? CSSPrimitiveValue::UnitType::kNumber
-                                    : CSSPrimitiveValue::UnitType::kPixels);
+      value, is_spaces ? CSSPrimitiveValue::UnitType::kNumber
+                       : CSSPrimitiveValue::UnitType::kPixels);
 }
 
 const CSSValue* TableLayout::CSSValueFromComputedStyleInternal(
@@ -11667,6 +11688,16 @@ const CSSValue* WebkitPerspectiveOriginX::ParseSingleValue(
 }
 
 void WebkitPerspectiveOriginX::ApplyInherit(StyleResolverState& state) const {
+  if (state.GetDocument().StandardizedBrowserZoomEnabled() &&
+      state.ParentStyle()->EffectiveZoom() !=
+          state.StyleBuilder().EffectiveZoom()) {
+    ApplyValue(
+        state,
+        *ComputedStyleUtils::ZoomAdjustedPixelValueForLength(
+            state.ParentStyle()->PerspectiveOrigin().X(), *state.ParentStyle()),
+        static_cast<ValueModeFlags>(ValueMode::kNormal));
+    return;
+  }
   state.StyleBuilder().SetPerspectiveOriginX(
       state.ParentStyle()->PerspectiveOrigin().X());
 }
@@ -11681,6 +11712,16 @@ const CSSValue* WebkitPerspectiveOriginY::ParseSingleValue(
 }
 
 void WebkitPerspectiveOriginY::ApplyInherit(StyleResolverState& state) const {
+  if (state.GetDocument().StandardizedBrowserZoomEnabled() &&
+      state.ParentStyle()->EffectiveZoom() !=
+          state.StyleBuilder().EffectiveZoom()) {
+    ApplyValue(
+        state,
+        *ComputedStyleUtils::ZoomAdjustedPixelValueForLength(
+            state.ParentStyle()->PerspectiveOrigin().Y(), *state.ParentStyle()),
+        static_cast<ValueModeFlags>(ValueMode::kNormal));
+    return;
+  }
   state.StyleBuilder().SetPerspectiveOriginY(
       state.ParentStyle()->PerspectiveOrigin().Y());
 }
@@ -12230,6 +12271,16 @@ const CSSValue* WebkitTransformOriginX::ParseSingleValue(
 }
 
 void WebkitTransformOriginX::ApplyInherit(StyleResolverState& state) const {
+  if (state.GetDocument().StandardizedBrowserZoomEnabled() &&
+      state.ParentStyle()->EffectiveZoom() !=
+          state.StyleBuilder().EffectiveZoom()) {
+    ApplyValue(state,
+               *ComputedStyleUtils::ZoomAdjustedPixelValueForLength(
+                   state.ParentStyle()->GetTransformOrigin().X(),
+                   *state.ParentStyle()),
+               static_cast<ValueModeFlags>(ValueMode::kNormal));
+    return;
+  }
   state.StyleBuilder().SetTransformOriginX(
       state.ParentStyle()->GetTransformOrigin().X());
 }
@@ -12262,6 +12313,16 @@ const CSSValue* WebkitTransformOriginY::ParseSingleValue(
 }
 
 void WebkitTransformOriginY::ApplyInherit(StyleResolverState& state) const {
+  if (state.GetDocument().StandardizedBrowserZoomEnabled() &&
+      state.ParentStyle()->EffectiveZoom() !=
+          state.StyleBuilder().EffectiveZoom()) {
+    ApplyValue(state,
+               *ComputedStyleUtils::ZoomAdjustedPixelValueForLength(
+                   state.ParentStyle()->GetTransformOrigin().Y(),
+                   *state.ParentStyle()),
+               static_cast<ValueModeFlags>(ValueMode::kNormal));
+    return;
+  }
   state.StyleBuilder().SetTransformOriginY(
       state.ParentStyle()->GetTransformOrigin().Y());
 }
@@ -12275,6 +12336,18 @@ const CSSValue* WebkitTransformOriginZ::ParseSingleValue(
 }
 
 void WebkitTransformOriginZ::ApplyInherit(StyleResolverState& state) const {
+  if (state.GetDocument().StandardizedBrowserZoomEnabled() &&
+      state.ParentStyle()->EffectiveZoom() !=
+          state.StyleBuilder().EffectiveZoom()) {
+    const ComputedStyle& parent_style = *state.ParentStyle();
+    ApplyValue(
+        state,
+        *CSSNumericLiteralValue::Create(parent_style.GetTransformOrigin().Z() /
+                                            parent_style.EffectiveZoom(),
+                                        CSSPrimitiveValue::UnitType::kPixels),
+        static_cast<ValueModeFlags>(ValueMode::kNormal));
+    return;
+  }
   state.StyleBuilder().SetTransformOriginZ(
       state.ParentStyle()->GetTransformOrigin().Z());
 }

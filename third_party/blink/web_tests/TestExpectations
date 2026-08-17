@@ -1282,10 +1282,6 @@ crbug.com/494341468 external/wpt/quirks/tables-inherit-color-from-body-quirk-005
 
 crbug.com/537801217 external/wpt/css/selectors/active-observable.html [ Failure Pass Timeout ]
 
-crbug.com/420443621 external/wpt/css/css-viewport/zoom/animation-range.html [ Failure ]
-crbug.com/420443621 external/wpt/css/css-viewport/zoom/view-timeline-inset.html [ Failure ]
-crbug.com/420443621 external/wpt/css/css-viewport/zoom/grid.html [ Failure ]
-
 # ====== Style team owned tests to here ======
 
 crbug.com/384523570 fast/animation/scroll-animations/scroll-timeline-snapshotting.html [ Failure ]

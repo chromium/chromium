@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] element with px line-height
-  assert_equals: expected "40px" but got "20px"
-[FAIL] element with percentage line-height
-  assert_equals: expected "40px" but got "20px"
-Harness: the test ran to completion.
-
