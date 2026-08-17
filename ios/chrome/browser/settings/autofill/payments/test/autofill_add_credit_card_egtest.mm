@@ -105,8 +105,8 @@ id<GREYMatcher> CardNumberIconView(NSString* icon_type) {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   // Add feature configs here.
-  if ([self isRunningTest:@selector
-            (testUseCameraButtonShownWhenFeatureEnabled)]) {
+  if ([self isRunningTest:@selector(
+                              testUseCameraButtonShownWhenFeatureEnabled)]) {
     config.features_enabled.push_back(
         autofill::features::kAutofillCreditCardScannerIos);
   }
@@ -120,8 +120,7 @@ id<GREYMatcher> CardNumberIconView(NSString* icon_type) {
     [ChromeEarlGreyUI
         tapSettingsMenuButton:grey_accessibilityID(
                                   @"kSettingsAutofillAndPasswordsCellId")];
-    [[EarlGrey
-        selectElementWithMatcher:PaymentMethodsButton()]
+    [[EarlGrey selectElementWithMatcher:PaymentMethodsButton()]
         performAction:grey_tap()];
   } else {
     [ChromeEarlGreyUI tapSettingsMenuButton:PaymentMethodsButton()];

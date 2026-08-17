@@ -69,8 +69,7 @@ id<GREYMatcher> DeleteConfirmationButton() {
     [ChromeEarlGreyUI
         tapSettingsMenuButton:grey_accessibilityID(
                                   @"kSettingsAutofillAndPasswordsCellId")];
-    [[EarlGrey
-        selectElementWithMatcher:PaymentMethodsButton()]
+    [[EarlGrey selectElementWithMatcher:PaymentMethodsButton()]
         performAction:grey_tap()];
   } else {
     [ChromeEarlGreyUI tapSettingsMenuButton:PaymentMethodsButton()];

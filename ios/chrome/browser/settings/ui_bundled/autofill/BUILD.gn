@@ -179,9 +179,7 @@ source_set("eg2_tests") {
   testonly = true
   sources = [
     "autofill_add_address_manually_egtest.mm",
-    "autofill_add_credit_card_egtest.mm",
     "autofill_credit_card_settings_egtest.mm",
-    "autofill_cvc_storage_settings_egtest.mm",
     "autofill_edit_credit_card_egtest.mm",
     "autofill_profile_settings_egtest.mm",
   ]

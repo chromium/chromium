@@ -86,6 +86,7 @@ _integration_eg2tests_deps = [
 _settings_eg2tests_deps = [
   "//ios/chrome/browser/settings/autofill/autofill_ai/test:eg2_tests",
   "//ios/chrome/browser/settings/autofill/autofill_and_passwords/test:eg2_tests",
+  "//ios/chrome/browser/settings/autofill/payments/test:eg2_tests",
   "//ios/chrome/browser/settings/clear_browsing_data/quick_delete_browsing_data/test:eg2_tests",
   "//ios/chrome/browser/settings/clear_browsing_data/quick_delete_other_data/test:eg2_tests",
   "//ios/chrome/browser/settings/clear_browsing_data/test:eg2_tests",
