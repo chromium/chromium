@@ -616,7 +616,7 @@ void EmailVerificationRequest::Verify(
              std::optional<base::DictValue> result) {
             if (status.parse_status != ParseStatus::kSuccess) {
               jwks->data = base::unexpected(
-                  EmailVerificationRequestResult::kJwksHttpNotFound);
+                  JwksParseStatusToEvpRequestStatus(status.parse_status));
             } else {
               jwks->data = std::move(*result);
             }

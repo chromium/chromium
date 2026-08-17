@@ -125,6 +125,11 @@ AccountsListParseStatusToEvpRequestStatus(ParseStatus parse_status);
 CONTENT_EXPORT blink::mojom::EmailVerificationRequestResult
 TokenParseStatusToEvpRequestStatus(ParseStatus parse_status);
 
+// Converts a ParseStatus from a JWKS fetch to an EvpRequestStatus.
+// Should not be invoked when parse_status is ParseStatus::kSuccess.
+CONTENT_EXPORT blink::mojom::EmailVerificationRequestResult
+JwksParseStatusToEvpRequestStatus(ParseStatus parse_status);
+
 CONTENT_EXPORT blink::mojom::EmailVerificationRequestResult
 VerificationResultToEvpRequestStatus(EvtVerifier::Result result);
 

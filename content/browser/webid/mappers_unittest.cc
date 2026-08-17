@@ -11,6 +11,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/webid/email_verification_request.mojom.h"
 #include "third_party/blink/public/mojom/webid/federated_request.mojom.h"
 
 namespace content {
@@ -20,6 +21,7 @@ using ::testing::ElementsAre;
 using Field = IdentityRequestDialogDisclosureField;
 using IdentityRequestAccountPtr = scoped_refptr<IdentityRequestAccount>;
 using LoginState = IdentityRequestAccount::LoginState;
+using blink::mojom::EmailVerificationRequestResult;
 
 namespace {
 IdentityRequestAccountPtr CreateEmptyAccount() {
@@ -100,6 +102,24 @@ TEST(FedCmMappersTest, ComputeAccountFields) {
   account->idp_claimed_login_state = LoginState::kSignUp;
   ComputeAccountFields(fields, accounts);
   EXPECT_THAT(account->fields, ElementsAre(Field::kName));
+}
+
+TEST(FedCmMappersTest, JwksParseStatusToEvpRequestStatus) {
+  EXPECT_EQ(EmailVerificationRequestResult::kJwksHttpNotFound,
+            JwksParseStatusToEvpRequestStatus(ParseStatus::kHttpNotFoundError));
+  EXPECT_EQ(EmailVerificationRequestResult::kJwksHttpNotFound,
+            JwksParseStatusToEvpRequestStatus(ParseStatus::kNoResponseError));
+  EXPECT_EQ(EmailVerificationRequestResult::kJwksHttpNotFound,
+            JwksParseStatusToEvpRequestStatus(
+                ParseStatus::kBlockedByConnectionAllowlist));
+  EXPECT_EQ(
+      EmailVerificationRequestResult::kJwksInvalidResponse,
+      JwksParseStatusToEvpRequestStatus(ParseStatus::kInvalidResponseError));
+  EXPECT_EQ(EmailVerificationRequestResult::kJwksInvalidResponse,
+            JwksParseStatusToEvpRequestStatus(ParseStatus::kEmptyListError));
+  EXPECT_EQ(
+      EmailVerificationRequestResult::kJwksInvalidResponse,
+      JwksParseStatusToEvpRequestStatus(ParseStatus::kInvalidContentTypeError));
 }
 
 }  // namespace webid

@@ -392,6 +392,28 @@ EmailVerificationRequestResult TokenParseStatusToEvpRequestStatus(
   }
 }
 
+EmailVerificationRequestResult JwksParseStatusToEvpRequestStatus(
+    ParseStatus parse_status) {
+  switch (parse_status) {
+    case ParseStatus::kHttpNotFoundError:
+      return EmailVerificationRequestResult::kJwksHttpNotFound;
+    // TODO(crbug.com/535664990): Map
+    // `ParseStatus::kBlockedByConnectionAllowlist` to a new
+    // `EmailVerificationRequestResult` enum specific to request blocked
+    // by connection allowlist.
+    case ParseStatus::kBlockedByConnectionAllowlist:
+    case ParseStatus::kNoResponseError:
+      return EmailVerificationRequestResult::kJwksHttpNotFound;
+    case ParseStatus::kInvalidResponseError:
+      return EmailVerificationRequestResult::kJwksInvalidResponse;
+    case ParseStatus::kEmptyListError:
+    case ParseStatus::kInvalidContentTypeError:
+      return EmailVerificationRequestResult::kJwksInvalidResponse;
+    case ParseStatus::kSuccess:
+      NOTREACHED();
+  }
+}
+
 EmailVerificationRequestResult VerificationResultToEvpRequestStatus(
     EvtVerifier::Result result) {
   switch (result) {

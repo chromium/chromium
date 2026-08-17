@@ -1354,6 +1354,98 @@ TEST_F(EmailVerificationRequestTest, TokenInvalidResponse) {
                        EmailVerificationRequestResult::kTokenInvalidResponse));
 }
 
+class EmailVerificationRequestJwksErrorTest
+    : public EmailVerificationRequestTest,
+      public ::testing::WithParamInterface<
+          std::pair<ParseStatus, EmailVerificationRequestResult>> {};
+
+TEST_P(EmailVerificationRequestJwksErrorTest, VerifyFailsOnJwksError) {
+  auto [parse_status, expected_result] = GetParam();
+
+  base::HistogramTester histogram_tester;
+  NavigateAndCommit(GURL("https://rp.example.com"));
+
+  auto mock_network_manager_ptr =
+      std::make_unique<NiceMock<MockEmailVerifierNetworkRequestManager>>();
+  NiceMock<MockEmailVerifierNetworkRequestManager>* mock_network_manager =
+      mock_network_manager_ptr.get();
+  EmailVerificationRequest email_verification_request(
+      std::move(mock_network_manager_ptr),
+      std::make_unique<NiceMock<MockIdpNetworkRequestManager>>(),
+      std::make_unique<NiceMock<MockDnsRequest>>(),
+      static_cast<RenderFrameHostImpl&>(*main_rfh()));
+
+  const GURL kIssuerUrl("https://issuer.example.com");
+  const GURL kIssuanceEndpoint("https://issuer.example.com/token");
+  const GURL kJwksUri("https://issuer.example.com/jwks");
+
+  EXPECT_CALL(*mock_network_manager,
+              DownloadAndParseUncredentialedUrl(kJwksUri, _))
+      .WillOnce(WithArgs<1>([&](ParseJsonCallback callback) {
+        std::move(callback).Run(FetchStatus{parse_status}, std::nullopt);
+      }));
+
+  EXPECT_CALL(*mock_network_manager,
+              SendTokenRequest(kIssuanceEndpoint, _, _, _))
+      .WillOnce([&](const GURL&, const std::string&,
+                    const net::HttpRequestHeaders&,
+                    EmailVerifierNetworkRequestManager::TokenRequestCallback
+                        callback) {
+        auto issuer_key = crypto::keypair::PrivateKey::GenerateEd25519();
+        sdjwt::Header h;
+        h.typ = "evt+jwt";
+        h.kid = "test_kid";
+        h.alg = "EdDSA";
+        sdjwt::Payload p;
+        p.iss = url::Origin::Create(kIssuerUrl).Serialize();
+        p.email = "test@issuer.example.com";
+        p.email_verified = true;
+        p.iat = base::Time::Now();
+
+        sdjwt::Jwt issued_jwt;
+        issued_jwt.header = *(h.ToJson());
+        issued_jwt.payload = *(p.ToJson());
+        EXPECT_TRUE(issued_jwt.Sign(sdjwt::CreateJwtSigner(issuer_key)));
+
+        sdjwt::SdJwt token;
+        token.jwt = issued_jwt;
+
+        EmailVerifierNetworkRequestManager::TokenResult result;
+        result.token = base::Value(token.Serialize());
+        std::move(callback).Run(FetchStatus{ParseStatus::kSuccess},
+                                std::move(result));
+      });
+
+  EmailVerifier::Result issuer_result;
+  issuer_result.email = "test@issuer.example.com";
+  issuer_result.issuer_site = net::SchemefulSite(kIssuerUrl);
+  issuer_result.issuance_endpoint = kIssuanceEndpoint;
+  issuer_result.jwks_uri = kJwksUri;
+  issuer_result.signing_alg_values_supported.push_back("EdDSA");
+
+  base::test::TestFuture<std::optional<std::string>,
+                         blink::mojom::EmailVerificationRequestResult,
+                         base::TimeDelta>
+      future;
+  email_verification_request.Verify(issuer_result, "test_nonce",
+                                    future.GetCallback());
+  EXPECT_FALSE(future.Get<0>().has_value());
+
+  histogram_tester.ExpectUniqueSample("Blink.Evp.Status.Verify",
+                                      expected_result, 1);
+  EXPECT_EQ(1, static_cast<TestRenderFrameHost*>(main_rfh())
+                   ->GetEmailVerificationRequestIssueCount(expected_result));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    EmailVerificationRequestJwksErrorTest,
+    ::testing::Values(
+        std::make_pair(ParseStatus::kInvalidResponseError,
+                       EmailVerificationRequestResult::kJwksInvalidResponse),
+        std::make_pair(ParseStatus::kHttpNotFoundError,
+                       EmailVerificationRequestResult::kJwksHttpNotFound)));
+
 TEST_F(EmailVerificationRequestTest, FencedFrameRejected) {
   NavigateAndCommit(GURL("https://rp.example.com"));
 
