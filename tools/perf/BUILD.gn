@@ -3,7 +3,8 @@
 # found in the LICENSE file.
 
 COMMON_PERF_DATA = [
-  "//third_party/crossbench/.vpython3",
+  "//third_party/crossbench/vpython.toml",
+  "//third_party/crossbench/vpython.toml.uv.lock",
   "//third_party/crossbench/cb.py",
   "//third_party/crossbench/crossbench/",
   "//third_party/crossbench/config/",
