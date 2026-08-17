@@ -17,6 +17,7 @@
 #include "components/one_time_tokens/core/browser/one_time_token.h"
 #include "components/one_time_tokens/core/browser/one_time_token_log_sink.h"
 #include "components/one_time_tokens/core/browser/one_time_token_retrieval_error.h"
+#include "components/one_time_tokens/core/browser/one_time_token_service_constants.h"
 #include "components/one_time_tokens/core/browser/one_time_token_type.h"
 #include "components/one_time_tokens/core/common/one_time_token_switches.h"
 #include "components/signin/public/base/oauth_consumer_id.h"
@@ -131,13 +132,7 @@ void EmailOneTimeTokenFetcher::OnAccessTokenFetched(
 void EmailOneTimeTokenFetcher::StartOneTimeTokenServiceCall(
     signin::AccessTokenInfo info) {
   auto resource_request = std::make_unique<network::ResourceRequest>();
-  std::string endpoint_url =
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          switches::kOneTimeTokenFetchEmailEndpointUrl);
-  if (endpoint_url.empty()) {
-    endpoint_url = switches::kDefaultOneTimeTokenFetchEmailEndpointUrl;
-  }
-  GURL url(endpoint_url);
+  GURL url = GetOneTimeTokenServiceUrl("v1/onetimetokens:fetchEmail");
 
   // TODO(crbug.com/486806779): figure out correct encoding.
   std::string encoded_reference;

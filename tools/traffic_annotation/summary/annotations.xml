@@ -403,7 +403,7 @@ Refer to README.md for content description and update process.
  <item id="wallpaper_request" added_in_milestone="125" content_hash_code="0192ac19" os_list="chromeos" file_path="chrome/browser/ash/wallpaper_handlers/sea_pen_fetcher.cc" />
  <item id="cws_fetch_item_snippet" added_in_milestone="124" content_hash_code="06b8ded9" os_list="windows,chromeos,linux" file_path="extensions/browser/webstore_data_fetcher.cc" />
  <item id="remoting_cloud_provision_gce_instance" added_in_milestone="125" content_hash_code="020ad462" os_list="linux,windows,chromeos,android" file_path="remoting/base/cloud_service_client.cc" />
- <item id="lens_overlay" added_in_milestone="125" content_hash_code="03ef5586" os_list="linux,windows,chromeos" file_path="chrome/browser/ui/lens/lens_overlay_query_controller.cc" />
+ <item id="lens_overlay" added_in_milestone="125" content_hash_code="03ef5586" os_list="linux,windows,chromeos,android" file_path="chrome/browser/ui/lens/lens_overlay_query_controller.cc" />
  <item id="register_push_notification_service" added_in_milestone="124" type="partial" second_id="oauth2_api_call_flow" content_hash_code="03f2cc8a" os_list="chromeos" semantics_fields="1,2,3,4,5,7,8,9" policy_fields="3,4" file_path="chrome/browser/push_notification/server_client/push_notification_server_client_desktop_impl.cc" />
  <item id="youtube_music_integration" added_in_milestone="126" content_hash_code="0168e5a0" os_list="chromeos" file_path="ash/system/focus_mode/sounds/youtube_music/youtube_music_client.cc" />
  <item id="personalized_recommended_apps_download" added_in_milestone="127" content_hash_code="0216d0f6" os_list="chromeos" file_path="chrome/browser/ash/login/oobe_apps_service/oobe_apps_almanac_endpoint.cc" />
@@ -435,7 +435,7 @@ Refer to README.md for content description and update process.
  <item id="remoting_cloud_generate_host_token" added_in_milestone="131" content_hash_code="0147c5dd" os_list="linux,windows,chromeos,android" file_path="remoting/base/cloud_service_client.cc" />
  <item id="remoting_cloud_reauthorize_host" added_in_milestone="131" content_hash_code="046e5c5b" os_list="linux,windows,chromeos,android" file_path="remoting/base/cloud_service_client.cc" />
  <item id="remoting_cloud_verify_session_token" added_in_milestone="131" content_hash_code="07850d01" os_list="linux,windows,chromeos,android" file_path="remoting/base/cloud_service_client.cc" />
- <item id="lens_overlay_gen204" added_in_milestone="131" content_hash_code="0522c289" os_list="linux,windows,chromeos" file_path="chrome/browser/ui/lens/lens_overlay_gen204_controller.cc" />
+ <item id="lens_overlay_gen204" added_in_milestone="131" content_hash_code="0522c289" os_list="linux,windows,chromeos,android" file_path="chrome/browser/ui/lens/lens_overlay_gen204_controller.cc" />
  <item id="policy_proxy_config" added_in_milestone="131" content_hash_code="015c4f8d" os_list="linux,windows" file_path="chrome/enterprise_companion/proxy_config_service.cc" />
  <item id="chromeos_emoji_picker_search_fetcher" added_in_milestone="131" content_hash_code="072cef01" os_list="chromeos" file_path="chromeos/ash/components/emoji/gif_tenor_api_fetcher.cc" />
  <item id="chromeos_emoji_picker_categories_fetcher" added_in_milestone="131" content_hash_code="02ee9118" os_list="chromeos" file_path="chromeos/ash/components/emoji/gif_tenor_api_fetcher.cc" />
@@ -538,4 +538,5 @@ Refer to README.md for content description and update process.
  <item id="iwa_dev_ui_update_manifest" added_in_milestone="153" type="partial" second_id="iwa_update_manifest_fetcher" content_hash_code="03008323" os_list="linux,windows,chromeos" semantics_fields="1,2,3,6" policy_fields="3,5" file_path="chrome/browser/ui/webui/iwa_dev/iwa_dev_page_handler.cc" />
  <item id="notebooks_service_create_notebook" added_in_milestone="152" content_hash_code="00b284b0" os_list="linux,windows,android,chromeos" file_path="components/notebooks/internal/notebooks_network_service_impl.cc" />
  <item id="notebooks_service_create_notebook_source" added_in_milestone="152" content_hash_code="02552ad6" os_list="linux,windows,android,chromeos" file_path="components/notebooks/internal/notebooks_network_service_impl.cc" />
+ <item id="fetch_user_data_processing_consent" added_in_milestone="153" content_hash_code="036ac1e5" os_list="linux,windows,android,chromeos" file_path="components/one_time_tokens/core/browser/user_data_processing_consent_fetcher.cc" />
 </annotations>
