@@ -1438,15 +1438,14 @@ TEST_P(MediaStreamConstraintsUtilAudioTest,
 }
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
-// Voice Isolation is supported.
-TEST_P(MediaStreamConstraintsUtilAudioTest, VoiceIsolationControl) {
+// Tests voice isolation constraints on a device that has the
+// media::AudioParameters::VOICE_ISOLATION_SUPPORTED effect set.
+TEST_P(MediaStreamConstraintsUtilAudioTest, VoiceIsolationEnabledOnSupportedDevice) {
   if (!IsDeviceCapture()) {
     return;
   }
-#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(media::kWebRtcVoiceIsolationDenoiser);
-#endif
+
+  // Exact true: Requesting exact voice isolation enables voice isolation.
   constraint_factory_.Reset();
   constraint_factory_.basic().voice_isolation.SetExact(true);
   AudioCaptureSettings settings = SelectSettings(true, capabilities_);
@@ -1455,6 +1454,7 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, VoiceIsolationControl) {
       settings.audio_processing_properties().voice_isolation,
       AudioProcessingProperties::VoiceIsolationType::kVoiceIsolationEnabled);
 
+  // Exact false: Explicitly requesting disabled voice isolation disables it.
   constraint_factory_.Reset();
   constraint_factory_.basic().voice_isolation.SetExact(false);
   settings = SelectSettings(true, capabilities_);
@@ -1462,12 +1462,101 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, VoiceIsolationControl) {
   EXPECT_EQ(
       settings.audio_processing_properties().voice_isolation,
       AudioProcessingProperties::VoiceIsolationType::kVoiceIsolationDisabled);
+
+  // Ideal true: Requesting ideal voice isolation enables voice isolation.
+  constraint_factory_.Reset();
+  constraint_factory_.basic().voice_isolation.SetIdeal(true);
+  settings = SelectSettings(true, capabilities_);
+  EXPECT_TRUE(settings.HasValue());
+  EXPECT_EQ(
+      settings.audio_processing_properties().voice_isolation,
+      AudioProcessingProperties::VoiceIsolationType::kVoiceIsolationEnabled);
+
+  // Ideal false: Requesting ideal disabled voice isolation disables it.
+  constraint_factory_.Reset();
+  constraint_factory_.basic().voice_isolation.SetIdeal(false);
+  settings = SelectSettings(true, capabilities_);
+  EXPECT_TRUE(settings.HasValue());
+  EXPECT_EQ(
+      settings.audio_processing_properties().voice_isolation,
+      AudioProcessingProperties::VoiceIsolationType::kVoiceIsolationDisabled);
+
+  // Unconstrained: When no voice isolation constraint is given, default
+  // settings are used.
   constraint_factory_.Reset();
   settings = SelectSettings(true, capabilities_);
   EXPECT_TRUE(settings.HasValue());
   EXPECT_EQ(settings.audio_processing_properties().voice_isolation,
             kVoiceIsolationDefaultValue);
 }
+
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+// Tests voice isolation constraints on a device that does not have the
+// media::AudioParameters::VOICE_ISOLATION_SUPPORTED effect set.
+TEST_P(MediaStreamConstraintsUtilAudioTest,
+       VoiceIsolationNotEnabledOnUnsupportedDevice) {
+  if (!IsDeviceCapture()) {
+    return;
+  }
+
+  // "system_echo_canceller_device" only has the ECHO_CANCELLER effect bit set
+  // (and does not have VOICE_ISOLATION_SUPPORTED).
+
+  // Exact true: Settings selection fails because voice isolation is
+  // unsupported on the device.
+  constraint_factory_.Reset();
+  constraint_factory_.basic().device_id.SetExact(
+      "system_echo_canceller_device");
+  constraint_factory_.basic().voice_isolation.SetExact(true);
+  AudioCaptureSettings settings = SelectSettings(true, capabilities_);
+  EXPECT_FALSE(settings.HasValue());
+
+  // Exact false: Explicitly requesting disabled voice isolation succeeds.
+  constraint_factory_.Reset();
+  constraint_factory_.basic().device_id.SetExact(
+      "system_echo_canceller_device");
+  constraint_factory_.basic().voice_isolation.SetExact(false);
+  settings = SelectSettings(true, capabilities_);
+  EXPECT_TRUE(settings.HasValue());
+  EXPECT_EQ(
+      settings.audio_processing_properties().voice_isolation,
+      AudioProcessingProperties::VoiceIsolationType::kVoiceIsolationDisabled);
+
+  // Ideal true: Selection succeeds since ideal constraints are not mandatory,
+  // but voice isolation is disabled because the device lacks support.
+  constraint_factory_.Reset();
+  constraint_factory_.basic().device_id.SetExact(
+      "system_echo_canceller_device");
+  constraint_factory_.basic().voice_isolation.SetIdeal(true);
+  settings = SelectSettings(true, capabilities_);
+  EXPECT_TRUE(settings.HasValue());
+  EXPECT_EQ(
+      settings.audio_processing_properties().voice_isolation,
+      AudioProcessingProperties::VoiceIsolationType::kVoiceIsolationDisabled);
+
+  // Ideal false: Selection succeeds and voice isolation is disabled.
+  constraint_factory_.Reset();
+  constraint_factory_.basic().device_id.SetExact(
+      "system_echo_canceller_device");
+  constraint_factory_.basic().voice_isolation.SetIdeal(false);
+  settings = SelectSettings(true, capabilities_);
+  EXPECT_TRUE(settings.HasValue());
+  EXPECT_EQ(
+      settings.audio_processing_properties().voice_isolation,
+      AudioProcessingProperties::VoiceIsolationType::kVoiceIsolationDisabled);
+
+  // Unconstrained: Selection succeeds and voice isolation is disabled because
+  // the device lacks support.
+  constraint_factory_.Reset();
+  constraint_factory_.basic().device_id.SetExact(
+      "system_echo_canceller_device");
+  settings = SelectSettings(true, capabilities_);
+  EXPECT_TRUE(settings.HasValue());
+  EXPECT_EQ(
+      settings.audio_processing_properties().voice_isolation,
+      AudioProcessingProperties::VoiceIsolationType::kVoiceIsolationDisabled);
+}
+#endif
 #else
 TEST_P(MediaStreamConstraintsUtilAudioTest, VoiceIsolationControl) {
   if (!IsDeviceCapture()) {
@@ -1539,11 +1628,6 @@ TEST_P(MediaStreamConstraintsUtilAudioTest,
   if (!IsDeviceCapture()) {
     return;
   }
-
-#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(media::kWebRtcVoiceIsolationDenoiser);
-#endif
 
   // 1. Create a running source.
   auto platform_source_unique = std::make_unique<TestAudioSource>();

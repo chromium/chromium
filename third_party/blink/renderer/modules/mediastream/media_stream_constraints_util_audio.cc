@@ -793,19 +793,25 @@ class ProcessingBasedContainer {
     }
     echo_cancellation_modes.push_back(EchoCancellationMode::kDisabled);
     BoolSet voice_isolation_set;
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+    // The device lacks voice isolation support if the ML model for voice
+    // isolation is not available.
+    if (!(device_parameters.effects() &
+          media::AudioParameters::VOICE_ISOLATION_SUPPORTED)) {
+      voice_isolation_set = BoolSet({false});
+    }
+#else
     if (!IsVoiceIsolationSupported()) {
       voice_isolation_set = BoolSet({false});
-    } else if (voice_isolation_value.has_value()) {
-      voice_isolation_set = BoolSet({*voice_isolation_value});
-    }
-#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
-    if (voice_isolation_set.Contains(true)) {
-      if (!(device_parameters.effects() &
-            media::AudioParameters::VOICE_ISOLATION_SUPPORTED)) {
-        voice_isolation_set = BoolSet({false});
-      }
     }
 #endif
+
+    // Apply specific source/track restriction if we haven't already
+    // disabled it due to lack of system support.
+    if (voice_isolation_set.Contains(true) &&
+        voice_isolation_value.has_value()) {
+      voice_isolation_set = BoolSet({*voice_isolation_value});
+    }
     return ProcessingBasedContainer(
         ProcessingType::kApmProcessed, std::move(echo_cancellation_modes),
         /*auto_gain_control_set=*/BoolSet(),
@@ -1509,10 +1515,8 @@ Vector<EchoCancellationMode> GetSupportedEchoCancellationModes(
 }
 
 bool IsVoiceIsolationSupported() {
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
   return true;
-#elif BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
-  return base::FeatureList::IsEnabled(media::kWebRtcVoiceIsolationDenoiser);
 #else
   return false;
 #endif
