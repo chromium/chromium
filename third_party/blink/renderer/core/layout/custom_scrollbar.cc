@@ -427,7 +427,7 @@ const ComputedStyle* CustomScrollbar::GetScrollbarPartStyleForCursor(
     ScrollbarPart part_type) const {
   const LayoutCustomScrollbarPart* part_layout_object = GetPart(part_type);
   if (part_layout_object) {
-    return part_layout_object->Style();
+    return &part_layout_object->StyleRef();
   }
   switch (part_type) {
     case kBackButtonStartPart:
