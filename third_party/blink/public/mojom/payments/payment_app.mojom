@@ -4,7 +4,6 @@
 
 module payments.mojom;
 
-import "third_party/blink/public/mojom/manifest/manifest.mojom";
 import "url/mojom/url.mojom";
 
 enum PaymentHandlerStatus {
@@ -16,14 +15,6 @@ enum PaymentHandlerStatus {
   FETCH_PAYMENT_APP_INFO_FAILED,
 };
 
-// This struct is provided to hold a payment instrument from render
-// side (PaymentInstrument.idl).
-struct PaymentInstrument {
-  string name;
-  array<blink.mojom.ManifestImageResource> icons;
-  string method;
-};
-
 enum PaymentDelegation {
   SHIPPING_ADDRESS,
   PAYER_NAME,
@@ -31,25 +22,15 @@ enum PaymentDelegation {
   PAYER_EMAIL,
 };
 
-// This interface provides implementation of PaymentInstruments.idl
-// and PaymentManager.idl in render side. This interface is implemented
-// by payment_manager.cc and runs in browser side.
+// This interface provides implementation of PaymentManager.idl in render
+// side. This interface is implemented by payment_manager.cc and runs in browser
+// side.
 interface PaymentManager {
   // |context_url| is the url of the web page creating this interface.
   // |service_worker_scope| is passed as string since it is from
   // ServiceWorkerRegistration and the interface is used for
   // ServiceWorkerRegistration.idl
   Init(url.mojom.Url context_url, string service_worker_scope);
-  DeletePaymentInstrument(string instrument_key)
-      => (PaymentHandlerStatus status);
-  GetPaymentInstrument(string instrument_key)
-      => (PaymentInstrument instrument, PaymentHandlerStatus status);
-  KeysOfPaymentInstruments()
-      => (array<string> keys, PaymentHandlerStatus status);
-  HasPaymentInstrument(string instrument_key)
-      => (PaymentHandlerStatus status);
-  ClearPaymentInstruments()
-      => (PaymentHandlerStatus status);
   SetUserHint(string user_hint);
   // A method from PaymentManager.idl which lets payment handlers specify
   // whether or not they can handle shipping address or contact info (payer's

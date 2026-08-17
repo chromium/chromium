@@ -26,18 +26,6 @@ class CONTENT_EXPORT PaymentAppDatabase {
   using PaymentApps = std::map<int64_t, std::unique_ptr<StoredPaymentApp>>;
   using ReadAllPaymentAppsCallback = base::OnceCallback<void(PaymentApps)>;
 
-  using DeletePaymentInstrumentCallback =
-      base::OnceCallback<void(payments::mojom::PaymentHandlerStatus)>;
-  using ReadPaymentInstrumentCallback =
-      base::OnceCallback<void(payments::mojom::PaymentInstrumentPtr,
-                              payments::mojom::PaymentHandlerStatus)>;
-  using KeysOfPaymentInstrumentsCallback =
-      base::OnceCallback<void(const std::vector<std::string>&,
-                              payments::mojom::PaymentHandlerStatus)>;
-  using HasPaymentInstrumentCallback =
-      base::OnceCallback<void(payments::mojom::PaymentHandlerStatus)>;
-  using ClearPaymentInstrumentsCallback =
-      base::OnceCallback<void(payments::mojom::PaymentHandlerStatus)>;
   using SetPaymentAppInfoCallback =
       base::OnceCallback<void(payments::mojom::PaymentHandlerStatus)>;
   using EnableDelegationsCallback =
@@ -53,19 +41,6 @@ class CONTENT_EXPORT PaymentAppDatabase {
 
   void ReadAllPaymentApps(ReadAllPaymentAppsCallback callback);
 
-  void DeletePaymentInstrument(const GURL& scope,
-                               const std::string& instrument_key,
-                               DeletePaymentInstrumentCallback callback);
-  void ReadPaymentInstrument(const GURL& scope,
-                             const std::string& instrument_key,
-                             ReadPaymentInstrumentCallback callback);
-  void KeysOfPaymentInstruments(const GURL& scope,
-                                KeysOfPaymentInstrumentsCallback callback);
-  void HasPaymentInstrument(const GURL& scope,
-                            const std::string& instrument_key,
-                            HasPaymentInstrumentCallback callback);
-  void ClearPaymentInstruments(const GURL& scope,
-                               ClearPaymentInstrumentsCallback callback);
   void SetPaymentAppUserHint(const GURL& scope, const std::string& user_hint);
   void EnablePaymentAppDelegations(
       const GURL& scope,
@@ -92,62 +67,6 @@ class CONTENT_EXPORT PaymentAppDatabase {
       const std::vector<std::pair<int64_t, std::string>>& raw_data,
       blink::ServiceWorkerStatusCode status);
 
-  // DeletePaymentInstrument callbacks
-  void DidFindRegistrationToDeletePaymentInstrument(
-      const std::string& instrument_key,
-      DeletePaymentInstrumentCallback callback,
-      blink::ServiceWorkerStatusCode status,
-      scoped_refptr<ServiceWorkerRegistration> registration);
-  void DidFindPaymentInstrument(int64_t registration_id,
-                                const std::string& instrument_key,
-                                DeletePaymentInstrumentCallback callback,
-                                const std::vector<std::string>& data,
-                                blink::ServiceWorkerStatusCode status);
-  void DidDeletePaymentInstrument(DeletePaymentInstrumentCallback callback,
-                                  blink::ServiceWorkerStatusCode status);
-
-  // ReadPaymentInstrument callbacks
-  void DidFindRegistrationToReadPaymentInstrument(
-      const std::string& instrument_key,
-      ReadPaymentInstrumentCallback callback,
-      blink::ServiceWorkerStatusCode status,
-      scoped_refptr<ServiceWorkerRegistration> registration);
-  void DidReadPaymentInstrument(ReadPaymentInstrumentCallback callback,
-                                const std::vector<std::string>& data,
-                                blink::ServiceWorkerStatusCode status);
-
-  // KeysOfPaymentInstruments callbacks
-  void DidFindRegistrationToGetKeys(
-      KeysOfPaymentInstrumentsCallback callback,
-      blink::ServiceWorkerStatusCode status,
-      scoped_refptr<ServiceWorkerRegistration> registration);
-  void DidGetKeysOfPaymentInstruments(KeysOfPaymentInstrumentsCallback callback,
-                                      const std::vector<std::string>& data,
-                                      blink::ServiceWorkerStatusCode status);
-
-  // HasPaymentInstrument callbacks
-  void DidFindRegistrationToHasPaymentInstrument(
-      const std::string& instrument_key,
-      HasPaymentInstrumentCallback callback,
-      blink::ServiceWorkerStatusCode status,
-      scoped_refptr<ServiceWorkerRegistration> registration);
-  void DidHasPaymentInstrument(DeletePaymentInstrumentCallback callback,
-                               const std::vector<std::string>& data,
-                               blink::ServiceWorkerStatusCode status);
-
-  // ClearPaymentInstruments callbacks
-  void DidFindRegistrationToClearPaymentInstruments(
-      const GURL& scope,
-      ClearPaymentInstrumentsCallback callback,
-      blink::ServiceWorkerStatusCode status,
-      scoped_refptr<ServiceWorkerRegistration> registration);
-  void DidGetKeysToClearPaymentInstruments(
-      scoped_refptr<ServiceWorkerRegistration> registration,
-      ClearPaymentInstrumentsCallback callback,
-      const std::vector<std::string>& keys,
-      payments::mojom::PaymentHandlerStatus status);
-  void DidClearPaymentInstruments(ClearPaymentInstrumentsCallback callback,
-                                  blink::ServiceWorkerStatusCode status);
 
   // SetPaymentAppUserHint callbacks.
   void DidFindRegistrationToSetPaymentAppUserHint(

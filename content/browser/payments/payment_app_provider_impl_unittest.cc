@@ -40,8 +40,6 @@ class PaymentManager;
 namespace {
 
 using ::payments::mojom::PaymentHandlerStatus;
-using ::payments::mojom::PaymentInstrument;
-using ::payments::mojom::PaymentInstrumentPtr;
 
 void GetAllPaymentAppsCallback(
     InstalledPaymentAppsFinder::PaymentApps* out_apps,

@@ -39,17 +39,6 @@ class CONTENT_EXPORT PaymentManager : public payments::mojom::PaymentManager {
 
   // payments::mojom::PaymentManager methods:
   void Init(const GURL& context_url, const std::string& scope) override;
-  void DeletePaymentInstrument(
-      const std::string& instrument_key,
-      DeletePaymentInstrumentCallback callback) override;
-  void GetPaymentInstrument(const std::string& instrument_key,
-                            GetPaymentInstrumentCallback callback) override;
-  void KeysOfPaymentInstruments(
-      KeysOfPaymentInstrumentsCallback callback) override;
-  void HasPaymentInstrument(const std::string& instrument_key,
-                            HasPaymentInstrumentCallback callback) override;
-  void ClearPaymentInstruments(
-      ClearPaymentInstrumentsCallback callback) override;
   void SetUserHint(const std::string& user_hint) override;
   void EnableDelegations(
       const std::vector<payments::mojom::PaymentDelegation>& delegations,
