@@ -940,11 +940,6 @@ crbug.com/352104898 [ fuchsia fuchsia-board-qemu-x64 passthrough ] WebglExtensio
 crbug.com/352104898 [ fuchsia fuchsia-board-qemu-x64 passthrough ] WebglExtension_WEBGL_blend_func_extended [ Failure ]
 crbug.com/352104898 [ fuchsia fuchsia-board-qemu-x64 passthrough angle-swiftshader ] WebglExtension_WEBGL_render_shared_exponent [ Failure ]
 
-crbug.com/542706617 [ fuchsia fuchsia-board-qemu-x64 ] conformance2/textures/image_bitmap_from_canvas/tex-2d-rgb9_e5-rgb-float.html [ Failure ]
-crbug.com/542706617 [ fuchsia fuchsia-board-qemu-x64 ] conformance2/textures/image_bitmap_from_canvas/tex-2d-rgb9_e5-rgb-half_float.html [ Failure ]
-crbug.com/542706617 [ fuchsia fuchsia-board-qemu-x64 ] conformance2/textures/webgl_canvas/tex-2d-rgb9_e5-rgb-float.html [ Failure ]
-crbug.com/542706617 [ fuchsia fuchsia-board-qemu-x64 ] conformance2/textures/webgl_canvas/tex-2d-rgb9_e5-rgb-half_float.html [ Failure ]
-
 ###############################
 # New failures in WebGL rolls #
 ###############################
