@@ -1655,10 +1655,9 @@ std::variant<int, content::MainFunctionParams> ChromeMainDelegate::RunProcess(
       {switches::kNoOpForTestingProcess, NoOpMain},
   };
 
-  for (size_t i = 0; i < std::size(kMainFunctions); ++i) {
-    if (process_type == UNSAFE_TODO(kMainFunctions[i]).name) {
-      return UNSAFE_TODO(kMainFunctions[i])
-          .function(std::move(main_function_params));
+  for (const MainFunction& main_function : kMainFunctions) {
+    if (process_type == main_function.name) {
+      return main_function.function(std::move(main_function_params));
     }
   }
 #endif  // BUILDFLAG(IS_MAC)

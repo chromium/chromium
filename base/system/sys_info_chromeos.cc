@@ -8,7 +8,6 @@
 #include <stdint.h>
 #include <sys/utsname.h>
 
-#include "base/compiler_specific.h"
 #include "base/environment.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
@@ -129,8 +128,7 @@ class ChromeOSVersionInfo {
     }
     // Parse the version from the first matching recognized version key.
     std::string version;
-    for (size_t i = 0; i < std::size(kLinuxStandardBaseVersionKeys); ++i) {
-      std::string key = UNSAFE_TODO(kLinuxStandardBaseVersionKeys[i]);
+    for (const char* key : kLinuxStandardBaseVersionKeys) {
       if (GetLsbReleaseValue(key, &version) && !version.empty()) {
         break;
       }
@@ -149,8 +147,8 @@ class ChromeOSVersionInfo {
     // Check release name for Chrome OS.
     std::string release_name;
     if (GetLsbReleaseValue(kChromeOsReleaseNameKey, &release_name)) {
-      for (size_t i = 0; i < std::size(kChromeOsReleaseNames); ++i) {
-        if (release_name == UNSAFE_TODO(kChromeOsReleaseNames[i])) {
+      for (const char* name : kChromeOsReleaseNames) {
+        if (release_name == name) {
           is_running_on_chromeos_ = true;
           break;
         }

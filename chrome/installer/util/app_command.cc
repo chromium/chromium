@@ -9,7 +9,6 @@
 #include <stddef.h>
 
 #include "base/check.h"
-#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "base/win/registry.h"
@@ -92,11 +91,11 @@ bool AppCommand::Initialize(const base::win::RegKey& key) {
 
   command_line_.swap(cmd_line);
 
-  for (size_t i = 0; i < std::size(kNameBoolVars); ++i) {
+  for (const NamedBoolVar& var : kNameBoolVars) {
     DWORD value = 0;  // Set default to false.
     // Note: ReadValueDW only modifies out param on success.
-    key.ReadValueDW(UNSAFE_TODO(kNameBoolVars[i]).name, &value);
-    this->*(UNSAFE_TODO(kNameBoolVars[i]).data) = (value != 0);
+    key.ReadValueDW(var.name, &value);
+    this->*(var.data) = (value != 0);
   }
 
   return true;
@@ -116,9 +115,9 @@ void AppCommand::AddCreateAppCommandWorkItems(const HKEY root_key,
                                command_line_, true)
       ->set_log_message("setting AppCommand CommandLine registry value");
 
-  for (size_t i = 0; i < std::size(kNameBoolVars); ++i) {
-    const wchar_t* var_name = UNSAFE_TODO(kNameBoolVars[i]).name;
-    bool var_data = this->*(UNSAFE_TODO(kNameBoolVars[i]).data);
+  for (const NamedBoolVar& var : kNameBoolVars) {
+    const wchar_t* var_name = var.name;
+    bool var_data = this->*(var.data);
 
     // Adds a work item to set |var_name| to DWORD 1 if |var_data| is true;
     // adds a work item to remove |var_name| otherwise.

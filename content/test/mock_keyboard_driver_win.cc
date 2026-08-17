@@ -103,10 +103,10 @@ bool MockKeyboardDriverWin::SetLayout(int layout) {
     {L"00001009", MockKeyboard::LAYOUT_CANADIAN_FRENCH},
   };
 
-  for (size_t i = 0; i < std::size(kLanguageIDs); ++i) {
-    if (layout == UNSAFE_TODO(kLanguageIDs[i]).keyboard_layout) {
-      HKL new_keyboard_layout = LoadKeyboardLayout(
-          UNSAFE_TODO(kLanguageIDs[i]).language, KLF_ACTIVATE);
+  for (const auto& language_id : kLanguageIDs) {
+    if (layout == language_id.keyboard_layout) {
+      HKL new_keyboard_layout =
+          LoadKeyboardLayout(language_id.language, KLF_ACTIVATE);
       // loaded_keyboard_layout_ must always have a valid keyboard handle
       // so we only assign upon success.
       if (new_keyboard_layout) {

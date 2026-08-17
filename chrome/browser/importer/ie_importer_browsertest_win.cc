@@ -309,12 +309,11 @@ class TestObserver : public ProfileWriter,
 
   void AddFavicons(const favicon_base::FaviconUsageDataList& usage) override {
     // Importer should group the favicon information for each favicon URL.
-    for (size_t i = 0; i < std::size(kIEFaviconGroup); ++i) {
-      GURL favicon_url(UNSAFE_TODO(kIEFaviconGroup[i]).favicon_url);
+    for (const FaviconGroup& favicon_group : kIEFaviconGroup) {
+      GURL favicon_url(favicon_group.favicon_url);
       std::set<GURL> urls;
-      for (size_t j = 0;
-           j < std::size(UNSAFE_TODO(kIEFaviconGroup[i]).site_url); ++j) {
-        urls.insert(GURL(UNSAFE_TODO(kIEFaviconGroup[i].site_url[j])));
+      for (const char16_t* site_url : favicon_group.site_url) {
+        urls.insert(GURL(site_url));
       }
 
       SCOPED_TRACE(testing::Message() << "Expected Favicon: " << favicon_url);

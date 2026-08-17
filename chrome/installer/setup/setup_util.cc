@@ -22,7 +22,6 @@
 #include "base/base64.h"
 #include "base/check.h"
 #include "base/command_line.h"
-#include "base/compiler_specific.h"
 #include "base/cpu.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
@@ -237,8 +236,8 @@ bool ContainsUnsupportedSwitch(const base::CommandLine& cmd_line) {
       "app-host",
       "app-launcher",
   };
-  for (size_t i = 0; i < std::size(kLegacySwitches); ++i) {
-    if (cmd_line.HasSwitch(UNSAFE_TODO(kLegacySwitches[i]))) {
+  for (const char* legacy_switch : kLegacySwitches) {
+    if (cmd_line.HasSwitch(legacy_switch)) {
       return true;
     }
   }

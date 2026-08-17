@@ -14,7 +14,6 @@
 #include "base/base_paths.h"
 #include "base/base_paths_win.h"
 #include "base/command_line.h"
-#include "base/compiler_specific.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -1036,8 +1035,9 @@ class ShellUtilRegistryTest : public testing::Test {
 
   static const std::set<std::wstring> FileExtensions() {
     std::set<std::wstring> file_extensions;
-    for (size_t i = 0; i < std::size(kTestFileExtensions); ++i)
-      file_extensions.insert(UNSAFE_TODO(kTestFileExtensions[i]));
+    for (const wchar_t* extension : kTestFileExtensions) {
+      file_extensions.insert(extension);
+    }
     return file_extensions;
   }
 

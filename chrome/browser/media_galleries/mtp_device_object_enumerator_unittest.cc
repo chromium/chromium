@@ -9,7 +9,6 @@
 
 #include <utility>
 
-#include "base/compiler_specific.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -50,27 +49,26 @@ TEST_F(MTPDeviceObjectEnumeratorTest, Empty) {
 
 TEST_F(MTPDeviceObjectEnumeratorTest, Traversal) {
   std::vector<device::mojom::MtpFileEntryPtr> entries;
-  for (size_t i = 0; i < std::size(kTestCases); ++i) {
+  for (const MtpFileEntryData& test_case : kTestCases) {
     auto entry = device::mojom::MtpFileEntry::New();
-    entry->file_name = UNSAFE_TODO(kTestCases[i]).name;
-    entry->file_size = UNSAFE_TODO(kTestCases[i]).size;
+    entry->file_name = test_case.name;
+    entry->file_size = test_case.size;
     entry->file_type =
-        UNSAFE_TODO(kTestCases[i]).is_directory
+        test_case.is_directory
             ? device::mojom::MtpFileEntry::FileType::FILE_TYPE_FOLDER
             : device::mojom::MtpFileEntry::FileType::FILE_TYPE_OTHER;
-    entry->modification_time = UNSAFE_TODO(kTestCases[i]).modification_time;
+    entry->modification_time = test_case.modification_time;
     entries.push_back(std::move(entry));
   }
   MTPDeviceObjectEnumerator enumerator(std::move(entries));
   TestEnumeratorIsEmpty(&enumerator);
   TestEnumeratorIsEmpty(&enumerator);
-  for (size_t i = 0; i < std::size(kTestCases); ++i) {
-    UNSAFE_TODO(EXPECT_EQ(kTestCases[i].name, enumerator.Next().value()));
-    UNSAFE_TODO(EXPECT_EQ(kTestCases[i].size, enumerator.Size()));
-    UNSAFE_TODO(
-        EXPECT_EQ(kTestCases[i].is_directory, enumerator.IsDirectory()));
-    UNSAFE_TODO(EXPECT_EQ(kTestCases[i].modification_time,
-                          enumerator.LastModifiedTime().ToTimeT()));
+  for (const MtpFileEntryData& test_case : kTestCases) {
+    EXPECT_EQ(test_case.name, enumerator.Next().value());
+    EXPECT_EQ(test_case.size, enumerator.Size());
+    EXPECT_EQ(test_case.is_directory, enumerator.IsDirectory());
+    EXPECT_EQ(test_case.modification_time,
+              enumerator.LastModifiedTime().ToTimeT());
   }
   TestNextEntryIsEmpty(&enumerator);
   TestNextEntryIsEmpty(&enumerator);

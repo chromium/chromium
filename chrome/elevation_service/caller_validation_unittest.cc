@@ -4,7 +4,6 @@
 
 #include "chrome/elevation_service/caller_validation.h"
 
-#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -314,10 +313,10 @@ TEST_F(CallerValidationTest, TrimProcessPath) {
        L"C:\\Program Files\\Google\\Chrome"},
   };
 
-  for (size_t i = 0; i < std::size(cases); ++i) {
-    base::FilePath input(UNSAFE_TODO(cases[i]).input);
+  for (const TestData& test_case : cases) {
+    base::FilePath input(test_case.input);
     auto output = MaybeTrimProcessPathForTesting(input);
-    EXPECT_EQ(output.value(), UNSAFE_TODO(cases[i]).expected);
+    EXPECT_EQ(output.value(), test_case.expected);
   }
 }
 

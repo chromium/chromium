@@ -10,7 +10,6 @@
 
 #include "ash/constants/ash_constants.h"
 #include "ash/constants/webui_url_constants.h"
-#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -102,8 +101,8 @@ bool ImageSource::IsAllowlisted(const std::string& path) const {
   if (components.empty())
     return false;
 
-  for (size_t i = 0; i < std::size(kAllowlistedDirectories); i++) {
-    if (components[0] == UNSAFE_TODO(kAllowlistedDirectories[i])) {
+  for (const char* directory : kAllowlistedDirectories) {
+    if (components[0] == directory) {
       return true;
     }
   }

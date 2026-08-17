@@ -2513,11 +2513,9 @@ bool DeviceStatusCollector::GetNetworkStatus(
     em::NetworkState::ConnectionState connection_state_enum =
         em::NetworkState::UNKNOWN;
     const std::string connection_state_string(state->connection_state());
-    for (size_t i = 0; i < std::size(kConnectionStateMap); ++i) {
-      if (connection_state_string ==
-          UNSAFE_TODO(kConnectionStateMap[i]).state_string) {
-        connection_state_enum =
-            UNSAFE_TODO(kConnectionStateMap[i]).state_constant;
+    for (const auto& entry : kConnectionStateMap) {
+      if (connection_state_string == entry.state_string) {
+        connection_state_enum = entry.state_constant;
         break;
       }
     }
