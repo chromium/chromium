@@ -445,6 +445,7 @@ source_set("test_support") {
     ]
     public_deps += [ "//chrome/test:test_support" ]
     deps += [
+      "//chrome/browser/ui/browser_window",
       "//chrome/browser/web_applications:web_applications_test_support",
       "//content/test:test_support",
     ]

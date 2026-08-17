@@ -50,7 +50,7 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/download/download_browsertest_utils.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/test/base/ui_test_utils.h"
 #endif
 
@@ -119,7 +119,7 @@ void BrowsingDataRemoverBrowserTestBase::InitFeatureLists(
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-Browser* BrowsingDataRemoverBrowserTestBase::GetBrowser() const {
+BrowserWindowInterface* BrowsingDataRemoverBrowserTestBase::GetBrowser() const {
   return incognito_browser_ ? incognito_browser_.get() : browser();
 }
 
@@ -257,7 +257,7 @@ BrowsingDataRemoverBrowserTestBase::GetActiveWebContents() {
 
 #if !BUILDFLAG(IS_ANDROID)
 content::WebContents* BrowsingDataRemoverBrowserTestBase::GetActiveWebContents(
-    Browser* browser) {
+    BrowserWindowInterface* browser) {
   return browser->tab_strip_model()->GetActiveWebContents();
 }
 #endif  // !BUILDFLAG(IS_ANDROID)

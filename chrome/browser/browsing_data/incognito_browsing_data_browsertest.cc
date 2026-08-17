@@ -23,7 +23,7 @@
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
 #include "chrome/browser/media/clear_key_cdm_test_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -80,17 +80,17 @@ class IncognitoBrowsingDataBrowserTest
     UseIncognitoBrowser();
   }
 
-  Browser* GetRegularBrowser() { return browser(); }
+  BrowserWindowInterface* GetRegularBrowser() { return browser(); }
 
-  Browser* GetIncognitoBrowser() { return GetBrowser(); }
+  BrowserWindowInterface* GetIncognitoBrowser() { return GetBrowser(); }
 
   // Test a data type by creating a value in Incognito mode and checking it is
   // counted by the Incognito cookie counter and not by the regular mode one.
   // Then closing Incognito mode and ensuring it is not affecting a new
   // Incognito profile.
   void TestSiteData(const std::string& type) {
-    Browser* regular_browser = GetRegularBrowser();
-    Browser* incognito_browser = GetIncognitoBrowser();
+    BrowserWindowInterface* regular_browser = GetRegularBrowser();
+    BrowserWindowInterface* incognito_browser = GetIncognitoBrowser();
 
     EXPECT_TRUE(regular_browser->GetProfile()->IsRegularProfile());
     EXPECT_TRUE(incognito_browser->GetProfile()->IsIncognitoProfile());
@@ -133,8 +133,8 @@ class IncognitoBrowsingDataBrowserTest
   // Test that storage systems like filesystem, where just an access creates an
   // empty store, are counted and deleted correctly.
   void TestEmptySiteData(const std::string& type) {
-    Browser* regular_browser = GetRegularBrowser();
-    Browser* incognito_browser = GetIncognitoBrowser();
+    BrowserWindowInterface* regular_browser = GetRegularBrowser();
+    BrowserWindowInterface* incognito_browser = GetIncognitoBrowser();
 
     EXPECT_EQ(0, GetSiteDataCount(GetActiveWebContents(regular_browser)));
     EXPECT_EQ(0, GetSiteDataCount(GetActiveWebContents(incognito_browser)));
@@ -162,7 +162,8 @@ class IncognitoBrowsingDataBrowserTest
     ExpectTotalModelCount(incognito_browser, 0);
   }
 
-  inline void ExpectTotalModelCount(Browser* browser, size_t expected) {
+  inline void ExpectTotalModelCount(BrowserWindowInterface* browser,
+                                    size_t expected) {
     std::unique_ptr<BrowsingDataModel> browsing_data_model =
         GetBrowsingDataModel(browser->GetProfile());
 

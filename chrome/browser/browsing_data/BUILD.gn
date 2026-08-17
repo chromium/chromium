@@ -365,6 +365,10 @@ source_set("platform_browser_tests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
+
+  if (!is_android) {
+    deps += [ "//chrome/browser/ui/browser_window" ]
+  }
 }
 
 if (!is_android) {
@@ -401,6 +405,7 @@ if (!is_android) {
       "//chrome/browser/sync",
       "//chrome/browser/sync/test/integration:sync_integration_test_support",
       "//chrome/browser/ui",
+      "//chrome/browser/ui/browser_window",
       "//chrome/browser/unified_consent",
       "//chrome/browser/webdata_services",
       "//chrome/test:test_support",

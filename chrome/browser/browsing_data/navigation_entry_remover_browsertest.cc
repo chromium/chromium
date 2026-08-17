@@ -7,8 +7,8 @@
 #include "base/files/file_path.h"
 #include "build/build_config.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -49,7 +49,8 @@ class NavigationEntryRemoverTest : public InProcessBrowserTest {
 
   Profile* profile() { return browser()->GetProfile(); }
 
-  void AddNavigations(Browser* browser, const std::vector<GURL>& urls) {
+  void AddNavigations(BrowserWindowInterface* browser,
+                      const std::vector<GURL>& urls) {
     for (const GURL& url : urls) {
       ui_test_utils::NavigateToURLWithDisposition(
           browser, url, WindowOpenDisposition::CURRENT_TAB,
@@ -57,7 +58,7 @@ class NavigationEntryRemoverTest : public InProcessBrowserTest {
     }
   }
 
-  void AddTab(Browser* browser, const std::vector<GURL>& urls) {
+  void AddTab(BrowserWindowInterface* browser, const std::vector<GURL>& urls) {
     ui_test_utils::NavigateToURLWithDisposition(
         browser, urls[0], WindowOpenDisposition::NEW_FOREGROUND_TAB,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB |
@@ -65,12 +66,13 @@ class NavigationEntryRemoverTest : public InProcessBrowserTest {
     AddNavigations(browser, {urls.begin() + 1, urls.end()});
   }
 
-  Browser* AddBrowser(Browser* browser, const std::vector<GURL>& urls) {
+  BrowserWindowInterface* AddBrowser(BrowserWindowInterface* browser,
+                                     const std::vector<GURL>& urls) {
     ui_test_utils::BrowserCreatedObserver browser_created_observer;
     ui_test_utils::NavigateToURLWithDisposition(
         browser, urls[0], WindowOpenDisposition::NEW_WINDOW,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_BROWSER);
-    Browser* new_browser = browser_created_observer.Wait();
+    BrowserWindowInterface* new_browser = browser_created_observer.Wait();
 #if BUILDFLAG(IS_MAC)
     content::HandleMissingKeyWindow();
 #endif
@@ -339,7 +341,7 @@ IN_PROC_BROWSER_TEST_F(NavigationEntryRemoverTest, RecentTabDeletion) {
 IN_PROC_BROWSER_TEST_F(NavigationEntryRemoverTest,
                        MAYBE_RecentTabWindowDeletion) {
   // Create a new browser with three tabs and close it.
-  Browser* new_browser = AddBrowser(browser(), {url_a_});
+  BrowserWindowInterface* new_browser = AddBrowser(browser(), {url_a_});
   AddTab(new_browser, {url_b_, url_c_});
   AddTab(new_browser, {url_d_});
   chrome::CloseWindow(new_browser);

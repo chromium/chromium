@@ -8,7 +8,6 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/unified_consent/unified_consent_service_factory.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/signin/public/base/signin_buildflags.h"
