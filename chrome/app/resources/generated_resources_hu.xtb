@@ -6715,6 +6715,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="6185151644843671709">Azonosítókulcs mentve és PIN-kód létrehozva</translation>
 <translation id="6185353868193925315">{PASSWORD_COUNT,plural, =1{1 jelszót és egyéb elemeket csak erre az eszközre ment a rendszer. Ha a többi eszközén is használni szeretné őket, mentse őket Google-fiókjába. Ezzel az esetleges ismétlődéseket is eltávolítja.}other{{PASSWORD_COUNT} jelszót és egyéb elemeket csak erre az eszközre ment a rendszer. Ha a többi eszközén is használni szeretné őket, mentse őket Google-fiókjába. Ezzel az esetleges ismétlődéseket is eltávolítja.}}</translation>
 <translation id="6186177419203903310">Ezzel a rendszer összes új USB-perifériájára vonatkozóan engedélyezi az értesítéseket. Biztosan folytatni szeretné?</translation>
+<translation id="6188822118034543225">Az osztott nézet menüjével válthat az egymás melletti és az egymásra helyezett elrendezések között.</translation>
 <translation id="6190953336330058278">Telefonközpont-alkalmazások</translation>
 <translation id="6192333916571137726">Fájl letöltése</translation>
 <translation id="6192413564913825901">Áthelyezés az összes könyvjelző közé</translation>
@@ -7410,6 +7411,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="6729280095610283088">A sarki fény fényes sugarai egy erdő felett.</translation>
 <translation id="6729493062119577923">Megosztott lapcsoport tevékenységei</translation>
 <translation id="6730744976532805323">Megosztja a jelenlegi lapot a Geminivel, még akkor is, ha Ön lapot vált</translation>
+<translation id="6731848763586448407">Próbálja ki az egymásra helyezett osztott nézetet</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (azonosító: <ph name="EXTENSION_OR_APP_ID" />)</translation>
 <translation id="6736243959894955139">Cím</translation>
 <translation id="6737663862851963468">Kerberos-jegy eltávolítása</translation>

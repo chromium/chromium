@@ -6692,6 +6692,7 @@
 <translation id="6185151644843671709">已儲存密碼金鑰並建立 PIN 碼</translation>
 <translation id="6185353868193925315">{PASSWORD_COUNT,plural, =1{這 1 組密碼和其他項目只會儲存在這部裝置。如要在其他裝置使用，請儲存到 Google 帳戶。此操作也會清理所有重複項目。}other{這 {PASSWORD_COUNT} 組密碼和其他項目只會儲存在這部裝置。如要在其他裝置使用，請儲存到 Google 帳戶。此操作也會清理所有重複項目。}}</translation>
 <translation id="6186177419203903310">這麼做會啟用系統中所有新 USB 周邊裝置的通知。確定要繼續嗎？</translation>
+<translation id="6188822118034543225">使用分割畫面選單，即可切換左右和上下並排版面。</translation>
 <translation id="6190953336330058278">Phone Hub 應用程式</translation>
 <translation id="6192333916571137726">下載檔案</translation>
 <translation id="6192413564913825901">移至「所有書籤」</translation>
@@ -7387,6 +7388,7 @@
 <translation id="6729280095610283088">明亮的北極光照射在森林上空。</translation>
 <translation id="6729493062119577923">共用分頁群組活動</translation>
 <translation id="6730744976532805323">與 Gemini 分享目前使用的分頁。切換分頁時，分享的分頁也會改變。</translation>
+<translation id="6731848763586448407">試試上下並排分割畫面</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (ID：<ph name="EXTENSION_OR_APP_ID" />)</translation>
 <translation id="6736243959894955139">位址</translation>
 <translation id="6737663862851963468">移除 Kerberos 票證</translation>

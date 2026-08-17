@@ -6696,6 +6696,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="6185151644843671709">Toegangssleutel opgeslagen en pincode gemaakt</translation>
 <translation id="6185353868193925315">{PASSWORD_COUNT,plural, =1{1 wachtwoord en andere items worden alleen op dit apparaat opgeslagen. Als je ze wilt gebruiken op je andere apparaten, sla je ze op in je Google-account. Hiermee worden ook eventuele duplicaten opgeschoond.}other{{PASSWORD_COUNT} wachtwoorden en andere items worden alleen op dit apparaat opgeslagen. Als je ze wilt gebruiken op je andere apparaten, sla je ze op in je Google-account. Hiermee worden ook eventuele duplicaten opgeschoond.}}</translation>
 <translation id="6186177419203903310">Hiermee zet je meldingen aan voor alle nieuwe USB-randapparaten in het systeem. Weet je zeker dat je wilt doorgaan?</translation>
+<translation id="6188822118034543225">Gebruik het menu voor gesplitste weergave om te wisselen tussen de indelingen naast elkaar en gestapeld.</translation>
 <translation id="6190953336330058278">Telefoonhub-apps</translation>
 <translation id="6192333916571137726">Bestand downloaden</translation>
 <translation id="6192413564913825901">Verplaatsen naar Alle bookmarks</translation>
@@ -7391,6 +7392,7 @@ Je hebt nog # gehackte wachtwoorden. Google Wachtwoordmanager raadt je aan deze 
 <translation id="6729280095610283088">Heldere banen van het noorderlicht boven een bos.</translation>
 <translation id="6729493062119577923">Activiteit van gedeelde tabbladgroep</translation>
 <translation id="6730744976532805323">Deelt het huidige tabblad met Gemini, zelfs als je van tabblad wisselt</translation>
+<translation id="6731848763586448407">Gestapelde gesplitste weergave proberen</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (ID: <ph name="EXTENSION_OR_APP_ID" />)</translation>
 <translation id="6736243959894955139">Adres</translation>
 <translation id="6737663862851963468">Kerberos-ticket verwijderen</translation>

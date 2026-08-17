@@ -6696,6 +6696,7 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="6185151644843671709">Gorde da sarbide-gakoa, eta sortu da PINa</translation>
 <translation id="6185353868193925315">{PASSWORD_COUNT,plural, =1{1 pasahitz eta beste elementu batzuk gailu honetan soilik gordeta daude. Beste gailuetan erabiltzeko, gorde itzazu Google-ko kontuan. Gainera, bikoiztuak garbituko dira.}other{{PASSWORD_COUNT} pasahitz eta beste elementu batzuk gailu honetan soilik gordeta daude. Beste gailuetan erabiltzeko, gorde itzazu Google-ko kontuan. Gainera, bikoiztuak garbituko dira.}}</translation>
 <translation id="6186177419203903310">USB bidezko periferiko berri guztien jakinarazpenak gaituko dira sistema osoan. Ziur aurrera egin nahi duzula?</translation>
+<translation id="6188822118034543225">Erabili ikuspegi zatituaren menua fitxak bata bestearen alboan eta pilatuta ikusi nahi dituzun aukeratzeko.</translation>
 <translation id="6190953336330058278">Phone Hub-en aplikazioak</translation>
 <translation id="6192333916571137726">Deskargatu fitxategia</translation>
 <translation id="6192413564913825901">Eraman laster-marka guztien karpetara</translation>
@@ -7391,6 +7392,7 @@ Arriskuan dauden # pasahitz gehiago dauzkazu. Google-ren Pasahitz-kudeatzailea z
 <translation id="6729280095610283088">Aurora borealaren izpi distiratsuak, baso baten gainean.</translation>
 <translation id="6729493062119577923">Partekatutako fitxa taldearen jarduerak</translation>
 <translation id="6730744976532805323">Une horretan irekita dagoen fitxa Gemini-rekin partekatzen du, fitxaz aldatuta ere</translation>
+<translation id="6731848763586448407">Probatu ikuspegi zatitu horizontala</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (identifikatzailea: <ph name="EXTENSION_OR_APP_ID" />)</translation>
 <translation id="6736243959894955139">Helbidea</translation>
 <translation id="6737663862851963468">Kendu Kerberos-eko txartel bat</translation>

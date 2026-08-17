@@ -6717,6 +6717,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6185151644843671709">Nyckeln har sparats och pinkoden har skapats</translation>
 <translation id="6185353868193925315">{PASSWORD_COUNT,plural, =1{1 lösenord och andra objekt sparas endast på den här enheten. Om du vill använda dem på dina andra enheter sparar du dem i Google-kontot. Detta tar även bort eventuella dubbletter.}other{{PASSWORD_COUNT} lösenord och andra objekt sparas endast på den här enheten. Om du vill använda dem på dina andra enheter sparar du dem i Google-kontot. Detta tar även bort eventuella dubbletter.}}</translation>
 <translation id="6186177419203903310">Då aktiveras aviseringar för all ny USB-kringutrustning i systemet. Vill du fortsätta?</translation>
+<translation id="6188822118034543225">Använd menyn för delad vy för att växla mellan layouter sida vid sida och staplade layouter.</translation>
 <translation id="6190953336330058278">Phone Hub-appar</translation>
 <translation id="6192333916571137726">Ladda ned fil</translation>
 <translation id="6192413564913825901">Flytta till Alla bokmärken</translation>
@@ -7412,6 +7413,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6729280095610283088">Starkt lysande norrsken över en skog.</translation>
 <translation id="6729493062119577923">Aktivitet i den delade flikgruppen</translation>
 <translation id="6730744976532805323">Delar den aktuella fliken med Gemini, även när du byter flik</translation>
+<translation id="6731848763586448407">Testa staplad delad vy</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (id: <ph name="EXTENSION_OR_APP_ID" />)</translation>
 <translation id="6736243959894955139">Adress</translation>
 <translation id="6737663862851963468">Ta bort Kerberos-biljett</translation>

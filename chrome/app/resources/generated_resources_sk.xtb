@@ -6702,6 +6702,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="6185151644843671709">Prístupový kľúč bol uložený a kód PIN vytvorený</translation>
 <translation id="6185353868193925315">{PASSWORD_COUNT,plural, =1{1 heslo a ďalšie položky sú uložené iba v tomto zariadení. Ak ich chcete používať v ďalších zariadeniach, uložte si ich v účte Google. Vymažete tým aj všetky duplikáty.}few{{PASSWORD_COUNT} heslá a ďalšie položky sú uložené iba v tomto zariadení. Ak ich chcete používať v ďalších zariadeniach, uložte si ich v účte Google. Vymažete tým aj všetky duplikáty.}many{{PASSWORD_COUNT} passwords and other items are saved only to this device. To use them on your other devices, save them in your Google Account. This will also clean up any duplicates.}other{{PASSWORD_COUNT} hesiel a ďalších položiek je uložených iba v tomto zariadení. Ak ich chcete používať v ďalších zariadeniach, uložte si ich v účte Google. Vymažete tým aj všetky duplikáty.}}</translation>
 <translation id="6186177419203903310">Týmto zapnete upozornenia pre všetky nové periférie USB v systéme. Naozaj chcete pokračovať?</translation>
+<translation id="6188822118034543225">Pomocou ponuky rozdeleného zobrazenia môžete prepínať medzi rozloženiami vedľa seba a nad sebou.</translation>
 <translation id="6190953336330058278">Aplikácie Telefónneho centra</translation>
 <translation id="6192333916571137726">Sťahovanie súboru</translation>
 <translation id="6192413564913825901">Presunúť do priečinka Všetky záložky</translation>
@@ -7401,6 +7402,7 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="6729280095610283088">Jasné pruhy polárnej žiary nad lesom.</translation>
 <translation id="6729493062119577923">Aktivita zdieľanej skupiny kariet</translation>
 <translation id="6730744976532805323">Aktuálna karta sa zdieľa s Gemini, aj keď budete karty prepínať</translation>
+<translation id="6731848763586448407">Vyskúšajte rozdelené zobrazenie nad sebou</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (Identifikátor: <ph name="EXTENSION_OR_APP_ID" />)</translation>
 <translation id="6736243959894955139">Adresa</translation>
 <translation id="6737663862851963468">Odstrániť lístok Kerberos</translation>

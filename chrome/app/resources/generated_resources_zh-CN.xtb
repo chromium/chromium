@@ -6696,6 +6696,7 @@
 <translation id="6185151644843671709">已保存通行密钥并创建 PIN 码</translation>
 <translation id="6185353868193925315">{PASSWORD_COUNT,plural, =1{有 1 个密码和其他内容只保存到此设备上。若要在其他设备上使用它们，请将它们保存到您的 Google 账号中。此操作还会清理所有重复项。}other{有 {PASSWORD_COUNT} 个密码和其他内容只保存到此设备上。若要在其他设备上使用它们，请将它们保存到您的 Google 账号中。此操作还会清理所有重复项。}}</translation>
 <translation id="6186177419203903310">此操作将为系统中的所有新 USB 外围设备启用通知功能。确定要继续吗？</translation>
+<translation id="6188822118034543225">使用拆分视图菜单可在并排布局和堆叠布局之间切换。</translation>
 <translation id="6190953336330058278">Phone Hub 应用</translation>
 <translation id="6192333916571137726">下载文件</translation>
 <translation id="6192413564913825901">移至“所有书签”文件夹</translation>
@@ -7391,6 +7392,7 @@
 <translation id="6729280095610283088">森林上空闪耀着明亮的北极光。</translation>
 <translation id="6729493062119577923">共享标签页分组活动记录</translation>
 <translation id="6730744976532805323">与 Gemini 分享当前标签页，即使切换标签页也无妨</translation>
+<translation id="6731848763586448407">试用堆叠拆分视图</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" />（ID：<ph name="EXTENSION_OR_APP_ID" />）</translation>
 <translation id="6736243959894955139">地址</translation>
 <translation id="6737663862851963468">移除 Kerberos 票据</translation>

@@ -6709,6 +6709,7 @@
 <translation id="6185151644843671709">已儲存密鑰和建立 PIN</translation>
 <translation id="6185353868193925315">{PASSWORD_COUNT,plural, =1{1 個密碼和其他項目只會儲存至此裝置。如要在其他裝置上使用，請將項目儲存至 Google 帳戶。這也會清除任何重複項目。}other{{PASSWORD_COUNT} 個密碼和其他項目只會儲存至此裝置。如要在其他裝置上使用，請將項目儲存至 Google 帳戶。這也會清除任何重複項目。}}</translation>
 <translation id="6186177419203903310">系統會啟用所有新 USB 周邊裝置的通知。確定要繼續嗎？</translation>
+<translation id="6188822118034543225">使用分割檢視模式選單切換並排和堆疊版面配置。</translation>
 <translation id="6190953336330058278">Phone Hub 應用程式</translation>
 <translation id="6192333916571137726">下載檔案</translation>
 <translation id="6192413564913825901">移至「所有書籤」</translation>
@@ -7404,6 +7405,7 @@
 <translation id="6729280095610283088">森林上空閃耀著明亮的北極光。</translation>
 <translation id="6729493062119577923">共用分頁群組活動</translation>
 <translation id="6730744976532805323">與 Gemini 分享當前分頁，即使你切換分頁亦然</translation>
+<translation id="6731848763586448407">試用堆疊式分割檢視模式</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (ID：<ph name="EXTENSION_OR_APP_ID" />)</translation>
 <translation id="6736243959894955139">位址</translation>
 <translation id="6737663862851963468">移除 Kerberos 票證</translation>

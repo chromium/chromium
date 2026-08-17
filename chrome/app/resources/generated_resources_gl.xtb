@@ -6704,6 +6704,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="6185151644843671709">Gardouse a clave de acceso e creouse o PIN</translation>
 <translation id="6185353868193925315">{PASSWORD_COUNT,plural, =1{Hai 1 contrasinal e outros elementos gardados só neste dispositivo. Para usalos noutros, gárdaos na túa Conta de Google. Esta acción tamén eliminará todos os duplicados do almacenamento.}other{Hai {PASSWORD_COUNT} contrasinais e outros elementos gardados só neste dispositivo. Para usalos noutros, gárdaos na túa Conta de Google. Esta acción tamén eliminará todos os duplicados do almacenamento.}}</translation>
 <translation id="6186177419203903310">Activaranse as notificacións para todos os periféricos USB novos do sistema. Seguro que queres continuar?</translation>
+<translation id="6188822118034543225">Usa o menú desta vista para cambiar entre os deseños de lado a lado e empillado.</translation>
 <translation id="6190953336330058278">Aplicacións de O meu teléfono</translation>
 <translation id="6192333916571137726">Queres descargar o ficheiro?</translation>
 <translation id="6192413564913825901">Mover a todos os marcadores</translation>
@@ -7399,6 +7400,7 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="6729280095610283088">Feixes luminosos dunha aurora boreal sobre un bosque.</translation>
 <translation id="6729493062119577923">Actividade do grupo de pestanas compartido</translation>
 <translation id="6730744976532805323">Compártese a pestana actual con Gemini, mesmo cando cambias de pestana</translation>
+<translation id="6731848763586448407">Probar a vista dividida empillada</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (código: <ph name="EXTENSION_OR_APP_ID" />)</translation>
 <translation id="6736243959894955139">Enderezo</translation>
 <translation id="6737663862851963468">Quitar tícket de Kerberos</translation>

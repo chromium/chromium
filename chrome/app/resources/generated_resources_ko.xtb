@@ -6716,6 +6716,7 @@
 <translation id="6185151644843671709">패스키 저장 및 PIN 생성됨</translation>
 <translation id="6185353868193925315">{PASSWORD_COUNT,plural, =1{비밀번호 1개 및 기타 항목이 이 기기에만 저장됩니다. 다른 기기에서 사용하려면 Google 계정에 저장하세요. 이렇게 하면 중복 항목도 정리됩니다}other{비밀번호 {PASSWORD_COUNT}개 및 기타 항목이 이 기기에만 저장됩니다. 다른 기기에서 사용하려면 Google 계정에 저장하세요. 이렇게 하면 중복 항목도 정리됩니다}}</translation>
 <translation id="6186177419203903310">시스템 전반에서 모든 새 USB 주변기기에 대한 알림이 사용 설정됩니다. 계속하시겠습니까?</translation>
+<translation id="6188822118034543225">분할 뷰 메뉴를 사용하여 나란히 배치된 레이아웃과 스택 레이아웃 간에 전환하세요.</translation>
 <translation id="6190953336330058278">휴대전화 허브 앱</translation>
 <translation id="6192333916571137726">파일 다운로드</translation>
 <translation id="6192413564913825901">모든 북마크로 이동</translation>
@@ -7411,6 +7412,7 @@
 <translation id="6729280095610283088">숲 위로 오로라의 빛줄기가 빛납니다.</translation>
 <translation id="6729493062119577923">공유 탭 그룹 활동</translation>
 <translation id="6730744976532805323">탭을 전환해도 현재 탭이 Gemini와 계속 공유됩니다.</translation>
+<translation id="6731848763586448407">스택 분할 뷰를 사용해 보세요</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" />(ID: <ph name="EXTENSION_OR_APP_ID" />)</translation>
 <translation id="6736243959894955139">주소</translation>
 <translation id="6737663862851963468">Kerberos 티켓 삭제</translation>

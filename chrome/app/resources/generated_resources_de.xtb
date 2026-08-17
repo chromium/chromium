@@ -6697,6 +6697,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6185151644843671709">Passkey gespeichert und PIN erstellt</translation>
 <translation id="6185353868193925315">{PASSWORD_COUNT,plural, =1{1 Passwort und andere Elemente sind nur auf diesem Gerät gespeichert. Wenn du sie auf deinen anderen Geräten verwenden möchtest, speichere sie in deinem Google-Konto. Dadurch werden auch alle Duplikate entfernt.}other{{PASSWORD_COUNT} Passwörter und andere Elemente werden nur auf diesem Gerät gespeichert. Wenn du sie auf deinen anderen Geräten verwenden möchtest, speichere sie in deinem Google-Konto. Dadurch werden auch alle Duplikate entfernt.}}</translation>
 <translation id="6186177419203903310">Dadurch werden Benachrichtigungen für alle neuen USB‑Peripheriegeräte im gesamten System aktiviert. Möchtest du wirklich fortfahren?</translation>
+<translation id="6188822118034543225">Über das Menü „Geteilte Ansicht“ kannst du zwischen dem nebeneinander und übereinander angeordneten Layout wechseln.</translation>
 <translation id="6190953336330058278">Phone Hub-Apps</translation>
 <translation id="6192333916571137726">Datei herunterladen</translation>
 <translation id="6192413564913825901">In Ordner „Alle Lesezeichen“ verschieben</translation>
@@ -7392,6 +7393,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="6729280095610283088">Helle Polarlichter über einem Wald.</translation>
 <translation id="6729493062119577923">Aktivitäten der geteilten Tabgruppe</translation>
 <translation id="6730744976532805323">Der aktuelle Tab wird mit Gemini geteilt, auch wenn du zwischen Tabs wechselst</translation>
+<translation id="6731848763586448407">Geteilte Ansicht mit übereinander angeordnetem Layout ausprobieren</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (ID: <ph name="EXTENSION_OR_APP_ID" />)</translation>
 <translation id="6736243959894955139">Adresse</translation>
 <translation id="6737663862851963468">Kerberos-Ticket entfernen</translation>

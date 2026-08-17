@@ -6699,6 +6699,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6185151644843671709">Passkey salvata e PIN creato</translation>
 <translation id="6185353868193925315">{PASSWORD_COUNT,plural, =1{1 password e altri elementi sono salvati solo su questo dispositivo. Per usarli sugli altri dispositivi, salvali nel tuo Account Google. Verranno eliminati anche eventuali duplicati.}other{{PASSWORD_COUNT} password e altri elementi sono salvati solo su questo dispositivo. Per usarli sugli altri dispositivi, salvali nel tuo Account Google. Verranno eliminati anche eventuali duplicati.}}</translation>
 <translation id="6186177419203903310">Verranno attivate le notifiche per tutte le nuove periferiche USB del sistema. Continuare?</translation>
+<translation id="6188822118034543225">Utilizza il menu della visualizzazione divisa per passare dal layout affiancato a quello impilato e viceversa.</translation>
 <translation id="6190953336330058278">App di Phone Hub</translation>
 <translation id="6192333916571137726">Scarica file</translation>
 <translation id="6192413564913825901">Sposta in tutti i preferiti</translation>
@@ -7394,6 +7395,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6729280095610283088">Rivoli luminosi dell'aurora boreale su una foresta.</translation>
 <translation id="6729493062119577923">Attività del gruppo di schede condiviso</translation>
 <translation id="6730744976532805323">Condivide la scheda corrente con Gemini, anche quando cambi scheda.</translation>
+<translation id="6731848763586448407">Prova la visualizzazione divisa impilata</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (ID: <ph name="EXTENSION_OR_APP_ID" />)</translation>
 <translation id="6736243959894955139">Indirizzo</translation>
 <translation id="6737663862851963468">Rimuovere richiesta di Kerberos</translation>

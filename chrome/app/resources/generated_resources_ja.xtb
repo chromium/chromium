@@ -6697,6 +6697,7 @@
 <translation id="6185151644843671709">パスキーを保存し、PIN を作成しました</translation>
 <translation id="6185353868193925315">{PASSWORD_COUNT,plural, =1{1 件のパスワードとその他の項目がこのデバイスのみに保存されています。他のデバイスで使用するには、Google アカウントに保存してください。保存時に重複する項目は整理されます。}other{{PASSWORD_COUNT} 件のパスワードとその他の項目がこのデバイスのみに保存されています。他のデバイスで使用するには、Google アカウントに保存してください。保存時に重複する項目は整理されます。}}</translation>
 <translation id="6186177419203903310">システム全体であらゆる新しい USB 周辺機器の通知が有効になります。続行してもよろしいですか？</translation>
+<translation id="6188822118034543225">分割ビュー メニューを使用して、横並びと縦並びのレイアウトを切り替えることができます。</translation>
 <translation id="6190953336330058278">スマートフォン ハブ アプリ</translation>
 <translation id="6192333916571137726">ファイルをダウンロード</translation>
 <translation id="6192413564913825901">すべてのブックマークに移動</translation>
@@ -7392,6 +7393,7 @@
 <translation id="6729280095610283088">森の上空を流れるように輝くオーロラ。</translation>
 <translation id="6729493062119577923">共有タブグループのアクティビティ</translation>
 <translation id="6730744976532805323">タブを切り替えても、現在のタブを Gemini と共有します</translation>
+<translation id="6731848763586448407">縦並びの分割ビューをお試しください</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" />（ID: <ph name="EXTENSION_OR_APP_ID" />）</translation>
 <translation id="6736243959894955139">アドレス</translation>
 <translation id="6737663862851963468">Kerberos チケットの削除</translation>
