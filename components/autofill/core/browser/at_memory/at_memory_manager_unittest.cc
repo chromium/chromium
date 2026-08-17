@@ -624,7 +624,7 @@ TEST_F(AtMemoryManagerTest, FlightReservation_ValueAndLabelFormatting) {
   MemorySearchResult entry(MemoryDataType::kFlightReservationDepartureDate,
                            /*type_name=*/u"Departure Date",
                            /*value=*/u"2024-06-07 3:30 PM",
-                           /*relevance_score=*/1.0,
+                           /*confidence_score=*/1.0,
                            /*typed_value=*/datetime_typed);
 
   entry.metadata_list.emplace_back(
