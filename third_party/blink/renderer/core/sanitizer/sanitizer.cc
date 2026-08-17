@@ -1111,12 +1111,6 @@ Sanitizer::Action Sanitizer::SanitizeSingleNode(Node* node, Mode safe) const {
   return action;
 }
 
-bool Sanitizer::ShouldReplaceNodeWithChildren(Node* node) const {
-  return replace_elements_ && node->IsElementNode() &&
-         !IsA<HTMLTemplateElement>(node) &&
-         replace_elements_->Contains(To<Element>(node)->TagQName());
-}
-
 bool Sanitizer::setFrom(const SanitizerConfig* config,
                         bool allowCommentsAndDataAttributes) {
   // https://wicg.github.io/sanitizer-api/#configuration-set

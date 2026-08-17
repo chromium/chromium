@@ -324,31 +324,29 @@ static inline void ExecuteTakeAllChildrenTask(HTMLConstructionSiteTask& task) {
 
 void HTMLConstructionSite::ExecuteTask(HTMLConstructionSiteTask& task) {
   DCHECK(task_queue_.empty());
-  if (task.operation == HTMLConstructionSiteTask::kInsert) {
-    ExecuteInsertTask(task);
-    return;
+  switch (task.operation) {
+    case HTMLConstructionSiteTask::kInsert:
+      ExecuteInsertTask(task);
+      break;
+    case HTMLConstructionSiteTask::kInsertText:
+      ExecuteInsertTextTask(task);
+      break;
+    case HTMLConstructionSiteTask::kRemove:
+      if (task.child->parentNode()) {
+        task.child->parentNode()->ParserRemoveChild(*task.child);
+      }
+      break;
+    // All the cases below this point are only used by the adoption agency.
+    case HTMLConstructionSiteTask::kInsertAlreadyParsedChild:
+      ExecuteInsertAlreadyParsedChildTask(task);
+      break;
+    case HTMLConstructionSiteTask::kReparent:
+      ExecuteReparentTask(task);
+      break;
+    case HTMLConstructionSiteTask::kTakeAllChildren:
+      ExecuteTakeAllChildrenTask(task);
+      break;
   }
-
-  if (task.operation == HTMLConstructionSiteTask::kInsertText) {
-    ExecuteInsertTextTask(task);
-    return;
-  }
-
-  // All the cases below this point are only used by the adoption agency.
-
-  if (task.operation == HTMLConstructionSiteTask::kInsertAlreadyParsedChild) {
-    return ExecuteInsertAlreadyParsedChildTask(task);
-  }
-
-  if (task.operation == HTMLConstructionSiteTask::kReparent) {
-    return ExecuteReparentTask(task);
-  }
-
-  if (task.operation == HTMLConstructionSiteTask::kTakeAllChildren) {
-    return ExecuteTakeAllChildrenTask(task);
-  }
-
-  NOTREACHED();
 }
 
 // This is only needed for TextDocuments where we might have text nodes
@@ -463,17 +461,39 @@ void HTMLConstructionSite::QueueTask(HTMLConstructionSiteTask& task,
     FlushPendingText();
   }
 
-  if (task.child && task.parent && !task.parent->IsDocumentNode() &&
-      task.operation != HTMLConstructionSiteTask::Operation::kTakeAllChildren) {
-    if (auto* active_sanitizer = ActiveSanitizer(task.child.Get())) {
-      if (!active_sanitizer->Sanitize(task.child)) {
-        return;
+  if (task.operation == HTMLConstructionSiteTask::Operation::kInsert) {
+    CHECK(task.child);
+    CHECK(task.parent);
+    // For adding to the root, we need to post process. This only happens for
+    // parseHTML{Unsafe}.
+    if (!task.parent->IsDocumentNode()) {
+      if (auto* active_sanitizer = ActiveSanitizer(task.child.Get())) {
+        if (!active_sanitizer->Sanitize(task.child)) {
+          return;
+        }
       }
     }
   }
 
   AdjustInsertionLocation(task);
   task_queue_.push_back(task);
+}
+
+Sanitizer::Action HTMLConstructionSite::CheckSanitizerAction(Node* node) const {
+  auto* active_sanitizer = ActiveSanitizer(node);
+  if (!active_sanitizer) {
+    return Sanitizer::Action::kKeep;
+  }
+  return active_sanitizer->CheckSanitizerAction(node);
+}
+
+Sanitizer::Action HTMLConstructionSite::SanitizeAndReturnAction(
+    Node* node) const {
+  auto* active_sanitizer = ActiveSanitizer(node);
+  if (!active_sanitizer) {
+    return Sanitizer::Action::kKeep;
+  }
+  return active_sanitizer->SanitizeAndReturnAction(node);
 }
 
 StreamingSanitizer* HTMLConstructionSite::ActiveSanitizer(
@@ -950,8 +970,8 @@ void HTMLConstructionSite::AdjustInsertionLocation(
     // doing this at the same time as foster parenting.
     for (HTMLStackItem* parent_item =
              open_elements_.Find(DynamicTo<Element>(task.parent.Get()));
-         parent_item &&
-         active_sanitizer->ShouldReplaceWithChildren(task.parent);
+         parent_item && active_sanitizer->CheckSanitizerAction(task.parent) ==
+                            Sanitizer::Action::kReplaceWithChildren;
          parent_item = parent_item->NextItemInStack()) {
       task.parent = parent_item->GetNode();
     }
@@ -1321,6 +1341,12 @@ void HTMLConstructionSite::TakeAllChildren(HTMLStackItem* new_parent,
   HTMLConstructionSiteTask task(HTMLConstructionSiteTask::kTakeAllChildren);
   task.parent = new_parent->GetNode();
   task.child = old_parent->GetNode();
+  QueueTask(task, true);
+}
+
+void HTMLConstructionSite::RemoveNode(HTMLStackItem* child) {
+  HTMLConstructionSiteTask task(HTMLConstructionSiteTask::kRemove);
+  task.child = child->GetNode();
   QueueTask(task, true);
 }
 

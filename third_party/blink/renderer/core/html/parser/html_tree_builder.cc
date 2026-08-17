@@ -1820,6 +1820,10 @@ void HTMLTreeBuilder::CallTheAdoptionAgency(AtomicHTMLToken* token) {
     HTMLStackItem* node = furthest_block;
     HTMLStackItem* next_node = node->NextItemInStack();
     HTMLStackItem* last_node = furthest_block;
+    if (tree_.SanitizeAndReturnAction(last_node->GetElement()) !=
+        Sanitizer::Action::kKeep) {
+      last_node = nullptr;
+    }
     if (RuntimeEnabledFeatures::HTMLAdoptionAlgorithmNewStepsEnabled()) {
       bool node_in_active_formatting_elements = false;
       // 4.12
@@ -1881,9 +1885,27 @@ void HTMLTreeBuilder::CallTheAdoptionAgency(AtomicHTMLToken* token) {
           bookmark.MoveToAfter(node_entry);
         }
         // 4.13.8
-        tree_.Reparent(node, last_node);
-        // 4.13.9
-        last_node = node;
+        Sanitizer::Action action =
+            tree_.SanitizeAndReturnAction(node->GetElement());
+
+        switch (action) {
+          case Sanitizer::Action::kKeep:
+          case Sanitizer::Action::kKeepElement:
+            if (last_node) {
+              tree_.Reparent(node, last_node);
+            }
+            // 4.13.9
+            last_node = node;
+            break;
+          case Sanitizer::Action::kDrop:
+            if (last_node) {
+              tree_.RemoveNode(last_node);
+            }
+            last_node = nullptr;
+            break;
+          case Sanitizer::Action::kReplaceWithChildren:
+            break;
+        }
       }
     } else {
       // 9.1, 9.2, 9.3 and 9.11 are covered by the for() loop.
@@ -1917,26 +1939,65 @@ void HTMLTreeBuilder::CallTheAdoptionAgency(AtomicHTMLToken* token) {
           bookmark.MoveToAfter(node_entry);
         }
         // 9.9
-        tree_.Reparent(node, last_node);
-        // 9.10
-        last_node = node;
+        Sanitizer::Action action =
+            tree_.SanitizeAndReturnAction(node->GetElement());
+
+        switch (action) {
+          case Sanitizer::Action::kKeep:
+          case Sanitizer::Action::kKeepElement:
+            if (last_node) {
+              tree_.Reparent(node, last_node);
+            }
+            // 9.10
+            last_node = node;
+            break;
+          case Sanitizer::Action::kDrop:
+            if (last_node) {
+              tree_.RemoveNode(last_node);
+            }
+            last_node = nullptr;
+            break;
+          case Sanitizer::Action::kReplaceWithChildren:
+            break;
+        }
       }
     }
     // 4.14
-    tree_.InsertAlreadyParsedChild(common_ancestor, last_node);
+    if (last_node) {
+      tree_.InsertAlreadyParsedChild(common_ancestor, last_node);
+    }
     // 4.15
     HTMLStackItem* new_item =
         tree_.CreateElementFromSavedToken(formatting_element_item);
-    // 4.16
-    tree_.TakeAllChildren(new_item, furthest_block);
-    // 4.17
-    tree_.Reparent(furthest_block, new_item);
-    // 4.18
+
+    Sanitizer::Action action =
+        tree_.SanitizeAndReturnAction(new_item->GetElement());
+
+    // Ensure stack is updated before any DOM operations so `continue` skips
+    // safely 4.18
     tree_.ActiveFormattingElements()->SwapTo(formatting_element, new_item,
                                              bookmark);
     // 4.19
     tree_.OpenElements()->Remove(formatting_element);
     tree_.OpenElements()->InsertAbove(new_item, furthest_block);
+
+    switch (action) {
+      case Sanitizer::Action::kReplaceWithChildren:
+        // Skip DOM operations. Children safely remain in furthest_block.
+        continue;
+      case Sanitizer::Action::kDrop:
+        // Take the children out of furthest_block, but do NOT reparent
+        // new_item. new_item will be dropped along with the children.
+        tree_.TakeAllChildren(new_item, furthest_block);
+        break;
+      case Sanitizer::Action::kKeep:
+      case Sanitizer::Action::kKeepElement:
+        // 4.16
+        tree_.TakeAllChildren(new_item, furthest_block);
+        // 4.17
+        tree_.Reparent(furthest_block, new_item);
+        break;
+    }
   }
 }
 

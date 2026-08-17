@@ -136,7 +136,6 @@ class CORE_EXPORT Sanitizer final : public ScriptWrappable {
   // This is used for streaming.
   bool IsElementAllowed(const QualifiedName& name) const;
   Action SanitizeSingleNode(Node* node, Mode safe) const;
-  bool ShouldReplaceNodeWithChildren(Node* node) const;
   void ProcessElement(Element* element, Mode safe) const;
   bool AllowIsAttribute(const QualifiedName& element_name) const;
 
@@ -206,8 +205,12 @@ class StreamingSanitizer : public GarbageCollected<StreamingSanitizer> {
            Sanitizer::Action::kKeep;
   }
 
-  bool ShouldReplaceWithChildren(Node* node) const {
-    return sanitizer_->ShouldReplaceNodeWithChildren(node);
+  Sanitizer::Action SanitizeAndReturnAction(Node* node) {
+    return sanitizer_->SanitizeSingleNode(node, mode_);
+  }
+
+  Sanitizer::Action CheckSanitizerAction(Node* node) const {
+    return sanitizer_->ActionForNode(node, node);
   }
 
   // Special treaming for parser-processed HTML feature:
