@@ -390,7 +390,6 @@ class CONTENT_EXPORT RenderProcessHostImpl
   void OnProcessLaunched() override;
   void OnProcessLaunchFailed(int error_code) override;
 #if BUILDFLAG(IS_ANDROID)
-  bool CanUseWarmUpConnection() override;
   bool HasSpareRendererPriority() override;
   void OnSpareRendererPriorityGraduated(bool is_alive) override;
   bool IsForOutermostMainFrame() override;
