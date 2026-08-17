@@ -51,7 +51,7 @@ class POLICY_EXPORT IncognitoModePolicyHandler
                                   PolicyErrorMap* errors);
   // Validates that policy follows official pattern
   // https://www.chromium.org/administrators/url-blocklist-filter-format
-  bool ValidatePolicy(const std::string& url_pattern);
+  bool ValidatePolicy(const std::string& url_pattern, bool is_allowlist);
   // Returns the filtered URL list policy value. Invalid entries are
   // filtered out and list gets truncated to maximum size.
   std::optional<base::ListValue> GetFilteredUrlListPolicyValue(

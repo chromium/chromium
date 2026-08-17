@@ -291,11 +291,40 @@ TEST_F(IncognitoModePolicyHandlerTest, FilterInvalidUrls) {
   VerifyAllowlistPref(expected);
 }
 
+TEST_F(IncognitoModePolicyHandlerTest, AllowlistSetWithWildcardAsteriskOnly) {
+  base::ListValue allowlist;
+  allowlist.Append("*");
+  SetIncognitoModeUrlAllowlist(std::move(allowlist));
+  ApplyPolicies();
+
+  const base::Value* value = nullptr;
+  EXPECT_FALSE(store_->GetValue(
+      policy::policy_prefs::kIncognitoModeUrlAllowlist, &value));
+  EXPECT_FALSE(store_->GetValue(
+      policy::policy_prefs::kIncognitoModeUrlBlocklist, &value));
+  EXPECT_FALSE(store_->GetValue(
+      policy::policy_prefs::kIncognitoModeAvailability, &value));
+}
+
+TEST_F(IncognitoModePolicyHandlerTest,
+       AllowlistSetWithWildcardAsteriskAndValidEntry) {
+  base::ListValue allowlist;
+  allowlist.Append("*");
+  allowlist.Append("example.com");
+  SetIncognitoModeUrlAllowlist(std::move(allowlist));
+  ApplyPolicies();
+
+  base::ListValue expected_allowlist;
+  expected_allowlist.Append("example.com");
+  VerifyAllowlistPref(expected_allowlist);
+  VerifyBlocklistPref(base::ListValue().Append("*"));
+}
+
 TEST_F(IncognitoModePolicyHandlerTest, ValidatePolicy) {
   IncognitoModePolicyHandler handler;
   PolicyErrorMap errors;
 
-  auto check_url = [&](const std::string& url) {
+  auto check_allowlist_url = [&](const std::string& url) {
     errors.Clear();
     policies_.Clear();
     base::ListValue list;
@@ -304,25 +333,40 @@ TEST_F(IncognitoModePolicyHandlerTest, ValidatePolicy) {
     return handler.CheckPolicySettings(policies_, &errors);
   };
 
-  EXPECT_TRUE(check_url("http://*"));
+  auto check_blocklist_url = [&](const std::string& url) {
+    errors.Clear();
+    policies_.Clear();
+    base::ListValue list;
+    list.Append(url);
+    SetIncognitoModeUrlBlocklist(std::move(list));
+    return handler.CheckPolicySettings(policies_, &errors);
+  };
+
+  EXPECT_TRUE(check_allowlist_url("http://*"));
   EXPECT_EQ(0U, errors.size());
 
-  EXPECT_TRUE(check_url("ws://example.org/component.js"));
+  EXPECT_TRUE(check_allowlist_url("ws://example.org/component.js"));
   EXPECT_EQ(0U, errors.size());
 
-  EXPECT_TRUE(check_url("wsgi:///rancom,org/"));
+  EXPECT_TRUE(check_allowlist_url("wsgi:///rancom,org/"));
   EXPECT_EQ(1U, errors.size());
 
-  EXPECT_TRUE(check_url("127.0.0.1:65535"));
+  EXPECT_TRUE(check_allowlist_url("127.0.0.1:65535"));
   EXPECT_EQ(0U, errors.size());
 
-  EXPECT_TRUE(check_url("127.0.0.1:65536"));
+  EXPECT_TRUE(check_allowlist_url("127.0.0.1:65536"));
   EXPECT_EQ(1U, errors.size());
 
-  EXPECT_TRUE(check_url("*"));
+  EXPECT_TRUE(check_allowlist_url("*"));
+  EXPECT_EQ(1U, errors.size());
+
+  EXPECT_TRUE(check_blocklist_url("*"));
   EXPECT_EQ(0U, errors.size());
 
-  EXPECT_TRUE(check_url("*.developers.com"));
+  EXPECT_TRUE(check_allowlist_url("*.developers.com"));
+  EXPECT_EQ(1U, errors.size());
+
+  EXPECT_TRUE(check_blocklist_url("*.developers.com"));
   EXPECT_EQ(1U, errors.size());
 }
 

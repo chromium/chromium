@@ -39,6 +39,10 @@ bool ValidateHost(const std::string& host) {
   return host == "*" || host.find('*') == std::string::npos;
 }
 
+bool IsAllowlistPolicy(std::string_view policy_name) {
+  return policy_name == policy::key::kIncognitoModeUrlAllowlist;
+}
+
 }  // namespace
 
 namespace policy {
@@ -173,6 +177,7 @@ bool IncognitoModePolicyHandler::CheckUrlListPolicySettings(
   bool type_error = false;
   std::string policy;
   std::vector<std::string> invalid_patterns;
+  const bool is_allowlist = IsAllowlistPolicy(policy_name);
   for (const auto& policy_iter : value->GetList()) {
     if (!policy_iter.is_string()) {
       type_error = true;
@@ -180,7 +185,7 @@ bool IncognitoModePolicyHandler::CheckUrlListPolicySettings(
     }
 
     policy = policy_iter.GetString();
-    if (!ValidatePolicy(policy)) {
+    if (!ValidatePolicy(policy, is_allowlist)) {
       invalid_patterns.push_back(policy);
     }
   }
@@ -198,14 +203,22 @@ bool IncognitoModePolicyHandler::CheckUrlListPolicySettings(
   return true;
 }
 
-bool IncognitoModePolicyHandler::ValidatePolicy(
-    const std::string& url_pattern) {
+bool IncognitoModePolicyHandler::ValidatePolicy(const std::string& url_pattern,
+                                                bool is_allowlist) {
   url_matcher::util::FilterComponents components;
-  return url_matcher::util::FilterToComponents(
-             url_pattern, &components.scheme, &components.host,
-             &components.match_subdomains, &components.port, &components.path,
-             &components.query) &&
-         ValidateHost(components.host);
+  if (!url_matcher::util::FilterToComponents(
+          url_pattern, &components.scheme, &components.host,
+          &components.match_subdomains, &components.port, &components.path,
+          &components.query) ||
+      !ValidateHost(components.host)) {
+    return false;
+  }
+
+  if (is_allowlist && components.IsWildcard()) {
+    return false;
+  }
+
+  return true;
 }
 
 std::optional<base::ListValue>
@@ -218,9 +231,10 @@ IncognitoModePolicyHandler::GetFilteredUrlListPolicyValue(
     return std::nullopt;
   }
 
+  const bool is_allowlist = IsAllowlistPolicy(policy_name);
   base::ListValue filtered_list;
   for (const auto& entry : value->GetList()) {
-    if (entry.is_string() && ValidatePolicy(entry.GetString())) {
+    if (entry.is_string() && ValidatePolicy(entry.GetString(), is_allowlist)) {
       filtered_list.Append(entry.Clone());
     }
   }
