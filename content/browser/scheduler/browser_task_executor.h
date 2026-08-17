@@ -109,6 +109,9 @@ class CONTENT_EXPORT BrowserTaskExecutor {
   static scoped_refptr<base::SingleThreadTaskRunner> GetIOThreadTaskRunner(
       const BrowserTaskTraits& traits);
 
+  // This must be called after the FeatureList has been initialized.
+  static void PostFeatureListInit();
+
   // As Create but with the user provided objects.
   static void CreateForTesting(
       std::unique_ptr<BrowserUIThreadScheduler> browser_ui_thread_scheduler,

@@ -36,6 +36,7 @@
 #include "base/scoped_observation.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
+#include "base/synchronization/lock.h"
 #include "base/synchronization/lock_metrics_recorder.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/system/system_monitor.h"
@@ -46,6 +47,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool/initialization_util.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
+#include "base/thread_annotations.h"
 #include "base/threading/platform_thread_metrics.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_restrictions.h"
@@ -817,11 +819,24 @@ int BrowserMainLoop::PreCreateThreads() {
 #endif
 
 #if BUILDFLAG(IS_MAC)
-  // The WindowResizeHelper allows the UI thread to wait on specific renderer
-  // and GPU messages from the IO thread. Initializing it before the IO thread
-  // starts ensures the affected IO thread messages always have somewhere to go.
+  // The WindowResizeHelper allows the UI thread to wait on and process specific
+  // compositor and Mojo tasks (posted to its task runner) while blocked in
+  // modal macOS Cocoa nested loops (e.g. during window creation or live
+  // resize).
+  //
+  // During startup, the default UI thread queue is heavily loaded with low-
+  // priority initialization tasks, which can starve these compositor tasks in
+  // the normal event loop and delay the first paint. This is especially
+  // critical as modern Chrome UI (e.g. Top Chrome WebUI) relies on compositor
+  // frame submission and processing on the UI thread to render.
+  //
+  // If `kPrioritizeResizeTaskRunnerOnStartup` is enabled, we route the helper's
+  // target task runner to the higher-priority `kStartup` queue.
   ui::WindowResizeHelperMac::Get()->Init(
-      base::SingleThreadTaskRunner::GetCurrentDefault());
+      base::FeatureList::IsEnabled(
+          features::kPrioritizeResizeTaskRunnerOnStartup)
+          ? content::GetUIThreadTaskRunner({BrowserTaskType::kStartup})
+          : base::SingleThreadTaskRunner::GetCurrentDefault());
 #endif
 
   // GpuDataManager should be initialized in parts_->PreCreateThreads through
@@ -949,6 +964,11 @@ void BrowserMainLoop::CreateStartupTasks() {
 
 scoped_refptr<base::SingleThreadTaskRunner>
 BrowserMainLoop::GetResizeTaskRunner() {
+  // Returns the task runner used for compositor and window resize tasks.
+  // Prioritizing rendering is critical on startup because parts of the browser
+  // UI (e.g., Top Chrome) use WebUI and must submit compositor frames to draw
+  // the UI. During startup, if kPrioritizeResizeTaskRunnerOnStartup is enabled,
+  // we route these tasks to the higher-priority kStartup queue.
 #if BUILDFLAG(IS_MAC)
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
       ui::WindowResizeHelperMac::Get()->task_runner();
@@ -956,6 +976,10 @@ BrowserMainLoop::GetResizeTaskRunner() {
   return task_runner ? task_runner
                      : base::SingleThreadTaskRunner::GetCurrentDefault();
 #else
+  if (base::FeatureList::IsEnabled(
+          features::kPrioritizeResizeTaskRunnerOnStartup)) {
+    return content::GetUIThreadTaskRunner({BrowserTaskType::kStartup});
+  }
   return base::SingleThreadTaskRunner::GetCurrentDefault();
 #endif
 }

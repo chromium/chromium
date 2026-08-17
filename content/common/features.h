@@ -192,6 +192,7 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchDevtoolsUserAgentOverride);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(
     kPreloadActivationReportWithExtensionInterception);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPreloadingConfig);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrioritizeResizeTaskRunnerOnStartup);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(
     kPrerenderMoreCorrectSpeculativeRFHCreation);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPriorityOverridePendingViews);

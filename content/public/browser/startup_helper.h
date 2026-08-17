@@ -24,6 +24,9 @@ CONTENT_EXPORT void InstallPartitionAllocSchedulerLoopQuarantineTaskObserver();
 // Starts the thread pool based on the field trial param settings.
 CONTENT_EXPORT void StartThreadPool();
 
+// Notifies the task executor that the feature list has been initialized.
+CONTENT_EXPORT void PostFeatureListInit();
+
 }  // namespace content
 
 #endif  // CONTENT_PUBLIC_BROWSER_STARTUP_HELPER_H_

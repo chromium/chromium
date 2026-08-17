@@ -15,7 +15,9 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "content/browser/scheduler/browser_task_priority.h"
+#include "content/common/features.h"
 #include "content/public/browser/browser_thread.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -41,13 +43,22 @@ class BrowserTaskQueuesTest : public testing::Test {
             base::sequence_manager::SequenceManager::Settings::Builder()
                 .SetPrioritySettings(
                     internal::CreateBrowserTaskPrioritySettings())
-                .Build())),
-        queues_(std::make_unique<BrowserTaskQueues>(BrowserThread::UI,
-                                                    sequence_manager_.get())),
-        handle_(queues_->GetHandle()) {
+                .Build())) {}
+
+  void SetUp() override {
+    InitFeatureList();
+    queues_ = std::make_unique<BrowserTaskQueues>(BrowserThread::UI,
+                                                  sequence_manager_.get());
+    handle_ = queues_->GetHandle();
     sequence_manager_->SetDefaultTaskQueue(queues_->GetDefaultTaskQueue());
   }
 
+  virtual void InitFeatureList() {
+    feature_list_.InitAndDisableFeature(
+        features::kPrioritizeResizeTaskRunnerOnStartup);
+  }
+
+  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<SequenceManager> sequence_manager_;
   std::unique_ptr<BrowserTaskQueues> queues_;
   scoped_refptr<BrowserTaskQueues::Handle> handle_;
@@ -264,6 +275,104 @@ TEST_F(BrowserTaskQueuesTest, TaskIsRunWhenEnableQueueIsCalled) {
     EXPECT_CALL(user_visible, Run).Times(1);
     run_loop.Run();
   }
+}
+
+TEST_F(BrowserTaskQueuesTest, StartupQueuePriorityDisabled) {
+  using internal::BrowserTaskPriority;
+
+  // Initially, kStartup queue is not prioritized.
+  EXPECT_EQ(queues_->GetQueuePriorityForTesting(QueueType::kStartup),
+            static_cast<base::sequence_manager::TaskQueue::QueuePriority>(
+                BrowserTaskPriority::kNormalPriority));
+
+  // Call OnStartupComplete and verify it remains normal priority.
+  handle_->OnStartupComplete();
+  {
+    base::RunLoop run_loop;
+    handle_->ScheduleRunAllPendingTasksForTesting(run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  EXPECT_EQ(queues_->GetQueuePriorityForTesting(QueueType::kStartup),
+            static_cast<base::sequence_manager::TaskQueue::QueuePriority>(
+                BrowserTaskPriority::kNormalPriority));
+}
+
+class BrowserTaskQueuesWithStartupPrioritizationTest
+    : public BrowserTaskQueuesTest {
+ protected:
+  BrowserTaskQueuesWithStartupPrioritizationTest() = default;
+
+  void InitFeatureList() override {
+    feature_list_.InitAndEnableFeature(
+        features::kPrioritizeResizeTaskRunnerOnStartup);
+  }
+};
+
+TEST_F(BrowserTaskQueuesWithStartupPrioritizationTest,
+       StartupQueuePriorityEnabled) {
+  using internal::BrowserTaskPriority;
+
+  // Initially, kStartup queue is prioritized immediately after construction.
+  EXPECT_EQ(queues_->GetQueuePriorityForTesting(QueueType::kStartup),
+            static_cast<base::sequence_manager::TaskQueue::QueuePriority>(
+                BrowserTaskPriority::kHighestPriority));
+
+  // Enable queues to verify it remains prioritized.
+  handle_->EnableAllExceptBestEffortQueues();
+  {
+    base::RunLoop run_loop;
+    handle_->ScheduleRunAllPendingTasksForTesting(run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  EXPECT_EQ(queues_->GetQueuePriorityForTesting(QueueType::kStartup),
+            static_cast<base::sequence_manager::TaskQueue::QueuePriority>(
+                BrowserTaskPriority::kHighestPriority));
+
+  // Once startup is complete, it is set to normal priority.
+  handle_->OnStartupComplete();
+  {
+    base::RunLoop run_loop;
+    handle_->ScheduleRunAllPendingTasksForTesting(run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  EXPECT_EQ(queues_->GetQueuePriorityForTesting(QueueType::kStartup),
+            static_cast<base::sequence_manager::TaskQueue::QueuePriority>(
+                BrowserTaskPriority::kNormalPriority));
+}
+
+TEST_F(BrowserTaskQueuesTest, PostFeatureListInitDisabled) {
+  using internal::BrowserTaskPriority;
+
+  EXPECT_EQ(queues_->GetQueuePriorityForTesting(QueueType::kStartup),
+            static_cast<base::sequence_manager::TaskQueue::QueuePriority>(
+                BrowserTaskPriority::kNormalPriority));
+
+  queues_->PostFeatureListInit();
+
+  EXPECT_EQ(queues_->GetQueuePriorityForTesting(QueueType::kStartup),
+            static_cast<base::sequence_manager::TaskQueue::QueuePriority>(
+                BrowserTaskPriority::kNormalPriority));
+}
+
+TEST_F(BrowserTaskQueuesTest, PostFeatureListInitEnabled) {
+  using internal::BrowserTaskPriority;
+
+  EXPECT_EQ(queues_->GetQueuePriorityForTesting(QueueType::kStartup),
+            static_cast<base::sequence_manager::TaskQueue::QueuePriority>(
+                BrowserTaskPriority::kNormalPriority));
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kPrioritizeResizeTaskRunnerOnStartup);
+
+  queues_->PostFeatureListInit();
+
+  EXPECT_EQ(queues_->GetQueuePriorityForTesting(QueueType::kStartup),
+            static_cast<base::sequence_manager::TaskQueue::QueuePriority>(
+                BrowserTaskPriority::kHighestPriority));
 }
 
 }  // namespace

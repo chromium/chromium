@@ -313,4 +313,12 @@ void BrowserTaskExecutor::
       .InstallPartitionAllocSchedulerLoopQuarantineTaskObserver();
 }
 
+// static
+void BrowserTaskExecutor::PostFeatureListInit() {
+  if (!g_browser_task_executor) {
+    return;
+  }
+  g_browser_task_executor->browser_ui_thread_scheduler_->PostFeatureListInit();
+}
+
 }  // namespace content

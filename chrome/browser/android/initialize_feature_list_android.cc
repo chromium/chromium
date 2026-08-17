@@ -47,6 +47,11 @@ static void JNI_InitializeFeatureList_InitializeFeatureList(JNIEnv* env) {
           chrome_feature_list_creator->network_time_tracker()));
   chrome_feature_list_creator->CreateFeatureList();
 
+  // Re-evaluate feature state now that FeatureList has been initialized, as
+  // the task executor was created before FeatureList and could not access
+  // Finch/field trial configurations.
+  content::PostFeatureListInit();
+
   // The FeatureList needs to be created before starting the ThreadPool.
   content::StartThreadPool();
   content::InstallPartitionAllocSchedulerLoopQuarantineTaskObserver();

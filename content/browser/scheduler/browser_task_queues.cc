@@ -6,7 +6,9 @@
 
 #include <iterator>
 
+#include "base/base_switches.h"
 #include "base/check.h"
+#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -15,6 +17,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "content/browser/scheduler/browser_task_priority.h"
+#include "content/common/features.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_features.h"
 
@@ -185,6 +188,12 @@ BrowserTaskQueues::BrowserTaskQueues(
   GetBrowserTaskQueue(QueueType::kBeforeUnloadBrowserResponse)
       ->SetQueuePriority(BrowserTaskPriority::kHighPriority);
 
+  if (IsPrioritizeResizeEnabled()) {
+    GetBrowserTaskQueue(QueueType::kStartup)
+        ->SetQueuePriority(BrowserTaskPriority::kHighestPriority);
+    startup_queue_prioritized_ = true;
+  }
+
   // Control queue
   control_queue_ =
       sequence_manager->CreateTaskQueue(base::sequence_manager::TaskQueue::Spec(
@@ -238,6 +247,17 @@ void BrowserTaskQueues::OnStartupComplete() {
       BrowserTaskPriority::kHighestPriority);
   GetBrowserTaskQueue(QueueType::kServiceWorkerStorageControlResponse)
       ->SetQueuePriority(BrowserTaskPriority::kHighPriority);
+
+  if (startup_queue_prioritized_) {
+    // Update Startup task queue priority back to normal priority now that
+    // startup has completed.
+    DCHECK_EQ(static_cast<BrowserTaskPriority>(
+                  GetBrowserTaskQueue(QueueType::kStartup)->GetQueuePriority()),
+              BrowserTaskPriority::kHighestPriority);
+    GetBrowserTaskQueue(QueueType::kStartup)
+        ->SetQueuePriority(BrowserTaskPriority::kNormalPriority);
+    startup_queue_prioritized_ = false;
+  }
 }
 
 void BrowserTaskQueues::EnableTaskQueue(QueueType type) {
@@ -296,6 +316,39 @@ void BrowserTaskQueues::SetOnTaskCompletedHandler(
 void BrowserTaskQueues::AddTaskObserver(base::TaskObserver* task_observer) {
   for (const auto& queue : queue_data_) {
     queue.task_queue->AddTaskObserver(task_observer);
+  }
+}
+
+base::sequence_manager::TaskQueue::QueuePriority
+BrowserTaskQueues::GetQueuePriorityForTesting(QueueType type) const {
+  return GetBrowserTaskQueue(type)->GetQueuePriority();
+}
+
+bool BrowserTaskQueues::IsPrioritizeResizeEnabled() const {
+  if (!base::FeatureList::GetInstance()) {
+    // FeatureList is not initialized yet (early constructor phase). We return
+    // false here, but the prioritization state will be re-evaluated shortly
+    // after inside PostFeatureListInit() once the FeatureList is initialized
+    // (which handles both command-line overrides and Finch field trials).
+    return false;
+  }
+  return base::FeatureList::IsEnabled(
+      features::kPrioritizeResizeTaskRunnerOnStartup);
+}
+
+void BrowserTaskQueues::PostFeatureListInit() {
+  if (startup_queue_prioritized_) {
+    return;
+  }
+  // Re-evaluate the prioritization feature now that FeatureList is initialized.
+  // During construction, the global base::FeatureList was null, so we deferred
+  // evaluation (unless already initialized early in tests). Now that FeatureList
+  // is loaded (with command-line overrides and Finch trials), we can determine if
+  // prioritization should be applied, and upgrade the queue priority dynamically.
+  if (IsPrioritizeResizeEnabled()) {
+    GetBrowserTaskQueue(QueueType::kStartup)
+        ->SetQueuePriority(BrowserTaskPriority::kHighestPriority);
+    startup_queue_prioritized_ = true;
   }
 }
 

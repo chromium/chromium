@@ -93,6 +93,14 @@ BrowserUIThreadScheduler::GetDefaultTaskQueue() const {
   return task_queues_.GetDefaultTaskQueue();
 }
 
+bool BrowserUIThreadScheduler::IsPrioritizeResizeEnabled() const {
+  return task_queues_.IsPrioritizeResizeEnabled();
+}
+
+void BrowserUIThreadScheduler::PostFeatureListInit() {
+  task_queues_.PostFeatureListInit();
+}
+
 void BrowserUIThreadScheduler::CommonSequenceManagerSetup(
     base::sequence_manager::SequenceManager* sequence_manager) {
   DCHECK_EQ(static_cast<size_t>(sequence_manager->GetPriorityCount()),

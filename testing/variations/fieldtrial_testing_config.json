@@ -27245,6 +27245,7 @@
                         "InitialWebUI",
                         "InitialWebUISurfaceSync",
                         "InitialWebUIWithoutExtensions",
+                        "PrioritizeResizeTaskRunnerOnStartup",
                         "SendGPUChannelEarly",
                         "SkipIPCChannelPausingForNonGuests",
                         "WebUIBundledCodeCache",

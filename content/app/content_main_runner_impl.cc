@@ -1242,6 +1242,13 @@ int ContentMainRunnerImpl::RunBrowser(MainFunctionParams main_params,
     if (post_early_initialization_exit_code.has_value())
       return post_early_initialization_exit_code.value();
 
+    if (!delegate_->IsInitFeatureListEarly()) {
+      // Re-evaluate feature state now that FeatureList has been initialized, as
+      // the task executor was created before FeatureList and could not access
+      // Finch configurations.
+      BrowserTaskExecutor::PostFeatureListInit();
+    }
+
     // The hang watcher needs to be started once the feature list is available
     // but before the IO thread is started.
     if (base::HangWatcher::IsEnabled()) {
