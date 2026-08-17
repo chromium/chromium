@@ -1147,7 +1147,7 @@ public class AwContents implements SmartClipProvider {
             setNewAwContents(
                     AwContentsJni.get().init(mBrowserContext.getNativeBrowserContextPointer()));
 
-            onContainerViewChanged();
+            setContainerView(containerView);
         }
 
         // Drain any scheduled prefetch requests that may have happened during this constructor's
@@ -1378,28 +1378,69 @@ public class AwContents implements SmartClipProvider {
     }
 
     private void setContainerView(ViewGroup newContainerView) {
-        // setWillNotDraw(false) is required since WebView draws its own contents using its
-        // container view. If this is ever not the case we should remove this, as it removes
-        // Android's gatherTransparentRegion optimization for the view.
-        mContainerView = newContainerView;
-        mContainerView.setWillNotDraw(false);
+        boolean isSwappingView = mContainerView != null && mContainerView != newContainerView;
 
-        assert mDrawFunctor == null;
+        if (isSwappingView) {
+            // setWillNotDraw(false) is required since WebView draws its own contents using its
+            // container view. If this is ever not the case we should remove this, as it removes
+            // Android's gatherTransparentRegion optimization for the view.
+            mContainerView = newContainerView;
+            mContainerView.setWillNotDraw(false);
 
-        mViewAndroidDelegate.setContainerView(mContainerView);
-        if (mAwPdfExporter != null) {
-            mAwPdfExporter.setContainerView(mContainerView);
+            assert mDrawFunctor == null;
+
+            mViewAndroidDelegate.setContainerView(mContainerView);
+            if (mAwPdfExporter != null) {
+                mAwPdfExporter.setContainerView(mContainerView);
+            }
+            mWebContentsDelegate.setContainerView(mContainerView);
+            for (PopupTouchHandleDrawable drawable : mTouchHandleDrawables) {
+                drawable.onContainerViewChanged(mContainerView);
+            }
+
+            mOverScrollHelper.setContainerView(mContainerView);
+            setOverScrollMode(mContainerView.getOverScrollMode());
+            mScrollAccessibilityHelper.setContainerView(mContainerView);
         }
-        mWebContentsDelegate.setContainerView(mContainerView);
-        for (PopupTouchHandleDrawable drawable : mTouchHandleDrawables) {
-            drawable.onContainerViewChanged(newContainerView);
+
+        // NOTE: mCurrentAwViewMethods is used by the old container view, the WebView, so it might
+        // refer to a NullAwViewMethods when in fullscreen. To ensure that the state is reconciled
+        // with the new container view correctly, we bypass mCurrentAwViewMethods and use the real
+        // implementation directly.
+        mPrimaryAwViewMethods.onVisibilityChanged(mContainerView, mContainerView.getVisibility());
+        mPrimaryAwViewMethods.onWindowVisibilityChanged(mContainerView.getWindowVisibility());
+
+        boolean containerViewAttached = mContainerView.isAttachedToWindow();
+        if (containerViewAttached && !mIsAttachedToWindow) {
+            mPrimaryAwViewMethods.onAttachedToWindow();
+        } else if (!containerViewAttached && mIsAttachedToWindow) {
+            mPrimaryAwViewMethods.onDetachedFromWindow();
         }
 
-        mOverScrollHelper.setContainerView(mContainerView);
-        setOverScrollMode(mContainerView.getOverScrollMode());
-        mScrollAccessibilityHelper.setContainerView(mContainerView);
+        // Skip passing size of FullScreenView down. FullScreenView is newly created and detached
+        // so has initial size 0x0 before layout. Avoid this temporary resize to 0x0 which can
+        // cause flickers and sometimes layout problems in the web page.
+        if ((mContainerView instanceof FullScreenView)) {
+            assert !containerViewAttached;
+        } else {
+            mPrimaryAwViewMethods.onSizeChanged(
+                    mContainerView.getWidth(), mContainerView.getHeight(), 0, 0);
+        }
+        mPrimaryAwViewMethods.onWindowFocusChanged(mContainerView.hasWindowFocus());
+        mPrimaryAwViewMethods.onFocusChanged(mContainerView.hasFocus(), 0, null);
+        ViewUtils.requestLayout(mContainerView, "AwContents.onContainerViewChanged");
 
-        onContainerViewChanged();
+        if (mAutofillProvider != null) mAutofillProvider.onContainerViewChanged(mContainerView);
+        mDisplayModeController.setCurrentContainerView(mContainerView);
+
+        // This is unconditionally required during initialization. Even though the View is the same,
+        // calling this causes AwDisplayCutoutController to destroy and recreate its
+        // ViewPositionObserver.
+        // Re-creating the observer resets its bound-tracker to [0,0], forcing it to fire an
+        // immediate onPositionChanged event that correctly calculates Keyboard Window Insets!
+        if (mDisplayCutoutController != null) {
+            mDisplayCutoutController.setCurrentContainerView(mContainerView);
+        }
         setScrollBarStyle(mCurrentInternalAccessAdapter.super_getScrollBarStyle());
     }
 
@@ -1448,41 +1489,6 @@ public class AwContents implements SmartClipProvider {
     public Context getProvidedContext() {
         ThreadUtils.assertOnUiThread();
         return mContext;
-    }
-
-    /** Reconciles the state of this AwContents object with the state of the new container view. */
-    private void onContainerViewChanged() {
-        // NOTE: mCurrentAwViewMethods is used by the old container view, the WebView, so it might
-        // refer to a NullAwViewMethods when in fullscreen. To ensure that the state is reconciled
-        // with the new container view correctly, we bypass mCurrentAwViewMethods and use the real
-        // implementation directly.
-        mPrimaryAwViewMethods.onVisibilityChanged(mContainerView, mContainerView.getVisibility());
-        mPrimaryAwViewMethods.onWindowVisibilityChanged(mContainerView.getWindowVisibility());
-
-        boolean containerViewAttached = mContainerView.isAttachedToWindow();
-        if (containerViewAttached && !mIsAttachedToWindow) {
-            mPrimaryAwViewMethods.onAttachedToWindow();
-        } else if (!containerViewAttached && mIsAttachedToWindow) {
-            mPrimaryAwViewMethods.onDetachedFromWindow();
-        }
-
-        // Skip passing size of FullScreenView down. FullScreenView is newly created and detached
-        // so has initial size 0x0 before layout. Avoid this temporary resize to 0x0 which can
-        // cause flickers and sometimes layout problems in the web page.
-        if ((mContainerView instanceof FullScreenView)) {
-            assert !containerViewAttached;
-        } else {
-            mPrimaryAwViewMethods.onSizeChanged(
-                    mContainerView.getWidth(), mContainerView.getHeight(), 0, 0);
-        }
-        mPrimaryAwViewMethods.onWindowFocusChanged(mContainerView.hasWindowFocus());
-        mPrimaryAwViewMethods.onFocusChanged(mContainerView.hasFocus(), 0, null);
-        ViewUtils.requestLayout(mContainerView, "AwContents.onContainerViewChanged");
-        if (mAutofillProvider != null) mAutofillProvider.onContainerViewChanged(mContainerView);
-        mDisplayModeController.setCurrentContainerView(mContainerView);
-        if (mDisplayCutoutController != null) {
-            mDisplayCutoutController.setCurrentContainerView(mContainerView);
-        }
     }
 
     /**
