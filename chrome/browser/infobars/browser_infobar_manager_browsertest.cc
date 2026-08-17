@@ -13,6 +13,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/infobars/infobar_features.h"
 #include "chrome/browser/infobars/infobar_spec.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
@@ -30,6 +31,28 @@
 #include "url/gurl.h"
 
 namespace infobars {
+
+namespace {
+
+InfoBarSpec BuildGlobalSpecSkippingIncognito() {
+  return InfoBarSpec::Builder(InfoBarDelegate::TEST_INFOBAR)
+      .SetMessageText(u"Test Message")
+      .SetScope(InfoBarScope::kGlobal)
+      .SetBrowserFilter(
+          base::BindRepeating([](BrowserWindowInterface* browser) {
+            return !browser->GetProfile()->IsOffTheRecord();
+          }))
+      .Build();
+}
+
+size_t InfoBarCountIn(Browser* browser) {
+  return ContentInfoBarManager::FromWebContents(
+             browser->tab_strip_model()->GetActiveWebContents())
+      ->infobars()
+      .size();
+}
+
+}  // namespace
 
 class BrowserInfoBarManagerBrowserTest : public InProcessBrowserTest {
  public:
@@ -310,6 +333,27 @@ IN_PROC_BROWSER_TEST_F(BrowserInfoBarManagerBrowserTest,
 
   // The infobar should STILL be present on browser1 (no cascade).
   EXPECT_TRUE(has_test_infobar(infobar_manager1));
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserInfoBarManagerBrowserTest,
+                       ShowGloballyRespectsBrowserFilter) {
+  Browser* incognito_browser = CreateIncognitoBrowser();
+  manager()->Register(BuildGlobalSpecSkippingIncognito());
+
+  manager()->ShowGlobally(InfoBarDelegate::TEST_INFOBAR);
+
+  EXPECT_EQ(1u, InfoBarCountIn(browser()));
+  EXPECT_EQ(0u, InfoBarCountIn(incognito_browser));
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserInfoBarManagerBrowserTest,
+                       GlobalPropagationRespectsBrowserFilter) {
+  manager()->Register(BuildGlobalSpecSkippingIncognito());
+
+  manager()->ShowGlobally(InfoBarDelegate::TEST_INFOBAR);
+  EXPECT_EQ(1u, InfoBarCountIn(browser()));
+
+  EXPECT_EQ(0u, InfoBarCountIn(CreateIncognitoBrowser()));
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserInfoBarManagerBrowserTest, FullscreenHiding) {

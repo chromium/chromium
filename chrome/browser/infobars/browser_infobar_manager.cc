@@ -282,6 +282,9 @@ void BrowserInfoBarManager::ShowGlobally(
   GlobalBrowserCollection::GetInstance()->ForEach(
       [this, &spec, identifier,
        &added_any_infobars](BrowserWindowInterface* browser) {
+        if (spec.browser_filter() && !spec.browser_filter().Run(browser)) {
+          return true;
+        }
         tabs::TabInterface* active_tab = browser->GetActiveTabInterface();
         content::WebContents* active_contents =
             active_tab ? active_tab->GetContents() : nullptr;
@@ -458,6 +461,10 @@ void BrowserInfoBarManager::OnActiveTabChanged(
 
   if (new_manager) {
     for (auto& [identifier, context] : active_global_infobars_) {
+      if (context.spec.browser_filter() &&
+          !context.spec.browser_filter().Run(browser)) {
+        continue;
+      }
       auto infobar =
           CreateConfirmInfoBar(std::make_unique<RegistryInfoBarDelegate>(
               context.spec, active_contents));
