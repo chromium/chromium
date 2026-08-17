@@ -137,6 +137,19 @@ std::optional<uint8_t> AthmTestIssuer::Verify(
   return result.metadata;
 }
 
+std::optional<uint8_t> AthmTestIssuer::VerifyWithCheck(
+    base::span<const uint8_t> marshaled_token) const {
+  anonymous_tokens::AthmToken token;
+  absl::Status status = anonymous_tokens::UnmarshalAthmToken(
+      base::as_string_view(marshaled_token), &token);
+  if (!status.ok() ||
+      token.token_type != PrivateVerificationTokensParameters::kAthmTokenType ||
+      base::as_byte_span(token.issuer_key_id) != base::as_byte_span(key_id_)) {
+    return std::nullopt;
+  }
+  return Verify(base::as_byte_span(token.token));
+}
+
 // --- AthmTestClient ---
 
 // static

@@ -87,6 +87,14 @@ class AthmTestIssuer {
   // nullopt if the token does not verify.
   std::optional<uint8_t> Verify(base::span<const uint8_t> token) const;
 
+  // Issuer side: verifies `marshaled_token` (132-byte wire-formatted token),
+  // validating that the token type is `kAthmTokenType` and the issuer key ID
+  // matches `key_id()`, and verifies the inner 98-byte unblinded token via
+  // Verify(). Returns the recovered hidden metadata on success, or nullopt if
+  // unmarshaling, header validation, or cryptographic verification fails.
+  std::optional<uint8_t> VerifyWithCheck(
+      base::span<const uint8_t> marshaled_token) const;
+
  private:
   AthmTestIssuer(std::vector<uint8_t> params,
                  std::vector<uint8_t> private_key,

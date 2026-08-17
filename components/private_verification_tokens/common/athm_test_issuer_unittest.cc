@@ -469,5 +469,177 @@ TEST(AthmTestIssuerTest,
   EXPECT_FALSE(response_body.has_value());
 }
 
+TEST(AthmTestIssuerTest, VerifyWithCheck_Success) {
+  std::optional<AthmTestIssuer> issuer =
+      AthmTestIssuer::Create(kBucketCount, DeploymentId("verify-check-ok"));
+  ASSERT_TRUE(issuer.has_value());
+
+  constexpr size_t kBatchSize = 1;
+  PrivateVerificationTokensPublicKey public_key(
+      url::Origin::Create(GURL("https://issuer.example.com")),
+      issuer->public_key(), issuer->public_key_proof(),
+      base::Time::Now() + base::Days(30), /*version=*/1);
+  IssuerConfig issuer_config(GURL("https://issuer.example.com/request"),
+                             kBatchSize, std::move(public_key), {},
+                             "verify-check-ok");
+
+  base::expected<PrivacyPassAthmBatchRequest, PrivacyPassAthmBatchRequestError>
+      batch_request =
+          PrivacyPassAthmBatchRequest::Create(issuer_config, kBucketCount);
+  ASSERT_TRUE(batch_request.has_value());
+
+  constexpr uint8_t kMetadata = 3;
+  std::optional<std::string> response_body = issuer->BatchIssue(
+      base::as_string_view(batch_request->request_body()), kMetadata);
+  ASSERT_TRUE(response_body.has_value());
+
+  base::expected<std::vector<std::vector<uint8_t>>,
+                 PrivacyPassAthmBatchRequestError>
+      finalized_tokens =
+          batch_request->Finalize(base::as_byte_span(*response_body));
+  ASSERT_TRUE(finalized_tokens.has_value());
+  ASSERT_EQ(finalized_tokens->size(), 1u);
+
+  std::optional<uint8_t> recovered =
+      issuer->VerifyWithCheck((*finalized_tokens)[0]);
+  ASSERT_TRUE(recovered.has_value());
+  EXPECT_EQ(*recovered, kMetadata);
+}
+
+TEST(AthmTestIssuerTest, VerifyWithCheck_WrongTokenType_ReturnsNullopt) {
+  std::optional<AthmTestIssuer> issuer =
+      AthmTestIssuer::Create(kBucketCount, DeploymentId("verify-check-type"));
+  ASSERT_TRUE(issuer.has_value());
+
+  constexpr size_t kBatchSize = 1;
+  PrivateVerificationTokensPublicKey public_key(
+      url::Origin::Create(GURL("https://issuer.example.com")),
+      issuer->public_key(), issuer->public_key_proof(),
+      base::Time::Now() + base::Days(30), /*version=*/1);
+  IssuerConfig issuer_config(GURL("https://issuer.example.com/request"),
+                             kBatchSize, std::move(public_key), {},
+                             "verify-check-type");
+
+  base::expected<PrivacyPassAthmBatchRequest, PrivacyPassAthmBatchRequestError>
+      batch_request =
+          PrivacyPassAthmBatchRequest::Create(issuer_config, kBucketCount);
+  ASSERT_TRUE(batch_request.has_value());
+
+  std::optional<std::string> response_body =
+      issuer->BatchIssue(base::as_string_view(batch_request->request_body()),
+                         /*hidden_metadata=*/0);
+  ASSERT_TRUE(response_body.has_value());
+
+  base::expected<std::vector<std::vector<uint8_t>>,
+                 PrivacyPassAthmBatchRequestError>
+      finalized_tokens =
+          batch_request->Finalize(base::as_byte_span(*response_body));
+  ASSERT_TRUE(finalized_tokens.has_value());
+
+  anonymous_tokens::AthmToken token;
+  ASSERT_TRUE(anonymous_tokens::UnmarshalAthmToken(
+                  base::as_string_view((*finalized_tokens)[0]), &token)
+                  .ok());
+  token.token_type = 0x1234;
+  std::string marshaled;
+  ASSERT_TRUE(anonymous_tokens::MarshalAthmToken(token, &marshaled).ok());
+
+  EXPECT_FALSE(
+      issuer->VerifyWithCheck(base::as_byte_span(marshaled)).has_value());
+}
+
+TEST(AthmTestIssuerTest, VerifyWithCheck_WrongKeyId_ReturnsNullopt) {
+  std::optional<AthmTestIssuer> issuer =
+      AthmTestIssuer::Create(kBucketCount, DeploymentId("verify-check-keyid"));
+  ASSERT_TRUE(issuer.has_value());
+
+  constexpr size_t kBatchSize = 1;
+  PrivateVerificationTokensPublicKey public_key(
+      url::Origin::Create(GURL("https://issuer.example.com")),
+      issuer->public_key(), issuer->public_key_proof(),
+      base::Time::Now() + base::Days(30), /*version=*/1);
+  IssuerConfig issuer_config(GURL("https://issuer.example.com/request"),
+                             kBatchSize, std::move(public_key), {},
+                             "verify-check-keyid");
+
+  base::expected<PrivacyPassAthmBatchRequest, PrivacyPassAthmBatchRequestError>
+      batch_request =
+          PrivacyPassAthmBatchRequest::Create(issuer_config, kBucketCount);
+  ASSERT_TRUE(batch_request.has_value());
+
+  std::optional<std::string> response_body =
+      issuer->BatchIssue(base::as_string_view(batch_request->request_body()),
+                         /*hidden_metadata=*/0);
+  ASSERT_TRUE(response_body.has_value());
+
+  base::expected<std::vector<std::vector<uint8_t>>,
+                 PrivacyPassAthmBatchRequestError>
+      finalized_tokens =
+          batch_request->Finalize(base::as_byte_span(*response_body));
+  ASSERT_TRUE(finalized_tokens.has_value());
+
+  anonymous_tokens::AthmToken token;
+  ASSERT_TRUE(anonymous_tokens::UnmarshalAthmToken(
+                  base::as_string_view((*finalized_tokens)[0]), &token)
+                  .ok());
+  token.issuer_key_id[0] ^= 0xFF;
+  std::string marshaled;
+  ASSERT_TRUE(anonymous_tokens::MarshalAthmToken(token, &marshaled).ok());
+
+  EXPECT_FALSE(
+      issuer->VerifyWithCheck(base::as_byte_span(marshaled)).has_value());
+}
+
+TEST(AthmTestIssuerTest, VerifyWithCheck_InvalidCrypto_ReturnsNullopt) {
+  std::optional<AthmTestIssuer> issuer =
+      AthmTestIssuer::Create(kBucketCount, DeploymentId("verify-check-crypto"));
+  ASSERT_TRUE(issuer.has_value());
+
+  constexpr size_t kBatchSize = 1;
+  PrivateVerificationTokensPublicKey public_key(
+      url::Origin::Create(GURL("https://issuer.example.com")),
+      issuer->public_key(), issuer->public_key_proof(),
+      base::Time::Now() + base::Days(30), /*version=*/1);
+  IssuerConfig issuer_config(GURL("https://issuer.example.com/request"),
+                             kBatchSize, std::move(public_key), {},
+                             "verify-check-crypto");
+
+  base::expected<PrivacyPassAthmBatchRequest, PrivacyPassAthmBatchRequestError>
+      batch_request =
+          PrivacyPassAthmBatchRequest::Create(issuer_config, kBucketCount);
+  ASSERT_TRUE(batch_request.has_value());
+
+  std::optional<std::string> response_body =
+      issuer->BatchIssue(base::as_string_view(batch_request->request_body()),
+                         /*hidden_metadata=*/0);
+  ASSERT_TRUE(response_body.has_value());
+
+  base::expected<std::vector<std::vector<uint8_t>>,
+                 PrivacyPassAthmBatchRequestError>
+      finalized_tokens =
+          batch_request->Finalize(base::as_byte_span(*response_body));
+  ASSERT_TRUE(finalized_tokens.has_value());
+
+  anonymous_tokens::AthmToken token;
+  ASSERT_TRUE(anonymous_tokens::UnmarshalAthmToken(
+                  base::as_string_view((*finalized_tokens)[0]), &token)
+                  .ok());
+  token.token[kTamperByteOffset] ^= 0x01;
+  std::string marshaled;
+  ASSERT_TRUE(anonymous_tokens::MarshalAthmToken(token, &marshaled).ok());
+
+  EXPECT_FALSE(
+      issuer->VerifyWithCheck(base::as_byte_span(marshaled)).has_value());
+}
+
+TEST(AthmTestIssuerTest, VerifyWithCheck_InvalidLength_ReturnsNullopt) {
+  std::optional<AthmTestIssuer> issuer =
+      AthmTestIssuer::Create(kBucketCount, DeploymentId("verify-check-len"));
+  ASSERT_TRUE(issuer.has_value());
+
+  const std::vector<uint8_t> short_bytes = {0xC0, 0x7E, 0x01, 0x02};
+  EXPECT_FALSE(issuer->VerifyWithCheck(short_bytes).has_value());
+}
+
 }  // namespace
 }  // namespace private_verification_tokens
