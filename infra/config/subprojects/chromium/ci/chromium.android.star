@@ -3203,9 +3203,6 @@ ci.builder(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.device.cc_unittests.filter",
                 ],
-                # TODO(crbug.com/546581718): Re-enable on CQ once the high
-                # pending time is gone.
-                ci_only = True,
             ),
             "chrome_public_test_apk": targets.mixin(
                 args = [
@@ -3233,11 +3230,6 @@ ci.builder(
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.device_14.content_browsertests.filter",
                 ],
                 # TODO(crbug.com/410638690): Re-enable on CQ once the high
-                # pending time is gone.
-                ci_only = True,
-            ),
-            "viz_unittests": targets.mixin(
-                # TODO(crbug.com/546581718): Re-enable on CQ once the high
                 # pending time is gone.
                 ci_only = True,
             ),
