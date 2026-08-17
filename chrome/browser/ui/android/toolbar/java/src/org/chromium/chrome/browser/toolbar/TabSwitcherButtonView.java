@@ -47,7 +47,7 @@ public class TabSwitcherButtonView extends ListMenuButton {
     }
 
     /**
-     * @param tint The {@ColorStateList} used to tint the button.
+     * @param tint The {@link ColorStateList} used to tint the button.
      */
     public void setTint(ColorStateList tint) {
         mTabSwitcherButtonDrawable.setTint(tint);

@@ -58,7 +58,7 @@ public final class InstantMessageDelegateFactory {
     }
 
     /**
-     * @param testService The {@InstantMessageDelegateImpl} to use for testing.
+     * @param testService The {@link InstantMessageDelegateImpl} to use for testing.
      */
     public static void setForTesting(@Nullable InstantMessageDelegateImpl testService) {
         sInstantMessageDelegateImplForTesting = testService;

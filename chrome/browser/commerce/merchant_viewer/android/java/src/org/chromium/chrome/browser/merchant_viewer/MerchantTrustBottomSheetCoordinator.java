@@ -61,7 +61,7 @@ public class MerchantTrustBottomSheetCoordinator implements View.OnLayoutChangeL
      *
      * @param context current {@link Context} intsance.
      * @param windowAndroid app's Adnroid window.
-     * @param bottomSheetController {@BottomSheetController} instance.
+     * @param bottomSheetController {@link BottomSheetController} instance.
      * @param tabSupplier provider to obtain {@link Tab}.
      * @param layoutView decor view.
      * @param intentRequestTracker The {@link IntentRequestTracker} of the current activity.

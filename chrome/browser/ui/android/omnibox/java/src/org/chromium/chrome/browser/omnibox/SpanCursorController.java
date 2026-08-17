@@ -168,7 +168,7 @@ class SpanCursorController {
 
     /**
      * @param editable The editable.
-     * @return Debug string for the given {@Editable}.
+     * @return Debug string for the given {@link Editable}.
      */
     private static String toDebugString(Editable editable) {
         return String.format(

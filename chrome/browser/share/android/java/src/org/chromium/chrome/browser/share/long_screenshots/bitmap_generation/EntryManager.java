@@ -24,9 +24,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Entry manager responsible for managing all the of the {@LongScreenshotEntry}. This should be used
- * to generate and retrieve the needed bitmaps. Currently we generate the screenshot in one pass; to
- * obtain it call {@link generateFullpageEntry}.
+ * Entry manager responsible for managing all the of the {@link LongScreenshotEntry}. This should be
+ * used to generate and retrieve the needed bitmaps. Currently we generate the screenshot in one
+ * pass; to obtain it call {@link generateFullpageEntry}.
  */
 @NullMarked
 public class EntryManager {

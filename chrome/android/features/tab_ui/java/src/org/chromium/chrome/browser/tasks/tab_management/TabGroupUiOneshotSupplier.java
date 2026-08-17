@@ -125,7 +125,7 @@ public class TabGroupUiOneshotSupplier extends OneshotSupplierImpl<TabGroupUi> {
      * Constructs a specialized {@link OneshotSupplier} for {@link TabGroupUi}.
      *
      * @param activityTabProvider Gives access to the current tab.
-     * @param tabModelSelector Gives access to the current set of {@TabModel}.
+     * @param tabModelSelector Gives access to the current set of {@link TabModel}.
      * @param activity The {@link Activity} that creates this surface.
      * @param parentView The parent view of this UI.
      * @param browserControlsStateProvider The {@link BrowserControlsStateProvider} of the top

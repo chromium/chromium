@@ -280,7 +280,7 @@ public class AutofillUiUtils {
      * Show Tooltip UI.
      *
      * @param context Context required to get resources.
-     * @param popup {@PopupWindow} that shows tooltip UI.
+     * @param popup {@link PopupWindow} that shows tooltip UI.
      * @param text Text to be shown in tool tip UI.
      * @param offsetProvider Interface to provide the X and Y offsets.
      * @param anchorView Anchor view under which tooltip popup has to be shown

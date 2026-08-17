@@ -205,7 +205,7 @@ public class InstalledWebappPermissionStore {
                 .apply();
     }
 
-    /** Reset permission {@type} from the store. */
+    /** Reset permission {@code type} from the store. */
     public void resetPermission(Origin origin, @ContentSettingsType.EnumType int type) {
         mPreferences
                 .edit()

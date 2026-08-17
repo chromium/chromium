@@ -39,8 +39,8 @@ public class NtpSigninPromoCoordinator {
      * @param profile A {@link Profile} object to access identity services. This must be the
      *     original profile, not the incognito one.
      * @param activityResultTracker Tracker of activity results.
-     * @param launcher A {@SigninAndHistorySyncActivityLauncher} for the initialization of {@link
-     *     SigninPromoDelegate}.
+     * @param launcher A {@link SigninAndHistorySyncActivityLauncher} for the initialization of
+     *     {@link SigninPromoDelegate}.
      * @param bottomSheetController Used to interact with the bottom sheet.
      * @param modalDialogManagerSupplier Supplies the {@link ModalDialogManager}.
      * @param snackbarManager Manages snackbars shown in the app.

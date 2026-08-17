@@ -18,12 +18,14 @@ import java.lang.annotation.RetentionPolicy;
 
 /**
  * Owns the lifecycle of one bitmap in the long screenshot.
+ *
  * <ul>
- * <li>1. Defines the bounds for the bitmap.</li>
- * <li>2. Requests the generation of the bitmap using {@BitmapGenerator}.</li>
- * <li>3. Tracks the status of the generation.</li>
- * <li>4. Stores the generated bitmap.</li>
+ *   <li>1. Defines the bounds for the bitmap.
+ *   <li>2. Requests the generation of the bitmap using {@link BitmapGenerator}.
+ *   <li>3. Tracks the status of the generation.
+ *   <li>4. Stores the generated bitmap.
  * </ul>
+ *
  * Callers of this class should provide a {@link LongScreenshotsEntry.EntryListener} which returns
  * the status of the generation. Upon receiving the BITMAP_GENERATED success code, callers can call
  * {@link getBitmap} to retrieve the generated bitmap.

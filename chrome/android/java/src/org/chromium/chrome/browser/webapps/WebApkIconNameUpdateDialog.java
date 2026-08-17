@@ -54,7 +54,7 @@ public class WebApkIconNameUpdateDialog implements ModalDialogProperties.Control
      * Shows the dialog.
      *
      * @param activityContext The activity context used to inflate views.
-     * @param manager The {@ModalDialogManager} to use.
+     * @param manager The {@link ModalDialogManager} to use.
      * @param packageName The package name for this app.
      * @param iconChanging Whether an icon change has been detected.
      * @param shortNameChanging Whether a short name change has been detected.

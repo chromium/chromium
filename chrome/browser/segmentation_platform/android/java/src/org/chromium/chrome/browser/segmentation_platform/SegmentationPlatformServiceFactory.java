@@ -35,11 +35,11 @@ public final class SegmentationPlatformServiceFactory {
     }
 
     /**
-     * Set a {@SegmentationPlatformService} to use for testing. All subsequent calls to {@link
+     * Set a {@link SegmentationPlatformService} to use for testing. All subsequent calls to {@link
      * #getForProfile( Profile )} will return the test object rather than the real object.
      *
-     * @param testService The {@SegmentationPlatformService} to use for testing, or null if the real
-     *         service should be used.
+     * @param testService The {@link SegmentationPlatformService} to use for testing, or null if the
+     *     real service should be used.
      */
     public static void setForTests(@Nullable SegmentationPlatformService testService) {
         sSegmentationPlatformServiceForTesting = testService;

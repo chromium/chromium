@@ -66,7 +66,7 @@ public interface TabManagementDelegate {
      * @param bottomSheetController The {@link BottomSheetController} for the current activity.
      * @param dataSharingTabManager The {@link} DataSharingTabManager managing communication between
      *     UI and DataSharing services.
-     * @param tabModelSelector Gives access to the current set of {@TabModel}.
+     * @param tabModelSelector Gives access to the current set of {@link TabModel}.
      * @param tabContentManager Gives access to the tab content.
      * @param tabCreatorManager Manages creation of tabs.
      * @param layoutStateProviderSupplier Supplies the {@link LayoutStateProvider}.

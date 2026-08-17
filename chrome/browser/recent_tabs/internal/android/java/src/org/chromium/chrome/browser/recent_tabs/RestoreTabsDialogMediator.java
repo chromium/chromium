@@ -31,7 +31,7 @@ public class RestoreTabsDialogMediator extends RestoreTabsMediator {
     /**
      * Initialize mediator with required dependencies.
      *
-     * @param model A {@link PropertyModel} that holds the {@RestoreTabsProperties}.
+     * @param model A {@link PropertyModel} that holds the {@link RestoreTabsProperties}.
      * @param profile The {@link Profile} for the current user.
      * @param tabCreatorManager A {@link TabCreatorManager} instance to restore tabs.
      * @param modalDialogManagerSupplier A supplier for the {@link ModalDialogManager}.

@@ -47,7 +47,7 @@ public class HistoricalEntry {
      *
      * @param tabGroupId The tab group id of the group.
      * @param groupTitle The title of the group or null if the default group name should be used.
-     * @param groupColor The {@TabGroupColorId} of the group.
+     * @param groupColor The {@link TabGroupColorId} of the group.
      * @param tabs The list of {@link Tab} in this group.
      */
     public HistoricalEntry(

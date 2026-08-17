@@ -42,8 +42,8 @@ public interface BrowserControlsSizer extends BrowserControlsVisibilityManager {
     void setAnimateBrowserControlsHeightChanges(boolean animateBrowserControlsHeightChanges);
 
     /**
-     * Notifies the {@BrowserControlsSizer} of the background color that's been set to the browser
-     * controls view.
+     * Notifies the {@link BrowserControlsSizer} of the background color that's been set to the
+     * browser controls view.
      *
      * @param color The color used for the background of the browser controls view.
      * @deprecated Use {@link BottomControlsStacker#notifyBackgroundColor(int)}.

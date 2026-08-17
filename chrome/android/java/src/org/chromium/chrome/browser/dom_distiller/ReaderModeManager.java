@@ -150,7 +150,7 @@ public class ReaderModeManager extends EmptyTabObserver
         int STARTED = 2;
     }
 
-    /** The key to access this object from a {@Tab}. */
+    /** The key to access this object from a {@link Tab}. */
     public static final Class<ReaderModeManager> USER_DATA_KEY = ReaderModeManager.class;
 
     /** Histogram name for the state of the reader mode accessibility setting. */

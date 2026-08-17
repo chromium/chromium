@@ -83,7 +83,7 @@ public class OptionalButtonCoordinator {
      *     transitions.
      * @param isAnimationAllowedPredicate A BooleanProvider that is called before all transitions to
      *     determine if said transition should be animated or not.
-     * @param featureEngagementTrackerSupplier Provides a {@Tracker} when available.
+     * @param featureEngagementTrackerSupplier Provides a {@link Tracker} when available.
      */
     public OptionalButtonCoordinator(
             View view,

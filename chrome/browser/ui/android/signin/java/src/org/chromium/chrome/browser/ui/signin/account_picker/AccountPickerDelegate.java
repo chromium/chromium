@@ -20,8 +20,8 @@ public interface AccountPickerDelegate {
      * A controller for the state of the sign-in flow, e.g. showing error screens.
      *
      * @deprecated TODO(crbug.com/469772349): Remove SigninStateController after {@link
-     *     WebSigninAccountPickerDelegate} and {@link SendTabToSelfCoordinator} migration to
-     *     {@BottomSheetSigninAndHistorySyncCoordinator.Delegate}
+     *     WebSigninAccountPickerDelegate} and {@link SendTabToSelfCoordinator} migration to {@link
+     *     BottomSheetSigninAndHistorySyncCoordinator.Delegate}
      */
     interface SigninStateController {
 

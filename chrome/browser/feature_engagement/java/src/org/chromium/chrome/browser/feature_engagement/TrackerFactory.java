@@ -54,11 +54,11 @@ public final class TrackerFactory {
     }
 
     /**
-     * Set a {@Tracker} to use for testing. All calls to {@link #getTrackerForProfile( Profile )}
-     * will return the test tracker rather than the real tracker.
+     * Set a {@link Tracker} to use for testing. All calls to {@link #getTrackerForProfile( Profile
+     * )} will return the test tracker rather than the real tracker.
      *
-     * @param testTracker The {@Tracker} to use for testing, or null if the real tracker should be
-     *                    used.
+     * @param testTracker The {@link Tracker} to use for testing, or null if the real tracker should
+     *     be used.
      */
     public static void setTrackerForTests(@Nullable Tracker testTracker) {
         sTrackerForTesting = testTracker;

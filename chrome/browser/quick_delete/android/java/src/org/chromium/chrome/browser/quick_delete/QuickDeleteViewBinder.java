@@ -28,7 +28,7 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.TextViewWithClickableSpans;
 
-/** The {@View} binder class for the quick delete MVC. */
+/** The {@link View} binder class for the quick delete MVC. */
 @NullMarked
 class QuickDeleteViewBinder {
     public static void bind(PropertyModel model, View quickDeleteView, PropertyKey propertyKey) {

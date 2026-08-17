@@ -50,8 +50,8 @@ public class TabGroupColorPickerCoordinator implements TabGroupColorPicker {
      * @param colorPickerView The view used for the color picker container.
      * @param colorPickerType The {@link TabGroupColorPickerType} associated with this color picker.
      * @param isIncognito Whether the current tab model is in incognito mode.
-     * @param layoutType The {@TabGroupColorPickerLayoutType} that the component will be arranged
-     *     as.
+     * @param layoutType The {@link TabGroupColorPickerLayoutType} that the component will be
+     *     arranged as.
      * @param onColorItemClicked The runnable for performing an action on each color click event.
      */
     public TabGroupColorPickerCoordinator(
