@@ -672,6 +672,8 @@ static_library("common") {
       "daemon_process_linux.cc",
       "host_wtmpdb_logger.cc",
       "host_wtmpdb_logger.h",
+      "terminal_process_monitor_linux.cc",
+      "terminal_process_monitor_linux.h",
       "terminal_session_linux.cc",
     ]
 
@@ -1041,7 +1043,10 @@ source_set("unit_tests") {
   }
 
   if (is_linux) {
-    sources += [ "pairing_registry_delegate_linux_unittest.cc" ]
+    sources += [
+      "pairing_registry_delegate_linux_unittest.cc",
+      "terminal_process_monitor_linux_unittest.cc",
+    ]
     deps += [ "//remoting/host/linux:unit_tests" ]
   }
 
