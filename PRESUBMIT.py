@@ -7841,50 +7841,6 @@ def CheckAssertAshOnlyCode(input_api, output_api):
     return errors
 
 
-def _IsMiraclePtrDisallowed(input_api, affected_file):
-    path = affected_file.UnixLocalPath()
-    if not _IsCPlusPlusFile(input_api, path):
-        return False
-
-    # Renderer-only code is generally allowed to use MiraclePtr. These
-    # directories, however, are specifically disallowed, for perf reasons.
-    if ('third_party/blink/renderer/core/' in path
-            or 'third_party/blink/renderer/platform/heap/' in path
-            or 'third_party/blink/renderer/platform/fonts/' in path):
-        return True
-
-    # `functional.h` contains some shared plumbing, and should not be
-    # excluded directly.
-    if ('third_party/blink/renderer/platform/wtf/' in path and
-            'third_party/blink/renderer/platform/wtf/functional' not in path):
-        return True
-
-    # We assume that everything else may be used outside of Renderer processes.
-    return False
-
-
-# TODO(crbug.com/40206238): Remove these checks, once they are replaced
-# by the Chromium Clang Plugin (which will be preferable because it will
-# 1) report errors earlier - at compile-time and 2) cover more rules).
-def CheckRawPtrUsage(input_api, output_api):
-    """Rough checks that raw_ptr<T> usage guidelines are followed."""
-    errors = []
-    # The regex below matches "raw_ptr<" following a word boundary, but not in a
-    # C++ comment.
-    raw_ptr_matcher = input_api.re.compile(r'^((?!//).)*\braw_(ptr|ref|span)<')
-    file_filter = lambda f: _IsMiraclePtrDisallowed(input_api, f)
-    for f, line_num, line in input_api.RightHandSideLines(file_filter):
-        match_result = raw_ptr_matcher.search(line)
-        if match_result:
-            errors.append(
-                output_api.PresubmitError(
-                    f'Problem on {f.LocalPath()}:{line_num} - '
-                    f'`raw_{match_result.group(2)}` should not be used in this '
-                    'renderer code (as documented in the "Pointers to '
-                    'unprotected memory" section in //base/memory/raw_ptr.md)')
-            )
-    return errors
-
 
 def CheckAdvancedMemorySafetyChecksUsage(input_api, output_api):
     """Checks that ADVANCED_MEMORY_SAFETY_CHECKS() macro is neither added nor
