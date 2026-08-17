@@ -91,7 +91,7 @@ chromium-metrics-reviews@google.com.
   <int value="168428260" label="PrivacyGuideFragment"/>
   <int value="201053571" label="AutofillAndPasswordsFragment"/>
   <int value="217285687" label="AppearanceSettingsFragment"/>
-  <int value="323758419" label="TrackingProtectionSettings"/>
+  <int value="323758419" label="(Obsolete) TrackingProtectionSettings"/>
   <int value="351534386" label="SiteSearchSettings"/>
   <int value="383093746" label="(Obsolete) PrivacySandboxSettingsFragment"/>
   <int value="406265787" label="LanguageSettings"/>

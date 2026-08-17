@@ -699,11 +699,12 @@ chromium-metrics-reviews@google.com.
   <int value="100271" label="AccessibilityFaceGazeGesturesToConfidence"/>
   <int value="100272" label="ShelfGeminiAppPinRolls"/>
   <int value="100273"
-      label="ProfileContentSettingsExceptionsTrackingProtection"/>
+      label="(obsolete) ProfileContentSettingsExceptionsTrackingProtection"/>
   <int value="100274"
-      label="ProfileContentSettingsPartitionedExceptionsTrackingProtection"/>
+      label="(obsolete)
+             ProfileContentSettingsPartitionedExceptionsTrackingProtection"/>
   <int value="100275"
-      label="ProfileDefaultContentSettingValuesTrackingProtection"/>
+      label="(obsolete) ProfileDefaultContentSettingValuesTrackingProtection"/>
   <int value="100276" label="ShowForwardButton"/>
   <int value="100277" label="AccessibilityMagnifierFollowsSts"/>
   <int value="100278" label="AccessibilityReadAnythingLanguagesEnabled"/>
