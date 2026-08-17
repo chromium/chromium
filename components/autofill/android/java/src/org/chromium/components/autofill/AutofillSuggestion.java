@@ -13,10 +13,21 @@ import org.chromium.url.GURL;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 /** A container representing a single entry in an Autofill UI (e.g. keyboard accessory). */
 @NullMarked
 public class AutofillSuggestion {
+    // LINT.IfChange(UnacceptableSuggestionTypes)
+    private static final Set<Integer> UNACCEPTABLE_SUGGESTION_TYPES =
+            Set.of(
+                    SuggestionType.SEPARATOR,
+                    SuggestionType.INSECURE_CONTEXT_PAYMENT_DISABLED_MESSAGE,
+                    SuggestionType.MIXED_FORM_MESSAGE,
+                    SuggestionType.TITLE,
+                    SuggestionType.AT_MEMORY_SOURCE_ATTRIBUTION);
+    // LINT.ThenChange(/components/autofill/core/browser/suggestions/suggestion.cc:UnacceptableSuggestionTypes)
+
     private final @Nullable String mLabel;
     private final @Nullable String mSecondaryLabel;
     private final String mSublabel;
@@ -32,7 +43,7 @@ public class AutofillSuggestion {
     private final @Nullable GURL mCustomIconUrl;
     private final @Nullable Payload mPayload;
     private final List<AutofillSuggestion> mChildren;
-    private final boolean mIsAcceptable;
+    private final @Acceptability int mAcceptability;
     private final int mOriginalIndex;
 
     public sealed interface Payload
@@ -58,7 +69,7 @@ public class AutofillSuggestion {
      *     (e.g., if it requires a fetch from the server).
      * @param payload Additional data passed with the suggestion.
      * @param children The list of children suggestions.
-     * @param isAcceptable Whether the suggestion is acceptable.
+     * @param acceptability The acceptability state of the suggestion.
      * @param originalIndex The index of the suggestion in the list provided by the C++
      *     AutofillKeyboardAccessoryController.
      */
@@ -78,7 +89,7 @@ public class AutofillSuggestion {
             @Nullable GURL customIconUrl,
             @Nullable Payload payload,
             List<AutofillSuggestion> children,
-            boolean isAcceptable,
+            @Acceptability int acceptability,
             int originalIndex) {
         mLabel = label;
         mSecondaryLabel = secondaryLabel;
@@ -95,7 +106,7 @@ public class AutofillSuggestion {
         mCustomIconUrl = customIconUrl;
         mPayload = payload;
         mChildren = children;
-        mIsAcceptable = isAcceptable;
+        mAcceptability = acceptability;
         mOriginalIndex = originalIndex;
     }
 
@@ -191,7 +202,18 @@ public class AutofillSuggestion {
     }
 
     public boolean isAcceptable() {
-        return mIsAcceptable;
+        if (UNACCEPTABLE_SUGGESTION_TYPES.contains(mSuggestionType)) {
+            return false;
+        }
+        switch (mAcceptability) {
+            case Acceptability.SELECTABLE_AND_ACCEPTABLE:
+                return true;
+            case Acceptability.SELECTABLE_BUT_UNACCEPTABLE:
+            case Acceptability.UNSELECTABLE_AND_UNACCEPTABLE:
+                return false;
+        }
+        assert false : "Unhandled acceptability value: " + mAcceptability;
+        return false;
     }
 
     public int getOriginalIndex() {
@@ -220,7 +242,7 @@ public class AutofillSuggestion {
                 && Objects.equals(this.mCustomIconUrl, other.mCustomIconUrl)
                 && Objects.equals(this.mPayload, other.mPayload)
                 && Objects.equals(this.mChildren, other.mChildren)
-                && this.mIsAcceptable == other.mIsAcceptable
+                && this.mAcceptability == other.mAcceptability
                 && this.mOriginalIndex == other.mOriginalIndex;
     }
 
@@ -241,7 +263,7 @@ public class AutofillSuggestion {
                 this.mCustomIconUrl,
                 this.mPayload,
                 this.mChildren,
-                this.mIsAcceptable,
+                this.mAcceptability,
                 this.mOriginalIndex);
     }
 
@@ -262,7 +284,7 @@ public class AutofillSuggestion {
         private int mSuggestionType;
         private @Nullable Payload mPayload;
         private List<AutofillSuggestion> mChildren = Collections.emptyList();
-        private boolean mIsAcceptable;
+        private @Acceptability int mAcceptability;
         private int mOriginalIndex;
 
         public Builder setIconId(int iconId) {
@@ -340,8 +362,8 @@ public class AutofillSuggestion {
             return this;
         }
 
-        public Builder setIsAcceptable(boolean isAcceptable) {
-            this.mIsAcceptable = isAcceptable;
+        public Builder setAcceptability(@Acceptability int acceptability) {
+            this.mAcceptability = acceptability;
             return this;
         }
 
@@ -376,7 +398,7 @@ public class AutofillSuggestion {
                     mCustomIconUrl,
                     mPayload,
                     mChildren,
-                    mIsAcceptable,
+                    mAcceptability,
                     mOriginalIndex);
         }
     }

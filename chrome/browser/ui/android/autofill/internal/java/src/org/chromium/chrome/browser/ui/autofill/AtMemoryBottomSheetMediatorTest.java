@@ -57,6 +57,7 @@ import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.Hom
 import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.IllustrationCardItemProperties;
 import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.ScreenId;
 import org.chromium.chrome.browser.ui.autofill.internal.R;
+import org.chromium.components.autofill.Acceptability;
 import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.components.autofill.PopupNoticeInteractions;
 import org.chromium.components.autofill.SuggestionType;
@@ -114,13 +115,13 @@ public class AtMemoryBottomSheetMediatorTest {
                                 .setIconId(R.drawable.flight)
                                 .setLabel("KLM204")
                                 .setSubLabel("Flight ⋅ 15 May ⋅ SEA - MUC")
-                                .setIsAcceptable(true)
+                                .setAcceptability(Acceptability.SELECTABLE_AND_ACCEPTABLE)
                                 .build(),
                         new AutofillSuggestion.Builder()
                                 .setIconId(R.drawable.travel_trip)
                                 .setLabel("Hotel Booking")
                                 .setSubLabel("Hilton ⋅ 16 May")
-                                .setIsAcceptable(true)
+                                .setAcceptability(Acceptability.SELECTABLE_AND_ACCEPTABLE)
                                 .build());
 
         mMediator.show(suggestions);
@@ -146,7 +147,7 @@ public class AtMemoryBottomSheetMediatorTest {
                                 .setLabel("No Connection")
                                 .setSubLabel("No connection")
                                 .setSuggestionType(SuggestionType.AT_MEMORY_NO_CONNECTION)
-                                .setIsAcceptable(false)
+                                .setAcceptability(Acceptability.UNSELECTABLE_AND_UNACCEPTABLE)
                                 .build());
 
         mMediator.show(suggestions);
@@ -223,7 +224,7 @@ public class AtMemoryBottomSheetMediatorTest {
                         .setLabel("Recent")
                         .setSubLabel("No connection")
                         .setSuggestionType(SuggestionType.AT_MEMORY_NO_CONNECTION)
-                        .setIsAcceptable(false)
+                        .setAcceptability(Acceptability.UNSELECTABLE_AND_UNACCEPTABLE)
                         .build();
         List<AutofillSuggestion> suggestions = List.of(suggestion);
         mMediator.show(suggestions);
@@ -406,7 +407,7 @@ public class AtMemoryBottomSheetMediatorTest {
                 .setSubLabel("test details")
                 .setIconId(R.drawable.flight)
                 .setSuggestionType(SuggestionType.AT_MEMORY_SEARCH_AFFORDANCE)
-                .setIsAcceptable(true)
+                .setAcceptability(Acceptability.SELECTABLE_AND_ACCEPTABLE)
                 .build();
     }
 
@@ -420,7 +421,7 @@ public class AtMemoryBottomSheetMediatorTest {
                                 .setSuggestionType(SuggestionType.AT_MEMORY_SEARCH_RESULT)
                                 .setIsLoading(false)
                                 .setApplyDeactivatedStyle(true)
-                                .setIsAcceptable(false)
+                                .setAcceptability(Acceptability.UNSELECTABLE_AND_UNACCEPTABLE)
                                 .build()));
 
         assertEquals(1, mModelList.size());
@@ -439,7 +440,7 @@ public class AtMemoryBottomSheetMediatorTest {
                                 .setSuggestionType(SuggestionType.AT_MEMORY_SEARCH_RESULT)
                                 .setIsLoading(true)
                                 .setApplyDeactivatedStyle(false)
-                                .setIsAcceptable(false)
+                                .setAcceptability(Acceptability.UNSELECTABLE_AND_UNACCEPTABLE)
                                 .build()));
 
         assertEquals(1, mModelList.size());
@@ -464,7 +465,7 @@ public class AtMemoryBottomSheetMediatorTest {
                         .setLabel("Find and fill with Gemini")
                         .setSubLabel("")
                         .setSuggestionType(SuggestionType.AT_MEMORY_FETCHING)
-                        .setIsAcceptable(false)
+                        .setAcceptability(Acceptability.UNSELECTABLE_AND_UNACCEPTABLE)
                         .build();
 
         mMediator.show(List.of(fetchingSuggestion));
@@ -489,7 +490,7 @@ public class AtMemoryBottomSheetMediatorTest {
                         .setLabel("Find and fill with Gemini")
                         .setSubLabel("")
                         .setSuggestionType(SuggestionType.AT_MEMORY_FETCHING)
-                        .setIsAcceptable(false)
+                        .setAcceptability(Acceptability.UNSELECTABLE_AND_UNACCEPTABLE)
                         .build();
 
         mMediator.show(List.of(noticeSuggestion, fetchingSuggestion));
