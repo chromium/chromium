@@ -18,13 +18,13 @@ message AtMemoryQueryRequest {
   // The list of Autofill data types supported by this client build.
   repeated MemoryDataType supported_local_data_types = 2;
 
-  // The URL of the page where the popup has been triggered.
+  // The URL of the main frame where the popup has been triggered.
   string url = 3;
 
   // locale of a user's Chrome client: "en-us"
   string locale = 4;
 
-  // The title of the page where the popup has been triggered.
+  // The title of the main frame where the popup has been triggered.
   string title = 5;
 }
 
@@ -128,10 +128,11 @@ message AutofillFetchSpecification {
 
 // Instructions for retrieving local Autofill data.
 message AutofillFetchPlan {
-  // Deprecated: used as a fallback if fetch_specifications is empty.
+  // The list of target local data categories to fetch (e.g.
+  // [MEMORY_DATA_TYPE_FLIGHT_RESERVATION]).
   repeated MemoryDataType data_types = 1 [deprecated = true];
 
-  // Deprecated: used as a fallback if fetch_specifications is empty.
+  // Keywords extracted from the query to filter local database results.
   repeated string filter_keywords = 2 [deprecated = true];
 
   // The list of AutofillFetchSpecifications to use for fetching local data.
@@ -196,6 +197,7 @@ message Attribute {
     // insurance number".
     string schemaless_key = 3;
   }
+  // The value to fill or display (e.g. "CX123" or "42").
   // `value` should always be set. If `typed_value` is set, `value` should be a
   // readable string representation of `typed_value` (e.g., a formatted date
   // time string). Older clients that do not support (the newest version of)

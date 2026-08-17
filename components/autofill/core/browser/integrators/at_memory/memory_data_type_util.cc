@@ -818,6 +818,8 @@ MemoryDataType ToMemoryDataType(
       return MemoryDataType::kShipmentCarrierDomain;
     case ProtoType::MEMORY_DATA_TYPE_SHIPMENT_ESTIMATED_DELIVERY_DATE:
       return MemoryDataType::kShipmentEstimatedDeliveryDate;
+    case ProtoType::MEMORY_DATA_TYPE_SHIPMENT_SHIP_DATE:
+      return MemoryDataType::kShipmentShippedDate;
     case ProtoType::MEMORY_DATA_TYPE_NATIONAL_ID_CARD_FULL:
       return MemoryDataType::kNationalIdCardNumber;
     case ProtoType::MEMORY_DATA_TYPE_NATIONAL_ID_CARD_NAME:

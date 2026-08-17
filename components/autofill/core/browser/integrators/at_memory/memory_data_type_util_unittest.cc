@@ -256,6 +256,10 @@ TEST(MemoryDataTypeUtilTest, ToMemoryDataTypeMapping) {
       ToMemoryDataType(
           personal_context::proto::MEMORY_DATA_TYPE_DRIVERS_LICENSE_NUMBER),
       MemoryDataType::kDriversLicenseNumber);
+  EXPECT_EQ(
+      ToMemoryDataType(
+          personal_context::proto::MEMORY_DATA_TYPE_SHIPMENT_SHIP_DATE),
+      MemoryDataType::kShipmentShippedDate);
 
   // Entity types map to their primary attributes:
   EXPECT_EQ(ToMemoryDataType(personal_context::proto::MEMORY_DATA_TYPE_VEHICLE),

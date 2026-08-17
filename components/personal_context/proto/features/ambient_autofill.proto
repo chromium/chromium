@@ -23,6 +23,11 @@ message ContextMemoryAmbientAutofillRequest {
   // will be provided in the response. If set to true, only the presence of spii
   // will be returned.
   bool return_spii_presence = 3;
+
+  // The ID of the client.
+  //
+  // This is the cache guid that is stored in Chrome Sync for the device.
+  string client_id = 4;
 }
 
 message ContextMemoryAmbientAutofillResponse {

@@ -21,6 +21,7 @@ enum EntityType {
   VEHICLE = 7;
   KNOWN_TRAVELER_NUMBER = 8;
   SENSITIVE_PII_PRESENCE = 9;
+  ENCRYPTED_ENTITY = 10;
 }
 
 // This is a mirror of google.protobuf.Duration.
@@ -102,6 +103,15 @@ message Entity {
     Vehicle vehicle = 7;
     SensitivePiiPresence sensitive_pii_presence = 11;
     KnownTravelerNumber known_traveler_number = 12;
+    // The bytes of an encrypted entity.
+    //
+    // This should be decrypted by the client using the private key stored in
+    // kPersonalContextPrivateKey in
+    // components/personal_context/core/personal_context_prefs.h.
+    //
+    // The decrypted payload is a DecryptedEntity, which may contain a
+    // DecryptedPassport or DecryptedDriversLicense as the containing entity.
+    bytes encrypted_entity = 13;
   }
 
   // The source references for the entity.
@@ -115,6 +125,7 @@ message SourceReference {
   oneof source_reference {
     GmailReference gmail = 1;
     PhotosReference photos = 2;
+    DriveFile drive = 3;
   }
 }
 
@@ -131,6 +142,14 @@ message GmailReference {
 message PhotosReference {
   // The deeplink URL of the photo, album or video in Photos.
   string photos_url = 1;
+}
+
+// Represents a reference to a Drive file.
+message DriveFile {
+  // Name of the Drive file.
+  string name = 1;
+  // Drive URL of the file.
+  string url = 2;
 }
 
 // Represents a completed purchase transaction from a retail merchant.
@@ -324,6 +343,109 @@ message SensitivePiiPresence {
   Type type = 1;
 }
 
+message DecryptedEntity {
+  reserved 2, 5 to 16;
+
+  repeated DecryptedReference references = 1;
+
+  oneof entity {
+    DecryptedPassport passport = 3;
+    DecryptedDriversLicense drivers_license = 4;
+  }
+}
+
+message DecryptedReference {
+  reserved 2 to 9, 13 to 21, 23 to 47;
+
+  oneof reference {
+    DecryptedGmailMessage gmail_message = 1;
+    DecryptedPhotosPhoto photo = 10;
+    DecryptedPhotosVideo video = 11;
+    DecryptedPhotosAlbum photos_album = 12;
+    DecryptedDriveFile drive_file = 22;
+  }
+}
+
+message DecryptedGmailMessage {
+  reserved 1, 3 to 5, 7 to 13;
+
+  // Subject of the message.
+  string subject = 2;
+
+  // URL to the email message.
+  string message_url = 6;
+}
+
+message DecryptedPhotosPhoto {
+  reserved 1 to 5, 7 to 11;
+
+  // The deeplink url of the photo.
+  string deeplink_url = 6;
+}
+
+message DecryptedPhotosVideo {
+  reserved 1 to 6, 8 to 12;
+
+  // The deeplink url of the video.
+  string deeplink_url = 7;
+}
+
+message DecryptedPhotosAlbum {
+  reserved 1 to 8, 10 to 14;
+
+  // The deeplink url of the album.
+  string deeplink_url = 9;
+}
+
+message DecryptedDriveFile {
+  reserved 1, 3, 4;
+
+  // Drive file title.
+  string name = 2;
+
+  // Drive URL of the file.
+  string url = 5;
+}
+
+message DecryptedPassport {
+  reserved 2 to 4, 9, 10;
+
+  // The name of the user as it appears on the passport.
+  string full_name = 1;
+
+  // The unique identifier number for the passport.
+  string number = 5;
+
+  // The issue date of the passport.
+  Date issue_date = 6;
+
+  // The expiration date of the passport.
+  Date expiration_date = 7;
+
+  // The country that issued the passport, normalized as a two-letter country
+  // code (ISO 3166-1 alpha-2).
+  string issuing_country = 8;
+}
+
+message DecryptedDriversLicense {
+  reserved 2 to 4;
+
+  // The name of the user as it appears on the driver's license.
+  string full_name = 1;
+
+  // The unique identifier number for the driver's license.
+  string number = 5;
+
+  // The state or province that issued the driver's license.
+  string issuing_region = 6;
+
+  // The issue date of the driver's license.
+  Date issue_date = 7;
+
+  // The expiration date of the driver's license.
+  Date expiration_date = 8;
+}
+
 // Represents the memory data types supported by the Chrome client. This
 // includes both local Autofill data types and remote data types (e.g. Gmail,
 // Photos, etc.).
@@ -372,6 +494,7 @@ enum MemoryDataType {
   MEMORY_DATA_TYPE_SHIPMENT_CARRIER_NAME = 41;
   MEMORY_DATA_TYPE_SHIPMENT_CARRIER_DOMAIN = 42;
   MEMORY_DATA_TYPE_SHIPMENT_ESTIMATED_DELIVERY_DATE = 43;
+  MEMORY_DATA_TYPE_SHIPMENT_SHIP_DATE = 76;
   MEMORY_DATA_TYPE_NATIONAL_ID_CARD_FULL = 44;
   MEMORY_DATA_TYPE_NATIONAL_ID_CARD_NAME = 45;
   MEMORY_DATA_TYPE_NATIONAL_ID_CARD_COUNTRY = 46;
