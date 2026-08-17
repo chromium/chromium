@@ -171,6 +171,7 @@ BASE_DECLARE_FEATURE(kDeferNavigationStateChanged);
 BASE_DECLARE_FEATURE(kDesktopAndroidLinkCapturing);
 BASE_DECLARE_FEATURE(kDesktopUAOnConnectedDisplay);
 BASE_DECLARE_FEATURE(kDeviceAuthenticatorAndroidx);
+BASE_DECLARE_FEATURE(kDisableGridTabSwitcher);
 BASE_DECLARE_FEATURE(kDisablePartnerHomepageAndroid);
 BASE_DECLARE_FEATURE(kDisableScrollbarOfFadingEdgeScrollView);
 BASE_DECLARE_FEATURE(kDiscardPageWithCrashedSubframePolicy);

@@ -5669,6 +5669,11 @@ inline constexpr char kContextualPanelCloseButtonDescription[] =
     "When this is enabled, the contextual search panel will show a close "
     "button. Its scrim will also be hidden.";
 
+inline constexpr char kDisableGridTabSwitcherName[] = "Disable Grid Tab Switcher";
+inline constexpr char kDisableGridTabSwitcherDescription[] =
+    "Disables the grid tab switcher on Android. Only applies to large form "
+    "factor devices.";
+
 inline constexpr char kEdgeToEdgeAutomotiveName[] = "Edge-to-Edge Automotive";
 inline constexpr char kEdgeToEdgeAutomotiveDescription[] =
     "When this is enabled, edge to edge logic will be enabled on automotive "

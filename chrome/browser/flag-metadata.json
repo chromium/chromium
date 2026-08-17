@@ -2770,6 +2770,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "disable-grid-tab-switcher",
+    "owners": ["hitarthkothari@google.com", "clank-tab-dev@google.com"],
+    "expiry_milestone": 160
+  },
+  {
     "name": "disable-javascript-harmony-shipping",
     "owners": [ "adamk@chromium.org", "syg@chromium.org" ],
     // This flag is used for field debugging along with

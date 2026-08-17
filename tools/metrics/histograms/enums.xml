@@ -15864,6 +15864,7 @@ from previous Chrome versions.
   <int value="384851297" label="GamepadRawInputChangeEvent:enabled"/>
   <int value="384927690" label="AutofillEnableLocalIban:disabled"/>
   <int value="385046753" label="DisableSystemBlur:disabled"/>
+  <int value="385067826" label="DisableGridTabSwitcher:disabled"/>
   <int value="385206456" label="ShowReadyToPayDebugInfo:enabled"/>
   <int value="385969127" label="disable-win32k-lockdown"/>
   <int value="386064454" label="OmniboxDuiPrerendering:enabled"/>
@@ -18264,6 +18265,7 @@ from previous Chrome versions.
   <int value="1142788238" label="FontCacheScaling:disabled"/>
   <int value="1142970266"
       label="SignedExchangePrefetchCacheForNavigations:disabled"/>
+  <int value="1143194037" label="DisableGridTabSwitcher:enabled"/>
   <int value="1146565782" label="PrerenderActivationByFormSubmission:enabled"/>
   <int value="1146728529" label="DevToolsCssValueTracing:enabled"/>
   <int value="1146944555" label="CrosExpandSodaLanguages:enabled"/>

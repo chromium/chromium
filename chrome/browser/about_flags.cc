@@ -13792,6 +13792,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillAndPasswordsRemoveSignInPromo)},
 
+#if BUILDFLAG(IS_ANDROID)
+    {"disable-grid-tab-switcher",
+     flag_descriptions::kDisableGridTabSwitcherName,
+     flag_descriptions::kDisableGridTabSwitcherDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kDisableGridTabSwitcher)},
+#endif
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
