@@ -1345,17 +1345,6 @@ class GlicApiTestSystemSettingsTest : public GlicApiTestWithOneTab {
 };
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestSystemSettingsTest,
-                       testGetOsMicrophonePermissionStatusAllowed) {
-  EXPECT_CALL(mock_platform_handle,
-              IsAllowed(ContentSettingsType::MEDIASTREAM_MIC))
-      .WillOnce(testing::Return(true));
-
-  // Trigger the GetOsMicrophonePermissionStatus API and check if it returns
-  // true as mocked by this test.
-  ExecuteJsTest();
-}
-
-IN_PROC_BROWSER_TEST_P(GlicApiTestSystemSettingsTest,
                        testGetOsMicrophonePermissionStatusNotAllowed) {
   EXPECT_CALL(mock_platform_handle,
               IsAllowed(ContentSettingsType::MEDIASTREAM_MIC))

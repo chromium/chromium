@@ -722,6 +722,18 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTestSystemSettingsTest,
   EXPECT_TRUE(signal.Wait());
 }
 
+IN_PROC_BROWSER_TEST_P(NewGlicApiTestSystemSettingsTest,
+                       testGetOsMicrophonePermissionStatusAllowed) {
+  EXPECT_CALL(mock_platform_handle,
+              IsAllowed(ContentSettingsType::MEDIASTREAM_MIC))
+      .WillRepeatedly(testing::Return(true));
+  ASSERT_OK(OpenGlicForActiveTab());
+
+  // Trigger the GetOsMicrophonePermissionStatus API and check if it returns
+  // true as mocked by this test.
+  ExecuteJsTest();
+}
+
 IN_PROC_BROWSER_TEST_P(NewGlicOnboardingApiTest, testIsOnboardingCompleted) {
   ASSERT_OK(OpenGlicForActiveTab());
   ExecuteJsTest();
