@@ -88,35 +88,27 @@ def to_kebab_case(name):
 def format_flag_names(user_flag_name):
   """Generates all required name formats from the user's flag name."""
   return {
-      "user_flag_name":
-      user_flag_name,
-      "java_constant_name":
-      to_java_upper_snake_case(user_flag_name),
-      "cpp_variable_name":
-      to_cpp_lower_camel_case_k(user_flag_name),
-      "cpp_lower_camel_case_name":
-      to_kebab_case(user_flag_name),
-      "flag_description_name":
-      to_cpp_lower_camel_case_k(user_flag_name) + "Name",
-      "flag_description_description":
-      to_cpp_lower_camel_case_k(user_flag_name) + "Description",
+    "user_flag_name": user_flag_name,
+    "java_constant_name": to_java_upper_snake_case(user_flag_name),
+    "cpp_variable_name": to_cpp_lower_camel_case_k(user_flag_name),
+    "cpp_lower_camel_case_name": to_kebab_case(user_flag_name),
+    "flag_description_name": to_cpp_lower_camel_case_k(user_flag_name) + "Name",
+    "flag_description_description": to_cpp_lower_camel_case_k(user_flag_name)
+    + "Description",
   }
 
 
 # --- File Paths ---
 FILE_PATHS = {
-    "java_feature_list": ("chrome/browser/flags/android/java/src/org/chromium/"
-                          "chrome/browser/flags/ChromeFeatureList.java"),
-    "cpp_feature_list_h":
-    "chrome/browser/flags/android/chrome_feature_list.h",
-    "cpp_feature_list_cc":
-    "chrome/browser/flags/android/chrome_feature_list.cc",
-    "about_flags_cc":
-    "chrome/browser/about_flags.cc",
-    "flag_descriptions_h":
-    "chrome/browser/flag_descriptions.h",
-    "flag_metadata_json":
-    "chrome/browser/flag-metadata.json",
+  "java_feature_list": (
+    "chrome/browser/flags/android/java/src/org/chromium/"
+    "chrome/browser/flags/ChromeFeatureList.java"
+  ),
+  "cpp_feature_list_h": "chrome/browser/flags/android/chrome_feature_list.h",
+  "cpp_feature_list_cc": "chrome/browser/flags/android/chrome_feature_list.cc",
+  "about_flags_cc": "chrome/browser/about_flags.cc",
+  "flag_descriptions_h": "chrome/browser/flag_descriptions.h",
+  "flag_metadata_json": "chrome/browser/flag-metadata.json",
 }
 
 # --- File Operations Helper Functions ---
@@ -142,35 +134,43 @@ def insert_block_before_line(lines, new_block_lines, target_line_pattern):
   for i, line in enumerate(lines):
     if target_line_pattern in line:
       return lines[:i] + new_block_lines + lines[i:]
-  print(f"Error: Target line pattern '{target_line_pattern}'"
-        " not found for insertion.")
+  print(
+    f"Error: Target line pattern '{target_line_pattern}'"
+    " not found for insertion."
+  )
   return lines
 
 
 def get_current_username():
   """Gets the current user's username and formats as an email."""
   try:
-    username = subprocess.check_output("git config user.email",
-                                       shell=True).decode('utf-8').strip()
+    username = (
+      subprocess.check_output("git config user.email", shell=True)
+      .decode('utf-8')
+      .strip()
+    )
     if not username:
-      print("Error: 'git config user.email' returned an empty value.",
-            file=sys.stderr)
+      print(
+        "Error: 'git config user.email' returned an empty value.",
+        file=sys.stderr,
+      )
       sys.exit(1)
     return username
   except subprocess.CalledProcessError:
     print(
-        "Error: Could not determine username. Please ensure"
-        "'git config user.email' is set.",
-        file=sys.stderr)
+      "Error: Could not determine username. Please ensure"
+      "'git config user.email' is set.",
+      file=sys.stderr,
+    )
     sys.exit(1)
 
 
 def add_metadata_entry_textually(file_path, new_entry_dict):
   """
-    Updates flag-metadata.json by treating it as a text file to preserve
-    comments and formatting. It finds the correct alphabetical insertion
-    point and adds the new flag metadata block.
-    """
+  Updates flag-metadata.json by treating it as a text file to preserve
+  comments and formatting. It finds the correct alphabetical insertion
+  point and adds the new flag metadata block.
+  """
   if not os.path.exists(file_path):
     print(f"Error: File not found at {file_path}. Cannot add metadata.")
     return
@@ -206,10 +206,10 @@ def add_metadata_entry_textually(file_path, new_entry_dict):
   # --- Step 2: Prepare the text block for the new entry ---
   owners_json_string = json.dumps(new_entry_dict["owners"])
   new_block_lines = [
-      '  {\n',
-      f'    "name": "{new_flag_name}",\n',
-      f'    "owners": {owners_json_string},\n',
-      f'    "expiry_milestone": {new_entry_dict["expiry_milestone"]}\n',
+    '  {\n',
+    f'    "name": "{new_flag_name}",\n',
+    f'    "owners": {owners_json_string},\n',
+    f'    "expiry_milestone": {new_entry_dict["expiry_milestone"]}\n',
   ]
 
   # --- Step 3: Insert the block and handle trailing commas ---
@@ -218,8 +218,11 @@ def add_metadata_entry_textually(file_path, new_entry_dict):
     # The new block needs a trailing comma.
     new_block_lines.append('  },\n')
     # Insert the new block before the block of the next alphabetical feature.
-    file_lines = (file_lines[:insertion_line_index] + new_block_lines +
-                  file_lines[insertion_line_index:])
+    file_lines = (
+      file_lines[:insertion_line_index]
+      + new_block_lines
+      + file_lines[insertion_line_index:]
+    )
   else:
     # Case 2: Appending to the end of the list.
     # The new block does NOT get a trailing comma.
@@ -242,11 +245,16 @@ def add_metadata_entry_textually(file_path, new_entry_dict):
         break
 
     if closing_bracket_index != -1:
-      file_lines = (file_lines[:closing_bracket_index] + new_block_lines +
-                    file_lines[closing_bracket_index:])
+      file_lines = (
+        file_lines[:closing_bracket_index]
+        + new_block_lines
+        + file_lines[closing_bracket_index:]
+      )
     else:
-      print(f"Error: Could not find closing bracket ']' in {file_path}."
-            "Appending to end of file as a fallback.")
+      print(
+        f"Error: Could not find closing bracket ']' in {file_path}."
+        "Appending to end of file as a fallback."
+      )
       file_lines.extend(new_block_lines)
 
   write_file(file_path, file_lines)
@@ -255,8 +263,13 @@ def add_metadata_entry_textually(file_path, new_entry_dict):
 # --- Main Script Logic ---
 
 
-def add_chrome_android_feature_flag(user_provided_flag_name, display_name,
-                                    description, owners_list, expiry_milestone):
+def add_chrome_android_feature_flag(
+  user_provided_flag_name,
+  display_name,
+  description,
+  owners_list,
+  expiry_milestone,
+):
   """Performs all file modifications to add the new feature flag."""
   print("\nStarting to add new feature flag to the codebase...")
 
@@ -270,12 +283,15 @@ def add_chrome_android_feature_flag(user_provided_flag_name, display_name,
   # Step 3: Add Java-side functional component
   print("\nStep 3: Adding Java-side functional code...")
   java_file_lines = read_file(FILE_PATHS["java_feature_list"])
-  if java_file_lines is None: return
+  if java_file_lines is None:
+    return
 
   # The new flag definition will always be a single line.
   # A code formatter can split it later if necessary.
-  new_java_line = (f'    public static final String {java_constant_name}'
-                   f' = "{user_provided_flag_name}";\n')
+  new_java_line = (
+    f'    public static final String {java_constant_name}'
+    f' = "{user_provided_flag_name}";\n'
+  )
 
   insert_idx = -1
   last_flag_block_end_idx = -1
@@ -319,19 +335,24 @@ def add_chrome_android_feature_flag(user_provided_flag_name, display_name,
     java_file_lines.insert(last_flag_block_end_idx + 1, new_java_line)
   else:
     # Fallback case: No feature flags were found. We can't safely insert.
-    print(f"Warning: No existing feature flags found in",
-          f"{FILE_PATHS['java_feature_list']}. Could not add new flag.")
+    print(
+      f"Warning: No existing feature flags found in",
+      f"{FILE_PATHS['java_feature_list']}. Could not add new flag.",
+    )
     return  # Exit the step to prevent incorrect file modification.
 
   write_file(FILE_PATHS["java_feature_list"], java_file_lines)
-  print(f"Added Java constant: {java_constant_name} to ",
-        f"{FILE_PATHS['java_feature_list']}")
+  print(
+    f"Added Java constant: {java_constant_name} to ",
+    f"{FILE_PATHS['java_feature_list']}",
+  )
 
   # Step 4: Add C++-side functional component
   print("\nStep 4: Adding C++-side functional code...")
   # .h file
   h_file_lines = read_file(FILE_PATHS["cpp_feature_list_h"])
-  if h_file_lines is None: return
+  if h_file_lines is None:
+    return
   new_h_line = f'BASE_DECLARE_FEATURE({cpp_variable_name});\n'
   h_insert_idx, last_h_decl_idx = -1, -1
   for i, line in enumerate(h_file_lines):
@@ -342,17 +363,19 @@ def add_chrome_android_feature_flag(user_provided_flag_name, display_name,
         h_insert_idx = i
         break
   h_file_lines.insert(
-      h_insert_idx if h_insert_idx != -1 else last_h_decl_idx + 1, new_h_line)
+    h_insert_idx if h_insert_idx != -1 else last_h_decl_idx + 1, new_h_line
+  )
   write_file(FILE_PATHS["cpp_feature_list_h"], h_file_lines)
   print(f"Added C++ declaration to {FILE_PATHS['cpp_feature_list_h']}")
 
   # .cc file
   cc_file_lines = read_file(FILE_PATHS["cpp_feature_list_cc"])
-  if cc_file_lines is None: return
+  if cc_file_lines is None:
+    return
 
   # Determine what to insert based on the context.
   lines_to_insert = [
-      f'BASE_FEATURE({cpp_variable_name}, base::FEATURE_DISABLED_BY_DEFAULT);\n'
+    f'BASE_FEATURE({cpp_variable_name}, base::FEATURE_DISABLED_BY_DEFAULT);\n'
   ]
 
   insertion_anchor_idx = -1
@@ -387,13 +410,17 @@ def add_chrome_android_feature_flag(user_provided_flag_name, display_name,
       else:
         break
 
-    cc_file_lines = (cc_file_lines[:true_insertion_point] + lines_to_insert +
-                     cc_file_lines[true_insertion_point:])
+    cc_file_lines = (
+      cc_file_lines[:true_insertion_point]
+      + lines_to_insert
+      + cc_file_lines[true_insertion_point:]
+    )
 
   # --- Case 2: Appending to the end of the list ---
   else:
-    if last_feature_idx > 0 and cc_file_lines[last_feature_idx -
-                                              1].strip().startswith('//'):
+    if last_feature_idx > 0 and cc_file_lines[
+      last_feature_idx - 1
+    ].strip().startswith('//'):
       # If the last feature in the file was commented, add a preceding newline.
       lines_to_insert.insert(0, '\n')
 
@@ -406,11 +433,16 @@ def add_chrome_android_feature_flag(user_provided_flag_name, display_name,
           break
 
     if last_block_end_idx != -1:
-      cc_file_lines = (cc_file_lines[:last_block_end_idx + 1] +
-                       lines_to_insert + cc_file_lines[last_block_end_idx + 1:])
+      cc_file_lines = (
+        cc_file_lines[: last_block_end_idx + 1]
+        + lines_to_insert
+        + cc_file_lines[last_block_end_idx + 1 :]
+      )
     else:
-      print(f"Warning: No BASE_FEATUREs found in "
-            f"{FILE_PATHS['cpp_feature_list_cc']}. Appending to end of file.")
+      print(
+        f"Warning: No BASE_FEATUREs found in "
+        f"{FILE_PATHS['cpp_feature_list_cc']}. Appending to end of file."
+      )
       cc_file_lines.extend(lines_to_insert)
 
   write_file(FILE_PATHS["cpp_feature_list_cc"], cc_file_lines)
@@ -420,10 +452,17 @@ def add_chrome_android_feature_flag(user_provided_flag_name, display_name,
   start_pattern = "FEATURE_EXPORT_LIST_START"
   end_marker = "FEATURE_EXPORT_LIST_END"
   start_idx = next(
-      (i for i, line in enumerate(cc_file_lines) if start_pattern in line), -1)
+    (i for i, line in enumerate(cc_file_lines) if start_pattern in line), -1
+  )
   if start_idx != -1:
-    end_idx = next((i for i, line in enumerate(cc_file_lines)
-                    if end_marker in line and i > start_idx), -1)
+    end_idx = next(
+      (
+        i
+        for i, line in enumerate(cc_file_lines)
+        if end_marker in line and i > start_idx
+      ),
+      -1,
+    )
     if end_idx != -1:
       insertion_point, last_feature_line = -1, -1
       for i in range(start_idx + 1, end_idx):
@@ -435,47 +474,56 @@ def add_chrome_android_feature_flag(user_provided_flag_name, display_name,
             break
       new_exposed_line = f'    &{cpp_variable_name},\n'
       cc_file_lines.insert(
-          insertion_point if insertion_point != -1 else last_feature_line + 1,
-          new_exposed_line)
+        insertion_point if insertion_point != -1 else last_feature_line + 1,
+        new_exposed_line,
+      )
   write_file(FILE_PATHS["cpp_feature_list_cc"], cc_file_lines)
   print(
-      f"Added C++ feature and exposed it in {FILE_PATHS['cpp_feature_list_cc']}"
+    f"Added C++ feature and exposed it in {FILE_PATHS['cpp_feature_list_cc']}"
   )
 
   # Step 5: Add about_flags portion
   print("\nStep 5: Adding about_flags entry...")
   about_flags_lines = read_file(FILE_PATHS["about_flags_cc"])
-  if about_flags_lines is None: return
+  if about_flags_lines is None:
+    return
   new_about_flags_entry = [
-      '#if BUILDFLAG(IS_ANDROID)\n', f'    {{"{cpp_lower_camel_case_name}",\n',
-      f'     flag_descriptions::{flag_desc_name_var},\n',
-      f'     flag_descriptions::{flag_desc_description_var}, kOsAndroid,\n',
-      f'     FEATURE_VALUE_TYPE(chrome::android::{cpp_variable_name})}},\n',
-      '#endif\n'
+    '#if BUILDFLAG(IS_ANDROID)\n',
+    f'    {{"{cpp_lower_camel_case_name}",\n',
+    f'     flag_descriptions::{flag_desc_name_var},\n',
+    f'     flag_descriptions::{flag_desc_description_var}, kOsAndroid,\n',
+    f'     FEATURE_VALUE_TYPE(chrome::android::{cpp_variable_name})}},\n',
+    '#endif\n',
   ]
   about_flags_lines = insert_block_before_line(
-      about_flags_lines, new_about_flags_entry,
-      "// Add new entries above this line.")
+    about_flags_lines,
+    new_about_flags_entry,
+    "// Add new entries above this line.",
+  )
   write_file(FILE_PATHS["about_flags_cc"], about_flags_lines)
-  print(f"Added about_flags entry for {cpp_lower_camel_case_name} to "
-        f"{FILE_PATHS['about_flags_cc']}")
+  print(
+    f"Added about_flags entry for {cpp_lower_camel_case_name} to "
+    f"{FILE_PATHS['about_flags_cc']}"
+  )
   # Step 6: Add flag_descriptions portion
   print("\nStep 6: Adding flag_descriptions...")
 
   # --- Modify flag_descriptions.h ---
   flag_desc_cc_lines = read_file(FILE_PATHS["flag_descriptions_h"])
-  if flag_desc_cc_lines is None: return
+  if flag_desc_cc_lines is None:
+    return
 
   cc_start_marker = "FLAG_DESCRIPTIONS_ANDROID_START"
   cc_end_marker = "FLAG_DESCRIPTIONS_ANDROID_END"
 
   cc_start_idx = next(
-      (i
-       for i, line in enumerate(flag_desc_cc_lines) if cc_start_marker in line),
-      -1)
+    (i for i, line in enumerate(flag_desc_cc_lines) if cc_start_marker in line),
+    -1,
+  )
   cc_end_idx = next(
-      (i for i, line in enumerate(flag_desc_cc_lines) if cc_end_marker in line),
-      -1)
+    (i for i, line in enumerate(flag_desc_cc_lines) if cc_end_marker in line),
+    -1,
+  )
 
   if cc_start_idx != -1 and cc_end_idx != -1:
     cc_insertion_point = -1
@@ -491,93 +539,117 @@ def add_chrome_android_feature_flag(user_provided_flag_name, display_name,
           true_insertion_point = i
           # Scan backwards to find the start of the block (the "Name" line).
           for j in range(i - 1, cc_start_idx, -1):
-            if 'inline constexpr char' in flag_desc_cc_lines[
-                j] and 'Name[]' in flag_desc_cc_lines[j]:
+            if (
+              'inline constexpr char' in flag_desc_cc_lines[j]
+              and 'Name[]' in flag_desc_cc_lines[j]
+            ):
               true_insertion_point = j
-            elif flag_desc_cc_lines[j].strip(
-            ) == '':  # Stop at the blank line of the previous entry
+            elif (
+              flag_desc_cc_lines[j].strip() == ''
+            ):  # Stop at the blank line of the previous entry
               break
           cc_insertion_point = true_insertion_point
           break
 
     new_cc_pair = [
-        f'inline constexpr char {flag_desc_name_var}[] = "{display_name}";\n',
-        f'inline constexpr char {flag_desc_description_var}[] =\n',
-        f'    "{description}";\n', '\n'
+      f'inline constexpr char {flag_desc_name_var}[] = "{display_name}";\n',
+      f'inline constexpr char {flag_desc_description_var}[] =\n',
+      f'    "{description}";\n',
+      '\n',
     ]
 
     # If no later entry was found, insert before the end marker. Otherwise,
     # insert at the found point.
-    final_cc_insertion_idx = (cc_end_idx if cc_insertion_point == -1 else
-                              cc_insertion_point)
-    flag_desc_cc_lines = (flag_desc_cc_lines[:final_cc_insertion_idx] +
-                          new_cc_pair +
-                          flag_desc_cc_lines[final_cc_insertion_idx:])
+    final_cc_insertion_idx = (
+      cc_end_idx if cc_insertion_point == -1 else cc_insertion_point
+    )
+    flag_desc_cc_lines = (
+      flag_desc_cc_lines[:final_cc_insertion_idx]
+      + new_cc_pair
+      + flag_desc_cc_lines[final_cc_insertion_idx:]
+    )
 
     write_file(FILE_PATHS["flag_descriptions_h"], flag_desc_cc_lines)
     print(f"Added definitions to {FILE_PATHS['flag_descriptions_h']}")
   else:
-    print(f"Error: Could not find START/END markers in"
-          f"{FILE_PATHS['flag_descriptions_h']}")
+    print(
+      f"Error: Could not find START/END markers in"
+      f"{FILE_PATHS['flag_descriptions_h']}"
+    )
 
   # Step 7: Add flag-metadata portion
   print("\nStep 7: Adding flag-metadata entry...")
   new_metadata_entry = {
-      "name": cpp_lower_camel_case_name,
-      "owners": owners_list,
-      "expiry_milestone": expiry_milestone
+    "name": cpp_lower_camel_case_name,
+    "owners": owners_list,
+    "expiry_milestone": expiry_milestone,
   }
-  add_metadata_entry_textually(FILE_PATHS["flag_metadata_json"],
-                               new_metadata_entry)
-  print(f"Added metadata for {cpp_lower_camel_case_name} to "
-        f"{FILE_PATHS['flag_metadata_json']}")
+  add_metadata_entry_textually(
+    FILE_PATHS["flag_metadata_json"], new_metadata_entry
+  )
+  print(
+    f"Added metadata for {cpp_lower_camel_case_name} to "
+    f"{FILE_PATHS['flag_metadata_json']}"
+  )
 
   # Step 12: Run generate_flag_enums.py
   print(
-      "\nStep 12: Running tools/metrics/histograms/generate_flag_enums.py ...")
+    "\nStep 12: Running tools/metrics/histograms/generate_flag_enums.py ..."
+  )
   try:
-    subprocess.run([
-        "python3", "tools/metrics/histograms/generate_flag_enums.py",
-        "--feature", user_provided_flag_name
-    ],
-                   check=True,
-                   capture_output=True,
-                   text=True)
+    subprocess.run(
+      [
+        "python3",
+        "tools/metrics/histograms/generate_flag_enums.py",
+        "--feature",
+        user_provided_flag_name,
+      ],
+      check=True,
+      capture_output=True,
+      text=True,
+    )
     print("Successfully ran generate_flag_enums.py.")
   except (subprocess.CalledProcessError, FileNotFoundError) as e:
     print(f"Error running generate_flag_enums.py: {e}")
 
   # Step 13: Give confirmation
   print(
-      "\n\nFeature flag addition process complete. Remember to check the diff!")
+    "\n\nFeature flag addition process complete. Remember to check the diff!"
+  )
 
 
 def parse_arguments():
   """Parses command line arguments."""
   parser = argparse.ArgumentParser(
-      description="New Chrome Android Feature Flag Creator. "
-      "If arguments are not provided, the script will prompt interactively.",
-      formatter_class=argparse.RawTextHelpFormatter)
+    description="New Chrome Android Feature Flag Creator. "
+    "If arguments are not provided, the script will prompt interactively.",
+    formatter_class=argparse.RawTextHelpFormatter,
+  )
 
   parser.add_argument(
-      '--name',
-      type=str,
-      help='Internal feature flag name (e.g., MyNewFeatureFlag).')
-  parser.add_argument('--display-name',
-                      type=str,
-                      help='User-facing name for chrome://flags.')
-  parser.add_argument('--description',
-                      type=str,
-                      help='Description for chrome://flags.')
+    '--name',
+    type=str,
+    help='Internal feature flag name (e.g., MyNewFeatureFlag).',
+  )
   parser.add_argument(
-      '--owners',
-      type=str,
-      help=('Additional owners as a comma-separated list of emails '
-            '(e.g., "user1@a.com,user2@b.com").'))
+    '--display-name', type=str, help='User-facing name for chrome://flags.'
+  )
   parser.add_argument(
-      '--milestone',
-      type=int,
-      help='The expiry milestone as a positive whole number (e.g., 152).')
+    '--description', type=str, help='Description for chrome://flags.'
+  )
+  parser.add_argument(
+    '--owners',
+    type=str,
+    help=(
+      'Additional owners as a comma-separated list of emails '
+      '(e.g., "user1@a.com,user2@b.com").'
+    ),
+  )
+  parser.add_argument(
+    '--milestone',
+    type=int,
+    help='The expiry milestone as a positive whole number (e.g., 152).',
+  )
 
   return parser.parse_args()
 
@@ -593,20 +665,22 @@ def main():
   user_provided_flag_name = args.name
   while not user_provided_flag_name:
     user_provided_flag_name = input(
-        "\nEnter the internal feature flag name (e.g., MyNewFeatureFlag): "
+      "\nEnter the internal feature flag name (e.g., MyNewFeatureFlag): "
     ).strip()
     if not user_provided_flag_name:
       print("The internal name cannot be empty.")
 
   # 2. Get the user-facing name
   display_name = args.display_name
-  default_display_name = re.sub(r'([a-z])([A-Z])', r'\1 \2',
-                                user_provided_flag_name)
+  default_display_name = re.sub(
+    r'([a-z])([A-Z])', r'\1 \2', user_provided_flag_name
+  )
 
   if not display_name:
     display_name = input(
-        f"Enter the user-facing name for chrome://flags "
-        f"(press Enter for default: '{default_display_name}'): ").strip()
+      f"Enter the user-facing name for chrome://flags "
+      f"(press Enter for default: '{default_display_name}'): "
+    ).strip()
     if not display_name:
       display_name = default_display_name
 
@@ -616,8 +690,9 @@ def main():
 
   if not description:
     description = input(
-        f"Enter the description for chrome://flags "
-        f"(press Enter for default: '{default_description}'): ").strip()
+      f"Enter the description for chrome://flags "
+      f"(press Enter for default: '{default_description}'): "
+    ).strip()
     if not description:
       description = default_description
 
@@ -628,12 +703,14 @@ def main():
   if not additional_owners_input:
     print(f"\nYou ({current_user}) will be added as an owner automatically.")
     additional_owners_input = input(
-        "Enter any additional owners as a comma-separated list of emails "
-        "(or press Enter to skip): ").strip()
+      "Enter any additional owners as a comma-separated list of emails "
+      "(or press Enter to skip): "
+    ).strip()
 
   additional_owners = [
-      owner.strip() for owner in additional_owners_input.split(',')
-      if owner.strip()
+    owner.strip()
+    for owner in additional_owners_input.split(',')
+    if owner.strip()
   ]
 
   # Remove duplicates while preserving the order of the first occurrence.
@@ -651,7 +728,8 @@ def main():
   # Ensure milestone is a positive integer
   while not isinstance(expiry_milestone, int) or expiry_milestone <= 0:
     milestone_input = input(
-        "Enter the expiry milestone as a number (e.g., 152): ").strip()
+      "Enter the expiry milestone as a number (e.g., 152): "
+    ).strip()
     if milestone_input.isdigit():
       expiry_milestone = int(milestone_input)
     else:
@@ -664,8 +742,13 @@ def main():
   print(f"  - Owners:        {all_owners}")
   print(f"  - Milestone:     {expiry_milestone}")
 
-  add_chrome_android_feature_flag(user_provided_flag_name, display_name,
-                                  description, all_owners, expiry_milestone)
+  add_chrome_android_feature_flag(
+    user_provided_flag_name,
+    display_name,
+    description,
+    all_owners,
+    expiry_milestone,
+  )
 
 
 if __name__ == "__main__":

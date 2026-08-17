@@ -10,7 +10,6 @@ import match_util
 
 
 class MatchHelperTest(unittest.TestCase):
-
   def testExpandRegexIdentifierPlaceholder(self):
     def matches(pattern, target):
       regex = re.compile(match_util.ExpandRegexIdentifierPlaceholder(pattern))

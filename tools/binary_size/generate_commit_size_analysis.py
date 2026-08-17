@@ -14,12 +14,15 @@ import shutil
 import subprocess
 
 _SRC_ROOT = os.path.normpath(
-    os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
-_RESOURCE_SIZES_PATH = os.path.join(_SRC_ROOT, 'build', 'android',
-                                    'resource_sizes.py')
+  os.path.join(os.path.dirname(__file__), os.pardir, os.pardir)
+)
+_RESOURCE_SIZES_PATH = os.path.join(
+  _SRC_ROOT, 'build', 'android', 'resource_sizes.py'
+)
 _BINARY_SIZE_DIR = os.path.join(_SRC_ROOT, 'tools', 'binary_size')
-_CLANG_UPDATE_PATH = os.path.join(_SRC_ROOT, 'tools', 'clang', 'scripts',
-                                  'update.py')
+_CLANG_UPDATE_PATH = os.path.join(
+  _SRC_ROOT, 'tools', 'clang', 'scripts', 'update.py'
+)
 
 
 def _copy_files_to_staging_dir(files_to_copy, make_staging_path):
@@ -28,33 +31,36 @@ def _copy_files_to_staging_dir(files_to_copy, make_staging_path):
     shutil.copy(filename, make_staging_path(filename))
 
 
-def _generate_resource_sizes(to_resource_sizes_py, make_chromium_output_path,
-                             make_staging_path, filename):
+def _generate_resource_sizes(
+  to_resource_sizes_py, make_chromium_output_path, make_staging_path, filename
+):
   """Creates results-chart.json as $staging_dir/$filename"""
   cmd = [
-      _RESOURCE_SIZES_PATH,
-      make_chromium_output_path(to_resource_sizes_py['apk_name']),
-      '--output-format=chartjson',
-      '--chromium-output-directory',
-      make_chromium_output_path(),
-      '--output-dir',
-      make_staging_path(),
+    _RESOURCE_SIZES_PATH,
+    make_chromium_output_path(to_resource_sizes_py['apk_name']),
+    '--output-format=chartjson',
+    '--chromium-output-directory',
+    make_chromium_output_path(),
+    '--output-dir',
+    make_staging_path(),
   ]
   FORWARDED_PARAMS = [
-      ('--trichrome-library', make_chromium_output_path, 'trichrome_library'),
-      ('--trichrome-chrome', make_chromium_output_path, 'trichrome_chrome'),
-      ('--trichrome-webview', make_chromium_output_path, 'trichrome_webview'),
+    ('--trichrome-library', make_chromium_output_path, 'trichrome_library'),
+    ('--trichrome-chrome', make_chromium_output_path, 'trichrome_chrome'),
+    ('--trichrome-webview', make_chromium_output_path, 'trichrome_webview'),
   ]
   for switch, fun, key in FORWARDED_PARAMS:
     if key in to_resource_sizes_py:
       cmd += [switch, fun(to_resource_sizes_py[key])]
   subprocess.run(cmd, check=True)
-  os.rename(make_staging_path('results-chart.json'),
-            make_staging_path(filename))
+  os.rename(
+    make_staging_path('results-chart.json'), make_staging_path(filename)
+  )
 
 
-def _generate_supersize_archive(supersize_input_file, make_chromium_output_path,
-                                make_staging_path):
+def _generate_supersize_archive(
+  supersize_input_file, make_chromium_output_path, make_staging_path
+):
   """Creates a .size file for the given .apk or .minimal.apks"""
   supersize_input_path = make_chromium_output_path(supersize_input_file)
   size_path = make_staging_path(supersize_input_file) + '.size'
@@ -62,15 +68,15 @@ def _generate_supersize_archive(supersize_input_file, make_chromium_output_path,
   supersize_script_path = os.path.join(_BINARY_SIZE_DIR, 'supersize')
 
   subprocess.run(
-      [
-          supersize_script_path,
-          'archive',
-          size_path,
-          '-f',
-          supersize_input_path,
-          '-v',
-      ],
-      check=True,
+    [
+      supersize_script_path,
+      'archive',
+      size_path,
+      '-f',
+      supersize_input_path,
+      '-v',
+    ],
+    check=True,
   )
 
 
@@ -96,15 +102,21 @@ def main():
   #          * trichrome_webview: --trichrome-webview param (Trichrome only).
   #        * supersize_input_file: Main input for SuperSize.
 
-  parser.add_argument('--size-config-json',
-                      required=True,
-                      help='Path to android_size_bot_config JSON')
-  parser.add_argument('--chromium-output-directory',
-                      required=True,
-                      help='Location of the build artifacts.')
-  parser.add_argument('--staging-dir',
-                      required=True,
-                      help='Directory to write generated files to.')
+  parser.add_argument(
+    '--size-config-json',
+    required=True,
+    help='Path to android_size_bot_config JSON',
+  )
+  parser.add_argument(
+    '--chromium-output-directory',
+    required=True,
+    help='Location of the build artifacts.',
+  )
+  parser.add_argument(
+    '--staging-dir',
+    required=True,
+    help='Directory to write generated files to.',
+  )
   args = parser.parse_args()
 
   with open(args.size_config_json, 'rt') as fh:
@@ -135,15 +147,24 @@ def main():
 
   config_32 = config.get('to_resource_sizes_py')
   if config_32:
-    _generate_resource_sizes(config_32, make_chromium_output_path,
-                             make_staging_path, 'resource_sizes_32.json')
+    _generate_resource_sizes(
+      config_32,
+      make_chromium_output_path,
+      make_staging_path,
+      'resource_sizes_32.json',
+    )
   config_64 = config.get('to_resource_sizes_py_64')
   if config_64:
-    _generate_resource_sizes(config_64, make_chromium_output_path,
-                             make_staging_path, 'resource_sizes_64.json')
+    _generate_resource_sizes(
+      config_64,
+      make_chromium_output_path,
+      make_staging_path,
+      'resource_sizes_64.json',
+    )
 
-  _generate_supersize_archive(supersize_input_file, make_chromium_output_path,
-                              make_staging_path)
+  _generate_supersize_archive(
+    supersize_input_file, make_chromium_output_path, make_staging_path
+  )
 
 
 if __name__ == '__main__':

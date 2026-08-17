@@ -50,11 +50,11 @@ class Command(cr.Plugin, cr.Plugin.Type):
       the parser that was built for the command.
     """
     self.parser = subparsers.add_parser(
-        self.name,
-        add_help=False,
-        help=self.help,
-        description=self.description or self.help,
-        epilog=self.epilog,
+      self.name,
+      add_help=False,
+      help=self.help,
+      description=self.description or self.help,
+      epilog=self.epilog,
     )
     self.parser.set_defaults(_command=self)
     cr.context.AddCommonArguments(self.parser)
@@ -71,9 +71,10 @@ class Command(cr.Plugin, cr.Plugin.Type):
       reason: The reason to give the user in the help text.
     """
     parser.add_argument(
-        '_remains', metavar='arguments',
-        nargs=argparse.REMAINDER,
-        help='The additional arguments to {0}.'.format(reason)
+      '_remains',
+      metavar='arguments',
+      nargs=argparse.REMAINDER,
+      help='The additional arguments to {0}.'.format(reason),
     )
 
   def EarlyArgProcessing(self):

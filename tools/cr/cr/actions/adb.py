@@ -40,11 +40,16 @@ class Adb(object):
     """Invoke a target binary on the device."""
     with target:
       cr.Host.Execute(
-          '{CR_ADB}', 'shell', 'am', 'start',
-          '-a', '{CR_ACTION}',
-          '-n', '{CR_INTENT}',
-          '{CR_RUN_ARGUMENTS}',
-          *arguments
+        '{CR_ADB}',
+        'shell',
+        'am',
+        'start',
+        '-a',
+        '{CR_ACTION}',
+        '-n',
+        '{CR_INTENT}',
+        '{CR_RUN_ARGUMENTS}',
+        *arguments,
       )
 
   @classmethod
@@ -65,41 +70,28 @@ class Adb(object):
   @classmethod
   def Uninstall(cls, target, arguments):
     with target:
-      cr.Host.Execute(
-          '{CR_ADB}', 'uninstall',
-          '{CR_PACKAGE}',
-          *arguments
-      )
+      cr.Host.Execute('{CR_ADB}', 'uninstall', '{CR_PACKAGE}', *arguments)
 
   @classmethod
   def Install(cls, target, arguments):
     with target:
-      cr.Host.Execute(
-          '{CR_ADB}', 'install',
-          '{CR_BINARY}',
-          *arguments
-      )
+      cr.Host.Execute('{CR_ADB}', 'install', '{CR_BINARY}', *arguments)
 
   @classmethod
   def Reinstall(cls, target, arguments):
     with target:
-      cr.Host.Execute(
-          '{CR_ADB}', 'install',
-          '-r',
-          '{CR_BINARY}',
-          *arguments
-      )
+      cr.Host.Execute('{CR_ADB}', 'install', '-r', '{CR_BINARY}', *arguments)
 
   @classmethod
   def AttachGdb(cls, target, arguments):
     with target:
       cr.Host.Execute(
-          '{CR_ADB_GDB}',
-          '--adb={CR_ADB}',
-          '--symbol-dir=${CR_BUILD_DIR}/lib',
-          '--program-name={CR_TARGET_NAME}',
-          '--package-name={CR_PACKAGE}',
-          *arguments
+        '{CR_ADB_GDB}',
+        '--adb={CR_ADB}',
+        '--symbol-dir=${CR_BUILD_DIR}/lib',
+        '--program-name={CR_TARGET_NAME}',
+        '--package-name={CR_PACKAGE}',
+        *arguments,
       )
 
 
@@ -125,10 +117,12 @@ class AdbRunner(cr.Runner):
       else:
         target_name_flag = '-s'
       cr.Host.Execute(
-          '{CR_TEST_RUNNER}', test_type,
-          target_name_flag, '{CR_TARGET_NAME}',
-          '--{CR_TEST_MODE}',
-          *arguments
+        '{CR_TEST_RUNNER}',
+        test_type,
+        target_name_flag,
+        '{CR_TARGET_NAME}',
+        '--{CR_TEST_MODE}',
+        *arguments,
       )
 
 

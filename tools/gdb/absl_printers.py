@@ -8,7 +8,8 @@ import gdb.printing
 import os
 
 sys.path.insert(
-    1, os.path.join(os.path.dirname(os.path.abspath(__file__)), 'util'))
+  1, os.path.join(os.path.dirname(os.path.abspath(__file__)), 'util')
+)
 import reload_helper
 
 
@@ -42,7 +43,8 @@ class SwissTablePrinter(object):
       base = _base_classes(base)[0]
     policy_type_name = base.template_argument(0).name
     self._is_flat = policy_type_name.startswith(
-        'absl::container_internal::FlatHash')
+      'absl::container_internal::FlatHash'
+    )
     slot_type_name = f'{base.name}::slot_type'
     self._slot_type_ptr = gdb.lookup_type(slot_type_name).pointer()
 
@@ -91,29 +93,33 @@ class SwissTablePrinter(object):
 
   def num_children(self, max_count):
     del max_count
-    if (self.is_map):
+    if self.is_map:
       return int(self._size()) * 2
     return int(self._size())
 
 
 class FlatHashSetPrinter(SwissTablePrinter):
   """Pretty-printer for flat_hash_set."""
+
   short_type_name = 'flat_hash_set'
 
 
 class FlatHashMapPrinter(SwissTablePrinter):
   """Pretty-printer for flat_hash_map."""
+
   short_type_name = 'flat_hash_map'
   is_map = True
 
 
 class NodeHashSetPrinter(SwissTablePrinter):
   """Pretty-printer for node_hash_set."""
+
   short_type_name = 'node_hash_set'
 
 
 class NodeHashMapPrinter(SwissTablePrinter):
   """Pretty-printer for node_hash_map."""
+
   short_type_name = 'node_hash_map'
   is_map = True
 

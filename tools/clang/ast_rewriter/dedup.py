@@ -32,10 +32,10 @@ def filter_path(path):
   Examine a path and return true if we want to filter it out,
   e.g. because it's in third_party. Feel free to customize the logic.
   """
-  if (any(exclude in path for exclude in paths_to_exclude)):
+  if any(exclude in path for exclude in paths_to_exclude):
     return True
 
-  if (not any(include in path for include in paths_to_include)):
+  if not any(include in path for include in paths_to_include):
     return True
 
   return False
@@ -43,13 +43,13 @@ def filter_path(path):
 
 ### Actual work
 def ProcessFile(filename, deduped_contents, unique_paths):
-  """ Read every replacement in a file, normalizing paths and removing
-      duplicates, as well as any paths we choose to filter out. Keep track
-      of all unique paths we see so we know which files to add headers to.
+  """Read every replacement in a file, normalizing paths and removing
+  duplicates, as well as any paths we choose to filter out. Keep track
+  of all unique paths we see so we know which files to add headers to.
 
-      filename: the name of the file to be processed
-      deduped_contents: the set of replacements we've already processed
-      unique_paths: the set of unique replacement paths we've seen.
+  filename: the name of the file to be processed
+  deduped_contents: the set of replacements we've already processed
+  unique_paths: the set of unique replacement paths we've seen.
   """
   with open(filename) as f:
     for line in f.readlines():
@@ -82,7 +82,8 @@ def DedupFiles(filenames):
   for path in unique_paths:
     for header in headers_to_add:
       deduped_contents.add(
-          f"include-user-header:::{path}:::-1:::-1:::{header}\n")
+        f"include-user-header:::{path}:::-1:::-1:::{header}\n"
+      )
 
   output_file = "deduped.txt"
   WriteFile(output_file, sorted(deduped_contents))

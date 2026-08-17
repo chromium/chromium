@@ -11,7 +11,7 @@ import subprocess
 import sys
 
 _CLANG_WRAPPER_CMD_LINE_RE = re.compile(
-    r'''
+  r'''
     (
       (?P<rewrapper>.*rewrapper(\.exe)?"?\s+)
       # rewrapper may have args between it and clang.
@@ -34,7 +34,9 @@ _CLANG_WRAPPER_CMD_LINE_RE = re.compile(
     (?!\w)                        # Boundary to reject unexpected trailing text (like '_wrapper').
     \s+
     (?P<args>.*)
-    ''', re.VERBOSE)
+    ''',
+  re.VERBOSE,
+)
 _debugging = False
 
 
@@ -42,14 +44,14 @@ def _IsTargettingWindows(target_os):
   if target_os is not None:
     # Available choices are based on: gn help target_os
     assert target_os in [
-        'android',
-        'chromeos',
-        'fuchsia',
-        'ios',
-        'linux',
-        'mac',
-        'nacl',
-        'win',
+      'android',
+      'chromeos',
+      'fuchsia',
+      'ios',
+      'linux',
+      'mac',
+      'nacl',
+      'win',
     ]
     return target_os == 'win'
   return sys.platform == 'win32'
@@ -59,27 +61,27 @@ def _FilterFlags(command, additional_filtered_flags):
   # Dictionary from flags to filter, to the number of additional arguments each
   # flag consumes (so we can remove any flag parameters).
   flags_to_filter = {
-      # These are Visual Studio-specific arguments not recognized or used by
-      # some third-party clang tooling. They only suppress or activate graphical
-      # output anyway.
-      '/nologo': 0,
-      '/showIncludes': 0,
-      # Drop frontend-only arguments, which generally aren't needed by clang
-      # tooling.
-      '-Xclang': 1,
-      # This is used for profiling-guided optimizations. Not necessary by tools,
-      # and clangd complains it cannot find the referenced profile file.
-      '-fprofile-sample-use': 1,
-      '-fprofile-use': 1,
-      # This flag is only usable with -fprofile-sample-use excluded above.
-      # Exclude it to avoid having an unused-command-line-argument error.
-      '-fsample-profile-use-profi': 1,
-      # Clang modules don't play particularly well with clangd.
-      # To solve this, we simply need to remove all references to modulemaps and
-      # to modules.
-      '-fbuiltin-module-map': 0,
-      '-fmodule-map-file': 1,
-      '-fmodule-file': 1,
+    # These are Visual Studio-specific arguments not recognized or used by
+    # some third-party clang tooling. They only suppress or activate graphical
+    # output anyway.
+    '/nologo': 0,
+    '/showIncludes': 0,
+    # Drop frontend-only arguments, which generally aren't needed by clang
+    # tooling.
+    '-Xclang': 1,
+    # This is used for profiling-guided optimizations. Not necessary by tools,
+    # and clangd complains it cannot find the referenced profile file.
+    '-fprofile-sample-use': 1,
+    '-fprofile-use': 1,
+    # This flag is only usable with -fprofile-sample-use excluded above.
+    # Exclude it to avoid having an unused-command-line-argument error.
+    '-fsample-profile-use-profi': 1,
+    # Clang modules don't play particularly well with clangd.
+    # To solve this, we simply need to remove all references to modulemaps and
+    # to modules.
+    '-fbuiltin-module-map': 0,
+    '-fmodule-map-file': 1,
+    '-fmodule-file': 1,
   }
   # Add user-added flags. We only support flags with no parameters here.
   if additional_filtered_flags:
@@ -99,8 +101,10 @@ def _FilterFlags(command, additional_filtered_flags):
       if expected_params == 1:
         continue
       elif _debugging:
-        print("Expecting %s to have %d parameters, but got 1" %
-              (split_flag[0], expected_params))
+        print(
+          "Expecting %s to have %d parameters, but got 1"
+          % (split_flag[0], expected_params)
+        )
         print("The flag will be kept in the command!")
     # Handle regular parameters.
     if command_part in flags_to_filter:
@@ -175,8 +179,10 @@ def ProcessCompileDatabase(compile_db, filtered_args, target_os=None):
   # Filter out NaCl stuff. The clang tooling chokes on them.
   # TODO(dcheng): This doesn't appear to do anything anymore, remove?
   compile_db = [
-      e for e in compile_db if '_nacl.cc.pdb' not in e['command']
-      and '_nacl_win64.cc.pdb' not in e['command']
+    e
+    for e in compile_db
+    if '_nacl.cc.pdb' not in e['command']
+    and '_nacl_win64.cc.pdb' not in e['command']
   ]
   if _debugging:
     print('Filtered out %d entries...' % (original_length - len(compile_db)))
@@ -188,8 +194,16 @@ def ProcessCompileDatabase(compile_db, filtered_args, target_os=None):
 
 def GetNinjaPath():
   ninja_executable = 'ninja.exe' if sys.platform == 'win32' else 'ninja'
-  return os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', '..',
-                      '..', '..', 'third_party', 'ninja', ninja_executable)
+  return os.path.join(
+    os.path.dirname(os.path.realpath(__file__)),
+    '..',
+    '..',
+    '..',
+    '..',
+    'third_party',
+    'ninja',
+    ninja_executable,
+  )
 
 
 # FIXME: This really should be a build target, rather than generated at runtime.
@@ -212,8 +226,10 @@ def GenerateWithNinja(path, targets=None):
   if targets is None:
     targets = []
   json_compile_db = subprocess.check_output(
-      [ninja_path, '-C', path] + targets +
-      ['-t', 'compdb', '-x', 'cc', 'cxx', 'objc', 'objcxx'])
+    [ninja_path, '-C', path]
+    + targets
+    + ['-t', 'compdb', '-x', 'cc', 'cxx', 'objc', 'objcxx']
+  )
   return json.loads(json_compile_db)
 
 

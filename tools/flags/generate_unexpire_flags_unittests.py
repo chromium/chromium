@@ -13,8 +13,10 @@ class TestUnexpireGenerator(unittest.TestCase):
 
   def read_golden_file(self, extension):
     with open(
-        os.path.join(os.path.dirname(__file__),
-                     'unexpire_test.' + extension + '.expected')) as f:
+      os.path.join(
+        os.path.dirname(__file__), 'unexpire_test.' + extension + '.expected'
+      )
+    ) as f:
       return f.read()
 
   def testCcFile(self):

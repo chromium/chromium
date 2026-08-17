@@ -36,7 +36,8 @@ class _MissingToErrorFormatter(string.Formatter):
         raise KeyError('unknown')
       return result
     return super(_MissingToErrorFormatter, self).convert_field(
-        value, conversion)
+      value, conversion
+    )
 
 
 class _Tracer(object):
@@ -97,6 +98,7 @@ class Config(cr.visitor.Node, cr.loader.AutoExport):
     Returns:
         A dynamic value.
     """
+
     def Resolve(base):
       test = base.Get(condition)
       if test:
@@ -104,6 +106,7 @@ class Config(cr.visitor.Node, cr.loader.AutoExport):
       else:
         value = false_value
       return base.Substitute(value)
+
     return Resolve
 
   @classmethod
@@ -116,11 +119,13 @@ class Config(cr.visitor.Node, cr.loader.AutoExport):
     Returns:
         value if it resolves, alternate otherwise.
     """
+
     def Resolve(base):
       try:
         return base.Substitute(value)
       except KeyError:
         return base.Substitute(alternate)
+
     return Resolve
 
   def __init__(self, name='--', literal=False, export=None, enabled=True):

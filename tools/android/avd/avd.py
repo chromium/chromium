@@ -13,7 +13,8 @@ import signal
 import sys
 
 _SRC_ROOT = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), '..', '..', '..'))
+  os.path.join(os.path.dirname(__file__), '..', '..', '..')
+)
 
 sys.path.append(os.path.join(_SRC_ROOT, 'third_party', 'catapult', 'devil'))
 from devil.android.tools import script_common
@@ -39,8 +40,7 @@ class _Process:
 def _detect_emulator_processes():
   serials = [adb.GetDeviceSerial() for adb in adb_wrapper.AdbWrapper.Devices()]
   emulator_ports = {
-      int(s.split('-')[-1])
-      for s in serials if s.startswith('emulator-')
+    int(s.split('-')[-1]) for s in serials if s.startswith('emulator-')
   }
   if not emulator_ports:
     return []
@@ -49,13 +49,14 @@ def _detect_emulator_processes():
     if p.status == psutil.CONN_LISTEN and p.laddr.port in emulator_ports:
       if p.pid is None:
         logging.warning(
-            'Skipping emulator on port %s because PID cannot be '
-            'determined (insufficient privileges?).', p.laddr.port)
+          'Skipping emulator on port %s because PID cannot be '
+          'determined (insufficient privileges?).',
+          p.laddr.port,
+        )
       else:
         found.add((p.pid, p.laddr.port))
   return [
-      _Process(x[0], x[1],
-               psutil.Process(x[0]).cmdline()[0]) for x in found
+    _Process(x[0], x[1], psutil.Process(x[0]).cmdline()[0]) for x in found
   ]
 
 
@@ -67,11 +68,13 @@ def _avd_procs_for_config(path, avd_procs):
 
 
 def _add_avd_config_argument(parser, required=True):
-  parser.add_argument('--avd-config',
-                      type=os.path.realpath,
-                      metavar='PATH',
-                      required=required,
-                      help='Path to an AVD config text protobuf.')
+  parser.add_argument(
+    '--avd-config',
+    type=os.path.realpath,
+    metavar='PATH',
+    required=required,
+    help='Path to an AVD config text protobuf.',
+  )
 
 
 def _add_common_arguments(parser):
@@ -98,8 +101,8 @@ def main(raw_args):
 
   subparsers = parser.add_subparsers()
   subparser = subparsers.add_parser(
-      'install',
-      help='Install the CIPD packages specified in the given config.')
+    'install', help='Install the CIPD packages specified in the given config.'
+  )
   _add_common_arguments(subparser)
   _add_avd_config_argument(subparser)
 
@@ -110,8 +113,9 @@ def main(raw_args):
   subparser.set_defaults(func=install_cmd)
 
   subparser = subparsers.add_parser(
-      'uninstall',
-      help='Uninstall all the artifacts associated with the given config.')
+    'uninstall',
+    help='Uninstall all the artifacts associated with the given config.',
+  )
   _add_common_arguments(subparser)
   _add_avd_config_argument(subparser)
 
@@ -122,138 +126,159 @@ def main(raw_args):
   subparser.set_defaults(func=uninstall_cmd)
 
   subparser = subparsers.add_parser(
-      'create',
-      help='Create an AVD CIPD package according to the given config.')
+    'create', help='Create an AVD CIPD package according to the given config.'
+  )
   _add_common_arguments(subparser)
   _add_avd_config_argument(subparser)
   subparser.add_argument(
-      '--avd-variant',
-      help='The name of the AVD variant to use during creation. Will error out '
-      'if the name is set but avd config has no variants or the name is not '
-      'found in the avd config.')
+    '--avd-variant',
+    help='The name of the AVD variant to use during creation. Will error out '
+    'if the name is set but avd config has no variants or the name is not '
+    'found in the avd config.',
+  )
   subparser.add_argument(
-      '--snapshot',
-      action='store_true',
-      help='Snapshot the AVD before creating the CIPD package.')
+    '--snapshot',
+    action='store_true',
+    help='Snapshot the AVD before creating the CIPD package.',
+  )
   subparser.add_argument(
-      '--force',
-      action='store_true',
-      help='Pass --force to AVD creation. This is useful when an AVD with '
-      'the same name already exists.')
-  subparser.add_argument('--keep',
-                         action='store_true',
-                         help='Keep the AVD after creating the CIPD package.')
+    '--force',
+    action='store_true',
+    help='Pass --force to AVD creation. This is useful when an AVD with '
+    'the same name already exists.',
+  )
   subparser.add_argument(
-      '--privileged-apk',
-      action='append',
-      default=[],
-      dest='privileged_apk_pairs',
-      nargs=2,
-      metavar=('APK_PATH', 'DEVICE_PARTITION'),
-      help='Privileged apks to be installed during AVD launching. Expecting '
-      'two strings where the first element being the path to the APK, and the '
-      'second element being the system image partition on device where the APK '
-      'will be pushed to. Example: --privileged-apk path/to/some.apk /system')
+    '--keep',
+    action='store_true',
+    help='Keep the AVD after creating the CIPD package.',
+  )
   subparser.add_argument(
-      '--additional-apk',
-      action='append',
-      default=[],
-      dest='additional_apks',
-      metavar='APK_PATH',
-      type=os.path.realpath,
-      help='Additional apk to be installed during AVD launching')
+    '--privileged-apk',
+    action='append',
+    default=[],
+    dest='privileged_apk_pairs',
+    nargs=2,
+    metavar=('APK_PATH', 'DEVICE_PARTITION'),
+    help='Privileged apks to be installed during AVD launching. Expecting '
+    'two strings where the first element being the path to the APK, and the '
+    'second element being the system image partition on device where the APK '
+    'will be pushed to. Example: --privileged-apk path/to/some.apk /system',
+  )
   subparser.add_argument(
-      '--cipd-json-output',
-      type=os.path.realpath,
-      metavar='PATH',
-      help='Path to which `cipd create` should dump json output '
-      'via -json-output.')
+    '--additional-apk',
+    action='append',
+    default=[],
+    dest='additional_apks',
+    metavar='APK_PATH',
+    type=os.path.realpath,
+    help='Additional apk to be installed during AVD launching',
+  )
   subparser.add_argument(
-      '--dry-run',
-      action='store_true',
-      help='Skip the CIPD package creation after creating the AVD.')
+    '--cipd-json-output',
+    type=os.path.realpath,
+    metavar='PATH',
+    help='Path to which `cipd create` should dump json output '
+    'via -json-output.',
+  )
+  subparser.add_argument(
+    '--dry-run',
+    action='store_true',
+    help='Skip the CIPD package creation after creating the AVD.',
+  )
 
   def create_cmd(args):
     avd_config = avd.AvdConfig(args.avd_config)
     avd_config.Create(
-        avd_variant_name=args.avd_variant,
-        force=args.force,
-        snapshot=args.snapshot,
-        keep=args.keep,
-        additional_apks=args.additional_apks,
-        privileged_apk_tuples=[tuple(p) for p in args.privileged_apk_pairs],
-        cipd_json_output=args.cipd_json_output,
-        dry_run=args.dry_run)
+      avd_variant_name=args.avd_variant,
+      force=args.force,
+      snapshot=args.snapshot,
+      keep=args.keep,
+      additional_apks=args.additional_apks,
+      privileged_apk_tuples=[tuple(p) for p in args.privileged_apk_pairs],
+      cipd_json_output=args.cipd_json_output,
+      dry_run=args.dry_run,
+    )
     return 0
 
   subparser.set_defaults(func=create_cmd)
 
   subparser = subparsers.add_parser(
-      'start',
-      help='Start an AVD instance with the given config.',
-      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    'start',
+    help='Start an AVD instance with the given config.',
+    formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+  )
   _add_common_arguments(subparser)
   _add_avd_config_argument(subparser)
   subparser.add_argument(
-      '--wipe-data',
-      action='store_true',
-      default=False,
-      help='Reset user data image for this emulator. Note that when set, all '
-      'the customization, e.g. wifi, additional apks, privileged apks will be '
-      'gone')
+    '--wipe-data',
+    action='store_true',
+    default=False,
+    help='Reset user data image for this emulator. Note that when set, all '
+    'the customization, e.g. wifi, additional apks, privileged apks will be '
+    'gone',
+  )
   subparser.add_argument(
-      '--read-only',
-      action='store_true',
-      help='Allowing running multiple instances of emulators on the same AVD, '
-      'but cannot save snapshot. This will be forced to False if emulator '
-      'has a system snapshot.')
-  subparser.add_argument('--no-read-only',
-                         action='store_false',
-                         dest='read_only')
+    '--read-only',
+    action='store_true',
+    help='Allowing running multiple instances of emulators on the same AVD, '
+    'but cannot save snapshot. This will be forced to False if emulator '
+    'has a system snapshot.',
+  )
+  subparser.add_argument(
+    '--no-read-only', action='store_false', dest='read_only'
+  )
   # TODO(crbug.com/40208043): Default to False when AVDs with sideloaded
   # system apks are rolled.
   subparser.set_defaults(read_only=True)
   subparser.add_argument(
-      '--writable-system',
-      action='store_true',
-      default=False,
-      help='Makes system & vendor image writable after adb remount. This will '
-      'be forced to True, if emulator has a system snapshot.')
+    '--writable-system',
+    action='store_true',
+    default=False,
+    help='Makes system & vendor image writable after adb remount. This will '
+    'be forced to True, if emulator has a system snapshot.',
+  )
   subparser.add_argument(
-      '--emulator-window',
-      action='store_true',
-      default=False,
-      help='Enable graphical window display on the emulator.')
+    '--emulator-window',
+    action='store_true',
+    default=False,
+    help='Enable graphical window display on the emulator.',
+  )
   subparser.add_argument(
-      '--gpu-mode',
-      help='Override the mode of hardware OpenGL ES emulation indicated by the '
-      'AVD. See "emulator -help-gpu" for a full list of modes. Note when set '
-      'to "host", it needs a valid DISPLAY env, even if "--emulator-window" is '
-      'false, and it will not work under remote sessions like chrome remote '
-      'desktop.')
+    '--gpu-mode',
+    help='Override the mode of hardware OpenGL ES emulation indicated by the '
+    'AVD. See "emulator -help-gpu" for a full list of modes. Note when set '
+    'to "host", it needs a valid DISPLAY env, even if "--emulator-window" is '
+    'false, and it will not work under remote sessions like chrome remote '
+    'desktop.',
+  )
   subparser.add_argument(
-      '--debug-tags',
-      help='Comma-separated list of debug tags. This can be used to enable or '
-      'disable debug messages from specific parts of the emulator, e.g. '
-      'init,snapshot. See "emulator -help-debug-tags" '
-      'for a full list of tags.')
+    '--debug-tags',
+    help='Comma-separated list of debug tags. This can be used to enable or '
+    'disable debug messages from specific parts of the emulator, e.g. '
+    'init,snapshot. See "emulator -help-debug-tags" '
+    'for a full list of tags.',
+  )
   subparser.add_argument(
-      '--disk-size',
-      help='Override the default disk size for the emulator instance.')
+    '--disk-size',
+    help='Override the default disk size for the emulator instance.',
+  )
   subparser.add_argument(
-      '--enable-network',
-      action='store_true',
-      help='Enable the network (WiFi and mobile data) on the emulator.')
+    '--enable-network',
+    action='store_true',
+    help='Enable the network (WiFi and mobile data) on the emulator.',
+  )
   subparser.add_argument(
-      '--require-fast-start',
-      action='store_true',
-      help='Deprecated and will be removed soon. Please use '
-      '"proto/*_local.textpb" avd config files for local development.')
+    '--require-fast-start',
+    action='store_true',
+    help='Deprecated and will be removed soon. Please use '
+    '"proto/*_local.textpb" avd config files for local development.',
+  )
   subparser.add_argument(
-      '--no-mouse-reposition',
-      action='store_true',
-      help= 'Do not reposition the mouse pointer when clicking in the' \
-      'emulator window.')
+    '--no-mouse-reposition',
+    action='store_true',
+    help='Do not reposition the mouse pointer when clicking in the'
+    'emulator window.',
+  )
 
   def start_cmd(args):
     avd_config = avd.AvdConfig(args.avd_config)
@@ -267,37 +292,43 @@ def main(raw_args):
       debug_tags = 'time,init'
 
     inst = avd_config.CreateInstance()
-    inst.Start(read_only=args.read_only,
-               window=args.emulator_window,
-               writable_system=args.writable_system,
-               gpu_mode=args.gpu_mode,
-               wipe_data=args.wipe_data,
-               debug_tags=debug_tags,
-               disk_size=args.disk_size,
-               enable_network=args.enable_network,
-               no_mouse_reposition=args.no_mouse_reposition)
+    inst.Start(
+      read_only=args.read_only,
+      window=args.emulator_window,
+      writable_system=args.writable_system,
+      gpu_mode=args.gpu_mode,
+      wipe_data=args.wipe_data,
+      debug_tags=debug_tags,
+      disk_size=args.disk_size,
+      enable_network=args.enable_network,
+      no_mouse_reposition=args.no_mouse_reposition,
+    )
     print('%s started (pid: %d)' % (str(inst), inst._emulator_proc.pid))
     return 0
 
   subparser.set_defaults(func=start_cmd)
 
   subparser = subparsers.add_parser(
-      'list',
-      help='Shows possible values for --avd-config.',
-      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    'list',
+    help='Shows possible values for --avd-config.',
+    formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+  )
   _add_common_arguments(subparser)
   _add_avd_config_argument(subparser, required=False)
   subparser.add_argument(
-      '--avd-config-dir',
-      type=os.path.realpath,
-      metavar='DIR_PATH',
-      help='Path to the dir that contains the avd config files. '
-      'Default to the sibling dir "proto" of this "avd.py" script, if neither '
-      '"--avd-config-path" nor this argument is set.')
-  subparser.add_argument('--json-output',
-                         type=os.path.realpath,
-                         metavar='PATH',
-                         help='Dump json output to the given path.')
+    '--avd-config-dir',
+    type=os.path.realpath,
+    metavar='DIR_PATH',
+    help='Path to the dir that contains the avd config files. '
+    'Default to the sibling dir "proto" of this "avd.py" script, if neither '
+    '"--avd-config-path" nor this argument is set.',
+  )
+  subparser.add_argument(
+    '--json-output',
+    type=os.path.realpath,
+    metavar='PATH',
+    help='Dump json output to the given path.',
+  )
 
   def list_cmd(args):
     if args.avd_config:
@@ -320,8 +351,9 @@ def main(raw_args):
     for row in metadata:
       cur_avd_procs = _avd_procs_for_config(row['avd_proto_path'], avd_procs)
       row['active_pids'] = ', '.join(str(p.pid) for p in cur_avd_procs)
-      row['active_serials'] = ', '.join(f'emulator-{p.port}'
-                                        for p in cur_avd_procs)
+      row['active_serials'] = ', '.join(
+        f'emulator-{p.port}' for p in cur_avd_procs
+      )
     if args.json_output:
       with open(args.json_output, 'w') as json_file:
         json.dump(metadata, json_file, indent=2)
@@ -333,10 +365,11 @@ def main(raw_args):
   subparser.set_defaults(func=list_cmd)
 
   subparser = subparsers.add_parser(
-      'stop',
-      help='Stops emulators for the given avd config (or all emulators if no '
-      'config is given)',
-      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    'stop',
+    help='Stops emulators for the given avd config (or all emulators if no '
+    'config is given)',
+    formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+  )
   _add_common_arguments(subparser)
   _add_avd_config_argument(subparser, required=False)
 
@@ -372,8 +405,9 @@ def main(raw_args):
 
   logging_common.InitializeLogging(args)
 
-  if sys.platform.startswith('linux') and not os.access('/dev/kvm',
-                                                        os.R_OK | os.W_OK):
+  if sys.platform.startswith('linux') and not os.access(
+    '/dev/kvm', os.R_OK | os.W_OK
+  ):
     logging.warning('WARNING: You do not have read/write access to /dev/kvm.')
 
   devil_chromium.Initialize(adb_path=args.adb_path)

@@ -39,17 +39,25 @@ COMPRESSED_SECTION_NAME = '.compressed_library_data'
 ADDRESS_ALIGN = 0x1000
 
 CUT_RANGE_BEGIN_MAGIC = bytearray(
-    [0x2e, 0x2a, 0xee, 0xf6, 0x45, 0x03, 0xd2, 0x50])
+  [0x2E, 0x2A, 0xEE, 0xF6, 0x45, 0x03, 0xD2, 0x50]
+)
 CUT_RANGE_END_MAGIC = bytearray(
-    [0x52, 0x40, 0xeb, 0x9d, 0xdb, 0x11, 0xed, 0x1a])
+  [0x52, 0x40, 0xEB, 0x9D, 0xDB, 0x11, 0xED, 0x1A]
+)
 COMPRESSED_RANGE_BEGIN_MAGIC = bytearray(
-    [0x5e, 0x49, 0x4a, 0x4c, 0xae, 0x28, 0xc8, 0xbb])
+  [0x5E, 0x49, 0x4A, 0x4C, 0xAE, 0x28, 0xC8, 0xBB]
+)
 COMPRESSED_RANGE_END_MAGIC = bytearray(
-    [0xdd, 0x60, 0xed, 0xcf, 0xc3, 0x29, 0xa6, 0xd6])
+  [0xDD, 0x60, 0xED, 0xCF, 0xC3, 0x29, 0xA6, 0xD6]
+)
 
 # src/third_party/llvm-build/Release+Asserts/bin/llvm-objcopy
-OBJCOPY_PATH = pathlib.Path(__file__).resolve().parents[3].joinpath(
-    'third_party/llvm-build/Release+Asserts/bin/llvm-objcopy')
+OBJCOPY_PATH = (
+  pathlib.Path(__file__)
+  .resolve()
+  .parents[3]
+  .joinpath('third_party/llvm-build/Release+Asserts/bin/llvm-objcopy')
+)
 
 
 def SegmentContains(main_l, main_r, l, r):
@@ -120,29 +128,34 @@ def MatchVaddrAlignment(vaddr, offset, align=ADDRESS_ALIGN):
 
 def _SetupLogging():
   logging.basicConfig(
-      format='%(asctime)s %(filename)s:%(lineno)s %(levelname)s] %(message)s',
-      datefmt='%H:%M:%S',
-      level=logging.ERROR)
+    format='%(asctime)s %(filename)s:%(lineno)s %(levelname)s] %(message)s',
+    datefmt='%H:%M:%S',
+    level=logging.ERROR,
+  )
 
 
 def _ParseArguments():
   parser = argparse.ArgumentParser()
   parser.add_argument(
-      '-i', '--input', help='Shared library to parse', required=True)
+    '-i', '--input', help='Shared library to parse', required=True
+  )
   parser.add_argument(
-      '-o', '--output', help='Name of the output file', required=True)
+    '-o', '--output', help='Name of the output file', required=True
+  )
   parser.add_argument(
-      '-l',
-      '--left_range',
-      help='Beginning of the target part of the library',
-      type=int,
-      required=True)
+    '-l',
+    '--left_range',
+    help='Beginning of the target part of the library',
+    type=int,
+    required=True,
+  )
   parser.add_argument(
-      '-r',
-      '--right_range',
-      help='End (exclusive) of the target part of the library',
-      type=int,
-      required=True)
+    '-r',
+    '--right_range',
+    help='End (exclusive) of the target part of the library',
+    type=int,
+    required=True,
+  )
   return parser.parse_args()
 
 
@@ -154,7 +167,8 @@ def _FileRangeToVirtualAddressRange(data, l, r):
   """
   elf = elf_headers.ElfHeader(data)
   for phdr in elf.GetProgramHeadersByType(
-      elf_headers.ProgramHeader.Type.PT_LOAD):
+    elf_headers.ProgramHeader.Type.PT_LOAD
+  ):
     # Current version of the prototype only supports ranges which are fully
     # contained inside one LOAD segment. It should cover most of the common
     # cases.
@@ -185,14 +199,21 @@ def _CopyRangeIntoCompressedSection(data, l, r):
       f.write(compressed_range)
 
     objcopy_args = [
-        OBJCOPY_PATH, objcopy_input_file, objcopy_output_file, '--add-section',
-        '{}={}'.format(COMPRESSED_SECTION_NAME, objcopy_data_file)
+      OBJCOPY_PATH,
+      objcopy_input_file,
+      objcopy_output_file,
+      '--add-section',
+      '{}={}'.format(COMPRESSED_SECTION_NAME, objcopy_data_file),
     ]
     run_result = subprocess.run(
-        objcopy_args, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
+      objcopy_args, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE
+    )
     if run_result.returncode != 0:
-      raise RuntimeError('objcopy failed with status code {}: {}'.format(
-          run_result.returncode, run_result.stderr))
+      raise RuntimeError(
+        'objcopy failed with status code {}: {}'.format(
+          run_result.returncode, run_result.stderr
+        )
+      )
 
     with open(objcopy_output_file, 'rb') as f:
       data[:] = bytearray(f.read())
@@ -232,21 +253,23 @@ def _MovePhdrToTheEnd(data):
   # AddProgramHeader handling the increase of size due to addition of new
   # header.
   elf_hdr.AddProgramHeader(
-      elf_headers.ProgramHeader.Create(
-          elf_hdr.byte_order,
-          p_type=elf_headers.ProgramHeader.Type.PT_LOAD,
-          p_flags=elf_headers.ProgramHeader.Flags.PF_R,
-          p_offset=new_phoff,
-          p_vaddr=new_vaddr,
-          p_paddr=new_vaddr,
-          p_filesz=current_filesize,
-          p_memsz=current_filesize,
-          p_align=ADDRESS_ALIGN,
-      ))
+    elf_headers.ProgramHeader.Create(
+      elf_hdr.byte_order,
+      p_type=elf_headers.ProgramHeader.Type.PT_LOAD,
+      p_flags=elf_headers.ProgramHeader.Flags.PF_R,
+      p_offset=new_phoff,
+      p_vaddr=new_vaddr,
+      p_paddr=new_vaddr,
+      p_filesz=current_filesize,
+      p_memsz=current_filesize,
+      p_align=ADDRESS_ALIGN,
+    )
+  )
 
   # PHDR segment if it exists should point to the new location.
   for phdr in elf_hdr.GetProgramHeadersByType(
-      elf_headers.ProgramHeader.Type.PT_PHDR):
+    elf_headers.ProgramHeader.Type.PT_PHDR
+  ):
     phdr.p_offset = new_phoff
     phdr.p_vaddr = new_vaddr
     phdr.p_paddr = new_vaddr
@@ -255,7 +278,7 @@ def _MovePhdrToTheEnd(data):
   # We need to replace the previous phdr placement with zero bytes to fail
   # fast if dynamic linker doesn't like the new program header.
   previous_phdr_size = (elf_hdr.e_phnum - 1) * elf_hdr.e_phentsize
-  data[old_phoff:old_phoff + previous_phdr_size] = [0] * previous_phdr_size
+  data[old_phoff : old_phoff + previous_phdr_size] = [0] * previous_phdr_size
 
   # Updating ELF header to point to the new location.
   elf_hdr.PatchData(data)
@@ -276,22 +299,24 @@ def _CreateLoadForCompressedSection(data):
       break
   if section_offset is None:
     raise RuntimeError(
-        'Failed to locate {} section in file'.format(COMPRESSED_SECTION_NAME))
+      'Failed to locate {} section in file'.format(COMPRESSED_SECTION_NAME)
+    )
 
   unaligned_new_vaddr = _FindNewVaddr(elf_hdr.GetProgramHeaders())
   new_vaddr = MatchVaddrAlignment(unaligned_new_vaddr, section_offset)
   elf_hdr.AddProgramHeader(
-      elf_headers.ProgramHeader.Create(
-          elf_hdr.byte_order,
-          p_type=elf_headers.ProgramHeader.Type.PT_LOAD,
-          p_flags=elf_headers.ProgramHeader.Flags.PF_R,
-          p_offset=section_offset,
-          p_vaddr=new_vaddr,
-          p_paddr=new_vaddr,
-          p_filesz=section_size,
-          p_memsz=section_size,
-          p_align=ADDRESS_ALIGN,
-      ))
+    elf_headers.ProgramHeader.Create(
+      elf_hdr.byte_order,
+      p_type=elf_headers.ProgramHeader.Type.PT_LOAD,
+      p_flags=elf_headers.ProgramHeader.Flags.PF_R,
+      p_offset=section_offset,
+      p_vaddr=new_vaddr,
+      p_paddr=new_vaddr,
+      p_filesz=section_size,
+      p_memsz=section_size,
+      p_align=ADDRESS_ALIGN,
+    )
+  )
   elf_hdr.PatchData(data)
   return new_vaddr, new_vaddr + section_size
 
@@ -312,7 +337,8 @@ def _SplitLoadSegmentAndNullifyRange(data, l, r):
 
   range_phdr = None
   for phdr in elf_hdr.GetProgramHeadersByType(
-      elf_headers.ProgramHeader.Type.PT_LOAD):
+    elf_headers.ProgramHeader.Type.PT_LOAD
+  ):
     if SegmentContains(phdr.p_offset, phdr.FilePositionEnd(), l, r):
       range_phdr = phdr
       break
@@ -325,17 +351,18 @@ def _SplitLoadSegmentAndNullifyRange(data, l, r):
   if left_segment_size > 0:
     # Creating LOAD segment containing the [phdr.p_offset, l) part.
     elf_hdr.AddProgramHeader(
-        elf_headers.ProgramHeader.Create(
-            elf_hdr.byte_order,
-            p_type=range_phdr.p_type,
-            p_flags=range_phdr.p_flags,
-            p_offset=range_phdr.p_offset,
-            p_vaddr=range_phdr.p_vaddr,
-            p_paddr=range_phdr.p_paddr,
-            p_filesz=left_segment_size,
-            p_memsz=left_segment_size,
-            p_align=range_phdr.p_align,
-        ))
+      elf_headers.ProgramHeader.Create(
+        elf_hdr.byte_order,
+        p_type=range_phdr.p_type,
+        p_flags=range_phdr.p_flags,
+        p_offset=range_phdr.p_offset,
+        p_vaddr=range_phdr.p_vaddr,
+        p_paddr=range_phdr.p_paddr,
+        p_filesz=left_segment_size,
+        p_memsz=left_segment_size,
+        p_align=range_phdr.p_align,
+      )
+    )
   if range_phdr.p_offset + range_phdr.p_memsz > r:
     # Creating LOAD segment containing the [r, phdr.p_offset + phdr.p_memsz).
     right_segment_delta = r - range_phdr.p_offset
@@ -343,17 +370,18 @@ def _SplitLoadSegmentAndNullifyRange(data, l, r):
     right_segment_filesize = max(range_phdr.p_filesz - right_segment_delta, 0)
     right_segment_memsize = range_phdr.p_memsz - right_segment_delta
     elf_hdr.AddProgramHeader(
-        elf_headers.ProgramHeader.Create(
-            elf_hdr.byte_order,
-            p_type=range_phdr.p_type,
-            p_flags=range_phdr.p_flags,
-            p_offset=r,
-            p_vaddr=right_segment_address,
-            p_paddr=right_segment_address,
-            p_filesz=right_segment_filesize,
-            p_memsz=right_segment_memsize,
-            p_align=range_phdr.p_align,
-        ))
+      elf_headers.ProgramHeader.Create(
+        elf_hdr.byte_order,
+        p_type=range_phdr.p_type,
+        p_flags=range_phdr.p_flags,
+        p_offset=r,
+        p_vaddr=right_segment_address,
+        p_paddr=right_segment_address,
+        p_filesz=right_segment_filesize,
+        p_memsz=right_segment_memsize,
+        p_align=range_phdr.p_align,
+      )
+    )
   # Modifying the range_phdr
   central_segment_address = range_phdr.p_vaddr + left_segment_size
   range_phdr.p_offset = l
@@ -412,18 +440,29 @@ def _CutRangeAndCorrectFile(data, l, r):
   elf.PatchData(data)
 
 
-def _PatchConstructorBytes(data, cut_range_virt_l, cut_range_virt_r,
-                           compressed_range_virt_l, compressed_range_virt_r):
+def _PatchConstructorBytes(
+  data,
+  cut_range_virt_l,
+  cut_range_virt_r,
+  compressed_range_virt_l,
+  compressed_range_virt_r,
+):
   """Sets magic bytes given by constructor to the given ranges."""
   elf = elf_headers.ElfHeader(data)
 
   to_patch = [
-      (CUT_RANGE_BEGIN_MAGIC, cut_range_virt_l, 'cut range begin'),
-      (CUT_RANGE_END_MAGIC, cut_range_virt_r, 'cut range end'),
-      (COMPRESSED_RANGE_BEGIN_MAGIC, compressed_range_virt_l,
-       'compressed range begin'),
-      (COMPRESSED_RANGE_END_MAGIC, compressed_range_virt_r,
-       'compressed range end'),
+    (CUT_RANGE_BEGIN_MAGIC, cut_range_virt_l, 'cut range begin'),
+    (CUT_RANGE_END_MAGIC, cut_range_virt_r, 'cut range end'),
+    (
+      COMPRESSED_RANGE_BEGIN_MAGIC,
+      compressed_range_virt_l,
+      'compressed range begin',
+    ),
+    (
+      COMPRESSED_RANGE_END_MAGIC,
+      compressed_range_virt_r,
+      'compressed range end',
+    ),
   ]
 
   for magic_bytes, new_value, name in to_patch:
@@ -433,7 +472,7 @@ def _PatchConstructorBytes(data, cut_range_virt_l, cut_range_virt_r,
     if data.rfind(magic_bytes) != magic_idx:
       raise RuntimeError('%s magic bytes occures more then once' % name)
     new_value_bytes = new_value.to_bytes(length=8, byteorder=elf.byte_order)
-    data[magic_idx:magic_idx + 8] = new_value_bytes
+    data[magic_idx : magic_idx + 8] = new_value_bytes
 
 
 def _ShrinkRangeToAlignVirtualAddress(data, l, r):
@@ -454,7 +493,8 @@ def main():
     data = bytearray(data)
 
   left_range, right_range = _ShrinkRangeToAlignVirtualAddress(
-      data, args.left_range, args.right_range)
+    data, args.left_range, args.right_range
+  )
   if left_range >= right_range:
     raise RuntimeError('Range collapsed after aligning by page size')
 
@@ -462,11 +502,13 @@ def main():
   _MovePhdrToTheEnd(data)
 
   compressed_virt_l, compressed_virt_r = _CreateLoadForCompressedSection(data)
-  virt_l, virt_r = _SplitLoadSegmentAndNullifyRange(data, left_range,
-                                                    right_range)
+  virt_l, virt_r = _SplitLoadSegmentAndNullifyRange(
+    data, left_range, right_range
+  )
   _CutRangeAndCorrectFile(data, left_range, right_range)
-  _PatchConstructorBytes(data, virt_l, virt_r, compressed_virt_l,
-                         compressed_virt_r)
+  _PatchConstructorBytes(
+    data, virt_l, virt_r, compressed_virt_l, compressed_virt_r
+  )
 
   with open(args.output, 'wb') as f:
     f.write(data)

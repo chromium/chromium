@@ -147,7 +147,7 @@ class _BcIntArrayType:
   _UNPACKER_MAP = {
     1: iter,
     2: _UnpackUint16ListToBytes,
-    4: _UnpackUint32ListToBytes
+    4: _UnpackUint32ListToBytes,
   }
 
   def __init__(self, length, width):
@@ -224,7 +224,8 @@ class _BcTypeInfo:
       bits = self.int_types.get(item_type_id)
       if bits is not None:  # |bits| can be None for non-int arrays.
         self.int_array_types[self.cur_type_id] = _BcIntArrayType(
-            size, bits // 8)
+          size, bits // 8
+        )
     self.cur_type_id += 1
 
   def GetArrayType(self, idx):
@@ -320,23 +321,27 @@ def _ParseBcAnalyzer(lines):
         if tag in ['CSTRING', 'STRING', 'DATA']:
           # Exclude 32-bit / 4-byte strings since they're rarely used, and are
           # likely confused with 32-bit int arrays.
-          s = consts_cur_type.ParseOpItemsAsBytes(line, attrib_pos,
-                                                  tag == 'CSTRING')
+          s = consts_cur_type.ParseOpItemsAsBytes(
+            line, attrib_pos, tag == 'CSTRING'
+          )
           yield (consts_cur_type, s)
 
 
 class _BcAnalyzerRunner:
-  """Helper to run bcanalyzer and extract output lines. """
+  """Helper to run bcanalyzer and extract output lines."""
 
   def __init__(self, output_directory):
     self._args = [
-        path_util.GetBcAnalyzerPath(), '--dump', '--disable-histogram'
+      path_util.GetBcAnalyzerPath(),
+      '--dump',
+      '--disable-histogram',
     ]
     self._output_directory = output_directory
 
   def RunOnFile(self, obj_file):
     output = subprocess.check_output(
-        self._args + [obj_file], cwd=self._output_directory).decode('ascii')
+      self._args + [obj_file], cwd=self._output_directory
+    ).decode('ascii')
     return output.splitlines()
 
 

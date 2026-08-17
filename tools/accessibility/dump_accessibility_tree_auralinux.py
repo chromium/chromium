@@ -15,8 +15,11 @@ import pyatspi
 
 # Helper function to check application name
 def AppNameFinder(name):
-  if (name.lower().find('chromium') != 0 and name.lower().find('chrome') != 0
-      and name.lower().find('google chrome') != 0):
+  if (
+    name.lower().find('chromium') != 0
+    and name.lower().find('chrome') != 0
+    and name.lower().find('google chrome') != 0
+  ):
     return False
   return True
 
@@ -28,13 +31,17 @@ def Dump(obj, indent):
   role = obj.get_role_name()
   name = obj.get_name()
   bounds = obj.get_extents(pyatspi.DESKTOP_COORDS)
-  bounds_str = '(%d, %d) size (%d x %d)' % (bounds.x, bounds.y, bounds.width,
-                                            bounds.height)
+  bounds_str = '(%d, %d) size (%d x %d)' % (
+    bounds.x,
+    bounds.y,
+    bounds.width,
+    bounds.height,
+  )
   print('%s%s name="%s" %s' % (indent_str, role, name, bounds_str))
 
   # Don't recurse into applications other than Chrome
   if role == 'application':
-    if (not AppNameFinder(name)):
+    if not AppNameFinder(name):
       return
 
   for i in range(obj.get_child_count()):

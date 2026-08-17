@@ -47,12 +47,12 @@ def SampleSymbols(candidates, changed_files=None):
   if changed_files:
     changed_files = set(changed_files)
     contributed_files = {
-        s.source_path
-        for s in selected if s.source_path in changed_files
+      s.source_path for s in selected if s.source_path in changed_files
     }
     pool = [
-        c for c in candidates
-        if c.source_path in changed_files and c not in selected
+      c
+      for c in candidates
+      if c.source_path in changed_files and c not in selected
     ]
     needed = 8 - sum(1 for s in selected if s.source_path in changed_files)
 
@@ -60,9 +60,12 @@ def SampleSymbols(candidates, changed_files=None):
       if not pool:
         break
       # Score: size + 100 bonus if file has not contributed yet
-      pool.sort(key=lambda s: abs(s.size) +
-                (100 if s.source_path not in contributed_files else 0),
-                reverse=True)
+      pool.sort(
+        key=lambda s: (
+          abs(s.size) + (100 if s.source_path not in contributed_files else 0)
+        ),
+        reverse=True,
+      )
       best = pool.pop(0)
       selected.add(best)
       contributed_files.add(best.source_path)
@@ -72,9 +75,7 @@ def SampleSymbols(candidates, changed_files=None):
 
 def CreateUnifiedDiff(name, before, after):
   """Helper to create a unified diff between before and after disassembly."""
-  unified_diff = difflib.unified_diff(before,
-                                      after,
-                                      fromfile='before/' + name,
-                                      tofile='after/' + name,
-                                      n=10)
+  unified_diff = difflib.unified_diff(
+    before, after, fromfile='before/' + name, tofile='after/' + name, n=10
+  )
   return ''.join(unified_diff)

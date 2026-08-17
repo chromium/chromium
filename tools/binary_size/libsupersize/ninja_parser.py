@@ -22,7 +22,6 @@ _RLIBS_REGEX = re.compile(r'  rlibs = (.*?)(?:\n|$)')
 
 
 class _SourceMapper:
-
   def __init__(self, dep_map, parsed_file_count, inputs_by_path):
     self._dep_map = dep_map
     self.parsed_file_count = parsed_file_count
@@ -37,7 +36,7 @@ class _SourceMapper:
     # foo/bar.a(baz.o)
     start_idx = path.index('(')
     lib_name = path[:start_idx]
-    obj_name = path[start_idx + 1:-1]
+    obj_name = path[start_idx + 1 : -1]
     by_basename = self._dep_map.get(lib_name)
     if not by_basename:
       if lib_name.endswith('rlib') and 'std/' in lib_name:
@@ -86,8 +85,9 @@ def _ParseNinjaPathList(path_list):
 
 
 def _HasObjectExtension(output):
-  return (output.endswith('.a') or output.endswith('.o')
-          or output.endswith('.rlib'))
+  return (
+    output.endswith('.a') or output.endswith('.o') or output.endswith('.rlib')
+  )
 
 
 def _GetOutputObject(outputs):
@@ -118,7 +118,7 @@ def _ParseOneFile(lines, dep_map, inputs_by_path):
           dep_map[output] = {os.path.basename(p): p for p in obj_paths}
       elif inputs_by_path:
         last_elf_paths = [
-            os.path.normpath(p) for p in _ParseNinjaPathList(outputs)
+          os.path.normpath(p) for p in _ParseNinjaPathList(outputs)
         ]
         for elf_path in last_elf_paths:
           results = inputs_by_path.get(elf_path)
@@ -154,8 +154,7 @@ def Parse(output_directory, interesting_elf_paths):
   if interesting_elf_paths:
     # Change paths to be relative to output directory.
     inputs_by_path = {
-        os.path.relpath(p, output_directory): []
-        for p in interesting_elf_paths
+      os.path.relpath(p, output_directory): [] for p in interesting_elf_paths
     }
   else:
     inputs_by_path = {}
@@ -187,22 +186,30 @@ def main():
   parser.add_argument('--show-mappings', action='store_true')
   parser.add_argument('--map-path', type=str)
   args = parser.parse_args()
-  logging.basicConfig(level=logging.DEBUG,
-                      format='%(levelname).1s %(relativeCreated)6d %(message)s')
+  logging.basicConfig(
+    level=logging.DEBUG,
+    format='%(levelname).1s %(relativeCreated)6d %(message)s',
+  )
 
   elf_paths = [args.elf_path] if args.elf_path else []
   source_mapper = Parse(args.output_directory, elf_paths)
   elf_inputs = source_mapper.GetInputsForBinary(args.elf_path)
 
-  print('Found {} elf_inputs, and {} source mappings'.format(
-      len(elf_inputs), len(source_mapper._dep_map)))
+  print(
+    'Found {} elf_inputs, and {} source mappings'.format(
+      len(elf_inputs), len(source_mapper._dep_map)
+    )
+  )
   if args.show_inputs:
     print('elf_inputs:')
     print('\n'.join(elf_inputs))
   if args.map_path:
     print('object_path -> source_path:')
-    print('{} -> {}'.format(args.map_path,
-                            source_mapper.FindSourceForPath(args.map_path)))
+    print(
+      '{} -> {}'.format(
+        args.map_path, source_mapper.FindSourceForPath(args.map_path)
+      )
+    )
   if args.show_mappings:
     print('object_path -> source_path:')
     for path in source_mapper.IterAllPaths():

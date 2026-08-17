@@ -25,8 +25,8 @@ class _ApkFileManager:
     # Use numbered subdirectories for uniqueness.
     # Suffix with basename(path) for readability.
     default = '-'.join(
-        [str(len(self._subdir_by_apks_path)),
-         os.path.basename(path)])
+      [str(len(self._subdir_by_apks_path)), os.path.basename(path)]
+    )
     return self._temp_dir / self._subdir_by_apks_path.setdefault(path, default)
 
   def InfoList(self, path):
@@ -143,7 +143,8 @@ def MeasureApkSignatureBlock(zip_file):
   eocd_offset_from_end = -22 - len(zip_file.comment)
   zip_file.fp.seek(eocd_offset_from_end, os.SEEK_END)
   assert zip_file.fp.read(4) == b'PK\005\006', (
-      'failed to find end-of-central-directory')
+    'failed to find end-of-central-directory'
+  )
 
   # Read out the "start of central directory" offset.
   zip_file.fp.seek(eocd_offset_from_end + 16, os.SEEK_END)
@@ -151,8 +152,12 @@ def MeasureApkSignatureBlock(zip_file):
 
   # Compute the offset after the last zip entry.
   last_info = max(zip_file.infolist(), key=lambda i: i.header_offset)
-  last_header_size = (30 + len(last_info.filename) +
-                      ReadZipInfoExtraFieldLength(zip_file, last_info))
-  end_of_last_file = (last_info.header_offset + last_header_size +
-                      last_info.compress_size)
+  last_header_size = (
+    30
+    + len(last_info.filename)
+    + ReadZipInfoExtraFieldLength(zip_file, last_info)
+  )
+  end_of_last_file = (
+    last_info.header_offset + last_header_size + last_info.compress_size
+  )
   return start_of_central_directory - end_of_last_file

@@ -22,7 +22,7 @@ class ShellCommand(cr.Command):
   def __init__(self):
     super(ShellCommand, self).__init__()
     self.help = 'Launch a shell'
-    self.description = ("""
+    self.description = """
         If no arguments are present, this launches an interactive system
         shell (ie bash) with the environment modified to that used for the
         build systems.
@@ -30,7 +30,7 @@ class ShellCommand(cr.Command):
         in that shell.
         This allows you to run commands that are not yet available natively
         in cr.
-        """)
+        """
 
   def AddArguments(self, subparsers):
     parser = super(ShellCommand, self).AddArguments(subparsers)
@@ -48,7 +48,7 @@ class ShellCommand(cr.Command):
     elif shell.endswith('bash'):
       ps1 = '[CR] ' + os.environ.get('PS1', '')
       with tempfile.NamedTemporaryFile() as rcfile:
-        rcfile.write('source ~/.bashrc\nPS1="'+ps1+'"')
+        rcfile.write('source ~/.bashrc\nPS1="' + ps1 + '"')
         rcfile.flush()
         cr.Host.Execute(shell, '--rcfile', rcfile.name)
     else:

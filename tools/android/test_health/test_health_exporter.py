@@ -15,8 +15,9 @@ from test_health_extractor import TestHealthInfo, GitRepoInfo
 JsonSafeDict = Dict[str, Union[str, int]]
 
 
-def to_json_file(test_health_list: List[TestHealthInfo],
-                 output_path: pathlib.Path) -> None:
+def to_json_file(
+    test_health_list: List[TestHealthInfo], output_path: pathlib.Path
+) -> None:
     """Exports test health information to a newline-delimited JSON file.
 
     Each line of the output file is an independent JSON object. This format is
@@ -37,8 +38,9 @@ def to_json_file(test_health_list: List[TestHealthInfo],
             json_file.write('\n')
 
 
-def _to_test_health_dicts(test_health_list: List[TestHealthInfo]
-                          ) -> List[JsonSafeDict]:
+def _to_test_health_dicts(
+    test_health_list: List[TestHealthInfo],
+) -> List[JsonSafeDict]:
     """Transforms a list of `TestHealthInfo` into dicts of JSON-safe data."""
     java_test_health_list = []
     for test_health in test_health_list:
@@ -47,7 +49,8 @@ def _to_test_health_dicts(test_health_list: List[TestHealthInfo]
         else:
             logging.warning(
                 f'Skipped non-Java test "{test_health.test_name}"; currently'
-                'only Java tests are supported.')
+                'only Java tests are supported.'
+            )
 
     return java_test_health_list
 
@@ -62,18 +65,19 @@ def _to_test_health_dict(test_health_info: TestHealthInfo) -> JsonSafeDict:
 
     if test_health_info.java_test_health:
         test_health_dict.update(
-            _to_java_test_health_dict(test_health_info.java_test_health))
+            _to_java_test_health_dict(test_health_info.java_test_health)
+        )
     else:
         test_health_dict.update(test_type='UNKNOWN')
 
     test_health_dict.update(
-        _to_git_repo_info_dict(test_health_info.git_repo_info))
+        _to_git_repo_info_dict(test_health_info.git_repo_info)
+    )
 
     return test_health_dict
 
 
-def _to_java_test_health_dict(java_test_health: JavaTestHealth
-                              ) -> JsonSafeDict:
+def _to_java_test_health_dict(java_test_health: JavaTestHealth) -> JsonSafeDict:
     """Transforms a `JavaTestHealth` into a dict of JSON-safe data."""
     test_dict: JsonSafeDict = dict(test_type='JAVA')
 
@@ -88,13 +92,17 @@ def _to_java_test_health_dict(java_test_health: JavaTestHealth
             disabled_tests=java_test_health.disabled_tests,
             disable_if_tests=java_test_health.disable_if_tests,
             tags=java_test_health.tags,
-        ))
+        )
+    )
 
     return test_dict
 
 
 def _to_git_repo_info_dict(git_repo_info: GitRepoInfo) -> JsonSafeDict:
     """Transforms a `GitRepoInfo` into a dict of JSON-safe data."""
-    return dict(git_head_hash=git_repo_info.git_head,
-                git_head_timestamp=git_repo_info.git_head_time.isoformat(
-                    timespec='microseconds'))
+    return dict(
+        git_head_hash=git_repo_info.git_head,
+        git_head_timestamp=git_repo_info.git_head_time.isoformat(
+            timespec='microseconds'
+        ),
+    )

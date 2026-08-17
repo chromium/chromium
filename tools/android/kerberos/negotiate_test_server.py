@@ -3,7 +3,7 @@
 # Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-""" Test server for testing Negotiate Authorization
+"""Test server for testing Negotiate Authorization
 
 This is a minimal dummy server for testing HTTP Negotiate Authorization.
 It is currently only used for manual testing.
@@ -32,23 +32,29 @@ import BaseHTTPServer
 HOST_NAME = 'localhost'
 PORT_NUMBER = 8080
 
-SUCCESS_HTML = ('<html><head>'
-                '<title>SPNEGO Negotiation completed!</title>'
-                '</head><body>'
-                '<p><b><big>Talked to SPNEGO Authenticator</big></b></p>'
-                '</body></html>')
+SUCCESS_HTML = (
+  '<html><head>'
+  '<title>SPNEGO Negotiation completed!</title>'
+  '</head><body>'
+  '<p><b><big>Talked to SPNEGO Authenticator</big></b></p>'
+  '</body></html>'
+)
 
-FAILURE_HTML = ('<html><head>'
-                '<title>Not Authorized</title>'
-                '</head><body>'
-                '<p><big>Did not talk to SPNEGO Authenticator</big></p>'
-                '</body></html>')
+FAILURE_HTML = (
+  '<html><head>'
+  '<title>Not Authorized</title>'
+  '</head><body>'
+  '<p><big>Did not talk to SPNEGO Authenticator</big></p>'
+  '</body></html>'
+)
 
-WRONG_HEADER_HTML = ('<html><head>'
-                     '<title>Not Authorized</title>'
-                     '</head><body>'
-                     '<p><big>Bad header value. Found "%s"</big></p>'
-                     '</body></html>')
+WRONG_HEADER_HTML = (
+  '<html><head>'
+  '<title>Not Authorized</title>'
+  '</head><body>'
+  '<p><big>Bad header value. Found "%s"</big></p>'
+  '</body></html>'
+)
 
 
 class MyHandler(BaseHTTPServer.BaseHTTPRequestHandler):

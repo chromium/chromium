@@ -18,6 +18,7 @@ def sorted_edges_by_name(edges):
     Prioritizes sorting by the first node in an edge."""
     return sorted(edges, key=lambda edge: (edge[0].name, edge[1].name))
 
+
 @functools.total_ordering
 class Node:
     """A node/vertex in a directed graph."""

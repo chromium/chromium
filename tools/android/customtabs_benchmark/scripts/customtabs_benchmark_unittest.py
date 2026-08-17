@@ -10,7 +10,8 @@ import customtabs_benchmark
 class CustomTabsBenchmarkTestCase(unittest.TestCase):
   def testParseResult(self):
     result_line = (
-        "1,0,disabled,1000,3000,510998167,510998345,511000338,510999329")
+      "1,0,disabled,1000,3000,510998167,510998345,511000338,510999329"
+    )
     result = customtabs_benchmark.ParseResult(result_line)
     self.assertEqual(1, result.warmup)
     self.assertEqual(0, result.skip_launcher_activity)
@@ -22,8 +23,7 @@ class CustomTabsBenchmarkTestCase(unittest.TestCase):
     self.assertEqual(510999329 - 510998167, result.first_contentful_paint)
 
   def testParsePartialResult(self):
-    result_line = (
-        "1,0,disabled,1000,3000,510998167,-1,-1,510999329")
+    result_line = "1,0,disabled,1000,3000,510998167,-1,-1,510999329"
     result = customtabs_benchmark.ParseResult(result_line)
     self.assertEqual(1, result.warmup)
     self.assertEqual(0, result.skip_launcher_activity)

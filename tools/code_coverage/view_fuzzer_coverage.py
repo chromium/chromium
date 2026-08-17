@@ -62,41 +62,49 @@ def _ParseCommandArguments():
   arg_parser.usage = __doc__
 
   arg_parser.add_argument(
-      '--fuzzer-type',
-      choices=['libfuzzer', 'centipede', 'fuzzilli', 'blackbox'],
-      default='libfuzzer',
-      help='The type of fuzzer to analyze.')
-  arg_parser.add_argument('--target',
-                          type=str,
-                          required=True,
-                          help='The fuzzer binary name. For blackbox fuzzers, '
-                          'the target binary to use, e.g. Chrome or v8')
-  arg_parser.add_argument('--build-dir',
-                          default=os.path.join(chromium_src_dir, 'out',
-                                               'coverage'),
-                          help='Where to build fuzzers.')
-  arg_parser.add_argument('--html-dir',
-                          default=os.path.join(chromium_src_dir, 'out',
-                                               'coverage-html'),
-                          help='Where to put HTML report.')
+    '--fuzzer-type',
+    choices=['libfuzzer', 'centipede', 'fuzzilli', 'blackbox'],
+    default='libfuzzer',
+    help='The type of fuzzer to analyze.',
+  )
   arg_parser.add_argument(
-      '--corpora-dir',
-      help='The directory containing the fuzzing corpora. Required when the '
-      'fuzzer type is blackbox, where it is the directory of html or js files '
-      'to be run with the target.')
+    '--target',
+    type=str,
+    required=True,
+    help='The fuzzer binary name. For blackbox fuzzers, '
+    'the target binary to use, e.g. Chrome or v8',
+  )
   arg_parser.add_argument(
-      '--retain-build-dir',
-      action='store_true',
-      help='Avoid cleaning the build dir (may result in multiple fuzzers being '
-      'analyzed).')
+    '--build-dir',
+    default=os.path.join(chromium_src_dir, 'out', 'coverage'),
+    help='Where to build fuzzers.',
+  )
   arg_parser.add_argument(
-      '--testcase-timeout',
-      type=int,
-      default=60,
-      help='Timeout in seconds for each testcase. Defaults to 60 seconds. For '
-      'blackbox fuzzers, this corresponds to the TEST_TIMEOUT env variable for '
-      'the bot running the fuzzer. Many blackbox fuzzers require a timeout '
-      'because test cases can\'t signal when they are finished.')
+    '--html-dir',
+    default=os.path.join(chromium_src_dir, 'out', 'coverage-html'),
+    help='Where to put HTML report.',
+  )
+  arg_parser.add_argument(
+    '--corpora-dir',
+    help='The directory containing the fuzzing corpora. Required when the '
+    'fuzzer type is blackbox, where it is the directory of html or js files '
+    'to be run with the target.',
+  )
+  arg_parser.add_argument(
+    '--retain-build-dir',
+    action='store_true',
+    help='Avoid cleaning the build dir (may result in multiple fuzzers being '
+    'analyzed).',
+  )
+  arg_parser.add_argument(
+    '--testcase-timeout',
+    type=int,
+    default=60,
+    help='Timeout in seconds for each testcase. Defaults to 60 seconds. For '
+    'blackbox fuzzers, this corresponds to the TEST_TIMEOUT env variable for '
+    'the bot running the fuzzer. Many blackbox fuzzers require a timeout '
+    'because test cases can\'t signal when they are finished.',
+  )
   args = arg_parser.parse_args()
   return args
 
@@ -147,24 +155,39 @@ def Main():
     temp_corpora_dir = tempfile.TemporaryDirectory()
     corpora_dir_path = temp_corpora_dir.name
     step("Download corpora")
-    check_call([
+    check_call(
+      [
         sys.executable,
-        os.path.join(script_dir, "download_fuzz_corpora.py"), "--download-dir",
-        corpora_dir_path, "--build-dir", args.build_dir, "--corpora-type",
-        args.fuzzer_type
-    ])
+        os.path.join(script_dir, "download_fuzz_corpora.py"),
+        "--download-dir",
+        corpora_dir_path,
+        "--build-dir",
+        args.build_dir,
+        "--corpora-type",
+        args.fuzzer_type,
+      ]
+    )
 
   individual_profdata_dir = tempfile.TemporaryDirectory()
-  step('Running fuzzers (can take a while - NB you might need a valid DISPLAY '
-       'set for some fuzzers)')
+  step(
+    'Running fuzzers (can take a while - NB you might need a valid DISPLAY '
+    'set for some fuzzers)'
+  )
 
   run_all_fuzzers_cmd = [
-      sys.executable, XVFB_PATH,
-      os.path.join(script_dir, "run_all_fuzzers.py"), "--fuzzer-binaries-dir",
-      args.build_dir, "--fuzzer-corpora-dir", corpora_dir_path,
-      "--profdata-outdir", individual_profdata_dir.name, "--fuzzer",
-      args.fuzzer_type, "--testcase-timeout",
-      str(args.testcase_timeout)
+    sys.executable,
+    XVFB_PATH,
+    os.path.join(script_dir, "run_all_fuzzers.py"),
+    "--fuzzer-binaries-dir",
+    args.build_dir,
+    "--fuzzer-corpora-dir",
+    corpora_dir_path,
+    "--profdata-outdir",
+    individual_profdata_dir.name,
+    "--fuzzer",
+    args.fuzzer_type,
+    "--testcase-timeout",
+    str(args.testcase_timeout),
   ]
   if is_blackbox_fuzzer:
     run_all_fuzzers_cmd += ["--target", args.target]
@@ -174,26 +197,42 @@ def Main():
   step("Merging profdata")
   merged_profdata_dir = tempfile.TemporaryDirectory()
   merged_profdata_file = os.path.join(merged_profdata_dir.name, "out.profdata")
-  llvm_dir = os.path.join(chromium_src_dir, "third_party", "llvm-build",
-                          "Release+Asserts", "bin")
-  check_call([
+  llvm_dir = os.path.join(
+    chromium_src_dir, "third_party", "llvm-build", "Release+Asserts", "bin"
+  )
+  check_call(
+    [
       sys.executable,
-      os.path.join(script_dir, "merge_all_profdata.py"), "--profdata-dir",
-      individual_profdata_dir.name, "--outfile", merged_profdata_file,
+      os.path.join(script_dir, "merge_all_profdata.py"),
+      "--profdata-dir",
+      individual_profdata_dir.name,
+      "--outfile",
+      merged_profdata_file,
       "--llvm-profdata",
-      os.path.join(llvm_dir, "llvm-profdata")
-  ])
+      os.path.join(llvm_dir, "llvm-profdata"),
+    ]
+  )
 
   step("Generating HTML")
   target_path = os.path.join(args.build_dir, args.target)
-  check_call([
-      os.path.join(llvm_dir, "llvm-cov"), "show", target_path, "--format=html",
-      "--instr-profile", merged_profdata_file, "--output-dir", args.html_dir,
-      "--compilation-dir", args.build_dir
-  ])
+  check_call(
+    [
+      os.path.join(llvm_dir, "llvm-cov"),
+      "show",
+      target_path,
+      "--format=html",
+      "--instr-profile",
+      merged_profdata_file,
+      "--output-dir",
+      args.html_dir,
+      "--compilation-dir",
+      args.build_dir,
+    ]
+  )
 
-  uri = pathlib.Path(os.path.abspath(os.path.join(args.html_dir,
-                                                  "index.html"))).as_uri()
+  uri = pathlib.Path(
+    os.path.abspath(os.path.join(args.html_dir, "index.html"))
+  ).as_uri()
   print("Report URI " + uri)
   step("Opening HTML in Chrome")
   check_call(["google-chrome-stable", uri])

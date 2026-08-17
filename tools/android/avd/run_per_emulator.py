@@ -14,7 +14,8 @@ import sys
 import time
 
 _SRC_ROOT = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), '..', '..', '..'))
+  os.path.join(os.path.dirname(__file__), '..', '..', '..')
+)
 sys.path.append(os.path.join(_SRC_ROOT, 'third_party', 'catapult', 'devil'))
 from devil.utils import logging_common
 
@@ -44,8 +45,9 @@ def get_emulators(all_emulators):
 
     # If we found an API level and it's 28 or less, skip it.
     if api_level and api_level <= 28:
-      logging.info('Skipping emulator %s due to old API level (%d).', path,
-                   api_level)
+      logging.info(
+        'Skipping emulator %s due to old API level (%d).', path, api_level
+      )
       continue
     emulators.append(path)
   return emulators
@@ -70,13 +72,16 @@ def wait_for_emulator(serial):
 def main():
   """Starts each emulator, runs a command, and stops it."""
   parser = argparse.ArgumentParser(
-      description='Run a command on all available emulators.')
-  parser.add_argument('--cmd',
-                      required=True,
-                      help='The command to run on the emulator.')
-  parser.add_argument('--all',
-                      action='store_true',
-                      help='Run on all emulators, not just installed ones.')
+    description='Run a command on all available emulators.'
+  )
+  parser.add_argument(
+    '--cmd', required=True, help='The command to run on the emulator.'
+  )
+  parser.add_argument(
+    '--all',
+    action='store_true',
+    help='Run on all emulators, not just installed ones.',
+  )
   parser.add_argument('--output-file', help='File to write the output to.')
   logging_common.AddLoggingArguments(parser)
   args = parser.parse_args()
@@ -98,32 +103,34 @@ def main():
   for emulator_config in emulators:
     logging.info('Starting emulator: %s', emulator_config)
     try:
-      start_process = subprocess.Popen([
-          'tools/android/avd/avd.py', 'start', '--avd-config', emulator_config
-      ],
-                                       stdout=subprocess.PIPE,
-                                       stderr=subprocess.PIPE,
-                                       encoding='utf-8')
+      start_process = subprocess.Popen(
+        ['tools/android/avd/avd.py', 'start', '--avd-config', emulator_config],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        encoding='utf-8',
+      )
       stdout, stderr = start_process.communicate()
       if start_process.returncode != 0:
-        logging.error('Failed to start emulator %s: %s', emulator_config,
-                      stderr)
+        logging.error(
+          'Failed to start emulator %s: %s', emulator_config, stderr
+        )
         continue
 
       # The serial number is expected to be in the output of the start command.
       match = re.search(r'emulator-\d+', stdout)
       if not match:
-        logging.error('Could not determine serial for emulator %s',
-                      emulator_config)
+        logging.error(
+          'Could not determine serial for emulator %s', emulator_config
+        )
         continue
       serial = match.group(0)
 
       if wait_for_emulator(serial):
         logging.info('Running command on %s: %s', serial, args.cmd)
         try:
-          cmd_output = subprocess.check_output(args.cmd,
-                                               shell=True,
-                                               encoding='utf-8')
+          cmd_output = subprocess.check_output(
+            args.cmd, shell=True, encoding='utf-8'
+          )
           if args.output_file:
             with open(args.output_file, 'a') as f:
               f.write(f'{emulator_config}: {cmd_output.strip()}\n')
@@ -134,15 +141,18 @@ def main():
 
       logging.info('Stopping emulator: %s', emulator_config)
       subprocess.run(
-          ['tools/android/avd/avd.py', 'stop', '--avd-config', emulator_config],
-          check=False)
+        ['tools/android/avd/avd.py', 'stop', '--avd-config', emulator_config],
+        check=False,
+      )
     except Exception as e:
-      logging.error('An error occurred with emulator %s: %s', emulator_config,
-                    e)
+      logging.error(
+        'An error occurred with emulator %s: %s', emulator_config, e
+      )
       # Ensure the emulator is stopped even if an error occurs.
       subprocess.run(
-          ['tools/android/avd/avd.py', 'stop', '--avd-config', emulator_config],
-          check=False)
+        ['tools/android/avd/avd.py', 'stop', '--avd-config', emulator_config],
+        check=False,
+      )
 
 
 if __name__ == '__main__':

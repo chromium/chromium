@@ -13,6 +13,7 @@ This script requires the "brotli" executable.
 Option 1) sudo apt-get install brotli
 Option 2) "ninja clang_x64/brotli", and use "--brotli clang_x64/brotli"
 """
+
 import argparse
 import os
 import pathlib
@@ -28,7 +29,12 @@ _PAK_UTIL = _DIR_SOURCE_ROOT / 'tools' / 'grit' / 'pak_util.py'
 
 def _extract_pak(pak_path, output_dir, brotli):
   cmd = [
-      sys.executable, _PAK_UTIL, 'extract', pak_path, '--output-dir', output_dir
+    sys.executable,
+    _PAK_UTIL,
+    'extract',
+    pak_path,
+    '--output-dir',
+    output_dir,
   ]
   if brotli:
     cmd += ['--brotli', brotli]
@@ -64,8 +70,9 @@ def _transform_html(html):
   # <span class="title">TITLE</span>
   # <span class="homepage"><a href="URL">homepage</a></span>
   # <pre>LICENSE</pre>
-  pattern = re.compile(r'"title".*?>(.*?)<.*?href="(.*?)".*?<pre>(.*?)</pre>',
-                       re.DOTALL)
+  pattern = re.compile(
+    r'"title".*?>(.*?)<.*?href="(.*?)".*?<pre>(.*?)</pre>', re.DOTALL
+  )
   entries = ['Open-source libraries used by Chrome:\n']
   for title, url, text in pattern.findall(html):
     entry = ['Project: ' + title, 'URL: ' + url, '', text]
@@ -75,7 +82,8 @@ def _transform_html(html):
   expected_count = html.count('</pre>')
   if expected_count != actual_count:
     sys.stderr.write(
-        f'Parsed {actual_count} but should have parse {expected_count}\n')
+      f'Parsed {actual_count} but should have parse {expected_count}\n'
+    )
     sys.exit(1)
 
   sep = '\n' + '=' * 80 + '\n'
@@ -84,15 +92,18 @@ def _transform_html(html):
 
 def main():
   parser = argparse.ArgumentParser()
-  parser.add_argument('--brotli',
-                      help='Path to brotli executable if not on PATH.')
-  parser.add_argument('--chrome-apk',
-                      required=True,
-                      help='Path to .apk with assets/resources.pak in it.')
+  parser.add_argument(
+    '--brotli', help='Path to brotli executable if not on PATH.'
+  )
+  parser.add_argument(
+    '--chrome-apk',
+    required=True,
+    help='Path to .apk with assets/resources.pak in it.',
+  )
   parser.add_argument('--output', required=True, help='Output file path.')
-  parser.add_argument('--raw',
-                      action='store_true',
-                      help='Do not convert to plain text.')
+  parser.add_argument(
+    '--raw', action='store_true', help='Do not convert to plain text.'
+  )
   args = parser.parse_args()
 
   data = _extract_licenses(args.chrome_apk, args.brotli)

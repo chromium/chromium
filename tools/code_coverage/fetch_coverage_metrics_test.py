@@ -32,7 +32,8 @@ class FetchCoverageMetricsTest(fake_filesystem_unittest.TestCase):
     self.addCleanup(self.make_patcher.stop)
 
     self.lines_patcher = mock.patch(
-        'fetch_coverage_metrics.fetch_gerrit_file_lines')
+      'fetch_coverage_metrics.fetch_gerrit_file_lines'
+    )
     self.mock_lines = self.lines_patcher.start()
     self.addCleanup(self.lines_patcher.stop)
 
@@ -66,9 +67,10 @@ class FetchCoverageMetricsTest(fake_filesystem_unittest.TestCase):
     res = fcm.make_request('https://example.com/api', 'my-token')
     self.assertEqual(res, b'{"data": {}}')
     self.mock_get.assert_called_once_with(
-        'https://example.com/api',
-        headers={'Authorization': 'Bearer my-token'},
-        timeout=30)
+      'https://example.com/api',
+      headers={'Authorization': 'Bearer my-token'},
+      timeout=30,
+    )
 
   def test_make_request_http_error(self) -> None:
     """Verifies RequestException is caught and logged."""
@@ -109,52 +111,48 @@ class FetchCoverageMetricsTest(fake_filesystem_unittest.TestCase):
   def test_main_success_stdout(self) -> None:
     """Verifies full CLI workflow printing JSON to stdout."""
     pct_json = {
-        'data': {
-            'files': [
-                {
-                    'path': 'partial_cov.cc',
-                    'absolute_coverage': {
-                        'covered': 85,
-                        'total': 100
-                    },
-                },
-                {
-                    'path': 'high_cov.cc',
-                    'absolute_coverage': {
-                        'covered': 10,
-                        'total': 10
-                    },
-                },
-            ]
-        }
+      'data': {
+        'files': [
+          {
+            'path': 'partial_cov.cc',
+            'absolute_coverage': {'covered': 85, 'total': 100},
+          },
+          {
+            'path': 'high_cov.cc',
+            'absolute_coverage': {'covered': 10, 'total': 10},
+          },
+        ]
+      }
     }
     lines_json = {
-        'data': {
-            'files': [{
-                'path':
-                'partial_cov.cc',
-                'lines': [
-                    {
-                        'line': 10,
-                        'count': 0
-                    },
-                    {
-                        'line': 20,
-                        'count': 5
-                    },
-                ],
-            }]
-        }
+      'data': {
+        'files': [
+          {
+            'path': 'partial_cov.cc',
+            'lines': [
+              {'line': 10, 'count': 0},
+              {'line': 20, 'count': 5},
+            ],
+          }
+        ]
+      }
     }
     self.mock_make.side_effect = [
-        json.dumps(pct_json).encode('utf-8'),
-        json.dumps(lines_json).encode('utf-8'),
+      json.dumps(pct_json).encode('utf-8'),
+      json.dumps(lines_json).encode('utf-8'),
     ]
     self.mock_lines.return_value = {'10': 'uncovered();', '20': 'cov();'}
 
     test_args = [
-        'fcm.py', '--host', 'h', '--project', 'p', '--change', '123',
-        '--patchset', '1'
+      'fcm.py',
+      '--host',
+      'h',
+      '--project',
+      'p',
+      '--change',
+      '123',
+      '--patchset',
+      '1',
     ]
     out_buf = io.StringIO()
     with mock.patch.object(sys, 'argv', test_args):
@@ -189,16 +187,25 @@ class FetchCoverageMetricsTest(fake_filesystem_unittest.TestCase):
     pct_json = {'data': {'files': {'foo.java': {'absolute_coverage': 10.0}}}}
     lines_json = {'data': {'files': {'foo.java': {'lines': []}}}}
     self.mock_make.side_effect = [
-        json.dumps(pct_json).encode('utf-8'),
-        json.dumps(lines_json).encode('utf-8'),
+      json.dumps(pct_json).encode('utf-8'),
+      json.dumps(lines_json).encode('utf-8'),
     ]
     self.mock_lines.return_value = {}
 
     out_path = '/mock/out/report.json'
     self.fs.create_dir('/mock/out')
     test_args = [
-        'fcm.py', '--host', 'h', '--project', 'p', '--change', '1',
-        '--patchset', '1', '--output', out_path
+      'fcm.py',
+      '--host',
+      'h',
+      '--project',
+      'p',
+      '--change',
+      '1',
+      '--patchset',
+      '1',
+      '--output',
+      out_path,
     ]
     with mock.patch.object(sys, 'argv', test_args):
       fcm.main()
@@ -209,23 +216,32 @@ class FetchCoverageMetricsTest(fake_filesystem_unittest.TestCase):
   def test_main_files_filtering(self) -> None:
     """Verifies CLI --files argument filters out non-matching files."""
     pct_json = {
-        'data': {
-            'files': {
-                'foo.java': {'absolute_coverage': 10.0},
-                'bar.cc': {'absolute_coverage': 20.0},
-            }
+      'data': {
+        'files': {
+          'foo.java': {'absolute_coverage': 10.0},
+          'bar.cc': {'absolute_coverage': 20.0},
         }
+      }
     }
     lines_json = {'data': {'files': {'foo.java': {'lines': []}}}}
     self.mock_make.side_effect = [
-        json.dumps(pct_json).encode('utf-8'),
-        json.dumps(lines_json).encode('utf-8'),
+      json.dumps(pct_json).encode('utf-8'),
+      json.dumps(lines_json).encode('utf-8'),
     ]
     self.mock_lines.return_value = {}
 
     test_args = [
-        'fcm.py', '--host', 'h', '--project', 'p', '--change', '1',
-        '--patchset', '1', '--files', 'foo.java'
+      'fcm.py',
+      '--host',
+      'h',
+      '--project',
+      'p',
+      '--change',
+      '1',
+      '--patchset',
+      '1',
+      '--files',
+      'foo.java',
     ]
     out_buf = io.StringIO()
     with mock.patch.object(sys, 'argv', test_args):
@@ -240,8 +256,15 @@ class FetchCoverageMetricsTest(fake_filesystem_unittest.TestCase):
     """Verifies exit(1) when percentages fetch returns None."""
     self.mock_make.return_value = None
     test_args = [
-        'fcm.py', '--host', 'h', '--project', 'p', '--change', '1',
-        '--patchset', '1'
+      'fcm.py',
+      '--host',
+      'h',
+      '--project',
+      'p',
+      '--change',
+      '1',
+      '--patchset',
+      '1',
     ]
     err_buf = io.StringIO()
     with mock.patch.object(sys, 'argv', test_args):
@@ -255,8 +278,15 @@ class FetchCoverageMetricsTest(fake_filesystem_unittest.TestCase):
     """Verifies exit(1) when percentages JSON parsing fails."""
     self.mock_make.return_value = b'not_json'
     test_args = [
-        'fcm.py', '--host', 'h', '--project', 'p', '--change', '1',
-        '--patchset', '1'
+      'fcm.py',
+      '--host',
+      'h',
+      '--project',
+      'p',
+      '--change',
+      '1',
+      '--patchset',
+      '1',
     ]
     err_buf = io.StringIO()
     with mock.patch.object(sys, 'argv', test_args):
@@ -270,12 +300,19 @@ class FetchCoverageMetricsTest(fake_filesystem_unittest.TestCase):
     """Verifies lines query exception logs to stderr and continues."""
     pct_json = {'data': {'files': {'bar.cc': {'absolute_coverage': 0.0}}}}
     self.mock_make.side_effect = [
-        json.dumps(pct_json).encode('utf-8'),
-        b'bad_lines_json',
+      json.dumps(pct_json).encode('utf-8'),
+      b'bad_lines_json',
     ]
     test_args = [
-        'fcm.py', '--host', 'h', '--project', 'p', '--change', '1',
-        '--patchset', '1'
+      'fcm.py',
+      '--host',
+      'h',
+      '--project',
+      'p',
+      '--change',
+      '1',
+      '--patchset',
+      '1',
     ]
     err_buf = io.StringIO()
     out_buf = io.StringIO()

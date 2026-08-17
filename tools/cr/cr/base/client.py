@@ -48,11 +48,11 @@ GCLIENT_FILENAME = '.gclient'
 
 # The default config values installed by this module.
 DEFAULT = cr.Config.From(
-    CR_ROOT_PATH=os.path.join('{GOOGLE_CODE}'),
-    CR_CLIENT_NAME='chromium',
-    CR_CLIENT_PATH=os.path.join('{CR_ROOT_PATH}', '{CR_CLIENT_NAME}'),
-    CR_SRC=os.path.join('{CR_CLIENT_PATH}', 'src'),
-    CR_BUILD_DIR=os.path.join('{CR_SRC}', '{CR_OUT_FULL}'),
+  CR_ROOT_PATH=os.path.join('{GOOGLE_CODE}'),
+  CR_CLIENT_NAME='chromium',
+  CR_CLIENT_PATH=os.path.join('{CR_ROOT_PATH}', '{CR_CLIENT_NAME}'),
+  CR_SRC=os.path.join('{CR_CLIENT_PATH}', 'src'),
+  CR_BUILD_DIR=os.path.join('{CR_SRC}', '{CR_OUT_FULL}'),
 )
 
 
@@ -60,8 +60,9 @@ def DetectClient():
   # Attempt to detect the current client from the cwd
   # See if we can detect the source tree root
   client_path = os.getcwd()
-  while (client_path and
-         not os.path.exists(os.path.join(client_path, GCLIENT_FILENAME))):
+  while client_path and not os.path.exists(
+    os.path.join(client_path, GCLIENT_FILENAME)
+  ):
     old = client_path
     client_path = os.path.dirname(client_path)
     if client_path == old:
@@ -111,11 +112,15 @@ def _MigrateAndGetConfigDir(use_build_dir):
 
   if old_config_exists:
     if new_config_exists:
-      print('Warning: Old config file %s superseded by new config file %s' %
-            (old_config_file, new_config_file))
+      print(
+        'Warning: Old config file %s superseded by new config file %s'
+        % (old_config_file, new_config_file)
+      )
     else:
-      print('Migrating config file from %s to %s...' % (old_config_file,
-                                                        new_config_file))
+      print(
+        'Migrating config file from %s to %s...'
+        % (old_config_file, new_config_file)
+      )
       if not cr.context.dry_run:
         # Make the new config directory (if necessary).
         try:
@@ -130,8 +135,10 @@ def _MigrateAndGetConfigDir(use_build_dir):
           try:
             os.removedirs(old_config_dir)
           except OSError:
-            print('Warning: Old config directory %s could not be removed' %
-                  (old_config_dir))
+            print(
+              'Warning: Old config directory %s could not be removed'
+              % (old_config_dir)
+            )
 
   return new_config_dir
 
@@ -145,9 +152,12 @@ def _WriteConfig(writer, data):
 
 def AddArguments(parser):
   parser.add_argument(
-      '-o', '--out', dest='_out', metavar='name',
-      default=None,
-      help='The name of the out directory to use. Overrides CR_OUT.'
+    '-o',
+    '--out',
+    dest='_out',
+    metavar='name',
+    default=None,
+    help='The name of the out directory to use. Overrides CR_OUT.',
   )
 
 
@@ -175,7 +185,8 @@ def ReadGClient():
   result = {}
   try:
     gclient_file = cr.context.Substitute(
-        os.path.join('{CR_CLIENT_PATH}', GCLIENT_FILENAME))
+      os.path.join('{CR_CLIENT_PATH}', GCLIENT_FILENAME)
+    )
     with open(gclient_file, 'r') as spec_file:
       # matching the behaviour of gclient, so pylint: disable=exec-used
       exec(spec_file.read(), {}, result)
@@ -192,15 +203,19 @@ def WriteGClient():
 
   """
   gclient_file = cr.context.Substitute(
-      os.path.join('{CR_CLIENT_PATH}', GCLIENT_FILENAME))
-  spec = '\n'.join('%s = %s' % (key, pprint.pformat(value))
-      for key,value in cr.context.gclient.items())
+    os.path.join('{CR_CLIENT_PATH}', GCLIENT_FILENAME)
+  )
+  spec = '\n'.join(
+    '%s = %s' % (key, pprint.pformat(value))
+    for key, value in cr.context.gclient.items()
+  )
   if cr.context.dry_run:
     print('Write the following spec to', gclient_file)
     print(spec)
   else:
     with open(gclient_file, 'w') as spec_file:
       spec_file.write(spec)
+
 
 def LoadConfig():
   """Loads the client configuration for the given context.
@@ -256,8 +271,9 @@ def WriteConfig(use_build_dir, data):
 
 def PrintInfo():
   print('Selected output directory is', cr.context.Find('CR_BUILD_DIR'))
-  print('Build config file is', _GetConfigFile(
-      _GetConfigDir(use_build_dir=True)))
+  print(
+    'Build config file is', _GetConfigFile(_GetConfigDir(use_build_dir=True))
+  )
   try:
     for name in cr.auto.build.config.OVERRIDES.exported.keys():
       print(' ', name, '=', cr.context.Get(name))

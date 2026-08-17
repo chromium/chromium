@@ -66,12 +66,14 @@ class ParseGerritUrlTest(unittest.TestCase):
   def test_invalid_url_no_c_prefix(self):
     with self.assertRaises(ValueError):
       parse_gerrit_url.parse_gerrit_url(
-          'https://chromium-review.googlesource.com/q/status:open')
+        'https://chromium-review.googlesource.com/q/status:open'
+      )
 
   def test_invalid_url_no_change_number(self):
     with self.assertRaises(ValueError):
       parse_gerrit_url.parse_gerrit_url(
-          'https://chromium-review.googlesource.com/c/chromium/src/+/invalid')
+        'https://chromium-review.googlesource.com/c/chromium/src/+/invalid'
+      )
 
   def test_invalid_empty_url(self):
     with self.assertRaises(ValueError):

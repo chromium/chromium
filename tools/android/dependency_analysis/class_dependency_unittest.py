@@ -12,6 +12,7 @@ import class_dependency
 
 class TestHelperFunctions(unittest.TestCase):
     """Unit tests for module-level helper functions."""
+
     def test_java_class_params_to_key(self):
         """Tests that the helper concatenates, separated with a dot."""
         result = class_dependency.java_class_params_to_key('pkg.name', 'class')
@@ -20,21 +21,24 @@ class TestHelperFunctions(unittest.TestCase):
     def test_split_nested_class_from_key(self):
         """Tests that the helper correctly splits out a nested class."""
         part1, part2 = class_dependency.split_nested_class_from_key(
-            'pkg.name.class$nested')
+            'pkg.name.class$nested'
+        )
         self.assertEqual(part1, 'pkg.name.class')
         self.assertEqual(part2, 'nested')
 
     def test_split_nested_class_from_key_no_nested(self):
         """Tests that the helper works when there is no nested class."""
         part1, part2 = class_dependency.split_nested_class_from_key(
-            'pkg.name.class')
+            'pkg.name.class'
+        )
         self.assertEqual(part1, 'pkg.name.class')
         self.assertIsNone(part2)
 
     def test_split_nested_class_from_key_lambda(self):
         """Tests that the helper works for jdeps' formatting of lambdas."""
         part1, part2 = class_dependency.split_nested_class_from_key(
-            'pkg.name.class$$Lambda$1')
+            'pkg.name.class$$Lambda$1'
+        )
         self.assertEqual(part1, 'pkg.name.class')
         self.assertEqual(part2, '$Lambda$1')
 
@@ -44,13 +48,15 @@ class TestHelperFunctions(unittest.TestCase):
         Specifically, jdeps uses a numeric name for private nested classes.
         """
         part1, part2 = class_dependency.split_nested_class_from_key(
-            'pkg.name.class$1')
+            'pkg.name.class$1'
+        )
         self.assertEqual(part1, 'pkg.name.class')
         self.assertEqual(part2, '1')
 
 
 class TestJavaClass(unittest.TestCase):
     """Unit tests for dependency_analysis.class_dependency.JavaClass."""
+
     TEST_PKG = 'package'
     TEST_CLS = 'class'
     UNIQUE_KEY_1 = 'abc'
@@ -80,8 +86,9 @@ class TestJavaClass(unittest.TestCase):
         test_node = class_dependency.JavaClass(self.TEST_PKG, self.TEST_CLS)
         test_node.add_nested_class(self.UNIQUE_KEY_1)
         test_node.add_nested_class(self.UNIQUE_KEY_2)
-        self.assertEqual(test_node.nested_classes,
-                         {self.UNIQUE_KEY_1, self.UNIQUE_KEY_2})
+        self.assertEqual(
+            test_node.nested_classes, {self.UNIQUE_KEY_1, self.UNIQUE_KEY_2}
+        )
 
     def test_add_nested_class_duplicate(self):
         """Tests that adding the same nested class twice will not dupe."""
@@ -96,6 +103,7 @@ class TestJavaClassDependencyGraph(unittest.TestCase):
 
     Full name: dependency_analysis.class_dependency.JavaClassDependencyGraph.
     """
+
     def setUp(self):
         """Sets up a new JavaClassDependencyGraph."""
         self.test_graph = class_dependency.JavaClassDependencyGraph()
@@ -103,7 +111,8 @@ class TestJavaClassDependencyGraph(unittest.TestCase):
     def test_create_node_from_key(self):
         """Tests that a jdeps name is correctly parsed into package + class."""
         created_node = self.test_graph.create_node_from_key(
-            'package.class$nested')
+            'package.class$nested'
+        )
         self.assertEqual(created_node.package, 'package')
         self.assertEqual(created_node.class_name, 'class')
         self.assertEqual(created_node.name, 'package.class')

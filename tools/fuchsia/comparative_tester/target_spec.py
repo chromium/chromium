@@ -21,6 +21,6 @@ raw_fuchsia_dir = results_dir + "/fuchsia_raw"
 
 # A list of test targets to deploy to both devices. Stick to *_perftests.
 test_targets = [
-    "base:base_perftests",
-    "net:net_perftests",
+  "base:base_perftests",
+  "net:net_perftests",
 ]

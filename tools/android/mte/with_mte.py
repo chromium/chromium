@@ -11,7 +11,8 @@ import subprocess
 import sys
 
 _SRC_ROOT = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), '..', '..', '..'))
+  os.path.join(os.path.dirname(__file__), '..', '..', '..')
+)
 
 sys.path.append(os.path.join(_SRC_ROOT, 'third_party', 'catapult', 'devil'))
 from devil import base_error
@@ -30,8 +31,9 @@ def _LogDevicesOnFailure(msg):
   except base_error.BaseError:
     logging.exception(msg)
     logging.error('Devices visible to adb:')
-    for entry in adb_wrapper.AdbWrapper.Devices(desired_state=None,
-                                                long_list=True):
+    for entry in adb_wrapper.AdbWrapper.Devices(
+      desired_state=None, long_list=True
+    ):
       logging.error('  %s: %s', entry[0].GetDeviceSerial(), ' '.join(entry[1:]))
     raise
 
@@ -43,8 +45,9 @@ def Mte(args):
 
   try:
     with _LogDevicesOnFailure('Failed to set up the device.'):
-      device = device_utils.DeviceUtils.HealthyDevices(
-          device_arg=args.device)[0]
+      device = device_utils.DeviceUtils.HealthyDevices(device_arg=args.device)[
+        0
+      ]
       bootctl_supported = device.GetProp('ro.arm64.memtag.bootctl_supported')
       if bootctl_supported != '1':
         raise Exception('MTE is not supported on this device')
@@ -62,14 +65,13 @@ def Mte(args):
 def main(raw_args):
   parser = argparse.ArgumentParser()
   logging_common.AddLoggingArguments(parser)
-  parser.add_argument('--adb',
-                      type=os.path.realpath,
-                      required=True,
-                      help='Path to adb binary.')
+  parser.add_argument(
+    '--adb', type=os.path.realpath, required=True, help='Path to adb binary.'
+  )
   parser.add_argument('--device', help='Device serial.')
-  parser.add_argument('command',
-                      nargs='*',
-                      help='Command to run with MTE enabled.')
+  parser.add_argument(
+    'command', nargs='*', help='Command to run with MTE enabled.'
+  )
   args = parser.parse_args()
 
   logging_common.InitializeLogging(args)

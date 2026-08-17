@@ -22,7 +22,8 @@ import sys
 import parse_smaps
 
 _SRC_PATH = os.path.join(
-    os.path.dirname(__file__), os.pardir, os.pardir, os.pardir)
+  os.path.dirname(__file__), os.pardir, os.pardir, os.pardir
+)
 sys.path.append(os.path.join(_SRC_PATH, 'third_party', 'catapult', 'devil'))
 from devil.android import device_utils
 
@@ -53,12 +54,13 @@ def _GetPssInKb(mappings, app_package, verbose):
 
 def _CreateArgumentParser():
   parser = argparse.ArgumentParser()
-  parser.add_argument('--chrome-package', help='Chrome package to look for.',
-                      required=True)
-  parser.add_argument('--app-package', help='Application to inspect.',
-                      required=True)
-  parser.add_argument('--verbose', help='Verbose output.',
-                      action='store_true')
+  parser.add_argument(
+    '--chrome-package', help='Chrome package to look for.', required=True
+  )
+  parser.add_argument(
+    '--app-package', help='Application to inspect.', required=True
+  )
+  parser.add_argument('--verbose', help='Verbose output.', action='store_true')
   return parser
 
 
@@ -78,7 +80,8 @@ def main():
   for process in processes:
     mappings = parse_smaps.ParseProcSmaps(device, process.pid)
     executable_pss_kb, other_pss_kb = _GetPssInKb(
-        mappings, args.app_package, args.verbose)
+      mappings, args.app_package, args.verbose
+    )
     total_executable_pss_kb += executable_pss_kb
     total_other_pss_kb += other_pss_kb
 

@@ -18,24 +18,30 @@ A = TypeVar('A')
 B = TypeVar('B')
 
 CHROMIUM_SRC = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), "..", ".."))
-CLANG_FORMAT = os.path.join(CHROMIUM_SRC, 'third_party', 'depot_tools',
-                            'clang_format.py')
+  os.path.join(os.path.dirname(__file__), "..", "..")
+)
+CLANG_FORMAT = os.path.join(
+  CHROMIUM_SRC, 'third_party', 'depot_tools', 'clang_format.py'
+)
 
 # The full set of macros which we consider when looking for test definitions.
 # Any such macro wrapping a GTest macro can be added to this list, so we can
 # detect it for disabling tests. This list is likely incomplete.
 TEST_MACROS = {
-    'TEST',
-    'TEST_F',
-    'TYPED_TEST',
-    'IN_PROC_BROWSER_TEST',
-    'IN_PROC_BROWSER_TEST_F',
+  'TEST',
+  'TEST_F',
+  'TYPED_TEST',
+  'IN_PROC_BROWSER_TEST',
+  'IN_PROC_BROWSER_TEST_F',
 }
 
 
-def disabler(full_test_name: str, source_file: str, new_cond: Condition,
-             message: Optional[str]) -> str:
+def disabler(
+  full_test_name: str,
+  source_file: str,
+  new_cond: Condition,
+  message: Optional[str],
+) -> str:
   """Disable a GTest test within the given file.
 
   Args:
@@ -141,8 +147,10 @@ def disabler(full_test_name: str, source_file: str, new_cond: Condition,
     elif merged == conditions.NEVER:
       replacement_name = test_name
 
-    replace_line(test_name_index,
-                 lines[test_name_index].replace(current_name, replacement_name))
+    replace_line(
+      test_name_index,
+      lines[test_name_index].replace(current_name, replacement_name),
+    )
 
     if src_range:
       delete_lines(src_range[0], src_range[1] + 1)
@@ -153,17 +161,18 @@ def disabler(full_test_name: str, source_file: str, new_cond: Condition,
     return clang_format('\n'.join(lines), modified_lines)
 
   # => now conditionally disabled
-  replace_line(test_name_index,
-               lines[test_name_index].replace(current_name, maybe))
+  replace_line(
+    test_name_index, lines[test_name_index].replace(current_name, maybe)
+  )
 
   condition_impl = cc_format_condition(merged)
 
   condition_block = [
-      f'#if {condition_impl}',
-      f'#define {maybe} {disabled}',
-      '#else',
-      f'#define {maybe} {test_name}',
-      '#endif',
+    f'#if {condition_impl}',
+    f'#define {maybe} {disabled}',
+    '#else',
+    f'#define {maybe} {test_name}',
+    '#endif',
   ]
 
   if src_range:
@@ -187,9 +196,9 @@ def disabler(full_test_name: str, source_file: str, new_cond: Condition,
   # Insert includes.
   # First find the set of headers we need for the given condition.
   necessary_includes = {
-      include
-      for var in conditions.find_terminals(merged)
-      if (include := var.gtest_info.header) is not None
+    include
+    for var in conditions.find_terminals(merged)
+    if (include := var.gtest_info.header) is not None
   }
 
   # Then scan through the existing set of headers, finding which are already
@@ -328,7 +337,8 @@ def find_conditions(lines: List[str], start_line: int, test_name: str):
     elif name == 'define' and args[0] == maybe_test:
       if most_recent_endif is None:
         raise Exception(
-            f'{maybe_test} is defined outside of a preprocessor conditional')
+          f'{maybe_test} is defined outside of a preprocessor conditional'
+        )
 
       found_define = True
       if args[1] == disabled_test:
@@ -397,8 +407,9 @@ def get_directive(lines: List[str], i: int) -> Optional[Tuple[str, Any]]:
   # NOTE: This is a subset of all valid preprocessing tokens, as this matches
   # the set that are typically used. We may need to expand this in the future,
   # e.g. to more fully match integer literals.
-  tokens = re.findall('"[^"]*"|<[^>]*>|\\w+|\\d+|&&|\|\||[,()!]',
-                      match.group(2))
+  tokens = re.findall(
+    '"[^"]*"|<[^>]*>|\\w+|\\d+|&&|\|\||[,()!]', match.group(2)
+  )
 
   # Reverse the token list, so we can pop from the end non-quadratically. We
   # could also maintain an index, but it would have to be shared down the whole
@@ -489,23 +500,22 @@ BUILDFLAG_TYPE = object()
 
 # Extend conditions.TERMINALS with GTest-specific info.
 for t_name, t_repr in [
-    ('android', GTestInfo(BUILDFLAG_TYPE, 'IS_ANDROID',
-                          'build/build_config.h')),
-    ('chromeos', GTestInfo(BUILDFLAG_TYPE, 'IS_CHROMEOS',
-                           'build/build_config.h')),
-    ('fuchsia', GTestInfo(BUILDFLAG_TYPE, 'IS_FUCHSIA',
-                          'build/build_config.h')),
-    ('ios', GTestInfo(BUILDFLAG_TYPE, 'IS_IOS', 'build/build_config.h')),
-    ('linux', GTestInfo(BUILDFLAG_TYPE, 'IS_LINUX', 'build/build_config.h')),
-    ('mac', GTestInfo(BUILDFLAG_TYPE, 'IS_MAC', 'build/build_config.h')),
-    ('win', GTestInfo(BUILDFLAG_TYPE, 'IS_WIN', 'build/build_config.h')),
-    ('arm64', GTestInfo(MACRO_TYPE, 'ARCH_CPU_ARM64', 'build/build_config.h')),
-    ('x86', GTestInfo(MACRO_TYPE, 'ARCH_CPU_X86', 'build/build_config.h')),
-    ('x86-64', GTestInfo(MACRO_TYPE, 'ARCH_CPU_X86_64',
-                         'build/build_config.h')),
-    ('asan', GTestInfo(MACRO_TYPE, 'ADDRESS_SANITIZER', None)),
-    ('msan', GTestInfo(MACRO_TYPE, 'MEMORY_SANITIZER', None)),
-    ('tsan', GTestInfo(MACRO_TYPE, 'THREAD_SANITIZER', None)),
+  ('android', GTestInfo(BUILDFLAG_TYPE, 'IS_ANDROID', 'build/build_config.h')),
+  (
+    'chromeos',
+    GTestInfo(BUILDFLAG_TYPE, 'IS_CHROMEOS', 'build/build_config.h'),
+  ),
+  ('fuchsia', GTestInfo(BUILDFLAG_TYPE, 'IS_FUCHSIA', 'build/build_config.h')),
+  ('ios', GTestInfo(BUILDFLAG_TYPE, 'IS_IOS', 'build/build_config.h')),
+  ('linux', GTestInfo(BUILDFLAG_TYPE, 'IS_LINUX', 'build/build_config.h')),
+  ('mac', GTestInfo(BUILDFLAG_TYPE, 'IS_MAC', 'build/build_config.h')),
+  ('win', GTestInfo(BUILDFLAG_TYPE, 'IS_WIN', 'build/build_config.h')),
+  ('arm64', GTestInfo(MACRO_TYPE, 'ARCH_CPU_ARM64', 'build/build_config.h')),
+  ('x86', GTestInfo(MACRO_TYPE, 'ARCH_CPU_X86', 'build/build_config.h')),
+  ('x86-64', GTestInfo(MACRO_TYPE, 'ARCH_CPU_X86_64', 'build/build_config.h')),
+  ('asan', GTestInfo(MACRO_TYPE, 'ADDRESS_SANITIZER', None)),
+  ('msan', GTestInfo(MACRO_TYPE, 'MEMORY_SANITIZER', None)),
+  ('tsan', GTestInfo(MACRO_TYPE, 'THREAD_SANITIZER', None)),
 ]:
   conditions.get_term(t_name).gtest_info = t_repr
 
@@ -537,8 +547,9 @@ def canonicalise(parsed_condition) -> Condition:
   # If not a logical operator, this must a be a function-style macro used to
   # express a condition. Find the Terminal it represents.
   assert len(args) == 1
-  term = next((t for t in conditions.TERMINALS if t.gtest_info.name == args[0]),
-              None)
+  term = next(
+    (t for t in conditions.TERMINALS if t.gtest_info.name == args[0]), None
+  )
   if term is None:
     # TODO: Should probably produce with a nicer error message here, as this is
     # a somewhat expected case where we can't parse the existing condition.
@@ -596,13 +607,15 @@ def clang_format(file_contents: str, modified_lines: List[int]) -> str:
   # things simple for the calling code.
   modified_lines = [i + 1 for i in modified_lines]
 
-  p = subprocess.Popen(['python3', CLANG_FORMAT, '--style=file'] +
-                       [f'--lines={i}:{i}' for i in modified_lines],
-                       cwd=CHROMIUM_SRC,
-                       stdin=subprocess.PIPE,
-                       stdout=subprocess.PIPE,
-                       stderr=subprocess.PIPE,
-                       text=True)
+  p = subprocess.Popen(
+    ['python3', CLANG_FORMAT, '--style=file']
+    + [f'--lines={i}:{i}' for i in modified_lines],
+    cwd=CHROMIUM_SRC,
+    stdin=subprocess.PIPE,
+    stdout=subprocess.PIPE,
+    stderr=subprocess.PIPE,
+    text=True,
+  )
 
   stdout, stderr = p.communicate(file_contents)
 

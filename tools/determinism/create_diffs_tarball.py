@@ -31,12 +31,15 @@ def CreateArchive(first, second, input_files, output_file):
 
 def main():
   parser = argparse.ArgumentParser()
-  parser.add_argument('-f', '--first-build-dir',
-                      help='The first build directory')
-  parser.add_argument('-s', '--second-build-dir',
-                      help='The second build directory')
-  parser.add_argument('--json-input',
-                      help='JSON file to specify list of files to archive.')
+  parser.add_argument(
+    '-f', '--first-build-dir', help='The first build directory'
+  )
+  parser.add_argument(
+    '-s', '--second-build-dir', help='The second build directory'
+  )
+  parser.add_argument(
+    '--json-input', help='JSON file to specify list of files to archive.'
+  )
   parser.add_argument('--output', help='output filename.')
   args = parser.parse_args()
 
@@ -52,8 +55,9 @@ def main():
   with open(args.json_input) as f:
     input_files = json.load(f)
 
-  CreateArchive(args.first_build_dir, args.second_build_dir, input_files,
-                args.output)
+  CreateArchive(
+    args.first_build_dir, args.second_build_dir, input_files, args.output
+  )
 
 
 if __name__ == '__main__':

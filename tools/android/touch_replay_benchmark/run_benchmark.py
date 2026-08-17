@@ -49,7 +49,8 @@ import sys
 import time
 
 _SRC_PATH = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), '..', '..', '..'))
+  os.path.join(os.path.dirname(__file__), '..', '..', '..')
+)
 
 sys.path.append(os.path.join(_SRC_PATH, 'third_party'))
 import pyyaml
@@ -67,8 +68,9 @@ from pylib import constants
 sys.path.append(os.path.join(_SRC_PATH, 'tools', 'variations'))
 import fieldtrial_util
 
-_FIELDTRIAL_TESTING_CONFIG = os.path.join(_SRC_PATH, 'testing', 'variations',
-                                          'fieldtrial_testing_config.json')
+_FIELDTRIAL_TESTING_CONFIG = os.path.join(
+  _SRC_PATH, 'testing', 'variations', 'fieldtrial_testing_config.json'
+)
 
 _EVENTS_FILE_ON_DEVICE = '/data/local/tmp/touch_events.dump'
 _REPLAY_EXECUTABLE_ON_DEVICE = '/data/local/tmp/touch_replay'
@@ -79,38 +81,43 @@ _EMPTY_FILE_ON_DEVICE = '/data/local/tmp/empty_file'
 def _CreateParser():
   parser = argparse.ArgumentParser()
   parser.add_argument('-d', '--device', help='Android device to use.')
-  parser.add_argument('-o',
-                      '--output',
-                      required=True,
-                      help='Directory for results.')
-  parser.add_argument('-c',
-                      '--config',
-                      required=True,
-                      help='YAML configuration file defining ' +
-                      'combinations of parameters to be compared. ' +
-                      'See example.yaml.')
-  parser.add_argument('-e',
-                      '--events',
-                      required=True,
-                      help='Replay file to simulate touch gestures')
-  parser.add_argument('-r',
-                      '--replayer',
-                      required=True,
-                      help='Path to the |touch_replay| binary')
-  parser.add_argument('-n',
-                      '--n',
-                      type=int,
-                      default=-1,
-                      help='Number of runs to make. ' +
-                      'A negative number means infinite. ' +
-                      'This is the default')
+  parser.add_argument(
+    '-o', '--output', required=True, help='Directory for results.'
+  )
+  parser.add_argument(
+    '-c',
+    '--config',
+    required=True,
+    help='YAML configuration file defining '
+    + 'combinations of parameters to be compared. '
+    + 'See example.yaml.',
+  )
+  parser.add_argument(
+    '-e',
+    '--events',
+    required=True,
+    help='Replay file to simulate touch gestures',
+  )
+  parser.add_argument(
+    '-r', '--replayer', required=True, help='Path to the |touch_replay| binary'
+  )
+  parser.add_argument(
+    '-n',
+    '--n',
+    type=int,
+    default=-1,
+    help='Number of runs to make. '
+    + 'A negative number means infinite. '
+    + 'This is the default',
+  )
   return parser
 
 
 def _GetPreferredDevice(preferred_device_serial):
   if preferred_device_serial:
     devices = device_utils.DeviceUtils.HealthyDevices(
-        device_arg=preferred_device_serial)
+      device_arg=preferred_device_serial
+    )
   else:
     devices = device_utils.DeviceUtils.HealthyDevices()
   if devices and devices[0].IsOnline():
@@ -119,42 +126,52 @@ def _GetPreferredDevice(preferred_device_serial):
 
 
 def _PrepareNotification(device: device_utils.DeviceUtils):
-  device.RunShellCommand(['/system/bin/rm', '-rf', _NOTIFY_FILE_ON_DEVICE],
-                         check_return=True)
-  device.RunShellCommand(['/system/bin/mkdir', '-p', _NOTIFY_FILE_ON_DEVICE],
-                         check_return=True)
+  device.RunShellCommand(
+    ['/system/bin/rm', '-rf', _NOTIFY_FILE_ON_DEVICE], check_return=True
+  )
+  device.RunShellCommand(
+    ['/system/bin/mkdir', '-p', _NOTIFY_FILE_ON_DEVICE], check_return=True
+  )
 
 
 def _LogcatMessage(device, message: str):
-  device.RunShellCommand(['log', '-p', 'v', '-t', 'touch_replay', message],
-                         check_return=True)
+  device.RunShellCommand(
+    ['log', '-p', 'v', '-t', 'touch_replay', message], check_return=True
+  )
 
 
 def _TouchNotificationFileOnDevice(device: device_utils.DeviceUtils):
   _LogcatMessage(device, 'RequestJankTrackerCSV')
-  device.RunShellCommand(['/system/bin/touch', _EMPTY_FILE_ON_DEVICE],
-                         check_return=True)
   device.RunShellCommand(
-      ['/system/bin/mv', '-f', _EMPTY_FILE_ON_DEVICE, _NOTIFY_FILE_ON_DEVICE],
-      check_return=True)
+    ['/system/bin/touch', _EMPTY_FILE_ON_DEVICE], check_return=True
+  )
+  device.RunShellCommand(
+    ['/system/bin/mv', '-f', _EMPTY_FILE_ON_DEVICE, _NOTIFY_FILE_ON_DEVICE],
+    check_return=True,
+  )
 
 
 def _ReplayTouchEvents(device: device_utils.DeviceUtils):
   time.sleep(1)
   device.RunShellCommand(
-      [_REPLAY_EXECUTABLE_ON_DEVICE, 'replay', _EVENTS_FILE_ON_DEVICE],
-      as_root=True,
-      check_return=True)
+    [_REPLAY_EXECUTABLE_ON_DEVICE, 'replay', _EVENTS_FILE_ON_DEVICE],
+    as_root=True,
+    check_return=True,
+  )
   time.sleep(5)
   _TouchNotificationFileOnDevice(device)
 
 
-def _ReplayTouchEventsWithCpuProfile(device: device_utils.DeviceUtils,
-                                     trace_dir: str, config):
+def _ReplayTouchEventsWithCpuProfile(
+  device: device_utils.DeviceUtils, trace_dir: str, config
+):
   os.makedirs(trace_dir)
   command = [
-      config['cpu_profile'], '--config', config['chrometto_config'], '-o',
-      trace_dir
+    config['cpu_profile'],
+    '--config',
+    config['chrometto_config'],
+    '-o',
+    trace_dir,
   ]
   proc = subprocess.Popen(command)
 
@@ -172,11 +189,14 @@ def _ExtractJankCsv(logcat_monitor):
     result_line_re = re.compile(r'JankyDurationTrackerCSV:(.*)$')
     match = logcat_monitor.WaitFor(result_line_re, timeout=60)
     occurrences = sum(
-        1 for _ in logcat_monitor.FindAll(r'.*JankyDurationTrackerCSV:.*'))
+      1 for _ in logcat_monitor.FindAll(r'.*JankyDurationTrackerCSV:.*')
+    )
     if occurrences != 1:
       logging.error(
-          'JankyDurationTrackerCSV occurrences: {}, skipping result'.format(
-              occurrences))
+        'JankyDurationTrackerCSV occurrences: {}, skipping result'.format(
+          occurrences
+        )
+      )
     else:
       return match[1]
   except device_errors.CommandTimeoutError as _:
@@ -200,11 +220,12 @@ def _FlattenParsedConfig(config: dict):
 
 
 def _FlagsForConfig(config):
-  fieldtrial_args = fieldtrial_util.GenerateArgs(_FIELDTRIAL_TESTING_CONFIG,
-                                                 'android')
+  fieldtrial_args = fieldtrial_util.GenerateArgs(
+    _FIELDTRIAL_TESTING_CONFIG, 'android'
+  )
   flags = fieldtrial_args + [
-      '--disable-fre',
-      '--watch-dir-for-scroll-jank-report={}'.format(_NOTIFY_FILE_ON_DEVICE)
+    '--disable-fre',
+    '--watch-dir-for-scroll-jank-report={}'.format(_NOTIFY_FILE_ON_DEVICE),
   ]
   config_args = config['args']
   if 'named_args' in config and config_args in config['named_args']:
@@ -215,8 +236,12 @@ def _FlagsForConfig(config):
   return flags
 
 
-def _Run(device: device_utils.DeviceUtils, parsed_config, output_dir_name,
-         runs_to_perform):
+def _Run(
+  device: device_utils.DeviceUtils,
+  parsed_config,
+  output_dir_name,
+  runs_to_perform,
+):
   configs = _FlattenParsedConfig(parsed_config)
   # On the device create the directory for Chrome to watch.
   _PrepareNotification(device)
@@ -228,24 +253,31 @@ def _Run(device: device_utils.DeviceUtils, parsed_config, output_dir_name,
   runs_done = 0
   while runs_done != runs_to_perform:
     config = configs[random.randrange(len(configs))]
-    logcat_file = os.path.join(logcat_dir,
-                               '{:04d}_logcat.txt'.format(runs_done))
+    logcat_file = os.path.join(
+      logcat_dir, '{:04d}_logcat.txt'.format(runs_done)
+    )
     package_info = constants.PACKAGE_INFO['chrome']
 
-    with flag_changer.CustomCommandLineFlags(device, package_info.cmdline_file,
-                                             _FlagsForConfig(config)):
+    with flag_changer.CustomCommandLineFlags(
+      device, package_info.cmdline_file, _FlagsForConfig(config)
+    ):
       url = config['url']
       if 'named_urls' in config and url in config['named_urls']:
         url = config['named_urls'][url]
-      logcat_monitor = device.GetLogcatMonitor(clear=True,
-                                               output_file=logcat_file)
+      logcat_monitor = device.GetLogcatMonitor(
+        clear=True, output_file=logcat_file
+      )
       logcat_monitor.Start()
       try:
-        device.StartActivity(intent.Intent(package=package_info.package,
-                                           activity=package_info.activity,
-                                           data=url),
-                             blocking=True,
-                             force_stop=True)
+        device.StartActivity(
+          intent.Intent(
+            package=package_info.package,
+            activity=package_info.activity,
+            data=url,
+          ),
+          blocking=True,
+          force_stop=True,
+        )
         # Wait some for the webpage to load.
         time.sleep(7)
 
@@ -253,8 +285,9 @@ def _Run(device: device_utils.DeviceUtils, parsed_config, output_dir_name,
         if not enable_tracing:
           _ReplayTouchEvents(device)
         else:
-          trace_dir = os.path.join(output_dir_name, 'traces',
-                                   '{:04d}_trace'.format(runs_done))
+          trace_dir = os.path.join(
+            output_dir_name, 'traces', '{:04d}_trace'.format(runs_done)
+          )
           _ReplayTouchEventsWithCpuProfile(device, trace_dir, config)
 
         # Save the measurements.
@@ -300,12 +333,16 @@ def main():
   logging.info('Using device: {}'.format(device.serial))
 
   device.PushChangedFiles(
-      [(os.path.abspath(args.events), _EVENTS_FILE_ON_DEVICE),
-       (os.path.abspath(args.replayer), _REPLAY_EXECUTABLE_ON_DEVICE)],
-      delete_device_stale=True)
+    [
+      (os.path.abspath(args.events), _EVENTS_FILE_ON_DEVICE),
+      (os.path.abspath(args.replayer), _REPLAY_EXECUTABLE_ON_DEVICE),
+    ],
+    delete_device_stale=True,
+  )
   if not device.FileExists(_REPLAY_EXECUTABLE_ON_DEVICE):
-    raise Exception('Executable not found on device: {}'.format(
-        _REPLAY_EXECUTABLE_ON_DEVICE))
+    raise Exception(
+      'Executable not found on device: {}'.format(_REPLAY_EXECUTABLE_ON_DEVICE)
+    )
 
   if args.n == 0:
     raise Exception('Requested 0 runs')

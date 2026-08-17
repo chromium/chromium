@@ -7,8 +7,9 @@
 
 def shorten_class(class_name: str) -> str:
     """Returns a shortened version of the fully qualilied class name."""
-    return class_name.replace('org.chromium.',
-                              '.').replace('chrome.browser.', 'c.b.')
+    return class_name.replace('org.chromium.', '.').replace(
+        'chrome.browser.', 'c.b.'
+    )
 
 
 def shorten_build_target(build_target: str) -> str:

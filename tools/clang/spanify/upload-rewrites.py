@@ -42,7 +42,8 @@ def initialize_globals(base_dir=None):
 
     # Fetch the content of docs/unsafe_buffers.md directly from the repository
     unsafe_buffers_path = os.path.abspath(
-        os.path.join(SCRIPT_DIR, "../../../docs/unsafe_buffers.md"))
+        os.path.join(SCRIPT_DIR, "../../../docs/unsafe_buffers.md")
+    )
     if os.path.exists(unsafe_buffers_path):
         with open(unsafe_buffers_path, "r", encoding="utf-8") as f:
             UNSAFE_BUFFERS_DOCS = f.read()
@@ -51,7 +52,8 @@ def initialize_globals(base_dir=None):
             "Reference docs can be found under: docs/unsafe_buffers.md\n"
             "URL: "
             "https://chromium.googlesource.com/chromium/src/+/HEAD/docs/"
-            "unsafe_buffers.md")
+            "unsafe_buffers.md"
+        )
 
 
 def sh(cmd, check=False, cwd=None):
@@ -61,7 +63,6 @@ def sh(cmd, check=False, cwd=None):
     stderr_str = res.stderr.decode("utf-8", errors="replace")
 
     class CommandResult:
-
         def __init__(self, returncode, stdout, stderr):
             self.returncode = returncode
             self.stdout = stdout
@@ -70,10 +71,12 @@ def sh(cmd, check=False, cwd=None):
     result = CommandResult(res.returncode, stdout_str, stderr_str)
 
     if check and result.returncode != 0:
-        raise Exception(f"Command failed: {cmd}\n"
-                        f"exit code: {result.returncode}\n"
-                        f"stdout: {result.stdout}\n"
-                        f"stderr: {result.stderr}")
+        raise Exception(
+            f"Command failed: {cmd}\n"
+            f"exit code: {result.returncode}\n"
+            f"stdout: {result.stdout}\n"
+            f"stderr: {result.stderr}"
+        )
     return result
 
 
@@ -84,7 +87,8 @@ def cleanup_prompt_files():
         if os.path.exists(PROMPT_DIR):
             for filename in os.listdir(PROMPT_DIR):
                 if filename.startswith("tmp_prompt_") and filename.endswith(
-                        ".txt"):
+                    ".txt"
+                ):
                     path = os.path.join(PROMPT_DIR, filename)
                     try:
                         os.remove(path)
@@ -199,24 +203,23 @@ def commit_applied_edits(submodule):
     # Commit the applied edits
     print("Committing changes...")
     sh("git add -u -- ':!third_party'", cwd=submodule)
-    sh('git commit -m "Apply automated spanification patch"',
-       check=True,
-       cwd=submodule)
+    sh(
+        'git commit -m "Apply automated spanification patch"',
+        check=True,
+        cwd=submodule,
+    )
 
 
 def get_modified_files(submodule, sub_main, branch):
     """Returns the list of modified files in the current branch."""
     # Find modified files list compared to the latest upstream main base
-    files_res = sh(f"git diff --name-only {sub_main}...{branch}",
-                   cwd=submodule)
+    files_res = sh(f"git diff --name-only {sub_main}...{branch}", cwd=submodule)
     return " ".join(files_res.stdout.splitlines()).strip()
 
 
-def create_prompt_file(files,
-                       submodule,
-                       branch,
-                       sub_main,
-                       compilation_error=""):
+def create_prompt_file(
+    files, submodule, branch, sub_main, compilation_error=""
+):
     """Creates the prompt file with target files and git diff."""
     # Capture full git diff compared to upstream main base
     diff_res = sh(f"git diff {sub_main}...{branch}", cwd=submodule)
@@ -232,8 +235,9 @@ def create_prompt_file(files,
         prompt = template_file.read()
 
     # Safe substitutions of dynamic context data
-    working_dir = os.path.join(os.getcwd(),
-                               submodule) if submodule else os.getcwd()
+    working_dir = (
+        os.path.join(os.getcwd(), submodule) if submodule else os.getcwd()
+    )
     prompt = prompt.replace("{{TARGET_FILES}}", files)
     prompt = prompt.replace("{{GIT_DIFF}}", git_diff)
     prompt = prompt.replace("{{UNSAFE_BUFFERS_DOCS}}", UNSAFE_BUFFERS_DOCS)
@@ -242,12 +246,14 @@ def create_prompt_file(files,
     # Write prompt contents to a temporary file inside the jetski temp
     # directory to ensure it is never committed
     os.makedirs(PROMPT_DIR, exist_ok=True)
-    with tempfile.NamedTemporaryFile(mode="w+",
-                                     prefix="tmp_prompt_",
-                                     suffix=".txt",
-                                     delete=False,
-                                     encoding="utf-8",
-                                     dir=PROMPT_DIR) as f_prompt:
+    with tempfile.NamedTemporaryFile(
+        mode="w+",
+        prefix="tmp_prompt_",
+        suffix=".txt",
+        delete=False,
+        encoding="utf-8",
+        dir=PROMPT_DIR,
+    ) as f_prompt:
         f_prompt.write(prompt)
         prompt_file_path = f_prompt.name
     return [prompt_file_path, working_dir]
@@ -265,8 +271,8 @@ def call_jetski_cli(prompt_file_path, working_dir, model, abs_working_dir):
     # 1. Create a safe, isolated temporary directory for
     # this run's configuration
     with tempfile.TemporaryDirectory(
-            prefix="jetski_config_") as temp_gemini_dir:
-
+        prefix="jetski_config_"
+    ) as temp_gemini_dir:
         # 2. Replicate the expected internal layout:
         # <gemini_dir>/<app_data_dir>/cli/
         settings_dir = os.path.join(temp_gemini_dir, "jetski", "cli")
@@ -281,14 +287,17 @@ def call_jetski_cli(prompt_file_path, working_dir, model, abs_working_dir):
         temp_dir_abs = os.path.abspath(tempfile.gettempdir())
 
         allowed_paths = sorted(
-            list({
-                abs_working_dir,
-                repo_root,
-                prompt_path_abs,
-                prompt_dir_abs,
-                scratch_dir_abs,
-                temp_dir_abs,
-            }))
+            list(
+                {
+                    abs_working_dir,
+                    repo_root,
+                    prompt_path_abs,
+                    prompt_dir_abs,
+                    scratch_dir_abs,
+                    temp_dir_abs,
+                }
+            )
+        )
 
         allow_rules = [
             "command(git status)",
@@ -317,8 +326,11 @@ def call_jetski_cli(prompt_file_path, working_dir, model, abs_working_dir):
         except Exception as e:
             print(f"ERROR: Failed to write settings.json: {e}")
         jetski_cmd = [
-            jetski_path, "--gemini_dir",
-            os.path.abspath(temp_gemini_dir), "--app_data_dir", "jetski"
+            jetski_path,
+            "--gemini_dir",
+            os.path.abspath(temp_gemini_dir),
+            "--app_data_dir",
+            "jetski",
         ]
 
         # Use default model if not specified
@@ -329,12 +341,13 @@ def call_jetski_cli(prompt_file_path, working_dir, model, abs_working_dir):
 
         llm_output = ""
         try:
-            print("Running jetski-cli with native sandbox "
-                  f"path: {temp_gemini_dir}")
-            llm_res = subprocess.run(jetski_cmd,
-                                     text=True,
-                                     cwd=working_dir,
-                                     check=True)
+            print(
+                "Running jetski-cli with native sandbox "
+                f"path: {temp_gemini_dir}"
+            )
+            llm_res = subprocess.run(
+                jetski_cmd, text=True, cwd=working_dir, check=True
+            )
             llm_output = llm_res.stdout
         except subprocess.CalledProcessError as e:
             print(e.stdout)
@@ -372,9 +385,11 @@ def analyze_error(stdout, stderr):
     # Generic fallback: grab the first non-empty, non-utility line of output
     for line in (stderr_clean + "\n" + stdout_clean).split("\n"):
         line_clean = line.strip()
-        if (line_clean
-                and not line_clean.startswith("ninja: Entering directory")
-                and not line_clean.startswith("shutdown cloud logging")):
+        if (
+            line_clean
+            and not line_clean.startswith("ninja: Entering directory")
+            and not line_clean.startswith("shutdown cloud logging")
+        ):
             return line_clean
 
     return "Unknown compilation error"
@@ -386,12 +401,14 @@ def compile_branch(platform, target, submodule, index=None):
     print(f"Compiling the branch in {submodule}...")
     out_dir = f"out/{platform}"
 
-    compile_res = subprocess.run(f"autoninja -C {out_dir} {target}",
-                                 shell=True,
-                                 capture_output=True,
-                                 text=True,
-                                 cwd=submodule)
-    compile_success = (compile_res.returncode == 0)
+    compile_res = subprocess.run(
+        f"autoninja -C {out_dir} {target}",
+        shell=True,
+        capture_output=True,
+        text=True,
+        cwd=submodule,
+    )
+    compile_success = compile_res.returncode == 0
     compile_result = "SUCCESS" if compile_success else "ERROR"
     result_status = "success" if compile_success else "failure"
     print(f"Compilation status: {compile_result}")
@@ -438,19 +455,23 @@ def commit_if_changes(submodule):
         sh("git cl format", cwd=submodule)
         print("Jetski made fixes. Committing changes...")
         sh("git add -u -- ':!third_party'", cwd=submodule)
-        sh('git commit -m "Jetski auto-fixes for compilation"',
-           check=True,
-           cwd=submodule)
+        sh(
+            'git commit -m "Jetski auto-fixes for compilation"',
+            check=True,
+            cwd=submodule,
+        )
 
 
 def compute_diff_stats(submodule, sub_main, branch):
     """Calculate final modifications compared to upstream main
     after fixes were applied."""
-    final_files_res = sh(f"git diff --name-only {sub_main}...{branch}",
-                         cwd=submodule)
+    final_files_res = sh(
+        f"git diff --name-only {sub_main}...{branch}", cwd=submodule
+    )
     first_file = ""
     files_list = [
-        line.strip() for line in final_files_res.stdout.splitlines()
+        line.strip()
+        for line in final_files_res.stdout.splitlines()
         if line.strip()
     ]
     num_files = len(files_list)
@@ -458,8 +479,9 @@ def compute_diff_stats(submodule, sub_main, branch):
         first_file = files_list[0]
 
     # Capture git shortstat to calculate progress
-    shortstat_res = sh(f"git diff {sub_main}...{branch} --shortstat",
-                       cwd=submodule)
+    shortstat_res = sh(
+        f"git diff {sub_main}...{branch} --shortstat", cwd=submodule
+    )
     shortstat = shortstat_res.stdout.strip()
     plus_delta = 0
     minus_delta = 0
@@ -476,34 +498,56 @@ def compute_diff_stats(submodule, sub_main, branch):
     return [plus_delta, minus_delta, total_delta, num_files, first_file]
 
 
-def append_row(branch, gerrit_url, compile_result, plus_delta, minus_delta,
-               total_delta, num_files, compilation_errors, llm_output):
+def append_row(
+    branch,
+    gerrit_url,
+    compile_result,
+    plus_delta,
+    minus_delta,
+    total_delta,
+    num_files,
+    compilation_errors,
+    llm_output,
+):
     """Appends a row to the specified csv file."""
     # patch source identifier
     with open(PATCHES_CSV, "a", newline="", encoding="utf-8") as f_csv:
         writer = csv.writer(f_csv, quoting=csv.QUOTE_MINIMAL)
-        writer.writerow([
-            branch, gerrit_url, compile_result, plus_delta, minus_delta,
-            total_delta, num_files, compilation_errors, llm_output
-        ])
+        writer.writerow(
+            [
+                branch,
+                gerrit_url,
+                compile_result,
+                plus_delta,
+                minus_delta,
+                total_delta,
+                num_files,
+                compilation_errors,
+                llm_output,
+            ]
+        )
 
 
-def upload_to_gerrit(submodule, branch, bug_number, first_file, fixed_text,
-                     patch):
+def upload_to_gerrit(
+    submodule, branch, bug_number, first_file, fixed_text, patch
+):
     """Uploads the branch to Gerrit with the specified bug number."""
     gerrit_url = ""
     # Use the current patch file name as original patch info
     original_patch = f"Original patch: {patch}"
 
     # Compose complete commit description
-    commit_msg = (f"Spanification of {first_file}, etc.\n\n"
-                  f"{fixed_text}\n\n"
-                  f"{original_patch}\n\n"
-                  f"Bug: {bug_number}")
+    commit_msg = (
+        f"Spanification of {first_file}, etc.\n\n"
+        f"{fixed_text}\n\n"
+        f"{original_patch}\n\n"
+        f"Bug: {bug_number}"
+    )
 
     # Handle Gerrit upload securely using temporary message file
-    with tempfile.NamedTemporaryFile(mode="w+", suffix=".txt",
-                                     delete=False) as f_msg:
+    with tempfile.NamedTemporaryFile(
+        mode="w+", suffix=".txt", delete=False
+    ) as f_msg:
         f_msg.write(commit_msg)
         f_msg_path = f_msg.name
 
@@ -521,11 +565,13 @@ def upload_to_gerrit(submodule, branch, bug_number, first_file, fixed_text,
             "--message-file",
             f_msg_path,
         ]
-        process = subprocess.Popen(upload_cmd,
-                                   stdout=subprocess.PIPE,
-                                   stderr=subprocess.STDOUT,
-                                   text=True,
-                                   cwd=submodule)
+        process = subprocess.Popen(
+            upload_cmd,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True,
+            cwd=submodule,
+        )
         upload_output_list = []
         while True:
             line = process.stdout.readline()
@@ -550,26 +596,40 @@ def upload_to_gerrit(submodule, branch, bug_number, first_file, fixed_text,
                 print(f"Gerrit CL URL: {gerrit_url}")
                 print(f"Gerrit CL Number: {cl_number}")
             else:
-                print("WARNING: Could not parse Gerrit URL " +
-                      "from upload output.")
+                print(
+                    "WARNING: Could not parse Gerrit URL "
+                    + "from upload output."
+                )
         else:
             print(f"ERROR: git cl upload failed for branch {branch}")
             if "User has no Gerrit Account" in upload_output:
                 print("\n" + "=" * 80)
-                print("[ERROR] Gerrit Authentication Failure: "
-                      "User has no Gerrit Account.")
-                print("This usually means you need to register your "
-                      "account on the Gerrit host.")
-                print("Please visit the Gerrit UI in your browser and sign in "
-                      "once to activate your account.")
+                print(
+                    "[ERROR] Gerrit Authentication Failure: "
+                    "User has no Gerrit Account."
+                )
+                print(
+                    "This usually means you need to register your "
+                    "account on the Gerrit host."
+                )
+                print(
+                    "Please visit the Gerrit UI in your browser and sign in "
+                    "once to activate your account."
+                )
                 print("For Dawn, visit: https://dawn-review.googlesource.com/")
-                print("For Chromium, visit: "
-                      "https://chromium-review.googlesource.com/")
+                print(
+                    "For Chromium, visit: "
+                    "https://chromium-review.googlesource.com/"
+                )
                 print("\nOther troubleshooting steps:")
-                print("1. Ensure you have a valid SSO ticket by running: "
-                      "sso-client")
-                print("2. Run 'git cl creds-check' in the repository to "
-                      "verify your credentials.")
+                print(
+                    "1. Ensure you have a valid SSO ticket by running: "
+                    "sso-client"
+                )
+                print(
+                    "2. Run 'git cl creds-check' in the repository to "
+                    "verify your credentials."
+                )
                 print("=" * 80 + "\n")
     finally:
         if os.path.exists(f_msg_path):
@@ -594,60 +654,66 @@ def get_arguments():
         description=(
             "Refines automatic C++ spanification branches using jetski-cli,\n"
             "compiles changes locally to verify fixes, and uploads patchsets "
-            "to Gerrit."),
-        epilog=("How to run the command:\n"
-                "  1. Run with standard/default bug option:\n"
-                "     python3 upload-rewrites.py\n\n"
-                "  2. Run with custom Buganizer/Gerrit bug number:\n"
-                "     python3 upload-rewrites.py --bug 123456789\n"
-                "     python3 upload-rewrites.py -b 123456789\n\n"
-                "  3. Run starting from branch review/compilation index"
-                "     (e.g., branch 40):\n"
-                "     python3 upload-rewrites.py --start 40\n\n"
-                "  4. Run selecting another platform:\n"
-                "     python3 upload-rewrites.py --platform android"),
-        formatter_class=argparse.RawDescriptionHelpFormatter)
+            "to Gerrit."
+        ),
+        epilog=(
+            "How to run the command:\n"
+            "  1. Run with standard/default bug option:\n"
+            "     python3 upload-rewrites.py\n\n"
+            "  2. Run with custom Buganizer/Gerrit bug number:\n"
+            "     python3 upload-rewrites.py --bug 123456789\n"
+            "     python3 upload-rewrites.py -b 123456789\n\n"
+            "  3. Run starting from branch review/compilation index"
+            "     (e.g., branch 40):\n"
+            "     python3 upload-rewrites.py --start 40\n\n"
+            "  4. Run selecting another platform:\n"
+            "     python3 upload-rewrites.py --platform android"
+        ),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
     parser.add_argument(
         "--bug_number",
         "-b",
         type=str,
         default="439964610",
         help="Gerrit/Buganizer bug number to include in the commit description"
-        "(default: 439964610)")
+        "(default: 439964610)",
+    )
     parser.add_argument(
         "--project",
         type=str,
         default="auto",
-        help=
-        "Project to select for spanification (e.g., chrome, partition_alloc, "
-        "dawn, skia, angle; default: auto)")
+        help="Project to select for spanification (e.g., chrome, partition_alloc, "
+        "dawn, skia, angle; default: auto)",
+    )
     parser.add_argument(
         "--start_branch",
         "-s",
         type=int,
         default=0,
         help="The branch number to start iterating from "
-        "(e.g., 40 to start from spanification_rewrite_evaluate_40)")
+        "(e.g., 40 to start from spanification_rewrite_evaluate_40)",
+    )
     parser.add_argument(
         "--platform",
         "-p",
         type=str,
         default="linux",
-        help=
-        "Platform to select for building/verifying changes (default: linux)")
+        help="Platform to select for building/verifying changes (default: linux)",
+    )
     parser.add_argument(
         "--model",
         "-m",
         type=str,
         default="",
-        help="Model to use for jetski-cli, uses default model if not specified"
+        help="Model to use for jetski-cli, uses default model if not specified",
     )
     parser.add_argument(
         "--upload",
         "-u",
         type=str2bool,
         default=True,
-        help="upload each patch to gerrit after aplying jetski (default: true)"
+        help="upload each patch to gerrit after aplying jetski (default: true)",
     )
     return parser.parse_args()
 
@@ -668,9 +734,17 @@ def main():
     cleanup_prompt_files()
 
     # Ensure patches.csv is prepared
-    append_row("original_patch", "gerrit_url", "compile_result", "plus_delta",
-               "minus_delta", "total_delta", "num_files", "compilation_errors",
-               "llm_output")
+    append_row(
+        "original_patch",
+        "gerrit_url",
+        "compile_result",
+        "plus_delta",
+        "minus_delta",
+        "total_delta",
+        "num_files",
+        "compilation_errors",
+        "llm_output",
+    )
 
     # # Switch to main branch first
     # sh("git checkout main", check=True)
@@ -705,8 +779,7 @@ Then refined with jetski-cli and at last manually refined"""
                 sub_main = "master"  # nocheck
 
         # Create/reset the branch off main
-        res_checkout = sh(f"git checkout -B {branch} {sub_main}",
-                          cwd=submodule)
+        res_checkout = sh(f"git checkout -B {branch} {sub_main}", cwd=submodule)
         if res_checkout.returncode != 0:
             print(f"ERROR: Failed to checkout/create branch {branch}")
             continue
@@ -723,8 +796,9 @@ Then refined with jetski-cli and at last manually refined"""
         commit_applied_edits(submodule)
 
         print("Compiling branch to check if automatic spanification passes...")
-        [compile_result, compilation_errors,
-         clean_output] = compile_branch(platform, target, submodule, index)
+        [compile_result, compilation_errors, clean_output] = compile_branch(
+            platform, target, submodule, index
+        )
 
         llm_output = ""
         if compile_result != "SUCCESS":
@@ -733,41 +807,58 @@ Then refined with jetski-cli and at last manually refined"""
             files = get_modified_files(submodule, sub_main, branch)
 
             # Create prompt file with target files and git diff
-            [prompt_file_path,
-             working_dir] = create_prompt_file(files, submodule, branch,
-                                               sub_main, clean_output)
+            [prompt_file_path, working_dir] = create_prompt_file(
+                files, submodule, branch, sub_main, clean_output
+            )
 
             if not prompt_file_path:
                 break
 
             abs_working_dir = os.path.abspath(working_dir)
-            llm_output = call_jetski_cli(prompt_file_path, working_dir, model,
-                                         abs_working_dir)
+            llm_output = call_jetski_cli(
+                prompt_file_path, working_dir, model, abs_working_dir
+            )
 
             commit_if_changes(submodule)
 
-            [compile_result, compilation_errors,
-             clean_output] = compile_branch(platform, target, submodule, index)
+            [compile_result, compilation_errors, clean_output] = compile_branch(
+                platform, target, submodule, index
+            )
         else:
-            print("Automatic spanification compiled successfully! "
-                  "Skipping jetski-cli.")
+            print(
+                "Automatic spanification compiled successfully! "
+                "Skipping jetski-cli."
+            )
 
-        [plus_delta, minus_delta, total_delta, num_files,
-         first_file] = compute_diff_stats(submodule, sub_main, branch)
+        [plus_delta, minus_delta, total_delta, num_files, first_file] = (
+            compute_diff_stats(submodule, sub_main, branch)
+        )
 
         if num_files == 0:
-            print(f"WARNING: No diff found between {branch} and main."
-                  "Skipping upload.")
+            print(
+                f"WARNING: No diff found between {branch} and main."
+                "Skipping upload."
+            )
             sh(f"git checkout {sub_main}", cwd=submodule)
             continue
 
         gerrit_url = ""
         if upload_arg:
-            gerrit_url = upload_to_gerrit(submodule, branch, bug_number,
-                                          first_file, fixed_text, patch)
+            gerrit_url = upload_to_gerrit(
+                submodule, branch, bug_number, first_file, fixed_text, patch
+            )
 
-        append_row(branch, gerrit_url, compile_result, plus_delta, minus_delta,
-                   total_delta, num_files, compilation_errors, llm_output)
+        append_row(
+            branch,
+            gerrit_url,
+            compile_result,
+            plus_delta,
+            minus_delta,
+            total_delta,
+            num_files,
+            compilation_errors,
+            llm_output,
+        )
 
         cleanup_prompt_files()
 

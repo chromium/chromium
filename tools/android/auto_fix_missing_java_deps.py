@@ -18,17 +18,19 @@ from pylib import constants
 
 def main():
   parser = argparse.ArgumentParser(
-      description='Continuously build and apply GN deps fixes.')
-  parser.add_argument('-C',
-                      '--output-directory',
-                      help='Path to the root build directory.')
-  parser.add_argument('--quiet',
-                      action='store_true',
-                      help='Pass --quiet to autoninja')
+    description='Continuously build and apply GN deps fixes.'
+  )
+  parser.add_argument(
+    '-C', '--output-directory', help='Path to the root build directory.'
+  )
+  parser.add_argument(
+    '--quiet', action='store_true', help='Pass --quiet to autoninja'
+  )
   parser.add_argument('targets', nargs='*', help='Targets to build')
 
-  logging.basicConfig(level=logging.INFO,
-                      format='\033[33mStatus:\033[0m %(message)s')
+  logging.basicConfig(
+    level=logging.INFO, format='\033[33mStatus:\033[0m %(message)s'
+  )
   args = parser.parse_args()
   if args.output_directory:
     constants.SetOutputDirectory(args.output_directory)
@@ -59,7 +61,7 @@ def main():
 
     with open(siso_output_path, 'r') as f:
       commands = [
-          l.strip() for l in f if l.strip().startswith('build/gn_editor')
+        l.strip() for l in f if l.strip().startswith('build/gn_editor')
       ]
 
     if not commands:
@@ -71,8 +73,9 @@ def main():
       cmd_parts = shlex.split(command)
       subprocess.run(cmd_parts, check=True, cwd=_SRC_ROOT)
 
-  logging.info('Still not fixed after %d iterations. Giving up.',
-               iteration_count)
+  logging.info(
+    'Still not fixed after %d iterations. Giving up.', iteration_count
+  )
   return 1
 
 

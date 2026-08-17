@@ -17,10 +17,13 @@ import node_modules
 
 def main():
   try:
-    node.RunNode([
-        node_modules.PathToTypescript(), '--project',
-        str(_HERE_DIR / 'jsconfig.json')
-    ])
+    node.RunNode(
+      [
+        node_modules.PathToTypescript(),
+        '--project',
+        str(_HERE_DIR / 'jsconfig.json'),
+      ]
+    )
   except RuntimeError as e:
     # Skip first line, which is just error text added by node.RunNode().
     lines = str(e).splitlines()[1:]

@@ -14,15 +14,18 @@ import subprocess
 
 START_OF_TEXT_SYMBOL = 'linker_script_start_of_text'
 
-_SRC_PATH = os.path.abspath(os.path.join(
-    os.path.dirname(__file__), os.pardir, os.pardir))
-_TOOL_PREFIX = os.path.join(_SRC_PATH, 'third_party', 'llvm-build',
-                            'Release+Asserts', 'bin', 'llvm-')
+_SRC_PATH = os.path.abspath(
+  os.path.join(os.path.dirname(__file__), os.pardir, os.pardir)
+)
+_TOOL_PREFIX = os.path.join(
+  _SRC_PATH, 'third_party', 'llvm-build', 'Release+Asserts', 'bin', 'llvm-'
+)
 
 _MAX_WARNINGS_TO_PRINT = 200
 
-SymbolInfo = collections.namedtuple('SymbolInfo', ('name', 'offset', 'size',
-                                                   'section'))
+SymbolInfo = collections.namedtuple(
+  'SymbolInfo', ('name', 'offset', 'size', 'section')
+)
 
 
 def _IsExpectedSectionForInstrumentedCode(section):
@@ -75,7 +78,8 @@ def _SymbolInfosFromStream(input_file):
     # translating offsets from the profile dumps.
     if name == START_OF_TEXT_SYMBOL:
       symbol_infos.append(
-          SymbolInfo(name=name, offset=offset, section='.text', size=0))
+        SymbolInfo(name=name, offset=offset, section='.text', size=0)
+      )
       continue
     # Check symbol type for validity and ignore some types.
     symbol_type = symbol['Type']['Name']
@@ -97,7 +101,8 @@ def _SymbolInfosFromStream(input_file):
     # name. Break early on encountering symbols in unexpected sections to get
     # notified about adjustments due.
     assert _IsExpectedSectionForInstrumentedCode(section), (
-        f'Symbol {name} in unexpected section "{section}"')
+      f'Symbol {name} in unexpected section "{section}"'
+    )
     assert scope in ['Local', 'Global', 'Weak']
     # Forbid ARM mapping symbols and other unexpected symbol names, but allow $
     # characters in a non-initial position, which can appear as a component of a
@@ -111,10 +116,9 @@ def _SymbolInfosFromStream(input_file):
     # prefixes is done by disallowing spaces in symbol names.
     assert re.match('^[a-zA-Z0-9_.][a-zA-Z0-9_.$]*$', name), name
 
-    symbol_info = SymbolInfo(name=name,
-                             offset=offset,
-                             section=section,
-                             size=size)
+    symbol_info = SymbolInfo(
+      name=name, offset=offset, section=section, size=size
+    )
     # On ARM the LLD linker inserts pseudo-functions (thunks) that allow
     # jumping distances farther than 16 MiB. Such thunks are known to often
     # reside on multiple offsets, they are not instrumented and hence they do
@@ -126,16 +130,27 @@ def _SymbolInfosFromStream(input_file):
   # Outlined functions are known to be repeated often, so ignore them in the
   # repeated symbol count.
   repeated_symbols = list(
-      filter(lambda s: len(name_to_offsets[s]) > 1,
-             (k for k in name_to_offsets.keys()
-              if not k.startswith('OUTLINED_FUNCTION_'))))
+    filter(
+      lambda s: len(name_to_offsets[s]) > 1,
+      (
+        k
+        for k in name_to_offsets.keys()
+        if not k.startswith('OUTLINED_FUNCTION_')
+      ),
+    )
+  )
   if repeated_symbols:
     # Log the first 5 repeated offsets of the first 10 repeated symbols.
-    logging.warning('%d symbols repeated with multiple offsets:\n %s',
-                    len(repeated_symbols), '\n '.join(
-                        '{} {}'.format(sym, ' '.join(
-                            str(offset) for offset in name_to_offsets[sym][:5]))
-                        for sym in repeated_symbols[:10]))
+    logging.warning(
+      '%d symbols repeated with multiple offsets:\n %s',
+      len(repeated_symbols),
+      '\n '.join(
+        '{} {}'.format(
+          sym, ' '.join(str(offset) for offset in name_to_offsets[sym][:5])
+        )
+        for sym in repeated_symbols[:10]
+      ),
+    )
 
   return symbol_infos
 
@@ -150,16 +165,22 @@ def SymbolInfosFromBinary(binary_filename):
     A list of SymbolInfo from the binary.
   """
   command = [
-      _TOOL_PREFIX + 'readelf', '--syms', '--elf-output-style=JSON',
-      '--pretty-print', binary_filename
+    _TOOL_PREFIX + 'readelf',
+    '--syms',
+    '--elf-output-style=JSON',
+    '--pretty-print',
+    binary_filename,
   ]
   try:
-    p = subprocess.Popen(command,
-                         stdout=subprocess.PIPE,
-                         universal_newlines=True)
+    p = subprocess.Popen(
+      command, stdout=subprocess.PIPE, universal_newlines=True
+    )
   except OSError as error:
-    logging.error('Failed to execute the command: path=%s, binary_filename=%s',
-                  command[0], binary_filename)
+    logging.error(
+      'Failed to execute the command: path=%s, binary_filename=%s',
+      command[0],
+      binary_filename,
+    )
     raise error
 
   try:
@@ -169,7 +190,8 @@ def SymbolInfosFromBinary(binary_filename):
 
 
 _LLVM_NM_LINE_RE = re.compile(
-    r'^[\-0-9a-f]{8,16}[ ](?P<symbol_type>.)[ ](?P<name>.*)$', re.VERBOSE)
+  r'^[\-0-9a-f]{8,16}[ ](?P<symbol_type>.)[ ](?P<name>.*)$', re.VERBOSE
+)
 
 
 def _SymbolInfosFromLlvmNm(lines):
@@ -193,14 +215,16 @@ def _SymbolInfosFromLlvmNm(lines):
   return symbol_names
 
 
-_NM_PATH = os.path.join(_SRC_PATH, 'third_party', 'llvm-build',
-                        'Release+Asserts', 'bin', 'llvm-nm')
+_NM_PATH = os.path.join(
+  _SRC_PATH, 'third_party', 'llvm-build', 'Release+Asserts', 'bin', 'llvm-nm'
+)
 
 
 def CheckLlvmNmExists():
   assert os.path.exists(_NM_PATH), (
-      'llvm-nm not found. Please run '
-      '//tools/clang/scripts/update.py --package=objdump to install it.')
+    'llvm-nm not found. Please run '
+    '//tools/clang/scripts/update.py --package=objdump to install it.'
+  )
 
 
 def SymbolNamesFromLlvmBitcodeFile(filename):
@@ -213,11 +237,13 @@ def SymbolNamesFromLlvmBitcodeFile(filename):
     [str] A list of symbol names, can be empty.
   """
   command = (_NM_PATH, '--defined-only', filename)
-  p = subprocess.Popen(command,
-                       shell=False,
-                       stdout=subprocess.PIPE,
-                       stderr=subprocess.PIPE,
-                       text=True)
+  p = subprocess.Popen(
+    command,
+    shell=False,
+    stdout=subprocess.PIPE,
+    stderr=subprocess.PIPE,
+    text=True,
+  )
   try:
     result = _SymbolInfosFromLlvmNm(p.stdout)
     if not result:

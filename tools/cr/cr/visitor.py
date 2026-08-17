@@ -2,9 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-""".
+"""."""
 
-"""
 import collections
 
 # HIDDEN is a marker used to suppress a value, making it as if it were not set
@@ -40,7 +39,7 @@ class Visitor(object):
         for key in self.KeysOf(node.values):
           self.Visit(key, node.values[key])
         # And now recurse into all the children
-        for child in  node.children:
+        for child in node.children:
           self.VisitNode(child)
       finally:
         self.EndNode()

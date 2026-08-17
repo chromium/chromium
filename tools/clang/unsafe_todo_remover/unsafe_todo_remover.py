@@ -48,96 +48,86 @@ STATE_FILE = "out.json"
 #
 # See infra/config/generated/builders/gn_args_locations.json for reference.
 BUILDERS = [
-    # Linux builders
-    ('tryserver.chromium.linux', 'linux-rel'),
-    ('tryserver.chromium.linux', 'linux_chromium_tsan_rel_ng'),
-    ('chromium.linux', 'Linux Builder (dbg)'),
-    ('chromium.memory', 'Linux ASan LSan Builder'),
-
-    # Chromeos builders
-    ('chromium.chromiumos', 'linux-cfm-rel'),
-    ('chromium.chromiumos', 'linux-chromeos-rel'),
-    ('tryserver.chromium.chromiumos', 'chromeos-libfuzzer-asan-rel'),
-
-    # Android builders
-    ('chromium.android', 'android-x86-rel'),
-    ('chromium', 'android-arm64-archive-rel'),
-    ('chromium.android', 'android-14-x64-rel'),
-    ('chromium.android', 'android-x86-rel'),
-    ('chromium.fuzz', 'android-arm64-libfuzzer-hwasan'),
-    ('tryserver.chromium.android', 'android-cronet-arm-dbg'),
-    ('tryserver.chromium.android', 'android-webview-13-x64-dbg'),
-
-    # Fuchsia
-    ('chromium.fuchsia', 'Deterministic Fuchsia (dbg)'),
-
-    # Mac
-    ('chromium.mac', 'mac-arm64-dbg'),
-    ('chromium.mac', 'mac-arm64-rel'),
-    ('tryserver.chromium.mac', 'mac-rel'),
-    ('tryserver.chromium.mac', 'mac-rel'),
-
-    # Dawn
-    ('tryserver.chromium.dawn', 'dawn-win11-arm64-deps-rel'),
-
-    # Windows builders
-    ('chromium.win', 'linux-win-cross-rel'),
-    ('chromium.memory', 'win-asan'),
-    ('chromium.win', 'Win Builder'),
-    ('chromium.win', 'Win x64 Builder (dbg)'),
-    ('chromium.win', 'linux-win-cross-rel'),
-    ('chromium.win', 'win-arm64-rel'),
-    ('tryserver.chromium.win', 'win-arm64-compile-dbg'),
-    ('tryserver.chromium.win', 'win-libfuzzer-asan-rel'),
-    ('tryserver.chromium.win', 'win-rel'),
-    ('tryserver.chromium.win', 'win_optional_gpu_tests_rel'),
-
-    # Fuchsia cast
-    ('chromium.fuchsia', 'fuchsia-x64-cast-receiver-rel'),
-
-    # Android cast
-    ('chromium.android', "android-cast-arm-dbg"),
+  # Linux builders
+  ('tryserver.chromium.linux', 'linux-rel'),
+  ('tryserver.chromium.linux', 'linux_chromium_tsan_rel_ng'),
+  ('chromium.linux', 'Linux Builder (dbg)'),
+  ('chromium.memory', 'Linux ASan LSan Builder'),
+  # Chromeos builders
+  ('chromium.chromiumos', 'linux-cfm-rel'),
+  ('chromium.chromiumos', 'linux-chromeos-rel'),
+  ('tryserver.chromium.chromiumos', 'chromeos-libfuzzer-asan-rel'),
+  # Android builders
+  ('chromium.android', 'android-x86-rel'),
+  ('chromium', 'android-arm64-archive-rel'),
+  ('chromium.android', 'android-14-x64-rel'),
+  ('chromium.android', 'android-x86-rel'),
+  ('chromium.fuzz', 'android-arm64-libfuzzer-hwasan'),
+  ('tryserver.chromium.android', 'android-cronet-arm-dbg'),
+  ('tryserver.chromium.android', 'android-webview-13-x64-dbg'),
+  # Fuchsia
+  ('chromium.fuchsia', 'Deterministic Fuchsia (dbg)'),
+  # Mac
+  ('chromium.mac', 'mac-arm64-dbg'),
+  ('chromium.mac', 'mac-arm64-rel'),
+  ('tryserver.chromium.mac', 'mac-rel'),
+  ('tryserver.chromium.mac', 'mac-rel'),
+  # Dawn
+  ('tryserver.chromium.dawn', 'dawn-win11-arm64-deps-rel'),
+  # Windows builders
+  ('chromium.win', 'linux-win-cross-rel'),
+  ('chromium.memory', 'win-asan'),
+  ('chromium.win', 'Win Builder'),
+  ('chromium.win', 'Win x64 Builder (dbg)'),
+  ('chromium.win', 'linux-win-cross-rel'),
+  ('chromium.win', 'win-arm64-rel'),
+  ('tryserver.chromium.win', 'win-arm64-compile-dbg'),
+  ('tryserver.chromium.win', 'win-libfuzzer-asan-rel'),
+  ('tryserver.chromium.win', 'win-rel'),
+  ('tryserver.chromium.win', 'win_optional_gpu_tests_rel'),
+  # Fuchsia cast
+  ('chromium.fuchsia', 'fuchsia-x64-cast-receiver-rel'),
+  # Android cast
+  ('chromium.android', "android-cast-arm-dbg"),
 ]
 
 EXCLUDED_DIRECTORIES = [
-    # Non production code:
-    "agents/",
-    "tools/",
-    "build/",
-
-    # UNSAFE_TODO in template.
-    #
-    # C++ templates can explode into many instantiations, making it impractical
-    # to verify all of them. This script only build the file that contains the
-    # UNSAFE_TODO, so template instantiations in other files are not verified.
-    # Thus, we exclude files known to have UNSAFE_TODO in templates.
-    "base/strings/string_tokenizer.h",
-    "chrome/browser/media/router/discovery/discovery_network_list_posix.cc",
-    "components/zucchini/io_utils.h",
-    "components/zucchini/patch_utils.h",
-    "components/zucchini/rel32_utils.h",
-    "device/fido/cbor_extract.h",
-    "gpu/command_buffer/common/cmd_buffer_common.h",
-    "gpu/command_buffer/common/gles2_cmd_utils.h",
-    "mojo/core/broker_messages.h",
-    "mojo/public/cpp/bindings/lib/array_internal.h",
-    "mojo/public/cpp/bindings/lib/array_serialization.h",
-    "third_party/blink/renderer/core/css/parser/css_tokenizer_input_stream.h",
-    "third_party/blink/renderer/platform/fonts/opentype/open_type_types.h",
-    "ui/gfx/x/property_cache.h",
-
-    # UNSAFE_TODO wrapping specific macros.
-    #
-    # Those macros expands sometimes into code that triggers
-    # -WUnsafe-buffer-usage or not, depending on the platform. These variations
-    # are not supported by the script, so we exclude them.
-    "chrome/browser/media/router/discovery/discovery_network_list_posix.cc",
-    "net/base/network_interfaces_posix.cc",
-    "net/dns/address_info.cc",
-    "net/dns/loopback_only.cc",
-    "media/gpu/test/video_test_helpers.cc",
-    "net/cert/ct_objects_extractor.cc",
-    "sandbox/linux/syscall_broker/broker_simple_message.cc",
+  # Non production code:
+  "agents/",
+  "tools/",
+  "build/",
+  # UNSAFE_TODO in template.
+  #
+  # C++ templates can explode into many instantiations, making it impractical
+  # to verify all of them. This script only build the file that contains the
+  # UNSAFE_TODO, so template instantiations in other files are not verified.
+  # Thus, we exclude files known to have UNSAFE_TODO in templates.
+  "base/strings/string_tokenizer.h",
+  "chrome/browser/media/router/discovery/discovery_network_list_posix.cc",
+  "components/zucchini/io_utils.h",
+  "components/zucchini/patch_utils.h",
+  "components/zucchini/rel32_utils.h",
+  "device/fido/cbor_extract.h",
+  "gpu/command_buffer/common/cmd_buffer_common.h",
+  "gpu/command_buffer/common/gles2_cmd_utils.h",
+  "mojo/core/broker_messages.h",
+  "mojo/public/cpp/bindings/lib/array_internal.h",
+  "mojo/public/cpp/bindings/lib/array_serialization.h",
+  "third_party/blink/renderer/core/css/parser/css_tokenizer_input_stream.h",
+  "third_party/blink/renderer/platform/fonts/opentype/open_type_types.h",
+  "ui/gfx/x/property_cache.h",
+  # UNSAFE_TODO wrapping specific macros.
+  #
+  # Those macros expands sometimes into code that triggers
+  # -WUnsafe-buffer-usage or not, depending on the platform. These variations
+  # are not supported by the script, so we exclude them.
+  "chrome/browser/media/router/discovery/discovery_network_list_posix.cc",
+  "net/base/network_interfaces_posix.cc",
+  "net/dns/address_info.cc",
+  "net/dns/loopback_only.cc",
+  "media/gpu/test/video_test_helpers.cc",
+  "net/cert/ct_objects_extractor.cc",
+  "sandbox/linux/syscall_broker/broker_simple_message.cc",
 ]
 
 # List of functions that are considered unsafe and should not be unwrapped.
@@ -146,75 +136,77 @@ EXCLUDED_DIRECTORIES = [
 # file, which means they cannot be removed.
 # This list is based on the Clang source code.
 UNSAFE_LIBC_FUNCTIONS = {
-    "atof",
-    "atoi",
-    "atol",
-    "atoll",
-    "bcopy",
-    "bsearch",
-    "bzero",
-    "fgets",
-    "fgetws",
-    "fputs",
-    "fputws",
-    "fread",
-    "fwrite",
-    "gets",
-    "memccpy",
-    "memchr",
-    "memcmp",
-    "memcpy",
-    "memmove",
-    "mempcpy",
-    "memset",
-    "puts",
-    "qsort",
-    "strcasecmp",
-    "strcat",
-    "strchr",
-    "strcmp",
-    "strcoll",
-    "strcpy",
-    "strcspn",
-    "strdup",
-    "strerror_r",
-    "strerror_s",
-    "stricmp",
-    "strlcat",
-    "strlcpy",
-    "strlen",
-    "strncat",
-    "strncmp",
-    "strncpy",
-    "strndup",
-    "strnlen",
-    "strpbrk",
-    "strrchr",
-    "strspn",
-    "strstr",
-    "strtod",
-    "strtof",
-    "strtoimax",
-    "strtok",
-    "strtol",
-    "strtold",
-    "strtoll",
-    "strtoul",
-    "strtoull",
-    "strtoumax",
-    "strxfrm",
-    "wmemchr",
-    "wmemcmp",
-    "wmemcpy",
-    "wmemmove",
-    "wmemset",
+  "atof",
+  "atoi",
+  "atol",
+  "atoll",
+  "bcopy",
+  "bsearch",
+  "bzero",
+  "fgets",
+  "fgetws",
+  "fputs",
+  "fputws",
+  "fread",
+  "fwrite",
+  "gets",
+  "memccpy",
+  "memchr",
+  "memcmp",
+  "memcpy",
+  "memmove",
+  "mempcpy",
+  "memset",
+  "puts",
+  "qsort",
+  "strcasecmp",
+  "strcat",
+  "strchr",
+  "strcmp",
+  "strcoll",
+  "strcpy",
+  "strcspn",
+  "strdup",
+  "strerror_r",
+  "strerror_s",
+  "stricmp",
+  "strlcat",
+  "strlcpy",
+  "strlen",
+  "strncat",
+  "strncmp",
+  "strncpy",
+  "strndup",
+  "strnlen",
+  "strpbrk",
+  "strrchr",
+  "strspn",
+  "strstr",
+  "strtod",
+  "strtof",
+  "strtoimax",
+  "strtok",
+  "strtol",
+  "strtold",
+  "strtoll",
+  "strtoul",
+  "strtoull",
+  "strtoumax",
+  "strxfrm",
+  "wmemchr",
+  "wmemcmp",
+  "wmemcpy",
+  "wmemmove",
+  "wmemset",
 }
 
 # Regex to match: optional scope (:: or std::), one of the functions, followed
 # by word boundary. Used to check the content inside UNSAFE_TODO(...).
-LIBC_REGEX = re.compile(r'^\s*(?:(?:std)?::)?(?:' +
-                        '|'.join(re.escape(f)
-                                 for f in UNSAFE_LIBC_FUNCTIONS) + r')\b')
+LIBC_REGEX = re.compile(
+  r'^\s*(?:(?:std)?::)?(?:'
+  + '|'.join(re.escape(f) for f in UNSAFE_LIBC_FUNCTIONS)
+  + r')\b'
+)
 
 # --- Helpers ---
 
@@ -248,16 +240,14 @@ def log(category: str, message: str):
   print(f"{color}[{cat_upper}]{Colors.RESET} {message}", file=sys.stderr)
 
 
-def run_command(cmd: Sequence[str],
-                cwd: str | None = None,
-                capture_output: bool = True) -> subprocess.CompletedProcess:
+def run_command(
+  cmd: Sequence[str], cwd: str | None = None, capture_output: bool = True
+) -> subprocess.CompletedProcess:
   """Executes a subprocess command."""
   try:
-    return subprocess.run(cmd,
-                          cwd=cwd,
-                          text=True,
-                          capture_output=capture_output,
-                          check=False)
+    return subprocess.run(
+      cmd, cwd=cwd, text=True, capture_output=capture_output, check=False
+    )
   except Exception as e:
     log("ERR", f"Command execution failed: {cmd} -> {e}")
     return subprocess.CompletedProcess(cmd, 1, "", str(e))
@@ -377,26 +367,36 @@ class BuildEnvironment:
     if not os.path.exists(self.build_dir):
       log("BUILD", f"Setting up builder: {self.config}...")
       cmd = [
-          "./tools/mb/mb.py", "gen", "-m", self.group, "-b", self.config,
-          self.build_dir
+        "./tools/mb/mb.py",
+        "gen",
+        "-m",
+        self.group,
+        "-b",
+        self.config,
+        self.build_dir,
       ]
       res = run_command(cmd)
       if res.returncode != 0:
-        log("ERR",
-            f"Failed to generate build files for {self.config}: {res.stderr}")
+        log(
+          "ERR",
+          f"Failed to generate build files for {self.config}: {res.stderr}",
+        )
         raise RuntimeError("MB gen failed")
 
     # Always regenerate compile_commands.json to ensure it's fresh
     log("GN", f"Generating compile_commands.json for {self.config}...")
     res = run_command(
-        ["gn", "gen", self.build_dir, "--export-compile-commands"])
+      ["gn", "gen", self.build_dir, "--export-compile-commands"]
+    )
     if res.returncode != 0:
       log("ERR", f"Failed to export compile commands: {res.stderr}")
       raise RuntimeError("GN gen failed")
 
     # Build everything to ensure generated files (headers, etc.) are present.
-    log("BUILD",
-        f"Building all targets in {self.config} (this may take a while)...")
+    log(
+      "BUILD",
+      f"Building all targets in {self.config} (this may take a while)...",
+    )
     run_command(["autoninja", "-C", self.build_dir], capture_output=False)
 
     self._load_compile_db()
@@ -467,8 +467,18 @@ class CodeModifier:
     """Scans the codebase for UNSAFE_TODO macros."""
     log("SCAN", "Scanning for UNSAFE_TODO instances...")
     cmd = [
-        "git", "grep", "-n", "--column", "-w", "UNSAFE_TODO", "--", "*.cc",
-        "*.h", "*.cpp", "*.mm", "*.hh"
+      "git",
+      "grep",
+      "-n",
+      "--column",
+      "-w",
+      "UNSAFE_TODO",
+      "--",
+      "*.cc",
+      "*.h",
+      "*.cpp",
+      "*.mm",
+      "*.hh",
     ]
     res = run_command(cmd)
     lines = res.stdout.strip().splitlines()
@@ -510,8 +520,11 @@ class CodeModifier:
     col_idx = loc.col - 1
     original_line = lines[line_idx]
 
-    lines[line_idx] = (original_line[:col_idx] + "UNSAFE_XXXX" +
-                       original_line[col_idx + len("UNSAFE_TODO"):])
+    lines[line_idx] = (
+      original_line[:col_idx]
+      + "UNSAFE_XXXX"
+      + original_line[col_idx + len("UNSAFE_TODO") :]
+    )
     CodeModifier._write_file(loc.filepath, lines)
 
   @staticmethod
@@ -527,7 +540,7 @@ class CodeModifier:
     offset = 0
     for i in range(line - 1):
       offset += len(lines[i])
-    offset += (col - 1)
+    offset += col - 1
 
     # Verify we are at UNSAFE_TODO
     if not content[offset:].startswith("UNSAFE_TODO"):
@@ -556,10 +569,10 @@ class CodeModifier:
       return content
 
     # Extract inner content
-    inner = content[open_paren + 1:close_paren]
+    inner = content[open_paren + 1 : close_paren]
 
     # Reconstruct
-    new_content = content[:offset] + inner + content[close_paren + 1:]
+    new_content = content[:offset] + inner + content[close_paren + 1 :]
     return new_content
 
   @staticmethod
@@ -570,7 +583,8 @@ class CodeModifier:
         content = f.read()
 
       new_content = CodeModifier._remove_wrapper_from_content(
-          content, loc.line, loc.col)
+        content, loc.line, loc.col
+      )
 
       if content != new_content:
         with open(loc.filepath, 'w') as f:
@@ -590,26 +604,30 @@ class CodeModifier:
       offset = 0
       for i in range(loc.line - 1):
         offset += len(lines[i])
-      offset += (loc.col - 1)
+      offset += loc.col - 1
 
       if not content[offset:].startswith("UNSAFE_TODO"):
         return False
 
       open_paren = content.find("(", offset)
-      if open_paren == -1: return False
+      if open_paren == -1:
+        return False
 
       balance = 1
       close_paren = -1
       for i in range(open_paren + 1, len(content)):
-        if content[i] == "(": balance += 1
-        elif content[i] == ")": balance -= 1
+        if content[i] == "(":
+          balance += 1
+        elif content[i] == ")":
+          balance -= 1
         if balance == 0:
           close_paren = i
           break
 
-      if close_paren == -1: return False
+      if close_paren == -1:
+        return False
 
-      inner = content[open_paren + 1:close_paren].strip()
+      inner = content[open_paren + 1 : close_paren].strip()
       return bool(LIBC_REGEX.match(inner))
     except Exception:
       return False
@@ -632,7 +650,8 @@ class CodeModifier:
       original_content = content
       for loc in sorted_locs:
         content = CodeModifier._remove_wrapper_from_content(
-            content, loc.line, loc.col)
+          content, loc.line, loc.col
+        )
 
       if content != original_content:
         with open(filepath, 'w') as f:
@@ -703,21 +722,25 @@ def analyze_todos(args):
 
       # 2. Check if this builder has already run for these TODOs
       todos_to_check = [
-          t for t in unresolved_todos
-          if not state.get_builder_status(t.key, builder.config)
+        t
+        for t in unresolved_todos
+        if not state.get_builder_status(t.key, builder.config)
       ]
       if not todos_to_check:
         continue
 
       processed_files_count += 1
-      log(str(processed_files_count),
-          f"Processing {filepath} ({len(todos_to_check)} items)...")
+      log(
+        str(processed_files_count),
+        f"Processing {filepath} ({len(todos_to_check)} items)...",
+      )
 
       try:
         # --- STEP 0: Skip files that can't be compiled ---
         if not builder.find_compilable_source(filepath):
-          log("WARN",
-              f"Cannot compile {filepath} on {builder.config}. Skipping.")
+          log(
+            "WARN", f"Cannot compile {filepath} on {builder.config}. Skipping."
+          )
           for todo in todos_to_check:
             state.set_status(todo.key, builder.config, "SKIP")
           continue
@@ -779,7 +802,7 @@ def apply_fixes(args):
     # Check for legacy format
     if not isinstance(builder_status_map, dict):
       status = builder_status_map
-      is_success = (status == "SUCCESS")
+      is_success = status == "SUCCESS"
     else:
       # Check if ANY builder succeeded
       is_success = "SUCCESS" in builder_status_map.values()
@@ -810,9 +833,9 @@ def apply_fixes(args):
 
 def main():
   parser = argparse.ArgumentParser(description="Cleanup UNSAFE_TODO macros")
-  parser.add_argument("--apply",
-                      action="store_true",
-                      help="Apply fixes based on out.json")
+  parser.add_argument(
+    "--apply", action="store_true", help="Apply fixes based on out.json"
+  )
   args = parser.parse_args()
 
   if args.apply:

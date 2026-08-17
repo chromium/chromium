@@ -10,8 +10,7 @@ import process_profiles
 
 
 def ReadNonEmptyStrippedFromFile(file_name):
-  """Reads a file, strips leading/trailing whitespace and removes empty lines.
-  """
+  """Reads a file, strips leading/trailing whitespace and removes empty lines."""
   stripped_lines = []
   with open(file_name, 'r') as file:
     for line in file:
@@ -42,32 +41,39 @@ def ProcessProfiles(profile_files, lib_chrome_so_path):
     raise Exception('Failed to get ordered symbols')
   for sym in ordered_symbols:
     assert not sym.startswith('OUTLINED_FUNCTION_'), (
-        'Outlined function found in instrumented function, very likely '
-        'something has gone very wrong!')
+      'Outlined function found in instrumented function, very likely '
+      'something has gone very wrong!'
+    )
   symbols_size = processor.SymbolsSize(ordered_symbols)
   return ordered_symbols, symbols_size
 
 
-def CollectProfiles(profiler: android_profile_tool.AndroidProfileTool,
-                    profile_webview: bool,
-                    arch: str,
-                    apk_path_or_browser_name: str,
-                    out_dir_str: Optional[str] = None,
-                    webview_installer_path: Optional[str] = None):
+def CollectProfiles(
+  profiler: android_profile_tool.AndroidProfileTool,
+  profile_webview: bool,
+  arch: str,
+  apk_path_or_browser_name: str,
+  out_dir_str: Optional[str] = None,
+  webview_installer_path: Optional[str] = None,
+):
   """Collects profiles from the device."""
   if profile_webview:
     if not webview_installer_path:
       raise ValueError(
-          'webview_installer_path must be provided for webview profiling')
+        'webview_installer_path must be provided for webview profiling'
+      )
     profiler.InstallAndSetWebViewProvider(webview_installer_path)
-    return profiler.CollectWebViewStartupProfile(apk_path_or_browser_name,
-                                                 arch, out_dir_str)
+    return profiler.CollectWebViewStartupProfile(
+      apk_path_or_browser_name, arch, out_dir_str
+    )
 
   if arch == 'arm64':
-    return profiler.CollectSpeedometerProfile(apk_path_or_browser_name,
-                                              out_dir_str)
-  return profiler.CollectSystemHealthProfile(apk_path_or_browser_name,
-                                             out_dir_str)
+    return profiler.CollectSpeedometerProfile(
+      apk_path_or_browser_name, out_dir_str
+    )
+  return profiler.CollectSystemHealthProfile(
+    apk_path_or_browser_name, out_dir_str
+  )
 
 
 def GetLibchromeSoPath(out_dir, arch, profile_webview=False):
@@ -89,26 +95,35 @@ def GetLibchromeTarget(arch, profile_webview=False):
 
 def AddCommonArguments(parser):
   """Adds common arguments to the parser."""
-  parser.add_argument('--target-arch',
-                      dest='arch',
-                      required=True,
-                      choices=['arm', 'arm64', 'x86', 'x64'],
-                      help='The target architecture for which to build.')
-  parser.add_argument('--profile-webview',
-                      action='store_true',
-                      default=False,
-                      help='Use the WebView benchmark profiles to generate the '
-                      'orderfile.')
-  parser.add_argument('--streamline-for-debugging',
-                      action='store_true',
-                      help=('Streamline the run for faster debugging.'))
-  parser.add_argument('-v',
-                      '--verbose',
-                      dest='verbosity',
-                      action='count',
-                      default=0,
-                      help='Increase verbosity for debugging.')
-  parser.add_argument('--save-profile-data',
-                      action='store_true',
-                      default=False,
-                      help='Avoid deleting the generated profile data.')
+  parser.add_argument(
+    '--target-arch',
+    dest='arch',
+    required=True,
+    choices=['arm', 'arm64', 'x86', 'x64'],
+    help='The target architecture for which to build.',
+  )
+  parser.add_argument(
+    '--profile-webview',
+    action='store_true',
+    default=False,
+    help='Use the WebView benchmark profiles to generate the orderfile.',
+  )
+  parser.add_argument(
+    '--streamline-for-debugging',
+    action='store_true',
+    help=('Streamline the run for faster debugging.'),
+  )
+  parser.add_argument(
+    '-v',
+    '--verbose',
+    dest='verbosity',
+    action='count',
+    default=0,
+    help='Increase verbosity for debugging.',
+  )
+  parser.add_argument(
+    '--save-profile-data',
+    action='store_true',
+    default=False,
+    help='Avoid deleting the generated profile data.',
+  )

@@ -25,18 +25,19 @@ def _PluginConfig(name, only_enabled=False, only_active=False):
   config.property_name = name.lower() + '_config'
   return config
 
+
 _selectors = cr.Config('PRIORITY')
 CONFIG_TYPES = [
-    # Lowest priority, always there default values.
-    _PluginConfig('DEFAULT').AddChild(_selectors),
-    # Only turned on if the plugin is enabled.
-    _PluginConfig('ENABLED', only_enabled=True),
-    # Only turned on while the plugin is the active one.
-    _PluginConfig('ACTIVE', only_active=True),
-    # Holds detected values for active plugins.
-    _PluginConfig('DETECTED', only_active=True),
-    # Holds overrides, used in custom setup plugins.
-    _PluginConfig('OVERRIDES'),
+  # Lowest priority, always there default values.
+  _PluginConfig('DEFAULT').AddChild(_selectors),
+  # Only turned on if the plugin is enabled.
+  _PluginConfig('ENABLED', only_enabled=True),
+  # Only turned on while the plugin is the active one.
+  _PluginConfig('ACTIVE', only_active=True),
+  # Holds detected values for active plugins.
+  _PluginConfig('DETECTED', only_active=True),
+  # Holds overrides, used in custom setup plugins.
+  _PluginConfig('OVERRIDES'),
 ]
 
 cr.config.GLOBALS.extend(CONFIG_TYPES)
@@ -132,7 +133,7 @@ class Plugin(cr.loader.AutoExport):
     self._root = _FindRoot(self.__class__)
     rootname = self._root.__name__.lower()
     if self._name.endswith(rootname) and self.__class__ != self._root:
-      self._name = self._name[:-len(rootname)]
+      self._name = self._name[: -len(rootname)]
     for config_root in CONFIG_TYPES:
       config = cr.Config()
       setattr(self, config_root.property_name, config)
@@ -238,8 +239,9 @@ class Plugin(cr.loader.AutoExport):
   @classmethod
   def Plugins(cls):
     """Return all enabled plugins of type cls in priority order."""
-    return sorted(cls.UnorderedPlugins(),
-                  key=attrgetter('priority'), reverse=True)
+    return sorted(
+      cls.UnorderedPlugins(), key=attrgetter('priority'), reverse=True
+    )
 
   @classmethod
   def Choices(cls):

@@ -68,6 +68,7 @@ def NormalizeLines(lines):
       ret.append(line.rstrip() + '\n')
   return ret
 
+
 _DISASSEMBLED_METHOD_QUOTA = 10
 _SYMBOL_FULL_NAME_RE = re.compile(r'(.*?)#(.*?)\((.*?)\):? ?(.*)')
 
@@ -76,10 +77,12 @@ class _CachedApkDisassembler:
   def __init__(self):
     self._proguard_mapping_file_path_lookup = {}
 
-  def AssignProguardMappingPath(self, apk_file_path,
-                                proguard_mapping_file_path):
+  def AssignProguardMappingPath(
+    self, apk_file_path, proguard_mapping_file_path
+  ):
     self._proguard_mapping_file_path_lookup[apk_file_path] = (
-        proguard_mapping_file_path)
+      proguard_mapping_file_path
+    )
 
   def _DisassembleApk(self, mapping, apk_path):
     r8_path = path_util.GetR8Path()
@@ -95,8 +98,13 @@ class _CachedApkDisassembler:
       tmp_file.flush()
 
       cmd = [
-          path_util.GetJavaExec(), '-cp', r8_path,
-          'com.android.tools.r8.Disassemble', '--pg-map', mapping, tmp_file.name
+        path_util.GetJavaExec(),
+        '-cp',
+        r8_path,
+        'com.android.tools.r8.Disassemble',
+        '--pg-map',
+        mapping,
+        tmp_file.name,
       ]
       r8_output = subprocess.check_output(cmd, encoding='utf-8')
 
@@ -104,18 +112,21 @@ class _CachedApkDisassembler:
 
   @functools.lru_cache(None)
   def GetForApkAndSplit(self, apk_file_path, split_name):
-    proguard_mapping_file_path = (
-        self._proguard_mapping_file_path_lookup[apk_file_path])
+    proguard_mapping_file_path = self._proguard_mapping_file_path_lookup[
+      apk_file_path
+    ]
     r8_output = None
     if split_name:
       logging.info('Creating disassembly for APK split: %s', split_name)
       with zip_util.UnzipToTemp(
-          apk_file_path, f'splits/{split_name}-master.apk') as split_path:
+        apk_file_path, f'splits/{split_name}-master.apk'
+      ) as split_path:
         r8_output = self._DisassembleApk(proguard_mapping_file_path, split_path)
     elif apk_file_path.endswith('.apk'):
       logging.info('Creating disassembly for APK: %s', apk_file_path)
-      r8_output = self._DisassembleApk(proguard_mapping_file_path,
-                                       apk_file_path)
+      r8_output = self._DisassembleApk(
+        proguard_mapping_file_path, apk_file_path
+      )
     if r8_output is None:
       return None
     class_obj_map, _ = r8_disassembly.Parse(io.StringIO(r8_output))
@@ -138,8 +149,9 @@ def _ExtractDisassemblyForMethod(class_obj_map, method):
     param_types = param_types.split(',') if param_types else []
     class_obj = class_obj_map.get(class_name)
     if class_obj is not None:
-      bytecode = class_obj.FindMethodByteCode(class_name, method_name,
-                                              param_types, return_type)
+      bytecode = class_obj.FindMethodByteCode(
+        class_name, method_name, param_types, return_type
+      )
   return bytecode
 
 
@@ -147,7 +159,8 @@ def Disassemble(symbol, path_resolver, apk_disassembler_cache):
   logging.debug('Disassembling %s', symbol.full_name)
   container = symbol.container
   proguard_mapping_file_name = container.metadata.get(
-      'proguard_mapping_file_name')
+    'proguard_mapping_file_name'
+  )
   if proguard_mapping_file_name is None:
     raise Exception('Mapping file does not exist in container metadata.')
 
@@ -155,31 +168,39 @@ def Disassemble(symbol, path_resolver, apk_disassembler_cache):
   apk_file_name = container.metadata['apk_file_name']
   apk_file_path = str(path_resolver(apk_file_name))
   split_name = container.metadata.get('apk_split_name')  # Can be None.
-  apk_disassembler_cache.AssignProguardMappingPath(apk_file_path,
-                                                   proguard_mapping_file_path)
+  apk_disassembler_cache.AssignProguardMappingPath(
+    apk_file_path, proguard_mapping_file_path
+  )
   class_obj_map = apk_disassembler_cache.GetForApkAndSplit(
-      apk_file_path, split_name)
+    apk_file_path, split_name
+  )
   if class_obj_map is None:
     return None
   logging.info('Looking up disassembly for %s', symbol.full_name)
   return _ExtractDisassemblyForMethod(class_obj_map, symbol.full_name)
 
 
-def _AddUnifiedDiff(top_changed_symbols,
-                    before_path_resolver,
-                    after_path_resolver,
-                    normalize=False):
+def _AddUnifiedDiff(
+  top_changed_symbols,
+  before_path_resolver,
+  after_path_resolver,
+  normalize=False,
+):
   after_apk_disassembler_cache = _CachedApkDisassembler()
   before_apk_disassembler_cache = _CachedApkDisassembler()
   for symbol in top_changed_symbols:
     after = None
     if symbol.after_symbol:
-      after = Disassemble(symbol.after_symbol, after_path_resolver,
-                          after_apk_disassembler_cache)
+      after = Disassemble(
+        symbol.after_symbol, after_path_resolver, after_apk_disassembler_cache
+      )
     before = None
     if symbol.before_symbol:
-      before = Disassemble(symbol.before_symbol, before_path_resolver,
-                           before_apk_disassembler_cache)
+      before = Disassemble(
+        symbol.before_symbol,
+        before_path_resolver,
+        before_apk_disassembler_cache,
+      )
 
     logging.info('Adding disassembly for: %s', symbol.full_name)
     if normalize:
@@ -188,7 +209,8 @@ def _AddUnifiedDiff(top_changed_symbols,
 
     target_symbol = symbol.after_symbol or symbol.before_symbol
     target_symbol.disassembly = disassembly_util.CreateUnifiedDiff(
-        symbol.full_name, before or [], after or [])
+      symbol.full_name, before or [], after or []
+    )
 
 
 def _GetTopChangedSymbols(delta_size_info, changed_files=None):
@@ -212,31 +234,38 @@ def _GetTopChangedSymbols(delta_size_info, changed_files=None):
   return disassembly_util.SampleSymbols(candidates, changed_files=changed_files)
 
 
-def AddDisassembly(delta_size_info,
-                   before_path_resolver,
-                   after_path_resolver,
-                   normalize=False,
-                   changed_files=None):
+def AddDisassembly(
+  delta_size_info,
+  before_path_resolver,
+  after_path_resolver,
+  normalize=False,
+  changed_files=None,
+):
   """Adds disassembly diffs to top changed dex symbols.
 
-    Adds the unified diff on the "before" and "after" disassembly to the
-    top |_DISASSEMBLED_METHOD_QUOTA| changed symbols.
+  Adds the unified diff on the "before" and "after" disassembly to the
+  top |_DISASSEMBLED_METHOD_QUOTA| changed symbols.
 
-    Args:
-      delta_size_info: DeltaSizeInfo Object we are adding disassembly to.
-      before_path_resolver: Callable to compute paths for "before" artifacts.
-      after_path_resolver: Callable to compute paths for "after" artifacts.
-      normalize: Whether to normalize the disassembly.
+  Args:
+    delta_size_info: DeltaSizeInfo Object we are adding disassembly to.
+    before_path_resolver: Callable to compute paths for "before" artifacts.
+    after_path_resolver: Callable to compute paths for "after" artifacts.
+    normalize: Whether to normalize the disassembly.
   """
   logging.info('Computing top changed symbols')
-  top_changed_symbols = _GetTopChangedSymbols(delta_size_info,
-                                              changed_files=changed_files)
-  logging.info('Adding disassembly to top %d changed dex symbols',
-               _DISASSEMBLED_METHOD_QUOTA)
-  _AddUnifiedDiff(top_changed_symbols,
-                  before_path_resolver,
-                  after_path_resolver,
-                  normalize=normalize)
+  top_changed_symbols = _GetTopChangedSymbols(
+    delta_size_info, changed_files=changed_files
+  )
+  logging.info(
+    'Adding disassembly to top %d changed dex symbols',
+    _DISASSEMBLED_METHOD_QUOTA,
+  )
+  _AddUnifiedDiff(
+    top_changed_symbols,
+    before_path_resolver,
+    after_path_resolver,
+    normalize=normalize,
+  )
 
 
 def main():
@@ -248,8 +277,9 @@ def main():
 
   logging.info('Loading %s and %s...', args.apk_path, args.mapping_file_path)
   apk_disassembler_cache = _CachedApkDisassembler()
-  apk_disassembler_cache.AssignProguardMappingPath(args.apk_path,
-                                                   args.mapping_file_path)
+  apk_disassembler_cache.AssignProguardMappingPath(
+    args.apk_path, args.mapping_file_path
+  )
   class_obj_map = apk_disassembler_cache.GetForApkAndSplit(args.apk_path, None)
   variables = {'class_obj_map': class_obj_map}
   banner = []

@@ -8,7 +8,8 @@ import gdb.printing
 import os
 
 sys.path.insert(
-    1, os.path.join(os.path.dirname(os.path.abspath(__file__)), 'util'))
+  1, os.path.join(os.path.dirname(os.path.abspath(__file__)), 'util')
+)
 import reload_helper
 
 
@@ -102,15 +103,19 @@ class RouterLinkStatePrinter:
       elif status & 32:
         lock_str = ', locked by B'
 
-      return (f'RouterLinkState {{A: {', '.join(side_a_parts)}; '
-              f'B: {', '.join(side_b_parts)}{lock_str}}}')
+      return (
+        f'RouterLinkState {{A: {", ".join(side_a_parts)}; '
+        f'B: {", ".join(side_b_parts)}{lock_str}}}'
+      )
     except gdb.error:
       return 'RouterLinkState'
 
   def children(self):
     yield 'status', self.val['status']
-    yield 'allowed_bypass_request_source', self.val[
-        'allowed_bypass_request_source']
+    yield (
+      'allowed_bypass_request_source',
+      self.val['allowed_bypass_request_source'],
+    )
 
 
 class RemoteRouterLinkPrinter:
@@ -141,8 +146,10 @@ class RemoteRouterLinkPrinter:
     if str(stable_str) == 'true':
       stable_msg = 'stable side'
     sublink_value = self.val['sublink_']['value_']
-    return (f'RemoteRouterLink with sublink {sublink_value}' +
-            f'{side_str} ({stable_msg}, {link_type_str})')
+    return (
+      f'RemoteRouterLink with sublink {sublink_value}'
+      + f'{side_str} ({stable_msg}, {link_type_str})'
+    )
 
 
 class RouterPrinter:
@@ -159,9 +166,9 @@ class RouterPrinter:
     try:
       status_int = int(self.val['status_flags_'])
       statuses = []
-      if (status_int & 1):
+      if status_int & 1:
         statuses.append('closed')
-      if (status_int & 2):
+      if status_int & 2:
         statuses.append('dead')
       if not statuses:
         status_str = 'normal'
@@ -172,17 +179,17 @@ class RouterPrinter:
     yield 'status_flags_', status_str
     # Reorder the remaining members according to subjective importance.
     members = [
-        'outward_edge_',
-        'inward_edge_',
-        'is_peer_closed_',
-        'is_disconnected_',
-        'bridge_',
-        'inbound_parcels_',
-        'outbound_parcels_',
-        'traps_',
-        'pending_gets_',
-        'pending_puts_',
-        'is_pending_get_exclusive_',
+      'outward_edge_',
+      'inward_edge_',
+      'is_peer_closed_',
+      'is_disconnected_',
+      'bridge_',
+      'inbound_parcels_',
+      'outbound_parcels_',
+      'traps_',
+      'pending_gets_',
+      'pending_puts_',
+      'is_pending_get_exclusive_',
     ]
     for m in members:
       yield m, self.val[m]
@@ -226,14 +233,14 @@ class NodeLinkPrinter:
     except:
       yield 'node_', 'unknown'
     important_members = [
-        'remote_node_type_',
-        'activation_state_',
-        'sublinks_',
-        'partial_parcels_',
-        'early_parcels_for_sublink_',
-        'next_referral_id_',
-        'local_node_name_',
-        'remote_node_name_',
+      'remote_node_type_',
+      'activation_state_',
+      'sublinks_',
+      'partial_parcels_',
+      'early_parcels_for_sublink_',
+      'next_referral_id_',
+      'local_node_name_',
+      'remote_node_name_',
     ]
     for m in important_members:
       yield m, self.val[m]
@@ -266,10 +273,10 @@ class NodePrinter:
 
   def children(self):
     important_members = [
-        'type_',
-        'assigned_name_',
-        'connections_',
-        'pending_introductions_',
+      'type_',
+      'assigned_name_',
+      'connections_',
+      'pending_introductions_',
     ]
     for m in important_members:
       yield m, self.val[m]
@@ -419,8 +426,8 @@ class TrapSetPrinter:
 class SublinkIdPrinter:
   """Pretty-printer for ipcz::SublinkId.
 
-       The real type is ipcz::StrongAlias<class SublinkIdTag, uint64_t>.
-    """
+  The real type is ipcz::StrongAlias<class SublinkIdTag, uint64_t>.
+  """
 
   def __init__(self, val):
     self.val = val
@@ -464,15 +471,20 @@ _add('Box', '^ipcz::Box$', BoxPrinter)
 _add('DriverTransport', '^ipcz::DriverTransport$', DriverTransportPrinter)
 _add('IpczRef', '^ipcz::Ref<.*>$', RefPrinter)
 _add('LocalRouterLink', '^ipcz::LocalRouterLink$', LocalRouterLinkPrinter)
-_add('NodeConnectorForBrokerToNonBroker',
-     '^ipcz::.*NodeConnectorForBrokerToNonBroker$',
-     NodeConnectorForBrokerToNonBrokerPrinter)
+_add(
+  'NodeConnectorForBrokerToNonBroker',
+  '^ipcz::.*NodeConnectorForBrokerToNonBroker$',
+  NodeConnectorForBrokerToNonBrokerPrinter,
+)
 _add('Node', '^ipcz::Node$', NodePrinter)
 _add('NodeLink', '^ipcz::NodeLink$', NodeLinkPrinter)
 _add('NodeName', '^ipcz::NodeName$', NodeNamePrinter)
 _add('Parcel', '^ipcz::Parcel$', ParcelPrinter)
-_add('ParcelQueue', '^ipcz::SequencedQueue<.*ipcz::ParcelQueueTraits>$',
-     ParcelQueuePrinter)
+_add(
+  'ParcelQueue',
+  '^ipcz::SequencedQueue<.*ipcz::ParcelQueueTraits>$',
+  ParcelQueuePrinter,
+)
 _add('RemoteRouterLink', '^ipcz::RemoteRouterLink$', RemoteRouterLinkPrinter)
 _add('RouteEdge', '^ipcz::RouteEdge$', RouteEdgePrinter)
 _add('Router', '^ipcz::Router$', RouterPrinter)

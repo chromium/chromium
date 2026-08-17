@@ -24,8 +24,9 @@ tracer = telemetry.get_tracer(__name__)
 # ------------------------------------------------------------------------------
 
 
-def RecordMainAttributes(targets: list[str], gtest_filter: str,
-                         used_cache: bool, out_dir: str):
+def RecordMainAttributes(
+  targets: list[str], gtest_filter: str, used_cache: bool, out_dir: str
+):
   """Records main attributes to the current span.
 
   Attributes recorded:
@@ -67,8 +68,9 @@ def RecordBuildAttributes(is_retry: str, is_successful: bool):
   span.set_attribute('build.is_successful', is_successful)
 
 
-def RecordRunAttributes(cmd: list[str], is_successful: bool,
-                        test_summary: TestSummary):
+def RecordRunAttributes(
+  cmd: list[str], is_successful: bool, test_summary: TestSummary
+):
   """Records attributes related to the command execution.
 
   Attributes recorded:

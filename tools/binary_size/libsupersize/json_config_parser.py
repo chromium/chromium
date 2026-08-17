@@ -21,8 +21,8 @@ class JsonConfig:
 
   def ApkPathDefaults(self):
     return {
-        k: v['source_path']
-        for k, v in self._json_obj.get('apk_files', {}).items()
+      k: v['source_path']
+      for k, v in self._json_obj.get('apk_files', {}).items()
     }
 
   def ComponentForNativeFile(self, basename):

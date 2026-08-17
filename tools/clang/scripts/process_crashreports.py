@@ -3,8 +3,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-"""Looks for crash reports in out/clang-crashreports and uploads them to GCS.
-"""
+"""Looks for crash reports in out/clang-crashreports and uploads them to GCS."""
 
 from __future__ import print_function
 
@@ -23,7 +22,8 @@ import tempfile
 
 GCS_BUCKET = 'chrome-clang-crash-reports'
 SRC_DIR = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), '..', '..', '..'))
+  os.path.join(os.path.dirname(__file__), '..', '..', '..')
+)
 CRASHREPORTS_DIR = os.path.join(SRC_DIR, 'out', 'clang-crashreports')
 GSUTIL = os.path.join(SRC_DIR, 'third_party', 'depot_tools', 'gsutil.py')
 SISO_BINARY = os.path.join(SRC_DIR, 'third_party', 'siso', 'cipd', 'siso')
@@ -40,8 +40,9 @@ def FetchRbeCrashReports():
 
   if len(logs) > 1:
     logs.sort(key=lambda x: os.path.getmtime(x), reverse=True)
-    print("Found multiple siso_output files. Using the latest one: %s" %
-          logs[0])
+    print(
+      "Found multiple siso_output files. Using the latest one: %s" % logs[0]
+    )
 
   log = logs[0]
   print('processing %s...' % log)
@@ -132,7 +133,13 @@ def ProcessCrashreport(base, source):
   # /v1/yyyy-mm-dd/botname-basename.tgz
   now = datetime.datetime.now()
   dest = 'gs://%s/v1/%04d/%02d/%02d/%s-%s.tgz' % (
-      GCS_BUCKET, now.year, now.month, now.day, source, base)
+    GCS_BUCKET,
+    now.year,
+    now.month,
+    now.day,
+    source,
+    base,
+  )
 
   ArchiveAndUpload(dest, files)
 
@@ -151,19 +158,31 @@ def DeleteCrashFiles():
 
 def main():
   parser = argparse.ArgumentParser(description=__doc__)
-  parser.add_argument('--delete', dest='delete', action='store_true',
-                      help='Delete all crashreports after processing them '
-                           '(default)')
-  parser.add_argument('--no-delete', dest='delete', action='store_false',
-                      help='Do not delete crashreports after processing them')
+  parser.add_argument(
+    '--delete',
+    dest='delete',
+    action='store_true',
+    help='Delete all crashreports after processing them (default)',
+  )
+  parser.add_argument(
+    '--no-delete',
+    dest='delete',
+    action='store_false',
+    help='Do not delete crashreports after processing them',
+  )
   parser.set_defaults(delete=True)
-  parser.add_argument('--source',  default='user-' + getpass.getuser(),
-                      help='Source of the crash -- usually a bot name. '
-                           'Leave empty to use your username.')
-  parser.add_argument('--download-only',
-                      action='store_true',
-                      help='Download crash reports from RBE and exit without '
-                      'processing or uploading them')
+  parser.add_argument(
+    '--source',
+    default='user-' + getpass.getuser(),
+    help='Source of the crash -- usually a bot name. '
+    'Leave empty to use your username.',
+  )
+  parser.add_argument(
+    '--download-only',
+    action='store_true',
+    help='Download crash reports from RBE and exit without '
+    'processing or uploading them',
+  )
   args = parser.parse_args()
 
   # If the crash happened on RBE, the crash report is on the RBE worker.
@@ -186,7 +205,8 @@ def main():
   clang_reproducers = glob.glob(os.path.join(CRASHREPORTS_DIR, '*.sh'))
   # lld reproducers just leave a .tar
   lld_reproducers = glob.glob(
-      os.path.join(CRASHREPORTS_DIR, 'linker-crash*.tar'))
+    os.path.join(CRASHREPORTS_DIR, 'linker-crash*.tar')
+  )
   reproducers = clang_reproducers + lld_reproducers
   for reproducer in reproducers:
     base = os.path.splitext(os.path.basename(reproducer))[0]
@@ -203,21 +223,33 @@ def main():
   # from RBE.
   if not reproducers and os.path.exists(CRASHREPORTS_DIR):
     leftover_artifacts = sorted(
-        [f for f in os.listdir(CRASHREPORTS_DIR) if f != '.gitignore'])
+      [f for f in os.listdir(CRASHREPORTS_DIR) if f != '.gitignore']
+    )
     if leftover_artifacts:
-      print('\nNotice: Found crash artifacts in %s but no .sh '
-            'reproducer scripts or .tar files were found.' % CRASHREPORTS_DIR)
+      print(
+        '\nNotice: Found crash artifacts in %s but no .sh '
+        'reproducer scripts or .tar files were found.' % CRASHREPORTS_DIR
+      )
       print('Uploading leftover artifacts: %s' % ', '.join(leftover_artifacts))
-      print('This usually happens if the Clang Driver aborted '
-            'diagnostic generation during the preprocessor '
-            'recovery pass.\n')
+      print(
+        'This usually happens if the Clang Driver aborted '
+        'diagnostic generation during the preprocessor '
+        'recovery pass.\n'
+      )
       now = datetime.datetime.now()
-      base = ('incomplete-crash-report-missing-reproducer-' +
-              now.strftime('%H%M%S'))
+      base = 'incomplete-crash-report-missing-reproducer-' + now.strftime(
+        '%H%M%S'
+      )
       dest = 'gs://%s/v1/%04d/%02d/%02d/%s-%s.tgz' % (
-          GCS_BUCKET, now.year, now.month, now.day, args.source, base)
+        GCS_BUCKET,
+        now.year,
+        now.month,
+        now.day,
+        args.source,
+        base,
+      )
       leftover_files = [
-          os.path.join(CRASHREPORTS_DIR, f) for f in leftover_artifacts
+        os.path.join(CRASHREPORTS_DIR, f) for f in leftover_artifacts
       ]
       sys.stdout.write('processing leftover artifacts... ')
       sys.stdout.flush()

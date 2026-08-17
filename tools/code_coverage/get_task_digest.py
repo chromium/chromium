@@ -14,13 +14,13 @@ import sys
 def _query_properties(build_id: str, target: str) -> str | None:
   """Queries bb CLI for CAS digest in a single build.
 
-    Args:
-        build_id: Buildbucket build ID string.
-        target: Target test suite or compilation output name.
+  Args:
+      build_id: Buildbucket build ID string.
+      target: Target test suite or compilation output name.
 
-    Returns:
-        Hexadecimal CAS digest hash string or None.
-    """
+  Returns:
+      Hexadecimal CAS digest hash string or None.
+  """
   cmd_in = ['bb', 'get', '-json', '-fields', 'input.properties', build_id]
   res = subprocess.run(cmd_in, capture_output=True, text=True, check=False)
   if res.returncode == 0:
@@ -57,13 +57,13 @@ def _query_properties(build_id: str, target: str) -> str | None:
 def get_digest_from_properties(build_id: str, target: str) -> str | None:
   """Queries bb CLI to retrieve CAS digest from build or child compilator.
 
-    Args:
-        build_id: Buildbucket build ID string.
-        target: Target test suite or compilation output name.
+  Args:
+      build_id: Buildbucket build ID string.
+      target: Target test suite or compilation output name.
 
-    Returns:
-        Hexadecimal CAS digest hash string or None.
-    """
+  Returns:
+      Hexadecimal CAS digest hash string or None.
+  """
   digest = _query_properties(build_id, target)
   if digest:
     return digest

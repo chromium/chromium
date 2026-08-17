@@ -36,8 +36,11 @@ class TraceFile:
             The result of the query as a pandas dataframe.
         """
         result = await command_line.run(
-            "third_party/perfetto/tools/trace_processor", self.trace_file,
-            "-Q", query)
+            "third_party/perfetto/tools/trace_processor",
+            self.trace_file,
+            "-Q",
+            query,
+        )
         # Use io.StringIO to treat the string as a file and read it with pandas.
         return pd.read_csv(io.StringIO(result.stdout), na_values=['[NULL]'])
 
@@ -50,13 +53,16 @@ class TraceFile:
             config_file: The config file to use for recording.
         """
         recording_task = asyncio.create_task(
-            command_line.run("third_party/perfetto/tools/record_android_trace",
-                             "-o",
-                             self.trace_file,
-                             "-c",
-                             config_file,
-                             "-n",
-                             interruption_signal=signal.SIGINT))
+            command_line.run(
+                "third_party/perfetto/tools/record_android_trace",
+                "-o",
+                self.trace_file,
+                "-c",
+                config_file,
+                "-n",
+                interruption_signal=signal.SIGINT,
+            )
+        )
         if recording_task.done():
             Exception(f"Recording failed: {recording_task.result()}")
 
@@ -90,13 +96,20 @@ def histograms_trace_config(histograms, duration=10000):
         raise TypeError("histograms must be a string or a list of strings")
 
     # This assumes the current working directory is the chromium src root.
-    jinja_file = os.path.join(os.getcwd(), "tools", "android", "colabutils",
-                              "res", "histogram_trace_cfg.pbtxt.j2")
+    jinja_file = os.path.join(
+        os.getcwd(),
+        "tools",
+        "android",
+        "colabutils",
+        "res",
+        "histogram_trace_cfg.pbtxt.j2",
+    )
     with open(jinja_file, 'r') as f:
         template_content = f.read()
     template = Template(template_content)
-    rendered_config = template.render(histogram_names=histograms,
-                                      duration=duration)
+    rendered_config = template.render(
+        histogram_names=histograms, duration=duration
+    )
 
     with tempfile.NamedTemporaryFile(mode='w') as temporary_config_file:
         temporary_config_file.write(rendered_config)
@@ -114,8 +127,14 @@ def histogram_values_query(histogram):
     Returns:
         A string containing the query.
     """
-    jinja_file = os.path.join(os.getcwd(), "tools", "android", "colabutils",
-                              "res", "histogram_query.j2")
+    jinja_file = os.path.join(
+        os.getcwd(),
+        "tools",
+        "android",
+        "colabutils",
+        "res",
+        "histogram_query.j2",
+    )
     with open(jinja_file, 'r') as f:
         template_content = f.read()
     template = Template(template_content)

@@ -9,8 +9,15 @@ from opentelemetry import trace
 
 # Appends third_party/depot_tools/infra_lib so that we can import telemetry.
 sys.path.append(
-    os.path.join(os.path.dirname(__file__), os.path.pardir, os.path.pardir,
-                 'third_party', 'depot_tools', 'infra_lib'))
+  os.path.join(
+    os.path.dirname(__file__),
+    os.path.pardir,
+    os.path.pardir,
+    'third_party',
+    'depot_tools',
+    'infra_lib',
+  )
+)
 
 import telemetry
 

@@ -150,33 +150,28 @@ _BENCHMARKS = [
         name='chrome_nosig',
         from_string='IntentHandler";',
         to_string='Different<sub>UniqueString";',
-        change_file=
-        'chrome/android/java/src/org/chromium/chrome/browser/IntentHandler.java',  # pylint: disable=line-too-long
+        change_file='chrome/android/java/src/org/chromium/chrome/browser/IntentHandler.java',  # pylint: disable=line-too-long
         can_install=True,
     ),
     Benchmark(
         name='chrome_sig',
         from_string='public ChromeApplicationImpl() {}',
-        to_string=
-        'public ChromeApplicationImpl() {};public void NewInterface<sub>Method(){}',  # pylint: disable=line-too-long
-        change_file=
-        'chrome/android/java/src/org/chromium/chrome/browser/ChromeApplicationImpl.java',  # pylint: disable=line-too-long
+        to_string='public ChromeApplicationImpl() {};public void NewInterface<sub>Method(){}',  # pylint: disable=line-too-long
+        change_file='chrome/android/java/src/org/chromium/chrome/browser/ChromeApplicationImpl.java',  # pylint: disable=line-too-long
         can_install=True,
     ),
     Benchmark(
         name='module_public_sig',
         from_string='INVALID_WINDOW_ID = -1',
         to_string='INVALID_WINDOW_ID = -<sub>',
-        change_file=
-        'chrome/browser/tabwindow/android/java/src/org/chromium/chrome/browser/tabwindow/TabWindowManager.java',  # pylint: disable=line-too-long
+        change_file='chrome/browser/tabwindow/android/java/src/org/chromium/chrome/browser/tabwindow/TabWindowManager.java',  # pylint: disable=line-too-long
         can_install=True,
     ),
     Benchmark(
         name='module_internal_nosig',
         from_string='"TabModelSelector',
         to_string='"DifferentUnique<sub>String',
-        change_file=
-        'chrome/browser/tabwindow/internal/android/java/src/org/chromium/chrome/browser/tabwindow/TabWindowManagerImpl.java',  # pylint: disable=line-too-long
+        change_file='chrome/browser/tabwindow/internal/android/java/src/org/chromium/chrome/browser/tabwindow/TabWindowManagerImpl.java',  # pylint: disable=line-too-long
         can_install=True,
     ),
     Benchmark(
@@ -220,10 +215,8 @@ _BENCHMARKS = [
     Benchmark(
         name='cta_test_sig',
         from_string='public void testStartOnBlankPage() {',
-        to_string=
-        'public void NewInterface<sub>Method(){};public void testStartOnBlankPage() {',  # pylint: disable=line-too-long
-        change_file=
-        'chrome/android/javatests/src/org/chromium/chrome/browser/ExampleFreshCtaTest.java',  # pylint: disable=line-too-long
+        to_string='public void NewInterface<sub>Method(){};public void testStartOnBlankPage() {',  # pylint: disable=line-too-long
+        change_file='chrome/android/javatests/src/org/chromium/chrome/browser/ExampleFreshCtaTest.java',  # pylint: disable=line-too-long
         can_install=True,
         can_run=True,
         test_filter='*ExampleFreshCtaTest*',
@@ -232,20 +225,20 @@ _BENCHMARKS = [
         name='chrome_junit_sig',
         from_string='@Mock Profile mProfile;',
         # @org.junit.Ignore to avoid the JUnit4TestNotRun errorprone warning.
-        to_string=
-        '@org.junit.Ignore public void NewInterface<sub>Method(){};@Mock Profile mProfile;',  # pylint: disable=line-too-long
-        change_file=
-        'chrome/android/junit/src/org/chromium/chrome/browser/ExampleRobolectricTest.java',  # pylint: disable=line-too-long
+        to_string='@org.junit.Ignore public void NewInterface<sub>Method(){};@Mock Profile mProfile;',  # pylint: disable=line-too-long
+        change_file='chrome/android/junit/src/org/chromium/chrome/browser/ExampleRobolectricTest.java',  # pylint: disable=line-too-long
         can_run=True,
         test_filter='*ExampleRobolectricTest*',
     ),
     Benchmark(
         name='al_cc',
-        from_string=
-        '#include "chrome/browser/android/compositor/compositor_view.h"',
+        from_string=(
+            '#include "chrome/browser/android/compositor/compositor_view.h"'
+        ),
         to_string=(
             '#include "chrome/browser/android/compositor/compositor_view.h"\n'
-            '// random_comment<sub>'),
+            '// random_comment<sub>'
+        ),
         change_file='chrome/browser/android/compositor/compositor_view.cc',
         can_install=True,
     ),
@@ -278,14 +271,17 @@ def _backup_file(file_path: pathlib.Path):
 
 def _detect_emulators() -> List[device_utils.DeviceUtils]:
     return [
-        device_utils.DeviceUtils(d) for d in adb_wrapper.AdbWrapper.Devices()
+        device_utils.DeviceUtils(d)
+        for d in adb_wrapper.AdbWrapper.Devices()
         if isinstance(d, adb_wrapper.AdbWrapper) and d.is_emulator
     ]
 
 
 def _poll_for_emulators(
-        condition: Callable[[List[device_utils.DeviceUtils]], bool], *,
-        expected: str):
+    condition: Callable[[List[device_utils.DeviceUtils]], bool],
+    *,
+    expected: str,
+):
     for sec in range(_SECONDS_TO_POLL_FOR_EMULATOR):
         emulators = _detect_emulators()
         if condition(emulators):
@@ -295,14 +291,16 @@ def _poll_for_emulators(
     else:
         raise Exception(
             f'Emulator is not ready after {_SECONDS_TO_POLL_FOR_EMULATOR}s. '
-            f'Expected {expected}.')
+            f'Expected {expected}.'
+        )
 
 
 @contextlib.contextmanager
 def _emulator(emulator_avd_name):
     logging.info(f'Starting emulator image: {emulator_avd_name}')
-    _poll_for_emulators(lambda emulators: len(emulators) == 0,
-                        expected='no running emulators')
+    _poll_for_emulators(
+        lambda emulators: len(emulators) == 0, expected='no running emulators'
+    )
     avd_config = _AVD_CONFIG_DIR / emulator_avd_name
     is_verbose = logging.getLogger().isEnabledFor(logging.INFO)
     cmd = [_AVD_SCRIPT, 'start', '--avd-config', avd_config]
@@ -316,8 +314,10 @@ def _emulator(emulator_avd_name):
     except subprocess.CalledProcessError:
         logging.error(f'Unable to start the emulator {emulator_avd_name}')
         raise
-    _poll_for_emulators(lambda emulators: len(emulators) == 1,
-                        expected='exactly one emulator started successfully')
+    _poll_for_emulators(
+        lambda emulators: len(emulators) == 1,
+        expected='exactly one emulator started successfully',
+    )
     device = _detect_emulators()[0]
     assert device.adb is not None
     try:
@@ -327,8 +327,10 @@ def _emulator(emulator_avd_name):
         yield device
     finally:
         device.adb.Emu('kill')
-        _poll_for_emulators(lambda emulators: len(emulators) == 0,
-                            expected='no running emulators')
+        _poll_for_emulators(
+            lambda emulators: len(emulators) == 0,
+            expected='no running emulators',
+        )
         logging.info('Stopped emulator.')
 
 
@@ -347,13 +349,15 @@ def _run_and_time_cmd(cmd: List[str], *, dry_run: bool) -> float:
         env['AUTONINJA_STDOUT_NAME'] = '/dev/null'
         # Ensure that stdout goes to stderr so that timing output does not get
         # mixed with logging output.
-        subprocess.run(cmd,
-                       cwd=_SRC_ROOT,
-                       capture_output=not show_output,
-                       stdout=sys.stderr if show_output else None,
-                       check=True,
-                       text=True,
-                       env=env)
+        subprocess.run(
+            cmd,
+            cwd=_SRC_ROOT,
+            capture_output=not show_output,
+            stdout=sys.stderr if show_output else None,
+            check=True,
+            text=True,
+            env=env,
+        )
     except subprocess.CalledProcessError as e:
         logging.error('Output was: %s', e.output)
         raise
@@ -362,10 +366,9 @@ def _run_and_time_cmd(cmd: List[str], *, dry_run: bool) -> float:
 
 def _run_gn_gen(out_dir: pathlib.Path, *, dry_run: bool) -> float:
     return _run_and_time_cmd(
-        [sys.executable,
-         str(_GN_PATH), 'gen', '-C',
-         str(out_dir)],
-        dry_run=dry_run)
+        [sys.executable, str(_GN_PATH), 'gen', '-C', str(out_dir)],
+        dry_run=dry_run,
+    )
 
 
 def _terminate_build_server_if_needed(out_dir: pathlib.Path):
@@ -397,23 +400,34 @@ def _compile(out_dir: pathlib.Path, target: str, *, dry_run: bool) -> float:
         _terminate_build_server_if_needed(out_dir)
 
 
-def _run_install(out_dir: pathlib.Path, target: str, device_serial: str, *,
-                 dry_run: bool) -> float:
+def _run_install(
+    out_dir: pathlib.Path, target: str, device_serial: str, *, dry_run: bool
+) -> float:
     # Example script path: out/Debug/bin/chrome_public_apk
     script_path = out_dir / 'bin' / target
     # Disable first run to get a more accurate timing of startup.
     cmd = [
-        str(script_path), 'run', '--device', device_serial,
-        '--args=--disable-fre', '--exit-on-match',
-        '^Successfully loaded native library$'
+        str(script_path),
+        'run',
+        '--device',
+        device_serial,
+        '--args=--disable-fre',
+        '--exit-on-match',
+        '^Successfully loaded native library$',
     ]
     if logging.getLogger().isEnabledFor(logging.DEBUG):
         cmd += ['-vv']
     return _run_and_time_cmd(cmd, dry_run=dry_run)
 
 
-def _run_test(out_dir: pathlib.Path, target: str, device_serial: str,
-              test_filter: str, *, dry_run: bool) -> float:
+def _run_test(
+    out_dir: pathlib.Path,
+    target: str,
+    device_serial: str,
+    test_filter: str,
+    *,
+    dry_run: bool,
+) -> float:
     # Example script path: out/Debug/bin/run_chrome_public_test_apk
     script_path = out_dir / 'bin' / f'run_{target}'
     cmd = [str(script_path), '--fast-local-dev']
@@ -426,41 +440,59 @@ def _run_test(out_dir: pathlib.Path, target: str, device_serial: str,
     return _run_and_time_cmd(cmd, dry_run=dry_run)
 
 
-def _execute_benchmark_stages(benchmark: Benchmark, out_dir: pathlib.Path,
-                              target: str,
-                              emulator: Optional[device_utils.DeviceUtils], *,
-                              dry_run: bool) -> List[Tuple[str, float]]:
+def _execute_benchmark_stages(
+    benchmark: Benchmark,
+    out_dir: pathlib.Path,
+    target: str,
+    emulator: Optional[device_utils.DeviceUtils],
+    *,
+    dry_run: bool,
+) -> List[Tuple[str, float]]:
     if benchmark.can_install:
         assert emulator, f'An emulator is required for {benchmark}'
-    results = [(f'{benchmark.name}_compile',
-                _compile(out_dir, target, dry_run=dry_run))]
+    results = [
+        (
+            f'{benchmark.name}_compile',
+            _compile(out_dir, target, dry_run=dry_run),
+        )
+    ]
     if benchmark.can_run:
         serial = emulator.serial if emulator else ''
-        results.append((f'{benchmark.name}_run',
-                        _run_test(out_dir,
-                                  target,
-                                  serial,
-                                  benchmark.test_filter,
-                                  dry_run=dry_run)))
+        results.append(
+            (
+                f'{benchmark.name}_run',
+                _run_test(
+                    out_dir,
+                    target,
+                    serial,
+                    benchmark.test_filter,
+                    dry_run=dry_run,
+                ),
+            )
+        )
     elif benchmark.can_install:
-        results.append((f'{benchmark.name}_install',
-                        _run_install(out_dir,
-                                     target,
-                                     emulator.serial,
-                                     dry_run=dry_run)))
+        results.append(
+            (
+                f'{benchmark.name}_install',
+                _run_install(out_dir, target, emulator.serial, dry_run=dry_run),
+            )
+        )
     return results
 
 
-def _run_benchmark(benchmark: Benchmark, out_dir: pathlib.Path, target: str,
-                   emulator: Optional[device_utils.DeviceUtils], *,
-                   dry_run: bool) -> List[Tuple[str, float]]:
+def _run_benchmark(
+    benchmark: Benchmark,
+    out_dir: pathlib.Path,
+    target: str,
+    emulator: Optional[device_utils.DeviceUtils],
+    *,
+    dry_run: bool,
+) -> List[Tuple[str, float]]:
     # This ensures that the only change is the one that this script makes.
     logging.info('Prepping benchmark...')
-    results = _execute_benchmark_stages(benchmark,
-                                        out_dir,
-                                        target,
-                                        emulator,
-                                        dry_run=dry_run)
+    results = _execute_benchmark_stages(
+        benchmark, out_dir, target, emulator, dry_run=dry_run
+    )
     for name, elapsed in results:
         logging.info(f'Took {elapsed:.1f}s to prep {name}.')
     logging.info('Starting actual test...')
@@ -472,19 +504,20 @@ def _run_benchmark(benchmark: Benchmark, out_dir: pathlib.Path, target: str,
             # 2 billion is less than 2^31-1, which is the maximum positive int
             # in java and less than the maximum negative int, which is -2^31.
             replacement = benchmark.to_string.replace(
-                '<sub>', str(random.randint(1, 2_000_000_000)))
+                '<sub>', str(random.randint(1, 2_000_000_000))
+            )
             logging.info(
-                f'Replacing {benchmark.from_string} with {replacement}')
+                f'Replacing {benchmark.from_string} with {replacement}'
+            )
             new_content = content.replace(benchmark.from_string, replacement)
             assert content != new_content, (
                 f'Need to update {benchmark.from_string} in '
-                f'{benchmark.change_file}')
+                f'{benchmark.change_file}'
+            )
             f.write(new_content)
-        return _execute_benchmark_stages(benchmark,
-                                         out_dir,
-                                         target,
-                                         emulator,
-                                         dry_run=dry_run)
+        return _execute_benchmark_stages(
+            benchmark, out_dir, target, emulator, dry_run=dry_run
+        )
 
 
 def _format_result(time_taken: List[float]) -> str:
@@ -506,9 +539,16 @@ def _parse_benchmarks(benchmarks: List[str]) -> Iterator[Benchmark]:
             yield _BENCHMARK_FROM_NAME[name]
 
 
-def run_benchmarks(benchmarks: List[str], gn_args: List[str],
-                   output_directory: pathlib.Path, target: str, repeat: int,
-                   emulator_avd_name: Optional[str], *, dry_run: bool) -> Dict:
+def run_benchmarks(
+    benchmarks: List[str],
+    gn_args: List[str],
+    output_directory: pathlib.Path,
+    target: str,
+    repeat: int,
+    emulator_avd_name: Optional[str],
+    *,
+    dry_run: bool,
+) -> Dict:
     args_gn_path = output_directory / 'args.gn'
     if emulator_avd_name is None:
         emulator_ctx = contextlib.nullcontext
@@ -523,17 +563,20 @@ def run_benchmarks(benchmarks: List[str], gn_args: List[str],
         for run_num in range(repeat):
             logging.info(f'Run number: {run_num + 1}')
             timings['gn_gen'].append(
-                _run_gn_gen(output_directory, dry_run=dry_run))
+                _run_gn_gen(output_directory, dry_run=dry_run)
+            )
             for benchmark in _parse_benchmarks(benchmarks):
                 logging.info(f'Starting {benchmark.name}...')
                 # Start a fresh emulator for each benchmark to produce more
                 # consistent results.
                 with emulator_ctx() as emulator:
-                    results = _run_benchmark(benchmark=benchmark,
-                                             out_dir=output_directory,
-                                             target=target,
-                                             emulator=emulator,
-                                             dry_run=dry_run)
+                    results = _run_benchmark(
+                        benchmark=benchmark,
+                        out_dir=output_directory,
+                        target=target,
+                        emulator=emulator,
+                        dry_run=dry_run,
+                    )
                 for name, elapsed in results:
                     logging.info(f'Completed {name}: {elapsed:.1f}s')
                     timings[name].append(elapsed)
@@ -558,63 +601,86 @@ def main():
     assert __doc__ is not None
     parser = argparse.ArgumentParser(
         description=__doc__ + _list_benchmarks(),
-        formatter_class=argparse.RawDescriptionHelpFormatter)
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
     parser.add_argument(
         'benchmark',
         nargs='*',
         metavar='BENCHMARK',
         # Allow empty to just test `gn_gen` speed.
         choices=list(_all_benchmark_and_suite_names()) + [[]],
-        help='Names of benchmark(s) or suites(s) to run.')
-    parser.add_argument('--bundle',
-                        action='store_true',
-                        help='Switch the default target from apk to bundle.')
-    parser.add_argument('--test',
-                        action='store_true',
-                        help='Switch the default target to a test apk.')
-    parser.add_argument('--no-server',
-                        action='store_true',
-                        help='Do not start a faster local dev server before '
-                        'running the test.')
-    parser.add_argument('--no-incremental-install',
-                        action='store_true',
-                        help='Do not use incremental install.')
-    parser.add_argument('--no-component-build',
-                        action='store_true',
-                        help='Turn off component build.')
-    parser.add_argument('--build-64bit',
-                        action='store_true',
-                        help='Build 64-bit by default, even with no emulator.')
-    parser.add_argument('-r',
-                        '--repeat',
-                        type=int,
-                        default=1,
-                        help='Number of times to repeat the benchmark.')
+        help='Names of benchmark(s) or suites(s) to run.',
+    )
+    parser.add_argument(
+        '--bundle',
+        action='store_true',
+        help='Switch the default target from apk to bundle.',
+    )
+    parser.add_argument(
+        '--test',
+        action='store_true',
+        help='Switch the default target to a test apk.',
+    )
+    parser.add_argument(
+        '--no-server',
+        action='store_true',
+        help='Do not start a faster local dev server before running the test.',
+    )
+    parser.add_argument(
+        '--no-incremental-install',
+        action='store_true',
+        help='Do not use incremental install.',
+    )
+    parser.add_argument(
+        '--no-component-build',
+        action='store_true',
+        help='Turn off component build.',
+    )
+    parser.add_argument(
+        '--build-64bit',
+        action='store_true',
+        help='Build 64-bit by default, even with no emulator.',
+    )
+    parser.add_argument(
+        '-r',
+        '--repeat',
+        type=int,
+        default=1,
+        help='Number of times to repeat the benchmark.',
+    )
     parser.add_argument(
         '-C',
         '--output-directory',
-        help='If outdir is not provided, will attempt to guess.')
-    parser.add_argument('--emulator',
-                        help='Specify this to override the default emulator.')
-    parser.add_argument('--target',
-                        help='Specify this to override the default target.')
-    parser.add_argument('-v',
-                        '--verbose',
-                        action='count',
-                        default=0,
-                        help='1 to print logging, 2 to print ninja output.')
-    parser.add_argument('-q',
-                        '--quiet',
-                        action='store_true',
-                        help='Do not print the summary.')
-    parser.add_argument('--json',
-                        action='store_true',
-                        help='Output machine-readable output per benchmark.')
-    parser.add_argument('-n',
-                        '--dry-run',
-                        action='store_true',
-                        help='Do everything except the build/test/run '
-                        'steps, which will return random times.')
+        help='If outdir is not provided, will attempt to guess.',
+    )
+    parser.add_argument(
+        '--emulator', help='Specify this to override the default emulator.'
+    )
+    parser.add_argument(
+        '--target', help='Specify this to override the default target.'
+    )
+    parser.add_argument(
+        '-v',
+        '--verbose',
+        action='count',
+        default=0,
+        help='1 to print logging, 2 to print ninja output.',
+    )
+    parser.add_argument(
+        '-q', '--quiet', action='store_true', help='Do not print the summary.'
+    )
+    parser.add_argument(
+        '--json',
+        action='store_true',
+        help='Output machine-readable output per benchmark.',
+    )
+    parser.add_argument(
+        '-n',
+        '--dry-run',
+        action='store_true',
+        help='Do everything except the build/test/run '
+        'steps, which will return random times.',
+    )
     args = parser.parse_args()
 
     if args.output_directory:
@@ -630,7 +696,8 @@ def main():
     else:
         level = logging.WARNING
     logging.basicConfig(
-        level=level, format='%(levelname).1s %(relativeCreated)6d %(message)s')
+        level=level, format='%(levelname).1s %(relativeCreated)6d %(message)s'
+    )
 
     gn_args = _GN_ARGS.copy()
     if args.no_server:
@@ -667,24 +734,28 @@ def main():
     else:
         target = _TARGETS['apk']
 
-    results = run_benchmarks(args.benchmark,
-                             gn_args,
-                             out_dir,
-                             target,
-                             args.repeat,
-                             args.emulator,
-                             dry_run=args.dry_run)
+    results = run_benchmarks(
+        args.benchmark,
+        gn_args,
+        out_dir,
+        target,
+        args.repeat,
+        args.emulator,
+        dry_run=args.dry_run,
+    )
 
     if args.json:
         json_results = []
         for name, timings in results.items():
-            json_results.append({
-                'name': name,
-                'timings': timings,
-                'emulator': args.emulator,
-                'gn_args': gn_args,
-                'target': target,
-            })
+            json_results.append(
+                {
+                    'name': name,
+                    'timings': timings,
+                    'emulator': args.emulator,
+                    'gn_args': gn_args,
+                    'target': target,
+                }
+            )
         print(json.dumps(json_results, indent=2))
     elif not args.quiet:
         print(f'Summary')

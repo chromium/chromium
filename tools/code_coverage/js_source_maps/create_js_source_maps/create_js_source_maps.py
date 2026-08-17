@@ -10,8 +10,9 @@ from pathlib import Path
 _HERE_DIR = Path(__file__).parent
 _SOURCE_MAP_CREATOR = (_HERE_DIR / 'create_js_source_maps.js').resolve()
 
-_NODE_PATH = (_HERE_DIR.parent.parent.parent.parent / 'third_party' /
-              'node').resolve()
+_NODE_PATH = (
+  _HERE_DIR.parent.parent.parent.parent / 'third_party' / 'node'
+).resolve()
 sys.path.append(str(_NODE_PATH))
 import node
 
@@ -28,7 +29,8 @@ def main(argv):
   # We can't use third_party/node/node.py directly from the gni template
   # because we don't have a good way to specify the path to
   # create_js_source_maps.js in a gni template.
-  node.RunNode([
+  node.RunNode(
+    [
       str(_SOURCE_MAP_CREATOR),
       "--originals",
       *args.originals,
@@ -36,7 +38,11 @@ def main(argv):
       *args.sources,
       "--outputs",
       *args.outputs,
-  ] + ['--inline-sourcemaps'] if args.inline_sourcemaps else [])
+    ]
+    + ['--inline-sourcemaps']
+    if args.inline_sourcemaps
+    else []
+  )
 
 
 if __name__ == '__main__':

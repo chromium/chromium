@@ -19,6 +19,7 @@ try:
         # Do not import IPython when running unit tests to avoid module name
         # conflicts. There is `import cProfile as profile` in IPython.
         from IPython.display import HTML, display
+
         _HAS_IPYTHON = True
 except ImportError:
     _HAS_IPYTHON = False
@@ -65,10 +66,9 @@ class MemoryUsageView:
         return cls(roots)
 
     @classmethod
-    def from_heap_dump(cls,
-                       trace_file_name: str,
-                       demangle: bool = True,
-                       aggregate: bool = True) -> 'MemoryUsageView':
+    def from_heap_dump(
+        cls, trace_file_name: str, demangle: bool = True, aggregate: bool = True
+    ) -> 'MemoryUsageView':
         """Creates a MemoryUsageView from a trace file with a heap dump."""
         abs_path = os.path.abspath(trace_file_name)
         with TraceProcessor(trace=abs_path) as trace_processor:
@@ -81,10 +81,9 @@ class MemoryUsageView:
         return json.dumps(self.roots, cls=TreeNodeEncoder, indent=0, **kwargs)
 
     @classmethod
-    def from_df(cls,
-                df: pd.DataFrame,
-                demangle: bool = True,
-                aggregate: bool = True) -> 'MemoryUsageView':
+    def from_df(
+        cls, df: pd.DataFrame, demangle: bool = True, aggregate: bool = True
+    ) -> 'MemoryUsageView':
         """Creates a MemoryUsageView from a DataFrame."""
         roots = []
         if demangle:
@@ -95,8 +94,9 @@ class MemoryUsageView:
         return cls(roots)
 
     @classmethod
-    def from_comparison(cls, base: 'MemoryUsageView',
-                        new: 'MemoryUsageView') -> 'MemoryUsageView':
+    def from_comparison(
+        cls, base: 'MemoryUsageView', new: 'MemoryUsageView'
+    ) -> 'MemoryUsageView':
         """Duplicates the base view with deltas as compared to the new view."""
         return cls(_compare_node_lists(base.roots, new.roots))
 
@@ -119,7 +119,8 @@ class MemoryUsageView:
         saved_roots = self.roots
         unique_root_id = f'metrics-root-{id(self)}'
         env = jinja2.Environment(
-            loader=jinja2.FileSystemLoader(_MEMORY_USAGE_DIR))
+            loader=jinja2.FileSystemLoader(_MEMORY_USAGE_DIR)
+        )
         env.policies['json.dumps_function'] = MemoryUsageView.to_json
         try:
             # Common heap profiles are a too deep for the default recursion
@@ -201,8 +202,9 @@ def _extract_heap_dump(trace_processor: TraceProcessor) -> pd.DataFrame:
     return df
 
 
-def _load_df(df: pd.DataFrame, d: demangler.Demangler,
-             aggregate: bool) -> list[TreeNode]:
+def _load_df(
+    df: pd.DataFrame, d: demangler.Demangler, aggregate: bool
+) -> list[TreeNode]:
     """Loads a DataFrame into a MemoryUsageView.roots."""
     # Nodes indexed by callsite_id.
     nodes: dict[int, TreeNode] = {}
@@ -216,19 +218,22 @@ def _load_df(df: pd.DataFrame, d: demangler.Demangler,
 
         callsite_id = int(row.callsite_id)
         assert callsite_id not in nodes, (
-            f'Duplicate callsite id: {row.callsite_id}')
+            f'Duplicate callsite id: {row.callsite_id}'
+        )
 
         node = TreeNode(name=frame_name, value=int(row.total_size_bytes))
         nodes[callsite_id] = node
 
         if int(row.depth) == 0:
             assert pd.isna(row.parent_callsite_id), (
-                f'Row with zero depth and {row.parent_callsite_id=}')
+                f'Row with zero depth and {row.parent_callsite_id=}'
+            )
             roots.append(node)
             continue
         parent_id = int(row.parent_callsite_id)
         assert parent_id in nodes, (
-            f'Missing parent callsite for {callsite_id}: {parent_id}')
+            f'Missing parent callsite for {callsite_id}: {parent_id}'
+        )
         parent_node = nodes[parent_id]
         parent_node.children.append(node)
     if aggregate:
@@ -276,13 +281,16 @@ def _aggregate_nodes(nodes: list[TreeNode]) -> list[TreeNode]:
         name_to_grouped_node[name] = grouped_node
 
     # Sort the nodes by their cumulative value.
-    return sorted(list(name_to_grouped_node.values()),
-                  key=lambda node: node.value,
-                  reverse=True)
+    return sorted(
+        list(name_to_grouped_node.values()),
+        key=lambda node: node.value,
+        reverse=True,
+    )
 
 
-def _zip_by_name(left_nodes: list[TreeNode],
-                 right_nodes: list[TreeNode]) -> list[TreeNode]:
+def _zip_by_name(
+    left_nodes: list[TreeNode], right_nodes: list[TreeNode]
+) -> list[TreeNode]:
     """Iterates over two lists of nodes, producing pairs with an item from each.
 
     Nodes are paired by name. This function assumes that each input list has no
@@ -302,8 +310,9 @@ def _zip_by_name(left_nodes: list[TreeNode],
             yield (None, node2)
 
 
-def _compare_node_lists(nodes_base: list[TreeNode],
-                        nodes_new: list[TreeNode]) -> list[TreeNode]:
+def _compare_node_lists(
+    nodes_base: list[TreeNode], nodes_new: list[TreeNode]
+) -> list[TreeNode]:
     """Recursively creates a copy of base nodes with deltas to the new list.
 
     Puts value difference (from base list to the new list) as node.delta in the
@@ -319,9 +328,9 @@ def _compare_node_lists(nodes_base: list[TreeNode],
             result.append(TreeNode(name=new.name, value=0, delta=new.value))
             continue
         if not new:
-            zero_new = TreeNode(name=base.name,
-                                value=base.value,
-                                delta=-base.value)
+            zero_new = TreeNode(
+                name=base.name, value=base.value, delta=-base.value
+            )
             result.append(zero_new)
             continue
         merged_node = TreeNode(name=base.name, value=base.value)

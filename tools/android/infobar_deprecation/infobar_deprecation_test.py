@@ -9,9 +9,10 @@ import unittest
 import infobar_deprecation
 
 sys.path.append(
-    os.path.dirname(
-        os.path.dirname(
-            os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
+  os.path.dirname(
+    os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+  )
+)
 from PRESUBMIT_test_mocks import MockFile, MockInputApi, MockOutputApi
 
 _MOCK_INFOBAR_DELEGATE_H_CONTENTS = '''
@@ -41,11 +42,11 @@ class InfobarDeprecationMockInputApi(MockInputApi):
 class InfobarDeprecationMockInputFile(MockFile):
   def ChangedContents(self):
     return [
-        (6, '  E_INFOBAR = 5,'),
-        (7, '  F_INFOBAR_ANDROID = 6,'),
-        (8, '  F_INFOBAR_MOBILE = 7,'),
-        (9, '  F_INFOBAR_IOS = 8,'),
-        (10, '  // G_INFOBAR_ANDROID = 9,'),
+      (6, '  E_INFOBAR = 5,'),
+      (7, '  F_INFOBAR_ANDROID = 6,'),
+      (8, '  F_INFOBAR_MOBILE = 7,'),
+      (9, '  F_INFOBAR_IOS = 8,'),
+      (10, '  // G_INFOBAR_ANDROID = 9,'),
     ]
 
 
@@ -55,31 +56,44 @@ class TestInfobarDeprecation(unittest.TestCase):
 
     mock_input_api = MockInputApi()
     mock_input_api.files = [
-        MockFile(
-            os.path.join(infobar_deprecation.INFOBAR_ANDROID_FOLDERS[0],
-                         'TestInfobarDelegate.java'), lines),
-        MockFile(
-            os.path.join(infobar_deprecation.INFOBAR_ANDROID_FOLDERS[1],
-                         'test_infobar_delegate.cc'), lines),
-
-        # Add un-related file for testing.
-        MockFile(
-            os.path.join(infobar_deprecation.INFOBAR_ANDROID_FOLDERS[1],
-                         'README.md'), lines),
+      MockFile(
+        os.path.join(
+          infobar_deprecation.INFOBAR_ANDROID_FOLDERS[0],
+          'TestInfobarDelegate.java',
+        ),
+        lines,
+      ),
+      MockFile(
+        os.path.join(
+          infobar_deprecation.INFOBAR_ANDROID_FOLDERS[1],
+          'test_infobar_delegate.cc',
+        ),
+        lines,
+      ),
+      # Add un-related file for testing.
+      MockFile(
+        os.path.join(
+          infobar_deprecation.INFOBAR_ANDROID_FOLDERS[1], 'README.md'
+        ),
+        lines,
+      ),
     ]
-    warnings = infobar_deprecation._CheckNewInfobar(mock_input_api,
-                                                    MockOutputApi())
+    warnings = infobar_deprecation._CheckNewInfobar(
+      mock_input_api, MockOutputApi()
+    )
     self.assertEqual(1, len(warnings))
     self.assertEqual(2, len(warnings[0].items))
 
   def testInfobarFiles(self):
     mock_input_api = InfobarDeprecationMockInputApi()
     mock_input_api.files = [
-        InfobarDeprecationMockInputFile(infobar_deprecation.INFOBAR_DELEGATE_H,
-                                        []),
+      InfobarDeprecationMockInputFile(
+        infobar_deprecation.INFOBAR_DELEGATE_H, []
+      ),
     ]
-    warnings = infobar_deprecation._CheckNewInfobar(mock_input_api,
-                                                    MockOutputApi())
+    warnings = infobar_deprecation._CheckNewInfobar(
+      mock_input_api, MockOutputApi()
+    )
     self.assertEqual(1, len(warnings))
     self.assertEqual(2, len(warnings[0].items))
 

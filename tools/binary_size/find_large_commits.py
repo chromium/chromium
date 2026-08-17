@@ -13,7 +13,7 @@ import subprocess
 # Commit ranges where perf bot was giving invalid results.
 # Range objects implement __contains__ for fast "in" operators.
 _BAD_COMMIT_RANGES = [
-    range(1045024, 1045552),  # https://crbug.com/1361952
+  range(1045024, 1045552),  # https://crbug.com/1361952
 ]
 
 
@@ -43,10 +43,13 @@ def _FindBigDeltas(revs_and_sizes, increase_threshold, decrease_threshold):
 
 def _LookupCommitInfo(rev):
   sha1 = subprocess.check_output(
-      ['git', 'crrev-parse', str(rev)], encoding="utf-8").strip()
+    ['git', 'crrev-parse', str(rev)], encoding="utf-8"
+  ).strip()
   if not sha1:
-    raise Exception(f'git crrev-parse for {rev} failed. Probably need to '
-                    f'"git fetch origin main"')
+    raise Exception(
+      f'git crrev-parse for {rev} failed. Probably need to '
+      f'"git fetch origin main"'
+    )
   desc = subprocess.check_output(['git', 'log', '-n1', sha1], encoding="utf-8")
   author = re.search(r'Author: .*?<(.*?)>', desc).group(1)
   day, year = re.search(r'Date:\s+\w+\s+(\w+ \d+)\s+.*?\s+(\d+)', desc).groups()
@@ -58,25 +61,32 @@ def _LookupCommitInfo(rev):
 def main():
   parser = argparse.ArgumentParser()
   parser.add_argument(
-      '--increase-threshold',
-      type=int,
-      default=30 * 1024,
-      help='Minimum number of bytes larger to be considered a notable.')
+    '--increase-threshold',
+    type=int,
+    default=30 * 1024,
+    help='Minimum number of bytes larger to be considered a notable.',
+  )
   parser.add_argument(
-      '--decrease-threshold',
-      type=int,
-      default=30 * 1024,
-      help='Minimum number of bytes smaller to be considered a notable.')
+    '--decrease-threshold',
+    type=int,
+    default=30 * 1024,
+    help='Minimum number of bytes smaller to be considered a notable.',
+  )
   parser.add_argument(
-      'points_csv', help='Input .csv file with columns: revision,value')
+    'points_csv', help='Input .csv file with columns: revision,value'
+  )
   options = parser.parse_args()
 
   revs_and_sizes = _ReadCsv(options.points_csv)
-  big_deltas = _FindBigDeltas(revs_and_sizes, options.increase_threshold,
-                              options.decrease_threshold)
+  big_deltas = _FindBigDeltas(
+    revs_and_sizes, options.increase_threshold, options.decrease_threshold
+  )
 
-  print('Printing info for up to {} commits in the range {}-{}'.format(
-      len(big_deltas), revs_and_sizes[0][0], revs_and_sizes[-1][0]))
+  print(
+    'Printing info for up to {} commits in the range {}-{}'.format(
+      len(big_deltas), revs_and_sizes[0][0], revs_and_sizes[-1][0]
+    )
+  )
   print('Revision,Hash,Title,Author,Delta,Date')
   num_bad_commits = 0
   for rev, delta, prev_rev in big_deltas:

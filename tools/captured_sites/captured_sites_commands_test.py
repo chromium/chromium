@@ -12,7 +12,6 @@ import captured_sites_commands
 
 
 class UnitTestCapturedSitesCommands(unittest.TestCase):
-
   def createAndSetEnvDirectory(self, env_name, dir_name):
     full_dir_path = Path(dir_name)
     if not full_dir_path.exists():
@@ -21,19 +20,21 @@ class UnitTestCapturedSitesCommands(unittest.TestCase):
 
   def setUp(self):
     self.local_environ = os.environ.copy()
-    self.createAndSetEnvDirectory('CAPTURED_SITES_USER_DATA_DIR',
-                                  '/tmp/captured_sites/userdir')
-    self.createAndSetEnvDirectory('CAPTURED_SITES_LOG_DATA_DIR',
-                                  '/tmp/captured_sites/local_test_results')
+    self.createAndSetEnvDirectory(
+      'CAPTURED_SITES_USER_DATA_DIR', '/tmp/captured_sites/userdir'
+    )
+    self.createAndSetEnvDirectory(
+      'CAPTURED_SITES_LOG_DATA_DIR', '/tmp/captured_sites/local_test_results'
+    )
 
   def buildReturnCommandText(self, name, args):
     command = captured_sites_commands.initiate_command(name, self.local_environ)
     command.build(args)
     return command.print()
 
-  def helpCompareInputsToExpected(self,
-                                  actual_input_and_output,
-                                  is_python_cmd=False):
+  def helpCompareInputsToExpected(
+    self, actual_input_and_output, is_python_cmd=False
+  ):
     for i, [name, args, expected_print] in enumerate(actual_input_and_output):
       identifier = ' '.join([name] + args)
       with self.subTest(command=identifier):
@@ -49,251 +50,336 @@ class UnitTestCapturedSitesCommands(unittest.TestCase):
 
   def testBuildCommand(self):
     actual_input_and_output = [
-        [
-            'build', [],
-            'autoninja -C out/Default captured_sites_interactive_tests'
-        ],
-        [
-            'build', ['-r'],
-            'autoninja -C out/Release captured_sites_interactive_tests'
-        ],
+      [
+        'build',
+        [],
+        'autoninja -C out/Default captured_sites_interactive_tests',
+      ],
+      [
+        'build',
+        ['-r'],
+        'autoninja -C out/Release captured_sites_interactive_tests',
+      ],
     ]
     self.helpCompareInputsToExpected(actual_input_and_output)
 
   def testChromeCommand(self):
     actual_input_and_output = [
-        [
-            'chrome', [],
-            ('/usr/bin/google-chrome --ignore-certificate-errors-spki-list=2HcX'
-             'CSKKJS0lEXLQEWhpHUfGuojiU0tiT5gOF9LP6IQ=,PoNnQAwghMiLUPg1YNFtvTfG'
-             'reNT8r9oeLEyzgNCJWc= --user-data-dir="/tmp/captured_sites/userdir'
-             '" --disable-application-cache --show-autofill-signatures --enable'
-             '-features=AutofillShowTypePredictions --disable-features=Autofill'
-             'CacheQueryResponses')
-        ],
-        [
-            'chrome', ['-r'],
-            ('out/Release/chrome --ignore-certificate-errors-spki-list=2HcXCSKK'
-             'JS0lEXLQEWhpHUfGuojiU0tiT5gOF9LP6IQ=,PoNnQAwghMiLUPg1YNFtvTfGreNT'
-             '8r9oeLEyzgNCJWc= --user-data-dir="/tmp/captured_sites/userdir" --'
-             'disable-application-cache --show-autofill-signatures --enable-fea'
-             'tures=AutofillShowTypePredictions --disable-features=AutofillCach'
-             'eQueryResponses')
-        ],
-        [
-            'chrome', ['-w'],
-            ('/usr/bin/google-chrome --ignore-certificate-errors-spki-list=2HcX'
-             'CSKKJS0lEXLQEWhpHUfGuojiU0tiT5gOF9LP6IQ=,PoNnQAwghMiLUPg1YNFtvTfG'
-             'reNT8r9oeLEyzgNCJWc= --user-data-dir="/tmp/captured_sites/userdir'
-             '" --disable-application-cache --show-autofill-signatures --enable'
-             '-features=AutofillShowTypePredictions --disable-features=Autofill'
-             'CacheQueryResponses --host-resolver-rules="MAP *:80 127.0.0.1:808'
-             '0,MAP *:443 127.0.0.1:8081,EXCLUDE localhost"')
-        ],
-        [
-            'chrome', ['-r', '-w'],
-            ('out/Release/chrome --ignore-certificate-errors-spki-list=2HcXCSKK'
-             'JS0lEXLQEWhpHUfGuojiU0tiT5gOF9LP6IQ=,PoNnQAwghMiLUPg1YNFtvTfGreNT'
-             '8r9oeLEyzgNCJWc= --user-data-dir="/tmp/captured_sites/userdir" --'
-             'disable-application-cache --show-autofill-signatures --enable-fea'
-             'tures=AutofillShowTypePredictions --disable-features=AutofillCach'
-             'eQueryResponses --host-resolver-rules="MAP *:80 127.0.0.1:8080,MA'
-             'P *:443 127.0.0.1:8081,EXCLUDE localhost"')
-        ],
+      [
+        'chrome',
+        [],
+        (
+          '/usr/bin/google-chrome --ignore-certificate-errors-spki-list=2HcX'
+          'CSKKJS0lEXLQEWhpHUfGuojiU0tiT5gOF9LP6IQ=,PoNnQAwghMiLUPg1YNFtvTfG'
+          'reNT8r9oeLEyzgNCJWc= --user-data-dir="/tmp/captured_sites/userdir'
+          '" --disable-application-cache --show-autofill-signatures --enable'
+          '-features=AutofillShowTypePredictions --disable-features=Autofill'
+          'CacheQueryResponses'
+        ),
+      ],
+      [
+        'chrome',
+        ['-r'],
+        (
+          'out/Release/chrome --ignore-certificate-errors-spki-list=2HcXCSKK'
+          'JS0lEXLQEWhpHUfGuojiU0tiT5gOF9LP6IQ=,PoNnQAwghMiLUPg1YNFtvTfGreNT'
+          '8r9oeLEyzgNCJWc= --user-data-dir="/tmp/captured_sites/userdir" --'
+          'disable-application-cache --show-autofill-signatures --enable-fea'
+          'tures=AutofillShowTypePredictions --disable-features=AutofillCach'
+          'eQueryResponses'
+        ),
+      ],
+      [
+        'chrome',
+        ['-w'],
+        (
+          '/usr/bin/google-chrome --ignore-certificate-errors-spki-list=2HcX'
+          'CSKKJS0lEXLQEWhpHUfGuojiU0tiT5gOF9LP6IQ=,PoNnQAwghMiLUPg1YNFtvTfG'
+          'reNT8r9oeLEyzgNCJWc= --user-data-dir="/tmp/captured_sites/userdir'
+          '" --disable-application-cache --show-autofill-signatures --enable'
+          '-features=AutofillShowTypePredictions --disable-features=Autofill'
+          'CacheQueryResponses --host-resolver-rules="MAP *:80 127.0.0.1:808'
+          '0,MAP *:443 127.0.0.1:8081,EXCLUDE localhost"'
+        ),
+      ],
+      [
+        'chrome',
+        ['-r', '-w'],
+        (
+          'out/Release/chrome --ignore-certificate-errors-spki-list=2HcXCSKK'
+          'JS0lEXLQEWhpHUfGuojiU0tiT5gOF9LP6IQ=,PoNnQAwghMiLUPg1YNFtvTfGreNT'
+          '8r9oeLEyzgNCJWc= --user-data-dir="/tmp/captured_sites/userdir" --'
+          'disable-application-cache --show-autofill-signatures --enable-fea'
+          'tures=AutofillShowTypePredictions --disable-features=AutofillCach'
+          'eQueryResponses --host-resolver-rules="MAP *:80 127.0.0.1:8080,MA'
+          'P *:443 127.0.0.1:8081,EXCLUDE localhost"'
+        ),
+      ],
     ]
     self.helpCompareInputsToExpected(actual_input_and_output)
 
   def testWprCommand(self):
     actual_input_and_output = [
-        [
-            'wpr', ['record', 'google'],
-            ('third_party/webpagereplay/scripts/run_wpr.py rec'
-             'ord --http_port=8080 --https_port=8081 --inject_scripts=chrome/te'
-             'st/data/web_page_replay_go_helper_scripts/automation_helper.js --'
-             'no_archive_certificates --https_cert_file=components/test/data/au'
-             'tofill/web_page_replay_support_files/ecdsa_cert.pem,components/te'
-             'st/data/autofill/web_page_replay_support_files/wpr_cert.pem --htt'
-             'ps_key_file=components/test/data/autofill/web_page_replay_support'
-             '_files/ecdsa_key.pem,components/test/data/autofill/web_page_repla'
-             'y_support_files/wpr_key.pem chrome/test/data/autofill/captured_si'
-             'tes/artifacts/google.wpr')
-        ],
-        [
-            'wpr', ['record', '-c', 'rsa', 'google'],
-            ('third_party/webpagereplay/scripts/run_wpr.py rec'
-             'ord --http_port=8080 --https_port=8081 --inject_scripts=chrome/te'
-             'st/data/web_page_replay_go_helper_scripts/automation_helper.js --'
-             'no_archive_certificates --https_cert_file=components/test/data/au'
-             'tofill/web_page_replay_support_files/wpr_cert.pem --https_key_fil'
-             'e=components/test/data/autofill/web_page_replay_support_files/wpr'
-             '_key.pem chrome/test/data/autofill/captured_sites/artifacts/googl'
-             'e.wpr')
-        ],
-        [
-            'wpr', ['replay', 'google'],
-            ('third_party/webpagereplay/scripts/run_wpr.py rep'
-             'lay --http_port=8080 --https_port=8081 --inject_scripts=chrome/te'
-             'st/data/web_page_replay_go_helper_scripts/automation_helper.js --'
-             'no_archive_certificates --serve_response_in_chronological_sequenc'
-             'e --https_cert_file=components/test/data/autofill/web_page_replay'
-             '_support_files/ecdsa_cert.pem,components/test/data/autofill/web_p'
-             'age_replay_support_files/wpr_cert.pem --https_key_file=components'
-             '/test/data/autofill/web_page_replay_support_files/ecdsa_key.pem,c'
-             'omponents/test/data/autofill/web_page_replay_support_files/wpr_ke'
-             'y.pem chrome/test/data/autofill/captured_sites/artifacts/google.w'
-             'pr')
-        ],
-        [
-            'wpr', ['replay', 'sign_in_pass', 'google'],
-            ('third_party/webpagereplay/scripts/run_wpr.py rep'
-             'lay --http_port=8080 --https_port=8081 --inject_scripts=chrome/te'
-             'st/data/web_page_replay_go_helper_scripts/automation_helper.js --'
-             'no_archive_certificates --serve_response_in_chronological_sequenc'
-             'e --https_cert_file=components/test/data/autofill/web_page_replay'
-             '_support_files/ecdsa_cert.pem,components/test/data/autofill/web_p'
-             'age_replay_support_files/wpr_cert.pem --https_key_file=components'
-             '/test/data/autofill/web_page_replay_support_files/ecdsa_key.pem,c'
-             'omponents/test/data/autofill/web_page_replay_support_files/wpr_ke'
-             'y.pem chrome/test/data/password/captured_sites/artifacts/sign_in_'
-             'pass/google.wpr')
-        ],
-        [
-            'wpr', ['replay', '-c', 'rsa', 'google'],
-            ('third_party/webpagereplay/scripts/run_wpr.py rep'
-             'lay --http_port=8080 --https_port=8081 --inject_scripts=chrome/te'
-             'st/data/web_page_replay_go_helper_scripts/automation_helper.js --'
-             'no_archive_certificates --serve_response_in_chronological_sequenc'
-             'e --https_cert_file=components/test/data/autofill/web_page_replay'
-             '_support_files/wpr_cert.pem --https_key_file=components/test/data'
-             '/autofill/web_page_replay_support_files/wpr_key.pem chrome/test/d'
-             'ata/autofill/captured_sites/artifacts/google.wpr')
-        ],
+      [
+        'wpr',
+        ['record', 'google'],
+        (
+          'third_party/webpagereplay/scripts/run_wpr.py rec'
+          'ord --http_port=8080 --https_port=8081 --inject_scripts=chrome/te'
+          'st/data/web_page_replay_go_helper_scripts/automation_helper.js --'
+          'no_archive_certificates --https_cert_file=components/test/data/au'
+          'tofill/web_page_replay_support_files/ecdsa_cert.pem,components/te'
+          'st/data/autofill/web_page_replay_support_files/wpr_cert.pem --htt'
+          'ps_key_file=components/test/data/autofill/web_page_replay_support'
+          '_files/ecdsa_key.pem,components/test/data/autofill/web_page_repla'
+          'y_support_files/wpr_key.pem chrome/test/data/autofill/captured_si'
+          'tes/artifacts/google.wpr'
+        ),
+      ],
+      [
+        'wpr',
+        ['record', '-c', 'rsa', 'google'],
+        (
+          'third_party/webpagereplay/scripts/run_wpr.py rec'
+          'ord --http_port=8080 --https_port=8081 --inject_scripts=chrome/te'
+          'st/data/web_page_replay_go_helper_scripts/automation_helper.js --'
+          'no_archive_certificates --https_cert_file=components/test/data/au'
+          'tofill/web_page_replay_support_files/wpr_cert.pem --https_key_fil'
+          'e=components/test/data/autofill/web_page_replay_support_files/wpr'
+          '_key.pem chrome/test/data/autofill/captured_sites/artifacts/googl'
+          'e.wpr'
+        ),
+      ],
+      [
+        'wpr',
+        ['replay', 'google'],
+        (
+          'third_party/webpagereplay/scripts/run_wpr.py rep'
+          'lay --http_port=8080 --https_port=8081 --inject_scripts=chrome/te'
+          'st/data/web_page_replay_go_helper_scripts/automation_helper.js --'
+          'no_archive_certificates --serve_response_in_chronological_sequenc'
+          'e --https_cert_file=components/test/data/autofill/web_page_replay'
+          '_support_files/ecdsa_cert.pem,components/test/data/autofill/web_p'
+          'age_replay_support_files/wpr_cert.pem --https_key_file=components'
+          '/test/data/autofill/web_page_replay_support_files/ecdsa_key.pem,c'
+          'omponents/test/data/autofill/web_page_replay_support_files/wpr_ke'
+          'y.pem chrome/test/data/autofill/captured_sites/artifacts/google.w'
+          'pr'
+        ),
+      ],
+      [
+        'wpr',
+        ['replay', 'sign_in_pass', 'google'],
+        (
+          'third_party/webpagereplay/scripts/run_wpr.py rep'
+          'lay --http_port=8080 --https_port=8081 --inject_scripts=chrome/te'
+          'st/data/web_page_replay_go_helper_scripts/automation_helper.js --'
+          'no_archive_certificates --serve_response_in_chronological_sequenc'
+          'e --https_cert_file=components/test/data/autofill/web_page_replay'
+          '_support_files/ecdsa_cert.pem,components/test/data/autofill/web_p'
+          'age_replay_support_files/wpr_cert.pem --https_key_file=components'
+          '/test/data/autofill/web_page_replay_support_files/ecdsa_key.pem,c'
+          'omponents/test/data/autofill/web_page_replay_support_files/wpr_ke'
+          'y.pem chrome/test/data/password/captured_sites/artifacts/sign_in_'
+          'pass/google.wpr'
+        ),
+      ],
+      [
+        'wpr',
+        ['replay', '-c', 'rsa', 'google'],
+        (
+          'third_party/webpagereplay/scripts/run_wpr.py rep'
+          'lay --http_port=8080 --https_port=8081 --inject_scripts=chrome/te'
+          'st/data/web_page_replay_go_helper_scripts/automation_helper.js --'
+          'no_archive_certificates --serve_response_in_chronological_sequenc'
+          'e --https_cert_file=components/test/data/autofill/web_page_replay'
+          '_support_files/wpr_cert.pem --https_key_file=components/test/data'
+          '/autofill/web_page_replay_support_files/wpr_key.pem chrome/test/d'
+          'ata/autofill/captured_sites/artifacts/google.wpr'
+        ),
+      ],
     ]
-    self.helpCompareInputsToExpected(actual_input_and_output,
-                                     is_python_cmd=True)
+    self.helpCompareInputsToExpected(
+      actual_input_and_output, is_python_cmd=True
+    )
 
   def testRefreshCommand(self):
     actual_input_and_output = [
+      [
+        'refresh',
+        ['google'],
+        (
+          'out/Default/captured_sites_interactive_tests --gtest_filter="*/Au'
+          'tofillCapturedSitesRefresh.Recipe/google" --enable-pixel-output-i'
+          'n-tests --test-launcher-interactive --vmodule=captured_sites_test'
+          '_utils=2,cache_replayer=1,autofill_captured_sites_interactive_uit'
+          'est=1'
+        ),
+      ],
+      [
+        'refresh',
+        ['-r', 'google'],
+        (
+          'out/Release/captured_sites_interactive_tests --gtest_filter="*/Au'
+          'tofillCapturedSitesRefresh.Recipe/google" --enable-pixel-output-i'
+          'n-tests --test-launcher-interactive --vmodule=captured_sites_test'
+          '_utils=2,cache_replayer=1,autofill_captured_sites_interactive_uit'
+          'est=1'
+        ),
+      ],
+      [
+        'refresh',
+        ['-b', 'google'],
+        (
+          'testing/xvfb.py out/Default/captured_sites_interactive_tests --gt'
+          'est_filter="*/AutofillCapturedSitesRefresh.Recipe/google" --enabl'
+          'e-pixel-output-in-tests --test-launcher-interactive --vmodule=cap'
+          'tured_sites_test_utils=2,cache_replayer=1,autofill_captured_sites'
+          '_interactive_uitest=1'
+        ),
+      ],
+      [
+        'refresh',
+        ['-r', '-s', 'google'],
+        (
+          'out/Release/captured_sites_interactive_tests --gtest_filter="*/Au'
+          'tofillCapturedSitesRefresh.Recipe/google" --enable-pixel-output-i'
+          'n-tests --test-launcher-interactive --vmodule=captured_sites_test'
+          '_utils=2,cache_replayer=1,autofill_captured_sites_interactive_uit'
+          'est=1 --test-launcher-summary-output=/tmp/captured_sites/local_te'
+          'st_results/google_output.json 2>&1 | tee /tmp/captured_sites/loca'
+          'l_test_results/google_capture.log'
+        ),
+      ],
+      [
+        'refresh',
         [
-            'refresh', ['google'],
-            ('out/Default/captured_sites_interactive_tests --gtest_filter="*/Au'
-             'tofillCapturedSitesRefresh.Recipe/google" --enable-pixel-output-i'
-             'n-tests --test-launcher-interactive --vmodule=captured_sites_test'
-             '_utils=2,cache_replayer=1,autofill_captured_sites_interactive_uit'
-             'est=1')
+          '-r',
+          '-s',
+          '-b',
+          '-d',
+          '-f',
+          '-v',
+          '-t',
+          '5',
+          '-a',
+          'c',
+          '-q',
+          'pipe',
+          '-w',
+          'google',
         ],
-        [
-            'refresh', ['-r', 'google'],
-            ('out/Release/captured_sites_interactive_tests --gtest_filter="*/Au'
-             'tofillCapturedSitesRefresh.Recipe/google" --enable-pixel-output-i'
-             'n-tests --test-launcher-interactive --vmodule=captured_sites_test'
-             '_utils=2,cache_replayer=1,autofill_captured_sites_interactive_uit'
-             'est=1')
-        ],
-        [
-            'refresh', ['-b', 'google'],
-            ('testing/xvfb.py out/Default/captured_sites_interactive_tests --gt'
-             'est_filter="*/AutofillCapturedSitesRefresh.Recipe/google" --enabl'
-             'e-pixel-output-in-tests --test-launcher-interactive --vmodule=cap'
-             'tured_sites_test_utils=2,cache_replayer=1,autofill_captured_sites'
-             '_interactive_uitest=1')
-        ],
-        [
-            'refresh', ['-r', '-s', 'google'],
-            ('out/Release/captured_sites_interactive_tests --gtest_filter="*/Au'
-             'tofillCapturedSitesRefresh.Recipe/google" --enable-pixel-output-i'
-             'n-tests --test-launcher-interactive --vmodule=captured_sites_test'
-             '_utils=2,cache_replayer=1,autofill_captured_sites_interactive_uit'
-             'est=1 --test-launcher-summary-output=/tmp/captured_sites/local_te'
-             'st_results/google_output.json 2>&1 | tee /tmp/captured_sites/loca'
-             'l_test_results/google_capture.log')
-        ],
-        [
-            'refresh',
-            [
-                '-r', '-s', '-b', '-d', '-f', '-v', '-t', '5', '-a', 'c', '-q',
-                'pipe', '-w', 'google'
-            ],
-            ('testing/xvfb.py out/Release/captured_sites_interactive_tests --gt'
-             'est_filter="*/AutofillCapturedSitesRefresh.Recipe/google" --enabl'
-             'e-pixel-output-in-tests --test-launcher-interactive --vmodule=cap'
-             'tured_sites_test_utils=2,autofill_download_manager=1,form_cache=1'
-             ',autofill_agent=1,autofill_handler=1,form_structure=1,cache_repla'
-             'yer=2,autofill_captured_sites_interactive_uitest=1 --gtest_also_r'
-             'un_disabled_tests --gtest_break_on_failure --wpr_verbose --test-l'
-             'auncher-retry-limit=5 --autofill-server-type=SavedCache  --comman'
-             'd_file=pipe --test-launcher-summary-output=/tmp/captured_sites/lo'
-             'cal_test_results/google_output.json 2>&1 | tee /tmp/captured_site'
-             's/local_test_results/google_capture.log')
-        ],
+        (
+          'testing/xvfb.py out/Release/captured_sites_interactive_tests --gt'
+          'est_filter="*/AutofillCapturedSitesRefresh.Recipe/google" --enabl'
+          'e-pixel-output-in-tests --test-launcher-interactive --vmodule=cap'
+          'tured_sites_test_utils=2,autofill_download_manager=1,form_cache=1'
+          ',autofill_agent=1,autofill_handler=1,form_structure=1,cache_repla'
+          'yer=2,autofill_captured_sites_interactive_uitest=1 --gtest_also_r'
+          'un_disabled_tests --gtest_break_on_failure --wpr_verbose --test-l'
+          'auncher-retry-limit=5 --autofill-server-type=SavedCache  --comman'
+          'd_file=pipe --test-launcher-summary-output=/tmp/captured_sites/lo'
+          'cal_test_results/google_output.json 2>&1 | tee /tmp/captured_site'
+          's/local_test_results/google_capture.log'
+        ),
+      ],
     ]
     self.helpCompareInputsToExpected(actual_input_and_output)
 
   def testRunCommand(self):
     actual_input_and_output = [
+      [
+        'run',
+        ['google'],
+        (
+          'out/Default/captured_sites_interactive_tests --gtest_filter="*/Au'
+          'tofillCapturedSitesInteractiveTest.Recipe/google" --enable-pixel-'
+          'output-in-tests --test-launcher-interactive --vmodule=captured_si'
+          'tes_test_utils=2,cache_replayer=1,autofill_captured_sites_interac'
+          'tive_uitest=1'
+        ),
+      ],
+      [
+        'run',
+        ['-r', 'google'],
+        (
+          'out/Release/captured_sites_interactive_tests --gtest_filter="*/Au'
+          'tofillCapturedSitesInteractiveTest.Recipe/google" --enable-pixel-'
+          'output-in-tests --test-launcher-interactive --vmodule=captured_si'
+          'tes_test_utils=2,cache_replayer=1,autofill_captured_sites_interac'
+          'tive_uitest=1'
+        ),
+      ],
+      [
+        'run',
+        ['-b', 'google'],
+        (
+          'testing/xvfb.py out/Default/captured_sites_interactive_tests --gt'
+          'est_filter="*/AutofillCapturedSitesInteractiveTest.Recipe/google"'
+          ' --enable-pixel-output-in-tests --test-launcher-interactive --vmo'
+          'dule=captured_sites_test_utils=2,cache_replayer=1,autofill_captur'
+          'ed_sites_interactive_uitest=1'
+        ),
+      ],
+      [
+        'run',
+        ['-r', '-s', 'google'],
+        (
+          'out/Release/captured_sites_interactive_tests --gtest_filter="*/Au'
+          'tofillCapturedSitesInteractiveTest.Recipe/google" --enable-pixel-'
+          'output-in-tests --test-launcher-interactive --vmodule=captured_si'
+          'tes_test_utils=2,cache_replayer=1,autofill_captured_sites_interac'
+          'tive_uitest=1 --test-launcher-summary-output=/tmp/captured_sites/'
+          'local_test_results/google_output.json 2>&1 | tee /tmp/captured_si'
+          'tes/local_test_results/google_capture.log'
+        ),
+      ],
+      [
+        'run',
+        ['-r', '-s', '-u', 'google'],
+        (
+          'out/Release/captured_sites_interactive_tests --gtest_filter="*/Au'
+          'tofillCapturedSitesInteractiveTest.Recipe/google" --enable-pixel-'
+          'output-in-tests --ui-test-action-max-timeout=180000 --test-launch'
+          'er-timeout=180000 --vmodule=captured_sites_test_utils=2,cache_rep'
+          'layer=1,autofill_captured_sites_interactive_uitest=1 --test-launc'
+          'her-summary-output=/tmp/captured_sites/local_test_results/google_'
+          'output.json 2>&1 | tee /tmp/captured_sites/local_test_results/goo'
+          'gle_capture.log'
+        ),
+      ],
+      [
+        'run',
         [
-            'run', ['google'],
-            ('out/Default/captured_sites_interactive_tests --gtest_filter="*/Au'
-             'tofillCapturedSitesInteractiveTest.Recipe/google" --enable-pixel-'
-             'output-in-tests --test-launcher-interactive --vmodule=captured_si'
-             'tes_test_utils=2,cache_replayer=1,autofill_captured_sites_interac'
-             'tive_uitest=1')
+          '-r',
+          '-s',
+          '-b',
+          '-d',
+          '-f',
+          '-v',
+          '-t',
+          '5',
+          '-a',
+          'c',
+          '-q',
+          'pipe',
+          '-w',
+          'google',
         ],
-        [
-            'run', ['-r', 'google'],
-            ('out/Release/captured_sites_interactive_tests --gtest_filter="*/Au'
-             'tofillCapturedSitesInteractiveTest.Recipe/google" --enable-pixel-'
-             'output-in-tests --test-launcher-interactive --vmodule=captured_si'
-             'tes_test_utils=2,cache_replayer=1,autofill_captured_sites_interac'
-             'tive_uitest=1')
-        ],
-        [
-            'run', ['-b', 'google'],
-            ('testing/xvfb.py out/Default/captured_sites_interactive_tests --gt'
-             'est_filter="*/AutofillCapturedSitesInteractiveTest.Recipe/google"'
-             ' --enable-pixel-output-in-tests --test-launcher-interactive --vmo'
-             'dule=captured_sites_test_utils=2,cache_replayer=1,autofill_captur'
-             'ed_sites_interactive_uitest=1')
-        ],
-        [
-            'run', ['-r', '-s', 'google'],
-            ('out/Release/captured_sites_interactive_tests --gtest_filter="*/Au'
-             'tofillCapturedSitesInteractiveTest.Recipe/google" --enable-pixel-'
-             'output-in-tests --test-launcher-interactive --vmodule=captured_si'
-             'tes_test_utils=2,cache_replayer=1,autofill_captured_sites_interac'
-             'tive_uitest=1 --test-launcher-summary-output=/tmp/captured_sites/'
-             'local_test_results/google_output.json 2>&1 | tee /tmp/captured_si'
-             'tes/local_test_results/google_capture.log')
-        ],
-        [
-            'run', ['-r', '-s', '-u', 'google'],
-            ('out/Release/captured_sites_interactive_tests --gtest_filter="*/Au'
-             'tofillCapturedSitesInteractiveTest.Recipe/google" --enable-pixel-'
-             'output-in-tests --ui-test-action-max-timeout=180000 --test-launch'
-             'er-timeout=180000 --vmodule=captured_sites_test_utils=2,cache_rep'
-             'layer=1,autofill_captured_sites_interactive_uitest=1 --test-launc'
-             'her-summary-output=/tmp/captured_sites/local_test_results/google_'
-             'output.json 2>&1 | tee /tmp/captured_sites/local_test_results/goo'
-             'gle_capture.log')
-        ],
-        [
-            'run',
-            [
-                '-r', '-s', '-b', '-d', '-f', '-v', '-t', '5', '-a', 'c', '-q',
-                'pipe', '-w', 'google'
-            ],
-            ('testing/xvfb.py out/Release/captured_sites_interactive_tests --gt'
-             'est_filter="*/AutofillCapturedSitesInteractiveTest.Recipe/google"'
-             ' --enable-pixel-output-in-tests --test-launcher-interactive --vmo'
-             'dule=captured_sites_test_utils=2,autofill_download_manager=1,form'
-             '_cache=1,autofill_agent=1,autofill_handler=1,form_structure=1,cac'
-             'he_replayer=2,autofill_captured_sites_interactive_uitest=1 --gtes'
-             't_also_run_disabled_tests --gtest_break_on_failure --wpr_verbose '
-             '--test-launcher-retry-limit=5 --autofill-server-type=SavedCache  '
-             '--command_file=pipe --test-launcher-summary-output=/tmp/captured_'
-             'sites/local_test_results/google_output.json 2>&1 | tee /tmp/captu'
-             'red_sites/local_test_results/google_capture.log')
-        ],
+        (
+          'testing/xvfb.py out/Release/captured_sites_interactive_tests --gt'
+          'est_filter="*/AutofillCapturedSitesInteractiveTest.Recipe/google"'
+          ' --enable-pixel-output-in-tests --test-launcher-interactive --vmo'
+          'dule=captured_sites_test_utils=2,autofill_download_manager=1,form'
+          '_cache=1,autofill_agent=1,autofill_handler=1,form_structure=1,cac'
+          'he_replayer=2,autofill_captured_sites_interactive_uitest=1 --gtes'
+          't_also_run_disabled_tests --gtest_break_on_failure --wpr_verbose '
+          '--test-launcher-retry-limit=5 --autofill-server-type=SavedCache  '
+          '--command_file=pipe --test-launcher-summary-output=/tmp/captured_'
+          'sites/local_test_results/google_output.json 2>&1 | tee /tmp/captu'
+          'red_sites/local_test_results/google_capture.log'
+        ),
+      ],
     ]
     self.helpCompareInputsToExpected(actual_input_and_output)
 

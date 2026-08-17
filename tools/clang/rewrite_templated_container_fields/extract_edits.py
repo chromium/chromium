@@ -58,8 +58,9 @@ class Node:
   include_directive = ""
   neighbors = set()
 
-  def __init__(self, is_field, is_excluded, has_auto_type, replacement,
-               include_directive) -> None:
+  def __init__(
+    self, is_field, is_excluded, has_auto_type, replacement, include_directive
+  ) -> None:
     self.is_field = is_field
     self.is_excluded = is_excluded
     self.replacement = replacement
@@ -77,13 +78,18 @@ class Node:
 
 
 def GetNode(txt: str):
-  txt = txt[1:len(txt) - 1]
+  txt = txt[1 : len(txt) - 1]
   x = txt.split('\\,')
   return Node(x[0], x[1], x[2], x[3], x[4])
 
 
-def DFS(visited: set, graph: defaultdict, key: str, key_to_node: defaultdict,
-        changes: set):
+def DFS(
+  visited: set,
+  graph: defaultdict,
+  key: str,
+  key_to_node: defaultdict,
+  changes: set,
+):
   if key not in visited:
     node = key_to_node[key]
     if node.has_auto_type == "0":
@@ -95,8 +101,9 @@ def DFS(visited: set, graph: defaultdict, key: str, key_to_node: defaultdict,
 
 
 # to propagate field exclusions to all neighbors
-def PropagateExclusions(visited: set, graph: defaultdict, key: str,
-                        key_to_node: defaultdict):
+def PropagateExclusions(
+  visited: set, graph: defaultdict, key: str, key_to_node: defaultdict
+):
   if key not in visited:
     n = key_to_node[key]
     n.is_excluded = "1"
@@ -148,12 +155,18 @@ def main():
     # that if any field has a typedefNameDecl type, make all matches
     # current and previous marked as is_field
     if lhs.replacement in key_to_node.keys():
-      lhs.is_field = "1" if lhs.is_field == "1" or key_to_node[
-          lhs.replacement].is_field == "1" else "0"
+      lhs.is_field = (
+        "1"
+        if lhs.is_field == "1" or key_to_node[lhs.replacement].is_field == "1"
+        else "0"
+      )
 
     if rhs.replacement in key_to_node.keys():
-      rhs.is_field = "1" if rhs.is_field == "1" or key_to_node[
-          rhs.replacement].is_field == "1" else "0"
+      rhs.is_field = (
+        "1"
+        if rhs.is_field == "1" or key_to_node[rhs.replacement].is_field == "1"
+        else "0"
+      )
 
     key_to_node[lhs.replacement] = lhs
     key_to_node[rhs.replacement] = rhs

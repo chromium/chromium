@@ -12,8 +12,8 @@ import symbol_extractor
 # The number of spaces that objdump prefixes each symbol with.
 SPACES = ' ' * 14
 
-class TestSymbolInfosFromStream(unittest.TestCase):
 
+class TestSymbolInfosFromStream(unittest.TestCase):
   SYMBOL_INFO_DUMP = r"""[
   {
     "FileSummary": {
@@ -169,31 +169,33 @@ class TestSymbolInfosFromStream(unittest.TestCase):
       fp.seek(0)
       symbol_infos = symbol_extractor._SymbolInfosFromStream(fp)
       self.assertEquals(len(symbol_infos), 3)
-      first = symbol_extractor.SymbolInfo('first', 0x00c1c05c, 0x2c, '.text')
+      first = symbol_extractor.SymbolInfo('first', 0x00C1C05C, 0x2C, '.text')
       self.assertEquals(first, symbol_infos[0])
       second = symbol_extractor.SymbolInfo('second', 0x00155, 0x12, '.text')
       self.assertEquals(second, symbol_infos[1])
-      third = symbol_extractor.SymbolInfo('third', 0x4fbdab8, 0x50, '.text')
+      third = symbol_extractor.SymbolInfo('third', 0x4FBDAB8, 0x50, '.text')
       self.assertEquals(third, symbol_infos[2])
 
 
 class TestSymbolInfoMappings(unittest.TestCase):
-
   def setUp(self):
     self.symbol_infos = [
-        symbol_extractor.SymbolInfo('firstNameAtOffset', 0x42, 42, '.text'),
-        symbol_extractor.SymbolInfo('secondNameAtOffset', 0x42, 42, '.text'),
-        symbol_extractor.SymbolInfo('thirdSymbol', 0x64, 20, '.text')]
+      symbol_extractor.SymbolInfo('firstNameAtOffset', 0x42, 42, '.text'),
+      symbol_extractor.SymbolInfo('secondNameAtOffset', 0x42, 42, '.text'),
+      symbol_extractor.SymbolInfo('thirdSymbol', 0x64, 20, '.text'),
+    ]
 
   def testGroupSymbolInfosByOffset(self):
     offset_to_symbol_info = symbol_extractor.GroupSymbolInfosByOffset(
-        self.symbol_infos)
+      self.symbol_infos
+    )
     self.assertEquals(len(offset_to_symbol_info), 2)
     self.assertIn(0x42, offset_to_symbol_info)
     self.assertEquals(offset_to_symbol_info[0x42][0], self.symbol_infos[0])
     self.assertEquals(offset_to_symbol_info[0x42][1], self.symbol_infos[1])
     self.assertIn(0x64, offset_to_symbol_info)
     self.assertEquals(offset_to_symbol_info[0x64][0], self.symbol_infos[2])
+
 
 if __name__ == '__main__':
   unittest.main()

@@ -17,14 +17,20 @@ import subprocess
 import sys
 import urllib.request
 
-from build import (CheckoutGitRepo, GetCommitDescription, GetLatestLLVMCommit,
-                   LLVM_DIR, LLVM_GIT_URL, RunCommand)
+from build import (
+  CheckoutGitRepo,
+  GetCommitDescription,
+  GetLatestLLVMCommit,
+  LLVM_DIR,
+  LLVM_GIT_URL,
+  RunCommand,
+)
 from update import CHROMIUM_DIR, DownloadAndUnpack
 
 # Access to //tools/rust
 sys.path.append(
-    os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..',
-                 'rust'))
+  os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'rust')
+)
 
 from build_crubit import GetLatestCrubitCommit
 from build_rust import RUST_GIT_URL, RUST_SRC_DIR, GetLatestRustCommit
@@ -33,28 +39,28 @@ from build_rust import RUST_GIT_URL, RUST_SRC_DIR, GetLatestRustCommit
 THIS_DIR = os.path.dirname(__file__)
 CHROMIUM_DIR = os.path.abspath(os.path.join(THIS_DIR, '..', '..', '..'))
 CLANG_UPDATE_PY_PATH = os.path.join(THIS_DIR, 'update.py')
-RUST_UPDATE_PY_PATH = os.path.join(THIS_DIR, '..', '..', 'rust',
-                                   'update_rust.py')
+RUST_UPDATE_PY_PATH = os.path.join(
+  THIS_DIR, '..', '..', 'rust', 'update_rust.py'
+)
 BUILD_RUST_PY_PATH = os.path.join(THIS_DIR, '..', '..', 'rust', 'build_rust.py')
 
 # Bots where we build Clang + Rust.
 BUILD_CLANG_BOTS = [
-    'linux_upload_clang',
-    'mac_upload_clang',
-    'mac_upload_clang_arm',
-    'win_upload_clang',
+  'linux_upload_clang',
+  'mac_upload_clang',
+  'mac_upload_clang_arm',
+  'win_upload_clang',
 ]
 BUILD_RUST_BOTS = [
-    'linux_upload_rust',
-    'mac_upload_rust',
-    'mac_upload_rust_arm',
-    'win_upload_rust',
+  'linux_upload_rust',
+  'mac_upload_rust',
+  'mac_upload_rust_arm',
+  'win_upload_rust',
 ]
 
 # Keep lines in here at <= 72 columns, else they wrap in gerrit.
 # There can be no whitespace line between or below these gerrit footers.
-COMMIT_FOOTER = \
-'''
+COMMIT_FOOTER = '''
 Bug: TODO. Remove the Tricium: line below when filling this in.
 Tricium: skip
 Include-Ci-Only-Tests: true
@@ -88,8 +94,7 @@ Cq-Include-Trybots: chrome/try:linux-chromeos-chrome
 Cq-Include-Trybots: chrome/try:linux-pgo,mac-pgo,win32-pgo,win64-pgo
 Cq-Include-Trybots: chrome/try:win-chrome,win64-chrome,linux-chrome,mac-chrome'''
 
-RUST_BOTS = \
-'''Cq-Include-Trybots: chromium/try:android-rust-arm32-rel
+RUST_BOTS = '''Cq-Include-Trybots: chromium/try:android-rust-arm32-rel
 Cq-Include-Trybots: chromium/try:android-rust-arm64-dbg
 Cq-Include-Trybots: chromium/try:android-rust-arm64-rel
 Cq-Include-Trybots: chromium/try:linux-rust-x64-dbg
@@ -104,8 +109,9 @@ is_win = sys.platform.startswith('win32')
 class RustVersion:
   """Holds the nightly Rust version in an explicit format."""
 
-  def __init__(self, rust_git_hash: str, crubit_git_hash: str,
-               sub_revision: int):
+  def __init__(
+    self, rust_git_hash: str, crubit_git_hash: str, sub_revision: int
+  ):
     self.rust_git_hash = rust_git_hash
     self.crubit_git_hash = crubit_git_hash
     self.sub_revision = int(sub_revision)
@@ -121,8 +127,10 @@ class RustVersion:
     return f'{self.rust_git_hash}-{self.sub_revision}'
 
   def __eq__(self, o) -> bool:
-    return (self.rust_git_hash == o.rust_git_hash
-            and self.sub_revision == o.sub_revision)
+    return (
+      self.rust_git_hash == o.rust_git_hash
+      and self.sub_revision == o.sub_revision
+    )
 
 
 class ClangVersion:
@@ -143,8 +151,10 @@ class ClangVersion:
     return f'{self.git_describe}-{self.sub_revision}'
 
   def __eq__(self, o) -> bool:
-    return (self.git_describe == o.git_describe
-            and self.sub_revision == o.sub_revision)
+    return (
+      self.git_describe == o.git_describe
+      and self.sub_revision == o.sub_revision
+    )
 
 
 REV = '\'([0-9a-z-]+)\''
@@ -159,14 +169,18 @@ def PatchClangRevision(new_version: ClangVersion) -> ClangVersion:
   sub_revision = re.search(f'CLANG_SUB_REVISION = {SUB_REV}', content).group(1)
   old_version = ClangVersion(git_describe, sub_revision)
 
-  content = re.sub(f'CLANG_REVISION = {REV}',
-                   f'CLANG_REVISION = \'{new_version.git_describe}\'',
-                   content,
-                   count=1)
-  content = re.sub(f'CLANG_SUB_REVISION = {SUB_REV}',
-                   f'CLANG_SUB_REVISION = {new_version.sub_revision}',
-                   content,
-                   count=1)
+  content = re.sub(
+    f'CLANG_REVISION = {REV}',
+    f'CLANG_REVISION = \'{new_version.git_describe}\'',
+    content,
+    count=1,
+  )
+  content = re.sub(
+    f'CLANG_SUB_REVISION = {SUB_REV}',
+    f'CLANG_SUB_REVISION = {new_version.sub_revision}',
+    content,
+    count=1,
+  )
 
   with open(CLANG_UPDATE_PY_PATH, 'w') as f:
     f.write(content)
@@ -188,18 +202,24 @@ def PatchRustRevision(new_version: RustVersion) -> RustVersion:
   with open(RUST_UPDATE_PY_PATH) as f:
     content = f.read()
 
-  content = re.sub(f'RUST_REVISION = {REV}',
-                   f'RUST_REVISION = \'{new_version.rust_git_hash}\'',
-                   content,
-                   count=1)
-  content = re.sub(f'CRUBIT_REVISION = {REV}',
-                   f'CRUBIT_REVISION = \'{new_version.crubit_git_hash}\'',
-                   content,
-                   count=1)
-  content = re.sub(f'RUST_SUB_REVISION = {SUB_REV}',
-                   f'RUST_SUB_REVISION = {new_version.sub_revision}',
-                   content,
-                   count=1)
+  content = re.sub(
+    f'RUST_REVISION = {REV}',
+    f'RUST_REVISION = \'{new_version.rust_git_hash}\'',
+    content,
+    count=1,
+  )
+  content = re.sub(
+    f'CRUBIT_REVISION = {REV}',
+    f'CRUBIT_REVISION = \'{new_version.crubit_git_hash}\'',
+    content,
+    count=1,
+  )
+  content = re.sub(
+    f'RUST_SUB_REVISION = {SUB_REV}',
+    f'RUST_SUB_REVISION = {new_version.sub_revision}',
+    content,
+    count=1,
+  )
   # TODO(https://crbug.com/460482110): Also change `crubit_revision` in `//DEPS`
   # after https://crrev.com/c/7426682 lands and sticks.
 
@@ -209,9 +229,10 @@ def PatchRustRevision(new_version: RustVersion) -> RustVersion:
 
 def PatchRustStage0():
   verify_stage0 = subprocess.run(
-      [sys.executable, BUILD_RUST_PY_PATH, '--verify-stage0-hash'],
-      capture_output=True,
-      text=True)
+    [sys.executable, BUILD_RUST_PY_PATH, '--verify-stage0-hash'],
+    capture_output=True,
+    text=True,
+  )
   if verify_stage0.returncode == 0:
     return
 
@@ -227,10 +248,12 @@ def PatchRustStage0():
     content = f.read()
 
   STAGE0_HASH = '\'([0-9a-z]+)\''
-  content = re.sub(f'STAGE0_JSON_SHA256 = {STAGE0_HASH}',
-                   f'STAGE0_JSON_SHA256 = \'{new_stage0_hash}\'',
-                   content,
-                   count=1)
+  content = re.sub(
+    f'STAGE0_JSON_SHA256 = {STAGE0_HASH}',
+    f'STAGE0_JSON_SHA256 = \'{new_stage0_hash}\'',
+    content,
+    count=1,
+  )
   with open(RUST_UPDATE_PY_PATH, 'w') as f:
     f.write(content)
 
@@ -240,10 +263,12 @@ def PatchRustRemoveOverride():
     content = f.read()
 
   REV = '([0-9a-z-]+)'
-  content = re.sub(f'OVERRIDE_CLANG_REVISION = \'{REV}\'',
-                   f'OVERRIDE_CLANG_REVISION = None',
-                   content,
-                   count=1)
+  content = re.sub(
+    f'OVERRIDE_CLANG_REVISION = \'{REV}\'',
+    f'OVERRIDE_CLANG_REVISION = None',
+    content,
+    count=1,
+  )
   with open(RUST_UPDATE_PY_PATH, 'w') as f:
     f.write(content)
 
@@ -265,51 +290,69 @@ def main():
   parser = argparse.ArgumentParser(description='upload new clang revision')
   # TODO(crbug.com/40250560): Remove this when the cron job doesn't pass a SHA.
   parser.add_argument(
-      'ignored',
-      nargs='?',
-      help='Ignored argument to handle the cron job passing a clang SHA')
-  parser.add_argument('--clang-git-hash',
-                      type=str,
-                      metavar='SHA1',
-                      help='Clang git hash to build the toolchain for.')
+    'ignored',
+    nargs='?',
+    help='Ignored argument to handle the cron job passing a clang SHA',
+  )
   parser.add_argument(
-      '--clang-sub-revision',
-      type=int,
-      default=1,
-      metavar='NUM',
-      help='Clang sub-revision to build the toolchain for. Defaults to 1.')
-  parser.add_argument('--rust-git-hash',
-                      type=str,
-                      metavar='SHA1',
-                      help='Rust git hash to build the toolchain for.')
-  parser.add_argument('--crubit-git-hash',
-                      type=str,
-                      metavar='SHA1',
-                      help='Crubit git hash to build the toolchain for.')
+    '--clang-git-hash',
+    type=str,
+    metavar='SHA1',
+    help='Clang git hash to build the toolchain for.',
+  )
   parser.add_argument(
-      '--rust-sub-revision',
-      type=int,
-      default=1,
-      metavar='NUM',
-      help='Rust sub-revision to build the toolchain for. Defaults to 1.')
+    '--clang-sub-revision',
+    type=int,
+    default=1,
+    metavar='NUM',
+    help='Clang sub-revision to build the toolchain for. Defaults to 1.',
+  )
   parser.add_argument(
-      '--no-git',
-      action='store_true',
-      default=False,
-      help=('Print out `git` commands instead of running them. Still generates '
-            'a local diff for debugging purposes.'))
-  parser.add_argument('--skip-rust',
-                      action='store_true',
-                      default=False,
-                      help=('Skip updating the rust revision.'))
-  parser.add_argument('--skip-crubit',
-                      action='store_true',
-                      default=False,
-                      help=('Skip updating the crubit revision.'))
-  parser.add_argument('--skip-clang',
-                      action='store_true',
-                      default=False,
-                      help=('Skip updating the clang revision.'))
+    '--rust-git-hash',
+    type=str,
+    metavar='SHA1',
+    help='Rust git hash to build the toolchain for.',
+  )
+  parser.add_argument(
+    '--crubit-git-hash',
+    type=str,
+    metavar='SHA1',
+    help='Crubit git hash to build the toolchain for.',
+  )
+  parser.add_argument(
+    '--rust-sub-revision',
+    type=int,
+    default=1,
+    metavar='NUM',
+    help='Rust sub-revision to build the toolchain for. Defaults to 1.',
+  )
+  parser.add_argument(
+    '--no-git',
+    action='store_true',
+    default=False,
+    help=(
+      'Print out `git` commands instead of running them. Still generates '
+      'a local diff for debugging purposes.'
+    ),
+  )
+  parser.add_argument(
+    '--skip-rust',
+    action='store_true',
+    default=False,
+    help=('Skip updating the rust revision.'),
+  )
+  parser.add_argument(
+    '--skip-crubit',
+    action='store_true',
+    default=False,
+    help=('Skip updating the crubit revision.'),
+  )
+  parser.add_argument(
+    '--skip-clang',
+    action='store_true',
+    default=False,
+    help=('Skip updating the clang revision.'),
+  )
 
   args = parser.parse_args()
 
@@ -328,8 +371,9 @@ def main():
     # CheckoutLLVM() makes `LLVM_DIR` be the current working directory, so that
     # we can GetCommitDescription() without changing directory.
     CheckoutGitRepo("LLVM", LLVM_GIT_URL, clang_git_hash, LLVM_DIR)
-    clang_version = ClangVersion(GetCommitDescription(clang_git_hash),
-                                 args.clang_sub_revision)
+    clang_version = ClangVersion(
+      GetCommitDescription(clang_git_hash), args.clang_sub_revision
+    )
     os.chdir(CHROMIUM_DIR)
 
   old_rust_version = GetOldRustRevision()
@@ -351,8 +395,9 @@ def main():
       crubit_git_hash = GetLatestCrubitCommit()
 
     CheckoutGitRepo("Rust", RUST_GIT_URL, rust_git_hash, RUST_SRC_DIR)
-    rust_version = RustVersion(rust_git_hash, crubit_git_hash,
-                               args.rust_sub_revision)
+    rust_version = RustVersion(
+      rust_git_hash, crubit_git_hash, args.rust_sub_revision
+    )
     if rust_version == old_rust_version:
       if rust_version.crubit_git_hash != old_rust_version.crubit_git_hash:
         rust_version.sub_revision += old_rust_version.sub_revision + 1
@@ -367,15 +412,17 @@ def main():
   if not args.skip_clang:
     old_clang_version = PatchClangRevision(clang_version)
   if args.skip_rust and args.skip_crubit:
-    assert (clang_version !=
-            old_clang_version), ('Change the sub-revision of Clang if there is '
-                                 'no major version change.')
+    assert clang_version != old_clang_version, (
+      'Change the sub-revision of Clang if there is no major version change.'
+    )
   else:
     PatchRustRevision(rust_version)
-    assert (clang_version != old_clang_version
-            or rust_version != old_rust_version), (
-                'Change the sub-revision of Clang or Rust if there is '
-                'no major version change.')
+    assert (
+      clang_version != old_clang_version or rust_version != old_rust_version
+    ), (
+      'Change the sub-revision of Clang or Rust if there is '
+      'no major version change.'
+    )
     PatchRustStage0()
     if not args.skip_clang:
       PatchRustRemoveOverride()
@@ -386,19 +433,22 @@ def main():
   else:
     clang_change = f'{old_clang_version} : {clang_version}'
     clang_change_log = (
-        f'{LLVM_GIT_URL}/+log/'
-        f'{old_clang_version.short_git_hash}..{clang_version.short_git_hash}'
-        f'\n\n')
+      f'{LLVM_GIT_URL}/+log/'
+      f'{old_clang_version.short_git_hash}..{clang_version.short_git_hash}'
+      f'\n\n'
+    )
 
   if args.skip_rust:
     rust_change = '[skipping Rust]'
     rust_change_log = ''
   else:
     rust_change = f'{old_rust_version} : {rust_version}'
-    rust_change_log = (f'{RUST_GIT_URL}/+log/'
-                       f'{old_rust_version.short_git_hash}..'
-                       f'{rust_version.short_git_hash}'
-                       f'\n\n')
+    rust_change_log = (
+      f'{RUST_GIT_URL}/+log/'
+      f'{old_rust_version.short_git_hash}..'
+      f'{rust_version.short_git_hash}'
+      f'\n\n'
+    )
 
   title = f'Roll clang+rust {clang_change} / {rust_change}'
 
@@ -409,38 +459,47 @@ def main():
   if not args.skip_rust:
     commit_message += f'\n{RUST_BOTS}'
 
-  Git('add',
-      CLANG_UPDATE_PY_PATH,
-      RUST_UPDATE_PY_PATH,
-      no_run=args.no_git)
+  Git('add', CLANG_UPDATE_PY_PATH, RUST_UPDATE_PY_PATH, no_run=args.no_git)
   Git('commit', '-m', commit_message, no_run=args.no_git)
   Git('cl', 'upload', '-f', '--bypass-hooks', '--squash', no_run=args.no_git)
   if not args.skip_clang:
-    Git('cl',
-        'try',
-        '-B',
-        "chromium/try",
-        *itertools.chain(*[['-b', bot] for bot in BUILD_CLANG_BOTS]),
-        no_run=args.no_git)
-
-  Git('cl',
+    Git(
+      'cl',
       'try',
       '-B',
       "chromium/try",
-      *itertools.chain(*[['-b', bot] for bot in BUILD_RUST_BOTS]),
-      no_run=args.no_git)
+      *itertools.chain(*[['-b', bot] for bot in BUILD_CLANG_BOTS]),
+      no_run=args.no_git,
+    )
 
-  print('Please, wait until the try bots succeeded '
-        'and then push the binaries to RBE.')
+  Git(
+    'cl',
+    'try',
+    '-B',
+    "chromium/try",
+    *itertools.chain(*[['-b', bot] for bot in BUILD_RUST_BOTS]),
+    no_run=args.no_git,
+  )
+
+  print(
+    'Please, wait until the try bots succeeded '
+    'and then push the binaries to RBE.'
+  )
   print()
-  print('To update the Clang/Rust DEPS entries, run:\n  '
-        'tools/clang/scripts/sync_deps.py')
+  print(
+    'To update the Clang/Rust DEPS entries, run:\n  '
+    'tools/clang/scripts/sync_deps.py'
+  )
   print()
-  print('To regenerate BUILD.gn rules for Rust stdlib (needed if dep versions '
-        'in the stdlib change for example), run:\n  tools/rust/gnrt_stdlib.py.')
+  print(
+    'To regenerate BUILD.gn rules for Rust stdlib (needed if dep versions '
+    'in the stdlib change for example), run:\n  tools/rust/gnrt_stdlib.py.'
+  )
   print()
-  print('To update Abseil .def files, run:\n  '
-        'third_party/abseil-cpp/generate_def_files.py')
+  print(
+    'To update Abseil .def files, run:\n  '
+    'third_party/abseil-cpp/generate_def_files.py'
+  )
 
 
 if __name__ == '__main__':

@@ -37,7 +37,7 @@ _RES_XML_END_NAMESPACE_TYPE = 0x0101
 _RES_XML_START_ELEMENT_TYPE = 0x0102
 _RES_XML_END_ELEMENT_TYPE = 0x0103
 _RES_XML_CDATA_TYPE = 0x0104
-_RES_XML_LAST_CHUNK_TYPE = 0x017f
+_RES_XML_LAST_CHUNK_TYPE = 0x017F
 # This contains a uint32_t array mapping strings in the string pool back to
 # resource identifiers.  It is optional.
 _RES_XML_RESOURCE_MAP_TYPE = 0x0180
@@ -65,8 +65,11 @@ class _ArscStreamReader(stream_reader.StreamReader):
 
   def NextArscEncodedLengthWide(self):
     short1 = self.NextUShort()
-    return (((short1 & 0x7FFF) << 16) | self.NextUShort() if short1
-            & 0x8000 else short1)
+    return (
+      ((short1 & 0x7FFF) << 16) | self.NextUShort()
+      if short1 & 0x8000
+      else short1
+    )
 
   def NextCString(self, n):
     t = self.NextBytes(n)
@@ -86,28 +89,29 @@ class _ArscStreamReader(stream_reader.StreamReader):
 
     Requires all classes in this file to be parsed, before calling.
     """
+
     def MakeGeneric(type_name):
       return lambda reader, parent: ArscGeneric(type_name, reader, parent)
 
     return {
-        _RES_STRING_POOL_TYPE: ArscStringPool,
-        _RES_TABLE_TYPE: ArscResTable,
-        _RES_XML_TYPE: MakeGeneric('XML'),
-        _RES_XML_FIRST_CHUNK_TYPE: MakeGeneric('XML_FIRST_CHUNK'),
-        _RES_XML_START_NAMESPACE_TYPE: MakeGeneric('XML_START_NAMESPACE'),
-        _RES_XML_END_NAMESPACE_TYPE: MakeGeneric('XML_END_NAMESPACE'),
-        _RES_XML_START_ELEMENT_TYPE: MakeGeneric('XML_START_ELEMENT'),
-        _RES_XML_END_ELEMENT_TYPE: MakeGeneric('XML_END_ELEMENT'),
-        _RES_XML_CDATA_TYPE: MakeGeneric('XML_CDATA'),
-        _RES_XML_LAST_CHUNK_TYPE: MakeGeneric('XML_LAST_CHUNK'),
-        _RES_XML_RESOURCE_MAP_TYPE: MakeGeneric('XML_RESOURCE_MAP'),
-        _RES_TABLE_PACKAGE_TYPE: ArscResTablePackage,
-        _RES_TABLE_TYPE_TYPE: ArscResTableType,
-        _RES_TABLE_TYPE_SPEC_TYPE: ArscResTableTypeSpec,
-        _RES_TABLE_LIBRARY_TYPE: MakeGeneric('LIBRARY'),
-        _RES_TABLE_OVERLAYABLE_TYPE: MakeGeneric('OVERLAYABLE'),
-        _RES_TABLE_OVERLAYABLE_POLICY_TYPE: MakeGeneric('OVERLAYABLE_POLICY'),
-        _RES_TABLE_STAGED_ALIAS_TYPE: MakeGeneric('STAGED_ALIAS'),
+      _RES_STRING_POOL_TYPE: ArscStringPool,
+      _RES_TABLE_TYPE: ArscResTable,
+      _RES_XML_TYPE: MakeGeneric('XML'),
+      _RES_XML_FIRST_CHUNK_TYPE: MakeGeneric('XML_FIRST_CHUNK'),
+      _RES_XML_START_NAMESPACE_TYPE: MakeGeneric('XML_START_NAMESPACE'),
+      _RES_XML_END_NAMESPACE_TYPE: MakeGeneric('XML_END_NAMESPACE'),
+      _RES_XML_START_ELEMENT_TYPE: MakeGeneric('XML_START_ELEMENT'),
+      _RES_XML_END_ELEMENT_TYPE: MakeGeneric('XML_END_ELEMENT'),
+      _RES_XML_CDATA_TYPE: MakeGeneric('XML_CDATA'),
+      _RES_XML_LAST_CHUNK_TYPE: MakeGeneric('XML_LAST_CHUNK'),
+      _RES_XML_RESOURCE_MAP_TYPE: MakeGeneric('XML_RESOURCE_MAP'),
+      _RES_TABLE_PACKAGE_TYPE: ArscResTablePackage,
+      _RES_TABLE_TYPE_TYPE: ArscResTableType,
+      _RES_TABLE_TYPE_SPEC_TYPE: ArscResTableTypeSpec,
+      _RES_TABLE_LIBRARY_TYPE: MakeGeneric('LIBRARY'),
+      _RES_TABLE_OVERLAYABLE_TYPE: MakeGeneric('OVERLAYABLE'),
+      _RES_TABLE_OVERLAYABLE_POLICY_TYPE: MakeGeneric('OVERLAYABLE_POLICY'),
+      _RES_TABLE_STAGED_ALIAS_TYPE: MakeGeneric('STAGED_ALIAS'),
     }
 
   def NextArscChunk(self, parent=None):
@@ -126,6 +130,7 @@ def _SplitBits(value, *widths):
 
 class ResTableConfig:
   """Structure to specify |config| in ArscResTableType."""
+
   def __init__(self, reader):
     self.size = reader.NextUInt()
     assert self.size == 64
@@ -170,20 +175,24 @@ class ResTableConfig:
   def DecodeLanguageOrRegion(self, code, base):
     if code & 0x8000 == 0:
       # Two-letter encoding: (MSB) 0sssssss 0fffffff for first & second letters.
-      return (chr(code & 0x7f) + chr(code >> 8)).rstrip('\0')
+      return (chr(code & 0x7F) + chr(code >> 8)).rstrip('\0')
     # Three-letter encoding: (MSB) 1tttttss sssfffff.
-    return ''.join(chr(base + ((code >> i) & 0x1f)) for i in range(3))
+    return ''.join(chr(base + ((code >> i) & 0x1F)) for i in range(3))
 
   def EmitLocaleString(self):
     """Emits locale data as formatted string if non-0."""
     if self.locale == 0:
       return
     language, country = _SplitBits(self.locale, 16, 16)
-    script_was_provided = (self.locale_script
-                           and not self.locale_script_was_computed)
+    script_was_provided = (
+      self.locale_script and not self.locale_script_was_computed
+    )
     ret = self.DecodeLanguageOrRegion(language, ord('a'))
-    if (not script_was_provided and not self.locale_variant
-        and not self.locale_numbering_system):  # Legacy format.
+    if (
+      not script_was_provided
+      and not self.locale_variant
+      and not self.locale_numbering_system
+    ):  # Legacy format.
       if country != 0:
         ret += '-r' + self.DecodeLanguageOrRegion(country, ord('0'))
     else:
@@ -336,6 +345,7 @@ class ArscChunk:
     size: (In header) Byte size of the chunk, including header.
     placeholder: Number of placeholder bytes.
   """
+
   def __init__(self, reader, parent):
     # Custom additions for binary size tracking.
     self.addr = reader.Tell()
@@ -385,6 +395,7 @@ class ArscChunk:
 
 class ArscGeneric(ArscChunk):
   """Generic chunk containing only name."""
+
   def __init__(self, type_name, reader, parent):
     super().__init__(reader, parent)
     self.type_name = type_name
@@ -422,7 +433,7 @@ class ArscStringPool(ArscChunk):
     self.role = ''  # Can be modified by parent.
     base = self.addr + self.string_start
     self.string_addrs = [
-        base + reader.NextUInt() for _ in range(self.string_count)
+      base + reader.NextUInt() for _ in range(self.string_count)
     ]
 
     # Clone to enable lazy string read without polluting |reader|. This is
@@ -430,10 +441,10 @@ class ArscStringPool(ArscChunk):
     self.reader = reader.Clone()
 
   def __str__(self):
-    return self.StrHelper('STRING_POOL', {
-        'string_count': self.string_count,
-        'style_count': self.style_count
-    })
+    return self.StrHelper(
+      'STRING_POOL',
+      {'string_count': self.string_count, 'style_count': self.style_count},
+    )
 
   def symbol_name(self):
     return f'STRING_POOL_{self.role}' if self.role else 'STRING_POOL'
@@ -465,8 +476,8 @@ class ArscStringPool(ArscChunk):
   def string_items(self):
     encoding = 'utf-8' if self.is_utf8 else 'utf-16'
     ret = [
-        info.data.decode(encoding, errors='surrogatepass')
-        for info in self.string_infos
+      info.data.decode(encoding, errors='surrogatepass')
+      for info in self.string_infos
     ]
     self.reader = None
     return ret
@@ -490,6 +501,7 @@ class ArscResTable(ArscChunk):
   Fields:
     package_count: Number of ArscResTablePackage entries (typically 1).
   """
+
   def __init__(self, reader, parent=None):
     super().__init__(reader, parent)
     self.package_count = reader.NextUInt()
@@ -545,6 +557,7 @@ class ArscResTablePackage(ArscChunk):
   Fields:
     name: Android app package name for the resource.
   """
+
   def __init__(self, reader, parent=None):
     super().__init__(reader, parent)
     self.id = reader.NextUInt()
@@ -607,7 +620,8 @@ class ArscResTableType(ArscChunk):
     config: ResTableConfig instance.
     entry_count: Number of resources contained.
   """
-  NO_ENTRY = 0xffffffff
+
+  NO_ENTRY = 0xFFFFFFFF
   FLAG_SPARSE = 0x01
 
   def __init__(self, reader, parent=None):
@@ -632,8 +646,9 @@ class ArscResTableType(ArscChunk):
     entries_start_addr = self.addr + self.entries_start
     if not self.is_sparse:
       entries_offsets = [reader.NextUInt() for _ in range(self.entry_count)]
-      self.entry_placeholder += sum(4 for o in entries_offsets
-                                    if o == ArscResTableType.NO_ENTRY)
+      self.entry_placeholder += sum(
+        4 for o in entries_offsets if o == ArscResTableType.NO_ENTRY
+      )
 
     assert entries_start_addr >= reader.Tell()
     # Skip reading actual entries.
@@ -644,14 +659,16 @@ class ArscResTableType(ArscChunk):
 
   def __str__(self):
     return self.StrHelper(
-        'TYPE', {
-            'type_str': self.type_str,
-            'entry_count': self.entry_count,
-            'is_sparse': self.is_sparse,
-            'size': self.size,
-            'placeholder': self.entry_placeholder,
-            'config': str(self.config),
-        })
+      'TYPE',
+      {
+        'type_str': self.type_str,
+        'entry_count': self.entry_count,
+        'is_sparse': self.is_sparse,
+        'size': self.size,
+        'placeholder': self.entry_placeholder,
+        'config': str(self.config),
+      },
+    )
 
   def symbol_name(self):
     return str(self.config) or 'default'
@@ -666,6 +683,7 @@ class ArscResTableTypeSpec(ArscChunk):
     type_str: Name of the common type, e.g., "drawable", "layout", "string".
     entry_count: Number of resources contained.
   """
+
   def __init__(self, reader, parent=None):
     super().__init__(reader, parent)
     assert parent
@@ -682,10 +700,9 @@ class ArscResTableTypeSpec(ArscChunk):
     reader.Seek(self.end_addr)
 
   def __str__(self):
-    return self.StrHelper('TYPE_SPEC', {
-        'type_str': self.type_str,
-        'entry_count': self.entry_count
-    })
+    return self.StrHelper(
+      'TYPE_SPEC', {'type_str': self.type_str, 'entry_count': self.entry_count}
+    )
 
   def symbol_name(self):
     return 'TYPE_SPEC'
@@ -699,6 +716,7 @@ class ArscFile:
   Fields:
     table: The root chunk that contains all other chunks.
   """
+
   def __init__(self, data):
     reader = _ArscStreamReader(data)
     assert reader.PeekArscHeaderType() == _RES_TABLE_TYPE
@@ -710,6 +728,7 @@ class ArscFile:
     |path| is a string to establish context of |chunk|, consisting of non-None
     labels of ancestral and current chunks joined by '/'.
     """
+
     @dataclasses.dataclass
     class StackFrame:
       prev_has_label: bool
@@ -772,8 +791,9 @@ def main():
   parser = argparse.ArgumentParser(description='Dump ARSC contents to stdout.')
   parser.add_argument('--rtxt-path', help='R.txt that maps IDs -> names')
   parser.add_argument('--strings', action='store_true')
-  parser.add_argument('input',
-                      help='Input (.arsc, .apk, .jar, .zip) file path.')
+  parser.add_argument(
+    'input', help='Input (.arsc, .apk, .jar, .zip) file path.'
+  )
   args = parser.parse_args()
 
   if not args.rtxt_path:
@@ -788,7 +808,7 @@ def main():
   if os.path.splitext(args.input)[1] in ('.apk', '.jar', '.zip'):
     with zipfile.ZipFile(args.input) as z:
       arsc_file_paths = [
-          f for f in z.namelist() if os.path.splitext(f)[1] == '.arsc'
+        f for f in z.namelist() if os.path.splitext(f)[1] == '.arsc'
       ]
       if not arsc_file_paths:
         print('Error: {} does not contain .arsc files.'.format(args.input))

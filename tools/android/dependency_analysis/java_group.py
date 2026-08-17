@@ -39,9 +39,12 @@ class JavaGroup(graph.Node):
         if java_class.name not in self._classes:
             self._classes[java_class.name] = java_class
 
-    def add_class_dependency_edge(self, end_group: 'JavaGroup',
-                                  begin_class: class_dependency.JavaClass,
-                                  end_class: class_dependency.JavaClass):
+    def add_class_dependency_edge(
+        self,
+        end_group: 'JavaGroup',
+        begin_class: class_dependency.JavaClass,
+        end_class: class_dependency.JavaClass,
+    ):
         """Adds a class dependency edge as part of a group dependency.
 
         Each group dependency is comprised of one or more class dependencies,
@@ -57,8 +60,9 @@ class JavaGroup(graph.Node):
         if class_edge not in self._class_dependency_edges[end_group]:
             self._class_dependency_edges[end_group].add(class_edge)
 
-    def get_class_dependencies_in_outbound_edge(self, end_node: 'JavaGroup'
-                                                ) -> Set[Tuple]:
+    def get_class_dependencies_in_outbound_edge(
+        self, end_node: 'JavaGroup'
+    ) -> Set[Tuple]:
         """Breaks down a group dependency edge into class dependencies.
 
         For group A to depend on another group B, there must exist at least one

@@ -29,12 +29,16 @@ class BlinkGcPluginTest(plugin_testing.ClangPluginTest):
     # use the processed results as the actual results of the test.
     if os.path.exists('%s.graph.json' % test_name):
       try:
-        actual = subprocess.check_output([
-            sys.executable, '../process-graph.py', '-c',
-            '%s.graph.json' % test_name
-        ],
-                                         stderr=subprocess.STDOUT,
-                                         universal_newlines=True)
+        actual = subprocess.check_output(
+          [
+            sys.executable,
+            '../process-graph.py',
+            '-c',
+            '%s.graph.json' % test_name,
+          ],
+          stderr=subprocess.STDOUT,
+          universal_newlines=True,
+        )
       except subprocess.CalledProcessError as e:
         # The graph processing script returns a failure exit code if the graph
         # is bad (e.g. it has a cycle). The output still needs to be captured in
@@ -50,26 +54,32 @@ class BlinkGcPluginTest(plugin_testing.ClangPluginTest):
 def main():
   parser = argparse.ArgumentParser()
   parser.add_argument(
-      '--reset-results',
-      action='store_true',
-      help='If specified, overwrites the expected results in place.')
+    '--reset-results',
+    action='store_true',
+    help='If specified, overwrites the expected results in place.',
+  )
   parser.add_argument('clang_path', help='The path to the clang binary.')
-  parser.add_argument('--quiet',
-                      action='store_true',
-                      help='If specified, suppresses printing the expected '
-                      'and actual output and only prints the diff.')
-  parser.add_argument('--filter',
-                      action='store',
-                      help='Filter to test files that match a regex')
+  parser.add_argument(
+    '--quiet',
+    action='store_true',
+    help='If specified, suppresses printing the expected '
+    'and actual output and only prints the diff.',
+  )
+  parser.add_argument(
+    '--filter', action='store', help='Filter to test files that match a regex'
+  )
   args = parser.parse_args()
 
   dir_name = os.path.dirname(os.path.realpath(__file__))
 
-  return BlinkGcPluginTest(dir_name,
-                           args.clang_path, ['blink-gc-plugin'],
-                           args.reset_results,
-                           args.quiet,
-                           filename_regex=args.filter).Run()
+  return BlinkGcPluginTest(
+    dir_name,
+    args.clang_path,
+    ['blink-gc-plugin'],
+    args.reset_results,
+    args.quiet,
+    filename_regex=args.filter,
+  ).Run()
 
 
 if __name__ == '__main__':

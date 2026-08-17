@@ -16,10 +16,12 @@ def display_utr_help():
   """Displays UTR help with overridden usage."""
   utr_path = os.path.join(os.path.dirname(__file__), '..', '..', 'utr')
   try:
-    result = subprocess.run([sys.executable, utr_path, '--help'],
-                            capture_output=True,
-                            text=True,
-                            check=True)
+    result = subprocess.run(
+      [sys.executable, utr_path, '--help'],
+      capture_output=True,
+      text=True,
+      check=True,
+    )
     output = result.stdout
     # Override usage
     output = output.replace('usage: utr', 'usage: autotest.py --builder')
@@ -32,20 +34,20 @@ def display_utr_help():
         next_section = output.find("\noptional arguments:\n", pos_start)
       if next_section != -1:
         note = (
-            "Note: The commands above will invoke UTR directly.\n\n"
-            "When invoked via autotest.py --builder, UTR is always executed "
-            "in 'test'\nmode by default. The corresponding autotest command is:"
+          "Note: The commands above will invoke UTR directly.\n\n"
+          "When invoked via autotest.py --builder, UTR is always executed "
+          "in 'test'\nmode by default. The corresponding autotest command is:"
         )
 
         example = (
-            "\n\nvpython3 tools/autotest.py --builder -B $BUCKET -b $BUILDER "
-            "-t $TEST --\n    --gtest_filter=Test.Case\n")
+          "\n\nvpython3 tools/autotest.py --builder -B $BUCKET -b $BUILDER "
+          "-t $TEST --\n    --gtest_filter=Test.Case\n"
+        )
 
         output = output[:pos_start] + note + example + output[next_section:]
 
     print(output)
   except subprocess.CalledProcessError as e:
-
     print(f"Error calling UTR help: {e}", file=sys.stderr)
     print(e.stderr, file=sys.stderr)
 

@@ -15,13 +15,15 @@ from parameterized import parameterized
 from pathlib import Path
 
 _HERE_DIR = Path(__file__).parent.resolve()
-_SOURCE_MAP_PROCESSOR = (_HERE_DIR.parent /
-                         'create_js_source_maps.js').resolve()
+_SOURCE_MAP_PROCESSOR = (
+  _HERE_DIR.parent / 'create_js_source_maps.js'
+).resolve()
 _SOURCE_MAP_TRANSLATOR = (_HERE_DIR / 'translate_source_map.js').resolve()
 _SOURCE_MAP_PREFIX = b'//# sourceMappingURL=data:application/json;base64,'
 
-_NODE_PATH = (_HERE_DIR.parent.parent.parent.parent.parent / 'third_party' /
-              'node').resolve()
+_NODE_PATH = (
+  _HERE_DIR.parent.parent.parent.parent.parent / 'third_party' / 'node'
+).resolve()
 sys.path.append(str(_NODE_PATH))
 import node
 
@@ -35,25 +37,31 @@ class CreateSourceMapsTest(unittest.TestCase):
       shutil.rmtree(self._out_folder)
 
   def _translate(self, source_map, line, column):
-    """ Translates from post-transform to pre-transform using a source map.
+    """Translates from post-transform to pre-transform using a source map.
 
     Translates a line and column in some hypothetical processed JavaScript
     back into the hypothetical original line and column using the indicated
     source map. Returns the pre-processed line and column.
     """
-    stdout = node.RunNode([
-        str(_SOURCE_MAP_TRANSLATOR), "--source_map", source_map, "--line",
-        str(line), "--column",
-        str(column)
-    ])
+    stdout = node.RunNode(
+      [
+        str(_SOURCE_MAP_TRANSLATOR),
+        "--source_map",
+        source_map,
+        "--line",
+        str(line),
+        "--column",
+        str(column),
+      ]
+    )
     result = json.loads(stdout)
     assert isinstance(result['line'], int)
     assert isinstance(result['column'], int)
     return result['line'], result['column']
 
-  @parameterized.expand([(True, ), (False, )])
+  @parameterized.expand([(True,), (False,)])
   def testPostProcessedFile(self, inline_sourcemap):
-    ''' Test that a known starting file translates back correctly
+    '''Test that a known starting file translates back correctly
 
     Assume we start with the following file:
     Line 1
@@ -81,20 +89,23 @@ class CreateSourceMapsTest(unittest.TestCase):
       Line 10
       Line 11
       '''
-    input_fd, input_file_name = tempfile.mkstemp(dir=self._out_folder,
-                                                 text=True,
-                                                 suffix=".js")
+    input_fd, input_file_name = tempfile.mkstemp(
+      dir=self._out_folder, text=True, suffix=".js"
+    )
     os.write(input_fd, file_after_preprocess)
     os.close(input_fd)
     original_file_name = os.path.join(self._out_folder, "input.js")
     output_file_name = input_file_name + ".out"
     shutil.copyfile(os.path.join(_HERE_DIR, "input.js"), original_file_name)
-    node.RunNode([
+    node.RunNode(
+      [
         str(_SOURCE_MAP_PROCESSOR),
         "--originals={}".format(" ".join([original_file_name])),
         "--inputs={}".format(" ".join([input_file_name])),
         "--outputs={}".format(" ".join([output_file_name])),
-    ] + (["--inline-sourcemaps"] if inline_sourcemap else []))
+      ]
+      + (["--inline-sourcemaps"] if inline_sourcemap else [])
+    )
 
     if inline_sourcemap:
       with open(output_file_name, 'rb') as output_file:
@@ -104,11 +115,12 @@ class CreateSourceMapsTest(unittest.TestCase):
 
       # Check source map was appended properly.
       self.assertGreaterEqual(len(output_lines), 1)
-      self.assertEqual(file_after_preprocess,
-                       output[:-(len(output_lines[-1]) + 1)])
+      self.assertEqual(
+        file_after_preprocess, output[: -(len(output_lines[-1]) + 1)]
+      )
       self.assertTrue(output_lines[-1].startswith(_SOURCE_MAP_PREFIX))
 
-      source_map = base64.b64decode(output_lines[-1][len(_SOURCE_MAP_PREFIX):])
+      source_map = base64.b64decode(output_lines[-1][len(_SOURCE_MAP_PREFIX) :])
     else:
       with open(output_file_name) as map_file:
         source_map = map_file.read()

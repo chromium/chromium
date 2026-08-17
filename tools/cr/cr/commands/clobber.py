@@ -20,9 +20,9 @@ class ClobberCommand(cr.Command):
   def __init__(self):
     super(ClobberCommand, self).__init__()
     self.help = 'Clobber the current output directory'
-    self.description = ("""
+    self.description = """
         This deletes all generated files from the output directory.
-        """)
+        """
 
   def Run(self):
     self.Clobber()

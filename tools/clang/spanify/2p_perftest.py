@@ -2,15 +2,17 @@
 # Copyright 2026 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""Script to run Pinpoint performance tests for 2P library CLs using DEPS-based workflow.
+"""Script to run Pinpoint performance tests for 2P library CLs using
+DEPS-based workflow.
 
 This script modifies the Chromium DEPS file to inject hooks that fetch and apply
 the 2P library patch, uploads this temporary DEPS change to Gerrit, and then
 triggers Pinpoint using the generated Chromium CL.
 
 Assumptions:
-  Both Chromium and its submodules must not have any uncommitted, tracked changes.
-  If you have local changes in Chromium (e.g. adaptation fixes for the 2P API change),
+  Both Chromium and its submodules must not have any uncommitted, tracked
+  changes. If you have local changes in Chromium (e.g. adaptation fixes for
+  the 2P API change),
   you must commit them locally on your branch before running this script.
 
 Examples:
@@ -50,7 +52,6 @@ COMMIT_MSG_TEMPLATE = "Temp DEPS roll for Pinpoint: {project} CL {change_num}"
 
 
 class GitHelper:
-
     def __init__(self, cwd, dry_run=False):
         self.cwd = cwd
         self.dry_run = dry_run
@@ -61,11 +62,9 @@ class GitHelper:
             return 0, "", ""
 
         try:
-            result = subprocess.run(cmd,
-                                    cwd=self.cwd,
-                                    capture_output=True,
-                                    text=True,
-                                    check=True)
+            result = subprocess.run(
+                cmd, cwd=self.cwd, capture_output=True, text=True, check=True
+            )
             return result.returncode, result.stdout, result.stderr
         except subprocess.CalledProcessError as e:
             print(
@@ -86,7 +85,8 @@ class GitHelper:
         if self.dry_run:
             return "main"
         _, stdout, _ = self.run_cmd(
-            ["git", "rev-parse", "--abbrev-ref", "HEAD"])
+            ["git", "rev-parse", "--abbrev-ref", "HEAD"]
+        )
         return stdout.strip()
 
     def create_and_checkout_branch(self, branch_name):
@@ -95,13 +95,15 @@ class GitHelper:
     def cherry_pick_local_commits(self, original_branch):
         if self.dry_run:
             print(
-                f"[DRY RUN] Would cherry-pick local commits from {original_branch} and clean up tools/clang/spanify/"
+                f"[DRY RUN] Would cherry-pick local commits from "
+                f"{original_branch} and clean up tools/clang/spanify/"
             )
             return
 
         # Find commits on original_branch that are not in origin/main
         _, stdout, _ = self.run_cmd(
-            ["git", "log", f"origin/main..{original_branch}", "--format=%H"])
+            ["git", "log", f"origin/main..{original_branch}", "--format=%H"]
+        )
         commits = stdout.strip().splitlines()
         if not commits:
             return
@@ -114,26 +116,35 @@ class GitHelper:
                 self.run_cmd(["git", "cherry-pick", commit])
             except Exception as e:
                 print(
-                    f"Error cherry-picking commit {commit}. You may need to rebase your branch.",
+                    f"Error cherry-picking commit {commit}. You may need to "
+                    "rebase your branch.",
                     file=sys.stderr,
                 )
                 raise
 
-        # Revert any changes to tools/clang/spanify/ to keep the CL clean of script/scratch changes
+        # Revert any changes to tools/clang/spanify/ to keep the CL clean of
+        # script/scratch changes
         print(
             "Cleaning up tools/clang/spanify/ changes from temporary branch..."
         )
         self.run_cmd(
-            ["git", "checkout", "origin/main", "--", "tools/clang/spanify/"])
+            ["git", "checkout", "origin/main", "--", "tools/clang/spanify/"]
+        )
 
         # Commit the revert if there are changes
         _, stdout, _ = self.run_cmd(
-            ["git", "status", "--porcelain", "tools/clang/spanify/"])
+            ["git", "status", "--porcelain", "tools/clang/spanify/"]
+        )
         if stdout.strip():
-            self.run_cmd([
-                "git", "commit", "-m", "Revert script/scratch changes",
-                "--no-verify"
-            ])
+            self.run_cmd(
+                [
+                    "git",
+                    "commit",
+                    "-m",
+                    "Revert script/scratch changes",
+                    "--no-verify",
+                ]
+            )
 
     def checkout_branch(self, branch_name):
         self.run_cmd(["git", "checkout", branch_name])
@@ -173,7 +184,8 @@ class GitHelper:
             return match.group(0)
 
         raise RuntimeError(
-            f"Could not find uploaded CL URL in git cl output:\n{output}")
+            f"Could not find uploaded CL URL in git cl output:\n{output}"
+        )
 
 
 def normalize_gerrit_host(host):
@@ -225,13 +237,17 @@ def get_related_changes(gerrit_host, project, change_num):
 
 
 def fetch_open_parents(gerrit_host, project, change_num):
-    """Fetches related changes and returns only the open parents of the target CL."""
+    """Fetches related changes and returns only the open parents of the
+    target CL.
+    """
     print("Querying Gerrit for related changes (chains)...")
     related_changes = get_related_changes(gerrit_host, project, change_num)
     for i, change in enumerate(related_changes):
         if change.get("_change_number") == change_num:
             # Parents are after the target CL in the list
-            return [c for c in related_changes[i + 1:] if c.get("status") == "NEW"]
+            return [
+                c for c in related_changes[i + 1 :] if c.get("status") == "NEW"
+            ]
     return []
 
 
@@ -260,7 +276,8 @@ def parse_cl_url(url):
             )
             patchset = 1
 
-    # Gerrit shards change references by the last two digits of the change number
+    # Gerrit shards change references by the last two digits of the change
+    # number
     # to avoid directory scaling issues on the git server.
     # i.e.
     # Change 1257717 ends in 17, so its ref is under refs/changes/17/1257717/...
@@ -403,12 +420,15 @@ def generate_deps_roll_cl(git_helper, cl_url, deps_path):
     gerrit_host, project, change_num, patchset, git_ref = parse_cl_url(cl_url)
     print(
         f"\n--- Processing 2P CL: {cl_url} ---\n"
-        f"Parsed CL: host={gerrit_host}, project={project}, change={change_num}, patchset={patchset}\n"
-        f"Constructed git ref: {git_ref}")
+        f"Parsed CL: host={gerrit_host}, project={project}, "
+        f"change={change_num}, patchset={patchset}\n"
+        f"Constructed git ref: {git_ref}"
+    )
 
     # Reconstruct the Git repository URL from Gerrit host and project name
-    git_host = gerrit_host.replace("-review.googlesource.com",
-                                   ".googlesource.com")
+    git_host = gerrit_host.replace(
+        "-review.googlesource.com", ".googlesource.com"
+    )
     dep_url = f"https://{git_host}/{project}"
 
     git_refs = []
@@ -430,7 +450,8 @@ def generate_deps_roll_cl(git_helper, cl_url, deps_path):
 
     if not dep_path:
         raise RuntimeError(
-            f"Could not find dependency in DEPS for project: {project}")
+            f"Could not find dependency in DEPS for project: {project}"
+        )
 
     print(f"Found matching dependency: path={dep_path}, url={dep_url}")
 
@@ -454,11 +475,13 @@ def generate_deps_roll_cl(git_helper, cl_url, deps_path):
 
         print("Committing DEPS changes...")
         git_helper.commit_all_changes(
-            COMMIT_MSG_TEMPLATE.format(project=project, change_num=change_num))
+            COMMIT_MSG_TEMPLATE.format(project=project, change_num=change_num)
+        )
 
         print("Uploading CL to Gerrit...")
         uploaded_cl_url = git_helper.upload_cl(
-            COMMIT_MSG_TEMPLATE.format(project=project, change_num=change_num))
+            COMMIT_MSG_TEMPLATE.format(project=project, change_num=change_num)
+        )
         print(f"Uploaded Chromium CL: {uploaded_cl_url}")
         success = True
         return uploaded_cl_url
@@ -507,9 +530,12 @@ def build_pinpoint_command(pinpoint_path, exp_cl, base_cl, args):
 
 
 def parse_arguments(args):
-    parser = argparse.ArgumentParser(description=(
-        "Run Pinpoint performance tests for 2P library CLs using DEPS"
-        " workflow."))
+    parser = argparse.ArgumentParser(
+        description=(
+            "Run Pinpoint performance tests for 2P library CLs using DEPS"
+            " workflow."
+        )
+    )
     parser.add_argument(
         "--exp-cl",
         required=True,
@@ -570,55 +596,63 @@ def run_performance_test(git_helper, pinpoint_path, deps_path, args):
     # Generate Base Chromium CL if requested
     base_chromium_cl = None
     if args.base_cl:
-        base_chromium_cl = generate_deps_roll_cl(git_helper, args.base_cl,
-                                                 deps_path)
+        base_chromium_cl = generate_deps_roll_cl(
+            git_helper, args.base_cl, deps_path
+        )
 
     # Build and run Pinpoint command
-    pinpoint_cmd = build_pinpoint_command(pinpoint_path, exp_chromium_cl,
-                                          base_chromium_cl, args)
+    pinpoint_cmd = build_pinpoint_command(
+        pinpoint_path, exp_chromium_cl, base_chromium_cl, args
+    )
 
     if args.dry_run:
-        print(f"\n[DRY RUN] Pinpoint command to run:\n"
-              f"{' '.join(pinpoint_cmd)}")
+        print(f"\n[DRY RUN] Pinpoint command to run:\n{' '.join(pinpoint_cmd)}")
         return
 
     print(f"\nRunning Pinpoint: {' '.join(pinpoint_cmd)}")
-    result = subprocess.run(pinpoint_cmd,
-                            capture_output=True,
-                            text=True,
-                            check=True)
+    result = subprocess.run(
+        pinpoint_cmd, capture_output=True, text=True, check=True
+    )
     print(result.stdout)
     if result.stderr:
         print(result.stderr, file=sys.stderr)
 
     # Try to extract Job ID from Pinpoint output.
     # Format can be UUID or hex string.
-    # e.g., "Finished actions for batch: <job_id>" or "Created job batch: <job_id>"
+    # e.g., "Finished actions for batch: <job_id>" or
+    # "Created job batch: <job_id>"
     match = re.search(
         r"https://pinpoint-dot-chromeperf\.appspot\.com/job/([a-f0-9]+)",
-        result.stdout)
+        result.stdout,
+    )
     if not match:
         print(
             "\nCould not parse Job ID from Pinpoint output.\n"
             "To monitor later, find the Job ID in the output above and run:\n"
-            "  pinpoint wait-job -name <job_id>")
+            "  pinpoint wait-job -name <job_id>"
+        )
         return
 
     job_id = match.group(1)
-    # TODO: Simplify instructions and remove warning once pinpoint CLI -download-results works reliably.
+    # TODO: Simplify instructions and remove warning once pinpoint CLI
+    # -download-results works reliably.
     print(
         f"\nPinpoint job started successfully.\n"
         f"To monitor the job, run:\n"
         f"  pinpoint wait-job -name {job_id}\n\n"
-        f"WARNING: The pinpoint CLI '-download-results' flag may fail silently.\n"
+        "WARNING: The pinpoint CLI '-download-results' flag may fail"
+        " silently.\n"
         f"If the CLI fails to download the CSV, download it manually from:\n"
         f"  https://pinpoint-dot-chromeperf.appspot.com/job/{job_id}\n"
         f"click 'export' and 'RAW CSV' to download it manually\n"
-        f"and save it to '~/Downloads/{job_id}.csv'.")
+        f"and save it to '~/Downloads/{job_id}.csv'."
+    )
     if args.benchmark == "speedometer3":
         print(
-            f"\nOnce downloaded, you can calculate confidence intervals by running:\n"
-            f"  out/Default/pinpoint_ci ~/Downloads/{job_id}.csv")
+            "\nOnce downloaded, you can calculate confidence intervals by"
+            " running:\n"
+            f"  out/Default/pinpoint_ci ~/Downloads/{job_id}.csv"
+        )
 
 
 def main(args):

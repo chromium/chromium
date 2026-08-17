@@ -14,52 +14,52 @@ import compile_db
 
 # Input compile DB.
 _TEST_COMPILE_DB = [
-    # Verifies that rewrapper.exe is removed.
-    {
-        'command': r'C:\rewrapper.exe C:\clang-cl.exe /blah',
-    },
-    # Verifies a rewrapper path containing a space.
-    {
-        'command': r'"C:\Program Files\rewrapper.exe" C:\clang-cl.exe /blah',
-    },
-    # Includes a string define.
-    {
-        'command': r'clang-cl.exe /blah "-DCR_CLANG_REVISION=\"346388-1\""',
-    },
-    # Includes a string define with a space in it.
-    {
-        'command': r'clang-cl.exe /blah -D"MY_DEFINE=\"MY VALUE\""',
-    },
+  # Verifies that rewrapper.exe is removed.
+  {
+    'command': r'C:\rewrapper.exe C:\clang-cl.exe /blah',
+  },
+  # Verifies a rewrapper path containing a space.
+  {
+    'command': r'"C:\Program Files\rewrapper.exe" C:\clang-cl.exe /blah',
+  },
+  # Includes a string define.
+  {
+    'command': r'clang-cl.exe /blah "-DCR_CLANG_REVISION=\"346388-1\""',
+  },
+  # Includes a string define with a space in it.
+  {
+    'command': r'clang-cl.exe /blah -D"MY_DEFINE=\"MY VALUE\""',
+  },
 ]
 
 # Expected compile DB after processing for windows.
 _EXPECTED_COMPILE_DB = [
-    {
-        'command': r'C:\clang-cl.exe --driver-mode=cl /blah',
-    },
-    {
-        'command': r'C:\clang-cl.exe --driver-mode=cl /blah',
-    },
-    {
-        'command': r'clang-cl.exe --driver-mode=cl /blah '
-                   r'"-DCR_CLANG_REVISION=\"346388-1\""',
-    },
-    {
-        'command': r'clang-cl.exe --driver-mode=cl /blah '
-                   r'-D"MY_DEFINE=\"MY VALUE\""',
-    },
+  {
+    'command': r'C:\clang-cl.exe --driver-mode=cl /blah',
+  },
+  {
+    'command': r'C:\clang-cl.exe --driver-mode=cl /blah',
+  },
+  {
+    'command': r'clang-cl.exe --driver-mode=cl /blah '
+    r'"-DCR_CLANG_REVISION=\"346388-1\""',
+  },
+  {
+    'command': r'clang-cl.exe --driver-mode=cl /blah '
+    r'-D"MY_DEFINE=\"MY VALUE\""',
+  },
 ]
 
 
 class CompileDbTest(unittest.TestCase):
-
   def setUp(self):
     self.maxDiff = None
 
   def testProcessNotOnWindows(self):
     sys.platform = 'linux2'
     processed_compile_db = compile_db.ProcessCompileDatabase(
-        _TEST_COMPILE_DB, [])
+      _TEST_COMPILE_DB, []
+    )
 
     # Assert no changes were made.
     try:
@@ -71,7 +71,8 @@ class CompileDbTest(unittest.TestCase):
   def testProcessForWindows_HostPlatformBased(self):
     sys.platform = 'win32'
     processed_compile_db = compile_db.ProcessCompileDatabase(
-        _TEST_COMPILE_DB, [])
+      _TEST_COMPILE_DB, []
+    )
 
     # Check each entry individually to improve readability of the output.
     for actual, expected in zip(processed_compile_db, _EXPECTED_COMPILE_DB):
@@ -79,9 +80,9 @@ class CompileDbTest(unittest.TestCase):
 
   def testProcessForWindows_TargetOsBased(self):
     sys.platform = 'linux2'
-    processed_compile_db = compile_db.ProcessCompileDatabase(_TEST_COMPILE_DB,
-                                                             [],
-                                                             target_os='win')
+    processed_compile_db = compile_db.ProcessCompileDatabase(
+      _TEST_COMPILE_DB, [], target_os='win'
+    )
 
     # Check each entry individually to improve readability of the output.
     for actual, expected in zip(processed_compile_db, _EXPECTED_COMPILE_DB):
@@ -89,106 +90,111 @@ class CompileDbTest(unittest.TestCase):
 
   def testFrontendArgsFiltered(self):
     sys.platform = 'linux2'
-    input_db = [{
-        'command':
-        r'clang -g -Xclang -fuse-ctor-homing -funroll-loops test.cc'
-    }]
-    self.assertEqual(compile_db.ProcessCompileDatabase(input_db, []),
-                     [{
-                         'command': r'clang -g -funroll-loops test.cc'
-                     }])
+    input_db = [
+      {'command': r'clang -g -Xclang -fuse-ctor-homing -funroll-loops test.cc'}
+    ]
+    self.assertEqual(
+      compile_db.ProcessCompileDatabase(input_db, []),
+      [{'command': r'clang -g -funroll-loops test.cc'}],
+    )
 
   def testProfileSampleUseFiltered(self):
     sys.platform = 'linux2'
-    input_db = [{
-        'command':
-        r'clang -g -fprofile-sample-use=../path/to.prof -funroll-loops test.cc'
-    }]
-    self.assertEqual(compile_db.ProcessCompileDatabase(input_db, []),
-                     [{
-                         'command': r'clang -g -funroll-loops test.cc'
-                     }])
+    input_db = [
+      {
+        'command': r'clang -g -fprofile-sample-use=../path/to.prof -funroll-loops test.cc'
+      }
+    ]
+    self.assertEqual(
+      compile_db.ProcessCompileDatabase(input_db, []),
+      [{'command': r'clang -g -funroll-loops test.cc'}],
+    )
 
   def testFilterArgs(self):
     sys.platform = 'linux2'
     input_db = [{'command': r'clang -g -ffile-compilation-dir=. -O3 test.cc'}]
     self.assertEqual(
-        compile_db.ProcessCompileDatabase(
-            input_db,
-            ['-ffile-compilation-dir=.', '-frandom-flag-that-does-not-exist']),
-        [{
-            'command': r'clang -g -O3 test.cc'
-        }])
+      compile_db.ProcessCompileDatabase(
+        input_db,
+        ['-ffile-compilation-dir=.', '-frandom-flag-that-does-not-exist'],
+      ),
+      [{'command': r'clang -g -O3 test.cc'}],
+    )
 
   def testRewrapperRemoved(self):
     sys.platform = 'linux2'
-    input_db = [{
-        'command':
-        r'./buildtools/reclient/rewrapper ./bin/clang++ -O3 test.cc',
-    }]
-    self.assertEqual(compile_db.ProcessCompileDatabase(input_db, []),
-                     [{
-                         'command': r'./bin/clang++ -O3 test.cc'
-                     }])
+    input_db = [
+      {
+        'command': r'./buildtools/reclient/rewrapper ./bin/clang++ -O3 test.cc',
+      }
+    ]
+    self.assertEqual(
+      compile_db.ProcessCompileDatabase(input_db, []),
+      [{'command': r'./bin/clang++ -O3 test.cc'}],
+    )
 
   def testRewrapperArgsRemoved(self):
     sys.platform = 'linux2'
-    input_db = [{
-        'command':
-        r'./buildtools/reclient/rewrapper'
+    input_db = [
+      {
+        'command': r'./buildtools/reclient/rewrapper'
         r' -cfg=./buildtools/reclient_cfgs/.../rewrapper_linux.cfg'
         r' -exec_root=/chromium/src/'
         r' ./bin/clang++ -O3 test.cc',
-    }]
-    self.assertEqual(compile_db.ProcessCompileDatabase(input_db, []),
-                     [{
-                         'command': r'./bin/clang++ -O3 test.cc'
-                     }])
+      }
+    ]
+    self.assertEqual(
+      compile_db.ProcessCompileDatabase(input_db, []),
+      [{'command': r'./bin/clang++ -O3 test.cc'}],
+    )
 
   def testClangWrapperRemoved(self):
     sys.platform = 'linux2'
     # Test for clang_code_coverage_wrapper.py
-    input_db = [{
-        'command':
-        r'python3 ../../build/toolchain/clang_code_coverage_wrapper.py '
+    input_db = [
+      {
+        'command': r'python3 ../../build/toolchain/clang_code_coverage_wrapper.py '
         r'--target-os=linux ../../third_party/llvm-build/Release+Asserts/bin/clang++ '
         r'-O3 test.cc',
-    }]
-    self.assertEqual(compile_db.ProcessCompileDatabase(input_db, []), [{
-        'command':
-        r'../../third_party/llvm-build/Release+Asserts/bin/clang++ '
-        r'-O3 test.cc'
-    }])
+      }
+    ]
+    self.assertEqual(
+      compile_db.ProcessCompileDatabase(input_db, []),
+      [
+        {
+          'command': r'../../third_party/llvm-build/Release+Asserts/bin/clang++ '
+          r'-O3 test.cc'
+        }
+      ],
+    )
 
     # Test for multiple versions and prefixes.
     input_db = [
-        {
-            'command': r'some_other_wrapper.py ./bin/clang-15 -O3 test.cc',
-        },
-        {
-            'command': r'some_other_wrapper.py ./bin/clang++-15 -O3 test.cc',
-        },
+      {
+        'command': r'some_other_wrapper.py ./bin/clang-15 -O3 test.cc',
+      },
+      {
+        'command': r'some_other_wrapper.py ./bin/clang++-15 -O3 test.cc',
+      },
     ]
     self.assertEqual(
-        compile_db.ProcessCompileDatabase(input_db, []),
-        [
-            {
-                'command': r'./bin/clang-15 -O3 test.cc'
-            },
-            {
-                'command': r'./bin/clang++-15 -O3 test.cc'
-            },
-        ],
+      compile_db.ProcessCompileDatabase(input_db, []),
+      [
+        {'command': r'./bin/clang-15 -O3 test.cc'},
+        {'command': r'./bin/clang++-15 -O3 test.cc'},
+      ],
     )
 
     # Test for bare compiler (no wrapper).
-    input_db = [{
+    input_db = [
+      {
         'command': r'clang++ -O3 test.cc',
-    }]
-    self.assertEqual(compile_db.ProcessCompileDatabase(input_db, []),
-                     [{
-                         'command': r'clang++ -O3 test.cc'
-                     }])
+      }
+    ]
+    self.assertEqual(
+      compile_db.ProcessCompileDatabase(input_db, []),
+      [{'command': r'clang++ -O3 test.cc'}],
+    )
 
 
 if __name__ == '__main__':

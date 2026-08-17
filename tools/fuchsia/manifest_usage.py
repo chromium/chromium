@@ -42,8 +42,10 @@ class FilesystemNode:
     try:
       self.size = 0 if os.path.isdir(self.path) else os.path.getsize(self.path)
     except FileNotFoundError:
-      print(f'{path} not found, please check that you have compiled '
-            'the target that generates this manifest.')
+      print(
+        f'{path} not found, please check that you have compiled '
+        'the target that generates this manifest.'
+      )
       exit(1)
 
 
@@ -100,9 +102,11 @@ class ManifestAnalyzer:
       parent_node.size += leaf_node.size
 
   def print_file_count(self, max_depth: int, sort_order: SortOrder) -> None:
-    sorted_nodes = sorted(self.path_map.values(),
-                          key=lambda node: node.descendant_count,
-                          reverse=sort_order == SortOrder.DESCENDING)
+    sorted_nodes = sorted(
+      self.path_map.values(),
+      key=lambda node: node.descendant_count,
+      reverse=sort_order == SortOrder.DESCENDING,
+    )
     for node in sorted_nodes:
       if node.descendant_count <= 0:
         continue
@@ -112,9 +116,11 @@ class ManifestAnalyzer:
       print(f'{node.descendant_count: >10}\t{node.path}')
 
   def print_byte_size(self, max_depth: int, sort_order: SortOrder) -> None:
-    sorted_nodes = sorted(self.path_map.values(),
-                          key=lambda node: node.size,
-                          reverse=sort_order == SortOrder.DESCENDING)
+    sorted_nodes = sorted(
+      self.path_map.values(),
+      key=lambda node: node.size,
+      reverse=sort_order == SortOrder.DESCENDING,
+    )
     for node in sorted_nodes:
       depth = node.path.count('/')
       if depth > max_depth:
@@ -124,29 +130,36 @@ class ManifestAnalyzer:
 
 def main():
   parser = argparse.ArgumentParser(
-      description='Launches a long-running emulator that can '
-      'be re-used for multiple test runs.')
+    description='Launches a long-running emulator that can '
+    'be re-used for multiple test runs.'
+  )
   parser.add_argument(
-      'manifest_path',
-      type=str,
-      help='path to the .manifest '
-      'file. For example, the manifest for chrome/test:browser_tests can be '
-      'found at <out_dir>/gen/chrome/test/browser_tests/browser_tests.manifest')
-  parser.add_argument('--analysis',
-                      type=Analysis,
-                      choices=list(Analysis),
-                      default=Analysis.SIZE,
-                      help='which type of analysis to print')
-  parser.add_argument('--max-depth',
-                      type=int,
-                      default=sys.maxsize,
-                      help='only print directories to the provided depth')
+    'manifest_path',
+    type=str,
+    help='path to the .manifest '
+    'file. For example, the manifest for chrome/test:browser_tests can be '
+    'found at <out_dir>/gen/chrome/test/browser_tests/browser_tests.manifest',
+  )
   parser.add_argument(
-      '--sort-order',
-      type=SortOrder,
-      choices=list(SortOrder),
-      default=SortOrder.ASCENDING,
-      help='which order to use for sorting, defualts to ascending')
+    '--analysis',
+    type=Analysis,
+    choices=list(Analysis),
+    default=Analysis.SIZE,
+    help='which type of analysis to print',
+  )
+  parser.add_argument(
+    '--max-depth',
+    type=int,
+    default=sys.maxsize,
+    help='only print directories to the provided depth',
+  )
+  parser.add_argument(
+    '--sort-order',
+    type=SortOrder,
+    choices=list(SortOrder),
+    default=SortOrder.ASCENDING,
+    help='which order to use for sorting, defualts to ascending',
+  )
   args = parser.parse_args()
 
   analyzer = ManifestAnalyzer()

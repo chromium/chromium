@@ -34,8 +34,15 @@ import time
 import unittest
 
 CHROME_PROFILES_PATH = os.path.join(os.getcwd(), 'chrome_profiles')
-CHROME_PATH = os.path.join(os.environ['USERPROFILE'], 'AppData', 'Local',
-                           'Google', 'Chrome SxS', 'Application', 'chrome.exe')
+CHROME_PATH = os.path.join(
+  os.environ['USERPROFILE'],
+  'AppData',
+  'Local',
+  'Google',
+  'Chrome SxS',
+  'Application',
+  'chrome.exe',
+)
 NVDA_PATH = os.path.join(os.getcwd(), 'nvdaPortable', 'nvda_noUIAccess.exe')
 NVDA_PROCTEST_PATH = os.path.join(os.getcwd(), 'nvda-proctest')
 NVDA_LOGPATH = os.path.join(os.getcwd(), 'nvda_log.txt')
@@ -43,7 +50,6 @@ WAIT_FOR_SPEECH_TIMEOUT_SECS = 3.0
 
 
 class NvdaChromeTest(unittest.TestCase):
-
   @classmethod
   def setUpClass(cls):
     print('user data: %s' % CHROME_PROFILES_PATH)
@@ -54,7 +60,7 @@ class NvdaChromeTest(unittest.TestCase):
     tasklist = subprocess.Popen("tasklist", shell=True, stdout=subprocess.PIPE)
     tasklist_output = tasklist.communicate()[0].decode('utf8').split('\r\n')
     for task in tasklist_output:
-      if (task.split(' ', 1)[0] == "nvda.exe"):
+      if task.split(' ', 1)[0] == "nvda.exe":
         print("nvda.exe is running!  Please kill it before running these tests")
         sys.exit()
 
@@ -76,8 +82,10 @@ class NvdaChromeTest(unittest.TestCase):
   def setUp(self):
     user_data_dir = tempfile.mkdtemp(dir=CHROME_PROFILES_PATH)
     args = [
-        CHROME_PATH,
-        '--user-data-dir=%s' % user_data_dir, '--no-first-run', 'about:blank'
+      CHROME_PATH,
+      '--user-data-dir=%s' % user_data_dir,
+      '--no-first-run',
+      'about:blank',
     ]
     print()
     print(' '.join(args))
@@ -137,7 +145,7 @@ class NvdaChromeTest(unittest.TestCase):
     """
     if not os.access(NVDA_LOGPATH, os.F_OK):
       return []
-    lines = open(NVDA_LOGPATH).readlines()[self.last_nvda_log_line:]
+    lines = open(NVDA_LOGPATH).readlines()[self.last_nvda_log_line :]
     regex = re.compile(r"u'((?:[^\'\\]|\\.)*)\'")
     result = []
     for line in lines:
@@ -150,10 +158,10 @@ class NvdaChromeTest(unittest.TestCase):
 
   def _ArrayInArray(self, lines, expected):
     positions = len(lines) - len(expected) + 1
-    if (positions >= 0):
+    if positions >= 0:
       # loop through the number of positions that the subset can hold
       for index in range(positions):
-        if (lines[index:index + len(expected)] == expected):
+        if lines[index : index + len(expected)] == expected:
           return True
     return False
 
@@ -177,8 +185,12 @@ class NvdaChromeTest(unittest.TestCase):
         return True
 
       if time.time() - start_time >= WAIT_FOR_SPEECH_TIMEOUT_SECS:
-        self.fail("Test for expected speech failed.\n\nExpected:\n" +
-                  str(expected) + ".\n\nActual:\n" + str(lines))
+        self.fail(
+          "Test for expected speech failed.\n\nExpected:\n"
+          + str(expected)
+          + ".\n\nActual:\n"
+          + str(lines)
+        )
         return False
       time.sleep(0.1)
 

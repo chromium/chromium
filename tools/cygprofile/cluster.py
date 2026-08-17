@@ -12,9 +12,9 @@ import itertools
 import logging
 
 Neighbor = collections.namedtuple('Neighbor', ('src', 'dst', 'dist'))
-CalleeInfo = collections.namedtuple('CalleeInfo',
-                                    ('index', 'callee_symbol',
-                                     'misses', 'caller_and_count'))
+CalleeInfo = collections.namedtuple(
+  'CalleeInfo', ('index', 'callee_symbol', 'misses', 'caller_and_count')
+)
 CallerInfo = collections.namedtuple('CallerInfo', ('caller_symbol', 'count'))
 
 
@@ -65,6 +65,7 @@ class Clustering:
   performance and should not be used (1.7% decline in speedometer2,
   450K native library memory regression).
   """
+
   NEIGHBOR_DISTANCE = 20
   FAR_DISTANCE = 1000
   MAX_CLUSTER_SIZE = 4096  # 4k pages on android.
@@ -128,7 +129,8 @@ class Clustering:
   def AddSymbolLists(self, sym_lists):
     self._num_lists = len(sym_lists)
     self._neighbors = self._CoalesceNeighbors(
-        self._ConstructNeighbors(sym_lists))
+      self._ConstructNeighbors(sym_lists)
+    )
 
   def _ConstructNeighbors(self, sym_lists):
     neighbors = []
@@ -150,7 +152,7 @@ class Clustering:
     coalesced = []
     logging.info('Will coalesce over %s neighbor pairs', len(pairs))
     count = 0
-    for (s, t) in pairs:
+    for s, t in pairs:
       assert s != t, '{} != {}'.format(s, t)
       if (t, s) in pairs and t < s:
         # Only process each unordered pair once.
@@ -165,8 +167,9 @@ class Clustering:
         distances.extend(-d for d in pairs[(t, s)])
       if distances:
         num_missing = self._num_lists - len(distances)
-        avg_distance = (float(sum(distances)) +
-                        self.FAR_DISTANCE * num_missing) / self._num_lists
+        avg_distance = (
+          float(sum(distances)) + self.FAR_DISTANCE * num_missing
+        ) / self._num_lists
         if avg_distance > 0:
           coalesced.append(Neighbor(s, t, avg_distance))
         else:
@@ -201,40 +204,60 @@ class Clustering:
       neighbor = self._neighbors.pop()
       src = self.ClusterOf(neighbor.src)
       dst = self.ClusterOf(neighbor.dst)
-      if (src == dst or
-          src.binary_size + dst.binary_size > self.MAX_CLUSTER_SIZE):
+      if (
+        src == dst or src.binary_size + dst.binary_size > self.MAX_CLUSTER_SIZE
+      ):
         continue
       self.Combine(src, dst)
     if size_map:
-      clusters_by_size = sorted(list(set(self._cluster_map.values())),
-                                key=lambda c: -c.binary_size)
+      clusters_by_size = sorted(
+        list(set(self._cluster_map.values())), key=lambda c: -c.binary_size
+      )
     else:
-      clusters_by_size = sorted(list(set(self._cluster_map.values())),
-                                key=lambda c: -len(c.syms))
+      clusters_by_size = sorted(
+        list(set(self._cluster_map.values())), key=lambda c: -len(c.syms)
+      )
     logging.info('Produced %s clusters', len(clusters_by_size))
-    logging.info('Top sizes: %s', ['{}/{}'.format(len(c.syms), c.binary_size)
-                                   for c in clusters_by_size[:4]])
-    logging.info('Bottom sizes: %s', ['{}/{}'.format(len(c.syms), c.binary_size)
-                                      for c in clusters_by_size[-4:]])
+    logging.info(
+      'Top sizes: %s',
+      [
+        '{}/{}'.format(len(c.syms), c.binary_size) for c in clusters_by_size[:4]
+      ],
+    )
+    logging.info(
+      'Bottom sizes: %s',
+      [
+        '{}/{}'.format(len(c.syms), c.binary_size)
+        for c in clusters_by_size[-4:]
+      ],
+    )
     ordered_syms = []
     for c in clusters_by_size:
       ordered_syms.extend(c.syms)
     assert len(ordered_syms) == len(set(ordered_syms)), 'Duplicated symbols!'
     return ordered_syms
 
+
 def _GetOffsetSymbolName(processor, dump_offset):
-  dump_offset_to_symbol_info = \
-      processor.GetDumpOffsetToSymboInfolIncludingWhitelist()
+  dump_offset_to_symbol_info = (
+    processor.GetDumpOffsetToSymboInfolIncludingWhitelist()
+  )
   offset_to_primary = processor.OffsetToPrimaryMap()
   idx = dump_offset // 2
   assert dump_offset >= 0 and idx < len(dump_offset_to_symbol_info), (
-      'Dump offset out of binary range')
+    'Dump offset out of binary range'
+  )
   symbol_info = dump_offset_to_symbol_info[idx]
-  assert symbol_info, ('A return address (offset = 0x{:08x}) does not map '
-                       'to any symbol'.format(dump_offset))
+  assert symbol_info, (
+    'A return address (offset = 0x{:08x}) does not map to any symbol'.format(
+      dump_offset
+    )
+  )
   assert symbol_info.offset in offset_to_primary, (
-      'Offset not found in primary map!')
+    'Offset not found in primary map!'
+  )
   return offset_to_primary[symbol_info.offset].name
+
 
 def _ClusterOffsetsLists(profiles, processor, limit_cluster_size=False):
   raw_offsets = profiles.GetProcessOffsetLists()
@@ -243,7 +266,8 @@ def _ClusterOffsetsLists(profiles, processor, limit_cluster_size=False):
   for p in raw_offsets:
     for offsets in raw_offsets[p]:
       symbol_names = processor.GetOrderedSymbols(
-          processor.GetReachedOffsetsFromDump(offsets))
+        processor.GetReachedOffsetsFromDump(offsets)
+      )
       process_symbols[p].append(symbol_names)
       seen_symbols |= set(symbol_names)
   if limit_cluster_size:
@@ -260,9 +284,11 @@ def _ClusterOffsetsLists(profiles, processor, limit_cluster_size=False):
   assert _BROWSER in process_symbols
 
   renderer_clustering = Clustering.ClusteredSymbolLists(
-      process_symbols[_RENDERER], size_map)
+    process_symbols[_RENDERER], size_map
+  )
   browser_clustering = Clustering.ClusteredSymbolLists(
-      process_symbols[_BROWSER], size_map)
+    process_symbols[_BROWSER], size_map
+  )
   other_lists = []
   for process, syms in process_symbols.items():
     if process not in (_RENDERER, _BROWSER):
@@ -291,5 +317,5 @@ def ClusterOffsets(profiles, processor, limit_cluster_size=False):
 
   Returns:
     A list of clustered symbol offsets.
-"""
+  """
   return _ClusterOffsetsLists(profiles, processor, limit_cluster_size)

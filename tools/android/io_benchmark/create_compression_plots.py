@@ -3,6 +3,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Plots compression benchmark data from a log file."""
+
 """Example output from the compression benchmark, collected on a Pixel 9 Pro
 XL:
 
@@ -100,17 +101,19 @@ import pandas as pd
 def ParseData(filepath: str) -> pd.DataFrame:
   """Parses the benchmark data from the given file.
 
-    Args:
-      filepath: File to parse, from the output of the script.
-    """
+  Args:
+    filepath: File to parse, from the output of the script.
+  """
   data = []
-  line_regex = re.compile(r'(\w+),'  # method (e.g., snappy)
-                          r'(compression|decompression),'  # operation
-                          r'(\d+),'  # chunk_size
-                          r'([\d.]+),'  # throughput
-                          r'([\d.]+),'  # latency
-                          r'([\d.]+)'  # compression_ratio
-                          r'$')
+  line_regex = re.compile(
+    r'(\w+),'  # method (e.g., snappy)
+    r'(compression|decompression),'  # operation
+    r'(\d+),'  # chunk_size
+    r'([\d.]+),'  # throughput
+    r'([\d.]+),'  # latency
+    r'([\d.]+)'  # compression_ratio
+    r'$'
+  )
 
   with open(filepath, 'r') as f:
     for line in f:
@@ -118,11 +121,17 @@ def ParseData(filepath: str) -> pd.DataFrame:
       if match:
         data.append(list(match.groups()))
 
-  df = pd.DataFrame(data,
-                    columns=[
-                        'method', 'operation', 'chunk_size', 'throughput',
-                        'latency', 'compression_ratio'
-                    ])
+  df = pd.DataFrame(
+    data,
+    columns=[
+      'method',
+      'operation',
+      'chunk_size',
+      'throughput',
+      'latency',
+      'compression_ratio',
+    ],
+  )
 
   for col in ['chunk_size', 'throughput', 'latency', 'compression_ratio']:
     df[col] = pd.to_numeric(df[col])
@@ -132,10 +141,10 @@ def ParseData(filepath: str) -> pd.DataFrame:
 def Plot(df: pd.DataFrame, output_dir: str = '.') -> None:
   """Generates and saves plots from the benchmark data.
 
-    Args:
-      df: As returned by ParseData().
-      output_dir: base directory to output the plots
-    """
+  Args:
+    df: As returned by ParseData().
+    output_dir: base directory to output the plots
+  """
   methods = sorted(df['method'].unique())
 
   # Ensure output directory exists
@@ -144,21 +153,20 @@ def Plot(df: pd.DataFrame, output_dir: str = '.') -> None:
   compression_df = df[df['operation'] == 'compression']
   decompression_df = df[df['operation'] == 'decompression']
 
-  def CreatePlot(data,
-                 y_col,
-                 title,
-                 ylabel,
-                 is_log_y=False,
-                 output_filename=""):
+  def CreatePlot(
+    data, y_col, title, ylabel, is_log_y=False, output_filename=""
+  ):
     plt.figure(figsize=(12, 7))
     for method in methods:
       subset = data[data['method'] == method]
       if not subset.empty:
-        plt.plot(subset['chunk_size'],
-                 subset[y_col],
-                 marker='o',
-                 linestyle='-',
-                 label=method)
+        plt.plot(
+          subset['chunk_size'],
+          subset[y_col],
+          marker='o',
+          linestyle='-',
+          label=method,
+        )
 
     plt.title(title)
     plt.xlabel('Chunk Size (bytes)')
@@ -171,48 +179,59 @@ def Plot(df: pd.DataFrame, output_dir: str = '.') -> None:
     plt.savefig(os.path.join(output_dir, output_filename))
     plt.close()
 
-  CreatePlot(compression_df,
-             'throughput',
-             'Compression Throughput vs. Chunk Size',
-             'Throughput (MB/s)',
-             output_filename='compression_throughput.png')
+  CreatePlot(
+    compression_df,
+    'throughput',
+    'Compression Throughput vs. Chunk Size',
+    'Throughput (MB/s)',
+    output_filename='compression_throughput.png',
+  )
 
-  CreatePlot(decompression_df,
-             'throughput',
-             'Decompression Throughput vs. Chunk Size',
-             'Throughput (MB/s)',
-             output_filename='decompression_throughput.png')
+  CreatePlot(
+    decompression_df,
+    'throughput',
+    'Decompression Throughput vs. Chunk Size',
+    'Throughput (MB/s)',
+    output_filename='decompression_throughput.png',
+  )
 
-  CreatePlot(compression_df,
-             'latency',
-             'Compression Latency vs. Chunk Size',
-             'Latency (microseconds)',
-             is_log_y=True,
-             output_filename='compression_latency.png')
+  CreatePlot(
+    compression_df,
+    'latency',
+    'Compression Latency vs. Chunk Size',
+    'Latency (microseconds)',
+    is_log_y=True,
+    output_filename='compression_latency.png',
+  )
 
-  CreatePlot(decompression_df,
-             'latency',
-             'Decompression Latency vs. Chunk Size',
-             'Latency (microseconds)',
-             is_log_y=True,
-             output_filename='decompression_latency.png')
+  CreatePlot(
+    decompression_df,
+    'latency',
+    'Decompression Latency vs. Chunk Size',
+    'Latency (microseconds)',
+    is_log_y=True,
+    output_filename='decompression_latency.png',
+  )
 
-  CreatePlot(compression_df,
-             'compression_ratio',
-             'Compression Ratio vs. Chunk Size',
-             'Compression Ratio',
-             output_filename='compression_ratio.png')
+  CreatePlot(
+    compression_df,
+    'compression_ratio',
+    'Compression Ratio vs. Chunk Size',
+    'Compression Ratio',
+    output_filename='compression_ratio.png',
+  )
 
 
 def main() -> int:
   parser = argparse.ArgumentParser(
-      description='Parse and plot compression benchmark data.')
-  parser.add_argument('input_file',
-                      help='Path to the input file with benchmark data.')
-  parser.add_argument('output_dir',
-                      nargs='?',
-                      default='.',
-                      help='Directory to save the plots.')
+    description='Parse and plot compression benchmark data.'
+  )
+  parser.add_argument(
+    'input_file', help='Path to the input file with benchmark data.'
+  )
+  parser.add_argument(
+    'output_dir', nargs='?', default='.', help='Directory to save the plots.'
+  )
   args = parser.parse_args()
 
   if not os.path.exists(args.input_file):
@@ -221,8 +240,7 @@ def main() -> int:
 
   df = ParseData(args.input_file)
   Plot(df, args.output_dir)
-  print("Generated benchmark plots in "
-        f"'{os.path.abspath(args.output_dir)}'")
+  print(f"Generated benchmark plots in '{os.path.abspath(args.output_dir)}'")
 
 
 if __name__ == '__main__':

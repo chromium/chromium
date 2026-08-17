@@ -78,16 +78,19 @@ def create_json_obj_from_graph(graph_obj: graph.Graph) -> Dict:
 
 
 def create_class_graph_from_json_obj(
-        json_obj: Dict) -> class_dependency.JavaClassDependencyGraph:
+    json_obj: Dict,
+) -> class_dependency.JavaClassDependencyGraph:
     """Creates a JavaClassDependencyGraph from a JSON representation."""
     class_graph = class_dependency.JavaClassDependencyGraph()
 
     for node_json_obj in json_obj[json_consts.NODES]:
         name = node_json_obj[json_consts.NAME]
         nested = node_json_obj[json_consts.META][
-            class_json_consts.NESTED_CLASSES]
+            class_json_consts.NESTED_CLASSES
+        ]
         build_targets = node_json_obj[json_consts.META][
-            class_json_consts.BUILD_TARGETS]
+            class_json_consts.BUILD_TARGETS
+        ]
         added_node = class_graph.add_node_if_new(name)
         added_node.nested_classes = set(nested)
         added_node.build_targets = set(build_targets)
@@ -103,20 +106,25 @@ def create_class_graph_from_json_obj(
 def create_build_metadata(src_path: pathlib.Path) -> Dict:
     """Creates metadata about the build the graph was extracted from."""
     return {
-        json_consts.COMMIT_HASH:
-        git_metadata_utils.get_head_commit_hash(src_path),
-        json_consts.COMMIT_CR_POSITION:
-        git_metadata_utils.get_head_commit_cr_position(src_path),
-        json_consts.COMMIT_TIME:
-        git_metadata_utils.get_head_commit_time(src_path),
+        json_consts.COMMIT_HASH: git_metadata_utils.get_head_commit_hash(
+            src_path
+        ),
+        json_consts.COMMIT_CR_POSITION: (
+            git_metadata_utils.get_head_commit_cr_position(src_path)
+        ),
+        json_consts.COMMIT_TIME: git_metadata_utils.get_head_commit_time(
+            src_path
+        ),
     }
 
 
 def dump_class_and_package_and_target_graphs_to_file(
-        class_graph: class_dependency.JavaClassDependencyGraph,
-        package_graph: package_dependency.JavaPackageDependencyGraph,
-        target_graph: target_dependency.JavaTargetDependencyGraph,
-        filename: str, src_path: pathlib.Path):
+    class_graph: class_dependency.JavaClassDependencyGraph,
+    package_graph: package_dependency.JavaPackageDependencyGraph,
+    target_graph: target_dependency.JavaTargetDependencyGraph,
+    filename: str,
+    src_path: pathlib.Path,
+):
     """Dumps a JSON representation of the class/package/target graph to a file.
 
     We dump the graphs together because the package graph in-memory holds
@@ -143,7 +151,7 @@ def dump_class_and_package_and_target_graphs_to_file(
 
 
 def load_class_graph_from_file(
-        filename: str
+    filename: str,
 ) -> Tuple[class_dependency.JavaClassDependencyGraph, Dict]:
     """Recreates a JavaClassDependencyGraph from a JSON file.
 
@@ -154,13 +162,17 @@ def load_class_graph_from_file(
         json_obj = json.load(json_file)
         class_graph_json_obj = json_obj[json_consts.CLASS_GRAPH]
         return create_class_graph_from_json_obj(
-            class_graph_json_obj), json_obj.get(json_consts.BUILD_METADATA)
+            class_graph_json_obj
+        ), json_obj.get(json_consts.BUILD_METADATA)
 
 
 def load_class_and_package_graphs_from_file(
-        filename: str
-) -> Tuple[class_dependency.JavaClassDependencyGraph, package_dependency.
-           JavaPackageDependencyGraph, Dict]:
+    filename: str,
+) -> Tuple[
+    class_dependency.JavaClassDependencyGraph,
+    package_dependency.JavaPackageDependencyGraph,
+    Dict,
+]:
     """Recreates a Java(Class+Package)DependencyGraph from a JSON file.
 
     The file is expected to be in the format dumped by

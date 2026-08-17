@@ -12,38 +12,53 @@ import argparse, json, os, urllib.parse
 
 # Extracts the names of all non-disabled captured site tests.
 def get_all_sites():
-  with open("chrome/test/data/autofill/captured_sites/artifacts/testcases.json",
-            "r") as f:
-    return (site["site_name"] for site in json.loads(f.read())["tests"]
-            if not site.get("disabled", False))
+  with open(
+    "chrome/test/data/autofill/captured_sites/artifacts/testcases.json", "r"
+  ) as f:
+    return (
+      site["site_name"]
+      for site in json.loads(f.read())["tests"]
+      if not site.get("disabled", False)
+    )
+
 
 # Command line args.
-parser = argparse.ArgumentParser(epilog="List of tests: " +
-                                 ", ".join(get_all_sites()))
+parser = argparse.ArgumentParser(
+  epilog="List of tests: " + ", ".join(get_all_sites())
+)
 parser.add_argument(
-    "target",
-    help=("Build target of captured_sites_interactive_tests binary. "
-          "For example, Default. The binary should already exist."))
+  "target",
+  help=(
+    "Build target of captured_sites_interactive_tests binary. "
+    "For example, Default. The binary should already exist."
+  ),
+)
 parser.add_argument("features", help="A comma-separated list of feature names.")
 parser.add_argument(
-    "-r",
-    dest="histogram_regex",
-    help=("A regex matching the histogram names that should be dumped. If not "
-          "specified, the metrics of all histograms dumped."))
+  "-r",
+  dest="histogram_regex",
+  help=(
+    "A regex matching the histogram names that should be dumped. If not "
+    "specified, the metrics of all histograms dumped."
+  ),
+)
 parser.add_argument(
-    "-o",
-    dest="output",
-    default="/tmp/",
-    help=("Directory to record the metrics into. Creates files per test, named"
-          " after the test case."))
+  "-o",
+  dest="output",
+  default="/tmp/",
+  help=(
+    "Directory to record the metrics into. Creates files per test, named"
+    " after the test case."
+  ),
+)
 parser.add_argument(
-    "-t",
-    dest="test",
-    help="Test case. If no test is specified, all tests are run.")
-parser.add_argument("-s",
-                    dest="silent",
-                    action="store_true",
-                    help="Don't print test output.")
+  "-t",
+  dest="test",
+  help="Test case. If no test is specified, all tests are run.",
+)
+parser.add_argument(
+  "-s", dest="silent", action="store_true", help="Don't print test output."
+)
 args = parser.parse_args()
 
 # The captured_sites_interactive_tests binary should be built.
@@ -55,14 +70,16 @@ assert os.path.exists(captured_site_tests)
 # args.features is enabled/disabled depending on `features_enabled`.
 def run_test(site, features_enabled):
   cmd = "./" + captured_site_tests
-  cmd += (" --gtest_filter="
-          "All/AutofillCapturedSitesInteractiveTest.Recipe/" + site)
+  cmd += (
+    " --gtest_filter=All/AutofillCapturedSitesInteractiveTest.Recipe/" + site
+  )
   # Enable scraping tools. Special characters need to be escaped.
   cmd += " --enable-features=AutofillCapturedSiteTestsMetricsScraper"
   cmd += ":output_dir/" + urllib.parse.quote(args.output, safe="")
   if args.histogram_regex is not None:
-    cmd += "/histogram_regex/" + urllib.parse.quote(args.histogram_regex,
-                                                    safe="")
+    cmd += "/histogram_regex/" + urllib.parse.quote(
+      args.histogram_regex, safe=""
+    )
   # En- or disable features.
   if features_enabled:
     cmd += "," + args.features
@@ -72,8 +89,10 @@ def run_test(site, features_enabled):
   cmd += " --enable-pixel-output-in-tests"
   cmd += " --test-launcher-timeout=10000000"
   cmd += " --ui-test-action-max-timeout=10000000"
-  cmd += (" --vmodule=captured_sites_test_utils=2\,"
-          "autofill_captured_sites_interactive_uitest=1")
+  cmd += (
+    " --vmodule=captured_sites_test_utils=2\,"
+    "autofill_captured_sites_interactive_uitest=1"
+  )
   # Maybe disable output.
   if args.silent:
     cmd += " > /dev/null 2>&1"
@@ -107,6 +126,7 @@ def run_tests_and_diff(site):
   print("Comparing metrics (no output means no diff)")
   os.system("diff %s %s" % (result_enabled, result_disabled))
   print("")
+
 
 # If a test is specified, only run that specific test. Otherwise run all.
 if args.test is None:

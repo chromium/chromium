@@ -29,14 +29,22 @@ import re
 import sys
 
 sys.path.insert(
-    1, os.path.join(os.path.dirname(os.path.abspath(__file__)), 'util'))
+  1, os.path.join(os.path.dirname(os.path.abspath(__file__)), 'util')
+)
 import class_methods
 
 sys.path.insert(
-    1,
-    os.path.join(
-        os.path.dirname(os.path.abspath(__file__)), '..', '..', 'third_party',
-        'blink', 'tools', 'gdb'))
+  1,
+  os.path.join(
+    os.path.dirname(os.path.abspath(__file__)),
+    '..',
+    '..',
+    'third_party',
+    'blink',
+    'tools',
+    'gdb',
+  ),
+)
 try:
   import blink
 finally:
@@ -54,9 +62,9 @@ pp_set = gdb.printing.RegexpCollectionPrettyPrinter("chromium")
 def typed_ptr(ptr):
   """Prints a pointer along with its exact type.
 
-    By default, gdb would print just the address, which takes more
-    steps to interpret.
-    """
+  By default, gdb would print just the address, which takes more
+  steps to interpret.
+  """
   # Returning this as a cast expression surrounded by parentheses
   # makes it easier to cut+paste inside of gdb.
   return '((%s)%s)' % (ptr.dynamic_type, ptr)
@@ -65,11 +73,11 @@ def typed_ptr(ptr):
 def yield_fields(val):
   """Use this in a printer's children() method to print an object's fields.
 
-    e.g.
-      def children():
-        for result in yield_fields(self.val):
-          yield result
-    """
+  e.g.
+    def children():
+      for result in yield_fields(self.val):
+        yield result
+  """
   try:
     fields = val.type.target().fields()
   except:
@@ -82,30 +90,28 @@ def yield_fields(val):
 
 
 class Printer(object):
-
   def __init__(self, val):
     self.val = val
 
 
 class StringPrinter(Printer):
-
   def display_hint(self):
     return 'string'
 
 
 class String16Printer(StringPrinter):
-
   def to_string(self):
     return blink.ustring_to_string(self.val['_M_dataplus']['_M_p'])
 
 
-pp_set.add_printer('string16',
-                   '^string16|std::basic_string<(unsigned short|char16_t).*>$',
-                   String16Printer)
+pp_set.add_printer(
+  'string16',
+  '^string16|std::basic_string<(unsigned short|char16_t).*>$',
+  String16Printer,
+)
 
 
 class GURLPrinter(StringPrinter):
-
   def to_string(self):
     return self.val['spec_']
 
@@ -114,7 +120,6 @@ pp_set.add_printer('GURL', '^GURL$', GURLPrinter)
 
 
 class FilePathPrinter(StringPrinter):
-
   def to_string(self):
     return self.val['path_']['_M_dataplus']['_M_p']
 
@@ -123,7 +128,6 @@ pp_set.add_printer('FilePath', '^FilePath$', FilePathPrinter)
 
 
 class SmartPtrPrinter(Printer):
-
   def to_string(self):
     return '%s%s' % (self.typename, typed_ptr(self.ptr()))
 
@@ -168,8 +172,10 @@ class WeakPtrPrinter(SmartPtrPrinter):
     # because calling gdb.parse_and_eval('(*(%s*)(%s)).ref_.IsValid()' %
     # (self.val.type, self.val.address))) does not work in all cases.
     ptr = self.val['ref_']['flag_']['ptr_']
-    if (ptr and
-        not ptr.dereference()['invalidated_']['flag_']['__a_']['__a_value']):
+    if (
+      ptr
+      and not ptr.dereference()['invalidated_']['flag_']['__a_']['__a_value']
+    ):
       return self.val['ptr_']
     return gdb.Value(0).cast(self.val['ptr_'].type)
 
@@ -184,25 +190,27 @@ class CallbackPrinter(Printer):
     return '...'
 
 
-pp_set.add_printer('base::OnceCallback', '^base::OnceCallback<.*>$',
-                   CallbackPrinter)
-pp_set.add_printer('base::RepeatingCallback', '^base::RepeatingCallback<.*>$',
-                   CallbackPrinter)
+pp_set.add_printer(
+  'base::OnceCallback', '^base::OnceCallback<.*>$', CallbackPrinter
+)
+pp_set.add_printer(
+  'base::RepeatingCallback', '^base::RepeatingCallback<.*>$', CallbackPrinter
+)
 
 
 class LocationPrinter(Printer):
-
   def to_string(self):
-    return '%s()@%s:%s' % (self.val['function_name_'].string(),
-                           self.val['file_name_'].string(),
-                           self.val['line_number_'])
+    return '%s()@%s:%s' % (
+      self.val['function_name_'].string(),
+      self.val['file_name_'].string(),
+      self.val['line_number_'],
+    )
 
 
 pp_set.add_printer('base::Location', '^base::Location$', LocationPrinter)
 
 
 class PendingTaskPrinter(Printer):
-
   def to_string(self):
     return 'From %s' % (self.val['posted_from'],)
 
@@ -212,12 +220,12 @@ class PendingTaskPrinter(Printer):
         yield result
 
 
-pp_set.add_printer('base::PendingTask', '^base::PendingTask$',
-                   PendingTaskPrinter)
+pp_set.add_printer(
+  'base::PendingTask', '^base::PendingTask$', PendingTaskPrinter
+)
 
 
 class LockPrinter(Printer):
-
   def to_string(self):
     try:
       if self.val['owned_by_thread_']:
@@ -232,7 +240,6 @@ pp_set.add_printer('base::Lock', '^base::Lock$', LockPrinter)
 
 
 class AbslOptionalPrinter(Printer):
-
   def to_string(self):
     if self.val['engaged_']:
       return "%s: %s" % (str(self.val.type.tag), self.val['data_'])
@@ -240,12 +247,12 @@ class AbslOptionalPrinter(Printer):
       return "%s: is empty" % str(self.val.type.tag)
 
 
-pp_set.add_printer('absl::optional', '^absl::optional<.*>$',
-                   AbslOptionalPrinter)
+pp_set.add_printer(
+  'absl::optional', '^absl::optional<.*>$', AbslOptionalPrinter
+)
 
 
 class StdOptionalPrinter(Printer):
-
   def to_string(self):
     if self.val['__engaged_']:
       return "%s: %s" % (str(self.val.type.tag), self.val['__val_'])
@@ -253,15 +260,16 @@ class StdOptionalPrinter(Printer):
       return "%s: is empty" % str(self.val.type.tag)
 
 
-pp_set.add_printer('std::optional', '^std::__Cr::optional<.*>$',
-                   StdOptionalPrinter)
+pp_set.add_printer(
+  'std::optional', '^std::__Cr::optional<.*>$', StdOptionalPrinter
+)
 
 
 class TimeDeltaPrinter(object):
-
   def __init__(self, val):
     self._timedelta = datetime.timedelta(
-        microseconds=int(val['delta_']['value_']))
+      microseconds=int(val['delta_']['value_'])
+    )
 
   def timedelta(self):
     return self._timedelta
@@ -274,7 +282,6 @@ pp_set.add_printer('base::TimeDelta', '^base::TimeDelta$', TimeDeltaPrinter)
 
 
 class TimeTicksPrinter(TimeDeltaPrinter):
-
   def __init__(self, val):
     self._timedelta = datetime.timedelta(microseconds=int(val['us_']['value_']))
 
@@ -283,13 +290,13 @@ pp_set.add_printer('base::TimeTicks', '^base::TimeTicks$', TimeTicksPrinter)
 
 
 class TimePrinter(object):
-
   def __init__(self, val):
     timet_offset = gdb.parse_and_eval(
-        'base::Time::kMicrosecondsFromWindowsToUnixEpoch')
-    self._datetime = (
-        datetime.datetime.fromtimestamp(0) + datetime.timedelta(
-            microseconds=int(val['us_']['value_']) - int(timet_offset)))
+      'base::Time::kMicrosecondsFromWindowsToUnixEpoch'
+    )
+    self._datetime = datetime.datetime.fromtimestamp(0) + datetime.timedelta(
+      microseconds=int(val['us_']['value_']) - int(timet_offset)
+    )
 
   def datetime(self):
     return self._datetime
@@ -302,7 +309,6 @@ pp_set.add_printer('base::Time', '^base::Time$', TimePrinter)
 
 
 class FlatTreePrinter(object):
-
   def __init__(self, val):
     self.val = val
 
@@ -317,12 +323,12 @@ class FlatTreePrinter(object):
 
 pp_set.add_printer('base::flat_map', '^base::flat_map<.*>$', FlatTreePrinter)
 pp_set.add_printer('base::flat_set', '^base::flat_set<.*>$', FlatTreePrinter)
-pp_set.add_printer('base::flat_tree', '^base::internal::flat_tree<.*>$',
-                   FlatTreePrinter)
+pp_set.add_printer(
+  'base::flat_tree', '^base::internal::flat_tree<.*>$', FlatTreePrinter
+)
 
 
 class ValuePrinter(object):
-
   def __init__(self, val):
     self.val = val
 
@@ -332,7 +338,7 @@ class ValuePrinter(object):
   def to_string(self):
     typestr = str(self.get_type())
     # Trim prefix to just get the emum short name.
-    typestr = typestr[typestr.rfind(':') + 1:]
+    typestr = typestr[typestr.rfind(':') + 1 :]
 
     if typestr == 'NONE':
       return 'base::Value of type NONE'
@@ -356,22 +362,24 @@ class ValuePrinter(object):
 
 pp_set.add_printer('base::Value', '^base::Value$', ValuePrinter)
 pp_set.add_printer('base::ListValue', '^base::ListValue$', ValuePrinter)
-pp_set.add_printer('base::DictionaryValue', '^base::DictionaryValue$',
-                   ValuePrinter)
+pp_set.add_printer(
+  'base::DictionaryValue', '^base::DictionaryValue$', ValuePrinter
+)
 
 
 class IpcMessagePrinter(Printer):
-
   def header(self):
     return self.val['header_'].cast(
-        gdb.lookup_type('IPC::Message::Header').pointer())
+      gdb.lookup_type('IPC::Message::Header').pointer()
+    )
 
   def to_string(self):
     message_type = self.header()['type']
-    return '%s of kind %s line %s' % (self.val.dynamic_type,
-                                      (message_type >> 16).cast(
-                                          gdb.lookup_type('IPCMessageStart')),
-                                      message_type & 0xffff)
+    return '%s of kind %s line %s' % (
+      self.val.dynamic_type,
+      (message_type >> 16).cast(gdb.lookup_type('IPCMessageStart')),
+      message_type & 0xFFFF,
+    )
 
   def children(self):
     yield ('header_', self.header().dereference())
@@ -386,7 +394,6 @@ pp_set.add_printer('IPC::Message', '^IPC::Message$', IpcMessagePrinter)
 
 
 class SiteInstanceImplPrinter(object):
-
   def __init__(self, val):
     self.val = val.cast(val.dynamic_type)
 
@@ -402,22 +409,25 @@ class SiteInstanceImplPrinter(object):
       yield ('process_', typed_ptr(self.val['process_']))
 
 
-pp_set.add_printer('content::SiteInstanceImpl', '^content::SiteInstanceImpl$',
-                   SiteInstanceImplPrinter)
+pp_set.add_printer(
+  'content::SiteInstanceImpl',
+  '^content::SiteInstanceImpl$',
+  SiteInstanceImplPrinter,
+)
 
 
 class RenderProcessHostImplPrinter(object):
-
   def __init__(self, val):
     self.val = val.cast(val.dynamic_type)
 
   def to_string(self):
     pid = ''
     try:
-      child_process_launcher_ptr = (
-          self.val['child_process_launcher_']['impl_']['data_']['ptr'])
+      child_process_launcher_ptr = self.val['child_process_launcher_']['impl_'][
+        'data_'
+      ]['ptr']
       if child_process_launcher_ptr:
-        context = (child_process_launcher_ptr['context_']['ptr_'])
+        context = child_process_launcher_ptr['context_']['ptr_']
         if context:
           pid = ' PID %s' % str(context['process_']['process_'])
     except gdb.error:
@@ -438,15 +448,19 @@ class RenderProcessHostImplPrinter(object):
     yield ('widget_helper_', self.val['widget_helper_'])
     yield ('is_initialized_', self.val['is_initialized_'])
     yield ('browser_context_', typed_ptr(self.val['browser_context_']))
-    yield ('sudden_termination_allowed_',
-           self.val['sudden_termination_allowed_'])
+    yield (
+      'sudden_termination_allowed_',
+      self.val['sudden_termination_allowed_'],
+    )
     yield ('ignore_input_events_', self.val['ignore_input_events_'])
     yield ('is_guest_', self.val['is_guest_'])
 
 
-pp_set.add_printer('content::RenderProcessHostImpl',
-                   '^content::RenderProcessHostImpl$',
-                   RenderProcessHostImplPrinter)
+pp_set.add_printer(
+  'content::RenderProcessHostImpl',
+  '^content::RenderProcessHostImpl$',
+  RenderProcessHostImplPrinter,
+)
 
 
 class AtomicPrinter(Printer):
@@ -456,8 +470,9 @@ class AtomicPrinter(Printer):
     return self.val['__a_']['__a_value']
 
 
-pp_set.add_printer('std::__Cr::__atomic', '^std::__Cr::(__)?atomic<.*>$',
-                   AtomicPrinter)
+pp_set.add_printer(
+  'std::__Cr::__atomic', '^std::__Cr::(__)?atomic<.*>$', AtomicPrinter
+)
 
 gdb.printing.register_pretty_printer(gdb, pp_set, replace=_DEBUGGING)
 """Implementations of inlined libc++ std container functions."""
@@ -488,18 +503,27 @@ class ReverseCallback(gdb.Command):
 
   def invoke(self, arg, from_tty):
     if not gdb_running_under_rr():
-      raise gdb.error('reverse-callback requires debugging under rr: ' +
-                      'https://rr-project.org/')
+      raise gdb.error(
+        'reverse-callback requires debugging under rr: '
+        + 'https://rr-project.org/'
+      )
 
     # Find the stack frame which extracts the bind state from the task.
     bind_state_frame = find_nearest_frame_matching(
-        gdb.selected_frame(), lambda frame: frame.function() and re.match(
-            '^base::internal::Invoker<.*>' +
-            r'::RunOnce\(base::internal::BindStateBase\*\)$',
-            frame.function().name))
+      gdb.selected_frame(),
+      lambda frame: (
+        frame.function()
+        and re.match(
+          '^base::internal::Invoker<.*>'
+          + r'::RunOnce\(base::internal::BindStateBase\*\)$',
+          frame.function().name,
+        )
+      ),
+    )
     if bind_state_frame is None:
       raise Exception(
-          'base::internal::Invoker frame not found; are you in a callback?')
+        'base::internal::Invoker frame not found; are you in a callback?'
+      )
     bind_state_frame.select()
 
     # Disable all existing breakpoints.
@@ -523,11 +547,13 @@ class ReverseCallback(gdb.Command):
     # Find the stack frame which created the BindState.
     def in_bindstate(frame):
       return frame.function() and frame.function().name.startswith(
-          'base::internal::BindState<')
+        'base::internal::BindState<'
+      )
 
     creation_frame = find_nearest_frame_matching(
-        find_nearest_frame_matching(gdb.selected_frame(), in_bindstate),
-        lambda frame: not in_bindstate(frame))
+      find_nearest_frame_matching(gdb.selected_frame(), in_bindstate),
+      lambda frame: not in_bindstate(frame),
+    )
 
     # The callback creates the bindstate, step up once more to get the creator
     # of the callback.
@@ -539,7 +565,6 @@ ReverseCallback()
 
 @class_methods.Class('std::__1::vector', template_types=['T'])
 class LibcppVector(object):
-
   @class_methods.member_function('T&', 'operator[]', ['int'])
   def element(obj, i):
     return obj['__begin_'][i]
@@ -551,7 +576,6 @@ class LibcppVector(object):
 
 @class_methods.Class('std::__1::unique_ptr', template_types=['T'])
 class LibcppUniquePtr(object):
-
   @class_methods.member_function('T*', 'get', [])
   def get(obj):
     return obj['__ptr_']['__value_']

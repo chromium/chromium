@@ -22,10 +22,12 @@ def ExtendSectionRangeAdjacent(section_range_by_name, section_name, addr, size):
   prev_end_address = prev_address + prev_size
   # Consistency check: The sections don't overlap.
   assert addr - prev_end_address >= 0, (
-      f'{section_name} {prev_end_address} {addr}')
+    f'{section_name} {prev_end_address} {addr}'
+  )
   # Consistency check: Gap between them is less than 64 KiB.
   assert addr - prev_end_address < 64 * 1024, (
-      f'{section_name} {prev_end_address} {addr}')
+    f'{section_name} {prev_end_address} {addr}'
+  )
   new_end_address = addr + size
   new_size = new_end_address - prev_address
   section_range_by_name[section_name] = (prev_address, new_size)
@@ -47,13 +49,13 @@ def _NormalizeObjectPath(path, obj_prefixes):
     # Convert obj/third_party/... -> third_party/...
     for prefix in obj_prefixes:
       if path.startswith(prefix):
-        path = path[len(prefix):]
+        path = path[len(prefix) :]
 
   if path.endswith(')'):
     # Convert foo/bar.a(baz.o) -> foo/bar.a/baz.o so that hierarchical
     # breakdowns consider the .o part to be a separate node.
     start_idx = path.rindex('(')
-    path = os.path.join(path[:start_idx], path[start_idx + 1:-1])
+    path = os.path.join(path[:start_idx], path[start_idx + 1 : -1])
   return path
 
 
@@ -66,7 +68,7 @@ def _NormalizeSourcePath(path, gen_prefixes, gen_dir_pattern):
     # Non-chromium gen_dir logic.
     m = gen_dir_pattern.match(path)
     if m:
-      return True, path[m.end():]
+      return True, path[m.end() :]
     return False, path
 
   if path.startswith('../../'):
@@ -81,7 +83,7 @@ def _NormalizeSourcePath(path, gen_prefixes, gen_dir_pattern):
   # Convert gen/third_party/... -> third_party/...
   for prefix in gen_prefixes:
     if path.startswith(prefix):
-      return True, path[len(prefix):]
+      return True, path[len(prefix) :]
 
   return True, path
 
@@ -97,11 +99,13 @@ def NormalizePaths(raw_symbols, gen_dir_regex=None, toolchain_subdirs=None):
     gen_prefixes.extend(f'{t}/gen/' for t in toolchain_subdirs)
   for symbol in raw_symbols:
     if symbol.object_path:
-      symbol.object_path = _NormalizeObjectPath(symbol.object_path,
-                                                obj_prefixes)
+      symbol.object_path = _NormalizeObjectPath(
+        symbol.object_path, obj_prefixes
+      )
     if symbol.source_path:
       symbol.generated_source, symbol.source_path = _NormalizeSourcePath(
-          symbol.source_path, gen_prefixes, gen_dir_pattern)
+        symbol.source_path, gen_prefixes, gen_dir_pattern
+      )
 
 
 def _ComputeAncestorPath(path_list, symbol_count):
@@ -152,9 +156,11 @@ def CompactLargeAliasesIntoSharedSymbols(raw_symbols, max_count):
     aliases = symbol.aliases
     if aliases and len(aliases) > max_count:
       symbol.source_path = _ComputeAncestorPath(
-          [s.source_path for s in aliases if s.source_path], len(aliases))
+        [s.source_path for s in aliases if s.source_path], len(aliases)
+      )
       symbol.object_path = _ComputeAncestorPath(
-          [s.object_path for s in aliases if s.object_path], len(aliases))
+        [s.object_path for s in aliases if s.object_path], len(aliases)
+      )
       symbol.generated_source = all(s.generated_source for s in aliases)
       symbol.aliases = None
       num_shared_symbols += 1
@@ -163,8 +169,11 @@ def CompactLargeAliasesIntoSharedSymbols(raw_symbols, max_count):
       src_cursor += 1
   raw_symbols[dst_cursor:] = []
   num_removed = src_cursor - dst_cursor
-  logging.debug('Converted %d aliases into %d shared-path symbols', num_removed,
-                num_shared_symbols)
+  logging.debug(
+    'Converted %d aliases into %d shared-path symbols',
+    num_removed,
+    num_shared_symbols,
+  )
 
 
 def RemoveAssetSuffix(path):

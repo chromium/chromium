@@ -57,20 +57,28 @@ def CreateArgumentParser():
   orderfile_shared.AddCommonArguments(parser)
 
   # Essential arguments for profiling and processing:
-  parser.add_argument('--android-browser',
-                      required=True,
-                      help='Browser string to pass to run_benchmark.')
-  parser.add_argument('-C',
-                      '--out-dir',
-                      type=pathlib.Path,
-                      required=True,
-                      help='Path to the output directory (e.g. out/Release).')
+  parser.add_argument(
+    '--android-browser',
+    required=True,
+    help='Browser string to pass to run_benchmark.',
+  )
+  parser.add_argument(
+    '-C',
+    '--out-dir',
+    type=pathlib.Path,
+    required=True,
+    help='Path to the output directory (e.g. out/Release).',
+  )
   # The following two are bot-specific args.
-  parser.add_argument('--isolated-script-test-output',
-                      type=pathlib.Path,
-                      help='Output.json file that the script can write to.')
-  parser.add_argument('--isolated-script-test-perf-output',
-                      help='Deprecated and ignored, but bots pass it.')
+  parser.add_argument(
+    '--isolated-script-test-output',
+    type=pathlib.Path,
+    help='Output.json file that the script can write to.',
+  )
+  parser.add_argument(
+    '--isolated-script-test-perf-output',
+    help='Deprecated and ignored, but bots pass it.',
+  )
 
   return parser
 
@@ -79,14 +87,15 @@ def GenerateOrderfile(options, device):
   """Generates an orderfile for a given device."""
   host_profile_root = options.out_dir / 'profile_data'
   profiler = android_profile_tool.AndroidProfileTool(
-      str(host_profile_root),
-      device,
-      debug=options.streamline_for_debugging,
-      verbosity=options.verbosity)
+    str(host_profile_root),
+    device,
+    debug=options.streamline_for_debugging,
+    verbosity=options.verbosity,
+  )
 
-  lib_chrome_so = orderfile_shared.GetLibchromeSoPath(options.out_dir,
-                                                      options.arch,
-                                                      options.profile_webview)
+  lib_chrome_so = orderfile_shared.GetLibchromeSoPath(
+    options.out_dir, options.arch, options.profile_webview
+  )
   try:
     if options.profile_webview:
       if options.arch == 'arm64':
@@ -100,11 +109,14 @@ def GenerateOrderfile(options, device):
     else:
       apk_or_browser = options.android_browser
       webview_installer_path = None
-    files = orderfile_shared.CollectProfiles(profiler, options.profile_webview,
-                                             options.arch,
-                                             apk_or_browser,
-                                             str(options.out_dir),
-                                             webview_installer_path)
+    files = orderfile_shared.CollectProfiles(
+      profiler,
+      options.profile_webview,
+      options.arch,
+      apk_or_browser,
+      str(options.out_dir),
+      webview_installer_path,
+    )
     ordered_symbols, _ = orderfile_shared.ProcessProfiles(files, lib_chrome_so)
     with open(_GetUnpatchedOrderfileFilename(options), 'w') as orderfile:
       orderfile.write('\n'.join(ordered_symbols))
@@ -113,8 +125,9 @@ def GenerateOrderfile(options, device):
       profiler.Cleanup()
     logging.getLogger().setLevel(logging.INFO)
 
-  orderfile_shared.AddDummyFunctions(_GetUnpatchedOrderfileFilename(options),
-                                     _GetOrderfileFilename(options))
+  orderfile_shared.AddDummyFunctions(
+    _GetUnpatchedOrderfileFilename(options), _GetOrderfileFilename(options)
+  )
 
 
 def main():
@@ -126,8 +139,9 @@ def main():
     level = logging.INFO
   else:
     level = logging.WARNING
-  logging.basicConfig(level=level,
-                      format='%(levelname).1s %(relativeCreated)6d %(message)s')
+  logging.basicConfig(
+    level=level, format='%(levelname).1s %(relativeCreated)6d %(message)s'
+  )
 
   logging.info('Generate Profile Data')
 

@@ -16,50 +16,51 @@ import tempfile
 from update import DownloadUrl, CDS_URL, CLANG_REVISION, CLANG_SUB_REVISION
 
 sys.path.append(
-    os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..',
-                 'rust'))
+  os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'rust')
+)
 from update_rust import RUST_REVISION, RUST_SUB_REVISION
 
 CLANG_PLATFORM_TO_PACKAGE_FILES = {
-    'Linux_x64': [
-        'clang',
-        'clang-android-runtime-library',
-        'clang-tidy',
-        'clangd',
-        'llvm-code-coverage',
-        'llvmobjdump',
-    ],
-    'Mac': [
-        'clang',
-        'clang-mac-runtime-library',
-        'clang-tidy',
-        'clangd',
-        'llvm-code-coverage',
-        'llvmobjdump',
-    ],
-    'Mac_arm64': [
-        'clang',
-        'clang-tidy',
-        'clangd',
-        'llvm-code-coverage',
-        'llvmobjdump',
-    ],
-    'Win': [
-        'clang',
-        'clang-tidy',
-        'clang-win-runtime-library',
-        'clangd',
-        'llvm-code-coverage',
-        'llvmobjdump',
-    ],
+  'Linux_x64': [
+    'clang',
+    'clang-android-runtime-library',
+    'clang-tidy',
+    'clangd',
+    'llvm-code-coverage',
+    'llvmobjdump',
+  ],
+  'Mac': [
+    'clang',
+    'clang-mac-runtime-library',
+    'clang-tidy',
+    'clangd',
+    'llvm-code-coverage',
+    'llvmobjdump',
+  ],
+  'Mac_arm64': [
+    'clang',
+    'clang-tidy',
+    'clangd',
+    'llvm-code-coverage',
+    'llvmobjdump',
+  ],
+  'Win': [
+    'clang',
+    'clang-tidy',
+    'clang-win-runtime-library',
+    'clangd',
+    'llvm-code-coverage',
+    'llvmobjdump',
+  ],
 }
 
 
 def GetDepsObjectInfo(object_name: str) -> str:
   url = f'{CDS_URL}/{object_name}'
   describe_url = f'gs://chromium-browser-clang/{object_name}'
-  output = subprocess.check_output(['gsutil.py', 'stat',
-                                    describe_url]).decode("utf-8")
+  output = subprocess.check_output(['gsutil.py', 'stat', describe_url]).decode(
+    "utf-8"
+  )
   # Output looks like:
   # ``
   # gs://bucket/path:
@@ -88,7 +89,7 @@ def GetDepsObjectInfo(object_name: str) -> str:
 def GetRustObjectNames() -> list:
   object_names = []
   for host_os in ['Linux_x64', 'Mac', 'Mac_arm64', 'Win']:
-    rust_version = (f'{RUST_REVISION}-{RUST_SUB_REVISION}')
+    rust_version = f'{RUST_REVISION}-{RUST_SUB_REVISION}'
     clang_revision = CLANG_REVISION
     object_name = f'{host_os}/rust-toolchain-{rust_version}-{clang_revision}'
     object_names.append(f'{object_name}.tar.xz')
@@ -98,11 +99,12 @@ def GetRustObjectNames() -> list:
 def GetLibclangObjectNames() -> list:
   object_names = []
   for host_os in ['Linux_x64', 'Mac', 'Mac_arm64', 'Win']:
-    rust_version = (f'{RUST_REVISION}-{RUST_SUB_REVISION}')
+    rust_version = f'{RUST_REVISION}-{RUST_SUB_REVISION}'
     clang_revision = CLANG_REVISION
     object_name = f'{host_os}/rust-libclang-{rust_version}-{clang_revision}'
     object_names.append(f'{object_name}.tar.xz')
   return object_names
+
 
 def GetClangObjectNames() -> list:
   object_names = []
@@ -118,28 +120,31 @@ def main():
   setdep_revisions = []
 
   rust_object_infos = [
-      GetDepsObjectInfo(o) for o in sorted(GetRustObjectNames())
+    GetDepsObjectInfo(o) for o in sorted(GetRustObjectNames())
   ]
   rust_object_infos_string = '?'.join(rust_object_infos)
   rust_deps_entry_path = 'src/third_party/rust-toolchain'
   setdep_revisions.append(
-      f'--revision={rust_deps_entry_path}@{rust_object_infos_string}')
+    f'--revision={rust_deps_entry_path}@{rust_object_infos_string}'
+  )
 
   libclang_object_infos = [
-      GetDepsObjectInfo(o) for o in sorted(GetLibclangObjectNames())
+    GetDepsObjectInfo(o) for o in sorted(GetLibclangObjectNames())
   ]
   libclang_object_infos_string = '?'.join(libclang_object_infos)
   libclang_deps_entry_path = 'src/third_party/llvm-libclang'
   setdep_revisions.append(
-      f'--revision={libclang_deps_entry_path}@{libclang_object_infos_string}')
+    f'--revision={libclang_deps_entry_path}@{libclang_object_infos_string}'
+  )
 
   clang_object_infos = [
-      GetDepsObjectInfo(o) for o in sorted(GetClangObjectNames())
+    GetDepsObjectInfo(o) for o in sorted(GetClangObjectNames())
   ]
   clang_object_infos_string = '?'.join(clang_object_infos)
   clang_deps_entry_path = 'src/third_party/llvm-build/Release+Asserts'
   setdep_revisions.append(
-      f'--revision={clang_deps_entry_path}@{clang_object_infos_string}')
+    f'--revision={clang_deps_entry_path}@{clang_object_infos_string}'
+  )
 
   subprocess.run(['gclient', 'setdep'] + setdep_revisions)
 

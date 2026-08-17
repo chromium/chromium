@@ -13,8 +13,9 @@ import os
 import sys
 import json
 
-_SRC_PATH = os.path.abspath(os.path.join(
-    os.path.dirname(__file__), os.pardir, os.pardir))
+_SRC_PATH = os.path.abspath(
+  os.path.join(os.path.dirname(__file__), os.pardir, os.pardir)
+)
 path = os.path.join(_SRC_PATH, 'tools', 'cygprofile')
 sys.path.append(path)
 import symbol_extractor
@@ -26,8 +27,10 @@ def _Median(items):
   sorted_items = sorted(items)
   if len(sorted_items) & 1:
     return sorted_items[len(sorted_items) // 2]
-  return (sorted_items[len(sorted_items) // 2 - 1] +
-          sorted_items[len(sorted_items) // 2]) // 2
+  return (
+    sorted_items[len(sorted_items) // 2 - 1]
+    + sorted_items[len(sorted_items) // 2]
+  ) // 2
 
 
 class SymbolOffsetProcessor:
@@ -71,10 +74,12 @@ class SymbolOffsetProcessor:
     """
     if self._symbol_infos is None:
       self._symbol_infos = symbol_extractor.SymbolInfosFromBinary(
-          self._binary_filename)
+        self._binary_filename
+      )
       self._symbol_infos.sort(key=lambda s: s.offset)
-      logging.info('%d symbols from %s',
-                   len(self._symbol_infos), self._binary_filename)
+      logging.info(
+        '%d symbols from %s', len(self._symbol_infos), self._binary_filename
+      )
     return self._symbol_infos
 
   def NameToSymbolMap(self):
@@ -107,8 +112,10 @@ class SymbolOffsetProcessor:
           curr = self._offset_to_primary[s.offset]
           if curr.size != s.size:
             assert curr.size == 0 or s.size == 0, (
-                'Nonzero size mismatch between {} and {}'.format(
-                    curr.name, s.name))
+              'Nonzero size mismatch between {} and {}'.format(
+                curr.name, s.name
+              )
+            )
             # Upgrade to a symbol with nonzero size, otherwise don't change
             # anything so that we use the earliest nonzero-size symbol.
             if curr.size == 0 and s.size != 0:
@@ -126,7 +133,8 @@ class SymbolOffsetProcessor:
     """
     if self._offset_to_symbols is None:
       self._offset_to_symbols = symbol_extractor.GroupSymbolInfosByOffset(
-          self.SymbolInfos())
+        self.SymbolInfos()
+      )
     return self._offset_to_symbols
 
   def GetOrderedSymbols(self, offsets):
@@ -183,11 +191,13 @@ class SymbolOffsetProcessor:
     """
     reached_offsets = []
     already_seen = set()
+
     def update(_, symbol_offset):
       if symbol_offset is None or symbol_offset in already_seen:
         return
       reached_offsets.append(symbol_offset)
       already_seen.add(symbol_offset)
+
     self._TranslateReachedOffsetsFromDump(dump, lambda x: x, update)
     return reached_offsets
 
@@ -215,9 +225,10 @@ class SymbolOffsetProcessor:
         translate raw offsets to symbol offsets.
     """
     self._TranslateReachedOffsetsFromDump(
-        annotated_offsets,
-        lambda o: o.Offset(),
-        lambda o, symbol_offset: o.SetOffset(symbol_offset))
+      annotated_offsets,
+      lambda o: o.Offset(),
+      lambda o, symbol_offset: o.SetOffset(symbol_offset),
+    )
 
   def _TranslateReachedOffsetsFromDump(self, items, get, update):
     """Translate raw binary offsets to symbol offsets.
@@ -237,15 +248,17 @@ class SymbolOffsetProcessor:
       dump_offset = get(i)
       idx = dump_offset // 2
       assert dump_offset >= 0 and idx < len(dump_offset_to_symbol_info), (
-          'Dump offset out of binary range')
+        'Dump offset out of binary range'
+      )
       symbol_info = dump_offset_to_symbol_info[idx]
-      assert symbol_info, ('A return address (offset = 0x{:08x}) does not map '
-          'to any symbol'.format(dump_offset))
+      assert symbol_info, (
+        'A return address (offset = 0x{:08x}) does not map '
+        'to any symbol'.format(dump_offset)
+      )
       update(i, symbol_info.offset)
 
   def GetWhitelistSymbols(self):
-    """Returns list(string) containing names of the symbols whose size is zero.
-    """
+    """Returns list(string) containing names of the symbols whose size is zero."""
     if self._whitelist is None:
       self.GetDumpOffsetToSymboInfolIncludingWhitelist()
     return self._whitelist
@@ -263,8 +276,9 @@ class SymbolOffsetProcessor:
     if self._whitelist is None:
       self._whitelist = set()
       symbols = self.SymbolInfos()
-      start_syms = [s for s in symbols
-                    if s.name == symbol_extractor.START_OF_TEXT_SYMBOL]
+      start_syms = [
+        s for s in symbols if s.name == symbol_extractor.START_OF_TEXT_SYMBOL
+      ]
       assert len(start_syms) == 1, 'Can\'t find unique start of text symbol'
       start_of_text = start_syms[0].offset
       self.GetDumpOffsetToSymbolInfo()
@@ -275,7 +289,8 @@ class SymbolOffsetProcessor:
         self._whitelist.add(sym.name)
         idx = (sym.offset - start_of_text) // 2
         assert self._offset_to_symbol_info[idx] == sym, (
-            'Unexpected unset offset')
+          'Unexpected unset offset'
+        )
         idx += 1
         while idx < max_idx and self._offset_to_symbol_info[idx] is None:
           self._offset_to_symbol_info[idx] = sym
@@ -290,8 +305,11 @@ class SymbolOffsetProcessor:
         section, maps it to a symbol, or None.
     """
     if self._offset_to_symbol_info is None:
-      start_syms = [s for s in self.SymbolInfos()
-                    if s.name == symbol_extractor.START_OF_TEXT_SYMBOL]
+      start_syms = [
+        s
+        for s in self.SymbolInfos()
+        if s.name == symbol_extractor.START_OF_TEXT_SYMBOL
+      ]
       assert len(start_syms) == 1, 'Can\'t find unique start of text symbol'
       start_of_text = start_syms[0].offset
       max_offset = max(s.offset + s.size for s in self.SymbolInfos())
@@ -299,8 +317,10 @@ class SymbolOffsetProcessor:
       self._offset_to_symbol_info = [None] * text_length_halfwords
       for sym in self.SymbolInfos():
         offset = sym.offset - start_of_text
-        assert offset >= 0, ('Unexpected symbol before the start of text. '
-                             'Has the linker script broken?')
+        assert offset >= 0, (
+          'Unexpected symbol before the start of text. '
+          'Has the linker script broken?'
+        )
         # The low bit of offset may be set to indicate a thumb instruction. The
         # actual offset is still halfword aligned and so the low bit may be
         # safely ignored in the division by two below.
@@ -315,9 +335,10 @@ class SymbolOffsetProcessor:
 
         if sym.name != symbol_extractor.START_OF_TEXT_SYMBOL and sym.size == 0:
           idx = offset // 2
-          assert (self._offset_to_symbol_info[idx] is None or
-                  self._offset_to_symbol_info[idx].size == 0), (
-              'Unexpected symbols overlapping')
+          assert (
+            self._offset_to_symbol_info[idx] is None
+            or self._offset_to_symbol_info[idx].size == 0
+          ), 'Unexpected symbols overlapping'
           self._offset_to_symbol_info[idx] = sym
     return self._offset_to_symbol_info
 
@@ -368,6 +389,7 @@ class ProfileManager:
     Each offset is annotated with the phase and process that it appeared in, and
     can report how often it occurred in a specific phase and process.
     """
+
     def __init__(self, offset):
       self._offset = offset
       self._count = {}
@@ -378,8 +400,7 @@ class ProfileManager:
     def __eq__(self, other):
       if other is None:
         return False
-      return (self._offset == other._offset and
-              self._count == other._count)
+      return self._offset == other._offset and self._count == other._count
 
     def Increment(self, phase, process):
       key = (phase, process)
@@ -409,17 +430,19 @@ class ProfileManager:
     def Filenames(self, phase=None):
       if phase is None:
         return self._filenames
-      return [f for f in self._filenames
-              if ProfileManager._Phase(f) == phase]
+      return [f for f in self._filenames if ProfileManager._Phase(f) == phase]
 
     def Add(self, filename):
       self._filenames.append(filename)
 
     def IsCloseTo(self, filename):
       run_group_ts = _Median(
-          [ProfileManager._Timestamp(f) for f in self._filenames])
-      return abs(ProfileManager._Timestamp(filename) -
-                 run_group_ts) < self.RUN_GROUP_THRESHOLD_NS
+        [ProfileManager._Timestamp(f) for f in self._filenames]
+      )
+      return (
+        abs(ProfileManager._Timestamp(filename) - run_group_ts)
+        < self.RUN_GROUP_THRESHOLD_NS
+      )
 
   def __init__(self, filenames):
     """Initialize a ProfileManager.
@@ -450,8 +473,9 @@ class ProfileManager:
     """
     if phase is None:
       return self._GetOffsetsForGroup(self._filenames)
-    return self._GetOffsetsForGroup(f for f in self._filenames
-                                    if self._Phase(f) == phase)
+    return self._GetOffsetsForGroup(
+      f for f in self._filenames if self._Phase(f) == phase
+    )
 
   def GetAnnotatedOffsets(self):
     """Merges offsets across run groups and annotates each one.
@@ -466,7 +490,8 @@ class ProfileManager:
         process = self._ProcessName(f)
         for offset in self._ReadOffsets(f):
           offset_map.setdefault(offset, self.AnnotatedOffset(offset)).Increment(
-              phase, process)
+            phase, process
+          )
     return offset_map.values()
 
   def GetProcessOffsetLists(self):
@@ -487,10 +512,12 @@ class ProfileManager:
     # This is a sanity check to ensure the number of race-related
     # inconsistencies is small.
     if total_calls_count != count:
-      logging.warning('Instrumentation missed calls! %u != %u',
-                      total_calls_count, count)
+      logging.warning(
+        'Instrumentation missed calls! %u != %u', total_calls_count, count
+      )
       assert abs(total_calls_count - count) < 3, (
-          'Instrumentation call count differs by too much.')
+        'Instrumentation call count differs by too much.'
+      )
 
   def GetProcessOffsetGraph(self):
     """Returns a dict that maps each process type to a list of processes's
@@ -501,9 +528,9 @@ class ProfileManager:
     graph_by_process = collections.defaultdict(list)
     for f in self._filenames:
       process_info = self._ReadJSON(f)
-      assert ('total_calls_count' in process_info
-              and 'call_graph' in process_info), ('Unexpected JSON format for '
-                                                  '%s.' % f)
+      assert (
+        'total_calls_count' in process_info and 'call_graph' in process_info
+      ), 'Unexpected JSON format for %s.' % f
       self._SanityCheckAllCallsCapturedByTheInstrumentation(process_info)
       graph_by_process[self._ProcessName(f)].append(process_info['call_graph'])
     return graph_by_process
@@ -549,7 +576,7 @@ class ProfileManager:
   def _Timestamp(cls, filename):
     dash_index = filename.rindex('-')
     dot_index = filename.rindex('.')
-    return int(filename[dash_index+1:dot_index])
+    return int(filename[dash_index + 1 : dot_index])
 
   @classmethod
   def _Phase(cls, filename):
@@ -581,12 +608,15 @@ class ProfileManager:
       return  # Small runs have too much variance for testing.
     sizes = list(map(lambda g: len(g.Filenames()), self._run_groups))
     avg_size = sum(sizes) // len(self._run_groups)
-    num_outliers = len([s for s in sizes
-                        if s > 1.5 * avg_size or s < 0.75 * avg_size])
+    num_outliers = len(
+      [s for s in sizes if s > 1.5 * avg_size or s < 0.75 * avg_size]
+    )
     expected_outliers = 0.1 * len(self._run_groups)
     assert num_outliers < expected_outliers, (
-        'Saw {} outliers instead of at most {} for average of {}'.format(
-            num_outliers, expected_outliers, avg_size))
+      'Saw {} outliers instead of at most {} for average of {}'.format(
+        num_outliers, expected_outliers, avg_size
+      )
+    )
 
 
 def GetReachedOffsetsFromDumpFiles(dump_filenames, library_filename):
@@ -613,20 +643,38 @@ def GetReachedOffsetsFromDumpFiles(dump_filenames, library_filename):
 def CreateArgumentParser():
   """Returns an ArgumentParser."""
   parser = argparse.ArgumentParser(description='Outputs reached symbols')
-  parser.add_argument('--instrumented-build-dir', type=str,
-                      help='Path to the instrumented build', required=True)
-  parser.add_argument('--build-dir', type=str, help='Path to the build dir',
-                      required=True)
-  parser.add_argument('--dumps', type=str, help='A comma-separated list of '
-                      'files with instrumentation dumps', required=True)
-  parser.add_argument('--output', type=str, help='Output filename',
-                      required=True)
-  parser.add_argument('--offsets-output', type=str,
-                      help='Output filename for the symbol offsets',
-                      required=False, default=None)
-  parser.add_argument('--library-name', default='libchrome.so',
-                      help=('Chrome shared library name (usually libchrome.so '
-                            'or libmonochrome.so'))
+  parser.add_argument(
+    '--instrumented-build-dir',
+    type=str,
+    help='Path to the instrumented build',
+    required=True,
+  )
+  parser.add_argument(
+    '--build-dir', type=str, help='Path to the build dir', required=True
+  )
+  parser.add_argument(
+    '--dumps',
+    type=str,
+    help='A comma-separated list of files with instrumentation dumps',
+    required=True,
+  )
+  parser.add_argument(
+    '--output', type=str, help='Output filename', required=True
+  )
+  parser.add_argument(
+    '--offsets-output',
+    type=str,
+    help='Output filename for the symbol offsets',
+    required=False,
+    default=None,
+  )
+  parser.add_argument(
+    '--library-name',
+    default='libchrome.so',
+    help=(
+      'Chrome shared library name (usually libchrome.so or libmonochrome.so'
+    ),
+  )
   return parser
 
 
@@ -639,10 +687,12 @@ def main():
   profile_manager = ProfileManager(dump_files)
   dumps = profile_manager.GetMergedOffsets()
 
-  instrumented_native_lib = os.path.join(args.instrumented_build_dir,
-                                         'lib.unstripped', args.library_name)
-  regular_native_lib = os.path.join(args.build_dir,
-                                    'lib.unstripped', args.library_name)
+  instrumented_native_lib = os.path.join(
+    args.instrumented_build_dir, 'lib.unstripped', args.library_name
+  )
+  regular_native_lib = os.path.join(
+    args.build_dir, 'lib.unstripped', args.library_name
+  )
 
   instrumented_processor = SymbolOffsetProcessor(instrumented_native_lib)
 
@@ -654,12 +704,14 @@ def main():
 
   primary_map = instrumented_processor.OffsetToPrimaryMap()
   reached_primary_symbols = set(
-      primary_map[offset] for offset in reached_offsets)
+    primary_map[offset] for offset in reached_offsets
+  )
   logging.info('Reached symbol names = %d', len(reached_primary_symbols))
 
   regular_processor = SymbolOffsetProcessor(regular_native_lib)
   matched_in_regular_build = regular_processor.MatchSymbolNames(
-      s.name for s in reached_primary_symbols)
+    s.name for s in reached_primary_symbols
+  )
   logging.info('Matched symbols = %d', len(matched_in_regular_build))
   total_size = sum(s.size for s in matched_in_regular_build)
   logging.info('Total reached size = %d', total_size)

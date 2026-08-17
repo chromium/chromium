@@ -7,6 +7,6 @@
 # and update the corresponding README.md appropriately.
 
 full_targets = [
-    "d8",
-    "chrome",
+  "d8",
+  "chrome",
 ]

@@ -22,8 +22,14 @@ import java_test_utils
 
 _CHROMIUM_SRC_PATH = git_metadata_utils.get_chromium_src_path()
 
-_IGNORED_DIRS = ('out', 'third_party', 'clank', 'build/linux', 'native_client',
-                 'tools/android/test_health/testdata')
+_IGNORED_DIRS = (
+    'out',
+    'third_party',
+    'clank',
+    'build/linux',
+    'native_client',
+    'tools/android/test_health/testdata',
+)
 
 _IGNORED_FILES = set()
 
@@ -59,12 +65,13 @@ class TestHealthInfo:
     """Information about the Git repository being sampled."""
 
 
-def get_repo_test_health(git_repo: Optional[pathlib.Path] = None,
-                         *,
-                         test_dir: Union[str, pathlib.Path, None] = None,
-                         ignored_dirs: Tuple[str, ...] = _IGNORED_DIRS,
-                         ignored_files: Set[str] = _IGNORED_FILES
-                         ) -> List[TestHealthInfo]:
+def get_repo_test_health(
+    git_repo: Optional[pathlib.Path] = None,
+    *,
+    test_dir: Union[str, pathlib.Path, None] = None,
+    ignored_dirs: Tuple[str, ...] = _IGNORED_DIRS,
+    ignored_files: Set[str] = _IGNORED_FILES,
+) -> List[TestHealthInfo]:
     """Gets test health information and stats for a Git repository.
 
     This function checks for Java tests annotated as disabled but could
@@ -112,13 +119,15 @@ def get_repo_test_health(git_repo: Optional[pathlib.Path] = None,
     with multiprocessing.Pool() as p:
         test_health_infos: list[Optional[TestHealthInfo]] = p.map(
             functools.partial(_get_test_health_info, git_repo, repo_info),
-            test_paths)
+            test_paths,
+        )
 
     return [t for t in test_health_infos if t is not None]
 
 
-def _get_test_health_info(repo_root: pathlib.Path, repo_info: GitRepoInfo,
-                          test_path: pathlib.Path) -> Optional[TestHealthInfo]:
+def _get_test_health_info(
+    repo_root: pathlib.Path, repo_info: GitRepoInfo, test_path: pathlib.Path
+) -> Optional[TestHealthInfo]:
     test_file = test_path.relative_to(repo_root)
     try:
         test_health_stats = java_test_utils.get_java_test_health(test_path)
@@ -126,19 +135,22 @@ def _get_test_health_info(repo_root: pathlib.Path, repo_info: GitRepoInfo,
         # This can occur if the file uses syntax not supported by the underlying
         # javalang python module used by java_test_utils. These files should be
         # investigated manually.
-        logging.warning(f'Skipped file "{test_file}" due to'
-                        ' Java syntax error:')
+        logging.warning(f'Skipped file "{test_file}" due to Java syntax error:')
         logging.warning(f'    {e}')
         logging.warning(f'        {e.lineno}:{e.offset}: {e.text}')
         return None
 
-    return TestHealthInfo(test_name=test_file.stem,
-                          test_dir=test_file.parent,
-                          test_filename=test_file.name,
-                          java_test_health=test_health_stats,
-                          git_repo_info=repo_info)
+    return TestHealthInfo(
+        test_name=test_file.stem,
+        test_dir=test_file.parent,
+        test_filename=test_file.name,
+        java_test_health=test_health_stats,
+        git_repo_info=repo_info,
+    )
 
 
 def _get_git_repo_info(git_repo: pathlib.Path) -> GitRepoInfo:
-    return GitRepoInfo(git_metadata_utils.get_head_commit_hash(git_repo),
-                       git_metadata_utils.get_head_commit_datetime(git_repo))
+    return GitRepoInfo(
+        git_metadata_utils.get_head_commit_hash(git_repo),
+        git_metadata_utils.get_head_commit_datetime(git_repo),
+    )

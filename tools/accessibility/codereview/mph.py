@@ -3,10 +3,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """
-  Upload comments to gerrit.
+Upload comments to gerrit.
 
-  mph = "make Peter happy".
-  Previously called mch ("make Casey happy").
+mph = "make Peter happy".
+Previously called mch ("make Casey happy").
 """
 
 import os
@@ -20,6 +20,7 @@ def _ensure_depot_tools():
   try:
     import gerrit_util
     import git_cl
+
     return
   except ImportError:
     pass
@@ -45,8 +46,10 @@ try:
   import gerrit_util
   import git_cl
 except:
-  print('depot_tools not found; try appending the module path to your' +
-        ' python path')
+  print(
+    'depot_tools not found; try appending the module path to your'
+    + ' python path'
+  )
   sys.exit(1)
 
 
@@ -77,7 +80,6 @@ def SetReview(host, change, revision, msg, lgtm, comments):
 
 
 class GerritParser(codereview_parser.Parser):
-
   def __init__(self, file):
     codereview_parser.Parser.__init__(self, file)
     self._HOST = 'chromium-review.googlesource.com'
@@ -96,10 +98,12 @@ class GerritParser(codereview_parser.Parser):
     if matcher:
       self._issue_number = int(matcher.groups()[0])
       self._patchset = int(matcher.groups()[1])
-      self._change_id = gerrit_util.GetChange(self._HOST,
-                                              self._issue_number)['change_id']
+      self._change_id = gerrit_util.GetChange(self._HOST, self._issue_number)[
+        'change_id'
+      ]
       self._revision_id = gerrit_util.GetChangeCurrentRevision(
-          self._HOST, self._change_id)[0]['current_revision']
+        self._HOST, self._change_id
+      )[0]['current_revision']
 
   def OnFinishPreamble(self):
     pass
@@ -111,16 +115,20 @@ class GerritParser(codereview_parser.Parser):
     if not path in self._comments:
       self._comments[path] = []
 
-    self._comments[path].append({
-        'message': comment,
-        'line': line,
-        'unresolved': True
-    })
+    self._comments[path].append(
+      {'message': comment, 'line': line, 'unresolved': True}
+    )
 
   def OnParseFinished(self):
     is_lg = re.match(".*lgtm.*", self._overall_comment, re.IGNORECASE)
-    SetReview(self._HOST, self._change_id, self._revision_id,
-              self._overall_comment, is_lg, self._comments)
+    SetReview(
+      self._HOST,
+      self._change_id,
+      self._revision_id,
+      self._overall_comment,
+      is_lg,
+      self._comments,
+    )
     print('Done')
 
   def Parse(self):
@@ -131,17 +139,24 @@ class GerritParser(codereview_parser.Parser):
     max_message = 10000
     tail = '...\n(message too large)'
     if len(message) > max_message:
-      message = message[:max_message - len(tail)] + tail
+      message = message[: max_message - len(tail)] + tail
 
     issue_props = self._rd.get_issue_properties(self._issue_number, None)
     reviewers = ','.join(issue_props['reviewers'])
     cc = ','.join(issue_props['cc'])
-    self._rd.post('/%d/publish' % issue,
-                  [('xsrf_token', self._rd.xsrf_token()), ('message', message),
-                   ('message_only', 'False'),
-                   ('add_as_reviewer', str(bool(add_as_reviewer))),
-                   ('reviewers', reviewers), ('cc', cc), ('send_mail', 'True'),
-                   ('no_redirect', 'True')])
+    self._rd.post(
+      '/%d/publish' % issue,
+      [
+        ('xsrf_token', self._rd.xsrf_token()),
+        ('message', message),
+        ('message_only', 'False'),
+        ('add_as_reviewer', str(bool(add_as_reviewer))),
+        ('reviewers', reviewers),
+        ('cc', cc),
+        ('send_mail', 'True'),
+        ('no_redirect', 'True'),
+      ],
+    )
 
 
 def ProcessFile(file):

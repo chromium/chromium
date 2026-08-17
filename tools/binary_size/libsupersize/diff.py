@@ -79,14 +79,19 @@ def _MatchSymbols(before, after, key_func, padding_by_segment):
       # Padding tracked in aggregate, except for padding-only symbols.
       if before_sym.size_without_padding != 0:
         segment = (before_sym.container_name, before_sym.section_name)
-        padding_by_segment[segment] += (after_sym.padding_pss -
-                                        before_sym.padding_pss)
+        padding_by_segment[segment] += (
+          after_sym.padding_pss - before_sym.padding_pss
+        )
       delta_symbols.append(models.DeltaSymbol(before_sym, after_sym))
     else:
       unmatched_after.append(after_sym)
 
-  logging.debug('%s: Matched %d of %d symbols', key_func.__name__,
-                len(delta_symbols), len(after))
+  logging.debug(
+    '%s: Matched %d of %d symbols',
+    key_func.__name__,
+    len(delta_symbols),
+    len(after),
+  )
 
   unmatched_before = []
   for syms in before_symbols_by_key.values():
@@ -102,11 +107,13 @@ def _DiffSymbolGroups(containers, before, after, is_sparse):
 
   # Usually >90% of symbols are exact matches, so all of the time is spent in
   # this first pass.
-  all_deltas, before, after = _MatchSymbols(before, after, _Key1,
-                                            padding_by_segment)
+  all_deltas, before, after = _MatchSymbols(
+    before, after, _Key1, padding_by_segment
+  )
   for key_func in (_Key2, _Key3, _Key4):
-    delta_syms, before, after = _MatchSymbols(before, after, key_func,
-                                              padding_by_segment)
+    delta_syms, before, after = _MatchSymbols(
+      before, after, key_func, padding_by_segment
+    )
     all_deltas.extend(delta_syms)
 
   logging.debug('Creating %d unmatched symbols', len(after) + len(before))
@@ -165,11 +172,13 @@ def Diff(before, after, sort=False):
   assert isinstance(after, models.SizeInfo)
   containers_diff = _DiffContainerLists(before.containers, after.containers)
   is_sparse = before.is_sparse and after.is_sparse
-  symbol_diff = _DiffSymbolGroups(containers_diff, before.raw_symbols,
-                                  after.raw_symbols, is_sparse)
+  symbol_diff = _DiffSymbolGroups(
+    containers_diff, before.raw_symbols, after.raw_symbols, is_sparse
+  )
   removed_sources, added_sources = symbol_diff.GetEntireAddOrRemoveSources()
-  ret = models.DeltaSizeInfo(before, after, containers_diff, symbol_diff,
-                             removed_sources, added_sources)
+  ret = models.DeltaSizeInfo(
+    before, after, containers_diff, symbol_diff, removed_sources, added_sources
+  )
 
   if sort:
     syms = ret.symbols  # Triggers clustering.

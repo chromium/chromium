@@ -10,15 +10,15 @@ import unittest
 
 import extract_resident_pages
 
-class ExtractResidentPagesUnittest(unittest.TestCase):
 
+class ExtractResidentPagesUnittest(unittest.TestCase):
   def testParseResidentPages(self):
     max_pages = 10600
     pages = []
     resident_pages = ""
 
     for i in range(max_pages):
-      is_resident = random.randint(0,1)
+      is_resident = random.randint(0, 1)
       pages.append(is_resident)
       if is_resident:
         resident_pages += str(i) + '\n'
@@ -35,5 +35,4 @@ class ExtractResidentPagesUnittest(unittest.TestCase):
 
 
 if __name__ == '__main__':
-
   unittest.main()

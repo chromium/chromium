@@ -27,12 +27,15 @@ def _FirebaseLogin():
 
 def _CheckFirebaseCLI():
     """Fail with a proper error message, if Firebase CLI is not installed."""
-    if subprocess.call(['firebase', '--version'],
-                       stdout=subprocess.DEVNULL) != 0:
+    if (
+        subprocess.call(['firebase', '--version'], stdout=subprocess.DEVNULL)
+        != 0
+    ):
         link = 'https://firebase.google.com/docs/cli#install_the_firebase_cli'
         raise Exception(
             'Firebase CLI not installed or not on your PATH. Follow '
-            'the instructions at ' + link + ' to install')
+            'the instructions at ' + link + ' to install'
+        )
 
 
 def _CheckNPM():
@@ -41,7 +44,8 @@ def _CheckNPM():
         link = 'https://nodejs.org'
         raise Exception(
             'npm not installed or not on your PATH. Either install Node.js '
-            'through your package manager or download it from ' + link + '.')
+            'through your package manager or download it from ' + link + '.'
+        )
 
 
 def _BuildDist():
@@ -71,8 +75,9 @@ def _FirebaseInitProjectDir(project_dir):
 
 def _FirebaseDeploy(project_dir):
     """Deploy the project to firebase hosting."""
-    subprocess.check_call(['firebase', 'deploy', '-P', FIREBASE_PROJECT],
-                          cwd=project_dir)
+    subprocess.check_call(
+        ['firebase', 'deploy', '-P', FIREBASE_PROJECT], cwd=project_dir
+    )
 
 
 def _CopyDistFiles(dist_dir, project_static_dir):
@@ -81,14 +86,13 @@ def _CopyDistFiles(dist_dir, project_static_dir):
 
 
 def main():
-    message = (
-        f"""This script builds the Clank Dependency Graph Visualizer and \
+    message = f"""This script builds the Clank Dependency Graph Visualizer and \
 deploys it to Firebase hosting at {FIREBASE_PROJECT}.firebaseapp.com.
 
 Please ensure you have read the instructions at //{JS_DIR}/README.md first \
 before running this.
 
-Are you sure you want to continue?""")
+Are you sure you want to continue?"""
 
     if not _Prompt(message):
         print('Nothing was deployed.')

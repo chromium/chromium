@@ -4,36 +4,36 @@
 # found in the LICENSE file.
 """Run fuzzilli for the specified duration and generate a coverage report
 
-  * Example usage: vpython3 measure_fuzzilli_coverage.py
-                   --build-out-dir ~/chromium/src/out/Fuzzilli
-                   --fuzzilli-dir ~/fuzzilli
-                   --report-out-dir ~/chromium/src/out/report
-                   --profile mojoLockManager
-                   --minutes 20
+* Example usage: vpython3 measure_fuzzilli_coverage.py
+                 --build-out-dir ~/chromium/src/out/Fuzzilli
+                 --fuzzilli-dir ~/fuzzilli
+                 --report-out-dir ~/chromium/src/out/report
+                 --profile mojoLockManager
+                 --minutes 20
 
-    Optionally, use --ignore-filename-regex to provide a regular
-    expression matching all the file paths to be excluded from the report.
-    Use --filters to explicitly state all the directories or files to get
-    include in the coverage report.
+  Optionally, use --ignore-filename-regex to provide a regular
+  expression matching all the file paths to be excluded from the report.
+  Use --filters to explicitly state all the directories or files to get
+  include in the coverage report.
 
-    The following gn args, for use with `js_in_process_fuzzer`, are a mix
-    of args required for coverage and args that improve fuzzing either by
-    speed up or increased coverage:
-        use_sanitizer_coverage = true
-        is_component_build = false
-        is_debug = false
-        symbol_level = 2
-        blink_symbol_level = 0
-        use_remoteexec = true
-        dcheck_always_on = false
-        is_asan = false
-        use_chromium_fuzzilli = true
-        v8_fuzzilli = true
-        v8_static_library = true
-        v8_dcheck_always_on = true
-        optimize_for_fuzzing = false
-        enable_mojom_fuzzer = true
-        use_clang_coverage = true
+  The following gn args, for use with `js_in_process_fuzzer`, are a mix
+  of args required for coverage and args that improve fuzzing either by
+  speed up or increased coverage:
+      use_sanitizer_coverage = true
+      is_component_build = false
+      is_debug = false
+      symbol_level = 2
+      blink_symbol_level = 0
+      use_remoteexec = true
+      dcheck_always_on = false
+      is_asan = false
+      use_chromium_fuzzilli = true
+      v8_fuzzilli = true
+      v8_static_library = true
+      v8_dcheck_always_on = true
+      optimize_for_fuzzing = false
+      enable_mojom_fuzzer = true
+      use_clang_coverage = true
 """
 
 import argparse
@@ -47,7 +47,9 @@ import sys
 import tempfile
 
 DEFAULT_FUZZILLI_FLAGS = [
-    '--storagePath=/tmp/fuzzilli_storage', '--overwrite', '--engine=hybrid'
+  '--storagePath=/tmp/fuzzilli_storage',
+  '--overwrite',
+  '--engine=hybrid',
 ]
 SCRIPT_DIR = Path(__file__).resolve().parent
 SRC_DIR = SCRIPT_DIR.parents[1]
@@ -56,8 +58,8 @@ SRC_DIR = SCRIPT_DIR.parents[1]
 class ProcessGroupHandler:
   """Simple class for handling process groups across the program.
 
-     Notably, this class ensures that the associated process group
-     is killed upon interrupt by providing an interrupt_handler.
+  Notably, this class ensures that the associated process group
+  is killed upon interrupt by providing an interrupt_handler.
   """
 
   def __init__(self):
@@ -68,8 +70,8 @@ class ProcessGroupHandler:
 
   def KillProcessGroup(self):
     """Kill the process group with a SIGTERM signal. Grant 10 seconds
-       to allow for graceful shutdown, following up with a SIGKILL if
-       the process group is still active.
+    to allow for graceful shutdown, following up with a SIGKILL if
+    the process group is still active.
     """
 
     os.killpg(os.getpgid(self.process_group.pid), signal.SIGTERM)
@@ -82,9 +84,9 @@ class ProcessGroupHandler:
   def interrupt_handler(self, sig, frame):
     """Gracefully handle interrupt by killing children processes.
 
-       When running Fuzzilli, many child processes are created. Without
-       killing the entire process groups, these processes become orphan
-       processes.
+    When running Fuzzilli, many child processes are created. Without
+    killing the entire process groups, these processes become orphan
+    processes.
     """
 
     self.KillProcessGroup()
@@ -101,72 +103,81 @@ def _ParseCommandArguments():
   arg_parser.usage = __doc__
 
   arg_parser.add_argument(
-      '-fd',
-      '--fuzzilli-dir',
-      type=str,
-      required=True,
-      help='The absolute path to the directory containing Fuzzilli.')
+    '-fd',
+    '--fuzzilli-dir',
+    type=str,
+    required=True,
+    help='The absolute path to the directory containing Fuzzilli.',
+  )
 
   arg_parser.add_argument(
-      '-b',
-      '--build-out-dir',
-      type=str,
-      required=True,
-      help='The absolute path to the Chrome output directory.')
+    '-b',
+    '--build-out-dir',
+    type=str,
+    required=True,
+    help='The absolute path to the Chrome output directory.',
+  )
 
   arg_parser.add_argument(
-      '-r',
-      '--report-out-dir',
-      type=str,
-      required=True,
-      help='The absolute path to the directory to which to output the report.')
+    '-r',
+    '--report-out-dir',
+    type=str,
+    required=True,
+    help='The absolute path to the directory to which to output the report.',
+  )
 
   arg_parser.add_argument(
-      '-m',
-      '--minutes',
-      type=int,
-      required=True,
-      help='The number of minutes for which to run Fuzzilli.')
+    '-m',
+    '--minutes',
+    type=int,
+    required=True,
+    help='The number of minutes for which to run Fuzzilli.',
+  )
 
   arg_parser.add_argument(
-      '-f',
-      '--filters',
-      action='append',
-      required=False,
-      help='Directories or files to get code coverage for, and all files under '
-      'the directories are included recursively.')
+    '-f',
+    '--filters',
+    action='append',
+    required=False,
+    help='Directories or files to get code coverage for, and all files under '
+    'the directories are included recursively.',
+  )
 
   arg_parser.add_argument(
-      '-i',
-      '--ignore-filename-regex',
-      type=str,
-      help='Skip source code files with file paths that match the given '
-      'regular expression. For example, use -i=\'.*/out/.*|.*/third_party/.*\' '
-      'to exclude files in third_party/ and out/ folders from the report.')
+    '-i',
+    '--ignore-filename-regex',
+    type=str,
+    help='Skip source code files with file paths that match the given '
+    'regular expression. For example, use -i=\'.*/out/.*|.*/third_party/.*\' '
+    'to exclude files in third_party/ and out/ folders from the report.',
+  )
 
   arg_parser.add_argument(
-      '-p',
-      '--profile',
-      type=str,
-      required=True,
-      help='Provide a profile for Fuzzilli to use while running, identifying'
-      'by the key defined in Fuzzilli\'s `profiles` Dictionary.')
+    '-p',
+    '--profile',
+    type=str,
+    required=True,
+    help='Provide a profile for Fuzzilli to use while running, identifying'
+    'by the key defined in Fuzzilli\'s `profiles` Dictionary.',
+  )
 
   args = arg_parser.parse_args()
   return args
 
 
-def _RunFuzzilli(pg_handler, fuzzilli_dir, build_out_dir, minutes, profile,
-                 profraw_dir):
+def _RunFuzzilli(
+  pg_handler, fuzzilli_dir, build_out_dir, minutes, profile, profraw_dir
+):
   """Builds and runs Fuzzilli.
 
-     Bypasses the 'swift run' wrapper to ensure signals are handled correctly.
-     Launches a process group in order to kill all associated processes
-     after running for the desired duration.
+  Bypasses the 'swift run' wrapper to ensure signals are handled correctly.
+  Launches a process group in order to kill all associated processes
+  after running for the desired duration.
   """
 
-  os.environ["LLVM_PROFILE_FILE"] = \
-    os.path.join(profraw_dir, "fuzzilli.%4m%c.profraw")
+  os.environ["LLVM_PROFILE_FILE"] = os.path.join(
+    profraw_dir, "fuzzilli.%4m%c.profraw"
+  )
 
   build_command = ['swift', 'build', '-c', 'release']
   try:
@@ -180,14 +191,15 @@ def _RunFuzzilli(pg_handler, fuzzilli_dir, build_out_dir, minutes, profile,
   # profile. To ensure that js_in_process_fuzzer can see the environment
   # variable, create a temporary script for Fuzzilli to execute, in which the
   # environment variable is set.
-  temp_wrapper = tempfile.NamedTemporaryFile(mode='w+',
-                                             delete=False,
-                                             suffix='.sh')
+  temp_wrapper = tempfile.NamedTemporaryFile(
+    mode='w+', delete=False, suffix='.sh'
+  )
   try:
     temp_wrapper.write(
-        '#!/bin/bash\n'
-        f'export LLVM_PROFILE_FILE="{os.environ["LLVM_PROFILE_FILE"]}"\n'
-        f'exec {os.path.join(build_out_dir, "js_in_process_fuzzer")} "$@"')
+      '#!/bin/bash\n'
+      f'export LLVM_PROFILE_FILE="{os.environ["LLVM_PROFILE_FILE"]}"\n'
+      f'exec {os.path.join(build_out_dir, "js_in_process_fuzzer")} "$@"'
+    )
     temp_wrapper.flush()
     temp_wrapper.close()
 
@@ -195,11 +207,14 @@ def _RunFuzzilli(pg_handler, fuzzilli_dir, build_out_dir, minutes, profile,
     os.chmod(temp_wrapper.name, 0o755)
     print(f"The temporary file is located at: {temp_wrapper.name}")
 
-    fuzzilli_executable = os.path.join(fuzzilli_dir,
-                                       '.build/release/FuzzilliCli')
+    fuzzilli_executable = os.path.join(
+      fuzzilli_dir, '.build/release/FuzzilliCli'
+    )
     run_command = [
-        fuzzilli_executable, *DEFAULT_FUZZILLI_FLAGS, f'--profile={profile}',
-        temp_wrapper.name
+      fuzzilli_executable,
+      *DEFAULT_FUZZILLI_FLAGS,
+      f'--profile={profile}',
+      temp_wrapper.name,
     ]
 
     # Use a process group, as this command will create many child processes that
@@ -221,8 +236,9 @@ def _RunFuzzilli(pg_handler, fuzzilli_dir, build_out_dir, minutes, profile,
   return True
 
 
-def _GenerateCoverageReport(build_out_dir, report_out_dir,
-                            ignore_filename_regex, filters, profraw_dir):
+def _GenerateCoverageReport(
+  build_out_dir, report_out_dir, ignore_filename_regex, filters, profraw_dir
+):
   if filters is None:
     filters = []
 
@@ -231,15 +247,23 @@ def _GenerateCoverageReport(build_out_dir, report_out_dir,
     #
     # glob.glob expands the wildcard
     gen_profile_command = [
-        'llvm-profdata', 'merge', '-o',
-        os.path.join(profraw_dir, 'coverage.profdata')
+      'llvm-profdata',
+      'merge',
+      '-o',
+      os.path.join(profraw_dir, 'coverage.profdata'),
     ] + glob.glob(os.path.join(profraw_dir, '*.profraw'))
     subprocess.run(gen_profile_command, check=True)
 
     coverage_command = [
-        f'{SRC_DIR}/tools/code_coverage/coverage.py', 'js_in_process_fuzzer',
-        '-b', build_out_dir, '-o', report_out_dir, '-p',
-        os.path.join(profraw_dir, 'coverage.profdata'), '--no-component-view'
+      f'{SRC_DIR}/tools/code_coverage/coverage.py',
+      'js_in_process_fuzzer',
+      '-b',
+      build_out_dir,
+      '-o',
+      report_out_dir,
+      '-p',
+      os.path.join(profraw_dir, 'coverage.profdata'),
+      '--no-component-view',
     ]
     for f in filters:
       coverage_command.extend(['-f', f])
@@ -270,13 +294,23 @@ def Main():
     profraw_path = Path(profraw_dir)
     print(f'Using {profraw_path} for profraw files.')
 
-    if not _RunFuzzilli(pg_handler, args.fuzzilli_dir, args.build_out_dir,
-                        args.minutes, args.profile, profraw_path):
+    if not _RunFuzzilli(
+      pg_handler,
+      args.fuzzilli_dir,
+      args.build_out_dir,
+      args.minutes,
+      args.profile,
+      profraw_path,
+    ):
       sys.exit('Error: Fuzzilli failed to build or run.')
 
-    if not _GenerateCoverageReport(args.build_out_dir, args.report_out_dir,
-                                   args.ignore_filename_regex, args.filters,
-                                   profraw_path):
+    if not _GenerateCoverageReport(
+      args.build_out_dir,
+      args.report_out_dir,
+      args.ignore_filename_regex,
+      args.filters,
+      profraw_path,
+    ):
       sys.exit('Error: Failed to generate coverage report.')
 
 

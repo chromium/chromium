@@ -12,7 +12,6 @@ import unittest
 
 
 class IsFlakyTest(unittest.TestCase):
-
   def setUp(self):
     self.original_subprocess_check_call = subprocess.check_call
     subprocess.check_call = self.mock_check_call
@@ -31,11 +30,12 @@ class IsFlakyTest(unittest.TestCase):
       return 0
 
   def mock_load_options(self):
-    class MockOptions():
+    class MockOptions:
       jobs = 2
       retries = 10
       threshold = 0.3
       command = ['command', 'param1', 'param2']
+
     return MockOptions()
 
   def testExecutesTestCorrectNumberOfTimes(self):

@@ -11,7 +11,9 @@ import build_gn_editor
 class BuildTargetTest(unittest.TestCase):
   def test_get_variable_considers_whole_variable_name(self):
     build_target = build_gn_editor.BuildTarget(
-        'type', 'name', '''
+      'type',
+      'name',
+      '''
         type(name) {
           srcjar_deps = [
             "hi",
@@ -21,7 +23,8 @@ class BuildTargetTest(unittest.TestCase):
             "bye",
           ]
         }
-    ''')
+    ''',
+    )
 
     variable = build_target.get_variable('deps')
     assert variable is not None

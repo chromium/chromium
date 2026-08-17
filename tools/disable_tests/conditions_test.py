@@ -31,18 +31,21 @@ import conditions
 # A Hypothesis strategy for generating Conditions.
 def rec_condition_st(max_leaves):
   return st.recursive(
-      st.sampled_from(conditions.TERMINALS),
-      lambda children: st.tuples(st.just('not'), children) | st.tuples(
-          st.sampled_from(['or', 'and']), st.lists(children)),
-      max_leaves=max_leaves,
+    st.sampled_from(conditions.TERMINALS),
+    lambda children: (
+      st.tuples(st.just('not'), children)
+      | st.tuples(st.sampled_from(['or', 'and']), st.lists(children))
+    ),
+    max_leaves=max_leaves,
   )
 
 
 # We separate out ALWAYS and NEVER from the recursive part, as they should only
 # ever appear as a singular thing at the top-level.
 def condition_st(max_leaves):
-  return st.sampled_from([conditions.ALWAYS, conditions.NEVER
-                          ]) | rec_condition_st(max_leaves)
+  return st.sampled_from(
+    [conditions.ALWAYS, conditions.NEVER]
+  ) | rec_condition_st(max_leaves)
 
 
 # Taken from the example in the itertools docs.
@@ -50,7 +53,8 @@ def powerset(iterable):
   """returns an iterator over all subsets of iterable."""
   s = list(iterable)
   return itertools.chain.from_iterable(
-      itertools.combinations(s, r) for r in range(len(s) + 1))
+    itertools.combinations(s, r) for r in range(len(s) + 1)
+  )
 
 
 class ConditionsTest(unittest.TestCase):
@@ -66,19 +70,24 @@ class ConditionsTest(unittest.TestCase):
       true_vars = set(true_vars)
       # Exclude cases where mutually exclusive vars are set.
       if any(
-          len(group & true_vars) > 1 for group in conditions.CONDITION_GROUPS):
+        len(group & true_vars) > 1 for group in conditions.CONDITION_GROUPS
+      ):
         continue
 
-      self.assertEqual(conditions.evaluate(cond, true_vars),
-                       conditions.evaluate(simplified, true_vars))
+      self.assertEqual(
+        conditions.evaluate(cond, true_vars),
+        conditions.evaluate(simplified, true_vars),
+      )
 
   @given(cond=condition_st(max_leaves=7))
   @settings(deadline=timedelta(milliseconds=1000))
   def test_simplified_condition_is_at_least_as_small_as_original(self, cond):
     simplified = conditions.simplify(cond)
 
-    self.assertLessEqual(len(conditions.find_terminals(simplified)),
-                         len(conditions.find_terminals(cond)))
+    self.assertLessEqual(
+      len(conditions.find_terminals(simplified)),
+      len(conditions.find_terminals(cond)),
+    )
 
 
 if __name__ == '__main__':

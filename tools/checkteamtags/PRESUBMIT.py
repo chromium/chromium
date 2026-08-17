@@ -28,11 +28,13 @@ def _CommonChecks(input_api, output_api):
 def _RunUnitTests(input_api, output_api):
   """Runs unit tests for checkteamtags."""
   repo_root = input_api.change.RepositoryRoot()
-  checkteamtags_dir = input_api.os_path.join(repo_root, 'tools',
-                                             'checkteamtags')
+  checkteamtags_dir = input_api.os_path.join(
+    repo_root, 'tools', 'checkteamtags'
+  )
   test_runner = input_api.os_path.join(checkteamtags_dir, 'run_tests')
   return_code = input_api.subprocess.call(
-      [input_api.python3_executable, test_runner])
+    [input_api.python3_executable, test_runner]
+  )
   if return_code:
     message = 'Checkteamtags unit tests did not all pass.'
     return [output_api.PresubmitError(message)]
@@ -42,15 +44,14 @@ def _RunUnitTests(input_api, output_api):
 def _RunPyLint(input_api, output_api):
   """Runs unit tests for checkteamtags."""
   disabled_warnings = [
-      'anomalous-backslash-in-string',
-      'bad-indentation',
-      'consider-using-from-import',
-      'consider-using-with',
-      'missing-module-docstring',
-      'unspecified-encoding',
+    'anomalous-backslash-in-string',
+    'bad-indentation',
+    'consider-using-from-import',
+    'consider-using-with',
+    'missing-module-docstring',
+    'unspecified-encoding',
   ]
-  tests = input_api.canned_checks.GetPylint(input_api,
-                                            output_api,
-                                            disabled_warnings=disabled_warnings,
-                                            version='3.2')
+  tests = input_api.canned_checks.GetPylint(
+    input_api, output_api, disabled_warnings=disabled_warnings, version='3.2'
+  )
   return input_api.RunTests(tests)

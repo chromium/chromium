@@ -8,7 +8,6 @@ import android_res_formatter
 
 
 class AndroidResFormatterTest(unittest.TestCase):
-
   def test_format_xml_no_changes(self):
     # Test case where we expect no changes
     input_xml = """<?xml version="1.0" encoding="utf-8"?>

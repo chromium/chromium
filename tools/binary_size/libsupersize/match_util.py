@@ -34,10 +34,14 @@ def _CreateIdentifierRegex(parts):
     camel_remainder += token.title()
   first_letter = parts[0][0]
   prefixed_pattern = '[a-z]' + first_letter.upper() + camel_remainder
-  camel_pattern = '[%s%s]%s' % (first_letter.lower(), first_letter.upper(),
-                                camel_remainder)
+  camel_pattern = '[%s%s]%s' % (
+    first_letter.lower(),
+    first_letter.upper(),
+    camel_remainder,
+  )
   middle_patterns = '|'.join(
-      (shouty_pattern, snake_pattern, prefixed_pattern, camel_pattern))
+    (shouty_pattern, snake_pattern, prefixed_pattern, camel_pattern)
+  )
   return r'(?:%s(?:%s)%s)' % (prefix_pattern, middle_patterns, suffix_pattern)
 
 
@@ -53,6 +57,8 @@ def ExpandRegexIdentifierPlaceholder(pattern):
   Note: SymbolGroup.Where* methods call this function already, so there is
   generally no need to call it directly.
   """
-  return re.sub(r'\{\{(.*?)\}\}',
-                lambda m: _CreateIdentifierRegex(m.group(1).split('_')),
-                pattern)
+  return re.sub(
+    r'\{\{(.*?)\}\}',
+    lambda m: _CreateIdentifierRegex(m.group(1).split('_')),
+    pattern,
+  )

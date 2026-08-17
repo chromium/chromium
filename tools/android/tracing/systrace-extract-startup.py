@@ -69,7 +69,8 @@ def log(message, *arguments):
 
 def ParseTraceDatas(trace_file_path):
   start_tag = re.compile(
-      '^\s*<script class="trace-data" type="application/text">$')
+    '^\s*<script class="trace-data" type="application/text">$'
+  )
   end_tag = re.compile('^(?P<line>.*?)\s*</script>$')
 
   trace_datas = []
@@ -164,7 +165,6 @@ class EventInterval(object):
 
 
 class Process(object):
-
   BROWSER_NAME = 'Browser'
 
   def __init__(self, pid):
@@ -196,7 +196,8 @@ class Trace(object):
   def Finalize(self):
     self.startup_event = self.FindFirstEvent(*Trace.STARTUP_EVENT_NAMES)
     self.navigation_start_event = self.FindFirstEvent(
-        Trace.NAVIGATION_START_EVENT_NAME)
+      Trace.NAVIGATION_START_EVENT_NAME
+    )
 
     def _FindNavigationToCommitInterval():
       events = self.FindAllEvents(Trace.NAVIGATION_COMMIT_EVENT_NAME)
@@ -207,6 +208,7 @@ class Trace(object):
         elif event.phase == Event.PHASE_ASYNC_END:
           interval.SetToEventOnce(event)
       return interval
+
     self.navigation_to_commit_interval = _FindNavigationToCommitInterval()
 
   def FindAllEvents(self, *names):
@@ -227,8 +229,9 @@ class Trace(object):
   NAVIGATION_COMMIT_EVENT_NAME = 'Navigation StartToCommit'
 
   STARTUP_EVENT_NAMES = [
-      'Startup.BrowserMainEntryPoint', 'ChromeApplication.onCreate',
-      'ContentShellApplication.onCreate'
+    'Startup.BrowserMainEntryPoint',
+    'ChromeApplication.onCreate',
+    'ContentShellApplication.onCreate',
   ]
 
 
@@ -270,8 +273,10 @@ def ParseTrace(file_path):
     if name == 'process_name':
       process.name = event.args['name']
 
-    if (category == 'disabled-by-default-uma-addtime' and
-        name not in process.time_ns_by_histogram):
+    if (
+      category == 'disabled-by-default-uma-addtime'
+      and name not in process.time_ns_by_histogram
+    ):
       process.time_ns_by_histogram[name] = int(event.args['value_ns'])
 
     if name in Trace.STARTUP_EVENT_NAMES:
@@ -287,8 +292,10 @@ def ParseTrace(file_path):
     elif name == 'firstMeaningfulPaint':
       trace.navigation_to_meaningful_paint_interval.SetToEventOnce(event)
 
-    if (name == 'AsyncInitializationActivity.onCreate()' and
-        phase == Event.PHASE_END):
+    if (
+      name == 'AsyncInitializationActivity.onCreate()'
+      and phase == Event.PHASE_END
+    ):
       process.first_ui_interval.SetFromEventOnce(event)
     elif name == 'ChromeBrowserInitializer.startChromeBrowserProcessesAsync':
       process.first_ui_interval.SetToEventOnce(event)
@@ -301,40 +308,57 @@ def ParseTrace(file_path):
   return trace
 
 
-EventSummary = collections.namedtuple('EventSummary', [
+EventSummary = collections.namedtuple(
+  'EventSummary',
+  [
     'trace',
     'event',
     'startup_to_event_ms',
     'navigation_to_event_ms',
-    'duration_ms'
-])
+    'duration_ms',
+  ],
+)
+
 
 def SummarizeEvents(event_name_regex, trace, process):
   summaries = []
+
   def _AddSummary(event, start_us, duration_us):
     startup_to_event_ms = (
-        None if trace.startup_event is None else
-        (start_us - trace.startup_event.timestamp_us) / 1000.0)
+      None
+      if trace.startup_event is None
+      else (start_us - trace.startup_event.timestamp_us) / 1000.0
+    )
     navigation_to_event_ms = (
-        None if trace.navigation_start_event is None else
-        (start_us - trace.navigation_start_event.timestamp_us) / 1000.0)
-    summaries.append(EventSummary(
-        trace, event, startup_to_event_ms, navigation_to_event_ms,
-        duration_us / 1000.0))
+      None
+      if trace.navigation_start_event is None
+      else (start_us - trace.navigation_start_event.timestamp_us) / 1000.0
+    )
+    summaries.append(
+      EventSummary(
+        trace,
+        event,
+        startup_to_event_ms,
+        navigation_to_event_ms,
+        duration_us / 1000.0,
+      )
+    )
 
   for name, events in process.events_by_name.iteritems():
     if event_name_regex.search(name):
-      sorted_events = sorted(events,
-                             key=lambda e: (e.tid, e.timestamp_us))
+      sorted_events = sorted(events, key=lambda e: (e.tid, e.timestamp_us))
       begin_event = None
       for event in sorted_events:
         if event.phase == Event.PHASE_COMPLETE:
           _AddSummary(event, event.timestamp_us, event.duration_us)
-        elif (event.phase == Event.PHASE_BEGIN or
-              event.phase == Event.PHASE_ASYNC_BEGIN):
+        elif (
+          event.phase == Event.PHASE_BEGIN
+          or event.phase == Event.PHASE_ASYNC_BEGIN
+        ):
           begin_event = event
-        elif (event.phase == Event.PHASE_END or
-              event.phase == Event.PHASE_ASYNC_END):
+        elif (
+          event.phase == Event.PHASE_END or event.phase == Event.PHASE_ASYNC_END
+        ):
           if begin_event is not None:
             duration_us = event.timestamp_us - begin_event.timestamp_us
             _AddSummary(event, begin_event.timestamp_us, duration_us)
@@ -373,7 +397,8 @@ def PrintReport(file_paths, options):
     # Make it less likely for terminals to eat tabs when wrapping a line.
     gap = '    '
 
-  table = [[
+  table = [
+    [
       'File',
       'Startup (ms)',
       'StartupToNavigation (ms)',
@@ -381,8 +406,9 @@ def PrintReport(file_paths, options):
       'NavigationToContentfulPaint (ms)',
       'StartupToContentfulPaint (ms)',
       'NavigationToMeaningfulPaint (ms)',
-      'StartupToMeaningfulPaint (ms)'
-  ]]
+      'StartupToMeaningfulPaint (ms)',
+    ]
+  ]
   for trace in traces:
     browser_process = None
     for process in trace.process_by_pid.itervalues():
@@ -392,22 +418,27 @@ def PrintReport(file_paths, options):
     if browser_process is None:
       continue
 
-    table.append([
+    table.append(
+      [
         os.path.basename(trace.file_path),
         browser_process.startup_interval.FormatAsMilliseconds(),
         trace.startup_to_navigation_interval.FormatAsMilliseconds(),
         trace.navigation_to_commit_interval.FormatAsMilliseconds(),
         trace.navigation_to_contentul_paint_interval.FormatAsMilliseconds(),
-        browser_process.startup_interval.UpTo(trace.navigation_to_contentul_paint_interval).\
-            FormatAsMilliseconds(),
+        browser_process.startup_interval.UpTo(
+          trace.navigation_to_contentul_paint_interval
+        ).FormatAsMilliseconds(),
         trace.navigation_to_meaningful_paint_interval.FormatAsMilliseconds(),
-        browser_process.startup_interval.UpTo(trace.navigation_to_meaningful_paint_interval).\
-            FormatAsMilliseconds()
-    ])
+        browser_process.startup_interval.UpTo(
+          trace.navigation_to_meaningful_paint_interval
+        ).FormatAsMilliseconds(),
+      ]
+    )
 
     if event_name_regex:
       event_summaries = SummarizeEvents(
-          event_name_regex, trace, browser_process)
+        event_name_regex, trace, browser_process
+      )
       for summary in event_summaries:
         event_summaries_by_name[summary.event.name].append(summary)
 
@@ -420,32 +451,41 @@ def PrintReport(file_paths, options):
 
     width = max(len(s) for s in summaries_by_trace.itervalues())
     summary_headers = [
-        'StartupToEvent (ms)',
-        'NavigationToEvent (ms)',
-        'Duration (ms)'
+      'StartupToEvent (ms)',
+      'NavigationToEvent (ms)',
+      'Duration (ms)',
     ]
 
     table.append(
-        [name] +
-        ([gap] * len(summary_headers)) +
-        list(itertools.chain.from_iterable(
-            ['#{}'.format(i)] + [gap] * (len(summary_headers) - 1)
-                for i in range(1, width))))
-    table.append(
-        ['File'] +
-        summary_headers * width)
+      [name]
+      + ([gap] * len(summary_headers))
+      + list(
+        itertools.chain.from_iterable(
+          ['#{}'.format(i)] + [gap] * (len(summary_headers) - 1)
+          for i in range(1, width)
+        )
+      )
+    )
+    table.append(['File'] + summary_headers * width)
 
-    trace_summaries = sorted(summaries_by_trace.iteritems(),
-                             key=lambda t_s: _TraceSortingKey(t_s[0]))
+    trace_summaries = sorted(
+      summaries_by_trace.iteritems(), key=lambda t_s: _TraceSortingKey(t_s[0])
+    )
     for trace, summaries in trace_summaries:
       row = [os.path.basename(trace.file_path)]
       for summary in summaries:
         row += [
-            (gap if summary.startup_to_event_ms is None
-                else summary.startup_to_event_ms),
-            (gap if summary.navigation_to_event_ms is None
-                else summary.navigation_to_event_ms),
-            summary.duration_ms
+          (
+            gap
+            if summary.startup_to_event_ms is None
+            else summary.startup_to_event_ms
+          ),
+          (
+            gap
+            if summary.navigation_to_event_ms is None
+            else summary.navigation_to_event_ms
+          ),
+          summary.duration_ms,
         ]
       table.append(row)
 
@@ -466,12 +506,12 @@ def PrintTrace(trace_file_path, options):
       log('{} (ms): {}', name, time_ms)
 
   histogram_names = [
-      'ChromeGeneratedCustomTab.IntentToFirstCommitNavigationTime3.ZoomedIn',
-      'CustomTabs.IntentToFirstCommitNavigationTime3.ZoomedIn',
-      'PageLoad.PaintTiming.NavigationToFirstPaint',
-      'PageLoad.PaintTiming.NavigationToFirstContentfulPaint',
-      'PageLoad.Experimental.PaintTiming.NavigationToFirstMeaningfulPaint',
-      'SessionRestore.ForegroundTabFirstPaint3',
+    'ChromeGeneratedCustomTab.IntentToFirstCommitNavigationTime3.ZoomedIn',
+    'CustomTabs.IntentToFirstCommitNavigationTime3.ZoomedIn',
+    'PageLoad.PaintTiming.NavigationToFirstPaint',
+    'PageLoad.PaintTiming.NavigationToFirstContentfulPaint',
+    'PageLoad.Experimental.PaintTiming.NavigationToFirstMeaningfulPaint',
+    'SessionRestore.ForegroundTabFirstPaint3',
   ]
 
   processes = sorted(trace.process_by_pid.itervalues(), key=lambda p: p.name)
@@ -487,22 +527,36 @@ def PrintTrace(trace_file_path, options):
 
     if process.name == Process.BROWSER_NAME:
       _PrintInterval('Startup', process.startup_interval)
-      _PrintInterval('StartupToNavigation',
-          trace.startup_to_navigation_interval)
+      _PrintInterval(
+        'StartupToNavigation', trace.startup_to_navigation_interval
+      )
       _PrintInterval('NavigationToCommit', trace.navigation_to_commit_interval)
-      _PrintInterval('NavigationToContentfulPaint',
-          trace.navigation_to_contentul_paint_interval)
-      _PrintInterval('StartupToContentfulPaint', process.startup_interval.UpTo(
-          trace.navigation_to_contentul_paint_interval))
-      _PrintInterval('NavigationToMeaningfulPaint',
-          trace.navigation_to_meaningful_paint_interval)
-      _PrintInterval('StartupToMeaningfulPaint', process.startup_interval.UpTo(
-          trace.navigation_to_meaningful_paint_interval))
+      _PrintInterval(
+        'NavigationToContentfulPaint',
+        trace.navigation_to_contentul_paint_interval,
+      )
+      _PrintInterval(
+        'StartupToContentfulPaint',
+        process.startup_interval.UpTo(
+          trace.navigation_to_contentul_paint_interval
+        ),
+      )
+      _PrintInterval(
+        'NavigationToMeaningfulPaint',
+        trace.navigation_to_meaningful_paint_interval,
+      )
+      _PrintInterval(
+        'StartupToMeaningfulPaint',
+        process.startup_interval.UpTo(
+          trace.navigation_to_meaningful_paint_interval
+        ),
+      )
 
       if options.experimental:
         _PrintInterval('First UI interval', process.first_ui_interval)
 
     if process.malloc_counter_by_name:
+
       def _PrintMallocCounter(title, value_name, factor):
         value = process.malloc_counter_by_name.get(value_name)
         if value is not None:
@@ -526,11 +580,14 @@ def PrintTrace(trace_file_path, options):
           for event_summary in event_summaries:
             with LogIndenter('{}:', event_summary.event.name):
               if event_summary.startup_to_event_ms is not None:
-                log('StartupToEvent (ms): {}',
-                    event_summary.startup_to_event_ms)
+                log(
+                  'StartupToEvent (ms): {}', event_summary.startup_to_event_ms
+                )
               if event_summary.navigation_to_event_ms is not None:
-                log('NavigationToEvent (ms): {}',
-                    event_summary.navigation_to_event_ms)
+                log(
+                  'NavigationToEvent (ms): {}',
+                  event_summary.navigation_to_event_ms,
+                )
               log('Duration (ms): {}', event_summary.duration_ms)
 
     indenter.unindent()
@@ -540,24 +597,37 @@ def PrintTrace(trace_file_path, options):
 def main():
   parser = argparse.ArgumentParser()
   parser.add_argument('file_or_glob')
-  parser.add_argument('--print-none-histograms',
-                      help='Print histograms with None values.',
-                      default=False, action='store_true')
+  parser.add_argument(
+    '--print-none-histograms',
+    help='Print histograms with None values.',
+    default=False,
+    action='store_true',
+  )
   # TODO: introduce a variant that takes a list of event names, as escaping
   #       event names can be tedious.
   # TODO: match regex against '<index>|<event name>' to allow selecting
   #       events by index (complicated for begin/end pairs).
-  parser.add_argument('--print-events',
-                      help='Print events matching the specified regex.')
-  parser.add_argument('--experimental',
-                      default=False, action='store_true',
-                      help='Enable experimental stuff.')
-  parser.add_argument('--report',
-                      default=False, action='store_true',
-                      help='Present information as a tab-separated table.')
-  parser.add_argument('--csv',
-                      default=False, action='store_true',
-                      help=('Separate report values by commas (not tabs).'))
+  parser.add_argument(
+    '--print-events', help='Print events matching the specified regex.'
+  )
+  parser.add_argument(
+    '--experimental',
+    default=False,
+    action='store_true',
+    help='Enable experimental stuff.',
+  )
+  parser.add_argument(
+    '--report',
+    default=False,
+    action='store_true',
+    help='Present information as a tab-separated table.',
+  )
+  parser.add_argument(
+    '--csv',
+    default=False,
+    action='store_true',
+    help=('Separate report values by commas (not tabs).'),
+  )
 
   options = parser.parse_args()
 

@@ -2,8 +2,7 @@
 # Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""Check that symbols are ordered into a binary as they appear in the orderfile.
-"""
+"""Check that symbols are ordered into a binary as they appear in the orderfile."""
 
 import argparse
 import dataclasses
@@ -22,13 +21,15 @@ _DEFAULT_THRESHOLD = 80
 @dataclasses.dataclass
 class _OffsetGroup:
   """Represents a set of symbols sharing the same offset."""
+
   offset: int
   names: Set[str] = dataclasses.field(default_factory=set)
   used: bool = False
 
 
 def _NamesToOffsetGroups(
-    symbol_infos: symbol_extractor.SymbolInfo) -> Dict[str, _OffsetGroup]:
+  symbol_infos: symbol_extractor.SymbolInfo,
+) -> Dict[str, _OffsetGroup]:
   """Groups all symbols by offset."""
   name_to_group = {}
   offset_to_group = {}
@@ -42,13 +43,14 @@ def _NamesToOffsetGroups(
   return name_to_group
 
 
-def _MultipleAddressSymbols(symbol_infos: symbol_extractor.SymbolInfo,
-                            name_to_group: Dict[str, _OffsetGroup]):
+def _MultipleAddressSymbols(
+  symbol_infos: symbol_extractor.SymbolInfo,
+  name_to_group: Dict[str, _OffsetGroup],
+):
   """Finds a set of symbols appearing at the same address."""
   ret = set()
   for si in symbol_infos:
-    if (si.name in name_to_group
-        and si.offset != name_to_group[si.name].offset):
+    if si.name in name_to_group and si.offset != name_to_group[si.name].offset:
       ret.add(si.name)
   return ret
 
@@ -69,7 +71,8 @@ def _VerifySymbolOrder(orderfile_symbols, symbol_infos, threshold):
   """
   name_to_group = _NamesToOffsetGroups(symbol_infos)
   symbols_at_multiple_addresses = _MultipleAddressSymbols(
-      symbol_infos, name_to_group)
+    symbol_infos, name_to_group
+  )
 
   # Verify that offsets of the symbols from the orderfile appear in the binary
   # in non-decreasing order.
@@ -82,8 +85,10 @@ def _VerifySymbolOrder(orderfile_symbols, symbol_infos, threshold):
   for sym in orderfile_symbols:
     if sym in symbols_at_multiple_addresses:
       logging.warning(
-          'Ignoring symbol from orderfile appearing ' +
-          'at multiple addresses: %s', sym)
+        'Ignoring symbol from orderfile appearing '
+        + 'at multiple addresses: %s',
+        sym,
+      )
       continue
     if sym not in name_to_group:
       missing_count += 1
@@ -106,21 +111,32 @@ def _VerifySymbolOrder(orderfile_symbols, symbol_infos, threshold):
   if missing_count:
     # TODO(crbug.com/340534475): Return False when too many symbols are
     # missing.
-    logging.warning('%d missing symbols:\n%s', missing_count,
-                    '\n'.join(str(x) for x in missing_syms[:100]))
+    logging.warning(
+      '%d missing symbols:\n%s',
+      missing_count,
+      '\n'.join(str(x) for x in missing_syms[:100]),
+    )
   if misorder_count:
-    logging.warning('%d misordered symbols:\n%s', misorder_count,
-                    '\n'.join(str(x) for x in misordered_syms[:threshold]))
+    logging.warning(
+      '%d misordered symbols:\n%s',
+      misorder_count,
+      '\n'.join(str(x) for x in misordered_syms[:threshold]),
+    )
     if misorder_count > threshold:
-      logging.error('%d misordered symbols over threshold %d, failing',
-                    misorder_count, threshold)
+      logging.error(
+        '%d misordered symbols over threshold %d, failing',
+        misorder_count,
+        threshold,
+      )
       return False
   return True
 
 
-def ExtractAndVerifySymbolOrder(binary_filename: str,
-                                orderfile_filename: str,
-                                threshold: int = _DEFAULT_THRESHOLD):
+def ExtractAndVerifySymbolOrder(
+  binary_filename: str,
+  orderfile_filename: str,
+  threshold: int = _DEFAULT_THRESHOLD,
+):
   """Extracts symbols and verifies the ordering.
 
   Args:
@@ -140,32 +156,39 @@ def ExtractAndVerifySymbolOrder(binary_filename: str,
 def CreateArgumentParser():
   """Creates and returns the argument parser."""
   parser = argparse.ArgumentParser()
-  parser.add_argument('--target-arch',
-                      dest='arch',
-                      required=True,
-                      choices=['arm', 'arm64', 'x86', 'x64'],
-                      help='The target architecture for which to build.')
-  parser.add_argument('-C',
-                      '--out-dir',
-                      type=pathlib.Path,
-                      required=True,
-                      help='Path to the output directory.')
-  parser.add_argument('--orderfile-path',
-                      required=True,
-                      help='Path to the orderfile to verify.')
   parser.add_argument(
-      '--threshold',
-      action='store',
-      dest='threshold',
-      default=_DEFAULT_THRESHOLD,
-      type=int,
-      help='The maximum allowed number of out-of-order symbols.')
-  parser.add_argument('-v',
-                      '--verbose',
-                      dest='verbosity',
-                      action='count',
-                      default=0,
-                      help='Increase verbosity for debugging.')
+    '--target-arch',
+    dest='arch',
+    required=True,
+    choices=['arm', 'arm64', 'x86', 'x64'],
+    help='The target architecture for which to build.',
+  )
+  parser.add_argument(
+    '-C',
+    '--out-dir',
+    type=pathlib.Path,
+    required=True,
+    help='Path to the output directory.',
+  )
+  parser.add_argument(
+    '--orderfile-path', required=True, help='Path to the orderfile to verify.'
+  )
+  parser.add_argument(
+    '--threshold',
+    action='store',
+    dest='threshold',
+    default=_DEFAULT_THRESHOLD,
+    type=int,
+    help='The maximum allowed number of out-of-order symbols.',
+  )
+  parser.add_argument(
+    '-v',
+    '--verbose',
+    dest='verbosity',
+    action='count',
+    default=0,
+    help='Increase verbosity for debugging.',
+  )
   return parser
 
 
@@ -176,13 +199,16 @@ def main():
     level = logging.DEBUG
   else:
     level = logging.INFO
-  logging.basicConfig(level=level,
-                      format='%(levelname).1s %(relativeCreated)6d %(message)s')
+  logging.basicConfig(
+    level=level, format='%(levelname).1s %(relativeCreated)6d %(message)s'
+  )
 
-  lib_chrome_so = orderfile_shared.GetLibchromeSoPath(options.out_dir,
-                                                      options.arch)
-  if ExtractAndVerifySymbolOrder(lib_chrome_so, options.orderfile_path,
-                                 options.threshold):
+  lib_chrome_so = orderfile_shared.GetLibchromeSoPath(
+    options.out_dir, options.arch
+  )
+  if ExtractAndVerifySymbolOrder(
+    lib_chrome_so, options.orderfile_path, options.threshold
+  ):
     return 0
   return 1
 

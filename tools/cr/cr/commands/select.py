@@ -22,10 +22,10 @@ class SelectCommand(cr.Command):
   def __init__(self):
     super(SelectCommand, self).__init__()
     self.help = 'Select an output directory'
-    self.description = ("""
+    self.description = """
         This makes the specified output directory the default for all future
         operations. It also invokes prepare on that directory.
-        """)
+        """
 
   def AddArguments(self, subparsers):
     parser = super(SelectCommand, self).AddArguments(subparsers)
@@ -35,9 +35,11 @@ class SelectCommand(cr.Command):
   @classmethod
   def AddPrepareArguments(cls, parser):
     parser.add_argument(
-        '--no-prepare', dest='_no_prepare',
-        action='store_true', default=False,
-        help='Don\'t prepare the output directory.'
+      '--no-prepare',
+      dest='_no_prepare',
+      action='store_true',
+      default=False,
+      help='Don\'t prepare the output directory.',
     )
 
   def Run(self):
@@ -51,8 +53,8 @@ class SelectCommand(cr.Command):
     directory.
     """
     cr.base.client.WriteConfig(
-        use_build_dir=False,
-        data=dict(CR_OUT_FULL=cr.context.Get('CR_OUT_FULL')))
+      use_build_dir=False, data=dict(CR_OUT_FULL=cr.context.Get('CR_OUT_FULL'))
+    )
     cr.base.client.PrintInfo()
     # Now we run the post select actions
     if not getattr(cr.context.args, '_no_prepare', None):

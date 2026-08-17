@@ -52,7 +52,8 @@ def _package_from_name(clazz):
 def _create_dep_graph():
     # dict of class -> set(referenced classes)
     class_graph = check_for_missing_direct_deps._ParseDepGraph(
-        'obj/chrome/android/chrome_java.javac.jar')
+        'obj/chrome/android/chrome_java.javac.jar'
+    )
 
     # Strip nested classes.
     ret = collections.defaultdict(set)
@@ -89,12 +90,16 @@ def main():
     # class name -> set(class names they depend on that are in chrome_java)
     deps_by_name = collections.defaultdict(set)
     for name in not_already_marked:
-        deps_by_name[name].update(c for c in dep_graph.get(name, [])
-                                  if c != name and c in names_to_class)
+        deps_by_name[name].update(
+            c
+            for c in dep_graph.get(name, [])
+            if c != name and c in names_to_class
+        )
 
     # Sort tuples of name -> deps by class name to try and keep them clustered.
-    unmarked_items = sorted(x for x in deps_by_name.items()
-                            if x[0] not in already_marked)
+    unmarked_items = sorted(
+        x for x in deps_by_name.items() if x[0] not in already_marked
+    )
     current_unblocked = [
         x for x in unmarked_items if all(d in already_marked for d in x[1])
     ]
@@ -121,8 +126,10 @@ def main():
     logging.info('Future unblocked: %d', len(future_unblocked))
 
     # Filter to just blocked deps.
-    still_blocked = [(c, sorted(d for d in deps if d not in future_marked))
-                     for c, deps in still_blocked]
+    still_blocked = [
+        (c, sorted(d for d in deps if d not in future_marked))
+        for c, deps in still_blocked
+    ]
     # Sort by smallest number of blocked deps.
     still_blocked.sort(key=lambda x: len(x[1]))
     logging.info('Classes with circular deps: %d', len(still_blocked))
@@ -148,7 +155,8 @@ def main():
         for name, circular_deps in still_blocked:
             clazz = names_to_class[name]
             writer.writerow(
-                (clazz.path.lstrip('/.'), len(circular_deps), 'Yes'))
+                (clazz.path.lstrip('/.'), len(circular_deps), 'Yes')
+            )
             for dep in circular_deps:
                 clazz = names_to_class[dep]
                 writer.writerow(('', clazz.path.lstrip('/.')))

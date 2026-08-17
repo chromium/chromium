@@ -15,8 +15,9 @@ import pathlib
 
 INFOBAR_DELEGATE_H = 'components/infobars/core/infobar_delegate.h'
 INFOBAR_ANDROID_FOLDERS = (
-    'chrome/browser/ui/android/infobars',
-    'chrome/android/java/src/org/chromium/chrome/browser/infobar')
+  'chrome/browser/ui/android/infobars',
+  'chrome/android/java/src/org/chromium/chrome/browser/infobar',
+)
 
 
 def CheckDeprecationOnUpload(input_api, output_api):
@@ -35,21 +36,25 @@ def _IncludeFiles(f):
 
 def _CheckNewInfobar(input_api, output_api):
   warnings = []
-  for f in input_api.AffectedFiles(include_deletes=False,
-                                   file_filter=_IncludeFiles):
-
+  for f in input_api.AffectedFiles(
+    include_deletes=False, file_filter=_IncludeFiles
+  ):
     # Consider only newly added files.
-    if f.Action() == 'A' and (os.path.dirname(
-        f.LocalPath()) in INFOBAR_ANDROID_FOLDERS) and (
-            'infobar' in os.path.basename(f.LocalPath()).lower()):
+    if (
+      f.Action() == 'A'
+      and (os.path.dirname(f.LocalPath()) in INFOBAR_ANDROID_FOLDERS)
+      and ('infobar' in os.path.basename(f.LocalPath()).lower())
+    ):
       warnings.append('  %s' % f.LocalPath())
 
-    if (f.LocalPath() == INFOBAR_DELEGATE_H):
+    if f.LocalPath() == INFOBAR_DELEGATE_H:
       contents = input_api.ReadFile(f)
 
       # Capture current identifiers.
-      p = re.compile('enum InfoBarIdentifier {(.*?)}',
-                     re.IGNORECASE | re.DOTALL | re.MULTILINE)
+      p = re.compile(
+        'enum InfoBarIdentifier {(.*?)}',
+        re.IGNORECASE | re.DOTALL | re.MULTILINE,
+      )
       ids = p.search(contents).group(1)
 
       find_id = re.compile('(.*) =')
@@ -65,13 +70,14 @@ def _CheckNewInfobar(input_api, output_api):
           continue
         infobar_id = match.group(1)
         if infobar_id.endswith("_ANDROID") or infobar_id.endswith("_MOBILE"):
-          warnings.append('  %s:%d\n    \t%s' %
-                          (f.LocalPath(), line_number, line.strip()))
+          warnings.append(
+            '  %s:%d\n    \t%s' % (f.LocalPath(), line_number, line.strip())
+          )
 
   if warnings:
     return [
-        output_api.PresubmitPromptWarning(
-            '''
+      output_api.PresubmitPromptWarning(
+        '''
 Android InfoBar Deprecation Check failed:
   Your new code appears to add a new infobar on Android.
 
@@ -80,6 +86,8 @@ Android InfoBar Deprecation Check failed:
 
   See components/messages/README.md or reach out to components/messages/OWNERS
   for more information.
-''', warnings)
+''',
+        warnings,
+      )
     ]
   return []

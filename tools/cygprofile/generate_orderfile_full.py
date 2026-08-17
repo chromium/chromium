@@ -45,12 +45,12 @@ _GN_PATH = _SRC_PATH / 'third_party/depot_tools/gn.py'
 # Architecture specific GN args. Trying to build an orderfile for an
 # architecture not listed here will eventually throw.
 _ARCH_GN_ARGS = {
-    'arm': ['target_cpu="arm"'],
-    # Does not work on the bot: https://crbug.com/41490637
-    'arm64': ['target_cpu="arm64"'],
-    'x86': ['target_cpu="x86"'],
-    # Telemetry does not work with x64 yet: https://crbug.com/327791269
-    'x64': ['target_cpu="x64"'],
+  'arm': ['target_cpu="arm"'],
+  # Does not work on the bot: https://crbug.com/41490637
+  'arm64': ['target_cpu="arm64"'],
+  'x86': ['target_cpu="x86"'],
+  # Telemetry does not work with x64 yet: https://crbug.com/327791269
+  'x64': ['target_cpu="x64"'],
 }
 
 _RESULTS_KEY_SPEEDOMETER = 'Speedometer2.0'
@@ -78,11 +78,13 @@ class StepRecorder:
     """True if FailStep has been called."""
     return self._error_recorded
 
-  def RunCommand(self,
-                 cmd: List[str],
-                 cwd: pathlib.Path = _SRC_PATH,
-                 raise_on_error: bool = True,
-                 capture_output: bool = False) -> subprocess.CompletedProcess:
+  def RunCommand(
+    self,
+    cmd: List[str],
+    cwd: pathlib.Path = _SRC_PATH,
+    raise_on_error: bool = True,
+    capture_output: bool = False,
+  ) -> subprocess.CompletedProcess:
     """Execute a shell command.
 
     Args:
@@ -100,12 +102,13 @@ class StepRecorder:
     """
     logging.info('Executing %s in %s', ' '.join(cmd), cwd)
     process = subprocess.run(
-        cmd,
-        capture_output=capture_output,
-        check=False,  # This allows for raise_on_error.
-        text=True,
-        cwd=cwd,
-        env=os.environ)
+      cmd,
+      capture_output=capture_output,
+      check=False,  # This allows for raise_on_error.
+      text=True,
+      cwd=cwd,
+      env=os.environ,
+    )
     if raise_on_error and process.returncode != 0:
       if capture_output:
         self.FailStep(str(process.stdout) + str(process.stderr))
@@ -157,8 +160,13 @@ def _RemoveBlanks(src_file, dest_file):
 class ClankCompiler:
   """Handles compilation of clank."""
 
-  def __init__(self, out_dir: pathlib.Path, step_recorder: StepRecorder,
-               options, orderfile_location):
+  def __init__(
+    self,
+    out_dir: pathlib.Path,
+    step_recorder: StepRecorder,
+    options,
+    orderfile_location,
+  ):
     self._out_dir = out_dir
     self._step_recorder = step_recorder
     self._options = options
@@ -170,34 +178,37 @@ class ClankCompiler:
     self._ninja_command += ['-C']
 
     # WebView targets
-    self._webview_target, webview_apk = _GetWebViewTargetAndApk(
-        options.arch)
+    self._webview_target, webview_apk = _GetWebViewTargetAndApk(options.arch)
     self.webview_apk_path = str(out_dir / 'apks' / webview_apk)
-    self.webview_installer_path = str(self._out_dir / 'bin' /
-                                      self._webview_target)
+    self.webview_installer_path = str(
+      self._out_dir / 'bin' / self._webview_target
+    )
 
     # Chrome targets
     self._chrome_target, self.chrome_browser_name = (
-        _GetChromeTargetAndBrowserName(options.arch))
+      _GetChromeTargetAndBrowserName(options.arch)
+    )
 
     self._libchrome_target = orderfile_shared.GetLibchromeTarget(
-        options.arch, options.profile_webview)
+      options.arch, options.profile_webview
+    )
     self.lib_chrome_so = orderfile_shared.GetLibchromeSoPath(
-        out_dir, options.arch, options.profile_webview)
+      out_dir, options.arch, options.profile_webview
+    )
 
   def _GenerateGnArgs(self, instrumented):
     # Set the "Release Official" flavor, the parts affecting performance.
     gn_args = [
-        'enable_resource_allowlist_generation=false',
-        'is_chrome_branded=' + str(not self._options.public).lower(),
-        'is_debug=false',
-        'is_official_build=true',
-        'symbol_level=1',  # to fit 30 GiB RAM on the bot when LLD is running
-        'target_os="android"',
-        'enable_proguard_obfuscation=false',  # More debuggable stacktraces.
-        'use_remoteexec=' + str(self._options.use_remoteexec).lower(),
-        'use_order_profiling=' + str(instrumented).lower(),
-        'devtools_instrumentation_dumping=' + str(instrumented).lower()
+      'enable_resource_allowlist_generation=false',
+      'is_chrome_branded=' + str(not self._options.public).lower(),
+      'is_debug=false',
+      'is_official_build=true',
+      'symbol_level=1',  # to fit 30 GiB RAM on the bot when LLD is running
+      'target_os="android"',
+      'enable_proguard_obfuscation=false',  # More debuggable stacktraces.
+      'use_remoteexec=' + str(self._options.use_remoteexec).lower(),
+      'use_order_profiling=' + str(instrumented).lower(),
+      'devtools_instrumentation_dumping=' + str(instrumented).lower(),
     ]
     gn_args += _ARCH_GN_ARGS[self._options.arch]
 
@@ -216,25 +227,29 @@ class ClankCompiler:
     """
     logging.info('Compile %s' % target)
     gn_args = self._GenerateGnArgs(instrumented)
-    self._step_recorder.RunCommand([
+    self._step_recorder.RunCommand(
+      [
         sys.executable,
-        str(_GN_PATH), 'gen',
-        str(self._out_dir), '--args=' + ' '.join(gn_args)
-    ])
+        str(_GN_PATH),
+        'gen',
+        str(self._out_dir),
+        '--args=' + ' '.join(gn_args),
+      ]
+    )
     # At times there is a cyclic dependency, so if the initial ninja command
     # fails, we can retry after cleaning the output directory.
-    process = self._step_recorder.RunCommand(self._ninja_command +
-                                             [str(self._out_dir), target],
-                                             raise_on_error=False)
+    process = self._step_recorder.RunCommand(
+      self._ninja_command + [str(self._out_dir), target], raise_on_error=False
+    )
     if process.returncode == 0:
       return
     # The first ninja command failed, try cleaning and re-running.
     self._step_recorder.RunCommand(
-        [sys.executable,
-         str(_GN_PATH), 'clean',
-         str(self._out_dir)])
-    self._step_recorder.RunCommand(self._ninja_command +
-                                   [str(self._out_dir), target])
+      [sys.executable, str(_GN_PATH), 'clean', str(self._out_dir)]
+    )
+    self._step_recorder.RunCommand(
+      self._ninja_command + [str(self._out_dir), target]
+    )
 
   def _ForceRelink(self):
     """Forces libmonochrome.so to be re-linked.
@@ -288,6 +303,7 @@ class OrderfileGenerator:
   Builds an instrumented binary, profiles a run of the application, and
   generates an updated orderfile.
   """
+
   _CHECK_ORDERFILE_SCRIPT = _SRC_PATH / 'tools/cygprofile/check_orderfile.py'
 
   # Previous orderfile_generator debug files would be overwritten.
@@ -296,12 +312,15 @@ class OrderfileGenerator:
   def __init__(self, options):
     self._options = options
     self._instrumented_out_dir = (
-        _OUT_PATH / f'orderfile_{self._options.arch}_instrumented_out')
+      _OUT_PATH / f'orderfile_{self._options.arch}_instrumented_out'
+    )
 
     self._uninstrumented_out_dir = (
-        _OUT_PATH / f'orderfile_{self._options.arch}_uninstrumented_out')
+      _OUT_PATH / f'orderfile_{self._options.arch}_uninstrumented_out'
+    )
     self._no_orderfile_out_dir = (
-        _OUT_PATH / f'orderfile_{self._options.arch}_no_orderfile_out')
+      _OUT_PATH / f'orderfile_{self._options.arch}_no_orderfile_out'
+    )
 
     self._PrepareOrderfilePaths()
 
@@ -309,18 +328,22 @@ class OrderfileGenerator:
       self._host_profile_root = _SRC_PATH / 'profile_data'
       device = self._SetDevice()
       self._profiler = android_profile_tool.AndroidProfileTool(
-          str(self._host_profile_root),
-          device,
-          debug=self._options.streamline_for_debugging,
-          verbosity=self._options.verbosity)
+        str(self._host_profile_root),
+        device,
+        debug=self._options.streamline_for_debugging,
+        verbosity=self._options.verbosity,
+      )
       if options.pregenerated_profiles:
         self._profiler.SetPregeneratedProfiles(
-            glob.glob(options.pregenerated_profiles))
+          glob.glob(options.pregenerated_profiles)
+        )
     else:
       assert not options.pregenerated_profiles, (
-          '--pregenerated-profiles cannot be used with --skip-profile')
+        '--pregenerated-profiles cannot be used with --skip-profile'
+      )
       assert not options.profile_save_dir, (
-          '--profile-save-dir cannot be used with --skip-profile')
+        '--profile-save-dir cannot be used with --skip-profile'
+      )
 
     self._output_data = {}
     self._step_recorder = StepRecorder()
@@ -347,7 +370,7 @@ class OrderfileGenerator:
     return str(self._orderfiles_dir / f'unpatched_orderfile.{arch}')
 
   def _SetDevice(self):
-    """ Selects the device to be used by the script.
+    """Selects the device to be used by the script.
 
     Returns:
       (Device with given serial ID) : if the --device flag is set.
@@ -367,7 +390,6 @@ class OrderfileGenerator:
         return device
     raise Exception('No device running Android Q+ found to build trichrome.')
 
-
   def _GenerateAndProcessProfile(self):
     """Invokes a script to merge the per-thread traces into one file.
 
@@ -385,15 +407,20 @@ class OrderfileGenerator:
         raise Exception('Profile save directory must not pre-exist')
 
     assert self._compiler is not None, (
-        'A valid compiler is needed to generate profiles.')
+      'A valid compiler is needed to generate profiles.'
+    )
     if self._options.profile_webview:
       apk_or_browser = self._compiler.webview_apk_path
     else:
       apk_or_browser = self._compiler.chrome_browser_name
     files = orderfile_shared.CollectProfiles(
-        self._profiler,
-        self._options.profile_webview, self._options.arch, apk_or_browser,
-        str(self._instrumented_out_dir), self._compiler.webview_installer_path)
+      self._profiler,
+      self._options.profile_webview,
+      self._options.arch,
+      apk_or_browser,
+      str(self._instrumented_out_dir),
+      self._compiler.webview_installer_path,
+    )
     self._MaybeSaveProfile()
     self._ProcessPhasedOrderfile(files)
     if not self._options.save_profile_data:
@@ -411,7 +438,8 @@ class OrderfileGenerator:
     logging.info('Process Phased Orderfile')
     assert self._compiler is not None
     ordered_symbols, symbols_size = orderfile_shared.ProcessProfiles(
-        files, self._compiler.lib_chrome_so)
+      files, self._compiler.lib_chrome_so
+    )
     self._output_data['offsets_kib'] = symbols_size / 1024
     with open(self._GetUnpatchedOrderfileFilename(), 'w') as orderfile:
       orderfile.write('\n'.join(ordered_symbols))
@@ -427,14 +455,16 @@ class OrderfileGenerator:
     # TODO(crbug.com/340534475): Stop writing the `unpatched_orderfile` and
     # saving it locally.
     logging.info('Add dummy functions')
-    orderfile_shared.AddDummyFunctions(self._GetUnpatchedOrderfileFilename(),
-                                       self._GetPathToOrderfile())
+    orderfile_shared.AddDummyFunctions(
+      self._GetUnpatchedOrderfileFilename(), self._GetPathToOrderfile()
+    )
 
   def _VerifySymbolOrder(self):
     logging.info('Verify Symbol Order')
     assert self._compiler is not None
     return check_orderfile.ExtractAndVerifySymbolOrder(
-        self._compiler.lib_chrome_so, self._GetPathToOrderfile())
+      self._compiler.lib_chrome_so, self._GetPathToOrderfile()
+    )
 
   def _WebViewStartupBenchmark(self, apk: str):
     """Runs system_health.webview_startup benchmark.
@@ -444,15 +474,26 @@ class OrderfileGenerator:
     logging.info('Running system_health.webview_startup')
     try:
       chromium_out_dir = os.path.abspath(
-          os.path.join(os.path.dirname(apk), '..'))
+        os.path.join(os.path.dirname(apk), '..')
+      )
       browser = 'android-webview-standalone'
       out_dir = tempfile.mkdtemp()
-      android_profile_tool.RunCommand([
-          'tools/perf/run_benchmark', '--device', self._profiler._device.serial,
-          '--browser', browser, '--output-format=csv', '--output-dir', out_dir,
-          '--chromium-output-directory', chromium_out_dir, '--reset-results',
-          'system_health.webview_startup'
-      ])
+      android_profile_tool.RunCommand(
+        [
+          'tools/perf/run_benchmark',
+          '--device',
+          self._profiler._device.serial,
+          '--browser',
+          browser,
+          '--output-format=csv',
+          '--output-dir',
+          out_dir,
+          '--chromium-output-directory',
+          chromium_out_dir,
+          '--reset-results',
+          'system_health.webview_startup',
+        ]
+      )
       out_file_path = os.path.join(out_dir, 'results.csv')
       if not os.path.exists(out_file_path):
         raise Exception('Results file not found!')
@@ -462,8 +503,9 @@ class OrderfileGenerator:
         for row in reader:
           if not row['name'].startswith('webview_startup'):
             continue
-          results.setdefault(row['name'], {}).setdefault(row['stories'],
-                                                         []).append(row['avg'])
+          results.setdefault(row['name'], {}).setdefault(
+            row['stories'], []
+          ).append(row['avg'])
 
       if not results:
         raise Exception('Could not find relevant results')
@@ -490,10 +532,17 @@ class OrderfileGenerator:
     try:
       out_dir = tempfile.mkdtemp()
       cmd = [
-          'tools/perf/run_benchmark', '--device', self._profiler._device.serial,
-          '--browser=exact', '--output-format=csv', '--output-dir', out_dir,
-          '--reset-results', '--browser-executable', apk,
-          'orderfile.memory_mobile'
+        'tools/perf/run_benchmark',
+        '--device',
+        self._profiler._device.serial,
+        '--browser=exact',
+        '--output-format=csv',
+        '--output-dir',
+        out_dir,
+        '--reset-results',
+        '--browser-executable',
+        apk,
+        'orderfile.memory_mobile',
       ] + ['-v'] * self._options.verbosity
       android_profile_tool.RunCommand(cmd)
 
@@ -511,8 +560,9 @@ class OrderfileGenerator:
           # story run, so this average (reported as 'avg') is exactly the value
           # of that one sample. Each story is run multiple times, so this loop
           # will accumulate into a list all values for all runs of each story.
-          results.setdefault(row['name'], {}).setdefault(row['stories'],
-                                                         []).append(row['avg'])
+          results.setdefault(row['name'], {}).setdefault(
+            row['stories'], []
+          ).append(row['avg'])
 
       if not results:
         raise Exception('Could not find relevant results')
@@ -538,10 +588,17 @@ class OrderfileGenerator:
     try:
       out_dir = tempfile.mkdtemp()
       cmd = [
-          'tools/perf/run_benchmark', '--device', self._profiler._device.serial,
-          '--browser=exact', '--output-format=histograms', '--output-dir',
-          out_dir, '--reset-results', '--browser-executable', apk,
-          'speedometer2'
+        'tools/perf/run_benchmark',
+        '--device',
+        self._profiler._device.serial,
+        '--browser=exact',
+        '--output-format=histograms',
+        '--output-dir',
+        out_dir,
+        '--reset-results',
+        '--browser-executable',
+        apk,
+        'speedometer2',
       ] + ['-v'] * self._options.verbosity
 
       android_profile_tool.RunCommand(cmd)
@@ -567,9 +624,9 @@ class OrderfileGenerator:
     finally:
       shutil.rmtree(out_dir)
 
-  def RunBenchmark(self,
-                   out_directory: pathlib.Path,
-                   no_orderfile: bool = False) -> Dict:
+  def RunBenchmark(
+    self, out_directory: pathlib.Path, no_orderfile: bool = False
+  ) -> Dict:
     """Builds chrome apk and runs performance and memory benchmarks.
 
     Builds a non-instrumented version of chrome.
@@ -586,8 +643,12 @@ class OrderfileGenerator:
     """
     benchmark_results = {}
     try:
-      self._compiler = ClankCompiler(out_directory, self._step_recorder,
-                                     self._options, self._GetPathToOrderfile())
+      self._compiler = ClankCompiler(
+        out_directory,
+        self._step_recorder,
+        self._options,
+        self._GetPathToOrderfile(),
+      )
 
       if no_orderfile:
         orderfile_path = self._GetPathToOrderfile()
@@ -598,16 +659,19 @@ class OrderfileGenerator:
       # Build APK to be installed on the device.
       self._compiler.CompileChromeApk(instrumented=False, force_relink=True)
       benchmark_results[_RESULTS_KEY_SPEEDOMETER] = self._PerformanceBenchmark(
-          self._compiler.chrome_browser_name)
+        self._compiler.chrome_browser_name
+      )
       benchmark_results['orderfile.memory_mobile'] = (
-          self._NativeCodeMemoryBenchmark(self._compiler.chrome_browser_name))
+        self._NativeCodeMemoryBenchmark(self._compiler.chrome_browser_name)
+      )
       if self._options.profile_webview:
         self._compiler.CompileWebViewApk(instrumented=False, force_relink=True)
         self._profiler.InstallAndSetWebViewProvider(
-            self._compiler.webview_installer_path)
-        benchmark_results[
-            'system_health.webview_startup'] = self._WebViewStartupBenchmark(
-                self._compiler.webview_apk_path)
+          self._compiler.webview_installer_path
+        )
+        benchmark_results['system_health.webview_startup'] = (
+          self._WebViewStartupBenchmark(self._compiler.webview_apk_path)
+        )
 
     except Exception as e:
       benchmark_results['Error'] = str(e)
@@ -618,30 +682,36 @@ class OrderfileGenerator:
 
     return benchmark_results
 
-  def _SaveBenchmarkResultsToOutput(self, with_orderfile_results,
-                                    no_orderfile_results):
+  def _SaveBenchmarkResultsToOutput(
+    self, with_orderfile_results, no_orderfile_results
+  ):
     self._output_data['orderfile_benchmark_results'] = with_orderfile_results
     self._output_data['no_orderfile_benchmark_results'] = no_orderfile_results
     with_orderfile_samples = with_orderfile_results[_RESULTS_KEY_SPEEDOMETER]
     no_orderfile_samples = no_orderfile_results[_RESULTS_KEY_SPEEDOMETER]
-    self._output_data['orderfile_median_speedup'] = (
-        statistics.median(no_orderfile_samples) /
-        statistics.median(with_orderfile_samples))
+    self._output_data['orderfile_median_speedup'] = statistics.median(
+      no_orderfile_samples
+    ) / statistics.median(with_orderfile_samples)
 
     def RelativeStdev(samples):
       return statistics.stdev(samples) / statistics.median(samples)
 
     self._output_data['orderfile_benchmark_stdev_relative'] = RelativeStdev(
-        with_orderfile_samples)
+      with_orderfile_samples
+    )
     self._output_data['no_orderfile_benchmark_stdev_relative'] = RelativeStdev(
-        no_orderfile_samples)
+      no_orderfile_samples
+    )
 
   def Generate(self):
     """Generates and maybe upload an order."""
     if self._options.profile:
-      self._compiler = ClankCompiler(self._instrumented_out_dir,
-                                     self._step_recorder, self._options,
-                                     self._GetPathToOrderfile())
+      self._compiler = ClankCompiler(
+        self._instrumented_out_dir,
+        self._step_recorder,
+        self._options,
+        self._GetPathToOrderfile(),
+      )
       if not self._options.pregenerated_profiles:
         # If there are pregenerated profiles, the instrumented build should
         # not be changed to avoid invalidating the pregenerated profile
@@ -653,24 +723,29 @@ class OrderfileGenerator:
       self._GenerateAndProcessProfile()
 
     if self._options.profile:
-      _RemoveBlanks(self._GetUnpatchedOrderfileFilename(),
-                    self._GetPathToOrderfile())
+      _RemoveBlanks(
+        self._GetUnpatchedOrderfileFilename(), self._GetPathToOrderfile()
+      )
     self._AddDummyFunctions()
     if not self.CompileAndVerify():
       return False
 
     if self._options.benchmark:
       self._SaveBenchmarkResultsToOutput(
-          self.RunBenchmark(self._uninstrumented_out_dir),
-          self.RunBenchmark(self._no_orderfile_out_dir, no_orderfile=True))
+        self.RunBenchmark(self._uninstrumented_out_dir),
+        self.RunBenchmark(self._no_orderfile_out_dir, no_orderfile=True),
+      )
 
     return not self._step_recorder.ErrorRecorded()
 
   def CompileAndVerify(self):
     """Compiles and verifies the orderfile."""
-    self._compiler = ClankCompiler(self._uninstrumented_out_dir,
-                                   self._step_recorder, self._options,
-                                   self._GetPathToOrderfile())
+    self._compiler = ClankCompiler(
+      self._uninstrumented_out_dir,
+      self._step_recorder,
+      self._options,
+      self._GetPathToOrderfile(),
+    )
     self._compiler.CompileLibchrome(instrumented=False, force_relink=False)
     return self._VerifySymbolOrder()
 
@@ -684,61 +759,61 @@ def CreateArgumentParser():
   parser = argparse.ArgumentParser()
   orderfile_shared.AddCommonArguments(parser)
   parser.add_argument(
-      "--no-benchmark",
-      action="store_false",
-      dest="benchmark",
-      default=True,
-      help="Disables running benchmarks.",
+    "--no-benchmark",
+    action="store_false",
+    dest="benchmark",
+    default=True,
+    help="Disables running benchmarks.",
   )
   parser.add_argument(
-      "--device",
-      default=None,
-      type=str,
-      help="Device serial number on which to run profiling.",
+    "--device",
+    default=None,
+    type=str,
+    help="Device serial number on which to run profiling.",
   )
 
   parser.add_argument(
-      "--skip-profile",
-      action="store_false",
-      dest="profile",
-      default=True,
-      help="Don't generate a profile on the device. Only patch from the "
-      "existing profile.",
+    "--skip-profile",
+    action="store_false",
+    dest="profile",
+    default=True,
+    help="Don't generate a profile on the device. Only patch from the "
+    "existing profile.",
   )
   parser.add_argument(
-      "--use-remoteexec",
-      action="store_true",
-      help="Enable remoteexec. see //build/toolchain/rbe.gni.",
-      default=False,
+    "--use-remoteexec",
+    action="store_true",
+    help="Enable remoteexec. see //build/toolchain/rbe.gni.",
+    default=False,
   )
   parser.add_argument("--adb-path", help="Path to the adb binary.")
 
   parser.add_argument(
-      "--public",
-      action="store_true",
-      help="Build non-internal APK and change the orderfile location. "
-      "Required if your checkout is non-internal.",
-      default=False,
+    "--public",
+    action="store_true",
+    help="Build non-internal APK and change the orderfile location. "
+    "Required if your checkout is non-internal.",
+    default=False,
   )
   parser.add_argument(
-      "--pregenerated-profiles",
-      default=None,
-      type=str,
-      help="Pregenerated profiles to use instead of running the profile step. "
-      "Cannot be used with --skip-profiles.",
+    "--pregenerated-profiles",
+    default=None,
+    type=str,
+    help="Pregenerated profiles to use instead of running the profile step. "
+    "Cannot be used with --skip-profiles.",
   )
   parser.add_argument(
-      "--profile-save-dir",
-      default=None,
-      type=str,
-      help="Directory to save any profiles created. These can be used with "
-      "--pregenerated-profiles. Cannot be used with --skip-profiles.",
+    "--profile-save-dir",
+    default=None,
+    type=str,
+    help="Directory to save any profiles created. These can be used with "
+    "--pregenerated-profiles. Cannot be used with --skip-profiles.",
   )
   parser.add_argument(
-      "--verify",
-      action="store_true",
-      help="If true, the script avoids generation, only compiles the library "
-      "and verifies the current orderfile.",
+    "--verify",
+    action="store_true",
+    help="If true, the script avoids generation, only compiles the library "
+    "and verifies the current orderfile.",
   )
   return parser
 

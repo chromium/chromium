@@ -16,6 +16,7 @@ def CheckAllowedFiles(input_api, output_api):
   for f in input_api.AffectedFiles(include_deletes=False):
     path = f.LocalPath()
     if not path.endswith(('.py', '.cpp', '.txt', '.h')):
-      errors.append(output_api.PresubmitError("Unexpected file added %s" %
-                                              path))
+      errors.append(
+        output_api.PresubmitError("Unexpected file added %s" % path)
+      )
   return errors

@@ -13,6 +13,7 @@ def uniform_path_format(native_path):
   """Alters the path if needed to be separated by forward slashes."""
   return posixpath.normpath(native_path.replace(os.sep, posixpath.sep))
 
+
 def parse(filename):
   """Searches the file for lines that start with `# TEAM:` or `# COMPONENT:`.
 
@@ -25,7 +26,7 @@ def parse(filename):
         'team': 'team@email.here',
         'os': 'Linux|Windows|Mac|Android|Chrome|Fuchsia'
     }
- """
+  """
   team_regex = re.compile('\s*#\s*TEAM\s*:\s*(\S+)')
   component_regex = re.compile('\s*#\s*COMPONENT\s*:\s*(\S+)')
   os_regex = re.compile('\s*#\s*OS\s*:\s*(\S+)')
@@ -103,8 +104,10 @@ def aggregate_components_from_owners(all_owners_data, root):
         num_with_team_component += 1
         num_with_team_component_by_depth[file_depth] += 1
         teams_per_component[component].add(team)
-        if component not in topmost_team or file_depth < topmost_team[
-            component]['depth']:
+        if (
+          component not in topmost_team
+          or file_depth < topmost_team[component]['depth']
+        ):
           topmost_team[component] = {'depth': file_depth, 'team': team}
     else:
       rel_owners_path = uniform_path_format(os.path.join(rel_dirname, 'OWNERS'))
@@ -113,25 +116,25 @@ def aggregate_components_from_owners(all_owners_data, root):
         dir_missing_info_by_depth[file_depth].append(rel_owners_path)
 
   mappings = {
-      'component-to-team': {k: v['team']
-                            for k, v in topmost_team.items()},
-      'teams-per-component':
-      {k: sorted(list(v))
-       for k, v in teams_per_component.items()},
-      'dir-to-component': dir_to_component,
-      'dir-to-team': dir_to_team,
+    'component-to-team': {k: v['team'] for k, v in topmost_team.items()},
+    'teams-per-component': {
+      k: sorted(list(v)) for k, v in teams_per_component.items()
+    },
+    'dir-to-component': dir_to_component,
+    'dir-to-team': dir_to_team,
   }
   warnings += validate_one_team_per_component(mappings)
-  stats = {'OWNERS-count': num_total,
-           'OWNERS-with-component-only-count': num_with_component,
-           'OWNERS-with-team-and-component-count': num_with_team_component,
-           'OWNERS-count-by-depth': num_total_by_depth,
-           'OWNERS-with-component-only-count-by-depth':
-           num_with_component_by_depth,
-           'OWNERS-with-team-and-component-count-by-depth':
-           num_with_team_component_by_depth,
-           'OWNERS-missing-info-by-depth':
-           dir_missing_info_by_depth}
+  stats = {
+    'OWNERS-count': num_total,
+    'OWNERS-with-component-only-count': num_with_component,
+    'OWNERS-with-team-and-component-count': num_with_team_component,
+    'OWNERS-count-by-depth': num_total_by_depth,
+    'OWNERS-with-component-only-count-by-depth': num_with_component_by_depth,
+    'OWNERS-with-team-and-component-count-by-depth': (
+      num_with_team_component_by_depth
+    ),
+    'OWNERS-missing-info-by-depth': dir_missing_info_by_depth,
+  }
   return mappings, warnings, stats
 
 
@@ -142,14 +145,12 @@ def validate_one_team_per_component(m):
   teams_per_component = m['teams-per-component']
   for c in teams_per_component:
     if len(teams_per_component[c]) > 1:
-      warnings.append('Component %s has the following teams assigned: %s.\n'
-                      'Team %s is being used, as it is defined at the OWNERS '
-                      'file at the topmost dir'
-                      % (
-                          c,
-                          ', '.join(teams_per_component[c]),
-                          m['component-to-team'][c]
-                      ))
+      warnings.append(
+        'Component %s has the following teams assigned: %s.\n'
+        'Team %s is being used, as it is defined at the OWNERS '
+        'file at the topmost dir'
+        % (c, ', '.join(teams_per_component[c]), m['component-to-team'][c])
+      )
   return warnings
 
 
@@ -176,7 +177,7 @@ def scrape_owners(root, include_subdirs):
   data = {}
 
   def nearest_ancestor_tag(dirname, tag):
-    """ Find the value of tag in the nearest ancestor that defines it."""
+    """Find the value of tag in the nearest ancestor that defines it."""
     ancestor = os.path.dirname(dirname)
     while ancestor:
       rel_ancestor = uniform_path_format(os.path.relpath(ancestor, root))

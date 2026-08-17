@@ -16,7 +16,6 @@ import run_server
 
 
 class RunServerTest(unittest.TestCase):
-
     def setUp(self):
         # Suppress print statements during tests.
         self.held_stdout = io.StringIO()
@@ -35,7 +34,8 @@ class RunServerTest(unittest.TestCase):
     def create_mock_handler(self, path, client_ip='127.0.0.1'):
         """Creates a partially initialized handler for testing do_GET."""
         handler = run_server.MainRequestHandler.__new__(
-            run_server.MainRequestHandler)
+            run_server.MainRequestHandler
+        )
         handler.path = path
         handler.client_address = (client_ip, 12345)
         handler.send_error = MagicMock()
@@ -97,8 +97,7 @@ class RunServerTest(unittest.TestCase):
         run_server._config.require_imprint = True
 
         # First request sets the imprinted IP.
-        handler1 = self.create_mock_handler('/index.html',
-                                            client_ip='10.0.0.1')
+        handler1 = self.create_mock_handler('/index.html', client_ip='10.0.0.1')
         with patch('http.server.SimpleHTTPRequestHandler.do_GET'):
             handler1.do_GET()
             self.assertEqual(run_server._config.allowed_client_ip, '10.0.0.1')
@@ -111,12 +110,12 @@ class RunServerTest(unittest.TestCase):
             handler2.send_error.assert_not_called()
 
         # Request from a different IP is blocked.
-        handler3 = self.create_mock_handler('/index.html',
-                                            client_ip='10.0.0.2')
+        handler3 = self.create_mock_handler('/index.html', client_ip='10.0.0.2')
         handler3.do_GET()
         handler3.send_error.assert_called_with(
             HTTPStatus.FORBIDDEN,
-            "Forbidden: Server is imprinted to a different IP.")
+            "Forbidden: Server is imprinted to a different IP.",
+        )
 
 
 if __name__ == '__main__':

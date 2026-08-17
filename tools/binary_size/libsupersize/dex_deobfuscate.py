@@ -7,9 +7,11 @@ import functools
 import logging
 import re
 
-_PROGUARD_CLASS_MAPPING_RE = re.compile(r'(?P<original_name>[^ ]+)'
-                                        r' -> '
-                                        r'(?P<obfuscated_name>[^:]+):')
+_PROGUARD_CLASS_MAPPING_RE = re.compile(
+  r'(?P<original_name>[^ ]+)'
+  r' -> '
+  r'(?P<obfuscated_name>[^:]+):'
+)
 
 
 def _CreateClassDeobfuscationMap(mapping_line_iter):

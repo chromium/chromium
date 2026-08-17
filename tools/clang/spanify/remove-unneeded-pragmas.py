@@ -23,7 +23,7 @@
 #       "checkout_google_internal": True,
 #     },
 #  },
-#]
+# ]
 # ```
 # You'll also need to run some scripts like:
 # ```
@@ -71,8 +71,12 @@ def FindCodeFilesWithPragma() -> set[str]:
         git grep -l '#pragma allow_unsafe_buffers' --\
             '*.h' '*.cc' '*.c' '*.cpp' '*.mm' '*.m'
     """
-    files_that_had_pragma = set(f.strip() for f in subprocess.check_output(
-        files_with_pragma, shell=True).decode("utf-8").split("\n"))
+    files_that_had_pragma = set(
+        f.strip()
+        for f in subprocess.check_output(files_with_pragma, shell=True)
+        .decode("utf-8")
+        .split("\n")
+    )
     files_that_had_pragma.discard("")
     return files_that_had_pragma
 
@@ -80,13 +84,13 @@ def FindCodeFilesWithPragma() -> set[str]:
 # For a given target (just a label for the out directory) and the associated
 # gn args generate the json representation of the targets and find all files we
 # will compile when compiling this target.
-def FindReachableFilesForConfigsInSet(target, args,
-                                      files_to_check) -> set[str]:
+def FindReachableFilesForConfigsInSet(target, args, files_to_check) -> set[str]:
     current_target = set()
     # Generate the project.json file, you could also specify the name with
     # --json-file-name but no real need.
-    os.system("gn gen out/%s --ide=json --args='%s'" %
-              (target, "\n".join(args)))
+    os.system(
+        "gn gen out/%s --ide=json --args='%s'" % (target, "\n".join(args))
+    )
     with open('out/%s/project.json' % target) as f:
         data = json.load(f)
         for tar, values in data['targets'].items():
@@ -124,8 +128,10 @@ def RemovePragmasFromFiles(files):
                         else:
                             f.write(line)
         except Exception as e:
-            print("Failed to remove opt_out from %s: %s" % (file, str(e)),
-                  flush=True)
+            print(
+                "Failed to remove opt_out from %s: %s" % (file, str(e)),
+                flush=True,
+            )
 
 
 def AddPragmasToFiles(unsafe_buffers_files, files_that_had_pragma) -> [str]:
@@ -139,7 +145,7 @@ def AddPragmasToFiles(unsafe_buffers_files, files_that_had_pragma) -> [str]:
     for file in unsafe_buffers_files:
         try:
             print("Opting out %s" % file, flush=True)
-            if (not os.path.exists(file)):
+            if not os.path.exists(file):
                 print("File %s does not exist." % file, flush=True)
                 continue
             # If the file already had the pragma, restore the old state.
@@ -188,15 +194,21 @@ def AddPragmasUntilTargetCompiles(target, args, files_that_had_pragma) -> bool:
         # We will fix this by inserting the opt_out_lines in the file.
 
         # Get the list of files with unsafe buffer operations.
-        unsafe_buffers_files = subprocess.check_output(
-            """
+        unsafe_buffers_files = (
+            subprocess.check_output(
+                """
             autoninja -k 0 -C out/%s |\
                 grep -E 'Wunsafe-buffer-usage' |\
                 cut -d':' -f1 |\
                 cut -d'(' -f1 |\
                 sort -u
-            """ % target,
-            shell=True).decode("utf-8").split("\n")
+            """
+                % target,
+                shell=True,
+            )
+            .decode("utf-8")
+            .split("\n")
+        )
 
         # Strip the ../../ from the file paths.
         unsafe_buffers_files = [
@@ -206,8 +218,9 @@ def AddPragmasUntilTargetCompiles(target, args, files_that_had_pragma) -> bool:
         # Clean empty strings.
         unsafe_buffers_files = [file for file in unsafe_buffers_files if file]
 
-        rewrittens = AddPragmasToFiles(unsafe_buffers_files,
-                                       files_that_had_pragma)
+        rewrittens = AddPragmasToFiles(
+            unsafe_buffers_files, files_that_had_pragma
+        )
 
         if not rewrittens:
             print("No files were fixed.", flush=True)
@@ -215,8 +228,10 @@ def AddPragmasUntilTargetCompiles(target, args, files_that_had_pragma) -> bool:
                 # Don't stop the whole script but report an error so someone
                 # can check if there is a fix needed  to get this compiling.
                 # Perhaps this was a bad git commit.
-                print("Two unsuccessful builds in a row without opt-outs: %s" %
-                      target)
+                print(
+                    "Two unsuccessful builds in a row without opt-outs: %s"
+                    % target
+                )
                 break
             else:
                 no_files_rewritten = True
@@ -228,8 +243,9 @@ def main():
     # Collect all files that have the pragma we are interested in.
     print("Collecting files with opt_out...", flush=True)
     files_that_had_pragma = FindCodeFilesWithPragma()
-    print("found %d files with pragmas." % len(files_that_had_pragma),
-          flush=True)
+    print(
+        "found %d files with pragmas." % len(files_that_had_pragma), flush=True
+    )
 
     # Find all the reachable files for each gn target (this limits the removals
     # to ones we'll actually build and thus can be sure if we build properly).
@@ -237,13 +253,16 @@ def main():
     for target, args in GnConfigs(True).all_platforms_and_configs.items():
         print("Determining reachable files for %s" % target, flush=True)
         current_target = FindReachableFilesForConfigsInSet(
-            target, args, files_that_had_pragma)
+            target, args, files_that_had_pragma
+        )
         print('target: %s has %d' % (target, len(current_target)), flush=True)
         reachable_files_with_pragmas |= current_target
 
-    print("Found %d reachable files that had pragmas." %
-          len(reachable_files_with_pragmas),
-          flush=True)
+    print(
+        "Found %d reachable files that had pragmas."
+        % len(reachable_files_with_pragmas),
+        flush=True,
+    )
 
     # Before adding the opt_out lines, we need to clear them in every files.
     # Note that the opt_out_lines are not very stable, the bug and comments
@@ -266,7 +285,6 @@ def main():
     exclusions = [
         # Reproduce on android-cronet-riscv64-dbg.
         "base/profiler/register_context_registers.h",
-
         # Reproduce on linux-cast-arm-rel
         "media/parsers/h264_bit_reader.h",
     ]
@@ -277,8 +295,7 @@ def main():
     # Add changed code and create the commit.
     os.system("git add -u")
 
-    git_commit_description =\
-        """spanification: remove `#pragma allow_unsafe_buffers` to xxx
+    git_commit_description = """spanification: remove `#pragma allow_unsafe_buffers` to xxx
 
         This is a clean up of any files that now compile without the pragma.
         This CL has no behavior changes.

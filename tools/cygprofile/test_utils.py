@@ -12,7 +12,8 @@ import process_profiles
 _FILE_COUNTER = 0
 
 SimpleTestSymbol = collections.namedtuple(
-    'SimpleTestSymbol', ['name', 'offset', 'size'])
+  'SimpleTestSymbol', ['name', 'offset', 'size']
+)
 
 
 class TestSymbolOffsetProcessor(process_profiles.SymbolOffsetProcessor):
@@ -41,4 +42,5 @@ def ProfileFile(timestamp_sec, phase, process_name=None):
   else:
     name_str = ''
   return 'test-directory/profile-hitmap-{}{}-{}.txt_{}'.format(
-      name_str, _FILE_COUNTER, timestamp_sec * 1000 * 1000 * 1000, phase)
+    name_str, _FILE_COUNTER, timestamp_sec * 1000 * 1000 * 1000, phase
+  )

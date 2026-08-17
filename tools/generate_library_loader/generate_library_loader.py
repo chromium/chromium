@@ -14,7 +14,6 @@ a standard way to do so, and limits the ugliness just to generated files).
 For more info refer to http://crbug.com/162733 .
 """
 
-
 import optparse
 import os.path
 import re
@@ -134,6 +133,7 @@ IMPL_MEMBER_INIT_TEMPLATE = """
 IMPL_MEMBER_CLEANUP_TEMPLATE = """  %(function_name)s = NULL;
 """
 
+
 def main():
   parser = optparse.OptionParser()
   parser.add_option('--name')
@@ -165,25 +165,26 @@ def main():
   # Stick a known string at the beginning to ensure this doesn't begin
   # with an underscore, which is reserved for the C++ implementation.
   unique_prefix = (
-      'LIBRARY_LOADER_' +
-      re.sub(r'[\W]', '_', os.path.basename(options.output_h)).upper())
+    'LIBRARY_LOADER_'
+    + re.sub(r'[\W]', '_', os.path.basename(options.output_h)).upper()
+  )
 
   member_decls = []
   member_init = []
   member_cleanup = []
   for fn in args:
-    member_decls.append(HEADER_MEMBER_TEMPLATE % {
-      'function_name': fn,
-      'unique_prefix': unique_prefix
-    })
-    member_init.append(IMPL_MEMBER_INIT_TEMPLATE % {
-      'function_name': fn,
-      'unique_prefix': unique_prefix
-    })
-    member_cleanup.append(IMPL_MEMBER_CLEANUP_TEMPLATE % {
-      'function_name': fn,
-      'unique_prefix': unique_prefix
-    })
+    member_decls.append(
+      HEADER_MEMBER_TEMPLATE
+      % {'function_name': fn, 'unique_prefix': unique_prefix}
+    )
+    member_init.append(
+      IMPL_MEMBER_INIT_TEMPLATE
+      % {'function_name': fn, 'unique_prefix': unique_prefix}
+    )
+    member_cleanup.append(
+      IMPL_MEMBER_CLEANUP_TEMPLATE
+      % {'function_name': fn, 'unique_prefix': unique_prefix}
+    )
 
   header = options.header
   if options.link_directly == 0 and options.bundled_header:
@@ -210,7 +211,8 @@ def main():
   # Doing it this way is more maintainable, because it's going to work
   # even if file gets moved without updating the contents.
   source_tree_root = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), '..', '..'))
+    os.path.join(os.path.dirname(__file__), '..', '..')
+  )
   generator_path = os.path.relpath(__file__, source_tree_root)
 
   header_contents = HEADER_TEMPLATE % {
@@ -243,6 +245,7 @@ def main():
     impl_file.close()
 
   return 0
+
 
 if __name__ == '__main__':
   sys.exit(main())

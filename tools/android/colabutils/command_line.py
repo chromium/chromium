@@ -34,6 +34,7 @@ class CommandException(Exception):
 @dataclasses.dataclass(frozen=True)
 class CommandResult:
     """Result of a command execution."""
+
     stdout: str
     stderr: str
     returncode: int
@@ -56,17 +57,18 @@ async def run(command, *args, input="", interruption_signal=signal.SIGKILL):
             stdin=asyncio.subprocess.PIPE,
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE,
-            preexec_fn=os.setpgrp)
+            preexec_fn=os.setpgrp,
+        )
         stdout, stderr = await process.communicate(input=input.encode('utf-8'))
         returncode = process.returncode
         result = CommandResult(stdout.decode(), stderr.decode(), returncode)
         if returncode != 0:
-            raise CommandException("Command failed",
-                                   result=result,
-                                   command=(command, ) + args)
+            raise CommandException(
+                "Command failed", result=result, command=(command,) + args
+            )
         return result
     except FileNotFoundError:
-        raise CommandException("Command not found", command=(command, ) + args)
+        raise CommandException("Command not found", command=(command,) + args)
     except asyncio.CancelledError:
         # Handle cancellation by killing the process group. First, check if
         # the process is still running, then kill it and wait for it to exit.

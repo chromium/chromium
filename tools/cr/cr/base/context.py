@@ -14,6 +14,7 @@ import argparse
 import os
 import cr
 
+
 class _DumpVisitor(cr.visitor.ExportVisitor):
   """A visitor that prints all variables in a config hierarchy."""
 
@@ -121,14 +122,16 @@ class Context(cr.config.Config):
     self._data.derived = cr.config.Config('DERIVED')
     self.AddChildren(*cr.config.GLOBALS)
     self.AddChildren(
-        cr.config.Config('ENVIRONMENT', literal=True, export=True).Set(
-            {k: self.ParseValue(v) for k, v in os.environ.items()}),
-        self._data.arguments,
-        self._data.derived,
+      cr.config.Config('ENVIRONMENT', literal=True, export=True).Set(
+        {k: self.ParseValue(v) for k, v in os.environ.items()}
+      ),
+      self._data.arguments,
+      self._data.derived,
     )
     # Build the command line argument parser
-    self._data.parser = _ArgumentParser(add_help=False, description=description,
-                                        epilog=epilog)
+    self._data.parser = _ArgumentParser(
+      add_help=False, description=description, epilog=epilog
+    )
     self._data.subparsers = self.parser.add_subparsers()
     # Add the global arguments
     self.AddCommonArguments(self._data.parser)
@@ -139,7 +142,7 @@ class Context(cr.config.Config):
     return self._data
 
   def __enter__(self):
-    """ To support using 'with cr.base.context.Create():'"""
+    """To support using 'with cr.base.context.Create():'"""
     _stack.append(self)
     cr.context = self
     return self
@@ -157,28 +160,34 @@ class Context(cr.config.Config):
   def AddCommonArguments(cls, parser):
     """Adds the command line arguments common to all commands in cr."""
     parser.add_argument(
-        '-h', '--help',
-        action=_ShowHelp, nargs=0,
-        help='show the help message and exit.'
+      '-h',
+      '--help',
+      action=_ShowHelp,
+      nargs=0,
+      help='show the help message and exit.',
     )
     parser.add_argument(
-        '--dry-run', dest='CR_DRY_RUN',
-        action='store_true', default=None,
-        help="""
+      '--dry-run',
+      dest='CR_DRY_RUN',
+      action='store_true',
+      default=None,
+      help="""
           Don't execute commands, just print them. Implies verbose.
           Overrides CR_DRY_RUN
-          """
+          """,
     )
-    parser.add_argument('-v',
-                        '--verbose',
-                        dest='CR_VERBOSE',
-                        action='count',
-                        default=0,
-                        help="""
+    parser.add_argument(
+      '-v',
+      '--verbose',
+      dest='CR_VERBOSE',
+      action='count',
+      default=0,
+      help="""
           Print information about commands being performed.
           Repeating multiple times increases the verbosity level.
           Overrides CR_VERBOSE
-          """)
+          """,
+    )
 
   @property
   def args(self):
@@ -236,7 +245,8 @@ class Context(cr.config.Config):
     self._data.arguments.Wipe()
     if self._data.args:
       self._data.arguments.Set(
-          {k: v for k, v in vars(self._data.args).items() if v is not None})
+        {k: v for k, v in vars(self._data.args).items() if v is not None}
+      )
 
   def DumpValues(self, with_source):
     _DumpVisitor(with_source).VisitNode(self)

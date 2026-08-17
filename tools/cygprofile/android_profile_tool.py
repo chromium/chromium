@@ -65,11 +65,13 @@ class AndroidProfileTool:
 
   _DEVICE_PROFILE_DIR = '/data/local/tmp/chrome/orderfile'
 
-  def __init__(self,
-               host_profile_root: str,
-               device: device_utils.DeviceUtils,
-               debug=False,
-               verbosity=0):
+  def __init__(
+    self,
+    host_profile_root: str,
+    device: device_utils.DeviceUtils,
+    debug=False,
+    verbosity=0,
+  ):
     """Constructor.
 
     Args:
@@ -99,9 +101,9 @@ class AndroidProfileTool:
     logging.info('Using pregenerated profiles')
     self._pregenerated_profiles = files
 
-  def CollectSystemHealthProfile(self,
-                                 apk_or_browser: str,
-                                 out_dir: Optional[str] = None):
+  def CollectSystemHealthProfile(
+    self, apk_or_browser: str, out_dir: Optional[str] = None
+  ):
     """Run the orderfile system health benchmarks and collect log files.
 
     Args:
@@ -116,8 +118,9 @@ class AndroidProfileTool:
       NoProfileDataError: No data was found on the device.
     """
     if self._pregenerated_profiles:
-      logging.info('Using pregenerated profiles instead of running '
-                   'system health profile')
+      logging.info(
+        'Using pregenerated profiles instead of running system health profile'
+      )
       logging.info('Profile files: %s', '\n'.join(self._pregenerated_profiles))
       return self._pregenerated_profiles
     logging.info('Running system health profile')
@@ -140,9 +143,9 @@ class AndroidProfileTool:
     self._DeleteDeviceData()
     return data
 
-  def CollectSpeedometerProfile(self,
-                                apk_or_browser: str,
-                                out_dir: Optional[str] = None):
+  def CollectSpeedometerProfile(
+    self, apk_or_browser: str, out_dir: Optional[str] = None
+  ):
     """Run Speedometer 3 and collect log files
 
     Args:
@@ -173,10 +176,9 @@ class AndroidProfileTool:
     self._DeleteDeviceData()
     return data
 
-  def CollectWebViewStartupProfile(self,
-                                   apk: str,
-                                   arch: str,
-                                   out_dir: Optional[str] = None):
+  def CollectWebViewStartupProfile(
+    self, apk: str, arch: str, out_dir: Optional[str] = None
+  ):
     """Run the given benchmark and collect the generated profiles.
 
     Args:
@@ -199,44 +201,57 @@ class AndroidProfileTool:
 
     if out_dir:
       maybe_driver_path = [
-          f'--driver-path={os.path.join(out_dir, "clang_x64", "chromedriver")}']
-      adb_bin_path = os.path.join(constants.DIR_SOURCE_ROOT, 'third_party',
-                                  'android_sdk', 'public', 'platform-tools',
-                                  'adb')
+        f'--driver-path={os.path.join(out_dir, "clang_x64", "chromedriver")}'
+      ]
+      adb_bin_path = os.path.join(
+        constants.DIR_SOURCE_ROOT,
+        'third_party',
+        'android_sdk',
+        'public',
+        'platform-tools',
+        'adb',
+      )
       maybe_adb_bin_path = f',"adb_bin":"{adb_bin_path}"'
     else:
       maybe_driver_path = []
       maybe_adb_bin_path = ''
 
-    RunCommand([
+    RunCommand(
+      [
         'tools/perf/cb',
         'embedder',
-        f'--browser={{browser:"clank/android_webview/tools/crossbench_config/cipd/{arch}/Velvet_{arch}.apk",driver:{{type:"Android"' +
-        maybe_adb_bin_path +
-        '}}',
-    ] + maybe_driver_path + [
+        f'--browser={{browser:"clank/android_webview/tools/crossbench_config/cipd/{arch}/Velvet_{arch}.apk",driver:{{type:"Android"'
+        + maybe_adb_bin_path
+        + '}}',
+      ]
+      + maybe_driver_path
+      + [
         '--splashscreen=skip',
         '--cuj-config=third_party/crossbench/config/team/woa/embedder_cuj_config.hjson',
-        '--network={"type":"wpr","path":"tools/perf/page_sets/data/crossbench_android_embedder_000.wprgo"' +
-        ',"skip_deterministic_script_injection":true}',
+        '--network={"type":"wpr","path":"tools/perf/page_sets/data/crossbench_android_embedder_000.wprgo"'
+        + ',"skip_deterministic_script_injection":true}',
         '--embedder-process-name=googleapp',
         '--embedder-setup-command-config=clank/android_webview/tools/crossbench_config/agsa_setup_config.hjson',
-    ])
+      ]
+    )
     self._RestoreCommandLineFlags(changer)
 
     pid = self._GetProcessPid(
-        'com.google.android.googlequicksearchbox:googleapp')
+      'com.google.android.googlequicksearchbox:googleapp'
+    )
     time.sleep(60)  # Leave time for the profile dump
     data = self._PullProfileData('embedder.crossbench')
     data = self._FilterWebViewProfiles(data, pid)
     if len(data) != 2:
       raise NoProfileDataError(
-          f'Expected 2 profiles (browser and renderer) but found {len(data)}')
+        f'Expected 2 profiles (browser and renderer) but found {len(data)}'
+      )
     self._DeleteDeviceData()
     return data
 
-  def _FilterWebViewProfiles(self, data: List[str],
-                             pid: Optional[int]) -> List[str]:
+  def _FilterWebViewProfiles(
+    self, data: List[str], pid: Optional[int]
+  ) -> List[str]:
     if not pid:
       logging.warning('Could not find PID, not filtering profiles.')
       return data
@@ -275,10 +290,9 @@ class AndroidProfileTool:
     RunCommand([installer_path, 'set-webview-provider'])
 
   def Cleanup(self):
-    """Delete all local and device files left over from profiling. """
+    """Delete all local and device files left over from profiling."""
     self._DeleteDeviceData()
     self._DeleteHostData(self._host_profile_root)
-
 
   def _SetUpDevice(self):
     """When profiling, files are output to the disk by every process.  This
@@ -320,14 +334,16 @@ class AndroidProfileTool:
     """Creates folders on the device to store profile data."""
     logging.info('Setting up device folders...')
     self._DeleteDeviceData()
-    self._device.RunShellCommand(['mkdir', '-p', self._DEVICE_PROFILE_DIR],
-                                 check_return=True)
+    self._device.RunShellCommand(
+      ['mkdir', '-p', self._DEVICE_PROFILE_DIR], check_return=True
+    )
 
   def _DeleteDeviceData(self):
-    """Clears out profile storage locations on the device. """
+    """Clears out profile storage locations on the device."""
     for profile_dir in [self._DEVICE_PROFILE_DIR]:
-      self._device.RunShellCommand(['rm', '-rf', str(profile_dir)],
-                                   check_return=True)
+      self._device.RunShellCommand(
+        ['rm', '-rf', str(profile_dir)], check_return=True
+      )
 
   def _DeleteHostData(self, host_profile_dir):
     """Clears out profile storage locations on the host."""
@@ -358,9 +374,9 @@ class AndroidProfileTool:
     logging.info('Pulling profile data into %s...', host_profile_dir)
 
     self._SetUpHostFolders(host_profile_dir)
-    self._device.PullFile(self._DEVICE_PROFILE_DIR,
-                          host_profile_dir,
-                          timeout=300)
+    self._device.PullFile(
+      self._DEVICE_PROFILE_DIR, host_profile_dir, timeout=300
+    )
 
     # After directory pull (over ADB), collect all the profiling-related file
     # names in it. Some old versions of ADB did not create the subdirectory
@@ -374,7 +390,8 @@ class AndroidProfileTool:
       if root_file == redundant_dir_root:
         profile_dir = os.path.join(host_profile_dir, root_file)
         files.extend(
-            os.path.join(profile_dir, f) for f in os.listdir(profile_dir))
+          os.path.join(profile_dir, f) for f in os.listdir(profile_dir)
+        )
       else:
         files.append(os.path.join(host_profile_dir, root_file))
 
@@ -389,18 +406,21 @@ def _CreateArgumentParser():
   """Creates and return the argument parser."""
   parser = argparse.ArgumentParser()
   parser.add_argument('--adb-path', type=os.path.realpath, help='adb binary')
-  parser.add_argument('--apk-path',
-                      type=os.path.realpath,
-                      required=True,
-                      help='APK to profile')
-  parser.add_argument('--output-directory',
-                      type=os.path.realpath,
-                      required=True,
-                      help='Chromium output directory (e.g. out/Release)')
-  parser.add_argument('--trace-directory',
-                      type=os.path.realpath,
-                      help='Directory in which profile traces will be stored. '
-                      'Defaults to <output-directory>/profile_data')
+  parser.add_argument(
+    '--apk-path', type=os.path.realpath, required=True, help='APK to profile'
+  )
+  parser.add_argument(
+    '--output-directory',
+    type=os.path.realpath,
+    required=True,
+    help='Chromium output directory (e.g. out/Release)',
+  )
+  parser.add_argument(
+    '--trace-directory',
+    type=os.path.realpath,
+    help='Directory in which profile traces will be stored. '
+    'Defaults to <output-directory>/profile_data',
+  )
   return parser
 
 
@@ -408,16 +428,18 @@ def main():
   parser = _CreateArgumentParser()
   args = parser.parse_args()
 
-  devil_chromium.Initialize(output_directory=args.output_directory,
-                            adb_path=args.adb_path)
+  devil_chromium.Initialize(
+    output_directory=args.output_directory, adb_path=args.adb_path
+  )
 
   trace_directory = args.trace_directory
   if not trace_directory:
     trace_directory = os.path.join(args.output_directory, 'profile_data')
   devices = device_utils.DeviceUtils.HealthyDevices()
   assert devices, 'Expected at least one connected device'
-  profiler = AndroidProfileTool(host_profile_root=trace_directory,
-                                device=devices[0])
+  profiler = AndroidProfileTool(
+    host_profile_root=trace_directory, device=devices[0]
+  )
   profiler.CollectSystemHealthProfile(args.apk_path)
   return 0
 

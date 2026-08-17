@@ -18,6 +18,7 @@ class JavaPackageDependencyGraph(graph.Graph[JavaPackage]):
 
     A directed edge A -> B indicates that A depends on B.
     """
+
     def __init__(self, class_graph: class_dependency.JavaClassDependencyGraph):
         """Initializes a new package-level dependency graph
         by "collapsing" a class-level dependency graph into its packages.
@@ -44,7 +45,8 @@ class JavaPackageDependencyGraph(graph.Graph[JavaPackage]):
             begin_package_node.add_class(begin_class)
             end_package_node.add_class(end_class)
             begin_package_node.add_class_dependency_edge(
-                end_package_node, begin_class, end_class)
+                end_package_node, begin_class, end_class
+            )
 
     def create_node_from_key(self, key: str):
         """Create a JavaPackage node from the given key (package name)."""
@@ -62,8 +64,10 @@ class JavaPackageDependencyGraph(graph.Graph[JavaPackage]):
         }
         """
         return {
-            group_json_consts.CLASS_EDGES:
-            sorted(
-                [begin.name, end.name] for begin, end in
-                begin_node.get_class_dependencies_in_outbound_edge(end_node)),
+            group_json_consts.CLASS_EDGES: sorted(
+                [begin.name, end.name]
+                for begin, end in begin_node.get_class_dependencies_in_outbound_edge(
+                    end_node
+                )
+            ),
         }

@@ -8,15 +8,16 @@ import os
 import re
 
 _METADATA_FILENAME = 'DIR_METADATA'
-_METADATA_COMPONENT_REGEX = re.compile(r'^\s*component:\s*"(.*?)"',
-                                       re.MULTILINE)
+_METADATA_COMPONENT_REGEX = re.compile(
+  r'^\s*component:\s*"(.*?)"', re.MULTILINE
+)
 _METADATA_MIXINS_REGEX = re.compile(r'^\s*mixins:\s*"(.*?)"', re.MULTILINE)
 # Paths that are missing metadata, and where it's hard to add (e.g. code in
 # other repositories.
 _COMPONENT_DEFAULTS = {
-    os.path.join('third_party', 'webrtc'): 'Blink>WebRTC',
-    os.path.join('logging', 'rtc_event_log'): 'Blink>WebRTC',  # Generated files
-    os.path.join('modules'): 'Blink>WebRTC',  # Generated files
+  os.path.join('third_party', 'webrtc'): 'Blink>WebRTC',
+  os.path.join('logging', 'rtc_event_log'): 'Blink>WebRTC',  # Generated files
+  os.path.join('modules'): 'Blink>WebRTC',  # Generated files
 }
 
 
@@ -87,8 +88,9 @@ class _ComponentLookupContext:
         result = component
         break
     else:
-      metadata_path = os.path.join(self._source_directory, directory,
-                                   _METADATA_FILENAME)
+      metadata_path = os.path.join(
+        self._source_directory, directory, _METADATA_FILENAME
+      )
       result = self._ParseComponentFromMetadata(metadata_path)
 
     if not result:
@@ -100,8 +102,9 @@ class _ComponentLookupContext:
     return result
 
 
-def PopulateComponents(raw_symbols, source_directory, component_overrides,
-                       default_component):
+def PopulateComponents(
+  raw_symbols, source_directory, component_overrides, default_component
+):
   """Populates the |component| field based on |source_path|.
 
   Symbols without a |source_path| are skipped.

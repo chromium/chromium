@@ -27,6 +27,7 @@ def CheckChange(input_api, output_api):
         output_api,
         input_api.PresubmitLocalPath(),
         files_to_check=[r'.+_unittest\.py$'],
-        files_to_skip=files_to_skip)
+        files_to_skip=files_to_skip,
+    )
 
     return input_api.RunTests(checks, False)

@@ -32,10 +32,9 @@ def Main():
 
   # Build the command context
   with cr.base.context.Create(
-      description='The chrome dev build tool.',
-      epilog='Contact ' + _CONTACT + ' if you have issues with this tool.',
-      ) as context:
-
+    description='The chrome dev build tool.',
+    epilog='Contact ' + _CONTACT + ' if you have issues with this tool.',
+  ) as context:
     # Try to detect the current client information
     cr.base.client.DetectClient()
 
@@ -75,23 +74,36 @@ def Main():
     if command.requires_build_dir:
       if not found_build_dir:
         if not cr.context.Find('CR_OUT_FULL'):
-          print(cr.context.Substitute(
-              'No build directory specified. Please use cr init to make one.'))
+          print(
+            cr.context.Substitute(
+              'No build directory specified. Please use cr init to make one.'
+            )
+          )
         else:
-          print(cr.context.Substitute(
-              'Build {CR_BUILD_DIR} not a valid build directory'))
+          print(
+            cr.context.Substitute(
+              'Build {CR_BUILD_DIR} not a valid build directory'
+            )
+          )
         exit(1)
       if cr.context.Find('CR_VERSION') != cr.base.client.VERSION:
-        print(cr.context.Substitute(
-            'Build {CR_BUILD_DIR} is for the wrong version of cr'))
+        print(
+          cr.context.Substitute(
+            'Build {CR_BUILD_DIR} is for the wrong version of cr'
+          )
+        )
         print('Please run cr init to reset it')
         exit(1)
       cr.Platform.Prepare()
     if cr.context.verbose >= 1:
-      print(cr.context.Substitute('Running cr ' + command.name +
-                                  ' for {CR_BUILD_DIR}'))
+      print(
+        cr.context.Substitute(
+          'Running cr ' + command.name + ' for {CR_BUILD_DIR}'
+        )
+      )
     # Invoke the given command
     command.Run()
+
 
 if __name__ == '__main__':
   sys.exit(Main())

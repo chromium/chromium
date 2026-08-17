@@ -16,14 +16,24 @@ import sys
 from typing import List, Dict, Set, Tuple, Optional, Any, TypeVar, Callable
 
 import target_spec
-from test_results import (TargetResult, ReadTargetFromJson, TestResult,
-                          ResultLine)
+from test_results import (
+  TargetResult,
+  ReadTargetFromJson,
+  TestResult,
+  ResultLine,
+)
 
 
 class LineStats(object):
-
-  def __init__(self, desc: str, unit: str, time_avg: float, time_dev: float,
-               cv: float, samples: int) -> None:
+  def __init__(
+    self,
+    desc: str,
+    unit: str,
+    time_avg: float,
+    time_dev: float,
+    cv: float,
+    samples: int,
+  ) -> None:
     """A corpus of stats about a particular line from a given test's output.
 
     Args:
@@ -46,8 +56,13 @@ class LineStats(object):
     """Converts the line to a human-readable string."""
     if self.sample_num > 1:
       return "{}: {:.5f} σ={:.5f} {} with n={} cv={}".format(
-          self.desc, self.time_avg, self.time_dev, self.unit, self.sample_num,
-          self.cv)
+        self.desc,
+        self.time_avg,
+        self.time_dev,
+        self.unit,
+        self.sample_num,
+        self.cv,
+      )
     else:
       return "{}: {:.5f} with only one sample".format(self.desc, self.time_avg)
 
@@ -70,9 +85,15 @@ def LineFromList(lines: List[ResultLine]) -> LineStats:
 
 
 class TestStats(object):
-
-  def __init__(self, name: str, time_avg: float, time_dev: float, cv: float,
-               samples: int, lines: List[LineStats]) -> None:
+  def __init__(
+    self,
+    name: str,
+    time_avg: float,
+    time_dev: float,
+    cv: float,
+    samples: int,
+    lines: List[LineStats],
+  ) -> None:
     """Represents a summary of relevant statistics for a list of tests.
 
     Args:
@@ -101,11 +122,15 @@ class TestStats(object):
 
     lines = []
     if self.sample_num > 1:
-      lines.append("{}: {:.5f} σ={:.5f}ms with n={} cv={}".format(
-          self.name, self.time_avg, self.time_dev, self.sample_num, self.cv))
+      lines.append(
+        "{}: {:.5f} σ={:.5f}ms with n={} cv={}".format(
+          self.name, self.time_avg, self.time_dev, self.sample_num, self.cv
+        )
+      )
     else:
-      lines.append("{}: {:.5f} with only one sample".format(
-          self.name, self.time_avg))
+      lines.append(
+        "{}: {:.5f} with only one sample".format(self.name, self.time_avg)
+      )
     for line in self.lines:
       lines.append("  {}".format(line.ToString()))
     return lines
@@ -140,7 +165,6 @@ def TestFromList(tests: List[TestResult]) -> TestStats:
 
 
 class TargetStats(object):
-
   def __init__(self, name: str, samples: int, tests: List[TestStats]) -> None:
     """A representation of the actual target that was built and run on the
     platforms multiple times to generate statistical data.
@@ -256,8 +280,9 @@ def CompareTargets(linux: TargetStats, fuchsia: TargetStats) -> Dict[str, Any]:
   """
   if linux and fuchsia:
     assert linux.name == fuchsia.name
-    paired_tests = ZipListsByPredicate(linux.tests, fuchsia.tests,
-                                     lambda test: test.name)
+    paired_tests = ZipListsByPredicate(
+      linux.tests, fuchsia.tests, lambda test: test.name
+    )
     paired_tests = MapDictValues(paired_tests, CompareTests)
     return {"name": linux.name, "tests": paired_tests}
   else:
@@ -283,13 +308,15 @@ def CompareTests(linux: TestStats, fuchsia: TestStats) -> Dict[str, Any]:
     else:
       name = fuchsia.name
       failing_os = "Linux"
-    logging.error("%s failed to produce output for the test %s",
-                  failing_os, name)
+    logging.error(
+      "%s failed to produce output for the test %s", failing_os, name
+    )
     return {}
 
   assert linux.name == fuchsia.name
-  paired_lines = ZipListsByPredicate(linux.lines, fuchsia.lines,
-                                     lambda line: line.desc)
+  paired_lines = ZipListsByPredicate(
+    linux.lines, fuchsia.lines, lambda line: line.desc
+  )
   paired_lines = MapDictValues(paired_lines, CompareLines)
   result = {"lines": paired_lines, "unit": "ms"}  # type: Dict[str, Any]
 
@@ -344,8 +371,9 @@ T = TypeVar("T")
 R = TypeVar("R")
 
 
-def ZipListsByPredicate(left: List[T], right: List[T],
-                        pred: Callable[[T], R]) -> Dict[R, Tuple[T, T]]:
+def ZipListsByPredicate(
+  left: List[T], right: List[T], pred: Callable[[T], R]
+) -> Dict[R, Tuple[T, T]]:
   """This function takes two lists, and a predicate. The predicate is applied to
   the values in both lists to obtain a keying value from them. Each item is then
   inserted into the returned dictionary using the obtained key. The predicate
@@ -374,8 +402,9 @@ U = TypeVar("U")
 V = TypeVar("V")
 
 
-def MapDictValues(dct: Dict[T, Tuple[R, U]],
-                  predicate: Callable[[R, U], V]) -> Dict[T, V]:
+def MapDictValues(
+  dct: Dict[T, Tuple[R, U]], predicate: Callable[[R, U], V]
+) -> Dict[T, V]:
   """This function applies the predicate to all the values in the dictionary,
   returning a new dictionary with the new values.
   """
@@ -388,13 +417,15 @@ def MapDictValues(dct: Dict[T, Tuple[R, U]],
 def main():
   linux_avgs = DirectoryStats(target_spec.raw_linux_dir)
   fuchsia_avgs = DirectoryStats(target_spec.raw_fuchsia_dir)
-  paired_targets = ZipListsByPredicate(linux_avgs, fuchsia_avgs,
-                                       lambda target: target.name)
+  paired_targets = ZipListsByPredicate(
+    linux_avgs, fuchsia_avgs, lambda target: target.name
+  )
   for name, targets in paired_targets.items():
     comparison_dict = CompareTargets(*targets)
     if comparison_dict:
-      with open("{}/{}.json".format(target_spec.results_dir, name),
-                "w") as outfile:
+      with open(
+        "{}/{}.json".format(target_spec.results_dir, name), "w"
+      ) as outfile:
         json.dump(comparison_dict, outfile, indent=2)
 
 

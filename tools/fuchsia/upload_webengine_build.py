@@ -16,8 +16,9 @@ import subprocess
 import sys
 
 WEB_ENGINE_TARGETS = [
-    'cast_runner_pkg', 'web_engine_shell_pkg',
-    'performance_web_engine_test_suite'
+  'cast_runner_pkg',
+  'web_engine_shell_pkg',
+  'performance_web_engine_test_suite',
 ]
 
 FAR_ARTIFACTS = ['cast_runner.far', 'web_engine_shell.far', 'web_engine.far']
@@ -25,11 +26,9 @@ FAR_ARTIFACTS = ['cast_runner.far', 'web_engine_shell.far', 'web_engine.far']
 
 def Run(command):
   print(command)
-  subprocess.run(command,
-                 shell=True,
-                 check=True,
-                 encoding='utf-8',
-                 stderr=subprocess.STDOUT)
+  subprocess.run(
+    command, shell=True, check=True, encoding='utf-8', stderr=subprocess.STDOUT
+  )
 
 
 def FindFile(file, root_dir):
@@ -39,8 +38,9 @@ def FindFile(file, root_dir):
         return os.path.join(root, f)
 
   raise AssertionError(
-      f'File {file} not found. Be sure it is created by one of the '
-      f'targets {WEB_ENGINE_TARGETS}')
+    f'File {file} not found. Be sure it is created by one of the '
+    f'targets {WEB_ENGINE_TARGETS}'
+  )
 
 
 def StartBuildAndUpload(out_dir, gcs_path, commit=None):
@@ -66,22 +66,27 @@ def StartBuildAndUpload(out_dir, gcs_path, commit=None):
 
 def main():
   parser = argparse.ArgumentParser()
-  parser.add_argument('-c',
-                      '--commit',
-                      type=str,
-                      help='Revision to checkout, compile, and upload.',
-                      required=False)
-  parser.add_argument('-g',
-                      '--gcs_path',
-                      type=str,
-                      help='A full GCS path that will contain the artifacts.',
-                      required=True)
-  parser.add_argument('-d',
-                      '--out_dir',
-                      type=str,
-                      help=('Output directory to build from. '
-                            'Must have GN args set already.'),
-                      required=True)
+  parser.add_argument(
+    '-c',
+    '--commit',
+    type=str,
+    help='Revision to checkout, compile, and upload.',
+    required=False,
+  )
+  parser.add_argument(
+    '-g',
+    '--gcs_path',
+    type=str,
+    help='A full GCS path that will contain the artifacts.',
+    required=True,
+  )
+  parser.add_argument(
+    '-d',
+    '--out_dir',
+    type=str,
+    help=('Output directory to build from. Must have GN args set already.'),
+    required=True,
+  )
   args = parser.parse_args()
   return StartBuildAndUpload(args.out_dir, args.gcs_path, args.commit)
 

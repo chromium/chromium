@@ -30,10 +30,9 @@ def _run_adb_shell_command(device, cmd):
   if not device:
     return ""
   try:
-    return device.RunShellCommand(cmd,
-                                  check_return=True,
-                                  large_output=True,
-                                  raw_output=True)
+    return device.RunShellCommand(
+      cmd, check_return=True, large_output=True, raw_output=True
+    )
   except device_errors.CommandFailedError as e:
     logging.error("Failed to run adb command %s on device: %s", cmd, e)
     return ""
@@ -58,9 +57,9 @@ def _format_bytes(num_bytes):
     return "N/A"
   num = float(num_bytes)
   if num >= 1024.0 * 1024.0 * 1024.0:
-    return f"{num / (1024.0 ** 3):.2f} GiB"
+    return f"{num / (1024.0**3):.2f} GiB"
   elif num >= 1024.0 * 1024.0:
-    return f"{num / (1024.0 ** 2):.2f} MiB"
+    return f"{num / (1024.0**2):.2f} MiB"
   elif num >= 1024.0:
     return f"{num / 1024.0:.2f} KiB"
   else:
@@ -80,14 +79,17 @@ def _get_pid_to_name_map(device):
 
 
 def _build_sf_maps(sf_output):
-  """Builds window-to-package and task-to-package mappings from SurfaceFlinger."""
+  """Builds window-to-package and task-to-package mappings from
+  SurfaceFlinger.
+  """
   window_to_package = {}
   task_to_package = {}
 
   pkg_act_pattern = re.compile(
-      r'(?:VRI-)?(?P<pkg>[a-zA-Z0-9_\.]+)/(?P<act>[^#\s]+)#\d+')
+    r'(?:VRI-)?(?P<pkg>[a-zA-Z0-9_\.]+)/(?P<act>[^#\s]+)#\d+'
+  )
   act_pattern = re.compile(
-      r'ActivityRecord\{[a-f0-9]+\s+u\d+\s+(?P<pkg_act>[^\s\}]+)\s+t(?P<task_id>\d+)\}'
+    r'ActivityRecord\{[a-f0-9]+\s+u\d+\s+(?P<pkg_act>[^\s\}]+)\s+t(?P<task_id>\d+)\}'
   )
 
   for line in sf_output.splitlines():
@@ -113,9 +115,9 @@ def _build_sf_maps(sf_output):
 def _parse_dumpsys_gpu(content):
   """Parses 'dumpsys gpu' output."""
   result = {
-      'global_total_bytes': None,
-      'global_raw_line': None,
-      'loaded_packages': [],
+    'global_total_bytes': None,
+    'global_raw_line': None,
+    'loaded_packages': [],
   }
 
   for line in content.splitlines():
@@ -140,18 +142,19 @@ def _parse_dmabuf_dump(content, pid_map=None):
     pid_map = {}
 
   dmabuf_total_pattern = re.compile(
-      r'dmabuf total:\s*(\d+)\s*kB\s+kernel_rss:\s*(\d+)\s*kB\s+userspace_rss:\s*(\d+)\s*kB\s+userspace_pss:\s*(\d+)\s*kB'
+    r'dmabuf total:\s*(\d+)\s*kB\s+kernel_rss:\s*(\d+)\s*kB\s+userspace_rss:\s*(\d+)\s*kB\s+userspace_pss:\s*(\d+)\s*kB'
   )
   process_header_pattern = re.compile(
-      r'^([a-zA-Z0-9_\.\-\/\[\]\(\)\ \:\#]+)\:(\d+)$')
+    r'^([a-zA-Z0-9_\.\-\/\[\]\(\)\ \:\#]+)\:(\d+)$'
+  )
   process_total_pattern = re.compile(r'PROCESS TOTAL\s+(\d+)\s*kB\s+(\d+)\s*kB')
 
   result = {
-      'total_kb': None,
-      'kernel_rss_kb': None,
-      'userspace_rss_kb': None,
-      'userspace_pss_kb': None,
-      'processes': [],
+    'total_kb': None,
+    'kernel_rss_kb': None,
+    'userspace_rss_kb': None,
+    'userspace_pss_kb': None,
+    'processes': [],
   }
 
   # Overall total line
@@ -180,13 +183,15 @@ def _parse_dmabuf_dump(content, pid_map=None):
 
       resolved_name = pid_map.get(pid_str, proc_name)
 
-      result['processes'].append({
+      result['processes'].append(
+        {
           'pid': int(pid_str),
           'name': proc_name,
           'resolved_name': resolved_name,
           'rss_bytes': rss_kb * 1024,
           'pss_bytes': pss_kb * 1024,
-      })
+        }
+      )
 
   result['processes'].sort(key=lambda x: x['pss_bytes'], reverse=True)
   return result
@@ -200,17 +205,19 @@ def _parse_dumpsys_surfaceflinger(content, pid_map=None):
   window_to_package, task_to_package = _build_sf_maps(content)
 
   gralloc_total_pattern = re.compile(
-      r'Total imported by gralloc:\s*([\d\.]+)\s*(\w+)')
+    r'Total imported by gralloc:\s*([\d\.]+)\s*(\w+)'
+  )
   sf_buffer_pattern = re.compile(
-      r'^\+\s*name:\s*(?P<name>[^,]+),\s*id:\s*(?P<id>\d+),\s*size:\s*(?P<size>[^,]+)'
-      r'(?:,\s*w/h:\s*(?P<wh>[^,]+))?')
+    r'^\+\s*name:\s*(?P<name>[^,]+),\s*id:\s*(?P<id>\d+),\s*size:\s*(?P<size>[^,]+)'
+    r'(?:,\s*w/h:\s*(?P<wh>[^,]+))?'
+  )
   size_unit_pattern = re.compile(r'^(?P<val>[\d\.]+)\s*(?P<unit>[a-zA-Z]*)$')
 
   result = {
-      'gralloc_total_bytes': None,
-      'imported_buffers_by_name': {},
-      'allocator_buffers_by_requestor': {},
-      'itemized_buffers': [],
+    'gralloc_total_bytes': None,
+    'imported_buffers_by_name': {},
+    'allocator_buffers_by_requestor': {},
+    'itemized_buffers': [],
   }
 
   # Total imported by gralloc line
@@ -228,9 +235,11 @@ def _parse_dumpsys_surfaceflinger(content, pid_map=None):
     if 'Imported gralloc buffers:' in line:
       in_imported = True
       continue
-    if in_imported and ('Total imported by gralloc:' in line
-                        or 'GraphicBufferAllocator buffers:' in line
-                        or 'FlagManager' in line):
+    if in_imported and (
+      'Total imported by gralloc:' in line
+      or 'GraphicBufferAllocator buffers:' in line
+      or 'FlagManager' in line
+    ):
       in_imported = False
       continue
 
@@ -245,8 +254,9 @@ def _parse_dumpsys_surfaceflinger(content, pid_map=None):
 
         size_bytes = 0.0
         if sz_m:
-          size_bytes = _parse_size_to_bytes(sz_m.group('val'),
-                                            sz_m.group('unit'))
+          size_bytes = _parse_size_to_bytes(
+            sz_m.group('val'), sz_m.group('unit')
+          )
 
         # Attempt resolving owner name
         resolved_owner = name
@@ -260,11 +270,12 @@ def _parse_dumpsys_surfaceflinger(content, pid_map=None):
             task_match = re.search(r'Task=(\d+)', vri_name)
             if task_match and task_match.group(1) in task_to_package:
               resolved_owner = (
-                  f"{task_to_package[task_match.group(1)]} (Window:"
-                  f" {vri_name})")
+                f"{task_to_package[task_match.group(1)]} (Window: {vri_name})"
+              )
             elif vri_name in window_to_package:
               resolved_owner = (
-                  f"{window_to_package[vri_name]} (Window: {vri_name})")
+                f"{window_to_package[vri_name]} (Window: {vri_name})"
+              )
             else:
               resolved_owner = f"Window: {vri_name}"
         else:
@@ -272,20 +283,22 @@ def _parse_dumpsys_surfaceflinger(content, pid_map=None):
 
         if resolved_owner not in imported_agg:
           imported_agg[resolved_owner] = {
-              'count': 0,
-              'total_bytes': 0.0,
-              'raw_name': name,
+            'count': 0,
+            'total_bytes': 0.0,
+            'raw_name': name,
           }
         imported_agg[resolved_owner]['count'] += 1
         imported_agg[resolved_owner]['total_bytes'] += size_bytes
 
-        result['itemized_buffers'].append({
+        result['itemized_buffers'].append(
+          {
             'name': name,
             'id': buf_id,
             'size_bytes': size_bytes,
             'wh': wh_str,
             'resolved_owner': resolved_owner,
-        })
+          }
+        )
 
   result['imported_buffers_by_name'] = imported_agg
 
@@ -298,8 +311,11 @@ def _parse_dumpsys_surfaceflinger(content, pid_map=None):
       in_gba = True
       continue
     if in_gba:
-      if ('Total imported by gralloc:' in line or 'FlagManager' in line
-          or not line.strip()):
+      if (
+        'Total imported by gralloc:' in line
+        or 'FlagManager' in line
+        or not line.strip()
+      ):
         if 'Total imported by gralloc:' in line or 'FlagManager' in line:
           in_gba = False
         continue
@@ -312,8 +328,9 @@ def _parse_dumpsys_surfaceflinger(content, pid_map=None):
         sz_m = size_unit_pattern.match(size_str)
         size_bytes = 0.0
         if sz_m:
-          size_bytes = _parse_size_to_bytes(sz_m.group('val'),
-                                            sz_m.group('unit'))
+          size_bytes = _parse_size_to_bytes(
+            sz_m.group('val'), sz_m.group('unit')
+          )
 
         if requestor not in gba_agg:
           gba_agg[requestor] = {'count': 0, 'total_bytes': 0.0}
@@ -340,37 +357,55 @@ def _print_summary(gpu_data, dmabuf_data, sf_data, filter_str=None):
   gpu_str = _format_bytes(gpu_global)
   print(f"{'dumpsys gpu (Global total)':<35} | {gpu_str:<40}")
 
-  dmabuf_pss = (dmabuf_data.get('userspace_pss_kb') * 1024
-                if dmabuf_data.get('userspace_pss_kb') is not None else None)
-  dmabuf_total = (dmabuf_data.get('total_kb') *
-                  1024 if dmabuf_data.get('total_kb') is not None else None)
-  dmabuf_rss = (dmabuf_data.get('userspace_rss_kb') * 1024
-                if dmabuf_data.get('userspace_rss_kb') is not None else None)
+  dmabuf_pss = (
+    dmabuf_data.get('userspace_pss_kb') * 1024
+    if dmabuf_data.get('userspace_pss_kb') is not None
+    else None
+  )
+  dmabuf_total = (
+    dmabuf_data.get('total_kb') * 1024
+    if dmabuf_data.get('total_kb') is not None
+    else None
+  )
+  dmabuf_rss = (
+    dmabuf_data.get('userspace_rss_kb') * 1024
+    if dmabuf_data.get('userspace_rss_kb') is not None
+    else None
+  )
 
-  print(f"{'dmabuf_dump (Userspace PSS)':<35} |"
-        f" {_format_bytes(dmabuf_pss):<40}")
-  print(f"{'dmabuf_dump (Userspace RSS)':<35} |"
-        f" {_format_bytes(dmabuf_rss):<40}")
-  print(f"{'dmabuf_dump (Kernel DMA-BUF Total)':<35} |"
-        f" {_format_bytes(dmabuf_total):<40}")
+  print(
+    f"{'dmabuf_dump (Userspace PSS)':<35} | {_format_bytes(dmabuf_pss):<40}"
+  )
+  print(
+    f"{'dmabuf_dump (Userspace RSS)':<35} | {_format_bytes(dmabuf_rss):<40}"
+  )
+  print(
+    f"{'dmabuf_dump (Kernel DMA-BUF Total)':<35} |"
+    f" {_format_bytes(dmabuf_total):<40}"
+  )
 
   sf_gralloc = sf_data.get('gralloc_total_bytes')
-  print(f"{'dumpsys SurfaceFlinger (Gralloc)':<35} |"
-        f" {_format_bytes(sf_gralloc):<40}")
+  print(
+    f"{'dumpsys SurfaceFlinger (Gralloc)':<35} |"
+    f" {_format_bytes(sf_gralloc):<40}"
+  )
   print("-" * 80)
 
   # dmabuf_dump breakdown
   print("\n[ 2. DMABUF_DUMP PER-PROCESS BREAKDOWN (by PSS) ]")
   print("-" * 80)
-  print(f"{'PID':<7} | {'Process Name / Package':<38} | {'PSS':<14} |"
-        f" {'RSS':<14}")
+  print(
+    f"{'PID':<7} | {'Process Name / Package':<38} | {'PSS':<14} | {'RSS':<14}"
+  )
   print("-" * 80)
 
   procs = dmabuf_data.get('processes', [])
   if filter_str:
     procs = [
-        p for p in procs if filter_str.lower() in p['resolved_name'].lower()
-        or filter_str.lower() in p['name'].lower()
+      p
+      for p in procs
+      if filter_str.lower() in p['resolved_name'].lower()
+      or filter_str.lower() in p['name'].lower()
     ]
 
   for p in procs:
@@ -378,8 +413,9 @@ def _print_summary(gpu_data, dmabuf_data, sf_data, filter_str=None):
     if len(p_name) > 36:
       p_name = p_name[:34] + ".."
     print(
-        f"{p['pid']:<7} | {p_name:<38} | {_format_bytes(p['pss_bytes']):<14} |"
-        f" {_format_bytes(p['rss_bytes']):<14}")
+      f"{p['pid']:<7} | {p_name:<38} | {_format_bytes(p['pss_bytes']):<14} |"
+      f" {_format_bytes(p['rss_bytes']):<14}"
+    )
   print("-" * 80)
 
   # SurfaceFlinger breakdown
@@ -389,22 +425,23 @@ def _print_summary(gpu_data, dmabuf_data, sf_data, filter_str=None):
   print("-" * 80)
 
   imported = sf_data.get('imported_buffers_by_name', {})
-  sorted_imported = sorted(imported.items(),
-                           key=lambda x: x[1]['total_bytes'],
-                           reverse=True)
+  sorted_imported = sorted(
+    imported.items(), key=lambda x: x[1]['total_bytes'], reverse=True
+  )
 
   if filter_str:
     sorted_imported = [
-        item for item in sorted_imported
-        if filter_str.lower() in item[0].lower()
+      item for item in sorted_imported if filter_str.lower() in item[0].lower()
     ]
 
   for name, data in sorted_imported:
     b_name = name
     if len(b_name) > 43:
       b_name = b_name[:41] + ".."
-    print(f"{b_name:<45} | {data['count']:<7} |"
-          f" {_format_bytes(data['total_bytes']):<18}")
+    print(
+      f"{b_name:<45} | {data['count']:<7} |"
+      f" {_format_bytes(data['total_bytes']):<18}"
+    )
   print("-" * 80)
 
   # Itemized SurfaceFlinger buffers table
@@ -412,15 +449,18 @@ def _print_summary(gpu_data, dmabuf_data, sf_data, filter_str=None):
   if itemized:
     print("\n[ 4. SURFACEFLINGER ITEMIZED BUFFERS LIST ]")
     print("-" * 145)
-    print(f"{'Owner / Process / Window':<60} | "
-          f"{'Buffer Name':<45} | {'ID':<6} | {'Size':<12} | {'W x H':<12}")
+    print(
+      f"{'Owner / Process / Window':<60} | "
+      f"{'Buffer Name':<45} | {'ID':<6} | {'Size':<12} | {'W x H':<12}"
+    )
     print("-" * 145)
 
     if filter_str:
       itemized = [
-          b for b in itemized
-          if filter_str.lower() in b['resolved_owner'].lower()
-          or filter_str.lower() in b['name'].lower()
+        b
+        for b in itemized
+        if filter_str.lower() in b['resolved_owner'].lower()
+        or filter_str.lower() in b['name'].lower()
       ]
 
     itemized.sort(key=lambda x: x['resolved_owner'])
@@ -433,9 +473,11 @@ def _print_summary(gpu_data, dmabuf_data, sf_data, filter_str=None):
       if len(display_name) > 43:
         display_name = display_name[:41] + ".."
 
-      print(f"{owner_str:<60} | {display_name:<45} | "
-            f"{buf['id']:<6} | {_format_bytes(buf['size_bytes']):<12} | "
-            f"{buf['wh']:<12}")
+      print(
+        f"{owner_str:<60} | {display_name:<45} | "
+        f"{buf['id']:<6} | {_format_bytes(buf['size_bytes']):<12} | "
+        f"{buf['wh']:<12}"
+      )
     print("-" * 145)
 
   # dumpsys gpu details
@@ -450,29 +492,32 @@ def _print_summary(gpu_data, dmabuf_data, sf_data, filter_str=None):
 
 
 def main():
-  parser = argparse.ArgumentParser(description=(
+  parser = argparse.ArgumentParser(
+    description=(
       "Parses dumpsys gpu, dmabuf_dump, and dumpsys SurfaceFlinger to"
-      " summarize graphics memory usage on an Android device."))
-  parser.add_argument(
-      "-s",
-      "--serial",
-      "-d",
-      "--device",
-      dest="device",
-      help="Target ADB device serial (for multiple connected devices)",
+      " summarize graphics memory usage on an Android device."
+    )
   )
   parser.add_argument(
-      "--filter",
-      help=(
-          "Filter results by process or buffer name substring (case-insensitive)"
-      ),
+    "-s",
+    "--serial",
+    "-d",
+    "--device",
+    dest="device",
+    help="Target ADB device serial (for multiple connected devices)",
+  )
+  parser.add_argument(
+    "--filter",
+    help=(
+      "Filter results by process or buffer name substring (case-insensitive)"
+    ),
   )
 
   args = parser.parse_args()
   logging.basicConfig(
-      level=logging.INFO,
-      format="%(levelname)s: %(message)s",
-      stream=sys.stderr,
+    level=logging.INFO,
+    format="%(levelname)s: %(message)s",
+    stream=sys.stderr,
   )
 
   devil_chromium.Initialize()
@@ -485,8 +530,10 @@ def main():
   device = devices[0]
   try:
     device.EnableRoot()
-  except (device_errors.CommandFailedError,
-          device_errors.RootUserBuildError) as e:
+  except (
+    device_errors.CommandFailedError,
+    device_errors.RootUserBuildError,
+  ) as e:
     logging.warning("Unable to enable root on device: %s", e)
 
   logging.info("Querying device via 'dumpsys gpu'...")
@@ -507,10 +554,10 @@ def main():
   sf_data = _parse_dumpsys_surfaceflinger(sf_content, pid_map)
 
   _print_summary(
-      gpu_data,
-      dmabuf_data,
-      sf_data,
-      filter_str=args.filter,
+    gpu_data,
+    dmabuf_data,
+    sf_data,
+    filter_str=args.filter,
   )
   return 0
 

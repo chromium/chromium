@@ -15,8 +15,7 @@ import time
 
 from operator import sub
 
-_SRC_PATH = os.path.abspath(os.path.join(
-    os.path.dirname(__file__), '..', '..'))
+_SRC_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 
 sys.path.append(os.path.join(_SRC_PATH, 'third_party', 'catapult', 'devil'))
 from devil.android import device_errors
@@ -25,6 +24,7 @@ from devil.android import device_utils
 sys.path.append(os.path.join(_SRC_PATH, 'build', 'android'))
 import devil_chromium
 
+
 class Utils(object):
   """A helper class to hold various utility methods."""
 
@@ -32,7 +32,8 @@ class Utils(object):
   def FindLines(haystack, needle):
     """A helper method to find lines in |haystack| that contain the string
     |needle|."""
-    return [ hay for hay in haystack if needle in hay ]
+    return [hay for hay in haystack if needle in hay]
+
 
 class Validator(object):
   """A helper class with validation methods for argparse."""
@@ -63,9 +64,11 @@ class Validator(object):
       raise argparse.ArgumentTypeError("%s is a negative integer" % val)
     return ival
 
+
 class Timer(object):
   """A helper class to track timestamps based on when this program was
   started"""
+
   starting_time = time.time()
 
   @staticmethod
@@ -73,6 +76,7 @@ class Timer(object):
     """A helper method to return the time (in seconds) since this program was
     started."""
     return time.time() - Timer.starting_time
+
 
 class DeviceHelper(object):
   """A helper class with various generic device interaction methods."""
@@ -85,7 +89,8 @@ class DeviceHelper(object):
       process_name = process_name.split(':')[0]
       cmd = ['dumpsys', 'package', process_name]
       user_id_lines = adb.RunShellCommand(
-          cmd, large_output=True, check_return=True)
+        cmd, large_output=True, check_return=True
+      )
       user_id_lines = Utils.FindLines(user_id_lines, 'userId=')
 
       if not user_id_lines:
@@ -109,8 +114,9 @@ class DeviceHelper(object):
     """Returns a device serial to connect to.  If |preset| is specified it will
     return |preset| if it is connected and |None| otherwise.  If |preset| is not
     specified it will return the first connected device."""
-    devices = [d.adb.GetDeviceSerial()
-               for d in device_utils.DeviceUtils.HealthyDevices()]
+    devices = [
+      d.adb.GetDeviceSerial() for d in device_utils.DeviceUtils.HealthyDevices()
+    ]
     if not devices:
       return None
 
@@ -137,8 +143,10 @@ class DeviceHelper(object):
       logging.warning('Error getting PIDs to track: %s', exc)
     return sorted(pids, key=lambda tup: tup[0])
 
+
 class NetworkHelper(object):
   """A helper class to query basic network usage of an application."""
+
   @staticmethod
   def QueryNetwork(adb, userid):
     """Queries the device for network information about the application with a
@@ -188,6 +196,7 @@ class NetworkHelper(object):
       pass
     return results
 
+
 class MemoryHelper(object):
   """A helper class to query basic memory usage of a process."""
 
@@ -200,7 +209,8 @@ class MemoryHelper(object):
     results = [0, 0, 0]
 
     mem_lines = adb.RunShellCommand(
-        ['dumpsys', 'meminfo', pid], check_return=True)
+      ['dumpsys', 'meminfo', pid], check_return=True
+    )
     for line in mem_lines:
       match = re.split('\s+', line.strip())
 
@@ -229,23 +239,27 @@ class MemoryHelper(object):
         results[result_idx] = round(float(match[query_idx]) / 1000.0, 2)
     return results
 
+
 class GraphicsHelper(object):
   """A helper class to query basic graphics memory usage of a process."""
 
   # TODO(dtrainor): Find a generic way to query/fall back for other devices.
   # Is showmap consistently reliable?
   __NV_MAP_MODELS = ['Xoom']
-  __NV_MAP_FILE_LOCATIONS = ['/d/nvmap/generic-0/clients',
-                             '/d/nvmap/iovmm/clients']
+  __NV_MAP_FILE_LOCATIONS = [
+    '/d/nvmap/generic-0/clients',
+    '/d/nvmap/iovmm/clients',
+  ]
 
-  __SHOWMAP_MODELS = ['Nexus S',
-                      'Nexus S 4G',
-                      'Galaxy Nexus',
-                      'Nexus 4',
-                      'Nexus 5',
-                      'Nexus 7']
-  __SHOWMAP_KEY_MATCHES = ['/dev/pvrsrvkm',
-                           '/dev/kgsl-3d0']
+  __SHOWMAP_MODELS = [
+    'Nexus S',
+    'Nexus S 4G',
+    'Galaxy Nexus',
+    'Nexus 4',
+    'Nexus 5',
+    'Nexus 7',
+  ]
+  __SHOWMAP_KEY_MATCHES = ['/dev/pvrsrvkm', '/dev/kgsl-3d0']
 
   @staticmethod
   def __QueryShowmap(adb, pid):
@@ -258,10 +272,10 @@ class GraphicsHelper(object):
       for line in mem_lines:
         match = re.split('[ ]+', line.strip())
         if match[-1] in GraphicsHelper.__SHOWMAP_KEY_MATCHES:
-          return [ round(float(match[2]) / 1000.0, 2) ]
+          return [round(float(match[2]) / 1000.0, 2)]
     except device_errors.AdbShellCommandFailedError:
       pass
-    return [ 0 ]
+    return [0]
 
   @staticmethod
   def __NvMapPath(adb):
@@ -285,8 +299,8 @@ class GraphicsHelper(object):
       for line in mem_lines:
         match = re.split(' +', line.strip())
         if match[2] == pid:
-          return [ round(float(match[3]) / 1000000.0, 2) ]
-    return [ 0 ]
+          return [round(float(match[3]) / 1000000.0, 2)]
+    return [0]
 
   @staticmethod
   def QueryVideoMemory(adb, pid):
@@ -305,7 +319,8 @@ class GraphicsHelper(object):
       return GraphicsHelper.__QueryNvMap(adb, pid)
     elif model in GraphicsHelper.__SHOWMAP_MODELS:
       return GraphicsHelper.__QueryShowmap(adb, pid)
-    return [ 0 ]
+    return [0]
+
 
 class DeviceSnapshot(object):
   """A class holding a snapshot of memory and network usage for various pids
@@ -334,7 +349,7 @@ class DeviceSnapshot(object):
     self.network = {}
     self.timestamp = Timer.GetTimestamp()
 
-    for (userid, pid, name) in pids:
+    for userid, pid, name in pids:
       if show_mem:
         self.memory[pid] = self.__QueryMemoryForPid(adb, pid)
 
@@ -366,7 +381,7 @@ class DeviceSnapshot(object):
   def GetNameForPid(self, search_pid):
     """Returns the process name of a tracked |search_pid|.  This only works if
     |search_pid| is tracked by this snapshot."""
-    for (userid, pid, name) in self.pids:
+    for userid, pid, name in self.pids:
       if pid == search_pid:
         return name
     return None
@@ -375,7 +390,7 @@ class DeviceSnapshot(object):
     """Returns the application userId for an associated |pid|.  This only works
     if |search_pid| is tracked by this snapshot and the application userId is
     queryable."""
-    for (userid, pid, name) in self.pids:
+    for userid, pid, name in self.pids:
       if pid == search_pid:
         return userid
     return None
@@ -416,6 +431,7 @@ class DeviceSnapshot(object):
     """Returns the time since program start that this snapshot was taken."""
     return self.timestamp
 
+
 class OutputBeautifier(object):
   """A helper class to beautify the memory output to various destinations.
 
@@ -428,22 +444,18 @@ class OutputBeautifier(object):
                graph.
   """
 
-  __MEMORY_COLUMN_TITLES = ['Native',
-                            'Pss',
-                            'Dalvik',
-                            'Graphics']
+  __MEMORY_COLUMN_TITLES = ['Native', 'Pss', 'Dalvik', 'Graphics']
 
-  __NETWORK_COLUMN_TITLES = ['Bg Rx',
-                             'Bg Tx',
-                             'Fg Rx',
-                             'Fg Tx']
+  __NETWORK_COLUMN_TITLES = ['Bg Rx', 'Bg Tx', 'Fg Rx', 'Fg Tx']
 
-  __TERMINAL_COLORS = {'ENDC': 0,
-                       'BOLD': 1,
-                       'GREY30': 90,
-                       'RED': 91,
-                       'DARK_YELLOW': 33,
-                       'GREEN': 92}
+  __TERMINAL_COLORS = {
+    'ENDC': 0,
+    'BOLD': 1,
+    'GREY30': 90,
+    'RED': 91,
+    'DARK_YELLOW': 33,
+    'GREEN': 92,
+  }
 
   def __init__(self, can_color=True, overwrite=True):
     """Creates an instance of an OutputBeautifier."""
@@ -459,7 +471,7 @@ class OutputBeautifier(object):
     """Find the set of unique pids across all every snapshot in |snapshots|."""
     pids = set()
     for snapshot in snapshots:
-      for (userid, pid, name) in snapshot.GetPidInfo():
+      for userid, pid, name in snapshot.GetPidInfo():
         pids.add((userid, pid, name))
     return pids
 
@@ -501,15 +513,17 @@ class OutputBeautifier(object):
       return string
 
     return '%s%s%s' % (
-        self.__TermCode(self.__TERMINAL_COLORS[color]),
-        string,
-        self.__TermCode(self.__TERMINAL_COLORS['ENDC']))
+      self.__TermCode(self.__TERMINAL_COLORS[color]),
+      string,
+      self.__TermCode(self.__TERMINAL_COLORS['ENDC']),
+    )
 
   def __PadAndColor(self, string, length, left_align, color):
     """A helper method to both pad and color the string.  See
     |self.__ColorString| and |self.__PadString|."""
     return self.__ColorString(
-      self.__PadString(string, length, left_align), color)
+      self.__PadString(string, length, left_align), color
+    )
 
   def __OutputLine(self, line):
     """Writes a line to the screen.  This also tracks how many times this method
@@ -594,8 +608,9 @@ class OutputBeautifier(object):
       round_val = self.__CleanRound(val, precision)
       round_delta = self.__CleanRound(deltas[idx], precision)
       output += self.__PadString(str(round_val), 8, True) + ' '
-      output += self.__PadAndColor('(' + str(round_delta) + ')', 8, False,
-          self.__GetDiffColor(deltas[idx]))
+      output += self.__PadAndColor(
+        '(' + str(round_delta) + ')', 8, False, self.__GetDiffColor(deltas[idx])
+      )
 
     return output
 
@@ -663,13 +678,15 @@ class OutputBeautifier(object):
       stats += self.__PadString('', 8, True)
     return stats
 
-  def __PrintHeaderHelper(self,
-                          snapshot,
-                          show_labels,
-                          show_timestamp,
-                          show_mem,
-                          show_net,
-                          show_trailer):
+  def __PrintHeaderHelper(
+    self,
+    snapshot,
+    show_labels,
+    show_timestamp,
+    show_mem,
+    show_net,
+    show_trailer,
+  ):
     """Helper method to concat various header entries together into one header.
     This will line up with a entry built by __PrintStatsHelper if the same
     values are passed to it."""
@@ -691,14 +708,16 @@ class OutputBeautifier(object):
 
     return ' '.join(titles)
 
-  def __PrintStatsHelper(self,
-                         pid,
-                         snapshot,
-                         prev_snapshot,
-                         show_labels,
-                         show_timestamp,
-                         show_mem,
-                         show_net):
+  def __PrintStatsHelper(
+    self,
+    pid,
+    snapshot,
+    prev_snapshot,
+    show_labels,
+    show_timestamp,
+    show_mem,
+    show_net,
+  ):
     """Helper method to concat various stats entries together into one line.
     This will line up with a header built by __PrintHeaderHelper if the same
     values are passed to it."""
@@ -740,28 +759,28 @@ class OutputBeautifier(object):
     show_timestamp = False
     show_trailer = True
 
-    self.__OutputLine(self.__PrintHeaderHelper(snapshot,
-                                               show_label,
-                                               show_timestamp,
-                                               show_mem,
-                                               show_net,
-                                               show_trailer))
+    self.__OutputLine(
+      self.__PrintHeaderHelper(
+        snapshot, show_label, show_timestamp, show_mem, show_net, show_trailer
+      )
+    )
 
-    for (userid, pid, name) in snapshot.GetPidInfo():
-      self.__OutputLine(self.__PrintStatsHelper(pid,
-                                                snapshot,
-                                                prev_snapshot,
-                                                show_label,
-                                                show_timestamp,
-                                                show_mem,
-                                                show_net))
+    for userid, pid, name in snapshot.GetPidInfo():
+      self.__OutputLine(
+        self.__PrintStatsHelper(
+          pid,
+          snapshot,
+          prev_snapshot,
+          show_label,
+          show_timestamp,
+          show_mem,
+          show_net,
+        )
+      )
 
-  def PrettyFile(self,
-                 file_path,
-                 snapshots,
-                 diff_against_start,
-                 show_mem=True,
-                 show_net=True):
+  def PrettyFile(
+    self, file_path, snapshots, diff_against_start, show_mem=True, show_net=True
+  ):
     """Writes |snapshots| (a list of DeviceSnapshots) to |file_path|.
     |diff_against_start| determines whether or not the snapshot deltas are
     between the first entry and all entries or each previous entry.  This output
@@ -783,14 +802,13 @@ class OutputBeautifier(object):
     self.can_color = False
 
     with open(file_path, 'w') as out:
-      for (userid, pid, name) in pids:
+      for userid, pid, name in pids:
         out.write(name + ' (' + str(pid) + '):\n')
-        out.write(self.__PrintHeaderHelper(None,
-                                           show_label,
-                                           show_timestamp,
-                                           show_mem,
-                                           show_net,
-                                           show_trailer))
+        out.write(
+          self.__PrintHeaderHelper(
+            None, show_label, show_timestamp, show_mem, show_net, show_trailer
+          )
+        )
         out.write('\n')
 
         prev_snapshot = None
@@ -799,13 +817,17 @@ class OutputBeautifier(object):
           has_net = show_net and snapshot.GetNetworkResults(userid) is not None
           if not has_mem and not has_net:
             continue
-          out.write(self.__PrintStatsHelper(pid,
-                                            snapshot,
-                                            prev_snapshot,
-                                            show_label,
-                                            show_timestamp,
-                                            show_mem,
-                                            show_net))
+          out.write(
+            self.__PrintStatsHelper(
+              pid,
+              snapshot,
+              prev_snapshot,
+              show_label,
+              show_timestamp,
+              show_mem,
+              show_net,
+            )
+          )
           out.write('\n')
           if not prev_snapshot or not diff_against_start:
             prev_snapshot = snapshot
@@ -829,7 +851,7 @@ class OutputBeautifier(object):
     pids = self.__FindPidsForSnapshotList(snapshots)
 
     pp = PdfPages(file_path)
-    for (userid, pid, name) in pids:
+    for userid, pid, name in pids:
       figure = pyplot.figure()
       ax = figure.add_subplot(1, 1, 1)
       ax.set_xlabel('Time (s)')
@@ -859,70 +881,91 @@ class OutputBeautifier(object):
       pp.savefig()
     pp.close()
 
+
 def main(argv):
   parser = argparse.ArgumentParser()
-  parser.add_argument('--process',
-                      dest='procname',
-                      help="A (sub)string to match against process names.")
-  parser.add_argument('-p',
-                      '--pid',
-                      dest='pid',
-                      type=Validator.ValidateNonNegativeNumber,
-                      help='Which pid to scan for.')
-  parser.add_argument('-d',
-                      '--device',
-                      dest='device',
-                      help='Device serial to scan.')
-  parser.add_argument('-t',
-                      '--timelimit',
-                      dest='timelimit',
-                      type=Validator.ValidateNonNegativeNumber,
-                      help='How long to track memory in seconds.')
-  parser.add_argument('-f',
-                      '--frequency',
-                      dest='frequency',
-                      default=0,
-                      type=Validator.ValidateNonNegativeNumber,
-                      help='How often to poll in seconds.')
-  parser.add_argument('-s',
-                      '--diff-against-start',
-                      dest='diff_against_start',
-                      action='store_true',
-                      help='Whether or not to always compare against the'
-                           ' original memory values for deltas.')
-  parser.add_argument('-b',
-                      '--boring-output',
-                      dest='dull_output',
-                      action='store_true',
-                      help='Whether or not to dull down the output.')
-  parser.add_argument('-k',
-                      '--keep-results',
-                      dest='no_overwrite',
-                      action='store_true',
-                      help='Keeps printing the results in a list instead of'
-                           ' overwriting the previous values.')
-  parser.add_argument('-g',
-                      '--graph-file',
-                      dest='graph_file',
-                      type=Validator.ValidatePdfPath,
-                      help='PDF file to save graph of memory stats to.')
-  parser.add_argument('-o',
-                      '--text-file',
-                      dest='text_file',
-                      type=Validator.ValidatePath,
-                      help='File to save memory tracking stats to.')
-  parser.add_argument('-m',
-                      '--memory',
-                      dest='show_mem',
-                      action='store_true',
-                      help='Whether or not to show memory stats. True by'
-                           ' default unless --n is specified.')
-  parser.add_argument('-n',
-                      '--net',
-                      dest='show_net',
-                      action='store_true',
-                      help='Whether or not to show network stats. False by'
-                           ' default.')
+  parser.add_argument(
+    '--process',
+    dest='procname',
+    help="A (sub)string to match against process names.",
+  )
+  parser.add_argument(
+    '-p',
+    '--pid',
+    dest='pid',
+    type=Validator.ValidateNonNegativeNumber,
+    help='Which pid to scan for.',
+  )
+  parser.add_argument(
+    '-d', '--device', dest='device', help='Device serial to scan.'
+  )
+  parser.add_argument(
+    '-t',
+    '--timelimit',
+    dest='timelimit',
+    type=Validator.ValidateNonNegativeNumber,
+    help='How long to track memory in seconds.',
+  )
+  parser.add_argument(
+    '-f',
+    '--frequency',
+    dest='frequency',
+    default=0,
+    type=Validator.ValidateNonNegativeNumber,
+    help='How often to poll in seconds.',
+  )
+  parser.add_argument(
+    '-s',
+    '--diff-against-start',
+    dest='diff_against_start',
+    action='store_true',
+    help='Whether or not to always compare against the'
+    ' original memory values for deltas.',
+  )
+  parser.add_argument(
+    '-b',
+    '--boring-output',
+    dest='dull_output',
+    action='store_true',
+    help='Whether or not to dull down the output.',
+  )
+  parser.add_argument(
+    '-k',
+    '--keep-results',
+    dest='no_overwrite',
+    action='store_true',
+    help='Keeps printing the results in a list instead of'
+    ' overwriting the previous values.',
+  )
+  parser.add_argument(
+    '-g',
+    '--graph-file',
+    dest='graph_file',
+    type=Validator.ValidatePdfPath,
+    help='PDF file to save graph of memory stats to.',
+  )
+  parser.add_argument(
+    '-o',
+    '--text-file',
+    dest='text_file',
+    type=Validator.ValidatePath,
+    help='File to save memory tracking stats to.',
+  )
+  parser.add_argument(
+    '-m',
+    '--memory',
+    dest='show_mem',
+    action='store_true',
+    help='Whether or not to show memory stats. True by'
+    ' default unless --n is specified.',
+  )
+  parser.add_argument(
+    '-n',
+    '--net',
+    dest='show_net',
+    action='store_true',
+    help='Whether or not to show network stats. False by default.',
+  )
 
   args = parser.parse_args()
 
@@ -953,7 +996,7 @@ def main(argv):
       if not device:
         adb = None
       elif not adb or device != str(adb):
-        #adb = adb_wrapper.AdbWrapper(device)
+        # adb = adb_wrapper.AdbWrapper(device)
         adb = device_utils.DeviceUtils(device)
         old_snapshot = None
         snapshots = []
@@ -992,11 +1035,14 @@ def main(argv):
     printer.PrettyGraph(args.graph_file, snapshots)
 
   if args.text_file:
-    printer.PrettyFile(args.text_file,
-                       snapshots,
-                       args.diff_against_start,
-                       args.show_mem,
-                       args.show_net)
+    printer.PrettyFile(
+      args.text_file,
+      snapshots,
+      args.diff_against_start,
+      args.show_mem,
+      args.show_net,
+    )
+
 
 if __name__ == '__main__':
   sys.exit(main(sys.argv))

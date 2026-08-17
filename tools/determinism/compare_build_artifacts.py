@@ -25,21 +25,24 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 def get_files_to_compare(build_dir, recursive=False):
   """Get the list of files to compare."""
-  allowed = frozenset((
-    '.aab',
-    '.apk',
-    '.apks',
-    '.app',
-    '.bin',  # V8 snapshot file snapshot_blob.bin
-    '.dll',
-    '.dylib',
-    '.exe',
-    '.isolated',
-    '.nexe',
-    '.pdb',
-    '.so',
-    '.zip',
-  ))
+  allowed = frozenset(
+    (
+      '.aab',
+      '.apk',
+      '.apks',
+      '.app',
+      '.bin',  # V8 snapshot file snapshot_blob.bin
+      '.dll',
+      '.dylib',
+      '.exe',
+      '.isolated',
+      '.nexe',
+      '.pdb',
+      '.so',
+      '.zip',
+    )
+  )
+
   def check(f):
     if not os.path.isfile(f):
       return False
@@ -63,9 +66,9 @@ def get_files_to_compare(build_dir, recursive=False):
 
 def get_files_to_compare_using_isolate(build_dir):
   # First, find all .runtime_deps files under build_dir.
-  runtime_deps_files = glob.glob(os.path.join(build_dir, '**',
-                                              '*.runtime_deps'),
-                                 recursive=True)
+  runtime_deps_files = glob.glob(
+    os.path.join(build_dir, '**', '*.runtime_deps'), recursive=True
+  )
 
   # Then, extract their contents.
   ret_files = set()
@@ -119,12 +122,13 @@ def diff_binary(first_filepath, second_filepath, file_len):
             num_diffs += 1
         if len(streams) < MAX_STREAMS:
           for idx in range(NUM_CHUNKS_IN_BLOCK):
-            lhs_chunk = lhs_data[idx * CHUNK_SIZE:(idx + 1) * CHUNK_SIZE]
-            rhs_chunk = rhs_data[idx * CHUNK_SIZE:(idx + 1) * CHUNK_SIZE]
+            lhs_chunk = lhs_data[idx * CHUNK_SIZE : (idx + 1) * CHUNK_SIZE]
+            rhs_chunk = rhs_data[idx * CHUNK_SIZE : (idx + 1) * CHUNK_SIZE]
             if lhs_chunk != rhs_chunk:
               if len(streams) < MAX_STREAMS:
-                streams.append((offset + CHUNK_SIZE * idx,
-                                lhs_chunk, rhs_chunk))
+                streams.append(
+                  (offset + CHUNK_SIZE * idx, lhs_chunk, rhs_chunk)
+                )
               else:
                 break
       offset += len(lhs_data)
@@ -133,7 +137,10 @@ def diff_binary(first_filepath, second_filepath, file_len):
   if not num_diffs:
     return None
   result = '%d out of %d bytes are different (%.2f%%)' % (
-        num_diffs, file_len, 100.0 * num_diffs / file_len)
+    num_diffs,
+    file_len,
+    100.0 * num_diffs / file_len,
+  )
   if streams:
     encode = lambda text: ''.join(chr(i) if 31 < i < 127 else '.' for i in text)
 
@@ -142,14 +149,20 @@ def diff_binary(first_filepath, second_filepath, file_len):
       rhs_line = '%s \'%s\'' % (rhs_data.hex(), encode(rhs_data))
       diff = list(difflib.Differ().compare([lhs_line], [rhs_line]))[-1][2:-1]
       result += '\n  0x%-8x: %s\n              %s\n              %s' % (
-          offset, lhs_line, rhs_line, diff)
+        offset,
+        lhs_line,
+        rhs_line,
+        diff,
+      )
 
   return result
 
 
 def diff_zips(first_filepath, second_filepath):
-  with zipfile.ZipFile(first_filepath) as z1, \
-       zipfile.ZipFile(second_filepath) as z2:
+  with (
+    zipfile.ZipFile(first_filepath) as z1,
+    zipfile.ZipFile(second_filepath) as z2,
+  ):
     names1 = z1.namelist()
     names2 = z2.namelist()
     # This kind of difference is rare, so don't put effort into printing the
@@ -158,7 +171,8 @@ def diff_zips(first_filepath, second_filepath):
       diff = sorted(set(names1).symmetric_difference(names2))
       if diff:
         return '  Zip file lists differ:\n' + '\n'.join(
-            '    ' + f for f in diff)
+          '    ' + f for f in diff
+        )
       else:
         return '  Zips contain same files, but in different orders.'
 
@@ -179,10 +193,12 @@ def diff_zips(first_filepath, second_filepath):
 
 def memoize(f):
   memo = {}
+
   def helper(*args):
     if args not in memo:
       memo[args] = f(*args)
     return memo[args]
+
   return helper
 
 
@@ -205,18 +221,25 @@ def compare_files(first_filepath, second_filepath):
   ret = None
   file_len = os.stat(first_filepath).st_size
   if file_len != os.stat(second_filepath).st_size:
-    ret = 'different size: %d != %d' % (file_len,
-                                        os.stat(second_filepath).st_size)
+    ret = 'different size: %d != %d' % (
+      file_len,
+      os.stat(second_filepath).st_size,
+    )
   else:
     ret = diff_binary(first_filepath, second_filepath, file_len)
 
-  if ret and zipfile.is_zipfile(first_filepath) and zipfile.is_zipfile(
-      second_filepath):
+  if (
+    ret
+    and zipfile.is_zipfile(first_filepath)
+    and zipfile.is_zipfile(second_filepath)
+  ):
     try:
       ret += '\n' + diff_zips(first_filepath, second_filepath)
     except OSError:
-      print("https://crbug.com/1427203: error from diff_zips(%s, %s)?" %
-            (first_filepath, second_filepath))
+      print(
+        "https://crbug.com/1427203: error from diff_zips(%s, %s)?"
+        % (first_filepath, second_filepath)
+      )
       raise
   return ret
 
@@ -232,17 +255,19 @@ def get_deps(ninja_path, build_dir, target):
     fixed_build_dir = build_dir[:-2]
     if os.path.exists(fixed_build_dir):
       print(
-          'fixed_build_dir %s exists.'
-          ' will try to use orig dir.' % fixed_build_dir,
-          file=sys.stderr)
+        'fixed_build_dir %s exists.'
+        ' will try to use orig dir.' % fixed_build_dir,
+        file=sys.stderr,
+      )
       fixed_build_dir = build_dir
     else:
       shutil.move(build_dir, fixed_build_dir)
 
   try:
     out = subprocess.check_output(
-        [ninja_path, '-C', fixed_build_dir, '-t', 'graph', target],
-        universal_newlines=True)
+      [ninja_path, '-C', fixed_build_dir, '-t', 'graph', target],
+      universal_newlines=True,
+    )
   except subprocess.CalledProcessError as e:
     print('error to get graph for %s: %s' % (target, e), file=sys.stderr)
     return []
@@ -261,8 +286,9 @@ def get_deps(ninja_path, build_dir, target):
         continue
       if os.path.isabs(path):
         print(
-            'not support abs path %s used for target %s' % (path, target),
-            file=sys.stderr)
+          'not support abs path %s used for target %s' % (path, target),
+          file=sys.stderr,
+        )
         continue
       files.append(path)
   return files
@@ -279,8 +305,10 @@ def compare_deps(first_dir, second_dir, ninja_path, targets):
     if set(first_deps) != set(second_deps):
       # Since we do not thiks this case occur, we do not do anything special
       # for this case.
-      print('deps on %s are different: %s' %
-            (target, set(first_deps).symmetric_difference(set(second_deps))))
+      print(
+        'deps on %s are different: %s'
+        % (target, set(first_deps).symmetric_difference(set(second_deps)))
+      )
       continue
     max_filepath_len = max([0] + [len(n) for n in first_deps])
     for d in first_deps:
@@ -294,8 +322,15 @@ def compare_deps(first_dir, second_dir, ninja_path, targets):
   return list(diffs)
 
 
-def compare_build_artifacts(first_dir, second_dir, ninja_path, target_platform,
-                            json_output, recursive, use_isolate_files):
+def compare_build_artifacts(
+  first_dir,
+  second_dir,
+  ninja_path,
+  target_platform,
+  json_output,
+  recursive,
+  use_isolate_files,
+):
   """Compares the artifacts from two distinct builds."""
   if not os.path.isdir(first_dir):
     print('%s isn\'t a valid directory.' % first_dir, file=sys.stderr)
@@ -305,8 +340,10 @@ def compare_build_artifacts(first_dir, second_dir, ninja_path, target_platform,
     return 1
 
   epoch_hex = binascii.hexlify(struct.pack('<I', int(time.time()))).decode()
-  print('Epoch: %s' % ' '.join(epoch_hex[i:i + 2]
-                               for i in range(0, len(epoch_hex), 2)))
+  print(
+    'Epoch: %s'
+    % ' '.join(epoch_hex[i : i + 2] for i in range(0, len(epoch_hex), 2))
+  )
 
   with open(os.path.join(BASE_DIR, 'deterministic_build_ignorelist.pyl')) as f:
     raw_ignorelist = ast.literal_eval(f.read())
@@ -342,8 +379,12 @@ def compare_build_artifacts(first_dir, second_dir, ninja_path, target_platform,
     first_list.update(['toolchain.ninja'])
     second_list.update(['toolchain.ninja'])
 
-  print('See https://chromium.googlesource.com/chromium/src/+/HEAD/docs/deterministic_builds.md')
-  print('for debugging non-determinisitic builds. Skip to "Unexpected diffs:" below')
+  print(
+    'See https://chromium.googlesource.com/chromium/src/+/HEAD/docs/deterministic_builds.md'
+  )
+  print(
+    'for debugging non-determinisitic builds. Skip to "Unexpected diffs:" below'
+  )
   print('and search for "DIFFERENT (unexpected)" for clues about problems.')
   print()
   print('Differences of files in build directories:')
@@ -400,15 +441,16 @@ def compare_build_artifacts(first_dir, second_dir, ninja_path, target_platform,
 
   all_diffs = expected_diffs + unexpected_diffs
   diffs_to_investigate = sorted(set(all_diffs).difference(missing_files))
-  deps_diff = compare_deps(first_dir, second_dir,
-                           ninja_path, diffs_to_investigate)
+  deps_diff = compare_deps(
+    first_dir, second_dir, ninja_path, diffs_to_investigate
+  )
 
   if json_output:
     try:
       out = {
-          'expected_diffs': expected_diffs,
-          'unexpected_diffs': unexpected_diffs,
-          'deps_diff': deps_diff,
+        'expected_diffs': expected_diffs,
+        'unexpected_diffs': unexpected_diffs,
+        'deps_diff': deps_diff,
       }
       with open(json_output, 'w') as f:
         json.dump(out, f)
@@ -421,27 +463,40 @@ def compare_build_artifacts(first_dir, second_dir, ninja_path, target_platform,
 def main():
   parser = optparse.OptionParser(usage='%prog [options]')
   parser.add_option(
-      '-f', '--first-build-dir', help='The first build directory.')
+    '-f', '--first-build-dir', help='The first build directory.'
+  )
   parser.add_option(
-      '-s', '--second-build-dir', help='The second build directory.')
-  parser.add_option('-r', '--recursive', action='store_true', default=False,
-                    help='Indicates if the comparison should be recursive.')
+    '-s', '--second-build-dir', help='The second build directory.'
+  )
   parser.add_option(
-      '--use-isolate-files',
-      action='store_true',
-      default=False,
-      help='Use .runtime_deps files in each directory to determine which '
-      'artifacts to compare.')
+    '-r',
+    '--recursive',
+    action='store_true',
+    default=False,
+    help='Indicates if the comparison should be recursive.',
+  )
+  parser.add_option(
+    '--use-isolate-files',
+    action='store_true',
+    default=False,
+    help='Use .runtime_deps files in each directory to determine which '
+    'artifacts to compare.',
+  )
 
   parser.add_option('--json-output', help='JSON file to output differences')
-  parser.add_option('--ninja-path', help='path to ninja command.',
-                    default='ninja')
-  target = {
-      'darwin': 'mac', 'linux2': 'linux', 'win32': 'win'
-  }.get(sys.platform, sys.platform)
   parser.add_option(
-      '-t', '--target-platform', help='The target platform.',
-      default=target, choices=('android', 'fuchsia', 'mac', 'linux', 'win'))
+    '--ninja-path', help='path to ninja command.', default='ninja'
+  )
+  target = {'darwin': 'mac', 'linux2': 'linux', 'win32': 'win'}.get(
+    sys.platform, sys.platform
+  )
+  parser.add_option(
+    '-t',
+    '--target-platform',
+    help='The target platform.',
+    default=target,
+    choices=('android', 'fuchsia', 'mac', 'linux', 'win'),
+  )
   options, _ = parser.parse_args()
 
   if not options.first_build_dir:
@@ -451,13 +506,15 @@ def main():
   if not options.target_platform:
     parser.error('--target-platform is required')
 
-  return compare_build_artifacts(os.path.abspath(options.first_build_dir),
-                                 os.path.abspath(options.second_build_dir),
-                                 options.ninja_path,
-                                 options.target_platform,
-                                 options.json_output,
-                                 options.recursive,
-                                 options.use_isolate_files)
+  return compare_build_artifacts(
+    os.path.abspath(options.first_build_dir),
+    os.path.abspath(options.second_build_dir),
+    options.ninja_path,
+    options.target_platform,
+    options.json_output,
+    options.recursive,
+    options.use_isolate_files,
+  )
 
 
 if __name__ == '__main__':

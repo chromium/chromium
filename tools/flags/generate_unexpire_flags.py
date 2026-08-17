@@ -143,8 +143,7 @@ def gen_flags_fragment(prog_name, mstone):
 
 
 def update_file_if_stale(filename, data):
-  """Writes data to filename if data is different from file's contents on disk.
-  """
+  """Writes data to filename if data is different from file's contents on disk."""
   try:
     disk_data = open(filename, 'r').read()
     if disk_data == data:

@@ -46,7 +46,8 @@ def _ParseSLeb128(data, offset):
 class Mutf8DecodeError(Exception):
   def __init__(self, message, length, offset):
     message += ' (decoded string length: {}, string data offset: {:#x})'.format(
-        length, offset)
+      length, offset
+    )
     super().__init__(message)
 
 
@@ -77,7 +78,7 @@ class StreamReader:
   def NextBytes(self, n):
     old_pos = self._pos
     self._pos = min(len(self._data), old_pos + n)
-    return self._data[old_pos:self._pos]
+    return self._data[old_pos : self._pos]
 
   def NextUByte(self):
     self._pos += 1
@@ -119,28 +120,30 @@ class StreamReader:
     for _ in range(string_length):
       a = self.NextUByte()
       if a == 0:
-        raise Mutf8DecodeError('Early string termination encountered',
-                               string_length, offset)
+        raise Mutf8DecodeError(
+          'Early string termination encountered', string_length, offset
+        )
       if (a & 0x80) == 0x00:
         code = a
-      elif (a & 0xe0) == 0xc0:
+      elif (a & 0xE0) == 0xC0:
         b = self.NextUByte()
-        if (b & 0xc0) != 0x80:
+        if (b & 0xC0) != 0x80:
           raise Mutf8DecodeError('Error in byte 2', string_length, offset)
-        code = ((a & 0x1f) << 6) | (b & 0x3f)
-      elif (a & 0xf0) == 0xe0:
+        code = ((a & 0x1F) << 6) | (b & 0x3F)
+      elif (a & 0xF0) == 0xE0:
         b = self.NextUByte()
         c = self.NextUByte()
-        if (b & 0xc0) != 0x80 or (c & 0xc0) != 0x80:
+        if (b & 0xC0) != 0x80 or (c & 0xC0) != 0x80:
           raise Mutf8DecodeError('Error in byte 3 or 4', string_length, offset)
-        code = ((a & 0x0f) << 12) | ((b & 0x3f) << 6) | (c & 0x3f)
+        code = ((a & 0x0F) << 12) | ((b & 0x3F) << 6) | (c & 0x3F)
       else:
         raise Mutf8DecodeError('Bad byte', string_length, offset)
       ret += chr(code)
 
     if self.NextUByte() != 0x00:
-      raise Mutf8DecodeError('Expected string termination', string_length,
-                             offset)
+      raise Mutf8DecodeError(
+        'Expected string termination', string_length, offset
+      )
 
     return ret
 

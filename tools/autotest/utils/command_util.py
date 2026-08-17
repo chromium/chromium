@@ -23,14 +23,14 @@ def ExitWithMessage(*args: list[str]):
 
 
 class GtestConfig:
-
   @property
   def user_path_flags(self) -> list[str]:
     return ['--test-launcher-summary-output', '--json-results-file']
 
   def GetOutputFlags(self, path: str) -> list[str]:
     return [
-        f'--test-launcher-summary-output={path}', f'--json-results-file={path}'
+      f'--test-launcher-summary-output={path}',
+      f'--json-results-file={path}',
     ]
 
   def ParseResults(self, path: str) -> TestSummary:
@@ -38,7 +38,6 @@ class GtestConfig:
 
 
 class WebTestConfig:
-
   @property
   def user_path_flags(self) -> list[str]:
     return ['--json-test-results']
@@ -51,11 +50,14 @@ class WebTestConfig:
 
 
 @telemetry.tracer.start_as_current_span('chromium.tools.autotest.run_target')
-def RunTestCommandWithSummary(cmd: list[str],
-                              test_type: const.TestType = const.TestType.GTEST,
-                              **kwargs: int) -> tuple[int, TestSummary]:
-  runner_config = GtestConfig() if test_type == const.TestType.GTEST else \
-    WebTestConfig()
+def RunTestCommandWithSummary(
+  cmd: list[str],
+  test_type: const.TestType = const.TestType.GTEST,
+  **kwargs: int,
+) -> tuple[int, TestSummary]:
+  runner_config = (
+    GtestConfig() if test_type == const.TestType.GTEST else WebTestConfig()
+  )
   user_provided_path: str = None
 
   for flag in runner_config.user_path_flags:
@@ -70,9 +72,9 @@ def RunTestCommandWithSummary(cmd: list[str],
       break
 
   def _run_and_parse_tests(cmd: list[str], path: str):
-    result: subprocess.CompletedProcess[str] = subprocess.run(cmd,
-                                                              check=False,
-                                                              **kwargs)
+    result: subprocess.CompletedProcess[str] = subprocess.run(
+      cmd, check=False, **kwargs
+    )
     test_summary: TestSummary = runner_config.ParseResults(path)
     is_successful: bool = result.returncode == 0
 
@@ -96,9 +98,9 @@ def RunCommand(cmd: list[str], **kwargs: int) -> str:
 
   try:
     # Set an encoding to convert the binary output to a string.
-    return subprocess.check_output(cmd,
-                                   **kwargs,
-                                   encoding=locale.getpreferredencoding())
+    return subprocess.check_output(
+      cmd, **kwargs, encoding=locale.getpreferredencoding()
+    )
   except subprocess.CalledProcessError as e:
     raise CommandError(e.cmd, e.returncode, e.output) from None
 

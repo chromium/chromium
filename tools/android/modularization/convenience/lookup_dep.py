@@ -14,6 +14,7 @@ Example:
 Find build target with class FooUtil:
    tools/android/modularization/convenience/lookup_dep.py FooUtil
 '''
+
 import argparse
 import logging
 import pathlib
@@ -30,34 +31,36 @@ from util import dep_utils
 
 def main():
   arg_parser = argparse.ArgumentParser(
-      description='Finds which build target contains a particular Java class.')
+    description='Finds which build target contains a particular Java class.'
+  )
 
-  arg_parser.add_argument('-C',
-                          '--output-directory',
-                          help='Build output directory.')
-  arg_parser.add_argument('--build',
-                          action='store_true',
-                          help='Build all .build_config files.')
-  arg_parser.add_argument('classes',
-                          nargs='+',
-                          help='Java classes to search for')
-  arg_parser.add_argument('-v',
-                          '--verbose',
-                          action='store_true',
-                          help='Verbose logging.')
+  arg_parser.add_argument(
+    '-C', '--output-directory', help='Build output directory.'
+  )
+  arg_parser.add_argument(
+    '--build', action='store_true', help='Build all .build_config files.'
+  )
+  arg_parser.add_argument(
+    'classes', nargs='+', help='Java classes to search for'
+  )
+  arg_parser.add_argument(
+    '-v', '--verbose', action='store_true', help='Verbose logging.'
+  )
 
   arguments = arg_parser.parse_args()
 
   logging.basicConfig(
-      level=logging.DEBUG if arguments.verbose else logging.WARNING,
-      format='%(asctime)s.%(msecs)03d %(levelname).1s %(message)s',
-      datefmt='%H:%M:%S')
+    level=logging.DEBUG if arguments.verbose else logging.WARNING,
+    format='%(asctime)s.%(msecs)03d %(levelname).1s %(message)s',
+    datefmt='%H:%M:%S',
+  )
 
   if arguments.output_directory:
     constants.SetOutputDirectory(arguments.output_directory)
   constants.CheckOutputDirectory()
   abs_out_dir: pathlib.Path = pathlib.Path(
-      constants.GetOutDirectory()).resolve()
+    constants.GetOutDirectory()
+  ).resolve()
 
   index = dep_utils.ClassLookupIndex(abs_out_dir, arguments.build)
   matches = {c: index.match(c) for c in arguments.classes}
@@ -73,11 +76,13 @@ def main():
       matches = {c: index.match(c) for c in arguments.classes}
 
   if not arguments.build:
-    print('Showing potentially stale results. Run lookup.dep.py with --build '
-          '(slower) to build any unbuilt GN targets and get full results.')
+    print(
+      'Showing potentially stale results. Run lookup.dep.py with --build '
+      '(slower) to build any unbuilt GN targets and get full results.'
+    )
     print()
 
-  for (class_name, class_entries) in matches.items():
+  for class_name, class_entries in matches.items():
     if not class_entries:
       print(f'Could not find build target for class "{class_name}"')
     elif len(class_entries) == 1:

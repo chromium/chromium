@@ -36,7 +36,7 @@ _MERGED_FOLDER = os.path.join(_BASE_FOLDER, 'merged')
 _PRINT_ONLY = False
 
 
-class Refresh():
+class Refresh:
   def collect_sites(self, testcases_file):
     with open(testcases_file, 'r') as file:
       content = json.load(file)
@@ -52,8 +52,12 @@ class Refresh():
        --release to run against release build
        --background to run with xvfb.py."""
     command_args = [
-        'tools/captured_sites/control.py', 'refresh', '--store-log',
-        '--release', '--background', site_name
+      'tools/captured_sites/control.py',
+      'refresh',
+      '--store-log',
+      '--release',
+      '--background',
+      site_name,
     ]
     _make_process_call(command_args, _PRINT_ONLY)
 
@@ -73,8 +77,13 @@ class Refresh():
         first_trim = False
 
       command_args = [
-          sys.executable, _WPR_SCRIPTS_FOLDER + 'run_httparchive.py', 'trim',
-          '--host', host_domain, to_trim_wpr_archive, trimmed_wpr_archive
+        sys.executable,
+        _WPR_SCRIPTS_FOLDER + 'run_httparchive.py',
+        'trim',
+        '--host',
+        host_domain,
+        to_trim_wpr_archive,
+        trimmed_wpr_archive,
       ]
       _make_process_call(command_args, _PRINT_ONLY)
 
@@ -87,8 +96,12 @@ class Refresh():
     merged_wpr_archive = os.path.join(_MERGED_FOLDER, '%s.wpr' % site_name)
 
     command_args = [
-        sys.executable, _WPR_SCRIPTS_FOLDER + 'run_httparchive.py', 'merge',
-        trimmed_wpr_archive, fresh_wpr_archive, merged_wpr_archive
+      sys.executable,
+      _WPR_SCRIPTS_FOLDER + 'run_httparchive.py',
+      'merge',
+      trimmed_wpr_archive,
+      fresh_wpr_archive,
+      merged_wpr_archive,
     ]
     _make_process_call(command_args, _PRINT_ONLY)
 
@@ -96,20 +109,25 @@ class Refresh():
     """Update .test file expectations to reflect the changes in the newly merged
     Server Predictions"""
     cmd = '...'
-    #TODO(crbug.com/40216356)
+    # TODO(crbug.com/40216356)
     print('Not Implemented')
 
 
 def _parse_args():
   parser = argparse.ArgumentParser(
-      formatter_class=argparse.RawTextHelpFormatter)
+    formatter_class=argparse.RawTextHelpFormatter
+  )
   parser.usage = __doc__
-  parser.add_argument('site_name',
-                      nargs='?',
-                      default='*',
-                      help=('The site name which should have a match in '
-                            'testcases.json. Use * to indicate all enumerated '
-                            'sites in that file.'))
+  parser.add_argument(
+    'site_name',
+    nargs='?',
+    default='*',
+    help=(
+      'The site name which should have a match in '
+      'testcases.json. Use * to indicate all enumerated '
+      'sites in that file.'
+    ),
+  )
   return parser.parse_args()
 
 
@@ -120,14 +138,17 @@ def _make_process_call(command_args, print_only):
     return
 
   if not os.path.exists(command_args[0]):
-    raise EnvironmentError('Cannot locate binary to execute. '
-                           'Ensure that working directory is chromium/src')
+    raise EnvironmentError(
+      'Cannot locate binary to execute. '
+      'Ensure that working directory is chromium/src'
+    )
   subprocess.call(command_text, shell=True)
 
 
 def _create_subfolders():
-  assert os.path.isdir(_BASE_FOLDER), ('Expecting path "%s" to exist in your '
-                                       'chromium checkout' % _BASE_FOLDER)
+  assert os.path.isdir(_BASE_FOLDER), (
+    'Expecting path "%s" to exist in your chromium checkout' % _BASE_FOLDER
+  )
   if not os.path.isdir(_MERGED_FOLDER):
     os.mkdir(_MERGED_FOLDER)
   if not os.path.isdir(_REFRESH_FOLDER):

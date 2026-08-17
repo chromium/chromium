@@ -1,7 +1,7 @@
 # Copyright 2026 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-""" Tests for memory_usage_view.py"""
+"""Tests for memory_usage_view.py"""
 
 import json
 import os
@@ -13,8 +13,13 @@ import unittest
 _SRC_PATH = pathlib.Path(__file__).resolve().parents[4]
 sys.path.append(str(_SRC_PATH / 'tools/android'))
 from colabutils.memory_usage.memory_usage_view import (
-    MemoryUsageView, TreeNode, _aggregate_nodes, _zip_by_name,
-    _compare_node_lists, _prettify_size)
+    MemoryUsageView,
+    TreeNode,
+    _aggregate_nodes,
+    _zip_by_name,
+    _compare_node_lists,
+    _prettify_size,
+)
 
 _REALISTIC_JSON = """
 [
@@ -80,12 +85,12 @@ _SIMPLE_JSON_WITH_DELTAS = """
 
 
 class MemoryUsageViewTest(unittest.TestCase):
-
     def test_json_preserved(self):
         view = MemoryUsageView.from_json(_SIMPLE_JSON_WITH_DELTAS)
         dumped_json = view.to_json()
-        self.assertEqual(json.loads(_SIMPLE_JSON_WITH_DELTAS),
-                         json.loads(dumped_json))
+        self.assertEqual(
+            json.loads(_SIMPLE_JSON_WITH_DELTAS), json.loads(dumped_json)
+        )
 
     def test_from_json_defaults(self):
         json_data = '''[{"name": "root"}]'''
@@ -220,8 +225,9 @@ class MemoryUsageViewTest(unittest.TestCase):
         self.assertEqual([(node, None)], list(_zip_by_name([node], [])))
         self.assertEqual([(None, node)], list(_zip_by_name([], [node])))
         node2 = TreeNode(name='def')
-        self.assertEqual([(None, node), (None, node2)],
-                         list(_zip_by_name([], [node, node2])))
+        self.assertEqual(
+            [(None, node), (None, node2)], list(_zip_by_name([], [node, node2]))
+        )
 
     def test_zip_by_name_simple(self):
         left_node1 = TreeNode(name='l1')

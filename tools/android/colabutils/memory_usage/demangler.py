@@ -18,20 +18,22 @@ class Demangler:
     def __init__(self):
         src_path = pathlib.Path(__file__).resolve().parents[4]
         self.binary_path = str(
-            src_path /
-            'third_party/llvm-build/Release+Asserts/bin/llvm-cxxfilt')
+            src_path / 'third_party/llvm-build/Release+Asserts/bin/llvm-cxxfilt'
+        )
         self.process = None
 
     def start(self):
         if not os.path.exists(self.binary_path):
             raise FileNotFoundError(f'Not found: {self.binary_path}')
         # TODO(crbug.com/473768497): Explore async demangling.
-        self.process = subprocess.Popen([self.binary_path],
-                                        stdin=subprocess.PIPE,
-                                        stdout=subprocess.PIPE,
-                                        stderr=subprocess.DEVNULL,
-                                        text=True,
-                                        bufsize=1)
+        self.process = subprocess.Popen(
+            [self.binary_path],
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL,
+            text=True,
+            bufsize=1,
+        )
 
     def demangle(self, mangled_name):
         if not self.process:

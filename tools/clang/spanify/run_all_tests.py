@@ -24,18 +24,22 @@ def _RunGit(args):
 def _GenerateCompileCommands(files, include_paths):
     """Returns a JSON string containing a compilation database for the input."""
     files = [f.replace('\\', '/') for f in files]
-    include_path_flags = ' '.join('-I %s' % include_path.replace('\\', '/')
-                                  for include_path in include_paths)
-    return json.dumps([{
-        'directory':
-        os.path.dirname(f),
-        'command':
-        'clang++ -std=c++23 -fsyntax-only %s %s' %
-        (include_path_flags, os.path.basename(f)),
-        'file':
-        os.path.basename(f)
-    } for f in files],
-                      indent=2)
+    include_path_flags = ' '.join(
+        '-I %s' % include_path.replace('\\', '/')
+        for include_path in include_paths
+    )
+    return json.dumps(
+        [
+            {
+                'directory': os.path.dirname(f),
+                'command': 'clang++ -std=c++23 -fsyntax-only %s %s'
+                % (include_path_flags, os.path.basename(f)),
+                'file': os.path.basename(f),
+            }
+            for f in files
+        ],
+        indent=2,
+    )
 
 
 def RunScriptsAsPipedCommands(*scripts_cmds):
@@ -47,9 +51,7 @@ def RunScriptsAsPipedCommands(*scripts_cmds):
     for script_cmd in scripts_cmds:
         processes.append(
             subprocess.Popen(
-                [python] + script_cmd,
-                stdin=prev_stdout,
-                stdout=subprocess.PIPE
+                [python] + script_cmd, stdin=prev_stdout, stdout=subprocess.PIPE
             )
         )
 
@@ -78,14 +80,20 @@ def _ApplyTool(scripts_dir, spanify_dir, test_dir, actual_files, project):
         returncode = RunScriptsAsPipedCommands(
             # 1. run_tool.py
             [
-                os.path.join(scripts_dir, "run_tool.py"), "--tool", "spanify",
-                "-p", test_dir, f'--tool-arg=--project={project}'
-            ] + actual_files,
+                os.path.join(scripts_dir, "run_tool.py"),
+                "--tool",
+                "spanify",
+                "-p",
+                test_dir,
+                f'--tool-arg=--project={project}',
+            ]
+            + actual_files,
             # 2. extract_edits.py (from spanify_dir)
             [os.path.join(spanify_dir, "extract_edits.py")],
             # 3. apply_edits.py
-            [os.path.join(scripts_dir, "apply_edits.py"), "-p", test_dir] +
-            actual_files)
+            [os.path.join(scripts_dir, "apply_edits.py"), "-p", test_dir]
+            + actual_files,
+        )
 
         if returncode != 0:
             return returncode
@@ -123,11 +131,15 @@ def RunTestsForProject(spanify_dir, scripts_dir, src_dir, project):
         os.path.realpath(os.path.join(src_dir, 'testing/gtest/include')),
         os.path.realpath(os.path.join(src_dir, 'testing/gmock/include')),
         os.path.realpath(
-            os.path.join(src_dir,
-                         'third_party/googletest/src/googletest/include')),
+            os.path.join(
+                src_dir, 'third_party/googletest/src/googletest/include'
+            )
+        ),
         os.path.realpath(
-            os.path.join(src_dir,
-                         'third_party/googletest/src/googlemock/include')),
+            os.path.join(
+                src_dir, 'third_party/googletest/src/googlemock/include'
+            )
+        ),
     ]
 
     # Set up the test environment.
@@ -143,8 +155,9 @@ def RunTestsForProject(spanify_dir, scripts_dir, src_dir, project):
     old_cwd = os.getcwd()
     os.chdir(test_dir)
     try:
-        exitcode = _ApplyTool(scripts_dir, spanify_dir, test_dir, actual_files,
-                              project)
+        exitcode = _ApplyTool(
+            scripts_dir, spanify_dir, test_dir, actual_files, project
+        )
     finally:
         os.chdir(old_cwd)
 
@@ -167,7 +180,8 @@ def RunTestsForProject(spanify_dir, scripts_dir, src_dir, project):
                 expected_output,
                 actual_output,
                 fromfile=os.path.relpath(expected, spanify_dir),
-                tofile=os.path.relpath(actual, spanify_dir))
+                tofile=os.path.relpath(actual, spanify_dir),
+            )
             sys.stdout.writelines(lines)
             print('[  FAILED  ] %s' % os.path.relpath(actual, spanify_dir))
             # Don't clean up the file on failure, so the results can be referenced
@@ -185,8 +199,9 @@ def RunTestsForProject(spanify_dir, scripts_dir, src_dir, project):
 
 def main():
     parser = argparse.ArgumentParser(description='Run spanify tests.')
-    parser.add_argument('--project',
-                        help='If specified, only run tests for this project.')
+    parser.add_argument(
+        '--project', help='If specified, only run tests for this project.'
+    )
     args = parser.parse_args()
 
     spanify_dir = os.path.dirname(os.path.realpath(__file__))
@@ -205,8 +220,9 @@ def main():
         projects = [args.project]
 
     for project in projects:
-        passed, failed = RunTestsForProject(spanify_dir, scripts_dir, src_dir,
-                                            project)
+        passed, failed = RunTestsForProject(
+            spanify_dir, scripts_dir, src_dir, project
+        )
         total_passed += passed
         total_failed += failed
 

@@ -10,39 +10,42 @@ import models
 
 
 class DisassemblyUtilTest(unittest.TestCase):
-
   def testSelectEvenlySpaced(self):
     self.assertEqual([], disassembly_util._SelectEvenlySpaced([], 3))
     self.assertEqual([1], disassembly_util._SelectEvenlySpaced([1], 3))
     self.assertEqual([1, 2], disassembly_util._SelectEvenlySpaced([1, 2], 3))
-    self.assertEqual([1, 2, 3],
-                     disassembly_util._SelectEvenlySpaced([1, 2, 3], 3))
-    self.assertEqual([2, 3, 4],
-                     disassembly_util._SelectEvenlySpaced([1, 2, 3, 4], 3))
-    self.assertEqual([2, 4, 5],
-                     disassembly_util._SelectEvenlySpaced([1, 2, 3, 4, 5], 3))
+    self.assertEqual(
+      [1, 2, 3], disassembly_util._SelectEvenlySpaced([1, 2, 3], 3)
+    )
+    self.assertEqual(
+      [2, 3, 4], disassembly_util._SelectEvenlySpaced([1, 2, 3, 4], 3)
+    )
+    self.assertEqual(
+      [2, 4, 5], disassembly_util._SelectEvenlySpaced([1, 2, 3, 4, 5], 3)
+    )
 
   def testSelectSymbols(self):
 
     def make_delta(name, before_size, after_size, source_path=None):
       before = None
       if before_size:
-        before = models.Symbol(models.SECTION_TEXT,
-                               size_without_padding=before_size,
-                               name=name)
+        before = models.Symbol(
+          models.SECTION_TEXT, size_without_padding=before_size, name=name
+        )
         before.source_path = source_path
       after = None
       if after_size:
-        after = models.Symbol(models.SECTION_TEXT,
-                              size_without_padding=after_size,
-                              name=name)
+        after = models.Symbol(
+          models.SECTION_TEXT, size_without_padding=after_size, name=name
+        )
         after.source_path = source_path
       return models.DeltaSymbol(before, after)
 
     # Empty candidates
-    self.assertEqual([],
-                     disassembly_util.SampleSymbols(
-                         models.DeltaSymbolGroup([], name='test')))
+    self.assertEqual(
+      [],
+      disassembly_util.SampleSymbols(models.DeltaSymbolGroup([], name='test')),
+    )
 
     # Create a set of candidates
     symbols = []
@@ -70,10 +73,10 @@ class DisassemblyUtilTest(unittest.TestCase):
     # and some from evenly spaced.
     added = [s for s in selected if s.diff_status == models.DIFF_STATUS_ADDED]
     removed = [
-        s for s in selected if s.diff_status == models.DIFF_STATUS_REMOVED
+      s for s in selected if s.diff_status == models.DIFF_STATUS_REMOVED
     ]
     changed = [
-        s for s in selected if s.diff_status == models.DIFF_STATUS_CHANGED
+      s for s in selected if s.diff_status == models.DIFF_STATUS_CHANGED
     ]
     self.assertGreaterEqual(len(added), 2)
     self.assertGreaterEqual(len(removed), 2)
@@ -88,9 +91,10 @@ class DisassemblyUtilTest(unittest.TestCase):
     # Since we need at least 8 from changed files and Minior only has 5, all 5
     # must be selected.
     selected_with_files = disassembly_util.SampleSymbols(
-        candidates, changed_files=['Minior.java'])
+      candidates, changed_files=['Minior.java']
+    )
     minior_symbols_with_files = [
-        s for s in selected_with_files if s.source_path == 'Minior.java'
+      s for s in selected_with_files if s.source_path == 'Minior.java'
     ]
     self.assertEqual(len(minior_symbols_with_files), 5)
 
@@ -98,15 +102,17 @@ class DisassemblyUtilTest(unittest.TestCase):
     # contributed yet, whereas Baz.java has already contributed large symbols.
     # NewFile.java should be prioritized.
     selected_scoring = disassembly_util.SampleSymbols(
-        candidates, changed_files=['Baz.java', 'NewFile.java'])
+      candidates, changed_files=['Baz.java', 'NewFile.java']
+    )
     newfile_symbols = [
-        s for s in selected_scoring if s.source_path == 'NewFile.java'
+      s for s in selected_scoring if s.source_path == 'NewFile.java'
     ]
     self.assertEqual(len(newfile_symbols), 1)
 
     # If we specify a file that has no candidates, it shouldn't crash
     selected_empty_file = disassembly_util.SampleSymbols(
-        candidates, changed_files=['NonExistent.java'])
+      candidates, changed_files=['NonExistent.java']
+    )
     self.assertGreater(len(selected_empty_file), 0)
 
   def testCreateUnifiedDiff(self):

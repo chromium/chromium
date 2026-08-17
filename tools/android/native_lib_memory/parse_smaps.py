@@ -3,7 +3,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-"""Parses /proc/[pid]/smaps on a device and shows the total amount of swap used.
+"""Parses /proc/[pid]/smaps on a device and shows the total amount of swap
+used.
 """
 
 import argparse
@@ -14,7 +15,8 @@ import re
 import sys
 
 _SRC_PATH = os.path.join(
-    os.path.dirname(__file__), os.pardir, os.pardir, os.pardir)
+  os.path.dirname(__file__), os.pardir, os.pardir, os.pardir
+)
 sys.path.append(os.path.join(_SRC_PATH, 'third_party', 'catapult', 'devil'))
 from devil.android import device_utils
 
@@ -47,7 +49,7 @@ class Mapping:
     """
     assert ':' in line
     split_index = line.index(':')
-    k, v = line[:split_index].strip(), line[split_index + 1:].strip()
+    k, v = line[:split_index].strip(), line[split_index + 1 :].strip()
     assert k not in self.fields
     if v.endswith('kB'):
       v = int(v[:-2])
@@ -60,8 +62,10 @@ class Mapping:
     entry it was generated from.
     """
     lines = []
-    lines.append('%x-%x %s %x %s' % (
-        self.start, self.end, self.permissions, self.offset, self.pathname))
+    lines.append(
+      '%x-%x %s %x %s'
+      % (self.start, self.end, self.permissions, self.offset, self.pathname)
+    )
     for name in self.fields:
       format_str = None
       if isinstance(self.fields[name], int):
@@ -74,21 +78,23 @@ class Mapping:
 
 def _ParseProcSmapsLines(lines):
   SMAPS_ENTRY_START_RE = (
-      # start-end
-      '^([0-9a-f]{1,16})-([0-9a-f]{1,16}) '
-      # Permissions
-      '([r\-][w\-][x\-][ps]) '
-      # Offset
-      '([0-9a-f]{1,16}) '
-      # Device
-      '([0-9a-f]{2,3}:[0-9a-f]{2,3}) '
-      # Inode
-      '([0-9]*) '
-      # Pathname
-      '(.*)')
-  assert re.search(SMAPS_ENTRY_START_RE,
-                   '35b1800000-35b1820000 r-xp 00000000 08:02 135522  '
-                   '/usr/lib64/ld-2.15.so')
+    # start-end
+    '^([0-9a-f]{1,16})-([0-9a-f]{1,16}) '
+    # Permissions
+    '([r\-][w\-][x\-][ps]) '
+    # Offset
+    '([0-9a-f]{1,16}) '
+    # Device
+    '([0-9a-f]{2,3}:[0-9a-f]{2,3}) '
+    # Inode
+    '([0-9]*) '
+    # Pathname
+    '(.*)'
+  )
+  assert re.search(
+    SMAPS_ENTRY_START_RE,
+    '35b1800000-35b1820000 r-xp 00000000 08:02 135522  /usr/lib64/ld-2.15.so',
+  )
   entry_re = re.compile(SMAPS_ENTRY_START_RE)
 
   mappings = []
@@ -127,7 +133,7 @@ def _GetPageTableFootprint(device, pid):
   lines = device.RunShellCommand(command, check_return=True)
   for line in lines:
     if line.startswith('VmPTE:'):
-      value = int(line[len('VmPTE: '):line.index('kB')])
+      value = int(line[len('VmPTE: ') : line.index('kB')])
       return value
   # Should not be reached.
   return None
@@ -135,9 +141,12 @@ def _GetPageTableFootprint(device, pid):
 
 def _SummarizeMapping(mapping, metric):
   return '%s %s %s: %d kB (Total Size: %d kB)' % (
-      hex(mapping.start),
-      mapping.pathname, mapping.permissions, metric,
-      (mapping.end - mapping.start) / 1024)
+    hex(mapping.start),
+    mapping.pathname,
+    mapping.permissions,
+    metric,
+    (mapping.end - mapping.start) / 1024,
+  )
 
 
 def _PrintMappingsMetric(mappings, field_name):
@@ -152,8 +161,9 @@ def _PrintMappingsMetric(mappings, field_name):
   """
   total_kb = sum(m.fields[field_name] for m in mappings)
   print('Total Size (kB) = %d' % total_kb)
-  sorted_by_metric = sorted(mappings,
-                            key=lambda m: m.fields[field_name], reverse=True)
+  sorted_by_metric = sorted(
+    mappings, key=lambda m: m.fields[field_name], reverse=True
+  )
   for mapping in sorted_by_metric:
     metric = mapping.fields[field_name]
     if not metric:
@@ -169,7 +179,7 @@ def _PrintSwapStats(mappings):
 def _PrintAnonymousMappingsStats(mappings):
   print('Anonymous mappings sorted by Shared_Dirty memory:')
   anonymous_mappings = [
-      mapping for mapping in mappings if mapping.pathname.startswith('[')
+    mapping for mapping in mappings if mapping.pathname.startswith('[')
   ]
   _PrintMappingsMetric(anonymous_mappings, 'Shared_Dirty')
 
@@ -179,8 +189,10 @@ def _PrintAnonymousMappingsStats(mappings):
 
 def _FootprintForAnonymousMapping(mapping):
   assert mapping.pathname.startswith('[anon:')
-  if (mapping.pathname == '[anon:libc_malloc]'
-      and mapping.fields['Shared_Dirty'] != 0):
+  if (
+    mapping.pathname == '[anon:libc_malloc]'
+    and mapping.fields['Shared_Dirty'] != 0
+  ):
     # libc_malloc mappings can come from the zygote. In this case, the shared
     # dirty memory is likely dirty in the zygote, don't count it.
     return mapping.fields['Rss']
@@ -252,17 +264,23 @@ def _CreateArgumentParser():
   parser = argparse.ArgumentParser()
   parser.add_argument('--pid', help='PID.', type=int)
   parser.add_argument('--file', help='Pre-stored file', type=str)
-  parser.add_argument('--estimate-footprint',
-                      help='Show the estimated memory foootprint',
-                      action='store_true')
-  parser.add_argument('--store-smaps', help='Store the smaps file locally',
-                      action='store_true')
-  parser.add_argument('--show-allocator-footprint',
-                      help='Show the footprint from a given allocator',
-                      choices=['v8', 'libc_malloc', 'partition_alloc'],
-                      nargs='+')
   parser.add_argument(
-      '--device', help='Device to use', type=str, default='default')
+    '--estimate-footprint',
+    help='Show the estimated memory foootprint',
+    action='store_true',
+  )
+  parser.add_argument(
+    '--store-smaps', help='Store the smaps file locally', action='store_true'
+  )
+  parser.add_argument(
+    '--show-allocator-footprint',
+    help='Show the footprint from a given allocator',
+    choices=['v8', 'libc_malloc', 'partition_alloc'],
+    nargs='+',
+  )
+  parser.add_argument(
+    '--device', help='Device to use', type=str, default='default'
+  )
   return parser
 
 

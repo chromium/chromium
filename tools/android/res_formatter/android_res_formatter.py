@@ -112,7 +112,7 @@ def format_node(node, indent=0, indent_str=' ' * INDENT_SIZE):
   """
   if node.nodeType == minidom.Node.DOCUMENT_NODE:
     parts = [
-        format_node(child, indent, indent_str) for child in node.childNodes
+      format_node(child, indent, indent_str) for child in node.childNodes
     ]
     return ''.join(parts)
 
@@ -123,8 +123,9 @@ def format_node(node, indent=0, indent_str=' ' * INDENT_SIZE):
     attrs = sort_attributes(node.attributes)
 
     real_children = [
-        c for c in node.childNodes
-        if c.nodeType != minidom.Node.TEXT_NODE or c.nodeValue.strip()
+      c
+      for c in node.childNodes
+      if c.nodeType != minidom.Node.TEXT_NODE or c.nodeValue.strip()
     ]
 
     # Try single-line formatting first
@@ -135,8 +136,10 @@ def format_node(node, indent=0, indent_str=' ' * INDENT_SIZE):
       single_line = f"{indent_str * indent}<{tag}{attr_str} />\n"
       if len(single_line) <= MAX_LINE_LENGTH:
         return single_line
-    elif len(real_children
-             ) == 1 and real_children[0].nodeType == minidom.Node.TEXT_NODE:
+    elif (
+      len(real_children) == 1
+      and real_children[0].nodeType == minidom.Node.TEXT_NODE
+    ):
       text = real_children[0].nodeValue.strip()
       single_line = f"{indent_str * indent}<{tag}{attr_str}>{text}</{tag}>\n"
       if len(single_line) <= MAX_LINE_LENGTH:
@@ -151,10 +154,11 @@ def format_node(node, indent=0, indent_str=' ' * INDENT_SIZE):
     if len(single_line_open) <= MAX_LINE_LENGTH or len(attrs) <= 1:
       ret += single_line_open
     else:
-      continuation_indent = ' ' * (indent * len(indent_str) +
-                                   CONTINUATION_INDENT_SIZE)
+      continuation_indent = ' ' * (
+        indent * len(indent_str) + CONTINUATION_INDENT_SIZE
+      )
       attr_strs_wrapped = [
-          f'\n{continuation_indent}{name}="{value}"' for name, value in attrs
+        f'\n{continuation_indent}{name}="{value}"' for name, value in attrs
       ]
       ret += f"{indent_str * indent}<{tag}{''.join(attr_strs_wrapped)}"
 
@@ -194,7 +198,7 @@ def format_xml(content):
   if content.startswith('<?xml'):
     end_idx = content.find('?>')
     if end_idx != -1:
-      xml_declaration = content[:end_idx + 2] + '\n'
+      xml_declaration = content[: end_idx + 2] + '\n'
       return xml_declaration + formatted
 
   return formatted
@@ -207,10 +211,13 @@ def print_diff(original, formatted, filename):
       2 if differences were found, 0 otherwise.
   """
   diff = list(
-      difflib.unified_diff(original.splitlines(keepends=True),
-                           formatted.splitlines(keepends=True),
-                           fromfile=f'a/{filename}',
-                           tofile=f'b/{filename}'))
+    difflib.unified_diff(
+      original.splitlines(keepends=True),
+      formatted.splitlines(keepends=True),
+      fromfile=f'a/{filename}',
+      tofile=f'b/{filename}',
+    )
+  )
 
   if not diff:
     return 0
@@ -245,20 +252,26 @@ def process_file(file_path, check=False, stdout=False, diff=False):
 def main():
   """Main function to handle CLI arguments and run the formatter."""
   parser = argparse.ArgumentParser(
-      description='Format Android resource XML files.')
-  parser.add_argument('paths',
-                      nargs='+',
-                      help='Paths to XML files or directories to format.')
+    description='Format Android resource XML files.'
+  )
   parser.add_argument(
-      '--check',
-      action='store_true',
-      help='Check if files are formatted without modifying them.')
-  parser.add_argument('--diff',
-                      action='store_true',
-                      help='Print diff to stdout rather than modifying files.')
-  parser.add_argument('--stdout',
-                      action='store_true',
-                      help='Print formatted content to stdout instead of file.')
+    'paths', nargs='+', help='Paths to XML files or directories to format.'
+  )
+  parser.add_argument(
+    '--check',
+    action='store_true',
+    help='Check if files are formatted without modifying them.',
+  )
+  parser.add_argument(
+    '--diff',
+    action='store_true',
+    help='Print diff to stdout rather than modifying files.',
+  )
+  parser.add_argument(
+    '--stdout',
+    action='store_true',
+    help='Print formatted content to stdout instead of file.',
+  )
 
   args = parser.parse_args()
 

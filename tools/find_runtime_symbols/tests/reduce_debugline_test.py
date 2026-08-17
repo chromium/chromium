@@ -46,21 +46,23 @@ class ReduceDebuglineTest(unittest.TestCase):
       """)
 
   _EXPECTED_REDUCED_DEBUGLINE = [
-      (0xa3fd90, '../../base/logging.h'),
-      (0xa41210, '../../chrome/service/service_main.cc'),
-      (0xa41300, '../../base/message_loop.h'),
-      (0xa4141f, '../../chrome/service/service_main.cc'),
-      (0xa41710, '../../base/logging.h'),
-      ]
+    (0xA3FD90, '../../base/logging.h'),
+    (0xA41210, '../../chrome/service/service_main.cc'),
+    (0xA41300, '../../base/message_loop.h'),
+    (0xA4141F, '../../chrome/service/service_main.cc'),
+    (0xA41710, '../../base/logging.h'),
+  ]
 
   def test(self):
     ranges_dict = reduce_debugline.reduce_decoded_debugline(
-        StringIO(self._DECODED_DEBUGLINE))
+      StringIO(self._DECODED_DEBUGLINE)
+    )
     self.assertEqual(self._EXPECTED_REDUCED_DEBUGLINE, ranges_dict)
 
 
 if __name__ == '__main__':
   logging.basicConfig(
-      level=logging.DEBUG if '-v' in sys.argv else logging.ERROR,
-      format='%(levelname)5s %(filename)15s(%(lineno)3d): %(message)s')
+    level=logging.DEBUG if '-v' in sys.argv else logging.ERROR,
+    format='%(levelname)5s %(filename)15s(%(lineno)3d): %(message)s',
+  )
   unittest.main()

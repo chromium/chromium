@@ -19,37 +19,43 @@ from clang import compile_db
 def main(argv):
   parser = argparse.ArgumentParser()
   parser.add_argument(
-      '--filter_arg',
-      nargs='*',
-      help='Additional argument(s) to filter out from compilation database.')
+    '--filter_arg',
+    nargs='*',
+    help='Additional argument(s) to filter out from compilation database.',
+  )
   parser.add_argument(
-      '-o',
-      help='File to write the compilation database to. Defaults to stdout')
+    '-o', help='File to write the compilation database to. Defaults to stdout'
+  )
   parser.add_argument('-p', required=True, help='Path to build directory')
   parser.add_argument(
-      '--target_os',
-      choices=[
-          'android',
-          'chromeos',
-          'fuchsia',
-          'ios',
-          'linux',
-          'mac',
-          'nacl',
-          'win',
-      ],
-      help='Target OS - see `gn help target_os`. Set to "win" when ' +
-      'cross-compiling Windows from Linux or another host')
-  parser.add_argument('targets',
-                      nargs='*',
-                      help='Additional targets to pass to ninja')
+    '--target_os',
+    choices=[
+      'android',
+      'chromeos',
+      'fuchsia',
+      'ios',
+      'linux',
+      'mac',
+      'nacl',
+      'win',
+    ],
+    help='Target OS - see `gn help target_os`. Set to "win" when '
+    + 'cross-compiling Windows from Linux or another host',
+  )
+  parser.add_argument(
+    'targets', nargs='*', help='Additional targets to pass to ninja'
+  )
 
   args = parser.parse_args()
 
-  compdb_text = json.dumps(compile_db.ProcessCompileDatabase(
-      compile_db.GenerateWithNinja(args.p, args.targets), args.filter_arg,
-      args.target_os),
-                           indent=2)
+  compdb_text = json.dumps(
+    compile_db.ProcessCompileDatabase(
+      compile_db.GenerateWithNinja(args.p, args.targets),
+      args.filter_arg,
+      args.target_os,
+    ),
+    indent=2,
+  )
   if args.o is None:
     print(compdb_text)
   else:

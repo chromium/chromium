@@ -28,8 +28,9 @@ ROOT_PATH = os.path.join(os.path.dirname(__file__), '..', '..')
 
 def get_chromium_version():
   """Parses the Chromium version out of //chrome/VERSION."""
-  with open(os.path.join(ROOT_PATH, 'chrome', 'VERSION'),
-            encoding='utf-8') as f:
+  with open(
+    os.path.join(ROOT_PATH, 'chrome', 'VERSION'), encoding='utf-8'
+  ) as f:
     for line in f.readlines():
       key, value = line.strip().split('=')
       if key == 'MAJOR':
@@ -129,6 +130,7 @@ def write_if_changed(filename, contents):
 
 def main():
   import doctest
+
   doctest.testmod()
 
   if len(sys.argv) < 3:

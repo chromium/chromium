@@ -14,7 +14,8 @@ def extract_failed_files(log_content):
   # Regex to match lines like '../../ipc/ipc_logging.cc:265:5: error:'
   # It captures the path and filename.
   error_pattern = re.compile(
-      rb"^(?P<filepath>[^:]+):\d+:\d+:.*\s*(error|warning):")
+    rb"^(?P<filepath>[^:]+):\d+:\d+:.*\s*(error|warning):"
+  )
 
   for line in log_content.splitlines():
     match = error_pattern.match(line)

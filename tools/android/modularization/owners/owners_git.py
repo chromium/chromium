@@ -39,8 +39,9 @@ def get_total_files(git_src: str, subdirectory: str) -> int:
   return len(filepaths)
 
 
-def _run_ls_files_command(subdirectory: Optional[str],
-                          git_src: str) -> List[str]:
+def _run_ls_files_command(
+  subdirectory: Optional[str], git_src: str
+) -> List[str]:
   command = _build_ls_files_command(subdirectory)
   filepath_str = run_command(command, cwd=git_src)
   result = []
@@ -70,18 +71,31 @@ def _build_ls_files_command(subdirectory: Optional[str]) -> List[str]:
     return ['git', 'ls-files', '-s']
 
 
-def _get_last_commit_in_dir(git_src: str, subdirectory: str,
-                            trailing_days: int):
+def _get_last_commit_in_dir(
+  git_src: str, subdirectory: str, trailing_days: int
+):
   '''Returns the last commit hash for a given directory.'''
-  return run_command([
-      'git', 'log', '-1', f'--since=\"{trailing_days} days ago\"',
-      '--pretty=format:%H', '--', subdirectory
-  ],
-                     cwd=git_src)
+  return run_command(
+    [
+      'git',
+      'log',
+      '-1',
+      f'--since="{trailing_days} days ago"',
+      '--pretty=format:%H',
+      '--',
+      subdirectory,
+    ],
+    cwd=git_src,
+  )
 
 
-def get_log(git_src: str, subdirectory: str, trailing_days: int, follow: bool,
-            cache_dir: Optional[str]) -> str:
+def get_log(
+  git_src: str,
+  subdirectory: str,
+  trailing_days: int,
+  follow: bool,
+  cache_dir: Optional[str],
+) -> str:
   '''Gets the git log for a given directory.'''
   if cache_dir is not None:
     key = subdirectory.replace(os.sep, '_')
@@ -97,16 +111,18 @@ def get_log(git_src: str, subdirectory: str, trailing_days: int, follow: bool,
           return f.read()
 
   cmd = [
-      'git',
-      'log',
+    'git',
+    'log',
   ]
   if follow:
     cmd.append('--follow')
-  cmd.extend([
-      f'--since=\"{trailing_days} days ago\"',
+  cmd.extend(
+    [
+      f'--since="{trailing_days} days ago"',
       '--',
       subdirectory,
-  ])
+    ]
+  )
   git_log_output = run_command(cmd, cwd=git_src)
 
   # No cache hit, need to update cache.
@@ -122,13 +138,11 @@ def get_log(git_src: str, subdirectory: str, trailing_days: int, follow: bool,
 def run_command(command: List[str], cwd: str) -> str:
   '''Runs a command and returns the output.
 
-    Raises an exception and prints the command output if the command fails.'''
+  Raises an exception and prints the command output if the command fails.'''
   try:
-    run_result = subprocess.run(command,
-                                capture_output=True,
-                                text=True,
-                                check=True,
-                                cwd=cwd)
+    run_result = subprocess.run(
+      command, capture_output=True, text=True, check=True, cwd=cwd
+    )
   except subprocess.CalledProcessError as e:
     print(f'{command} failed with code {e.returncode}.', file=sys.stderr)
     print(f'\nSTDERR:\n{e.stderr}', file=sys.stderr)

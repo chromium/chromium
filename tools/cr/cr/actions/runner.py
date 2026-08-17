@@ -21,14 +21,15 @@ class Runner(cr.Action, cr.Plugin.Type):
   @classmethod
   def AddArguments(cls, command, parser):
     parser.add_argument(
-        '--test', dest='CR_TEST_TYPE',
-        choices=cr.Target.TEST_TYPES,
-        default=None,
-        help="""
+      '--test',
+      dest='CR_TEST_TYPE',
+      choices=cr.Target.TEST_TYPES,
+      default=None,
+      help="""
             Sets the test type to use,
             defaults to choosing based on the target.
             Set to 'no' to force it to not be a test.
-            """
+            """,
     )
     cls.AddSelectorArg(command, parser)
 

@@ -11,24 +11,32 @@ import subprocess
 
 import cr
 
+
 class AndroidPlatform(cr.Platform):
   """The implementation of Platform for the android target."""
 
   ACTIVE = cr.Config.From(
-      CR_ADB=os.path.join('{CR_SRC}', 'third_party', 'android_sdk', 'public',
-          'platform-tools', 'adb'),
-      CR_TARGET_SUFFIX='_apk',
-      CR_BINARY=os.path.join('{CR_BUILD_DIR}', 'apks', '{CR_TARGET_NAME}.apk'),
-      CR_ACTION='android.intent.action.VIEW',
-      CR_PACKAGE='com.google.android.apps.{CR_TARGET}',
-      CR_PROCESS='{CR_PACKAGE}',
-      CR_ACTIVITY='.Main',
-      CR_INTENT='{CR_PACKAGE}/{CR_ACTIVITY}',
-      CR_TEST_RUNNER=os.path.join(
-          '{CR_SRC}', 'build', 'android', 'test_runner.py'),
-      CR_ADB_GDB=os.path.join('{CR_SRC}', 'build', 'android', 'adb_gdb'),
-      CR_DEFAULT_TARGET='chrome_public',
-      GN_ARG_target_os='"android"'
+    CR_ADB=os.path.join(
+      '{CR_SRC}',
+      'third_party',
+      'android_sdk',
+      'public',
+      'platform-tools',
+      'adb',
+    ),
+    CR_TARGET_SUFFIX='_apk',
+    CR_BINARY=os.path.join('{CR_BUILD_DIR}', 'apks', '{CR_TARGET_NAME}.apk'),
+    CR_ACTION='android.intent.action.VIEW',
+    CR_PACKAGE='com.google.android.apps.{CR_TARGET}',
+    CR_PROCESS='{CR_PACKAGE}',
+    CR_ACTIVITY='.Main',
+    CR_INTENT='{CR_PACKAGE}/{CR_ACTIVITY}',
+    CR_TEST_RUNNER=os.path.join(
+      '{CR_SRC}', 'build', 'android', 'test_runner.py'
+    ),
+    CR_ADB_GDB=os.path.join('{CR_SRC}', 'build', 'android', 'adb_gdb'),
+    CR_DEFAULT_TARGET='chrome_public',
+    GN_ARG_target_os='"android"',
   )
 
   def __init__(self):
@@ -63,8 +71,9 @@ class AndroidInitHook(cr.InitHook):
     if 'android' in target_os:
       return
     url = cr.context.gclient.get('solutions', [{}])[0].get('url')
-    if (url.startswith('https://chrome-internal.googlesource.com/') and
-        url.endswith('/internal/apps.git')):
+    if url.startswith(
+      'https://chrome-internal.googlesource.com/'
+    ) and url.endswith('/internal/apps.git'):
       return
     print('This client is not android capable.')
     print('It can be made capable by adding android to the target_os list')

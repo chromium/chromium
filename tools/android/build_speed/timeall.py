@@ -28,22 +28,24 @@ _MAX_BUILD_COMBINATIONS = 4
 
 def _log(message: str):
     if not _QUIET:
-        print(f"timeall.py-{time.time() - _START_TIME:.0f}s: {message}",
-              file=sys.stderr)
+        print(
+            f"timeall.py-{time.time() - _START_TIME:.0f}s: {message}",
+            file=sys.stderr,
+        )
 
 
 def _run_command(command: list[str]) -> str:
     _log(f'Running: {" ".join(command)}')
-    process = subprocess.run(command,
-                             capture_output=True,
-                             text=True,
-                             check=True)
+    process = subprocess.run(
+        command, capture_output=True, text=True, check=True
+    )
     _log(process.stderr)
     return process.stdout
 
 
-def _run_command_with_repeat(command: list[str], repeat: int,
-                            outdir_name: str) -> Optional[str]:
+def _run_command_with_repeat(
+    command: list[str], repeat: int, outdir_name: str
+) -> Optional[str]:
     _log(f"Running with {repeat=}")
     for idx in range(repeat):
         try:
@@ -62,7 +64,7 @@ def _run_command_with_repeat(command: list[str], repeat: int,
 @dataclasses.dataclass(frozen=True)
 class _Options:
     benchmark: str
-    r: int # times to repeat the benchmark.
+    r: int  # times to repeat the benchmark.
     i: bool = False  # incremental_install
     n: bool = False  # no_component_build
     s: bool = False  # server
@@ -100,9 +102,9 @@ def _run_benchmark(options: _Options):
     if not options.s:
         cmd.append("--no-server")
     _log(f"Start {options=}")
-    output = _run_command_with_repeat(cmd,
-                                     repeat=options.r,
-                                     outdir_name=outdir_name)
+    output = _run_command_with_repeat(
+        cmd, repeat=options.r, outdir_name=outdir_name
+    )
     assert output is not None
     if not _QUIET:
         print(output, end="", flush=True)
@@ -162,8 +164,12 @@ def run(debug: bool):
         else:
             e = emulator
         # i: incremental_install, n: no_component_build, s: server
-        build_options = [(i, n, s) for i, n, s in itertools.product(
-            incremental_opts, nocomponent_opts, server_opts)]
+        build_options = [
+            (i, n, s)
+            for i, n, s in itertools.product(
+                incremental_opts, nocomponent_opts, server_opts
+            )
+        ]
         if debug:
             build_options = [build_options[0]]
         else:
@@ -171,7 +177,8 @@ def run(debug: bool):
             build_options = build_options[:_MAX_BUILD_COMBINATIONS]
         for i, n, s in build_options:
             benchmark_options.append(
-                _Options(benchmark=benchmark, r=repeat, e=e, i=i, n=n, s=s))
+                _Options(benchmark=benchmark, r=repeat, e=e, i=i, n=n, s=s)
+            )
 
     # shuffle benchmark_options
     if debug:

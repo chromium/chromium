@@ -66,8 +66,8 @@ def apply_collected_edits(replacements, platform="linux"):
     apply_edits_script = "tools/clang/scripts/apply_edits.py"
 
     subprocess.run(
-        [sys.executable,
-         str(apply_edits_script), "-p", f"./out/{platform}"],
+        [sys.executable, str(apply_edits_script), "-p", f"./out/{platform}"],
         input=input_text,
         text=True,
-        check=True)
+        check=True,
+    )

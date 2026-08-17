@@ -20,8 +20,9 @@ from collections import defaultdict
 from owners_file_tags import parse, uniform_path_format
 
 
-DEFAULT_MAPPING_URL = \
-    'https://storage.googleapis.com/chromium-owners/component_map.json'
+DEFAULT_MAPPING_URL = (
+  'https://storage.googleapis.com/chromium-owners/component_map.json'
+)
 
 # Represent tags that may be found in OWNERS files.
 _COMPONENT = 'COMPONENT'
@@ -32,6 +33,7 @@ _TEAM = 'TEAM'
 # replaced with TEAM, the line ' #TEAMS :some-team@chromium.org' matches the
 # pattern; however, the correct formatting is '# TEAM: some-team@chromium.org'.
 LINE_PATTERN = '.*#\s*{}.*:.*'
+
 
 def _get_entries(lines, tag):
   """Returns a line for the given tag, e.g. '# TEAM: some-team@google.com'.
@@ -61,7 +63,8 @@ def _get_entries(lines, tag):
     if re.match('^# {}: .*$'.format(tag), entries[0]):
       return entries[0]
     raise ValueError(
-        '{} has an invalid prefix. Use \'# {}: \''.format(entries[0], tag))
+      '{} has an invalid prefix. Use \'# {}: \''.format(entries[0], tag)
+    )
 
   raise ValueError('Contains more than one {} per directory'.format(tag))
 
@@ -89,7 +92,8 @@ def validate_mappings(arguments, owners_files):
     A string containing the details of any multi-team per component.
   """
   mappings_file = json.load(
-      urllib.request.urlopen(arguments.current_mapping_url))
+    urllib.request.urlopen(arguments.current_mapping_url)
+  )
   new_dir_to_component = mappings_file.get('dir-to-component', {})
   new_dir_to_team = mappings_file.get('dir-to-team', {})
 
@@ -138,27 +142,29 @@ def validate_mappings(arguments, owners_files):
 
   # Convert component->[dirs], dir->team to component->[teams].
   affected_component_to_teams = {
-      component:
-      list({new_dir_to_team[d]
-            for d in dirs if d in new_dir_to_team})
-      for component, dirs in affected_component_to_dirs.items()
+    component: list({new_dir_to_team[d] for d in dirs if d in new_dir_to_team})
+    for component, dirs in affected_component_to_dirs.items()
   }
 
   # Perform cardinality check.
   warnings = ''
   for component, teams in affected_component_to_teams.items():
     if len(teams) > 1:
-      warnings += ('\nThe set of all OWNERS files with COMPONENT: %s list '
-                   "multiple TEAM's: %s") % (component, ', '.join(teams))
+      warnings += (
+        '\nThe set of all OWNERS files with COMPONENT: %s list '
+        "multiple TEAM's: %s"
+      ) % (component, ', '.join(teams))
   if warnings:
-    warnings = ('Are you sure these are correct? After landing this patch:%s'
-                % warnings)
+    warnings = (
+      'Are you sure these are correct? After landing this patch:%s' % warnings
+    )
 
   return warnings
 
 
 def check_owners(rel_path, full_path):
   """Component and Team check in OWNERS files. crbug.com/667954"""
+
   def result_dict(error):
     return {
       'error': error,
@@ -187,8 +193,8 @@ def check_owners(rel_path, full_path):
     #   component1,component2,...
     #   component1 component2 ...
     component_count = max(
-        len(component.strip().split()),
-        len(component.strip().split(',')))
+      len(component.strip().split()), len(component.strip().split(','))
+    )
     if component_count > 1:
       return result_dict('Has more than one component name')
     # TODO(robertocn): Check against a static list of valid components,
@@ -215,19 +221,20 @@ Examples:
 
   parser = argparse.ArgumentParser(usage=usage)
   parser.add_argument('--root', help='Specifies the repository root.')
-  parser.add_argument('-v',
-                      '--verbose',
-                      action='count',
-                      default=0,
-                      help='Print debug logging')
-  parser.add_argument('--bare',
-                      action='store_true',
-                      default=False,
-                      help='Prints the bare filename triggering the checks')
   parser.add_argument(
-      '--current_mapping_url',
-      default=DEFAULT_MAPPING_URL,
-      help='URL for existing dir/component and component/team mapping')
+    '-v', '--verbose', action='count', default=0, help='Print debug logging'
+  )
+  parser.add_argument(
+    '--bare',
+    action='store_true',
+    default=False,
+    help='Prints the bare filename triggering the checks',
+  )
+  parser.add_argument(
+    '--current_mapping_url',
+    default=DEFAULT_MAPPING_URL,
+    help='URL for existing dir/component and component/team mapping',
+  )
   parser.add_argument('--json', help='Path to JSON output file')
   args, owners_files = parser.parse_known_args()
 
@@ -235,8 +242,11 @@ Examples:
   logging.basicConfig(level=levels[min(len(levels) - 1, args.verbose)])
 
   errors = list(
-      filter(None, (check_owners(*rel_and_full_paths(args.root, f))
-                    for f in owners_files)))
+    filter(
+      None,
+      (check_owners(*rel_and_full_paths(args.root, f)) for f in owners_files),
+    )
+  )
 
   warnings = None
   if not errors:

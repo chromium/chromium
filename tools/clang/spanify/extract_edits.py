@@ -112,6 +112,7 @@ class Component:
         # `Component.all` can be used to iterate over all components.
         Component.all.add(self)
 
+
 class Node:
     # Mapping in between the node's key and the node.
     key_to_node = dict()
@@ -188,7 +189,7 @@ def DFS(node: Node):
         node: The current node being processed.
     """
     # Only visit nodes once:
-    if (node.visited):
+    if node.visited:
         return
     node.visited = True
 
@@ -215,7 +216,7 @@ def ComputeSizeInfoAvailable(node: Node, sinks: set):
     # If there are no dependencies, the size info is available if this node
     # is a sink.
     if not node.neighbors_directed:
-        node.size_info_available = (node.key in sinks)
+        node.size_info_available = node.key in sinks
         return
 
     # Cycle: If the node is currently being visited, it means it depends on
@@ -237,7 +238,9 @@ def ComputeSizeInfoAvailable(node: Node, sinks: set):
     # of an isolated cycle. Isolated cycle are rewritten.
     node.size_info_available = not any(
         neighbour.size_info_available == False
-        for neighbour in node.neighbors_directed)
+        for neighbour in node.neighbors_directed
+    )
+
 
 # Assert a replacement follows the expected format:
 # - r:::<file path>:::<offset>:::<length>:::<replacement text>
@@ -249,16 +252,18 @@ def assert_valid_replacement(replacement: str):
         directive_type = parts[0]
 
         assert directive_type in [
-            'r', 'include-user-header', 'include-system-header'
+            'r',
+            'include-user-header',
+            'include-system-header',
         ], f"Unknown directive type '{directive_type}'"
 
         assert len(parts) > 1
         assert parts[1] != '', "File path must not be empty."
 
         if directive_type == 'r':
-            assert len(
-                parts
-            ) == 6, f"Directive 'r' must have 6 parts, got {len(parts)}"
+            assert len(parts) == 6, (
+                f"Directive 'r' must have 6 parts, got {len(parts)}"
+            )
 
             # Validate offset.
             assert parts[2].isdigit()
@@ -271,7 +276,8 @@ def assert_valid_replacement(replacement: str):
                 int(parts[4])  # Check if it's a valid integer representation
             except ValueError:
                 raise AssertionError(
-                    f"Precedence '{parts[4]}' must be a valid integer string.")
+                    f"Precedence '{parts[4]}' must be a valid integer string."
+                )
         else:
             assert len(parts) == 5
     except:
@@ -317,7 +323,9 @@ def merge_insertions_and_remove_precedence_field(changes: set) -> set:
         if len(candidates) == 1:
             # No conflict.
             _, text = candidates[0]
-            reconstructed_directive = f"r:::{file_path}:::{offset}:::{length}:::{text}"
+            reconstructed_directive = (
+                f"r:::{file_path}:::{offset}:::{length}:::{text}"
+            )
             result.add(reconstructed_directive)
             continue
 
@@ -326,9 +334,9 @@ def merge_insertions_and_remove_precedence_field(changes: set) -> set:
 
             # Assert uniqueness of precedence values to ensure determinism.
             precedences = [p for p, _ in candidates]
-            assert len(precedences) == len(
-                set(precedences)
-            ), "Conflicting insertions need to have unique precedece values."
+            assert len(precedences) == len(set(precedences)), (
+                "Conflicting insertions need to have unique precedece values."
+            )
 
             merged_texts = [t for _, t in sorted(candidates)]
             reconstructed_directive = f"r:::{file_path}:::{offset}:::{length}:::{''.join(merged_texts)}"
@@ -337,7 +345,9 @@ def merge_insertions_and_remove_precedence_field(changes: set) -> set:
             # Conflicting non-insertion replacement. This is an unresolvable
             # conflict for now. Just remove the precedence field.
             for _, text in candidates:
-                reconstructed_directive = f"r:::{file_path}:::{offset}:::{length}:::{text}"
+                reconstructed_directive = (
+                    f"r:::{file_path}:::{offset}:::{length}:::{text}"
+                )
                 result.add(reconstructed_directive)
 
     return result
@@ -370,8 +380,9 @@ def main():
         # - 'i': Sink node. A rewrite from a source requires the ultimate end
         #        nodes to be sink. They represent nodes we know can be rewrite
         #        because the buffer's size is known.
-        assert line[0] in ['r', 'e', 's', 'i', 'f'], "Unknown line type: " +\
-               line[0] + " in line: " + line
+        assert line[0] in ['r', 'e', 's', 'i', 'f'], (
+            "Unknown line type: " + line[0] + " in line: " + line
+        )
 
         # Replacement associated with a node:
         if line[0] == 'r':
@@ -463,9 +474,12 @@ def main():
     # The whole component is discarded in case of conflict, because we can't
     # satisfy the constraints.
     for component in Component.all:
-        if component.frontier_changes_accepted & component.frontier_changes_rejected:
+        if (
+            component.frontier_changes_accepted
+            & component.frontier_changes_rejected
+        ):
             component.changes.clear()
-            continue;
+            continue
 
         component.changes |= component.frontier_changes_accepted
 
@@ -478,19 +492,22 @@ def main():
     summary_filename = scratch_dir() / 'patches.txt'
     with summary_filename.open('w') as summary_file:
         component_with_changes = [
-            component for component in Component.all
+            component
+            for component in Component.all
             if len(component.changes) > 0
         ]
 
         for index, component in enumerate(component_with_changes):
-            merged_component_changes = merge_insertions_and_remove_precedence_field(
-                component.changes)
+            merged_component_changes = (
+                merge_insertions_and_remove_precedence_field(component.changes)
+            )
 
             for text in merged_component_changes:
                 print(text)
 
             summary_file.write(
-                f'patch_{index}: {len(merged_component_changes)}\n')
+                f'patch_{index}: {len(merged_component_changes)}\n'
+            )
 
             with (scratch_dir() / f'patch_{index}.txt').open('w') as f:
                 f.write('\n'.join(merged_component_changes))

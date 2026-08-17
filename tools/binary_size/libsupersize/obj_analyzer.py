@@ -67,7 +67,7 @@ _active_pids = None
 def _DecodePosition(x):
   # Encoded as "123:123"
   sep_idx = x.index(':')
-  return (int(x[:sep_idx]), int(x[sep_idx + 1:]))
+  return (int(x[:sep_idx]), int(x[sep_idx + 1 :]))
 
 
 class _PathsByType:
@@ -113,15 +113,14 @@ class _BulkObjectFileAnalyzerWorker:
       # Create 1-tuples of strings.
       return [(p,) for p in paths]
     # Create 1-tuples of arrays of strings.
-    return [(paths[i:i + size], ) for i in range(0, len(paths), size)]
+    return [(paths[i : i + size],) for i in range(0, len(paths), size)]
 
   def _DoBulkFork(self, runner, batches):
     # Order of the jobs doesn't matter since each job owns independent paths,
     # and our output is a dict where paths are the key.
     return parallel.BulkForkAndCall(
-        runner,
-        batches,
-        output_directory=self._output_directory)
+      runner, batches, output_directory=self._output_directory
+    )
 
   def _RunNm(self, paths_by_type):
     """Calls nm to get symbols and (for non-BC files) string addresses."""
@@ -130,7 +129,8 @@ class _BulkObjectFileAnalyzerWorker:
     # Combine object files and Bitcode files for nm.
     BATCH_SIZE = 50  # Arbitrarily chosen.
     batches.extend(
-        self._MakeBatches(paths_by_type.obj + paths_by_type.bc, BATCH_SIZE))
+      self._MakeBatches(paths_by_type.obj + paths_by_type.bc, BATCH_SIZE)
+    )
     results = self._DoBulkFork(nm.RunNmOnIntermediates, batches)
 
     # Names are still mangled.
@@ -152,8 +152,7 @@ class _BulkObjectFileAnalyzerWorker:
     """Calls llvm-bcanalyzer to extract string data (for LLD-LTO)."""
     BATCH_SIZE = 50  # Arbitrarily chosen.
     batches = self._MakeBatches(paths_by_type.bc, BATCH_SIZE)
-    results = self._DoBulkFork(
-        bcanalyzer.RunBcAnalyzerOnIntermediates, batches)
+    results = self._DoBulkFork(bcanalyzer.RunBcAnalyzerOnIntermediates, batches)
     for encoded_strs in results:
       if encoded_strs != parallel.EMPTY_ENCODED_DICT:
         self._encoded_strings_by_path_chunks.append(encoded_strs)
@@ -161,9 +160,12 @@ class _BulkObjectFileAnalyzerWorker:
   def AnalyzePaths(self, paths):
     logging.debug('worker: AnalyzePaths() started.')
     paths_by_type = self._ClassifyPaths(paths)
-    logging.info('File counts: {\'arch\': %d, \'obj\': %d, \'bc\': %d}',
-                 len(paths_by_type.arch), len(paths_by_type.obj),
-                 len(paths_by_type.bc))
+    logging.info(
+      'File counts: {\'arch\': %d, \'obj\': %d, \'bc\': %d}',
+      len(paths_by_type.arch),
+      len(paths_by_type.obj),
+      len(paths_by_type.bc),
+    )
     self._RunNm(paths_by_type)
     if self._track_string_literals:
       self._RunLlvmBcAnalyzer(paths_by_type)
@@ -172,7 +174,8 @@ class _BulkObjectFileAnalyzerWorker:
   def SortPaths(self):
     # Demangle all names, which can result in some merging of lists.
     self._paths_by_name = demangle.DemangleKeysAndMergeLists(
-        self._paths_by_name)
+      self._paths_by_name
+    )
     # Sort and uniquefy.
     for key in self._paths_by_name.keys():
       self._paths_by_name[key] = sorted(set(self._paths_by_name[key]))
@@ -182,19 +185,22 @@ class _BulkObjectFileAnalyzerWorker:
     address, offset, _ = string_extract.LookupElfRodataInfo(elf_path)
     adjust = address - offset
     abs_elf_string_ranges = (
-        (addr - adjust, s) for addr, s in elf_string_ranges)
+      (addr - adjust, s) for addr, s in elf_string_ranges
+    )
     return string_extract.ReadFileChunks(elf_path, abs_elf_string_ranges)
 
   def _GetEncodedRangesFromStringAddresses(self, string_data):
-    params = ((chunk,)
-        for chunk in self._encoded_string_addresses_by_path_chunks)
+    params = (
+      (chunk,) for chunk in self._encoded_string_addresses_by_path_chunks
+    )
     # Order of the jobs doesn't matter since each job owns independent paths,
     # and our output is a dict where paths are the key.
     results = parallel.BulkForkAndCall(
-        string_extract.ResolveStringPiecesIndirect,
-        params,
-        string_data=string_data,
-        output_directory=self._output_directory)
+      string_extract.ResolveStringPiecesIndirect,
+      params,
+      string_data=string_data,
+      output_directory=self._output_directory,
+    )
     return list(results)
 
   def _GetEncodedRangesFromStrings(self, string_data):
@@ -202,7 +208,8 @@ class _BulkObjectFileAnalyzerWorker:
     # Order of the jobs doesn't matter since each job owns independent paths,
     # and our output is a dict where paths are the key.
     results = parallel.BulkForkAndCall(
-        string_extract.ResolveStringPieces, params, string_data=string_data)
+      string_extract.ResolveStringPieces, params, string_data=string_data
+    )
     return list(results)
 
   def AnalyzeStringLiterals(self, elf_path, elf_string_ranges):
@@ -222,7 +229,8 @@ class _BulkObjectFileAnalyzerWorker:
       for encoded_ranges in encoded_ranges_sources:  # [source_idx].
         t.extend([b[section_idx] for b in encoded_ranges])  # [batch_idx].
       self._list_of_encoded_elf_string_ranges_by_path.append(
-          parallel.JoinEncodedDictOfLists(t))
+        parallel.JoinEncodedDictOfLists(t)
+      )
     logging.debug('worker: AnalyzeStringLiterals() completed.')
 
   def GetSymbolNames(self):
@@ -230,8 +238,8 @@ class _BulkObjectFileAnalyzerWorker:
 
   def GetStringPositions(self):
     return [
-        parallel.DecodeDictOfLists(x, value_transform=_DecodePosition)
-        for x in self._list_of_encoded_elf_string_ranges_by_path
+      parallel.DecodeDictOfLists(x, value_transform=_DecodePosition)
+      for x in self._list_of_encoded_elf_string_ranges_by_path
     ]
 
   def GetEncodedStringPositions(self):
@@ -271,11 +279,15 @@ class _BulkObjectFileAnalyzerHost:
       self._pipe = parent_conn
     else:
       # We are the child process.
-      logging.root.handlers[0].setFormatter(logging.Formatter(
-          'obj_analyzer: %(levelname).1s %(relativeCreated)6d %(message)s'))
+      logging.root.handlers[0].setFormatter(
+        logging.Formatter(
+          'obj_analyzer: %(levelname).1s %(relativeCreated)6d %(message)s'
+        )
+      )
       worker_analyzer = _BulkObjectFileAnalyzerWorker(
-          self._output_directory,
-          track_string_literals=self._track_string_literals)
+        self._output_directory,
+        track_string_literals=self._track_string_literals,
+      )
       delegate = _BulkObjectFileAnalyzerDelegate(worker_analyzer, child_conn)
       delegate.Run()
 
@@ -306,8 +318,8 @@ class _BulkObjectFileAnalyzerHost:
     logging.debug('Decoding string symbol results from forked process')
     result = self._pipe.recv()
     return [
-        parallel.DecodeDictOfLists(x, value_transform=_DecodePosition)
-        for x in result
+      parallel.DecodeDictOfLists(x, value_transform=_DecodePosition)
+      for x in result
     ]
 
   def Close(self):
@@ -318,6 +330,7 @@ class _BulkObjectFileAnalyzerHost:
 
 class _BulkObjectFileAnalyzerDelegate:
   """The subprocess entry point."""
+
   def __init__(self, worker_analyzer, pipe):
     self._worker_analyzer = worker_analyzer
     self._pipe = pipe
@@ -349,21 +362,25 @@ class _BulkObjectFileAnalyzerDelegate:
   def _HandleMessage(self, message):
     if message[0] == _MSG_ANALYZE_PATHS:
       assert self._allow_analyze_paths, (
-          'Cannot call AnalyzePaths() after AnalyzeStringLiterals()s.')
+        'Cannot call AnalyzePaths() after AnalyzeStringLiterals()s.'
+      )
       # Invert '\x01'.join(paths), favoring paths = [] over paths = [''] since
       # the latter is less likely to happen.
       paths = message[1].split('\x01') if message[1] else []
       self._job_queue.put(lambda: self._worker_analyzer.AnalyzePaths(paths))
     elif message[0] == _MSG_SORT_PATHS:
       assert self._allow_analyze_paths, (
-          'Cannot call SortPaths() after AnalyzeStringLiterals()s.')
+        'Cannot call SortPaths() after AnalyzeStringLiterals()s.'
+      )
       self._job_queue.put(self._worker_analyzer.SortPaths)
     elif message[0] == _MSG_ANALYZE_STRINGS:
       self._WaitForAnalyzePathJobs()
       elf_path, string_positions = message[1:]
       self._job_queue.put(
-          lambda: self._worker_analyzer.AnalyzeStringLiterals(
-              elf_path, string_positions))
+        lambda: self._worker_analyzer.AnalyzeStringLiterals(
+          elf_path, string_positions
+        )
+      )
     elif message[0] == _MSG_GET_SYMBOL_NAMES:
       self._WaitForAnalyzePathJobs()
       self._pipe.send(None)
@@ -406,8 +423,10 @@ def main():
   parser.add_argument('objects', type=os.path.realpath, nargs='+')
 
   args = parser.parse_args()
-  logging.basicConfig(level=logging.DEBUG,
-                      format='%(levelname).1s %(relativeCreated)6d %(message)s')
+  logging.basicConfig(
+    level=logging.DEBUG,
+    format='%(levelname).1s %(relativeCreated)6d %(message)s',
+  )
 
   if args.multiprocess:
     bulk_analyzer = _BulkObjectFileAnalyzerHost(args.output_directory)
@@ -431,15 +450,22 @@ def main():
     bulk_analyzer.AnalyzeStringLiterals(args.elf_file, ((address, size),))
 
     positions_by_path = bulk_analyzer.GetStringPositions()[0]
-    print('Found {} string literals'.format(
-        sum(len(v) for v in positions_by_path.values())))
+    print(
+      'Found {} string literals'.format(
+        sum(len(v) for v in positions_by_path.values())
+      )
+    )
     if args.show_strings:
       logging.debug('.rodata adjust=%d', address - offset)
       for path, positions in positions_by_path.items():
         strs = string_extract.ReadFileChunks(
-            args.elf_file, ((offset + addr, size) for addr, size in positions))
-        print('{}: {!r}'.format(
-            path, [s if len(s) < 20 else s[:20] + '...' for s in strs]))
+          args.elf_file, ((offset + addr, size) for addr, size in positions)
+        )
+        print(
+          '{}: {!r}'.format(
+            path, [s if len(s) < 20 else s[:20] + '...' for s in strs]
+          )
+        )
 
 
 if __name__ == '__main__':

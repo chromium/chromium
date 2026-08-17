@@ -18,7 +18,9 @@ class TestSummary:
   parse_error: str = ""
 
   def __str__(self) -> str:
-    error_str = f"Parse error: {self.parse_error}\n\n" if self.parse_error else ""
+    error_str = (
+      f"Parse error: {self.parse_error}\n\n" if self.parse_error else ""
+    )
 
     failed_lines = []
     m = len(self.failed_tests)
@@ -38,10 +40,12 @@ class TestSummary:
 
     failed = '\n\n'.join(failed_lines)
 
-    return (f"{error_str}"
-            f"Test count: \n{self.test_count}\n\n"
-            f"Passed tests:\n{passed}\n\n"
-            f"Failed tests:\n{failed}")
+    return (
+      f"{error_str}"
+      f"Test count: \n{self.test_count}\n\n"
+      f"Passed tests:\n{passed}\n\n"
+      f"Failed tests:\n{failed}"
+    )
 
 
 def ParseTests(file_path: str) -> TestSummary:
@@ -64,8 +68,10 @@ def ParseTests(file_path: str) -> TestSummary:
       for result in results:
         status = result.get('status')
 
-        if (status in ('SUCCESS', 'PASS', 'SKIPPED')
-            and test_name not in test_names):
+        if (
+          status in ('SUCCESS', 'PASS', 'SKIPPED')
+          and test_name not in test_names
+        ):
           test_names.add(test_name)
           passed_tests.append(test_name)
         elif test_name not in test_names:
@@ -74,9 +80,9 @@ def ParseTests(file_path: str) -> TestSummary:
           failed_tests.append((test_name, logs))
       count += 1
 
-  return TestSummary(test_count=count,
-                     failed_tests=failed_tests,
-                     passed_tests=passed_tests)
+  return TestSummary(
+    test_count=count, failed_tests=failed_tests, passed_tests=passed_tests
+  )
 
 
 def ParseWebTestResults(file_path: str) -> TestSummary:
@@ -88,7 +94,8 @@ def ParseWebTestResults(file_path: str) -> TestSummary:
       data = json.load(f)
   except json.JSONDecodeError as e:
     return TestSummary(
-        parse_error=f"Failed to parse web test results as JSON: {e}")
+      parse_error=f"Failed to parse web test results as JSON: {e}"
+    )
 
   failed_tests: list[tuple[str, str]] = []
   passed_tests: list[str] = []
@@ -107,10 +114,11 @@ def ParseWebTestResults(file_path: str) -> TestSummary:
       actual = node.get("actual", "")
       expected = node.get("expected", "PASS").split()
       failed_tests.append(
-          (test_name, f"Actual: {actual}, Expected: {' or '.join(expected)}"))
+        (test_name, f"Actual: {actual}, Expected: {' or '.join(expected)}")
+      )
     else:
       passed_tests.append(test_name)
 
-  return TestSummary(test_count=count,
-                     failed_tests=failed_tests,
-                     passed_tests=passed_tests)
+  return TestSummary(
+    test_count=count, failed_tests=failed_tests, passed_tests=passed_tests
+  )

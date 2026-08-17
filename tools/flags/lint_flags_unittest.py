@@ -12,7 +12,6 @@ from pyfakefs import fake_filesystem_unittest
 
 
 class FindUnusedFlagsTest(fake_filesystem_unittest.TestCase):
-
   def setUp(self):
     self.setUpPyfakefs()
     self.root_path = pathlib.Path() / 'fake' / 'chromium' / 'src'
@@ -20,26 +19,24 @@ class FindUnusedFlagsTest(fake_filesystem_unittest.TestCase):
 
   def test_find_unused_flags(self):
     metadata_path = self.root_path / 'chrome' / 'browser' / 'flag-metadata.json'
-    metadata = [{
-        'name': 'used-flag'
-    }, {
-        'name': 'unused-flag'
-    }, {
-        'name': 'enable-benchmarking'
-    }, {
-        'name': 'used-in-ios'
-    }, {
-        'name': 'used-in-site-isolation'
-    }]
+    metadata = [
+      {'name': 'used-flag'},
+      {'name': 'unused-flag'},
+      {'name': 'enable-benchmarking'},
+      {'name': 'used-in-ios'},
+      {'name': 'used-in-site-isolation'},
+    ]
     self.fs.create_file(metadata_path, contents=json.dumps(metadata))
 
     path = self.root_path / 'chrome' / 'browser' / 'about_flags.cc'
     self.fs.create_file(path, contents='{"used-flag", "ignore-this"},\n')
-    path = (self.root_path / 'ios' / 'chrome' / 'browser' / 'flags' /
-            'about_flags.mm')
+    path = (
+      self.root_path / 'ios' / 'chrome' / 'browser' / 'flags' / 'about_flags.mm'
+    )
     self.fs.create_file(path, contents='\n\n{"used-in-ios", ...},\n')
-    path = (self.root_path / 'chrome' / 'browser' / 'site_isolation' /
-            'about_flags.h')
+    path = (
+      self.root_path / 'chrome' / 'browser' / 'site_isolation' / 'about_flags.h'
+    )
     self.fs.create_file(path, contents='"used-in-site-isolation"')
 
     unused_flags = lint_flags.find_unused_flags_in_metadata(self.root_path)

@@ -30,8 +30,9 @@ class AdbClient:
         if not self.adb_path:
             print("Error: 'adb' command not found. Is it in your PATH?")
             sys.exit(1)
-        self.use_shell = (os.name == 'nt' and self.adb_path.lower().endswith(
-            ('.bat', '.cmd')))
+        self.use_shell = os.name == 'nt' and self.adb_path.lower().endswith(
+            ('.bat', '.cmd')
+        )
 
     def run(self, args, **kwargs):
         """Executes an ADB command using the global config."""
@@ -141,14 +142,18 @@ class MainRequestHandler(SimpleHTTPRequestHandler):
             self.send_header('Content-Type', 'application/json')
             self.end_headers()
             self.wfile.write(
-                json.dumps({
-                    'success': True,
-                    'density_factor': density_factor
-                }).encode('utf-8'))
-        except (subprocess.CalledProcessError, FileNotFoundError,
-                ValueError) as e:
-            self.send_error(HTTPStatus.INTERNAL_SERVER_ERROR,
-                            f'Failed to get density: {e}')
+                json.dumps(
+                    {'success': True, 'density_factor': density_factor}
+                ).encode('utf-8')
+            )
+        except (
+            subprocess.CalledProcessError,
+            FileNotFoundError,
+            ValueError,
+        ) as e:
+            self.send_error(
+                HTTPStatus.INTERNAL_SERVER_ERROR, f'Failed to get density: {e}'
+            )
 
     def _get_ui_dump_data(self):
         """Gets the UI hierarchy XML from the device."""
@@ -163,8 +168,9 @@ class MainRequestHandler(SimpleHTTPRequestHandler):
             _config.adb.run(['shell', 'uiautomator', 'dump', temp_device_path])
 
             # Read the file content
-            result = _config.adb.run(['shell', 'cat', temp_device_path],
-                                     text=True)
+            result = _config.adb.run(
+                ['shell', 'cat', temp_device_path], text=True
+            )
             return result.stdout
         finally:
             # Clean up the temporary file on the device if it was created
@@ -179,13 +185,14 @@ class MainRequestHandler(SimpleHTTPRequestHandler):
             self.send_header('Content-Type', 'application/json')
             self.end_headers()
             self.wfile.write(
-                json.dumps({
-                    'success': True,
-                    'xml': xml_content
-                }).encode('utf-8'))
+                json.dumps({'success': True, 'xml': xml_content}).encode(
+                    'utf-8'
+                )
+            )
         except (subprocess.CalledProcessError, FileNotFoundError) as e:
-            self.send_error(HTTPStatus.INTERNAL_SERVER_ERROR,
-                            f'Failed to get UI dump: {e}')
+            self.send_error(
+                HTTPStatus.INTERNAL_SERVER_ERROR, f'Failed to get UI dump: {e}'
+            )
 
     def _get_screenshot_data(self):
         """Gets a screenshot from the device."""
@@ -207,8 +214,10 @@ class MainRequestHandler(SimpleHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(png_data)
         except (subprocess.CalledProcessError, FileNotFoundError) as e:
-            self.send_error(HTTPStatus.INTERNAL_SERVER_ERROR,
-                            f'Failed to get screenshot: {e}')
+            self.send_error(
+                HTTPStatus.INTERNAL_SERVER_ERROR,
+                f'Failed to get screenshot: {e}',
+            )
 
     def do_GET(self):
         """Handles GET requests."""
@@ -219,11 +228,14 @@ class MainRequestHandler(SimpleHTTPRequestHandler):
                     print(f"Imprinting server to client IP: {client_ip}")
                     _config.allowed_client_ip = client_ip
                 elif _config.allowed_client_ip != client_ip:
-                    print(f"Blocking request from {client_ip} "
-                          f"(Imprinted to {_config.allowed_client_ip})")
+                    print(
+                        f"Blocking request from {client_ip} "
+                        f"(Imprinted to {_config.allowed_client_ip})"
+                    )
                     self.send_error(
                         HTTPStatus.FORBIDDEN,
-                        "Forbidden: Server is imprinted to a different IP.")
+                        "Forbidden: Server is imprinted to a different IP.",
+                    )
                     return
 
         if self.path == '/':
@@ -244,6 +256,7 @@ class MainRequestHandler(SimpleHTTPRequestHandler):
 
 class CachingMainRequestHandler(MainRequestHandler):
     """An ADB request handler that caches ADB-related data in memory."""
+
     # The cache is stored in class fields, which is fine since the server is
     # single-threaded and the cache is read-only after the first hit.
     cached_screenshot = None
@@ -254,21 +267,24 @@ class CachingMainRequestHandler(MainRequestHandler):
         """Gets a screenshot, using a cache if available."""
         if not CachingMainRequestHandler.cached_screenshot:
             CachingMainRequestHandler.cached_screenshot = (
-                super()._get_screenshot_data())
+                super()._get_screenshot_data()
+            )
         return CachingMainRequestHandler.cached_screenshot
 
     def _get_ui_dump_data(self):
         """Gets the UI hierarchy XML, using a cache if available."""
         if not CachingMainRequestHandler.cached_ui_dump:
-            CachingMainRequestHandler.cached_ui_dump = super(
-            )._get_ui_dump_data()
+            CachingMainRequestHandler.cached_ui_dump = (
+                super()._get_ui_dump_data()
+            )
         return CachingMainRequestHandler.cached_ui_dump
 
     def _get_density_data(self):
         """Gets the display density factor, using a cache if available."""
         if not CachingMainRequestHandler.cached_density:
-            CachingMainRequestHandler.cached_density = super(
-            )._get_density_data()
+            CachingMainRequestHandler.cached_density = (
+                super()._get_density_data()
+            )
         return CachingMainRequestHandler.cached_density
 
 
@@ -285,7 +301,8 @@ def run(handler_class):
             if _config.allowed_client_ip is None:
                 print(
                     f"Timeout: No client connected within {_config.timeout}s. "
-                    "Exiting.")
+                    "Exiting."
+                )
                 httpd.shutdown()
 
         # Start a timer to shut down if not imprinted within the timeout.
@@ -304,29 +321,35 @@ def run(handler_class):
 
 def main():
     parser = argparse.ArgumentParser(
-        description='Backend server for the Chrome Android Layout Inspector.')
+        description='Backend server for the Chrome Android Layout Inspector.'
+    )
     parser.add_argument(
         '-s',
         '--serial',
-        help='Directs ADB commands to the specific device or emulator.')
+        help='Directs ADB commands to the specific device or emulator.',
+    )
     parser.add_argument(
         '-p',
         '--port',
         type=int,
         default=_config.port,
-        help=f'Port to run the server on (default: {_config.port}).')
+        help=f'Port to run the server on (default: {_config.port}).',
+    )
     parser.add_argument(
         '--cache',
         action='store_true',
-        help='Cache ADB results in memory to speed up front-end debugging.')
+        help='Cache ADB results in memory to speed up front-end debugging.',
+    )
     parser.add_argument(
         '--remote',
         action='store_true',
-        help='Bind server to all interfaces instead of localhost.')
+        help='Bind server to all interfaces instead of localhost.',
+    )
     parser.add_argument(
         '--open',
         action='store_true',
-        help='Disable security imprint and timeout (allow all IPs).')
+        help='Disable security imprint and timeout (allow all IPs).',
+    )
     args = parser.parse_args()
 
     # Initialize sub-components.
@@ -340,14 +363,17 @@ def main():
     _config.serial = _config.adb.get_device(args.serial)
     print(f"Using ADB device: {_config.serial}")
 
-    Handler = (CachingMainRequestHandler
-               if _config.use_cache else MainRequestHandler)
+    Handler = (
+        CachingMainRequestHandler if _config.use_cache else MainRequestHandler
+    )
     if _config.use_cache:
         print('Caching is enabled.')
 
     if _config.require_imprint:
-        print(f'Security imprint ENABLED. Waiting {_config.timeout}s '
-              'for first connection...')
+        print(
+            f'Security imprint ENABLED. Waiting {_config.timeout}s '
+            'for first connection...'
+        )
     else:
         print('Security imprint DISABLED. Server is open to all IPs.')
     run(handler_class=Handler)

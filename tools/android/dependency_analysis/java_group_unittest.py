@@ -23,6 +23,7 @@ def create_mock_java_class(cls='class'):
 
 class TestJavaPackage(unittest.TestCase):
     """Unit tests for dependency_analysis.class_dependency.JavaGroup."""
+
     TEST_GRP_1 = 'group1'
     TEST_GRP_2 = 'group2'
     TEST_CLS_1 = 'class1'
@@ -40,8 +41,9 @@ class TestJavaPackage(unittest.TestCase):
         test_node = java_group.JavaGroup(self.TEST_GRP_1)
         mock_class_node = create_mock_java_class()
         test_node.add_class(mock_class_node)
-        self.assertEqual(test_node.classes,
-                         {mock_class_node.name: mock_class_node})
+        self.assertEqual(
+            test_node.classes, {mock_class_node.name: mock_class_node}
+        )
 
     def test_add_class_multiple(self):
         """Tests adding multiple classes to this group."""
@@ -51,10 +53,12 @@ class TestJavaPackage(unittest.TestCase):
         test_node.add_class(mock_class_node_1)
         test_node.add_class(mock_class_node_2)
         self.assertEqual(
-            test_node.classes, {
+            test_node.classes,
+            {
                 mock_class_node_1.name: mock_class_node_1,
-                mock_class_node_2.name: mock_class_node_2
-            })
+                mock_class_node_2.name: mock_class_node_2,
+            },
+        )
 
     def test_add_class_duplicate(self):
         """Tests that adding the same class twice will not dupe."""
@@ -62,8 +66,9 @@ class TestJavaPackage(unittest.TestCase):
         mock_class_node = create_mock_java_class()
         test_node.add_class(mock_class_node)
         test_node.add_class(mock_class_node)
-        self.assertEqual(test_node.classes,
-                         {mock_class_node.name: mock_class_node})
+        self.assertEqual(
+            test_node.classes, {mock_class_node.name: mock_class_node}
+        )
 
     def test_get_class_dependencies_in_outbound_edge(self):
         """Tests adding/getting class dependency edges for a package edge."""
@@ -76,20 +81,27 @@ class TestJavaPackage(unittest.TestCase):
         mock_class_node_3 = create_mock_java_class(cls=self.TEST_CLS_3)
 
         # Add the class dependencies (1 -> 2), (1 -> 2) (duplicate), (1 -> 3)
-        start_node.add_class_dependency_edge(end_node, mock_class_node_1,
-                                             mock_class_node_2)
-        start_node.add_class_dependency_edge(end_node, mock_class_node_1,
-                                             mock_class_node_2)
-        start_node.add_class_dependency_edge(end_node, mock_class_node_1,
-                                             mock_class_node_3)
+        start_node.add_class_dependency_edge(
+            end_node, mock_class_node_1, mock_class_node_2
+        )
+        start_node.add_class_dependency_edge(
+            end_node, mock_class_node_1, mock_class_node_2
+        )
+        start_node.add_class_dependency_edge(
+            end_node, mock_class_node_1, mock_class_node_3
+        )
 
         # Expected output: the two deduped dependencies (1 -> 2), (1 -> 3)
         # making up the edge (start_node, end_node).
         deps = start_node.get_class_dependencies_in_outbound_edge(end_node)
         self.assertEqual(len(deps), 2)
         self.assertEqual(
-            deps, {(mock_class_node_1, mock_class_node_2),
-                   (mock_class_node_1, mock_class_node_3)})
+            deps,
+            {
+                (mock_class_node_1, mock_class_node_2),
+                (mock_class_node_1, mock_class_node_3),
+            },
+        )
 
     def test_get_class_dependencies_in_outbound_edge_not_outbound(self):
         """Tests getting dependencies for a non-outbound edge."""

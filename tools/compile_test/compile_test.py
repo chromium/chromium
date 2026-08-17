@@ -48,9 +48,9 @@ def DoMain(argv):
       cxx_cmdline.append('-c')
     # Pass remaining arguments to the compiler.
     cxx_cmdline += args
-    cxx_popen = subprocess.Popen(cxx_cmdline,
-                                 stdout=subprocess.PIPE,
-                                 stderr=subprocess.PIPE)
+    cxx_popen = subprocess.Popen(
+      cxx_cmdline, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+    )
     cxx_stdout, cxx_stderr = cxx_popen.communicate()
     if cxx_popen.returncode == 0:
       print(options.on_success)

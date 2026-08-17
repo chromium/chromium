@@ -97,7 +97,7 @@ Displaying notes found at file offset 0x226c41e8 with length 0x0000001c:
 """
 
 _OBJECT_OUTPUTS = {
-    'obj/third_party/icu/icuuc/ucnv_ext.o': """\
+  'obj/third_party/icu/icuuc/ucnv_ext.o': """\
 There are 71 section headers, starting at offset 0x3114:
 
 Section Headers:
@@ -129,7 +129,7 @@ Key to Flags:
   I (info), L (link order), G (group), T (TLS), E (exclude), x (unknown)
   O (extra OS processing required) o (OS specific), p (processor specific)
 """,
-    'obj/third_party/WebKit.a': """\
+  'obj/third_party/WebKit.a': """\
 
 File: obj/third_party/WebKit.a(PaintChunker.o)
 There are 68 section headers, starting at offset 0x5650:
@@ -153,7 +153,7 @@ Key to Flags:
   I (info), L (link order), G (group), T (TLS), E (exclude), x (unknown)
   O (extra OS processing required) o (OS specific), p (processor specific)
 """,
-    'obj/base/base/page_allocator.o': """\
+  'obj/base/base/page_allocator.o': """\
 There are 68 section headers, starting at offset 0x5650:
 
 Section Headers:
@@ -161,7 +161,7 @@ Section Headers:
   [ 0]                   NULL            00000000 000000 000000 00      0   0  0
   [ 1] .rodata.str1.1    PROGBITS        00000000 000015 000005 01 AMS  0   0  1
 """,
-    'obj/third_party/ffmpeg/libffmpeg_internal.a': """\
+  'obj/third_party/ffmpeg/libffmpeg_internal.a': """\
 
 File: obj/third_party/ffmpeg/libffmpeg_internal.a(fft_float.o)
 There are 68 section headers, starting at offset 0x5650:
@@ -186,7 +186,7 @@ Key to Flags:
   I (info), L (link order), G (group), T (TLS), E (exclude), x (unknown)
   O (extra OS processing required) o (OS specific), p (processor specific)
 """,
-    '../../third_party/gvr-android-sdk/libgvr_shim_static_arm.a': """\
+  '../../third_party/gvr-android-sdk/libgvr_shim_static_arm.a': """\
 
 File: ../../third_party/gvr-android-sdk/libgvr_shim_static_arm.a(\
 libcontroller_api_impl.a_controller_api_impl.o)

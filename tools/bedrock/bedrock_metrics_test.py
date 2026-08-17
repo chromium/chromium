@@ -12,7 +12,6 @@ import bedrock_metrics
 
 
 class TestBedrockMetrics(unittest.TestCase):
-
   def setUp(self):
     # Create a temporary directory for test files.
     self.test_dir = tempfile.mkdtemp(prefix="bedrock_test_")
@@ -31,14 +30,16 @@ class TestBedrockMetrics(unittest.TestCase):
     #   - other_extension.txt (Content: "apple banana\ntext file content")
     #   - empty_file.h (Content: "")
     files_to_create_for_matching = [
-        ("file_alpha.h", "apple banana\ncount_me_once"),
-        ("file_beta.cc", "banana cherry\ncount_me_once\ncount_me_once"),
-        ("file_gamma.mm", "apple cherry\nno_count_string"),
-        (os.path.join("sub", "file_delta.h"), "apple\ncount_me_once"),
-        ("file_exclude_me.cc", "apple banana\ncontent for exclude"),
-        ("other_extension.txt",
-         "apple banana\ntext file content"),  # Invalid extension
-        ("empty_file.h", "")
+      ("file_alpha.h", "apple banana\ncount_me_once"),
+      ("file_beta.cc", "banana cherry\ncount_me_once\ncount_me_once"),
+      ("file_gamma.mm", "apple cherry\nno_count_string"),
+      (os.path.join("sub", "file_delta.h"), "apple\ncount_me_once"),
+      ("file_exclude_me.cc", "apple banana\ncontent for exclude"),
+      (
+        "other_extension.txt",
+        "apple banana\ntext file content",
+      ),  # Invalid extension
+      ("empty_file.h", ""),
     ]
 
     for rel_path, content in files_to_create_for_matching:
@@ -73,20 +74,23 @@ class TestBedrockMetrics(unittest.TestCase):
     # No content_match_strings, so string_matches_count is 0.
     count, str_count = bedrock_metrics.count_matching_files(self.test_dir)
     self.assertEqual(count, 6, "File count mismatch with no filters")
-    self.assertEqual(str_count, 0,
-                     "String count should be 0 with no content search strings")
+    self.assertEqual(
+      str_count, 0, "String count should be 0 with no content search strings"
+    )
 
   def test_cmf_include_filename_single(self):
     # include_filename_strings=["alpha"] -> matches file_alpha.h
     count, str_count = bedrock_metrics.count_matching_files(
-        self.test_dir, include_filename_strings=["alpha"])
+      self.test_dir, include_filename_strings=["alpha"]
+    )
     self.assertEqual(count, 1)
     self.assertEqual(str_count, 0)
 
   def test_cmf_include_filename_multiple_all_match(self):
     # include_filename_strings=["file", "alpha"] -> matches file_alpha.h
     count, str_count = bedrock_metrics.count_matching_files(
-        self.test_dir, include_filename_strings=["file", "alpha"])
+      self.test_dir, include_filename_strings=["file", "alpha"]
+    )
     self.assertEqual(count, 1)
     self.assertEqual(str_count, 0)
 
@@ -94,7 +98,8 @@ class TestBedrockMetrics(unittest.TestCase):
     # include_filename_strings=["alpha", "beta"] -> No file has BOTH "alpha"
     # AND"beta".
     count, str_count = bedrock_metrics.count_matching_files(
-        self.test_dir, include_filename_strings=["alpha", "nomatch"])
+      self.test_dir, include_filename_strings=["alpha", "nomatch"]
+    )
     self.assertEqual(count, 0)
     self.assertEqual(str_count, 0)
 
@@ -102,7 +107,8 @@ class TestBedrockMetrics(unittest.TestCase):
     # exclude_filename_strings=["exclude"] -> Excludes file_exclude_me.cc
     # Original 6 valid files - 1 = 5 files.
     count, str_count = bedrock_metrics.count_matching_files(
-        self.test_dir, exclude_filename_strings=["exclude"])
+      self.test_dir, exclude_filename_strings=["exclude"]
+    )
     self.assertEqual(count, 5)
     self.assertEqual(str_count, 0)
 
@@ -114,7 +120,8 @@ class TestBedrockMetrics(unittest.TestCase):
     # file_beta.cc (banana cherry) does not contain "apple". empty_file.h is
     # empty.
     count, str_count = bedrock_metrics.count_matching_files(
-        self.test_dir, include_file_content_strings=["apple"])
+      self.test_dir, include_file_content_strings=["apple"]
+    )
     self.assertEqual(count, 4)
     self.assertEqual(str_count, 0)
 
@@ -128,15 +135,16 @@ class TestBedrockMetrics(unittest.TestCase):
     # empty_file.h - No
     # Expected: 5 files
     count, str_count = bedrock_metrics.count_matching_files(
-        self.test_dir, include_file_content_strings=["apple", "cherry"])
+      self.test_dir, include_file_content_strings=["apple", "cherry"]
+    )
     self.assertEqual(count, 5)
     self.assertEqual(str_count, 0)
 
   def test_cmf_include_file_content_strings_none_present_in_content(self):
     # include_file_content_strings=["nonexistent_string_pattern"]
     count, str_count = bedrock_metrics.count_matching_files(
-        self.test_dir,
-        include_file_content_strings=["nonexistent_string_pattern"])
+      self.test_dir, include_file_content_strings=["nonexistent_string_pattern"]
+    )
     self.assertEqual(count, 0)
     self.assertEqual(str_count, 0)
 
@@ -147,10 +155,11 @@ class TestBedrockMetrics(unittest.TestCase):
     # sub/file_delta.h: 1 | file_exclude_me.cc: 0 | empty_file.h: 0
     # Total string matches: 1 + 2 + 0 + 1 + 0 + 0 = 4
     count, str_count = bedrock_metrics.count_matching_files(
-        self.test_dir, content_match_strings=["count_me_once"])
+      self.test_dir, content_match_strings=["count_me_once"]
+    )
     self.assertEqual(
-        count, 6,
-        "File count should include all valid files for content counting")
+      count, 6, "File count should include all valid files for content counting"
+    )
     self.assertEqual(str_count, 4, "String match count error")
 
   def test_cmf_content_match_strings_multiple_terms_count(self):
@@ -164,7 +173,8 @@ class TestBedrockMetrics(unittest.TestCase):
     # empty_file.h: apple(0)+banana(0)=0
     # Total string matches: 2+1+1+1+2+0 = 7
     count, str_count = bedrock_metrics.count_matching_files(
-        self.test_dir, content_match_strings=["apple", "banana"])
+      self.test_dir, content_match_strings=["apple", "banana"]
+    )
     self.assertEqual(count, 6)
     self.assertEqual(str_count, 7)
 
@@ -191,11 +201,12 @@ class TestBedrockMetrics(unittest.TestCase):
     #    sub/file_delta.h (has "apple"): 1 occurrences
     #    Total str_count = 1.
     count, str_count = bedrock_metrics.count_matching_files(
-        self.test_dir,
-        include_file_content_strings=["apple"],
-        content_match_strings=["count_me_once"],
-        include_filename_strings=["file"],
-        exclude_filename_strings=["exclude"])
+      self.test_dir,
+      include_file_content_strings=["apple"],
+      content_match_strings=["count_me_once"],
+      include_filename_strings=["file"],
+      exclude_filename_strings=["exclude"],
+    )
     self.assertEqual(count, 3)
     self.assertEqual(str_count, 2)
 
@@ -221,7 +232,8 @@ class TestBedrockMetrics(unittest.TestCase):
     # (Step 4) is skipped.
     # Same as include_file_content_strings=None.
     count, str_count = bedrock_metrics.count_matching_files(
-        self.test_dir, include_file_content_strings=[])
+      self.test_dir, include_file_content_strings=[]
+    )
     self.assertEqual(count, 6)  # All 6 valid extension files
     self.assertEqual(str_count, 0)
 
@@ -229,7 +241,8 @@ class TestBedrockMetrics(unittest.TestCase):
     # No strings to count, so str_count should be 0.
     # File count reflects all files matching other criteria.
     count, str_count = bedrock_metrics.count_matching_files(
-        self.test_dir, content_match_strings=[])
+      self.test_dir, content_match_strings=[]
+    )
     self.assertEqual(count, 6)  # All 6 valid extension files
     self.assertEqual(str_count, 0)
 
@@ -237,7 +250,8 @@ class TestBedrockMetrics(unittest.TestCase):
     # The code `if s_str:` skips empty strings in content_match_strings.
     # So, ["count_me_once", ""] should behave like ["count_me_once"].
     count, str_count = bedrock_metrics.count_matching_files(
-        self.test_dir, content_match_strings=["count_me_once", ""])
+      self.test_dir, content_match_strings=["count_me_once", ""]
+    )
     self.assertEqual(count, 6)
     self.assertEqual(str_count, 4)  # Same as just ["count_me_once"]
 
@@ -251,18 +265,20 @@ class TestBedrockMetrics(unittest.TestCase):
 
   def test_cl_multiple_files(self):
     total_lines = bedrock_metrics.count_lines(
-        [self.lines_file1_path, self.lines_file2_path])
+      [self.lines_file1_path, self.lines_file2_path]
+    )
     self.assertEqual(total_lines, 3 + 1)  # 4
 
   def test_cl_empty_file(self):
     # An empty file has 0 lines according to file.readlines().
-    self.assertEqual(bedrock_metrics.count_lines([self.lines_empty_file_path]),
-                     0)
+    self.assertEqual(
+      bedrock_metrics.count_lines([self.lines_empty_file_path]), 0
+    )
 
   def test_cl_mixed_files_including_empty(self):
-    total_lines = bedrock_metrics.count_lines([
-        self.lines_file1_path, self.lines_empty_file_path, self.lines_file2_path
-    ])
+    total_lines = bedrock_metrics.count_lines(
+      [self.lines_file1_path, self.lines_empty_file_path, self.lines_file2_path]
+    )
     self.assertEqual(total_lines, 3 + 0 + 1)  # 4
 
   def test_cl_empty_file_list(self):

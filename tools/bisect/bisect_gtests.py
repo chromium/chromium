@@ -51,13 +51,13 @@ def Run(command, print_stdout_on_error=True):
 
 
 def StartBisect(good_rev, bad_rev, build_command, test_command):
-  assert (Run('git bisect start'))
-  assert (Run('git bisect bad %s' % bad_rev))
-  assert (Run('git bisect good %s' % good_rev))
+  assert Run('git bisect start')
+  assert Run('git bisect bad %s' % bad_rev)
+  assert Run('git bisect good %s' % good_rev)
 
   while True:
-    assert (Run('gclient sync'))
-    assert (Run(build_command))
+    assert Run('gclient sync')
+    assert Run(build_command)
     test_ret = None
     # If the test result is different running twice, then
     # try again.
@@ -71,16 +71,14 @@ def StartBisect(good_rev, bad_rev, build_command, test_command):
     gitcp = None
     if test_ret:
       print('git bisect good')
-      gitcp = subprocess.run('git bisect good',
-                             shell=True,
-                             capture_output=True,
-                             text=True)
+      gitcp = subprocess.run(
+        'git bisect good', shell=True, capture_output=True, text=True
+      )
     else:
       print('git bisect bad')
-      gitcp = subprocess.run('git bisect bad',
-                             shell=True,
-                             capture_output=True,
-                             text=True)
+      gitcp = subprocess.run(
+        'git bisect bad', shell=True, capture_output=True, text=True
+      )
     # git should always print 'left to test after this'. No stdout
     # means something is wrong.
     if not gitcp.stdout:
@@ -90,7 +88,7 @@ def StartBisect(good_rev, bad_rev, build_command, test_command):
       break
 
     print(gitcp.stdout)
-    first_line = gitcp.stdout[:gitcp.stdout.find('\n')]
+    first_line = gitcp.stdout[: gitcp.stdout.find('\n')]
     # Found the culprit!
     if GIT_BAD_COMMENT_MSG in first_line:
       print('Found the culprit change!')
@@ -105,17 +103,15 @@ def StartBisect(good_rev, bad_rev, build_command, test_command):
 
 def main():
   parser = argparse.ArgumentParser()
-  parser.add_argument('-b',
-                      '--bad',
-                      type=str,
-                      help='A bad revision to start bisection.')
-  parser.add_argument('-g',
-                      '--good',
-                      type=str,
-                      help='A good revision to start bisection.')
-  parser.add_argument('--build_command',
-                      type=str,
-                      help='Command to build test target.')
+  parser.add_argument(
+    '-b', '--bad', type=str, help='A bad revision to start bisection.'
+  )
+  parser.add_argument(
+    '-g', '--good', type=str, help='A good revision to start bisection.'
+  )
+  parser.add_argument(
+    '--build_command', type=str, help='Command to build test target.'
+  )
   parser.add_argument('--test_command', type=str, help='Command to run test.')
   args = parser.parse_args()
   return StartBisect(args.good, args.bad, args.build_command, args.test_command)

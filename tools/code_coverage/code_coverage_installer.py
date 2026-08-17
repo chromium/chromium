@@ -47,12 +47,12 @@ def run_command(args, cwd=None):
       The integer return code of the subprocess execution.
   """
   result = subprocess.run(
-      args,
-      stdout=subprocess.PIPE,
-      stderr=subprocess.STDOUT,
-      text=True,
-      cwd=cwd,
-      check=False,
+    args,
+    stdout=subprocess.PIPE,
+    stderr=subprocess.STDOUT,
+    text=True,
+    cwd=cwd,
+    check=False,
   )
   if result.stdout:
     print_indented(result.stdout, level=2)
@@ -76,8 +76,9 @@ def verify_chromium_checkout(src_root):
       return True
     print('FAIL')
     print_indented(
-        'Error: Could not find DEPS file. Not a valid Chromium checkout.',
-        file=sys.stderr)
+      'Error: Could not find DEPS file. Not a valid Chromium checkout.',
+      file=sys.stderr,
+    )
   except Exception as e:
     print('FAIL')
     print_indented(f'Error verifying checkout: {e}', file=sys.stderr)
@@ -95,8 +96,9 @@ def verify_llvm_tools(src_root):
   """
   print('Verifying LLVM coverage tools... ', end='', flush=True)
   try:
-    llvm_bin_dir = (src_root / 'third_party' / 'llvm-build' /
-                    'Release+Asserts' / 'bin')
+    llvm_bin_dir = (
+      src_root / 'third_party' / 'llvm-build' / 'Release+Asserts' / 'bin'
+    )
     llvm_cov = llvm_bin_dir / 'llvm-cov'
     llvm_profdata = llvm_bin_dir / 'llvm-profdata'
 
@@ -105,14 +107,16 @@ def verify_llvm_tools(src_root):
       return True
 
     print('FAIL')
-    print_indented(textwrap.dedent("""\
+    print_indented(
+      textwrap.dedent("""\
             Error: LLVM coverage tools (llvm-cov, llvm-profdata) are missing.
             To install them, add the following to your .gclient configuration:
               "custom_vars": {
                 "checkout_clang_coverage_tools": True,
               }
             And then run: gclient runhooks"""),
-                   file=sys.stderr)
+      file=sys.stderr,
+    )
   except Exception as e:
     print('FAIL')
     print_indented(f'Error verifying LLVM tools: {e}', file=sys.stderr)
@@ -129,8 +133,9 @@ def verify_recipes(infra_dir):
       True if the code_coverage recipe module directory exists, False otherwise.
   """
   print('Verifying code coverage recipe code... ', end='', flush=True)
-  recipe_module_path = (infra_dir / 'build' / 'recipes' / 'recipe_modules' /
-                        'code_coverage')
+  recipe_module_path = (
+    infra_dir / 'build' / 'recipes' / 'recipe_modules' / 'code_coverage'
+  )
   if recipe_module_path.exists():
     print('OK')
     return True
@@ -172,13 +177,15 @@ def setup_infra(infra_dir):
   gclient_file = infra_dir / '.gclient'
   if gclient_file.exists():
     print_indented(
-        'Existing gclient configuration found. Running gclient sync...')
+      'Existing gclient configuration found. Running gclient sync...'
+    )
     code = run_command(['gclient', 'sync'], cwd=infra_dir)
     if code == 0:
       print_indented('gclient sync completed successfully.')
       return True
-    print_indented(f'Error: gclient sync failed with exit code {code}.',
-                   file=sys.stderr)
+    print_indented(
+      f'Error: gclient sync failed with exit code {code}.', file=sys.stderr
+    )
   else:
     print_indented('Running fetch infra_superproject...')
     code = run_command(['fetch', 'infra_superproject'], cwd=infra_dir)
@@ -186,8 +193,9 @@ def setup_infra(infra_dir):
       print_indented('fetch infra_superproject completed successfully.')
       return True
     print_indented(
-        f'Error: fetch infra_superproject failed with exit code {code}.',
-        file=sys.stderr)
+      f'Error: fetch infra_superproject failed with exit code {code}.',
+      file=sys.stderr,
+    )
   return False
 
 
@@ -201,9 +209,9 @@ def verify_gemini_md(src_root):
       True if GEMINI.md was successfully verified or updated, False on error.
   """
   print(
-      'Verifying global coverage agent rules in GEMINI.md... ',
-      end='',
-      flush=True,
+    'Verifying global coverage agent rules in GEMINI.md... ',
+    end='',
+    flush=True,
   )
   gemini_md = src_root / 'GEMINI.md'
   target_line = '@agents/prompts/templates/code_coverage.md'
@@ -231,14 +239,15 @@ def verify_gemini_md(src_root):
 def main():
   """Parses command line arguments and runs all verification steps."""
   parser = argparse.ArgumentParser(
-      description=
-      'Verifies and initializes Code Coverage development environment.')
+    description='Verifies and initializes Code Coverage development environment.'
+  )
   parser.add_argument(
-      '--infra-dir',
-      required=True,
-      type=pathlib.Path,
-      help='Path to the directory containing (or to checkout) chrome infra '
-      'repositories.')
+    '--infra-dir',
+    required=True,
+    type=pathlib.Path,
+    help='Path to the directory containing (or to checkout) chrome infra '
+    'repositories.',
+  )
   args = parser.parse_args()
   infra_dir = args.infra_dir.resolve()
 
@@ -261,8 +270,9 @@ def main():
 
   if not verify_gemini_md(SRC_ROOT):
     print_indented(
-        'Error: Could not verify or initialize GEMINI.md configuration.',
-        file=sys.stderr)
+      'Error: Could not verify or initialize GEMINI.md configuration.',
+      file=sys.stderr,
+    )
     sys.exit(1)
 
   print('\nCode Coverage environment successfully verified and initialized')

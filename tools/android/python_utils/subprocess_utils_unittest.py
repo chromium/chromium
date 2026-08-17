@@ -11,8 +11,10 @@ import unittest
 
 import git_metadata_utils, subprocess_utils
 
-_COMMAND_PROCESS_ERROR_LOG_REGEX = (r'Command ".*" failed with code \d+\.'
-                                    r'(\nSTDERR: .*)?(\nSTDOUT: .*)?')
+_COMMAND_PROCESS_ERROR_LOG_REGEX = (
+    r'Command ".*" failed with code \d+\.'
+    r'(\nSTDERR: .*)?(\nSTDOUT: .*)?'
+)
 
 
 class TestResolveCommands(unittest.TestCase):
@@ -28,29 +30,36 @@ class TestResolveCommands(unittest.TestCase):
             del os.environ['PATH']
 
     def test_resolve_ninja_returns_command_if_in_path(self):
-        ninja_dir = str(git_metadata_utils.get_chromium_src_path() /
-                        'third_party/ninja')
+        ninja_dir = str(
+            git_metadata_utils.get_chromium_src_path() / 'third_party/ninja'
+        )
         os.environ['PATH'] = ninja_dir
         self.assertEqual('ninja', subprocess_utils.resolve_ninja())
 
     def test_resolve_ninja_returns_depot_path_if_not_in_path(self):
         if 'PATH' in os.environ:
             del os.environ['PATH']
-        ninja_path = str(git_metadata_utils.get_chromium_src_path() /
-                         'third_party/ninja/ninja')
+        ninja_path = str(
+            git_metadata_utils.get_chromium_src_path()
+            / 'third_party/ninja/ninja'
+        )
         self.assertEqual(ninja_path, subprocess_utils.resolve_ninja())
 
     def test_resolve_autoninja_returns_command_if_in_path(self):
-        autoninja_dir = str(git_metadata_utils.get_chromium_src_path() /
-                            'third_party/depot_tools')
+        autoninja_dir = str(
+            git_metadata_utils.get_chromium_src_path()
+            / 'third_party/depot_tools'
+        )
         os.environ['PATH'] = autoninja_dir
         self.assertEqual('autoninja', subprocess_utils.resolve_autoninja())
 
     def test_resolve_autoninja_returns_depot_path_if_not_in_path(self):
         if 'PATH' in os.environ:
             del os.environ['PATH']
-        autoninja_path = str(git_metadata_utils.get_chromium_src_path() /
-                             'third_party/depot_tools/autoninja')
+        autoninja_path = str(
+            git_metadata_utils.get_chromium_src_path()
+            / 'third_party/depot_tools/autoninja'
+        )
         self.assertEqual(autoninja_path, subprocess_utils.resolve_autoninja())
 
 
@@ -75,7 +84,8 @@ class TestRunCommand(unittest.TestCase):
         expected_cwd = '/usr/local/bin'
 
         pwd_output = subprocess_utils.run_command(
-            ['pwd'], cwd=pathlib.Path(expected_cwd).resolve(strict=True))
+            ['pwd'], cwd=pathlib.Path(expected_cwd).resolve(strict=True)
+        )
 
         self.assertEqual(expected_cwd, pwd_output)
 
@@ -83,7 +93,8 @@ class TestRunCommand(unittest.TestCase):
         expected_output = 'some sample output'
 
         command_output = subprocess_utils.run_command(
-            ['echo', 'some', 'sample', 'output'])
+            ['echo', 'some', 'sample', 'output']
+        )
 
         self.assertEqual(expected_output, command_output)
 
@@ -91,7 +102,8 @@ class TestRunCommand(unittest.TestCase):
         expected_output = 'Hello, world!'
 
         command_output = subprocess_utils.run_command(
-            ['echo', '\t Hello, world! \n'])
+            ['echo', '\t Hello, world! \n']
+        )
 
         self.assertEqual(expected_output, command_output)
 
@@ -99,58 +111,60 @@ class TestRunCommand(unittest.TestCase):
         expected_output = 0
 
         command_output = subprocess_utils.run_command(
-            ['echo', '\t Hello, world! \n'], exitcode_only=True)
+            ['echo', '\t Hello, world! \n'], exitcode_only=True
+        )
 
         self.assertEqual(expected_output, command_output)
 
     def test_run_command_exitcode_only_returns_exitcode_on_failure(self):
         expected_output = 1
 
-        command_output = subprocess_utils.run_command(['git', 'foo'],
-                                                      exitcode_only=True)
+        command_output = subprocess_utils.run_command(
+            ['git', 'foo'], exitcode_only=True
+        )
 
         self.assertEqual(expected_output, command_output)
 
     def test_run_command_process_error_no_output(self):
-        with self.assertRaises(
-                subprocess.CalledProcessError) as error_cm, self.assertLogs(
-                    level='ERROR') as logging_cm:
+        with (
+            self.assertRaises(subprocess.CalledProcessError) as error_cm,
+            self.assertLogs(level='ERROR') as logging_cm,
+        ):
             subprocess_utils.run_command(['false'])
 
         self.assertEqual(1, error_cm.exception.returncode)
         self.assertEqual(1, len(logging_cm.output))
-        self.assertRegex(logging_cm.output[0],
-                         _COMMAND_PROCESS_ERROR_LOG_REGEX)
+        self.assertRegex(logging_cm.output[0], _COMMAND_PROCESS_ERROR_LOG_REGEX)
 
     def test_run_command_process_error_with_stderr_output(self):
         expected_stderr_regex = r"git: 'foo' is not a git command.+"
 
-        with self.assertRaises(
-                subprocess.CalledProcessError) as error_cm, self.assertLogs(
-                    level='ERROR') as logging_cm:
+        with (
+            self.assertRaises(subprocess.CalledProcessError) as error_cm,
+            self.assertLogs(level='ERROR') as logging_cm,
+        ):
             subprocess_utils.run_command(['git', 'foo'])
 
         self.assertEqual(1, error_cm.exception.returncode)
         self.assertRegex(error_cm.exception.stderr, expected_stderr_regex)
         self.assertEqual('', error_cm.exception.stdout)
         self.assertEqual(1, len(logging_cm.output))
-        self.assertRegex(logging_cm.output[0],
-                         _COMMAND_PROCESS_ERROR_LOG_REGEX)
+        self.assertRegex(logging_cm.output[0], _COMMAND_PROCESS_ERROR_LOG_REGEX)
 
     def test_run_command_process_error_with_stdout_output(self):
         expected_stdout_regex = r'usage: git.+'
 
-        with self.assertRaises(
-                subprocess.CalledProcessError) as error_cm, self.assertLogs(
-                    level='ERROR') as logging_cm:
+        with (
+            self.assertRaises(subprocess.CalledProcessError) as error_cm,
+            self.assertLogs(level='ERROR') as logging_cm,
+        ):
             subprocess_utils.run_command(['git'])
 
         self.assertEqual(1, error_cm.exception.returncode)
         self.assertEqual('', error_cm.exception.stderr)
         self.assertRegex(error_cm.exception.stdout, expected_stdout_regex)
         self.assertEqual(1, len(logging_cm.output))
-        self.assertRegex(logging_cm.output[0],
-                         _COMMAND_PROCESS_ERROR_LOG_REGEX)
+        self.assertRegex(logging_cm.output[0], _COMMAND_PROCESS_ERROR_LOG_REGEX)
 
     def test_run_command_not_found(self):
         with self.assertRaises(FileNotFoundError) as error_cm:

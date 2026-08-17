@@ -24,7 +24,6 @@ GTEST_CONTENT = 'TEST(A, B) {}'
 
 
 class FindMatchingTestFilesTest(TestCase):
-
   def setUp(self):
     super().setUp()
     self.setUpPyfakefs()
@@ -36,44 +35,51 @@ class FindMatchingTestFilesTest(TestCase):
 
   def test_cc_test(self):
     self.create_cc_test('foo_unittest.cc')
-    self.assertEqual(['foo_unittest.cc'],
-                     file_finder.FindMatchingTestFiles('foo_unittest.cc'))
+    self.assertEqual(
+      ['foo_unittest.cc'], file_finder.FindMatchingTestFiles('foo_unittest.cc')
+    )
 
   def create_rs_test(self, path):
     self.fs.create_file(path, contents='#[gtest(A, B)]')
 
   def test_rs_test(self):
     self.create_rs_test('foo_unittest.rs')
-    self.assertEqual(['foo_unittest.rs'],
-                     file_finder.FindMatchingTestFiles('foo_unittest.rs'))
+    self.assertEqual(
+      ['foo_unittest.rs'], file_finder.FindMatchingTestFiles('foo_unittest.rs')
+    )
 
   def test_mm_test(self):
     self.create_cc_test('foo_unittest.mm')
-    self.assertEqual(['foo_unittest.mm'],
-                     file_finder.FindMatchingTestFiles('foo_unittest.mm'))
+    self.assertEqual(
+      ['foo_unittest.mm'], file_finder.FindMatchingTestFiles('foo_unittest.mm')
+    )
 
   def test_cc_alt_test(self):
     self.fs.create_file('foo.cc')
     self.create_cc_test('foo_unittest.cc')
-    self.assertEqual(['foo_unittest.cc'],
-                     file_finder.FindMatchingTestFiles('foo.cc'))
+    self.assertEqual(
+      ['foo_unittest.cc'], file_finder.FindMatchingTestFiles('foo.cc')
+    )
 
   def test_rs_alt_test(self):
     self.fs.create_file('foo.rs')
     self.create_rs_test('foo_unittest.rs')
-    self.assertEqual(['foo_unittest.rs'],
-                     file_finder.FindMatchingTestFiles('foo.rs'))
+    self.assertEqual(
+      ['foo_unittest.rs'], file_finder.FindMatchingTestFiles('foo.rs')
+    )
 
   def test_cc_maybe_test(self):
     self.fs.create_file('foo_unittest.cc')
-    self.assertEqual(['foo_unittest.cc'],
-                     file_finder.FindMatchingTestFiles('foo_unittest.cc'))
+    self.assertEqual(
+      ['foo_unittest.cc'], file_finder.FindMatchingTestFiles('foo_unittest.cc')
+    )
 
   def test_cc_alt_maybe_test(self):
     self.fs.create_file('foo.cc')
     self.fs.create_file('foo_unittest.cc')
-    self.assertEqual(['foo_unittest.cc'],
-                     file_finder.FindMatchingTestFiles('foo.cc'))
+    self.assertEqual(
+      ['foo_unittest.cc'], file_finder.FindMatchingTestFiles('foo.cc')
+    )
 
   def test_cc_no_test(self):
     self.fs.create_file('foo.cc')
@@ -84,19 +90,22 @@ class FindMatchingTestFilesTest(TestCase):
   def test_h_for_cc_test(self):
     self.fs.create_file('foo.h')
     self.create_cc_test('foo_unittest.cc')
-    self.assertEqual(['foo_unittest.cc'],
-                     file_finder.FindMatchingTestFiles('foo.h'))
+    self.assertEqual(
+      ['foo_unittest.cc'], file_finder.FindMatchingTestFiles('foo.h')
+    )
 
   def test_h_for_mm_test(self):
     self.fs.create_file('foo.h')
     self.create_cc_test('foo_unittest.mm')
-    self.assertEqual(['foo_unittest.mm'],
-                     file_finder.FindMatchingTestFiles('foo.h'))
+    self.assertEqual(
+      ['foo_unittest.mm'], file_finder.FindMatchingTestFiles('foo.h')
+    )
 
   def test_java(self):
     self.fs.create_file('Foo.java')
-    self.assertEqual(['Foo.java'],
-                     file_finder.FindMatchingTestFiles('Foo.java'))
+    self.assertEqual(
+      ['Foo.java'], file_finder.FindMatchingTestFiles('Foo.java')
+    )
 
   def test_directory_search(self):
     test_dir = os.path.join(const.SRC_DIR, 'foo_dir')
@@ -106,28 +115,44 @@ class FindMatchingTestFilesTest(TestCase):
     self.assertEqual([test_file], file_finder.FindMatchingTestFiles(test_dir))
 
   def test_web_test_html(self):
-    path = os.path.join(const.SRC_DIR, 'third_party', 'blink', 'web_tests',
-                        'fast', 'media', 'mq-display-mode.html')
+    path = os.path.join(
+      const.SRC_DIR,
+      'third_party',
+      'blink',
+      'web_tests',
+      'fast',
+      'media',
+      'mq-display-mode.html',
+    )
     self.fs.create_file(path)
     self.assertEqual([path], file_finder.FindMatchingTestFiles(path))
 
   def test_web_test_js(self):
-    path = os.path.join(const.SRC_DIR, 'third_party', 'blink', 'web_tests',
-                        'fast', 'media', 'mq-display-mode.js')
+    path = os.path.join(
+      const.SRC_DIR,
+      'third_party',
+      'blink',
+      'web_tests',
+      'fast',
+      'media',
+      'mq-display-mode.js',
+    )
     self.fs.create_file(path)
     self.assertEqual([path], file_finder.FindMatchingTestFiles(path))
 
   def test_web_test_directory(self):
-    test_dir = os.path.join(const.SRC_DIR, 'third_party', 'blink', 'web_tests',
-                            'fast', 'media')
+    test_dir = os.path.join(
+      const.SRC_DIR, 'third_party', 'blink', 'web_tests', 'fast', 'media'
+    )
     test_file = os.path.join(test_dir, 'mq-display-mode.html')
     self.fs.create_dir(test_dir)
     self.fs.create_file(test_file)
     self.assertEqual([test_file], file_finder.FindMatchingTestFiles(test_dir))
 
   def test_web_test_exclude_resources(self):
-    test_dir = os.path.join(const.SRC_DIR, 'third_party', 'blink', 'web_tests',
-                            'fast', 'media')
+    test_dir = os.path.join(
+      const.SRC_DIR, 'third_party', 'blink', 'web_tests', 'fast', 'media'
+    )
     resources_dir = os.path.join(test_dir, 'resources')
     test_file = os.path.join(test_dir, 'mq-display-mode.html')
     resource_file = os.path.join(resources_dir, 'helper.html')
@@ -139,8 +164,9 @@ class FindMatchingTestFilesTest(TestCase):
     self.assertEqual([test_file], file_finder.FindMatchingTestFiles(test_dir))
 
   def test_web_test_exclude_expectations(self):
-    test_dir = os.path.join(const.SRC_DIR, 'third_party', 'blink', 'web_tests',
-                            'fast', 'media')
+    test_dir = os.path.join(
+      const.SRC_DIR, 'third_party', 'blink', 'web_tests', 'fast', 'media'
+    )
     test_file = os.path.join(test_dir, 'mq-display-mode.html')
     expected_file = os.path.join(test_dir, 'mq-display-mode-expected.html')
 
@@ -152,18 +178,21 @@ class FindMatchingTestFilesTest(TestCase):
 
   def test_webui_tests(self):
     # Setup a fake WebUI directory structure under const.SRC_DIR
-    webui_dir = os.path.join(const.SRC_DIR, 'chrome', 'test', 'data', 'webui',
-                             'glic')
+    webui_dir = os.path.join(
+      const.SRC_DIR, 'chrome', 'test', 'data', 'webui', 'glic'
+    )
     unit_tests_dir = os.path.join(webui_dir, 'unit_tests')
     self.fs.create_dir(unit_tests_dir)
 
     # Create the C++ wrapper containing references to the JS files
     cc_wrapper = os.path.join(webui_dir, 'glic_browsertest.cc')
-    self.fs.create_file(cc_wrapper,
-                        contents='TEST_F(GlicWebUIBrowserTest, All) {\n'
-                        '  RunTest("glic/unit_tests/glic_api_host_test.js")\n'
-                        '  RunTest("glic/unit_tests/glic_api_client_test.js")\n'
-                        '}')
+    self.fs.create_file(
+      cc_wrapper,
+      contents='TEST_F(GlicWebUIBrowserTest, All) {\n'
+      '  RunTest("glic/unit_tests/glic_api_host_test.js")\n'
+      '  RunTest("glic/unit_tests/glic_api_client_test.js")\n'
+      '}',
+    )
 
     # Create the TS test files
     ts_file1 = os.path.join(unit_tests_dir, 'glic_api_host_test.ts')
@@ -186,8 +215,9 @@ class FindMatchingTestFilesTest(TestCase):
 
     # Assertion 3: Searching the unit_tests directory should return only
     # the C++ wrapper (deduplicated)
-    self.assertEqual([cc_wrapper],
-                     file_finder.FindMatchingTestFiles(unit_tests_dir))
+    self.assertEqual(
+      [cc_wrapper], file_finder.FindMatchingTestFiles(unit_tests_dir)
+    )
 
   def test_recursive_search(self):
     # Setup: root/match.cc, root/subdir/match.cc
@@ -200,8 +230,9 @@ class FindMatchingTestFilesTest(TestCase):
     self.create_cc_test(file1)
     self.create_cc_test(file2)
 
-    with mock.patch('utils.command_util.HaveUserPickFile',
-                    return_value=file1) as mock_pick:
+    with mock.patch(
+      'utils.command_util.HaveUserPickFile', return_value=file1
+    ) as mock_pick:
       results = file_finder.FindMatchingTestFiles('match_test.cc')
       self.assertEqual([file1], results)
       mock_pick.assert_called_once()
@@ -264,8 +295,9 @@ class FindMatchingTestFilesTest(TestCase):
 
     with mock.patch('utils.command_util.HaveUserPickFile') as mock_pick:
       # path_index=0
-      results = file_finder.FindMatchingTestFiles('common_test.cc',
-                                                  path_index=0)
+      results = file_finder.FindMatchingTestFiles(
+        'common_test.cc', path_index=0
+      )
       self.assertEqual([file1], results)
       mock_pick.assert_not_called()
 
@@ -290,17 +322,20 @@ class FindMatchingTestFilesTest(TestCase):
     local_file = os.path.join(const.SRC_DIR, 'local_test.cc')
     self.create_cc_test(local_file)
 
-    results = file_finder.FindMatchingTestFiles('local_test.cc',
-                                                remote_search=True)
+    results = file_finder.FindMatchingTestFiles(
+      'local_test.cc', remote_search=True
+    )
     self.assertEqual([local_file], results)
 
   @mock.patch('sys.platform', 'win32')
   def test_windows_path_normalization(self):
-    with mock.patch.object(file_finder.os.path, 'altsep', '/'), \
-         mock.patch.object(file_finder.os.path, 'sep', '\\'), \
-         mock.patch(
-             'finders.file_finder._RecursiveMatchFilename') as mock_recursive:
-
+    with (
+      mock.patch.object(file_finder.os.path, 'altsep', '/'),
+      mock.patch.object(file_finder.os.path, 'sep', '\\'),
+      mock.patch(
+        'finders.file_finder._RecursiveMatchFilename'
+      ) as mock_recursive,
+    ):
       mock_recursive.return_value = ([], [])
       with self.assertRaises(AutotestError):
         file_finder.FindMatchingTestFiles('dir/file.cc')
@@ -311,7 +346,6 @@ class FindMatchingTestFilesTest(TestCase):
 
 
 class TargetCacheTest(TestCase):
-
   def setUp(self):
     super().setUp()
     self.setUpPyfakefs()
@@ -349,7 +383,6 @@ class TargetCacheTest(TestCase):
 
 
 class FindTestTargetsTest(TestCase):
-
   def setUp(self):
     super().setUp()
     self.setUpPyfakefs()
@@ -362,8 +395,9 @@ class FindTestTargetsTest(TestCase):
       runnable = '\n'.join(self.mock_run_command.runnable_targets)
       non_runnable = '\n'.join(self.mock_run_command.non_runnable_targets)
       if any(
-          c.startswith('--exclude-type=source_set,static_library,rust_library')
-          for c in cmd):
+        c.startswith('--exclude-type=source_set,static_library,rust_library')
+        for c in cmd
+      ):
         return runnable
       return runnable + ('\n' + non_runnable if non_runnable else '')
 
@@ -387,88 +421,101 @@ class FindTestTargetsTest(TestCase):
     #     chrome/browser/ui/browser_browsertest.cc \
     #     third_party/blink/renderer/platform/wtf/vector_test.cc
     self.mock_run_command.runnable_targets = [
-        "//:blink_tests", "//:gn_all", "//chrome/test:browser_tests",
-        "//chrome/test:performance_browser_tests",
-        "//third_party/blink/public:all_blink",
-        "//third_party/blink/renderer/platform/wtf:wtf_unittests",
-        "//third_party/blink/renderer/platform/wtf:wtf_unittests_sources"
+      "//:blink_tests",
+      "//:gn_all",
+      "//chrome/test:browser_tests",
+      "//chrome/test:performance_browser_tests",
+      "//third_party/blink/public:all_blink",
+      "//third_party/blink/renderer/platform/wtf:wtf_unittests",
+      "//third_party/blink/renderer/platform/wtf:wtf_unittests_sources",
     ]
-    targets, _ = target_finder.FindTestTargets(self.mock_cache,
-                                               self.out_dir, ['foo.cc'],
-                                               run_all=True)
+    targets, _ = target_finder.FindTestTargets(
+      self.mock_cache, self.out_dir, ['foo.cc'], run_all=True
+    )
 
     self.assertIn('chrome/test:browser_tests', targets)
-    self.assertIn('third_party/blink/renderer/platform/wtf:wtf_unittests',
-                  targets)
+    self.assertIn(
+      'third_party/blink/renderer/platform/wtf:wtf_unittests', targets
+    )
     self.assertNotIn('//:blink_tests', targets)
 
   def test_internal_suffixes(self):
     self.mock_run_command.runnable_targets = [
-        "//chrome/android:chrome_public_test_apk__java_binary",
-        "//chrome/android:chrome_public_test_apk__test_apk"
+      "//chrome/android:chrome_public_test_apk__java_binary",
+      "//chrome/android:chrome_public_test_apk__test_apk",
     ]
-    targets, _ = target_finder.FindTestTargets(self.mock_cache, self.out_dir,
-                                               ['foo.java'])
+    targets, _ = target_finder.FindTestTargets(
+      self.mock_cache, self.out_dir, ['foo.java']
+    )
     # Should strip suffix
     self.assertIn('chrome/android:chrome_public_test_apk', targets)
 
   def test_filter_non_runnable_targets(self):
     self.mock_run_command.runnable_targets = ["//chrome/test:browser_tests"]
     self.mock_run_command.non_runnable_targets = [
-        "//components/payments:passkey_browser_binder_unittests"
+      "//components/payments:passkey_browser_binder_unittests"
     ]
 
-    targets, _ = target_finder.FindTestTargets(self.mock_cache, self.out_dir,
-                                               ['foo.cc'])
+    targets, _ = target_finder.FindTestTargets(
+      self.mock_cache, self.out_dir, ['foo.cc']
+    )
 
     self.assertEqual(['chrome/test:browser_tests'], targets)
 
   def test_allowlist(self):
     self.mock_run_command.runnable_targets = ["//chrome/test:browser_tests"]
-    targets, _ = target_finder.FindTestTargets(self.mock_cache, self.out_dir,
-                                               ['foo.cc'])
+    targets, _ = target_finder.FindTestTargets(
+      self.mock_cache, self.out_dir, ['foo.cc']
+    )
     self.assertIn('chrome/test:browser_tests', targets)
 
   def test_target_ambiguity_prompt(self):
     self.mock_run_command.runnable_targets = [
-        "//chrome/test:unit_tests", "//chrome/test:browser_tests"
+      "//chrome/test:unit_tests",
+      "//chrome/test:browser_tests",
     ]
-    with mock.patch('utils.command_util.HaveUserPickTarget',
-                    return_value='//chrome/test:unit_tests') as mock_pick:
-      targets, _ = target_finder.FindTestTargets(self.mock_cache, self.out_dir,
-                                                 ['foo.cc'])
+    with mock.patch(
+      'utils.command_util.HaveUserPickTarget',
+      return_value='//chrome/test:unit_tests',
+    ) as mock_pick:
+      targets, _ = target_finder.FindTestTargets(
+        self.mock_cache, self.out_dir, ['foo.cc']
+      )
       self.assertEqual(['chrome/test:unit_tests'], targets)
       mock_pick.assert_called_once()
       self.assertEqual(mock_pick.call_args[0][0], None)
 
   def test_target_ambiguity_prompt_gemini_cli(self):
     self.mock_run_command.runnable_targets = [
-        "//chrome/test:unit_tests", "//chrome/test:browser_tests"
+      "//chrome/test:unit_tests",
+      "//chrome/test:browser_tests",
     ]
     with mock.patch('utils.IsGeminiCli', return_value=True) as mock_pick:
       orig_paths = ['foo.cc']
       with self.assertRaises(SystemExit):
-        target_finder.FindTestTargets(self.mock_cache,
-                                      self.out_dir, ['foo.cc'],
-                                      orig_paths=orig_paths)
+        target_finder.FindTestTargets(
+          self.mock_cache, self.out_dir, ['foo.cc'], orig_paths=orig_paths
+        )
 
   def test_target_index(self):
     self.mock_run_command.runnable_targets = [
-        "//chrome/test:unit_tests", "//chrome/test:browser_tests"
+      "//chrome/test:unit_tests",
+      "//chrome/test:browser_tests",
     ]
     # Sorted: browser_tests, unit_tests. Index 0 -> browser_tests
-    targets, _ = target_finder.FindTestTargets(self.mock_cache,
-                                               self.out_dir, ['foo.cc'],
-                                               target_index=0)
+    targets, _ = target_finder.FindTestTargets(
+      self.mock_cache, self.out_dir, ['foo.cc'], target_index=0
+    )
     self.assertEqual(['chrome/test:browser_tests'], targets)
 
   def test_run_all(self):
     self.mock_run_command.runnable_targets = [
-        "//chrome/test:unit_tests", "//chrome/test:browser_tests"
+      "//chrome/test:unit_tests",
+      "//chrome/test:browser_tests",
     ]
-    targets, _ = target_finder.FindTestTargets(self.mock_cache,
-                                               self.out_dir, ['foo.cc'],
-                                               run_all=True)
+    targets, _ = target_finder.FindTestTargets(
+      self.mock_cache, self.out_dir, ['foo.cc'], run_all=True
+    )
     self.assertEqual(len(targets), 2)
     self.assertIn('chrome/test:browser_tests', targets)
     self.assertIn('chrome/test:unit_tests', targets)
@@ -501,7 +548,6 @@ class FindTestTargetsTest(TestCase):
 
 
 class FindRelatedTestFilesTest(TestCase):
-
   def setUp(self):
     super().setUp()
     self.setUpPyfakefs()
@@ -534,7 +580,7 @@ class FindRelatedTestFilesTest(TestCase):
         return test_file
       # Simulate existence check failing for intermediate stem
       # (foo_bar).
-      if ('foo_bar.cc' in cmd_str or 'foo_bar.h' in cmd_str):
+      if 'foo_bar.cc' in cmd_str or 'foo_bar.h' in cmd_str:
         raise self._create_command_error()
       return ''
 
@@ -553,7 +599,7 @@ class FindRelatedTestFilesTest(TestCase):
       if 'foo*' in cmd_str:
         return test_file
       # Simulate finding the intermediate stem file
-      if ('foo_bar.cc' in cmd_str or 'foo_bar.h' in cmd_str):
+      if 'foo_bar.cc' in cmd_str or 'foo_bar.h' in cmd_str:
         return 'foo_bar.cc'
       raise self._create_command_error()
 
@@ -670,7 +716,6 @@ class FindRelatedTestFilesTest(TestCase):
 
 
 class SearchForTestsByNameTest(TestCase):
-
   def setUp(self):
     super().setUp()
     self.setUpPyfakefs()
@@ -679,15 +724,16 @@ class SearchForTestsByNameTest(TestCase):
 
   def test_class_method_syntax(self):
     test_file = 'FooTest.java'
-    self.fs.create_file(test_file,
-                        contents='class FooTest { @Test void foo() {} }')
+    self.fs.create_file(
+      test_file, contents='class FooTest { @Test void foo() {} }'
+    )
 
     # Mock RunCommand for ripgrep to return the file
     self.mock_run_command.return_value = test_file
 
-    files, filter = file_finder.SearchForTestsByName(['FooTest#testMethod'],
-                                                     quiet=True,
-                                                     remote_search=False)
+    files, filter = file_finder.SearchForTestsByName(
+      ['FooTest#testMethod'], quiet=True, remote_search=False
+    )
 
     self.assertEqual([test_file], files)
     self.assertEqual('FooTest#testMethod', filter)
@@ -697,14 +743,15 @@ class SearchForTestsByNameTest(TestCase):
 
   def test_parameterized_test_syntax(self):
     test_file = 'FooTest.cc'
-    self.fs.create_file(test_file,
-                        contents='IN_PROC_BROWSER_TEST_P(FooTest, Bar) {}')
+    self.fs.create_file(
+      test_file, contents='IN_PROC_BROWSER_TEST_P(FooTest, Bar) {}'
+    )
 
     self.mock_run_command.return_value = test_file
 
-    files, filter = file_finder.SearchForTestsByName(['FooTest.Bar'],
-                                                     quiet=True,
-                                                     remote_search=False)
+    files, filter = file_finder.SearchForTestsByName(
+      ['FooTest.Bar'], quiet=True, remote_search=False
+    )
 
     self.assertEqual([test_file], files)
     self.assertEqual('FooTest.Bar:FooTest.Bar/*:*/FooTest.Bar/*', filter)
@@ -712,7 +759,6 @@ class SearchForTestsByNameTest(TestCase):
 
 # Tests execution of multiple test targets to ensure correct flag isolation.
 class RunTestTargetsTest(TestCase):
-
   def setUp(self):
     super().setUp()
     self.setUpPyfakefs()
@@ -721,8 +767,10 @@ class RunTestTargetsTest(TestCase):
 
     # Mock RunTestCommandWithSummary to avoid running actual commands
     self.mock_run_with_summary = mock.patch(
-        'test_executor.command.RunTestCommandWithSummary').start()
+      'test_executor.command.RunTestCommandWithSummary'
+    ).start()
     from utils.command_util import TestSummary
+
     self.mock_run_with_summary.return_value = (0, TestSummary(test_count=1))
     self.addCleanup(mock.patch.stopall)
 
@@ -733,26 +781,29 @@ class RunTestTargetsTest(TestCase):
     self.fs.create_file(wrapper_path)
 
     # We also need to simulate blink web tests runner path
-    web_tests_runner = os.path.join(const.SRC_DIR, 'third_party', 'blink',
-                                    'tools', 'run_web_tests.py')
+    web_tests_runner = os.path.join(
+      const.SRC_DIR, 'third_party', 'blink', 'tools', 'run_web_tests.py'
+    )
     self.fs.create_file(web_tests_runner)
 
     targets = ['base:base_unittests', 'blink_tests']
     web_test_files = [
-        'third_party/blink/web_tests/fast/media/mq-display-mode.html'
+      'third_party/blink/web_tests/fast/media/mq-display-mode.html'
     ]
 
     # Run the executor
-    test_executor.RunTestTargets(out_dir=self.out_dir,
-                                 targets=targets,
-                                 gtest_filter='ValuesTest.*',
-                                 pref_mapping_filter=None,
-                                 extra_args=['--some-shared-arg'],
-                                 dry_run=False,
-                                 no_try_android_wrappers=False,
-                                 no_fast_local_dev=False,
-                                 no_single_variant=False,
-                                 web_test_files=web_test_files)
+    test_executor.RunTestTargets(
+      out_dir=self.out_dir,
+      targets=targets,
+      gtest_filter='ValuesTest.*',
+      pref_mapping_filter=None,
+      extra_args=['--some-shared-arg'],
+      dry_run=False,
+      no_try_android_wrappers=False,
+      no_fast_local_dev=False,
+      no_single_variant=False,
+      web_test_files=web_test_files,
+    )
 
     # Verify calls to RunTestCommandWithSummary
     self.assertEqual(self.mock_run_with_summary.call_count, 2)
@@ -773,7 +824,6 @@ class RunTestTargetsTest(TestCase):
 
 
 class MainExitCodeTest(TestCase):
-
   def setUp(self):
     super().setUp()
     self.setUpPyfakefs()
@@ -796,24 +846,27 @@ class MainExitCodeTest(TestCase):
       runnable = '\n'.join(self.mock_run_command.runnable_targets)
       non_runnable = '\n'.join(self.mock_run_command.non_runnable_targets)
       if any(
-          c.startswith('--exclude-type=source_set,static_library,rust_library')
-          for c in cmd):
+        c.startswith('--exclude-type=source_set,static_library,rust_library')
+        for c in cmd
+      ):
         return runnable
       return runnable + ('\n' + non_runnable if non_runnable else '')
 
     self.mock_run_command.side_effect = side_effect
 
     # Mock build and run
-    self.mock_build = mock.patch('main.test_executor.BuildTestTargets',
-                                 return_value=True).start()
+    self.mock_build = mock.patch(
+      'main.test_executor.BuildTestTargets', return_value=True
+    ).start()
     self.mock_run = mock.patch('main.test_executor.RunTestTargets').start()
 
     # Mock filters to avoid subprocess + fakefs issues
-    mock.patch('main.filters.BuildTestFilter',
-               return_value='DummyFilter.*').start()
     mock.patch(
-        'main.filters.BuildPrefMappingTestFilter',
-        return_value='DummyPrefFilter.*',
+      'main.filters.BuildTestFilter', return_value='DummyFilter.*'
+    ).start()
+    mock.patch(
+      'main.filters.BuildPrefMappingTestFilter',
+      return_value='DummyPrefFilter.*',
     ).start()
 
     # Mock telemetry to avoid opentelemetry crash when not initialized
@@ -846,11 +899,12 @@ class MainExitCodeTest(TestCase):
     self.mock_run.return_value = 0
     runner = CliRunner()
     result = runner.invoke(
-        main.main, ['-C', self.out_dir, '--suite', 'chrome_junit_tests'])
+      main.main, ['-C', self.out_dir, '--suite', 'chrome_junit_tests']
+    )
     self.assertEqual(result.exit_code, 0)
-    self.mock_build.assert_called_once_with(self.out_dir,
-                                            ['chrome_junit_tests'], False,
-                                            False, False)
+    self.mock_build.assert_called_once_with(
+      self.out_dir, ['chrome_junit_tests'], False, False, False
+    )
     self.mock_run.assert_called_once()
     call_args, call_kwargs = self.mock_run.call_args
     self.assertEqual(call_args[1], ['chrome_junit_tests'])

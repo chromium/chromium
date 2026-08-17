@@ -20,16 +20,27 @@ from python_utils import git_metadata_utils
 _CHROMIUM_SRC_PATH = git_metadata_utils.get_chromium_src_path()
 _CHROMIUM_REPO_INFO = test_health_extractor.GitRepoInfo(
     git_head=git_metadata_utils.get_head_commit_hash(),
-    git_head_time=git_metadata_utils.get_head_commit_datetime())
+    git_head_time=git_metadata_utils.get_head_commit_datetime(),
+)
 
-_TEST_FILES_PATH = (_CHROMIUM_SRC_PATH / 'tools' / 'android' / 'test_health' /
-                    'testdata' / 'javatests' / 'org' / 'chromium' / 'chrome' /
-                    'browser' / 'test_health').relative_to(_CHROMIUM_SRC_PATH)
+_TEST_FILES_PATH = (
+    _CHROMIUM_SRC_PATH
+    / 'tools'
+    / 'android'
+    / 'test_health'
+    / 'testdata'
+    / 'javatests'
+    / 'org'
+    / 'chromium'
+    / 'chrome'
+    / 'browser'
+    / 'test_health'
+).relative_to(_CHROMIUM_SRC_PATH)
 _HEALTHY_TESTS_PATH = _TEST_FILES_PATH / 'healthy_tests'
 _UNHEALTHY_TESTS_PATH = _TEST_FILES_PATH / 'unhealthy_tests'
 _INVALID_SYNTAX_TEST_PATH = (
-    _UNHEALTHY_TESTS_PATH /
-    'InvalidSyntaxTest.java').relative_to(_TEST_FILES_PATH)
+    _UNHEALTHY_TESTS_PATH / 'InvalidSyntaxTest.java'
+).relative_to(_TEST_FILES_PATH)
 
 _IGNORED_DIRS = ('disabled_tests', 'unhealthy_tests')
 
@@ -54,16 +65,22 @@ class GetRepoTestHealth(unittest.TestCase):
                 tests_count=1,
                 disabled_tests=[],
                 disable_if_tests=[],
-                tags=['tagPublicTransit']),
-            git_repo_info=_CHROMIUM_REPO_INFO)
+                tags=['tagPublicTransit'],
+            ),
+            git_repo_info=_CHROMIUM_REPO_INFO,
+        )
 
         test_health_infos = test_health_extractor.get_repo_test_health(
             test_dir=_TEST_FILES_PATH,
             ignored_dirs=_IGNORED_DIRS,
             ignored_files={
-                str((_HEALTHY_TESTS_PATH /
-                     'SampleNoPackageTest.java').relative_to(_TEST_FILES_PATH))
-            })
+                str(
+                    (
+                        _HEALTHY_TESTS_PATH / 'SampleNoPackageTest.java'
+                    ).relative_to(_TEST_FILES_PATH)
+                )
+            },
+        )
 
         self.assertEqual(expected_test_health_info, test_health_infos[0])
 
@@ -79,20 +96,23 @@ class GetRepoTestHealth(unittest.TestCase):
                 disable_if_tests_count=1,
                 tests_count=4,
                 disabled_tests=[
-                    _JAVA_PACKAGE_UNHEALTHY_TESTS +
-                    '.SampleTest#testDisabledTest'
+                    _JAVA_PACKAGE_UNHEALTHY_TESTS
+                    + '.SampleTest#testDisabledTest'
                 ],
                 disable_if_tests=[
-                    _JAVA_PACKAGE_UNHEALTHY_TESTS +
-                    '.SampleTest#testDisableIfTest'
+                    _JAVA_PACKAGE_UNHEALTHY_TESTS
+                    + '.SampleTest#testDisableIfTest'
                 ],
-                tags=[]),
-            git_repo_info=_CHROMIUM_REPO_INFO)
+                tags=[],
+            ),
+            git_repo_info=_CHROMIUM_REPO_INFO,
+        )
 
         test_health_infos = test_health_extractor.get_repo_test_health(
             test_dir=_TEST_FILES_PATH,
             ignored_dirs=('disabled_tests', 'healthy_tests'),
-            ignored_files={str(_INVALID_SYNTAX_TEST_PATH)})
+            ignored_files={str(_INVALID_SYNTAX_TEST_PATH)},
+        )
 
         self.assertEqual(expected_test_health_info, test_health_infos[0])
 
@@ -101,11 +121,18 @@ class GetRepoTestHealth(unittest.TestCase):
             test_dir=_TEST_FILES_PATH,
             ignored_dirs=_IGNORED_DIRS,
             ignored_files={
-                str((_HEALTHY_TESTS_PATH /
-                     'SampleTest.java').relative_to(_TEST_FILES_PATH)),
-                str((_HEALTHY_TESTS_PATH /
-                     'SampleNoPackageTest.java').relative_to(_TEST_FILES_PATH))
-            })
+                str(
+                    (_HEALTHY_TESTS_PATH / 'SampleTest.java').relative_to(
+                        _TEST_FILES_PATH
+                    )
+                ),
+                str(
+                    (
+                        _HEALTHY_TESTS_PATH / 'SampleNoPackageTest.java'
+                    ).relative_to(_TEST_FILES_PATH)
+                ),
+            },
+        )
 
         self.assertListEqual([], test_health_info)
 
@@ -115,9 +142,13 @@ class GetRepoTestHealth(unittest.TestCase):
                 test_dir=_TEST_FILES_PATH,
                 ignored_dirs=('disabled_tests', 'healthy_tests'),
                 ignored_files={
-                    str((_UNHEALTHY_TESTS_PATH /
-                         'SampleTest.java').relative_to(_TEST_FILES_PATH))
-                })
+                    str(
+                        (_UNHEALTHY_TESTS_PATH / 'SampleTest.java').relative_to(
+                            _TEST_FILES_PATH
+                        )
+                    )
+                },
+            )
 
         self.assertListEqual([], test_health_infos)
         self.assertIn(str(_INVALID_SYNTAX_TEST_PATH), logging_cm.output[0])
@@ -125,8 +156,9 @@ class GetRepoTestHealth(unittest.TestCase):
     def test_get_test_health_checks_all_files(self):
         all_files = [
             f.relative_to(_CHROMIUM_SRC_PATH)
-            for f in (_CHROMIUM_SRC_PATH /
-                      _TEST_FILES_PATH).resolve(strict=True).rglob('*.java')
+            for f in (_CHROMIUM_SRC_PATH / _TEST_FILES_PATH)
+            .resolve(strict=True)
+            .rglob('*.java')
             if f.name != 'InvalidSyntaxTest.java'
         ]
 
@@ -134,7 +166,8 @@ class GetRepoTestHealth(unittest.TestCase):
             f.test_dir / f.test_filename
             for f in test_health_extractor.get_repo_test_health(
                 test_dir=_TEST_FILES_PATH,
-                ignored_files={str(_INVALID_SYNTAX_TEST_PATH)})
+                ignored_files={str(_INVALID_SYNTAX_TEST_PATH)},
+            )
         ]
 
         self.assertListEqual(all_files, test_health_infos)

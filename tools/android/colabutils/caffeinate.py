@@ -21,7 +21,9 @@ async def caffeinate(interval=30):
     Usage::
         async with colabutils.caffeinate():
             await app.start(url='about:blank')
-            fcp_time_ms = await navigation.measure_fcp(app, url="https://google.com")
+            fcp_time_ms = await navigation.measure_fcp(
+                app, url="https://google.com"
+            )
             print(f"FCP: {fcp_time_ms} ms")
     """
     # Simulate keypresses of the F24 key since it is unlikely that Chrome is
@@ -29,8 +31,10 @@ async def caffeinate(interval=30):
     cmd = "while true; do input keyevent 337; sleep {interval}; done"
 
     caffeinate_task = asyncio.create_task(
-        command_line.adb_shell(cmd.format(interval=interval),
-                               interruption_signal=signal.SIGINT))
+        command_line.adb_shell(
+            cmd.format(interval=interval), interruption_signal=signal.SIGINT
+        )
+    )
     try:
         yield
     finally:

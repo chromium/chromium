@@ -50,7 +50,7 @@ class Terminal:
     self.expectations_info = None
 
   def __str__(self):
-    return (f"Terminal('{self.name}')")
+    return f"Terminal('{self.name}')"
 
   def __repr__(self):
     return str(self)
@@ -87,19 +87,19 @@ class Terminal:
 # need to handle this on the other end, to reduce it back down after
 # simplifying.
 TERMINALS = [
-    Terminal('android', group='os'),
-    Terminal('chromeos', group='os'),
-    Terminal('fuchsia', group='os'),
-    Terminal('ios', group='os'),
-    Terminal('linux', group='os'),
-    Terminal('mac', group='os'),
-    Terminal('win', group='os'),
-    Terminal('arm64', group='arch'),
-    Terminal('x86', group='arch'),
-    Terminal('x86-64', group='arch'),
-    Terminal('asan', group=None),
-    Terminal('msan', group=None),
-    Terminal('tsan', group=None),
+  Terminal('android', group='os'),
+  Terminal('chromeos', group='os'),
+  Terminal('fuchsia', group='os'),
+  Terminal('ios', group='os'),
+  Terminal('linux', group='os'),
+  Terminal('mac', group='os'),
+  Terminal('win', group='os'),
+  Terminal('arm64', group='arch'),
+  Terminal('x86', group='arch'),
+  Terminal('x86-64', group='arch'),
+  Terminal('asan', group=None),
+  Terminal('msan', group=None),
+  Terminal('tsan', group=None),
 ]
 
 # Terminals should have unique names.
@@ -137,10 +137,13 @@ def parse(condition_strs: List[str]) -> Condition:
     return ALWAYS
 
   try:
-    return op_of('or', [
+    return op_of(
+      'or',
+      [
         op_of('and', [get_term(x.strip()) for x in cond.split('&')])
         for cond in condition_strs
-    ])
+      ],
+    )
   except ValueError as e:
     # Catching the exception raised by get_term.
     valid_conds = '\n'.join(sorted(f'\t{term.name}' for term in TERMINALS))
@@ -291,8 +294,9 @@ def simplify(cond: Condition) -> Condition:
           # Replace the sole differing variable with DONT_CARE to produce the
           # combined minterm. Flag both inputs as having been used, and
           # therefore as not being prime implicants.
-          new_implicants.add(a[:diff_index] + (DONT_CARE, ) +
-                             a[diff_index + 1:])
+          new_implicants.add(
+            a[:diff_index] + (DONT_CARE,) + a[diff_index + 1 :]
+          )
           used |= {a, b}
           combined_some_minterms = True
 

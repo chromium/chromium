@@ -13,8 +13,9 @@ import os
 import sys
 
 
-_SRC_PATH = os.path.abspath(os.path.join(
-    os.path.dirname(__file__), os.pardir, os.pardir, os.pardir))
+_SRC_PATH = os.path.abspath(
+  os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, os.pardir)
+)
 sys.path.insert(0, os.path.join(_SRC_PATH, 'third_party', 'catapult', 'devil'))
 from devil.android import device_utils
 from devil.android import device_errors
@@ -22,12 +23,18 @@ from devil.android import device_errors
 
 def _CreateArgumentParser():
   parser = argparse.ArgumentParser(
-    description='Create JSON file for residency pages')
+    description='Create JSON file for residency pages'
+  )
   parser.add_argument('--device-serial', type=str, required=True)
-  parser.add_argument('--on-device-file-path', type=str,
-                      help='Path to residency.txt', required=True)
-  parser.add_argument('--output-directory', type=str, help='Output directory',
-                      required=False)
+  parser.add_argument(
+    '--on-device-file-path',
+    type=str,
+    help='Path to residency.txt',
+    required=True,
+  )
+  parser.add_argument(
+    '--output-directory', type=str, help='Output directory', required=False
+  )
   return parser
 
 
@@ -47,7 +54,8 @@ def _ReadFileFromDevice(device_serial, file_path):
     content = device.ReadFile(file_path, True)
   except device_errors.CommandFailedError:
     logging.exception(
-        'Possible failure reaching the device or reading the file')
+      'Possible failure reaching the device or reading the file'
+    )
 
   return content
 
@@ -78,7 +86,7 @@ def ParseResidentPages(resident_pages):
       expected += 1
 
     pages_list.append(1)
-    expected += 1;
+    expected += 1
   return pages_list
 
 
@@ -113,16 +121,16 @@ def main():
   args = parser.parse_args()
   logging.basicConfig(level=logging.INFO)
 
-  content = _ReadFileFromDevice(args.device_serial,
-                                args.on_device_file_path)
+  content = _ReadFileFromDevice(args.device_serial, args.on_device_file_path)
   if not content:
     logging.error('Error reading file from device')
     return 1
 
   pages_list = ParseResidentPages(content)
   pages_json = _GetResidentPagesJSON(pages_list)
-  _WriteJSONToFile(pages_json, os.path.join(args.output_directory,
-                                            'residency.json'))
+  _WriteJSONToFile(
+    pages_json, os.path.join(args.output_directory, 'residency.json')
+  )
 
   return 0
 

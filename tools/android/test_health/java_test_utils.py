@@ -17,18 +17,26 @@ from python_utils import git_metadata_utils
 
 _CHROMIUM_SRC_PATH = git_metadata_utils.get_chromium_src_path()
 
-_SIX_SRC_PATH = (_CHROMIUM_SRC_PATH / 'third_party' / 'six' /
-                 'src').resolve(strict=True)
+_SIX_SRC_PATH = (_CHROMIUM_SRC_PATH / 'third_party' / 'six' / 'src').resolve(
+    strict=True
+)
 # six is a dependency of javalang
 sys.path.insert(0, str(_SIX_SRC_PATH))
 
-_JAVALANG_SRC_PATH = (_CHROMIUM_SRC_PATH / 'third_party' / 'javalang' /
-                      'src').resolve(strict=True)
+_JAVALANG_SRC_PATH = (
+    _CHROMIUM_SRC_PATH / 'third_party' / 'javalang' / 'src'
+).resolve(strict=True)
 if str(_JAVALANG_SRC_PATH) not in sys.path:
     sys.path.insert(1, str(_JAVALANG_SRC_PATH))
 import javalang
-from javalang.tree import (Annotation, ClassDeclaration, CompilationUnit,
-                           Import, MethodDeclaration, PackageDeclaration)
+from javalang.tree import (
+    Annotation,
+    ClassDeclaration,
+    CompilationUnit,
+    Import,
+    MethodDeclaration,
+    PackageDeclaration,
+)
 
 _TEST_ANNOTATION = 'Test'
 _DISABLED_TEST_ANNOTATION = 'DisabledTest'
@@ -42,6 +50,7 @@ _TAG_PUBLIC_TRANSIT = 'tagPublicTransit'
 @dataclasses.dataclass(frozen=True)
 class JavaTestHealth:
     """Holder class for Java test health information."""
+
     java_package: Optional[str]
     """The Java package containing the test, if specified, else `None`."""
     disabled_tests_count: int
@@ -77,17 +86,21 @@ def get_java_test_health(test_path: pathlib.Path) -> JavaTestHealth:
     try:
         java_ast: CompilationUnit = javalang.parse.parse(java_file_contents)
     except javalang.parser.JavaSyntaxError as syntax_error:
-        raise JavaSyntaxError(syntax_error.description,
-                              line_num=syntax_error.at.position.line,
-                              column_num=syntax_error.at.position.column,
-                              file_path=test_path,
-                              java_src_code=java_file_contents) from None
+        raise JavaSyntaxError(
+            syntax_error.description,
+            line_num=syntax_error.at.position.line,
+            column_num=syntax_error.at.position.column,
+            file_path=test_path,
+            java_src_code=java_file_contents,
+        ) from None
     except javalang.tokenizer.LexerError as lexer_error:
-        raise JavaSyntaxError(str(lexer_error),
-                              line_num=0,
-                              column_num=0,
-                              file_path=test_path,
-                              java_src_code=java_file_contents) from None
+        raise JavaSyntaxError(
+            str(lexer_error),
+            line_num=0,
+            column_num=0,
+            file_path=test_path,
+            java_src_code=java_file_contents,
+        ) from None
 
     return _get_java_test_health(java_ast)
 
@@ -113,65 +126,82 @@ def _get_java_test_health(java_ast: CompilationUnit) -> JavaTestHealth:
     tags = set()
     # Don't consider these deps to mean it's a Public Transit test,
     # it can be a test that only had entry points migrated.
-    SHALLOW_PUBLIC_TRANSIT_DEPS = set([
-        'org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule',
-        'org.chromium.chrome.test.transit.ChromeTransitTestRules',
-        'org.chromium.chrome.test.transit.ReusedCtaTransitTestRule',
-        'org.chromium.chrome.test.transit.FreshCtaTransitTestRule',
-        'org.chromium.chrome.test.transit.page.PageStation',
-        'org.chromium.chrome.test.transit.page.WebPageStation',
-    ])
+    SHALLOW_PUBLIC_TRANSIT_DEPS = set(
+        [
+            'org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule',
+            'org.chromium.chrome.test.transit.ChromeTransitTestRules',
+            'org.chromium.chrome.test.transit.ReusedCtaTransitTestRule',
+            'org.chromium.chrome.test.transit.FreshCtaTransitTestRule',
+            'org.chromium.chrome.test.transit.page.PageStation',
+            'org.chromium.chrome.test.transit.page.WebPageStation',
+        ]
+    )
     for i in java_ast.imports:
-        if ('org.chromium.chrome.test.transit.' in i.path
-                and not i.path in SHALLOW_PUBLIC_TRANSIT_DEPS):
+        if (
+            'org.chromium.chrome.test.transit.' in i.path
+            and not i.path in SHALLOW_PUBLIC_TRANSIT_DEPS
+        ):
             print(i.path)
             tags.add(_TAG_PUBLIC_TRANSIT)
             break
 
     java_classes: List[ClassDeclaration] = java_ast.types
     for java_class in java_classes:
-        if any(annotation.name == _DISABLED_TEST_ANNOTATION
-               for annotation in java_class.annotations):
+        if any(
+            annotation.name == _DISABLED_TEST_ANNOTATION
+            for annotation in java_class.annotations
+        ):
             all_test_methods = _collect_all_test_methods(java_class)
             annotation_counter[_TEST_ANNOTATION] += len(all_test_methods)
             annotation_counter[_DISABLED_TEST_ANNOTATION] += len(
-                all_test_methods)
+                all_test_methods
+            )
             for test_method in all_test_methods:
-                test_full_name = (f'{java_ast.package.name}'
-                                  f'.{java_class.name}'
-                                  f'#{test_method}')
+                test_full_name = (
+                    f'{java_ast.package.name}.{java_class.name}#{test_method}'
+                )
                 disabled_test_list.append(test_full_name)
             continue
         elif any(
-                re.fullmatch(_DISABLE_IF_TEST_PATTERN, annotation.name)
-                for annotation in java_class.annotations):
+            re.fullmatch(_DISABLE_IF_TEST_PATTERN, annotation.name)
+            for annotation in java_class.annotations
+        ):
             all_test_methods = _collect_all_test_methods(java_class)
             annotation_counter[_TEST_ANNOTATION] += len(all_test_methods)
             annotation_counter[_DISABLE_IF_TEST_ANNOTATION] += len(
-                all_test_methods)
+                all_test_methods
+            )
             for test_method in all_test_methods:
-                test_full_name = (f'{java_ast.package.name}'
-                                  f'.{java_class.name}'
-                                  f'#{test_method}')
+                test_full_name = (
+                    f'{java_ast.package.name}.{java_class.name}#{test_method}'
+                )
                 disable_if_test_list.append(test_full_name)
             continue
 
         java_methods: List[MethodDeclaration] = java_class.methods
         for java_method in java_methods:
             annotation_counter.update(
-                _count_annotations(java_method.annotations))
-            if any(annotation.name == _DISABLED_TEST_ANNOTATION
-                   for annotation in java_method.annotations):
-                test_full_name = (f'{java_ast.package.name}'
-                                  f'.{java_class.name}'
-                                  f'#{java_method.name}')
+                _count_annotations(java_method.annotations)
+            )
+            if any(
+                annotation.name == _DISABLED_TEST_ANNOTATION
+                for annotation in java_method.annotations
+            ):
+                test_full_name = (
+                    f'{java_ast.package.name}'
+                    f'.{java_class.name}'
+                    f'#{java_method.name}'
+                )
                 disabled_test_list.append(test_full_name)
             elif any(
-                    re.fullmatch(_DISABLE_IF_TEST_PATTERN, annotation.name)
-                    for annotation in java_method.annotations):
-                test_full_name = (f'{java_ast.package.name}'
-                                  f'.{java_class.name}'
-                                  f'#{java_method.name}')
+                re.fullmatch(_DISABLE_IF_TEST_PATTERN, annotation.name)
+                for annotation in java_method.annotations
+            ):
+                test_full_name = (
+                    f'{java_ast.package.name}'
+                    f'.{java_class.name}'
+                    f'#{java_method.name}'
+                )
                 disable_if_test_list.append(test_full_name)
 
     return JavaTestHealth(
@@ -187,7 +217,8 @@ def _get_java_test_health(java_ast: CompilationUnit) -> JavaTestHealth:
 
 def _collect_all_test_methods(java_class: ClassDeclaration) -> List[str]:
     return [
-        method.name for method in java_class.methods
+        method.name
+        for method in java_class.methods
         if any(a.name == _TEST_ANNOTATION for a in method.annotations)
     ]
 
@@ -195,7 +226,8 @@ def _collect_all_test_methods(java_class: ClassDeclaration) -> List[str]:
 def _collect_all_test_methods(java_class: ClassDeclaration) -> List[str]:
     """Gets the names of all @Test methods in a Java class."""
     return [
-        method.name for method in java_class.methods
+        method.name
+        for method in java_class.methods
         if any(a.name == _TEST_ANNOTATION for a in method.annotations)
     ]
 
@@ -235,8 +267,15 @@ def _count_annotations(annotations: List[Annotation]) -> collections.Counter:
 class JavaSyntaxError(SyntaxError):
     """A syntax error found when parsing Java source code."""
 
-    def __init__(self, error_message, *, line_num: int, column_num: int,
-                 file_path: pathlib.Path, java_src_code: str):
+    def __init__(
+        self,
+        error_message,
+        *,
+        line_num: int,
+        column_num: int,
+        file_path: pathlib.Path,
+        java_src_code: str,
+    ):
         """Instantiates a JavaParseError.
 
         Args:

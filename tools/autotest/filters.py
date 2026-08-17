@@ -15,7 +15,7 @@ def BuildTestFilter(filenames: list[str], line: int | None) -> str:
   # TODO(crbug.com/434009870): Support EarlGrey tests, which don't use
   # Googletest's macros or pascal case naming convention.
   native_files: list[str] = [
-      f for f in filenames if f.endswith(('.cc', '_unittest.mm', '.rs'))
+    f for f in filenames if f.endswith(('.cc', '_unittest.mm', '.rs'))
   ]
   filters: list[str] = []
   if java_files:
@@ -31,7 +31,8 @@ def BuildTestFilter(filenames: list[str], line: int | None) -> str:
 
 def BuildCppTestFilter(filenames: list[str], line: int | None) -> str:
   make_filter_command: list[str | Path] = [
-      sys.executable, const.SRC_DIR / 'tools' / 'make_gtest_filter.py'
+    sys.executable,
+    const.SRC_DIR / 'tools' / 'make_gtest_filter.py',
   ]
   if line:
     make_filter_command += ['--line', str(line)]
@@ -42,13 +43,14 @@ def BuildCppTestFilter(filenames: list[str], line: int | None) -> str:
 
 
 def BuildJavaTestFilter(filenames: list[str]) -> str:
-  return ':'.join('*.{}*'.format(os.path.splitext(os.path.basename(f))[0])
-                  for f in filenames)
+  return ':'.join(
+    '*.{}*'.format(os.path.splitext(os.path.basename(f))[0]) for f in filenames
+  )
 
 
 def BuildPrefMappingTestFilter(filenames: list[str]) -> str | None:
   mapping_files: list[str] = [
-      f for f in filenames if const.PREF_MAPPING_FILE_REGEX.match(f)
+    f for f in filenames if const.PREF_MAPPING_FILE_REGEX.match(f)
   ]
   if not mapping_files:
     return None

@@ -13,7 +13,7 @@ class MacHost(cr.Host):
   """The implementation of Host for mac."""
 
   ACTIVE = cr.Config.From(
-      GOOGLE_CODE='/usr/local/google/code',
+    GOOGLE_CODE='/usr/local/google/code',
   )
 
   def __init__(self):
@@ -27,8 +27,8 @@ class MacPlatform(cr.Platform):
   """The implementation of Platform for the mac target."""
 
   ACTIVE = cr.Config.From(
-      CR_BINARY=os.path.join('{CR_BUILD_DIR}', '{CR_BUILD_TARGET}'),
-      CHROME_DEVEL_SANDBOX='/usr/local/sbin/chrome-devel-sandbox',
+    CR_BINARY=os.path.join('{CR_BUILD_DIR}', '{CR_BUILD_TARGET}'),
+    CHROME_DEVEL_SANDBOX='/usr/local/sbin/chrome-devel-sandbox',
   )
 
   @property

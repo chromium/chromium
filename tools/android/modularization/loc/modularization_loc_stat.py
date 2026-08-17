@@ -26,19 +26,16 @@ KEY_START_DATE = 'start_date'
 KEY_END_DATE = 'end_date'
 
 _M12N_DIRS = [
-    'chrome/browser',
-    'components',
+  'chrome/browser',
+  'components',
 ]
 
 _LEGACY_DIR = 'chrome/android'
 
 
-def GenerateLOCStats(start_date,
-                     end_date,
-                     *,
-                     quiet=False,
-                     json_format=False,
-                     git_dir=None):
+def GenerateLOCStats(
+  start_date, end_date, *, quiet=False, json_format=False, git_dir=None
+):
   """Generate modulazation LOC stats.
 
   Args:
@@ -71,16 +68,25 @@ def GenerateLOCStats(start_date,
   #  ...
   repo_dir = git_dir or os.getcwd()
   command = [
-      'git', '-C', repo_dir, 'log', '--numstat', '--no-renames',
-      '--format=#:%al:%cs:%s', '--after=' + start_date, '--before=' + end_date,
-      'chrome', 'components'
+    'git',
+    '-C',
+    repo_dir,
+    'log',
+    '--numstat',
+    '--no-renames',
+    '--format=#:%al:%cs:%s',
+    '--after=' + start_date,
+    '--before=' + end_date,
+    'chrome',
+    'components',
   ]
   try:
     proc = subprocess.Popen(
-        command,
-        bufsize=1,  # buffered mode
-        stdout=subprocess.PIPE,
-        universal_newlines=True)
+      command,
+      bufsize=1,  # buffered mode
+      stdout=subprocess.PIPE,
+      universal_newlines=True,
+    )
   except subprocess.SubprocessError as e:
     print(f'{command} failed with code {e.returncode}.', file=sys.stderr)
     print(f'\nSTDERR: {e.stderr}', file=sys.stderr)
@@ -99,8 +105,9 @@ def GenerateLOCStats(start_date,
     line = raw_line.strip()
     if line.startswith('#'):  # patch summary line
       _, author, commit_date, *subject = line.split(':', 4)
-      revert_cl = (subject[0].startswith('Revert')
-                   or subject[0].startswith('Reland'))
+      revert_cl = subject[0].startswith('Revert') or subject[0].startswith(
+        'Reland'
+      )
     else:
       if revert_cl or not line.endswith('.java'):
         continue
@@ -119,7 +126,8 @@ def GenerateLOCStats(start_date,
         author_stat_legacy[author] += diff
 
     msg = f'\rProcessing {commit_date} by {author}'
-    if not quiet: _print_progress(msg, prev_msg_len)
+    if not quiet:
+      _print_progress(msg, prev_msg_len)
     prev_msg_len = len(msg)
 
   if not quiet:
@@ -127,19 +135,23 @@ def GenerateLOCStats(start_date,
     print('\n')
 
   rankings_modularized = OrderedDict(
-      sorted(author_stat_m12n.items(), key=lambda x: x[1], reverse=True))
+    sorted(author_stat_m12n.items(), key=lambda x: x[1], reverse=True)
+  )
   rankings_legacy = OrderedDict(
-      sorted(author_stat_legacy.items(), key=lambda x: x[1], reverse=True))
+    sorted(author_stat_legacy.items(), key=lambda x: x[1], reverse=True)
+  )
 
   if json_format:
-    return json.dumps({
+    return json.dumps(
+      {
         KEY_LOC_MODULARIZED: total_m12n,
         KEY_LOC_LEGACY: total_legacy,
         KEY_RANKINGS_MODULARIZED: rankings_modularized,
         KEY_RANKINGS_LEGACY: rankings_legacy,
         KEY_START_DATE: start_date,
         KEY_END_DATE: end_date,
-    })
+      }
+    )
   else:
     output = []
     total = total_m12n + total_legacy
@@ -150,10 +162,11 @@ def GenerateLOCStats(start_date,
 
     # Shows the top 50 contributors in each category.
     output.extend(
-        _print_ranking(rankings_modularized, total_m12n,
-                       'modules and components'))
+      _print_ranking(rankings_modularized, total_m12n, 'modules and components')
+    )
     output.extend(
-        _print_ranking(rankings_legacy, total_legacy, 'legacy and glue'))
+      _print_ranking(rankings_legacy, total_legacy, 'legacy and glue')
+    )
 
     return '\n'.join(output)
 
@@ -207,36 +220,48 @@ def GetDateRange(*, past_days: int) -> Tuple[str, str]:
 
 if __name__ == "__main__":
   parser = argparse.ArgumentParser(
-      description="Generates LOC stats for modularization effort.")
+    description="Generates LOC stats for modularization effort."
+  )
 
   date_group = parser.add_mutually_exclusive_group(required=True)
-  date_group.add_argument('--date',
-                          type=str,
-                          metavar=('<date-from>', '<date-to>'),
-                          nargs=2,
-                          help='date range (YYYY-MM-DD)~(YYYY-MM-DD)')
-  date_group.add_argument('--past-days',
-                          type=int,
-                          help='The number of days to look back for stats. '
-                          '0 for today only.')
-  parser.add_argument('-q',
-                      '--quiet',
-                      action='store_true',
-                      help='Do not output any message while processing')
-  parser.add_argument('-j',
-                      '--json',
-                      action='store_true',
-                      help='Output result in json format. '
-                      'If not specified, output in more human-readable table.')
-  parser.add_argument('-o',
-                      '--output',
-                      type=str,
-                      help='File to write the result to in json format. '
-                      'If not specified, outputs to console.')
-  parser.add_argument('--git-dir',
-                      type=str,
-                      help='Root directory of the git repo to look into. '
-                      'If not specified, use the current directory.')
+  date_group.add_argument(
+    '--date',
+    type=str,
+    metavar=('<date-from>', '<date-to>'),
+    nargs=2,
+    help='date range (YYYY-MM-DD)~(YYYY-MM-DD)',
+  )
+  date_group.add_argument(
+    '--past-days',
+    type=int,
+    help='The number of days to look back for stats. 0 for today only.',
+  )
+  parser.add_argument(
+    '-q',
+    '--quiet',
+    action='store_true',
+    help='Do not output any message while processing',
+  )
+  parser.add_argument(
+    '-j',
+    '--json',
+    action='store_true',
+    help='Output result in json format. '
+    'If not specified, output in more human-readable table.',
+  )
+  parser.add_argument(
+    '-o',
+    '--output',
+    type=str,
+    help='File to write the result to in json format. '
+    'If not specified, outputs to console.',
+  )
+  parser.add_argument(
+    '--git-dir',
+    type=str,
+    help='Root directory of the git repo to look into. '
+    'If not specified, use the current directory.',
+  )
   args = parser.parse_args()
   if args.past_days and args.past_days < 0:
     raise parser.error('--past-days must be non-negative.')
@@ -246,11 +271,13 @@ if __name__ == "__main__":
   else:
     start_date, end_date = GetDateRange(past_days=args.past_days)
 
-  result = GenerateLOCStats(start_date,
-                            end_date,
-                            quiet=args.quiet,
-                            json_format=args.json,
-                            git_dir=args.git_dir)
+  result = GenerateLOCStats(
+    start_date,
+    end_date,
+    quiet=args.quiet,
+    json_format=args.json,
+    git_dir=args.git_dir,
+  )
   if args.output:
     with open(args.output, 'w') as f:
       f.write(result)

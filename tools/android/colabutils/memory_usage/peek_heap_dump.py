@@ -16,7 +16,8 @@ from colabutils.memory_usage.memory_usage_view import MemoryUsageView
 def main():
     parser = argparse.ArgumentParser(
         description='Load a heap dump from a trace file and print top-level '
-        'memory usage.')
+        'memory usage.'
+    )
     parser.add_argument('trace_file', help='Path to the trace file.')
     args = parser.parse_args()
 

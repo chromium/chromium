@@ -38,39 +38,63 @@ import urllib
 import urllib.error
 import urllib.request
 
-from update import (CDS_URL, CHROMIUM_DIR, CLANG_REVISION, LLVM_BUILD_DIR,
-                    FORCE_HEAD_REVISION_FILENAME, FORCE_HEAD_REVISION_FILE,
-                    PACKAGE_VERSION, RELEASE_VERSION, STAMP_FILENAME,
-                    STAMP_FILE, THIS_DIR, DownloadUrl, DownloadAndUnpack,
-                    DownloadAndUnpackPackage, EnsureDirExists, GetDefaultHostOs,
-                    ReadStampFile, RmTree, WriteStampFile)
+from update import (
+  CDS_URL,
+  CHROMIUM_DIR,
+  CLANG_REVISION,
+  LLVM_BUILD_DIR,
+  FORCE_HEAD_REVISION_FILENAME,
+  FORCE_HEAD_REVISION_FILE,
+  PACKAGE_VERSION,
+  RELEASE_VERSION,
+  STAMP_FILENAME,
+  STAMP_FILE,
+  THIS_DIR,
+  DownloadUrl,
+  DownloadAndUnpack,
+  DownloadAndUnpackPackage,
+  EnsureDirExists,
+  GetDefaultHostOs,
+  ReadStampFile,
+  RmTree,
+  WriteStampFile,
+)
 
 # Path constants. (All of these should be absolute paths.)
 THIRD_PARTY_DIR = os.path.join(CHROMIUM_DIR, 'third_party')
 LLVM_DIR = os.path.join(THIRD_PARTY_DIR, 'llvm')
 COMPILER_RT_DIR = os.path.join(LLVM_DIR, 'compiler-rt')
-LLVM_GIT_URL = ('https://chromium.googlesource.com/external/' +
-                'github.com/llvm/llvm-project')
+LLVM_GIT_URL = (
+  'https://chromium.googlesource.com/external/' + 'github.com/llvm/llvm-project'
+)
 LLVM_BOOTSTRAP_DIR = os.path.join(THIRD_PARTY_DIR, 'llvm-bootstrap')
-LLVM_BOOTSTRAP_INSTALL_DIR = os.path.join(THIRD_PARTY_DIR,
-                                          'llvm-bootstrap-install')
+LLVM_BOOTSTRAP_INSTALL_DIR = os.path.join(
+  THIRD_PARTY_DIR, 'llvm-bootstrap-install'
+)
 LLVM_INSTRUMENTED_DIR = os.path.join(THIRD_PARTY_DIR, 'llvm-instrumented')
 LLVM_PROFDATA_FILE = os.path.join(LLVM_INSTRUMENTED_DIR, 'profdata.prof')
 LLVM_BUILD_TOOLS_DIR = os.path.abspath(
-    os.path.join(LLVM_DIR, '..', 'llvm-build-tools'))
-ANDROID_NDK_DIR = os.path.join(CHROMIUM_DIR, 'third_party',
-                               'android_toolchain', 'ndk')
-ANDROID_NDK_TOOLCHAIN_RELATIVE_DIR = os.path.join('toolchains', 'llvm',
-                                                  'prebuilt', 'linux-x86_64')
-ANDROID_NDK_TOOLCHAIN_DIR = os.path.join(ANDROID_NDK_DIR,
-                                         ANDROID_NDK_TOOLCHAIN_RELATIVE_DIR)
-FUCHSIA_SDK_DIR = os.path.join(CHROMIUM_DIR, 'third_party', 'fuchsia-sdk',
-                               'sdk')
+  os.path.join(LLVM_DIR, '..', 'llvm-build-tools')
+)
+ANDROID_NDK_DIR = os.path.join(
+  CHROMIUM_DIR, 'third_party', 'android_toolchain', 'ndk'
+)
+ANDROID_NDK_TOOLCHAIN_RELATIVE_DIR = os.path.join(
+  'toolchains', 'llvm', 'prebuilt', 'linux-x86_64'
+)
+ANDROID_NDK_TOOLCHAIN_DIR = os.path.join(
+  ANDROID_NDK_DIR, ANDROID_NDK_TOOLCHAIN_RELATIVE_DIR
+)
+FUCHSIA_SDK_DIR = os.path.join(
+  CHROMIUM_DIR, 'third_party', 'fuchsia-sdk', 'sdk'
+)
 PINNED_CLANG_DIR = os.path.join(LLVM_BUILD_TOOLS_DIR, 'pinned-clang')
 
-BUG_REPORT_URL = ('https://crbug.com in the Tools>LLVM component,'
-                  ' run tools/clang/scripts/process_crashreports.py'
-                  ' (only if inside Google) to upload crash related files,')
+BUG_REPORT_URL = (
+  'https://crbug.com in the Tools>LLVM component,'
+  ' run tools/clang/scripts/process_crashreports.py'
+  ' (only if inside Google) to upload crash related files,'
+)
 
 LIBXML2_VERSION = 'libxml2-v2.9.12'
 ZSTD_VERSION = 'zstd-1.5.5'
@@ -81,6 +105,8 @@ ZSTD_VERSION = 'zstd-1.5.5'
 DEFAULT_MACOSX_DEPLOYMENT_TARGET = '10.12'
 
 win_sdk_dir = None
+
+
 def GetWinSDKDir():
   """Get the location of the current SDK."""
   global win_sdk_dir
@@ -92,6 +118,7 @@ def GetWinSDKDir():
 
   sys.path.append(os.path.join(CHROMIUM_DIR, 'build'))
   import vs_toolchain
+
   win_sdk_dir = vs_toolchain.SetEnvironmentAndGetSDKDir()
   msvs_version = vs_toolchain.GetVisualStudioVersion()
 
@@ -111,12 +138,14 @@ def GetWinSDKDir():
 
 def RunCommand(command, setenv=False, env=None, fail_hard=True):
   """Run command and return success (True) or failure; or if fail_hard is
-     True, exit on failure.  If setenv is True, runs the command in a
-     shell with the msvc tools for x64 architecture."""
+  True, exit on failure.  If setenv is True, runs the command in a
+  shell with the msvc tools for x64 architecture."""
 
   if setenv and sys.platform == 'win32':
-    command = [os.path.join(CHROMIUM_DIR, 'tools', 'win', 'setenv.bat'), '&&'
-               ] + command
+    command = [
+      os.path.join(CHROMIUM_DIR, 'tools', 'win', 'setenv.bat'),
+      '&&',
+    ] + command
 
   # https://docs.python.org/2/library/subprocess.html:
   # "On Unix with shell=True [...] if args is a sequence, the first item
@@ -168,11 +197,15 @@ def CheckoutGitRepo(name, git_url, commit, dir):
     # Undo local changes with `git restore .`.
     # `git diff-index --exit-code` returns 0 when there is no diff.
     # Also check that the first commit is reachable.
-    if (RunCommand(['git', 'restore', '.'], fail_hard=False) and RunCommand(
-        ['git', 'diff-index', '--exit-code', 'HEAD'], fail_hard=False)
-        and RunCommand(['git', 'fetch'], fail_hard=False)
-        and RunCommand(['git', 'checkout', commit], fail_hard=False)
-        and RunCommand(['git', 'clean', '-f'], fail_hard=False)):
+    if (
+      RunCommand(['git', 'restore', '.'], fail_hard=False)
+      and RunCommand(
+        ['git', 'diff-index', '--exit-code', 'HEAD'], fail_hard=False
+      )
+      and RunCommand(['git', 'fetch'], fail_hard=False)
+      and RunCommand(['git', 'checkout', commit], fail_hard=False)
+      and RunCommand(['git', 'clean', '-f'], fail_hard=False)
+    ):
       return
 
     # If we can't use the current repo, delete it.
@@ -190,38 +223,48 @@ def CheckoutGitRepo(name, git_url, commit, dir):
   print('CheckoutGitRepo failed.')
   sys.exit(1)
 
+
 # Git commits include timing and author metadata in their hash.
 # To ensure we get a consistent hash when applying local changes,
 # set everything to fixed values via environment variable
 GIT_METADATA_OVERRIDES = {
-    'GIT_AUTHOR_NAME': 'Dummy Author',
-    'GIT_AUTHOR_EMAIL': 'none@none.com',
-    'GIT_AUTHOR_DATE': '2099-01-01 10:10:10',
-    'GIT_COMMITTER_NAME': 'Dummy Committer',
-    'GIT_COMMITTER_EMAIL': 'none@none.com',
-    'GIT_COMMITTER_DATE': '2099-01-01 10:10:10',
+  'GIT_AUTHOR_NAME': 'Dummy Author',
+  'GIT_AUTHOR_EMAIL': 'none@none.com',
+  'GIT_AUTHOR_DATE': '2099-01-01 10:10:10',
+  'GIT_COMMITTER_NAME': 'Dummy Committer',
+  'GIT_COMMITTER_EMAIL': 'none@none.com',
+  'GIT_COMMITTER_DATE': '2099-01-01 10:10:10',
 }
 
 
 def IsGitAncestorToHead(git_repository, commit):
   """Returns if commit is an ancestor of HEAD."""
-  return RunCommand([
-      'git', '-C', git_repository, 'merge-base', '--is-ancestor', commit, 'HEAD'
-  ],
-                           fail_hard=False)
+  return RunCommand(
+    [
+      'git',
+      '-C',
+      git_repository,
+      'merge-base',
+      '--is-ancestor',
+      commit,
+      'HEAD',
+    ],
+    fail_hard=False,
+  )
 
 
-def GitCherryPick(git_repository,
-                  commit,
-                  git_remote=None,
-                  git_remote_name='github'):
+def GitCherryPick(
+  git_repository, commit, git_remote=None, git_remote_name='github'
+):
   print(f'Cherry-picking {commit} in {git_repository} from {git_remote}')
   git_cmd = ['git', '-C', git_repository]
   if git_remote is not None:
-    RunCommand(git_cmd + ['remote', 'add', git_remote_name, git_remote],
-               fail_hard=False)
-    RunCommand(git_cmd +
-               ['fetch', '--recurse-submodules=no', git_remote_name, commit])
+    RunCommand(
+      git_cmd + ['remote', 'add', git_remote_name, git_remote], fail_hard=False
+    )
+    RunCommand(
+      git_cmd + ['fetch', '--recurse-submodules=no', git_remote_name, commit]
+    )
 
   if IsGitAncestorToHead(git_repository, commit):
     print('Commit already an ancestor; skipping.')
@@ -229,11 +272,17 @@ def GitCherryPick(git_repository,
 
   env = os.environ.copy()
   env.update(GIT_METADATA_OVERRIDES)
-  RunCommand([
-      'git', '-C', git_repository, 'cherry-pick', '--keep-redundant-commits',
-      commit
-  ],
-             env=env)
+  RunCommand(
+    [
+      'git',
+      '-C',
+      git_repository,
+      'cherry-pick',
+      '--keep-redundant-commits',
+      commit,
+    ],
+    env=env,
+  )
 
 
 def GitRevert(git_repository, commit):
@@ -243,41 +292,47 @@ def GitRevert(git_repository, commit):
     return
   env = os.environ.copy()
   env.update(GIT_METADATA_OVERRIDES)
-  RunCommand(['git', '-C', git_repository, 'revert', '--no-edit', commit],
-             env=env)
+  RunCommand(
+    ['git', '-C', git_repository, 'revert', '--no-edit', commit], env=env
+  )
 
 
 def FetchUrl(url, max_tries=5, delay_seconds=1):
   """Fetch content from a URL. If the fetch fails, retry several times after a
-     short delay."""
+  short delay."""
   for i in range(max_tries):
     try:
       with urllib.request.urlopen(url) as response:
         return response.read()
     except (ConnectionError, urllib.error.URLError) as e:
       # If this was the last try or a permanent 404 client error, re-raise.
-      if i >= max_tries - 1 or (isinstance(e, urllib.error.HTTPError)
-                                and e.code == 404):
+      if i >= max_tries - 1 or (
+        isinstance(e, urllib.error.HTTPError) and e.code == 404
+      ):
         raise e
 
       reason = getattr(e, 'reason', e)
-      print(f"Failed to fetch {url}: {reason} (attempt {i + 1}/{max_tries}). "
-            f"Retrying in {delay_seconds}s...")
+      print(
+        f"Failed to fetch {url}: {reason} (attempt {i + 1}/{max_tries}). "
+        f"Retrying in {delay_seconds}s..."
+      )
       time.sleep(delay_seconds)
       delay_seconds *= 2
 
 
 def GetLatestCommit(url):
   """Get the latest commit hash from a git repository's JSON output. If the
-     fetch fails, retry several times after a short delay."""
+  fetch fails, retry several times after a short delay."""
   main = json.loads(FetchUrl(url).decode("utf-8").replace(")]}'", ""))
   return main['commit']
 
 
 def GetLatestLLVMCommit():
   """Get the latest commit hash in the LLVM monorepo."""
-  url = ('https://chromium.googlesource.com/external/' +
-         'github.com/llvm/llvm-project/+/refs/heads/main?format=JSON')
+  url = (
+    'https://chromium.googlesource.com/external/'
+    + 'github.com/llvm/llvm-project/+/refs/heads/main?format=JSON'
+  )
   return GetLatestCommit(url)
 
 
@@ -286,10 +341,17 @@ def GetCommitDescription(commit):
 
   Needs to be called from inside the git repository dir."""
   git_exe = 'git.bat' if sys.platform.startswith('win') else 'git'
-  return subprocess.check_output([
-      git_exe, 'describe', '--long', '--abbrev=8', '--match=*llvmorg-*-init',
-      commit
-  ], universal_newlines=True).rstrip()
+  return subprocess.check_output(
+    [
+      git_exe,
+      'describe',
+      '--long',
+      '--abbrev=8',
+      '--match=*llvmorg-*-init',
+      commit,
+    ],
+    universal_newlines=True,
+  ).rstrip()
 
 
 def AddCMakeToPath():
@@ -326,11 +388,14 @@ def AddGitForWindowsToPath():
     DownloadAndUnpack(CDS_URL + '/tools/' + archive_name, git_dir)
     WriteStampFile(version, stamp_file)
 
-  os.environ['PATH'] = os.path.join(
-      git_dir, 'usr', 'bin') + os.pathsep + os.environ.get('PATH', '')
+  os.environ['PATH'] = (
+    os.path.join(git_dir, 'usr', 'bin')
+    + os.pathsep
+    + os.environ.get('PATH', '')
+  )
 
 
-def AddZlibToPath(dry_run = False):
+def AddZlibToPath(dry_run=False):
   """Download and build zlib, and add to PATH."""
   zlib_dir = os.path.join(LLVM_BUILD_TOOLS_DIR, 'zlib-1.2.11')
   if dry_run:
@@ -342,19 +407,39 @@ def AddZlibToPath(dry_run = False):
   DownloadAndUnpack(CDS_URL + '/tools/' + zip_name, LLVM_BUILD_TOOLS_DIR)
   os.chdir(zlib_dir)
   zlib_files = [
-      'adler32', 'compress', 'crc32', 'deflate', 'gzclose', 'gzlib', 'gzread',
-      'gzwrite', 'inflate', 'infback', 'inftrees', 'inffast', 'trees',
-      'uncompr', 'zutil'
+    'adler32',
+    'compress',
+    'crc32',
+    'deflate',
+    'gzclose',
+    'gzlib',
+    'gzread',
+    'gzwrite',
+    'inflate',
+    'infback',
+    'inftrees',
+    'inffast',
+    'trees',
+    'uncompr',
+    'zutil',
   ]
   cl_flags = [
-      '/nologo', '/O2', '/DZLIB_DLL', '/c', '/D_CRT_SECURE_NO_DEPRECATE',
-      '/D_CRT_NONSTDC_NO_DEPRECATE'
+    '/nologo',
+    '/O2',
+    '/DZLIB_DLL',
+    '/c',
+    '/D_CRT_SECURE_NO_DEPRECATE',
+    '/D_CRT_NONSTDC_NO_DEPRECATE',
   ]
-  RunCommand(['cl.exe'] + [f + '.c' for f in zlib_files] + cl_flags,
-             setenv=True)
-  RunCommand(['lib.exe'] + [f + '.obj'
-                            for f in zlib_files] + ['/nologo', '/out:zlib.lib'],
-             setenv=True)
+  RunCommand(
+    ['cl.exe'] + [f + '.c' for f in zlib_files] + cl_flags, setenv=True
+  )
+  RunCommand(
+    ['lib.exe']
+    + [f + '.obj' for f in zlib_files]
+    + ['/nologo', '/out:zlib.lib'],
+    setenv=True,
+  )
   # Remove the test directory so it isn't found when trying to find
   # test.exe.
   shutil.rmtree('test')
@@ -410,49 +495,49 @@ def BuildLibXml2(cc, cxx, cmake_sysroot, mac_deployment_target):
   # WindowsManifestMerger.
   # Also enable WITH_THREADS, else libxml doesn't compile on Linux.
   cmake_args = [
-          '-DCMAKE_C_COMPILER=' + cc,
-          '-DCMAKE_CXX_COMPILER=' + cxx,
-          '-DCMAKE_BUILD_TYPE=Release',
-          '-DCMAKE_INSTALL_PREFIX=install',
-          '-DCMAKE_INSTALL_LIBDIR=lib',
-          '-DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded',  # /MT to match LLVM.
-          '-DBUILD_SHARED_LIBS=OFF',
-          '-DLIBXML2_WITH_C14N=OFF',
-          '-DLIBXML2_WITH_CATALOG=OFF',
-          '-DLIBXML2_WITH_DEBUG=OFF',
-          '-DLIBXML2_WITH_DOCB=OFF',
-          '-DLIBXML2_WITH_FTP=OFF',
-          '-DLIBXML2_WITH_HTML=OFF',
-          '-DLIBXML2_WITH_HTTP=OFF',
-          '-DLIBXML2_WITH_ICONV=OFF',
-          '-DLIBXML2_WITH_ICU=OFF',
-          '-DLIBXML2_WITH_ISO8859X=OFF',
-          '-DLIBXML2_WITH_LEGACY=OFF',
-          '-DLIBXML2_WITH_LZMA=OFF',
-          '-DLIBXML2_WITH_MEM_DEBUG=OFF',
-          '-DLIBXML2_WITH_MODULES=OFF',
-          '-DLIBXML2_WITH_OUTPUT=ON',
-          '-DLIBXML2_WITH_PATTERN=OFF',
-          '-DLIBXML2_WITH_PROGRAMS=OFF',
-          '-DLIBXML2_WITH_PUSH=OFF',
-          '-DLIBXML2_WITH_PYTHON=OFF',
-          '-DLIBXML2_WITH_READER=OFF',
-          '-DLIBXML2_WITH_REGEXPS=OFF',
-          '-DLIBXML2_WITH_RUN_DEBUG=OFF',
-          '-DLIBXML2_WITH_SAX1=OFF',
-          '-DLIBXML2_WITH_SCHEMAS=OFF',
-          '-DLIBXML2_WITH_SCHEMATRON=OFF',
-          '-DLIBXML2_WITH_TESTS=OFF',
-          '-DLIBXML2_WITH_THREADS=ON',
-          '-DLIBXML2_WITH_THREAD_ALLOC=OFF',
-          '-DLIBXML2_WITH_TREE=ON',
-          '-DLIBXML2_WITH_VALID=OFF',
-          '-DLIBXML2_WITH_WRITER=OFF',
-          '-DLIBXML2_WITH_XINCLUDE=OFF',
-          '-DLIBXML2_WITH_XPATH=OFF',
-          '-DLIBXML2_WITH_XPTR=OFF',
-          '-DLIBXML2_WITH_ZLIB=OFF',
-      ]
+    '-DCMAKE_C_COMPILER=' + cc,
+    '-DCMAKE_CXX_COMPILER=' + cxx,
+    '-DCMAKE_BUILD_TYPE=Release',
+    '-DCMAKE_INSTALL_PREFIX=install',
+    '-DCMAKE_INSTALL_LIBDIR=lib',
+    '-DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded',  # /MT to match LLVM.
+    '-DBUILD_SHARED_LIBS=OFF',
+    '-DLIBXML2_WITH_C14N=OFF',
+    '-DLIBXML2_WITH_CATALOG=OFF',
+    '-DLIBXML2_WITH_DEBUG=OFF',
+    '-DLIBXML2_WITH_DOCB=OFF',
+    '-DLIBXML2_WITH_FTP=OFF',
+    '-DLIBXML2_WITH_HTML=OFF',
+    '-DLIBXML2_WITH_HTTP=OFF',
+    '-DLIBXML2_WITH_ICONV=OFF',
+    '-DLIBXML2_WITH_ICU=OFF',
+    '-DLIBXML2_WITH_ISO8859X=OFF',
+    '-DLIBXML2_WITH_LEGACY=OFF',
+    '-DLIBXML2_WITH_LZMA=OFF',
+    '-DLIBXML2_WITH_MEM_DEBUG=OFF',
+    '-DLIBXML2_WITH_MODULES=OFF',
+    '-DLIBXML2_WITH_OUTPUT=ON',
+    '-DLIBXML2_WITH_PATTERN=OFF',
+    '-DLIBXML2_WITH_PROGRAMS=OFF',
+    '-DLIBXML2_WITH_PUSH=OFF',
+    '-DLIBXML2_WITH_PYTHON=OFF',
+    '-DLIBXML2_WITH_READER=OFF',
+    '-DLIBXML2_WITH_REGEXPS=OFF',
+    '-DLIBXML2_WITH_RUN_DEBUG=OFF',
+    '-DLIBXML2_WITH_SAX1=OFF',
+    '-DLIBXML2_WITH_SCHEMAS=OFF',
+    '-DLIBXML2_WITH_SCHEMATRON=OFF',
+    '-DLIBXML2_WITH_TESTS=OFF',
+    '-DLIBXML2_WITH_THREADS=ON',
+    '-DLIBXML2_WITH_THREAD_ALLOC=OFF',
+    '-DLIBXML2_WITH_TREE=ON',
+    '-DLIBXML2_WITH_VALID=OFF',
+    '-DLIBXML2_WITH_WRITER=OFF',
+    '-DLIBXML2_WITH_XINCLUDE=OFF',
+    '-DLIBXML2_WITH_XPATH=OFF',
+    '-DLIBXML2_WITH_XPTR=OFF',
+    '-DLIBXML2_WITH_ZLIB=OFF',
+  ]
   if cmake_sysroot:
     cmake_args.append('-DCMAKE_SYSROOT=' + cmake_sysroot)
   if sys.platform == 'darwin':
@@ -466,15 +551,14 @@ def BuildLibXml2(cc, cxx, cmake_sysroot, mac_deployment_target):
   else:
     libxml2_lib = os.path.join(dirs.lib_dir, 'libxml2.a')
   extra_cmake_flags = [
-      '-DLLVM_ENABLE_LIBXML2=FORCE_ON',
-      '-DLIBXML2_INCLUDE_DIR=' + dirs.include_dir.replace('\\', '/'),
-      '-DLIBXML2_LIBRARIES=' + libxml2_lib.replace('\\', '/'),
-      '-DLIBXML2_LIBRARY=' + libxml2_lib.replace('\\', '/'),
-
-      # This hermetic libxml2 has enough features enabled for lld-link, but not
-      # for the libxml2 usage in libclang. We don't need libxml2 support in
-      # libclang, so just turn that off.
-      '-DCLANG_ENABLE_LIBXML2=NO',
+    '-DLLVM_ENABLE_LIBXML2=FORCE_ON',
+    '-DLIBXML2_INCLUDE_DIR=' + dirs.include_dir.replace('\\', '/'),
+    '-DLIBXML2_LIBRARIES=' + libxml2_lib.replace('\\', '/'),
+    '-DLIBXML2_LIBRARY=' + libxml2_lib.replace('\\', '/'),
+    # This hermetic libxml2 has enough features enabled for lld-link, but not
+    # for the libxml2 usage in libclang. We don't need libxml2 support in
+    # libclang, so just turn that off.
+    '-DCLANG_ENABLE_LIBXML2=NO',
   ]
   extra_cflags = ['-DLIBXML_STATIC']
 
@@ -488,6 +572,7 @@ class ZStdDirs:
   Includes the diractories where the source is unpacked, where it is built,
   and installed.
   """
+
   def __init__(self):
     self.unzip_dir = LLVM_BUILD_TOOLS_DIR
     # When unpacked in `unzip_dir`, this will be the directory where the
@@ -521,19 +606,21 @@ def BuildZStd(cc, cxx, cmake_sysroot, mac_deployment_target):
   os.chdir(dirs.build_dir)
 
   cmake_args = [
-          '-DCMAKE_C_COMPILER=' + cc,
-          '-DCMAKE_CXX_COMPILER=' + cxx,
-          '-DCMAKE_BUILD_TYPE=Release',
-          '-DCMAKE_INSTALL_PREFIX=install',
-          '-DCMAKE_INSTALL_LIBDIR=lib',
-          '-DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded',  # /MT to match LLVM.
-          '-DZSTD_BUILD_SHARED=OFF',
-      ]
+    '-DCMAKE_C_COMPILER=' + cc,
+    '-DCMAKE_CXX_COMPILER=' + cxx,
+    '-DCMAKE_BUILD_TYPE=Release',
+    '-DCMAKE_INSTALL_PREFIX=install',
+    '-DCMAKE_INSTALL_LIBDIR=lib',
+    '-DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded',  # /MT to match LLVM.
+    '-DZSTD_BUILD_SHARED=OFF',
+  ]
   if cmake_sysroot:
     cmake_args.append('-DCMAKE_SYSROOT=' + cmake_sysroot)
   if sys.platform == 'darwin':
     cmake_args.append('-DCMAKE_OSX_DEPLOYMENT_TARGET=' + mac_deployment_target)
-  RunCommand(['cmake', '-GNinja'] + cmake_args + ['../build/cmake'], setenv=True)
+  RunCommand(
+    ['cmake', '-GNinja'] + cmake_args + ['../build/cmake'], setenv=True
+  )
   RunCommand(['ninja', 'install'], setenv=True)
 
   if sys.platform == 'win32':
@@ -541,10 +628,10 @@ def BuildZStd(cc, cxx, cmake_sysroot, mac_deployment_target):
   else:
     zstd_lib = os.path.join(dirs.lib_dir, 'libzstd.a')
   extra_cmake_flags = [
-      '-DLLVM_ENABLE_ZSTD=ON',
-      '-DLLVM_USE_STATIC_ZSTD=ON',
-      '-Dzstd_INCLUDE_DIR=' + dirs.include_dir.replace('\\', '/'),
-      '-Dzstd_LIBRARY=' + zstd_lib.replace('\\', '/'),
+    '-DLLVM_ENABLE_ZSTD=ON',
+    '-DLLVM_USE_STATIC_ZSTD=ON',
+    '-Dzstd_INCLUDE_DIR=' + dirs.include_dir.replace('\\', '/'),
+    '-Dzstd_LIBRARY=' + zstd_lib.replace('\\', '/'),
   ]
   extra_cflags = []
 
@@ -553,8 +640,9 @@ def BuildZStd(cc, cxx, cmake_sysroot, mac_deployment_target):
 
 def DownloadPinnedClang():
   PINNED_CLANG_VERSION = 'llvmorg-21-init-5118-g52cd27e6-4'
-  DownloadAndUnpackPackage('clang', PINNED_CLANG_DIR, GetDefaultHostOs(),
-                           PINNED_CLANG_VERSION)
+  DownloadAndUnpackPackage(
+    'clang', PINNED_CLANG_DIR, GetDefaultHostOs(), PINNED_CLANG_VERSION
+  )
 
 
 def VerifyVersionOfBuiltClangMatchesVERSION():
@@ -564,13 +652,18 @@ def VerifyVersionOfBuiltClangMatchesVERSION():
   clang = os.path.join(LLVM_BUILD_DIR, 'bin', 'clang')
   if sys.platform == 'win32':
     clang += '-cl.exe'
-  version_out = subprocess.check_output([clang, '--version'],
-                                        universal_newlines=True)
+  version_out = subprocess.check_output(
+    [clang, '--version'], universal_newlines=True
+  )
   version_out = re.match(r'clang version ([0-9]+)', version_out).group(1)
   if version_out != RELEASE_VERSION:
-    print(('unexpected clang version %s (not %s), '
-           'update RELEASE_VERSION in update.py')
-          % (version_out, RELEASE_VERSION))
+    print(
+      (
+        'unexpected clang version %s (not %s), '
+        'update RELEASE_VERSION in update.py'
+      )
+      % (version_out, RELEASE_VERSION)
+    )
     sys.exit(1)
 
 
@@ -583,13 +676,22 @@ def VerifyZlibSupport():
     test_file = 'nul'
 
   print('Checking for zlib support')
-  clang_out = subprocess.check_output([
-      clang, '-target', 'x86_64-unknown-linux-gnu', '-gz', '-c', '-###', '-x',
-      'c', test_file
-  ],
-                                      stderr=subprocess.STDOUT,
-                                      universal_newlines=True)
-  if (re.search(r'--compress-debug-sections', clang_out)):
+  clang_out = subprocess.check_output(
+    [
+      clang,
+      '-target',
+      'x86_64-unknown-linux-gnu',
+      '-gz',
+      '-c',
+      '-###',
+      '-x',
+      'c',
+      test_file,
+    ],
+    stderr=subprocess.STDOUT,
+    universal_newlines=True,
+  )
+  if re.search(r'--compress-debug-sections', clang_out):
     print('OK')
   else:
     print(('Failed to detect zlib support!\n\n(driver output: %s)') % clang_out)
@@ -604,16 +706,20 @@ def VerifyZStdSupport():
   elif sys.platform == 'linux':
     lld = os.path.join(lld, 'ld.lld')
   else:
-    print('zstd support check cannot be performed on the unsupported ' \
-          'platform ' + sys.platform)
+    print(
+      'zstd support check cannot be performed on the unsupported '
+      'platform ' + sys.platform
+    )
     return
 
   print('Checking for zstd support')
-  lld_out = subprocess.run([lld, '--compress-debug-sections=zstd'],
-                           check=False,
-                           stdout=subprocess.PIPE,
-                           stderr=subprocess.STDOUT,
-                           universal_newlines=True).stdout
+  lld_out = subprocess.run(
+    [lld, '--compress-debug-sections=zstd'],
+    check=False,
+    stdout=subprocess.PIPE,
+    stderr=subprocess.STDOUT,
+    universal_newlines=True,
+  ).stdout
   if '--compress-debug-sections: zstd is not available' in lld_out:
     print(('Failed to detect zlib support!\n\n(driver output: %s)') % lld_out)
     sys.exit(1)
@@ -630,23 +736,25 @@ def DownloadDebianSysroot(platform_name, skip_download=False):
   # The sysroot was built at
   # https://chromium-review.googlesource.com/c/chromium/src/+/5506275/1
   # and the hashes here are from sysroots.json in that CL.
-  toolchain_bucket = 'https://commondatastorage.googleapis.com/chrome-linux-sysroot/'
+  toolchain_bucket = (
+    'https://commondatastorage.googleapis.com/chrome-linux-sysroot/'
+  )
 
   hashes = {
-      # hash from https://chromium-review.googlesource.com/c/chromium/src/+/5506275/1/build/linux/sysroot_scripts/sysroots.json#3
-      'amd64': 'dec7a3a0fc5b83b909cba1b6d119077e0429a138eadef6bf5a0f2e03b1904631',
-      # hash from https://chromium-review.googlesource.com/c/chromium/src/+/5506275/1/build/linux/sysroot_scripts/sysroots.json#21
-      'i386': 'b53933120bb08ffc38140a817e3f0f99782254a6bf9622271574fa004e8783a4',
-      # hash from https://chromium-review.googlesource.com/c/chromium/src/+/5506275/1/build/linux/sysroot_scripts/sysroots.json#15
-      'arm': 'fe81e7114b97440262bce004caf02c1514732e2fa7f99693b2836932ad1c4626',
-      # hash from https://chromium-review.googlesource.com/c/chromium/src/+/5506275/1/build/linux/sysroot_scripts/sysroots.json#21
-      'arm64': '308e23faba3174bd01accfe358467b8a40fad4db4c49ef629da30219f65a275f',
-      # hash from https://chromium-review.googlesource.com/c/chromium/src/+/6603953/1/build/linux/sysroot_scripts/sysroots.json#45
-      'riscv64': '6c924a8f88bb4731f3c2334c6ae5b5da47d5ca196ff571a91071f104dbacecad',
+    # hash from https://chromium-review.googlesource.com/c/chromium/src/+/5506275/1/build/linux/sysroot_scripts/sysroots.json#3
+    'amd64': 'dec7a3a0fc5b83b909cba1b6d119077e0429a138eadef6bf5a0f2e03b1904631',
+    # hash from https://chromium-review.googlesource.com/c/chromium/src/+/5506275/1/build/linux/sysroot_scripts/sysroots.json#21
+    'i386': 'b53933120bb08ffc38140a817e3f0f99782254a6bf9622271574fa004e8783a4',
+    # hash from https://chromium-review.googlesource.com/c/chromium/src/+/5506275/1/build/linux/sysroot_scripts/sysroots.json#15
+    'arm': 'fe81e7114b97440262bce004caf02c1514732e2fa7f99693b2836932ad1c4626',
+    # hash from https://chromium-review.googlesource.com/c/chromium/src/+/5506275/1/build/linux/sysroot_scripts/sysroots.json#21
+    'arm64': '308e23faba3174bd01accfe358467b8a40fad4db4c49ef629da30219f65a275f',
+    # hash from https://chromium-review.googlesource.com/c/chromium/src/+/6603953/1/build/linux/sysroot_scripts/sysroots.json#45
+    'riscv64': '6c924a8f88bb4731f3c2334c6ae5b5da47d5ca196ff571a91071f104dbacecad',
   }
 
   releases = {
-      'riscv64': 'trixie',
+    'riscv64': 'trixie',
   }
 
   release = releases.get(platform_name, 'bullseye')
@@ -669,23 +777,23 @@ def compiler_rt_cmake_flags(*, sanitizers, profile):
   # Don't set -DCOMPILER_RT_BUILD_BUILTINS=ON/OFF as it interferes with the
   # runtimes logic of building builtins.
   args = [
-      # Build crtbegin/crtend. It's just two tiny TUs, so just enable this
-      # everywhere, even though we only need it on Linux.
-      'COMPILER_RT_BUILD_CRT=ON',
-      'COMPILER_RT_BUILD_LIBFUZZER=OFF',
-      # Turn off ctx_profile because it depends on the sanitizer libraries,
-      # which we don't always build.
-      'COMPILER_RT_BUILD_CTX_PROFILE=OFF',
-      'COMPILER_RT_BUILD_MEMPROF=OFF',
-      'COMPILER_RT_BUILD_ORC=OFF',
-      'COMPILER_RT_BUILD_PROFILE=' + ('ON' if profile else 'OFF'),
-      'COMPILER_RT_BUILD_SANITIZERS=' + ('ON' if sanitizers else 'OFF'),
-      'COMPILER_RT_BUILD_XRAY=OFF',
-      # See crbug.com/1205046: don't build scudo (and others we don't need).
-      'COMPILER_RT_SANITIZERS_TO_BUILD=asan;dfsan;msan;hwasan;tsan;cfi',
-      # We explicitly list all targets we want to build, do not autodetect
-      # targets.
-      'COMPILER_RT_DEFAULT_TARGET_ONLY=ON',
+    # Build crtbegin/crtend. It's just two tiny TUs, so just enable this
+    # everywhere, even though we only need it on Linux.
+    'COMPILER_RT_BUILD_CRT=ON',
+    'COMPILER_RT_BUILD_LIBFUZZER=OFF',
+    # Turn off ctx_profile because it depends on the sanitizer libraries,
+    # which we don't always build.
+    'COMPILER_RT_BUILD_CTX_PROFILE=OFF',
+    'COMPILER_RT_BUILD_MEMPROF=OFF',
+    'COMPILER_RT_BUILD_ORC=OFF',
+    'COMPILER_RT_BUILD_PROFILE=' + ('ON' if profile else 'OFF'),
+    'COMPILER_RT_BUILD_SANITIZERS=' + ('ON' if sanitizers else 'OFF'),
+    'COMPILER_RT_BUILD_XRAY=OFF',
+    # See crbug.com/1205046: don't build scudo (and others we don't need).
+    'COMPILER_RT_SANITIZERS_TO_BUILD=asan;dfsan;msan;hwasan;tsan;cfi',
+    # We explicitly list all targets we want to build, do not autodetect
+    # targets.
+    'COMPILER_RT_DEFAULT_TARGET_ONLY=ON',
   ]
   return args
 
@@ -695,8 +803,9 @@ def gn_arg(v):
     return True
   if v == 'False':
     return False
-  raise argparse.ArgumentTypeError('Expected one of %r or %r' % (
-      'True', 'False'))
+  raise argparse.ArgumentTypeError(
+    'Expected one of %r or %r' % ('True', 'False')
+  )
 
 
 class Timer:
@@ -722,108 +831,164 @@ class Timer:
     if not self.times:
       return
     longest_phase = max(len(phase) for (phase, elapsed) in self.times)
-    longest_elapsed = max(len(str(int(elapsed))) for (phase, elapsed) in self.times)
+    longest_elapsed = max(
+      len(str(int(elapsed))) for (phase, elapsed) in self.times
+    )
     print('-- timers --')
-    for (phase, elapsed) in self.times:
-      print('{}: {:{}.1f}'.format(phase.rjust(longest_phase), elapsed, longest_elapsed + 2))
+    for phase, elapsed in self.times:
+      print(
+        '{}: {:{}.1f}'.format(
+          phase.rjust(longest_phase), elapsed, longest_elapsed + 2
+        )
+      )
+
 
 def main():
   timer = Timer()
   atexit.register(Timer.dump, timer)
 
   parser = argparse.ArgumentParser(description='Build Clang.')
-  parser.add_argument('--bootstrap',
-                      action='store_true',
-                      help='first build clang with CC, then with itself.')
-  parser.add_argument('--disable-asserts', action='store_true',
-                      help='build with asserts disabled')
-  parser.add_argument('--host-cc',
-                      help='build with host C compiler, requires --host-cxx as '
-                      'well')
-  parser.add_argument('--host-cxx',
-                      help='build with host C++ compiler, requires --host-cc '
-                      'as well')
-  parser.add_argument('--pgo', action='store_true', help='build with PGO')
-  parser.add_argument('--thinlto',
-                      action='store_true',
-                      help='build with ThinLTO')
-  parser.add_argument('--bolt', action='store_true', help='build with BOLT')
-  parser.add_argument('--llvm-force-head-revision', action='store_true',
-                      help='build the latest revision')
-  parser.add_argument('--run-tests', action='store_true',
-                      help='run tests after building')
-  parser.add_argument('--skip-build', action='store_true',
-                      help='do not build anything')
-  parser.add_argument('--skip-checkout', action='store_true',
-                      help='do not create or update any checkouts')
-  parser.add_argument('--build-dir',
-                      help='Override build directory')
-  parser.add_argument('--install-dir',
-                      help='override the install directory for the final '
-                      'compiler. If not specified, no install happens for '
-                      'the compiler.')
-  parser.add_argument('--no-tools',
-                      action='store_true',
-                      help='don\'t build any chromium tools or '
-                      'clang-extra-tools. Overrides --extra-tools.')
-  parser.add_argument('--extra-tools', nargs='*', default=[],
-                      help='select additional chrome tools to build')
-  parser.add_argument('--no-runtimes',
-                      action='store_true',
-                      help='don\'t build compiler-rt, sanitizer and profile '
-                      'runtimes. This is incompatible with --pgo. On Mac, '
-                      'compiler-rt is always built regardless.')
-  parser.add_argument('--use-system-cmake',
-                      action='store_true',
-                      help='use the cmake from PATH instead of downloading '
-                      'and using prebuilt cmake binaries')
-  parser.add_argument('--tf-path',
-                      help='path to python tensorflow pip package. '
-                      'Used for embedding an MLGO model')
   parser.add_argument(
-      '--with-ml-inliner-model',
-      help='path to MLGO inliner model to embed. Setting to '
-      '\'default\', will download an official model which was '
-      'trained for Chrome on Android',
-      default='default' if sys.platform.startswith('linux') else '')
-  parser.add_argument('--with-android', type=gn_arg, nargs='?', const=True,
-                      help='build the Android ASan runtime (linux only)',
-                      default=sys.platform.startswith('linux'))
-  parser.add_argument('--pic',
-                      action='store_true',
-                      help='Uses PIC when building LLVM')
-  parser.add_argument('--with-fuchsia',
-                      type=gn_arg,
-                      nargs='?',
-                      const=True,
-                      help='build the Fuchsia runtimes (linux only)',
-                      default=sys.platform.startswith('linux'))
-  parser.add_argument('--without-android', action='store_false',
-                      help='don\'t build Android ASan runtime (linux only)',
-                      dest='with_android')
-  parser.add_argument('--without-fuchsia', action='store_false',
-                      help='don\'t build Fuchsia clang_rt runtime (linux/mac)',
-                      dest='with_fuchsia',
-                      default=sys.platform in ('linux2', 'darwin'))
-  parser.add_argument('--with-compiler-wrapper',
-                      metavar='WRAPPER',
-                      help='Use a compiler wrapper (like ccache) to build the '
-                      'stage 1 compiler')
-  parser.add_argument('--without-zstd',
-                      dest='with_zstd',
-                      action='store_false',
-                      help='Disable zstd in the build')
-  parser.add_argument('--preserve-gcs-signature',
-                      action='store_true',
-                      help='By default, this script removes gcs hash files '
-                      'so that third_party/llvm-build is clobbered on the next'
-                      'run of gclient sync. This disables that, so that the'
-                      'directory will be preserved when syncing. Useful for'
-                      'local development.')
+    '--bootstrap',
+    action='store_true',
+    help='first build clang with CC, then with itself.',
+  )
+  parser.add_argument(
+    '--disable-asserts', action='store_true', help='build with asserts disabled'
+  )
+  parser.add_argument(
+    '--host-cc', help='build with host C compiler, requires --host-cxx as well'
+  )
+  parser.add_argument(
+    '--host-cxx',
+    help='build with host C++ compiler, requires --host-cc as well',
+  )
+  parser.add_argument('--pgo', action='store_true', help='build with PGO')
+  parser.add_argument(
+    '--thinlto', action='store_true', help='build with ThinLTO'
+  )
+  parser.add_argument('--bolt', action='store_true', help='build with BOLT')
+  parser.add_argument(
+    '--llvm-force-head-revision',
+    action='store_true',
+    help='build the latest revision',
+  )
+  parser.add_argument(
+    '--run-tests', action='store_true', help='run tests after building'
+  )
+  parser.add_argument(
+    '--skip-build', action='store_true', help='do not build anything'
+  )
+  parser.add_argument(
+    '--skip-checkout',
+    action='store_true',
+    help='do not create or update any checkouts',
+  )
+  parser.add_argument('--build-dir', help='Override build directory')
+  parser.add_argument(
+    '--install-dir',
+    help='override the install directory for the final '
+    'compiler. If not specified, no install happens for '
+    'the compiler.',
+  )
+  parser.add_argument(
+    '--no-tools',
+    action='store_true',
+    help='don\'t build any chromium tools or '
+    'clang-extra-tools. Overrides --extra-tools.',
+  )
+  parser.add_argument(
+    '--extra-tools',
+    nargs='*',
+    default=[],
+    help='select additional chrome tools to build',
+  )
+  parser.add_argument(
+    '--no-runtimes',
+    action='store_true',
+    help='don\'t build compiler-rt, sanitizer and profile '
+    'runtimes. This is incompatible with --pgo. On Mac, '
+    'compiler-rt is always built regardless.',
+  )
+  parser.add_argument(
+    '--use-system-cmake',
+    action='store_true',
+    help='use the cmake from PATH instead of downloading '
+    'and using prebuilt cmake binaries',
+  )
+  parser.add_argument(
+    '--tf-path',
+    help='path to python tensorflow pip package. '
+    'Used for embedding an MLGO model',
+  )
+  parser.add_argument(
+    '--with-ml-inliner-model',
+    help='path to MLGO inliner model to embed. Setting to '
+    '\'default\', will download an official model which was '
+    'trained for Chrome on Android',
+    default='default' if sys.platform.startswith('linux') else '',
+  )
+  parser.add_argument(
+    '--with-android',
+    type=gn_arg,
+    nargs='?',
+    const=True,
+    help='build the Android ASan runtime (linux only)',
+    default=sys.platform.startswith('linux'),
+  )
+  parser.add_argument(
+    '--pic', action='store_true', help='Uses PIC when building LLVM'
+  )
+  parser.add_argument(
+    '--with-fuchsia',
+    type=gn_arg,
+    nargs='?',
+    const=True,
+    help='build the Fuchsia runtimes (linux only)',
+    default=sys.platform.startswith('linux'),
+  )
+  parser.add_argument(
+    '--without-android',
+    action='store_false',
+    help='don\'t build Android ASan runtime (linux only)',
+    dest='with_android',
+  )
+  parser.add_argument(
+    '--without-fuchsia',
+    action='store_false',
+    help='don\'t build Fuchsia clang_rt runtime (linux/mac)',
+    dest='with_fuchsia',
+    default=sys.platform in ('linux2', 'darwin'),
+  )
+  parser.add_argument(
+    '--with-compiler-wrapper',
+    metavar='WRAPPER',
+    help='Use a compiler wrapper (like ccache) to build the stage 1 compiler',
+  )
+  parser.add_argument(
+    '--without-zstd',
+    dest='with_zstd',
+    action='store_false',
+    help='Disable zstd in the build',
+  )
+  parser.add_argument(
+    '--preserve-gcs-signature',
+    action='store_true',
+    help='By default, this script removes gcs hash files '
+    'so that third_party/llvm-build is clobbered on the next'
+    'run of gclient sync. This disables that, so that the'
+    'directory will be preserved when syncing. Useful for'
+    'local development.',
+  )
 
   args = parser.parse_args()
 
-  global CLANG_REVISION, PACKAGE_VERSION, LLVM_BUILD_DIR, STAMP_FILE, FORCE_HEAD_REVISION_FILE
+  global \
+    CLANG_REVISION, \
+    PACKAGE_VERSION, \
+    LLVM_BUILD_DIR, \
+    STAMP_FILE, \
+    FORCE_HEAD_REVISION_FILE
 
   # TODO(crbug.com/534655507): Remove in next Clang roll.
   if args.llvm_force_head_revision:
@@ -837,7 +1002,9 @@ def main():
     print('Android NDK not found at ' + ANDROID_NDK_DIR)
     print('The Android NDK is needed to build a Clang whose -fsanitize=address')
     print('works on Android. See ')
-    print('https://www.chromium.org/developers/how-tos/android-build-instructions')
+    print(
+      'https://www.chromium.org/developers/how-tos/android-build-instructions'
+    )
     print('for how to install the NDK, or pass --without-android.')
     return 1
   if args.no_runtimes and args.pgo:
@@ -851,7 +1018,7 @@ def main():
     print('target_os section in your .gclient and running hooks, ')
     print('or pass --without-fuchsia.')
     print(
-        'https://chromium.googlesource.com/chromium/src/+/main/docs/fuchsia/build_instructions.md'
+      'https://chromium.googlesource.com/chromium/src/+/main/docs/fuchsia/build_instructions.md'
     )
     print('for general Fuchsia build instructions.')
     return 1
@@ -867,11 +1034,11 @@ def main():
   if major == 3:
     # Python3 only allows unbuffered output for binary streams. This
     # workaround comes from https://stackoverflow.com/a/181654/4052492.
-    sys.stdout = io.TextIOWrapper(open(sys.stdout.fileno(), 'wb', 0),
-                                  write_through=True)
+    sys.stdout = io.TextIOWrapper(
+      open(sys.stdout.fileno(), 'wb', 0), write_through=True
+    )
   else:
     sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
-
 
   if args.build_dir:
     args.build_dir = os.path.abspath(args.build_dir)
@@ -881,7 +1048,8 @@ def main():
     # build directory, make sure they appear there instead of the default one.
     STAMP_FILE = os.path.normpath(os.path.join(LLVM_BUILD_DIR, STAMP_FILENAME))
     FORCE_HEAD_REVISION_FILE = os.path.normpath(
-        os.path.join(LLVM_BUILD_DIR, "..", FORCE_HEAD_REVISION_FILENAME))
+      os.path.join(LLVM_BUILD_DIR, "..", FORCE_HEAD_REVISION_FILENAME)
+    )
 
   if args.llvm_force_head_revision:
     checkout_revision = GetLatestLLVMCommit()
@@ -890,7 +1058,9 @@ def main():
 
   if not args.skip_checkout:
     with timer.time('checkout llvm'):
-      CheckoutGitRepo('LLVM monorepo', LLVM_GIT_URL, checkout_revision, LLVM_DIR)
+      CheckoutGitRepo(
+        'LLVM monorepo', LLVM_GIT_URL, checkout_revision, LLVM_DIR
+      )
       # TODO(crbug.com/461828767): remove once we roll past this revision
       GitCherryPick(LLVM_DIR, '10e97641f53a6eba5ad9430dc25f1ad6e5e8abed')
 
@@ -899,12 +1069,14 @@ def main():
     PACKAGE_VERSION = '%s-0' % CLANG_REVISION
 
   print('Locally building clang %s...' % PACKAGE_VERSION)
-  WriteStampFile('',
-                 STAMP_FILE,
-                 preserve_hash_files=args.preserve_gcs_signature)
-  WriteStampFile('',
-                 FORCE_HEAD_REVISION_FILE,
-                 preserve_hash_files=args.preserve_gcs_signature)
+  WriteStampFile(
+    '', STAMP_FILE, preserve_hash_files=args.preserve_gcs_signature
+  )
+  WriteStampFile(
+    '',
+    FORCE_HEAD_REVISION_FILE,
+    preserve_hash_files=args.preserve_gcs_signature,
+  )
 
   if not args.use_system_cmake:
     AddCMakeToPath()
@@ -955,57 +1127,61 @@ def main():
   pic_mode = 'ON' if args.pic or pic_default else 'OFF'
 
   base_cmake_args = [
-      '-GNinja',
-      '-DCMAKE_BUILD_TYPE=Release',
-      '-DLLVM_ENABLE_ASSERTIONS=%s' % ('OFF' if args.disable_asserts else 'ON'),
-      '-DLLVM_ENABLE_IO_SANDBOX=OFF',
-      f'-DLLVM_ENABLE_PROJECTS={projects}',
-      f'-DLLVM_ENABLE_RUNTIMES={runtimes}',
-      f'-DLLVM_TARGETS_TO_BUILD={targets}',
-      f'-DLLVM_ENABLE_PIC={pic_mode}',
-      '-DLLVM_ENABLE_Z3_SOLVER=OFF',
-      '-DCLANG_PLUGIN_SUPPORT=OFF',
-      '-DCLANG_ENABLE_STATIC_ANALYZER=OFF',
-      '-DCLANG_ENABLE_ARCMT=OFF',
-      '-DBUG_REPORT_URL=' + BUG_REPORT_URL,
-      # See crbug.com/1126219: Use native symbolizer instead of DIA
-      '-DLLVM_ENABLE_DIA_SDK=OFF',
-      # Link all binaries with lld. Effectively passes -fuse-ld=lld to the
-      # compiler driver. On Windows, cmake calls the linker directly, so there
-      # the same is achieved by passing -DCMAKE_LINKER=$lld below.
-      '-DLLVM_ENABLE_LLD=ON',
-      # The default value differs per platform, force it off everywhere.
-      '-DLLVM_ENABLE_PER_TARGET_RUNTIME_DIR=OFF',
-      # Don't use curl.
-      '-DLLVM_ENABLE_CURL=OFF',
-      # Build libclang.a as well as libclang.so
-      '-DLIBCLANG_BUILD_STATIC=ON',
-      # The Rust build (on Mac ARM at least if not others) depends on the
-      # FileCheck tool which is built but not installed by default, this
-      # puts it in the path for the Rust build to find and matches the
-      # `bootstrap` tool:
-      # https://github.com/rust-lang/rust/blob/021861aea8de20c76c7411eb8ada7e8235e3d9b5/src/bootstrap/src/core/build_steps/llvm.rs#L348
-      '-DLLVM_INSTALL_UTILS=ON',
-      '-DLLVM_ENABLE_ZSTD=%s' % ('ON' if args.with_zstd else 'OFF'),
+    '-GNinja',
+    '-DCMAKE_BUILD_TYPE=Release',
+    '-DLLVM_ENABLE_ASSERTIONS=%s' % ('OFF' if args.disable_asserts else 'ON'),
+    '-DLLVM_ENABLE_IO_SANDBOX=OFF',
+    f'-DLLVM_ENABLE_PROJECTS={projects}',
+    f'-DLLVM_ENABLE_RUNTIMES={runtimes}',
+    f'-DLLVM_TARGETS_TO_BUILD={targets}',
+    f'-DLLVM_ENABLE_PIC={pic_mode}',
+    '-DLLVM_ENABLE_Z3_SOLVER=OFF',
+    '-DCLANG_PLUGIN_SUPPORT=OFF',
+    '-DCLANG_ENABLE_STATIC_ANALYZER=OFF',
+    '-DCLANG_ENABLE_ARCMT=OFF',
+    '-DBUG_REPORT_URL=' + BUG_REPORT_URL,
+    # See crbug.com/1126219: Use native symbolizer instead of DIA
+    '-DLLVM_ENABLE_DIA_SDK=OFF',
+    # Link all binaries with lld. Effectively passes -fuse-ld=lld to the
+    # compiler driver. On Windows, cmake calls the linker directly, so there
+    # the same is achieved by passing -DCMAKE_LINKER=$lld below.
+    '-DLLVM_ENABLE_LLD=ON',
+    # The default value differs per platform, force it off everywhere.
+    '-DLLVM_ENABLE_PER_TARGET_RUNTIME_DIR=OFF',
+    # Don't use curl.
+    '-DLLVM_ENABLE_CURL=OFF',
+    # Build libclang.a as well as libclang.so
+    '-DLIBCLANG_BUILD_STATIC=ON',
+    # The Rust build (on Mac ARM at least if not others) depends on the
+    # FileCheck tool which is built but not installed by default, this
+    # puts it in the path for the Rust build to find and matches the
+    # `bootstrap` tool:
+    # https://github.com/rust-lang/rust/blob/021861aea8de20c76c7411eb8ada7e8235e3d9b5/src/bootstrap/src/core/build_steps/llvm.rs#L348
+    '-DLLVM_INSTALL_UTILS=ON',
+    '-DLLVM_ENABLE_ZSTD=%s' % ('ON' if args.with_zstd else 'OFF'),
   ]
 
   if sys.platform == 'darwin':
-    isysroot = subprocess.check_output(['xcrun', '--show-sdk-path'],
-                                       universal_newlines=True).rstrip()
+    isysroot = subprocess.check_output(
+      ['xcrun', '--show-sdk-path'], universal_newlines=True
+    ).rstrip()
     # TODO(crbug.com/522267458): Remove this when class stub is implemented for lld.
     base_cmake_args.append('-DHOST_LINK_VERSION=1249')
   base_cmake_args += ['-DLLVM_ENABLE_UNWIND_TABLES=OFF']
 
   compiler_wrapper_cmake_args = []
   if args.with_compiler_wrapper:
-    compiler_wrapper_cmake_args.append('-DCMAKE_C_COMPILER_LAUNCHER=' +
-                                       args.with_compiler_wrapper)
-    compiler_wrapper_cmake_args.append('-DCMAKE_CXX_COMPILER_LAUNCHER=' +
-                                       args.with_compiler_wrapper)
+    compiler_wrapper_cmake_args.append(
+      '-DCMAKE_C_COMPILER_LAUNCHER=' + args.with_compiler_wrapper
+    )
+    compiler_wrapper_cmake_args.append(
+      '-DCMAKE_CXX_COMPILER_LAUNCHER=' + args.with_compiler_wrapper
+    )
 
   if args.host_cc or args.host_cxx:
-    assert args.host_cc and args.host_cxx, \
-           "--host-cc and --host-cxx need to be used together"
+    assert args.host_cc and args.host_cxx, (
+      "--host-cc and --host-cxx need to be used together"
+    )
     cc = args.host_cc
     cxx = args.host_cxx
   else:
@@ -1025,7 +1201,7 @@ def main():
       cxx = os.path.join(PINNED_CLANG_DIR, 'bin', 'clang++')
 
     if sys.platform.startswith('linux'):
-      base_cmake_args += [ '-DLLVM_STATIC_LINK_CXX_STDLIB=ON' ]
+      base_cmake_args += ['-DLLVM_STATIC_LINK_CXX_STDLIB=ON']
 
   if sys.platform.startswith('linux'):
     # Add the sysroot to base_cmake_args.
@@ -1051,8 +1227,10 @@ def main():
     base_cmake_args.append('-DLLVM_ENABLE_RPMALLOC=ON')
 
     # Set a sysroot to make the build more hermetic.
-    base_cmake_args.append('-DLLVM_WINSYSROOT="%s"' %
-                           os.path.dirname(os.path.dirname(GetWinSDKDir())))
+    base_cmake_args.append(
+      '-DLLVM_WINSYSROOT="%s"'
+      % os.path.dirname(os.path.dirname(GetWinSDKDir()))
+    )
 
   deployment_target = DEFAULT_MACOSX_DEPLOYMENT_TARGET
 
@@ -1060,8 +1238,9 @@ def main():
   # and to make sure lld-link output on other platforms is identical to
   # lld-link on Windows (for cross-builds).
   with timer.time('libxml2 build'):
-    libxml_cmake_args, libxml_cflags = BuildLibXml2(cc, cxx, cmake_sysroot,
-                                                    deployment_target)
+    libxml_cmake_args, libxml_cflags = BuildLibXml2(
+      cc, cxx, cmake_sysroot, deployment_target
+    )
   base_cmake_args += libxml_cmake_args
   cflags += libxml_cflags
   cxxflags += libxml_cflags
@@ -1069,8 +1248,9 @@ def main():
   if args.with_zstd:
     # Statically link zstd to make lld support zstd compression for debug info.
     with timer.time('zstd build'):
-      zstd_cmake_args, zstd_cflags = BuildZStd(cc, cxx, cmake_sysroot,
-                                               deployment_target)
+      zstd_cmake_args, zstd_cflags = BuildZStd(
+        cc, cxx, cmake_sysroot, deployment_target
+      )
     base_cmake_args += zstd_cmake_args
     cflags += zstd_cflags
     cxxflags += zstd_cflags
@@ -1078,36 +1258,36 @@ def main():
   lit_excludes = []
   if sys.platform.startswith('linux'):
     lit_excludes += [
-        # fstat and sunrpc tests fail due to sysroot/host mismatches
-        # (crbug.com/1459187).
-        '^MemorySanitizer-.* f?stat(at)?(64)?.cpp$',
-        '^.*Sanitizer-.*sunrpc.*cpp$',
-        # sysroot/host glibc version mismatch, crbug.com/1506551
-        '^.*Sanitizer.*mallinfo2.cpp$',
+      # fstat and sunrpc tests fail due to sysroot/host mismatches
+      # (crbug.com/1459187).
+      '^MemorySanitizer-.* f?stat(at)?(64)?.cpp$',
+      '^.*Sanitizer-.*sunrpc.*cpp$',
+      # sysroot/host glibc version mismatch, crbug.com/1506551
+      '^.*Sanitizer.*mallinfo2.cpp$',
     ]
   elif sys.platform == 'darwin':
     lit_excludes += [
-        # Fails with a recent ld, crbug.com/332589870
-        '^.*instrprof-darwin-exports.c$',
+      # Fails with a recent ld, crbug.com/332589870
+      '^.*instrprof-darwin-exports.c$',
     ]
     if platform.machine() == 'arm64':
       lit_excludes += [
-          # TODO(https://crbug.com/40270881): fix and re-enable
-          '^.*AddressSanitizer-arm64-darwin.*$',
-          '^.*SanitizerCommon-lsan-arm64-Darwin.*$',
-          '^.*SanitizerCommon-ubsan-arm64-Darwin.*Posix/dedup_token_length_test.cpp$',
+        # TODO(https://crbug.com/40270881): fix and re-enable
+        '^.*AddressSanitizer-arm64-darwin.*$',
+        '^.*SanitizerCommon-lsan-arm64-Darwin.*$',
+        '^.*SanitizerCommon-ubsan-arm64-Darwin.*Posix/dedup_token_length_test.cpp$',
       ]
   elif sys.platform == 'win32':
     lit_excludes += [
-        # TODO(https://crbug.com/404547503): fix and re-enable
-        '^.*Profile-x86_64.*ContinuousSyncMode/online-merging-windows.c$',
+      # TODO(https://crbug.com/404547503): fix and re-enable
+      '^.*Profile-x86_64.*ContinuousSyncMode/online-merging-windows.c$',
     ]
   if not sys.platform.startswith('linux'):
     lit_excludes += [
-        # TODO(https://crbug.com/474402846): fix and re-enable
-        '^Builtins-.*ctor_dtor.c$',
-        '^Builtins-.*dso_handle.cpp$',
-        '^Builtins-i386-windows.*$',
+      # TODO(https://crbug.com/474402846): fix and re-enable
+      '^Builtins-.*ctor_dtor.c$',
+      '^Builtins-.*dso_handle.cpp$',
+      '^Builtins-i386-windows.*$',
     ]
 
   test_env = os.environ.copy()
@@ -1117,7 +1297,9 @@ def main():
   if lit_excludes:
     test_env['LIT_FILTER_OUT'] = '|'.join(lit_excludes)
 
-  crash_diagnostics_dir = os.path.join(CHROMIUM_DIR, 'out', 'clang-crashreports')
+  crash_diagnostics_dir = os.path.join(
+    CHROMIUM_DIR, 'out', 'clang-crashreports'
+  )
   cflags.append('-fcrash-diagnostics-dir=' + crash_diagnostics_dir)
   cxxflags.append('-fcrash-diagnostics-dir=' + crash_diagnostics_dir)
 
@@ -1141,7 +1323,10 @@ def main():
     if sys.platform == 'darwin':
       # Need ARM and AArch64 for building the ios clang_rt.
       bootstrap_targets += ';ARM;AArch64'
-    bootstrap_args = base_cmake_args + compiler_wrapper_cmake_args + [
+    bootstrap_args = (
+      base_cmake_args
+      + compiler_wrapper_cmake_args
+      + [
         '-DLLVM_TARGETS_TO_BUILD=' + bootstrap_targets,
         '-DLLVM_ENABLE_PROJECTS=clang;lld',
         '-DLLVM_ENABLE_RUNTIMES=' + ';'.join(runtimes),
@@ -1153,34 +1338,45 @@ def main():
         '-DCMAKE_MODULE_LINKER_FLAGS=' + ' '.join(ldflags),
         # Ignore args.disable_asserts for the bootstrap compiler.
         '-DLLVM_ENABLE_ASSERTIONS=ON',
-    ]
+      ]
+    )
     # PGO needs libclang_rt.profile but none of the other compiler-rt stuff.
-    bootstrap_args.extend([
+    bootstrap_args.extend(
+      [
         '-D' + f
         for f in compiler_rt_cmake_flags(sanitizers=False, profile=args.pgo)
-    ])
+      ]
+    )
     if sys.platform == 'darwin':
-      bootstrap_args.extend([
+      bootstrap_args.extend(
+        [
           '-DCOMPILER_RT_ENABLE_IOS=OFF',
           '-DCOMPILER_RT_ENABLE_WATCHOS=OFF',
           '-DCOMPILER_RT_ENABLE_TVOS=OFF',
-          ])
+        ]
+      )
       if platform.machine() == 'arm64':
         bootstrap_args.extend(['-DDARWIN_osx_ARCHS=arm64'])
       else:
         bootstrap_args.extend(['-DDARWIN_osx_ARCHS=x86_64'])
 
-    if cc is not None:  bootstrap_args.append('-DCMAKE_C_COMPILER=' + cc)
-    if cxx is not None: bootstrap_args.append('-DCMAKE_CXX_COMPILER=' + cxx)
-    if lld is not None: bootstrap_args.append('-DCMAKE_LINKER=' + lld)
+    if cc is not None:
+      bootstrap_args.append('-DCMAKE_C_COMPILER=' + cc)
+    if cxx is not None:
+      bootstrap_args.append('-DCMAKE_CXX_COMPILER=' + cxx)
+    if lld is not None:
+      bootstrap_args.append('-DCMAKE_LINKER=' + lld)
     with timer.time('bootstrap cmake'):
-      RunCommand(['cmake'] + bootstrap_args + [os.path.join(LLVM_DIR, 'llvm')],
-                 setenv=True)
+      RunCommand(
+        ['cmake'] + bootstrap_args + [os.path.join(LLVM_DIR, 'llvm')],
+        setenv=True,
+      )
     with timer.time('bootstrap build'):
       RunCommand(['ninja'], setenv=True)
     # x86 mac toolchain builds are super slow, skip bootstrap tests
-    if args.run_tests and not (platform.machine() == 'x86_64'
-                               and sys.platform == 'darwin'):
+    if args.run_tests and not (
+      platform.machine() == 'x86_64' and sys.platform == 'darwin'
+    ):
       with timer.time('bootstrap check-all'):
         RunCommand(['ninja', 'check-all'], env=test_env, setenv=True)
     with timer.time('bootstrap install'):
@@ -1199,7 +1395,9 @@ def main():
       cc = os.path.join(LLVM_BOOTSTRAP_INSTALL_DIR, 'bin', 'clang')
       cxx = os.path.join(LLVM_BOOTSTRAP_INSTALL_DIR, 'bin', 'clang++')
       if sys.platform == 'darwin':
-        libtool = os.path.join(LLVM_BOOTSTRAP_INSTALL_DIR, 'bin', 'llvm-libtool-darwin')
+        libtool = os.path.join(
+          LLVM_BOOTSTRAP_INSTALL_DIR, 'bin', 'llvm-libtool-darwin'
+        )
 
     print('Bootstrap compiler installed.')
 
@@ -1216,24 +1414,30 @@ def main():
     cxxflags += ['-Wno-backend-plugin']
 
     instrument_args = base_cmake_args + [
-        '-DLLVM_ENABLE_PROJECTS=clang',
-        '-DCMAKE_C_FLAGS=' + ' '.join(cflags),
-        '-DCMAKE_CXX_FLAGS=' + ' '.join(cxxflags),
-        '-DCMAKE_EXE_LINKER_FLAGS=' + ' '.join(ldflags),
-        '-DCMAKE_SHARED_LINKER_FLAGS=' + ' '.join(ldflags),
-        '-DCMAKE_MODULE_LINKER_FLAGS=' + ' '.join(ldflags),
-        # Build with instrumentation.
-        '-DLLVM_BUILD_INSTRUMENTED=IR',
+      '-DLLVM_ENABLE_PROJECTS=clang',
+      '-DCMAKE_C_FLAGS=' + ' '.join(cflags),
+      '-DCMAKE_CXX_FLAGS=' + ' '.join(cxxflags),
+      '-DCMAKE_EXE_LINKER_FLAGS=' + ' '.join(ldflags),
+      '-DCMAKE_SHARED_LINKER_FLAGS=' + ' '.join(ldflags),
+      '-DCMAKE_MODULE_LINKER_FLAGS=' + ' '.join(ldflags),
+      # Build with instrumentation.
+      '-DLLVM_BUILD_INSTRUMENTED=IR',
     ]
     # Build with the bootstrap compiler.
-    if cc is not None:  instrument_args.append('-DCMAKE_C_COMPILER=' + cc)
-    if cxx is not None: instrument_args.append('-DCMAKE_CXX_COMPILER=' + cxx)
-    if lld is not None: instrument_args.append('-DCMAKE_LINKER=' + lld)
-    if libtool is not None: instrument_args.append('-DCMAKE_LIBTOOL=' + libtool)
+    if cc is not None:
+      instrument_args.append('-DCMAKE_C_COMPILER=' + cc)
+    if cxx is not None:
+      instrument_args.append('-DCMAKE_CXX_COMPILER=' + cxx)
+    if lld is not None:
+      instrument_args.append('-DCMAKE_LINKER=' + lld)
+    if libtool is not None:
+      instrument_args.append('-DCMAKE_LIBTOOL=' + libtool)
 
     with timer.time('pgo cmake'):
-      RunCommand(['cmake'] + instrument_args + [os.path.join(LLVM_DIR, 'llvm')],
-                 setenv=True)
+      RunCommand(
+        ['cmake'] + instrument_args + [os.path.join(LLVM_DIR, 'llvm')],
+        setenv=True,
+      )
     with timer.time('pgo build'):
       RunCommand(['ninja', 'clang'], setenv=True)
     print('Instrumented compiler built.')
@@ -1264,19 +1468,34 @@ def main():
       training_source = 'pgo_training-3.ii'
       with open(training_source, 'wb') as f:
         DownloadUrl(CDS_URL + '/' + training_source, f)
-      train_cmd = [os.path.join(LLVM_INSTRUMENTED_DIR, 'bin', 'clang++'),
-                  '-target', 'x86_64-unknown-unknown', '-O2', '-g', '-std=c++23',
-                   '-fno-exceptions', '-fno-rtti', '-w', '-c', training_source]
+      train_cmd = [
+        os.path.join(LLVM_INSTRUMENTED_DIR, 'bin', 'clang++'),
+        '-target',
+        'x86_64-unknown-unknown',
+        '-O2',
+        '-g',
+        '-std=c++23',
+        '-fno-exceptions',
+        '-fno-rtti',
+        '-w',
+        '-c',
+        training_source,
+      ]
       if sys.platform == 'darwin':
         train_cmd.extend(['-isysroot', isysroot])
       RunCommand(train_cmd, setenv=True)
 
       # Merge profiles.
-      profdata = os.path.join(LLVM_BOOTSTRAP_INSTALL_DIR, 'bin', 'llvm-profdata')
+      profdata = os.path.join(
+        LLVM_BOOTSTRAP_INSTALL_DIR, 'bin', 'llvm-profdata'
+      )
       RunCommand(
-          [profdata, 'merge', '-output=' + LLVM_PROFDATA_FILE] +
-          glob.glob(os.path.join(LLVM_INSTRUMENTED_DIR, 'profiles', '*.profraw')),
-          setenv=True)
+        [profdata, 'merge', '-output=' + LLVM_PROFDATA_FILE]
+        + glob.glob(
+          os.path.join(LLVM_INSTRUMENTED_DIR, 'profiles', '*.profraw')
+        ),
+        setenv=True,
+      )
       print('Profile generated.')
 
   # If building at head, define a macro that plugins can use for #ifdefing
@@ -1308,29 +1527,38 @@ def main():
   chrome_tools = []
   if not args.no_tools:
     default_tools = [
-        'plugins', 'blink_gc_plugin', 'raw_ptr_plugin', 'translation_unit'
+      'plugins',
+      'blink_gc_plugin',
+      'raw_ptr_plugin',
+      'translation_unit',
     ]
     chrome_tools = list(set(default_tools + args.extra_tools))
-  if cc is not None:  base_cmake_args.append('-DCMAKE_C_COMPILER=' + cc)
-  if cxx is not None: base_cmake_args.append('-DCMAKE_CXX_COMPILER=' + cxx)
-  if lld is not None: base_cmake_args.append('-DCMAKE_LINKER=' + lld)
-  if libtool is not None: base_cmake_args.append('-DCMAKE_LIBTOOL=' + libtool)
+  if cc is not None:
+    base_cmake_args.append('-DCMAKE_C_COMPILER=' + cc)
+  if cxx is not None:
+    base_cmake_args.append('-DCMAKE_CXX_COMPILER=' + cxx)
+  if lld is not None:
+    base_cmake_args.append('-DCMAKE_LINKER=' + lld)
+  if libtool is not None:
+    base_cmake_args.append('-DCMAKE_LIBTOOL=' + libtool)
   final_install_dir = args.install_dir if args.install_dir else LLVM_BUILD_DIR
   cmake_args = base_cmake_args + [
-      '-DCMAKE_C_FLAGS=' + ' '.join(cflags),
-      '-DCMAKE_CXX_FLAGS=' + ' '.join(cxxflags),
-      '-DCMAKE_EXE_LINKER_FLAGS=' + ' '.join(ldflags),
-      '-DCMAKE_SHARED_LINKER_FLAGS=' + ' '.join(ldflags),
-      '-DCMAKE_MODULE_LINKER_FLAGS=' + ' '.join(ldflags),
-      '-DCMAKE_INSTALL_PREFIX=' + final_install_dir,
+    '-DCMAKE_C_FLAGS=' + ' '.join(cflags),
+    '-DCMAKE_CXX_FLAGS=' + ' '.join(cxxflags),
+    '-DCMAKE_EXE_LINKER_FLAGS=' + ' '.join(ldflags),
+    '-DCMAKE_SHARED_LINKER_FLAGS=' + ' '.join(ldflags),
+    '-DCMAKE_MODULE_LINKER_FLAGS=' + ' '.join(ldflags),
+    '-DCMAKE_INSTALL_PREFIX=' + final_install_dir,
   ]
   if not args.no_tools:
-    cmake_args.extend([
+    cmake_args.extend(
+      [
         '-DLLVM_EXTERNAL_PROJECTS=chrometools',
-        '-DLLVM_EXTERNAL_CHROMETOOLS_SOURCE_DIR=' +
-        os.path.join(CHROMIUM_DIR, 'tools', 'clang'),
-        '-DCHROMIUM_TOOLS=%s' % ';'.join(chrome_tools)
-    ])
+        '-DLLVM_EXTERNAL_CHROMETOOLS_SOURCE_DIR='
+        + os.path.join(CHROMIUM_DIR, 'tools', 'clang'),
+        '-DCHROMIUM_TOOLS=%s' % ';'.join(chrome_tools),
+      ]
+    )
   if args.pgo:
     cmake_args.append('-DLLVM_PROFDATA_FILE=' + LLVM_PROFDATA_FILE)
   if args.thinlto:
@@ -1349,13 +1577,16 @@ def main():
   elif sys.platform.startswith('linux'):
     if platform.machine() == 'aarch64':
       cmake_args.append(
-          '-DLLVM_DEFAULT_TARGET_TRIPLE=aarch64-unknown-linux-gnu')
+        '-DLLVM_DEFAULT_TARGET_TRIPLE=aarch64-unknown-linux-gnu'
+      )
     elif platform.machine() == 'riscv64':
       cmake_args.append(
-          '-DLLVM_DEFAULT_TARGET_TRIPLE=riscv64-unknown-linux-gnu')
+        '-DLLVM_DEFAULT_TARGET_TRIPLE=riscv64-unknown-linux-gnu'
+      )
     elif platform.machine() == 'loongarch64':
       cmake_args.append(
-          '-DLLVM_DEFAULT_TARGET_TRIPLE=loongarch64-unknown-linux-gnu')
+        '-DLLVM_DEFAULT_TARGET_TRIPLE=loongarch64-unknown-linux-gnu'
+      )
     else:
       cmake_args.append('-DLLVM_DEFAULT_TARGET_TRIPLE=x86_64-unknown-linux-gnu')
     cmake_args.append('-DLLVM_ENABLE_PER_TARGET_RUNTIME_DIR=ON')
@@ -1371,28 +1602,26 @@ def main():
 
   if sys.platform.startswith('linux'):
     runtimes_triples_args['i386-unknown-linux-gnu'] = {
-        "args": [
-            'CMAKE_SYSROOT=%s' % sysroot_i386,
-            # TODO(crbug.com/40242553): pass proper flags to i386 tests so they
-            # compile correctly
-            'LLVM_INCLUDE_TESTS=OFF',
-        ],
-        "profile":
-        True,
-        "sanitizers":
-        True,
+      "args": [
+        'CMAKE_SYSROOT=%s' % sysroot_i386,
+        # TODO(crbug.com/40242553): pass proper flags to i386 tests so they
+        # compile correctly
+        'LLVM_INCLUDE_TESTS=OFF',
+      ],
+      "profile": True,
+      "sanitizers": True,
     }
     runtimes_triples_args['x86_64-unknown-linux-gnu'] = {
-        "args": [
-            'CMAKE_SYSROOT=%s' % sysroot_amd64,
-            # Enable CET IBT so that binaries compiled with
-            # -fcf-protection=branch can enable kernel IBT enforcement.
-            'CMAKE_C_FLAGS=-fcf-protection=branch',
-            'CMAKE_CXX_FLAGS=-fcf-protection=branch',
-            'CMAKE_ASM_FLAGS=-fcf-protection=branch',
-        ],
-        "profile": True,
-        "sanitizers": True,
+      "args": [
+        'CMAKE_SYSROOT=%s' % sysroot_amd64,
+        # Enable CET IBT so that binaries compiled with
+        # -fcf-protection=branch can enable kernel IBT enforcement.
+        'CMAKE_C_FLAGS=-fcf-protection=branch',
+        'CMAKE_CXX_FLAGS=-fcf-protection=branch',
+        'CMAKE_ASM_FLAGS=-fcf-protection=branch',
+      ],
+      "profile": True,
+      "sanitizers": True,
     }
     # Using "armv7a-unknown-linux-gnueabhihf" confuses the compiler-rt
     # builtins build, since compiler-rt/cmake/builtin-config-ix.cmake
@@ -1402,101 +1631,86 @@ def main():
     # https://chromium-review.googlesource.com/c/chromium/src/+/3702739/4
     # Maybe it should work for builtins too?
     runtimes_triples_args['armv7-unknown-linux-gnueabihf'] = {
-        "args": [
-            'CMAKE_SYSROOT=%s' % sysroot_arm,
-            # Can't run tests on x86 host.
-            'LLVM_INCLUDE_TESTS=OFF',
-        ],
-        "profile":
-        True,
-        "sanitizers":
-        True,
+      "args": [
+        'CMAKE_SYSROOT=%s' % sysroot_arm,
+        # Can't run tests on x86 host.
+        'LLVM_INCLUDE_TESTS=OFF',
+      ],
+      "profile": True,
+      "sanitizers": True,
     }
     runtimes_triples_args['aarch64-unknown-linux-gnu'] = {
-        "args": [
-            'CMAKE_SYSROOT=%s' % sysroot_arm64,
-            # Can't run tests on x86 host.
-            'LLVM_INCLUDE_TESTS=OFF',
-
-            # Make sure libraries are compiled with PAC/BTI enabled
-            'CMAKE_C_FLAGS=-mbranch-protection=standard',
-            'CMAKE_CXX_FLAGS=-mbranch-protection=standard',
-            'CMAKE_ASM_FLAGS=-mbranch-protection=standard',
-        ],
-        "profile":
-        True,
-        "sanitizers":
-        True,
+      "args": [
+        'CMAKE_SYSROOT=%s' % sysroot_arm64,
+        # Can't run tests on x86 host.
+        'LLVM_INCLUDE_TESTS=OFF',
+        # Make sure libraries are compiled with PAC/BTI enabled
+        'CMAKE_C_FLAGS=-mbranch-protection=standard',
+        'CMAKE_CXX_FLAGS=-mbranch-protection=standard',
+        'CMAKE_ASM_FLAGS=-mbranch-protection=standard',
+      ],
+      "profile": True,
+      "sanitizers": True,
     }
     runtimes_triples_args['riscv64-unknown-linux-gnu'] = {
-        "args": [
-            'CMAKE_SYSROOT=%s' % sysroot_riscv64,
-            # Can't run tests on x86 host.
-            'LLVM_INCLUDE_TESTS=OFF',
-        ],
-        "profile":
-        True,
-        "sanitizers":
-        True,
+      "args": [
+        'CMAKE_SYSROOT=%s' % sysroot_riscv64,
+        # Can't run tests on x86 host.
+        'LLVM_INCLUDE_TESTS=OFF',
+      ],
+      "profile": True,
+      "sanitizers": True,
     }
   elif sys.platform == 'win32':
     sysroot = os.path.dirname(os.path.dirname(GetWinSDKDir()))
     runtimes_triples_args['i386-pc-windows-msvc'] = {
-        "args": [
-            'LLVM_ENABLE_PER_TARGET_RUNTIME_DIR=OFF',
-            'LLVM_WINSYSROOT="%s"' % sysroot,
-        ],
-        "profile":
-        True,
-        "sanitizers":
-        False,
+      "args": [
+        'LLVM_ENABLE_PER_TARGET_RUNTIME_DIR=OFF',
+        'LLVM_WINSYSROOT="%s"' % sysroot,
+      ],
+      "profile": True,
+      "sanitizers": False,
     }
     runtimes_triples_args['x86_64-pc-windows-msvc'] = {
-        "args": [
-            'LLVM_ENABLE_PER_TARGET_RUNTIME_DIR=OFF',
-            'LLVM_WINSYSROOT="%s"' % sysroot,
-        ],
-        "profile":
-        True,
-        "sanitizers":
-        True,
+      "args": [
+        'LLVM_ENABLE_PER_TARGET_RUNTIME_DIR=OFF',
+        'LLVM_WINSYSROOT="%s"' % sysroot,
+      ],
+      "profile": True,
+      "sanitizers": True,
     }
     runtimes_triples_args['aarch64-pc-windows-msvc'] = {
-        "args": [
-            'LLVM_ENABLE_PER_TARGET_RUNTIME_DIR=OFF',
-            'LLVM_WINSYSROOT="%s"' % sysroot,
-            # Can't run tests on x86 host.
-            'LLVM_INCLUDE_TESTS=OFF',
-        ],
-        "profile":
-        True,
-        "sanitizers":
-        False,
+      "args": [
+        'LLVM_ENABLE_PER_TARGET_RUNTIME_DIR=OFF',
+        'LLVM_WINSYSROOT="%s"' % sysroot,
+        # Can't run tests on x86 host.
+        'LLVM_INCLUDE_TESTS=OFF',
+      ],
+      "profile": True,
+      "sanitizers": False,
     }
   elif sys.platform == 'darwin':
     # compiler-rt is built for all platforms/arches with a single
     # configuration, we should only specify one target triple. 'default' is
     # specially handled.
     runtimes_triples_args['default'] = {
-        "args": [
-            'SANITIZER_MIN_OSX_VERSION=' + deployment_target,
-            'COMPILER_RT_ENABLE_MACCATALYST=ON',
-            'COMPILER_RT_ENABLE_IOS=ON',
-            'COMPILER_RT_ENABLE_WATCHOS=ON',
-            'COMPILER_RT_ENABLE_TVOS=ON',
-            'COMPILER_RT_ENABLE_XROS=ON',
-            'DARWIN_ios_ARCHS=arm64',
-            'DARWIN_iossim_ARCHS=arm64;x86_64',
-            'DARWIN_osx_ARCHS=arm64;x86_64',
-            'DARWIN_tvos_BUILTIN_ARCHS=arm64',
-            'DARWIN_tvossim_BUILTIN_ARCHS=arm64;x86_64',
-            'DARWIN_watchos_BUILTIN_ARCHS=arm64',
-            'DARWIN_watchossim_BUILTIN_ARCHS=arm64;x86_64',
-        ],
-        "sanitizers":
-        True,
-        "profile":
-        True
+      "args": [
+        'SANITIZER_MIN_OSX_VERSION=' + deployment_target,
+        'COMPILER_RT_ENABLE_MACCATALYST=ON',
+        'COMPILER_RT_ENABLE_IOS=ON',
+        'COMPILER_RT_ENABLE_WATCHOS=ON',
+        'COMPILER_RT_ENABLE_TVOS=ON',
+        'COMPILER_RT_ENABLE_XROS=ON',
+        'DARWIN_ios_ARCHS=arm64',
+        'DARWIN_iossim_ARCHS=arm64;x86_64',
+        'DARWIN_osx_ARCHS=arm64;x86_64',
+        'DARWIN_tvos_BUILTIN_ARCHS=arm64',
+        'DARWIN_tvossim_BUILTIN_ARCHS=arm64;x86_64',
+        'DARWIN_watchos_BUILTIN_ARCHS=arm64',
+        'DARWIN_watchossim_BUILTIN_ARCHS=arm64;x86_64',
+      ],
+      "sanitizers": True,
+      "profile": True,
     }
 
   if args.with_android:
@@ -1510,10 +1724,9 @@ def main():
         api_level = '36'
       target_triple += '-linux-android' + api_level
       android_cflags = [
-          '--sysroot=%s/sysroot' % toolchain_dir,
-
-          # We don't have an unwinder ready, and don't need it either.
-          '--unwindlib=none',
+        '--sysroot=%s/sysroot' % toolchain_dir,
+        # We don't have an unwinder ready, and don't need it either.
+        '--unwindlib=none',
       ]
 
       if target_arch == 'aarch64':
@@ -1521,27 +1734,27 @@ def main():
         android_cflags += ['-mbranch-protection=standard']
 
       android_args = [
-          'LLVM_ENABLE_RUNTIMES=compiler-rt',
-          # On Android, we want DWARF info for the builtins for unwinding. See
-          # crbug.com/1311807.
-          'CMAKE_BUILD_TYPE=RelWithDebInfo',
-          'CMAKE_C_FLAGS=' + ' '.join(android_cflags),
-          'CMAKE_CXX_FLAGS=' + ' '.join(android_cflags),
-          'CMAKE_ASM_FLAGS=' + ' '.join(android_cflags),
-          'COMPILER_RT_USE_BUILTINS_LIBRARY=ON',
-          'SANITIZER_CXX_ABI=libcxxabi',
-          'CMAKE_SHARED_LINKER_FLAGS=-Wl,-u__cxa_demangle',
-          'ANDROID=1',
-          'LLVM_ENABLE_PER_TARGET_RUNTIME_DIR=OFF',
-          'LLVM_INCLUDE_TESTS=OFF',
-          # This prevents static_asserts from firing in 32-bit builds.
-          # TODO: remove once we only support API >=24.
-          'ANDROID_NATIVE_API_LEVEL=' + api_level,
+        'LLVM_ENABLE_RUNTIMES=compiler-rt',
+        # On Android, we want DWARF info for the builtins for unwinding. See
+        # crbug.com/1311807.
+        'CMAKE_BUILD_TYPE=RelWithDebInfo',
+        'CMAKE_C_FLAGS=' + ' '.join(android_cflags),
+        'CMAKE_CXX_FLAGS=' + ' '.join(android_cflags),
+        'CMAKE_ASM_FLAGS=' + ' '.join(android_cflags),
+        'COMPILER_RT_USE_BUILTINS_LIBRARY=ON',
+        'SANITIZER_CXX_ABI=libcxxabi',
+        'CMAKE_SHARED_LINKER_FLAGS=-Wl,-u__cxa_demangle',
+        'ANDROID=1',
+        'LLVM_ENABLE_PER_TARGET_RUNTIME_DIR=OFF',
+        'LLVM_INCLUDE_TESTS=OFF',
+        # This prevents static_asserts from firing in 32-bit builds.
+        # TODO: remove once we only support API >=24.
+        'ANDROID_NATIVE_API_LEVEL=' + api_level,
       ]
       runtimes_triples_args[target_triple] = {
-          "args": android_args,
-          "sanitizers": True,
-          "profile": True
+        "args": android_args,
+        "sanitizers": True,
+        "profile": True,
       }
 
   if args.with_fuchsia:
@@ -1549,7 +1762,8 @@ def main():
     for target_arch in ['aarch64', 'x86_64']:
       fuchsia_arch_name = {'aarch64': 'arm64', 'x86_64': 'x64'}[target_arch]
       toolchain_dir = os.path.join(
-          FUCHSIA_SDK_DIR, 'arch', fuchsia_arch_name, 'sysroot')
+        FUCHSIA_SDK_DIR, 'arch', fuchsia_arch_name, 'sysroot'
+      )
       target_triple = target_arch + '-unknown-fuchsia'
       # Build the Fuchsia profile and asan runtimes.  This is done after the rt
       # builtins have been created because the CMake build runs link checks that
@@ -1562,20 +1776,20 @@ def main():
       # TODO(thakis): Might have to pass -B here once sysroot contains
       # binaries (e.g. gas for arm64?)
       fuchsia_args = [
-          'LLVM_ENABLE_RUNTIMES=compiler-rt',
-          'CMAKE_SYSTEM_NAME=Fuchsia',
-          'CMAKE_SYSROOT=%s' % toolchain_dir,
-          # TODO(thakis|scottmg): Use PER_TARGET_RUNTIME_DIR for all platforms.
-          # https://crbug.com/882485.
-          'LLVM_ENABLE_PER_TARGET_RUNTIME_DIR=ON',
+        'LLVM_ENABLE_RUNTIMES=compiler-rt',
+        'CMAKE_SYSTEM_NAME=Fuchsia',
+        'CMAKE_SYSROOT=%s' % toolchain_dir,
+        # TODO(thakis|scottmg): Use PER_TARGET_RUNTIME_DIR for all platforms.
+        # https://crbug.com/882485.
+        'LLVM_ENABLE_PER_TARGET_RUNTIME_DIR=ON',
       ]
       if build_sanitizers:
         fuchsia_args.append('SANITIZER_NO_UNDEFINED_SYMBOLS=OFF')
 
       runtimes_triples_args[target_triple] = {
-          "args": fuchsia_args,
-          "sanitizers": build_sanitizers,
-          "profile": build_profile
+        "args": fuchsia_args,
+        "sanitizers": build_sanitizers,
+        "profile": build_profile,
       }
 
   # Embed MLGO inliner model. If tf_path is not specified, a vpython3 env
@@ -1584,24 +1798,29 @@ def main():
   # the top of main()
   if args.with_ml_inliner_model:
     if args.with_ml_inliner_model == 'default':
-      model_path = ('https://commondatastorage.googleapis.com/'
-                    'chromium-browser-clang/tools/mlgo_model3.tgz')
+      model_path = (
+        'https://commondatastorage.googleapis.com/'
+        'chromium-browser-clang/tools/mlgo_model3.tgz'
+      )
     else:
       model_path = args.with_ml_inliner_model
     if not args.tf_path:
       with timer.time('get tensorflow'):
         tf_path = subprocess.check_output(
-            ['vpython3', os.path.join(THIS_DIR, 'get_tensorflow.py')],
-            universal_newlines=True).rstrip()
+          ['vpython3', os.path.join(THIS_DIR, 'get_tensorflow.py')],
+          universal_newlines=True,
+        ).rstrip()
     else:
       tf_path = args.tf_path
-    print('Embedding MLGO inliner model at %s using Tensorflow at %s' %
-          (model_path, tf_path))
+    print(
+      'Embedding MLGO inliner model at %s using Tensorflow at %s'
+      % (model_path, tf_path)
+    )
     cmake_args += [
-        '-DLLVM_INLINER_MODEL_PATH=%s' % model_path,
-        '-DTENSORFLOW_AOT_PATH=%s' % tf_path,
-        # Disable Regalloc model generation since it is unused
-        '-DLLVM_RAEVICT_MODEL_PATH=none'
+      '-DLLVM_INLINER_MODEL_PATH=%s' % model_path,
+      '-DTENSORFLOW_AOT_PATH=%s' % tf_path,
+      # Disable Regalloc model generation since it is unused
+      '-DLLVM_RAEVICT_MODEL_PATH=none',
     ]
 
   # Convert FOO=BAR CMake flags per triple into
@@ -1619,7 +1838,7 @@ def main():
         cmake_args.append('-DRUNTIMES_' + triple + '_' + arg)
         cmake_args.append('-DBUILTINS_' + triple + '_' + arg)
     if not args.no_runtimes:
-      profile = runtimes_triples_args[triple]["profile"],
+      profile = (runtimes_triples_args[triple]["profile"],)
       sanitizers = runtimes_triples_args[triple]["sanitizers"]
     else:
       profile = False
@@ -1645,9 +1864,11 @@ def main():
   EnsureDirExists(LLVM_BUILD_DIR)
   os.chdir(LLVM_BUILD_DIR)
   with timer.time('cmake'):
-    RunCommand(['cmake'] + cmake_args + [os.path.join(LLVM_DIR, 'llvm')],
-               setenv=True,
-               env=deployment_env)
+    RunCommand(
+      ['cmake'] + cmake_args + [os.path.join(LLVM_DIR, 'llvm')],
+      setenv=True,
+      env=deployment_env,
+    )
   with timer.time('build'):
     RunCommand(['ninja'], setenv=True)
 
@@ -1663,60 +1884,92 @@ def main():
 
     # Instrument.
     with timer.time('bolt instrument'):
-      RunCommand([
-          'bin/llvm-bolt', 'bin/clang', '-o', 'bin/clang-bolt.inst',
-          '-instrument', '--instrumentation-file-append-pid',
-          '--instrumentation-file=' +
-          os.path.join(bolt_profiles_dir, 'prof.fdata')
-      ])
-    RunCommand([
-        'ln', '-s',
+      RunCommand(
+        [
+          'bin/llvm-bolt',
+          'bin/clang',
+          '-o',
+          'bin/clang-bolt.inst',
+          '-instrument',
+          '--instrumentation-file-append-pid',
+          '--instrumentation-file='
+          + os.path.join(bolt_profiles_dir, 'prof.fdata'),
+        ]
+      )
+    RunCommand(
+      [
+        'ln',
+        '-s',
         os.path.join(LLVM_BUILD_DIR, 'bin', 'clang-bolt.inst'),
-        os.path.join(LLVM_BUILD_DIR, 'bin', 'clang++-bolt.inst')
-    ])
+        os.path.join(LLVM_BUILD_DIR, 'bin', 'clang++-bolt.inst'),
+      ]
+    )
 
     # Train by building a part of Clang.
     os.mkdir('bolt-training')
     os.chdir('bolt-training')
     bolt_train_cmake_args = base_cmake_args + [
-        '-DLLVM_TARGETS_TO_BUILD=X86',
-        '-DLLVM_ENABLE_PROJECTS=clang',
-        '-DCMAKE_C_FLAGS=' + ' '.join(cflags),
-        '-DCMAKE_CXX_FLAGS=' + ' '.join(cxxflags),
-        '-DCMAKE_EXE_LINKER_FLAGS=' + ' '.join(ldflags),
-        '-DCMAKE_SHARED_LINKER_FLAGS=' + ' '.join(ldflags),
-        '-DCMAKE_MODULE_LINKER_FLAGS=' + ' '.join(ldflags),
-        '-DCMAKE_C_COMPILER=' +
-        os.path.join(LLVM_BUILD_DIR, 'bin/clang-bolt.inst'),
-        '-DCMAKE_CXX_COMPILER=' +
-        os.path.join(LLVM_BUILD_DIR, 'bin/clang++-bolt.inst'),
-        '-DCMAKE_ASM_COMPILER=' +
-        os.path.join(LLVM_BUILD_DIR, 'bin/clang-bolt.inst'),
-        '-DCMAKE_ASM_COMPILER_ID=Clang',
+      '-DLLVM_TARGETS_TO_BUILD=X86',
+      '-DLLVM_ENABLE_PROJECTS=clang',
+      '-DCMAKE_C_FLAGS=' + ' '.join(cflags),
+      '-DCMAKE_CXX_FLAGS=' + ' '.join(cxxflags),
+      '-DCMAKE_EXE_LINKER_FLAGS=' + ' '.join(ldflags),
+      '-DCMAKE_SHARED_LINKER_FLAGS=' + ' '.join(ldflags),
+      '-DCMAKE_MODULE_LINKER_FLAGS=' + ' '.join(ldflags),
+      '-DCMAKE_C_COMPILER='
+      + os.path.join(LLVM_BUILD_DIR, 'bin/clang-bolt.inst'),
+      '-DCMAKE_CXX_COMPILER='
+      + os.path.join(LLVM_BUILD_DIR, 'bin/clang++-bolt.inst'),
+      '-DCMAKE_ASM_COMPILER='
+      + os.path.join(LLVM_BUILD_DIR, 'bin/clang-bolt.inst'),
+      '-DCMAKE_ASM_COMPILER_ID=Clang',
     ]
     with timer.time('bolt training cmake'):
-      RunCommand(['cmake'] + bolt_train_cmake_args +
-                 [os.path.join(LLVM_DIR, 'llvm')])
+      RunCommand(
+        ['cmake'] + bolt_train_cmake_args + [os.path.join(LLVM_DIR, 'llvm')]
+      )
     with timer.time('bolt training benchmark'):
-      RunCommand([
-          'ninja', 'tools/clang/lib/Sema/CMakeFiles/obj.clangSema.dir/Sema.cpp.o'
-      ])
+      RunCommand(
+        [
+          'ninja',
+          'tools/clang/lib/Sema/CMakeFiles/obj.clangSema.dir/Sema.cpp.o',
+        ]
+      )
     os.chdir(LLVM_BUILD_DIR)
 
     # Optimize.
     with timer.time('bolt optimize'):
-      RunCommand([
+      RunCommand(
+        [
           sys.executable,
-          os.path.join(LLVM_DIR, 'clang', 'utils', 'perf-training',
-                       'perf-helper.py'), 'merge-fdata', 'bin/merge-fdata',
-          'merged.fdata', bolt_profiles_dir
-      ])
-      RunCommand([
-          'bin/llvm-bolt', 'bin/clang', '-o', 'bin/clang-bolt.opt', '-data',
-          'merged.fdata', '-reorder-blocks=ext-tsp', '-reorder-functions=hfsort+',
-          '-split-functions', '-split-all-cold', '-split-eh', '-dyno-stats',
-          '-icf=1', '-use-gnu-stack', '-use-old-text'
-      ])
+          os.path.join(
+            LLVM_DIR, 'clang', 'utils', 'perf-training', 'perf-helper.py'
+          ),
+          'merge-fdata',
+          'bin/merge-fdata',
+          'merged.fdata',
+          bolt_profiles_dir,
+        ]
+      )
+      RunCommand(
+        [
+          'bin/llvm-bolt',
+          'bin/clang',
+          '-o',
+          'bin/clang-bolt.opt',
+          '-data',
+          'merged.fdata',
+          '-reorder-blocks=ext-tsp',
+          '-reorder-functions=hfsort+',
+          '-split-functions',
+          '-split-all-cold',
+          '-split-eh',
+          '-dyno-stats',
+          '-icf=1',
+          '-use-gnu-stack',
+          '-use-old-text',
+        ]
+      )
 
     # Overwrite clang, preserving its timestamp so ninja doesn't rebuild it.
     RunCommand(['touch', '-r', 'bin/clang', 'bin/clang-bolt.opt'])
@@ -1728,25 +1981,27 @@ def main():
     VerifyZStdSupport()
 
   # Run tests.
-  if (chrome_tools and (args.run_tests or args.llvm_force_head_revision)):
+  if chrome_tools and (args.run_tests or args.llvm_force_head_revision):
     with timer.time('cr-check-all'):
       RunCommand(['ninja', '-C', LLVM_BUILD_DIR, 'cr-check-all'], setenv=True)
 
   if args.run_tests:
     with timer.time('check-all'):
-      RunCommand(['ninja', '-C', LLVM_BUILD_DIR, 'check-all'],
-                 env=test_env,
-                 setenv=True)
+      RunCommand(
+        ['ninja', '-C', LLVM_BUILD_DIR, 'check-all'], env=test_env, setenv=True
+      )
   if args.install_dir:
     with timer.time('install'):
       RunCommand(['ninja', 'install'], setenv=True)
 
-  WriteStampFile(PACKAGE_VERSION,
-                 STAMP_FILE,
-                 preserve_hash_files=args.preserve_gcs_signature)
-  WriteStampFile(PACKAGE_VERSION,
-                 FORCE_HEAD_REVISION_FILE,
-                 preserve_hash_files=args.preserve_gcs_signature)
+  WriteStampFile(
+    PACKAGE_VERSION, STAMP_FILE, preserve_hash_files=args.preserve_gcs_signature
+  )
+  WriteStampFile(
+    PACKAGE_VERSION,
+    FORCE_HEAD_REVISION_FILE,
+    preserve_hash_files=args.preserve_gcs_signature,
+  )
 
   print('Clang build was successful.')
 

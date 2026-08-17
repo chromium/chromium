@@ -16,7 +16,8 @@ from . import chrome
 def _get_listening_ports():
     """Returns a list of TCP ports that are in the 'LISTEN' state."""
     return [
-        conn.laddr.port for conn in psutil.net_connections()
+        conn.laddr.port
+        for conn in psutil.net_connections()
         if conn.status == 'LISTEN'
     ]
 
@@ -33,9 +34,11 @@ def _assert_no_listeners_for_ports(ports):
     listening_ports = _get_listening_ports()
     for port in ports:
         if port in listening_ports:
-            raise Exception(f"Port {port} is in use by another program. Run " \
-                            "ss -lptn 'sport = :{port}'` on your terminal to " \
-                            "check which process is listening to the port")
+            raise Exception(
+                f"Port {port} is in use by another program. Run "
+                "ss -lptn 'sport = :{port}'` on your terminal to "
+                "check which process is listening to the port"
+            )
 
 
 async def _wait_for_ports(ports):
@@ -64,7 +67,11 @@ HTTPS_PORT = 8081  # The port used by WPR for HTTPS connections.
 # https://chromium.googlesource.com/webpagereplay/+/HEAD/README.md#running-on-android
 COMMAND_LINE_FLAGS = [
     f"--host-resolver-rules=\"MAP *:80 127.0.0.1:{HTTP_PORT},MAP *:443 127.0.0.1:{HTTPS_PORT},EXCLUDE localhost\"",
-    "--ignore-certificate-errors-spki-list=PhrPvGIaAMmd29hj8BCZOq096yj7uMpRNHpn5PDxI6I=,2HcXCSKKJS0lEXLQEWhpHUfGuojiU0tiT5gOF9LP6IQ="
+    (
+        "--ignore-certificate-errors-spki-list="
+        "PhrPvGIaAMmd29hj8BCZOq096yj7uMpRNHpn5PDxI6I=,"
+        "2HcXCSKKJS0lEXLQEWhpHUfGuojiU0tiT5gOF9LP6IQ="
+    ),
 ]
 
 
@@ -118,29 +125,34 @@ async def _server(action, archive_path):
     """
 
     # Configure adb to reverse proxy the ports needed for WPR to the device
-    await command_line.run("adb", "reverse", f"tcp:{HTTP_PORT}",
-                           f"tcp:{HTTP_PORT}")
-    await command_line.run("adb", "reverse", f"tcp:{HTTPS_PORT}",
-                           f"tcp:{HTTPS_PORT}")
+    await command_line.run(
+        "adb", "reverse", f"tcp:{HTTP_PORT}", f"tcp:{HTTP_PORT}"
+    )
+    await command_line.run(
+        "adb", "reverse", f"tcp:{HTTPS_PORT}", f"tcp:{HTTPS_PORT}"
+    )
     _assert_no_listeners_for_ports([HTTP_PORT, HTTPS_PORT])
 
     async with chrome.additional_command_line_flags(*COMMAND_LINE_FLAGS):
         wpr_task = asyncio.create_task(
             # The WPR server listens for SIGINT (Ctrl-C) to exit gracefully
-            command_line.run("go",
-                             "run",
-                             "-C",
-                             "third_party/webpagereplay",
-                             "src/wpr.go",
-                             action,
-                             "--https_cert_file",
-                             "wpr_cert.pem,ecdsa_cert.pem",
-                             "--https_key_file",
-                             "wpr_key.pem,ecdsa_key.pem",
-                             f"--http_port={HTTP_PORT}",
-                             f"--https_port={HTTPS_PORT}",
-                             archive_path,
-                             interruption_signal=signal.SIGINT))
+            command_line.run(
+                "go",
+                "run",
+                "-C",
+                "third_party/webpagereplay",
+                "src/wpr.go",
+                action,
+                "--https_cert_file",
+                "wpr_cert.pem,ecdsa_cert.pem",
+                "--https_key_file",
+                "wpr_key.pem,ecdsa_key.pem",
+                f"--http_port={HTTP_PORT}",
+                f"--https_port={HTTPS_PORT}",
+                archive_path,
+                interruption_signal=signal.SIGINT,
+            )
+        )
         try:
             await _wait_for_ports([8080, 8081])
             yield

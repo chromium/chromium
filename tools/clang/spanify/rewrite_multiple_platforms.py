@@ -34,8 +34,10 @@ COMMON_EXTRA_GN_ARGS = [
 
 
 # Discover all available platforms and configurations from gnconfigs.
-AVAILABLE_PLATFORMS = sorted(set(GnConfigs(False).min_all_platforms.keys()) |
-                             set(GnConfigs(False).all_platforms_and_configs.keys()))
+AVAILABLE_PLATFORMS = sorted(
+    set(GnConfigs(False).min_all_platforms.keys())
+    | set(GnConfigs(False).all_platforms_and_configs.keys())
+)
 
 LLVM_BUILD_DIR = pathlib.Path('third_party/llvm-build')
 LLVM_UPSTREAM_DIR = pathlib.Path('third_party/llvm-build-upstream')
@@ -59,15 +61,15 @@ def get_platform_args(platform, project='chrome'):
     args = configs.get_config(platform, project)
 
     if args is None:
-        raise ValueError(f"Unknown platform/project combination: "
-                         f"{platform}/{project}")
+        raise ValueError(
+            f"Unknown platform/project combination: {platform}/{project}"
+        )
 
     submodule = PROJECTS[project].get('submodule', '.')
     standalone = submodule != '.'
     extra_args = COMMON_EXTRA_GN_ARGS if not standalone else []
 
     return '\n'.join(args + extra_args) + '\n'
-
 
 
 @contextlib.contextmanager
@@ -99,21 +101,24 @@ def build_and_manage_llvm():
             backed_up = True
         else:
             logging.info(
-                'llvm-build already contains rewriter, skipping backup.')
+                'llvm-build already contains rewriter, skipping backup.'
+            )
 
     if is_incremental:
         logging.info('Building the rewriter incrementally...')
         run_command(['ninja', '-C', str(LLVM_BUILD_DIR / 'Release+Asserts')])
     else:
         logging.info('Building the rewriter completely...')
-        run_command([
-            'tools/clang/scripts/build.py',
-            '--with-android',
-            '--without-fuchsia',
-            '--with-ml-inliner-model=',
-            '--extra-tools',
-            'spanify',
-        ])
+        run_command(
+            [
+                'tools/clang/scripts/build.py',
+                '--with-android',
+                '--without-fuchsia',
+                '--with-ml-inliner-model=',
+                '--extra-tools',
+                'spanify',
+            ]
+        )
 
     try:
         yield
@@ -124,8 +129,10 @@ def build_and_manage_llvm():
             if LLVM_UPSTREAM_DIR.exists():
                 shutil.move(LLVM_UPSTREAM_DIR, LLVM_BUILD_DIR)
         elif is_incremental:
-            logging.warning('Keeping customized llvm-build. '
-                            'Regular builds will be slower until restored.')
+            logging.warning(
+                'Keeping customized llvm-build. '
+                'Regular builds will be slower until restored.'
+            )
 
 
 def run_command(cmd, **kwargs):
@@ -165,8 +172,7 @@ def _prepare_dawn(submodule):
     (submodule_path / '.gclient').write_text(gclient_content)
 
     # Sync dependencies.
-    run_command(['gclient', 'sync', '--no-history', '--shallow'],
-                cwd=submodule)
+    run_command(['gclient', 'sync', '--no-history', '--shallow'], cwd=submodule)
 
 
 def _prepare_angle(submodule):
@@ -174,8 +180,7 @@ def _prepare_angle(submodule):
     run_command([sys.executable, 'scripts/bootstrap.py'], cwd=submodule)
 
     # Sync dependencies.
-    run_command(['gclient', 'sync', '--no-history', '--shallow'],
-                cwd=submodule)
+    run_command(['gclient', 'sync', '--no-history', '--shallow'], cwd=submodule)
 
     # Patch gclient_args.gni.
     submodule_path = pathlib.Path(submodule)
@@ -206,16 +211,16 @@ def _prepare_webrtc(submodule):
     (parent_path / '.gclient').write_text(gclient_content)
 
     # Sync dependencies.
-    run_command(['gclient', 'sync', '--no-history', '--shallow'],
-                cwd=parent_path)
+    run_command(
+        ['gclient', 'sync', '--no-history', '--shallow'], cwd=parent_path
+    )
 
 
 def prepare_standalone_project(submodule, project):
     """
     Syncs dependencies and applies setup fixes for a standalone project.
     """
-    logging.info('Preparing standalone project %s in %s...', project,
-                 submodule)
+    logging.info('Preparing standalone project %s in %s...', project, submodule)
     match project:
         case 'skia':
             _prepare_skia(submodule)
@@ -241,7 +246,6 @@ def prepare_platform(platform, out_dir, project):
 
     out_dir.mkdir(parents=True, exist_ok=True)
 
-
     # Generate build files.
     platform_args = get_platform_args(platform, project)
     (out_dir / 'args.gn').write_text(platform_args)
@@ -253,25 +257,30 @@ def prepare_platform(platform, out_dir, project):
                 continue
             src = v_dir / 'lib/darwin'
             if src.exists():
-                dst = (LLVM_BUILD_DIR / CLANG_LIB_REL_PATH / v_dir.name /
-                       'lib/darwin')
+                dst = (
+                    LLVM_BUILD_DIR
+                    / CLANG_LIB_REL_PATH
+                    / v_dir.name
+                    / 'lib/darwin'
+                )
                 shutil.copytree(src, dst, dirs_exist_ok=True)
 
     logging.info('Generating build files for %s in %s...', platform, submodule)
     out_dir_arg = out_dir.relative_to(submodule) if standalone else out_dir
-    run_command([str(GN_PATH), 'gen', str(out_dir_arg)],
-                cwd=submodule if standalone else None)
-
+    run_command(
+        [str(GN_PATH), 'gen', str(out_dir_arg)],
+        cwd=submodule if standalone else None,
+    )
 
     # Build generated files that a successful compilation depends on.
     logging.info('Building generated targets for %s...', platform)
 
     targets_proc = subprocess.Popen(
-        ['ninja', '-C',
-         str(out_dir_arg), '-t', 'targets', 'all'],
+        ['ninja', '-C', str(out_dir_arg), '-t', 'targets', 'all'],
         stdout=subprocess.PIPE,
         text=True,
-        cwd=submodule if standalone else None)
+        cwd=submodule if standalone else None,
+    )
 
     assert targets_proc.stdout is not None
 
@@ -285,7 +294,8 @@ def prepare_platform(platform, out_dir, project):
     else:
         escaped_path = re.escape(compile_dirs.strip('/'))
         pattern = re.compile(
-            rf'^gen/{escaped_path}/.*(\.h|inc|css_tokenizer_codepoints\.cc)$')
+            rf'^gen/{escaped_path}/.*(\.h|inc|css_tokenizer_codepoints\.cc)$'
+        )
 
     for line in targets_proc.stdout:
         # Ninja targets output format is "target: rule"
@@ -299,23 +309,21 @@ def prepare_platform(platform, out_dir, project):
         logging.info('No generated targets to build for %s.', platform)
         return
 
-    logging.info('Total generated targets to build for %s: %d', platform,
-                 len(targets))
+    logging.info(
+        'Total generated targets to build for %s: %d', platform, len(targets)
+    )
     for t in targets:
         logging.info('-  %s', t)
 
     # Generate them in batches to avoid hitting command line length limits.
     arg_max = min(os.sysconf('SC_ARG_MAX') // 2, 1000000)
     subprocess.run(
-        ['xargs', '-s',
-         str(arg_max), 'autoninja', '-C',
-         str(out_dir_arg)],
+        ['xargs', '-s', str(arg_max), 'autoninja', '-C', str(out_dir_arg)],
         input='\n'.join(targets),
         text=True,
         check=True,
-        cwd=submodule if standalone else None)
-
-
+        cwd=submodule if standalone else None,
+    )
 
 
 def run_rewrite_tool(platform, out_dir, project):
@@ -362,20 +370,20 @@ def run_rewrite_tool(platform, out_dir, project):
     out_path = scratch_dir() / f'rewriter-{platform}.main.out'
     err_path = scratch_dir() / f'rewriter-{platform}.main.err'
 
-    logging.info("Running: %s | awk '!x[$0]++' > %s", shlex.join(cmd),
-                 out_path)
+    logging.info("Running: %s | awk '!x[$0]++' > %s", shlex.join(cmd), out_path)
 
     with out_path.open('w') as out_f, err_path.open('w') as err_f:
         # Run run_tool.py and pipe it to awk
-        proc1 = subprocess.Popen(cmd,
-                                 stdout=subprocess.PIPE,
-                                 stderr=err_f,
-                                 text=True,
-                                 cwd=submodule if standalone else None)
-        proc2 = subprocess.Popen(['awk', '!x[$0]++'],
-                                 stdin=proc1.stdout,
-                                 stdout=out_f,
-                                 text=True)
+        proc1 = subprocess.Popen(
+            cmd,
+            stdout=subprocess.PIPE,
+            stderr=err_f,
+            text=True,
+            cwd=submodule if standalone else None,
+        )
+        proc2 = subprocess.Popen(
+            ['awk', '!x[$0]++'], stdin=proc1.stdout, stdout=out_f, text=True
+        )
 
         # Allow proc1 to receive SIGPIPE if awk exits early
         assert proc1.stdout is not None
@@ -387,7 +395,10 @@ def run_rewrite_tool(platform, out_dir, project):
     if proc1.returncode != 0:
         logging.warning(
             'Rewrite tool failed for %s with exit code %d. '
-            'Continuing with partial results.', platform, proc1.returncode)
+            'Continuing with partial results.',
+            platform,
+            proc1.returncode,
+        )
 
 
 def apply_edits_phase(platform, out_dir, project):
@@ -419,42 +430,53 @@ def apply_edits_phase(platform, out_dir, project):
         extract_proc = subprocess.Popen(
             [sys.executable, str(extract_edits_path)],
             stdin=rfd,
-            stdout=subprocess.PIPE)
+            stdout=subprocess.PIPE,
+        )
 
         assert extract_proc.stdout is not None
-        apply_proc = subprocess.Popen([
-            sys.executable,
-            str(apply_edits_path),
-            '-p',
-            str(out_dir_arg),
-        ],
-                                      stdin=extract_proc.stdout,
-                                      cwd=submodule if standalone else None)
+        apply_proc = subprocess.Popen(
+            [
+                sys.executable,
+                str(apply_edits_path),
+                '-p',
+                str(out_dir_arg),
+            ],
+            stdin=extract_proc.stdout,
+            cwd=submodule if standalone else None,
+        )
 
         # Allow extract to receive SIGPIPE if apply exits early
         extract_proc.stdout.close()
         apply_proc.communicate()
 
         if extract_proc.wait() != 0:
-            logging.warning('extract_edits.py failed with exit code %d.',
-                            extract_proc.returncode)
+            logging.warning(
+                'extract_edits.py failed with exit code %d.',
+                extract_proc.returncode,
+            )
         if apply_proc.returncode != 0:
-            logging.warning('apply_edits.py failed with exit code %d.',
-                            apply_proc.returncode)
+            logging.warning(
+                'apply_edits.py failed with exit code %d.',
+                apply_proc.returncode,
+            )
 
 
 def main():
     parser = argparse.ArgumentParser(
-        description='Rewrite multiple platforms using spanify.')
+        description='Rewrite multiple platforms using spanify.'
+    )
     parser.add_argument(
         '--platform',
         action='append',
         help='Platforms to rewrite (e.g., linux, win, mac, android). '
-        'Can be specified multiple times.')
-    parser.add_argument('--project',
-                        choices=PROJECTS.keys(),
-                        default='chrome',
-                        help='Project to rewrite.')
+        'Can be specified multiple times.',
+    )
+    parser.add_argument(
+        '--project',
+        choices=PROJECTS.keys(),
+        default='chrome',
+        help='Project to rewrite.',
+    )
 
     args = parser.parse_args()
 
@@ -466,9 +488,11 @@ def main():
     project = args.project
     submodule = PROJECTS[project].get('submodule', '.')
 
-    logging.basicConfig(level=logging.INFO,
-                        format='[%(asctime)s %(levelname)s] %(message)s',
-                        datefmt='%H:%M:%S')
+    logging.basicConfig(
+        level=logging.INFO,
+        format='[%(asctime)s %(levelname)s] %(message)s',
+        datefmt='%H:%M:%S',
+    )
 
     clear_scratch_dir()
 
@@ -481,8 +505,9 @@ def main():
         # Apply edits after running the tool on all requested platforms.
         # We use the last platform's out_dir for apply_edits.py as it needs
         # a valid build directory to find headers, etc.
-        apply_edits_phase(platforms[-1], get_out_dir(platforms[-1], submodule),
-                          project)
+        apply_edits_phase(
+            platforms[-1], get_out_dir(platforms[-1], submodule), project
+        )
 
     logging.info('Formatting...')
     # Running git cl format in the submodule if necessary.
@@ -490,7 +515,6 @@ def main():
         run_command(['git', 'cl', 'format'], cwd=submodule)
     except subprocess.CalledProcessError:
         logging.warning('git cl format failed, continuing...')
-
 
 
 if __name__ == '__main__':

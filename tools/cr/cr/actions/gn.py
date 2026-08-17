@@ -25,10 +25,11 @@ class GnPrepareOut(cr.PrepareOut):
     gn_args = cr.context.Find('GN_ARGS') or ''
     for key, value in cr.context.exported.items():
       if key.startswith(GN_ARG_PREFIX):
-        gn_args += ' %s=%s' % (key[len(GN_ARG_PREFIX):], value)
+        gn_args += ' %s=%s' % (key[len(GN_ARG_PREFIX) :], value)
 
-    gn_args += (' is_debug=%s' %
-        ('true' if cr.context['CR_BUILDTYPE'] == 'Debug' else 'false'))
+    gn_args += ' is_debug=%s' % (
+      'true' if cr.context['CR_BUILDTYPE'] == 'Debug' else 'false'
+    )
 
     arch = cr.context.Find('CR_ENVSETUP_ARCH') or ''
     if arch:

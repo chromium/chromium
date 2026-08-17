@@ -27,19 +27,22 @@ def get_test_metadata(invocation, test_regex: str) -> Tuple[str, str]:
 
   # If there isn't a match, check if the test ID contains a backslash. If so,
   # try interpreting it as a literal backslash rather than as a regex escape.
-  if (('testResults' not in test_results or not test_results['testResults'])
-      and '\\' in test_regex):
-    test_results = query_test_result(invocation=invocation,
-                                     test_regex=test_regex.replace(
-                                         '\\', '\\\\'))
+  if (
+    'testResults' not in test_results or not test_results['testResults']
+  ) and '\\' in test_regex:
+    test_results = query_test_result(
+      invocation=invocation, test_regex=test_regex.replace('\\', '\\\\')
+    )
 
   if 'testResults' not in test_results:
     raise errors.UserError(
-        f"ResultDB couldn't query for invocation: {invocation}")
+      f"ResultDB couldn't query for invocation: {invocation}"
+    )
 
   if len(test_results["testResults"]) == 0:
     raise errors.UserError(
-        f"ResultDB couldn't find test result for test regex {test_regex}")
+      f"ResultDB couldn't find test result for test regex {test_regex}"
+    )
 
   result = test_results["testResults"][0]
   try:
@@ -48,12 +51,14 @@ def get_test_metadata(invocation, test_regex: str) -> Tuple[str, str]:
     repo, filename = loc['repo'], loc['fileName']
   except KeyError as e:
     raise errors.InternalError(
-        f"Malformed GetTestResult response: no key {e}") from e
+      f"Malformed GetTestResult response: no key {e}"
+    ) from e
 
   if repo != 'https://chromium.googlesource.com/chromium/src':
     raise errors.UserError(
-        f"Test is in repo '{repo}', this tool can only disable tests in " +
-        "chromium/chromium/src")
+      f"Test is in repo '{repo}', this tool can only disable tests in "
+      + "chromium/chromium/src"
+    )
 
   return name, filename
 
@@ -71,13 +76,13 @@ def get_test_result_history(test_id: str, page_size: int) -> dict:
 
   now = datetime.datetime.now(datetime.timezone.utc)
   request = {
-      'realm': 'chromium:ci',
-      'testIdRegexp': test_id,
-      'timeRange': {
-          'earliest': (now - datetime.timedelta(hours=6)).isoformat(),
-          'latest': now.isoformat(),
-      },
-      'pageSize': page_size,
+    'realm': 'chromium:ci',
+    'testIdRegexp': test_id,
+    'timeRange': {
+      'earliest': (now - datetime.timedelta(hours=6)).isoformat(),
+      'latest': now.isoformat(),
+    },
+    'pageSize': page_size,
   }
 
   return rdb_rpc('GetTestResultHistory', request)
@@ -95,9 +100,12 @@ def get_test_result(test_name: str) -> dict:
     The TestResult message, in dict form.
   """
 
-  return rdb_rpc('GetTestResult', {
+  return rdb_rpc(
+    'GetTestResult',
+    {
       'name': test_name,
-  })
+    },
+  )
 
 
 def query_test_result(invocation: str, test_regex: str):
@@ -111,14 +119,14 @@ def query_test_result(invocation: str, test_regex: str):
     The QueryTestResults response message, in dict form.
   """
   request = {
-      'invocations': [invocation],
-      'readMask': {
-          'paths': ['test_id', 'test_metadata'],
-      },
-      'pageSize': 1000,
-      'predicate': {
-          'testIdRegexp': test_regex,
-      },
+    'invocations': [invocation],
+    'readMask': {
+      'paths': ['test_id', 'test_metadata'],
+    },
+    'pageSize': 1000,
+    'predicate': {
+      'testIdRegexp': test_regex,
+    },
   }
   return rdb_rpc('QueryTestResults', request)
 
@@ -159,11 +167,13 @@ def rdb_rpc(method: str, request: dict) -> dict:
     if (response_json := canned_responses.get(key, None)) is not None:
       return json.loads(response_json)
 
-  p = subprocess.Popen(['rdb', 'rpc', 'luci.resultdb.v1.ResultDB', method],
-                       stdin=subprocess.PIPE,
-                       stdout=subprocess.PIPE,
-                       stderr=subprocess.PIPE,
-                       text=True)
+  p = subprocess.Popen(
+    ['rdb', 'rpc', 'luci.resultdb.v1.ResultDB', method],
+    stdin=subprocess.PIPE,
+    stdout=subprocess.PIPE,
+    stderr=subprocess.PIPE,
+    text=True,
+  )
 
   stdout, stderr = p.communicate(json.dumps(request))
   if p.returncode != 0:
@@ -171,8 +181,9 @@ def rdb_rpc(method: str, request: dict) -> dict:
     # just match on the output.
     if 'interactive login is required' in stderr:
       raise errors.UserError(
-          "Authentication is required to fetch test metadata.\n" +
-          "Please run:\n\trdb auth-login\nand try again")
+        "Authentication is required to fetch test metadata.\n"
+        + "Please run:\n\trdb auth-login\nand try again"
+      )
 
     raise Exception(f'rdb rpc {method} failed with: {stderr}')
 

@@ -9,12 +9,12 @@ COMMENTS_STR = "=== COMMENTS ===\n"
 COMMENT_SEP_STR = "=" * 72 + "\n"
 DASHES_STR = "-" * 36 + "\n"
 FILE_LINE_RE = re.compile(
-    "File (?P<name>[^\s]+)( \(snapshot (?P<snapshot>\d+)\))?")
+  "File (?P<name>[^\s]+)( \(snapshot (?P<snapshot>\d+)\))?"
+)
 LINE_LINE_RE = re.compile("Line (?P<number>\d+): (?P<text>.*)\n")
 
 
 class Parser(object):
-
   def __init__(self, linesiter):
     self._lines = linesiter
 

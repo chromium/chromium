@@ -10,6 +10,7 @@ import graph
 
 class TestNode(unittest.TestCase):
     """Unit tests for dependency_analysis.graph.Node."""
+
     UNIQUE_KEY_1 = 'abc'
     UNIQUE_KEY_2 = 'def'
 
@@ -71,6 +72,7 @@ class TestNode(unittest.TestCase):
 
 class TestGraph(unittest.TestCase):
     """Unit tests for dependency_analysis.graph.Graph."""
+
     UNIQUE_KEY_1 = 'abc'
     UNIQUE_KEY_2 = 'def'
 
@@ -88,8 +90,7 @@ class TestGraph(unittest.TestCase):
     def test_get_node_exists(self):
         """Tests getting a node that we know exists in the graph."""
         self.test_graph.add_node_if_new(self.UNIQUE_KEY_1)
-        self.assertIsNotNone(self.test_graph.get_node_by_key(
-            self.UNIQUE_KEY_1))
+        self.assertIsNotNone(self.test_graph.get_node_by_key(self.UNIQUE_KEY_1))
 
     def test_get_node_does_not_exist(self):
         """Tests getting a node that we know does not exist in the graph."""
@@ -100,8 +101,10 @@ class TestGraph(unittest.TestCase):
         node1 = self.test_graph.add_node_if_new(self.UNIQUE_KEY_1)
         node2 = self.test_graph.add_node_if_new(self.UNIQUE_KEY_2)
         self.assertEqual(self.test_graph.num_nodes, 2)
-        self.assertEqual(graph.sorted_nodes_by_name(self.test_graph.nodes),
-                         graph.sorted_nodes_by_name([node1, node2]))
+        self.assertEqual(
+            graph.sorted_nodes_by_name(self.test_graph.nodes),
+            graph.sorted_nodes_by_name([node1, node2]),
+        )
 
     def test_add_nodes_duplicate(self):
         """Tests adding the same node twice to the graph."""
@@ -135,16 +138,19 @@ class TestGraph(unittest.TestCase):
         self.assertEqual(node2.outbound, {node1})
         self.assertEqual(
             graph.sorted_edges_by_name(self.test_graph.edges),
-            graph.sorted_edges_by_name([(node1, node2), (node2, node1)]))
+            graph.sorted_edges_by_name([(node1, node2), (node2, node1)]),
+        )
 
     def test_add_edge_duplicate(self):
         """Tests adding a duplicate edge to the graph."""
         node1 = self.test_graph.add_node_if_new(self.UNIQUE_KEY_1)
         node2 = self.test_graph.add_node_if_new(self.UNIQUE_KEY_2)
         edge_added_first = self.test_graph.add_edge_if_new(
-            self.UNIQUE_KEY_1, self.UNIQUE_KEY_2)
+            self.UNIQUE_KEY_1, self.UNIQUE_KEY_2
+        )
         edge_added_second = self.test_graph.add_edge_if_new(
-            self.UNIQUE_KEY_1, self.UNIQUE_KEY_2)
+            self.UNIQUE_KEY_1, self.UNIQUE_KEY_2
+        )
 
         self.assertEqual(self.test_graph.num_edges, 1)
         self.assertTrue(edge_added_first)
@@ -155,10 +161,8 @@ class TestGraph(unittest.TestCase):
         """Tests adding a new edge to a graph without the edge's nodes."""
         self.test_graph.add_edge_if_new(self.UNIQUE_KEY_1, self.UNIQUE_KEY_2)
         self.assertEqual(self.test_graph.num_edges, 1)
-        self.assertIsNotNone(self.test_graph.get_node_by_key(
-            self.UNIQUE_KEY_1))
-        self.assertIsNotNone(self.test_graph.get_node_by_key(
-            self.UNIQUE_KEY_2))
+        self.assertIsNotNone(self.test_graph.get_node_by_key(self.UNIQUE_KEY_1))
+        self.assertIsNotNone(self.test_graph.get_node_by_key(self.UNIQUE_KEY_2))
 
 
 if __name__ == '__main__':

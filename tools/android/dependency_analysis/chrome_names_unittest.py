@@ -15,22 +15,29 @@ class TestChromeNames_ShortenClass(unittest.TestCase):
         self.assertEqual(
             '.c.b.flags.ChromeFeatureList',
             chrome_names.shorten_class(
-                'org.chromium.chrome.browser.flags.ChromeFeatureList'))
+                'org.chromium.chrome.browser.flags.ChromeFeatureList'
+            ),
+        )
 
     def test_shorten_base_class(self):
         self.assertEqual(
             '.base.Callback',
-            chrome_names.shorten_class('org.chromium.base.Callback'))
+            chrome_names.shorten_class('org.chromium.base.Callback'),
+        )
 
     def test_shorten_components_class(self):
         self.assertEqual(
             '.components.prefs.PrefService',
             chrome_names.shorten_class(
-                'org.chromium.components.prefs.PrefService'))
+                'org.chromium.components.prefs.PrefService'
+            ),
+        )
 
     def test_does_not_shorten_third_party_class(self):
-        self.assertEqual('org.other_project.Class',
-                         chrome_names.shorten_class('org.other_project.Class'))
+        self.assertEqual(
+            'org.other_project.Class',
+            chrome_names.shorten_class('org.other_project.Class'),
+        )
 
 
 class TestChromeNames_ShortenBuildTarget(unittest.TestCase):
@@ -39,13 +46,17 @@ class TestChromeNames_ShortenBuildTarget(unittest.TestCase):
     def test_shorten_chrome_java(self):
         self.assertEqual(
             'chrome_java',
-            chrome_names.shorten_build_target('//chrome/android:chrome_java'))
+            chrome_names.shorten_build_target('//chrome/android:chrome_java'),
+        )
 
     def test_shorten_chrome_browser(self):
         self.assertEqual(
             '//c/b/flags:java',
-            chrome_names.shorten_build_target('//chrome/browser/flags:java'))
+            chrome_names.shorten_build_target('//chrome/browser/flags:java'),
+        )
 
     def test_does_not_shorten_other_directories(self):
-        self.assertEqual('//base:base_java',
-                         chrome_names.shorten_build_target('//base:base_java'))
+        self.assertEqual(
+            '//base:base_java',
+            chrome_names.shorten_build_target('//base:base_java'),
+        )

@@ -1,7 +1,7 @@
 # Copyright 2026 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-""" Tests for demangler.py"""
+"""Tests for demangler.py"""
 
 import os
 import pathlib
@@ -14,9 +14,9 @@ from colabutils.memory_usage.demangler import Demangler
 
 
 class DemanglerTest(unittest.TestCase):
-
-    @unittest.skipIf(sys.platform == 'win32',
-                     'llvm-cxxfilt is not fetched on Windows')
+    @unittest.skipIf(
+        sys.platform == 'win32', 'llvm-cxxfilt is not fetched on Windows'
+    )
     def test_demangle(self):
         with Demangler() as demangler:
             mangled_name = '_Znwm'

@@ -65,7 +65,8 @@ class JavaTargetDependencyGraph(graph.Graph[JavaTarget]):
                     begin_target_node.add_class(begin_class)
                     end_target_node.add_class(end_class)
                     begin_target_node.add_class_dependency_edge(
-                        end_target_node, begin_class, end_class)
+                        end_target_node, begin_class, end_class
+                    )
 
     def create_node_from_key(self, key: str):
         """Create a JavaTarget node from the given key (target name)."""
@@ -83,8 +84,10 @@ class JavaTargetDependencyGraph(graph.Graph[JavaTarget]):
         }
         """
         return {
-            group_json_consts.CLASS_EDGES:
-            sorted(
-                [begin.name, end.name] for begin, end in
-                begin_node.get_class_dependencies_in_outbound_edge(end_node)),
+            group_json_consts.CLASS_EDGES: sorted(
+                [begin.name, end.name]
+                for begin, end in begin_node.get_class_dependencies_in_outbound_edge(
+                    end_node
+                )
+            ),
         }

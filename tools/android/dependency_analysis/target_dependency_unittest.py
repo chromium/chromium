@@ -11,9 +11,9 @@ import unittest.mock
 import target_dependency
 
 
-def create_mock_java_class(targets: Optional[List[str]] = None,
-                           pkg='package',
-                           cls='class'):
+def create_mock_java_class(
+    targets: Optional[List[str]] = None, pkg='package', cls='class'
+):
     mock_class = unittest.mock.Mock()
     mock_class.class_name = cls
     mock_class.package = pkg
@@ -27,6 +27,7 @@ class TestJavaTargetDependencyGraph(unittest.TestCase):
 
     Full name: dependency_analysis.class_dependency.JavaTargetDependencyGraph.
     """
+
     TEST_TARGET1 = 'target1'
     TEST_TARGET2 = 'target2'
     TEST_CLS = 'class'
@@ -42,13 +43,18 @@ class TestJavaTargetDependencyGraph(unittest.TestCase):
         # Create dependencies (1 -> 3) and (3 -> 2).
         mock_class_graph = unittest.mock.Mock()
         mock_class_graph.nodes = [
-            mock_class_node_1, mock_class_node_2, mock_class_node_3
+            mock_class_node_1,
+            mock_class_node_2,
+            mock_class_node_3,
         ]
-        mock_class_graph.edges = [(mock_class_node_1, mock_class_node_3),
-                                  (mock_class_node_3, mock_class_node_2)]
+        mock_class_graph.edges = [
+            (mock_class_node_1, mock_class_node_3),
+            (mock_class_node_3, mock_class_node_2),
+        ]
 
         test_graph = target_dependency.JavaTargetDependencyGraph(
-            mock_class_graph)
+            mock_class_graph
+        )
 
         # Expected output: two-node target graph with a bidirectional edge.
         self.assertEqual(test_graph.num_nodes, 2)
@@ -56,8 +62,9 @@ class TestJavaTargetDependencyGraph(unittest.TestCase):
         self.assertIsNotNone(test_graph.get_node_by_key(self.TEST_TARGET1))
         self.assertIsNotNone(test_graph.get_node_by_key(self.TEST_TARGET2))
         # Ensure there is a bidirectional edge.
-        (edge_1_start, edge_1_end), (edge_2_start,
-                                     edge_2_end) = test_graph.edges
+        (edge_1_start, edge_1_end), (edge_2_start, edge_2_end) = (
+            test_graph.edges
+        )
         self.assertEqual(edge_1_start, edge_2_end)
         self.assertEqual(edge_2_start, edge_1_end)
 
@@ -72,7 +79,8 @@ class TestJavaTargetDependencyGraph(unittest.TestCase):
         mock_class_graph.edges = []
 
         test_graph = target_dependency.JavaTargetDependencyGraph(
-            mock_class_graph)
+            mock_class_graph
+        )
 
         # Expected output: one-node package graph with no edges.
         self.assertEqual(test_graph.num_nodes, 1)
@@ -95,7 +103,8 @@ class TestJavaTargetDependencyGraph(unittest.TestCase):
         mock_class_graph.edges = [(mock_class_node_1, mock_class_node_2)]
 
         test_graph = target_dependency.JavaTargetDependencyGraph(
-            mock_class_graph)
+            mock_class_graph
+        )
 
         # Expected output: one-node package graph with no edges.
         self.assertEqual(test_graph.num_nodes, 1)
@@ -107,20 +116,26 @@ class TestJavaTargetDependencyGraph(unittest.TestCase):
         # Create three class nodes (1, 2, 3) in in two targets [1, 2], [1, 3].
 
         mock_class_node_1 = create_mock_java_class(
-            targets=[self.TEST_TARGET1, self.TEST_TARGET2])
+            targets=[self.TEST_TARGET1, self.TEST_TARGET2]
+        )
         mock_class_node_2 = create_mock_java_class(targets=[self.TEST_TARGET1])
         mock_class_node_3 = create_mock_java_class(targets=[self.TEST_TARGET2])
 
         # Create dependencies (1 -> 3) and (3 -> 2).
         mock_class_graph = unittest.mock.Mock()
         mock_class_graph.nodes = [
-            mock_class_node_1, mock_class_node_2, mock_class_node_3
+            mock_class_node_1,
+            mock_class_node_2,
+            mock_class_node_3,
         ]
-        mock_class_graph.edges = [(mock_class_node_1, mock_class_node_3),
-                                  (mock_class_node_3, mock_class_node_2)]
+        mock_class_graph.edges = [
+            (mock_class_node_1, mock_class_node_3),
+            (mock_class_node_3, mock_class_node_2),
+        ]
 
         test_graph = target_dependency.JavaTargetDependencyGraph(
-            mock_class_graph)
+            mock_class_graph
+        )
 
         # Expected output: two-node target graph with a bidirectional edge and
         #                  no self edge: target1 <=> target2
@@ -131,8 +146,9 @@ class TestJavaTargetDependencyGraph(unittest.TestCase):
         self.assertIsNotNone(target1_node)
         self.assertIsNotNone(target2_node)
         # Ensure there is a bidirectional edge.
-        (edge_1_start, edge_1_end), (edge_2_start,
-                                     edge_2_end) = test_graph.edges
+        (edge_1_start, edge_1_end), (edge_2_start, edge_2_end) = (
+            test_graph.edges
+        )
         self.assertEqual(edge_1_start, edge_2_end)
         self.assertEqual(edge_2_start, edge_1_end)
 
@@ -142,7 +158,8 @@ class TestJavaTargetDependencyGraph(unittest.TestCase):
         mock_class_graph.nodes = []
         mock_class_graph.edges = []
         test_graph = target_dependency.JavaTargetDependencyGraph(
-            mock_class_graph)
+            mock_class_graph
+        )
 
         created_node = test_graph.create_node_from_key(self.TEST_TARGET1)
         self.assertEqual(created_node.name, self.TEST_TARGET1)

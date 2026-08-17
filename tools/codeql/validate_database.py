@@ -1,7 +1,7 @@
 # Copyright 2024 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-""" Given a path to a directory of CodeQL logs, this script analyzes the
+"""Given a path to a directory of CodeQL logs, this script analyzes the
 contents of those logs to determine whether the CodeQL extractor encountered
 any errors that affect the integrity of the finalized database.
 
@@ -10,24 +10,27 @@ On success (database is intact), this script returns 0.
 On failure (database is corrupt OR has unknown status), this script returns -1
 and outputs a list of the specific logfiles that correspond to integrity errors,
 plus a list of the specific logfiles containing unknown errors."""
+
 import os
 import argparse
 
 # The set of errors that are known to exist, but do not affect the integrity
 # of the finalized database.
 KNOWN_INCONSEQUENTIAL_ERRORS = [
-    "Unknown expr kind 30",
-    "Unexpected template kind 9",
-    "Unknown expr kind 31",
-    "Unknown expr kind 34",
-    "Unexpected dynamic init kind 1",
-    "Unexpected dynamic init kind 2",
-    "Unexpected dynamic init kind 3",
-    "Unexpected dynamic init kind 6",
-    "Unexpected dynamic init kind 7",
-    "Unknown kind 5",
-    ("In fabricate_destructors_expr: Unsupported expression kind encountered "
-     "while fabricating destructors (fabricate_destructors_expr, 31)."),
+  "Unknown expr kind 30",
+  "Unexpected template kind 9",
+  "Unknown expr kind 31",
+  "Unknown expr kind 34",
+  "Unexpected dynamic init kind 1",
+  "Unexpected dynamic init kind 2",
+  "Unexpected dynamic init kind 3",
+  "Unexpected dynamic init kind 6",
+  "Unexpected dynamic init kind 7",
+  "Unknown kind 5",
+  (
+    "In fabricate_destructors_expr: Unsupported expression kind encountered "
+    "while fabricating destructors (fabricate_destructors_expr, 31)."
+  ),
 ]
 
 # TODO(flowerhack): These error messages are pretty brittle at the moment. As we
@@ -35,27 +38,35 @@ KNOWN_INCONSEQUENTIAL_ERRORS = [
 # update these to match the appropriate errors more flexible (e.g. remove
 # references to specific files, etc)
 KNOWN_PROBLEMATIC_ERRORS = [
-    ('In construct_text_message: "../../third_party/dawn/src/dawn/native/'
-     'webgpu_absl_format.cpp", line 118: internal error: assertion failed: '
-     'cast_node: cast to class type (exprutil.c, line 9462 in cast_node)'),
-    ('Warning[extractor-c++]: In construct_text_message: "../../base/functional'
-     '/function_ref.h", line 69: internal error: assertion failed at: '
-     '"decls.c", line 21165 in mark_decl_after_first_in_comma_list')
+  (
+    'In construct_text_message: "../../third_party/dawn/src/dawn/native/'
+    'webgpu_absl_format.cpp", line 118: internal error: assertion failed: '
+    'cast_node: cast to class type (exprutil.c, line 9462 in cast_node)'
+  ),
+  (
+    'Warning[extractor-c++]: In construct_text_message: "../../base/functional'
+    '/function_ref.h", line 69: internal error: assertion failed at: '
+    '"decls.c", line 21165 in mark_decl_after_first_in_comma_list'
+  ),
 ]
 
-GENERIC_EXTRACTOR_ERROR = ('Warning[extractor-c++]: In main: Extractor exiting '
-                           'with code 1')
+GENERIC_EXTRACTOR_ERROR = (
+  'Warning[extractor-c++]: In main: Extractor exiting with code 1'
+)
 
 
 def line_in_list(line, errlist):
-  """ For a given line, checks if it matches any error in errlist. """
+  """For a given line, checks if it matches any error in errlist."""
   return any([line in error for error in errlist])
 
 
 def check_if_log_lines_indicate_nontrivial_error(
-    filename, log_lines, extractor_logs_indicating_integrity_errors,
-    extractor_logs_containing_unknown_errors):
-  """ For a given list of log_lines, checks if any of them (1) known problematic
+  filename,
+  log_lines,
+  extractor_logs_indicating_integrity_errors,
+  extractor_logs_containing_unknown_errors,
+):
+  """For a given list of log_lines, checks if any of them (1) known problematic
   errors or (2) unknown errors, and stores the filename in the appropriate
   list if so."""
   for line in log_lines:
@@ -74,16 +85,19 @@ def check_if_log_lines_indicate_nontrivial_error(
 
 def main():
   parser = argparse.ArgumentParser(
-      description='Parse arguments for validation of CodeQL databases')
+    description='Parse arguments for validation of CodeQL databases'
+  )
   parser.add_argument(
-      '--codeql_log_path',
-      '-l',
-      type=str,
-      required=True,
-      help='Absolute path of a CodeQL log directory (e.g. "/codeql_db/logs")')
+    '--codeql_log_path',
+    '-l',
+    type=str,
+    required=True,
+    help='Absolute path of a CodeQL log directory (e.g. "/codeql_db/logs")',
+  )
   args = parser.parse_args()
-  logs_directory_path = os.path.abspath(os.path.expanduser(
-      args.codeql_log_path))
+  logs_directory_path = os.path.abspath(
+    os.path.expanduser(args.codeql_log_path)
+  )
   extractor_logs_directory_path = os.path.join(logs_directory_path, 'extractor')
 
   extractor_logs_indicating_integrity_errors = []
@@ -107,11 +121,16 @@ def main():
         # If so, scan all errors emanated by the extractor and classify them.
         num_files_with_errors += 1
         check_if_log_lines_indicate_nontrivial_error(
-            filename, lines, extractor_logs_indicating_integrity_errors,
-            extractor_logs_containing_unknown_errors)
+          filename,
+          lines,
+          extractor_logs_indicating_integrity_errors,
+          extractor_logs_containing_unknown_errors,
+        )
 
-  if not (extractor_logs_indicating_integrity_errors
-          or extractor_logs_containing_unknown_errors):
+  if not (
+    extractor_logs_indicating_integrity_errors
+    or extractor_logs_containing_unknown_errors
+  ):
     print("Database contains no integrity errors.")
     return 0
 
@@ -122,8 +141,7 @@ def main():
   print("Paths of logfiles containing unknown errors:")
   for filepath in extractor_logs_containing_unknown_errors:
     print(filepath)
-  print(f"{num_files_with_errors}/{num_files_scanned}"
-        " files contained errors")
+  print(f"{num_files_with_errors}/{num_files_scanned} files contained errors")
   print(f"{len(extractor_logs_containing_unknown_errors)} unknown errors")
   print(f"{len(extractor_logs_indicating_integrity_errors)} integrity errors")
   return -1

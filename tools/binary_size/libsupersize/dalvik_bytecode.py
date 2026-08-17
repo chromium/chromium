@@ -252,8 +252,9 @@ fe 21c  const-method-handle vAA, method_handle@BBBB
 ff 21c  const-method-type vAA, proto@BBBB
 """
 
-DalvikByteCode = collections.namedtuple('DalvikByteCode',
-                                        'op,size,format,name,params')
+DalvikByteCode = collections.namedtuple(
+  'DalvikByteCode', 'op,size,format,name,params'
+)
 
 
 def _ParseByteCodeSpecs():
@@ -326,7 +327,7 @@ def Split(insns):
   while pos < pos_end:
     instr = DALVIK_INSTRUCTIONS[insns[pos]]
     size = instr.size
-    chunk = insns[pos:pos + size]
+    chunk = insns[pos : pos + size]
     # Instructions with supplemental data contains relative offset to where
     # data starts, which indicates where code ends.
     if instr.format == '31t':

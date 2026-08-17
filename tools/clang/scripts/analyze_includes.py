@@ -111,7 +111,7 @@ def parse_build(build_log, root_filter=None):
           print('missing include under', file_stack[0])
           continue
       else:
-        del file_stack[-(prev_depth - depth + 1):]
+        del file_stack[-(prev_depth - depth + 1) :]
 
       includes[file_stack[-1]].add(filename)
       file_stack.append(filename)
@@ -129,7 +129,7 @@ def parse_build(build_log, root_filter=None):
       includes.setdefault(filename, set())
       continue
 
-    if (m := ENTER_DIR_RE.match(line)):
+    if m := ENTER_DIR_RE.match(line):
       build_dir = m.group(1)
       continue
 
@@ -144,28 +144,29 @@ def parse_build(build_log, root_filter=None):
 class TestParseBuild(unittest.TestCase):
   def test_basic(self):
     x = [
-        'ninja: Entering directory `out/foo\'',
-        '[1/3] clang -c ../../a.cc -o a.o',
-        '. ../../a.h',
-        '[2/3] clang -c gen/c.c -o a.o',
+      'ninja: Entering directory `out/foo\'',
+      '[1/3] clang -c ../../a.cc -o a.o',
+      '. ../../a.h',
+      '[2/3] clang -c gen/c.c -o a.o',
     ]
     (roots, includes) = parse_build(x)
     self.assertEqual(roots, set(['a.cc', 'out/foo/gen/c.c']))
-    self.assertEqual(set(includes.keys()),
-                     set(['a.cc', 'a.h', 'out/foo/gen/c.c']))
+    self.assertEqual(
+      set(includes.keys()), set(['a.cc', 'a.h', 'out/foo/gen/c.c'])
+    )
     self.assertEqual(includes['a.cc'], set(['a.h']))
     self.assertEqual(includes['a.h'], set())
     self.assertEqual(includes['out/foo/gen/c.c'], set())
 
   def test_more(self):
     x = [
-        'ninja: Entering directory `out/foo\'',
-        '[20/99] clang -c ../../a.cc -o a.o',
-        '. ../../a.h',
-        '. ../../b.h',
-        '.. ../../c.h',
-        '... ../../d.h',
-        '. ../../e.h',
+      'ninja: Entering directory `out/foo\'',
+      '[20/99] clang -c ../../a.cc -o a.o',
+      '. ../../a.h',
+      '. ../../b.h',
+      '.. ../../c.h',
+      '... ../../d.h',
+      '. ../../e.h',
     ]
     (roots, includes) = parse_build(x)
     self.assertEqual(roots, set(['a.cc']))
@@ -177,11 +178,11 @@ class TestParseBuild(unittest.TestCase):
 
   def test_multiple(self):
     x = [
-        'ninja: Entering directory `out/foo\'',
-        '[123/234] clang -c ../../a.cc -o a.o',
-        '. ../../a.h',
-        '[124/234] clang -c ../../b.cc -o b.o',
-        '. ../../b.h',
+      'ninja: Entering directory `out/foo\'',
+      '[123/234] clang -c ../../a.cc -o a.o',
+      '. ../../a.h',
+      '[124/234] clang -c ../../b.cc -o b.o',
+      '. ../../b.h',
     ]
     (roots, includes) = parse_build(x)
     self.assertEqual(roots, set(['a.cc', 'b.cc']))
@@ -190,11 +191,11 @@ class TestParseBuild(unittest.TestCase):
 
   def test_root_filter(self):
     x = [
-        'ninja: Entering directory `out/foo\'',
-        '[9/100] clang -c ../../a.cc -o a.o',
-        '. ../../a.h',
-        '[10/100] clang -c ../../b.cc -o b.o',
-        '. ../../b.h',
+      'ninja: Entering directory `out/foo\'',
+      '[9/100] clang -c ../../a.cc -o a.o',
+      '. ../../a.h',
+      '[10/100] clang -c ../../b.cc -o b.o',
+      '. ../../b.h',
     ]
     (roots, includes) = parse_build(x, re.compile(r'^a.cc$'))
     self.assertEqual(roots, set(['a.cc']))
@@ -203,28 +204,29 @@ class TestParseBuild(unittest.TestCase):
 
   def test_windows(self):
     x = [
-        'ninja: Entering directory `out/foo\'',
-        '[1/3] path\\clang-cl.exe /c ../../a.cc /Foa.o',
-        '. ../../a.h',
-        '[2/3] clang-cl.exe /c gen/c.c /Foa.o',
+      'ninja: Entering directory `out/foo\'',
+      '[1/3] path\\clang-cl.exe /c ../../a.cc /Foa.o',
+      '. ../../a.h',
+      '[2/3] clang-cl.exe /c gen/c.c /Foa.o',
     ]
     (roots, includes) = parse_build(x)
     self.assertEqual(roots, set(['a.cc', 'out/foo/gen/c.c']))
-    self.assertEqual(set(includes.keys()),
-                     set(['a.cc', 'a.h', 'out/foo/gen/c.c']))
+    self.assertEqual(
+      set(includes.keys()), set(['a.cc', 'a.h', 'out/foo/gen/c.c'])
+    )
     self.assertEqual(includes['a.cc'], set(['a.h']))
     self.assertEqual(includes['a.h'], set())
     self.assertEqual(includes['out/foo/gen/c.c'], set())
 
   def test_bindgen(self):
     x = [
-        'ninja: Entering directory `out/foo\'',
-        '[123/234] clang -c ../../a.cc -o a.o',
-        '. ../../a.h',
-        '[124/234] bindgen -c ../../b.cc -o b.o',
-        '. ../../b.h',
-        '[125/234] clang -c ../../c.cc -o c.o',
-        '. ../../c.h',
+      'ninja: Entering directory `out/foo\'',
+      '[123/234] clang -c ../../a.cc -o a.o',
+      '. ../../a.h',
+      '[124/234] bindgen -c ../../b.cc -o b.o',
+      '. ../../b.h',
+      '[125/234] clang -c ../../c.cc -o c.o',
+      '. ../../c.h',
     ]
     (roots, includes) = parse_build(x)
     self.assertEqual(roots, set(['a.cc', 'c.cc']))
@@ -233,11 +235,11 @@ class TestParseBuild(unittest.TestCase):
 
   def test_modules(self):
     x = [
-        'ninja: Entering directory `out/foo\'',
-        '[123/234] clang -x c++ -Xclang -emit-module -c ../../a.modulemap -o a.pcm',
-        '[124/234] clang -fmodule-file=a.pcm -c ../../a.cc -o a.o',
-        '. a.pcm',
-        '. ../../a.h',
+      'ninja: Entering directory `out/foo\'',
+      '[123/234] clang -x c++ -Xclang -emit-module -c ../../a.modulemap -o a.pcm',
+      '[124/234] clang -fmodule-file=a.pcm -c ../../a.cc -o a.o',
+      '. a.pcm',
+      '. ../../a.h',
     ]
     (roots, includes) = parse_build(x)
     self.assertEqual(roots, {'a.cc'})
@@ -435,7 +437,9 @@ def batched(iterable, n):
     yield batch
 
 
-def analyze(target, revision, build_log_file, json_file, root_filter, processes=1):
+def analyze(
+  target, revision, build_log_file, json_file, root_filter, processes=1
+):
   log('Parsing build log...')
   (roots, includes) = parse_build(build_log_file, root_filter)
 
@@ -521,21 +525,24 @@ def analyze(target, revision, build_log_file, json_file, root_filter, processes=
   json_file.write('data = ')
 
   json.dump(
-      {
-          'target': target,
-          'revision': revision,
-          'date': datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC'),
-          'files': names,
-          'roots': [nr(x) for x in sorted(roots)],
-          'includes': [[nr(x) for x in sorted(includes[n])] for n in names],
-          'included_by': [[nr(x) for x in sorted(included_by[n])] for n in names],
-          'sizes': [sizes[n] for n in names],
-          'tsizes': [trans_sizes[n] for n in names],
-          'asizes': [added_sizes[n] for n in names],
-          'esizes': [[added_sizes[(s, d)] for d in sorted(includes[s])]
-                     for s in names],
-          'prevalence': [prevalence[n] for n in names],
-      }, json_file)
+    {
+      'target': target,
+      'revision': revision,
+      'date': datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC'),
+      'files': names,
+      'roots': [nr(x) for x in sorted(roots)],
+      'includes': [[nr(x) for x in sorted(includes[n])] for n in names],
+      'included_by': [[nr(x) for x in sorted(included_by[n])] for n in names],
+      'sizes': [sizes[n] for n in names],
+      'tsizes': [trans_sizes[n] for n in names],
+      'asizes': [added_sizes[n] for n in names],
+      'esizes': [
+        [added_sizes[(s, d)] for d in sorted(includes[s])] for s in names
+      ],
+      'prevalence': [prevalence[n] for n in names],
+    },
+    json_file,
+  )
 
   log('All done!')
 
@@ -546,25 +553,33 @@ def main():
     return 1
 
   parser = argparse.ArgumentParser(description='Analyze an #include graph.')
-  parser.add_argument('build_log',
-                      type=argparse.FileType('r', errors='replace'),
-                      help='The build log to analyze (- for stdin).')
-  parser.add_argument('--target',
-                      help='The target that was built (e.g. chrome).')
-  parser.add_argument('--revision',
-                      help='The revision that was built (e.g. 016588d4ee20).')
   parser.add_argument(
-      '--json-out',
-      type=argparse.FileType('w'),
-      help='Write full analysis data to a JSON file (- for stdout).')
-  parser.add_argument('--root-filter',
-                      help='Regex to filter which root files are analyzed.')
-  parser.add_argument('--processes',
-                      action="store",
-                      type=int,
-                      default=1,
-                      help="Use multiple processes to speed up the analysis - "
-                           "note that this scales memory usage significantly")
+    'build_log',
+    type=argparse.FileType('r', errors='replace'),
+    help='The build log to analyze (- for stdin).',
+  )
+  parser.add_argument(
+    '--target', help='The target that was built (e.g. chrome).'
+  )
+  parser.add_argument(
+    '--revision', help='The revision that was built (e.g. 016588d4ee20).'
+  )
+  parser.add_argument(
+    '--json-out',
+    type=argparse.FileType('w'),
+    help='Write full analysis data to a JSON file (- for stdout).',
+  )
+  parser.add_argument(
+    '--root-filter', help='Regex to filter which root files are analyzed.'
+  )
+  parser.add_argument(
+    '--processes',
+    action="store",
+    type=int,
+    default=1,
+    help="Use multiple processes to speed up the analysis - "
+    "note that this scales memory usage significantly",
+  )
   args = parser.parse_args()
 
   if args.json_out and not (args.target and args.revision):
@@ -577,8 +592,14 @@ def main():
     print('error: --root-filter is not a valid regex')
     return 1
 
-  analyze(args.target, args.revision, args.build_log, args.json_out,
-          root_filter, processes=args.processes)
+  analyze(
+    args.target,
+    args.revision,
+    args.build_log,
+    args.json_out,
+    root_filter,
+    processes=args.processes,
+  )
 
 
 if __name__ == '__main__':

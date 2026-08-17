@@ -10,17 +10,17 @@ import cr
 class ChromePublicTarget(cr.NamedTarget):
   NAME = 'chrome_public'
   CONFIG = cr.Config.From(
-      CR_RUN_ARGUMENTS=cr.Config.Optional('-d "{CR_URL!e}"'),
-      CR_TARGET_NAME='ChromePublic',
-      CR_PACKAGE='org.chromium.chrome',
-      CR_ACTIVITY='com.google.android.apps.chrome.Main',
+    CR_RUN_ARGUMENTS=cr.Config.Optional('-d "{CR_URL!e}"'),
+    CR_TARGET_NAME='ChromePublic',
+    CR_PACKAGE='org.chromium.chrome',
+    CR_ACTIVITY='com.google.android.apps.chrome.Main',
   )
 
 
 class ChromePublicTestTarget(cr.NamedTarget):
   NAME = 'chrome_public_test'
   CONFIG = cr.Config.From(
-      CR_TARGET_NAME='ChromePublicTest',
-      CR_TEST_TYPE=cr.Target.INSTRUMENTATION_TEST,
-      CR_RUN_DEPENDENCIES=[ChromePublicTarget.NAME],
+    CR_TARGET_NAME='ChromePublicTest',
+    CR_TEST_TYPE=cr.Target.INSTRUMENTATION_TEST,
+    CR_RUN_DEPENDENCIES=[ChromePublicTarget.NAME],
   )

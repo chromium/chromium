@@ -114,8 +114,9 @@ def ExpandThinArchives(paths, output_directory):
     for subpath, _ in IterArchiveChunks(abs_path):
       expanded_paths.append(CreateThinObjectPath(path, subpath))
 
-  logging.info('%d of %d .a files were thin archives',
-               len(thin_paths), num_archives)
+  logging.info(
+    '%d of %d .a files were thin archives', len(thin_paths), num_archives
+  )
   return expanded_paths, thin_paths
 
 

@@ -39,22 +39,26 @@ import models
 # * The parse time for compressed linker maps is dominated by ungzipping.
 
 _STRIP_NAME_PREFIX = {
-    models.FLAG_STARTUP: 8,
-    models.FLAG_UNLIKELY: 9,
-    models.FLAG_REL_LOCAL: 10,
-    models.FLAG_REL: 4,
-    models.FLAG_HOT: 4,
+  models.FLAG_STARTUP: 8,
+  models.FLAG_UNLIKELY: 9,
+  models.FLAG_REL_LOCAL: 10,
+  models.FLAG_REL: 4,
+  models.FLAG_HOT: 4,
 }
 
 # Sections that we want to create individual symbols from.
-_USEFUL_SECTIONS = frozenset(models.BSS_SECTIONS + (
+_USEFUL_SECTIONS = frozenset(
+  models.BSS_SECTIONS
+  + (
     models.SECTION_DATA,
     models.SECTION_DATA_REL_RO,
     models.SECTION_DATA_REL_RO_LOCAL,
     models.SECTION_RODATA,
     models.SECTION_TDATA,
     models.SECTION_TEXT,
-))
+  )
+)
+
 
 def _OpenMaybeGzAsText(path):
   """Calls `gzip.open()` if |path| ends in ".gz", otherwise calls `open()`."""
@@ -95,6 +99,7 @@ def _NormalizeName(name):
 
 class MapFileParserGold:
   """Parses a linker map file from gold linker."""
+
   # Map file writer for gold linker:
   # https://github.com/gittup/binutils/blob/HEAD/gold/mapfile.cc
 
@@ -161,10 +166,11 @@ class MapFileParserGold:
         break
       name, size_str, path = parts
       sym = models.Symbol(
-          models.SECTION_BSS,
-          int(size_str[2:], 16),
-          full_name=name,
-          object_path=path)
+        models.SECTION_BSS,
+        int(size_str[2:], 16),
+        full_name=name,
+        object_path=path,
+      )
       ret.append(sym)
     return ret
 
@@ -222,8 +228,9 @@ class MapFileParserGold:
         if not section_name.startswith('.'):
           logging.info('Merged %s into %s', section_name, prev_section_name)
           section_name = prev_section_name
-          archive_util.ExtendSectionRangeAdjacent(section_ranges, section_name,
-                                                  section_address, section_size)
+          archive_util.ExtendSectionRangeAdjacent(
+            section_ranges, section_name, section_address, section_size
+          )
         else:
           prev_section_name = section_name
           self._section_ranges[section_name] = (section_address, section_size)
@@ -260,18 +267,25 @@ class MapFileParserGold:
               address = int(address_str[2:], 16)
               size = int(size_str[2:], 16)
               path = None
-              sym = models.Symbol(section_name, size, address=address,
-                                  full_name=name, object_path=path)
+              sym = models.Symbol(
+                section_name,
+                size,
+                address=address,
+                full_name=name,
+                object_path=path,
+              )
               syms.append(sym)
               if merge_symbol_start_address > 0:
                 merge_symbol_start_address += size
             else:
               # A normal symbol entry.
               subsection_name, address_str, size_str, path = (
-                  self._ParsePossiblyWrappedParts(line, 4))
+                self._ParsePossiblyWrappedParts(line, 4)
+              )
               size = int(size_str[2:], 16)
               assert subsection_name.startswith(section_name), (
-                  'subsection name was: ' + subsection_name)
+                'subsection name was: ' + subsection_name
+              )
               mangled_name = subsection_name[prefix_len:]
               name = None
               address_str2 = None
@@ -316,13 +330,18 @@ class MapFileParserGold:
                   merge_symbol_start_address = 0
                   if merge_size > 0:
                     # merge_size == 0 for the initial symbol generally.
-                    logging.debug('Merge symbol of size %d found at:\n  %r',
-                                  merge_size, syms[-1])
+                    logging.debug(
+                      'Merge symbol of size %d found at:\n  %r',
+                      merge_size,
+                      syms[-1],
+                    )
                     # Set size=0 so that it will show up as padding.
                     sym = models.Symbol(
-                        section_name, 0,
-                        address=address,
-                        full_name='** symbol gap %d' % symbol_gap_count)
+                      section_name,
+                      0,
+                      address=address,
+                      full_name='** symbol gap %d' % symbol_gap_count,
+                    )
                     symbol_gap_count += 1
                     syms.append(sym)
 
@@ -336,23 +355,34 @@ class MapFileParserGold:
               #                 0x003f9d3c       0x48 obj/base/base/cpu.o
               #                 0x003f9d3d                base::CPU::CPU()
               full_name = name or mangled_name
-              if mangled_name and (not name or mangled_name.startswith('_Z') or
-                                   '._Z' in mangled_name):
+              if mangled_name and (
+                not name
+                or mangled_name.startswith('_Z')
+                or '._Z' in mangled_name
+              ):
                 full_name = mangled_name
 
               flags = _FlagsFromMangledName(mangled_name)
               if full_name:
                 if flags:
-                  full_name = full_name[_STRIP_NAME_PREFIX[flags]:]
+                  full_name = full_name[_STRIP_NAME_PREFIX[flags] :]
                 else:
                   full_name = _NormalizeName(full_name)
 
-              sym = models.Symbol(section_name, size, address=address,
-                                  full_name=full_name, object_path=path,
-                                  flags=flags)
+              sym = models.Symbol(
+                section_name,
+                size,
+                address=address,
+                full_name=full_name,
+                object_path=path,
+                flags=flags,
+              )
               syms.append(sym)
-          logging.debug('Symbol count for %s: %d', section_name,
-                        len(syms) - sym_count_at_start)
+          logging.debug(
+            'Symbol count for %s: %d',
+            section_name,
+            len(syms) - sym_count_at_start,
+          )
       except:
         logging.error('Problem line: %r', line)
         logging.error('In section: %r', section_name)
@@ -403,8 +433,14 @@ def _ProcessLevel3Buffer(buffer):
       best_entry = entry
 
   total_span = buffer[-1][4]
-  return (best_entry[0], best_entry[1], best_entry[2], 3, total_span,
-          best_entry[5])
+  return (
+    best_entry[0],
+    best_entry[1],
+    best_entry[2],
+    3,
+    total_span,
+    best_entry[5],
+  )
 
 
 def _GroupLevel3(tokenizer):
@@ -443,11 +479,13 @@ def _GroupLevel3(tokenizer):
 
 class MapFileParserLld:
   """Parses a linker map file from LLD."""
+
   # Map file writer for LLD linker (for ELF):
   # https://github.com/llvm-mirror/lld/blob/HEAD/ELF/MapFile.cpp
   _LINE_RE_V0 = re.compile(r'([0-9a-f]+)\s+([0-9a-f]+)\s+(\d+) ( *)(.*)')
   _LINE_RE_V1 = re.compile(
-      r'\s*[0-9a-f]+\s+([0-9a-f]+)\s+([0-9a-f]+)\s+(\d+) ( *)(.*)')
+    r'\s*[0-9a-f]+\s+([0-9a-f]+)\s+([0-9a-f]+)\s+(\d+) ( *)(.*)'
+  )
   _LINE_RE = [_LINE_RE_V0, _LINE_RE_V1]
 
   def __init__(self, linker_name):
@@ -465,8 +503,9 @@ class MapFileParserLld:
         next_thumb2_mode: New |thumb2_mode| value, or None if keep old value.
     """
     # Annotations for ARM match '$t', '$d.1', but not '$_21::invoke'.
-    if tok.startswith('$') and (len(tok) == 2 or
-                                (len(tok) >= 3 and tok[2] == '.')):
+    if tok.startswith('$') and (
+      len(tok) == 2 or (len(tok) >= 3 and tok[2] == '.')
+    ):
       if tok.startswith('$t'):
         return True, True  # Is annotation, enter Thumb2 mode.
       if tok.startswith('$a'):
@@ -508,7 +547,8 @@ class MapFileParserLld:
         assert level >= 2, 'Cannot jump from Level 1 to Level 3.'
         # Detect annotations. If found, maybe update |thumb2_mode|, then skip.
         (is_annotation, next_thumb2_mode) = (
-            MapFileParserLld.ParseArmAnnotations(next_tok))
+          MapFileParserLld.ParseArmAnnotations(next_tok)
+        )
         if is_annotation:
           if next_thumb2_mode:
             thumb2_mode = next_thumb2_mode
@@ -610,7 +650,7 @@ class MapFileParserLld:
     prev_section_end = 0
     prev_section_name = None
 
-    for (line, address, size, level, span, tok) in tokenizer:
+    for line, address, size, level, span, tok in tokenizer:
       # Level 1 data match the "Out" column. They specify sections or
       # PROVIDE_HIDDEN lines.
       if level == 1:
@@ -618,22 +658,28 @@ class MapFileParserLld:
         # Once we've hit a partition, we've finished the main library.
         # Ideally we'd also break down symbols in partitions, but we're likely
         # to stop using them soon anyways.
-        if (syms and address == 0 or tok.endswith('_partition')
-            or tok.startswith('PROVIDE_HIDDEN')):
+        if (
+          syms
+          and address == 0
+          or tok.endswith('_partition')
+          or tok.startswith('PROVIDE_HIDDEN')
+        ):
           logging.info('Stopped parsing at %s', tok)
           break
 
         cur_section = tok
         assert address >= prev_section_end, (
-            f'Section {cur_section} has start address within previous section: '
-            f'{address}\n{self._section_ranges}')
+          f'Section {cur_section} has start address within previous section: '
+          f'{address}\n{self._section_ranges}'
+        )
 
         # E.g. Merge user-defined sections. e.g.: malloc_hook, protected_memory.
         if not cur_section.startswith('.'):
           logging.info('Merged %s into %s', cur_section, prev_section_name)
           cur_section = prev_section_name
-          archive_util.ExtendSectionRangeAdjacent(self._section_ranges,
-                                                  cur_section, address, size)
+          archive_util.ExtendSectionRangeAdjacent(
+            self._section_ranges, cur_section, address, size
+          )
         else:
           prev_section_name = cur_section
           self._section_ranges[cur_section] = (address, size)
@@ -679,16 +725,24 @@ class MapFileParserLld:
 
               is_partial = False
               cur_obj = None
-            elif (cur_obj == 'lto.tmp' or 'thinlto-cache' in cur_obj
-                  or '.lto.' in cur_obj):
+            elif (
+              cur_obj == 'lto.tmp'
+              or 'thinlto-cache' in cur_obj
+              or '.lto.' in cur_obj
+            ):
               thin_map[address] = (size, os.path.basename(cur_obj))
               cur_obj = None
 
           # Create a symbol here since there may be no ensuing Level 3 lines.
           # But if there are, then the symbol can be modified later as sym[-1].
-          sym = models.Symbol(cur_section, size, address=address,
-                              full_name=mangled_name, object_path=cur_obj,
-                              flags=cur_flags)
+          sym = models.Symbol(
+            cur_section,
+            size,
+            address=address,
+            full_name=mangled_name,
+            object_path=cur_obj,
+            flags=cur_flags,
+          )
           syms.append(sym)
 
           # Level 3 |address| is nested under Level 2, don't add |size|.
@@ -758,14 +812,20 @@ class MapFileParserLld:
                   #   symbol.
                   # Anything that makes it here would be an anomaly worthy of
                   # investigation, so print warnings.
-                  logging.warning('Unrecognized __typeid_ symbol at %08X',
-                                  address)
+                  logging.warning(
+                    'Unrecognized __typeid_ symbol at %08X', address
+                  )
                   continue
               else:
                 # Prefer |size|, and only fall back to |span| if |size == 0|.
                 size_to_use = size if size > 0 else span
-              sym = models.Symbol(cur_section, size_to_use, address=address,
-                                  full_name=tok, flags=cur_flags)
+              sym = models.Symbol(
+                cur_section,
+                size_to_use,
+                address=address,
+                full_name=tok,
+                flags=cur_flags,
+              )
               syms.append(sym)
 
               # Suppress symbols with overlapping |address|. This eliminates
@@ -780,8 +840,11 @@ class MapFileParserLld:
     if promoted_name_count:
       logging.info('Found %d promoted global names', promoted_name_count)
     if jump_tables_count:
-      logging.info('Found %d CFI jump tables with %d total entries',
-                   jump_tables_count, jump_entries_count)
+      logging.info(
+        'Found %d CFI jump tables with %d total entries',
+        jump_tables_count,
+        jump_entries_count,
+      )
     return self._section_ranges, syms, {'thin_map': thin_map}
 
 
@@ -948,11 +1011,13 @@ def ProcessThinLtoPaths(raw_symbols, extras):
               sorted_paths = sorted(object_paths)
               symbol.object_path = sorted_paths[0]
               for path in sorted_paths[1:]:
-                new_sym = models.Symbol(symbol.section_name,
-                                        symbol.size,
-                                        address=symbol.address,
-                                        full_name=symbol.full_name,
-                                        object_path=path)
+                new_sym = models.Symbol(
+                  symbol.section_name,
+                  symbol.size,
+                  address=symbol.address,
+                  full_name=symbol.full_name,
+                  object_path=path,
+                )
                 ret.append(new_sym)
             else:
               num_omitted_aliases += 1
@@ -965,16 +1030,29 @@ def ProcessThinLtoPaths(raw_symbols, extras):
   #   Assigned (1 object path): 1098 symbols with total PSS = 55454
   #   Ambiguous (2+ object paths): 2315 symbols with total PSS = 41941
   logging.info('Object path deduction results for pathless symbols:')
-  logging.info('  No match: %d symbols with total PSS = %d', ref_tmp_popu[0],
-               ref_tmp_pss[0])
-  logging.info('  Assigned (1 object path): %d symbols with total PSS = %d',
-               ref_tmp_popu[1], ref_tmp_pss[1])
-  logging.info('  Ambiguous (2+ object paths): %d symbols with total PSS = %d',
-               ref_tmp_popu[2], ref_tmp_pss[2])
-  logging.info('  Created %d aliases covering %d bytes', num_aliases,
-               pss_aliases)
-  logging.info('  Skipped aliases for %d small symbols, covering %d bytes',
-               num_omitted_aliases, pss_omitted_aliases)
+  logging.info(
+    '  No match: %d symbols with total PSS = %d',
+    ref_tmp_popu[0],
+    ref_tmp_pss[0],
+  )
+  logging.info(
+    '  Assigned (1 object path): %d symbols with total PSS = %d',
+    ref_tmp_popu[1],
+    ref_tmp_pss[1],
+  )
+  logging.info(
+    '  Ambiguous (2+ object paths): %d symbols with total PSS = %d',
+    ref_tmp_popu[2],
+    ref_tmp_pss[2],
+  )
+  logging.info(
+    '  Created %d aliases covering %d bytes', num_aliases, pss_aliases
+  )
+  logging.info(
+    '  Skipped aliases for %d small symbols, covering %d bytes',
+    num_omitted_aliases,
+    pss_omitted_aliases,
+  )
   return ret
 
 
@@ -982,17 +1060,19 @@ def main():
   parser = argparse.ArgumentParser()
   parser.add_argument('linker_file', type=os.path.realpath)
   parser.add_argument(
-      '-v',
-      '--verbose',
-      default=0,
-      action='count',
-      help='Verbose level (multiple times for more)')
+    '-v',
+    '--verbose',
+    default=0,
+    action='count',
+    help='Verbose level (multiple times for more)',
+  )
   parser.add_argument('--dump', action='store_true')
   args = parser.parse_args()
 
   logging.basicConfig(
-      level=logging.WARNING - args.verbose * 10,
-      format='%(levelname).1s %(relativeCreated)6d %(message)s')
+    level=logging.WARNING - args.verbose * 10,
+    format='%(levelname).1s %(relativeCreated)6d %(message)s',
+  )
 
   section_ranges, syms, extras = ParseFile(args.linker_file)
 
@@ -1004,17 +1084,17 @@ def main():
     # Enter interactive shell.
     readline.parse_and_bind('tab: complete')
     variables = {
-        'section_ranges': section_ranges,
-        'syms': syms,
-        'extras': extras
+      'section_ranges': section_ranges,
+      'syms': syms,
+      'extras': extras,
     }
     banner_lines = [
-        '*' * 80,
-        'Variables:',
-        '  section_ranges: Map from section name to (address, size).',
-        '  syms: Raw symbols parsed from the linker map file.',
-        '  extras: Format-specific extra data.',
-        '*' * 80,
+      '*' * 80,
+      'Variables:',
+      '  section_ranges: Map from section name to (address, size).',
+      '  syms: Raw symbols parsed from the linker map file.',
+      '  extras: Format-specific extra data.',
+      '*' * 80,
     ]
     code.InteractiveConsole(variables).interact('\n'.join(banner_lines))
 

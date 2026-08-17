@@ -17,8 +17,13 @@ import sys
 import tempfile
 
 SRC_ROOT = pathlib.Path(__file__).resolve().parents[2]
-ISOLATE_MAP_PATH = (pathlib.Path('infra') / 'config' / 'generated' / 'testing' /
-                    'gn_isolate_map.pyl')
+ISOLATE_MAP_PATH = (
+  pathlib.Path('infra')
+  / 'config'
+  / 'generated'
+  / 'testing'
+  / 'gn_isolate_map.pyl'
+)
 UPDATE_RUST_PATH = pathlib.Path('tools') / 'rust' / 'update_rust.py'
 RUST_TOOLCHAIN_PATH = pathlib.Path('third_party') / 'rust-toolchain'
 
@@ -35,12 +40,12 @@ def run_git(src_root, args):
   """
   cmd = ['git'] + args
   return subprocess.run(
-      cmd,
-      capture_output=True,
-      text=True,
-      cwd=src_root,
-      check=False,
-      encoding='utf-8',
+    cmd,
+    capture_output=True,
+    text=True,
+    cwd=src_root,
+    check=False,
+    encoding='utf-8',
   )
 
 
@@ -60,12 +65,15 @@ def parse_isolate_map(content_str, source_name):
     # Map label -> suite name, excluding additional_compile_target
     label_to_suite = {}
     if not isinstance(data, dict):
-      print(f'Error parsing {source_name}: Expected a dictionary',
-            file=sys.stderr)
+      print(
+        f'Error parsing {source_name}: Expected a dictionary', file=sys.stderr
+      )
       return None
     for suite, details in data.items():
-      if isinstance(
-          details, dict) and details.get('type') == 'additional_compile_target':
+      if (
+        isinstance(details, dict)
+        and details.get('type') == 'additional_compile_target'
+      ):
         continue
       if isinstance(details, dict):
         label = details.get('label')
@@ -73,8 +81,10 @@ def parse_isolate_map(content_str, source_name):
           label_to_suite[label] = suite
     return label_to_suite
   except Exception as e:
-    print(f'Error parsing gn_isolate_map.pyl from {source_name}: {e}',
-          file=sys.stderr)
+    print(
+      f'Error parsing gn_isolate_map.pyl from {source_name}: {e}',
+      file=sys.stderr,
+    )
     return None
 
 
@@ -91,9 +101,9 @@ def load_isolate_map(src_root):
   pyl_path = src_root / ISOLATE_MAP_PATH
   if not pyl_path.exists():
     print(
-        f'Error: Isolate map not found at {pyl_path}. '
-        f'Please run main.star or sync.',
-        file=sys.stderr,
+      f'Error: Isolate map not found at {pyl_path}. '
+      f'Please run main.star or sync.',
+      file=sys.stderr,
     )
     return None
 
@@ -127,12 +137,12 @@ def run_gn_refs(src_root, build_dir, target_file):
   cmd = ['gn', 'refs', build_dir, '--all', gn_target]
   try:
     res = subprocess.run(
-        cmd,
-        capture_output=True,
-        text=True,
-        cwd=src_root,
-        check=False,
-        encoding='utf-8',
+      cmd,
+      capture_output=True,
+      text=True,
+      cwd=src_root,
+      check=False,
+      encoding='utf-8',
     )
     if res.returncode != 0:
       return None, res.stderr.strip()
@@ -199,8 +209,9 @@ def extract_test_suites(gn_refs_output, file_path, isolate_map):
       # The 'score' is the depth of the common directory prefix between the
       # file and the target.
       score = common_dir_prefix_len(file_dir, target_dir)
-      resolved_suites[suite_name] = max(resolved_suites.get(suite_name, -1),
-                                        score)
+      resolved_suites[suite_name] = max(
+        resolved_suites.get(suite_name, -1), score
+      )
 
   if not resolved_suites:
     return []
@@ -211,7 +222,7 @@ def extract_test_suites(gn_refs_output, file_path, isolate_map):
   # score == 0 (e.g., targets in the root directory).
   if max_score > 0:
     filtered_suites = [
-        name for name, score in resolved_suites.items() if score > 0
+      name for name, score in resolved_suites.items() if score > 0
     ]
   else:
     filtered_suites = list(resolved_suites.keys())
@@ -264,8 +275,8 @@ def check_graph_stability(src_root, revision, target_file, gn_refs_output):
   res = run_git(src_root, cmd)
   if res.returncode != 0:
     print(
-        f'Warning: Stability check failed to run: {res.stderr.strip()}',
-        file=sys.stderr,
+      f'Warning: Stability check failed to run: {res.stderr.strip()}',
+      file=sys.stderr,
     )
     return False, []
   changed_files = res.stdout.splitlines()
@@ -364,8 +375,9 @@ def _stub_missing_target(wt_path, target_ref):
   dest_dir = wt_path / dir_path
   build_gn_path = dest_dir / 'BUILD.gn'
 
-  stub_content = (f'\n# Stub added by test_suite_mapper.py\n'
-                  f'group("{target_name}") {{}}\n')
+  stub_content = (
+    f'\n# Stub added by test_suite_mapper.py\ngroup("{target_name}") {{}}\n'
+  )
 
   try:
     dest_dir.mkdir(parents=True, exist_ok=True)
@@ -378,8 +390,9 @@ def _stub_missing_target(wt_path, target_ref):
     return False
 
 
-def _spoof_rust_version(wt_path, src_rust_toolchain_dir,
-                        dest_rust_toolchain_dir):
+def _spoof_rust_version(
+  wt_path, src_rust_toolchain_dir, dest_rust_toolchain_dir
+):
   """Spoofs the Rust VERSION file in the worktree to match update_rust.py.
 
   Args:
@@ -422,8 +435,9 @@ def _spoof_rust_version(wt_path, src_rust_toolchain_dir,
   rust_version = match.group(1)
   clang_part = match.group(5)
   new_version_content = (
-      f'rustc {rust_version} {expected_rev} '
-      f'({expected_rev}-{expected_sub}-{clang_part} chromium)\n')
+    f'rustc {rust_version} {expected_rev} '
+    f'({expected_rev}-{expected_sub}-{clang_part} chromium)\n'
+  )
 
   dest_version_path = dest_rust_toolchain_dir / 'VERSION'
   try:
@@ -520,12 +534,12 @@ def _run_gn_gen_with_stubbing(wt_path, build_dir):
   max_retries = 10
   for attempt in range(max_retries):
     res = subprocess.run(
-        ['gn', 'gen', build_dir],
-        capture_output=True,
-        text=True,
-        cwd=wt_path,
-        check=False,
-        encoding='utf-8',
+      ['gn', 'gen', build_dir],
+      capture_output=True,
+      text=True,
+      cwd=wt_path,
+      check=False,
+      encoding='utf-8',
     )
     if res.returncode == 0:
       return True
@@ -546,9 +560,9 @@ def _run_gn_gen_with_stubbing(wt_path, build_dir):
         for t in set(missing_targets):
           if t in stubbed_targets:
             print(
-                f'Error: Target {t} was already stubbed but '
-                f'still unresolved. Cannot recover.',
-                file=sys.stderr,
+              f'Error: Target {t} was already stubbed but '
+              f'still unresolved. Cannot recover.',
+              file=sys.stderr,
             )
             return False
           if _stub_missing_target(wt_path, t):
@@ -559,17 +573,17 @@ def _run_gn_gen_with_stubbing(wt_path, build_dir):
           continue
 
     print(
-        f'Error running gn gen in worktree (Attempt {attempt + 1}): '
-        f'{res.stdout.strip()}',
-        file=sys.stderr,
+      f'Error running gn gen in worktree (Attempt {attempt + 1}): '
+      f'{res.stdout.strip()}',
+      file=sys.stderr,
     )
     if res.stderr:
       print(res.stderr.strip(), file=sys.stderr)
     break
   else:
     print(
-        'Error: Failed to resolve GN graph after maximum retries.',
-        file=sys.stderr,
+      'Error: Failed to resolve GN graph after maximum retries.',
+      file=sys.stderr,
     )
   return False
 
@@ -592,9 +606,8 @@ def git_worktree(src_root, revision, prefix='wt_cov_map_', parent_dir=None):
     wt_path = pathlib.Path(wt_dir)
 
     res = run_git(
-        src_root,
-        ['worktree', 'add', '--detach', '--force',
-         str(wt_path), revision],
+      src_root,
+      ['worktree', 'add', '--detach', '--force', str(wt_path), revision],
     )
     if res.returncode != 0:
       raise RuntimeError(f'Error creating git worktree: {res.stderr.strip()}')
@@ -618,8 +631,9 @@ def run_heavyweight_resolution(src_root, revision, build_dir, target_file):
     A list of strings (test suites) if successful, or None.
   """
   try:
-    with git_worktree(src_root, revision,
-                      parent_dir=src_root.parent) as wt_path:
+    with git_worktree(
+      src_root, revision, parent_dir=src_root.parent
+    ) as wt_path:
       # 2. Create symlinks for non-tracked/nested repo paths
       _setup_worktree_symlinks(src_root, wt_path, build_dir)
 
@@ -679,8 +693,8 @@ def verify_build_dir(src_root, build_dir):
   args_gn_path = src_root / build_dir / 'args.gn'
   if not args_gn_path.exists():
     return (
-        False,
-        f'args.gn not found in {build_dir}. Please run `gn gen`.',
+      False,
+      f'args.gn not found in {build_dir}. Please run `gn gen`.',
     )
 
   target_os = None
@@ -702,23 +716,24 @@ def verify_build_dir(src_root, build_dir):
 
   if target_os and target_os != 'linux':
     return (
-        False,
-        f'Unsupported target_os: {target_os}. '
-        f"Only 'linux' is supported initially.",
+      False,
+      f'Unsupported target_os: {target_os}. '
+      f"Only 'linux' is supported initially.",
     )
 
   if not target_os and not sys.platform.startswith('linux'):
     return (
-        False,
-        f'Host platform {sys.platform} is not Linux, '
-        f"and target_os is not set to 'linux' in args.gn.",
+      False,
+      f'Host platform {sys.platform} is not Linux, '
+      f"and target_os is not set to 'linux' in args.gn.",
     )
 
   return True, None
 
 
-def _load_isolate_map_for_args(src_root, isolate_map_file, revision,
-                               force_heavyweight):
+def _load_isolate_map_for_args(
+  src_root, isolate_map_file, revision, force_heavyweight
+):
   """Loads the isolate map based on arguments.
 
   Args:
@@ -735,8 +750,8 @@ def _load_isolate_map_for_args(src_root, isolate_map_file, revision,
   if isolate_map_file:
     if not os.path.exists(isolate_map_file):
       print(
-          f'Error: Isolate map file not found: {isolate_map_file}',
-          file=sys.stderr,
+        f'Error: Isolate map file not found: {isolate_map_file}',
+        file=sys.stderr,
       )
       sys.exit(1)
     try:
@@ -748,9 +763,9 @@ def _load_isolate_map_for_args(src_root, isolate_map_file, revision,
   elif revision:
     if not force_heavyweight:
       print(
-          'Error: For lightweight mapping at a revision, you must provide '
-          'the historical isolate map using --isolate-map-file.',
-          file=sys.stderr,
+        'Error: For lightweight mapping at a revision, you must provide '
+        'the historical isolate map using --isolate-map-file.',
+        file=sys.stderr,
       )
       sys.exit(1)
     return None
@@ -773,27 +788,33 @@ def _check_and_warn_stability(src_root, revision, file_path, refs):
   stable, changed = check_graph_stability(src_root, revision, file_path, refs)
   if not stable:
     print(
-        f'Warning: The GN graph or the file may have changed '
-        f'since revision {revision}.',
-        file=sys.stderr,
+      f'Warning: The GN graph or the file may have changed '
+      f'since revision {revision}.',
+      file=sys.stderr,
     )
     changed_files_display = ', '.join(changed[:5])
     if len(changed) > 5:
       changed_files_display += f" and {len(changed) - 5} more"
     print(
-        f'The following relevant files were modified: '
-        f'{changed_files_display}',
-        file=sys.stderr,
+      f'The following relevant files were modified: {changed_files_display}',
+      file=sys.stderr,
     )
     print(
-        'The mapping results might be inaccurate.',
-        file=sys.stderr,
+      'The mapping results might be inaccurate.',
+      file=sys.stderr,
     )
   return stable
 
 
-def _should_run_heavyweight(src_root, revision, file_path, refs,
-                            force_heavyweight, stable, lightweight_suites):
+def _should_run_heavyweight(
+  src_root,
+  revision,
+  file_path,
+  refs,
+  force_heavyweight,
+  stable,
+  lightweight_suites,
+):
   """Determines if heavyweight resolution should be run.
 
   Args:
@@ -818,17 +839,18 @@ def _should_run_heavyweight(src_root, revision, file_path, refs,
       current_suites = extract_test_suites(refs, file_path, head_isolate_map)
       if lightweight_suites != current_suites:
         print(
-            'Difference detected between lightweight revision mapping and '
-            'HEAD mapping, and the build graph is unstable. Triggering '
-            'heavyweight resolution.',
-            file=sys.stderr,
+          'Difference detected between lightweight revision mapping and '
+          'HEAD mapping, and the build graph is unstable. Triggering '
+          'heavyweight resolution.',
+          file=sys.stderr,
         )
         return True
   return False
 
 
-def _execute_heavyweight_resolution(src_root, revision, build_dir, file_path,
-                                    lightweight_suites):
+def _execute_heavyweight_resolution(
+  src_root, revision, build_dir, file_path, lightweight_suites
+):
   """Executes heavyweight resolution and handles fallback/logging.
 
   Args:
@@ -842,40 +864,44 @@ def _execute_heavyweight_resolution(src_root, revision, build_dir, file_path,
     A list of strings (test suites).
   """
   if not revision:
-    print('Error: Heavyweight resolution requires a --revision.',
-          file=sys.stderr)
+    print(
+      'Error: Heavyweight resolution requires a --revision.', file=sys.stderr
+    )
     sys.exit(1)
   print(
-      f'Running heavyweight GN graph resolution at revision {revision}...',
-      file=sys.stderr,
+    f'Running heavyweight GN graph resolution at revision {revision}...',
+    file=sys.stderr,
   )
   print(
-      'This requires checking out a worktree and running gn gen '
-      '(takes ~1 minute).',
-      file=sys.stderr,
+    'This requires checking out a worktree and running gn gen '
+    '(takes ~1 minute).',
+    file=sys.stderr,
   )
-  heavyweight_suites = run_heavyweight_resolution(src_root, revision, build_dir,
-                                                  file_path)
+  heavyweight_suites = run_heavyweight_resolution(
+    src_root, revision, build_dir, file_path
+  )
   if heavyweight_suites is not None:
-    if (lightweight_suites is not None
-        and heavyweight_suites != lightweight_suites):
+    if (
+      lightweight_suites is not None
+      and heavyweight_suites != lightweight_suites
+    ):
       print(
-          f'Heavyweight resolution completed. Results corrected: '
-          f'{lightweight_suites} -> {heavyweight_suites}',
-          file=sys.stderr,
+        f'Heavyweight resolution completed. Results corrected: '
+        f'{lightweight_suites} -> {heavyweight_suites}',
+        file=sys.stderr,
       )
     else:
       print(
-          f'Heavyweight resolution completed. '
-          f'Confirmed results: {heavyweight_suites}',
-          file=sys.stderr,
+        f'Heavyweight resolution completed. '
+        f'Confirmed results: {heavyweight_suites}',
+        file=sys.stderr,
       )
     return heavyweight_suites
   else:
     print(
-        'Error: Heavyweight resolution failed. '
-        'Falling back to lightweight results.',
-        file=sys.stderr,
+      'Error: Heavyweight resolution failed. '
+      'Falling back to lightweight results.',
+      file=sys.stderr,
     )
     return lightweight_suites if lightweight_suites is not None else []
 
@@ -898,38 +924,43 @@ Output Format:
   Returns a JSON array of covering test suite names (e.g., ["unit_tests", "browser_tests"]).
 """
   parser = argparse.ArgumentParser(
-      description=
-      'Maps a Chromium source file path to its covering target test suites.',
-      epilog=epilog,
-      formatter_class=argparse.RawDescriptionHelpFormatter,
+    description=(
+      'Maps a Chromium source file path to its covering target test suites.'
+    ),
+    epilog=epilog,
+    formatter_class=argparse.RawDescriptionHelpFormatter,
   )
   parser.add_argument(
-      'file_path',
-      type=pathlib.Path,
-      help='Relative path to the target file (e.g., chrome/browser/.../file.cc)'
+    'file_path',
+    type=pathlib.Path,
+    help='Relative path to the target file (e.g., chrome/browser/.../file.cc)',
   )
   parser.add_argument(
-      '--build-dir',
-      type=pathlib.Path,
-      default=pathlib.Path('out/Default'),
-      help=('Build directory (defaults to out/Default). Must contain args.gn '
-            'and be configured for target_os="linux".'),
+    '--build-dir',
+    type=pathlib.Path,
+    default=pathlib.Path('out/Default'),
+    help=(
+      'Build directory (defaults to out/Default). Must contain args.gn '
+      'and be configured for target_os="linux".'
+    ),
   )
   parser.add_argument(
-      '--revision',
-      '-r',
-      help='Git revision (hash, tag, branch) to perform the mapping at.',
+    '--revision',
+    '-r',
+    help='Git revision (hash, tag, branch) to perform the mapping at.',
   )
   parser.add_argument(
-      '--force-heavyweight',
-      action='store_true',
-      help=('Force rebuilding the GN build graph at the revision '
-            '(slower but 100%% accurate).'),
+    '--force-heavyweight',
+    action='store_true',
+    help=(
+      'Force rebuilding the GN build graph at the revision '
+      '(slower but 100%% accurate).'
+    ),
   )
   parser.add_argument(
-      '--isolate-map-file',
-      type=pathlib.Path,
-      help='Path to a local gn_isolate_map.pyl file to use for mapping.',
+    '--isolate-map-file',
+    type=pathlib.Path,
+    help='Path to a local gn_isolate_map.pyl file to use for mapping.',
   )
   args = parser.parse_args()
 
@@ -947,13 +978,13 @@ Output Format:
   # Verify build directory exists
   if not (src_root / build_dir).exists():
     print(
-        f'Error: Build directory {build_dir} does not exist or is not '
-        f'configured.',
-        file=sys.stderr,
+      f'Error: Build directory {build_dir} does not exist or is not '
+      f'configured.',
+      file=sys.stderr,
     )
     print(
-        f'Please run `gn gen {build_dir}` or supply a valid --build-dir.',
-        file=sys.stderr,
+      f'Please run `gn gen {build_dir}` or supply a valid --build-dir.',
+      file=sys.stderr,
     )
     sys.exit(1)
 
@@ -962,8 +993,9 @@ Output Format:
     print(f'Error: {err}', file=sys.stderr)
     sys.exit(1)
 
-  isolate_map = _load_isolate_map_for_args(src_root, args.isolate_map_file,
-                                           revision, args.force_heavyweight)
+  isolate_map = _load_isolate_map_for_args(
+    src_root, args.isolate_map_file, revision, args.force_heavyweight
+  )
 
   if isolate_map is None and not args.force_heavyweight:
     sys.exit(1)
@@ -987,19 +1019,19 @@ Output Format:
     lightweight_suites = extract_test_suites(refs, args.file_path, isolate_map)
 
   run_heavyweight = _should_run_heavyweight(
-      src_root,
-      revision,
-      args.file_path,
-      refs,
-      args.force_heavyweight,
-      stable,
-      lightweight_suites,
+    src_root,
+    revision,
+    args.file_path,
+    refs,
+    args.force_heavyweight,
+    stable,
+    lightweight_suites,
   )
 
   if run_heavyweight:
-    test_suites = _execute_heavyweight_resolution(src_root, revision, build_dir,
-                                                  args.file_path,
-                                                  lightweight_suites)
+    test_suites = _execute_heavyweight_resolution(
+      src_root, revision, build_dir, args.file_path, lightweight_suites
+    )
   else:
     test_suites = lightweight_suites if lightweight_suites is not None else []
 

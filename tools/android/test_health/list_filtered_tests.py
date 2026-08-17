@@ -12,19 +12,25 @@ import pathlib
 
 
 def main():
-    parser = argparse.ArgumentParser(description=(
-        'Lists filtered tests in .filter files in testing/buildbot/filters,'
-        ' outputs a .csv'))
-    parser.add_argument('-o',
-                        '--output-file',
-                        type=pathlib.Path,
-                        required=True,
-                        help='output CSV file path')
+    parser = argparse.ArgumentParser(
+        description=(
+            'Lists filtered tests in .filter files in testing/buildbot/filters,'
+            ' outputs a .csv'
+        )
+    )
+    parser.add_argument(
+        '-o',
+        '--output-file',
+        type=pathlib.Path,
+        required=True,
+        help='output CSV file path',
+    )
     args = parser.parse_args()
 
     filter_dir = pathlib.Path('testing/buildbot/filters')
     filter_file_paths = [
-        f for f in filter_dir.iterdir()
+        f
+        for f in filter_dir.iterdir()
         if f.is_file() and f.name.endswith('_apk.filter')
     ]
 
@@ -43,15 +49,15 @@ def main():
     for filter_file_name, filtered_tests in filtered_tests_by_builder.items():
         for filtered_test in filtered_tests:
             all_filtered_tests_to_builders[filtered_test].append(
-                filter_file_name)
+                filter_file_name
+            )
 
     with open(args.output_file, 'w') as csv_output_file:
         csv_writer = csv.writer(csv_output_file)
 
         for filtered_test in sorted(all_filtered_tests_to_builders):
             builders = all_filtered_tests_to_builders[filtered_test]
-            csv_writer.writerow(
-                ['.filter', filtered_test, ', '.join(builders)])
+            csv_writer.writerow(['.filter', filtered_test, ', '.join(builders)])
 
 
 if __name__ == '__main__':

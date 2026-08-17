@@ -33,18 +33,21 @@ def _GenerateCompileCommands(files, include_paths):
   # that write compile DBs and the tools that read them don't agree on the
   # escaping convention: https://llvm.org/bugs/show_bug.cgi?id=19687
   files = [f.replace('\\', '/') for f in files]
-  include_path_flags = ' '.join('-I %s' % include_path.replace('\\', '/')
-                                for include_path in include_paths)
-  return json.dumps([{
-      'directory':
-      os.path.dirname(f),
-      'command':
-      'clang++ -std=c++23 -fsyntax-only %s %s' %
-      (include_path_flags, os.path.basename(f)),
-      'file':
-      os.path.basename(f)
-  } for f in files],
-                    indent=2)
+  include_path_flags = ' '.join(
+    '-I %s' % include_path.replace('\\', '/') for include_path in include_paths
+  )
+  return json.dumps(
+    [
+      {
+        'directory': os.path.dirname(f),
+        'command': 'clang++ -std=c++23 -fsyntax-only %s %s'
+        % (include_path_flags, os.path.basename(f)),
+        'file': os.path.basename(f),
+      }
+      for f in files
+    ],
+    indent=2,
+  )
 
 
 def _NumberOfTestsToString(tests):
@@ -52,9 +55,16 @@ def _NumberOfTestsToString(tests):
   return '%d test%s' % (tests, 's' if tests != 1 else '')
 
 
-def _ApplyTool(tools_clang_scripts_directory, tool_to_test, tool_path,
-               tool_args, test_directory_for_tool, actual_files, apply_edits,
-               extract_edits_path):
+def _ApplyTool(
+  tools_clang_scripts_directory,
+  tool_to_test,
+  tool_path,
+  tool_args,
+  test_directory_for_tool,
+  actual_files,
+  apply_edits,
+  extract_edits_path,
+):
   try:
     # Stage the test files in the git index. If they aren't staged, then
     # run_tool.py will skip them when applying replacements.
@@ -67,10 +77,13 @@ def _ApplyTool(tools_clang_scripts_directory, tool_to_test, tool_path,
     # Otherwise just the first step is done and the result is written to
     #   actual_files[0].
     processes = []
-    args = ['python',
-            os.path.join(tools_clang_scripts_directory, 'run_tool.py')]
-    extra_run_tool_args_path = os.path.join(test_directory_for_tool,
-                                            'run_tool.args')
+    args = [
+      'python',
+      os.path.join(tools_clang_scripts_directory, 'run_tool.py'),
+    ]
+    extra_run_tool_args_path = os.path.join(
+      test_directory_for_tool, 'run_tool.args'
+    )
     if os.path.exists(extra_run_tool_args_path):
       with open(extra_run_tool_args_path, 'r') as extra_run_tool_args_file:
         extra_run_tool_args = extra_run_tool_args_file.readlines()
@@ -89,28 +102,34 @@ def _ApplyTool(tools_clang_scripts_directory, tool_to_test, tool_path,
     if apply_edits:
       if not extract_edits_path:
         args = [
-            'python',
-            os.path.join(tools_clang_scripts_directory, 'extract_edits.py')
+          'python',
+          os.path.join(tools_clang_scripts_directory, 'extract_edits.py'),
         ]
         processes.append(
-            subprocess.Popen(args,
-                             stdin=processes[-1].stdout,
-                             stdout=subprocess.PIPE))
+          subprocess.Popen(
+            args, stdin=processes[-1].stdout, stdout=subprocess.PIPE
+          )
+        )
       else:
         args = ['python', os.path.join(extract_edits_path, 'extract_edits.py')]
         processes.append(
-            subprocess.Popen(args,
-                             stdin=processes[-1].stdout,
-                             stdout=subprocess.PIPE))
+          subprocess.Popen(
+            args, stdin=processes[-1].stdout, stdout=subprocess.PIPE
+          )
+        )
 
       args = [
-          'python',
-          os.path.join(tools_clang_scripts_directory, 'apply_edits.py'), '-p',
-          test_directory_for_tool
+        'python',
+        os.path.join(tools_clang_scripts_directory, 'apply_edits.py'),
+        '-p',
+        test_directory_for_tool,
       ]
       args.extend(actual_files)  # Limit edits to the test files.
-      processes.append(subprocess.Popen(
-          args, stdin=processes[-1].stdout, stdout=subprocess.PIPE))
+      processes.append(
+        subprocess.Popen(
+          args, stdin=processes[-1].stdout, stdout=subprocess.PIPE
+        )
+      )
 
     # Wait for the pipeline to finish running + check exit codes.
     stdout, _ = processes[-1].communicate()
@@ -152,82 +171,113 @@ def _NormalizeSingleRawOutputLine(output_line, test_dir):
 
   edit_type, path, offset, length, replacement = output_line.split(':::', 4)
   path = _NormalizePathInRawOutput(path, test_dir)
-  return "%s:::%s:::%s:::%s:::%s" % (edit_type, path, offset, length,
-                                     replacement)
+  return "%s:::%s:::%s:::%s:::%s" % (
+    edit_type,
+    path,
+    offset,
+    length,
+    replacement,
+  )
 
 
 def _NormalizeRawOutput(output_lines, test_dir):
   return list(
-      map(lambda line: _NormalizeSingleRawOutputLine(line, test_dir),
-          output_lines))
+    map(
+      lambda line: _NormalizeSingleRawOutputLine(line, test_dir), output_lines
+    )
+  )
 
 
 def main(argv):
   parser = argparse.ArgumentParser()
   parser.add_argument(
-      '--apply-edits',
-      action='store_true',
-      help='Applies the edits to the original test files and compares the '
-           'reformatted new files with the expected files.')
+    '--apply-edits',
+    action='store_true',
+    help='Applies the edits to the original test files and compares the '
+    'reformatted new files with the expected files.',
+  )
   parser.add_argument(
-      '--tool-arg', nargs='?', action='append',
-      help='optional arguments passed to the tool')
+    '--tool-arg',
+    nargs='?',
+    action='append',
+    help='optional arguments passed to the tool',
+  )
   parser.add_argument(
-      '--tool-path', nargs='?',
-      help='optional path to the tool directory')
-  parser.add_argument('tool_name',
-                      nargs=1,
-                      help='Clang tool to be tested.')
+    '--tool-path', nargs='?', help='optional path to the tool directory'
+  )
+  parser.add_argument('tool_name', nargs=1, help='Clang tool to be tested.')
   parser.add_argument(
-      '--test-filter', default='*', help='optional glob filter for test names')
-  parser.add_argument('--extract-edits-path',
-                      nargs='?',
-                      help='optional path to the extract_edits script\
-      [e.g. if custom filtering or post-processing of edits is needed]')
+    '--test-filter', default='*', help='optional glob filter for test names'
+  )
+  parser.add_argument(
+    '--extract-edits-path',
+    nargs='?',
+    help='optional path to the extract_edits script\
+      [e.g. if custom filtering or post-processing of edits is needed]',
+  )
   args = parser.parse_args(argv)
   tool_to_test = args.tool_name[0]
   print('\nTesting %s\n' % tool_to_test)
   tools_clang_scripts_directory = os.path.dirname(os.path.realpath(__file__))
   tools_clang_directory = os.path.dirname(tools_clang_scripts_directory)
   test_directory_for_tool = os.path.join(
-      tools_clang_directory, tool_to_test, 'tests')
-  compile_database = os.path.join(test_directory_for_tool,
-                                  'compile_commands.json')
+    tools_clang_directory, tool_to_test, 'tests'
+  )
+  compile_database = os.path.join(
+    test_directory_for_tool, 'compile_commands.json'
+  )
   source_files = glob.glob(
-      os.path.join(test_directory_for_tool,
-                   '%s-original.cc' % args.test_filter))
+    os.path.join(test_directory_for_tool, '%s-original.cc' % args.test_filter)
+  )
   ext = 'cc' if args.apply_edits else 'txt'
-  actual_files = ['-'.join([source_file.rsplit('-', 1)[0], 'actual.cc'])
-                  for source_file in source_files]
-  expected_files = ['-'.join([source_file.rsplit('-', 1)[0], 'expected.' + ext])
-                    for source_file in source_files]
+  actual_files = [
+    '-'.join([source_file.rsplit('-', 1)[0], 'actual.cc'])
+    for source_file in source_files
+  ]
+  expected_files = [
+    '-'.join([source_file.rsplit('-', 1)[0], 'expected.' + ext])
+    for source_file in source_files
+  ]
   if not args.apply_edits and len(actual_files) != 1:
     print('Only one test file is expected for testing without apply-edits.')
     return 1
 
   include_paths = []
   include_paths.append(
-      os.path.realpath(os.path.join(tools_clang_directory, '../..')))
+    os.path.realpath(os.path.join(tools_clang_directory, '../..'))
+  )
   # Many gtest and gmock headers expect to have testing/gtest/include and/or
   # testing/gmock/include in the include search path.
   include_paths.append(
-      os.path.realpath(os.path.join(tools_clang_directory,
-                                    '../..',
-                                    'testing/gtest/include')))
+    os.path.realpath(
+      os.path.join(tools_clang_directory, '../..', 'testing/gtest/include')
+    )
+  )
   include_paths.append(
-      os.path.realpath(os.path.join(tools_clang_directory,
-                                    '../..',
-                                    'testing/gmock/include')))
+    os.path.realpath(
+      os.path.join(tools_clang_directory, '../..', 'testing/gmock/include')
+    )
+  )
 
   include_paths.append(
-      os.path.realpath(
-          os.path.join(tools_clang_directory, '../..',
-                       'third_party/googletest/src/googletest/include')))
+    os.path.realpath(
+      os.path.join(
+        tools_clang_directory,
+        '../..',
+        'third_party/googletest/src/googletest/include',
+      )
+    )
+  )
 
   include_paths.append(
-      os.path.realpath(
-          os.path.join(tools_clang_directory, '../..',
-                       'third_party/googletest/src/googlemock/include')))
+    os.path.realpath(
+      os.path.join(
+        tools_clang_directory,
+        '../..',
+        'third_party/googletest/src/googlemock/include',
+      )
+    )
+  )
 
   if len(actual_files) == 0:
     print('Tool "%s" does not have compatible test files.' % tool_to_test)
@@ -242,10 +292,17 @@ def main(argv):
 
   # Run the tool.
   os.chdir(test_directory_for_tool)
-  exitcode = _ApplyTool(tools_clang_scripts_directory, tool_to_test,
-                        args.tool_path, args.tool_arg, test_directory_for_tool,
-                        actual_files, args.apply_edits, args.extract_edits_path)
-  if (exitcode != 0):
+  exitcode = _ApplyTool(
+    tools_clang_scripts_directory,
+    tool_to_test,
+    args.tool_path,
+    args.tool_arg,
+    test_directory_for_tool,
+    actual_files,
+    args.apply_edits,
+    args.extract_edits_path,
+  )
+  if exitcode != 0:
     return exitcode
 
   # Compare actual-vs-expected results.
@@ -257,17 +314,22 @@ def main(argv):
     with open(expected, 'r') as f:
       expected_output = f.readlines()
     with open(actual, 'r') as f:
-      actual_output =  f.readlines()
+      actual_output = f.readlines()
     if not args.apply_edits:
-      actual_output = _NormalizeRawOutput(actual_output,
-                                          test_directory_for_tool)
-      expected_output = _NormalizeRawOutput(expected_output,
-                                            test_directory_for_tool)
+      actual_output = _NormalizeRawOutput(
+        actual_output, test_directory_for_tool
+      )
+      expected_output = _NormalizeRawOutput(
+        expected_output, test_directory_for_tool
+      )
     if actual_output != expected_output:
       failed += 1
-      lines = difflib.unified_diff(expected_output, actual_output,
-                                   fromfile=os.path.relpath(expected),
-                                   tofile=os.path.relpath(actual))
+      lines = difflib.unified_diff(
+        expected_output,
+        actual_output,
+        fromfile=os.path.relpath(expected),
+        tofile=os.path.relpath(actual),
+      )
       sys.stdout.writelines(lines)
       print('[  FAILED  ] %s' % os.path.relpath(actual))
       # Don't clean up the file on failure, so the results can be referenced

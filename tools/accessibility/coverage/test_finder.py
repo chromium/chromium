@@ -26,7 +26,8 @@ sys.path.append(os.path.abspath("./third_party/blink/tools"))
 sys.path.append(os.path.abspath("./"))
 # Chromium check
 NOT_CHROME_ERROR = (
-    'You must be in the chromium src directory to run this command.')
+  'You must be in the chromium src directory to run this command.'
+)
 try:
   file = open('./DIR_METADATA', 'r')
   if not 'project: "chromium"' in file.read():
@@ -36,7 +37,9 @@ except IOError:
   print(NOT_CHROME_ERROR)
   exit()
 
-from third_party.blink.tools.blinkpy.w3c.directory_owners_extractor import DirectoryOwnersExtractor
+from third_party.blink.tools.blinkpy.w3c.directory_owners_extractor import (
+  DirectoryOwnersExtractor,
+)
 from third_party.blink.tools.blinkpy.common.host import Host
 
 # CONSTANTS
@@ -44,48 +47,52 @@ DIR_METADATA = 'DIR_METADATA'
 COMMON_METADATA = 'COMMON_METADATA'
 OWNERS = 'OWNERS'
 TEST_NAME_REGEX = re.compile(
-    r"TEST(_[FP])?\(\s*'?([a-zA-Z][a-zA-Z0-9]*)'?,"
-    "\s*'?([a-zA-Z][a-zA-Z0-9_]*)'?", re.MULTILINE)
+  r"TEST(_[FP])?\(\s*'?([a-zA-Z][a-zA-Z0-9]*)'?,"
+  "\s*'?([a-zA-Z][a-zA-Z0-9_]*)'?",
+  re.MULTILINE,
+)
 TEST_SUITE_REGEX = re.compile(
-    r'TEST_SUITE(_[FP])?\(\s*([a-zA-Z][a-zA-Z0-9]*),\s*([a-zA-Z][a-zA-Z0-9]*),',
-    re.MULTILINE)
+  r'TEST_SUITE(_[FP])?\(\s*([a-zA-Z][a-zA-Z0-9]*),\s*([a-zA-Z][a-zA-Z0-9]*),',
+  re.MULTILINE,
+)
 
 parser = argparse.ArgumentParser(
-    "Determines test suites for given directories and components")
+  "Determines test suites for given directories and components"
+)
 parser.add_argument(
-    '-c',
-    '--components',
-    nargs='+',
-    # TODO: Adjust to buganizer once the
-    # coverage team updates the tool
-    help='A monorail component to collect suites for',
-    default=[])
+  '-c',
+  '--components',
+  nargs='+',
+  # TODO: Adjust to buganizer once the
+  # coverage team updates the tool
+  help='A monorail component to collect suites for',
+  default=[],
+)
 parser.add_argument(
-    '-d',
-    '--dirs',
-    nargs='*',
-    help='Directory to search through, at least one must be present',
-    default=['./'])
-parser.add_argument('-i',
-                    '--ignore_dir',
-                    nargs='*',
-                    help='Directories to ignore',
-                    default=[])
-parser.add_argument('-o',
-                    '--out_file',
-                    help='The file to write the suites to.',
-                    required=True)
-parser.add_argument('-j',
-                    '--jobs',
-                    required=False,
-                    help='The number of threads to allow',
-                    type=int,
-                    default=0)
+  '-d',
+  '--dirs',
+  nargs='*',
+  help='Directory to search through, at least one must be present',
+  default=['./'],
+)
+parser.add_argument(
+  '-i', '--ignore_dir', nargs='*', help='Directories to ignore', default=[]
+)
+parser.add_argument(
+  '-o', '--out_file', help='The file to write the suites to.', required=True
+)
+parser.add_argument(
+  '-j',
+  '--jobs',
+  required=False,
+  help='The number of threads to allow',
+  type=int,
+  default=0,
+)
 args = parser.parse_args()
 
 
 class ThreadManager(int):
-
   def __init__(self, max_threads):
     self.num_threads = 0
     self.max_threads = max_threads
@@ -112,7 +119,6 @@ class ThreadManager(int):
 
 
 class TestFinder(argparse.Namespace):
-
   def __init__(self, args):
     self.host = Host()
     self.component_map = dict()
@@ -124,7 +130,7 @@ class TestFinder(argparse.Namespace):
     self.total_working = 0
     self.dirs = args.dirs
     self.comps = args.components
-    self.dir_thread_manager = ThreadManager(args.jobs * .75)
+    self.dir_thread_manager = ThreadManager(args.jobs * 0.75)
     self.read_thread_manager = ThreadManager(args.jobs / 4)
     self.out_file = args.out_file
 
@@ -210,8 +216,9 @@ class TestFinder(argparse.Namespace):
     if files.__len__() > 0:
       self.dirs_with_tests.add(os.path.relpath(dir))
     for file in files:
-      if not self.read_thread_manager.run(self.get_test_suites_for_file,
-                                          (file, suites)):
+      if not self.read_thread_manager.run(
+        self.get_test_suites_for_file, (file, suites)
+      ):
         self.get_test_suites_for_file(file, suites)
 
   def start(self):
@@ -223,15 +230,16 @@ class TestFinder(argparse.Namespace):
   def save(self):
     with open(self.out_file, 'w') as outfile:
       data = {
-          "components": self.component_map,
-          "directories": [*self.dirs_with_tests],
-          "disabled_tests": self.disabled_tests,
-          "maybe_tests": self.maybe_tests,
-          "total_disabled": self.total_disabled,
-          "total_maybe": self.total_maybe,
-          "total_working": self.total_working,
-          "total_tests":
-          self.total_working + self.total_maybe + self.total_disabled
+        "components": self.component_map,
+        "directories": [*self.dirs_with_tests],
+        "disabled_tests": self.disabled_tests,
+        "maybe_tests": self.maybe_tests,
+        "total_disabled": self.total_disabled,
+        "total_maybe": self.total_maybe,
+        "total_working": self.total_working,
+        "total_tests": self.total_working
+        + self.total_maybe
+        + self.total_disabled,
       }
       json.dump(data, outfile, indent=2)
 
@@ -265,10 +273,12 @@ class TestFinder(argparse.Namespace):
     for sub_dir in sub_dirs:
       # skip hidden directories
       if not self.is_hidden(sub_dir) and not self.is_output_dir(sub_dir):
-        common_component_to_pass = (component if using_common_metadata else
-                                    common_component)
-        if not self.dir_thread_manager.run(self.build_component_map,
-                                           (sub_dir, common_component_to_pass)):
+        common_component_to_pass = (
+          component if using_common_metadata else common_component
+        )
+        if not self.dir_thread_manager.run(
+          self.build_component_map, (sub_dir, common_component_to_pass)
+        ):
           self.build_component_map(sub_dir, common_component_to_pass)
 
 

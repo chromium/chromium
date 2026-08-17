@@ -23,11 +23,9 @@ class DevilUtilTest(unittest.TestCase):
 
   def run_util(self, *args, stdin=None):
     cmd = [self.executable] + list(args)
-    return subprocess.run(cmd,
-                          capture_output=True,
-                          text=True,
-                          check=True,
-                          input=stdin)
+    return subprocess.run(
+      cmd, capture_output=True, text=True, check=True, input=stdin
+    )
 
   def test_hash(self):
     file1 = os.path.join(self.temp_dir, 'file1')
@@ -40,8 +38,8 @@ class DevilUtilTest(unittest.TestCase):
     with open(file2, 'wb') as f:
       f.write(content2)
 
-    expected1 = hex(zlib.crc32(content1) & 0xffffffff)[2:]
-    expected2 = hex(zlib.crc32(content2) & 0xffffffff)[2:]
+    expected1 = hex(zlib.crc32(content1) & 0xFFFFFFFF)[2:]
+    expected2 = hex(zlib.crc32(content2) & 0xFFFFFFFF)[2:]
 
     result = self.run_util('hash', f'{file1}:{file2}')
     self.assertEqual(result.stdout.strip(), f'{expected1}\n{expected2}')
@@ -65,7 +63,7 @@ class DevilUtilTest(unittest.TestCase):
     # Compress the path of file1 so that @dest.zst expands to file1's path
     self.run_util('compress', dest, file1 + '\n')
 
-    expected = hex(zlib.crc32(b'c1') & 0xffffffff)[2:]
+    expected = hex(zlib.crc32(b'c1') & 0xFFFFFFFF)[2:]
     result = self.run_util('hash', f'@{dest}')
     self.assertEqual(result.stdout.strip(), expected)
 
@@ -125,9 +123,9 @@ class DevilUtilTest(unittest.TestCase):
     cwd = os.getcwd()
     os.chdir(extract_dir)
     try:
-      subprocess.run([self.executable, 'extract', '-'],
-                     input=archive_content,
-                     check=True)
+      subprocess.run(
+        [self.executable, 'extract', '-'], input=archive_content, check=True
+      )
     finally:
       os.chdir(cwd)
 
@@ -150,7 +148,7 @@ class DevilUtilTest(unittest.TestCase):
       f.write('hash\n')
       f.write(file1 + '\n')
 
-    expected = hex(zlib.crc32(b'c1') & 0xffffffff)[2:]
+    expected = hex(zlib.crc32(b'c1') & 0xFFFFFFFF)[2:]
     # Run without 'hash' command explicitly, it should come from resp file
     cmd = [self.executable, f'@{resp_file}']
     result = subprocess.run(cmd, capture_output=True, text=True, check=True)
@@ -164,7 +162,7 @@ class DevilUtilTest(unittest.TestCase):
     with open(test_file, 'wb') as f:
       f.write(content)
 
-    expected = hex(zlib.crc32(content) & 0xffffffff)[2:]
+    expected = hex(zlib.crc32(content) & 0xFFFFFFFF)[2:]
     result = self.run_util('hash', test_file)
     self.assertEqual(result.stdout.strip(), expected)
 

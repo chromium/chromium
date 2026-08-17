@@ -11,8 +11,9 @@ import subprocess
 
 _SRC_ROOT = pathlib.Path(__file__).parents[3]
 
-_GOOGLE_JAVA_FORMAT = (_SRC_ROOT / 'third_party' / 'google-java-format' /
-                       'google-java-format')
+_GOOGLE_JAVA_FORMAT = (
+    _SRC_ROOT / 'third_party' / 'google-java-format' / 'google-java-format'
+)
 
 _IMPORTS = """import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.NullMarked;
@@ -27,30 +28,38 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.build.NullUtil.assertNonNull;
 """
 
-_MODIFIER_KEYWORDS = (r'(?:(?:' + '|'.join([
-    'abstract',
-    'default',
-    'final',
-    'native',
-    'private',
-    'protected',
-    'public',
-    'static',
-    'synchronized',
-    r'/\*\s*package\s*\*/',
-]) + r')\s+)*')
+_MODIFIER_KEYWORDS = (
+    r'(?:(?:'
+    + '|'.join(
+        [
+            'abstract',
+            'default',
+            'final',
+            'native',
+            'private',
+            'protected',
+            'public',
+            'static',
+            'synchronized',
+            r'/\*\s*package\s*\*/',
+        ]
+    )
+    + r')\s+)*'
+)
 
-_NULLABLE_RE = re.compile(r'(\n *)@Nullable'
-                          r'('
-                          r'(?:\s*@\w+(?:\(.*?\))?)*'
-                          r'\s+(?:' + _MODIFIER_KEYWORDS + r')?' +
-                          r'(?:<.*?>)?'
-                          r')')
+_NULLABLE_RE = re.compile(
+    r'(\n *)@Nullable'
+    r'('
+    r'(?:\s*@\w+(?:\(.*?\))?)*'
+    r'\s+(?:' + _MODIFIER_KEYWORDS + r')?' + r'(?:<.*?>)?'
+    r')'
+)
 _CLASSES_REGEX = re.compile(
     r'(^(?:public|protected|private|/\*\s*package\s*\*/)?\s*'
     r'(?:(?:static|abstract|final|sealed)\s+)*'
     r'(?:class|@?interface|enum)\s+\w+)',
-    flags=re.MULTILINE)
+    flags=re.MULTILINE,
+)
 
 
 def _mark_file(path):
@@ -72,11 +81,9 @@ def _mark_file(path):
     # Remove @NonNull
     data = data.replace('@NonNull', '')
     # Add imports
-    data = re.sub(r'(^package .*\n)',
-                  r'\1' + _IMPORTS,
-                  data,
-                  flags=re.MULTILINE,
-                  count=1)
+    data = re.sub(
+        r'(^package .*\n)', r'\1' + _IMPORTS, data, flags=re.MULTILINE, count=1
+    )
 
     # Add @NullMarked
     data = _CLASSES_REGEX.sub(r'@NullMarked\n\1', data, count=1)
@@ -109,8 +116,11 @@ def main():
 
     if changed_paths:
         cmd = [
-            str(_GOOGLE_JAVA_FORMAT), '--aosp', '--skip-javadoc-formatting',
-            '--skip-removing-unused-imports', '--replace'
+            str(_GOOGLE_JAVA_FORMAT),
+            '--aosp',
+            '--skip-javadoc-formatting',
+            '--skip-removing-unused-imports',
+            '--replace',
         ] + changed_paths
         logging.info('Running: %s', ' '.join(cmd))
         subprocess.check_call(cmd)

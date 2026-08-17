@@ -19,7 +19,8 @@ class ChromeStylePluginTest(plugin_testing.ClangPluginTest):
   """Test harness for the Chrome style plugin."""
 
   def AdjustClangArguments(self, clang_cmd):
-    clang_cmd.extend([
+    clang_cmd.extend(
+      [
         # Skip code generation
         '-fsyntax-only',
         # Fake system directory for tests
@@ -29,31 +30,37 @@ class ChromeStylePluginTest(plugin_testing.ClangPluginTest):
         '-Wunsafe-buffer-usage',
         '--include-directory',
         '.',
-    ])
+      ]
+    )
 
 
 def main():
   parser = argparse.ArgumentParser()
   parser.add_argument(
-      '--reset-results',
-      action='store_true',
-      help='If specified, overwrites the expected results in place.')
+    '--reset-results',
+    action='store_true',
+    help='If specified, overwrites the expected results in place.',
+  )
   parser.add_argument('clang_path', help='The path to the clang binary.')
-  parser.add_argument('--quiet',
-                      action='store_true',
-                      help='If specified, suppresses printing the expected '
-                      'and actual output and only prints the diff.')
-  parser.add_argument('--filter',
-                      action='store',
-                      help='Filter to test files that match a regex')
+  parser.add_argument(
+    '--quiet',
+    action='store_true',
+    help='If specified, suppresses printing the expected '
+    'and actual output and only prints the diff.',
+  )
+  parser.add_argument(
+    '--filter', action='store', help='Filter to test files that match a regex'
+  )
   args = parser.parse_args()
 
   return ChromeStylePluginTest(
-      os.path.dirname(os.path.realpath(__file__)),
-      args.clang_path, ['find-bad-constructs', 'unsafe-buffers', 'strict-deps'],
-      args.reset_results,
-      args.quiet,
-      filename_regex=args.filter).Run()
+    os.path.dirname(os.path.realpath(__file__)),
+    args.clang_path,
+    ['find-bad-constructs', 'unsafe-buffers', 'strict-deps'],
+    args.reset_results,
+    args.quiet,
+    filename_regex=args.filter,
+  ).Run()
 
 
 if __name__ == '__main__':

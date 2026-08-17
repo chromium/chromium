@@ -20,7 +20,15 @@ def UnitStringIsValid(unit: str) -> bool:
     bool: Whether or not it is a unit.
   """
   accepted_units = [
-      "us/hop", "us/task", "ns/sample", "ms", "s", "count", "KB", "MB/s", "us"
+    "us/hop",
+    "us/task",
+    "ns/sample",
+    "ms",
+    "s",
+    "count",
+    "KB",
+    "MB/s",
+    "us",
   ]
   return unit in accepted_units
 
@@ -44,9 +52,9 @@ class ResultLine(object):
     """
 
     return {
-        "description": self.desc,
-        "measurement": self.meas,
-        "unit": self.unit,
+      "description": self.desc,
+      "measurement": self.meas,
+      "unit": self.unit,
     }
 
 
@@ -79,26 +87,33 @@ def ResultLineFromStdout(line: str) -> Optional[ResultLine]:
   """
 
   if "pkgsvr" in line:
-    return None # Filters pkgsrv noise from Fuchsia output.
+    return None  # Filters pkgsrv noise from Fuchsia output.
   chunks = line.split()
   # There should be 1 chunk for the measure, 1 for the unit, and at least one
   # for the line description, so at least 3 total
   if len(chunks) < 3:
-    logging.warning("The line {} contains too few space-separated pieces to be "
-                    "parsed as a ResultLine".format(line))
+    logging.warning(
+      "The line {} contains too few space-separated pieces to be "
+      "parsed as a ResultLine".format(line)
+    )
     return None
   unit = chunks[-1]
   if not UnitStringIsValid(unit):
-    logging.warning("The unit string parsed from {} was {}, which was not "
-                    "expected".format(line, unit))
+    logging.warning(
+      "The unit string parsed from {} was {}, which was not expected".format(
+        line, unit
+      )
+    )
     return None
   try:
     measure = float(chunks[-2])
     desc = " ".join(chunks[:-2])
     return ResultLine(desc, measure, unit)
   except ValueError as e:
-    logging.warning("The chunk {} could not be parsed as a valid measurement "
-                    "because of {}".format(chunks[-2], str(e)))
+    logging.warning(
+      "The chunk {} could not be parsed as a valid measurement "
+      "because of {}".format(chunks[-2], str(e))
+    )
     return None
 
 
@@ -120,9 +135,9 @@ class TestResult(object):
           serialized to JSON.
     """
     return {
-        "name": self.name,
-        "time_in_ms": self.time,
-        "lines": [line.ToJsonDict() for line in self.lines]
+      "name": self.name,
+      "time_in_ms": self.time,
+      "lines": [line.ToJsonDict() for line in self.lines],
     }
 
 
@@ -166,8 +181,11 @@ def ExtractTestInfo(line: str) -> Tuple[str, float]:
   try:
     test_name, rest = trimmed.split("(")  # Isolate the measurement
   except Exception as e:
-    err_text = "Could not extract the case name from {} because of error {}"\
-               .format(trimmed, str(e))
+    err_text = (
+      "Could not extract the case name from {} because of error {}".format(
+        trimmed, str(e)
+      )
+    )
     raise Exception(err_text)
   try:
     measure, _ = rest.split(")", 1)[0].split()
@@ -219,8 +237,8 @@ class TargetResult(object):
       Dict[str, Any]: The TargetResult in JSON-serializable form.
     """
     return {
-        "name": self.name,
-        "tests": [test.ToJsonDict() for test in self.tests]
+      "name": self.name,
+      "tests": [test.ToJsonDict() for test in self.tests],
     }
 
   def WriteToJson(self, path: str) -> None:
@@ -249,7 +267,8 @@ def ReadTargetFromJson(path: str) -> Optional[TargetResult]:
   with open(path, "r") as json_file:
     dct = json.load(json_file)
     return TargetResult(
-        dct["name"], [ReadTestFromJson(test_dct) for test_dct in dct["tests"]])
+      dct["name"], [ReadTestFromJson(test_dct) for test_dct in dct["tests"]]
+    )
 
 
 def TargetResultFromStdout(lines: List[str], name: str) -> TargetResult:
@@ -296,6 +315,6 @@ def TargetResultFromStdout(lines: List[str], name: str) -> TargetResult:
         read_lines = False
 
   test_cases = [
-      TaggedTestFromLines(test_lines) for test_lines in test_line_lists
+    TaggedTestFromLines(test_lines) for test_lines in test_line_lists
   ]
   return TargetResult(name, test_cases)

@@ -58,7 +58,6 @@ def _RenderSectionSizesAndRawSymbols(section_sizes, raw_symbols):
 
 
 class LinkerMapParserTest(unittest.TestCase):
-
   @_CompareWithGolden()
   def test_Parser(self):
     lines = _ReadMapFile(_TEST_MAP_PATH)
@@ -105,9 +104,11 @@ class LinkerMapParserTest(unittest.TestCase):
     lines = _ReadMapFile(_TEST_MAP_PATH)
     parser = linker_map_parser.MapFileParserLld('lld-lto_v1')
     tokenizer = parser.Tokenize(lines)
-    for (_, address, size, level, span, tok) in tokenizer:
-      ret.append('%8X %8X (%d) %s %s' % (address, size, level, '-' * 8 if
-                                         span is None else '%8X' % span, tok))
+    for _, address, size, level, span, tok in tokenizer:
+      ret.append(
+        '%8X %8X (%d) %s %s'
+        % (address, size, level, '-' * 8 if span is None else '%8X' % span, tok)
+      )
     return ret
 
 

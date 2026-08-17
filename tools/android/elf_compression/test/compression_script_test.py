@@ -21,11 +21,19 @@ CONSTRUCTOR_C_PATH = '../decompression_hook/decompression_hook.c'
 SCRIPT_PATH = '../compress_section.py'
 
 # src/third_party/llvm-build/Release+Asserts/bin/clang++
-LLVM_CLANG_CC_PATH = pathlib.Path(__file__).resolve().parents[4].joinpath(
-    'third_party/llvm-build/Release+Asserts/bin/clang++')
+LLVM_CLANG_CC_PATH = (
+  pathlib.Path(__file__)
+  .resolve()
+  .parents[4]
+  .joinpath('third_party/llvm-build/Release+Asserts/bin/clang++')
+)
 # src/third_party/llvm-build/Release+Asserts/bin/clang
-LLVM_CLANG_PATH = pathlib.Path(__file__).resolve().parents[4].joinpath(
-    'third_party/llvm-build/Release+Asserts/bin/clang')
+LLVM_CLANG_PATH = (
+  pathlib.Path(__file__)
+  .resolve()
+  .parents[4]
+  .joinpath('third_party/llvm-build/Release+Asserts/bin/clang')
+)
 
 # The array that we are trying to cut out of the file have those bytes at
 # its start and end. This is done to simplify the test code to not perform
@@ -65,31 +73,60 @@ class CompressionScriptTest(unittest.TestCase):
     library_path = os.path.join(self.tmpdir, 'libtest.so')
     library_object_path = os.path.join(self.tmpdir, 'libtest.o')
     constructor_object_path = os.path.join(self.tmpdir, 'constructor.o')
-    library_object_build_result = subprocess.run([
-        LLVM_CLANG_CC_PATH, '-c', '-fPIC', '-O2', self.library_cc_path, '-o',
-        library_object_path
-    ])
+    library_object_build_result = subprocess.run(
+      [
+        LLVM_CLANG_CC_PATH,
+        '-c',
+        '-fPIC',
+        '-O2',
+        self.library_cc_path,
+        '-o',
+        library_object_path,
+      ]
+    )
     self.assertEqual(library_object_build_result.returncode, 0)
 
-    constructor_object_build_result = subprocess.run([
-        LLVM_CLANG_PATH, '-c', '-fPIC', '-O2', self.constructor_c_path, '-o',
-        constructor_object_path
-    ])
+    constructor_object_build_result = subprocess.run(
+      [
+        LLVM_CLANG_PATH,
+        '-c',
+        '-fPIC',
+        '-O2',
+        self.constructor_c_path,
+        '-o',
+        constructor_object_path,
+      ]
+    )
     self.assertEqual(constructor_object_build_result.returncode, 0)
 
-    library_build_result = subprocess.run([
-        LLVM_CLANG_PATH, '-shared', '-fPIC', '-O2', library_object_path,
-        constructor_object_path, '-o', library_path, '-pthread'
-    ])
+    library_build_result = subprocess.run(
+      [
+        LLVM_CLANG_PATH,
+        '-shared',
+        '-fPIC',
+        '-O2',
+        library_object_path,
+        constructor_object_path,
+        '-o',
+        library_path,
+        '-pthread',
+      ]
+    )
     self.assertEqual(library_build_result.returncode, 0)
     return library_path
 
   def _BuildOpener(self):
     opener_path = os.path.join(self.tmpdir, 'library_opener')
-    opener_build_result = subprocess.run([
-        LLVM_CLANG_CC_PATH, '-O2', self.opener_cc_path, '-o', opener_path,
-        '-ldl'
-    ])
+    opener_build_result = subprocess.run(
+      [
+        LLVM_CLANG_CC_PATH,
+        '-O2',
+        self.opener_cc_path,
+        '-o',
+        opener_path,
+        '-ldl',
+      ]
+    )
     self.assertEqual(opener_build_result.returncode, 0)
     return opener_path
 
@@ -101,30 +138,33 @@ class CompressionScriptTest(unittest.TestCase):
 
     output_path = os.path.join(self.tmpdir, 'patchedlibtest.so')
     script_arguments = [
-        self.script_path,
-        '-i',
-        library_path,
-        '-o',
-        output_path,
-        '-l',
-        str(l),
-        '-r',
-        str(r),
+      self.script_path,
+      '-i',
+      library_path,
+      '-o',
+      output_path,
+      '-l',
+      str(l),
+      '-r',
+      str(r),
     ]
     script_run_result = subprocess.run(
-        script_arguments,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        encoding='utf-8')
+      script_arguments,
+      stdout=subprocess.PIPE,
+      stderr=subprocess.PIPE,
+      encoding='utf-8',
+    )
     self.assertEqual(script_run_result.stderr, '')
     self.assertEqual(script_run_result.returncode, 0)
     return output_path
 
   def _RunOpener(self, opener_path, patched_library_path):
-    opener_run_result = subprocess.run([opener_path, patched_library_path],
-                                       stdout=subprocess.PIPE,
-                                       stderr=subprocess.PIPE,
-                                       encoding='utf-8')
+    opener_run_result = subprocess.run(
+      [opener_path, patched_library_path],
+      stdout=subprocess.PIPE,
+      stderr=subprocess.PIPE,
+      encoding='utf-8',
+    )
     self.assertEqual(opener_run_result.stderr, '')
     self.assertEqual(opener_run_result.returncode, 0)
     return opener_run_result.stdout
@@ -159,7 +199,8 @@ class CompressionScriptTest(unittest.TestCase):
     self.assertEqual(compress_section.MatchVaddrAlignment(99, 100, 1024), 100)
     self.assertEqual(compress_section.MatchVaddrAlignment(101, 100, 1024), 1124)
     self.assertEqual(
-        compress_section.MatchVaddrAlignment(1024, 2049, 1024), 1025)
+      compress_section.MatchVaddrAlignment(1024, 2049, 1024), 1025
+    )
 
   def testSegmentContains(self):
     """Tests for SegmentContains method of the script."""

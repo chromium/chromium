@@ -12,22 +12,24 @@ import sys
 
 @unittest.skipUnless(sys.platform == 'linux', 'Only linux is supported')
 class RunAllFuzzersTest(unittest.TestCase):
-
   @classmethod
   def setUpClass(cls):
-    gn_args = ('use_clang_coverage=true '
-               'dcheck_always_on=true '
-               'ffmpeg_branding=\"ChromeOS\" '
-               'is_component_build=false '
-               'is_debug=false '
-               'proprietary_codecs=true '
-               'use_remoteexec=true '
-               'use_libfuzzer=true '
-               'use_clang_modules=false')
+    gn_args = (
+      'use_clang_coverage=true '
+      'dcheck_always_on=true '
+      'ffmpeg_branding="ChromeOS" '
+      'is_component_build=false '
+      'is_debug=false '
+      'proprietary_codecs=true '
+      'use_remoteexec=true '
+      'use_libfuzzer=true '
+      'use_clang_modules=false'
+    )
     cls.testfuzzer1 = 'xml_parser_fuzzer'
     cls.testfuzzer2 = 'query_parser_fuzzer'
     cls.chromium_src_dir = os.path.join(
-        os.path.abspath(os.path.dirname(__file__)), "..", "..")
+      os.path.abspath(os.path.dirname(__file__)), "..", ".."
+    )
     fuzzer_binaries_dir = "out/run_all_fuzzers_test"
     pathlib.Path(fuzzer_binaries_dir).mkdir(parents=True, exist_ok=True)
     cls.fuzzer_binaries_dir = fuzzer_binaries_dir
@@ -38,14 +40,17 @@ class RunAllFuzzersTest(unittest.TestCase):
       print("GN command failed. Error:")
       print(e.output)
     build_cmd = [
-        'autoninja', '-C', cls.fuzzer_binaries_dir, cls.testfuzzer1,
-        cls.testfuzzer2
+      'autoninja',
+      '-C',
+      cls.fuzzer_binaries_dir,
+      cls.testfuzzer1,
+      cls.testfuzzer2,
     ]
     with open("test.log", "wb") as f:
       try:
-        process = subprocess.Popen(build_cmd,
-                                   cwd=cls.chromium_src_dir,
-                                   stdout=subprocess.PIPE)
+        process = subprocess.Popen(
+          build_cmd, cwd=cls.chromium_src_dir, stdout=subprocess.PIPE
+        )
         for c in iter(lambda: process.stdout.read(1), b''):
           f.write(c)
       except subprocess.CalledProcessError as e:
@@ -69,29 +74,38 @@ class RunAllFuzzersTest(unittest.TestCase):
 
   def test_wrong_arguments(self):
     cmd = [
-        'python3', 'tools/code_coverage/run_all_fuzzers.py',
-        '--fuzzer-binaries-dir', self.fuzzer_binaries_dir,
-        '--fuzzer-corpora-dir', self.fuzzer_corpora_dir
+      'python3',
+      'tools/code_coverage/run_all_fuzzers.py',
+      '--fuzzer-binaries-dir',
+      self.fuzzer_binaries_dir,
+      '--fuzzer-corpora-dir',
+      self.fuzzer_corpora_dir,
     ]
     with self.assertRaises(subprocess.CalledProcessError) as e:
       subprocess.check_call(cmd, cwd=self.chromium_src_dir)
-    assert ("returned non-zero exit status 2" in str(e.exception))
+    assert "returned non-zero exit status 2" in str(e.exception)
     cmd = [
-        'python3', 'tools/code_coverage/run_all_fuzzers.py',
-        '--fuzzer-binaries-dir', self.fuzzer_binaries_dir, '--profdata-outdir',
-        self.profdata_outdir
+      'python3',
+      'tools/code_coverage/run_all_fuzzers.py',
+      '--fuzzer-binaries-dir',
+      self.fuzzer_binaries_dir,
+      '--profdata-outdir',
+      self.profdata_outdir,
     ]
     with self.assertRaises(subprocess.CalledProcessError) as e:
       subprocess.check_call(cmd, cwd=self.chromium_src_dir)
-    assert ("returned non-zero exit status 2" in str(e.exception))
+    assert "returned non-zero exit status 2" in str(e.exception)
     cmd = [
-        'python3', 'tools/code_coverage/run_all_fuzzers.py',
-        '--fuzzer-corpora-dir', self.fuzzer_corpora_dir, '--profdata-outdir',
-        self.profdata_outdir
+      'python3',
+      'tools/code_coverage/run_all_fuzzers.py',
+      '--fuzzer-corpora-dir',
+      self.fuzzer_corpora_dir,
+      '--profdata-outdir',
+      self.profdata_outdir,
     ]
     with self.assertRaises(subprocess.CalledProcessError) as e:
       subprocess.check_call(cmd, cwd=self.chromium_src_dir)
-    assert ("returned non-zero exit status 2" in str(e.exception))
+    assert "returned non-zero exit status 2" in str(e.exception)
 
   def test_libfuzzer_fuzzers_succeed(self):
     os.makedirs(os.path.join(self.fuzzer_corpora_dir, self.testfuzzer1))
@@ -107,19 +121,26 @@ class RunAllFuzzersTest(unittest.TestCase):
       f2.close()
 
     cmd = [
-        'python3', 'tools/code_coverage/run_all_fuzzers.py',
-        '--fuzzer-binaries-dir', self.fuzzer_binaries_dir,
-        '--fuzzer-corpora-dir', self.fuzzer_corpora_dir, '--profdata-outdir',
-        self.profdata_outdir, '--fuzzer', 'libfuzzer'
+      'python3',
+      'tools/code_coverage/run_all_fuzzers.py',
+      '--fuzzer-binaries-dir',
+      self.fuzzer_binaries_dir,
+      '--fuzzer-corpora-dir',
+      self.fuzzer_corpora_dir,
+      '--profdata-outdir',
+      self.profdata_outdir,
+      '--fuzzer',
+      'libfuzzer',
     ]
     subprocess.check_call(cmd, cwd=self.chromium_src_dir)
 
     expected_profdata = sorted(
-        [self.testfuzzer1 + ".profdata", self.testfuzzer2 + ".profdata"])
+      [self.testfuzzer1 + ".profdata", self.testfuzzer2 + ".profdata"]
+    )
     actual_profdata = sorted(os.listdir(self.profdata_outdir))
-    assert (
-        expected_profdata == actual_profdata
-    ), "Expected " + str(expected_profdata) + " but got " + str(actual_profdata)
+    assert expected_profdata == actual_profdata, (
+      "Expected " + str(expected_profdata) + " but got " + str(actual_profdata)
+    )
 
   def test_blackbox_fuzzers_succeed(self):
     # Create a dummy chrome binary in a temp dir.
@@ -137,18 +158,18 @@ class RunAllFuzzersTest(unittest.TestCase):
 
         with tempfile.TemporaryDirectory() as out_dir:
           cmd = [
-              sys.executable,
-              'tools/code_coverage/run_all_fuzzers.py',
-              '--fuzzer-binaries-dir',
-              bin_dir,
-              '--fuzzer-corpora-dir',
-              corpora_dir,
-              '--profdata-outdir',
-              out_dir,
-              '--fuzzer',
-              'blackbox',
-              '--target',
-              'chrome',
+            sys.executable,
+            'tools/code_coverage/run_all_fuzzers.py',
+            '--fuzzer-binaries-dir',
+            bin_dir,
+            '--fuzzer-corpora-dir',
+            corpora_dir,
+            '--profdata-outdir',
+            out_dir,
+            '--fuzzer',
+            'blackbox',
+            '--target',
+            'chrome',
           ]
           # Verify the script runs without crashing when blackbox is specified.
           subprocess.check_call(cmd, cwd=self.chromium_src_dir)

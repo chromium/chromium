@@ -82,8 +82,10 @@ def find_cycles_from_node(
                     new_cycle = list(dfs_stack) + [cur_node, start_node]
                     cycles[cur_length + 1].append(new_cycle)
 
-                elif (not on_stack[other_node]
-                      and cur_length + 1 < max_cycle_length):
+                elif (
+                    not on_stack[other_node]
+                    and cur_length + 1 < max_cycle_length
+                ):
                     # We are only allowed to recurse into the next node if:
                     # 1) It hasn't been visited in the current cycle. This is
                     # because if the next node n _has_ been visited in the
@@ -103,8 +105,9 @@ def find_cycles_from_node(
     return cycles
 
 
-def find_cycles(base_graph: graph.Graph,
-                max_cycle_length: int) -> List[List[Cycle]]:
+def find_cycles(
+    base_graph: graph.Graph, max_cycle_length: int
+) -> List[List[Cycle]]:
     """Finds all cycles in the graph within a certain length.
 
     The algorithm is as such: Number the nodes arbitrarily. For i from 0 to
@@ -131,8 +134,9 @@ def find_cycles(base_graph: graph.Graph,
     cycles = [[] for _ in range(max_cycle_length + 1)]
 
     for start_node in sorted_base_graph_nodes:
-        start_node_cycles = find_cycles_from_node(start_node, max_cycle_length,
-                                                  node_to_id)
+        start_node_cycles = find_cycles_from_node(
+            start_node, max_cycle_length, node_to_id
+        )
         for cycle_length, cycle_list in enumerate(start_node_cycles):
             cycles[cycle_length].extend(cycle_list)
 
@@ -149,30 +153,35 @@ def main():
 
     arg_parser = argparse.ArgumentParser(
         description='Given a JSON dependency graph, count the number of cycles '
-        'in the package graph.')
+        'in the package graph.'
+    )
     required_arg_group = arg_parser.add_argument_group('required arguments')
     required_arg_group.add_argument(
         '-f',
         '--file',
         required=True,
         help='Path to the JSON file containing the dependency graph. '
-        'See the README on how to generate this file.')
+        'See the README on how to generate this file.',
+    )
     required_arg_group.add_argument(
         '-l',
         '--cycle-length',
         type=int,
         required=True,
         help='The maximum length of cycles to find, at most 5 or 6 to keep the '
-        'script runtime low.')
+        'script runtime low.',
+    )
     arg_parser.add_argument(
         '-o',
         '--output',
         type=argparse.FileType('w'),
-        help='Path to the file to write the list of cycles to.')
+        help='Path to the file to write the list of cycles to.',
+    )
     args = arg_parser.parse_args()
 
     _, package_graph, _ = serialization.load_class_and_package_graphs_from_file(
-        args.file)
+        args.file
+    )
 
     all_cycles = find_cycles(package_graph, args.cycle_length)
     # There are no cycles of length 0 or 1 (since self-loops are disallowed).
@@ -190,8 +199,9 @@ def main():
                 output_file.write(f'Cycles of length {cycle_length}:\n')
                 cycle_texts = []
                 for cycle in cycles:
-                    cycle_texts.append(' > '.join(cycle_node.name
-                                                  for cycle_node in cycle))
+                    cycle_texts.append(
+                        ' > '.join(cycle_node.name for cycle_node in cycle)
+                    )
                 output_file.write('\n'.join(sorted(cycle_texts)))
                 output_file.write('\n')
 

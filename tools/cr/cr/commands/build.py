@@ -16,10 +16,10 @@ class BuildCommand(cr.Command):
   def __init__(self):
     super(BuildCommand, self).__init__()
     self.help = 'Build a target'
-    self.description = ("""
+    self.description = """
         Uses the specified builder for the platform to bring the target
         up to date.
-        """)
+        """
 
   def AddArguments(self, subparsers):
     parser = super(BuildCommand, self).AddArguments(subparsers)
@@ -29,8 +29,7 @@ class BuildCommand(cr.Command):
     return parser
 
   def Run(self):
-    return cr.Builder.Build(
-        cr.Target.GetTargets(), cr.context.remains)
+    return cr.Builder.Build(cr.Target.GetTargets(), cr.context.remains)
 
 
 class CleanCommand(cr.Command):
@@ -43,7 +42,8 @@ class CleanCommand(cr.Command):
     super(CleanCommand, self).__init__()
     self.help = 'Clean a target'
     self.description = (
-        'Uses the specified builder to clean out built files for the target.')
+      'Uses the specified builder to clean out built files for the target.'
+    )
 
   def AddArguments(self, subparsers):
     parser = super(CleanCommand, self).AddArguments(subparsers)
@@ -53,8 +53,7 @@ class CleanCommand(cr.Command):
     return parser
 
   def Run(self):
-    return cr.Builder.Clean(
-        cr.Target.GetTargets(), cr.context.remains)
+    return cr.Builder.Clean(cr.Target.GetTargets(), cr.context.remains)
 
 
 class RebuildCommand(cr.Command):
@@ -67,7 +66,8 @@ class RebuildCommand(cr.Command):
     super(RebuildCommand, self).__init__()
     self.help = 'Rebuild a target'
     self.description = (
-        'Uses the specified builder for the platform to rebuild a target.')
+      'Uses the specified builder for the platform to rebuild a target.'
+    )
 
   def AddArguments(self, subparsers):
     parser = super(RebuildCommand, self).AddArguments(subparsers)
@@ -77,5 +77,4 @@ class RebuildCommand(cr.Command):
     return parser
 
   def Run(self):
-    return cr.Builder.Rebuild(
-        cr.Target.GetTargets(), cr.context.remains)
+    return cr.Builder.Rebuild(cr.Target.GetTargets(), cr.context.remains)

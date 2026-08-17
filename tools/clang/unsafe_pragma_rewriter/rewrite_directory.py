@@ -15,23 +15,28 @@ import tempfile
 
 def main():
   parser = argparse.ArgumentParser(
-      description="Rewrite UNSAFE_TODO regions using clang compiler errors.",
-      formatter_class=argparse.RawDescriptionHelpFormatter)
+    description="Rewrite UNSAFE_TODO regions using clang compiler errors.",
+    formatter_class=argparse.RawDescriptionHelpFormatter,
+  )
 
-  parser.add_argument("-C",
-                      dest="build_dir",
-                      default="out/Debug",
-                      help="Specify the build directory, defaults to out/Debug")
-  parser.add_argument("-f",
-                      dest="force",
-                      action="store_true",
-                      help="skip conditional compilation checks.")
-  parser.add_argument("-v",
-                      dest="verbose",
-                      action="store_true",
-                      help="Enable verbose logging")
-  parser.add_argument("directory",
-                      help="Directory under src/ to checkout and modify.")
+  parser.add_argument(
+    "-C",
+    dest="build_dir",
+    default="out/Debug",
+    help="Specify the build directory, defaults to out/Debug",
+  )
+  parser.add_argument(
+    "-f",
+    dest="force",
+    action="store_true",
+    help="skip conditional compilation checks.",
+  )
+  parser.add_argument(
+    "-v", dest="verbose", action="store_true", help="Enable verbose logging"
+  )
+  parser.add_argument(
+    "directory", help="Directory under src/ to checkout and modify."
+  )
 
   args = parser.parse_args()
   build_dir = args.build_dir
@@ -42,7 +47,12 @@ def main():
   print("Checking GN build arg configuration ...")
   try:
     dcheck_cmd = [
-        "gn", "args", "-C", build_dir, "--short", "--list=dcheck_always_on"
+      "gn",
+      "args",
+      "-C",
+      build_dir,
+      "--short",
+      "--list=dcheck_always_on",
     ]
     dcheck = subprocess.check_output(dcheck_cmd, text=True)
     if "true" not in dcheck:
@@ -50,18 +60,27 @@ def main():
       sys.exit(1)
 
     diag_cmd = [
-        "gn", "args", "-C", build_dir, "--short",
-        "--list=diagnostics_print_source_range_info"
+      "gn",
+      "args",
+      "-C",
+      build_dir,
+      "--short",
+      "--list=diagnostics_print_source_range_info",
     ]
     diag = subprocess.check_output(diag_cmd, text=True)
     if "true" not in diag:
-      print("Set GN arg diagnostics_print_source_range_info = true",
-            file=sys.stderr)
+      print(
+        "Set GN arg diagnostics_print_source_range_info = true", file=sys.stderr
+      )
       sys.exit(1)
 
     warn_cmd = [
-        "gn", "args", "-C", build_dir, "--short",
-        "--list=treat_warnings_as_errors"
+      "gn",
+      "args",
+      "-C",
+      build_dir,
+      "--short",
+      "--list=treat_warnings_as_errors",
     ]
     warn = subprocess.check_output(warn_cmd, text=True)
     if "false" not in warn:
@@ -119,8 +138,9 @@ def main():
   ninja = subprocess.run(ninja_command, text=True, capture_output=True)
   if ninja.stderr:
     source_files = [
-        x for x in source_files
-        if not 'unknown target "../../' + x in ninja.stderr
+      x
+      for x in source_files
+      if not 'unknown target "../../' + x in ninja.stderr
     ]
 
   if verbose:
@@ -128,23 +148,27 @@ def main():
     print("\n".join(source_files), "\n")
 
   subprocess.run(
-      ["tools/clang/unsafe_pragma_rewriter/remove_unsafe_pragma.py"] +
-      source_files,
-      check=True)
+    ["tools/clang/unsafe_pragma_rewriter/remove_unsafe_pragma.py"]
+    + source_files,
+    check=True,
+  )
 
   print("Compile to find unsafe errors ...")
   targets = ["../../" + x + "^" for x in source_files]
   buildlog0 = os.path.join(tmpdir, "buildlog0")
   with open(buildlog0, "w") as f_log:
-    subprocess.run(["autoninja", "-k", "1000", "-C", build_dir, "-v"] + targets,
-                   stdout=f_log,
-                   stderr=subprocess.STDOUT)
+    subprocess.run(
+      ["autoninja", "-k", "1000", "-C", build_dir, "-v"] + targets,
+      stdout=f_log,
+      stderr=subprocess.STDOUT,
+    )
 
   with open(buildlog0) as f_in:
     compiled = subprocess.check_output(
-        ["tools/clang/unsafe_pragma_rewriter/extract_sources.py"],
-        stdin=f_in,
-        text=True).strip()
+      ["tools/clang/unsafe_pragma_rewriter/extract_sources.py"],
+      stdin=f_in,
+      text=True,
+    ).strip()
     compiled_files = compiled.splitlines() if compiled else []
 
   if not compiled_files:
@@ -162,9 +186,10 @@ def main():
 
   with open(buildlog0) as f_in:
     fail = subprocess.check_output(
-        ["tools/clang/unsafe_pragma_rewriter/extract_failures.py"],
-        stdin=f_in,
-        text=True).strip()
+      ["tools/clang/unsafe_pragma_rewriter/extract_failures.py"],
+      stdin=f_in,
+      text=True,
+    ).strip()
     fail_files = fail.splitlines() if fail else []
 
   if verbose and fail_files:
@@ -174,44 +199,52 @@ def main():
   print("Resetting to clean state ...")
   subprocess.run(["git", "checkout", "--", directory], check=True)
   subprocess.run(
-      ["tools/clang/unsafe_pragma_rewriter/remove_unsafe_pragma.py"] +
-      source_files,
-      check=True)
+    ["tools/clang/unsafe_pragma_rewriter/remove_unsafe_pragma.py"]
+    + source_files,
+    check=True,
+  )
 
   print("Adding UNSAFE_TODO() ...")
   with open(buildlog0) as f_in:
-    subprocess.run(["tools/clang/unsafe_pragma_rewriter/fix_unsafe.py"],
-                   stdin=f_in,
-                   check=True)
+    subprocess.run(
+      ["tools/clang/unsafe_pragma_rewriter/fix_unsafe.py"],
+      stdin=f_in,
+      check=True,
+    )
 
   if source_files:
     try:
       needs_header_cmd = ["git", "grep", "-l", "UNSAFE_TODO"] + source_files
-      needs_header = subprocess.check_output(needs_header_cmd,
-                                             text=True).strip()
+      needs_header = subprocess.check_output(
+        needs_header_cmd, text=True
+      ).strip()
       needs_header_files = needs_header.splitlines() if needs_header else []
     except Exception as e:
       needs_header_files = []
 
     if needs_header_files:
       subprocess.run(
-          ["tools/add_header.py", "--header", '"base/compiler_specific.h"'] +
-          needs_header_files,
-          check=True)
+        ["tools/add_header.py", "--header", '"base/compiler_specific.h"']
+        + needs_header_files,
+        check=True,
+      )
 
   for i in range(1, 5):
     print(f"Compile to find bad rewrites (Pass {i}) ...")
     buildlog_i = os.path.join(tmpdir, f"buildlog{i}")
     with open(buildlog_i, "w") as f_log:
-      subprocess.run(["autoninja", "-k", "1000", "-C", build_dir] + targets,
-                     stdout=f_log,
-                     stderr=subprocess.STDOUT)
+      subprocess.run(
+        ["autoninja", "-k", "1000", "-C", build_dir] + targets,
+        stdout=f_log,
+        stderr=subprocess.STDOUT,
+      )
 
     with open(buildlog_i) as f_in:
       fail = subprocess.check_output(
-          ["tools/clang/unsafe_pragma_rewriter/extract_failures.py"],
-          stdin=f_in,
-          text=True).strip()
+        ["tools/clang/unsafe_pragma_rewriter/extract_failures.py"],
+        stdin=f_in,
+        text=True,
+      ).strip()
       failures = fail.splitlines() if fail else []
 
     if not failures:

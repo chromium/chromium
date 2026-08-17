@@ -62,7 +62,8 @@ def SectionInfoFromElf(elf_path):
     if section_name == 'NULL':
       continue
     assert not section_name.startswith('.debug'), (
-        'Should not section sizes of an unstripped binary.')
+      'Should not section sizes of an unstripped binary.'
+    )
 
     # Stop if we hit any partitions.
     if section_name.endswith('_partition'):
@@ -72,16 +73,17 @@ def SectionInfoFromElf(elf_path):
     if section_type == 'NOBITS':
       # Ensure we don't count BSS as real size.
       assert section_name in models.BSS_SECTIONS, (
-          'BSS_SECTIONS out of date: ' + section_name)
+        'BSS_SECTIONS out of date: ' + section_name
+      )
 
     section_range = (int(items[2], 16), int(items[4], 16))
 
     # E.g. Merge user-defined sections. e.g.: malloc_hook, protected_memory.
     if not section_name.startswith('.'):
       logging.info('Merged %s into %s', section_name, prev_section_name)
-      archive_util.ExtendSectionRangeAdjacent(section_ranges, prev_section_name,
-                                              section_range[0],
-                                              section_range[1])
+      archive_util.ExtendSectionRangeAdjacent(
+        section_ranges, prev_section_name, section_range[0], section_range[1]
+      )
     else:
       section_ranges[items[0]] = section_range
       prev_section_name = section_name
@@ -101,8 +103,10 @@ def main():
   parser = argparse.ArgumentParser()
   parser.add_argument('elf_path', type=os.path.realpath)
   args = parser.parse_args()
-  logging.basicConfig(level=logging.DEBUG,
-                      format='%(levelname).1s %(relativeCreated)6d %(message)s')
+  logging.basicConfig(
+    level=logging.DEBUG,
+    format='%(levelname).1s %(relativeCreated)6d %(message)s',
+  )
 
   # Other functions in this file have test entrypoints in object_analyzer.py.
   section_ranges = SectionInfoFromElf(args.elf_path)

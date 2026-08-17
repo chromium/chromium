@@ -153,7 +153,7 @@ def ForkAndCall(func, args, decode_func=None):
     result = _ImmediateResult(func(*args))
   else:
     pool = _MakeProcessPool([args])  # Omit |kwargs|.
-    result = pool.apply_async(_FuncWrapper(func), (0, ))
+    result = pool.apply_async(_FuncWrapper(func), (0,))
     pool.close()
   return _WrappedResult(result, decode_func=decode_func)
 
@@ -209,7 +209,8 @@ def EncodeDictOfLists(d, key_transform=None, value_transform=None):
   keys = '\x01'.join(keys)
   if value_transform:
     values = '\x01'.join(
-        '\x02'.join(value_transform(y) for y in x) for x in d.values())
+      '\x02'.join(value_transform(y) for y in x) for x in d.values()
+    )
   else:
     values = '\x01'.join('\x02'.join(x) for x in d.values())
   return keys, values
@@ -217,13 +218,15 @@ def EncodeDictOfLists(d, key_transform=None, value_transform=None):
 
 def JoinEncodedDictOfLists(encoded_values):
   assert isinstance(encoded_values, list), 'Does not work with generators'
-  return ('\x01'.join(x[0] for x in encoded_values if x[0]),
-          '\x01'.join(x[1] for x in encoded_values if x[1]))
+  return (
+    '\x01'.join(x[0] for x in encoded_values if x[0]),
+    '\x01'.join(x[1] for x in encoded_values if x[1]),
+  )
 
 
-def DecodeDictOfLists(encoded_keys_and_values,
-                      key_transform=None,
-                      value_transform=None):
+def DecodeDictOfLists(
+  encoded_keys_and_values, key_transform=None, value_transform=None
+):
   """Deserializes a dict where values are lists of strings."""
   encoded_keys, encoded_values = encoded_keys_and_values
   if not encoded_keys:

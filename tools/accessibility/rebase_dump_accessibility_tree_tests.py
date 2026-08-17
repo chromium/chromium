@@ -19,7 +19,6 @@ of the changes look reasonable, then upload the change for code review.
 Optional argument: patchset number, otherwise will default to latest patchset
 '''
 
-
 import json
 import os
 import re
@@ -41,9 +40,11 @@ TEST_EXPECTED_STR = 'Expected output: '
 TEST_ACTUAL_STR = 'Actual'
 TEST_END_STR = '<-- End-of-file -->'
 
-TEST_NAME_REGEX = re.compile(r'(?:content.test.*accessibility|'
-                             r'third_party.aria-practices.src.content.patterns)'
-                             r'.([^@]*)')
+TEST_NAME_REGEX = re.compile(
+  r'(?:content.test.*accessibility|'
+  r'third_party.aria-practices.src.content.patterns)'
+  r'.([^@]*)'
+)
 
 # A global that keeps track of files we've already updated, so we don't
 # bother to update the same file twice.
@@ -67,7 +68,8 @@ def _clean_line(line: str) -> str:
 
 
 def _get_individual_test_logs(
-    log: List[str]) -> Generator[List[str], None, None]:
+  log: List[str],
+) -> Generator[List[str], None, None]:
   '''Yields logs for an individual test from a log containing several tests.
 
   Each distinct expectations filename is only included once.
@@ -82,15 +84,15 @@ def _get_individual_test_logs(
     elif TEST_END_STR in line:
       assert expected_file, 'Malformed log.'
       if expected_file not in completed_files:
-        yield (log[start_i:i + 1])
+        yield (log[start_i : i + 1])
         completed_files.add(expected_file)
 
 
 def _write_file(filename: str, data: List[str], directory=TEST_DATA_PATH):
   '''Write data to a file.'''
-  with open(full_path := os.path.join(directory, filename),
-            'w',
-            encoding='utf-8') as f:
+  with open(
+    full_path := os.path.join(directory, filename), 'w', encoding='utf-8'
+  ) as f:
     f.writelines(data)
     completed_files.add(full_path)
     print(".", end="", flush=True)
@@ -126,26 +128,31 @@ def get_trybot_log(patch_set: Optional[int]) -> List:
 
   def _ensure_luci_logged_in():
     '''Ensure we are logged into LUCI, as `git cl try-results` will log a
-     warning otherwise.'''
+    warning otherwise.'''
     process = subprocess.run(
-        f'luci-auth token -scopes https://www.googleapis.com/auth/userinfo.email',
-        shell=True,
-        capture_output=True,
+      f'luci-auth token -scopes https://www.googleapis.com/auth/userinfo.email',
+      shell=True,
+      capture_output=True,
     )
-    if (process.returncode != 0):
+    if process.returncode != 0:
       raise PermissionError(
-          'Not logged into LUCI, please run `luci-auth login`')
+        'Not logged into LUCI, please run `luci-auth login`'
+      )
 
   _ensure_luci_logged_in()
   patch_set_arg = f'--patchset={patch_set}' if patch_set is not None else ''
-  if not (output := subprocess.run(
+  if not (
+    output := subprocess.run(
       f'git cl try-results --json=- {patch_set_arg}',
       shell=True,
       capture_output=True,
       text=True,
-  ).stdout):
-    raise ValueError('Did not find an issue attached to the current branch. '
-                     'Note for Googlers: you might just need to run gcert.')
+    ).stdout
+  ):
+    raise ValueError(
+      'Did not find an issue attached to the current branch. '
+      'Note for Googlers: you might just need to run gcert.'
+    )
   return json.loads(output)
 
 
@@ -160,12 +167,12 @@ def _rdb_rpc(method: str, request: dict) -> dict:
     The response from ResultDB, in dict format.
   '''
   p = subprocess.Popen(
-      f'rdb rpc luci.resultdb.v1.ResultDB {method}',
-      shell=True,
-      stdin=subprocess.PIPE,
-      stdout=subprocess.PIPE,
-      stderr=subprocess.PIPE,
-      text=True,
+    f'rdb rpc luci.resultdb.v1.ResultDB {method}',
+    shell=True,
+    stdin=subprocess.PIPE,
+    stdout=subprocess.PIPE,
+    stderr=subprocess.PIPE,
+    text=True,
   )
   stdout, stderr = p.communicate(json.dumps(request))
   if p.returncode != 0:
@@ -180,16 +187,16 @@ def _get_artifacts_for_failing_tests(builder_id: str) -> List[str]:
   b/350991029 for context).
   '''
   response = _rdb_rpc(
-      'QueryArtifacts',
-      {
-          'invocations': [f'invocations/build-{builder_id}'],
-          'pageSize': 1000,
-          'predicate': {
-              'testResultPredicate': {
-                  'expectancy': 'VARIANTS_WITH_ONLY_UNEXPECTED_RESULTS',
-              }
-          },
+    'QueryArtifacts',
+    {
+      'invocations': [f'invocations/build-{builder_id}'],
+      'pageSize': 1000,
+      'predicate': {
+        'testResultPredicate': {
+          'expectancy': 'VARIANTS_WITH_ONLY_UNEXPECTED_RESULTS',
+        }
       },
+    },
   )
   if 'artifacts' not in response:
     return []
@@ -199,8 +206,9 @@ def _get_artifacts_for_failing_tests(builder_id: str) -> List[str]:
     return 'contentType' in artifact and artifact['contentType'] == 'text/plain'
 
   return [
-      artifact['fetchUrl'] for artifact in response['artifacts']
-      if _has_text_log(artifact)
+    artifact['fetchUrl']
+    for artifact in response['artifacts']
+    if _has_text_log(artifact)
   ]
 
 
@@ -208,7 +216,7 @@ def main():
   patch_set = sys.argv[1] if len(sys.argv) > 1 else None
 
   failing_builder_ids = [
-      b['id'] for b in get_trybot_log(patch_set) if b['status'] == 'FAILURE'
+    b['id'] for b in get_trybot_log(patch_set) if b['status'] == 'FAILURE'
   ]
   if not failing_builder_ids:
     print('No failing builders found for the current branch.')
@@ -227,6 +235,7 @@ def main():
         _write_file(expected_file, actual_text)
   sorted_files = sorted(completed_files)
   print(''.join([f'\nWrote expectations file: {f}' for f in sorted_files]))
+
 
 if __name__ == '__main__':
   sys.exit(main())

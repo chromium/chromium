@@ -16,7 +16,8 @@ import tempfile
 
 SELF_FILE = os.path.normpath(os.path.abspath(__file__))
 REPOSITORY_ROOT = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), '..', '..'))
+  os.path.join(os.path.dirname(__file__), '..', '..')
+)
 
 
 def Run(*args):
@@ -33,9 +34,15 @@ def EnsureEmptyDir(path):
 
 
 def BuildForArch(arch):
-  Run('scripts/fx', '--dir', 'out/release-{}'.format(arch), 'set',
-      'terminal.qemu-{}'.format(arch), '--args=is_debug=false',
-      '--args=build_sdk_archives=true')
+  Run(
+    'scripts/fx',
+    '--dir',
+    'out/release-{}'.format(arch),
+    'set',
+    'terminal.qemu-{}'.format(arch),
+    '--args=is_debug=false',
+    '--args=build_sdk_archives=true',
+  )
   Run('scripts/fx', 'build', 'sdk', 'build/images')
 
 
@@ -58,17 +65,19 @@ def main(args):
     unknown_archs = target_archs - ALL_ARCHS
     if unknown_archs:
       print(
-          f'Unknown architectures: {unknown_archs}. Known architectures: {ALL_ARCHS}'
+        f'Unknown architectures: {unknown_archs}. Known architectures: {ALL_ARCHS}'
       )
       return 1
 
   # Nuke the SDK from DEPS, put our just-built one there, and set a fake .hash
   # file. This means that on next gclient runhooks, we'll restore to the
   # real DEPS-determined SDK.
-  sdk_output_dir = os.path.join(REPOSITORY_ROOT, 'third_party', 'fuchsia-sdk',
-                                'sdk')
-  images_output_dir = os.path.join(REPOSITORY_ROOT, 'third_party',
-                                   'fuchsia-sdk', 'images')
+  sdk_output_dir = os.path.join(
+    REPOSITORY_ROOT, 'third_party', 'fuchsia-sdk', 'sdk'
+  )
+  images_output_dir = os.path.join(
+    REPOSITORY_ROOT, 'third_party', 'fuchsia-sdk', 'images'
+  )
   EnsureEmptyDir(sdk_output_dir)
   EnsureEmptyDir(images_output_dir)
 
@@ -92,13 +101,17 @@ def main(args):
       sdk_gn_dir = os.path.join(arch_output_dir, 'sdk', 'gn-' + sdk_tar)
 
       # Process the Core SDK tarball to generate the GN SDK.
-      Run('scripts/sdk/gn/generate.py', '--archive', sdk_tar_path, '--output',
-          sdk_gn_dir)
+      Run(
+        'scripts/sdk/gn/generate.py',
+        '--archive',
+        sdk_tar_path,
+        '--output',
+        sdk_gn_dir,
+      )
 
-      shutil.copytree(sdk_gn_dir,
-                      sdk_output_dir,
-                      copy_function=Copy,
-                      dirs_exist_ok=True)
+      shutil.copytree(
+        sdk_gn_dir, sdk_output_dir, copy_function=Copy, dirs_exist_ok=True
+      )
 
       # Merge the manifests.
       manifest_path = os.path.join(sdk_output_dir, 'meta', 'manifest.json')
@@ -131,8 +144,9 @@ def main(args):
         continue
 
       shutil.copyfile(
-          os.path.join(arch_output_dir, entry['path']),
-          os.path.join(arch_image_dir, entry['name']) + '.' + entry['type'])
+        os.path.join(arch_output_dir, entry['path']),
+        os.path.join(arch_image_dir, entry['name']) + '.' + entry['type'],
+      )
 
   # Write merged manifest file.
   with open(manifest_path, 'w') as manifest_file:

@@ -24,26 +24,35 @@ import test_health_extractor
 def main():
     parser = argparse.ArgumentParser(
         description='Gather Java test health information for a Git repository'
-        ' and export it as newline-delimited JSON.')
-    parser.add_argument('-o',
-                        '--output-file',
-                        type=pathlib.Path,
-                        required=True,
-                        help='output file path for extracted test health data')
-    parser.add_argument('--git-dir',
-                        type=pathlib.Path,
-                        required=False,
-                        help='root directory of the Git repository to read'
-                        ' (defaults to the Chromium repo)')
-    parser.add_argument('--test-dir',
-                        type=pathlib.Path,
-                        required=False,
-                        help='subdirectory containing the tests of interest;'
-                        ' defaults to the root of the Git repo')
-    parser.add_argument('-v',
-                        '--verbose',
-                        action='store_true',
-                        help='Used to display detailed logging.')
+        ' and export it as newline-delimited JSON.'
+    )
+    parser.add_argument(
+        '-o',
+        '--output-file',
+        type=pathlib.Path,
+        required=True,
+        help='output file path for extracted test health data',
+    )
+    parser.add_argument(
+        '--git-dir',
+        type=pathlib.Path,
+        required=False,
+        help='root directory of the Git repository to read'
+        ' (defaults to the Chromium repo)',
+    )
+    parser.add_argument(
+        '--test-dir',
+        type=pathlib.Path,
+        required=False,
+        help='subdirectory containing the tests of interest;'
+        ' defaults to the root of the Git repo',
+    )
+    parser.add_argument(
+        '-v',
+        '--verbose',
+        action='store_true',
+        help='Used to display detailed logging.',
+    )
     args = parser.parse_args()
 
     if args.verbose:
@@ -51,17 +60,18 @@ def main():
     else:
         level = logging.INFO
     logging.basicConfig(
-        level=level, format='%(levelname).1s %(relativeCreated)6d %(message)s')
+        level=level, format='%(levelname).1s %(relativeCreated)6d %(message)s'
+    )
 
     logging.info('Extracting test health data from Git repo.')
     start_time = time.time()
     test_health_list = test_health_extractor.get_repo_test_health(
-        args.git_dir, test_dir=args.test_dir)
+        args.git_dir, test_dir=args.test_dir
+    )
     extraction_time = time.time() - start_time
     logging.debug(f'--- Extraction took {extraction_time:.2f} seconds ---')
 
-    logging.info('Exporting test health data to file: ' +
-                 str(args.output_file))
+    logging.info('Exporting test health data to file: ' + str(args.output_file))
     export_start_time = time.time()
     test_health_exporter.to_json_file(test_health_list, args.output_file)
     export_time = time.time() - export_start_time

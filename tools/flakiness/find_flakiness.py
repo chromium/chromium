@@ -83,7 +83,7 @@ def FindShardingFlakiness(test_path, data_path, supervisor_args):
   data_file.write('%i runs\n' % num_runs)
   print('%i passes' % num_passes)
   data_file.write('%i passes\n' % num_passes)
-  for (test, count) in failed_tests.iteritems():
+  for test, count in failed_tests.iteritems():
     print('%s -> %i' % (test, count))
     data_file.write('%s -> %i\n' % (test, count))
   data_file.close()
@@ -122,8 +122,11 @@ def FindUnaryFlakiness(test_path, output_path, num_procs, num_repeats, timeout):
     num_fails = 0
     num_terminated = 0
     procs = []
-    args = [test_path, '--gtest_filter=' + test_name,
-            '--gtest_repeat=%i' % num_repeats]
+    args = [
+      test_path,
+      '--gtest_filter=' + test_name,
+      '--gtest_repeat=%i' % num_repeats,
+    ]
     while len(procs) < num_procs:
       procs.append(subprocess.Popen(args))
     seconds = 0
@@ -173,7 +176,8 @@ def main():
     time.sleep(FF_SLEEP_INTERVAL)
 
   FindUnaryFlakiness(
-      args[0], output_path, FF_NUM_PROCS, FF_NUM_REPEATS, FF_TIMEOUT)
+    args[0], output_path, FF_NUM_PROCS, FF_NUM_REPEATS, FF_TIMEOUT
+  )
 
 
 if __name__ == '__main__':

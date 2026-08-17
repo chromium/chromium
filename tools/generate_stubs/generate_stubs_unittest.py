@@ -27,42 +27,46 @@ import unittest
 
 
 def _MakeSignature(return_type, name, params):
-  return {'return_type': return_type,
-          'name': name,
-          'params': params}
+  return {'return_type': return_type, 'name': name, 'params': params}
 
 
 SIMPLE_SIGNATURES = [
-    ('int foo(int a)', _MakeSignature('int', 'foo', ['int a'])),
-    ('int bar(int a, double b)', _MakeSignature('int', 'bar',
-                                                ['int a', 'double b'])),
-    ('int baz(void)', _MakeSignature('int', 'baz', ['void'])),
-    ('void quux(void)', _MakeSignature('void', 'quux', ['void'])),
-    ('void waldo(void);', _MakeSignature('void', 'waldo', ['void'])),
-    ('int corge(void);', _MakeSignature('int', 'corge', ['void'])),
-    ('int ferda(char **argv[]);',
-     _MakeSignature('int', 'ferda', ['char **argv[]'])),
-    ]
+  ('int foo(int a)', _MakeSignature('int', 'foo', ['int a'])),
+  (
+    'int bar(int a, double b)',
+    _MakeSignature('int', 'bar', ['int a', 'double b']),
+  ),
+  ('int baz(void)', _MakeSignature('int', 'baz', ['void'])),
+  ('void quux(void)', _MakeSignature('void', 'quux', ['void'])),
+  ('void waldo(void);', _MakeSignature('void', 'waldo', ['void'])),
+  ('int corge(void);', _MakeSignature('int', 'corge', ['void'])),
+  (
+    'int ferda(char **argv[]);',
+    _MakeSignature('int', 'ferda', ['char **argv[]']),
+  ),
+]
 
 TRICKY_SIGNATURES = [
-    ('const struct name *foo(int a, struct Test* b);  ',
-     _MakeSignature('const struct name *',
-                    'foo',
-                    ['int a', 'struct Test* b'])),
-    ('const struct name &foo(int a, struct Test* b);',
-     _MakeSignature('const struct name &',
-                    'foo',
-                    ['int a', 'struct Test* b'])),
-    ('const struct name &_foo(int a, struct Test* b);',
-     _MakeSignature('const struct name &',
-                    '_foo',
-                    ['int a', 'struct Test* b'])),
-    ('struct name const * const _foo(int a, struct Test* b) '
-     '__attribute__((inline));',
-     _MakeSignature('struct name const * const',
-                    '_foo',
-                    ['int a', 'struct Test* b']))
-    ]
+  (
+    'const struct name *foo(int a, struct Test* b);  ',
+    _MakeSignature('const struct name *', 'foo', ['int a', 'struct Test* b']),
+  ),
+  (
+    'const struct name &foo(int a, struct Test* b);',
+    _MakeSignature('const struct name &', 'foo', ['int a', 'struct Test* b']),
+  ),
+  (
+    'const struct name &_foo(int a, struct Test* b);',
+    _MakeSignature('const struct name &', '_foo', ['int a', 'struct Test* b']),
+  ),
+  (
+    'struct name const * const _foo(int a, struct Test* b) '
+    '__attribute__((inline));',
+    _MakeSignature(
+      'struct name const * const', '_foo', ['int a', 'struct Test* b']
+    ),
+  ),
+]
 
 INVALID_SIGNATURES = ['I am bad', 'Seriously bad(', ';;;']
 
@@ -85,11 +89,12 @@ class GenerateStubModuleFunctionsUnittest(unittest.TestCase):
 
     # We assume signatures are in order.
     for i in range(len(SIMPLE_SIGNATURES)):
-      self.assertEqual(SIMPLE_SIGNATURES[i][1], signatures[i],
-                       msg='Expected %s\nActual %s\nFor %s' %
-                       (SIMPLE_SIGNATURES[i][1],
-                        signatures[i],
-                        SIMPLE_SIGNATURES[i][0]))
+      self.assertEqual(
+        SIMPLE_SIGNATURES[i][1],
+        signatures[i],
+        msg='Expected %s\nActual %s\nFor %s'
+        % (SIMPLE_SIGNATURES[i][1], signatures[i], SIMPLE_SIGNATURES[i][0]),
+      )
 
   def testParseSignatures_TrickySignatures(self):
     file_contents = '\n'.join([x[0] for x in TRICKY_SIGNATURES])
@@ -99,11 +104,12 @@ class GenerateStubModuleFunctionsUnittest(unittest.TestCase):
 
     # We assume signatures are in order.
     for i in range(len(TRICKY_SIGNATURES)):
-      self.assertEqual(TRICKY_SIGNATURES[i][1], signatures[i],
-                       msg='Expected %s\nActual %s\nFor %s' %
-                       (TRICKY_SIGNATURES[i][1],
-                        signatures[i],
-                        TRICKY_SIGNATURES[i][0]))
+      self.assertEqual(
+        TRICKY_SIGNATURES[i][1],
+        signatures[i],
+        msg='Expected %s\nActual %s\nFor %s'
+        % (TRICKY_SIGNATURES[i][1], signatures[i], TRICKY_SIGNATURES[i][0]),
+      )
 
   def testParseSignatures_InvalidSignatures(self):
     for i in INVALID_SIGNATURES:
@@ -138,32 +144,47 @@ class WindowsLibUnittest(unittest.TestCase):
     contents = outfile.getvalue()
 
     # Check that the file header is correct.
-    self.assertTrue(contents.startswith("""LIBRARY %s
+    self.assertTrue(
+      contents.startswith(
+        """LIBRARY %s
 EXPORTS
-""" % module_name))
+"""
+        % module_name
+      )
+    )
 
     # Check that the signatures were exported.
     for sig in signatures:
       pattern = '\n  %s\n' % sig['name']
-      self.assertTrue(re.search(pattern, contents),
-                      msg='Expected match of "%s" in %s' % (pattern, contents))
+      self.assertTrue(
+        re.search(pattern, contents),
+        msg='Expected match of "%s" in %s' % (pattern, contents),
+      )
 
   def testQuietRun(self):
     output = io.StringIO()
-    gs.QuietRun([
-        sys.executable, '-c', 'from __future__ import print_function; '
-        'print("line 1 and suffix\\nline 2")'
-    ],
-                write_to=output)
+    gs.QuietRun(
+      [
+        sys.executable,
+        '-c',
+        'from __future__ import print_function; '
+        'print("line 1 and suffix\\nline 2")',
+      ],
+      write_to=output,
+    )
     self.assertEqual('line 1 and suffix\nline 2\n', output.getvalue())
 
     output = io.StringIO()
-    gs.QuietRun([
-        sys.executable, '-c', 'from __future__ import print_function; '
-        'print("line 1 and suffix\\nline 2")'
-    ],
-                filter='line 1',
-                write_to=output)
+    gs.QuietRun(
+      [
+        sys.executable,
+        '-c',
+        'from __future__ import print_function; '
+        'print("line 1 and suffix\\nline 2")',
+      ],
+      filter='line 1',
+      write_to=output,
+    )
     self.assertEqual('line 2\n', output.getvalue())
 
 
@@ -172,67 +193,82 @@ class PosixStubWriterUnittest(unittest.TestCase):
     self.module_name = 'my_module-1'
     self.signatures = [sig[1] for sig in SIMPLE_SIGNATURES]
     self.out_dir = 'out_dir'
-    self.writer = gs.PosixStubWriter(self.module_name, '', self.signatures,
-                                     'VLOG(1)')
+    self.writer = gs.PosixStubWriter(
+      self.module_name, '', self.signatures, 'VLOG(1)'
+    )
 
   def testEnumName(self):
-    self.assertEqual('kModuleMy_module1',
-                     gs.PosixStubWriter.EnumName(self.module_name))
+    self.assertEqual(
+      'kModuleMy_module1', gs.PosixStubWriter.EnumName(self.module_name)
+    )
 
   def testIsInitializedName(self):
-    self.assertEqual('IsMy_module1Initialized',
-                     gs.PosixStubWriter.IsInitializedName(self.module_name))
+    self.assertEqual(
+      'IsMy_module1Initialized',
+      gs.PosixStubWriter.IsInitializedName(self.module_name),
+    )
 
   def testInitializeModuleName(self):
     self.assertEqual(
-        'InitializeMy_module1',
-        gs.PosixStubWriter.InitializeModuleName(self.module_name))
+      'InitializeMy_module1',
+      gs.PosixStubWriter.InitializeModuleName(self.module_name),
+    )
 
   def testUninitializeModuleName(self):
     self.assertEqual(
-        'UninitializeMy_module1',
-        gs.PosixStubWriter.UninitializeModuleName(self.module_name))
+      'UninitializeMy_module1',
+      gs.PosixStubWriter.UninitializeModuleName(self.module_name),
+    )
 
   def testStubFunctionPointer(self):
     self.assertEqual(
-        'static int (*foo_ptr)(int a) = nullptr;',
-        gs.PosixStubWriter.StubFunctionPointer(SIMPLE_SIGNATURES[0][1]))
+      'static int (*foo_ptr)(int a) = nullptr;',
+      gs.PosixStubWriter.StubFunctionPointer(SIMPLE_SIGNATURES[0][1]),
+    )
 
   def testStubFunction(self):
     # Test for a signature with a return value and a parameter.
     self.assertEqual(
-        """extern int foo(int a) __attribute__((weak));
+      """extern int foo(int a) __attribute__((weak));
 DISABLE_CFI_ICALL
 int  foo(int a) {
   return foo_ptr(a);
-}""", gs.PosixStubWriter.StubFunction(SIMPLE_SIGNATURES[0][1]))
+}""",
+      gs.PosixStubWriter.StubFunction(SIMPLE_SIGNATURES[0][1]),
+    )
 
     # Test for a signature with a void return value and no parameters.
     self.assertEqual(
-        """extern void waldo(void) __attribute__((weak));
+      """extern void waldo(void) __attribute__((weak));
 DISABLE_CFI_ICALL
 void  waldo(void) {
   waldo_ptr();
-}""", gs.PosixStubWriter.StubFunction(SIMPLE_SIGNATURES[4][1]))
+}""",
+      gs.PosixStubWriter.StubFunction(SIMPLE_SIGNATURES[4][1]),
+    )
 
     # Test export macros.
     sig = _MakeSignature('int*', 'foo', ['bool b'])
     sig['export'] = 'TEST_EXPORT'
     self.assertEqual(
-        """extern int* foo(bool b) __attribute__((weak));
+      """extern int* foo(bool b) __attribute__((weak));
 DISABLE_CFI_ICALL
 int* TEST_EXPORT foo(bool b) {
   return foo_ptr(b);
-}""", gs.PosixStubWriter.StubFunction(sig))
+}""",
+      gs.PosixStubWriter.StubFunction(sig),
+    )
 
     # Test for a signature where an array is passed. It should be passed without
     # square brackets otherwise the compilation failure will occur..
     self.assertEqual(
-        """extern int ferda(char **argv[]) __attribute__((weak));
+      """extern int ferda(char **argv[]) __attribute__((weak));
 DISABLE_CFI_ICALL
 int  ferda(char **argv[]) {
   return ferda_ptr(argv);
-}""", gs.PosixStubWriter.StubFunction(SIMPLE_SIGNATURES[6][1]))
+}""",
+      gs.PosixStubWriter.StubFunction(SIMPLE_SIGNATURES[6][1]),
+    )
 
   def testWriteImplemenationContents(self):
     outfile = io.StringIO()
@@ -246,25 +282,30 @@ int  ferda(char **argv[]) {
     # Check that the signatures were exported.
     for sig in self.signatures:
       decl = gs.PosixStubWriter.StubFunctionPointer(sig)
-      self.assertTrue(contents.find(decl) != -1,
-                      msg='Expected "%s" in %s' % (decl, contents))
+      self.assertTrue(
+        contents.find(decl) != -1, msg='Expected "%s" in %s' % (decl, contents)
+      )
 
     # Verify that each signature has an stub function generated for it.
     for sig in self.signatures:
       decl = gs.PosixStubWriter.StubFunction(sig)
-      self.assertTrue(contents.find(decl) != -1,
-                      msg='Expected "%s" in %s' % (decl, contents))
+      self.assertTrue(
+        contents.find(decl) != -1, msg='Expected "%s" in %s' % (decl, contents)
+      )
 
     # Find module initializer functions.  Make sure all 3 exist.
     decl = gs.PosixStubWriter.InitializeModuleName(self.module_name)
-    self.assertTrue(contents.find(decl) != -1,
-                    msg='Expected "%s" in %s' % (decl, contents))
+    self.assertTrue(
+      contents.find(decl) != -1, msg='Expected "%s" in %s' % (decl, contents)
+    )
     decl = gs.PosixStubWriter.UninitializeModuleName(self.module_name)
-    self.assertTrue(contents.find(decl) != -1,
-                    msg='Expected "%s" in %s' % (decl, contents))
+    self.assertTrue(
+      contents.find(decl) != -1, msg='Expected "%s" in %s' % (decl, contents)
+    )
     decl = gs.PosixStubWriter.IsInitializedName(self.module_name)
-    self.assertTrue(contents.find(decl) != -1,
-                    msg='Expected "%s" in %s' % (decl, contents))
+    self.assertTrue(
+      contents.find(decl) != -1, msg='Expected "%s" in %s' % (decl, contents)
+    )
 
   def testWriteHeaderContents(self):
     # Data for header generation.
@@ -272,8 +313,9 @@ int  ferda(char **argv[]) {
 
     # Make the header.
     outfile = io.StringIO()
-    self.writer.WriteHeaderContents(module_names, 'my_namespace', 'GUARD_',
-                                    outfile)
+    self.writer.WriteHeaderContents(
+      module_names, 'my_namespace', 'GUARD_', outfile
+    )
     contents = outfile.getvalue()
 
     # Check for namespace and header guard.
@@ -287,19 +329,23 @@ int  ferda(char **argv[]) {
     for name in module_names:
       # Check for enums.
       decl = gs.PosixStubWriter.EnumName(name)
-      self.assertTrue(contents.find(decl) != -1,
-                      msg='Expected "%s" in %s' % (decl, contents))
+      self.assertTrue(
+        contents.find(decl) != -1, msg='Expected "%s" in %s' % (decl, contents)
+      )
 
       # Check for module initializer functions.
       decl = gs.PosixStubWriter.IsInitializedName(name)
-      self.assertTrue(contents.find(decl) != -1,
-                      msg='Expected "%s" in %s' % (decl, contents))
+      self.assertTrue(
+        contents.find(decl) != -1, msg='Expected "%s" in %s' % (decl, contents)
+      )
       decl = gs.PosixStubWriter.InitializeModuleName(name)
-      self.assertTrue(contents.find(decl) != -1,
-                      msg='Expected "%s" in %s' % (decl, contents))
+      self.assertTrue(
+        contents.find(decl) != -1, msg='Expected "%s" in %s' % (decl, contents)
+      )
       decl = gs.PosixStubWriter.UninitializeModuleName(name)
-      self.assertTrue(contents.find(decl) != -1,
-                      msg='Expected "%s" in %s' % (decl, contents))
+      self.assertTrue(
+        contents.find(decl) != -1, msg='Expected "%s" in %s' % (decl, contents)
+      )
 
   def testWriteImplementationPreamble(self):
     # Data for header generation.
@@ -307,9 +353,9 @@ int  ferda(char **argv[]) {
 
     # Make the header.
     outfile = io.StringIO()
-    self.writer.WriteImplementationPreamble(module_names, outfile,
-                                            "base/logging.h",
-                                            "my/compiler_specific.h")
+    self.writer.WriteImplementationPreamble(
+      module_names, outfile, "base/logging.h", "my/compiler_specific.h"
+    )
     contents = outfile.getvalue()
 
     # Verify includes are included correctly.
@@ -322,8 +368,9 @@ int  ferda(char **argv[]) {
 
     # Make the header.
     outfile = io.StringIO()
-    self.writer.WriteUmbrellaInitializer(module_names, 'my_namespace', outfile,
-                                         'VLOG(1)')
+    self.writer.WriteUmbrellaInitializer(
+      module_names, 'my_namespace', outfile, 'VLOG(1)'
+    )
     contents = outfile.getvalue()
 
     # Check for umbrella initializer declaration.
@@ -335,14 +382,18 @@ int  ferda(char **argv[]) {
     for name in module_names:
       # Check for module initializer functions.
       decl = gs.PosixStubWriter.IsInitializedName(name)
-      self.assertTrue(contents.find(decl) != -1,
-                      msg='Expected "%s" in %s' % (decl, contents))
+      self.assertTrue(
+        contents.find(decl) != -1, msg='Expected "%s" in %s' % (decl, contents)
+      )
       decl = gs.PosixStubWriter.InitializeModuleName(name)
-      self.assertTrue(contents.find(decl) != -1,
-                      msg='Expected "%s" in %s' % (decl, contents))
+      self.assertTrue(
+        contents.find(decl) != -1, msg='Expected "%s" in %s' % (decl, contents)
+      )
       decl = gs.PosixStubWriter.UninitializeModuleName(name)
-      self.assertTrue(contents.find(decl) != -1,
-                      msg='Expected "%s" in %s' % (decl, contents))
+      self.assertTrue(
+        contents.find(decl) != -1, msg='Expected "%s" in %s' % (decl, contents)
+      )
+
 
 if __name__ == '__main__':
   unittest.main()

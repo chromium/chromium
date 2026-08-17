@@ -40,7 +40,8 @@ class _DwoNameLookup:
 
   def __init__(self, any_path):
     finder = path_util.OutputDirectoryFinder(
-        any_path_within_output_directory=any_path)
+      any_path_within_output_directory=any_path
+    )
     self._output_path = finder.Detect()  # May be None.
     self._dwarf_dump_path = path_util.GetDwarfdumpPath()
     self._cache = {}
@@ -55,10 +56,9 @@ class _DwoNameLookup:
     # Assumption: |dwo_path| is relative to output path.
     real_dwo_path = os.path.join(self._output_path, dwo_path)
     cmd = [self._dwarf_dump_path, real_dwo_path] + _DWARF_DUMP_FLAGS
-    proc = subprocess.Popen(cmd,
-                            stdout=subprocess.PIPE,
-                            stderr=subprocess.DEVNULL,
-                            encoding='utf-8')
+    proc = subprocess.Popen(
+      cmd, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, encoding='utf-8'
+    )
     name = None
     state = 0
     # Scan output line by line, exit and terminate as soon as possible.
@@ -89,8 +89,9 @@ class _DwoNameLookup:
   def LogStats(self):
     if self._cache:
       num_success = sum(1 for k, v in self._cache.items() if k != v)
-      logging.info('Successful .dwo lookups: %d / %d', num_success,
-                   len(self._cache))
+      logging.info(
+        'Successful .dwo lookups: %d / %d', num_success, len(self._cache)
+      )
 
 
 @dataclasses.dataclass(order=True)
@@ -114,9 +115,13 @@ class _SourceMapper:
     """
     # Bisect against stop = self._largest_address + 1 to avoid bisecting against
     # the "source path" tuple component.
-    bisect_index = bisect.bisect_right(
+    bisect_index = (
+      bisect.bisect_right(
         self._range_info_list,
-        (_AddressRange(address, self._largest_address + 1), '')) - 1
+        (_AddressRange(address, self._largest_address + 1), ''),
+      )
+      - 1
+    )
     if bisect_index >= 0:
       info = self._range_info_list[bisect_index]
       if info[0].start <= address < info[0].stop:
@@ -148,9 +153,9 @@ def ParseDumpOutputForTest(lines, dwo_name_lookup=None):
 def _Parse(elf_path):
   cmd = [path_util.GetDwarfdumpPath(), elf_path] + _DWARF_DUMP_FLAGS
   logging.debug('Running: %s', ' '.join(cmd))
-  stdout = subprocess.check_output(cmd,
-                                   stderr=subprocess.DEVNULL,
-                                   encoding='utf-8')
+  stdout = subprocess.check_output(
+    cmd, stderr=subprocess.DEVNULL, encoding='utf-8'
+  )
   return _ParseDumpOutput(stdout.splitlines(), _DwoNameLookup(elf_path))
 
 
@@ -171,8 +176,9 @@ def _ParseDumpOutput(lines, dwo_name_lookup=None):
     if (source_path or dwo_path) and address_ranges:
       for address_range in address_ranges:
         if dwo_path:
-          source_path = (dwo_name_lookup.Lookup(dwo_path)
-                         if dwo_name_lookup else dwo_path)
+          source_path = (
+            dwo_name_lookup.Lookup(dwo_path) if dwo_name_lookup else dwo_path
+          )
         range_info_list.append((address_range, source_path))
 
   if dwo_name_lookup:
@@ -269,11 +275,14 @@ def _ExtractDwValue(line):
   rparen_index = line.find(')', lparen_index + 1)
   if rparen_index < 0:
     return None
-  if (lparen_index < rparen_index - 2 and line[lparen_index + 1] == '"'
-      and line[rparen_index - 1] == '"'):
+  if (
+    lparen_index < rparen_index - 2
+    and line[lparen_index + 1] == '"'
+    and line[rparen_index - 1] == '"'
+  ):
     lparen_index += 1
     rparen_index -= 1
-  return line[lparen_index + 1:rparen_index]
+  return line[lparen_index + 1 : rparen_index]
 
 
 def main():
@@ -283,19 +292,25 @@ def main():
   group.add_argument('--elf-file', type=os.path.realpath)
 
   args = parser.parse_args()
-  logging.basicConfig(level=logging.DEBUG,
-                      format='%(levelname).1s %(relativeCreated)6d %(message)s')
+  logging.basicConfig(
+    level=logging.DEBUG,
+    format='%(levelname).1s %(relativeCreated)6d %(message)s',
+  )
 
   if args.dwarf_dump_output:
     dwo_name_lookup = _DwoNameLookup(args.dwarf_dump_output)
     with open(args.dwarf_dump_output, 'r') as f:
-      source_mapper = CreateAddressSourceMapperForTest(f.read().splitlines(),
-                                                       dwo_name_lookup)
+      source_mapper = CreateAddressSourceMapperForTest(
+        f.read().splitlines(), dwo_name_lookup
+      )
   else:
     assert args.elf_file
     source_mapper = CreateAddressSourceMapper(args.elf_file)
-  logging.warning('Found %d source paths across %d ranges',
-                  source_mapper.NumberOfPaths(), source_mapper.num_ranges)
+  logging.warning(
+    'Found %d source paths across %d ranges',
+    source_mapper.NumberOfPaths(),
+    source_mapper.num_ranges,
+  )
 
 
 if __name__ == '__main__':

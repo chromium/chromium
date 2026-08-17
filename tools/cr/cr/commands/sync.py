@@ -19,7 +19,7 @@ class SyncCommand(cr.Command):
 
   # The configuration loaded to support this command.
   DEFAULT = cr.Config.From(
-      GCLIENT_BINARY=os.path.join('{DEPOT_TOOLS}', 'gclient'),
+    GCLIENT_BINARY=os.path.join('{DEPOT_TOOLS}', 'gclient'),
   )
 
   # A placeholder for the detected gclient environment

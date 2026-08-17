@@ -7,7 +7,7 @@
 import cr
 
 DEFAULT = cr.Config.From(
-    CR_ENVSETUP_ARCH='{CR_ARCH}',
+  CR_ENVSETUP_ARCH='{CR_ARCH}',
 )
 
 
@@ -19,24 +19,23 @@ class Arch(cr.Plugin, cr.Plugin.Type):
   @classmethod
   def AddArguments(cls, parser):
     parser.add_argument(
-        '--architecture', dest=cls.SELECTOR,
-        choices=cls.Choices(),
-        default=None,
-        help='Sets the target architecture to use. Overrides ' + cls.SELECTOR
+      '--architecture',
+      dest=cls.SELECTOR,
+      choices=cls.Choices(),
+      default=None,
+      help='Sets the target architecture to use. Overrides ' + cls.SELECTOR,
     )
 
 
 class IA32Arch(Arch):
-
   ACTIVE = cr.Config.From(
-      CR_ENVSETUP_ARCH='ia32',
+    CR_ENVSETUP_ARCH='ia32',
   )
 
 
 class Mips32Arch(Arch):
-
   ACTIVE = cr.Config.From(
-      CR_ENVSETUP_ARCH='mipsel',
+    CR_ENVSETUP_ARCH='mipsel',
   )
 
   @property
@@ -45,9 +44,8 @@ class Mips32Arch(Arch):
 
 
 class X64Arch(Arch):
-
   ACTIVE = cr.Config.From(
-      CR_ENVSETUP_ARCH='x64',
+    CR_ENVSETUP_ARCH='x64',
   )
 
   @property
@@ -56,9 +54,8 @@ class X64Arch(Arch):
 
 
 class Arm32Arch(Arch):
-
   ACTIVE = cr.Config.From(
-      CR_ENVSETUP_ARCH='arm',
+    CR_ENVSETUP_ARCH='arm',
   )
 
   @property
@@ -71,9 +68,8 @@ class Arm32Arch(Arch):
 
 
 class Arm64Arch(Arch):
-
   ACTIVE = cr.Config.From(
-      CR_ENVSETUP_ARCH='arm64',
+    CR_ENVSETUP_ARCH='arm64',
   )
 
   @property

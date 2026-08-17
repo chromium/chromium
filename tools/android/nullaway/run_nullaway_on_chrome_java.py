@@ -16,9 +16,12 @@ def main():
     logging.basicConfig(format='%(message)s', level=logging.INFO)
     parser = argparse.ArgumentParser()
     java_files, javac_cmd = run_annotator_on_chrome_java.prep_errorprone_run(
-        False, parser)
-    logging.info('Running NullAway on %d @NullMarked files in chrome_java',
-                 len(java_files))
+        False, parser
+    )
+    logging.info(
+        'Running NullAway on %d @NullMarked files in chrome_java',
+        len(java_files),
+    )
     sys.exit(subprocess.run(javac_cmd).returncode)
 
 

@@ -10,9 +10,10 @@ _ARGUMENT_TYPE_PATTERN = re.compile('\([^()]*\)(\s*const)?')
 _TEMPLATE_ARGUMENT_PATTERN = re.compile('<[^<>]*>')
 _LEADING_TYPE_PATTERN = re.compile('^.*\s+(\w+::)')
 _READELF_SECTION_HEADER_PATTER = re.compile(
-    '^\s*\[\s*(Nr|\d+)\]\s+(|\S+)\s+([A-Z_]+)\s+([0-9a-f]+)\s+'
-    '([0-9a-f]+)\s+([0-9a-f]+)\s+([0-9]+)\s+([WAXMSILGxOop]*)\s+'
-    '([0-9]+)\s+([0-9]+)\s+([0-9]+)')
+  '^\s*\[\s*(Nr|\d+)\]\s+(|\S+)\s+([A-Z_]+)\s+([0-9a-f]+)\s+'
+  '([0-9a-f]+)\s+([0-9a-f]+)\s+([0-9]+)\s+([WAXMSILGxOop]*)\s+'
+  '([0-9]+)\s+([0-9]+)\s+([0-9]+)'
+)
 
 
 class ParsingException(Exception):
@@ -66,9 +67,11 @@ class Procedure:
     self.name = name
 
   def __eq__(self, other):
-    return (self.start == other.start and
-            self.end == other.end and
-            self.name == other.name)
+    return (
+      self.start == other.start
+      and self.end == other.end
+      and self.name == other.name
+    )
 
   def __ne__(self, other):
     return not self.__eq__(other)
@@ -81,7 +84,8 @@ class ElfSection:
   """A class for an elf section header."""
 
   def __init__(
-      self, number, name, stype, address, offset, size, es, flg, lk, inf, al):
+    self, number, name, stype, address, offset, size, es, flg, lk, inf, al
+  ):
     self.number = number
     self.name = name
     self.stype = stype
@@ -95,17 +99,19 @@ class ElfSection:
     self.al = al
 
   def __eq__(self, other):
-    return (self.number == other.number and
-            self.name == other.name and
-            self.stype == other.stype and
-            self.address == other.address and
-            self.offset == other.offset and
-            self.size == other.size and
-            self.es == other.es and
-            self.flg == other.flg and
-            self.lk == other.lk and
-            self.inf == other.inf and
-            self.al == other.al)
+    return (
+      self.number == other.number
+      and self.name == other.name
+      and self.stype == other.stype
+      and self.address == other.address
+      and self.offset == other.offset
+      and self.size == other.size
+      and self.es == other.es
+      and self.flg == other.flg
+      and self.lk == other.lk
+      and self.inf == other.inf
+      and self.al == other.al
+    )
 
   def __ne__(self, other):
     return not self.__eq__(other)
@@ -175,19 +181,21 @@ class StaticSymbolsInFile:
       line = line.rstrip()
       matched = _READELF_SECTION_HEADER_PATTER.match(line)
       if matched:
-        self._append_elf_section(ElfSection(
-            int(matched.group(1), 10), # number
-            matched.group(2), # name
-            matched.group(3), # stype
-            int(matched.group(4), 16), # address
-            int(matched.group(5), 16), # offset
-            int(matched.group(6), 16), # size
-            matched.group(7), # es
-            matched.group(8), # flg
-            matched.group(9), # lk
-            matched.group(10), # inf
-            matched.group(11) # al
-            ))
+        self._append_elf_section(
+          ElfSection(
+            int(matched.group(1), 10),  # number
+            matched.group(2),  # name
+            matched.group(3),  # stype
+            int(matched.group(4), 16),  # address
+            int(matched.group(5), 16),  # offset
+            int(matched.group(6), 16),  # size
+            matched.group(7),  # es
+            matched.group(8),  # flg
+            matched.group(9),  # lk
+            matched.group(10),  # inf
+            matched.group(11),  # al
+          )
+        )
       else:
         if line in ('Key to Flags:', 'Program Headers:'):
           break
@@ -230,8 +238,9 @@ class StaticSymbolsInFile:
 
       start_val = int(sym_value, 16)
 
-      if (sym_type in ('r', 'R', 'D', 'U', 'd', 'V') and
-          (not mangled and sym_name.startswith('typeinfo'))):
+      if sym_type in ('r', 'R', 'D', 'U', 'd', 'V') and (
+        not mangled and sym_name.startswith('typeinfo')
+      ):
         self._append_typeinfo(start_val, sym_name)
 
       # It's possible for two symbols to share the same address, if
@@ -266,7 +275,8 @@ class StaticSymbolsInFile:
       if not mangled:
         routine = self._get_short_function_name(routine)
       self._append_procedure(
-          last_start, Procedure(last_start, start_val, routine))
+        last_start, Procedure(last_start, start_val, routine)
+      )
 
       last_start = start_val
       routine = sym_name
@@ -274,4 +284,5 @@ class StaticSymbolsInFile:
     if not mangled:
       routine = self._get_short_function_name(routine)
     self._append_procedure(
-        last_start, Procedure(last_start, last_start, routine))
+      last_start, Procedure(last_start, last_start, routine)
+    )

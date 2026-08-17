@@ -12,7 +12,6 @@ import timeall
 
 
 class TimeallTest(unittest.TestCase):
-
     def setUp(self):
         self.original_quiet_state = timeall._QUIET
         timeall._QUIET = True
@@ -22,15 +21,17 @@ class TimeallTest(unittest.TestCase):
 
     @unittest.mock.patch('subprocess.run')
     def test_run_benchmark_basic(self, mock_run):
-        mock_run.return_value = unittest.mock.Mock(stdout='output',
-                                                   stderr='',
-                                                   check=True)
-        options = timeall._Options(benchmark='chrome_nosig',
-                                   r=1,
-                                   e='emulator.avd',
-                                   i=True,
-                                   n=False,
-                                   s=True)
+        mock_run.return_value = unittest.mock.Mock(
+            stdout='output', stderr='', check=True
+        )
+        options = timeall._Options(
+            benchmark='chrome_nosig',
+            r=1,
+            e='emulator.avd',
+            i=True,
+            n=False,
+            s=True,
+        )
         timeall._run_benchmark(options)
 
         expected_cmd = [
@@ -44,22 +45,23 @@ class TimeallTest(unittest.TestCase):
             '--emulator',
             'emulator.avd',
         ]
-        mock_run.assert_called_once_with(expected_cmd,
-                                         capture_output=True,
-                                         text=True,
-                                         check=True)
+        mock_run.assert_called_once_with(
+            expected_cmd, capture_output=True, text=True, check=True
+        )
 
     @unittest.mock.patch('subprocess.run')
     def test_run_benchmark_test_target(self, mock_run):
-        mock_run.return_value = unittest.mock.Mock(stdout='output',
-                                                   stderr='',
-                                                   check=True)
-        options = timeall._Options(benchmark='cta_test_sig',
-                                   r=1,
-                                   e='emulator.avd',
-                                   i=True,
-                                   n=False,
-                                   s=True)
+        mock_run.return_value = unittest.mock.Mock(
+            stdout='output', stderr='', check=True
+        )
+        options = timeall._Options(
+            benchmark='cta_test_sig',
+            r=1,
+            e='emulator.avd',
+            i=True,
+            n=False,
+            s=True,
+        )
         timeall._run_benchmark(options)
 
         expected_cmd = [
@@ -73,22 +75,18 @@ class TimeallTest(unittest.TestCase):
             '--emulator',
             'emulator.avd',
         ]
-        mock_run.assert_called_once_with(expected_cmd,
-                                         capture_output=True,
-                                         text=True,
-                                         check=True)
+        mock_run.assert_called_once_with(
+            expected_cmd, capture_output=True, text=True, check=True
+        )
 
     @unittest.mock.patch('subprocess.run')
     def test_run_benchmark_all_flags_off_and_no_emulator(self, mock_run):
-        mock_run.return_value = unittest.mock.Mock(stdout='output',
-                                                   stderr='',
-                                                   check=True)
-        options = timeall._Options(benchmark='base_sig',
-                                   r=1,
-                                   e='',
-                                   i=False,
-                                   n=True,
-                                   s=False)
+        mock_run.return_value = unittest.mock.Mock(
+            stdout='output', stderr='', check=True
+        )
+        options = timeall._Options(
+            benchmark='base_sig', r=1, e='', i=False, n=True, s=False
+        )
         timeall._run_benchmark(options)
 
         expected_cmd = [
@@ -104,25 +102,23 @@ class TimeallTest(unittest.TestCase):
             '--no-component-build',
             '--no-server',
         ]
-        mock_run.assert_called_once_with(expected_cmd,
-                                         capture_output=True,
-                                         text=True,
-                                         check=True)
+        mock_run.assert_called_once_with(
+            expected_cmd, capture_output=True, text=True, check=True
+        )
 
     @unittest.mock.patch('subprocess.run')
     def test_run_command_with_repeat_no_failure(self, mock_run):
-        mock_run.return_value = unittest.mock.Mock(stdout='output',
-                                                   stderr='',
-                                                   check=True)
+        mock_run.return_value = unittest.mock.Mock(
+            stdout='output', stderr='', check=True
+        )
         cmd = ['some', 'command']
-        output = timeall._run_command_with_repeat(cmd,
-                                                  repeat=3,
-                                                  outdir_name='out/Debug')
+        output = timeall._run_command_with_repeat(
+            cmd, repeat=3, outdir_name='out/Debug'
+        )
         self.assertEqual(output, 'output')
-        mock_run.assert_called_once_with(cmd,
-                                         capture_output=True,
-                                         text=True,
-                                         check=True)
+        mock_run.assert_called_once_with(
+            cmd, capture_output=True, text=True, check=True
+        )
 
     @unittest.mock.patch('subprocess.run')
     def test_run_command_with_repeat_one_failure(self, mock_run):
@@ -135,25 +131,24 @@ class TimeallTest(unittest.TestCase):
             unittest.mock.Mock(stdout='output', stderr='', check=True),
         ]
 
-        output = timeall._run_command_with_repeat(cmd,
-                                                  repeat=3,
-                                                  outdir_name='out/Debug')
+        output = timeall._run_command_with_repeat(
+            cmd, repeat=3, outdir_name='out/Debug'
+        )
         self.assertEqual(output, 'output')
         self.assertEqual(mock_run.call_count, 3)
-        mock_run.assert_has_calls([
-            unittest.mock.call(cmd,
-                                capture_output=True,
-                                text=True,
-                                check=True),
-            unittest.mock.call(gn_clean_cmd,
-                                capture_output=True,
-                                text=True,
-                                check=True),
-            unittest.mock.call(cmd,
-                                capture_output=True,
-                                text=True,
-                                check=True),
-        ])
+        mock_run.assert_has_calls(
+            [
+                unittest.mock.call(
+                    cmd, capture_output=True, text=True, check=True
+                ),
+                unittest.mock.call(
+                    gn_clean_cmd, capture_output=True, text=True, check=True
+                ),
+                unittest.mock.call(
+                    cmd, capture_output=True, text=True, check=True
+                ),
+            ]
+        )
 
     @unittest.mock.patch('subprocess.run')
     def test_run_command_with_repeat_all_failures(self, mock_run):
@@ -167,33 +162,30 @@ class TimeallTest(unittest.TestCase):
 
         mock_run.side_effect = side_effect
 
-        output = timeall._run_command_with_repeat(cmd,
-                                                  repeat=3,
-                                                  outdir_name='out/Debug')
+        output = timeall._run_command_with_repeat(
+            cmd, repeat=3, outdir_name='out/Debug'
+        )
         self.assertIsNone(output)
         self.assertEqual(mock_run.call_count, 5)
-        mock_run.assert_has_calls([
-            unittest.mock.call(cmd,
-                                capture_output=True,
-                                text=True,
-                                check=True),
-            unittest.mock.call(gn_clean_cmd,
-                                capture_output=True,
-                                text=True,
-                                check=True),
-            unittest.mock.call(cmd,
-                                capture_output=True,
-                                text=True,
-                                check=True),
-            unittest.mock.call(gn_clean_cmd,
-                                capture_output=True,
-                                text=True,
-                                check=True),
-            unittest.mock.call(cmd,
-                                capture_output=True,
-                                text=True,
-                                check=True),
-        ])
+        mock_run.assert_has_calls(
+            [
+                unittest.mock.call(
+                    cmd, capture_output=True, text=True, check=True
+                ),
+                unittest.mock.call(
+                    gn_clean_cmd, capture_output=True, text=True, check=True
+                ),
+                unittest.mock.call(
+                    cmd, capture_output=True, text=True, check=True
+                ),
+                unittest.mock.call(
+                    gn_clean_cmd, capture_output=True, text=True, check=True
+                ),
+                unittest.mock.call(
+                    cmd, capture_output=True, text=True, check=True
+                ),
+            ]
+        )
 
     @unittest.mock.patch('timeall.run')
     def test_main_debug(self, mock_run):
@@ -229,12 +221,12 @@ class TimeallTest(unittest.TestCase):
         self.assertTrue(options.n)
         self.assertFalse(options.s)
 
-    @unittest.mock.patch('random.choice',
-                         return_value='android_31_google_apis_x64_local.textpb')
+    @unittest.mock.patch(
+        'random.choice', return_value='android_31_google_apis_x64_local.textpb'
+    )
     @unittest.mock.patch('random.shuffle', side_effect=lambda x: x)
     @unittest.mock.patch('timeall._run_benchmarks')
-    def test_run_no_debug(self, mock_run_benchmarks, mock_shuffle,
-                          mock_choice):
+    def test_run_no_debug(self, mock_run_benchmarks, mock_shuffle, mock_choice):
         timeall.run(debug=False)
         mock_run_benchmarks.assert_called_once()
         _, kwargs = mock_run_benchmarks.call_args
@@ -253,8 +245,9 @@ class TimeallTest(unittest.TestCase):
         last_options = benchmark_options[-1]
         self.assertEqual(last_options.benchmark, 'al_cc')
         self.assertEqual(last_options.r, 3)
-        self.assertEqual(last_options.e,
-                         'android_31_google_apis_x64_local.textpb')
+        self.assertEqual(
+            last_options.e, 'android_31_google_apis_x64_local.textpb'
+        )
         self.assertTrue(last_options.i)
         self.assertFalse(last_options.n)
         self.assertTrue(last_options.s)

@@ -3,7 +3,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-""" Script to generate boilerplate code for a new IPH feature.
+"""Script to generate boilerplate code for a new IPH feature.
 
 This script will prompt the user for a feature name (which should be in
 UpperCamelCase) and a simple one-line description. It will then update the
@@ -60,8 +60,9 @@ def get_user_input():
     print("Error: Both feature name and description are required.")
     sys.exit(1)
 
-  export_java_str = input(
-      "Do you want to export to Java? (y/N): ").strip().lower()
+  export_java_str = (
+    input("Do you want to export to Java? (y/N): ").strip().lower()
+  )
   export_java = export_java_str in ('y', 'yes')
 
   return feature_name, description, export_java
@@ -70,8 +71,9 @@ def get_user_input():
 def update_feature_constants_java(feature_name, description):
   """Updates FeatureConstants.java with the new IPH feature."""
   file_path = (
-      "components/feature_engagement/public/android/java/src/"
-      "org/chromium/components/feature_engagement/FeatureConstants.java")
+    "components/feature_engagement/public/android/java/src/"
+    "org/chromium/components/feature_engagement/FeatureConstants.java"
+  )
   check_file_exists(file_path)
 
   print(f"Updating {file_path} for {feature_name}...")
@@ -144,8 +146,11 @@ def update_feature_constants_java(feature_name, description):
               backtrack_idx = len(out_lines)
               while backtrack_idx > 0:
                 prev_line = out_lines[backtrack_idx - 1].strip()
-                if prev_line.startswith("/**") or prev_line.startswith(
-                    "*") or prev_line == "":
+                if (
+                  prev_line.startswith("/**")
+                  or prev_line.startswith("*")
+                  or prev_line == ""
+                ):
                   backtrack_idx -= 1
                 else:
                   break
@@ -157,25 +162,33 @@ def update_feature_constants_java(feature_name, description):
 
   if interface_insert_idx != -1:
     new_item = [
-        f"    /** {description} */\n",
-        f"    String {snake_name} = \"IPH_{feature_name}\";\n"
+      f"    /** {description} */\n",
+      f"    String {snake_name} = \"IPH_{feature_name}\";\n",
     ]
 
     # Manage spacing above.
-    if interface_insert_idx > 0 and out_lines[interface_insert_idx - 1].strip(
-    ) != "" and "// FEATURE_CONSTANTS_JAVA_INTERFACE_START" not in out_lines[
-        interface_insert_idx - 1]:
+    if (
+      interface_insert_idx > 0
+      and out_lines[interface_insert_idx - 1].strip() != ""
+      and "// FEATURE_CONSTANTS_JAVA_INTERFACE_START"
+      not in out_lines[interface_insert_idx - 1]
+    ):
       new_item.insert(0, "\n")
 
     # Manage spacing below.
-    if interface_insert_idx < len(
-        out_lines) and out_lines[interface_insert_idx].strip(
-        ) != "" and "// FEATURE_CONSTANTS_JAVA_INTERFACE_END" not in out_lines[
-            interface_insert_idx]:
+    if (
+      interface_insert_idx < len(out_lines)
+      and out_lines[interface_insert_idx].strip() != ""
+      and "// FEATURE_CONSTANTS_JAVA_INTERFACE_END"
+      not in out_lines[interface_insert_idx]
+    ):
       new_item.append("\n")
 
-    out_lines = (out_lines[:interface_insert_idx] + new_item +
-                 out_lines[interface_insert_idx:])
+    out_lines = (
+      out_lines[:interface_insert_idx]
+      + new_item
+      + out_lines[interface_insert_idx:]
+    )
 
   with open(file_path, 'w') as f:
     f.writelines(out_lines)
@@ -193,23 +206,24 @@ def update_feature_configurations_cc(feature_name, description):
   used_event = f"{snake_name}_used"
 
   config_block = [
-      f"  if (kIPH{feature_name}.name == feature->name) {{\n",
-      f"    // TODO: Verify the validity of these restrictions.\n",
-      "    FeatureConfig config;\n", "    config.valid = true;\n\n",
-      "    // IPH is always available at start-up.\n",
-      "    config.availability = Comparator(ANY, 0);\n\n",
-      "    // IPH only shows if no other IPH has shown this session.\n",
-      "    config.session_rate = Comparator(EQUAL, 0);\n\n",
-      "    // IPH only shows once per 360 days.\n",
-      f"    config.trigger = EventConfig(\"{trigger_event}\",\n",
-      "                                 Comparator(EQUAL, 0), 360, 360);\n\n",
-      "    // IPH will not show for 360 days after ABC event.\n",
-      f"    // TODO: Document what will count as \"used\", you "
-      "may also\n",
-      "    // want to rename this event to be specific to what \"ABC\" is.\n",
-      f"    config.used = EventConfig(\"{used_event}\",\n",
-      "                              Comparator(EQUAL, 0), 360, 360);\n",
-      "    return config;\n", "  }\n\n"
+    f"  if (kIPH{feature_name}.name == feature->name) {{\n",
+    f"    // TODO: Verify the validity of these restrictions.\n",
+    "    FeatureConfig config;\n",
+    "    config.valid = true;\n\n",
+    "    // IPH is always available at start-up.\n",
+    "    config.availability = Comparator(ANY, 0);\n\n",
+    "    // IPH only shows if no other IPH has shown this session.\n",
+    "    config.session_rate = Comparator(EQUAL, 0);\n\n",
+    "    // IPH only shows once per 360 days.\n",
+    f"    config.trigger = EventConfig(\"{trigger_event}\",\n",
+    "                                 Comparator(EQUAL, 0), 360, 360);\n\n",
+    "    // IPH will not show for 360 days after ABC event.\n",
+    f"    // TODO: Document what will count as \"used\", you may also\n",
+    "    // want to rename this event to be specific to what \"ABC\" is.\n",
+    f"    config.used = EventConfig(\"{used_event}\",\n",
+    "                              Comparator(EQUAL, 0), 360, 360);\n",
+    "    return config;\n",
+    "  }\n\n",
   ]
 
   with open(file_path, 'r') as f:
@@ -233,8 +247,9 @@ def update_feature_configurations_cc(feature_name, description):
           inserted = True
         out_lines.append(line)
       else:
-        if (not inserted and "if (" in line
-            and ".name == feature->name)" in line):
+        if (
+          not inserted and "if (" in line and ".name == feature->name)" in line
+        ):
           match = re.search(r'if \((kIPH[a-zA-Z0-9_]+)\.name', line)
           if match:
             existing_name = match.group(1)
@@ -282,7 +297,8 @@ def update_feature_constants_h(feature_name, description):
         # Look for lines like FEATURE_CONSTANTS_DECLARE_FEATURE(kIPH...);.
         if not inserted and "FEATURE_CONSTANTS_DECLARE_FEATURE" in line:
           match = re.search(
-              r'FEATURE_CONSTANTS_DECLARE_FEATURE\((kIPH[a-zA-Z0-9_]+)\)', line)
+            r'FEATURE_CONSTANTS_DECLARE_FEATURE\((kIPH[a-zA-Z0-9_]+)\)', line
+          )
           if match:
             existing_name = match.group(1)
             if f"kIPH{feature_name}".lower() < existing_name.lower():
@@ -303,9 +319,11 @@ def update_feature_constants_cc(feature_name, description):
 
   print(f"Updating {file_path} for {feature_name}...")
 
-  declaration = (f"BASE_FEATURE(kIPH{feature_name},\n"
-                 f"             \"IPH_{feature_name}\",\n"
-                 f"             base::FEATURE_DISABLED_BY_DEFAULT);")
+  declaration = (
+    f"BASE_FEATURE(kIPH{feature_name},\n"
+    f"             \"IPH_{feature_name}\",\n"
+    f"             base::FEATURE_DISABLED_BY_DEFAULT);"
+  )
 
   with open(file_path, 'r') as f:
     lines = f.readlines()
@@ -351,8 +369,9 @@ def update_feature_list_h(feature_name, description):
 
   print(f"Updating {file_path} for {feature_name}...")
 
-  variation_param = (f"DEFINE_VARIATION_PARAM(kIPH{feature_name}, "
-                     f"\"IPH_{feature_name}\");")
+  variation_param = (
+    f"DEFINE_VARIATION_PARAM(kIPH{feature_name}, \"IPH_{feature_name}\");"
+  )
   variation_entry = f"        VARIATION_ENTRY(kIPH{feature_name}),"
 
   with open(file_path, 'r') as f:
@@ -389,8 +408,9 @@ def update_feature_list_h(feature_name, description):
         out_lines.append(line)
       else:
         if not inserted_param and line.startswith("DEFINE_VARIATION_PARAM("):
-          match = re.search(r'DEFINE_VARIATION_PARAM\((kIPH[a-zA-Z0-9_]+),',
-                            line)
+          match = re.search(
+            r'DEFINE_VARIATION_PARAM\((kIPH[a-zA-Z0-9_]+),', line
+          )
           if match:
             existing_name = match.group(1)
             if f"kIPH{feature_name}".lower() < existing_name.lower():
@@ -467,8 +487,10 @@ def update_feature_list_cc(feature_name, description):
 
 def update_event_constants_java(feature_name, description):
   """Updates EventConstants.java with the new IPH used event."""
-  file_path = ("components/feature_engagement/public/android/java/src/"
-               "org/chromium/components/feature_engagement/EventConstants.java")
+  file_path = (
+    "components/feature_engagement/public/android/java/src/"
+    "org/chromium/components/feature_engagement/EventConstants.java"
+  )
   check_file_exists(file_path)
 
   print(f"Updating {file_path} for {feature_name}...")
@@ -478,9 +500,9 @@ def update_event_constants_java(feature_name, description):
   used_event_var = used_event_val.upper()
 
   event_block = [
-      f"    /** TODO: Document what this event is. */\n",
-      f"    public static final String {used_event_var} = "
-      f"\"{used_event_val}\";\n"
+    f"    /** TODO: Document what this event is. */\n",
+    f"    public static final String {used_event_var} = "
+    f"\"{used_event_val}\";\n",
   ]
 
   with open(file_path, 'r') as f:
@@ -508,9 +530,11 @@ def update_event_constants_java(feature_name, description):
         out_lines.append(line)
       else:
         if not inserted and line.strip().startswith(
-            "public static final String "):
-          match = re.search(r'public static final String\s+([A-Z0-9_]+)\s*=',
-                            line)
+          "public static final String "
+        ):
+          match = re.search(
+            r'public static final String\s+([A-Z0-9_]+)\s*=', line
+          )
           if match:
             existing_var = match.group(1)
             # Both are uppercase, so normal comparison is case-insensitive.
@@ -521,8 +545,11 @@ def update_event_constants_java(feature_name, description):
               backtrack_idx = len(out_lines)
               while backtrack_idx > 0:
                 prev_line = out_lines[backtrack_idx - 1].strip()
-                if prev_line.startswith("/**") or prev_line.startswith(
-                    "*") or prev_line == "":
+                if (
+                  prev_line.startswith("/**")
+                  or prev_line.startswith("*")
+                  or prev_line == ""
+                ):
                   backtrack_idx -= 1
                 else:
                   break
@@ -538,14 +565,19 @@ def update_event_constants_java(feature_name, description):
 
   if insert_idx != -1:
     # Manage spacing.
-    if insert_idx > 0 and out_lines[insert_idx - 1].strip(
-    ) != "" and "// EVENT_CONSTANTS_JAVA_CLASS_START" not in out_lines[
-        insert_idx - 1]:
+    if (
+      insert_idx > 0
+      and out_lines[insert_idx - 1].strip() != ""
+      and "// EVENT_CONSTANTS_JAVA_CLASS_START" not in out_lines[insert_idx - 1]
+    ):
       event_block.insert(0, "\n")
 
     # Add a newline after our block if the next line isn't already empty.
-    if insert_idx < len(out_lines) and out_lines[insert_idx].strip(
-    ) != "" and "// EVENT_CONSTANTS_JAVA_CLASS_END" not in out_lines[insert_idx]:
+    if (
+      insert_idx < len(out_lines)
+      and out_lines[insert_idx].strip() != ""
+      and "// EVENT_CONSTANTS_JAVA_CLASS_END" not in out_lines[insert_idx]
+    ):
       event_block.append("\n")
 
     out_lines = out_lines[:insert_idx] + event_block + out_lines[insert_idx:]
@@ -561,8 +593,9 @@ def update_actions_xml(feature_name, description):
 
   print(f"Updating {file_path} for {feature_name}...")
 
-  variant_entry = (f"  <variant name=\"_{feature_name}\"\n"
-                   f"      summary=\"{description}\"/>\n")
+  variant_entry = (
+    f"  <variant name=\"_{feature_name}\"\n      summary=\"{description}\"/>\n"
+  )
 
   with open(file_path, 'r') as f:
     lines = f.readlines()
@@ -602,16 +635,19 @@ def update_actions_xml(feature_name, description):
 
 def update_histograms_xml(feature_name, description):
   """Updates histograms.xml with the new IPH feature."""
-  file_path = ("tools/metrics/histograms/metadata/"
-               "feature_engagement/histograms.xml")
+  file_path = (
+    "tools/metrics/histograms/metadata/feature_engagement/histograms.xml"
+  )
   check_file_exists(file_path)
 
   print(f"Updating {file_path} for {feature_name}...")
 
   # Format it to match the existing style (indentation and multi-line if
   # needed, but we will stick to the two-line format for consistency).
-  variant_entry = (f"  <variant name=\"IPH_{feature_name}\"\n"
-                   f"      summary=\"{description}\"/>\n")
+  variant_entry = (
+    f"  <variant name=\"IPH_{feature_name}\"\n"
+    f"      summary=\"{description}\"/>\n"
+  )
 
   with open(file_path, 'r') as f:
     lines = f.readlines()
@@ -673,7 +709,7 @@ Two TODOs are in the file: components/feature_engagement/public/feature_configur
 """)
   if export_java:
     print(
-        "One TODO is in: components/feature_engagement/public/android/java/src/org/chromium/components/feature_engagement/EventConstants.java"
+      "One TODO is in: components/feature_engagement/public/android/java/src/org/chromium/components/feature_engagement/EventConstants.java"
     )
     print("")
 

@@ -33,26 +33,30 @@ def process_file(filepath):
   while i < len(lines):
     current_line = lines[i].strip()
     if current_line == "#ifdef UNSAFE_BUFFERS_BUILD":
-      has_todo = (i + 1 < len(lines)
-                  and lines[i + 1].strip().startswith("// TODO"))
+      has_todo = i + 1 < len(lines) and lines[i + 1].strip().startswith(
+        "// TODO"
+      )
       pragma_offset = 2 if has_todo else 1
 
       # Check if the pragma and endif lines exist and match the pattern
       pragma_line_index = i + pragma_offset
-      pragma_found = (
-          pragma_line_index < len(lines) and
-          lines[pragma_line_index].strip().startswith("#pragma allow_unsafe_"))
+      pragma_found = pragma_line_index < len(lines) and lines[
+        pragma_line_index
+      ].strip().startswith("#pragma allow_unsafe_")
 
       endif_line_index = i + pragma_offset + 1
-      endif_found = (endif_line_index < len(lines)
-                     and lines[endif_line_index].strip() == "#endif")
+      endif_found = (
+        endif_line_index < len(lines)
+        and lines[endif_line_index].strip() == "#endif"
+      )
 
       if pragma_found and endif_found:
         block_end_line_index = endif_line_index
         line_before_is_blank = (i == 0) or (lines[i - 1].strip() == "")
         line_after_index = block_end_line_index + 1
-        line_after_is_blank = (line_after_index >= len(lines)) or \
-                              (lines[line_after_index].strip() == "")
+        line_after_is_blank = (line_after_index >= len(lines)) or (
+          lines[line_after_index].strip() == ""
+        )
 
         if line_before_is_blank and line_after_is_blank:
           i = line_after_index + 1

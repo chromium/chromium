@@ -48,10 +48,10 @@ _DEX_STRING_MAX_SAME_NAME_ALIAS_COUNT = 6
 
 # Synthetics that map 1:1 with the class they are a suffix on.
 _CLASS_SPECIFIC_SYNTHETICS = (
-    'ExternalSyntheticLambda',
-    'ExternalSyntheticApiModelOutline',
-    'ExternalSyntheticServiceLoad',
-    'Lambda',
+  'ExternalSyntheticLambda',
+  'ExternalSyntheticApiModelOutline',
+  'ExternalSyntheticServiceLoad',
+  'Lambda',
 )
 
 
@@ -82,12 +82,14 @@ def RunApkAnalyzerAsync(apk_path, mapping_path):
 
   # Use a thread rather than directly using a Popen instance so that stdout is
   # being read from.
-  return parallel.CallOnThread(subprocess.run,
-                               args,
-                               env=env,
-                               encoding='utf-8',
-                               capture_output=True,
-                               check=True)
+  return parallel.CallOnThread(
+    subprocess.run,
+    args,
+    env=env,
+    encoding='utf-8',
+    capture_output=True,
+    check=True,
+  )
 
 
 def _ParseApkAnalyzerOutput(stdout, stderr):
@@ -101,7 +103,13 @@ def _ParseApkAnalyzerOutput(stdout, stderr):
       # We want to name these columns so we know exactly which is which.
       # pylint: disable=unused-variable
       node_type, state, defined_methods, referenced_methods, size, name = (
-          vals[0], vals[1], vals[2], vals[3], vals[4], vals[5:])
+        vals[0],
+        vals[1],
+        vals[2],
+        vals[3],
+        vals[4],
+        vals[5:],
+      )
       data.append((node_type, ' '.join(name), int(size)))
     except Exception:
       logging.error('Problem line was: %s', line)
@@ -146,8 +154,10 @@ def UndoHierarchicalSizing(data):
     while next_idx < num_nodes:
       next_name = data[next_idx][1]
       if name == _TOTAL_NODE_NAME or (
-          len(next_name) > name_len and next_name.startswith(name)
-          and next_name[name_len] in '. '):
+        len(next_name) > name_len
+        and next_name.startswith(name)
+        and next_name[name_len] in '. '
+      ):
         # Child node
         child_next_idx, child_node_size = process_node(next_idx)
         next_idx = child_next_idx
@@ -163,7 +173,7 @@ def UndoHierarchicalSizing(data):
     # parent node's size.
     total_child_size = min(size, total_child_size)
     # TODO(wnwen): Add assert back once dexlib2 2.2.5 is released and rolled.
-    #assert total_child_size <= size, (
+    # assert total_child_size <= size, (
     #    'Child node total size exceeded parent node total size')
 
     node_size = size - total_child_size
@@ -171,8 +181,9 @@ def UndoHierarchicalSizing(data):
     # To avoid having two symbols with the same name in these cases, do not
     # create symbols for packages (which have no size anyways).
     if node_type == 'P' and node_size != 0 and name != _TOTAL_NODE_NAME:
-      logging.warning('Unexpected java package that takes up size: %d, %s',
-                      node_size, name)
+      logging.warning(
+        'Unexpected java package that takes up size: %d, %s', node_size, name
+      )
     if node_type != 'P' or node_size != 0:
       nodes.append((node_type, name, node_size))
     return next_idx, size
@@ -206,12 +217,13 @@ def _NormalizeName(orig_name):
   if synthetic_marker_idx == -1:
     return outer_class, orig_name
 
-  synthetic_part = orig_name[synthetic_marker_idx + 2:]
+  synthetic_part = orig_name[synthetic_marker_idx + 2 :]
 
   # Example: package.Cls$$InternalSyntheticLambda$0$81073ff6$0
   if synthetic_part.startswith('InternalSyntheticLambda$'):
-    next_dollar_idx = orig_name.index('$',
-        synthetic_marker_idx + len('$$InternalSyntheticLambda$'))
+    next_dollar_idx = orig_name.index(
+      '$', synthetic_marker_idx + len('$$InternalSyntheticLambda$')
+    )
     return outer_class, orig_name[:next_dollar_idx]
 
   # Ensure we notice if a new type of InternalSythetic pops up.
@@ -275,8 +287,9 @@ def CreateDexSymbol(name, size, source_map):
       suspect_class_name = old_package
       if suspect_class_name.startswith('WV.'):
         suspect_class_name = suspect_class_name[3:]
-      if ('.' not in suspect_class_name
-          and new_package.endswith(f'.{suspect_class_name}')):
+      if '.' not in suspect_class_name and new_package.endswith(
+        f'.{suspect_class_name}'
+      ):
         name = name.replace(f' {old_package}.', ' ')
         old_package = new_package
       else:
@@ -291,11 +304,13 @@ def CreateDexSymbol(name, size, source_map):
     section_name = models.SECTION_DEX
 
   source_path = source_map.get(outer_class, '')
-  return models.Symbol(section_name,
-                       size,
-                       full_name=name,
-                       object_path=object_path,
-                       source_path=source_path)
+  return models.Symbol(
+    section_name,
+    size,
+    full_name=name,
+    object_path=object_path,
+    source_path=source_path,
+  )
 
 
 def _SymbolsFromNodes(nodes, source_map):
@@ -309,6 +324,7 @@ def _SymbolsFromNodes(nodes, source_map):
   for symbols_bucket in symbol_buckets:
     symbols_bucket.sort(key=lambda s: s.full_name)
   return symbol_buckets
+
 
 def _GenDexStringsUsedByClasses(dexfile, class_deobfuscation_map):
   """Emit strings used in code_items and associate them with classes.
@@ -351,8 +367,8 @@ def _GenDexStringsUsedByClasses(dexfile, class_deobfuscation_map):
 
   # Precompute map from code item offsets to set of string id used.
   code_off_to_used_string_ids = {
-      code_item.offset: set(dexfile.IterAllStringIdsUsedByCodeItem(code_item))
-      for code_item in dexfile.code_item_list
+    code_item.offset: set(dexfile.IterAllStringIdsUsedByCodeItem(code_item))
+    for code_item in dexfile.code_item_list
   }
   code_off_to_used_string_ids[0] = set()  # Offset 0 = No code.
 
@@ -361,10 +377,12 @@ def _GenDexStringsUsedByClasses(dexfile, class_deobfuscation_map):
   for i, class_item in enumerate(dexfile.class_def_item_list):
     string_idxs_used_by_class = set()
     class_data_item = dexfile.GetClassDataItemByOffset(
-        class_item.class_data_off)
+      class_item.class_data_off
+    )
     if class_data_item:
-      for encoded_method in itertools.chain(class_data_item.direct_methods,
-                                            class_data_item.virtual_methods):
+      for encoded_method in itertools.chain(
+        class_data_item.direct_methods, class_data_item.virtual_methods
+      ):
         code_off = encoded_method.code_off
         string_idxs_used_by_class |= code_off_to_used_string_ids[code_off]
     for string_idx in string_idxs_used_by_class:
@@ -380,8 +398,12 @@ def _GenDexStringsUsedByClasses(dexfile, class_deobfuscation_map):
     class_names = sorted(LookupDeobfuscatedClassNames(i) for i in class_idxs)
     yield string_idx, size, decoded_string, class_names
 
-  logging.info('Deobfuscated %d / %d classes (%d failures)', num_deobfus_names,
-               len(dexfile.class_def_item_list), num_failed_deobfus)
+  logging.info(
+    'Deobfuscated %d / %d classes (%d failures)',
+    num_deobfus_names,
+    len(dexfile.class_def_item_list),
+    num_failed_deobfus,
+  )
   if num_bad_name > 0:
     logging.warn('Found %d class names not formatted as "L.*;".' % num_bad_name)
 
@@ -391,8 +413,9 @@ def _MakeFakeSourcePath(class_name):
   return f'{models.APK_PREFIX_PATH}/{class_path}'
 
 
-def _StringSymbolsFromDexFile(apk_path, dexfile, source_map,
-                              class_deobfuscation_map):
+def _StringSymbolsFromDexFile(
+  apk_path, dexfile, source_map, class_deobfuscation_map
+):
   if not dexfile:
     return []
   logging.info('Extractng string symbols from %s', apk_path)
@@ -410,21 +433,27 @@ def _StringSymbolsFromDexFile(apk_path, dexfile, source_map,
     for class_name in string_user_class_names:
       outer_class, class_name = _NormalizeName(class_name)
       full_name = string_extract.GetNameOfStringLiteralBytes(
-          decoded_string.encode('utf-8', errors='surrogatepass'))
-      source_path = (source_map.get(outer_class, '')
-                     or _MakeFakeSourcePath(class_name))
-      sym = models.Symbol(models.SECTION_DEX,
-                          size,
-                          full_name=full_name,
-                          object_path=object_path,
-                          source_path=source_path,
-                          aliases=aliases if num_aliases > 1 else None)
+        decoded_string.encode('utf-8', errors='surrogatepass')
+      )
+      source_path = source_map.get(outer_class, '') or _MakeFakeSourcePath(
+        class_name
+      )
+      sym = models.Symbol(
+        models.SECTION_DEX,
+        size,
+        full_name=full_name,
+        object_path=object_path,
+        source_path=source_path,
+        aliases=aliases if num_aliases > 1 else None,
+      )
       aliases.append(sym)
     assert num_aliases == len(aliases)
     dex_string_symbols += aliases
 
-  logging.info('Counted %d class -> method -> code strings',
-               len(dexfile.string_data_item_list) - len(fresh_string_idx_set))
+  logging.info(
+    'Counted %d class -> method -> code strings',
+    len(dexfile.string_data_item_list) - len(fresh_string_idx_set),
+  )
 
   # Extract aggregate string symbols for {types, methods, fields, prototypes}.
   # Due to significant overlap (coincidental or induced by R8), {method, field}
@@ -439,15 +468,21 @@ def _StringSymbolsFromDexFile(apk_path, dexfile, source_map,
     old_count = len(string_idx_set)
     string_idx_set &= fresh_string_idx_set
     fresh_string_idx_set -= string_idx_set
-    logging.info('Counted %d %s strings among %d found', len(string_idx_set),
-                 name, old_count)
+    logging.info(
+      'Counted %d %s strings among %d found',
+      len(string_idx_set),
+      name,
+      old_count,
+    )
     if string_idx_set:
       # Each string has +4 for pointer.
-      size = sum(dexfile.string_data_item_list[string_idx].byte_size
-                 for string_idx in string_idx_set) + 4 * len(string_idx_set)
-      sym = models.Symbol(models.SECTION_DEX,
-                          size,
-                          full_name=f'** .dex ({name} strings)')
+      size = sum(
+        dexfile.string_data_item_list[string_idx].byte_size
+        for string_idx in string_idx_set
+      ) + 4 * len(string_idx_set)
+      sym = models.Symbol(
+        models.SECTION_DEX, size, full_name=f'** .dex ({name} strings)'
+      )
       dex_string_symbols.append(sym)
 
   # Type strings.
@@ -457,8 +492,9 @@ def _StringSymbolsFromDexFile(apk_path, dexfile, source_map,
   # Method and field strings.
   method_string_idx_set = {i.name_idx for i in dexfile.method_id_item_list}
   field_string_idx_set = {i.name_idx for i in dexfile.field_id_item_list}
-  _AddAggregateStringSymbol('method and field',
-                            method_string_idx_set | field_string_idx_set)
+  _AddAggregateStringSymbol(
+    'method and field', method_string_idx_set | field_string_idx_set
+  )
 
   # Prototype strings.
   proto_string_idx_set = {i.shorty_idx for i in dexfile.proto_id_item_list}
@@ -470,8 +506,9 @@ def _StringSymbolsFromDexFile(apk_path, dexfile, source_map,
 def _ParseDexfilesInApk(apk_path):
   with zipfile.ZipFile(apk_path) as src_zip:
     dex_infos = [
-        info for info in src_zip.infolist() if
-        info.filename.startswith('classes') and info.filename.endswith('.dex')
+      info
+      for info in src_zip.infolist()
+      if info.filename.startswith('classes') and info.filename.endswith('.dex')
     ]
     # Assume sound and stable ordering of DEX filenames.
     for dex_info in dex_infos:
@@ -479,9 +516,14 @@ def _ParseDexfilesInApk(apk_path):
       yield dex_info.filename, dex_parser.DexFile(dex_data)
 
 
-def CreateDexSymbols(apk_path, apk_analyzer_async_result, dex_total_size,
-                     class_deobfuscation_map, size_info_prefix,
-                     track_string_literals):
+def CreateDexSymbols(
+  apk_path,
+  apk_analyzer_async_result,
+  dex_total_size,
+  class_deobfuscation_map,
+  size_info_prefix,
+  track_string_literals,
+):
   """Creates DEX symbols given apk_analyzer output.
 
   Args:
@@ -505,8 +547,9 @@ def CreateDexSymbols(apk_path, apk_analyzer_async_result, dex_total_size,
   else:
     source_map = dict()
 
-  nodes = _ParseApkAnalyzerOutput(apk_analyzer_result.stdout,
-                                  apk_analyzer_result.stderr)
+  nodes = _ParseApkAnalyzerOutput(
+    apk_analyzer_result.stdout, apk_analyzer_result.stderr
+  )
   nodes = UndoHierarchicalSizing(nodes)
 
   total_node_size = sum([x[2] for x in nodes])
@@ -515,8 +558,11 @@ def CreateDexSymbols(apk_path, apk_analyzer_async_result, dex_total_size,
   # Reporting: dex_total_size=6546088 total_node_size=6559549
   if dex_total_size < total_node_size:
     logging.error(
-        'Node size too large, check for node processing errors. '
-        'dex_total_size=%d total_node_size=%d', dex_total_size, total_node_size)
+      'Node size too large, check for node processing errors. '
+      'dex_total_size=%d total_node_size=%d',
+      dex_total_size,
+      total_node_size,
+    )
 
   dex_method_symbols, dex_other_symbols = _SymbolsFromNodes(nodes, source_map)
   dex_string_symbols = []
@@ -524,9 +570,9 @@ def CreateDexSymbols(apk_path, apk_analyzer_async_result, dex_total_size,
   for dex_path, dexfile in _ParseDexfilesInApk(apk_path):
     logging.debug('Found DEX: %r', dex_path)
     if track_string_literals:
-      dex_string_symbols += _StringSymbolsFromDexFile(apk_path, dexfile,
-                                                      source_map,
-                                                      class_deobfuscation_map)
+      dex_string_symbols += _StringSymbolsFromDexFile(
+        apk_path, dexfile, source_map, class_deobfuscation_map
+      )
     map_item_sizes = dexfile.ComputeMapItemSizes()
     metrics = {}
     for item in map_item_sizes:
@@ -535,10 +581,12 @@ def CreateDexSymbols(apk_path, apk_analyzer_async_result, dex_total_size,
     metrics_by_file[dex_path] = metrics
 
   if dex_string_symbols:
-    logging.info('Converting excessive DEX string aliases into shared-path '
-                 'symbols')
+    logging.info(
+      'Converting excessive DEX string aliases into shared-path symbols'
+    )
     archive_util.CompactLargeAliasesIntoSharedSymbols(
-        dex_string_symbols, _DEX_STRING_MAX_SAME_NAME_ALIAS_COUNT)
+      dex_string_symbols, _DEX_STRING_MAX_SAME_NAME_ALIAS_COUNT
+    )
 
   dex_method_size = round(sum(s.pss for s in dex_method_symbols))
   dex_other_size = round(sum(s.pss for s in dex_other_symbols))
@@ -546,15 +594,17 @@ def CreateDexSymbols(apk_path, apk_analyzer_async_result, dex_total_size,
   unattributed_dex = dex_total_size - dex_method_size - dex_other_size
   # Compare against -5 instead of 0 to guard against round-off errors.
   assert unattributed_dex >= -5, (
-      'sum(dex_symbols.size) > sum(filesize(dex file)). {} vs {}'.format(
-          dex_method_size + dex_other_size, dex_total_size))
+    'sum(dex_symbols.size) > sum(filesize(dex file)). {} vs {}'.format(
+      dex_method_size + dex_other_size, dex_total_size
+    )
+  )
 
   if unattributed_dex > 0:
     dex_other_symbols.append(
-        models.Symbol(
-            models.SECTION_DEX,
-            unattributed_dex,
-            full_name='** .dex (unattributed)'))
+      models.Symbol(
+        models.SECTION_DEX, unattributed_dex, full_name='** .dex (unattributed)'
+      )
+    )
 
   dex_other_symbols.extend(dex_method_symbols)
   dex_other_symbols.extend(dex_string_symbols)
@@ -563,8 +613,8 @@ def CreateDexSymbols(apk_path, apk_analyzer_async_result, dex_total_size,
   # just fake the size of dex methods as the sum of symbols, and make
   # "dex other" responsible for any unattributed bytes.
   section_ranges = {
-      models.SECTION_DEX_METHOD: (0, dex_method_size),
-      models.SECTION_DEX: (0, dex_total_size - dex_method_size),
+    models.SECTION_DEX_METHOD: (0, dex_method_size),
+    models.SECTION_DEX: (0, dex_total_size - dex_method_size),
   }
 
   return section_ranges, dex_other_symbols, metrics_by_file

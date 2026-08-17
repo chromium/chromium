@@ -14,13 +14,15 @@ import sys
 class ClangPluginTest(object):
   """Test harness for clang plugins."""
 
-  def __init__(self,
-               test_base,
-               clang_path,
-               plugin_names,
-               reset_results,
-               quiet,
-               filename_regex=None):
+  def __init__(
+    self,
+    test_base,
+    clang_path,
+    plugin_names,
+    reset_results,
+    quiet,
+    filename_regex=None,
+  ):
     """Constructor.
 
     Args:
@@ -59,9 +61,9 @@ class ClangPluginTest(object):
     clang_cmd = [self._clang_path, '-std=c++23']
 
     # Use the traditional diagnostics format (see crbug.com/1450229).
-    clang_cmd.extend([
-        '-fno-diagnostics-show-line-numbers', '-fcaret-diagnostics-max-lines=1'
-    ])
+    clang_cmd.extend(
+      ['-fno-diagnostics-show-line-numbers', '-fcaret-diagnostics-max-lines=1']
+    )
 
     for p in self._plugin_names:
       clang_cmd.extend(['-Xclang', '-add-plugin', '-Xclang', p])
@@ -97,17 +99,19 @@ class ClangPluginTest(object):
         print(f'passed!')
         passing.append(test_name)
 
-    print('Ran %d tests: %d succeeded, %d failed' % (
-        len(passing) + len(failing), len(passing), len(failing)))
+    print(
+      'Ran %d tests: %d succeeded, %d failed'
+      % (len(passing) + len(failing), len(passing), len(failing))
+    )
     for test in failing:
       print('    %s' % test)
     return len(failing)
 
   def RunOneTest(self, test_name, cmd):
     try:
-      actual = subprocess.check_output(cmd,
-                                       stderr=subprocess.STDOUT,
-                                       universal_newlines=True)
+      actual = subprocess.check_output(
+        cmd, stderr=subprocess.STDOUT, universal_newlines=True
+      )
     except subprocess.CalledProcessError as e:
       # Some plugin tests intentionally trigger compile errors, so just ignore
       # an exit code that indicates failure.
@@ -138,15 +142,18 @@ class ClangPluginTest(object):
     # Also filters out lines with a `DEBUG: ` prefix for ease of printf
     # debugging.
     actual_lines = list(
-        filter(lambda line: not line.startswith('DEBUG: '),
-               actual.replace('\\', '/').splitlines(keepends=True)))
+      filter(
+        lambda line: not line.startswith('DEBUG: '),
+        actual.replace('\\', '/').splitlines(keepends=True),
+      )
+    )
     expected_lines = expected.replace('\\', '/').splitlines(keepends=True)
 
     diff = list(
-        difflib.unified_diff(expected_lines,
-                             actual_lines,
-                             fromfile=expected_path,
-                             tofile=actual_path))
+      difflib.unified_diff(
+        expected_lines, actual_lines, fromfile=expected_path, tofile=actual_path
+      )
+    )
 
     if diff:
       open(result_path, 'w').write(actual)

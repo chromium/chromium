@@ -16,8 +16,9 @@ import subprocess
 import sys
 import pathlib
 
-DEFAULT_SYSROOT = pathlib.Path(__file__).parents[2].joinpath(
-    'third_party', 'rust-toolchain')
+DEFAULT_SYSROOT = (
+    pathlib.Path(__file__).parents[2].joinpath('third_party', 'rust-toolchain')
+)
 
 # Determine the cargo executable name based on whether `subprocess` thinks
 # we're on a Windows platform or not, which is more accurate than checking it
@@ -33,14 +34,20 @@ _CARGO_EXE = 'cargo.exe' if _IS_WIN else 'cargo'
 def _GetWindowsToolchainFlags():
     # Get VS toolchain helpers from //build/vs_toolchain.py
     sys.path.append(
-        os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..',
-                     'build'))
+        os.path.join(
+            os.path.dirname(os.path.abspath(__file__)), '..', '..', 'build'
+        )
+    )
 
-    from vs_toolchain import FindVCComponentRoot, SetEnvironmentAndGetSDKDir, SDK_VERSION
+    from vs_toolchain import (
+        FindVCComponentRoot,
+        SetEnvironmentAndGetSDKDir,
+        SDK_VERSION,
+    )
 
     # If DEPOT_TOOLS_WIN_TOOLCHAINset to 0, the user has explicitly requested
     # that we use their toolchain installation instead of the hermetic one
-    if (not _IS_WIN or os.environ.get('DEPOT_TOOLS_WIN_TOOLCHAIN', '1') == '0'):
+    if not _IS_WIN or os.environ.get('DEPOT_TOOLS_WIN_TOOLCHAIN', '1') == '0':
         return []
 
     # The vs_toolchain function calls mess with the environment, so save a
@@ -51,26 +58,43 @@ def _GetWindowsToolchainFlags():
 
     # The paths for other architectures aren't clear, we can figure
     # them out if we need to.
-    if (sys.maxsize <= 2**32 or sys.maxsize > 2**64
-            or 'arm' in platform.machine().lower()):
-        print("WARNING: run_cargo.py: non-x64 Windows host is not supported.\n",
-              "This may fail in unexpected ways.")
+    if (
+        sys.maxsize <= 2**32
+        or sys.maxsize > 2**64
+        or 'arm' in platform.machine().lower()
+    ):
+        print(
+            "WARNING: run_cargo.py: non-x64 Windows host is not supported.\n",
+            "This may fail in unexpected ways.",
+        )
 
     short_arch_path = 'x64'
     bin_arch_path = os.path.join('Hostx64', 'x64')
 
-    linker_path = os.path.join(FindVCComponentRoot('Tools'), 'bin',
-                               bin_arch_path, 'link.exe')
+    linker_path = os.path.join(
+        FindVCComponentRoot('Tools'), 'bin', bin_arch_path, 'link.exe'
+    )
     include_paths = [
         os.path.join(FindVCComponentRoot('Tools'), 'lib', short_arch_path),
-        os.path.join(SetEnvironmentAndGetSDKDir(), 'Lib', SDK_VERSION, 'um',
-                     short_arch_path),
-        os.path.join(SetEnvironmentAndGetSDKDir(), 'Lib', SDK_VERSION, 'ucrt',
-                     short_arch_path),
+        os.path.join(
+            SetEnvironmentAndGetSDKDir(),
+            'Lib',
+            SDK_VERSION,
+            'um',
+            short_arch_path,
+        ),
+        os.path.join(
+            SetEnvironmentAndGetSDKDir(),
+            'Lib',
+            SDK_VERSION,
+            'ucrt',
+            short_arch_path,
+        ),
     ]
 
-    flags = [f'-Clinker={linker_path}'
-             ] + [f"-Lnative={path}" for path in include_paths]
+    flags = [f'-Clinker={linker_path}'] + [
+        f"-Lnative={path}" for path in include_paths
+    ]
 
     os.environ.clear()
     os.environ.update(environ_backup)
@@ -79,7 +103,7 @@ def _GetWindowsToolchainFlags():
 
 def _PrependOrInsert(dict, key, sep, value):
     """Insert `value` into `dict[key]` if it doesn't already exist,
-       otherwise prepend `sep + value` to the existing entry
+    otherwise prepend `sep + value` to the existing entry
     """
     if key in dict:
         dict[key] = value + sep + dict[key]
@@ -104,8 +128,12 @@ def RunCargo(rust_sysroot, home_dir, cargo_args, extra_rustflags=None):
     if not extra_rustflags:
         extra_rustflags = []
     extra_rustflags += _GetWindowsToolchainFlags()
-    _PrependOrInsert(cargo_env, 'CARGO_ENCODED_RUSTFLAGS', chr(0x1f),
-                     chr(0x1f).join(extra_rustflags))
+    _PrependOrInsert(
+        cargo_env,
+        'CARGO_ENCODED_RUSTFLAGS',
+        chr(0x1F),
+        chr(0x1F).join(extra_rustflags),
+    )
 
     # https://docs.python.org/3/library/subprocess.html#subprocess.Popen:
     #     **Warning**: For maximum reliability, use a fully qualified path for
@@ -126,17 +154,19 @@ def RunCargo(rust_sysroot, home_dir, cargo_args, extra_rustflags=None):
     #
     # Therefore, there is no need for `shell=True` here if we provide a fully
     # qualified path to cargo.
-    return subprocess.run(['cargo'] + cargo_args,
-                          env=cargo_env,
-                          executable=cargo_path).returncode
+    return subprocess.run(
+        ['cargo'] + cargo_args, env=cargo_env, executable=cargo_path
+    ).returncode
 
 
 def main():
     parser = argparse.ArgumentParser(description='run cargo')
-    parser.add_argument('--rust-sysroot',
-                        default=DEFAULT_SYSROOT,
-                        type=pathlib.Path,
-                        help='use cargo and rustc from here')
+    parser.add_argument(
+        '--rust-sysroot',
+        default=DEFAULT_SYSROOT,
+        type=pathlib.Path,
+        help='use cargo and rustc from here',
+    )
     (args, cargo_args) = parser.parse_known_args()
     return RunCargo(args.rust_sysroot, None, cargo_args)
 

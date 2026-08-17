@@ -1,7 +1,8 @@
 # Copyright 2023 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-""" Script for building a Chromium CodeQL database."""
+"""Script for building a Chromium CodeQL database."""
+
 import argparse
 import functools
 import json
@@ -20,8 +21,8 @@ CommandOutput = namedtuple("CommandOutput", "output traceback")
 
 
 def log_subprocess_output(output, logger=None):
-  """ Reads from a subprocess's stdout and writes it to `logger`,
-  or, if none given, to stdout.  """
+  """Reads from a subprocess's stdout and writes it to `logger`,
+  or, if none given, to stdout."""
   if not logger:
     print(output)
   else:
@@ -29,35 +30,43 @@ def log_subprocess_output(output, logger=None):
 
 
 class CodeQLDatabase:
-
   def __init__(self, src_path, db_path, codeql_binary_path):
-    """ Construct a new `CodeQLDatabase` object.
+    """Construct a new `CodeQLDatabase` object.
     :param src_path: The path to the chromium/src tree.
     :param db_path: The path where the CodeQL database will be created.
     :return: returns nothing
     """
     self.db_path = db_path
     try:
-      process_stdout = subprocess.check_output([
-          codeql_binary_path, 'database', 'init', f'--source-root={src_path}',
-          '--language=cpp', db_path, '--overwrite'
-      ])
+      process_stdout = subprocess.check_output(
+        [
+          codeql_binary_path,
+          'database',
+          'init',
+          f'--source-root={src_path}',
+          '--language=cpp',
+          db_path,
+          '--overwrite',
+        ]
+      )
       log_subprocess_output(process_stdout)
     except subprocess.CalledProcessError:
       # Presumably failed due to an invalid value for db_path.
       raise ValueError
 
 
-def index_one_target(target_name,
-                     src_path,
-                     db_path,
-                     codeql_binary_path,
-                     out_path,
-                     logger,
-                     ninja_path='ninja',
-                     gn_path='gn',
-                     logfile=None,
-                     reduce_cores_used=False):
+def index_one_target(
+  target_name,
+  src_path,
+  db_path,
+  codeql_binary_path,
+  out_path,
+  logger,
+  ninja_path='ninja',
+  gn_path='gn',
+  logfile=None,
+  reduce_cores_used=False,
+):
   try:
     process_stdout = subprocess.check_output([gn_path, 'clean', out_path])
     log_subprocess_output(process_stdout)
@@ -81,8 +90,16 @@ def index_one_target(target_name,
 
   print("Tracing compilation.")
   trace_command = [
-      codeql_binary_path, 'database', 'trace-command', db_path,
-      f'--working-dir={src_path}', '--', ninja_path, '-C', out_path, target_name
+    codeql_binary_path,
+    'database',
+    'trace-command',
+    db_path,
+    f'--working-dir={src_path}',
+    '--',
+    ninja_path,
+    '-C',
+    out_path,
+    target_name,
   ]
   if reduce_cores_used:
     usable_cpu_count = int(multiprocessing.cpu_count() / 2)
@@ -99,7 +116,8 @@ def index_one_target(target_name,
   print("Finalizing codeql db.")
   try:
     process_stdout = subprocess.check_output(
-        [codeql_binary_path, 'database', 'finalize', '-j=-1', db_path])
+      [codeql_binary_path, 'database', 'finalize', '-j=-1', db_path]
+    )
     log_subprocess_output(process_stdout)
   except subprocess.CalledProcessError as e:
     print("CodeQL DB finalization failed with return code %s" % e.returncode)
@@ -125,59 +143,72 @@ def main():
 
   print("Parsing command line arguments.")
   parser = argparse.ArgumentParser(
-      description='Build CodeQL database for Chromium browser process')
+    description='Build CodeQL database for Chromium browser process'
+  )
   parser.add_argument(
-      '--out_path',
-      '-o',
-      type=str,
-      default='out/release',
-      help='Relative path inside chromium checkout to build directory')
-  parser.add_argument('--db_path',
-                      '-d',
-                      type=str,
-                      required=True,
-                      help='Path to output database')
+    '--out_path',
+    '-o',
+    type=str,
+    default='out/release',
+    help='Relative path inside chromium checkout to build directory',
+  )
   parser.add_argument(
-      '--logfile',
-      '-l',
-      type=str,
-      help="absolute path to logfile for `trace` calls, if desired")
+    '--db_path', '-d', type=str, required=True, help='Path to output database'
+  )
   parser.add_argument(
-      '--gn_targets',
-      '-g',
-      action='append',
-      type=str,
-      help=(
-          'name for the specific GN target you want a CodeQL database for '
-          '(e.g. `//components:components_unittests`); if left blank, indexes '
-          'everything'))
+    '--logfile',
+    '-l',
+    type=str,
+    help="absolute path to logfile for `trace` calls, if desired",
+  )
   parser.add_argument(
-      '--codeql_binary_path',
-      '-c',
-      type=str,
-      default='codeql',
-      help=('Path to the codeql binary. If this is not set, the script assumes '
-            'it is located at `codeql` somewhere in the user\'s PATH.'))
+    '--gn_targets',
+    '-g',
+    action='append',
+    type=str,
+    help=(
+      'name for the specific GN target you want a CodeQL database for '
+      '(e.g. `//components:components_unittests`); if left blank, indexes '
+      'everything'
+    ),
+  )
   parser.add_argument(
-      '--gn_path',
-      type=str,
-      default='gn',
-      help=('Path to the gn executable. If this is not set, the script assumes '
-            'it is located at `gn` somehwere in the user\'s PATH.'))
+    '--codeql_binary_path',
+    '-c',
+    type=str,
+    default='codeql',
+    help=(
+      'Path to the codeql binary. If this is not set, the script assumes '
+      'it is located at `codeql` somewhere in the user\'s PATH.'
+    ),
+  )
   parser.add_argument(
-      '--ninja_path',
-      type=str,
-      default='ninja',
-      help=('Path to the ninja executable. If this is not set, the script '
-            'assumes it is located at `ninja` somehwere in the user\'s PATH.'))
+    '--gn_path',
+    type=str,
+    default='gn',
+    help=(
+      'Path to the gn executable. If this is not set, the script assumes '
+      'it is located at `gn` somehwere in the user\'s PATH.'
+    ),
+  )
   parser.add_argument(
-      '--reduce_cores_used',
-      default=False,
-      action='store_true',
-      help=('If set, reduces the number of cores used when building a target.'))
+    '--ninja_path',
+    type=str,
+    default='ninja',
+    help=(
+      'Path to the ninja executable. If this is not set, the script '
+      'assumes it is located at `ninja` somehwere in the user\'s PATH.'
+    ),
+  )
+  parser.add_argument(
+    '--reduce_cores_used',
+    default=False,
+    action='store_true',
+    help=('If set, reduces the number of cores used when building a target.'),
+  )
   args = parser.parse_args()
 
-  if (args.logfile):
+  if args.logfile:
     ch = logging.FileHandler(args.logfile)
     ch.setFormatter(logging.Formatter('%(message)s'))
     logger.addHandler(ch)
@@ -192,9 +223,19 @@ def main():
   else:
     actual_targets_to_index = args.gn_targets
   for target in actual_targets_to_index:
-    index_one_target(target, src_path, args.db_path, args.codeql_binary_path,
-                     args.out_path, logger, args.ninja_path, args.gn_path,
-                     args.logfile, args.reduce_cores_used)
+    index_one_target(
+      target,
+      src_path,
+      args.db_path,
+      args.codeql_binary_path,
+      args.out_path,
+      logger,
+      args.ninja_path,
+      args.gn_path,
+      args.logfile,
+      args.reduce_cores_used,
+    )
+
 
 if __name__ == '__main__':
   main()

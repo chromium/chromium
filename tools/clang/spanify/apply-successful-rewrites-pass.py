@@ -21,11 +21,13 @@ def main():
 
     for p in scratch_dir().glob('patch_*.pass'):
         valid_patches.append(
-            (int(p.name.removeprefix('patch_').removesuffix('.pass')), p))
+            (int(p.name.removeprefix('patch_').removesuffix('.pass')), p)
+        )
 
     if not valid_patches:
-        print(f"No successful patches found in {scratch_dir()}.",
-              file=sys.stderr)
+        print(
+            f"No successful patches found in {scratch_dir()}.", file=sys.stderr
+        )
         return 0
 
     valid_patches.sort(key=lambda x: x[0])

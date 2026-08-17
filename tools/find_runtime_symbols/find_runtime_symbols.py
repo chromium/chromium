@@ -28,8 +28,9 @@ from procfs import ProcMaps  # pylint: disable=F0401
 try:
   from collections import OrderedDict  # pylint: disable=E0611
 except ImportError:
-  _SIMPLEJSON_PATH = os.path.join(_BASE_PATH, os.pardir, os.pardir,
-                                  'third_party')
+  _SIMPLEJSON_PATH = os.path.join(
+    _BASE_PATH, os.pardir, os.pardir, 'third_party'
+  )
   sys.path.insert(0, _SIMPLEJSON_PATH)
   from simplejson import OrderedDict
 
@@ -53,7 +54,8 @@ class RuntimeSymbolsInProcess:
         static_symbols = self._static_symbols_in_filse.get(vma.name)
         if static_symbols:
           return static_symbols.find_procedure_by_runtime_address(
-              runtime_address, vma)
+            runtime_address, vma
+          )
         return None
     return None
 
@@ -63,7 +65,8 @@ class RuntimeSymbolsInProcess:
         static_symbols = self._static_symbols_in_filse.get(vma.name)
         if static_symbols:
           return static_symbols.find_sourcefile_by_runtime_address(
-              runtime_address, vma)
+            runtime_address, vma
+          )
         return None
     return None
 
@@ -73,7 +76,8 @@ class RuntimeSymbolsInProcess:
         static_symbols = self._static_symbols_in_filse.get(vma.name)
         if static_symbols:
           return static_symbols.find_typeinfo_by_runtime_address(
-              runtime_address, vma)
+            runtime_address, vma
+          )
         return None
     return None
 
@@ -101,14 +105,16 @@ class RuntimeSymbolsInProcess:
 
       readelf_entry = file_entry.get('readelf-e')
       if readelf_entry:
-        with open(os.path.join(prepared_data_dir, readelf_entry['file']),
-                  'r') as f:
+        with open(
+          os.path.join(prepared_data_dir, readelf_entry['file']), 'r'
+        ) as f:
           static_symbols.load_readelf_ew(f)
 
       decodedline_file_entry = file_entry.get('readelf-debug-decodedline-file')
       if decodedline_file_entry:
-        with open(os.path.join(prepared_data_dir,
-                               decodedline_file_entry['file']), 'r') as f:
+        with open(
+          os.path.join(prepared_data_dir, decodedline_file_entry['file']), 'r'
+        ) as f:
           static_symbols.load_readelf_debug_decodedline_file(f)
 
       symbols_in_process._static_symbols_in_filse[vma.name] = static_symbols
@@ -162,10 +168,10 @@ def _find_runtime_typeinfo_symbols(symbols_in_process, addresses):
 
 
 _INTERNAL_FINDERS = {
-    FUNCTION_SYMBOLS: _find_runtime_function_symbols,
-    SOURCEFILE_SYMBOLS: _find_runtime_sourcefile_symbols,
-    TYPEINFO_SYMBOLS: _find_runtime_typeinfo_symbols,
-    }
+  FUNCTION_SYMBOLS: _find_runtime_function_symbols,
+  SOURCEFILE_SYMBOLS: _find_runtime_sourcefile_symbols,
+  TYPEINFO_SYMBOLS: _find_runtime_typeinfo_symbols,
+}
 
 
 def find_runtime_symbols(symbol_type, symbols_in_process, addresses):
@@ -175,9 +181,12 @@ def find_runtime_symbols(symbol_type, symbols_in_process, addresses):
 def main():
   # FIX: Accept only .pre data
   if len(sys.argv) < 2:
-    sys.stderr.write("""Usage:
+    sys.stderr.write(
+      """Usage:
 %s /path/to/prepared_data_dir/ < addresses.txt
-""" % sys.argv[0])
+"""
+      % sys.argv[0]
+    )
     return 1
 
   log = logging.getLogger('find_runtime_symbols')
@@ -197,9 +206,9 @@ def main():
     return 1
 
   symbols_in_process = RuntimeSymbolsInProcess.load(prepared_data_dir)
-  symbols_dict = find_runtime_symbols(FUNCTION_SYMBOLS,
-                                      symbols_in_process,
-                                      sys.stdin)
+  symbols_dict = find_runtime_symbols(
+    FUNCTION_SYMBOLS, symbols_in_process, sys.stdin
+  )
   for address, symbol in symbols_dict.iteritems():
     if symbol:
       print('%016x %s' % (address, symbol))

@@ -29,7 +29,7 @@ _PAGE_SIZE = 4096
 
 
 def _TestBit(word, bit):
-  assert(bit >= 0 and bit < 8)
+  assert bit >= 0 and bit < 8
   return not not ((word >> bit) & 1)
 
 
@@ -50,7 +50,8 @@ def _GetResidentPagesSet(memdump_contents, lib_name, verbose):
   """
   resident_pages = set()
   MAP_RX = re.compile(
-      r'^([0-9a-f]+)-([0-9a-f]+) ([\w-]+) ([0-9a-f]+) .* "(.*)" \[(.*)\]$')
+    r'^([0-9a-f]+)-([0-9a-f]+) ([\w-]+) ([0-9a-f]+) .* "(.*)" \[(.*)\]$'
+  )
   for line in memdump_contents:
     line = line.rstrip('\r\n')
     if line.startswith('[ PID'):
@@ -65,7 +66,7 @@ def _GetResidentPagesSet(memdump_contents, lib_name, verbose):
     map_end = int(r.group(2), 16)
     prot = r.group(3)
     offset = int(r.group(4), 16)
-    assert(offset % _PAGE_SIZE == 0)
+    assert offset % _PAGE_SIZE == 0
     lib = r.group(5)
     enc_bitmap = r.group(6)
 
@@ -77,23 +78,36 @@ def _GetResidentPagesSet(memdump_contents, lib_name, verbose):
     bitmap_pages_count = len(bitmap) * 8
 
     if verbose:
-      print('Found %s: mapped %d pages in mode %s @ offset %s.' %
-            (lib, map_pages_count, prot, _HexAddr(offset)))
-      print(' Map range in the process VA: [%s - %s]. Len: %s' %
-            (_HexAddr(map_start), _HexAddr(map_end),
-             _HexAddr(map_pages_count * _PAGE_SIZE)))
-      print(' Corresponding addresses in the binary: [%s - %s]. Len: %s' %
-            (_HexAddr(offset), _HexAddr(offset + map_end - map_start),
-             _HexAddr(map_pages_count * _PAGE_SIZE)))
+      print(
+        'Found %s: mapped %d pages in mode %s @ offset %s.'
+        % (lib, map_pages_count, prot, _HexAddr(offset))
+      )
+      print(
+        ' Map range in the process VA: [%s - %s]. Len: %s'
+        % (
+          _HexAddr(map_start),
+          _HexAddr(map_end),
+          _HexAddr(map_pages_count * _PAGE_SIZE),
+        )
+      )
+      print(
+        ' Corresponding addresses in the binary: [%s - %s]. Len: %s'
+        % (
+          _HexAddr(offset),
+          _HexAddr(offset + map_end - map_start),
+          _HexAddr(map_pages_count * _PAGE_SIZE),
+        )
+      )
       print(' Bitmap: %d pages' % bitmap_pages_count)
       print('')
 
-    assert(bitmap_pages_count >= map_pages_count)
+    assert bitmap_pages_count >= map_pages_count
     for i in xrange(map_pages_count):
       bitmap_idx = i / 8
       bitmap_off = i % 8
-      if (bitmap_idx < len(bitmap) and
-          _TestBit(ord(bitmap[bitmap_idx]), bitmap_off)):
+      if bitmap_idx < len(bitmap) and _TestBit(
+        ord(bitmap[bitmap_idx]), bitmap_off
+      ):
         resident_pages.add(offset / _PAGE_SIZE + i)
   return resident_pages
 
@@ -102,18 +116,30 @@ def main(argv):
   NM_RX = re.compile(r'^([0-9a-f]+)\s+.*$')
 
   parser = OptionParser()
-  parser.add_option("-r", "--reverse",
-                    action="store_true", dest="reverse", default=False,
-                    help="Print out non present symbols")
-  parser.add_option("-v", "--verbose",
-                    action="store_true", dest="verbose", default=False,
-                    help="Print out verbose debug information.")
+  parser.add_option(
+    "-r",
+    "--reverse",
+    action="store_true",
+    dest="reverse",
+    default=False,
+    help="Print out non present symbols",
+  )
+  parser.add_option(
+    "-v",
+    "--verbose",
+    action="store_true",
+    dest="verbose",
+    default=False,
+    help="Print out verbose debug information.",
+  )
 
   (options, args) = parser.parse_args()
 
   if len(args) != 3:
-    print('Usage: %s [-v] memdump.file nm.file library.so' % (os.path.basename(
-        argv[0])))
+    print(
+      'Usage: %s [-v] memdump.file nm.file library.so'
+      % (os.path.basename(argv[0]))
+    )
     return 1
 
   memdump_file = args[0]
@@ -124,9 +150,9 @@ def main(argv):
     memdump_contents = sys.stdin.readlines()
   else:
     memdump_contents = open(memdump_file, 'r').readlines()
-  resident_pages = _GetResidentPagesSet(memdump_contents,
-                                        lib_name,
-                                        options.verbose)
+  resident_pages = _GetResidentPagesSet(
+    memdump_contents, lib_name, options.verbose
+  )
 
   # Process the nm symbol table, filtering out the resident symbols.
   nm_fh = open(nm_file, 'r')
@@ -143,10 +169,11 @@ def main(argv):
 
     sym_addr = int(r.group(1), 16)
     sym_page = sym_addr / _PAGE_SIZE
-    last_sym_matched = (sym_page in resident_pages)
+    last_sym_matched = sym_page in resident_pages
     if (sym_page in resident_pages) != options.reverse:
       print(line)
   return 0
+
 
 if __name__ == '__main__':
   sys.exit(main(sys.argv))

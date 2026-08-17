@@ -14,12 +14,12 @@ import urllib.parse
 def parse_gerrit_url(url: str) -> dict[str, str | int]:
   """Parses a Gerrit CL URL into host, project, change, and patchset.
 
-    Args:
-        url: Absolute Gerrit CL URL string.
+  Args:
+      url: Absolute Gerrit CL URL string.
 
-    Returns:
-        Dictionary containing host, project, change (int), and patchset (int).
-    """
+  Returns:
+      Dictionary containing host, project, change (int), and patchset (int).
+  """
   parsed = urllib.parse.urlparse(url)
   host = parsed.netloc
   path = parsed.path
@@ -35,10 +35,10 @@ def parse_gerrit_url(url: str) -> dict[str, str | int]:
   patchset = int(match.group(3)) if match.group(3) else 1
 
   return {
-      'host': host,
-      'project': project,
-      'change': change,
-      'patchset': patchset,
+    'host': host,
+    'project': project,
+    'change': change,
+    'patchset': patchset,
   }
 
 

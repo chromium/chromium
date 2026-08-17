@@ -53,8 +53,9 @@ class ElfEntry(object):
     current_offset = offset
     for field_name, field_size in self._fields:
       value = int.from_bytes(
-          data[current_offset:current_offset + field_size],
-          byteorder=self.byte_order)
+        data[current_offset : current_offset + field_size],
+        byteorder=self.byte_order,
+      )
       setattr(self, field_name, value)
       current_offset += field_size
 
@@ -71,7 +72,8 @@ class ElfEntry(object):
     bytearr = bytearray()
     for field_name, field_size in self._fields:
       field_bytes = getattr(self, field_name).to_bytes(
-          field_size, byteorder=self.byte_order)
+        field_size, byteorder=self.byte_order
+      )
       bytearr.extend(field_bytes)
     return bytearr
 
@@ -132,16 +134,16 @@ class SectionHeader(ElfEntry):
     self.sh_addralign = None
     self.sh_entsize = None
     fields = [
-        ('sh_name', 4),
-        ('sh_type', 4),
-        ('sh_flags', 8),
-        ('sh_addr', 8),
-        ('sh_offset', 8),
-        ('sh_size', 8),
-        ('sh_link', 4),
-        ('sh_info', 4),
-        ('sh_addralign', 8),
-        ('sh_entsize', 8),
+      ('sh_name', 4),
+      ('sh_type', 4),
+      ('sh_flags', 8),
+      ('sh_addr', 8),
+      ('sh_offset', 8),
+      ('sh_size', 8),
+      ('sh_link', 4),
+      ('sh_info', 4),
+      ('sh_addralign', 8),
+      ('sh_entsize', 8),
     ]
     super(SectionHeader, self).__init__(byte_order, fields)
     # This is readonly version of section name in string form. We can't set it
@@ -216,14 +218,14 @@ class ProgramHeader(ElfEntry):
     self.p_memsz = None
     self.p_align = None
     fields = [
-        ('p_type', 4),
-        ('p_flags', 4),
-        ('p_offset', 8),
-        ('p_vaddr', 8),
-        ('p_paddr', 8),
-        ('p_filesz', 8),
-        ('p_memsz', 8),
-        ('p_align', 8),
+      ('p_type', 4),
+      ('p_flags', 4),
+      ('p_offset', 8),
+      ('p_vaddr', 8),
+      ('p_paddr', 8),
+      ('p_filesz', 8),
+      ('p_memsz', 8),
+      ('p_align', 8),
     ]
     super(ProgramHeader, self).__init__(byte_order, fields)
 
@@ -282,7 +284,8 @@ class ElfHeader(ElfEntry):
     current_offset = self.e_phoff
     for _ in range(0, self.e_phnum):
       self.phdrs.append(
-          ProgramHeader.FromBytes(self.byte_order, data, current_offset))
+        ProgramHeader.FromBytes(self.byte_order, data, current_offset)
+      )
       current_offset += self.e_phentsize
 
   def _ParseSectionHeaders(self, data):
@@ -295,11 +298,11 @@ class ElfHeader(ElfEntry):
 
     if self.e_shstrndx != 0:
       string_table_offset = self.e_shoff + self.e_shstrndx * self.e_shentsize
-      string_table = StringTableHeader.FromBytes(self.byte_order, data,
-                                                 string_table_offset)
+      string_table = StringTableHeader.FromBytes(
+        self.byte_order, data, string_table_offset
+      )
       for shdr in self.shdrs:
         shdr.SetStrName(string_table.GetName(data, shdr.sh_name))
-
 
   def __init__(self, data):
     """ElfHeader constructor.
@@ -329,26 +332,26 @@ class ElfHeader(ElfEntry):
     self.e_shnum = None
     self.e_shstrndx = None
     fields = [
-        ('ei_magic', 4),
-        ('ei_class', 1),
-        ('ei_data', 1),
-        ('ei_version', 1),
-        ('ei_osabi', 1),
-        ('ei_abiversion', 1),
-        ('ei_pad', 7),
-        ('e_type', 2),
-        ('e_machine', 2),
-        ('e_version', 4),
-        ('e_entry', 8),
-        ('e_phoff', 8),
-        ('e_shoff', 8),
-        ('e_flags', 4),
-        ('e_ehsize', 2),
-        ('e_phentsize', 2),
-        ('e_phnum', 2),
-        ('e_shentsize', 2),
-        ('e_shnum', 2),
-        ('e_shstrndx', 2),
+      ('ei_magic', 4),
+      ('ei_class', 1),
+      ('ei_data', 1),
+      ('ei_version', 1),
+      ('ei_osabi', 1),
+      ('ei_abiversion', 1),
+      ('ei_pad', 7),
+      ('e_type', 2),
+      ('e_machine', 2),
+      ('e_version', 4),
+      ('e_entry', 8),
+      ('e_phoff', 8),
+      ('e_shoff', 8),
+      ('e_flags', 4),
+      ('e_ehsize', 2),
+      ('e_phentsize', 2),
+      ('e_phnum', 2),
+      ('e_shentsize', 2),
+      ('e_shnum', 2),
+      ('e_shstrndx', 2),
     ]
 
     self._ValidateBitness(data)
@@ -436,7 +439,7 @@ class ElfHeader(ElfEntry):
     self._OrderProgramHeaders()
     for phdr in self.GetProgramHeaders():
       phdr_bytes = phdr.ToBytes()
-      data[current_offset:current_offset + len(phdr_bytes)] = phdr_bytes
+      data[current_offset : current_offset + len(phdr_bytes)] = phdr_bytes
       current_offset += self.e_phentsize
 
   def _PatchSectionHeaders(self, data):
@@ -444,7 +447,7 @@ class ElfHeader(ElfEntry):
     current_offset = self.e_shoff
     for shdr in self.GetSectionHeaders():
       shdr_bytes = shdr.ToBytes()
-      data[current_offset:current_offset + len(shdr_bytes)] = shdr_bytes
+      data[current_offset : current_offset + len(shdr_bytes)] = shdr_bytes
       current_offset += self.e_shentsize
 
   def PatchData(self, data):
@@ -464,6 +467,6 @@ class ElfHeader(ElfEntry):
       data: bytearray. The data array to be patched.
     """
     elf_bytes = self.ToBytes()
-    data[:len(elf_bytes)] = elf_bytes
+    data[: len(elf_bytes)] = elf_bytes
     self._PatchProgramHeaders(data)
     self._PatchSectionHeaders(data)

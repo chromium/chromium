@@ -18,7 +18,8 @@ import sys
 import update
 
 
-from build import (CheckoutGitRepo, LLVM_GIT_URL)
+from build import CheckoutGitRepo, LLVM_GIT_URL
+
 
 def GetCheckoutDir(out_dir):
   """Returns absolute path to the checked-out llvm repo."""
@@ -48,12 +49,12 @@ def BuildTargets(build_dir, targets):
 
   # From that dir, run cmake
   cmake_args = [
-      'cmake',
-      '-GNinja',
-      '-DLLVM_ENABLE_PROJECTS=clang;clang-tools-extra',
-      '-DCMAKE_BUILD_TYPE=Release',
-      '-DLLVM_ENABLE_ASSERTIONS=On',
-      '../llvm',
+    'cmake',
+    '-GNinja',
+    '-DLLVM_ENABLE_PROJECTS=clang;clang-tools-extra',
+    '-DCMAKE_BUILD_TYPE=Release',
+    '-DLLVM_ENABLE_ASSERTIONS=On',
+    '../llvm',
   ]
   subprocess.check_call(cmake_args, cwd=build_dir)
 
@@ -65,7 +66,8 @@ def main():
   parser = argparse.ArgumentParser(description='Build clang_tools_extra.')
   parser.add_argument('--fetch', action='store_true', help='fetch LLVM source')
   parser.add_argument(
-      '--revision', help='LLVM revision to use', default=update.CLANG_REVISION)
+    '--revision', help='LLVM revision to use', default=update.CLANG_REVISION
+  )
   parser.add_argument('OUT_DIR', help='where we put the LLVM source repository')
   parser.add_argument('TARGETS', nargs='+', help='targets being built')
   args = parser.parse_args()

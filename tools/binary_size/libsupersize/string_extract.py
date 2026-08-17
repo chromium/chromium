@@ -63,7 +63,7 @@ def LookupElfRodataInfo(elf_path):
     # [Nr] Name           Type        Addr     Off     Size   ES Flg Lk Inf Al
     # [07] .rodata        PROGBITS    025e7000 237c000 5ec4f6 00   A  0   0 256
     if '.rodata ' in line:
-      fields = line[line.index(models.SECTION_RODATA):].split()
+      fields = line[line.index(models.SECTION_RODATA) :].split()
       return int(fields[2], 16), int(fields[3], 16), int(fields[4], 16)
   raise AssertionError('No .rodata for command: ' + repr(args))
 
@@ -153,20 +153,23 @@ def _ReadStringSections(target, output_directory, positions_by_path):
   string_sections_by_path = {}
   if is_archive:
     for subpath, chunk in ar.IterArchiveChunks(
-        os.path.join(output_directory, target)):
+      os.path.join(output_directory, target)
+    ):
       path = '{}({})'.format(target, subpath)
       positions = positions_by_path.get(path)
       # No positions if file has no string literals.
       if positions:
-        string_sections_by_path[path] = (
-            [chunk[offset:offset + size] for offset, size in positions])
+        string_sections_by_path[path] = [
+          chunk[offset : offset + size] for offset, size in positions
+        ]
   else:
     for path in target:
       positions = positions_by_path.get(path)
       # We already log a warning about this in _IterStringLiterals().
       if positions:
         string_sections_by_path[path] = ReadFileChunks(
-            os.path.join(output_directory, path), positions)
+          os.path.join(output_directory, path), positions
+        )
   return string_sections_by_path
 
 
@@ -184,8 +187,9 @@ def _IterStringLiterals(path, addresses, obj_sections):
   if not obj_sections:
     # Happens when there is an address for a symbol which is not actually a
     # string literal, or when string_sections_by_path is missing an entry.
-    logging.warning('Object has %d strings but no string sections: %s',
-                    len(addresses), path)
+    logging.warning(
+      'Object has %d strings but no string sections: %s', len(addresses), path
+    )
     return
   for section_data in obj_sections:
     cur_offsets = next_offsets
@@ -263,10 +267,12 @@ def _AnnotateStringData(string_data, path_value_gen):
 
 
 # This is a target for BulkForkAndCall().
-def ResolveStringPiecesIndirect(encoded_string_addresses_by_path, string_data,
-                                output_directory):
+def ResolveStringPiecesIndirect(
+  encoded_string_addresses_by_path, string_data, output_directory
+):
   string_addresses_by_path = parallel.DecodeDictOfLists(
-      encoded_string_addresses_by_path)
+    encoded_string_addresses_by_path
+  )
   # Assign |target| as archive path, or a list of object paths.
   any_path = next(iter(string_addresses_by_path.keys()))
   target = _ExtractArchivePath(any_path)
@@ -275,15 +281,18 @@ def ResolveStringPiecesIndirect(encoded_string_addresses_by_path, string_data,
 
   # Run readelf to find location of .rodata within the .o files.
   section_positions_by_path = _LookupStringSectionPositions(
-      target, output_directory)
+    target, output_directory
+  )
   # Load the .rodata sections (from object files) as strings.
   string_sections_by_path = _ReadStringSections(
-      target, output_directory, section_positions_by_path)
+    target, output_directory, section_positions_by_path
+  )
 
   def GeneratePathAndValues():
     for path, object_addresses in string_addresses_by_path.items():
       for value in _IterStringLiterals(
-          path, object_addresses, string_sections_by_path.get(path)):
+        path, object_addresses, string_sections_by_path.get(path)
+      ):
         yield path, value
 
   ret = _AnnotateStringData(string_data, GeneratePathAndValues())
@@ -294,7 +303,8 @@ def ResolveStringPiecesIndirect(encoded_string_addresses_by_path, string_data,
 def ResolveStringPieces(encoded_strings_by_path, string_data):
   # ast.literal_eval() undoes repr() applied to strings.
   strings_by_path = parallel.DecodeDictOfLists(
-      encoded_strings_by_path, value_transform=ast.literal_eval)
+    encoded_strings_by_path, value_transform=ast.literal_eval
+  )
 
   def GeneratePathAndValues():
     for path, strings in strings_by_path.items():
@@ -336,7 +346,7 @@ def ReadStringLiterals(symbols, elf_path, all_rodata=False):
 def GetNameOfStringLiteralBytes(b):
   """Converts string literal bytes to printable form, may be truncated."""
   # Do an extra initial truncation to make the ascii checks faster.
-  b = b[:_STRING_LITERAL_LENGTH_CUTOFF + 1]
+  b = b[: _STRING_LITERAL_LENGTH_CUTOFF + 1]
   if not b.isascii():
     # file_format.py currently requires ascii (maybe unnecessarily...)
     return models.STRING_LITERAL_NAME
@@ -345,6 +355,6 @@ def GetNameOfStringLiteralBytes(b):
   s = b.decode('ascii')
   if s.isprintable():
     if len(s) > _STRING_LITERAL_LENGTH_CUTOFF:
-      return f'"{s[:_STRING_LITERAL_LENGTH_CUTOFF - 3]}"...'
+      return f'"{s[: _STRING_LITERAL_LENGTH_CUTOFF - 3]}"...'
     return f'"{s}"'
   return models.STRING_LITERAL_NAME

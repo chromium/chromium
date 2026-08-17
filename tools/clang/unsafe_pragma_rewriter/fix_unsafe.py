@@ -9,6 +9,7 @@ import os
 
 import range_merger
 
+
 def apply_fixes(file_path, fixes):
   """Applies the collected fixes to the given file.
   Fixes are (start_line, start_col, end_line, end_col) 0-indexed tuples.
@@ -43,42 +44,48 @@ def apply_fixes(file_path, fixes):
     # Ensure the start_line is within the bounds of the file content
     if not (0 <= start_line < len(lines)):
       sys.stderr.write(
-          f"Warning: Fix for '{file_path}' has out-of-bounds start line "
-          f"({start_line + 1}). Skipping fix {fix}.\n")
+        f"Warning: Fix for '{file_path}' has out-of-bounds start line "
+        f"({start_line + 1}). Skipping fix {fix}.\n"
+      )
       continue
 
     # Ensure start_col is within the bounds of the specific line
     # Use <= because insertion can be at the end of the line
     if not (0 <= start_col <= len(lines[start_line])):
       sys.stderr.write(
-          f"Warning: Fix for '{file_path}' on line {start_line + 1} has "
-          f"out-of-bounds start column ({start_col + 1}). Skipping fix "
-          f"{fix}.\n")
+        f"Warning: Fix for '{file_path}' on line {start_line + 1} has "
+        f"out-of-bounds start column ({start_col + 1}). Skipping fix "
+        f"{fix}.\n"
+      )
       continue
 
     # Ensure end_line is within bounds
     if not (0 <= end_line < len(lines)):
       sys.stderr.write(
-          f"Warning: Fix for '{file_path}' has out-of-bounds end line "
-          f"({end_line + 1}). Skipping fix {fix}.\n")
+        f"Warning: Fix for '{file_path}' has out-of-bounds end line "
+        f"({end_line + 1}). Skipping fix {fix}.\n"
+      )
       continue
 
     # Ensure end_col_adjusted is within the bounds of the specific line for.
     # Use <= because insertion can be at the end of the line.
     if not (0 <= end_col <= len(lines[end_line])):
       sys.stderr.write(
-          f"Warning: Fix for '{file_path}' on line {end_line + 1} has "
-          f"out-of-bounds end column ({end_col + 1}). Skipping "
-          f"suffix for fix {fix}.\n")
+        f"Warning: Fix for '{file_path}' on line {end_line + 1} has "
+        f"out-of-bounds end column ({end_col + 1}). Skipping "
+        f"suffix for fix {fix}.\n"
+      )
       continue
 
     # Insert the suffix after the character at end_col_adjusted
-    lines[end_line] = (lines[end_line][:end_col] + suffix +
-                       lines[end_line][end_col:])
+    lines[end_line] = (
+      lines[end_line][:end_col] + suffix + lines[end_line][end_col:]
+    )
 
     # Insert the prefix before the character at start_col
-    lines[start_line] = (lines[start_line][:start_col] + prefix +
-                         lines[start_line][start_col:])
+    lines[start_line] = (
+      lines[start_line][:start_col] + prefix + lines[start_line][start_col:]
+    )
 
   try:
     # Write the modified content back to the file
@@ -95,8 +102,9 @@ def main():
 
   # Matches the error start line: file:line:col:{range}: error: ...unsafe...
   error_start_re = re.compile(
-      rb"^../../(.*?):(\d+):(\d+):\{(\d+):(\d+)-(\d+):(\d+)\}: "
-      rb"(warning|error): .*unsafe.*")
+    rb"^../../(.*?):(\d+):(\d+):\{(\d+):(\d+)-(\d+):(\d+)\}: "
+    rb"(warning|error): .*unsafe.*"
+  )
 
   # Read compiler output line by line from standard input
   for line in sys.stdin.buffer.read().splitlines():
@@ -106,8 +114,12 @@ def main():
       abs_file_path = os.path.abspath(match.group(1).decode('ascii'))
 
       # Convert to zero-based indices
-      source_range = (int(match.group(4)) - 1, int(match.group(5)) - 1,
-                      int(match.group(6)) - 1, int(match.group(7)) - 1)
+      source_range = (
+        int(match.group(4)) - 1,
+        int(match.group(5)) - 1,
+        int(match.group(6)) - 1,
+        int(match.group(7)) - 1,
+      )
 
       entry = all_corrections.setdefault(abs_file_path, [])
       entry.append(source_range)

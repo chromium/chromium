@@ -14,13 +14,14 @@ _LINK_SUFFIX = ': link'
 
 DEFAULT = cr.Config.From()
 
+
 class NinjaBuilder(cr.Builder):
   """An implementation of Builder that uses ninja to do the actual build."""
 
   # Some basic configuration installed if we are enabled.
   ENABLED = cr.Config.From(
-      NINJA_BINARY=os.path.join('{DEPOT_TOOLS}', 'autoninja'),
-      NINJA_BUILD_FILE=os.path.join('{CR_BUILD_DIR}', 'build.ninja'),
+    NINJA_BINARY=os.path.join('{DEPOT_TOOLS}', 'autoninja'),
+    NINJA_BUILD_FILE=os.path.join('{CR_BUILD_DIR}', 'build.ninja'),
   )
   # A placeholder for the system detected configuration
   DETECTED = cr.Config('DETECTED')
@@ -32,20 +33,13 @@ class NinjaBuilder(cr.Builder):
   def Build(self, targets, arguments):
     build_arguments = [target.build_target for target in targets]
     build_arguments.extend(arguments)
-    cr.Host.Execute(
-        '{NINJA_BINARY}',
-        '-C{CR_BUILD_DIR}',
-        *build_arguments
-    )
+    cr.Host.Execute('{NINJA_BINARY}', '-C{CR_BUILD_DIR}', *build_arguments)
 
   def Clean(self, targets, arguments):
     build_arguments = [target.build_target for target in targets]
     build_arguments.extend(arguments)
     cr.Host.Execute(
-        '{NINJA_BINARY}',
-        '-C{CR_BUILD_DIR}',
-        '-tclean',
-        *build_arguments
+      '{NINJA_BINARY}', '-C{CR_BUILD_DIR}', '-tclean', *build_arguments
     )
 
   def GetTargets(self):
@@ -56,18 +50,15 @@ class NinjaBuilder(cr.Builder):
       except KeyError:
         return self._targets
       output = cr.Host.Capture(
-          '{NINJA_BINARY}',
-          '-C{CR_BUILD_DIR}',
-          '-ttargets',
-          'all'
+        '{NINJA_BINARY}', '-C{CR_BUILD_DIR}', '-ttargets', 'all'
       )
       for line in output.split('\n'):
         line = line.strip()
         if line.endswith(_PHONY_SUFFIX):
-          target = line[:-len(_PHONY_SUFFIX)].strip()
+          target = line[: -len(_PHONY_SUFFIX)].strip()
           self._targets.append(target)
         elif line.endswith(_LINK_SUFFIX):
-          target = line[:-len(_LINK_SUFFIX)].strip()
+          target = line[: -len(_LINK_SUFFIX)].strip()
           self._targets.append(target)
     return self._targets
 

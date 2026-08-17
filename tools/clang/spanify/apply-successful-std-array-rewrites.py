@@ -33,8 +33,9 @@ def main():
         has_std_array = False
         with p.open("r") as fd:
             for line in fd:
-                if line.startswith('+') and ('std::array' in line
-                                             or 'std::to_array' in line):
+                if line.startswith('+') and (
+                    'std::array' in line or 'std::to_array' in line
+                ):
                     has_std_array = True
                     break
 
@@ -43,7 +44,8 @@ def main():
             txt_file = scratch_dir() / f"patch_{index}.txt"
             if txt_file.exists():
                 replacements.extend(
-                    txt_file.read_text().splitlines(keepends=True))
+                    txt_file.read_text().splitlines(keepends=True)
+                )
             else:
                 print(f"Warning: {txt_file} does not exist.", file=sys.stderr)
 

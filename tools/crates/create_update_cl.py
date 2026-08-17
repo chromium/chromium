@@ -28,12 +28,15 @@ THIRD_PARTY_RUST = os.path.join(CHROMIUM_DIR, "third_party", "rust")
 CRATES_DIR = os.path.join(THIRD_PARTY_RUST, "chromium_crates_io")
 VENDOR_DIR = os.path.join(CRATES_DIR, "vendor")
 INCLUSIVE_LANG_SCRIPT = os.path.join(
-    CHROMIUM_DIR, "infra", "update_inclusive_language_presubmit_exempt_dirs.sh")
+    CHROMIUM_DIR, "infra", "update_inclusive_language_presubmit_exempt_dirs.sh"
+)
 INCLUSIVE_LANG_CONFIG = os.path.join(
-    CHROMIUM_DIR, "infra", "inclusive_language_presubmit_exempt_dirs.txt")
+    CHROMIUM_DIR, "infra", "inclusive_language_presubmit_exempt_dirs.txt"
+)
 RUN_GNRT = os.path.join(THIS_DIR, "run_gnrt.py")
-UPDATE_RUST_SCRIPT = os.path.join(CHROMIUM_DIR, "tools", "rust",
-                                  "update_rust.py")
+UPDATE_RUST_SCRIPT = os.path.join(
+    CHROMIUM_DIR, "tools", "rust", "update_rust.py"
+)
 
 sys.path.append(CRATES_DIR)
 import crate_utils
@@ -73,15 +76,17 @@ def RunCommandAndCheckForErrors(args, check_stdout: bool, check_exitcode: bool):
 
     # Needs shell=True on Windows due to git.bat in depot_tools.
     is_win = sys.platform.startswith('win32')
-    result = subprocess.run(args,
-                            stdout=subprocess.PIPE,
-                            stderr=subprocess.STDOUT,
-                            text=True,
-                            shell=is_win)
+    result = subprocess.run(
+        args,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        text=True,
+        shell=is_win,
+    )
 
     success = True
     if check_exitcode:
-        success &= (result.returncode == 0)
+        success &= result.returncode == 0
     if check_stdout:
         success &= re.search(r'\bwarning\b', result.stdout.lower()) is None
         success &= re.search(r'\berror\b', result.stdout.lower()) is None
@@ -94,9 +99,9 @@ def RunCommandAndCheckForErrors(args, check_stdout: bool, check_exitcode: bool):
 
 def Git(*args) -> str:
     """Runs a git command."""
-    return RunCommandAndCheckForErrors(['git'] + list(args),
-                                       check_stdout=False,
-                                       check_exitcode=True)
+    return RunCommandAndCheckForErrors(
+        ['git'] + list(args), check_stdout=False, check_exitcode=True
+    )
 
 
 def GitAddRustFiles():
@@ -106,38 +111,47 @@ def GitAddRustFiles():
 
 def Gnrt(*args) -> str:
     """Runs a gnrt command."""
-    return RunCommandAndCheckForErrors([RUN_GNRT] + list(args),
-                                       check_stdout=True,
-                                       check_exitcode=True)
+    return RunCommandAndCheckForErrors(
+        [RUN_GNRT] + list(args), check_stdout=True, check_exitcode=True
+    )
 
 
-def GnrtUpdate(args: List[str], check_stdout: bool,
-               check_exitcode: bool) -> str:
+def GnrtUpdate(
+    args: List[str], check_stdout: bool, check_exitcode: bool
+) -> str:
     """Runs `gnrt update` command."""
     # See the `[dependencies.cxxbridge-cmd]` section in
     # `third_party/rust/chromium_crates_io/Cargo.toml` for explanation why
     # `-Zbindeps` flag is needed.
     args = ["update", "--"] + args + ["-Zunstable-options", "-Zbindeps"]
-    return RunCommandAndCheckForErrors([RUN_GNRT] + list(args),
-                                       check_stdout=check_stdout,
-                                       check_exitcode=check_exitcode)
+    return RunCommandAndCheckForErrors(
+        [RUN_GNRT] + list(args),
+        check_stdout=check_stdout,
+        check_exitcode=check_exitcode,
+    )
 
 
-def GnrtUpdateCrate(old_crate_id: str, new_crate_id: str, check_stdout: bool,
-                    check_exitcode: bool):
+def GnrtUpdateCrate(
+    old_crate_id: str,
+    new_crate_id: str,
+    check_stdout: bool,
+    check_exitcode: bool,
+):
     old_crate_version = crate_utils.ConvertCrateIdToCrateVersion(old_crate_id)
     new_crate_version = crate_utils.ConvertCrateIdToCrateVersion(new_crate_id)
     old_epoch = crate_utils.ConvertCrateIdToCrateEpoch(old_crate_id)
     new_epoch = crate_utils.ConvertCrateIdToCrateEpoch(new_crate_id)
-    is_major_update = (old_epoch != new_epoch)
+    is_major_update = old_epoch != new_epoch
 
     cargo_update_args = [old_crate_id, "--precise", f"{new_crate_version}"]
     if is_major_update:
         cargo_update_args.append("--breaking")
 
-    return GnrtUpdate(cargo_update_args,
-                      check_stdout=check_stdout,
-                      check_exitcode=check_exitcode)
+    return GnrtUpdate(
+        cargo_update_args,
+        check_stdout=check_stdout,
+        check_exitcode=check_exitcode,
+    )
 
 
 @dataclass(eq=True, order=True)
@@ -150,9 +164,11 @@ class UpdatedCrate:
         assert name == crate_utils.ConvertCrateIdToCrateName(self.new_crate_id)
 
         old_version = crate_utils.ConvertCrateIdToCrateVersion(
-            self.old_crate_id)
+            self.old_crate_id
+        )
         new_version = crate_utils.ConvertCrateIdToCrateVersion(
-            self.new_crate_id)
+            self.new_crate_id
+        )
 
         return f"{name}: {old_version} => {new_version}"
 
@@ -164,20 +180,25 @@ class CratesDiff:
     added_crate_ids: List[str]
 
     def size(self):
-        return len(self.updates) + len(self.added_crate_ids) + len(
-            self.removed_crate_ids)
+        return (
+            len(self.updates)
+            + len(self.added_crate_ids)
+            + len(self.removed_crate_ids)
+        )
 
 
-def DiffCrateIds(old_crate_ids: Set[str], new_crate_ids: Set[str],
-                 only_minor_updates: bool) -> CratesDiff:
+def DiffCrateIds(
+    old_crate_ids: Set[str], new_crate_ids: Set[str], only_minor_updates: bool
+) -> CratesDiff:
     """Compares two results of `GetCurrentCrateIds` and returns what changed.
     When `only_minor_updates` is True, then `foo@1.0` => `foo@2.0` will be
     treated as a removal of `foo@1.0` and an addition of `foo@2.0`.  Otherwise,
     it will be treated as an update.
     """
 
-    def CrateIdsToDict(crate_ids: Set[str],
-                       only_minor_updates) -> Dict[str, str]:
+    def CrateIdsToDict(
+        crate_ids: Set[str], only_minor_updates
+    ) -> Dict[str, str]:
         """Transforms `crate_ids` into a dictionary that maps either 1) a crate
         name (when `only_minor_updates=False`) or 2) a crate epoch (when
         `only_minor_updates=True`) into 3) a crate version.  The caller should
@@ -197,9 +218,11 @@ def DiffCrateIds(old_crate_ids: Set[str], new_crate_ids: Set[str],
                 assert not only_minor_updates
                 old_crate_id = result[key]
                 new_crate_id = crate_id
-                raise RuntimeError(f"Error calculating a `Cargo.lock` diff:" + \
-                                   f" conflict between {old_crate_id} and " + \
-                                   f"{new_crate_id}")
+                raise RuntimeError(
+                    f"Error calculating a `Cargo.lock` diff:"
+                    + f" conflict between {old_crate_id} and "
+                    + f"{new_crate_id}"
+                )
             result[key] = crate_id
         return result
 
@@ -224,8 +247,9 @@ def DiffCrateIds(old_crate_ids: Set[str], new_crate_ids: Set[str],
         if key not in old_dict:
             added_crate_ids.append(new_crate_id)
 
-    return CratesDiff(sorted(updates), sorted(removed_crate_ids),
-                      sorted(added_crate_ids))
+    return CratesDiff(
+        sorted(updates), sorted(removed_crate_ids), sorted(added_crate_ids)
+    )
 
 
 def DoArgsAskForBreakingChanges(cargo_update_args) -> bool:
@@ -246,13 +270,16 @@ def FindUpdateableCrates(args) -> List[str]:
     Git("reset", "--hard")
     only_minor_updates = not DoArgsAskForBreakingChanges(args.remaining_args)
     diff = DiffCrateIds(old_crate_ids, new_crate_ids, only_minor_updates)
-    crate_updates = [(update.old_crate_id, update.new_crate_id)
-                     for update in diff.updates]
+    crate_updates = [
+        (update.old_crate_id, update.new_crate_id) for update in diff.updates
+    ]
     if crate_updates:
-        names = sorted([
-            crate_utils.ConvertCrateIdToCrateName(id)
-            for (id, _) in crate_updates
-        ])
+        names = sorted(
+            [
+                crate_utils.ConvertCrateIdToCrateName(id)
+                for (id, _) in crate_updates
+            ]
+        )
         names = f"{', '.join(names)}"
         text = f"Found updates for {len(crate_updates)} crates: {names}"
         print("\n".join(textwrap.wrap(text, 80)))
@@ -269,31 +296,34 @@ def GetAffectedCrateIds(diff: CratesDiff) -> Set[str]:
     return affected
 
 
-def FindDiffOfCrateUpdate(old_crate_id: str, new_crate_id: str,
-                          only_minor_updates: bool) -> CratesDiff:
+def FindDiffOfCrateUpdate(
+    old_crate_id: str, new_crate_id: str, only_minor_updates: bool
+) -> CratesDiff:
     """Runs `gnrt update <crate_id>` and returns the diff of this update.
     (`crate_id` typically looks like "syn@2.0.50".  This function is
     idempotent - at the end it runs `git reset --hard` to undo any changes.)"""
 
     print(
-        f"Measuring the delta of updating {old_crate_id} => {new_crate_id}...")
+        f"Measuring the delta of updating {old_crate_id} => {new_crate_id}..."
+    )
     assert not IsGitDirty()  # No local changes expected here.
     old_crate_ids = crate_utils.GetCurrentCrateIds()
-    GnrtUpdateCrate(old_crate_id,
-                    new_crate_id,
-                    check_stdout=False,
-                    check_exitcode=False)
+    GnrtUpdateCrate(
+        old_crate_id, new_crate_id, check_stdout=False, check_exitcode=False
+    )
     new_crate_ids = crate_utils.GetCurrentCrateIds()
     Git("reset", "--hard")
     return DiffCrateIds(old_crate_ids, new_crate_ids, only_minor_updates)
 
 
 def FormatMarkdownItem(item: str) -> str:
-    return textwrap.fill(f"* {item}",
-                         width=72,
-                         subsequent_indent='  ',
-                         break_long_words=False,
-                         break_on_hyphens=False).strip()
+    return textwrap.fill(
+        f"* {item}",
+        width=72,
+        subsequent_indent='  ',
+        break_long_words=False,
+        break_on_hyphens=False,
+    ).strip()
 
 
 def SortedMarkdownList(input_list: List[str]) -> str:
@@ -305,8 +335,7 @@ def CreateCommitTitle(old_crate_id: str, new_crate_id: str) -> str:
     crate_name = crate_utils.ConvertCrateIdToCrateName(old_crate_id)
     old_version = crate_utils.ConvertCrateIdToCrateVersion(old_crate_id)
     new_version = crate_utils.ConvertCrateIdToCrateVersion(new_crate_id)
-    roll_summary = f"{crate_name}: " + \
-        f"{old_version} => {new_version}"
+    roll_summary = f"{crate_name}: " + f"{old_version} => {new_version}"
     title = f"Roll {roll_summary} in //third_party/rust."
     return title
 
@@ -321,7 +350,7 @@ def CreateCommitTitleForBreakingUpdate(diff: CratesDiff) -> str:
 def FormatCrateUpdateForClDescriptionBody(update: UpdatedCrate) -> str:
     name = crate_utils.ConvertCrateIdToCrateName(update.new_crate_id)
     new_version = crate_utils.ConvertCrateIdToCrateVersion(update.new_crate_id)
-    return (f"{update}; https://docs.rs/crate/{name}/{new_version}")
+    return f"{update}; https://docs.rs/crate/{name}/{new_version}"
 
 
 def FormatCrateIdForClDescriptionBody(crate_id: str) -> str:
@@ -339,11 +368,14 @@ process and other details can be found at
 """
 
     update_descriptions = SortedMarkdownList(
-        map(FormatCrateUpdateForClDescriptionBody, diff.updates))
+        map(FormatCrateUpdateForClDescriptionBody, diff.updates)
+    )
     new_crate_descriptions = SortedMarkdownList(
-        map(FormatCrateIdForClDescriptionBody, diff.added_crate_ids))
+        map(FormatCrateIdForClDescriptionBody, diff.added_crate_ids)
+    )
     removed_crate_descriptions = SortedMarkdownList(
-        map(FormatCrateIdForClDescriptionBody, diff.removed_crate_ids))
+        map(FormatCrateIdForClDescriptionBody, diff.removed_crate_ids)
+    )
     if update_descriptions:
         description += f"\nUpdated crates:\n\n{update_descriptions}\n"
     if new_crate_descriptions:
@@ -351,8 +383,9 @@ process and other details can be found at
     if removed_crate_descriptions:
         description += f"\nRemoved crates:\n\n{removed_crate_descriptions}\n"
 
-    new_or_updated_crate_ids = diff.added_crate_ids + \
-        [update.new_crate_id for update in diff.updates]
+    new_or_updated_crate_ids = diff.added_crate_ids + [
+        update.new_crate_id for update in diff.updates
+    ]
 
     description += """
 Bug: None
@@ -368,8 +401,13 @@ Cq-Include-Trybots: chromium/try:win-rust-x64-rel
     return description
 
 
-def UpdateCrate(args, old_crate_id: str, new_crate_id: str,
-                upstream_branch: str, branch_number: int):
+def UpdateCrate(
+    args,
+    old_crate_id: str,
+    new_crate_id: str,
+    upstream_branch: str,
+    branch_number: int,
+):
     """Runs `gnrt update <crate_id>` and other follow-up commands to actually
     update the crate. Returns a tuple of (new_branch, diff)."""
 
@@ -383,14 +421,15 @@ def UpdateCrate(args, old_crate_id: str, new_crate_id: str,
     # gnrt update
     old_crate_ids = crate_utils.GetCurrentCrateIds()
     print(f"  Running `gnrt update` for {old_crate_id} => {new_crate_id} ...")
-    GnrtUpdateCrate(old_crate_id,
-                    new_crate_id,
-                    check_stdout=True,
-                    check_exitcode=True)
+    GnrtUpdateCrate(
+        old_crate_id, new_crate_id, check_stdout=True, check_exitcode=True
+    )
     new_crate_ids = crate_utils.GetCurrentCrateIds()
     if old_crate_ids == new_crate_ids:
-        print("  `gnrt update` resulted in no changes - "\
-              "maybe other steps will handle this crate...")
+        print(
+            "  `gnrt update` resulted in no changes - "
+            "maybe other steps will handle this crate..."
+        )
         return upstream_branch, CratesDiff([], [], [])
     diff = DiffCrateIds(old_crate_ids, new_crate_ids, only_minor_updates)
     title = CreateCommitTitle(old_crate_id, new_crate_id)
@@ -405,22 +444,31 @@ def UpdateCrate(args, old_crate_id: str, new_crate_id: str,
     Git("commit", "-m", description)
     if args.upload:
         print(f"  Running `git cl upload ...` ...")
-        GitClUpload("--hashtag=cratesio-autoupdate",
-                    "--cc=chrome-rust-experiments+autoupdate@google.com")
+        GitClUpload(
+            "--hashtag=cratesio-autoupdate",
+            "--cc=chrome-rust-experiments+autoupdate@google.com",
+        )
 
-    final_diff = FinishUpdatingCrate(args, title, diff, old_crate_ids,
-                                     only_minor_updates)
+    final_diff = FinishUpdatingCrate(
+        args, title, diff, old_crate_ids, only_minor_updates
+    )
     return new_branch, final_diff
 
 
-def FinishUpdatingCrate(args, title: str, diff: CratesDiff,
-                        old_crate_ids: Set[str],
-                        only_minor_updates: bool) -> CratesDiff:
+def FinishUpdatingCrate(
+    args,
+    title: str,
+    diff: CratesDiff,
+    old_crate_ids: Set[str],
+    only_minor_updates: bool,
+) -> CratesDiff:
     updated_old_crate_ids = set()
 
     # git mv <vendor/old version> <vendor/new version>
-    print(f"  Running `git mv <old dir> <new dir>` " +
-          "(for better diff of major version updates)...")
+    print(
+        f"  Running `git mv <old dir> <new dir>` "
+        + "(for better diff of major version updates)..."
+    )
     for update in diff.updates:
         updated_old_crate_ids.add(update.old_crate_id)
 
@@ -430,15 +478,19 @@ def FinishUpdatingCrate(args, title: str, diff: CratesDiff,
             Git("mv", "--force", f"{old_dir}", f"{new_dir}")
 
             old_target_dir = crate_utils.ConvertCrateIdToBuildDir(
-                update.old_crate_id)
+                update.old_crate_id
+            )
             new_target_dir = crate_utils.ConvertCrateIdToBuildDir(
-                update.new_crate_id)
+                update.new_crate_id
+            )
             if old_target_dir != new_target_dir:
                 Git("mv", "--force", old_target_dir, new_target_dir)
     GitAddRustFiles()
-    did_commit = GitCommit(args,
-                           "git mv <old dir> <new dir> (for better diff)",
-                           error_if_no_changes=False)
+    did_commit = GitCommit(
+        args,
+        "git mv <old dir> <new dir> (for better diff)",
+        error_if_no_changes=False,
+    )
     if did_commit:
         Git("reset", "--hard", "HEAD^")  # Undoing `git mv ...`
 
@@ -448,9 +500,9 @@ def FinishUpdatingCrate(args, title: str, diff: CratesDiff,
     GitAddRustFiles()
     # `INCLUSIVE_LANG_SCRIPT` below uses `git grep` and therefore depends on the
     # earlier `Git("add"...)` above.  Please don't reorder/coalesce the `add`.
-    new_content = RunCommandAndCheckForErrors([INCLUSIVE_LANG_SCRIPT],
-                                              check_stdout=False,
-                                              check_exitcode=True)
+    new_content = RunCommandAndCheckForErrors(
+        [INCLUSIVE_LANG_SCRIPT], check_stdout=False, check_exitcode=True
+    )
     with open(INCLUSIVE_LANG_CONFIG, "w") as f:
         f.write(new_content)
     Git("add", INCLUSIVE_LANG_CONFIG)
@@ -470,30 +522,38 @@ def FinishUpdatingCrate(args, title: str, diff: CratesDiff,
     print(f"  Removing //third_party/rust/.../<old_epoch> ...")
     for update in diff.updates:
         old_target_dir = crate_utils.ConvertCrateIdToBuildDir(
-            update.old_crate_id)
+            update.old_crate_id
+        )
         new_target_dir = crate_utils.ConvertCrateIdToBuildDir(
-            update.new_crate_id)
+            update.new_crate_id
+        )
         if old_target_dir == new_target_dir:
             continue  # Skip minor crate updates
 
         old_files_count = len(
-            Git("ls-files", "--", old_target_dir).splitlines())
+            Git("ls-files", "--", old_target_dir).splitlines()
+        )
         new_files_count = len(
-            Git("ls-files", "--", new_target_dir).splitlines())
+            Git("ls-files", "--", new_target_dir).splitlines()
+        )
         if old_files_count == new_files_count:
             Git("rm", "-r", "--force", "--", old_target_dir)
         elif old_files_count > new_files_count:
-            print(f"WARNING: not deleting {old_target_dir} "\
-                   "because it contains extra files")
+            print(
+                f"WARNING: not deleting {old_target_dir} "
+                "because it contains extra files"
+            )
         else:
             print(
-                f"WARNING: {old_target_dir} unexpectedly has less files "\
-                f"than {new_target_dir}")
+                f"WARNING: {old_target_dir} unexpectedly has less files "
+                f"than {new_target_dir}"
+            )
     GitCommit(
         args,
         "Removing //third_party/rust/.../<old_epoch>",
         # Just skip this commit when this is a minor-version update.
-        error_if_no_changes=False)
+        error_if_no_changes=False,
+    )
 
     # Fix up the target names
     # (in case this is a major version update)
@@ -501,15 +561,19 @@ def FinishUpdatingCrate(args, title: str, diff: CratesDiff,
     for update in diff.updates:
         old_target = crate_utils.ConvertCrateIdToGnLabel(update.old_crate_id)
         new_target = crate_utils.ConvertCrateIdToGnLabel(update.new_crate_id)
-        if old_target == new_target: continue
+        if old_target == new_target:
+            continue
         # `check_exitcode=False` to gracefully handle no hits.
         grep = RunCommandAndCheckForErrors(
             ["git", "grep", "-l", old_target, "--", "*/BUILD.gn"],
             check_stdout=False,
-            check_exitcode=False)
+            check_exitcode=False,
+        )
         for path in grep.splitlines():
-            if not path: continue
-            if "third_party/rust" in path: continue
+            if not path:
+                continue
+            if "third_party/rust" in path:
+                continue
             with open(path, 'r') as file:
                 file_contents = file.read()
             file_contents = file_contents.replace(old_target, new_target)
@@ -520,15 +584,17 @@ def FinishUpdatingCrate(args, title: str, diff: CratesDiff,
         args,
         "Updating the target name in BUILD.gn files",
         # Just skip this commit when this is a minor-version update.
-        error_if_no_changes=False)
+        error_if_no_changes=False,
+    )
 
     if args.upload:
         issue = Git("cl", "issue")
         print(f"  {issue}")
 
     final_crate_ids = crate_utils.GetCurrentCrateIds()
-    final_diff = DiffCrateIds(old_crate_ids, final_crate_ids,
-                              only_minor_updates)
+    final_diff = DiffCrateIds(
+        old_crate_ids, final_crate_ids, only_minor_updates
+    )
 
     if args.upload:
         print(f"  Updating CL description on Gerrit...")
@@ -546,7 +612,8 @@ def IsGitDirty():
     # Since the roll script won't add new files outside //third_party/rust
     # though, ignore untracked changes there.
     if Git("status", "--porcelain", "third_party/rust") or Git(
-            "status", "--porcelain", "--untracked-files=no"):
+        "status", "--porcelain", "--untracked-files=no"
+    ):
         return True
     else:
         return False
@@ -554,15 +621,19 @@ def IsGitDirty():
 
 def RaiseErrorIfGitIsDirty():
     if IsGitDirty():
-        raise RuntimeError("Dirty `git status` - save your local changes "\
-                           "before rerunning the script")
+        raise RuntimeError(
+            "Dirty `git status` - save your local changes "
+            "before rerunning the script"
+        )
 
 
 def RaiseErrorIfCantUploadToGerrit():
     if shutil.which('gcertstatus'):
-        RunCommandAndCheckForErrors(["gcertstatus", "--check_remaining=45m"],
-                                    check_stdout=False,
-                                    check_exitcode=True)
+        RunCommandAndCheckForErrors(
+            ["gcertstatus", "--check_remaining=45m"],
+            check_stdout=False,
+            check_exitcode=True,
+        )
 
 
 def CheckoutInitialBranch(branch):
@@ -573,9 +644,9 @@ def CheckoutInitialBranch(branch):
 
     # Ensure the //third_party/rust-toolchain version matches the branch.
     print("Running //tools/rust/update_rust.py (hopefully a no-op)...")
-    RunCommandAndCheckForErrors([UPDATE_RUST_SCRIPT],
-                                check_stdout=False,
-                                check_exitcode=True)
+    RunCommandAndCheckForErrors(
+        [UPDATE_RUST_SCRIPT], check_stdout=False, check_exitcode=True
+    )
 
 
 def GitClUpload(*args):
@@ -592,8 +663,16 @@ def GitClUpload(*args):
     # `git cl upload` hangs sometimes.  I am guessing that `--force` is needed
     # to suppress a prompt, although I am not sure what prompt + why that prompt
     # appears.
-    Git("cl", "upload", "--bypass-hooks", "--force", "-o", "banned-words~skip",
-        "--squash", *args)
+    Git(
+        "cl",
+        "upload",
+        "--bypass-hooks",
+        "--force",
+        "-o",
+        "banned-words~skip",
+        "--squash",
+        *args,
+    )
 
 
 def GitCommit(args, title, error_if_no_changes=True):
@@ -606,7 +685,8 @@ def GitCommit(args, title, error_if_no_changes=True):
     else:
         if error_if_no_changes:
             raise RuntimeError(
-                f"The '{title}' commit unexpectedly has no changes")
+                f"The '{title}' commit unexpectedly has no changes"
+            )
         else:
             print("    Nothing to commit")
             return False
@@ -654,8 +734,10 @@ def BreakingUpdate(args):
     Git("commit", "-m", description)
     if args.upload:
         print(f"  Running `git cl upload ...` ...")
-        GitClUpload("--hashtag=cratesio-autoupdate",
-                    "--cc=chrome-rust-experiments+autoupdate@google.com")
+        GitClUpload(
+            "--hashtag=cratesio-autoupdate",
+            "--cc=chrome-rust-experiments+autoupdate@google.com",
+        )
 
     FinishUpdatingCrate(args, title, diff, old_crate_ids, only_minor_updates)
 
@@ -693,34 +775,42 @@ def AutoUpdate(args):
                 skipped_crate_names.append(crate_name)
             else:
                 todo_crate_updates_without_skips.append(
-                    (old_crate_id, new_crate_id))
+                    (old_crate_id, new_crate_id)
+                )
         todo_crate_updates = todo_crate_updates_without_skips
-        print(f"Skipping the following crates because of `--skip`: " +
-              f"{', '.join(skipped_crate_names)}")
+        print(
+            f"Skipping the following crates because of `--skip`: "
+            + f"{', '.join(skipped_crate_names)}"
+        )
 
     if not todo_crate_updates:
         print("There were no updates - exiting early...")
         return 0
 
     update_diffs = dict()
-    for (old_crate_id, new_crate_id) in todo_crate_updates:
+    for old_crate_id, new_crate_id in todo_crate_updates:
         update_diffs[old_crate_id] = FindDiffOfCrateUpdate(
-            old_crate_id, new_crate_id, only_minor_updates)
+            old_crate_id, new_crate_id, only_minor_updates
+        )
 
     # Filter out crates that are not updateable on their own
     # (they need to be updated together with another crate).
     todo_crate_updates = [
-        update for update in todo_crate_updates
+        update
+        for update in todo_crate_updates
         if update_diffs[update[0]].size() != 0
     ]
 
     # Start with small updates in an attempt to keep CLs small.
     todo_crate_updates = sorted(
         todo_crate_updates,
-        key=lambda crate_update: update_diffs[crate_update[0]].size())
+        key=lambda crate_update: update_diffs[crate_update[0]].size(),
+    )
 
-    print(f"** Updating {len(todo_crate_updates)} crates! "
-          f"Expect this to take about {len(todo_crate_updates) * 2} minutes.")
+    print(
+        f"** Updating {len(todo_crate_updates)} crates! "
+        f"Expect this to take about {len(todo_crate_updates) * 2} minutes."
+    )
 
     # Map from crate_id -> (branch_name, branch_number)
     crate_to_branch = {}
@@ -728,7 +818,7 @@ def AutoUpdate(args):
     branch_number = 1
     while todo_crate_updates:
         actually_updated_crate_ids = set()
-        for (old_crate_id, new_crate_id) in todo_crate_updates:
+        for old_crate_id, new_crate_id in todo_crate_updates:
             # Determine the upstream for this crate update.
             if args.chained:
                 current_upstream = upstream_branch
@@ -745,16 +835,23 @@ def AutoUpdate(args):
                             best_upstream_num = prev_num
                             best_upstream_branch = prev_branch
                 if best_upstream_branch:
-                    print(f"Note: Crate {old_crate_id} affects crates already "
-                          f"modified in {best_upstream_branch}. Chaining to "
-                          f"avoid conflicts.")
+                    print(
+                        f"Note: Crate {old_crate_id} affects crates already "
+                        f"modified in {best_upstream_branch}. Chaining to "
+                        f"avoid conflicts."
+                    )
                     current_upstream = best_upstream_branch
 
             # Try to update the crate. UpdateCrate returns a new branch name on
             # success (plus the diff), or the passed-in upstream_branch if no
             # changes were made.
-            new_branch, diff = UpdateCrate(args, old_crate_id, new_crate_id,
-                                           current_upstream, branch_number)
+            new_branch, diff = UpdateCrate(
+                args,
+                old_crate_id,
+                new_crate_id,
+                current_upstream,
+                branch_number,
+            )
 
             # If the update was successful, we need to track which crates were
             # updated so we don't try to update them again in the next pass.
@@ -782,7 +879,7 @@ def AutoUpdate(args):
         if missed_crate_updates:
             if len(missed_crate_updates) == len(todo_crate_updates):
                 print("ERROR: Failed to make progress with these crates:")
-                for (old_crate_id, new_crate_id) in todo_crate_updates:
+                for old_crate_id, new_crate_id in todo_crate_updates:
                     print(f"  {old_crate_id} => {new_crate_id}")
                 raise RuntimeError("Failed to make progress")
             else:
@@ -805,58 +902,65 @@ def ManualUpdate(args):
     diff = DiffCrateIds(old_crate_ids, new_crate_ids, False)
     if diff.size() == 0:
         raise RuntimeError(
-            "No changes in `Cargo.lock` after running `gnrt vendor`")
+            "No changes in `Cargo.lock` after running `gnrt vendor`"
+        )
 
     # This covers most update steps: git mv, gnrt vendor, gnrt gen
-    FinishUpdatingCrate(args,
-                        title,
-                        diff,
-                        old_crate_ids,
-                        only_minor_updates=False)
+    FinishUpdatingCrate(
+        args, title, diff, old_crate_ids, only_minor_updates=False
+    )
 
 
 def main():
     parser = argparse.ArgumentParser(description="Update Rust crates")
-    parser.add_argument("--no-upload",
-                        dest='upload',
-                        default=True,
-                        action='store_false',
-                        help="Avoids uploading CLs to Gerrit")
+    parser.add_argument(
+        "--no-upload",
+        dest='upload',
+        default=True,
+        action='store_false',
+        help="Avoids uploading CLs to Gerrit",
+    )
     parser.add_argument("--verbose", action='store_true')
     subparsers = parser.add_subparsers(required=False)
 
     parser_auto = subparsers.add_parser(
-        "auto", description="Automatically update minor version of all crates")
+        "auto", description="Automatically update minor version of all crates"
+    )
     parser_auto.set_defaults(func=AutoUpdate)
     parser_auto.add_argument(
         "--upstream-branch",
         default="origin/main",
-        help="The upstream branch on which to base the series of CLs.")
+        help="The upstream branch on which to base the series of CLs.",
+    )
     parser_auto.add_argument(
         "--chained",
         action="store_true",
         default=False,
-        help=
-        "Defaults to a chain of dependent CLs instead of attempting to "\
-        "create independent CLs."
+        help="Defaults to a chain of dependent CLs instead of attempting to "
+        "create independent CLs.",
     )
-    parser_auto.add_argument("--skip",
-                             default=[],
-                             action="append",
-                             nargs="+",
-                             help="Skip updating this crate name.")
-    parser_auto.add_argument("remaining_args",
-                             nargs='*',
-                             metavar='`cargo update` option',
-                             help="Args to pass to `cargo update`")
+    parser_auto.add_argument(
+        "--skip",
+        default=[],
+        action="append",
+        nargs="+",
+        help="Skip updating this crate name.",
+    )
+    parser_auto.add_argument(
+        "remaining_args",
+        nargs='*',
+        metavar='`cargo update` option',
+        help="Args to pass to `cargo update`",
+    )
 
     parser_manual = subparsers.add_parser(
         "manual",
-        description="Generate update CL after manual edit of `Cargo.toml`")
+        description="Generate update CL after manual edit of `Cargo.toml`",
+    )
     parser_manual.set_defaults(func=ManualUpdate)
-    parser_manual.add_argument("--title",
-                               required=True,
-                               help="The first line of CL description.")
+    parser_manual.add_argument(
+        "--title", required=True, help="The first line of CL description."
+    )
 
     args = parser.parse_args()
     if "func" not in args:

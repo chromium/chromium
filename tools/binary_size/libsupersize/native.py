@@ -43,7 +43,9 @@ import zip_util
 # sections, so is absent in map file sections (which stop when they find
 # .debug). .part.end likewise is different in map file vs readelf.
 _SECTION_SIZE_BLOCKLIST = [
-    '.shstrtab', '.ARM.attributes', models.SECTION_PART_END
+  '.shstrtab',
+  '.ARM.attributes',
+  models.SECTION_PART_END,
 ]
 
 # A limit on the number of symbols an address can have, before these symbols
@@ -80,20 +82,24 @@ class ElfInfo:
 
 
 def _CreateElfInfo(elf_path):
-  return ElfInfo(path=elf_path,
-                 architecture=readelf.ArchFromElf(elf_path),
-                 build_id=readelf.BuildIdFromElf(elf_path),
-                 section_ranges=readelf.SectionInfoFromElf(elf_path),
-                 size=os.path.getsize(elf_path))
+  return ElfInfo(
+    path=elf_path,
+    architecture=readelf.ArchFromElf(elf_path),
+    build_id=readelf.BuildIdFromElf(elf_path),
+    section_ranges=readelf.SectionInfoFromElf(elf_path),
+    size=os.path.getsize(elf_path),
+  )
 
 
 def _ComputeUnattributedElfSize(elf_info, section_ranges):
-  sum_without_bss = sum(s for k, (_, s) in section_ranges.items()
-                        if k not in models.BSS_SECTIONS)
+  sum_without_bss = sum(
+    s for k, (_, s) in section_ranges.items() if k not in models.BSS_SECTIONS
+  )
   ret = elf_info.size - sum_without_bss
   assert ret >= 0, (
-      f'Negative ELF overhead for {elf_info.path}: overhead={ret} '
-      f'size={elf_info.size}.\nsections: {section_ranges}\n')
+    f'Negative ELF overhead for {elf_info.path}: overhead={ret} '
+    f'size={elf_info.size}.\nsections: {section_ranges}\n'
+  )
   return ret
 
 
@@ -109,8 +115,9 @@ def _AddSourcePathsUsingObjectPaths(ninja_source_mapper, raw_symbols):
     if not os.path.isabs(object_path) and not object_path.startswith('..'):
       symbol.source_path = ninja_source_mapper.FindSourceForPath(object_path)
   assert ninja_source_mapper.unmatched_paths_count == 0, (
-      'One or more source file paths could not be found. Likely caused by '
-      '.ninja files being generated at a different time than the .map file.')
+    'One or more source file paths could not be found. Likely caused by '
+    '.ninja files being generated at a different time than the .map file.'
+  )
 
 
 def _AddSourcePathsUsingAddress(dwarf_source_mapper, raw_symbols):
@@ -125,16 +132,20 @@ def _AddSourcePathsUsingAddress(dwarf_source_mapper, raw_symbols):
     if source_path:
       match_count += 1
       symbol.source_path = source_path
-  logging.info('dwarfdump found paths for %d of %d .text symbols.', match_count,
-               query_count)
+  logging.info(
+    'dwarfdump found paths for %d of %d .text symbols.',
+    match_count,
+    query_count,
+  )
   # Majority of unmatched queries are for assembly source files (ex libav1d)
   # and v8 builtins.
   if query_count > 0:
     unmatched_ratio = (query_count - match_count) / query_count
     assert unmatched_ratio < 0.2, (
-        'Percentage of failing |dwarf_source_mapper| queries ' +
-        '({}%) >= 20% '.format(unmatched_ratio * 100) +
-        'FindSourceForTextAddress() likely has a bug.')
+      'Percentage of failing |dwarf_source_mapper| queries '
+      + '({}%) >= 20% '.format(unmatched_ratio * 100)
+      + 'FindSourceForTextAddress() likely has a bug.'
+    )
 
 
 def _ConnectNmAliases(raw_symbols):
@@ -167,8 +178,9 @@ def _AssignNmAliasPathsAndCreatePathAliases(raw_symbols, object_paths_by_name):
     # '__typeid_' symbols appear in linker .map only, and not nm output.
     if full_name.startswith('__typeid_'):
       if object_paths_by_name.get(full_name):
-        logging.warning('Found unexpected __typeid_ symbol in nm output: %s',
-                        full_name)
+        logging.warning(
+          'Found unexpected __typeid_ symbol in nm output: %s', full_name
+        )
       continue
 
     # Don't skip if symbol.IsBss(). This is needed for LLD-LTO to work, since
@@ -177,9 +189,12 @@ def _AssignNmAliasPathsAndCreatePathAliases(raw_symbols, object_paths_by_name):
     # arise. But that's a lesser evil compared to having LLD-LTO .bss missing
     # object_path and source_path.
     # TODO(huangs): Fix aliased symbols for the LLD case.
-    if (symbol.IsStringLiteral() or not full_name or full_name[0] in '*.'
-        or  # e.g. ** merge symbols, .Lswitch.table
-        full_name == 'startup'):
+    if (
+      symbol.IsStringLiteral()
+      or not full_name
+      or full_name[0] in '*.'  # e.g. ** merge symbols, .Lswitch.table
+      or full_name == 'startup'
+    ):
       continue
 
     object_paths = object_paths_by_name.get(full_name)
@@ -207,25 +222,33 @@ def _AssignNmAliasPathsAndCreatePathAliases(raw_symbols, object_paths_by_name):
       symbol.aliases = aliases
       num_aliases_created += len(object_paths) - 1
       for object_path in object_paths[1:]:
-        new_sym = models.Symbol(symbol.section_name,
-                                symbol.size,
-                                address=symbol.address,
-                                full_name=full_name,
-                                object_path=object_path,
-                                aliases=aliases)
+        new_sym = models.Symbol(
+          symbol.section_name,
+          symbol.size,
+          address=symbol.address,
+          full_name=full_name,
+          object_path=object_path,
+          aliases=aliases,
+        )
         aliases.append(new_sym)
         ret.append(new_sym)
 
   logging.debug(
-      'Cross-referenced %d symbols with nm output. '
-      'num_unknown_names=%d num_path_mismatches=%d '
-      'num_aliases_created=%d', num_found_paths, num_unknown_names,
-      num_path_mismatches, num_aliases_created)
+    'Cross-referenced %d symbols with nm output. '
+    'num_unknown_names=%d num_path_mismatches=%d '
+    'num_aliases_created=%d',
+    num_found_paths,
+    num_unknown_names,
+    num_path_mismatches,
+    num_aliases_created,
+  )
   # Currently: num_unknown_names=1246 out of 591206 (0.2%).
   if num_unknown_names > min(20, len(raw_symbols) * 0.01):
     logging.warning(
-        'Abnormal number of symbols not found in .o files (%d of %d)',
-        num_unknown_names, len(raw_symbols))
+      'Abnormal number of symbols not found in .o files (%d of %d)',
+      num_unknown_names,
+      len(raw_symbols),
+    )
   return ret
 
 
@@ -237,14 +260,15 @@ def _DiscoverMissedObjectPaths(raw_symbols, known_inputs):
     path = symbol.object_path
     if path.endswith(')'):
       # Convert foo/bar.a(baz.o) -> foo/bar.a
-      path = path[:path.rindex('(')]
+      path = path[: path.rindex('(')]
     if path and path not in known_inputs:
       missed_inputs.add(path)
   return missed_inputs
 
 
-def _CreateMergeStringsReplacements(merge_string_syms,
-                                    list_of_positions_by_object_path):
+def _CreateMergeStringsReplacements(
+  merge_string_syms, list_of_positions_by_object_path
+):
   """Creates replacement symbols for |merge_syms|."""
   ret = []
   STRING_LITERAL_NAME = models.STRING_LITERAL_NAME
@@ -257,11 +281,13 @@ def _CreateMergeStringsReplacements(merge_string_syms,
     for object_path, positions in positions_by_object_path.items():
       for offset, size in positions:
         address = merge_sym_address + offset
-        symbol = models.Symbol(models.SECTION_RODATA,
-                               size,
-                               address=address,
-                               full_name=STRING_LITERAL_NAME,
-                               object_path=object_path)
+        symbol = models.Symbol(
+          models.SECTION_RODATA,
+          size,
+          address=address,
+          full_name=STRING_LITERAL_NAME,
+          object_path=object_path,
+        )
         new_symbols.append(symbol)
 
   logging.debug('Created %d string literal symbols', sum(len(x) for x in ret))
@@ -282,8 +308,10 @@ def _CreateMergeStringsReplacements(merge_string_syms,
     new_symbols = [prev_symbol]
     for symbol in symbols[1:]:
       padding = symbol.address - prev_symbol.end_address
-      if (prev_symbol.address == symbol.address
-          and prev_symbol.size == symbol.size):
+      if (
+        prev_symbol.address == symbol.address
+        and prev_symbol.size == symbol.size
+      ):
         # String is an alias.
         num_aliases += 1
         aliases = prev_symbol.aliases
@@ -308,8 +336,11 @@ def _CreateMergeStringsReplacements(merge_string_syms,
     ret[i] = new_symbols
 
   logging.debug(
-      'Removed %d overlapping string literals (%d bytes) & created %d aliases',
-      num_removed, size_removed, num_aliases)
+    'Removed %d overlapping string literals (%d bytes) & created %d aliases',
+    num_removed,
+    size_removed,
+    num_aliases,
+  )
   return ret
 
 
@@ -350,8 +381,12 @@ def _AddNmAliases(raw_symbols, names_by_address):
         missing_names[s.full_name].append(s.address)
         # Sometimes happens for symbols from assembly files.
         if num_missing < 10:
-          logging.debug('Name missing from aliases: %s %s (addr=%x)',
-                        s.full_name, name_list, s.address)
+          logging.debug(
+            'Name missing from aliases: %s %s (addr=%x)',
+            s.full_name,
+            name_list,
+            s.address,
+          )
         continue
       replacements.append((i, name_list))
       num_new_symbols += len(name_list) - 1
@@ -360,15 +395,18 @@ def _AddNmAliases(raw_symbols, names_by_address):
     for address, names in names_by_address.items():
       for name in names:
         if name in missing_names:
-          logging.info('Missing name %s is at address %x instead of [%s]' %
-                       (name, address, ','.join('%x' % a
-                                                for a in missing_names[name])))
+          logging.info(
+            'Missing name %s is at address %x instead of [%s]'
+            % (name, address, ','.join('%x' % a for a in missing_names[name]))
+          )
 
   is_small_file = len(raw_symbols) < 1000
-  if not is_small_file and num_new_symbols / len(raw_symbols) < .05:
+  if not is_small_file and num_new_symbols / len(raw_symbols) < 0.05:
     logging.warning(
-        'Number of aliases is oddly low (%.0f%%). It should '
-        'usually be around 25%%.', num_new_symbols / len(raw_symbols) * 100)
+      'Number of aliases is oddly low (%.0f%%). It should '
+      'usually be around 25%%.',
+      num_new_symbols / len(raw_symbols) * 100,
+    )
 
   # Step 2: Create new symbols as siblings to each existing one.
   logging.debug('Creating %d new symbols from nm output', num_new_symbols)
@@ -386,10 +424,10 @@ def _AddNmAliases(raw_symbols, names_by_address):
       # CompactLargeAliasesIntoSharedSymbols(), which assumes aliases differ
       # only by path. The field will be set afterwards by _ConnectNmAliases().
       new_syms.append(
-          models.Symbol(sym.section_name,
-                        sym.size,
-                        address=sym.address,
-                        full_name=full_name))
+        models.Symbol(
+          sym.section_name, sym.size, address=sym.address, full_name=full_name
+        )
+      )
     ret += new_syms
   ret += raw_symbols[prev_src:]
   assert expected_num_symbols == len(ret)
@@ -404,7 +442,7 @@ def _ResolveThinArchivePaths(raw_symbols, thin_archives):
       start_idx = object_path.rindex('(')
       archive_path = object_path[:start_idx]
       if archive_path in thin_archives:
-        subpath = object_path[start_idx + 1:-1]
+        subpath = object_path[start_idx + 1 : -1]
         symbol.object_path = ar.CreateThinObjectPath(archive_path, subpath)
 
 
@@ -438,17 +476,23 @@ def _DeduceObjectPathForSwitchTables(raw_symbols, object_paths_by_name):
         assert s.object_path in object_paths, s.object_path
   if num_switch_tables > 0:
     logging.info(
-        'Found %d switch tables: Deduced %d object paths with ' +
-        '%d arbitrations. %d remain unassigned.', num_switch_tables,
-        num_deduced, num_arbitrations, num_unassigned)
+      'Found %d switch tables: Deduced %d object paths with '
+      + '%d arbitrations. %d remain unassigned.',
+      num_switch_tables,
+      num_deduced,
+      num_arbitrations,
+      num_unassigned,
+    )
 
 
 def _AnalyzeElf(native_spec, elf_info, outdir_context=None):
   """Adds ELF section ranges and symbols."""
   assert native_spec.map_path or native_spec.elf_path, (
-      'Need a linker map or an ELF file.')
+    'Need a linker map or an ELF file.'
+  )
   assert native_spec.map_path or not native_spec.track_string_literals, (
-      'track_string_literals not yet implemented without map file')
+    'track_string_literals not yet implemented without map file'
+  )
   if native_spec.elf_path:
     elf_section_ranges = elf_info.section_ranges
     # Run nm on the elf file to retrieve the list of symbol names per-address.
@@ -468,31 +512,35 @@ def _AnalyzeElf(native_spec, elf_info, outdir_context=None):
     # common ancestor of all paths.
     if outdir_context and native_spec.map_path:
       bulk_analyzer = obj_analyzer.BulkObjectFileAnalyzer(
-          outdir_context.output_directory,
-          track_string_literals=native_spec.track_string_literals)
+        outdir_context.output_directory,
+        track_string_literals=native_spec.track_string_literals,
+      )
       bulk_analyzer.AnalyzePaths(outdir_context.elf_object_paths)
 
   if native_spec.map_path:
     logging.info('Parsing Linker Map')
     map_section_ranges, raw_symbols, linker_map_extras = (
-        linker_map_parser.ParseFile(native_spec.map_path))
+      linker_map_parser.ParseFile(native_spec.map_path)
+    )
 
     if outdir_context and outdir_context.thin_archives:
       _ResolveThinArchivePaths(raw_symbols, outdir_context.thin_archives)
   else:
     map_section_ranges = None
     logging.info('Collecting symbols from nm')
-    raw_symbols = nm.CreateUniqueSymbols(native_spec.elf_path,
-                                         elf_section_ranges)
+    raw_symbols = nm.CreateUniqueSymbols(
+      native_spec.elf_path, elf_section_ranges
+    )
 
   def section_ranges_equivalent(section_name):
     # This should compare the whole range, but our test data has not been
     # updated to have the addresses match (only the sizes). A missing section on
     # either side is assumed to have zero size because LLD sometimes removes
     # empty sections (see crbug.com/476313144).
-    return (map_section_ranges.get(section_name,
-                                   (-1, 0))[1] == elf_section_ranges.get(
-                                       section_name, (-1, 0))[1])
+    return (
+      map_section_ranges.get(section_name, (-1, 0))[1]
+      == elf_section_ranges.get(section_name, (-1, 0))[1]
+    )
 
   if native_spec.elf_path and native_spec.map_path:
     logging.debug('Validating section sizes')
@@ -505,21 +553,27 @@ def _AnalyzeElf(native_spec, elf_info, outdir_context=None):
         differing_elf_section_ranges[k] = elf_section_ranges.get(k, (-1, -1))
         differing_map_section_ranges[k] = map_section_ranges.get(k, (-1, -1))
     if differing_map_section_ranges:
-      raise Exception('ELF file and .map file do not agree on section sizes.\n'
-                      f'readelf: {differing_elf_section_ranges}\n'
-                      f'.map file: {differing_map_section_ranges}\n')
+      raise Exception(
+        'ELF file and .map file do not agree on section sizes.\n'
+        f'readelf: {differing_elf_section_ranges}\n'
+        f'.map file: {differing_map_section_ranges}\n'
+      )
 
   if native_spec.elf_path and native_spec.map_path and outdir_context:
     missed_object_paths = _DiscoverMissedObjectPaths(
-        raw_symbols, outdir_context.known_inputs)
+      raw_symbols, outdir_context.known_inputs
+    )
     missed_object_paths = ar.ExpandThinArchives(
-        missed_object_paths, outdir_context.output_directory)[0]
+      missed_object_paths, outdir_context.output_directory
+    )[0]
     bulk_analyzer.AnalyzePaths(missed_object_paths)
     bulk_analyzer.SortPaths()
     if native_spec.track_string_literals:
       merge_string_syms = [
-          s for s in raw_symbols if s.full_name == '** merge strings'
-          or s.full_name == '** lld merge strings'
+        s
+        for s in raw_symbols
+        if s.full_name == '** merge strings'
+        or s.full_name == '** lld merge strings'
       ]
       # More likely for there to be a bug in supersize than an ELF to not have a
       # single string literal.
@@ -534,7 +588,8 @@ def _AnalyzeElf(native_spec, elf_info, outdir_context=None):
   object_paths_by_name = {}
   if native_spec.elf_path:
     logging.info(
-        'Adding symbols removed by identical code folding (as reported by nm)')
+      'Adding symbols removed by identical code folding (as reported by nm)'
+    )
     # This normally does not block (it's finished by this time).
     names_by_address = elf_nm_result.get()
     if native_spec.map_path:
@@ -547,14 +602,16 @@ def _AnalyzeElf(native_spec, elf_info, outdir_context=None):
     if native_spec.map_path and outdir_context:
       object_paths_by_name = bulk_analyzer.GetSymbolNames()
       logging.debug(
-          'Fetched path information for %d symbols from %d files',
-          len(object_paths_by_name),
-          len(outdir_context.elf_object_paths) + len(missed_object_paths))
+        'Fetched path information for %d symbols from %d files',
+        len(object_paths_by_name),
+        len(outdir_context.elf_object_paths) + len(missed_object_paths),
+      )
       _DeduceObjectPathForSwitchTables(raw_symbols, object_paths_by_name)
       # For aliases, this provides path information where there wasn't any.
       logging.info('Creating aliases for symbols shared by multiple paths')
       raw_symbols = _AssignNmAliasPathsAndCreatePathAliases(
-          raw_symbols, object_paths_by_name)
+        raw_symbols, object_paths_by_name
+      )
 
       if native_spec.track_string_literals:
         logging.info('Waiting for string literal extraction to complete.')
@@ -564,7 +621,8 @@ def _AnalyzeElf(native_spec, elf_info, outdir_context=None):
       if native_spec.track_string_literals:
         logging.info('Deconstructing ** merge strings into literals')
         replacements = _CreateMergeStringsReplacements(
-            merge_string_syms, list_of_positions_by_object_path)
+          merge_string_syms, list_of_positions_by_object_path
+        )
         for merge_sym, literal_syms in zip(merge_string_syms, replacements):
           # Don't replace if no literals were found.
           if literal_syms:
@@ -572,15 +630,17 @@ def _AnalyzeElf(native_spec, elf_info, outdir_context=None):
             idx = raw_symbols.index(merge_sym)
             # This assignment is a bit slow (causes array to be shifted), but
             # is fast enough since len(merge_string_syms) < 10.
-            raw_symbols[idx:idx + 1] = literal_syms
+            raw_symbols[idx : idx + 1] = literal_syms
 
   if native_spec.map_path:
-    raw_symbols = linker_map_parser.ProcessThinLtoPaths(raw_symbols,
-                                                        linker_map_extras)
+    raw_symbols = linker_map_parser.ProcessThinLtoPaths(
+      raw_symbols, linker_map_extras
+    )
 
   if native_spec.elf_path and native_spec.track_string_literals:
     sym_and_string_literals = string_extract.ReadStringLiterals(
-        raw_symbols, native_spec.elf_path)
+      raw_symbols, native_spec.elf_path
+    )
     for sym, data in sym_and_string_literals:
       sym.full_name = string_extract.GetNameOfStringLiteralBytes(data)
 
@@ -594,7 +654,8 @@ def _AddUnattributedSectionSymbols(raw_symbols, section_ranges, source_path):
   seen_sections = set()
 
   for section_name, group in itertools.groupby(
-      raw_symbols, lambda s: s.section_name):
+    raw_symbols, lambda s: s.section_name
+  ):
     seen_sections.add(section_name)
     # Get last Last symbol in group.
     sym = None  # Needed for pylint.
@@ -604,27 +665,37 @@ def _AddUnattributedSectionSymbols(raw_symbols, section_ranges, source_path):
     section_range = section_ranges.get(section_name)
     if not section_range:
       logging.warning(
-          'Found symbol(s) in invalid section %s\nSection ranges: %s', sym,
-          section_ranges)
+        'Found symbol(s) in invalid section %s\nSection ranges: %s',
+        sym,
+        section_ranges,
+      )
       continue
     size_from_syms = end_address - section_ranges[section_name][0]
     overhead = section_ranges[section_name][1] - size_from_syms
     assert overhead >= 0, (
-        'Last symbol (%s) ends %d bytes after section boundary (%x)' %
-        (sym, -overhead, sum(section_ranges[section_name])))
+      'Last symbol (%s) ends %d bytes after section boundary (%x)'
+      % (sym, -overhead, sum(section_ranges[section_name]))
+    )
     if overhead > 0 and section_name not in models.BSS_SECTIONS:
       new_syms_by_section[section_name].append(
-          models.Symbol(section_name,
-                        overhead,
-                        address=end_address,
-                        full_name='** {} (unattributed)'.format(section_name),
-                        source_path=source_path))
-      logging.info('Last symbol in %s does not reach end of section, gap=%d',
-                   section_name, overhead)
+        models.Symbol(
+          section_name,
+          overhead,
+          address=end_address,
+          full_name='** {} (unattributed)'.format(section_name),
+          source_path=source_path,
+        )
+      )
+      logging.info(
+        'Last symbol in %s does not reach end of section, gap=%d',
+        section_name,
+        overhead,
+      )
 
   # Sections that should not bundle into ".other".
   unsummed_sections, summed_sections = models.ClassifySections(
-      section_ranges.keys())
+    section_ranges.keys()
+  )
   ret = []
   other_symbols = []
   # Sort keys to ensure consistent order (> 1 sections may have address = 0).
@@ -632,28 +703,38 @@ def _AddUnattributedSectionSymbols(raw_symbols, section_ranges, source_path):
     if section_name in seen_sections:
       continue
     # Handle sections that don't appear in |raw_symbols|.
-    if (section_name not in unsummed_sections
-        and section_name not in summed_sections):
+    if (
+      section_name not in unsummed_sections
+      and section_name not in summed_sections
+    ):
       other_symbols.append(
-          models.Symbol(models.SECTION_OTHER,
-                        section_size,
-                        full_name='** ELF Section: {}'.format(section_name),
-                        source_path=source_path))
-      archive_util.ExtendSectionRange(section_ranges, models.SECTION_OTHER,
-                                      section_size)
+        models.Symbol(
+          models.SECTION_OTHER,
+          section_size,
+          full_name='** ELF Section: {}'.format(section_name),
+          source_path=source_path,
+        )
+      )
+      archive_util.ExtendSectionRange(
+        section_ranges, models.SECTION_OTHER, section_size
+      )
     else:
       ret.append(
-          models.Symbol(section_name,
-                        section_size,
-                        full_name='** ELF Section: {}'.format(section_name),
-                        source_path=source_path))
+        models.Symbol(
+          section_name,
+          section_size,
+          full_name='** ELF Section: {}'.format(section_name),
+          source_path=source_path,
+        )
+      )
   other_symbols.sort(key=lambda s: (s.address, s.full_name))
 
   # TODO(agrieve): It would probably simplify things to use a dict of
   #     section_name->raw_symbols while creating symbols.
   # Merge |new_syms_by_section| into |raw_symbols| while maintaining ordering.
   for section_name, group in itertools.groupby(
-      raw_symbols, lambda s: s.section_name):
+    raw_symbols, lambda s: s.section_name
+  ):
     if section_name not in section_ranges:
       # We log an warning about this above already.
       continue
@@ -664,16 +745,20 @@ def _AddUnattributedSectionSymbols(raw_symbols, section_ranges, source_path):
 
 def ParseNinjaFiles(output_directory, elf_paths_to_find_inputs_for=None):
   logging.info('Parsing ninja files')
-  ninja_source_mapper = ninja_parser.Parse(output_directory,
-                                           elf_paths_to_find_inputs_for)
-  logging.debug('Parsed %d .ninja files. Linker inputs=%d of %d',
-                ninja_source_mapper.parsed_file_count,
-                ninja_source_mapper.inputs_map_count,
-                len(elf_paths_to_find_inputs_for))
+  ninja_source_mapper = ninja_parser.Parse(
+    output_directory, elf_paths_to_find_inputs_for
+  )
+  logging.debug(
+    'Parsed %d .ninja files. Linker inputs=%d of %d',
+    ninja_source_mapper.parsed_file_count,
+    ninja_source_mapper.inputs_map_count,
+    len(elf_paths_to_find_inputs_for),
+  )
   if elf_paths_to_find_inputs_for:
     for path in elf_paths_to_find_inputs_for:
       assert ninja_source_mapper.GetInputsForBinary(path), (
-          'Failed to find any link commands in ninja files for ' + path)
+        'Failed to find any link commands in ninja files for ' + path
+      )
 
   return ninja_source_mapper
 
@@ -687,14 +772,16 @@ def _CountRelocationsFromElf(elf_path):
   args = [path_util.GetReadElfPath(), '-r', elf_path]
   stdout = subprocess.check_output(args).decode('ascii')
   relocations = re.findall(
-      r'Relocation section .* at offset .* contains (\d+) entries', stdout)
+    r'Relocation section .* at offset .* contains (\d+) entries', stdout
+  )
   return sum([int(i) for i in relocations])
 
 
 def _FindToolchainSubdirs(output_directory):
   return [
-      n for n in os.listdir(output_directory)
-      if os.path.exists(os.path.join(output_directory, n, 'toolchain.ninja'))
+    n
+    for n in os.listdir(output_directory)
+    if os.path.exists(os.path.join(output_directory, n, 'toolchain.ninja'))
   ]
 
 
@@ -713,24 +800,29 @@ def CreateMetadata(*, native_spec, elf_info, shorten_path):
 
   if native_spec.elf_path:
     native_metadata[models.METADATA_ELF_FILENAME] = shorten_path(
-        native_spec.elf_path)
+      native_spec.elf_path
+    )
     timestamp_obj = datetime.datetime.fromtimestamp(
-        os.path.getmtime(native_spec.elf_path), datetime.timezone.utc)
+      os.path.getmtime(native_spec.elf_path), datetime.timezone.utc
+    )
     timestamp = calendar.timegm(timestamp_obj.timetuple())
     native_metadata[models.METADATA_ELF_MTIME] = timestamp
 
   if native_spec.map_path:
     native_metadata[models.METADATA_MAP_FILENAME] = shorten_path(
-        native_spec.map_path)
+      native_spec.map_path
+    )
   return native_metadata
 
 
-def CreateSymbols(*,
-                  apk_spec,
-                  native_spec,
-                  output_directory=None,
-                  ninja_source_mapper=None,
-                  pak_id_map=None):
+def CreateSymbols(
+  *,
+  apk_spec,
+  native_spec,
+  output_directory=None,
+  ninja_source_mapper=None,
+  pak_id_map=None,
+):
   """Creates native symbols for the given native_spec.
 
   Args:
@@ -749,7 +841,8 @@ def CreateSymbols(*,
   if apk_spec and native_spec.apk_so_path:
     # Extraction takes around 1 second, so do it in parallel.
     apk_elf_info_result = parallel.ForkAndCall(
-        _ElfInfoFromApk, (apk_spec.apk_path, native_spec.apk_so_path))
+      _ElfInfoFromApk, (apk_spec.apk_path, native_spec.apk_so_path)
+    )
 
   raw_symbols = []
   dwarf_source_mapper = None
@@ -764,16 +857,20 @@ def CreateSymbols(*,
   elif native_spec.elf_path:
     logging.info('Parsing source path info via dwarfdump')
     dwarf_source_mapper = dwarfdump.CreateAddressSourceMapper(
-        native_spec.elf_path)
-    logging.info('Found %d source paths across %s ranges',
-                 dwarf_source_mapper.NumberOfPaths(),
-                 dwarf_source_mapper.num_ranges)
+      native_spec.elf_path
+    )
+    logging.info(
+      'Found %d source paths across %s ranges',
+      dwarf_source_mapper.NumberOfPaths(),
+      dwarf_source_mapper.num_ranges,
+    )
 
   # Start by finding elf_object_paths so that nm can run on them while the
   # linker .map is being parsed.
   if ninja_elf_object_paths:
     elf_object_paths, thin_archives = ar.ExpandThinArchives(
-        ninja_elf_object_paths, output_directory)
+      ninja_elf_object_paths, output_directory
+    )
     known_inputs = set(elf_object_paths)
     known_inputs.update(ninja_elf_object_paths)
   else:
@@ -783,17 +880,22 @@ def CreateSymbols(*,
     # TODO(agrieve): Seems to be used only for tests. Remove?
     if ninja_source_mapper and native_spec.map_path:
       thin_archives = set(
-          p for p in ninja_source_mapper.IterAllPaths() if p.endswith('.a')
-          and ar.IsThinArchive(os.path.join(output_directory, p)))
+        p
+        for p in ninja_source_mapper.IterAllPaths()
+        if p.endswith('.a')
+        and ar.IsThinArchive(os.path.join(output_directory, p))
+      )
     else:
       thin_archives = None
 
   if output_directory:
     toolchain_subdirs = _FindToolchainSubdirs(output_directory)
-    outdir_context = _OutputDirectoryContext(elf_object_paths=elf_object_paths,
-                                             known_inputs=known_inputs,
-                                             output_directory=output_directory,
-                                             thin_archives=thin_archives)
+    outdir_context = _OutputDirectoryContext(
+      elf_object_paths=elf_object_paths,
+      known_inputs=known_inputs,
+      output_directory=output_directory,
+      thin_archives=thin_archives,
+    )
   else:
     toolchain_subdirs = None
     outdir_context = None
@@ -805,27 +907,38 @@ def CreateSymbols(*,
     if native_spec.elf_path:
       expected_build_id = readelf.BuildIdFromElf(native_spec.elf_path)
       assert elf_info.build_id == expected_build_id, (
-          'BuildID of {} != $APK/{}: {} != {}'.format(native_spec.elf_path,
-                                                      native_spec.apk_so_path,
-                                                      expected_build_id,
-                                                      elf_info.build_id))
+        'BuildID of {} != $APK/{}: {} != {}'.format(
+          native_spec.elf_path,
+          native_spec.apk_so_path,
+          expected_build_id,
+          elf_info.build_id,
+        )
+      )
   elif native_spec.elf_path:
     # Strip ELF before capturing section information to avoid recording
     # debug sections (and .shstrtab gets smaller as well).
     with tempfile.NamedTemporaryFile(
-        suffix=os.path.basename(native_spec.elf_path)) as f:
+      suffix=os.path.basename(native_spec.elf_path)
+    ) as f:
       strip_path = path_util.GetStripPath()
-      subprocess.run([
-          strip_path, '--strip-debug', '--strip-unneeded', '-o', f.name,
-          native_spec.elf_path
-      ],
-                     check=True)
+      subprocess.run(
+        [
+          strip_path,
+          '--strip-debug',
+          '--strip-unneeded',
+          '-o',
+          f.name,
+          native_spec.elf_path,
+        ],
+        check=True,
+      )
       elf_info = _CreateElfInfo(f.name)
 
   object_paths_by_name = None
   if native_spec.elf_path or native_spec.map_path:
     section_ranges, raw_symbols, object_paths_by_name = _AnalyzeElf(
-        native_spec, elf_info, outdir_context=outdir_context)
+      native_spec, elf_info, outdir_context=outdir_context
+    )
     if pak_id_map and native_spec.map_path:
       # For trichrome, pak files are in different apks than native library,
       # so need to pass along pak_id_map separately and ensure
@@ -841,39 +954,51 @@ def CreateSymbols(*,
     if native_spec.elf_path:
       key = posixpath.basename(native_spec.elf_path)
       metrics_by_file[key] = {
-          f'{models.METRICS_SIZE}/{k}': size
-          for (k, (offset, size)) in section_ranges.items()
+        f'{models.METRICS_SIZE}/{k}': size
+        for (k, (offset, size)) in section_ranges.items()
       }
       relocations_count = _CountRelocationsFromElf(native_spec.elf_path)
       metrics_by_file[key][
-          f'{models.METRICS_COUNT}/{models.METRICS_COUNT_RELOCATIONS}'] = (
-              relocations_count)
+        f'{models.METRICS_COUNT}/{models.METRICS_COUNT_RELOCATIONS}'
+      ] = relocations_count
 
   source_path = ''
   if native_spec.apk_so_path:
     # Put section symbols under $NATIVE/libfoo.so (abi)/...
     source_path = '{}/{} ({})'.format(
-        models.NATIVE_PREFIX_PATH, posixpath.basename(native_spec.apk_so_path),
-        elf_info.architecture)
+      models.NATIVE_PREFIX_PATH,
+      posixpath.basename(native_spec.apk_so_path),
+      elf_info.architecture,
+    )
 
   if elf_info:
     elf_overhead_size = _ComputeUnattributedElfSize(elf_info, section_ranges)
 
   raw_symbols, other_symbols = _AddUnattributedSectionSymbols(
-      raw_symbols, section_ranges, source_path)
+    raw_symbols, section_ranges, source_path
+  )
 
   if elf_info:
-    elf_overhead_symbol = models.Symbol(models.SECTION_OTHER,
-                                        elf_overhead_size,
-                                        full_name='Overhead: ELF file',
-                                        source_path=source_path)
-    archive_util.ExtendSectionRange(section_ranges, models.SECTION_OTHER,
-                                    elf_overhead_size)
+    elf_overhead_symbol = models.Symbol(
+      models.SECTION_OTHER,
+      elf_overhead_size,
+      full_name='Overhead: ELF file',
+      source_path=source_path,
+    )
+    archive_util.ExtendSectionRange(
+      section_ranges, models.SECTION_OTHER, elf_overhead_size
+    )
     other_symbols.append(elf_overhead_symbol)
 
   # Always have .other come last.
-  other_symbols.sort(key=lambda s: (s.IsOverhead(), s.full_name.startswith(
-      '**'), s.address, s.full_name))
+  other_symbols.sort(
+    key=lambda s: (
+      s.IsOverhead(),
+      s.full_name.startswith('**'),
+      s.address,
+      s.full_name,
+    )
+  )
 
   if ninja_source_mapper:
     _AddSourcePathsUsingObjectPaths(ninja_source_mapper, raw_symbols)
@@ -884,14 +1009,17 @@ def CreateSymbols(*,
 
   # Path normalization must come before compacting aliases so that
   # ancestor paths do not mix generated and non-generated paths.
-  archive_util.NormalizePaths(raw_symbols,
-                              gen_dir_regex=native_spec.gen_dir_regex,
-                              toolchain_subdirs=toolchain_subdirs)
+  archive_util.NormalizePaths(
+    raw_symbols,
+    gen_dir_regex=native_spec.gen_dir_regex,
+    toolchain_subdirs=toolchain_subdirs,
+  )
 
   if native_spec.elf_path or native_spec.map_path:
     logging.info('Converting excessive aliases into shared-path symbols')
     archive_util.CompactLargeAliasesIntoSharedSymbols(
-        raw_symbols, _MAX_SAME_NAME_ALIAS_COUNT)
+      raw_symbols, _MAX_SAME_NAME_ALIAS_COUNT
+    )
 
     logging.debug('Connecting nm aliases')
     _ConnectNmAliases(raw_symbols)

@@ -20,11 +20,11 @@ _STATIC_FILES_DIR = _VIEWER_DIR / 'static'
 _FIREBASE_PROJECT = 'chrome-supersize'
 _PROD_URL = 'https://chrome-supersize.firebaseapp.com/'
 _WASM_FILES = [
-    'caspian_web.js',
-    'caspian_web.wasm',
+  'caspian_web.js',
+  'caspian_web.wasm',
 ]
 _DEBUG_WASM_FILES = [
-    'caspian_web.wasm.debug.wasm',
+  'caspian_web.wasm.debug.wasm',
 ]
 
 _PROD = 'prod'
@@ -41,8 +41,10 @@ def _CheckFirebaseCLI():
   """Fail with a proper error message, if Firebase CLI is not installed."""
   if subprocess.call(['firebase', '--version'], stdout=subprocess.DEVNULL) != 0:
     link = 'https://firebase.google.com/docs/cli#install_the_firebase_cli'
-    raise Exception('Firebase CLI not installed or not on your PATH. Follow '
-                    'the instructions at ' + link + ' to install')
+    raise Exception(
+      'Firebase CLI not installed or not on your PATH. Follow '
+      'the instructions at ' + link + ' to install'
+    )
 
 
 def _FirebaseInitProjectDir(project_dir):
@@ -60,10 +62,10 @@ def _FirebaseInitProjectDir(project_dir):
     ],
     "headers": [
       {
-        "source": "/sw.js",
+    "source": "/sw.js",
         "headers": [
           {
-            "key": "Cache-Control",
+      "key": "Cache-Control",
             "value": "no-cache, no-store, must-revalidate"
           }
         ]
@@ -78,20 +80,33 @@ def _FirebaseInitProjectDir(project_dir):
 def _FirebaseDeploy(project_dir, deploy_mode=_PROD):
   """Deploy the project to firebase hosting."""
   if deploy_mode == _DEV:
-    subprocess.check_call([
-        'firebase', '-P', _FIREBASE_PROJECT, 'emulators:start', '--only',
-        'hosting'
-    ],
-                          cwd=project_dir)
+    subprocess.check_call(
+      [
+        'firebase',
+        '-P',
+        _FIREBASE_PROJECT,
+        'emulators:start',
+        '--only',
+        'hosting',
+      ],
+      cwd=project_dir,
+    )
   elif deploy_mode == _STAGING:
     print('Note: deploying to staging requires firebase cli >= 8.12.0')
-    subprocess.check_call([
-        'firebase', '-P', _FIREBASE_PROJECT, 'hosting:channel:deploy', 'staging'
-    ],
-                          cwd=project_dir)
+    subprocess.check_call(
+      [
+        'firebase',
+        '-P',
+        _FIREBASE_PROJECT,
+        'hosting:channel:deploy',
+        'staging',
+      ],
+      cwd=project_dir,
+    )
   else:
-    subprocess.check_call(['firebase', 'deploy', '-P', _FIREBASE_PROJECT],
-                          cwd=project_dir)
+    subprocess.check_call(
+      ['firebase', 'deploy', '-P', _FIREBASE_PROJECT], cwd=project_dir
+    )
 
 
 def _MaybeDownloadWasmFiles(force_download):
@@ -114,8 +129,9 @@ def _FillInAndCopyTemplates(project_static_dir):
   src_path = _VIEWER_DIR / 'templates' / 'sw.js'
   dst_path = project_static_dir / 'sw.js'
   cache_hash = uuid.uuid4().hex
-  dst_path.write_text(src_path.read_text().replace('{{cache_hash}}',
-                                                   cache_hash))
+  dst_path.write_text(
+    src_path.read_text().replace('{{cache_hash}}', cache_hash)
+  )
 
 
 def _CopyStaticFiles(project_static_dir, *, include_debug_wasm):
@@ -135,30 +151,38 @@ def _Prompt(message):
 def main():
   parser = argparse.ArgumentParser()
   deployment_mode_group = parser.add_mutually_exclusive_group(required=True)
-  deployment_mode_group.add_argument('--local',
-                                     action='store_const',
-                                     dest='deploy_mode',
-                                     const=_DEV,
-                                     help='Deploy a locally hosted server.')
   deployment_mode_group.add_argument(
-      '--staging',
-      action='store_const',
-      dest='deploy_mode',
-      const=_STAGING,
-      help='Deploy to staging channel (does not support authenticated '
-      'requests).')
-  deployment_mode_group.add_argument('--prod',
-                                     action='store_const',
-                                     dest='deploy_mode',
-                                     const=_PROD,
-                                     help='Deploy to prod.')
-  parser.add_argument('--download-wasm',
-                      action='store_true',
-                      help='Update local copy of WASM files.')
+    '--local',
+    action='store_const',
+    dest='deploy_mode',
+    const=_DEV,
+    help='Deploy a locally hosted server.',
+  )
+  deployment_mode_group.add_argument(
+    '--staging',
+    action='store_const',
+    dest='deploy_mode',
+    const=_STAGING,
+    help='Deploy to staging channel (does not support authenticated requests).',
+  )
+  deployment_mode_group.add_argument(
+    '--prod',
+    action='store_const',
+    dest='deploy_mode',
+    const=_PROD,
+    help='Deploy to prod.',
+  )
+  parser.add_argument(
+    '--download-wasm',
+    action='store_true',
+    help='Update local copy of WASM files.',
+  )
   options = parser.parse_args()
 
-  message = (f'This script deploys the viewer to {_PROD_URL}.\n'
-             'Are you sure you want to continue?')
+  message = (
+    f'This script deploys the viewer to {_PROD_URL}.\n'
+    'Are you sure you want to continue?'
+  )
 
   if options.deploy_mode != _PROD or _Prompt(message):
     _CheckFirebaseCLI()
@@ -168,8 +192,9 @@ def main():
       project_dir = pathlib.Path(project_dir)
       _MaybeDownloadWasmFiles(options.download_wasm)
       project_static_dir = _FirebaseInitProjectDir(project_dir)
-      _CopyStaticFiles(project_static_dir,
-                       include_debug_wasm=options.deploy_mode == _DEV)
+      _CopyStaticFiles(
+        project_static_dir, include_debug_wasm=options.deploy_mode == _DEV
+      )
       _FillInAndCopyTemplates(project_static_dir)
       _FirebaseDeploy(project_dir, deploy_mode=options.deploy_mode)
   else:

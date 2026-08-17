@@ -67,11 +67,15 @@ _DEFAULT_USER_DATA_DIR = os.path.join(_HOME_DIR, 'data/userdir')
 _DEFAULT_LOG_DATA_DIR = os.path.join(_HOME_DIR, 'data/local_test_results')
 
 # Long text chunks that will be used in command constructions.
-_EXTRA_BROWSER_AUTOFILL = ('autofill_download_manager=1,form_cache=1,'
-                           'autofill_agent=1,autofill_handler=1,'
-                           'form_structure=1,cache_replayer=2')
-_WPR_INJECT_SCRIPTS = ('--inject_scripts=chrome/test/data/web_page_replay_go_h'
-                       'elper_scripts/automation_helper.js')
+_EXTRA_BROWSER_AUTOFILL = (
+  'autofill_download_manager=1,form_cache=1,'
+  'autofill_agent=1,autofill_handler=1,'
+  'form_structure=1,cache_replayer=2'
+)
+_WPR_INJECT_SCRIPTS = (
+  '--inject_scripts=chrome/test/data/web_page_replay_go_h'
+  'elper_scripts/automation_helper.js'
+)
 _NORMAL_BROWSER_AUTOFILL = 'cache_replayer=1'
 _RUN_BACKGROUND = 'testing/xvfb.py'
 _RUN_DISABLED_TESTS = '--gtest_also_run_disabled_tests'
@@ -86,49 +90,57 @@ _PASSWORD_MANAGER_REFRESH = '*/CapturedSitesPasswordManagerRefresh'
 _VMODULE_AUTOFILL_FILE = 'autofill_captured_sites_interactive_uitest'
 _VMODULE_PASSWORD_FILE = 'password_manager_captured_sites_interactive_uitest'
 
-_WPR_SUPPORT_FILES_PATH = ('components/test/data/autofill/'
-                           'web_page_replay_support_files')
+_WPR_SUPPORT_FILES_PATH = (
+  'components/test/data/autofill/web_page_replay_support_files'
+)
 
 _STABLE_GOOGLE_CHROME = '/usr/bin/google-chrome'
 _RELEASE_BUILD_CHROME = 'out/Release/chrome'
 
-_HOOK_CHROME_TO_WPR = ('--host-resolver-rules="MAP *:80 127.0.0.1:8080,'
-                       'MAP *:443 127.0.0.1:8081,EXCLUDE localhost"')
+_HOOK_CHROME_TO_WPR = (
+  '--host-resolver-rules="MAP *:80 127.0.0.1:8080,'
+  'MAP *:443 127.0.0.1:8081,EXCLUDE localhost"'
+)
 
 _AUTOFILL_CACHE_TYPE_LOOKUP = {
-    'SavedCache': 'SavedCache',
-    'ProductionServer': 'ProductionServer',
-    'OnlyLocalHeuristics': 'OnlyLocalHeuristics',
-    'c': 'SavedCache',
-    'p': 'ProductionServer',
-    'n': 'OnlyLocalHeuristics'
+  'SavedCache': 'SavedCache',
+  'ProductionServer': 'ProductionServer',
+  'OnlyLocalHeuristics': 'OnlyLocalHeuristics',
+  'c': 'SavedCache',
+  'p': 'ProductionServer',
+  'n': 'OnlyLocalHeuristics',
 }
 
 WprInfo = namedtuple('WprInfo', ['cert', 'key', 'hash'])
 _WPR_CERT_LOOKUP = {
-    'ecdsa':
-    WprInfo('ecdsa_cert.pem', 'ecdsa_key.pem',
-            '2HcXCSKKJS0lEXLQEWhpHUfGuojiU0tiT5gOF9LP6IQ='),
-    'rsa':
-    WprInfo('wpr_cert.pem', 'wpr_key.pem',
-            'PoNnQAwghMiLUPg1YNFtvTfGreNT8r9oeLEyzgNCJWc='),
+  'ecdsa': WprInfo(
+    'ecdsa_cert.pem',
+    'ecdsa_key.pem',
+    '2HcXCSKKJS0lEXLQEWhpHUfGuojiU0tiT5gOF9LP6IQ=',
+  ),
+  'rsa': WprInfo(
+    'wpr_cert.pem',
+    'wpr_key.pem',
+    'PoNnQAwghMiLUPg1YNFtvTfGreNT8r9oeLEyzgNCJWc=',
+  ),
 }
 
 
 def available_commands():
   commands = {
-      'build': BuildCommand,
-      'chrome': ChromeCommand,
-      'refresh': RefreshCommand,
-      'run': RunCommand,
-      'wpr': WprCommand,
+    'build': BuildCommand,
+    'chrome': ChromeCommand,
+    'refresh': RefreshCommand,
+    'run': RunCommand,
+    'wpr': WprCommand,
   }
   return commands
 
 
 def parse_command():
   parser = argparse.ArgumentParser(
-      formatter_class=argparse.RawTextHelpFormatter)
+    formatter_class=argparse.RawTextHelpFormatter
+  )
   parser.usage = __doc__
   parser.add_argument('name', choices=available_commands().keys())
   parser.add_argument('args', nargs=argparse.REMAINDER)
@@ -148,8 +160,7 @@ def initiate_and_build_command():
   return instance
 
 
-class Command():
-
+class Command:
   def __init__(self, description, local_environ):
     self.description = description
     self.setup_environ(local_environ)
@@ -159,7 +170,8 @@ class Command():
 
     if 'CAPTURED_SITES_USER_DATA_DIR' in self.local_environ:
       self.user_data_dir_path = self.local_environ[
-          'CAPTURED_SITES_USER_DATA_DIR']
+        'CAPTURED_SITES_USER_DATA_DIR'
+      ]
     else:
       self.user_data_dir_path = _DEFAULT_USER_DATA_DIR
 
@@ -206,45 +218,60 @@ class Command():
     command_text = ' '.join(args)
 
     if not os.path.exists(args[0]):
-      raise EnvironmentError('Cannot locate binary to execute. '
-                             'Ensure that working directory is chromium/src')
+      raise EnvironmentError(
+        'Cannot locate binary to execute. '
+        'Ensure that working directory is chromium/src'
+      )
     subprocess.call(command_text, shell=True)
 
   def add_args(self, parser):
     parser.add_argument(
-        '-p',
-        '--print-only',
-        dest='print_only',
-        action='store_true',
-        help='Build the command and print it but do not execute.')
+      '-p',
+      '--print-only',
+      dest='print_only',
+      action='store_true',
+      help='Build the command and print it but do not execute.',
+    )
 
   def add_cert_args(self, parser):
     parser.add_argument(
-        '-c',
-        '--cert-type',
-        dest='cert_type',
-        action='store',
-        default='all',
-        choices=['ecdsa', 'rsa', 'all'],
-        help='Define tls certificate type for the session. Defaults to `all`.')
+      '-c',
+      '--cert-type',
+      dest='cert_type',
+      action='store',
+      default='all',
+      choices=['ecdsa', 'rsa', 'all'],
+      help='Define tls certificate type for the session. Defaults to `all`.',
+    )
 
   def add_scenario_site_args(self, parser):
     parser.add_argument(
-        'scenario_dir',
-        nargs='?',
-        default='',
-        choices=[
-            'sign_in_pass', 'sign_up_pass', 'sign_up_fill',
-            'capture_update_pass', '*', '', 'automated_password_change'
-        ],
-        help=('Only for password tests to designate the specific '
-              'test scenario. Use * to indicate all password test'
-              ' scenarios.'))
+      'scenario_dir',
+      nargs='?',
+      default='',
+      choices=[
+        'sign_in_pass',
+        'sign_up_pass',
+        'sign_up_fill',
+        'capture_update_pass',
+        '*',
+        '',
+        'automated_password_change',
+      ],
+      help=(
+        'Only for password tests to designate the specific '
+        'test scenario. Use * to indicate all password test'
+        ' scenarios.'
+      ),
+    )
     parser.add_argument(
-        'site_name',
-        help=('The site name which should have a match in '
-              'testcases.json. Use * to indicate all enumerated '
-              'sites in that file.'))
+      'site_name',
+      help=(
+        'The site name which should have a match in '
+        'testcases.json. Use * to indicate all enumerated '
+        'sites in that file.'
+      ),
+    )
 
   def retrieve_cert_info(self, cert_type):
     cert_paths = []
@@ -258,20 +285,22 @@ class Command():
     cert_arg = '--https_cert_file=' + ','.join(cert_paths)
     key_arg = '--https_key_file=' + ','.join(key_paths)
     ignore_cert_list_arg = '--ignore-certificate-errors-spki-list=' + ','.join(
-        hashes)
+      hashes
+    )
     return cert_arg, key_arg, ignore_cert_list_arg
 
 
 class BuildCommand(Command):
-
   def __init__(self, local_environ):
     super().__init__('Build the test target.', local_environ)
 
   def build(self, args):
     super().build(args)
     self.command_args = [
-        'autoninja', '-C', 'out/' + self.options.binary_folder,
-        'captured_sites_interactive_tests'
+      'autoninja',
+      '-C',
+      'out/' + self.options.binary_folder,
+      'captured_sites_interactive_tests',
     ]
 
   def make_process_call(self, args):
@@ -281,21 +310,21 @@ class BuildCommand(Command):
   def add_args(self, parser):
     super().add_args(parser)
     parser.add_argument(
-        '-r',
-        '--release',
-        dest='binary_folder',
-        default='Default',
-        const='Release',
-        help=
-        'Start a build of captured_sites_interactive_tests in Release folder.',
-        action='store_const')
+      '-r',
+      '--release',
+      dest='binary_folder',
+      default='Default',
+      const='Release',
+      help='Start a build of captured_sites_interactive_tests in Release folder.',
+      action='store_const',
+    )
 
 
 class ChromeCommand(Command):
-
   def __init__(self, local_environ):
-    super().__init__('Start a Chrome instance with autofill hooks.',
-                     local_environ)
+    super().__init__(
+      'Start a Chrome instance with autofill hooks.', local_environ
+    )
 
   def build(self, args):
     super().build(args)
@@ -305,19 +334,25 @@ class ChromeCommand(Command):
     self.command_args = [self.options.build_target, ignore_cert_list_arg]
 
     if not os.path.isdir(self.user_data_dir_path):
-      print('Required CAPTURED_SITES_USER_DATA_DIR "%s" cannot be found' %
-            self.user_data_dir_path)
+      print(
+        'Required CAPTURED_SITES_USER_DATA_DIR "%s" cannot be found'
+        % self.user_data_dir_path
+      )
       raise ValueError(
-          'Must set environment variable $CAPTURED_SITES_USER_DATA_D'
-          'IR or ensure default _DEFAULT_USER_DATA_DIR exists')
+        'Must set environment variable $CAPTURED_SITES_USER_DATA_D'
+        'IR or ensure default _DEFAULT_USER_DATA_DIR exists'
+      )
     else:
       self.command_args.append('--user-data-dir="%s"' % self.user_data_dir_path)
 
-    self.command_args.extend([
-        '--disable-application-cache', '--show-autofill-signatures',
+    self.command_args.extend(
+      [
+        '--disable-application-cache',
+        '--show-autofill-signatures',
         '--enable-features=AutofillShowTypePredictions',
-        '--disable-features=AutofillCacheQueryResponses'
-    ])
+        '--disable-features=AutofillCacheQueryResponses',
+      ]
+    )
 
     if self.options.wpr_selection:
       self.command_args.append(_HOOK_CHROME_TO_WPR)
@@ -329,23 +364,29 @@ class ChromeCommand(Command):
 
   def add_args(self, parser):
     super().add_args(parser)
-    parser.add_argument('-r',
-                        '--release',
-                        dest='build_target',
-                        default=_STABLE_GOOGLE_CHROME,
-                        const=_RELEASE_BUILD_CHROME,
-                        help='Start Release build of chrome.',
-                        action='store_const')
-    parser.add_argument('-w',
-                        '--wpr',
-                        dest='wpr_selection',
-                        action='store_true',
-                        help='Point chrome instance at wpr service.')
-    parser.add_argument('-u',
-                        '--url',
-                        dest='start_url',
-                        action='store',
-                        help='Grab starting URL from test recipe.')
+    parser.add_argument(
+      '-r',
+      '--release',
+      dest='build_target',
+      default=_STABLE_GOOGLE_CHROME,
+      const=_RELEASE_BUILD_CHROME,
+      help='Start Release build of chrome.',
+      action='store_const',
+    )
+    parser.add_argument(
+      '-w',
+      '--wpr',
+      dest='wpr_selection',
+      action='store_true',
+      help='Point chrome instance at wpr service.',
+    )
+    parser.add_argument(
+      '-u',
+      '--url',
+      dest='start_url',
+      action='store',
+      help='Grab starting URL from test recipe.',
+    )
     self.add_cert_args(parser)
 
   def _print_starting_url(self, url):
@@ -371,17 +412,23 @@ class ChromeCommand(Command):
 
 
 class TestCommand(Command):
-
-  def __init__(self, description, gtest_filter_autofill, gtest_filter_password,
-               local_environ):
+  def __init__(
+    self,
+    description,
+    gtest_filter_autofill,
+    gtest_filter_password,
+    local_environ,
+  ):
     super().__init__(description, local_environ)
     self.gtest_filter_autofill = gtest_filter_autofill
     self.gtest_filter_password = gtest_filter_password
 
   def extract_parameter(self):
     if self.options.scenario_dir != '':
-      self.gtest_parameter = '%s_%s' % (self.options.scenario_dir,
-                                        self.options.site_name)
+      self.gtest_parameter = '%s_%s' % (
+        self.options.scenario_dir,
+        self.options.site_name,
+      )
       self.vmodule_name = _VMODULE_PASSWORD_FILE
       self.gtest_filter = self.gtest_filter_password
     else:
@@ -395,22 +442,26 @@ class TestCommand(Command):
     self.extract_parameter()
 
     self.command_args = [
-        'out/%s/captured_sites_interactive_tests' % self.options.target,
-        '--gtest_filter="%s.Recipe/%s"' %
-        (self.gtest_filter, self.gtest_parameter),
-        '--enable-pixel-output-in-tests',
+      'out/%s/captured_sites_interactive_tests' % self.options.target,
+      '--gtest_filter="%s.Recipe/%s"'
+      % (self.gtest_filter, self.gtest_parameter),
+      '--enable-pixel-output-in-tests',
     ]
 
     if self.options.use_bot_timeout:
-      self.command_args.extend([
+      self.command_args.extend(
+        [
           '--ui-test-action-max-timeout=180000',
-          '--test-launcher-timeout=180000'
-      ])
+          '--test-launcher-timeout=180000',
+        ]
+      )
     else:
       self.command_args.append('--test-launcher-interactive')
 
-    self.command_args.append('--vmodule=captured_sites_test_utils=2,%s,%s=1' %
-                             (self.options.verbose_logging, self.vmodule_name))
+    self.command_args.append(
+      '--vmodule=captured_sites_test_utils=2,%s,%s=1'
+      % (self.options.verbose_logging, self.vmodule_name)
+    )
 
     if self.options.background:
       self.command_args.insert(0, _RUN_BACKGROUND)
@@ -425,133 +476,176 @@ class TestCommand(Command):
       self.command_args.append('--wpr_verbose')
 
     if self.options.retry_count > 0:
-      self.command_args.append('--test-launcher-retry-limit=%d' %
-                               self.options.retry_count)
+      self.command_args.append(
+        '--test-launcher-retry-limit=%d' % self.options.retry_count
+      )
 
     if self.options.autofill_cache_type:
       full_cache_type = _AUTOFILL_CACHE_TYPE_LOOKUP[
-          self.options.autofill_cache_type]
+        self.options.autofill_cache_type
+      ]
       self.command_args.append('--autofill-server-type=%s ' % full_cache_type)
 
     if self.options.command_file:
-      self.command_args.append('--command_file=%s' %
-                               os.path.expanduser(self.options.command_file))
+      self.command_args.append(
+        '--command_file=%s' % os.path.expanduser(self.options.command_file)
+      )
 
     if self.options.store_log:
       if not os.path.isdir(self.log_data_dir_path):
-        print('Required CAPTURED_SITES_LOG_DATA_DIR "%s" cannot be found' %
-              self.log_data_dir_path)
-        raise ValueError('Must set environment variable '
-                         '$CAPTURED_SITES_LOG_DATA_DIR or ensure default '
-                         '_DEFAULT_LOG_DATA_DIR exists')
+        print(
+          'Required CAPTURED_SITES_LOG_DATA_DIR "%s" cannot be found'
+          % self.log_data_dir_path
+        )
+        raise ValueError(
+          'Must set environment variable '
+          '$CAPTURED_SITES_LOG_DATA_DIR or ensure default '
+          '_DEFAULT_LOG_DATA_DIR exists'
+        )
       logging_scenario_site_param = self.gtest_parameter.replace('*', 'all')
       self.command_args.append(
-          '--test-launcher-summary-output={}/{}_output.json'.format(
-              self.log_data_dir_path, logging_scenario_site_param))
+        '--test-launcher-summary-output={}/{}_output.json'.format(
+          self.log_data_dir_path, logging_scenario_site_param
+        )
+      )
       self.command_args.extend(self.additional_args)
       self.additional_args = []
-      self.command_args.append('2>&1 | tee {}/{}_capture.log'.format(
-          self.log_data_dir_path, logging_scenario_site_param))
+      self.command_args.append(
+        '2>&1 | tee {}/{}_capture.log'.format(
+          self.log_data_dir_path, logging_scenario_site_param
+        )
+      )
 
   def add_args(self, parser):
     super().add_args(parser)
-    parser.add_argument('-r',
-                        '--release',
-                        dest='target',
-                        action='store_const',
-                        default='Default',
-                        const='Release',
-                        help='Run tests on Release build of chrome.')
     parser.add_argument(
-        '-s',
-        '--store-log',
-        dest='store_log',
-        action='store_true',
-        help=f'Store the log and output in {self.log_data_dir_path}.')
-    parser.add_argument('-b',
-                        '--background',
-                        dest='background',
-                        action='store_true',
-                        help='Run the test in background with xvfb.py.')
-    parser.add_argument('-d',
-                        '--disabled',
-                        dest='add_disabled',
-                        action='store_true',
-                        help='Also run disabled tests that match the filter.')
+      '-r',
+      '--release',
+      dest='target',
+      action='store_const',
+      default='Default',
+      const='Release',
+      help='Run tests on Release build of chrome.',
+    )
     parser.add_argument(
-        '-u',
-        '--use_bot_timeout',
-        dest='use_bot_timeout',
-        action='store_true',
-        help=('Use the same timeout settings as exists on the bot (3 minutes) '
-              'instead of the `test-launcher-interactive` setting. This is '
-              'particularly useful when bisecting.'))
-    parser.add_argument('-f',
-                        '--break_on_failure',
-                        dest='add_break_on_failure',
-                        action='store_true',
-                        help=('Run tests in single-process mode and brings the '
-                              'debugger on an assertion failure.'))
-    parser.add_argument('-v',
-                        '--verbose',
-                        dest='verbose_logging',
-                        action='store_const',
-                        default=_NORMAL_BROWSER_AUTOFILL,
-                        const=_EXTRA_BROWSER_AUTOFILL,
-                        help='Log verbose Autofill Server information.')
-    parser.add_argument('-t',
-                        '--test-retry',
-                        dest='retry_count',
-                        action='store',
-                        default=0,
-                        type=int,
-                        help='How many times to retry failed tests.')
-    parser.add_argument('-a',
-                        '--autofill-cache-type',
-                        dest='autofill_cache_type',
-                        choices=_AUTOFILL_CACHE_TYPE_LOOKUP.keys(),
-                        action='store',
-                        help='Control the autofill cache behavior.')
-    parser.add_argument('-q',
-                        '--command_file',
-                        dest='command_file',
-                        action='store',
-                        default='',
-                        type=str,
-                        help='Location of "pipe: file')
-    parser.add_argument('-w',
-                        '--wpr_verbose',
-                        dest='wpr_verbose',
-                        action='store_true',
-                        help='Also include verbose WPR output.')
+      '-s',
+      '--store-log',
+      dest='store_log',
+      action='store_true',
+      help=f'Store the log and output in {self.log_data_dir_path}.',
+    )
+    parser.add_argument(
+      '-b',
+      '--background',
+      dest='background',
+      action='store_true',
+      help='Run the test in background with xvfb.py.',
+    )
+    parser.add_argument(
+      '-d',
+      '--disabled',
+      dest='add_disabled',
+      action='store_true',
+      help='Also run disabled tests that match the filter.',
+    )
+    parser.add_argument(
+      '-u',
+      '--use_bot_timeout',
+      dest='use_bot_timeout',
+      action='store_true',
+      help=(
+        'Use the same timeout settings as exists on the bot (3 minutes) '
+        'instead of the `test-launcher-interactive` setting. This is '
+        'particularly useful when bisecting.'
+      ),
+    )
+    parser.add_argument(
+      '-f',
+      '--break_on_failure',
+      dest='add_break_on_failure',
+      action='store_true',
+      help=(
+        'Run tests in single-process mode and brings the '
+        'debugger on an assertion failure.'
+      ),
+    )
+    parser.add_argument(
+      '-v',
+      '--verbose',
+      dest='verbose_logging',
+      action='store_const',
+      default=_NORMAL_BROWSER_AUTOFILL,
+      const=_EXTRA_BROWSER_AUTOFILL,
+      help='Log verbose Autofill Server information.',
+    )
+    parser.add_argument(
+      '-t',
+      '--test-retry',
+      dest='retry_count',
+      action='store',
+      default=0,
+      type=int,
+      help='How many times to retry failed tests.',
+    )
+    parser.add_argument(
+      '-a',
+      '--autofill-cache-type',
+      dest='autofill_cache_type',
+      choices=_AUTOFILL_CACHE_TYPE_LOOKUP.keys(),
+      action='store',
+      help='Control the autofill cache behavior.',
+    )
+    parser.add_argument(
+      '-q',
+      '--command_file',
+      dest='command_file',
+      action='store',
+      default='',
+      type=str,
+      help='Location of "pipe: file',
+    )
+    parser.add_argument(
+      '-w',
+      '--wpr_verbose',
+      dest='wpr_verbose',
+      action='store_true',
+      help='Also include verbose WPR output.',
+    )
     self.add_scenario_site_args(parser)
 
 
 class RefreshCommand(TestCommand):
-
   def __init__(self, local_environ):
     super().__init__(
-        'Refresh the Server Predictions of an autofill or password test.',
-        _AUTOFILL_REFRESH, _PASSWORD_MANAGER_REFRESH, local_environ)
+      'Refresh the Server Predictions of an autofill or password test.',
+      _AUTOFILL_REFRESH,
+      _PASSWORD_MANAGER_REFRESH,
+      local_environ,
+    )
 
 
 class RunCommand(TestCommand):
-
   def __init__(self, local_environ):
-    super().__init__('Start an autofill or password test run.', _AUTOFILL_TEST,
-                     _PASSWORD_MANAGER_TEST, local_environ)
+    super().__init__(
+      'Start an autofill or password test run.',
+      _AUTOFILL_TEST,
+      _PASSWORD_MANAGER_TEST,
+      local_environ,
+    )
 
 
 class WprCommand(Command):
-
   def __init__(self, local_environ):
     super().__init__('Start WPR to replay or record.', local_environ)
 
   def build(self, args):
     super().build(args)
     self.command_args = [
-        sys.executable, 'third_party/webpagereplay/scripts/run_wpr.py',
-        self.options.subhead, '--http_port=8080', '--https_port=8081'
+      sys.executable,
+      'third_party/webpagereplay/scripts/run_wpr.py',
+      self.options.subhead,
+      '--http_port=8080',
+      '--https_port=8081',
     ]
 
     self.command_args.append(_WPR_INJECT_SCRIPTS)
@@ -570,15 +664,21 @@ class WprCommand(Command):
     if self.options.scenario_dir == '':
       wpr_path = f'{_AUTOFILL_ARTIFACTS_PATH}/{self.options.site_name}.wpr'
     else:
-      wpr_path = f'{_PASSWORD_ARTIFACTS_PATH}/'\
-               + f'{self.options.scenario_dir}/{self.options.site_name}.wpr'
+      wpr_path = (
+        f'{_PASSWORD_ARTIFACTS_PATH}/'
+        + f'{self.options.scenario_dir}/{self.options.site_name}.wpr'
+      )
     self.command_args.append(wpr_path)
 
   def add_args(self, parser):
-    parser.add_argument('subhead',
-                        choices=['record', 'replay'],
-                        help=('Whether to record new traffic to an archive, '
-                              'or replay from an existing archive.'))
+    parser.add_argument(
+      'subhead',
+      choices=['record', 'replay'],
+      help=(
+        'Whether to record new traffic to an archive, '
+        'or replay from an existing archive.'
+      ),
+    )
     self.add_cert_args(parser)
     self.add_scenario_site_args(parser)
     super().add_args(parser)

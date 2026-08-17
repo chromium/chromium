@@ -50,8 +50,9 @@ _IGNORED_CLASSES_RE = [
 ]
 
 
-def gen_build_target_graph(out_dir: pathlib.Path, include_testonly: bool,
-                           no_cache: bool):
+def gen_build_target_graph(
+    out_dir: pathlib.Path, include_testonly: bool, no_cache: bool
+):
     project_json = out_dir / 'project.json'
     if not project_json.exists() or no_cache:
         subprocess.run(['gn', 'gen', '--ide=json', str(out_dir)])
@@ -94,49 +95,60 @@ def main():
         '--all',
         action='store_true',
         help='Show all targets, by default only those with all deps annotated '
-        'are shown.')
+        'are shown.',
+    )
     parser.add_argument(
         '--no-cache',
         action='store_true',
         help='Skip the /tmp caches and regenerate project.json, useful when '
-        'the list files changes.')
+        'the list files changes.',
+    )
     parser.add_argument(
         '-C',
         '--out-dir',
         default='out/Debug',
         type=pathlib.Path,
         help='Used to generate project.json in the outdir and use it for the '
-        'target graph. Defaults to out/Debug.')
-    parser.add_argument('--csv',
-                        type=pathlib.Path,
-                        help='Also output a .csv file for further processing')
+        'target graph. Defaults to out/Debug.',
+    )
+    parser.add_argument(
+        '--csv',
+        type=pathlib.Path,
+        help='Also output a .csv file for further processing',
+    )
     parser.add_argument(
         '-v',
         '--verbose',
         action='count',
         default=0,
         help='1 to print deps/dependent count, 2 to print each unmarked class, '
-        '3 to print lists of deps, and 4 to print lists of dependents.')
+        '3 to print lists of deps, and 4 to print lists of dependents.',
+    )
     parser.add_argument(
         '--include-testonly',
         action='store_true',
-        help='Include testonly targets, otherwise excluded by default.')
+        help='Include testonly targets, otherwise excluded by default.',
+    )
     args = parser.parse_args()
     gsutil_cmd = [
-        'gsutil.py', 'cp', 'gs://clank-dependency-graphs/latest/all.json',
-        _DEPENDENCY_JSON_PATH
+        'gsutil.py',
+        'cp',
+        'gs://clank-dependency-graphs/latest/all.json',
+        _DEPENDENCY_JSON_PATH,
     ]
     subprocess.run(gsutil_cmd, capture_output=True)
     class_graph, _, _ = serialization.load_class_and_package_graphs_from_file(
-        _DEPENDENCY_JSON_PATH)
+        _DEPENDENCY_JSON_PATH
+    )
     target_graph = target_dependency.JavaTargetDependencyGraph(class_graph)
     target_outbound, target_inbound, skipped_targets = gen_build_target_graph(
-        args.out_dir, args.include_testonly, args.no_cache)
+        args.out_dir, args.include_testonly, args.no_cache
+    )
 
     stats_cmd = [
         str(_SRC / 'tools/android/nullaway/java_file_stats.py'),
         '--nomark-list-path',
-        str(_NOMARK_LIST_PATH)
+        str(_NOMARK_LIST_PATH),
     ]
     if _FILE_CACHE_PATH.exists() and not args.no_cache:
         stats_cmd += ['--cached-file-list', str(_FILE_CACHE_PATH)]
@@ -151,20 +163,19 @@ def main():
         if idx == -1:
             idx = path.find('/com/')
         if idx != -1:
-            full_name = path[idx + 1:].replace('/', '.').replace('.java', '')
+            full_name = path[idx + 1 :].replace('/', '.').replace('.java', '')
         else:
             # Skip all files without /org/ or /com/ since they are likely not
             # relevant for chrome packages (e.g. usually third_party stuff).
             continue
-        if any(
-                re.match(pattern, full_name)
-                for pattern in _IGNORED_CLASSES_RE):
-            #print(f'Ignoring {full_name}')
+        if any(re.match(pattern, full_name) for pattern in _IGNORED_CLASSES_RE):
+            # print(f'Ignoring {full_name}')
             continue
         unmarked_classes.add(full_name)
 
     class_nodes = [
-        n for n in class_graph.nodes
+        n
+        for n in class_graph.nodes
         if n.package.startswith(_CHROME_PACKAGE_PREFIXES)
     ]
     class_nodes.sort(key=lambda n: len(n.inbound), reverse=True)
@@ -209,12 +220,12 @@ def main():
             continue
         for n in node.outbound:
             if n._unique_key not in target_transitive_outbound[target]:
-                #print(target, 'inbound', n._unique_key)
+                # print(target, 'inbound', n._unique_key)
                 target_transitive_outbound[target].add(n._unique_key)
         # These are targets that depend on this target
         for n in node.inbound:
             if n._unique_key not in target_transitive_inbound[target]:
-                #print(target, 'outbound', n._unique_key)
+                # print(target, 'outbound', n._unique_key)
                 target_transitive_inbound[target].add(n._unique_key)
 
     # Account for up to 5-levels of transitive deps (~2^5). This isn't perfect
@@ -227,11 +238,13 @@ def main():
             # These are deps of this target
             for t in target_outbound[target]:
                 target_transitive_outbound[target].update(
-                    target_transitive_outbound[t])
+                    target_transitive_outbound[t]
+                )
             # These are targets that depend on this target
             for t in target_inbound[target]:
                 target_transitive_inbound[target].update(
-                    target_transitive_inbound[t])
+                    target_transitive_inbound[t]
+                )
 
     targets_unmarked_deps = collections.defaultdict(set)
     targets_unmarked_dependents = collections.defaultdict(set)
@@ -244,12 +257,14 @@ def main():
                 targets_unmarked_dependents[target].add(dep)
 
     if not args.all:
-        java_targets = set(t for t in java_targets
-                           if len(targets_unmarked_deps[t]) == 0)
+        java_targets = set(
+            t for t in java_targets if len(targets_unmarked_deps[t]) == 0
+        )
 
     # Only keep targets that actually need to be annotated.
     targets_list = sorted(
-        [t for t in java_targets if targets_num_unmarked[t] > 0])
+        [t for t in java_targets if targets_num_unmarked[t] > 0]
+    )
 
     for t in targets_list:
         # Remove the // at the beginning for easy copy/pasting into siso.
@@ -288,9 +303,11 @@ target depends on.''')
             csv_writer = csv.writer(csv_output_file)
             for t in targets_list:
                 status = [
-                    t[2:], targets_num_unmarked[t],
+                    t[2:],
+                    targets_num_unmarked[t],
                     len(targets_unmarked_dependents[t]),
-                    len(targets_unmarked_deps[t]), timestamp
+                    len(targets_unmarked_deps[t]),
+                    timestamp,
                 ]
                 csv_writer.writerow(status)
 

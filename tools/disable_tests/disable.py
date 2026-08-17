@@ -25,53 +25,66 @@ SRC_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 
 def main(argv: List[str]) -> int:
   valid_conds = ' '.join(
-      sorted(f'\t{term.name}' for term in conditions.TERMINALS))
+    sorted(f'\t{term.name}' for term in conditions.TERMINALS)
+  )
 
   parser = argparse.ArgumentParser(
-      description='Disables tests.',
-      epilog=f"Valid conditions are:\n{valid_conds}")
+    description='Disables tests.',
+    epilog=f"Valid conditions are:\n{valid_conds}",
+  )
 
   parser.add_argument(
-      'build',
-      type=str,
-      help='the Buildbucket build ID to search for tests to disable ')
-  parser.add_argument('test_regex',
-                      type=str,
-                      help='the regex for the test to disable. For example: ' +
-                      '".*CompressionUtilsTest.GzipCompression.*". Currently' +
-                      'we assume that there is at most one test matching' +
-                      'the regex. Disabling multiple tests at the same time' +
-                      'is not currently supported (crbug.com/1364416)')
-  parser.add_argument('conditions',
-                      type=str,
-                      nargs='*',
-                      help="the conditions under which to disable the test. " +
-                      "Each entry consists of any number of conditions joined" +
-                      " with '&', specifying the conjunction of these values." +
-                      " All entries will be 'OR'ed together, along with any " +
-                      "existing conditions from the file.")
-  parser.add_argument('-c',
-                      '--cache',
-                      action='store_true',
-                      help='cache ResultDB rpc results, useful for testing.')
+    'build',
+    type=str,
+    help='the Buildbucket build ID to search for tests to disable ',
+  )
+  parser.add_argument(
+    'test_regex',
+    type=str,
+    help='the regex for the test to disable. For example: '
+    + '".*CompressionUtilsTest.GzipCompression.*". Currently'
+    + 'we assume that there is at most one test matching'
+    + 'the regex. Disabling multiple tests at the same time'
+    + 'is not currently supported (crbug.com/1364416)',
+  )
+  parser.add_argument(
+    'conditions',
+    type=str,
+    nargs='*',
+    help="the conditions under which to disable the test. "
+    + "Each entry consists of any number of conditions joined"
+    + " with '&', specifying the conjunction of these values."
+    + " All entries will be 'OR'ed together, along with any "
+    + "existing conditions from the file.",
+  )
+  parser.add_argument(
+    '-c',
+    '--cache',
+    action='store_true',
+    help='cache ResultDB rpc results, useful for testing.',
+  )
 
   # group = parser.add_mutually_exclusive_group()
   parser.add_argument(
-      '-b',
-      '--bug',
-      help="write a TODO referencing this bug in a comment " +
-      "next to the disabled test. Bug can be given as just the" +
-      " ID or a URL (e.g. 123456, crbug.com/v8/654321).")
-  parser.add_argument('-m',
-                      '--message',
-                      help="write a comment containing this message next to " +
-                      "the disabled test.")
+    '-b',
+    '--bug',
+    help="write a TODO referencing this bug in a comment "
+    + "next to the disabled test. Bug can be given as just the"
+    + " ID or a URL (e.g. 123456, crbug.com/v8/654321).",
+  )
+  parser.add_argument(
+    '-m',
+    '--message',
+    help="write a comment containing this message next to "
+    + "the disabled test.",
+  )
 
   args = parser.parse_args(argv[1:])
 
   if args.cache:
-    resultdb.CANNED_RESPONSE_FILE = os.path.join(os.path.dirname(__file__),
-                                                 '.canned_responses.json')
+    resultdb.CANNED_RESPONSE_FILE = os.path.join(
+      os.path.dirname(__file__), '.canned_responses.json'
+    )
 
   message = args.message
   if args.bug is not None:
@@ -79,11 +92,15 @@ def main(argv: List[str]) -> int:
       message = make_bug_message(args.bug, message)
     except Exception:
       print(
-          'Invalid value for --bug. Should have one of the following forms:\n' +
-          '\t1234\n' + '\tcrbug/1234\n' + '\tcrbug/project/1234\n' +
-          '\tcrbug.com/1234\n' + '\tcrbug.com/project/1234\n' +
-          '\tbugs.chromium.org/p/project/issues/detail?id=1234\n',
-          file=sys.stderr)
+        'Invalid value for --bug. Should have one of the following forms:\n'
+        + '\t1234\n'
+        + '\tcrbug/1234\n'
+        + '\tcrbug/project/1234\n'
+        + '\tcrbug.com/1234\n'
+        + '\tcrbug.com/project/1234\n'
+        + '\tbugs.chromium.org/p/project/issues/detail?id=1234\n',
+        file=sys.stderr,
+      )
       return 1
 
   try:
@@ -162,8 +179,9 @@ def parse_bug(bug: str) -> Tuple[int, str]:
 #   * Printing out all valid configs.
 #   * Overwrite the existing state rather than adding to it. Probably leave this
 #     until it's requested.
-def disable_test(build: str, test_regex: str, cond_strs: List[str],
-                 message: Optional[str]):
+def disable_test(
+  build: str, test_regex: str, cond_strs: List[str], message: Optional[str]
+):
   conds = conditions.parse(cond_strs)
   invocation = "invocations/build-" + build
   test_name, filename = resultdb.get_test_metadata(invocation, test_regex)
@@ -183,8 +201,9 @@ def disable_test(build: str, test_regex: str, cond_strs: List[str],
       source_file = f.read()
   except FileNotFoundError as e:
     raise errors.UserError(
-        f"Couldn't open file {filename}. Either this test has moved file very" +
-        "recently, or your checkout isn't up-to-date.") from e
+      f"Couldn't open file {filename}. Either this test has moved file very"
+      + "recently, or your checkout isn't up-to-date."
+    ) from e
 
   if extension == 'cc':
     disabler = gtest.disabler
@@ -192,7 +211,8 @@ def disable_test(build: str, test_regex: str, cond_strs: List[str],
     disabler = expectations.disabler
   else:
     raise errors.UserError(
-        f"Don't know how to disable tests for this file format ({extension})")
+      f"Don't know how to disable tests for this file format ({extension})"
+    )
 
   new_content = disabler(test_name, source_file, conds, message)
   with open(full_path, 'w') as f:
@@ -215,10 +235,9 @@ def extract_name_and_suite(test_name: str) -> str:
 
 
 def get_current_commit_hash() -> Optional[str]:
-  proc = subprocess.run(['git', 'rev-parse', 'HEAD'],
-                        check=False,
-                        capture_output=True,
-                        text=True)
+  proc = subprocess.run(
+    ['git', 'rev-parse', 'HEAD'], check=False, capture_output=True, text=True
+  )
   if proc.returncode != 0:
     return None
 
@@ -251,17 +270,19 @@ Checked out chromium/src revision:
 '''
 
   params = urllib.parse.urlencode(
-      dict(
-          labels='Type-Bug,Pri-2',
-          # TODO: Consider separating the tool out into its own component. Or
-          # perhaps just adding a label like 'Test-Disabling-Tool'.
-          components='Infra>Sheriffing>SheriffOMatic',
-          summary=summary,
-          description=description,
-      ))
+    dict(
+      labels='Type-Bug,Pri-2',
+      # TODO: Consider separating the tool out into its own component. Or
+      # perhaps just adding a label like 'Test-Disabling-Tool'.
+      components='Infra>Sheriffing>SheriffOMatic',
+      summary=summary,
+      description=description,
+    )
+  )
 
   return urllib.parse.urlunsplit(
-      ('https', 'bugs.chromium.org', '/p/chromium/issues/entry', params, ''))
+    ('https', 'bugs.chromium.org', '/p/chromium/issues/entry', params, '')
+  )
 
 
 if __name__ == '__main__':

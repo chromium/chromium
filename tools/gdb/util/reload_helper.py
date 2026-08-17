@@ -45,6 +45,6 @@ def remove_printer(collection, subprinter_name):
   # by GDB Python API. May break in the future.
   initial_len = len(collection.subprinters)
   collection.subprinters = [
-      p for p in collection.subprinters if p.name != subprinter_name
+    p for p in collection.subprinters if p.name != subprinter_name
   ]
   return len(collection.subprinters) < initial_len

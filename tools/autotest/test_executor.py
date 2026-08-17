@@ -34,18 +34,19 @@ def _log_failure(msg: str):
 
 
 @telemetry.tracer.start_as_current_span('chromium.tools.autotest.build')
-def BuildTestTargets(out_dir: str, targets: list[str], dry_run: bool,
-                     quiet: bool, is_retry: bool) -> bool:
+def BuildTestTargets(
+  out_dir: str, targets: list[str], dry_run: bool, quiet: bool, is_retry: bool
+) -> bool:
   """Builds the specified targets with ninja"""
   cmd: list[str] = gn_helpers.CreateBuildCommand(out_dir) + targets
   _log_build(f"\n>>> Building {len(targets)} target(s): {shlex.join(cmd)}\n")
-  if (dry_run):
+  if dry_run:
     return True
 
   should_capture = quiet or not sys.stdout.isatty()
-  completed_process = subprocess.run(cmd,
-                                     capture_output=should_capture,
-                                     encoding='utf-8')
+  completed_process = subprocess.run(
+    cmd, capture_output=should_capture, encoding='utf-8'
+  )
 
   is_successful = completed_process.returncode == 0
   telemetry.RecordBuildAttributes(is_retry, is_successful)
@@ -66,14 +67,19 @@ def BuildTestTargets(out_dir: str, targets: list[str], dry_run: bool,
   return is_successful
 
 
-def _CreateWebTestCommand(out_dir: str,
-                          web_test_files: list[str] | set[str] | None,
-                          extra_args: list[str]) -> list[str]:
-  run_web_tests_path = os.path.join(const.SRC_DIR, 'third_party', 'blink',
-                                    'tools', 'run_web_tests.py')
+def _CreateWebTestCommand(
+  out_dir: str,
+  web_test_files: list[str] | set[str] | None,
+  extra_args: list[str],
+) -> list[str]:
+  run_web_tests_path = os.path.join(
+    const.SRC_DIR, 'third_party', 'blink', 'tools', 'run_web_tests.py'
+  )
   cmd = [
-      'vpython3', run_web_tests_path, f'--build-directory={out_dir}',
-      '--no-build'
+    'vpython3',
+    run_web_tests_path,
+    f'--build-directory={out_dir}',
+    '--no-build',
   ]
   if web_test_files:
     cmd.extend(sorted(web_test_files))
@@ -81,11 +87,16 @@ def _CreateWebTestCommand(out_dir: str,
   return cmd
 
 
-def _CreateGtestCommand(out_dir: str, target_binary: str,
-                        gtest_filter: str | None,
-                        pref_mapping_filter: str | None, extra_args: list[str],
-                        no_try_android_wrappers: bool, no_fast_local_dev: bool,
-                        no_single_variant: bool) -> list[str]:
+def _CreateGtestCommand(
+  out_dir: str,
+  target_binary: str,
+  gtest_filter: str | None,
+  pref_mapping_filter: str | None,
+  extra_args: list[str],
+  no_try_android_wrappers: bool,
+  no_fast_local_dev: bool,
+  no_single_variant: bool,
+) -> list[str]:
   path: str = os.path.join(out_dir, 'bin', f'run_{target_binary}')
   target_extra_args = list(extra_args)
   if no_try_android_wrappers or not os.path.isfile(path):
@@ -106,18 +117,20 @@ def _CreateGtestCommand(out_dir: str, target_binary: str,
   return cmd
 
 
-def RunTestTargets(out_dir: str,
-                   targets: list[str],
-                   gtest_filter: str,
-                   pref_mapping_filter: str | None,
-                   extra_args: list[str],
-                   dry_run: bool,
-                   no_try_android_wrappers: bool,
-                   no_fast_local_dev: bool,
-                   no_single_variant: bool,
-                   is_suite: bool = False,
-                   gemini: bool | None = False,
-                   web_test_files: list[str] | set[str] | None = None) -> int:
+def RunTestTargets(
+  out_dir: str,
+  targets: list[str],
+  gtest_filter: str,
+  pref_mapping_filter: str | None,
+  extra_args: list[str],
+  dry_run: bool,
+  no_try_android_wrappers: bool,
+  no_fast_local_dev: bool,
+  no_single_variant: bool,
+  is_suite: bool = False,
+  gemini: bool | None = False,
+  web_test_files: list[str] | set[str] | None = None,
+) -> int:
   total_passed = total_failed = 0
   failed_test_names = []
   any_failed = False
@@ -130,10 +143,16 @@ def RunTestTargets(out_dir: str,
       cmd = _CreateWebTestCommand(out_dir, web_test_files, extra_args)
     else:
       test_type = const.TestType.GTEST
-      cmd = _CreateGtestCommand(out_dir, target_binary, gtest_filter,
-                                pref_mapping_filter, extra_args,
-                                no_try_android_wrappers, no_fast_local_dev,
-                                no_single_variant)
+      cmd = _CreateGtestCommand(
+        out_dir,
+        target_binary,
+        gtest_filter,
+        pref_mapping_filter,
+        extra_args,
+        no_try_android_wrappers,
+        no_fast_local_dev,
+        no_single_variant,
+      )
 
     command_str = shlex.join(cmd)
     _log_run(f"\n>>> Running {target_binary}")
@@ -142,11 +161,13 @@ def RunTestTargets(out_dir: str,
       continue
 
     return_code, summary = command.RunTestCommandWithSummary(
-        cmd, test_type=test_type)
+      cmd, test_type=test_type
+    )
 
     if return_code != 0:
       _log_failure(
-          f"\n<<< {target_binary} failed with exit code {return_code}\n")
+        f"\n<<< {target_binary} failed with exit code {return_code}\n"
+      )
 
     if not is_suite:
       if return_code != 0:
@@ -157,7 +178,7 @@ def RunTestTargets(out_dir: str,
 
     if summary.parse_error:
       logging.warning(
-          f"Could not parse test summary JSON for {target_binary}. {summary.parse_error}"
+        f"Could not parse test summary JSON for {target_binary}. {summary.parse_error}"
       )
     else:
       total_passed += len(summary.passed_tests)
@@ -188,8 +209,9 @@ def RunTestTargets(out_dir: str,
   return 1 if any_failed else 0
 
 
-def _RunGeminiDiagnostic(cmd: list[str],
-                         test_summary: command.TestSummary) -> None:
+def _RunGeminiDiagnostic(
+  cmd: list[str], test_summary: command.TestSummary
+) -> None:
   logging.info('\n=== Diagnosis and Suggested Fix ===\n')
 
   command_str = shlex.join(cmd)
@@ -200,25 +222,29 @@ def _RunGeminiDiagnostic(cmd: list[str],
     clean_log = (log or "").strip()
     indented_log = '    ' + clean_log.replace('\n', '\n    ')
     failed_lines.append(
-        f"[{i + 1}/{len(test_summary.failed_tests)}] {name}\n{indented_log}")
+      f"[{i + 1}/{len(test_summary.failed_tests)}] {name}\n{indented_log}"
+    )
 
   failed_str = '\n\n'.join(failed_lines)
-  summary_text = f"Test count: {test_summary.test_count}\n\nFailed tests:\n{failed_str}"
+  summary_text = (
+    f"Test count: {test_summary.test_count}\n\nFailed tests:\n{failed_str}"
+  )
 
   prompt = (
-      f"The following test command failed:\n```bash\n{command_str}\n```\n\n"
-      f"Here is the structured test summary, including exact failure logs:\n```\n{summary_text}\n```\n\n"
-      f"Please diagnose this test failure. Use your file reading and code search tools "
-      f"to look at the relevant source code and test files mentioned in the logs.\n\n"
-      f"I highly recommend running `git diff` first to see if any recent changes might have caused this failure.\n\n"
-      f"Follow these steps to structure your response:\n"
-      f"1.  **Diagnose the Failure:** Explain why the tests failed, analyzing the discrepancy between expected and actual behavior.\n"
-      f"2.  **Propose a Fix:** Suggest a concrete fix and explain exactly how you plan to implement it. Prefer modifying the code or the test logic to achieve the intended behavior. Deleting a test should be a last resort, only recommended if the test is fundamentally invalid or testing removed functionality.\n"
-      f"3.  **Ask for Confirmation:** Before writing any code or modifying any files, explicitly ask the user for confirmation to go ahead and implement the proposed fix."
+    f"The following test command failed:\n```bash\n{command_str}\n```\n\n"
+    f"Here is the structured test summary, including exact failure logs:\n```\n{summary_text}\n```\n\n"
+    f"Please diagnose this test failure. Use your file reading and code search tools "
+    f"to look at the relevant source code and test files mentioned in the logs.\n\n"
+    f"I highly recommend running `git diff` first to see if any recent changes might have caused this failure.\n\n"
+    f"Follow these steps to structure your response:\n"
+    f"1.  **Diagnose the Failure:** Explain why the tests failed, analyzing the discrepancy between expected and actual behavior.\n"
+    f"2.  **Propose a Fix:** Suggest a concrete fix and explain exactly how you plan to implement it. Prefer modifying the code or the test logic to achieve the intended behavior. Deleting a test should be a last resort, only recommended if the test is fundamentally invalid or testing removed functionality.\n"
+    f"3.  **Ask for Confirmation:** Before writing any code or modifying any files, explicitly ask the user for confirmation to go ahead and implement the proposed fix."
   )
 
   logging.info(
-      "Launching Gemini CLI to analyze the failure (this may take a moment)...")
+    "Launching Gemini CLI to analyze the failure (this may take a moment)..."
+  )
   try:
     gemini_cmd = gemini_helpers.get_gemini_command(use_alias=True)
     # Run the gemini CLI with the -i flag for interactive mode.
@@ -226,12 +252,13 @@ def _RunGeminiDiagnostic(cmd: list[str],
     subprocess.run(gemini_cmd + ['-i', prompt], check=True)
   except FileNotFoundError:
     logging.error(
-        "Gemini CLI ('gemini') is not installed or not in system PATH.")
-    logging.error(
-        "\nNote: If 'gemini' is configured as a shell alias, Python cannot execute it."
+      "Gemini CLI ('gemini') is not installed or not in system PATH."
     )
     logging.error(
-        "Please add the gemini executable directory to your PATH, or create a symlink:"
+      "\nNote: If 'gemini' is configured as a shell alias, Python cannot execute it."
+    )
+    logging.error(
+      "Please add the gemini executable directory to your PATH, or create a symlink:"
     )
     logging.error("  ln -s /path/to/actual/gemini ~/.local/bin/gemini")
   except subprocess.CalledProcessError as e:

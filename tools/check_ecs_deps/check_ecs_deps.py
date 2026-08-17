@@ -3,7 +3,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-''' Verifies that builds of the embedded content_shell do not included
+'''Verifies that builds of the embedded content_shell do not included
 unnecessary dependencies.'''
 
 from __future__ import print_function
@@ -58,10 +58,8 @@ kAllowedLibraryList = [
   'librt',
   'libstdc++',
   'linux-vdso',
-
   # Needed for default ozone platforms
   'libdrm',
-
   # NSS & NSPR
   'libnss3',
   'libnssutil3',
@@ -69,10 +67,8 @@ kAllowedLibraryList = [
   'libplc4',
   'libplds4',
   'libsmime3',
-
   # OpenSSL
   'libcrypto',
-
   # Miscellaneous
   'libcap',
   'libexpat',
@@ -81,6 +77,7 @@ kAllowedLibraryList = [
 ]
 
 binary_target = 'content_shell'
+
 
 def stdmsg(_final, errors):
   if errors:
@@ -107,12 +104,20 @@ def _main():
   }
 
   parser = optparse.OptionParser(
-      "usage: %prog -b <dir> --target <Debug|Release>")
-  parser.add_option("", "--annotate", dest='annotate', action='store_true',
-      default=False, help="include buildbot annotations in output")
+    "usage: %prog -b <dir> --target <Debug|Release>"
+  )
+  parser.add_option(
+    "",
+    "--annotate",
+    dest='annotate',
+    action='store_true',
+    default=False,
+    help="include buildbot annotations in output",
+  )
   parser.add_option("", "--noannotate", dest='annotate', action='store_false')
-  parser.add_option("-b", "--build-dir",
-                    help="the location of the compiler output")
+  parser.add_option(
+    "-b", "--build-dir", help="the location of the compiler output"
+  )
   parser.add_option("--target", help="Debug or Release")
   parser.add_option('-v', '--verbose', default=False, action='store_true')
 
@@ -123,10 +128,12 @@ def _main():
 
   # Bake target into build_dir.
   if options.target and options.build_dir:
-    assert (options.target !=
-            os.path.basename(os.path.dirname(options.build_dir)))
-    options.build_dir = os.path.join(os.path.abspath(options.build_dir),
-                                     options.target)
+    assert options.target != os.path.basename(
+      os.path.dirname(options.build_dir)
+    )
+    options.build_dir = os.path.join(
+      os.path.abspath(options.build_dir), options.target
+    )
 
   if options.build_dir != None:
     build_dir = os.path.abspath(options.build_dir)
@@ -136,42 +143,47 @@ def _main():
   target = os.path.join(build_dir, binary_target)
 
   if options.annotate:
-    output.update({
-      'message': lambda x: bbmsg(None, x),
-      'fail': lambda x: bbmsg('FAILURE', x),
-      'warn': lambda x: bbmsg('WARNINGS', x),
-      'abend': lambda x: bbmsg('EXCEPTIONS', x),
-      'ok': lambda x: bbmsg(None, x),
-    })
+    output.update(
+      {
+        'message': lambda x: bbmsg(None, x),
+        'fail': lambda x: bbmsg('FAILURE', x),
+        'warn': lambda x: bbmsg('WARNINGS', x),
+        'abend': lambda x: bbmsg('EXCEPTIONS', x),
+        'ok': lambda x: bbmsg(None, x),
+      }
+    )
 
   if options.verbose:
     output['verbose'] = lambda x: stdmsg(None, x)
 
-  forbidden_regexp = re.compile(string.join(map(re.escape,
-                                                kUndesiredLibraryList), '|'))
+  forbidden_regexp = re.compile(
+    string.join(map(re.escape, kUndesiredLibraryList), '|')
+  )
   mapping_regexp = re.compile(r"\s*([^/]*) => (.*)")
-  blessed_regexp = re.compile(r"(%s)[-0-9.]*\.so" % string.join(map(re.escape,
-      kAllowedLibraryList), '|'))
+  blessed_regexp = re.compile(
+    r"(%s)[-0-9.]*\.so" % string.join(map(re.escape, kAllowedLibraryList), '|')
+  )
   built_regexp = re.compile(re.escape(build_dir + os.sep))
 
   success = 0
   warning = 0
 
-  p = subprocess.Popen(['ldd', target], stdout=subprocess.PIPE,
-      stderr=subprocess.PIPE)
+  p = subprocess.Popen(
+    ['ldd', target], stdout=subprocess.PIPE, stderr=subprocess.PIPE
+  )
   out, err = p.communicate()
 
   if err != '':
-    output['abend']([
-      'Failed to execute ldd to analyze dependencies for ' + target + ':',
-      '    ' + err,
-    ])
+    output['abend'](
+      [
+        'Failed to execute ldd to analyze dependencies for ' + target + ':',
+        '    ' + err,
+      ]
+    )
     return 1
 
   if out == '':
-    output['abend']([
-      'No output to scan for forbidden dependencies.'
-    ])
+    output['abend'](['No output to scan for forbidden dependencies.'])
     return 1
 
   success = 1
@@ -201,6 +213,7 @@ def _main():
   else:
     output['fail'](None)
     return 1
+
 
 if __name__ == "__main__":
   # handle arguments...

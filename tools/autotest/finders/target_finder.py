@@ -17,7 +17,6 @@ import utils.constants as const
 
 # A persistent cache to avoid running gn on repeated runs of autotest.
 class TargetCache:
-
   def __init__(self, out_dir: str) -> None:
     self.out_dir = out_dir
     self.path: str = os.path.join(out_dir, 'autotest_cache')
@@ -56,20 +55,23 @@ def _TestTargetsFromGnRefs(targets: list[str]) -> list[str]:
   # Find "standard" targets (e.g., GTests).
   standard_targets: list[str] = [t for t in targets if '__' not in t]
   standard_targets = [
-      t for t in standard_targets if t.endswith(const.TEST_TARGET_SUFFIXES)
-      or t in const.TEST_TARGET_ALLOWLIST
+    t
+    for t in standard_targets
+    if t.endswith(const.TEST_TARGET_SUFFIXES)
+    or t in const.TEST_TARGET_ALLOWLIST
   ]
   all_test_targets.update(standard_targets)
 
   # Find targets using internal GN suffixes (e.g., Java APKs).
   _SUBTARGET_SUFFIXES = (
-      '__java_binary',  # robolectric_binary()
-      '__test_runner_script',  # test() targets
-      '__test_apk',  # instrumentation_test_apk() targets
+    '__java_binary',  # robolectric_binary()
+    '__test_runner_script',  # test() targets
+    '__test_apk',  # instrumentation_test_apk() targets
   )
   for suffix in _SUBTARGET_SUFFIXES:
-    all_test_targets.update(t[:-len(suffix)] for t in targets
-                            if t.endswith(suffix))
+    all_test_targets.update(
+      t[: -len(suffix)] for t in targets if t.endswith(suffix)
+    )
 
   return sorted(list(all_test_targets))
 
@@ -83,20 +85,22 @@ def _ParseRefsOutput(output: str) -> list[str]:
 
 
 def _FindTestTargetsViaGnRefs(
-    out_dir: str, gn_paths: list[str]) -> tuple[list[str], list[str]]:
+  out_dir: str, gn_paths: list[str]
+) -> tuple[list[str], list[str]]:
   gn_path: str = os.path.join(str(const.DEPOT_TOOLS_DIR), 'gn.py')
 
   cmd: list[str] = [
-      sys.executable,
-      gn_path,
-      'refs',
-      out_dir,
-      '--all',
-      '--relation=source',
+    sys.executable,
+    gn_path,
+    'refs',
+    out_dir,
+    '--all',
+    '--relation=source',
   ]
 
   is_cpp_only = all(
-      p.endswith(('.cc', '.mm', '.cpp', '.h', '.m', '.rs')) for p in gn_paths)
+    p.endswith(('.cc', '.mm', '.cpp', '.h', '.m', '.rs')) for p in gn_paths
+  )
   if not is_cpp_only:
     cmd.append('--relation=input')
 
@@ -113,24 +117,28 @@ def _FindTestTargetsViaGnRefs(
       cmd.append(f'@{tmp_file.name}')
 
     targets: list[str] = _ParseRefsOutput(
-        command.RunCommand(
-            cmd + ['--exclude-type=source_set,static_library,rust_library']))
+      command.RunCommand(
+        cmd + ['--exclude-type=source_set,static_library,rust_library']
+      )
+    )
     test_targets = _TestTargetsFromGnRefs(targets)
 
     if not test_targets and targets:
       test_targets = _ParseRefsOutput(
-          command.RunCommand(cmd + ['--type=executable']))
+        command.RunCommand(cmd + ['--type=executable'])
+      )
   return test_targets, targets
 
 
 def FindTestTargets(
-    target_cache: TargetCache,
-    out_dir: str,
-    paths: list[str],
-    run_all: bool = False,
-    run_changed: bool = False,
-    target_index: int | None = None,
-    orig_paths: list[str] | None = None) -> tuple[list[str], bool]:
+  target_cache: TargetCache,
+  out_dir: str,
+  paths: list[str],
+  run_all: bool = False,
+  run_changed: bool = False,
+  target_index: int | None = None,
+  orig_paths: list[str] | None = None,
+) -> tuple[list[str], bool]:
   run_all: bool = run_all or run_changed
 
   # Normalize paths, so they can be cached.
@@ -154,9 +162,11 @@ def FindTestTargets(
     if not test_targets:
       msg = f'"{paths}" did not match any test targets.'
       if raw_targets:
-        msg += (f' Consider adding one of the following targets to '
-                f'TEST_TARGET_ALLOWLIST within {const.__file__}: \n' +
-                '\n'.join(raw_targets))
+        msg += (
+          f' Consider adding one of the following targets to '
+          f'TEST_TARGET_ALLOWLIST within {const.__file__}: \n'
+          + '\n'.join(raw_targets)
+        )
       command.ExitWithMessage(msg)
 
   test_targets.sort()
@@ -172,8 +182,9 @@ def FindTestTargets(
           for t in test_targets:
             logging.info(f'  {t}')
         command.ExitWithMessage(
-            'Your query may involve non-test sources. Use --target to choose'
-            ' one explicitly.')
+          'Your query may involve non-test sources. Use --target to choose'
+          ' one explicitly.'
+        )
       logging.info('Trying to run all of them!')
     elif target_index is not None and 0 <= target_index < len(test_targets):
       test_targets = [test_targets[target_index]]

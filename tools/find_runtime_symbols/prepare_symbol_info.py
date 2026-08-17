@@ -29,13 +29,16 @@ LOGGER = logging.getLogger('prepare_symbol_info')
 
 def _dump_command_result(command, output_dir_path, basename, suffix):
   handle_out, filename_out = tempfile.mkstemp(
-      suffix=suffix, prefix=basename + '.', dir=output_dir_path)
+    suffix=suffix, prefix=basename + '.', dir=output_dir_path
+  )
   handle_err, filename_err = tempfile.mkstemp(
-      suffix=suffix + '.err', prefix=basename + '.', dir=output_dir_path)
+    suffix=suffix + '.err', prefix=basename + '.', dir=output_dir_path
+  )
   error = False
   try:
     subprocess.check_call(
-        command, stdout=handle_out, stderr=handle_err, shell=True)
+      command, stdout=handle_out, stderr=handle_err, shell=True
+    )
   except (OSError, subprocess.CalledProcessError):
     error = True
   finally:
@@ -50,7 +53,8 @@ def _dump_command_result(command, output_dir_path, basename, suffix):
     os.remove(filename_err)
 
   if os.path.exists(filename_out) and (
-      os.path.getsize(filename_out) == 0 or error):
+    os.path.getsize(filename_out) == 0 or error
+  ):
     os.remove(filename_out)
     return None
 
@@ -60,11 +64,13 @@ def _dump_command_result(command, output_dir_path, basename, suffix):
   return filename_out
 
 
-def prepare_symbol_info(maps_path,
-                        output_dir_path=None,
-                        alternative_dirs=None,
-                        use_tempdir=False,
-                        use_source_file_name=False):
+def prepare_symbol_info(
+  maps_path,
+  output_dir_path=None,
+  alternative_dirs=None,
+  use_tempdir=False,
+  use_source_file_name=False,
+):
   """Prepares (collects) symbol information files for find_runtime_symbols.
 
   1) If |output_dir_path| is specified, it tries collecting symbol information
@@ -148,41 +154,57 @@ def prepare_symbol_info(maps_path,
   LOGGER.debug('Listing up symbols.')
   files = {}
   for entry in maps.iter(ProcMaps.executable):
-    LOGGER.debug('  %016x-%016x +%06x %s' % (
-        entry.begin, entry.end, entry.offset, entry.name))
+    LOGGER.debug(
+      '  %016x-%016x +%06x %s'
+      % (entry.begin, entry.end, entry.offset, entry.name)
+    )
     binary_path = entry.name
     for target_path, host_path in alternative_dirs.iteritems():
       if entry.name.startswith(target_path):
         binary_path = entry.name.replace(target_path, host_path, 1)
-    if not (ProcMaps.EXECUTABLE_PATTERN.match(binary_path) or
-            (os.path.isfile(binary_path) and os.access(binary_path, os.X_OK))):
+    if not (
+      ProcMaps.EXECUTABLE_PATTERN.match(binary_path)
+      or (os.path.isfile(binary_path) and os.access(binary_path, os.X_OK))
+    ):
       continue
     nm_filename = _dump_command_result(
-        'nm -n --format bsd %s | c++filt' % binary_path,
-        output_dir_path, os.path.basename(binary_path), '.nm')
+      'nm -n --format bsd %s | c++filt' % binary_path,
+      output_dir_path,
+      os.path.basename(binary_path),
+      '.nm',
+    )
     if not nm_filename:
       continue
     readelf_e_filename = _dump_command_result(
-        'readelf -eW %s' % binary_path,
-        output_dir_path, os.path.basename(binary_path), '.readelf-e')
+      'readelf -eW %s' % binary_path,
+      output_dir_path,
+      os.path.basename(binary_path),
+      '.readelf-e',
+    )
     if not readelf_e_filename:
       continue
     readelf_debug_decodedline_file = None
     if use_source_file_name:
       readelf_debug_decodedline_file = _dump_command_result(
-          'readelf -wL %s | %s' % (binary_path, REDUCE_DEBUGLINE_PATH),
-          output_dir_path, os.path.basename(binary_path), '.readelf-wL')
+        'readelf -wL %s | %s' % (binary_path, REDUCE_DEBUGLINE_PATH),
+        output_dir_path,
+        os.path.basename(binary_path),
+        '.readelf-wL',
+      )
 
     files[entry.name] = {}
     files[entry.name]['nm'] = {
-        'file': os.path.basename(nm_filename),
-        'format': 'bsd',
-        'mangled': False}
+      'file': os.path.basename(nm_filename),
+      'format': 'bsd',
+      'mangled': False,
+    }
     files[entry.name]['readelf-e'] = {
-        'file': os.path.basename(readelf_e_filename)}
+      'file': os.path.basename(readelf_e_filename)
+    }
     if readelf_debug_decodedline_file:
       files[entry.name]['readelf-debug-decodedline-file'] = {
-          'file': os.path.basename(readelf_debug_decodedline_file)}
+        'file': os.path.basename(readelf_debug_decodedline_file)
+      }
 
     files[entry.name]['size'] = os.stat(binary_path).st_size
 
@@ -210,13 +232,20 @@ def main():
     return 1
 
   option_parser = optparse.OptionParser(
-      '%s /path/to/maps [/path/to/output_data_dir/]' % sys.argv[0])
-  option_parser.add_option('--alternative-dirs', dest='alternative_dirs',
-                           metavar='/path/on/target@/path/on/host[:...]',
-                           help='Read files in /path/on/host/ instead of '
-                           'files in /path/on/target/.')
-  option_parser.add_option('--verbose', dest='verbose', action='store_true',
-                           help='Enable verbose mode.')
+    '%s /path/to/maps [/path/to/output_data_dir/]' % sys.argv[0]
+  )
+  option_parser.add_option(
+    '--alternative-dirs',
+    dest='alternative_dirs',
+    metavar='/path/on/target@/path/on/host[:...]',
+    help='Read files in /path/on/host/ instead of files in /path/on/target/.',
+  )
+  option_parser.add_option(
+    '--verbose',
+    dest='verbose',
+    action='store_true',
+    help='Enable verbose mode.',
+  )
   options, args = option_parser.parse_args(sys.argv)
   alternative_dirs_dict = {}
   if options.alternative_dirs:
@@ -238,11 +267,13 @@ def main():
     option_parser.error('Argument error.')
     return 1
   if len(args) == 2:
-    result, _ = prepare_symbol_info(args[1],
-                                    alternative_dirs=alternative_dirs_dict)
+    result, _ = prepare_symbol_info(
+      args[1], alternative_dirs=alternative_dirs_dict
+    )
   else:
-    result, _ = prepare_symbol_info(args[1], args[2],
-                                    alternative_dirs=alternative_dirs_dict)
+    result, _ = prepare_symbol_info(
+      args[1], args[2], alternative_dirs=alternative_dirs_dict
+    )
 
   return not result
 

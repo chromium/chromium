@@ -101,9 +101,14 @@ def _print_stats(marked_all, nomark_all, unmarked_all):
         # Skip non-existent subdirs.
         if subdir_total == 0:
             continue
-        print(f'  //{subdir}:', stat(subdir_marked_count, subdir_total), '/',
-              stat(subdir_nomark_count, subdir_total), '/',
-              stat(subdir_unmarked_count, subdir_total))
+        print(
+            f'  //{subdir}:',
+            stat(subdir_marked_count, subdir_total),
+            '/',
+            stat(subdir_nomark_count, subdir_total),
+            '/',
+            stat(subdir_unmarked_count, subdir_total),
+        )
 
 
 def _read_file_list(filepath):
@@ -119,25 +124,28 @@ def _write_file_list(filepath, filelist):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('-C',
-                        dest='src_dir',
-                        default=_SRC_ROOT,
-                        help='Path to CHROMIUM_SRC.')
+    parser.add_argument(
+        '-C', dest='src_dir', default=_SRC_ROOT, help='Path to CHROMIUM_SRC.'
+    )
     parser.add_argument(
         '--unmarked-list-path',
-        help='Path to output the list of files with @NullUnmarked.')
+        help='Path to output the list of files with @NullUnmarked.',
+    )
     parser.add_argument(
         '--marked-list-path',
-        help='Path to output the list of files with @NullMarked.')
+        help='Path to output the list of files with @NullMarked.',
+    )
     parser.add_argument(
         '--nomark-list-path',
-        help='Path to output the list of files without any annotation.')
+        help='Path to output the list of files without any annotation.',
+    )
     parser.add_argument(
         '--cached-file-list',
-        help='Path to list of java files instead of walking the tree.')
+        help='Path to list of java files instead of walking the tree.',
+    )
     parser.add_argument(
         '--output-file-list',
-        help='Path to output list of java files for use by --cached-file-list.'
+        help='Path to output list of java files for use by --cached-file-list.',
     )
     parser.add_argument('--csv', action='store_true', help='Output a .csv')
     parser.add_argument('-v', '--verbose', action='store_true')
@@ -150,7 +158,8 @@ def main():
 
     if options.cached_file_list and options.output_file_list:
         parser.error(
-            'Cant pass in both --cached-file-list and --output-file-list')
+            'Cant pass in both --cached-file-list and --output-file-list'
+        )
 
     logging.info('Collecting java files')
     start = time.time()
@@ -158,12 +167,12 @@ def main():
         java_files = _read_file_list(options.cached_file_list)
     else:
         java_files = list(_collect_java_files(options.src_dir))
-    logging.info(f'Collecting java files done in {time.time()-start:.1f}s')
+    logging.info(f'Collecting java files done in {time.time() - start:.1f}s')
 
     logging.info('Processing files')
     start = time.time()
     marked, nomark, unmarked = _check_if_marked(java_files)
-    logging.info(f'Processing files files done in {time.time()-start:.1f}s')
+    logging.info(f'Processing files files done in {time.time() - start:.1f}s')
 
     if options.unmarked_list_path:
         _write_file_list(options.unmarked_list_path, unmarked)
@@ -185,8 +194,16 @@ def main():
 
     if options.csv:
         csv.writer(sys.stdout).writerow(
-            (date.today(), len(marked), len(nomark), len(unmarked),
-             len(marked_tests), len(nomark_tests), len(unmarked_tests)))
+            (
+                date.today(),
+                len(marked),
+                len(nomark),
+                len(unmarked),
+                len(marked_tests),
+                len(nomark_tests),
+                len(unmarked_tests),
+            )
+        )
     else:
         print(date.today())
         print('==== Non-test Files ====')
@@ -194,7 +211,7 @@ def main():
         print()
         print('====== Test Files ======')
         _print_stats(marked_tests, nomark_tests, unmarked_tests)
-    logging.info(f'Calculating stats done in {time.time()-start:.1f}s')
+    logging.info(f'Calculating stats done in {time.time() - start:.1f}s')
 
 
 if __name__ == '__main__':

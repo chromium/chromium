@@ -47,10 +47,10 @@ def record_testcase(name: str, testcase_args: List[str]):
     os.remove(temp_canned_response_file)
 
   testcase = {
-      'args': testcase_args,
-      'requests': recorded_requests,
-      'read_data': TrackingFile.read_data,
-      'written_data': TrackingFile.written_data,
+    'args': testcase_args,
+    'requests': recorded_requests,
+    'read_data': TrackingFile.read_data,
+    'written_data': TrackingFile.written_data,
   }
 
   print(f'Recorded testcase {name}.\nDiff from this testcase is:\n')
@@ -74,10 +74,10 @@ def print_diffs(read_data: Dict[str, str], written_data: Dict[str, str]):
       after = lines(written_data[filename])
 
       sys.stdout.writelines(
-          difflib.unified_diff(before,
-                               after,
-                               fromfile=f'a/{filename}',
-                               tofile=f'b/{filename}'))
+        difflib.unified_diff(
+          before, after, fromfile=f'a/{filename}', tofile=f'b/{filename}'
+        )
+      )
 
 
 def opener(old_open):
@@ -211,7 +211,7 @@ def cmd_show(args: argparse.Namespace):
     for request, response in requests.items():
       n = request.index('/')
       name = request[:n]
-      payload = json.loads(request[n + 1:])
+      payload = json.loads(request[n + 1 :])
 
       print(f'\n{name}')
       pprint.pprint(payload)
@@ -245,13 +245,14 @@ def cmd_run(_args: argparse.Namespace):
   testcases = []
   for name, testcase_json in all_testcase_jsons():
     testcases.append(
-        IntegrationTest(
-            name,
-            testcase_json['args'],
-            testcase_json['requests'],
-            testcase_json['read_data'],
-            testcase_json['written_data'],
-        ))
+      IntegrationTest(
+        name,
+        testcase_json['args'],
+        testcase_json['requests'],
+        testcase_json['read_data'],
+        testcase_json['written_data'],
+      )
+    )
 
   test_runner = unittest.TextTestRunner()
   test_runner.run(unittest.TestSuite(testcases))
@@ -265,19 +266,21 @@ def cmd_rerecord(_args: argparse.Namespace):
 
 def main():
   parser = argparse.ArgumentParser(
-      description='Record / replay integration tests.', )
+    description='Record / replay integration tests.',
+  )
 
   subparsers = parser.add_subparsers()
 
   record_parser = subparsers.add_parser('record', help='Record a testcase')
-  record_parser.add_argument('name',
-                             type=str,
-                             help='The name to give the testcase')
   record_parser.add_argument(
-      'args',
-      type=str,
-      nargs='+',
-      help='The arguments to use for running the testcase.')
+    'name', type=str, help='The name to give the testcase'
+  )
+  record_parser.add_argument(
+    'args',
+    type=str,
+    nargs='+',
+    help='The arguments to use for running the testcase.',
+  )
   record_parser.set_defaults(func=cmd_record)
 
   run_parser = subparsers.add_parser('run', help='Run all testcases')
@@ -288,7 +291,8 @@ def main():
   show_parser.set_defaults(func=cmd_show)
 
   rerecord_parser = subparsers.add_parser(
-      'rerecord', help='Re-record all existing testcases')
+    'rerecord', help='Re-record all existing testcases'
+  )
   rerecord_parser.set_defaults(func=cmd_rerecord)
 
   args = parser.parse_args()

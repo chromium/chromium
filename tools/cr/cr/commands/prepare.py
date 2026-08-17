@@ -21,10 +21,10 @@ class PrepareCommand(cr.Command):
   def __init__(self):
     super(PrepareCommand, self).__init__()
     self.help = 'Prepares an output directory'
-    self.description = ("""
+    self.description = """
         This does any preparation needed for the output directory, such as
         running gn.
-        """)
+        """
 
   def Run(self):
     self.Prepare()
@@ -50,11 +50,14 @@ class PrepareOut(cr.Plugin, cr.Plugin.Type):
   @classmethod
   def AddArguments(cls, parser):
     parser.add_argument(
-        '--generator', dest=cls.SELECTOR,
-        choices=cls.Choices(),
-        default=None,
-        help=('Sets the build file generator to use. ' +
-              'Overrides %s.' % cls.SELECTOR)
+      '--generator',
+      dest=cls.SELECTOR,
+      choices=cls.Choices(),
+      default=None,
+      help=(
+        'Sets the build file generator to use. '
+        + 'Overrides %s.' % cls.SELECTOR
+      ),
     )
 
   def UpdateContext(self):

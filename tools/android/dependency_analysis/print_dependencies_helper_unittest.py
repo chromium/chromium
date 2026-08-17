@@ -15,21 +15,24 @@ class TestHelperFunctions(unittest.TestCase):
         """Tests getting all valid keys for the given input."""
         test_keys = ['o.c.another.test', 'o.c.test', 'o.c.testing']
         valid_keys = print_dependencies_helper.get_valid_package_keys_matching(
-            test_keys, 'test')
+            test_keys, 'test'
+        )
         self.assertEqual(valid_keys, ['o.c.another.test', 'o.c.test'])
 
     def test_package_no_match(self):
         """Tests getting no valid keys when there is no matching key."""
         test_keys = ['o.c.another.test', 'o.c.test', 'o.c.testing']
         valid_keys = print_dependencies_helper.get_valid_package_keys_matching(
-            test_keys, 'nomatch')
+            test_keys, 'nomatch'
+        )
         self.assertEqual(valid_keys, [])
 
     def test_class_multiple_matches(self):
         """Tests getting multiple valid keys that match the given input."""
         test_keys = ['o.c.test.Test', 'o.c.testing.Test', 'o.c.test.Wrong']
         valid_keys = print_dependencies_helper.get_valid_class_keys_matching(
-            test_keys, 'Test')
+            test_keys, 'Test'
+        )
         self.assertEqual(valid_keys, ['o.c.test.Test', 'o.c.testing.Test'])
 
     def test_class_full_match(self):
@@ -37,7 +40,8 @@ class TestHelperFunctions(unittest.TestCase):
         match."""
         test_keys = ['o.c.test.Test', 'o.c.testing.Test', 'o.c.test.Wrong']
         valid_keys = print_dependencies_helper.get_valid_class_keys_matching(
-            test_keys, 'o.c.test.Test')
+            test_keys, 'o.c.test.Test'
+        )
         self.assertEqual(valid_keys, ['o.c.test.Test'])
 
     def test_class_no_match_lower_case(self):
@@ -45,7 +49,8 @@ class TestHelperFunctions(unittest.TestCase):
         input was case-insensitive."""
         test_keys = ['o.c.test.Test', 'o.c.testing.Test', 'o.c.test.Wrong']
         valid_keys = print_dependencies_helper.get_valid_class_keys_matching(
-            test_keys, 'test')
+            test_keys, 'test'
+        )
         self.assertEqual(valid_keys, [])
 
     def test_class_no_match_partial(self):
@@ -53,7 +58,8 @@ class TestHelperFunctions(unittest.TestCase):
         class name."""
         test_keys = ['o.c.test.Test', 'o.c.testing.Test', 'o.c.test.Wrong']
         valid_keys = print_dependencies_helper.get_valid_class_keys_matching(
-            test_keys, 'est')
+            test_keys, 'est'
+        )
         self.assertEqual(valid_keys, [])
 
     def test_class_no_match_partial_qualified(self):
@@ -61,5 +67,6 @@ class TestHelperFunctions(unittest.TestCase):
         fully qualified name."""
         test_keys = ['o.c.test.Test', 'o.c.testing.Test', 'o.c.test.Wrong']
         valid_keys = print_dependencies_helper.get_valid_class_keys_matching(
-            test_keys, '.test.Test')
+            test_keys, '.test.Test'
+        )
         self.assertEqual(valid_keys, [])

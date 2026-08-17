@@ -23,11 +23,12 @@ class Test(unittest.TestCase):
         f.write(b'b')
 
       self.assertEqual(
-          compare_build_artifacts.diff_binary(filea, fileb, 1),
-          """1 out of 1 bytes are different (100.00%)
+        compare_build_artifacts.diff_binary(filea, fileb, 1),
+        """1 out of 1 bytes are different (100.00%)
   0x0       : 61 'a'
               62 'b'
-              62 'b""")
+              62 'b""",
+      )
 
 
 if __name__ == '__main__':

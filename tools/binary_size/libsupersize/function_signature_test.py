@@ -11,7 +11,6 @@ import function_signature
 
 
 class AnalyzeTest(unittest.TestCase):
-
   def testParseJavaFunctionSignature(self):
     # Java method with no args
     SIG = 'org.ClassName java.util.List getCameraInfo()'
@@ -58,8 +57,9 @@ class AnalyzeTest(unittest.TestCase):
     actual = function_signature.ParseJava(SIG)
     self.assertEqual('OldClass#readShort', actual[2])
     self.assertEqual('org.OldClass#readShort', actual[1])
-    self.assertEqual('org.NewClass#org.OldClass.readShort(int,int): int',
-                     actual[0])
+    self.assertEqual(
+      'org.NewClass#org.OldClass.readShort(int,int): int', actual[0]
+    )
     self.assertEqual(actual, function_signature.ParseJava(actual[0]))
 
     # Class merging: Field
@@ -71,95 +71,143 @@ class AnalyzeTest(unittest.TestCase):
     self.assertEqual(actual, function_signature.ParseJava(actual[0]))
 
   def testParseFunctionSignature(self):
-    def check(ret_part, name_part, params_part, after_part='',
-              name_without_templates=None):
+    def check(
+      ret_part,
+      name_part,
+      params_part,
+      after_part='',
+      name_without_templates=None,
+    ):
       if name_without_templates is None:
         name_without_templates = re.sub(r'<.*?>', '<>', name_part) + after_part
 
       signature = ''.join((name_part, params_part, after_part))
-      got_full_name, got_template_name, got_name = (
-          function_signature.Parse(signature))
+      got_full_name, got_template_name, got_name = function_signature.Parse(
+        signature
+      )
       self.assertEqual(name_without_templates, got_name)
       self.assertEqual(name_part + after_part, got_template_name)
       self.assertEqual(name_part + params_part + after_part, got_full_name)
       if ret_part:
         signature = ''.join((ret_part, name_part, params_part, after_part))
-        got_full_name, got_template_name, got_name = (
-            function_signature.Parse(signature))
+        got_full_name, got_template_name, got_name = function_signature.Parse(
+          signature
+        )
         self.assertEqual(name_without_templates, got_name)
         self.assertEqual(name_part + after_part, got_template_name)
         self.assertEqual(name_part + params_part + after_part, got_full_name)
 
-    check('bool ',
-          'foo::Bar<unsigned int, int>::Do<unsigned int>',
-          '(unsigned int)')
-    check('base::internal::CheckedNumeric<int>& ',
-          'base::internal::CheckedNumeric<int>::operator+=<int>',
-          '(int)')
-    check('base::internal::CheckedNumeric<int>& ',
-          'b::i::CheckedNumeric<int>::MathOp<b::i::CheckedAddOp, int>',
-          '(int)')
+    check(
+      'bool ', 'foo::Bar<unsigned int, int>::Do<unsigned int>', '(unsigned int)'
+    )
+    check(
+      'base::internal::CheckedNumeric<int>& ',
+      'base::internal::CheckedNumeric<int>::operator+=<int>',
+      '(int)',
+    )
+    check(
+      'base::internal::CheckedNumeric<int>& ',
+      'b::i::CheckedNumeric<int>::MathOp<b::i::CheckedAddOp, int>',
+      '(int)',
+    )
     check('', '(anonymous namespace)::GetBridge', '(long long)')
     check('', 'operator delete', '(void*)')
-    check('', 'b::i::DstRangeRelationToSrcRangeImpl<long long, long long, '
-              'std::__ndk1::numeric_limits, (b::i::Integer)1>::Check',
-          '(long long)')
-    check('', 'cc::LayerIterator::operator cc::LayerIteratorPosition const',
-          '()',
-          ' const')
-    check('decltype ({parm#1}((SkRecords::NoOp)())) ',
-          'SkRecord::Record::visit<SkRecords::Draw&>',
-          '(SkRecords::Draw&)',
-          ' const')
-    check('', 'base::internal::BindStateBase::BindStateBase',
-          '(void (*)(), void (*)(base::internal::BindStateBase const*))')
-    check('int ', 'std::__ndk1::__c11_atomic_load<int>',
-          '(std::__ndk1::<int> volatile*, std::__ndk1::memory_order)')
-    check('std::basic_ostream<char, std::char_traits<char> >& ',
-          'std::operator<< <std::char_traits<char> >',
-          '(std::basic_ostream<char, std::char_traits<char> >&, char)',
-          name_without_templates='std::operator<< <>')
-    check('',
-          'std::basic_istream<char, std::char_traits<char> >'
-          '::operator>>',
-          '(unsigned int&)',
-          name_without_templates='std::basic_istream<>::operator>>')
-    check('',
-          'std::operator><std::allocator<char> >', '()',
-          name_without_templates='std::operator><>')
-    check('',
-          'std::operator>><std::allocator<char> >',
-          '(std::basic_istream<char, std::char_traits<char> >&)',
-          name_without_templates='std::operator>><>')
-    check('',
-          'std::basic_istream<char>::operator>', '(unsigned int&)',
-          name_without_templates='std::basic_istream<>::operator>')
-    check('v8::internal::SlotCallbackResult ',
-          'v8::internal::UpdateTypedSlotHelper::UpdateCodeTarget'
-          '<v8::PointerUpdateJobTraits<(v8::Direction)1>::Foo(v8::Heap*, '
-          'v8::MemoryChunk*)::{lambda(v8::SlotType, unsigned char*)#2}::'
-          'operator()(v8::SlotType, unsigned char*, unsigned char*) '
-          'const::{lambda(v8::Object**)#1}>',
-          '(v8::RelocInfo, v8::Foo<(v8::PointerDirection)1>::Bar(v8::Heap*)::'
-          '{lambda(v8::SlotType)#2}::operator()(v8::SlotType) const::'
-          '{lambda(v8::Object**)#1})',
-          name_without_templates=(
-              'v8::internal::UpdateTypedSlotHelper::UpdateCodeTarget<>'))
-    check('',
-          'WTF::StringAppend<WTF::String, WTF::String>::operator WTF::String',
-          '()',
-          ' const')
+    check(
+      '',
+      'b::i::DstRangeRelationToSrcRangeImpl<long long, long long, '
+      'std::__ndk1::numeric_limits, (b::i::Integer)1>::Check',
+      '(long long)',
+    )
+    check(
+      '',
+      'cc::LayerIterator::operator cc::LayerIteratorPosition const',
+      '()',
+      ' const',
+    )
+    check(
+      'decltype ({parm#1}((SkRecords::NoOp)())) ',
+      'SkRecord::Record::visit<SkRecords::Draw&>',
+      '(SkRecords::Draw&)',
+      ' const',
+    )
+    check(
+      '',
+      'base::internal::BindStateBase::BindStateBase',
+      '(void (*)(), void (*)(base::internal::BindStateBase const*))',
+    )
+    check(
+      'int ',
+      'std::__ndk1::__c11_atomic_load<int>',
+      '(std::__ndk1::<int> volatile*, std::__ndk1::memory_order)',
+    )
+    check(
+      'std::basic_ostream<char, std::char_traits<char> >& ',
+      'std::operator<< <std::char_traits<char> >',
+      '(std::basic_ostream<char, std::char_traits<char> >&, char)',
+      name_without_templates='std::operator<< <>',
+    )
+    check(
+      '',
+      'std::basic_istream<char, std::char_traits<char> >::operator>>',
+      '(unsigned int&)',
+      name_without_templates='std::basic_istream<>::operator>>',
+    )
+    check(
+      '',
+      'std::operator><std::allocator<char> >',
+      '()',
+      name_without_templates='std::operator><>',
+    )
+    check(
+      '',
+      'std::operator>><std::allocator<char> >',
+      '(std::basic_istream<char, std::char_traits<char> >&)',
+      name_without_templates='std::operator>><>',
+    )
+    check(
+      '',
+      'std::basic_istream<char>::operator>',
+      '(unsigned int&)',
+      name_without_templates='std::basic_istream<>::operator>',
+    )
+    check(
+      'v8::internal::SlotCallbackResult ',
+      'v8::internal::UpdateTypedSlotHelper::UpdateCodeTarget'
+      '<v8::PointerUpdateJobTraits<(v8::Direction)1>::Foo(v8::Heap*, '
+      'v8::MemoryChunk*)::{lambda(v8::SlotType, unsigned char*)#2}::'
+      'operator()(v8::SlotType, unsigned char*, unsigned char*) '
+      'const::{lambda(v8::Object**)#1}>',
+      '(v8::RelocInfo, v8::Foo<(v8::PointerDirection)1>::Bar(v8::Heap*)::'
+      '{lambda(v8::SlotType)#2}::operator()(v8::SlotType) const::'
+      '{lambda(v8::Object**)#1})',
+      name_without_templates=(
+        'v8::internal::UpdateTypedSlotHelper::UpdateCodeTarget<>'
+      ),
+    )
+    check(
+      '',
+      'WTF::StringAppend<WTF::String, WTF::String>::operator WTF::String',
+      '()',
+      ' const',
+    )
     # Make sure []s are not removed from the name part.
     check('', 'Foo', '()', ' [virtual thunk]')
     # Template function that accepts an anonymous lambda.
-    check('',
-          'blink::FrameView::ForAllNonThrottledFrameViews<blink::FrameView::Pre'
-          'Paint()::{lambda(FrameView&)#2}>',
-          '(blink::FrameView::PrePaint()::{lambda(FrameView&)#2} const&)', '')
+    check(
+      '',
+      'blink::FrameView::ForAllNonThrottledFrameViews<blink::FrameView::Pre'
+      'Paint()::{lambda(FrameView&)#2}>',
+      '(blink::FrameView::PrePaint()::{lambda(FrameView&)#2} const&)',
+      '',
+    )
 
     # Test with multiple template args.
-    check('int ', 'Foo<int()>::bar<a<b> >', '()',
-          name_without_templates='Foo<>::bar<>')
+    check(
+      'int ',
+      'Foo<int()>::bar<a<b> >',
+      '()',
+      name_without_templates='Foo<>::bar<>',
+    )
 
     # SkArithmeticImageFilter.cpp has class within function body. e.g.:
     #   ArithmeticFP::onCreateGLSLInstance() looks like:
@@ -172,8 +220,7 @@ class AnalyzeTest(unittest.TestCase):
     #   }
     # };
     SIG = '(anonymous namespace)::Foo::Baz() const::GLSLFP::onData(Foo, Bar)'
-    got_full_name, got_template_name, got_name = (
-        function_signature.Parse(SIG))
+    got_full_name, got_template_name, got_name = function_signature.Parse(SIG)
     self.assertEqual('(anonymous namespace)::Foo::Baz', got_name)
     self.assertEqual('(anonymous namespace)::Foo::Baz', got_template_name)
     self.assertEqual(SIG, got_full_name)
@@ -181,24 +228,31 @@ class AnalyzeTest(unittest.TestCase):
     # Top-level lambda.
     # Note: Inline lambdas do not seem to be broken into their own symbols.
     SIG = 'cc::{lambda(cc::PaintOp*)#63}::_FUN(cc::PaintOp*)'
-    got_full_name, got_template_name, got_name = (
-        function_signature.Parse(SIG))
+    got_full_name, got_template_name, got_name = function_signature.Parse(SIG)
     self.assertEqual('cc::$lambda#63', got_name)
     self.assertEqual('cc::$lambda#63', got_template_name)
     self.assertEqual('cc::$lambda#63(cc::PaintOp*)', got_full_name)
 
     SIG = 'cc::$_63::__invoke(cc::PaintOp*)'
-    got_full_name, got_template_name, got_name = (
-        function_signature.Parse(SIG))
+    got_full_name, got_template_name, got_name = function_signature.Parse(SIG)
     self.assertEqual('cc::$lambda#63', got_name)
     self.assertEqual('cc::$lambda#63', got_template_name)
     self.assertEqual('cc::$lambda#63(cc::PaintOp*)', got_full_name)
 
     # Data members
-    check('', 'blink::CSSValueKeywordsHash::findValueImpl', '(char const*)',
-          '::value_word_list')
-    check('', 'foo::Bar<Z<Y> >::foo<bar>', '(abc)', '::var<baz>',
-          name_without_templates='foo::Bar<>::foo<>::var<>')
+    check(
+      '',
+      'blink::CSSValueKeywordsHash::findValueImpl',
+      '(char const*)',
+      '::value_word_list',
+    )
+    check(
+      '',
+      'foo::Bar<Z<Y> >::foo<bar>',
+      '(abc)',
+      '::var<baz>',
+      name_without_templates='foo::Bar<>::foo<>::var<>',
+    )
 
     # ABI Tag Attributes
     SIG = 'std::make_unique[abi:v15000]<Foo>(Bar const*&)'
@@ -224,6 +278,8 @@ class AnalyzeTest(unittest.TestCase):
 
 
 if __name__ == '__main__':
-  logging.basicConfig(level=logging.DEBUG,
-                      format='%(levelname).1s %(relativeCreated)6d %(message)s')
+  logging.basicConfig(
+    level=logging.DEBUG,
+    format='%(levelname).1s %(relativeCreated)6d %(message)s',
+  )
   unittest.main()

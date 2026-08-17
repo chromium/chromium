@@ -42,17 +42,14 @@ if __name__ == "__main__":
   ranges = [(1, 1, 2, 2), (1, 3, 1, 17)]
   expected = [(1, 1, 2, 2)]
   actual = merge_ranges(ranges)
-  assert expected == actual, \
-    f"Expected {expected}, actual {actual}"
+  assert expected == actual, f"Expected {expected}, actual {actual}"
 
   ranges = [(1, 1, 2, 2), (1, 3, 2, 17)]
   expected = [(1, 1, 2, 17)]
   actual = merge_ranges(ranges)
-  assert expected == actual, \
-    f"Expected {expected}, actual {actual}"
+  assert expected == actual, f"Expected {expected}, actual {actual}"
 
   ranges = [(1, 1, 2, 2), (2, 3, 2, 17)]
   expected = [(1, 1, 2, 2), (2, 3, 2, 17)]
   actual = merge_ranges(ranges)
-  assert expected == actual, \
-    f"Expected {expected}, actual {actual}"
+  assert expected == actual, f"Expected {expected}, actual {actual}"

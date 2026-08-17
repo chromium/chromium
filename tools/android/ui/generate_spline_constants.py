@@ -14,6 +14,7 @@ chrome/browser/compositor/overlays/strip/StackScroller.java
 import math
 import sys
 
+
 def Main():
   # Keep these in sync with the values in //chrome/android/java/src/org/
   # chromium/chrome/browser/compositor/overlays/strip/StackScroller.java
@@ -38,22 +39,21 @@ def Main():
       x = xMin + (xMax - xMin) / 2.0
       coef = 3.0 * x * (1.0 - x)
       tx = coef * ((1.0 - x) * P1 + x * P2) + x * x * x
-      if math.fabs(tx - alpha) < 1E-5:
+      if math.fabs(tx - alpha) < 1e-5:
         break
       if tx > alpha:
         xMax = x
       else:
         xMin = x
 
-    spline_position.append(coef * ((1.0 - x) * START_TENSION + x)
-                           + x * x * x)
+    spline_position.append(coef * ((1.0 - x) * START_TENSION + x) + x * x * x)
 
     yMax = 1.0
     while 1:
       y = yMin + (yMax - yMin) / 2.0
       coef = 3.0 * y * (1.0 - y)
       dy = coef * ((1.0 - y) * START_TENSION + y) + y * y * y
-      if math.fabs(dy - alpha) < 1E-5:
+      if math.fabs(dy - alpha) < 1e-5:
         break
       if dy > alpha:
         yMax = y
@@ -70,6 +70,7 @@ def Main():
 
   return 0
 
+
 def WriteJavaArrayDeclaration(name, float_list):
   MAX_CHARS_PER_LINE = 100
   INDENT_LEVELS = 2
@@ -81,8 +82,9 @@ def WriteJavaArrayDeclaration(name, float_list):
   FLOAT_LENGTH = len('0.123456, ')
 
   # +1 accounts for the trimmed space at the end.
-  FLOATS_PER_LINE = ((MAX_CHARS_PER_LINE - len(VALUES_PREAMBLE) + 1)
-                     // FLOAT_LENGTH)
+  FLOATS_PER_LINE = (
+    MAX_CHARS_PER_LINE - len(VALUES_PREAMBLE) + 1
+  ) // FLOAT_LENGTH
 
   chunks = []
   for i in range(0, len(float_list), FLOATS_PER_LINE):
@@ -95,6 +97,7 @@ def WriteJavaArrayDeclaration(name, float_list):
   s += '\n'
   s += DECLARATION_PREAMBLE + '};'
   return s
+
 
 if __name__ == '__main__':
   sys.exit(Main())

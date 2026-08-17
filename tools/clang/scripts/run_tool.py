@@ -70,6 +70,7 @@ from clang import compile_db
 
 CompDBEntry = namedtuple('CompDBEntry', ['directory', 'filename', 'command'])
 
+
 def _PruneGitFiles(git_files, paths):
   """Prunes the list of files from git to include only those that are either in
   |paths| or start with one item in |paths|.
@@ -119,10 +120,9 @@ def _RunGitLsFiles(cwd=None):
   else:
     args.append('git')
   args.append('ls-files')
-  command = subprocess.Popen(args,
-                             cwd=cwd,
-                             stdout=subprocess.PIPE,
-                             stderr=subprocess.PIPE)
+  command = subprocess.Popen(
+    args, cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+  )
   output, err = command.communicate()
   if command.returncode != 0:
     return []
@@ -163,10 +163,12 @@ def GetFilesFromGit(paths=None):
 
       if submodule_root:
         submodule_files = _RunGitLsFiles(cwd=submodule_root)
-        git_files.extend([
+        git_files.extend(
+          [
             os.path.realpath(os.path.join(submodule_root, f))
             for f in submodule_files
-        ])
+          ]
+        )
 
     if partial_paths:
       git_files = _PruneGitFiles(git_files, partial_paths)
@@ -175,7 +177,7 @@ def GetFilesFromGit(paths=None):
 
 
 def _GetEntriesFromCompileDB(build_directory, source_filenames):
-  """ Gets the list of files and args mentioned in the compilation database.
+  """Gets the list of files and args mentioned in the compilation database.
 
   Args:
     build_directory: Directory that contains the compile database.
@@ -186,15 +188,18 @@ def _GetEntriesFromCompileDB(build_directory, source_filenames):
   filenames_set = None if source_filenames is None else set(source_filenames)
   entries = compile_db.Read(build_directory)
   return [
-      CompDBEntry(entry['directory'], entry['file'], entry['command'])
-      for entry in entries if filenames_set is None or os.path.realpath(
-          os.path.join(entry['directory'], entry['file'])) in filenames_set
+    CompDBEntry(entry['directory'], entry['file'], entry['command'])
+    for entry in entries
+    if filenames_set is None
+    or os.path.realpath(os.path.join(entry['directory'], entry['file']))
+    in filenames_set
   ]
 
 
-def _UpdateCompileCommandsIfNeeded(compile_commands, files_list,
-                                   target_os=None):
-  """ Filters compile database to only include required files, and makes it
+def _UpdateCompileCommandsIfNeeded(
+  compile_commands, files_list, target_os=None
+):
+  """Filters compile database to only include required files, and makes it
   more clang-tool friendly on Windows.
 
   Args:
@@ -209,14 +214,16 @@ def _UpdateCompileCommandsIfNeeded(compile_commands, files_list,
     filtered_compile_commands = []
     for entry in compile_commands:
       file_path = os.path.relpath(
-          os.path.join(entry['directory'], entry['file']))
+        os.path.join(entry['directory'], entry['file'])
+      )
       if file_path in relative_paths:
         filtered_compile_commands.append(entry)
   else:
     filtered_compile_commands = compile_commands
 
-  return compile_db.ProcessCompileDatabase(filtered_compile_commands, [],
-                                           target_os)
+  return compile_db.ProcessCompileDatabase(
+    filtered_compile_commands, [], target_os
+  )
 
 
 def _ExecuteTool(toolname, tool_args, build_directory, compdb_entry):
@@ -243,30 +250,35 @@ def _ExecuteTool(toolname, tool_args, build_directory, compdb_entry):
   """
 
   args = [toolname, compdb_entry.filename]
-  if (tool_args):
+  if tool_args:
     args.extend(tool_args)
 
   args.append('--')
-  args.extend([
-      a for a in shlex.split(compdb_entry.command,
-                             posix=(sys.platform != 'win32'))
+  args.extend(
+    [
+      a
+      for a in shlex.split(
+        compdb_entry.command, posix=(sys.platform != 'win32')
+      )
       # 'command' contains the full command line, including the input
       # source file itself. We need to filter it out otherwise it's
       # passed to the tool twice - once directly and once via
       # the compile args.
       if a != compdb_entry.filename
-        # /showIncludes is used by Ninja to track header file dependencies on
-        # Windows. We don't need to do this here, and it results in lots of spam
-        # and a massive log file, so we strip it.
-        and a != '/showIncludes' and a != '/showIncludes:user'
-        # -MMD has the same purpose on non-Windows. It may have a corresponding
-        # '-MF <filename>', which we strip below.
-        and a != '-MMD'
-  ])
+      # /showIncludes is used by Ninja to track header file dependencies on
+      # Windows. We don't need to do this here, and it results in lots of spam
+      # and a massive log file, so we strip it.
+      and a != '/showIncludes'
+      and a != '/showIncludes:user'
+      # -MMD has the same purpose on non-Windows. It may have a corresponding
+      # '-MF <filename>', which we strip below.
+      and a != '-MMD'
+    ]
+  )
 
   for i, arg in enumerate(args):
     if arg == '-MF':
-      del args[i:i+2]
+      del args[i : i + 2]
       break
 
   # shlex.split escapes double quotes in non-Posix mode, so we need to strip
@@ -274,26 +286,30 @@ def _ExecuteTool(toolname, tool_args, build_directory, compdb_entry):
   if sys.platform == 'win32':
     args = [a.replace('\\"', '"') for a in args]
   command = subprocess.Popen(
-      args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=build_directory)
+    args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=build_directory
+  )
   stdout_text, stderr_text = command.communicate()
   stdout_text = stdout_text.decode('utf-8')
   stderr_text = stderr_text.decode('utf-8')
   stderr_text = re.sub(
-      r"^warning: .*'linker' input unused \[-Wunused-command-line-argument\]\n",
-      "", stderr_text, flags=re.MULTILINE)
+    r"^warning: .*'linker' input unused \[-Wunused-command-line-argument\]\n",
+    "",
+    stderr_text,
+    flags=re.MULTILINE,
+  )
 
   if command.returncode != 0:
     return {
-        'status': False,
-        'filename': compdb_entry.filename,
-        'stderr_text': stderr_text,
+      'status': False,
+      'filename': compdb_entry.filename,
+      'stderr_text': stderr_text,
     }
   else:
     return {
-        'status': True,
-        'filename': compdb_entry.filename,
-        'stdout_text': stdout_text,
-        'stderr_text': stderr_text,
+      'status': True,
+      'filename': compdb_entry.filename,
+      'stdout_text': stdout_text,
+      'stderr_text': stderr_text,
     }
 
 
@@ -324,9 +340,11 @@ class _CompilerDispatcher(object):
     """Does the grunt work."""
     pool = multiprocessing.Pool()
     result_iterator = pool.imap_unordered(
-        functools.partial(_ExecuteTool, self.__toolname, self.__tool_args,
-                          self.__build_directory),
-                          self.__compdb_entries)
+      functools.partial(
+        _ExecuteTool, self.__toolname, self.__tool_args, self.__build_directory
+      ),
+      self.__compdb_entries,
+    )
     for result in result_iterator:
       self.__ProcessResult(result)
     sys.stderr.write('\n')
@@ -352,15 +370,16 @@ class _CompilerDispatcher(object):
     # inspect.
     if done_count % 100 == 0 or done_count == len(self.__compdb_entries):
       sys.stderr.write(
-          'Processed %d files with %s tool (%d failures) [%.2f%%]\r' %
-          (done_count, self.__toolname, self.__failed_count, percentage))
+        'Processed %d files with %s tool (%d failures) [%.2f%%]\r'
+        % (done_count, self.__toolname, self.__failed_count, percentage)
+      )
 
 
 def main():
   parser = argparse.ArgumentParser()
   parser.add_argument(
-      '--options-file',
-      help='optional file to read options from')
+    '--options-file', help='optional file to read options from'
+  )
   args, argv = parser.parse_known_args()
   if args.options_file:
     argv = open(args.options_file).read().split()
@@ -368,39 +387,47 @@ def main():
   parser.add_argument('--tool', required=True, help='clang tool to run')
   parser.add_argument('--all', action='store_true')
   parser.add_argument(
-      '--generate-compdb',
-      action='store_true',
-      help='regenerate the compile database before running the tool')
+    '--generate-compdb',
+    action='store_true',
+    help='regenerate the compile database before running the tool',
+  )
+  parser.add_argument('--shard', metavar='<n>-of-<count>')
   parser.add_argument(
-      '--shard',
-      metavar='<n>-of-<count>')
+    '-p',
+    required=True,
+    help='path to the directory that contains the compile database',
+  )
   parser.add_argument(
-      '-p',
-      required=True,
-      help='path to the directory that contains the compile database')
+    '--target_os',
+    choices=['android', 'chromeos', 'ios', 'linux', 'nacl', 'mac', 'win'],
+    help='Target OS - see `gn help target_os`. Set to "win" when '
+    + 'cross-compiling Windows from Linux or another host',
+  )
   parser.add_argument(
-      '--target_os',
-      choices=['android', 'chromeos', 'ios', 'linux', 'nacl', 'mac', 'win'],
-      help='Target OS - see `gn help target_os`. Set to "win" when ' +
-      'cross-compiling Windows from Linux or another host')
+    'path_filter',
+    nargs='*',
+    help='optional paths to filter what files the tool is run on',
+  )
   parser.add_argument(
-      'path_filter',
-      nargs='*',
-      help='optional paths to filter what files the tool is run on')
+    '--tool-arg',
+    nargs='?',
+    action='append',
+    help='optional arguments passed to the tool',
+  )
   parser.add_argument(
-      '--tool-arg', nargs='?', action='append',
-      help='optional arguments passed to the tool')
-  parser.add_argument(
-      '--tool-path', nargs='?',
-      help='optional path to the tool directory')
+    '--tool-path', nargs='?', help='optional path to the tool directory'
+  )
   args = parser.parse_args(argv)
 
   if args.tool_path:
     tool_path = os.path.abspath(args.tool_path)
   else:
-    tool_path = os.path.abspath(os.path.join(
-          os.path.dirname(__file__),
-          '../../../third_party/llvm-build/Release+Asserts/bin'))
+    tool_path = os.path.abspath(
+      os.path.join(
+        os.path.dirname(__file__),
+        '../../../third_party/llvm-build/Release+Asserts/bin',
+      )
+    )
   if not os.path.exists(tool_path):
     sys.stderr.write('tool not found: %s\n' % tool_path)
     return -1
@@ -414,14 +441,14 @@ def main():
     # Filter out files that aren't C/C++/Obj-C/Obj-C++.
     extensions = frozenset(('.c', '.cc', '.cpp', '.m', '.mm'))
     source_filenames = [
-        f for f in git_filenames if os.path.splitext(f)[1] in extensions
+      f for f in git_filenames if os.path.splitext(f)[1] in extensions
     ]
 
   if args.generate_compdb:
     compile_commands = compile_db.GenerateWithNinja(args.p)
-    compile_commands = _UpdateCompileCommandsIfNeeded(compile_commands,
-                                                      source_filenames,
-                                                      args.target_os)
+    compile_commands = _UpdateCompileCommandsIfNeeded(
+      compile_commands, source_filenames, args.target_os
+    )
     with open(os.path.join(args.p, 'compile_commands.json'), 'w') as f:
       f.write(json.dumps(compile_commands, indent=2))
 
@@ -434,16 +461,18 @@ def main():
     shard_number = int(match.group(1)) - 1
     shard_count = int(match.group(2))
     compdb_entries = [
-        f for i, f in enumerate(sorted(compdb_entries))
-        if i % shard_count == shard_number
+      f
+      for i, f in enumerate(sorted(compdb_entries))
+      if i % shard_count == shard_number
     ]
-    print('Shard %d-of-%d will process %d entries out of %d' %
-          (shard_number, shard_count, len(compdb_entries), total_length))
+    print(
+      'Shard %d-of-%d will process %d entries out of %d'
+      % (shard_number, shard_count, len(compdb_entries), total_length)
+    )
 
-  dispatcher = _CompilerDispatcher(os.path.join(tool_path, args.tool),
-                                   args.tool_arg,
-                                   args.p,
-                                   compdb_entries)
+  dispatcher = _CompilerDispatcher(
+    os.path.join(tool_path, args.tool), args.tool_arg, args.p, compdb_entries
+  )
   dispatcher.Run()
   return -dispatcher.failed_count
 

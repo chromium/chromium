@@ -58,7 +58,7 @@ def main():
     return 1
 
   starting_list = reduce_decoded_debugline(sys.stdin)
-  bits64 = starting_list[-1][0] > 0xffffffff
+  bits64 = starting_list[-1][0] > 0xFFFFFFFF
   for address, filename in starting_list:
     if bits64:
       print('%016x %s' % (address, filename))

@@ -43,8 +43,9 @@ def get_chromium_src_path() -> pathlib.Path:
     return _CHROMIUM_SRC_ROOT
 
 
-def get_head_commit_format(git_repo: Optional[PathStr] = None,
-                           format: str = '') -> str:
+def get_head_commit_format(
+    git_repo: Optional[PathStr] = None, format: str = ''
+) -> str:
     """Gets formatted info from the commit at HEAD for a Git repository.
 
     Args:
@@ -74,8 +75,8 @@ def get_head_commit_format(git_repo: Optional[PathStr] = None,
     _assert_git_repository(git_repo)
 
     return subprocess_utils.run_command(
-        ['git', 'show', '--no-patch', f'--pretty=format:{format}'],
-        cwd=git_repo)
+        ['git', 'show', '--no-patch', f'--pretty=format:{format}'], cwd=git_repo
+    )
 
 
 def get_head_commit_hash(git_repo: Optional[PathStr] = None) -> str:
@@ -93,8 +94,7 @@ def get_head_commit_time(git_repo: Optional[PathStr] = None) -> str:
     return get_head_commit_format(git_repo, '%cd')
 
 
-def get_head_commit_datetime(git_repo: Optional[PathStr] = None
-                             ) -> dt.datetime:
+def get_head_commit_datetime(git_repo: Optional[PathStr] = None) -> dt.datetime:
     """Gets the datetime of the commit at HEAD for a Git repository in UTC.
 
     The datetime returned contains timezone information (in timezone.utc) so
@@ -124,11 +124,13 @@ def get_head_commit_cr_position(git_repo: Optional[PathStr] = None) -> str:
         if 'Cr-Commit-Position: ' in line:
             last_hash_idx = line.rfind('#')
             assert last_hash_idx != -1, (
-                f'Could not find # in Cr-Commit-Position line: {line}.')
+                f'Could not find # in Cr-Commit-Position line: {line}.'
+            )
             last_right_curly_idx = line.rfind('}')
             assert last_hash_idx < last_right_curly_idx, (
-                'Could not find } after # in ' + line)
-            return line[last_hash_idx + 1:last_right_curly_idx]
+                'Could not find } after # in ' + line
+            )
+            return line[last_hash_idx + 1 : last_right_curly_idx]
     return ''
 
 
@@ -138,21 +140,25 @@ def _assert_git_repository(git_repo_root: pathlib.Path) -> None:
     except FileNotFoundError as err:
         raise ValueError(
             f'The Git repository root "{git_repo_root}" is invalid;'
-            f' {err.strerror}: "{err.filename}".')
+            f' {err.strerror}: "{err.filename}".'
+        )
 
     if not repo_path.is_dir():
         raise ValueError(
             f'The Git repository root "{git_repo_root}" is invalid;'
-            f' not a directory.')
+            f' not a directory.'
+        )
 
     try:
         git_internals_path = repo_path.joinpath('.git').resolve(strict=True)
     except FileNotFoundError as err:
         raise ValueError(
             f'The path "{git_repo_root}" is not a root directory for a Git'
-            f' repository; {err.strerror}: "{err.filename}".')
+            f' repository; {err.strerror}: "{err.filename}".'
+        )
 
     if not repo_path.is_dir():
         raise ValueError(
             f'The Git repository root "{git_repo_root}" is invalid;'
-            f' {git_internals_path} is not a directory.')
+            f' {git_internals_path} is not a directory.'
+        )

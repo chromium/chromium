@@ -13,15 +13,16 @@ import subprocess
 from typing import List, Optional, Tuple
 
 
-def _find_block(source: str, start: int, open_delim: str,
-                close_delim: str) -> Tuple[int, int]:
+def _find_block(
+  source: str, start: int, open_delim: str, close_delim: str
+) -> Tuple[int, int]:
   open_delim_pos = source[start:].find(open_delim)
   if open_delim_pos < 0:
     return (-1, -1)
 
   baseline = start + open_delim_pos
   delim_count = 1
-  for i, char in enumerate(source[baseline + 1:]):
+  for i, char in enumerate(source[baseline + 1 :]):
     if char == open_delim:
       delim_count += 1
       continue
@@ -88,16 +89,19 @@ class VariableContentList(object):
     if end <= start:
       return False
 
-    bracketless_content = content[start + 1:end].strip()
+    bracketless_content = content[start + 1 : end].strip()
     if not bracketless_content:
       return True
 
     whitespace = re.compile(r'^\s+', re.MULTILINE)
     comma = re.compile(r',$', re.MULTILINE)
     self._elements = list(
-        dict.fromkeys(
-            re.sub(comma, '', re.sub(whitespace, '',
-                                     bracketless_content)).split('\n')))
+      dict.fromkeys(
+        re.sub(comma, '', re.sub(whitespace, '', bracketless_content)).split(
+          '\n'
+        )
+      )
+    )
     return True
 
   def get_elements(self) -> List[str]:
@@ -196,7 +200,7 @@ class BuildTarget:
     return self._target_type
 
   def get_variable(self, variable_name: str) -> Optional[TargetVariable]:
-    pattern = re.compile(fr'^\s*{variable_name} = ', re.MULTILINE)
+    pattern = re.compile(rf'^\s*{variable_name} = ', re.MULTILINE)
     match = pattern.search(self._content)
     if not match:
       return None
@@ -211,7 +215,7 @@ class BuildTarget:
     if end <= start:
       return None
 
-    return TargetVariable(variable_name, self._content[start:end + 1])
+    return TargetVariable(variable_name, self._content[start : end + 1])
 
   def add_variable(self, variable: TargetVariable) -> None:
     """Adds the variable to the end of the content.
@@ -221,12 +225,13 @@ class BuildTarget:
 
   def replace_variable(self, variable: TargetVariable) -> None:
     """Replaces an existing variable and returns True on success."""
-    pattern = re.compile(fr'^\s*{variable.get_name()} =', re.MULTILINE)
+    pattern = re.compile(rf'^\s*{variable.get_name()} =', re.MULTILINE)
     match = pattern.search(self._content)
     if not match:
       raise BuildFileUpdateError(
-          f'{self._target_type}("{self._target_name}") variable '
-          f'{variable.get_name()} not found. Unable to replace.')
+        f'{self._target_type}("{self._target_name}") variable '
+        f'{variable.get_name()} not found. Unable to replace.'
+      )
 
     start = match.end()
     if variable.is_list():
@@ -236,15 +241,21 @@ class BuildTarget:
 
     if end <= match.start():
       raise BuildFileUpdateError(
-          f'{self._target_type}("{self._target_name}") variable '
-          f'{variable.get_name()} invalid. Unable to replace.')
+        f'{self._target_type}("{self._target_name}") variable '
+        f'{variable.get_name()} invalid. Unable to replace.'
+      )
 
-    self._content = (self._content[:match.start()] + variable.serialize() +
-                     self._content[end + 1:])
+    self._content = (
+      self._content[: match.start()]
+      + variable.serialize()
+      + self._content[end + 1 :]
+    )
 
   def serialize(self) -> str:
-    return (f'\n{self._target_type}("{self._target_name}") {{\n' +
-            f'{self._content}\n}}\n')
+    return (
+      f'\n{self._target_type}("{self._target_name}") {{\n'
+      + f'{self._content}\n}}\n'
+    )
 
 
 class BuildFile:
@@ -260,13 +271,15 @@ class BuildFile:
 
   def get_target_names_of_type(self, target_type: str) -> List[str]:
     """Lists all targets in the build file of target_type."""
-    pattern = re.compile(fr'^\s*{target_type}\(\"(\w+)\"\)', re.MULTILINE)
+    pattern = re.compile(rf'^\s*{target_type}\(\"(\w+)\"\)', re.MULTILINE)
     return pattern.findall(self._content)
 
-  def get_target(self, target_type: str,
-                 target_name: str) -> Optional[BuildTarget]:
-    pattern = re.compile(fr'^\s*{target_type}\(\"{target_name}\"\)',
-                         re.MULTILINE)
+  def get_target(
+    self, target_type: str, target_name: str
+  ) -> Optional[BuildTarget]:
+    pattern = re.compile(
+      rf'^\s*{target_type}\(\"{target_name}\"\)', re.MULTILINE
+    )
     match = pattern.search(self._content)
     if not match:
       return None
@@ -275,7 +288,7 @@ class BuildFile:
     if end <= start:
       return None
 
-    return BuildTarget(target_type, target_name, self._content[start + 1:end])
+    return BuildTarget(target_type, target_name, self._content[start + 1 : end])
 
   def get_path(self) -> pathlib.Path:
     return self._path
@@ -287,10 +300,13 @@ class BuildFile:
     with open(self._path, 'r') as build_gn_file:
       disk_content = build_gn_file.read()
     return ''.join(
-        difflib.unified_diff(disk_content.splitlines(keepends=True),
-                             self._content.splitlines(keepends=True),
-                             fromfile=f'{self._path}',
-                             tofile=f'{self._path}'))
+      difflib.unified_diff(
+        disk_content.splitlines(keepends=True),
+        self._content.splitlines(keepends=True),
+        fromfile=f'{self._path}',
+        tofile=f'{self._path}',
+      )
+    )
 
   def add_target(self, target: BuildTarget) -> None:
     """Adds the target to the end of the content.
@@ -300,34 +316,43 @@ class BuildFile:
 
   def replace_target(self, target: BuildTarget) -> None:
     """Replaces an existing target and returns True on success."""
-    pattern = re.compile(fr'^\s*{target.get_type()}\(\"{target.get_name()}\"\)',
-                         re.MULTILINE)
+    pattern = re.compile(
+      rf'^\s*{target.get_type()}\(\"{target.get_name()}\"\)', re.MULTILINE
+    )
     match = pattern.search(self._content)
     if not match:
       raise BuildFileUpdateError(
-          f'{target.get_type()}("{target.get_name()}") not found. '
-          'Unable to replace.')
+        f'{target.get_type()}("{target.get_name()}") not found. '
+        'Unable to replace.'
+      )
 
     start, end = _find_block(self._content, match.end(), '{', '}')
     if end <= start:
       raise BuildFileUpdateError(
-          f'{target.get_type()}("{target.get_name()}") invalid. '
-          'Unable to replace.')
+        f'{target.get_type()}("{target.get_name()}") invalid. '
+        'Unable to replace.'
+      )
 
-    self._content = (self._content[:match.start()] + target.serialize() +
-                     self._content[end + 1:])
+    self._content = (
+      self._content[: match.start()]
+      + target.serialize()
+      + self._content[end + 1 :]
+    )
 
   def format_content(self) -> None:
-    process = subprocess.Popen(['gn', 'format', '--stdin'],
-                               stdout=subprocess.PIPE,
-                               stdin=subprocess.PIPE,
-                               stderr=subprocess.PIPE)
+    process = subprocess.Popen(
+      ['gn', 'format', '--stdin'],
+      stdout=subprocess.PIPE,
+      stdin=subprocess.PIPE,
+      stderr=subprocess.PIPE,
+    )
     stdout_data, stderr_data = process.communicate(input=self._content.encode())
     if process.returncode:
       raise BuildFileUpdateError(
-          'Formatting failed. There was likely an error in the changes '
-          '(this program cannot handle complex BUILD.gn files).\n'
-          f'stderr: {stderr_data.decode()}')
+        'Formatting failed. There was likely an error in the changes '
+        '(this program cannot handle complex BUILD.gn files).\n'
+        f'stderr: {stderr_data.decode()}'
+      )
     self._content = stdout_data.decode()
 
   def write_content_to_file(self) -> None:

@@ -13,12 +13,14 @@ def _MakeSym(section, size, path, name=None, container=None):
   if name is None:
     # Trailing letter is important since diffing trims numbers.
     name = '{}_{}A'.format(section[1:], size)
-  ret = models.Symbol(section,
-                      size,
-                      full_name=name,
-                      template_name=name,
-                      name=name,
-                      object_path=path)
+  ret = models.Symbol(
+    section,
+    size,
+    full_name=name,
+    template_name=name,
+    name=name,
+    object_path=path,
+  )
   if container:
     ret.container = container
   return ret
@@ -37,46 +39,47 @@ def _CreateSizeInfo(aliases=None, containers=None):
   metadata = {}
   section_sizes = {'.text': 100, '.bss': 40}
   metrics_by_file = {
-      'classes.dex': {
-          'COUNT/HEADER': 1,
-          'COUNT/STRING_ID': 11,
-          'COUNT/CODE': 3,
-          'COUNT/STRING_DATA': 11,
-          'SIZE/HEADER': 1024,
-          'SIZE/STRING_ID': 44,
-          'SIZE/CODE': 1337,
-          'SIZE/STRING_DATA': 888,
-      },
+    'classes.dex': {
+      'COUNT/HEADER': 1,
+      'COUNT/STRING_ID': 11,
+      'COUNT/CODE': 3,
+      'COUNT/STRING_DATA': 11,
+      'SIZE/HEADER': 1024,
+      'SIZE/STRING_ID': 44,
+      'SIZE/CODE': 1337,
+      'SIZE/STRING_DATA': 888,
+    },
   }
   if not containers:
     containers = [
-        models.Container('',
-                         metadata=metadata,
-                         section_sizes=section_sizes,
-                         metrics_by_file=metrics_by_file)
+      models.Container(
+        '',
+        metadata=metadata,
+        section_sizes=section_sizes,
+        metrics_by_file=metrics_by_file,
+      )
     ]
   models.BaseContainer.AssignShortNames(containers)
   TEXT = models.SECTION_TEXT
   symbols = [
-      _MakeSym(models.SECTION_DEX_METHOD, 10, 'a', 'com.Foo#bar()'),
-      _MakeSym(TEXT, 20, 'a', '.Lfoo'),
-      _MakeSym(TEXT, 30, 'b'),
-      _MakeSym(TEXT, 40, 'b'),
-      _MakeSym(TEXT, 50, 'b'),
-      _MakeSym(TEXT, 60, ''),
+    _MakeSym(models.SECTION_DEX_METHOD, 10, 'a', 'com.Foo#bar()'),
+    _MakeSym(TEXT, 20, 'a', '.Lfoo'),
+    _MakeSym(TEXT, 30, 'b'),
+    _MakeSym(TEXT, 40, 'b'),
+    _MakeSym(TEXT, 50, 'b'),
+    _MakeSym(TEXT, 60, ''),
   ]
   for s in symbols:
     s.container = containers[0]
   if aliases:
     for tup in aliases:
-      syms = symbols[tup[0]:tup[1]]
+      syms = symbols[tup[0] : tup[1]]
       for sym in syms:
         sym.aliases = syms
   return models.SizeInfo(build_config, containers, symbols)
 
 
 class DiffTest(unittest.TestCase):
-
   def testIdentity(self):
     size_info1 = _CreateSizeInfo()
     size_info2 = _CreateSizeInfo()
@@ -117,11 +120,11 @@ class DiffTest(unittest.TestCase):
   def testDontMatchAcrossSections(self):
     size_info1 = _CreateSizeInfo()
     size_info1.raw_symbols += [
-        _MakeSym(models.SECTION_TEXT, 11, 'asdf', name='Hello'),
+      _MakeSym(models.SECTION_TEXT, 11, 'asdf', name='Hello'),
     ]
     size_info2 = _CreateSizeInfo()
     size_info2.raw_symbols += [
-        _MakeSym(models.SECTION_RODATA, 11, 'asdf', name='Hello'),
+      _MakeSym(models.SECTION_RODATA, 11, 'asdf', name='Hello'),
     ]
     # For simplicity, not associating |symbols| with |containers|.
     d = diff.Diff(size_info1, size_info2)
@@ -129,14 +132,12 @@ class DiffTest(unittest.TestCase):
     self.assertEqual(0, d.raw_symbols.size)
 
   def testDontMatchAcrossContainers(self):
-    container_a = models.Container('A',
-                                   metadata={},
-                                   section_sizes={},
-                                   metrics_by_file={})
-    container_b = models.Container('B',
-                                   metadata={},
-                                   section_sizes={},
-                                   metrics_by_file={})
+    container_a = models.Container(
+      'A', metadata={}, section_sizes={}, metrics_by_file={}
+    )
+    container_b = models.Container(
+      'B', metadata={}, section_sizes={}, metrics_by_file={}
+    )
     containers = [container_a, container_b]
     size_info1 = _CreateSizeInfo(containers=containers)
     size_info1.raw_symbols[0].container = container_b
@@ -182,17 +183,17 @@ class DiffTest(unittest.TestCase):
     TEXT = models.SECTION_TEXT
     size_info1 = _CreateSizeInfo()
     size_info1.raw_symbols += [
-        _MakeSym(TEXT, 11, 'a', name='.L__unnamed_1193'),
-        _MakeSym(TEXT, 22, 'a', name='.L__unnamed_1194'),
-        _MakeSym(TEXT, 33, 'a', name='SingleCategoryPreferences$3#this$0'),
-        _MakeSym(TEXT, 44, 'a', name='.L.ref.tmp.2'),
+      _MakeSym(TEXT, 11, 'a', name='.L__unnamed_1193'),
+      _MakeSym(TEXT, 22, 'a', name='.L__unnamed_1194'),
+      _MakeSym(TEXT, 33, 'a', name='SingleCategoryPreferences$3#this$0'),
+      _MakeSym(TEXT, 44, 'a', name='.L.ref.tmp.2'),
     ]
     size_info2 = _CreateSizeInfo()
     size_info2.raw_symbols += [
-        _MakeSym(TEXT, 11, 'a', name='.L__unnamed_2194'),
-        _MakeSym(TEXT, 22, 'a', name='.L__unnamed_2195'),
-        _MakeSym(TEXT, 33, 'a', name='SingleCategoryPreferences$9#this$009'),
-        _MakeSym(TEXT, 44, 'a', name='.L.ref.tmp.137'),
+      _MakeSym(TEXT, 11, 'a', name='.L__unnamed_2194'),
+      _MakeSym(TEXT, 22, 'a', name='.L__unnamed_2195'),
+      _MakeSym(TEXT, 33, 'a', name='SingleCategoryPreferences$9#this$009'),
+      _MakeSym(TEXT, 44, 'a', name='.L.ref.tmp.137'),
     ]
     # For simplicity, not associating |symbols| with |containers|.
     d = diff.Diff(size_info1, size_info2)

@@ -38,16 +38,15 @@ from lib.results import result_types
 
 
 class ResultsCollector:
-
   def __init__(self):
     self.results = {}
 
   def add_result(self, name, identifier, value, units):
     assert name not in self.results
     self.results[name] = {
-        'identifier': identifier,
-        'value': int(value),
-        'units': units
+      'identifier': identifier,
+      'value': int(value),
+      'units': units,
     }
 
     # Legacy printing, previously used for parsing the text logs.
@@ -61,13 +60,18 @@ def get_size(filename):
 def get_linux_stripped_size(filename):
   # Assumes |filename| is in out/Release
   src_dir = os.path.dirname(os.path.dirname(os.path.dirname(filename)))
-  llvm_strip_path = os.path.join(src_dir, 'third_party', 'llvm-build',
-                                 'Release+Asserts', 'bin', 'llvm-strip')
+  llvm_strip_path = os.path.join(
+    src_dir, 'third_party', 'llvm-build', 'Release+Asserts', 'bin', 'llvm-strip'
+  )
 
   with tempfile.NamedTemporaryFile() as stripped_file:
     strip_cmd = [
-        llvm_strip_path, '--strip-unneeded', '--strip-debug', '-o',
-        stripped_file.name, filename
+      llvm_strip_path,
+      '--strip-unneeded',
+      '--strip-debug',
+      '-o',
+      stripped_file.name,
+      filename,
     ]
     result = 0
     result, _ = run_process(result, strip_cmd)
@@ -102,81 +106,126 @@ def main_mac(output_directory, results_collector, size_path):
     framework_dsym_bundle = framework_name + '.dSYM'
 
     chromium_app_dir = os.path.join(output_directory, app_bundle)
-    chromium_executable = os.path.join(chromium_app_dir, 'Contents', 'MacOS',
-                                       base_name)
+    chromium_executable = os.path.join(
+      chromium_app_dir, 'Contents', 'MacOS', base_name
+    )
 
     chromium_framework_dir = os.path.join(output_directory, framework_bundle)
-    chromium_framework_executable = os.path.join(chromium_framework_dir,
-                                                 framework_name)
+    chromium_framework_executable = os.path.join(
+      chromium_framework_dir, framework_name
+    )
 
-    chromium_framework_dsym_dir = os.path.join(output_directory,
-                                               framework_dsym_bundle)
-    chromium_framework_dsym = os.path.join(chromium_framework_dsym_dir,
-                                           'Contents', 'Resources', 'DWARF',
-                                           framework_name)
+    chromium_framework_dsym_dir = os.path.join(
+      output_directory, framework_dsym_bundle
+    )
+    chromium_framework_dsym = os.path.join(
+      chromium_framework_dsym_dir,
+      'Contents',
+      'Resources',
+      'DWARF',
+      framework_name,
+    )
     if os.path.exists(chromium_executable):
       print_dict = {
-          # Remove spaces in the names so any downstream processing is less
-          # likely to choke.
-          'app_name': re.sub(r'\s', '', base_name),
-          'app_bundle': re.sub(r'\s', '', app_bundle),
-          'framework_name': re.sub(r'\s', '', framework_name),
-          'framework_bundle': re.sub(r'\s', '', framework_bundle),
-          'app_size': get_size(chromium_executable),
-          'framework_size': get_size(chromium_framework_executable),
-          'framework_dsym_name': re.sub(r'\s', '', framework_name) + 'Dsym',
-          'framework_dsym_size': get_size(chromium_framework_dsym),
+        # Remove spaces in the names so any downstream processing is less
+        # likely to choke.
+        'app_name': re.sub(r'\s', '', base_name),
+        'app_bundle': re.sub(r'\s', '', app_bundle),
+        'framework_name': re.sub(r'\s', '', framework_name),
+        'framework_bundle': re.sub(r'\s', '', framework_bundle),
+        'app_size': get_size(chromium_executable),
+        'framework_size': get_size(chromium_framework_executable),
+        'framework_dsym_name': re.sub(r'\s', '', framework_name) + 'Dsym',
+        'framework_dsym_size': get_size(chromium_framework_dsym),
       }
 
       # Collect the segment info out of the App
       result, stdout = run_process(result, [size_path, chromium_executable])
-      print_dict['app_text'], print_dict['app_data'], print_dict['app_objc'] = \
-          re.search(r'(\d+)\s+(\d+)\s+(\d+)', stdout).groups()
+      print_dict['app_text'], print_dict['app_data'], print_dict['app_objc'] = (
+        re.search(r'(\d+)\s+(\d+)\s+(\d+)', stdout).groups()
+      )
 
       # Collect the segment info out of the Framework
-      result, stdout = run_process(result,
-                                   [size_path, chromium_framework_executable])
-      print_dict['framework_text'], print_dict['framework_data'], \
-        print_dict['framework_objc'] = \
-          re.search(r'(\d+)\s+(\d+)\s+(\d+)', stdout).groups()
+      result, stdout = run_process(
+        result, [size_path, chromium_framework_executable]
+      )
+      (
+        print_dict['framework_text'],
+        print_dict['framework_data'],
+        print_dict['framework_objc'],
+      ) = re.search(r'(\d+)\s+(\d+)\s+(\d+)', stdout).groups()
 
       # Collect the whole size of the App bundle on disk (include the framework)
       whole_size = 0
-      for root_dir, _, filenames in os.walk(chromium_app_dir,
-                                            followlinks=False):
+      for root_dir, _, filenames in os.walk(
+        chromium_app_dir, followlinks=False
+      ):
         for filename in filenames:
           full_path = os.path.join(root_dir, filename)
           if not os.path.islink(full_path):
             whole_size += get_size(full_path)
       print_dict['app_bundle_size'] = whole_size
 
-      results_collector.add_result(print_dict['app_name'],
-                                   print_dict['app_name'],
-                                   print_dict['app_size'], 'bytes')
-      results_collector.add_result('%s-__TEXT' % print_dict['app_name'],
-                                   '__TEXT', print_dict['app_text'], 'bytes')
-      results_collector.add_result('%s-__DATA' % print_dict['app_name'],
-                                   '__DATA', print_dict['app_data'], 'bytes')
-      results_collector.add_result('%s-__OBJC' % print_dict['app_name'],
-                                   '__OBJC', print_dict['app_objc'], 'bytes')
-      results_collector.add_result(print_dict['framework_name'],
-                                   print_dict['framework_name'],
-                                   print_dict['framework_size'], 'bytes')
-      results_collector.add_result('%s-__TEXT' % print_dict['framework_name'],
-                                   '__TEXT', print_dict['framework_text'],
-                                   'bytes')
-      results_collector.add_result('%s-__DATA' % print_dict['framework_name'],
-                                   '__DATA', print_dict['framework_data'],
-                                   'bytes')
-      results_collector.add_result('%s-__OBJC' % print_dict['framework_name'],
-                                   '__OBJC', print_dict['framework_objc'],
-                                   'bytes')
-      results_collector.add_result(print_dict['app_bundle'],
-                                   print_dict['app_bundle'],
-                                   print_dict['app_bundle_size'], 'bytes')
-      results_collector.add_result(print_dict['framework_dsym_name'],
-                                   print_dict['framework_dsym_name'],
-                                   print_dict['framework_dsym_size'], 'bytes')
+      results_collector.add_result(
+        print_dict['app_name'],
+        print_dict['app_name'],
+        print_dict['app_size'],
+        'bytes',
+      )
+      results_collector.add_result(
+        '%s-__TEXT' % print_dict['app_name'],
+        '__TEXT',
+        print_dict['app_text'],
+        'bytes',
+      )
+      results_collector.add_result(
+        '%s-__DATA' % print_dict['app_name'],
+        '__DATA',
+        print_dict['app_data'],
+        'bytes',
+      )
+      results_collector.add_result(
+        '%s-__OBJC' % print_dict['app_name'],
+        '__OBJC',
+        print_dict['app_objc'],
+        'bytes',
+      )
+      results_collector.add_result(
+        print_dict['framework_name'],
+        print_dict['framework_name'],
+        print_dict['framework_size'],
+        'bytes',
+      )
+      results_collector.add_result(
+        '%s-__TEXT' % print_dict['framework_name'],
+        '__TEXT',
+        print_dict['framework_text'],
+        'bytes',
+      )
+      results_collector.add_result(
+        '%s-__DATA' % print_dict['framework_name'],
+        '__DATA',
+        print_dict['framework_data'],
+        'bytes',
+      )
+      results_collector.add_result(
+        '%s-__OBJC' % print_dict['framework_name'],
+        '__OBJC',
+        print_dict['framework_objc'],
+        'bytes',
+      )
+      results_collector.add_result(
+        print_dict['app_bundle'],
+        print_dict['app_bundle'],
+        print_dict['app_bundle_size'],
+        'bytes',
+      )
+      results_collector.add_result(
+        print_dict['framework_dsym_name'],
+        print_dict['framework_dsym_name'],
+        print_dict['framework_dsym_size'],
+        'bytes',
+      )
 
       # Found a match, don't check the other base_names.
       return result
@@ -204,19 +253,21 @@ def check_linux_binary(binary_name, output_directory):
   result = 0
   sizes = []
 
-  sizes.append((binary_name, binary_name, 'size', get_size(binary_file),
-                'bytes'))
+  sizes.append(
+    (binary_name, binary_name, 'size', get_size(binary_file), 'bytes')
+  )
 
   result, stripped_size = get_linux_stripped_size(binary_file)
-  sizes.append((binary_name + '-stripped', 'stripped', 'stripped',
-                stripped_size, 'bytes'))
+  sizes.append(
+    (binary_name + '-stripped', 'stripped', 'stripped', stripped_size, 'bytes')
+  )
 
   result, stdout = run_process(result, ['size', binary_file])
   text, data, bss = re.search(r'(\d+)\s+(\d+)\s+(\d+)', stdout).groups()
   sizes += [
-      (binary_name + '-text', 'text', '', text, 'bytes'),
-      (binary_name + '-data', 'data', '', data, 'bytes'),
-      (binary_name + '-bss', 'bss', '', bss, 'bytes'),
+    (binary_name + '-text', 'text', '', text, 'bytes'),
+    (binary_name + '-data', 'data', '', data, 'bytes'),
+    (binary_name + '-bss', 'bss', '', bss, 'bytes'),
   ]
 
   # Determine if the binary has the DT_TEXTREL marker.
@@ -241,12 +292,12 @@ def main_linux(output_directory, results_collector, size_path):
   """
   assert size_path is None
   binaries = [
-      'chrome',
-      'nacl_helper',
-      'nacl_helper_bootstrap',
-      'libffmpegsumo.so',
-      'libgcflashplayer.so',
-      'libppGoogleNaClPluginChrome.so',
+    'chrome',
+    'nacl_helper',
+    'nacl_helper_bootstrap',
+    'libffmpegsumo.so',
+    'libgcflashplayer.so',
+    'libppGoogleNaClPluginChrome.so',
   ]
 
   result = 0
@@ -263,8 +314,8 @@ def main_linux(output_directory, results_collector, size_path):
       totals[totals_id] = totals.get(totals_id, 0) + int(value)
 
   files = [
-      'nacl_irt_x86_64.nexe',
-      'resources.pak',
+    'nacl_irt_x86_64.nexe',
+    'resources.pak',
   ]
 
   for filename in files:
@@ -282,16 +333,16 @@ def main_linux(output_directory, results_collector, size_path):
   # also deliver data structures rather than printing, and the logic for
   # the printing and the summing totals is shared across all three flavors.
   for (identifier, units), value in sorted(totals.items()):
-    results_collector.add_result('totals-%s' % identifier, identifier, value,
-                                 units)
+    results_collector.add_result(
+      'totals-%s' % identifier, identifier, value, units
+    )
 
   return result
 
 
-def check_android_binaries(binaries,
-                           output_directory,
-                           results_collector,
-                           binaries_to_print=None):
+def check_android_binaries(
+  binaries, output_directory, results_collector, binaries_to_print=None
+):
   """Common method for printing size information for Android targets.
 
   Prints size information for each element of binaries in the output
@@ -304,7 +355,7 @@ def check_android_binaries(binaries,
   if not binaries_to_print:
     binaries_to_print = binaries
 
-  for (binary, binary_to_print) in zip(binaries, binaries_to_print):
+  for binary, binary_to_print in zip(binaries, binaries_to_print):
     this_result, this_sizes = check_linux_binary(binary, output_directory)
     if result == 0:
       result = this_result
@@ -324,9 +375,9 @@ def main_android(output_directory, results_collector, size_path):
   """
   assert size_path is None
   binaries = [
-      'chrome_public_apk/libs/armeabi-v7a/libchrome.so',
-      'lib/libchrome.so',
-      'libchrome.so',
+    'chrome_public_apk/libs/armeabi-v7a/libchrome.so',
+    'lib/libchrome.so',
+    'libchrome.so',
   ]
 
   return check_android_binaries(binaries, output_directory, results_collector)
@@ -341,15 +392,19 @@ def main_android_cronet(output_directory, results_collector, size_path):
   assert size_path is None
   # Use version in binary file name, but not in printed output.
   binaries_with_paths = glob.glob(
-      os.path.join(output_directory, 'libcronet.*.so'))
+    os.path.join(output_directory, 'libcronet.*.so')
+  )
   num_binaries = len(binaries_with_paths)
   assert num_binaries == 1, "Got %d binaries: %s" % (
-      num_binaries, ', '.join(binaries_with_paths))
+    num_binaries,
+    ', '.join(binaries_with_paths),
+  )
   binaries = [os.path.basename(binaries_with_paths[0])]
   binaries_to_print = ['libcronet.so']
 
-  return check_android_binaries(binaries, output_directory, results_collector,
-                                binaries_to_print)
+  return check_android_binaries(
+    binaries, output_directory, results_collector, binaries_to_print
+  )
 
 
 def main_win(output_directory, results_collector, size_path):
@@ -360,25 +415,25 @@ def main_win(output_directory, results_collector, size_path):
   """
   assert size_path is None
   files = [
-      'chrome.dll',
-      'chrome.dll.pdb',
-      'chrome.exe',
-      'chrome_child.dll',
-      'chrome_child.dll.pdb',
-      'chrome_elf.dll',
-      'chrome_proxy.exe',
-      'chrome_watcher.dll',
-      'elevated_tracing_service.exe',
-      'elevation_service.exe',
-      'libEGL.dll',
-      'libGLESv2.dll',
-      'mini_installer.exe',
-      'notification_helper.exe',
-      'resources.pak',
-      'setup.exe',
-      'WidevineCdm\\_platform_specific\\win_arm64\\widevinecdm.dll',
-      'WidevineCdm\\_platform_specific\\win_x64\\widevinecdm.dll',
-      'WidevineCdm\\_platform_specific\\win_x86\\widevinecdm.dll',
+    'chrome.dll',
+    'chrome.dll.pdb',
+    'chrome.exe',
+    'chrome_child.dll',
+    'chrome_child.dll.pdb',
+    'chrome_elf.dll',
+    'chrome_proxy.exe',
+    'chrome_watcher.dll',
+    'elevated_tracing_service.exe',
+    'elevation_service.exe',
+    'libEGL.dll',
+    'libGLESv2.dll',
+    'mini_installer.exe',
+    'notification_helper.exe',
+    'resources.pak',
+    'setup.exe',
+    'WidevineCdm\\_platform_specific\\win_arm64\\widevinecdm.dll',
+    'WidevineCdm\\_platform_specific\\win_x64\\widevinecdm.dll',
+    'WidevineCdm\\_platform_specific\\win_x86\\widevinecdm.dll',
   ]
 
   for f in files:
@@ -413,38 +468,42 @@ def main():
     default_platform = None
 
   main_map = {
-      'android': main_android,
-      'android-cronet': main_android_cronet,
-      'linux': main_linux,
-      'mac': main_mac,
-      'win': main_win,
+    'android': main_android,
+    'android-cronet': main_android_cronet,
+    'linux': main_linux,
+    'mac': main_mac,
+    'win': main_win,
   }
   platforms = sorted(main_map.keys())
 
   parser = argparse.ArgumentParser()
   parser.add_argument(
-      '--output-directory',
-      type=os.path.realpath,
-      help='Chromium output directory, e.g. /path/to/src/out/Debug')
+    '--output-directory',
+    type=os.path.realpath,
+    help='Chromium output directory, e.g. /path/to/src/out/Debug',
+  )
   parser.add_argument(
-      '--platform',
-      default=default_platform,
-      help='specify platform (%s) [default: %%(default)s]' %
-      ', '.join(platforms))
+    '--platform',
+    default=default_platform,
+    help='specify platform (%s) [default: %%(default)s]' % ', '.join(platforms),
+  )
   parser.add_argument('--size-path', default=None, help='Path to size binary')
 
   # Accepted to conform to the isolated script interface, but ignored.
   parser.add_argument('--isolated-script-test-filter', help=argparse.SUPPRESS)
   parser.add_argument(
-      '--isolated-script-test-perf-output', help=argparse.SUPPRESS)
+    '--isolated-script-test-perf-output', help=argparse.SUPPRESS
+  )
   parser.add_argument('--isolated-script-test-repeat', help=argparse.SUPPRESS)
-  parser.add_argument('--isolated-script-test-launcher-retry-limit',
-                      help=argparse.SUPPRESS)
+  parser.add_argument(
+    '--isolated-script-test-launcher-retry-limit', help=argparse.SUPPRESS
+  )
 
   parser.add_argument(
-      '--isolated-script-test-output',
-      type=os.path.realpath,
-      help='File to which simplified JSON results will be written.')
+    '--isolated-script-test-output',
+    type=os.path.realpath,
+    help='File to which simplified JSON results will be written.',
+  )
 
   args = parser.parse_args()
 
@@ -459,16 +518,17 @@ def main():
     return 2
 
   isolated_script_output = {
-      'valid': False,
-      'failures': [],
-      'version': 'simplified'
+    'valid': False,
+    'failures': [],
+    'version': 'simplified',
   }
   test_name = 'sizes'
 
   results_directory = None
   if args.isolated_script_test_output:
     results_directory = os.path.join(
-        os.path.dirname(args.isolated_script_test_output), test_name)
+      os.path.dirname(args.isolated_script_test_output), test_name
+    )
     if not os.path.exists(results_directory):
       os.makedirs(results_directory)
 
@@ -477,9 +537,9 @@ def main():
   try:
     rc = real_main(args.output_directory, results_collector, args.size_path)
     isolated_script_output = {
-        'valid': True,
-        'failures': [test_name] if rc else [],
-        'version': 'simplified',
+      'valid': True,
+      'failures': [test_name] if rc else [],
+      'version': 'simplified',
     }
   finally:
     if results_directory:
@@ -491,13 +551,15 @@ def main():
       # We need to add a bit more data to the results and rearrange some things,
       # otherwise the conversion fails due to the provided data being malformed.
       updated_results = format_for_histograms_conversion(
-          results_collector.results)
+        results_collector.results
+      )
       with open(histogram_path, 'w') as f:
         json.dump(updated_results, f)
       histogram_result = convert_chart_json.ConvertChartJson(histogram_path)
       if histogram_result.returncode != 0:
         sys.stderr.write(
-            'chartjson conversion failed: %s\n' % histogram_result.stdout)
+          'chartjson conversion failed: %s\n' % histogram_result.stdout
+        )
         rc = rc or histogram_result.returncode
       else:
         with open(histogram_path, 'wb') as f:
@@ -512,16 +574,18 @@ def main():
       # Source comes from:
       # infra/go/src/go.chromium.org/luci/resultdb/sink/proto/v1/test_result.proto
       struct_test_dict = {
-          'coarseName': None,  # Not used for single tests.
-          'fineName': None,  # Not used for single tests.
-          'caseNameComponents': ['*fixture'],
+        'coarseName': None,  # Not used for single tests.
+        'fineName': None,  # Not used for single tests.
+        'caseNameComponents': ['*fixture'],
       }
-      result_sink_client.Post(test_name,
-                              status,
-                              None, # duration
-                              None, # test_log
-                              None, # test file
-                              test_id_structured=struct_test_dict)
+      result_sink_client.Post(
+        test_name,
+        status,
+        None,  # duration
+        None,  # test_log
+        None,  # test file
+        test_id_structured=struct_test_dict,
+      )
 
   return rc
 

@@ -25,13 +25,7 @@ class GetTaskDigestTest(unittest.TestCase):
   def test_input_properties_success(self) -> None:
     """Verifies hash extraction from input swarm_hashes."""
     data = {
-        'input': {
-            'properties': {
-                'swarm_hashes': {
-                    'net_unittests': 'abc123/810'
-                }
-            }
-        }
+      'input': {'properties': {'swarm_hashes': {'net_unittests': 'abc123/810'}}}
     }
     mock_proc = mock.MagicMock(returncode=0, stdout=json.dumps(data))
     self.mock_run.return_value = mock_proc
@@ -52,13 +46,9 @@ class GetTaskDigestTest(unittest.TestCase):
     """Verifies extraction from output swarm_hashes."""
     data_in = {'input': {'properties': {}}}
     data_out = {
-        'output': {
-            'properties': {
-                'swarm_hashes': {
-                    'net_unittests': 'hash111/50'
-                }
-            }
-        }
+      'output': {
+        'properties': {'swarm_hashes': {'net_unittests': 'hash111/50'}}
+      }
     }
     proc_in = mock.MagicMock(returncode=0, stdout=json.dumps(data_in))
     proc_out = mock.MagicMock(returncode=0, stdout=json.dumps(data_out))
@@ -70,15 +60,13 @@ class GetTaskDigestTest(unittest.TestCase):
     """Verifies extraction from swarming_trigger_properties."""
     data_in = {'input': {'properties': {}}}
     data_out = {
-        'output': {
-            'properties': {
-                'swarming_trigger_properties': {
-                    'swarm_hashes': {
-                        'net_unittests': 'hash789/100'
-                    }
-                }
-            }
+      'output': {
+        'properties': {
+          'swarming_trigger_properties': {
+            'swarm_hashes': {'net_unittests': 'hash789/100'}
+          }
         }
+      }
     }
     proc_in = mock.MagicMock(returncode=0, stdout=json.dumps(data_in))
     proc_out = mock.MagicMock(returncode=0, stdout=json.dumps(data_out))
@@ -91,9 +79,7 @@ class GetTaskDigestTest(unittest.TestCase):
     data_in1 = {'input': {'properties': {}}}
     data_out1 = {'output': {'properties': {}}}
     data_steps = {
-        'steps': [{
-            'summaryMarkdown': '* [8000000000000000002](url)'
-        }]
+      'steps': [{'summaryMarkdown': '* [8000000000000000002](url)'}]
     }
     data_in2 = {'input': {'properties': {}}}
     data_out2 = {'output': {'properties': {'net_unittests': 'childhash/999'}}}
@@ -103,7 +89,11 @@ class GetTaskDigestTest(unittest.TestCase):
     proc_in2 = mock.MagicMock(returncode=0, stdout=json.dumps(data_in2))
     proc_out2 = mock.MagicMock(returncode=0, stdout=json.dumps(data_out2))
     self.mock_run.side_effect = [
-        proc_in1, proc_out1, proc_steps, proc_in2, proc_out2
+      proc_in1,
+      proc_out1,
+      proc_steps,
+      proc_in2,
+      proc_out2,
     ]
     res = gtd.get_digest_from_properties('orch', 'net_unittests')
     self.assertEqual(res, 'childhash')
@@ -126,21 +116,24 @@ class GetTaskDigestTest(unittest.TestCase):
   def test_main_not_found(self, _) -> None:
     """Verifies sys.exit(1) when digest is missing."""
     err_buf = io.StringIO()
-    with mock.patch.object(sys, 'argv',
-                           ['gtd.py', '--build', '1', '--step', 's']):
+    with mock.patch.object(
+      sys, 'argv', ['gtd.py', '--build', '1', '--step', 's']
+    ):
       with contextlib.redirect_stderr(err_buf):
         with self.assertRaises(SystemExit) as cm:
           gtd.main()
     self.assertEqual(cm.exception.code, 1)
     self.assertIn('not found', err_buf.getvalue())
 
-  @mock.patch('get_task_digest.get_digest_from_properties',
-              return_value='hash789')
+  @mock.patch(
+    'get_task_digest.get_digest_from_properties', return_value='hash789'
+  )
   def test_main_success(self, _) -> None:
     """Verifies digest is printed to stdout."""
     out_buf = io.StringIO()
-    with mock.patch.object(sys, 'argv',
-                           ['gtd.py', '--build', '1', '--step', 's']):
+    with mock.patch.object(
+      sys, 'argv', ['gtd.py', '--build', '1', '--step', 's']
+    ):
       with contextlib.redirect_stdout(out_buf):
         gtd.main()
     self.assertIn('hash789', out_buf.getvalue())

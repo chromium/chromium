@@ -14,10 +14,11 @@ _STATUS_VERIFIED = 2
 # Src root of SuperSize being run. Not to be confused with src root of the input
 # binary being archived.
 _TOOLS_SRC_ROOT = os.environ.get(
-    'CHECKOUT_SOURCE_ROOT',
-    os.path.abspath(
-        os.path.join(os.path.dirname(__file__), os.pardir, os.pardir,
-                     os.pardir)))
+  'CHECKOUT_SOURCE_ROOT',
+  os.path.abspath(
+    os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, os.pardir)
+  ),
+)
 
 
 class _PathFinder:
@@ -74,9 +75,12 @@ class OutputDirectoryFinder(_PathFinder):
   def Verify(self):
     if not self._value or not os.path.isdir(self._value):
       raise Exception(
-          'Invalid --output-directory. Path not found: {}\n'
-          'Use --no-output-directory to disable features that rely on it.'.
-          format(self._value))
+        'Invalid --output-directory. Path not found: {}\n'
+        'Use --no-output-directory to disable features that rely on it.'.format(
+          self._value
+        )
+      )
+
 
 def GetSrcRootFromOutputDirectory(output_directory):
   """Returns the source root directory from output directory.
@@ -99,8 +103,10 @@ def GetSrcRootFromOutputDirectory(output_directory):
       cur_dir, prev_dir = os.path.dirname(cur_dir), cur_dir
       if cur_dir == prev_dir:  # Reached root.
         break
-  logging.warning('Cannot deduce src root from output directory. Falling back '
-                  'to tools src root.')
+  logging.warning(
+    'Cannot deduce src root from output directory. Falling back '
+    'to tools src root.'
+  )
   return _TOOLS_SRC_ROOT
 
 
@@ -113,8 +119,9 @@ def FromToolsSrcRoot(*args):
 
 
 def _LlvmTool(name):
-  default = FromToolsSrcRoot('third_party', 'llvm-build', 'Release+Asserts',
-                             'bin', 'llvm-')
+  default = FromToolsSrcRoot(
+    'third_party', 'llvm-build', 'Release+Asserts', 'bin', 'llvm-'
+  )
   actual = os.environ.get('SUPERSIZE_TOOL_PREFIX', default)
   # abspath since some executions use cwd= argument.
   return os.path.abspath(actual + name)
@@ -124,8 +131,11 @@ def CheckLlvmToolsAvailable():
   test_path = _LlvmTool('objdump')
   if not os.path.isfile(test_path):
     raise Exception(
-        ('File not found: {}\nProbably need to run: '
-         'tools/clang/scripts/update.py --package=objdump').format(test_path))
+      (
+        'File not found: {}\nProbably need to run: '
+        'tools/clang/scripts/update.py --package=objdump'
+      ).format(test_path)
+    )
 
 
 def GetCppFiltPath():
@@ -155,15 +165,29 @@ def GetObjDumpPath():
 def GetDisassembleObjDumpPath(arch):
   path = None
   if arch == 'arm':
-    path = FromToolsSrcRoot('third_party', 'android_toolchain', 'ndk',
-                            'toolchains', 'arm-linux-androideabi-4.9',
-                            'prebuilt', 'linux-x86_64', 'bin',
-                            'arm-linux-androideabi-objdump')
+    path = FromToolsSrcRoot(
+      'third_party',
+      'android_toolchain',
+      'ndk',
+      'toolchains',
+      'arm-linux-androideabi-4.9',
+      'prebuilt',
+      'linux-x86_64',
+      'bin',
+      'arm-linux-androideabi-objdump',
+    )
   elif arch == 'arm64':
-    path = FromToolsSrcRoot('third_party', 'android_toolchain', 'ndk',
-                            'toolchains', 'aarch64-linux-android-4.9',
-                            'prebuilt', 'linux-x86_64', 'bin',
-                            'aarch64-linux-android-objdump')
+    path = FromToolsSrcRoot(
+      'third_party',
+      'android_toolchain',
+      'ndk',
+      'toolchains',
+      'aarch64-linux-android-4.9',
+      'prebuilt',
+      'linux-x86_64',
+      'bin',
+      'aarch64-linux-android-objdump',
+    )
   if path and os.path.exists(path):
     return path
 
@@ -180,14 +204,16 @@ def GetStripPath():
 
 
 def GetApkAnalyzerPath():
-  default_path = FromToolsSrcRoot('third_party', 'android_build_tools',
-                                  'apkanalyzer', 'apkanalyzer')
+  default_path = FromToolsSrcRoot(
+    'third_party', 'android_build_tools', 'apkanalyzer', 'apkanalyzer'
+  )
   return os.environ.get('SUPERSIZE_APK_ANALYZER', default_path)
 
 
 def GetAapt2Path():
-  default_path = FromToolsSrcRoot('third_party', 'android_build_tools', 'aapt2',
-                                  'cipd', 'aapt2')
+  default_path = FromToolsSrcRoot(
+    'third_party', 'android_build_tools', 'aapt2', 'cipd', 'aapt2'
+  )
   return os.environ.get('SUPERSIZE_AAPT2', default_path)
 
 

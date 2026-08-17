@@ -38,7 +38,8 @@ class PakIdMap:
         pak_id = int(name[id_start_idx:id_end_idx])
         object_paths = object_paths_by_name[name]
         self._dict[pak_id].update(
-            (o, ninja_source_mapper.FindSourceForPath(o)) for o in object_paths)
+          (o, ninja_source_mapper.FindSourceForPath(o)) for o in object_paths
+        )
 
   def Lookup(self, pak_id):
     ret = self._dict.get(pak_id)
@@ -71,8 +72,9 @@ def _CreateSymbolsFromFile(file_name, contents, res_info, symbols_by_id):
   # Reversed so that aliases are clobbered by the entries they are aliases of.
   id_map = {id(v): k for k, v in reversed(contents.resources.items())}
   alias_map = {
-      k: id_map[id(v)]
-      for k, v in contents.resources.items() if id_map[id(v)] != k
+    k: id_map[id(v)]
+    for k, v in contents.resources.items()
+    if id_map[id(v)] != k
   }
   name = posixpath.basename(file_name)
   # Hyphens used for language regions. E.g.: en-GB.pak, sr-Latn.pak, ...
@@ -85,7 +87,8 @@ def _CreateSymbolsFromFile(file_name, contents, res_info, symbols_by_id):
   overhead = 12 + 6  # Header size plus extra offset
   # Key just needs to be unique from other IDs and pak overhead symbols.
   symbols_by_id[-len(symbols_by_id) - 1] = models.Symbol(
-      section_name, overhead, full_name='Overhead: {}'.format(file_name))
+    section_name, overhead, full_name='Overhead: {}'.format(file_name)
+  )
   for pak_id in sorted(contents.resources):
     aliased_pak_id = alias_map.get(pak_id)
     if aliased_pak_id is not None:
@@ -99,12 +102,13 @@ def _CreateSymbolsFromFile(file_name, contents, res_info, symbols_by_id):
       name, source_path = res_info[pak_id]
       if pak_id not in symbols_by_id:
         full_name = '{}: {}'.format(source_path, name)
-        new_symbol = models.Symbol(section_name,
-                                   0,
-                                   address=pak_id,
-                                   full_name=full_name)
-        if (section_name == models.SECTION_PAK_NONTRANSLATED
-            and _IsPakContentUncompressed(resource_data)):
+        new_symbol = models.Symbol(
+          section_name, 0, address=pak_id, full_name=full_name
+        )
+        if (
+          section_name == models.SECTION_PAK_NONTRANSLATED
+          and _IsPakContentUncompressed(resource_data)
+        ):
           new_symbol.flags |= models.FLAG_UNCOMPRESSED
         symbols_by_id[pak_id] = new_symbol
 
@@ -126,13 +130,15 @@ def _FinalizeSymbols(symbols_by_id, pak_id_map):
     aliases = symbol.aliases or [symbol]
     symbol.aliases = aliases
     for object_path, source_path in path_tuples[1:]:
-      new_sym = models.Symbol(symbol.section_name,
-                              symbol.size,
-                              address=symbol.address,
-                              full_name=symbol.full_name,
-                              object_path=object_path,
-                              source_path=source_path,
-                              aliases=aliases)
+      new_sym = models.Symbol(
+        symbol.section_name,
+        symbol.size,
+        address=symbol.address,
+        full_name=symbol.full_name,
+        object_path=object_path,
+        source_path=source_path,
+        aliases=aliases,
+      )
       aliases.append(new_sym)
       raw_symbols.append(new_sym)
 
@@ -141,8 +147,9 @@ def _FinalizeSymbols(symbols_by_id, pak_id_map):
   return raw_symbols
 
 
-def CreatePakSymbolsFromApk(section_ranges, apk_path, apk_pak_paths,
-                            pak_info_path, pak_id_map):
+def CreatePakSymbolsFromApk(
+  section_ranges, apk_path, apk_pak_paths, pak_info_path, pak_id_map
+):
   """Uses files in apk to find and add pak symbols."""
   with zipfile.ZipFile(apk_path) as z:
     pak_zip_infos = [z.getinfo(p) for p in apk_pak_paths]
@@ -152,18 +159,22 @@ def CreatePakSymbolsFromApk(section_ranges, apk_path, apk_pak_paths,
       contents = data_pack.ReadDataPackFromString(z.read(zip_info))
       if zip_info.compress_type != zipfile.ZIP_STORED:
         logging.warning(
-            'Expected .pak files to be STORED, but this one is compressed: %s',
-            zip_info.filename)
+          'Expected .pak files to be STORED, but this one is compressed: %s',
+          zip_info.filename,
+        )
       path = archive_util.RemoveAssetSuffix(zip_info.filename)
-      section_name = _CreateSymbolsFromFile(path, contents, res_info,
-                                            symbols_by_id)
-      archive_util.ExtendSectionRange(section_ranges, section_name,
-                                      zip_info.compress_size)
+      section_name = _CreateSymbolsFromFile(
+        path, contents, res_info, symbols_by_id
+      )
+      archive_util.ExtendSectionRange(
+        section_ranges, section_name, zip_info.compress_size
+      )
   return _FinalizeSymbols(symbols_by_id, pak_id_map)
 
 
-def CreatePakSymbolsFromFiles(section_ranges, pak_paths, pak_info_path,
-                              output_directory, pak_id_map):
+def CreatePakSymbolsFromFiles(
+  section_ranges, pak_paths, pak_info_path, output_directory, pak_id_map
+):
   """Uses files from --pak-file args to find and add pak symbols."""
   if pak_info_path:
     res_info = _ParsePakInfoFile(pak_info_path)
@@ -174,8 +185,12 @@ def CreatePakSymbolsFromFiles(section_ranges, pak_paths, pak_info_path,
     with open(pak_path, 'rb') as f:
       contents = data_pack.ReadDataPackFromString(f.read())
     section_name = _CreateSymbolsFromFile(
-        os.path.relpath(pak_path, output_directory), contents, res_info,
-        symbols_by_id)
-    archive_util.ExtendSectionRange(section_ranges, section_name,
-                                    os.path.getsize(pak_path))
+      os.path.relpath(pak_path, output_directory),
+      contents,
+      res_info,
+      symbols_by_id,
+    )
+    archive_util.ExtendSectionRange(
+      section_ranges, section_name, os.path.getsize(pak_path)
+    )
   return _FinalizeSymbols(symbols_by_id, pak_id_map)

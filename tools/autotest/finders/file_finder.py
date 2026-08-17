@@ -14,20 +14,32 @@ import utils.constants as const
 from utils.command_error import CommandError
 
 _DIR_SOURCE_ROOT = os.path.normpath(
-    os.path.join(os.path.basename(__file__), '../../..'))
-_COMMON_EXTENSIONS = ('.java', '.cc', '.mm', '.h', '.json', '.html', '.ts',
-                      '.rs')
+  os.path.join(os.path.basename(__file__), '../../..')
+)
+_COMMON_EXTENSIONS = (
+  '.java',
+  '.cc',
+  '.mm',
+  '.h',
+  '.json',
+  '.html',
+  '.ts',
+  '.rs',
+)
 
 
 def _CodeSearchFiles(query_args: list[str]) -> list[str]:
-  lines: list[str] = command.RunCommand([
+  lines: list[str] = command.RunCommand(
+    [
       'cs',
       '-l',
       # Give the local path to the file, if the file exists.
       '--local',
       # Restrict our search to Chromium
       'git:chrome-internal/codesearch/chrome/src@main',
-  ] + query_args).splitlines()
+    ]
+    + query_args
+  ).splitlines()
   return [l.strip() for l in lines if l.strip()]
 
 
@@ -49,13 +61,23 @@ def _FindRemoteCandidates(target: str) -> tuple[list[str], list[str]]:
 
 def IsWebTestFile(file_path: str) -> bool:
   normalized = os.path.normpath(file_path).replace('\\', '/')
-  if 'third_party/blink/web_tests/' not in normalized and \
-      'third_party/web_tests/' not in normalized:
+  if (
+    'third_party/blink/web_tests/' not in normalized
+    and 'third_party/web_tests/' not in normalized
+  ):
     return False
 
   _, ext = os.path.splitext(normalized)
-  if ext not in ('.html', '.htm', '.xhtml', '.xht', '.xml', '.svg', '.js',
-                 '.php'):
+  if ext not in (
+    '.html',
+    '.htm',
+    '.xhtml',
+    '.xht',
+    '.xml',
+    '.svg',
+    '.js',
+    '.php',
+  ):
     return False
 
   parts = normalized.split('/')
@@ -63,8 +85,15 @@ def IsWebTestFile(file_path: str) -> bool:
     return False
 
   basename = os.path.basename(normalized)
-  if basename.endswith(('-expected.html', '-expected.xml', '-expected.txt',
-                        '-expected.png', '-expected.ini')):
+  if basename.endswith(
+    (
+      '-expected.html',
+      '-expected.xml',
+      '-expected.txt',
+      '-expected.png',
+      '-expected.ini',
+    )
+  ):
     return False
 
   return True
@@ -98,8 +127,9 @@ def IsTestFile(file_path: str) -> const.TestValidity:
   return const.TestValidity.MAYBE_A_TEST
 
 
-def _RecursiveMatchFilename(folder: str,
-                            filename: str) -> tuple[list[str], list[str]]:
+def _RecursiveMatchFilename(
+  folder: str, filename: str
+) -> tuple[list[str], list[str]]:
   current_dir: str = os.path.split(folder)[-1]
   if current_dir.startswith('out') or current_dir.startswith('.'):
     return ([], [])
@@ -108,10 +138,13 @@ def _RecursiveMatchFilename(folder: str,
   try:
     with os.scandir(folder) as it:
       for entry in it:
-        if (entry.is_symlink()):
+        if entry.is_symlink():
           continue
-        if (entry.is_file() and filename in entry.path
-            and not os.path.basename(entry.path).startswith('.')):
+        if (
+          entry.is_file()
+          and filename in entry.path
+          and not os.path.basename(entry.path).startswith('.')
+        ):
           file_validity: const.TestValidity = IsTestFile(entry.path)
           if file_validity is const.TestValidity.VALID_TEST:
             exact.append(entry.path)
@@ -123,7 +156,8 @@ def _RecursiveMatchFilename(folder: str,
           # ignore these exceptions like we would ignore symlinks.
           try:
             matches: tuple[list[str], list[str]] = _RecursiveMatchFilename(
-                entry.path, filename)
+              entry.path, filename
+            )
             exact += matches[0]
             close += matches[1]
           except FileNotFoundError:
@@ -151,13 +185,15 @@ def _FindTestFilesInDirectory(directory: str) -> list[str]:
         logging.debug(path)
         test_files.add(path)
       elif file_validity is const.TestValidity.MAYBE_A_TEST:
-        logging.debug(path +
-                      ' matched but doesn\'t include gtest files, skipping.')
+        logging.debug(
+          path + ' matched but doesn\'t include gtest files, skipping.'
+        )
   return sorted(test_files)
 
 
-def SearchForTestsByName(terms: list[str], quiet: bool,
-                         remote_search: bool) -> tuple[list[str], str]:
+def SearchForTestsByName(
+  terms: list[str], quiet: bool, remote_search: bool
+) -> tuple[list[str], str]:
 
   def GetPatternForTerm(term: str) -> str:
     ANY: str = '.' if not remote_search else r'[\s\S]'
@@ -194,19 +230,22 @@ def SearchForTestsByName(terms: list[str], quiet: bool,
     # Use ripgrep.
     try:
       files = [
-          f for f in command.RunCommand([
-              'rg',
-              '-l',
-              '--multiline',
-              '--multiline-dotall',
-              '-g',
-              const.GTEST_FILE_NAME_GLOB,
-              '-g',
-              const.PREF_MAPPING_FILE_NAME_GLOB,
-              '--glob-case-insensitive',
-              pattern,
-              str(const.SRC_DIR),
-          ]).splitlines()
+        f
+        for f in command.RunCommand(
+          [
+            'rg',
+            '-l',
+            '--multiline',
+            '--multiline-dotall',
+            '-g',
+            const.GTEST_FILE_NAME_GLOB,
+            '-g',
+            const.PREF_MAPPING_FILE_NAME_GLOB,
+            '--glob-case-insensitive',
+            pattern,
+            str(const.SRC_DIR),
+          ]
+        ).splitlines()
       ]
     except CommandError as e:
       if e.return_code == 1:
@@ -235,8 +274,11 @@ def SearchForTestsByName(terms: list[str], quiet: bool,
 def IsProbablyFile(name: str) -> bool:
   # Returns whether the name is likely a test file name, path,
   # or directory path.
-  return (name.endswith(_COMMON_EXTENSIONS) or os.path.exists(name)
-          or os.path.exists(os.path.join(_DIR_SOURCE_ROOT, name)))
+  return (
+    name.endswith(_COMMON_EXTENSIONS)
+    or os.path.exists(name)
+    or os.path.exists(os.path.join(_DIR_SOURCE_ROOT, name))
+  )
 
 
 def _FindCppTestForTsFile(target: str) -> str | None:
@@ -294,9 +336,9 @@ def _FindTestForFile(target: os.PathLike[str]) -> str | None:
   return maybe_valid[0] if maybe_valid else None
 
 
-def FindMatchingTestFiles(target: str,
-                          remote_search: bool = False,
-                          path_index: int | None = None) -> list[str]:
+def FindMatchingTestFiles(
+  target: str, remote_search: bool = False, path_index: int | None = None
+) -> list[str]:
   # Return early if there's an exact file match.
   exists = os.path.isfile(target)
   if not exists:
@@ -317,8 +359,9 @@ def FindMatchingTestFiles(target: str,
 
   if sys.platform.startswith('win32') and os.path.altsep in target:
     # Use backslash as the path separator on Windows to match os.scandir().
-    logging.debug('Replacing ' + os.path.altsep + ' with ' + os.path.sep +
-                  ' in: ' + target)
+    logging.debug(
+      'Replacing ' + os.path.altsep + ' with ' + os.path.sep + ' in: ' + target
+    )
     target = target.replace(os.path.altsep, os.path.sep)
   logging.debug('Finding files with full path containing: ' + target)
 
@@ -328,8 +371,10 @@ def FindMatchingTestFiles(target: str,
       logging.info('Failed to find remote candidates; searching recursively')
       exact, close = _RecursiveMatchFilename(str(const.SRC_DIR), target)
   else:
-    logging.warning(f'Doing a slow local search for {target}. '
-                    f'Consider installing `cs` or using -r.')
+    logging.warning(
+      f'Doing a slow local search for {target}. '
+      f'Consider installing `cs` or using -r.'
+    )
     exact, close = _RecursiveMatchFilename(str(const.SRC_DIR), target)
 
   if exact:
@@ -342,7 +387,7 @@ def FindMatchingTestFiles(target: str,
   if len(exact) >= 1:
     # Given "Foo", don't ask to disambiguate ModFoo.java vs Foo.java.
     more_exact: list[str] = [
-        p for p in exact if os.path.basename(p) in (target, f'{target}.java')
+      p for p in exact if os.path.basename(p) in (target, f'{target}.java')
     ]
     if len(more_exact) == 1:
       test_files = more_exact
@@ -366,7 +411,11 @@ def _GetChangedFiles() -> list[str]:
   merge_base_command: list[str] = ['git', 'merge-base', 'origin/main', 'HEAD']
   merge_base: str = command.RunCommand(merge_base_command).strip()
   git_command: list[str] = [
-      'git', 'diff', '--name-only', '--diff-filter=ACMRT', merge_base
+    'git',
+    'diff',
+    '--name-only',
+    '--diff-filter=ACMRT',
+    merge_base,
   ]
   changed_files: list[str] = command.RunCommand(git_command).splitlines()
   return changed_files
@@ -383,8 +432,9 @@ def GetChangedTestFiles() -> list[str]:
   return test_files
 
 
-def _GetPotentiallyRelatedTestFiles(basename: str, test_exts: list[str],
-                                    remote_search: bool) -> list[str]:
+def _GetPotentiallyRelatedTestFiles(
+  basename: str, test_exts: list[str], remote_search: bool
+) -> list[str]:
   """Locate all test files starting with basename."""
   if remote_search:
     ext_pattern = '|'.join(e.strip('.') for e in test_exts)
@@ -404,8 +454,9 @@ def _GetPotentiallyRelatedTestFiles(basename: str, test_exts: list[str],
     raise
 
 
-def _CheckIfFileExists(basename: str, check_exts: list[str],
-                       remote_search: bool) -> bool:
+def _CheckIfFileExists(
+  basename: str, check_exts: list[str], remote_search: bool
+) -> bool:
   """Checks existence with the given stem and any of the extensions."""
   if remote_search:
     check_ext_pattern = '|'.join(e.strip('.') for e in check_exts)
@@ -423,8 +474,9 @@ def _CheckIfFileExists(basename: str, check_exts: list[str],
     return False
 
 
-def _FindRelatedTestFiles(impl_path: str,
-                          remote_search: bool = False) -> list[str]:
+def _FindRelatedTestFiles(
+  impl_path: str, remote_search: bool = False
+) -> list[str]:
   """Finds test files related to an implementation file."""
   # Uses iterative suffix removal as a heuristic.
   _, filename = os.path.split(impl_path)
@@ -450,8 +502,9 @@ def _FindRelatedTestFiles(impl_path: str,
       # Only C++, Java, and Rust code files are supported.
       return []
 
-  candidates = _GetPotentiallyRelatedTestFiles(basename, test_exts,
-                                               remote_search)
+  candidates = _GetPotentiallyRelatedTestFiles(
+    basename, test_exts, remote_search
+  )
 
   def generate_stems(name: str):
     # Generator that iteratively yields the name
@@ -474,7 +527,6 @@ def _FindRelatedTestFiles(impl_path: str,
     # E.g. foo_manager_browser_test.cc would be peeled like:
     # foo_manager_browser_test -> foo_manager_browser -> foo_manager -> foo
     for current_stem in generate_stems(cand_basename):
-
       # If we peeled back enough to match the original modified file exactly
       # this test file is said to be related to the original target file.
       if current_stem == basename:
@@ -484,9 +536,9 @@ def _FindRelatedTestFiles(impl_path: str,
       # Otherwise, check if this intermediate stem exists as its own
       # implementation file.
       if current_stem not in exists_cache:
-        exists_cache[current_stem] = _CheckIfFileExists(current_stem,
-                                                        check_exts,
-                                                        remote_search)
+        exists_cache[current_stem] = _CheckIfFileExists(
+          current_stem, check_exts, remote_search
+        )
 
       # If this intermediate stem exists this test is not considered
       # related the original target file.
@@ -511,6 +563,7 @@ def GetRelatedTestFiles(remote_search: bool = False) -> list[str]:
     else:
       # If it's an implementation file, find the tests related to it.
       related_test_files.update(
-          _FindRelatedTestFiles(f, remote_search=remote_search))
+        _FindRelatedTestFiles(f, remote_search=remote_search)
+      )
 
   return sorted(related_test_files)

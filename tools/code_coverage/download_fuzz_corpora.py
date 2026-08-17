@@ -16,14 +16,14 @@ LIBFUZZER_CORPORA_TYPE = 'libfuzzer'
 CENTIPEDE_CORPORA_TYPE = 'centipede'
 FUZZILLI_CORPORA_TYPE = 'fuzzilli'
 ALL_CORPORA_TYPES = [
-    LIBFUZZER_CORPORA_TYPE, CENTIPEDE_CORPORA_TYPE, FUZZILLI_CORPORA_TYPE
+  LIBFUZZER_CORPORA_TYPE,
+  CENTIPEDE_CORPORA_TYPE,
+  FUZZILLI_CORPORA_TYPE,
 ]
 CORPORA_BUCKET_BASE_URL_BY_TYPE = {
-    LIBFUZZER_CORPORA_TYPE:
-    'gs://clusterfuzz-libfuzzer-backup/corpus/libfuzzer/',
-    CENTIPEDE_CORPORA_TYPE:
-    'gs://clusterfuzz-centipede-backup/corpus/centipede/',
-    FUZZILLI_CORPORA_TYPE: 'gs://autozilli/',
+  LIBFUZZER_CORPORA_TYPE: 'gs://clusterfuzz-libfuzzer-backup/corpus/libfuzzer/',
+  CENTIPEDE_CORPORA_TYPE: 'gs://clusterfuzz-centipede-backup/corpus/centipede/',
+  FUZZILLI_CORPORA_TYPE: 'gs://autozilli/',
 }
 
 import argparse
@@ -48,14 +48,16 @@ def _gsutil(cmd, cwd):
 
 def _get_fuzzilli_corpora(arch):
   cmd = [
-      sys.executable, _GSUTIL_PY, 'ls',
-      CORPORA_BUCKET_BASE_URL_BY_TYPE[FUZZILLI_CORPORA_TYPE]
+    sys.executable,
+    _GSUTIL_PY,
+    'ls',
+    CORPORA_BUCKET_BASE_URL_BY_TYPE[FUZZILLI_CORPORA_TYPE],
   ]
   output = subprocess.check_output(cmd).decode('utf-8')
   regex = {
-      'x64': r'autozilli-[0-9]+\.tgz',
-      'x86': r'autozilli-x86-[0-9]+\.tgz',
-      'arm64': r'autozilli-arm64-[0-9]+\.tgz',
+    'x64': r'autozilli-[0-9]+\.tgz',
+    'x86': r'autozilli-x86-[0-9]+\.tgz',
+    'arm64': r'autozilli-arm64-[0-9]+\.tgz',
   }[arch]
   return re.findall(regex, output)
 
@@ -113,23 +115,30 @@ def _ParseCommandArguments():
   arg_parser = argparse.ArgumentParser()
   arg_parser.usage = __doc__
 
-  arg_parser.add_argument('--download-dir',
-                          type=str,
-                          required=True,
-                          help='Directory into which corpora are downloaded.')
-  arg_parser.add_argument('--build-dir',
-                          required=True,
-                          type=str,
-                          help='Directory where fuzzers were built.')
-  arg_parser.add_argument('--corpora-type',
-                          choices=ALL_CORPORA_TYPES,
-                          default=LIBFUZZER_CORPORA_TYPE,
-                          help='The type of corpora to download.')
   arg_parser.add_argument(
-      '--arch',
-      choices=['x64', 'x86', 'arm64'],
-      default='x64',
-      help='The cpu architecture of the target. Fuzzilli only.')
+    '--download-dir',
+    type=str,
+    required=True,
+    help='Directory into which corpora are downloaded.',
+  )
+  arg_parser.add_argument(
+    '--build-dir',
+    required=True,
+    type=str,
+    help='Directory where fuzzers were built.',
+  )
+  arg_parser.add_argument(
+    '--corpora-type',
+    choices=ALL_CORPORA_TYPES,
+    default=LIBFUZZER_CORPORA_TYPE,
+    help='The type of corpora to download.',
+  )
+  arg_parser.add_argument(
+    '--arch',
+    choices=['x64', 'x86', 'arm64'],
+    default='x64',
+    help='The cpu architecture of the target. Fuzzilli only.',
+  )
   args = arg_parser.parse_args()
   return args
 
@@ -156,14 +165,23 @@ def Main():
   print("Corpora to download: " + str(corpora_to_download))
 
   with Pool(cpu_count()) as p:
-    results = p.map(_download_corpus,
-                    [(corpus, args.download_dir, args.corpora_type)
-                     for corpus in corpora_to_download])
-  unzip_func = (_unzip_fuzzilli_corpus if args.corpora_type
-                == FUZZILLI_CORPORA_TYPE else _unzip_corpus)
+    results = p.map(
+      _download_corpus,
+      [
+        (corpus, args.download_dir, args.corpora_type)
+        for corpus in corpora_to_download
+      ],
+    )
+  unzip_func = (
+    _unzip_fuzzilli_corpus
+    if args.corpora_type == FUZZILLI_CORPORA_TYPE
+    else _unzip_corpus
+  )
   with Pool(cpu_count()) as p:
-    results = p.map(unzip_func, [(corpus, args.download_dir)
-                                 for corpus in corpora_to_download])
+    results = p.map(
+      unzip_func,
+      [(corpus, args.download_dir) for corpus in corpora_to_download],
+    )
 
 
 if __name__ == '__main__':

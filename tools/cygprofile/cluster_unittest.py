@@ -10,10 +10,12 @@ import json
 
 import cluster
 import process_profiles
-from test_utils import (ProfileFile,
-                        SimpleTestSymbol,
-                        TestProfileManager,
-                        TestSymbolOffsetProcessor)
+from test_utils import (
+  ProfileFile,
+  SimpleTestSymbol,
+  TestProfileManager,
+  TestSymbolOffsetProcessor,
+)
 
 
 class ClusteringTestCase(unittest.TestCase):
@@ -44,19 +46,20 @@ class ClusteringTestCase(unittest.TestCase):
   def testClusteringDistances(self):
     c = cluster.Clustering()
     c.NEIGHBOR_DISTANCE = 3
-    c.AddSymbolLists([list('abcd'), list('acbe'), list('bacf'),
-                      list('badf'), list('baef')])
+    c.AddSymbolLists(
+      [list('abcd'), list('acbe'), list('bacf'), list('badf'), list('baef')]
+    )
     distances = {}
     for n in c._neighbors:
       self.assertFalse((n.src, n.dst) in distances)
       distances[(n.src, n.dst)] = n.dist
     self.assertEqual(13, len(distances))
-    self.assertEqual((2 + 1 + 1 + 2000) / 5., distances[('a', 'c')])
-    self.assertEqual((1 + 4000) / 5., distances[('a', 'd')])
-    self.assertEqual((1 + 4000) / 5., distances[('a', 'e')])
-    self.assertEqual((2 + 2 + 2 + 2000) / 5., distances[('a', 'f')])
+    self.assertEqual((2 + 1 + 1 + 2000) / 5.0, distances[('a', 'c')])
+    self.assertEqual((1 + 4000) / 5.0, distances[('a', 'd')])
+    self.assertEqual((1 + 4000) / 5.0, distances[('a', 'e')])
+    self.assertEqual((2 + 2 + 2 + 2000) / 5.0, distances[('a', 'f')])
     self.assertEqual(0, distances[('b', 'a')])
-    self.assertEqual((1 + -1 + 2 + 2000) / 5., distances[('b', 'c')])
+    self.assertEqual((1 + -1 + 2 + 2000) / 5.0, distances[('b', 'c')])
     self.assertTrue(('b', 'd') in distances)
     self.assertTrue(('b', 'e') in distances)
     self.assertTrue(('c', 'd') in distances)
@@ -68,8 +71,9 @@ class ClusteringTestCase(unittest.TestCase):
   def testClusterToList(self):
     c = cluster.Clustering()
     c.NEIGHBOR_DISTANCE = 3
-    c.AddSymbolLists([list('abcd'), list('acbe'), list('bacf'),
-                      list('badf'), list('baef')])
+    c.AddSymbolLists(
+      [list('abcd'), list('acbe'), list('bacf'), list('badf'), list('baef')]
+    )
     self.assertEqual(list('bacfed'), c.ClusterToList())
 
   def testClusterOneList(self):
@@ -94,18 +98,15 @@ class ClusteringTestCase(unittest.TestCase):
     c = cluster.Clustering()
     c.NEIGHBOR_DISTANCE = 3
     c.MAX_CLUSTER_SIZE = 1  # Will supress all clusters
-    size_map = {'a': 3,
-                'b': 4,
-                'c': 5,
-                'd': 6,
-                'e': 7,
-                'f': 8}
-    c.AddSymbolLists([list('abcd'), list('acbe'), list('bacf'),
-                      list('badf'), list('baef')])
+    size_map = {'a': 3, 'b': 4, 'c': 5, 'd': 6, 'e': 7, 'f': 8}
+    c.AddSymbolLists(
+      [list('abcd'), list('acbe'), list('bacf'), list('badf'), list('baef')]
+    )
     self.assertEqual(list('fedcba'), c.ClusterToList(size_map))
 
   def testClusterOffsets(self):
-    processor = TestSymbolOffsetProcessor([
+    processor = TestSymbolOffsetProcessor(
+      [
         SimpleTestSymbol('linker_script_start_of_text', 0, 0),
         SimpleTestSymbol('1', 1000, 999),
         SimpleTestSymbol('2', 2000, 999),
@@ -116,14 +117,18 @@ class ClusteringTestCase(unittest.TestCase):
         SimpleTestSymbol('7', 7000, 16),
         SimpleTestSymbol('8', 8000, 999),
         SimpleTestSymbol('9', 9000, 16),
-    ])
-    mgr = TestProfileManager({
+      ]
+    )
+    mgr = TestProfileManager(
+      {
         ProfileFile(40, 0, ''): [1000, 2000, 3000],
         ProfileFile(50, 1, ''): [3000, 4000, 5000],
         ProfileFile(51, 0, 'renderer'): [2000, 3000, 6000],
         ProfileFile(51, 1, 'gpu-process'): [6000, 7000],
         ProfileFile(70, 0, ''): [1000, 2000, 6000, 8000, 9000],
-        ProfileFile(70, 1, ''): [9000, 5000, 3000]})
+        ProfileFile(70, 1, ''): [9000, 5000, 3000],
+      }
+    )
     syms = cluster.ClusterOffsets(mgr, processor, limit_cluster_size=False)
     self.assertListEqual(list('236148957'), syms)
 

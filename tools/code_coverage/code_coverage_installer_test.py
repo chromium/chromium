@@ -45,9 +45,11 @@ class CodeCoverageInstallerTest(fake_filesystem_unittest.TestCase):
   def test_verify_llvm_tools_success(self) -> None:
     """Verifies LLVM tools check succeeds when both binaries exist."""
     self.fs.create_file(
-        '/src/third_party/llvm-build/Release+Asserts/bin/llvm-cov')
+      '/src/third_party/llvm-build/Release+Asserts/bin/llvm-cov'
+    )
     self.fs.create_file(
-        '/src/third_party/llvm-build/Release+Asserts/bin/llvm-profdata')
+      '/src/third_party/llvm-build/Release+Asserts/bin/llvm-profdata'
+    )
     result = code_coverage_installer.verify_llvm_tools(self.src_root)
     self.assertTrue(result)
 
@@ -89,8 +91,9 @@ class CodeCoverageInstallerTest(fake_filesystem_unittest.TestCase):
     self.mock_run_command.return_value = 0
     result = code_coverage_installer.setup_infra(infra_dir)
     self.assertTrue(result)
-    self.mock_run_command.assert_called_once_with(['gclient', 'sync'],
-                                                  cwd=infra_dir)
+    self.mock_run_command.assert_called_once_with(
+      ['gclient', 'sync'], cwd=infra_dir
+    )
 
   def test_setup_infra_gclient_exists_sync_failure(self) -> None:
     """Verifies setup fails when gclient sync returns non-zero code."""
@@ -107,7 +110,8 @@ class CodeCoverageInstallerTest(fake_filesystem_unittest.TestCase):
     result = code_coverage_installer.setup_infra(infra_dir)
     self.assertTrue(result)
     self.mock_run_command.assert_called_once_with(
-        ['fetch', 'infra_superproject'], cwd=infra_dir)
+      ['fetch', 'infra_superproject'], cwd=infra_dir
+    )
 
   def test_setup_infra_no_gclient_fetch_failure(self) -> None:
     """Verifies setup fails when fetch infra_superproject returns non-zero."""
@@ -118,8 +122,9 @@ class CodeCoverageInstallerTest(fake_filesystem_unittest.TestCase):
 
   def test_fs_permission_error_handled(self) -> None:
     """Verifies filesystem permission errors are caught gracefully."""
-    with patch('pathlib.Path.exists',
-               side_effect=PermissionError('Access Denied')):
+    with patch(
+      'pathlib.Path.exists', side_effect=PermissionError('Access Denied')
+    ):
       result = code_coverage_installer.verify_chromium_checkout(self.src_root)
     self.assertFalse(result)
 
@@ -143,8 +148,9 @@ class CodeCoverageInstallerTest(fake_filesystem_unittest.TestCase):
   def test_verify_gemini_md_already_present(self) -> None:
     """Verifies no duplicate entry added when import is already present."""
     gemini_path = self.src_root / 'GEMINI.md'
-    gemini_path.write_text('@agents/prompts/templates/code_coverage.md\n',
-                           encoding='utf-8')
+    gemini_path.write_text(
+      '@agents/prompts/templates/code_coverage.md\n', encoding='utf-8'
+    )
     result = code_coverage_installer.verify_gemini_md(self.src_root)
     self.assertTrue(result)
 
@@ -158,12 +164,15 @@ class CodeCoverageInstallerMainTest(unittest.TestCase):
     self.enterContext(contextlib.redirect_stderr(io.StringIO()))
 
     self.patcher_argv = patch(
-        'sys.argv', ['code_coverage_installer.py', '--infra-dir', '/infra_dir'])
+      'sys.argv', ['code_coverage_installer.py', '--infra-dir', '/infra_dir']
+    )
     self.patcher_exit = patch('sys.exit', side_effect=SystemExit)
-    self.patcher_gemini = patch('code_coverage_installer.verify_gemini_md',
-                                return_value=True)
+    self.patcher_gemini = patch(
+      'code_coverage_installer.verify_gemini_md', return_value=True
+    )
     self.patcher_checkout = patch(
-        'code_coverage_installer.verify_chromium_checkout')
+      'code_coverage_installer.verify_chromium_checkout'
+    )
     self.patcher_llvm = patch('code_coverage_installer.verify_llvm_tools')
     self.patcher_recipes = patch('code_coverage_installer.verify_recipes')
     self.patcher_service = patch('code_coverage_installer.verify_service')

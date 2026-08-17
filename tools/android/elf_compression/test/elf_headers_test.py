@@ -14,7 +14,6 @@ ELF_HEADER_TEST_LIBRARY = 'testdata/lib.so'
 
 
 class ElfHeaderTest(unittest.TestCase):
-
   def setUp(self):
     super(ElfHeaderTest, self).setUp()
     script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -41,14 +40,14 @@ class ElfHeaderTest(unittest.TestCase):
     self.assertEqual(len(phdrs), 8)
 
     phdr_types = [
-        elf_headers.ProgramHeader.Type.PT_LOAD,
-        elf_headers.ProgramHeader.Type.PT_LOAD,
-        elf_headers.ProgramHeader.Type.PT_LOAD,
-        elf_headers.ProgramHeader.Type.PT_LOAD,
-        elf_headers.ProgramHeader.Type.PT_DYNAMIC,
-        None,  # Non-standard segment: GNU_EH_FRAME
-        None,  # Non-standard segment: GNU_STACK
-        None,  # Non-standard segment: GNU_RELRO
+      elf_headers.ProgramHeader.Type.PT_LOAD,
+      elf_headers.ProgramHeader.Type.PT_LOAD,
+      elf_headers.ProgramHeader.Type.PT_LOAD,
+      elf_headers.ProgramHeader.Type.PT_LOAD,
+      elf_headers.ProgramHeader.Type.PT_DYNAMIC,
+      None,  # Non-standard segment: GNU_EH_FRAME
+      None,  # Non-standard segment: GNU_STACK
+      None,  # Non-standard segment: GNU_RELRO
     ]
     for i in range(0, len(phdrs)):
       if phdr_types[i] is not None:
@@ -74,32 +73,32 @@ class ElfHeaderTest(unittest.TestCase):
     self.assertEqual(len(shdrs), 26)
 
     shdr_types = [
-        elf_headers.SectionHeader.Type.SHT_NULL,
-        elf_headers.SectionHeader.Type.SHT_HASH,
-        None,  # Non-standard section: GNU_HASH
-        elf_headers.SectionHeader.Type.SHT_DYNSYM,
-        elf_headers.SectionHeader.Type.SHT_STRTAB,
-        None,  # Non-standard section: VERSYM
-        None,  # Non-standard section: VERNEED
-        elf_headers.SectionHeader.Type.SHT_RELA,
-        elf_headers.SectionHeader.Type.SHT_PROGBITS,
-        elf_headers.SectionHeader.Type.SHT_PROGBITS,
-        elf_headers.SectionHeader.Type.SHT_PROGBITS,
-        elf_headers.SectionHeader.Type.SHT_PROGBITS,
-        elf_headers.SectionHeader.Type.SHT_PROGBITS,
-        elf_headers.SectionHeader.Type.SHT_PROGBITS,
-        elf_headers.SectionHeader.Type.SHT_PROGBITS,
-        None,  # Non-standard section: INIT_ARRAY
-        None,  # Non-standard section: FINI_ARRAY
-        elf_headers.SectionHeader.Type.SHT_DYNAMIC,
-        elf_headers.SectionHeader.Type.SHT_PROGBITS,
-        elf_headers.SectionHeader.Type.SHT_PROGBITS,
-        elf_headers.SectionHeader.Type.SHT_PROGBITS,
-        elf_headers.SectionHeader.Type.SHT_NOBITS,
-        elf_headers.SectionHeader.Type.SHT_PROGBITS,
-        elf_headers.SectionHeader.Type.SHT_SYMTAB,
-        elf_headers.SectionHeader.Type.SHT_STRTAB,
-        elf_headers.SectionHeader.Type.SHT_STRTAB,
+      elf_headers.SectionHeader.Type.SHT_NULL,
+      elf_headers.SectionHeader.Type.SHT_HASH,
+      None,  # Non-standard section: GNU_HASH
+      elf_headers.SectionHeader.Type.SHT_DYNSYM,
+      elf_headers.SectionHeader.Type.SHT_STRTAB,
+      None,  # Non-standard section: VERSYM
+      None,  # Non-standard section: VERNEED
+      elf_headers.SectionHeader.Type.SHT_RELA,
+      elf_headers.SectionHeader.Type.SHT_PROGBITS,
+      elf_headers.SectionHeader.Type.SHT_PROGBITS,
+      elf_headers.SectionHeader.Type.SHT_PROGBITS,
+      elf_headers.SectionHeader.Type.SHT_PROGBITS,
+      elf_headers.SectionHeader.Type.SHT_PROGBITS,
+      elf_headers.SectionHeader.Type.SHT_PROGBITS,
+      elf_headers.SectionHeader.Type.SHT_PROGBITS,
+      None,  # Non-standard section: INIT_ARRAY
+      None,  # Non-standard section: FINI_ARRAY
+      elf_headers.SectionHeader.Type.SHT_DYNAMIC,
+      elf_headers.SectionHeader.Type.SHT_PROGBITS,
+      elf_headers.SectionHeader.Type.SHT_PROGBITS,
+      elf_headers.SectionHeader.Type.SHT_PROGBITS,
+      elf_headers.SectionHeader.Type.SHT_NOBITS,
+      elf_headers.SectionHeader.Type.SHT_PROGBITS,
+      elf_headers.SectionHeader.Type.SHT_SYMTAB,
+      elf_headers.SectionHeader.Type.SHT_STRTAB,
+      elf_headers.SectionHeader.Type.SHT_STRTAB,
     ]
     for i in range(0, len(shdrs)):
       if shdr_types[i] is not None:
@@ -134,32 +133,32 @@ class ElfHeaderTest(unittest.TestCase):
     elf = elf_headers.ElfHeader(data)
 
     section_names = [
-        '',
-        '.hash',
-        '.gnu.hash',
-        '.dynsym',
-        '.dynstr',
-        '.gnu.version',
-        '.gnu.version_r',
-        '.rela.dyn',
-        '.init',
-        '.plt',
-        '.plt.got',
-        '.text',
-        '.fini',
-        '.eh_frame_hdr',
-        '.eh_frame',
-        '.init_array',
-        '.fini_array',
-        '.dynamic',
-        '.got',
-        '.got.plt',
-        '.data',
-        '.bss',
-        '.comment',
-        '.symtab',
-        '.strtab',
-        '.shstrtab',
+      '',
+      '.hash',
+      '.gnu.hash',
+      '.dynsym',
+      '.dynstr',
+      '.gnu.version',
+      '.gnu.version_r',
+      '.rela.dyn',
+      '.init',
+      '.plt',
+      '.plt.got',
+      '.text',
+      '.fini',
+      '.eh_frame_hdr',
+      '.eh_frame',
+      '.init_array',
+      '.fini_array',
+      '.dynamic',
+      '.got',
+      '.got.plt',
+      '.data',
+      '.bss',
+      '.comment',
+      '.symtab',
+      '.strtab',
+      '.shstrtab',
     ]
     shdrs = elf.GetSectionHeaders()
     for i in range(0, len(shdrs)):

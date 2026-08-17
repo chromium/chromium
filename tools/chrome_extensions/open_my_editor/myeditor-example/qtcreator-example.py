@@ -13,8 +13,10 @@ import argparse
 import os
 import sh
 
+
 def qtcreator_open_file(filepath, line=1):
   sh.qtcreator("-client", filepath + ":" + str(line))
+
 
 CHROMIUM_ROOT = os.environ['HOME'] + "/workspace/chromium/src"
 

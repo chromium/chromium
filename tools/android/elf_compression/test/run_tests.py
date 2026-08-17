@@ -5,8 +5,8 @@
 import unittest
 
 TESTS = [
-    'compression_script_test',
-    'elf_headers_test',
+  'compression_script_test',
+  'elf_headers_test',
 ]
 
 if __name__ == '__main__':

@@ -29,11 +29,13 @@ def _LogPeakRamUsage():
 
 
 def _AddCommonArguments(parser):
-  parser.add_argument('-v',
-                      '--verbose',
-                      default=0,
-                      action='count',
-                      help='Verbose level (multiple times for more)')
+  parser.add_argument(
+    '-v',
+    '--verbose',
+    default=0,
+    action='count',
+    help='Verbose level (multiple times for more)',
+  )
 
 
 class _PathResolver:
@@ -42,15 +44,18 @@ class _PathResolver:
 
   def __call__(self, subpath):
     # Use dict to de-dupe while keeping order.
-    candidates = list({
+    candidates = list(
+      {
         self._parent_path / subpath: 0,
         self._parent_path / pathlib.PosixPath(subpath).name: 0,
-    })
+      }
+    )
     for p in candidates:
       if p.exists():
         return p
-    raise Exception('Paths do not exist: ' +
-                    ', '.join(str(t) for t in candidates))
+    raise Exception(
+      'Paths do not exist: ' + ', '.join(str(t) for t in candidates)
+    )
 
 
 class _DiffAction:
@@ -64,7 +69,8 @@ class _DiffAction:
   def Run(args, on_config_error):
     args.output_directory = None
     args.inputs = [args.before, args.after]
-    args.query = '\n'.join([
+    args.query = '\n'.join(
+      [
         'd = Diff()',
         'sis = canned_queries.StaticInitializers(d.symbols)',
         'count = sis.CountsByDiffStatus()[models.DIFF_STATUS_ADDED]',
@@ -75,7 +81,8 @@ class _DiffAction:
         '  print()',
         '  print("Full diff:")',
         'Print(d, verbose=%s)' % bool(args.all),
-    ])
+      ]
+    )
     console.Run(args, on_config_error)
 
 
@@ -85,21 +92,26 @@ class _SaveDiffAction:
     parser.add_argument('before', help='Before-patch .size file.')
     parser.add_argument('after', help='After-patch .size file.')
     parser.add_argument(
-        'output_file',
-        help='Write generated data to the specified .sizediff file.')
-    parser.add_argument('--title',
-                        help='Value for the "title" build_config entry.')
+      'output_file',
+      help='Write generated data to the specified .sizediff file.',
+    )
+    parser.add_argument(
+      '--title', help='Value for the "title" build_config entry.'
+    )
     parser.add_argument('--url', help='Value for the "url" build_config entry.')
     parser.add_argument(
-        '--save-disassembly',
-        help='Adds the disassembly for the top 10 changed symbols.',
-        action='store_true')
+      '--save-disassembly',
+      help='Adds the disassembly for the top 10 changed symbols.',
+      action='store_true',
+    )
     parser.add_argument(
-        '--before-directory',
-        help='Defaults to directory containing before-patch .size file.')
+      '--before-directory',
+      help='Defaults to directory containing before-patch .size file.',
+    )
     parser.add_argument(
-        '--after-directory',
-        help='Defaults to directory containing after-patch .size file.')
+      '--after-directory',
+      help='Defaults to directory containing after-patch .size file.',
+    )
 
   @staticmethod
   def Run(args, on_config_error):
@@ -126,10 +138,12 @@ class _SaveDiffAction:
     if args.save_disassembly:
       before_path_resolver = _PathResolver(args.before_directory)
       after_path_resolver = _PathResolver(args.after_directory)
-      dex_disassembly.AddDisassembly(delta_size_info, before_path_resolver,
-                                     after_path_resolver)
-      native_disassembly.AddDisassembly(delta_size_info, before_path_resolver,
-                                        after_path_resolver)
+      dex_disassembly.AddDisassembly(
+        delta_size_info, before_path_resolver, after_path_resolver
+      )
+      native_disassembly.AddDisassembly(
+        delta_size_info, before_path_resolver, after_path_resolver
+      )
 
     file_format.SaveDeltaSizeInfo(delta_size_info, args.output_file)
 
@@ -140,15 +154,18 @@ def main():
   actions = {}
   actions['archive'] = (archive, 'Create a .size file')
   actions['console'] = (
-      console,
-      'Starts an interactive Python console for analyzing .size files.')
+    console,
+    'Starts an interactive Python console for analyzing .size files.',
+  )
   actions['diff'] = (
-      _DiffAction(),
-      'Shorthand for console --query "Print(Diff())" (plus highlights static '
-      'initializers in diff)')
+    _DiffAction(),
+    'Shorthand for console --query "Print(Diff())" (plus highlights static '
+    'initializers in diff)',
+  )
   actions['save_diff'] = (
-      _SaveDiffAction(),
-      'Create a stand-alone .sizediff diff report from two .size files.')
+    _SaveDiffAction(),
+    'Create a stand-alone .sizediff diff report from two .size files.',
+  )
 
   for name, tup in actions.items():
     sub_parser = sub_parsers.add_parser(name, help=tup[1])
@@ -165,8 +182,10 @@ def main():
     sys.exit(1)
 
   args = parser.parse_args()
-  logging.basicConfig(level=logging.WARNING - args.verbose * 10,
-                      format='%(levelname).1s %(relativeCreated)6d %(message)s')
+  logging.basicConfig(
+    level=logging.WARNING - args.verbose * 10,
+    format='%(levelname).1s %(relativeCreated)6d %(message)s',
+  )
 
   if logging.getLogger().isEnabledFor(logging.DEBUG):
     atexit.register(_LogPeakRamUsage)

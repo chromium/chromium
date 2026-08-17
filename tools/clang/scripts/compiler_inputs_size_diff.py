@@ -63,7 +63,7 @@ def parse_report_into_tu_size_dict(lines: Iterable[str]) -> Dict[str, int]:
   for line in lines_iter:
     m = LINE_RE.match(line)
     if not m:
-      assert (line == '\n')
+      assert line == '\n'
       line = next(lines_iter)
       sizes['total'] = int(line.rstrip().split(' ')[1])
       break
@@ -153,8 +153,9 @@ def print_diff(before: Dict[str, int], after: Dict[str, int]):
   max_path_length = max(len(k) for k in size_diffs)
   if max_path_length > 100:
     max_path_length = 100
-  size_diffs = sorted([(k, v) for (k, v) in size_diffs.items() if v != 0],
-                      key=lambda x: -x[1])
+  size_diffs = sorted(
+    [(k, v) for (k, v) in size_diffs.items() if v != 0], key=lambda x: -x[1]
+  )
 
   before_total = before['total']
   after_total = after['total']
@@ -171,13 +172,18 @@ def print_diff(before: Dict[str, int], after: Dict[str, int]):
 
 def main():
   parser = argparse.ArgumentParser(
-      description='Calculate deltas between results of compiler_inputs_size.py')
-  parser.add_argument('before',
-                      type=argparse.FileType('r'),
-                      help='First report from compiler_inputs_size.py.')
-  parser.add_argument('after',
-                      type=argparse.FileType('r'),
-                      help='Second report from compiler_inputs_size.py.')
+    description='Calculate deltas between results of compiler_inputs_size.py'
+  )
+  parser.add_argument(
+    'before',
+    type=argparse.FileType('r'),
+    help='First report from compiler_inputs_size.py.',
+  )
+  parser.add_argument(
+    'after',
+    type=argparse.FileType('r'),
+    help='Second report from compiler_inputs_size.py.',
+  )
   args = parser.parse_args()
 
   before = parse_report_into_tu_size_dict(args.before)

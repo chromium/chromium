@@ -59,21 +59,24 @@ def run_gn_command(args: List[str]) -> List[str]:
     # variables set by swarming bots or the local environment (e.g., PATH,
     # DEPOT_TOOLS_PATH, toolchain paths, and RBE/Reclient variables). GN cannot
     # locate compilers, SDKs, or tools without these environment variables.
-    result = subprocess.run(command,
-                            cwd=chromium_src_dir,
-                            capture_output=True,
-                            text=True,
-                            check=True,
-                            env=os.environ)
+    result = subprocess.run(
+      command,
+      cwd=chromium_src_dir,
+      capture_output=True,
+      text=True,
+      check=True,
+      env=os.environ,
+    )
     return [line.strip() for line in result.stdout.splitlines() if line.strip()]
   except subprocess.CalledProcessError as e:
     logging.error(
-        f'Error running gn command: {e}\nStdout: {e.stdout}\nStderr: {e.stderr}'
+      f'Error running gn command: {e}\nStdout: {e.stdout}\nStderr: {e.stderr}'
     )
     raise
   except FileNotFoundError:
-    logging.error('\'gn\' command not found. '
-                  'Ensure depot_tools is in your PATH.')
+    logging.error(
+      '\'gn\' command not found. Ensure depot_tools is in your PATH.'
+    )
     raise
 
 
@@ -83,8 +86,13 @@ def find_all_fuzzer_targets(out_dir: str) -> List[str]:
   """
   logging.info(f'Finding all fuzzer targets in {out_dir}...')
   args = [
-      'refs', out_dir, '//testing/libfuzzer:fuzzing_engine', '--all',
-      '--type=executable', '--as=label', '-q'
+    'refs',
+    out_dir,
+    '//testing/libfuzzer:fuzzing_engine',
+    '--all',
+    '--type=executable',
+    '--as=label',
+    '-q',
   ]
   return run_gn_command(args)
 
@@ -105,19 +113,19 @@ def get_modified_files() -> List[str]:
   # https://buganizer.corp.google.com/issues/522387539
   logging.info('Detecting modified files against HEAD~...')
   command = ['git', 'diff', '--name-only', '--diff-filter=d', 'HEAD~']
-  result = subprocess.run(command,
-                          cwd=chromium_src_dir,
-                          capture_output=True,
-                          text=True,
-                          check=True)
+  result = subprocess.run(
+    command, cwd=chromium_src_dir, capture_output=True, text=True, check=True
+  )
   return [
-      f.strip() for f in result.stdout.splitlines()
-      if f.strip().endswith(('.cc', '.cpp', '.c', '.h', '.m', '.mm'))
+    f.strip()
+    for f in result.stdout.splitlines()
+    if f.strip().endswith(('.cc', '.cpp', '.c', '.h', '.m', '.mm'))
   ]
 
 
-def get_affected_fuzzers(modified_files: List[str], out_dir: str,
-                         all_fuzzers: List[str]) -> Dict[str, List[str]]:
+def get_affected_fuzzers(
+  modified_files: List[str], out_dir: str, all_fuzzers: List[str]
+) -> Dict[str, List[str]]:
   """Maps modified files to the fuzzer targets they affect."""
   affected_map: Dict[str, List[str]] = {}
   all_fuzzers_set = set(all_fuzzers)
@@ -133,14 +141,15 @@ def get_affected_fuzzers(modified_files: List[str], out_dir: str,
       affected = [f for f in reverse_deps if f in all_fuzzers_set]
       return gn_path, affected
     except subprocess.CalledProcessError as e:
-      logging.warning(f'Failed to find reverse deps for {gn_path}: {e}. '
-                      'Fuzzing coverage for this file will be missing.')
+      logging.warning(
+        f'Failed to find reverse deps for {gn_path}: {e}. '
+        'Fuzzing coverage for this file will be missing.'
+      )
       return gn_path, []
 
   with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
     future_to_file = {
-        executor.submit(process_file, f): f
-        for f in modified_files
+      executor.submit(process_file, f): f for f in modified_files
     }
     for future in concurrent.futures.as_completed(future_to_file):
       gn_path, affected = future.result()
@@ -156,20 +165,23 @@ def get_affected_fuzzers(modified_files: List[str], out_dir: str,
 
 def main():
   parser = argparse.ArgumentParser(
-      description='Discover affected fuzzer targets.')
-  parser.add_argument('-v',
-                      '--verbose',
-                      action='store_true',
-                      help='Verbose logging.')
+    description='Discover affected fuzzer targets.'
+  )
   parser.add_argument(
-      '--out-dir',
-      required=True,
-      help='Build directory. GN args will be replaced in this directory.')
+    '-v', '--verbose', action='store_true', help='Verbose logging.'
+  )
+  parser.add_argument(
+    '--out-dir',
+    required=True,
+    help='Build directory. GN args will be replaced in this directory.',
+  )
 
   args = parser.parse_args()
-  logging.basicConfig(level=logging.DEBUG if args.verbose else logging.INFO,
-                      format='%(levelname)s: %(message)s',
-                      stream=sys.stderr)
+  logging.basicConfig(
+    level=logging.DEBUG if args.verbose else logging.INFO,
+    format='%(levelname)s: %(message)s',
+    stream=sys.stderr,
+  )
 
   # Detect modified files
   modified_files = get_modified_files()
@@ -183,11 +195,13 @@ def main():
   all_fuzzers = find_all_fuzzer_targets(args.out_dir)
   if not all_fuzzers:
     logging.warning(
-        'No fuzzer targets found. Ensure "use_libfuzzer = true" in GN args.')
+      'No fuzzer targets found. Ensure "use_libfuzzer = true" in GN args.'
+    )
     return 1
 
-  affected_fuzzers_map = get_affected_fuzzers(modified_files, args.out_dir,
-                                              all_fuzzers)
+  affected_fuzzers_map = get_affected_fuzzers(
+    modified_files, args.out_dir, all_fuzzers
+  )
 
   final_output = {'affected_fuzzers': affected_fuzzers_map}
   print(json.dumps(final_output, indent=2, sort_keys=True))

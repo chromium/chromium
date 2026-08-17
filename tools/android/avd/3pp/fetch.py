@@ -25,25 +25,29 @@ import shutil
 import subprocess
 
 _SRC_PATH = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), os.path.pardir, os.path.pardir,
-                 os.path.pardir, os.path.pardir))
+  os.path.join(
+    os.path.dirname(__file__),
+    os.path.pardir,
+    os.path.pardir,
+    os.path.pardir,
+    os.path.pardir,
+  )
+)
 # The src-relative files and dirs we would like to include in the CIPD.
 _BASE_DEPS = [
-    # vpython, binaries and avd configs used by //tools/android/avd/avd.py
-    '.vpython3',
-    'third_party/android_sdk/public/cmdline-tools/',
-    'third_party/android_sdk/public/platform-tools/',
-    'tools/android/avd/proto/',
-
-    # Should be the same as python_library("devil_chromium_py") in
-    # //build/android/BUILD.gn
-    'build/android/devil_chromium.json',
-    'third_party/catapult/devil/devil/devil_dependencies.json',
-    'third_party/catapult/third_party/gsutil/',
-
-    # Read by gn_helpers.BuildWithChromium()
-    # Needed to recognize the adb binary in third_party/android_sdk
-    'build/config/gclient_args.gni',
+  # vpython, binaries and avd configs used by //tools/android/avd/avd.py
+  '.vpython3',
+  'third_party/android_sdk/public/cmdline-tools/',
+  'third_party/android_sdk/public/platform-tools/',
+  'tools/android/avd/proto/',
+  # Should be the same as python_library("devil_chromium_py") in
+  # //build/android/BUILD.gn
+  'build/android/devil_chromium.json',
+  'third_party/catapult/devil/devil/devil_dependencies.json',
+  'third_party/catapult/third_party/gsutil/',
+  # Read by gn_helpers.BuildWithChromium()
+  # Needed to recognize the adb binary in third_party/android_sdk
+  'build/config/gclient_args.gni',
 ]
 
 
@@ -87,10 +91,10 @@ def _compute_hash_paths(base_path, *rel_paths):
 # Return a list of src-relative paths for the dependent files and dirs for avd
 def _get_deps(chromium_src_path):
   deps_cmds = [
-      os.path.join(chromium_src_path, 'build', 'print_python_deps.py'),
-      '--root',
-      chromium_src_path,
-      os.path.join(chromium_src_path, 'tools', 'android', 'avd', 'avd.py'),
+    os.path.join(chromium_src_path, 'build', 'print_python_deps.py'),
+    '--root',
+    chromium_src_path,
+    os.path.join(chromium_src_path, 'tools', 'android', 'avd', 'avd.py'),
   ]
   deps_output = subprocess.check_output(deps_cmds, universal_newlines=True)
   # Filter out comments in deps_output
@@ -113,7 +117,8 @@ def do_checkout(checkout_path):
     checkout_dep_path = os.path.join(checkout_path, 'src', *dep_pieces)
 
     checkout_dep_par_path = os.path.abspath(
-        os.path.join(checkout_dep_path, os.path.pardir))
+      os.path.join(checkout_dep_path, os.path.pardir)
+    )
     if not os.path.exists(checkout_dep_par_path):
       os.makedirs(checkout_dep_par_path)
 
@@ -129,7 +134,8 @@ def do_checkout(checkout_path):
 
 def main():
   ap = argparse.ArgumentParser(
-      description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+  )
   sub = ap.add_subparsers()
 
   latest = sub.add_parser("latest")

@@ -13,34 +13,40 @@ def CommonChecks(input_api, output_api):
   output = []
   files_to_skip = []
   disabled_warnings = [
-      'bad-indentation',
-      'consider-using-dict-items',
-      'consider-using-with',
-      'deprecated-method',
-      'duplicate-code',
-      'line-too-long',
-      'logging-not-lazy',
-      'missing-module-docstring',
-      'protected-access',
-      'superfluous-parens',
-      'unspecified-encoding',
-      'unused-import',
-      'use-maxsplit-arg',
+    'bad-indentation',
+    'consider-using-dict-items',
+    'consider-using-with',
+    'deprecated-method',
+    'duplicate-code',
+    'line-too-long',
+    'logging-not-lazy',
+    'missing-module-docstring',
+    'protected-access',
+    'superfluous-parens',
+    'unspecified-encoding',
+    'unused-import',
+    'use-maxsplit-arg',
   ]
   output.extend(
-      input_api.canned_checks.RunPylint(input_api,
-                                        output_api,
-                                        disabled_warnings=disabled_warnings,
-                                        files_to_skip=files_to_skip,
-                                        version='3.2'))
+    input_api.canned_checks.RunPylint(
+      input_api,
+      output_api,
+      disabled_warnings=disabled_warnings,
+      files_to_skip=files_to_skip,
+      version='3.2',
+    )
+  )
 
   # These tests don't run on Windows and give verbose and cryptic failure
   # messages.
   if input_api.sys.platform != 'win32':
     output.extend(
-        input_api.canned_checks.RunUnitTests(input_api, output_api, [
-            input_api.os_path.join(input_api.PresubmitLocalPath(), 'run_tests')
-        ]))
+      input_api.canned_checks.RunUnitTests(
+        input_api,
+        output_api,
+        [input_api.os_path.join(input_api.PresubmitLocalPath(), 'run_tests')],
+      )
+    )
   return output
 
 

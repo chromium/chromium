@@ -78,9 +78,11 @@ files_with_pragma = """
         | cut -d':' -f1 \
         | sort -u
 """
-for file in subprocess.check_output(files_with_pragma, shell=True)\
-        .decode("utf-8")\
-        .split("\n"):
+for file in (
+    subprocess.check_output(files_with_pragma, shell=True)
+    .decode("utf-8")
+    .split("\n")
+):
     if not file:
         continue
 
@@ -174,15 +176,21 @@ for target, args in gn_args.items():
         # We will fix this by inserting the opt_out_lines in the file.
 
         # Get the list of files with unsafe buffer operations.
-        unsafe_buffers_files = subprocess.check_output(
-            """
+        unsafe_buffers_files = (
+            subprocess.check_output(
+                """
             autoninja -k 0 -C out/%s |\
                 grep -E 'Wunsafe-buffer-usage' |\
                 cut -d':' -f1 |\
                 cut -d'(' -f1 |\
                 sort -u
-            """ % target,
-            shell=True).decode("utf-8").split("\n")
+            """
+                % target,
+                shell=True,
+            )
+            .decode("utf-8")
+            .split("\n")
+        )
 
         # Strip the ../../ from the file paths.
         unsafe_buffers_files = [
@@ -202,7 +210,7 @@ for target, args in gn_args.items():
         for file in unsafe_buffers_files:
             try:
                 print("Opting out %s" % file)
-                if (not os.path.exists(file)):
+                if not os.path.exists(file):
                     print("File %s does not exist." % file)
                     continue
 
@@ -229,8 +237,7 @@ for target, args in gn_args.items():
 os.system("git cl format")
 os.system("git add -u")
 
-git_commit_description =\
-    """spanification: Add `#pragma allow_unsafe_buffers` to xxx
+git_commit_description = """spanification: Add `#pragma allow_unsafe_buffers` to xxx
 
 This is a preparation to fix each files.
 This CL has no behavior changes.

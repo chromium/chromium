@@ -38,60 +38,64 @@ import build_gn_editor
 _IGNORED_FILES_IN_RES = {'DIR_METADATA', 'OWNERS'}
 
 _VALUES_SUPPORTED = [
-    'arrays',
-    'colors',
-    'dimens',
-    'ids',
-    'strings',
-    'styles',
+  'arrays',
+  'colors',
+  'dimens',
+  'ids',
+  'strings',
+  'styles',
 ]
 
 _DIRS_SUPPORTED = [
-    'animator',
-    'anim',
-    'color',
-    'drawable',
-    'font',
-    'mipmap',
-    'layout',
-    'menu',
-    'raw',
-    'values',
-    'xml',
+  'animator',
+  'anim',
+  'color',
+  'drawable',
+  'font',
+  'mipmap',
+  'layout',
+  'menu',
+  'raw',
+  'values',
+  'xml',
 ]
 
 
 def main():
   arg_parser = argparse.ArgumentParser(
-      description='Creates Android resources directories and boilerplate files '
-      'for a module.')
+    description='Creates Android resources directories and boilerplate files '
+    'for a module.'
+  )
 
-  arg_parser.add_argument('module',
-                          help='Module directory to create resources for. e.g. '
-                          'chrome/browser/foo')
+  arg_parser.add_argument(
+    'module',
+    help='Module directory to create resources for. e.g. chrome/browser/foo',
+  )
 
-  arg_parser.add_argument('-v',
-                          '--values',
-                          nargs='+',
-                          default=[],
-                          choices=_VALUES_SUPPORTED,
-                          help='Creates values .xml resources files that do '
-                          'not exist yet.')
   arg_parser.add_argument(
-      '-d',
-      '--directories',
-      nargs='+',
-      default=[],
-      choices=_DIRS_SUPPORTED,
-      help='Creates resources file directories that do not exist yet. '
-      'Use --values to create the values directory.')
+    '-v',
+    '--values',
+    nargs='+',
+    default=[],
+    choices=_VALUES_SUPPORTED,
+    help='Creates values .xml resources files that do not exist yet.',
+  )
   arg_parser.add_argument(
-      '-q',
-      '--qualifiers',
-      nargs='+',
-      help='If specified, resources will be created under these Android '
-      'resources qualifiers. See '
-      'https://developer.android.com/guide/topics/resources/providing-resources#AlternativeResources'
+    '-d',
+    '--directories',
+    nargs='+',
+    default=[],
+    choices=_DIRS_SUPPORTED,
+    help='Creates resources file directories that do not exist yet. '
+    'Use --values to create the values directory.',
+  )
+  arg_parser.add_argument(
+    '-q',
+    '--qualifiers',
+    nargs='+',
+    help='If specified, resources will be created under these Android '
+    'resources qualifiers. See '
+    'https://developer.android.com/guide/topics/resources/providing-resources#AlternativeResources',
   )
 
   arguments = arg_parser.parse_args()
@@ -107,8 +111,9 @@ def main():
 
   # Detect existing resources
   all_resources = [
-      p for p in resources_path.rglob('*')
-      if p.is_file() and p.name not in _IGNORED_FILES_IN_RES
+    p
+    for p in resources_path.rglob('*')
+    if p.is_file() and p.name not in _IGNORED_FILES_IN_RES
   ]
 
   changes_requested = False
@@ -125,13 +130,15 @@ def main():
     changes_requested = True
     if value_type == 'strings':
       raise ValueError(
-          'strings.xml files are replaced by strings.grd files for '
-          'localization, and modules do not need to create separate '
-          'strings.grd files. Existing strings can be left in and new strings '
-          'can be added to '
-          'chrome/browser/ui/android/strings/android_chrome_strings.grd')
-    created_resources = _touch_values_files(resources_path, value_type,
-                                            qualifier_suffixes)
+        'strings.xml files are replaced by strings.grd files for '
+        'localization, and modules do not need to create separate '
+        'strings.grd files. Existing strings can be left in and new strings '
+        'can be added to '
+        'chrome/browser/ui/android/strings/android_chrome_strings.grd'
+      )
+    created_resources = _touch_values_files(
+      resources_path, value_type, qualifier_suffixes
+    )
     new_resources.extend(created_resources)
     all_resources.extend(created_resources)
 
@@ -140,14 +147,16 @@ def main():
     changes_requested = True
     if subdirectory == 'values':
       raise ValueError(
-          'Use -v/--values to create the values directory and values resources.'
+        'Use -v/--values to create the values directory and values resources.'
       )
     _touch_subdirectories(resources_path, subdirectory, qualifier_suffixes)
 
   if not changes_requested:
-    print('No resource types specified to create, so just created the res/ '
-          'directory. Use -v/--values to create value resources and '
-          '-d/--directories to create resources subdirectories.')
+    print(
+      'No resource types specified to create, so just created the res/ '
+      'directory. Use -v/--values to create value resources and '
+      '-d/--directories to create resources subdirectories.'
+    )
 
   # Print out build target suggestions
   all_resources.sort(key=str)
@@ -180,8 +189,9 @@ def _yes_or_no(question: str) -> bool:
     return False
 
 
-def _determine_target_to_use(targets: List[str], target_type: str,
-                             default_name: str) -> Optional[str]:
+def _determine_target_to_use(
+  targets: List[str], target_type: str, default_name: str
+) -> Optional[str]:
   num_targets = len(targets)
   if not num_targets:
     print(f'Found no existing {target_type} will create ":{default_name}".')
@@ -198,9 +208,12 @@ def _enumerate_targets_and_ask(targets: List[str]) -> Optional[str]:
     print(f'{i + 1}: {target}')
 
   try:
-    val = int(
-        input('Enter the number corresponding the to target you want to '
-              'use: ')) - 1
+    val = (
+      int(
+        input('Enter the number corresponding the to target you want to use: ')
+      )
+      - 1
+    )
   except ValueError:
     return None
 
@@ -210,8 +223,9 @@ def _enumerate_targets_and_ask(targets: List[str]) -> Optional[str]:
   return None
 
 
-def _identify_module_structure(path_argument: str
-                               ) -> Tuple[pathlib.Path, pathlib.Path]:
+def _identify_module_structure(
+  path_argument: str,
+) -> Tuple[pathlib.Path, pathlib.Path]:
   module_path = pathlib.Path(path_argument)
   assert module_path.is_dir()
 
@@ -238,11 +252,15 @@ def _identify_module_structure(path_argument: str
     return build_gn_path, resources_path
 
   raise Exception(
-      f'BUILD.gn found neither in {module_path} nor in {possible_android_path}')
+    f'BUILD.gn found neither in {module_path} nor in {possible_android_path}'
+  )
 
 
-def _touch_values_files(resources_path: pathlib.Path, value_resource_type: str,
-                        qualifier_suffixes: List[str]) -> List[pathlib.Path]:
+def _touch_values_files(
+  resources_path: pathlib.Path,
+  value_resource_type: str,
+  qualifier_suffixes: List[str],
+) -> List[pathlib.Path]:
   created_files = []
   for qualifier_suffix in qualifier_suffixes:
     values_path = resources_path / f'values{qualifier_suffix}'
@@ -306,18 +324,19 @@ _ARRAYS_BOILERPLATE = """    <!-- Prime numbers -->
     </array>"""
 
 _BOILERPLATE = {
-    'dimens': _DIMENS_BOILERPLATE,
-    'colors': _COLORS_BOILERPLATE,
-    'styles': _STYLES_BOILERPLATE,
-    'ids': _IDS_BOILERPLATE,
-    'arrays': _ARRAYS_BOILERPLATE
+  'dimens': _DIMENS_BOILERPLATE,
+  'colors': _COLORS_BOILERPLATE,
+  'styles': _STYLES_BOILERPLATE,
+  'ids': _IDS_BOILERPLATE,
+  'arrays': _ARRAYS_BOILERPLATE,
 }
 
 
 def _create_filler(value_resource_type: str) -> str:
   boilerplate = _BOILERPLATE[value_resource_type]
-  return _RESOURCES_BOILERPLATE_TEMPLATE.format(year=_get_current_year(),
-                                                contents=boilerplate)
+  return _RESOURCES_BOILERPLATE_TEMPLATE.format(
+    year=_get_current_year(), contents=boilerplate
+  )
 
 
 def _get_current_year() -> int:
@@ -325,17 +344,18 @@ def _get_current_year() -> int:
 
 
 _COMMON_RESOURCE_DEPS = [
-    "//chrome/browser/ui/android/strings:ui_strings_grd",
-    "//components/browser_ui/strings/android:browser_ui_strings_grd",
-    "//components/browser_ui/styles/android:java_resources",
-    "//components/browser_ui/widget/android:java_resources",
-    "//third_party/android_deps:material_design_java",
-    "//ui/android:ui_java_resources",
+  "//chrome/browser/ui/android/strings:ui_strings_grd",
+  "//components/browser_ui/strings/android:browser_ui_strings_grd",
+  "//components/browser_ui/styles/android:java_resources",
+  "//components/browser_ui/widget/android:java_resources",
+  "//third_party/android_deps:material_design_java",
+  "//ui/android:ui_java_resources",
 ]
 
 
-def _touch_subdirectories(resources_path: pathlib.Path, subdirectory: str,
-                          qualifier_suffixes: List[str]) -> List[pathlib.Path]:
+def _touch_subdirectories(
+  resources_path: pathlib.Path, subdirectory: str, qualifier_suffixes: List[str]
+) -> List[pathlib.Path]:
   for qualifier_suffix in qualifier_suffixes:
     subdir_name = f'{subdirectory}{qualifier_suffix}'
     subdir_path = resources_path / subdir_name
@@ -346,8 +366,9 @@ def _touch_subdirectories(resources_path: pathlib.Path, subdirectory: str,
       print(f'{subdir_path} already exists.')
 
 
-def _generate_resources_sources(build_gn_dir_path: pathlib.Path,
-                                new_resources: List[pathlib.Path]) -> List[str]:
+def _generate_resources_sources(
+  build_gn_dir_path: pathlib.Path, new_resources: List[pathlib.Path]
+) -> List[str]:
   return [f'"{str(r.relative_to(build_gn_dir_path))}"' for r in new_resources]
 
 
@@ -360,17 +381,23 @@ def _generate_suggested_resources_deps() -> List[str]:
   return [f'# "{dep}"' for dep in _COMMON_RESOURCE_DEPS]
 
 
-def _generate_resources_content(build_gn_path: pathlib.Path,
-                                new_resources: List[pathlib.Path], *,
-                                include_comment: bool) -> str:
+def _generate_resources_content(
+  build_gn_path: pathlib.Path,
+  new_resources: List[pathlib.Path],
+  *,
+  include_comment: bool,
+) -> str:
   build_gn_dir_path = build_gn_path.parent
   new_resources_lines = _list_to_lines(
-      _generate_resources_sources(build_gn_dir_path, new_resources), 4)
+    _generate_resources_sources(build_gn_dir_path, new_resources), 4
+  )
   suggested_deps_lines = _list_to_lines(_generate_suggested_resources_deps(), 4)
   comment = ''
   if include_comment:
-    comment = ('\n    # Commonly required resources deps for convenience, ' +
-               'add other required deps and remove unnecessary ones.')
+    comment = (
+      '\n    # Commonly required resources deps for convenience, '
+      + 'add other required deps and remove unnecessary ones.'
+    )
   resources_content = f"""sources = [
 {new_resources_lines}
   ]
@@ -381,11 +408,12 @@ def _generate_resources_content(build_gn_path: pathlib.Path,
   return resources_content
 
 
-def _generate_suggested_resources(build_gn_path: pathlib.Path,
-                                  new_resources: List[pathlib.Path]) -> str:
-  resources_content = _generate_resources_content(build_gn_path,
-                                                  new_resources,
-                                                  include_comment=True)
+def _generate_suggested_resources(
+  build_gn_path: pathlib.Path, new_resources: List[pathlib.Path]
+) -> str:
+  resources_content = _generate_resources_content(
+    build_gn_path, new_resources, include_comment=True
+  )
   resources_target_suggestion = f"""
 android_resources("java_resources") {{
   {resources_content}
@@ -402,8 +430,9 @@ def _generate_suggested_java_package(build_gn_path: pathlib.Path) -> str:
   return f'org.chromium.{".".join(parts_for_package)}'
 
 
-def _generate_library_content(build_gn_path: pathlib.Path,
-                              resources_target_name: str) -> str:
+def _generate_library_content(
+  build_gn_path: pathlib.Path, resources_target_name: str
+) -> str:
   suggested_java_package = _generate_suggested_java_package(build_gn_path)
   library_content = f"""deps = [
      ":{resources_target_name}",
@@ -413,10 +442,12 @@ def _generate_library_content(build_gn_path: pathlib.Path,
   return library_content
 
 
-def _generate_library_target(build_gn_path: pathlib.Path,
-                             resources_target_name: str) -> str:
-  library_content = _generate_library_content(build_gn_path,
-                                              resources_target_name)
+def _generate_library_target(
+  build_gn_path: pathlib.Path, resources_target_name: str
+) -> str:
+  library_content = _generate_library_content(
+    build_gn_path, resources_target_name
+  )
   android_library_target_suggestion = f"""
 android_library("java") {{
   {library_content}
@@ -424,16 +455,17 @@ android_library("java") {{
   return android_library_target_suggestion
 
 
-def _create_or_update_variable_list(target: build_gn_editor.BuildTarget,
-                                    variable_name: str,
-                                    elements: List[str]) -> None:
+def _create_or_update_variable_list(
+  target: build_gn_editor.BuildTarget, variable_name: str, elements: List[str]
+) -> None:
   variable = target.get_variable(variable_name)
   if variable:
     variable_list = variable.get_content_as_list()
     if not variable_list:
       raise build_gn_editor.BuildFileUpdateError(
-          f'{target.get_type()}("{target.get_name()}") '
-          f'{variable_name} is not a list.')
+        f'{target.get_type()}("{target.get_name()}") '
+        f'{variable_name} is not a list.'
+      )
 
     variable_list.add_elements(elements)
     variable.set_content_from_list(variable_list)
@@ -447,22 +479,26 @@ def _create_or_update_variable_list(target: build_gn_editor.BuildTarget,
   target.add_variable(variable)
 
 
-def _update_build_file(build_file: build_gn_editor.BuildFile,
-                       all_resources: List[pathlib.Path]) -> bool:
+def _update_build_file(
+  build_file: build_gn_editor.BuildFile, all_resources: List[pathlib.Path]
+) -> bool:
   libraries = build_file.get_target_names_of_type('android_library')
   resources = build_file.get_target_names_of_type('android_resources')
 
-  library_target = _determine_target_to_use(libraries, 'android_library',
-                                            'java')
-  resources_target = _determine_target_to_use(resources, 'android_resources',
-                                              'java_resources')
+  library_target = _determine_target_to_use(
+    libraries, 'android_library', 'java'
+  )
+  resources_target = _determine_target_to_use(
+    resources, 'android_resources', 'java_resources'
+  )
   if not library_target or not resources_target:
     print('Invalid build target selections. Aborting BUILD.gn changes.')
     return False
 
   try:
-    _update_build_targets(build_file, all_resources, library_target,
-                          resources_target)
+    _update_build_targets(
+      build_file, all_resources, library_target, resources_target
+    )
   except build_gn_editor.BuildFileUpdateError as e:
     print(f'Changes to build targets failed: {e}. Aborting BUILD.gn changes.')
     return False
@@ -476,31 +512,40 @@ def _update_build_file(build_file: build_gn_editor.BuildFile,
   return True
 
 
-def _update_build_targets(build_file: build_gn_editor.BuildFile,
-                          all_resources: List[pathlib.Path],
-                          library_target: str, resources_target: str) -> None:
+def _update_build_targets(
+  build_file: build_gn_editor.BuildFile,
+  all_resources: List[pathlib.Path],
+  library_target: str,
+  resources_target: str,
+) -> None:
   resources = build_file.get_target('android_resources', resources_target)
   if not resources:
     resources = build_gn_editor.BuildTarget(
-        'android_resources', resources_target,
-        _generate_resources_content(build_file.get_path(),
-                                    all_resources,
-                                    include_comment=False))
+      'android_resources',
+      resources_target,
+      _generate_resources_content(
+        build_file.get_path(), all_resources, include_comment=False
+      ),
+    )
     build_file.add_target(resources)
   else:
     _create_or_update_variable_list(
-        resources, 'sources',
-        _generate_resources_sources(build_file.get_path().parent,
-                                    all_resources))
-    _create_or_update_variable_list(resources, 'deps',
-                                    _generate_suggested_resources_deps())
+      resources,
+      'sources',
+      _generate_resources_sources(build_file.get_path().parent, all_resources),
+    )
+    _create_or_update_variable_list(
+      resources, 'deps', _generate_suggested_resources_deps()
+    )
     build_file.replace_target(resources)
 
   library = build_file.get_target('android_library', library_target)
   if not library:
     library = build_gn_editor.BuildTarget(
-        'android_library', library_target,
-        _generate_library_content(build_file.get_path(), resources_target))
+      'android_library',
+      library_target,
+      _generate_library_content(build_file.get_path(), resources_target),
+    )
     build_file.add_target(library)
   else:
     _create_or_update_variable_list(library, 'deps', [f'":{resources_target}"'])
@@ -508,19 +553,25 @@ def _update_build_targets(build_file: build_gn_editor.BuildFile,
     resources_package = library.get_variable('resources_package')
     if not resources_package:
       resources_package_str = _generate_suggested_java_package(
-          build_file.get_path())
+        build_file.get_path()
+      )
       library.add_variable(
-          build_gn_editor.TargetVariable('resources_package',
-                                         f'"{resources_package_str}"'))
+        build_gn_editor.TargetVariable(
+          'resources_package', f'"{resources_package_str}"'
+        )
+      )
     build_file.replace_target(library)
 
 
-def _print_build_target_suggestions(build_gn_path: pathlib.Path,
-                                    new_resources: List[pathlib.Path]) -> None:
+def _print_build_target_suggestions(
+  build_gn_path: pathlib.Path, new_resources: List[pathlib.Path]
+) -> None:
   resources_target_suggestion = _generate_suggested_resources(
-      build_gn_path, new_resources)
+    build_gn_path, new_resources
+  )
   android_library_target_suggestion = _generate_library_target(
-      build_gn_path, 'java_resources')
+    build_gn_path, 'java_resources'
+  )
   print(f'Suggestion for {build_gn_path}:')
   print(resources_target_suggestion)
   print(android_library_target_suggestion)

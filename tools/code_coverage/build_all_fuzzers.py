@@ -4,8 +4,9 @@
 # found in the LICENSE file.
 """Build all Chromium libfuzzer targets that have corresponding corpora.
 
-  * Example usage: build_all_fuzzers.py --output-dir OUTPUT_DIR
+* Example usage: build_all_fuzzers.py --output-dir OUTPUT_DIR
 """
+
 import argparse
 import coverage_consts
 import logging
@@ -22,10 +23,13 @@ def _ParseCommandArguments():
   arg_parser.usage = __doc__
 
   arg_parser.add_argument(
-      '--output-dir',
-      type=str,
-      help=('Directory where fuzzers are to be built. GN args are assumed to '
-            'have already been set.'))
+    '--output-dir',
+    type=str,
+    help=(
+      'Directory where fuzzers are to be built. GN args are assumed to '
+      'have already been set.'
+    ),
+  )
   args = arg_parser.parse_args()
   return args
 

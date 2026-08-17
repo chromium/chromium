@@ -8,15 +8,17 @@ import matplotlib.lines as mlines
 import matplotlib.colors as mcolors
 
 
-def stripplot(ax,
-              data,
-              x_key,
-              y_key,
-              x_label=None,
-              y_label=None,
-              title=None,
-              units='',
-              color_palette='Set2'):
+def stripplot(
+    ax,
+    data,
+    x_key,
+    y_key,
+    x_label=None,
+    y_label=None,
+    title=None,
+    units='',
+    color_palette='Set2',
+):
     """Generates a strip plot with overlaid mean and confidence intervals.
 
     This function creates a seaborn stripplot to visualize the distribution of
@@ -65,26 +67,30 @@ def stripplot(ax,
 
     # Use seaborn.stripplot to show individual data points for each group.
     # `hue` is used to give each group a distinct color.
-    sns.stripplot(x=x_key,
-                  y=y_key,
-                  data=data,
-                  hue=x_key,
-                  size=8,
-                  alpha=0.6,
-                  ax=ax,
-                  legend=False)
+    sns.stripplot(
+        x=x_key,
+        y=y_key,
+        data=data,
+        hue=x_key,
+        size=8,
+        alpha=0.6,
+        ax=ax,
+        legend=False,
+    )
 
     # Overlay a pointplot to display the mean and 95% confidence interval.
     # `join=False` prevents drawing lines between points of different groups.
-    point_plot = sns.pointplot(x=x_key,
-                               y=y_key,
-                               data=data,
-                               hue=x_key,
-                               ax=ax,
-                               join=False,
-                               markers='d',
-                               errorbar=('ci', 95),
-                               capsize=0.05)
+    point_plot = sns.pointplot(
+        x=x_key,
+        y=y_key,
+        data=data,
+        hue=x_key,
+        ax=ax,
+        join=False,
+        markers='d',
+        errorbar=('ci', 95),
+        capsize=0.05,
+    )
 
     # Get the unique groups to ensure a consistent order for colors and labels.
     unique_groups = data[x_key].unique()
@@ -95,12 +101,16 @@ def stripplot(ax,
 
     # Manually create legend handles with circular markers in the palette color.
     legend_handles = [
-        mlines.Line2D([], [],
-                      color=colors[i],
-                      marker='o',
-                      linestyle='None',
-                      markersize=8,
-                      label=group) for i, group in enumerate(unique_groups)
+        mlines.Line2D(
+            [],
+            [],
+            color=colors[i],
+            marker='o',
+            linestyle='None',
+            markersize=8,
+            label=group,
+        )
+        for i, group in enumerate(unique_groups)
     ]
     ax.legend(handles=legend_handles, title=x_label)
 
@@ -113,13 +123,15 @@ def stripplot(ax,
         darker_color = (r * 0.6, g * 0.6, b * 0.6, a)
         # Add a text annotation for the mean. A small horizontal offset is added
         # to prevent the label from overlapping with the point marker.
-        ax.text(i + 0.1,
-                mean_value,
-                f'{mean_value:.0f}{units}',
-                ha='left',
-                va='center',
-                color=darker_color,
-                fontweight='bold')
+        ax.text(
+            i + 0.1,
+            mean_value,
+            f'{mean_value:.0f}{units}',
+            ha='left',
+            va='center',
+            color=darker_color,
+            fontweight='bold',
+        )
 
     ax.set_ylabel(y_label or y_key)
     ax.set_xlabel(x_label or x_key)

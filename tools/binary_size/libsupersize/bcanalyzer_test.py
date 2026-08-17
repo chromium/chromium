@@ -25,51 +25,76 @@ def _MakeBytes(bits, toks):
     the result of concatanating tokens.
   """
   cfi = itertools.chain.from_iterable
-  chars = cfi(map(ord, t) if isinstance(t, str) else (t, ) for t in toks)
+  chars = cfi(map(ord, t) if isinstance(t, str) else (t,) for t in toks)
   return bytes(cfi((c >> (8 * i) for i in range(bits // 8)) for c in chars))
 
 
 class BcAnalyzerTest(unittest.TestCase):
-
   def testParseTag(self):
     # Valid cases.
-    self.assertEqual((bcanalyzer.OPENING_TAG, 'FOO', 4),
-                     bcanalyzer.ParseTag('<FOO> trailing'))
-    self.assertEqual((bcanalyzer.OPENING_TAG, 'BAR', 4),
-                     bcanalyzer.ParseTag('<BAR op0=3 op1=4>'))
-    self.assertEqual((bcanalyzer.CLOSING_TAG, 'FOO', 5),
-                     bcanalyzer.ParseTag('</FOO>'))
-    self.assertEqual((bcanalyzer.SELF_CLOSING_TAG, 'FOO', 4),
-                     bcanalyzer.ParseTag('<FOO/>'))
-    self.assertEqual((bcanalyzer.SELF_CLOSING_TAG, 'TOMATO2', 8),
-                     bcanalyzer.ParseTag('<TOMATO2   />'))
+    self.assertEqual(
+      (bcanalyzer.OPENING_TAG, 'FOO', 4), bcanalyzer.ParseTag('<FOO> trailing')
+    )
+    self.assertEqual(
+      (bcanalyzer.OPENING_TAG, 'BAR', 4),
+      bcanalyzer.ParseTag('<BAR op0=3 op1=4>'),
+    )
+    self.assertEqual(
+      (bcanalyzer.CLOSING_TAG, 'FOO', 5), bcanalyzer.ParseTag('</FOO>')
+    )
+    self.assertEqual(
+      (bcanalyzer.SELF_CLOSING_TAG, 'FOO', 4), bcanalyzer.ParseTag('<FOO/>')
+    )
+    self.assertEqual(
+      (bcanalyzer.SELF_CLOSING_TAG, 'TOMATO2', 8),
+      bcanalyzer.ParseTag('<TOMATO2   />'),
+    )
     # Not self-closing: For simplicity we requires '/>' with space.
-    self.assertEqual((bcanalyzer.OPENING_TAG, 'TOMATO2', 8),
-                     bcanalyzer.ParseTag('<TOMATO2  / >'))
-    self.assertEqual((bcanalyzer.SELF_CLOSING_TAG, 'BAR', 4),
-                     bcanalyzer.ParseTag('<BAR op0=3 op1=4/>'))
-    self.assertEqual((bcanalyzer.OPENING_TAG, 'FOO', 4),
-                     bcanalyzer.ParseTag('<FOO> / trailing'))
-    self.assertEqual((bcanalyzer.SELF_CLOSING_TAG, 'STRUCT_NAME', 12),
-                     bcanalyzer.ParseTag('<STRUCT_NAME abbrevid=7 op0=0/>'))
-    self.assertEqual((bcanalyzer.SELF_CLOSING_TAG, 'UnkownCode41', 13),
-                     bcanalyzer.ParseTag('<UnkownCode41 op0=0 op1=4 op2=5/>'))
-    self.assertEqual((bcanalyzer.CLOSING_TAG, 'FOO_BAR', 9),
-                     bcanalyzer.ParseTag('</FOO_BAR> \'/>trailing\''))
-    self.assertEqual((bcanalyzer.OPENING_TAG, 'A', 2),
-                     bcanalyzer.ParseTag('<A>'))
-    self.assertEqual((bcanalyzer.OPENING_TAG, 'lower', 6),
-                     bcanalyzer.ParseTag('<lower >'))
+    self.assertEqual(
+      (bcanalyzer.OPENING_TAG, 'TOMATO2', 8),
+      bcanalyzer.ParseTag('<TOMATO2  / >'),
+    )
+    self.assertEqual(
+      (bcanalyzer.SELF_CLOSING_TAG, 'BAR', 4),
+      bcanalyzer.ParseTag('<BAR op0=3 op1=4/>'),
+    )
+    self.assertEqual(
+      (bcanalyzer.OPENING_TAG, 'FOO', 4),
+      bcanalyzer.ParseTag('<FOO> / trailing'),
+    )
+    self.assertEqual(
+      (bcanalyzer.SELF_CLOSING_TAG, 'STRUCT_NAME', 12),
+      bcanalyzer.ParseTag('<STRUCT_NAME abbrevid=7 op0=0/>'),
+    )
+    self.assertEqual(
+      (bcanalyzer.SELF_CLOSING_TAG, 'UnkownCode41', 13),
+      bcanalyzer.ParseTag('<UnkownCode41 op0=0 op1=4 op2=5/>'),
+    )
+    self.assertEqual(
+      (bcanalyzer.CLOSING_TAG, 'FOO_BAR', 9),
+      bcanalyzer.ParseTag('</FOO_BAR> \'/>trailing\''),
+    )
+    self.assertEqual(
+      (bcanalyzer.OPENING_TAG, 'A', 2), bcanalyzer.ParseTag('<A>')
+    )
+    self.assertEqual(
+      (bcanalyzer.OPENING_TAG, 'lower', 6), bcanalyzer.ParseTag('<lower >')
+    )
     # An invalid tag (all numbers), but we allow for simplicity.
-    self.assertEqual((bcanalyzer.OPENING_TAG, '123', 4),
-                     bcanalyzer.ParseTag('<123>'))
+    self.assertEqual(
+      (bcanalyzer.OPENING_TAG, '123', 4), bcanalyzer.ParseTag('<123>')
+    )
     # Abominations that are allowed for simplicity.
-    self.assertEqual((bcanalyzer.SELF_CLOSING_TAG, 'FOO', 5),
-                     bcanalyzer.ParseTag('</FOO/>'))
-    self.assertEqual((bcanalyzer.SELF_CLOSING_TAG, 'FOO', 4),
-                     bcanalyzer.ParseTag('<FOO///////>'))
-    self.assertEqual((bcanalyzer.OPENING_TAG, 'FOO', 4),
-                     bcanalyzer.ParseTag('<FOO>>>>>'))
+    self.assertEqual(
+      (bcanalyzer.SELF_CLOSING_TAG, 'FOO', 5), bcanalyzer.ParseTag('</FOO/>')
+    )
+    self.assertEqual(
+      (bcanalyzer.SELF_CLOSING_TAG, 'FOO', 4),
+      bcanalyzer.ParseTag('<FOO///////>'),
+    )
+    self.assertEqual(
+      (bcanalyzer.OPENING_TAG, 'FOO', 4), bcanalyzer.ParseTag('<FOO>>>>>')
+    )
 
     # Invalid cases.
     None3 = (None, None, None)
@@ -99,10 +124,12 @@ class BcAnalyzerTest(unittest.TestCase):
 
       with test_util.AddMocksToPath():
         encoded_results = bcanalyzer.RunBcAnalyzerOnIntermediates(
-            ['test.o'], test_util.TEST_OUTPUT_DIR)
+          ['test.o'], test_util.TEST_OUTPUT_DIR
+        )
 
       results = parallel.DecodeDictOfLists(
-          encoded_results, value_transform=ast.literal_eval)
+        encoded_results, value_transform=ast.literal_eval
+      )
       self.assertEqual(['test.o'], list(results.keys()))
       str_list = results['test.o']
 
@@ -137,6 +164,7 @@ class BcAnalyzerTest(unittest.TestCase):
 
     # Restore globa param in bcanalyzer.
     bcanalyzer._CHAR_WIDTH_LIMIT = saved_char_width_limit
+
 
 if __name__ == '__main__':
   unittest.main()

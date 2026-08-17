@@ -12,8 +12,9 @@ import os
 import struct
 import sys
 
-_SRC_PATH = os.path.abspath(os.path.join(
-    os.path.dirname(__file__), os.pardir, os.pardir))
+_SRC_PATH = os.path.abspath(
+  os.path.join(os.path.dirname(__file__), os.pardir, os.pardir)
+)
 path = os.path.join(_SRC_PATH, 'tools', 'cygprofile')
 sys.path.append(path)
 import process_profiles
@@ -22,6 +23,7 @@ SIZEOF_INT = 4
 BITS_IN_INT = SIZEOF_INT * 8
 # This is the number of bytes represented in a dump by one bit.
 BYTES_GRANULARITY = 4
+
 
 def _DumpToOffsets(filename):
   """From a dump, returns a list of offsets in it.
@@ -74,15 +76,28 @@ def _ReachedSymbols(offsets, offset_to_symbol):
 def _CreateArgumentParser():
   """Returns an ArgumentParser."""
   parser = argparse.ArgumentParser(description='Outputs reached symbols')
-  parser.add_argument('--build-dir', type=str,
-                      help='Path to the build directory', required=True)
-  parser.add_argument('--dumps', type=str, help='A comma-separated list of '
-                      'files with instrumentation dumps', required=False)
-  parser.add_argument('--dumps-dir', type=str, help='Directory name with'
-                      'reached code dumps', required=False)
-  parser.add_argument('--library-name', default='libchrome.so',
-                      help=('Chrome shared library name (usually libchrome.so '
-                            'or libmonochrome.so'))
+  parser.add_argument(
+    '--build-dir', type=str, help='Path to the build directory', required=True
+  )
+  parser.add_argument(
+    '--dumps',
+    type=str,
+    help='A comma-separated list of files with instrumentation dumps',
+    required=False,
+  )
+  parser.add_argument(
+    '--dumps-dir',
+    type=str,
+    help='Directory name withreached code dumps',
+    required=False,
+  )
+  parser.add_argument(
+    '--library-name',
+    default='libchrome.so',
+    help=(
+      'Chrome shared library name (usually libchrome.so or libmonochrome.so'
+    ),
+  )
   parser.add_argument('--output', required=True, help='Output filename')
   return parser
 
@@ -106,8 +121,9 @@ def main():
   for dump_filename in dumps:
     offsets |= set(_DumpToOffsets(dump_filename))
   logging.info('Found %d reached locations', len(offsets))
-  library_path = os.path.join(args.build_dir, 'lib.unstripped',
-                              args.library_name)
+  library_path = os.path.join(
+    args.build_dir, 'lib.unstripped', args.library_name
+  )
   processor = process_profiles.SymbolOffsetProcessor(library_path)
   logging.info('Finding Symbols')
   offset_to_symbol = processor.GetDumpOffsetToSymbolInfo()
@@ -115,7 +131,7 @@ def main():
   reached_symbol_infos.remove(None)
   with open(args.output, 'w') as f:
     for s in reached_symbol_infos:
-        f.write('%s\n' % s.name)
+      f.write('%s\n' % s.name)
 
   # Print some stats.
   reached_size = sum(s.size for s in reached_symbol_infos)
@@ -126,11 +142,10 @@ def main():
       all_symbol_infos.add(i)
   total_size = sum(s.size for s in all_symbol_infos)
   logging.info('Total size of known symbols = {}'.format(total_size))
-  coverage_percent = float(reached_size) / total_size * 100;
+  coverage_percent = float(reached_size) / total_size * 100
   logging.info('Coverage: {0:.2f}%'.format(coverage_percent))
 
 
 if __name__ == '__main__':
   main()
   sys.exit(0)
-

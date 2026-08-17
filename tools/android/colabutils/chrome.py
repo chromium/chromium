@@ -11,20 +11,23 @@ from . import command_line
 
 
 class Channel(Enum):
-    STABLE = "stable",
-    CANARY = "canary",
-    DEV = "dev",
-    BETA = "beta",
-    LOCAL_BUILD = "local-build",
-    CHROMIUM = "chromium",
+    STABLE = ("stable",)
+    CANARY = ("canary",)
+    DEV = ("dev",)
+    BETA = ("beta",)
+    LOCAL_BUILD = ("local-build",)
+    CHROMIUM = ("chromium",)
+
 
 class App:
     """Class to control the chrome app."""
 
     def __init__(self, channel):
         if not isinstance(channel, Channel):
-            raise TypeError(f"channel must be a member of the Channel enum, "
-                            f"got {type(channel)}.")
+            raise TypeError(
+                f"channel must be a member of the Channel enum, "
+                f"got {type(channel)}."
+            )
 
         self.channel = channel
 
@@ -34,13 +37,19 @@ class App:
         await command_line.adb_shell(shlex.join(command_parts))
 
     async def start(
-            self,
-            activity="org.chromium.chrome.browser.ChromeTabbedActivity",
-            action="android.intent.action.VIEW",
-            url=None):
+        self,
+        activity="org.chromium.chrome.browser.ChromeTabbedActivity",
+        action="android.intent.action.VIEW",
+        url=None,
+    ):
         """Runs the adb shell command to start an activity."""
         command_parts = [
-            "am", "start", "-n", f"{self.package()}/{activity}", "-a", action
+            "am",
+            "start",
+            "-n",
+            f"{self.package()}/{activity}",
+            "-a",
+            action,
         ]
         if url:
             command_parts.extend(["-d", url])
@@ -63,17 +72,20 @@ class App:
                 return "org.chromium.chrome"
             case _:
                 raise AssertionError(
-                    f"Missing package name for channel: {self.channel}.")
+                    f"Missing package name for channel: {self.channel}."
+                )
 
 
 @contextlib.asynccontextmanager
 async def additional_command_line_flags(*args):
     """A context manager to temporarily add flags to chrome-command-line."""
     # Ensure the file exists before reading it.
-    await command_line.adb_shell("touch",
-                                 "/data/local/tmp/chrome-command-line")
-    old_flags_str = (await command_line.adb_shell(
-        "cat", "/data/local/tmp/chrome-command-line")).stdout.strip()
+    await command_line.adb_shell("touch", "/data/local/tmp/chrome-command-line")
+    old_flags_str = (
+        await command_line.adb_shell(
+            "cat", "/data/local/tmp/chrome-command-line"
+        )
+    ).stdout.strip()
 
     try:
         # The command-line file must start with a placeholder token. If the file
@@ -82,8 +94,10 @@ async def additional_command_line_flags(*args):
         new_flags_list = old_flags_list + list(args)
         new_flags_str = shlex.join(new_flags_list)
         await command_line.adb_shell(
-            "cat > /data/local/tmp/chrome-command-line", input=new_flags_str)
+            "cat > /data/local/tmp/chrome-command-line", input=new_flags_str
+        )
         yield
     finally:
         await command_line.adb_shell(
-            "cat > /data/local/tmp/chrome-command-line", input=old_flags_str)
+            "cat > /data/local/tmp/chrome-command-line", input=old_flags_str
+        )

@@ -77,8 +77,8 @@ class _ResourceSourceMapper:
     res_info_without_root = self._ParseResInfoFile(apk_res_info_path)
     # We package resources in the res/ folder only in the apk.
     res_info = {
-        os.path.join('res', dest): source
-        for dest, source in res_info_without_root.items()
+      os.path.join('res', dest): source
+      for dest, source in res_info_without_root.items()
     }
     res_info.update(self._path_defaults)
     return res_info
@@ -98,20 +98,24 @@ class _ResourceSourceMapper:
     return ''
 
 
-def _CreateTypeSpecSymbols(chunk, package_id, sym_source_path, names_by_id,
-                           raw_symbols):
+def _CreateTypeSpecSymbols(
+  chunk, package_id, sym_source_path, names_by_id, raw_symbols
+):
   # Rather than report the type spec as a symbol, create a 4-byte
   # symbol for each resource. While the size is not representative,
   # this at least allows determining which symbols were added/removed
   # when diffing.
   PER_ENTRY_SIZE = 4
   assert chunk.size > chunk.entry_count * PER_ENTRY_SIZE, (
-      f'{chunk.type_str}: size={chunk.size}, count={chunk.entry_count}')
+    f'{chunk.type_str}: size={chunk.size}, count={chunk.entry_count}'
+  )
   if not names_by_id:
-    sym = models.Symbol(models.SECTION_ARSC,
-                        chunk.size,
-                        source_path=sym_source_path,
-                        full_name=chunk.symbol_name())
+    sym = models.Symbol(
+      models.SECTION_ARSC,
+      chunk.size,
+      source_path=sym_source_path,
+      full_name=chunk.symbol_name(),
+    )
     raw_symbols.append(sym)
     return chunk.size
 
@@ -122,19 +126,23 @@ def _CreateTypeSpecSymbols(chunk, package_id, sym_source_path, names_by_id,
     if not name:
       num_unnamed += 1
       continue
-    sym = models.Symbol(models.SECTION_ARSC,
-                        PER_ENTRY_SIZE,
-                        source_path=sym_source_path,
-                        full_name=name)
+    sym = models.Symbol(
+      models.SECTION_ARSC,
+      PER_ENTRY_SIZE,
+      source_path=sym_source_path,
+      full_name=name,
+    )
     raw_symbols.append(sym)
 
   # Unnamed can happen when using stable IDs, and aapt2 is forced to
   # leave gaps.
   if num_unnamed > 0:
-    sym = models.Symbol(models.SECTION_ARSC,
-                        num_unnamed * PER_ENTRY_SIZE,
-                        source_path=sym_source_path,
-                        full_name='<unnamed>')
+    sym = models.Symbol(
+      models.SECTION_ARSC,
+      num_unnamed * PER_ENTRY_SIZE,
+      source_path=sym_source_path,
+      full_name='<unnamed>',
+    )
     raw_symbols.append(sym)
   return chunk.entry_count * PER_ENTRY_SIZE
 
@@ -143,7 +151,7 @@ def _CreateStringSymbols(chunk, sym_source_path, raw_symbols):
   total_size = 0
   for i in range(chunk.string_count):
     # Do an extra initial truncation to make the ascii checks faster.
-    value = chunk.GetString(i)[:_MAX_STRING_LEN + 1]
+    value = chunk.GetString(i)[: _MAX_STRING_LEN + 1]
     if not value.isascii():
       # file_format.py currently requires ascii (maybe unnecessarily...)
       name = '<non-ascii>'
@@ -152,14 +160,13 @@ def _CreateStringSymbols(chunk, sym_source_path, raw_symbols):
       if not value.isprintable():
         name = '<non-printable>'
       elif len(value) > _MAX_STRING_LEN:
-        name = f'"{value[:_MAX_STRING_LEN - 3]}"...'
+        name = f'"{value[: _MAX_STRING_LEN - 3]}"...'
       else:
         name = f'"{value}"'
     size = 4 + chunk.GetEncodedSize(i)  # Include the offset uint32
-    sym = models.Symbol(models.SECTION_ARSC,
-                        size,
-                        source_path=sym_source_path,
-                        full_name=name)
+    sym = models.Symbol(
+      models.SECTION_ARSC, size, source_path=sym_source_path, full_name=name
+    )
     raw_symbols.append(sym)
     total_size += size
   return total_size
@@ -174,8 +181,9 @@ def CreateArscSymbols(apk_spec):
   metrics_by_file = {}
   with zipfile.ZipFile(apk_spec.apk_path) as src_zip:
     arsc_infos = [
-        info for info in src_zip.infolist()
-        if info.filename == _RESOURCES_ARSC_FILE
+      info
+      for info in src_zip.infolist()
+      if info.filename == _RESOURCES_ARSC_FILE
     ]
     if len(arsc_infos) != 0:
       assert len(arsc_infos) == 1
@@ -187,50 +195,66 @@ def CreateArscSymbols(apk_spec):
       overhead = len(arsc_data)
       package_id = None
       for inner_path, chunk in arsc_file.VisitPreOrder():
-        sym_source_path = (f'{source_path}/{inner_path}'
-                           if inner_path else source_path)
+        sym_source_path = (
+          f'{source_path}/{inner_path}' if inner_path else source_path
+        )
         if isinstance(chunk, arsc_parser.ArscResTablePackage):
           package_id = chunk.id
         elif isinstance(chunk, arsc_parser.ArscStringPool):
           prev_count = len(raw_symbols)
           overhead -= _CreateStringSymbols(
-              chunk, f'{sym_source_path}/{chunk.symbol_name()}', raw_symbols)
-          logging.info('Created %d ARSC string pool symbols for %s',
-                       len(raw_symbols) - prev_count, chunk.symbol_name())
+            chunk, f'{sym_source_path}/{chunk.symbol_name()}', raw_symbols
+          )
+          logging.info(
+            'Created %d ARSC string pool symbols for %s',
+            len(raw_symbols) - prev_count,
+            chunk.symbol_name(),
+          )
         elif isinstance(chunk, arsc_parser.ArscResTableTypeSpec):
           metrics[f'{models.METRICS_COUNT}/{chunk.type_str}'] = (
-              chunk.entry_count)
+            chunk.entry_count
+          )
           prev_count = len(raw_symbols)
-          overhead -= _CreateTypeSpecSymbols(chunk, package_id, sym_source_path,
-                                             names_by_id, raw_symbols)
-          logging.info('Created %d ARSC type spec symbols', len(raw_symbols) - prev_count)
+          overhead -= _CreateTypeSpecSymbols(
+            chunk, package_id, sym_source_path, names_by_id, raw_symbols
+          )
+          logging.info(
+            'Created %d ARSC type spec symbols', len(raw_symbols) - prev_count
+          )
         elif not chunk.children:  # Leaf chunk.
           name = chunk.symbol_name()
           overhead -= chunk.size
-          sym = models.Symbol(models.SECTION_ARSC,
-                              chunk.size - chunk.placeholder,
-                              source_path=sym_source_path,
-                              full_name=name)
+          sym = models.Symbol(
+            models.SECTION_ARSC,
+            chunk.size - chunk.placeholder,
+            source_path=sym_source_path,
+            full_name=name,
+          )
           raw_symbols.append(sym)
           if chunk.placeholder:
-            placeholder_sym = (models.Symbol(
-                models.SECTION_ARSC,
-                chunk.placeholder,
-                source_path=sym_source_path,
-                full_name=f'{name} (placeholders)'))
+            placeholder_sym = models.Symbol(
+              models.SECTION_ARSC,
+              chunk.placeholder,
+              source_path=sym_source_path,
+              full_name=f'{name} (placeholders)',
+            )
             raw_symbols.append(placeholder_sym)
 
       if overhead > 0:
         raw_symbols.append(
-            models.Symbol(models.SECTION_ARSC,
-                          overhead,
-                          source_path=source_path,
-                          full_name='Overhead: ARSC'))
+          models.Symbol(
+            models.SECTION_ARSC,
+            overhead,
+            source_path=source_path,
+            full_name='Overhead: ARSC',
+          )
+        )
       metrics_by_file[filename] = metrics
 
   section_ranges = {}
-  archive_util.ExtendSectionRange(section_ranges, models.SECTION_ARSC,
-                                  sum(s.size for s in raw_symbols))
+  archive_util.ExtendSectionRange(
+    section_ranges, models.SECTION_ARSC, sum(s.size for s in raw_symbols)
+  )
   return section_ranges, raw_symbols, metrics_by_file
 
 
@@ -241,10 +265,12 @@ def CreateMetadata(apk_spec, include_file_details, shorten_path):
   if include_file_details:
     if apk_spec.mapping_path:
       apk_metadata[models.METADATA_PROGUARD_MAPPING_FILENAME] = shorten_path(
-          apk_spec.mapping_path)
+        apk_spec.mapping_path
+      )
   if apk_spec.minimal_apks_path:
     apk_metadata[models.METADATA_APK_FILENAME] = shorten_path(
-        apk_spec.minimal_apks_path)
+      apk_spec.minimal_apks_path
+    )
     apk_metadata[models.METADATA_APK_SPLIT_NAME] = apk_spec.split_name
   else:
     apk_metadata[models.METADATA_APK_FILENAME] = shorten_path(apk_spec.apk_path)
@@ -258,10 +284,12 @@ def CreateApkOtherSymbols(apk_spec):
     A tuple of (section_ranges, raw_symbols, apk_metadata, apk_metrics_by_file).
   """
   logging.info('Creating symbols for other APK entries')
-  res_source_mapper = _ResourceSourceMapper(apk_spec.size_info_prefix,
-                                            apk_spec.path_defaults)
+  res_source_mapper = _ResourceSourceMapper(
+    apk_spec.size_info_prefix, apk_spec.path_defaults
+  )
   resource_deobfuscator = _ResourcePathDeobfuscator(
-      apk_spec.resources_pathmap_path)
+    apk_spec.resources_pathmap_path
+  )
   raw_symbols = []
   zip_info_total = 0
   zipalign_total = 0
@@ -277,21 +305,26 @@ def CreateApkOtherSymbols(apk_spec):
       zipalign_total += len(zip_info.extra)
 
       # Skip files that we explicitly analyze: .so, .dex, .pak, and .arsc.
-      if (zip_info.filename == _RESOURCES_ARSC_FILE
-          or zip_info.filename in apk_spec.ignore_apk_paths):
+      if (
+        zip_info.filename == _RESOURCES_ARSC_FILE
+        or zip_info.filename in apk_spec.ignore_apk_paths
+      ):
         continue
 
       resource_filename = resource_deobfuscator.MaybeRemapPath(
-          zip_info.filename)
+        zip_info.filename
+      )
       source_path = res_source_mapper.FindSourceForPath(resource_filename)
       if not source_path:
         source_path = posixpath.join(models.APK_PREFIX_PATH, resource_filename)
       raw_symbols.append(
-          models.Symbol(
-              models.SECTION_OTHER,
-              zip_info.compress_size,
-              source_path=source_path,
-              full_name=resource_filename))  # Full name must disambiguate
+        models.Symbol(
+          models.SECTION_OTHER,
+          zip_info.compress_size,
+          source_path=source_path,
+          full_name=resource_filename,
+        )
+      )  # Full name must disambiguate
 
   # Store zipalign overhead and signing block size as metadata rather than an
   # "Overhead:" symbol because they fluctuate in size, and would be a source of
@@ -299,29 +332,35 @@ def CreateApkOtherSymbols(apk_spec):
   # Might be even better if we had an option in Tiger Viewer to ignore certain
   # symbols, but taking this as a short-cut for now.
   apk_metadata = {
-      models.METADATA_ZIPALIGN_OVERHEAD: zipalign_total,
-      models.METADATA_SIGNING_BLOCK_SIZE: signing_block_size,
+    models.METADATA_ZIPALIGN_OVERHEAD: zipalign_total,
+    models.METADATA_SIGNING_BLOCK_SIZE: signing_block_size,
   }
 
   apk_metrics_by_file = {}
   apk_metrics_by_file[posixpath.basename(apk_spec.apk_path)] = {
-      f'{models.METRICS_SIZE}/{models.METRICS_SIZE_APK_FILE}':
-      os.path.getsize(apk_spec.apk_path),
+    f'{models.METRICS_SIZE}/{models.METRICS_SIZE_APK_FILE}': os.path.getsize(
+      apk_spec.apk_path
+    ),
   }
 
   # Overhead includes:
   #  * Size of all local zip headers (minus zipalign padding).
   #  * Size of central directory & end of central directory.
-  overhead_size = (os.path.getsize(apk_spec.apk_path) - zip_info_total -
-                   zipalign_total - signing_block_size)
+  overhead_size = (
+    os.path.getsize(apk_spec.apk_path)
+    - zip_info_total
+    - zipalign_total
+    - signing_block_size
+  )
   assert overhead_size >= 0, 'Apk overhead must be non-negative'
-  zip_overhead_symbol = models.Symbol(models.SECTION_OTHER,
-                                      overhead_size,
-                                      full_name='Overhead: APK file')
+  zip_overhead_symbol = models.Symbol(
+    models.SECTION_OTHER, overhead_size, full_name='Overhead: APK file'
+  )
   raw_symbols.append(zip_overhead_symbol)
 
   section_ranges = {}
-  archive_util.ExtendSectionRange(section_ranges, models.SECTION_OTHER,
-                                  sum(s.size for s in raw_symbols))
+  archive_util.ExtendSectionRange(
+    section_ranges, models.SECTION_OTHER, sum(s.size for s in raw_symbols)
+  )
   file_format.SortSymbols(raw_symbols)
   return section_ranges, raw_symbols, apk_metadata, apk_metrics_by_file

@@ -26,10 +26,10 @@ RUST_REPO = ''  # This gets filled in by main().
 # ./dashboard.py > /tmp/toolchain-dashboard.html
 # gsutil.py cp -a public-read /tmp/toolchain-dashboard.html gs://chromium-browser-clang/
 
-#TODO: Plot 30-day moving averages.
-#TODO: Overview with current age of each toolchain component.
-#TODO: Tables of last N rolls for each component.
-#TODO: Link to next roll bug, count of blockers, etc.
+# TODO: Plot 30-day moving averages.
+# TODO: Overview with current age of each toolchain component.
+# TODO: Tables of last N rolls for each component.
+# TODO: Link to next roll bug, count of blockers, etc.
 
 
 def timestamp_to_str(timestamp):
@@ -39,10 +39,18 @@ def timestamp_to_str(timestamp):
 
 def get_git_timestamp(repo, revision):
   '''Get the Unix timestamp of a git commit.'''
-  out = subprocess.check_output([
-      'git', '-C', repo, 'show', '--date=unix', '--pretty=fuller', '--no-patch',
-      revision
-  ]).decode('utf-8')
+  out = subprocess.check_output(
+    [
+      'git',
+      '-C',
+      repo,
+      'show',
+      '--date=unix',
+      '--pretty=fuller',
+      '--no-patch',
+      revision,
+    ]
+  ).decode('utf-8')
   DATE_RE = re.compile(r'^CommitDate: (\d+)$', re.MULTILINE)
   m = DATE_RE.search(out)
   return int(m.group(1))
@@ -58,7 +66,7 @@ def svn2git(svn_rev):
     # $ ( echo '{' && git rev-list 40c47680eb2a1cb9bb7f8598c319335731bd5204 | while read commit ; do SVNREV=$(git log --format=%B -n 1 $commit | grep '^llvm-svn: [0-9]*$' | awk '{print $2 }') ; [[ ! -z '$SVNREV' ]] && echo "\"$SVNREV\": \"$commit\"," ; done && echo '}' ) | tee /tmp/llvm_svn2git.json
     # and manually removing the trailing comma of the last entry.
     with urllib.request.urlopen(
-        'https://commondatastorage.googleapis.com/chromium-browser-clang/llvm_svn2git.json'
+      'https://commondatastorage.googleapis.com/chromium-browser-clang/llvm_svn2git.json'
     ) as url:
       svn2git_dict = json.load(url)
     # For branch commits, use the most recent commit to main instead.
@@ -71,18 +79,29 @@ def svn2git(svn_rev):
 def clang_rolls():
   '''Return a dict from timestamp to clang revision rolled in at that time.'''
   FIRST_ROLL = 'd78457ce2895e5b98102412983a979f1896eca90'
-  log = subprocess.check_output([
-      'git', '-C', CHROMIUM_REPO, 'log', '--date=unix', '--pretty=fuller', '-p',
-      f'{FIRST_ROLL}..origin/main', '--', 'tools/clang/scripts/update.py',
-      'tools/clang/scripts/update.sh'
-  ]).decode('utf-8')
+  log = subprocess.check_output(
+    [
+      'git',
+      '-C',
+      CHROMIUM_REPO,
+      'log',
+      '--date=unix',
+      '--pretty=fuller',
+      '-p',
+      f'{FIRST_ROLL}..origin/main',
+      '--',
+      'tools/clang/scripts/update.py',
+      'tools/clang/scripts/update.sh',
+    ]
+  ).decode('utf-8')
 
   # AuthorDate is when a commit was first authored; CommitDate (part of
   # --pretty=fuller) is when a commit was last updated. We use the latter since
   # it's more likely to reflect when the commit become part of upstream.
   DATE_RE = re.compile(r'^CommitDate: (\d+)$')
   VERSION_RE = re.compile(
-      r'^\+CLANG_REVISION = \'llvmorg-\d+-init-\d+-g([0-9a-f]+)\'$')
+    r'^\+CLANG_REVISION = \'llvmorg-\d+-init-\d+-g([0-9a-f]+)\'$'
+  )
   VERSION_RE_OLD = re.compile(r'^\+CLANG_REVISION = \'([0-9a-f]{10,})\'$')
   # +CLANG_REVISION=125186
   VERSION_RE_SVN = re.compile(r'^\+CLANG_REVISION ?= ?\'?(\d{1,6})\'?$')
@@ -104,7 +123,7 @@ def clang_rolls():
       rev = svn2git(m.group(1))
 
     if rev:
-      assert (date)
+      assert date
       rolls[date] = rev
       date = None
 
@@ -114,18 +133,30 @@ def clang_rolls():
 def origin_git_rev(repository, revision):
   '''Extract the GitOrigin-RevId for revision in repository.'''
   log = subprocess.check_output(
-      ['git', '-C', repository, 'show', '-s', revision]).decode('utf-8')
-  return re.search(r'^\s+GitOrigin-RevId: ([0-9a-f]+)$', log,
-                   re.MULTILINE).group(1)
+    ['git', '-C', repository, 'show', '-s', revision]
+  ).decode('utf-8')
+  return re.search(
+    r'^\s+GitOrigin-RevId: ([0-9a-f]+)$', log, re.MULTILINE
+  ).group(1)
 
 
 def libcxx_rolls():
   '''Return a dict from timestamp to libcxx revision rolled in at that time.'''
   FIRST_ROLL = 'e7001969a4527bc416ef354a78195b942160e79c'
-  log = subprocess.check_output([
-      'git', '-C', CHROMIUM_REPO, 'log', '--date=unix', '--pretty=fuller', '-p',
-      f'{FIRST_ROLL}..origin/main', '--', 'buildtools/deps_revisions.gni'
-  ]).decode('utf-8')
+  log = subprocess.check_output(
+    [
+      'git',
+      '-C',
+      CHROMIUM_REPO,
+      'log',
+      '--date=unix',
+      '--pretty=fuller',
+      '-p',
+      f'{FIRST_ROLL}..origin/main',
+      '--',
+      'buildtools/deps_revisions.gni',
+    ]
+  ).decode('utf-8')
 
   DATE_RE = re.compile(r'^CommitDate: (\d+)$')
   VERSION_RE = re.compile(r'^\+\s*libcxx_revision\s*=\s*"([0-9a-f]+)"$')
@@ -146,7 +177,7 @@ def libcxx_rolls():
       rev = svn2git(m.group(1))
 
     if rev:
-      assert (date)
+      assert date
       rolls[date] = rev
       date = None
 
@@ -155,15 +186,19 @@ def libcxx_rolls():
 
 def roll_ages(rolls, upstream_repo):
   '''Given a dict from timestamps to upstream revisions, return a list of pairs
-    of timestamp string and *upstream revision age* in days at that timestamp.'''
+  of timestamp string and *upstream revision age* in days at that timestamp.'''
 
   ages = []
+
   def add(timestamp, rev):
     ages.append(
-        (timestamp_to_str(timestamp),
-         (timestamp - get_git_timestamp(upstream_repo, rev)) / (3600 * 24)))
+      (
+        timestamp_to_str(timestamp),
+        (timestamp - get_git_timestamp(upstream_repo, rev)) / (3600 * 24),
+      )
+    )
 
-  assert (rolls)
+  assert rolls
   prev_roll_rev = None
   for roll_time, roll_rev in sorted(rolls.items()):
     if prev_roll_rev:
@@ -180,17 +215,27 @@ def rust_rolls():
   FIRST_ROLL = 'c77dda41d8904b6c03083cd939733d9f754b0aeb'
   # Some rolls used CIPD version numbers (dates) instead of Git hashes.
   CIPD_ROLLS = {
-      '20220914': '63b8d9b6898ec926f9eafa372506b6722d583694',
-      '20221101': 'b7d9af278cc7e2d3bc8845156a0ab405a3536724',
-      '20221118': '9db23f8d30e8d00e2e5e18b51f7bb8e582520600',
-      '20221207': 'a09e8c55c663d2b070f99ab0fdadbcc2c45656b2',
-      '20221209': '9553a4d439ffcf239c12142a78aa9923058e8a78',
-      '20230117': '925dc37313853f15dc21e42dc869b024fe488ef3',
+    '20220914': '63b8d9b6898ec926f9eafa372506b6722d583694',
+    '20221101': 'b7d9af278cc7e2d3bc8845156a0ab405a3536724',
+    '20221118': '9db23f8d30e8d00e2e5e18b51f7bb8e582520600',
+    '20221207': 'a09e8c55c663d2b070f99ab0fdadbcc2c45656b2',
+    '20221209': '9553a4d439ffcf239c12142a78aa9923058e8a78',
+    '20230117': '925dc37313853f15dc21e42dc869b024fe488ef3',
   }
-  log = subprocess.check_output([
-      'git', '-C', CHROMIUM_REPO, 'log', '--date=unix', '--pretty=fuller', '-p',
-      f'{FIRST_ROLL}..origin/main', '--', 'tools/rust/update_rust.py'
-  ]).decode('utf-8')
+  log = subprocess.check_output(
+    [
+      'git',
+      '-C',
+      CHROMIUM_REPO,
+      'log',
+      '--date=unix',
+      '--pretty=fuller',
+      '-p',
+      f'{FIRST_ROLL}..origin/main',
+      '--',
+      'tools/rust/update_rust.py',
+    ]
+  ).decode('utf-8')
 
   # AuthorDate is when a commit was first authored; CommitDate (part of
   # --pretty=fuller) is when a commit was last updated. We use the latter since
@@ -213,7 +258,7 @@ def rust_rolls():
         rev = CIPD_ROLLS[rev]
 
     if rev:
-      assert (date)
+      assert date
       rolls[date] = rev
       date = None
 
@@ -385,14 +430,18 @@ def print_dashboard():
 
 def main():
   parser = argparse.ArgumentParser(
-      description='Generate Chromium toolchain dashboard.')
-  parser.add_argument('--llvm-dir',
-                      help='LLVM repository directory.',
-                      default=os.path.join(CHROMIUM_REPO, '..', '..',
-                                           'llvm-project'))
-  parser.add_argument('--rust-dir',
-                      help='Rust repository directory.',
-                      default=os.path.join(CHROMIUM_REPO, '..', '..', 'rust'))
+    description='Generate Chromium toolchain dashboard.'
+  )
+  parser.add_argument(
+    '--llvm-dir',
+    help='LLVM repository directory.',
+    default=os.path.join(CHROMIUM_REPO, '..', '..', 'llvm-project'),
+  )
+  parser.add_argument(
+    '--rust-dir',
+    help='Rust repository directory.',
+    default=os.path.join(CHROMIUM_REPO, '..', '..', 'rust'),
+  )
   args = parser.parse_args()
 
   global LLVM_REPO

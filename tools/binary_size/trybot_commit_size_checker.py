@@ -56,39 +56,48 @@ _MUTABLE_CONSTANTS_LOG = 'mutable_contstants_log'
 _FOR_TESTING_LOG = 'for_test_log'
 _DEX_SYMBOLS_LOG = 'dex_symbols_log'
 _HTML_REPORT_URL_TEMPLATE = (
-    'https://chrome-supersize.firebaseapp.com/viewer.html?load_url={{%s}}')
+  'https://chrome-supersize.firebaseapp.com/viewer.html?load_url={{%s}}'
+)
 _MAX_PAK_INCREASE = 1024
-_TRYBOT_MD_URL = ('https://chromium.googlesource.com/chromium/src/+/main/docs/'
-                  'speed/binary_size/android_binary_size_trybot.md')
+_TRYBOT_MD_URL = (
+  'https://chromium.googlesource.com/chromium/src/+/main/docs/'
+  'speed/binary_size/android_binary_size_trybot.md'
+)
 
 
-_PROGUARD_CLASS_MAPPING_RE = re.compile(r'(?P<original_name>[^ ]+)'
-                                        r' -> '
-                                        r'(?P<obfuscated_name>[^:]+):')
-_PROGUARD_FIELD_MAPPING_RE = re.compile(r'(?P<type>[^ ]+) '
-                                        r'(?P<original_name>[^ (]+)'
-                                        r' -> '
-                                        r'(?P<obfuscated_name>[^:]+)')
+_PROGUARD_CLASS_MAPPING_RE = re.compile(
+  r'(?P<original_name>[^ ]+)'
+  r' -> '
+  r'(?P<obfuscated_name>[^:]+):'
+)
+_PROGUARD_FIELD_MAPPING_RE = re.compile(
+  r'(?P<type>[^ ]+) '
+  r'(?P<original_name>[^ (]+)'
+  r' -> '
+  r'(?P<obfuscated_name>[^:]+)'
+)
 _PROGUARD_METHOD_MAPPING_RE = re.compile(
-    # line_start:line_end: (optional)
-    r'((?P<line_start>\d+):(?P<line_end>\d+):)?'
-    r'(?P<return_type>[^ ]+)'  # original method return type
-    # original method class name (if exists)
-    r' (?:(?P<original_method_class>[a-zA-Z_\d.$]+)\.)?'
-    r'(?P<original_method_name>[^.\(]+)'
-    r'\((?P<params>[^\)]*)\)'  # original method params
-    r'(?:[^ ]*)'  # original method line numbers (ignored)
-    r' -> '
-    r'(?P<obfuscated_name>.+)')  # obfuscated method name
+  # line_start:line_end: (optional)
+  r'((?P<line_start>\d+):(?P<line_end>\d+):)?'
+  r'(?P<return_type>[^ ]+)'  # original method return type
+  # original method class name (if exists)
+  r' (?:(?P<original_method_class>[a-zA-Z_\d.$]+)\.)?'
+  r'(?P<original_method_name>[^.\(]+)'
+  r'\((?P<params>[^\)]*)\)'  # original method params
+  r'(?:[^ ]*)'  # original method line numbers (ignored)
+  r' -> '
+  r'(?P<obfuscated_name>.+)'
+)  # obfuscated method name
 
 
-class _SizeDelta(collections.namedtuple(
-    'SizeDelta', ['name', 'units', 'expected', 'actual'])):
-
+class _SizeDelta(
+  collections.namedtuple('SizeDelta', ['name', 'units', 'expected', 'actual'])
+):
   @property
   def explanation(self):
     ret = '{}: {} {} (max is {} {})'.format(
-        self.name, self.actual, self.units, self.expected, self.units)
+      self.name, self.actual, self.units, self.expected, self.units
+    )
     return ret
 
   def IsAllowable(self):
@@ -121,11 +130,12 @@ def _SymbolDiffHelper(title_fragment, symbols):
     for group in both.GroupedByContainer():
       counts = group.CountsByDiffStatus()
       lines += [
-          '===== {} Added & Removed ({}) ====='.format(
-              title_fragment, group.full_name),
-          'Added: {}'.format(counts[models.DIFF_STATUS_ADDED]),
-          'Removed: {}'.format(counts[models.DIFF_STATUS_REMOVED]),
-          ''
+        '===== {} Added & Removed ({}) ====='.format(
+          title_fragment, group.full_name
+        ),
+        'Added: {}'.format(counts[models.DIFF_STATUS_ADDED]),
+        'Removed: {}'.format(counts[models.DIFF_STATUS_REMOVED]),
+        '',
       ]
       lines.extend(describe.GenerateLines(group, summarize=False))
       lines += ['']
@@ -136,7 +146,8 @@ def _SymbolDiffHelper(title_fragment, symbols):
 @functools.lru_cache(maxsize=None)
 def _GetFeatureSymbolNamesCached(full_source_path):
   raw_symbols = find_features.FindFeatureSymbolNamesInFile(
-      str(full_source_path))
+    str(full_source_path)
+  )
   # Strip any C++ namespaces so the returned set contains pure feature basenames
   # (e.g. {'kMyFeature'}).
   return {sym.split('::')[-1] for sym in raw_symbols}
@@ -147,8 +158,8 @@ def _IsFeatureSymbol(symbol, out_directory=None):
   in its source file."""
   underlying_symbol = symbol.after_symbol or symbol.before_symbol
   assert underlying_symbol, (
-      'Impossible: underlying_symbol has neither after_symbol nor '
-      'before_symbol')
+    'Impossible: underlying_symbol has neither after_symbol nor before_symbol'
+  )
 
   source_path = underlying_symbol.source_path
   if not source_path:
@@ -162,9 +173,9 @@ def _IsFeatureSymbol(symbol, out_directory=None):
     else:
       # Local test or fallback paths
       possible_paths = [
-          repo_root / 'out/Release/gen' / source_path,
-          repo_root / 'out/Debug/gen' / source_path,
-          repo_root / 'out/Default/gen' / source_path,
+        repo_root / 'out/Release/gen' / source_path,
+        repo_root / 'out/Debug/gen' / source_path,
+        repo_root / 'out/Default/gen' / source_path,
       ]
       full_source_path = None
       for p in possible_paths:
@@ -195,13 +206,17 @@ def _CreateMutableConstantsDelta(symbols, out_directory=None):
   # Exclude Rust symbols. Path filtering (.rs) is preferred, but some Rust
   # symbols (like lazy_static/once_cell internals) lack path info in SuperSize
   # (showing as {no path}), so we also filter by name patterns.
-  symbols = symbols \
-      .WhereInSection('d') \
-      .WhereNameMatches(r'\bk[A-Z]|\b[A-Z_]+$') \
-      .WhereFullNameMatches('abi:logically_const').Inverted() \
-      .WhereSourcePathMatches(r'\.rs$').Inverted() \
-      .WhereFullNameMatches(r'::.*LAZY$|once_cell|lazy_static').Inverted() \
-      .Filter(lambda s: not _IsFeatureSymbol(s, out_directory))
+  symbols = (
+    symbols.WhereInSection('d')
+    .WhereNameMatches(r'\bk[A-Z]|\b[A-Z_]+$')
+    .WhereFullNameMatches('abi:logically_const')
+    .Inverted()
+    .WhereSourcePathMatches(r'\.rs$')
+    .Inverted()
+    .WhereFullNameMatches(r'::.*LAZY$|once_cell|lazy_static')
+    .Inverted()
+    .Filter(lambda s: not _IsFeatureSymbol(s, out_directory))
+  )
   lines, net_added = _SymbolDiffHelper('Mutable Constants', symbols)
 
   return lines, _SizeDelta('Mutable Constants', 'symbols', 0, net_added)
@@ -212,7 +227,8 @@ def _CreateMethodCountDelta(symbols, max_increase):
   method_symbols = symbols.WhereInSection(models.SECTION_DEX_METHOD)
   method_lines, net_method_added = _SymbolDiffHelper('Methods', method_symbols)
   class_symbols = symbols.WhereInSection(models.SECTION_DEX).Filter(
-      lambda s: not s.IsStringLiteral() and '#' not in s.name)
+    lambda s: not s.IsStringLiteral() and '#' not in s.name
+  )
   class_lines, _ = _SymbolDiffHelper('Classes', class_symbols)
   lines = []
   if class_lines:
@@ -221,44 +237,55 @@ def _CreateMethodCountDelta(symbols, max_increase):
   if method_lines:
     lines.extend(method_lines)
 
-  return lines, _SizeDelta('Dex Methods Count', 'methods', max_increase,
-                           net_method_added)
+  return lines, _SizeDelta(
+    'Dex Methods Count', 'methods', max_increase, net_method_added
+  )
 
 
 def _CreateResourceSizesDelta(before_dir, after_dir, max_increase):
   sizes_diff = diagnose_bloat.ResourceSizesDiff(
-      filename='resource_sizes_32.json')
+    filename='resource_sizes_32.json'
+  )
   sizes_diff.ProduceDiff(before_dir, after_dir)
 
-  return sizes_diff.Summary(), _SizeDelta('Normalized APK Size', 'bytes',
-                                          max_increase,
-                                          sizes_diff.summary_stat.value)
+  return sizes_diff.Summary(), _SizeDelta(
+    'Normalized APK Size', 'bytes', max_increase, sizes_diff.summary_stat.value
+  )
 
 
 def _CreateBaseModuleResourceSizesDelta(before_dir, after_dir, max_increase):
   sizes_diff = diagnose_bloat.ResourceSizesDiff(
-      filename='resource_sizes_32.json', include_sections=['base'])
+    filename='resource_sizes_32.json', include_sections=['base']
+  )
   sizes_diff.ProduceDiff(before_dir, after_dir)
 
   return sizes_diff.DetailedResults(), _SizeDelta(
-      'Base Module Size', 'bytes', max_increase,
-      sizes_diff.CombinedSizeChangeForSection('base'))
+    'Base Module Size',
+    'bytes',
+    max_increase,
+    sizes_diff.CombinedSizeChangeForSection('base'),
+  )
 
 
 def _CreateResourceSizes64Delta(before_dir, after_dir, max_increase):
   sizes_diff = diagnose_bloat.ResourceSizesDiff(
-      filename='resource_sizes_64.json')
+    filename='resource_sizes_64.json'
+  )
   sizes_diff.ProduceDiff(before_dir, after_dir)
 
   # Allow 4x growth of arm64 before blocking CLs.
   # TODO(crbug.com/399103933): Return this to * 4 once bot is not noisy.
-  return sizes_diff.Summary(), _SizeDelta('Normalized APK Size (arm64)',
-                                          'bytes', max_increase * 400,
-                                          sizes_diff.summary_stat.value)
+  return sizes_diff.Summary(), _SizeDelta(
+    'Normalized APK Size (arm64)',
+    'bytes',
+    max_increase * 400,
+    sizes_diff.summary_stat.value,
+  )
 
 
-def _CreateSupersizeDiff(before_size_path, after_size_path, review_subject,
-                         review_url):
+def _CreateSupersizeDiff(
+  before_size_path, after_size_path, review_subject, review_url
+):
   before = archive.LoadAndPostProcessSizeInfo(before_size_path)
   after = archive.LoadAndPostProcessSizeInfo(after_size_path)
   if review_subject:
@@ -272,14 +299,21 @@ def _CreateSupersizeDiff(before_size_path, after_size_path, review_subject,
 
 
 def _CreateUncompressedPakSizeDeltas(symbols):
-  pak_symbols = symbols.Filter(lambda s:
-      s.size > 0 and
-      bool(s.flags & models.FLAG_UNCOMPRESSED) and
-      s.section_name == models.SECTION_PAK_NONTRANSLATED)
+  pak_symbols = symbols.Filter(
+    lambda s: (
+      s.size > 0
+      and bool(s.flags & models.FLAG_UNCOMPRESSED)
+      and s.section_name == models.SECTION_PAK_NONTRANSLATED
+    )
+  )
   return [
-      _SizeDelta('Uncompressed Pak Entry "{}"'.format(pak.full_name), 'bytes',
-                 _MAX_PAK_INCREASE, pak.after_symbol.size)
-      for pak in pak_symbols
+    _SizeDelta(
+      'Uncompressed Pak Entry "{}"'.format(pak.full_name),
+      'bytes',
+      _MAX_PAK_INCREASE,
+      pak.after_symbol.size,
+    )
+    for pak in pak_symbols
   ]
 
 
@@ -303,8 +337,12 @@ def _ParseRTxtResources(path):
   return ret
 
 
-def _CreateResourceDiffLines(unused_resources_before_paths, r_txt_before_paths,
-                             unused_resources_after_paths, r_txt_after_paths):
+def _CreateResourceDiffLines(
+  unused_resources_before_paths,
+  r_txt_before_paths,
+  unused_resources_after_paths,
+  r_txt_after_paths,
+):
   unused_resources_before = set()
   for path in unused_resources_before_paths:
     unused_resources_before.update(_ParseUnusedResources(path))
@@ -329,14 +367,18 @@ def _CreateResourceDiffLines(unused_resources_before_paths, r_txt_before_paths,
   new_unused_resources = new_resources & unused_resources_after
 
   existing_now_used_resources = (
-      (existing_resources & unused_resources_before) - unused_resources_after)
+    existing_resources & unused_resources_before
+  ) - unused_resources_after
   existing_now_unused_resources = (
-      (existing_resources - unused_resources_before) & unused_resources_after)
+    existing_resources - unused_resources_before
+  ) & unused_resources_after
 
-  removed_resources_previously_used = (removed_resources -
-                                       unused_resources_before)
-  removed_resources_previously_unused = (removed_resources
-                                         & unused_resources_before)
+  removed_resources_previously_used = (
+    removed_resources - unused_resources_before
+  )
+  removed_resources_previously_unused = (
+    removed_resources & unused_resources_before
+  )
 
   lines = ['===== New resources that are used: =====']
   lines += [f'+{r}' for r in sorted(new_used_resources)]
@@ -410,8 +452,12 @@ def _CreateTestingSymbolsDeltas(before_mapping_paths, after_mapping_paths):
     lines.append('Removed Symbols Named "ForTest"')
     lines.extend(removed_symbols)
     lines.extend(['', ''])  # empty lines added for clarity
-  return lines, _SizeDelta('Added symbols named "ForTest"', 'symbols', 0,
-                           len(added_symbols) - len(removed_symbols))
+  return lines, _SizeDelta(
+    'Added symbols named "ForTest"',
+    'symbols',
+    0,
+    len(added_symbols) - len(removed_symbols),
+  )
 
 
 def _GenerateBinarySizePluginDetails(metrics, sizediff_filename):
@@ -425,12 +471,12 @@ def _GenerateBinarySizePluginDetails(metrics, sizediff_filename):
     elif log_name == _RESOURCE_SIZES_64_LOG:
       name = 'Android Binary Size (arm64 high end) (TrichromeLibrary64.apk)'
     listing = {
-        'name': name,
-        'delta': '{} {}'.format(_FormatNumber(delta.actual), delta.units),
-        'limit': '{} {}'.format(_FormatNumber(delta.expected), delta.units),
-        'log_name': log_name,
-        'allowed': delta.IsAllowable(),
-        'large_improvement': delta.IsLargeImprovement(),
+      'name': name,
+      'delta': '{} {}'.format(_FormatNumber(delta.actual), delta.units),
+      'limit': '{} {}'.format(_FormatNumber(delta.expected), delta.units),
+      'log_name': log_name,
+      'allowed': delta.IsAllowable(),
+      'large_improvement': delta.IsLargeImprovement(),
     }
     # Always show the Normalized APK Size.
     if log_name in _MAIN_LOG_NAMES or delta.actual != 0:
@@ -438,15 +484,15 @@ def _GenerateBinarySizePluginDetails(metrics, sizediff_filename):
   binary_size_listings.sort(key=lambda x: x['name'])
 
   binary_size_extras = [
-      {
-          'text': 'APK Breakdown',
-          'url': _HTML_REPORT_URL_TEMPLATE % sizediff_filename
-      },
+    {
+      'text': 'APK Breakdown',
+      'url': _HTML_REPORT_URL_TEMPLATE % sizediff_filename,
+    },
   ]
 
   return {
-      'listings': binary_size_listings,
-      'extras': binary_size_extras,
+    'listings': binary_size_listings,
+    'extras': binary_size_extras,
   }
 
 
@@ -471,38 +517,46 @@ def main():
   parser.add_argument('--author', required=True, help='CL author')
   parser.add_argument('--review-subject', help='Review subject')
   parser.add_argument('--review-url', help='Review URL')
-  parser.add_argument('--size-config-json-name',
-                      required=True,
-                      help='Filename of JSON with configs for '
-                      'binary size measurement.')
   parser.add_argument(
-      '--before-dir',
-      required=True,
-      help='Directory containing the APK from reference build.')
+    '--size-config-json-name',
+    required=True,
+    help='Filename of JSON with configs for binary size measurement.',
+  )
   parser.add_argument(
-      '--after-dir',
-      required=True,
-      help='Directory containing APK for the new build.')
+    '--before-dir',
+    required=True,
+    help='Directory containing the APK from reference build.',
+  )
   parser.add_argument(
-      '--results-path',
-      required=True,
-      help='Output path for the trybot result .json file.')
+    '--after-dir',
+    required=True,
+    help='Directory containing APK for the new build.',
+  )
   parser.add_argument(
-      '--staging-dir',
-      required=True,
-      help='Directory to write summary files to.')
+    '--results-path',
+    required=True,
+    help='Output path for the trybot result .json file.',
+  )
   parser.add_argument(
-      '--local-test',
-      action='store_true',
-      help='Allow input directories to be diagnose_bloat.py ones.')
-  parser.add_argument('--changed-file',
-                      action='append',
-                      dest='changed_files',
-                      help='List of changed files in the commit')
+    '--staging-dir', required=True, help='Directory to write summary files to.'
+  )
+  parser.add_argument(
+    '--local-test',
+    action='store_true',
+    help='Allow input directories to be diagnose_bloat.py ones.',
+  )
+  parser.add_argument(
+    '--changed-file',
+    action='append',
+    dest='changed_files',
+    help='List of changed files in the commit',
+  )
   args = parser.parse_args()
 
-  logging.basicConfig(level=logging.INFO,
-                      format='%(levelname).1s %(relativeCreated)6d %(message)s')
+  logging.basicConfig(
+    level=logging.INFO,
+    format='%(levelname).1s %(relativeCreated)6d %(message)s',
+  )
 
   before_path = pathlib.Path(args.before_dir)
   after_path = pathlib.Path(args.after_dir)
@@ -524,12 +578,12 @@ def main():
     size_filename = config['supersize_input_file'] + '.size'
 
   before_mapping_paths = [
-      _UseAlterantiveIfMissing(before_path_resolver(f))
-      for f in config['mapping_files']
+    _UseAlterantiveIfMissing(before_path_resolver(f))
+    for f in config['mapping_files']
   ]
   after_mapping_paths = [
-      _UseAlterantiveIfMissing(after_path_resolver(f))
-      for f in config['mapping_files']
+    _UseAlterantiveIfMissing(after_path_resolver(f))
+    for f in config['mapping_files']
   ]
 
   max_size_increase = _MaxSizeIncrease(args.author, args.review_subject)
@@ -539,16 +593,20 @@ def main():
 
   logging.info('Creating Supersize diff')
   supersize_diff_lines, delta_size_info = _CreateSupersizeDiff(
-      _UseAlterantiveIfMissing(before_path_resolver(size_filename)),
-      _UseAlterantiveIfMissing(after_path_resolver(size_filename)),
-      args.review_subject, args.review_url)
+    _UseAlterantiveIfMissing(before_path_resolver(size_filename)),
+    _UseAlterantiveIfMissing(after_path_resolver(size_filename)),
+    args.review_subject,
+    args.review_url,
+  )
 
   changed_symbols = delta_size_info.raw_symbols.WhereDiffStatusIs(
-      models.DIFF_STATUS_UNCHANGED).Inverted()
+    models.DIFF_STATUS_UNCHANGED
+  ).Inverted()
 
   logging.info('Checking dex symbols')
-  dex_delta_lines, dex_delta = _CreateMethodCountDelta(changed_symbols,
-                                                       max_methods_increase)
+  dex_delta_lines, dex_delta = _CreateMethodCountDelta(
+    changed_symbols, max_methods_increase
+  )
   size_deltas = {dex_delta}
   metrics = {(dex_delta, _DEX_SYMBOLS_LOG)}
 
@@ -558,7 +616,8 @@ def main():
   logging.info('Checking for mutable constants in native symbols')
   out_directory = delta_size_info.after.build_config.get('out_directory')
   mutable_constants_lines, mutable_constants_delta = (
-      _CreateMutableConstantsDelta(changed_symbols, out_directory))
+    _CreateMutableConstantsDelta(changed_symbols, out_directory)
+  )
   size_deltas.add(mutable_constants_delta)
   metrics.add((mutable_constants_delta, _MUTABLE_CONSTANTS_LOG))
 
@@ -573,27 +632,31 @@ def main():
   resources_diff_lines = []
   if unused_resources_paths and r_txt_paths:
     unused_resources_before_paths = [
-        _UseAlterantiveIfMissing(before_path_resolver(p))
-        for p in unused_resources_paths
+      _UseAlterantiveIfMissing(before_path_resolver(p))
+      for p in unused_resources_paths
     ]
     unused_resources_after_paths = [
-        _UseAlterantiveIfMissing(after_path_resolver(p))
-        for p in unused_resources_paths
+      _UseAlterantiveIfMissing(after_path_resolver(p))
+      for p in unused_resources_paths
     ]
     r_txt_before_paths = [
-        _UseAlterantiveIfMissing(before_path_resolver(p)) for p in r_txt_paths
+      _UseAlterantiveIfMissing(before_path_resolver(p)) for p in r_txt_paths
     ]
     r_txt_after_paths = [
-        _UseAlterantiveIfMissing(after_path_resolver(p)) for p in r_txt_paths
+      _UseAlterantiveIfMissing(after_path_resolver(p)) for p in r_txt_paths
     ]
     resources_diff_lines = _CreateResourceDiffLines(
-        unused_resources_before_paths, r_txt_before_paths,
-        unused_resources_after_paths, r_txt_after_paths)
+      unused_resources_before_paths,
+      r_txt_before_paths,
+      unused_resources_after_paths,
+      r_txt_after_paths,
+    )
 
   # Look for symbols with 'ForTest' in their name.
   logging.info('Checking for DEX symbols named "ForTest"')
   testing_symbols_lines, test_symbols_delta = _CreateTestingSymbolsDeltas(
-      before_mapping_paths, after_mapping_paths)
+    before_mapping_paths, after_mapping_paths
+  )
   size_deltas.add(test_symbols_delta)
   metrics.add((test_symbols_delta, _FOR_TESTING_LOG))
 
@@ -606,15 +669,18 @@ def main():
   config_32 = config.get('to_resource_sizes_py')
   if config_32:
     logging.info('Creating sizes diff')
-    resource_sizes_lines, resource_sizes_delta = (_CreateResourceSizesDelta(
-        args.before_dir, args.after_dir, max_size_increase))
+    resource_sizes_lines, resource_sizes_delta = _CreateResourceSizesDelta(
+      args.before_dir, args.after_dir, max_size_increase
+    )
     size_deltas.add(resource_sizes_delta)
     metrics.add((resource_sizes_delta, _RESOURCE_SIZES_LOG))
 
     logging.info('Creating base module sizes diff')
     base_resource_sizes_lines, base_resource_sizes_delta = (
-        _CreateBaseModuleResourceSizesDelta(args.before_dir, args.after_dir,
-                                            max_size_increase))
+      _CreateBaseModuleResourceSizesDelta(
+        args.before_dir, args.after_dir, max_size_increase
+      )
+    )
     size_deltas.add(base_resource_sizes_delta)
     metrics.add((base_resource_sizes_delta, _BASE_RESOURCE_SIZES_LOG))
 
@@ -622,23 +688,29 @@ def main():
   if config_64:
     logging.info('Creating 64-bit sizes diff')
     resource_sizes_64_lines, resource_sizes_64_delta = (
-        _CreateResourceSizes64Delta(args.before_dir, args.after_dir,
-                                    max_size_increase))
+      _CreateResourceSizes64Delta(
+        args.before_dir, args.after_dir, max_size_increase
+      )
+    )
     size_deltas.add(resource_sizes_64_delta)
     metrics.add((resource_sizes_64_delta, _RESOURCE_SIZES_64_LOG))
 
   logging.info('Adding disassembly to dex symbols')
-  dex_disassembly.AddDisassembly(delta_size_info,
-                                 before_path_resolver,
-                                 after_path_resolver,
-                                 normalize=True,
-                                 changed_files=args.changed_files)
+  dex_disassembly.AddDisassembly(
+    delta_size_info,
+    before_path_resolver,
+    after_path_resolver,
+    normalize=True,
+    changed_files=args.changed_files,
+  )
   logging.info('Adding disassembly to native symbols')
-  native_disassembly.AddDisassembly(delta_size_info,
-                                    before_path_resolver,
-                                    after_path_resolver,
-                                    normalize=True,
-                                    changed_files=args.changed_files)
+  native_disassembly.AddDisassembly(
+    delta_size_info,
+    before_path_resolver,
+    after_path_resolver,
+    normalize=True,
+    changed_files=args.changed_files,
+  )
 
   # .sizediff can be consumed by the html viewer.
   logging.info('Creating HTML Report')
@@ -668,68 +740,69 @@ To understand what those checks are and how to pass them, see:
 
   summary = '<br>' + checks_text.replace('\n', '<br>')
   links_json = [
-      {
-          'name': 'Mutable Constants Diff',
-          'lines': mutable_constants_lines + see_docs_lines,
-          'log_name': _MUTABLE_CONSTANTS_LOG,
-      },
-      {
-          'name': 'ForTest Symbols Diff',
-          'lines': testing_symbols_lines + see_docs_lines,
-          'log_name': _FOR_TESTING_LOG,
-      },
-      {
-          'name': 'Dex Class and Method Diff',
-          'lines': dex_delta_lines + see_docs_lines,
-          'log_name': _DEX_SYMBOLS_LOG,
-      },
-      {
-          'name': 'Android Resources Diff',
-          'lines': resources_diff_lines,
-      },
-      {
-          'name': 'SuperSize Text Diff',
-          'lines': supersize_diff_lines,
-      },
-      {
-          'name': 'SuperSize HTML Diff',
-          'url': _HTML_REPORT_URL_TEMPLATE % sizediff_filename,
-      },
+    {
+      'name': 'Mutable Constants Diff',
+      'lines': mutable_constants_lines + see_docs_lines,
+      'log_name': _MUTABLE_CONSTANTS_LOG,
+    },
+    {
+      'name': 'ForTest Symbols Diff',
+      'lines': testing_symbols_lines + see_docs_lines,
+      'log_name': _FOR_TESTING_LOG,
+    },
+    {
+      'name': 'Dex Class and Method Diff',
+      'lines': dex_delta_lines + see_docs_lines,
+      'log_name': _DEX_SYMBOLS_LOG,
+    },
+    {
+      'name': 'Android Resources Diff',
+      'lines': resources_diff_lines,
+    },
+    {
+      'name': 'SuperSize Text Diff',
+      'lines': supersize_diff_lines,
+    },
+    {
+      'name': 'SuperSize HTML Diff',
+      'url': _HTML_REPORT_URL_TEMPLATE % sizediff_filename,
+    },
   ]
   if config_32:
     links_json[0:0] = [
-        {
-            'name': 'Binary Size Details (arm32)',
-            'lines': resource_sizes_lines + see_docs_lines,
-            'log_name': _RESOURCE_SIZES_LOG,
-        },
-        {
-            'name': 'Base Module Binary Size Details',
-            'lines': base_resource_sizes_lines + see_docs_lines,
-            'log_name': _BASE_RESOURCE_SIZES_LOG,
-        },
+      {
+        'name': 'Binary Size Details (arm32)',
+        'lines': resource_sizes_lines + see_docs_lines,
+        'log_name': _RESOURCE_SIZES_LOG,
+      },
+      {
+        'name': 'Base Module Binary Size Details',
+        'lines': base_resource_sizes_lines + see_docs_lines,
+        'log_name': _BASE_RESOURCE_SIZES_LOG,
+      },
     ]
 
   if config_64:
     links_json[2:2] = [
-        {
-            'name': 'Binary Size Details (arm64)',
-            'lines': resource_sizes_64_lines + see_docs_lines,
-            'log_name': _RESOURCE_SIZES_64_LOG,
-        },
+      {
+        'name': 'Binary Size Details (arm64)',
+        'lines': resource_sizes_64_lines + see_docs_lines,
+        'log_name': _RESOURCE_SIZES_64_LOG,
+      },
     ]
   # Remove empty diffs (Mutable Constants, Dex Method, ...).
   links_json = [o for o in links_json if o.get('lines') or o.get('url')]
 
   binary_size_plugin_json = _GenerateBinarySizePluginDetails(
-      metrics, sizediff_filename)
+    metrics, sizediff_filename
+  )
 
   results_json = {
-      'status_code': status_code,
-      'summary': summary,
-      'archive_filenames': [sizediff_filename],
-      'links': links_json,
-      'gerrit_plugin_details': binary_size_plugin_json,
+    'status_code': status_code,
+    'summary': summary,
+    'archive_filenames': [sizediff_filename],
+    'links': links_json,
+    'gerrit_plugin_details': binary_size_plugin_json,
   }
 
   with open(args.results_path, 'w') as f:

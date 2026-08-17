@@ -16,6 +16,7 @@ def _ensure_depot_tools():
   try:
     import gerrit_util
     import git_cl
+
     return
   except ImportError:
     pass
@@ -93,7 +94,8 @@ def main(argv):
   # Fetch the current branch.
   Progress("Fetching... " + ref)
   git_cl.RunGit(
-      ["fetch", "https://chromium.googlesource.com/chromium/src", ref])
+    ["fetch", "https://chromium.googlesource.com/chromium/src", ref]
+  )
   print('Issue: %d, patchset: %d\n' % (issue, patchset))
   print()
   print(git_cl.RunGit(["show", "FETCH_HEAD"]))

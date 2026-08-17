@@ -57,18 +57,18 @@ def GetUsedResources(source_paths, resource_types):
   """
   type_regex = '|'.join(map(re.escape, resource_types))
   patterns = [
-      # @+drawable/id and @drawable/id
-      r'@((\+?))(%s)/(\w+)' % type_regex,
-      # package.R.style.id
-      r'\b((\w+\.)*)R\.(%s)\.(\w+)' % type_regex,
-      # <style name="child" parent="id">
-      r'<(())(%s).*parent="(\w+)">' % type_regex,
+    # @+drawable/id and @drawable/id
+    r'@((\+?))(%s)/(\w+)' % type_regex,
+    # package.R.style.id
+    r'\b((\w+\.)*)R\.(%s)\.(\w+)' % type_regex,
+    # <style name="child" parent="id">
+    r'<(())(%s).*parent="(\w+)">' % type_regex,
   ]
   resources = []
   for pattern in patterns:
     p = subprocess.Popen(
-        ['grep', '-REIhoe', pattern] + source_paths,
-        stdout=subprocess.PIPE)
+      ['grep', '-REIhoe', pattern] + source_paths, stdout=subprocess.PIPE
+    )
     grep_out, grep_err = p.communicate()
     # Check stderr instead of return code, since return code is 1 when no
     # matches are found.
@@ -96,14 +96,28 @@ def FormatResources(resources):
 def ParseArgs(args):
   parser = optparse.OptionParser()
   parser.add_option('-v', help='Show verbose output', action='store_true')
-  parser.add_option('-s', '--source-path', help='Specify a source folder path '
-                    '(e.g. ui/android/java)', action='append', default=[])
-  parser.add_option('-r', '--r-txt-path', help='Specify a "first-party" R.txt '
-                    'file (e.g. out/Debug/content_shell_apk/R.txt)',
-                    action='append', default=[])
-  parser.add_option('-t', '--third-party-r-txt-path', help='Specify an R.txt '
-                    'file for a third party library', action='append',
-                    default=[])
+  parser.add_option(
+    '-s',
+    '--source-path',
+    help='Specify a source folder path (e.g. ui/android/java)',
+    action='append',
+    default=[],
+  )
+  parser.add_option(
+    '-r',
+    '--r-txt-path',
+    help='Specify a "first-party" R.txt '
+    'file (e.g. out/Debug/content_shell_apk/R.txt)',
+    action='append',
+    default=[],
+  )
+  parser.add_option(
+    '-t',
+    '--third-party-r-txt-path',
+    help='Specify an R.txt file for a third party library',
+    action='append',
+    default=[],
+  )
   options, args = parser.parse_args(args=args)
   if args:
     parser.error('positional arguments not allowed')
@@ -111,14 +125,19 @@ def ParseArgs(args):
     parser.error('at least one source folder path must be specified with -s')
   if not options.r_txt_path:
     parser.error('at least one R.txt path must be specified with -r')
-  return (options.v, options.source_path, options.r_txt_path,
-          options.third_party_r_txt_path)
+  return (
+    options.v,
+    options.source_path,
+    options.r_txt_path,
+    options.third_party_r_txt_path,
+  )
 
 
 def main(args=None):
   verbose, source_paths, r_txt_paths, third_party_r_txt_paths = ParseArgs(args)
-  defined_resources = (set(GetLibraryResources(r_txt_paths)) -
-                       set(GetLibraryResources(third_party_r_txt_paths)))
+  defined_resources = set(GetLibraryResources(r_txt_paths)) - set(
+    GetLibraryResources(third_party_r_txt_paths)
+  )
   resource_types = list(set([r[0] for r in defined_resources]))
   used_resources = set(GetUsedResources(source_paths, resource_types))
   unused_resources = defined_resources - used_resources
@@ -127,19 +146,22 @@ def main(args=None):
   # aapt dump fails silently. Notify the user if things look wrong.
   if not defined_resources:
     print(
-        'Warning: No resources found. Did you provide the correct R.txt paths?',
-        file=sys.stderr)
+      'Warning: No resources found. Did you provide the correct R.txt paths?',
+      file=sys.stderr,
+    )
   if not used_resources:
     print(
-        'Warning: No resources referenced from Java or resource files. Did you '
-        'provide the correct source paths?',
-        file=sys.stderr)
+      'Warning: No resources referenced from Java or resource files. Did you '
+      'provide the correct source paths?',
+      file=sys.stderr,
+    )
   if undefined_resources:
     print(
-        'Warning: found %d "undefined" resources that are referenced by Java '
-        'files or by other resources, but are not defined anywhere. Run with '
-        '-v to see them.' % len(undefined_resources),
-        file=sys.stderr)
+      'Warning: found %d "undefined" resources that are referenced by Java '
+      'files or by other resources, but are not defined anywhere. Run with '
+      '-v to see them.' % len(undefined_resources),
+      file=sys.stderr,
+    )
 
   if verbose:
     print('%d undefined resources:' % len(undefined_resources))

@@ -41,16 +41,22 @@ async def run_benchmark(app, output_dir, *args):
                 return "chromium"
             case _:
                 raise AssertionError(
-                    f"Missing target browser for channel: {channel}.")
+                    f"Missing target browser for channel: {channel}."
+                )
 
     # Crossbench will fail if the output directory already exists.
     if os.path.exists(output_dir):
         raise FileExistsError(f"Output directory {output_dir} already exists.")
 
-    await command_line.run("./third_party/crossbench/cb.py", "speedometer3.1",
-                           "--browser",
-                           f"adb:{get_target_browser(app.channel)}",
-                           "--out-dir", f"{output_dir}", *args)
+    await command_line.run(
+        "./third_party/crossbench/cb.py",
+        "speedometer3.1",
+        "--browser",
+        f"adb:{get_target_browser(app.channel)}",
+        "--out-dir",
+        f"{output_dir}",
+        *args,
+    )
     return read_result(output_dir)
 
 
@@ -73,15 +79,20 @@ def read_result(output_dir, run_index=None):
 
     if not os.path.exists(json_path):
         raise FileNotFoundError(
-            f"Speedometer results not found at {json_path}, {output_dir}")
+            f"Speedometer results not found at {json_path}, {output_dir}"
+        )
 
     df = pd.read_json(json_path)
-    return Result(df.iloc[:, 0]["data"],
-                  df.iloc[:, 0]["info"]) if run_index is None else Result(df)
+    return (
+        Result(df.iloc[:, 0]["data"], df.iloc[:, 0]["info"])
+        if run_index is None
+        else Result(df)
+    )
 
 
 class ResultType(Enum):
     """Type of the speedometer benchmark result."""
+
     VALUES = "values"  # List of all values by story or by iteration
     AVERAGE = ["average", "mean"]  # Average of all the values
     MIN = "min"  # Minimum of all the values
@@ -101,9 +112,13 @@ class Result:
         self.data = data
         self.info = info
         self.num_iterations = max(
-            (int(k.split('-')[1]) + 1
-             for k in self.data if k.startswith("Iteration-")),
-            default=0)
+            (
+                int(k.split('-')[1]) + 1
+                for k in self.data
+                if k.startswith("Iteration-")
+            ),
+            default=0,
+        )
 
     def _lookup(self, key, result_type):
         """Looks up a value in the speedometer benchmark results."""
@@ -111,8 +126,7 @@ class Result:
             raise ValueError(f"Results do not contain the key {key}.")
 
         # Extract the value of the result type from the Enum, if necessary.
-        rt = result_type.value if isinstance(result_type,
-                                             Enum) else result_type
+        rt = result_type.value if isinstance(result_type, Enum) else result_type
 
         if isinstance(rt, list):
             # Some result types can have different keys depending on if the
@@ -122,18 +136,21 @@ class Result:
             matched_rt = [r for r in rt if r in self.data[key]]
             if len(matched_rt) != 1:
                 raise ValueError(
-                    f"{len(matched_rt)} results found for {key} and {rt}")
+                    f"{len(matched_rt)} results found for {key} and {rt}"
+                )
             rt = matched_rt[0]
 
         if not isinstance(rt, str):
             raise ValueError(
                 f"Invalid type {type(result_type)} for speedometer benchmark "
-                + "result.")
+                + "result."
+            )
 
         if rt not in self.data[key]:
             raise ValueError(
-                f"Result type {rt} not found for {key} in speedometer " +
-                "benchmark results.")
+                f"Result type {rt} not found for {key} in speedometer "
+                + "benchmark results."
+            )
 
         return self.data[key][rt]
 
@@ -174,9 +191,11 @@ class Result:
         sub_story = parts[1] if len(parts) > 1 else None
         sync_or_async = parts[2] if len(parts) > 2 else None
 
-        if top_story not in _STORY_MAP.keys() or \
-           (sub_story and sub_story not in _STORY_MAP[top_story]) or \
-           (sync_or_async and sync_or_async not in ["Sync", "Async"]):
+        if (
+            top_story not in _STORY_MAP.keys()
+            or (sub_story and sub_story not in _STORY_MAP[top_story])
+            or (sync_or_async and sync_or_async not in ["Sync", "Async"])
+        ):
             return False
 
         return True
@@ -212,43 +231,76 @@ class Result:
         """
         if index < 0 or index >= self.num_iterations:
             raise IndexError(
-                f"Iteration index {index} is out of valid range [0, " +
-                f"{self.num_iterations}).")
+                f"Iteration index {index} is out of valid range [0, "
+                + f"{self.num_iterations})."
+            )
 
         return self._lookup(f"Iteration-{index}-Total", result_type)
 
 
 _STORY_MAP = {
-    'TodoMVC-JavaScript-ES5': \
-        ['Adding100Items', 'CompletingAllItems', 'DeletingAllItems'],
-    'TodoMVC-JavaScript-ES6-Webpack-Complex-DOM' : \
-        ['Adding100Items', 'CompletingAllItems', 'DeletingAllItems'],
-    'TodoMVC-WebComponents': \
-        ['Adding100Items', 'CompletingAllItems', 'DeletingAllItems'],
-    'TodoMVC-React-Complex-DOM': \
-        ['Adding100Items', 'CompletingAllItems', 'DeletingAllItems'],
-    'TodoMVC-React-Redux': \
-        ['Adding100Items', 'CompletingAllItems', 'DeletingAllItems'],
-    'TodoMVC-Backbone': \
-        ['Adding100Items', 'CompletingAllItems', 'DeletingAllItems'],
-    'TodoMVC-Angular-Complex-DOM': \
-        ['Adding100Items', 'CompletingAllItems', 'DeletingAllItems'],
-    'TodoMVC-Vue': \
-        ['Adding100Items', 'CompletingAllItems', 'DeletingAllItems'],
-    'TodoMVC-jQuery': \
-        ['Adding100Items', 'CompletingAllItems', 'DeletingAllItems'],
-    'TodoMVC-Preact-Complex-DOM': \
-        ['Adding100Items', 'CompletingAllItems', 'DeletingAllItems'],
-    'TodoMVC-Svelte-Complex-DOM': \
-        ['Adding100Items', 'CompletingAllItems', 'DeletingAllItems'],
-    'TodoMVC-Lit-Complex-DOM' : \
-        ['Adding100Items', 'CompletingAllItems', 'DeletingAllItems'],
-    'NewsSite-Next' : ['NavigateToUS', 'NavigateToWorld', 'NavigateToPolitics'],
-    'NewsSite-Nuxt' : ['NavigateToUS', 'NavigateToWorld', 'NavigateToPolitics'],
+    'TodoMVC-JavaScript-ES5': [
+        'Adding100Items',
+        'CompletingAllItems',
+        'DeletingAllItems',
+    ],
+    'TodoMVC-JavaScript-ES6-Webpack-Complex-DOM': [
+        'Adding100Items',
+        'CompletingAllItems',
+        'DeletingAllItems',
+    ],
+    'TodoMVC-WebComponents': [
+        'Adding100Items',
+        'CompletingAllItems',
+        'DeletingAllItems',
+    ],
+    'TodoMVC-React-Complex-DOM': [
+        'Adding100Items',
+        'CompletingAllItems',
+        'DeletingAllItems',
+    ],
+    'TodoMVC-React-Redux': [
+        'Adding100Items',
+        'CompletingAllItems',
+        'DeletingAllItems',
+    ],
+    'TodoMVC-Backbone': [
+        'Adding100Items',
+        'CompletingAllItems',
+        'DeletingAllItems',
+    ],
+    'TodoMVC-Angular-Complex-DOM': [
+        'Adding100Items',
+        'CompletingAllItems',
+        'DeletingAllItems',
+    ],
+    'TodoMVC-Vue': ['Adding100Items', 'CompletingAllItems', 'DeletingAllItems'],
+    'TodoMVC-jQuery': [
+        'Adding100Items',
+        'CompletingAllItems',
+        'DeletingAllItems',
+    ],
+    'TodoMVC-Preact-Complex-DOM': [
+        'Adding100Items',
+        'CompletingAllItems',
+        'DeletingAllItems',
+    ],
+    'TodoMVC-Svelte-Complex-DOM': [
+        'Adding100Items',
+        'CompletingAllItems',
+        'DeletingAllItems',
+    ],
+    'TodoMVC-Lit-Complex-DOM': [
+        'Adding100Items',
+        'CompletingAllItems',
+        'DeletingAllItems',
+    ],
+    'NewsSite-Next': ['NavigateToUS', 'NavigateToWorld', 'NavigateToPolitics'],
+    'NewsSite-Nuxt': ['NavigateToUS', 'NavigateToWorld', 'NavigateToPolitics'],
     'Editor-CodeMirror': ['Long', 'Highlight'],
     'Editor-TipTap': ['Long', 'Highlight'],
-    'Charts-observable-plot' : ['Stacked by 6', 'Stacked by 20', 'Dotted'],
-    'Charts-chartjs' : ['Draw scatter', 'Show tooltip', 'Draw opaque scatter'],
-    'React-Stockcharts-SVG' : ['Render', 'PanTheChart', 'ZoomTheChart'],
-    'Perf-Dashboard' : ['Render', 'SelectingPoints', 'SelectingRange'],
+    'Charts-observable-plot': ['Stacked by 6', 'Stacked by 20', 'Dotted'],
+    'Charts-chartjs': ['Draw scatter', 'Show tooltip', 'Draw opaque scatter'],
+    'React-Stockcharts-SVG': ['Render', 'PanTheChart', 'ZoomTheChart'],
+    'Perf-Dashboard': ['Render', 'SelectingPoints', 'SelectingRange'],
 }

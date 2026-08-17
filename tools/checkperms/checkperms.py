@@ -51,16 +51,14 @@ EXECUTABLE_EXTENSIONS = (
 )
 
 # Files for which the executable bit may or may not be set.
-IGNORED_EXTENSIONS = (
-  'dylib',
-)
+IGNORED_EXTENSIONS = ('dylib',)
 
 # These files must have executable bit set.
 #
 # Case-insensitive, lower-case only.
 EXECUTABLE_PATHS = (
   'chrome/test/data/app_shim/app_shim_32_bit.app/contents/'
-      'macos/app_mode_loader',
+  'macos/app_mode_loader',
 )
 
 # These files must not have the executable bit set. This is mainly a performance
@@ -173,21 +171,25 @@ IGNORED_FILENAMES = (
 #
 # Case-insensitive, lower-case only.
 IGNORED_PATHS = (
-    '__init__.py',
-    'out/',
-    'third_party/rust/chromium_crates_io/vendor/',
-    'third_party/wpt_tools/wpt/tools/third_party/',
-    # TODO(maruel): Fix these.
-    'third_party/devscripts/licensecheck.pl.vanilla',
-    'third_party/libxml/linux/xml2-config',
-    'third_party/protobuf/',
-    'third_party/sqlite/',
+  '__init__.py',
+  'out/',
+  'third_party/rust/chromium_crates_io/vendor/',
+  'third_party/wpt_tools/wpt/tools/third_party/',
+  # TODO(maruel): Fix these.
+  'third_party/devscripts/licensecheck.pl.vanilla',
+  'third_party/libxml/linux/xml2-config',
+  'third_party/protobuf/',
+  'third_party/sqlite/',
 )
 
 #### USER EDITABLE SECTION ENDS HERE ####
 
-assert (set(EXECUTABLE_EXTENSIONS) & set(IGNORED_EXTENSIONS) &
-        set(NON_EXECUTABLE_EXTENSIONS) == set())
+assert (
+  set(EXECUTABLE_EXTENSIONS)
+  & set(IGNORED_EXTENSIONS)
+  & set(NON_EXECUTABLE_EXTENSIONS)
+  == set()
+)
 assert set(EXECUTABLE_PATHS) & set(NON_EXECUTABLE_PATHS) == set()
 
 VALID_CHARS = set(string.ascii_lowercase + string.digits + '/-_.')
@@ -206,7 +208,8 @@ def capture(cmd, cwd):
   env = os.environ.copy()
   env['LANGUAGE'] = 'en_US.UTF-8'
   p = subprocess.Popen(
-      cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=cwd, env=env)
+    cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=cwd, env=env
+  )
   return p.communicate()[0].decode('utf-8', 'ignore')
 
 
@@ -222,17 +225,19 @@ def get_git_root(dir_path):
 def is_ignored(rel_path):
   """Returns True if rel_path is in our whitelist of files to ignore."""
   rel_path = rel_path.lower()
-  return (
-      os.path.basename(rel_path) in IGNORED_FILENAMES or
-      rel_path.lower().startswith(IGNORED_PATHS))
+  return os.path.basename(
+    rel_path
+  ) in IGNORED_FILENAMES or rel_path.lower().startswith(IGNORED_PATHS)
 
 
 def must_be_executable(rel_path):
   """The file name represents a file type that must have the executable bit
   set.
   """
-  return (os.path.splitext(rel_path)[1][1:] in EXECUTABLE_EXTENSIONS or
-          rel_path.lower() in EXECUTABLE_PATHS)
+  return (
+    os.path.splitext(rel_path)[1][1:] in EXECUTABLE_EXTENSIONS
+    or rel_path.lower() in EXECUTABLE_PATHS
+  )
 
 
 def ignored_extension(rel_path):
@@ -246,8 +251,10 @@ def must_not_be_executable(rel_path):
   """The file name represents a file type that must not have the executable
   bit set.
   """
-  return (os.path.splitext(rel_path)[1][1:] in NON_EXECUTABLE_EXTENSIONS or
-          rel_path.lower() in NON_EXECUTABLE_PATHS)
+  return (
+    os.path.splitext(rel_path)[1][1:] in NON_EXECUTABLE_EXTENSIONS
+    or rel_path.lower() in NON_EXECUTABLE_PATHS
+  )
 
 
 def has_executable_bit(full_path):
@@ -271,17 +278,20 @@ def has_shebang_or_is_elf_or_mach_o(full_path):
   with open(full_path, 'rb') as f:
     data = f.read(4)
     return (
-        data[:3] == b'#!/' or data == b'#! /',
-        data == b'\x7fELF',  # ELFMAG
-        data in (
-            b'\xfe\xed\xfa\xce',  # MH_MAGIC
-            b'\xce\xfa\xed\xfe',  # MH_CIGAM
-            b'\xfe\xed\xfa\xcf',  # MH_MAGIC_64
-            b'\xcf\xfa\xed\xfe',  # MH_CIGAM_64
-            b'\xca\xfe\xba\xbe',  # FAT_MAGIC
-            b'\xbe\xba\xfe\xca',  # FAT_CIGAM
-            b'\xca\xfe\xba\xbf',  # FAT_MAGIC_64
-            b'\xbf\xba\xfe\xca'))  # FAT_CIGAM_64
+      data[:3] == b'#!/' or data == b'#! /',
+      data == b'\x7fELF',  # ELFMAG
+      data
+      in (
+        b'\xfe\xed\xfa\xce',  # MH_MAGIC
+        b'\xce\xfa\xed\xfe',  # MH_CIGAM
+        b'\xfe\xed\xfa\xcf',  # MH_MAGIC_64
+        b'\xcf\xfa\xed\xfe',  # MH_CIGAM_64
+        b'\xca\xfe\xba\xbe',  # FAT_MAGIC
+        b'\xbe\xba\xfe\xca',  # FAT_CIGAM
+        b'\xca\xfe\xba\xbf',  # FAT_MAGIC_64
+        b'\xbf\xba\xfe\xca',
+      ),
+    )  # FAT_CIGAM_64
 
 
 def check_file(root_path, rel_path):
@@ -297,12 +307,14 @@ def check_file(root_path, rel_path):
   the file.
   """
   full_path = os.path.join(root_path, rel_path)
+
   def result_dict(error):
     return {
       'error': error,
       'full_path': full_path,
       'rel_path': rel_path,
     }
+
   try:
     bit = has_executable_bit(full_path)
   except OSError:
@@ -328,8 +340,9 @@ def check_file(root_path, rel_path):
   if bit != (shebang or elf or mach_o):
     if bit:
       return result_dict(
-          'Has executable bit but not shebang or ELF or Mach-O header: %s' %
-          exec_remove)
+        'Has executable bit but not shebang or ELF or Mach-O header: %s'
+        % exec_remove
+      )
     if shebang:
       return result_dict('Has shebang but not executable bit: %s' % exec_add)
     if elf:
@@ -339,8 +352,11 @@ def check_file(root_path, rel_path):
 
 
 def check_files(root, files):
-  gen = (check_file(root, f) for f in files
-         if not is_ignored(f) and not os.path.isdir(f))
+  gen = (
+    check_file(root, f)
+    for f in files
+    if not is_ignored(f) and not os.path.isdir(f)
+  )
   return filter(None, gen)
 
 
@@ -355,8 +371,9 @@ class ApiBase:
     logging.debug('check_file(%s)' % rel_path)
     self.count += 1
 
-    if (not must_be_executable(rel_path) and
-        not must_not_be_executable(rel_path)):
+    if not must_be_executable(rel_path) and not must_not_be_executable(
+      rel_path
+    ):
       self.count_read_header += 1
 
     return check_file(self.root_dir, rel_path)
@@ -371,7 +388,7 @@ class ApiBase:
     logging.info('check(%s) -> %d' % (start_dir, len(items)))
     for item in items:
       full_path = os.path.join(self.root_dir, start_dir, item)
-      rel_path = full_path[len(self.root_dir) + 1:]
+      rel_path = full_path[len(self.root_dir) + 1 :]
       if is_ignored(rel_path):
         continue
       if os.path.isdir(full_path):
@@ -386,7 +403,8 @@ class ApiBase:
   def list_dir(self, start_dir):
     """Lists all the files and directory inside start_dir."""
     return sorted(
-      x for x in os.listdir(os.path.join(self.root_dir, start_dir))
+      x
+      for x in os.listdir(os.path.join(self.root_dir, start_dir))
       if not x.startswith('.')
     )
 
@@ -400,10 +418,8 @@ class ApiAllFilesAtOnceBase(ApiBase):
       self._files = sorted(self._get_all_files())
       if not self.bare_output:
         print('Found %s files' % len(self._files))
-    start_dir = start_dir[len(self.root_dir) + 1:]
-    return [
-      x[len(start_dir):] for x in self._files if x.startswith(start_dir)
-    ]
+    start_dir = start_dir[len(self.root_dir) + 1 :]
+    return [x[len(start_dir) :] for x in self._files if x.startswith(start_dir)]
 
   def _get_all_files(self):
     """Lists all the files and directory inside self._root_dir."""
@@ -450,24 +466,31 @@ Examples:
 
   parser = optparse.OptionParser(usage=usage)
   parser.add_option(
-      '--root',
-      help='Specifies the repository root. This defaults '
-           'to the checkout repository root')
+    '--root',
+    help='Specifies the repository root. This defaults '
+    'to the checkout repository root',
+  )
   parser.add_option(
-      '-v', '--verbose', action='count', default=0, help='Print debug logging')
+    '-v', '--verbose', action='count', default=0, help='Print debug logging'
+  )
   parser.add_option(
-      '--bare',
-      action='store_true',
-      default=False,
-      help='Prints the bare filename triggering the checks')
+    '--bare',
+    action='store_true',
+    default=False,
+    help='Prints the bare filename triggering the checks',
+  )
   parser.add_option(
-      '--file', action='append', dest='files',
-      help='Specifics a list of files to check the permissions of. Only these '
-      'files will be checked')
+    '--file',
+    action='append',
+    dest='files',
+    help='Specifics a list of files to check the permissions of. Only these '
+    'files will be checked',
+  )
   parser.add_option(
-      '--file-list',
-      help='Specifies a file with a list of files (one per line) to check the '
-      'permissions of. Only these files will be checked')
+    '--file-list',
+    help='Specifies a file with a list of files (one per line) to check the '
+    'permissions of. Only these files will be checked',
+  )
   parser.add_option('--json', help='Path to JSON output file')
   options, args = parser.parse_args()
 
@@ -480,8 +503,11 @@ Examples:
   if options.files and options.file_list:
     parser.error('--file and --file-list are mutually exclusive options')
 
-  if sys.platform.startswith(
-      'win') and not options.files and not options.file_list:
+  if (
+    sys.platform.startswith('win')
+    and not options.files
+    and not options.file_list
+  ):
     # checkperms of the entire tree on Windows takes many hours so is not
     # supported. Instead just check this script.
     options.files = [sys.argv[0]]
@@ -503,8 +529,10 @@ Examples:
     errors = api.check(start_dir)
 
     if not options.bare:
-      print('Processed %s files, %d files were tested for shebang/ELF/Mach-O '
-            'header' % (api.count, api.count_read_header))
+      print(
+        'Processed %s files, %d files were tested for shebang/ELF/Mach-O '
+        'header' % (api.count, api.count_read_header)
+      )
 
   # Convert to an actual list.
   errors = list(errors)

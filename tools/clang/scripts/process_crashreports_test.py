@@ -15,7 +15,6 @@ import process_crashreports
 
 
 class TestProcessCrashreports(unittest.TestCase):
-
   def setUp(self):
     self.temp_dir = tempfile.mkdtemp()
     self.out_dir = os.path.join(self.temp_dir, 'out')
@@ -53,15 +52,22 @@ class TestProcessCrashreports(unittest.TestCase):
       self.assertEqual(mock_check_call.call_count, 1)
 
       now = datetime.datetime.now()
-      expected_dest = ('gs://chrome-clang-crash-reports/v1/%04d/%02d/%02d/'
-                       'test-bot-main-c2d3e4.tgz' %
-                       (now.year, now.month, now.day))
+      expected_dest = (
+        'gs://chrome-clang-crash-reports/v1/%04d/%02d/%02d/'
+        'test-bot-main-c2d3e4.tgz' % (now.year, now.month, now.day)
+      )
 
       # Verify the gsutil command fully
-      mock_check_call.assert_called_once_with([
-          sys.executable, process_crashreports.GSUTIL, '-q', 'cp', ANY,
-          expected_dest
-      ])
+      mock_check_call.assert_called_once_with(
+        [
+          sys.executable,
+          process_crashreports.GSUTIL,
+          '-q',
+          'cp',
+          ANY,
+          expected_dest,
+        ]
+      )
 
       # Verify files were deleted
       self.assertFalse(os.path.exists(self.crash_sh))
@@ -77,8 +83,10 @@ class TestProcessCrashreports(unittest.TestCase):
       siso_output = os.path.join(default_dir, 'siso_output')
 
       digest = "deadbeef/123"
-      fetch_cmd = (f"siso fetch -reapi_instance=test-instance "
-                   f"-type=dir-extract {digest} out/clang-crashreports/")
+      fetch_cmd = (
+        f"siso fetch -reapi_instance=test-instance "
+        f"-type=dir-extract {digest} out/clang-crashreports/"
+      )
       with open(siso_output, 'w') as f:
         f.write("auxiliary outputs:\n")
         f.write(f"out/clang-crashreports/\t{digest}\t{fetch_cmd}\n")
@@ -89,22 +97,34 @@ class TestProcessCrashreports(unittest.TestCase):
       self.assertEqual(mock_check_call.call_count, 2)
 
       now = datetime.datetime.now()
-      expected_dest = ('gs://chrome-clang-crash-reports/v1/%04d/%02d/%02d/'
-                       'test-bot-main-c2d3e4.tgz' %
-                       (now.year, now.month, now.day))
+      expected_dest = (
+        'gs://chrome-clang-crash-reports/v1/%04d/%02d/%02d/'
+        'test-bot-main-c2d3e4.tgz' % (now.year, now.month, now.day)
+      )
 
       # Verify exact siso command
-      mock_check_call.assert_any_call([
-          process_crashreports.SISO_BINARY, 'fetch',
-          '-reapi_instance=test-instance', '-type=dir-extract', digest,
-          'out/clang-crashreports/'
-      ])
+      mock_check_call.assert_any_call(
+        [
+          process_crashreports.SISO_BINARY,
+          'fetch',
+          '-reapi_instance=test-instance',
+          '-type=dir-extract',
+          digest,
+          'out/clang-crashreports/',
+        ]
+      )
 
       # Verify exact gsutil command
-      mock_check_call.assert_any_call([
-          sys.executable, process_crashreports.GSUTIL, '-q', 'cp', ANY,
-          expected_dest
-      ])
+      mock_check_call.assert_any_call(
+        [
+          sys.executable,
+          process_crashreports.GSUTIL,
+          '-q',
+          'cp',
+          ANY,
+          expected_dest,
+        ]
+      )
 
       # Verify files were deleted
       self.assertFalse(os.path.exists(self.crash_sh))
@@ -119,8 +139,9 @@ class TestProcessCrashreports(unittest.TestCase):
       os.remove(self.crash_c)
 
       # Create leftover crash files/dirs
-      leftover_cpp = os.path.join(self.crashreports_dir,
-                                  'crash-report-1234.cpp')
+      leftover_cpp = os.path.join(
+        self.crashreports_dir, 'crash-report-1234.cpp'
+      )
       with open(leftover_cpp, 'w') as f:
         f.write('partially preprocessed code')
       leftover_dir = os.path.join(self.crashreports_dir, 'modules.cache')
@@ -137,17 +158,25 @@ class TestProcessCrashreports(unittest.TestCase):
 
       with patch('process_crashreports.datetime') as mock_datetime:
         mock_datetime.datetime.now.return_value = datetime.datetime(
-            2026, 5, 13, 14, 30, 5)
+          2026, 5, 13, 14, 30, 5
+        )
         process_crashreports.main()
 
       self.assertEqual(mock_check_call.call_count, 1)
       expected_dest = (
-          'gs://chrome-clang-crash-reports/v1/2026/05/13/'
-          'test-bot-incomplete-crash-report-missing-reproducer-143005.tgz')
-      mock_check_call.assert_called_once_with([
-          sys.executable, process_crashreports.GSUTIL, '-q', 'cp', ANY,
-          expected_dest
-      ])
+        'gs://chrome-clang-crash-reports/v1/2026/05/13/'
+        'test-bot-incomplete-crash-report-missing-reproducer-143005.tgz'
+      )
+      mock_check_call.assert_called_once_with(
+        [
+          sys.executable,
+          process_crashreports.GSUTIL,
+          '-q',
+          'cp',
+          ANY,
+          expected_dest,
+        ]
+      )
 
       # Verify all files/dirs were deleted
       self.assertFalse(os.path.exists(leftover_cpp))

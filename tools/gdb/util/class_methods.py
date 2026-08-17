@@ -39,8 +39,10 @@ def member_function(return_type, name, arguments):
     function which constructs the return type. See CreateTypeResolver
     for details about type resolution.
   """
+
   def DefineMember(fn):
     return MemberFunction(return_type, name, arguments, fn)
+
   return DefineMember
 
 
@@ -74,21 +76,25 @@ def Class(class_name, template_types):
 
   class MethodWorkerWrapper(gdb.xmethod.XMethod):
     """Wrapper of an XMethodWorker class as an XMethod."""
+
     def __init__(self, name, worker_class):
       super(MethodWorkerWrapper, self).__init__(name)
       self.name = name
       self.worker_class = worker_class
 
-
   class ClassMatcher(gdb.xmethod.XMethodMatcher):
     """Matches member functions of one class template."""
+
     def __init__(self, obj):
       super(ClassMatcher, self).__init__(class_name)
 
       # Constructs a regular expression to match this type.
       self._class_regex = re.compile(
-          '^' + re.escape(class_name) +
-          ('<.*>' if len(template_types) > 0 else '') + '$')
+        '^'
+        + re.escape(class_name)
+        + ('<.*>' if len(template_types) > 0 else '')
+        + '$'
+      )
 
       # Construct a dictionary and array of methods
       self.dict = {}
@@ -100,22 +106,24 @@ def Class(class_name, template_types):
 
         name = attr.name
         return_type = CreateTypeResolver(attr.return_type)
-        arguments = [CreateTypeResolver(arg) for arg in
-                     attr.arguments]
+        arguments = [CreateTypeResolver(arg) for arg in attr.arguments]
         method = MethodWorkerWrapper(
-            attr.name,
-            CreateTemplatedMethodWorker(return_type,
-                                        arguments, attr.function_))
+          attr.name,
+          CreateTemplatedMethodWorker(return_type, arguments, attr.function_),
+        )
         self.methods.append(method)
 
     def match(self, class_type, method_name):
       if not re.match(self._class_regex, class_type.tag):
         return None
-      templates = [class_type.template_argument(i) for i in
-                   range(len(template_types))]
-      return [method.worker_class(templates) for method in self.methods
-              if method.name == method_name and method.enabled]
-
+      templates = [
+        class_type.template_argument(i) for i in range(len(template_types))
+      ]
+      return [
+        method.worker_class(templates)
+        for method in self.methods
+        if method.name == method_name and method.enabled
+      ]
 
   def CreateTypeResolver(type_desc):
     """Creates a callback which resolves to the appropriate type when
@@ -159,9 +167,9 @@ def Class(class_name, template_types):
     except ValueError:
       return lambda template_types: gdb.lookup_type(type_desc)
 
-
-  def CreateTemplatedMethodWorker(return_callback, args_callbacks,
-                                  method_callback):
+  def CreateTemplatedMethodWorker(
+    return_callback, args_callbacks, method_callback
+  ):
     class TemplatedMethodWorker(gdb.xmethod.XMethodWorker):
       def __init__(self, templates):
         super(TemplatedMethodWorker, self).__init__()
@@ -175,6 +183,7 @@ def Class(class_name, template_types):
 
       def __call__(self, *args):
         return method_callback(*args)
+
     return TemplatedMethodWorker
 
   def DefineClass(obj):

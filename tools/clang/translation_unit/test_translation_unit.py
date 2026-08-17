@@ -32,27 +32,35 @@ def _NumberOfTestsToString(tests):
 # first. This is explained here:
 # https://chromium.googlesource.com/chromium/src/+/main/docs/clang_tool_refactoring.md
 def main():
-  tools_clang_directory = os.path.dirname(os.path.dirname(
-      os.path.realpath(__file__)))
+  tools_clang_directory = os.path.dirname(
+    os.path.dirname(os.path.realpath(__file__))
+  )
   tools_clang_scripts_directory = os.path.join(tools_clang_directory, 'scripts')
   test_directory_for_tool = os.path.join(
-      tools_clang_directory, 'translation_unit', 'test_files')
-  compile_database = os.path.join(test_directory_for_tool,
-                                  'compile_commands.json')
+    tools_clang_directory, 'translation_unit', 'test_files'
+  )
+  compile_database = os.path.join(
+    test_directory_for_tool, 'compile_commands.json'
+  )
   compile_database_template = compile_database + '.template'
   source_files = glob.glob(os.path.join(test_directory_for_tool, '*.cc'))
 
   # Generate a temporary compilation database to run the tool over.
   with open(compile_database, 'w') as f:
-    f.write(_GenerateCompileCommands(compile_database_template,
-                                     test_directory_for_tool))
+    f.write(
+      _GenerateCompileCommands(
+        compile_database_template, test_directory_for_tool
+      )
+    )
 
-  args = ['python',
-          os.path.join(tools_clang_scripts_directory, 'run_tool.py'),
-          '--tool',
-          'translation_unit',
-          '-p',
-          test_directory_for_tool]
+  args = [
+    'python',
+    os.path.join(tools_clang_scripts_directory, 'run_tool.py'),
+    '--tool',
+    'translation_unit',
+    '-p',
+    test_directory_for_tool,
+  ]
   args.extend(source_files)
   run_tool = subprocess.Popen(args, stdout=subprocess.PIPE)
   stdout, _ = run_tool.communicate()
@@ -83,9 +91,12 @@ def main():
         break
     if not has_same_filepaths:
       failed += 1
-      for line in difflib.unified_diff(expected_output, actual_output,
-                                       fromfile=os.path.relpath(expected),
-                                       tofile=os.path.relpath(actual)):
+      for line in difflib.unified_diff(
+        expected_output,
+        actual_output,
+        fromfile=os.path.relpath(expected),
+        tofile=os.path.relpath(actual),
+      ):
         sys.stdout.write(line)
       print('[  FAILED  ] %s' % os.path.relpath(actual))
       # Don't clean up the file on failure, so the results can be referenced

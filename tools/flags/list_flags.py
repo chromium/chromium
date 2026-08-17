@@ -3,8 +3,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-"""Emits a formatted, optionally filtered view of the list of flags.
-"""
+"""Emits a formatted, optionally filtered view of the list of flags."""
 
 from __future__ import print_function
 
@@ -15,8 +14,9 @@ import sys
 
 import flags_utils
 
-DEPOT_TOOLS_PATH = os.path.join(flags_utils.ROOT_PATH, 'third_party',
-                                'depot_tools')
+DEPOT_TOOLS_PATH = os.path.join(
+  flags_utils.ROOT_PATH, 'third_party', 'depot_tools'
+)
 
 sys.path.append(DEPOT_TOOLS_PATH)
 
@@ -44,9 +44,10 @@ def resolve_owners(flags):
   """
 
   owners_db = owners_client.GetCodeOwnersClient(
-      host="chromium-review.googlesource.com",
-      project="chromium/src",
-      branch="main")
+    host="chromium-review.googlesource.com",
+    project="chromium/src",
+    branch="main",
+  )
 
   new_flags = []
   for f in flags:
@@ -67,8 +68,8 @@ def resolve_owners(flags):
 
 def find_unused(flags):
   FLAG_FILES = [
-      'chrome/browser/about_flags.cc',
-      'ios/chrome/browser/flags/about_flags.mm',
+    'chrome/browser/about_flags.cc',
+    'ios/chrome/browser/flags/about_flags.mm',
   ]
   flag_files_data = [open(f, 'r', encoding='utf-8').read() for f in FLAG_FILES]
   unused_flags = []
@@ -141,14 +142,22 @@ def print_flags(flags, verbose):
   """
   for f in flags:
     if verbose:
-      print('%s\t%d\t%s\t%s' % (f['name'], f['expiry_milestone'], ','.join(
-          f['owners']), ','.join(f['resolved_owners'])))
+      print(
+        '%s\t%d\t%s\t%s'
+        % (
+          f['name'],
+          f['expiry_milestone'],
+          ','.join(f['owners']),
+          ','.join(f['resolved_owners']),
+        )
+      )
     else:
       print(f['name'])
 
 
 def main():
   import doctest
+
   doctest.testmod()
 
   parser = argparse.ArgumentParser(description=__doc__)
