@@ -943,13 +943,15 @@ BookmarksMatchChecker::BookmarksMatchChecker() {
 
 bool BookmarksMatchChecker::IsExitConditionSatisfied(std::ostream* os) {
   *os << "Waiting for matching models";
-  return AllModelsMatch();
-}
-
-void BookmarksMatchChecker::WillStartWaiting() {
+  // Trigger favicon loading for all nodes across all models to ensure
+  // concurrent asynchronous lookups rather than sequential loading.
+  // AllModelsMatch() early-outs on the first missing favicon, so failing
+  // to eagerly load them here would cause the checker to sequentially wait for
+  // each node one-by-one.
   for (int i = 0; i < sync_datatype_helper::test()->num_clients(); ++i) {
     TriggerAllFaviconLoading(GetBookmarkModel(i));
   }
+  return AllModelsMatch();
 }
 
 SingleBookmarkModelStatusChangeChecker::SingleBookmarkModelStatusChangeChecker(
