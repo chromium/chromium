@@ -783,6 +783,12 @@ IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTest, Bug346955148Test) {
   SimpleTest(GetTestUrl("indexeddb", "bug_346955148.html"));
 }
 
+// Regression test for crbug.com/545736196: Tests that concurrent callers
+// probing an unversioned DB, aborting upgrade, and reopening do not hang.
+IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTest, AbortedUpgradeReopen) {
+  SimpleTest(GetTestUrl("indexeddb", "aborted_upgrade_reopen.html"));
+}
+
 // Regression test for crbug.com/392376370
 IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTest, NestedBlob) {
   SimpleTest(GetTestUrl("indexeddb", "nested_blob.html"));

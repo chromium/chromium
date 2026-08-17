@@ -63,7 +63,10 @@ IDBOpenDBRequest::IDBOpenDBRequest(
   DCHECK(!ResultAsAny());
 }
 
-IDBOpenDBRequest::~IDBOpenDBRequest() = default;
+IDBOpenDBRequest::~IDBOpenDBRequest() {
+  CHECK(!shared_connection_target_);
+  CHECK(shared_requests_.empty());
+}
 
 void IDBOpenDBRequest::BindToConnection(
     SharedIDBDatabaseConnection* connection) {
@@ -90,22 +93,16 @@ void IDBOpenDBRequest::OnRequestComplete() {
   shared_requests_.clear();
 }
 
-SharedIDBDatabaseConnection*
-IDBOpenDBRequest::CreateAndRegisterSharedConnection(
-    mojo::PendingAssociatedRemote<mojom::blink::IDBDatabase> pending_database,
-    const IDBDatabaseMetadata& metadata) {
+void IDBOpenDBRequest::RegisterSharedConnection(
+    SharedIDBDatabaseConnection* connection,
+    const String& name) {
   DCHECK(base::FeatureList::IsEnabled(
       features::kIndexedDBConnectionDeduplication));
-  SharedIDBDatabaseConnection* shared_connection =
-      MakeGarbageCollected<SharedIDBDatabaseConnection>(
-          GetExecutionContext(), std::move(callbacks_receiver_),
-          std::move(pending_database), metadata);
-  factory_->RegisterSharedConnection(metadata.name, shared_connection);
+  factory_->RegisterSharedConnection(name, connection);
   for (auto& shared : shared_requests_) {
-    shared->BindToConnection(shared_connection);
+    shared->BindToConnection(connection);
   }
   shared_requests_.clear();
-  return shared_connection;
 }
 
 void IDBOpenDBRequest::Trace(Visitor* visitor) const {
@@ -178,9 +175,10 @@ void IDBOpenDBRequest::OnUpgradeNeeded(
   IDBDatabase* idb_database = nullptr;
   if (base::FeatureList::IsEnabled(
           features::kIndexedDBConnectionDeduplication)) {
-    SharedIDBDatabaseConnection* shared_connection =
-        CreateAndRegisterSharedConnection(std::move(pending_database),
-                                          metadata);
+    auto* shared_connection = MakeGarbageCollected<SharedIDBDatabaseConnection>(
+        GetExecutionContext(), std::move(callbacks_receiver_),
+        std::move(pending_database), metadata);
+    BindToConnection(shared_connection);
     idb_database = MakeGarbageCollected<IDBDatabase>(
         GetExecutionContext(), shared_connection, connection_priority_);
   } else {
@@ -189,7 +187,6 @@ void IDBOpenDBRequest::OnUpgradeNeeded(
         std::move(pending_database), connection_priority_);
   }
 
-  OnRequestComplete();
   idb_database->SetMetadata(metadata);
 
   if (old_version == IDBDatabaseMetadata::kNoVersion) {
@@ -231,6 +228,11 @@ void IDBOpenDBRequest::OnOpenDBSuccess(
     idb_database = ResultAsAny()->IdbDatabase();
     DCHECK(idb_database);
     DCHECK(!callbacks_receiver_);
+    if (base::FeatureList::IsEnabled(
+            features::kIndexedDBConnectionDeduplication)) {
+      CHECK(shared_connection_target_);
+      RegisterSharedConnection(shared_connection_target_, metadata.name);
+    }
   } else {
     DCHECK(callbacks_receiver_);
     if (base::FeatureList::IsEnabled(
@@ -249,8 +251,10 @@ void IDBOpenDBRequest::OnOpenDBSuccess(
       } else {
         // This request established a new connection. Create the shared wrapper
         // and register it in the factory cache for future requests to reuse.
-        shared_connection = CreateAndRegisterSharedConnection(
+        shared_connection = MakeGarbageCollected<SharedIDBDatabaseConnection>(
+            GetExecutionContext(), std::move(callbacks_receiver_),
             std::move(pending_database), metadata);
+        RegisterSharedConnection(shared_connection, metadata.name);
       }
 
       idb_database = MakeGarbageCollected<IDBDatabase>(
