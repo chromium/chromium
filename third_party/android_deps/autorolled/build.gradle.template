@@ -65,6 +65,8 @@ dependencies {
     compileLatest 'com.google.android.gms:play-services-vision-common:+'
     compileLatest 'com.google.android.gms:play-services-vision:+'
     compileLatest 'com.google.firebase:firebase-messaging:+'
+    compileLatest 'com.google.firebase:firebase-common:+'
+    compileLatest 'com.google.firebase:firebase-installations:+'
 
     // Other libraries
     compileLatest 'com.airbnb.android:lottie:+'
