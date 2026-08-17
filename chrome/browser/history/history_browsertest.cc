@@ -15,30 +15,19 @@
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
-#include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_test_util.h"
-#include "chrome/browser/actor/execution_engine.h"
-#include "chrome/browser/actor/ui/event_dispatcher.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history/history_tab_helper.h"
 #include "chrome/browser/history/history_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_host/chrome_navigation_ui_data.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
-#include "chrome/browser/sync/test/integration/sync_test.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/ui_features.h"
-#include "chrome/common/actor.mojom.h"
-#include "chrome/common/actor/action_result.h"
-#include "chrome/common/chrome_features.h"
-#include "chrome/common/url_constants.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/actor/core/actor_features.h"
 #include "components/history/core/browser/features.h"
 #include "components/history/core/browser/history_backend.h"
 #include "components/history/core/browser/history_database.h"
@@ -65,6 +54,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "ui/webui/untrusted_web_ui_browsertest_util.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 using content::BrowserThread;
 using ::testing::_;
@@ -1137,9 +1127,7 @@ IN_PROC_BROWSER_TEST_F(HistoryBrowserTest,
 
 class HistoryTaskTagBrowserTest : public HistoryBrowserTest {
  public:
-  HistoryTaskTagBrowserTest() {
-    scoped_feature_list_.InitAndDisableFeature(actor::kGlicActionAllowlist);
-  }
+  HistoryTaskTagBrowserTest() = default;
 
  protected:
   actor::TaskId LatestTaskIdFromNavigationData(
@@ -1187,9 +1175,6 @@ class HistoryTaskTagBrowserTest : public HistoryBrowserTest {
   actor::ActorKeyedService* actor_service() {
     return actor::ActorKeyedService::Get(profile());
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Test that history entry is correctly tagged when actor is active.

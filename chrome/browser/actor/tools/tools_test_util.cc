@@ -4,11 +4,9 @@
 
 #include "chrome/browser/actor/tools/tools_test_util.h"
 
-#include "base/base64.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/bind.h"
 #include "base/test/test_timeouts.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_metrics.h"
@@ -16,23 +14,15 @@
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/site_policy.h"
-#include "chrome/browser/actor/ui/event_dispatcher.h"
-#include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/optimization_guide/browser_test_util.h"
 #include "chrome/browser/password_manager/actor_login/chrome_actor_login_delegate_client.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/zoom/chrome_zoom_level_prefs.h"
-#include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/platform_browser_test.h"
-#include "components/actor/core/actor_features.h"
 #include "components/optimization_guide/core/filters/optimization_hints_component_update_listener.h"
 #include "components/password_manager/core/browser/actor_login/internal/actor_login_delegate_client.h"
 #include "components/tabs/public/tab_interface.h"
-#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/webid/federated_embedder_login_request.h"
 #include "content/public/test/browser_test_utils.h"
@@ -207,7 +197,7 @@ ActorToolsTest::ActorToolsTest() {
   scoped_feature_list_.InitWithFeaturesAndParameters(
       /*enabled_features=*/
       {{features::kGlic, {}}},
-      /*disabled_features=*/{features::kGlicWarming, kGlicActionAllowlist});
+      /*disabled_features=*/{features::kGlicWarming});
 }
 
 ActorToolsTest::~ActorToolsTest() = default;

@@ -26,7 +26,6 @@ namespace {
   // Features and switches
   (void)&GetGlicLiveModeFeature();
   (void)&GetGlicMultiInstanceFeature();
-  (void)&GetGlicActionAllowlistFeature();
   (void)GetDisableActorSafetyChecksSwitch();
 
   // Enums and Prefs

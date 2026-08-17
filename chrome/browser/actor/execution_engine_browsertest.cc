@@ -11,10 +11,7 @@
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/metrics/field_trial_params.h"
 #include "base/run_loop.h"
-#include "base/strings/strcat.h"
-#include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -85,9 +82,6 @@
 #include "content/public/test/navigation_handle_observer.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_frame_navigation_observer.h"
-#include "content/public/test/test_navigation_observer.h"
-#include "content/public/test/test_utils.h"
-#include "net/base/features.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -95,8 +89,6 @@
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/gfx/geometry/point.h"
-#include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
@@ -1182,13 +1174,7 @@ constexpr char kLookalikeHostWarning[] = "accounts-google.com";
 
 class ExecutionEngineUrlGatingBrowserTest : public InProcessBrowserTest {
  public:
-  ExecutionEngineUrlGatingBrowserTest() {
-    base::FieldTrialParams params;
-    params["allowlist"] = "a.com,b.com";
-    params["allowlist_only"] = "false";
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        kGlicActionAllowlist, std::move(params));
-  }
+  ExecutionEngineUrlGatingBrowserTest() = default;
 
   ~ExecutionEngineUrlGatingBrowserTest() override = default;
 
@@ -1252,7 +1238,6 @@ class ExecutionEngineUrlGatingBrowserTest : public InProcessBrowserTest {
 
  private:
   base::HistogramTester histogram_tester_for_init_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   base::ScopedTempDir temp_dir_;
   // Must outlive any ActorTask created with it as the policy checker.
   MockPolicyChecker policy_checker_{

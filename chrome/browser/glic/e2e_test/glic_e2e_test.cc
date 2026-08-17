@@ -402,10 +402,6 @@ static_assert(static_cast<int>(GlicActorTaskState::State::kPausedByUser) >= 0);
 static_assert(static_cast<int>(GlicActorTaskState::State::kReflecting) >= 0);
 
 // Validate features and switches used by internal tests:
-const base::Feature& GetGlicActionAllowlistFeature() {
-  return actor::kGlicActionAllowlist;
-}
-
 const char* GetDisableActorSafetyChecksSwitch() {
   return actor::switches::kDisableActorSafetyChecks;
 }

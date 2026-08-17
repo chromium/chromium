@@ -29,7 +29,6 @@ enum class MayActOnUrlBlockReason {
   kOptimizationGuideBlock,
   kSafeBrowsing,
   kTabIsErrorDocument,
-  kUrlNotInAllowlist,
   kWrongScheme,
   kEnterprisePolicy,
   kBlockedByStaticList,

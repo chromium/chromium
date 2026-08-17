@@ -7,31 +7,22 @@
 #include <optional>
 
 #include "base/files/scoped_temp_dir.h"
-#include "base/metrics/field_trial_params.h"
 #include "base/strings/strcat.h"
-#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
-#include "base/timer/elapsed_timer.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
-#include "chrome/browser/actor/actor_keyed_service_factory.h"
-#include "chrome/browser/actor/actor_tab_data.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/autofill_selection_dialog_event_handler.h"
 #include "chrome/browser/actor/enterprise_policy_checker.h"
 #include "chrome/browser/actor/site_policy.h"
-#include "chrome/browser/actor/tool_request_variant.h"
 #include "chrome/browser/actor/tools/click_tool_request.h"
-#include "chrome/browser/actor/tools/fake_tool.h"
 #include "chrome/browser/actor/tools/fake_tool_request.h"
-#include "chrome/browser/actor/tools/tool.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/tools/wait_tool.h"
 #include "chrome/browser/actor/ui/event_dispatcher.h"
@@ -46,18 +37,14 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/actor/core/actor_features.h"
-#include "components/actor/core/safety_list_manager.h"
 #include "components/actor/core/shared_types.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/autofill/core/browser/integrators/actor/actor_form_filling_types.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/core/filters/optimization_hints_component_update_listener.h"
 #include "components/optimization_guide/proto/hints.pb.h"
-#include "components/origin_gating/core/origin_gating_cache.h"
-#include "components/origin_gating/core/origin_gating_checker.h"
 #include "components/page_content_annotations/content/mojom/page_stability.mojom.h"
 #include "components/tabs/public/mock_tab_interface.h"
-#include "components/tabs/public/tab_interface.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/navigation_simulator.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
@@ -1139,11 +1126,7 @@ class ExecutionEngineUrlGatingTest : public ChromeRenderViewHostTestHarness {
   ~ExecutionEngineUrlGatingTest() override = default;
 
   void SetUp() override {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        /* enabled_features = */ {{features::kGlicActor, {}},
-                                  {kGlicActionAllowlist,
-                                   CreateFieldTrialParams()}},
-        /* disabled_features = */ {});
+    scoped_feature_list_.InitAndEnableFeature(features::kGlicActor);
 
     ChromeRenderViewHostTestHarness::SetUp();
 
@@ -1183,13 +1166,6 @@ class ExecutionEngineUrlGatingTest : public ChromeRenderViewHostTestHarness {
     }
     mock_optimization_guide_keyed_service_ = nullptr;
     ChromeRenderViewHostTestHarness::TearDown();
-  }
-
-  virtual base::FieldTrialParams CreateFieldTrialParams() {
-    base::FieldTrialParams params;
-    params["allowlist"] = "a.test,b.test";
-    params["allowlist_only"] = "false";
-    return params;
   }
 
  protected:
@@ -1303,20 +1279,6 @@ class ExecutionEngineUrlGatingTest : public ChromeRenderViewHostTestHarness {
   base::ScopedTempDir temp_dir_;
 };
 
-class ExecutionEngineUrlGatingAllowlistOnlyTest
-    : public ExecutionEngineUrlGatingTest {
- public:
-  ~ExecutionEngineUrlGatingAllowlistOnlyTest() override = default;
-
-  base::FieldTrialParams CreateFieldTrialParams() override {
-    base::FieldTrialParams params;
-    params["allowlist"] = "a.test,b.test";
-    params["allowlist_exact"] = "exact.test";
-    params["allowlist_only"] = "true";
-    return params;
-  }
-};
-
 // TODO(crbug.com/480230075): Crashing on Android.
 #if BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
 #define MAYBE_AllowLocalhost DISABLED_AllowLocalhost
@@ -1359,15 +1321,6 @@ TEST_F(ExecutionEngineUrlGatingTest, InsecureHTTPAllowedWhenSpecified) {
   GetExecutionEngine().IsAcceptableNavigationDestination(GURL("http://a.test/"),
                                                          allowed.GetCallback());
   EXPECT_EQ(allowed.Get(), MayActOnUrlBlockReason::kAllowed);
-}
-
-TEST_F(ExecutionEngineUrlGatingTest, AllowAllowlistedHosts) {
-  CheckUrl(GURL("https://a.test/"), true);
-  CheckUrl(GURL("https://b.test/"), true);
-}
-
-TEST_F(ExecutionEngineUrlGatingTest, AllowSubdomain) {
-  CheckUrl(GURL("https://subdomain.a.test/"), true);
 }
 
 TEST_F(ExecutionEngineUrlGatingTest, AllowIfNotBlocked) {
@@ -1426,10 +1379,7 @@ TEST_F(ExecutionEngineUrlGatingTest, AllowedOriginsFromNavigationGating) {
 
   {
     base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitWithFeaturesAndParameters(
-        {{kGlicActionAllowlist, CreateFieldTrialParams()},
-         {kGlicCrossOriginNavigationGating, base::FieldTrialParams()}},
-        {});
+    scoped_feature_list.InitAndEnableFeature(kGlicCrossOriginNavigationGating);
     CheckUrl(url, true);
   }
 }
@@ -1470,25 +1420,12 @@ TEST_F(ExecutionEngineUrlGatingTest, EnterprisePolicyOrder) {
            EnterprisePolicyChecker::UrlBlockReason::kExplicitlyAllowed);
 }
 
-TEST_F(ExecutionEngineUrlGatingAllowlistOnlyTest, BlockIfNotInAllowlist) {
-  CheckUrl(GURL("https://c.test/"), false);
-}
-
-TEST_F(ExecutionEngineUrlGatingAllowlistOnlyTest,
-       BlockSubdomainIfNotInExactAllowlist) {
-  CheckUrl(GURL("https://subdomain.exact.test/"), false);
-  CheckUrl(GURL("https://exact.test/"), true);
-}
-
 TEST_F(ExecutionEngineUrlGatingTest,
        IsAcceptableNavigationDestination_AllowedByCache) {
   const GURL url("https://c.test/");
 
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeaturesAndParameters(
-      {{kGlicActionAllowlist, CreateFieldTrialParams()},
-       {kGlicCrossOriginNavigationGating, {}}},
-      {});
+  scoped_feature_list.InitAndEnableFeature(kGlicCrossOriginNavigationGating);
 
   EXPECT_CALL(
       *mock_optimization_guide_keyed_service_,
@@ -1511,10 +1448,7 @@ TEST_F(ExecutionEngineUrlGatingTest,
   const GURL url("https://c.test/");
 
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeaturesAndParameters(
-      {{kGlicActionAllowlist, CreateFieldTrialParams()},
-       {kGlicCrossOriginNavigationGating, {}}},
-      {});
+  scoped_feature_list.InitAndEnableFeature(kGlicCrossOriginNavigationGating);
 
   EXPECT_CALL(
       *mock_optimization_guide_keyed_service_,
@@ -1535,10 +1469,7 @@ TEST_F(ExecutionEngineUrlGatingTest, SafetyChecksForNextAction_AllowedByCache) {
   const GURL url("https://c.test/");
 
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeaturesAndParameters(
-      {{kGlicActionAllowlist, CreateFieldTrialParams()},
-       {kGlicCrossOriginNavigationGating, {}}},
-      {});
+  scoped_feature_list.InitAndEnableFeature(kGlicCrossOriginNavigationGating);
 
   EXPECT_CALL(
       *mock_optimization_guide_keyed_service_,
@@ -1558,8 +1489,7 @@ TEST_F(ExecutionEngineUrlGatingTest,
 
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeaturesAndParameters(
-      {{kGlicActionAllowlist, CreateFieldTrialParams()},
-       {kGlicCrossOriginNavigationGating,
+      {{kGlicCrossOriginNavigationGating,
         {{"prompt_user_for_sensitive_navigations", "true"}}}},
       {});
 

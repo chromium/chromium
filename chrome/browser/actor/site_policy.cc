@@ -116,7 +116,6 @@ mojom::ActionResultCode BlockReasonToResultCode(MayActOnUrlBlockReason reason,
       return maybe_granular(ActionResultCode::kActionsBlockedOnErrorPage);
     case MayActOnUrlBlockReason::kIpAddress:
     case MayActOnUrlBlockReason::kOptimizationGuideBlock:
-    case MayActOnUrlBlockReason::kUrlNotInAllowlist:
     case MayActOnUrlBlockReason::kBlockedByContainerConfig:
       return generic_block_code;
   }

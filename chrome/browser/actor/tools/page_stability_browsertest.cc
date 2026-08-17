@@ -4,24 +4,18 @@
 
 #include <utility>
 
-#include "base/synchronization/lock.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
-#include "base/test/test_timeouts.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_test_util.h"
-#include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/tools/page_stability_test_util.h"
-#include "chrome/browser/actor/tools/tools_test_util.h"
-#include "chrome/browser/actor/ui/event_dispatcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/test/base/chrome_test_utils.h"
 #include "components/actor/core/actor_features.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/page_content_annotations/content/mojom/page_stability.mojom.h"
@@ -36,6 +30,7 @@
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
+#include "url/gurl.h"
 
 namespace actor {
 
@@ -207,13 +202,8 @@ class ActorPageStabilityNavigationTypesTest
   }
 
   ActorPageStabilityNavigationTypesTest() {
-    base::FieldTrialParams allowlist_params;
-    allowlist_params["allowlist"] = "foo.com,bar.com";
-    allowlist_params["allowlist_only"] = "true";
-
     page_tools_feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{{kGlicActionAllowlist, allowlist_params},
-                              {kGlicCrossOriginNavigationGating,
+        /*enabled_features=*/{{kGlicCrossOriginNavigationGating,
                                {{"confirm_navigation_to_new_origins",
                                  "false"}}}},
         /*disabled_features=*/{});
