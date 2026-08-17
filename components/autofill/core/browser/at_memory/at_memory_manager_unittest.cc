@@ -2157,7 +2157,7 @@ TEST_F(AtMemoryManagerTest,
         Run(ElementsAre(EqualsSuggestion(
                 SuggestionType::kAtMemoryFetching,
                 l10n_util::GetStringUTF16(
-                    IDS_AUTOFILL_AT_MEMORY_FETCHING_REVIEWING_CONNECTED_APPS))),
+                    IDS_AUTOFILL_AT_MEMORY_FETCHING_FINDING_INFO_WITH_GEMINI))),
             AutofillSuggestionTriggerSource::kAtMemoryTriggerString));
     // Query is sent to the service.
     EXPECT_CALL(mock_query_service(),
@@ -2168,20 +2168,29 @@ TEST_F(AtMemoryManagerTest,
         Run(ElementsAre(EqualsSuggestion(
                 SuggestionType::kAtMemoryFetching,
                 l10n_util::GetStringUTF16(
-                    IDS_AUTOFILL_AT_MEMORY_FETCHING_PUTTING_IT_TOGETHER))),
+                    IDS_AUTOFILL_AT_MEMORY_FETCHING_REVIEWING_CONNECTED_APPS))),
             AutofillSuggestionTriggerSource::kAtMemoryTriggerString));
-    // Second timer tick loops back to the first string.
+    // Second timer tick advances to third message.
     EXPECT_CALL(
         update_callback_,
         Run(ElementsAre(EqualsSuggestion(
                 SuggestionType::kAtMemoryFetching,
                 l10n_util::GetStringUTF16(
-                    IDS_AUTOFILL_AT_MEMORY_FETCHING_REVIEWING_CONNECTED_APPS))),
+                    IDS_AUTOFILL_AT_MEMORY_FETCHING_PUTTING_IT_TOGETHER))),
+            AutofillSuggestionTriggerSource::kAtMemoryTriggerString));
+    // Third timer tick loops back to the first string.
+    EXPECT_CALL(
+        update_callback_,
+        Run(ElementsAre(EqualsSuggestion(
+                SuggestionType::kAtMemoryFetching,
+                l10n_util::GetStringUTF16(
+                    IDS_AUTOFILL_AT_MEMORY_FETCHING_FINDING_INFO_WITH_GEMINI))),
             AutofillSuggestionTriggerSource::kAtMemoryTriggerString));
   }
 
   manager().OnSearchSubmitted(u"query");
 
+  task_environment_.FastForwardBy(kFetchingMessageInterval);
   task_environment_.FastForwardBy(kFetchingMessageInterval);
   task_environment_.FastForwardBy(kFetchingMessageInterval);
 }
@@ -2200,7 +2209,7 @@ TEST_F(AtMemoryManagerTest, FetchingState_TimerStopsWhenResultsReceived) {
       Run(ElementsAre(EqualsSuggestion(
               SuggestionType::kAtMemoryFetching,
               l10n_util::GetStringUTF16(
-                  IDS_AUTOFILL_AT_MEMORY_FETCHING_REVIEWING_CONNECTED_APPS))),
+                  IDS_AUTOFILL_AT_MEMORY_FETCHING_FINDING_INFO_WITH_GEMINI))),
           AutofillSuggestionTriggerSource::kAtMemoryTriggerString));
 
   manager().OnSearchSubmitted(u"query");
@@ -2211,7 +2220,7 @@ TEST_F(AtMemoryManagerTest, FetchingState_TimerStopsWhenResultsReceived) {
       Run(ElementsAre(EqualsSuggestion(
               SuggestionType::kAtMemoryFetching,
               l10n_util::GetStringUTF16(
-                  IDS_AUTOFILL_AT_MEMORY_FETCHING_PUTTING_IT_TOGETHER))),
+                  IDS_AUTOFILL_AT_MEMORY_FETCHING_REVIEWING_CONNECTED_APPS))),
           AutofillSuggestionTriggerSource::kAtMemoryTriggerString));
   task_environment_.FastForwardBy(kFetchingMessageInterval);
 
@@ -2241,7 +2250,7 @@ TEST_F(AtMemoryManagerTest, FetchingState_TimerStopsOnPopupHidden) {
       Run(ElementsAre(EqualsSuggestion(
               SuggestionType::kAtMemoryFetching,
               l10n_util::GetStringUTF16(
-                  IDS_AUTOFILL_AT_MEMORY_FETCHING_REVIEWING_CONNECTED_APPS))),
+                  IDS_AUTOFILL_AT_MEMORY_FETCHING_FINDING_INFO_WITH_GEMINI))),
           AutofillSuggestionTriggerSource::kAtMemoryTriggerString));
 
   manager().OnSearchSubmitted(u"query");
