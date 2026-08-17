@@ -2569,7 +2569,6 @@ ci.builder(
                     "--disable-field-trial-config",
                     "--skia-gold-consider-unsupported",
                 ],
-                ci_only = True,
                 swarming = targets.swarming(
                     dimensions = {
                         # use 8-core to shorten runtime
