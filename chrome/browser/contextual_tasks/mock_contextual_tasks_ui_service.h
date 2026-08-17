@@ -7,6 +7,7 @@
 
 #include "chrome/browser/contextual_tasks/contextual_tasks_cookie_synchronizer.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
+#include "components/contextual_search/contextual_search_session_handle.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace contextual_tasks {

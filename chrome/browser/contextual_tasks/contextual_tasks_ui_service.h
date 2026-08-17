@@ -6,7 +6,9 @@
 #define CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_UI_SERVICE_H_
 
 #include <map>
-#include <set>
+#include <memory>
+#include <optional>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -17,13 +19,10 @@
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks.mojom.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_eligibility_manager.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_types.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_delegate.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
-#include "components/contextual_search/contextual_search_session_handle.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/lens/lens_overlay_invocation_source.h"
 #include "content/public/browser/page_navigator.h"
 #include "net/base/backoff_entry.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -42,25 +41,30 @@ class Uuid;
 }  // namespace base
 
 namespace content {
-struct OpenURLParams;
-class WebContents;
 class RenderFrameHost;
+class WebContents;
 struct GlobalRenderFrameHostToken;
+struct OpenURLParams;
 }  // namespace content
+
+namespace contextual_search {
+class ContextualSearchSessionHandle;
+enum class ContextualSearchSource;
+}  // namespace contextual_search
+
+namespace lens {
+class LensMediaLinkHandler;
+}  // namespace lens
 
 namespace signin {
 class AccessTokenFetcher;
-struct AccessTokenInfo;
 class IdentityManager;
+struct AccessTokenInfo;
 }  // namespace signin
 
 namespace tabs {
 class TabInterface;
 }  // namespace tabs
-
-namespace lens {
-class LensMediaLinkHandler;
-}  // namespace lens
 
 namespace contextual_tasks {
 
@@ -68,8 +72,10 @@ inline constexpr char kTaskQueryParam[] = "chrome_task_id";
 inline constexpr char kChromeHostParam[] = "chrome_host";
 
 class ContextualTasksCookieSynchronizer;
+class ContextualTasksEligibilityManager;
 class ContextualTasksService;
 class ContextualTasksUIInterface;
+class ContextualTasksUiServiceDelegate;
 class ContextualTasksWindowTracker;
 class ContextualTasksWindowTrackerManager;
 
