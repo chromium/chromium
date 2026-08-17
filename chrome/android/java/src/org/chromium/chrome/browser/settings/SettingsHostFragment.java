@@ -125,10 +125,6 @@ public class SettingsHostFragment extends Fragment
         return mContainmentHelper;
     }
 
-    void setContainmentHelperForTesting(SettingsContainmentHelper containmentHelper) {
-        mContainmentHelper = containmentHelper;
-    }
-
     @Override
     public void onStart() {
         super.onStart();
@@ -463,5 +459,13 @@ public class SettingsHostFragment extends Fragment
     public void popBackStack() {
         assert isAdded();
         getChildFragmentManager().popBackStack();
+    }
+
+    void setContainmentHelperForTesting(SettingsContainmentHelper containmentHelper) {
+        mContainmentHelper = containmentHelper;
+    }
+
+    public @Nullable FragmentDependencyProvider getDependencyProviderForTesting() {
+        return mDependencyProvider;
     }
 }

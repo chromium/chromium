@@ -223,8 +223,13 @@ public class SettingsPageFragmentDelegateImplTest {
                     callback instanceof FragmentDependencyProvider);
         }
 
-        // Verify fragment creation and addition.
-        verify(mFragmentTransaction).add(any(SettingsHostFragment.class), eq(EXPECTED_TAG));
+        // Verify fragment creation and addition with dependency provider set.
+        ArgumentCaptor<SettingsHostFragment> hostCaptor =
+                ArgumentCaptor.forClass(SettingsHostFragment.class);
+        verify(mFragmentTransaction).add(hostCaptor.capture(), eq(EXPECTED_TAG));
+        assertNotNull(
+                "Dependency provider should be set on host fragment before transaction",
+                hostCaptor.getValue().getDependencyProviderForTesting());
         verify(mFragmentTransaction).commitAllowingStateLoss();
     }
 

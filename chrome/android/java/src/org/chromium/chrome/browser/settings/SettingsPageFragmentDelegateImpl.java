@@ -212,10 +212,25 @@ public class SettingsPageFragmentDelegateImpl
         mToolbar.setOnMenuItemClickListener(
                 item -> SettingsMenuHelper.onOptionsItemSelected(item, mActivity, this));
 
+        var dependencyProvider =
+                new FragmentDependencyProvider(
+                        mActivity,
+                        mProfile,
+                        windowAndroidSupplier,
+                        mActivityResultTracker,
+                        snackbarSupplier,
+                        bottomSheetSupplier,
+                        mModalDialogSupplier,
+                        () -> mSearchCoordinator);
+
         mSettingsHostFragment =
                 (SettingsHostFragment) fragmentManager.findFragmentByTag(mFragmentTag);
         if (mSettingsHostFragment == null) {
             mSettingsHostFragment = new SettingsHostFragment();
+            // Set the dependency provider before executing the transaction so child fragments
+            // created during attachment (e.g. MainSettings) have their dependencies attached
+            // before creating their preferences.
+            mSettingsHostFragment.setDependencyProvider(dependencyProvider);
             // Add the fragment without a container using two-parameter add() to prevent multiple
             // settings tabs from colliding on the same container ID during activity recreation.
             fragmentManager
@@ -225,6 +240,8 @@ public class SettingsPageFragmentDelegateImpl
             // Execute the transaction so mSettingsHostFragment creates its view and getView() is
             // non-null below.
             fragmentManager.executePendingTransactions();
+        } else {
+            mSettingsHostFragment.setDependencyProvider(dependencyProvider);
         }
 
         // If the host fragment view was attached to a different tab's container, attach it to this
@@ -237,17 +254,6 @@ public class SettingsPageFragmentDelegateImpl
             fragmentContainer.addView(hostView, layoutParams);
         }
 
-        var dependencyProvider =
-                new FragmentDependencyProvider(
-                        mActivity,
-                        mProfile,
-                        windowAndroidSupplier,
-                        mActivityResultTracker,
-                        snackbarSupplier,
-                        bottomSheetSupplier,
-                        mModalDialogSupplier,
-                        () -> mSearchCoordinator);
-        mSettingsHostFragment.setDependencyProvider(dependencyProvider);
         if (mSettingsHostFragment.isAdded()) {
             mSettingsHostFragment
                     .getChildFragmentManager()
