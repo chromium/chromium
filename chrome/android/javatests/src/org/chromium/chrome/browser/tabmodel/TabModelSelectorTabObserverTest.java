@@ -51,7 +51,6 @@ public class TabModelSelectorTabObserverTest {
             new TabModelSelectorObserverTestRule();
 
     @Mock private TabDelegateFactory mTabDelegateFactory;
-    private int mTabId;
     private Profile mProfile;
     private Profile mIncognitoProfile;
 

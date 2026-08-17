@@ -59,7 +59,6 @@ import org.chromium.chrome.browser.tasks.tab_management.UndoGroupSnackbarControl
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
-import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.components.tab_groups.TabGroupsFeatureMap;
@@ -92,7 +91,6 @@ public class TabCollectionTabModelImplTest {
             ChromeTransitTestRules.fastAutoResetCtaActivityRule();
 
     private String mTestUrl;
-    private WebPageStation mPage;
     private TabModelSelector mTabModelSelector;
     private TabModel mRegularModel;
     private TabCollectionTabModelImpl mCollectionModel;
@@ -104,7 +102,7 @@ public class TabCollectionTabModelImplTest {
         mActivityTestRule.getActivity().getSnackbarManager().disableForTesting();
 
         mTestUrl = mActivityTestRule.getTestServer().getURL("/chrome/test/data/android/ok.txt");
-        mPage = mActivityTestRule.startOnBlankPage();
+        mActivityTestRule.startOnBlankPage();
         mTabModelSelector = mActivityTestRule.getActivity().getTabModelSelector();
         mRegularModel = mTabModelSelector.getModel(/* incognito= */ false);
         if (mRegularModel instanceof TabCollectionTabModelImpl collectionModel) {
@@ -4493,8 +4491,7 @@ public class TabCollectionTabModelImplTest {
     @Test
     @MediumTest
     public void testIsClosingAllTabs() throws Exception {
-        Tab tab0 = getTabAt(0);
-        Tab tab1 = createTab();
+        createTab();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     assertFalse(mCollectionModel.isClosingAllTabs());
@@ -4530,7 +4527,7 @@ public class TabCollectionTabModelImplTest {
     @MediumTest
     public void testIsClosingAllTabsIsFalse() throws Exception {
         Tab tab0 = getTabAt(0);
-        Tab tab1 = createTab();
+        createTab();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     assertFalse(mCollectionModel.isClosingAllTabs());

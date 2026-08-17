@@ -52,7 +52,6 @@ import org.chromium.chrome.browser.tabwindow.WindowId;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
-import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.browser.contextmenu.ContextMenuUtils;
 import org.chromium.content_public.browser.AdditionalNavigationParams;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -85,7 +84,6 @@ public class ContextMenuLoadUrlParamsTest {
 
     // Load parameters of the last call to openNewTab().
     private static LoadUrlParams sOpenNewTabLoadUrlParams;
-    private WebPageStation mInitialPage;
 
     // Records parameters of calls to TabModelSelector methods and otherwise behaves like
     // TabModelSelectorImpl.
@@ -166,7 +164,7 @@ public class ContextMenuLoadUrlParamsTest {
                 () -> {
                     FirstRunStatus.setFirstRunFlowComplete(true);
                 });
-        mInitialPage = mActivityTestRule.startOnBlankPage();
+        mActivityTestRule.startOnBlankPage();
     }
 
     @After

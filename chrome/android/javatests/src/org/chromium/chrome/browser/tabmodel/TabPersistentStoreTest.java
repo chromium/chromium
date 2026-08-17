@@ -117,10 +117,6 @@ import java.util.concurrent.TimeoutException;
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
 @EnableFeatures({ChromeFeatureList.ANDROID_TAB_SKIP_SAVE_TABS_TASK_KILLSWITCH})
 public class TabPersistentStoreTest {
-    // Test activity type that does not restore tab on cold restart.
-    // Any type other than ActivityType.TABBED works.
-    private static final @ActivityType int NO_RESTORE_TYPE = ActivityType.CUSTOM_TAB;
-
     private ChromeActivity mChromeActivity;
 
     private static final int SELECTOR_INDEX = 0;
@@ -157,7 +153,6 @@ public class TabPersistentStoreTest {
     static class TestTabModelSelector extends TabModelSelectorBase implements TabModelDelegate {
         final TabPersistentStoreImpl mTabPersistentStore;
         final MockTabPersistentStoreObserver mTabPersistentStoreObserver;
-        private final TabModelOrderController mTabModelOrderController;
         // Required to ensure TabContentManager is not null.
         private final TabContentManager mMockTabContentManager;
 
@@ -194,8 +189,6 @@ public class TabPersistentStoreTest {
                                     return tabPersistentStore;
                                 }
                             });
-            mTabModelOrderController = new TabModelOrderControllerImpl(this);
-            NextTabPolicySupplier nextTabPolicySupplier = () -> NextTabPolicy.HIERARCHICAL;
 
             Profile profile = profileProviderSupplier.get().getOriginalProfile();
             TabModelInternal regularTabModel = new MockTabModel(profile, null);
@@ -1596,19 +1589,18 @@ public class TabPersistentStoreTest {
 
         ArgumentCaptor<TabPersistentStoreObserver> shadowObserverCaptor = captor();
 
-        ShadowTabStoreValidator validator =
-                ThreadUtils.runOnUiThreadBlocking(
-                        () -> {
-                            return new ShadowTabStoreValidator(
-                                    ProfileManager.getLastUsedRegularProfile(),
-                                    store,
-                                    shadowStore,
-                                    recordingTabCreator,
-                                    shadowTabCreator,
-                                    migrationManager,
-                                    /* windowTag= */ "0",
-                                    "Tabbed");
-                        });
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    new ShadowTabStoreValidator(
+                            ProfileManager.getLastUsedRegularProfile(),
+                            store,
+                            shadowStore,
+                            recordingTabCreator,
+                            shadowTabCreator,
+                            migrationManager,
+                            /* windowTag= */ "0",
+                            "Tabbed");
+                });
 
         verify(shadowStore).addObserver(shadowObserverCaptor.capture());
         TabPersistentStoreObserver shadowObserver = shadowObserverCaptor.getValue();

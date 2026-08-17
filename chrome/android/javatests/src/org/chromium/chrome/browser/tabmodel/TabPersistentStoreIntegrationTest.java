@@ -458,8 +458,6 @@ public class TabPersistentStoreIntegrationTest {
     @Feature({"TabPersistentStore"})
     @RequiresRestart("Multiple activities make this complicated without a restart.")
     public void testFallbackNtpRestorationOrder() throws Exception {
-        final ChromeTabbedActivity originalActivity =
-                mActivityTestRule.getActivity();
         // 1. Start with 1 tab (blank). Load ok.txt in a new tab.
         final Tab tab0 = mActivityTestRule.loadUrlInNewTab(mTestUrl, false);
         // Now we have [Blank, tab0]. tab0 is active.

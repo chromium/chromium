@@ -50,7 +50,6 @@ import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskTrackerFac
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
-import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -79,12 +78,11 @@ public class TabModelMultiWindowTest {
     @Mock
     private MediaCaptureDevicesDispatcherAndroid.Natives mMediaCaptureDevicesDispatcherAndroidJni;
 
-    private WebPageStation mPage;
     private TabModelJniBridge mTabModelJni;
 
     @Before
     public void setUp() {
-        mPage = mActivityTestRule.startOnBlankPage();
+        mActivityTestRule.startOnBlankPage();
         mTabModelJni =
                 (TabModelJniBridge)
                         mActivityTestRule.getActivity().getTabModelSelector().getModel(false);

@@ -55,9 +55,6 @@ import java.util.List;
 @Restriction({DeviceFormFactor.PHONE})
 @Batch(Batch.PER_CLASS)
 public class TabGroupsTest {
-    private static final int OTHER_ROOT_ID_1 = 11;
-    private static final int OTHER_ROOT_ID_2 = 22;
-
     @Rule
     public AutoResetCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.fastAutoResetCtaActivityRule();
