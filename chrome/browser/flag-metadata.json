@@ -6512,11 +6512,6 @@
     "expiry_milestone": 145
   },
   {
-    "name": "language-packs-in-settings",
-    "owners": ["mlcui@google.com", "claudiomagni@chromium.org", "cros-borders-eng@google.com"],
-    "expiry_milestone": 126
-  },
-  {
     "name": "launcher-continue-section-with-recents",
     "owners": ["tbarzic@chromium.org", "mmourgos@chromium.org"],
     "expiry_milestone": 130

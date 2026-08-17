@@ -7105,13 +7105,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPageContentCacheDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(page_content_annotations::features::kPageContentCache)},
 
-#if BUILDFLAG(IS_CHROMEOS)
-    {"language-packs-in-settings",
-     flag_descriptions::kLanguagePacksInSettingsName,
-     flag_descriptions::kLanguagePacksInSettingsDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kLanguagePacksInSettings)},
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
     {"mbi-mode", flag_descriptions::kMBIModeName,
      flag_descriptions::kMBIModeDescription, kOsAll,
      FEATURE_WITH_PARAMS_VALUE_TYPE(features::kMBIMode,

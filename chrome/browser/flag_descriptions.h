@@ -7954,12 +7954,6 @@ inline constexpr char kCrosComponentsName[] = "Cros Components";
 inline constexpr char kCrosComponentsDescription[] =
     "Enable cros-component UI elements, replacing other elements.";
 
-inline constexpr char kLanguagePacksInSettingsName[] =
-    "Language Packs in Settings";
-inline constexpr char kLanguagePacksInSettingsDescription[] =
-    "Enables the UI and logic to manage Language Packs in Settings. This is "
-    "used for languages and input methods.";
-
 inline constexpr char kLauncherContinueSectionWithRecentsName[] =
     "Launcher continue section with recent drive files";
 inline constexpr char kLauncherContinueSectionWithRecentsDescription[] =
