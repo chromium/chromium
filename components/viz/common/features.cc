@@ -364,11 +364,6 @@ const base::FeatureParam<int> kNumberPendingFramesUntilThrottle{
     &kNoCompositorFrameAcks, "pending_frames", 1};
 BASE_FEATURE(kDisplaySchedulerAsClient, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables prioritization of the BeginFrame InputClient (like
-// FlingSchedulerAndroid) so it can dispatch events before the renderer
-// receives its BeginFrame.
-BASE_FEATURE(kFlingSchedulingImprovements, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables optimizations in `DirectRenderer` and `OcclusionCuller` that reuses
 // pre-existing loops to access filter data from `AggregatedRenderPassDrawQuad`.
 // This is a temporary flag to work as a kill switch for the optimization and

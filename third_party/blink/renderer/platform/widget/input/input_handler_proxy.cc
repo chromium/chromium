@@ -284,9 +284,7 @@ InputHandlerProxy::InputHandlerProxy(cc::InputHandler& input_handler,
       snap_fling_controller_(std::make_unique<cc::SnapFlingController>(this)),
       cursor_control_handler_(std::make_unique<CursorControlHandler>()),
       update_scroll_predictor_(base::FeatureList::IsEnabled(
-          input::features::kUpdateScrollPredictorInputMapping)),
-      fling_scheduling_improvements_(base::FeatureList::IsEnabled(
-          ::features::kFlingSchedulingImprovements)) {
+          input::features::kUpdateScrollPredictorInputMapping)) {
   DCHECK(client);
   input_handler_->BindToClient(this);
 
@@ -350,9 +348,6 @@ void InputHandlerProxy::HandleInputEventWithLatencyInfo(
            WebGestureEvent::InertialPhaseState::kMomentum);
   DCHECK(input_handler_);
   input_handler_->NotifyInputEvent(is_fling);
-  if (is_fling && fling_scheduling_improvements_) {
-    handling_fling_ = true;
-  }
 
   // Prevent the events to be counted into INP metrics if there is an active
   // scroll.
@@ -1182,7 +1177,6 @@ InputHandlerProxy::EventDisposition InputHandlerProxy::HandleGestureScrollBegin(
     const WebGestureEvent& gesture_event,
     cc::EventMetrics* metrics) {
   TRACE_EVENT0("input", "InputHandlerProxy::HandleGestureScrollBegin");
-  handling_fling_ = false;
 
   if (scroll_predictor_)
     scroll_predictor_->ResetOnGestureScrollBegin(gesture_event);
@@ -1753,7 +1747,7 @@ void InputHandlerProxy::DeliverInputForBeginFrame(
   }
 
   base::TimeTicks sample_time = base::TimeTicks::Max();
-  if (!handling_fling_ && update_scroll_predictor_ && scroll_predictor_ &&
+  if (update_scroll_predictor_ && scroll_predictor_ &&
       scroll_predictor_->ShouldResampleScrollEvents()) {
     base::TimeDelta latency = scroll_predictor_->ResampleLatency(args.interval);
     sample_time = args.frame_time + latency;
@@ -1765,8 +1759,7 @@ void InputHandlerProxy::DeliverInputForBeginFrame(
   // 2. The kUpdateScrollPredictorInputMapping feature and its
   // kGenerateSyntheticScrollPrediction param are both enabled.
   bool should_attempt_synthetic =
-      !handling_fling_ && scroll_predictor_ &&
-      scroll_predictor_->ShouldResampleScrollEvents() &&
+      scroll_predictor_ && scroll_predictor_->ShouldResampleScrollEvents() &&
       (GetEffectiveScrollEventDispatchMode(currently_active_gesture_device_) ==
            cc::InputHandlerClient::ScrollEventDispatchMode::
                kUseScrollPredictorForEmptyQueue ||
@@ -1809,10 +1802,6 @@ void InputHandlerProxy::DeliverInputForBeginFrame(
 
   if (!queue_flushed_callback_.is_null()) {
     std::move(queue_flushed_callback_).Run();
-  }
-
-  if (compositor_event_queue_->empty()) {
-    handling_fling_ = false;
   }
 }
 

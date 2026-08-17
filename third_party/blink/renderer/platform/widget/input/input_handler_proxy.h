@@ -281,8 +281,6 @@ class PLATFORM_EXPORT InputHandlerProxy : public cc::InputHandlerClient,
   // Returns the ElementId of the currently latched scroller, or invalid id.
   cc::ElementId LatchedScrollerElementId() const;
 
-  bool HandlingFlingForTesting() const { return handling_fling_; }
-
  private:
   friend class test::TestInputHandlerProxy;
   friend class test::InputHandlerProxyTest;
@@ -514,14 +512,7 @@ class PLATFORM_EXPORT InputHandlerProxy : public cc::InputHandlerClient,
   // Cached value of the kUpdateScrollPredictorInputMapping feature flag.
   const bool update_scroll_predictor_;
 
-  // Cached value of the kFlingSchedulingImprovements feature flag.
-  const bool fling_scheduling_improvements_;
 
-  // Tracks whether a fling is currently in progress. This is only set to true
-  // if `fling_scheduling_improvements_` is enabled. When true, input events
-  // are processed up to the current |frame_time| instead of using resampling
-  // offset.
-  bool handling_fling_ = false;
 
   // `cc::InputHandlerClient::ScrollEventDispatchMode::kEnqueueScrollEvents`:
   // Scroll events arriving in `HandleInputEventWithLatencyInfo` will be
