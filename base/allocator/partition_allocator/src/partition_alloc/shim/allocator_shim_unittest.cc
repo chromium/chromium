@@ -1882,7 +1882,11 @@ class ScopedCustomDispatchSwapForTesting {
     InstallCustomDispatchForTesting(dispatch);
   }
   ~ScopedCustomDispatchSwapForTesting() {
-    InstallCustomDispatchForTesting(original_dispatch_);
+    if (!original_dispatch_ || original_dispatch_->next == nullptr) {
+      UninstallCustomDispatch();
+    } else {
+      InstallCustomDispatchForTesting(original_dispatch_);
+    }
   }
 
  private:
