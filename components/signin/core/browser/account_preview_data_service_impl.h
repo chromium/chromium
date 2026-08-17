@@ -50,7 +50,8 @@ class AccountPreviewDataServiceImpl : public AccountPreviewDataService,
     kRefreshTokenUpdated = 1,
     kRefreshTokenRemoved = 2,
     kRefreshTokenInvalidated = 3,
-    kMaxValue = kRefreshTokenInvalidated,
+    kExternalAppAccountUpdated = 4,
+    kMaxValue = kExternalAppAccountUpdated,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:AccountPreviewFetchTriggerCause)
 
@@ -126,6 +127,7 @@ class AccountPreviewDataServiceImpl : public AccountPreviewDataService,
   void CreateAndStartRepeatingTimer();
   void ResetTimer();
   std::optional<AccountPreviewPreference> ComputePreferredAccount() const;
+  void ComputeAndStorePreferredAccount();
 
   void NotifyBatchBarrierOnFetchCompleted(const GaiaId& gaia_id);
   void MaybeNotifySinglePendingRequests(const GaiaId& gaia_id);

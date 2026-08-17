@@ -1984,6 +1984,104 @@ TEST_F(AccountPreviewDataServiceTest,
   EXPECT_FALSE(service_->GetExternalAppAccountForTesting().has_value());
   EXPECT_TRUE(prefs_.GetDict(prefs::kAccountPreviewExternalAppAccount).empty());
 }
+
+TEST_F(AccountPreviewDataServiceTest,
+       UpdateExternalAppAccountTriggersComputationAndUpdatesPreferredAccount) {
+  EXPECT_EQ(service_->GetPreferredAccountForPromo(), std::nullopt);
+
+  // Mock successful fetches for account1 and account2.
+  MockSuccessfulFetch(&test_url_loader_factory_);
+  MockSuccessfulFetch(&test_url_loader_factory_);
+
+  base::RunLoop all_data_available_loop;
+  service_->SetAllDataAvailableCallbackForTesting(
+      all_data_available_loop.QuitClosure());
+
+  AccountInfo account1 =
+      identity_test_env_.MakeAccountAvailable("account1@gmail.com");
+  AccountInfo account2 =
+      identity_test_env_.MakeAccountAvailable("account2@gmail.com");
+
+  all_data_available_loop.Run();
+
+  // account1 is default account (first in list).
+  EXPECT_THAT(service_->GetPreferredAccountForPromo(),
+              testing::Optional(testing::Field(
+                  &AccountPreviewPreference::gaia_id, account1.gaia)));
+
+  // Update external app account to account2.
+  // Because all accounts are already cached, preferred account is recomputed
+  // immediately.
+  base::HistogramTester histograms;
+  service_->UpdateExternalAppAccount("account2@gmail.com");
+
+  // account2 becomes preferred because is_external_app_primary is true for
+  // account2.
+  EXPECT_THAT(service_->GetPreferredAccountForPromo(),
+              testing::Optional(testing::Field(
+                  &AccountPreviewPreference::gaia_id, account2.gaia)));
+  histograms.ExpectBucketCount(
+      "Signin.AccountPreview.AllFetchTriggerCause",
+      AccountPreviewDataServiceImpl::FetchTriggerCause::
+          kExternalAppAccountUpdated,
+      1);
+
+  // Calling UpdateExternalAppAccount with the same account does not re-trigger
+  // computation.
+  service_->UpdateExternalAppAccount("account2@gmail.com");
+  histograms.ExpectBucketCount(
+      "Signin.AccountPreview.AllFetchTriggerCause",
+      AccountPreviewDataServiceImpl::FetchTriggerCause::
+          kExternalAppAccountUpdated,
+      1);
+
+  // Clearing external app account recomputes preferred account back to
+  // account1.
+  service_->UpdateExternalAppAccount(std::nullopt);
+  EXPECT_THAT(service_->GetPreferredAccountForPromo(),
+              testing::Optional(testing::Field(
+                  &AccountPreviewPreference::gaia_id, account1.gaia)));
+  histograms.ExpectBucketCount(
+      "Signin.AccountPreview.AllFetchTriggerCause",
+      AccountPreviewDataServiceImpl::FetchTriggerCause::
+          kExternalAppAccountUpdated,
+      2);
+}
+
+TEST_F(AccountPreviewDataServiceTest,
+       UpdateExternalAppAccountFetchesUncachedAccounts) {
+  // Make account1 available and cached.
+  MockSuccessfulFetch(&test_url_loader_factory_);
+  base::RunLoop run_loop;
+  service_->SetFetchCompleteCallbackForTesting(run_loop.QuitClosure());
+  AccountInfo account1 =
+      identity_test_env_.MakeAccountAvailable("account1@gmail.com");
+  run_loop.Run();
+
+  // Make account2 available without caching (mock fails fetch).
+  MockFailedStatsFetch(&test_url_loader_factory_, net::ERR_FAILED);
+  MockFailedPreviewsFetch(&test_url_loader_factory_, net::ERR_FAILED);
+  base::RunLoop run_loop_fail;
+  service_->SetFetchCompleteCallbackForTesting(run_loop_fail.QuitClosure());
+  AccountInfo account2 =
+      identity_test_env_.MakeAccountAvailable("account2@gmail.com");
+  run_loop_fail.Run();
+
+  EXPECT_FALSE(service_->GetAccountPreviewData(account2.gaia).has_value());
+
+  // Now update external app account to account2. This should trigger a fetch
+  // for the uncached account2.
+  MockSuccessfulFetch(&test_url_loader_factory_);
+  base::RunLoop run_loop_fetch;
+  service_->SetFetchCompleteCallbackForTesting(run_loop_fetch.QuitClosure());
+  service_->UpdateExternalAppAccount("account2@gmail.com");
+  run_loop_fetch.Run();
+
+  EXPECT_TRUE(service_->GetAccountPreviewData(account2.gaia).has_value());
+  EXPECT_THAT(service_->GetPreferredAccountForPromo(),
+              testing::Optional(testing::Field(
+                  &AccountPreviewPreference::gaia_id, account2.gaia)));
+}
 #endif
 
 }  // namespace signin

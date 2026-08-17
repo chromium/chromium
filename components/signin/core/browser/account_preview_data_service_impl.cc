@@ -69,7 +69,9 @@ void RecordSuccessfulFetchingMetrics(
     case AccountPreviewDataServiceImpl::FetchTriggerCause::kRefreshTokenUpdated:
     case AccountPreviewDataServiceImpl::FetchTriggerCause::kRefreshTokenRemoved:
     case AccountPreviewDataServiceImpl::FetchTriggerCause::
-        kRefreshTokenInvalidated: {
+        kRefreshTokenInvalidated:
+    case AccountPreviewDataServiceImpl::FetchTriggerCause::
+        kExternalAppAccountUpdated: {
       int count = pref_service->GetInteger(
           prefs::kAccountPreviewNonPeriodicFetchCountPref);
       pref_service->SetInteger(prefs::kAccountPreviewNonPeriodicFetchCountPref,
@@ -177,19 +179,37 @@ void AccountPreviewDataServiceImpl::UpdateExternalAppAccount(
     return;
   }
 
-  if (!email.has_value() || email->empty()) {
-    ClearExternalAppAccount();
+  std::optional<GaiaId> current_external_account =
+      ReadExternalAppAccountFromPrefs();
+  std::optional<GaiaId> new_external_account;
+
+  if (email.has_value() && !email->empty() && identity_manager_) {
+    AccountInfo account_info =
+        identity_manager_->FindExtendedAccountInfoByEmailAddress(*email);
+    if (!account_info.IsEmpty() && !account_info.gaia.empty()) {
+      new_external_account = account_info.gaia;
+    }
+  }
+
+  if (current_external_account == new_external_account) {
+    if (new_external_account.has_value()) {
+      // Refresh the timestamp for the existing account without re-triggering
+      // preferred account computation.
+      WriteExternalAppAccountToPrefs(*new_external_account, base::Time::Now());
+    }
     return;
   }
 
-  AccountInfo account_info =
-      identity_manager_->FindExtendedAccountInfoByEmailAddress(*email);
-  if (account_info.gaia.empty()) {
+  if (new_external_account.has_value()) {
+    WriteExternalAppAccountToPrefs(*new_external_account, base::Time::Now());
+  } else {
     ClearExternalAppAccount();
-    return;
   }
 
-  WriteExternalAppAccountToPrefs(account_info.gaia, base::Time::Now());
+  // TODO(crbug.com/547785656): Consider triggering fetches for less accounts,
+  // as this account may have priority over other accounts, regardless of their
+  // sync preview data.
+  EnsureAllAccountsFetched(FetchTriggerCause::kExternalAppAccountUpdated);
 }
 
 std::optional<GaiaId>
@@ -356,7 +376,10 @@ void AccountPreviewDataServiceImpl::EnsureAllAccountsFetched(
   // preferred data is exactly equivalent to the current list of accounts. This
   // will directly be false for all periodic refreshes since the previous list
   // and results are cleared during periodic refreshes.
-  if (switches::kAccountPreviewDataPersistAccounts.Get() &&
+  // In case the external app account was updated, we want to trigger a new
+  // preferred account computation, so we need to bypass this optimization.
+  if (cause != FetchTriggerCause::kExternalAppAccountUpdated &&
+      switches::kAccountPreviewDataPersistAccounts.Get() &&
       !HaveAccountsMutatedSinceLastFetch(accounts)) {
     base::UmaHistogramEnumeration(
         "Signin.AccountPreview.TriggerCauseAccountsUnchangedSinceLastFetch",
@@ -479,6 +502,10 @@ AccountPreviewDataServiceImpl::ComputePreferredAccount() const {
   // TODO(crbug.com/530144650): Ensure that the order of accounts is consistent
   // between platforms, having the first account as the default account for
   // promos.
+#if BUILDFLAG(IS_ANDROID)
+  std::optional<GaiaId> external_app_account =
+      ReadExternalAppAccountFromPrefs();
+#endif
   for (const CoreAccountInfo& account : GetAccountsWithValidRefreshTokens()) {
     auto cache_it = cached_data_.find(account.gaia);
     if (cache_it == cached_data_.end()) {
@@ -497,14 +524,26 @@ AccountPreviewDataServiceImpl::ComputePreferredAccount() const {
     context.is_child = extended_info.IsChildAccount() == signin::Tribool::kTrue;
     context.preview_data = &cache_it->second;
 
-    // TODO(crbug.com/530144650): Set `is_external_app_primary` when available
-    // on Android.
+#if BUILDFLAG(IS_ANDROID)
+    context.is_external_app_primary = external_app_account.has_value() &&
+                                      *external_app_account == account.gaia;
+#else
     context.is_external_app_primary = false;
+#endif
 
     contexts.push_back(std::move(context));
   }
 
   return ComputePreferredAccountForPromo(contexts);
+}
+
+void AccountPreviewDataServiceImpl::ComputeAndStorePreferredAccount() {
+  if (base::FeatureList::IsEnabled(
+          switches::kEnableAccountPreviewPreferredAccount)) {
+    std::optional<AccountPreviewPreference> preferred_account =
+        ComputePreferredAccount();
+    WritePreferredAccountToPrefs(preferred_account);
+  }
 }
 
 std::vector<CoreAccountInfo>
@@ -568,12 +607,7 @@ void AccountPreviewDataServiceImpl::OnAllFetchesCompleted(
 
   RecordAccountsUsedForLastFetch();
 
-  if (base::FeatureList::IsEnabled(
-          switches::kEnableAccountPreviewPreferredAccount)) {
-    std::optional<AccountPreviewPreference> preferred_account =
-        ComputePreferredAccount();
-    WritePreferredAccountToPrefs(preferred_account);
-  }
+  ComputeAndStorePreferredAccount();
 
   if (should_reset_periodic_timer) {
     ResetTimer();
