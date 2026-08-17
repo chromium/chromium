@@ -15,9 +15,10 @@ import com.google.android.gms.location.Priority;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.SysUtils;
 import org.chromium.base.TimeUtils;
+import org.chromium.base.TriState;
+import org.chromium.base.TriStateUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.components.cached_flags.BooleanCachedFeatureParam;
 import org.chromium.components.cached_flags.CachedFeatureParam;
 import org.chromium.components.cached_flags.CachedFlag;
@@ -253,7 +254,7 @@ public class OmniboxFeatures {
             newBooleanParam(sDiagnostics, "omnibox_diag_input_connection", false);
 
     /** When enabled, Jump Start Omnibox is activated and can engage if the feature is enabled. */
-    private static @Nullable Boolean sActivateJumpStartOmnibox;
+    private static @TriState int sActivateJumpStartOmnibox;
 
     /**
      * Create an instance of a CachedFeatureFlag.
@@ -397,29 +398,30 @@ public class OmniboxFeatures {
     /** Returns the cached value of the Jump-Start settings toggle. */
     public static boolean isJumpStartOmniboxEnabled() {
         if (!OmniboxFeatures.sJumpStartOmnibox.isEnabled()) return false;
-        if (sActivateJumpStartOmnibox == null) {
+        if (sActivateJumpStartOmnibox == TriState.NOT_SET) {
             boolean isEligibleDevice =
                     !DeviceFormFactor.isTablet()
                             && SysUtils.amountOfPhysicalMemoryKB()
                                     <= sJumpStartOmniboxMemoryThresholdKb.getValue();
-            sActivateJumpStartOmnibox = sPrefs.getBoolean(KEY_JUMP_START_OMNIBOX, isEligibleDevice);
+            boolean isActivated = sPrefs.getBoolean(KEY_JUMP_START_OMNIBOX, isEligibleDevice);
+            sActivateJumpStartOmnibox = TriStateUtils.from(isActivated);
             @OmniboxJumpStartState
             int state =
                     isEligibleDevice
-                            ? sActivateJumpStartOmnibox
+                            ? isActivated
                                     ? OmniboxJumpStartState.ENABLED // Eligible and activated
                                     : OmniboxJumpStartState.DISABLED_BY_USER // Eligible only
                             : OmniboxJumpStartState.NOT_ELIGIBLE; // Not eligible.
             RecordHistogram.recordEnumeratedHistogram(
                     "Android.Omnibox.JumpStartState", state, OmniboxJumpStartState.COUNT);
         }
-        return sActivateJumpStartOmnibox;
+        return sActivateJumpStartOmnibox == TriState.TRUE;
     }
 
     /** Updates the cached value of the Jump-Start settings toggle. */
     public static void setJumpStartOmniboxEnabled(boolean isEnabled) {
         assert OmniboxFeatures.sJumpStartOmnibox.isEnabled();
-        sActivateJumpStartOmnibox = isEnabled;
+        sActivateJumpStartOmnibox = TriStateUtils.from(isEnabled);
         sPrefs.edit().putBoolean(KEY_JUMP_START_OMNIBOX, isEnabled).apply();
     }
 

@@ -18,6 +18,8 @@ import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.TriState;
+import org.chromium.base.TriStateUtils;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
@@ -72,7 +74,7 @@ public class SearchEngineService implements Destroyable, TemplateUrlServiceObser
             new ObserverList<>();
 
     private @Nullable SearchEngineMetadata mDefaultSearchEngineMetadata;
-    private @Nullable Boolean mNeedToCheckForSearchEnginePromo;
+    private @TriState int mNeedToCheckForSearchEnginePromo;
     private boolean mDoesDefaultSearchEngineHaveLogo;
     private @Nullable StatusIconResource mFavicon;
     private @Nullable String mSearchEngineName;
@@ -319,33 +321,35 @@ public class SearchEngineService implements Destroyable, TemplateUrlServiceObser
      */
     @VisibleForTesting
     boolean needToCheckForSearchEnginePromo() {
-        if (mNeedToCheckForSearchEnginePromo == null || mNeedToCheckForSearchEnginePromo) {
+        if (mNeedToCheckForSearchEnginePromo == TriState.NOT_SET
+                || mNeedToCheckForSearchEnginePromo == TriState.TRUE) {
             mNeedToCheckForSearchEnginePromo = fetchCheckForSearchEnginePromo();
             // getCheckForSearchEnginePromo can fail; if it does, we'll stay in the uncached
             // state and return false.
-            if (mNeedToCheckForSearchEnginePromo == null) return false;
+            if (mNeedToCheckForSearchEnginePromo == TriState.NOT_SET) return false;
         }
-        return mNeedToCheckForSearchEnginePromo;
+        return mNeedToCheckForSearchEnginePromo == TriState.TRUE;
     }
 
     /**
      * Performs a (potentially expensive) lookup of whether we need to check for a search engine
-     * promo. In rare cases this can fail; in these cases it will return null.
+     * promo. In rare cases this can fail; in these cases it will return {@link TriState#NOT_SET}.
      */
-    private @Nullable Boolean fetchCheckForSearchEnginePromo() {
+    private @TriState int fetchCheckForSearchEnginePromo() {
         // LocaleManager#needToCheckForSearchEnginePromo() checks several system features which
         // risk throwing exceptions. See the exception cases below for details.
         try {
-            return LocaleManager.getInstance().needToCheckForSearchEnginePromo();
+            return TriStateUtils.from(
+                    LocaleManager.getInstance().needToCheckForSearchEnginePromo());
         } catch (SecurityException e) {
             Log.e(TAG, "Can be thrown by a failed IPC, see crbug.com/40660387\n", e);
-            return null;
+            return TriState.NOT_SET;
         } catch (RuntimeException e) {
             Log.e(
                     TAG,
                     "Can be thrown if underlying services are dead, see crbug.com/40715590\n",
                     e);
-            return null;
+            return TriState.NOT_SET;
         }
     }
 
