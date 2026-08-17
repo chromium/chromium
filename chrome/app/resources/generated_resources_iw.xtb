@@ -8173,7 +8173,7 @@
 <translation id="708550780726587276">(לא מוגדרת)</translation>
 <translation id="7086377898680121060">הגברת הבהירות</translation>
 <translation id="7086672505018440886">‏הכללה של קובצי יומן Chrome בארכיון.</translation>
-<translation id="7088434364990739311">המערכת לא הצליחה להפעיל את בדיקת העדכונים (קוד שגיאה <ph name="ERROR" />).</translation>
+<translation id="7088434364990739311">הייתה בעיה וחיפוש העדכונים לא התחיל (קוד שגיאה <ph name="ERROR" />).</translation>
 <translation id="7088674813905715446">המכשיר הזה הועבר למצב 'ללא הקצאה' על ידי מנהל המערכת. על מנת להפעיל אותו עבור הרשמה, יש לבקש ממנהל המערכת להעביר את המכשיר למצב המתנה.</translation>
 <translation id="7088960765736518739">גישה באמצעות מתג</translation>
 <translation id="7089253021944603172">הכרטיסייה פעילה שוב</translation>
@@ -8772,7 +8772,7 @@
 <translation id="75362970626182391">קבוצת כרטיסיות חדשה</translation>
 <translation id="7536815228183532290">נכנסת בתור <ph name="EMAIL" /></translation>
 <translation id="7538013435257102593">בדרך כלל לא מורידים את סוג הקובץ הזה, והוא עלול להיות מסוכן</translation>
-<translation id="7540972813190816353">אירעה שגיאה בעת בדיקת עדכונים: <ph name="ERROR" /></translation>
+<translation id="7540972813190816353">קרתה שגיאה בזמן חיפוש העדכונים: <ph name="ERROR" /></translation>
 <translation id="7541076351905098232">המכשיר שלך הועבר לגרסה קודמת על ידי <ph name="MANAGER" />. עליך לשמור קבצים חשובים ולהפעיל אותו מחדש. כל הנתונים שבמכשיר יימחקו.</translation>
 <translation id="754207240458482646">הסנכרון עם מכשירים אחרים בחשבון שלך בוצע. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="7542113656240799536">‏פרטי אימות רשת של EAP</translation>

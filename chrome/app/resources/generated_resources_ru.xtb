@@ -636,7 +636,7 @@
 <translation id="1470084204649225129">{NUM_TABS,plural, =1{Добавить вкладку в новую группу}one{Добавить вкладки в новую группу}few{Добавить вкладки в новую группу}many{Добавить вкладки в новую группу}other{Добавить вкладки в новую группу}}</translation>
 <translation id="1470946456740188591">Чтобы включить или отключить режим активного курсора, нажмите Ctrl + Поиск + 7</translation>
 <translation id="1471034383866732283">Не удается найти основной контент на этой странице для открытия в режиме чтения.</translation>
-<translation id="1472675084647422956">Показать больше</translation>
+<translation id="1472675084647422956">Ещё</translation>
 <translation id="1473223074251193484">Настроить режим модема</translation>
 <translation id="1473616112002966036">&amp;Кадр видео</translation>
 <translation id="1476088332184200792">Копировать на мое устройство</translation>
@@ -3834,7 +3834,7 @@
 <translation id="3810593934879994994"><ph name="ORIGIN" /> может просматривать файлы в указанных ниже папках.</translation>
 <translation id="3810770279996899697">Менеджеру паролей необходим доступ к Связке ключей macOS</translation>
 <translation id="3810914450553844415">Администратор запретил добавлять дополнительные аккаунты Google</translation>
-<translation id="3810973564298564668">Управление</translation>
+<translation id="3810973564298564668">Настроить</translation>
 <translation id="381202950560906753">Добавить ещё</translation>
 <translation id="3812525830114410218">Недопустимый сертификат</translation>
 <translation id="3813296892522778813">Поиск не дал результатов? Перейдите в <ph name="BEGIN_LINK_CHROMIUM" />Справочный центр Google Chrome<ph name="END_LINK_CHROMIUM" />.</translation>
@@ -6793,7 +6793,7 @@
 <translation id="6077131872140550515">Удалить из предпочитаемых сетей</translation>
 <translation id="6077476112742402730">Голосовой ввод</translation>
 <translation id="6078199831684941650">Обновлено до версии <ph name="VERSION" /></translation>
-<translation id="6078323886959318429">Добавить ярлык</translation>
+<translation id="6078323886959318429">Новый ярлык</translation>
 <translation id="6078752646384677957">Проверьте микрофон и уровни громкости.</translation>
 <translation id="608029822688206592">Сеть не найдена. Установите SIM-карту и повторите попытку.</translation>
 <translation id="608531959444400877">"<ph name="WINDOW_TITLE" />" – элемент группы без названия</translation>
