@@ -34,7 +34,6 @@
 #include "chrome/browser/sessions/exit_type_service.h"
 #include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/sessions/session_service_factory.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_init_state.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -42,6 +41,7 @@
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_controller.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/unload_controller.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
@@ -170,8 +170,7 @@ void PostTryToCloseBrowsersForProfile(
                                    original_profile
                              : browser->GetProfile() == original_profile;
           if (matches) {
-            UnloadController::From(browser->GetBrowserForMigrationOnly())
-                ->ResetTryToCloseWindow();
+            UnloadController::From(browser)->ResetTryToCloseWindow();
           }
           return true;
         });
@@ -202,13 +201,12 @@ void TryToCloseBrowsersForProfile(
         if (!matches_profile(browser)) {
           return true;
         }
-        if (UnloadController::From(browser->GetBrowserForMigrationOnly())
-                ->TryToCloseWindow(
-                    skip_beforeunload,
-                    base::BindRepeating(
-                        &PostTryToCloseBrowsersForProfile, original_profile,
-                        match_original_profile, on_close_success,
-                        on_close_aborted, profile_path, skip_beforeunload))) {
+        if (UnloadController::From(browser)->TryToCloseWindow(
+                skip_beforeunload,
+                base::BindRepeating(&PostTryToCloseBrowsersForProfile,
+                                    original_profile, match_original_profile,
+                                    on_close_success, on_close_aborted,
+                                    profile_path, skip_beforeunload))) {
           waiting_for_close = true;
           return false;
         }

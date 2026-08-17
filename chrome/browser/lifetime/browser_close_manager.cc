@@ -79,8 +79,7 @@ void BrowserCloseManager::CancelBrowserClose() {
   browser_shutdown::SetTryingToQuit(false);
   GlobalBrowserCollection::GetInstance()->ForEach(
       [](BrowserWindowInterface* browser) {
-        UnloadController::From(browser->GetBrowserForMigrationOnly())
-            ->ResetTryToCloseWindow();
+        UnloadController::From(browser)->ResetTryToCloseWindow();
         return true;
       },
       BrowserCollection::Order::kCreation);
@@ -95,11 +94,10 @@ void BrowserCloseManager::TryToCloseBrowsers() {
   bool should_stop = false;
   GlobalBrowserCollection::GetInstance()->ForEach(
       [this, &should_stop](BrowserWindowInterface* browser) {
-        if (UnloadController::From(browser->GetBrowserForMigrationOnly())
-                ->TryToCloseWindow(
-                    false, base::BindRepeating(
-                               &BrowserCloseManager::OnBrowserReportCloseable,
-                               this))) {
+        if (UnloadController::From(browser)->TryToCloseWindow(
+                false,
+                base::BindRepeating(
+                    &BrowserCloseManager::OnBrowserReportCloseable, this))) {
           current_browser_ = browser;
           should_stop = true;
         }

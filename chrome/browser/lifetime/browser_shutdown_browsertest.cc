@@ -10,9 +10,9 @@
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/lifetime/termination_notification.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -78,7 +78,7 @@ IN_PROC_BROWSER_TEST_F(BrowserShutdownBrowserTest,
                        MAYBE_TwoBrowsersClosingShutdownHistograms) {
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL("browser://version")));
-  Browser* browser2 = CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* browser2 = CreateBrowser(browser()->GetProfile());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser2, GURL("browser://help")));
 
   base::MockCallback<BrowserWindowInterface::BrowserDidCloseCallback>
