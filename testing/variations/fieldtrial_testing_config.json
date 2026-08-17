@@ -4493,8 +4493,8 @@
                 {
                     "name": "Initial1s_Max5m_20260804",
                     "params": {
-                        "kInitialDelayForBrokenAlternativeServiceParam": "1s",
-                        "kMaxDelayForBrokenAlternativeServiceParam": "5m"
+                        "InitialDelayForBrokenAlternativeServiceParam": "1s",
+                        "MaxDelayForBrokenAlternativeServiceParam": "5m"
                     },
                     "enable_features": [
                         "InitialDelayForBrokenAlternativeService",
