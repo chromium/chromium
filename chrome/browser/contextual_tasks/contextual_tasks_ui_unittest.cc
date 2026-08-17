@@ -1273,6 +1273,9 @@ TEST_F(ContextualTasksUiTest, DidFinishNavigation_UpdatesThemeFromCsParam) {
 }
 
 TEST_F(ContextualTasksUiTest, CanExpandToFullTab_CobrowseEligible) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(contextual_tasks::kContextualTasks);
+
   FakeContextualTasksEligibilityManager eligibility_manager;
   eligibility_manager.SetIsEligible(true);
   EXPECT_CALL(*service_for_nav_, GetEligibilityManager())
@@ -1287,6 +1290,9 @@ TEST_F(ContextualTasksUiTest, CanExpandToFullTab_CobrowseEligible) {
 }
 
 TEST_F(ContextualTasksUiTest, CanExpandToFullTab_NotCobrowseEligible) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(contextual_tasks::kContextualTasks);
+
   FakeContextualTasksEligibilityManager eligibility_manager;
   eligibility_manager.SetIsEligible(false);
   EXPECT_CALL(*service_for_nav_, GetEligibilityManager())
@@ -1301,6 +1307,9 @@ TEST_F(ContextualTasksUiTest, CanExpandToFullTab_NotCobrowseEligible) {
 }
 
 TEST_F(ContextualTasksUiTest, CanExpandToFullTab_BecomesEligibleMidSession) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(contextual_tasks::kContextualTasks);
+
   FakeContextualTasksEligibilityManager eligibility_manager;
   eligibility_manager.SetIsEligible(false);
   EXPECT_CALL(*service_for_nav_, GetEligibilityManager())
@@ -1319,6 +1328,23 @@ TEST_F(ContextualTasksUiTest, CanExpandToFullTab_BecomesEligibleMidSession) {
 
   // The cached eligibility value should remain false, keeping the button
   // hidden.
+  EXPECT_FALSE(controller.CanExpandToFullTab());
+}
+
+TEST_F(ContextualTasksUiTest, CanExpandToFullTab_FeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(contextual_tasks::kContextualTasks);
+
+  FakeContextualTasksEligibilityManager eligibility_manager;
+  eligibility_manager.SetIsEligible(true);
+  EXPECT_CALL(*service_for_nav_, GetEligibilityManager())
+      .WillRepeatedly(Return(&eligibility_manager));
+
+  content::TestWebUI web_ui;
+  web_ui.set_web_contents(embedded_web_contents_.get());
+  ContextualTasksUI controller(&web_ui);
+
+  controller.SetIsAiPage(true);
   EXPECT_FALSE(controller.CanExpandToFullTab());
 }
 
