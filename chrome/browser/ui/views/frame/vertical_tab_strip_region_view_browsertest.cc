@@ -1802,8 +1802,16 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripFocusSwipeTest,
   EXPECT_EQ(std::nullopt, tab_strip_model()->GetFocusedGroup());
 }
 
+// TODO(crbug.com/546848427): Fix wall-clock timing race with kGestureResetTimeout.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+#define MAYBE_SwipeTriggersOnlyOncePerGesture \
+  DISABLED_SwipeTriggersOnlyOncePerGesture
+#else
+#define MAYBE_SwipeTriggersOnlyOncePerGesture \
+  SwipeTriggersOnlyOncePerGesture
+#endif
 IN_PROC_BROWSER_TEST_F(VerticalTabStripFocusSwipeTest,
-                       SwipeTriggersOnlyOncePerGesture) {
+                       MAYBE_SwipeTriggersOnlyOncePerGesture) {
   EnterVerticalTabsMode();
   AppendTab();
   AppendTab();
