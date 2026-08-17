@@ -1418,8 +1418,8 @@ interface SkillsClient {
   // Notify that a skill has been deleted.
   NotifySkillDeleted(string skill_id);
 
-  // Notify that the skill to invoke has changed.
-  NotifySkillToInvokeChanged(Skill skill);
+  // The skills enablement state has changed at runtime.
+  NotifySkillsEnabledChanged(bool enabled);
 };
 
 // @generate glic_api

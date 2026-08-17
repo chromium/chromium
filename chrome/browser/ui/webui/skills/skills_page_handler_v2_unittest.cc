@@ -6,13 +6,17 @@
 
 #include <memory>
 
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/skills/skills_ui_tab_controller_interface.h"
 #include "chrome/browser/ui/webui/skills/skills_dialog_delegate.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/skills/features.h"
 #include "components/skills/public/skill.h"
+#include "components/skills/public/skills_prefs.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
@@ -60,6 +64,10 @@ class MockSkillsUiTabController : public SkillsUiTabControllerInterface {
 
 class SkillsPageHandlerV2Test : public ChromeRenderViewHostTestHarness {
  public:
+  SkillsPageHandlerV2Test() {
+    feature_list_.InitAndEnableFeature(features::kSkillsEnabled);
+  }
+
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
 
@@ -74,6 +82,7 @@ class SkillsPageHandlerV2Test : public ChromeRenderViewHostTestHarness {
   }
 
  protected:
+  base::test::ScopedFeatureList feature_list_;
   signin::IdentityTestEnvironment identity_test_env_;
   mojo::Remote<::skills::mojom::SkillsPageHandler> remote_handler_;
   std::unique_ptr<SkillsPageHandlerV2> handler_;
@@ -130,6 +139,26 @@ TEST_F(SkillsPageHandlerV2Test, SendPrompt) {
   EXPECT_CALL(mock_tab_controller, SendPrompt("test_prompt")).Times(1);
 
   remote_handler_->SendPrompt("test_prompt");
+  remote_handler_.FlushForTesting();
+}
+
+TEST_F(SkillsPageHandlerV2Test, InvokeSkill_NoOpWhenDisabled) {
+  profile()->GetPrefs()->SetBoolean(prefs::kChromeSkillsEnabled, false);
+  tabs::MockTabInterface mock_tab;
+  ::ui::UnownedUserDataHost user_data_host;
+  EXPECT_CALL(mock_tab, GetUnownedUserDataHost())
+      .WillRepeatedly(testing::ReturnRef(user_data_host));
+
+  tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
+                                                       &mock_tab);
+
+  MockSkillsUiTabController mock_tab_controller(mock_tab);
+
+  EXPECT_CALL(mock_tab_controller,
+              InvokeSkill(testing::_, testing::_, testing::_))
+      .Times(0);
+
+  remote_handler_->InvokeSkill("test_skill_id", "test_name", "test_icon");
   remote_handler_.FlushForTesting();
 }
 

@@ -12,7 +12,9 @@
 #include "components/optimization_guide/core/hints/optimization_guide_decision.h"
 #include "components/optimization_guide/core/hints/optimization_metadata.h"
 #include "components/optimization_guide/proto/hints.pb.h"
+#include "components/prefs/pref_service.h"
 #include "components/skills/features.h"
+#include "components/skills/public/skills_prefs.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/test/mock_navigation_handle.h"
@@ -131,6 +133,21 @@ class SkillsUpdateObserverTest : public ChromeRenderViewHostTestHarness {
 TEST_F(SkillsUpdateObserverTest, FeatureDisabled) {
   feature_list_.Reset();
   feature_list_.InitWithFeatures({}, {features::kSkillsEnabled});
+  GURL url("https://www.example.com");
+
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
+              CanApplyOptimization(
+                  url, optimization_guide::proto::OptimizationType::SKILLS,
+                  A<optimization_guide::OptimizationGuideDecisionCallback>()))
+      .Times(0);
+
+  SimulateNavigation(url);
+  EXPECT_EQ(observer_->contextual_skills(), nullptr);
+}
+
+// Test that the Optimization Guide is not called if the pref is disabled.
+TEST_F(SkillsUpdateObserverTest, PrefDisabled) {
+  profile()->GetPrefs()->SetBoolean(skills::prefs::kChromeSkillsEnabled, false);
   GURL url("https://www.example.com");
 
   EXPECT_CALL(*mock_optimization_guide_keyed_service_,
@@ -262,6 +279,27 @@ TEST_F(SkillsUpdateObserverTest, GetContextualSkillPreviews) {
   EXPECT_EQ(previews[0]->id, "test_skill");
   EXPECT_EQ(previews[0]->name, "Test Skill");
   EXPECT_EQ(previews[0]->icon, "test_icon");
+}
+
+TEST_F(SkillsUpdateObserverTest,
+       GetContextualSkillPreviews_DisabledWhenPrefDisabled) {
+  GURL url("https://www.example.com");
+  skills::proto::SkillsList skills_list;
+  skills::proto::Skill* skill = skills_list.add_skills();
+  skill->set_id("test_skill");
+  skill->set_name("Test Skill");
+  skill->set_icon("test_icon");
+  ExpectOptimizationGuideDecision(
+      url, optimization_guide::OptimizationGuideDecision::kTrue, skills_list);
+
+  SimulateNavigation(url);
+
+  std::vector<glic::mojom::SkillPreviewPtr> previews =
+      observer_->GetContextualSkillPreviews();
+  EXPECT_EQ(previews.size(), 1u);
+
+  profile()->GetPrefs()->SetBoolean(skills::prefs::kChromeSkillsEnabled, false);
+  EXPECT_TRUE(observer_->GetContextualSkillPreviews().empty());
 }
 
 // Test that the contextual skills are updated on same document navigations.

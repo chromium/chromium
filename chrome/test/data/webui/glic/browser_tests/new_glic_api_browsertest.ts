@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CancelActionsResult, ClientCapabilities, ExperimentalTriggeringUpdateType, FileUploadPolicyState, FormFactor, HostCapability, InvocationSource, PanelStateKind, Platform, SbThreatType, ScreenshotEncryptionScheme, ScrollToErrorReason, SkillSource, WebClientMode} from '/glic/glic_api/glic_api.js';
+import {CancelActionsResult, ClientCapabilities, ExperimentalTriggeringUpdateType, FileUploadPolicyState, FormFactor, HostCapability, InvocationSource, PanelStateKind, Platform, SbThreatType, ScreenshotEncryptionScheme, ScrollToErrorReason, SkillSource, SkillsWebClientEvent, WebClientMode} from '/glic/glic_api/glic_api.js';
 import type {AdditionalContext, CounterAbuseVerdict, ExperimentalTriggeringUpdate, FocusedTabData, GetPinCandidatesOptions, GlicBrowserHost, GlicWebClient, InvokeOptions, Observable, Observable2, OpenPanelInfo, PageMetadata, PanelOpeningData, PanelState, ScrollToError, TabData, UserConfirmationDialogRequest, UserProfileInfo, ZeroStateSuggestionsV2} from '/glic/glic_api/glic_api.js';
 import {Subject} from '/glic/observable.js';
 
@@ -2509,13 +2509,16 @@ class ApiTestFailsToInitialize extends ApiTestFixtureBase {
 
 class SkillsApiTests extends ApiTests {
   async testGetSkillSuccess() {
-    assertDefined(this.host.getSkillPreviews);
-    assertDefined(this.host.getSkill);
-    const skillPreviewsSequence = observeSequence(this.host.getSkillPreviews());
+    assertDefined(this.host.skills);
+    const skillsApi = await observeSequence(this.host.skills()).next();
+    assertDefined(skillsApi);
+    assertDefined(skillsApi.getSkillPreviews);
+    assertDefined(skillsApi.getSkill);
+    const skillPreviewsSequence = observeSequence(skillsApi.getSkillPreviews());
     const skills = await skillPreviewsSequence.waitFor(s => s.length === 2);
     const targetSkill = skills.find(s => s.name === 'test_skill_1');
     assertDefined(targetSkill);
-    const actualSkill = await this.host.getSkill(targetSkill.id);
+    const actualSkill = await skillsApi.getSkill(targetSkill.id);
     assertDefined(actualSkill);
     assertEquals(actualSkill.preview.id, targetSkill.id);
     assertEquals(actualSkill.preview.name, 'test_skill_1');
@@ -2551,27 +2554,20 @@ class SkillsApiTests extends ApiTests {
         skill2.creationTime.getTime());
   }
 
-  async testShowManageSkillsUi() {
-    assertDefined(this.host.showManageSkillsUi);
-    this.host.showManageSkillsUi();
-  }
+  async testGetSkillDisabled() {
+    // Check that skills are disabled via the new API
+    assertDefined(this.host.skills);
+    assertUndefined(await observeSequence(this.host.skills()).next());
 
-  async testShowBrowseSkillsUi() {
-    assertDefined(this.host.showBrowseSkillsUi);
-    this.host.showBrowseSkillsUi();
-  }
-
-
-  async testDisplaySkillInDialogSuccess() {
-    assertDefined(this.host.createSkill);
-    const request = {
-      id: 'id',
-      name: 'name',
-      icon: 'icon',
-      prompt: 'prompt',
-      source: SkillSource.FIRST_PARTY,
-    };
-    this.host.createSkill(request);
+    // API should be gone when disabled.
+    assertUndefined(this.host.getSkill);
+    assertUndefined(this.host.createSkill);
+    assertUndefined(this.host.updateSkill);
+    assertUndefined(this.host.showManageSkillsUi);
+    assertUndefined(this.host.showBrowseSkillsUi);
+    assertUndefined(this.host.recordSkillsWebClientEvent);
+    assertUndefined(this.host.getSkillPreviews);
+    assertUndefined(this.host.getSkillToInvoke);
   }
 
   async testSendingContextualSkillsToGlic() {
@@ -2641,6 +2637,134 @@ class SkillsApiTests extends ApiTests {
     const skillPreviewsSequence = observeSequence(this.host.getSkillPreviews());
     const skills = await skillPreviewsSequence.next();
     assertEquals(0, skills.length);
+  }
+}
+
+// TODO(b/546606964): enable these tests on android.
+class SkillsDesktopOnlyApiTests extends SkillsApiTests {
+  async testSkillsEnabledState() {
+    assertDefined(this.host.skills);
+    const skillsSequence = observeSequence(this.host.skills());
+    const skills = await skillsSequence.next();
+    assertDefined(skills);
+
+    // Call when enabled
+    assertDefined(skills.getSkill);
+    await assertRejects(skills.getSkill('non-existent-id'));
+
+    // Get a valid skill ID from getSkillPreviews.
+    assertDefined(skills.getSkillPreviews);
+    const skillPreviewsSequence = observeSequence(skills.getSkillPreviews());
+    const skillPreviews =
+        await skillPreviewsSequence.waitFor(s => s.length === 1);
+    const skillId = skillPreviews[0]!.id;
+
+    // Verify that both the new API and deprecated API succeed when skills are
+    // enabled.
+    assertDefined(skills.recordSkillsWebClientEvent);
+    skills.recordSkillsWebClientEvent(SkillsWebClientEvent.OPENED_MENU);
+
+    assertDefined(skills.getSkill);
+    const skillFromNewApi = await skills.getSkill(skillId);
+    assertDefined(skillFromNewApi);
+    assertEquals('source_id_1', skillFromNewApi.sourceSkillId);
+
+    assertDefined(this.host.getSkill);
+    const skillFromDeprecatedApi = await this.host.getSkill(skillId);
+    assertDefined(skillFromDeprecatedApi);
+    assertEquals('source_id_1', skillFromDeprecatedApi.sourceSkillId);
+    assertDefined(this.host.getSkillToInvoke);
+
+    await this.advanceToNextStep();
+    assertUndefined(await skillsSequence.next());
+
+    // When skills are disabled, API methods that return a Promise should reject
+    // with an error, both when calling via a saved reference to
+    // GlicBrowserSkills (new API)...
+    assertDefined(skills.recordSkillsWebClientEvent);
+    skills.recordSkillsWebClientEvent(SkillsWebClientEvent.OPENED_MENU);
+    assertDefined(skills.getSkill);
+    await assertRejects(skills.getSkill(skillId));
+    assertDefined(skills.createSkill);
+    await assertRejects(skills.createSkill({prompt: 'test'}));
+    assertDefined(skills.updateSkill);
+    await assertRejects(skills.updateSkill({id: skillId}));
+
+    // ...and when calling via GlicBrowserHost (deprecated API).
+    assertDefined(this.host.recordSkillsWebClientEvent);
+    this.host.recordSkillsWebClientEvent(SkillsWebClientEvent.OPENED_MENU);
+    assertDefined(this.host.getSkill);
+    await assertRejects(this.host.getSkill!(skillId));
+    assertDefined(this.host.createSkill);
+    await assertRejects(this.host.createSkill!({prompt: 'test'}));
+    assertDefined(this.host.updateSkill);
+    await assertRejects(this.host.updateSkill!({id: skillId}));
+
+    // Synchronous void functions that couldn't throw an error previously must
+    // fail silently without throwing an error, both on GlicBrowserSkills (new
+    // API) and on GlicBrowserHost (deprecated API).
+    assertDefined(skills.showManageSkillsUi);
+    skills.showManageSkillsUi!();
+    assertDefined(skills.showBrowseSkillsUi);
+    skills.showBrowseSkillsUi!();
+    assertDefined(this.host.showManageSkillsUi);
+    this.host.showManageSkillsUi!();
+    assertDefined(this.host.showBrowseSkillsUi);
+    this.host.showBrowseSkillsUi!();
+
+    // Advance to next step (re-enable skills) and verify skills observable
+    // emits a new instance.
+    await this.advanceToNextStep();
+    const reenabledSkills = await skillsSequence.next();
+    assertDefined(reenabledSkills);
+    assertDefined(reenabledSkills.getSkill);
+    const reenabledSkill = await reenabledSkills.getSkill(skillId);
+    assertDefined(reenabledSkill);
+    assertEquals('source_id_1', reenabledSkill.sourceSkillId);
+  }
+
+  async testCreateSkillAndDisable() {
+    assertDefined(this.host.skills);
+    const skillsSequence = observeSequence(this.host.skills());
+    const skills = await skillsSequence.next();
+    assertDefined(skills);
+    assertDefined(skills.createSkill);
+
+    const request = {
+      id: 'id',
+      name: 'name',
+      icon: 'icon',
+      prompt: 'prompt',
+      source: SkillSource.FIRST_PARTY,
+    };
+    await skills.createSkill(request);
+
+    // Advance to step 2 where C++ disables skills and closes the dialog.
+    await this.advanceToNextStep();
+    assertUndefined(await skillsSequence.next());
+    await assertRejects(skills.createSkill(request));
+  }
+
+  async testShowManageSkillsUi() {
+    assertDefined(this.host.showManageSkillsUi);
+    this.host.showManageSkillsUi();
+  }
+
+  async testShowBrowseSkillsUi() {
+    assertDefined(this.host.showBrowseSkillsUi);
+    this.host.showBrowseSkillsUi();
+  }
+
+  async testDisplaySkillInDialogSuccess() {
+    assertDefined(this.host.createSkill);
+    const request = {
+      id: 'id',
+      name: 'name',
+      icon: 'icon',
+      prompt: 'prompt',
+      source: SkillSource.FIRST_PARTY,
+    };
+    this.host.createSkill(request);
   }
 
   async testShowManageSkillsUiNoWindow() {
@@ -2799,11 +2923,12 @@ const TEST_FIXTURES: Array<typeof ApiTestFixtureBase> = [
   TriggeringUpdatesTest,
   ScreenshotTests,
   NotifyPanelWillOpenTest,
+  SkillsApiTests,
 ];
 
-
+// TODO(b/546606964): enable these tests on android.
 if (!navigator.userAgent.includes('Android')) {
-  TEST_FIXTURES.push(SkillsApiTests, InitiallyNotResizableTest);
+  TEST_FIXTURES.push(SkillsDesktopOnlyApiTests, InitiallyNotResizableTest);
 }
 
 testMain(TEST_FIXTURES);

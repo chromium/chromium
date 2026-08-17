@@ -64,6 +64,7 @@
 #include "chrome/browser/signin/chrome_signin_client_test_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
+#include "chrome/browser/skills/skills_service_factory.h"
 #include "chrome/browser/skills/skills_ui_tab_controller_interface.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -92,6 +93,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/skills/features.h"
+#include "components/skills/public/skills_prefs.h"
 #include "components/skills/public/skills_service.h"
 #include "components/subscription_eligibility/subscription_eligibility_prefs.h"
 #include "components/tabs/public/tab_interface.h"
@@ -125,7 +127,6 @@
 #include "chrome/browser/media/audio_ducker.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
-#include "chrome/browser/skills/skills_service_factory.h"
 #include "chrome/browser/skills/skills_ui_tab_controller.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"  // nogncheck
@@ -223,11 +224,12 @@ std::vector<std::string> GetTestSuiteNames() {
       "NewGlicApiTestGeminiEnterpriseSettingsPolicy",
       "NewGlicApiTestGeminiEnterpriseSettingsPolicyUnset",
       "NewGlicApiTestWithMqlsIdGetterDisabled",
+      "NewGlicApiTestWithSkills",
+      "NewGlicApiTestWithSkillsDisabled",
       "NewGlicOnboardingApiTest",
       "NewGlicApiTestSystemSettingsTest",
 #if !BUILDFLAG(IS_ANDROID)
       "NewGlicApiTestWithFileUploadPolicyEnabled",
-      "NewGlicApiTestWithSkills",
       "NewGlicApiTestWithNewTabDaisyChain",
 #endif
   };
@@ -3849,7 +3851,6 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithGeminiActOnWebPolicy,
   ContinueJsTest();
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 class NewGlicApiTestWithSkills : public NewGlicApiTest {
  public:
   NewGlicApiTestWithSkills() {
@@ -3860,6 +3861,10 @@ class NewGlicApiTestWithSkills : public NewGlicApiTest {
     NewGlicApiTest::SetUpOnMainThread();
     service_ = skills::SkillsServiceFactory::GetForProfile(GetProfile());
     ASSERT_TRUE(service_);
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return service_->GetServiceStatus() !=
+             skills::SkillsService::ServiceStatus::kNotInitialized;
+    }));
     service_->SetServiceStatusForTesting(
         skills::SkillsService::ServiceStatus::kReady);
     ASSERT_OK(OpenGlicForActiveTab());
@@ -3910,6 +3915,70 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithSkills, testGetSkillPreviewsSuccess) {
   ExecuteJsTest();
 }
 
+class NewGlicApiTestWithSkillsDisabled : public NewGlicApiTest {
+ public:
+  NewGlicApiTestWithSkillsDisabled() {
+    scoped_feature_list_.InitAndEnableFeature(::features::kSkillsEnabled);
+  }
+
+  void SetUpOnMainThread() override {
+    NewGlicApiTest::SetUpOnMainThread();
+    GetProfile()->GetPrefs()->SetBoolean(skills::prefs::kChromeSkillsEnabled,
+                                         false);
+    ASSERT_OK(OpenGlicForActiveTab());
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithSkillsDisabled, testGetSkillDisabled) {
+  ExecuteJsTest();
+}
+
+// TODO(b/546606964): enable these tests on android.
+#if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithSkills, testSkillsEnabledState) {
+  glic::GlicHistogramTester histogram_tester;
+  SkillsService()->AddSkill(/*source_skill_id=*/"source_id_1",
+                            /*name=*/"test_skill_1",
+                            /*icon=*/"test_icon_1",
+                            /*prompt=*/"test_prompt_1");
+  ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest();
+  histogram_tester.ExpectBucketCount(
+      "Glic.Skills.WebClient.Event",
+      static_cast<int>(mojom::SkillsWebClientEvent::kOpenedMenu), 1);
+  GetProfile()->GetPrefs()->SetBoolean(skills::prefs::kChromeSkillsEnabled,
+                                       false);
+  ContinueJsTest();
+  GetProfile()->GetPrefs()->SetBoolean(skills::prefs::kChromeSkillsEnabled,
+                                       true);
+  ContinueJsTest();
+  histogram_tester.ExpectBucketCount(
+      "Glic.Skills.WebClient.Event",
+      static_cast<int>(mojom::SkillsWebClientEvent::kOpenedMenu), 1);
+}
+
+IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithSkills, testCreateSkillAndDisable) {
+  ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest();
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+    auto* controller = static_cast<skills::SkillsUiTabController*>(
+        skills::SkillsUiTabControllerInterface::From(tab));
+    return controller && controller->IsShowing();
+  }));
+  GetProfile()->GetPrefs()->SetBoolean(skills::prefs::kChromeSkillsEnabled,
+                                       false);
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+  auto* controller = static_cast<skills::SkillsUiTabController*>(
+      skills::SkillsUiTabControllerInterface::From(tab));
+  ASSERT_TRUE(controller);
+  controller->CloseDialog();
+  ContinueJsTest();
+}
+
 IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithSkills,
                        testDisplaySkillInDialogSuccess) {
   ExecuteJsTest();
@@ -3936,6 +4005,7 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithSkills, testShowBrowseSkillsUi) {
   ExecuteJsTest();
   WaitForSkillsTab(chrome::kChromeUISkillsBrowsePath);
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithSkills,
                        testSendingContextualSkillsToGlic) {
@@ -4028,6 +4098,8 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithSkills,
   ExecuteJsTest({.instance = instance2});
 }
 
+// TODO(b/546606964): enable these tests on android.
+#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithSkills,
                        testShowManageSkillsUiNoWindow) {
   ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTabAndDetach());
@@ -4398,6 +4470,15 @@ INSTANTIATE_TEST_SUITE_P(,
                          &WithTestParams::PrintTestVariant);
 
 INSTANTIATE_TEST_SUITE_P(,
+                         NewGlicApiTestWithSkills,
+                         DefaultTestParamSet(),
+                         &WithTestParams::PrintTestVariant);
+INSTANTIATE_TEST_SUITE_P(,
+                         NewGlicApiTestWithSkillsDisabled,
+                         DefaultTestParamSet(),
+                         &WithTestParams::PrintTestVariant);
+
+INSTANTIATE_TEST_SUITE_P(,
                          NewGlicOnboardingApiTest,
                          DefaultTestParamSet(),
                          &WithTestParams::PrintTestVariant);
@@ -4410,11 +4491,6 @@ INSTANTIATE_TEST_SUITE_P(,
 #if !BUILDFLAG(IS_ANDROID)
 INSTANTIATE_TEST_SUITE_P(,
                          NewGlicApiTestWithFileUploadPolicyEnabled,
-                         DefaultTestParamSet(),
-                         &WithTestParams::PrintTestVariant);
-// TODO(b/520114620): Skills are not supported yet on Android.
-INSTANTIATE_TEST_SUITE_P(,
-                         NewGlicApiTestWithSkills,
                          DefaultTestParamSet(),
                          &WithTestParams::PrintTestVariant);
 INSTANTIATE_TEST_SUITE_P(,
@@ -4450,12 +4526,13 @@ GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(GlicApiScrollToTest);
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
     NewGlicApiTestWithExperimentalTriggeringScreenshot);
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(NewGlicApiUnresponsiveTest);
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(NewGlicApiTestWithSkills);
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(NewGlicApiTestWithSkillsDisabled);
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(NewGlicOnboardingApiTest);
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(NewGlicApiTestSystemSettingsTest);
 #if !BUILDFLAG(IS_ANDROID)
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
     NewGlicApiTestWithFileUploadPolicyEnabled);
-GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(NewGlicApiTestWithSkills);
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
     NewGlicApiTestWithNewTabDaisyChain);
 #endif

@@ -20,10 +20,12 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/skills/features.h"
 #include "components/skills/public/skill.h"
 #include "components/skills/public/skills_metrics.h"
+#include "components/skills/public/skills_prefs.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
@@ -52,6 +54,8 @@ class TestSkillsUiTabController : public SkillsUiTabController {
     return mock_glic_keyed_service_.get();
   }
 
+  Profile* GetProfile() override { return profile_; }
+
   void SetMockGlicKeyedService(
       std::unique_ptr<glic::MockGlicKeyedService> mock) {
     mock_glic_keyed_service_ = std::move(mock);
@@ -70,7 +74,11 @@ class TestSkillsUiTabController : public SkillsUiTabController {
 
 class SkillsUiTabControllerTest : public ChromeViewsTestBase {
  public:
-  SkillsUiTabControllerTest() = default;
+  explicit SkillsUiTabControllerTest(
+      const std::vector<base::test::FeatureRef>& enabled_features = {
+          features::kSkillsEnabled}) {
+    feature_list_.InitWithFeatures(enabled_features, {});
+  }
 
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
@@ -114,6 +122,7 @@ class SkillsUiTabControllerTest : public ChromeViewsTestBase {
   content::RenderViewHostTestEnabler render_view_host_test_enabler_;
   glic::GlicProfileManager glic_profile_manager_;
   glic::GlicUnitTestEnvironment glic_test_env_;
+  base::test::ScopedFeatureList feature_list_;
 
   ::ui::UnownedUserDataHost user_data_host_;
   tabs::MockTabInterface mock_tab_;
@@ -141,6 +150,22 @@ TEST_F(SkillsUiTabControllerTest, InvokeSkill_CallsInvokeWithAutoSubmit) {
       });
 
   controller_->InvokeSkill(kTestSkillId, "", "");
+}
+
+TEST_F(SkillsUiTabControllerTest, InvokeSkill_NoOpWhenDisabled) {
+  controller_->profile_->GetPrefs()->SetBoolean(
+      skills::prefs::kChromeSkillsEnabled, false);
+  controller_->test_skill_.id = kTestSkillId;
+  controller_->test_skill_.prompt = "Test Prompt";
+
+  auto* mock_glic_keyed_service =
+      static_cast<glic::MockGlicKeyedService*>(controller_->GetGlicService());
+  EXPECT_CALL(*mock_glic_keyed_service,
+              InvokeWithAutoSubmit(testing::_, testing::_))
+      .Times(0);
+
+  controller_->InvokeSkill(kTestSkillId, "", "");
+  EXPECT_TRUE(controller_->GetLastInvokedSkillIdForTesting().empty());
 }
 
 TEST_F(SkillsUiTabControllerTest, InvokeSkill_LogsUserCreatedInvokeMetrics) {
@@ -246,12 +271,9 @@ TEST_F(SkillsUiTabControllerTest, SendPrompt_CallsInvokeWithAutoSubmit) {
 
 class SkillsUiTabControllerV2Test : public SkillsUiTabControllerTest {
  public:
-  SkillsUiTabControllerV2Test() {
-    feature_list_.InitAndEnableFeature(features::kSkillsWebViewV2Enabled);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
+  SkillsUiTabControllerV2Test()
+      : SkillsUiTabControllerTest(
+            {features::kSkillsEnabled, features::kSkillsWebViewV2Enabled}) {}
 };
 
 TEST_F(SkillsUiTabControllerV2Test, InvokeSkill_SkipsPrompt) {

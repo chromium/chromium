@@ -35,6 +35,7 @@
 #include "chrome/browser/glic/suggestions/contextual_cueing_features.h"
 #include "chrome/browser/permissions/system/system_permission_settings.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/skills/skills_service_factory.h"
 #include "chrome/browser/ui/prefs/prefs_tab_helper.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
@@ -666,7 +667,8 @@ void PopulateGlobalClientInitialState(mojom::WebClientInitialState* state,
   state->enable_trust_first_onboarding =
       !GlicEnabling::HasConsentedForProfile(profile);
   state->onboarding_completed = GlicEnabling::HasConsentedForProfile(profile);
-  state->enable_skills = base::FeatureList::IsEnabled(features::kSkillsEnabled);
+  state->enable_skills =
+      skills::SkillsServiceFactory::IsSkillsEnabledForProfile(profile);
   state->enable_get_tab_favicon_by_id =
       base::FeatureList::IsEnabled(features::kGlicGetTabFaviconById);
   state->enable_process_counter_abuse_verdict =

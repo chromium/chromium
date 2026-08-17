@@ -8,6 +8,7 @@
 #include "base/supports_user_data.h"
 #include "chrome/browser/glic/host/glic_cookie_synchronizer.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/skills/skills_service_factory.h"
 #include "chrome/browser/skills/skills_ui_tab_controller_interface.h"
 #include "chrome/browser/skills/skills_ui_window_controller.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -152,6 +153,9 @@ void SkillsPageHandlerV2::ShowDeleteToast(const std::string& skill_id,
 void SkillsPageHandlerV2::InvokeSkill(const std::string& skill_id,
                                       const std::string& skill_name,
                                       const std::string& skill_icon) {
+  if (!SkillsServiceFactory::IsSkillsEnabledForProfile(&profile_.get())) {
+    return;
+  }
   tabs::TabInterface* tab =
       tabs::TabInterface::GetFromContents(&web_contents_.get());
   if (!tab) {

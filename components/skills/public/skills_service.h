@@ -92,6 +92,9 @@ class SkillsService : public KeyedService {
     // Called when the service status is changed.
     virtual void OnStatusChanged() {}
 
+    // Called when the skills enablement status is changed.
+    virtual void OnSkillsEnabledChanged(bool enabled) {}
+
     // Called when the service has completed a download of 1P skills. Receives
     // new data or nullptr if data has not changed.
     virtual void OnDiscoverySkillsUpdated(

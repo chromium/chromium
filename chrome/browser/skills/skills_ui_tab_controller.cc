@@ -11,6 +11,7 @@
 #include "chrome/browser/glic/public/glic_passkeys.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/skills/skills_glic_mojom_util.h"
+#include "chrome/browser/skills/skills_service_factory.h"
 #include "chrome/browser/skills/skills_ui_window_controller.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/webui/skills/skills_dialog_delegate.h"
@@ -173,9 +174,21 @@ bool SkillsUiTabController::IsShowing() const {
   return dialog_widget_ != nullptr;
 }
 
+Profile* SkillsUiTabController::GetProfile() {
+  content::WebContents* contents = tab_->GetContents();
+  if (!contents) {
+    return nullptr;
+  }
+  return Profile::FromBrowserContext(contents->GetBrowserContext());
+}
+
 void SkillsUiTabController::InvokeSkill(std::string_view skill_id,
                                         std::string_view skill_name,
                                         std::string_view skill_icon) {
+  if (!SkillsServiceFactory::IsSkillsEnabledForProfile(GetProfile())) {
+    return;
+  }
+
   last_invoked_skill_id_for_testing_ = skill_id;
 
   const skills::Skill* skill = nullptr;

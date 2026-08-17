@@ -115,9 +115,7 @@ export class SkillsClientImpl implements SkillsClientInterface {
     this.sender.requestNoResponse('notifySkillDeleted', {skillId});
   }
 
-  notifySkillToInvokeChanged(skill: SkillMojo): void {
-    this.sender.requestNoResponse('notifySkillToInvokeChanged', {
-      skill: skillToClient(skill),
-    });
+  notifySkillsEnabledChanged(enabled: boolean): void {
+    this.sender.requestNoResponse('notifySkillsEnabledChanged', {enabled});
   }
 }

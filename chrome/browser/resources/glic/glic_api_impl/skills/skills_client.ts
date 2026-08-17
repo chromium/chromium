@@ -4,7 +4,7 @@
 
 import {assert} from '//resources/js/assert.js';
 
-import type {CreateSkillRequest, GlicBrowserHost, ObservableValue, Skill, SkillPreview, SkillsWebClientEvent, UpdateSkillRequest} from '../../glic_api/glic_api.js';
+import type {CreateSkillRequest, GlicBrowserHost, GlicBrowserSkills, ObservableValue, Skill, SkillPreview, SkillsWebClientEvent, UpdateSkillRequest} from '../../glic_api/glic_api.js';
 import {ObservableValue as ObservableValueImpl} from '../../observable.js';
 import type {WebClientInitialStatePrivate} from '../request_types.js';
 import type {MessageHandlerInterface} from '../transport/messaging.js';
@@ -74,14 +74,60 @@ export class SkillsWebClientMessageHandler implements
     this.host.skillPreviews.assignAndSignal(this.combineSkillPreviews());
   }
 
-  notifySkillToInvokeChanged(payload: {
-    skill: Skill,
+  notifySkillsEnabledChanged(payload: {
+    enabled: boolean,
   }): void {
-    this.host.skillToInvoke.assignAndSignal(payload.skill);
+    this.host.setSkillsEnabled(payload.enabled);
   }
 
   private combineSkillPreviews() {
     return [...this.cachedContextualSkillPreviews, ...this.cachedSkillPreviews];
+  }
+}
+
+class GlicBrowserSkillsImpl implements GlicBrowserSkills {
+  constructor(private host: GlicBrowserHostSkills) {}
+
+  async createSkill(request: CreateSkillRequest): Promise<void> {
+    const result = await this.host.getRemote().requestWithResponse(
+        'createSkill', {request});
+    if (!result.modalOpened) {
+      throw new Error('createSkill: failed to open dialog');
+    }
+  }
+
+  async updateSkill(request: UpdateSkillRequest): Promise<void> {
+    const result = await this.host.getRemote().requestWithResponse(
+        'updateSkill', {request});
+    if (!result.modalOpened) {
+      throw new Error('updateSkill: failed to open dialog');
+    }
+  }
+
+  showManageSkillsUi(): void {
+    this.host.getRemote().requestNoResponse('showManageSkillsUi', undefined);
+  }
+
+  showBrowseSkillsUi(): void {
+    this.host.getRemote().requestNoResponse('showBrowseSkillsUi', undefined);
+  }
+
+  async getSkill(id: string): Promise<Skill> {
+    const result =
+        await this.host.getRemote().requestWithResponse('getSkill', {id});
+    if (!result.skill) {
+      throw new Error('getSkill: failed');
+    }
+    return result.skill;
+  }
+
+  recordSkillsWebClientEvent(event: SkillsWebClientEvent): void {
+    this.host.getRemote().requestNoResponse(
+        'recordSkillsWebClientEvent', {event});
+  }
+
+  getSkillPreviews(): ObservableValue<SkillPreview[]> {
+    return this.host.skillPreviews;
   }
 }
 
@@ -91,18 +137,27 @@ export class GlicBrowserHostSkills implements Partial<GlicBrowserHost> {
       new SkillsWebClientMessageHandler(this);
   skillPreviews = ObservableValueImpl.withNoValue<SkillPreview[]>();
   skillToInvoke = ObservableValueImpl.withNoValue<Skill>();
+  private skillsObservable =
+      ObservableValueImpl.withValue<GlicBrowserSkills|undefined>(undefined);
+  private skillsInstance = new GlicBrowserSkillsImpl(this);
 
   initialize(
       initialState: WebClientInitialStatePrivate, router: PostMessageRouter,
       skillsRemote: PendingRemote<SkillsHost>|undefined,
       skillsReceiver: PendingReceiver<SkillsClient>|undefined) {
+    this.setSkillsEnabled(initialState.enableSkills);
+
+    // Support legacy behavior (which had these functions exist or not exist
+    // based on feature enablement as of initialization).
     if (!initialState.enableSkills) {
       this.createSkill = undefined;
       this.updateSkill = undefined;
       this.showManageSkillsUi = undefined;
       this.showBrowseSkillsUi = undefined;
       this.getSkill = undefined;
-      return;
+      this.recordSkillsWebClientEvent = undefined;
+      this.getSkillPreviews = undefined;
+      this.getSkillToInvoke = undefined;
     }
 
     if (skillsRemote && skillsReceiver) {
@@ -112,54 +167,49 @@ export class GlicBrowserHostSkills implements Partial<GlicBrowserHost> {
     }
   }
 
-  async createSkill?(request: CreateSkillRequest): Promise<void> {
+  getRemote(): PostMessageRemote<SkillsHost> {
     assert(this.skillsRemote);
-    const result =
-        await this.skillsRemote.requestWithResponse('createSkill', {request});
-    if (!result.modalOpened) {
-      throw new Error('createSkill: failed to open dialog');
-    }
+    return this.skillsRemote;
   }
 
-  async updateSkill?(request: UpdateSkillRequest): Promise<void> {
-    assert(this.skillsRemote);
-    const result =
-        await this.skillsRemote.requestWithResponse('updateSkill', {request});
-    if (!result.modalOpened) {
-      throw new Error('updateSkill: failed to open dialog');
-    }
+  createSkill?(request: CreateSkillRequest): Promise<void> {
+    return this.skillsInstance.createSkill(request);
+  }
+
+  updateSkill?(request: UpdateSkillRequest): Promise<void> {
+    return this.skillsInstance.updateSkill(request);
   }
 
   showManageSkillsUi?(): void {
-    assert(this.skillsRemote);
-    this.skillsRemote.requestNoResponse('showManageSkillsUi', undefined);
+    this.skillsInstance.showManageSkillsUi();
   }
 
   showBrowseSkillsUi?(): void {
-    assert(this.skillsRemote);
-    this.skillsRemote.requestNoResponse('showBrowseSkillsUi', undefined);
+    this.skillsInstance.showBrowseSkillsUi();
   }
 
-  async getSkill?(id: string): Promise<Skill> {
-    assert(this.skillsRemote);
-    const result =
-        await this.skillsRemote.requestWithResponse('getSkill', {id});
-    if (!result.skill) {
-      throw new Error('getSkill: failed');
-    }
-    return result.skill;
+  getSkill?(id: string): Promise<Skill> {
+    return this.skillsInstance.getSkill(id);
   }
 
   recordSkillsWebClientEvent?(event: SkillsWebClientEvent): void {
-    assert(this.skillsRemote);
-    this.skillsRemote.requestNoResponse('recordSkillsWebClientEvent', {event});
+    this.skillsInstance.recordSkillsWebClientEvent(event);
   }
 
   getSkillPreviews?(): ObservableValue<SkillPreview[]> {
-    return this.skillPreviews;
+    return this.skillsInstance.getSkillPreviews();
   }
 
   getSkillToInvoke?(): ObservableValue<Skill> {
     return this.skillToInvoke;
+  }
+
+  skills(): ObservableValue<GlicBrowserSkills|undefined> {
+    return this.skillsObservable;
+  }
+
+  setSkillsEnabled(enabled: boolean) {
+    this.skillsObservable.assignAndSignal(
+        enabled ? this.skillsInstance : undefined);
   }
 }

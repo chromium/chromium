@@ -509,11 +509,15 @@ void SkillsServiceImpl::OnProviderSkillsChanged(SkillsProvider* provider) {
 }
 
 void SkillsServiceImpl::OnSkillsEnabledPrefChanged() {
-  if (IsSkillsEnabled(pref_service_)) {
+  bool enabled = IsSkillsEnabled(pref_service_);
+  if (enabled) {
     if (optimization_guide_) {
       optimization_guide_->RegisterOptimizationTypes(
           {optimization_guide::proto::SKILLS});
     }
+  }
+  for (Observer& observer : observers_) {
+    observer.OnSkillsEnabledChanged(enabled);
   }
 }
 

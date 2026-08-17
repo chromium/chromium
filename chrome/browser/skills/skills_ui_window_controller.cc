@@ -148,6 +148,10 @@ void SkillsUiWindowController::InvokeSkill(std::string_view skill_id,
   if (skill_id.empty()) {
     return;
   }
+  if (!SkillsServiceFactory::IsSkillsEnabledForProfile(
+          browser_window_interface_->GetProfile())) {
+    return;
+  }
 
   if (auto* active_tab = browser_window_interface_->GetActiveTabInterface()) {
     if (auto* tab_controller =

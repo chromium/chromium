@@ -151,6 +151,7 @@ class GlicSkillsClientSession : public glic::mojom::SkillsHandler,
   void UpdateSkillPreviews(std::optional<tabs::TabInterface*> updated_tab);
   void NotifyContextualSkillsChanged(
       std::vector<mojom::SkillPreviewPtr> contextual_skill_previews);
+  void OnSkillsEnabledChanged(bool enabled) override;
 
  private:
   mojom::SkillPtr GetSkillById(std::string_view skill_id);
