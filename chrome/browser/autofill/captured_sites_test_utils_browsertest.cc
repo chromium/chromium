@@ -16,6 +16,8 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
 
 namespace {
@@ -27,36 +29,74 @@ class CapturedSitesTestUtilsBrowserTest : public autofill::AutofillUiTest {
   void SetUpOnMainThread() override {
     autofill::AutofillUiTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
+ protected:
+  content::RenderFrameHostWrapper NavigateAwayAndGetUnloadedFrame() {
+    GURL url1 = embedded_test_server()->GetURL("a.com", "/title1.html");
+    GURL url2 = embedded_test_server()->GetURL("b.com", "/title2.html");
+
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url1));
+
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    content::RenderFrameHostWrapper old_rfh(
+        web_contents->GetPrimaryMainFrame());
+
+    content::TestNavigationManager navigation_manager(web_contents, url2);
+    EXPECT_TRUE(content::ExecJs(
+        old_rfh.get(), content::JsReplace("window.location.href = $1;", url2)));
+    EXPECT_TRUE(navigation_manager.WaitForNavigationFinished());
+    EXPECT_TRUE(navigation_manager.was_committed());
+    EXPECT_TRUE(old_rfh.IsDestroyed() || !old_rfh->IsActive());
+
+    return old_rfh;
   }
 };
 
-// Tests that evaluating script helpers on a RenderFrameHost after it has
-// unloaded or navigated away returns false without crashing the test process.
+// Tests that evaluating script and input helpers on a RenderFrameHost after it
+// has unloaded or navigated away returns false without crashing the test
+// process.
 IN_PROC_BROWSER_TEST_F(
     CapturedSitesTestUtilsBrowserTest,
     ScrollElementIntoView_NavigatingFrame_ReturnsFalseWithoutCrash) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-
-  GURL url1 = embedded_test_server()->GetURL("a.com", "/title1.html");
-  GURL url2 = embedded_test_server()->GetURL("b.com", "/title2.html");
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url1));
-
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-
-  // Save the primary main frame before starting navigation to url2.
-  content::RenderFrameHostWrapper old_rfh(web_contents->GetPrimaryMainFrame());
-
-  // Start cross-site navigation to url2 asynchronously.
-  content::TestNavigationManager navigation_manager(web_contents, url2);
-  ASSERT_TRUE(content::ExecJs(
-      old_rfh.get(), content::JsReplace("window.location.href = $1;", url2)));
-  ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
-
-  // Attempting to scroll an element on an unloaded frame should return false.
+  content::RenderFrameHostWrapper old_rfh = NavigateAwayAndGetUnloadedFrame();
   EXPECT_FALSE(
       TestRecipeReplayer::ScrollElementIntoView("//button", old_rfh.get()));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    CapturedSitesTestUtilsBrowserTest,
+    PlaceFocusOnElement_NavigatingFrame_ReturnsFalseWithoutCrash) {
+  content::RenderFrameHostWrapper old_rfh = NavigateAwayAndGetUnloadedFrame();
+  EXPECT_FALSE(
+      TestRecipeReplayer::PlaceFocusOnElement("//button", {}, old_rfh.get()));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    CapturedSitesTestUtilsBrowserTest,
+    GetBoundingRectOfTargetElement_NavigatingFrame_ReturnsFalseWithoutCrash) {
+  content::RenderFrameHostWrapper old_rfh = NavigateAwayAndGetUnloadedFrame();
+  gfx::Rect rect;
+  EXPECT_FALSE(TestRecipeReplayer::GetBoundingRectOfTargetElement(
+      "//button", {}, old_rfh.get(), &rect));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    CapturedSitesTestUtilsBrowserTest,
+    SimulateLeftMouseClickAt_NavigatingFrame_ReturnsFalseWithoutCrash) {
+  content::RenderFrameHostWrapper old_rfh = NavigateAwayAndGetUnloadedFrame();
+  EXPECT_FALSE(TestRecipeReplayer::SimulateLeftMouseClickAt(gfx::Point(0, 0),
+                                                            old_rfh.get()));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    CapturedSitesTestUtilsBrowserTest,
+    SimulateMouseHoverAt_NavigatingFrame_ReturnsFalseWithoutCrash) {
+  content::RenderFrameHostWrapper old_rfh = NavigateAwayAndGetUnloadedFrame();
+  EXPECT_FALSE(TestRecipeReplayer::SimulateMouseHoverAt(old_rfh.get(),
+                                                        gfx::Point(0, 0)));
 }
 
 }  // namespace
