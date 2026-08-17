@@ -141,6 +141,7 @@ import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.metrics.UmaSessionStats;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceIphController;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.CloseWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.multiwindow.TabbedCrashRecoveryDelegate;
@@ -2962,7 +2963,15 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             }
             return true;
         } else if (id == R.id.close_window) {
-            mActivity.finishAndRemoveTask();
+            if (mMultiInstanceManager != null && MultiWindowUtils.isMultiInstanceApi31Enabled()) {
+                mMultiInstanceManager.closeWindows(
+                        Collections.singletonList(mMultiInstanceManager.getCurrentInstanceId()),
+                        fromMenu
+                                ? CloseWindowAppSource.MENU
+                                : CloseWindowAppSource.KEYBOARD_SHORTCUT);
+            } else {
+                mActivity.finishAndRemoveTask();
+            }
             return true;
         } else if (id == R.id.glic_menu_id) {
             return toggleGlic(false, GlicInvocationSource.THREE_DOTS_MENU);

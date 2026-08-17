@@ -230,6 +230,20 @@ public class KeyboardShortcutsTest {
 
     @Test
     @SmallTest
+    public void testCloseWindow() {
+        boolean isKeyEventHandled =
+                keyDown(
+                        KeyEvent.KEYCODE_W,
+                        (KeyEvent.META_CTRL_ON | KeyEvent.META_SHIFT_ON),
+                        /* isCurrentTabVisible= */ true);
+
+        assertTrue("Expected key event to be handled", isKeyEventHandled);
+        verify(mMenuOrKeyboardActionController, times(1))
+                .onMenuOrKeyboardAction(/* id= */ eq(R.id.close_window), /* fromMenu= */ eq(false));
+    }
+
+    @Test
+    @SmallTest
     public void testCloseTab_singlePinnedTab_firstAttempt_tabShouldNotClose() {
         // Setup the first closure attempt of a pinned tab.
         setUpTabModelSelector(List.of(mTab));

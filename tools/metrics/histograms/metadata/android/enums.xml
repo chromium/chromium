@@ -1111,6 +1111,8 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="No tabs in window"/>
   <int value="4" label="Recent Tabs page"/>
   <int value="5" label="Recently closed limit exceeded"/>
+  <int value="6" label="Keyboard shortcut"/>
+  <int value="7" label="Menu"/>
 </enum>
 
 <enum name="ContactsPickerDialogAction">

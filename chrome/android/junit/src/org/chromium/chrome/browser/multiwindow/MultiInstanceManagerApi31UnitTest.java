@@ -418,6 +418,7 @@ public class MultiInstanceManagerApi31UnitTest {
         mMultiInstanceManager.mTestBuildInstancesList = false;
         ShadowToast.reset();
         ToastManager.resetForTesting();
+        DeviceInfo.setIsDesktopForTesting(false);
     }
 
     private void setupActivityForCreateNewWindowIntent(Activity activity) {
@@ -1009,6 +1010,80 @@ public class MultiInstanceManagerApi31UnitTest {
 
         // Verify the window that contains only 1 NTP is permanently closed.
         assertEquals(1, mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ANY).size());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ON_STARTUP_WINDOW_POLICY)
+    public void testCloseWindows_KeyboardShortcut_StartupWindowPolicyEnabled() {
+        DeviceInfo.setIsDesktopForTesting(true);
+        assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask56));
+        assertEquals(1, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask57));
+
+        // Soft closing an instance via keyboard shortcut when the startup window policy is enabled
+        // does not permanently delete persisted state for the entry and marks the instance for
+        // deletion.
+        mMultiInstanceManager.closeWindows(
+                Collections.singletonList(1), CloseWindowAppSource.KEYBOARD_SHORTCUT);
+        List<InstanceInfo> instanceInfoList =
+                mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ANY);
+        assertEquals(1, instanceInfoList.size());
+        assertTrue(ChromeMultiInstancePersistentStore.readMarkedForDeletion(1));
+        assertFalse(ChromeMultiInstancePersistentStore.readMarkedForDeletion(0));
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.ON_STARTUP_WINDOW_POLICY)
+    public void testCloseWindows_KeyboardShortcut_StartupWindowPolicyDisabled() {
+        DeviceInfo.setIsDesktopForTesting(true);
+        assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask56));
+        assertEquals(1, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask57));
+
+        // Soft closing an instance via keyboard shortcut when the startup window policy is disabled
+        // does not permanently delete persisted state for the entry and does not mark the instance
+        // for deletion.
+        mMultiInstanceManager.closeWindows(
+                Collections.singletonList(1), CloseWindowAppSource.KEYBOARD_SHORTCUT);
+        List<InstanceInfo> instanceInfoList =
+                mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ANY);
+        assertEquals(2, instanceInfoList.size());
+        assertFalse(ChromeMultiInstancePersistentStore.readMarkedForDeletion(1));
+        assertFalse(ChromeMultiInstancePersistentStore.readMarkedForDeletion(0));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ON_STARTUP_WINDOW_POLICY)
+    public void testCloseWindows_KeyboardShortcut_StartupWindowPolicyEnabled_NonDesktop() {
+        DeviceInfo.setIsDesktopForTesting(false);
+        assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask56));
+        assertEquals(1, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask57));
+
+        // Soft closing an instance via keyboard shortcut on a non-desktop device does not mark the
+        // instance for deletion even when the startup window policy feature is enabled.
+        mMultiInstanceManager.closeWindows(
+                Collections.singletonList(1), CloseWindowAppSource.KEYBOARD_SHORTCUT);
+        List<InstanceInfo> instanceInfoList =
+                mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ANY);
+        assertEquals(2, instanceInfoList.size());
+        assertFalse(ChromeMultiInstancePersistentStore.readMarkedForDeletion(1));
+        assertFalse(ChromeMultiInstancePersistentStore.readMarkedForDeletion(0));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ON_STARTUP_WINDOW_POLICY)
+    public void testCloseWindows_Menu_StartupWindowPolicyEnabled() {
+        DeviceInfo.setIsDesktopForTesting(true);
+        assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask56));
+        assertEquals(1, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask57));
+
+        // Soft closing an instance via menu option when the startup window policy is enabled does
+        // not permanently delete persisted state for the entry and marks the instance for
+        // deletion.
+        mMultiInstanceManager.closeWindows(Collections.singletonList(1), CloseWindowAppSource.MENU);
+        List<InstanceInfo> instanceInfoList =
+                mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ANY);
+        assertEquals(1, instanceInfoList.size());
+        assertTrue(ChromeMultiInstancePersistentStore.readMarkedForDeletion(1));
+        assertFalse(ChromeMultiInstancePersistentStore.readMarkedForDeletion(0));
     }
 
     @Test

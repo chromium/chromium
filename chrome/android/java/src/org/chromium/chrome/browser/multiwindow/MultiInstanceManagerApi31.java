@@ -939,11 +939,21 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
             }
             assumeNonNull(mTabModelOrchestratorSupplier.get()).cleanupInstance(instanceId);
         } else {
+            // Windows closed via keyboard shortcut (ctrl+shift+w) or menu are marked for deletion
+            // only when the new startup window policy is enabled (so they are available on Recent
+            // Tabs, but excluded from MRU instance ID allocation).
+            boolean isShortcutOrMenu =
+                    source == CloseWindowAppSource.KEYBOARD_SHORTCUT
+                            || source == CloseWindowAppSource.MENU;
+            boolean markedForDeletion =
+                    !isShortcutOrMenu || MultiWindowUtils.isNewStartupWindowPolicyEnabled();
             ChromeMultiInstancePersistentStore.writeMarkedForDeletion(
-                    instanceId, /* markedForDeletion= */ true);
+                    instanceId, markedForDeletion);
             ChromeMultiInstancePersistentStore.writeIsRecoverable(instanceId, false);
             ChromeMultiInstancePersistentStore.writeClosureTime(instanceId);
-            ChromeMultiInstancePersistentStore.removeTaskId(instanceId);
+            if (markedForDeletion) {
+                ChromeMultiInstancePersistentStore.removeTaskId(instanceId);
+            }
         }
 
         // Activity#finishAndRemoveTask() is preferred for active instances because it synchronously
@@ -1024,7 +1034,9 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
      * @param source The window closure source, from {@link CloseWindowAppSource}.
      */
     private static boolean isPermanentClosureSource(@CloseWindowAppSource int source) {
-        return source != CloseWindowAppSource.WINDOW_MANAGER;
+        return source != CloseWindowAppSource.WINDOW_MANAGER
+                && source != CloseWindowAppSource.KEYBOARD_SHORTCUT
+                && source != CloseWindowAppSource.MENU;
     }
 
     private static boolean hasRestorableRegularTabs(int instanceId) {
