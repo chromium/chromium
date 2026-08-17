@@ -28,17 +28,16 @@ declare_args() {
   # true will cause your build to fail if the internal files are missing.
   #
   # If changing the value of this, you MUST also update the following files
-  # depending on the
-  # platform:
-  # Android: Internal expectations files that verify the native libraries  are compiled into the Android binary.
+  # depending on the platform:
+  # Android: Internal expectations files that verify the native libraries are compiled into the Android binary.
   # ChromeOS: //lib/chrome_util.py in the Chromite repo (ex: https://crrev.com/c/3437291)
   # Linux: Internal archive files. //chrome/installer/linux/common/installer.include handles the
   # relevant files not being present.
   # Mac: //chrome/installer/mac/signing/parts.py
   # Windows: //chrome/installer/mini_installer/chrome.release and internal archive files
-  if (is_fuchsia || is_android || is_ios) {
-    # Fuchsia, Android, and iOS should work but are not included in the set we
-    # release for, so we do not needlessly increase the binary size.
+  if (is_fuchsia || is_ios) {
+    # Fuchsia and iOS should work but are not included in the set we release
+    # for, so we do not needlessly increase the binary size.
     build_with_internal_optimization_guide = false
   } else {
     # Use is_chrome_branded as a proxy for "does src-internal exist".

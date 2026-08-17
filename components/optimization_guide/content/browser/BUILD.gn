@@ -72,7 +72,10 @@ static_library("page_context_eligibility") {
     "//components/optimization_guide/core:optimization_guide_library_holder",
   ]
 
-  if (build_with_internal_optimization_guide) {
+  # On desktop, the internal library is built as a runtime data dependency.
+  # On Android, it is packaged into the Chrome APK/bundle via loadable_modules
+  # and dynamically loaded at runtime by OptimizationGuideLibraryHolder.
+  if (build_with_internal_optimization_guide && !is_android) {
     data_deps = [
       "//components/optimization_guide/internal:optimization_guide_internal",
     ]
