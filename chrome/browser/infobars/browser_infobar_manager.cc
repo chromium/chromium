@@ -5,13 +5,16 @@
 #include "chrome/browser/infobars/browser_infobar_manager.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/infobars/confirm_infobar_creator.h"
 #include "chrome/browser/infobars/infobar_spec.h"
@@ -23,6 +26,7 @@
 #include "components/infobars/core/infobar.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "url/gurl.h"
 
@@ -32,18 +36,44 @@ namespace {
 
 // RegistryInfoBarDelegate acts as the universal adapter between the modern
 // InfoBarSpec and the legacy ConfirmInfoBarDelegate.
-class RegistryInfoBarDelegate final : public ConfirmInfoBarDelegate {
+class RegistryInfoBarDelegate final : public ConfirmInfoBarDelegate,
+                                      public content::WebContentsObserver {
  public:
-  explicit RegistryInfoBarDelegate(
-      InfoBarSpec spec)
-      : spec_(std::move(spec)) {}
+  // The delegate observes `contents` because substitutions are read while
+  // the view is being built, before the infobar has an owner.
+  RegistryInfoBarDelegate(InfoBarSpec spec, content::WebContents* contents)
+      : content::WebContentsObserver(contents), spec_(std::move(spec)) {}
 
   infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override {
     return spec_.identifier();
   }
 
   std::u16string GetMessageText() const override {
+    if (!spec_.message_text_template().empty()) {
+      std::vector<std::u16string> substitution_texts;
+      for (const MessageSubstitution& substitution :
+           GetMessageSubstitutions()) {
+        substitution_texts.push_back(substitution.text);
+      }
+      return base::ReplaceStringPlaceholders(spec_.message_text_template(),
+                                             substitution_texts,
+                                             /*offsets=*/nullptr);
+    }
     return spec_.message_text();
+  }
+
+  std::u16string GetMessageTextTemplate() const override {
+    return spec_.message_text_template();
+  }
+
+  const std::vector<MessageSubstitution>& GetMessageSubstitutions()
+      const override {
+    if (!substitutions_.has_value()) {
+      substitutions_ = spec_.substitutions_callback()
+                           ? spec_.substitutions_callback().Run(web_contents())
+                           : std::vector<MessageSubstitution>();
+    }
+    return *substitutions_;
   }
 
   std::u16string GetLinkText() const override { return spec_.link_text(); }
@@ -53,6 +83,9 @@ class RegistryInfoBarDelegate final : public ConfirmInfoBarDelegate {
   int GetIconId() const override { return spec_.icon_id(); }
 
   const gfx::VectorIcon& GetVectorIcon() const override {
+    if (dark_mode() && spec_.dark_mode_icon()) {
+      return *spec_.dark_mode_icon();
+    }
     return spec_.icon() ? *spec_.icon()
                         : ConfirmInfoBarDelegate::GetVectorIcon();
   }
@@ -81,7 +114,7 @@ class RegistryInfoBarDelegate final : public ConfirmInfoBarDelegate {
 
   bool Accept() override {
     base::UmaHistogramSparse("InfoBar.Centralized.Accept", GetIdentifier());
-    auto* contents = GetWebContents();
+    auto* contents = web_contents();
     if (contents && spec_.ok_button_callback()) {
       spec_.ok_button_callback().Run(contents);
     }
@@ -90,7 +123,7 @@ class RegistryInfoBarDelegate final : public ConfirmInfoBarDelegate {
 
   bool Cancel() override {
     base::UmaHistogramSparse("InfoBar.Centralized.Cancel", GetIdentifier());
-    auto* contents = GetWebContents();
+    auto* contents = web_contents();
     if (contents && spec_.cancel_button_callback()) {
       spec_.cancel_button_callback().Run(contents);
     }
@@ -99,7 +132,7 @@ class RegistryInfoBarDelegate final : public ConfirmInfoBarDelegate {
 
   void InfoBarDismissed() override {
     base::UmaHistogramSparse("InfoBar.Centralized.Dismiss", GetIdentifier());
-    auto* contents = GetWebContents();
+    auto* contents = web_contents();
     if (contents && spec_.dismiss_callback()) {
       spec_.dismiss_callback().Run(contents);
     }
@@ -109,6 +142,17 @@ class RegistryInfoBarDelegate final : public ConfirmInfoBarDelegate {
     base::UmaHistogramSparse("InfoBar.Centralized.LinkClicked",
                              GetIdentifier());
     return ConfirmInfoBarDelegate::LinkClicked(disposition);
+  }
+
+  bool InlineSubstitutionLinkClicked(
+      size_t index,
+      WindowOpenDisposition disposition) override {
+    base::UmaHistogramSparse("InfoBar.Centralized.LinkClicked",
+                             GetIdentifier());
+    if (spec_.inline_link_callback()) {
+      spec_.inline_link_callback().Run(web_contents(), index, disposition);
+    }
+    return false;
   }
 
   bool ShouldExpire(const NavigationDetails& details) const override {
@@ -129,14 +173,10 @@ class RegistryInfoBarDelegate final : public ConfirmInfoBarDelegate {
   }
 
  private:
-  content::WebContents* GetWebContents() {
-    if (!infobar()) {
-      return nullptr;
-    }
-    return ContentInfoBarManager::WebContentsFromInfoBar(infobar());
-  }
-
   InfoBarSpec spec_;
+  // Computed once and cached so the substitutions don't change under the
+  // view.
+  mutable std::optional<std::vector<MessageSubstitution>> substitutions_;
 };
 
 content::WebContents* GetActiveWebContents() {
@@ -217,9 +257,8 @@ void BrowserInfoBarManager::Show(
   if (!manager) {
     return;
   }
-  if (manager->AddInfoBar(
-          CreateConfirmInfoBar(std::make_unique<RegistryInfoBarDelegate>(
-              it->second)))) {
+  if (manager->AddInfoBar(CreateConfirmInfoBar(
+          std::make_unique<RegistryInfoBarDelegate>(it->second, contents)))) {
     base::UmaHistogramSparse("InfoBar.Centralized.Show", identifier);
   }
 }
@@ -252,7 +291,7 @@ void BrowserInfoBarManager::ShowGlobally(
           if (manager) {
             auto infobar =
                 CreateConfirmInfoBar(std::make_unique<RegistryInfoBarDelegate>(
-                    spec));
+                    spec, active_contents));
             auto* added_infobar = manager->AddInfoBar(std::move(infobar));
             if (added_infobar) {
               active_global_infobars_[identifier].active_instances[manager] =
@@ -421,7 +460,7 @@ void BrowserInfoBarManager::OnActiveTabChanged(
     for (auto& [identifier, context] : active_global_infobars_) {
       auto infobar =
           CreateConfirmInfoBar(std::make_unique<RegistryInfoBarDelegate>(
-              context.spec));
+              context.spec, active_contents));
       auto* added_infobar = new_manager->AddInfoBar(std::move(infobar));
       if (added_infobar) {
         context.active_instances[new_manager] = added_infobar;
