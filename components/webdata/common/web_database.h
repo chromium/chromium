@@ -25,6 +25,22 @@ class Encryptor;
 // This class manages a SQLite database that stores various web page meta data.
 class WEBDATA_EXPORT WebDatabase {
  public:
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class InitResult {
+    kSuccess = 0,
+    kCouldNotOpen = 1,
+    kDatabaseLocked = 2,
+    kCouldNotRazeIncompatibleVersion = 3,
+    kFailedToBeginInitTransaction = 4,
+    kMetaTableInitFailed = 5,
+    kCurrentVersionTooNew = 6,
+    kMigrationError = 7,
+    kFailedToCreateTable = 8,
+    kFailedToCommitInitTransaction = 9,
+    kMaxValue = kFailedToCommitInitTransaction
+  };
+
   enum State { COMMIT_NOT_NEEDED, COMMIT_NEEDED };
 
   // Current database version number.
