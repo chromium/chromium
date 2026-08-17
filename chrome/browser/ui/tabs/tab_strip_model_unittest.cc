@@ -48,7 +48,6 @@
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/commerce/core/commerce_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"

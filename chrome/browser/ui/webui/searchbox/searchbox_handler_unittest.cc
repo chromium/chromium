@@ -92,7 +92,6 @@
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
 #include "chrome/browser/ui/webui/searchbox/omnibox_composebox_handler.h"
 #include "chrome/browser/ui/webui/searchbox/webui_omnibox_handler.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
 #endif
 
 namespace {

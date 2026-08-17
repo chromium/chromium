@@ -9,7 +9,6 @@
 
 #include "base/callback_list.h"
 #include "base/test/mock_callback.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
 #include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/ui/country_combobox_model.h"

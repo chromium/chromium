@@ -99,7 +99,6 @@
 #include "chrome/browser/ui/views/side_panel/customize_chrome/side_panel_controller_views.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_section.h"
 #include "chrome/browser/ui/webui/util/webui_util_desktop.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
 #endif
 
 namespace {

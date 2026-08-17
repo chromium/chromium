@@ -74,8 +74,6 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/test/base/test_browser_window.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
