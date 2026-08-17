@@ -118,6 +118,7 @@ source_set("browser_tests") {
   ]
   deps = [
     ":test_support",
+    "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/test:test_support",
     "//content/public/browser",
   ]

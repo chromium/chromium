@@ -4,20 +4,82 @@
 
 #include "chrome/browser/ui/android/tab_model/tab_model_jni_bridge.h"
 
+#include <memory>
 #include <optional>
+#include <set>
+#include <vector>
 
+#include "chrome/browser/android/tab_android.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/tab_list/tab_list_interface_observer.h"
 #include "chrome/test/base/android/android_browser_test.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_pattern.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
+#include "net/dns/mock_host_resolver.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "ui/gfx/range/range.h"
+#include "url/gurl.h"
 
 namespace {
 
-using TabModelJniBridgeTest = AndroidBrowserTest;
+class TabModelJniBridgeTest : public AndroidBrowserTest {
+ public:
+  void SetUpOnMainThread() override {
+    AndroidBrowserTest::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
+  }
+
+  // Returns the TabModelJniBridge under test.
+  TabModelJniBridge* bridge() {
+    return static_cast<TabModelJniBridge*>(GetTabListInterface());
+  }
+
+  // Converts a TabInterface to TabAndroid.
+  TabAndroid* ToTabAndroid(tabs::TabInterface* tab) {
+    return tab ? TabAndroid::FromTabHandle(tab->GetHandle()) : nullptr;
+  }
+
+  // Returns the HostContentSettingsMap for the current profile.
+  HostContentSettingsMap* GetHostContentSettingsMap() {
+    return HostContentSettingsMapFactory::GetForProfile(GetProfile());
+  }
+
+  // Returns the sound content setting for the given URL.
+  ContentSetting GetSoundSetting(const GURL& url) {
+    return GetHostContentSettingsMap()->GetContentSetting(
+        url, url, ContentSettingsType::SOUND);
+  }
+
+  // Calls SetMuteSetting on the bridge.
+  void SetMuteSetting(const std::vector<TabAndroid*>& tabs, bool mute) {
+    bridge()->SetMuteSetting(/*env=*/nullptr, tabs, mute);
+  }
+
+  // Navigates the given tab to the URL and waits for completion.
+  tabs::TabInterface* NavigateTab(tabs::TabInterface* tab, const GURL& url) {
+    EXPECT_TRUE(tab);
+    if (tab) {
+      EXPECT_TRUE(content::NavigateToURL(tab->GetContents(), url));
+    }
+    return tab;
+  }
+
+  // Opens a new tab and navigates it to the URL.
+  tabs::TabInterface* OpenAndNavigateTab(const GURL& url) {
+    tabs::TabInterface* tab =
+        GetTabListInterface()->OpenTab(GURL("about:blank"), /*index=*/-1);
+    return NavigateTab(tab, url);
+  }
+};
 
 IN_PROC_BROWSER_TEST_F(TabModelJniBridgeTest, AddToGroupWithOutOfOrderHandles) {
   // Create some tabs. This is likely, though not guaranteed, to create
@@ -149,6 +211,186 @@ IN_PROC_BROWSER_TEST_F(TabModelJniBridgeTest, ObserverOnTabAddedIndex) {
   EXPECT_EQ(opened_tab, new_tab);
 
   tab_list->RemoveTabListInterfaceObserver(&observer);
+}
+
+IN_PROC_BROWSER_TEST_F(TabModelJniBridgeTest, SetMuteSettingSingleTab) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url = embedded_test_server()->GetURL("/title1.html");
+  tabs::TabInterface* tab = NavigateTab(GetTabListInterface()->GetTab(0), url);
+  ASSERT_TRUE(tab);
+  TabAndroid* tab_android = ToTabAndroid(tab);
+  ASSERT_TRUE(tab_android);
+
+  // Sound content setting should initially be CONTENT_SETTING_ALLOW.
+  EXPECT_EQ(CONTENT_SETTING_ALLOW, GetSoundSetting(url));
+
+  // Muting the tab sets the sound content setting to CONTENT_SETTING_BLOCK and
+  // mutes the WebContents audio.
+  SetMuteSetting({tab_android}, /*mute=*/true);
+  EXPECT_EQ(CONTENT_SETTING_BLOCK, GetSoundSetting(url));
+  EXPECT_TRUE(tab->GetContents()->IsAudioMuted());
+
+  // Unmuting the tab restores the sound content setting to
+  // CONTENT_SETTING_ALLOW and unmutes the WebContents audio.
+  SetMuteSetting({tab_android}, /*mute=*/false);
+  EXPECT_EQ(CONTENT_SETTING_ALLOW, GetSoundSetting(url));
+  EXPECT_FALSE(tab->GetContents()->IsAudioMuted());
+}
+
+IN_PROC_BROWSER_TEST_F(TabModelJniBridgeTest, SetMuteSettingChromeScheme) {
+  const GURL chrome_url("chrome://version");
+  tabs::TabInterface* tab =
+      NavigateTab(GetTabListInterface()->GetTab(0), chrome_url);
+  ASSERT_TRUE(tab);
+  TabAndroid* tab_android = ToTabAndroid(tab);
+  ASSERT_TRUE(tab_android);
+
+  EXPECT_FALSE(tab->GetContents()->IsAudioMuted());
+
+  HostContentSettingsMap* settings_map = GetHostContentSettingsMap();
+  const size_t initial_settings_count =
+      settings_map->GetSettingsForOneType(ContentSettingsType::SOUND).size();
+
+  // Muting a chrome:// tab toggles WebContents audio mute state without
+  // creating a HostContentSettingsMap exception.
+  SetMuteSetting({tab_android}, /*mute=*/true);
+  EXPECT_TRUE(tab->GetContents()->IsAudioMuted());
+  EXPECT_EQ(CONTENT_SETTING_ALLOW, GetSoundSetting(chrome_url));
+  EXPECT_EQ(
+      initial_settings_count,
+      settings_map->GetSettingsForOneType(ContentSettingsType::SOUND).size());
+
+  // Strengthen the verification: iterate through all sound settings to ensure
+  // no host-specific pattern was created that matches the chrome:// URL,
+  // confirming that internal scheme URLs bypass content settings map rules.
+  for (const auto& setting :
+       settings_map->GetSettingsForOneType(ContentSettingsType::SOUND)) {
+    if (!setting.primary_pattern.MatchesAllHosts()) {
+      EXPECT_FALSE(setting.primary_pattern.Matches(chrome_url));
+    }
+  }
+
+  // Unmuting the chrome:// tab toggles WebContents audio mute back.
+  SetMuteSetting({tab_android}, /*mute=*/false);
+  EXPECT_FALSE(tab->GetContents()->IsAudioMuted());
+  EXPECT_EQ(CONTENT_SETTING_ALLOW, GetSoundSetting(chrome_url));
+  EXPECT_EQ(
+      initial_settings_count,
+      settings_map->GetSettingsForOneType(ContentSettingsType::SOUND).size());
+}
+
+IN_PROC_BROWSER_TEST_F(TabModelJniBridgeTest,
+                       SetMuteSettingMultipleTabsSameOrigin) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url_a1 = embedded_test_server()->GetURL("a.com", "/title1.html");
+  const GURL url_a2 = embedded_test_server()->GetURL("a.com", "/title2.html");
+  const GURL url_b = embedded_test_server()->GetURL("b.com", "/title1.html");
+
+  tabs::TabInterface* tab1_interface =
+      NavigateTab(GetTabListInterface()->GetTab(0), url_a1);
+  ASSERT_TRUE(tab1_interface);
+  TabAndroid* tab1 = ToTabAndroid(tab1_interface);
+  ASSERT_TRUE(tab1);
+
+  tabs::TabInterface* tab2 = OpenAndNavigateTab(url_a2);
+  ASSERT_TRUE(tab2);
+  TabAndroid* tab2_android = ToTabAndroid(tab2);
+  ASSERT_TRUE(tab2_android);
+
+  tabs::TabInterface* tab3_interface = OpenAndNavigateTab(url_b);
+  ASSERT_TRUE(tab3_interface);
+  TabAndroid* tab3 = ToTabAndroid(tab3_interface);
+  ASSERT_TRUE(tab3);
+
+  EXPECT_EQ(CONTENT_SETTING_ALLOW, GetSoundSetting(url_a1));
+  EXPECT_EQ(CONTENT_SETTING_ALLOW, GetSoundSetting(url_a2));
+  EXPECT_EQ(CONTENT_SETTING_ALLOW, GetSoundSetting(url_b));
+
+  // Muting tab1 (a.com) and tab3 (b.com) should also mute tab2 because tab2
+  // shares the same origin with tab1, even though tab2 is not passed in the
+  // list.
+  SetMuteSetting({tab1, tab3}, /*mute=*/true);
+  EXPECT_EQ(CONTENT_SETTING_BLOCK, GetSoundSetting(url_a1));
+  EXPECT_EQ(CONTENT_SETTING_BLOCK, GetSoundSetting(url_a2));
+  EXPECT_EQ(CONTENT_SETTING_BLOCK, GetSoundSetting(url_b));
+  EXPECT_TRUE(tab1->web_contents()->IsAudioMuted());
+  EXPECT_TRUE(tab2->GetContents()->IsAudioMuted());
+  EXPECT_TRUE(tab3->web_contents()->IsAudioMuted());
+
+  // Unmuting with tab1, tab2, and tab3 in the same batch tests unmuting with
+  // duplicate origins and restores the sound setting for all tabs.
+  SetMuteSetting({tab1, tab2_android, tab3}, /*mute=*/false);
+  EXPECT_EQ(CONTENT_SETTING_ALLOW, GetSoundSetting(url_a1));
+  EXPECT_EQ(CONTENT_SETTING_ALLOW, GetSoundSetting(url_a2));
+  EXPECT_EQ(CONTENT_SETTING_ALLOW, GetSoundSetting(url_b));
+  EXPECT_FALSE(tab1->web_contents()->IsAudioMuted());
+  EXPECT_FALSE(tab2->GetContents()->IsAudioMuted());
+  EXPECT_FALSE(tab3->web_contents()->IsAudioMuted());
+}
+
+IN_PROC_BROWSER_TEST_F(TabModelJniBridgeTest, SetMuteSettingEmptyUrl) {
+  // Insert a new tab with an un-navigated WebContents (empty URL).
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(GetProfile()));
+  tabs::TabInterface* empty_tab = GetTabListInterface()->InsertWebContentsAt(
+      /*index=*/1, std::move(web_contents), /*should_pin=*/false,
+      /*group=*/std::nullopt);
+  ASSERT_TRUE(empty_tab);
+  EXPECT_TRUE(empty_tab->GetContents()->GetLastCommittedURL().is_empty());
+
+  TabAndroid* empty_tab_android = ToTabAndroid(empty_tab);
+  ASSERT_TRUE(empty_tab_android);
+
+  // Passing empty URL tab should gracefully skip without crashing or modifying
+  // settings.
+  HostContentSettingsMap* settings_map = GetHostContentSettingsMap();
+  const size_t initial_settings_count =
+      settings_map->GetSettingsForOneType(ContentSettingsType::SOUND).size();
+  SetMuteSetting({empty_tab_android}, /*mute=*/true);
+  EXPECT_EQ(
+      initial_settings_count,
+      settings_map->GetSettingsForOneType(ContentSettingsType::SOUND).size());
+  SetMuteSetting({empty_tab_android}, /*mute=*/false);
+  EXPECT_EQ(
+      initial_settings_count,
+      settings_map->GetSettingsForOneType(ContentSettingsType::SOUND).size());
+}
+
+IN_PROC_BROWSER_TEST_F(TabModelJniBridgeTest,
+                       SetMuteSettingWithWildcardPattern) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL subdomain_url =
+      embedded_test_server()->GetURL("sub.example.com", "/title1.html");
+  const GURL another_subdomain_url =
+      embedded_test_server()->GetURL("another.example.com", "/title1.html");
+
+  // Set a wildcard rule to block sound on [*.]example.com.
+  GetHostContentSettingsMap()->SetContentSettingCustomScope(
+      ContentSettingsPattern::FromString("[*.]example.com"),
+      ContentSettingsPattern::Wildcard(), ContentSettingsType::SOUND,
+      CONTENT_SETTING_BLOCK);
+
+  tabs::TabInterface* tab =
+      NavigateTab(GetTabListInterface()->GetTab(0), subdomain_url);
+  ASSERT_TRUE(tab);
+  TabAndroid* tab_android = ToTabAndroid(tab);
+  ASSERT_TRUE(tab_android);
+
+  // Both subdomains should initially have sound blocked by the wildcard rule.
+  EXPECT_EQ(CONTENT_SETTING_BLOCK, GetSoundSetting(subdomain_url));
+  EXPECT_EQ(CONTENT_SETTING_BLOCK, GetSoundSetting(another_subdomain_url));
+
+  // Unmuting sub.example.com creates a more specific exception for it.
+  SetMuteSetting({tab_android}, /*mute=*/false);
+  EXPECT_EQ(CONTENT_SETTING_ALLOW, GetSoundSetting(subdomain_url));
+
+  // Another subdomain should still have sound blocked by the wildcard rule.
+  EXPECT_EQ(CONTENT_SETTING_BLOCK, GetSoundSetting(another_subdomain_url));
+
+  // Muting sub.example.com clears the specific exception back to default.
+  SetMuteSetting({tab_android}, /*mute=*/true);
+  EXPECT_EQ(CONTENT_SETTING_BLOCK, GetSoundSetting(subdomain_url));
 }
 
 }  // namespace
