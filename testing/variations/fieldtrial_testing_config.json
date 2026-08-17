@@ -309,7 +309,7 @@
                 {
                     "name": "Control",
                     "disable_features": [
-                        "AccessibilityDeprecateJavaNodecache"
+                        "AccessibilityDeprecateJavaNodeCache"
                     ]
                 }
             ]
