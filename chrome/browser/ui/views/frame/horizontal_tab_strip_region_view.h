@@ -154,7 +154,6 @@ class HorizontalTabStripRegionViewNew : public BaseTabStripRegionView {
   views::View::Views GetChildrenInZOrder() override;
   void Layout(PassKey) override;
 
-  Profile* profile();
   bool HasLeadingButtons() const { return false; }
 
   // TabStripRegionView:
@@ -178,12 +177,17 @@ class HorizontalTabStripRegionViewNew : public BaseTabStripRegionView {
   // if we did not show the scroll buttons. To be used only in Layout().
   bool ComputeIsUnpinnedTabsScrollable(views::ManualLayoutUtil& layout_util);
 
+  void UpdateButtonBorders();
+
+  raw_ptr<TabStripActionContainer> tab_strip_action_container_ = nullptr;
   raw_ptr<views::View> reserved_grab_handle_space_ = nullptr;
   raw_ptr<TabStripComboButton> combo_button_ = nullptr;
   raw_ptr<views::Button> new_tab_button_ = nullptr;
   raw_ptr<TabScrollButtonContainer> scroll_button_container_ = nullptr;
 
   std::unique_ptr<views::ActionViewController> action_view_controller_;
+
+  base::CallbackListSubscription subscription_;
 };
 
 using HorizontalTabStripRegionView = HorizontalTabStripRegionViewOld;

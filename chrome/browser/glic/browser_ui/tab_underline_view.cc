@@ -203,9 +203,9 @@ int TabUnderlineView::ComputeDimension() {
     return kMinUnderlineWidth;
   }
 
-  int insets_dim = (orientation_ == Orientation::kHorizontal)
-                       ? parent()->GetInsets().width()
-                       : parent()->GetInsets().height();
+  gfx::Insets insets = insets_.value_or(parent()->GetInsets());
+  int insets_dim = (orientation_ == Orientation::kHorizontal) ? insets.width()
+                                                              : insets.height();
 
   // Underline should use either the width of the tab's contents bounds or the
   // width of the favicon, whichever is greater.
@@ -219,6 +219,11 @@ int TabUnderlineView::ComputeDimension() {
 
 void TabUnderlineView::SetOrientation(Orientation orientation) {
   orientation_ = orientation;
+}
+
+void TabUnderlineView::SetInsets(const gfx::Insets& insets) {
+  insets_ = insets;
+  SchedulePaint();
 }
 
 void TabUnderlineView::DrawEffect(gfx::Canvas* canvas,

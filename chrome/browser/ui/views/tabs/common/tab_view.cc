@@ -325,14 +325,12 @@ TabView::TabView(TabCollectionNode* collection_node)
                                  tab->GetHandle()),
                              browser_window, tab->GetHandle()))
                          .Build());
-    if (orientation_ == TabStripOrientation::kVertical) {
-      glic_tab_underline_view_->SetOrientation(
-          glic::TabUnderlineView::Orientation::kVertical);
-      glic_tab_underline_view_->SetProperty(views::kViewIgnoredByLayoutKey,
-                                            true);
-      glic_tab_underline_view_->SetBoundsRect(
-          gfx::Rect(0, 0, 2 * glic::TabUnderlineView::kEffectThickness,
-                    GetLayoutConstant(LayoutConstant::kVerticalTabHeight)));
+    const bool is_horizontal = orientation_ == TabStripOrientation::kHorizontal;
+    glic_tab_underline_view_->SetOrientation(
+        is_horizontal ? glic::TabUnderlineView::Orientation::kHorizontal
+                      : glic::TabUnderlineView::Orientation::kVertical);
+    if (is_horizontal) {
+      glic_tab_underline_view_->SetInsets(tab_styling_->GetContentsInsets());
     }
   }
 

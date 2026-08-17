@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_GLIC_BROWSER_UI_TAB_UNDERLINE_VIEW_H_
 #define CHROME_BROWSER_GLIC_BROWSER_UI_TAB_UNDERLINE_VIEW_H_
 
+#include <optional>
+
 #include "base/scoped_observation.h"
 #include "cc/paint/paint_shader.h"
 #include "chrome/browser/glic/browser_ui/animated_effect_view.h"
@@ -15,6 +17,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/compositor/compositor_animation_observer.h"
 #include "ui/compositor/compositor_observer.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 
@@ -78,6 +81,7 @@ class TabUnderlineView : public AnimatedEffectView,
   };
 
   void SetOrientation(Orientation orientation);
+  void SetInsets(const gfx::Insets& insets);
 
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kGlicTabUnderlineElementId);
 
@@ -115,6 +119,7 @@ class TabUnderlineView : public AnimatedEffectView,
   tabs::TabHandle tab_handle_;
 
   Orientation orientation_ = Orientation::kHorizontal;
+  std::optional<gfx::Insets> insets_;
 
   base::CallbackListSubscription active_tab_subscription_;
 };

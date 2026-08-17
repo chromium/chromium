@@ -94,6 +94,14 @@ views::ProposedLayout TabViewVerticalLayout::CalculateProposedLayout(
     }
   }
 
+  if (TabView().glic_tab_underline_view_) {
+    const gfx::Rect glic_bounds =
+        gfx::Rect(0, 0, 2 * glic::TabUnderlineView::kEffectThickness, height);
+    layouts.child_layouts.emplace_back(
+        TabView().glic_tab_underline_view_.get(),
+        TabView().glic_tab_underline_view_->GetVisible(), glic_bounds);
+  }
+
   return layouts;
 }
 
