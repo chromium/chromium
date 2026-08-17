@@ -1195,7 +1195,6 @@ ServiceWorkerRegistry::GetOrCreateRegistration(
   scoped_refptr<ServiceWorkerRegistration> registration =
       context_->GetLiveRegistration(data.registration_id);
   if (registration) {
-    CHECK_EQ(registration->key(), data.key);
     return registration;
   }
 
@@ -1211,9 +1210,7 @@ ServiceWorkerRegistry::GetOrCreateRegistration(
 
   scoped_refptr<ServiceWorkerVersion> version =
       context_->GetLiveVersion(data.version_id);
-  if (version) {
-    CHECK_EQ(version->key(), data.key);
-  } else {
+  if (!version) {
     version = base::MakeRefCounted<ServiceWorkerVersion>(
         registration.get(), data.script, data.script_type, data.version_id,
         std::move(version_reference), context_->AsWeakPtr(),
