@@ -4,6 +4,7 @@
 
 package org.chromium.media;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -38,6 +39,8 @@ import androidx.annotation.IntDef;
 
 import org.jni_zero.JNINamespace;
 
+import org.chromium.base.ApplicationStatus;
+import org.chromium.base.ApplicationStatus.WindowFocusChangedListener;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
@@ -79,6 +82,10 @@ public class VideoCaptureCamera2 extends VideoCapture {
             assert mCameraThreadHandler.getLooper() == Looper.myLooper() : "called on wrong thread";
             Log.e(TAG, "cameraDevice was closed unexpectedly");
 
+            // onDisconnected can be triggered by higher-priority client eviction, physical
+            // disconnection, security policy or permission changes. Try to re-open the camera on
+            // the next time the window regains focus.
+            mRetryCameraOpenOnFocus = true;
             cameraDevice.close();
             mCameraDevice = null;
             changeCameraStateAndNotify(CameraState.STOPPED);
@@ -386,6 +393,7 @@ public class VideoCaptureCamera2 extends VideoCapture {
         public void run() {
             assert mCameraThreadHandler.getLooper() == Looper.myLooper() : "called on wrong thread";
 
+            mRetryCameraOpenOnFocus = false;
             if (mCameraDevice == null) return;
 
             // As per Android API documentation, this will automatically abort captures
@@ -1155,6 +1163,8 @@ public class VideoCaptureCamera2 extends VideoCapture {
     private int mIso;
     private boolean mRedEyeReduction;
     private int mFillLightMode = AndroidFillLightMode.OFF;
+    private boolean mRetryCameraOpenOnFocus;
+    private @Nullable WindowFocusChangedListener mWindowFocusListener;
     private boolean mTorch;
     private boolean mEnableFaceDetection;
     private boolean mUseHardwareBuffers;
@@ -1839,6 +1849,39 @@ public class VideoCaptureCamera2 extends VideoCapture {
                     ContextUtils.getApplicationContext(), mInteractiveStateReceiver, filter);
         }
 
+        if (mWindowFocusListener == null && ApplicationStatus.isInitialized()) {
+            mWindowFocusListener =
+                    new WindowFocusChangedListener() {
+                        @Override
+                        public void onWindowFocusChanged(Activity activity, boolean hasFocus) {
+                            mCameraThreadHandler.post(
+                                    new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            if (hasFocus && mRetryCameraOpenOnFocus) {
+                                                mRetryCameraOpenOnFocus = false;
+                                                Log.d(
+                                                        TAG,
+                                                        "Window regained focus, attempting to"
+                                                                + " resume camera.");
+                                                onInteractiveStateChanged(true);
+                                            }
+                                        }
+                                    });
+                        }
+                    };
+            final WindowFocusChangedListener listenerToRegister = mWindowFocusListener;
+            new Handler(Looper.getMainLooper())
+                    .post(
+                            new Runnable() {
+                                @Override
+                                public void run() {
+                                    ApplicationStatus.registerWindowFocusChangedListener(
+                                            listenerToRegister);
+                                }
+                            });
+        }
+
         return true;
     }
 
@@ -1970,6 +2013,19 @@ public class VideoCaptureCamera2 extends VideoCapture {
         if (mInteractiveStateReceiver != null) {
             ContextUtils.getApplicationContext().unregisterReceiver(mInteractiveStateReceiver);
             mInteractiveStateReceiver = null;
+        }
+        if (mWindowFocusListener != null) {
+            final WindowFocusChangedListener listenerToUnregister = mWindowFocusListener;
+            mWindowFocusListener = null;
+            new Handler(Looper.getMainLooper())
+                    .post(
+                            new Runnable() {
+                                @Override
+                                public void run() {
+                                    ApplicationStatus.unregisterWindowFocusChangedListener(
+                                            listenerToUnregister);
+                                }
+                            });
         }
         Log.d(TAG, "deallocate");
     }
