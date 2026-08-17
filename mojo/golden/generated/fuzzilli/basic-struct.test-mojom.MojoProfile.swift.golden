@@ -45,7 +45,7 @@ extension ObjectGroup {
             ] => .undefined,
             "getStruct": [
                 .plain(.string),
-            ] => .jsPromise,
+            ] => .jsPromise(resolvingTo: .jsGoldenPrimary_GetStructResponse),
             "syncGetStruct": [
                 .plain(.string),
             ] => .jsGoldenPrimary_SyncGetStructResponse,
@@ -99,6 +99,11 @@ extension ILType {
     fileprivate static let jsGoldenSimpleStructConstructor: ILType = .constructor([
         .plain(.string),
     ] => .jsGoldenSimpleStruct)
+    fileprivate static let jsGoldenPrimary_GetStructResponse: ILType = .object(
+        ofGroup: "golden.Primary_GetStructResponse",
+        withProperties: [
+            "result",
+        ])
     fileprivate static let jsGoldenPrimary_SyncGetStructResponse: ILType = .object(
         ofGroup: "golden.Primary_SyncGetStructResponse",
         withProperties: [
@@ -124,6 +129,14 @@ extension ObjectGroup {
         instanceType: .jsGoldenSimpleStruct,
         properties: [
             "field": .string,
+        ],
+        methods: [:]
+    )
+    fileprivate static let goldenPrimaryGetStructResponse = ObjectGroup(
+        name: "golden.Primary_GetStructResponse",
+        instanceType: .jsGoldenPrimary_GetStructResponse,
+        properties: [
+            "result": .jsGoldenSimpleStruct,
         ],
         methods: [:]
     )
@@ -297,6 +310,7 @@ let mojoPrimaryProfile = Profile(
         .goldenPrimaryPendingReceiver,
         .goldenLargeStruct,
         .goldenSimpleStruct,
+        .goldenPrimaryGetStructResponse,
         .goldenPrimarySyncGetStructResponse,
     ] + commonMojoObjectGroups,
     additionalEnumerations: [

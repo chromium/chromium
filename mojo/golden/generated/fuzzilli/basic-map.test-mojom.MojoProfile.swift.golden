@@ -42,11 +42,11 @@ extension ObjectGroup {
             "passMap": [
                 .plain(.jsString_GoldenEntryMap),
                 .plain(.string),
-            ] => .jsPromise,
+            ] => .jsPromise(resolvingTo: .jsGoldenPrimary_PassMapResponse),
             "passNestedMap": [
                 .plain(.jsInteger_String_GoldenEntryMapMap),
                 .plain(.integer),
-            ] => .jsPromise,
+            ] => .jsPromise(resolvingTo: .jsGoldenPrimary_PassNestedMapResponse),
             "getMap": [
             ] => .jsGoldenPrimary_GetMapResponse,
         ]
@@ -81,6 +81,16 @@ extension ILType {
         ])
     fileprivate static let jsGoldenEntryConstructor: ILType = .constructor([
     ] => .jsGoldenEntry)
+    fileprivate static let jsGoldenPrimary_PassMapResponse: ILType = .object(
+        ofGroup: "golden.Primary_PassMapResponse",
+        withProperties: [
+            "result",
+        ])
+    fileprivate static let jsGoldenPrimary_PassNestedMapResponse: ILType = .object(
+        ofGroup: "golden.Primary_PassNestedMapResponse",
+        withProperties: [
+            "result",
+        ])
     fileprivate static let jsGoldenPrimary_GetMapResponse: ILType = .object(
         ofGroup: "golden.Primary_GetMapResponse",
         withProperties: [
@@ -93,6 +103,22 @@ extension ObjectGroup {
         name: "golden.Entry",
         instanceType: .jsGoldenEntry,
         properties: [
+        ],
+        methods: [:]
+    )
+    fileprivate static let goldenPrimaryPassMapResponse = ObjectGroup(
+        name: "golden.Primary_PassMapResponse",
+        instanceType: .jsGoldenPrimary_PassMapResponse,
+        properties: [
+            "result": .jsGoldenEntry,
+        ],
+        methods: [:]
+    )
+    fileprivate static let goldenPrimaryPassNestedMapResponse = ObjectGroup(
+        name: "golden.Primary_PassNestedMapResponse",
+        instanceType: .jsGoldenPrimary_PassNestedMapResponse,
+        properties: [
+            "result": .jsString_GoldenEntryMap,
         ],
         methods: [:]
     )
@@ -291,6 +317,8 @@ let mojoPrimaryProfile = Profile(
         .goldenPrimaryRemoteWrapper,
         .goldenPrimaryPendingReceiver,
         .goldenEntry,
+        .goldenPrimaryPassMapResponse,
+        .goldenPrimaryPassNestedMapResponse,
         .goldenPrimaryGetMapResponse,
     ] + commonMojoObjectGroups,
     additionalEnumerations: [

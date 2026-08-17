@@ -44,7 +44,7 @@ extension ObjectGroup {
             ] => .undefined,
             "getUnion": [
                 .plain(.boolean),
-            ] => .jsPromise,
+            ] => .jsPromise(resolvingTo: .jsGoldenPrimary_GetUnionResponse),
             "syncGetUnion": [
                 .plain(.boolean),
             ] => .jsGoldenPrimary_SyncGetUnionResponse,
@@ -82,6 +82,11 @@ extension ILType {
     fileprivate static let jsGoldenTokenConstructor: ILType = .constructor([
         .plain(.integer),
     ] => .jsGoldenToken)
+    fileprivate static let jsGoldenPrimary_GetUnionResponse: ILType = .object(
+        ofGroup: "golden.Primary_GetUnionResponse",
+        withProperties: [
+            "result",
+        ])
     fileprivate static let jsGoldenPrimary_SyncGetUnionResponse: ILType = .object(
         ofGroup: "golden.Primary_SyncGetUnionResponse",
         withProperties: [
@@ -95,6 +100,14 @@ extension ObjectGroup {
         instanceType: .jsGoldenToken,
         properties: [
             "data": .integer,
+        ],
+        methods: [:]
+    )
+    fileprivate static let goldenPrimaryGetUnionResponse = ObjectGroup(
+        name: "golden.Primary_GetUnionResponse",
+        instanceType: .jsGoldenPrimary_GetUnionResponse,
+        properties: [
+            "result": .jsGoldenSimpleUnion,
         ],
         methods: [:]
     )
@@ -266,6 +279,7 @@ let mojoPrimaryProfile = Profile(
         .goldenPrimaryRemoteWrapper,
         .goldenPrimaryPendingReceiver,
         .goldenToken,
+        .goldenPrimaryGetUnionResponse,
         .goldenPrimarySyncGetUnionResponse,
     ] + commonMojoObjectGroups,
     additionalEnumerations: [

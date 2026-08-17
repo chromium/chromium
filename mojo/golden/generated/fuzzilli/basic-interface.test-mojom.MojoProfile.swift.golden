@@ -41,7 +41,7 @@ extension ObjectGroup {
         methods: [
             "method": [
                 .plain(.boolean),
-            ] => .jsPromise,
+            ] => .jsPromise(resolvingTo: .jsGoldenPrimary_MethodResponse),
             "methodWithoutResponse": [
                 .plain(.string),
                 .plain(.boolean),
@@ -75,6 +75,11 @@ extension ObjectGroup {
 /// Structs
 ///
 extension ILType {
+    fileprivate static let jsGoldenPrimary_MethodResponse: ILType = .object(
+        ofGroup: "golden.Primary_MethodResponse",
+        withProperties: [
+            "result",
+        ])
     fileprivate static let jsGoldenPrimary_SyncMethodResponse: ILType = .object(
         ofGroup: "golden.Primary_SyncMethodResponse",
         withProperties: [
@@ -83,6 +88,14 @@ extension ILType {
 }
 
 extension ObjectGroup {
+    fileprivate static let goldenPrimaryMethodResponse = ObjectGroup(
+        name: "golden.Primary_MethodResponse",
+        instanceType: .jsGoldenPrimary_MethodResponse,
+        properties: [
+            "result": .string,
+        ],
+        methods: [:]
+    )
     fileprivate static let goldenPrimarySyncMethodResponse = ObjectGroup(
         name: "golden.Primary_SyncMethodResponse",
         instanceType: .jsGoldenPrimary_SyncMethodResponse,
@@ -206,6 +219,7 @@ let mojoPrimaryProfile = Profile(
         .goldenPrimaryRemote,
         .goldenPrimaryRemoteWrapper,
         .goldenPrimaryPendingReceiver,
+        .goldenPrimaryMethodResponse,
         .goldenPrimarySyncMethodResponse,
     ] + commonMojoObjectGroups,
     additionalEnumerations: [

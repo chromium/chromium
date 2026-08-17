@@ -46,15 +46,15 @@ extension ObjectGroup {
             "get": [
                 .plain(.jsGoldenEntryArray),
                 .plain(.integer),
-            ] => .jsPromise,
+            ] => .jsPromise(resolvingTo: .jsGoldenPrimary_GetResponse),
             "syncGetBools": [
             ] => .jsGoldenPrimary_SyncGetBoolsResponse,
             "syncGetStrings": [
             ] => .jsGoldenPrimary_SyncGetStringsResponse,
             "getBools": [
-            ] => .jsPromise,
+            ] => .jsPromise(resolvingTo: .jsGoldenPrimary_GetBoolsResponse),
             "getStrings": [
-            ] => .jsPromise,
+            ] => .jsPromise(resolvingTo: .jsGoldenPrimary_GetStringsResponse),
             "passFloats": [
                 .plain(.jsFloatArray),
             ] => .undefined,
@@ -93,6 +93,11 @@ extension ILType {
         ])
     fileprivate static let jsGoldenEntryConstructor: ILType = .constructor([
     ] => .jsGoldenEntry)
+    fileprivate static let jsGoldenPrimary_GetResponse: ILType = .object(
+        ofGroup: "golden.Primary_GetResponse",
+        withProperties: [
+            "result",
+        ])
     fileprivate static let jsGoldenPrimary_SyncGetBoolsResponse: ILType = .object(
         ofGroup: "golden.Primary_SyncGetBoolsResponse",
         withProperties: [
@@ -103,6 +108,16 @@ extension ILType {
         withProperties: [
             "strings",
         ])
+    fileprivate static let jsGoldenPrimary_GetBoolsResponse: ILType = .object(
+        ofGroup: "golden.Primary_GetBoolsResponse",
+        withProperties: [
+            "bools",
+        ])
+    fileprivate static let jsGoldenPrimary_GetStringsResponse: ILType = .object(
+        ofGroup: "golden.Primary_GetStringsResponse",
+        withProperties: [
+            "strings",
+        ])
 }
 
 extension ObjectGroup {
@@ -110,6 +125,14 @@ extension ObjectGroup {
         name: "golden.Entry",
         instanceType: .jsGoldenEntry,
         properties: [
+        ],
+        methods: [:]
+    )
+    fileprivate static let goldenPrimaryGetResponse = ObjectGroup(
+        name: "golden.Primary_GetResponse",
+        instanceType: .jsGoldenPrimary_GetResponse,
+        properties: [
+            "result": .jsGoldenEntry,
         ],
         methods: [:]
     )
@@ -124,6 +147,22 @@ extension ObjectGroup {
     fileprivate static let goldenPrimarySyncGetStringsResponse = ObjectGroup(
         name: "golden.Primary_SyncGetStringsResponse",
         instanceType: .jsGoldenPrimary_SyncGetStringsResponse,
+        properties: [
+            "strings": .jsStringArray,
+        ],
+        methods: [:]
+    )
+    fileprivate static let goldenPrimaryGetBoolsResponse = ObjectGroup(
+        name: "golden.Primary_GetBoolsResponse",
+        instanceType: .jsGoldenPrimary_GetBoolsResponse,
+        properties: [
+            "bools": .jsBooleanArray,
+        ],
+        methods: [:]
+    )
+    fileprivate static let goldenPrimaryGetStringsResponse = ObjectGroup(
+        name: "golden.Primary_GetStringsResponse",
+        instanceType: .jsGoldenPrimary_GetStringsResponse,
         properties: [
             "strings": .jsStringArray,
         ],
@@ -321,8 +360,11 @@ let mojoPrimaryProfile = Profile(
         .goldenPrimaryRemoteWrapper,
         .goldenPrimaryPendingReceiver,
         .goldenEntry,
+        .goldenPrimaryGetResponse,
         .goldenPrimarySyncGetBoolsResponse,
         .goldenPrimarySyncGetStringsResponse,
+        .goldenPrimaryGetBoolsResponse,
+        .goldenPrimaryGetStringsResponse,
     ] + commonMojoObjectGroups,
     additionalEnumerations: [
     ] + commonMojoEnumerations,
