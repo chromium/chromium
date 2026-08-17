@@ -116,18 +116,39 @@ public class BookmarkBarSettingsFragment extends ChromeBaseSettingsFragment
 
     private ChromeManagedPreferenceDelegate createManagedPreferenceDelegate() {
         return new ChromeManagedPreferenceDelegate(getProfile()) {
+            // If true, helper methods in ManagedPreferencesUtils will disable the preference
+            // and display the text "Managed by your organization" with the business icon.
             @Override
             public boolean isPreferenceControlledByPolicy(Preference preference) {
-                return BookmarkBarUtils.isUserPrefsShowBookmarkBarManagedByPolicy(getProfile());
+                return BookmarkBarUtils.isUserPrefsBookmarkBarVisibilityStateManagedByPolicy(
+                        getProfile());
             }
 
+            // If true, helper methods in ManagedPreferencesUtils will display the text
+            // "Recommended by your organization" with the business icon.
             @Override
             public @Nullable Boolean isPreferenceRecommendation(Preference preference) {
-                if (!BookmarkBarUtils.isUserPrefsShowBookmarkBarRecommended(getProfile())) {
+                if (!BookmarkBarUtils.isUserPrefsBookmarkBarVisibilityStateRecommended(
+                        getProfile())) {
+                    // No recommendation exists.
                     return null;
                 }
-                return BookmarkBarUtils.isUserPrefsShowBookmarkBarFollowingRecommendation(
-                        getProfile());
+
+                // On tablets, we use device-specific SharedPreferences. This requires
+                // special treatment for enterprise policies; which are UserPrefs bound. If
+                // a user has set a SharedPreference value, we must compare that value to
+                // the UserPrefs policy's recommended value directly.
+                if (BookmarkBarUtils.hasUserSetDevicePrefBookmarkBarVisibilityState()) {
+                    return BookmarkBarUtils.getDevicePrefBookmarkBarVisibilityState(getProfile())
+                            == BookmarkBarUtils
+                                    .getUserPrefsBookmarkBarVisibilityStateRecommendedValue(
+                                            getProfile());
+                }
+
+                // In the user has not set a SharedPreferences value (which is always the
+                // case on Desktop), we can simply follow the standard UserPrefs flow.
+                return BookmarkBarUtils
+                        .isUserPrefsBookmarkBarVisibilityStateFollowingRecommendation(getProfile());
             }
         };
     }
