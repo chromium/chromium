@@ -889,7 +889,7 @@ IN_PROC_BROWSER_TEST_P(PrefetchActivationBeaconBrowserTest,
         }
         if (params->url_request.url == beacon_url) {
           beacon_seen = true;
-          EXPECT_EQ(params->url_request.method, "HEAD");
+          EXPECT_EQ(params->url_request.method, "GET");
           URLLoaderInterceptor::WriteResponse("", "", params->client.get());
           beacon_run_loop.Quit();
           return true;
@@ -1583,7 +1583,7 @@ IN_PROC_BROWSER_TEST_P(PrefetchActivationBeaconInterceptionBrowserTest,
 
   beacon_response_->WaitForRequest();
   EXPECT_EQ(beacon_response_->http_request()->method,
-            net::test_server::METHOD_HEAD);
+            net::test_server::METHOD_GET);
   beacon_response_->Send("HTTP/1.1 200 OK\r\n\r\n");
   beacon_response_->Done();
 

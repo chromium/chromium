@@ -51,7 +51,7 @@ class CONTENT_EXPORT PreloadActivationReportManager
   static PreloadActivationReportManager* GetOrCreateForBrowserContext(
       BrowserContext* browser_context);
 
-  // Sends a credentialless HEAD request to the specified endpoint.
+  // Sends a credentialless GET request to the specified endpoint.
   void ReportActivation(const GURL& endpoint, RenderFrameHost* rfh);
 
   size_t GetLoaderCountForTesting() const { return loaders_.size(); }

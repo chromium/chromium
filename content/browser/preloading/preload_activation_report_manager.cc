@@ -75,7 +75,7 @@ void PreloadActivationReportManager::ReportActivation(const GURL& endpoint,
   // TODO(crbug.com/499814382): Audit if the other parameters of the request.
   auto request = std::make_unique<network::ResourceRequest>();
   request->url = endpoint;
-  request->method = net::HttpRequestHeaders::kHeadMethod;
+  request->method = net::HttpRequestHeaders::kGetMethod;
   request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   request->devtools_request_id = devtools_request_id;
   request->resource_type = static_cast<int>(blink::mojom::ResourceType::kPing);
@@ -183,8 +183,8 @@ void PreloadActivationReportManager::OnRedirect(
     const network::mojom::URLResponseHead& response_head) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  // Enforce that the HTTP method must remain HEAD.
-  if (redirect_info.new_method != net::HttpRequestHeaders::kHeadMethod) {
+  // Enforce that the HTTP method must remain GET.
+  if (redirect_info.new_method != net::HttpRequestHeaders::kGetMethod) {
     devtools_instrumentation::OnPrefetchActivationBeaconRequestComplete(
         it->frame_tree_node_id, it->devtools_request_id,
         network::URLLoaderCompletionStatus(net::ERR_ABORTED));

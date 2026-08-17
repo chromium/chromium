@@ -50,7 +50,7 @@ TEST_F(PreloadActivationReportManagerTest, ReportActivation) {
   const network::ResourceRequest& request =
       test_url_loader_factory_.GetPendingRequest(0)->request;
   EXPECT_EQ(request.url, endpoint);
-  EXPECT_EQ(request.method, "HEAD");
+  EXPECT_EQ(request.method, "GET");
   EXPECT_TRUE(request.devtools_request_id.has_value());
 
   // Simulate successful response.
@@ -82,13 +82,13 @@ TEST_F(PreloadActivationReportManagerTest,
   network::TestURLLoaderFactory::PendingRequest* pending_request =
       custom_factory.GetPendingRequest(0);
   EXPECT_EQ(pending_request->request.url, endpoint);
-  EXPECT_EQ(pending_request->request.method, "HEAD");
+  EXPECT_EQ(pending_request->request.method, "GET");
 
   // Simulate redirect.
   net::RedirectInfo redirect_info;
   redirect_info.status_code = 302;
   redirect_info.new_url = redirect_endpoint;
-  redirect_info.new_method = "HEAD";
+  redirect_info.new_method = "GET";
 
   auto redirect_head = network::mojom::URLResponseHead::New();
   redirect_head->headers = base::MakeRefCounted<net::HttpResponseHeaders>(
@@ -140,7 +140,7 @@ TEST_F(PreloadActivationReportManagerTest,
   net::RedirectInfo redirect_info;
   redirect_info.status_code = 302;
   redirect_info.new_url = redirect_endpoint;
-  redirect_info.new_method = "HEAD";
+  redirect_info.new_method = "GET";
 
   auto redirect_head = network::mojom::URLResponseHead::New();
   redirect_head->headers = base::MakeRefCounted<net::HttpResponseHeaders>(
@@ -183,8 +183,8 @@ TEST_F(PreloadActivationReportManagerTest,
   net::RedirectInfo redirect_info;
   redirect_info.status_code = 302;
   redirect_info.new_url = redirect_endpoint;
-  // Change the method to GET, which should be blocked.
-  redirect_info.new_method = "GET";
+  // Change the method to POST, which should be blocked.
+  redirect_info.new_method = "POST";
 
   auto redirect_head = network::mojom::URLResponseHead::New();
   redirect_head->headers = base::MakeRefCounted<net::HttpResponseHeaders>(

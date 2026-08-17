@@ -18491,7 +18491,7 @@ class PrerenderActivationBeaconBrowserTest
     }
 
     if (base::StartsWith(path, "/beacon", base::CompareCase::SENSITIVE)) {
-      EXPECT_EQ(request.method, net::test_server::METHOD_HEAD);
+      EXPECT_EQ(request.method, net::test_server::METHOD_GET);
 
       GetUIThreadTaskRunner({})->PostTask(
           FROM_HERE,
@@ -18848,7 +18848,7 @@ class PrerenderActivationBeaconRedirectSameSiteBrowserTest
 
   std::unique_ptr<net::test_server::HttpResponse> HandleBeaconRequest(
       const net::test_server::HttpRequest& request) {
-    EXPECT_EQ(request.method, net::test_server::METHOD_HEAD);
+    EXPECT_EQ(request.method, net::test_server::METHOD_GET);
 
     GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
