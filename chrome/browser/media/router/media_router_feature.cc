@@ -50,7 +50,6 @@ BASE_FEATURE(kCastAllowAllIPsFeature,
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAllowAllSitesToInitiateMirroring,
              base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kDialMediaRouteProvider, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kDelayMediaSinkDiscovery, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kShowCastPermissionRejectedError,
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -180,10 +179,6 @@ std::string GetReceiverIdHashToken(PrefService* pref_service) {
     pref_service->SetString(prefs::kMediaRouterReceiverIdHashToken, token);
   }
   return token;
-}
-
-bool DialMediaRouteProviderEnabled() {
-  return base::FeatureList::IsEnabled(kDialMediaRouteProvider);
 }
 
 bool RedirectionMediaRouteProviderEnabled() {

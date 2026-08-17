@@ -6647,12 +6647,6 @@ inline constexpr char kDeviceSignalsBackfillDisclaimerDescription[] =
     "shown to managed users missing the device signals permission on chrome "
     "startup.";
 
-inline constexpr char kDialMediaRouteProviderName[] =
-    "Allow cast device discovery with DIAL protocol";
-inline constexpr char kDialMediaRouteProviderDescription[] =
-    "Enable/Disable the browser discovery of the DIAL support cast device."
-    "It sends a discovery SSDP message every 120 seconds";
-
 inline constexpr char kPictureInPictureMuteControlName[] =
     "Picture-in-Picture Mute Control";
 inline constexpr char kPictureInPictureMuteControlDescription[] =

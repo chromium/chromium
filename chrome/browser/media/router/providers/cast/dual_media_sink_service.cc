@@ -105,12 +105,10 @@ bool DualMediaSinkService::DialDiscoveryStarted() const {
 }
 
 DualMediaSinkService::DualMediaSinkService() {
-  if (DialMediaRouteProviderEnabled()) {
-    dial_media_sink_service_ = std::make_unique<DialMediaSinkService>();
-    dial_media_sink_service_->Initialize(
-        base::BindRepeating(&DualMediaSinkService::OnSinksDiscovered,
-                            base::Unretained(this), "dial"));
-  }
+  dial_media_sink_service_ = std::make_unique<DialMediaSinkService>();
+  dial_media_sink_service_->Initialize(
+      base::BindRepeating(&DualMediaSinkService::OnSinksDiscovered,
+                          base::Unretained(this), "dial"));
 
   cast_media_sink_service_ = std::make_unique<CastMediaSinkService>();
   cast_media_sink_service_->Initialize(
@@ -118,7 +116,7 @@ DualMediaSinkService::DualMediaSinkService() {
                           base::Unretained(this), "cast"),
       base::BindRepeating(&DualMediaSinkService::OnDiscoveryPermissionRejected,
                           base::Unretained(this)),
-      dial_media_sink_service_ ? dial_media_sink_service_->impl() : nullptr);
+      dial_media_sink_service_->impl());
 
   cast_channel::CastSocketService* cast_socket_service =
       cast_channel::CastSocketService::GetInstance();

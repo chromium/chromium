@@ -776,9 +776,7 @@ void MediaRouterDesktop::InitializeMediaRouteProviders() {
 
   InitializeWiredDisplayMediaRouteProvider();
   InitializeCastMediaRouteProvider();
-  if (DialMediaRouteProviderEnabled()) {
-    InitializeDialMediaRouteProvider();
-  }
+  InitializeDialMediaRouteProvider();
   if (RedirectionMediaRouteProviderEnabled()) {
     InitializeRedirectionMediaRouteProvider();
   }
