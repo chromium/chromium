@@ -258,8 +258,16 @@ TEST_F(StandaloneTrustedVaultClientTest,
   EXPECT_THAT(FetchKeys(client.get(), account_info), ElementsAre(kServerKey));
 }
 
+// TODO(crbug.com/543720939): Flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ShouldFollowKeyRotationOnUserEnrolment \
+  DISABLED_ShouldFollowKeyRotationOnUserEnrolment
+#else
+#define MAYBE_ShouldFollowKeyRotationOnUserEnrolment \
+  ShouldFollowKeyRotationOnUserEnrolment
+#endif
 TEST_F(StandaloneTrustedVaultClientTest,
-       ShouldFollowKeyRotationOnUserEnrolment) {
+       MAYBE_ShouldFollowKeyRotationOnUserEnrolment) {
   std::unique_ptr<StandaloneTrustedVaultClient> client = CreateClient();
   CoreAccountInfo account_info = MakeAccountAvailable(kTestEmail);
   WaitForIdle(client.get());
@@ -297,8 +305,16 @@ TEST_F(StandaloneTrustedVaultClientTest,
   EXPECT_TRUE(fake_security_domains_server_->AllMembersHaveKey(new_epoch_key));
 }
 
+// TODO(crbug.com/544711435): Flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ShouldResolveErrorAndRegisterFactorsAfterFollowingKeyRotation \
+  DISABLED_ShouldResolveErrorAndRegisterFactorsAfterFollowingKeyRotation
+#else
+#define MAYBE_ShouldResolveErrorAndRegisterFactorsAfterFollowingKeyRotation \
+  ShouldResolveErrorAndRegisterFactorsAfterFollowingKeyRotation
+#endif
 TEST_F(StandaloneTrustedVaultClientTest,
-       ShouldResolveErrorAndRegisterFactorsAfterFollowingKeyRotation) {
+       MAYBE_ShouldResolveErrorAndRegisterFactorsAfterFollowingKeyRotation) {
   const std::vector<uint8_t> kLocalKeyV1 = {1, 1, 1, 1};
   const std::vector<uint8_t> kRemoteKeyV2 = {2, 2, 2, 2};
   const int kLocalEpochV1 = 1;
