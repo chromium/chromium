@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.theme;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -18,6 +20,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.ui.util.ColorUtils;
@@ -134,5 +137,23 @@ public class ThemeUtilsUnitTest {
                 ThemeUtils.getThemedToolbarIconTintResForActivityState(
                         BrandedColorScheme.LIGHT_BRANDED_THEME, /* isActivityFocused= */ true);
         assertEquals(R.color.default_icon_color_dark_tint_list, tintRes);
+    }
+
+    @Test
+    public void getBackgroundColor_tabHasColor() {
+        Tab tab = mock(Tab.class);
+        when(tab.getBackgroundColor()).thenReturn(Color.RED);
+
+        assertEquals(Color.RED, ThemeUtils.getBackgroundColor(tab));
+    }
+
+    @Test
+    public void getBackgroundColor_defaultFallback() {
+        Tab tab = mock(Tab.class);
+        when(tab.getBackgroundColor()).thenReturn(Color.TRANSPARENT);
+        when(tab.getContext()).thenReturn(mContext);
+
+        int expected = ChromeColors.getDefaultThemeColor(mContext, /* isIncognito= */ false);
+        assertEquals(expected, ThemeUtils.getBackgroundColor(tab));
     }
 }
