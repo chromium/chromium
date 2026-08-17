@@ -744,9 +744,7 @@ bool SearchPrefetchService::OnNavigationLikely(
   if (!web_contents) {
     return false;
   }
-  if (!AllowTopNavigationPrefetch() && index == 0) {
-    return false;
-  }
+
   // Only prefetch search types.
   if (!AutocompleteMatch::IsSearchType(match.type)) {
     return false;

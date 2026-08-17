@@ -77,9 +77,6 @@ bool IsSearchMouseDownPrefetchEnabled();
 // Search suggestion. This is for Android only.
 bool IsTouchDownPrefetchEnabled();
 
-// Allows the top selection to be prefetched by navigation prefetch strategies.
-bool AllowTopNavigationPrefetch();
-
 // Allows search history suggestions to be prefetched by navigation prefetch
 // strategies.
 bool PrefetchSearchHistorySuggestions();
