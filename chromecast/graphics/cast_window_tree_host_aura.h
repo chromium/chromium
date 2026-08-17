@@ -15,8 +15,7 @@ namespace chromecast {
 // An aura::WindowTreeHost that correctly converts input events.
 class CastWindowTreeHostAura : public aura::WindowTreeHostPlatform {
  public:
-  CastWindowTreeHostAura(bool enable_input,
-                         ui::PlatformWindowInitProperties properties);
+  explicit CastWindowTreeHostAura(ui::PlatformWindowInitProperties properties);
 
   CastWindowTreeHostAura(const CastWindowTreeHostAura&) = delete;
   CastWindowTreeHostAura& operator=(const CastWindowTreeHostAura&) = delete;
@@ -31,7 +30,6 @@ class CastWindowTreeHostAura : public aura::WindowTreeHostPlatform {
       const gfx::Size& size_in_pixels) const override;
 
  private:
-  const bool enable_input_;
   std::unique_ptr<UiEventSource> ui_event_source_;
 };
 

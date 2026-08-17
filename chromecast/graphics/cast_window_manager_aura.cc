@@ -170,8 +170,7 @@ void CastLayoutManager::SetChildBounds(aura::Window* child,
 
 }  // namespace
 
-CastWindowManagerAura::CastWindowManagerAura(bool enable_input)
-    : enable_input_(enable_input) {}
+CastWindowManagerAura::CastWindowManagerAura() {}
 
 CastWindowManagerAura::~CastWindowManagerAura() {
   TearDown();
@@ -191,7 +190,7 @@ void CastWindowManagerAura::Setup() {
   LOG(INFO) << "Starting window manager, bounds: " << host_bounds.ToString();
   CHECK(aura::Env::GetInstance());
   window_tree_host_ = std::make_unique<CastWindowTreeHostAura>(
-      enable_input_, std::move(properties));
+      std::move(properties));
   window_tree_host_->InitHost();
   aura::Window* root_window = window_tree_host_->window();
   root_window->SetLayoutManager(

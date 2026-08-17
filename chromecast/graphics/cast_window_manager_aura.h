@@ -32,7 +32,7 @@ class CastWindowTreeHostAura;
 class CastWindowManagerAura : public CastWindowManager,
                               public aura::client::WindowParentingClient {
  public:
-  explicit CastWindowManagerAura(bool enable_input);
+  CastWindowManagerAura();
 
   CastWindowManagerAura(const CastWindowManagerAura&) = delete;
   CastWindowManagerAura& operator=(const CastWindowManagerAura&) = delete;
@@ -70,7 +70,6 @@ class CastWindowManagerAura : public CastWindowManager,
   }
 
  private:
-  const bool enable_input_;
 
   std::unique_ptr<CastWindowTreeHostAura> window_tree_host_;
   std::unique_ptr<aura::client::DefaultCaptureClient> capture_client_;

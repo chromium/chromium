@@ -167,9 +167,6 @@ const char kDesktopWindow1080p[] = "desktop-window-1080p";
 const char kForceMediaResolutionHeight[] = "force-media-resolution-height";
 const char kForceMediaResolutionWidth[] = "force-media-resolution-width";
 
-// Enables input event handling by the window manager.
-const char kEnableInput[] = "enable-input";
-
 // Background color used when Chromium hasn't rendered anything yet.
 const char kCastAppBackgroundColor[] = "cast-app-background-color";
 

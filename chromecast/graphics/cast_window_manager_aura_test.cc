@@ -73,7 +73,7 @@ TEST_F(CastWindowManagerAuraTest, InitialWindowId) {
 
 TEST_F(CastWindowManagerAuraTest, WindowInput) {
   std::unique_ptr<CastWindowManagerAura> window_manager =
-      std::make_unique<CastWindowManagerAura>(true /* enable input */);
+      std::make_unique<CastWindowManagerAura>();
 
   CastTestWindowDelegate window_delegate;
   aura::Window window(&window_delegate);
@@ -99,35 +99,6 @@ TEST_F(CastWindowManagerAuraTest, WindowInput) {
   EXPECT_EQ(ui::VKEY_0, window_delegate.key_code());
 }
 
-TEST_F(CastWindowManagerAuraTest, WindowInputDisabled) {
-  std::unique_ptr<CastWindowManagerAura> window_manager =
-      std::make_unique<CastWindowManagerAura>(false /* enable input */);
-
-  CastTestWindowDelegate window_delegate;
-  aura::Window window(&window_delegate);
-  window.Init(ui::LAYER_NOT_DRAWN);
-  window.SetName("event window");
-  window_manager->AddWindow(&window);
-  window.SetBounds(gfx::Rect(0, 0, 1280, 720));
-  window.Show();
-  EXPECT_FALSE(window.IsRootWindow());
-  EXPECT_TRUE(window.GetHost());
-
-  // Confirm that the Aura focus client tracks window focus correctly.
-  aura::client::FocusClient* focus_client =
-      aura::client::GetFocusClient(&window);
-  EXPECT_TRUE(focus_client);
-  EXPECT_FALSE(focus_client->GetFocusedWindow());
-  window.Focus();
-  EXPECT_EQ(&window, focus_client->GetFocusedWindow());
-
-  // Confirm that a key event is *not* delivered to the window when input is
-  // disabled.
-  ui::test::EventGenerator event_generator(window.GetRootWindow());
-  event_generator.PressKey(ui::VKEY_0, ui::EF_NONE);
-  EXPECT_EQ(ui::VKEY_UNKNOWN, window_delegate.key_code());
-}
-
 void VerifyWindowOrder(aura::Window* root_window) {
   for (size_t i = 0; i < root_window->children().size() - 1; ++i)
     EXPECT_LE(root_window->children()[i]->GetId(),
@@ -136,7 +107,7 @@ void VerifyWindowOrder(aura::Window* root_window) {
 
 TEST_F(CastWindowManagerAuraTest, CheckProperWindowOrdering) {
   std::unique_ptr<CastWindowManagerAura> window_manager =
-      std::make_unique<CastWindowManagerAura>(false /* enable input */);
+      std::make_unique<CastWindowManagerAura>();
 
   TestWindow window1(1);
   TestWindow window3(3);

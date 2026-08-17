@@ -604,9 +604,7 @@ int CastBrowserMainParts::PreMainMessageLoopRun() {
   }
 #endif
 
-  window_manager_ = std::make_unique<CastWindowManagerAura>(
-      CAST_IS_DEBUG_BUILD() ||
-      GetSwitchValueBoolean(switches::kEnableInput, false));
+  window_manager_ = std::make_unique<CastWindowManagerAura>();
   window_manager_->Setup();
 
   display_change_observer_ = std::make_unique<DisplayConfiguratorObserver>(

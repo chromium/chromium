@@ -87,7 +87,6 @@ extern const char kForceMediaResolutionHeight[];
 extern const char kForceMediaResolutionWidth[];
 
 // UI switches
-extern const char kEnableInput[];
 extern const char kSystemGestureStartWidth[];
 extern const char kSystemGestureStartHeight[];
 extern const char kBottomSystemGestureStartHeight[];
