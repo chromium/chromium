@@ -14,6 +14,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "build/build_config.h"
 #include "chrome/browser/predictors/loading_predictor.h"
 #include "chrome/browser/predictors/loading_predictor_factory.h"
 #include "chrome/browser/preloading/chrome_preloading.h"
@@ -333,8 +334,14 @@ IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderBrowserTest, DISABLED_IframeTest) {
   EXPECT_EQ(1, preresolve_count_);
 }
 
+// TODO(crbug.com/546866634): Fix 100 ms timing race on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_UserSettingDisabledTest DISABLED_UserSettingDisabledTest
+#else
+#define MAYBE_UserSettingDisabledTest UserSettingDisabledTest
+#endif
 IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderBrowserTest,
-                       UserSettingDisabledTest) {
+                       MAYBE_UserSettingDisabledTest) {
   prefetch::SetPreloadPagesState(browser()->GetProfile()->GetPrefs(),
                                  prefetch::PreloadPagesState::kNoPreloading);
   const GURL& url = GetTestURL("/one_anchor.html");
@@ -376,8 +383,14 @@ class AnchorElementPreloaderHoldbackBrowserTest
   }
 };
 
+// TODO(crbug.com/546817564): Fix 100 ms timing race on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_PreconnectHoldbackTest DISABLED_PreconnectHoldbackTest
+#else
+#define MAYBE_PreconnectHoldbackTest PreconnectHoldbackTest
+#endif
 IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderHoldbackBrowserTest,
-                       PreconnectHoldbackTest) {
+                       MAYBE_PreconnectHoldbackTest) {
   const GURL& url = GetTestURL("/one_anchor.html");
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
