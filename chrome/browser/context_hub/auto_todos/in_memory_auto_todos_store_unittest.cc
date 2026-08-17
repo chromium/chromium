@@ -70,7 +70,7 @@ TEST_F(InMemoryAutoTodosStoreTest, AddItemGeneratesIdIfEmpty) {
   store_.GetAllItems(get_future.GetCallback());
   auto items = get_future.Get();
   ASSERT_EQ(items.size(), 1u);
-  EXPECT_EQ(items[0].id, "item_1");
+  EXPECT_EQ(items[0].id, "todo_1");
   EXPECT_EQ(items[0].title, "No ID Todo");
 }
 
@@ -91,6 +91,27 @@ TEST_F(InMemoryAutoTodosStoreTest, AddAllTodos) {
   store_.GetAllItems(get_future.GetCallback());
   auto items = get_future.Get();
   ASSERT_EQ(items.size(), 2u);
+}
+
+TEST_F(InMemoryAutoTodosStoreTest, AddAllTodosGeneratesIdIfEmpty) {
+  AutoTodoEntry item1;
+  item1.title = "Item 1";
+  AutoTodoEntry item2;
+  item2.title = "Item 2";
+
+  const std::vector<AutoTodoEntry> items_to_add = {item1, item2};
+  base::test::TestFuture<bool> add_future;
+  store_.AddAllTodos(items_to_add, add_future.GetCallback());
+  EXPECT_TRUE(add_future.Get());
+
+  base::test::TestFuture<std::vector<AutoTodoEntry>> get_future;
+  store_.GetAllItems(get_future.GetCallback());
+  auto items = get_future.Get();
+  ASSERT_EQ(items.size(), 2u);
+  EXPECT_EQ(items[0].id, "todo_2");
+  EXPECT_EQ(items[0].title, "Item 2");
+  EXPECT_EQ(items[1].id, "todo_1");
+  EXPECT_EQ(items[1].title, "Item 1");
 }
 
 TEST_F(InMemoryAutoTodosStoreTest, AddAllTodosReplacesExistingItems) {

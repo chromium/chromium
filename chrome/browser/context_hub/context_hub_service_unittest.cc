@@ -241,6 +241,7 @@ TEST_F(ContextHubServiceTest, GenerateFirstPartyAutoTodos_ServiceSuccess) {
   // Notification after adding the todos.
   EXPECT_CALL(observer,
               OnAutoTodosChanged(ElementsAre(AllOf(
+                  Field(&AutoTodoEntry::id, "todo_1"),
                   Field(&AutoTodoEntry::title, "Test Todo"),
                   Field(&AutoTodoEntry::description, "Test Description")))));
   EXPECT_CALL(observer, OnFirstPartyAutoTodosGenerationStateChanged(false));
@@ -504,7 +505,7 @@ TEST_F(ContextHubServiceTest,
   EXPECT_CALL(observer, OnThirdPartyAutoTodosGenerationStateChanged(true));
   // Verify that the observer is notified of the todo being saved to the store.
   EXPECT_CALL(observer, OnAutoTodosChanged(ElementsAre(AllOf(
-                            Field(&AutoTodoEntry::id, "item_1"),
+                            Field(&AutoTodoEntry::id, "todo_1"),
                             Field(&AutoTodoEntry::title, "Todo title")))));
   EXPECT_CALL(observer, OnThirdPartyAutoTodosGenerationStateChanged(false));
 

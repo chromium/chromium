@@ -482,9 +482,6 @@ void ContextHubService::OnFirstPartyAutoTodosFetched(
   entries.reserve(response.todos_size());
   for (const personal_context::proto::AutoTodoItem& todo : response.todos()) {
     AutoTodoEntry entry;
-    // TODO(crbug.com/541276677): Remove when the observer is notified of cache
-    // changes.
-    entry.id = todo.title();
     entry.title = todo.title();
     entry.description = todo.description();
     entry.importance_score = todo.importance_score();
