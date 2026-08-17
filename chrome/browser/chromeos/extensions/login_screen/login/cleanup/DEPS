@@ -34,7 +34,6 @@ include_rules = [
   "+chrome/browser/policy/extension_force_install_mixin.h",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/ash/shelf",
-  "+chrome/browser/ui/browser.h",
   "+chrome/browser/ui/browser_window/public/browser_collection_observer.h",
   "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
   "+chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h",

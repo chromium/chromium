@@ -21,7 +21,6 @@
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/window_controller.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/common/extensions/api/echo_private.h"
@@ -175,10 +174,10 @@ ExtensionFunction::ResponseAction EchoPrivateGetUserConsentFunction::Run() {
     }
   } else {
     extensions::WindowController* window = nullptr;
-    int tab_index = -1;
     if (!extensions::ExtensionTabUtil::GetTabById(
             *params->consent_requester.tab_id, browser_context(),
-            false /*incognito_enabled*/, &window, &web_contents, &tab_index) ||
+            /*include_incognito=*/false, &window, &web_contents,
+            /*tab_index=*/nullptr) ||
         !window) {
       return RespondNow(Error("Tab not found."));
     }
@@ -186,7 +185,7 @@ ExtensionFunction::ResponseAction EchoPrivateGetUserConsentFunction::Run() {
     // Bail out if the requested tab is not active - the dialog is modal to the
     // window, so showing it for a request from an inactive tab could be
     // misleading/confusing to the user.
-    if (tab_index != window->GetBrowser()->tab_strip_model()->active_index()) {
+    if (web_contents != window->GetActiveTab()) {
       return RespondNow(Error("Consent requested from an inactive tab."));
     }
   }
