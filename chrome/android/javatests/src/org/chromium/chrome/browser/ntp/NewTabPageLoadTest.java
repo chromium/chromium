@@ -28,7 +28,6 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
-import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.browser.suggestions.SuggestionsDependenciesRule;
 import org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVisitedSites;
 import org.chromium.components.favicon.IconType;
@@ -47,7 +46,6 @@ public class NewTabPageLoadTest {
     @Rule public SuggestionsDependenciesRule mSuggestionDeps = new SuggestionsDependenciesRule();
 
     private AutoVerifyingMostVisitedSites mMostVisitedSites;
-    private WebPageStation mStartPage;
 
     @Before
     public void setUp() throws Exception {

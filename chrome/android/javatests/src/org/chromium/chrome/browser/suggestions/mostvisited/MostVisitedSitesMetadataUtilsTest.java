@@ -178,8 +178,7 @@ public class MostVisitedSitesMetadataUtilsTest {
         File topSitesDirectory = MostVisitedSitesMetadataUtils.getOrCreateTopSitesDirectory();
         File topSitesFile = new File(topSitesDirectory, "top_sites");
         AtomicFile file = new AtomicFile(topSitesFile);
-        FileOutputStream fileStream = null;
-        fileStream = file.startWrite();
+        FileOutputStream fileStream = file.startWrite();
         fileStream.write(listData, 0, listData.length);
         file.finishWrite(fileStream);
 

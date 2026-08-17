@@ -545,8 +545,6 @@ public class ShowNtpAtStartupTest {
         HomeSurfaceTestUtils.waitForTabModel(cta);
         waitForNtpLoaded(mActivityTestRule.getActivityTab());
 
-        NewTabPage ntp = (NewTabPage) mActivityTestRule.getActivityTab().getNativePage();
-
         verifyFakeSearchBoxWidth();
     }
 
@@ -560,8 +558,6 @@ public class ShowNtpAtStartupTest {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         HomeSurfaceTestUtils.waitForTabModel(cta);
         waitForNtpLoaded(mActivityTestRule.getActivityTab());
-
-        NewTabPage ntp = (NewTabPage) mActivityTestRule.getActivityTab().getNativePage();
 
         verifyMostVisitedTileMargin();
     }

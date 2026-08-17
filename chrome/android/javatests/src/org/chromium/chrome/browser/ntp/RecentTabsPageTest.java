@@ -110,7 +110,6 @@ import java.util.concurrent.TimeUnit;
 @DoNotBatch(reason = "Tests manipulate UI which can interfere between tests.")
 public class RecentTabsPageTest {
     private static final int COLOR_ID = TabGroupColorId.YELLOW;
-    private static final int COLOR_ID_2 = TabGroupColorId.RED;
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 

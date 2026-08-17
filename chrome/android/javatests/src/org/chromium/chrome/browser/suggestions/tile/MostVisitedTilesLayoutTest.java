@@ -159,7 +159,7 @@ public class MostVisitedTilesLayoutTest {
     @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511288662
     public void testTilesLayoutAppearance_DisableMvtCustomization(boolean nightModeEnabled)
             throws Exception {
-        doTilesLayoutAppearanceTest(nightModeEnabled, "_v1");
+        doTilesLayoutAppearanceTest("_v1");
     }
 
     @Test
@@ -170,11 +170,10 @@ public class MostVisitedTilesLayoutTest {
     @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511288662
     public void testTilesLayoutAppearance_EnableMvtCustomization(boolean nightModeEnabled)
             throws Exception {
-        doTilesLayoutAppearanceTest(nightModeEnabled, "_with_add_new_button_v1");
+        doTilesLayoutAppearanceTest("_with_add_new_button_v1");
     }
 
-    private void doTilesLayoutAppearanceTest(boolean nightModeEnabled, String suffix)
-            throws Exception {
+    private void doTilesLayoutAppearanceTest(String suffix) throws Exception {
         List<SiteSuggestion> siteSuggestions =
                 makeAndSetUpFakeSuggestions(FAKE_MOST_VISITED_URLS.length);
 
