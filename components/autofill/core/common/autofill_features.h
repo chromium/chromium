@@ -213,6 +213,8 @@ BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kAutofillAtMemoryRequestTimeout);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillAtMemoryInactivityNudge);
 COMPONENT_EXPORT(AUTOFILL)
+BASE_DECLARE_FEATURE(kAutofillAtMemoryPreviouslyFilled);
+COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillAtMemorySupportContenteditableOnAndroid);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillAtMemoryTriggerShortcut);

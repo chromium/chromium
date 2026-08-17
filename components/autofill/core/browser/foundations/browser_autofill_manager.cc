@@ -1160,8 +1160,7 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
   if (AtMemoryManager* am = client().GetAtMemoryManager();
       am && IsAtMemoryTriggerSource(trigger_source)) {
     am->set_target_field_origin(field.origin());
-    std::vector<Suggestion> suggestions;
-    am->MaybeAppendPersonalContextNotice(suggestions);
+    std::vector<Suggestion> suggestions = am->GetEmptyQuerySuggestions();
 
     // Show suggestions with a search bar to start the flow.
     external_delegate_->OnSuggestionsReturned(field, suggestions);

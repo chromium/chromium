@@ -116,6 +116,13 @@ class AtMemoryManager : public CreditCardAccessManager::Observer {
   // Returns true if a search is currently in progress.
   bool IsSearching() const;
 
+  // Returns the list of suggestions to show when the query is empty.
+  // These suggestions will be in order:
+  // * kPersonalContextNotice (optional)
+  // * kTitle (optional)
+  // * kAtMemorySearchResult (repeated)
+  std::vector<Suggestion> GetEmptyQuerySuggestions() const;
+
   // Appends the personal context notice to the suggestions if necessary.
   void MaybeAppendPersonalContextNotice(
       std::vector<Suggestion>& suggestions) const;
@@ -168,9 +175,15 @@ class AtMemoryManager : public CreditCardAccessManager::Observer {
   // Advances to the next fetching suggestion message and updates the UI.
   void AdvanceFetchingSuggestion();
 
+  // Appends previously filled suggestions to the list of suggestions.
+  static void MaybeAppendPreviouslyFilledSuggestions(
+      std::vector<Suggestion>& suggestions);
+
   // Shows all the suggestions in the empty state.
   // These suggestions will be in order:
   // * kPersonalContextNotice (optional)
+  // * kTitle (optional)
+  // * kAtMemorySearchResult (repeated)
   void ShowEmptyQuerySuggestions();
 
   // Shows all the suggestions in the query typing state.
