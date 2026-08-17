@@ -411,4 +411,35 @@ TEST_F(Canvas2DResourceProviderTest, ImageCacheOnContextLost) {
                                             SkSamplingOptions(), nullptr);
 }
 
+TEST_F(Canvas2DResourceProviderTest, EstimatedSizeInBytesSoftware) {
+  constexpr gfx::Size kSize(20, 20);
+  viz::SharedImageFormat format = viz::SharedImageFormat::N32Format();
+  auto sii_provider =
+      std::make_unique<TestWebGraphicsSharedImageInterfaceProvider>(
+          test_context_provider_->SharedImageInterface());
+
+  ScopedTestingPlatformSupport<GpuCompositingTestPlatform> platform;
+  platform->SetGpuCompositingDisabled(true);
+
+  auto provider =
+      Canvas2DResourceProvider::CreateWithClearForSoftwareCompositor(
+          kSize, format, kPremul_SkAlphaType, gfx::ColorSpace::CreateSRGB(),
+          gfx::HDRMetadata(), sii_provider.get());
+
+  ASSERT_TRUE(provider && provider->IsValid());
+  EXPECT_TRUE(provider->IsSoftware());
+  EXPECT_EQ(provider->EstimatedSizeInBytes(),
+            base::ByteSize(kSize.width() * kSize.height() * 4));
+}
+
+TEST_F(Canvas2DResourceProviderTest, EstimatedSizeInBytesAccelerated) {
+  constexpr gfx::Size kSize(10, 10);
+  auto provider = MakeCanvas2DResourceProvider(context_provider_wrapper_);
+
+  ASSERT_TRUE(provider && provider->IsValid());
+  EXPECT_TRUE(provider->IsAccelerated());
+  EXPECT_EQ(provider->EstimatedSizeInBytes(),
+            base::ByteSize(kSize.width() * kSize.height() * 4));
+}
+
 }  // namespace blink

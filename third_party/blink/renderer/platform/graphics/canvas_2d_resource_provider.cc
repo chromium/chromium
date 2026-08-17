@@ -369,6 +369,9 @@ base::ByteSize Canvas2DResourceProvider::EstimatedSizeInBytes() const {
   if (resource_) {
     result += resource_->EstimatedSizeInBytes() * num_inflight_resources_;
   }
+  if (surface_) {
+    result += base::ByteSize(GetSize());
+  }
   return result;
 }
 

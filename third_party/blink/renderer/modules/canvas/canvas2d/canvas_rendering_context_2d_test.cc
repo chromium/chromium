@@ -1999,6 +1999,31 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   EXPECT_TRUE(handler.IsHibernating());
 }
 
+TEST_P(CanvasRenderingContext2DTestAccelerated,
+       AllocatedBufferSizeDuringHibernation) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({features::kCanvas2DHibernation}, {});
+
+  CreateContext(kNonOpaque);
+  Context2D()->InitializeResourceProvider();
+
+  auto& handler = CHECK_DEREF(Context2D()->GetHibernationHandler());
+  ASSERT_FALSE(handler.IsHibernating());
+  base::ByteSize active_size = Context2D()->AllocatedBufferSize();
+  EXPECT_GT(active_size, base::ByteSize(0));
+
+  GetDocument().GetPage()->SetVisibilityState(
+      mojom::blink::PageVisibilityState::kHidden,
+      /*is_initial_state=*/false);
+
+  WaitForHibernation();
+  ASSERT_TRUE(handler.IsHibernating());
+
+  EXPECT_EQ(Context2D()->AllocatedBufferSize(),
+            base::ByteSize(handler.memory_size()));
+  EXPECT_GT(Context2D()->AllocatedBufferSize(), base::ByteSize(0));
+}
+
 // https://crbug.com/708445: When the canvas hibernates or wakes up from
 // hibernation, the compositing reasons for the canvas element may change. In
 // these cases, the element should request a compositing update.

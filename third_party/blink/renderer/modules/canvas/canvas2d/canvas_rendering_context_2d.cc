@@ -1254,6 +1254,9 @@ base::ByteSize CanvasRenderingContext2D::AllocatedBufferSize() const {
   if (bitmap_provider_) {
     return bitmap_provider_->EstimatedSizeInBytes();
   }
+  if (hibernation_handler_ && hibernation_handler_->IsHibernating()) {
+    return base::ByteSize(hibernation_handler_->memory_size());
+  }
   return base::ByteSize();
 }
 
