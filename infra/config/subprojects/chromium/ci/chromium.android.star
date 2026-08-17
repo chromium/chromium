@@ -3182,6 +3182,11 @@ ci.builder(
             "panther_on_14",
         ],
         per_test_modifications = {
+            "android_webview_unittests": targets.mixin(
+                # TODO(crbug.com/546581718): Re-enable on CQ once the high
+                # pending time is gone.
+                ci_only = True,
+            ),
             "android_browsertests": targets.mixin(
                 # TODO Re-enable on CQ once the high
                 # pending time is gone
@@ -3190,13 +3195,17 @@ ci.builder(
                     shards = 7,
                 ),
             ),
-            "android_webview_unittests": targets.mixin(
+            "blink_platform_unittests": targets.mixin(
+                # TODO(crbug.com/546581718): Re-enable on CQ once the high
+                # pending time is gone.
                 ci_only = True,
             ),
             "cc_unittests": targets.mixin(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.device.cc_unittests.filter",
                 ],
+                # TODO(crbug.com/546581718): Re-enable on CQ once the high
+                # pending time is gone.
                 ci_only = True,
             ),
             "chrome_public_test_apk": targets.mixin(
@@ -3205,11 +3214,31 @@ ci.builder(
                 ],
                 ci_only = True,
             ),
+            "chrome_public_unit_test_apk": targets.mixin(
+                # TODO(crbug.com/546581718): Re-enable on CQ once the high
+                # pending time is gone.
+                ci_only = True,
+            ),
+            "chrome_public_smoke_test": targets.mixin(
+                # TODO(crbug.com/546581718): Re-enable on CQ once the high
+                # pending time is gone.
+                ci_only = True,
+            ),
+            "chrome_public_bundle_smoke_test": targets.mixin(
+                # TODO(crbug.com/546581718): Re-enable on CQ once the high
+                # pending time is gone.
+                ci_only = True,
+            ),
             "content_browsertests": targets.mixin(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.device_14.content_browsertests.filter",
                 ],
                 # TODO(crbug.com/410638690): Re-enable on CQ once the high
+                # pending time is gone.
+                ci_only = True,
+            ),
+            "viz_unittests": targets.mixin(
+                # TODO(crbug.com/546581718): Re-enable on CQ once the high
                 # pending time is gone.
                 ci_only = True,
             ),
