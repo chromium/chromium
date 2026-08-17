@@ -164,6 +164,8 @@ InspectorEmulationAgent::InspectorEmulationAgent(
       navigator_platform_override_(&agent_state_,
                                    /*default_value=*/String()),
       hardware_concurrency_override_(&agent_state_, /*default_value=*/0),
+      cpu_performance_override_(&agent_state_,
+                                /*default_value=*/String()),
       data_saver_override_(&agent_state_,
                            /*default_value=*/DataSaverOverride::Unset),
       user_agent_override_(&agent_state_, /*default_value=*/String()),
@@ -217,6 +219,10 @@ void InspectorEmulationAgent::Restore() {
 
   if (int concurrency = hardware_concurrency_override_.Get())
     setHardwareConcurrencyOverride(concurrency);
+
+  if (!cpu_performance_override_.Get().IsNull()) {
+    setCPUPerformanceOverride(cpu_performance_override_.Get());
+  }
 
   if (!locale_override_.Get().empty())
     setLocaleOverride(locale_override_.Get());
@@ -314,6 +320,7 @@ protocol::Response InspectorEmulationAgent::disable() {
   }
 
   hardware_concurrency_override_.Clear();
+  cpu_performance_override_.Clear();
   setUserAgentOverride(String(), std::nullopt, std::nullopt, nullptr);
   if (!locale_override_.Get().empty())
     setLocaleOverride(String());
@@ -906,6 +913,28 @@ protocol::Response InspectorEmulationAgent::setHardwareConcurrencyOverride(
   return protocol::Response::Success();
 }
 
+protocol::Response InspectorEmulationAgent::setCPUPerformanceOverride(
+    std::optional<String> performance_tier) {
+  if (performance_tier.has_value()) {
+    namespace PerformanceTierEnum =
+        protocol::Emulation::SetCPUPerformanceOverride::PerformanceTierEnum;
+    const String& tier_str = performance_tier.value();
+    if (tier_str != PerformanceTierEnum::Unknown &&
+        tier_str != PerformanceTierEnum::Low &&
+        tier_str != PerformanceTierEnum::Mid &&
+        tier_str != PerformanceTierEnum::High &&
+        tier_str != PerformanceTierEnum::Ultra) {
+      return protocol::Response::InvalidParams(
+          "Invalid performanceTier enum value");
+    }
+    InnerEnable();
+    cpu_performance_override_.Set(tier_str);
+  } else {
+    cpu_performance_override_.Clear();
+  }
+  return protocol::Response::Success();
+}
+
 protocol::Response InspectorEmulationAgent::setUserAgentOverride(
     const String& user_agent,
     std::optional<String> accept_language,
@@ -1102,6 +1131,26 @@ void InspectorEmulationAgent::ApplyHardwareConcurrencyOverride(
     unsigned int& hardware_concurrency) {
   if (int concurrency = hardware_concurrency_override_.Get())
     hardware_concurrency = concurrency;
+}
+
+void InspectorEmulationAgent::ApplyCPUPerformanceOverride(
+    mojom::blink::PerformanceTier& tier) {
+  if (!cpu_performance_override_.Get().IsNull()) {
+    const String& tier_str = cpu_performance_override_.Get();
+    namespace PerformanceTierEnum =
+        protocol::Emulation::SetCPUPerformanceOverride::PerformanceTierEnum;
+    if (tier_str == PerformanceTierEnum::Low) {
+      tier = mojom::blink::PerformanceTier::kLow;
+    } else if (tier_str == PerformanceTierEnum::Mid) {
+      tier = mojom::blink::PerformanceTier::kMid;
+    } else if (tier_str == PerformanceTierEnum::High) {
+      tier = mojom::blink::PerformanceTier::kHigh;
+    } else if (tier_str == PerformanceTierEnum::Ultra) {
+      tier = mojom::blink::PerformanceTier::kUltra;
+    } else if (tier_str == PerformanceTierEnum::Unknown) {
+      tier = mojom::blink::PerformanceTier::kUnknown;
+    }
+  }
 }
 
 void InspectorEmulationAgent::ApplyUserAgentOverride(String* user_agent) {

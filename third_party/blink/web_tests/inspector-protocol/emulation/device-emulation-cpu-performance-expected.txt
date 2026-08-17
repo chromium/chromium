@@ -1,0 +1,13 @@
+Tests that overriding CPU performance tier changes the navigator property
+Match after setting tier, run 1: true
+Match after setting tier, run 1 after reload: true
+Match after setting tier, run 2: true
+Match after setting tier, run 2 after reload: true
+Match after setting tier, run 3: true
+Match after setting tier, run 3 after reload: true
+Match after setting tier, run 4: true
+Match after setting tier, run 4 after reload: true
+Failed to set invalid tier bogus: Invalid performanceTier enum value
+Match after setting invalid tier bogus: true
+Match after clearing tier: true
+

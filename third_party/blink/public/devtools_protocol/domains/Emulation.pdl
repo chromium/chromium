@@ -570,6 +570,22 @@ domain Emulation
       # Hardware concurrency to report
       integer hardwareConcurrency
 
+  # Overrides the value of navigator.cpuPerformance
+  experimental command setCPUPerformanceOverride
+    parameters
+      # Override value. Omitting the parameter disables the override.
+      optional enum performanceTier
+        # Tier 0: Unknown
+        unknown
+        # Tier 1: Low
+        low
+        # Tier 2: Mid
+        mid
+        # Tier 3: High
+        high
+        # Tier 4: Ultra
+        ultra
+
   # Allows overriding user agent with the given string.
   # `userAgentMetadata` must be set for Client Hint headers to be sent.
   command setUserAgentOverride

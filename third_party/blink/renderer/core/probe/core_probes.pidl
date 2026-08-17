@@ -99,6 +99,7 @@ interface CoreProbes {
   void DidResizeMainFrame(LocalFrame*);
   void ApplyAcceptLanguageOverride(ExecutionContext*, String* accept_language);
   void ApplyAcceptLanguageOverride(CoreProbeSink*, String* accept_language);
+  void ApplyCPUPerformanceOverride(CoreProbeSink*, mojom::blink::PerformanceTier& tier);
   void ApplyHardwareConcurrencyOverride(CoreProbeSink*, unsigned int& hardware_concurrency);
   void ApplyDataSaverOverride(CoreProbeSink*, bool& data_saver);
   void ApplyUserAgentOverride(CoreProbeSink*, String* user_agent);
