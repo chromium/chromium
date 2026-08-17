@@ -861,7 +861,8 @@ HostCache::Entry HostResolverManager::ResolveLocally(
     const NetLogWithSource& source_net_log,
     HostCache* cache,
     std::deque<TaskType>* out_tasks,
-    std::optional<HostCache::EntryStaleness>* out_stale_info) {
+    std::optional<HostCache::EntryStaleness>* out_stale_info,
+    bool record_metrics) {
   DCHECK(out_stale_info);
   *out_stale_info = std::nullopt;
 
@@ -935,8 +936,9 @@ HostCache::Entry HostResolverManager::ResolveLocally(
       HostCache::Key key = job_key.ToCacheKey(secure);
 
       bool ignore_secure = task == TaskType::CACHE_LOOKUP;
-      resolved = MaybeServeFromCache(cache, key, cache_usage, ignore_secure,
-                                     source_net_log, out_stale_info);
+      resolved =
+          MaybeServeFromCache(cache, key, cache_usage, ignore_secure,
+                              source_net_log, out_stale_info, record_metrics);
       if (resolved) {
         // |MaybeServeFromCache()| will update |*out_stale_info| as needed.
         DCHECK(out_stale_info->has_value());
@@ -1070,7 +1072,8 @@ std::optional<HostCache::Entry> HostResolverManager::MaybeServeFromCache(
     ResolveHostParameters::CacheUsage cache_usage,
     bool ignore_secure,
     const NetLogWithSource& source_net_log,
-    std::optional<HostCache::EntryStaleness>* out_stale_info) {
+    std::optional<HostCache::EntryStaleness>* out_stale_info,
+    bool record_metrics) {
   DCHECK(out_stale_info);
   *out_stale_info = std::nullopt;
 
@@ -1088,8 +1091,9 @@ std::optional<HostCache::Entry> HostResolverManager::MaybeServeFromCache(
   const std::pair<const HostCache::Key, HostCache::Entry>* cache_result;
   HostCache::EntryStaleness staleness;
   if (cache_usage == ResolveHostParameters::CacheUsage::STALE_ALLOWED) {
-    cache_result = cache->LookupStale(effective_key, tick_clock_->NowTicks(),
-                                      &staleness, ignore_secure);
+    cache_result =
+        cache->LookupStale(effective_key, tick_clock_->NowTicks(), &staleness,
+                           ignore_secure, record_metrics);
   } else {
     // If the cache usage is STALE_ALLOWED_WHILE_REFRESHING, the request
     // allows a stale result. However, stale results are checked and served
@@ -1101,8 +1105,8 @@ std::optional<HostCache::Entry> HostResolverManager::MaybeServeFromCache(
         cache_usage == ResolveHostParameters::CacheUsage::ALLOWED ||
         cache_usage ==
             ResolveHostParameters::CacheUsage::STALE_ALLOWED_WHILE_REFRESHING);
-    cache_result =
-        cache->Lookup(effective_key, tick_clock_->NowTicks(), ignore_secure);
+    cache_result = cache->Lookup(effective_key, tick_clock_->NowTicks(),
+                                 ignore_secure, record_metrics);
     staleness = HostCache::kNotStale;
   }
   if (cache_result) {

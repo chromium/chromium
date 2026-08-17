@@ -13,6 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -1627,6 +1628,8 @@ TEST_F(HostResolverServiceEndpointRequestTest, AllowStaleWhileRefreshing) {
       STALE_ALLOWED_WHILE_REFRESHING;
   Requester requester = CreateRequester("https://ok", std::move(parameters));
 
+  base::HistogramTester histogram_tester;
+
   // Start the request. It should provide stale results first.
   int rv = requester.Start();
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
@@ -1646,6 +1649,15 @@ TEST_F(HostResolverServiceEndpointRequestTest, AllowStaleWhileRefreshing) {
                                                 ElementsAre(fresh_endpoint2))));
   EXPECT_FALSE(requester.request()->IsStaleWhileRefreshing());
   EXPECT_FALSE(requester.request()->GetStaleInfo());
+
+  // There should be no double-counting of a stale miss for the fallback task
+  // sequence generation.
+  histogram_tester.ExpectBucketCount(
+      "Net.DNS.HostCache.Lookup",
+      static_cast<int>(HostCache::LookupOutcome::kLookupMissStale), 0);
+  histogram_tester.ExpectBucketCount(
+      "Net.DNS.HostCache.Lookup",
+      static_cast<int>(HostCache::LookupOutcome::kLookupHitStale), 1);
 }
 
 // Tests that a stale negative cache entry is not treated as the final result.

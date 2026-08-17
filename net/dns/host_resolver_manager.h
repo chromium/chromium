@@ -374,7 +374,8 @@ class NET_EXPORT HostResolverManager
       const NetLogWithSource& source_net_log,
       HostCache* cache,
       std::deque<TaskType>* out_tasks,
-      std::optional<HostCache::EntryStaleness>* out_stale_info);
+      std::optional<HostCache::EntryStaleness>* out_stale_info,
+      bool record_metrics = true);
 
   // Creates and starts a Job to asynchronously attempt to resolve
   // |request|.
@@ -411,7 +412,8 @@ class NET_EXPORT HostResolverManager
       ResolveHostParameters::CacheUsage cache_usage,
       bool ignore_secure,
       const NetLogWithSource& source_net_log,
-      std::optional<HostCache::EntryStaleness>* out_stale_info);
+      std::optional<HostCache::EntryStaleness>* out_stale_info,
+      bool record_metrics = true);
 
   // Returns any preset resolution result from the active DoH configuration that
   // matches |key.host|.

@@ -385,7 +385,7 @@ int HostResolverManager::ServiceEndpointRequestImpl::DoResolveLocally() {
         only_ipv6_reachable, *job_key_, ip_address,
         ResolveHostParameters::CacheUsage::ALLOWED,
         parameters_.secure_dns_policy, parameters_.source, net_log_,
-        host_cache(), &tasks_, &maybe_fresh_info);
+        host_cache(), &tasks_, &maybe_fresh_info, /*record_metrics=*/false);
     CHECK(!maybe_fresh_info.has_value() || !maybe_fresh_info->is_stale());
     if (maybe_non_stale_results.error() != ERR_DNS_CACHE_MISS ||
         tasks_.empty()) {
