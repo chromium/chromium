@@ -137,6 +137,21 @@ CreatePrePrefetchURLLoaderFactoryOnUI(BrowserContext* browser_context) {
   network::mojom::NetworkContext* network_context =
       browser_context->GetDefaultStoragePartition()->GetNetworkContext();
 
+  if (features::kPrefetchOffTheMainThreadCheckWillCreateURLLoaderFactory
+          .Get()) {
+    // Creates the same URLLoaderFactory as the PrefetchContainer's default
+    // network context's URLLoaderFactory. This is only for Android WebView
+    // prefetches, assuming:
+    // - Always browser-initiated.
+    // - Referring origin is always `std::nullopt` (see
+    //   `BrowserContext::StartBrowserPrefetchRequest()`).
+    return CreatePrefetchURLLoaderFactory<
+        mojo::PendingRemote<network::mojom::URLLoaderFactory>>(
+        network_context, browser_context,
+        /*referring_origin=*/std::nullopt,
+        /*renderer_initiator_info=*/nullptr);
+  }
+
   mojo::PendingRemote<network::mojom::URLLoaderFactory> pending_factory;
   if (g_url_loader_factory_for_testing) {
     CHECK_IS_TEST();

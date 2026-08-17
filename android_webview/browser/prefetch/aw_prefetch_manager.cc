@@ -153,6 +153,12 @@ static PrefService* g_pref_service_for_testing = nullptr;
 // thread.
 network::HttpRequestHeadersUpdateParams GetAwPrefetchHeadersOnNonUIThread(
     const network::ResourceRequest& request) {
+  if (::features::kPrefetchOffTheMainThreadCheckWillCreateURLLoaderFactory
+          .Get()) {
+    // The headers below will be added via `AwProxyingURLLoaderFactory`.
+    return {};
+  }
+
   network::HttpRequestHeadersUpdateParams headers_update_params;
   // We can safely ignore any processing handled in
   // `shouldInterceptRequest`, because prefetch intentionally bypasses it.

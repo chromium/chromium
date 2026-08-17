@@ -358,6 +358,7 @@ struct PrefetchRearchParam final {
   static std::vector<PrefetchRearchParam> Params();
 
   bool force_off_the_main_thread;
+  bool check_will_create_url_loader_factory;
   std::optional<features::PrefetchMatchResolverUnblockAsyncPolicy>
       unblock_async_policy;
 };

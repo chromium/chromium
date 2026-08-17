@@ -776,6 +776,13 @@ BASE_FEATURE(kPrefetchOffTheMainThread, base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<bool>
     kPrefetchOffTheMainThreadUpdateMissingHeaderCache{
         &kPrefetchOffTheMainThread, "update_missing_header_cache", true};
+// Consults `ContentBrowserClient::WillCreateURLLoaderFactory()` for
+// PrePrefetch requests. Use `false` for keeping the existing behavior before
+// this param is introduced.
+const base::FeatureParam<bool>
+    kPrefetchOffTheMainThreadCheckWillCreateURLLoaderFactory{
+        &kPrefetchOffTheMainThread, "check_will_create_url_loader_factory",
+        false};
 
 // Use code paths for prefetch/prerender integration.
 // See also `kPrerender2FallbackPrefetchSpecRules`.

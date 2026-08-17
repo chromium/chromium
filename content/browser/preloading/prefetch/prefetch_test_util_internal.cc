@@ -830,15 +830,23 @@ std::vector<PrefetchRearchParam> PrefetchRearchParam::Params() {
       },
       PrefetchRearchParam{
           .force_off_the_main_thread = true,
+          .check_will_create_url_loader_factory = false,
           .unblock_async_policy = std::nullopt,
       },
       PrefetchRearchParam{
           .force_off_the_main_thread = true,
+          .check_will_create_url_loader_factory = true,
+          .unblock_async_policy = std::nullopt,
+      },
+      PrefetchRearchParam{
+          .force_off_the_main_thread = true,
+          .check_will_create_url_loader_factory = true,
           .unblock_async_policy =
               features::PrefetchMatchResolverUnblockAsyncPolicy::kAsyncBlocked,
       },
       PrefetchRearchParam{
           .force_off_the_main_thread = true,
+          .check_will_create_url_loader_factory = true,
           .unblock_async_policy = features::
               PrefetchMatchResolverUnblockAsyncPolicy::kAsyncBlockedUnmatch,
       },
@@ -847,10 +855,17 @@ std::vector<PrefetchRearchParam> PrefetchRearchParam::Params() {
 
 void WithPrefetchRearchParam::InitRearchFeatures() {
   if (param_.force_off_the_main_thread) {
-    feature_list_force_off_the_main_thread_.InitWithFeatures(
+    std::vector<base::test::FeatureRefAndParams> enabled_features;
+    enabled_features.push_back(
         {features::kPrefetchOffTheMainThread,
-         features::kPrefetchOffTheMainThreadForceForTesting},
-        {});
+         {{features::kPrefetchOffTheMainThreadCheckWillCreateURLLoaderFactory
+               .name,
+           param_.check_will_create_url_loader_factory ? "true" : "false"}}});
+    enabled_features.push_back(
+        {features::kPrefetchOffTheMainThreadForceForTesting, {}});
+
+    feature_list_force_off_the_main_thread_.InitWithFeaturesAndParameters(
+        enabled_features, {});
   }
   if (param_.unblock_async_policy.has_value()) {
     const char* policy_str = nullptr;

@@ -1852,6 +1852,7 @@ crbug.com/40550039 svg/W3C-SVG-1.1-SE/struct-use-11-f.svg [ Skip ]
 # (See also `TestExpectations`)
 # ServiceWorkers are not supported in off-the-main-thread prefetch.
 crbug.com/452389538 virtual/prefetch-force-off-the-main-thread/external/wpt/speculation-rules/prefetch/tentative/service-worker/* [ Skip ]
+crbug.com/452389538 virtual/prefetch-force-off-the-main-thread-wculf/external/wpt/speculation-rules/prefetch/tentative/service-worker/* [ Skip ]
 
 # Device Bound Session Credentials is not supported on Android.
 [ Android ] external/wpt/device-bound-session-credentials/* [ Skip ]

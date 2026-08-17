@@ -142,6 +142,19 @@ public class AwPrefetchTest extends AwParameterizedTest {
         testPrefetchRequestResponseSuccess(/* runOnWorkerThread= */ true);
     }
 
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({
+        ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1",
+        "enable-features=PrefetchOffTheMainThread:check_will_create_url_loader_factory/true,"
+                + "WebViewPrefetchOffTheMainThread"
+    })
+    public void testPrefetchRequestResponseSuccess_WorkerThread_OMTEnabled_WCULF()
+            throws Throwable {
+        testPrefetchRequestResponseSuccess(/* runOnWorkerThread= */ true);
+    }
+
     private void testPrefetchRequestResponseSuccess(boolean runOnWorkerThread) throws Throwable {
         // Do the prefetch request.
         TestAwPrefetchCallback callback =
@@ -181,6 +194,18 @@ public class AwPrefetchTest extends AwParameterizedTest {
         "enable-features=PrefetchOffTheMainThread,WebViewPrefetchOffTheMainThread"
     })
     public void testPrefetchRequestHTTPSOnlySupported_WorkerThread_OMTEnabled() throws Throwable {
+        testPrefetchRequestHTTPSOnlySupported(/* runOnWorkerThread= */ true);
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({
+        "enable-features=PrefetchOffTheMainThread:check_will_create_url_loader_factory/true,"
+                + "WebViewPrefetchOffTheMainThread"
+    })
+    public void testPrefetchRequestHTTPSOnlySupported_WorkerThread_OMTEnabled_WCULF()
+            throws Throwable {
         testPrefetchRequestHTTPSOnlySupported(/* runOnWorkerThread= */ true);
     }
 
@@ -225,6 +250,17 @@ public class AwPrefetchTest extends AwParameterizedTest {
         "enable-features=PrefetchOffTheMainThread,WebViewPrefetchOffTheMainThread"
     })
     public void testPrefetchRequestInvalidHeaders_WorkerThread_OMTEnabled() throws Throwable {
+        testPrefetchRequestInvalidHeaders(/* runOnWorkerThread= */ true);
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({
+        "enable-features=PrefetchOffTheMainThread:check_will_create_url_loader_factory/true,"
+                + "WebViewPrefetchOffTheMainThread"
+    })
+    public void testPrefetchRequestInvalidHeaders_WorkerThread_OMTEnabled_WCULF() throws Throwable {
         testPrefetchRequestInvalidHeaders(/* runOnWorkerThread= */ true);
     }
 
@@ -286,6 +322,18 @@ public class AwPrefetchTest extends AwParameterizedTest {
         "enable-features=PrefetchOffTheMainThread,WebViewPrefetchOffTheMainThread"
     })
     public void testPrefetchRequestDuplicate_WorkerThread_OMTEnabled() throws Throwable {
+        testPrefetchRequestDuplicate(/* runOnWorkerThread= */ true);
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({
+        ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1",
+        "enable-features=PrefetchOffTheMainThread:check_will_create_url_loader_factory/true,"
+                + "WebViewPrefetchOffTheMainThread"
+    })
+    public void testPrefetchRequestDuplicate_WorkerThread_OMTEnabled_WCULF() throws Throwable {
         testPrefetchRequestDuplicate(/* runOnWorkerThread= */ true);
     }
 
@@ -408,6 +456,18 @@ public class AwPrefetchTest extends AwParameterizedTest {
         testPrefetchCancellation(/* runOnWorkerThread= */ true);
     }
 
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({
+        ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1",
+        "enable-features=PrefetchOffTheMainThread:check_will_create_url_loader_factory/true,"
+                + "WebViewPrefetchOffTheMainThread"
+    })
+    public void testPrefetchCancellation_WorkerThread_OMTEnabled_WCULF() throws Throwable {
+        testPrefetchCancellation(/* runOnWorkerThread= */ true);
+    }
+
     private void testPrefetchCancellation(boolean runOnWorkerThread) throws Throwable {
         // Do the prefetch request.
         TestAwPrefetchCallback callback =
@@ -488,6 +548,18 @@ public class AwPrefetchTest extends AwParameterizedTest {
     })
     public void
             testPrefetchQueueDrainedWhenUiThreadIsFree_VerifyPrefetchExecutionCount_WorkerThread_OMTEnabled() {
+        testPrefetchQueueDrainedWhenUiThreadIsFree_VerifyPrefetchExecutionCount();
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({
+        "enable-features=PrefetchOffTheMainThread:check_will_create_url_loader_factory/true,"
+                + "WebViewPrefetchOffTheMainThread"
+    })
+    public void
+            testPrefetchQueueDrainedWhenUiThreadIsFree_VerifyPrefetchExecutionCount_WorkerThread_OMTEnabled_WCULF() {
         testPrefetchQueueDrainedWhenUiThreadIsFree_VerifyPrefetchExecutionCount();
     }
 
@@ -574,6 +646,18 @@ public class AwPrefetchTest extends AwParameterizedTest {
     })
     public void
             testPrefetchQueueExplicitlyDrainedDuringAwContentsInitAndLoadUrl_WorkerThread_OMTEnabled() {
+        testPrefetchQueueExplicitlyDrainedDuringAwContentsInitAndLoadUrl();
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({
+        "enable-features=PrefetchOffTheMainThread:check_will_create_url_loader_factory/true,"
+                + "WebViewPrefetchOffTheMainThread"
+    })
+    public void
+            testPrefetchQueueExplicitlyDrainedDuringAwContentsInitAndLoadUrl_WorkerThread_OMTEnabled_WCULF() {
         testPrefetchQueueExplicitlyDrainedDuringAwContentsInitAndLoadUrl();
     }
 
@@ -701,6 +785,19 @@ public class AwPrefetchTest extends AwParameterizedTest {
         testPrefetchHasExpectedSecHeaderPurposeHeaderValue(/* runOnWorkerThread= */ true);
     }
 
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({
+        ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1",
+        "enable-features=PrefetchOffTheMainThread:check_will_create_url_loader_factory/true,"
+                + "WebViewPrefetchOffTheMainThread"
+    })
+    public void testPrefetchHasExpectedSecHeaderPurposeHeaderValue_WorkerThread_OMTEnabled_WCULF()
+            throws Throwable {
+        testPrefetchHasExpectedSecHeaderPurposeHeaderValue(/* runOnWorkerThread= */ true);
+    }
+
     private void testPrefetchHasExpectedSecHeaderPurposeHeaderValue(boolean runOnWorkerThread)
             throws Throwable {
         // Do the prefetch request.
@@ -748,6 +845,19 @@ public class AwPrefetchTest extends AwParameterizedTest {
                 + "PrefetchOffTheMainThread,WebViewPrefetchOffTheMainThread"
     })
     public void testPrefetchAndSaveState_WorkerThread_OMTEnabled() throws Throwable {
+        testPrefetchAndSaveState(/* runOnWorkerThread= */ true);
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({
+        ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1",
+        "enable-features=WebViewSaveStateIncludeHeaders,"
+                + "PrefetchOffTheMainThread:check_will_create_url_loader_factory/true,"
+                + "WebViewPrefetchOffTheMainThread"
+    })
+    public void testPrefetchAndSaveState_WorkerThread_OMTEnabled_WCULF() throws Throwable {
         testPrefetchAndSaveState(/* runOnWorkerThread= */ true);
     }
 
@@ -859,6 +969,19 @@ public class AwPrefetchTest extends AwParameterizedTest {
         testPrefetchAfterNavigationLogging(/* runOnWorkerThread= */ true);
     }
 
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({
+        ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1",
+        "enable-features=PrefetchOffTheMainThread:check_will_create_url_loader_factory/true,"
+                + "WebViewPrefetchOffTheMainThread"
+    })
+    public void testPrefetchAfterNavigationLogging_WorkerThread_OMTEnabled_WCULF()
+            throws Throwable {
+        testPrefetchAfterNavigationLogging(/* runOnWorkerThread= */ true);
+    }
+
     private void testPrefetchAfterNavigationLogging(boolean runOnWorkerThread) throws Throwable {
         mActivityTestRule.startBrowserProcess();
 
@@ -925,6 +1048,19 @@ public class AwPrefetchTest extends AwParameterizedTest {
         "enable-features=PrefetchOffTheMainThread,WebViewPrefetchOffTheMainThread"
     })
     public void testPrefetchAfterNavigationLogging_notLoggedScenario_WorkerThread_OMTEnabled()
+            throws Throwable {
+        testPrefetchAfterNavigationLogging_notLoggedScenario(/* runOnWorkerThread= */ true);
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({
+        ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1",
+        "enable-features=PrefetchOffTheMainThread:check_will_create_url_loader_factory/true,"
+                + "WebViewPrefetchOffTheMainThread"
+    })
+    public void testPrefetchAfterNavigationLogging_notLoggedScenario_WorkerThread_OMTEnabled_WCULF()
             throws Throwable {
         testPrefetchAfterNavigationLogging_notLoggedScenario(/* runOnWorkerThread= */ true);
     }
@@ -996,6 +1132,19 @@ public class AwPrefetchTest extends AwParameterizedTest {
         "enable-features=PrefetchOffTheMainThread,WebViewPrefetchOffTheMainThread"
     })
     public void testPrefetchBypassesHttpCacheWithHeader_WorkerThread_OMTEnabled() throws Throwable {
+        testPrefetchBypassesHttpCacheWithHeader(/* runOnWorkerThread= */ true);
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({
+        ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1",
+        "enable-features=PrefetchOffTheMainThread:check_will_create_url_loader_factory/true,"
+                + "WebViewPrefetchOffTheMainThread"
+    })
+    public void testPrefetchBypassesHttpCacheWithHeader_WorkerThread_OMTEnabled_WCULF()
+            throws Throwable {
         testPrefetchBypassesHttpCacheWithHeader(/* runOnWorkerThread= */ true);
     }
 
@@ -1074,6 +1223,19 @@ public class AwPrefetchTest extends AwParameterizedTest {
         testPrefetchUsesHttpCacheByDefault(/* runOnWorkerThread= */ true);
     }
 
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({
+        ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1",
+        "enable-features=PrefetchOffTheMainThread:check_will_create_url_loader_factory/true,"
+                + "WebViewPrefetchOffTheMainThread"
+    })
+    public void testPrefetchUsesHttpCacheByDefault_WorkerThread_OMTEnabled_WCULF()
+            throws Throwable {
+        testPrefetchUsesHttpCacheByDefault(/* runOnWorkerThread= */ true);
+    }
+
     private void testPrefetchUsesHttpCacheByDefault(boolean runOnWorkerThread) throws Throwable {
         final String testPath = "/cachetime";
         final String testUrl = getUrl(testPath);
@@ -1149,6 +1311,20 @@ public class AwPrefetchTest extends AwParameterizedTest {
         testPrefetchRequestWithVariationsId(/* runOnWorkerThread= */ true);
     }
 
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({
+        ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1",
+        "enable-features=ExternalExperimentAllowlist:123/PrefetchStudy,Group1,"
+                + "PrefetchOffTheMainThread:check_will_create_url_loader_factory/true,"
+                + "WebViewPrefetchOffTheMainThread"
+    })
+    public void testPrefetchRequestWithVariationsId_WorkerThread_OMTEnabled_WCULF()
+            throws Throwable {
+        testPrefetchRequestWithVariationsId(/* runOnWorkerThread= */ true);
+    }
+
     private void testPrefetchRequestWithVariationsId(boolean runOnWorkerThread) throws Throwable {
         // The Variations ID (123) must match the entry in the ExternalExperimentAllowlist
         // defined in the @CommandLineFlags above. The metrics service will only register
@@ -1185,6 +1361,22 @@ public class AwPrefetchTest extends AwParameterizedTest {
         "enable-features=PrefetchOffTheMainThread,WebViewPrefetchOffTheMainThread"
     })
     public void testPrePrefetchServedAndConsumed_WorkerThread_OMTEnabled() throws Throwable {
+        testPrePrefetchServedAndConsumed();
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({
+        ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1",
+        "enable-features=PrefetchOffTheMainThread:check_will_create_url_loader_factory/true,"
+                + "WebViewPrefetchOffTheMainThread"
+    })
+    public void testPrePrefetchServedAndConsumed_WorkerThread_OMTEnabled_WCULF() throws Throwable {
+        testPrePrefetchServedAndConsumed();
+    }
+
+    private void testPrePrefetchServedAndConsumed() throws Throwable {
         // PrePrefetch is triggered under the flag enabled.
         TestAwPrefetchCallback callback =
                 startPrefetchAndWait(
@@ -1228,6 +1420,23 @@ public class AwPrefetchTest extends AwParameterizedTest {
     })
     public void testPrefetchFallbackWhenPrePrefetchFails_WorkerThread_OMTEnabled()
             throws Throwable {
+        testPrefetchFallbackWhenPrePrefetchFails();
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({
+        ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1",
+        "enable-features=PrefetchOffTheMainThread:check_will_create_url_loader_factory/true,"
+                + "WebViewPrefetchOffTheMainThread"
+    })
+    public void testPrefetchFallbackWhenPrePrefetchFails_WorkerThread_OMTEnabled_WCULF()
+            throws Throwable {
+        testPrefetchFallbackWhenPrePrefetchFails();
+    }
+
+    private void testPrefetchFallbackWhenPrePrefetchFails() throws Throwable {
         final String profileName = "TestProfile";
         final String testUrl = getUrl(BASIC_PREFETCH_RELATIVE_PATH);
 
@@ -1332,6 +1541,19 @@ public class AwPrefetchTest extends AwParameterizedTest {
         testPrefetchHasExpectedXRequestedWithHeader(/* runOnWorkerThread= */ true);
     }
 
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({
+        ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1",
+        "enable-features=PrefetchOffTheMainThread:check_will_create_url_loader_factory/true,"
+                + "WebViewPrefetchOffTheMainThread"
+    })
+    public void testPrefetchHasExpectedXRequestedWithHeader_WorkerThread_OMTEnabled_WCULF()
+            throws Throwable {
+        testPrefetchHasExpectedXRequestedWithHeader(/* runOnWorkerThread= */ true);
+    }
+
     private void testPrefetchHasExpectedXRequestedWithHeader(boolean runOnWorkerThread)
             throws Throwable {
         TestAwPrefetchCallback callback =
@@ -1360,6 +1582,23 @@ public class AwPrefetchTest extends AwParameterizedTest {
     })
     public void testPrePrefetchMatchesNormalPrefetchHeaders_WorkerThread_OMTEnabled()
             throws Throwable {
+        testPrePrefetchMatchesNormalPrefetchHeaders();
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({
+        ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1",
+        "enable-features=PrefetchOffTheMainThread:check_will_create_url_loader_factory/true,"
+                + "WebViewPrefetchOffTheMainThread"
+    })
+    public void testPrePrefetchMatchesNormalPrefetchHeaders_WorkerThread_OMTEnabled_WCULF()
+            throws Throwable {
+        testPrePrefetchMatchesNormalPrefetchHeaders();
+    }
+
+    private void testPrePrefetchMatchesNormalPrefetchHeaders() throws Throwable {
         String prefetchUrlPath = BASIC_PREFETCH_RELATIVE_PATH + "?type=prefetch";
         String prefetchUrl = getUrl(prefetchUrlPath);
 

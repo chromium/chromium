@@ -959,6 +959,14 @@ PrefetchContainer::CreatePrePrefetchURLLoaderFactory() {
           std::move(pre_prefetch_loader_),
           std::move(pre_prefetch_loader_client_receiver_), GetWeakPtr()));
 
+  if (features::kPrefetchOffTheMainThreadCheckWillCreateURLLoaderFactory
+          .Get()) {
+    // `WillCreateURLLoaderFactory` is already consulted in the PrePrefetch's
+    // URLLoaderFactory (i.e. inside `pre_prefetch_loader_`), so we don't go
+    // through `CreatePrefetchURLLoaderFactory()` here.
+    return pre_prefetch_url_loader_factory;
+  }
+
   // Currently `feature::kPrefetchOffTheMainThread` doesn't support the
   // request w/ isolated context.
   return CreatePrefetchURLLoaderFactory(
