@@ -184,8 +184,9 @@ NSString* tonemapping_shader_source =
 // unsupported.
 uint32_t GetTransferFunctionIndex(const gfx::ColorSpace& color_space) {
   skcms_TransferFunction fn;
-  if (color_space.GetTransferFunction(&fn))
+  if (color_space.GetTransferFunction(&fn)) {
     return 1;
+  }
 
   switch (color_space.GetTransferID()) {
     case gfx::ColorSpace::TransferID::PQ:
@@ -222,6 +223,7 @@ bool IOSurfaceGetMTLPixelFormat(IOSurfaceRef buffer,
       format[0] = MTLPixelFormatRGBA8Unorm;
       return true;
     case kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange:
+    case kCVPixelFormatType_Lossless_420YpCbCr8BiPlanarVideoRange:
     case kCVPixelFormatType_422YpCbCr8BiPlanarVideoRange:
     case kCVPixelFormatType_444YpCbCr8BiPlanarVideoRange:
       num_planes = 2;
@@ -229,7 +231,9 @@ bool IOSurfaceGetMTLPixelFormat(IOSurfaceRef buffer,
       UNSAFE_TODO(format[1]) = MTLPixelFormatRG8Unorm;
       return true;
     case kCVPixelFormatType_420YpCbCr10BiPlanarVideoRange:
+    case kCVPixelFormatType_Lossless_420YpCbCr10PackedBiPlanarVideoRange:
     case kCVPixelFormatType_422YpCbCr10BiPlanarVideoRange:
+    case kCVPixelFormatType_Lossless_422YpCbCr10PackedBiPlanarVideoRange:
     case kCVPixelFormatType_444YpCbCr10BiPlanarVideoRange:
       num_planes = 2;
       format[0] = MTLPixelFormatR16Unorm;
