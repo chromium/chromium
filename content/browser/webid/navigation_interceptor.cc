@@ -34,6 +34,27 @@
 
 namespace content::webid {
 
+namespace {
+
+std::string* GetIfString(net::structured_headers::Dictionary& dict,
+                         std::string_view key) {
+  auto it = dict.find(key);
+  if (it == dict.end() || it->second.member_is_inner_list ||
+      it->second.member.size() != 1) {
+    return nullptr;
+  }
+  return it->second.member.front().item.GetIfString();
+}
+
+std::optional<std::string> TakeIfString(
+    net::structured_headers::Dictionary& dict,
+    std::string_view key) {
+  std::string* str = GetIfString(dict, key);
+  return str ? std::make_optional(std::move(*str)) : std::nullopt;
+}
+
+}  // namespace
+
 using MediationRequirement = ::password_manager::CredentialMediationRequirement;
 using RequestTokenCallback = Request::RequestTokenCallback;
 
@@ -231,21 +252,12 @@ void NavigationInterceptor::OnConnectionStatusHeaderParsed(
     return;
   }
 
-  auto get_if_string = [&](std::string_view key) -> const std::string* {
-    auto it = result->find(key);
-    if (it == result->end() || it->second.member_is_inner_list ||
-        it->second.member.size() != 1) {
-      return nullptr;
-    }
-    return it->second.member.front().item.GetIfString();
-  };
-
-  if (const std::string* status = get_if_string("status");
+  if (const std::string* status = GetIfString(*result, "status");
       status && *status == "connected") {
     // The server can send this header without embedder login request.
     if (net::SchemefulSite::IsSameSite(embedder_login_request->idp_origin(),
                                        url::Origin::Create(intercepted_url))) {
-      const std::string* account_id = get_if_string("account_id");
+      const std::string* account_id = GetIfString(*result, "account_id");
 
       if (account_id && *account_id == embedder_login_request->account_id()) {
         embedder_login_request->OnFederatedResultReceived(
@@ -281,7 +293,8 @@ void NavigationInterceptor::OnHeaderParsed(
   }
 
   RequestBuilder request_builder;
-  auto idp_get_params_vector = request_builder.Build(intercepted_url, *result);
+  auto idp_get_params_vector =
+      request_builder.Build(intercepted_url, *std::move(result));
 
   if (!idp_get_params_vector) {
     // The header was available, parsed, but contained an invalid set of
@@ -350,18 +363,8 @@ const char* NavigationInterceptor::GetNameForLogging() {
 std::optional<std::vector<blink::mojom::IdentityProviderGetParametersPtr>>
 NavigationInterceptor::RequestBuilder::Build(
     const GURL& base_url,
-    const net::structured_headers::Dictionary& dictionary) {
-  auto get_string =
-      [&dictionary](const std::string& key) -> std::optional<std::string> {
-    auto it = dictionary.find(key);
-    if (it == dictionary.end() || it->second.member.size() != 1 ||
-        !it->second.member[0].item.is_string()) {
-      return std::nullopt;
-    }
-    return it->second.member[0].item.GetString();
-  };
-
-  auto config_url_str = get_string("config_url");
+    net::structured_headers::Dictionary dict) {
+  const std::string* config_url_str = GetIfString(dict, "config_url");
   if (!config_url_str) {
     return std::nullopt;
   }
@@ -373,33 +376,32 @@ NavigationInterceptor::RequestBuilder::Build(
     return std::nullopt;
   }
 
-  auto client_id = get_string("client_id");
+  std::string* client_id = GetIfString(dict, "client_id");
   if (!client_id) {
     return std::nullopt;
   }
 
   auto idp_options = blink::mojom::IdentityProviderRequestOptions::New();
 
-  idp_options->login_hint = get_string("login_hint").value_or("");
-  idp_options->domain_hint = get_string("domain_hint").value_or("");
-  idp_options->params_json = get_string("params");
+  idp_options->login_hint = TakeIfString(dict, "login_hint").value_or("");
+  idp_options->domain_hint = TakeIfString(dict, "domain_hint").value_or("");
+  idp_options->params_json = TakeIfString(dict, "params");
 
-  auto fields_it = dictionary.find("fields");
-  if (fields_it != dictionary.end()) {
+  if (auto it = dict.find("fields");
+      it != dict.end() && it->second.member_is_inner_list) {
     std::vector<std::string> fields;
-    for (const auto& member_item : fields_it->second.member) {
-      if (!member_item.item.is_string()) {
+    for (auto& member_item : it->second.member) {
+      std::string* field_str = member_item.item.GetIfString();
+      if (!field_str) {
         return std::nullopt;
       }
-      const std::string& field_str = member_item.item.GetString();
-      fields.push_back(field_str);
+      fields.emplace_back(std::move(*field_str));
     }
-    idp_options->fields = fields;
+    idp_options->fields = std::move(fields);
   }
 
   blink::mojom::RpContext context = blink::mojom::RpContext::kSignIn;
-  auto context_string = get_string("context");
-  if (context_string) {
+  if (const std::string* context_string = GetIfString(dict, "context")) {
     if (*context_string == "signin") {
       context = blink::mojom::RpContext::kSignIn;
     } else if (*context_string == "signup") {
@@ -415,9 +417,9 @@ NavigationInterceptor::RequestBuilder::Build(
   }
 
   auto idp_config = blink::mojom::IdentityProviderConfig::New();
-  idp_config->config_url = config_url;
+  idp_config->config_url = std::move(config_url);
 
-  idp_config->client_id = *client_id;
+  idp_config->client_id = std::move(*client_id);
 
   idp_options->config = std::move(idp_config);
 

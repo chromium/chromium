@@ -39,6 +39,11 @@
 namespace content::webid {
 
 using ::testing::_;
+using ::testing::ElementsAre;
+using ::testing::Eq;
+using ::testing::Field;
+using ::testing::Optional;
+using ::testing::Pointee;
 using ::testing::Return;
 using ::testing::WithArgs;
 using MediationRequirement = ::password_manager::CredentialMediationRequirement;
@@ -718,6 +723,86 @@ TEST_F(NavigationInterceptorTest,
   auto result = builder.Build(base_url_, parsed_dictionary);
 
   ASSERT_FALSE(result.has_value());
+}
+
+// Regression test for http://crbug.com/545549898.
+TEST_F(NavigationInterceptorTest, RequestBuilderHandlesInnerLists) {
+  const struct {
+    std::string_view desc;
+    std::string_view input;
+    testing::Matcher<std::optional<
+        std::vector<blink::mojom::IdentityProviderGetParametersPtr>>>
+        matches;
+  } kTestCases[] = {
+      {
+          "config_url-inner-list-rejected",
+          R"(config_url=("https://idp.example/fedcm.json"))",
+          Eq(std::nullopt),
+      },
+      {
+          "client_id-inner-list-rejected",
+          R"(config_url="https://idp.example/fedcm.json", client_id=("123"))",
+          Eq(std::nullopt),
+      },
+      {
+          "login_hint-inner-list-ignored",
+          R"(config_url="https://idp.example/fedcm.json", client_id="123", login_hint=("x"))",
+          Optional(ElementsAre(Pointee(Field(
+              &blink::mojom::IdentityProviderGetParameters::providers,
+              ElementsAre(Pointee(Field(
+                  &blink::mojom::IdentityProviderRequestOptions::login_hint,
+                  ""))))))),
+      },
+      {
+          "domain_hint-inner-list-ignored",
+          R"(config_url="https://idp.example/fedcm.json", client_id="123", domain_hint=("x"))",
+          Optional(ElementsAre(Pointee(Field(
+              &blink::mojom::IdentityProviderGetParameters::providers,
+              ElementsAre(Pointee(Field(
+                  &blink::mojom::IdentityProviderRequestOptions::domain_hint,
+                  ""))))))),
+      },
+      {
+          "params-inner-list-ignored",
+          R"(config_url="https://idp.example/fedcm.json", client_id="123", params=("x"))",
+          Optional(ElementsAre(Pointee(Field(
+              &blink::mojom::IdentityProviderGetParameters::providers,
+              ElementsAre(Pointee(Field(
+                  &blink::mojom::IdentityProviderRequestOptions::params_json,
+                  std::nullopt))))))),
+      },
+      {
+          "fields-not-inner-list-ignored",
+          R"(config_url="https://idp.example/fedcm.json", client_id="123", fields="x")",
+          Optional(ElementsAre(Pointee(
+              Field(&blink::mojom::IdentityProviderGetParameters::providers,
+                    ElementsAre(Pointee(Field(
+                        &blink::mojom::IdentityProviderRequestOptions::fields,
+                        std::nullopt))))))),
+      },
+      {
+          "fields-element-not-string-rejected",
+          R"(config_url="https://idp.example/fedcm.json", client_id="123", fields=(x))",
+          Eq(std::nullopt),
+      },
+      {
+          "context-inner-list-ignored",
+          R"(config_url="https://idp.example/fedcm.json", client_id="123", context=("x"))",
+          Optional(ElementsAre(Pointee(
+              Field(&blink::mojom::IdentityProviderGetParameters::context,
+                    blink::mojom::RpContext::kSignIn)))),
+      },
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.desc);
+
+    auto dict = net::structured_headers::ParseDictionary(test_case.input);
+    ASSERT_TRUE(dict);
+
+    NavigationInterceptor::RequestBuilder builder;
+    EXPECT_THAT(builder.Build(base_url_, *std::move(dict)), test_case.matches);
+  }
 }
 
 TEST_F(NavigationInterceptorTest, ResponseBuilderBuildsResponse) {
