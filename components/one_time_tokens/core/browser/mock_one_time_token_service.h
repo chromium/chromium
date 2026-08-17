@@ -34,6 +34,10 @@ class MockOneTimeTokenService : public OneTimeTokenService {
               (base::TimeDelta timeout,
                base::OnceCallback<void(std::optional<OneTimeToken>)> callback),
               (override));
+  MOCK_METHOD(void,
+              FetchUserDataProcessingConsent,
+              (FetchUserDataProcessingConsentCallback callback),
+              (override));
 };
 
 }  // namespace one_time_tokens

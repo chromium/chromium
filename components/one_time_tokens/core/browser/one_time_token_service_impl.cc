@@ -121,6 +121,15 @@ void OneTimeTokenServiceImpl::RequestOneTimeToken(
   }
 }
 
+void OneTimeTokenServiceImpl::FetchUserDataProcessingConsent(
+    FetchUserDataProcessingConsentCallback callback) {
+  if (gmail_.backend) {
+    gmail_.backend->FetchUserDataProcessingConsent(std::move(callback));
+  } else {
+    std::move(callback).Run(std::nullopt);
+  }
+}
+
 void OneTimeTokenServiceImpl::RetrieveSmsOtpIfNeeded() {
   if (!sms_.backend || sms_.has_pending_request ||
       !sms_subscription_manager_.GetNumberSubscribers()) {

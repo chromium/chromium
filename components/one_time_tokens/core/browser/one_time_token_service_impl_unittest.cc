@@ -17,6 +17,7 @@
 #include "components/one_time_tokens/core/browser/one_time_token.h"
 #include "components/one_time_tokens/core/browser/one_time_token_backend_notification.h"
 #include "components/one_time_tokens/core/browser/sms_otp_backend.h"
+#include "components/one_time_tokens/core/browser/user_data_processing_consent_states.h"
 #include "components/one_time_tokens/core/common/one_time_token_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -92,6 +93,11 @@ class MockGmailOtpBackend : public GmailOtpBackend {
   MOCK_METHOD(void,
               OnIncomingOneTimeTokenBackendNotification,
               (const OneTimeTokenBackendNotification& notification),
+              (override));
+
+  MOCK_METHOD(void,
+              FetchUserDataProcessingConsent,
+              (FetchUserDataProcessingConsentCallback callback),
               (override));
 
   // Simulates the reception of an OTP. This will run all pending callbacks from
@@ -1028,6 +1034,41 @@ TEST_F(OneTimeTokenServiceImplTest, SourceIsolation) {
   EXPECT_THAT(observer_gmail.results(),
               ElementsAre(Pair(OneTimeTokenSource::kGmail,
                                OneTimeTokenValueEq("GMAIL_OTP"))));
+}
+
+TEST_F(OneTimeTokenServiceImplTest, FetchUserDataProcessingConsent) {
+  OneTimeTokenServiceImpl service(/*sms_otp_backend=*/nullptr,
+                                  gmail_otp_backend_.get());
+
+  base::test::TestFuture<std::optional<UserDataProcessingConsentStates>> future;
+
+  UserDataProcessingConsentStates expected_states{
+      .comms_apps = ConsentState::kEnabled,
+      .google_apps = ConsentState::kDisabled,
+  };
+
+  EXPECT_CALL(*gmail_otp_backend_, FetchUserDataProcessingConsent)
+      .WillOnce(base::test::RunOnceCallback<0>(expected_states));
+
+  service.FetchUserDataProcessingConsent(future.GetCallback());
+
+  std::optional<UserDataProcessingConsentStates> result = future.Get();
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result->comms_apps, ConsentState::kEnabled);
+  EXPECT_EQ(result->google_apps, ConsentState::kDisabled);
+}
+
+TEST_F(OneTimeTokenServiceImplTest,
+       FetchUserDataProcessingConsent_NoGmailBackend) {
+  OneTimeTokenServiceImpl service(/*sms_otp_backend=*/nullptr,
+                                  /*gmail_otp_backend=*/nullptr);
+
+  base::test::TestFuture<std::optional<UserDataProcessingConsentStates>> future;
+
+  service.FetchUserDataProcessingConsent(future.GetCallback());
+
+  std::optional<UserDataProcessingConsentStates> result = future.Get();
+  EXPECT_FALSE(result.has_value());
 }
 
 }  // namespace one_time_tokens

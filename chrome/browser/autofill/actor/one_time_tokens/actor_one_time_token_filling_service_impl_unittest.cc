@@ -103,6 +103,12 @@ class FakeOneTimeTokenService : public one_time_tokens::OneTimeTokenService {
       base::OnceCallback<void(std::optional<one_time_tokens::OneTimeToken>)>
           callback) override {}
 
+  void FetchUserDataProcessingConsent(
+      one_time_tokens::OneTimeTokenService::
+          FetchUserDataProcessingConsentCallback callback) override {
+    std::move(callback).Run(/*consent_states=*/std::nullopt);
+  }
+
   void SetCachedTokens(std::vector<one_time_tokens::OneTimeToken> tokens) {
     cached_tokens_ = std::move(tokens);
   }

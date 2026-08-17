@@ -15,6 +15,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
 #include "components/one_time_tokens/core/browser/one_time_token_retrieval_error.h"
+#include "components/one_time_tokens/core/browser/user_data_processing_consent_states.h"
 #include "components/one_time_tokens/core/browser/util/expiring_subscription.h"
 
 namespace one_time_tokens {
@@ -73,6 +74,12 @@ class OneTimeTokenService : public KeyedService {
       base::OnceCallback<void(std::optional<OneTimeToken>)> callback) = 0;
 
   virtual OneTimeTokenLogSink* log_sink() = 0;
+
+  using FetchUserDataProcessingConsentCallback =
+      base::OnceCallback<void(std::optional<UserDataProcessingConsentStates>)>;
+  // Fetches the user data processing consent states from the backend.
+  virtual void FetchUserDataProcessingConsent(
+      FetchUserDataProcessingConsentCallback callback) = 0;
 };
 
 }  // namespace one_time_tokens

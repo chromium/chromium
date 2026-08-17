@@ -15,7 +15,11 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "components/one_time_tokens/core/browser/fetch_email_one_time_token_response.pb.h"
+#include "components/one_time_tokens/core/browser/fetch_user_data_processing_consent_response.pb.h"
+#include "components/one_time_tokens/core/browser/user_data_processing_consent_states.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "google_apis/gaia/google_service_auth_error.h"
+#include "net/base/net_errors.h"
 #include "net/base/url_util.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -23,6 +27,15 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace one_time_tokens {
+
+using ::google::internal::chrome::passwords::onetimetoken::v1::
+    FetchEmailOneTimeTokenResponse;
+using ::google::internal::chrome::passwords::onetimetoken::v1::
+    FetchUserDataProcessingConsentResponse;
+using ::google::internal::chrome::passwords::onetimetoken::v1::
+    USER_DATA_PROCESSING_CONSENT_STATE_DISABLED;
+using ::google::internal::chrome::passwords::onetimetoken::v1::
+    USER_DATA_PROCESSING_CONSENT_STATE_ENABLED;
 
 class GmailOtpBackendImplTest : public testing::Test {
  public:
@@ -48,6 +61,13 @@ class GmailOtpBackendImplTest : public testing::Test {
     return net::AppendQueryParameter(url, "alt", "proto").spec();
   }
 
+  std::string GetExpectedConsentUrl() {
+    GURL url(
+        "https://onetimetoken.pa.googleapis.com/v1/"
+        "onetimetokens:fetchUserDataProcessingConsent");
+    return net::AppendQueryParameter(url, "alt", "proto").spec();
+  }
+
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   network::TestURLLoaderFactory test_url_loader_factory_;
@@ -70,8 +90,7 @@ TEST_F(GmailOtpBackendImplTest, SubscribeAndGetToken) {
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       "access_token", base::Time::Now() + base::Hours(1));
 
-  ::google::internal::chrome::passwords::onetimetoken::v1::
-      FetchEmailOneTimeTokenResponse response;
+  FetchEmailOneTimeTokenResponse response;
   response.mutable_one_time_password()->set_one_time_password("123456");
   response.set_sender_address("noreply@example.com");
 
@@ -383,6 +402,85 @@ TEST_F(GmailOtpBackendImplTest, Subscribe_InitializationFailed) {
       static_cast<int>(
           OneTimeTokenRetrievalError::kGmailOtpBackendInitializationFailed),
       1);
+}
+
+TEST_F(GmailOtpBackendImplTest, FetchUserDataProcessingConsent_Success) {
+  base::test::TestFuture<std::optional<UserDataProcessingConsentStates>> future;
+  backend_.FetchUserDataProcessingConsent(future.GetCallback());
+
+  identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      "access_token", base::Time::Now() + base::Hours(1));
+
+  FetchUserDataProcessingConsentResponse response;
+  response.set_comms_apps(USER_DATA_PROCESSING_CONSENT_STATE_ENABLED);
+  response.set_google_apps(USER_DATA_PROCESSING_CONSENT_STATE_DISABLED);
+
+  test_url_loader_factory_.AddResponse(GetExpectedConsentUrl(),
+                                       response.SerializeAsString());
+
+  std::optional<UserDataProcessingConsentStates> result = future.Get();
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result->comms_apps, ConsentState::kEnabled);
+  EXPECT_EQ(result->google_apps, ConsentState::kDisabled);
+}
+
+TEST_F(GmailOtpBackendImplTest, FetchUserDataProcessingConsent_NetworkError) {
+  base::test::TestFuture<std::optional<UserDataProcessingConsentStates>> future;
+  backend_.FetchUserDataProcessingConsent(future.GetCallback());
+
+  identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      "access_token", base::Time::Now() + base::Hours(1));
+
+  test_url_loader_factory_.AddResponse(GetExpectedConsentUrl(), "",
+                                       net::HTTP_INTERNAL_SERVER_ERROR);
+
+  std::optional<UserDataProcessingConsentStates> result = future.Get();
+  EXPECT_FALSE(result.has_value());
+}
+
+TEST_F(GmailOtpBackendImplTest, FetchUserDataProcessingConsent_AuthError) {
+  base::test::TestFuture<std::optional<UserDataProcessingConsentStates>> future;
+  backend_.FetchUserDataProcessingConsent(future.GetCallback());
+
+  identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
+      GoogleServiceAuthError::FromConnectionError(net::ERR_FAILED));
+
+  std::optional<UserDataProcessingConsentStates> result = future.Get();
+  EXPECT_FALSE(result.has_value());
+}
+
+TEST_F(GmailOtpBackendImplTest,
+       FetchUserDataProcessingConsent_ConcurrentRequests) {
+  base::test::TestFuture<std::optional<UserDataProcessingConsentStates>>
+      future_1;
+  base::test::TestFuture<std::optional<UserDataProcessingConsentStates>>
+      future_2;
+
+  backend_.FetchUserDataProcessingConsent(future_1.GetCallback());
+  backend_.FetchUserDataProcessingConsent(future_2.GetCallback());
+
+  identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      "access_token", base::Time::Now() + base::Hours(1));
+
+  FetchUserDataProcessingConsentResponse response;
+  response.set_comms_apps(USER_DATA_PROCESSING_CONSENT_STATE_ENABLED);
+  response.set_google_apps(USER_DATA_PROCESSING_CONSENT_STATE_DISABLED);
+
+  test_url_loader_factory_.AddResponse(GetExpectedConsentUrl(),
+                                       response.SerializeAsString());
+
+  std::optional<UserDataProcessingConsentStates> result_1 = future_1.Get();
+  std::optional<UserDataProcessingConsentStates> result_2 = future_2.Get();
+
+  ASSERT_TRUE(result_1.has_value());
+  EXPECT_EQ(result_1->comms_apps, ConsentState::kEnabled);
+  EXPECT_EQ(result_1->google_apps, ConsentState::kDisabled);
+
+  ASSERT_TRUE(result_2.has_value());
+  EXPECT_EQ(result_2->comms_apps, ConsentState::kEnabled);
+  EXPECT_EQ(result_2->google_apps, ConsentState::kDisabled);
+
+  EXPECT_EQ(test_url_loader_factory_.total_requests(), 1u);
 }
 
 }  // namespace one_time_tokens

@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "components/one_time_tokens/core/browser/email_one_time_token_fetcher.h"
 #include "components/one_time_tokens/core/browser/one_time_token_log_sink.h"
+#include "components/one_time_tokens/core/browser/user_data_processing_consent_fetcher.h"
 #include "components/one_time_tokens/core/browser/util/expiring_cache.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -103,6 +104,21 @@ void GmailOtpBackendImpl::OnIncomingOneTimeTokenBackendNotification(
   ProcessCachedNotifications();
 }
 
+void GmailOtpBackendImpl::FetchUserDataProcessingConsent(
+    FetchUserDataProcessingConsentCallback callback) {
+  LOG_OTT(log_sink_) << "Fetching user data processing consent.";
+  pending_consent_callbacks_.push_back(std::move(callback));
+  if (consent_fetcher_) {
+    LOG_OTT(log_sink_) << "Consent fetch already in flight, queuing callback.";
+    return;
+  }
+  consent_fetcher_ = std::make_unique<UserDataProcessingConsentFetcher>(
+      url_loader_factory_, *identity_manager_, log_sink_);
+  consent_fetcher_->Start(
+      base::BindOnce(&GmailOtpBackendImpl::OnUserDataProcessingConsentFetched,
+                     weakptr_factory_.GetWeakPtr()));
+}
+
 void GmailOtpBackendImpl::ProcessCachedNotifications() {
   if (subscription_manager_.GetNumberSubscribers() == 0) {
     LOG_OTT(log_sink_)
@@ -183,6 +199,19 @@ void GmailOtpBackendImpl::OnResponseFromGmailOtpBackend(
   LOG_OTT(log_sink_) << "Gmail OTP backend retrieval succeeded. Notifying "
                         "subscribers.";
   subscription_manager_.Notify(base::ok(token));
+}
+
+void GmailOtpBackendImpl::OnUserDataProcessingConsentFetched(
+    std::optional<UserDataProcessingConsentStates> states) {
+  LOG_OTT(log_sink_) << "Consent fetch completed: "
+                     << (states.has_value() ? "success" : "failed");
+  consent_fetcher_.reset();
+  std::vector<FetchUserDataProcessingConsentCallback> callbacks =
+      std::move(pending_consent_callbacks_);
+  pending_consent_callbacks_.clear();
+  for (auto& callback : callbacks) {
+    std::move(callback).Run(states);
+  }
 }
 
 }  // namespace one_time_tokens

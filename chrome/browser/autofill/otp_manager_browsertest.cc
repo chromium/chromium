@@ -1,4 +1,4 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -96,6 +96,12 @@ class FakeGmailOtpBackend : public one_time_tokens::GmailOtpBackend {
   void OnIncomingOneTimeTokenBackendNotification(
       const one_time_tokens::OneTimeTokenBackendNotification& notification)
       override {}
+
+  void FetchUserDataProcessingConsent(
+      one_time_tokens::GmailOtpBackend::FetchUserDataProcessingConsentCallback
+          callback) override {
+    std::move(callback).Run(/*consent_states=*/std::nullopt);
+  }
 
   // Simulates the reception of a Gmail OTP.
   void ProcessCallbacks(

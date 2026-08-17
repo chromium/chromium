@@ -30,6 +30,13 @@ class MockGmailOtpBackend : public one_time_tokens::GmailOtpBackend {
               (const one_time_tokens::OneTimeTokenBackendNotification&
                    one_time_token_backend_notification),
               (override));
+
+  MOCK_METHOD(
+      void,
+      FetchUserDataProcessingConsent,
+      (one_time_tokens::GmailOtpBackend::FetchUserDataProcessingConsentCallback
+           callback),
+      (override));
 };
 
 MATCHER_P3(OneTimeTokenNotificationMatches,

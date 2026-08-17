@@ -18,6 +18,7 @@
 #include "components/one_time_tokens/core/browser/one_time_token.h"
 #include "components/one_time_tokens/core/browser/one_time_token_backend_notification.h"
 #include "components/one_time_tokens/core/browser/one_time_token_retrieval_error.h"
+#include "components/one_time_tokens/core/browser/user_data_processing_consent_states.h"
 #include "components/one_time_tokens/core/browser/util/expiring_cache.h"
 #include "components/one_time_tokens/core/browser/util/expiring_subscription.h"
 #include "components/one_time_tokens/core/browser/util/expiring_subscription_manager.h"
@@ -39,6 +40,7 @@ inline constexpr base::TimeDelta kNotificationExpirationDuration =
     base::Minutes(3);
 
 class EmailOneTimeTokenFetcher;
+class UserDataProcessingConsentFetcher;
 
 // Abstract interface for fetching OTPs from Gmail.
 class GmailOtpBackend : public KeyedService {
@@ -63,11 +65,16 @@ class GmailOtpBackend : public KeyedService {
   // Called when a new OTP is received via the OneTimeToken notification.
   virtual void OnIncomingOneTimeTokenBackendNotification(
       const OneTimeTokenBackendNotification& notification) = 0;
+
+  using FetchUserDataProcessingConsentCallback =
+      base::OnceCallback<void(std::optional<UserDataProcessingConsentStates>)>;
+  // Fetches the user data processing consent states from the backend.
+  virtual void FetchUserDataProcessingConsent(
+      FetchUserDataProcessingConsentCallback callback) = 0;
 };
 
-// Concrete implementation of GmailOtpBackend that provides a fake OTP
-// response. This is intended for use in testing and development environments
-// where a real backend is not available.
+// Concrete implementation of GmailOtpBackend that fetches OTPs and consent
+// states from the backend.
 class GmailOtpBackendImpl : public GmailOtpBackend,
                             public EmailOneTimeTokenFetchCoordinator::Delegate {
  public:
@@ -83,6 +90,9 @@ class GmailOtpBackendImpl : public GmailOtpBackend,
 
   void OnIncomingOneTimeTokenBackendNotification(
       const OneTimeTokenBackendNotification& notification) override;
+
+  void FetchUserDataProcessingConsent(
+      FetchUserDataProcessingConsentCallback callback) override;
 
   void OnCanSendNetworkRequest(
       const OneTimeTokenBackendNotification& notification,
@@ -100,6 +110,9 @@ class GmailOtpBackendImpl : public GmailOtpBackend,
       const OneTimeTokenBackendNotification& notification,
       base::TimeTicks trigger_time,
       base::expected<OneTimeToken, OneTimeTokenRetrievalError> reply);
+
+  void OnUserDataProcessingConsentFetched(
+      std::optional<UserDataProcessingConsentStates> states);
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
@@ -126,6 +139,13 @@ class GmailOtpBackendImpl : public GmailOtpBackend,
   base::flat_map<EncryptedMessageReference,
                  std::unique_ptr<EmailOneTimeTokenFetcher>>
       active_fetchers_;
+
+  // Active fetcher for user data processing consent.
+  std::unique_ptr<UserDataProcessingConsentFetcher> consent_fetcher_;
+
+  // Pending callbacks for in-flight consent fetch request.
+  std::vector<FetchUserDataProcessingConsentCallback>
+      pending_consent_callbacks_;
 
   // Weak pointer factory (must be last member in class).
   base::WeakPtrFactory<GmailOtpBackendImpl> weakptr_factory_{this};
