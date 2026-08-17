@@ -15,6 +15,7 @@ source_set("infobars") {
     "//chrome/browser/infobars",
     "//chrome/browser/obsolete_system",
     "//chrome/browser/ssl",
+    "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/page_info",
     "//components/infobars/core",
     "//components/omnibox/browser:vector_icons",

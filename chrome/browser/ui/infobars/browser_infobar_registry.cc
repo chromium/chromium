@@ -18,6 +18,7 @@
 #include "chrome/browser/obsolete_system/obsolete_system.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/known_interception_disclosure_infobar_delegate.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/page_info/chrome_page_info_delegate.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -132,6 +133,16 @@ void RegisterInfoBars() {
                                  ? omnibox::kChromeProductIcon
                                  : vector_icons::kProductRefreshIcon)
                     .SetScope(infobars::InfoBarScope::kGlobal)
+                    // Only offer to pin in normal, non-incognito,
+                    // non-guest browsers.
+                    .SetBrowserFilter(base::BindRepeating(
+                        [](BrowserWindowInterface* browser) {
+                          const Profile* profile = browser->GetProfile();
+                          return browser->GetType() ==
+                                     BrowserWindowInterface::TYPE_NORMAL &&
+                                 !profile->IsIncognitoProfile() &&
+                                 !profile->IsGuestSession();
+                        }))
                     .AddOkButton(
                         default_browser::PinInfoBarController::GetButtonLabel(),
                         base::BindRepeating(
