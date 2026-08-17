@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/event_utils.h"
 #include "chrome/browser/ui/views/frame/base_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view.h"
@@ -430,6 +431,29 @@ bool TabView::HasFreezingVote(FreezingVoteReason reason) const {
 bool TabView::HasFreezingVote() const {
   return collapsed_freezing_vote_.has_value() ||
          focus_mode_freezing_vote_.has_value();
+}
+
+void TabView::UpdateFocusFreezing() {
+  if (!features::IsTabGroupsFocusFreezingEnabled()) {
+    return;
+  }
+  const tabs::TabInterface* tab = GetTabInterface();
+  if (!tab) {
+    return;
+  }
+  const auto* controller =
+      collection_node_ ? collection_node_->GetController() : nullptr;
+  if (!controller) {
+    return;
+  }
+  const std::optional<tab_groups::TabGroupId> focused_group =
+      controller->GetFocusedGroup();
+  if (focused_group.has_value() && !tab->IsPinned() &&
+      tab->GetGroup() != focused_group.value()) {
+    CreateFreezingVote(FreezingVoteReason::kFocusedGroup);
+  } else {
+    ReleaseFreezingVote(FreezingVoteReason::kFocusedGroup);
+  }
 }
 
 void TabView::UpdateHovered(bool hovered) {
@@ -985,6 +1009,8 @@ void TabView::OnTabStateChanged() {
 
   SetSelection(tab->IsSelected());
   UpdateTabData(tab);
+
+  UpdateFocusFreezing();
 
   UpdateColors();
   InvalidateLayout();

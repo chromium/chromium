@@ -565,6 +565,24 @@ void TabStripCollectionController::TabGroupFocusChanged(
   UpdateFocusModeTheme(new_focused_group_id);
   browser_view_->browser_widget()->ThemeChanged();
   browser_view_->GetWidget()->non_client_view()->frame_view()->SchedulePaint();
+
+  UpdateAllTabsFocusFreezing();
+}
+
+void TabStripCollectionController::UpdateAllTabsFocusFreezing() {
+  if (!features::IsTabGroupsFocusFreezingEnabled()) {
+    return;
+  }
+  if (!model_ || !browser_view_ || !browser_view_->tab_strip_view()) {
+    return;
+  }
+  for (tabs::TabInterface* tab : *model_) {
+    views::View* const view =
+        browser_view_->tab_strip_view()->GetTabAnchorView(tab->GetHandle());
+    if (auto* tab_view = views::AsViewClass<TabView>(view)) {
+      tab_view->UpdateFocusFreezing();
+    }
+  }
 }
 
 void TabStripCollectionController::UpdateFocusModeTheme(

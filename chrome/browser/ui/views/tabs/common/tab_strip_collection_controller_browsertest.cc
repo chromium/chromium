@@ -677,4 +677,236 @@ INSTANTIATE_TEST_SUITE_P(
       }
     });
 
+class TabStripControllerFocusFreezingBrowserTest
+    : public VerticalTabsBrowserTestMixin<InProcessBrowserTest>,
+      public testing::WithParamInterface<TabStripOrientation> {
+ public:
+  TabStripOrientation orientation() const { return GetParam(); }
+  bool is_horizontal() const {
+    return orientation() == TabStripOrientation::kHorizontal;
+  }
+
+  void SetUpOnMainThread() override {
+    VerticalTabsBrowserTestMixin<InProcessBrowserTest>::SetUpOnMainThread();
+    if (is_horizontal()) {
+      ExitVerticalTabsMode();
+    }
+  }
+
+  const std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
+      override {
+    auto enabled = VerticalTabsBrowserTestMixin<
+        InProcessBrowserTest>::GetEnabledFeatures();
+    enabled.push_back({features::kTabGroupsFocusing, {}});
+    enabled.push_back({tabs::kTabStripUnification, {}});
+    return enabled;
+  }
+
+  TabView* GetTabViewAt(int model_index) {
+    BrowserView* browser_view =
+        BrowserView::GetBrowserViewForBrowser(browser());
+    tabs::TabInterface* tab =
+        browser()->tab_strip_model()->GetTabAtIndex(model_index);
+    views::View* const view =
+        browser_view->tab_strip_view()->GetTabAnchorView(tab->GetHandle());
+    return views::AsViewClass<TabView>(view);
+  }
+
+ private:
+  std::unique_ptr<base::AutoReset<gfx::Animation::RichAnimationRenderMode>>
+      animation_mode_reset_ = gfx::AnimationTestApi::SetRichAnimationRenderMode(
+          gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
+};
+
+IN_PROC_BROWSER_TEST_P(TabStripControllerFocusFreezingBrowserTest,
+                       FocusingGroupFreezesUnfocusedTabs) {
+  AppendTab();
+  AppendTab();
+  AppendTab();
+  TabStripModel* model = browser()->tab_strip_model();
+  ASSERT_EQ(4, model->count());
+
+  const tab_groups::TabGroupId group1 = model->AddToNewGroup({0, 1});
+  model->AddToNewGroup({2});
+
+  EXPECT_FALSE(
+      GetTabViewAt(0)->HasFreezingVote(FreezingVoteReason::kFocusedGroup));
+  EXPECT_FALSE(
+      GetTabViewAt(1)->HasFreezingVote(FreezingVoteReason::kFocusedGroup));
+  EXPECT_FALSE(
+      GetTabViewAt(2)->HasFreezingVote(FreezingVoteReason::kFocusedGroup));
+  EXPECT_FALSE(
+      GetTabViewAt(3)->HasFreezingVote(FreezingVoteReason::kFocusedGroup));
+
+  // Focus on group1. Unpinned tabs outside group1 should be frozen.
+  model->SetFocusedGroup(group1);
+  EXPECT_FALSE(
+      GetTabViewAt(0)->HasFreezingVote(FreezingVoteReason::kFocusedGroup));
+  EXPECT_FALSE(
+      GetTabViewAt(1)->HasFreezingVote(FreezingVoteReason::kFocusedGroup));
+  EXPECT_TRUE(
+      GetTabViewAt(2)->HasFreezingVote(FreezingVoteReason::kFocusedGroup));
+  EXPECT_TRUE(
+      GetTabViewAt(3)->HasFreezingVote(FreezingVoteReason::kFocusedGroup));
+
+  // Unfocus group1. All tabs should be unfrozen.
+  model->SetFocusedGroup(std::nullopt);
+  EXPECT_FALSE(
+      GetTabViewAt(0)->HasFreezingVote(FreezingVoteReason::kFocusedGroup));
+  EXPECT_FALSE(
+      GetTabViewAt(1)->HasFreezingVote(FreezingVoteReason::kFocusedGroup));
+  EXPECT_FALSE(
+      GetTabViewAt(2)->HasFreezingVote(FreezingVoteReason::kFocusedGroup));
+  EXPECT_FALSE(
+      GetTabViewAt(3)->HasFreezingVote(FreezingVoteReason::kFocusedGroup));
+}
+
+IN_PROC_BROWSER_TEST_P(TabStripControllerFocusFreezingBrowserTest,
+                       PinnedTabsAreNotFrozenWhenUnfocused) {
+  AppendTab();
+  AppendTab();
+  AppendTab();
+  TabStripModel* model = browser()->tab_strip_model();
+  ASSERT_EQ(4, model->count());
+
+  model->SetTabPinned(0, true);
+  const tab_groups::TabGroupId group1 = model->AddToNewGroup({1, 2});
+
+  // Focus on group1.
+  model->SetFocusedGroup(group1);
+  // Pinned tab (0) and focused group tabs (1, 2) should NOT be frozen.
+  EXPECT_FALSE(
+      GetTabViewAt(0)->HasFreezingVote(FreezingVoteReason::kFocusedGroup));
+  EXPECT_FALSE(
+      GetTabViewAt(1)->HasFreezingVote(FreezingVoteReason::kFocusedGroup));
+  EXPECT_FALSE(
+      GetTabViewAt(2)->HasFreezingVote(FreezingVoteReason::kFocusedGroup));
+  // Unpinned ungrouped tab (3) should be frozen.
+  EXPECT_TRUE(
+      GetTabViewAt(3)->HasFreezingVote(FreezingVoteReason::kFocusedGroup));
+
+  // Pin tab 3. Once pinned, it moves to index 1 and should not be frozen.
+  model->SetTabPinned(3, true);
+  EXPECT_FALSE(
+      GetTabViewAt(1)->HasFreezingVote(FreezingVoteReason::kFocusedGroup));
+
+  // Unpin the tab (now at index 1). It moves after the pinned tab at 0 (to
+  // index 1) and becomes unpinned outside the focused group, so it should be
+  // frozen.
+  model->SetTabPinned(1, false);
+  EXPECT_TRUE(
+      GetTabViewAt(1)->HasFreezingVote(FreezingVoteReason::kFocusedGroup));
+}
+
+IN_PROC_BROWSER_TEST_P(TabStripControllerFocusFreezingBrowserTest,
+                       SwitchingFocusedGroupsUpdatesFreezing) {
+  AppendTab();
+  AppendTab();
+  AppendTab();
+  TabStripModel* model = browser()->tab_strip_model();
+  ASSERT_EQ(4, model->count());
+
+  const tab_groups::TabGroupId group1 = model->AddToNewGroup({0, 1});
+  const tab_groups::TabGroupId group2 = model->AddToNewGroup({2, 3});
+
+  // Focus group1.
+  model->SetFocusedGroup(group1);
+  EXPECT_FALSE(
+      GetTabViewAt(0)->HasFreezingVote(FreezingVoteReason::kFocusedGroup));
+  EXPECT_FALSE(
+      GetTabViewAt(1)->HasFreezingVote(FreezingVoteReason::kFocusedGroup));
+  EXPECT_TRUE(
+      GetTabViewAt(2)->HasFreezingVote(FreezingVoteReason::kFocusedGroup));
+  EXPECT_TRUE(
+      GetTabViewAt(3)->HasFreezingVote(FreezingVoteReason::kFocusedGroup));
+
+  // Switch focus to group2.
+  model->SetFocusedGroup(group2);
+  EXPECT_TRUE(
+      GetTabViewAt(0)->HasFreezingVote(FreezingVoteReason::kFocusedGroup));
+  EXPECT_TRUE(
+      GetTabViewAt(1)->HasFreezingVote(FreezingVoteReason::kFocusedGroup));
+  EXPECT_FALSE(
+      GetTabViewAt(2)->HasFreezingVote(FreezingVoteReason::kFocusedGroup));
+  EXPECT_FALSE(
+      GetTabViewAt(3)->HasFreezingVote(FreezingVoteReason::kFocusedGroup));
+}
+
+IN_PROC_BROWSER_TEST_P(TabStripControllerFocusFreezingBrowserTest,
+                       CollapseAndFocusFreezingVotesAreIndependent) {
+  AppendTab();
+  AppendTab();
+  AppendTab();
+  TabStripModel* model = browser()->tab_strip_model();
+  ASSERT_EQ(4, model->count());
+
+  const tab_groups::TabGroupId group1 = model->AddToNewGroup({0, 1});
+  const tab_groups::TabGroupId group2 = model->AddToNewGroup({2, 3});
+  TabGroup* tab_group2 = model->group_model()->GetTabGroup(group2);
+
+  // Collapse group2.
+  vertical_tab_strip_controller()->ToggleTabGroupCollapsedState(
+      tab_group2, ToggleTabGroupCollapsedStateOrigin::kMouse);
+  EXPECT_FALSE(
+      GetTabViewAt(0)->HasFreezingVote(FreezingVoteReason::kCollapsedGroup));
+  EXPECT_FALSE(
+      GetTabViewAt(1)->HasFreezingVote(FreezingVoteReason::kCollapsedGroup));
+  EXPECT_TRUE(
+      GetTabViewAt(2)->HasFreezingVote(FreezingVoteReason::kCollapsedGroup));
+  EXPECT_TRUE(
+      GetTabViewAt(3)->HasFreezingVote(FreezingVoteReason::kCollapsedGroup));
+  EXPECT_FALSE(
+      GetTabViewAt(2)->HasFreezingVote(FreezingVoteReason::kFocusedGroup));
+  EXPECT_FALSE(
+      GetTabViewAt(3)->HasFreezingVote(FreezingVoteReason::kFocusedGroup));
+
+  // Focus group1 while group2 is collapsed.
+  model->SetFocusedGroup(group1);
+  EXPECT_FALSE(GetTabViewAt(0)->HasFreezingVote());
+  EXPECT_FALSE(GetTabViewAt(1)->HasFreezingVote());
+  // Tabs in group2 now have BOTH collapsed and unfocused freezing votes.
+  EXPECT_TRUE(
+      GetTabViewAt(2)->HasFreezingVote(FreezingVoteReason::kCollapsedGroup));
+  EXPECT_TRUE(
+      GetTabViewAt(2)->HasFreezingVote(FreezingVoteReason::kFocusedGroup));
+  EXPECT_TRUE(GetTabViewAt(2)->HasFreezingVote());
+  EXPECT_TRUE(
+      GetTabViewAt(3)->HasFreezingVote(FreezingVoteReason::kCollapsedGroup));
+  EXPECT_TRUE(
+      GetTabViewAt(3)->HasFreezingVote(FreezingVoteReason::kFocusedGroup));
+  EXPECT_TRUE(GetTabViewAt(3)->HasFreezingVote());
+
+  // Unfocus group1. Unfocused votes should be released, but collapsed votes
+  // remain.
+  model->SetFocusedGroup(std::nullopt);
+  EXPECT_TRUE(
+      GetTabViewAt(2)->HasFreezingVote(FreezingVoteReason::kCollapsedGroup));
+  EXPECT_FALSE(
+      GetTabViewAt(2)->HasFreezingVote(FreezingVoteReason::kFocusedGroup));
+  EXPECT_TRUE(GetTabViewAt(2)->HasFreezingVote());
+
+  // Expand group2. Collapsed votes are released.
+  vertical_tab_strip_controller()->ToggleTabGroupCollapsedState(
+      tab_group2, ToggleTabGroupCollapsedStateOrigin::kMouse);
+  EXPECT_FALSE(
+      GetTabViewAt(2)->HasFreezingVote(FreezingVoteReason::kCollapsedGroup));
+  EXPECT_FALSE(
+      GetTabViewAt(2)->HasFreezingVote(FreezingVoteReason::kFocusedGroup));
+  EXPECT_FALSE(GetTabViewAt(2)->HasFreezingVote());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    TabStripControllerFocusFreezingBrowserTest,
+    testing::Values(TabStripOrientation::kVertical,
+                    TabStripOrientation::kHorizontal),
+    [](const testing::TestParamInfo<TabStripOrientation>& info) {
+      switch (info.param) {
+        case TabStripOrientation::kVertical:
+          return "Vertical";
+        case TabStripOrientation::kHorizontal:
+          return "Horizontal";
+      }
+    });
+
 }  // namespace

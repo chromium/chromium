@@ -85,6 +85,7 @@ class TabView : public views::View,
   void ReleaseFreezingVote(FreezingVoteReason reason);
   bool HasFreezingVote(FreezingVoteReason reason) const;
   bool HasFreezingVote() const;
+  void UpdateFocusFreezing();
 
   void UpdateHovered(bool hovered);
   bool IsHoverAnimationActive() const;
