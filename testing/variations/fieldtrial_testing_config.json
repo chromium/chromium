@@ -21323,6 +21323,26 @@
             ]
         }
     ],
+    "RedWarningSurveyAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "RedInterstitialAndroid_20260817",
+                    "params": {
+                        "RedWarningSurveyAndroidHeedTriggerId": "mEt9WGQW70tK1KeaPYj0PTxM5Wnt",
+                        "RedWarningSurveyAndroidProceedTriggerId": "wfaSygGGJ0tK1KeaPYj0WwvBHcxH",
+                        "probability": "1.0"
+                    },
+                    "enable_features": [
+                        "RedWarningSurveyAndroid"
+                    ]
+                }
+            ]
+        }
+    ],
     "ReduceAcceptLanguage": [
         {
             "platforms": [
@@ -23901,8 +23921,10 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "SuspiciousSiteWarningSurvey_20260817",
                     "params": {
+                        "SuspiciousSiteWarningSurveyHeedTriggerId": "LZD24fmuf0tK1KeaPYj0Z79hw2qC",
+                        "SuspiciousSiteWarningSurveyProceedTriggerId": "HguD8vrc50tK1KeaPYj0R37AzmWa",
                         "probability": "1.0"
                     },
                     "enable_features": [
