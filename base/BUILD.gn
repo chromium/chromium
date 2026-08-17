@@ -494,6 +494,8 @@ component("base") {
     "memory/writable_shared_memory_region.h",
     "memory_coordinator/async_memory_consumer_registration.cc",
     "memory_coordinator/async_memory_consumer_registration.h",
+    "memory_coordinator/dummy_memory_consumer_registry.cc",
+    "memory_coordinator/dummy_memory_consumer_registry.h",
     "memory_coordinator/memory_consumer.cc",
     "memory_coordinator/memory_consumer.h",
     "memory_coordinator/memory_consumer_registry.cc",

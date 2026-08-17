@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/hash/hash.h"
+#include "base/memory_coordinator/dummy_memory_consumer_registry.h"
 #include "base/memory_coordinator/mock_memory_consumer.h"
 #include "base/test/gtest_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -119,6 +120,14 @@ TEST(MemoryConsumerRegistryTest,
 
   EXPECT_CALL(registry->Get(), OnMemoryConsumerRemoved(kObserverId, _));
   registry.reset();
+}
+
+TEST(MemoryConsumerRegistryTest, DummyMemoryConsumerRegistry) {
+  ScopedMemoryConsumerRegistry<DummyMemoryConsumerRegistry> registry;
+  EXPECT_TRUE(MemoryConsumerRegistry::Exists());
+
+  MockMemoryConsumer consumer;
+  MemoryConsumerRegistration registration("observer", kTestTraits, &consumer);
 }
 
 }  // namespace base
