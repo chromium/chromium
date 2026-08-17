@@ -13,6 +13,7 @@
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
+#include "build/build_config.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
@@ -468,7 +469,17 @@ IN_PROC_BROWSER_TEST_F(AiOverlayToolsBrowserTest,
   EXPECT_EQ("No active media session", future.Get().error());
 }
 
-IN_PROC_BROWSER_TEST_F(AiOverlayToolsBrowserTest, TranslatePageDefault) {
+// TODO(crbug.com/542894342): Re-enable flaky translate tests on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_TranslatePageDefault DISABLED_TranslatePageDefault
+#define MAYBE_TranslatePageSpecificTarget \
+  DISABLED_TranslatePageSpecificTarget
+#else
+#define MAYBE_TranslatePageDefault TranslatePageDefault
+#define MAYBE_TranslatePageSpecificTarget TranslatePageSpecificTarget
+#endif
+
+IN_PROC_BROWSER_TEST_F(AiOverlayToolsBrowserTest, MAYBE_TranslatePageDefault) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/empty.html")));
 
@@ -501,7 +512,8 @@ IN_PROC_BROWSER_TEST_F(AiOverlayToolsBrowserTest, TranslatePageDefault) {
             translate_client->GetLanguageState().current_language());
 }
 
-IN_PROC_BROWSER_TEST_F(AiOverlayToolsBrowserTest, TranslatePageSpecificTarget) {
+IN_PROC_BROWSER_TEST_F(AiOverlayToolsBrowserTest,
+                       MAYBE_TranslatePageSpecificTarget) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/empty.html")));
 
