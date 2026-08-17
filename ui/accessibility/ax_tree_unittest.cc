@@ -1253,7 +1253,7 @@ TEST(AXTreeTest, BogusAXTree) {
                             "AXTreeUpdate contains invalid node");
 #else
   EXPECT_FALSE(tree.Unserialize(initial_state));
-  EXPECT_EQ("AXTreeUpdate contains invalid node", tree.error());
+  EXPECT_EQ("Tree or update must have a valid root.", tree.error());
 #endif
 }
 
