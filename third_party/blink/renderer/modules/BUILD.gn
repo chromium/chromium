@@ -655,6 +655,7 @@ source_set("unit_tests") {
     "webaudio/biquad_filter_handler_test.cc",
     "webaudio/convolver_handler_test.cc",
     "webaudio/convolver_node_test.cc",
+    "webaudio/delay_handler_test.cc",
     "webaudio/dynamics_compressor_node_test.cc",
     "webaudio/media_stream_audio_destination_handler_test.cc",
     "webaudio/offline_audio_context_test.cc",

@@ -140,26 +140,62 @@ void DelayHandler::CheckNumberOfChannelsForInput(AudioNodeInput* input) {
   Context()->AssertGraphOwner();
   DCHECK_EQ(input, &Input(0));
 
-  // As soon as we know the channel count of our input, we can lazily
-  // initialize.  Sometimes this may be called more than once with different
-  // channel counts, in which case we must safely uninitialize and then
-  // re-initialize with the new channel count.
   const unsigned number_of_channels = input->NumberOfChannels();
 
-  if (IsInitialized() && number_of_channels != Output(0).NumberOfChannels()) {
-    // We're already initialized but the channel count has changed.
-    Uninitialize();
-  }
+  if (number_of_channels != Output(0).NumberOfChannels()) {
+    {
+      base::AutoLock locker(process_lock_);
 
-  if (!IsInitialized()) {
-    // This will propagate the channel count to any nodes connected further down
-    // the chain...
+      const unsigned current_number_of_channels = kernels_.size();
+      CHECK_GT(current_number_of_channels, 0u);
+      CHECK_GT(number_of_channels, 0u);
+
+      if (current_number_of_channels != number_of_channels) {
+        const uint32_t buffer_length =
+            base::checked_cast<uint32_t>(kernels_[0]->BufferSpan().size());
+        const size_t write_index = kernels_[0]->WriteIndex();
+
+        // Wrap the existing delay kernel buffers in a non-allocating AudioBus.
+        scoped_refptr<AudioBus> old_bus =
+            AudioBus::Create(current_number_of_channels, buffer_length, false);
+        for (unsigned i = 0; i < current_number_of_channels; ++i) {
+          old_bus->SetChannelMemory(i, kernels_[i]->BufferSpan());
+        }
+
+        // Allocate new Delay kernels for the destination channel layout.
+        Vector<std::unique_ptr<Delay>> new_kernels;
+        new_kernels.reserve(number_of_channels);
+        for (unsigned i = 0; i < number_of_channels; ++i) {
+          auto kernel = std::make_unique<Delay>(
+              max_delay_time_, sample_rate_, render_quantum_frames_);
+          kernel->SetWriteIndex(write_index);
+          new_kernels.push_back(std::move(kernel));
+        }
+
+        // Wrap the new delay kernel buffers in a non-allocating AudioBus.
+        scoped_refptr<AudioBus> new_bus =
+            AudioBus::Create(number_of_channels, buffer_length, false);
+        for (unsigned i = 0; i < number_of_channels; ++i) {
+          new_bus->SetChannelMemory(i, new_kernels[i]->BufferSpan());
+        }
+
+        // Perform standard Web Audio up/down-mixing directly between kernel
+        // buffers.
+        new_bus->CopyFrom(*old_bus, InternalChannelInterpretation());
+
+        // Clear non-allocating channel memory pointers before releasing buses.
+        for (unsigned i = 0; i < current_number_of_channels; ++i) {
+          old_bus->SetChannelMemory(i, base::span<float>());
+        }
+        for (unsigned i = 0; i < number_of_channels; ++i) {
+          new_bus->SetChannelMemory(i, base::span<float>());
+        }
+
+        kernels_ = std::move(new_kernels);
+      }
+      number_of_channels_ = number_of_channels;
+    }
     Output(0).SetNumberOfChannels(number_of_channels);
-
-    // Re-initialize the handler with the new channel count.
-    number_of_channels_ = number_of_channels;
-
-    Initialize();
   }
 
   AudioHandler::CheckNumberOfChannelsForInput(input);
@@ -188,6 +224,15 @@ double DelayHandler::LatencyTime() const {
 void DelayHandler::PullInputs(uint32_t frames_to_process) {
   // Render directly into output bus for in-place processing
   Input(0).Pull(Output(0).Bus(), frames_to_process);
+}
+
+Vector<Delay*> DelayHandler::KernelsForTesting() const {
+  base::AutoLock locker(process_lock_);
+  Vector<Delay*> result;
+  for (const auto& kernel : kernels_) {
+    result.push_back(kernel.get());
+  }
+  return result;
 }
 
 }  // namespace blink
