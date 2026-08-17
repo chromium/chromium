@@ -118,9 +118,7 @@ void AddSameConstraintsWithInsets(id<EdgeLayoutGuideProvider> innerView,
                                   id<EdgeLayoutGuideProvider> outerView,
                                   NSDirectionalEdgeInsets insets) {
   AddSameConstraintsToSidesWithInsets(
-      innerView, outerView,
-      (LayoutSides::kTop | LayoutSides::kLeading | LayoutSides::kBottom |
-       LayoutSides::kTrailing),
+      innerView, outerView, LayoutSides::kVertical | LayoutSides::kHorizontal,
       insets);
 }
 

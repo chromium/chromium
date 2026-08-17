@@ -244,8 +244,7 @@ const CGFloat kFlashDuration = 0.5;
   toolbar.translatesAutoresizingMaskIntoConstraints = NO;
   [self addSubview:toolbar];
 
-  AddSameConstraintsToSides(self, toolbar,
-                            LayoutSides::kLeading | LayoutSides::kTrailing);
+  AddSameConstraintsToSides(self, toolbar, LayoutSides::kHorizontal);
   [toolbar.bottomAnchor
       constraintEqualToAnchor:self.safeAreaLayoutGuide.bottomAnchor]
       .active = YES;

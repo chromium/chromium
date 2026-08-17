@@ -109,9 +109,8 @@ const CGFloat kSelectionUICornerRadius = 13.0;
   [self.selectionViewController didMoveToParentViewController:self];
   self.selectionViewController.view.translatesAutoresizingMaskIntoConstraints =
       NO;
-  AddSameConstraintsToSides(
-      self.selectionViewController.view, self.view,
-      (LayoutSides::kLeading | LayoutSides::kTop | LayoutSides::kBottom));
+  AddSameConstraintsToSides(self.selectionViewController.view, self.view,
+                            LayoutSides::kLeading | LayoutSides::kVertical);
   [NSLayoutConstraint activateConstraints:@[
     [self.selectionViewController.view.trailingAnchor
         constraintEqualToAnchor:_splitViewLayoutGuide.leadingAnchor],
@@ -211,7 +210,7 @@ const CGFloat kSelectionUICornerRadius = 13.0;
   [_sidePanel didMoveToParentViewController:self];
 
   AddSameConstraintsToSides(_sidePanel.view, _splitViewLayoutGuide,
-                            (LayoutSides::kTop | LayoutSides::kBottom));
+                            LayoutSides::kVertical);
   [NSLayoutConstraint activateConstraints:@[
     [_sidePanel.view.leadingAnchor
         constraintEqualToAnchor:_splitViewLayoutGuide.trailingAnchor],

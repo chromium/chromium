@@ -360,7 +360,7 @@ NSAttributedString* FormatHTMLListForUILabel(NSString* listString) {
   AddSameConstraints(chromeIconView, _icognitoIconView);
   AddSameCenterConstraints(_icognitoIconView, incognitoLogoView);
   AddSameConstraintsToSidesWithInsets(
-      chromeIconView, outerView, LayoutSides::kTop | LayoutSides::kBottom,
+      chromeIconView, outerView, LayoutSides::kVertical,
       NSDirectionalEdgeInsetsMake(kTitleContainerTopPadding, 0, 0, 0));
   return outerView;
 }

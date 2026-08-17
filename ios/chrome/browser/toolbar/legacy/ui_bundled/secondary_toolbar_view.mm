@@ -240,9 +240,8 @@ UIView* SecondaryToolbarLocationBarContainerView(
     [_progressBar.heightAnchor constraintEqualToConstant:kProgressBarHeight]
         .active = YES;
     [contentView addSubview:_progressBar];
-    AddSameConstraintsToSides(
-        self, _progressBar,
-        LayoutSides::kTop | LayoutSides::kLeading | LayoutSides::kTrailing);
+    AddSameConstraintsToSides(self, _progressBar,
+                              LayoutSides::kTop | LayoutSides::kHorizontal);
 
     // LocationBarView constraints.
     if (self.locationBarView) {
@@ -272,11 +271,10 @@ UIView* SecondaryToolbarLocationBarContainerView(
     self.bottomSeparator.alpha = 0.0;
     [contentView addSubview:self.bottomSeparator];
     AddSameConstraintsToSides(self, self.bottomSeparator,
-                              LayoutSides::kLeading | LayoutSides::kTrailing);
+                              LayoutSides::kHorizontal);
 
     AddSameConstraintsToSidesWithInsets(
-        locationBarContainer, safeArea,
-        LayoutSides::kLeading | LayoutSides::kTrailing,
+        locationBarContainer, safeArea, LayoutSides::kHorizontal,
         NSDirectionalEdgeInsetsMake(0, kExpandedLocationBarHorizontalMargin, 0,
                                     kExpandedLocationBarHorizontalMargin));
 

@@ -1169,10 +1169,8 @@ UIColor* AssistantHighlightBackgroundColor() {
     _spotlightView.translatesAutoresizingMaskIntoConstraints = NO;
     _spotlightView.userInteractionEnabled = NO;
     [button addSubview:_spotlightView];
-    AddSameConstraintsToSidesWithInsets(
+    AddSameConstraintsWithInsets(
         _spotlightView, button,
-        LayoutSides::kTop | LayoutSides::kTrailing | LayoutSides::kLeading |
-            LayoutSides::kBottom,
         NSDirectionalEdgeInsetsMake(
             kSpotlightViewVerticalInset, kSpotlightViewHorizontalInset,
             kSpotlightViewVerticalInset, kSpotlightViewHorizontalInset));

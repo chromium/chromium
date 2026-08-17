@@ -148,9 +148,8 @@ BOOL _keyboardShown;
     return;
   }
   [self.view addLayoutGuide:_visibleAreaLayoutGuide];
-  AddSameConstraintsToSides(
-      _visibleAreaLayoutGuide, self.view,
-      LayoutSides::kLeading | LayoutSides::kTrailing | LayoutSides::kTop);
+  AddSameConstraintsToSides(_visibleAreaLayoutGuide, self.view,
+                            LayoutSides::kTop | LayoutSides::kHorizontal);
 
   [self constraintVisibleAreaBottomSheetTo:self.view.bottomAnchor];
 }
@@ -188,7 +187,7 @@ BOOL _keyboardShown;
   [_bottomSheet didMoveToParentViewController:self];
 
   AddSameConstraintsToSides(_bottomSheet.view, self.view,
-                            (LayoutSides::kLeading | LayoutSides::kTrailing));
+                            LayoutSides::kHorizontal);
 
   self.bottomSheetHeightConstraint =
       [_bottomSheet.view.heightAnchor constraintEqualToConstant:0];

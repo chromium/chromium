@@ -57,7 +57,7 @@
   AddSameConstraintsToSides(doneButton, view.safeAreaLayoutGuide,
                             LayoutSides::kTop | LayoutSides::kLeading);
   AddSameConstraintsToSides(detailView, view.safeAreaLayoutGuide,
-                            LayoutSides::kLeading | LayoutSides::kTrailing);
+                            LayoutSides::kHorizontal);
   [NSLayoutConstraint activateConstraints:@[
     [doneButton.bottomAnchor constraintEqualToAnchor:detailView.topAnchor],
     [detailView.heightAnchor constraintEqualToAnchor:view.heightAnchor

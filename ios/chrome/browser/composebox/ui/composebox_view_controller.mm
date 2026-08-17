@@ -378,7 +378,7 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
                   : -kBlurBottomMargin,
               0, 0, 0));
       AddSameConstraintsToSides(_progressiveBlurEffect, safeAreaGuide,
-                                LayoutSides::kLeading | LayoutSides::kTrailing);
+                                LayoutSides::kHorizontal);
 
       NSLayoutConstraint* attachInputPlateToKeyboard =
           [_inputViewController.view.bottomAnchor
@@ -425,9 +425,8 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
                   ? -kReducedTransparencyInputPlateBottomMargin
                   : -kBlurBottomMargin,
               0));
-      AddSameConstraintsToSides(
-          _progressiveBlurEffect, safeAreaGuide,
-          LayoutSides::kTop | LayoutSides::kLeading | LayoutSides::kTrailing);
+      AddSameConstraintsToSides(_progressiveBlurEffect, safeAreaGuide,
+                                LayoutSides::kTop | LayoutSides::kHorizontal);
 
       _constraintToCloseButton = [_inputViewController.view.trailingAnchor
           constraintEqualToAnchor:_closeButton.leadingAnchor
@@ -485,9 +484,8 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
               0));
       AddSameConstraintsToSides(_progressiveBlurEffect, self.view,
                                 LayoutSides::kTop);
-      AddSameConstraintsToSides(
-          _progressiveBlurEffect, safeAreaGuide,
-          LayoutSides::kLeading | LayoutSides::kTrailing);
+      AddSameConstraintsToSides(_progressiveBlurEffect, safeAreaGuide,
+                                LayoutSides::kHorizontal);
 
       CGFloat leadingMargin = kInputPlateIpadMargin;
       if (!IsRegularXRegularSizeClass(self.traitCollection)) {

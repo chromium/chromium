@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/chrome_button.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -105,12 +106,10 @@ constexpr CGFloat kButtonStackVerticalMargin = 9;
 
   [self addChildViewController:_saveCardTableViewController];
   [view addSubview:saveCardView];
+  AddSameConstraintsToSides(saveCardView, view,
+                            LayoutSides::kTop | LayoutSides::kHorizontal);
   [NSLayoutConstraint activateConstraints:@[
-    [view.leadingAnchor constraintEqualToAnchor:saveCardView.leadingAnchor],
-    [view.topAnchor constraintEqualToAnchor:saveCardView.topAnchor],
-    [view.trailingAnchor constraintEqualToAnchor:saveCardView.trailingAnchor],
     [view.widthAnchor constraintEqualToAnchor:saveCardView.widthAnchor],
-
     [saveCardView.bottomAnchor
         constraintEqualToAnchor:_buttonStack.topAnchor
                        constant:-kButtonStackVerticalMargin],

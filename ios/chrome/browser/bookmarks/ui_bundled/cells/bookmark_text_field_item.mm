@@ -119,10 +119,8 @@
   [self.contentView addSubview:self.stackView];
 
   // Set up constraints.
-  AddSameConstraintsToSidesWithInsets(
+  AddSameConstraintsWithInsets(
       self.stackView, self.contentView,
-      LayoutSides::kLeading | LayoutSides::kTrailing | LayoutSides::kBottom |
-          LayoutSides::kTop,
       NSDirectionalEdgeInsetsMake(
           kBookmarkCellVerticalInset, kBookmarkCellHorizontalLeadingInset,
           kBookmarkCellVerticalInset, kBookmarkCellHorizontalTrailingInset));

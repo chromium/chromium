@@ -98,9 +98,9 @@ const CGFloat kSelectionViewOpacityAnimationDuration = 0.4f;
   NSDirectionalEdgeInsets insets =
       [self.delegate lensOverlayContainerPresenterInsetsForPresentation:self];
 
-  AddSameConstraintsToSides(
-      _containerViewController.view, _baseViewController.view,
-      LayoutSides::kLeading | LayoutSides::kBottom | LayoutSides::kTrailing);
+  AddSameConstraintsToSides(_containerViewController.view,
+                            _baseViewController.view,
+                            LayoutSides::kBottom | LayoutSides::kHorizontal);
   _topConstraint = [_containerViewController.view.topAnchor
       constraintEqualToAnchor:_baseViewController.view.topAnchor
                      constant:insets.top];

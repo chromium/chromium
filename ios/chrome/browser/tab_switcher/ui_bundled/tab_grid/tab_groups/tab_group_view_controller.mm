@@ -395,9 +395,8 @@ UIButton* TopToolbarButton(Symbol symbol,
   _bottomGradient.translatesAutoresizingMaskIntoConstraints = NO;
   _bottomGradient.userInteractionEnabled = NO;
   [_container addSubview:_bottomGradient];
-  AddSameConstraintsToSides(
-      _container, _bottomGradient,
-      LayoutSides::kBottom | LayoutSides::kLeading | LayoutSides::kTrailing);
+  AddSameConstraintsToSides(_container, _bottomGradient,
+                            LayoutSides::kBottom | LayoutSides::kHorizontal);
   [_bottomGradient.heightAnchor constraintEqualToConstant:kGradientHeight]
       .active = YES;
 

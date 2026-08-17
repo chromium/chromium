@@ -79,9 +79,8 @@ const CGFloat kDialogWidthInRegularDisplaySize = 540;
     [self.specificContentView.heightAnchor
         constraintGreaterThanOrEqualToAnchor:_contentStack.heightAnchor],
   ]];
-  AddSameConstraintsToSides(
-      _contentStack, self.specificContentView,
-      LayoutSides::kTrailing | LayoutSides::kLeading | LayoutSides::kTop);
+  AddSameConstraintsToSides(_contentStack, self.specificContentView,
+                            LayoutSides::kTop | LayoutSides::kHorizontal);
 
   [self registerForTraitChanges:@[ UITraitUserInterfaceStyle.class ]
                      withAction:@selector(configureAnimationColors)];

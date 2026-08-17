@@ -592,7 +592,7 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   [outerView addSubview:iconContainerView];
   AddSameCenterXConstraint(outerView, iconContainerView);
   AddSameConstraintsToSidesWithInsets(
-      iconContainerView, outerView, LayoutSides::kTop | LayoutSides::kBottom,
+      iconContainerView, outerView, LayoutSides::kVertical,
       NSDirectionalEdgeInsetsMake(kTrashIconContainerViewTopPadding, 0, 0, 0));
 
   return outerView;

@@ -135,8 +135,7 @@ const CGFloat kBaselineAdjustment = 10.0;
   separator.backgroundColor = [UIColor colorNamed:kBWGSeparatorColor];
   separator.translatesAutoresizingMaskIntoConstraints = NO;
   [wrapperContainer addSubview:separator];
-  LayoutSides sides =
-      LayoutSides::kTop | LayoutSides::kBottom | LayoutSides::kTrailing;
+  LayoutSides sides = LayoutSides::kTrailing | LayoutSides::kVertical;
   AddSameConstraintsToSides(separator, wrapperContainer, sides);
   [NSLayoutConstraint activateConstraints:@[
     [separator.heightAnchor constraintEqualToConstant:kSeparatorHeight],

@@ -107,12 +107,10 @@ const CGFloat kTitleMaxPointSize = 24.0f;
 // Adds constraints to the subviews.
 - (void)setUpConstraints {
   // TODO(crbug.com/504892651): Readjust based on dynamic type.
-  AddSameConstraintsToSides(
-      _imageBackgroundView, self,
-      LayoutSides::kLeading | LayoutSides::kTrailing | LayoutSides::kTop);
-  AddSameConstraintsToSides(
-      _titleLabel, self,
-      LayoutSides::kLeading | LayoutSides::kTrailing | LayoutSides::kBottom);
+  AddSameConstraintsToSides(_imageBackgroundView, self,
+                            LayoutSides::kTop | LayoutSides::kHorizontal);
+  AddSameConstraintsToSides(_titleLabel, self,
+                            LayoutSides::kBottom | LayoutSides::kHorizontal);
   AddSizeConstraints(_imageView, CGSizeMake(kIconSize, kIconSize));
   [NSLayoutConstraint activateConstraints:@[
     [_imageBackgroundView.bottomAnchor

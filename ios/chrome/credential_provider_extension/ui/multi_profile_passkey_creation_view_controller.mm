@@ -193,9 +193,8 @@ NSAttributedString* AsAttributedString(NSString* text,
   [specificContentView addSubview:passkeyInformationView];
 
   // Position the passkey information view at the top of the content view.
-  AddSameConstraintsToSides(
-      passkeyInformationView, specificContentView,
-      LayoutSides::kTop | LayoutSides::kLeading | LayoutSides::kTrailing);
+  AddSameConstraintsToSides(passkeyInformationView, specificContentView,
+                            LayoutSides::kTop | LayoutSides::kHorizontal);
 
   // Set the height of the passkey information view.
   [passkeyInformationView.bottomAnchor
@@ -207,9 +206,8 @@ NSAttributedString* AsAttributedString(NSString* text,
   [specificContentView addSubview:accountInformationView];
 
   // Position the account information view at the bottom of the content view.
-  AddSameConstraintsToSides(
-      accountInformationView, specificContentView,
-      LayoutSides::kLeading | LayoutSides::kTrailing | LayoutSides::kBottom);
+  AddSameConstraintsToSides(accountInformationView, specificContentView,
+                            LayoutSides::kBottom | LayoutSides::kHorizontal);
 
   return specificContentView;
 }

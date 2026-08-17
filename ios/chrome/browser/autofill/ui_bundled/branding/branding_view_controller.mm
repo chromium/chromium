@@ -111,9 +111,8 @@ constexpr NSString* kBrandingButtonAXId = @"kBrandingButtonAXId";
   if (shouldShow && _brandingIcon.superview == nil) {
     [self.view addSubview:_brandingIcon];
     _widthConstraintWhenHidingBranding.active = NO;
-    AddSameConstraintsToSides(
-        _brandingIcon, self.view,
-        LayoutSides::kTop | LayoutSides::kBottom | LayoutSides::kTrailing);
+    AddSameConstraintsToSides(_brandingIcon, self.view,
+                              LayoutSides::kTrailing | LayoutSides::kVertical);
     _leadingConstraint = [_brandingIcon.leadingAnchor
         constraintEqualToAnchor:self.view.leadingAnchor
                        constant:kLeadingInset];

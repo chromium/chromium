@@ -56,11 +56,9 @@ const NSInteger kTitleNumberOfLines = 2;
 
   [self.view addSubview:_tableView];
 
-  LayoutSides sides = LayoutSides::kTop | LayoutSides::kLeading |
-                      LayoutSides::kTrailing | LayoutSides::kBottom;
   NSDirectionalEdgeInsets insets =
       NSDirectionalEdgeInsetsMake(kTableViewTopInset, 0, 0, 0);
-  AddSameConstraintsToSidesWithInsets(_tableView, self.view, sides, insets);
+  AddSameConstraintsWithInsets(_tableView, self.view, insets);
 }
 
 - (void)updateHistoryItems:(const std::vector<AssistantAIMHistoryItem>&)items {

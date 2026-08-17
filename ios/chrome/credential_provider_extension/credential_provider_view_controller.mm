@@ -152,9 +152,8 @@ enum class PasskeyCreationEligibility {
 
   UINavigationBar* navigationBar = [self createNavigationBar];
   [self.view addSubview:navigationBar];
-  AddSameConstraintsToSides(
-      navigationBar, self.view.safeAreaLayoutGuide,
-      LayoutSides::kTrailing | LayoutSides::kTop | LayoutSides::kLeading);
+  AddSameConstraintsToSides(navigationBar, self.view.safeAreaLayoutGuide,
+                            LayoutSides::kTop | LayoutSides::kHorizontal);
 }
 
 - (void)viewWillAppear:(BOOL)animated {

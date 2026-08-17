@@ -121,9 +121,9 @@ const CGFloat kFadeAnimationVerticalOffset = 12;
 
       AddSameConstraints(viewController.view, _popupContainerView);
     } else {
-      AddSameConstraintsToSides(viewController.view, _popupContainerView,
-                                LayoutSides::kLeading | LayoutSides::kTrailing |
-                                    LayoutSides::kBottom);
+      AddSameConstraintsToSides(
+          viewController.view, _popupContainerView,
+          LayoutSides::kBottom | LayoutSides::kHorizontal);
       _popupTopConstraint = [viewController.view.topAnchor
           constraintEqualToAnchor:_popupContainerView.topAnchor];
       _popupTopConstraint.active = YES;

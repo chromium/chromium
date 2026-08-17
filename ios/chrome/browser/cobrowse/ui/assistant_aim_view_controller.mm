@@ -441,7 +441,7 @@ constexpr CGFloat kThresholdForCompleteVisibility = 0.3;
                                   : self.view.bottomAnchor;
 
     AddSameConstraintsToSides(_zeroStateViewController.view, self.view,
-                              LayoutSides::kLeading | LayoutSides::kTrailing);
+                              LayoutSides::kHorizontal);
 
     // Lowering the layout priority prevents a conflict with the header size
     // when minimizing.

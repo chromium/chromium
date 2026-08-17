@@ -187,8 +187,7 @@ constexpr CGFloat kEnterpriseIconPointSize = 20;
     _managementIconTrailingMarginConstraint.active = YES;
     AddSameCenterYConstraint(self, _managementIconView);
 
-    AddSameConstraintsToSides(_title, _subtitle,
-                              LayoutSides::kLeading | LayoutSides::kTrailing);
+    AddSameConstraintsToSides(_title, _subtitle, LayoutSides::kHorizontal);
     _titleConstraintForNameAndEmail =
         [_subtitle.topAnchor constraintEqualToAnchor:_title.bottomAnchor
                                             constant:kDefaultStyle.titleOffset];

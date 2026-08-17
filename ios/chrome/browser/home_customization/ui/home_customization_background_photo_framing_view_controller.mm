@@ -399,9 +399,8 @@ const CGFloat kGradientSpacingAboveInstructions = 150;
   gradientView.translatesAutoresizingMaskIntoConstraints = NO;
 
   [self.view insertSubview:gradientView aboveSubview:_scrollView];
-  AddSameConstraintsToSides(
-      gradientView, self.view,
-      LayoutSides::kLeading | LayoutSides::kTrailing | LayoutSides::kBottom);
+  AddSameConstraintsToSides(gradientView, self.view,
+                            LayoutSides::kBottom | LayoutSides::kHorizontal);
   [_pinchInstructionsView.topAnchor
       constraintEqualToAnchor:gradientView.topAnchor
                      constant:kGradientSpacingAboveInstructions]

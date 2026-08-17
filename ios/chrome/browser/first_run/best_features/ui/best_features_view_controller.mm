@@ -65,9 +65,8 @@ const CGFloat kTableViewSectionFooterHeight = 3;
   _tableView.dataSource = _dataSource;
 
   [self.specificContentView addSubview:_tableView];
-  AddSameConstraintsToSides(
-      _tableView, self.specificContentView,
-      LayoutSides::kTop | LayoutSides::kLeading | LayoutSides::kTrailing);
+  AddSameConstraintsToSides(_tableView, self.specificContentView,
+                            LayoutSides::kTop | LayoutSides::kHorizontal);
   [NSLayoutConstraint activateConstraints:@[
     [self.specificContentView.bottomAnchor
         constraintGreaterThanOrEqualToAnchor:_tableView.bottomAnchor],

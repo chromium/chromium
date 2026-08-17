@@ -194,11 +194,10 @@ UIImage* GetEnterpriseIcon() {
                                      ? kTableViewLargeVerticalSpacing
                                      : kTopLargePadding)];
     AddSameConstraintsToSidesWithInsets(
-        nameLabel, self, LayoutSides::kLeading | LayoutSides::kTrailing,
+        nameLabel, self, LayoutSides::kHorizontal,
         NSDirectionalEdgeInsets{0, kTableViewHorizontalSpacing, 0,
                                 kTableViewHorizontalSpacing});
-    AddSameConstraintsToSides(emailLabel, nameLabel,
-                              LayoutSides::kLeading | LayoutSides::kTrailing);
+    AddSameConstraintsToSides(emailLabel, nameLabel, LayoutSides::kHorizontal);
     [NSLayoutConstraint activateConstraints:@[
       [_avatarView.centerXAnchor constraintEqualToAnchor:self.centerXAnchor],
       _topPaddingConstraint,

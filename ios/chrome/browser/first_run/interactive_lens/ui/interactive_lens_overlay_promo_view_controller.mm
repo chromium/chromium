@@ -267,9 +267,8 @@ UIContentSizeCategory MaxContentSizeCategory() {
   heightConstraint.priority = UILayoutPriorityDefaultHigh + 1;
   heightConstraint.active = YES;
 
-  AddSameConstraintsToSides(
-      _footerContainerView, view,
-      LayoutSides::kLeading | LayoutSides::kTrailing | LayoutSides::kBottom);
+  AddSameConstraintsToSides(_footerContainerView, view,
+                            LayoutSides::kBottom | LayoutSides::kHorizontal);
 
   [NSLayoutConstraint activateConstraints:@[
     [_separatorLine.topAnchor
@@ -305,13 +304,11 @@ UIContentSizeCategory MaxContentSizeCategory() {
   UIView* lensView = _lensViewController.view;
 
   // The lens view is in the top portion of the container.
-  AddSameConstraintsToSides(
-      _lensContainerView, lensView,
-      LayoutSides::kLeading | LayoutSides::kTrailing | LayoutSides::kTop);
+  AddSameConstraintsToSides(_lensContainerView, lensView,
+                            LayoutSides::kTop | LayoutSides::kHorizontal);
   // The fake webpage view is in the bottom portion of the container.
-  AddSameConstraintsToSides(
-      _lensContainerView, _fakeWebpageContainerView,
-      LayoutSides::kLeading | LayoutSides::kTrailing | LayoutSides::kBottom);
+  AddSameConstraintsToSides(_lensContainerView, _fakeWebpageContainerView,
+                            LayoutSides::kBottom | LayoutSides::kHorizontal);
   // This will be filled with the actual image height when the image is loaded.
   _lensViewHeightConstraint =
       [lensView.heightAnchor constraintEqualToConstant:0];
@@ -527,9 +524,8 @@ UIContentSizeCategory MaxContentSizeCategory() {
   // ratio, so it can grow in height, and a content mode of ScaleAspectFill, so
   // the image takes up the full space. And then, it's aligned to the top of the
   // container, which clips the excess at the bottom.
-  AddSameConstraintsToSides(
-      containerView, fakeWebpageImageView,
-      LayoutSides::kLeading | LayoutSides::kTrailing | LayoutSides::kTop);
+  AddSameConstraintsToSides(containerView, fakeWebpageImageView,
+                            LayoutSides::kTop | LayoutSides::kHorizontal);
   [fakeWebpageImageView.widthAnchor
       constraintEqualToAnchor:fakeWebpageImageView.heightAnchor
                    multiplier:fakeWebpageImage.size.width /
@@ -632,8 +628,7 @@ UIContentSizeCategory MaxContentSizeCategory() {
     [_hudView.topAnchor constraintEqualToAnchor:lensView.topAnchor
                                        constant:kHUDViewTopMargin],
   ]];
-  AddSameConstraintsToSides(_hudView, lensView,
-                            LayoutSides::kLeading | LayoutSides::kTrailing);
+  AddSameConstraintsToSides(_hudView, lensView, LayoutSides::kHorizontal);
 
   // Animate the HUD sliding down from the top.
   CGFloat hudHeight = _hudView.image.size.height;

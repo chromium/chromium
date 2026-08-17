@@ -96,7 +96,7 @@ CGFloat const kIconSize = 32;
   [outerView addSubview:iconContainerView];
   AddSameCenterXConstraint(outerView, iconContainerView);
   AddSameConstraintsToSidesWithInsets(
-      iconContainerView, outerView, LayoutSides::kTop | LayoutSides::kBottom,
+      iconContainerView, outerView, LayoutSides::kVertical,
       NSDirectionalEdgeInsetsMake(kTitleContainerTopPadding, 0, 0, 0));
 
   return outerView;

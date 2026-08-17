@@ -608,9 +608,8 @@ void ConfigureFetchingAmbientDataSuggestion(UIStackView* stackView,
   stackView.translatesAutoresizingMaskIntoConstraints = NO;
   [self addSubview:stackView];
   if (IsLiquidGlassEffectEnabled()) {
-    AddSameConstraintsToSides(
-        stackView, self,
-        LayoutSides::kTop | LayoutSides::kLeading | LayoutSides::kTrailing);
+    AddSameConstraintsToSides(stackView, self,
+                              LayoutSides::kTop | LayoutSides::kHorizontal);
     [stackView.heightAnchor constraintEqualToAnchor:self.heightAnchor].active =
         YES;
   } else {

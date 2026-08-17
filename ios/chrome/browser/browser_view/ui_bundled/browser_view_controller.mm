@@ -1499,7 +1499,7 @@ bool IsFullscreenNextIAEnabled() {
   UIView* primaryToolbar =
       self.toolbarCoordinator.primaryToolbarViewController.view;
   AddSameConstraintsToSides(toolbarView, primaryToolbar,
-                            LayoutSides::kLeading | LayoutSides::kTrailing);
+                            LayoutSides::kHorizontal);
 
   if (IsFullscreenNextIAEnabled()) {
     // Create constraint for when the App Bar is not active or on the side
@@ -1585,7 +1585,7 @@ bool IsFullscreenNextIAEnabled() {
         constraintEqualToAnchor:primaryToolbarView.bottomAnchor]
         .active = YES;
 
-    LayoutSides contentSides = LayoutSides::kLeading | LayoutSides::kTrailing;
+    LayoutSides contentSides = LayoutSides::kHorizontal;
     // If there's a bottom toolbar, the content area guide is constrained to
     // its top.
     UIView* secondaryToolbarView =

@@ -81,8 +81,7 @@ const CGFloat kVerticalSpacing = 2;
 
   AddSizeConstraints(imageView, CGSizeMake(kLensTranslateErrorImageSize,
                                            kLensTranslateErrorImageSize));
-  LayoutSides sides =
-      LayoutSides::kTop | LayoutSides::kTrailing | LayoutSides::kLeading;
+  LayoutSides sides = LayoutSides::kTop | LayoutSides::kHorizontal;
   NSDirectionalEdgeInsets insets = NSDirectionalEdgeInsetsMake(
       kViewTopPadding, kLeadingPadding, 0, kTrailingPadding);
   AddSameConstraintsToSidesWithInsets(mainStackView, self.view, sides, insets);

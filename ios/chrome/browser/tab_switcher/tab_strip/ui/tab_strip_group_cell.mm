@@ -330,8 +330,7 @@ CGFloat CalculateTitleLength(NSString* title) {
 - (void)setupConstraints {
   UIView* contentView = self.contentView;
   AddSameConstraintsToSidesWithInsets(
-      _contentContainer, contentView,
-      LayoutSides::kLeading | LayoutSides::kTrailing,
+      _contentContainer, contentView, LayoutSides::kHorizontal,
       NSDirectionalEdgeInsetsMake(
           0, TabStripGroupItemConstants.contentContainerHorizontalMargin, 0,
           TabStripGroupItemConstants.contentContainerHorizontalMargin));

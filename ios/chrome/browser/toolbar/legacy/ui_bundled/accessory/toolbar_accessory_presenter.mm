@@ -289,10 +289,8 @@ const CGFloat kAnimationDuration = 0.15;
         constraintEqualToAnchor:self.backgroundView.bottomAnchor],
   ]];
   // Layouts `shadow` around `self.backgroundView`.
-  AddSameConstraintsToSidesWithInsets(
+  AddSameConstraintsWithInsets(
       shadow, self.backgroundView,
-      LayoutSides::kTop | LayoutSides::kLeading | LayoutSides::kBottom |
-          LayoutSides::kTrailing,
       {-kShadowMargin, -kShadowMargin, -kShadowMargin, -kShadowMargin});
 }
 

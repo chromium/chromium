@@ -189,12 +189,10 @@ UIFont* GetNavigationBarTitleFont() {
   UILayoutGuide* contentLayoutGuide = scrollView.contentLayoutGuide;
   UILayoutGuide* frameLayoutGuide = scrollView.safeAreaLayoutGuide;
   AddSameConstraintsToSidesWithInsets(
-      self.contentView, contentLayoutGuide,
-      LayoutSides::kTop | LayoutSides::kBottom,
+      self.contentView, contentLayoutGuide, LayoutSides::kVertical,
       NSDirectionalEdgeInsets{kContentMargin, 0, kContentMargin, 0});
   AddSameConstraintsToSidesWithInsets(
-      self.contentView, frameLayoutGuide,
-      LayoutSides::kLeading | LayoutSides::kTrailing,
+      self.contentView, frameLayoutGuide, LayoutSides::kHorizontal,
       NSDirectionalEdgeInsets{0, kContentMargin, 0, kContentMargin});
 
   // Add the label.

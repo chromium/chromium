@@ -51,8 +51,7 @@ const CGFloat kTitleFontSize = 18;
 
   [self.view addSubview:label];
 
-  LayoutSides sides =
-      LayoutSides::kTop | LayoutSides::kTrailing | LayoutSides::kLeading;
+  LayoutSides sides = LayoutSides::kTop | LayoutSides::kHorizontal;
   NSDirectionalEdgeInsets insets = NSDirectionalEdgeInsetsMake(
       kViewTopPadding, kLateralPadding, 0, kLateralPadding);
   AddSameConstraintsToSidesWithInsets(label, self.view, sides, insets);

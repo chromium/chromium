@@ -751,9 +751,8 @@ constexpr CGFloat kAdditionalBorderMargin = 4;
   }
   UILayoutGuide* guide = [[UILayoutGuide alloc] init];
   [self.rootViewController.view addLayoutGuide:guide];
-  AddSameConstraintsToSides(
-      guide, contentAreaGuide,
-      LayoutSides::kLeading | LayoutSides::kTrailing | LayoutSides::kBottom);
+  AddSameConstraintsToSides(guide, contentAreaGuide,
+                            LayoutSides::kBottom | LayoutSides::kHorizontal);
   NSLayoutConstraint* topConstraintForBottomEdgeSwipe = [guide.topAnchor
       constraintEqualToAnchor:self.rootViewController.view.topAnchor];
   NSLayoutConstraint* topConstraintForTopEdgeSwipe =
@@ -1395,16 +1394,15 @@ constexpr CGFloat kAdditionalBorderMargin = 4;
                                 : UISwipeGestureRecognizerDirectionLeft;
   switch (direction) {
     case UISwipeGestureRecognizerDirectionUp:
-      AddSameConstraintsToSides(
-          boundingSizeGuide, contentAreaGuide,
-          LayoutSides::kLeading | LayoutSides::kTrailing | LayoutSides::kTop);
+      AddSameConstraintsToSides(boundingSizeGuide, contentAreaGuide,
+                                LayoutSides::kTop | LayoutSides::kHorizontal);
       AddSameConstraintsToSides(boundingSizeGuide, safeAreaGuide,
                                 LayoutSides::kBottom);
       break;
     case UISwipeGestureRecognizerDirectionDown:
-      AddSameConstraintsToSides(boundingSizeGuide, contentAreaGuide,
-                                LayoutSides::kLeading | LayoutSides::kTrailing |
-                                    LayoutSides::kBottom);
+      AddSameConstraintsToSides(
+          boundingSizeGuide, contentAreaGuide,
+          LayoutSides::kBottom | LayoutSides::kHorizontal);
       AddSameConstraintsToSides(boundingSizeGuide, safeAreaGuide,
                                 LayoutSides::kTop);
       break;
@@ -1413,13 +1411,13 @@ constexpr CGFloat kAdditionalBorderMargin = 4;
       if (isDirectionLeading) {
         AddSameConstraintsToSides(
             boundingSizeGuide, contentAreaGuide,
-            LayoutSides::kTop | LayoutSides::kBottom | LayoutSides::kLeading);
+            LayoutSides::kLeading | LayoutSides::kVertical);
         AddSameConstraintsToSides(boundingSizeGuide, safeAreaGuide,
                                   LayoutSides::kTrailing);
       } else {
         AddSameConstraintsToSides(
             boundingSizeGuide, contentAreaGuide,
-            LayoutSides::kTop | LayoutSides::kBottom | LayoutSides::kTrailing);
+            LayoutSides::kTrailing | LayoutSides::kVertical);
         AddSameConstraintsToSides(boundingSizeGuide, safeAreaGuide,
                                   LayoutSides::kLeading);
       }

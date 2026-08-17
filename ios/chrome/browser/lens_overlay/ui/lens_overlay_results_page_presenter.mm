@@ -642,7 +642,7 @@ const CGFloat kSidePanelHorizontalOcclusionInset = 24.0f;
   AddSameConstraintsToSides(
       _visibleAreaLayoutGuide,
       _baseViewController.bottomSheet.visibleAreaLayoutGuide,
-      LayoutSides::kLeading | LayoutSides::kTrailing | LayoutSides::kTop);
+      LayoutSides::kTop | LayoutSides::kHorizontal);
 
   CGFloat estimatedMediumDetentHeight =
       _detentsManager.estimatedMediumDetentHeight;

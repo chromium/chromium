@@ -15,6 +15,8 @@ enum class LayoutSides {
   kLeading = 1 << 1,
   kBottom = 1 << 2,
   kTrailing = 1 << 3,
+  kHorizontal = kLeading | kTrailing,
+  kVertical = kTop | kBottom,
 };
 
 // Implementation of bitwise "or", "and" operators (as those are not

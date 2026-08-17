@@ -43,9 +43,8 @@
     self.view.keyboardLayoutGuide.usesBottomSafeArea = NO;
 
     // Anchor on top of the keyboard.
-    AddSameConstraintsToSides(
-        _geminiViewController.view, self.view,
-        LayoutSides::kTop | LayoutSides::kLeading | LayoutSides::kTrailing);
+    AddSameConstraintsToSides(_geminiViewController.view, self.view,
+                              LayoutSides::kTop | LayoutSides::kHorizontal);
     [NSLayoutConstraint activateConstraints:@[
       [_geminiViewController.view.bottomAnchor
           constraintEqualToAnchor:self.view.keyboardLayoutGuide.topAnchor]

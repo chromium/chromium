@@ -224,13 +224,12 @@ struct MockStepConfig {
       [_widgetContainer.heightAnchor constraintEqualToConstant:0.0];
   AddSameConstraintsToSidesWithInsets(
       _descriptionLabel, self.view.safeAreaLayoutGuide,
-      LayoutSides::kTop | LayoutSides::kLeading | LayoutSides::kTrailing,
+      LayoutSides::kTop | LayoutSides::kHorizontal,
       NSDirectionalEdgeInsetsMake(kLayoutSpacingSmall, kLayoutSpacing, 0.0,
                                   kLayoutSpacing));
 
   AddSameConstraintsToSidesWithInsets(
-      _widgetContainer, self.view.safeAreaLayoutGuide,
-      LayoutSides::kLeading | LayoutSides::kTrailing,
+      _widgetContainer, self.view.safeAreaLayoutGuide, LayoutSides::kHorizontal,
       NSDirectionalEdgeInsetsMake(0.0, kLayoutSpacing, 0.0, kLayoutSpacing));
 
   [NSLayoutConstraint activateConstraints:@[

@@ -180,8 +180,7 @@ UIButtonConfiguration* CreateHeaderButtonConfiguration(UIImage* image) {
   [self.view addSubview:_disclaimerTextView];
 
   AddSameConstraintsToSidesWithInsets(
-      _disclaimerTextView, self.view,
-      LayoutSides::kLeading | LayoutSides::kTrailing,
+      _disclaimerTextView, self.view, LayoutSides::kHorizontal,
       NSDirectionalEdgeInsetsMake(0, kHorizontalMargin, 0, kHorizontalMargin));
   [_disclaimerTextView.topAnchor
       constraintEqualToAnchor:_navigationBar.bottomAnchor
@@ -231,9 +230,8 @@ UIButtonConfiguration* CreateHeaderButtonConfiguration(UIImage* image) {
                                                                item:tab];
                 }];
 
-  AddSameConstraintsToSides(
-      _collectionView, self.view,
-      LayoutSides::kLeading | LayoutSides::kTrailing | LayoutSides::kBottom);
+  AddSameConstraintsToSides(_collectionView, self.view,
+                            LayoutSides::kHorizontal | LayoutSides::kBottom);
   [_collectionView.topAnchor
       constraintEqualToAnchor:_disclaimerTextView.bottomAnchor
                      constant:kCollectionViewTopPadding]

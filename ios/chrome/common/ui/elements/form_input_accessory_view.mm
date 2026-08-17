@@ -511,9 +511,8 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
       _contentView.backgroundColor = [UIColor colorNamed:kBackgroundColor];
     }
     [self addSubview:_contentView];
-    AddSameConstraintsToSides(
-        self, _contentView,
-        LayoutSides::kBottom | LayoutSides::kLeading | LayoutSides::kTrailing);
+    AddSameConstraintsToSides(self, _contentView,
+                              LayoutSides::kBottom | LayoutSides::kHorizontal);
 
     [self setOmniboxSafeTopConstraint:_contentView];
   }
@@ -549,9 +548,8 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
   [_contentView addSubview:leadingViewContainer];
   [leadingViewContainer addSubview:leadingView];
   if ([self isLiquidGlassEffectEnabled]) {
-    AddSameConstraintsToSides(
-        leadingViewContainer, leadingView,
-        LayoutSides::kTop | LayoutSides::kLeading | LayoutSides::kTrailing);
+    AddSameConstraintsToSides(leadingViewContainer, leadingView,
+                              LayoutSides::kTop | LayoutSides::kHorizontal);
     [self setBottomAnchorForView:leadingView];
   } else {
     AddSameConstraints(leadingViewContainer, leadingView);
@@ -1015,9 +1013,8 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
         kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID;
     [self addSubview:_omniboxTypingShield];
 
-    AddSameConstraintsToSides(
-        self, _omniboxTypingShield,
-        LayoutSides::kTop | LayoutSides::kLeading | LayoutSides::kTrailing);
+    AddSameConstraintsToSides(self, _omniboxTypingShield,
+                              LayoutSides::kTop | LayoutSides::kHorizontal);
     _omniboxTypingShieldHeightConstraint =
         [_omniboxTypingShield.heightAnchor constraintEqualToConstant:0];
     _omniboxTypingShieldBottomConstraint = [_omniboxTypingShield.bottomAnchor

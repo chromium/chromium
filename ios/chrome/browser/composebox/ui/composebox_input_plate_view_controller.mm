@@ -356,8 +356,7 @@ UIImage* SendButtonImage(BOOL highlighted,
 
   AddSameConstraintsToSidesWithInsets(
       _inputPlateStackView, _inputPlateInternalContainerView,
-      (LayoutSides::kLeading | LayoutSides::kTrailing),
-      kInputPlateStackViewPadding);
+      LayoutSides::kHorizontal, kInputPlateStackViewPadding);
 
   [self updateInputPlateStackViewAnimated:NO];
 
@@ -482,7 +481,7 @@ UIImage* SendButtonImage(BOOL highlighted,
                                     .trailingAnchor],
   ]];
   AddSameConstraintsToSides(_editView, _omniboxContainer,
-                            LayoutSides::kTop | LayoutSides::kBottom);
+                            LayoutSides::kVertical);
 
   [self.mutator requestUIRefresh];
   [self updatePlaceholderText];

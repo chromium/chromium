@@ -121,7 +121,7 @@ constexpr const CGFloat kSubtitleBottomMargin = 17;
 
   AddSameConstraintsToSidesWithInsets(
       addressBarView, self.specificContentView,
-      LayoutSides::kTop | LayoutSides::kLeading | LayoutSides::kTrailing,
+      LayoutSides::kTop | LayoutSides::kHorizontal,
       NSDirectionalEdgeInsetsMake(0, kAddressViewHorizontalPadding, 0,
                                   kAddressViewHorizontalPadding));
 
