@@ -20,6 +20,7 @@ import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -209,10 +210,12 @@ public class TabSearchOverlayCoordinatorUnitTest {
 
         verify(mBackPressManager)
                 .addHandler(mCoordinator, BackPressHandler.Type.TAB_SEARCH_OVERLAY);
+        verify(mActivityLifecycleDispatcher).register(mCoordinator);
 
         // Clear mock invocations from setup phase to ensure test assertions are isolated.
         clearInvocations(mLocationBarCoordinator);
         clearInvocations(mBackPressManager);
+        clearInvocations(mActivityLifecycleDispatcher);
     }
 
     @After
@@ -221,6 +224,7 @@ public class TabSearchOverlayCoordinatorUnitTest {
         assertNull(mCoordinator.getPanelContainerForTesting());
         verify(mSearchUiCoordinator).destroy();
         verify(mBackPressManager).removeHandler(mCoordinator);
+        verify(mActivityLifecycleDispatcher).unregister(mCoordinator);
         assertFalse(mSuggestionsListNonEmptySupplier.hasObservers());
     }
 
@@ -1003,5 +1007,77 @@ public class TabSearchOverlayCoordinatorUnitTest {
                         .getDimensionPixelSize(R.dimen.tab_search_close_button_size_desktop);
         assertEquals(expectedSize, closeButton.getLayoutParams().width);
         assertEquals(expectedSize, closeButton.getLayoutParams().height);
+    }
+
+    @Test
+    public void testOnConfigurationChanged_whenVisible_hidesOverlay() {
+        showOverlay();
+        assertTrue(mCoordinator.isVisible());
+
+        var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.TabSearch.DismissalReason",
+                        TabSearchDismissalReason.WINDOW_RESIZED);
+        mCoordinator.onConfigurationChanged(new Configuration());
+        watcher.assertExpected();
+
+        assertOverlayHidden();
+    }
+
+    @Test
+    public void testOnConfigurationChanged_whenHidden_doesNothing() {
+        assertFalse(mCoordinator.isVisible());
+
+        mCoordinator.onConfigurationChanged(new Configuration());
+
+        verify(mLocationBarCoordinator, never()).clearOmniboxFocus();
+    }
+
+    @Test
+    public void testOnAppHeaderStateChanged_whenVisible_hidesOverlay() {
+        showOverlay();
+        assertTrue(mCoordinator.isVisible());
+
+        var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.TabSearch.DismissalReason",
+                        TabSearchDismissalReason.WINDOW_RESIZED);
+        mCoordinator.onAppHeaderStateChanged(new AppHeaderState());
+        watcher.assertExpected();
+
+        assertOverlayHidden();
+    }
+
+    @Test
+    public void testOnAppHeaderStateChanged_whenHidden_doesNothing() {
+        assertFalse(mCoordinator.isVisible());
+
+        mCoordinator.onAppHeaderStateChanged(new AppHeaderState());
+
+        verify(mLocationBarCoordinator, never()).clearOmniboxFocus();
+    }
+
+    @Test
+    public void testOnDesktopWindowingModeChanged_whenVisible_hidesOverlay() {
+        showOverlay();
+        assertTrue(mCoordinator.isVisible());
+
+        var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.TabSearch.DismissalReason",
+                        TabSearchDismissalReason.WINDOW_RESIZED);
+        mCoordinator.onDesktopWindowingModeChanged(true);
+        watcher.assertExpected();
+
+        assertOverlayHidden();
+    }
+
+    @Test
+    public void testOnDesktopWindowingModeChanged_whenHidden_doesNothing() {
+        assertFalse(mCoordinator.isVisible());
+
+        mCoordinator.onDesktopWindowingModeChanged(true);
+
+        verify(mLocationBarCoordinator, never()).clearOmniboxFocus();
     }
 }

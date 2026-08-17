@@ -10,6 +10,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Build;
@@ -49,6 +50,7 @@ import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.chrome.browser.omnibox.BackKeyBehaviorDelegate;
 import org.chromium.chrome.browser.omnibox.LocationBarEmbedder;
 import org.chromium.chrome.browser.omnibox.UrlBar;
@@ -95,7 +97,9 @@ import java.util.List;
  */
 @NullMarked
 public class TabSearchOverlayCoordinator
-        implements BackPressHandler, DesktopWindowStateManager.AppHeaderObserver {
+        implements BackPressHandler,
+                DesktopWindowStateManager.AppHeaderObserver,
+                ConfigurationChangedObserver {
     // LINT.IfChange(TabSearchEntryPoint)
     @IntDef({
         TabSearchEntryPoint.HORIZONTAL_TAB_STRIP,
@@ -120,7 +124,8 @@ public class TabSearchOverlayCoordinator
         TabSearchDismissalReason.WINDOW_FOCUS_LOST,
         TabSearchDismissalReason.TAB_SELECTED,
         TabSearchDismissalReason.TAB_GROUP_SELECTED,
-        TabSearchDismissalReason.URL_LOADED
+        TabSearchDismissalReason.URL_LOADED,
+        TabSearchDismissalReason.WINDOW_RESIZED
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface TabSearchDismissalReason {
@@ -131,7 +136,8 @@ public class TabSearchOverlayCoordinator
         int TAB_SELECTED = 4;
         int TAB_GROUP_SELECTED = 5;
         int URL_LOADED = 6;
-        int NUM_ENTRIES = 7;
+        int WINDOW_RESIZED = 7;
+        int NUM_ENTRIES = 8;
     }
 
     // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:TabSearchDismissalReason)
@@ -213,6 +219,7 @@ public class TabSearchOverlayCoordinator
         mTabGroupUiActionHandlerSupplier = tabGroupUiActionHandlerSupplier;
         mDesktopWindowStateManager = desktopWindowStateManager;
         mBackPressManager.addHandler(this, BackPressHandler.Type.TAB_SEARCH_OVERLAY);
+        mLifecycleDispatcher.register(this);
 
         if (mDesktopWindowStateManager != null) {
             mDesktopWindowStateManager.addObserver(this);
@@ -240,6 +247,7 @@ public class TabSearchOverlayCoordinator
         if (mDesktopWindowStateManager != null) {
             mDesktopWindowStateManager.removeObserver(this);
         }
+        mLifecycleDispatcher.unregister(this);
         mProfileSupplier.removeObserver(mProfileObserver);
         mBackPressManager.removeHandler(this);
         if (mChangeProcessor != null) {
@@ -395,8 +403,8 @@ public class TabSearchOverlayCoordinator
         // Dismiss the tab search panel when the window loses focus (e.g. on Alt-Tab).
         mWindowFocusListener =
                 (hasFocus) -> {
-                    if (!hasFocus && isVisible()) {
-                        hide(TabSearchDismissalReason.WINDOW_FOCUS_LOST);
+                    if (!hasFocus) {
+                        hideIfVisible(TabSearchDismissalReason.WINDOW_FOCUS_LOST);
                     }
                 };
 
@@ -590,6 +598,17 @@ public class TabSearchOverlayCoordinator
         mModel.set(TabSearchOverlayProperties.VISIBLE, false);
         mBackPressStateSupplier.set(false);
         updateExclusionRects();
+    }
+
+    /**
+     * Hides the tab search overlay if it is currently visible.
+     *
+     * @param reason The {@link TabSearchDismissalReason} for hiding the overlay.
+     */
+    private void hideIfVisible(@TabSearchDismissalReason int reason) {
+        if (isVisible()) {
+            hide(reason);
+        }
     }
 
     /** Returns whether the tab search overlay is currently visible. */
@@ -850,12 +869,19 @@ public class TabSearchOverlayCoordinator
 
     @Override
     public void onAppHeaderStateChanged(AppHeaderState newState) {
-        updateExclusionRects();
+        hideIfVisible(TabSearchDismissalReason.WINDOW_RESIZED);
     }
 
     @Override
     public void onDesktopWindowingModeChanged(boolean isInDesktopWindow) {
-        updateExclusionRects();
+        hideIfVisible(TabSearchDismissalReason.WINDOW_RESIZED);
+    }
+
+    // ConfigurationChangedObserver implementation.
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        hideIfVisible(TabSearchDismissalReason.WINDOW_RESIZED);
     }
 
     // Testing methods.

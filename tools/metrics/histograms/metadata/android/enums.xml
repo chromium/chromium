@@ -2217,6 +2217,7 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Tab Selected"/>
   <int value="5" label="Tab Group Selected"/>
   <int value="6" label="URL Loaded / Query Submitted"/>
+  <int value="7" label="Window Resized"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/TabSearchOverlayCoordinator.java:TabSearchDismissalReason) -->
