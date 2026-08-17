@@ -10543,26 +10543,6 @@
             ]
         }
     ],
-    "EnableIntermediateDnsResults": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnableIntermediateDnsResults"
-                    ]
-                }
-            ]
-        }
-    ],
     "EnableManagementPromotionBanner": [
         {
             "platforms": [
@@ -18406,6 +18386,7 @@
                     },
                     "enable_features": [
                         "AdjustIPv6FallbackTime",
+                        "EnableIntermediateDnsResults",
                         "IPv6FallbackBasedOnRTT",
                         "OptimisticDnsForTcp"
                     ]
