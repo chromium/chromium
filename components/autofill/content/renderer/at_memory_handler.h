@@ -18,6 +18,7 @@
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/is_required.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "third_party/blink/public/web/web_range.h"
 
 namespace autofill {
 class FieldDataManager;
@@ -61,6 +62,7 @@ class AtMemoryHandler {
     FieldRendererId field_id{};
     bool caused_by_trigger_string = false;
     size_t value_hash = 0;
+    blink::WebRange selection_range;
   };
 
   explicit AtMemoryHandler(AutofillAgent* agent);

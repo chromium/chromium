@@ -1931,17 +1931,25 @@ class AutofillAgentTest_AtMemory : public AutofillAgentTest {
                               const std::optional<PasswordSuggestionRequest>&
                                   password_request) {
           if (IsAtMemoryTriggerSource(trigger_source)) {
-            base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-                FROM_HERE,
-                base::BindOnce(
-                    &AutofillAgent::ApplyFieldAction,
-                    test_api(autofill_agent()).GetWeakPtr(),
-                    mojom::FieldActionType::kReplaceSelectionForAtMemory,
-                    action_persistence_to_respond_, field_id,
-                    fill_value_to_respond_)
-                    .Then(run_loop_->QuitClosure()));
+            ApplyFieldActionAsync(field_id, fill_value_to_respond_,
+                                  action_persistence_to_respond_);
           }
         });
+  }
+
+  // Calls ApplyFieldAction() asynchronously.
+  // To be called in response to AskForValuesToFill().
+  void ApplyFieldActionAsync(
+      FieldRendererId field_id,
+      std::u16string value = u"result",
+      mojom::ActionPersistence persistence = mojom::ActionPersistence::kFill) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&AutofillAgent::ApplyFieldAction,
+                       test_api(autofill_agent()).GetWeakPtr(),
+                       mojom::FieldActionType::kReplaceSelectionForAtMemory,
+                       persistence, field_id, std::move(value))
+            .Then(run_loop_->QuitClosure()));
   }
 
   void WaitForApplyFieldAction() {
@@ -2529,6 +2537,43 @@ TEST_F(AutofillAgentTest_AtMemory, AtMemoryReplaceTriggerAbortsIfValueChanged) {
   EXPECT_EQ(input.Value().Utf16(), u"hello @@ changed");
 }
 
+// Tests that ApplyFieldAction() with kReplaceSelectionForAtMemory refocuses the
+// element and restores the caret if the element lost focus.
+TEST_F(AutofillAgentTest_AtMemory, RefocusesAndRestoresCaretIfUnfocused) {
+  LoadHTML(R"(<input id="f"><input id="g">)");
+  WaitForFormsSeen();
+  blink::WebInputElement input = GetInputElementById("f");
+  blink::WebInputElement other = GetInputElementById("g");
+  Focus("f");
+
+  // Ignore standard Autofill noise during setup.
+  EXPECT_CALL(
+      autofill_driver(),
+      AskForValuesToFill(
+          _, _, _, Ne(AutofillSuggestionTriggerSource::kAtMemoryTriggerString),
+          _))
+      .Times(AnyNumber());
+  // Expect the specific @memory trigger.
+  EXPECT_CALL(
+      autofill_driver(),
+      AskForValuesToFill(
+          _, _, _, AutofillSuggestionTriggerSource::kAtMemoryTriggerString, _))
+      .WillOnce([this, &other](const FormData& form, FieldRendererId field_id,
+                               const gfx::Rect& caret_bounds,
+                               AutofillSuggestionTriggerSource trigger_source,
+                               const std::optional<PasswordSuggestionRequest>&
+                                   password_request) {
+        other.Focus();
+        EXPECT_EQ(other.GetDocument().FocusedElement(), other);
+        ApplyFieldActionAsync(field_id);
+      });
+
+  SimulateSlowTyping("hello @@");
+  WaitForApplyFieldAction();
+  EXPECT_EQ(input.Value().Utf16(), u"hello result");
+  EXPECT_EQ(input.GetDocument().FocusedElement(), input);
+}
+
 // Tests that a non-standard trigger string works in <input> fields.
 TEST_F(AutofillAgentTest_AtMemory, NonStandardTriggerString) {
   // Ignore standard Autofill noise during setup.
@@ -2795,6 +2840,48 @@ TEST_F(AutofillAgentTest_AtMemoryContentEditable,
   WaitForApplyFieldAction();
   // Filling should be aborted; value remains unchanged.
   EXPECT_EQ(ce.TextContent().Utf16(), u"hello @@ changed");
+}
+
+// Tests that ApplyFieldAction() with kReplaceSelectionForAtMemory refocuses the
+// element and restores the caret if the element lost focus.
+TEST_F(AutofillAgentTest_AtMemoryContentEditable,
+       RefocusesAndRestoresCaretIfUnfocused) {
+  blink::WebElement ce = GetWebElementById("ce");
+  Focus("ce");
+
+  ExecuteJavaScriptForTests(R"(
+    const input = document.createElement('input');
+    input.id = 'other';
+    document.body.appendChild(input);
+  )");
+  blink::WebElement other = GetWebElementById("other");
+
+  // Ignore standard Autofill noise during setup.
+  EXPECT_CALL(
+      autofill_driver(),
+      AskForValuesToFill(
+          _, _, _, Ne(AutofillSuggestionTriggerSource::kAtMemoryTriggerString),
+          _))
+      .Times(AnyNumber());
+  // Expect the specific @memory trigger.
+  EXPECT_CALL(
+      autofill_driver(),
+      AskForValuesToFill(
+          _, _, _, AutofillSuggestionTriggerSource::kAtMemoryTriggerString, _))
+      .WillOnce([this, &other](const FormData& form, FieldRendererId field_id,
+                               const gfx::Rect& caret_bounds,
+                               AutofillSuggestionTriggerSource trigger_source,
+                               const std::optional<PasswordSuggestionRequest>&
+                                   password_request) {
+        other.Focus();
+        ApplyFieldActionAsync(field_id);
+        EXPECT_EQ(other.GetDocument().FocusedElement(), other);
+      });
+
+  SimulateSlowTyping("hello @@");
+  WaitForApplyFieldAction();
+  EXPECT_EQ(ce.TextContent().Utf16(), u"hello result");
+  EXPECT_EQ(ce.GetDocument().FocusedElement(), ce);
 }
 
 // Tests that a non-standard trigger string works in <div contenteditable>

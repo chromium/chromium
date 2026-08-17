@@ -99,6 +99,7 @@ bool IsModifierKey(const WebKeyboardEvent& event) {
   }
 }
 
+// Returns true if `element` is fillable by AtMemory.
 bool IsSupportedField(const WebElement& element) {
   if (!element || !form_util::IsAccessible(element)) {
     return false;
@@ -324,7 +325,8 @@ void AtMemoryHandler::DidReceiveKeyDownForAtMemoryTriggerString(
                   form_control,
                   AutofillSuggestionTriggerSource::kAtMemoryTriggerString,
                   SynchronousFormCache(), std::nullopt);
-            } else if (element.IsContentEditable()) {
+            } else {
+              DCHECK(element.IsContentEditable());
               self->agent_->ShowSuggestionsForContentEditable(
                   element,
                   AutofillSuggestionTriggerSource::kAtMemoryTriggerString);
@@ -351,15 +353,34 @@ void AtMemoryHandler::ReplaceSelectionForAtMemory(WebElement element,
     return;
   }
 
+  WebLocalFrame* frame = element.GetDocument().GetFrame();
+  if (!frame) {
+    return;
+  }
+
+  // Ensures that `element.GetDocument().FocusedElement() == element` and that
+  // SetEditableSelectionOffsets() and ExtendSelectionAndReplace() operate on
+  // that element -- assuming that no JavaScript `focus` listener or similar
+  // moved the focus elsewhere.
+  element.Focus();
+
+  if (!info->selection_range.IsNull()) {
+    // Restores the text selection at the time of AskForValuesToFill().
+    // When AtMemory was triggered with the trigger string, the selection is
+    // normally empty (but JavaScript may have interfered).
+    // When AtMemory was triggered by the context menu or keyboard shortcut, it
+    // may be non-empty and filling should replace the selected text.
+    frame->SetEditableSelectionOffsets(info->selection_range.StartOffset(),
+                                       info->selection_range.EndOffset());
+  }
+
   int offset = 0;
   if (info->caused_by_trigger_string && HasTriggerStringNextToCaret(element)) {
     offset = GetTriggerString().size();
   }
 
-  if (WebLocalFrame* frame = element.GetDocument().GetFrame()) {
-    frame->ExtendSelectionAndReplace(/*before=*/offset,
-                                     /*after=*/0, WebString::FromUtf16(value));
-  }
+  frame->ExtendSelectionAndReplace(/*before=*/offset,
+                                   /*after=*/0, WebString::FromUtf16(value));
 }
 
 std::optional<AtMemoryHandler::AskForValuesToFillInfo>
@@ -417,12 +438,17 @@ void AtMemoryHandler::MaybeUpdateAskForValuesToFill(
     return element.TextContent();
   }();
 
+  WebLocalFrame* frame = element.GetDocument().GetFrame();
+
   last_at_memory_ask_for_values_to_fills_.push_back(AskForValuesToFillInfo{
       .field_id = form_util::GetFieldRendererId(element),
       .caused_by_trigger_string =
           trigger_source ==
           AutofillSuggestionTriggerSource::kAtMemoryTriggerString,
-      .value_hash = base::FastHash(base::as_byte_span(value.Utf16()))});
+      .value_hash = base::FastHash(base::as_byte_span(value.Utf16())),
+      .selection_range =
+          frame ? frame->GetInputMethodController()->GetSelectionOffsets()
+                : WebRange()});
 }
 
 ukm::UkmRecorder* AtMemoryHandler::GetUkmRecorder() {
