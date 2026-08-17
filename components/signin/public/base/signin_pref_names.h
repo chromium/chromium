@@ -25,6 +25,10 @@ COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const char kAccountPreviewNonPeriodicFetchCountPref[];
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const char kAccountPreviewDataLastFetchAccounts[];
+#if BUILDFLAG(IS_ANDROID)
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+extern const char kAccountPreviewExternalAppAccount[];
+#endif
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const char kGaiaCookieHash[];
 COMPONENT_EXPORT(SIGNIN_SWITCHES)

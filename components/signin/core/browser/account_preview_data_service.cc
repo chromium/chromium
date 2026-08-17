@@ -29,6 +29,9 @@ void AccountPreviewDataService::RegisterProfilePrefs(
   registry->RegisterDictionaryPref(prefs::kAccountPreviewPreference);
   registry->RegisterIntegerPref(prefs::kAccountPreviewNonPeriodicFetchCountPref,
                                 0);
+#if BUILDFLAG(IS_ANDROID)
+  registry->RegisterDictionaryPref(prefs::kAccountPreviewExternalAppAccount);
+#endif
 }
 
 }  // namespace signin

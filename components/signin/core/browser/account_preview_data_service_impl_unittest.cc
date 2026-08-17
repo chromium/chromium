@@ -5,6 +5,7 @@
 #include "components/signin/core/browser/account_preview_data_service_impl.h"
 
 #include "base/functional/callback_forward.h"
+#include "base/json/values_util.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
@@ -86,7 +87,12 @@ class AccountPreviewDataServiceTest : public testing::Test {
     feature_list_.InitWithFeatures(
         {switches::kEnableAccountPreviewData,
          switches::kEnableAccountPreviewEntityPreviews,
-         switches::kEnableAccountPreviewPreferredAccount},
+         switches::kEnableAccountPreviewPreferredAccount
+#if BUILDFLAG(IS_ANDROID)
+         ,
+         switches::kEnableAccountPreviewUseAppAccount
+#endif
+        },
         {});
   }
 
@@ -1819,5 +1825,165 @@ TEST_F(AccountPreviewDataServiceTest,
   EXPECT_FALSE(service_->GetAccountPreviewData(account1.gaia).has_value());
   EXPECT_TRUE(service_->GetAccountPreviewData(account2.gaia).has_value());
 }
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(AccountPreviewDataServiceTest, UpdateExternalAppAccountValidAccount) {
+  AccountInfo account =
+      identity_test_env_.MakeAccountAvailable("user@gmail.com");
+
+  service_->UpdateExternalAppAccount("user@gmail.com");
+
+  std::optional<GaiaId> gaia_id = service_->GetExternalAppAccountForTesting();
+  ASSERT_TRUE(gaia_id.has_value());
+  EXPECT_EQ(*gaia_id, account.gaia);
+
+  const base::DictValue& dict =
+      prefs_.GetDict(prefs::kAccountPreviewExternalAppAccount);
+  const std::string* gaia_id_str = dict.FindString("gaia_id");
+  ASSERT_TRUE(gaia_id_str);
+  EXPECT_EQ(*gaia_id_str, account.gaia.ToString());
+  EXPECT_TRUE(dict.Find("timestamp"));
+}
+
+TEST_F(AccountPreviewDataServiceTest,
+       UpdateExternalAppAccountNullOrEmptyClearsPref) {
+  AccountInfo account =
+      identity_test_env_.MakeAccountAvailable("user@gmail.com");
+
+  service_->UpdateExternalAppAccount("user@gmail.com");
+  EXPECT_TRUE(service_->GetExternalAppAccountForTesting().has_value());
+
+  service_->UpdateExternalAppAccount(std::nullopt);
+  EXPECT_FALSE(service_->GetExternalAppAccountForTesting().has_value());
+  EXPECT_TRUE(prefs_.GetDict(prefs::kAccountPreviewExternalAppAccount).empty());
+
+  service_->UpdateExternalAppAccount("user@gmail.com");
+  EXPECT_TRUE(service_->GetExternalAppAccountForTesting().has_value());
+
+  service_->UpdateExternalAppAccount("");
+  EXPECT_FALSE(service_->GetExternalAppAccountForTesting().has_value());
+  EXPECT_TRUE(prefs_.GetDict(prefs::kAccountPreviewExternalAppAccount).empty());
+}
+
+TEST_F(AccountPreviewDataServiceTest,
+       UpdateExternalAppAccountUnknownAccountClearsPref) {
+  AccountInfo account =
+      identity_test_env_.MakeAccountAvailable("user@gmail.com");
+
+  service_->UpdateExternalAppAccount("user@gmail.com");
+  EXPECT_TRUE(service_->GetExternalAppAccountForTesting().has_value());
+
+  service_->UpdateExternalAppAccount("unknown@gmail.com");
+  EXPECT_FALSE(service_->GetExternalAppAccountForTesting().has_value());
+  EXPECT_TRUE(prefs_.GetDict(prefs::kAccountPreviewExternalAppAccount).empty());
+}
+
+TEST_F(AccountPreviewDataServiceTest,
+       UpdateExternalAppAccountExpirationCleansUpPref) {
+  AccountInfo account =
+      identity_test_env_.MakeAccountAvailable("user@gmail.com");
+
+  service_->UpdateExternalAppAccount("user@gmail.com");
+  EXPECT_TRUE(service_->GetExternalAppAccountForTesting().has_value());
+
+  // 179 days: still valid.
+  task_environment_.FastForwardBy(base::Days(179));
+  EXPECT_TRUE(service_->GetExternalAppAccountForTesting().has_value());
+
+  // 2 more days (181 total): expired.
+  task_environment_.FastForwardBy(base::Days(2));
+  EXPECT_FALSE(service_->GetExternalAppAccountForTesting().has_value());
+
+  // Triggering periodic refresh should clear expired pref.
+  MockSuccessfulFetch(&test_url_loader_factory_);
+  base::RunLoop run_loop;
+  service_->SetFetchCompleteCallbackForTesting(run_loop.QuitClosure());
+  task_environment_.FastForwardBy(base::Hours(24));
+  run_loop.Run();
+
+  EXPECT_TRUE(prefs_.GetDict(prefs::kAccountPreviewExternalAppAccount).empty());
+}
+
+TEST_F(AccountPreviewDataServiceTest,
+       UpdateExternalAppAccountAccountRemovalCleansUpPref) {
+  AccountInfo account1 =
+      identity_test_env_.MakeAccountAvailable("user1@gmail.com");
+  AccountInfo account2 =
+      identity_test_env_.MakeAccountAvailable("user2@gmail.com");
+
+  service_->UpdateExternalAppAccount("user1@gmail.com");
+  EXPECT_TRUE(service_->GetExternalAppAccountForTesting().has_value());
+
+  // Removing a different account shouldn't clear external app account pref.
+  identity_test_env_.RemoveRefreshTokenForAccount(account2.account_id);
+  EXPECT_TRUE(service_->GetExternalAppAccountForTesting().has_value());
+
+  // Removing the external app account cleans up the pref.
+  identity_test_env_.RemoveRefreshTokenForAccount(account1.account_id);
+  EXPECT_FALSE(service_->GetExternalAppAccountForTesting().has_value());
+  EXPECT_TRUE(prefs_.GetDict(prefs::kAccountPreviewExternalAppAccount).empty());
+}
+
+TEST_F(AccountPreviewDataServiceTest,
+       UpdateExternalAppAccountTokenLoadCleansUpNonExistentAccount) {
+  // Set external app account pref for an account that does not exist in
+  // identity manager.
+  base::DictValue dict;
+  dict.Set("gaia_id", "non_existent_gaia");
+  dict.Set("timestamp", base::TimeToValue(base::Time::Now()));
+  prefs_.SetDict(prefs::kAccountPreviewExternalAppAccount, std::move(dict));
+
+  AccountInfo account =
+      identity_test_env_.MakeAccountAvailable("user@gmail.com");
+  signin::WaitForRefreshTokensLoaded(identity_test_env_.identity_manager());
+
+  // Re-create service (simulating Chrome restart).
+  auto helper = std::make_unique<TestWaitForNetworkCallbackHelper>();
+  network_delay_helper_ = helper.get();
+  service_ = std::make_unique<AccountPreviewDataServiceImpl>(
+      identity_test_env_.identity_manager(), &sync_service_, &prefs_,
+      test_url_loader_factory_.GetSafeWeakWrapper(), std::move(helper),
+      version_info::Channel::UNKNOWN, &profile_metrics_service_);
+
+  // Stored external app account is not in IdentityManager, so it should be
+  // cleared.
+  EXPECT_FALSE(service_->GetExternalAppAccountForTesting().has_value());
+  EXPECT_TRUE(prefs_.GetDict(prefs::kAccountPreviewExternalAppAccount).empty());
+}
+
+TEST_F(AccountPreviewDataServiceTest,
+       UpdateExternalAppAccountSigninDisallowedClearsPref) {
+  AccountInfo account =
+      identity_test_env_.MakeAccountAvailable("user@gmail.com");
+
+  service_->UpdateExternalAppAccount("user@gmail.com");
+  EXPECT_TRUE(service_->GetExternalAppAccountForTesting().has_value());
+
+  prefs_.SetBoolean(prefs::kSigninAllowed, false);
+  EXPECT_FALSE(service_->GetExternalAppAccountForTesting().has_value());
+  EXPECT_TRUE(prefs_.GetDict(prefs::kAccountPreviewExternalAppAccount).empty());
+}
+
+TEST_F(AccountPreviewDataServiceTest,
+       UpdateExternalAppAccountFeatureDisabledClearsPref) {
+  AccountInfo account =
+      identity_test_env_.MakeAccountAvailable("user@gmail.com");
+
+  // Store pref while feature is enabled.
+  service_->UpdateExternalAppAccount("user@gmail.com");
+  EXPECT_TRUE(service_->GetExternalAppAccountForTesting().has_value());
+  EXPECT_FALSE(
+      prefs_.GetDict(prefs::kAccountPreviewExternalAppAccount).empty());
+
+  // Disable feature and call UpdateExternalAppAccount.
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitAndDisableFeature(
+      switches::kEnableAccountPreviewUseAppAccount);
+
+  service_->UpdateExternalAppAccount("user@gmail.com");
+  EXPECT_FALSE(service_->GetExternalAppAccountForTesting().has_value());
+  EXPECT_TRUE(prefs_.GetDict(prefs::kAccountPreviewExternalAppAccount).empty());
+}
+#endif
 
 }  // namespace signin

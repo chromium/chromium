@@ -10,6 +10,7 @@
 #include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/json/values_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -36,6 +37,10 @@ constexpr char kPreferredAccountDictDataTypeKey[] = "data_type";
 constexpr char kPreferredAccountDictQuartileKey[] = "quartile";
 constexpr char kPreferredAccountDictOtherDeviceFormFactorKey[] =
     "other_device_form_factor";
+#if BUILDFLAG(IS_ANDROID)
+constexpr char kExternalAppAccountDictGaiaIdKey[] = "gaia_id";
+constexpr char kExternalAppAccountDictTimestampKey[] = "timestamp";
+#endif
 
 constexpr base::TimeDelta kMinPeriodicRefreshInterval = base::Hours(12);
 
@@ -161,12 +166,35 @@ AccountPreviewDataServiceImpl::GetAccountPreviewData(
 #if BUILDFLAG(IS_ANDROID)
 void AccountPreviewDataServiceImpl::UpdateExternalAppAccount(
     const std::optional<std::string>& email) {
-  // TODO(crbug.com/532963639): convert to gaia id, cache as hashed with the
-  // timestamp, and recompute preference if needed.
-  // This needs to be removed if the corresponding account is removed from the
-  // device, per privacy requirement.
-  // Also, the id should not be taken into account if the id was saved 180 days
-  // ago per product discussion.
+  if (!base::FeatureList::IsEnabled(
+          switches::kEnableAccountPreviewUseAppAccount)) {
+    ClearExternalAppAccount();
+    return;
+  }
+
+  if (!pref_service_->GetBoolean(prefs::kSigninAllowed)) {
+    ClearExternalAppAccount();
+    return;
+  }
+
+  if (!email.has_value() || email->empty()) {
+    ClearExternalAppAccount();
+    return;
+  }
+
+  AccountInfo account_info =
+      identity_manager_->FindExtendedAccountInfoByEmailAddress(*email);
+  if (account_info.gaia.empty()) {
+    ClearExternalAppAccount();
+    return;
+  }
+
+  WriteExternalAppAccountToPrefs(account_info.gaia, base::Time::Now());
+}
+
+std::optional<GaiaId>
+AccountPreviewDataServiceImpl::GetExternalAppAccountForTesting() const {
+  return ReadExternalAppAccountFromPrefs();
 }
 #endif
 
@@ -257,6 +285,10 @@ void AccountPreviewDataServiceImpl::OnSingleFetchCompleted(
 
 void AccountPreviewDataServiceImpl::OnRefreshTokensLoaded() {
   RefreshAccountIdToGaiaIdMapping();
+#if BUILDFLAG(IS_ANDROID)
+  CleanUpExternalAppAccountIfExpired();
+  CleanUpExternalAppAccountIfNotOnDevice();
+#endif
   if (deferred_fetch_on_loaded_tokens_callback_) {
     std::move(deferred_fetch_on_loaded_tokens_callback_).Run();
   }
@@ -275,6 +307,10 @@ void AccountPreviewDataServiceImpl::RefreshAllAccountPreviewData() {
   // Clear data to ensure a new fresh fetch and preferred data computation is
   // performed.
   ClearAllDataAndResults();
+#if BUILDFLAG(IS_ANDROID)
+  CleanUpExternalAppAccountIfExpired();
+  CleanUpExternalAppAccountIfNotOnDevice();
+#endif
   EnsureAllAccountsFetched(FetchTriggerCause::kPeriodicRefresh);
 }
 
@@ -633,8 +669,14 @@ void AccountPreviewDataServiceImpl::OnSigninAllowedPrefChanged() {
     if (!identity_manager_observation_.IsObserving()) {
       identity_manager_observation_.Observe(identity_manager_);
       CreateAndStartRepeatingTimer();
+#if BUILDFLAG(IS_ANDROID)
+      CleanUpExternalAppAccountIfExpired();
+#endif
       if (identity_manager_->AreRefreshTokensLoaded()) {
         RefreshAccountIdToGaiaIdMapping();
+#if BUILDFLAG(IS_ANDROID)
+        CleanUpExternalAppAccountIfNotOnDevice();
+#endif
       }
     }
     return;
@@ -642,6 +684,9 @@ void AccountPreviewDataServiceImpl::OnSigninAllowedPrefChanged() {
 
   identity_manager_observation_.Reset();
   repeating_timer_.reset();
+#if BUILDFLAG(IS_ANDROID)
+  ClearExternalAppAccount();
+#endif
   ClearAllDataAndResults();
 }
 
@@ -702,6 +747,15 @@ void AccountPreviewDataServiceImpl::ProcessAccountRemoval(
     pref_service_->ClearPref(prefs::kAccountPreviewDataLastFetchAccounts);
   }
 
+#if BUILDFLAG(IS_ANDROID)
+  std::optional<GaiaId> external_app_account_gaia_id =
+      ReadExternalAppAccountFromPrefs();
+  if (external_app_account_gaia_id.has_value() &&
+      *external_app_account_gaia_id == gaia_id) {
+    ClearExternalAppAccount();
+  }
+#endif
+
   cached_data_.erase(gaia_id);
   if (active_fetchers_.contains(gaia_id)) {
     MaybeNotifySinglePendingRequests(gaia_id);
@@ -737,5 +791,87 @@ void AccountPreviewDataServiceImpl::ClearAllDataAndResults() {
   ClearMemoryData();
   ClearStoredResults();
 }
+
+#if BUILDFLAG(IS_ANDROID)
+std::optional<GaiaId>
+AccountPreviewDataServiceImpl::ReadExternalAppAccountFromPrefs() const {
+  if (!base::FeatureList::IsEnabled(
+          switches::kEnableAccountPreviewUseAppAccount)) {
+    return std::nullopt;
+  }
+
+  const base::DictValue& dict =
+      pref_service_->GetDict(prefs::kAccountPreviewExternalAppAccount);
+  const std::string* gaia_id_str =
+      dict.FindString(kExternalAppAccountDictGaiaIdKey);
+  if (!gaia_id_str || gaia_id_str->empty()) {
+    return std::nullopt;
+  }
+
+  const base::Value* time_val = dict.Find(kExternalAppAccountDictTimestampKey);
+  if (!time_val) {
+    return std::nullopt;
+  }
+
+  std::optional<base::Time> last_update = base::ValueToTime(time_val);
+  if (!last_update.has_value()) {
+    return std::nullopt;
+  }
+
+  if (base::Time::Now() - *last_update >
+      switches::kAccountPreviewAppAccountExpirationDuration.Get()) {
+    return std::nullopt;
+  }
+
+  return GaiaId(*gaia_id_str);
+}
+
+void AccountPreviewDataServiceImpl::WriteExternalAppAccountToPrefs(
+    const GaiaId& gaia_id,
+    base::Time timestamp) {
+  CHECK(!gaia_id.empty());
+  base::DictValue dict;
+  dict.Set(kExternalAppAccountDictGaiaIdKey, gaia_id.ToString());
+  dict.Set(kExternalAppAccountDictTimestampKey, base::TimeToValue(timestamp));
+  pref_service_->SetDict(prefs::kAccountPreviewExternalAppAccount,
+                         std::move(dict));
+}
+
+void AccountPreviewDataServiceImpl::ClearExternalAppAccount() {
+  pref_service_->ClearPref(prefs::kAccountPreviewExternalAppAccount);
+}
+
+void AccountPreviewDataServiceImpl::CleanUpExternalAppAccountIfExpired() {
+  const base::DictValue& dict =
+      pref_service_->GetDict(prefs::kAccountPreviewExternalAppAccount);
+  if (dict.empty()) {
+    return;
+  }
+
+  // Reading the pref contains the check for the expiration time. This avoid
+  // creating a timer specifically for this purpose. Calling
+  // `CleanUpExternalAppAccountIfExpired()` periodically/when appriorate
+  // should allow to clear this pref based on expiry date accurately enough.
+  if (!ReadExternalAppAccountFromPrefs().has_value()) {
+    ClearExternalAppAccount();
+  }
+}
+
+void AccountPreviewDataServiceImpl::CleanUpExternalAppAccountIfNotOnDevice() {
+  std::optional<GaiaId> stored_gaia_id = ReadExternalAppAccountFromPrefs();
+  if (!stored_gaia_id.has_value()) {
+    return;
+  }
+
+  for (const CoreAccountInfo& account :
+       identity_manager_->GetAccountsWithRefreshTokens()) {
+    if (account.gaia == *stored_gaia_id) {
+      return;
+    }
+  }
+
+  ClearExternalAppAccount();
+}
+#endif
 
 }  // namespace signin

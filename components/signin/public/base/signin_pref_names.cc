@@ -31,6 +31,12 @@ const char kAccountPreviewDataLastUpdatePref[] =
 const char kAccountPreviewDataLastFetchAccounts[] =
     "signin.account_preview_data_last_fetch_accounts";
 
+#if BUILDFLAG(IS_ANDROID)
+// Dictionary pref that contains the external app account GaiaId and timestamp.
+const char kAccountPreviewExternalAppAccount[] =
+    "signin.account_preview_external_app_account";
+#endif
+
 // Integer pref that tracks the number of non-periodic full fetches until the
 // next periodic fetch.
 const char kAccountPreviewNonPeriodicFetchCountPref[] =
