@@ -205,14 +205,12 @@ const CachedMatchedProperties::Entry* MatchedPropertiesCache::Find(
       // UserModify() is the initial value.
       continue;
     }
-    if ((entry.parent_computed_style->IsEnsuredInDisplayNone() ||
-         entry.computed_style->IsEnsuredOutsideFlatTree()) &&
-        !style_resolver_state.ParentStyle()->IsEnsuredInDisplayNone() &&
-        !style_resolver_state.IsOutsideFlatTree()) {
-      // If we cached a ComputedStyle in a display:none subtree, or outside the
-      // flat tree,  we would not have triggered fetches for external resources
-      // and have StylePendingImages in the ComputedStyle. Instead of having to
-      // inspect the cached ComputedStyle for such resources, don't use a cached
+    if (entry.parent_computed_style->IsEnsuredInDisplayNone() &&
+        !style_resolver_state.ParentStyle()->IsEnsuredInDisplayNone()) {
+      // If we cached a ComputedStyle in a display:none subtree, we would not
+      // have triggered fetches for external resources and have
+      // StylePendingImages in the ComputedStyle. Instead of having to inspect
+      // the cached ComputedStyle for such resources, don't use a cached
       // ComputedStyle when it was cached in display:none but is now rendered.
       continue;
     }

@@ -1529,7 +1529,7 @@ bool Node::ShouldSkipMarkingStyleDirty() const {
       return false;
     }
     // This is an element outside the flat tree without a parent. Should only
-    // mark dirty if it has an ensured style.
+    // mark dirty if it has a computed style.
     return !element->GetComputedStyle();
   }
   // Text nodes outside the flat tree do not need to be marked for style recalc.
@@ -1559,9 +1559,6 @@ bool IsNodeInFlatTree(const Node& node, const Element* style_parent) {
   }
   if (!current_style && style_parent) {
     current_style = style_parent->GetComputedStyle();
-  }
-  if (current_style && current_style->IsEnsuredOutsideFlatTree()) {
-    return false;
   }
   return true;
 }
@@ -3773,26 +3770,17 @@ void Node::FlatTreeParentChanged() {
   }
   const ComputedStyle* style =
       IsElementNode() ? To<Element>(this)->GetComputedStyle() : nullptr;
-  bool detach = false;
   if (ShouldSkipMarkingStyleDirty()) {
     // If we should not mark the node dirty in the new flat tree position,
     // detach to make sure all computes styles, layout objects, and dirty
     // flags are cleared.
-    detach = IsDirtyForStyleRecalc() || ChildNeedsStyleRecalc() || style ||
-             GetLayoutObject();
-  }
-  if (!detach) {
-    // We are moving a node with ensured computed style into the flat tree.
-    // Clear ensured styles so that we can use IsEnsuredOutsideFlatTree() to
-    // determine that we are outside the flat tree before updating the style
-    // recalc root in MarkAncestorsWithChildNeedsStyleRecalc().
-    detach = style && style->IsEnsuredOutsideFlatTree();
-  }
-  if (detach) {
-    StyleEngine& engine = GetDocument().GetStyleEngine();
-    StyleEngine::DetachLayoutTreeScope detach_scope(engine);
-    DetachLayoutTree();
-    engine.FlatTreePositionChanged(*this);
+    if (IsDirtyForStyleRecalc() || ChildNeedsStyleRecalc() || style ||
+        GetLayoutObject()) {
+      StyleEngine& engine = GetDocument().GetStyleEngine();
+      StyleEngine::DetachLayoutTreeScope detach_scope(engine);
+      DetachLayoutTree();
+      engine.FlatTreePositionChanged(*this);
+    }
   }
 
   // The node changed the flat tree position by being slotted to a new slot or

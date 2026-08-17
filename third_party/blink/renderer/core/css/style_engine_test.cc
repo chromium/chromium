@@ -3112,73 +3112,6 @@ TEST_F(StyleEngineTest, RecalcPropagatedWritingMode) {
   EXPECT_FALSE(GetDocument().View()->NeedsLayout());
 }
 
-TEST_F(StyleEngineTest, GetComputedStyleOutsideFlatTree) {
-  ScopedGetComputedStyleOutsideFlatTreeForTest scoped_feature(true);
-
-  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
-      R"HTML(<div id="host"><div id="outer"><div id="inner"><div id="innermost"></div></div></div></div>)HTML");
-
-  auto* host = GetDocument().getElementById(AtomicString("host"));
-  auto* outer = GetDocument().getElementById(AtomicString("outer"));
-  auto* inner = GetDocument().getElementById(AtomicString("inner"));
-  auto* innermost = GetDocument().getElementById(AtomicString("innermost"));
-
-  host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
-  UpdateAllLifecyclePhases();
-
-  EXPECT_TRUE(host->GetComputedStyle());
-  // ComputedStyle is not generated outside the flat tree.
-  EXPECT_FALSE(outer->GetComputedStyle());
-  EXPECT_FALSE(inner->GetComputedStyle());
-  EXPECT_FALSE(innermost->GetComputedStyle());
-
-  inner->EnsureComputedStyle();
-  const ComputedStyle* outer_style = outer->GetComputedStyle();
-  const ComputedStyle* inner_style = inner->GetComputedStyle();
-
-  ASSERT_TRUE(outer_style);
-  ASSERT_TRUE(inner_style);
-  EXPECT_FALSE(innermost->GetComputedStyle());
-  EXPECT_TRUE(outer_style->IsEnsuredOutsideFlatTree());
-  EXPECT_TRUE(inner_style->IsEnsuredOutsideFlatTree());
-  EXPECT_EQ(Color::kTransparent, inner_style->VisitedDependentColor(
-                                     GetCSSPropertyBackgroundColor()));
-
-  inner->SetInlineStyleProperty(CSSPropertyID::kBackgroundColor, "green");
-  UpdateAllLifecyclePhases();
-
-  // Old ensured style is not cleared before we re-ensure it.
-  EXPECT_TRUE(inner->NeedsStyleRecalc());
-  EXPECT_EQ(inner_style, inner->GetComputedStyle());
-
-  inner->EnsureComputedStyle();
-
-  // Outer style was not dirty - we still have the same ComputedStyle object.
-  EXPECT_EQ(outer_style, outer->GetComputedStyle());
-  EXPECT_NE(inner_style, inner->GetComputedStyle());
-
-  inner_style = inner->GetComputedStyle();
-  EXPECT_EQ(Color(0, 128, 0), inner_style->VisitedDependentColor(
-                                  GetCSSPropertyBackgroundColor()));
-
-  // Making outer dirty will require that we clear ComputedStyles all the way up
-  // ensuring the style for innermost later because of inheritance.
-  outer->SetInlineStyleProperty(CSSPropertyID::kColor, "green");
-  UpdateAllLifecyclePhases();
-
-  EXPECT_EQ(outer_style, outer->GetComputedStyle());
-  EXPECT_EQ(inner_style, inner->GetComputedStyle());
-  EXPECT_FALSE(innermost->GetComputedStyle());
-
-  auto* innermost_style = innermost->EnsureComputedStyle();
-
-  EXPECT_NE(outer_style, outer->GetComputedStyle());
-  EXPECT_NE(inner_style, inner->GetComputedStyle());
-  ASSERT_TRUE(innermost_style);
-  EXPECT_EQ(Color(0, 128, 0),
-            innermost_style->VisitedDependentColor(GetCSSPropertyColor()));
-}
-
 TEST_F(StyleEngineTest, MoveSlottedOutsideFlatTree) {
   GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <div id="parent">
@@ -3285,35 +3218,6 @@ TEST_F(StyleEngineTest, RemoveStyleRecalcRootFromFlatTree) {
   EXPECT_FALSE(slot->ChildNeedsStyleRecalc());
   EXPECT_FALSE(span->NeedsStyleRecalc());
   EXPECT_FALSE(GetStyleRecalcRoot());
-}
-
-TEST_F(StyleEngineTest, SlottedWithEnsuredStyleOutsideFlatTree) {
-  ScopedGetComputedStyleOutsideFlatTreeForTest scoped_feature(true);
-
-  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
-    <div id="host"><span></span></div>
-  )HTML");
-
-  auto* host = GetDocument().getElementById(AtomicString("host"));
-  auto* span = To<Element>(host->firstChild());
-
-  ShadowRoot& shadow_root =
-      host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
-  shadow_root.SetInnerHTMLWithoutTrustedTypes(R"HTML(
-    <div><slot name="default"></slot></div>
-  )HTML");
-
-  UpdateAllLifecyclePhases();
-
-  // Ensure style outside the flat tree.
-  const ComputedStyle* style = span->EnsureComputedStyle();
-  ASSERT_TRUE(style);
-  EXPECT_TRUE(style->IsEnsuredOutsideFlatTree());
-
-  span->setAttribute(html_names::kSlotAttr, AtomicString("default"));
-  GetDocument().GetSlotAssignmentEngine().RecalcSlotAssignments();
-  EXPECT_EQ(span, GetStyleRecalcRoot());
-  EXPECT_FALSE(span->GetComputedStyle());
 }
 
 TEST_F(StyleEngineTest, ForceReattachRecalcRootAttachShadow) {
@@ -5950,53 +5854,6 @@ TEST_F(StyleEngineTest, CascadeLayersSheetsRemoved) {
 
   // When all sheets are removed, shadow tree ScopedStyleResolver is cleared.
   ASSERT_FALSE(shadow->GetScopedStyleResolver());
-}
-
-TEST_F(StyleEngineTest, NonSlottedStyleDirty) {
-  ScopedGetComputedStyleOutsideFlatTreeForTest scoped_feature(true);
-
-  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes("<div id=host></div>");
-  auto* host = GetDocument().getElementById(AtomicString("host"));
-  ASSERT_TRUE(host);
-  host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
-  UpdateAllLifecyclePhases();
-
-  // Add a child element to a shadow host with no slots. The inserted element is
-  // not marked for style recalc because the GetStyleRecalcParent() returns
-  // nullptr.
-  auto* span = MakeGarbageCollected<HTMLSpanElement>(GetDocument());
-  host->appendChild(span);
-  EXPECT_FALSE(host->ChildNeedsStyleRecalc());
-  EXPECT_FALSE(span->NeedsStyleRecalc());
-
-  UpdateAllLifecyclePhases();
-
-  // Set a style on the inserted child outside the flat tree.
-  // GetStyleRecalcParent() still returns nullptr, and the ComputedStyle of the
-  // child outside the flat tree is still null. No need to mark dirty.
-  span->SetInlineStyleProperty(CSSPropertyID::kColor, "red");
-  EXPECT_FALSE(host->ChildNeedsStyleRecalc());
-  EXPECT_FALSE(span->NeedsStyleRecalc());
-
-  // Ensure the ComputedStyle for the child and then change the style.
-  // GetStyleRecalcParent() is still null, which means the host is not marked
-  // with ChildNeedsStyleRecalc(), but the child needs to be marked dirty to
-  // make sure the next EnsureComputedStyle updates the style to reflect the
-  // changes.
-  const ComputedStyle* old_style = span->EnsureComputedStyle();
-  span->SetInlineStyleProperty(CSSPropertyID::kColor, "green");
-  EXPECT_FALSE(host->ChildNeedsStyleRecalc());
-  EXPECT_TRUE(span->NeedsStyleRecalc());
-  UpdateAllLifecyclePhases();
-
-  EXPECT_EQ(span->GetComputedStyle(), old_style);
-  const ComputedStyle* new_style = span->EnsureComputedStyle();
-  EXPECT_NE(new_style, old_style);
-
-  EXPECT_EQ(Color::FromRGB(255, 0, 0),
-            old_style->VisitedDependentColor(GetCSSPropertyColor()));
-  EXPECT_EQ(Color::FromRGB(0, 128, 0),
-            new_style->VisitedDependentColor(GetCSSPropertyColor()));
 }
 
 TEST_F(StyleEngineTest, CascadeLayerUseCount) {

@@ -1834,11 +1834,6 @@ void StyleResolver::ApplyBaseStyleNoCache(
       state, style_request, match_result, element_type_for_cache);
   ComputedStyleBuilder& builder = state.StyleBuilder();
 
-  if (style_recalc_context.is_ensuring_style &&
-      style_recalc_context.is_outside_flat_tree) {
-    builder.SetIsEnsuredOutsideFlatTree();
-  }
-
   Element* element_if_not_pseudo =
       IsForPseudoElement(*element, style_request) ? nullptr : element;
   if (cache_success.IsHit()) {

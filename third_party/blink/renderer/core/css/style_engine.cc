@@ -4086,23 +4086,6 @@ void StyleEngine::RecalcStyle() {
       {}, StyleRecalcContext::FromAncestors(style_recalc_root_.RootElement()));
 }
 
-void StyleEngine::ClearEnsuredDescendantStyles(Element& root) {
-  Node* current = &root;
-  while (current) {
-    if (auto* element = DynamicTo<Element>(current)) {
-      if (const auto* style = element->GetComputedStyle()) {
-        DCHECK(style->IsEnsuredOutsideFlatTree());
-        element->SetComputedStyle(nullptr);
-        element->ClearNeedsStyleRecalc();
-        element->ClearChildNeedsStyleRecalc();
-        current = FlatTreeTraversal::Next(*current, &root);
-        continue;
-      }
-    }
-    current = FlatTreeTraversal::NextSkippingChildren(*current, &root);
-  }
-}
-
 void StyleEngine::RebuildLayoutTreeForTraversalRootAncestors(
     Element* parent,
     Element* container_parent) {

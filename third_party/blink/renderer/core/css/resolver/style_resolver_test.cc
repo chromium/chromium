@@ -676,12 +676,7 @@ TEST_F(StyleResolverTest, BackgroundImageFetch) {
   EXPECT_FALSE(GetBackgroundImageValue(inside_contents).IsCachePending())
       << "Fetch for image inherited from display:contents";
 
-  if (RuntimeEnabledFeatures::GetComputedStyleOutsideFlatTreeEnabled()) {
-    EXPECT_TRUE(GetBackgroundImageValue(non_slotted).IsCachePending())
-        << "No fetch for element outside the flat tree";
-  } else {
-    ASSERT_EQ(non_slotted->GetComputedStyle(), nullptr);
-  }
+  EXPECT_EQ(non_slotted->GetComputedStyle(), nullptr);
 
   // Added two frameset elements to hit the MatchedPropertiesCache for the
   // second one. Frameset adjusts style to display:block in StyleAdjuster, but
@@ -1179,114 +1174,6 @@ TEST_F(StyleResolverTestCQ, CascadedValuesForPseudoElementInContainer) {
   CSSPropertyName top(CSSPropertyID::kTop);
   ASSERT_TRUE(map.at(top));
   EXPECT_EQ("1em", map.at(top)->CssText());
-}
-
-TEST_F(StyleResolverTest, EnsureComputedStyleSlotFallback) {
-  ScopedGetComputedStyleOutsideFlatTreeForTest scoped_feature(true);
-
-  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
-    <div id="host"><span></span></div>
-  )HTML");
-
-  ShadowRoot& shadow_root =
-      GetDocument()
-          .getElementById(AtomicString("host"))
-          ->AttachShadowRootForTesting(ShadowRootMode::kOpen);
-  shadow_root.SetInnerHTMLWithoutTrustedTypes(R"HTML(
-    <style>
-      slot { color: red }
-    </style>
-    <slot><span id="fallback"></span></slot>
-  )HTML");
-  Element* fallback = shadow_root.getElementById(AtomicString("fallback"));
-  ASSERT_TRUE(fallback);
-
-  UpdateAllLifecyclePhasesForTest();
-
-  // Elements outside the flat tree does not get styles computed during the
-  // lifecycle update.
-  EXPECT_FALSE(fallback->GetComputedStyle());
-
-  // We are currently allowed to query the computed style of elements outside
-  // the flat tree, but slot fallback does not inherit from the slot.
-  const ComputedStyle* fallback_style = fallback->EnsureComputedStyle();
-  ASSERT_TRUE(fallback_style);
-  EXPECT_EQ(Color::kBlack,
-            fallback_style->VisitedDependentColor(GetCSSPropertyColor()));
-}
-
-TEST_F(StyleResolverTest, EnsureComputedStyleOutsideFlatTree) {
-  ScopedGetComputedStyleOutsideFlatTreeForTest scoped_feature(true);
-
-  GetDocument().documentElement()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
-    <div id=host>
-      <template shadowrootmode=open>
-      </template>
-      <div id=a>
-        <div id=b>
-          <div id=c>
-            <div id=d>
-              <div id=e>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  )HTML");
-  UpdateAllLifecyclePhasesForTest();
-
-  Element* host = GetElementById("host");
-  ASSERT_TRUE(host);
-  ASSERT_TRUE(host->GetShadowRoot());
-
-  Element* a = GetElementById("a");
-  Element* b = GetElementById("b");
-  Element* c = GetElementById("c");
-  Element* d = GetElementById("d");
-  Element* e = GetElementById("e");
-  ASSERT_TRUE(a);
-  ASSERT_TRUE(b);
-  ASSERT_TRUE(c);
-  ASSERT_TRUE(d);
-  ASSERT_TRUE(e);
-
-  EXPECT_FALSE(a->GetComputedStyle());
-  EXPECT_FALSE(b->GetComputedStyle());
-  EXPECT_FALSE(c->GetComputedStyle());
-  EXPECT_FALSE(d->GetComputedStyle());
-  EXPECT_FALSE(e->GetComputedStyle());
-
-  c->EnsureComputedStyle();
-
-  const ComputedStyle* a_style = a->GetComputedStyle();
-  const ComputedStyle* b_style = b->GetComputedStyle();
-  const ComputedStyle* c_style = c->GetComputedStyle();
-
-  ASSERT_TRUE(a_style);
-  ASSERT_TRUE(b_style);
-  ASSERT_TRUE(c_style);
-  EXPECT_FALSE(d->GetComputedStyle());
-  EXPECT_FALSE(e->GetComputedStyle());
-
-  // Dirty style of #a.
-  a->SetInlineStyleProperty(CSSPropertyID::kZIndex, "42");
-
-  // Note that there is no call to UpdateAllLifecyclePhasesForTest here,
-  // because #a is outside the flat tree, hence that process would anyway not
-  // reach #a.
-
-  // Ensuring the style of some deep descendant must discover that some ancestor
-  // is marked for recalc.
-  e->EnsureComputedStyle();
-  EXPECT_TRUE(a->GetComputedStyle());
-  EXPECT_TRUE(b->GetComputedStyle());
-  EXPECT_TRUE(c->GetComputedStyle());
-  EXPECT_TRUE(d->GetComputedStyle());
-  EXPECT_TRUE(e->GetComputedStyle());
-  EXPECT_NE(a_style, a->GetComputedStyle());
-  EXPECT_NE(b_style, b->GetComputedStyle());
-  EXPECT_NE(c_style, c->GetComputedStyle());
 }
 
 TEST_F(StyleResolverTest, EnsureComputedStyleForExistingScrollMarkerGroup) {

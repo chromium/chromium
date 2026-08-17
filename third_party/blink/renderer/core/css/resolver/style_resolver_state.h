@@ -216,10 +216,6 @@ class CORE_EXPORT StyleResolverState {
     return originating_element_style_;
   }
   bool IsForHighlight() const { return is_for_highlight_; }
-  // See StyleRecalcContext::is_outside_flat_tree.
-  bool IsOutsideFlatTree() const {
-    return style_recalc_context_ && style_recalc_context_->is_outside_flat_tree;
-  }
 
   bool CanTriggerAnimations() const { return can_trigger_animations_; }
 

@@ -3335,10 +3335,6 @@
       },
     },
     {
-      // https://crbug.com/40571175
-      name: "GetComputedStyleOutsideFlatTree",
-    },
-    {
       name: "GetDisplayMedia",
       public: true,
       status: {

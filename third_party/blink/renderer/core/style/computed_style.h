@@ -353,9 +353,6 @@ class ComputedStyle final : public ComputedStyleBase {
     if (!style) {
       return nullptr;
     }
-    if (style->IsEnsuredOutsideFlatTree()) {
-      return nullptr;
-    }
     if (style->IsEnsuredInDisplayNone()) {
       return nullptr;
     }

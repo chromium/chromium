@@ -179,10 +179,6 @@ const ComputedStyle* CSSComputedStyleDeclaration::ComputeComputedStyle() const {
   const ComputedStyle* style = styled_element->EnsureComputedStyle(
       (styled_element == element_) ? pseudo_element_specifier_ : kPseudoIdNone,
       pseudo_argument_);
-  if (style && style->IsEnsuredOutsideFlatTree()) {
-    UseCounter::Count(element_->GetDocument(),
-                      WebFeature::kGetComputedStyleOutsideFlatTree);
-  }
   return style;
 }
 

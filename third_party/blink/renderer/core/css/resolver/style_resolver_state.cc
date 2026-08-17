@@ -280,8 +280,7 @@ void StyleResolverState::SetLayoutParentStyle(
 
 void StyleResolverState::LoadPendingResources() {
   if (pseudo_request_type_ == StyleRequest::kForComputedStyle ||
-      (ParentStyle() && ParentStyle()->IsEnsuredInDisplayNone()) ||
-      StyleBuilder().IsEnsuredOutsideFlatTree()) {
+      (ParentStyle() && ParentStyle()->IsEnsuredInDisplayNone())) {
     return;
   }
   if (StyleBuilder().Display() == EDisplay::kNone && GetStyledElement() &&

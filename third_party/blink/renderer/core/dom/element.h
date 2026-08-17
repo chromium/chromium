@@ -2404,8 +2404,6 @@ class CORE_EXPORT Element : public ContainerNode {
                                    const StyleRecalcChange& child_change,
                                    const StyleRecalcContext&);
 
-  void MarkNonSlottedHostChildrenForStyleRecalc();
-
   void RebuildPseudoElementLayoutTree(PseudoId, WhitespaceAttacher&);
   void RebuildColumnLayoutTrees(WhitespaceAttacher&);
   void RebuildFirstLetterLayoutTree();

@@ -154,54 +154,6 @@ TEST_F(MatchedPropertiesCacheTest, EnsuredInDisplayNone) {
   EXPECT_TRUE(cache.Find(key1, style, *ensured_parent));
 }
 
-TEST_F(MatchedPropertiesCacheTest, EnsuredOutsideFlatTree) {
-  TestCache cache(GetDocument());
-
-  const auto& style = InitialStyle();
-  const auto& parent = InitialStyle();
-  auto builder = CreateStyleBuilder();
-  builder.SetIsEnsuredOutsideFlatTree();
-  const auto* ensured_style = builder.TakeStyle();
-
-  TestKey key1("display:block", 1, GetDocument());
-  StyleRecalcContext context;
-  context.is_outside_flat_tree = true;
-
-  cache.Add(key1, *ensured_style, parent);
-  EXPECT_FALSE(cache.Find(key1, style, parent));
-  EXPECT_TRUE(cache.Find(key1, *ensured_style, parent, nullptr, &context));
-
-  cache.Add(key1, style, parent);
-  EXPECT_TRUE(cache.Find(key1, style, parent));
-  EXPECT_TRUE(cache.Find(key1, *ensured_style, parent, nullptr, &context));
-}
-
-TEST_F(MatchedPropertiesCacheTest, EnsuredOutsideFlatTreeAndDisplayNone) {
-  TestCache cache(GetDocument());
-
-  const auto& parent = InitialStyle();
-  const auto& style = InitialStyle();
-
-  auto builder = CreateStyleBuilder();
-  builder.SetIsEnsuredInDisplayNone();
-  const auto* parent_none = builder.TakeStyle();
-
-  builder = CreateStyleBuilder();
-  builder.SetIsEnsuredOutsideFlatTree();
-  const auto* style_flat = builder.TakeStyle();
-
-  StyleRecalcContext context;
-  context.is_outside_flat_tree = true;
-
-  TestKey key1("display:block", 1, GetDocument());
-
-  cache.Add(key1, style, *parent_none);
-  EXPECT_TRUE(cache.Find(key1, *style_flat, parent, nullptr, &context));
-
-  cache.Add(key1, *style_flat, parent);
-  EXPECT_TRUE(cache.Find(key1, style, *parent_none, nullptr, &context));
-}
-
 TEST_F(MatchedPropertiesCacheTest, WritingModeDependency) {
   TestCache cache(GetDocument());
 

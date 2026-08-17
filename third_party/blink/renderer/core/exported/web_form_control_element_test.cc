@@ -678,47 +678,6 @@ TEST_F(WebFormControlElementTest,
   EXPECT_TRUE(input.SuggestedValue().IsEmpty());
 }
 
-TEST_F(
-    WebFormControlElementTest,
-    TextControlPreviewDisabledWhenSlottedIntoCanvasAfterStyleEnsuredOutsideFlatTree) {
-  ScopedCanvasDrawElementForTest forced_canvas_draw_element_feature(true);
-  ScopedGetComputedStyleOutsideFlatTreeForTest scoped_feature(true);
-
-  GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"(
-    <div>
-      <template shadowrootmode="open">
-        <canvas layoutsubtree>
-          <div id="slotHost">
-            <slot name="slot1"></slot>
-          </div>
-        </canvas>
-      </template>
-      <input id="input" slot="unslotted">
-    </div>
-  )");
-
-  HTMLInputElement* input =
-      DynamicTo<HTMLInputElement>(GetElementById("input"));
-  ASSERT_TRUE(input);
-
-  GetDocument().UpdateStyleAndLayoutTree();
-
-  // Ensure computed style outside the flat tree before assigning to a slot.
-  input->EnsureComputedStyle();
-
-  WebFormControlElement form_control(input);
-  form_control.SetSuggestedValue("suggestion");
-  EXPECT_EQ(input->SuggestedValue().Ascii(), "suggestion");
-
-  // Now slot 'input' into the canvas slot inside the shadow root.
-  input->setAttribute(html_names::kSlotAttr, AtomicString("slot1"));
-  GetDocument().UpdateStyleAndLayoutTree();
-
-  EXPECT_TRUE(input->IsInCanvasSubtree());
-  EXPECT_TRUE(input->IsCanvasOrInCanvasSubtree());
-  EXPECT_TRUE(form_control.SuggestedValue().IsEmpty());
-}
-
 TEST_F(WebFormControlElementTest,
        TextControlCanvasSubtreeStaleWhenUnslottedFromCanvas) {
   ScopedCanvasDrawElementForTest forced_canvas_draw_element_feature(true);
