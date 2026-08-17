@@ -160,7 +160,6 @@ scoped_refptr<gpu::SharedContextState> GetOrCreateSharedContextState(
     bool enable_vulkan,
     gl::GLSurface* gl_surface,
     GLSurfaceContextPair real_context) {
-  CHECK(!enable_vulkan);
   static base::NoDestructor<base::WeakPtr<gpu::SharedContextState>>
       cached_shared_context_state;
 
@@ -174,13 +173,18 @@ scoped_refptr<gpu::SharedContextState> GetOrCreateSharedContextState(
         shared_context_state->gr_context_type(),
         GpuServiceWebView::GetInstance()->gpu_preferences().gr_context_type);
     CHECK(!shared_context_state->use_virtualized_gl_contexts());
-    gl::GLDisplayEGL* display = gl::GLSurfaceEGL::GetGLDisplayEGL();
-    const bool is_angle =
-        !enable_vulkan &&
-        display->ext->b_EGL_ANGLE_external_context_and_surface;
-    CHECK(shared_context_state->feature_info());
-    CHECK_EQ(shared_context_state->feature_info()->gl_version_info().is_angle,
-             is_angle);
+    if (enable_vulkan) {
+      CHECK_EQ(shared_context_state->vk_context_provider(),
+               vulkan_context_provider);
+    } else {
+      gl::GLDisplayEGL* display = gl::GLSurfaceEGL::GetGLDisplayEGL();
+      const bool is_angle =
+          !enable_vulkan &&
+          display->ext->b_EGL_ANGLE_external_context_and_surface;
+      CHECK(shared_context_state->feature_info());
+      CHECK_EQ(shared_context_state->feature_info()->gl_version_info().is_angle,
+               is_angle);
+    }
     return base::WrapRefCounted(shared_context_state);
   }
 
@@ -191,9 +195,16 @@ scoped_refptr<gpu::SharedContextState> GetOrCreateSharedContextState(
   const bool is_angle =
       !enable_vulkan && display->ext->b_EGL_ANGLE_external_context_and_surface;
 
-  // SharedContextState only uses this as a default anchor surface, so
-  // a basic AwGLSurface is sufficient instead of AwGLSurfaceExternalStencil.
-  dummy_surface = base::MakeRefCounted<AwGLSurface>(display, is_angle);
+  if (enable_vulkan) {
+    if (real_context.first) {
+      dummy_surface =
+          base::MakeRefCounted<AwGLSurface>(display, real_context.first);
+    }
+  } else {
+    // SharedContextState only uses this as a default anchor surface, so
+    // a basic AwGLSurface is sufficient instead of AwGLSurfaceExternalStencil.
+    dummy_surface = base::MakeRefCounted<AwGLSurface>(display, is_angle);
+  }
 
   if (dummy_surface) {
     dummy_surface->Initialize(gl::GLSurfaceFormat());
@@ -278,14 +289,8 @@ void OutputSurfaceProviderWebView::InitializeContext() {
   bool result = gl_surface_->Initialize(gl::GLSurfaceFormat());
   DCHECK(result);
 
-  // Single SharedContextState is currently disabled for Vulkan for now because
-  // Android WebView's secondary command buffer rendering model binds
-  // per-WebView frame draw targets directly to individual
-  // AwVulkanContextProvider wrapper instances. Sharing a single
-  // SharedContextState across WebViews in Vulkan mode would cause secondary
-  // command buffer draw contexts to route to the wrong WebView.
-  if (!enable_vulkan_ && base::FeatureList::IsEnabled(
-                             features::kWebViewSingleSharedContextState)) {
+  if (base::FeatureList::IsEnabled(
+          features::kWebViewSingleSharedContextState)) {
     shared_context_state_ = GetOrCreateSharedContextState(
         vulkan_context_provider_, aw_gr_context_options_provider_.get(),
         enable_vulkan_, gl_surface_.get(), std::move(real_context));

@@ -7,11 +7,13 @@
 #include <algorithm>
 #include <utility>
 
+#include "android_webview/common/aw_features.h"
 #include "android_webview/common/gfx/aw_gr_context_options_provider.h"
 #include "android_webview/public/browser/draw_fn.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -36,6 +38,8 @@ namespace android_webview {
 AwVulkanContextProvider::Globals* AwVulkanContextProvider::g_globals = nullptr;
 
 namespace {
+
+AwVulkanContextProvider* g_shared_provider = nullptr;
 
 bool InitVulkanForWebView(VkInstance instance,
                           VkPhysicalDevice physical_device,
@@ -182,7 +186,24 @@ bool AwVulkanContextProvider::Globals::Initialize(
 // static
 scoped_refptr<AwVulkanContextProvider> AwVulkanContextProvider::Create(
     AwDrawFn_InitVkParams* params) {
+  if (base::FeatureList::IsEnabled(
+          features::kWebViewSingleSharedContextState)) {
+    if (g_shared_provider) {
+      CHECK_EQ(params->device,
+               g_shared_provider->GetDeviceQueue()->GetVulkanDevice());
+      CHECK_EQ(params->queue,
+               g_shared_provider->GetDeviceQueue()->GetVulkanQueue());
+      return base::WrapRefCounted(g_shared_provider);
+    }
+  }
+
   auto provider = base::WrapRefCounted(new AwVulkanContextProvider);
+  if (base::FeatureList::IsEnabled(
+          features::kWebViewSingleSharedContextState)) {
+    CHECK(!g_shared_provider);
+    g_shared_provider = provider.get();
+  }
+
   if (!provider->Initialize(params))
     return nullptr;
 
@@ -219,6 +240,11 @@ AwVulkanContextProvider::AwVulkanContextProvider() = default;
 
 AwVulkanContextProvider::~AwVulkanContextProvider() {
   CHECK(!active_draw_state_);
+  if (base::FeatureList::IsEnabled(
+          features::kWebViewSingleSharedContextState)) {
+    CHECK_EQ(g_shared_provider, this);
+    g_shared_provider = nullptr;
+  }
 }
 
 gpu::VulkanImplementation* AwVulkanContextProvider::GetVulkanImplementation() {
