@@ -336,7 +336,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [self deleteItems:[NSArray arrayWithObject:indexPath]];
 
   // Inform the command handler.
-  [self.commandHandler removeLanguage:languageItem.languageCode];
+  [self.commandHandler removeLanguage:languageItem.languageTag];
 }
 
 - (BOOL)tableView:(UITableView*)tableView
@@ -367,7 +367,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   // Inform the command handler.
   BOOL downward = sourceIndexPath.row < destinationIndexPath.row;
   NSUInteger offset = abs(sourceIndexPath.row - destinationIndexPath.row);
-  [self.commandHandler moveLanguage:languageItem.languageCode
+  [self.commandHandler moveLanguage:languageItem.languageTag
                            downward:downward
                          withOffset:offset];
 }
@@ -376,9 +376,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (void)addLanguageTableViewController:
             (AddLanguageTableViewController*)tableViewController
-                 didSelectLanguageCode:(const std::string&)languageCode {
+                  didSelectLanguageTag:(base::i18n::LanguageTag)languageTag {
   // Inform the command handler.
-  [self.commandHandler addLanguage:languageCode];
+  [self.commandHandler addLanguage:languageTag];
 
   // Update the model and the table view.
   [self updateLanguagesSection];
@@ -392,12 +392,13 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (void)languageDetailsTableViewController:
             (LanguageDetailsTableViewController*)tableViewController
                    didSelectOfferTranslate:(BOOL)offerTranslate
-                              languageCode:(const std::string&)languageCode {
+                               languageTag:
+                                   (base::i18n::LanguageTag)languageTag {
   // Inform the command handler.
   if (offerTranslate) {
-    [self.commandHandler unblockLanguage:languageCode];
+    [self.commandHandler unblockLanguage:languageTag];
   } else {
-    [self.commandHandler blockLanguage:languageCode];
+    [self.commandHandler blockLanguage:languageTag];
   }
 
   // Update the model and the table view.

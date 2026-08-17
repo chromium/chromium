@@ -11,6 +11,7 @@
 
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
+#include "base/i18n/language_tag.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_util.h"
@@ -237,8 +238,12 @@ TEST_F(LanguageSettingsPrivateApiTest, SetTranslateTargetLanguageTest) {
   std::unique_ptr<translate::TranslatePrefs> translate_prefs_ =
       ChromeTranslateClient::CreateTranslatePrefs(profile()->GetPrefs());
 
+  std::vector<base::i18n::LanguageTag> content_languages_tags =
+      translate_prefs_->GetLanguageList();
   std::vector<std::string> content_languages_before;
-  translate_prefs_->GetLanguageList(&content_languages_before);
+  for (const auto& tag : content_languages_tags) {
+    content_languages_before.push_back(std::string(tag.tag_string()));
+  }
 
 #if BUILDFLAG(IS_CHROMEOS)
   ASSERT_EQ(std::vector<std::string>({"en-US"}), content_languages_before);

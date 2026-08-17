@@ -30,8 +30,8 @@ namespace translate {
 namespace {
 
 using ::base::i18n::GetKnownLanguageTag;
+using ::base::i18n::GetLanguageTagFromString;
 using ::base::i18n::LanguageTag;
-using ::base::i18n::LanguageTagConverter;
 
 constexpr auto kBosnianCroatian = base::MakeFixedFlatSet<LanguageTag>(
     {GetKnownLanguageTag("bs"), GetKnownLanguageTag("hr")});
@@ -39,10 +39,8 @@ constexpr auto kHindiNepali = base::MakeFixedFlatSet<LanguageTag>(
     {GetKnownLanguageTag("hi"), GetKnownLanguageTag("ne")});
 
 bool IsSameOrSimilarLanguages(std::string_view lhs, std::string_view rhs) {
-  std::optional<LanguageTag> first_lang =
-      LanguageTagConverter::GetInstance().FromString(lhs);
-  std::optional<LanguageTag> second_lang =
-      LanguageTagConverter::GetInstance().FromString(rhs);
+  std::optional<LanguageTag> first_lang = GetLanguageTagFromString(lhs);
+  std::optional<LanguageTag> second_lang = GetLanguageTagFromString(rhs);
   if (!first_lang || !second_lang) {
     return false;
   }
@@ -72,14 +70,13 @@ std::optional<LanguageTag> GetHTMLOrHTTPContentLanguage(
     std::string_view content_lang,
     std::string_view html_lang) {
   // Check if html lang attribute is valid.
-  std::optional<LanguageTag> html_lang_tag = GetTranslateLanguage(
-      LanguageTagConverter::GetInstance().FromString(html_lang));
+  std::optional<LanguageTag> html_lang_tag =
+      GetTranslateLanguage(GetLanguageTagFromString(html_lang));
   if (html_lang_tag) {
     return *html_lang_tag;
   }
 
-  return GetTranslateLanguage(
-      LanguageTagConverter::GetInstance().FromString(content_lang));
+  return GetTranslateLanguage(GetLanguageTagFromString(content_lang));
 }
 
 // Checks if the model can complement a sub code when the page language doesn't
@@ -130,7 +127,7 @@ std::optional<LanguageTag> FilterDetectedLanguage(
   }
   // The detection is reliable and none of the cases that are not handled by the
   // language detection model.
-  return LanguageTagConverter::GetInstance().FromString(detected_language);
+  return GetLanguageTagFromString(detected_language);
 }
 
 // Returns the ISO 639 language code of the specified |utf8_text|, or 'unknown'

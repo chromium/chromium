@@ -8,6 +8,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/files/file_path.h"
+#import "base/i18n/language_tag.h"
 #import "base/task/single_thread_task_runner.h"
 #import "base/test/task_environment.h"
 #import "components/language/core/browser/language_prefs.h"
@@ -32,8 +33,8 @@ using user_prefs::PrefRegistrySyncable;
 namespace {
 
 const char kBlockedSite[] = "http://blockedsite.com";
-const char kLanguage1[] = "af";
-const char kLanguage2[] = "fr";
+constexpr char kLanguage1[] = "af";
+constexpr char kLanguage2[] = "fr";
 
 class TranslateTableViewControllerTest
     : public LegacyChromeTableViewControllerTest {
@@ -101,7 +102,8 @@ TEST_F(TranslateTableViewControllerTest, TestClearPreferences) {
       ChromeIOSTranslateClient::CreateTranslatePrefs(pref_service_.get()));
   translate_prefs->AddSiteToNeverPromptList(kBlockedSite);
   ASSERT_TRUE(translate_prefs->IsSiteOnNeverPromptList(kBlockedSite));
-  translate_prefs->AddToLanguageList(kLanguage1, /*force_blocked=*/true);
+  translate_prefs->AddToLanguageList(
+      base::i18n::GetKnownLanguageTag(kLanguage1), /*force_blocked=*/true);
   ASSERT_TRUE(translate_prefs->IsBlockedLanguage(kLanguage1));
   translate_prefs->AddLanguagePairToAlwaysTranslateList(kLanguage1, kLanguage2);
   ASSERT_TRUE(translate_prefs->IsLanguagePairOnAlwaysTranslateList(kLanguage1,

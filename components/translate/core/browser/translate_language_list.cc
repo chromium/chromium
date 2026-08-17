@@ -41,8 +41,8 @@ namespace translate {
 namespace {
 
 using ::base::i18n::GetKnownLanguageTag;
+using ::base::i18n::GetLanguageTagFromString;
 using ::base::i18n::LanguageTag;
-using ::base::i18n::LanguageTagConverter;
 
 // The default list of languages the Partial Translation service supports.
 // This list must be sorted in alphabetical order and contain no duplicates.
@@ -242,12 +242,15 @@ std::string TranslateLanguageList::GetLanguageCode(std::string_view language) {
   if (IsSupportedLanguage(language)) {
     return std::string(language);
   }
-  return std::string(language::ExtractBaseLanguage(language));
+  std::optional<LanguageTag> parsed = GetLanguageTagFromString(language);
+  if (parsed) {
+    return std::string(parsed->language_subtag());
+  }
+  return std::string(language);
 }
 
 bool TranslateLanguageList::IsSupportedLanguage(std::string_view language) {
-  std::optional<LanguageTag> tag =
-      LanguageTagConverter::GetInstance().FromString(language);
+  std::optional<LanguageTag> tag = GetLanguageTagFromString(language);
   if (!tag) {
     return false;
   }
@@ -257,8 +260,7 @@ bool TranslateLanguageList::IsSupportedLanguage(std::string_view language) {
 // static
 bool TranslateLanguageList::IsSupportedPartialTranslateLanguage(
     std::string_view language) {
-  std::optional<LanguageTag> tag =
-      LanguageTagConverter::GetInstance().FromString(language);
+  std::optional<LanguageTag> tag = GetLanguageTagFromString(language);
   if (!tag) {
     return false;
   }
@@ -389,7 +391,7 @@ bool TranslateLanguageList::SetSupportedLanguages(
       continue;
     }
     if (std::optional<LanguageTag> language_tag =
-            LanguageTagConverter::GetInstance().FromString(lang);
+            GetLanguageTagFromString(lang);
         language_tag) {
       supported_languages_from_service.emplace_back(*language_tag);
     }

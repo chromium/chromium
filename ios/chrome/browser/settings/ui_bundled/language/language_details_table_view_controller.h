@@ -5,8 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_LANGUAGE_LANGUAGE_DETAILS_TABLE_VIEW_CONTROLLER_H_
 #define IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_LANGUAGE_LANGUAGE_DETAILS_TABLE_VIEW_CONTROLLER_H_
 
-#include <string>
-
+#include "base/i18n/language_tag.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_controller_protocol.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_root_table_view_controller.h"
 
@@ -18,11 +17,11 @@
 @protocol LanguageDetailsTableViewControllerDelegate
 
 // Informs the delegate that user selected whether or not to offer Translate for
-// `languageCode`.
+// `languageTag`.
 - (void)languageDetailsTableViewController:
             (LanguageDetailsTableViewController*)tableViewController
                    didSelectOfferTranslate:(BOOL)offerTranslate
-                              languageCode:(const std::string&)languageCode;
+                               languageTag:(base::i18n::LanguageTag)languageTag;
 
 @end
 

@@ -681,10 +681,9 @@ std::string TranslateManager::GetTargetLanguage(
   }
 
   // Get the first supported language on the Accept Languages list.
-  std::vector<std::string> accept_languages_list;
-  prefs->GetLanguageList(&accept_languages_list);
-  for (const auto& lang : accept_languages_list) {
-    std::string lang_code = TranslateDownloadManager::GetLanguageCode(lang);
+  for (const auto& lang : prefs->GetLanguageList()) {
+    std::string lang_code =
+        TranslateDownloadManager::GetLanguageCode(lang.tag_string());
     if (TranslateDownloadManager::IsSupportedLanguage(lang_code)) {
       target_language_origin =
           TranslateBrowserMetrics::TargetLanguageOrigin::kAcceptLanguages;
@@ -795,8 +794,7 @@ bool TranslateManager::ShouldSuppressBubbleUI(
 void TranslateManager::AddTargetLanguageToAcceptLanguages(
     std::string_view target_language_code) {
   auto prefs = translate_client_->GetTranslatePrefs();
-  std::vector<std::string> languages;
-  prefs->GetLanguageList(&languages);
+  std::vector<base::i18n::LanguageTag> languages = prefs->GetLanguageList();
 
   std::string_view target_language, tail;
   // |target_language_code| should satisfy BCP47 and consist of a language code
@@ -808,13 +806,15 @@ void TranslateManager::AddTargetLanguageToAcceptLanguages(
   // list.
   if (tail.empty()) {
     for (const auto& language : languages) {
-      if (language::ExtractBaseLanguage(language) == target_language)
+      if (language.language_subtag() == target_language) {
         return;
+      }
     }
   } else {
     for (const auto& language : languages) {
-      if (language == target_language_code)
+      if (language.tag_string() == target_language_code) {
         return;
+      }
     }
   }
 
@@ -822,7 +822,10 @@ void TranslateManager::AddTargetLanguageToAcceptLanguages(
   // translation happens because of an hrefTranslate navigation).
   if (language_state_.AutoTranslateTo() != target_language_code &&
       language_state_.href_translate() != target_language_code) {
-    prefs->AddToLanguageList(target_language_code, /*force_blocked=*/false);
+    if (std::optional<LanguageTag> parsed_tag =
+            GetLanguageTagFromString(target_language_code)) {
+      prefs->AddToLanguageList(*parsed_tag, /*force_blocked=*/false);
+    }
   }
 }
 

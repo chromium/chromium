@@ -130,12 +130,13 @@
   }
 
   // Get the accept languages.
-  std::vector<std::string> languageCodes;
-  _translatePrefs->GetLanguageList(&languageCodes);
+  std::vector<base::i18n::LanguageTag> languageTags =
+      _translatePrefs->GetLanguageList();
 
   NSMutableArray<LanguageItem*>* acceptLanguages =
-      [NSMutableArray arrayWithCapacity:languageCodes.size()];
-  for (const auto& languageCode : languageCodes) {
+      [NSMutableArray arrayWithCapacity:languageTags.size()];
+  for (const auto& languageTag : languageTags) {
+    std::string languageCode(languageTag.tag_string());
     // Ignore unsupported languages.
     auto it = supportedLanguagesMap.find(languageCode);
     if (it == supportedLanguagesMap.end()) {
@@ -154,12 +155,10 @@
     // format while the Translate target language has the Translate server
     // format. To convert the former to the latter,
     // `GetTranslateLanguageMatcher()` is used.
-    std::string canonicalLanguageCode = std::string(
-        translate::GetTranslateLanguageMatcher()
-            .MatchOrDefault(
-                base::i18n::GetLanguageTagFromString(languageItem.languageCode)
-                    .value_or(base::i18n::GetKnownLanguageTag("und")))
-            .tag_string());
+    std::string canonicalLanguageCode =
+        std::string(translate::GetTranslateLanguageMatcher()
+                        .MatchOrDefault(languageItem.languageTag)
+                        .tag_string());
     std::string targetLanguageCode = TranslateServiceIOS::GetTargetLanguage(
         self.prefService, self.languageModelManager->GetPrimaryModel());
     languageItem.targetLanguage = targetLanguageCode == canonicalLanguageCode;
@@ -169,7 +168,7 @@
     // Translate target language.
     languageItem.blocked =
         !languageItem.supportsTranslate ||
-        _translatePrefs->IsBlockedLanguage(languageItem.languageCode) ||
+        _translatePrefs->IsBlockedLanguage(languageTag.tag_string()) ||
         [languageItem isTargetLanguage];
 
     if ([self translateEnabled]) {
@@ -191,8 +190,8 @@
 
 - (NSArray<LanguageItem*>*)supportedLanguagesItems {
   // Get the accept languages.
-  std::vector<std::string> acceptLanguageCodes;
-  _translatePrefs->GetLanguageList(&acceptLanguageCodes);
+  std::vector<base::i18n::LanguageTag> acceptLanguageTags =
+      _translatePrefs->GetLanguageList();
 
   // Get the supported languages.
   std::vector<translate::TranslateLanguageInfo> languages;
@@ -204,7 +203,10 @@
       [NSMutableArray arrayWithCapacity:languages.size()];
   for (const auto& language : languages) {
     // Ignore languages already in the accept languages list.
-    if (std::ranges::contains(acceptLanguageCodes, language.code)) {
+    std::optional<base::i18n::LanguageTag> languageTag =
+        base::i18n::GetLanguageTagFromString(language.code);
+    if (languageTag &&
+        std::ranges::contains(acceptLanguageTags, *languageTag)) {
       continue;
     }
     LanguageItem* languageItem = [self languageItemFromLanguage:language];
@@ -243,45 +245,50 @@
               : LanguageSettingsActions::DISABLE_TRANSLATE_GLOBALLY);
 }
 
-- (void)moveLanguage:(const std::string&)languageCode
+- (void)moveLanguage:(base::i18n::LanguageTag)languageTag
             downward:(BOOL)downward
           withOffset:(NSUInteger)offset {
   translate::TranslatePrefs::RearrangeSpecifier where =
       downward ? translate::TranslatePrefs::kDown
                : translate::TranslatePrefs::kUp;
+  std::vector<base::i18n::LanguageTag> languageTags =
+      _translatePrefs->GetLanguageList();
   std::vector<std::string> languageCodes;
-  _translatePrefs->GetLanguageList(&languageCodes);
-  _translatePrefs->RearrangeLanguage(languageCode, where, offset,
-                                     languageCodes);
+  languageCodes.reserve(languageTags.size());
+  for (const auto& tag : languageTags) {
+    languageCodes.push_back(std::string(tag.tag_string()));
+  }
+  _translatePrefs->RearrangeLanguage(std::string(languageTag.tag_string()),
+                                     where, offset, languageCodes);
 
   UMA_HISTOGRAM_ENUMERATION(kLanguageSettingsActionsHistogram,
                             LanguageSettingsActions::LANGUAGE_LIST_REORDERED);
 }
 
-- (void)addLanguage:(const std::string&)languageCode {
-  _translatePrefs->AddToLanguageList(languageCode, /*force_blocked=*/false);
+- (void)addLanguage:(base::i18n::LanguageTag)languageTag {
+  _translatePrefs->AddToLanguageList(languageTag, /*force_blocked=*/false);
 
   UMA_HISTOGRAM_ENUMERATION(kLanguageSettingsActionsHistogram,
                             LanguageSettingsActions::LANGUAGE_ADDED);
 }
 
-- (void)removeLanguage:(const std::string&)languageCode {
-  _translatePrefs->RemoveFromLanguageList(languageCode);
+- (void)removeLanguage:(base::i18n::LanguageTag)languageTag {
+  _translatePrefs->RemoveFromLanguageList(languageTag);
 
   UMA_HISTOGRAM_ENUMERATION(kLanguageSettingsActionsHistogram,
                             LanguageSettingsActions::LANGUAGE_REMOVED);
 }
 
-- (void)blockLanguage:(const std::string&)languageCode {
-  _translatePrefs->BlockLanguage(languageCode);
+- (void)blockLanguage:(base::i18n::LanguageTag)languageTag {
+  _translatePrefs->BlockLanguage(languageTag.tag_string());
 
   UMA_HISTOGRAM_ENUMERATION(
       kLanguageSettingsActionsHistogram,
       LanguageSettingsActions::DISABLE_TRANSLATE_FOR_SINGLE_LANGUAGE);
 }
 
-- (void)unblockLanguage:(const std::string&)languageCode {
-  _translatePrefs->UnblockLanguage(languageCode);
+- (void)unblockLanguage:(base::i18n::LanguageTag)languageTag {
+  _translatePrefs->UnblockLanguage(languageTag.tag_string());
 
   UMA_HISTOGRAM_ENUMERATION(
       kLanguageSettingsActionsHistogram,
@@ -293,7 +300,9 @@
 - (LanguageItem*)languageItemFromLanguage:
     (const translate::TranslateLanguageInfo&)language {
   LanguageItem* languageItem = [[LanguageItem alloc] init];
-  languageItem.languageCode = language.code;
+  languageItem.languageTag =
+      base::i18n::GetLanguageTagFromString(language.code)
+          .value_or(base::i18n::GetKnownLanguageTag("und"));
   languageItem.text = base::SysUTF8ToNSString(language.display_name);
   languageItem.leadingDetailText =
       base::SysUTF8ToNSString(language.native_display_name);

@@ -349,9 +349,14 @@ JNI_TranslateBridge_GetUserAcceptLanguages(JNIEnv* env,
   std::unique_ptr<translate::TranslatePrefs> translate_prefs =
       ChromeTranslateClient::CreateTranslatePrefs(GetPrefService(j_profile));
 
-  std::vector<std::string> languages;
-  translate_prefs->GetLanguageList(&languages);
-  return ToJavaArrayOfStrings(env, languages);
+  std::vector<base::i18n::LanguageTag> languages =
+      translate_prefs->GetLanguageList();
+  std::vector<std::string> language_strings;
+  language_strings.reserve(languages.size());
+  for (const auto& tag : languages) {
+    language_strings.push_back(std::string(tag.tag_string()));
+  }
+  return ToJavaArrayOfStrings(env, language_strings);
 }
 
 static void JNI_TranslateBridge_SetLanguageOrder(
@@ -371,10 +376,14 @@ static void JNI_TranslateBridge_UpdateUserAcceptLanguages(
   std::unique_ptr<translate::TranslatePrefs> translate_prefs =
       ChromeTranslateClient::CreateTranslatePrefs(GetPrefService(j_profile));
 
-  if (is_add) {
-    translate_prefs->AddToLanguageList(language_code, false /*force_blocked=*/);
-  } else {
-    translate_prefs->RemoveFromLanguageList(language_code);
+  std::optional<base::i18n::LanguageTag> parsed_tag =
+      base::i18n::GetLanguageTagFromString(language_code);
+  if (parsed_tag) {
+    if (is_add) {
+      translate_prefs->AddToLanguageList(*parsed_tag, false /*force_blocked=*/);
+    } else {
+      translate_prefs->RemoveFromLanguageList(*parsed_tag);
+    }
   }
 }
 
@@ -386,8 +395,13 @@ static void JNI_TranslateBridge_MoveAcceptLanguage(
   std::unique_ptr<translate::TranslatePrefs> translate_prefs =
       ChromeTranslateClient::CreateTranslatePrefs(GetPrefService(j_profile));
 
-  std::vector<std::string> languages;
-  translate_prefs->GetLanguageList(&languages);
+  std::vector<base::i18n::LanguageTag> languages =
+      translate_prefs->GetLanguageList();
+  std::vector<std::string> language_strings;
+  language_strings.reserve(languages.size());
+  for (const auto& tag : languages) {
+    language_strings.push_back(std::string(tag.tag_string()));
+  }
 
   translate::TranslatePrefs::RearrangeSpecifier where =
       translate::TranslatePrefs::kNone;
@@ -399,7 +413,8 @@ static void JNI_TranslateBridge_MoveAcceptLanguage(
     where = translate::TranslatePrefs::kUp;
   }
 
-  translate_prefs->RearrangeLanguage(language_code, where, offset, languages);
+  translate_prefs->RearrangeLanguage(language_code, where, offset,
+                                     language_strings);
 }
 
 static void JNI_TranslateBridge_SetLanguageBlockedState(

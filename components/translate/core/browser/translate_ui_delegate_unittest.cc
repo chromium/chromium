@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/i18n/language_tag.h"
 #include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -83,8 +84,10 @@ class TranslateUIDelegateTest : public ::testing::Test {
   void testContentLanguages() {
     TranslateDownloadManager::GetInstance()->set_application_locale("en");
     std::unique_ptr<TranslatePrefs> prefs(client_->GetTranslatePrefs());
-    prefs->AddToLanguageList("de", /*force_blocked=*/false);
-    prefs->AddToLanguageList("pl", /*force_blocked=*/false);
+    prefs->AddToLanguageList(base::i18n::GetKnownLanguageTag("de"),
+                             /*force_blocked=*/false);
+    prefs->AddToLanguageList(base::i18n::GetKnownLanguageTag("pl"),
+                             /*force_blocked=*/false);
 
     std::unique_ptr<TranslateUIDelegate> delegate =
         std::make_unique<TranslateUIDelegate>(manager_->GetWeakPtr(), "en",
@@ -97,7 +100,8 @@ class TranslateUIDelegateTest : public ::testing::Test {
 
     EXPECT_THAT(expected_codes, ::testing::ContainerEq(actual_codes));
 
-    prefs->AddToLanguageList("it", /*force_blocked=*/false);
+    prefs->AddToLanguageList(base::i18n::GetKnownLanguageTag("it"),
+                             /*force_blocked=*/false);
 
     delegate->GetContentLanguagesCodes(&actual_codes);
 

@@ -4,6 +4,8 @@
 
 #include "components/translate/core/browser/translate_ui_delegate.h"
 
+#include "base/i18n/language_tag.h"
+#include "base/i18n/tag_converters.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/language/core/browser/pref_names.h"
@@ -207,9 +209,11 @@ bool TranslateUIDelegate::IsLanguageBlocked() const {
 
 void TranslateUIDelegate::SetLanguageBlocked(bool value) {
   if (value) {
-    prefs_->AddToLanguageList(
-        translate_ui_languages_manager_->GetSourceLanguageCode(),
-        /*force_blocked=*/true);
+    if (std::optional<base::i18n::LanguageTag> parsed_tag =
+            base::i18n::GetLanguageTagFromString(
+                translate_ui_languages_manager_->GetSourceLanguageCode())) {
+      prefs_->AddToLanguageList(*parsed_tag, /*force_blocked=*/true);
+    }
     if (translate_manager_) {
       // Translation has been blocked for this language. Capture that in the
       // metrics. Note that we don't capture a language being unblocked... which

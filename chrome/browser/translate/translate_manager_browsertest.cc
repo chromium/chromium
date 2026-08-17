@@ -821,8 +821,8 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest,
   GetChromeTranslateClient()
       ->GetTranslateManager()
       ->SetIgnoreMissingKeyForTesting(true);
-  GetChromeTranslateClient()->GetTranslatePrefs()->AddToLanguageList("fr",
-                                                                     true);
+  GetChromeTranslateClient()->GetTranslatePrefs()->AddToLanguageList(
+      base::i18n::GetKnownLanguageTag("fr"), true);
 
   ClickFrenchHrefTranslateLinkOnGooglePage();
 
@@ -871,8 +871,8 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest,
   GetChromeTranslateClient()
       ->GetTranslateManager()
       ->SetIgnoreMissingKeyForTesting(true);
-  GetChromeTranslateClient()->GetTranslatePrefs()->AddToLanguageList("fr",
-                                                                     true);
+  GetChromeTranslateClient()->GetTranslatePrefs()->AddToLanguageList(
+      base::i18n::GetKnownLanguageTag("fr"), true);
   GetChromeTranslateClient()->GetTranslatePrefs()->AddSiteToNeverPromptList(
       "www.google.com");
 

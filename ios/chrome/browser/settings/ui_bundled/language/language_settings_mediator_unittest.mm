@@ -9,6 +9,8 @@
 #import <string>
 #import <vector>
 
+#import "base/i18n/language_tag.h"
+#import "base/i18n/tag_converters.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
@@ -59,7 +61,7 @@ std::vector<std::string> ExtractLanguageCodesFromLanguageItems(
   __block std::vector<std::string> output;
   [language_items enumerateObjectsUsingBlock:^(LanguageItem* item,
                                                NSUInteger index, BOOL* stop) {
-    output.push_back(item.languageCode);
+    output.push_back(std::string(item.languageTag.tag_string()));
   }];
   return output;
 }
@@ -103,9 +105,7 @@ class LanguageSettingsMediatorTest : public PlatformTest {
         ChromeIOSTranslateClient::CreateTranslatePrefs(profile_->GetPrefs());
 
     // Make sure the accept languages list is empty.
-    std::vector<std::string> languages;
-    translate_prefs_->GetLanguageList(&languages);
-    for (const auto& language : languages) {
+    for (const auto& language : translate_prefs_->GetLanguageList()) {
       translate_prefs_->RemoveFromLanguageList(language);
     }
 
@@ -169,7 +169,8 @@ TEST_F(LanguageSettingsMediatorTest, TestPrefsChanged) {
 
   consumer().languagePrefsChangedWasCalled = NO;
   EXPECT_FALSE(translate_prefs()->IsBlockedLanguage("fa"));
-  translate_prefs()->AddToLanguageList("fa", /*force_blocked=*/false);
+  translate_prefs()->AddToLanguageList(base::i18n::GetKnownLanguageTag("fa"),
+                                       /*force_blocked=*/false);
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kSyncOperationTimeout, ^bool() {
     return consumer().languagePrefsChangedWasCalled;
   }));
@@ -198,7 +199,8 @@ TEST_F(LanguageSettingsMediatorTest, TestSupportedLanguagesItems) {
       ExtractLanguageCodesFromLanguageItems(language_items);
   EXPECT_TRUE(std::ranges::contains(language_codes, "fa"));
 
-  translate_prefs()->AddToLanguageList("fa", /*force_blocked=*/false);
+  translate_prefs()->AddToLanguageList(base::i18n::GetKnownLanguageTag("fa"),
+                                       /*force_blocked=*/false);
   language_items = [mediator() supportedLanguagesItems];
   language_codes = ExtractLanguageCodesFromLanguageItems(language_items);
   EXPECT_FALSE(std::ranges::contains(language_codes, "fa"));
@@ -206,9 +208,12 @@ TEST_F(LanguageSettingsMediatorTest, TestSupportedLanguagesItems) {
 
 // Tests that the list of accept language items is as expected.
 TEST_F(LanguageSettingsMediatorTest, TestAcceptLanguagesItems) {
-  translate_prefs()->AddToLanguageList("fa", /*force_blocked=*/false);
-  translate_prefs()->AddToLanguageList("en-US", /*force_blocked=*/false);
-  translate_prefs()->AddToLanguageList("to", /*force_blocked=*/false);
+  translate_prefs()->AddToLanguageList(base::i18n::GetKnownLanguageTag("fa"),
+                                       /*force_blocked=*/false);
+  translate_prefs()->AddToLanguageList(base::i18n::GetKnownLanguageTag("en-US"),
+                                       /*force_blocked=*/false);
+  translate_prefs()->AddToLanguageList(base::i18n::GetKnownLanguageTag("to"),
+                                       /*force_blocked=*/false);
   translate_prefs()->SetRecentTargetLanguage("fa");
   translate_prefs()->UnblockLanguage("en-US");
 
@@ -216,17 +221,17 @@ TEST_F(LanguageSettingsMediatorTest, TestAcceptLanguagesItems) {
       [mediator() acceptLanguagesItems];
   ASSERT_EQ(3U, [acceptLanguagesItems count]);
 
-  EXPECT_EQ("fa", acceptLanguagesItems[0].languageCode);
+  EXPECT_EQ("fa", acceptLanguagesItems[0].languageTag.tag_string());
   EXPECT_TRUE(acceptLanguagesItems[0].supportsTranslate);
   EXPECT_TRUE(acceptLanguagesItems[0].targetLanguage);
   EXPECT_TRUE(acceptLanguagesItems[0].blocked);
 
-  EXPECT_EQ("en-US", acceptLanguagesItems[1].languageCode);
+  EXPECT_EQ("en-US", acceptLanguagesItems[1].languageTag.tag_string());
   EXPECT_TRUE(acceptLanguagesItems[1].supportsTranslate);
   EXPECT_FALSE(acceptLanguagesItems[1].targetLanguage);
   EXPECT_FALSE(acceptLanguagesItems[1].blocked);
 
-  EXPECT_EQ("to", acceptLanguagesItems[2].languageCode);
+  EXPECT_EQ("to", acceptLanguagesItems[2].languageTag.tag_string());
   EXPECT_FALSE(acceptLanguagesItems[2].supportsTranslate);
   EXPECT_FALSE(acceptLanguagesItems[2].targetLanguage);
   EXPECT_TRUE(acceptLanguagesItems[2].blocked);
@@ -241,45 +246,53 @@ TEST_F(LanguageSettingsMediatorTest, TestLanguageSettingsCommands) {
   [mediator() setTranslateEnabled:YES];
   EXPECT_TRUE(GetPrefs()->GetBoolean(translate::prefs::kOfferTranslateEnabled));
 
-  [mediator() addLanguage:"fa"];
-  [mediator() addLanguage:"en-US"];
+  [mediator() addLanguage:base::i18n::GetKnownLanguageTag("fa")];
+  [mediator() addLanguage:base::i18n::GetKnownLanguageTag("en-US")];
   EXPECT_EQ("fa,en-US", GetPrefs()->GetString(kAcceptLanguages));
   EXPECT_TRUE(translate_prefs()->IsBlockedLanguage("fa"));
   EXPECT_TRUE(translate_prefs()->IsBlockedLanguage("en-US"));
 
-  [mediator() unblockLanguage:"en-US"];
+  [mediator() unblockLanguage:base::i18n::GetKnownLanguageTag("en-US")];
   EXPECT_EQ("fa,en-US", GetPrefs()->GetString(kAcceptLanguages));
   EXPECT_TRUE(translate_prefs()->IsBlockedLanguage("fa"));
   EXPECT_FALSE(translate_prefs()->IsBlockedLanguage("en-US"));
 
   // The last fluent language cannot be unblocked.
-  [mediator() unblockLanguage:"fa"];
+  [mediator() unblockLanguage:base::i18n::GetKnownLanguageTag("fa")];
   EXPECT_EQ("fa,en-US", GetPrefs()->GetString(kAcceptLanguages));
   EXPECT_TRUE(translate_prefs()->IsBlockedLanguage("fa"));
   EXPECT_FALSE(translate_prefs()->IsBlockedLanguage("en-US"));
 
-  [mediator() blockLanguage:"en-US"];
+  [mediator() blockLanguage:base::i18n::GetKnownLanguageTag("en-US")];
   EXPECT_EQ("fa,en-US", GetPrefs()->GetString(kAcceptLanguages));
   EXPECT_TRUE(translate_prefs()->IsBlockedLanguage("fa"));
   EXPECT_TRUE(translate_prefs()->IsBlockedLanguage("en-US"));
 
-  [mediator() moveLanguage:"fa" downward:YES withOffset:1];
+  [mediator() moveLanguage:base::i18n::GetKnownLanguageTag("fa")
+                  downward:YES
+                withOffset:1];
   EXPECT_EQ("en-US,fa", GetPrefs()->GetString(kAcceptLanguages));
 
-  [mediator() moveLanguage:"fa" downward:NO withOffset:1];
+  [mediator() moveLanguage:base::i18n::GetKnownLanguageTag("fa")
+                  downward:NO
+                withOffset:1];
   EXPECT_EQ("fa,en-US", GetPrefs()->GetString(kAcceptLanguages));
 
   // Moving the first language up in order has no effect.
-  [mediator() moveLanguage:"fa" downward:NO withOffset:1];
+  [mediator() moveLanguage:base::i18n::GetKnownLanguageTag("fa")
+                  downward:NO
+                withOffset:1];
   EXPECT_EQ("fa,en-US", GetPrefs()->GetString(kAcceptLanguages));
 
   // Moving the last language down in order has no effect.
-  [mediator() moveLanguage:"en-US" downward:YES withOffset:1];
+  [mediator() moveLanguage:base::i18n::GetKnownLanguageTag("en-US")
+                  downward:YES
+                withOffset:1];
   EXPECT_EQ("fa,en-US", GetPrefs()->GetString(kAcceptLanguages));
 
-  [mediator() removeLanguage:"fa"];
+  [mediator() removeLanguage:base::i18n::GetKnownLanguageTag("fa")];
   EXPECT_EQ("en-US", GetPrefs()->GetString(kAcceptLanguages));
 
-  [mediator() removeLanguage:"en-US"];
+  [mediator() removeLanguage:base::i18n::GetKnownLanguageTag("en-US")];
   EXPECT_EQ("", GetPrefs()->GetString(kAcceptLanguages));
 }

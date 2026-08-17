@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/feature_list.h"
+#include "base/i18n/language_tag.h"
 #include "base/i18n/rtl.h"
 #include "base/i18n/tag_converters.h"
 #include "base/json/values_util.h"
@@ -45,14 +46,13 @@ namespace translate {
 namespace {
 
 using ::base::i18n::GetKnownLanguageTag;
+using ::base::i18n::GetLanguageTagFromString;
 using ::base::i18n::LanguageTag;
-using ::base::i18n::LanguageTagConverter;
 
 constexpr int kForceTriggerBackoffThreshold = 4;
 
 LanguageTag ToTranslateLanguageTag(std::string_view language) {
-  std::optional<LanguageTag> parsed =
-      LanguageTagConverter::GetInstance().FromString(language);
+  std::optional<LanguageTag> parsed = GetLanguageTagFromString(language);
   if (!parsed) {
     return GetKnownLanguageTag("und");
   }
@@ -60,15 +60,26 @@ LanguageTag ToTranslateLanguageTag(std::string_view language) {
       *parsed);
 }
 
+LanguageTag ResolveLanguagTag(const LanguageTag& language_tag) {
+  return translate::GetTranslateLanguageMatcher()
+      .Match(language_tag)
+      .value_or(language_tag);
+}
+
 // Returns whether or not the given list includes at least one language with
 // the same base as the input language.
 // For example: "en-US" and "en-UK" share the same base "en".
-bool ContainsSameBaseLanguage(const std::vector<std::string>& list,
+bool ContainsSameBaseLanguage(const std::vector<base::i18n::LanguageTag>& list,
                               std::string_view language_code) {
-  std::string_view base_language = language::ExtractBaseLanguage(language_code);
+  std::optional<base::i18n::LanguageTag> parsed_input =
+      GetLanguageTagFromString(language_code);
+  if (!parsed_input) {
+    return false;
+  }
   for (const auto& item : list) {
-    if (base_language == language::ExtractBaseLanguage(item))
+    if (parsed_input->language_subtag() == item.language_subtag()) {
       return true;
+    }
   }
   return false;
 }
@@ -317,7 +328,7 @@ std::vector<std::string> TranslatePrefs::GetNeverTranslateLanguages() const {
     }
 
     std::optional<LanguageTag> parsed_tag =
-        LanguageTagConverter::GetInstance().FromString(*language_as_string);
+        GetLanguageTagFromString(*language_as_string);
     if (parsed_tag) {
       languages.emplace_back(parsed_tag->tag_string());
     }
@@ -329,68 +340,64 @@ std::vector<std::string> TranslatePrefs::GetNeverTranslateLanguages() const {
 // internal format and not the Translate server format.
 // To convert from one to the other use util functions
 // ToTranslateLanguageTag() and base::i18n::LanguageTagConverter.
-void TranslatePrefs::AddToLanguageList(std::string_view input_language,
-                                       const bool force_blocked) {
-  DCHECK(!input_language.empty());
+void TranslatePrefs::AddToLanguageList(
+    const base::i18n::LanguageTag& language_tag,
+    const bool force_blocked) {
+  DCHECK(!language_tag.tag_string().empty());
 
-  std::optional<LanguageTag> parsed_tag =
-      LanguageTagConverter::GetInstance().FromString(input_language);
-  if (!parsed_tag) {
-    return;
-  }
-
-  std::vector<std::string> languages;
-  std::vector<std::string> user_selected_languages;
-  GetLanguageList(&languages);
-  GetUserSelectedLanguageList(&user_selected_languages);
+  std::vector<base::i18n::LanguageTag> languages = GetLanguageList();
+  std::vector<base::i18n::LanguageTag> user_selected_languages =
+      GetUserSelectedLanguageList();
 
   // We should block the language if the list does not already contain another
   // language with the same base language. Policy-forced languages aren't
   // counted as "blocking", so only user-selected languages are checked.
-  const bool should_block = !ContainsSameBaseLanguage(user_selected_languages,
-                                                      parsed_tag->tag_string());
+  const bool should_block = !ContainsSameBaseLanguage(
+      user_selected_languages, language_tag.tag_string());
 
   if (force_blocked || should_block) {
-    BlockLanguage(input_language);
+    BlockLanguage(language_tag.tag_string());
   }
 
   // Add the language to the list.
-  if (!std::ranges::contains(languages, parsed_tag->tag_string())) {
-    user_selected_languages.emplace_back(parsed_tag->tag_string());
-    language_prefs_->SetUserSelectedLanguagesList(user_selected_languages);
+  if (!std::ranges::contains(languages, language_tag)) {
+    user_selected_languages.push_back(language_tag);
+    std::vector<std::string> user_selected_language_codes;
+    user_selected_language_codes.reserve(user_selected_languages.size());
+    for (const auto& tag : user_selected_languages) {
+      user_selected_language_codes.push_back(std::string(tag.tag_string()));
+    }
+    language_prefs_->SetUserSelectedLanguagesList(user_selected_language_codes);
   }
 }
 
-void TranslatePrefs::RemoveFromLanguageList(std::string_view input_language) {
-  DCHECK(!input_language.empty());
+void TranslatePrefs::RemoveFromLanguageList(
+    const base::i18n::LanguageTag& language_tag) {
+  DCHECK(!language_tag.tag_string().empty());
 
-  std::optional<LanguageTag> chrome_language =
-      LanguageTagConverter::GetInstance().FromString(input_language);
-  if (!chrome_language) {
-    return;
-  }
-
-  std::vector<std::string> languages;
-  std::vector<std::string> user_selected_languages;
-  GetUserSelectedLanguageList(&user_selected_languages);
+  std::vector<base::i18n::LanguageTag> user_selected_languages =
+      GetUserSelectedLanguageList();
 
   // Remove the language from the list.
-  const auto& it =
-      std::ranges::find(user_selected_languages, chrome_language->tag_string());
+  const auto& it = std::ranges::find(user_selected_languages, language_tag);
   if (it != user_selected_languages.end()) {
-
     user_selected_languages.erase(it);
-    language_prefs_->SetUserSelectedLanguagesList(user_selected_languages);
+    std::vector<std::string> user_selected_language_codes;
+    user_selected_language_codes.reserve(user_selected_languages.size());
+    for (const auto& tag : user_selected_languages) {
+      user_selected_language_codes.push_back(std::string(tag.tag_string()));
+    }
+    language_prefs_->SetUserSelectedLanguagesList(user_selected_language_codes);
 
     // We should unblock the language if this was the last one from the same
     // language family.
-    GetLanguageList(&languages);
-    if (!ContainsSameBaseLanguage(languages, chrome_language->tag_string())) {
-      UnblockLanguage(input_language);
+    if (!ContainsSameBaseLanguage(GetLanguageList(),
+                                  language_tag.tag_string())) {
+      UnblockLanguage(language_tag.tag_string());
       // If the recent translate target matches the last language of a family
       // being removed, reset the most recent target language so it will not be
       // used the next time Translate is triggered.
-      LanguageTag translate_language = ToTranslateLanguageTag(input_language);
+      LanguageTag translate_language = ResolveLanguagTag(language_tag);
       if (translate_language.tag_string() == GetRecentTargetLanguage()) {
         ResetRecentTargetLanguage();
       }
@@ -407,7 +414,9 @@ void TranslatePrefs::RearrangeLanguage(
   DCHECK(!(offset < 1 && (where == kUp || where == kDown)));
 
   std::vector<std::string> languages;
-  GetUserSelectedLanguageList(&languages);
+  for (const auto& tag : GetUserSelectedLanguageList()) {
+    languages.push_back(std::string(tag.tag_string()));
+  }
 
   auto pos = std::ranges::find(languages, language);
   if (pos == languages.end())
@@ -558,14 +567,13 @@ void TranslatePrefs::GetTranslatableContentLanguages(
 
   // Get the language codes of user content languages.
   // Returned in Chrome format.
-  std::vector<std::string> language_codes;
-  GetLanguageList(&language_codes);
+  std::vector<base::i18n::LanguageTag> language_tags = GetLanguageList();
 
   absl::flat_hash_set<std::string> unique_languages;
-  unique_languages.reserve(language_codes.size());
-  for (auto& entry : language_codes) {
+  unique_languages.reserve(language_tags.size());
+  for (const auto& entry : language_tags) {
     // Get the language in Translate format.
-    LanguageTag supports_translate_code = ToTranslateLanguageTag(entry);
+    LanguageTag supports_translate_code = ResolveLanguagTag(entry);
     // Extract the language code, for example for en-US it returns en.
     std::string lang_code = TranslateDownloadManager::GetLanguageCode(
         supports_translate_code.tag_string());
@@ -680,7 +688,7 @@ std::vector<std::string> TranslatePrefs::GetAlwaysTranslateLanguages() const {
   languages.reserve(dict.size());
   for (auto language_pair : dict) {
     std::optional<LanguageTag> parsed_tag =
-        LanguageTagConverter::GetInstance().FromString(language_pair.first);
+        GetLanguageTagFromString(language_pair.first);
     if (!parsed_tag) {
       continue;
     }
@@ -819,14 +827,33 @@ void TranslatePrefs::SetAppLanguagePromptShown() {
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-void TranslatePrefs::GetLanguageList(
-    std::vector<std::string>* const languages) const {
-  language_prefs_->GetAcceptLanguagesList(languages);
+std::vector<base::i18n::LanguageTag> TranslatePrefs::GetLanguageList() const {
+  std::vector<base::i18n::LanguageTag> languages;
+  std::vector<std::string> language_codes;
+  language_prefs_->GetAcceptLanguagesList(&language_codes);
+  languages.reserve(language_codes.size());
+  for (const auto& code : language_codes) {
+    if (std::optional<base::i18n::LanguageTag> parsed_tag =
+            GetLanguageTagFromString(code)) {
+      languages.push_back(*parsed_tag);
+    }
+  }
+  return languages;
 }
 
-void TranslatePrefs::GetUserSelectedLanguageList(
-    std::vector<std::string>* const languages) const {
-  language_prefs_->GetUserSelectedLanguagesList(languages);
+std::vector<base::i18n::LanguageTag>
+TranslatePrefs::GetUserSelectedLanguageList() const {
+  std::vector<base::i18n::LanguageTag> languages;
+  std::vector<std::string> language_codes;
+  language_prefs_->GetUserSelectedLanguagesList(&language_codes);
+  languages.reserve(language_codes.size());
+  for (const auto& code : language_codes) {
+    if (std::optional<base::i18n::LanguageTag> parsed_tag =
+            GetLanguageTagFromString(code)) {
+      languages.push_back(*parsed_tag);
+    }
+  }
+  return languages;
 }
 
 bool TranslatePrefs::ShouldForceTriggerTranslateOnEnglishPages() {

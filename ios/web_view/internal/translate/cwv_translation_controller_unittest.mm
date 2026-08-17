@@ -6,6 +6,8 @@
 
 #import <memory>
 
+#import "base/i18n/language_tag.h"
+#import "base/i18n/tag_converters.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/language/core/browser/language_prefs.h"
 #import "components/language/core/browser/pref_names.h"
@@ -246,7 +248,11 @@ TEST_F(CWVTranslationControllerTest, ReadLanguagePolicy) {
   CWVTranslationLanguage* lang =
       [translation_controller_.supportedLanguages anyObject];
   std::string lang_code = base::SysNSStringToUTF8(lang.languageCode);
-  translate_prefs_->AddToLanguageList(lang_code, /*force_blocked=*/true);
+  if (std::optional<base::i18n::LanguageTag> parsed_tag =
+          base::i18n::LanguageTagConverter::GetInstance().FromString(
+              lang_code)) {
+    translate_prefs_->AddToLanguageList(*parsed_tag, /*force_blocked=*/true);
+  }
   CWVTranslationPolicy* policy =
       [translation_controller_ translationPolicyForPageLanguage:lang];
   EXPECT_EQ(CWVTranslationPolicyNever, policy.type);

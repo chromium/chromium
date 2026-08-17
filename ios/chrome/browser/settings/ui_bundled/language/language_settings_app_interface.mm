@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/settings/ui_bundled/language/language_settings_app_interface.h"
 
+#import "base/i18n/language_tag.h"
+#import "base/i18n/tag_converters.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/language/core/browser/pref_names.h"
 #import "components/translate/core/browser/translate_pref_names.h"
@@ -23,9 +25,7 @@ std::unique_ptr<translate::TranslatePrefs> CreateTranslatePrefs() {
 
 + (void)removeAllLanguages {
   auto translatePrefs = CreateTranslatePrefs();
-  std::vector<std::string> languages;
-  translatePrefs->GetLanguageList(&languages);
-  for (const auto& language : languages) {
+  for (const auto& language : translatePrefs->GetLanguageList()) {
     translatePrefs->RemoveFromLanguageList(language);
   }
 }
@@ -37,8 +37,12 @@ std::unique_ptr<translate::TranslatePrefs> CreateTranslatePrefs() {
 }
 
 + (void)addLanguage:(NSString*)language {
-  CreateTranslatePrefs()->AddToLanguageList(base::SysNSStringToUTF8(language),
-                                            /*force_blocked=*/false);
+  std::string language_str = base::SysNSStringToUTF8(language);
+  if (std::optional<base::i18n::LanguageTag> parsed_tag =
+          base::i18n::GetLanguageTagFromString(language_str)) {
+    CreateTranslatePrefs()->AddToLanguageList(*parsed_tag,
+                                              /*force_blocked=*/false);
+  }
 }
 
 + (BOOL)offersTranslation {

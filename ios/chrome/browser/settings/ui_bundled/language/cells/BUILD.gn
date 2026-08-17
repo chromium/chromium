@@ -7,5 +7,6 @@ source_set("cells") {
     "language_item.h",
     "language_item.mm",
   ]
+  public_deps = [ "//base/i18n:language_tag_no_icu" ]
   deps = [ "//ios/chrome/browser/shared/ui/table_view/cells" ]
 }
