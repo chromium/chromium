@@ -30,6 +30,12 @@ namespace signin {
 
 namespace {
 constexpr char kFetchStateHistogram[] = "Signin.AccountPreviewData.FetchState";
+constexpr char kFetchDurationSuccessHistogram[] =
+    "Signin.AccountPreviewData.FetchDuration.Success";
+constexpr char kFetchDurationFailureHistogram[] =
+    "Signin.AccountPreviewData.FetchDuration.Failure";
+constexpr char kFetchDurationTokenFailureHistogram[] =
+    "Signin.AccountPreviewData.FetchDuration.TokenFailure";
 }  // namespace
 
 using FetchState = AccountPreviewDataFetcher::FetchState;
@@ -103,6 +109,8 @@ TEST_F(AccountPreviewDataFetcherTest, Success) {
   histogram_tester_.ExpectBucketCount(kFetchStateHistogram,
                                       FetchState::kCompletedWithResults, 1);
   histogram_tester_.ExpectTotalCount(kFetchStateHistogram, 4);
+  histogram_tester_.ExpectTotalCount(kFetchDurationSuccessHistogram, 1);
+  histogram_tester_.ExpectTotalCount(kFetchDurationFailureHistogram, 0);
 }
 
 TEST_F(AccountPreviewDataFetcherTest, SuccessWithPreviewsDisabled) {
@@ -148,6 +156,8 @@ TEST_F(AccountPreviewDataFetcherTest, SuccessWithPreviewsDisabled) {
   histogram_tester_.ExpectBucketCount(kFetchStateHistogram,
                                       FetchState::kCompletedWithResults, 1);
   histogram_tester_.ExpectTotalCount(kFetchStateHistogram, 3);
+  histogram_tester_.ExpectTotalCount(kFetchDurationSuccessHistogram, 1);
+  histogram_tester_.ExpectTotalCount(kFetchDurationFailureHistogram, 0);
 }
 
 TEST_F(AccountPreviewDataFetcherTest, SuccessEmpty) {
@@ -184,6 +194,8 @@ TEST_F(AccountPreviewDataFetcherTest, SuccessEmpty) {
   histogram_tester_.ExpectBucketCount(kFetchStateHistogram,
                                       FetchState::kCompletedWithResults, 1);
   histogram_tester_.ExpectTotalCount(kFetchStateHistogram, 4);
+  histogram_tester_.ExpectTotalCount(kFetchDurationSuccessHistogram, 1);
+  histogram_tester_.ExpectTotalCount(kFetchDurationFailureHistogram, 0);
 }
 
 TEST_F(AccountPreviewDataFetcherTest, AccessTokenFailure) {
@@ -212,6 +224,9 @@ TEST_F(AccountPreviewDataFetcherTest, AccessTokenFailure) {
   EXPECT_FALSE(result_data.has_value());
 
   histogram_tester_.ExpectTotalCount(kFetchStateHistogram, 0);
+  histogram_tester_.ExpectTotalCount(kFetchDurationSuccessHistogram, 0);
+  histogram_tester_.ExpectTotalCount(kFetchDurationFailureHistogram, 0);
+  histogram_tester_.ExpectTotalCount(kFetchDurationTokenFailureHistogram, 1);
 }
 
 TEST_F(AccountPreviewDataFetcherTest, StatsFailure) {
@@ -287,6 +302,8 @@ TEST_F(AccountPreviewDataFetcherTest, PreviewsFailure) {
   histogram_tester_.ExpectBucketCount(kFetchStateHistogram,
                                       FetchState::kCompletedWithResults, 1);
   histogram_tester_.ExpectTotalCount(kFetchStateHistogram, 4);
+  histogram_tester_.ExpectTotalCount(kFetchDurationSuccessHistogram, 1);
+  histogram_tester_.ExpectTotalCount(kFetchDurationFailureHistogram, 0);
 }
 
 TEST_F(AccountPreviewDataFetcherTest, StatsInvalidJson) {
@@ -328,6 +345,8 @@ TEST_F(AccountPreviewDataFetcherTest, StatsInvalidJson) {
   histogram_tester_.ExpectBucketCount(kFetchStateHistogram,
                                       FetchState::kCompletedWithResults, 1);
   histogram_tester_.ExpectTotalCount(kFetchStateHistogram, 4);
+  histogram_tester_.ExpectTotalCount(kFetchDurationSuccessHistogram, 1);
+  histogram_tester_.ExpectTotalCount(kFetchDurationFailureHistogram, 0);
 }
 
 TEST_F(AccountPreviewDataFetcherTest, PreviewsInvalidJson) {
@@ -363,6 +382,8 @@ TEST_F(AccountPreviewDataFetcherTest, PreviewsInvalidJson) {
   histogram_tester_.ExpectBucketCount(kFetchStateHistogram,
                                       FetchState::kCompletedWithResults, 1);
   histogram_tester_.ExpectTotalCount(kFetchStateHistogram, 4);
+  histogram_tester_.ExpectTotalCount(kFetchDurationSuccessHistogram, 1);
+  histogram_tester_.ExpectTotalCount(kFetchDurationFailureHistogram, 0);
 }
 
 TEST_F(AccountPreviewDataFetcherTest, BothRequestsFail) {
@@ -395,6 +416,29 @@ TEST_F(AccountPreviewDataFetcherTest, BothRequestsFail) {
   histogram_tester_.ExpectBucketCount(kFetchStateHistogram,
                                       FetchState::kCompletedWithoutResults, 1);
   histogram_tester_.ExpectTotalCount(kFetchStateHistogram, 4);
+  histogram_tester_.ExpectTotalCount(kFetchDurationSuccessHistogram, 0);
+  histogram_tester_.ExpectTotalCount(kFetchDurationFailureHistogram, 1);
+}
+
+TEST_F(AccountPreviewDataFetcherTest, InvalidAccount) {
+  base::test::TestFuture<const GaiaId&, std::optional<AccountPreviewData>>
+      future;
+  auto fetcher = std::make_unique<AccountPreviewDataFetcher>(
+      GaiaId("invalid_gaia_id"), identity_test_env_.identity_manager(),
+      test_url_loader_factory_.GetSafeWeakWrapper(),
+      version_info::Channel::UNKNOWN,
+      /*current_device_cache_guids=*/base::flat_set<std::string>(),
+      future.GetCallback());
+  fetcher->Start();
+
+  auto [gaia_id, result_data] = future.Take();
+  EXPECT_EQ(GaiaId("invalid_gaia_id"), gaia_id);
+  EXPECT_FALSE(result_data.has_value());
+
+  histogram_tester_.ExpectTotalCount(kFetchStateHistogram, 0);
+  histogram_tester_.ExpectTotalCount(kFetchDurationSuccessHistogram, 0);
+  histogram_tester_.ExpectTotalCount(kFetchDurationFailureHistogram, 0);
+  histogram_tester_.ExpectTotalCount(kFetchDurationTokenFailureHistogram, 0);
 }
 
 TEST_F(AccountPreviewDataFetcherTest, PreviewsInvalidCacheGuid) {

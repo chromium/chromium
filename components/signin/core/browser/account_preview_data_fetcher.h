@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/version_info/channel.h"
 #include "components/signin/core/browser/account_preview_data.h"
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
@@ -111,6 +112,7 @@ class AccountPreviewDataFetcher {
   base::RepeatingCallback<void(bool)> barrier_callback_;
 
   bool is_started_ = false;
+  std::optional<base::ElapsedTimer> fetch_timer_;
 
   base::OnceClosure on_fetch_completed_for_testing_;
 

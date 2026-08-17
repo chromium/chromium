@@ -689,6 +689,22 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Signin.AccountPreviewData.FetchDuration.{Result}" units="ms"
+    expires_after="2027-06-01">
+  <owner>rsult@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Measures the duration of fetching sync preview data (including token
+    fetching and network requests) for a signed-in account, split by {Result}
+    fetches. Recorded when the fetch finishes.
+  </summary>
+  <token key="Result">
+    <variant name="Failure" summary="failed (network requests failed)"/>
+    <variant name="Success" summary="successful (at least some data returned)"/>
+    <variant name="TokenFailure" summary="failed during access token fetch"/>
+  </token>
+</histogram>
+
 <histogram name="Signin.AccountPreviewData.FetchState"
     enum="AccountPreviewDataFetchState" expires_after="2027-06-01">
   <owner>rsult@google.com</owner>

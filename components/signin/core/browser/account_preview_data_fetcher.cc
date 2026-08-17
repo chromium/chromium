@@ -40,6 +40,12 @@ constexpr char kStagingPreviewUrl[] =
     "https://alpha-chromesyncpreview-googleapis.pa.sandbox.google.com/v1";
 
 constexpr char kFetchStateHistogram[] = "Signin.AccountPreviewData.FetchState";
+constexpr char kFetchDurationSuccessHistogram[] =
+    "Signin.AccountPreviewData.FetchDuration.Success";
+constexpr char kFetchDurationFailureHistogram[] =
+    "Signin.AccountPreviewData.FetchDuration.Failure";
+constexpr char kFetchDurationTokenFailureHistogram[] =
+    "Signin.AccountPreviewData.FetchDuration.TokenFailure";
 
 // Parses the specifics field number (data type ID) from the stats name string.
 // Returns std::nullopt if the format doesn't match or cannot be parsed.
@@ -246,6 +252,7 @@ void AccountPreviewDataFetcher::Start() {
     return;
   }
   is_started_ = true;
+  fetch_timer_ = base::ElapsedTimer();
 
   AccountInfo account_info =
       identity_manager_->FindExtendedAccountInfoByGaiaId(gaia_id_);
@@ -267,6 +274,9 @@ void AccountPreviewDataFetcher::OnAccessTokenReceived(
     AccessTokenInfo token_info) {
   token_fetcher_.reset();
   if (error.state() != GoogleServiceAuthError::NONE) {
+    CHECK(fetch_timer_.has_value());
+    base::UmaHistogramMediumTimes(kFetchDurationTokenFailureHistogram,
+                                  fetch_timer_->Elapsed());
     fetched_data_ = std::nullopt;
     CompleteFetch();
     return;
@@ -398,6 +408,12 @@ void AccountPreviewDataFetcher::OnFetchCompleted(std::vector<bool> results) {
                                 fetched_data_.has_value()
                                     ? FetchState::kCompletedWithResults
                                     : FetchState::kCompletedWithoutResults);
+
+  CHECK(fetch_timer_.has_value());
+  base::UmaHistogramMediumTimes(fetched_data_.has_value()
+                                    ? kFetchDurationSuccessHistogram
+                                    : kFetchDurationFailureHistogram,
+                                fetch_timer_->Elapsed());
 
   CompleteFetch();
 }
