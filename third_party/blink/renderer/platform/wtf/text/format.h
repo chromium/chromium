@@ -60,6 +60,13 @@ class WTF_EXPORT FormatArg {
   template <typename T>
     requires std::convertible_to<const T&, StringView>
   FormatArg(const T& v) : value_(StringView(v)) {}
+  template <typename T>
+    requires(!std::convertible_to<const T&, StringView> &&
+             std::convertible_to<const T&, std::string_view>)
+  FormatArg(const T& v) {
+    std::string_view sv = v;
+    value_ = StringView(base::as_byte_span(sv));
+  }
   // NOLINTEND(google-explicit-constructor)
 
   FormatArg() = default;
@@ -250,10 +257,12 @@ class FormatString {
         if (type == 'd' || type == 'x' || type == 'X') {
           valid = std::is_integral_v<RawT> || std::is_enum_v<RawT>;
         } else if (type == 's') {
-          valid = std::convertible_to<const RawT&, StringView>;
+          valid = std::convertible_to<const RawT&, StringView> ||
+                  std::convertible_to<const RawT&, std::string_view>;
         } else if (type == 'p' || type == 'P') {
           valid = (std::convertible_to<RawT, const void*> &&
-                   !std::convertible_to<const RawT&, StringView>) ||
+                   !std::convertible_to<const RawT&, StringView> &&
+                   !std::convertible_to<const RawT&, std::string_view>) ||
                   std::is_same_v<RawT, std::nullptr_t>;
         } else if (type == 'e' || type == 'E' || type == 'f' || type == 'F' ||
                    type == 'g' || type == 'G') {
@@ -330,7 +339,9 @@ WTF_EXPORT StringBuilder& VFormatTo(StringBuilder& builder,
 //   implicitly convertible types).
 // - Floating-point types: `double` (and implicitly convertible types).
 // - String types: `blink::StringView`, `blink::String`, `blink::AtomicString`,
-//   `const char[N]`.
+//   `std::string`, `std::string_view`, `const char[N]`.
+//   Note that `std::string`, `std::string_view`, and `const char[N]` are
+//   treated as Latin-1, not UTF-8.
 // - Pointer types: `const void*`, `std::nullptr_t` (and implicitly
 //   convertible types).
 //

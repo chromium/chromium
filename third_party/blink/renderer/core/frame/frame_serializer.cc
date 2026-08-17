@@ -1452,9 +1452,7 @@ String FrameSerializer::MarkOfTheWebDeclaration(const KURL& url) {
     builder.Append(ch);
   }
   std::string escaped_url = builder.ToString().Ascii();
-  return String::Format("saved from url=(%04d)%s",
-                        static_cast<int>(escaped_url.length()),
-                        escaped_url.c_str());
+  return Format("saved from url=({:04}){}", escaped_url.length(), escaped_url);
 }
 
 // static
