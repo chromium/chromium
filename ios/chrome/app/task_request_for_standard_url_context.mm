@@ -9,6 +9,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
+#import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/app/startup/app_launch_metrics.h"
 #import "ios/chrome/app/task_request_url_context_private.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
@@ -71,9 +72,45 @@ void RecordExternalActionMetrics(NSURL* url) {
   [super recordStartupMetrics];
 
   NSURL* url = self.URLContext.URL;
+  if (!url) {
+    return;
+  }
 
-  if ([url.host isEqualToString:kExternalActionURLHost]) {
+  NSString* host = url.host;
+  NSString* scheme = url.scheme.lowercaseString;
+
+  if ([host isEqualToString:kExternalActionURLHost]) {
     RecordExternalActionMetrics(url);
+  } else if ([scheme isEqualToString:@"file"]) {
+    UMA_HISTOGRAM_ENUMERATION(kUMAMobileSessionStartActionHistogram,
+                              START_ACTION_OPEN_FILE,
+                              MOBILE_SESSION_START_ACTION_COUNT);
+  } else {
+    MobileSessionStartAction action = START_ACTION_OTHER;
+    if ([scheme isEqualToString:@"http"]) {
+      action = START_ACTION_OPEN_HTTP_FROM_OS;
+      base::RecordAction(
+          base::UserMetricsAction("MobileDefaultBrowserViewIntent"));
+    } else if ([scheme isEqualToString:@"https"]) {
+      action = START_ACTION_OPEN_HTTPS_FROM_OS;
+      base::RecordAction(
+          base::UserMetricsAction("MobileDefaultBrowserViewIntent"));
+    } else {
+      BOOL useHttps = [scheme hasSuffix:@"s"];
+      action = useHttps ? START_ACTION_OPEN_HTTPS : START_ACTION_OPEN_HTTP;
+      base::UmaHistogramEnumeration(kAppLaunchSource,
+                                    AppLaunchSource::LINK_OPENED_FROM_APP);
+      base::RecordAction(base::UserMetricsAction("MobileFirstPartyViewIntent"));
+    }
+    UMA_HISTOGRAM_ENUMERATION(kUMAMobileSessionStartActionHistogram, action,
+                              MOBILE_SESSION_START_ACTION_COUNT);
+
+    if (action == START_ACTION_OPEN_HTTP_FROM_OS ||
+        action == START_ACTION_OPEN_HTTPS_FROM_OS) {
+      base::UmaHistogramEnumeration(kAppLaunchSource,
+                                    AppLaunchSource::LINK_OPENED_FROM_OS);
+      LogOpenHTTPURLFromExternalURL();
+    }
   }
 }
 

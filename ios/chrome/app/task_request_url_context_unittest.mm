@@ -6,6 +6,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import <optional>
+
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/metrics/user_action_tester.h"
 #import "base/test/scoped_feature_list.h"
@@ -201,6 +203,54 @@ TEST_F(TaskRequestForURLContextTest, TestXCallbackURLMetrics) {
                                         test_case.expected_action, 1);
     histogram_tester.ExpectUniqueSample(kAppLaunchSource,
                                         AppLaunchSource::X_CALLBACK, 1);
+  }
+}
+
+// Tests that standard HTTP/HTTPS, File, and External Action URLs log launch
+// source, startup metrics, and user actions.
+TEST_F(TaskRequestForURLContextTest, TestSimpleURLMetrics) {
+  struct TestCase {
+    NSString* url_string;
+    MobileSessionStartAction expected_action;
+    std::optional<AppLaunchSource> expected_launch_source;
+    const char* expected_user_action;
+  } test_cases[] = {
+      {@"http://www.example.com", START_ACTION_OPEN_HTTP_FROM_OS,
+       AppLaunchSource::LINK_OPENED_FROM_OS, "MobileDefaultBrowserViewIntent"},
+      {@"https://www.example.com", START_ACTION_OPEN_HTTPS_FROM_OS,
+       AppLaunchSource::LINK_OPENED_FROM_OS, "MobileDefaultBrowserViewIntent"},
+      {@"googlechrome://www.example.com", START_ACTION_OPEN_HTTP,
+       AppLaunchSource::LINK_OPENED_FROM_APP, "MobileFirstPartyViewIntent"},
+      {@"googlechromes://www.example.com", START_ACTION_OPEN_HTTPS,
+       AppLaunchSource::LINK_OPENED_FROM_APP, "MobileFirstPartyViewIntent"},
+      {@"googlechrome://ChromeExternalAction", START_EXTERNAL_ACTION,
+       AppLaunchSource::EXTERNAL_ACTION, "MobileExternalActionURLOpened"},
+      {@"file:///path/to/file.txt", START_ACTION_OPEN_FILE, std::nullopt,
+       nullptr},
+  };
+
+  for (const auto& test_case : test_cases) {
+    base::HistogramTester histogram_tester;
+    base::UserActionTester user_action_tester;
+    NSURL* url = [NSURL URLWithString:test_case.url_string];
+    UIOpenURLContext* context = CreateMockURLContext(url);
+
+    TaskRequestForURLContext* request =
+        [TaskRequestForURLContext taskRequestWithURLContext:context
+                                                 sceneState:scene_state_
+                                                isColdStart:YES];
+    EXPECT_NE(request, nil);
+
+    histogram_tester.ExpectUniqueSample(kUMAMobileSessionStartActionHistogram,
+                                        test_case.expected_action, 1);
+    if (test_case.expected_launch_source.has_value()) {
+      histogram_tester.ExpectUniqueSample(
+          kAppLaunchSource, test_case.expected_launch_source.value(), 1);
+    }
+    if (test_case.expected_user_action) {
+      EXPECT_EQ(
+          user_action_tester.GetActionCount(test_case.expected_user_action), 1);
+    }
   }
 }
 

@@ -276,6 +276,10 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
         [self startupParametersForExternalActionWithAppID:appID
                                               completeURL:completeURL
                                      forceApplicationMode:forceApplicationMode];
+    // LINT.IfChange(SimpleURLContext)
+    // TODO(crbug.com/462018636): This code will be soon migrated to
+    // task_request_url_context.mm, so any change should be reflected also
+    // there. Contact fedegermi for additional information or support.
   } else if (parsedURL.SchemeIsFile()) {
     UMA_HISTOGRAM_ENUMERATION(kUMAMobileSessionStartActionHistogram,
                               START_ACTION_OPEN_FILE,
@@ -338,6 +342,7 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
                                     AppLaunchSource::LINK_OPENED_FROM_OS);
       LogOpenHTTPURLFromExternalURL();
     }
+    // LINT.ThenChange(//ios/chrome/app/task_request_for_url_context_simple.mm:SimpleURLContext)
 
     if (!externalURL.is_valid()) {
       return nil;

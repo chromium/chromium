@@ -34,7 +34,6 @@
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/app_group/widget_constants.h"
 #import "ios/chrome/common/x_callback_url.h"
-#import "net/base/apple/url_conversions.h"
 
 namespace {
 
@@ -151,7 +150,6 @@ void RecordRuntimeMetrics(UIOpenURLContext* url_context, bool is_first_run) {
 
 @interface TaskRequestForURLContext ()
 
-@property(nonatomic, assign, readonly) GURL parsedURL;
 @property(nonatomic, assign, readonly) MobileSessionCallerApp callerApp;
 
 @end
@@ -168,7 +166,7 @@ void RecordRuntimeMetrics(UIOpenURLContext* url_context, bool is_first_run) {
                                                         sceneState:sceneState
                                                        isColdStart:isColdStart];
   }
-  if (IsXCallbackURL(net::GURLWithNSURL(url))) {
+  if ([url.host isEqualToString:@"x-callback-url"]) {
     return [[TaskRequestForXCallbackURLContext alloc]
         initWithURLContext:URLContext
                 sceneState:sceneState
@@ -185,7 +183,7 @@ void RecordRuntimeMetrics(UIOpenURLContext* url_context, bool is_first_run) {
                        isColdStart:(BOOL)isColdStart {
   if ((self = [super initWithSceneState:sceneState isColdStart:isColdStart])) {
     _URLContext = URLContext;
-    _parsedURL = net::GURLWithNSURL(_URLContext.URL);
+
     _callerApp =
         GetCallerApp(_URLContext.options.sourceApplication, _URLContext.URL);
     [self extractGaiaID];
