@@ -1,9 +1,0 @@
-This tests that 'performance.measure' throws exceptions with reasonable messages.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-
-PASS window.performance.measure("measuring", null, "mark") threw exception SyntaxError: Failed to execute 'measure' on 'Performance': The mark 'null' does not exist..
-
-TEST COMPLETE
-
