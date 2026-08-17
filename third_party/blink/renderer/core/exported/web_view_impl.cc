@@ -3830,9 +3830,20 @@ void WebViewImpl::UpdateRendererPreferences(
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
   if (!ScrollbarTheme::MockScrollbarsEnabled()) {
-    WebRuntimeFeatures::EnableOverlayScrollbars(
-        renderer_preferences_.use_overlay_scrollbar);
-    UpdateUseOverlayScrollbar(renderer_preferences_.use_overlay_scrollbar);
+    // DevTools emulation can update Blink's overlay scrollbar setting,
+    // while OS theme updates can update NativeTheme before renderer preferences
+    // synchronize with Blink's. Avoid global scrollbar reconstruction only when
+    // both mirrors already match the requested preference.
+    const bool blink_changed = ScrollbarTheme::OverlayScrollbarsEnabled() !=
+                               renderer_preferences_.use_overlay_scrollbar;
+    const bool native_theme_changed =
+        ui::NativeTheme::GetInstanceForWeb()->use_overlay_scrollbar() !=
+        renderer_preferences_.use_overlay_scrollbar;
+    if (blink_changed || native_theme_changed) {
+      WebRuntimeFeatures::EnableOverlayScrollbars(
+          renderer_preferences_.use_overlay_scrollbar);
+      UpdateUseOverlayScrollbar(renderer_preferences_.use_overlay_scrollbar);
+    }
   }
 #endif
 
