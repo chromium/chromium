@@ -877,18 +877,11 @@ void CollectDawnInfo(const gpu::GpuPreferences& gpu_preferences,
   dawn_toggles.disabledToggles = required_disabled_toggles_webgpu.data();
 
   dawn::native::DawnInstanceDescriptor dawn_instance_desc = {};
-#if !defined(DAWN_BREAKING_INSTANCE_DESCRIPTOR_SPANIFICATION)
-  const char* dawn_search_path_c_str = dawn_search_path.c_str();
-  dawn_instance_desc.additionalRuntimeSearchPathsCount =
-      dawn_search_path.empty() ? 0u : 1u;
-  dawn_instance_desc.additionalRuntimeSearchPaths = &dawn_search_path_c_str;
-#else
   std::string_view dawn_search_path_view = dawn_search_path;
   if (!dawn_search_path.empty()) {
     dawn_instance_desc.additionalRuntimeSearchPaths =
         base::span_from_ref(dawn_search_path_view);
   }
-#endif
 
   wgpu::InstanceDescriptor instance_desc = {};
   instance_desc.nextInChain = &dawn_instance_desc;
