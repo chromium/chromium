@@ -1320,7 +1320,7 @@ void VideoFrame::set_color_space(const gfx::ColorSpace& color_space) {
     SCOPED_CRASH_KEY_STRING256("video_frame", "si_label",
                                shared_image()->debug_label());
     CHECK_EQ(color_space, shared_image()->color_space(),
-             base::NotFatalUntil::M153);
+             base::NotFatalUntil::M154);
   }
   color_space_ = color_space;
 }
