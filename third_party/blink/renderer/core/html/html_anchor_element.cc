@@ -228,16 +228,7 @@ void HTMLAnchorElementBase::ParseAttribute(
     if (params.old_value == params.new_value) {
       return;
     }
-    bool was_link = IsLink();
-    SetIsLink(!params.new_value.IsNull());
-    if (was_link || IsLink()) {
-      PseudoStateChanged(CSSSelector::kPseudoLink);
-      PseudoStateChanged(CSSSelector::kPseudoVisited);
-      if (was_link != IsLink()) {
-        PseudoStateChanged(CSSSelector::kPseudoWebkitAnyLink);
-        PseudoStateChanged(CSSSelector::kPseudoAnyLink);
-      }
-    }
+    AnchorElementUtils::UpdateHref(*this, params.new_value);
     if (isConnected() && params.old_value != params.new_value) {
       if (auto* document_rules =
               DocumentSpeculationRules::FromIfExists(GetDocument())) {

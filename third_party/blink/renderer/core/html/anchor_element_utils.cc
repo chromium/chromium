@@ -97,6 +97,22 @@ bool ValidateDownloadAttributeLength(const String& download_attr,
 
 }  // namespace
 
+void AnchorElementUtils::UpdateHref(Element& element,
+                                    const AtomicString& new_value) {
+  bool was_link = element.IsLink();
+  bool is_link = !new_value.IsNull();
+  element.SetIsLink(is_link);
+  if (!was_link && !is_link) {
+    return;
+  }
+  element.PseudoStateChanged(CSSSelector::kPseudoLink);
+  element.PseudoStateChanged(CSSSelector::kPseudoVisited);
+  if (was_link != is_link) {
+    element.PseudoStateChanged(CSSSelector::kPseudoWebkitAnyLink);
+    element.PseudoStateChanged(CSSSelector::kPseudoAnyLink);
+  }
+}
+
 void AnchorElementUtils::HandleDownloadAttribute(Element* element,
                                                  const String& download_attr,
                                                  const KURL& url,

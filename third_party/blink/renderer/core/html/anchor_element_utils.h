@@ -52,6 +52,9 @@ class KURL;
 
 class CORE_EXPORT AnchorElementUtils {
  public:
+  // Update the HREF attribute and notify about pseudo state changes.
+  static void UpdateHref(Element&, const AtomicString& new_value);
+
   static void HandleDownloadAttribute(Element* element,
                                       const String& download_attr,
                                       const KURL& url,
