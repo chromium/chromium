@@ -160,6 +160,25 @@ TEST_F(AttemptFormFillingToolJavaScriptFeatureTest, InvalidNodeIdFails) {
   EXPECT_EQ(result.error().code(), mojom::ActionResultCode::kInvalidDomNodeId);
 }
 
+// Test that when JavaScript returns a target not autofill element result code,
+// GetAutofillRendererIds fails with kFormFillingFieldNotFound.
+TEST_F(AttemptFormFillingToolJavaScriptFeatureTest,
+       TargetNotAutofillElementFails) {
+  MockGetAutofillRendererIds("{ resultCode: 4, uniqueIds: [] }");
+  ActionTarget target_node = CreateTargetWithNodeId();
+  base::test::TestFuture<
+      base::expected<std::vector<uint32_t>, ToolExecutionResult>>
+      future;
+
+  feature()->GetAutofillRendererIds(GetMainFrame(feature())->AsWeakPtr(),
+                                    {target_node}, future.GetCallback());
+
+  auto result = future.Get();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error().code(),
+            mojom::ActionResultCode::kFormFillingFieldNotFound);
+}
+
 // Test that when JavaScript returns a dictionary missing a uniqueIds list,
 // GetAutofillRendererIds fails with kArgumentsInvalid.
 TEST_F(AttemptFormFillingToolJavaScriptFeatureTest, MissingRendererIdsFails) {

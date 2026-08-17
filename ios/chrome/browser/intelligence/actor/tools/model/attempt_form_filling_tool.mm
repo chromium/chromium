@@ -316,8 +316,6 @@ void AttemptFormFillingTool::PopulateAutofillRendererIds() {
                 weak_ptr_factory_.GetWeakPtr(), frame->AsWeakPtr(),
                 barrier_closure));
   }
-
-  tool_requests_.clear();
 }
 
 void AttemptFormFillingTool::OnRequestRendererIdsResolved(

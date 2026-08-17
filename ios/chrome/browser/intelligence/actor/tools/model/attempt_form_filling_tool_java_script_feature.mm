@@ -31,6 +31,8 @@ mojom::ActionResultCode ToActionResultCode(int code) {
       return mojom::ActionResultCode::kCoordinatesOutOfBounds;
     case AttemptFormFillingToolResultCode::kInvalidDomNodeId:
       return mojom::ActionResultCode::kInvalidDomNodeId;
+    case AttemptFormFillingToolResultCode::kTargetNotAutofillElement:
+      return mojom::ActionResultCode::kFormFillingFieldNotFound;
     case AttemptFormFillingToolResultCode::kInvalidTarget:
     default:
       // TODO(crbug.com/505037793): Use a more appropriate ActionResultCode

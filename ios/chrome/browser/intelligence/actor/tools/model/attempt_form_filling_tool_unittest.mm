@@ -6,9 +6,11 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/test/test_future.h"
+#import "base/unguessable_token.h"
 #import "base/values.h"
 #import "components/autofill/core/browser/actor/mock_actor_form_filling_service.h"
 #import "components/autofill/core/common/unique_ids.h"
+#import "components/autofill/ios/browser/autofill_util.h"
 #import "components/autofill/ios/browser/test_autofill_client_ios.h"
 #import "components/autofill/ios/form_util/child_frame_registrar.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
@@ -35,6 +37,72 @@
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
+
+namespace {
+
+// Adds a `FormFillingRequest` proto to `action`.
+void AddFormFillingRequestToAction(
+    optimization_guide::proto::AttemptFormFillingAction& action,
+    bool is_address,
+    bool use_coordinates,
+    const std::string& document_identifier = "") {
+  auto* request = action.add_form_filling_requests();
+  request->set_requested_data(
+      is_address
+          ? optimization_guide::proto::FormFillingRequest_RequestedData_ADDRESS
+          : optimization_guide::proto::
+                FormFillingRequest_RequestedData_CREDIT_CARD);
+  auto* field = request->add_trigger_fields();
+  if (use_coordinates) {
+    field->mutable_coordinate()->set_x(is_address ? 10 : 30);
+    field->mutable_coordinate()->set_y(is_address ? 20 : 40);
+  } else {
+    field->set_content_node_id(is_address ? 100 : 200);
+    field->mutable_document_identifier()->set_serialized_token(
+        document_identifier);
+  }
+}
+
+// Creates an `AttemptFormFillingAction` with a single request.
+optimization_guide::proto::AttemptFormFillingAction CreateAction(
+    bool is_address = true,
+    bool use_coordinates = true,
+    const std::string& document_identifier = "") {
+  optimization_guide::proto::AttemptFormFillingAction action;
+  AddFormFillingRequestToAction(action, is_address, use_coordinates,
+                                document_identifier);
+  return action;
+}
+
+// Creates an address `ActorFormFillingRequest` for testing.
+autofill::ActorFormFillingRequest CreateAddressFormFillingRequest() {
+  autofill::ActorFormFillingRequest request;
+  request.requested_data = autofill::ActorFormFillingRequestedData::kAddress;
+  request.request_origin = url::Origin::Create(GURL("https://example.com"));
+
+  autofill::ActorSuggestion suggestion;
+  suggestion.id = autofill::ActorSuggestionId(123);
+  suggestion.title = "John Doe";
+  suggestion.details = "123 Main St";
+  request.suggestions.push_back(suggestion);
+  return request;
+}
+
+// Creates a credit card `ActorFormFillingRequest` for testing.
+autofill::ActorFormFillingRequest CreateCreditCardFormFillingRequest() {
+  autofill::ActorFormFillingRequest request;
+  request.requested_data = autofill::ActorFormFillingRequestedData::kCreditCard;
+  request.request_origin = url::Origin::Create(GURL("https://example.com"));
+
+  autofill::ActorSuggestion suggestion;
+  suggestion.id = autofill::ActorSuggestionId(456);
+  suggestion.title = "Visa";
+  suggestion.details = "1111";
+  request.suggestions.push_back(suggestion);
+  return request;
+}
+
+}  // namespace
 
 // A fake implementation of ActorTaskInterventionDelegate.
 @interface FakeFormFillingTaskInterventionDelegate
@@ -139,6 +207,10 @@ class AttemptFormFillingToolTest : public PlatformTest {
             ActionTargetJavaScriptFeature::GetInstance(),
             AttemptFormFillingToolJavaScriptFeature::GetInstance(),
         });
+    auto page_content_frames_manager =
+        std::make_unique<web::FakeWebFramesManager>();
+    web_state->SetWebFramesManager(web::ContentWorld::kPageContentWorld,
+                                   std::move(page_content_frames_manager));
     auto frames_manager = std::make_unique<web::FakeWebFramesManager>();
     auto main_frame = web::FakeWebFrame::CreateMainWebFrame();
     main_frame->set_browser_state(profile_.get());
@@ -199,9 +271,10 @@ class AttemptFormFillingToolTest : public PlatformTest {
   base::Value success_renderer_ids_js_result_;
 };
 
-// Test that successful tool execution retrieves suggestions, prompts the user,
-// fills the selected suggestion, and completes successfully.
-TEST_F(AttemptFormFillingToolTest, Success) {
+// Test that successful tool execution with coordinate targets retrieves
+// suggestions, prompts the user, fills the selected suggestion, and completes
+// successfully.
+TEST_F(AttemptFormFillingToolTest, Success_Coordinates) {
   web::FakeWebState* web_state = CreateAndInsertWebState();
 
   // Set up 2 renderer IDs for the 2 trigger fields in this test.
@@ -217,54 +290,148 @@ TEST_F(AttemptFormFillingToolTest, Success) {
       "attempt_form_filling.getAutofillRendererIds");
 
   optimization_guide::proto::AttemptFormFillingAction action;
-  // Request 0: Address
-  auto* request0 = action.add_form_filling_requests();
-  request0->set_requested_data(
-      optimization_guide::proto::FormFillingRequest_RequestedData_ADDRESS);
-  auto* field0 = request0->add_trigger_fields();
-  field0->mutable_coordinate()->set_x(10);
-  field0->mutable_coordinate()->set_y(20);
-
-  // Request 1: Credit Card
-  auto* request1 = action.add_form_filling_requests();
-  request1->set_requested_data(
-      optimization_guide::proto::FormFillingRequest_RequestedData_CREDIT_CARD);
-  auto* field1 = request1->add_trigger_fields();
-  field1->mutable_coordinate()->set_x(30);
-  field1->mutable_coordinate()->set_y(40);
+  AddFormFillingRequestToAction(action, /*is_address=*/true,
+                                /*use_coordinates=*/true);
+  AddFormFillingRequestToAction(action, /*is_address=*/false,
+                                /*use_coordinates=*/true);
 
   std::unique_ptr<AttemptFormFillingTool> tool = CreateTool(action, web_state);
   ASSERT_TRUE(tool);
 
-  std::vector<autofill::ActorFormFillingRequest> suggestions_result;
+  std::vector<autofill::ActorFormFillingRequest> suggestions_result = {
+      CreateAddressFormFillingRequest(),
+      CreateCreditCardFormFillingRequest(),
+  };
 
-  // Request 0: Address suggestion
-  autofill::ActorFormFillingRequest form_filling_request0;
-  form_filling_request0.requested_data =
-      autofill::ActorFormFillingRequestedData::kAddress;
-  form_filling_request0.request_origin =
-      url::Origin::Create(GURL("https://example.com"));
+  // Expect `GetSuggestions` to be called with callback.
+  base::test::TestFuture<void> get_suggestions_called_future;
+  EXPECT_CALL(*mock_form_filling_service(),
+              GetSuggestions(testing::_, testing::_, testing::_))
+      .WillOnce(
+          [&](autofill::AutofillClient& client,
+              base::span<const autofill::ActorFormFillingService::FillRequest>
+                  fill_requests,
+              autofill::ActorFormFillingService::GetSuggestionsCallback
+                  callback) {
+            std::move(callback).Run(std::move(suggestions_result));
+            // Mark `GetSuggestions` as called to exit the blocking run loop.
+            get_suggestions_called_future.SetValue();
+          });
 
-  autofill::ActorSuggestion suggestion0;
-  suggestion0.id = autofill::ActorSuggestionId(123);
-  suggestion0.title = "John Doe";
-  suggestion0.details = "123 Main St";
-  form_filling_request0.suggestions.push_back(suggestion0);
-  suggestions_result.push_back(form_filling_request0);
+  // Set expectations for when the suggestions are retrieved.
+  EXPECT_CALL(*mock_form_filling_service(), ScrollToForm(testing::_, 0));
 
-  // Request 1: Credit Card suggestion
-  autofill::ActorFormFillingRequest form_filling_request1;
-  form_filling_request1.requested_data =
-      autofill::ActorFormFillingRequestedData::kCreditCard;
-  form_filling_request1.request_origin =
-      url::Origin::Create(GURL("https://example.com"));
+  base::test::TestFuture<ToolExecutionResult> future;
+  tool->Execute(future.GetCallback());
 
-  autofill::ActorSuggestion suggestion1;
-  suggestion1.id = autofill::ActorSuggestionId(456);
-  suggestion1.title = "Visa";
-  suggestion1.details = "1111";
-  form_filling_request1.suggestions.push_back(suggestion1);
-  suggestions_result.push_back(form_filling_request1);
+  // Wait for the tool to resolve target frame and fetch suggestions.
+  EXPECT_TRUE(get_suggestions_called_future.Wait());
+
+  // --- Step 1: Handle first suggestion (Address) ---
+  ASSERT_TRUE(intervention_delegate().selectFromSuggestionsCalled);
+  ASSERT_EQ(intervention_delegate().promptedSuggestions.count, 1u);
+
+  ActorFormSuggestion* selected_suggestion0 =
+      intervention_delegate().promptedSuggestions[0];
+  EXPECT_EQ(selected_suggestion0.type, autofill::SuggestionType::kAddressEntry);
+
+  // Expect FillForm to be called for index 0.
+  EXPECT_CALL(*mock_form_filling_service(),
+              FillForm(testing::_, 0, testing::_));
+
+  // Expect ScrollToForm to be called for index 1 when first selection is done.
+  // Block the runloop until the scroll has happened to avoid early exit.
+  base::test::TestFuture<void> second_scroll_future;
+  EXPECT_CALL(*mock_form_filling_service(), ScrollToForm(testing::_, 1))
+      .WillOnce([&] { second_scroll_future.SetValue(); });
+
+  // Run the first selection.
+  [intervention_delegate() runCompletionWithSuggestion:selected_suggestion0];
+
+  // Wait for first selection to be processed and second request prompted.
+  EXPECT_TRUE(second_scroll_future.Wait());
+
+  // --- Step 2: Handle second suggestion (Credit Card) ---
+  ASSERT_TRUE(intervention_delegate().selectFromSuggestionsCalled);
+  ASSERT_EQ(intervention_delegate().promptedSuggestions.count, 1u);
+
+  ActorFormSuggestion* selected_suggestion1 =
+      intervention_delegate().promptedSuggestions[0];
+  EXPECT_EQ(selected_suggestion1.type,
+            autofill::SuggestionType::kCreditCardEntry);
+
+  // Expect FillForm to be called for index 1.
+  EXPECT_CALL(*mock_form_filling_service(),
+              FillForm(testing::_, 1, testing::_));
+
+  // Expect FillSuggestions to be called.
+  EXPECT_CALL(*mock_form_filling_service(),
+              FillSuggestions(testing::_, testing::_, testing::_))
+      .WillOnce(
+          [](autofill::AutofillClient& client,
+             base::span<const autofill::ActorFormFillingSelection>
+                 chosen_suggestions,
+             base::OnceCallback<void(
+                 base::expected<std::string, autofill::ActorFormFillingError>)>
+                 callback) { std::move(callback).Run(""); });
+
+  // Run the second selection.
+  [intervention_delegate() runCompletionWithSuggestion:selected_suggestion1];
+
+  // Verify the execution outcome.
+  ToolExecutionResult result = future.Get();
+  EXPECT_TRUE(result.IsOk());
+}
+
+// Test that successful tool execution with DOM node targets retrieves
+// suggestions, prompts the user, fills the selected suggestion, and completes
+// successfully.
+TEST_F(AttemptFormFillingToolTest, Success_DomNode) {
+  web::FakeWebState* web_state = CreateAndInsertWebState();
+
+  web::WebFramesManager* frames_manager =
+      ActionTargetJavaScriptFeature::GetInstance()->GetWebFramesManager(
+          web_state);
+  web::WebFrame* main_frame = frames_manager->GetMainWebFrame();
+  ASSERT_TRUE(main_frame);
+
+  base::UnguessableToken remote_token = base::UnguessableToken::Create();
+  std::optional<base::UnguessableToken> local_token =
+      autofill::DeserializeJavaScriptFrameId(main_frame->GetFrameId());
+  ASSERT_TRUE(local_token.has_value());
+
+  autofill::ChildFrameRegistrar* registrar =
+      autofill::ChildFrameRegistrar::GetOrCreateForWebState(web_state);
+  registrar->RegisterMapping(autofill::RemoteFrameToken(remote_token),
+                             autofill::LocalFrameToken(*local_token));
+
+  // Set up 2 renderer IDs for the 2 trigger fields in this test.
+  base::DictValue renderer_ids_dict;
+  renderer_ids_dict.Set("resultCode", 0);
+  base::ListValue unique_ids;
+  unique_ids.Append("1");
+  unique_ids.Append("2");
+  renderer_ids_dict.Set("uniqueIds", std::move(unique_ids));
+  base::Value renderer_ids_result(std::move(renderer_ids_dict));
+  AddJsResultForFunctionCallToMainFrame(
+      web_state, &renderer_ids_result,
+      "attempt_form_filling.getAutofillRendererIds");
+
+  optimization_guide::proto::AttemptFormFillingAction action;
+  AddFormFillingRequestToAction(action, /*is_address=*/true,
+                                /*use_coordinates=*/false,
+                                remote_token.ToString());
+  AddFormFillingRequestToAction(action, /*is_address=*/false,
+                                /*use_coordinates=*/false,
+                                remote_token.ToString());
+
+  std::unique_ptr<AttemptFormFillingTool> tool = CreateTool(action, web_state);
+  ASSERT_TRUE(tool);
+
+  std::vector<autofill::ActorFormFillingRequest> suggestions_result = {
+      CreateAddressFormFillingRequest(),
+      CreateCreditCardFormFillingRequest(),
+  };
 
   // Expect `GetSuggestions` to be called with callback.
   base::test::TestFuture<void> get_suggestions_called_future;
@@ -366,14 +533,8 @@ TEST_F(AttemptFormFillingToolTest, Validate_OneRequestEmptyTriggerFieldsFails) {
   web::FakeWebState* web_state = CreateAndInsertWebState();
 
   optimization_guide::proto::AttemptFormFillingAction action;
-
-  // Request 0: has 1 trigger field.
-  auto* request0 = action.add_form_filling_requests();
-  request0->set_requested_data(
-      optimization_guide::proto::FormFillingRequest_RequestedData_ADDRESS);
-  auto* field = request0->add_trigger_fields();
-  field->mutable_coordinate()->set_x(10);
-  field->mutable_coordinate()->set_y(20);
+  AddFormFillingRequestToAction(action, /*is_address=*/true,
+                                /*use_coordinates=*/true);
 
   // Request 1: has 0 trigger fields.
   auto* request1 = action.add_form_filling_requests();
@@ -398,13 +559,8 @@ TEST_F(AttemptFormFillingToolTest,
   web::FakeWebState* web_state = CreateAndInsertWebState();
 
   optimization_guide::proto::AttemptFormFillingAction action;
-  // Request 0: has 1 trigger field.
-  auto* request0 = action.add_form_filling_requests();
-  request0->set_requested_data(
-      optimization_guide::proto::FormFillingRequest_RequestedData_ADDRESS);
-  auto* field0 = request0->add_trigger_fields();
-  field0->mutable_coordinate()->set_x(10);
-  field0->mutable_coordinate()->set_y(20);
+  AddFormFillingRequestToAction(action, /*is_address=*/true,
+                                /*use_coordinates=*/true);
 
   // Request 1: has 1 invalid trigger field (neither node ID nor coordinate is
   // set).
@@ -428,14 +584,7 @@ TEST_F(AttemptFormFillingToolTest,
 TEST_F(AttemptFormFillingToolTest, Execute_WebStateDestroyedFails) {
   web::FakeWebState* web_state = CreateAndInsertWebState();
 
-  optimization_guide::proto::AttemptFormFillingAction action;
-  auto* request = action.add_form_filling_requests();
-  request->set_requested_data(
-      optimization_guide::proto::FormFillingRequest_RequestedData_ADDRESS);
-  auto* field = request->add_trigger_fields();
-  field->mutable_coordinate()->set_x(10);
-  field->mutable_coordinate()->set_y(20);
-
+  optimization_guide::proto::AttemptFormFillingAction action = CreateAction();
   std::unique_ptr<AttemptFormFillingTool> tool = CreateTool(action, web_state);
   ASSERT_TRUE(tool);
 
@@ -456,14 +605,7 @@ TEST_F(AttemptFormFillingToolTest, Execute_NoWebFramesManagerFails) {
                     ->GetSupportedContentWorld()),
             nullptr);
 
-  optimization_guide::proto::AttemptFormFillingAction action;
-  auto* request = action.add_form_filling_requests();
-  request->set_requested_data(
-      optimization_guide::proto::FormFillingRequest_RequestedData_ADDRESS);
-  auto* field = request->add_trigger_fields();
-  field->mutable_coordinate()->set_x(10);
-  field->mutable_coordinate()->set_y(20);
-
+  optimization_guide::proto::AttemptFormFillingAction action = CreateAction();
   std::unique_ptr<AttemptFormFillingTool> tool =
       CreateTool(action, web_state.get());
   ASSERT_TRUE(tool);
@@ -489,14 +631,7 @@ TEST_F(AttemptFormFillingToolTest, Execute_NoMainFrameFails) {
           ->GetMainWebFrame(),
       nullptr);
 
-  optimization_guide::proto::AttemptFormFillingAction action;
-  auto* request = action.add_form_filling_requests();
-  request->set_requested_data(
-      optimization_guide::proto::FormFillingRequest_RequestedData_ADDRESS);
-  auto* field = request->add_trigger_fields();
-  field->mutable_coordinate()->set_x(10);
-  field->mutable_coordinate()->set_y(20);
-
+  optimization_guide::proto::AttemptFormFillingAction action = CreateAction();
   std::unique_ptr<AttemptFormFillingTool> tool =
       CreateTool(action, web_state.get());
   ASSERT_TRUE(tool);
@@ -519,14 +654,7 @@ TEST_F(AttemptFormFillingToolTest,
   AddJsResultForFunctionCallToMainFrame(web_state, &js_result,
                                         "action_target.resolveTargetIframe");
 
-  optimization_guide::proto::AttemptFormFillingAction action;
-  auto* request = action.add_form_filling_requests();
-  request->set_requested_data(
-      optimization_guide::proto::FormFillingRequest_RequestedData_ADDRESS);
-  auto* field = request->add_trigger_fields();
-  field->mutable_coordinate()->set_x(10);
-  field->mutable_coordinate()->set_y(20);
-
+  optimization_guide::proto::AttemptFormFillingAction action = CreateAction();
   std::unique_ptr<AttemptFormFillingTool> tool = CreateTool(action, web_state);
   ASSERT_TRUE(tool);
 
@@ -552,14 +680,7 @@ TEST_F(AttemptFormFillingToolTest,
       web_state, &renderer_id_result,
       "attempt_form_filling.getAutofillRendererIds");
 
-  optimization_guide::proto::AttemptFormFillingAction action;
-  auto* request = action.add_form_filling_requests();
-  request->set_requested_data(
-      optimization_guide::proto::FormFillingRequest_RequestedData_ADDRESS);
-  auto* field = request->add_trigger_fields();
-  field->mutable_coordinate()->set_x(10);
-  field->mutable_coordinate()->set_y(20);
-
+  optimization_guide::proto::AttemptFormFillingAction action = CreateAction();
   std::unique_ptr<AttemptFormFillingTool> tool = CreateTool(action, web_state);
   ASSERT_TRUE(tool);
 
@@ -572,18 +693,37 @@ TEST_F(AttemptFormFillingToolTest,
             InternalToolErrorCode::kJavascriptFeatureGotInvalidResult);
 }
 
+// Test that if resolving Autofill renderer IDs fails because the target is not
+// an autofill element, the tool execution fails with kFormFillingFieldNotFound.
+TEST_F(AttemptFormFillingToolTest,
+       Execute_GetAutofillRendererIdsTargetNotAutofillElementFails) {
+  web::FakeWebState* web_state = CreateAndInsertWebState();
+
+  // Set up result with resultCode = 4 (kTargetNotAutofillElement).
+  base::DictValue renderer_ids_dict;
+  renderer_ids_dict.Set("resultCode", 4);
+  base::Value renderer_ids_result(std::move(renderer_ids_dict));
+  AddJsResultForFunctionCallToMainFrame(
+      web_state, &renderer_ids_result,
+      "attempt_form_filling.getAutofillRendererIds");
+
+  optimization_guide::proto::AttemptFormFillingAction action = CreateAction();
+  std::unique_ptr<AttemptFormFillingTool> tool = CreateTool(action, web_state);
+  ASSERT_TRUE(tool);
+
+  base::test::TestFuture<ToolExecutionResult> future;
+  tool->Execute(future.GetCallback());
+
+  ToolExecutionResult result = future.Get();
+  EXPECT_FALSE(result.IsOk());
+  EXPECT_EQ(result.code(), mojom::ActionResultCode::kFormFillingFieldNotFound);
+}
+
 // Test that tool execution fails if suggestion retrieval returns an error.
 TEST_F(AttemptFormFillingToolTest, Execute_GetSuggestionsError) {
   web::FakeWebState* web_state = CreateAndInsertWebState();
 
-  optimization_guide::proto::AttemptFormFillingAction action;
-  auto* request = action.add_form_filling_requests();
-  request->set_requested_data(
-      optimization_guide::proto::FormFillingRequest_RequestedData_ADDRESS);
-  auto* field = request->add_trigger_fields();
-  field->mutable_coordinate()->set_x(10);
-  field->mutable_coordinate()->set_y(20);
-
+  optimization_guide::proto::AttemptFormFillingAction action = CreateAction();
   std::unique_ptr<AttemptFormFillingTool> tool = CreateTool(action, web_state);
   ASSERT_TRUE(tool);
 
@@ -613,30 +753,13 @@ TEST_F(AttemptFormFillingToolTest, Execute_GetSuggestionsError) {
 TEST_F(AttemptFormFillingToolTest, Execute_DialogClosedError) {
   web::FakeWebState* web_state = CreateAndInsertWebState();
 
-  optimization_guide::proto::AttemptFormFillingAction action;
-  auto* request = action.add_form_filling_requests();
-  request->set_requested_data(
-      optimization_guide::proto::FormFillingRequest_RequestedData_ADDRESS);
-  auto* field = request->add_trigger_fields();
-  field->mutable_coordinate()->set_x(10);
-  field->mutable_coordinate()->set_y(20);
-
+  optimization_guide::proto::AttemptFormFillingAction action = CreateAction();
   std::unique_ptr<AttemptFormFillingTool> tool = CreateTool(action, web_state);
   ASSERT_TRUE(tool);
 
-  std::vector<autofill::ActorFormFillingRequest> suggestions_result;
-  autofill::ActorFormFillingRequest form_filling_request;
-  form_filling_request.requested_data =
-      autofill::ActorFormFillingRequestedData::kAddress;
-  form_filling_request.request_origin =
-      url::Origin::Create(GURL("https://example.com"));
-
-  autofill::ActorSuggestion suggestion;
-  suggestion.id = autofill::ActorSuggestionId(123);
-  suggestion.title = "John Doe";
-  suggestion.details = "123 Main St";
-  form_filling_request.suggestions.push_back(suggestion);
-  suggestions_result.push_back(form_filling_request);
+  std::vector<autofill::ActorFormFillingRequest> suggestions_result = {
+      CreateAddressFormFillingRequest(),
+  };
 
   // Expect that `GetSuggestions` gets called with callback. Block the runloop
   // until the callback is invoked.
@@ -678,30 +801,13 @@ TEST_F(AttemptFormFillingToolTest, Execute_DialogClosedError) {
 TEST_F(AttemptFormFillingToolTest, Execute_FillSuggestionsError) {
   web::FakeWebState* web_state = CreateAndInsertWebState();
 
-  optimization_guide::proto::AttemptFormFillingAction action;
-  auto* request = action.add_form_filling_requests();
-  request->set_requested_data(
-      optimization_guide::proto::FormFillingRequest_RequestedData_ADDRESS);
-  auto* field = request->add_trigger_fields();
-  field->mutable_coordinate()->set_x(10);
-  field->mutable_coordinate()->set_y(20);
-
+  optimization_guide::proto::AttemptFormFillingAction action = CreateAction();
   std::unique_ptr<AttemptFormFillingTool> tool = CreateTool(action, web_state);
   ASSERT_TRUE(tool);
 
-  std::vector<autofill::ActorFormFillingRequest> suggestions_result;
-  autofill::ActorFormFillingRequest form_filling_request;
-  form_filling_request.requested_data =
-      autofill::ActorFormFillingRequestedData::kAddress;
-  form_filling_request.request_origin =
-      url::Origin::Create(GURL("https://example.com"));
-
-  autofill::ActorSuggestion suggestion;
-  suggestion.id = autofill::ActorSuggestionId(123);
-  suggestion.title = "John Doe";
-  suggestion.details = "123 Main St";
-  form_filling_request.suggestions.push_back(suggestion);
-  suggestions_result.push_back(form_filling_request);
+  std::vector<autofill::ActorFormFillingRequest> suggestions_result = {
+      CreateAddressFormFillingRequest(),
+  };
 
   // Expect that `GetSuggestions` gets called with callback. Block the runloop
   // until the callback is invoked.

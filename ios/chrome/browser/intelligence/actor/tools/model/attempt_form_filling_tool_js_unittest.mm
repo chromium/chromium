@@ -155,7 +155,7 @@ TEST_F(AttemptFormFillingToolJavaScriptTest, GetNonExistent_ReturnsErrorCodes) {
             AttemptFormFillingToolResultCode::kCoordinatesOutOfBounds);
 }
 
-// Test lookup on a non-form element returns kInvalidDomNodeId.
+// Test lookup on a non-form element returns kTargetNotAutofillElement.
 TEST_F(AttemptFormFillingToolJavaScriptTest,
        GetNonFormElement_ReturnsErrorCodes) {
   // Node ID target
@@ -163,7 +163,7 @@ TEST_F(AttemptFormFillingToolJavaScriptTest,
   NSDictionary* result_node = GetAutofillRendererIds(@(node_id), nil, nil, nil);
   EXPECT_EQ(static_cast<AttemptFormFillingToolResultCode>(
                 [result_node[@"resultCode"] intValue]),
-            AttemptFormFillingToolResultCode::kInvalidDomNodeId);
+            AttemptFormFillingToolResultCode::kTargetNotAutofillElement);
 
   // Coordinate target
   NSDictionary* rect = GetElementClientRect("not_input");
@@ -174,7 +174,7 @@ TEST_F(AttemptFormFillingToolJavaScriptTest,
       @(optimization_guide::proto::Coordinate::PIXEL_TYPE_DIPS));
   EXPECT_EQ(static_cast<AttemptFormFillingToolResultCode>(
                 [result_coord[@"resultCode"] intValue]),
-            AttemptFormFillingToolResultCode::kInvalidDomNodeId);
+            AttemptFormFillingToolResultCode::kTargetNotAutofillElement);
 }
 
 }  // namespace actor

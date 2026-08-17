@@ -25,6 +25,8 @@ export enum AttemptFormFillingToolResultCode {
   // The provided DOM node ID could not be found or did not resolve to an
   // element.
   INVALID_DOM_NODE_ID = 3,
+  // The provided target is not an autofillable element.
+  TARGET_NOT_AUTOFILL_ELEMENT = 4,
 }
 // LINT.ThenChange(//ios/chrome/browser/intelligence/actor/tools/model/attempt_form_filling_tool_java_script_feature.h:AttemptFormFillingToolResultCode)
 
@@ -43,13 +45,13 @@ function getAutofillRendererIdByElement(element: Element):
     AutofillRendererIdResult {
   if (!isAutofillableElement(element)) {
     return {
-      resultCode: AttemptFormFillingToolResultCode.INVALID_DOM_NODE_ID,
+      resultCode: AttemptFormFillingToolResultCode.TARGET_NOT_AUTOFILL_ELEMENT,
     };
   }
   const uniqueId = getUniqueID(element);
   if (!uniqueId || uniqueId === RENDERER_ID_NOT_SET) {
     return {
-      resultCode: AttemptFormFillingToolResultCode.INVALID_DOM_NODE_ID,
+      resultCode: AttemptFormFillingToolResultCode.TARGET_NOT_AUTOFILL_ELEMENT,
     };
   }
   return {

@@ -31,6 +31,8 @@ enum class AttemptFormFillingToolResultCode {
   // The provided DOM node ID could not be found or did not resolve to an
   // element.
   kInvalidDomNodeId = 3,
+  // The provided target is not an autofillable element.
+  kTargetNotAutofillElement = 4,
 };
 // LINT.ThenChange(//ios/chrome/browser/intelligence/actor/tools/model/resources/attempt_form_filling_tool.ts:AttemptFormFillingToolResultCode)
 
