@@ -110,13 +110,20 @@ PrivacyPassAthmBatchRequest::Finalize(base::span<const uint8_t> response_body) {
     return base::unexpected(
         PrivacyPassAthmBatchRequestError::kAlreadyFinalized);
   }
-  size_t token_count = token_states_.size();
-  if (response_body.empty() || response_body.size() % token_count != 0) {
+  const size_t token_count = token_states_.size();
+  const size_t single_response_size =
+      athm_token_response_size(base::SpanToRustSlice(params_));
+  if (single_response_size == 0) {
+    return base::unexpected(
+        PrivacyPassAthmBatchRequestError::kParameterGenerationFailed);
+  }
+
+  const size_t expected_response_size = token_count * single_response_size;
+  if (response_body.size() != expected_response_size) {
     return base::unexpected(
         PrivacyPassAthmBatchRequestError::kInvalidResponseBodyLength);
   }
 
-  const size_t single_response_size = response_body.size() / token_count;
   const std::array<uint8_t, crypto::hash::kSha256Size> issuer_key_id =
       pvt_public_key_.key_id();
   const std::string issuer_key_id_str(issuer_key_id.begin(),

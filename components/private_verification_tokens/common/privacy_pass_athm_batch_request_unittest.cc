@@ -196,6 +196,31 @@ TEST(PrivacyPassAthmBatchRequestTest, MalformedResponseBody) {
   EXPECT_FALSE(odd_res.has_value());
   EXPECT_EQ(odd_res.error(),
             PrivacyPassAthmBatchRequestError::kInvalidResponseBodyLength);
+
+  // Divisible by batch_size, but incorrect total length (e.g. 100 bytes per
+  // token instead of expected 483 bytes for 4 buckets).
+  std::vector<uint8_t> wrong_chunk_size_bytes(200, 0xAA);
+  auto wrong_chunk_res = batch_request->Finalize(wrong_chunk_size_bytes);
+  EXPECT_FALSE(wrong_chunk_res.has_value());
+  EXPECT_EQ(wrong_chunk_res.error(),
+            PrivacyPassAthmBatchRequestError::kInvalidResponseBodyLength);
+
+  // Expected length for 2 tokens with 4 buckets is 2 * 483 = 966 bytes.
+  constexpr size_t kExpectedBatchResponseSize = 2 * 483;
+
+  // Correct size minus one byte (truncated).
+  std::vector<uint8_t> truncated_bytes(kExpectedBatchResponseSize - 1, 0xAA);
+  auto truncated_res = batch_request->Finalize(truncated_bytes);
+  EXPECT_FALSE(truncated_res.has_value());
+  EXPECT_EQ(truncated_res.error(),
+            PrivacyPassAthmBatchRequestError::kInvalidResponseBodyLength);
+
+  // Correct size plus one byte (extra).
+  std::vector<uint8_t> extra_bytes(kExpectedBatchResponseSize + 1, 0xAA);
+  auto extra_res = batch_request->Finalize(extra_bytes);
+  EXPECT_FALSE(extra_res.has_value());
+  EXPECT_EQ(extra_res.error(),
+            PrivacyPassAthmBatchRequestError::kInvalidResponseBodyLength);
 }
 
 }  // namespace

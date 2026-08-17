@@ -126,6 +126,11 @@ mod ffi {
             response: &[u8],
             params: &[u8],
         ) -> AthmBytesResult;
+
+        /// Returns the expected wire size in bytes of a single `TokenResponse`
+        /// for the given ATHM `params`. Returns 0 if `params` fails to
+        /// decode.
+        fn athm_token_response_size(params: &[u8]) -> usize;
     }
 }
 
@@ -267,4 +272,36 @@ fn athm_client_finalize(
         Ok(token) => ffi::AthmBytesResult { status: AthmStatus::Ok, bytes: encode(&token) },
         Err(_) => err_bytes(AthmStatus::OperationFailed),
     }
+}
+
+// Wire sizes in bytes for P-256 field elements and points in the BoringSSL
+// backend.
+const SCALAR_SIZE: usize = 32;
+const POINT_SIZE: usize = 33; // SEC-1 compressed format: 1-byte header + 32-byte X-coordinate
+
+// Number of dynamic challenge/response scalars per metadata bucket in
+// IssuanceProof (e_vec and a_vec).
+const SCALARS_PER_METADATA_BUCKET: usize = 2;
+
+/// Computes the wire size of an ATHM `IssuanceProof` for `n_buckets`:
+/// - `big_c`: 1 Point
+/// - `a_d`, `a_rho`, `a_w`: 3 fixed Scalars
+/// - `e_vec`, `a_vec`: `n_buckets` Scalars each (2 * `n_buckets` Scalars)
+const fn issuance_proof_size(n_buckets: u8) -> usize {
+    POINT_SIZE + (3 + (n_buckets as usize) * SCALARS_PER_METADATA_BUCKET) * SCALAR_SIZE
+}
+
+/// Computes the wire size of an ATHM `TokenResponse` for `n_buckets`:
+/// - `big_u`, `big_v`: 2 Points
+/// - `ts`: 1 Scalar
+/// - `issuance_proof`: `issuance_proof_size(n_buckets)`
+const fn token_response_size_for_buckets(n_buckets: u8) -> usize {
+    2 * POINT_SIZE + SCALAR_SIZE + issuance_proof_size(n_buckets)
+}
+
+fn athm_token_response_size(params: &[u8]) -> usize {
+    let Ok(params) = Params::decode(params) else {
+        return 0;
+    };
+    token_response_size_for_buckets(params.n_buckets)
 }
