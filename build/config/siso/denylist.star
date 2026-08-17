@@ -133,12 +133,21 @@ def __step_config(ctx, step_config):
         })
 
     if config.get(ctx, "default-remote"):
-        step_config["rules"].append({
-            "name": "default",
-            "action": ".*",
-            "remote": True,
-            "timeout": "2m",
-        })
+        step_config["rules"].extend([
+            {
+                "name": "default-python",
+                "command_prefix": platform.python_bin,
+                "remote": True,
+                "remote_command": platform.remote_python_bin,
+                "timeout": "2m",
+            },
+            {
+                "name": "default",
+                "action": ".*",
+                "remote": True,
+                "timeout": "2m",
+            },
+        ])
 
     return step_config
 
