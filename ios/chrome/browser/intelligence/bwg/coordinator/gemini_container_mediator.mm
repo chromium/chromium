@@ -159,7 +159,13 @@
   return shouldShow;
 }
 
-- (BOOL)shouldRequireFullPageContextForEntryPoint:
+- (BOOL)shouldBlockQuerySubmissionWhileLoadingForEntryPoint:
+    (gemini::EntryPoint)entryPoint {
+  return IsAppSwitcherAISummarizationEnabled() &&
+         entryPoint == gemini::EntryPoint::AppSwitcherAISummarization;
+}
+
+- (BOOL)shouldShowPageLoadingSnackbarOnOpeningInvocationForEntryPoint:
     (gemini::EntryPoint)entryPoint {
   return IsAppSwitcherAISummarizationEnabled() &&
          entryPoint == gemini::EntryPoint::AppSwitcherAISummarization;
@@ -397,9 +403,16 @@
   }
   config.contextualCueChipLabel = startupState.prepopulatedPrompt;
   config.entryPoint = startupState.entryPoint;
-  config.requireFullPageContext =
-      [self shouldRequireFullPageContextForEntryPoint:startupState.entryPoint];
-  RecordRequireFullPageContext(config.requireFullPageContext);
+  config.blockQuerySubmissionWhileLoading =
+      [self shouldBlockQuerySubmissionWhileLoadingForEntryPoint:
+          startupState.entryPoint];
+  RecordBlockQuerySubmissionWhileLoading(
+      config.blockQuerySubmissionWhileLoading);
+  config.showPageLoadingSnackbarOnOpeningInvocation =
+      [self shouldShowPageLoadingSnackbarOnOpeningInvocationForEntryPoint:
+          startupState.entryPoint];
+  RecordShowPageLoadingSnackbarOnOpeningInvocation(
+      config.showPageLoadingSnackbarOnOpeningInvocation);
   config.imageRemixIPHShouldShow =
       startupState.entryPoint == gemini::EntryPoint::ImageRemixIPH;
 

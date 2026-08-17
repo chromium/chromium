@@ -616,10 +616,12 @@ TEST_F(GeminiContainerMediatorTest, TestDidTapNewChatButtonResetsZeroState) {
   EXPECT_FALSE(consumer.dismissKeyboardCalled);
 }
 
-// Tests that requireFullPageContext is YES when kAppSwitcherAISummarization is
-// enabled and entry point is AppSwitcherAISummarization.
+// Tests that blockQuerySubmissionWhileLoading and
+// showPageLoadingSnackbarOnOpeningInvocation are YES when
+// kAppSwitcherAISummarization is enabled and entry point is
+// AppSwitcherAISummarization.
 TEST_F(GeminiContainerMediatorTest,
-       TestRequireFullPageContextEnabledForAppSwitcher) {
+       TestLoadingConfigurationEnabledForAppSwitcher) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       {kAppSwitcherAISummarization, kPageActionMenu}, {});
@@ -633,15 +635,20 @@ TEST_F(GeminiContainerMediatorTest,
   GeminiConfiguration* config = [mediator_
       createGeminiConfigurationForActiveWebState:app_switcher_startup_state
                               baseViewController:nil];
-  EXPECT_TRUE(config.requireFullPageContext);
-  histogram_tester.ExpectUniqueSample(kRequireFullPageContextHistogram, true,
-                                      1);
+  EXPECT_TRUE(config.blockQuerySubmissionWhileLoading);
+  EXPECT_TRUE(config.showPageLoadingSnackbarOnOpeningInvocation);
+  histogram_tester.ExpectUniqueSample(
+      kBlockQuerySubmissionWhileLoadingHistogram, true, 1);
+  histogram_tester.ExpectUniqueSample(
+      kShowPageLoadingSnackbarOnOpeningInvocationHistogram, true, 1);
 }
 
-// Tests that requireFullPageContext is NO when kAppSwitcherAISummarization is
-// enabled but entry point is not AppSwitcherAISummarization.
+// Tests that blockQuerySubmissionWhileLoading and
+// showPageLoadingSnackbarOnOpeningInvocation are NO when
+// kAppSwitcherAISummarization is enabled but entry point is not
+// AppSwitcherAISummarization.
 TEST_F(GeminiContainerMediatorTest,
-       TestRequireFullPageContextDisabledForOtherEntryPoints) {
+       TestLoadingConfigurationDisabledForOtherEntryPoints) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       {kAppSwitcherAISummarization, kPageActionMenu}, {});
@@ -655,9 +662,43 @@ TEST_F(GeminiContainerMediatorTest,
   GeminiConfiguration* config =
       [mediator_ createGeminiConfigurationForActiveWebState:promo_startup_state
                                          baseViewController:nil];
-  EXPECT_FALSE(config.requireFullPageContext);
-  histogram_tester.ExpectUniqueSample(kRequireFullPageContextHistogram, false,
-                                      1);
+  EXPECT_FALSE(config.blockQuerySubmissionWhileLoading);
+  EXPECT_FALSE(config.showPageLoadingSnackbarOnOpeningInvocation);
+  histogram_tester.ExpectUniqueSample(
+      kBlockQuerySubmissionWhileLoadingHistogram, false, 1);
+  histogram_tester.ExpectUniqueSample(
+      kShowPageLoadingSnackbarOnOpeningInvocationHistogram, false, 1);
+}
+
+// Tests that shouldBlockQuerySubmissionWhileLoadingForEntryPoint returns true
+// for AppSwitcherAISummarization when feature is enabled and false otherwise.
+TEST_F(GeminiContainerMediatorTest,
+       TestShouldBlockQuerySubmissionWhileLoadingForEntryPoint) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kAppSwitcherAISummarization, kPageActionMenu}, {});
+
+  EXPECT_TRUE([mediator_ shouldBlockQuerySubmissionWhileLoadingForEntryPoint:
+                             gemini::EntryPoint::AppSwitcherAISummarization]);
+  EXPECT_FALSE([mediator_ shouldBlockQuerySubmissionWhileLoadingForEntryPoint:
+                              gemini::EntryPoint::Promo]);
+}
+
+// Tests that shouldShowPageLoadingSnackbarOnOpeningInvocationForEntryPoint
+// returns true for AppSwitcherAISummarization when feature is enabled and false
+// otherwise.
+TEST_F(GeminiContainerMediatorTest,
+       TestShouldShowPageLoadingSnackbarOnOpeningInvocationForEntryPoint) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kAppSwitcherAISummarization, kPageActionMenu}, {});
+
+  EXPECT_TRUE(
+      [mediator_ shouldShowPageLoadingSnackbarOnOpeningInvocationForEntryPoint:
+                     gemini::EntryPoint::AppSwitcherAISummarization]);
+  EXPECT_FALSE(
+      [mediator_ shouldShowPageLoadingSnackbarOnOpeningInvocationForEntryPoint:
+                     gemini::EntryPoint::Promo]);
 }
 
 // Tests that changing detent to minimized when container is in zero state and

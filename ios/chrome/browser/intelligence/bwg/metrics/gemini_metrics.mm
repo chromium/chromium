@@ -154,8 +154,11 @@ const char kPromptTabsAttachedCountHistogram[] =
 
 const char kPromptMultiTabUsedHistogram[] = "IOS.Gemini.Prompt.MultiTabUsed";
 
-const char kRequireFullPageContextHistogram[] =
-    "IOS.Gemini.RequireFullPageContext";
+const char kBlockQuerySubmissionWhileLoadingHistogram[] =
+    "IOS.Gemini.BlockQuerySubmissionWhileLoading";
+
+const char kShowPageLoadingSnackbarOnOpeningInvocationHistogram[] =
+    "IOS.Gemini.ShowPageLoadingSnackbarOnOpeningInvocation";
 
 const char kResponseGeneratedImageIncluded[] =
     "IOS.Gemini.Response.GeneratedImage.Included";
@@ -871,7 +874,12 @@ void RecordGeminiLiveAccumulatedDuration(base::TimeDelta duration) {
                               duration);
 }
 
-void RecordRequireFullPageContext(bool require_full_page_context) {
-  base::UmaHistogramBoolean(kRequireFullPageContextHistogram,
-                            require_full_page_context);
+void RecordBlockQuerySubmissionWhileLoading(bool block_submission) {
+  base::UmaHistogramBoolean(kBlockQuerySubmissionWhileLoadingHistogram,
+                            block_submission);
+}
+
+void RecordShowPageLoadingSnackbarOnOpeningInvocation(bool show_snackbar) {
+  base::UmaHistogramBoolean(
+      kShowPageLoadingSnackbarOnOpeningInvocationHistogram, show_snackbar);
 }

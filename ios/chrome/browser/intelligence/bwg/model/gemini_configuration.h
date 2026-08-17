@@ -120,8 +120,12 @@ class PageContext;
 // Whether the account requires capability-based restriction.
 @property(nonatomic, assign) BOOL needsAccountCapabilityRestriction;
 
-// Whether full page context is required before initiating the Gemini session.
-@property(nonatomic, assign) BOOL requireFullPageContext;
+// Whether query submission should be blocked while page context is loading.
+@property(nonatomic, assign) BOOL blockQuerySubmissionWhileLoading;
+
+// Whether to display the page loading snackbar on the opening invocation while
+// page context is loading.
+@property(nonatomic, assign) BOOL showPageLoadingSnackbarOnOpeningInvocation;
 
 @end
 

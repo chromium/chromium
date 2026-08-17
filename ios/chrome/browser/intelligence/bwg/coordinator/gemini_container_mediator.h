@@ -94,8 +94,14 @@ class WebStateList;
 - (BOOL)shouldShowSuggestionChipsForEntryPoint:
     (gemini::EntryPoint)entryPoint;
 
-// Returns whether full page context is required for the given entry point.
-- (BOOL)shouldRequireFullPageContextForEntryPoint:
+// Returns whether query submission should be blocked while page context is
+// loading for the given entry point.
+- (BOOL)shouldBlockQuerySubmissionWhileLoadingForEntryPoint:
+    (gemini::EntryPoint)entryPoint;
+
+// Returns whether the page loading snackbar should be displayed on opening
+// invocation for the given entry point.
+- (BOOL)shouldShowPageLoadingSnackbarOnOpeningInvocationForEntryPoint:
     (gemini::EntryPoint)entryPoint;
 
 // Currently, `GeminiBrowserAgent` does some of the state cleanup after each
