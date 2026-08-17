@@ -565,7 +565,8 @@ void BaseUIManager::SendThreatDetails(
 // If HaTS surveys are enabled, then this gets called when the report is ready.
 void BaseUIManager::AttachThreatDetailsAndLaunchSurvey(
     content::BrowserContext* browser_context,
-    std::unique_ptr<ClientSafeBrowsingReportRequest> report) {
+    std::unique_ptr<ClientSafeBrowsingReportRequest> report,
+    bool is_tab_closed) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return;
 }

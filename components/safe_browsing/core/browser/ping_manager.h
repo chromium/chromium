@@ -155,7 +155,8 @@ class PingManager : public KeyedService {
 
   // Launches a survey and attaches ThreatDetails to the survey response.
   virtual void AttachThreatDetailsAndLaunchSurvey(
-      std::unique_ptr<ClientSafeBrowsingReportRequest> report);
+      std::unique_ptr<ClientSafeBrowsingReportRequest> report,
+      bool is_tab_closed);
 
   // Only used for tests
   void SetURLLoaderFactoryForTesting(

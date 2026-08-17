@@ -13,11 +13,11 @@ namespace safe_browsing {
 
 class ChromeSafeBrowsingHatsDelegate : public SafeBrowsingHatsDelegate {
  public:
-  ChromeSafeBrowsingHatsDelegate();
   explicit ChromeSafeBrowsingHatsDelegate(Profile* profile);
 
-  void LaunchRedWarningSurvey(const std::map<std::string, std::string>&
-                                  product_specific_string_data = {}) override;
+  void LaunchRedWarningSurvey(
+      const SurveyStringData& product_specific_string_data,
+      const SurveyBitsData& product_specific_bits_data) override;
 
  private:
   // raw_ptr is safe because this object is owned by keyed service, which will

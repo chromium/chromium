@@ -82,7 +82,8 @@ class BaseUIManager : public base::RefCountedThreadSafe<BaseUIManager> {
   // details included as part of a user's response to a HaTS survey.
   virtual void AttachThreatDetailsAndLaunchSurvey(
       content::BrowserContext* browser_context,
-      std::unique_ptr<ClientSafeBrowsingReportRequest> report);
+      std::unique_ptr<ClientSafeBrowsingReportRequest> report,
+      bool is_tab_closed);
 
   // Updates the allowlist URL set for |web_contents|. |navigation_id| is used
   // to ensure the |allowlist_url| for same navigation is only added once.

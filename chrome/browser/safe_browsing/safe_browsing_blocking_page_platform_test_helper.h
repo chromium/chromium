@@ -122,7 +122,8 @@ class FakeSafeBrowsingUIManager : public TestSafeBrowsingUIManager {
   // Overrides SafeBrowsingUIManager.
   void AttachThreatDetailsAndLaunchSurvey(
       content::BrowserContext* browser_context,
-      std::unique_ptr<ClientSafeBrowsingReportRequest> report) override;
+      std::unique_ptr<ClientSafeBrowsingReportRequest> report,
+      bool is_tab_closed) override;
   void ValidateReportForHats(std::string report_string);
   // Overrides SafeBrowsingUIManager
   void SendThreatDetails(

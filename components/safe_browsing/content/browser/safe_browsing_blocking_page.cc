@@ -12,6 +12,7 @@
 #include "base/lazy_instance.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "build/build_config.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/browser/client_report_util.h"
 #include "components/safe_browsing/content/browser/content_unsafe_resource_util.h"
@@ -248,7 +249,13 @@ void SafeBrowsingBlockingPage::FinishThreatDetails(const base::TimeDelta& delay,
   trigger_manager_->SetInterstitialInteractions(
       std::move(interstitial_interactions_));
   bool is_hats_candidate = false;
-  if (base::FeatureList::IsEnabled(kRedWarningSurvey)) {
+  const base::Feature& hats_feature =
+#if BUILDFLAG(IS_ANDROID)
+      kRedWarningSurveyAndroid;
+#else
+      kRedWarningSurvey;
+#endif
+  if (base::FeatureList::IsEnabled(hats_feature)) {
     is_hats_candidate =
         SafeBrowsingHatsDelegate::IsSurveyCandidate(
             threat_type_, kRedWarningSurveyReportTypeFilter.Get(), proceeded(),

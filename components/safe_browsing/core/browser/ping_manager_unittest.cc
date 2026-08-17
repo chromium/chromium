@@ -15,6 +15,7 @@
 #include "base/strings/escape.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -43,14 +44,17 @@ using enum ExtendedReportingLevel;
 
 class FakeSafeBrowsingHatsDelegate : public SafeBrowsingHatsDelegate {
  public:
-  void LaunchRedWarningSurvey(
-      const SurveyStringData& survey_string_data) override {
+  void LaunchRedWarningSurvey(const SurveyStringData& survey_string_data,
+                              const SurveyBitsData& survey_bits_data) override {
     survey_string_data_ = survey_string_data;
+    survey_bits_data_ = survey_bits_data;
   }
   SurveyStringData GetSurveyStringData() { return survey_string_data_; }
+  SurveyBitsData GetSurveyBitsData() { return survey_bits_data_; }
 
  private:
   SurveyStringData survey_string_data_;
+  SurveyBitsData survey_bits_data_;
 };
 class MockWebUIDelegate : public PingManager::WebUIDelegate {
  public:
@@ -90,6 +94,9 @@ class PingManagerTest : public testing::Test {
   base::FilePath persister_root_path_;
   base::FilePath persister_dir_;
   FakeSafeBrowsingHatsDelegate* SetUpHatsDelegate();
+  FakeSafeBrowsingHatsDelegate* RunAttachThreatDetailsAndLaunchSurvey(
+      std::unique_ptr<ClientSafeBrowsingReportRequest> report,
+      bool is_tab_closed = false);
 
  private:
   TestSafeBrowsingTokenFetcher* SetUpTokenFetcher();
@@ -176,6 +183,26 @@ FakeSafeBrowsingHatsDelegate* PingManagerTest::SetUpHatsDelegate() {
   auto* raw_hats_delegate = hats_delegate.get();
   ping_manager()->SetHatsDelegateForTesting(std::move(hats_delegate));
   return raw_hats_delegate;
+}
+
+FakeSafeBrowsingHatsDelegate*
+PingManagerTest::RunAttachThreatDetailsAndLaunchSurvey(
+    std::unique_ptr<ClientSafeBrowsingReportRequest> report,
+    bool is_tab_closed) {
+  SetNewPingManager(
+      /*get_should_fetch_access_token=*/base::BindRepeating(
+          []() { return true; }),
+      /*get_user_population_callback=*/base::BindRepeating([]() {
+        return ChromeUserPopulation();
+      }),
+      /*get_page_load_token_callback=*/base::BindRepeating([](GURL url) {
+        return ChromeUserPopulation::PageLoadToken();
+      }),
+      /*get_should_send_persisted_report=*/std::nullopt);
+  FakeSafeBrowsingHatsDelegate* raw_fake_sb_hats_delegate = SetUpHatsDelegate();
+  ping_manager()->AttachThreatDetailsAndLaunchSurvey(std::move(report),
+                                                     is_tab_closed);
+  return raw_fake_sb_hats_delegate;
 }
 
 void PingManagerTest::RunReportThreatDetailsTest(
@@ -624,7 +651,8 @@ TEST_F(PingManagerTest, AttachThreatDetailsAndLaunchSurvey) {
       }),
       /*get_should_send_persisted_report=*/std::nullopt);
   FakeSafeBrowsingHatsDelegate* raw_fake_sb_hats_delegate = SetUpHatsDelegate();
-  ping_manager()->AttachThreatDetailsAndLaunchSurvey(std::move(report));
+  ping_manager()->AttachThreatDetailsAndLaunchSurvey(std::move(report),
+                                                     /*is_tab_closed=*/false);
   std::string deserialized_report_string;
   EXPECT_TRUE(base::Base64UrlDecode(
       raw_fake_sb_hats_delegate->GetSurveyStringData()[kUserActivityWithUrls],
@@ -638,12 +666,264 @@ TEST_F(PingManagerTest, AttachThreatDetailsAndLaunchSurvey) {
             ChromeUserPopulation::SAFE_BROWSING);
   EXPECT_EQ(actual_report.population().page_load_tokens()[0].token_value(),
             "testing_page_load_token");
+  EXPECT_EQ(raw_fake_sb_hats_delegate->GetSurveyStringData().size(), 8u);
+  EXPECT_EQ(raw_fake_sb_hats_delegate->GetSurveyBitsData().size(), 5u);
   EXPECT_EQ(raw_fake_sb_hats_delegate->GetSurveyStringData()[kFlaggedUrl],
             "http://url.com/");
   EXPECT_EQ(raw_fake_sb_hats_delegate->GetSurveyStringData()[kMainFrameUrl],
             "http://page-url.com/");
   EXPECT_EQ(raw_fake_sb_hats_delegate->GetSurveyStringData()[kReferrerUrl],
             "http://referrer-url.com/");
+  EXPECT_EQ(raw_fake_sb_hats_delegate->GetSurveyStringData()[kUserAction],
+            kUserActionUnknown);
+  EXPECT_FALSE(
+      raw_fake_sb_hats_delegate->GetSurveyBitsData()[kLearnMoreClicked]);
+  EXPECT_FALSE(
+      raw_fake_sb_hats_delegate->GetSurveyBitsData()[kShowMoreClicked]);
+  EXPECT_FALSE(raw_fake_sb_hats_delegate->GetSurveyBitsData()[kOpenDiagnostic]);
+  EXPECT_FALSE(raw_fake_sb_hats_delegate
+                   ->GetSurveyBitsData()[kReportPhishingErrorClicked]);
+  EXPECT_FALSE(raw_fake_sb_hats_delegate->GetSurveyBitsData()[kRepeatVisit]);
+  EXPECT_EQ(raw_fake_sb_hats_delegate->GetSurveyStringData()[kReportType],
+            "URL_CLIENT_SIDE_PHISHING");
+}
+
+TEST_F(PingManagerTest, AttachThreatDetailsAndLaunchSurvey_Proceed) {
+  auto report = std::make_unique<ClientSafeBrowsingReportRequest>();
+  report->set_type(ClientSafeBrowsingReportRequest::URL_CLIENT_SIDE_PHISHING);
+  report->set_did_proceed(true);
+  FakeSafeBrowsingHatsDelegate* delegate =
+      RunAttachThreatDetailsAndLaunchSurvey(std::move(report));
+  EXPECT_FALSE(delegate->GetSurveyBitsData()[kLearnMoreClicked]);
+  EXPECT_EQ(delegate->GetSurveyStringData()[kUserAction], kUserActionProceed);
+}
+
+TEST_F(PingManagerTest, AttachThreatDetailsAndLaunchSurvey_DontProceed) {
+  auto report = std::make_unique<ClientSafeBrowsingReportRequest>();
+  report->set_type(ClientSafeBrowsingReportRequest::URL_CLIENT_SIDE_PHISHING);
+  report->set_did_proceed(false);
+  FakeSafeBrowsingHatsDelegate* delegate =
+      RunAttachThreatDetailsAndLaunchSurvey(std::move(report));
+  EXPECT_FALSE(delegate->GetSurveyBitsData()[kLearnMoreClicked]);
+  EXPECT_EQ(delegate->GetSurveyStringData()[kUserAction],
+            kUserActionDontProceed);
+}
+
+TEST_F(PingManagerTest, AttachThreatDetailsAndLaunchSurvey_InteractionProceed) {
+  auto report = std::make_unique<ClientSafeBrowsingReportRequest>();
+  report->set_type(ClientSafeBrowsingReportRequest::URL_CLIENT_SIDE_PHISHING);
+  report->set_did_proceed(false);
+  report->add_interstitial_interactions()
+      ->set_security_interstitial_interaction(
+          ClientSafeBrowsingReportRequest::InterstitialInteraction::
+              CMD_PROCEED);
+  FakeSafeBrowsingHatsDelegate* delegate =
+      RunAttachThreatDetailsAndLaunchSurvey(std::move(report));
+  EXPECT_FALSE(delegate->GetSurveyBitsData()[kLearnMoreClicked]);
+  EXPECT_EQ(delegate->GetSurveyStringData()[kUserAction], kUserActionProceed);
+}
+
+TEST_F(PingManagerTest,
+       AttachThreatDetailsAndLaunchSurvey_InteractionDontProceed) {
+  auto report = std::make_unique<ClientSafeBrowsingReportRequest>();
+  report->set_type(ClientSafeBrowsingReportRequest::URL_CLIENT_SIDE_PHISHING);
+  report->add_interstitial_interactions()
+      ->set_security_interstitial_interaction(
+          ClientSafeBrowsingReportRequest::InterstitialInteraction::
+              CMD_DONT_PROCEED);
+  FakeSafeBrowsingHatsDelegate* delegate =
+      RunAttachThreatDetailsAndLaunchSurvey(std::move(report));
+  EXPECT_FALSE(delegate->GetSurveyBitsData()[kLearnMoreClicked]);
+  EXPECT_EQ(delegate->GetSurveyStringData()[kUserAction],
+            kUserActionDontProceed);
+}
+
+TEST_F(PingManagerTest,
+       AttachThreatDetailsAndLaunchSurvey_InteractionCloseTab) {
+  auto report = std::make_unique<ClientSafeBrowsingReportRequest>();
+  report->set_type(ClientSafeBrowsingReportRequest::URL_CLIENT_SIDE_PHISHING);
+  report->set_did_proceed(false);
+  report->add_interstitial_interactions()
+      ->set_security_interstitial_interaction(
+          ClientSafeBrowsingReportRequest::InterstitialInteraction::
+              CMD_CLOSE_INTERSTITIAL_WITHOUT_UI);
+  FakeSafeBrowsingHatsDelegate* delegate =
+      RunAttachThreatDetailsAndLaunchSurvey(std::move(report),
+                                            /*is_tab_closed=*/true);
+  EXPECT_FALSE(delegate->GetSurveyBitsData()[kLearnMoreClicked]);
+  EXPECT_EQ(delegate->GetSurveyStringData()[kUserAction], kUserActionCloseTab);
+}
+
+TEST_F(PingManagerTest,
+       AttachThreatDetailsAndLaunchSurvey_InteractionNavigateAway) {
+  auto report = std::make_unique<ClientSafeBrowsingReportRequest>();
+  report->set_type(ClientSafeBrowsingReportRequest::URL_CLIENT_SIDE_PHISHING);
+  report->set_did_proceed(false);
+  report->add_interstitial_interactions()
+      ->set_security_interstitial_interaction(
+          ClientSafeBrowsingReportRequest::InterstitialInteraction::
+              CMD_CLOSE_INTERSTITIAL_WITHOUT_UI);
+  FakeSafeBrowsingHatsDelegate* delegate =
+      RunAttachThreatDetailsAndLaunchSurvey(std::move(report),
+                                            /*is_tab_closed=*/false);
+  EXPECT_FALSE(delegate->GetSurveyBitsData()[kLearnMoreClicked]);
+  EXPECT_EQ(delegate->GetSurveyStringData()[kUserAction],
+            kUserActionNavigateAway);
+}
+
+TEST_F(PingManagerTest,
+       AttachThreatDetailsAndLaunchSurvey_InteractionLearnMore) {
+  auto report = std::make_unique<ClientSafeBrowsingReportRequest>();
+  report->set_type(ClientSafeBrowsingReportRequest::URL_CLIENT_SIDE_PHISHING);
+  report->add_interstitial_interactions()
+      ->set_security_interstitial_interaction(
+          ClientSafeBrowsingReportRequest::InterstitialInteraction::
+              CMD_OPEN_HELP_CENTER);
+  FakeSafeBrowsingHatsDelegate* delegate =
+      RunAttachThreatDetailsAndLaunchSurvey(std::move(report));
+  EXPECT_TRUE(delegate->GetSurveyBitsData()[kLearnMoreClicked]);
+  EXPECT_EQ(delegate->GetSurveyStringData()[kUserAction], kUserActionUnknown);
+}
+
+TEST_F(PingManagerTest,
+       AttachThreatDetailsAndLaunchSurvey_InteractionShowMore) {
+  auto report = std::make_unique<ClientSafeBrowsingReportRequest>();
+  report->set_type(ClientSafeBrowsingReportRequest::URL_CLIENT_SIDE_PHISHING);
+  report->set_url("http://url.com");
+  report->set_page_url("http://page-url.com");
+  report->set_referrer_url("http://referrer-url.com");
+  report->add_interstitial_interactions()
+      ->set_security_interstitial_interaction(
+          ClientSafeBrowsingReportRequest::InterstitialInteraction::
+              CMD_SHOW_MORE_SECTION);
+  FakeSafeBrowsingHatsDelegate* delegate =
+      RunAttachThreatDetailsAndLaunchSurvey(std::move(report));
+  EXPECT_TRUE(delegate->GetSurveyBitsData()[kShowMoreClicked]);
+  EXPECT_FALSE(delegate->GetSurveyBitsData()[kOpenDiagnostic]);
+  EXPECT_FALSE(delegate->GetSurveyBitsData()[kReportPhishingErrorClicked]);
+}
+
+TEST_F(PingManagerTest,
+       AttachThreatDetailsAndLaunchSurvey_InteractionOpenDiagnostic) {
+  auto report = std::make_unique<ClientSafeBrowsingReportRequest>();
+  report->set_type(ClientSafeBrowsingReportRequest::URL_CLIENT_SIDE_PHISHING);
+  report->set_url("http://url.com");
+  report->set_page_url("http://page-url.com");
+  report->set_referrer_url("http://referrer-url.com");
+  report->add_interstitial_interactions()
+      ->set_security_interstitial_interaction(
+          ClientSafeBrowsingReportRequest::InterstitialInteraction::
+              CMD_OPEN_DIAGNOSTIC);
+  FakeSafeBrowsingHatsDelegate* delegate =
+      RunAttachThreatDetailsAndLaunchSurvey(std::move(report));
+  EXPECT_FALSE(delegate->GetSurveyBitsData()[kShowMoreClicked]);
+  EXPECT_TRUE(delegate->GetSurveyBitsData()[kOpenDiagnostic]);
+  EXPECT_FALSE(delegate->GetSurveyBitsData()[kReportPhishingErrorClicked]);
+}
+
+TEST_F(PingManagerTest,
+       AttachThreatDetailsAndLaunchSurvey_InteractionReportPhishingError) {
+  auto report = std::make_unique<ClientSafeBrowsingReportRequest>();
+  report->set_type(ClientSafeBrowsingReportRequest::URL_CLIENT_SIDE_PHISHING);
+  report->set_url("http://url.com");
+  report->set_page_url("http://page-url.com");
+  report->set_referrer_url("http://referrer-url.com");
+  report->add_interstitial_interactions()
+      ->set_security_interstitial_interaction(
+          ClientSafeBrowsingReportRequest::InterstitialInteraction::
+              CMD_REPORT_PHISHING_ERROR);
+  FakeSafeBrowsingHatsDelegate* delegate =
+      RunAttachThreatDetailsAndLaunchSurvey(std::move(report));
+  EXPECT_TRUE(delegate->GetSurveyBitsData()[kReportPhishingErrorClicked]);
+}
+
+TEST_F(PingManagerTest,
+       AttachThreatDetailsAndLaunchSurvey_InteractionProceedOverridesClose) {
+  auto report = std::make_unique<ClientSafeBrowsingReportRequest>();
+  report->set_type(ClientSafeBrowsingReportRequest::URL_CLIENT_SIDE_PHISHING);
+  report->add_interstitial_interactions()
+      ->set_security_interstitial_interaction(
+          ClientSafeBrowsingReportRequest::InterstitialInteraction::
+              CMD_CLOSE_INTERSTITIAL_WITHOUT_UI);
+  report->add_interstitial_interactions()
+      ->set_security_interstitial_interaction(
+          ClientSafeBrowsingReportRequest::InterstitialInteraction::
+              CMD_PROCEED);
+  FakeSafeBrowsingHatsDelegate* delegate =
+      RunAttachThreatDetailsAndLaunchSurvey(std::move(report),
+                                            /*is_tab_closed=*/true);
+  EXPECT_EQ(delegate->GetSurveyStringData()[kUserAction], kUserActionProceed);
+}
+
+TEST_F(
+    PingManagerTest,
+    AttachThreatDetailsAndLaunchSurvey_InteractionDontProceedOverridesClose) {
+  auto report = std::make_unique<ClientSafeBrowsingReportRequest>();
+  report->set_type(ClientSafeBrowsingReportRequest::URL_CLIENT_SIDE_PHISHING);
+  report->add_interstitial_interactions()
+      ->set_security_interstitial_interaction(
+          ClientSafeBrowsingReportRequest::InterstitialInteraction::
+              CMD_CLOSE_INTERSTITIAL_WITHOUT_UI);
+  report->add_interstitial_interactions()
+      ->set_security_interstitial_interaction(
+          ClientSafeBrowsingReportRequest::InterstitialInteraction::
+              CMD_DONT_PROCEED);
+  FakeSafeBrowsingHatsDelegate* delegate =
+      RunAttachThreatDetailsAndLaunchSurvey(std::move(report),
+                                            /*is_tab_closed=*/true);
+  EXPECT_EQ(delegate->GetSurveyStringData()[kUserAction],
+            kUserActionDontProceed);
+}
+
+TEST_F(PingManagerTest,
+       AttachThreatDetailsAndLaunchSurvey_MultipleInteractions) {
+  auto report = std::make_unique<ClientSafeBrowsingReportRequest>();
+  report->set_type(ClientSafeBrowsingReportRequest::URL_CLIENT_SIDE_PHISHING);
+  report->add_interstitial_interactions()
+      ->set_security_interstitial_interaction(
+          ClientSafeBrowsingReportRequest::InterstitialInteraction::
+              CMD_SHOW_MORE_SECTION);
+  report->add_interstitial_interactions()
+      ->set_security_interstitial_interaction(
+          ClientSafeBrowsingReportRequest::InterstitialInteraction::
+              CMD_OPEN_DIAGNOSTIC);
+  report->add_interstitial_interactions()
+      ->set_security_interstitial_interaction(
+          ClientSafeBrowsingReportRequest::InterstitialInteraction::
+              CMD_OPEN_HELP_CENTER);
+  report->add_interstitial_interactions()
+      ->set_security_interstitial_interaction(
+          ClientSafeBrowsingReportRequest::InterstitialInteraction::
+              CMD_REPORT_PHISHING_ERROR);
+  report->add_interstitial_interactions()
+      ->set_security_interstitial_interaction(
+          ClientSafeBrowsingReportRequest::InterstitialInteraction::
+              CMD_PROCEED);
+  FakeSafeBrowsingHatsDelegate* delegate =
+      RunAttachThreatDetailsAndLaunchSurvey(std::move(report));
+  const auto& string_data = delegate->GetSurveyStringData();
+  const auto& bits_data = delegate->GetSurveyBitsData();
+  EXPECT_EQ(string_data.at(kUserAction), kUserActionProceed);
+  EXPECT_TRUE(bits_data.at(kShowMoreClicked));
+  EXPECT_TRUE(bits_data.at(kOpenDiagnostic));
+  EXPECT_TRUE(bits_data.at(kLearnMoreClicked));
+  EXPECT_TRUE(bits_data.at(kReportPhishingErrorClicked));
+}
+
+TEST_F(PingManagerTest, AttachThreatDetailsAndLaunchSurvey_NullDelegate) {
+  auto report = std::make_unique<ClientSafeBrowsingReportRequest>();
+  report->set_type(ClientSafeBrowsingReportRequest::URL_CLIENT_SIDE_PHISHING);
+  // Do NOT call SetUpHatsDelegate(), so hats_delegate_ remains nullptr.
+  ping_manager()->AttachThreatDetailsAndLaunchSurvey(std::move(report),
+                                                     /*is_tab_closed=*/false);
+}
+
+TEST_F(PingManagerTest, AttachThreatDetailsAndLaunchSurvey_InvalidReportType) {
+  SetUpHatsDelegate();
+  auto report = std::make_unique<ClientSafeBrowsingReportRequest>();
+  report->set_type(ClientSafeBrowsingReportRequest::UNKNOWN);
+  EXPECT_CHECK_DEATH(ping_manager()->AttachThreatDetailsAndLaunchSurvey(
+      std::move(report), /*is_tab_closed=*/false));
 }
 
 }  // namespace safe_browsing

@@ -10,8 +10,11 @@
 
 namespace safe_browsing {
 
+// Named bit-valued Product Specific Data.
+using SurveyBitsData = std::map<std::string, bool>;
+
 // Named string-valued Product Specific Data.
-typedef std::map<std::string, std::string> SurveyStringData;
+using SurveyStringData = std::map<std::string, std::string>;
 
 class SafeBrowsingHatsDelegate {
  public:
@@ -24,7 +27,9 @@ class SafeBrowsingHatsDelegate {
   // A wrapper for the HaTS service LaunchSurvey method.
   virtual void LaunchRedWarningSurvey(
       // Named string values sent with user survey responses.
-      const SurveyStringData& product_specific_string_data = {}) = 0;
+      const SurveyStringData& product_specific_string_data,
+      // Named bit values sent with user survey responses.
+      const SurveyBitsData& product_specific_bits_data) = 0;
 
   // Determines if the associated user is a candidate for a HaTS survey.
   static bool IsSurveyCandidate(const SBThreatType& threat_type,

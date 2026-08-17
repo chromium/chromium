@@ -5,17 +5,23 @@
 #include "chrome/browser/safe_browsing/chrome_safe_browsing_hats_delegate.h"
 
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "chrome/browser/ui/hats/survey_config.h"
 
 namespace safe_browsing {
 
-ChromeSafeBrowsingHatsDelegate::ChromeSafeBrowsingHatsDelegate() = default;
 ChromeSafeBrowsingHatsDelegate::ChromeSafeBrowsingHatsDelegate(Profile* profile)
     : profile_(profile) {}
 
 void ChromeSafeBrowsingHatsDelegate::LaunchRedWarningSurvey(
-    const std::map<std::string, std::string>& product_specific_string_data) {
+    const SurveyStringData& product_specific_string_data,
+    const SurveyBitsData& product_specific_bits_data) {
+  if (!profile_ || profile_->IsOffTheRecord()) {
+    return;
+  }
+
   HatsService* hats_service =
       HatsServiceFactory::GetForProfile(profile_, /*create_if_necessary=*/true);
   if (!hats_service) {
@@ -23,7 +29,7 @@ void ChromeSafeBrowsingHatsDelegate::LaunchRedWarningSurvey(
   }
   hats_service->LaunchSurvey(
       kHatsSurveyTriggerRedWarning, /*success_callback=*/base::DoNothing(),
-      /*failure_callback=*/base::DoNothing(), /*product_specific_bits_data=*/{},
+      /*failure_callback=*/base::DoNothing(), product_specific_bits_data,
       product_specific_string_data);
 }
 
