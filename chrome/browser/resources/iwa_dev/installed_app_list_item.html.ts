@@ -21,11 +21,12 @@ export function getHtml(this: InstalledAppListItemElement) {
     <span id="version">v${this.app.installedVersion}</span>
     <span id="source-text">• ${this.sourceMetadata.label}</span>
   </div>
-  <div id="id">ID: ${this.app.appId}</div>
+  <div id="id">ID: ${this.app.webBundleId}</div>
   <div id="source">${this.sourceMetadata.description}</div>
 </div>
 <div id="actions">
-  <cr-button id="update-btn" @click="${this.onUpdateClick}">
+  <cr-button id="update-btn" ?disabled="${this.isUpdating}"
+      @click="${this.onUpdateClick}">
     Update
   </cr-button>
   <cr-button id="uninstall-btn" @click="${this.onUninstallClick}">

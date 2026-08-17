@@ -40,6 +40,7 @@ ${!this.devModeEnabled_ ? html`
         ${this.installedApps_.map(item => html`
           <installed-app-list-item
               .app="${item}"
+              .isUpdating="${this.updatingAppIds_.includes(item.appId)}"
               role="listitem"
               @request-update="${this.onRequestUpdate_}"
               @request-uninstall="${this.onRequestUninstall_}">

@@ -50,6 +50,7 @@ export class IwaDevAppElement extends CrLitElement {
       devModeEnabled_: {type: Boolean},
       installedApps_: {type: Array},
       hasFetchedApps_: {type: Boolean, state: true},
+      updatingAppIds_: {type: Array, state: true},
       toastMessage_: {type: String},
     };
   }
@@ -59,12 +60,15 @@ export class IwaDevAppElement extends CrLitElement {
   protected accessor installedApps_: IwaDevModeAppInfo[] = [];
   protected accessor hasFetchedApps_: boolean = false;
   protected accessor toastMessage_: string = '';
+  protected accessor updatingAppIds_: string[] = [];
   private browserProxy_: BrowserProxy = browserProxyFactory.getInstance();
   private listenerIds_: number[] = [];
 
   protected async onRequestUpdate_(e: CustomEvent<{app: IwaDevModeAppInfo}>) {
     const app = e.detail.app;
     let updatePromise: Promise<unknown>;
+
+    this.updatingAppIds_ = [...this.updatingAppIds_, app.appId];
 
     if (app.source.proxyOrigin) {
       updatePromise =
@@ -80,20 +84,20 @@ export class IwaDevAppElement extends CrLitElement {
       assertNotReached();
     }
 
-    return Promise
-        .all([
-          updatePromise,
-          new Promise(resolve => setTimeout(resolve, MIN_UPDATE_DELAY_MS)),
-        ])
-        .then(() => {
-          this.toastMessage_ = 'Update successful!';
-          this.$.toast.show();
-        })
-        .catch(err => {
-          const error = (err as {message?: string})?.message || String(err);
-          this.toastMessage_ = `Update failed: ${error}`;
-          this.$.toast.show();
-        });
+    const timerPromise =
+        new Promise(resolve => setTimeout(resolve, MIN_UPDATE_DELAY_MS));
+    try {
+      await updatePromise;
+      this.toastMessage_ = 'Update successful!';
+    } catch (err) {
+      const errorMsg = (err as {message?: string})?.message || String(err);
+      this.toastMessage_ = `Update failed: ${errorMsg}`;
+    } finally {
+      await timerPromise;
+      this.$.toast.show();
+      this.updatingAppIds_ =
+          this.updatingAppIds_.filter(id => id !== app.appId);
+    }
   }
 
   protected async onRequestUninstall_(

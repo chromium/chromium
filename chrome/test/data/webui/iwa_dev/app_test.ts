@@ -116,13 +116,18 @@ suite('<iwa-dev-app>', () => {
         'installed-app-list-item');
   }
 
-  function clickUpdateButton(itemIndex: number = 0) {
+  function getUpdateButton(itemIndex: number = 0): HTMLButtonElement {
     const items = getListItems();
     assertTrue(items.length > itemIndex);
     const updateButton =
-        items[itemIndex]!.shadowRoot.querySelector<HTMLElement>('#update-btn');
+        items[itemIndex]!.shadowRoot.querySelector<HTMLButtonElement>(
+            '#update-btn');
     assertTrue(!!updateButton);
-    updateButton.click();
+    return updateButton;
+  }
+
+  function clickUpdateButton(itemIndex: number = 0) {
+    getUpdateButton(itemIndex).click();
   }
 
   async function waitForUpdateCompletion() {
@@ -448,6 +453,39 @@ suite('<iwa-dev-app>', () => {
             'Update failed: App is already on the latest version.',
             app.$.toast.textContent?.trim());
       });
+
+  test('disables update button while update is in progress', async () => {
+    const appInfo = createManifestInstalledAppInfo();
+    handler.setResultFor(
+        'getInstalledAppsInfo', Promise.resolve({apps: [appInfo]}));
+
+    let resolveUpdate!: () => void;
+    const updatePromise = new Promise<void>(resolve => {
+      resolveUpdate = resolve;
+    });
+    handler.setResultFor('updateManifestInstalledApp', updatePromise);
+
+    createApp(/*devModeEnabled=*/ true);
+
+    await handler.whenCalled('getInstalledAppsInfo');
+    await microtasksFinished();
+
+    assertFalse(
+        getUpdateButton().disabled, 'Button should be enabled initially');
+
+    clickUpdateButton();
+    await microtasksFinished();
+
+    assertTrue(
+        getUpdateButton().disabled, 'Button should be disabled after click');
+
+    resolveUpdate();
+    await waitForUpdateCompletion();
+
+    assertFalse(
+        getUpdateButton().disabled,
+        'Button should be enabled after update completes');
+  });
 
   test('opens install dialog on install button click', async () => {
     handler.setResultFor('getInstalledAppsInfo', Promise.resolve({apps: []}));

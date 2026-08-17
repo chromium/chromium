@@ -66,6 +66,7 @@ export class InstalledAppListItemElement extends CrLitElement {
     return {
       app: {type: Object},
       sourceMetadata: {type: Object},
+      isUpdating: {type: Boolean},
     };
   }
 
@@ -83,6 +84,8 @@ export class InstalledAppListItemElement extends CrLitElement {
     },
     installedVersion: '',
   };
+
+  accessor isUpdating: boolean = false;
 
   protected accessor sourceMetadata: SourceMetadata = {
     label: '',
