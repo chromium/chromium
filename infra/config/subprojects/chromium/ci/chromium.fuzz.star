@@ -606,7 +606,10 @@ ci.builder(
             target_platform = builder_config.target_platform.LINUX,
         ),
         clusterfuzz_archive = builder_config.clusterfuzz_archive(
+            # TODO(https://crbug.com/527836546): Set `use_archive_path` to True
+            # then remove `archive_name_prefix` and `archive_subdir`.
             archive_name_prefix = "asan-v8-sandbox-testing",
+            archive_path = "linux-release-v8-sandbox-testing/asan-v8-sandbox-testing-linux-release",
             archive_subdir = "v8-sandbox-testing",
             gs_acl = "public-read",
             gs_bucket = "chromium-browser-asan",

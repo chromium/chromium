@@ -19,6 +19,7 @@
               "builder_group": "chromium.clang",
               "clusterfuzz_archive": {
                 "archive_name_prefix": "cfi",
+                "archive_path": "linux-release/cfi-linux-release",
                 "gs_acl": "public-read",
                 "gs_bucket": "chromium-browser-cfi",
                 "use_archive_path": false

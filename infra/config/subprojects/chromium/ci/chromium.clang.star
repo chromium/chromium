@@ -148,7 +148,10 @@ ci.builder(
             target_platform = builder_config.target_platform.LINUX,
         ),
         clusterfuzz_archive = builder_config.clusterfuzz_archive(
+            # TODO(https://crbug.com/527836546): Flip `use_archive_path` to True
+            # then remove `archive_name_prefix`.
             archive_name_prefix = "cfi",
+            archive_path = "linux-release/cfi-linux-release",
             gs_acl = "public-read",
             gs_bucket = "chromium-browser-cfi",
         ),
