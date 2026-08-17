@@ -11,6 +11,7 @@ import org.chromium.base.CommandLine;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
+import org.chromium.base.TriState;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.firstrun.FirstRunFlowSequencer;
@@ -38,7 +39,7 @@ class NativeInitializationController {
     private @Nullable List<Intent> mPendingNewIntents;
     private @Nullable List<ActivityResult> mPendingActivityResults;
 
-    private @Nullable Boolean mBackgroundTasksComplete;
+    private @TriState int mBackgroundTasksComplete;
     private boolean mHasDoneFirstDraw;
     private boolean mHasSignaledLibraryLoaded;
     private boolean mInitializationComplete;
@@ -90,14 +91,14 @@ class NativeInitializationController {
                 FirstRunFlowSequencer.checkIfFirstRunIsNecessary(
                         false, mActivityDelegate.getInitialIntent());
 
-        mBackgroundTasksComplete = false;
+        mBackgroundTasksComplete = TriState.FALSE;
         new AsyncInitTaskRunner() {
 
             @Override
             protected void onSuccess() {
                 ThreadUtils.assertOnUiThread();
 
-                mBackgroundTasksComplete = true;
+                mBackgroundTasksComplete = TriState.TRUE;
                 signalNativeLibraryLoadedIfReady();
             }
 
@@ -115,7 +116,7 @@ class NativeInitializationController {
         ThreadUtils.assertOnUiThread();
 
         // Called on UI thread when any of the booleans below have changed.
-        if (mHasDoneFirstDraw && (mBackgroundTasksComplete != null && mBackgroundTasksComplete)) {
+        if (mHasDoneFirstDraw && mBackgroundTasksComplete == TriState.TRUE) {
             // This block should only be hit once.
             assert !mHasSignaledLibraryLoaded;
             mHasSignaledLibraryLoaded = true;
