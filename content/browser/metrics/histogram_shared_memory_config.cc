@@ -14,7 +14,7 @@ using Config = base::HistogramSharedMemory::Config;
 
 std::optional<Config> GetHistogramSharedMemoryConfig(int process_type) {
   // Memory size constants used in the configurations.
-  constexpr size_t k1MB = 1 << 20;
+  constexpr size_t k2MB = 2 << 20;
   constexpr size_t k512KB = 512 << 10;
   constexpr size_t k256KB = 256 << 10;
   constexpr size_t k64KB = 64 << 10;
@@ -22,10 +22,11 @@ std::optional<Config> GetHistogramSharedMemoryConfig(int process_type) {
   // Determine the correct parameters based on the process type.
   switch (process_type) {
     case PROCESS_TYPE_RENDERER:
-      // Chrome telemetry shows RendererMetrics reaching 50-55% of the previous
-      // 2 MiB region at p99.9 on Windows. Use 1.5 MiB to retain headroom while
-      // reducing per-renderer commit charge.
-      return Config{PROCESS_TYPE_RENDERER, "RendererMetrics", k1MB + k512KB};
+      // Create persistent/shared memory and allow histograms to be stored in
+      // it. Memory that is not actually used won't be physically mapped by the
+      // system. RendererMetrics usage, as reported in UMA, peaked around 0.7MiB
+      // as of 2016-12-20.
+      return Config{PROCESS_TYPE_RENDERER, "RendererMetrics", k2MB};
 
     case PROCESS_TYPE_UTILITY:
       return Config{PROCESS_TYPE_UTILITY, "UtilityMetrics", k512KB};
