@@ -54,6 +54,14 @@ enum ItemIdentifier {
   self.tableView.allowsSelection = YES;
   self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 
+  UIBarButtonItem* cancelButton = [[UIBarButtonItem alloc]
+      initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
+                           target:self
+                           action:@selector(handleCancelButton)];
+  cancelButton.accessibilityIdentifier =
+      kAtMemoryCloseButtonAccessibilityIdentifier;
+  self.navigationItem.rightBarButtonItem = cancelButton;
+
   [self loadModel];
 }
 
@@ -75,6 +83,12 @@ enum ItemIdentifier {
   RegisterTableViewHeaderFooter<TableViewLinkHeaderFooterView>(self.tableView);
 
   [self createNewSnapshot];
+}
+
+#pragma mark - Actions
+
+- (void)handleCancelButton {
+  [self.atMemoryHandler dismissAtMemory];
 }
 
 #pragma mark - AtMemoryGranularFillConsumer
