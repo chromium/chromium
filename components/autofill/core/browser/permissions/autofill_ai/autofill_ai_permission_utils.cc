@@ -30,7 +30,6 @@
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
-#include "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_personal_context_enablement_utils.h"
 #include "components/autofill/core/common/autofill_debug_features.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
@@ -430,6 +429,24 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
   NOTREACHED();
 }
 
+// Returns the set of eligible subscription tiers configured by feature
+// parameters for Ambient Autofill.
+base::flat_set<int32_t> GetAutofillAmbientAutofillEligibleTiers() {
+  const std::string tier_list =
+      features::kAutofillAmbientAutofillEligibleTiers.Get();
+  const std::vector<std::string_view> tier_pieces = base::SplitStringPiece(
+      tier_list, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  base::flat_set<int32_t> eligible_tiers;
+  eligible_tiers.reserve(tier_pieces.size());
+  for (std::string_view piece : tier_pieces) {
+    int32_t tier_id = 0;
+    if (base::StringToInt(piece, &tier_id)) {
+      eligible_tiers.insert(tier_id);
+    }
+  }
+  return eligible_tiers;
+}
+
 // Checks whether all requirements for `IdentityManager` state are
 // met.
 [[nodiscard]] bool SatisfiesAccountRequirements(
@@ -500,21 +517,15 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
     case AutofillAiAction::kAmbientAutofill:
     case AutofillAiAction::kShowAmbientAutofillInSettings:
     case AutofillAiAction::kTypeSupportsAmbientAutofillData: {
-      if (!subscription_service) {
-        MaybeOutputReason(debug_message,
-                          "Subscription eligibility service not available.");
+      if (!IsDeviceOrSubscriptionTierEligibleForAmbientAutofill(
+              subscription_service)) {
+        MaybeOutputReason(
+            debug_message,
+            "User subscription tier is not eligible and device is "
+            "not eligible.");
         return false;
       }
-      const int32_t tier = subscription_service->GetAiSubscriptionTier();
-      if (GetAutofillAmbientAutofillEligibleTiers().contains(tier) ||
-          IsAndroidDeviceEligibleForAmbientAutofill()) {
-        break;
-      }
-
-      MaybeOutputReason(debug_message,
-                        "User subscription tier is not eligible and device is "
-                        "not eligible.");
-      return false;
+      break;
     }
     case AutofillAiAction::kOptIn: {
       if (!GetAccountGaiaIdHash(identity_manager).has_value()) {
@@ -692,6 +703,22 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
   }
 
   return true;
+}
+
+// Returns whether the current Android hardware model is configured as eligible
+// for Ambient Autofill by feature parameters.
+[[nodiscard]] bool IsAndroidDeviceEligibleForAmbientAutofill() {
+#if BUILDFLAG(IS_ANDROID)
+  const std::string model_name = base::SysInfo::HardwareModelName();
+  const std::string enabled_devices_str =
+      features::kAutofillAmbientAutofillEnabledDevices.Get();
+  return std::ranges::contains(
+      base::SplitStringPiece(enabled_devices_str, ",", base::TRIM_WHITESPACE,
+                             base::SPLIT_WANT_NONEMPTY),
+      model_name);
+#else
+  return false;
+#endif
 }
 
 }  // namespace
@@ -950,6 +977,16 @@ bool IsAutofillAiDefaultAvailabilityEnabled() {
 #else
   return true;
 #endif
+}
+
+[[nodiscard]] bool IsDeviceOrSubscriptionTierEligibleForAmbientAutofill(
+    const subscription_eligibility::SubscriptionEligibilityService*
+        subscription_eligibility_service) {
+  const bool tier_eligible =
+      subscription_eligibility_service &&
+      GetAutofillAmbientAutofillEligibleTiers().contains(
+          subscription_eligibility_service->GetAiSubscriptionTier());
+  return tier_eligible || IsAndroidDeviceEligibleForAmbientAutofill();
 }
 
 }  // namespace autofill

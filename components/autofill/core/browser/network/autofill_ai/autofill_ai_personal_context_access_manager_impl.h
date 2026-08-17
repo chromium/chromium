@@ -27,6 +27,7 @@
 #include "components/personal_context/core/personal_context_types.h"
 #include "components/personal_context/proto/features/common_data.pb.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/subscription_eligibility/subscription_eligibility_service.h"
 #include "net/base/backoff_entry.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
@@ -48,7 +49,9 @@ namespace autofill {
 //   - For unmasked entities, the class handles the cache changes internally.
 class AutofillAiPersonalContextAccessManagerImpl
     : public AutofillAiPersonalContextAccessManager,
-      public personal_context::PersonalContextEligibilityService::Observer {
+      public personal_context::PersonalContextEligibilityService::Observer,
+      public subscription_eligibility::SubscriptionEligibilityService::
+          Observer {
  public:
   // Represents the type of personal context network request sent to the server.
   enum class RequestType {
@@ -64,6 +67,8 @@ class AutofillAiPersonalContextAccessManagerImpl
       personal_context::PersonalContextService* personal_context_service,
       personal_context::PersonalContextEligibilityService*
           personal_context_eligibility_service,
+      subscription_eligibility::SubscriptionEligibilityService*
+          subscription_eligibility_service,
       PrefService* pref_service);
 
   AutofillAiPersonalContextAccessManagerImpl(
@@ -88,6 +93,9 @@ class AutofillAiPersonalContextAccessManagerImpl
   // personal_context::PersonalContextEligibilityService::Observer:
   void OnEligibilityStateChanged(
       personal_context::PersonalContextEligibilityState new_state) override;
+
+  // subscription_eligibility::SubscriptionEligibilityService::Observer:
+  void OnAiSubscriptionTierUpdated(int32_t new_subscription_tier) override;
 
  private:
   friend class AutofillAiPersonalContextAccessManagerImplTestApi;
@@ -246,6 +254,11 @@ class AutofillAiPersonalContextAccessManagerImpl
       personal_context::PersonalContextEligibilityService,
       personal_context::PersonalContextEligibilityService::Observer>
       eligibility_service_observation_{this};
+
+  base::ScopedObservation<
+      subscription_eligibility::SubscriptionEligibilityService,
+      subscription_eligibility::SubscriptionEligibilityService::Observer>
+      subscription_eligibility_observation_{this};
 
   PrefChangeRegistrar pref_registrar_;
 

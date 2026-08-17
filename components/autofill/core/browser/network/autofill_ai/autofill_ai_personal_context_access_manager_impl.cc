@@ -26,7 +26,6 @@
 #include "components/autofill/core/browser/manual_testing_import.h"
 #include "components/autofill/core/browser/network/autofill_ai/personal_context_conversion_util.h"
 #include "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_utils.h"
-#include "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_personal_context_enablement_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/personal_context/core/context_memory_error.h"
@@ -37,7 +36,6 @@
 #include "components/personal_context/proto/context_memory_service.pb.h"
 #include "components/personal_context/proto/features/ambient_autofill.pb.h"
 #include "components/prefs/pref_service.h"
-#include "components/subscription_eligibility/subscription_eligibility_prefs.h"
 #include "net/base/backoff_entry.h"
 
 namespace autofill {
@@ -126,6 +124,8 @@ AutofillAiPersonalContextAccessManagerImpl::
         personal_context::PersonalContextService* personal_context_service,
         personal_context::PersonalContextEligibilityService*
             personal_context_eligibility_service,
+        subscription_eligibility::SubscriptionEligibilityService*
+            subscription_eligibility_service,
         PrefService* pref_service)
     : personal_context_service_(CHECK_DEREF(personal_context_service)),
       personal_context_eligibility_service_(
@@ -133,17 +133,16 @@ AutofillAiPersonalContextAccessManagerImpl::
       pref_service_(pref_service) {
   eligibility_service_observation_.Observe(
       personal_context_eligibility_service);
+  if (subscription_eligibility_service) {
+    subscription_eligibility_observation_.Observe(
+        subscription_eligibility_service);
+  }
   if (pref_service_) {
     pref_registrar_.Init(pref_service_);
     pref_registrar_.Add(
         personal_context::prefs::kPersonalContextInAutofillSettingsToggleStatus,
         base::BindRepeating(&AutofillAiPersonalContextAccessManagerImpl::
                                 OnPersonalContextSettingsToggleChanged,
-                            base::Unretained(this)));
-    pref_registrar_.Add(
-        subscription_eligibility::prefs::kAiSubscriptionTier,
-        base::BindRepeating(&AutofillAiPersonalContextAccessManagerImpl::
-                                ComputeAndMaybeLogNonEligibilityReason,
                             base::Unretained(this)));
   }
 
@@ -538,6 +537,11 @@ void AutofillAiPersonalContextAccessManagerImpl::OnEligibilityStateChanged(
   }
 }
 
+void AutofillAiPersonalContextAccessManagerImpl::OnAiSubscriptionTierUpdated(
+    int32_t /*new_subscription_tier*/) {
+  ComputeAndMaybeLogNonEligibilityReason();
+}
+
 void AutofillAiPersonalContextAccessManagerImpl::
     OnPersonalContextSettingsToggleChanged() {
   if (pref_service_ &&
@@ -551,21 +555,17 @@ void AutofillAiPersonalContextAccessManagerImpl::
 void AutofillAiPersonalContextAccessManagerImpl::
     ComputeAndMaybeLogNonEligibilityReason() {
   using personal_context::PersonalContextNonEligibilityReason;
-  if (!pref_service_ || !is_non_eligibility_startup_delay_elapsed_) {
+  if (!is_non_eligibility_startup_delay_elapsed_) {
     return;
   }
 
-  // TODO(crbug.com/537686190): Consolidate this non-eligibility logic with the
-  // permission checks in `autofill_ai_permission_utils.cc`.
   std::optional<PersonalContextNonEligibilityReason> non_eligibility_reason =
       personal_context_eligibility_service_->GetNonEligibilityReason();
-  const int32_t tier = pref_service_->GetInteger(
-      subscription_eligibility::prefs::kAiSubscriptionTier);
 
   if (non_eligibility_reason ==
           PersonalContextNonEligibilityReason::kEligible &&
-      !GetAutofillAmbientAutofillEligibleTiers().contains(tier) &&
-      !IsAndroidDeviceEligibleForAmbientAutofill()) {
+      !IsDeviceOrSubscriptionTierEligibleForAmbientAutofill(
+          subscription_eligibility_observation_.GetSource())) {
     non_eligibility_reason = PersonalContextNonEligibilityReason::
         kNotG1SubscriberOrAndroidPremiumDevice;
   }

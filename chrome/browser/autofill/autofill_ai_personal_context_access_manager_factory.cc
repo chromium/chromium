@@ -8,10 +8,12 @@
 #include "chrome/browser/personal_context/personal_context_eligibility_service_factory.h"
 #include "chrome/browser/personal_context/personal_context_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/subscription_eligibility/subscription_eligibility_service_factory.h"
 #include "components/autofill/core/browser/network/autofill_ai/autofill_ai_personal_context_access_manager_impl.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/personal_context/core/personal_context_eligibility_service.h"
 #include "components/personal_context/core/personal_context_service.h"
+#include "components/subscription_eligibility/subscription_eligibility_service.h"
 
 namespace autofill {
 
@@ -41,6 +43,8 @@ AutofillAiPersonalContextAccessManagerFactory::
               .Build()) {
   DependsOn(PersonalContextEligibilityServiceFactory::GetInstance());
   DependsOn(PersonalContextServiceFactory::GetInstance());
+  DependsOn(subscription_eligibility::SubscriptionEligibilityServiceFactory::
+                GetInstance());
 }
 
 AutofillAiPersonalContextAccessManagerFactory::
@@ -59,6 +63,9 @@ std::unique_ptr<KeyedService> AutofillAiPersonalContextAccessManagerFactory::
   personal_context::PersonalContextEligibilityService*
       personal_context_eligibility_service =
           PersonalContextEligibilityServiceFactory::GetForProfile(profile);
+  subscription_eligibility::SubscriptionEligibilityService*
+      subscription_eligibility_service = subscription_eligibility::
+          SubscriptionEligibilityServiceFactory::GetForProfile(profile);
 
   if (!personal_context_service || !personal_context_eligibility_service) {
     return nullptr;
@@ -66,7 +73,7 @@ std::unique_ptr<KeyedService> AutofillAiPersonalContextAccessManagerFactory::
 
   return std::make_unique<AutofillAiPersonalContextAccessManagerImpl>(
       personal_context_service, personal_context_eligibility_service,
-      profile->GetPrefs());
+      subscription_eligibility_service, profile->GetPrefs());
 }
 
 }  // namespace autofill

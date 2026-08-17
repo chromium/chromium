@@ -1121,8 +1121,6 @@ static_library("browser") {
     "payments/webauthn_callback_types.h",
     "permissions/autofill_ai/autofill_ai_permission_utils.cc",
     "permissions/autofill_ai/autofill_ai_permission_utils.h",
-    "permissions/autofill_ai/autofill_ai_personal_context_enablement_utils.cc",
-    "permissions/autofill_ai/autofill_ai_personal_context_enablement_utils.h",
     "permissions/autofill_policy_service.cc",
     "permissions/autofill_policy_service.h",
     "single_field_fillers/autocomplete/autocomplete_history_manager.cc",
