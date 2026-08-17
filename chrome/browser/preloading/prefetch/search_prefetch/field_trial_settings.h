@@ -77,10 +77,6 @@ bool IsSearchMouseDownPrefetchEnabled();
 // Search suggestion. This is for Android only.
 bool IsTouchDownPrefetchEnabled();
 
-// Allows search history suggestions to be prefetched by navigation prefetch
-// strategies.
-bool PrefetchSearchHistorySuggestions();
-
 // Whether Omnibox prefetch and prerender should be restricted to the suggestion
 // being the default match.
 bool OnlyAllowDefaultMatchPreloading();

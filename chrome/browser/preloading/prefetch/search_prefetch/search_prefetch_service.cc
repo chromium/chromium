@@ -779,15 +779,12 @@ bool SearchPrefetchService::OnNavigationLikely(
     return false;
   }
 
-
   // Search history suggestions (those that are not also server suggestions)
-  // don't have search term args. If search history suggestions are enabled,
-  // generate search term args to get a prefetch URL.
+  // don't have search term args. Generate search term args to get a prefetch
+  // URL.
   TemplateURLRef::SearchTermsArgs* search_terms_args_for_prefetch;
   std::unique_ptr<TemplateURLRef::SearchTermsArgs> search_terms_args;
   if (!match.search_terms_args) {
-    if (!PrefetchSearchHistorySuggestions())
-      return false;
     search_terms_args =
         std::make_unique<TemplateURLRef::SearchTermsArgs>(search_terms);
     search_terms_args_for_prefetch = search_terms_args.get();
