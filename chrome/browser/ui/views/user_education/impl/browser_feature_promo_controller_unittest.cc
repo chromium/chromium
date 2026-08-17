@@ -1599,11 +1599,11 @@ class BrowserFeaturePromoControllerViewsTestBase
       std::optional<base::TimeDelta> timeout_delta = std::nullopt) {
     auto result =
         base::MakeRefCounted<base::RefCountedData<FeaturePromoResult>>();
-    // Must be computed before `WithElement()` below, which consumes `params`.
+    // Must be computed before `AfterShow()` below, which consumes `params`.
     const std::string caller =
         base::StrCat({"MaybeShowPromo( ", params.feature->name, ", ",
                       base::ToString(expected), " )"});
-    auto steps = Steps(WithElement(
+    auto steps = Steps(AfterShow(
         kBrowserViewElementId, [this, p = std::move(params), expected,
                                 result](ui::TrackedElement* el) mutable {
           if (expected) {
