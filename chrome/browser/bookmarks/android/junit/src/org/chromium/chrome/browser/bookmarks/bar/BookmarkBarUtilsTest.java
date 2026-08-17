@@ -544,60 +544,37 @@ public class BookmarkBarUtilsTest {
     @Test
     @SmallTest
     public void testIsActivityStateBookmarkBarCompatible() {
-        mActivityScenarioRule
-                .getScenario()
-                .onActivity(
-                        activity -> {
-                            // Case: Below "w412dp" threshold w/ feature disabled.
-                            RuntimeEnvironment.setQualifiers("w411dp");
-                            BookmarkBarUtils.setDeviceBookmarkBarCompatibleForTesting(false);
-                            assertFalse(
-                                    BookmarkBarUtils.isActivityStateBookmarkBarCompatible(
-                                            activity));
+        // Case: Below "w412dp" threshold w/ feature disabled.
+        RuntimeEnvironment.setQualifiers("w411dp");
+        BookmarkBarUtils.setDeviceBookmarkBarCompatibleForTesting(false);
+        assertFalse(BookmarkBarUtils.isActivityStateBookmarkBarCompatible(mActivity));
 
-                            // Case: Below "w412dp" threshold w/ feature enabled.
-                            BookmarkBarUtils.setDeviceBookmarkBarCompatibleForTesting(true);
-                            assertFalse(
-                                    BookmarkBarUtils.isActivityStateBookmarkBarCompatible(
-                                            activity));
+        // Case: Below "w412dp" threshold w/ feature enabled.
+        BookmarkBarUtils.setDeviceBookmarkBarCompatibleForTesting(true);
+        assertFalse(BookmarkBarUtils.isActivityStateBookmarkBarCompatible(mActivity));
 
-                            // Case: At "w412dp" threshold w/ feature disabled.
-                            RuntimeEnvironment.setQualifiers("w412dp");
-                            BookmarkBarUtils.setDeviceBookmarkBarCompatibleForTesting(false);
-                            assertFalse(
-                                    BookmarkBarUtils.isActivityStateBookmarkBarCompatible(
-                                            activity));
+        // Case: At "w412dp" threshold w/ feature disabled.
+        RuntimeEnvironment.setQualifiers("w412dp");
+        BookmarkBarUtils.setDeviceBookmarkBarCompatibleForTesting(false);
+        assertFalse(BookmarkBarUtils.isActivityStateBookmarkBarCompatible(mActivity));
 
-                            // Case: At "w412dp" threshold w/ feature enabled.
-                            BookmarkBarUtils.setDeviceBookmarkBarCompatibleForTesting(true);
-                            assertTrue(
-                                    BookmarkBarUtils.isActivityStateBookmarkBarCompatible(
-                                            activity));
-                        });
+        // Case: At "w412dp" threshold w/ feature enabled.
+        BookmarkBarUtils.setDeviceBookmarkBarCompatibleForTesting(true);
+        assertTrue(BookmarkBarUtils.isActivityStateBookmarkBarCompatible(mActivity));
     }
 
     @Test
     @SmallTest
     @Config(qualifiers = "sw599dp")
     public void testIsDeviceBookmarkBarCompatibleOnPhone() {
-        mActivityScenarioRule
-                .getScenario()
-                .onActivity(
-                        activity ->
-                                assertFalse(
-                                        BookmarkBarUtils.isDeviceBookmarkBarCompatible(activity)));
+        assertFalse(BookmarkBarUtils.isDeviceBookmarkBarCompatible(mActivity));
     }
 
     @Test
     @SmallTest
     @Config(qualifiers = "sw600dp")
     public void testIsDeviceBookmarkBarCompatibleOnTablet() {
-        mActivityScenarioRule
-                .getScenario()
-                .onActivity(
-                        activity ->
-                                assertTrue(
-                                        BookmarkBarUtils.isDeviceBookmarkBarCompatible(activity)));
+        assertTrue(BookmarkBarUtils.isDeviceBookmarkBarCompatible(mActivity));
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -608,94 +585,59 @@ public class BookmarkBarUtilsTest {
     @SmallTest
     public void testIsBookmarkBarVisible_Desktop() {
         mOverrideContextRule.setIsDesktop(true);
-        mActivityScenarioRule
-                .getScenario()
-                .onActivity(
-                        activity -> {
-                            // Case: feature disallowed and setting disabled.
-                            BookmarkBarUtils.setActivityStateBookmarkBarCompatibleForTesting(false);
-                            BookmarkBarUtils.setSettingEnabledForTesting(false);
-                            assertFalse(
-                                    BookmarkBarUtils.isBookmarkBarVisible(
-                                            activity, mProfile, false));
 
-                            // Case: feature disallowed and setting enabled.
-                            BookmarkBarUtils.setSettingEnabledForTesting(true);
-                            assertFalse(
-                                    BookmarkBarUtils.isBookmarkBarVisible(
-                                            activity, mProfile, false));
+        // Case: feature disallowed and setting disabled.
+        BookmarkBarUtils.setActivityStateBookmarkBarCompatibleForTesting(false);
+        BookmarkBarUtils.setSettingEnabledForTesting(false);
+        assertFalse(BookmarkBarUtils.isBookmarkBarVisible(mActivity, mProfile, false));
 
-                            // Case: feature allowed and setting disabled.
-                            BookmarkBarUtils.setActivityStateBookmarkBarCompatibleForTesting(true);
-                            BookmarkBarUtils.setSettingEnabledForTesting(false);
-                            assertFalse(
-                                    BookmarkBarUtils.isBookmarkBarVisible(
-                                            activity, mProfile, false));
+        // Case: feature disallowed and setting enabled.
+        BookmarkBarUtils.setSettingEnabledForTesting(true);
+        assertFalse(BookmarkBarUtils.isBookmarkBarVisible(mActivity, mProfile, false));
 
-                            // Case feature allowed and setting enabled.
-                            BookmarkBarUtils.setSettingEnabledForTesting(true);
-                            assertTrue(
-                                    BookmarkBarUtils.isBookmarkBarVisible(
-                                            activity, mProfile, false));
-                        });
+        // Case: feature allowed and setting disabled.
+        BookmarkBarUtils.setActivityStateBookmarkBarCompatibleForTesting(true);
+        BookmarkBarUtils.setSettingEnabledForTesting(false);
+        assertFalse(BookmarkBarUtils.isBookmarkBarVisible(mActivity, mProfile, false));
+
+        // Case feature allowed and setting enabled.
+        BookmarkBarUtils.setSettingEnabledForTesting(true);
+        assertTrue(BookmarkBarUtils.isBookmarkBarVisible(mActivity, mProfile, false));
     }
 
     @Test
     @SmallTest
     public void testIsBookmarkBarVisible_Tablet() {
         mOverrideContextRule.setIsDesktop(false);
-        mActivityScenarioRule
-                .getScenario()
-                .onActivity(
-                        activity -> {
-                            // Case: feature disallowed.
-                            BookmarkBarUtils.setActivityStateBookmarkBarCompatibleForTesting(false);
-                            assertFalse(
-                                    BookmarkBarUtils.isBookmarkBarVisible(
-                                            activity, mProfile, false));
 
-                            // Case: feature allowed no device pref (default is false).
-                            BookmarkBarUtils.setActivityStateBookmarkBarCompatibleForTesting(true);
-                            assertFalse(
-                                    BookmarkBarUtils.isBookmarkBarVisible(
-                                            activity, mProfile, false));
+        // Case: feature disallowed.
+        BookmarkBarUtils.setActivityStateBookmarkBarCompatibleForTesting(false);
+        assertFalse(BookmarkBarUtils.isBookmarkBarVisible(mActivity, mProfile, false));
 
-                            // Case: feature allowed explicit device pref
-                            BookmarkBarUtils.setDevicePrefShowBookmarksBar(
-                                    true, /* fromKeyboardShortcut= */ false);
-                            assertTrue(
-                                    BookmarkBarUtils.isBookmarkBarVisible(
-                                            activity, mProfile, false));
-                        });
+        // Case: feature allowed no device pref (default is false).
+        BookmarkBarUtils.setActivityStateBookmarkBarCompatibleForTesting(true);
+        assertFalse(BookmarkBarUtils.isBookmarkBarVisible(mActivity, mProfile, false));
+
+        // Case: feature allowed explicit device pref
+        BookmarkBarUtils.setDevicePrefShowBookmarksBar(true, /* fromKeyboardShortcut= */ false);
+        assertTrue(BookmarkBarUtils.isBookmarkBarVisible(mActivity, mProfile, false));
     }
 
     @Test
     @SmallTest
     public void testIsBookmarkBarVisible_XR() {
         mOverrideContextRule.setIsDesktop(false);
-        mActivityScenarioRule
-                .getScenario()
-                .onActivity(
-                        activity -> {
-                            BookmarkBarUtils.setActivityStateBookmarkBarCompatibleForTesting(true);
-                            BookmarkBarUtils.setDevicePrefShowBookmarksBar(
-                                    true, /* fromKeyboardShortcut= */ false);
+        BookmarkBarUtils.setActivityStateBookmarkBarCompatibleForTesting(true);
+        BookmarkBarUtils.setDevicePrefShowBookmarksBar(true, /* fromKeyboardShortcut= */ false);
 
-                            // Case: XR full space mode is enabled.
-                            assertFalse(
-                                    BookmarkBarUtils.isBookmarkBarVisible(
-                                            activity, mProfile, true));
+        // Case: XR full space mode is enabled.
+        assertFalse(BookmarkBarUtils.isBookmarkBarVisible(mActivity, mProfile, true));
 
-                            // Case: XR full space mode is disabled.
-                            assertTrue(
-                                    BookmarkBarUtils.isBookmarkBarVisible(
-                                            activity, mProfile, false));
+        // Case: XR full space mode is disabled.
+        assertTrue(BookmarkBarUtils.isBookmarkBarVisible(mActivity, mProfile, false));
 
-                            // Case: XR supplier is null.
-                            assertTrue(
-                                    BookmarkBarUtils.isBookmarkBarVisible(
-                                            activity, mProfile, false));
-                        });
+        // Case: XR supplier is null.
+        assertTrue(BookmarkBarUtils.isBookmarkBarVisible(mActivity, mProfile, false));
     }
 
     @Test
@@ -767,90 +709,42 @@ public class BookmarkBarUtilsTest {
     @Features.EnableFeatures(ChromeFeatureList.BOOKMARKS_BAR_NTP)
     public void testGetBookmarkBarVisibilityState_Desktop() {
         mOverrideContextRule.setIsDesktop(true);
-        mActivityScenarioRule
-                .getScenario()
-                .onActivity(
-                        activity -> {
-                            // Cases for feature disallowed.
-                            BookmarkBarUtils.setActivityStateBookmarkBarCompatibleForTesting(false);
 
-                            setIntegerPref(
-                                    /* isManaged= */ false,
-                                    /* managedPolicyValue= */ BookmarkBarVisibilityState
-                                            .ALWAYS_HIDE,
-                                    /* hasRecommendation= */ false,
-                                    /* isFollowing= */ false,
-                                    /* currentUserPref= */ BookmarkBarVisibilityState.ALWAYS_SHOW);
-                            assertEquals(
-                                    BookmarkBarVisibilityState.ALWAYS_HIDE,
-                                    BookmarkBarUtils.getBookmarkBarVisibilityState(
-                                            activity, mProfile, false));
+        // Cases for feature disallowed.
+        BookmarkBarUtils.setActivityStateBookmarkBarCompatibleForTesting(false);
 
-                            setIntegerPref(
-                                    /* isManaged= */ false,
-                                    /* managedPolicyValue= */ BookmarkBarVisibilityState
-                                            .ALWAYS_HIDE,
-                                    /* hasRecommendation= */ false,
-                                    /* isFollowing= */ false,
-                                    /* currentUserPref= */ BookmarkBarVisibilityState
-                                            .ONLY_SHOW_ON_NTP);
-                            assertEquals(
-                                    BookmarkBarVisibilityState.ALWAYS_HIDE,
-                                    BookmarkBarUtils.getBookmarkBarVisibilityState(
-                                            activity, mProfile, false));
+        setUserPrefState(BookmarkBarVisibilityState.ALWAYS_SHOW);
+        assertEquals(
+                BookmarkBarVisibilityState.ALWAYS_HIDE,
+                BookmarkBarUtils.getBookmarkBarVisibilityState(mActivity, mProfile, false));
 
-                            setIntegerPref(
-                                    /* isManaged= */ false,
-                                    /* managedPolicyValue= */ BookmarkBarVisibilityState
-                                            .ALWAYS_HIDE,
-                                    /* hasRecommendation= */ false,
-                                    /* isFollowing= */ false,
-                                    /* currentUserPref= */ BookmarkBarVisibilityState.ALWAYS_HIDE);
-                            assertEquals(
-                                    BookmarkBarVisibilityState.ALWAYS_HIDE,
-                                    BookmarkBarUtils.getBookmarkBarVisibilityState(
-                                            activity, mProfile, false));
+        setUserPrefState(BookmarkBarVisibilityState.ONLY_SHOW_ON_NTP);
+        assertEquals(
+                BookmarkBarVisibilityState.ALWAYS_HIDE,
+                BookmarkBarUtils.getBookmarkBarVisibilityState(mActivity, mProfile, false));
 
-                            // Cases for feature allowed.
-                            BookmarkBarUtils.setActivityStateBookmarkBarCompatibleForTesting(true);
+        setUserPrefState(BookmarkBarVisibilityState.ALWAYS_HIDE);
+        assertEquals(
+                BookmarkBarVisibilityState.ALWAYS_HIDE,
+                BookmarkBarUtils.getBookmarkBarVisibilityState(mActivity, mProfile, false));
 
-                            setIntegerPref(
-                                    /* isManaged= */ false,
-                                    /* managedPolicyValue= */ BookmarkBarVisibilityState
-                                            .ALWAYS_HIDE,
-                                    /* hasRecommendation= */ false,
-                                    /* isFollowing= */ false,
-                                    /* currentUserPref= */ BookmarkBarVisibilityState.ALWAYS_SHOW);
-                            assertEquals(
-                                    BookmarkBarVisibilityState.ALWAYS_SHOW,
-                                    BookmarkBarUtils.getBookmarkBarVisibilityState(
-                                            activity, mProfile, false));
+        // Cases for feature allowed.
+        BookmarkBarUtils.setActivityStateBookmarkBarCompatibleForTesting(true);
 
-                            setIntegerPref(
-                                    /* isManaged= */ false,
-                                    /* managedPolicyValue= */ BookmarkBarVisibilityState
-                                            .ALWAYS_HIDE,
-                                    /* hasRecommendation= */ false,
-                                    /* isFollowing= */ false,
-                                    /* currentUserPref= */ BookmarkBarVisibilityState
-                                            .ONLY_SHOW_ON_NTP);
-                            assertEquals(
-                                    BookmarkBarVisibilityState.ONLY_SHOW_ON_NTP,
-                                    BookmarkBarUtils.getBookmarkBarVisibilityState(
-                                            activity, mProfile, false));
+        setUserPrefState(BookmarkBarVisibilityState.ALWAYS_SHOW);
+        assertEquals(
+                BookmarkBarVisibilityState.ALWAYS_SHOW,
+                BookmarkBarUtils.getBookmarkBarVisibilityState(mActivity, mProfile, false));
 
-                            setIntegerPref(
-                                    /* isManaged= */ false,
-                                    /* managedPolicyValue= */ BookmarkBarVisibilityState
-                                            .ALWAYS_HIDE,
-                                    /* hasRecommendation= */ false,
-                                    /* isFollowing= */ false,
-                                    /* currentUserPref= */ BookmarkBarVisibilityState.ALWAYS_HIDE);
-                            assertEquals(
-                                    BookmarkBarVisibilityState.ALWAYS_HIDE,
-                                    BookmarkBarUtils.getBookmarkBarVisibilityState(
-                                            activity, mProfile, false));
-                        });
+        setUserPrefState(BookmarkBarVisibilityState.ONLY_SHOW_ON_NTP);
+        assertEquals(
+                BookmarkBarVisibilityState.ONLY_SHOW_ON_NTP,
+                BookmarkBarUtils.getBookmarkBarVisibilityState(mActivity, mProfile, false));
+
+        setUserPrefState(BookmarkBarVisibilityState.ALWAYS_HIDE);
+        assertEquals(
+                BookmarkBarVisibilityState.ALWAYS_HIDE,
+                BookmarkBarUtils.getBookmarkBarVisibilityState(mActivity, mProfile, false));
     }
 
     @Test
@@ -858,34 +752,26 @@ public class BookmarkBarUtilsTest {
     @Features.EnableFeatures(ChromeFeatureList.BOOKMARKS_BAR_NTP)
     public void testGetBookmarkBarVisibilityState_Tablet() {
         mOverrideContextRule.setIsDesktop(false);
-        mActivityScenarioRule
-                .getScenario()
-                .onActivity(
-                        activity -> {
-                            // Case: feature disallowed.
-                            BookmarkBarUtils.setActivityStateBookmarkBarCompatibleForTesting(false);
-                            assertEquals(
-                                    BookmarkBarVisibilityState.ALWAYS_HIDE,
-                                    BookmarkBarUtils.getBookmarkBarVisibilityState(
-                                            activity, mProfile, false));
 
-                            // Case: feature allowed no device pref (default is always hide).
-                            BookmarkBarUtils.setActivityStateBookmarkBarCompatibleForTesting(true);
-                            assertEquals(
-                                    BookmarkBarVisibilityState.ALWAYS_HIDE,
-                                    BookmarkBarUtils.getBookmarkBarVisibilityState(
-                                            activity, mProfile, false));
+        // Case: feature disallowed.
+        BookmarkBarUtils.setActivityStateBookmarkBarCompatibleForTesting(false);
+        assertEquals(
+                BookmarkBarVisibilityState.ALWAYS_HIDE,
+                BookmarkBarUtils.getBookmarkBarVisibilityState(mActivity, mProfile, false));
 
-                            // Case: feature allowed explicit device pref
-                            BookmarkBarUtils.setActivityStateBookmarkBarCompatibleForTesting(true);
-                            BookmarkBarUtils.setDevicePrefBookmarkBarVisibilityState(
-                                    BookmarkBarVisibilityState.ONLY_SHOW_ON_NTP,
-                                    /* fromKeyboardShortcut= */ false);
-                            assertEquals(
-                                    BookmarkBarVisibilityState.ONLY_SHOW_ON_NTP,
-                                    BookmarkBarUtils.getBookmarkBarVisibilityState(
-                                            activity, mProfile, false));
-                        });
+        // Case: feature allowed no device pref (default is always hide).
+        BookmarkBarUtils.setActivityStateBookmarkBarCompatibleForTesting(true);
+        assertEquals(
+                BookmarkBarVisibilityState.ALWAYS_HIDE,
+                BookmarkBarUtils.getBookmarkBarVisibilityState(mActivity, mProfile, false));
+
+        // Case: feature allowed explicit device pref
+        BookmarkBarUtils.setActivityStateBookmarkBarCompatibleForTesting(true);
+        BookmarkBarUtils.setDevicePrefBookmarkBarVisibilityState(
+                BookmarkBarVisibilityState.ONLY_SHOW_ON_NTP, /* fromKeyboardShortcut= */ false);
+        assertEquals(
+                BookmarkBarVisibilityState.ONLY_SHOW_ON_NTP,
+                BookmarkBarUtils.getBookmarkBarVisibilityState(mActivity, mProfile, false));
     }
 
     @Test
@@ -893,28 +779,21 @@ public class BookmarkBarUtilsTest {
     @Features.EnableFeatures(ChromeFeatureList.BOOKMARKS_BAR_NTP)
     public void testGetBookmarkBarVisibilityState_XR() {
         mOverrideContextRule.setIsDesktop(false);
-        mActivityScenarioRule
-                .getScenario()
-                .onActivity(
-                        activity -> {
-                            BookmarkBarUtils.setActivityStateBookmarkBarCompatibleForTesting(true);
-                            BookmarkBarUtils.setBookmarkBarVisibilityState(
-                                    mProfile,
-                                    BookmarkBarVisibilityState.ONLY_SHOW_ON_NTP,
-                                    /* fromKeyboardShortcut= */ false);
+        BookmarkBarUtils.setActivityStateBookmarkBarCompatibleForTesting(true);
+        BookmarkBarUtils.setBookmarkBarVisibilityState(
+                mProfile,
+                BookmarkBarVisibilityState.ONLY_SHOW_ON_NTP,
+                /* fromKeyboardShortcut= */ false);
 
-                            // Case: XR full space mode is enabled.
-                            assertEquals(
-                                    BookmarkBarVisibilityState.ALWAYS_HIDE,
-                                    BookmarkBarUtils.getBookmarkBarVisibilityState(
-                                            activity, mProfile, true));
+        // Case: XR full space mode is enabled.
+        assertEquals(
+                BookmarkBarVisibilityState.ALWAYS_HIDE,
+                BookmarkBarUtils.getBookmarkBarVisibilityState(mActivity, mProfile, true));
 
-                            // Case: XR full space mode is disabled.
-                            assertEquals(
-                                    BookmarkBarVisibilityState.ONLY_SHOW_ON_NTP,
-                                    BookmarkBarUtils.getBookmarkBarVisibilityState(
-                                            activity, mProfile, false));
-                        });
+        // Case: XR full space mode is disabled.
+        assertEquals(
+                BookmarkBarVisibilityState.ONLY_SHOW_ON_NTP,
+                BookmarkBarUtils.getBookmarkBarVisibilityState(mActivity, mProfile, false));
     }
 
     @Test
