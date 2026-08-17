@@ -23,6 +23,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_exposed_isolation_level.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 #include "third_party/blink/public/mojom/set_shape/set_shape.mojom.h"
@@ -46,7 +47,7 @@ bool ApiIsEnabledFor(content::RenderFrameHost& render_frame_host) {
     return true;
   }
 
-  return chromeos::features::IsCrosIsolatedWebAppSetShapeEnabled();
+  return base::FeatureList::IsEnabled(blink::features::kSetShape);
 }
 
 void SetShapeAndEventTargeter(views::Widget& widget,

@@ -15747,6 +15747,7 @@ from previous Chrome versions.
   <int value="356850763" label="AutofillEnableBuyNowPayLaterSyncing:disabled"/>
   <int value="356857664" label="QuickAnswersMaterialNextUI:enabled"/>
   <int value="356875586" label="AndroidAppIntegrationMultiDataSource:disabled"/>
+  <int value="356959150" label="SetShape:enabled"/>
   <int value="357138275" label="enable-floating-virtual-keyboard:disabled"/>
   <int value="357165937" label="ShareToGoogleCollections:enabled"/>
   <int value="357782837" label="CredentialManagementUnifiedUi:enabled"/>
@@ -21396,6 +21397,7 @@ from previous Chrome versions.
   <int value="2115389844"
       label="PopulateDOMNodeIdInFocusedNodeDetails:enabled"/>
   <int value="2116535245" label="PasswordEditDialogWithDetails:disabled"/>
+  <int value="2117027511" label="SetShape:disabled"/>
   <int value="2117485960" label="SupportPepperVideoDecoderDevAPI:disabled"/>
   <int value="2118287149" label="HelpAppSearchServiceIntegration:enabled"/>
   <int value="2118374092" label="MessagesForAndroidReaderMode:disabled"/>

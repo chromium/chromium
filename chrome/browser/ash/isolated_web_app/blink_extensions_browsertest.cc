@@ -64,15 +64,13 @@ web_app::IsolatedWebAppUrlInfo InstallIsolatedWebAppAndReturnUrlInfo(
 }  // namespace
 
 // Verifies the behavior of Blink extensions for Isolated Web Apps in ChromeOS
-// when the `kCrosIsolatedWebAppSetShape` flag is enabled.
+// when the `kSetShape` flag is enabled.
 class BlinkExtensionsWithFlagSetTest
     : public web_app::IsolatedWebAppBrowserTestHarness {
  public:
   BlinkExtensionsWithFlagSetTest() {
     feature_list_.InitWithFeatures(
-        {chromeos::features::kCrosIsolatedWebAppSetShape,
-         blink::features::kUnframedIwa},
-        {});
+        {blink::features::kSetShape, blink::features::kUnframedIwa}, {});
   }
 
  private:
@@ -188,15 +186,14 @@ IN_PROC_BROWSER_TEST_F(BlinkExtensionsAllowlistDisabledTest,
   EXPECT_EQ(false, content::EvalJs(frame, "'setShape' in window"));
 }
 
-// Verifies the `kCrosIsolatedWebAppSetShape` flag grants access even if the
+// Verifies the `kSetShape` flag grants access even if the
 // allowlist is disabled.
 class BlinkExtensionsAllowlistDisabledWithMainFlagEnabledTest
     : public web_app::IsolatedWebAppBrowserTestHarness {
  public:
   BlinkExtensionsAllowlistDisabledWithMainFlagEnabledTest() {
     feature_list_.InitWithFeatures(
-        {chromeos::features::kCrosIsolatedWebAppSetShape,
-         blink::features::kUnframedIwa},
+        {blink::features::kSetShape, blink::features::kUnframedIwa},
         {chromeos::features::kCrosIsolatedWebAppSetShapeAllowlist});
   }
 

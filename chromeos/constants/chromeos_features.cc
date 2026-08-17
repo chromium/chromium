@@ -39,9 +39,6 @@ BASE_FEATURE(kBlinkExtensionKiosk, base::FEATURE_DISABLED_BY_DEFAULT);
 // cros-jellybean-team@google.com.
 BASE_FEATURE(kCrosComponents, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables the setShape Blink extension for Isolated Web Apps on ChromeOS.
-BASE_FEATURE(kCrosIsolatedWebAppSetShape, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables the allowlist for the setShape Blink extension for Isolated Web Apps
 // on ChromeOS. This is intended to be used as the kill switch for the feature.
 BASE_FEATURE(kCrosIsolatedWebAppSetShapeAllowlist,
@@ -291,10 +288,6 @@ bool IsBlinkExtensionEnabled() {
 
 bool IsCrosComponentsEnabled() {
   return base::FeatureList::IsEnabled(kCrosComponents);
-}
-
-bool IsCrosIsolatedWebAppSetShapeEnabled() {
-  return base::FeatureList::IsEnabled(kCrosIsolatedWebAppSetShape);
 }
 
 bool IsCrosIsolatedWebAppSetShapeAllowlistEnabled() {

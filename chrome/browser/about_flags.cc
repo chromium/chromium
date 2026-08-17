@@ -5671,11 +5671,9 @@ const FeatureEntry kFeatureEntries[] = {
          network::features::
              kDirectSocketsUdpSendRequireMulticastPermissionPolicy)},
 #if BUILDFLAG(IS_CHROMEOS)
-    {"enable-chromeos-isolated-web-app-set-shape",
-     flag_descriptions::kEnableChromeOSIsolatedWebAppSetShapeName,
-     flag_descriptions::kEnableChromeOSIsolatedWebAppSetShapeDescription,
-     kOsCrOS,
-     FEATURE_VALUE_TYPE(chromeos::features::kCrosIsolatedWebAppSetShape)},
+    {"enable-set-shape", flag_descriptions::kEnableSetShapeName,
+     flag_descriptions::kEnableSetShapeDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(blink::features::kSetShape)},
     {"enable-isolated-web-app-managed-guest-session-install",
      flag_descriptions::kEnableIsolatedWebAppManagedGuestSessionInstallName,
      flag_descriptions::

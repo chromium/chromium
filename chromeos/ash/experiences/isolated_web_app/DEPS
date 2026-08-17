@@ -3,6 +3,7 @@ include_rules = [
   "+components/webapps/isolated_web_apps",
   "+content/public/browser",
   "+mojo/public/cpp/bindings",
+  "+third_party/blink/public/common/features.h",
   "+third_party/blink/public/common/runtime_feature_state",
   "+third_party/blink/public/mojom/set_shape",
   "+third_party/blink/public/mojom/manifest/display_mode.mojom.h",

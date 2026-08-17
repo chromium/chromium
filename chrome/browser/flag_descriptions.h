@@ -6068,11 +6068,10 @@ inline constexpr char kEnableAndroidSidePanelLogsDescription[] =
     "When enabled, includes detailed logging for the Android Side Panel "
     "feature.";
 
-inline constexpr char kEnableChromeOSIsolatedWebAppSetShapeName[] =
+inline constexpr char kEnableSetShapeName[] =
     "Enable ChromeOS Isolated Web App setShape API";
-inline constexpr char kEnableChromeOSIsolatedWebAppSetShapeDescription[] =
-    "Enables the chromeos.isolatedWebApp.setShape API for Isolated Web Apps on "
-    "ChromeOS.";
+inline constexpr char kEnableSetShapeDescription[] =
+    "Enables the window.setShape API for Isolated Web Apps on ChromeOS.";
 
 inline constexpr char kEnableCommandLineOnNonRootedName[] =
     "Enable command line on non-rooted devices";
