@@ -14,6 +14,7 @@
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #include "components/autofill/core/browser/proto/server.pb.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace autofill::test {
 
@@ -29,7 +30,7 @@ EntityOptions ToEntityOptions(Options options) {
       .date_modified = options.date_modified,
       .use_date = options.use_date,
       .app_locale = options.app_locale,
-      .record_type = options.record_type,
+      .record_type = std::move(options.record_type),
       .are_attributes_read_only = options.are_attributes_read_only,
       .use_count = options.use_count,
   };
@@ -464,20 +465,26 @@ EntityInstance GetEntityInstance(std::vector<AttributeInstance> attributes,
                               return attribute.type().entity_type() == type;
                             }))
       << "All attribute types must belong to the same entity type";
-  auto record_type_data = [&] -> EntityInstance::RecordTypeData {
-    switch (options.record_type) {
-      case EntityInstance::RecordType::kLocal:
-        return EntityInstance::LocalRecordTypePayload{};
-      case EntityInstance::RecordType::kServerWallet:
-        return EntityInstance::WalletRecordTypePayload{};
-      case EntityInstance::RecordType::kPersonalContext:
-        // TODO(crbug.com/542083924): Consider adding support for payloads to
-        // `EntityOptions`. For now, an empty payload is ok as most tests don't
-        // care about the sources.
-        return EntityInstance::PersonalContextRecordTypePayload{.sources = {}};
-    }
-    NOTREACHED();
-  }();
+  auto record_type_data = std::visit(
+      absl::Overload{
+          [](EntityInstance::RecordType record_type)
+              -> EntityInstance::RecordTypeData {
+            switch (record_type) {
+              case EntityInstance::RecordType::kLocal:
+                return EntityInstance::LocalRecordTypePayload{};
+              case EntityInstance::RecordType::kServerWallet:
+                return EntityInstance::WalletRecordTypePayload{};
+              case EntityInstance::RecordType::kPersonalContext:
+                return EntityInstance::PersonalContextRecordTypePayload{
+                    .sources = {}};
+            }
+            NOTREACHED();
+          },
+          [](const EntityInstance::RecordTypeData& record_type_data) {
+            return record_type_data;
+          }},
+      options.record_type);
+
   return EntityInstance(
       type, std::move(attributes),
       EntityInstance::EntityId(base::Uuid::ParseLowercase(options.guid)),

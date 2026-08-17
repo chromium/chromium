@@ -5,10 +5,15 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_TEST_UTILS_ENTITY_DATA_TEST_UTILS_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_TEST_UTILS_ENTITY_DATA_TEST_UTILS_H_
 
+#include <variant>
+
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 
 namespace autofill::test {
+
+using EntityRecordTypeRepresentation =
+    std::variant<EntityInstance::RecordType, EntityInstance::RecordTypeData>;
 
 template <typename = void>
 struct PassportEntityOptionsT {
@@ -22,7 +27,8 @@ struct PassportEntityOptionsT {
   base::Time date_modified = kJune2017;
   base::Time use_date = kJune2017;
   std::string_view app_locale = "en-US";
-  EntityInstance::RecordType record_type = EntityInstance::RecordType::kLocal;
+  EntityRecordTypeRepresentation record_type =
+      EntityInstance::RecordType::kLocal;
   EntityInstance::AreAttributesReadOnly are_attributes_read_only =
       EntityInstance::AreAttributesReadOnly(false);
   int use_count = 0;
@@ -51,7 +57,8 @@ struct DriversLicenseOptionsT {
   base::Time date_modified = kJune2017;
   base::Time use_date = kJune2017;
   std::string_view app_locale = "en-US";
-  EntityInstance::RecordType record_type = EntityInstance::RecordType::kLocal;
+  EntityRecordTypeRepresentation record_type =
+      EntityInstance::RecordType::kLocal;
   EntityInstance::AreAttributesReadOnly are_attributes_read_only =
       EntityInstance::AreAttributesReadOnly(false);
   int use_count = 0;
@@ -78,7 +85,8 @@ struct VehicleOptionsT {
   base::Time date_modified = kJune2017;
   base::Time use_date = kJune2017;
   std::string_view app_locale = "en-US";
-  EntityInstance::RecordType record_type = EntityInstance::RecordType::kLocal;
+  EntityRecordTypeRepresentation record_type =
+      EntityInstance::RecordType::kLocal;
   EntityInstance::AreAttributesReadOnly are_attributes_read_only =
       EntityInstance::AreAttributesReadOnly(false);
   int use_count = 0;
@@ -102,7 +110,8 @@ struct NationalIdCardOptionsT {
   std::string_view app_locale = "en-US";
   base::Time date_modified = kJune2017;
   base::Time use_date = kJune2017;
-  EntityInstance::RecordType record_type = EntityInstance::RecordType::kLocal;
+  EntityRecordTypeRepresentation record_type =
+      EntityInstance::RecordType::kLocal;
   EntityInstance::AreAttributesReadOnly are_attributes_read_only =
       EntityInstance::AreAttributesReadOnly(false);
   int use_count = 0;
@@ -122,7 +131,8 @@ struct KnownTravelerNumberOptionsT {
   std::string_view app_locale = "en-US";
   base::Time date_modified = kJune2017;
   base::Time use_date = kJune2017;
-  EntityInstance::RecordType record_type = EntityInstance::RecordType::kLocal;
+  EntityRecordTypeRepresentation record_type =
+      EntityInstance::RecordType::kLocal;
   EntityInstance::AreAttributesReadOnly are_attributes_read_only =
       EntityInstance::AreAttributesReadOnly(false);
   int use_count = 0;
@@ -144,7 +154,8 @@ struct RedressNumberOptionsT {
   std::string_view app_locale = "en-US";
   base::Time date_modified = kJune2017;
   base::Time use_date = kJune2017;
-  EntityInstance::RecordType record_type = EntityInstance::RecordType::kLocal;
+  EntityRecordTypeRepresentation record_type =
+      EntityInstance::RecordType::kLocal;
   EntityInstance::AreAttributesReadOnly are_attributes_read_only =
       EntityInstance::AreAttributesReadOnly(false);
   int use_count = 0;
@@ -169,7 +180,8 @@ struct FlightReservationOptionsT {
   std::string_view app_locale = "en-US";
   base::Time date_modified = kJune2017;
   base::Time use_date = kJune2017;
-  EntityInstance::RecordType record_type = EntityInstance::RecordType::kLocal;
+  EntityRecordTypeRepresentation record_type =
+      EntityInstance::RecordType::kLocal;
   EntityInstance::AreAttributesReadOnly are_attributes_read_only =
       EntityInstance::AreAttributesReadOnly(false);
   int use_count = 0;
@@ -195,7 +207,7 @@ struct OrderOptionsT {
   std::string_view app_locale = "en-US";
   base::Time date_modified = kJune2017;
   base::Time use_date = kJune2017;
-  EntityInstance::RecordType record_type =
+  EntityRecordTypeRepresentation record_type =
       EntityInstance::RecordType::kPersonalContext;
   EntityInstance::AreAttributesReadOnly are_attributes_read_only =
       EntityInstance::AreAttributesReadOnly(false);
@@ -219,7 +231,7 @@ struct ShipmentOptionsT {
   std::string_view app_locale = "en-US";
   base::Time date_modified = kJune2017;
   base::Time use_date = kJune2017;
-  EntityInstance::RecordType record_type =
+  EntityRecordTypeRepresentation record_type =
       EntityInstance::RecordType::kPersonalContext;
   EntityInstance::AreAttributesReadOnly are_attributes_read_only =
       EntityInstance::AreAttributesReadOnly(false);
@@ -239,7 +251,8 @@ struct EntityOptionsT {
   base::Time date_modified = kJune2017;
   base::Time use_date = kJune2017;
   std::string_view app_locale = "en-US";
-  EntityInstance::RecordType record_type = EntityInstance::RecordType::kLocal;
+  EntityRecordTypeRepresentation record_type =
+      EntityInstance::RecordType::kLocal;
   EntityInstance::AreAttributesReadOnly are_attributes_read_only =
       EntityInstance::AreAttributesReadOnly(false);
   std::string_view frecency_override = "";
