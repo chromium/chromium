@@ -110,6 +110,10 @@
 #include "net/dns/mdns_client_impl.h"
 #endif  // BUILDFLAG(ENABLE_MDNS)
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/android_info.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
 using net::test::IsError;
 using net::test::IsOk;
 using ::testing::_;
@@ -5031,6 +5035,11 @@ TEST_F(HostResolverManagerDnsTest,
 #if BUILDFLAG(IS_ANDROID)
 TEST_F(HostResolverManagerDnsTest,
        DnsPlatform_ScheduledOnStartupWithEmptyConfig) {
+  if (base::android::android_info::sdk_int() <
+      base::android::android_info::SDK_VERSION_Q) {
+    GTEST_SKIP() << "Platform DNS APIs are only available from Q.";
+  }
+
   resolver_->SetInsecureDnsClientEnabled(InsecureDnsMode::kEnabledPlatform,
                                          /*additional_dns_types_enabled=*/true);
 
@@ -5046,6 +5055,11 @@ TEST_F(HostResolverManagerDnsTest,
 
 TEST_F(HostResolverManagerDnsTest,
        DnsPlatform_ScheduledWhenTransitioningToEmptyNameservers) {
+  if (base::android::android_info::sdk_int() <
+      base::android::android_info::SDK_VERSION_Q) {
+    GTEST_SKIP() << "Platform DNS APIs are only available from Q.";
+  }
+
   resolver_->SetInsecureDnsClientEnabled(InsecureDnsMode::kEnabledPlatform,
                                          /*additional_dns_types_enabled=*/true);
 
@@ -5064,6 +5078,11 @@ TEST_F(HostResolverManagerDnsTest,
 
 TEST_F(HostResolverManagerDnsTest,
        DnsPlatformNoSystem_ResolvesWithoutSystemFallback) {
+  if (base::android::android_info::sdk_int() <
+      base::android::android_info::SDK_VERSION_Q) {
+    GTEST_SKIP() << "Platform DNS APIs are only available from Q.";
+  }
+
   resolver_->SetInsecureDnsClientEnabled(
       InsecureDnsMode::kEnabledPlatformNoSystem,
       /*additional_dns_types_enabled=*/true);
