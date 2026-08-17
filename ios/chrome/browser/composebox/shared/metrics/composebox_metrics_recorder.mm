@@ -140,6 +140,8 @@ omnibox::ModelMode ModelModeFromComposeboxModelOption(
       return omnibox::ModelMode::MODEL_MODE_GEMINI_PRO;
     case ComposeboxModelOption::kThinkingNoGenUI:
       return omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_NO_GEN_UI;
+    case ComposeboxModelOption::kFlash:
+      return omnibox::ModelMode::MODEL_MODE_GEMINI_FLASH_LATEST;
   }
 }
 

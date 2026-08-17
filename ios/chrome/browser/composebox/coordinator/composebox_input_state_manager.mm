@@ -59,6 +59,8 @@ ComposeboxModelOption ModelOptionForModelMode(omnibox::ModelMode model_mode) {
     case omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR:
     case omnibox::ModelMode::MODEL_MODE_UNSPECIFIED:
       return kRegular;
+    case omnibox::ModelMode::MODEL_MODE_GEMINI_FLASH_LATEST:
+      return kFlash;
     default:
       base::debug::DumpWithoutCrashing();
       return kRegular;
@@ -81,6 +83,8 @@ omnibox::ModelMode ModelModeForModelOption(
       return omnibox::ModelMode::MODEL_MODE_GEMINI_PRO;
     case kThinkingNoGenUI:
       return omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_NO_GEN_UI;
+    case kFlash:
+      return omnibox::ModelMode::MODEL_MODE_GEMINI_FLASH_LATEST;
   }
 }
 

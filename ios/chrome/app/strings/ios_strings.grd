@@ -1807,6 +1807,9 @@
       <message name="IDS_IOS_COMPOSEBOX_MODEL_SELECTOR_OPTION_AUTO" desc="Title for the contextual menu option where the system automatically selects the optimal model per query. [iOS only].">
         Auto
       </message>
+      <message name="IDS_IOS_COMPOSEBOX_MODEL_SELECTOR_OPTION_FLASH" desc="Title for the contextual menu option for the flash reasoning model. [iOS only].">
+        Flash
+      </message>
       <message name="IDS_IOS_COMPOSEBOX_MODEL_SELECTOR_OPTION_THINKING" desc="Title for the contextual menu option for the advanced thinking reasoning model. [iOS only].">
         Thinking
       </message>

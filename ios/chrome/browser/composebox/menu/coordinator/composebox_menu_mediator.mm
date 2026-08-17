@@ -216,6 +216,10 @@
           composeboxMenuMediator:self
                      didTapModel:ComposeboxModelOption::kThinkingNoGenUI];
       break;
+    case ComposeboxMenuItemType::kModelFlash:
+      [self.delegate composeboxMenuMediator:self
+                                didTapModel:ComposeboxModelOption::kFlash];
+      break;
     case ComposeboxMenuItemType::kAttachmentSharedTabs:
       [self.delegate composeboxMenuMediatorDidRequestSharedTabs:self];
       break;
