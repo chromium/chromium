@@ -7,6 +7,7 @@
 #import <memory>
 #import <set>
 
+#import "base/callback_list.h"
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
@@ -194,6 +195,7 @@ inline LayoutStateAssistantPassKey PassKey() {
   std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
   BOOL _initialAssistantButtonStateRecorded;
   raw_ptr<AimEligibilityService> _AIMEligibilityService;
+  base::CallbackListSubscription _aimEligibilitySubscription;
   std::unique_ptr<NetworkChangeObserverBridge> _networkChangeObserver;
 }
 
@@ -266,8 +268,15 @@ inline LayoutStateAssistantPassKey PassKey() {
           self, _geminiBrowserAgent);
     }
     _AIMEligibilityService = aimEligibilityService;
-
     __weak __typeof(self) weakSelf = self;
+    if (_AIMEligibilityService) {
+      _aimEligibilitySubscription =
+          _AIMEligibilityService->RegisterEligibilityChangedCallback(
+              base::BindRepeating(^{
+                [weakSelf updateAssistantButton];
+              }));
+    }
+
     _networkChangeObserver = std::make_unique<NetworkChangeObserverBridge>(^{
       [weakSelf updateAssistantButton];
     });
@@ -434,6 +443,7 @@ inline LayoutStateAssistantPassKey PassKey() {
   _geminiBrowserAgent = nullptr;
   _geminiObserver.reset();
   _URLLoader = nullptr;
+  _aimEligibilitySubscription = {};
   _AIMEligibilityService = nullptr;
   _networkChangeObserver.reset();
   _incognitoState = nil;
