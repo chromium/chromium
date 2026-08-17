@@ -11,10 +11,15 @@
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/android/tab_android.h"
 #include "ui/events/back_gesture_event.h"
 
 using base::android::JavaRef;
+
+namespace content {
+class WebContents;
+}  // namespace content
 
 namespace gesturenav {
 
@@ -26,7 +31,7 @@ class TabOnBackGestureHandler {
   TabOnBackGestureHandler(const TabOnBackGestureHandler&) = delete;
   TabOnBackGestureHandler& operator=(const TabOnBackGestureHandler&) = delete;
 
-  ~TabOnBackGestureHandler() = default;
+  ~TabOnBackGestureHandler();
 
   // forward: true if this gesture is supposed to forward a page, instead of
   // navigating back.
@@ -55,6 +60,11 @@ class TabOnBackGestureHandler {
   bool is_gesture_mode_ = false;
   ui::BackGestureEventSwipeEdge started_edge_ =
       ui::BackGestureEventSwipeEdge::LEFT;
+
+  // Tracks the WebContents that started the current navigation gesture.
+  // Used to prevent forwarding progress/cancel/invoke events to a newly
+  // swapped WebContents that never received OnGestureStarted().
+  base::WeakPtr<content::WebContents> gestured_web_contents_;
 };
 }  // namespace gesturenav
 

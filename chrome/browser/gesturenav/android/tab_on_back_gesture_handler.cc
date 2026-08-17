@@ -35,6 +35,8 @@ void AssertHasWindowAndCompositor(content::WebContents* web_contents) {
 TabOnBackGestureHandler::TabOnBackGestureHandler(TabAndroid* tab_android)
     : tab_android_(tab_android) {}
 
+TabOnBackGestureHandler::~TabOnBackGestureHandler() = default;
+
 void TabOnBackGestureHandler::OnBackStarted(JNIEnv* env,
                                             float progress,
                                             int edge,
@@ -58,6 +60,7 @@ void TabOnBackGestureHandler::OnBackStarted(JNIEnv* env,
   web_contents->GetBackForwardTransitionAnimationManager()->OnGestureStarted(
       back_gesture, started_edge_,
       forward ? NavDirection::kForward : NavDirection::kBackward);
+  gestured_web_contents_ = web_contents->GetWeakPtr();
 }
 
 bool TabOnBackGestureHandler::OnBackProgressed(JNIEnv* env,
@@ -67,7 +70,9 @@ bool TabOnBackGestureHandler::OnBackProgressed(JNIEnv* env,
                                                bool is_gesture_mode) {
   SCOPED_CRASH_KEY_BOOL("OnBackProgressed", "gesture mode", is_gesture_mode);
   auto swipe_edge = static_cast<ui::BackGestureEventSwipeEdge>(edge);
-  if (!is_in_progress_ || started_edge_ != swipe_edge) {
+  content::WebContents* web_contents = tab_android_->web_contents();
+  if (!web_contents || !is_in_progress_ || started_edge_ != swipe_edge ||
+      web_contents != gestured_web_contents_.get()) {
     // This event does not belong to the gesture we started, so give the gesture
     // back to the caller without mutating or cancelling an active gesture
     // belonging to a different owner or edge.
@@ -88,7 +93,6 @@ bool TabOnBackGestureHandler::OnBackProgressed(JNIEnv* env,
     return false;
   }
 
-  content::WebContents* web_contents = tab_android_->web_contents();
   CHECK(web_contents);
 
   // The OS can give us incorrect progress values.
@@ -108,9 +112,17 @@ void TabOnBackGestureHandler::OnBackCancelled(JNIEnv* env,
   }
 
   is_in_progress_ = false;
+  auto* started_web_contents = gestured_web_contents_.get();
+  gestured_web_contents_.reset();
 
   content::WebContents* web_contents = tab_android_->web_contents();
-  CHECK(web_contents);
+  if (!web_contents || web_contents != started_web_contents) {
+    // The WebContents was swapped or destroyed mid-gesture. Do not forward
+    // OnGestureCancelled() to a new WebContents that never received
+    // OnGestureStarted(), otherwise its animation manager might hit
+    // CHECK_NE(destination_entry_id_, kInvalidId). See crbug.com/530682179.
+    return;
+  }
 
   web_contents->GetBackForwardTransitionAnimationManager()
       ->OnGestureCancelled();
@@ -123,9 +135,17 @@ void TabOnBackGestureHandler::OnBackInvoked(JNIEnv* env, bool is_gesture_mode) {
   }
 
   is_in_progress_ = false;
+  auto* started_web_contents = gestured_web_contents_.get();
+  gestured_web_contents_.reset();
 
   content::WebContents* web_contents = tab_android_->web_contents();
-  CHECK(web_contents);
+  if (!web_contents || web_contents != started_web_contents) {
+    // The WebContents was swapped or destroyed mid-gesture. Do not forward
+    // OnGestureInvoked() to a new WebContents that never received
+    // OnGestureStarted(), otherwise its animation manager might hit
+    // CHECK_NE(destination_entry_id_, kInvalidId). See crbug.com/530682179.
+    return;
+  }
 
   web_contents->GetBackForwardTransitionAnimationManager()->OnGestureInvoked();
 }
@@ -134,7 +154,11 @@ void TabOnBackGestureHandler::Destroy(JNIEnv* env) {
   using AnimationStage =
       content::BackForwardTransitionAnimationManager::AnimationStage;
   auto* web_contents = tab_android_->web_contents();
+  // Only cancel if `web_contents` matches `gestured_web_contents_`; otherwise
+  // the gesture belonged to an older WebContents that has already been
+  // detached.
   if (is_in_progress_ && web_contents &&
+      web_contents == gestured_web_contents_.get() &&
       web_contents->GetBackForwardTransitionAnimationManager()
               ->GetCurrentAnimationStage() != AnimationStage::kNone) {
     // When the Java's Tab is destroyed, the compositor might already be
