@@ -37,6 +37,7 @@ if (!is_android) {
       "//chrome/browser/policy:test_support",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui",
+      "//chrome/browser/ui/browser_window",
       "//chrome/test:test_support",
       "//chrome/test:test_support_ui",
       "//components/client_hints/common",

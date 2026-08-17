@@ -38,8 +38,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -719,7 +719,8 @@ class ClientHintsBrowserTest : public policy::PolicyTest {
     web_contents->SetWebPreferences(prefs);
   }
 
-  void TestProfilesIndependent(Browser* browser_a, Browser* browser_b);
+  void TestProfilesIndependent(BrowserWindowInterface* browser_a,
+                               BrowserWindowInterface* browser_b);
   void TestSwitchWithNewProfile(const std::string& switch_value,
                                 size_t origins_stored);
 
@@ -1757,7 +1758,8 @@ IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest,
             count_client_hints_headers_seen());
 
   // OTR profile should get neither.
-  Browser* otr_browser = CreateIncognitoBrowser(browser()->GetProfile());
+  BrowserWindowInterface* otr_browser =
+      CreateIncognitoBrowser(browser()->GetProfile());
   SetClientHintExpectationsOnMainFrame(false);
   SetClientHintExpectationsOnSubresources(false);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(otr_browser,
@@ -2111,8 +2113,9 @@ IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest, MergeAcceptCH_MetaDelegate) {
   EXPECT_EQ(expected_client_hints_number, count_client_hints_headers_seen());
 }
 
-void ClientHintsBrowserTest::TestProfilesIndependent(Browser* browser_a,
-                                                     Browser* browser_b) {
+void ClientHintsBrowserTest::TestProfilesIndependent(
+    BrowserWindowInterface* browser_a,
+    BrowserWindowInterface* browser_b) {
   const GURL gurl = accept_ch_url();
 
   blink::UserAgentMetadata ua = embedder_support::GetUserAgentMetadata();
@@ -3228,7 +3231,7 @@ IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest,
   const GURL gurl = accept_ch_url();
 
   base::HistogramTester histogram_tester;
-  Browser* incognito = CreateIncognitoBrowser();
+  BrowserWindowInterface* incognito = CreateIncognitoBrowser();
 
   ContentSettingsForOneType host_settings =
       HostContentSettingsMapFactory::GetForProfile(incognito->GetProfile())
@@ -4828,7 +4831,7 @@ void ClientHintsBrowserTest::TestSwitchWithNewProfile(
       client_hints::switches::kInitializeClientHintsStorage, switch_value);
 
   Profile* profile = GenerateNewProfile();
-  Browser* browser = CreateBrowser(profile);
+  BrowserWindowInterface* browser = CreateBrowser(profile);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, without_accept_ch_url()));
 
@@ -4918,7 +4921,8 @@ IN_PROC_BROWSER_TEST_F(ClientHintsCommandLineSwitchBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), without_accept_ch_url()));
 
   // OTR profile should get neither.
-  Browser* otr_browser = CreateIncognitoBrowser(browser()->GetProfile());
+  BrowserWindowInterface* otr_browser =
+      CreateIncognitoBrowser(browser()->GetProfile());
   SetClientHintExpectationsOnMainFrame(false);
   SetClientHintExpectationsOnSubresources(false);
   ASSERT_TRUE(
