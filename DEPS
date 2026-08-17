@@ -912,7 +912,7 @@ deps = {
         'sha256sum': '1dc5bf865a3a48dd820fa8959b83c8662575d25465381803fae82427d176ba77',
         'size_bytes': 2794136,
         'generation': 1786633521996048,
-        'condition': 'checkout_android and not host_os == "linux" and non_git_source',
+        'condition': 'checkout_android and non_git_source',
       },
       {
         'object_name': 'Linux_x64/clang-llvmorg-23-init-19482-g53d18800-22.tar.xz',
