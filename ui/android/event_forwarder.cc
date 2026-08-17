@@ -8,7 +8,6 @@
 #include "base/numerics/ranges.h"
 #include "base/trace_event/typed_macros.h"
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
-#include "ui/android/ui_android_features.h"
 #include "ui/android/window_android.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/android/drag_event_android.h"
@@ -31,10 +30,7 @@ using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 }  // namespace
 
-EventForwarder::EventForwarder(ViewAndroid* view)
-    : view_(view),
-      send_touch_moves_to_observers(base::FeatureList::IsEnabled(
-          kSendTouchMovesToEventForwarderObservers)) {}
+EventForwarder::EventForwarder(ViewAndroid* view) : view_(view) {}
 
 EventForwarder::~EventForwarder() {
   JNIEnv* env = jni_zero::AttachCurrentThread();

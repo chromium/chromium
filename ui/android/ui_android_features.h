@@ -71,11 +71,6 @@ UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kReportBottomOverscrolls);
 // leading value to be configured.
 UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kRequireLeadingInTextViewWithLeading);
 
-// TODO(crbug.com/328601354): Cleanup flag after investigating nothing is broken
-// after changing the default behavior for EventForwarder observers.
-UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(
-    kSendTouchMovesToEventForwarderObservers);
-
 // Update display for context on configuration changed and activity resumed.
 UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kAndroidUpdateDisplayForContext);
 

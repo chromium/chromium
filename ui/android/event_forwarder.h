@@ -148,7 +148,6 @@ class UI_ANDROID_EXPORT EventForwarder {
   const raw_ptr<ViewAndroid> view_;
 
   base::ObserverList<Observer> observers_;
-  bool send_touch_moves_to_observers;
 };
 
 }  // namespace ui
