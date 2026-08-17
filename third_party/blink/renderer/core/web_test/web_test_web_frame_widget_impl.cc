@@ -290,16 +290,14 @@ void WebTestWebFrameWidgetImpl::SynchronouslyComposite(
 
   in_synchronous_composite_ = true;
 
-  auto wrapped_callback = blink::BindOnce(
-      [](base::OnceClosure cb, bool* in_synchronous_composite) {
-        *in_synchronous_composite = false;
-        if (cb) {
-          std::move(cb).Run();
-        }
-      },
-      // base::Unretained is safe by construction, because WebFrameWidgetImpl
-      // must always outlive the compositing machinery.
-      std::move(callback), base::Unretained(&in_synchronous_composite_));
+  // Use WrapWeakPersistent because `this` (a GarbageCollected object) can be
+  // destroyed before the compositing machinery invokes the presentation
+  // callback. For example, child local root iframes can be detached and
+  // garbage-collected while a composite or presentation is still in flight.
+  // See https://crbug.com/541312750.
+  auto wrapped_callback =
+      blink::BindOnce(&WebTestWebFrameWidgetImpl::DidSynchronouslyComposite,
+                      WrapWeakPersistent(this), std::move(callback));
 
   // If there's a visible popup, then we will update its compositing after
   // updating the host frame.
@@ -322,6 +320,14 @@ void WebTestWebFrameWidgetImpl::SynchronouslyComposite(
 
   DoComposite(popup->LayerTreeHostForTesting(), do_raster,
               std::move(wrapped_callback));
+}
+
+void WebTestWebFrameWidgetImpl::DidSynchronouslyComposite(
+    base::OnceClosure callback) {
+  in_synchronous_composite_ = false;
+  if (callback) {
+    std::move(callback).Run();
+  }
 }
 
 void WebTestWebFrameWidgetImpl::AnimateNow() {

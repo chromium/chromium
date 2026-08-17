@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<title>Tests that detaching a frame during synchronous compositing does not crash</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<body>
+<script>
+// Test that removing an iframe while synchronous compositing is in progress
+// does not cause a use-after-poison/free on WebTestWebFrameWidgetImpl.
+// See https://crbug.com/541312750.
+async_test((t) => {
+  const iframe = document.createElement('iframe');
+  iframe.onload = t.step_func(() => {
+    if (window.testRunner) {
+      testRunner.updateAllLifecyclePhasesAndComposite();
+    }
+    iframe.remove();
+    if (window.GCController) {
+      GCController.collectAll();
+    }
+    if (window.testRunner) {
+      testRunner.updateAllLifecyclePhasesAndCompositeThen(t.step_func_done());
+    } else {
+      t.done();
+    }
+  });
+  iframe.src = 'data:text/html,<div>subframe</div>';
+  document.body.appendChild(iframe);
+}, 'No crash when iframe is detached and collected during compositing');
+</script>
+</body>

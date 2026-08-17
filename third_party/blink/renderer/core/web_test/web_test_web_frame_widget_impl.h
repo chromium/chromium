@@ -94,6 +94,8 @@ class WebTestWebFrameWidgetImpl : public WebFrameWidgetImpl,
   // thus destroy |this| before returning.
   void SynchronouslyComposite(base::OnceClosure callback, bool do_raster);
 
+  void DidSynchronouslyComposite(base::OnceClosure callback);
+
   // Perform the synchronous composite step for a given LayerTreeHost.
   static void DoComposite(cc::LayerTreeHost* layer_tree_host,
                           bool do_raster,
