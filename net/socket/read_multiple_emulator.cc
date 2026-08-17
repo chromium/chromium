@@ -10,11 +10,13 @@
 #include "base/functional/bind.h"
 #include "base/numerics/safe_conversions.h"
 #include "net/base/io_buffer.h"
-#include "net/socket/socket.h"
+#include "net/socket/datagram_client_socket.h"
+#include "net/socket/diff_serv_code_point.h"
 
 namespace net {
 
-ReadMultipleEmulator::ReadMultipleEmulator(Socket* socket) : socket_(socket) {
+ReadMultipleEmulator::ReadMultipleEmulator(DatagramClientSocket* socket)
+    : socket_(socket) {
   CHECK(socket_);
 }
 
@@ -38,8 +40,12 @@ base::expected<DatagramsMetadata, Error> ReadMultipleEmulator::ReadMultiple(
     return base::unexpected(static_cast<Error>(rv));
   }
 
-  return DatagramsMetadata{
-      {/*offset=*/0, /*length=*/static_cast<size_t>(rv), /*tos=*/0}};
+  // Preserve the socket's per-packet TOS so QUIC can read the ECN codepoint
+  // (a bare 0 would make every packet appear Not-ECT). GetLastTos() reflects
+  // the datagram just returned by the synchronous Read() above.
+  const DscpAndEcn tos = socket_->GetLastTos();
+  return DatagramsMetadata{{/*offset=*/0, /*length=*/static_cast<size_t>(rv),
+                            /*tos=*/DscpAndEcnToTos(tos.dscp, tos.ecn)}};
 }
 
 void ReadMultipleEmulator::OnReadComplete(
@@ -48,8 +54,11 @@ void ReadMultipleEmulator::OnReadComplete(
   if (rv < 0) {
     std::move(callback).Run(base::unexpected(static_cast<Error>(rv)));
   } else {
-    std::move(callback).Run(DatagramsMetadata{
-        {/*offset=*/0, /*length=*/static_cast<size_t>(rv), /*tos=*/0}});
+    // See ReadMultiple(): preserve the just-read datagram's TOS for ECN.
+    const DscpAndEcn tos = socket_->GetLastTos();
+    std::move(callback).Run(
+        DatagramsMetadata{{/*offset=*/0, /*length=*/static_cast<size_t>(rv),
+                           /*tos=*/DscpAndEcnToTos(tos.dscp, tos.ecn)}});
   }
 }
 

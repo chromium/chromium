@@ -5,6 +5,10 @@
 #ifndef NET_SOCKET_DIFF_SERV_CODE_POINT_H_
 #define NET_SOCKET_DIFF_SERV_CODE_POINT_H_
 
+#include <cstdint>
+
+#include "base/check_op.h"
+
 namespace net {
 
 // Differentiated Services Code Point.
@@ -56,12 +60,22 @@ struct DscpAndEcn {
 };
 
 // Converts an 8-bit IP TOS field to its DSCP and ECN parts.
-static inline DscpAndEcn TosToDscpAndEcn(uint8_t tos) {
+inline DscpAndEcn TosToDscpAndEcn(uint8_t tos) {
   // Bitmasks to find the DSCP and ECN pieces of the TOS byte.
   constexpr uint8_t kEcnMask = 0b11;
   constexpr uint8_t kDscpMask = ~kEcnMask;
   return DscpAndEcn{static_cast<DiffServCodePoint>((tos & kDscpMask) >> 2),
                     static_cast<EcnCodePoint>(tos & kEcnMask)};
+}
+
+// Converts DSCP and ECN parts back to an 8-bit IP TOS field. The inverse of
+// TosToDscpAndEcn(); the NO_CHANGE sentinels are not valid inputs (callers
+// must resolve them to concrete values first).
+inline uint8_t DscpAndEcnToTos(DiffServCodePoint dscp, EcnCodePoint ecn) {
+  CHECK_NE(dscp, DSCP_NO_CHANGE);
+  CHECK_NE(ecn, ECN_NO_CHANGE);
+  return static_cast<uint8_t>((static_cast<int>(dscp) << 2) |
+                              static_cast<int>(ecn));
 }
 
 }  // namespace net

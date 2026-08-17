@@ -17,8 +17,8 @@
 
 namespace net {
 
+class DatagramClientSocket;
 class IOBuffer;
-class Socket;
 
 // TODO(crbug.com/515333601): This is helper class for temporary delegation to
 // Read() to avoid crashes when QuicUseReadMultiple is enabled. Delete this
@@ -30,7 +30,7 @@ class Socket;
 class NET_EXPORT ReadMultipleEmulator {
  public:
   // `socket` must outlive this emulator.
-  explicit ReadMultipleEmulator(Socket* socket);
+  explicit ReadMultipleEmulator(DatagramClientSocket* socket);
 
   ReadMultipleEmulator(const ReadMultipleEmulator&) = delete;
   ReadMultipleEmulator& operator=(const ReadMultipleEmulator&) = delete;
@@ -50,7 +50,7 @@ class NET_EXPORT ReadMultipleEmulator {
           callback,
       int rv);
 
-  const raw_ptr<Socket> socket_;
+  const raw_ptr<DatagramClientSocket> socket_;
   base::WeakPtrFactory<ReadMultipleEmulator> weak_factory_{this};
 };
 
