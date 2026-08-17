@@ -136,14 +136,17 @@ class PageActionView : public IconLabelBubbleView,
   views::View* GetLabelForTesting();
   gfx::SlideAnimation& GetSlideAnimationForTesting();
   AnchoredMessageBubbleView* GetAnchoredMessageForTesting();
-
-  // IconLabelBubbleView:
-  SkColor GetBackgroundColor() const override;
+  SkColor GetForegroundColorForTesting() const { return GetForegroundColor(); }
+  SkColor GetBackgroundColorForTesting() const { return GetBackgroundColor(); }
 
   static PageActionPassKey PassKeyForTesting() { return PageActionPassKey(); }
 
  protected:
   static PageActionPassKey PassKey() { return PageActionPassKey(); }
+
+  // IconLabelBubbleView:
+  SkColor GetBackgroundColor() const override;
+  bool PaintedOnSolidBackground() const override;
 
  private:
   // The image associated with the `action_item_` size may be different from the
@@ -168,6 +171,7 @@ class PageActionView : public IconLabelBubbleView,
   void MaybeRecordCollapsedMetrics(int label_width);
 
   void OnAnchoredMessageWidgetClose(views::Widget::ClosedReason closed_reason);
+  void SetIsShowingBubble(bool showing);
 
   void CreateAndShowAnchoredMessage(const PageActionModelInterface& model);
 

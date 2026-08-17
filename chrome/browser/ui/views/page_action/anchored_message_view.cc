@@ -156,6 +156,7 @@ AnchoredMessageBubbleView::AnchoredMessageBubbleView(
   SetBackgroundColor(ui::kColorSysSurface);
   set_corner_radius(kAnchoredMessageHeight / 2);
   set_margins(gfx::Insets());
+  set_highlight_button_when_shown(false);
 
   auto* animating_layout =
       SetLayoutManager(std::make_unique<views::AnimatingLayoutManager>());

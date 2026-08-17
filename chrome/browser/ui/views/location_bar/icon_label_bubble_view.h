@@ -241,6 +241,11 @@ class IconLabelBubbleView : public views::InkDropObserver,
 
   virtual void OnTouchUiChanged();
 
+  // Returns true if the view is painted on a solid background, or if it is
+  // intended to be transparent to the view over which it is painted. The view's
+  // background and foreground color accessors will reflect this preference.
+  virtual bool PaintedOnSolidBackground() const;
+
   // views::LabelButton:
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
@@ -352,11 +357,6 @@ class IconLabelBubbleView : public views::InkDropObserver,
   // Gets the highlight path for ink drops and focus rings using the current
   // bounds and separator visibility.
   SkPath GetHighlightPath() const;
-
-  // Returns true if the view is painted on a solid background, or if it is
-  // intended to be transparent to the view over which it is painted. The view's
-  // background and foreground color accessors will reflect this preference.
-  bool PaintedOnSolidBackground() const;
 
   raw_ptr<Delegate, DanglingUntriaged> delegate_;
 

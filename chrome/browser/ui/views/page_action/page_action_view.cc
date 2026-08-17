@@ -563,6 +563,8 @@ void PageActionView::CreateAndShowAnchoredMessage(
     anchored_message_widget_->MakeCloseSynchronous(
         base::BindOnce(&PageActionView::OnAnchoredMessageWidgetClose,
                        weak_factory_.GetWeakPtr()));
+    UpdateBackground();
+    UpdateIconImage();
 
     // Don't steal focus when shown
     anchored_message_widget_->ShowInactive();
@@ -576,9 +578,8 @@ void PageActionView::CreateAndShowAnchoredMessage(
 void PageActionView::OnAnchoredMessageWidgetClose(
     views::Widget::ClosedReason closed_reason) {
   // If `anchored_message_` is already null, it means we are in the middle of
-  // programmatically destroying the widget (e.g. from
-  // OnPageActionModelChanged). In this case, early return to avoid re-entrancy
-  // crashes.
+  // destroying the view (e.g. from ~PageActionView). In this case, early return
+  // to avoid re-entrancy crashes.
   if (!anchored_message_) {
     return;
   }
@@ -588,6 +589,8 @@ void PageActionView::OnAnchoredMessageWidgetClose(
       FROM_HERE, base::BindOnce(&PageActionView::CloseWidgetDeferred,
                                 weak_factory_.GetWeakPtr(),
                                 anchored_message_widget_->GetWeakPtr()));
+  UpdateBackground();
+  UpdateIconImage();
   UpdateTooltipText();
   anchored_message_visibility_changed_callbacks_.Notify(this);
 
@@ -694,6 +697,11 @@ SkColor PageActionView::GetBackgroundColor() const {
         *observation_.GetSource()->GetOverrideBackgroundColorId());
   }
   return IconLabelBubbleView::GetBackgroundColor();
+}
+
+bool PageActionView::PaintedOnSolidBackground() const {
+  return IconLabelBubbleView::PaintedOnSolidBackground() ||
+         IsAnchoredMessageVisible();
 }
 
 BEGIN_METADATA(PageActionView)

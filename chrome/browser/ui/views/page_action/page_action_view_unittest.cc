@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/run_until.h"
@@ -437,6 +438,57 @@ TEST_F(PageActionViewTest, Highlight) {
 
   EXPECT_CALL(*model(), GetActionActive()).WillRepeatedly(Return(false));
   page_action_view()->OnPageActionModelChanged(*model());
+  EXPECT_FALSE(ink_drop->GetHighlighted());
+}
+
+TEST_F(PageActionViewTest, AnchoredMessageUpdatesBackground) {
+  auto scoped_mode = gfx::AnimationTestApi::SetRichAnimationRenderMode(
+      gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
+
+  views::InkDropHost* const ink_drop =
+      views::InkDrop::Get(page_action_view()->ink_drop_view());
+
+  EXPECT_CALL(*model(), GetVisible()).WillRepeatedly(Return(true));
+  EXPECT_CALL(*model(), ShouldShowSuggestionChip())
+      .WillRepeatedly(Return(false));
+  EXPECT_CALL(*model(), ShouldShowAnchoredMessage())
+      .WillRepeatedly(Return(true));
+  std::u16string test_message = u"Message";
+  EXPECT_CALL(*model(), GetAnchoredMessageText())
+      .WillRepeatedly(ReturnRef(test_message));
+
+  std::optional<ui::ImageModel> mock_icon;
+  EXPECT_CALL(*model(), GetAnchoredMessageIcon())
+      .WillRepeatedly(ReturnRef(mock_icon));
+
+  std::optional<AnchoredMessageExpandableContent> mock_content;
+  EXPECT_CALL(*model(), GetAnchoredMessageExpandableContent())
+      .WillRepeatedly(ReturnRef(mock_content));
+
+  EXPECT_CALL(*model(), GetAnchoredMessageActionIconType())
+      .WillRepeatedly(Return(AnchoredMessageActionIconType::kNone));
+
+  page_action_view()->OnPageActionModelChanged(*model());
+
+  ASSERT_TRUE(page_action_view()->IsAnchoredMessageVisible());
+  ASSERT_NE(page_action_view()->GetBackground(), nullptr);
+  EXPECT_EQ(page_action_view()->GetBackground()->color().ResolveToSkColor(
+                page_action_view()->GetColorProvider()),
+            page_action_view()->GetColorProvider()->GetColor(
+                kColorOmniboxIconBackgroundTonal));
+  EXPECT_EQ(page_action_view()->GetForegroundColorForTesting(),
+            page_action_view()->GetColorProvider()->GetColor(
+                kColorOmniboxIconForegroundTonal));
+  EXPECT_FALSE(ink_drop->GetHighlighted());
+
+  // Close the anchored message.
+  page_action_view()->GetAnchoredMessageForTesting()->GetWidget()->Close();
+
+  ASSERT_FALSE(page_action_view()->IsAnchoredMessageVisible());
+  EXPECT_EQ(page_action_view()->GetBackground(), nullptr);
+  EXPECT_NE(page_action_view()->GetForegroundColorForTesting(),
+            page_action_view()->GetColorProvider()->GetColor(
+                kColorOmniboxIconForegroundTonal));
   EXPECT_FALSE(ink_drop->GetHighlighted());
 }
 
