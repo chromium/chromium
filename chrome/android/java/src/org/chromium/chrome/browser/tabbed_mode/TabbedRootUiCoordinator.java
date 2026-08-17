@@ -2964,21 +2964,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         BookmarkBarSettingChangeOrigin.KEYBOARD_SHORTCUT);
                 return true;
             }
-        } else if (id == R.id.bookmark_bar_state_only_ntp_menu_id) {
-            if (!BookmarkBarUtils.isActivityStateBookmarkBarCompatible(mActivity)) {
-                return false;
-            }
-            Profile profile = mProfileSupplier.asNonNull().get();
-            if (BookmarkBarUtils.getBookmarkBarVisibilityState(
-                            mActivity, profile, mXrSpaceModeObservableSupplier.get())
-                    != BookmarkBarVisibilityState.ONLY_SHOW_ON_NTP) {
-                BookmarkBarUtils.setBookmarkBarVisibilityState(
-                        profile,
-                        BookmarkBarVisibilityState.ONLY_SHOW_ON_NTP,
-                        /* fromKeyboardShortcut= */ false);
-                RecordUserAction.record("MobileMenuBookmarkBarOnlyNtp");
-            }
-            return true;
         } else if (id == R.id.bookmark_bar_state_always_show_menu_id) {
             if (!BookmarkBarUtils.isActivityStateBookmarkBarCompatible(mActivity)) {
                 return false;

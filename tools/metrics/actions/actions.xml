@@ -29910,15 +29910,6 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
-<action name="MobileMenuBookmarkBarOnlyNtp">
-  <owner>nehasapre@google.com</owner>
-  <owner>massan@google.com</owner>
-  <description>
-    User pressed &quot;Only show on New Tab Page&quot; in the &quot;Bookmarks
-    bar&quot; submenu in the app menu.
-  </description>
-</action>
-
 <action name="MobileMenuBookmarkThisPage">
   <owner>massan@google.com</owner>
   <description>User pressed 'Bookmark this page' in the app menu.</description>
