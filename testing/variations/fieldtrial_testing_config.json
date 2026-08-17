@@ -24394,25 +24394,6 @@
             ]
         }
     ],
-    "ThrottleConsecutiveNoDamageMainFrames": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20260813",
-                    "enable_features": [
-                        "ThrottleRepeatedNoDamageFrames"
-                    ]
-                }
-            ]
-        }
-    ],
     "ThrottleMainFrameTo60HzDesktopAndroid": [
         {
             "platforms": [
