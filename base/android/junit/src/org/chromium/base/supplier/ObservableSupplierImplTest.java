@@ -404,6 +404,24 @@ public class ObservableSupplierImplTest {
         assertEquals("foo", charSequenceSupplier.get());
     }
 
+    @Test
+    public void testAllowsSetToNull() {
+        assertTrue(
+                BaseObservableSupplierImpl.allowsSetToNull(ObservableSuppliers.createNullable()));
+        assertTrue(
+                BaseObservableSupplierImpl.allowsSetToNull(
+                        ObservableSuppliers.createNullable("initial")));
+        assertFalse(
+                BaseObservableSupplierImpl.allowsSetToNull(ObservableSuppliers.createMonotonic()));
+        assertFalse(
+                BaseObservableSupplierImpl.allowsSetToNull(
+                        ObservableSuppliers.createMonotonic("initial")));
+        assertFalse(
+                BaseObservableSupplierImpl.allowsSetToNull(
+                        ObservableSuppliers.createNonNull("initial")));
+        assertFalse(BaseObservableSupplierImpl.allowsSetToNull(ObservableSuppliers.alwaysNull()));
+    }
+
     private void checkState(
             int expectedCallCount,
             String expectedLastSuppliedString,

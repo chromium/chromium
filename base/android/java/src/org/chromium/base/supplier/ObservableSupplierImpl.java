@@ -42,17 +42,7 @@ class ObservableSupplierImpl<T> extends BaseObservableSupplierImpl<T>
     protected T mObject;
     private boolean mIsDestroyed;
 
-    @Deprecated // Migrate to ObservableSuppliers.*
-    public ObservableSupplierImpl() {
-        this(null, /* allowSetToNull= */ null);
-    }
-
-    @Deprecated // Migrate to ObservableSuppliers.*
-    public ObservableSupplierImpl(T initialValue) {
-        this(initialValue, /* allowSetToNull= */ null);
-    }
-
-    protected ObservableSupplierImpl(@Nullable T initialValue, @Nullable Boolean allowSetToNull) {
+    protected ObservableSupplierImpl(@Nullable T initialValue, boolean allowSetToNull) {
         super(allowSetToNull);
         mObject = initialValue;
         // Guard against creation on Instrumentation thread, since this causes the ThreadChecker
@@ -111,7 +101,7 @@ class ObservableSupplierImpl<T> extends BaseObservableSupplierImpl<T>
         // cancelled, so again, just ignore after destroy().
         if (!mIsDestroyed) {
             mThreadChecker.assertOnValidThread();
-            assert object != null || !Boolean.FALSE.equals(mAllowSetToNull)
+            assert object != null || mAllowSetToNull
                     : "set(null) called on a non-nullable supplier";
             T prevValue = mObject;
             mObject = object;

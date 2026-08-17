@@ -16,11 +16,9 @@ import org.chromium.build.annotations.Nullable;
 @SuppressWarnings("NullAway")
 class BaseObservableSupplierImpl<T extends @Nullable Object>
         implements MonotonicObservableSupplier<T> {
-    // TODO(455874046): Make this non-nullable once ObservableSupplierImpl is no longer directly
-    // used.
-    protected @Nullable Boolean mAllowSetToNull;
+    protected final boolean mAllowSetToNull;
 
-    BaseObservableSupplierImpl(@Nullable Boolean allowSetToNull) {
+    BaseObservableSupplierImpl(boolean allowSetToNull) {
         mAllowSetToNull = allowSetToNull;
     }
 
@@ -45,10 +43,10 @@ class BaseObservableSupplierImpl<T extends @Nullable Object>
     /**
      * If |thing| is a BaseObservableSupplierImpl, returns mAllowSetToNull. Otherwise, returns
      * whether |thing| is an instance of ObservableSupplier. E.g. this assumes that classes that do
-     * not extend BaseObservableSupplierImpl will no implement conflicting interfaces like
+     * not extend BaseObservableSupplierImpl will not implement conflicting interfaces like
      * ObservableSupplierImpl does.
      */
-    static <T> @Nullable Boolean allowsSetToNull(NullableObservableSupplier<T> thing) {
+    static <T> boolean allowsSetToNull(NullableObservableSupplier<T> thing) {
         if (thing instanceof BaseObservableSupplierImpl<T> impl) {
             return impl.mAllowSetToNull;
         }
