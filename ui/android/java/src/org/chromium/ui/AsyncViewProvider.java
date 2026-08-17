@@ -40,10 +40,11 @@ public class AsyncViewProvider<T extends View> implements Callback<View>, ViewPr
     /**
      * Returns a provider for a view in the view hierarchy that is to be inflated by {@param
      * viewStub}.
+     *
      * @param viewStub the {@link AsyncViewStub} that will inflate the view hierarchy containing the
-     *                 {@link View}.
+     *     {@link View}.
      * @param resId The resource id of the view that this provider should provide/encapsulate.
-     * @return an {@link AsyncViewProvider} that encapsulates a view with id {@param resId}.
+     * @return an {@link AsyncViewProvider} that encapsulates a view with id {@code resId}.
      */
     public static <E extends View> AsyncViewProvider<E> of(AsyncViewStub viewStub, int resId) {
         ThreadUtils.assertOnUiThread();
@@ -57,14 +58,15 @@ public class AsyncViewProvider<T extends View> implements Callback<View>, ViewPr
     }
 
     /**
-     * Get a provider for a view with id {@param viewResId} that is (or going to be) in the view
-     * hierarchy inflated by the AsyncViewStub with id {@param viewStubResId}.
+     * Get a provider for a view with id {@code viewResId} that is (or going to be) in the view
+     * hierarchy inflated by the AsyncViewStub with id {@code viewStubResId}.
+     *
      * @param root the {@link View} to use as the context for finding the View/ViewStub that the
-     *             provider encapsulates.
+     *     provider encapsulates.
      * @param viewStubResId the resource id of the AsyncViewStub that inflates the view hierarchy
-     *                      where the encapsulated View lives.
+     *     where the encapsulated View lives.
      * @param viewResId the resource id of the view that the provider should provide/encapsulate.
-     * @return an {@link AsyncViewProvider} that encapsulates a view with id {@param viewResId}.
+     * @return an {@link AsyncViewProvider} that encapsulates a view with id {@code viewResId}.
      */
     public static <E extends View> AsyncViewProvider<E> of(
             View root, int viewStubResId, int viewResId) {
@@ -93,11 +95,10 @@ public class AsyncViewProvider<T extends View> implements Callback<View>, ViewPr
     }
 
     /**
-     * @param resId resource id of the {@link View} that the returned provider would
-     *              encapsulate.
+     * @param resId resource id of the {@link View} that the returned provider would encapsulate.
      * @param <E> type of the {@link View} that the returned provider would encapsulate
-     * @return a provider for a {@link View} with resource id {@param resId} that is in the view
-     * hierarchy of the {@link View} encapsulated by this provider.
+     * @return a provider for a {@link View} with resource id {@code resId} that is in the view
+     *     hierarchy of the {@link View} encapsulated by this provider.
      */
     public <E extends View> AsyncViewProvider<E> getChildProvider(int resId) {
         if (mView != null) {

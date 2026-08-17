@@ -253,7 +253,7 @@ public class BasicListMenu implements ListMenu {
     }
 
     /**
-     * Runs {@param dismissDialog} at the end of each callback, recursively (through submenu items).
+     * Runs {@code dismissDialog} at the end of each callback, recursively (through submenu items).
      * If an item doesn't already have a click callback in its model, no click callback is added.
      *
      * @param dismissDialog The {@link Runnable} to run.

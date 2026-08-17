@@ -47,7 +47,7 @@ public class ListMenuButton extends ChromeImageButton {
 
     /**
      * Text that represents the item this menu button is related to. This will affect the content
-     * description of the view {@see #setContentDescription(CharSequence)}.
+     * description of the view {@link #setContentDescription(CharSequence)}.
      *
      * @param context The string representation of the list item this button represents.
      */

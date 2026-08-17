@@ -47,12 +47,12 @@ public class MenuModelBridge {
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    /** {@return A {@link MenuModelBridge} instance} */
+    /** Returns a {@link MenuModelBridge} instance. */
     public MenuModelBridge(long nativePtr) {
         mNativePtr = nativePtr;
     }
 
-    /** {@return The list of {@link ListItem} held by this {@link MenuModelBridge}} */
+    /** Returns the list of {@link ListItem} held by this {@link MenuModelBridge}. */
     public List<ListItem> getListItems() {
         return mItems;
     }

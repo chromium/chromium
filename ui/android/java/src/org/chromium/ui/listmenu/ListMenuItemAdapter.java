@@ -30,13 +30,13 @@ public class ListMenuItemAdapter extends ModelListAdapter {
     private final Collection<Integer> mDisabledTypes;
     private final @Nullable Delegate mDelegate;
 
-    /** Returns a {@link ListMenuItemAdapter} for a list containing {@param data}. */
+    /** Returns a {@link ListMenuItemAdapter} for a list containing {@code data}. */
     public ListMenuItemAdapter(ModelList data) {
         this(data, Set.of(), /* delegate= */ null);
     }
 
     /**
-     * Returns a {@link ListMenuItemAdapter} for a list containing {@param data}. {@param
+     * Returns a {@link ListMenuItemAdapter} for a list containing {@code data}. {@param
      * disabledTypes} contains the type enums which should be disabled in the adapter (i.e. not
      * keyboard-focusable or interactable).
      *

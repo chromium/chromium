@@ -45,8 +45,8 @@ public class DrawableTranslationAnimatorFactory {
      * Translates a {@link Drawable} by a specified displacement.
      *
      * @param drawable The drawable to be translated.
-     * @param initialBounds The {@link Rect} containing the initial bounds of {@param drawable}
-     *     prior to any animation.
+     * @param initialBounds The {@link Rect} containing the initial bounds of {@code drawable} prior
+     *     to any animation.
      * @param dX The amount the drawable is to be translated horizontally (in px).
      * @param dY The amount the drawable is translated vertically (in px).
      */

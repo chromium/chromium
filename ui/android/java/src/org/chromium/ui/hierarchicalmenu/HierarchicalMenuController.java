@@ -569,7 +569,7 @@ public class HierarchicalMenuController<T> {
         modelList.set(targetItems);
     }
 
-    /** Returns a shallow copy of {@param modelList}. */
+    /** Returns a shallow copy of {@code modelList}. */
     private ModelList shallowCopy(ModelList modelList) {
         ModelList result = new ModelList();
         for (ListItem item : modelList) {
@@ -578,7 +578,7 @@ public class HierarchicalMenuController<T> {
         return result;
     }
 
-    /** Returns whether {@param item} has a click listener. */
+    /** Returns whether {@code item} has a click listener. */
     public boolean hasClickListener(ListItem item) {
         return item.model != null
                 && item.model.containsKey(mKeyProvider.getClickListenerKey())
@@ -586,10 +586,10 @@ public class HierarchicalMenuController<T> {
     }
 
     /**
-     * Makes {@param dismissDialog} run at the end of the callback of {@param item}. If the item
+     * Makes {@code dismissDialog} run at the end of the callback of {@code item}. If the item
      * doesn't already have a click callback in its model, no click callback is added.
      *
-     * @param item The item to which we would add {@param runnable}.
+     * @param item The item to which we would add {@code runnable}.
      * @param dismissDialog The {@link Runnable} to run to dismiss the dialog.
      */
     private void addRunnableToCallback(ListItem item, Runnable dismissDialog) {
@@ -607,7 +607,7 @@ public class HierarchicalMenuController<T> {
     /**
      * Sets up the necessary callbacks for a menu item and its sub-items, recursively. This includes
      * setting hover listener for flyout menus and click listener for drill-down menus. It also
-     * attaches the {@param dismissDialog} runnable to the click handlers of terminal items.
+     * attaches the {@code dismissDialog} runnable to the click handlers of terminal items.
      *
      * @param headerModelList {@link ModelList} for unscrollable top header; null if headers scroll.
      * @param contentModelList {@link ModelList} for the scrollable content of the menu.
@@ -705,7 +705,7 @@ public class HierarchicalMenuController<T> {
     }
 
     /**
-     * Runs {@param dismissDialog} at the end of each callback, recursively (through submenu items).
+     * Runs {@code dismissDialog} at the end of each callback, recursively (through submenu items).
      * If an item doesn't already have a click callback in its model, no click callback is added.
      *
      * @param headerModelList {@link ModelList} for unscrollable top header; null if headers scroll.
@@ -804,7 +804,7 @@ public class HierarchicalMenuController<T> {
 
         /**
          * Returns a {@link AccessibilityListObserver} that reacts to changes in {@param
-         * headerModelList and {@param contentModelList}, the are backing models for {@param view}.
+         * headerModelList and {@param contentModelList}, the are backing models for {@code view}.
          */
         public AccessibilityListObserver(
                 View parentView,

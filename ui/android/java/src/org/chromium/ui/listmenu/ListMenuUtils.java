@@ -114,7 +114,7 @@ public class ListMenuUtils {
         return adapter;
     }
 
-    /** Returns whether {@param item} has a click listener. */
+    /** Returns whether {@code item} has a click listener. */
     public static boolean hasClickListener(ListItem item) {
         return item.model != null
                 && item.model.containsKey(CLICK_LISTENER)

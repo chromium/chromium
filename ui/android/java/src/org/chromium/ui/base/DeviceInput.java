@@ -182,7 +182,7 @@ public class DeviceInput implements InputDeviceListener {
     }
 
     /**
-     * @return the Touchpad MotionRange of AXIS_X for the provided {@param deviceId}, or null if the
+     * @return the Touchpad MotionRange of AXIS_X for the provided {@code deviceId}, or null if the
      *     device is not found or the device doesn't support touchpad source
      */
     public static InputDevice.@Nullable MotionRange getTouchpadXAxisMotionRange(int deviceId) {
@@ -197,7 +197,7 @@ public class DeviceInput implements InputDeviceListener {
     }
 
     /**
-     * @return the Touchpad MotionRange of AXIS_Y for the provided {@param deviceId}, or null if the
+     * @return the Touchpad MotionRange of AXIS_Y for the provided {@code deviceId}, or null if the
      *     device is not found or the device doesn't support touchpad source
      */
     public static InputDevice.@Nullable MotionRange getTouchpadYAxisMotionRange(int deviceId) {
