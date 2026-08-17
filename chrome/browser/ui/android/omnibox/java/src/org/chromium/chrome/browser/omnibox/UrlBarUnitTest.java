@@ -1249,9 +1249,6 @@ public class UrlBarUnitTest {
 
     @Test
     public void setInputIsMultilineEligible() {
-        // Permit line wrapping.
-        mUrlBar.setAllowMultilineInput(true);
-
         // Mark current input as wrapping eligible.
         mUrlBar.setInputIsMultilineEligible(true);
         mUrlBar.onFocusChanged(true, View.LAYOUT_DIRECTION_LTR, new Rect());
@@ -1264,14 +1261,6 @@ public class UrlBarUnitTest {
         // Defocused omnibox - never multiline
         mUrlBar.onFocusChanged(false, View.LAYOUT_DIRECTION_LTR, new Rect());
         mUrlBar.setInputIsMultilineEligible(true);
-        assertTrue(mUrlBar.isHorizontallyScrollable());
-
-        // Suppress line wrapping.
-        mUrlBar.setAllowMultilineInput(false);
-
-        // Mark current input as wrapping eligible.
-        mUrlBar.setInputIsMultilineEligible(true);
-        mUrlBar.onFocusChanged(true, View.LAYOUT_DIRECTION_LTR, new Rect());
         assertTrue(mUrlBar.isHorizontallyScrollable());
     }
 
@@ -1330,14 +1319,10 @@ public class UrlBarUnitTest {
 
     @Test
     public void onFocusChanged_MultilineEligibility() {
-        mUrlBar.setAllowMultilineInput(true);
         mUrlBar.onFocusChanged(false, View.FOCUS_DOWN, null);
         assertTrue(mUrlBar.isHorizontallyScrollable());
 
         mUrlBar.onFocusChanged(true, View.FOCUS_DOWN, null);
-        assertTrue(mUrlBar.isHorizontallyScrollable());
-
-        mUrlBar.setAllowMultilineInput(true);
         assertTrue(mUrlBar.isHorizontallyScrollable());
 
         mUrlBar.setInputIsMultilineEligible(true);

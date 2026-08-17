@@ -124,10 +124,6 @@ class UrlBarProperties {
     /** Whether focus should be allowed on the view. */
     public static final WritableBooleanPropertyKey ALLOW_FOCUS = new WritableBooleanPropertyKey();
 
-    /** Whether multiline input should be allowed on the view. */
-    public static final WritableBooleanPropertyKey ALLOW_MULTILINE_INPUT =
-            new WritableBooleanPropertyKey();
-
     /** Specified the autocomplete text to be shown to the user. */
     public static final WritableObjectPropertyKey<AutocompleteText> AUTOCOMPLETE_TEXT =
             new WritableObjectPropertyKey<>();
@@ -222,7 +218,6 @@ class UrlBarProperties {
                 ACCESSIBILITY_WARNING,
                 ACTION_MODE_CALLBACK,
                 ALLOW_FOCUS,
-                ALLOW_MULTILINE_INPUT,
                 AUTOCOMPLETE_TEXT,
                 DELEGATE,
                 FOCUS_CHANGE_CALLBACK,

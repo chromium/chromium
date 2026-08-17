@@ -5,9 +5,7 @@
 package org.chromium.chrome.browser.omnibox;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -19,7 +17,6 @@ import static org.chromium.chrome.browser.omnibox.UrlBarProperties.TEXT_COLOR;
 
 import android.app.Activity;
 import android.graphics.Color;
-import android.view.View;
 import android.view.View.OnLongClickListener;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -149,18 +146,6 @@ public class UrlBarViewBinderUnitTest {
         assertEquals(normalPadding, mUrlBar.getPaddingTop());
         assertEquals(13, mUrlBar.getPaddingStart());
         assertEquals(17, mUrlBar.getPaddingEnd());
-    }
-
-    @Test
-    @SmallTest
-    public void testSetAllowMultilineInput() {
-        mModel.set(UrlBarProperties.ALLOW_MULTILINE_INPUT, true);
-        mUrlBar.onFocusChanged(true, View.FOCUS_DOWN, null);
-        mUrlBar.setInputIsMultilineEligible(true);
-        assertFalse(mUrlBar.isHorizontallyScrollable());
-
-        mModel.set(UrlBarProperties.ALLOW_MULTILINE_INPUT, false);
-        assertTrue(mUrlBar.isHorizontallyScrollable());
     }
 
     @Test

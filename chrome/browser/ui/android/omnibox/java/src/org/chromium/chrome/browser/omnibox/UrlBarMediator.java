@@ -368,16 +368,6 @@ class UrlBarMediator implements UrlBarTextContextMenuDelegate {
         mModel.set(UrlBarProperties.ALLOW_FOCUS, allowFocus);
     }
 
-    /**
-     * Sets whether the view should *permit* multiline input.
-     *
-     * <p>The perimitted/allowed wrapping doesn't imply the wrapping will be applied. Only eligible
-     * input in focused state can wrap. This setting controls only whether wrapping is permitted.
-     */
-    public void setAllowMultilineInput(boolean allowMultilineInput) {
-        mModel.set(UrlBarProperties.ALLOW_MULTILINE_INPUT, allowMultilineInput);
-    }
-
     /** Set the listener to be notified for URL direction changes. */
     public void setUrlDirectionListener(Callback<Integer> listener) {
         mModel.set(UrlBarProperties.URL_DIRECTION_LISTENER, listener);

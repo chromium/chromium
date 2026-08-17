@@ -126,7 +126,6 @@ public class UrlBar extends AutocompleteEditText {
     private boolean mDesiredCursorVisible = true;
     private boolean mFocusEventEmitted;
     private boolean mAllowFocus = true;
-    private boolean mAllowMultilineInput;
     private boolean mCurrentInputCanBeWrapped;
 
     /** Tracks whether a long-press was performed during the current touch gesture. */
@@ -496,13 +495,6 @@ public class UrlBar extends AutocompleteEditText {
         setFocusableInTouchMode(allowFocus);
     }
 
-    /** Sets whether this {@link UrlBar} allows multiline input. */
-    public void setAllowMultilineInput(boolean allowMultilineInput) {
-        if (mAllowMultilineInput == allowMultilineInput) return;
-        mAllowMultilineInput = allowMultilineInput;
-        updateUrlBarForMultilineInput();
-    }
-
     /** Sets whether this {@link UrlBar} should enable bounds ellipsis. */
     public void setBoundsEllipsisEnabled(boolean enabled) {
         mBoundsEllipsisEnabled = enabled;
@@ -515,7 +507,7 @@ public class UrlBar extends AutocompleteEditText {
     }
 
     private void updateUrlBarForMultilineInput() {
-        boolean wantWrap = mFocused && mAllowMultilineInput && mCurrentInputCanBeWrapped;
+        boolean wantWrap = mFocused && mCurrentInputCanBeWrapped;
         if (wantWrap == !isHorizontallyScrollable()) return;
         setHorizontallyScrolling(!wantWrap);
     }

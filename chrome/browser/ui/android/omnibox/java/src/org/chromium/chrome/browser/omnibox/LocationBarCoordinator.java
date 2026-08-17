@@ -1045,20 +1045,6 @@ public class LocationBarCoordinator
         mLocationBarMediator.updateButtonVisibility();
     }
 
-    /**
-     * Decide if the UrlBar should permit text wrapping.
-     *
-     * <p>This method instructs the UrlBar to permit text wrapping feature on or off. Not all input
-     * is wrapped. The state computed here only decides whether wrapping should be permitted, not
-     * whether it will be applied.
-     */
-    private void updateUrlBarForMultilineInput() {
-        // Disable multiline input on Tablets if Fusebox state is "off".
-        boolean allowMultilineInput =
-                !(isTabletLayout() && mCurrentFuseboxState == FuseboxState.DISABLED);
-        mUrlCoordinator.setAllowMultilineInput(allowMultilineInput);
-    }
-
     /* package */ void onFuseboxStateChange(@FuseboxState int newState) {
         if (mUrlCoordinator == null || !mUrlCoordinator.hasFocus()) return;
         View plusButton = mLocationBarLayout.findViewById(R.id.fusebox_plus_button);
@@ -1073,7 +1059,6 @@ public class LocationBarCoordinator
                 getFuseboxLayoutModeSupplier().get() == FuseboxLayoutMode.SUGGESTIONS_POPOVER;
 
         mCurrentFuseboxState = newState;
-        updateUrlBarForMultilineInput();
 
         if (transitioningFromOrToDisabledState || isPopover) return;
 
