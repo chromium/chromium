@@ -32,6 +32,8 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarUtils.BookmarkBarSettingChangeOrigin;
+import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarUtils.BookmarkBarShownReason;
+import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarUtils.BookmarkBarVisibilityStateOnStartUpReason;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -106,6 +108,15 @@ public class BookmarkBarUtilsTest {
                 .thenReturn(hasRecommendation);
         when(mPrefService.isFollowingRecommendation(Pref.BOOKMARK_BAR_VISIBILITY_STATE))
                 .thenReturn(isFollowing);
+    }
+
+    private void setUserPrefShowBookmarksBar(boolean show) {
+        setBooleanPref(
+                /* isManaged= */ false,
+                /* managedPolicyValue= */ false,
+                /* hasRecommendation= */ false,
+                /* isFollowing= */ false,
+                /* currentUserPref= */ show);
     }
 
     private void setUserPrefState(@BookmarkBarVisibilityState int state) {
@@ -705,6 +716,84 @@ public class BookmarkBarUtilsTest {
         assertFalse(BookmarkBarUtils.isDevicePrefShowBookmarksBarEnabled(mProfile));
     }
 
+    @Test
+    @SmallTest
+    public void testMetrics_RecordStartUpMetrics_Desktop() {
+        mOverrideContextRule.setIsDesktop(true);
+        BookmarkBarUtils.setActivityStateBookmarkBarCompatibleForTesting(true);
+
+        // Case 1: user pref is enabled
+        setUserPrefShowBookmarksBar(true);
+        var watcher1 =
+                newBuilder()
+                        .expectBooleanRecordTimes(
+                                BookmarkBarUtils.BOOKMARK_BAR_SHOWN_ON_START_UP, true, 1)
+                        .expectIntRecord(
+                                BookmarkBarUtils.BOOKMARK_BAR_SHOWN_ON_START_UP_REASON,
+                                BookmarkBarShownReason.ENABLED_BY_USER_PREF)
+                        .build();
+        BookmarkBarUtils.recordStartUpMetrics(mActivity, mProfile, false);
+        watcher1.assertExpected();
+
+        // Case 2: user pref is disabled
+        setUserPrefShowBookmarksBar(false);
+        var watcher2 =
+                newBuilder()
+                        .expectBooleanRecordTimes(
+                                BookmarkBarUtils.BOOKMARK_BAR_SHOWN_ON_START_UP, false, 1)
+                        .expectIntRecord(
+                                BookmarkBarUtils.BOOKMARK_BAR_SHOWN_ON_START_UP_REASON,
+                                BookmarkBarShownReason.DISABLED_BY_USER_PREF)
+                        .build();
+        BookmarkBarUtils.recordStartUpMetrics(mActivity, mProfile, false);
+        watcher2.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    public void testMetrics_RecordStartUpMetrics_Tablet() {
+        mOverrideContextRule.setIsDesktop(false);
+        BookmarkBarUtils.setActivityStateBookmarkBarCompatibleForTesting(true);
+
+        // Case 1: explicit device pref enabled
+        BookmarkBarUtils.setDevicePrefShowBookmarksBar(true, false);
+        var watcher1 =
+                newBuilder()
+                        .expectBooleanRecordTimes(
+                                BookmarkBarUtils.BOOKMARK_BAR_SHOWN_ON_START_UP, true, 1)
+                        .expectIntRecord(
+                                BookmarkBarUtils.BOOKMARK_BAR_SHOWN_ON_START_UP_REASON,
+                                BookmarkBarShownReason.ENABLED_BY_DEVICE_PREF)
+                        .build();
+        BookmarkBarUtils.recordStartUpMetrics(mActivity, mProfile, false);
+        watcher1.assertExpected();
+
+        // Case 2: explicit device pref disabled
+        BookmarkBarUtils.setDevicePrefShowBookmarksBar(false, false);
+        var watcher2 =
+                newBuilder()
+                        .expectBooleanRecordTimes(
+                                BookmarkBarUtils.BOOKMARK_BAR_SHOWN_ON_START_UP, false, 1)
+                        .expectIntRecord(
+                                BookmarkBarUtils.BOOKMARK_BAR_SHOWN_ON_START_UP_REASON,
+                                BookmarkBarShownReason.DISABLED_BY_DEVICE_PREF)
+                        .build();
+        BookmarkBarUtils.recordStartUpMetrics(mActivity, mProfile, false);
+        watcher2.assertExpected();
+
+        // Case 3: default (no explicit user setting)
+        ContextUtils.getAppSharedPreferences().edit().clear().apply();
+        var watcher3 =
+                newBuilder()
+                        .expectNoRecords(BookmarkBarUtils.BOOKMARK_BAR_SHOWN_ON_START_UP)
+                        .expectIntRecord(
+                                BookmarkBarUtils.BOOKMARK_BAR_SHOWN_ON_START_UP_REASON,
+                                BookmarkBarShownReason.DISABLED_BY_FEATURE_PARAM)
+                        .build();
+        BookmarkBarUtils.recordStartUpMetrics(mActivity, mProfile, false);
+        watcher3.assertExpected();
+    }
+
     // ---------------------------------------------------------------------------------------------
     // Group 2: V2 (Tri-State Integers) - Top-level visibility getter/setter, UserPrefs/DevicePrefs.
     // ---------------------------------------------------------------------------------------------
@@ -1049,5 +1138,131 @@ public class BookmarkBarUtilsTest {
                 BookmarkBarUtils.isBookmarkBarVisibleForState(mActivity, mProfile, false, mTab));
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.NTP_URL);
         assertTrue(BookmarkBarUtils.isBookmarkBarVisibleForState(mActivity, mProfile, false, mTab));
+    }
+
+    @Test
+    @SmallTest
+    @Features.EnableFeatures(ChromeFeatureList.BOOKMARKS_BAR_NTP)
+    public void testMetrics_RecordStartUpMetricsForVisibilityState_Desktop() {
+        mOverrideContextRule.setIsDesktop(true);
+
+        // 1. ALWAYS_SHOW: Verifies that even if activity is incompatible for testing, the
+        // underlying user preference is recorded on startup.
+        BookmarkBarUtils.setActivityStateBookmarkBarCompatibleForTesting(false);
+        setUserPrefState(BookmarkBarVisibilityState.ALWAYS_SHOW);
+        var watcher1 =
+                newBuilder()
+                        .expectIntRecord(
+                                BookmarkBarUtils.VISIBILITY_STATE_ON_START_UP,
+                                BookmarkBarVisibilityState.ALWAYS_SHOW)
+                        .expectIntRecord(
+                                BookmarkBarUtils.VISIBILITY_STATE_ON_START_UP_REASON,
+                                BookmarkBarVisibilityStateOnStartUpReason.ALWAYS_SHOW_BY_USER_PREF)
+                        .build();
+        BookmarkBarUtils.recordStartUpMetricsForVisibilityState(mProfile);
+        watcher1.assertExpected();
+
+        // 2. ONLY_SHOW_ON_NTP
+        BookmarkBarUtils.setActivityStateBookmarkBarCompatibleForTesting(true);
+        setUserPrefState(BookmarkBarVisibilityState.ONLY_SHOW_ON_NTP);
+        var watcher2 =
+                newBuilder()
+                        .expectIntRecord(
+                                BookmarkBarUtils.VISIBILITY_STATE_ON_START_UP,
+                                BookmarkBarVisibilityState.ONLY_SHOW_ON_NTP)
+                        .expectIntRecord(
+                                BookmarkBarUtils.VISIBILITY_STATE_ON_START_UP_REASON,
+                                BookmarkBarVisibilityStateOnStartUpReason
+                                        .ONLY_SHOW_ON_NTP_BY_USER_PREF)
+                        .build();
+        BookmarkBarUtils.recordStartUpMetricsForVisibilityState(mProfile);
+        watcher2.assertExpected();
+
+        // 3. ALWAYS_HIDE
+        setUserPrefState(BookmarkBarVisibilityState.ALWAYS_HIDE);
+        var watcher3 =
+                newBuilder()
+                        .expectIntRecord(
+                                BookmarkBarUtils.VISIBILITY_STATE_ON_START_UP,
+                                BookmarkBarVisibilityState.ALWAYS_HIDE)
+                        .expectIntRecord(
+                                BookmarkBarUtils.VISIBILITY_STATE_ON_START_UP_REASON,
+                                BookmarkBarVisibilityStateOnStartUpReason.ALWAYS_HIDE_BY_USER_PREF)
+                        .build();
+        BookmarkBarUtils.recordStartUpMetricsForVisibilityState(mProfile);
+        watcher3.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    @Features.EnableFeatures(ChromeFeatureList.BOOKMARKS_BAR_NTP)
+    public void testMetrics_RecordStartUpMetricsForVisibilityState_Tablet() {
+        mOverrideContextRule.setIsDesktop(false);
+
+        // 1. Explicit ALWAYS_SHOW: Verifies that even if activity is incompatible, the device
+        // setting is recorded directly.
+        BookmarkBarUtils.setActivityStateBookmarkBarCompatibleForTesting(false);
+        BookmarkBarUtils.setDevicePrefBookmarkBarVisibilityState(
+                BookmarkBarVisibilityState.ALWAYS_SHOW,
+                BookmarkBarSettingChangeOrigin.APPEARANCE_SETTINGS);
+        var watcher1 =
+                newBuilder()
+                        .expectIntRecord(
+                                BookmarkBarUtils.VISIBILITY_STATE_ON_START_UP,
+                                BookmarkBarVisibilityState.ALWAYS_SHOW)
+                        .expectIntRecord(
+                                BookmarkBarUtils.VISIBILITY_STATE_ON_START_UP_REASON,
+                                BookmarkBarVisibilityStateOnStartUpReason
+                                        .ALWAYS_SHOW_BY_DEVICE_PREF)
+                        .build();
+        BookmarkBarUtils.recordStartUpMetricsForVisibilityState(mProfile);
+        watcher1.assertExpected();
+
+        // 2. Explicit ONLY_SHOW_ON_NTP
+        BookmarkBarUtils.setActivityStateBookmarkBarCompatibleForTesting(true);
+        BookmarkBarUtils.setDevicePrefBookmarkBarVisibilityState(
+                BookmarkBarVisibilityState.ONLY_SHOW_ON_NTP,
+                BookmarkBarSettingChangeOrigin.APPEARANCE_SETTINGS);
+        var watcher2 =
+                newBuilder()
+                        .expectIntRecord(
+                                BookmarkBarUtils.VISIBILITY_STATE_ON_START_UP,
+                                BookmarkBarVisibilityState.ONLY_SHOW_ON_NTP)
+                        .expectIntRecord(
+                                BookmarkBarUtils.VISIBILITY_STATE_ON_START_UP_REASON,
+                                BookmarkBarVisibilityStateOnStartUpReason
+                                        .ONLY_SHOW_ON_NTP_BY_DEVICE_PREF)
+                        .build();
+        BookmarkBarUtils.recordStartUpMetricsForVisibilityState(mProfile);
+        watcher2.assertExpected();
+
+        // 3. Explicit ALWAYS_HIDE
+        BookmarkBarUtils.setDevicePrefBookmarkBarVisibilityState(
+                BookmarkBarVisibilityState.ALWAYS_HIDE,
+                BookmarkBarSettingChangeOrigin.APPEARANCE_SETTINGS);
+        var watcher3 =
+                newBuilder()
+                        .expectIntRecord(
+                                BookmarkBarUtils.VISIBILITY_STATE_ON_START_UP,
+                                BookmarkBarVisibilityState.ALWAYS_HIDE)
+                        .expectIntRecord(
+                                BookmarkBarUtils.VISIBILITY_STATE_ON_START_UP_REASON,
+                                BookmarkBarVisibilityStateOnStartUpReason
+                                        .ALWAYS_HIDE_BY_DEVICE_PREF)
+                        .build();
+        BookmarkBarUtils.recordStartUpMetricsForVisibilityState(mProfile);
+        watcher3.assertExpected();
+
+        // 4. Default device state (no explicit setting)
+        ContextUtils.getAppSharedPreferences().edit().clear().apply();
+        var watcher4 =
+                newBuilder()
+                        .expectNoRecords(BookmarkBarUtils.VISIBILITY_STATE_ON_START_UP)
+                        .expectIntRecord(
+                                BookmarkBarUtils.VISIBILITY_STATE_ON_START_UP_REASON,
+                                BookmarkBarVisibilityStateOnStartUpReason.DEFAULT_DEVICE_VALUE)
+                        .build();
+        BookmarkBarUtils.recordStartUpMetricsForVisibilityState(mProfile);
+        watcher4.assertExpected();
     }
 }

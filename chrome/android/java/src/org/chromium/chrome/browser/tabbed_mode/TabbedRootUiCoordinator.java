@@ -1317,8 +1317,12 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         new OneShotCallback<>(mProfileSupplier, this::initCollaborationDelegatesOnProfile);
 
         if (BookmarkBarUtils.isDeviceBookmarkBarCompatible(mActivity)) {
-            BookmarkBarUtils.recordStartUpMetrics(
-                    mActivity, mProfileSupplier.get(), mXrSpaceModeObservableSupplier.get());
+            if (ChromeFeatureList.isEnabled(ChromeFeatureList.BOOKMARKS_BAR_NTP)) {
+                BookmarkBarUtils.recordStartUpMetricsForVisibilityState(mProfileSupplier.get());
+            } else {
+                BookmarkBarUtils.recordStartUpMetrics(
+                        mActivity, mProfileSupplier.get(), mXrSpaceModeObservableSupplier.get());
+            }
             mBookmarkBarVisibilityProvider =
                     new BookmarkBarVisibilityProvider(
                             mActivity,

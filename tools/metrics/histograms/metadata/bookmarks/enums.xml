@@ -107,6 +107,22 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/bookmarks/common/bookmark_bar_visibility_state.h:BookmarkBarVisibilityState) -->
 
+<!-- LINT.IfChange(BookmarkBarVisibilityStateOnStartUpReason) -->
+
+<enum name="BookmarkBarVisibilityStateOnStartUpReason">
+  <int value="0" label="Unknown reason"/>
+  <int value="1" label="Always show by user pref"/>
+  <int value="2" label="Always hide by user pref"/>
+  <int value="3" label="Only show on new tab page by user pref"/>
+  <int value="4" label="Always show by device pref (e.g. tablet)"/>
+  <int value="5" label="Always hide by device pref (e.g. tablet)"/>
+  <int value="6"
+      label="Only show on new tab page by device pref (e.g. tablet)"/>
+  <int value="7" label="Default device value (e.g. tablet)"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/bookmarks/android/java/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarUtils.java:BookmarkBarVisibilityStateOnStartUpReason) -->
+
 <enum name="BookmarkEditSource">
   <int value="0" label="Edited by a user"/>
   <int value="1" label="Edited by an extension"/>

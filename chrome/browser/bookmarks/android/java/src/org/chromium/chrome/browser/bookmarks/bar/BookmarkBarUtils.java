@@ -123,10 +123,45 @@ public class BookmarkBarUtils {
 
     // LINT.ThenChange(/tools/metrics/histograms/metadata/bookmarks/enums.xml:BookmarkBarSettingChangeOrigin)
 
+    // LINT.IfChange(BookmarkBarVisibilityStateOnStartUpReason)
+    /**
+     * Enum that defines the possible reasons the bookmark bar may be shown or hidden when using the
+     * tri-state visibility preference. These values are persisted to logs. Entries should not be
+     * renumbered and numeric values should never be reused.
+     */
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({
+        BookmarkBarVisibilityStateOnStartUpReason.UNKNOWN,
+        BookmarkBarVisibilityStateOnStartUpReason.ALWAYS_SHOW_BY_USER_PREF,
+        BookmarkBarVisibilityStateOnStartUpReason.ALWAYS_HIDE_BY_USER_PREF,
+        BookmarkBarVisibilityStateOnStartUpReason.ONLY_SHOW_ON_NTP_BY_USER_PREF,
+        BookmarkBarVisibilityStateOnStartUpReason.ALWAYS_SHOW_BY_DEVICE_PREF,
+        BookmarkBarVisibilityStateOnStartUpReason.ALWAYS_HIDE_BY_DEVICE_PREF,
+        BookmarkBarVisibilityStateOnStartUpReason.ONLY_SHOW_ON_NTP_BY_DEVICE_PREF,
+        BookmarkBarVisibilityStateOnStartUpReason.DEFAULT_DEVICE_VALUE,
+    })
+    public @interface BookmarkBarVisibilityStateOnStartUpReason {
+        int UNKNOWN = 0;
+        int ALWAYS_SHOW_BY_USER_PREF = 1;
+        int ALWAYS_HIDE_BY_USER_PREF = 2;
+        int ONLY_SHOW_ON_NTP_BY_USER_PREF = 3;
+        int ALWAYS_SHOW_BY_DEVICE_PREF = 4;
+        int ALWAYS_HIDE_BY_DEVICE_PREF = 5;
+        int ONLY_SHOW_ON_NTP_BY_DEVICE_PREF = 6;
+        int DEFAULT_DEVICE_VALUE = 7;
+        int NUM_ENTRIES = 8;
+    }
+
+    // LINT.ThenChange(/tools/metrics/histograms/metadata/bookmarks/enums.xml:BookmarkBarVisibilityStateOnStartUpReason)
+
     // [v1] Histogram names:
     public static final String TOGGLED_IN_SETTINGS = "Bookmarks.BookmarkBar.ToggledInSettings";
     public static final String TOGGLED_BY_KEYBOARD_SHORTCUT =
             "Bookmarks.BookmarkBar.ToggledByKeyboardShortcut";
+    public static final String BOOKMARK_BAR_SHOWN_ON_START_UP =
+            "Bookmarks.BookmarkBar.Android.ShownOnStartUp";
+    public static final String BOOKMARK_BAR_SHOWN_ON_START_UP_REASON =
+            "Bookmarks.BookmarkBar.Android.ShownOnStartUpReason";
 
     // [v2] Histogram names:
     public static final String TOGGLED_KEYBOARD = "Bookmarks.BookmarkBar.TriState.ToggledKeyboard";
@@ -137,13 +172,13 @@ public class BookmarkBarUtils {
     public static final String TOGGLED_APP_MENU = "Bookmarks.BookmarkBar.TriState.ToggledAppMenu";
     public static final String VISIBILITY_STATE_CHANGE_ORIGIN =
             "Bookmarks.BookmarkBar.TriState.VisibilityStateChangeOrigin";
+    public static final String VISIBILITY_STATE_ON_START_UP =
+            "Bookmarks.BookmarkBar.TriState.VisibilityStateOnStartUp";
+    public static final String VISIBILITY_STATE_ON_START_UP_REASON =
+            "Bookmarks.BookmarkBar.TriState.VisibilityStateOnStartUpReason";
 
     // Common histogram names:
     public static final String BOOKMARK_BAR_CLICK = "Bookmarks.BookmarkBar.Click";
-    public static final String BOOKMARK_BAR_SHOWN_ON_START_UP =
-            "Bookmarks.BookmarkBar.Android.ShownOnStartUp";
-    public static final String BOOKMARK_BAR_SHOWN_ON_START_UP_REASON =
-            "Bookmarks.BookmarkBar.Android.ShownOnStartUpReason";
 
     /** Whether the bookmark bar feature is forcibly allowed/disallowed for testing. */
     private static @Nullable Boolean sActivityStateBookmarkBarCompatibleForTesting;
@@ -870,6 +905,61 @@ public class BookmarkBarUtils {
                         BookmarkBarShownReason.NUM_ENTRIES);
             }
         }
+    }
+
+    public static void recordStartUpMetricsForVisibilityState(@Nullable Profile profile) {
+        @BookmarkBarVisibilityState
+        int settingState =
+                shouldUseProfileUserPrefs()
+                        ? getUserPrefsBookmarkBarVisibilityState(profile)
+                        : getDevicePrefBookmarkBarVisibilityState(profile);
+
+        // Record if the Bookmark Bar is visible, but not in cases of an unselected default state.
+        if (shouldUseProfileUserPrefs() || hasUserSetDevicePrefBookmarkBarVisibilityState()) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    VISIBILITY_STATE_ON_START_UP,
+                    settingState,
+                    BookmarkBarVisibilityState.MAX_VALUE + 1);
+        }
+
+        // Record the reason why the Bookmark Bar is visible (hidden) in this instance.
+        @BookmarkBarVisibilityStateOnStartUpReason int reason;
+        if (shouldUseProfileUserPrefs()) {
+            reason =
+                    switch (settingState) {
+                        case BookmarkBarVisibilityState.ALWAYS_SHOW ->
+                                BookmarkBarVisibilityStateOnStartUpReason.ALWAYS_SHOW_BY_USER_PREF;
+                        case BookmarkBarVisibilityState.ALWAYS_HIDE ->
+                                BookmarkBarVisibilityStateOnStartUpReason.ALWAYS_HIDE_BY_USER_PREF;
+                        case BookmarkBarVisibilityState.ONLY_SHOW_ON_NTP ->
+                                BookmarkBarVisibilityStateOnStartUpReason
+                                        .ONLY_SHOW_ON_NTP_BY_USER_PREF;
+                        default -> BookmarkBarVisibilityStateOnStartUpReason.UNKNOWN;
+                    };
+        } else {
+            if (hasUserSetDevicePrefBookmarkBarVisibilityState()) {
+                reason =
+                        switch (settingState) {
+                            case BookmarkBarVisibilityState.ALWAYS_SHOW ->
+                                    BookmarkBarVisibilityStateOnStartUpReason
+                                            .ALWAYS_SHOW_BY_DEVICE_PREF;
+                            case BookmarkBarVisibilityState.ALWAYS_HIDE ->
+                                    BookmarkBarVisibilityStateOnStartUpReason
+                                            .ALWAYS_HIDE_BY_DEVICE_PREF;
+                            case BookmarkBarVisibilityState.ONLY_SHOW_ON_NTP ->
+                                    BookmarkBarVisibilityStateOnStartUpReason
+                                            .ONLY_SHOW_ON_NTP_BY_DEVICE_PREF;
+                            default -> BookmarkBarVisibilityStateOnStartUpReason.UNKNOWN;
+                        };
+            } else {
+                reason = BookmarkBarVisibilityStateOnStartUpReason.DEFAULT_DEVICE_VALUE;
+            }
+        }
+
+        RecordHistogram.recordEnumeratedHistogram(
+                VISIBILITY_STATE_ON_START_UP_REASON,
+                reason,
+                BookmarkBarVisibilityStateOnStartUpReason.NUM_ENTRIES);
     }
 
     // Helper methods.

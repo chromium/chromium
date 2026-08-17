@@ -386,6 +386,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Bookmarks.BookmarkBar.TriState.VisibilityStateOnStartUp"
+    enum="BookmarkBarVisibilityState" expires_after="2027-02-15">
+  <owner>mschillaci@google.com</owner>
+  <owner>clank-app-team@google.com</owner>
+  <summary>
+    Records the BookmarkBarVisibilityState of the bookmarks bar on start-up.
+    This is only recorded for users who have a Desktop device, or users who have
+    explicitly set a device preference on tablet (excluding the default
+    unselected state).
+  </summary>
+</histogram>
+
+<histogram name="Bookmarks.BookmarkBar.TriState.VisibilityStateOnStartUpReason"
+    enum="BookmarkBarVisibilityStateOnStartUpReason" expires_after="2027-02-15">
+  <owner>mschillaci@google.com</owner>
+  <owner>clank-app-team@google.com</owner>
+  <summary>
+    Records the reason for the initial visibility state of the bookmarks bar on
+    start-up when using the tri-state visibility preference.
+  </summary>
+</histogram>
+
 <histogram name="Bookmarks.BookmarksBar.DragDropType"
     enum="BookmarkBarDragDropType" expires_after="2027-02-07">
   <owner>dfried@chromium.org</owner>
