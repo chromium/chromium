@@ -106,7 +106,7 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
 
     /**
      * An interface for classes that have some code to run before (or after) the class is
-     * instantiated. They run after {@Link BeforeClass} (or before @AfterClass) methods are called.
+     * instantiated. They run after {@link BeforeClass} (or before @AfterClass) methods are called.
      * Provides access to the test class (and the annotations defined for it) and the
      * instrumentation context.
      *
@@ -122,12 +122,12 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
     }
 
     /**
-     * An interface for classes that have some code to run before a test. They run after
-     * {@link SkipCheck}s and before {@Link Before} (or after @After). Provides access to the test
-     * method (and the annotations defined for it) and the instrumentation context.
+     * An interface for classes that have some code to run before a test. They run after {@link
+     * SkipCheck}s and before {@link Before} (or after @After). Provides access to the test method
+     * (and the annotations defined for it) and the instrumentation context.
      *
-     * Do not use TestHooks unless you also require ClassHooks. Otherwise, you should use TestRules
-     * and {@link #getDefaultTestRules}.
+     * <p>Do not use TestHooks unless you also require ClassHooks. Otherwise, you should use
+     * TestRules and {@link #getDefaultTestRules}.
      */
     public interface TestHook {
         /**

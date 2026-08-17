@@ -84,7 +84,7 @@ public class ListMenuButton extends ChromeImageButton {
     }
 
     /**
-     * @returns The {@link ListMenuHost} of the menu.
+     * @return The {@link ListMenuHost} of the menu.
      */
     public ListMenuHost getHost() {
         return mListMenuHost;
