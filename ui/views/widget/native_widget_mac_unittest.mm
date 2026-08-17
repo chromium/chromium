@@ -21,6 +21,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #import "components/remote_cocoa/app_shim/bridged_content_view.h"
@@ -40,12 +41,15 @@
 #include "ui/base/mojom/window_show_state.mojom.h"
 #import "ui/base/test/scoped_fake_full_keyboard_access.h"
 #import "ui/base/test/windowed_nsnotification_observer.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/recyclable_compositor_mac.h"
 #import "ui/events/test/cocoa_test_event_utils.h"
 #include "ui/events/test/event_generator.h"
 #import "ui/gfx/mac/coordinate_conversion.h"
 #include "ui/gfx/native_ui_types.h"
+#include "ui/native_theme/native_theme.h"
+#include "ui/native_theme/native_theme_observer.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/cocoa/native_widget_mac_event_monitor.h"
 #include "ui/views/cocoa/native_widget_mac_ns_window_host.h"
@@ -149,6 +153,8 @@ class BridgedNativeWidgetTestApi {
   void CheckAndNotifyAllWorkspacesStateChanged() {
     bridge_->CheckAndNotifyAllWorkspacesStateChanged();
   }
+
+  void OnSystemColorsChanged() { bridge_->OnSystemColorsChanged(); }
 
   remote_cocoa::NativeWidgetNSWindowBridge* bridge() { return &*bridge_; }
   void set_wants_to_be_visible(bool visible) {
@@ -2926,6 +2932,89 @@ TEST_F(NativeWidgetMacTest, RemoveEventMonitorAfterBridgeGone) {
   // Restore the bridge so the host tears down normally.
   BridgedNativeWidgetTestApi::RestoreInProcessBridge(host, std::move(bridge));
   ASSERT_TRUE(host->GetNSWindowMojo());
+  widget->CloseNow();
+}
+
+namespace {
+
+class ThemeChangeCountingWidgetObserver : public WidgetObserver {
+ public:
+  explicit ThemeChangeCountingWidgetObserver(Widget* widget) {
+    observation_.Observe(widget);
+  }
+
+  void OnWidgetThemeChanged(Widget* widget) override { ++theme_changed_count_; }
+  void OnWidgetDestroying(Widget* widget) override { observation_.Reset(); }
+
+  int theme_changed_count() const { return theme_changed_count_; }
+
+ private:
+  int theme_changed_count_ = 0;
+  base::ScopedObservation<Widget, WidgetObserver> observation_{this};
+};
+
+class TestNativeThemeObserver : public ui::NativeThemeObserver {
+ public:
+  explicit TestNativeThemeObserver(ui::NativeTheme* theme) {
+    observation_.Observe(theme);
+  }
+
+  void OnNativeThemeUpdated(ui::NativeTheme* theme) override {
+    ++theme_updated_count_;
+  }
+
+  int theme_updated_count() const { return theme_updated_count_; }
+
+ private:
+  int theme_updated_count_ = 0;
+  base::ScopedObservation<ui::NativeTheme, ui::NativeThemeObserver>
+      observation_{this};
+};
+
+}  // namespace
+
+// Tests that OnWindowNativeThemeChanged() on a window host only triggers
+// theme change on the target widget and does not notify the global NativeTheme.
+TEST_F(NativeWidgetMacTest, OnWindowNativeThemeChangedScopesToTargetWidget) {
+  base::test::ScopedFeatureList feature_list(
+      ::features::kThemeChangeOptimization);
+
+  Widget* widget1 = CreateTopLevelPlatformWidget();
+  widget1->Show();
+  Widget* widget2 = CreateTopLevelPlatformWidget();
+  widget2->Show();
+
+  ThemeChangeCountingWidgetObserver observer1(widget1);
+  ThemeChangeCountingWidgetObserver observer2(widget2);
+  TestNativeThemeObserver global_theme_observer(
+      ui::NativeTheme::GetInstanceForNativeUi());
+
+  BridgedNativeWidgetTestApi(widget1).OnSystemColorsChanged();
+
+  // Widget2 and process-wide NativeTheme should NOT have received
+  // notifications.
+  EXPECT_EQ(0, observer2.theme_changed_count());
+  EXPECT_EQ(0, global_theme_observer.theme_updated_count());
+
+  widget1->CloseNow();
+  widget2->CloseNow();
+}
+
+TEST_F(NativeWidgetMacTest,
+       OnWindowNativeThemeChangedNotifiesGlobalWhenDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(::features::kThemeChangeOptimization);
+
+  Widget* widget = CreateTopLevelPlatformWidget();
+  widget->Show();
+
+  TestNativeThemeObserver global_theme_observer(
+      ui::NativeTheme::GetInstanceForNativeUi());
+
+  BridgedNativeWidgetTestApi(widget).OnSystemColorsChanged();
+
+  EXPECT_GT(global_theme_observer.theme_updated_count(), 0);
+
   widget->CloseNow();
 }
 

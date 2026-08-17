@@ -33,6 +33,7 @@
 #include "ui/base/hit_test.h"
 #include "ui/base/ime/input_method.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_provider_key.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/recyclable_compositor_mac.h"
@@ -1156,7 +1157,13 @@ void NativeWidgetMacNSWindowHost::OnSpaceActivationChanged(
 }
 
 void NativeWidgetMacNSWindowHost::OnWindowNativeThemeChanged() {
-  ui::NativeTheme::GetInstanceForNativeUi()->NotifyOnNativeThemeUpdated();
+  if (base::FeatureList::IsEnabled(::features::kThemeChangeOptimization)) {
+    if (Widget* widget = GetWidget()) {
+      widget->ThemeChanged();
+    }
+  } else {
+    ui::NativeTheme::GetInstanceForNativeUi()->NotifyOnNativeThemeUpdated();
+  }
 }
 
 void NativeWidgetMacNSWindowHost::OnScrollEvent(
