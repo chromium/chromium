@@ -7323,11 +7323,6 @@ inline constexpr char kAudioSelectionImprovementName[] =
 inline constexpr char kAudioSelectionImprovementDescription[] =
     "Enable set-based audio selection improvement algorithm.";
 
-inline constexpr char kResetAudioSelectionImprovementPrefName[] =
-    "Reset audio selection improvement user preference";
-inline constexpr char kResetAudioSelectionImprovementPrefDescription[] =
-    "Reset audio selection improvement user preference for testing purpose.";
-
 inline constexpr char kAutoFramingOverrideName[] =
     "Auto-framing control override";
 inline constexpr char kAutoFramingOverrideDescription[] =

@@ -8742,11 +8742,6 @@
     "expiry_milestone": 155
   },
   {
-    "name": "reset-audio-selection-improvement-pref",
-    "owners": [ "zhangwenyu@google.com", "cros-device-enablement@google.com" ],
-    "expiry_milestone": 151
-  },
-  {
     "name": "reset-shortcut-customizations",
     "owners": [
       "jimmyxgong@chromium.org",

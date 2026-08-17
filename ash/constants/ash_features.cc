@@ -1602,10 +1602,6 @@ BASE_FEATURE(kReleaseNotesNotificationAlwaysEligible,
 BASE_FEATURE(kRenderArcNotificationsByChrome,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Reset audio I/O selection improvement pref, used for testing purpose.
-BASE_FEATURE(kResetAudioSelectionImprovementPref,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // If enabled, will reset all shortcut customizations on startup.
 BASE_FEATURE(kResetShortcutCustomizations, base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -3064,10 +3060,6 @@ bool IsRecoveryFlowReorderEnabled() {
 
 bool IsRenderArcNotificationsByChromeEnabled() {
   return base::FeatureList::IsEnabled(kRenderArcNotificationsByChrome);
-}
-
-bool IsResetAudioSelectionImprovementPrefEnabled() {
-  return base::FeatureList::IsEnabled(kResetAudioSelectionImprovementPref);
 }
 
 bool IsResetShortcutCustomizationsEnabled() {
