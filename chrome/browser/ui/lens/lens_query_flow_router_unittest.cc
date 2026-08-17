@@ -1188,6 +1188,64 @@ TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
   EXPECT_FALSE(router.ShouldPopulateFullPageContext());
 }
 
+TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
+       ShouldPopulateFullPageContext_OmniboxPopupButton_ReturnsFalse) {
+  SignInUser();
+  lens::GrantLensOverlayNeededPermissions(profile_.get());
+  EXPECT_CALL(*mock_lens_search_controller_, invocation_source())
+      .WillRepeatedly(
+          Return(lens::LensOverlayInvocationSource::kOmniboxPopupButton));
+  TestLensQueryFlowRouter router(mock_lens_search_controller_.get(),
+                                 mock_context_controller_.get(),
+                                 profile_.get());
+  router.StartQueryFlow(router.GetViewportScreenshot(),
+                        router.GetViewportScreenshot(),
+                        GURL("https://example.com"), "Title", {}, {},
+                        lens::MimeType::kAnnotatedPageContent, std::nullopt,
+                        1.0f, base::TimeTicks::Now());
+  EXPECT_EQ(router.context_upload_mode(),
+            LensQueryFlowRouter::ContextUploadMode::kSelectedRegionOnly);
+  EXPECT_FALSE(router.ShouldPopulateFullPageContext());
+}
+
+TEST_F(
+    LensQueryFlowRouterContextualTaskEnabledTest,
+    StartQueryFlow_RoutesToContextualTasks_SelectedRegionOnly_WhenOmniboxPopupButtonSource) {
+  SignInUser();
+  lens::GrantLensOverlayNeededPermissions(profile_.get());
+  // Arrange: Set up invocation source to kOmniboxPopupButton.
+  EXPECT_CALL(*mock_lens_search_controller_, invocation_source())
+      .WillRepeatedly(
+          Return(lens::LensOverlayInvocationSource::kOmniboxPopupButton));
+
+  // Arrange: Set up and create the router.
+  EXPECT_CALL(*mock_lens_search_controller_,
+              lens_search_contextualization_controller())
+      .WillOnce(Return(contextualization_controller_.get()));
+  TestLensQueryFlowRouter router(mock_lens_search_controller_.get(),
+                                 mock_context_controller_.get(),
+                                 profile_.get());
+
+  GURL example_url("https://example.com");
+  std::string page_title = "Title";
+  lens::MimeType primary_content_type = lens::MimeType::kAnnotatedPageContent;
+  float ui_scale_factor = 1.0f;
+  base::TimeTicks invocation_time = base::TimeTicks::Now();
+
+  // Arrange: Create some page content.
+  std::vector<uint8_t> bytes = {1, 2, 3};
+  std::vector<lens::PageContent> page_contents;
+  page_contents.push_back({bytes, lens::MimeType::kPlainText});
+
+  // Act: Start query flow.
+  router.StartQueryFlow(router.GetViewportScreenshot(),
+                        router.GetViewportScreenshot(), example_url, page_title,
+                        {}, page_contents, primary_content_type, std::nullopt,
+                        ui_scale_factor, invocation_time);
+  EXPECT_EQ(router.context_upload_mode(),
+            LensQueryFlowRouter::ContextUploadMode::kSelectedRegionOnly);
+}
+
 TEST_F(
     LensQueryFlowRouterContextualTaskEnabledTest,
     StartQueryFlow_RoutesToContextualTasks_OnlyViewport_WhenComposeboxSource) {
@@ -1249,7 +1307,7 @@ TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
   // Arrange: Set up and create the router.
   EXPECT_CALL(*mock_lens_search_controller_,
               lens_search_contextualization_controller())
-      .WillOnce(Return(contextualization_controller_.get()));
+      .WillRepeatedly(Return(contextualization_controller_.get()));
   TestLensQueryFlowRouter router(mock_lens_search_controller_.get(),
                                  mock_context_controller_.get(),
                                  profile_.get());
@@ -1313,7 +1371,7 @@ TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
   // Arrange: Set up and create the router.
   EXPECT_CALL(*mock_lens_search_controller_,
               lens_search_contextualization_controller())
-      .WillOnce(Return(contextualization_controller_.get()));
+      .WillRepeatedly(Return(contextualization_controller_.get()));
   TestLensQueryFlowRouter router(mock_lens_search_controller_.get(),
                                  mock_context_controller_.get(),
                                  profile_.get());
@@ -1377,7 +1435,7 @@ TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
   // Arrange: Set up and create the router.
   EXPECT_CALL(*mock_lens_search_controller_,
               lens_search_contextualization_controller())
-      .WillOnce(Return(contextualization_controller_.get()));
+      .WillRepeatedly(Return(contextualization_controller_.get()));
   TestLensQueryFlowRouter router(mock_lens_search_controller_.get(),
                                  mock_context_controller_.get(),
                                  profile_.get());
@@ -1543,7 +1601,7 @@ TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
   // Arrange: Set up and create the router.
   EXPECT_CALL(*mock_lens_search_controller_,
               lens_search_contextualization_controller())
-      .WillOnce(Return(contextualization_controller_.get()));
+      .WillRepeatedly(Return(contextualization_controller_.get()));
   TestLensQueryFlowRouter router(mock_lens_search_controller_.get(),
                                  mock_context_controller_.get(),
                                  profile_.get());
@@ -1609,7 +1667,7 @@ TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
   // Arrange: Set up and create the router.
   EXPECT_CALL(*mock_lens_search_controller_,
               lens_search_contextualization_controller())
-      .WillOnce(Return(contextualization_controller_.get()));
+      .WillRepeatedly(Return(contextualization_controller_.get()));
   TestLensQueryFlowRouter router(mock_lens_search_controller_.get(),
                                  mock_context_controller_.get(),
                                  profile_.get());

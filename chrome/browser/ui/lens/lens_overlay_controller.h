@@ -597,6 +597,9 @@ class LensOverlayController : public OverlayBaseController,
   // Returns true if the searchbox is a CONTEXTUAL_SEARCHBOX.
   bool IsContextualSearchbox();
 
+  // Returns true if the current query flow is in region-only mode.
+  bool IsSelectedRegionOnlyMode();
+
   // Returns true if the CoBrowse panel with Lens overlay is enabled.
   bool CoBrowsePanelWithLensOverlayEnabled() const;
 

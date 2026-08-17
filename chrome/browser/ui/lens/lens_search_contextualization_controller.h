@@ -184,6 +184,10 @@ class LensSearchContextualizationController {
   // Returns whether the protected page feature is enabled.
   bool IsProtectedPageFeatureEnabled();
 
+  // Evaluates page context eligibility for region-only flows without
+  // extracting page contents or taking screenshots.
+  void CheckPageContextEligibilityOnly();
+
   // Override these methods to be able to track calls made to the page context
   // eligibility API.
   virtual void CreatePageContextEligibilityAPI();

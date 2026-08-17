@@ -323,6 +323,12 @@ uint64_t LensOverlayController::GetInvocationTimeSinceEpoch() {
 }
 
 void LensOverlayController::SendText(lens::mojom::TextPtr text) {
+  if (IsSelectedRegionOnlyMode()) {
+    // Suppress text overlays in region-only mode. Bounding box coordinates
+    // returned for the cropped region payload do not map to the full viewport
+    // overlay coordinate frame.
+    return;
+  }
   if (!page_) {
     // Store the text to send once the page is bound.
     pre_initialization_text_ = std::move(text);
@@ -333,6 +339,12 @@ void LensOverlayController::SendText(lens::mojom::TextPtr text) {
 
 void LensOverlayController::SendRegionText(lens::mojom::TextPtr text,
                                            bool is_injected_image) {
+  if (IsSelectedRegionOnlyMode()) {
+    // Suppress text overlays in region-only mode. Bounding box coordinates
+    // returned for the cropped region payload do not map to the full viewport
+    // overlay coordinate frame.
+    return;
+  }
   if (!page_) {
     return;
   }
@@ -342,6 +354,12 @@ void LensOverlayController::SendRegionText(lens::mojom::TextPtr text,
 
 void LensOverlayController::SendObjects(
     std::vector<lens::mojom::OverlayObjectPtr> objects) {
+  if (IsSelectedRegionOnlyMode()) {
+    // Suppress object overlays in region-only mode. Bounding box coordinates
+    // returned for the cropped region payload do not map to the full viewport
+    // overlay coordinate frame.
+    return;
+  }
   if (!page_) {
     // Store the objects to send once the page is bound.
     pre_initialization_objects_ = std::move(objects);
@@ -1355,6 +1373,12 @@ void LensOverlayController::InitializeOverlayUI(
 bool LensOverlayController::IsContextualSearchbox() {
   return lens_search_controller_->lens_searchbox_controller()
       ->IsContextualSearchbox();
+}
+
+bool LensOverlayController::IsSelectedRegionOnlyMode() {
+  return GetLensQueryFlowRouter() &&
+         GetLensQueryFlowRouter()->context_upload_mode() ==
+             lens::LensQueryFlowRouter::ContextUploadMode::kSelectedRegionOnly;
 }
 
 GURL LensOverlayController::GetInitialURL() {

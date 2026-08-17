@@ -34,6 +34,7 @@ class LensQueryFlowRouter
   enum class ContextUploadMode {
     kViewportOnly,
     kFullPage,
+    kSelectedRegionOnly,
   };
 
   explicit LensQueryFlowRouter(LensSearchController* lens_search_controller);

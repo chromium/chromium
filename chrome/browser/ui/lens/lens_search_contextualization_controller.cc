@@ -937,6 +937,28 @@ void LensSearchContextualizationController::CreatePageContextEligibilityAPI() {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
+void LensSearchContextualizationController::CheckPageContextEligibilityOnly() {
+  if (!IsProtectedPageFeatureEnabled()) {
+    // GetCurrentPageContextEligibility() will return true in this case, so no
+    // further work is needed.
+    return;
+  }
+
+  const auto& tab_url = lens_search_controller_->GetTabInterface()
+                            ->GetContents()
+                            ->GetLastCommittedURL();
+  IsPageContextEligible(
+      tab_url, /*frame_metadata=*/{},
+      base::BindOnce(
+          [](base::WeakPtr<LensSearchContextualizationController> controller,
+             bool is_eligible) {
+            if (controller) {
+              controller->is_page_context_eligible_ = is_eligible;
+            }
+          },
+          weak_ptr_factory_.GetWeakPtr()));
+}
+
 bool LensSearchContextualizationController::GetCurrentPageContextEligibility() {
   if (!IsProtectedPageFeatureEnabled()) {
     return true;
