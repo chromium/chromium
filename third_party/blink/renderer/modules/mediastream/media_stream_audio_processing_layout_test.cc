@@ -219,6 +219,34 @@ TEST(AudioProcessingPropertiesToAudioProcessingSettingsTest,
 }
 #endif
 
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+TEST(AudioProcessingPropertiesToAudioProcessingSettingsTest,
+     VoiceIsolationPropertySetsWebrtcVoiceIsolation) {
+  // `enabled_platform_effects` is set to 0 because voice isolation in WebRTC
+  // audio processing settings depends solely on `properties.voice_isolation`
+  // (platform capabilities were already resolved when producing
+  // `AudioProcessingProperties`).
+  AudioProcessingProperties default_properties;
+  EXPECT_EQ(default_properties.voice_isolation, kVoiceIsolationDefaultValue);
+  media::AudioProcessingSettings settings_default =
+      MediaStreamAudioProcessingLayout::ComputeWebrtcProcessingSettingsForTests(
+          default_properties,
+          /*enabled_platform_effects=*/0,
+          /*multichannel_processing=*/true);
+  EXPECT_FALSE(settings_default.voice_isolation);
+
+  AudioProcessingProperties properties_enabled;
+  properties_enabled.voice_isolation =
+      VoiceIsolationType::kVoiceIsolationEnabled;
+  media::AudioProcessingSettings settings_enabled =
+      MediaStreamAudioProcessingLayout::ComputeWebrtcProcessingSettingsForTests(
+          properties_enabled,
+          /*enabled_platform_effects=*/0,
+          /*multichannel_processing=*/true);
+  EXPECT_TRUE(settings_enabled.voice_isolation);
+}
+#endif
+
 TEST(AudioProcessingPropertiesTest, VerifyDefaultProcessingState) {
   constexpr AudioProcessingProperties kDefaultProperties;
   EXPECT_EQ(kDefaultProperties.echo_cancellation_mode,

@@ -162,6 +162,17 @@ media::AudioProcessingSettings ComputeWebrtcProcessingSettings(
   out.multi_channel_capture_processing = multichannel_processing;
 
   out.use_loopback_aec_reference = echo_canceller.NeedSystemLoopback();
+
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+  // `media::AudioParameters::VOICE_ISOLATION_SUPPORTED` is a platform
+  // capability effect bit that was already taken into account when
+  // `AudioProcessingProperties` were calculated; changing platform effects
+  // does not directly determine the WebRTC voice isolation state.
+  out.voice_isolation =
+      (properties.voice_isolation ==
+       AudioProcessingProperties::VoiceIsolationType::kVoiceIsolationEnabled);
+#endif
+
   return out;
 }
 
