@@ -11,6 +11,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
+#include "chrome/browser/actor/actor_actions_runner.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_keyed_service_browsertest.h"
 #include "chrome/browser/actor/actor_proto_conversion.h"
@@ -507,5 +508,30 @@ IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
   browser2->GetWindow()->Close();
 }
 #endif
+
+IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
+                       ActorActionsRunnerExecuteWaitAction) {
+  optimization_guide::proto::Actions actions;
+  auto* action = actions.add_actions();
+  auto* wait = action->mutable_wait();
+  wait->set_wait_time_ms(10);
+  actions.set_skip_async_observation_collection(true);
+
+  base::RunLoop run_loop;
+  auto runner = std::make_unique<ActorActionsRunner>(
+      *GetProfile(), TestTaskSourceInfo(), std::move(actions),
+      run_loop.QuitClosure());
+
+  EXPECT_EQ(runner->result(), nullptr);
+  runner->Start();
+  run_loop.Run();
+
+  std::unique_ptr<optimization_guide::proto::ActionsResult> result =
+      runner->TakeResult();
+  ASSERT_TRUE(result != nullptr);
+  EXPECT_EQ(result->action_result(), 0);
+  EXPECT_EQ(runner->TakeResult(), nullptr);
+}
+
 }  // namespace
 }  // namespace actor

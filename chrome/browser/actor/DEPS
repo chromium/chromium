@@ -39,6 +39,9 @@ specific_include_rules = {
   ],
 
   # Test dependencies on UiEventDispatcher.
+  'actor_actions_runner_unittest\\.cc': [
+    "+chrome/browser/actor/ui/test_support/mock_actor_ui_state_manager.h",
+  ],
   'actor_keyed_service_unittest\\.cc': [
     "+chrome/browser/actor/ui/event_dispatcher.h",
     "+chrome/browser/actor/ui/test_support/mock_actor_ui_state_manager.h",

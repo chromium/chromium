@@ -17,6 +17,7 @@ if (is_android) {
 
 source_set("actor") {
   public = [
+    "actor_actions_runner.h",
     "actor_critical_action_logger.h",
     "actor_keyed_service.h",
     "actor_keyed_service_factory.h",
@@ -106,6 +107,7 @@ source_set("impl") {
   sources = [
     "action_tracker_for_metrics.cc",
     "action_tracker_for_metrics.h",
+    "actor_actions_runner.cc",
     "actor_critical_action_logger.cc",
     "actor_keyed_service.cc",
     "actor_keyed_service_factory.cc",
@@ -121,6 +123,7 @@ source_set("impl") {
     "actor_util.cc",
     "aggregated_journal_render_frame_binder.cc",
     "aggregated_journal_render_frame_binder.h",
+    "enterprise_policy_checker.cc",
     "execution_engine.cc",
     "site_policy.cc",
     "tab_observation_controller.cc",
@@ -346,6 +349,7 @@ source_set("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "actor_actions_runner_unittest.cc",
     "actor_critical_action_logger_unittest.cc",
     "actor_keyed_service_unittest.cc",
     "actor_metrics_unittest.cc",

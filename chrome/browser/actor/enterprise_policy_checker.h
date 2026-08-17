@@ -56,6 +56,22 @@ class EnterprisePolicyChecker {
       ContentValidationCallback callback) const = 0;
 };
 
+// A policy checker that permits all actions and content without restrictions.
+class NullEnterprisePolicyChecker : public EnterprisePolicyChecker {
+ public:
+  NullEnterprisePolicyChecker();
+  ~NullEnterprisePolicyChecker() override;
+
+  UrlBlockReason Evaluate(const GURL& url) const override;
+  void ValidateContentSentToRenderer(
+      content::RenderFrameHost* frame,
+      const std::string& content,
+      ContentValidationCallback callback) const override;
+};
+
+// Returns a shared NullEnterprisePolicyChecker instance.
+const EnterprisePolicyChecker* GetNullEnterprisePolicyChecker();
+
 }  // namespace actor
 
 #endif  // CHROME_BROWSER_ACTOR_ENTERPRISE_POLICY_CHECKER_H_

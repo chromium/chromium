@@ -45,27 +45,6 @@ namespace extensions {
 
 namespace {
 
-class NullPolicyChecker : public actor::EnterprisePolicyChecker {
- public:
-  actor::EnterprisePolicyChecker::UrlBlockReason Evaluate(
-      const GURL& url) const override {
-    return actor::EnterprisePolicyChecker::UrlBlockReason::kNotBlocked;
-  }
-
-  void ValidateContentSentToRenderer(
-      content::RenderFrameHost* frame,
-      const std::string& content,
-      actor::EnterprisePolicyChecker::ContentValidationCallback callback)
-      const override {
-    std::move(callback).Run(
-        actor::EnterprisePolicyChecker::ContentValidationReason::kAllowed);
-  }
-};
-
-NullPolicyChecker& GetNullPolicyChecker() {
-  static NullPolicyChecker checker;
-  return checker;
-}
 
 // Converts a session tab id to a tab handle.
 int32_t ConvertSessionTabIdToTabHandle(
@@ -186,7 +165,7 @@ ExtensionFunction::ResponseAction ExperimentalActorCreateTaskFunction::Run() {
   actor::TaskId task_id = actor_service->CreateTask(
       actor::TaskSourceInfo(actor::TaskSourceInfo::Client::kExperimentalActor,
                             /*id=*/std::nullopt),
-      &GetNullPolicyChecker());
+      actor::GetNullEnterprisePolicyChecker());
 
   return RespondNow(ArgumentList(
       api::experimental_actor::CreateTask::Results::Create(task_id.value())));
