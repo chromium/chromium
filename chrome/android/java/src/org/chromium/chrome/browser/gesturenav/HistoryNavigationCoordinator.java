@@ -16,7 +16,6 @@ import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -234,10 +233,7 @@ public class HistoryNavigationCoordinator
             return mEnabled;
         }
 
-        if (ChromeFeatureList.sActivateHistoryNavigationCoordinatorInGestureNavMode.isEnabled()) {
-            return true;
-        }
-        return !UiUtils.isGestureNavigationMode(mWindow.getWindow());
+        return true;
     }
 
     @Override

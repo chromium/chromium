@@ -241,8 +241,6 @@ public abstract class ChromeFeatureList {
     public static final String ACCOUNT_FOR_SUPPRESSED_KEYBOARD_INSETS =
             "AccountForSuppressedKeyboardInsets";
     public static final String ACCOUNT_PICKER_DIALOG = "AccountPickerDialog";
-    public static final String ACTIVATE_HISTORY_NAVIGATION_COORDINATOR_IN_GESTURE_NAV_MODE =
-            "ActivateHistoryNavigationCoordinatorInGestureNavMode";
     public static final String ACTOR_LOGIN_PERMISSIONS_UI = "ActorLoginPermissionsUi";
     public static final String ACTOR_NOTIFICATION_INTENT_ROUTING = "ActorNotificationIntentRouting";
     public static final String ACTOR_STEP_PROGRESS_NOTIFICATION = "ActorStepProgressNotification";
@@ -882,10 +880,6 @@ public abstract class ChromeFeatureList {
                     ACCOUNT_PICKER_DIALOG,
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ false);
-    public static final CachedFlag sActivateHistoryNavigationCoordinatorInGestureNavMode =
-            newCachedFlag(
-                    ACTIVATE_HISTORY_NAVIGATION_COORDINATOR_IN_GESTURE_NAV_MODE,
-                    /* defaultValue= */ true);
     public static final CachedFlag sAllocInstanceIdIncreasedDefaultRange =
             newCachedFlag(ALLOC_INSTANCE_ID_INCREASED_DEFAULT_RANGE, /* defaultValue= */ true);
     public static final CachedFlag sAndroidAnimatedProgressBarInBrowser =
@@ -1444,7 +1438,6 @@ public abstract class ChromeFeatureList {
                     // keep-sorted start
                     sAccountForSuppressedKeyboardInsets,
                     sAccountPickerDialog,
-                    sActivateHistoryNavigationCoordinatorInGestureNavMode,
                     sAllocInstanceIdIncreasedDefaultRange,
                     sAndroidAnimatedProgressBarInBrowser,
                     sAndroidApb144Patch1,
