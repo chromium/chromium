@@ -128,7 +128,7 @@ TEST_F(AtMemorySearchViewControllerTest, TestSearchState) {
   [(id<UISearchResultsUpdating>)view_controller_
       updateSearchResultsForSearchController:search_controller];
 
-  EXPECT_EQ(view_controller_.tableView.numberOfSections, 1);
+  EXPECT_EQ(view_controller_.tableView.numberOfSections, 2);
   EXPECT_EQ([view_controller_.tableView numberOfRowsInSection:0], 1);
 
   UITableViewCell* cell = [view_controller_.tableView.dataSource

@@ -37,6 +37,7 @@ source_set("ui") {
     "//ios/chrome/browser/autofill/atmemory/resources",
     "//ios/chrome/browser/autofill/atmemory/utils",
     "//ios/chrome/browser/autofill/autofill_ai/public",
+    "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/shared/ui:buildflags",
     "//ios/chrome/browser/shared/ui/list_model",
     "//ios/chrome/browser/shared/ui/symbols",
@@ -48,6 +49,7 @@ source_set("ui") {
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
     "//ui/base",
+    "//url",
   ]
 }
 

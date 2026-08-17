@@ -6,6 +6,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
+#import "build/buildflag.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/atmemory/public/at_memory_commands.h"
 #import "ios/chrome/browser/autofill/atmemory/public/at_memory_constants.h"
@@ -14,16 +15,23 @@
 #import "ios/chrome/browser/autofill/atmemory/ui/at_memory_search_item.h"
 #import "ios/chrome/browser/autofill/atmemory/ui/at_memory_search_mutator.h"
 #import "ios/chrome/browser/autofill/atmemory/utils/atmemory_ui_util.h"
+#import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/ui/buildflags.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/content_configuration/activity_indicator_content_configuration.h"
 #import "ios/chrome/browser/shared/ui/table_view/content_configuration/colorful_symbol_content_configuration.h"
 #import "ios/chrome/browser/shared/ui/table_view/content_configuration/table_view_cell_content_configuration.h"
+#import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
+#import "url/gurl.h"
 
 namespace {
+
+// URL for the AI disclosure footer link.
+constexpr char kAIDisclosureURL[] = "settings://ai_disclosure";
 
 // Section identifiers in the "AtMemory" page table view.
 enum class SectionIdentifier {
@@ -50,9 +58,11 @@ enum class ItemIdentifier {
 
 }  // namespace
 
-@interface AtMemorySearchViewController () <UISearchBarDelegate,
-                                            UISearchResultsUpdating,
-                                            AtMemoryInlineNoticeViewDelegate>
+@interface AtMemorySearchViewController () <
+    UISearchBarDelegate,
+    UISearchResultsUpdating,
+    AtMemoryInlineNoticeViewDelegate,
+    TableViewLinkHeaderFooterItemDelegate>
 @end
 
 @implementation AtMemorySearchViewController {
@@ -102,6 +112,8 @@ enum class ItemIdentifier {
   self.navigationItem.rightBarButtonItem = cancelButton;
 
   self.title = l10n_util::GetNSString(IDS_IOS_AUTOFILL_AI_FIND_AND_FILL_TITLE);
+
+  RegisterTableViewHeaderFooter<TableViewLinkHeaderFooterView>(self.tableView);
   [self loadModel];
 }
 
@@ -174,6 +186,43 @@ enum class ItemIdentifier {
     [self.mutator didSelectSearchResultItem:searchItem];
   }
   [tableView deselectRowAtIndexPath:indexPath animated:YES];
+}
+
+- (UIView*)tableView:(UITableView*)tableView
+    viewForFooterInSection:(NSInteger)section {
+  SectionIdentifier sectionIdentifier = static_cast<SectionIdentifier>(
+      [_dataSource sectionIdentifierForIndex:section].integerValue);
+
+  if (sectionIdentifier == SectionIdentifier::kSearchFooterSection) {
+    TableViewLinkHeaderFooterView* footer =
+        DequeueTableViewHeaderFooter<TableViewLinkHeaderFooterView>(tableView);
+    footer.delegate = self;
+    footer.urls = @[ [[CrURL alloc] initWithGURL:GURL(kAIDisclosureURL)] ];
+    [footer setText:l10n_util::GetNSString(IDS_IOS_AT_MEMORY_AI_DISCLOSURE)
+          withColor:[UIColor colorNamed:kTextSecondaryColor]];
+    return footer;
+  }
+
+  return nil;
+}
+
+- (CGFloat)tableView:(UITableView*)tableView
+    heightForFooterInSection:(NSInteger)section {
+  SectionIdentifier sectionIdentifier = static_cast<SectionIdentifier>(
+      [_dataSource sectionIdentifierForIndex:section].integerValue);
+
+  if (sectionIdentifier == SectionIdentifier::kSearchFooterSection) {
+    return UITableViewAutomaticDimension;
+  }
+
+  return 0;
+}
+
+#pragma mark - TableViewLinkHeaderFooterItemDelegate
+
+- (void)view:(TableViewLinkHeaderFooterView*)view didTapLinkURL:(CrURL*)URL {
+  CHECK(URL.gurl == GURL(kAIDisclosureURL));
+  // TODO(crbug.com/546671261): Open Enhanced Autofill details page.
 }
 
 #pragma mark - Actions
@@ -319,6 +368,10 @@ enum class ItemIdentifier {
                                            ItemIdentifier::kSearchItem)) ]
              intoSectionWithIdentifier:@(static_cast<int>(
                                            SectionIdentifier::kSearchSection))];
+  [snapshot appendSectionsWithIdentifiers:@[
+    @(static_cast<int>(SectionIdentifier::kSearchFooterSection))
+  ]];
+
   [self appendNoticeSectionToSnapshot:snapshot];
   [_dataSource applySnapshot:snapshot animatingDifferences:YES];
 }
