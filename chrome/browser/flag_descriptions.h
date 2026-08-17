@@ -5921,10 +5921,6 @@ inline constexpr char kChangeUnfocusedPriorityDescription[] =
     "Lower process priority for processes with only unfocused windows, "
     "allowing them to be discarded sooner.";
 
-inline constexpr char kChromeItemPickerUiName[] = "Chrome Item Picker Ui";
-inline constexpr char kChromeItemPickerUiDescription[] =
-    "Enable the Chrome item picker to show";
-
 inline constexpr char kChimeAndroidSdkDescription[] =
     "Enable Chime SDK to receive push notification.";
 inline constexpr char kChimeAndroidSdkName[] = "Use Chime SDK";

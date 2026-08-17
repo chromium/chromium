@@ -241,9 +241,7 @@ import java.util.function.Supplier;
         mModel.set(FuseboxProperties.POPUP_RECENT_TABS_HEADER_VISIBLE, false);
         mModel.set(FuseboxProperties.POPUP_RECENT_TABS_DIVIDER_VISIBLE, false);
 
-        mModel.set(
-                FuseboxProperties.POPUP_ATTACH_TAB_PICKER_VISIBLE,
-                !mIsDesktopPlatform && ChromeFeatureList.sChromeItemPickerUi.isEnabled());
+        mModel.set(FuseboxProperties.POPUP_ATTACH_TAB_PICKER_VISIBLE, !mIsDesktopPlatform);
         mModel.set(FuseboxProperties.POPUP_ATTACH_CAMERA_VISIBLE, !mIsDesktopPlatform);
         mModel.set(FuseboxProperties.POPUP_ATTACH_GALLERY_VISIBLE, true);
         mModel.set(FuseboxProperties.POPUP_TOOL_DIVIDER_VISIBLE, true);

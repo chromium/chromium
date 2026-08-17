@@ -454,7 +454,6 @@ public abstract class ChromeFeatureList {
     public static final String CCT_TAB_SWITCHER_ENABLED_FOR_EMBEDDER_EXPERIMENT =
             "CCTTabSwitcherEnabledForEmbedderExperiment";
     public static final String CHANGE_UNFOCUSED_PRIORITY = "ChangeUnfocusedPriority";
-    public static final String CHROME_ITEM_PICKER_UI = "ChromeItemPickerUi";
     public static final String CHROME_NATIVE_URL_OVERRIDING = "ChromeNativeUrlOverriding";
     public static final String CHROME_SURVEY_NEXT_ANDROID = "ChromeSurveyNextAndroid";
     public static final String CLAMP_AUTOMOTIVE_SCALING = "ClampAutomotiveScaling";
@@ -1049,8 +1048,6 @@ public abstract class ChromeFeatureList {
             newCachedFlag(CCT_TAB_SWITCHER_ENABLED_FOR_CHROME_EXPERIMENT, false);
     public static final CachedFlag sCctTabSwitcherEnabledForEmbedderExperiment =
             newCachedFlag(CCT_TAB_SWITCHER_ENABLED_FOR_EMBEDDER_EXPERIMENT, true);
-    public static final CachedFlag sChromeItemPickerUi =
-            newCachedFlag(CHROME_ITEM_PICKER_UI, /* defaultValue= */ true);
     public static final CachedFlag sChromeNativeUrlOverriding =
             newCachedFlag(CHROME_NATIVE_URL_OVERRIDING, BuildConfig.IS_DESKTOP_ANDROID);
     public static final CachedFlag sClampAutomotiveScaling =
@@ -1510,7 +1507,6 @@ public abstract class ChromeFeatureList {
                     sCctTabResumption,
                     sCctTabSwitcherEnabledForChromeExperiment,
                     sCctTabSwitcherEnabledForEmbedderExperiment,
-                    sChromeItemPickerUi,
                     sChromeNativeUrlOverriding,
                     sClampAutomotiveScaling,
                     sClankStartupLatencyInjection,

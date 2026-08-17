@@ -1801,11 +1801,6 @@
     "expiry_milestone": 155
   },
   {
-    "name": "chrome-item-picker-ui",
-    "owners": [ "haileywang@google.com", "ssid@chromium.org" ],
-    "expiry_milestone": 160
-  },
-  {
     "name": "chrome-native-url-overriding",
     "owners": [
       "mfiaz@google.com",

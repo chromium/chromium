@@ -6587,10 +6587,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kChangeUnfocusedPriorityName,
      flag_descriptions::kChangeUnfocusedPriorityDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kChangeUnfocusedPriority)},
-
-    {"chrome-item-picker-ui", flag_descriptions::kChromeItemPickerUiName,
-     flag_descriptions::kChromeItemPickerUiDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kChromeItemPickerUi)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
     {"most-visited-tiles-new-scoring",
