@@ -25,7 +25,6 @@
 #include "chrome/browser/ash/guest_os/guest_os_terminal.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/ash/crostini_installer/crostini_installer_dialog.h"
 #include "chromeos/ash/components/dbus/spaced/spaced_client.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_service.h"
@@ -43,7 +42,6 @@ namespace crostini {
 
 namespace {
 using SetupResult = CrostiniInstaller::SetupResult;
-constexpr char kCrostiniSetupSourceHistogram[] = "Crostini.SetupSource";
 
 constexpr int kUninitializedDiskSpace = -1;
 
@@ -201,20 +199,6 @@ void CrostiniInstaller::Shutdown() {
         restart_id_);
     restart_id_ = CrostiniManager::kUninitializedRestartId;
   }
-}
-
-void CrostiniInstaller::ShowDialog(CrostiniUISurface ui_surface) {
-  // Defensive check to prevent showing the installer when crostini is not
-  // allowed.
-  if (!CrostiniFeatures::Get()->IsAllowedNow(profile_)) {
-    return;
-  }
-  base::UmaHistogramEnumeration(kCrostiniSetupSourceHistogram, ui_surface,
-                                crostini::CrostiniUISurface::kCount);
-
-  // TODO(lxj): We should pass the dialog |this| here instead of letting the
-  // webui to call |GetForProfile()| later.
-  ash::CrostiniInstallerDialog::Show(profile_);
 }
 
 void CrostiniInstaller::Install(CrostiniManager::RestartOptions options,

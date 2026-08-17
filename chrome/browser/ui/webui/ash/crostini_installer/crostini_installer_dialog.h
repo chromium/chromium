@@ -5,9 +5,12 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_CROSTINI_INSTALLER_CROSTINI_INSTALLER_DIALOG_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_CROSTINI_INSTALLER_CROSTINI_INSTALLER_DIALOG_H_
 
+#include <optional>
+
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog/system_web_dialog_delegate.h"
 
 class Profile;
@@ -22,8 +25,10 @@ class CrostiniInstallerDialog : public SystemWebDialogDelegate {
       base::OnceCallback<void(base::WeakPtr<CrostiniInstallerUI>)>;
 
   // |on_loaded_callback| is ignored if the dialog is already showing.
-  static void Show(Profile* profile,
-                   OnLoadedCallback on_loaded_callback = OnLoadedCallback());
+  static void Show(
+      Profile* profile,
+      std::optional<crostini::CrostiniUISurface> ui_surface = std::nullopt,
+      OnLoadedCallback on_loaded_callback = OnLoadedCallback());
 
  private:
   CrostiniInstallerDialog(Profile* profile,

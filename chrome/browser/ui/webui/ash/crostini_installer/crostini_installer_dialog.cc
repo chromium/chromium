@@ -10,8 +10,10 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "base/check_deref.h"
 #include "base/functional/callback_helpers.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
+#include "chrome/browser/ash/crostini/crostini_installer.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ui/webui/ash/crostini_installer/crostini_installer_ui.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
@@ -35,10 +37,18 @@ GURL GetUrl() {
 
 namespace ash {
 
-void CrostiniInstallerDialog::Show(Profile* profile,
-                                   OnLoadedCallback on_loaded_callback) {
+void CrostiniInstallerDialog::Show(
+    Profile* profile,
+    std::optional<crostini::CrostiniUISurface> ui_surface,
+    OnLoadedCallback on_loaded_callback) {
   if (!crostini::CrostiniFeatures::Get()->IsAllowedNow(profile)) {
     return;
+  }
+
+  if (ui_surface) {
+    base::UmaHistogramEnumeration(crostini::kCrostiniSetupSourceHistogram,
+                                  *ui_surface,
+                                  crostini::CrostiniUISurface::kCount);
   }
 
   auto* instance = SystemWebDialogDelegate::FindInstance(GetUrl().spec());

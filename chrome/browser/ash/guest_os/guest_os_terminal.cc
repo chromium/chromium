@@ -24,8 +24,6 @@
 #include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
-#include "chrome/browser/ash/crostini/crostini_installer.h"
-#include "chrome/browser/ash/crostini/crostini_installer_factory.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
@@ -37,6 +35,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/extensions/application_launch.h"
+#include "chrome/browser/ui/webui/ash/crostini_installer/crostini_installer_dialog.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/system_web_apps/system_web_app_type.h"
 #include "components/app_restore/app_launch_info.h"
@@ -272,11 +271,8 @@ void LaunchTerminalWithIntent(
       // would bring up the installer, so keep that behaviour. Only applies to
       // the default Crostini VM, anything else is only accessible if the target
       // VM is installed.
-      auto* installer =
-          crostini::CrostiniInstallerFactory::GetForProfile(profile);
-      if (installer) {
-        installer->ShowDialog(crostini::CrostiniUISurface::kAppList);
-      }
+      ash::CrostiniInstallerDialog::Show(profile,
+                                         crostini::CrostiniUISurface::kAppList);
       return std::move(callback).Run(false, "Crostini not installed");
     } else {
       // Could happen if, e.g. a guest got disabled between listing and

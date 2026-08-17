@@ -2476,7 +2476,7 @@ AutotestPrivateRunCrostiniInstallerFunction::Run() {
   // we call RestartCrostini and we will be put in the pending restarters
   // queue and be notified on success/otherwise of installation.
   ash::CrostiniInstallerDialog::Show(
-      profile,
+      profile, /*ui_surface=*/std::nullopt,
       base::BindOnce([](base::WeakPtr<ash::CrostiniInstallerUI> installer_ui) {
         installer_ui->ClickInstallForTesting();
       }));
