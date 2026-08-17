@@ -31,7 +31,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.autofill.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
-import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
+import org.chromium.chrome.browser.settings.SettingsTestRule;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -51,8 +51,8 @@ public class AutofillPersonalContextSettingsRenderTest {
             new NightModeTestUtils.NightModeParams().getParameters();
 
     @Rule
-    public SettingsActivityTestRule<AutofillPersonalContextFragment> mSettingsActivityTestRule =
-            new SettingsActivityTestRule<>(AutofillPersonalContextFragment.class);
+    public SettingsTestRule<AutofillPersonalContextFragment> mSettingsTestRule =
+            new SettingsTestRule<>(AutofillPersonalContextFragment.class);
 
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
@@ -75,8 +75,8 @@ public class AutofillPersonalContextSettingsRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testRenderPersonalContextSettings_Collapsed() throws IOException {
-        mSettingsActivityTestRule.startSettingsActivity();
-        AutofillPersonalContextFragment fragment = mSettingsActivityTestRule.getFragment();
+        mSettingsTestRule.startSettingsActivity();
+        AutofillPersonalContextFragment fragment = mSettingsTestRule.getFragment();
 
         // Wait for RecyclerView to perform a layout pass and attach child views.
         CriteriaHelper.pollUiThread(
@@ -97,8 +97,8 @@ public class AutofillPersonalContextSettingsRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testRenderPersonalContextSettings_Expanded() throws IOException {
-        mSettingsActivityTestRule.startSettingsActivity();
-        Activity activity = mSettingsActivityTestRule.getActivity();
+        mSettingsTestRule.startSettingsActivity();
+        Activity activity = mSettingsTestRule.getActivity();
         View expandedView =
                 runOnUiThreadBlocking(
                         () -> {

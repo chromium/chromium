@@ -35,7 +35,7 @@ import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManagerFactory
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
-import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
+import org.chromium.chrome.browser.settings.SettingsTestRule;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.ui.test.util.NightModeTestUtils;
@@ -58,8 +58,8 @@ public class AutofillOptionsRenderTest {
     }
 
     @Rule
-    public SettingsActivityTestRule<AutofillOptionsFragment> mSettingsActivityTestRule =
-            new SettingsActivityTestRule<>(AutofillOptionsFragment.class, createFragmentArgs());
+    public SettingsTestRule<AutofillOptionsFragment> mSettingsTestRule =
+            new SettingsTestRule<>(AutofillOptionsFragment.class, createFragmentArgs());
 
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
@@ -98,8 +98,8 @@ public class AutofillOptionsRenderTest {
     })
     @DisableFeatures(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)
     public void testRenderAutofillOptionsSettings_WithPersonalContext() throws IOException {
-        mSettingsActivityTestRule.startSettingsActivity();
-        AutofillOptionsFragment fragment = mSettingsActivityTestRule.getFragment();
+        mSettingsTestRule.startSettingsActivity();
+        AutofillOptionsFragment fragment = mSettingsTestRule.getFragment();
 
         // Wait for RecyclerView to perform a layout pass and attach child views.
         CriteriaHelper.pollUiThread(
