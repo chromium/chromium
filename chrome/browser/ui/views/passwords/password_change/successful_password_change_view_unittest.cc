@@ -40,9 +40,11 @@ class SuccessfulPasswordChangeViewTest : public PasswordBubbleViewTestBase {
   }
 
   void TearDown() override {
-    view_->GetWidget()->CloseWithReason(
-        views::Widget::ClosedReason::kUnspecified);
-    view_ = nullptr;
+    if (view_) {
+      view_->GetWidget()->CloseWithReason(
+          views::Widget::ClosedReason::kUnspecified);
+      view_ = nullptr;
+    }
     PasswordBubbleViewTestBase::TearDown();
   }
 
@@ -55,6 +57,7 @@ class SuccessfulPasswordChangeViewTest : public PasswordBubbleViewTestBase {
   }
 
   SuccessfulPasswordChangeView* view() { return view_; }
+  void reset_view() { view_ = nullptr; }
 
   views::Label* GetLabelById(int id) {
     return static_cast<views::Label*>(view()->GetViewByID(id));
@@ -127,4 +130,31 @@ TEST_F(SuccessfulPasswordChangeViewTest, EyeButtonClick) {
   // Verify password is hidden.
   EXPECT_TRUE(GetLabelById(SuccessfulPasswordChangeView::kPasswordLabelId)
                   ->GetObscured());
+}
+
+TEST_F(SuccessfulPasswordChangeViewTest, AuthCallbackAfterViewDestruction) {
+  CreateAndShowView();
+
+  base::OnceCallback<void(bool)> captured_auth_callback;
+  EXPECT_CALL(*model_delegate_mock(), AuthenticateUserWithMessage)
+      .WillOnce(
+          testing::WithArg<1>([&](base::OnceCallback<void(bool)> callback) {
+            captured_auth_callback = std::move(callback);
+          }));
+
+  views::Button* eye_icon = static_cast<views::Button*>(
+      view()->GetViewByID(SuccessfulPasswordChangeView::kEyeIconButtonId));
+  EXPECT_TRUE(eye_icon);
+
+  views::test::ButtonTestApi(eye_icon).NotifyClick(ui::test::TestEvent());
+  EXPECT_TRUE(captured_auth_callback);
+
+  // Destroy the widget and view before the async auth callback runs.
+  views::Widget* widget = view()->GetWidget();
+  reset_view();
+  widget->CloseNow();
+
+  // Executing the callback when the view is destroyed must not crash or trigger
+  // UAF.
+  std::move(captured_auth_callback).Run(true);
 }

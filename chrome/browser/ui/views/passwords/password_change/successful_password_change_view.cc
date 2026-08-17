@@ -67,102 +67,6 @@ std::unique_ptr<views::View> CreateVerticalStackView() {
   return view;
 }
 
-// Row containing favicon, username, password and eye icon:
-// *--------------------------------------------------------*
-// |         | Username                          |          |
-// | Favicon |-----------------------------------| Eye icon |
-// |         | Password                          |          |
-// *--------------------------------------------------------*
-std::unique_ptr<views::View> CreateUsernamePasswordWithEyeIcon(
-    SuccessfulPasswordChangeBubbleController* controller) {
-  CHECK(controller);
-
-  auto parent_view = std::make_unique<views::BoxLayoutView>();
-  parent_view->SetInsideBorderInsets(ComputeRowMargins());
-
-  // Set the same spacing as for RichHoverButton which is displayed bellow.
-  const int icon_label_spacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
-      DISTANCE_RICH_HOVER_BUTTON_ICON_HORIZONTAL);
-  parent_view->SetBetweenChildSpacing(icon_label_spacing);
-
-  // Add favicon.
-  views::ImageView* favicon_view =
-      parent_view->AddChildView(std::make_unique<views::ImageView>());
-  const int icon_size = GetLayoutConstant(LayoutConstant::kPageInfoIconSize);
-  favicon_view->SetImageSize({icon_size, icon_size});
-  favicon_view->SetImage(ui::ImageModel::FromVectorIcon(
-      features::IsRoundedIconsEnabled() ? vector_icons::kGlobeIcon
-                                        : vector_icons::kGlobeOldIcon,
-      ui::kColorIcon, gfx::kFaviconSize));
-  controller->RequestFavicon(base::BindOnce(
-      [](views::ImageView* favicon_view, const gfx::Image& favicon) {
-        if (!favicon.IsEmpty()) {
-          favicon_view->SetImage(ui::ImageModel::FromImage(favicon));
-        }
-      },
-      favicon_view));
-
-  // Add username/password labels.
-  auto* username_password_view =
-      parent_view->AddChildView(CreateVerticalStackView());
-  username_password_view->SetProperty(views::kBoxLayoutFlexKey,
-                                      views::BoxLayoutFlexSpecification());
-  username_password_view->AddChildView(
-      CreateUsernameLabel(controller->GetUsername()));
-  views::Label* password_label = username_password_view->AddChildView(
-      CreatePasswordLabel(controller->GetNewPassword()));
-
-  // Add eye icon which allows to reveal a password.
-  auto* eye_icon = parent_view->AddChildView(
-      CreateVectorToggleImageButton(views::Button::PressedCallback()));
-  eye_icon->SetTooltipText(
-      l10n_util::GetStringUTF16(IDS_MANAGE_PASSWORDS_SHOW_PASSWORD));
-  eye_icon->SetToggledTooltipText(
-      l10n_util::GetStringUTF16(IDS_MANAGE_PASSWORDS_HIDE_PASSWORD));
-  eye_icon->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
-  views::SetImageFromVectorIconWithColor(eye_icon,
-                                         features::IsRoundedIconsEnabled()
-                                             ? views::kVisibilityFilledIcon
-                                             : views::kEyeOldIcon,
-                                         {ui::kColorIcon, ui::kColorIcon});
-  views::SetToggledImageFromVectorIconWithColor(
-      eye_icon,
-      features::IsRoundedIconsEnabled() ? views::kVisibilityOffFilledIcon
-                                        : views::kEyeCrossedOldIcon,
-      {ui::kColorIcon, ui::kColorIcon});
-
-  base::RepeatingCallback<void(bool)> auth_result_callback =
-      base::BindRepeating(
-          [](views::ToggleImageButton* toggle_button,
-             views::Label* password_label, bool auth_result) {
-            if (!auth_result) {
-              return;
-            }
-            password_label->SetObscured(!password_label->GetObscured());
-            toggle_button->SetToggled(!toggle_button->GetToggled());
-          },
-          eye_icon, password_label);
-
-  eye_icon->SetCallback(base::BindRepeating(
-      [](base::WeakPtr<SuccessfulPasswordChangeBubbleController> controller,
-         views::Label* password_label,
-         base::RepeatingCallback<void(bool)> auth_callback) {
-        if (!password_label->GetObscured()) {
-          // Run callback to hide the password. No auth needed to do it.
-          auth_callback.Run(true);
-          return;
-        }
-        if (controller) {
-          controller->AuthenticateUser(auth_callback);
-        }
-      },
-      controller->GetWeakPtr(), password_label,
-      std::move(auth_result_callback)));
-  eye_icon->SetID(SuccessfulPasswordChangeView::kEyeIconButtonId);
-
-  return parent_view;
-}
-
 std::unique_ptr<views::View> CreateManagePasswordsView(
     base::RepeatingClosure open_password_manager_closure) {
   auto manage_passwords_button = std::make_unique<RichHoverButton>(
@@ -217,15 +121,14 @@ SuccessfulPasswordChangeView::SuccessfulPasswordChangeView(
   // width.
   set_margins(gfx::Insets());
 
-  views::View* username_password_row = root_view->AddChildView(
-      CreateUsernamePasswordWithEyeIcon(controller_.get()));
+  root_view->AddChildView(CreateUsernamePasswordWithEyeIcon());
   root_view->AddChildView(std::make_unique<views::Separator>());
   root_view->AddChildView(CreateManagePasswordsView(base::BindRepeating(
       &SuccessfulPasswordChangeBubbleController::OpenPasswordManager,
       controller_->GetWeakPtr())));
 
   SetShowIcon(true);
-  SetInitiallyFocusedView(username_password_row->GetViewByID(kEyeIconButtonId));
+  SetInitiallyFocusedView(eye_icon_);
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   SetCloseCallback(base::BindRepeating(
       [](SuccessfulPasswordChangeView* view) {
@@ -257,6 +160,86 @@ ui::ImageModel SuccessfulPasswordChangeView::GetWindowIcon() {
 
 void SuccessfulPasswordChangeView::AddedToWidget() {
   SetBubbleHeaderLottie(IDR_PASSWORD_CHANGE_SUCCESS_LOTTIE);
+}
+
+std::unique_ptr<views::View>
+SuccessfulPasswordChangeView::CreateUsernamePasswordWithEyeIcon() {
+  auto parent_view = std::make_unique<views::BoxLayoutView>();
+  parent_view->SetInsideBorderInsets(ComputeRowMargins());
+
+  // Set the same spacing as for RichHoverButton which is displayed below.
+  const int icon_label_spacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
+      DISTANCE_RICH_HOVER_BUTTON_ICON_HORIZONTAL);
+  parent_view->SetBetweenChildSpacing(icon_label_spacing);
+
+  // Add favicon.
+  views::ImageView* favicon_view =
+      parent_view->AddChildView(std::make_unique<views::ImageView>());
+  const int icon_size = GetLayoutConstant(LayoutConstant::kPageInfoIconSize);
+  favicon_view->SetImageSize({icon_size, icon_size});
+  favicon_view->SetImage(ui::ImageModel::FromVectorIcon(
+      features::IsRoundedIconsEnabled() ? vector_icons::kGlobeIcon
+                                        : vector_icons::kGlobeOldIcon,
+      ui::kColorIcon, gfx::kFaviconSize));
+  controller_->RequestFavicon(base::BindOnce(
+      [](views::ImageView* favicon_view, const gfx::Image& favicon) {
+        if (!favicon.IsEmpty()) {
+          favicon_view->SetImage(ui::ImageModel::FromImage(favicon));
+        }
+      },
+      favicon_view));
+
+  // Add username/password labels.
+  auto* username_password_view =
+      parent_view->AddChildView(CreateVerticalStackView());
+  username_password_view->SetProperty(views::kBoxLayoutFlexKey,
+                                      views::BoxLayoutFlexSpecification());
+  username_password_view->AddChildView(
+      CreateUsernameLabel(controller_->GetUsername()));
+  password_label_ = username_password_view->AddChildView(
+      CreatePasswordLabel(controller_->GetNewPassword()));
+
+  // Add eye icon which allows to reveal a password.
+  eye_icon_ = parent_view->AddChildView(views::CreateVectorToggleImageButton(
+      base::BindRepeating(&SuccessfulPasswordChangeView::OnEyeIconClicked,
+                          base::Unretained(this))));
+  eye_icon_->SetTooltipText(
+      l10n_util::GetStringUTF16(IDS_MANAGE_PASSWORDS_SHOW_PASSWORD));
+  eye_icon_->SetToggledTooltipText(
+      l10n_util::GetStringUTF16(IDS_MANAGE_PASSWORDS_HIDE_PASSWORD));
+  eye_icon_->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
+  views::SetImageFromVectorIconWithColor(eye_icon_,
+                                         features::IsRoundedIconsEnabled()
+                                             ? views::kVisibilityFilledIcon
+                                             : views::kEyeOldIcon,
+                                         {ui::kColorIcon, ui::kColorIcon});
+  views::SetToggledImageFromVectorIconWithColor(
+      eye_icon_,
+      features::IsRoundedIconsEnabled() ? views::kVisibilityOffFilledIcon
+                                        : views::kEyeCrossedOldIcon,
+      {ui::kColorIcon, ui::kColorIcon});
+  eye_icon_->SetID(SuccessfulPasswordChangeView::kEyeIconButtonId);
+
+  return parent_view;
+}
+
+void SuccessfulPasswordChangeView::OnEyeIconClicked() {
+  if (!password_label_->GetObscured()) {
+    password_label_->SetObscured(true);
+    eye_icon_->SetToggled(false);
+    return;
+  }
+  controller_->AuthenticateUser(
+      base::BindOnce(&SuccessfulPasswordChangeView::OnAuthenticationResult,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void SuccessfulPasswordChangeView::OnAuthenticationResult(bool auth_result) {
+  if (!auth_result) {
+    return;
+  }
+  password_label_->SetObscured(false);
+  eye_icon_->SetToggled(true);
 }
 
 BEGIN_METADATA(SuccessfulPasswordChangeView)
