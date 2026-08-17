@@ -119,6 +119,29 @@ class QuicSessionPool::AsyncDnsJob
     std::optional<ConnectionManagementConfig> connection_management_config;
   };
 
+  // How the job obtained its session. Attempt-based results use connector
+  // identity rather than the connector's final slot because connectors can
+  // change slots. Failed jobs use kNone. The non-kNone values are recorded in
+  // Net.QuicSession.AsyncDnsJob.SuccessSource.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // LINT.IfChange(QuicSessionPoolAsyncDnsJobSuccessSource)
+  enum class SuccessSource {
+    kNone = 0,
+    // Another request activated a session for the same key.
+    kActiveSession = 1,
+    // The job found an existing session through IP pooling.
+    kIpPooling = 2,
+    // The initial connector's first attempt succeeded.
+    kInitialConnectorFirstAttempt = 3,
+    // A later attempt by the initial connector succeeded.
+    kInitialConnectorLaterAttempt = 4,
+    // An attempt by the connector created when the slow timer fired succeeded.
+    kSlowTimerConnector = 5,
+    kMaxValue = kSlowTimerConnector,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:QuicSessionPoolAsyncDnsJobSuccessSource)
+
   AsyncDnsJob(
       QuicSessionPool* pool,
       quic::ParsedQuicVersion quic_version,
@@ -199,24 +222,17 @@ class QuicSessionPool::AsyncDnsJob
   // Returns the name of the slot `connector` occupies. For logging.
   const char* SlotName(const EndpointConnector* connector) const;
 
-  // Logs the attempt `connector` is about to start and returns its job-wide
-  // identifier. Logging only.
-  int LogAttemptStarted(const EndpointConnector* connector,
-                        const Candidate& candidate);
+  // Called immediately before `connector` starts an attempt. Updates the
+  // attempt metrics, logs the attempt, and returns its job-wide identifier.
+  int OnAttemptStarted(const EndpointConnector* connector,
+                       const Candidate& candidate,
+                       base::TimeTicks start_time);
 
  private:
   // The result and the error details of one failed attempt.
   struct AttemptFailure {
     int rv = OK;
     NetErrorDetails details;
-  };
-
-  // How a successful job obtained its session. Failed jobs use kNone.
-  enum class SuccessSource {
-    kNone,
-    kAttemptSucceeded,
-    kActiveSession,
-    kIpPooling,
   };
 
   int DoResolveHost();
@@ -300,6 +316,9 @@ class QuicSessionPool::AsyncDnsJob
   // Logs the resolver's final result. Logging only.
   void LogServiceEndpointRequestFinished(int rv) const;
 
+  // Records this job's histograms. Called once when the job finishes.
+  void RecordMetrics(int rv) const;
+
   const quic::ParsedQuicVersion quic_version_;
   const raw_ptr<HostResolver> host_resolver_;
   const bool use_dns_aliases_;
@@ -349,6 +368,14 @@ class QuicSessionPool::AsyncDnsJob
   // Stamped once, when the job first stops waiting on DNS. Not moved when
   // the resolver finishes later.
   base::TimeTicks dns_resolution_end_time_;
+  // When the resolver reported its final result. Null while resolution is in
+  // flight. Distinct from `dns_resolution_end_time_`, which is stamped at the
+  // first usable partial results.
+  base::TimeTicks resolution_finished_time_;
+  // When the job's first attempt started. Null while no attempt started.
+  base::TimeTicks first_attempt_start_time_;
+  // When the successful attempt started.
+  base::TimeTicks successful_attempt_start_time_;
   // Runs while only the primary slot is filled. On expiry the job fills the
   // secondary slot so that an IPv4 attempt runs next to the IPv6 one.
   base::OneShotTimer slow_timer_;

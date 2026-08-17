@@ -17,9 +17,11 @@
 
 namespace net {
 
-QuicSessionPool::EndpointConnector::EndpointConnector(AsyncDnsJob* job,
-                                                      const char* name)
-    : job_(job), name_(name) {}
+QuicSessionPool::EndpointConnector::EndpointConnector(
+    AsyncDnsJob* job,
+    const char* name,
+    bool created_by_slow_timer)
+    : job_(job), name_(name), created_by_slow_timer_(created_by_slow_timer) {}
 
 QuicSessionPool::EndpointConnector::~EndpointConnector() {
   if (attempt_in_flight_) {
@@ -45,9 +47,10 @@ std::optional<int> QuicSessionPool::EndpointConnector::TryAdvance() {
       return std::nullopt;
     }
 
-    attempt_id_ = job_->LogAttemptStarted(this, *candidate);
-
     AsyncDnsJob::AttemptParams params = job_->GetAttemptParams();
+    attempt_start_time_ = base::TimeTicks::Now();
+    ++attempts_started_;
+    attempt_id_ = job_->OnAttemptStarted(this, *candidate, attempt_start_time_);
     // Passing a null `crypto_client_config_handle` is safe because the owning
     // job holds a handle for as long as this attempt can be alive.
     attempt_ = std::make_unique<QuicSessionAttempt>(

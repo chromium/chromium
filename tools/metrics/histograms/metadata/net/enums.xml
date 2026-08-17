@@ -3221,6 +3221,19 @@ Called by update_net_trust_anchors.py.-->
 
 <!-- LINT.ThenChange(//net/quic/quic_session_pool.cc:QuicSessionKeyPartialMatchResult) -->
 
+<!-- LINT.IfChange(QuicSessionPoolAsyncDnsJobSuccessSource) -->
+
+<enum name="QuicSessionPoolAsyncDnsJobSuccessSource">
+  <int value="0" label="kNone"/>
+  <int value="1" label="kActiveSession"/>
+  <int value="2" label="kIpPooling"/>
+  <int value="3" label="kInitialConnectorFirstAttempt"/>
+  <int value="4" label="kInitialConnectorLaterAttempt"/>
+  <int value="5" label="kSlowTimerConnector"/>
+</enum>
+
+<!-- LINT.ThenChange(//net/quic/quic_session_pool_async_dns_job.h:QuicSessionPoolAsyncDnsJobSuccessSource) -->
+
 <enum name="QuicTransportErrorCodes">
   <int value="0" label="NO_ERROR"/>
   <int value="1" label="INTERNAL_ERROR"/>

@@ -19,6 +19,7 @@
 #include "net/base/session_usage.h"
 #include "net/quic/quic_session_key.h"
 #include "net/quic/quic_session_pool.h"
+#include "net/quic/quic_session_pool_async_dns_job.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_packets.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_server_id.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_time.h"
@@ -39,6 +40,8 @@ namespace test {
 
 class QuicSessionPoolPeer {
  public:
+  using AsyncDnsJob = QuicSessionPool::AsyncDnsJob;
+
   QuicSessionPoolPeer(const QuicSessionPoolPeer&) = delete;
   QuicSessionPoolPeer& operator=(const QuicSessionPoolPeer&) = delete;
 

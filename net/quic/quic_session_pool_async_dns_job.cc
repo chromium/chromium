@@ -12,6 +12,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/values.h"
 #include "net/base/address_family.h"
 #include "net/base/ech_mode.h"
@@ -105,6 +106,7 @@ int QuicSessionPool::AsyncDnsJob::Run(CompletionOnceCallback callback) {
     callback_ = std::move(callback);
   } else {
     // The job settled without completing through CompleteJob().
+    RecordMetrics(rv);
     LogJobComplete(rv);
   }
   return rv > 0 ? OK : rv;
@@ -231,6 +233,7 @@ void QuicSessionPool::AsyncDnsJob::MaybeNotifyHostResolutionAndComplete(
 }
 
 void QuicSessionPool::AsyncDnsJob::CompleteJob(int rv) {
+  RecordMetrics(rv);
   LogJobComplete(rv);
   slow_timer_.Stop();
   if (!session_creation_notified_ &&
@@ -488,11 +491,15 @@ const char* QuicSessionPool::AsyncDnsJob::SlotName(
   return connector == primary_connector_.get() ? "primary" : "secondary";
 }
 
-int QuicSessionPool::AsyncDnsJob::LogAttemptStarted(
+int QuicSessionPool::AsyncDnsJob::OnAttemptStarted(
     const EndpointConnector* connector,
-    const Candidate& candidate) {
+    const Candidate& candidate,
+    base::TimeTicks start_time) {
   ++attempt_count_;
   const int attempt_id = static_cast<int>(attempt_count_);
+  if (first_attempt_start_time_.is_null()) {
+    first_attempt_start_time_ = start_time;
+  }
   net_log_.AddEvent(
       NetLogEventType::QUIC_SESSION_POOL_ASYNC_DNS_JOB_ATTEMPT_STARTED, [&] {
         return base::DictValue()
@@ -519,7 +526,9 @@ void QuicSessionPool::AsyncDnsJob::LogJobComplete(int rv) const {
           switch (success_source_) {
             case SuccessSource::kNone:
               break;
-            case SuccessSource::kAttemptSucceeded:
+            case SuccessSource::kInitialConnectorFirstAttempt:
+            case SuccessSource::kInitialConnectorLaterAttempt:
+            case SuccessSource::kSlowTimerConnector:
               completion_reason = "attempt_succeeded";
               break;
             case SuccessSource::kActiveSession:
@@ -550,10 +559,61 @@ void QuicSessionPool::AsyncDnsJob::LogServiceEndpointRequestFinished(
       });
 }
 
+void QuicSessionPool::AsyncDnsJob::RecordMetrics(int rv) const {
+  if (rv != OK) {
+    base::UmaHistogramCounts100(
+        "Net.QuicSession.AsyncDnsJob.AttemptsPerJob.JobFailed", attempt_count_);
+    // Time from the first connection attempt until the job failed. Jobs that
+    // fail before starting an attempt are not recorded.
+    if (!first_attempt_start_time_.is_null()) {
+      base::UmaHistogramMediumTimes(
+          "Net.QuicSession.AsyncDnsJob.TimeToFailure",
+          base::TimeTicks::Now() - first_attempt_start_time_);
+    }
+    return;
+  }
+
+  base::UmaHistogramCounts100(
+      "Net.QuicSession.AsyncDnsJob.AttemptsPerJob.JobSucceeded",
+      attempt_count_);
+  CHECK(success_source_ != SuccessSource::kNone);
+  base::UmaHistogramEnumeration("Net.QuicSession.AsyncDnsJob.SuccessSource",
+                                success_source_);
+  if (successful_attempt_start_time_.is_null()) {
+    return;
+  }
+  if (resolution_finished_time_.is_null()) {
+    // DNS is canceled when the job succeeds, so this is a lower bound on the
+    // time from attempt start to the final DNS result.
+    base::UmaHistogramMediumTimes(
+        "Net.QuicSession.AsyncDnsJob.SuccessfulAttemptElapsedTime."
+        "JobSuccessWithDnsInFlight",
+        base::TimeTicks::Now() - successful_attempt_start_time_);
+  } else {
+    // The attempt may start after DNS finishes. Record zero in that case.
+    base::UmaHistogramMediumTimes(
+        "Net.QuicSession.AsyncDnsJob.SuccessfulAttemptElapsedTime."
+        "FinalDnsResult",
+        std::max(base::TimeDelta(),
+                 resolution_finished_time_ - successful_attempt_start_time_));
+  }
+}
+
 void QuicSessionPool::AsyncDnsJob::DestroyOtherConnector(
     const EndpointConnector* connector) {
-  success_source_ = connector->has_attempt() ? SuccessSource::kAttemptSucceeded
-                                             : SuccessSource::kIpPooling;
+  if (!connector->has_attempt()) {
+    // The connector succeeded by pooling, without an attempt.
+    success_source_ = SuccessSource::kIpPooling;
+  } else if (connector->created_by_slow_timer()) {
+    success_source_ = SuccessSource::kSlowTimerConnector;
+  } else if (connector->attempts_started() > 1) {
+    success_source_ = SuccessSource::kInitialConnectorLaterAttempt;
+  } else {
+    success_source_ = SuccessSource::kInitialConnectorFirstAttempt;
+  }
+  if (connector->has_attempt()) {
+    successful_attempt_start_time_ = connector->attempt_start_time();
+  }
   net_log_.AddEvent(
       NetLogEventType::QUIC_SESSION_POOL_ASYNC_DNS_JOB_CONNECTOR_SETTLED_JOB,
       [&] {
@@ -617,7 +677,8 @@ void QuicSessionPool::AsyncDnsJob::OnSlowTimer() {
   net_log_.AddEvent(
       NetLogEventType::QUIC_SESSION_POOL_ASYNC_DNS_JOB_SLOW_TIMER_FIRED);
 
-  secondary_connector_ = std::make_unique<EndpointConnector>(this, "second");
+  secondary_connector_ = std::make_unique<EndpointConnector>(
+      this, "second", /*created_by_slow_timer=*/true);
   if (!primary_connector_->is_attempting_ipv6()) {
     // The connector in the primary slot is not on IPv6, either because it
     // attempts IPv4 or because it waits for a candidate. The slots decide the
@@ -676,6 +737,7 @@ int QuicSessionPool::AsyncDnsJob::DoResolveHost() {
 
 int QuicSessionPool::AsyncDnsJob::DoResolveHostComplete(int rv) {
   resolution_finished_ = true;
+  resolution_finished_time_ = base::TimeTicks::Now();
   MaybeSetDnsResolutionEndTime();
 
   // A resolver error fails the job only while no attempt has run. Once a
@@ -738,7 +800,8 @@ QuicSessionPool::AsyncDnsJob::ProcessServiceEndpointResults() {
   MaybeSetDnsResolutionEndTime();
 
   if (!primary_connector_) {
-    primary_connector_ = std::make_unique<EndpointConnector>(this, "first");
+    primary_connector_ = std::make_unique<EndpointConnector>(
+        this, "first", /*created_by_slow_timer=*/false);
   }
 
   std::optional<int> result = AdvanceConnectors();

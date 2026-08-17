@@ -136,6 +136,8 @@ class QuicSessionPoolAsyncDnsJobTest : public QuicSessionPoolTestBase,
     return IPEndPoint(ip_address, kDefaultServerPort);
   }
 
+  using SuccessSource = QuicSessionPoolPeer::AsyncDnsJob::SuccessSource;
+
   FakeServiceEndpointResolver fake_resolver_;
   // For NetLog events test coverage.
   RecordingNetLogObserver net_log_observer_;
@@ -1107,6 +1109,8 @@ TEST_P(QuicSessionPoolAsyncDnsJobTest, IpPoolingOnPartialResult) {
       fake_resolver_.AddFakeRequest();
   const url::SchemeHostPort server2(url::kHttpsScheme, kServer2HostName,
                                     kDefaultServerPort);
+  // Scoped to the second job. The first job recorded its own entries.
+  base::HistogramTester histograms;
   RequestBuilder builder2(this);
   builder2.destination = server2;
   builder2.url = GURL(kServer2Url);
@@ -1135,6 +1139,19 @@ TEST_P(QuicSessionPoolAsyncDnsJobTest, IpPoolingOnPartialResult) {
 
   socket_data.ExpectAllReadDataConsumed();
   socket_data.ExpectAllWriteDataConsumed();
+
+  histograms.ExpectUniqueSample("Net.QuicSession.AsyncDnsJob.SuccessSource",
+                                static_cast<int>(SuccessSource::kIpPooling), 1);
+  histograms.ExpectUniqueSample(
+      "Net.QuicSession.AsyncDnsJob.AttemptsPerJob.JobSucceeded", 0, 1);
+  histograms.ExpectTotalCount(
+      "Net.QuicSession.AsyncDnsJob.SuccessfulAttemptElapsedTime."
+      "FinalDnsResult",
+      0);
+  histograms.ExpectTotalCount(
+      "Net.QuicSession.AsyncDnsJob.SuccessfulAttemptElapsedTime."
+      "JobSuccessWithDnsInFlight",
+      0);
 }
 
 // A priority change made after an attempt started but while resolution is
@@ -1851,6 +1868,7 @@ TEST_P(QuicSessionPoolAsyncDnsJobTest, MetadataVariantOfClaimedIpIsAttempted) {
   base::WeakPtr<FakeServiceEndpointRequest> endpoint_request =
       fake_resolver_.AddFakeRequest();
   InitializeWithFakeResolver();
+  base::HistogramTester histograms;
   pool_->set_has_quic_ever_worked_on_current_network(true);
   ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
@@ -1907,6 +1925,12 @@ TEST_P(QuicSessionPoolAsyncDnsJobTest, MetadataVariantOfClaimedIpIsAttempted) {
   failing_socket_data.ExpectAllWriteDataConsumed();
   socket_data.ExpectAllReadDataConsumed();
   socket_data.ExpectAllWriteDataConsumed();
+
+  histograms.ExpectUniqueSample(
+      "Net.QuicSession.AsyncDnsJob.SuccessSource",
+      static_cast<int>(SuccessSource::kInitialConnectorLaterAttempt), 1);
+  histograms.ExpectUniqueSample(
+      "Net.QuicSession.AsyncDnsJob.AttemptsPerJob.JobSucceeded", 2, 1);
 }
 
 // An endpoint that matches an existing session by IP arrives after an attempt
@@ -2065,6 +2089,7 @@ TEST_P(QuicSessionPoolAsyncDnsJobTest, SlowTimerStartsSecondaryThatSucceeds) {
   base::WeakPtr<FakeServiceEndpointRequest> endpoint_request =
       fake_resolver_.AddFakeRequest();
   InitializeWithFakeResolver();
+  base::HistogramTester histograms;
   pool_->set_has_quic_ever_worked_on_current_network(true);
   ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
@@ -2106,11 +2131,14 @@ TEST_P(QuicSessionPoolAsyncDnsJobTest, SlowTimerStartsSecondaryThatSucceeds) {
   EXPECT_EQ(ToIPEndPoint(ipv6_session->peer_address()),
             MakeIPEndPoint(kIpv6Addr1));
 
-  // The attempt the secondary connector starts establishes its session right
-  // away.
-  crypto_client_stream_factory_.set_handshake_mode(
-      MockCryptoClientStream::ZERO_RTT);
+  // The secondary connector starts an IPv4 attempt when the timer fires.
   FastForwardBy(SlowTimerDelay());
+  EXPECT_FALSE(callback_.have_result());
+  ASSERT_EQ(crypto_client_stream_factory_.streams().size(), 2u);
+
+  constexpr base::TimeDelta kTimeUntilSuccess = base::Milliseconds(20);
+  FastForwardBy(kTimeUntilSuccess);
+  crypto_client_stream_factory_.streams()[1]->NotifySessionZeroRttComplete();
 
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
   EXPECT_EQ(ToIPEndPoint(GetActiveSession(kDefaultDestination)->peer_address()),
@@ -2137,6 +2165,20 @@ TEST_P(QuicSessionPoolAsyncDnsJobTest, SlowTimerStartsSecondaryThatSucceeds) {
           .GetEntriesWithType(
               NetLogEventType::QUIC_SESSION_POOL_ASYNC_DNS_JOB_SLOW_TIMER_FIRED)
           .empty());
+
+  histograms.ExpectUniqueSample(
+      "Net.QuicSession.AsyncDnsJob.SuccessSource",
+      static_cast<int>(SuccessSource::kSlowTimerConnector), 1);
+  histograms.ExpectUniqueSample(
+      "Net.QuicSession.AsyncDnsJob.AttemptsPerJob.JobSucceeded", 2, 1);
+  histograms.ExpectTimeBucketCount(
+      "Net.QuicSession.AsyncDnsJob.SuccessfulAttemptElapsedTime."
+      "JobSuccessWithDnsInFlight",
+      kTimeUntilSuccess, 1);
+  histograms.ExpectTotalCount(
+      "Net.QuicSession.AsyncDnsJob.SuccessfulAttemptElapsedTime."
+      "FinalDnsResult",
+      0);
 }
 
 // The primary connector succeeds after the secondary connector started its
@@ -2145,6 +2187,7 @@ TEST_P(QuicSessionPoolAsyncDnsJobTest, PrimarySucceedsAfterSecondaryStarted) {
   base::WeakPtr<FakeServiceEndpointRequest> endpoint_request =
       fake_resolver_.AddFakeRequest();
   InitializeWithFakeResolver();
+  base::HistogramTester histograms;
   pool_->set_has_quic_ever_worked_on_current_network(true);
   ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
@@ -2186,6 +2229,9 @@ TEST_P(QuicSessionPoolAsyncDnsJobTest, PrimarySucceedsAfterSecondaryStarted) {
   EXPECT_FALSE(callback_.have_result());
   ASSERT_EQ(crypto_client_stream_factory_.streams().size(), 2u);
 
+  // Finish DNS while both attempts are in flight.
+  endpoint_request->CallOnServiceEndpointRequestFinished(OK);
+
   // Finish the handshake of the attempt the primary connector started.
   crypto_client_stream_factory_.streams()[0]->NotifySessionZeroRttComplete();
 
@@ -2201,6 +2247,22 @@ TEST_P(QuicSessionPoolAsyncDnsJobTest, PrimarySucceedsAfterSecondaryStarted) {
 
   ipv6_data.ExpectAllReadDataConsumed();
   ipv6_data.ExpectAllWriteDataConsumed();
+
+  // The initial connector's first attempt succeeds. The secondary attempt is
+  // included in the attempt count, but does not change the source.
+  histograms.ExpectUniqueSample(
+      "Net.QuicSession.AsyncDnsJob.SuccessSource",
+      static_cast<int>(SuccessSource::kInitialConnectorFirstAttempt), 1);
+  histograms.ExpectUniqueSample(
+      "Net.QuicSession.AsyncDnsJob.AttemptsPerJob.JobSucceeded", 2, 1);
+  histograms.ExpectTimeBucketCount(
+      "Net.QuicSession.AsyncDnsJob.SuccessfulAttemptElapsedTime."
+      "FinalDnsResult",
+      SlowTimerDelay(), 1);
+  histograms.ExpectTotalCount(
+      "Net.QuicSession.AsyncDnsJob.SuccessfulAttemptElapsedTime."
+      "JobSuccessWithDnsInFlight",
+      0);
 }
 
 // The slow timer fires while the primary connector waits for a candidate.
@@ -2354,6 +2416,7 @@ TEST_P(QuicSessionPoolAsyncDnsJobTest, SlotSwapWhenPrimaryAttemptsIpv4) {
   base::WeakPtr<FakeServiceEndpointRequest> endpoint_request =
       fake_resolver_.AddFakeRequest();
   InitializeWithFakeResolver();
+  base::HistogramTester histograms;
   pool_->set_has_quic_ever_worked_on_current_network(true);
   ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
@@ -2418,6 +2481,14 @@ TEST_P(QuicSessionPoolAsyncDnsJobTest, SlotSwapWhenPrimaryAttemptsIpv4) {
           .GetEntriesWithType(
               NetLogEventType::QUIC_SESSION_POOL_ASYNC_DNS_JOB_SLOTS_SWAPPED)
           .empty());
+
+  // The slow timer created the successful connector. Moving it to the primary
+  // slot does not change its source.
+  histograms.ExpectUniqueSample(
+      "Net.QuicSession.AsyncDnsJob.SuccessSource",
+      static_cast<int>(SuccessSource::kSlowTimerConnector), 1);
+  histograms.ExpectUniqueSample(
+      "Net.QuicSession.AsyncDnsJob.AttemptsPerJob.JobSucceeded", 2, 1);
 }
 
 // A fixture with the slow timer disabled through its feature param. The param
@@ -2579,6 +2650,7 @@ TEST_P(QuicSessionPoolAsyncDnsJobTest, JobFailsWithMostRecentAttemptFailure) {
   base::WeakPtr<FakeServiceEndpointRequest> endpoint_request =
       fake_resolver_.AddFakeRequest();
   InitializeWithFakeResolver();
+  base::HistogramTester histograms;
   pool_->set_has_quic_ever_worked_on_current_network(true);
   ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
@@ -2638,6 +2710,12 @@ TEST_P(QuicSessionPoolAsyncDnsJobTest, JobFailsWithMostRecentAttemptFailure) {
   endpoint_request->CallOnServiceEndpointRequestFinished(OK);
   EXPECT_THAT(callback_.WaitForResult(), IsError(ERR_ADDRESS_INVALID));
   EXPECT_FALSE(HasActiveSession(kDefaultDestination));
+
+  histograms.ExpectUniqueSample(
+      "Net.QuicSession.AsyncDnsJob.AttemptsPerJob.JobFailed", 3, 1);
+  histograms.ExpectTimeBucketCount("Net.QuicSession.AsyncDnsJob.TimeToFailure",
+                                   SlowTimerDelay(), 1);
+  histograms.ExpectTotalCount("Net.QuicSession.AsyncDnsJob.SuccessSource", 0);
 }
 
 // The job completes before the slow timer fires. Time passing afterwards
@@ -3000,6 +3078,7 @@ TEST_P(QuicSessionPoolAsyncDnsJobTest,
   base::WeakPtr<FakeServiceEndpointRequest> endpoint_request =
       fake_resolver_.AddFakeRequest();
   InitializeWithFakeResolver();
+  base::HistogramTester histograms;
   pool_->set_has_quic_ever_worked_on_current_network(true);
   ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
@@ -3061,6 +3140,12 @@ TEST_P(QuicSessionPoolAsyncDnsJobTest,
 
   second_ipv6_data.ExpectAllReadDataConsumed();
   second_ipv6_data.ExpectAllWriteDataConsumed();
+
+  // This is a later attempt, but it still belongs to the connector created by
+  // the slow timer.
+  histograms.ExpectUniqueSample(
+      "Net.QuicSession.AsyncDnsJob.SuccessSource",
+      static_cast<int>(SuccessSource::kSlowTimerConnector), 1);
 }
 
 // While DNS resolution is in flight, connectors do not cross over to the

@@ -5799,6 +5799,70 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.QuicSession.AsyncDnsJob.AttemptsPerJob.{JobOutcome}"
+    units="attempts" expires_after="2026-11-02">
+  <owner>bashi@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    The number of connection attempts a QuicSessionPool::AsyncDnsJob started
+    before it settled. Recorded once per job, when {JobOutcome}. A job recorded
+    with zero attempts failed before it could start a connection attempt or
+    succeeded by using an existing session. Only recorded when the
+    AsyncDnsQuicJob feature is enabled.
+  </summary>
+  <token key="JobOutcome">
+    <variant name="JobFailed" summary="the job failed"/>
+    <variant name="JobSucceeded" summary="the job succeeded"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Net.QuicSession.AsyncDnsJob.SuccessfulAttemptElapsedTime.{MeasurementPoint}"
+    units="ms" expires_after="2026-11-02">
+  <owner>bashi@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    Time since the successful connection attempt started, measured at
+    {MeasurementPoint}. The FinalDnsResult variant records zero if the attempt
+    started after DNS finished. The JobSuccessWithDnsInFlight variant is a lower
+    bound on the time until the final DNS result because job success cancels
+    DNS. Recorded once per successful job that used a connection attempt. Only
+    recorded when the AsyncDnsQuicJob feature is enabled.
+  </summary>
+  <token key="MeasurementPoint">
+    <variant name="FinalDnsResult"
+        summary="the resolver returned its final result"/>
+    <variant name="JobSuccessWithDnsInFlight"
+        summary="the job succeeded while DNS was still running"/>
+  </token>
+</histogram>
+
+<histogram name="Net.QuicSession.AsyncDnsJob.SuccessSource"
+    enum="QuicSessionPoolAsyncDnsJobSuccessSource" expires_after="2026-11-02">
+  <owner>bashi@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    How a successful QuicSessionPool::AsyncDnsJob obtained its session. The
+    source is an active session for the same key, IP pooling, the first attempt
+    by the initial connector, a later attempt by the initial connector, or any
+    attempt by the connector created when the slow timer fired. Recorded once
+    per successful job. Only recorded when the AsyncDnsQuicJob feature is
+    enabled.
+  </summary>
+</histogram>
+
+<histogram name="Net.QuicSession.AsyncDnsJob.TimeToFailure" units="ms"
+    expires_after="2026-11-02">
+  <owner>bashi@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    The time from the start of a QuicSessionPool::AsyncDnsJob's first connection
+    attempt to the job's failure. Recorded once per failed job that started at
+    least one attempt. Jobs that fail before starting an attempt are not
+    recorded. Only recorded when the AsyncDnsQuicJob feature is enabled.
+  </summary>
+</histogram>
+
 <histogram name="Net.QuicSession.AsyncRead" enum="Boolean"
     expires_after="2024-11-17">
   <owner>dschinazi@chromium.org</owner>
