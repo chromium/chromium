@@ -2269,11 +2269,7 @@ public class CompositorViewHolder extends FrameLayout
 
     @Override
     public void updateObscured(boolean obscureTabContent, boolean obscureToolbar) {
-        if (ChromeFeatureList.sCompositorViewHolderObscuring.isEnabled()) {
-            updateFocusability(!obscureTabContent, /* blockDescendants= */ true);
-        } else {
-            updateFocusability(!obscureTabContent, /* blockDescendants= */ false);
-        }
+        updateFocusability(!obscureTabContent, /* blockDescendants= */ true);
     }
 
     // KeyListener and VirtualView management.
