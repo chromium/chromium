@@ -46,6 +46,8 @@ class ToolRequestVisitorFunctor {
   virtual void Apply(const CloseWindowToolRequest&) = 0;
   virtual void Apply(const CreateTabToolRequest&) = 0;
   virtual void Apply(const CreateWindowToolRequest&) = 0;
+  virtual void Apply(const EnterFullscreenToolRequest&) = 0;
+  virtual void Apply(const ExitFullscreenToolRequest&) = 0;
 #endif
   virtual void Apply(const DragAndReleaseToolRequest&) = 0;
   virtual void Apply(const HistoryToolRequest&) = 0;

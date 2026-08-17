@@ -76,6 +76,8 @@ constexpr absl::Overload PreToolEventsFn{
     NoUiEvents<CloseWindowToolRequest>,
     NoUiEvents<CreateTabToolRequest>,
     NoUiEvents<CreateWindowToolRequest>,
+    NoUiEvents<EnterFullscreenToolRequest>,
+    NoUiEvents<ExitFullscreenToolRequest>,
 #endif
     NoUiEvents<DragAndReleaseToolRequest>,
     NoUiEvents<HistoryToolRequest>,
@@ -112,6 +114,8 @@ constexpr absl::Overload PostToolEventsFn{
     NoUiEvents<CloseWindowToolRequest>,
     NoUiEvents<CreateTabToolRequest>,
     NoUiEvents<CreateWindowToolRequest>,
+    NoUiEvents<EnterFullscreenToolRequest>,
+    NoUiEvents<ExitFullscreenToolRequest>,
 #endif
     NoUiEvents<DragAndReleaseToolRequest>,
     NoUiEvents<HistoryToolRequest>,

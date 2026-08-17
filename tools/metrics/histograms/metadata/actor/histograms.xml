@@ -79,6 +79,8 @@ chromium-metrics-reviews@google.com.
   <variant name="CreateTab" summary="Create Tab"/>
   <variant name="CreateWindow" summary="Create Window"/>
   <variant name="DragAndRelease" summary="Drag And Release"/>
+  <variant name="EnterFullscreen" summary="Enter Fullscreen"/>
+  <variant name="ExitFullscreen" summary="Exit Fullscreen"/>
   <variant name="History" summary="History"/>
   <variant name="LoadAndExtractContent" summary="Load And Extract Content"/>
   <variant name="MediaControl" summary="Media Control"/>

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ACTOR_TOOLS_WINDOW_MANAGEMENT_TOOL_REQUEST_H_
 #define CHROME_BROWSER_ACTOR_TOOLS_WINDOW_MANAGEMENT_TOOL_REQUEST_H_
 
+#include <optional>
 #include <string>
 
 #include "chrome/browser/actor/tools/tool_request.h"
@@ -54,6 +55,44 @@ class CloseWindowToolRequest : public ToolRequest {
 
   explicit CloseWindowToolRequest(int32_t window_id);
   ~CloseWindowToolRequest() override;
+
+  int32_t GetWindowId() const { return window_id_; }
+
+  CreateToolResult CreateTool(TaskId task_id,
+                              ToolDelegate& tool_delegate) const override;
+  void Apply(ToolRequestVisitorFunctor& f) const override;
+  std::string_view Name() const override;
+
+ private:
+  int32_t window_id_;
+};
+
+// Enters fullscreen mode for a window.
+class EnterFullscreenToolRequest : public ToolRequest {
+ public:
+  static constexpr char kName[] = "EnterFullscreen";
+
+  explicit EnterFullscreenToolRequest(int32_t window_id);
+  ~EnterFullscreenToolRequest() override;
+
+  int32_t GetWindowId() const { return window_id_; }
+
+  CreateToolResult CreateTool(TaskId task_id,
+                              ToolDelegate& tool_delegate) const override;
+  void Apply(ToolRequestVisitorFunctor& f) const override;
+  std::string_view Name() const override;
+
+ private:
+  int32_t window_id_;
+};
+
+// Exits fullscreen mode for a window.
+class ExitFullscreenToolRequest : public ToolRequest {
+ public:
+  static constexpr char kName[] = "ExitFullscreen";
+
+  explicit ExitFullscreenToolRequest(int32_t window_id);
+  ~ExitFullscreenToolRequest() override;
 
   int32_t GetWindowId() const { return window_id_; }
 

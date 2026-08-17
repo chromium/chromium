@@ -15,6 +15,7 @@
 #include "chrome/common/actor.mojom.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
+#include "ui/base/base_window.h"
 #include "ui/base/ozone_buildflags.h"
 
 #if BUILDFLAG(IS_OZONE)
@@ -48,6 +49,14 @@ class ActorWindowManagementToolBrowserTest : public ActorToolsTest {
 
   std::unique_ptr<ToolRequest> MakeActivateWindowRequest(int32_t window_id) {
     return std::make_unique<ActivateWindowToolRequest>(window_id);
+  }
+
+  std::unique_ptr<ToolRequest> MakeEnterFullscreenRequest(int32_t window_id) {
+    return std::make_unique<EnterFullscreenToolRequest>(window_id);
+  }
+
+  std::unique_ptr<ToolRequest> MakeExitFullscreenRequest(int32_t window_id) {
+    return std::make_unique<ExitFullscreenToolRequest>(window_id);
   }
 };
 
@@ -86,8 +95,7 @@ IN_PROC_BROWSER_TEST_F(ActorWindowManagementToolBrowserTest, CreateWindow) {
   EXPECT_TRUE(new_window);
 
   EXPECT_EQ(initial_browser_count + 1, GetAllBrowserWindowInterfaces().size());
-  ui_test_utils::WaitForBrowserSetLastActive(
-      new_window->GetBrowserForMigrationOnly());
+  ui_test_utils::WaitForBrowserSetLastActive(new_window);
   EXPECT_EQ(new_window, GetLastActiveBrowserWindowInterfaceWithAnyProfile());
 }
 
@@ -169,8 +177,7 @@ IN_PROC_BROWSER_TEST_F(ActorWindowManagementToolBrowserTest, CloseWindow) {
   ExpectOkResult(close_result);
 
   EXPECT_EQ(initial_browser_count, GetAllBrowserWindowInterfaces().size());
-  ui_test_utils::WaitForBrowserSetLastActive(
-      initial_active_browser->GetBrowserForMigrationOnly());
+  ui_test_utils::WaitForBrowserSetLastActive(initial_active_browser);
   EXPECT_EQ(initial_active_browser,
             GetLastActiveBrowserWindowInterfaceWithAnyProfile());
 }
@@ -223,8 +230,7 @@ IN_PROC_BROWSER_TEST_F(ActorWindowManagementToolBrowserTest, ActivateWindow) {
 
   BrowserWindowInterface* new_window = new_window_observer.created_browser();
   ASSERT_NE(new_window, initial_window);
-  ui_test_utils::WaitForBrowserSetLastActive(
-      new_window->GetBrowserForMigrationOnly());
+  ui_test_utils::WaitForBrowserSetLastActive(new_window);
 
   // Activate the original window.
   std::unique_ptr<ToolRequest> activate_action =
@@ -234,10 +240,88 @@ IN_PROC_BROWSER_TEST_F(ActorWindowManagementToolBrowserTest, ActivateWindow) {
                    activate_result.GetCallback());
   ExpectOkResult(activate_result);
 
-  ui_test_utils::WaitForBrowserSetLastActive(
-      initial_window->GetBrowserForMigrationOnly());
+  ui_test_utils::WaitForBrowserSetLastActive(initial_window);
   EXPECT_EQ(initial_window,
             GetLastActiveBrowserWindowInterfaceWithAnyProfile());
+}
+
+// Ensure EnterFullscreen enters fullscreen for a specific window ID and is a
+// no-op if already in fullscreen.
+IN_PROC_BROWSER_TEST_F(ActorWindowManagementToolBrowserTest, EnterFullscreen) {
+  BrowserWindowInterface* browser_window =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
+  ASSERT_TRUE(browser_window);
+  const int32_t window_id = browser_window->GetSessionID().id();
+  ASSERT_FALSE(browser_window->GetWindow()->IsFullscreen());
+
+  // Enter fullscreen.
+  {
+    std::unique_ptr<ToolRequest> action = MakeEnterFullscreenRequest(window_id);
+    ActResultFuture result;
+    actor_task().Act(ToRequestList(action), result.GetCallback());
+    ExpectOkResult(result);
+    EXPECT_TRUE(browser_window->GetWindow()->IsFullscreen());
+  }
+
+  // Already in fullscreen. Should be no-op.
+  {
+    std::unique_ptr<ToolRequest> action = MakeEnterFullscreenRequest(window_id);
+    ActResultFuture result;
+    actor_task().Act(ToRequestList(action), result.GetCallback());
+    ExpectOkResult(result);
+    EXPECT_TRUE(browser_window->GetWindow()->IsFullscreen());
+  }
+}
+
+// Ensure ExitFullscreen exits fullscreen for a specific window ID and is a
+// no-op if already out of fullscreen.
+IN_PROC_BROWSER_TEST_F(ActorWindowManagementToolBrowserTest, ExitFullscreen) {
+  BrowserWindowInterface* browser_window =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
+  ASSERT_TRUE(browser_window);
+  const int32_t window_id = browser_window->GetSessionID().id();
+
+  // Enter fullscreen first.
+  ui_test_utils::ToggleFullscreenModeAndWait(browser_window);
+  ASSERT_TRUE(browser_window->GetWindow()->IsFullscreen());
+
+  // Exit fullscreen.
+  {
+    std::unique_ptr<ToolRequest> action = MakeExitFullscreenRequest(window_id);
+    ActResultFuture result;
+    actor_task().Act(ToRequestList(action), result.GetCallback());
+    ExpectOkResult(result);
+    EXPECT_FALSE(browser_window->GetWindow()->IsFullscreen());
+  }
+
+  // Already out of fullscreen. Should be no-op.
+  {
+    std::unique_ptr<ToolRequest> action = MakeExitFullscreenRequest(window_id);
+    ActResultFuture result;
+    actor_task().Act(ToRequestList(action), result.GetCallback());
+    ExpectOkResult(result);
+    EXPECT_FALSE(browser_window->GetWindow()->IsFullscreen());
+  }
+}
+
+// Ensure EnterFullscreen fails with kWindowWentAway for an invalid window ID.
+IN_PROC_BROWSER_TEST_F(ActorWindowManagementToolBrowserTest,
+                       EnterFullscreen_FailsWithInvalidWindowId) {
+  std::unique_ptr<ToolRequest> action =
+      MakeEnterFullscreenRequest(/*window_id=*/999999);
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+  ExpectErrorResult(result, mojom::ActionResultCode::kWindowWentAway);
+}
+
+// Ensure ExitFullscreen fails with kWindowWentAway for an invalid window ID.
+IN_PROC_BROWSER_TEST_F(ActorWindowManagementToolBrowserTest,
+                       ExitFullscreen_FailsWithInvalidWindowId) {
+  std::unique_ptr<ToolRequest> action =
+      MakeExitFullscreenRequest(/*window_id=*/999999);
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+  ExpectErrorResult(result, mojom::ActionResultCode::kWindowWentAway);
 }
 
 }  // namespace

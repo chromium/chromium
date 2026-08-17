@@ -18,16 +18,23 @@ namespace actor {
 // A tool to manage browser windows, e.g. create, close, activate, etc.
 class WindowManagementTool : public Tool {
  public:
-  enum class Action { kCreate, kActivate, kClose };
+  enum class Action {
+    kCreate,
+    kActivate,
+    kClose,
+    kEnterFullscreen,
+    kExitFullscreen
+  };
 
   // Create constructor
   explicit WindowManagementTool(TaskId task_id, ToolDelegate& tool_delegate);
 
-  // Activate|Close constructor.
+  // Activate|Close|EnterFullscreen|ExitFullscreen constructor.
   WindowManagementTool(Action action,
                        TaskId task_id,
                        ToolDelegate& tool_delegate,
                        int32_t window_id);
+
   ~WindowManagementTool() override;
 
   // actor::Tool:
@@ -46,6 +53,8 @@ class WindowManagementTool : public Tool {
   tabs::TabHandle GetTargetTab() const override;
 
  private:
+  BrowserWindowInterface* GetTargetBrowser() const;
+
   // Called when the browser with `window_id_` has closed.
   void OnBrowserDidClose(BrowserWindowInterface* browser);
 

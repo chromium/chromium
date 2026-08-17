@@ -75,4 +75,48 @@ std::string_view CloseWindowToolRequest::Name() const {
   return kName;
 }
 
+// EnterFullscreenToolRequest
+EnterFullscreenToolRequest::EnterFullscreenToolRequest(int32_t window_id)
+    : window_id_(window_id) {}
+EnterFullscreenToolRequest::~EnterFullscreenToolRequest() = default;
+
+ToolRequest::CreateToolResult EnterFullscreenToolRequest::CreateTool(
+    TaskId task_id,
+    ToolDelegate& tool_delegate) const {
+  return {std::make_unique<WindowManagementTool>(
+              WindowManagementTool::Action::kEnterFullscreen, task_id,
+              tool_delegate, GetWindowId()),
+          MakeOkResult()};
+}
+
+void EnterFullscreenToolRequest::Apply(ToolRequestVisitorFunctor& f) const {
+  f.Apply(*this);
+}
+
+std::string_view EnterFullscreenToolRequest::Name() const {
+  return kName;
+}
+
+// ExitFullscreenToolRequest
+ExitFullscreenToolRequest::ExitFullscreenToolRequest(int32_t window_id)
+    : window_id_(window_id) {}
+ExitFullscreenToolRequest::~ExitFullscreenToolRequest() = default;
+
+ToolRequest::CreateToolResult ExitFullscreenToolRequest::CreateTool(
+    TaskId task_id,
+    ToolDelegate& tool_delegate) const {
+  return {std::make_unique<WindowManagementTool>(
+              WindowManagementTool::Action::kExitFullscreen, task_id,
+              tool_delegate, GetWindowId()),
+          MakeOkResult()};
+}
+
+void ExitFullscreenToolRequest::Apply(ToolRequestVisitorFunctor& f) const {
+  f.Apply(*this);
+}
+
+std::string_view ExitFullscreenToolRequest::Name() const {
+  return kName;
+}
+
 }  // namespace actor

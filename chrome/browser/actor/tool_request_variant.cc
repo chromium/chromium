@@ -46,6 +46,14 @@ void ConvertToVariantFn::Apply(const CreateWindowToolRequest& tr) {
 void ConvertToVariantFn::Apply(const DragAndReleaseToolRequest& tr) {
   var_ = ToolRequestVariant(tr);
 }
+#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
+void ConvertToVariantFn::Apply(const EnterFullscreenToolRequest& tr) {
+  var_ = ToolRequestVariant(tr);
+}
+void ConvertToVariantFn::Apply(const ExitFullscreenToolRequest& tr) {
+  var_ = ToolRequestVariant(tr);
+}
+#endif
 void ConvertToVariantFn::Apply(const HistoryToolRequest& tr) {
   var_ = ToolRequestVariant(tr);
 }
