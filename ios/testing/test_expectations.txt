@@ -84,9 +84,6 @@ crbug.com/541236775 OmniboxHardwareKeyboardInteractionTestCase/testHardwareLeftR
 crbug.com/540429004 XCallbackURLEGTest/testTextSearchWithProfileSwitch [ Pass Failure ]
 crbug.com/541290681 SafariDataImportTestCase/testPasswordConflictResolution [ Pass Failure ]
 
-# Gardening suppression 2026-08-06
-crbug.com/543490495 GeminiCopresenceTestCase/testFloatyHiddenOnNTPAndTabGrid [ Failure ]
-
 # Gardening suppression 2026-08-11
 crbug.com/545120617 [ Device ] AutofillCreditCardSettingsTestCase/testToolbarDeleteButtonWithAddPaymentMethodFeatureEnabled [ Pass Failure ]
 crbug.com/545120835 PasswordCheckupTestCase/testPasswordCheckupDismissCompromisedPasswordWarning [ Pass Failure ]
