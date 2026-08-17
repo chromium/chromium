@@ -381,7 +381,8 @@ static bool ConsumeCustomFunction(CSSParserTokenStream& stream,
         return false;
       }
       if (!ConsumeUnparsedValue(stream, /*restricted_value=*/false,
-                                /*stop_type=*/kEOFToken, features, context)) {
+                                /*stop_type=*/kEOFToken, features, context) ||
+          !stream.AtEnd()) {
         return false;
       }
     } else {
