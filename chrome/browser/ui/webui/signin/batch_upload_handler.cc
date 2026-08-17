@@ -10,7 +10,6 @@
 
 #include "base/strings/to_string.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/signin/batch_upload/batch_upload.mojom.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/grit/generated_resources.h"
@@ -27,6 +26,7 @@
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 #include "chrome/browser/device_reauth/chrome_device_authenticator_factory.h"
 #include "components/device_reauth/device_authenticator.h"
+#include "components/tabs/public/tab_interface.h"
 #endif
 
 namespace {
@@ -241,8 +241,8 @@ void BatchUploadHandler::SaveToAccount(
 
     device_authenticator_ = ChromeDeviceAuthenticatorFactory::GetForProfile(
         browser_->GetProfile(),
-        browser_->GetTabStripModel()
-            ->GetActiveWebContents()
+        browser_->GetActiveTabInterface()
+            ->GetContents()
             ->GetTopLevelNativeWindow(),
         params);
 

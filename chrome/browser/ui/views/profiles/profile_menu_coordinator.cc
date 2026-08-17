@@ -88,20 +88,19 @@ void ProfileMenuCoordinator::ShowWithPromoResults(
           FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
 #endif
 
-  Browser* const browser = browser_->GetBrowserForMigrationOnly();
   auto avatar_toolbar_button = GetAvatarToolbarButton();
   std::unique_ptr<ProfileMenuViewBase> bubble;
   const bool is_incognito = GetProfile()->IsIncognitoProfile();
   if (is_incognito) {
-    bubble =
-        std::make_unique<IncognitoMenuView>(avatar_toolbar_button, browser);
+    bubble = std::make_unique<IncognitoMenuView>(avatar_toolbar_button,
+                                                 &browser_.get());
   } else {
 #if BUILDFLAG(IS_CHROMEOS)
     // Note: on Ash, only incognito windows have a profile menu.
     NOTREACHED() << "The profile menu is not implemented on Ash.";
 #else
-    bubble = std::make_unique<ProfileMenuView>(avatar_toolbar_button, browser,
-                                               promo_info, from_avatar_promo);
+    bubble = std::make_unique<ProfileMenuView>(
+        avatar_toolbar_button, &browser_.get(), promo_info, from_avatar_promo);
 #endif  // BUILDFLAG(IS_CHROMEOS)
   }
   bubble->SetProperty(views::kElementIdentifierKey,

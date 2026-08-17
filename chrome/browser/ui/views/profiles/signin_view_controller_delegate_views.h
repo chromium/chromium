@@ -23,7 +23,6 @@
 #include "ui/views/view_observer.h"
 #include "ui/views/window/dialog_delegate.h"
 
-class Browser;
 class BrowserWindowInterface;
 class GURL;
 enum class SyncConfirmationStyle;
@@ -57,13 +56,13 @@ class SigninViewControllerDelegateViews
       const SigninViewControllerDelegateViews&) = delete;
 
   static std::unique_ptr<views::WebView> CreateSyncConfirmationWebView(
-      Browser* browser,
+      BrowserWindowInterface* browser,
       SyncConfirmationStyle style,
       bool is_sync_promo);
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   static std::unique_ptr<views::WebView> CreateHistorySyncOptInWebView(
-      Browser* browser,
+      BrowserWindowInterface* browser,
       bool should_close_modal_dialog,
       HistorySyncOptinLaunchContext launch_context,
       HistorySyncOptinHelper::FlowCompletedCallback
@@ -71,17 +70,17 @@ class SigninViewControllerDelegateViews
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
   static std::unique_ptr<views::WebView> CreateSigninErrorWebView(
-      Browser* browser);
+      BrowserWindowInterface* browser);
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   static std::unique_ptr<views::WebView> CreateProfileCustomizationWebView(
-      Browser* browser,
+      BrowserWindowInterface* browser,
       bool is_local_profile_creation,
       bool show_profile_switch_iph = false,
       bool show_supervised_user_iph = false);
 
   static std::unique_ptr<views::WebView> CreateSignoutConfirmationWebView(
-      Browser* browser,
+      BrowserWindowInterface* browser,
       ChromeSignoutConfirmationPromptVariant variant,
       size_t unsynced_data_count,
       SignoutConfirmationCallback callback);
@@ -140,7 +139,7 @@ class SigninViewControllerDelegateViews
   // between resizes.
   SigninViewControllerDelegateViews(
       std::unique_ptr<views::WebView> content_view,
-      Browser* browser,
+      BrowserWindowInterface* browser,
       ui::mojom::ModalType dialog_modal_type,
       bool wait_for_size,
       bool should_show_close_button,
@@ -176,7 +175,7 @@ class SigninViewControllerDelegateViews
   raw_ptr<views::Widget> modal_signin_widget_ = nullptr;
 
   const raw_ptr<views::WebView> content_view_;
-  const raw_ptr<Browser> browser_;
+  const raw_ptr<BrowserWindowInterface> browser_;
   views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
   bool should_show_close_button_;
   base::ScopedClosureRunner on_closed_callback_;

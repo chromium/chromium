@@ -55,7 +55,8 @@ constexpr char kDismissedSigninBubbleType[] =
 constexpr char kIdentityState[] = "Sign-in Status";
 
 // Launches a HaTS survey for the profile associated with `browser`.
-void LaunchHatsSurveyForBrowser(const std::string& trigger, Browser* browser) {
+void LaunchHatsSurveyForBrowser(const std::string& trigger,
+                                BrowserWindowInterface* browser) {
   if (!browser) {
     return;
   }

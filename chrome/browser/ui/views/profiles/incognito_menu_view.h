@@ -13,14 +13,15 @@
 #include "chrome/browser/ui/views/profiles/profile_menu_view_base.h"
 #include "ui/views/bubble/bubble_anchor.h"
 
-class Browser;
+class BrowserWindowInterface;
 
 // This bubble view is displayed when the user clicks on the avatar button in
 // incognito mode and displays the incognito menu.
 class IncognitoMenuView : public ProfileMenuViewBase {
  public:
   // `browser` must not be nullptr.
-  IncognitoMenuView(views::BubbleAnchor anchor_element, Browser* browser);
+  IncognitoMenuView(views::BubbleAnchor anchor_element,
+                    BrowserWindowInterface* browser);
 
   IncognitoMenuView(const IncognitoMenuView&) = delete;
   IncognitoMenuView& operator=(const IncognitoMenuView&) = delete;

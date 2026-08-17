@@ -824,7 +824,7 @@ void AddAvatarToLastMenuItem(const gfx::Image& icon,
 
 void OnBrowserCreated(const GURL& link_url,
                       url::Origin initiator_origin,
-                      Browser* browser) {
+                      BrowserWindowInterface* browser) {
   if (!browser) {
     // TODO(crbug.com/40242414): Make sure we do something or log an error if
     // opening a browser window was not possible.
@@ -4871,8 +4871,7 @@ void RenderViewContextMenu::ExecOpenLinkInProfile(int profile_index) {
   base::FilePath profile_path = profile_link_paths_[profile_index];
   profiles::SwitchToProfile(
       profile_path, false,
-      base::BindRepeating(OnBrowserCreated, params_.link_url,
-                          params_.frame_origin));
+      base::BindOnce(OnBrowserCreated, params_.link_url, params_.frame_origin));
 }
 
 #if BUILDFLAG(ENABLE_COMPOSE)

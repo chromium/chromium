@@ -31,7 +31,7 @@
 #include "ui/views/style/typography.h"
 #include "ui/views/view_tracker.h"
 
-class Browser;
+class BrowserWindowInterface;
 
 namespace views {
 class Button;
@@ -156,7 +156,8 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
   static constexpr int kOtherProfileImageSize = 16;
 
   // `browser` must not be nullptr.
-  ProfileMenuViewBase(views::BubbleAnchor anchor_element, Browser* browser);
+  ProfileMenuViewBase(views::BubbleAnchor anchor_element,
+                      BrowserWindowInterface* browser);
   ~ProfileMenuViewBase() override;
 
   ProfileMenuViewBase(const ProfileMenuViewBase&) = delete;

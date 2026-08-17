@@ -19,7 +19,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/web_signin_interceptor.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/signin/dice_web_signin_interceptor_delegate.h"
@@ -213,7 +212,7 @@ DiceWebSigninInterceptionBubbleView::~DiceWebSigninInterceptionBubbleView() {
 // static
 std::unique_ptr<ScopedWebSigninInterceptionBubbleHandle>
 DiceWebSigninInterceptionBubbleView::CreateBubble(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     views::BubbleAnchor anchor,
     const WebSigninInterceptor::Delegate::BubbleParameters& bubble_parameters,
     base::OnceCallback<void(SigninInterceptionResult)> callback) {
@@ -239,8 +238,9 @@ DiceWebSigninInterceptionBubbleView::ScopedHandle::~ScopedHandle() {
     return;
   }
   widget->CloseWithReason(
-      bubble_->GetAccepted() ? views::Widget::ClosedReason::kAcceptButtonClicked
-                             : views::Widget::ClosedReason::kUnspecified);
+      bubble_->GetAccepted()
+          ? views::Widget::ClosedReason::kAcceptButtonClicked
+          : views::Widget::ClosedReason::kCancelButtonClicked);
 }
 
 DiceWebSigninInterceptionBubbleView::ScopedHandle::ScopedHandle(
@@ -297,7 +297,7 @@ content::WebContents* DiceWebSigninInterceptionBubbleView::AddNewContents(
 }
 
 DiceWebSigninInterceptionBubbleView::DiceWebSigninInterceptionBubbleView(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     views::BubbleAnchor anchor,
     const WebSigninInterceptor::Delegate::BubbleParameters& bubble_parameters,
     base::OnceCallback<void(SigninInterceptionResult)> callback)
@@ -492,7 +492,7 @@ bool DiceWebSigninInterceptorDelegate::IsSigninInterceptionSupportedInternal(
 
 std::unique_ptr<ScopedWebSigninInterceptionBubbleHandle>
 DiceWebSigninInterceptorDelegate::ShowSigninInterceptionBubbleInternal(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     const WebSigninInterceptor::Delegate::BubbleParameters& bubble_parameters,
     base::OnceCallback<void(SigninInterceptionResult)> callback) {
   DCHECK(browser);

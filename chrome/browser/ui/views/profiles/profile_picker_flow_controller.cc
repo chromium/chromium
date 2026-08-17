@@ -29,7 +29,6 @@
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -764,11 +763,12 @@ void ProfilePickerFlowController::PickProfile(
       ProfilePicker::GetOpenCommandLineUrlsInNextProfileOpened();
   ProfilePicker::SetOpenCommandLineUrlsInNextProfileOpened(false);
 
-  base::OnceCallback<void(Browser*)> switch_to_profile_complete_callback =
-      base::BindOnce(&ProfilePickerFlowController::OnSwitchToProfileComplete,
-                     weak_ptr_factory_.GetWeakPtr(), args.open_settings,
-                     args.exit_flow_after_profile_picked,
-                     std::move(pick_profile_complete_callback));
+  base::OnceCallback<void(BrowserWindowInterface*)>
+      switch_to_profile_complete_callback = base::BindOnce(
+          &ProfilePickerFlowController::OnSwitchToProfileComplete,
+          weak_ptr_factory_.GetWeakPtr(), args.open_settings,
+          args.exit_flow_after_profile_picked,
+          std::move(pick_profile_complete_callback));
 
   g_browser_process->profile_manager()->CreateProfileAsync(
       profile_path,
@@ -781,7 +781,7 @@ void ProfilePickerFlowController::OnSwitchToProfileComplete(
     bool open_settings,
     bool exit_flow_after_profile_picked,
     base::OnceCallback<void(bool)> pick_profile_complete_callback,
-    Browser* browser) {
+    BrowserWindowInterface* browser) {
   if (!browser || browser->IsDeleteScheduled()) {
     // The browser is destroyed or about to be destroyed.
     if (pick_profile_complete_callback) {
@@ -901,7 +901,8 @@ ProfilePickerFlowController::RegisterPostIdentitySteps(
 
 void ProfilePickerFlowController::OnProfileLoadedForPicking(
     bool open_command_line_urls,
-    base::OnceCallback<void(Browser*)> pick_profile_complete_callback,
+    base::OnceCallback<void(BrowserWindowInterface*)>
+        pick_profile_complete_callback,
     Profile* profile) {
   CHECK(pick_profile_complete_callback);
   if (!profile) {
@@ -939,7 +940,8 @@ void ProfilePickerFlowController::OnProfileLoadedForPicking(
 void ProfilePickerFlowController::OnDeviceSignalsDisclaimerResult(
     Profile* profile,
     bool open_command_line_urls,
-    base::OnceCallback<void(Browser*)> pick_profile_complete_callback,
+    base::OnceCallback<void(BrowserWindowInterface*)>
+        pick_profile_complete_callback,
     signin::DeviceSignalsDisclaimerResult result) {
   signals_disclaimer_result_recorded_ = true;
   switch (result) {

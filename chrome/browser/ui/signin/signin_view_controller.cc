@@ -532,7 +532,7 @@ void SigninViewController::ShowModalProfileCustomizationDialog(
   CloseModalSignin();
   dialog_ = std::make_unique<SigninModalDialogImpl>(
       SigninViewControllerDelegate::CreateProfileCustomizationDelegate(
-          browser_->GetBrowserForMigrationOnly(), is_local_profile_creation,
+          &browser_.get(), is_local_profile_creation,
           /*show_profile_switch_iph=*/true, /*show_supervised_user_iph=*/true),
       GetOnModalDialogClosedCallback());
 }
@@ -577,7 +577,7 @@ void SigninViewController::ShowModalSyncConfirmationDialog(
   CloseModalSignin();
   dialog_ = std::make_unique<SigninModalDialogImpl>(
       SigninViewControllerDelegate::CreateSyncConfirmationDelegate(
-          browser_->GetBrowserForMigrationOnly(),
+          &browser_.get(),
           is_signin_intercept ? SyncConfirmationStyle::kSigninInterceptModal
                               : SyncConfirmationStyle::kDefaultModal,
           is_sync_promo),
@@ -592,7 +592,7 @@ void SigninViewController::ShowModalHistorySyncOptInDialog(
   CloseModalSignin();
   dialog_ = std::make_unique<SigninModalDialogImpl>(
       SigninViewControllerDelegate::CreateSyncHistoryOptInDelegate(
-          browser_->GetBrowserForMigrationOnly(), should_close_modal_dialog,
+          &browser_.get(), should_close_modal_dialog,
           HistorySyncOptinLaunchContext::kModal, std::move(callback)),
       GetOnModalDialogClosedCallback());
 }
@@ -615,8 +615,7 @@ void SigninViewController::ShowModalManagedUserNoticeDialog(
 void SigninViewController::ShowModalSigninErrorDialog() {
   CloseModalSignin();
   dialog_ = std::make_unique<SigninModalDialogImpl>(
-      SigninViewControllerDelegate::CreateSigninErrorDelegate(
-          browser_->GetBrowserForMigrationOnly()),
+      SigninViewControllerDelegate::CreateSigninErrorDelegate(&browser_.get()),
       GetOnModalDialogClosedCallback());
 }
 
@@ -982,8 +981,8 @@ void SigninViewController::ShowSignoutConfirmationPrompt(
   CloseModalSignin();
   dialog_ = std::make_unique<SigninModalDialogImpl>(
       SigninViewControllerDelegate::CreateSignoutConfirmationDelegate(
-          browser_->GetBrowserForMigrationOnly(), prompt_variant,
-          unsynced_data_count, std::move(callback)),
+          &browser_.get(), prompt_variant, unsynced_data_count,
+          std::move(callback)),
       GetOnModalDialogClosedCallback());
 }
 

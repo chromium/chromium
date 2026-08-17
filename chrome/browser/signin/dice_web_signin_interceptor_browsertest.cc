@@ -484,13 +484,13 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest, SwitchAlreadyOpen) {
   ui_test_utils::BrowserCreatedObserver browser_created_observer;
   base::RunLoop loop;
   Profile* other_profile = nullptr;
-  base::OnceCallback<void(Browser*)> callback =
-      base::BindLambdaForTesting([&other_profile, &loop](Browser* browser) {
-        other_profile = browser->GetProfile();
-        loop.Quit();
-      });
-  profiles::SwitchToProfile(profile_path, /*always_create=*/true,
-                            std::move(callback));
+  profiles::SwitchToProfile(
+      profile_path, /*always_create=*/true,
+      base::BindLambdaForTesting(
+          [&other_profile, &loop](BrowserWindowInterface* browser) {
+            other_profile = browser->GetProfile();
+            loop.Quit();
+          }));
   loop.Run();
   ASSERT_TRUE(other_profile);
   const BrowserWindowInterface* const other_browser =
@@ -614,13 +614,13 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorGaiaBrowserTest,
   ui_test_utils::BrowserCreatedObserver browser_created_observer;
   base::RunLoop loop;
   Profile* other_profile = nullptr;
-  base::OnceCallback<void(Browser*)> callback =
-      base::BindLambdaForTesting([&other_profile, &loop](Browser* browser) {
-        other_profile = browser->GetProfile();
-        loop.Quit();
-      });
-  profiles::SwitchToProfile(profile_path, /*always_create=*/true,
-                            std::move(callback));
+  profiles::SwitchToProfile(
+      profile_path, /*always_create=*/true,
+      base::BindLambdaForTesting(
+          [&other_profile, &loop](BrowserWindowInterface* browser) {
+            other_profile = browser->GetProfile();
+            loop.Quit();
+          }));
   loop.Run();
   ASSERT_TRUE(other_profile);
   const BrowserWindowInterface* const other_browser =
@@ -2815,13 +2815,13 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest,
   ui_test_utils::BrowserCreatedObserver browser_created_observer;
   base::RunLoop loop;
   Profile* other_profile = nullptr;
-  base::OnceCallback<void(Browser*)> callback =
-      base::BindLambdaForTesting([&other_profile, &loop](Browser* browser) {
-        other_profile = browser->GetProfile();
-        loop.Quit();
-      });
-  profiles::SwitchToProfile(profile_path, /*always_create=*/true,
-                            std::move(callback));
+  profiles::SwitchToProfile(
+      profile_path, /*always_create=*/true,
+      base::BindLambdaForTesting(
+          [&other_profile, &loop](BrowserWindowInterface* browser) {
+            other_profile = browser->GetProfile();
+            loop.Quit();
+          }));
   loop.Run();
   ASSERT_TRUE(other_profile);
   const BrowserWindowInterface* const other_browser =

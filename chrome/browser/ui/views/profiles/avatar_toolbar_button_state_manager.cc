@@ -78,6 +78,7 @@
 #include "components/signin/public/identity_manager/primary_account_change_event.h"
 #include "components/sync/base/features.h"
 #include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_service_observer.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "content/public/common/url_utils.h"
 #include "google_apis/gaia/gaia_id.h"

@@ -23,7 +23,7 @@ namespace views {
 class WebView;
 }  // namespace views
 
-class Browser;
+class BrowserWindowInterface;
 class Profile;
 
 // Bubble shown as part of Dice web signin interception. This bubble is
@@ -48,7 +48,7 @@ class DiceWebSigninInterceptionBubbleView
   // should be closed.
   [[nodiscard]] static std::unique_ptr<ScopedWebSigninInterceptionBubbleHandle>
   CreateBubble(
-      Browser* browser,
+      BrowserWindowInterface* browser,
       views::BubbleAnchor anchor,
       const WebSigninInterceptor::Delegate::BubbleParameters& bubble_parameters,
       base::OnceCallback<void(SigninInterceptionResult)> callback);
@@ -123,7 +123,7 @@ class DiceWebSigninInterceptionBubbleView
   };
 
   DiceWebSigninInterceptionBubbleView(
-      Browser* browser,
+      BrowserWindowInterface* browser,
       views::BubbleAnchor anchor,
       const WebSigninInterceptor::Delegate::BubbleParameters& bubble_parameters,
       base::OnceCallback<void(SigninInterceptionResult)> callback);

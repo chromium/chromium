@@ -20,7 +20,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/profiles/profile_colors_util.h"
@@ -439,10 +439,10 @@ class ProfileMenuViewBase::AXMenuWidgetObserver : public views::WidgetObserver {
 };
 
 ProfileMenuViewBase::ProfileMenuViewBase(views::BubbleAnchor anchor_element,
-                                         Browser* browser)
+                                         BrowserWindowInterface* browser)
     : BubbleDialogDelegateView(anchor_element, views::BubbleBorder::TOP_RIGHT),
       profile_(raw_ref<Profile>::from_ptr(browser->GetProfile())),
-      close_bubble_helper_(this, browser->tab_strip_model()) {
+      close_bubble_helper_(this, browser->GetTabStripModel()) {
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   set_margins(gfx::Insets(0));
   DCHECK(!anchor_element.IsNull());

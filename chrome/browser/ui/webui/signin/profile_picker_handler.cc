@@ -244,7 +244,8 @@ base::DictValue CreateProfileState(const ProfileAttributesEntry* entry,
 // from the user.
 // Either Sign in to Chrome if there are no eligible profiles.
 // Or add a new Profile if the existing profiles do not match the user's need.
-void OpenLearnMoreURL(bool is_profile_list_empty, Browser* browser) {
+void OpenLearnMoreURL(bool is_profile_list_empty,
+                      BrowserWindowInterface* browser) {
   // Browser may be closing if the Profile was locked after being loaded for
   // example.
   if (!browser || browser->IsDeleteScheduled()) {

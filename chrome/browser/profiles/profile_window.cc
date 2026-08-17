@@ -33,7 +33,6 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/signin/signin_util.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/startup/startup_tab_provider.h"
@@ -51,7 +50,6 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
@@ -125,11 +123,12 @@ void FindOrCreateNewWindowForProfile(
                                 /*restore_tabbed_browser=*/true);
 }
 
-void OpenBrowserWindowForProfile(base::OnceCallback<void(Browser*)> callback,
-                                 bool always_create,
-                                 bool is_new_profile,
-                                 bool open_command_line_urls,
-                                 Profile* profile) {
+void OpenBrowserWindowForProfile(
+    base::OnceCallback<void(BrowserWindowInterface*)> callback,
+    bool always_create,
+    bool is_new_profile,
+    bool open_command_line_urls,
+    Profile* profile) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   TRACE_EVENT1("browser", "OpenBrowserWindowForProfile", "profile_path",
                profile->GetPath().AsUTF8Unsafe());
@@ -177,7 +176,7 @@ void OpenBrowserWindowForProfile(base::OnceCallback<void(Browser*)> callback,
     if (browser) {
       browser->GetWindow()->Activate();
       if (callback) {
-        std::move(callback).Run(browser->GetBrowserForMigrationOnly());
+        std::move(callback).Run(browser);
       }
       return;
     }
@@ -212,7 +211,7 @@ void LoadProfileAsync(const base::FilePath& path,
 
 void SwitchToProfile(const base::FilePath& path,
                      bool always_create,
-                     base::OnceCallback<void(Browser*)> callback,
+                     base::OnceCallback<void(BrowserWindowInterface*)> callback,
                      bool open_command_line_urls) {
   base::OnceCallback<void(Profile*)> open_browser_callback =
       base::BindOnce(&profiles::OpenBrowserWindowForProfile,
@@ -223,7 +222,8 @@ void SwitchToProfile(const base::FilePath& path,
       base::BindOnce(&ProfileLoadedCallback, std::move(open_browser_callback)));
 }
 
-void SwitchToGuestProfile(base::OnceCallback<void(Browser*)> callback) {
+void SwitchToGuestProfile(
+    base::OnceCallback<void(BrowserWindowInterface*)> callback) {
   SwitchToProfile(ProfileManager::GetGuestProfilePath(),
                   /*always_create=*/false, std::move(callback));
 }
@@ -243,7 +243,7 @@ void CloseProfileWindows(Profile* profile) {
 
 BrowserAddedForProfileObserver::BrowserAddedForProfileObserver(
     Profile* profile,
-    base::OnceCallback<void(Browser*)> callback)
+    base::OnceCallback<void(BrowserWindowInterface*)> callback)
     : profile_(profile->GetWeakPtr()), callback_(std::move(callback)) {
   DCHECK(callback_);
   browser_collection_observation_.Observe(
@@ -265,7 +265,7 @@ void BrowserAddedForProfileObserver::OnBrowserCreated(
     return;
   }
 
-  browser_ = browser->GetBrowserForMigrationOnly();
+  browser_ = browser;
   // By the time the browser is added a tab (or multiple) are about to be added.
   // Post the callback to the message loop so it gets executed after the tabs
   // are created.

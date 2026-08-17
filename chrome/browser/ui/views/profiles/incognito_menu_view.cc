@@ -24,7 +24,7 @@
 #include "ui/views/bubble/bubble_anchor.h"
 
 IncognitoMenuView::IncognitoMenuView(views::BubbleAnchor anchor_element,
-                                     Browser* browser)
+                                     BrowserWindowInterface* browser)
     : ProfileMenuViewBase(anchor_element, browser) {
   CHECK(profile().IsIncognitoProfile());
   GetViewAccessibility().SetName(GetAccessibleWindowTitle(),

@@ -22,6 +22,7 @@
 #include "chrome/browser/shortcuts/create_shortcut_for_current_web_contents_task.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
@@ -61,13 +62,14 @@ class CreateDesktopShortcutDialogViewBrowserTest : public DialogBrowserTest {
     shortcut_callback_ = std::move(callback);
   }
 
-  void ShowDialogInBrowser(Browser* browser, const std::string& name) {
+  void ShowDialogInBrowser(BrowserWindowInterface* browser,
+                           const std::string& name) {
     EXPECT_TRUE(
         ui_test_utils::NavigateToURL(browser, GURL("https://example.com")));
 
     std::u16string title = base::UTF8ToUTF16(name);
     ShowCreateDesktopShortcutDialogForTesting(
-        browser->tab_strip_model()->GetActiveWebContents(), gfx::ImageSkia(),
+        browser->GetActiveTabInterface()->GetContents(), gfx::ImageSkia(),
         title, std::move(shortcut_callback_));
   }
 
@@ -212,7 +214,7 @@ IN_PROC_BROWSER_TEST_F(CreateDesktopShortcutDialogViewBrowserTest,
   Profile* new_profile =
       &profiles::testing::CreateProfileSync(profile_manager, new_path);
 
-  base::test::TestFuture<Browser*> browser_future;
+  base::test::TestFuture<BrowserWindowInterface*> browser_future;
   // `is_new_profile` has to be set to false so that the profile picker is not
   // triggered.
   profiles::OpenBrowserWindowForProfile(browser_future.GetCallback(),
@@ -221,7 +223,7 @@ IN_PROC_BROWSER_TEST_F(CreateDesktopShortcutDialogViewBrowserTest,
                                         /*open_command_line_urls=*/false,
                                         new_profile);
   EXPECT_TRUE(browser_future.Wait());
-  Browser* new_browser = browser_future.Get();
+  BrowserWindowInterface* new_browser = browser_future.Get();
   EXPECT_EQ(new_browser->GetProfile(), new_profile);
 
   base::UserActionTester action_tester;

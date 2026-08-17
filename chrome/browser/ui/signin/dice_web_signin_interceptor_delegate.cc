@@ -20,7 +20,6 @@
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
@@ -60,12 +59,12 @@ class OidcEnterpriseSigninInterceptionHandle
     : public ScopedWebSigninInterceptionBubbleHandle {
  public:
   OidcEnterpriseSigninInterceptionHandle(
-      Browser* browser,
+      BrowserWindowInterface* browser,
       const WebSigninInterceptor::Delegate::BubbleParameters& bubble_parameters,
       signin::SigninChoiceWithConfirmAndRetryCallback callback,
       base::OnceClosure dialog_closed_closure,
       base::RepeatingClosure retry_callback)
-      : browser_(browser->GetWeakPtr()),
+      : browser_(browser ? browser->GetWeakPtr() : nullptr),
         bubble_parameters_(bubble_parameters),
         callback_(std::move(callback)) {
     DCHECK(browser_);
@@ -143,10 +142,10 @@ class ForcedEnterpriseSigninInterceptionHandle
     : public ScopedWebSigninInterceptionBubbleHandle {
  public:
   ForcedEnterpriseSigninInterceptionHandle(
-      Browser* browser,
+      BrowserWindowInterface* browser,
       const WebSigninInterceptor::Delegate::BubbleParameters& bubble_parameters,
       base::OnceCallback<void(SigninInterceptionResult)> callback)
-      : browser_(browser->GetWeakPtr()),
+      : browser_(browser ? browser->GetWeakPtr() : nullptr),
         bubble_parameters_(bubble_parameters),
         profile_creation_required_by_policy_(
             bubble_parameters.interception_type ==
@@ -270,8 +269,7 @@ DiceWebSigninInterceptorDelegate::ShowSigninInterceptionBubble(
       return nullptr;
     }
     return std::make_unique<ForcedEnterpriseSigninInterceptionHandle>(
-        browser->GetBrowserForMigrationOnly(), bubble_parameters,
-        std::move(callback));
+        browser, bubble_parameters, std::move(callback));
   }
 
   BrowserWindowInterface* browser =
@@ -280,9 +278,8 @@ DiceWebSigninInterceptorDelegate::ShowSigninInterceptionBubble(
     std::move(callback).Run(SigninInterceptionResult::kNotDisplayed);
     return nullptr;
   }
-  return ShowSigninInterceptionBubbleInternal(
-      browser->GetBrowserForMigrationOnly(), bubble_parameters,
-      std::move(callback));
+  return ShowSigninInterceptionBubbleInternal(browser, bubble_parameters,
+                                              std::move(callback));
 }
 
 std::unique_ptr<ScopedWebSigninInterceptionBubbleHandle>
@@ -297,9 +294,8 @@ DiceWebSigninInterceptorDelegate::ShowOidcInterceptionDialog(
   BrowserWindowInterface* browser =
       GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(web_contents);
   return std::make_unique<OidcEnterpriseSigninInterceptionHandle>(
-      browser ? browser->GetBrowserForMigrationOnly() : nullptr,
-      bubble_parameters, std::move(callback), std::move(dialog_closed_closure),
-      std::move(retry_callback));
+      browser, bubble_parameters, std::move(callback),
+      std::move(dialog_closed_closure), std::move(retry_callback));
 }
 
 void DiceWebSigninInterceptorDelegate::ShowFirstRunExperienceInNewProfile(
@@ -321,9 +317,9 @@ void DiceWebSigninInterceptorDelegate::ShowSigninError(
     return;
   }
 
-  Browser* browser = tabs::TabInterface::GetFromContents(web_contents)
-                         ->GetBrowserWindowInterface()
-                         ->GetBrowserForMigrationOnly();
+  BrowserWindowInterface* browser =
+      tabs::TabInterface::GetFromContents(web_contents)
+          ->GetBrowserWindowInterface();
   if (!browser) {
     return;
   }

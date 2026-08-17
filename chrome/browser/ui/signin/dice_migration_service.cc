@@ -143,9 +143,8 @@ bool DiceMigrationService::ForceMigrateUserIfEligible() {
       // toast.
       // This object deletes itself when done.
       new profiles::BrowserAddedForProfileObserver(
-          profile, base::BindOnce([](Browser* b) {
-            MaybeShowToast(b);
-          }));
+          profile,
+          base::BindOnce([](BrowserWindowInterface* b) { MaybeShowToast(b); }));
     }
   };
   CHECK(!toast_trigger_timer_.IsRunning());

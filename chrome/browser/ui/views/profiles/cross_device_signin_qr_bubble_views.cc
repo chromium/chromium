@@ -10,7 +10,6 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/signin/cross_device_signin_qr_bubble.h"
@@ -157,8 +156,7 @@ class CrossDeviceSigninQrWebView : public views::WebView,
 std::unique_ptr<views::BubbleDialogDelegate> CreateCrossDeviceSigninQrBubble(
     BrowserWindowInterface* browser,
     base::OnceClosure closing_callback) {
-  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(
-      browser->GetBrowserForMigrationOnly());
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
 
   views::View* anchor_view = nullptr;
   if (browser_view && browser_view->toolbar()) {

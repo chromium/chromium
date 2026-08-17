@@ -278,9 +278,9 @@ class SearchEngineChoiceDialogBrowserTest : public InProcessBrowserTest {
   // Unlike `CreateGuestBrowser()` which opens a blank tab, this opens a guest
   // profile and shows the Guest NTP.
   Browser* CreateGuestBrowserAndLoadNTP() {
-    base::test::TestFuture<Browser*> browser_future;
+    base::test::TestFuture<BrowserWindowInterface*> browser_future;
     profiles::SwitchToGuestProfile(browser_future.GetCallback());
-    Browser* guest_browser = browser_future.Get();
+    Browser* guest_browser = browser_future.Get()->GetBrowserForMigrationOnly();
     CHECK(guest_browser);
     EXPECT_TRUE(guest_browser->GetProfile()->IsGuestSession());
     content::WebContents* ntp_contents =

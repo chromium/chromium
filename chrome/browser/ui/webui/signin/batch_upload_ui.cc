@@ -22,6 +22,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/base/data_type.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/webui/webui_util.h"
 
@@ -54,7 +55,7 @@ void CloseBrowserTabOnCompletionSample(
     BrowserWindowInterface* browser,
     const std::map<syncer::DataType,
                    std::vector<syncer::LocalDataItemModel::DataId>>& items) {
-  browser->GetTabStripModel()->GetActiveTab()->Close();
+  browser->GetActiveTabInterface()->Close();
 }
 
 }  // namespace

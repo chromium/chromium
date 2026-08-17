@@ -186,7 +186,7 @@ class SidePanelCoordinatorTest : public InProcessBrowserTest {
     EXPECT_EQ(entry.value(), id);
   }
 
-  SidePanel* GetSidePanel(Browser* browser = nullptr) {
+  SidePanel* GetSidePanel(BrowserWindowInterface* browser = nullptr) {
     if (!browser) {
       browser = this->browser();
     }
@@ -2193,10 +2193,11 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
 
   // Make a guest window. This process can be either synchronous or
   // asynchronous, so use RunUntil.
-  Browser* guest_browser = nullptr;
-  profiles::SwitchToGuestProfile(base::BindOnce(
-      [](Browser** output, Browser* browser) { *output = browser; },
-      &guest_browser));
+  BrowserWindowInterface* guest_browser = nullptr;
+  profiles::SwitchToGuestProfile(
+      base::BindOnce([](BrowserWindowInterface** output,
+                        BrowserWindowInterface* browser) { *output = browser; },
+                     &guest_browser));
   ASSERT_TRUE(base::test::RunUntil([&]() { return guest_browser != nullptr; }));
   ASSERT_TRUE(guest_browser);
   ASSERT_TRUE(guest_browser->GetProfile()->IsGuestSession());

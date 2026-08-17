@@ -326,7 +326,7 @@ IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest, GuestAppMenuLacksBookmarks) {
 IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest, OpenBrowserWindowForProfile) {
   Profile* profile = browser()->GetProfile();
   size_t num_browsers = GlobalBrowserCollection::GetInstance()->GetSize();
-  base::test::TestFuture<Browser*> future;
+  base::test::TestFuture<BrowserWindowInterface*> future;
   profiles::OpenBrowserWindowForProfile(future.GetCallback(), true, false,
                                         false, profile);
   ASSERT_TRUE(future.Get());
@@ -342,7 +342,7 @@ IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest,
                        OpenTwoBrowserWindowsForProfile) {
   Profile* profile = browser()->GetProfile();
   size_t num_browsers = GlobalBrowserCollection::GetInstance()->GetSize();
-  base::test::TestFuture<Browser*> future;
+  base::test::TestFuture<BrowserWindowInterface*> future;
   profiles::OpenBrowserWindowForProfile(future.GetCallback(), true, false,
                                         false, profile);
   CreateBrowser(profile);
@@ -374,8 +374,9 @@ IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest,
   base::RunLoop run_loop;
   ProfilePicker::AddOnProfilePickerOpenedCallbackForTesting(
       run_loop.QuitClosure());
-  profiles::OpenBrowserWindowForProfile(base::OnceCallback<void(Browser*)>(),
-                                        true, false, false, profile);
+  profiles::OpenBrowserWindowForProfile(
+      base::OnceCallback<void(BrowserWindowInterface*)>(), true, false, false,
+      profile);
   run_loop.Run();
   EXPECT_EQ(num_browsers, GlobalBrowserCollection::GetInstance()->GetSize());
   EXPECT_TRUE(ProfilePicker::IsOpen());

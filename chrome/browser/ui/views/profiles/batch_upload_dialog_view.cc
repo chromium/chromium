@@ -9,13 +9,14 @@
 #include "base/strings/strcat.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/profiles/batch_upload_ui_delegate.h"
 #include "chrome/browser/ui/webui/signin/batch_upload_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/tabs/public/tab_interface.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/native_ui_types.h"
@@ -112,9 +113,8 @@ BatchUploadDialogView* BatchUploadDialogView::CreateBatchUploadDialogView(
                                 entry_point, std::move(complete_callback)));
   BatchUploadDialogView* dialog_view_ptr = dialog_view.get();
 
-  gfx::NativeWindow window = browser.tab_strip_model()
-                                 ->GetActiveWebContents()
-                                 ->GetTopLevelNativeWindow();
+  gfx::NativeWindow window =
+      browser.GetActiveTabInterface()->GetContents()->GetTopLevelNativeWindow();
 
   constrained_window::CreateBrowserModalDialogViews(std::move(dialog_view),
                                                     window);

@@ -42,9 +42,10 @@
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/subscription_eligibility/subscription_eligibility_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/sync/sync_ui_util.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/browser/ui/managed_ui.h"
@@ -56,6 +57,7 @@
 #include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/sync/sync_passphrase_dialog.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
+#include "chrome/browser/ui/views/color_provider_browser_helper.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
 #include "chrome/browser/ui/views/profiles/avatar_badge_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
@@ -156,11 +158,11 @@ bool ProfileMenuView::close_on_deactivate_for_testing_ = true;
 
 ProfileMenuView::ProfileMenuView(
     views::BubbleAnchor anchor_element,
-    Browser* browser,
+    BrowserWindowInterface* browser,
     signin::ProfileMenuAvatarButtonPromoInfo promo_info,
     bool from_avatar_promo)
     : ProfileMenuViewBase(anchor_element, browser),
-      browser_(raw_ref<Browser>::from_ptr(browser)),
+      browser_(raw_ref<BrowserWindowInterface>::from_ptr(browser)),
       promo_info_(promo_info),
       from_avatar_promo_(from_avatar_promo) {
   set_close_on_deactivate(close_on_deactivate_for_testing_);
@@ -376,9 +378,8 @@ void ProfileMenuView::OnSyncErrorButtonClicked(
           trusted_vault::TrustedVaultUserActionTriggerForUMA::kProfileMenu);
       break;
     case syncer::SyncService::UserActionableError::kNeedsPassphrase: {
-      Browser* browser_ptr = &browser();
       GetWidget()->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
-      ShowSyncPassphraseDialogAndDecryptData(*browser_ptr);
+      ShowSyncPassphraseDialogAndDecryptData(browser());
       break;
     }
     case syncer::SyncService::UserActionableError::kNeedsSettingsConfirmation:
@@ -448,7 +449,7 @@ void ProfileMenuView::OnOtherProfileSelected(
     // associated non-webapp browser.
     profiles::SwitchToProfile(
         profile_path, /*always_create=*/false,
-        base::BindOnce([](Browser* browser) {
+        base::BindOnce([](BrowserWindowInterface* browser) {
           if (!browser) {
             return;
           }
@@ -823,7 +824,8 @@ ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
             /*size_for_placeholder_avatar=*/kIdentityImageSizeForButton,
             /*use_high_res_file=*/true,
             GetPlaceholderAvatarIconParamsVisibleAgainstColor(
-                BrowserWindow::FromBrowser(&browser())
+                ColorProviderBrowserHelper::From(&browser())
+                    ->color_provider_source()
                     ->GetColorProvider()
                     ->GetColor(ui::kColorButtonBackgroundProminent)));
       } else {
@@ -1276,7 +1278,7 @@ void ProfileMenuView::OnCrossDeviceSigninButtonClicked() {
   if (!perform_menu_actions()) {
     return;
   }
-  Browser* browser_ptr = &browser();
+  BrowserWindowInterface* browser_ptr = &browser();
   GetWidget()->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
   OpenSigninToPhoneQrCodeBubble(browser_ptr,
                                 CrossDeviceSigninPromoEntryPoint::kProfileMenu,
@@ -1331,7 +1333,8 @@ void ProfileMenuView::BuildOtherProfilesSection(
             kOtherProfileImageSize,
             /*use_high_res_file=*/true,
             GetPlaceholderAvatarIconParamsVisibleAgainstColor(
-                BrowserWindow::FromBrowser(&browser())
+                ColorProviderBrowserHelper::From(&browser())
+                    ->color_provider_source()
                     ->GetColorProvider()
                     ->GetColor(ui::kColorMenuBackground))));
     std::u16string name = profile_entry->GetName();
@@ -1342,7 +1345,9 @@ void ProfileMenuView::BuildOtherProfilesSection(
       avatar_image =
           ui::ImageModel::FromImageSkia(AddLinearGradientRingToAvatar(
               avatar_image,
-              *BrowserWindow::FromBrowser(&browser())->GetColorProvider(),
+              *ColorProviderBrowserHelper::From(&browser())
+                   ->color_provider_source()
+                   ->GetColorProvider(),
               kOtherProfileImageSize));
       if (!name.empty()) {
         extra_accessible_text =

@@ -675,7 +675,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // A new browser should open on the Original Profile with the bookmarks
   // manager tab opened.
-  base::test::TestFuture<Browser*> browser_waiter;
+  base::test::TestFuture<BrowserWindowInterface*> browser_waiter;
   // Deletes itself.
   new profiles::BrowserAddedForProfileObserver(original_profile,
                                                browser_waiter.GetCallback());
@@ -688,7 +688,7 @@ IN_PROC_BROWSER_TEST_F(
                                        /*index=*/1,
                                        closed_waiter.GetCallback());
 
-  Browser* new_browser = browser_waiter.Get();
+  BrowserWindowInterface* new_browser = browser_waiter.Get();
   ASSERT_TRUE(new_browser);
   EXPECT_EQ(new_browser->GetProfile(), original_profile);
   bookmarks_manager_observer.WaitForNavigationFinished();
