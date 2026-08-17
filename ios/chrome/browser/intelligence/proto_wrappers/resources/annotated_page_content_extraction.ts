@@ -498,6 +498,7 @@ const ATTR_KEY_NAME = 'name';
 // Attribute and style values.
 const ATTR_VALUE_TRUE = 'true';
 const ATTR_VALUE_FALSE = 'false';
+const ATTR_VALUE_CURSOR_AUTO = 'auto';
 const ATTR_VALUE_CURSOR_NOT_ALLOWED = 'not-allowed';
 const ATTR_VALUE_CURSOR_POINTER = 'pointer';
 const ATTR_VALUE_ROLE_BUTTON = 'button';
@@ -1490,6 +1491,27 @@ function getScrollerInfo(
 }
 
 /**
+ * Checks if the element uses a pointer cursor, either via explicit CSS styling
+ * or default desktop User-Agent styling (e.g. <a> and <area> links with href).
+ *
+ * @param element The DOM element to check.
+ * @param tagName The standard tag name of the element.
+ * @param style The computed style of the element.
+ * @return True if the element uses a pointer cursor.
+ */
+function hasPointerCursor(
+    element: Element, tagName: string, style?: CSSStyleDeclaration): boolean {
+  if (style?.cursor === ATTR_VALUE_CURSOR_POINTER) {
+    return true;
+  }
+  const isDefaultOrUnsetCursor =
+      !style?.cursor || style.cursor === ATTR_VALUE_CURSOR_AUTO;
+  const isAnchorOrArea = tagName === TAG_A || tagName === TAG_AREA;
+  return isDefaultOrUnsetCursor && isAnchorOrArea &&
+      safeHasAttribute(element, ATTR_KEY_HREF);
+}
+
+/**
  * Computes the interaction info for the element.
  *
  * @param element The element to process.
@@ -1586,7 +1608,7 @@ function getNodeInteractionInfo(
   }
 
   // Pointer Cursor.
-  if (style?.cursor === ATTR_VALUE_CURSOR_POINTER) {
+  if (hasPointerCursor(element, tagName, style)) {
     clickabilityReasons.push(PageContentClickabilityReason.CURSOR_POINTER);
   }
 

@@ -533,6 +533,66 @@ TEST_P(PageContextExtractorJavaScriptFeatureTest,
   EXPECT_TRUE(interaction_info->FindList("clickabilityReasons"));
 }
 
+// Tests that anchor links with an href attribute receive clickability reasons
+// (CURSOR_POINTER), while anchors without href or with explicit non-pointer
+// cursors do not.
+TEST_P(PageContextExtractorJavaScriptFeatureTest,
+       ExtractPageContext_RichExtraction_AnchorClickabilityReasons) {
+  web::test::LoadHtml(@"<html><body>"
+                       "<a href=\"https://example.com\">Clickable Link</a>"
+                       "<a name=\"target\">Anchor Without Href</a>"
+                       "<a href=\"https://example.com\" style=\"cursor: "
+                       "default\">Default Cursor Link</a>"
+                       "</body></html>",
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  std::optional<base::Value> result_value = RunExtraction(
+      web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame(),
+      /*include_cross_origin_frame_content=*/false,
+      /*use_rich_extraction=*/true,
+      /*use_rich_extraction_with_actionable=*/true,
+      /*extract_paid_content=*/false,
+      /*attempt_paid_content_json_fixing=*/false, "nonce", base::Seconds(1));
+
+  ASSERT_TRUE(result_value);
+
+  const base::DictValue& dict = result_value->GetDict();
+  const base::DictValue* root_node = dict.FindDict("rootNode");
+  ASSERT_TRUE(root_node);
+  const base::ListValue* children = root_node->FindList("childrenNodes");
+  ASSERT_TRUE(children);
+  ASSERT_GE(children->size(), 3u);
+
+  auto has_cursor_pointer_clickability = [](const base::DictValue& node) {
+    const base::DictValue* interaction_info =
+        node.FindDictByDottedPath("contentAttributes.nodeInteractionInfo");
+    if (!interaction_info) {
+      return false;
+    }
+    const base::ListValue* click_reasons =
+        interaction_info->FindList("clickabilityReasons");
+    if (!click_reasons) {
+      return false;
+    }
+    for (const auto& reason : *click_reasons) {
+      if (static_cast<int>(reason.GetDouble()) ==
+          optimization_guide::proto::CLICKABILITY_REASON_CURSOR_POINTER) {
+        return true;
+      }
+    }
+    return false;
+  };
+
+  // 1. <a href="..."> has CURSOR_POINTER.
+  EXPECT_TRUE(has_cursor_pointer_clickability((*children)[0].GetDict()));
+
+  // 2. <a name="..."> without href does not have CURSOR_POINTER.
+  EXPECT_FALSE(has_cursor_pointer_clickability((*children)[1].GetDict()));
+
+  // 3. <a href="..." style="cursor: default"> does not have CURSOR_POINTER.
+  EXPECT_FALSE(has_cursor_pointer_clickability((*children)[2].GetDict()));
+}
+
 // Test the extraction of the text size.
 TEST_P(PageContextExtractorJavaScriptFeatureTest,
        ExtractPageContext_RichExtraction_Text_Size) {
