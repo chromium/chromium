@@ -303,6 +303,26 @@ IN_PROC_BROWSER_TEST_P(PaymentsChurnedUsersBubbleViewsBrowserTest,
   bubble_view->AcceptDialog();
 
   EXPECT_TRUE(accept_future.Wait());
+
+  // Wait for the confirmation bubble to be shown.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    AutofillBubbleBase* current_bubble = GetAutofillBubbleView();
+    if (!current_bubble || current_bubble == bubble_view) {
+      return false;
+    }
+    return true;
+  }));
+
+  // Icon should be visible while confirmation bubble is shown.
+  EXPECT_TRUE(IsIconVisible());
+
+  // Close the confirmation bubble.
+  AutofillBubbleBase* current_bubble = GetAutofillBubbleView();
+  auto* location_bar_bubble =
+      static_cast<AutofillLocationBarBubble*>(current_bubble);
+  location_bar_bubble->GetWidget()->CloseWithReason(
+      views::Widget::ClosedReason::kCloseButtonClicked);
+
   EXPECT_TRUE(base::test::RunUntil([&]() { return !IsIconVisible(); }));
 }
 
@@ -344,6 +364,44 @@ IN_PROC_BROWSER_TEST_P(PaymentsChurnedUsersBubbleViewsBrowserTest,
       views::Widget::ClosedReason::kCloseButtonClicked);
 
   EXPECT_TRUE(closed_future.Wait());
+  EXPECT_FALSE(IsIconVisible());
+}
+
+IN_PROC_BROWSER_TEST_P(PaymentsChurnedUsersBubbleViewsBrowserTest,
+                       NavigatingAwayHidesIcon) {
+  ShowBubble();
+  EXPECT_TRUE(IsIconVisible());
+
+  // Navigate to a new page.
+  EXPECT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("chrome://version/")));
+
+  EXPECT_FALSE(IsIconVisible());
+}
+
+IN_PROC_BROWSER_TEST_P(PaymentsChurnedUsersBubbleViewsBrowserTest,
+                       NavigatingAwayHidesIconWhileConfirmationBubbleIsShown) {
+  ShowBubble();
+
+  PaymentsChurnedUsersBubbleView* bubble_view = GetBubbleView();
+  ASSERT_TRUE(bubble_view);
+  bubble_view->AcceptDialog();
+
+  // Wait for the confirmation bubble to be shown.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    AutofillBubbleBase* current_bubble = GetAutofillBubbleView();
+    if (!current_bubble || current_bubble == bubble_view) {
+      return false;
+    }
+    return true;
+  }));
+
+  EXPECT_TRUE(IsIconVisible());
+
+  // Navigate to a new page.
+  EXPECT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("chrome://version/")));
+
   EXPECT_FALSE(IsIconVisible());
 }
 

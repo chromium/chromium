@@ -76,6 +76,9 @@ class PaymentsChurnedUsersBubbleController
   BubbleType GetBubbleType() const override;
   base::WeakPtr<BubbleControllerBase> GetBubbleControllerBaseWeakPtr() override;
 
+  // content::WebContentsObserver:
+  void PrimaryPageChanged(content::Page& page) override;
+
  protected:
   // AutofillBubbleControllerBase:
   void DoShowBubble() override;
@@ -86,15 +89,18 @@ class PaymentsChurnedUsersBubbleController
 #endif  // !BUILDFLAG(IS_ANDROID)
 
  private:
+  void OnConfirmationBubbleClosed(PaymentsUiClosedReason closed_reason);
+
   ui::ScopedUnownedUserData<PaymentsChurnedUsersBubbleController>
       scoped_unowned_user_data_;
 
   bool is_reshow_ = false;
   AccountInfo account_info_;
 
-  // Set to false if a user accepts, cancels, or closes the bubble. This ensures
-  // the page action icon goes away so that the user isn't stuck with the icon
-  // and re-showing the bubble in the omnibox.
+  // Set to false if a user cancels or closes the bubble churned users bubble,
+  // or if a user interacts with the confirmation bubble. This ensures the page
+  // action icon goes away so that the user isn't stuck with the icon and
+  // re-showing the bubble in the omnibox.
   bool should_show_icon_ = true;
 
   // Denotes whether the user has accepted the churned users bubble. Since
