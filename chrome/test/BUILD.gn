@@ -2015,6 +2015,7 @@ if (!is_android) {
       "//chrome/browser/first_run:browser_tests",
       "//chrome/browser/gcm",
       "//chrome/browser/geic",
+      "//chrome/browser/geic:browser_tests",
       "//chrome/browser/geic:ui",
       "//chrome/browser/geolocation:browser_tests",
       "//chrome/browser/glic",

@@ -3,15 +3,32 @@
 # found in the LICENSE file.
 
 import("//chrome/common/features.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
+
+mojom("mojo_bindings") {
+  sources = [ "geic.mojom" ]
+
+  public_deps = [ "//chrome/browser/pwc:features" ]
+}
 
 source_set("geic") {
   sources = [
     "geic_enabling.cc",
     "geic_enabling.h",
+    "geic_host.cc",
+    "geic_host.h",
+  ]
+  public_deps = [
+    ":mojo_bindings",
+    "//content/public/browser",
+    "//mojo/public/cpp/bindings",
+    "//ui/base/unowned_user_data",
   ]
   deps = [
     "//base",
+    "//chrome/browser:bad_message",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/pwc",
     "//chrome/common:channel_info",
     "//chrome/common:chrome_features",
     "//chrome/common:non_code_constants",
@@ -45,5 +62,34 @@ if (!is_android) {
       "//ui/gfx",
       "//ui/views",
     ]
+  }
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = []
+
+  deps = [
+    ":geic",
+    ":mojo_bindings",
+    "//base/test:test_support",
+    "//chrome/browser/pwc",
+    "//chrome/browser/pwc:features",
+    "//chrome/test:test_support",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//mojo/public/cpp/bindings",
+    "//net:test_support",
+    "//testing/gtest",
+    "//url",
+  ]
+
+  # The test uses desktop-only UI (Browser, InProcessBrowserTest).
+  if (!is_android) {
+    sources += [ "geic_host_browsertest.cc" ]
+    deps += [ "//chrome/browser/ui" ]
   }
 }

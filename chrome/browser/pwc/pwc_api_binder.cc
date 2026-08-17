@@ -29,9 +29,8 @@ void PwcApiBinder::Bind(
   receivers_.Add(this, std::move(receiver));
 }
 
-void BindPrivilegedBridge(
-    content::RenderFrameHost* render_frame_host,
-    mojo::PendingReceiver<mojom::PrivilegedBridge> receiver) {
+PrivilegedWebContents* EnforceCapabilityGate(
+    content::RenderFrameHost* render_frame_host) {
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(render_frame_host);
   PrivilegedWebContents* privileged =
@@ -57,7 +56,7 @@ void BindPrivilegedBridge(
   if (!structurally_qualified) {
     bad_message::ReceivedBadMessage(render_frame_host->GetProcess(),
                                     bad_message::PWC_BRIDGE_UNQUALIFIED_FRAME);
-    return;
+    return nullptr;
   }
 
   // Tier 2 -- conditions a well-behaved renderer cannot control or observe
@@ -72,7 +71,7 @@ void BindPrivilegedBridge(
   // Checking IsInPrimaryMainFrame() rather than IsOutermostMainFrame() also
   // keeps the gate correct if the PWC is ever embedded.
   if (!render_frame_host->IsInPrimaryMainFrame()) {
-    return;
+    return nullptr;
   }
 
   // The document must actually run in an origin-keyed process. Navigation in
@@ -83,10 +82,21 @@ void BindPrivilegedBridge(
   // site-keyed privileged process, a same-site cross-origin subframe could
   // share the qualifying frame's process, so the process must not hold
   // capabilities. The renderer has no say in whether isolation was applied,
-  // so the page still works; the bridge is simply unavailable.
+  // so the page still works; the capability surface is simply unavailable.
   if (!render_frame_host->GetSiteInstance()
            ->GetSecurityPrincipal()
            .IsOriginKeyed()) {
+    return nullptr;
+  }
+
+  return privileged;
+}
+
+void BindPrivilegedBridge(
+    content::RenderFrameHost* render_frame_host,
+    mojo::PendingReceiver<mojom::PrivilegedBridge> receiver) {
+  PrivilegedWebContents* privileged = EnforceCapabilityGate(render_frame_host);
+  if (!privileged) {
     return;
   }
 

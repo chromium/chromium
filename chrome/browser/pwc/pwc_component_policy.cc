@@ -21,6 +21,7 @@ PwcComponentPolicy::NewWindowPolicy NewWindowPolicyForComponent(
     case PrivilegedComponent::kTestComponent:
       return PwcComponentPolicy::NewWindowPolicy::kDrop;
     case PrivilegedComponent::kGlic:
+    case PrivilegedComponent::kGeic:
       return PwcComponentPolicy::NewWindowPolicy::kOpenAsUnrelatedTab;
   }
   NOTREACHED();
@@ -74,6 +75,12 @@ PwcComponentPolicy::ContentEnforcementForComponent(
       enforcement.disallow_shared_workers = false;
       return enforcement;
     case PrivilegedComponent::kGlic:
+      enforcement.disallow_service_worker_control = true;
+      enforcement.disallow_shared_workers = true;
+      return enforcement;
+    case PrivilegedComponent::kGeic:
+      // Same conservative defaults as kGlic; the GEIC team can adjust these in
+      // this security-reviewed file as the component's needs are established.
       enforcement.disallow_service_worker_control = true;
       enforcement.disallow_shared_workers = true;
       return enforcement;

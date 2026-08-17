@@ -12,6 +12,7 @@
 #include "content/public/browser/preloading_trigger_type.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "ui/base/unowned_user_data/unowned_user_data_host.h"
 
 namespace content {
 class BrowserContext;
@@ -67,6 +68,18 @@ class PrivilegedWebContents : public content::WebContentsDelegate,
   // PrivilegedWebContents.
   PwcApiBinder& bridge() { return *bridge_; }
 
+  // Registry for the serving component's PWC-scoped browser-side state. The
+  // component (e.g. //chrome/browser/geic) creates and owns its own helper --
+  // typically alongside the PrivilegedWebContents it creates -- and registers
+  // it here via ScopedUnownedUserData; consumers with the PrivilegedWebContents
+  // retrieve it by type (e.g. GeicHost::Get(pwc.unowned_user_data_host())).
+  // PrivilegedWebContents does not own or depend on the component's helper, so
+  // there is no dependency cycle. The host must outlive everything registered
+  // in it, which holds because the component scopes its helper to this PWC.
+  ui::UnownedUserDataHost& unowned_user_data_host() {
+    return unowned_user_data_host_;
+  }
+
   // content::WebContentsDelegate:
   // Privileged content never prerenders: a prerendered page is activated into
   // the primary main frame without running navigation throttles, which would
@@ -103,6 +116,7 @@ class PrivilegedWebContents : public content::WebContentsDelegate,
   const PwcComponentPolicy policy_;
   std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<PwcApiBinder> bridge_;
+  ui::UnownedUserDataHost unowned_user_data_host_;
 };
 
 }  // namespace pwc

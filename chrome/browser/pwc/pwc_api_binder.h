@@ -15,6 +15,32 @@ class RenderFrameHost;
 
 namespace pwc {
 
+class PrivilegedWebContents;
+
+// The single shared security gate for every privileged capability binder --
+// the bridge itself and per-component APIs such as //chrome/browser/geic.
+// Returns the PrivilegedWebContents whose privileged capability surface
+// `render_frame_host` is entitled to, or null if the request must be
+// rejected. Enforcement is folded in here, in two tiers, so a binder cannot
+// apply the gate partially:
+//
+// - A violation of a static property of the requesting document -- not an
+//   outermost main frame of a PrivilegedWebContents, or not committed over
+//   HTTPS to a capability origin -- could only come from a compromised
+//   renderer; this reports a bad message (terminating the renderer) and
+//   returns null.
+// - A condition the renderer cannot control or observe race-free -- the
+//   document no longer being the primary main frame (pending deletion), or
+//   its process lacking origin isolation -- also yields null, but with no
+//   kill: the receiver is simply dropped.
+//
+// Either way, on null the caller just returns, dropping the receiver. On
+// non-null the caller may bind, after any component-specific checks of its
+// own (a component mismatch is again a compromised renderer; see
+// BindGeicApi).
+PrivilegedWebContents* EnforceCapabilityGate(
+    content::RenderFrameHost* render_frame_host);
+
 // Browser-side host for the privileged capability bridge
 // (pwc::mojom::PrivilegedBridge). Owned by its PrivilegedWebContents and lives
 // for the WebContents' lifetime.

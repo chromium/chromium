@@ -20,6 +20,8 @@ enum class PrivilegedComponent {
   kTestComponent,
   // The glic panel (gemini.google.com).
   kGlic,
+  // GEIC (see //chrome/browser/geic).
+  kGeic,
 };
 
 // Supplies a component's origin allowlists. Implemented by the blessed

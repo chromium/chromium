@@ -2,3 +2,8 @@ alexwchen@google.com
 austinzzr@google.com
 esalma@google.com
 ftirelo@google.com
+
+# Mojom defines the IPC surface exposed to privileged content and is
+# security-sensitive: adding an interface or method requires security review.
+per-file *.mojom=set noparent
+per-file *.mojom=file://ipc/SECURITY_OWNERS

@@ -15,6 +15,7 @@
 #include "chrome/browser/actor/actor_script_tool_receiver.h"
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/dom_distiller/dom_distiller_service_factory.h"
+#include "chrome/browser/geic/geic_host.h"
 #include "chrome/browser/glic/host/glic_page_handler.h"
 #include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/glic/public/features.h"
@@ -455,7 +456,14 @@ void PopulateChromeFrameBinders(
     mojo::BinderMapWithContext<content::RenderFrameHost*>* map,
     content::RenderFrameHost* render_frame_host) {
   map->Add<glic::mojom::WebClientHandler>(&glic::BindGlicWebClientHandler);
-  map->Add<pwc::mojom::PrivilegedBridge>(&pwc::BindPrivilegedBridge);
+  // Defense in depth: privileged capability interfaces are not even registered
+  // for a frame outside a privileged process, so a non-PWC frame cannot
+  // request them at all. The bind-time gate (pwc::EnforceCapabilityGate)
+  // remains the security boundary for frames that do get the binders.
+  if (render_frame_host->GetProcess()->IsPrivileged()) {
+    map->Add<pwc::mojom::PrivilegedBridge>(&pwc::BindPrivilegedBridge);
+    map->Add<geic::mojom::GeicApi>(&geic::BindGeicApi);
+  }
   map->Add<image_annotation::mojom::Annotator>(&BindImageAnnotator);
 
   map->Add<blink::mojom::ScriptToolHost>(

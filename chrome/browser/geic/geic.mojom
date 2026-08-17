@@ -1,0 +1,20 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module geic.mojom;
+
+import "chrome/browser/pwc/pwc_features.mojom";
+
+// The GEIC capability surface, exposed to the qualifying main frame of a GEIC
+// PrivilegedWebContents (see //chrome/browser/pwc). The browser-side binder
+// (//chrome/browser/geic) hands this interface out only to a frame that passes
+// the shared privileged-frame gate AND whose blessed component is GEIC, so a
+// glic (or any other component's) frame never receives it.
+//
+// The interface is intentionally empty scaffolding. The GEIC team owns this
+// file and adds the real capability surface in follow-up CLs, each
+// implemented end to end and carrying IPC security review (see the *.mojom
+// rule in this directory's OWNERS).
+[RuntimeFeature=pwc.mojom.features.kPrivilegedWebContents]
+interface GeicApi {};
