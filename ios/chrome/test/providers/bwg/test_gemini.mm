@@ -49,7 +49,13 @@ id<BWGGatewayProtocol> CreateGeminiGateway() {
 void CheckGeminiEligibility(AuthenticationService* auth_service,
                             GeminiEligibilityCallback completion) {}
 
-void ResetGemini() {}
+static GeminiViewState g_current_view_state = GeminiViewState::kUnknown;
+static GeminiViewMode g_current_mode = GeminiViewMode::kUnknown;
+
+void ResetGemini() {
+  g_current_mode = GeminiViewMode::kUnknown;
+  g_current_view_state = GeminiViewState::kUnknown;
+}
 
 void UpdatePageAttachmentState(
     GeminiPageContextAttachmentState gemini_attachment_state) {}
@@ -86,15 +92,19 @@ void UpdateOverlayOffsetWithOpacity(CGFloat offset, CGFloat opacity) {}
 
 void UpdateDetentHeights(CGFloat collapsed_height, CGFloat extended_height) {}
 
-void UpdateGeminiViewState(GeminiViewState view_state) {}
+void UpdateGeminiViewState(GeminiViewState view_state) {
+  g_current_view_state = view_state;
+}
 
-void UpdateGeminiViewState(GeminiViewState view_state, bool animated) {}
+void UpdateGeminiViewState(GeminiViewState view_state, bool animated) {
+  g_current_view_state = view_state;
+}
 
 void UpdatePromptAction(gemini::EntryPoint entry_point,
                         NSString* prepopulated_prompt) {}
 
 GeminiViewState GetCurrentGeminiViewState() {
-  return GeminiViewState::kUnknown;
+  return g_current_view_state;
 }
 
 void RequestUIChange(GeminiUIElementType ui_element_type) {}
@@ -109,10 +119,17 @@ GeminiPageContextAttachmentState GetCurrentPageContextAttachmentState() {
   return GeminiPageContextAttachmentState::kUnknown;
 }
 
-static GeminiViewMode g_current_mode = GeminiViewMode::kUnknown;
-
 void SwitchToMode(GeminiViewMode mode, bool animated) {
   g_current_mode = mode;
+}
+
+void SwitchToMode(GeminiViewMode mode,
+                  GeminiViewState target_state,
+                  bool animated) {
+  g_current_mode = mode;
+  if (target_state != GeminiViewState::kUnknown) {
+    g_current_view_state = target_state;
+  }
 }
 
 GeminiViewMode GetCurrentMode() {

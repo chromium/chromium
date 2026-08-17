@@ -89,6 +89,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/custom_leading_view_type.h"
 #import "ios/chrome/browser/shared/public/commands/fullscreen_commands.h"
 #import "ios/chrome/browser/shared/public/commands/gemini_commands.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
@@ -675,8 +676,8 @@ struct AIHubBadgeActiveWindowsData : public base::SupportsUserData::Data {
   [self.viewController focusSteadyViewForVoiceOver];
 }
 
-- (void)setCustomLeadingViewVisible:(BOOL)visible animated:(BOOL)animated {
-  [self.viewController setCustomLeadingViewVisible:visible animated:animated];
+- (void)setCustomLeadingViewType:(CustomLeadingViewType)type {
+  [self.viewController setCustomLeadingViewType:type];
 }
 
 - (void)cancelOmniboxEdit {
@@ -868,6 +869,11 @@ struct AIHubBadgeActiveWindowsData : public base::SupportsUserData::Data {
 - (void)markDisplayedBadgeAsUnread:(BOOL)read {
   CHECK(IsChromeNextIaEnabled());
   [self.locationBarBadgeCoordinator markDisplayedBadgeAsUnread:read];
+}
+
+- (void)setBadgeCustomLeadingViewType:(CustomLeadingViewType)type {
+  CHECK(IsChromeNextIaEnabled());
+  [self.viewController setCustomLeadingViewType:type];
 }
 
 - (void)togglePageActionMenuEntryPointHighlight:(BOOL)highlight {

@@ -29,6 +29,7 @@
 #import "ios/chrome/browser/shared/public/commands/contextual_panel_entrypoint_commands.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_panel_entrypoint_iph_commands.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_sheet_commands.h"
+#import "ios/chrome/browser/shared/public/commands/custom_leading_view_type.h"
 #import "ios/chrome/browser/shared/public/commands/fullscreen_commands.h"
 #import "ios/chrome/browser/shared/public/commands/gemini_commands.h"
 #import "ios/chrome/browser/shared/public/commands/location_bar_badge_commands.h"
@@ -213,6 +214,11 @@
 - (void)markDisplayedBadgeAsUnread:(BOOL)read {
   CHECK(IsChromeNextIaEnabled());
   [_mediator markDisplayedBadgeAsUnread:read];
+}
+
+- (void)setBadgeCustomLeadingViewType:(CustomLeadingViewType)type {
+  CHECK(IsChromeNextIaEnabled());
+  // No-op.
 }
 
 #pragma mark - Private

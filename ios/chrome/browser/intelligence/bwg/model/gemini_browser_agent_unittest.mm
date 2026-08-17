@@ -47,6 +47,8 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/fullscreen_commands.h"
 #import "ios/chrome/browser/shared/public/commands/gemini_commands.h"
+#import "ios/chrome/browser/shared/public/commands/location_bar_badge_commands.h"
+#import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -125,6 +127,15 @@ class GeminiBrowserAgentTest : public PlatformTest {
     [browser_->GetCommandDispatcher()
         startDispatchingToTarget:mock_gemini_handler_
                      forProtocol:@protocol(GeminiCommands)];
+    mock_omnibox_handler_ = OCMProtocolMock(@protocol(OmniboxCommands));
+    [browser_->GetCommandDispatcher()
+        startDispatchingToTarget:mock_omnibox_handler_
+                     forProtocol:@protocol(OmniboxCommands)];
+    mock_location_bar_badge_handler_ =
+        OCMProtocolMock(@protocol(LocationBarBadgeCommands));
+    [browser_->GetCommandDispatcher()
+        startDispatchingToTarget:mock_location_bar_badge_handler_
+                     forProtocol:@protocol(LocationBarBadgeCommands)];
 
     std::unique_ptr<web::FakeWebState> web_state =
         std::make_unique<web::FakeWebState>();
@@ -185,8 +196,10 @@ class GeminiBrowserAgentTest : public PlatformTest {
     gemini_browser_agent_ = nullptr;
     gemini_tab_helper_ = nullptr;
     optimization_guide_service_ = nullptr;
-    mock_settings_handler_ = nullptr;
-    mock_gemini_handler_ = nullptr;
+    mock_settings_handler_ = nil;
+    mock_gemini_handler_ = nil;
+    mock_omnibox_handler_ = nil;
+    mock_location_bar_badge_handler_ = nil;
     fake_snapshot_delegate_ = nullptr;
     browser_.reset();
     scene_state_ = nil;
@@ -311,6 +324,8 @@ class GeminiBrowserAgentTest : public PlatformTest {
   raw_ptr<web::FakeWebFrame> fake_main_frame_;
   id mock_settings_handler_;
   id mock_gemini_handler_;
+  id mock_omnibox_handler_;
+  id mock_location_bar_badge_handler_;
   FakeSnapshotGeneratorDelegate* fake_snapshot_delegate_;
   raw_ptr<feature_engagement::test::MockTracker> mock_tracker_;
   FullscreenCoordinator* fullscreen_coordinator_;
@@ -1152,8 +1167,8 @@ TEST_F(GeminiBrowserAgentTest, TestOnGeminiLiveUserDidBargeIn) {
             ios::provider::GeminiClientMode::kTranscribing);
 }
 
-// Tests that fullscreen remains disabled while floaty is invoked, until
-// floaty is dismissed.
+// Tests that fullscreen is temporarily disabled when floaty is invoked, and
+// re-enabled once the UI appears or collapses.
 TEST_F(GeminiBrowserAgentTest,
        TestFloatyKeepsFullscreenDisabledUntilDismissed) {
   base::test::ScopedFeatureList scoped_feature_list;
@@ -1167,15 +1182,16 @@ TEST_F(GeminiBrowserAgentTest,
   InvokeFloaty([[GeminiConfiguration alloc] init]);
   EXPECT_FALSE(IsFullscreenEnabled());
 
-  // Fullscreen should remain disabled even when UI appears or state collapses.
+  // Fullscreen should be re-enabled once UI appears.
   gemini_browser_agent_->OnGeminiUIDidAppear();
-  EXPECT_FALSE(IsFullscreenEnabled());
+  EXPECT_TRUE(IsFullscreenEnabled());
 
+  // Fullscreen remains enabled in collapsed state.
   gemini_browser_agent_->OnViewStateChanged(
       ios::provider::GeminiViewState::kCollapsed);
-  EXPECT_FALSE(IsFullscreenEnabled());
+  EXPECT_TRUE(IsFullscreenEnabled());
 
-  // Fullscreen should be re-enabled once floaty is dismissed.
+  // Fullscreen should remain enabled once floaty is dismissed.
   gemini_browser_agent_->DismissFloaty();
   EXPECT_TRUE(IsFullscreenEnabled());
 

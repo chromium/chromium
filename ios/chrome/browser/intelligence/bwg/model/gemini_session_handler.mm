@@ -436,13 +436,11 @@ IOSGeminiSessionCancellationReason HistogramEnumFromGeminiCancelType(
       startGeminiLiveFirstRunWithBaseViewController:viewController
                                          completion:^(BOOL success) {
                                            if (!success) {
-                                             // TODO(crbug.com/535588632):
-                                             // switch directly to expanded
-                                             // floaty state once the method is
-                                             // bridged.
                                              ios::provider::SwitchToMode(
                                                  ios::provider::GeminiViewMode::
                                                      kFloaty,
+                                                 ios::provider::
+                                                     GeminiViewState::kExpanded,
                                                  /*animated=*/YES);
                                            }
                                            if (completion) {

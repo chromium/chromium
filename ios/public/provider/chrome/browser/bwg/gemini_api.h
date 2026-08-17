@@ -237,6 +237,12 @@ GeminiViewState GetCurrentGeminiViewState();
 // Switches the Gemini view to the specified mode with an animation flag.
 void SwitchToMode(GeminiViewMode mode, bool animated);
 
+// Switches the Gemini view to the specified mode and target state with an
+// animation flag.
+void SwitchToMode(GeminiViewMode mode,
+                  GeminiViewState target_state,
+                  bool animated);
+
 // Returns the current `GeminiViewMode` of the floaty.
 GeminiViewMode GetCurrentMode();
 

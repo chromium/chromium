@@ -40,6 +40,7 @@
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_panel_entrypoint_commands.h"
+#import "ios/chrome/browser/shared/public/commands/custom_leading_view_type.h"
 #import "ios/chrome/browser/shared/public/commands/find_in_page_commands.h"
 #import "ios/chrome/browser/shared/public/commands/fullscreen_commands.h"
 #import "ios/chrome/browser/shared/public/commands/gemini_commands.h"
@@ -1090,6 +1091,12 @@ inline LayoutStateToolbarPassKey PassKey() {
   CHECK(IsChromeNextIaEnabled());
   [_topLocationBarCoordinator markDisplayedBadgeAsUnread:read];
   [_bottomLocationBarCoordinator markDisplayedBadgeAsUnread:read];
+}
+
+- (void)setBadgeCustomLeadingViewType:(CustomLeadingViewType)type {
+  CHECK(IsChromeNextIaEnabled());
+  [_topLocationBarCoordinator setBadgeCustomLeadingViewType:type];
+  [_bottomLocationBarCoordinator setBadgeCustomLeadingViewType:type];
 }
 
 #pragma mark - ReaderModeChipCommands

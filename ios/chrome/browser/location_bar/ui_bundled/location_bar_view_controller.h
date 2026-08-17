@@ -92,6 +92,8 @@ class Tracker;
 @end
 
 // The view controller displaying the location bar. Manages the two states of
+enum class CustomLeadingViewType;
+
 // the omnibox - the editing and the non-editing states. In the editing state,
 // the omnibox textfield is displayed; in the non-editing state, the current
 // location is displayed.
@@ -259,8 +261,8 @@ class Tracker;
 // Creates a visual copy of the location bar steady view.
 - (UIView*)locationBarSteadyViewVisualCopy;
 
-// Sets the custom leading view visibility, optionally animated.
-- (void)setCustomLeadingViewVisible:(BOOL)visible animated:(BOOL)animated;
+// Sets the type of custom leading view to display in the steady view.
+- (void)setCustomLeadingViewType:(CustomLeadingViewType)type;
 
 @end
 
