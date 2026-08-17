@@ -83,7 +83,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTabRestoreTest, RecentTabsMenuTabDisposition) {
   content::DOMMessageQueue queue;
   BrowserWindowInterface* const browser =
       GetLastActiveBrowserWindowInterfaceWithAnyProfile();
-  RecentTabsSubMenuModel menu(nullptr, browser->GetBrowserForMigrationOnly());
+  RecentTabsSubMenuModel menu(nullptr, browser);
 
   ui_test_utils::BrowserCreatedObserver browser_created_observer;
   menu.ExecuteCommand(menu.GetFirstRecentTabsCommandId(), 0);

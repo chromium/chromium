@@ -10,7 +10,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
-class Browser;
+class BrowserWindowInterface;
 class ElevationIconSetter;
 class GlobalErrorWithStandardBubble;
 
@@ -22,7 +22,7 @@ class GlobalErrorBubbleView : public views::BubbleDialogDelegateView,
   GlobalErrorBubbleView(
       views::BubbleAnchor anchor,
       views::BubbleBorder::Arrow arrow,
-      Browser* browser,
+      BrowserWindowInterface* browser,
       const base::WeakPtr<GlobalErrorWithStandardBubble>& error);
   GlobalErrorBubbleView(const GlobalErrorBubbleView&) = delete;
   GlobalErrorBubbleView& operator=(const GlobalErrorBubbleView&) = delete;

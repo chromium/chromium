@@ -153,7 +153,9 @@ class ExtensionGlobalError : public GlobalErrorWithStandardBubble {
 
   std::u16string MenuItemLabel() override { NOTREACHED(); }
 
-  void ExecuteMenuItem(Browser* browser) override { NOTREACHED(); }
+  void ExecuteMenuItem(BrowserWindowInterface* browser) override {
+    NOTREACHED();
+  }
 
   std::u16string GetBubbleViewTitle() override {
     return GenerateTitle(delegate_->GetBlocklistedExtensions(),

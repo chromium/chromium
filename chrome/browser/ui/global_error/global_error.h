@@ -13,6 +13,7 @@
 #include "ui/base/models/image_model.h"
 
 class Browser;
+class BrowserWindowInterface;
 class GlobalErrorBubbleViewBase;
 
 // This object describes a single global error.
@@ -50,14 +51,14 @@ class GlobalError {
   // Returns the menu item icon.
   virtual ui::ImageModel MenuItemIcon();
   // Called when the user clicks on the menu item.
-  virtual void ExecuteMenuItem(Browser* browser) = 0;
+  virtual void ExecuteMenuItem(BrowserWindowInterface* browser) = 0;
 
   // Returns true if a bubble view should be shown.
   virtual bool HasBubbleView() = 0;
   // Returns true if the bubble view has been shown.
   virtual bool HasShownBubbleView() = 0;
   // Called to show the bubble view.
-  virtual void ShowBubbleView(Browser* browser) = 0;
+  virtual void ShowBubbleView(BrowserWindowInterface* browser) = 0;
   // Returns the bubble view.
   virtual GlobalErrorBubbleViewBase* GetBubbleView() = 0;
 };
@@ -97,7 +98,7 @@ class GlobalErrorWithStandardBubble : public GlobalError {
   // GlobalError overrides:
   bool HasBubbleView() override;
   bool HasShownBubbleView() override;
-  void ShowBubbleView(Browser* browser) override;
+  void ShowBubbleView(BrowserWindowInterface* browser) override;
   GlobalErrorBubbleViewBase* GetBubbleView() override;
 
   // This method is used by the View to notify this object that the bubble has

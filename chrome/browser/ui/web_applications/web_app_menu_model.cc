@@ -73,7 +73,7 @@ constexpr int WebAppMenuModel::kUninstallAppCommandId;
 constexpr int WebAppMenuModel::kExtensionsMenuCommandId;
 
 WebAppMenuModel::WebAppMenuModel(ui::AcceleratorProvider* provider,
-                                 Browser* browser)
+                                 BrowserWindowInterface* browser)
     : AppMenuModel(provider, browser) {}
 
 WebAppMenuModel::~WebAppMenuModel() = default;

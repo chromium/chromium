@@ -77,10 +77,10 @@ class FakeMenuGlobalError : public GlobalError {
   bool HasMenuItem() override { return true; }
   int MenuItemCommandID() override { return 1; }
   std::u16string MenuItemLabel() override { return u"fake"; }
-  void ExecuteMenuItem(Browser* /*browser*/) override {}
+  void ExecuteMenuItem(BrowserWindowInterface* /*browser*/) override {}
   bool HasShownBubbleView() override { return false; }
   bool HasBubbleView() override { return false; }
-  void ShowBubbleView(Browser* browser) override {}
+  void ShowBubbleView(BrowserWindowInterface* browser) override {}
   GlobalErrorBubbleViewBase* GetBubbleView() override { return nullptr; }
 
  private:

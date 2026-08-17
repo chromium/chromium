@@ -13,7 +13,7 @@
 
 #include "ui/menus/simple_menu_model.h"
 
-class Browser;
+class BrowserWindowInterface;
 class ReadingListSubMenuModel;
 
 class BookmarkSubMenuModel : public ui::SimpleMenuModel {
@@ -23,7 +23,7 @@ class BookmarkSubMenuModel : public ui::SimpleMenuModel {
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kReadingListMenuItem);
 
   BookmarkSubMenuModel(ui::SimpleMenuModel::Delegate* delegate,
-                       Browser* browser);
+                       BrowserWindowInterface* browser);
 
   BookmarkSubMenuModel(const BookmarkSubMenuModel&) = delete;
   BookmarkSubMenuModel& operator=(const BookmarkSubMenuModel&) = delete;
@@ -31,7 +31,7 @@ class BookmarkSubMenuModel : public ui::SimpleMenuModel {
   ~BookmarkSubMenuModel() override;
 
  private:
-  void Build(Browser* browser);
+  void Build(BrowserWindowInterface* browser);
 
   std::unique_ptr<ui::SimpleMenuModel> bookmark_bar_sub_menu_model_;
   std::unique_ptr<ReadingListSubMenuModel> reading_list_sub_menu_model_;

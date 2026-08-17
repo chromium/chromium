@@ -26,7 +26,7 @@
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/menus/simple_menu_model.h"
 
-class Browser;
+class BrowserWindowInterface;
 
 namespace favicon_base {
 struct FaviconImageResult;
@@ -61,7 +61,7 @@ class RecentTabsSubMenuModel : public ui::SimpleMenuModel,
   int GetFirstRecentTabsCommandId();
 
   RecentTabsSubMenuModel(ui::AcceleratorProvider* accelerator_provider,
-                         Browser* browser);
+                         BrowserWindowInterface* browser);
 
   RecentTabsSubMenuModel(const RecentTabsSubMenuModel&) = delete;
   RecentTabsSubMenuModel& operator=(const RecentTabsSubMenuModel&) = delete;
@@ -257,7 +257,7 @@ class RecentTabsSubMenuModel : public ui::SimpleMenuModel,
   // Returns true if `command_id` identifies as `command_type`.
   bool IsCommandType(CommandType command_type, int command_id) const;
 
-  const raw_ptr<Browser> browser_;  // Weak.
+  const raw_ptr<BrowserWindowInterface> browser_;  // Weak.
 
   LogMenuMetricsCallback log_menu_metrics_callback_;
 

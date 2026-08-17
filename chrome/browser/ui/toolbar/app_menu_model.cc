@@ -53,7 +53,6 @@
 #include "chrome/browser/sync/sync_ui_util.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -273,7 +272,7 @@ std::u16string GetUpgradeDialogTitleText() {
 
 // Returns the appropriate menu label for the IDC_INSTALL_PWA command if
 // available.
-std::u16string GetInstallPWALabel(Browser* browser) {
+std::u16string GetInstallPWALabel(BrowserWindowInterface* browser) {
   // There may be no active web contents in tests.
   auto* const web_contents = browser->tab_strip_model()->GetActiveWebContents();
   if (!web_contents) {
@@ -359,7 +358,7 @@ std::u16string GetInstallPWALabel(Browser* browser) {
 }
 
 // TODO(b/328077967): Implement async updates of menu for app icon.
-ui::ImageModel GetInstallPWAIcon(Browser* browser) {
+ui::ImageModel GetInstallPWAIcon(BrowserWindowInterface* browser) {
   ui::ImageModel app_icon_to_use = ui::ImageModel::FromVectorIcon(
       features::IsRoundedIconsEnabled() ? vector_icons::kInstallDesktopIcon
                                         : kInstallDesktopChromeRefreshOldIcon,
@@ -408,7 +407,7 @@ ui::ImageModel GetInstallPWAIcon(Browser* browser) {
 
 // Returns the appropriate menu label for the IDC_OPEN_IN_PWA_WINDOW command if
 // available.
-std::u16string GetOpenPWALabel(Browser* browser) {
+std::u16string GetOpenPWALabel(BrowserWindowInterface* browser) {
   std::optional<webapps::AppId> app_id =
       web_app::GetWebAppForActiveTab(browser);
   if (!app_id.has_value()) {
@@ -937,7 +936,7 @@ FindAndEditSubMenuModel::FindAndEditSubMenuModel(
 class SaveAndShareSubMenuModel : public ui::SimpleMenuModel {
  public:
   SaveAndShareSubMenuModel(ui::SimpleMenuModel::Delegate* delegate,
-                           Browser* browser);
+                           BrowserWindowInterface* browser);
   SaveAndShareSubMenuModel(const SaveAndShareSubMenuModel&) = delete;
   SaveAndShareSubMenuModel& operator=(const SaveAndShareSubMenuModel&) = delete;
   ~SaveAndShareSubMenuModel() override = default;
@@ -945,7 +944,7 @@ class SaveAndShareSubMenuModel : public ui::SimpleMenuModel {
  private:
   // Builds Send Tab to Self target device submenu when enhanced desktop UI is
   // enabled.
-  void BuildSendTabToSelfSubmenu(Browser* browser,
+  void BuildSendTabToSelfSubmenu(BrowserWindowInterface* browser,
                                  content::WebContents* web_contents);
 
   // Fallback helper to add simple Send Tab to Self menu item.
@@ -957,7 +956,7 @@ class SaveAndShareSubMenuModel : public ui::SimpleMenuModel {
 };
 
 void SaveAndShareSubMenuModel::BuildSendTabToSelfSubmenu(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     content::WebContents* web_contents) {
   CHECK(web_contents);
 
@@ -988,7 +987,7 @@ void SaveAndShareSubMenuModel::BuildSendTabToSelfSimpleItem() {
 
 SaveAndShareSubMenuModel::SaveAndShareSubMenuModel(
     ui::SimpleMenuModel::Delegate* delegate,
-    Browser* browser)
+    BrowserWindowInterface* browser)
     : SimpleMenuModel(delegate) {
   if (media_router::MediaRouterEnabled(browser->GetProfile())) {
     AddTitle(l10n_util::GetStringUTF16(IDS_SAVE_AND_SHARE_MENU_CAST));
@@ -1100,14 +1099,14 @@ void LogWrenchMenuAction(AppMenuAction action_id) {
 // Only used in branded builds.
 
 HelpMenuModel::HelpMenuModel(ui::SimpleMenuModel::Delegate* delegate,
-                             Browser* browser)
+                             BrowserWindowInterface* browser)
     : SimpleMenuModel(delegate) {
   Build(browser);
 }
 
 HelpMenuModel::~HelpMenuModel() = default;
 
-void HelpMenuModel::Build(Browser* browser) {
+void HelpMenuModel::Build(BrowserWindowInterface* browser) {
 #if BUILDFLAG(IS_CHROMEOS) && defined(OFFICIAL_BUILD)
   int help_string_id = IDS_GET_HELP;
 #else
@@ -1159,7 +1158,7 @@ void HelpMenuModel::Build(Browser* browser) {
 // ToolsMenuModel
 
 ToolsMenuModel::ToolsMenuModel(ui::SimpleMenuModel::Delegate* delegate,
-                               Browser* browser)
+                               BrowserWindowInterface* browser)
     : SimpleMenuModel(delegate) {
   Build(browser);
 }
@@ -1172,7 +1171,7 @@ ToolsMenuModel::~ToolsMenuModel() = default;
 // - Reading mode.
 // - Developer tools.
 // - Option to enable profiling.
-void ToolsMenuModel::Build(Browser* browser) {
+void ToolsMenuModel::Build(BrowserWindowInterface* browser) {
   // Tablet mode does not have a Tab Search button. We should not show tablet
   // mode users these menu items.
   bool is_tablet_mode = false;
@@ -1292,7 +1291,7 @@ void ToolsMenuModel::Build(Browser* browser) {
 
 ExtensionsMenuModel::ExtensionsMenuModel(
     ui::SimpleMenuModel::Delegate* delegate,
-    Browser* browser)
+    BrowserWindowInterface* browser)
     : SimpleMenuModel(delegate) {
   Build(browser);
 }
@@ -1303,7 +1302,7 @@ ExtensionsMenuModel::~ExtensionsMenuModel() = default;
 // - An overflow with two items:
 //   - An item to manage extensions at chrome://extensions
 //   - An item to visit the Chrome Web Store
-void ExtensionsMenuModel::Build(Browser* browser) {
+void ExtensionsMenuModel::Build(BrowserWindowInterface* browser) {
   AddItemWithStringIdAndVectorIcon(
       this, IDC_EXTENSIONS_SUBMENU_MANAGE_EXTENSIONS,
       IDS_EXTENSIONS_SUBMENU_MANAGE_EXTENSIONS_ITEM,
@@ -1343,7 +1342,7 @@ AlertMenuItem AppMenuModel::GetAlertItemForRunningTutorial(
 }
 
 AppMenuModel::AppMenuModel(ui::AcceleratorProvider* provider,
-                           Browser* browser,
+                           BrowserWindowInterface* browser,
                            AppMenuIconController* app_menu_icon_controller,
                            AlertMenuItem alert_item)
     : ui::SimpleMenuModel(this),

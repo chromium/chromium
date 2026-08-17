@@ -2652,10 +2652,10 @@ class MockGlobalError : public GlobalError {
   bool HasMenuItem() override { return true; }
   int MenuItemCommandID() override { return 12345; }
   std::u16string MenuItemLabel() override { return u"Mock Error"; }
-  void ExecuteMenuItem(Browser* browser) override {}
+  void ExecuteMenuItem(BrowserWindowInterface* browser) override {}
   bool HasBubbleView() override { return false; }
   bool HasShownBubbleView() override { return false; }
-  void ShowBubbleView(Browser* browser) override {}
+  void ShowBubbleView(BrowserWindowInterface* browser) override {}
   GlobalErrorBubbleViewBase* GetBubbleView() override { return nullptr; }
 
  private:

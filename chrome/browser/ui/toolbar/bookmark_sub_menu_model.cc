@@ -10,7 +10,7 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/toolbar/reading_list_sub_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -36,14 +36,14 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(BookmarkSubMenuModel,
 
 BookmarkSubMenuModel::BookmarkSubMenuModel(
     ui::SimpleMenuModel::Delegate* delegate,
-    Browser* browser)
+    BrowserWindowInterface* browser)
     : SimpleMenuModel(delegate) {
   Build(browser);
 }
 
 BookmarkSubMenuModel::~BookmarkSubMenuModel() = default;
 
-void BookmarkSubMenuModel::Build(Browser* browser) {
+void BookmarkSubMenuModel::Build(BrowserWindowInterface* browser) {
   if (delegate()->IsCommandIdVisible(IDC_BOOKMARK_THIS_TAB) ||
       delegate()->IsCommandIdVisible(IDC_BOOKMARK_ALL_TABS)) {
     AddItemWithStringId(IDC_BOOKMARK_THIS_TAB, IDS_BOOKMARK_THIS_TAB);

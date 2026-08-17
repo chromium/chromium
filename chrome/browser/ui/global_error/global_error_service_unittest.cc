@@ -33,11 +33,15 @@ class BaseError : public GlobalError {
     ADD_FAILURE();
     return std::u16string();
   }
-  void ExecuteMenuItem(Browser* browser) override { ADD_FAILURE(); }
+  void ExecuteMenuItem(BrowserWindowInterface* browser) override {
+    ADD_FAILURE();
+  }
 
   bool HasBubbleView() override { return false; }
   bool HasShownBubbleView() override { return false; }
-  void ShowBubbleView(Browser* browser) override { ADD_FAILURE(); }
+  void ShowBubbleView(BrowserWindowInterface* browser) override {
+    ADD_FAILURE();
+  }
   GlobalErrorBubbleViewBase* GetBubbleView() override { return nullptr; }
 
  private:
@@ -61,7 +65,7 @@ class MenuError : public BaseError {
   bool HasMenuItem() override { return true; }
   int MenuItemCommandID() override { return command_id_; }
   std::u16string MenuItemLabel() override { return std::u16string(); }
-  void ExecuteMenuItem(Browser* browser) override {}
+  void ExecuteMenuItem(BrowserWindowInterface* browser) override {}
 
  private:
   int command_id_;

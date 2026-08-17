@@ -20,6 +20,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/global_error/global_error.h"
 #include "chrome/browser/ui/global_error/global_error_service.h"
 #include "chrome/browser/ui/global_error/global_error_service_factory.h"
@@ -64,7 +65,7 @@ class ExtensionDisabledGlobalError final
   bool HasMenuItem() override;
   int MenuItemCommandID() override;
   std::u16string MenuItemLabel() override;
-  void ExecuteMenuItem(Browser* browser) override;
+  void ExecuteMenuItem(BrowserWindowInterface* browser) override;
   std::u16string GetBubbleViewTitle() override;
   std::vector<std::u16string> GetBubbleViewMessages() override;
   std::u16string GetBubbleViewAcceptButtonLabel() override;
@@ -144,7 +145,8 @@ std::u16string ExtensionDisabledGlobalError::MenuItemLabel() {
       extension_name);
 }
 
-void ExtensionDisabledGlobalError::ExecuteMenuItem(Browser* browser) {
+void ExtensionDisabledGlobalError::ExecuteMenuItem(
+    BrowserWindowInterface* browser) {
   ShowBubbleView(browser);
 }
 

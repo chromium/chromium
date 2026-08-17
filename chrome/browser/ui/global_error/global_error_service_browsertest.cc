@@ -38,7 +38,9 @@ class BubbleViewError final : public GlobalErrorWithStandardBubble {
     ADD_FAILURE();
     return std::u16string();
   }
-  void ExecuteMenuItem(Browser* browser) override { ADD_FAILURE(); }
+  void ExecuteMenuItem(BrowserWindowInterface* browser) override {
+    ADD_FAILURE();
+  }
 
   bool HasBubbleView() override { return true; }
   std::u16string GetBubbleViewTitle() override { return std::u16string(); }

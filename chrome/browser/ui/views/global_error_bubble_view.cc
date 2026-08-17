@@ -12,8 +12,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/platform_util.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/bubble_anchor_util.h"
 #include "chrome/browser/ui/global_error/global_error.h"
 #include "chrome/browser/ui/global_error/global_error_service.h"
@@ -40,7 +40,7 @@
 
 // static
 GlobalErrorBubbleViewBase* GlobalErrorBubbleViewBase::ShowStandardBubbleView(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     const base::WeakPtr<GlobalErrorWithStandardBubble>& error) {
   auto* control = BrowserView::GetBrowserViewForBrowser(browser)
                       ->toolbar_button_provider()
@@ -59,7 +59,7 @@ GlobalErrorBubbleViewBase* GlobalErrorBubbleViewBase::ShowStandardBubbleView(
 GlobalErrorBubbleView::GlobalErrorBubbleView(
     views::BubbleAnchor anchor,
     views::BubbleBorder::Arrow arrow,
-    Browser* browser,
+    BrowserWindowInterface* browser,
     const base::WeakPtr<GlobalErrorWithStandardBubble>& error)
     : BubbleDialogDelegateView(anchor,
                                arrow,

@@ -40,7 +40,8 @@ bool GlobalErrorWithStandardBubble::HasShownBubbleView() {
   return has_shown_bubble_view_;
 }
 
-void GlobalErrorWithStandardBubble::ShowBubbleView(Browser* browser) {
+void GlobalErrorWithStandardBubble::ShowBubbleView(
+    BrowserWindowInterface* browser) {
   has_shown_bubble_view_ = true;
   bubble_view_ =
       GlobalErrorBubbleViewBase::ShowStandardBubbleView(browser, AsWeakPtr());
