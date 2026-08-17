@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/functional/bind.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
@@ -22,9 +23,28 @@ DictationHandler::~DictationHandler() = default;
 
 void DictationHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
+      "getDictationShortcut",
+      base::BindRepeating(&DictationHandler::HandleGetDictationShortcut,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
       "setDictationShortcut",
       base::BindRepeating(&DictationHandler::HandleSetDictationShortcut,
                           base::Unretained(this)));
+}
+
+void DictationHandler::HandleGetDictationShortcut(const base::ListValue& args) {
+  CHECK_EQ(1U, args.size());
+  const base::Value& callback_id = args[0];
+  AllowJavascript();
+
+  std::string pref_shortcut =
+      Profile::FromWebUI(web_ui())->GetPrefs()->GetString(
+          prefs::kVoiceTypingHotkey);
+  ui::Accelerator accelerator = ui::Command::StringToAccelerator(pref_shortcut);
+
+  ResolveJavascriptCallback(
+      callback_id,
+      base::Value(base::UTF16ToUTF8(accelerator.GetShortcutText())));
 }
 
 void DictationHandler::HandleSetDictationShortcut(const base::ListValue& args) {

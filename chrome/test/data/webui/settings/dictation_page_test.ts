@@ -53,6 +53,7 @@ suite('DictationPage', function() {
 
   test('ShortcutUpdateFailedRevertsPref', async () => {
     browserProxy.setDictationShortcutResult(false);
+    browserProxy.setDictationShortcutValue('Ctrl+Alt+D');
     page.setPrefValue('browser.voice_typing_hotkey', 'Ctrl+Alt+D');
 
     assertTrue(isVisible(page.$.shortcutInput));
@@ -65,6 +66,14 @@ suite('DictationPage', function() {
 
     // Verify element reverted shortcut property back to original pref value.
     assertEquals('Ctrl+Alt+D', page.$.shortcutInput.shortcut);
+  });
+
+  test('PrefChangeShowsFormattedShortcutFromBrowser', async () => {
+    browserProxy.setDictationShortcutValue('⌃⇧D');
+    page.setPrefValue('browser.voice_typing_hotkey', 'Ctrl+Shift+D');
+    await flushTasks();
+
+    assertEquals('⌃⇧D', page.$.shortcutInput.shortcut);
   });
 
   test('settingsPageLearnMoreShown', () => {

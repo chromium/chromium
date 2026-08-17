@@ -61,22 +61,20 @@ export class SettingsDictationPageElement extends
     this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
   }
 
-  private onPrefChanged_(value: string) {
-    this.registeredShortcut_ = value || '';
+  private async onPrefChanged_() {
+    // We don't read the pref directly, as we want a formatted string that the
+    // browser produces.
+    this.registeredShortcut_ =
+        await DictationBrowserProxyImpl.getInstance().getDictationShortcut();
   }
 
   private async onShortcutUpdated_(event: CustomEvent<string>) {
     // TODO(b/540531389): Add interaction metrics for hotkey changes.
     const shortcut = event.detail;
-    this.registeredShortcut_ = shortcut;
-    const isValid =
-        await DictationBrowserProxyImpl.getInstance().setDictationShortcut(
-            shortcut);
-    if (!isValid) {
-      // Revert to the value stored in prefs.
-      this.registeredShortcut_ =
-          this.getPref<string>('browser.voice_typing_hotkey').value;
-    }
+    await DictationBrowserProxyImpl.getInstance().setDictationShortcut(
+        shortcut);
+    this.registeredShortcut_ =
+        await DictationBrowserProxyImpl.getInstance().getDictationShortcut();
   }
 }
 

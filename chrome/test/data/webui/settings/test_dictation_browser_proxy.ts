@@ -8,19 +8,33 @@ import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 export class TestDictationBrowserProxy extends TestBrowserProxy implements
     DictationBrowserProxy {
   private setDictationShortcutResult_: boolean = true;
+  private dictationShortcut_: string = '';
 
   constructor() {
     super([
+      'getDictationShortcut',
       'setDictationShortcut',
     ]);
   }
 
+  getDictationShortcut(): Promise<string> {
+    this.methodCalled('getDictationShortcut');
+    return Promise.resolve(this.dictationShortcut_);
+  }
+
   setDictationShortcut(shortcut: string): Promise<boolean> {
     this.methodCalled('setDictationShortcut', shortcut);
+    if (this.setDictationShortcutResult_) {
+      this.dictationShortcut_ = shortcut;
+    }
     return Promise.resolve(this.setDictationShortcutResult_);
   }
 
   setDictationShortcutResult(result: boolean) {
     this.setDictationShortcutResult_ = result;
+  }
+
+  setDictationShortcutValue(shortcut: string) {
+    this.dictationShortcut_ = shortcut;
   }
 }
